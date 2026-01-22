@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+
+# Data
+1_Inputs/
+4_Outputs/
+3_Logs/
+
+# Archives and Backups
+___Archive/
+BACKUP_*/
+*.rar

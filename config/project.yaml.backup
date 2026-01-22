@@ -1,0 +1,229 @@
+# F1D Clarity Measure - Central Configuration
+# Single source of runtime truth for all processing steps
+
+project:
+  name: "F1D_Clarity"
+  version: "F1D.1.0"
+  description: "Dictionary-based Clarity measure using LM Uncertainty & Weak_Modal"
+
+# Data year range
+data:
+  year_start: 2002
+  year_end: 2018
+
+# Paths (relative to project root)
+paths:
+  inputs: "1_Inputs"
+  scripts: "2_Scripts"
+  logs: "3_Logs"
+  outputs: "4_Outputs"
+
+  # Input files
+  lm_dictionary: "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
+  unified_info: "1_Inputs/Unified-info.parquet"
+  speaker_data_pattern: "1_Inputs/speaker_data_{year}.parquet"
+
+# Determinism settings
+determinism:
+  random_seed: 42
+  thread_count: 1  # Pinned for reproducibility
+  sort_inputs: true
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s [%(levelname)s] %(message)s"
+  timestamp_format: "%Y-%m-%d %H:%M:%S"
+
+# Step-specific parameters
+
+# STEP 00: Unified Info Check
+step_00:
+  enabled: true
+  output_subdir: "2.0_UnifiedInfoCheck"
+  outputs:
+    duplicate_report: "unified_info_duplicate_file_names.csv"
+    summary_report: "report_step_00.md"
+
+# STEP 01: Build LM Clarity Dictionary
+step_01:
+  enabled: true
+  output_subdir: "2.1_BuildLmClarityDictionary"
+
+  # Dictionary selection criteria
+  selection:
+    uncertainty_threshold: 0  # Include if Uncertainty > 0
+    weak_modal_threshold: 0   # Include if Weak_Modal > 0
+
+  # Token normalization
+  normalization:
+    case: "upper"  # Convert to uppercase
+    pattern: "[A-Z]+"  # Only keep tokens matching this regex
+
+  outputs:
+    dictionary: "lm_Clarity_dictionary.parquet"
+    summary_report: "report_step_01.md"
+
+# STEP 02: Extract QA Manager Docs
+step_02:
+  enabled: true
+  output_subdir: "2.2_ExtractQaManagerDocs"
+
+  # Context filter
+  context_filter: "qa"  # Only keep Q&A sections
+
+  # Managerial role keywords (case-insensitive substring matching)
+  managerial_roles:
+    - "PRESIDENT"
+    - "VP"
+    - "DIRECTOR"
+    - "CEO"
+    - "EVP"
+    - "SVP"
+    - "CFO"
+    - "OFFICER"
+    - "CHIEF"
+    - "EXECUTIVE"
+    - "HEAD"
+    - "CHAIRMAN"
+    - "SENIOR"
+    - "MANAGER"
+    - "COO"
+    - "TREASURER"
+    - "SECRETARY"
+    - "MD"
+    - "DEPUTY"
+    - "CONTROLLER"
+    - "GM"
+    - "PRINCIPAL"
+    - "CAO"
+    - "CIO"
+    - "CTO"
+    - "CMO"
+    - "LEADER"
+    - "LEAD"
+    - "CCO"
+    - "COORDINATOR"
+    - "AVP"
+    - "ADMINISTRATOR"
+    - "CHAIRWOMAN"
+    - "CHAIRPERSON"
+    - "SUPERINTENDENT"
+    - "DEAN"
+    - "COMMISSIONER"
+    - "CA"
+    - "GOVERNOR"
+    - "SUPERVISOR"
+    - "COACH"
+    - "PROVOST"
+    - "CAPTAIN"
+    - "CHO"
+    - "RECTOR"
+
+  # Exclusion keywords (case-insensitive substring matching)
+  exclusion_keywords:
+    - "Analyst"
+    - "Operator"
+    - "Editor"
+    - "Moderator"
+    - "??"
+
+  # Duplicate handling for Unified Info
+  duplicate_selection:
+    sort_by:
+      - "validation_timestamp"
+      - "start_date"
+    # If still tied, use lexicographic order on all columns
+
+  outputs:
+    docs_pattern: "qa_manager_docs_{year}.parquet"
+    summary_report: "report_step_02.md"
+
+# Dataset definitions (used by Step 2.2 and beyond)
+datasets:
+  manager_qa:
+    description: "Managerial speech in Q&A sections"
+    context_filter: "qa"
+    role_filter: "managerial"
+    enabled: true
+
+  manager_pres:
+    description: "Managerial speech in Presentation sections"
+    context_filter: "pres"
+    role_filter: "managerial"
+    enabled: true
+
+  analyst_qa:
+    description: "Analyst questions in Q&A sections"
+    context_filter: "qa"
+    role_filter: "analyst"
+    enabled: true
+
+  entire_call:
+    description: "All speech from all speakers (managers, analysts, operators) in all contexts (qa, pres)"
+    context_filter: null  # No context filtering
+    role_filter: null     # No role filtering
+    enabled: true
+
+# Analyst identification (for role_filter: analyst)
+analyst_detection:
+  keyword: "Analyst"  # Case-insensitive substring match in 'role' field
+
+# STEP 03: Tokenize & Count (C++)
+step_03:
+  enabled: true
+  output_subdir: "2.3_TokenizeAndCount"
+
+  # Tokenization
+  tokenization:
+    normalization: "uppercase"  # Convert to uppercase ASCII
+    non_letter_replacement: " "  # Replace non-letters with space
+    collapse_spaces: true
+    token_pattern: "[A-Z]+"  # Valid token regex
+
+  # Output options
+  top_matches_count: 5  # Number of top matched tokens to save
+
+  # C++ compilation
+  compiler:
+    executable: "g++"
+    standard: "c++17"
+    optimization: "-O2"
+    warnings: "-Wall -Wextra"
+
+  outputs:
+    call_pattern: "f1d_call_{year}.parquet"
+    summary_report: "report_step_03.md"
+
+# STEP 04: Build F1D Panel
+step_04:
+  enabled: true
+  output_subdir: "2.4_BuildF1dPanel"
+
+  # Measures: dataset + dictionary combinations
+  measures:
+    MaQaUnc:
+      dataset: "manager_qa"
+      dictionary: "Uncertainty"
+      description: "Manager Q&A Uncertainty"
+    MaPresUnc:
+      dataset: "manager_pres"
+      dictionary: "Uncertainty"
+      description: "Manager Presentation Uncertainty"
+    AnaQaUnc:
+      dataset: "analyst_qa"
+      dictionary: "Uncertainty"
+      description: "Analyst Q&A Uncertainty"
+    EntireCallNeg:
+      dataset: "entire_call"
+      dictionary: "Negative"
+      description: "Entire Call Negativity"
+
+  outputs:
+    panel_pattern: "{measure}_panel_{year}.parquet"
+    summary_report: "report_step_04.md"
+
+# Hash algorithms for reproducibility checks
+hashing:
+  algorithm: "sha256"
+  chunk_size: 65536  # For file hashing
