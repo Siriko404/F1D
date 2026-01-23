@@ -29,12 +29,12 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
   3. stats.json contains all required metrics (row counts, missing values, timing, checksums)
   4. Pattern uses inline helper functions (print_stat, print_stats_summary, save_stats) for copy-paste reuse
   5. Merge diagnostics pattern established for scripts with joins
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Define stats schema and helper function templates
-- [ ] 01-02: Implement inline stats in 1.1_CleanMetadata
-- [ ] 01-03: Validate stats.json output and console display
+- [ ] 01-01-PLAN.md — Define stats schema and helper function templates
+- [ ] 01-02-PLAN.md — Implement inline stats in 1.1_CleanMetadata
+- [ ] 01-03-PLAN.md — Validate stats.json output and console display
 
 ### Phase 2: Step 1 Sample
 **Goal**: All Step 1 scripts output comprehensive sample construction statistics
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Template & Pilot | 0/3 | Not started | - |
+| 1. Template & Pilot | 0/3 | Planned | - |
 | 2. Step 1 Sample | 0/5 | Not started | - |
 | 3. Step 2 Text | 0/3 | Not started | - |
 | 4. Steps 3-4 Financial & Econometric | 0/8 | Not started | - |
