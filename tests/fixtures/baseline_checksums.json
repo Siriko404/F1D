@@ -1,0 +1,28 @@
+{
+  "step2_linguistic_counts_2002": "405aa1998bbd8f6b896d26c97a4147b2abb22d018babcb90a906a0e025af51e6",
+  "step2_linguistic_counts_2003": "0ba1a87e1bbe62bfd5ff1ac8ab5656da1d2f066a88a267b26f434aba9bceef24",
+  "step2_linguistic_counts_2004": "573c3f9683f6e3c96683327eb44d417afb524a4ebd67d386a8eee5e420ba4d35",
+  "step2_linguistic_counts_2005": "4411edaf5c0d763a71e1c08bb728bc1795988962b6aab528f0464eb65244d5e9",
+  "step2_linguistic_counts_2006": "3d8d8dfb8b37db925d94a975925635f57d0c864778f4d347aed41130f690971c",
+  "step2_linguistic_counts_2007": "eac7bc38595e8ddb915d0952b963aab4d65922b6444c5565ef74610a28bd9a92",
+  "step2_linguistic_counts_2008": "84f4b07c6134aca03fc2e21bc4fe8444e6d9dc48731210e8e02db04006ed88ae",
+  "step2_linguistic_counts_2009": "e1a907a3808dd71487996963d60e18c22c032b1c8db1698c1043125e0ff25212",
+  "step2_linguistic_counts_2010": "5ded5eee87d952338fba087bac4c079bb533bf66d8b24be2d10997f4b3c5fd3f",
+  "step2_linguistic_counts_2011": "50c250499185d4e8f8394668ac2a17579596cf8a1fb490d16cc9565265f652b7",
+  "step2_linguistic_counts_2012": "3f2d329bcff210365d64abd9310ae6780ca5a61f01de8bd046f0b042262b1939",
+  "step2_linguistic_counts_2013": "f4268bccce65b279c620966afe558198b567cdb932213f8afad8bd575b31d90f",
+  "step2_linguistic_counts_2014": "00eb165c064b297f3b4cd7bb47becd66b2f9890c5eed92e914bb721d5dd0bde0",
+  "step2_linguistic_counts_2015": "0e3bc7cdc8da37c1d2fc7e6d1df2e300a7d71a4ac8bbad820dabf20e69806d03",
+  "step2_linguistic_counts_2016": "41d6016c1295b710029be27e8bf7af6909558150b5d7be2936f08b4c075a8a88",
+  "step2_linguistic_counts_2017": "839600b72652cfaa5ccc9c721737b2d16fe5d0e6c7336bc668e01cdaa3fdf049",
+  "step2_linguistic_counts_2018": "3b0e27e527b9ff494da1ed70912bb3eb111d03f34cf4eaf8b2caf06be3bfc909",
+  "_metadata": {
+    "generated_at": "2026-01-23T09:33:39.628620",
+    "git_commit": "64dac5556295708732320df99af7e63a236ed5dd",
+    "total_files": 17,
+    "missing_files": [
+      "step1_cleaned_metadata",
+      "step3_financial_features"
+    ]
+  }
+}
