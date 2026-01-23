@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 14 of 15 (Dependency Management) — In progress (4/4 plans complete)
+Phase: 14 of 15 (Dependency Management) — In progress (3/4 plans complete)
 Technical Remediation: Phase 7-15 — 34 concerns to address
 Status: Original project 100% complete, Phase 7-13 complete, Phase 14 in progress
-Last activity: 2026-01-23 — Completed 14-04: Document RapidFuzz optional dependency
+Last activity: 2026-01-23 — Completed 14-03: Test pipeline on Python 3.8-3.13 with GitHub Actions matrix
 
 Progress: [██████████] 100% (All 6 original phases complete)
-Technical Remediation: [████████████] 100% (Phase 7, 8, 9, 10, 11, 12, 13 complete; Phase 14 4/4 complete; remaining Phase 14-15)
+Technical Remediation: [████████████] 100% (Phase 7, 8, 9, 10, 11, 12, 13 complete; Phase 14 3/4 complete; remaining Phase 14-15)
 
 ## Performance Metrics
 
@@ -158,36 +158,53 @@ None.
 
 **Current session: 2026-01-23**
 
- ✅ **Phase 13 complete:**
-     - All 12 plans completed (13-01, 13-01b, 13-02, 13-03, 13-04, 13-04b, 13-05a, 13-05b, 13-05c, 13-06, 13-07, 13-08)
-     - 13-08: Path validation across 17 core scripts - Added active validation using shared.path_utils module
-     - Steps 1-3 have full validation (input files, output directories)
-     - Step 4 econometric scripts have path_utils import for future use
-     - 35 min execution time
-     - 4 commits (Step 1, Step 2, Step 3, Step 4)
+  ✅ **Phase 13 complete:**
+      - All 12 plans completed (13-01, 13-01b, 13-02, 13-03, 13-04, 13-04b, 13-05a, 13-05b, 13-05c, 13-06, 13-07, 13-08)
+      - 13-08: Path validation across 17 core scripts - Added active validation using shared.path_utils module
+      - Steps 1-3 have full validation (input files, output directories)
+      - Step 4 econometric scripts have path_utils import for future use
+      - 35 min execution time
+      - 4 commits (Step 1, Step 2, Step 3, Step 4)
 
-  ✅ **Phase 14-01 complete:**
-      - statsmodels pinned to 0.14.6 with upgrade procedures
-      - Updated requirements.txt with rationale comment about 0.14.0 breaking changes
-      - Updated DEPENDENCIES.md with statsmodels 0.14.6 rationale
-      - Created UPGRADE_GUIDE.md (281 lines) with comprehensive upgrade procedures
-      - Baseline comparison tolerance: 1e-6 for coefficient differences
-      - Rollback procedures documented for all upgrade paths
-      - ~3 min execution time
-      - 3 commits (Task 1, Task 2, Task 3)
+   ✅ **Phase 14-01 complete:**
+       - statsmodels pinned to 0.14.6 with upgrade procedures
+       - Updated requirements.txt with rationale comment about 0.14.0 breaking changes
+       - Updated DEPENDENCIES.md with statsmodels 0.14.6 rationale
+       - Created UPGRADE_GUIDE.md (281 lines) with comprehensive upgrade procedures
+       - Baseline comparison tolerance: 1e-6 for coefficient differences
+       - Rollback procedures documented for all upgrade paths
+       - ~3 min execution time
+       - 3 commits (Task 1, Task 2, Task 3)
 
-  📊 **Git Status:**
-      - All Phase 13-14 work committed to local repository
-      - Last commit: f07a1a5 (docs(14-01): create UPGRADE_GUIDE.md with upgrade procedures)
+   ✅ **Phase 14-02 complete:**
+       - PyArrow pinned to 21.0.0 with compatibility rationale
+       - Created DEPENDENCIES.md with comprehensive dependency documentation (12 dependencies)
+       - Updated DEPENDENCIES.md with PyArrow 21.0.0 rationale and performance notes
+       - Created UPGRADE_GUIDE.md with PyArrow upgrade procedure
+       - Performance benchmarking requirements documented (10% tolerance threshold)
+       - ~3 min execution time
+       - 3 commits (Task 1, Task 2, Task 3)
 
-  🎯 **Next Phase:**
-     - Phase 14: Dependency Management (3/4 remaining plans)
-     - 14-02: Document PyArrow 21.0.0 compatibility and performance (Wave 1)
-     - 14-03: Test pipeline on Python 3.8-3.13 with GitHub Actions matrix (Wave 2)
-     - 14-04: Document RapidFuzz optional dependency with installation instructions (Wave 1)
-     - Ready to proceed
+   ✅ **Phase 14-03 complete:**
+       - GitHub Actions workflow updated with Python 3.8-3.13 matrix testing
+       - Pip cache optimized to include Python version for proper caching
+       - Artifact names updated to include Python version for traceability
+       - DEPENDENCIES.md updated with Python Compatibility section
+       - UPGRADE_GUIDE.md updated with Python Upgrade Procedure (6-step process)
+       - Example workflow provided for Python 3.8 → 3.14 upgrade
+       - ~2 min execution time
+       - 3 commits (Task 1, Task 2, Task 3)
 
- **Resume file:** None
+   📊 **Git Status:**
+       - All Phase 13-14 work committed to local repository
+       - Last commit: 2845644 (docs(14-03): add Python upgrade testing procedure to UPGRADE_GUIDE.md)
+
+   🎯 **Next Phase:**
+      - Phase 14: Dependency Management (1/4 remaining plans)
+      - 14-04: Document RapidFuzz optional dependency with installation instructions (Wave 1)
+      - Ready to proceed
+
+  **Resume file:** None
 
 ## Phase 14 Achievements
 
@@ -483,7 +500,7 @@ Phase 13 successfully improved code modularity, robustness, and maintainability 
 ## Phase 14 Achievements
 
 **Completed:** 2026-01-23
-**Plans:** 1/4 (14-02 complete)
+**Plans:** 3/4 (14-01, 14-02, 14-03 complete)
 
 ### Overview
 
@@ -577,13 +594,108 @@ Phase 14 focuses on dependency management to ensure long-term stability and comp
 
 ### Phase 14 Status
 
-**Plans Completed (1/4):**
-- [ ] 14-01: Pin statsmodels to 0.14.6 and document versioning strategy (Wave 1)
+**Plans Completed (3/4):**
+- [x] 14-01: Pin statsmodels to 0.14.6 and document versioning strategy (Wave 1)
 - [x] 14-02: Document PyArrow 21.0.0 compatibility and performance (Wave 1)
-- [ ] 14-03: Test pipeline on Python 3.8-3.13 with GitHub Actions matrix (Wave 2)
+- [x] 14-03: Test pipeline on Python 3.8-3.13 with GitHub Actions matrix (Wave 2)
 - [ ] 14-04: Document RapidFuzz optional dependency with installation instructions (Wave 1)
 
 **Remaining Plans:**
-- 14-01: Pin statsmodels to 0.14.6 and document versioning strategy
-- 14-03: Test pipeline on Python 3.8-3.13 with GitHub Actions matrix
+- 14-04: Document RapidFuzz optional dependency with installation instructions
+
+---
+
+**Python Matrix Testing (14-03):**
+
+1. **Updated GitHub Actions workflow** (.github/workflows/test.yml)
+   - Added matrix strategy for Python versions: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
+   - Updated "Set up Python" step to use matrix.python-version
+   - Updated pip cache key to include Python version for proper caching
+   - Updated artifact names to include Python version (coverage-report-{version}, test-results-{version})
+   - All supported Python versions tested on every push/PR
+   - Early detection of Python-specific compatibility issues
+   - Version-traceable artifacts for debugging
+
+2. **Documented Python compatibility in DEPENDENCIES.md**
+   - Added comprehensive Python Compatibility section
+   - Listed all supported versions (3.8, 3.9, 3.10, 3.11, 3.12, 3.13)
+   - Documented minimum version (3.8) and latest tested (3.13)
+   - Explained rationale for broad compatibility
+   - Documented dependency constraints (PyArrow, NumPy, Pandas)
+   - Referenced GitHub Actions matrix testing
+   - Provided user recommendations (3.10-3.11 for best performance, minimum 3.8)
+   - Cross-referenced UPGRADE_GUIDE.md for upgrade procedures
+
+3. **Added Python upgrade testing procedure to UPGRADE_GUIDE.md**
+   - Documented 6-step Python upgrade process
+   - Step 1: Check Dependency Support (review DEPENDENCIES.md, release notes)
+   - Step 2: Local Testing (venv, pip install, pytest)
+   - Step 3: GitHub Actions Validation (update matrix, verify CI/CD)
+   - Step 4: Full Pipeline Validation (run all scripts, compare outputs)
+   - Step 5: Update Documentation (add to DEPENDENCIES.md, update matrix)
+   - Step 6: Deprecate Old Versions (optional - update requirements.txt, announce)
+   - Included example workflow for Python 3.8 → 3.14 upgrade
+   - Cross-referenced DEPENDENCIES.md and GitHub Actions
+
+### Technical Decisions
+
+1. **Matrix testing approach**: Chose GitHub Actions matrix strategy for Python version testing (standard approach for multi-version CI/CD)
+
+2. **Cache optimization**: Included Python version in pip cache key to prevent cross-version cache contamination and improve cache hit rates
+
+3. **Artifact traceability**: Added Python version to artifact names for easy debugging of version-specific failures
+
+4. **User guidance**: Provided clear recommendations (Python 3.10-3.11 for best performance, minimum 3.8 fully supported) in DEPENDENCIES.md
+
+5. **Upgrade procedure structure**: Organized upgrade procedure into 6 clear steps with example workflow for Python 3.8 → 3.14 upgrade
+
+### Files Created/Modified
+
+**Modified:**
+- .github/workflows/test.yml - Added Python 3.8-3.13 matrix strategy, updated pip cache key, updated artifact names
+- DEPENDENCIES.md - Added Python Compatibility section with supported versions, rationale, constraints, testing, user recommendations
+- UPGRADE_GUIDE.md - Added Python Upgrade Procedure section with 6-step process and example workflow
+
+### Verification Results
+
+**Phase 14-03 Must-Haves:**
+
+| # | Truth | Status | Evidence |
+|---|-------|--------|----------|
+| 1 | GitHub Actions tests Python 3.8-3.13 matrix | ✓ VERIFIED | .github/workflows/test.yml has matrix strategy with all 6 versions |
+| 2 | Pip cache includes Python version in key | ✓ VERIFIED | Cache key uses matrix.python-variable |
+| 3 | DEPENDENCIES.md documents all supported versions | ✓ VERIFIED | Python Compatibility section lists 3.8-3.13 |
+| 4 | UPGRADE_GUIDE.md provides Python upgrade testing steps | ✓ VERIFIED | 6-step procedure with local testing, CI/CD validation, full pipeline validation |
+
+### Plan Execution Summary
+
+**Plan 14-03 executed successfully:**
+
+✅ Task 1: Update GitHub Actions workflow for Python matrix testing (commit: c69f942)
+✅ Task 2: Document Python compatibility in DEPENDENCIES.md (commit: 8bcec13)
+✅ Task 3: Add Python upgrade testing procedure to UPGRADE_GUIDE.md (commit: 2845644)
+
+**Total execution time:** ~2 minutes
+**Total commits:** 3
+**Deviations:** None
+
+**Key Deliverables:**
+1. GitHub Actions workflow testing Python 3.8-3.13 matrix (6 versions)
+2. Pip cache optimization with Python version in cache key
+3. Version-traceable artifacts (coverage-report-{version}, test-results-{version})
+4. Python Compatibility section in DEPENDENCIES.md (comprehensive documentation)
+5. Python Upgrade Procedure in UPGRADE_GUIDE.md (6-step process with example)
+6. User guidance on recommended Python versions (3.10-3.11 for best performance)
+
+---
+
+### Phase 14 Status
+
+**Plans Completed (3/4):**
+- [x] 14-01: Pin statsmodels to 0.14.6 and document versioning strategy (Wave 1)
+- [x] 14-02: Document PyArrow 21.0.0 compatibility and performance (Wave 1)
+- [x] 14-03: Test pipeline on Python 3.8-3.13 with GitHub Actions matrix (Wave 2)
+- [ ] 14-04: Document RapidFuzz optional dependency with installation instructions (Wave 1)
+
+**Remaining Plans:**
 - 14-04: Document RapidFuzz optional dependency with installation instructions
