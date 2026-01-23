@@ -54,6 +54,7 @@ from utils import (
     generate_variable_reference,
     update_latest_symlink,
 )
+from shared.financial_utils import compute_financial_controls_quarterly
 
 # ==============================================================================
 # Configuration
@@ -319,45 +320,8 @@ def compute_compustat_controls(manifest, compustat):
     print("Computing Compustat Controls (Optimized)")
     print("=" * 60)
 
-    # Sort Compustat by gvkey and datadate
-    compustat = compustat.sort_values(["gvkey", "datadate"]).reset_index(drop=True)
-
-    # Compute lagged EPS (4 quarters back for YoY)
-    compustat["epspxq_lag4"] = compustat.groupby("gvkey")["epspxq"].shift(4)
-
-    # Compute control variables
-    compustat["Size"] = np.log(compustat["atq"].clip(lower=0.01))
-    compustat["BM"] = compustat["ceqq"] / (compustat["cshoq"] * compustat["prccq"])
-    compustat["Lev"] = compustat["ltq"] / compustat["atq"]
-    compustat["ROA"] = compustat["niq"] / compustat["atq"]
-
-    # New Extended Controls
-    # Current Ratio: Current Assets / Current Liabilities
-    compustat["CurrentRatio"] = compustat["actq"] / compustat["lctq"].replace(0, np.nan)
-
-    # R&D Intensity: R&D Expense / Total Assets (Treat missing R&D as 0)
-    compustat["RD_Intensity"] = compustat["xrdq"].fillna(0) / compustat["atq"]
-
-    # EPS Growth: (EPS - EPS_lag4) / |EPS_lag4|
-    mask = compustat["epspxq_lag4"].notna() & (compustat["epspxq_lag4"] != 0)
-    compustat["EPS_Growth"] = np.nan
-    compustat.loc[mask, "EPS_Growth"] = (
-        compustat.loc[mask, "epspxq"] - compustat.loc[mask, "epspxq_lag4"]
-    ) / compustat.loc[mask, "epspxq_lag4"].abs()
-
-    # Winsorize extreme values
-    for col in [
-        "Size",
-        "BM",
-        "Lev",
-        "ROA",
-        "EPS_Growth",
-        "CurrentRatio",
-        "RD_Intensity",
-    ]:
-        if compustat[col].notna().sum() > 0:
-            p1, p99 = compustat[col].quantile([0.01, 0.99])
-            compustat[col] = compustat[col].clip(lower=p1, upper=p99)
+    # Compute financial controls using shared quarterly function
+    compustat = compute_financial_controls_quarterly(compustat, winsorize=True)
 
     print(f"  Compustat controls computed for {compustat['gvkey'].nunique():,} firms")
 
