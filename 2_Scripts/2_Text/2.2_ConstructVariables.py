@@ -18,6 +18,25 @@ except ImportError:
     sys.path.insert(0, str(script_dir))
     from shared.symlink_utils import update_latest_link
 
+# Import shared path validation utilities
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 # ==============================================================================
 # Setup
 # ==============================================================================
@@ -25,7 +44,7 @@ except ImportError:
 
 def setup_logging():
     log_dir = Path(__file__).parent.parent.parent / "3_Logs" / "2.2_ConstructVariables"
-    log_dir.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(log_dir)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     log_path = log_dir / f"{timestamp}.log"
 
@@ -281,6 +300,7 @@ def load_ceo_map(root):
     manifest_path = (
         root / "4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet"
     )
+    validate_input_file(manifest_path, must_exist=True)
     df = pd.read_parquet(
         manifest_path,
         columns=[
@@ -407,6 +427,7 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir):
         return None
 
     print(f"\nProcessing {year}...")
+    validate_input_file(in_path, must_exist=True)
     df = pd.read_parquet(in_path)
     input_rows = len(df)
 
@@ -491,7 +512,7 @@ def main():
 
     out_base = root / "4_Outputs" / "2_Textual_Analysis"
     out_dir = out_base / f"2.2_Variables" / timestamp
-    out_dir.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(out_dir)
 
     # Memory tracking at script start
     mem_start = get_process_memory_mb()
@@ -586,6 +607,7 @@ def main():
         (f for f in output_files if f.name.endswith("_2002.parquet")), None
     )
     if first_year_file:
+        validate_input_file(first_year_file, must_exist=True)
         first_year_df = pd.read_parquet(first_year_file)
         numeric_cols = first_year_df.select_dtypes(include=[np.number]).columns.tolist()
         if numeric_cols:

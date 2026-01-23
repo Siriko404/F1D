@@ -8,6 +8,25 @@ from datetime import datetime
 import numpy as np
 import psutil
 
+# Import shared path validation utilities
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 
 def get_process_memory_mb():
     """
@@ -163,6 +182,7 @@ def main():
         missing_dep = 0
 
         if vars_path.exists():
+            validate_input_file(vars_path, must_exist=True)
             df = pd.read_parquet(vars_path)
             rows = len(df)
             stats["output"]["final_rows"] += rows

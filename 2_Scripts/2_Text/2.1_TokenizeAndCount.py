@@ -22,6 +22,25 @@ except ImportError:
     sys.path.insert(0, str(script_dir))
     from shared.symlink_utils import update_latest_link
 
+# Import shared path validation utilities
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 # ==============================================================================
 # Setup & Config
 # ==============================================================================
@@ -29,7 +48,7 @@ except ImportError:
 
 def setup_logging():
     log_dir = Path(__file__).parent.parent.parent / "3_Logs" / "2.1_TokenizeAndCount"
-    log_dir.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(log_dir)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     log_path = log_dir / f"{timestamp}.log"
 
@@ -53,7 +72,9 @@ def setup_logging():
 
 def load_config():
     root = Path(__file__).parent.parent.parent
-    with open(root / "config" / "project.yaml", "r") as f:
+    config_path = root / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
+    with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
 
@@ -383,6 +404,7 @@ def process_year_worker(
         "vocabulary_size": len(vocab_list),
     }
 
+    validate_input_file(input_path, must_exist=True)
     df = pd.read_parquet(input_path)
     initial_rows = len(df)
     year_stats["input_rows"] = initial_rows
@@ -465,6 +487,7 @@ def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir)
         "vocabulary_size": len(vocab_list),
     }
 
+    validate_input_file(input_path, must_exist=True)
     df = pd.read_parquet(input_path)
     initial_rows = len(df)
     year_stats["input_rows"] = initial_rows
@@ -536,7 +559,7 @@ def main():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out_base = root / "4_Outputs" / "2_Textual_Analysis"
     out_dir = out_base / f"2.1_Tokenized" / timestamp
-    out_dir.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(out_dir)
 
     # Initialize Stats
     start_time = time.perf_counter()
@@ -572,6 +595,7 @@ def main():
         / "latest"
         / "master_sample_manifest.parquet"
     )
+    validate_input_file(manifest_path, must_exist=True)
     manifest = pd.read_parquet(manifest_path, columns=["file_name"])
     valid_files = set(manifest["file_name"])
     print(f"Universe: {len(valid_files):,} files")
@@ -583,6 +607,7 @@ def main():
 
     # Load Dict
     lm_path = root / "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
+    validate_input_file(lm_path, must_exist=True)
     vocab_list, cat_sets = load_lm_dictionary(lm_path)
 
     stats["input"]["files"].append(str(lm_path))
