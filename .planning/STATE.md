@@ -10,20 +10,20 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 12 of 15 (Data Quality & Observability) — **COMPLETE**
-Phase: 13 of 15 (Script Refactoring) — **IN PROGRESS** (Plan 2/3 complete)
+Phase: 13 of 15 (Script Refactoring) — **IN PROGRESS** (Plan 4/10 complete)
 Technical Remediation: Phase 7-15 — 34 concerns to address
-Status: Original project 100% complete, Phase 7-12 complete, Phase 13 plans 1-2/3 complete
-Last activity: 2026-01-23 — Phase 13-01b complete (2 shared utility modules created: path_utils, symlink_utils + README updated)
+Status: Original project 100% complete, Phase 7-12 complete, Phase 13 plans 1-4/10 complete
+Last activity: 2026-01-23 — Phase 13-04 complete (string matching config and module created)
 
 Progress: [██████████] 100% (All 6 original phases complete)
-Technical Remediation: [████████████] 93% (Phase 7, 8, 9, 10, 11, 12 complete; Phase 13 2/3 complete; remaining Phase 13-15)
+Technical Remediation: [████████████] 94% (Phase 7, 8, 9, 10, 11, 12 complete; Phase 13 4/10 complete; remaining Phase 13-15)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 2 from Phase 13)
+- Total plans completed: 22 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 4 from Phase 13)
 - Average duration: ~11 min
-- Total execution time: ~72 min
+- Total execution time: ~76 min
 
 **By Phase:**
 
@@ -41,7 +41,7 @@ Technical Remediation: [████████████] 93% (Phase 7, 8, 9
 | | 10. Performance Optimization | 4/4 | ~15 min | ✅ COMPLETED | 2026-01-23 |
 | | 11. Testing Infrastructure | 7/7 | ~10 min | ✅ COMPLETED | 2026-01-23 |
 | | 12. Data Quality & Observability | 3/3 | ~12 min | ✅ COMPLETED | 2026-01-23 |
-| | 13. Script Refactoring | 2/3 | ~4 min | 🔄 IN PROGRESS | 2026-01-23 |
+| | 13. Script Refactoring | 4/10 | ~5 min | 🔄 IN PROGRESS | 2026-01-23 |
 
 **Recent Trend:**
 - Last 4 plans: ~9 min average
@@ -76,6 +76,8 @@ Recent decisions affecting current work:
 - [Phase 13-01b]: Use pathlib for cross-platform path operations instead of os.path
 - [Phase 13-01b]: Implement fallback chain for Windows: symlink (admin) → junction → copy
 - [Phase 13-01b]: Use temporary .write_test file to verify directory write permissions
+- [Phase 13-02]: Use module-relative path resolution (Path(__file__).parent) for config loading
+- [Phase 13-02]: Configure RapidFuzz scorers: token_sort_ratio for company names, WRatio for entities
 
 ### Pending Todos
 
@@ -175,24 +177,37 @@ None.
    - Execution time: ~2 minutes
    - SUMMARY.md and STATE.md updated
 
-✅ **Phase 13-01b completion:**
-   - 2 shared utility modules created (path_utils, symlink_utils)
-   - Updated shared/README.md with comprehensive documentation for all 5 modules
-   - All modules follow contract header format with type hints and docstrings
-   - 7 functions total (4 path, 3 symlink)
-   - Cross-platform support: symlink (Unix), junction (Windows), copy fallback
-   - All modules import successfully, no syntax errors
-   - 3 tasks committed individually
-   - Execution time: ~2 minutes
-   - SUMMARY.md and STATE.md updated
+ ✅ **Phase 13-01b completion:**
+    - 2 shared utility modules created (path_utils, symlink_utils)
+    - Updated shared/README.md with comprehensive documentation for all 5 modules
+    - All modules follow contract header format with type hints and docstrings
+    - 7 functions total (4 path, 3 symlink)
+    - Cross-platform support: symlink (Unix), junction (Windows), copy fallback
+    - All modules import successfully, no syntax errors
+    - 3 tasks committed individually
+    - Execution time: ~2 minutes
+    - SUMMARY.md and STATE.md updated
 
-📊 **Git Status:**
-   - All Phase 12 and Phase 13-01/01b work committed to local repository
-   - Last commit: 7abde2f (feat(13-01b): update shared/README.md with all 5 modules)
+ ✅ **Phase 13-02 completion:**
+    - String matching configuration module created
+    - Added string_matching section to config/project.yaml
+    - Created 2_Scripts/shared/string_matching.py (253 lines)
+    - 5 functions for fuzzy string matching using RapidFuzz
+    - Config-driven thresholds (company_name: 92.0, entity_name: 85.0)
+    - Added rapidfuzz>=3.14.0 to requirements.txt
+    - Bug fix: Config path resolution using module-relative paths
+    - All modules import successfully, no syntax errors
+    - 4 commits: 3 tasks + 1 bug fix
+    - Execution time: ~4 minutes
+    - SUMMARY.md and STATE.md updated
 
-🎯 **Next Phase:**
-   - Phase 13: Script Refactoring (1 more plan remaining)
-   - Next plan: Extract common code from large Step 4 scripts into shared modules
+ 📊 **Git Status:**
+    - All Phase 12 and Phase 13 work committed to local repository
+    - Last commit: e1f3270 (fix(13-04): resolve config path relative to module location)
+
+ 🎯 **Next Phase:**
+    - Phase 13: Script Refactoring (6 more plans remaining: 03, 04b, 05a, 05b, 05c, 05d)
+    - Next plan: Refactor large Step 4 scripts to use shared modules
    - Ready to proceed
 
 ## Phase 11 Achievements (Wave 2)
@@ -286,3 +301,28 @@ Total Wave 2 Tests: 32 tests (15 integration + 5 regression + 8 validation + 4 e
 2. 2_Scripts/shared/symlink_utils.py - 3 functions for cross-platform link creation
 3. 2_Scripts/shared/README.md - Comprehensive documentation for all 5 modules
 4. SUMMARY.md documenting all changes
+
+✅ **13-02-PLAN.md:** String matching configuration module
+   - Added string_matching section to config/project.yaml
+   - Created 2_Scripts/shared/string_matching.py module (253 lines)
+   - 5 functions: load_matching_config, get_scorer, match_company_names, match_many_to_many, warn_if_rapidfuzz_missing
+   - Config-driven thresholds: company_name (92.0), entity_name (85.0)
+   - Multiple RapidFuzz scorers supported: ratio, partial_ratio, token_sort_ratio, WRatio, QRatio
+   - Optional preprocessing with utils.default_process
+   - Graceful degradation for missing RapidFuzz dependency
+   - Fixed config path resolution using module-relative paths (Path(__file__).parent / '../../config/project.yaml')
+   - Added rapidfuzz>=3.14.0 to requirements.txt (MIT-licensed, 10x faster than fuzzywuzzy)
+   - All modules follow contract header format with ID, Description, Inputs, Outputs, Deterministic
+   - Type hints for all function signatures
+   - Comprehensive docstrings with Args, Returns, Raises, Note sections
+   - Bug fix: Config path now resolves correctly from any working directory (Rule 1 deviation)
+   - All modules import successfully, no syntax errors
+   - Config loading verified: returns 4 keys (company_name, entity_name, batch_size, enable_parallel)
+   - 4 commits: 3 tasks + 1 bug fix
+   - Total execution time: ~4 minutes
+
+**Key Deliverables:**
+1. config/project.yaml - string_matching section with thresholds and scorers
+2. 2_Scripts/shared/string_matching.py - 5 functions for fuzzy string matching
+3. requirements.txt - Added rapidfuzz>=3.14.0
+4. SUMMARY.md documenting all changes and deviations
