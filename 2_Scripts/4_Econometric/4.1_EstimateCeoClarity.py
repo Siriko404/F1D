@@ -225,7 +225,7 @@ def load_all_data(root, year_start, year_end, stats=None):
     manifest_path = (
         root
         / "4_Outputs"
-        / "1.0_BuildSampleManifest"
+        / "1.4_AssembleManifest"
         / "latest"
         / "master_sample_manifest.parquet"
     )
