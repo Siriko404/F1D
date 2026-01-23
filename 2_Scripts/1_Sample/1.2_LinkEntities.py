@@ -40,6 +40,7 @@ import importlib.util
 import hashlib
 import json
 import time
+import psutil
 
 # Dynamic import for 1.5_Utils.py to comply with naming convention
 try:
@@ -207,6 +208,157 @@ def save_stats(stats, out_dir):
 
 
 # ==============================================================================
+# Observability Helpers
+# ==============================================================================
+
+
+def get_process_memory_mb():
+    """
+    Get current process memory usage in MB.
+
+    Returns:
+        Dict with keys:
+        - rss_mb: Resident Set Size (actual physical memory in use)
+        - vms_mb: Virtual Memory Size (total memory allocated)
+        - percent: Memory usage as percentage of system memory
+    """
+    process = psutil.Process()
+    mem_info = process.memory_info()
+    mem_percent = process.memory_percent()
+
+    return {
+        "rss_mb": mem_info.rss / (1024 * 1024),  # Resident Set Size
+        "vms_mb": mem_info.vms / (1024 * 1024),  # Virtual Memory Size
+        "percent": mem_percent,
+    }
+
+
+def calculate_throughput(rows_processed, duration_seconds):
+    """
+    Calculate throughput in rows per second.
+
+    Args:
+        rows_processed: Number of rows processed
+        duration_seconds: Duration in seconds
+
+    Returns:
+        Throughput in rows per second (rounded to 2 decimals)
+        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
+    """
+    if duration_seconds <= 0:
+        return 0.0
+    return round(rows_processed / duration_seconds, 2)
+
+
+def detect_anomalies_zscore(df, columns, threshold=3.0):
+    """
+    Detect anomalies using z-score (standard deviation) method.
+
+    Deterministic: Same input produces same output.
+
+    Args:
+        df: DataFrame to analyze
+        columns: List of column names to analyze
+        threshold: Number of standard deviations for cutoff (default 3.0)
+
+    Returns:
+        Dict mapping column_name -> anomaly info
+    """
+    anomalies = {}
+
+    for col in columns:
+        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
+            continue
+
+        # Drop NaN for z-score calculation
+        series = df[col].dropna()
+
+        if len(series) == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        mean = series.mean()
+        std = series.std()
+
+        if std == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        # Calculate z-scores: (value - mean) / std
+        z_scores = abs((series - mean) / std)
+
+        # Flag anomalies beyond threshold
+        anomaly_mask = z_scores > threshold
+        anomaly_indices = df[anomaly_mask].index.tolist()
+
+        anomalies[col] = {
+            "count": int(anomaly_mask.sum()),
+            "sample_anomalies": anomaly_indices[:10],  # Top 10 for review
+            "threshold": threshold,
+            "mean": round(mean, 4),
+            "std": round(std, 4),
+        }
+
+    return anomalies
+
+
+def detect_anomalies_iqr(df, columns, multiplier=3.0):
+    """
+    Detect anomalies using IQR (Interquartile Range) method.
+
+    Deterministic: Same input produces same output.
+
+    Args:
+        df: DataFrame to analyze
+        columns: List of column names to analyze
+        multiplier: IQR multiplier for cutoff (default 3.0 = strong outliers)
+
+    Returns:
+        Dict mapping column_name -> anomaly info
+    """
+    anomalies = {}
+
+    for col in columns:
+        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
+            continue
+
+        # Drop NaN for IQR calculation
+        series = df[col].dropna()
+
+        if len(series) == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        # Calculate IQR: Q3 - Q1 (75th - 25th percentile)
+        q1 = series.quantile(0.25)
+        q3 = series.quantile(0.75)
+        iqr = q3 - q1
+
+        if iqr == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        # Flag anomalies
+        lower_bound = q1 - multiplier * iqr
+        upper_bound = q3 + multiplier * iqr
+
+        anomaly_mask = (series < lower_bound) | (series > upper_bound)
+        anomaly_indices = df[anomaly_mask].index.tolist()
+
+        anomalies[col] = {
+            "count": int(anomaly_mask.sum()),
+            "sample_anomalies": anomaly_indices[:10],
+            "iqr_bounds": [round(lower_bound, 4), round(upper_bound, 4)],
+        }
+
+    return anomalies
+
+
+# ==============================================================================
+# Configuration and setup
+# ==============================================================================
+# Configuration and setup
+# ==============================================================================
 # Configuration and setup
 # ==============================================================================
 # Configuration and setup
@@ -370,13 +522,17 @@ def main():
     start_time = time.perf_counter()
     start_iso = datetime.now().isoformat()
 
+    # Memory tracking at script start
+    mem_start = get_process_memory_mb()
+    all_memory_values = [mem_start["rss_mb"]]
+
     # Initialize stats
     stats = {
         "step_id": "1.2_LinkEntities",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
         "processing": {},
-        "output": {"final_rows": 0, "final_columns": 0, "files": []},
+        "output": {"final_rows": 0, "final_columns": 0, "files": [], "checksums": {}},
         "missing_values": {},
         "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
         "linking": {},
@@ -395,6 +551,10 @@ def main():
     stats["input"]["total_rows"] = len(df)
     stats["input"]["total_columns"] = len(df.columns)
 
+    # Memory tracking after loading metadata
+    mem_after_metadata = get_process_memory_mb()
+    all_memory_values.append(mem_after_metadata["rss_mb"])
+
     # Load CCM
     print_dual("Loading CCM database...")
     ccm = pd.read_parquet(paths["ccm"])
@@ -409,6 +569,10 @@ def main():
         paths["ccm"]
     )
     stats["linking"]["ccm_records"] = len(ccm)
+
+    # Memory tracking after loading CCM
+    mem_after_ccm = get_process_memory_mb()
+    all_memory_values.append(mem_after_ccm["rss_mb"])
 
     # ==========================================================================
     # DEDUP-INDEX OPTIMIZATION
@@ -428,6 +592,10 @@ def main():
     stats["linking"]["compression_ratio"] = round(
         total_calls / len(unique_company_ids), 1
     )
+
+    # Memory tracking after dedup-index
+    mem_after_dedup_index = get_process_memory_mb()
+    all_memory_values.append(mem_after_dedup_index["rss_mb"])
 
     # Create unique records (one per company_id)
     unique_df = df.drop_duplicates("company_id")[
@@ -529,6 +697,10 @@ def main():
 
     stats["linking"]["tier1_matched"] = int(tier1_matched)
 
+    # Memory tracking after Tier 1
+    mem_after_tier1 = get_process_memory_mb()
+    all_memory_values.append(mem_after_tier1["rss_mb"])
+
     # ==========================================================================
     # TIER 2: CUSIP8 + Date Range
     # ==========================================================================
@@ -579,6 +751,10 @@ def main():
     print_dual(f"    [CHECK] Total matched after Tier 2: {tier2_matched:,}")
 
     stats["linking"]["tier2_matched"] = int(tier2_matched)
+
+    # Memory tracking after Tier 2
+    mem_after_tier2 = get_process_memory_mb()
+    all_memory_values.append(mem_after_tier2["rss_mb"])
 
     # ==========================================================================
     # TIER 3: Fuzzy Name Match
@@ -790,6 +966,44 @@ def main():
     end_time = time.perf_counter()
     stats["timing"]["end_iso"] = datetime.now().isoformat()
     stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
+
+    # Memory tracking at script end
+    mem_end = get_process_memory_mb()
+    all_memory_values.append(mem_end["rss_mb"])
+
+    # Add memory stats to stats
+    stats["memory"] = {
+        "start_mb": round(mem_start["rss_mb"], 2),
+        "end_mb": round(mem_end["rss_mb"], 2),
+        "peak_mb": round(max(all_memory_values), 2),
+        "delta_mb": round(mem_end["rss_mb"] - mem_start["rss_mb"], 2),
+    }
+
+    # Add throughput to stats
+    duration_seconds = end_time - start_time
+    throughput = calculate_throughput(stats["output"]["final_rows"], duration_seconds)
+    stats["throughput"] = {
+        "rows_per_second": throughput,
+        "total_rows": stats["output"]["final_rows"],
+        "duration_seconds": round(duration_seconds, 3),
+    }
+
+    # Add output checksums
+    stats["output"]["checksums"] = {}
+    for filepath in [output_file, var_ref_file]:
+        if filepath.exists():
+            checksum = compute_file_checksum(filepath)
+            stats["output"]["checksums"][filepath.name] = checksum
+
+    # Add anomaly detection for numeric columns (link_quality, sic_int)
+    # Check if there are any numeric columns suitable for anomaly detection
+    numeric_cols = df_linked.select_dtypes(include=[np.number]).columns.tolist()
+    # Filter to relevant numeric columns for entity linking
+    anomaly_cols = [col for col in numeric_cols if col in ["link_quality", "sic_int"]]
+    if anomaly_cols:
+        stats["quality_anomalies"] = detect_anomalies_zscore(
+            df_linked, anomaly_cols, threshold=3.0
+        )
 
     # Print and save stats summary
     print_stats_summary(stats)
