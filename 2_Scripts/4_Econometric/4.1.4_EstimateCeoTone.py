@@ -35,6 +35,9 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import warnings
+import hashlib
+import json
+import time
 
 # Try importing statsmodels
 try:
@@ -123,7 +126,7 @@ CONFIG = {
 # Data Loading
 # ==============================================================================
 
-def load_all_data(root, year_start, year_end):
+def load_all_data(root, year_start, year_end, stats=None):
     """Load and merge all input data sources."""
     print("\n" + "="*60)
     print("Loading and merging data")
@@ -135,6 +138,9 @@ def load_all_data(root, year_start, year_end):
         'file_name', 'gvkey', 'start_date', 'ceo_id', 'ceo_name', 'ff12_code', 'ff12_name'
     ])
     print(f"  Manifest: {len(manifest):,} calls")
+    if stats:
+        stats["input"]["files"].append(str(manifest_path))
+        stats["input"]["checksums"]["manifest"] = compute_file_checksum(manifest_path)
     
     # Load linguistic variables, firm controls per year
     all_data = []
@@ -405,7 +411,7 @@ def compute_diagnostics(model, model_name, sample_name, n_ceos, n_firms):
 # Save Outputs
 # ==============================================================================
 
-def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir):
+def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=None):
     """Save all output files."""
     print("\n" + "="*60)
     print("Saving outputs")
@@ -562,7 +568,7 @@ def main(year_start=None, year_end=None):
     
     # Save outputs
     if all_ceo_scores:
-        save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir)
+        save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats)
         
         # Generate report
         duration = (datetime.now() - start_time).total_seconds()
@@ -590,6 +596,32 @@ def main(year_start=None, year_end=None):
             if diag['sample'] == 'Main':
                 print(f"  {diag['model']}: {diag['r_squared']:.4f} ({diag['n_ceos']:,} CEOs)")
     
+        # Final stats
+    stats['timing']['end_iso'] = datetime.now().isoformat()
+    stats['timing']['duration_seconds'] = round((datetime.now() - start_time).total_seconds(), 2)
+
+    if all_ceo_scores:
+        ceo_scores_df = pd.concat(all_ceo_scores, ignore_index=True)
+        stats['missing_values'] = analyze_missing_values(ceo_scores_df)
+
+        if all_diagnostics:
+            for diag in all_diagnostics:
+                key = diag.get('sample', 'unknown')
+                stats['regressions'][key] = {
+                    'n_observations': diag.get('n_observations', 0),
+                    'n_ceos': diag.get('n_ceos', 0),
+                    'n_firms': diag.get('n_firms', 0),
+                    'r_squared': diag.get('r_squared', 0),
+                    'r_squared_adj': diag.get('r_squared_adj', 0),
+                    'f_statistic': diag.get('f_statistic', 0),
+                    'f_pvalue': diag.get('f_pvalue', 0),
+                    'aic': diag.get('aic', 0),
+                    'bic': diag.get('bic', 0)
+                }
+
+    print_stats_summary(stats)
+    save_stats(stats, out_dir)
+
     # Close log
     dual_writer.close()
     sys.stdout = dual_writer.terminal

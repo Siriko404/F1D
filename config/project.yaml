@@ -1,321 +1,272 @@
-# F1D Clarity Measure - Central Configuration
-# Single source of runtime truth for all processing steps
-
 project:
-  name: "F1D_Clarity"
-  version: "F1D.1.0"
-  description: "Dictionary-based Clarity measure using LM Uncertainty & Weak_Modal"
-
-# Data year range
+  name: F1D_Clarity
+  version: F1D.1.0
+  description: Dictionary-based Clarity measure using LM Uncertainty & Weak_Modal
 data:
   year_start: 2002
   year_end: 2018
-
-# Paths (relative to project root)
 paths:
-  inputs: "1_Inputs"
-  scripts: "2_Scripts"
-  logs: "3_Logs"
-  outputs: "4_Outputs"
-
-  # Input files
-  lm_dictionary: "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
-  unified_info: "1_Inputs/Unified-info.parquet"
-  speaker_data_pattern: "1_Inputs/speaker_data_{year}.parquet"
-
-# Determinism settings
+  inputs: 1_Inputs
+  scripts: 2_Scripts
+  logs: 3_Logs
+  outputs: 4_Outputs
+  lm_dictionary: 1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv
+  unified_info: 1_Inputs/Unified-info.parquet
+  speaker_data_pattern: 1_Inputs/speaker_data_{year}.parquet
 determinism:
   random_seed: 42
-  thread_count: 1  # Pinned for reproducibility
+  thread_count: 1
   sort_inputs: true
-
-# Logging
 logging:
-  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
-  format: "%(asctime)s [%(levelname)s] %(message)s"
-  timestamp_format: "%Y-%m-%d %H:%M:%S"
-
-# Step-specific parameters
-
-# STEP 00: Unified Info Check
+  level: INFO
+  format: '%(asctime)s [%(levelname)s] %(message)s'
+  timestamp_format: '%Y-%m-%d %H:%M:%S'
 step_00:
   enabled: true
-  output_subdir: "2.0_UnifiedInfoCheck"
+  output_subdir: 2.0_UnifiedInfoCheck
   outputs:
-    duplicate_report: "unified_info_duplicate_file_names.csv"
-    summary_report: "report_step_00.md"
-
-# STEP 00b: Master Tenure Map
+    duplicate_report: unified_info_duplicate_file_names.csv
+    summary_report: report_step_00.md
 step_00b:
   enabled: true
-  output_subdir: "2.0b_BuildMasterTenureMap"
+  output_subdir: 2.0b_BuildMasterTenureMap
   outputs:
-    master_map: "master_tenure_map.parquet"
-
-# STEP 00c: Build Monthly Tenure Panel
+    master_map: master_tenure_map.parquet
 step_00c:
   enabled: true
-  output_subdir: "2.0c_BuildMonthlyTenurePanel"
+  output_subdir: 2.0c_BuildMonthlyTenurePanel
   outputs:
-    monthly_panel: "master_tenure_monthly.parquet"
-
-# STEP 01: Build LM Clarity Dictionary
+    monthly_panel: master_tenure_monthly.parquet
 step_01:
   enabled: true
-  output_subdir: "2.1_BuildLmClarityDictionary"
-
-  # Dictionary selection criteria
+  output_subdir: 2.1_BuildLmClarityDictionary
   selection:
-    uncertainty_threshold: 0  # Include if Uncertainty > 0
-    weak_modal_threshold: 0   # Include if Weak_Modal > 0
-
-  # Token normalization
+    uncertainty_threshold: 0
+    weak_modal_threshold: 0
   normalization:
-    case: "upper"  # Convert to uppercase
-    pattern: "[A-Z]+"  # Only keep tokens matching this regex
-
+    case: upper
+    pattern: '[A-Z]+'
   outputs:
-    dictionary: "lm_Clarity_dictionary.parquet"
-    unmatched_audit: "unmatched_calls_audit.csv"
-    summary_report: "report_step_01.md"
-
-# STEP 02.5: Link CCM and Industries
+    dictionary: lm_Clarity_dictionary.parquet
+    unmatched_audit: unmatched_calls_audit.csv
+    summary_report: report_step_01.md
 step_02_5:
   enabled: true
-  output_subdir: "2.5_LinkCcmAndIndustries"
+  output_subdir: 2.5_LinkCcmAndIndustries
   outputs:
-    enriched_pattern: "f1d_enriched_{year}.parquet"
-    unmatched_audit: "unmatched_calls_audit.csv"
-
-# STEP 02.5b: Link Calls to CEO
+    enriched_pattern: f1d_enriched_{year}.parquet
+    unmatched_audit: unmatched_calls_audit.csv
 step_02_5b:
   enabled: true
-  output_subdir: "2.5b_LinkCallsToCeo"
+  output_subdir: 2.5b_LinkCallsToCeo
   outputs:
-    enriched_ceo: "f1d_enriched_ceo_YYYY.parquet"
-    unmatched_audit: "unmatched_calls_audit.csv"
-
-# STEP 02.5c: Filter Calls and CEOs
+    enriched_ceo: f1d_enriched_ceo_YYYY.parquet
+    unmatched_audit: unmatched_calls_audit.csv
 step_02_5c:
   enabled: true
-  output_subdir: "2.5c_FilterCallsAndCeos"
+  output_subdir: 2.5c_FilterCallsAndCeos
   min_calls_threshold: 5
-  event_type_filter: "1"  # Filter 1: Only earnings calls (event_type='1')
-  # Filter 2: CEOs with >= min_calls_threshold calls (applied after Filter 1)
+  event_type_filter: '1'
   outputs:
-    enriched_filtered: "f1d_enriched_ceo_filtered_YYYY.parquet"
-    dropped_calls: "f1d_dropped_ceo_calls_YYYY.parquet"
-
-# STEP 2.7: Build Financial Controls
+    enriched_filtered: f1d_enriched_ceo_filtered_YYYY.parquet
+    dropped_calls: f1d_dropped_ceo_calls_YYYY.parquet
 step_07:
   enabled: true
-  output_subdir: "2.7_BuildFinancialControls"
+  output_subdir: 2.7_BuildFinancialControls
   return_windows:
     days_after_prev_call: 5
     days_before_current_call: 5
     min_trading_days: 20
   eps_growth:
     lag_quarters: 4
-    winsorize_percentiles: [1, 99]
+    winsorize_percentiles:
+    - 1
+    - 99
   surprise_deciles:
-    bins: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    bins:
+    - -5
+    - -4
+    - -3
+    - -2
+    - -1
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
   outputs:
-    controls_pattern: "calls_with_controls_{year}.parquet"
-    summary_report: "report_step_07.md"
-
-# STEP 2.8: Estimate CEO Clarity
+    controls_pattern: calls_with_controls_{year}.parquet
+    summary_report: report_step_07.md
 step_08:
   enabled: true
-  output_subdir: "2.8_EstimateCeoClarity"
+  output_subdir: 2.8_EstimateCeoClarity
   regression:
-    # Using our pipeline variable names (map to paper: MaQaUnc_pct -> UncAnsCEO)
-    dependent_var: "MaQaUnc_pct"
-    linguistic_controls: ["MaPresUnc_pct", "AnaQaUnc_pct", "EntireCallNeg_pct"]
-    firm_controls: ["SurpDec", "EPS_Growth", "StockRet", "MarketRet"]
-    fixed_effects: ["CEO_ID", "year"]
+    dependent_var: MaQaUnc_pct
+    linguistic_controls:
+    - MaPresUnc_pct
+    - AnaQaUnc_pct
+    - EntireCallNeg_pct
+    firm_controls:
+    - SurpDec
+    - EPS_Growth
+    - StockRet
+    - MarketRet
+    fixed_effects:
+    - CEO_ID
+    - year
     min_calls_per_ceo: 5
   outputs:
-    ceo_scores: "ceo_clarity_scores.parquet"
-    call_level: "calls_with_clarity.parquet"
-    regression_output: "regression_results.txt"
-    diagnostics: "model_diagnostics.csv"
-    summary_report: "report_step_08.md"
-
-# STEP 2.9: Liquidity Measures & Regression
+    ceo_scores: ceo_clarity_scores.parquet
+    call_level: calls_with_clarity.parquet
+    regression_output: regression_results.txt
+    diagnostics: model_diagnostics.csv
+    summary_report: report_step_08.md
 step_09:
   enabled: true
-  output_subdir: "2.9_LiquidityAnalysis"
+  output_subdir: 2.9_LiquidityAnalysis
   liquidity_measures:
-    window_days: [-5, 5]
+    window_days:
+    - -5
+    - 5
     min_trading_days: 5
-    winsorize_percentiles: [1, 99]
+    winsorize_percentiles:
+    - 1
+    - 99
   inputs:
-    cccl_instrument: "1_Inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet"
+    cccl_instrument: 1_Inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
   outputs:
-    liquidity_data: "calls_with_liquidity_{year}.parquet"
-    regression_results: "regression_results_liquidity.txt"
-    mediation_results: "mediation_results.txt"
-    summary_report: "report_step_09.md"
-
+    liquidity_data: calls_with_liquidity_{year}.parquet
+    regression_results: regression_results_liquidity.txt
+    mediation_results: mediation_results.txt
+    summary_report: report_step_09.md
 step_02:
   enabled: true
-  output_subdir: "2.2_ExtractFilteredDocs"
-
-  # Context filter
-  context_filter: "qa"  # Only keep Q&A sections
-
-  # Managerial role keywords (case-insensitive substring matching)
+  output_subdir: 2.2_ExtractFilteredDocs
+  context_filter: qa
   managerial_roles:
-    - "PRESIDENT"
-    - "VP"
-    - "DIRECTOR"
-    - "CEO"
-    - "EVP"
-    - "SVP"
-    - "CFO"
-    - "OFFICER"
-    - "CHIEF"
-    - "EXECUTIVE"
-    - "HEAD"
-    - "CHAIRMAN"
-    - "SENIOR"
-    - "MANAGER"
-    - "COO"
-    - "TREASURER"
-    - "SECRETARY"
-    - "MD"
-    - "DEPUTY"
-    - "CONTROLLER"
-    - "GM"
-    - "PRINCIPAL"
-    - "CAO"
-    - "CIO"
-    - "CTO"
-    - "CMO"
-    - "LEADER"
-    - "LEAD"
-    - "CCO"
-    - "COORDINATOR"
-    - "AVP"
-    - "ADMINISTRATOR"
-    - "CHAIRWOMAN"
-    - "CHAIRPERSON"
-    - "SUPERINTENDENT"
-    - "DEAN"
-    - "COMMISSIONER"
-    - "CA"
-    - "GOVERNOR"
-    - "SUPERVISOR"
-    - "COACH"
-    - "PROVOST"
-    - "CAPTAIN"
-    - "CHO"
-    - "RECTOR"
-
-  # Exclusion keywords (case-insensitive substring matching)
+  - PRESIDENT
+  - VP
+  - DIRECTOR
+  - CEO
+  - EVP
+  - SVP
+  - CFO
+  - OFFICER
+  - CHIEF
+  - EXECUTIVE
+  - HEAD
+  - CHAIRMAN
+  - SENIOR
+  - MANAGER
+  - COO
+  - TREASURER
+  - SECRETARY
+  - MD
+  - DEPUTY
+  - CONTROLLER
+  - GM
+  - PRINCIPAL
+  - CAO
+  - CIO
+  - CTO
+  - CMO
+  - LEADER
+  - LEAD
+  - CCO
+  - COORDINATOR
+  - AVP
+  - ADMINISTRATOR
+  - CHAIRWOMAN
+  - CHAIRPERSON
+  - SUPERINTENDENT
+  - DEAN
+  - COMMISSIONER
+  - CA
+  - GOVERNOR
+  - SUPERVISOR
+  - COACH
+  - PROVOST
+  - CAPTAIN
+  - CHO
+  - RECTOR
   exclusion_keywords:
-    - "Analyst"
-    - "Operator"
-    - "Editor"
-    - "Moderator"
-    - "??"
-
-  # Duplicate handling for Unified Info
+  - Analyst
+  - Operator
+  - Editor
+  - Moderator
+  - ??
   duplicate_selection:
     sort_by:
-      - "validation_timestamp"
-      - "start_date"
-    # If still tied, use lexicographic order on all columns
-
+    - validation_timestamp
+    - start_date
   outputs:
-    docs_pattern: "{dataset}_docs_{year}.parquet"
-    summary_report: "report_step_02.md"
-
-# Dataset definitions (used by Step 2.2 and beyond)
+    docs_pattern: '{dataset}_docs_{year}.parquet'
+    summary_report: report_step_02.md
 datasets:
   manager_qa:
-    description: "Managerial speech in Q&A sections"
-    context_filter: "qa"
-    role_filter: "managerial"
+    description: Managerial speech in Q&A sections
+    context_filter: qa
+    role_filter: managerial
     enabled: true
-
   manager_pres:
-    description: "Managerial speech in Presentation sections"
-    context_filter: "pres"
-    role_filter: "managerial"
+    description: Managerial speech in Presentation sections
+    context_filter: pres
+    role_filter: managerial
     enabled: true
-
   analyst_qa:
-    description: "Analyst questions in Q&A sections"
-    context_filter: "qa"
-    role_filter: "analyst"
+    description: Analyst questions in Q&A sections
+    context_filter: qa
+    role_filter: analyst
     enabled: true
-
   entire_call:
-    description: "All speech from all speakers (managers, analysts, operators) in all contexts (qa, pres)"
-    context_filter: null  # No context filtering
-    role_filter: null     # No role filtering
+    description: All speech from all speakers (managers, analysts, operators) in all
+      contexts (qa, pres)
+    context_filter: null
+    role_filter: null
     enabled: true
-
-# Analyst identification (for role_filter: analyst)
 analyst_detection:
-  keyword: "Analyst"  # Case-insensitive substring match in 'role' field
-
-# STEP 03: Tokenize & Count (C++)
+  keyword: Analyst
 step_03:
   enabled: true
-  output_subdir: "2.3_TokenizeAndCount"
-
-  # Tokenization
+  output_subdir: 2.3_TokenizeAndCount
   tokenization:
-    normalization: "uppercase"  # Convert to uppercase ASCII
-    non_letter_replacement: " "  # Replace non-letters with space
+    normalization: uppercase
+    non_letter_replacement: ' '
     collapse_spaces: true
-    token_pattern: "[A-Z]+"  # Valid token regex
-
-  # Output options
-  top_matches_count: 5  # Number of top matched tokens to save
-
-  # C++ compilation
+    token_pattern: '[A-Z]+'
+  top_matches_count: 5
   compiler:
-    executable: "g++"
-    standard: "c++17"
-    optimization: "-O2"
-    warnings: "-Wall -Wextra"
-
+    executable: g++
+    standard: c++17
+    optimization: -O2
+    warnings: -Wall -Wextra
   outputs:
-    call_pattern: "f1d_call_{year}.parquet"
-    summary_report: "report_step_03.md"
-
-# STEP 04: Build F1D Panel
+    call_pattern: f1d_call_{year}.parquet
+    summary_report: report_step_03.md
 step_04:
   enabled: true
-  output_subdir: "2.4_BuildF1dPanel"
-
-  # Measures: dataset + dictionary combinations
+  output_subdir: 2.4_BuildF1dPanel
   measures:
     MaQaUnc:
-      dataset: "manager_qa"
-      dictionary: "Uncertainty"
-      description: "Manager Q&A Uncertainty"
+      dataset: manager_qa
+      dictionary: Uncertainty
+      description: Manager Q&A Uncertainty
     MaPresUnc:
-      dataset: "manager_pres"
-      dictionary: "Uncertainty"
-      description: "Manager Presentation Uncertainty"
+      dataset: manager_pres
+      dictionary: Uncertainty
+      description: Manager Presentation Uncertainty
     AnaQaUnc:
-      dataset: "analyst_qa"
-      dictionary: "Uncertainty"
-      description: "Analyst Q&A Uncertainty"
+      dataset: analyst_qa
+      dictionary: Uncertainty
+      description: Analyst Q&A Uncertainty
     EntireCallNeg:
-      dataset: "entire_call"
-      dictionary: "Negative"
-      description: "Entire Call Negativity"
-
+      dataset: entire_call
+      dictionary: Negative
+      description: Entire Call Negativity
   outputs:
-    panel_pattern: "{measure}_panel_{year}.parquet"
-    summary_report: "report_step_04.md"
-
-# Hash algorithms for reproducibility checks
+    panel_pattern: '{measure}_panel_{year}.parquet'
+    summary_report: report_step_04.md
 hashing:
-  algorithm: "sha256"
-  chunk_size: 65536  # For file hashing
+  algorithm: sha256
+  chunk_size: 65536
