@@ -151,6 +151,18 @@ None.
 
 **Current session: 2026-01-23**
 
+✅ **Phase 13-05b completion:**
+   - Updated Step 2 scripts (2.1, 2.2) to use shared.symlink_utils.update_latest_link()
+   - Removed manual symlink creation code (76 lines removed, 50 lines added)
+   - Added import with sys.path fallback pattern (matching Step 1 scripts)
+   - Fixed bug: Added missing observability helpers (get_process_memory_mb, calculate_throughput) to 2.3_VerifyStep2.py (Rule 1 deviation)
+   - Cross-platform support: symlinks (Unix), junctions (Windows), copy fallback
+   - Clear warnings logged when fallback methods used
+   - 2.3 doesn't create symlinks (verification script only), so no changes needed for symlink handling
+   - 1 task committed (436d491)
+   - Execution time: ~6 minutes
+   - SUMMARY.md created
+
 ✅ **Phase 13-05a completion:**
    - All 5 Step 1 scripts (1.0-1.4) updated to use shared.symlink_utils.update_latest_link()
    - Manual symlink code removed from 1.0_BuildSampleManifest.py
@@ -346,6 +358,23 @@ Total Wave 2 Tests: 32 tests (15 integration + 5 regression + 8 validation + 4 e
 1. config/project.yaml - string_matching section with thresholds and scorers
 2. 2_Scripts/shared/string_matching.py - 5 functions for fuzzy string matching
 3. requirements.txt - Added rapidfuzz>=3.14.0
+4. SUMMARY.md documenting all changes and deviations
+
+✅ **13-05b-PLAN.md:** Improve Windows symlink fallback in Step 2 scripts
+   - Updated Step 2 scripts (2.1, 2.2) to use shared.symlink_utils.update_latest_link()
+   - Removed manual symlink creation code (76 lines removed, 50 lines added)
+   - Added import with sys.path fallback pattern (matching Step 1 scripts)
+   - Fixed bug: Added missing observability helpers (get_process_memory_mb, calculate_throughput) to 2.3_VerifyStep2.py (Rule 1 deviation)
+   - Cross-platform support: symlinks (Unix), junctions (Windows), copy fallback
+   - Clear warnings logged when fallback methods used
+   - 2.3 doesn't create symlinks (verification script only), so no changes needed for symlink handling
+   - Commit: 436d491 (refactor)
+   - Total execution time: ~6 minutes
+
+**Key Deliverables:**
+1. Updated 2_Scripts/2_Text/2.1_TokenizeAndCount.py - Uses update_latest_link()
+2. Updated 2_Scripts/2_Text/2.2_ConstructVariables.py - Uses update_latest_link()
+3. Fixed 2_Scripts/2_Text/2.3_VerifyStep2.py - Added missing observability helpers
 4. SUMMARY.md documenting all changes and deviations
 
 ✅ **13-05c-PLAN.md:** Update Step 3 scripts to use shared.symlink_utils
