@@ -762,6 +762,183 @@ Functions are deterministic:
 
 ---
 
+## string_matching.py
+
+Config-driven fuzzy name matching using RapidFuzz library.
+
+### When to Use
+
+- **Entity linking**: Match company names across different datasets
+- **Fuzzy matching**: Find approximate matches when exact matching fails
+- **Config-driven**: Thresholds and scoring methods from config/project.yaml
+- **Many-to-many**: Efficiently match multiple queries to multiple targets
+
+### Dependencies
+
+- `yaml`: Required (config loading)
+- `rapidfuzz`: Required (fuzzy matching, optional with graceful degradation)
+
+### API Reference
+
+#### `load_matching_config()`
+
+Load string matching configuration from config/project.yaml.
+
+```python
+from shared.string_matching import load_matching_config
+
+config = load_matching_config()
+# Returns: {'company_name': {'default_threshold': 92.0, ...}, ...}
+```
+
+**Returns:** Dict with string matching settings (or empty dict if config missing)
+
+**Raises:**
+- `FileNotFoundError`: If config/project.yaml not found
+- `yaml.YAMLError`: If config file is invalid YAML
+
+#### `get_scorer(name)`
+
+Get RapidFuzz scorer function by name.
+
+```python
+from shared.string_matching import get_scorer
+
+scorer = get_scorer('token_sort_ratio')
+# Returns: fuzz.token_sort_ratio function
+```
+
+**Parameters:**
+- `name`: Scorer name (ratio, partial_ratio, token_sort_ratio, token_set_ratio, WRatio, QRatio)
+
+**Returns:** Scorer function from rapidfuzz.fuzz
+
+**Raises:**
+- `ValueError`: If scorer name unknown
+- `ImportError`: If RapidFuzz not available
+
+#### `match_company_names(query, candidates, threshold=None, scorer_name='WRatio', preprocess=True)`
+
+Find best matching company name using RapidFuzz.
+
+```python
+from shared.string_matching import match_company_names
+
+best_match, score = match_company_names(
+    query="Apple Inc.",
+    candidates=["Apple", "Microsoft", "Google"],
+    threshold=92.0,
+    scorer_name='token_sort_ratio'
+)
+# Returns: ('Apple', 100.0) if score >= threshold
+```
+
+**Parameters:**
+- `query`: Company name to search for
+- `candidates`: List of candidate company names
+- `threshold`: Minimum similarity score (0-100). If None, uses config default.
+- `scorer_name`: Scorer to use (default: WRatio)
+- `preprocess`: If True, apply default preprocessing
+
+**Returns:** (best_match, score) tuple. If no match above threshold, returns (query, 0.0)
+
+**Note:** WRatio provides weighted ratio combining multiple metrics. Works well for company names with word order variations.
+
+#### `match_many_to_many(queries, targets, threshold=None, scorer_name='WRatio', preprocess=True)`
+
+Match multiple queries against targets using RapidFuzz.
+
+This is significantly faster than nested loops for large datasets.
+
+```python
+from shared.string_matching import match_many_to_many
+
+results = match_many_to_many(
+    queries=["Apple Inc.", "Microsoft Corp."],
+    targets=["Apple", "Microsoft", "Google", "Amazon"],
+    threshold=92.0
+)
+# Returns: [('Apple Inc.', 'Apple', 100.0), ('Microsoft Corp.', 'Microsoft', 100.0)]
+```
+
+**Parameters:**
+- `queries`: List of query strings
+- `targets`: List of target strings
+- `threshold`: Minimum similarity score (0-100)
+- `scorer_name`: Scorer to use
+- `preprocess`: If True, apply default preprocessing
+
+**Returns:** List of (query, target, score) tuples for matches above threshold
+
+**Note:** Uses process.cdist for efficient many-to-many matching. Falls back to extractOne if cdist fails.
+
+#### `_match_many_to_many_fallback(queries, targets, targets_processed, threshold, scorer, preprocess)`
+
+Fallback method for many-to-many matching (slower but more robust).
+
+**Parameters:**
+- `queries`: List of query strings
+- `targets`: List of target strings (original, not processed)
+- `targets_processed`: List of target strings (processed for matching)
+- `threshold`: Minimum similarity score
+- `scorer`: Scorer function
+- `preprocess`: If preprocessing was applied
+
+**Returns:** List of (query, target, score) tuples for matches above threshold
+
+**Note:** Internal helper function used when process.cdist fails.
+
+### Configuration
+
+Matching thresholds and scoring methods are configurable in `config/project.yaml`:
+
+```yaml
+string_matching:
+  company_name:
+    default_threshold: 92.0
+    min_threshold: 85.0
+    scorer: "token_sort_ratio"
+    preprocess: true
+  entity_name:
+    default_threshold: 85.0
+    min_threshold: 80.0
+    scorer: "WRatio"
+    preprocess: true
+```
+
+**Settings:**
+- `default_threshold`: Minimum similarity score to accept match (0-100)
+- `min_threshold`: Lowest acceptable score for edge cases
+- `scorer`: RapidFuzz scoring algorithm
+- `preprocess`: If True, apply default preprocessing (lowercase, remove special chars)
+
+### Available Scorers
+
+| Scorer | Description | Use Case |
+|--------|-------------|----------|
+| `ratio` | Simple string similarity | Exact-ish matches |
+| `partial_ratio` | Best partial match | Substrings |
+| `token_sort_ratio` | Token order insensitive | Word order variations |
+| `token_set_ratio` | Token subset insensitive | Partial word matches |
+| `WRatio` | Weighted ratio | General purpose (default) |
+| `QRatio` | Quick ratio | Fast general matching |
+
+### Determinism
+
+All functions are deterministic:
+- Same inputs produce identical match results
+- Config loading is deterministic (same config produces same thresholds)
+- Scoring algorithms are deterministic (no randomness)
+- Graceful degradation for missing dependencies
+
+### Cross-Platform Compatibility
+
+- Config path resolution uses module-relative paths (works from any working directory)
+- YAML parsing is consistent across platforms
+- RapidFuzz is cross-platform (works on Windows, macOS, Linux)
+
+---
+
 ## Module Usage Example
 
 ```python
