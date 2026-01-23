@@ -9,6 +9,7 @@ import shutil
 import hashlib
 import json
 import time
+import psutil
 
 # ==============================================================================
 # Setup
@@ -163,6 +164,155 @@ def save_stats(stats, out_dir):
     print(f"Saved: {stats_path.name}")
 
 
+# ==============================================================================
+# Observability Helpers
+# ==============================================================================
+
+
+def get_process_memory_mb():
+    """
+    Get current process memory usage in MB.
+
+    Returns:
+        Dict with keys:
+        - rss_mb: Resident Set Size (actual physical memory in use)
+        - vms_mb: Virtual Memory Size (total memory allocated)
+        - percent: Memory usage as percentage of system memory
+    """
+    process = psutil.Process()
+    mem_info = process.memory_info()
+    mem_percent = process.memory_percent()
+
+    return {
+        "rss_mb": mem_info.rss / (1024 * 1024),  # Resident Set Size
+        "vms_mb": mem_info.vms / (1024 * 1024),  # Virtual Memory Size
+        "percent": mem_percent,
+    }
+
+
+def calculate_throughput(rows_processed, duration_seconds):
+    """
+    Calculate throughput in rows per second.
+
+    Args:
+        rows_processed: Number of rows processed
+        duration_seconds: Duration in seconds
+
+    Returns:
+        Throughput in rows per second (rounded to 2 decimals)
+        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
+    """
+    if duration_seconds <= 0:
+        return 0.0
+    return round(rows_processed / duration_seconds, 2)
+
+
+def detect_anomalies_zscore(df, columns, threshold=3.0):
+    """
+    Detect anomalies using z-score (standard deviation) method.
+
+    Deterministic: Same input produces same output.
+
+    Args:
+        df: DataFrame to analyze
+        columns: List of column names to analyze
+        threshold: Number of standard deviations for cutoff (default 3.0)
+
+    Returns:
+        Dict mapping column_name -> anomaly info
+    """
+    anomalies = {}
+
+    for col in columns:
+        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
+            continue
+
+        # Drop NaN for z-score calculation
+        series = df[col].dropna()
+
+        if len(series) == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        mean = series.mean()
+        std = series.std()
+
+        if std == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        # Calculate z-scores: (value - mean) / std
+        z_scores = abs((series - mean) / std)
+
+        # Flag anomalies beyond threshold
+        anomaly_mask = z_scores > threshold
+        anomaly_indices = df[anomaly_mask].index.tolist()
+
+        anomalies[col] = {
+            "count": int(anomaly_mask.sum()),
+            "sample_anomalies": anomaly_indices[:10],  # Top 10 for review
+            "threshold": threshold,
+            "mean": round(mean, 4),
+            "std": round(std, 4),
+        }
+
+    return anomalies
+
+
+def detect_anomalies_iqr(df, columns, multiplier=3.0):
+    """
+    Detect anomalies using IQR (Interquartile Range) method.
+
+    Deterministic: Same input produces same output.
+
+    Args:
+        df: DataFrame to analyze
+        columns: List of column names to analyze
+        multiplier: IQR multiplier for cutoff (default 3.0 = strong outliers)
+
+    Returns:
+        Dict mapping column_name -> anomaly info
+    """
+    anomalies = {}
+
+    for col in columns:
+        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
+            continue
+
+        # Drop NaN for IQR calculation
+        series = df[col].dropna()
+
+        if len(series) == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        # Calculate IQR: Q3 - Q1 (75th - 25th percentile)
+        q1 = series.quantile(0.25)
+        q3 = series.quantile(0.75)
+        iqr = q3 - q1
+
+        if iqr == 0:
+            anomalies[col] = {"count": 0, "sample_anomalies": []}
+            continue
+
+        # Flag anomalies
+        lower_bound = q1 - multiplier * iqr
+        upper_bound = q3 + multiplier * iqr
+
+        anomaly_mask = (series < lower_bound) | (series > upper_bound)
+        anomaly_indices = df[anomaly_mask].index.tolist()
+
+        anomalies[col] = {
+            "count": int(anomaly_mask.sum()),
+            "sample_anomalies": anomaly_indices[:10],
+            "iqr_bounds": [round(lower_bound, 4), round(upper_bound, 4)],
+        }
+
+    return anomalies
+
+
+# ==============================================================================
+# Helper Loading Functions
 # ==============================================================================
 # Helper Loading Functions
 # ==============================================================================
@@ -393,12 +543,16 @@ def main():
     out_dir = out_base / f"2.2_Variables" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Memory tracking at script start
+    mem_start = get_process_memory_mb()
+    all_memory_values = [mem_start["rss_mb"]]
+
     stats = {
         "step_id": "2.2_ConstructVariables",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
         "processing": {},
-        "output": {"final_rows": 0, "final_columns": 0, "files": []},
+        "output": {"final_rows": 0, "final_columns": 0, "files": [], "checksums": {}},
         "missing_values": {},
         "speaker_flags": {},
         "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
@@ -446,6 +600,48 @@ def main():
     end_time = time.perf_counter()
     stats["timing"]["end_iso"] = datetime.now().isoformat()
     stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
+
+    # Memory tracking at script end
+    mem_end = get_process_memory_mb()
+    all_memory_values.append(mem_end["rss_mb"])
+
+    # Add memory stats to stats
+    stats["memory"] = {
+        "start_mb": round(mem_start["rss_mb"], 2),
+        "end_mb": round(mem_end["rss_mb"], 2),
+        "peak_mb": round(max(all_memory_values), 2),
+        "delta_mb": round(mem_end["rss_mb"] - mem_start["rss_mb"], 2),
+    }
+
+    # Add throughput to stats
+    duration_seconds = stats["timing"]["duration_seconds"]
+    throughput = calculate_throughput(stats["output"]["final_rows"], duration_seconds)
+    stats["throughput"] = {
+        "rows_per_second": throughput,
+        "total_rows": stats["output"]["final_rows"],
+        "duration_seconds": round(duration_seconds, 3),
+    }
+
+    # Add output checksums
+    stats["output"]["checksums"] = {}
+    output_files = list(out_dir.glob("linguistic_variables_*.parquet"))
+    for filepath in output_files:
+        checksum = compute_file_checksum(filepath)
+        stats["output"]["checksums"][filepath.name] = checksum
+
+    # Add anomaly detection for numeric columns (linguistic variables)
+    # Check if there are any numeric columns suitable for anomaly detection in aggregated data
+    # Using first year of output for anomaly detection
+    first_year_file = next(
+        (f for f in output_files if f.name.endswith("_2002.parquet")), None
+    )
+    if first_year_file:
+        first_year_df = pd.read_parquet(first_year_file)
+        numeric_cols = first_year_df.select_dtypes(include=[np.number]).columns.tolist()
+        if numeric_cols:
+            stats["quality_anomalies"] = detect_anomalies_zscore(
+                first_year_df, numeric_cols, threshold=3.0
+            )
 
     print_stats_summary(stats)
     save_stats(stats, out_dir)
