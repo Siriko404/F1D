@@ -158,13 +158,43 @@ When security patches are released:
 
 ## Optional Dependencies
 
-### rapidfuzz
-- **Purpose**: Fuzzy string matching for entity linking
-- **Minimum Version**: >=3.14.0
-- **Status**: Optional but recommended
-- **Fallback**: Exact matching if not installed
+### RapidFuzz
+- **Version**: >=3.14.0 (optional, not pinned)
+- **Purpose**: Fuzzy string matching for entity linking (Tier 3 matching)
+- **Required**: No (graceful degradation)
+- **Impact if Missing**:
+  - Tier 3 fuzzy name matching disabled
+  - Lower entity match rate (Tier 1 and Tier 2 still work)
+  - Pipeline completes successfully but with fewer matches
+- **Performance**:
+  - Without: Tier 3 matching returns no matches (fast but incomplete)
+  - With: Fuzzy matching with configurable thresholds (slower but more matches)
+  - Typical speedup: 10-50x for large company name datasets vs. manual implementation
+- **Graceful Degradation**:
+  - Import warning logged if unavailable
+  - Functions return (query, 0.0) instead of fuzzy matches
+  - No errors or pipeline failures
+- **Usage**:
+  - 2_Scripts/1_Sample/1.2_LinkEntities.py (Tier 3 fuzzy matching)
+  - 2_Scripts/shared/string_matching.py (core matching utilities with RAPIDFUZZ_AVAILABLE flag)
 - **Installation**: `pip install rapidfuzz>=3.14.0`
-- **Documentation**: See 1.2_LinkEntities.py for usage
+
+## Version Pinning Rationale
+
+| Dependency | Pinning Strategy | Rationale |
+|------------|-----------------|-----------|
+| pandas | Pinned to 2.2.3 | Stable release with good performance for typical dataset sizes |
+| numpy | Pinned to 2.3.2 | Stable release, supports target Python range |
+| scipy | Pinned to 1.16.1 | Stable release for statistical functions |
+| statsmodels | Pinned to 0.14.6 | Reproducible regression analysis, avoids breaking changes |
+| scikit-learn | Pinned to 1.7.2 | Stable release, future use |
+| lifelines | Pinned to 0.30.0 | Stable release for hazard models |
+| PyYAML | Pinned to 6.0.2 | Stable configuration parsing |
+| pyarrow | Pinned to 21.0.0 | Python 3.8-3.13 compatibility |
+| openpyxl | Pinned to 3.1.5 | Excel read/write support |
+| psutil | Pinned to 7.2.1 | Cross-platform system monitoring |
+| python-dateutil | Pinned to 2.9.0.post0 | Stable date parsing |
+| RapidFuzz | Optional, >=3.14.0 (not pinned) | Graceful degradation pattern allows pipeline to run without it; recommended for production use (higher match rates) |
 
 ## Performance Impact
 
@@ -180,9 +210,14 @@ When security patches are released:
 - **Usage**: Observability features in all scripts (Phase 12)
 
 ### RapidFuzz Impact
-- **Current version**: >=3.14.0
-- **Performance**: 10x faster than fuzzywuzzy when installed
-- **Usage**: Entity linking in 1.2_LinkEntities.py only
+- **Current version**: >=3.14.0 (optional)
+- **Performance**: 10-50x speedup for fuzzy matching vs. manual implementation
+- **Graceful Degradation**: Pipeline runs without it (RAPIDFUZZ_AVAILABLE flag)
+- **Match Rate Impact**:
+  - Without RapidFuzz: Tier 3 fuzzy matching disabled (only Tier 1 exact and Tier 2 partial matching)
+  - With RapidFuzz: Tier 3 fuzzy matching enabled (higher overall entity match rates)
+- **Usage**: Entity linking (1.2_LinkEntities.py) and string matching utilities (2_Scripts/shared/string_matching.py)
+- **Installation**: Optional but recommended for production use
 
 ## Dependency Matrix
 
