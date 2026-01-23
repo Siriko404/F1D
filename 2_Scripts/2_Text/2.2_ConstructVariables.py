@@ -4,12 +4,19 @@ import re
 from pathlib import Path
 from datetime import datetime
 import sys
-import os
-import shutil
 import hashlib
 import json
 import time
 import psutil
+
+# Import shared symlink utility for 'latest' link management
+try:
+    from shared.symlink_utils import update_latest_link
+except ImportError:
+    # Fallback if shared/__init__.py hasn't run yet
+    script_dir = Path(__file__).parent.parent
+    sys.path.insert(0, str(script_dir))
+    from shared.symlink_utils import update_latest_link
 
 # ==============================================================================
 # Setup
@@ -38,63 +45,6 @@ def setup_logging():
 
     sys.stdout = DualWriter(log_path)
     return log_path
-
-
-def update_latest_symlink(latest_dir, output_dir, print_fn=print):
-    """
-    Update 'latest' to point to the output directory.
-    Raises SystemExit on failure with non-zero exit code.
-
-    Args:
-        latest_dir: Path to the 'latest' symlink/directory
-        output_dir: Path to the output directory to link/copy
-        print_fn: Print function for logging (default: print)
-
-    Raises:
-        SystemExit: With exit code 1 on critical failure
-    """
-    # Remove existing latest (whether symlink, junction, or directory)
-    if latest_dir.exists() or latest_dir.is_symlink():
-        try:
-            if latest_dir.is_symlink():
-                os.unlink(str(latest_dir))
-            else:
-                shutil.rmtree(str(latest_dir))
-        except PermissionError as e:
-            print_fn(f"ERROR: Permission denied removing old 'latest': {e}")
-            print_fn(f"  Path: {latest_dir}")
-            sys.exit(1)
-        except FileNotFoundError:
-            pass  # Not an error - doesn't exist yet
-        except OSError as e:
-            print_fn(f"ERROR: Failed to remove old 'latest': {e}")
-            print_fn(f"  Path: {latest_dir}")
-            sys.exit(1)
-
-    # Try symlink first (preferred)
-    try:
-        os.symlink(str(output_dir), str(latest_dir), target_is_directory=True)
-        print_fn(f"\nUpdated 'latest' -> {output_dir.name}")
-    except PermissionError as e:
-        # Symlink failed (likely no admin rights on Windows)
-        # Fall back to copytree
-        print_fn(f"WARNING: Symlink creation failed (permission denied)")
-        print_fn(f"  Falling back to directory copy...")
-        try:
-            shutil.copytree(str(output_dir), str(latest_dir))
-            print_fn(f"\nCopied outputs to 'latest' (symlink not available)")
-        except OSError as e2:
-            print_fn(f"ERROR: Symlink and copytree both failed: {e2}")
-            print_fn(f"  Symlink error: {e}")
-            print_fn(f"  Output dir: {output_dir}")
-            print_fn(f"  Latest dir: {latest_dir}")
-            sys.exit(1)
-    except OSError as e:
-        # Other OSError (e.g., source doesn't exist)
-        print_fn(f"ERROR: Symlink creation failed: {e}")
-        print_fn(f"  Output dir: {output_dir}")
-        print_fn(f"  Latest dir: {latest_dir}")
-        sys.exit(1)
 
 
 def compute_file_checksum(filepath, algorithm="sha256"):
@@ -646,7 +596,7 @@ def main():
     print_stats_summary(stats)
     save_stats(stats, out_dir)
 
-    update_latest_symlink(out_base / "2.2_Variables" / "latest", out_dir)
+    update_latest_link(out_dir, out_base / "2.2_Variables" / "latest")
     print("\n=== Complete ===")
 
 

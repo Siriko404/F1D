@@ -9,6 +9,44 @@ import numpy as np
 import psutil
 
 
+def get_process_memory_mb():
+    """
+    Get current process memory usage in MB.
+
+    Returns:
+        Dict with keys:
+        - rss_mb: Resident Set Size (actual physical memory in use)
+        - vms_mb: Virtual Memory Size (total memory allocated)
+        - percent: Memory usage as percentage of system memory
+    """
+    process = psutil.Process()
+    mem_info = process.memory_info()
+    mem_percent = process.memory_percent()
+
+    return {
+        "rss_mb": mem_info.rss / (1024 * 1024),  # Resident Set Size
+        "vms_mb": mem_info.vms / (1024 * 1024),  # Virtual Memory Size
+        "percent": mem_percent,
+    }
+
+
+def calculate_throughput(rows_processed, duration_seconds):
+    """
+    Calculate throughput in rows per second.
+
+    Args:
+        rows_processed: Number of rows processed
+        duration_seconds: Duration in seconds
+
+    Returns:
+        Throughput in rows per second (rounded to 2 decimals)
+        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
+    """
+    if duration_seconds <= 0:
+        return 0.0
+    return round(rows_processed / duration_seconds, 2)
+
+
 def compute_file_checksum(filepath, algorithm="sha256"):
     h = hashlib.new(algorithm)
     with open(filepath, "rb") as f:

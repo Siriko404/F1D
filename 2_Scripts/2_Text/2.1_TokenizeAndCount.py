@@ -5,8 +5,6 @@ import re
 import yaml
 import sys
 import time
-import shutil
-import os
 import json
 import hashlib
 from datetime import datetime
@@ -14,6 +12,15 @@ from typing import Tuple
 from sklearn.feature_extraction.text import CountVectorizer
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import psutil
+
+# Import shared symlink utility for 'latest' link management
+try:
+    from shared.symlink_utils import update_latest_link
+except ImportError:
+    # Fallback if shared/__init__.py hasn't run yet
+    script_dir = Path(__file__).parent.parent
+    sys.path.insert(0, str(script_dir))
+    from shared.symlink_utils import update_latest_link
 
 # ==============================================================================
 # Setup & Config
@@ -42,26 +49,6 @@ def setup_logging():
 
     sys.stdout = DualWriter(log_path)
     return log_path
-
-
-def update_latest_symlink(latest_dir, output_dir):
-    if latest_dir.exists() or latest_dir.is_symlink():
-        try:
-            if latest_dir.is_symlink():
-                os.unlink(str(latest_dir))
-            else:
-                shutil.rmtree(str(latest_dir))
-        except Exception:
-            pass
-    try:
-        os.symlink(str(output_dir), str(latest_dir), target_is_directory=True)
-        print(f"\nUpdated 'latest' -> {output_dir.name}")
-    except OSError:
-        try:
-            shutil.copytree(str(output_dir), str(latest_dir))
-            print(f"\nCopied outputs to 'latest'")
-        except Exception:
-            pass
 
 
 def load_config():
@@ -751,7 +738,7 @@ def main():
 
     save_stats(stats, out_dir)
 
-    update_latest_symlink(out_base / "2.1_Tokenized" / "latest", out_dir)
+    update_latest_link(out_dir, out_base / "2.1_Tokenized" / "latest")
     print("\n=== Complete ===")
 
 
