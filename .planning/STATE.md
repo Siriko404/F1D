@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 Phase: 13 of 15 (Script Refactoring) — **IN PROGRESS** (Plan 8/10 complete)
 Technical Remediation: Phase 7-15 — 34 concerns to address
 Status: Original project 100% complete, Phase 7-12 complete, Phase 13 plans 1-8/10 complete
-Last activity: 2026-01-23 — Phase 13-05d complete (Step 4 symlink refactoring)
+Last activity: 2026-01-23 — Phase 13-05b complete (Step 2 symlink refactoring)
 
 Progress: [██████████] 100% (All 6 original phases complete)
 Technical Remediation: [████████████] 95% (Phase 7, 8, 9, 10, 11, 12 complete; Phase 13 8/10 complete; remaining Phase 13-15)
@@ -22,7 +22,7 @@ Technical Remediation: [████████████] 95% (Phase 7, 8, 9
 **Velocity:**
   - Total plans completed: 26 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 8 from Phase 13)
   - Average duration: ~11 min
-  - Total execution time: ~101 min
+  - Total execution time: ~107 min
 
 **By Phase:**
 
@@ -160,6 +160,18 @@ None.
    - Execution time: ~5 minutes
    - SUMMARY.md created
 
+ ✅ **Phase 13-04b completion:**
+    - 1.2_LinkEntities.py refactored to use config-driven fuzzy matching
+    - Imported from shared.string_matching (RAPIDFUZZ_AVAILABLE, load_matching_config, get_scorer)
+    - Replaced hardcoded threshold (92) with config-driven default_threshold
+    - Replaced hardcoded scorer (token_sort_ratio) with config-driven scorer_name
+    - Added sys.path insertion for shared module import
+    - 1.4_AssembleManifest.py verified (no fuzzy matching, no changes)
+    - Script executed successfully with identical outputs
+    - Changes already committed in 01f7224 (from plan 13-05a)
+    - Execution time: ~7 minutes
+    - SUMMARY.md and STATE.md updated
+
 ✅ **Phase 12-01 completion:**
    - Observability infrastructure created
    - psutil dependency added
@@ -215,8 +227,8 @@ None.
     - Last commit: e1f3270 (fix(13-04): resolve config path relative to module location)
 
  🎯 **Next Phase:**
-    - Phase 13: Script Refactoring (6 more plans remaining: 03, 04b, 05a, 05b, 05c, 05d)
-    - Next plan: Refactor large Step 4 scripts to use shared modules
+    - Phase 13: Script Refactoring (1 more plan remaining: 03)
+    - Next plan: Refactor Step 2 scripts to use config-driven string matching
    - Ready to proceed
 
 ## Phase 11 Achievements (Wave 2)
