@@ -47,10 +47,17 @@ def load_matching_config() -> Dict[str, Any]:
         FileNotFoundError: If config/project.yaml not found
         yaml.YAMLError: If config file is invalid YAML
     """
-    config_path = Path("config/project.yaml")
+    # Resolve config path relative to this module's location
+    # Module is at: 2_Scripts/shared/string_matching.py
+    # Config is at: config/project.yaml
+    # Need to go up two levels from shared/, then into config/
+    module_dir = Path(__file__).parent  # 2_Scripts/shared/
+    config_path = module_dir / "../../config/project.yaml"  # ../../config/project.yaml
 
     if not config_path.exists():
-        warnings.warn(f"Config file not found: {config_path}. Using defaults.")
+        warnings.warn(
+            f"Config file not found: {config_path.resolve()}. Using defaults."
+        )
         return {}
 
     try:
