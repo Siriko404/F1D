@@ -24,11 +24,15 @@ This document tracks all dependencies in the F1D data processing pipeline, inclu
 - **Usage**: Statistical tests, distributions
 
 ### statsmodels
-- **Version**: 0.14.5 (pinned)
+- **Version**: 0.14.6 (pinned)
 - **Purpose**: Statistical modeling and econometrics
 - **Compatibility**: Python 3.8+
 - **Usage**: Fixed effects OLS regression, model diagnostics
-- **Rationale**: 0.14.x series provides stable API for regression models
+- **Rationale**:
+  - 0.14.x series provides stable API for regression models
+  - 0.14.0 introduced breaking changes (deprecated GLM link names)
+  - Pinned to 0.14.6 for reproducible regression analysis
+  - Future upgrades require API compatibility validation (see UPGRADE_GUIDE.md)
 
 ### scikit-learn
 - **Version**: 1.7.2 (pinned)
@@ -187,7 +191,7 @@ When security patches are released:
 | pandas | 2.2.3 | 3.8 | All scripts | Yes |
 | numpy | 2.3.2 | 3.9 | All scripts | Yes |
 | scipy | 1.16.1 | 3.9 | All scripts | Yes |
-| statsmodels | 0.14.5 | 3.8 | Step 4 scripts | Yes |
+| statsmodels | 0.14.6 | 3.8 | Step 4 scripts | Yes |
 | scikit-learn | 1.7.2 | 3.8 | Future use | Yes |
 | lifelines | 0.30.0 | 3.8 | 4.3_TakeoverHazards.py | Yes |
 | PyYAML | 6.0.2 | 3.6 | All scripts | Yes |
