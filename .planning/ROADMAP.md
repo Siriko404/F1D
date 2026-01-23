@@ -32,7 +32,7 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Define stats schema and helper function templates
+- [x] 01-01-PLAN.md — Define stats schema and helper function templates
 - [ ] 01-02-PLAN.md — Implement inline stats in 1.1_CleanMetadata
 - [ ] 01-03-PLAN.md — Validate stats.json output and console display
 
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Template & Pilot | 0/3 | Planned | - |
+| 1. Template & Pilot | 1/3 | In progress | - |
 | 2. Step 1 Sample | 0/5 | Not started | - |
 | 3. Step 2 Text | 0/3 | Not started | - |
 | 4. Steps 3-4 Financial & Econometric | 0/8 | Not started | - |
