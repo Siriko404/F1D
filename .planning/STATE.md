@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 11 of 15 (Testing Infrastructure) — **COMPLETE**
-Phase: 12 of 15 (Data Quality & Observability) — **IN PROGRESS** (1/3 plans complete)
+Phase: 12 of 15 (Data Quality & Observability) — **IN PROGRESS** (2/3 plans complete)
 Technical Remediation: Phase 7-15 — 34 concerns to address
-Status: Original project 100% complete, Phase 7-11 complete (7/7 plans in Phase 11), Phase 12-01 complete, pushed to git
-Last activity: 2026-01-23 — Phase 12-01 complete (observability infrastructure), pushed to origin/master
+Status: Original project 100% complete, Phase 7-11 complete (7/7 plans in Phase 11), Phase 12-02 complete, ready to commit
+Last activity: 2026-01-23 — Phase 12-02 complete (observability rollout to Steps 1-2), all tasks committed
 
 Progress: [██████████] 100% (All 6 original phases complete)
-Technical Remediation: [███████████] 83% (Phase 7, 8, 9, 10, 11, 12-01 complete; remaining Phase 12-02, 12-03, 13-15)
+Technical Remediation: [████████████] 86% (Phase 7, 8, 9, 10, 11, 12-01, 12-02 complete; remaining Phase 12-03, 13-15)
 
 ## Performance Metrics
 
@@ -401,31 +401,50 @@ Total Wave 2 Tests: 32 tests (15 integration + 5 regression + 8 validation + 4 e
     - CI/CD documentation with enablement instructions
     - CI-CD placeholder documenting both enablement and deferral options
 
+✅ **12-02-PLAN.md:** Observability rollout to Steps 1-2 (8 scripts)
+    - Added observability features to 4 Step 1 scripts (1.1-1.4)
+    - Added observability features to 3 Step 2 scripts (2.1-2.3)
+    - Memory tracking at 3+ points per script (start, data loads, major ops, end)
+    - Throughput calculation (rows/second) for all scripts
+    - Output file checksums (SHA-256) for all generated files
+    - Anomaly detection using z-score method (threshold=3.0) for quality metrics
+    - Schema additions: memory, throughput, output_checksums, quality_anomalies
+    - Preserved existing stats.json structure (backward compatible)
+    - Created integration tests to verify observability features (7 tests)
+    - All scripts modified with copy-paste ready inline helper functions
+    - Task 1 commit: 380e253 (Step 1 scripts)
+    - Task 2 commit: 14b9d8b (Step 2 scripts)
+    - Task 3 commit: 9f0b359 (integration tests)
+    - Deviations: pytest.mark syntax fixed (module-level vs decorator)
+    - Commits: 380e253, 14b9d8b, 9f0b359
+
 ## Session Continuity
 
 **Session 2026-01-23:**
 
-✅ **Phase 12-01 completion:**
-    - Added psutil==7.2.1 to requirements.txt
-    - Created 5 inline observability helper functions in tests/unit/test_observability_helpers.py
-    - Created 6 unit tests covering all helper functions
-    - Fixed psutil API usage (memory_info().percent → memory_percent())
-    - Fixed test DataFrames (equal array lengths, sufficient data for stable std/IQR)
-    - All 6 tests pass
-    - Created 12-01-SUMMARY.md
-    - Commits: 57fe6c5, 652a902, 5470d25
+✅ **Phase 12-02 completion:**
+     - Added observability to 4 Step 1 scripts (1.1-1.4) - commit: 380e253
+     - Added observability to 3 Step 2 scripts (2.1-2.3) - commit: 14b9d8b
+     - Created integration tests for observability features - commit: 9f0b359
+     - Memory tracking, throughput, checksums, anomaly detection added
+     - Schema: memory, throughput, output_checksums, quality_anomalies
+     - All scripts pass integration tests (7 tests)
+     - Created 12-02-SUMMARY.md
+     - Deviations: pytest.mark syntax fixed (module-level vs decorator)
 
-✅ **Phase 12 is now 1/3 complete:**
-    - Observability infrastructure (12-01)
-    - Ready for rollout to Steps 1-2 (12-02)
-    - Ready for rollout to Steps 3-4 (12-03)
+✅ **Phase 12 is now 2/3 complete:**
+     - Observability infrastructure (12-01)
+     - Observability rollout to Steps 1-2 (12-02)
+     - Ready for rollout to Steps 3-4 (12-03)
 
 📊 **Git Status:**
-    - All changes committed to local repository
-    - Ready to push to origin/master
+     - All tasks committed (380e253, 14b9d8b, 9f0b359)
+     - SUMMARY.md created, STATE.md updated
+     - Ready to commit planning docs
 
 🎯 **Next Phase:**
-    - Continue with Phase 12-02: Rollout to Steps 1-2 (8 scripts)
+     - Continue with Phase 12-03: Rollout to Steps 3-4 (11 scripts)
+     - Note: Steps 3-4 scripts already have some stats, will enhance with observability
 
 ✅ **Phase 11-01 completion:**
     - Created pyproject.toml with pytest 8.0+ configuration
