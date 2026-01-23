@@ -541,7 +541,19 @@ def main():
     # Load metadata
     print_dual("Loading cleaned metadata...")
     validate_input_file(paths["metadata"], must_exist=True)
-    df = pd.read_parquet(paths["metadata"])
+    # Column pruning: only reading needed columns
+    df = pd.read_parquet(
+        paths["metadata"],
+        columns=[
+            "company_id",
+            "permno",
+            "cusip",
+            "company_name",
+            "company_ticker",
+            "start_date",
+            "file_name",
+        ],
+    )
     total_calls = len(df)
     print_dual(f"  Loaded {total_calls:,} calls\n")
 
@@ -559,7 +571,21 @@ def main():
     # Load CCM
     print_dual("Loading CCM database...")
     validate_input_file(paths["ccm"], must_exist=True)
-    ccm = pd.read_parquet(paths["ccm"])
+    # Column pruning: only reading needed columns
+    ccm = pd.read_parquet(
+        paths["ccm"],
+        columns=[
+            "LPERMNO",
+            "gvkey",
+            "conm",
+            "sic",
+            "LINKPRIM",
+            "LINKTYPE",
+            "LINKDT",
+            "LINKENDDT",
+            "cusip",
+        ],
+    )
     ccm["LINKDT"] = pd.to_datetime(ccm["LINKDT"])
     ccm["LINKENDDT_clean"] = ccm["LINKENDDT"].replace("E", "2099-12-31")
     ccm["LINKENDDT_dt"] = pd.to_datetime(ccm["LINKENDDT_clean"])
