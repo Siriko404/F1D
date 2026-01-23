@@ -49,6 +49,14 @@ except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
+# Import shared regression and reporting utilities
+from shared.regression_utils import run_fixed_effects_ols
+from shared.reporting_utils import (
+    generate_regression_report,
+    save_model_diagnostics,
+    save_variable_reference,
+)
+
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # ==============================================================================
@@ -541,12 +549,12 @@ def run_regression(df_sample, sample_name):
     formula = f"{dep_var} ~ C(ceo_id) + " + " + ".join(controls) + " + C(year)"
     print(f"  Formula: {formula[:80]}...")
 
-    # Estimate model
+    # Estimate model using shared function
     print(f"  Estimating... (this may take a minute)")
     start_time = datetime.now()
 
     try:
-        model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
+        model = run_fixed_effects_ols(df_reg, formula, sample_name, cov_type="HC1")
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}")
         return None, None, None
@@ -709,16 +717,16 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
     # Regression results (per sample)
     for sample_name, model in all_models.items():
         if model is not None:
-            results_path = out_dir / f"regression_results_{sample_name.lower()}.txt"
-            with open(results_path, "w") as f:
-                f.write(model.summary().as_text())
-            print(f"  Saved: regression_results_{sample_name.lower()}.txt")
+            report_path = generate_regression_report(model, sample_name, out_dir)
+            print(f"  Saved: {report_path.name}")
 
     # Model diagnostics
     if all_diagnostics:
         diag_df = pd.DataFrame(all_diagnostics)
-        diag_path = out_dir / "model_diagnostics.csv"
-        diag_df.to_csv(diag_path, index=False)
+        # Combine all model diagnostics into single CSV
+        for sample_name, model in all_models.items():
+            if model is not None:
+                diag_path = save_model_diagnostics(model, sample_name, out_dir)
         print(f"  Saved: model_diagnostics.csv")
 
     # Variable reference
