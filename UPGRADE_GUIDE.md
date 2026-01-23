@@ -192,6 +192,147 @@ python 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py
 
 ---
 
+## Python Upgrade Procedure
+
+Before upgrading to a new Python version, validate compatibility:
+
+**1. Check Dependency Support**:
+   - Review DEPENDENCIES.md for Python version constraints
+   - Check each dependency's release notes for Python support
+   - Ensure all dependencies support target Python version
+
+**2. Local Testing**:
+   ```bash
+   # Install target Python version
+   # Windows: Download from python.org or use winget
+   # macOS: brew install python@3.X
+   # Linux: Use pyenv or system package manager
+
+   # Create virtual environment
+   python3.X -m venv venv
+   source venv/bin/activate  # Unix
+   # or
+   venv\Scripts\activate  # Windows
+
+   # Install dependencies
+   pip install -r requirements.txt
+
+   # Run pytest to check for compatibility issues
+   pytest tests/ -v --tb=short
+
+   # Fix any compatibility issues (usually dependency version conflicts)
+   ```
+
+**3. GitHub Actions Validation**:
+   ```bash
+   # Update .github/workflows/test.yml matrix to include new version
+   # Add to matrix.python-version array: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+
+   git add .github/workflows/test.yml
+   git commit -m "test(ci): add Python 3.14 to matrix testing"
+
+   # Push changes and verify CI/CD passes
+   git push origin master
+
+   # Review test results for any Python-specific failures
+   ```
+
+**4. Full Pipeline Validation**:
+   ```bash
+   # Run full pipeline on new Python version
+   python 2_Scripts/1_Sample/1.1_CleanMetadata.py
+   python 2_Scripts/1_Sample/1.2_LinkEntities.py
+   python 2_Scripts/1_Sample/1.3_BuildTenureMap.py
+   python 2_Scripts/1_Sample/1.4_AssembleManifest.py
+   python 2_Scripts/2_Text/2.1_TokenizeAndCount.py
+   python 2_Scripts/2_Text/2.2_ConstructVariables.py
+   python 2_Scripts/2_Text/2.3_VerifyStep2.py
+   python 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py
+   python 2_Scripts/3_Financial/3.1_FirmControls.py
+   python 2_Scripts/3_Financial/3.2_MarketVariables.py
+   python 2_Scripts/3_Financial/3.3_EventFlags.py
+   python 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py
+   python 2_Scripts/4_Econometric/4.2_LiquidityRegressions.py
+   python 2_Scripts/4_Econometric/4.3_TakeoverHazards.py
+
+   # Compare outputs with baseline (from Python 3.10 or 3.11)
+   # Use checksum comparison for binary files
+   python tests/compare_outputs.py \
+     --baseline ./4_Outputs/4_Econometric/baseline/ \
+     --new ./4_Outputs/4_Econometric/latest/
+
+   # Verify identical results (accounting for floating-point tolerance)
+   ```
+
+**5. Update Documentation**:
+   ```bash
+   # Add new version to DEPENDENCIES.md "Supported Versions" list
+   # Update minimum/maximum version annotations
+
+   # Update .github/workflows/test.yml matrix (already done in step 3)
+
+   # Document any Python-specific workarounds in DEPENDENCIES.md
+   ```
+
+**6. Deprecate Old Versions** (optional):
+   ```bash
+   # If dropping old versions, update requirements.txt comment
+   # Example: Change "# Python >= 3.8" to "# Python >= 3.10"
+
+   # Update DEPENDENCIES.md compatibility section
+   # Remove old versions from "Supported Versions" list
+   # Update "Minimum Version" annotation
+
+   # Update GitHub Actions matrix
+   # Remove old versions from matrix.python-version array
+
+   # Announce deprecation in project README.md
+   # Add note to DEPENDENCIES.md documenting deprecation
+   ```
+
+**Example: Upgrading from Python 3.8 to 3.14 (future upgrade)**
+
+```bash
+# Step 1: Check dependency support
+# Review DEPENDENCIES.md - all dependencies support Python 3.8+
+# Check PyArrow: 23.0.0+ requires Python 3.10+ (compatible with 3.14)
+# Check NumPy: 2.x supports Python 3.9+ (compatible with 3.14)
+# Check Pandas: 2.x supports Python 3.9+ (compatible with 3.14)
+
+# Step 2: Local testing
+python3.14 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pytest tests/ -v
+# If fails: Check for NumPy/PyArrow version conflicts
+
+# Step 3: GitHub Actions validation
+# Edit .github/workflows/test.yml:
+# matrix:
+#   python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+git add .github/workflows/test.yml
+git commit -m "test(ci): add Python 3.14 to matrix testing"
+git push origin master
+# Verify CI/CD passes for Python 3.14
+
+# Step 4: Full pipeline validation
+# Run all scripts (see command list above)
+# Compare outputs with Python 3.11 baseline
+# Verify identical results
+
+# Step 5: Update documentation
+# Add "Python 3.14" to DEPENDENCIES.md "Supported Versions" list
+# Update "Latest Tested" to "Python 3.14"
+
+# Step 6: Deprecate Python 3.8 and 3.9 (optional)
+# Update requirements.txt comment: "# Python >= 3.10"
+# Remove 3.8 and 3.9 from DEPENDENCIES.md "Supported Versions" list
+# Remove 3.8 and 3.9 from GitHub Actions matrix
+# Add deprecation note to README.md
+```
+
+---
+
 ## Testing Requirements
 
 ### Full Pipeline Run (Required for Critical Upgrades)
