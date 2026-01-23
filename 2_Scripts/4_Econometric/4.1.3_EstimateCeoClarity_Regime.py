@@ -39,6 +39,22 @@ import hashlib
 import json
 import time
 import psutil
+# Try importing statsmodels
+try:
+    import statsmodels.formula.api as smf
+    STATSMODELS_AVAILABLE = True
+except ImportError:
+    STATSMODELS_AVAILABLE = False
+    print("WARNING: statsmodels not available. Install with: pip install statsmodels")
+
+# Import shared regression and reporting utilities
+from shared.regression_utils import run_fixed_effects_ols
+from shared.reporting_utils import (
+    generate_regression_report,
+    save_model_diagnostics,
+    save_variable_reference,
+)
+
 
 # ==============================================================================
 # Observability Helper Functions
@@ -454,7 +470,7 @@ def run_regression(df_sample, sample_name):
     start_time = datetime.now()
 
     try:
-        model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
+        model = run_fixed_effects_ols(df_reg, formula, sample_name, cov_type="HC1")
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}")
         return None, None, None

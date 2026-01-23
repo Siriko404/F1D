@@ -33,6 +33,22 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import numpy as np
+# Try importing statsmodels
+try:
+    import statsmodels.formula.api as smf
+    STATSMODELS_AVAILABLE = True
+except ImportError:
+    STATSMODELS_AVAILABLE = False
+    print("WARNING: statsmodels not available. Install with: pip install statsmodels")
+
+# Import shared regression and reporting utilities
+from shared.regression_utils import run_fixed_effects_ols
+from shared.reporting_utils import (
+    generate_regression_report,
+    save_model_diagnostics,
+    save_variable_reference,
+)
+
 from lifelines import CoxPHFitter
 import warnings
 import hashlib
