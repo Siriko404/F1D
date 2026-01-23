@@ -51,6 +51,10 @@ from shared.reporting_utils import (
     save_variable_reference,
 )
 from shared.symlink_utils import update_latest_link
+from shared.regression_validation import (
+    validate_columns,
+    validate_sample_size,
+)
 
 from lifelines import CoxPHFitter
 import warnings
@@ -493,6 +497,15 @@ def run_cox_ph(df, event_col, covariates, title, out_file):
 
     print(f"  N = {len(reg_df):,}, Events = {n_events:,}")
 
+    # Validate regression data before estimation
+    try:
+        required_columns = ["Duration", event_col] + covariates
+        validate_columns(reg_df, required_columns)
+        validate_sample_size(reg_df, min_observations=100)
+    except Exception as e:
+        print(f"  ERROR: Validation failed: {e}")
+        return None
+
     # Fit model
     cph = CoxPHFitter()
     cph.fit(reg_df, duration_col="Duration", event_col=event_col)
@@ -551,6 +564,23 @@ def run_fine_gray(df, target_type, covariates, title, out_file):
 
     if n_events < 10:
         print(f"  Insufficient events for {target_type}: {n_events}")
+        return None
+
+    # For competing events: extend duration (remain at risk)
+    competing_type = "Friendly" if target_type == "Uninvited" else "Uninvited"
+    reg_df["FG_Duration"] = reg_df["Duration"]
+    competing_mask = reg_df["Takeover_Type"] == competing_type
+    reg_df.loc[competing_mask, "FG_Duration"] = reg_df["Duration"].max() + 1
+
+    print(f"  N = {len(reg_df):,}, Events ({target_type}) = {n_events:,}")
+
+    # Validate regression data before estimation
+    try:
+        required_columns = ["Duration", "Takeover", "Takeover_Type"] + covariates
+        validate_columns(reg_df, required_columns)
+        validate_sample_size(reg_df, min_observations=100)
+    except Exception as e:
+        print(f"  ERROR: Validation failed: {e}")
         return None
 
     # For competing events: extend duration (remain at risk)

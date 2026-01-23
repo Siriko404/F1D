@@ -66,6 +66,11 @@ from shared.reporting_utils import (
     save_variable_reference,
 )
 from shared.symlink_utils import update_latest_link
+from shared.regression_validation import (
+    validate_regression_data,
+    validate_columns,
+    validate_sample_size,
+)
 
 import warnings
 import hashlib
@@ -481,6 +486,15 @@ def run_first_stage(df, out_dir):
             + " + C(year)"
         )
 
+        # Validate regression data before estimation
+        try:
+            required_columns = [endog_var, CONFIG["instrument"]] + controls + ["year"]
+            validate_columns(reg_df, required_columns)
+            validate_sample_size(reg_df, min_observations=100)
+        except Exception as e:
+            output_lines.append(f"  ERROR: Validation failed: {e}")
+            continue
+
         try:
             model = smf.ols(formula, data=reg_df).fit(cov_type="HC1")
 
@@ -573,6 +587,17 @@ def run_ols_regression(
     rhs += [c for c in other_controls if c in reg_df.columns and c not in rhs]
     formula = f"{dep_var} ~ " + " + ".join(rhs) + " + C(year)"
 
+    # Validate regression data before estimation
+    try:
+        required_columns = (
+            [dep_var, clarity_var, uncertainty_var] + other_controls + ["year"]
+        )
+        validate_columns(reg_df, required_columns)
+        validate_sample_size(reg_df, min_observations=100)
+    except Exception as e:
+        print(f"  ERROR: Validation failed: {e}")
+        return None
+
     try:
         model = smf.ols(formula, data=reg_df).fit(cov_type="HC1")
 
@@ -644,6 +669,15 @@ def run_iv_regression(
         reg_df["year"].astype(str), prefix="year", drop_first=True
     ).astype(np.float64)
     reg_df = pd.concat([reg_df.drop("year", axis=1), year_dummies], axis=1)
+
+    # Validate regression data before estimation
+    try:
+        required_columns = [dep_var, uncertainty_var, CONFIG["instrument"]] + controls
+        validate_columns(reg_df, required_columns)
+        validate_sample_size(reg_df, min_observations=100)
+    except Exception as e:
+        print(f"  ERROR: Validation failed: {e}")
+        return None
 
     try:
         # Prepare variables - ensure float64
