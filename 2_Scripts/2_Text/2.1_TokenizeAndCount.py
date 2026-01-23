@@ -486,6 +486,13 @@ def main():
                 print(f"  ERROR: Year {year} failed: {e}")
                 raise
 
+    # PERFORMANCE NOTE: Parallelization achieved
+    # - Baseline (sequential, thread_count=1): ~558 seconds (from 10-01)
+    # - Expected speedup: near-linear with thread_count (e.g., 3.8x with 4 threads)
+    # - Determinism: Results sorted by year before aggregation ensures reproducibility
+    # - To measure actual speedup: Change thread_count in config/project.yaml to 4 or 8
+    #   and compare runtimes. Use `time python 2.1_TokenizeAndCount.py`
+
     # Combine stats in year order for determinism
     stats["processing"]["per_year"] = [
         results[y] for y in sorted(results.keys()) if results[y].get("skipped") is None
@@ -533,10 +540,20 @@ def main():
 
     # Optimization metrics
     stats["optimization"] = {
-        "method": "vectorized_melt",
-        "description": "Replaced .iterrows() loop with vectorized .melt() operation",
+        "vectorization": {
+            "method": "vectorized_melt",
+            "description": "Replaced .iterrows() loop with vectorized .melt() operation",
+            "expected_speedup": "10-100x for LM dictionary (10K rows)",
+        },
+        "parallelization": {
+            "method": "ProcessPoolExecutor",
+            "thread_count": thread_count,
+            "workers_used": thread_count,
+            "description": "Parallel year processing with deterministic result ordering",
+            "expected_speedup": "near-linear for CPU-bound operations",
+            "notes": "To measure actual speedup: change thread_count in config/project.yaml to 4 or 8 and compare runtimes",
+        },
         "runtime_seconds": stats["timing"]["duration_seconds"],
-        "expected_speedup": "10-100x for LM dictionary (10K rows)",
     }
 
     # Save Stats
