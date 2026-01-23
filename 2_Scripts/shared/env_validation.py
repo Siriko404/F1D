@@ -1,0 +1,124 @@
+"""
+Environment Variable Validation Module
+
+Provides schema-based validation for environment variables, ready for future
+use when adding external services (WRDS credentials, API keys).
+
+Security:
+- Validates environment variables against defined schema
+- Applies defaults for optional variables
+- Raises clear errors on validation failures
+
+Note: Current codebase doesn't use environment variables yet.
+This module is preparatory infrastructure for future .env support.
+
+Source: Python os.environ documentation
+"""
+
+import os
+import sys
+from typing import Dict, Any, Optional
+
+
+# Define environment variable schema for future use
+ENV_SCHEMA = {
+    "WRDS_USERNAME": {
+        "required": False,  # Optional for now - using WRDS via different method
+        "type": str,
+        "description": "WRDS username for data access",
+    },
+    "WRDS_PASSWORD": {
+        "required": False,
+        "type": str,
+        "description": "WRDS password (WARNING: Should not be in .env - use keyring instead)",
+    },
+    "API_TIMEOUT_SECONDS": {
+        "required": False,
+        "type": int,
+        "default": 30,
+        "description": "API request timeout in seconds",
+    },
+    "MAX_RETRIES": {
+        "required": False,
+        "type": int,
+        "default": 3,
+        "description": "Maximum retry attempts for failed requests",
+    },
+}
+
+
+class EnvValidationError(Exception):
+    """Raised when environment validation fails."""
+
+    pass
+
+
+def validate_env_schema(schema: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Validate environment variables against schema.
+
+    Args:
+        schema: Dictionary defining expected env vars
+
+    Returns:
+        dict: Validated env var values (with defaults applied)
+
+    Raises:
+        EnvValidationError: If required vars missing or type validation fails
+    """
+    validated = {}
+
+    for var_name, var_spec in schema.items():
+        value = os.environ.get(var_name, var_spec.get("default"))
+
+        # Check required vars
+        if var_spec.get("required", True) and value is None:
+            raise EnvValidationError(
+                f"Required environment variable not set: {var_name}\n"
+                f"  Description: {var_spec.get('description')}"
+            )
+
+        # Skip type check if None (for optional vars)
+        if value is None:
+            continue
+
+        # Type validation
+        expected_type = var_spec["type"]
+        try:
+            if expected_type == int:
+                value = int(value)
+            elif expected_type == float:
+                value = float(value)
+            elif expected_type == bool:
+                value = value.lower() in ("true", "1", "yes")
+            elif expected_type == str:
+                value = str(value)
+            else:
+                raise EnvValidationError(f"Unsupported type: {expected_type}")
+        except (ValueError, TypeError) as e:
+            raise EnvValidationError(
+                f"Invalid type for {var_name}: expected {expected_type.__name__}, got {value}\n"
+                f"  Error: {e}"
+            )
+
+        validated[var_name] = value
+
+    return validated
+
+
+def load_and_validate_env() -> Dict[str, Any]:
+    """
+    Load and validate environment variables.
+
+    Returns validated env dict or exits on failure.
+
+    This is the entry point for environment validation.
+    Call this at script startup if using environment variables.
+    """
+    try:
+        env = validate_env_schema(ENV_SCHEMA)
+        print(f"Environment validated: {len(env)} variables")
+        return env
+    except EnvValidationError as e:
+        print(f"ERROR: Environment validation failed: {e}", file=sys.stderr)
+        sys.exit(1)
