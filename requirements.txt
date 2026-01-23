@@ -1,0 +1,21 @@
+# Python Version
+# Python >= 3.8
+
+# Core Data Science
+pandas==2.2.3
+numpy==2.3.2
+scipy==1.16.1
+
+# Statistical Modeling
+statsmodels==0.14.5
+scikit-learn==1.7.2
+lifelines==0.30.0
+
+# Data Formats
+PyYAML==6.0.2
+pyarrow==21.0.0
+openpyxl==3.1.5
+
+# Utilities
+psutil==7.2.1
+python-dateutil==2.9.0.post0
