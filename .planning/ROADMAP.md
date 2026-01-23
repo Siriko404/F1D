@@ -26,8 +26,8 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 - [x] **Phase 9: Security Hardening** - Add validation layers ✅ COMPLETED 2026-01-23
 - [x] **Phase 10: Performance Optimization** - Vectorize operations, add parallelization ✅ COMPLETED 2026-01-23
 - [x] **Phase 11: Testing Infrastructure** - Comprehensive test suite with pytest ✅ COMPLETED 2026-01-23
-- [ ] **Phase 12: Data Quality & Observability** - Quality reports and state tracking 📝 PLANNED
-- [ ] **Phase 13: Script Refactoring** - Break down large scripts, improve modularity ○ PENDING
+- [x] **Phase 12: Data Quality & Observability** - Quality reports and state tracking ✅ COMPLETED 2026-01-23
+- [ ] **Phase 13: Script Refactoring** - Break down large scripts, improve modularity 📝 PLANNED
 - [ ] **Phase 14: Dependency Management** - Version pinning and compatibility testing ○ PENDING
 - [ ] **Phase 15: Scaling Preparation** - Remove scaling limits for future growth ○ PENDING
 
@@ -242,13 +242,35 @@ Plans:
    2. All scripts track throughput (rows/second for data operations)
    3. Output files have checksums (SHA-256) for reproducibility verification
    4. Data quality anomalies are detected and flagged (outliers, missing values, inconsistencies)
-**Status**: 📝 IN PROGRESS (1/3 plans complete)
+**Status**: ✅ COMPLETED 2026-01-23 (3 plans in 3 waves)
 **Plans**: 3 plans
 
 Plans:
 - [x] 12-01: Observability infrastructure (psutil, inline helpers, unit tests) (Wave 1) ✅
-- [ ] 12-02: Rollout to Steps 1-2 (8 scripts) (Wave 2)
-- [ ] 12-03: Rollout to Steps 3-4 (11 scripts) and summary report (Wave 3)
+- [x] 12-02: Rollout to Steps 1-2 (8 scripts) (Wave 2) ✅
+- [x] 12-03: Rollout to Steps 3-4 (11 scripts) and summary report (Wave 3) ✅
+
+### Phase 13: Script Refactoring
+**Goal**: Break down large scripts, improve modularity
+**Depends on**: Phase 12
+**Requirements**: Large Script Files (8 scripts >800 lines), Output Path Dependencies, Data Assumptions, String Matching Logic, Windows Symlink Fallback
+**Success Criteria** (what must be TRUE):
+   1. Large scripts (800+ lines) broken into smaller focused modules
+   2. Each module has single responsibility
+   3. Fragile areas identified and made more robust
+   4. Output path dependencies validated before use
+   5. Data assumptions for regression validated
+   6. String matching logic parameterized in config
+   7. Windows symlink fallback improved (use junctions, add warnings)
+**Status**: 📝 PLANNED (5 plans in 3 waves)
+**Plans**: 5 plans
+
+Plans:
+- [ ] 13-01: Create shared utility modules (regression, financial, reporting, path, symlink) (Wave 1)
+- [ ] 13-02: Refactor large scripts to use shared modules (Wave 2)
+- [ ] 13-03: Add regression input validation (Wave 2)
+- [ ] 13-04: Parameterize string matching thresholds (Wave 3)
+- [ ] 13-05: Improve Windows symlink fallback with junctions (Wave 3)
 
 ## Progress
 
@@ -268,12 +290,13 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
  | 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
  | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
  | 10. Performance Optimization | 4/4 | ✅ COMPLETED | 2026-01-23 |
- | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
- | 12. Data Quality & Observability | 1/3 | 📝 IN PROGRESS | 2026-01-23 |
+  | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
+  | 12. Data Quality & Observability | 3/3 | ✅ COMPLETED | 2026-01-23 |
+  | 13. Script Refactoring | 0/5 | 📝 PLANNED | 2026-01-23 |
 
 
 ---
 ---
 *Roadmap created: 2026-01-22*
-*Roadmap updated: 2026-01-23 (Phase 12 plans added)*
-*Total plans: 59 | Total requirements: 30 mapped*
+*Roadmap updated: 2026-01-23 (Phase 12 complete, Phase 13 planned)*
+*Total plans: 64 | Total requirements: 30 mapped*
