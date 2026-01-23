@@ -68,6 +68,25 @@ from shared.string_matching import (
     RAPIDFUZZ_AVAILABLE,
 )
 
+# Import shared path validation utilities
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 # Load RapidFuzz directly for fuzzy matching operations
 if RAPIDFUZZ_AVAILABLE:
     from rapidfuzz import fuzz, process
@@ -347,6 +366,7 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
 
 def load_config():
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
@@ -373,12 +393,12 @@ def setup_paths(config):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     output_base = root / config["paths"]["outputs"] / "1.2_LinkEntities"
     paths["output_dir"] = output_base / timestamp
-    paths["output_dir"].mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(paths["output_dir"])
 
     paths["latest_dir"] = output_base / "latest"
 
     log_base = root / config["paths"]["logs"] / "1.2_LinkEntities"
-    log_base.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}.log"
 
     return paths, timestamp
@@ -520,6 +540,7 @@ def main():
 
     # Load metadata
     print_dual("Loading cleaned metadata...")
+    validate_input_file(paths["metadata"], must_exist=True)
     df = pd.read_parquet(paths["metadata"])
     total_calls = len(df)
     print_dual(f"  Loaded {total_calls:,} calls\n")
@@ -537,6 +558,7 @@ def main():
 
     # Load CCM
     print_dual("Loading CCM database...")
+    validate_input_file(paths["ccm"], must_exist=True)
     ccm = pd.read_parquet(paths["ccm"])
     ccm["LINKDT"] = pd.to_datetime(ccm["LINKDT"])
     ccm["LINKENDDT_clean"] = ccm["LINKENDDT"].replace("E", "2099-12-31")
@@ -904,6 +926,8 @@ def main():
 
     # Parse FF industries
     print_dual("\nMapping SIC codes to FF industries...")
+    validate_input_file(paths["ff12"], must_exist=True)
+    validate_input_file(paths["ff48"], must_exist=True)
     ff12_map = parse_ff_industries(paths["ff12"], 12)
     ff48_map = parse_ff_industries(paths["ff48"], 48)
 

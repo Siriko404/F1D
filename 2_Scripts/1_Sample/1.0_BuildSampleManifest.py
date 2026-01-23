@@ -58,6 +58,25 @@ except ImportError:
     _sys.path.insert(0, str(_script_dir))
     from shared.subprocess_validation import validate_script_path
 
+# Import shared path validation utilities
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = _Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 # ==============================================================================
 # Dual-write logging utility
 # ==============================================================================
@@ -99,6 +118,7 @@ ALLOWED_SCRIPT_DIR = Path(__file__).parent  # 2_Scripts/
 def load_config():
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
@@ -115,13 +135,13 @@ def setup_paths(config):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     output_base = root / config["paths"]["outputs"] / "1.0_BuildSampleManifest"
     paths["output_dir"] = output_base / timestamp
-    paths["output_dir"].mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(paths["output_dir"])
 
     paths["latest_dir"] = output_base / "latest"
 
     # Create log directory
     log_base = root / config["paths"]["logs"] / "1.0_BuildSampleManifest"
-    log_base.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}.log"
 
     return paths, timestamp
@@ -236,10 +256,10 @@ def main():
             / "latest"
             / "master_sample_manifest.parquet"
         )
-        if manifest_source.exists():
-            manifest_dest = paths["output_dir"] / "master_sample_manifest.parquet"
-            shutil.copy2(manifest_source, manifest_dest)
-            print_dual(f"Final manifest copied to: {manifest_dest}")
+        validate_input_file(manifest_source, must_exist=True)
+        manifest_dest = paths["output_dir"] / "master_sample_manifest.parquet"
+        shutil.copy2(manifest_source, manifest_dest)
+        print_dual(f"Final manifest copied to: {manifest_dest}")
 
         # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
         update_latest_link(
