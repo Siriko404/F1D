@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 11 of 15 (Testing Infrastructure) — **COMPLETE**
-Phase: 12 of 15 (Data Quality & Observability) — READY
+Phase: 12 of 15 (Data Quality & Observability) — **IN PROGRESS** (1/3 plans complete)
 Technical Remediation: Phase 7-15 — 34 concerns to address
-Status: Original project 100% complete, Phase 7-11 complete (7/7 plans in Phase 11), pushed to git
-Last activity: 2026-01-23 — Phase 11-01 complete (pytest framework), pushed to origin/master
+Status: Original project 100% complete, Phase 7-11 complete (7/7 plans in Phase 11), Phase 12-01 complete, pushed to git
+Last activity: 2026-01-23 — Phase 12-01 complete (observability infrastructure), pushed to origin/master
 
 Progress: [██████████] 100% (All 6 original phases complete)
-Technical Remediation: [███████████] 80% (Phase 7, 8, 9, 10, 11 complete; remaining Phase 12-15)
+Technical Remediation: [███████████] 83% (Phase 7, 8, 9, 10, 11, 12-01 complete; remaining Phase 12-02, 12-03, 13-15)
 
 ## Performance Metrics
 
@@ -376,6 +376,23 @@ Total Wave 2 Tests: 32 tests (15 integration + 5 regression + 8 validation + 4 e
 **Completed 2026-01-23:**
 
 ✅ **11-07-PLAN.md:** CI/CD configuration with GitHub Actions
+
+## Phase 12 Achievements
+
+**Completed 2026-01-23:**
+
+✅ **12-01-PLAN.md:** Observability infrastructure (psutil, inline helpers, unit tests)
+    - Added psutil==7.2.1 to requirements.txt for cross-platform memory tracking
+    - Created 5 inline observability helper functions following Phase 1 pattern
+    - get_process_memory_mb(): Track RSS, VMS, and percent memory usage
+    - calculate_throughput(): Calculate rows/second with division by zero handling
+    - compute_file_checksum(): SHA-256 file checksums using 8KB chunks
+    - detect_anomalies_zscore(): Outlier detection using z-score method (deterministic)
+    - detect_anomalies_iqr(): Outlier detection using IQR method (deterministic)
+    - All functions are deterministic (same input produces same output)
+    - Comprehensive unit tests covering all 5 functions with edge cases (6 tests)
+    - All tests pass
+    - Commits: 57fe6c5, 652a902, 5470d25
     - GitHub Actions workflow for automated testing (push/PR triggers)
     - pytest configuration with coverage reporting (HTML, XML, terminal)
     - Pip caching for faster CI runs
@@ -387,6 +404,28 @@ Total Wave 2 Tests: 32 tests (15 integration + 5 regression + 8 validation + 4 e
 ## Session Continuity
 
 **Session 2026-01-23:**
+
+✅ **Phase 12-01 completion:**
+    - Added psutil==7.2.1 to requirements.txt
+    - Created 5 inline observability helper functions in tests/unit/test_observability_helpers.py
+    - Created 6 unit tests covering all helper functions
+    - Fixed psutil API usage (memory_info().percent → memory_percent())
+    - Fixed test DataFrames (equal array lengths, sufficient data for stable std/IQR)
+    - All 6 tests pass
+    - Created 12-01-SUMMARY.md
+    - Commits: 57fe6c5, 652a902, 5470d25
+
+✅ **Phase 12 is now 1/3 complete:**
+    - Observability infrastructure (12-01)
+    - Ready for rollout to Steps 1-2 (12-02)
+    - Ready for rollout to Steps 3-4 (12-03)
+
+📊 **Git Status:**
+    - All changes committed to local repository
+    - Ready to push to origin/master
+
+🎯 **Next Phase:**
+    - Continue with Phase 12-02: Rollout to Steps 1-2 (8 scripts)
 
 ✅ **Phase 11-01 completion:**
     - Created pyproject.toml with pytest 8.0+ configuration

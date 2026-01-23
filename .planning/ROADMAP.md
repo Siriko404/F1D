@@ -238,15 +238,15 @@ Plans:
 **Depends on**: Phase 11
 **Requirements**: OBS-01, OBS-02, OBS-03, OBS-04
 **Success Criteria** (what must be TRUE):
-  1. All scripts track memory usage (peak, average per operation)
-  2. All scripts track throughput (rows/second for data operations)
-  3. Output files have checksums (SHA-256) for reproducibility verification
-  4. Data quality anomalies are detected and flagged (outliers, missing values, inconsistencies)
-**Status**: 📝 PLANNED (3 plans in 3 waves)
+   1. All scripts track memory usage (peak, average per operation)
+   2. All scripts track throughput (rows/second for data operations)
+   3. Output files have checksums (SHA-256) for reproducibility verification
+   4. Data quality anomalies are detected and flagged (outliers, missing values, inconsistencies)
+**Status**: 📝 IN PROGRESS (1/3 plans complete)
 **Plans**: 3 plans
 
 Plans:
-- [ ] 12-01: Observability infrastructure (psutil, inline helpers, unit tests) (Wave 1)
+- [x] 12-01: Observability infrastructure (psutil, inline helpers, unit tests) (Wave 1) ✅
 - [ ] 12-02: Rollout to Steps 1-2 (8 scripts) (Wave 2)
 - [ ] 12-03: Rollout to Steps 3-4 (11 scripts) and summary report (Wave 3)
 
@@ -264,14 +264,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Steps 3-4 Financial & Econometric | 10/10 | ✅ COMPLETED | 2026-01-22 |
 | 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
 | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
-| 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
-| 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
-| 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
-| 10. Performance Optimization | 4/4 | ✅ COMPLETED | 2026-01-23 |
-| 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
-| 12. Data Quality & Observability | 3/3 | 📝 PLANNED | - |
-| 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
-| 12. Data Quality & Observability | 0/3 | 📝 PLANNED | - |
+ | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
+ | 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
+ | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
+ | 10. Performance Optimization | 4/4 | ✅ COMPLETED | 2026-01-23 |
+ | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
+ | 12. Data Quality & Observability | 1/3 | 📝 IN PROGRESS | 2026-01-23 |
 
 
 ---
