@@ -156,8 +156,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: Fix silent symlink/copy failures in 3 utility files
-- [ ] 07-02: Enhance optional dependency warning in 1.2_LinkEntities.py
+- [x] 07-01: Fix silent symlink/copy failures in 3 utility files ✅
+- [x] 07-02: Enhance optional dependency warning in 1.2_LinkEntities.py ✅
 
 ## Progress
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Steps 3-4 Financial & Econometric | 10/10 | ✅ COMPLETED | 2026-01-22 |
 | 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
 | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
-| 7. Critical Bug Fixes | 0/2 | 📝 PLANNED | - |
+| 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
 
 ---
 *Roadmap created: 2026-01-22*
