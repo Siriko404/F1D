@@ -28,7 +28,7 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 - [x] **Phase 11: Testing Infrastructure** - Comprehensive test suite with pytest ✅ COMPLETED 2026-01-23
 - [x] **Phase 12: Data Quality & Observability** - Quality reports and state tracking ✅ COMPLETED 2026-01-23
 - [x] **Phase 13: Script Refactoring** - Break down large scripts, improve modularity ✅ COMPLETED 2026-01-23
-- [ ] **Phase 14: Dependency Management** - Version pinning and compatibility testing ○ PENDING
+- [ ] **Phase 14: Dependency Management** - Version pinning and compatibility testing 📝 PLANNED
 - [ ] **Phase 15: Scaling Preparation** - Remove scaling limits for future growth ○ PENDING
 
 ## Phase Details
