@@ -19,3 +19,4 @@ openpyxl==3.1.5
 # Utilities
 psutil==7.2.1
 python-dateutil==2.9.0.post0
+rapidfuzz>=3.14.0
