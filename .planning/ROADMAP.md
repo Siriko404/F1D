@@ -177,6 +177,22 @@ Plans:
 - [ ] 08-03: Update all scripts to import shared modules (Wave 2)
 - [ ] 08-04: Improve error handling consistency in econometric scripts (Wave 2)
 
+### Phase 9: Security Hardening
+**Goal**: Add validation layers
+**Depends on**: Phase 8
+**Requirements**: SEC-01 (Subprocess Execution Without Validation), SEC-02 (No Environment Variable Validation), SEC-03 (Missing Input Data Validation)
+**Success Criteria** (what must be TRUE):
+  1. All subprocess paths validated (within expected directory, absolute paths)
+  2. Environment variable schema validation implemented (if .env usage is added later)
+  3. Input data validation layer with column type and value range checks
+**Status**: 📝 PLANNED (3 plans in 2 waves)
+**Plans**: 3 plans
+
+Plans:
+- [ ] 09-01: Add subprocess path validation (Wave 1)
+- [ ] 09-02: Implement environment variable validation schema (Wave 1)
+- [ ] 09-03: Add input data validation layer (Wave 2)
+
 ## Progress
 
 **Execution Order:**
@@ -192,9 +208,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
 | | | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
 | | 8. Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
+| | 9. Security Hardening | 0/3 | 📝 PLANNED | - |
 | ---
 | | 8. Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
+| | 9. Security Hardening | 0/3 | 📝 PLANNED | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Total plans: 38 | Total requirements: 30 mapped*
+*Total plans: 41 | Total requirements: 30 mapped*
