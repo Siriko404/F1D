@@ -270,3 +270,17 @@ step_04:
 hashing:
   algorithm: sha256
   chunk_size: 65536
+string_matching:
+  company_name:
+    default_threshold: 92.0
+    min_threshold: 85.0
+    scorer: token_sort_ratio
+    preprocess: true
+  entity_name:
+    default_threshold: 85.0
+    min_threshold: 70.0
+    scorer: WRatio
+    preprocess: true
+  # General settings
+  batch_size: 1000
+  enable_parallel: false
