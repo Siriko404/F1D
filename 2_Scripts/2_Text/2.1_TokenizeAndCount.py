@@ -393,6 +393,14 @@ def main():
     stats["timing"]["end_iso"] = datetime.now().isoformat()
     stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
 
+    # Optimization metrics
+    stats["optimization"] = {
+        "method": "vectorized_melt",
+        "description": "Replaced .iterrows() loop with vectorized .melt() operation",
+        "runtime_seconds": stats["timing"]["duration_seconds"],
+        "expected_speedup": "10-100x for LM dictionary (10K rows)",
+    }
+
     # Save Stats
     print_stats_summary(stats)
     save_stats(stats, out_dir)
