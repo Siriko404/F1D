@@ -13,10 +13,15 @@ lifelines==0.30.0
 
 # Data Formats
 PyYAML==6.0.2
+# Pinned to 21.0.0 for Python 3.8-3.13 compatibility. 23.0.0+ requires Python >= 3.10. See DEPENDENCIES.md for upgrade strategy and performance notes.
 pyarrow==21.0.0
 openpyxl==3.1.5
 
 # Utilities
 psutil==7.2.1
 python-dateutil==2.9.0.post0
+# Optional: RapidFuzz for fuzzy string matching (Tier 3 entity linking)
+# Install for improved entity match rates: pip install rapidfuzz>=3.14.0
+# Pipeline runs without it (graceful degradation), but match rate is lower
+# See DEPENDENCIES.md for details on optional dependencies and performance impact
 rapidfuzz>=3.14.0
