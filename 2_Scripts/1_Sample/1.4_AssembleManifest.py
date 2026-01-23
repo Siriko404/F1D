@@ -414,7 +414,19 @@ def main():
 
     # Load inputs
     print_dual("Loading linked metadata...")
-    metadata = pd.read_parquet(paths["metadata"])
+    # Column pruning: only reading needed columns
+    metadata = pd.read_parquet(
+        paths["metadata"],
+        columns=[
+            "file_name",
+            "gvkey",
+            "start_date",
+            "ff12_code",
+            "ff12_name",
+            "ff48_code",
+            "ff48_name",
+        ],
+    )
 
     # Record metadata input stats
     metadata_checksum = compute_file_checksum(paths["metadata"])
@@ -426,7 +438,19 @@ def main():
     print_dual(f"  Loaded {len(metadata):,} calls\n")
 
     print_dual("Loading CEO tenure panel...")
-    tenure = pd.read_parquet(paths["tenure"])
+    # Column pruning: only reading needed columns
+    tenure = pd.read_parquet(
+        paths["tenure"],
+        columns=[
+            "gvkey",
+            "year",
+            "month",
+            "ceo_id",
+            "ceo_name",
+            "prev_ceo_id",
+            "prev_ceo_name",
+        ],
+    )
 
     # Record tenure input stats
     tenure_checksum = compute_file_checksum(paths["tenure"])
