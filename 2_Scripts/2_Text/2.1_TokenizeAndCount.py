@@ -322,7 +322,11 @@ def main():
 
     # Load Manifest
     manifest_path = (
-        root / "4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet"
+        root
+        / "4_Outputs"
+        / "1.4_AssembleManifest"
+        / "latest"
+        / "master_sample_manifest.parquet"
     )
     manifest = pd.read_parquet(manifest_path, columns=["file_name"])
     valid_files = set(manifest["file_name"])
