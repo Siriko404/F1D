@@ -10,7 +10,9 @@ import os
 import json
 import hashlib
 from datetime import datetime
+from typing import Tuple
 from sklearn.feature_extraction.text import CountVectorizer
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # ==============================================================================
 # Setup & Config
@@ -205,6 +207,109 @@ def load_lm_dictionary(dict_path):
     return vocab_list, cat_sets
 
 
+# OPTIMIZATION: Parallel year processing with ProcessPoolExecutor
+# thread_count from config/project.yaml controls parallelism
+# Expected speedup: near-linear for CPU-bound operations
+# Determinism: Results sorted by year before aggregation
+# Ref: 10-RESEARCH.md Pattern 3, Example 2
+
+
+def process_year_worker(
+    year: int,
+    root: Path,
+    config: dict,
+    valid_files: set,
+    vocab_list: list,
+    cat_sets: dict,
+    out_dir: Path,
+) -> Tuple[int, dict]:
+    """
+    Process a single year - must be picklable for ProcessPoolExecutor.
+
+    Returns:
+        Tuple of (year, year_stats_dict)
+    """
+    input_path = root / f"1_Inputs/speaker_data_{year}.parquet"
+    if not input_path.exists():
+        print(f"  Skipping {year}: Input not found")
+        return year, {"year": year, "skipped": True}
+
+    print(f"\nProcessing {year}...")
+    t0 = time.time()
+
+    year_stats = {
+        "year": year,
+        "input_rows": 0,
+        "output_rows": 0,
+        "filtered_rows": 0,
+        "total_tokens": 0,
+        "vocab_hits": 0,
+        "avg_tokens_per_doc": 0.0,
+        "vocabulary_size": len(vocab_list),
+    }
+
+    df = pd.read_parquet(input_path)
+    initial_rows = len(df)
+    year_stats["input_rows"] = initial_rows
+
+    # Filter
+    df = df[df["file_name"].isin(valid_files)].copy()
+    year_stats["filtered_rows"] = initial_rows - len(df)
+    print(f"  Loaded {initial_rows:,} -> {len(df):,} (Manifest match)")
+
+    if len(df) == 0:
+        return year, year_stats
+
+    # Vectorize
+    print("  Vectorizing...")
+    vectorizer = CountVectorizer(
+        vocabulary=vocab_list, token_pattern=r"(?u)\b[a-zA-Z]+\b", lowercase=False
+    )
+
+    raw_text = df["speaker_text"].astype(str).str.upper()
+    X = vectorizer.transform(raw_text)
+
+    year_stats["vocab_hits"] = int(X.sum())
+
+    # Aggregate counts per category
+    features = vectorizer.get_feature_names_out()
+    feat_map = {w: i for i, w in enumerate(features)}
+
+    # Prepare result dataframe output columns
+    meta_cols = [
+        "file_name",
+        "speaker_number",
+        "context",
+        "role",
+        "speaker_name",
+        "employer",
+    ]
+    meta_cols = [c for c in meta_cols if c in df.columns]
+    result = df[meta_cols].copy()
+
+    for cat, wset in cat_sets.items():
+        indices = [feat_map[w] for w in wset if w in feat_map]
+        if indices:
+            result[f"{cat}_count"] = np.array(X[:, indices].sum(axis=1)).flatten()
+        else:
+            result[f"{cat}_count"] = 0
+
+    # Total Tokens (Alpha only)
+    print("  Counting total tokens...")
+    regex = re.compile(r"(?u)\b[a-zA-Z]+\b")
+    result["total_tokens"] = raw_text.apply(lambda x: len(regex.findall(x)))
+
+    year_stats["total_tokens"] = int(result["total_tokens"].sum())
+    year_stats["avg_tokens_per_doc"] = round(result["total_tokens"].mean(), 2)
+    year_stats["output_rows"] = len(result)
+
+    # Save
+    out_path = out_dir / f"linguistic_counts_{year}.parquet"
+    result.to_parquet(out_path, index=False)
+    print(f"  Saved {out_path.name} ({time.time() - t0:.1f}s)")
+    return year, year_stats
+
+
 def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir):
     input_path = root / f"1_Inputs/speaker_data_{year}.parquet"
     if not input_path.exists():
@@ -349,31 +454,64 @@ def main():
 
     # Process
     config = load_config()
-    total_input_rows = 0
-    total_output_rows = 0
-    total_tokens = 0
-    total_vocab_hits = 0
+    years = range(2002, 2019)
+    thread_count = config.get("determinism", {}).get("thread_count", 1)
 
-    for year in range(2002, 2019):
-        result, year_stats = process_year(
-            year, root, config, valid_files, vocab_list, cat_sets, out_dir
-        )
+    print(f"\nProcessing {len(years)} years with {thread_count} worker(s)...")
 
-        if year_stats is None:
-            stats["processing"]["years_skipped"] += 1
-            continue
+    results = {}
+    with ProcessPoolExecutor(max_workers=thread_count) as executor:
+        # Submit all years
+        futures = {
+            executor.submit(
+                process_year_worker,
+                year,
+                root,
+                config,
+                valid_files,
+                vocab_list,
+                cat_sets,
+                out_dir,
+            ): year
+            for year in years
+        }
 
-        stats["processing"]["years_processed"] += 1
-        stats["processing"]["per_year"].append(year_stats)
-        total_input_rows += year_stats["input_rows"]
-        total_output_rows += year_stats["output_rows"]
-        total_tokens += year_stats["total_tokens"]
-        total_vocab_hits += year_stats["vocab_hits"]
+        # Collect results as they complete
+        for future in as_completed(futures):
+            year = futures[future]
+            try:
+                _, year_stats = future.result()
+                results[year] = year_stats
+            except Exception as e:
+                print(f"  ERROR: Year {year} failed: {e}")
+                raise
+
+    # Combine stats in year order for determinism
+    stats["processing"]["per_year"] = [
+        results[y] for y in sorted(results.keys()) if results[y].get("skipped") is None
+    ]
+
+    total_input_rows = sum(
+        s.get("input_rows", 0) for s in stats["processing"]["per_year"]
+    )
+    total_output_rows = sum(
+        s.get("output_rows", 0) for s in stats["processing"]["per_year"]
+    )
+    total_tokens = sum(
+        s.get("total_tokens", 0) for s in stats["processing"]["per_year"]
+    )
+    total_vocab_hits = sum(
+        s.get("vocab_hits", 0) for s in stats["processing"]["per_year"]
+    )
 
     stats["input"]["total_rows"] = total_input_rows
     stats["output"]["final_rows"] = total_output_rows
     stats["processing"]["total_tokens"] = total_tokens
     stats["processing"]["total_vocab_hits"] = total_vocab_hits
+    stats["processing"]["years_processed"] = len(stats["processing"]["per_year"])
+    stats["processing"]["years_skipped"] = (
+        len(years) - stats["processing"]["years_processed"]
+    )
 
     # Output files
     output_files = list(out_dir.glob("linguistic_counts_*.parquet"))
