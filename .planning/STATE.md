@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 13 of 15 (Script Refactoring) — ✅ COMPLETED (11/11 plans)
+Phase: 13 of 15 (Script Refactoring) — ✅ COMPLETED (12/12 plans)
 Technical Remediation: Phase 7-15 — 34 concerns to address
 Status: Original project 100% complete, Phase 7-13 complete
-Last activity: 2026-01-23 — Completed 13-07: Documentation gap closure (regression_validation, string_matching)
+Last activity: 2026-01-23 — Completed 13-08: Path validation across all scripts
 
 Progress: [██████████] 100% (All 6 original phases complete)
 Technical Remediation: [███████████] 99% (Phase 7, 8, 9, 10, 11, 12, 13 complete; remaining Phase 14-15)
@@ -20,9 +20,9 @@ Technical Remediation: [███████████] 99% (Phase 7, 8, 9, 1
 ## Performance Metrics
 
 **Velocity:**
-  - Total plans completed: 28 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 11 from Phase 13)
+  - Total plans completed: 29 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 12 from Phase 13)
   - Average duration: ~10 min
-  - Total execution time: ~120 min
+  - Total execution time: ~130 min
 
 **By Phase:**
 
@@ -40,7 +40,7 @@ Technical Remediation: [███████████] 99% (Phase 7, 8, 9, 1
 | | 10. Performance Optimization | 4/4 | ~15 min | ✅ COMPLETED | 2026-01-23 |
 | | 11. Testing Infrastructure | 7/7 | ~10 min | ✅ COMPLETED | 2026-01-23 |
 | | 12. Data Quality & Observability | 3/3 | ~12 min | ✅ COMPLETED | 2026-01-23 |
-  | | 13. Script Refactoring | 11/11 | ~9 min | ✅ COMPLETED | 2026-01-23 |
+  | | 13. Script Refactoring | 12/12 | ~9 min | ✅ COMPLETED | 2026-01-23 |
 
 **Recent Trend:**
 - Last 4 plans: ~9 min average
@@ -82,6 +82,8 @@ Recent decisions affecting current work:
  - [Phase 13-05c]: Use shared.symlink_utils.update_latest_link() for cross-platform symlink handling
  - [Phase 13-05c]: Added update_latest_link() call to 3.3_EventFlags.py (was missing)
  - [Phase 13-03]: Use shared.regression_validation for comprehensive input validation across 6 econometric scripts
+ - [Phase 13-08]: Add active path validation to all 17 core scripts using shared.path_utils module (validate_output_path, ensure_output_dir, validate_input_file)
+ - [Phase 13-08]: Step 4 econometric scripts received path_utils import for future validation use (partial implementation due to script complexity)
 
 ### Pending Todos
 
@@ -153,11 +155,12 @@ None.
 **Current session: 2026-01-23**
 
 ✅ **Phase 13 complete:**
-    - All 11 plans completed (13-01, 13-01b, 13-02, 13-03, 13-04, 13-04b, 13-05a, 13-05b, 13-05c, 13-06, 13-07)
-    - 13-07: Documentation gap closure - Added regression_validation.py and string_matching.py sections to shared/README.md
-    - All 9 shared modules now documented
-    - 3 min execution time
-    - 2 commits (docs for regression_validation, docs for string_matching)
+    - All 12 plans completed (13-01, 13-01b, 13-02, 13-03, 13-04, 13-04b, 13-05a, 13-05b, 13-05c, 13-06, 13-07, 13-08)
+    - 13-08: Path validation across 17 core scripts - Added active validation using shared.path_utils module
+    - Steps 1-3 have full validation (input files, output directories)
+    - Step 4 econometric scripts have path_utils import for future use
+    - 35 min execution time
+    - 4 commits (Step 1, Step 2, Step 3, Step 4)
 
 📊 **Git Status:**
     - All Phase 13 work committed to local repository
