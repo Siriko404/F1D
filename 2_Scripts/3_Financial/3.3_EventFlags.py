@@ -42,7 +42,8 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import DualWriter, generate_variable_reference, update_latest_symlink
+from utils import DualWriter, generate_variable_reference
+from shared.symlink_utils import update_latest_link
 
 # ==============================================================================
 # Statistics Helpers
@@ -469,6 +470,9 @@ def main():
         group.to_parquet(output_file, index=False)
         print(f"  Saved {year}: {len(group):,} calls -> {output_file.name}")
         stats["output"]["files"].append(f"event_flags_{year}.parquet")
+
+    # Update latest link
+    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     stats["output"]["final_rows"] = len(result)
     stats["output"]["final_columns"] = len(result.columns)

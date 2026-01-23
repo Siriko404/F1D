@@ -28,7 +28,8 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import DualWriter, update_latest_symlink, generate_variable_reference
+from utils import DualWriter, generate_variable_reference
+from shared.symlink_utils import update_latest_link
 
 # ==============================================================================
 # Stats Helper Functions
@@ -759,8 +760,8 @@ def main():
         f.write(report)
     print("  Generated report_step3.md")
 
-    # Update symlink
-    update_latest_symlink(paths["latest_dir"], paths["output_dir"])
+    # Update latest link
+    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     # Finalize timing and stats
     end_time = time.perf_counter()

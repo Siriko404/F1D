@@ -52,8 +52,8 @@ from utils import (
     DualWriter,
     get_latest_output_dir,
     generate_variable_reference,
-    update_latest_symlink,
 )
+from shared.symlink_utils import update_latest_link
 from shared.financial_utils import compute_financial_controls_quarterly
 
 # ==============================================================================
@@ -870,8 +870,8 @@ def main():
     # Generate variable reference
     generate_variable_reference(result, paths["output_dir"] / "variable_reference.csv")
 
-    # Update latest symlink
-    update_latest_symlink(paths["latest_dir"], paths["output_dir"])
+    # Update latest link
+    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     # Output stats
     stats["output"]["final_rows"] = len(result)

@@ -42,7 +42,8 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import DualWriter, generate_variable_reference, update_latest_symlink
+from utils import DualWriter, generate_variable_reference
+from shared.symlink_utils import update_latest_link
 
 
 def compute_file_checksum(filepath, algorithm="sha256"):
@@ -711,7 +712,7 @@ def main():
     generate_variable_reference(
         all_df, paths["output_dir"] / "market_variable_reference.csv"
     )
-    update_latest_symlink(paths["latest_dir"], paths["output_dir"])
+    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     stats["output"]["final_rows"] = len(all_df)
     stats["output"]["final_columns"] = len(all_df.columns)
