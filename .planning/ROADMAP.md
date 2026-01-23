@@ -262,15 +262,20 @@ Plans:
    5. Data assumptions for regression validated
    6. String matching logic parameterized in config
    7. Windows symlink fallback improved (use junctions, add warnings)
-**Status**: 📝 PLANNED (5 plans in 3 waves)
-**Plans**: 5 plans
+**Status**: 📝 PLANNED (10 plans in 3 waves)
+**Plans**: 10 plans
 
 Plans:
-- [ ] 13-01: Create shared utility modules (regression, financial, reporting, path, symlink) (Wave 1)
-- [ ] 13-02: Refactor large scripts to use shared modules (Wave 2)
-- [ ] 13-03: Add regression input validation (Wave 2)
-- [ ] 13-04: Parameterize string matching thresholds (Wave 3)
-- [ ] 13-05: Improve Windows symlink fallback with junctions (Wave 3)
+- [ ] 13-01: Create core shared modules (regression, financial, reporting) (Wave 1)
+- [ ] 13-01b: Create path/symlink shared modules (path_utils, symlink_utils, README) (Wave 1)
+- [ ] 13-04: Parameterize string matching (config + module + requirements) (Wave 1)
+- [ ] 13-02: Refactor Step 1 & 3 financial scripts (1.2, 3.0, 3.1) (Wave 2)
+- [ ] 13-03: Add regression input validation (module + 6 regression scripts) (Wave 3)
+- [ ] 13-04b: Refactor 1.2 and 1.4 for string matching (Wave 3)
+- [ ] 13-05a: Update Step 1 scripts with symlink_utils (Wave 3)
+- [ ] 13-05b: Update Step 2 scripts with symlink_utils (Wave 3)
+- [ ] 13-05c: Update Step 3 scripts with symlink_utils (Wave 3)
+- [ ] 13-05d: Update Step 4 scripts with symlink_utils (Wave 3)
 
 ## Progress
 
@@ -292,7 +297,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
  | 10. Performance Optimization | 4/4 | ✅ COMPLETED | 2026-01-23 |
   | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
   | 12. Data Quality & Observability | 3/3 | ✅ COMPLETED | 2026-01-23 |
-  | 13. Script Refactoring | 0/5 | 📝 PLANNED | 2026-01-23 |
+  | 13. Script Refactoring | 0/10 | 📝 PLANNED | 2026-01-23 |
 
 
 ---
