@@ -62,6 +62,7 @@ from shared.regression_validation import (
     validate_columns,
     validate_sample_size,
 )
+from shared.regression_helpers import build_regression_sample
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
