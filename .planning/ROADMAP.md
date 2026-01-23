@@ -302,10 +302,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
   | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
   | 12. Data Quality & Observability | 3/3 | ✅ COMPLETED | 2026-01-23 |
   | 13. Script Refactoring | 10/10 | ✅ COMPLETED | 2026-01-23 |
+  | 14. Dependency Management | 4/4 | 📝 PLANNED | 2026-01-23 |
 
 
 ---
 ---
 *Roadmap created: 2026-01-22*
-*Roadmap updated: 2026-01-23 (Phase 12 complete, Phase 13 planned)*
-*Total plans: 64 | Total requirements: 30 mapped*
+*Roadmap updated: 2026-01-23 (Phase 13 complete, Phase 14 planned)*
+*Total plans: 68 | Total requirements: 30 mapped*
