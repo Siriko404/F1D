@@ -48,9 +48,11 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import numpy as np
+
 # Try importing statsmodels
 try:
     import statsmodels.formula.api as smf
+
     STATSMODELS_AVAILABLE = True
 except ImportError:
     STATSMODELS_AVAILABLE = False
@@ -63,6 +65,7 @@ from shared.reporting_utils import (
     save_model_diagnostics,
     save_variable_reference,
 )
+from shared.symlink_utils import update_latest_link
 
 import warnings
 import hashlib
@@ -897,17 +900,7 @@ def main():
     print(f"  Saved: report_step4_2.md")
 
     # Update symlink
-    latest_link = out_dir.parent / "latest"
-    if latest_link.exists() or latest_link.is_symlink():
-        try:
-            latest_link.unlink()
-        except:
-            pass
-    try:
-        latest_link.symlink_to(out_dir.name, target_is_directory=True)
-        print(f"\nUpdated 'latest' -> {timestamp}")
-    except:
-        pass
+    update_latest_link(out_dir, out_dir.parent / "latest")
 
     # Summary
     duration = (datetime.now() - start_time).total_seconds()

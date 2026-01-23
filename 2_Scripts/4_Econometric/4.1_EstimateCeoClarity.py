@@ -51,6 +51,9 @@ except ImportError:
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
+# Import shared utilities
+from shared.symlink_utils import update_latest_link
+
 # ==============================================================================
 # Statistics Helper Functions
 # ==============================================================================
@@ -891,11 +894,7 @@ def main(year_start=None, year_end=None):
         generate_report(all_ceo_scores, all_diagnostics, out_dir, duration)
 
     # Update symlink
-    latest_link = out_dir.parent / "latest"
-    if latest_link.exists() or latest_link.is_symlink():
-        latest_link.unlink()
-    latest_link.symlink_to(out_dir.name, target_is_directory=True)
-    print(f"\nUpdated 'latest' -> {timestamp}")
+    update_latest_link(out_dir, out_dir.parent / "latest")
 
     # Final summary
     duration = (datetime.now() - start_time).total_seconds()

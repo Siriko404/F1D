@@ -33,9 +33,11 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import numpy as np
+
 # Try importing statsmodels
 try:
     import statsmodels.formula.api as smf
+
     STATSMODELS_AVAILABLE = True
 except ImportError:
     STATSMODELS_AVAILABLE = False
@@ -48,6 +50,7 @@ from shared.reporting_utils import (
     save_model_diagnostics,
     save_variable_reference,
 )
+from shared.symlink_utils import update_latest_link
 
 from lifelines import CoxPHFitter
 import warnings
@@ -853,21 +856,7 @@ def main():
     print(f"  Saved: takeover_event_summary.csv")
 
     # Update latest symlink
-    latest_dir = out_dir.parent / "latest"
-    if latest_dir.exists():
-        if latest_dir.is_symlink():
-            latest_dir.unlink()
-        else:
-            import shutil
-
-            shutil.rmtree(latest_dir)
-    try:
-        latest_dir.symlink_to(out_dir, target_is_directory=True)
-        print(f"  Updated 'latest' -> {timestamp}")
-    except OSError:
-        import shutil
-
-        shutil.copytree(out_dir, latest_dir)
+    update_latest_link(out_dir, out_dir.parent / "latest")
         print(f"  Created 'latest' copy")
 
     # Summary

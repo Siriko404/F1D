@@ -39,9 +39,11 @@ import hashlib
 import json
 import time
 import psutil
+
 # Try importing statsmodels
 try:
     import statsmodels.formula.api as smf
+
     STATSMODELS_AVAILABLE = True
 except ImportError:
     STATSMODELS_AVAILABLE = False
@@ -54,6 +56,7 @@ from shared.reporting_utils import (
     save_model_diagnostics,
     save_variable_reference,
 )
+from shared.symlink_utils import update_latest_link
 
 
 # ==============================================================================
@@ -889,11 +892,7 @@ def main(year_start=None, year_end=None):
         generate_report(all_ceo_scores, all_diagnostics, out_dir, duration)
 
     # Update symlink
-    latest_link = out_dir.parent / "latest"
-    if latest_link.exists() or latest_link.is_symlink():
-        latest_link.unlink()
-    latest_link.symlink_to(out_dir.name, target_is_directory=True)
-    print(f"\nUpdated 'latest' -> {timestamp}")
+    update_latest_link(out_dir, out_dir.parent / "latest")
 
     # Final summary
     duration = (datetime.now() - start_time).total_seconds()
