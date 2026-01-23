@@ -11,6 +11,7 @@ Ref: 10-RESEARCH.md Pattern 5 - PyArrow Dataset API
 from pathlib import Path
 from typing import Iterator, Optional, List
 import pandas as pd
+import pyarrow as pa
 import pyarrow.parquet as pq
 
 
@@ -52,7 +53,17 @@ def read_in_chunks(
             end_rg = ((i + 1) * chunk_size) // row_group_size
             if end_rg > num_row_groups:
                 end_rg = num_row_groups
-            table = parquet_file.read_row_group(start_rg, columns=columns)
+
+            # Read all row groups for this chunk
+            tables = [
+                parquet_file.read_row_group(rg, columns=columns)
+                for rg in range(start_rg, end_rg)
+            ]
+            table = (
+                pa.concat_tables(tables)
+                if len(tables) > 1
+                else (tables[0] if len(tables) == 1 else pa.table({}))
+            )
         else:
             table = parquet_file.read_row_group(i, columns=columns)
 
