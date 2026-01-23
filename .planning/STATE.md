@@ -84,6 +84,10 @@ Recent decisions affecting current work:
  - [Phase 13-03]: Use shared.regression_validation for comprehensive input validation across 6 econometric scripts
  - [Phase 13-08]: Add active path validation to all 17 core scripts using shared.path_utils module (validate_output_path, ensure_output_dir, validate_input_file)
  - [Phase 13-08]: Step 4 econometric scripts received path_utils import for future validation use (partial implementation due to script complexity)
+ - [Phase 14-01]: Pin statsmodels to exact version 0.14.6 to prevent API breakage from 0.14.0 changes (deprecated GLM link names)
+ - [Phase 14-01]: Require baseline coefficient comparison for all statsmodels upgrades (tolerance: 1e-6)
+ - [Phase 14-01]: Document upgrade procedures with explicit rollback steps to minimize risk
+ - [Phase 14-01]: Full pipeline run required for statsmodels upgrades to validate reproducibility
 
 ### Pending Todos
 
