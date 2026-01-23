@@ -13,6 +13,8 @@ from typing import Iterator, Optional, List
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
+import psutil
+import time
 
 
 def read_in_chunks(
@@ -162,3 +164,46 @@ def process_in_chunks(
             return pd.concat(results, ignore_index=True)
         else:
             return results
+
+
+def track_memory_usage(operation_name: str):
+    """
+    Decorator to track memory usage and timing of an operation.
+
+    Returns dict with result, memory stats, and timing.
+
+    Args:
+        operation_name: Name of operation being tracked
+
+    Returns:
+        Dict with keys: result, memory_mb (start/end/peak/delta), timing_seconds
+
+    Ref: 15-RESEARCH.md Pattern 5 (Memory Monitoring Integration)
+    Builds on Phase 12's get_process_memory_mb() pattern (see 12-01-SUMMARY.md)
+    """
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            process = psutil.Process()
+            mem_start = process.memory_info().rss / (1024 * 1024)
+            start_time = time.perf_counter()
+
+            result = func(*args, **kwargs)
+
+            mem_end = process.memory_info().rss / (1024 * 1024)
+            end_time = time.perf_counter()
+
+            return {
+                "result": result,
+                "memory_mb": {
+                    "start": mem_start,
+                    "end": mem_end,
+                    "peak": max(mem_start, mem_end),
+                    "delta": mem_end - mem_start,
+                },
+                "timing_seconds": end_time - start_time,
+            }
+
+        return wrapper
+
+    return decorator
