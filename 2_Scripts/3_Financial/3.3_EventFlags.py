@@ -30,6 +30,10 @@ import pandas as pd
 import numpy as np
 import yaml
 import importlib.util
+import hashlib
+import json
+import time
+import psutil
 
 # Dynamic import for 3.4_Utils.py
 utils_path = Path(__file__).parent / "3.4_Utils.py"
@@ -41,226 +45,493 @@ spec.loader.exec_module(utils)
 from utils import DualWriter, generate_variable_reference, update_latest_symlink
 
 # ==============================================================================
+# Statistics Helpers
+# ==============================================================================
+
+
+def compute_file_checksum(filepath, algorithm="sha256"):
+    """Compute checksum for a file."""
+    h = hashlib.new(algorithm)
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def print_stat(label, before=None, after=None, value=None, indent=2):
+    """Print a statistic with consistent formatting.
+
+    Modes:
+        - Delta mode (before/after): "  Label: 1,000 -> 800 (-20.0%)"
+        - Value mode: "  Label: 1,000"
+    """
+    prefix = " " * indent
+    if before is not None and after is not None:
+        delta = after - before
+        pct = (delta / before * 100) if before != 0 else 0
+        sign = "+" if delta >= 0 else ""
+        print(f"{prefix}{label}: {before:,} -> {after:,} ({sign}{pct:.1f}%)")
+    else:
+        v = value if value is not None else after
+        if isinstance(v, float):
+            print(f"{prefix}{label}: {v:,.2f}")
+        elif isinstance(v, int):
+            print(f"{prefix}{label}: {v:,}")
+        else:
+            print(f"{prefix}{label}: {v}")
+
+
+def analyze_missing_values(df):
+    """Analyze missing values per column."""
+    missing = {}
+    for col in df.columns:
+        null_count = df[col].isna().sum()
+        if null_count > 0:
+            missing[col] = {
+                "count": int(null_count),
+                "percent": round(null_count / len(df) * 100, 2),
+            }
+    return missing
+
+
+def print_stats_summary(stats):
+    """Print formatted summary table."""
+    print("\n" + "=" * 60)
+    print("STATISTICS SUMMARY")
+    print("=" * 60)
+
+    inp = stats["input"]
+    out = stats["output"]
+    delta = inp["total_rows"] - out["final_rows"]
+    delta_pct = (delta / inp["total_rows"] * 100) if inp["total_rows"] > 0 else 0
+
+    print(f"\n{'Metric':<25} {'Value':>15}")
+    print("-" * 42)
+    print(f"{'Input Rows':<25} {inp['total_rows']:>15,}")
+    print(f"{'Output Rows':<25} {out['final_rows']:>15,}")
+    print(f"{'Rows Removed':<25} {delta:>15,}")
+    print(f"{'Removal Rate':<25} {delta_pct:>14.1f}%")
+    print(f"{'Duration (seconds)':<25} {stats['timing']['duration_seconds']:>15.2f}")
+
+    if stats["processing"]:
+        print(f"\n{'Processing Step':<30} {'Count':>10}")
+        print("-" * 42)
+        for step, count in stats["processing"].items():
+            print(f"{step:<30} {count:>10,}")
+
+    print("=" * 60)
+
+
+def save_stats(stats, out_dir):
+    """Save statistics to JSON file."""
+    stats_path = out_dir / "stats.json"
+    with open(stats_path, "w", encoding="utf-8") as f:
+        json.dump(stats, f, indent=2, default=str)
+    print(f"Saved: {stats_path.name}")
+
+
+# ==============================================================================
+# Observability Helper Functions
+# ==============================================================================
+
+
+def get_process_memory_mb():
+    """
+    Get current process memory usage in MB.
+
+    Returns:
+        Dict with keys:
+        - rss_mb: Resident Set Size (actual physical memory in use)
+        - vms_mb: Virtual Memory Size (total memory allocated)
+        - percent: Memory usage as percentage of system memory
+    """
+    process = psutil.Process()
+    mem_info = process.memory_info()
+    mem_percent = process.memory_percent()
+
+    return {
+        "rss_mb": mem_info.rss / (1024 * 1024),
+        "vms_mb": mem_info.vms / (1024 * 1024),
+        "percent": mem_percent,
+    }
+
+
+def calculate_throughput(rows_processed, duration_seconds):
+    """
+    Calculate throughput in rows per second.
+
+    Args:
+        rows_processed: Number of rows processed
+        duration_seconds: Duration in seconds
+
+    Returns:
+        Throughput in rows per second (rounded to 2 decimals)
+        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
+    """
+    if duration_seconds <= 0:
+        return 0.0
+    return round(rows_processed / duration_seconds, 2)
+
+
+# ==============================================================================
 # Configuration
 # ==============================================================================
+
 
 def load_config():
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
-    with open(config_path, 'r') as f:
+    with open(config_path, "r") as f:
         return yaml.safe_load(f)
+
 
 def setup_paths(config, timestamp):
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
 
     paths = {
-        'root': root,
-        'manifest_dir': root / '4_Outputs' / '1.0_BuildSampleManifest' / 'latest',
-        'sdc_file': root / '1_Inputs' / 'SDC' / 'sdc-ma-merged.parquet',
+        "root": root,
+        "manifest_dir": root / "4_Outputs" / "1.0_BuildSampleManifest" / "latest",
+        "sdc_file": root / "1_Inputs" / "SDC" / "sdc-ma-merged.parquet",
     }
 
     # Output directory
-    output_base = root / config['paths']['outputs'] / "3_Financial_Features"
-    paths['output_dir'] = output_base / timestamp
-    paths['output_dir'].mkdir(parents=True, exist_ok=True)
-    paths['latest_dir'] = output_base / "latest"
+    output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
+    paths["output_dir"] = output_base / timestamp
+    paths["output_dir"].mkdir(parents=True, exist_ok=True)
+    paths["latest_dir"] = output_base / "latest"
 
     # Log directory
-    log_base = root / config['paths']['logs'] / "3_Financial_Features"
+    log_base = root / config["paths"]["logs"] / "3_Financial_Features"
     log_base.mkdir(parents=True, exist_ok=True)
-    paths['log_file'] = log_base / f"{timestamp}_events.log"
+    paths["log_file"] = log_base / f"{timestamp}_events.log"
 
     return paths
+
 
 # ==============================================================================
 # Data Loading
 # ==============================================================================
 
+
 def load_manifest(manifest_dir):
     """Load manifest data"""
     manifest_file = manifest_dir / "master_sample_manifest.parquet"
     df = pd.read_parquet(manifest_file)
-    
-    df['start_date'] = pd.to_datetime(df['start_date'])
-    df['year'] = df['start_date'].dt.year
-    
+
+    df["start_date"] = pd.to_datetime(df["start_date"])
+    df["year"] = df["start_date"].dt.year
+
     # Extract CUSIP6 for SDC matching
-    if 'cusip' in df.columns:
-        df['cusip6'] = df['cusip'].astype(str).str[:6]
-    
+    if "cusip" in df.columns:
+        df["cusip6"] = df["cusip"].astype(str).str[:6]
+
     print(f"  Loaded manifest: {len(df):,} calls")
     print(f"  Calls with CUSIP: {df['cusip6'].notna().sum():,}")
-    
+
     return df
+
 
 def load_sdc(sdc_file):
     """Load SDC M&A data"""
     print(f"  Loading SDC M&A data...")
-    
+
     df = pd.read_parquet(sdc_file)
     print(f"  Raw SDC: {len(df):,} deals")
-    
+
     # Normalize column names (SDC has spaces in names)
     col_mapping = {
-        'Target 6-digit CUSIP': 'target_cusip6',
-        'Date Announced': 'date_announced',
-        'Date Effective': 'date_effective',
-        'Date Withdrawn': 'date_withdrawn',
-        'Deal Attitude': 'deal_attitude',
-        'Deal Status': 'deal_status'
+        "Target 6-digit CUSIP": "target_cusip6",
+        "Date Announced": "date_announced",
+        "Date Effective": "date_effective",
+        "Date Withdrawn": "date_withdrawn",
+        "Deal Attitude": "deal_attitude",
+        "Deal Status": "deal_status",
     }
-    
+
     for old_name, new_name in col_mapping.items():
         if old_name in df.columns:
             df.rename(columns={old_name: new_name}, inplace=True)
-    
+
     # Ensure dates are datetime
-    for col in ['date_announced', 'date_effective', 'date_withdrawn']:
+    for col in ["date_announced", "date_effective", "date_withdrawn"]:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors='coerce')
-    
+            df[col] = pd.to_datetime(df[col], errors="coerce")
+
     # Clean CUSIP
-    df['target_cusip6'] = df['target_cusip6'].astype(str).str[:6]
-    
-    print(f"  SDC date range: {df['date_announced'].min()} to {df['date_announced'].max()}")
+    df["target_cusip6"] = df["target_cusip6"].astype(str).str[:6]
+
+    print(
+        f"  SDC date range: {df['date_announced'].min()} to {df['date_announced'].max()}"
+    )
     print(f"  Unique target CUSIPs: {df['target_cusip6'].nunique():,}")
-    
+
     # Categorize deal attitude
     print(f"\n  Deal Attitude distribution:")
-    if 'deal_attitude' in df.columns:
-        print(df['deal_attitude'].value_counts())
-    
+    if "deal_attitude" in df.columns:
+        print(df["deal_attitude"].value_counts())
+
     return df
+
 
 # ==============================================================================
 # Variable Computation
 # ==============================================================================
 
+
 def compute_takeover_flags(manifest, sdc):
     """Compute takeover flags for each call"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Computing Takeover Flags")
-    print("="*60)
-    
+    print("=" * 60)
+
     # Create lookup: cusip6 -> list of (date_announced, deal_attitude)
     sdc_by_cusip = {}
     for _, row in sdc.iterrows():
-        cusip6 = row['target_cusip6']
-        if pd.notna(row['date_announced']):
+        cusip6 = row["target_cusip6"]
+        if pd.notna(row["date_announced"]):
             if cusip6 not in sdc_by_cusip:
                 sdc_by_cusip[cusip6] = []
-            sdc_by_cusip[cusip6].append({
-                'date_announced': row['date_announced'],
-                'deal_attitude': row.get('deal_attitude', 'Unknown')
-            })
-    
+            sdc_by_cusip[cusip6].append(
+                {
+                    "date_announced": row["date_announced"],
+                    "deal_attitude": row.get("deal_attitude", "Unknown"),
+                }
+            )
+
     print(f"  SDC lookup built: {len(sdc_by_cusip):,} unique target CUSIPs")
-    
+
     results = []
     takeover_count = 0
-    
+
     for idx, row in manifest.iterrows():
-        cusip6 = row.get('cusip6')
-        call_date = row['start_date']
-        
+        cusip6 = row.get("cusip6")
+        call_date = row["start_date"]
+
         result = {
-            'file_name': row['file_name'],
-            'Takeover': 0,
-            'Takeover_Type': None,
-            'Duration': 4.0  # Default: censored at 4 quarters
+            "file_name": row["file_name"],
+            "Takeover": 0,
+            "Takeover_Type": None,
+            "Duration": 4.0,  # Default: censored at 4 quarters
         }
-        
+
         if pd.isna(cusip6) or cusip6 not in sdc_by_cusip:
             results.append(result)
             continue
-        
+
         # Check for takeover within 365 days of call
         for deal in sdc_by_cusip[cusip6]:
-            days_until = (deal['date_announced'] - call_date).days
-            
+            days_until = (deal["date_announced"] - call_date).days
+
             if 0 <= days_until <= 365:
-                result['Takeover'] = 1
-                
+                result["Takeover"] = 1
+
                 # Classify deal type
-                attitude = str(deal['deal_attitude']).lower() if deal['deal_attitude'] else ''
-                if 'hostile' in attitude or 'unsolicited' in attitude:
-                    result['Takeover_Type'] = 'Uninvited'
+                attitude = (
+                    str(deal["deal_attitude"]).lower() if deal["deal_attitude"] else ""
+                )
+                if "hostile" in attitude or "unsolicited" in attitude:
+                    result["Takeover_Type"] = "Uninvited"
                 else:
-                    result['Takeover_Type'] = 'Friendly'
-                
+                    result["Takeover_Type"] = "Friendly"
+
                 # Duration in quarters
-                result['Duration'] = max(0.25, days_until / 91.25)  # ~91.25 days per quarter
-                
+                result["Duration"] = max(
+                    0.25, days_until / 91.25
+                )  # ~91.25 days per quarter
+
                 takeover_count += 1
                 break  # Take first matching deal
-        
+
         results.append(result)
-        
+
         if (idx + 1) % 10000 == 0:
             print(f"  Processed {idx + 1:,} calls...")
-    
+
     results_df = pd.DataFrame(results)
-    
-    print(f"\n  Takeover events: {takeover_count:,} / {len(manifest):,} ({takeover_count/len(manifest)*100:.2f}%)")
+
+    print(
+        f"\n  Takeover events: {takeover_count:,} / {len(manifest):,} ({takeover_count / len(manifest) * 100:.2f}%)"
+    )
     print(f"\n  Takeover Type distribution:")
-    print(results_df[results_df['Takeover'] == 1]['Takeover_Type'].value_counts())
-    
+    print(results_df[results_df["Takeover"] == 1]["Takeover_Type"].value_counts())
+
     return results_df
+
 
 # ==============================================================================
 # Main
 # ==============================================================================
+
 
 def main():
     """Main execution"""
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
-    
+
+    # Initialize stats with observability sections
+    stats = {
+        "step_id": "3.3_EventFlags",
+        "timestamp": timestamp,
+        "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
+        "processing": {},
+        "output": {"final_rows": 0, "final_columns": 0, "files": [], "checksums": {}},
+        "missing_values": {},
+        "merges": {},
+        "timing": {"start_iso": "", "end_iso": "", "duration_seconds": 0.0},
+        "memory": {
+            "start_mb": 0.0,
+            "end_mb": 0.0,
+            "peak_mb": 0.0,
+            "delta_mb": 0.0,
+        },
+        "throughput": {
+            "rows_per_second": 0.0,
+            "total_rows": 0,
+            "duration_seconds": 0.0,
+        },
+        "quality_anomalies": {},
+    }
+
+    # Timing
+    start_time = time.perf_counter()
+    start_iso = datetime.now().isoformat()
+    stats["timing"]["start_iso"] = start_iso
+    mem_start = get_process_memory_mb()
+    stats["memory"]["start_mb"] = mem_start["rss_mb"]
+    memory_readings = [mem_start["rss_mb"]]
+
     # Setup logging
-    dual_writer = DualWriter(paths['log_file'])
+    dual_writer = DualWriter(paths["log_file"])
     sys.stdout = dual_writer
-    
-    print("="*60)
+
+    print("=" * 60)
     print("STEP 3.3: Build Event Flags")
     print(f"Timestamp: {timestamp}")
-    print("="*60)
-    
+    print("=" * 60)
+
     # Load data
     print("\nLoading data...")
-    manifest = load_manifest(paths['manifest_dir'])
-    sdc = load_sdc(paths['sdc_file'])
-    
+
+    # Input stats
+    manifest_file = paths["manifest_dir"] / "master_sample_manifest.parquet"
+    stats["input"]["files"].append(str(manifest_file))
+    stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
+        compute_file_checksum(manifest_file)
+    )
+
+    manifest = load_manifest(paths["manifest_dir"])
+    stats["input"]["total_rows"] = len(manifest)
+    stats["input"]["total_columns"] = len(manifest.columns)
+    print_stat("Manifest rows", value=len(manifest))
+    print_stat("Manifest columns", value=len(manifest.columns))
+
+    sdc = load_sdc(paths["sdc_file"])
+    print_stat("SDC deals", value=len(sdc))
+
     # Compute takeover flags
     event_flags = compute_takeover_flags(manifest, sdc)
-    
+    stats["processing"]["takeover_events"] = int(event_flags["Takeover"].sum())
+    stats["processing"]["takeover_pct"] = round(
+        float(event_flags["Takeover"].mean() * 100), 2
+    )
+    print_stat("Takeover events", value=int(event_flags["Takeover"].sum()))
+
     # Merge with manifest
-    result = manifest[['file_name', 'gvkey', 'start_date', 'year']].merge(event_flags, on='file_name')
-    
+    print("\nMerging with manifest...")
+    before_rows = len(manifest)
+    result = manifest[["file_name", "gvkey", "start_date", "year"]].merge(
+        event_flags, on="file_name"
+    )
+    after_rows = len(result)
+
+    stats["merges"]["event_flags_merge"] = {
+        "left_rows": before_rows,
+        "result_rows": after_rows,
+        "matched": after_rows,
+        "unmatched_left": before_rows - after_rows,
+        "merge_type": "1:1",
+    }
+    print_stat("Rows after merge", before=before_rows, after=after_rows)
+
+    # Analyze missing values
+    print("\nAnalyzing missing values...")
+    missing = analyze_missing_values(result)
+    stats["missing_values"] = missing
+    for col, info in missing.items():
+        print(f"  {col}: {info['count']:,} ({info['percent']:.2f}%)")
+
     # Save by year
     print("\nSaving outputs by year...")
-    for year, group in result.groupby('year'):
-        output_file = paths['output_dir'] / f"event_flags_{year}.parquet"
+    for year, group in result.groupby("year"):
+        output_file = paths["output_dir"] / f"event_flags_{year}.parquet"
         group.to_parquet(output_file, index=False)
         print(f"  Saved {year}: {len(group):,} calls -> {output_file.name}")
-    
-    # Generate variable reference
-    generate_variable_reference(result, paths['output_dir'] / "event_flags_variable_reference.csv")
-    
+        stats["output"]["files"].append(f"event_flags_{year}.parquet")
+
+    stats["output"]["final_rows"] = len(result)
+    stats["output"]["final_columns"] = len(result.columns)
+
+    # Finalize timing
+    end_time = time.perf_counter()
+    stats["timing"]["end_iso"] = datetime.now().isoformat()
+    stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
+
+    # Final memory tracking
+    mem_end = get_process_memory_mb()
+    memory_readings.append(mem_end["rss_mb"])
+    stats["memory"]["end_mb"] = mem_end["rss_mb"]
+    stats["memory"]["peak_mb"] = round(max(memory_readings), 2)
+    stats["memory"]["delta_mb"] = round(mem_end["rss_mb"] - mem_start["rss_mb"], 2)
+
+    # Calculate throughput
+    duration_seconds = end_time - start_time
+    if duration_seconds > 0 and stats["output"]["final_rows"] > 0:
+        throughput = calculate_throughput(
+            stats["output"]["final_rows"], duration_seconds
+        )
+        stats["throughput"]["rows_per_second"] = throughput
+        stats["throughput"]["total_rows"] = stats["output"]["final_rows"]
+        stats["throughput"]["duration_seconds"] = round(duration_seconds, 3)
+
+    # Compute output file checksums
+    stats["output"]["checksums"] = {}
+    for fname in stats["output"]["files"]:
+        if fname.endswith(".parquet"):
+            output_path = paths["output_dir"] / fname
+            if output_path.exists():
+                checksum = compute_file_checksum(output_path)
+                stats["output"]["checksums"][fname] = checksum
+    print(f"  Computed output checksums: {len(stats['output']['checksums'])} files")
+
+    # Note: 3.3 produces binary event flags (Takeover, Takeover_Type, Duration)
+    # These are categorical/binary variables, not suitable for numeric anomaly detection
+    stats["quality_anomalies"] = {}
+    print("  Anomaly detection skipped (event flags are binary/categorical)")
+
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
     print(f"Total calls processed: {len(result):,}")
     print(f"\nVariable coverage:")
-    print(f"  Takeover: {result['Takeover'].sum():,} events ({result['Takeover'].mean()*100:.2f}%)")
-    print(f"  Duration mean (takeovers only): {result[result['Takeover']==1]['Duration'].mean():.2f} quarters")
-    
+    print(
+        f"  Takeover: {result['Takeover'].sum():,} events ({result['Takeover'].mean() * 100:.2f}%)"
+    )
+    print(
+        f"  Duration mean (takeovers only): {result[result['Takeover'] == 1]['Duration'].mean():.2f} quarters"
+    )
+
     print(f"\nOutputs saved to: {paths['output_dir']}")
-    
+
+    # Stats summary
+    print_stats_summary(stats)
+    save_stats(stats, paths["output_dir"])
+
     dual_writer.close()
     sys.stdout = dual_writer.terminal
+
 
 if __name__ == "__main__":
     main()
