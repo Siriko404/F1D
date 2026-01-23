@@ -130,3 +130,167 @@ def compute_financial_features(
             features.append(row_copy)
 
     return pd.DataFrame(features)
+
+
+def calculate_firm_controls_quarterly(
+    row: pd.Series, compustat_df: pd.DataFrame, datadate: pd.Timestamp
+) -> dict:
+    """
+    Calculate firm-level control variables from quarterly Compustat data.
+
+    Uses quarterly Compustat variables (atq, ceqq, ltq, niq, etc.) instead of annual.
+    Matches on gvkey and datadate.
+
+    Args:
+        row: DataFrame row with firm identifiers (gvkey, datadate)
+        compustat_df: Quarterly Compustat data with firm metrics
+        datadate: Date for data selection (typically call's start_date)
+
+    Returns:
+        Dictionary with: Size, BM, Lev, ROA, CurrentRatio, RD_Intensity
+    """
+    gvkey = row.get("gvkey")
+    if gvkey is None:
+        return {}
+
+    # Get firm's data closest to or before the specified date
+    # Using merge_asof logic would be more efficient, but this is row-wise
+    compustat_df["datadate"] = pd.to_datetime(compustat_df["datadate"])
+    firm_data = compustat_df[
+        (compustat_df["gvkey"] == gvkey) & (compustat_df["datadate"] <= datadate)
+    ].sort_values("datadate", ascending=False)
+
+    if firm_data.empty:
+        return {}
+
+    data = firm_data.iloc[0]
+
+    # Size: log total assets (quarterly)
+    size = np.log(data["atq"]) if data.get("atq") and data["atq"] > 0 else np.nan
+
+    # Book-to-Market: book equity / market cap
+    # BM: ceqq / (cshoq * prccq)
+    bm = (
+        data["ceqq"] / (data["cshoq"] * data["prccq"])
+        if data.get("ceqq")
+        and data["ceqq"] > 0
+        and data.get("cshoq")
+        and data.get("cshoq") > 0
+        and data.get("prccq")
+        and data["prccq"] > 0
+        else np.nan
+    )
+
+    # Leverage: total liabilities / total assets (quarterly)
+    # Lev: ltq / atq
+    leverage = (
+        data["ltq"] / data["atq"] if data.get("atq") and data["atq"] > 0 else np.nan
+    )
+
+    # Return on Assets: net income / total assets (quarterly)
+    # ROA: niq / atq
+    roa = data["niq"] / data["atq"] if data.get("atq") and data["atq"] > 0 else np.nan
+
+    # Current Ratio: current assets / current liabilities
+    # CurrentRatio: actq / lctq
+    current_ratio = (
+        data["actq"] / data["lctq"] if data.get("lctq") and data["lctq"] > 0 else np.nan
+    )
+
+    # R&D Intensity: R&D / total assets (quarterly, treat missing as 0)
+    # RD_Intensity: xrdq / atq
+    rd_intensity = (
+        data["xrdq"].fillna(0) / data["atq"]
+        if data.get("atq") and data["atq"] > 0
+        else np.nan
+    )
+
+    return {
+        "Size": size,
+        "BM": bm,
+        "Lev": leverage,
+        "ROA": roa,
+        "CurrentRatio": current_ratio,
+        "RD_Intensity": rd_intensity,
+    }
+
+
+def compute_financial_controls_quarterly(
+    compustat_df: pd.DataFrame,
+    winsorize: bool = True,
+) -> pd.DataFrame:
+    """
+    Compute quarterly financial controls for all firms in Compustat DataFrame.
+
+    Vectorized calculation using quarterly Compustat variables. Matches the pattern
+    from 3.1_FirmControls.py for consistency with existing outputs.
+
+    Args:
+        compustat_df: Quarterly Compustat data with required columns
+        winsorize: If True, winsorize at 1% and 99% (default: True)
+
+    Returns:
+        DataFrame with added control variables (Size, BM, Lev, ROA,
+        EPS_Growth, CurrentRatio, RD_Intensity)
+
+    Note:
+        Requires columns: gvkey, datadate, atq, ceqq, cshoq, prccq, ltq, niq,
+                         epspxq, actq, lctq, xrdq
+    """
+    # Ensure datadate is datetime
+    compustat_df["datadate"] = pd.to_datetime(compustat_df["datadate"])
+
+    # Sort by gvkey and datadate for lag calculations
+    compustat_df = compustat_df.sort_values(["gvkey", "datadate"]).reset_index(
+        drop=True
+    )
+
+    # Compute lagged EPS (4 quarters back for YoY)
+    compustat_df["epspxq_lag4"] = compustat_df.groupby("gvkey")["epspxq"].shift(4)
+
+    # Compute control variables
+    # Size: ln(atq)
+    compustat_df["Size"] = np.log(compustat_df["atq"].clip(lower=0.01))
+
+    # Book-to-Market: ceqq / (cshoq * prccq)
+    compustat_df["BM"] = compustat_df["ceqq"] / (
+        compustat_df["cshoq"] * compustat_df["prccq"]
+    )
+
+    # Leverage: ltq / atq
+    compustat_df["Lev"] = compustat_df["ltq"] / compustat_df["atq"]
+
+    # ROA: niq / atq
+    compustat_df["ROA"] = compustat_df["niq"] / compustat_df["atq"]
+
+    # Current Ratio: actq / lctq
+    compustat_df["CurrentRatio"] = compustat_df["actq"] / compustat_df["lctq"].replace(
+        0, np.nan
+    )
+
+    # R&D Intensity: xrdq / atq (treat missing R&D as 0)
+    compustat_df["RD_Intensity"] = compustat_df["xrdq"].fillna(0) / compustat_df["atq"]
+
+    # EPS Growth: (EPS - EPS_lag4) / |EPS_lag4|
+    mask = compustat_df["epspxq_lag4"].notna() & (compustat_df["epspxq_lag4"] != 0)
+    compustat_df["EPS_Growth"] = np.nan
+    compustat_df.loc[mask, "EPS_Growth"] = (
+        compustat_df.loc[mask, "epspxq"] - compustat_df.loc[mask, "epspxq_lag4"]
+    ) / compustat_df.loc[mask, "epspxq_lag4"].abs()
+
+    # Winsorize extreme values if requested
+    if winsorize:
+        for col in [
+            "Size",
+            "BM",
+            "Lev",
+            "ROA",
+            "EPS_Growth",
+            "CurrentRatio",
+            "RD_Intensity",
+        ]:
+            if compustat_df[col].notna().sum() > 0:
+                p1, p99 = compustat_df[col].quantile([0.01, 0.99])
+                compustat_df[col] = compustat_df[col].clip(lower=p1, upper=p99)
+
+    return compustat_df
