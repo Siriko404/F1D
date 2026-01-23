@@ -111,13 +111,20 @@ def validate_dataframe_schema(
         min_val = range_spec.get("min")
         max_val = range_spec.get("max")
 
-        if min_val is not None and (df[col] < min_val).any():
-            count = (df[col] < min_val).sum()
-            errors.append(f"Column '{col}': {count} values below min ({min_val})")
+        try:
+            if min_val is not None and (df[col] < min_val).any():
+                count = (df[col] < min_val).sum()
+                errors.append(f"Column '{col}': {count} values below min ({min_val})")
 
-        if max_val is not None and (df[col] > max_val).any():
-            count = (df[col] > max_val).sum()
-            errors.append(f"Column '{col}': {count} values above max ({max_val})")
+            if max_val is not None and (df[col] > max_val).any():
+                count = (df[col] > max_val).sum()
+                errors.append(f"Column '{col}': {count} values above max ({max_val})")
+        except TypeError as e:
+            # Handle case where column type doesn't support comparison (e.g., strings vs int)
+            actual_type = str(df[col].dtype)
+            errors.append(
+                f"Column '{col}': cannot check range (type {actual_type} incompatible with range check)"
+            )
 
     # Report errors
     if errors:
