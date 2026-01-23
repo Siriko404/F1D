@@ -23,7 +23,6 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 **Technical Remediation Phases:** (7-15) — See `TECHNICAL_REMEDIATION_ROADMAP.md`
 - [x] **Phase 7: Critical Bug Fixes** - Fix silent failures and dependency handling ✅ COMPLETED 2026-01-23
 - [ ] **Phase 8: Tech Debt Cleanup** - Extract shared modules, eliminate duplication ○ PENDING
-- [ ] **Phase 8: Tech Debt Cleanup** - Extract shared modules, eliminate duplication ○ PENDING
 - [ ] **Phase 9: Security Hardening** - Add validation layers ○ PENDING
 - [ ] **Phase 10: Performance Optimization** - Vectorize operations, add parallelization ○ PENDING
 - [ ] **Phase 11: Testing Infrastructure** - Comprehensive test suite with pytest ○ PENDING
@@ -160,6 +159,24 @@ Plans:
 - [x] 07-01: Fix silent symlink/copy failures in 3 utility files ✅
 - [x] 07-02: Enhance optional dependency warning in 1.2_LinkEntities.py ✅
 
+### Phase 8: Tech Debt Cleanup
+**Goal**: Eliminate code duplication and improve maintainability
+**Depends on**: Phase 7
+**Requirements**: TECH-01 (Code Duplication - DualWriter Class), TECH-02 (Code Duplication - Utility Functions), TECH-04 (Inconsistent Error Handling)
+**Success Criteria** (what must be TRUE):
+  1. DualWriter class extracted to shared module (2_Scripts/shared/dual_writer.py)
+  2. Utility functions consolidated (compute_file_checksum, print_stat, analyze_missing_values, update_latest_symlink)
+  3. All scripts import from shared modules (no duplicate code)
+  4. Error handling improved (specific exceptions, logging, re-raise or graceful handling)
+**Status**: 📝 PLANNED (4 plans in 2 waves)
+**Plans**: 4 plans
+
+Plans:
+- [ ] 08-01: Extract DualWriter class to shared module (Wave 1)
+- [ ] 08-02: Consolidate utility functions to shared module (Wave 1)
+- [ ] 08-03: Update all scripts to import shared modules (Wave 2)
+- [ ] 08-04: Improve error handling consistency in econometric scripts (Wave 2)
+
 ## Progress
 
 **Execution Order:**
@@ -167,14 +184,15 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Template & Pilot | 3/3 | ✅ COMPLETED | 2026-01-22 |
-| 2. Step 1 Sample | 6/6 | ✅ COMPLETED | 2026-01-22 |
-| 3. Step 2 Text | 3/3 | ✅ COMPLETED | 2026-01-22 |
-| 4. Steps 3-4 Financial & Econometric | 10/10 | ✅ COMPLETED | 2026-01-22 |
-| 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
-| 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
-| 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 | ✅
+| | 1. Template & Pilot | 3/3 | ✅ COMPLETED | 2026-01-22 |
+| | 2. Step 1 Sample | 6/6 | ✅ COMPLETED | 2026-01-22 |
+| | 3. Step 2 Text | 3/3 | ✅ COMPLETED | 2026-01-22 |
+| | 4. Steps 3-4 Financial & Econometric | 10/10 | ✅ COMPLETED | 2026-01-22 |
+| | 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
+| | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
+| | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
+| | 8. Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Total plans: 34 | Total requirements: 30 mapped*
+*Total plans: 38 | Total requirements: 30 mapped*
