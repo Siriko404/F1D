@@ -9,20 +9,20 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 13 of 15 (Script Refactoring) — **IN PROGRESS** (Plan 5/10 complete)
+Phase: 13 of 15 (Script Refactoring) — **IN PROGRESS** (Plan 6/10 complete)
 Technical Remediation: Phase 7-15 — 34 concerns to address
-Status: Original project 100% complete, Phase 7-12 complete, Phase 13 plans 1-5/10 complete
-Last activity: 2026-01-23 — Phase 13-02 complete (quarterly support and script refactoring)
+Status: Original project 100% complete, Phase 7-12 complete, Phase 13 plans 1-6/10 complete
+Last activity: 2026-01-23 — Phase 13-05c complete (Step 3 symlink refactoring)
 
 Progress: [██████████] 100% (All 6 original phases complete)
-Technical Remediation: [████████████] 95% (Phase 7, 8, 9, 10, 11, 12 complete; Phase 13 5/10 complete; remaining Phase 13-15)
+Technical Remediation: [████████████] 95% (Phase 7, 8, 9, 10, 11, 12 complete; Phase 13 6/10 complete; remaining Phase 13-15)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 5 from Phase 13)
-- Average duration: ~11 min
-- Total execution time: ~87 min
+ - Total plans completed: 24 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 6 from Phase 13)
+ - Average duration: ~11 min
+ - Total execution time: ~91 min
 
 **By Phase:**
 
@@ -40,7 +40,7 @@ Technical Remediation: [████████████] 95% (Phase 7, 8, 9
 | | 10. Performance Optimization | 4/4 | ~15 min | ✅ COMPLETED | 2026-01-23 |
 | | 11. Testing Infrastructure | 7/7 | ~10 min | ✅ COMPLETED | 2026-01-23 |
 | | 12. Data Quality & Observability | 3/3 | ~12 min | ✅ COMPLETED | 2026-01-23 |
-| | 13. Script Refactoring | 4/10 | ~5 min | 🔄 IN PROGRESS | 2026-01-23 |
+| | 13. Script Refactoring | 6/10 | ~5 min | 🔄 IN PROGRESS | 2026-01-23 |
 
 **Recent Trend:**
 - Last 4 plans: ~9 min average
@@ -77,6 +77,8 @@ Recent decisions affecting current work:
 - [Phase 13-01b]: Use temporary .write_test file to verify directory write permissions
 - [Phase 13-02]: Use module-relative path resolution (Path(__file__).parent) for config loading
 - [Phase 13-02]: Configure RapidFuzz scorers: token_sort_ratio for company names, WRatio for entities
+- [Phase 13-05c]: Use shared.symlink_utils.update_latest_link() for cross-platform symlink handling
+- [Phase 13-05c]: Added update_latest_link() call to 3.3_EventFlags.py (was missing)
 
 ### Pending Todos
 
@@ -322,3 +324,18 @@ Total Wave 2 Tests: 32 tests (15 integration + 5 regression + 8 validation + 4 e
 2. 2_Scripts/shared/string_matching.py - 5 functions for fuzzy string matching
 3. requirements.txt - Added rapidfuzz>=3.14.0
 4. SUMMARY.md documenting all changes and deviations
+
+✅ **13-05c-PLAN.md:** Update Step 3 scripts to use shared.symlink_utils
+   - Updated all Step 3 scripts (3.0, 3.1, 3.2, 3.3) to use shared.symlink_utils.update_latest_link()
+   - Added update_latest_link() call to 3.3_EventFlags.py (was missing "latest" link creation)
+   - Windows junction support with fallback to copy
+   - All 4 scripts now use cross-platform symlink handling
+   - Commit: f3f55be (refactor)
+   - Total execution time: ~4 minutes
+
+**Key Deliverables:**
+1. Updated 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py - Uses update_latest_link()
+2. Updated 2_Scripts/3_Financial/3.1_FirmControls.py - Uses update_latest_link()
+3. Updated 2_Scripts/3_Financial/3.2_MarketVariables.py - Uses update_latest_link()
+4. Updated 2_Scripts/3_Financial/3.3_EventFlags.py - Added update_latest_link() call
+5. SUMMARY.md documenting all changes
