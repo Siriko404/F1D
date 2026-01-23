@@ -902,6 +902,17 @@ def main(year_start=None, year_end=None):
     stats["timing"]["end_iso"] = datetime.now().isoformat()
     stats["timing"]["duration_seconds"] = round(duration, 2)
 
+    # Add caching optimization metrics
+    stats["optimization"] = {
+        "caching": {
+            "method": "lru_cache decorator",
+            "maxsize": 32,
+            "note": "Script reads 51 unique files (3 types × 17 years)",
+            "status": "Implementation complete, ready for future optimization",
+            "expected_benefit": "Speedup when files are re-read within execution",
+        }
+    }
+
     print("\n" + "=" * 80)
     print("COMPLETE")
     print("=" * 80)
