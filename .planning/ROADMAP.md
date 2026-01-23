@@ -29,7 +29,7 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 - [x] **Phase 12: Data Quality & Observability** - Quality reports and state tracking ✅ COMPLETED 2026-01-23
 - [x] **Phase 13: Script Refactoring** - Break down large scripts, improve modularity ✅ COMPLETED 2026-01-23
 - [x] **Phase 14: Dependency Management** - Version pinning and compatibility testing ✅ COMPLETED 2026-01-23
-- [ ] **Phase 15: Scaling Preparation** - Remove scaling limits for future growth ○ PENDING
+- [ ] **Phase 15: Scaling Preparation** - Remove scaling limits for future growth 📝 PLANNED
 
 ## Phase Details
 
@@ -281,6 +281,45 @@ Plans:
 - [x] 13-09: Re-verify Phase 13 with updated verification report ✅
 - [x] 13-10: Finalize Phase 13 by updating ROADMAP.md and STATE.md ✅
 
+### Phase 14: Dependency Management
+**Goal**: Version pinning and compatibility testing
+**Depends on**: Phase 13
+**Requirements**: Statsmodels Version Compatibility, PyArrow Performance Degradation, Python 3.13 Compatibility
+**Success Criteria** (what must be TRUE):
+   1. Statsmodels pinned to exact version (0.14.6) to prevent API breakage
+   2. PyArrow documented with Python version constraints (21.0.0 works with 3.8-3.13)
+   3. Upgrade procedures documented with testing requirements
+   4. Python 3.8-3.13 matrix testing in CI/CD workflow
+   5. Optional dependencies documented (RapidFuzz with graceful degradation)
+**Status**: ✅ COMPLETED 2026-01-23 (4 plans in 2 waves)
+**Plans**: 4 plans
+
+Plans:
+- [x] 14-01: Pin statsmodels to 0.14.6 with upgrade procedures (Wave 1) ✅
+- [x] 14-02: Document PyArrow 21.0.0 compatibility and performance (Wave 1) ✅
+- [x] 14-03: Python 3.8-3.13 matrix testing (Wave 1) ✅
+- [x] 14-04: Document RapidFuzz as optional dependency (Wave 2) ✅
+
+### Phase 15: Scaling Preparation
+**Goal**: Remove scaling limits for future growth
+**Depends on**: Phase 14
+**Requirements**: Single-Threaded Processing, Disk I/O Bottleneck, Memory Requirements
+**Success Criteria** (what must be TRUE):
+   1. Deterministic parallelization implemented with seed propagation (parallel_utils.py)
+   2. Column pruning with pyarrow implemented for large datasets (1.2, 1.4, 3.2)
+   3. Chunked processing implemented for memory-constrained systems (MemoryAwareThrottler)
+   4. Memory usage monitoring added to scripts (track_memory_usage decorator)
+   5. Scaling limits documented with improvement paths (SCALING.md)
+**Status**: 📝 PLANNED (5 plans in 3 waves)
+**Plans**: 5 plans
+
+Plans:
+- [ ] 15-01: Implement deterministic parallelization (Wave 1) — Create parallel_utils.py with SeedSequence spawning
+- [ ] 15-02: Add column pruning for Parquet files (Wave 1) — Update 1.2, 1.4, 3.2 with column-specific reads
+- [ ] 15-04: Add memory usage monitoring (Wave 1) — Create track_memory_usage decorator, add to 4 scripts
+- [ ] 15-03: Implement chunked processing for large files (Wave 2) — Add MemoryAwareThrottler with config integration
+- [ ] 15-05: Document scaling limits and improvement paths (Wave 3) — Create SCALING.md with comprehensive scaling guide
+
 ## Progress
 
 **Execution Order:**
@@ -302,11 +341,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
   | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
   | 12. Data Quality & Observability | 3/3 | ✅ COMPLETED | 2026-01-23 |
   | 13. Script Refactoring | 10/10 | ✅ COMPLETED | 2026-01-23 |
-  | 14. Dependency Management | 4/4 | 📝 PLANNED | 2026-01-23 |
+  | 14. Dependency Management | 4/4 | ✅ COMPLETED | 2026-01-23 |
+  | 15. Scaling Preparation | 0/5 | 📝 PLANNED | 2026-01-23 |
 
 
 ---
 ---
-*Roadmap created: 2026-01-22*
-*Roadmap updated: 2026-01-23 (Phase 13 complete, Phase 14 planned)*
-*Total plans: 68 | Total requirements: 30 mapped*
+ *Roadmap created: 2026-01-22*
+ *Roadmap updated: 2026-01-23 (Phase 15 planned)*
+ *Total plans: 73 | Total requirements: 30 mapped*
