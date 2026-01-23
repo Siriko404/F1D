@@ -56,6 +56,25 @@ from utils import (
 from shared.symlink_utils import update_latest_link
 from shared.financial_utils import compute_financial_controls_quarterly
 
+# Import shared path validation utilities
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 # ==============================================================================
 # Configuration
 # ==============================================================================
@@ -64,6 +83,7 @@ from shared.financial_utils import compute_financial_controls_quarterly
 def load_config():
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
@@ -93,12 +113,12 @@ def setup_paths(config, timestamp):
     # Output directory
     output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
     paths["output_dir"] = output_base / timestamp
-    paths["output_dir"].mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(paths["output_dir"])
     paths["latest_dir"] = output_base / "latest"
 
     # Log directory
     log_base = root / config["paths"]["logs"] / "3_Financial_Features"
-    log_base.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}.log"
 
     return paths
@@ -198,6 +218,7 @@ def load_manifest(manifest_dir):
     if not manifest_file.exists():
         raise FileNotFoundError(f"Manifest not found: {manifest_file}")
 
+    validate_input_file(manifest_file, must_exist=True)
     df = pd.read_parquet(manifest_file)
     print(f"  Loaded manifest: {len(df):,} calls")
 

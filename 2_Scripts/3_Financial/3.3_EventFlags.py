@@ -45,6 +45,20 @@ spec.loader.exec_module(utils)
 from utils import DualWriter, generate_variable_reference
 from shared.symlink_utils import update_latest_link
 
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    # Fallback if shared/__init__.py hasn't run yet
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 # ==============================================================================
 # Statistics Helpers
 # ==============================================================================
@@ -182,6 +196,7 @@ def calculate_throughput(rows_processed, duration_seconds):
 def load_config():
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
@@ -199,12 +214,12 @@ def setup_paths(config, timestamp):
     # Output directory
     output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
     paths["output_dir"] = output_base / timestamp
-    paths["output_dir"].mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(paths["output_dir"])
     paths["latest_dir"] = output_base / "latest"
 
     # Log directory
     log_base = root / config["paths"]["logs"] / "3_Financial_Features"
-    log_base.mkdir(parents=True, exist_ok=True)
+    ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_events.log"
 
     return paths
