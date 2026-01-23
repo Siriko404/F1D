@@ -22,8 +22,8 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 
 **Technical Remediation Phases:** (7-15) — See `TECHNICAL_REMEDIATION_ROADMAP.md`
 - [x] **Phase 7: Critical Bug Fixes** - Fix silent failures and dependency handling ✅ COMPLETED 2026-01-23
-- [ ] **Phase 8: Tech Debt Cleanup** - Extract shared modules, eliminate duplication ○ PENDING
-- [ ] **Phase 9: Security Hardening** - Add validation layers ○ PENDING
+- [x] **Phase 8: Tech Debt Cleanup** - Extract shared modules, eliminate duplication ✅ COMPLETED 2026-01-23
+- [x] **Phase 9: Security Hardening** - Add validation layers ✅ COMPLETED 2026-01-23
 - [ ] **Phase 10: Performance Optimization** - Vectorize operations, add parallelization ○ PENDING
 - [ ] **Phase 11: Testing Infrastructure** - Comprehensive test suite with pytest ○ PENDING
 - [ ] **Phase 12: Data Quality & Observability** - Quality reports and state tracking ○ PENDING
@@ -185,13 +185,13 @@ Plans:
   1. All subprocess paths validated (within expected directory, absolute paths)
   2. Environment variable schema validation implemented (if .env usage is added later)
   3. Input data validation layer with column type and value range checks
-**Status**: 📝 PLANNED (3 plans in 2 waves)
+**Status**: ✅ COMPLETED 2026-01-23 (3 plans in 2 waves)
 **Plans**: 3 plans
 
 Plans:
-- [ ] 09-01: Add subprocess path validation (Wave 1)
-- [ ] 09-02: Implement environment variable validation schema (Wave 1)
-- [ ] 09-03: Add input data validation layer (Wave 2)
+- [x] 09-01: Add subprocess path validation (Wave 1) ✅
+- [x] 09-02: Implement environment variable validation schema (Wave 1) ✅
+- [x] 09-03: Add input data validation layer (Wave 2) ✅
 
 ## Progress
 
@@ -205,10 +205,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | | 3. Step 2 Text | 3/3 | ✅ COMPLETED | 2026-01-22 |
 | | 4. Steps 3-4 Financial & Econometric | 10/10 | ✅ COMPLETED | 2026-01-22 |
 | | 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
-| | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
-| | | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
-| | 8. Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
-| | 9. Security Hardening | 0/3 | 📝 PLANNED | - |
+ | | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
+ | | | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
+ | | | 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
+ | | | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
 | ---
 | | 8. Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
 | | 9. Security Hardening | 0/3 | 📝 PLANNED | - |
