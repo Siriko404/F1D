@@ -48,6 +48,7 @@ spec.loader.exec_module(utils)
 
 from utils import generate_variable_reference
 from shared.symlink_utils import update_latest_link
+from shared.chunked_reader import track_memory_usage
 
 # Import shared validation module (for opt-in data validation)
 try:
@@ -391,6 +392,62 @@ def setup_paths(config):
 # Variable reference generation and symlink handling imported from step1_utils
 
 # ==============================================================================
+# Memory-tracked operations
+# ==============================================================================
+
+
+@track_memory_usage("load_metadata")
+def load_metadata_with_tracking(input_path):
+    """Load metadata with memory tracking"""
+    validate_input_file(input_path, must_exist=True)
+    df = load_validated_parquet(
+        input_path, schema_name="Unified-info.parquet", strict=True
+    )
+    return df
+
+
+@track_memory_usage("clean_metadata")
+def clean_metadata_with_tracking(df):
+    """Clean metadata (dedup + collision resolution) with memory tracking"""
+    # Deduplication: Exact duplicates
+    original_count = len(df)
+    df_dedup = df.drop_duplicates()
+    exact_dupes = original_count - len(df_dedup)
+
+    # Resolve file_name collisions
+    collision_mask = df_dedup.duplicated(subset=["file_name"], keep=False)
+    collisions = df_dedup[collision_mask].copy()
+
+    if len(collisions) > 0:
+        # Sort by validation_timestamp and keep first
+        collisions_sorted = collisions.sort_values(
+            ["file_name", "validation_timestamp"]
+        )
+        keep_indices = collisions_sorted.groupby("file_name").head(1).index
+
+        # Remove all collisions, then add back kept ones
+        df_clean = df_dedup[~collision_mask].copy()
+        df_clean = pd.concat([df_clean, df_dedup.loc[keep_indices]], ignore_index=True)
+        resolved = len(collisions) - len(keep_indices)
+    else:
+        df_clean = df_dedup.copy()
+        resolved = 0
+
+    return {
+        "result": df_clean,
+        "exact_dupes_removed": exact_dupes,
+        "collision_rows_resolved": resolved,
+    }
+
+
+@track_memory_usage("save_output")
+def save_output_with_tracking(df, output_path):
+    """Save output with memory tracking"""
+    df.to_parquet(output_path, index=False)
+    return {"path": str(output_path)}
+
+
+# ==============================================================================
 # Main processing
 # ==============================================================================
 
@@ -412,7 +469,6 @@ def main():
 
     # Memory tracking at script start
     mem_start = get_process_memory_mb()
-    all_memory_values = [mem_start["rss_mb"]]
 
     # Initialize stats collector
     stats = {
@@ -423,6 +479,7 @@ def main():
         "output": {"final_rows": 0, "final_columns": 0, "files": [], "checksums": {}},
         "missing_values": {},
         "timing": {},
+        "memory_mb": {},  # Added for operation-level memory tracking
     }
 
     print_dual("=" * 80)
@@ -432,12 +489,12 @@ def main():
     print_dual(f"Output Directory: {paths['output_dir']}")
     print_dual("")
 
-    # Load Unified-info with schema validation
+    # Load Unified-info with memory tracking
     print_dual("Loading Unified-info.parquet...")
-    validate_input_file(paths["unified_info"], must_exist=True)
-    df = load_validated_parquet(
-        paths["unified_info"], schema_name="Unified-info.parquet", strict=True
-    )
+    load_result = load_metadata_with_tracking(paths["unified_info"])
+    df = load_result["result"]
+    stats["memory_mb"]["load_metadata"] = load_result["memory_mb"]
+
     original_count = len(df)
 
     # Record input stats
@@ -451,53 +508,20 @@ def main():
     print_stat("Input rows", value=original_count)
     print_stat("Input columns", value=len(df.columns))
 
-    # Deduplication: Exact duplicates
-    print_dual("\nStep 1: Removing exact duplicate rows...")
-    df_dedup = df.drop_duplicates()
-    exact_dupes = original_count - len(df_dedup)
+    # Clean metadata with memory tracking
+    print_dual("\nStep 1-2: Removing duplicates and resolving collisions...")
+    clean_result = clean_metadata_with_tracking(df)
+    df_clean = clean_result["result"]
+    stats["memory_mb"]["clean_metadata"] = clean_result["memory_mb"]
+
+    exact_dupes = clean_result["exact_dupes_removed"]
+    resolved = clean_result["collision_rows_resolved"]
     stats["processing"]["exact_duplicates_removed"] = exact_dupes
-    print_dual(f"  Removed {exact_dupes:,} exact duplicate rows")
-    print_dual(f"  Remaining: {len(df_dedup):,} rows")
-
-    # Memory tracking after deduplication
-    mem_after_dedup = get_process_memory_mb()
-    all_memory_values.append(mem_after_dedup["rss_mb"])
-
-    # Resolve file_name collisions
-    resolved = 0  # Initialize for stats tracking
-    print_dual("\nStep 2: Resolving file_name collisions...")
-    collision_mask = df_dedup.duplicated(subset=["file_name"], keep=False)
-    collisions = df_dedup[collision_mask].copy()
-
-    if len(collisions) > 0:
-        print_dual(
-            f"  Found {collisions['file_name'].nunique():,} file_names with multiple rows"
-        )
-
-        # Sort by validation_timestamp and keep first
-        collisions_sorted = collisions.sort_values(
-            ["file_name", "validation_timestamp"]
-        )
-        keep_indices = collisions_sorted.groupby("file_name").head(1).index
-
-        # Remove all collisions, then add back the kept ones
-        df_clean = df_dedup[~collision_mask].copy()
-        df_clean = pd.concat([df_clean, df_dedup.loc[keep_indices]], ignore_index=True)
-
-        resolved = len(collisions) - len(keep_indices)
-        print_dual(
-            f"  Resolved {resolved:,} collision rows (kept earliest validation_timestamp)"
-        )
-    else:
-        df_clean = df_dedup.copy()
-        print_dual("  No file_name collisions found")
-
     stats["processing"]["collision_rows_resolved"] = resolved
-    print_dual(f"  Remaining: {len(df_clean):,} rows")
 
-    # Memory tracking after collision resolution
-    mem_after_collision = get_process_memory_mb()
-    all_memory_values.append(mem_after_collision["rss_mb"])
+    print_dual(f"  Removed {exact_dupes:,} exact duplicate rows")
+    print_dual(f"  Resolved {resolved:,} collision rows")
+    print_dual(f"  Remaining: {len(df_clean):,} rows")
 
     # Event Filter: event_type == '1'
     print_dual("\nStep 3: Filtering for earnings calls (event_type='1')...")
@@ -533,19 +557,17 @@ def main():
     # Drop temporary year column
     df_final = df_final.drop(columns=["year"])
 
-    # Memory tracking after filtering
-    mem_after_filter = get_process_memory_mb()
-    all_memory_values.append(mem_after_filter["rss_mb"])
-
     # Record missing values and output stats
     stats["missing_values"] = analyze_missing_values(df_final)
     stats["output"]["final_rows"] = len(df_final)
     stats["output"]["final_columns"] = len(df_final.columns)
 
-    # Save output
+    # Save output with memory tracking
     output_file = paths["output_dir"] / "metadata_cleaned.parquet"
-    df_final.to_parquet(output_file, index=False)
-    print_dual(f"\nSaved cleaned metadata: {output_file}")
+    print_dual(f"\nSaving cleaned metadata...")
+    save_result = save_output_with_tracking(df_final, output_file)
+    stats["memory_mb"]["save_output"] = save_result["memory_mb"]
+    print_dual(f"Saved cleaned metadata: {output_file}")
 
     # Generate variable reference
     var_ref_file = paths["output_dir"] / "variable_reference.csv"
@@ -559,13 +581,11 @@ def main():
 
     # Memory tracking at script end
     mem_end = get_process_memory_mb()
-    all_memory_values.append(mem_end["rss_mb"])
 
     # Add memory stats to stats
     stats["memory"] = {
         "start_mb": round(mem_start["rss_mb"], 2),
         "end_mb": round(mem_end["rss_mb"], 2),
-        "peak_mb": round(max(all_memory_values), 2),
         "delta_mb": round(mem_end["rss_mb"] - mem_start["rss_mb"], 2),
     }
 
@@ -606,7 +626,7 @@ def main():
         "",
         f"- **Input rows**: {original_count:,}",
         f"- **Exact duplicates removed**: {exact_dupes:,}",
-        f"- **Collision rows resolved**: {resolved if len(collisions) > 0 else 0:,}",
+        f"- **Collision rows resolved**: {resolved:,}",
         f"- **Non-earnings calls removed**: {len(df_clean) - len(df_filtered) if 'event_type' in df_clean.columns else 0:,}",
         f"- **Out-of-range years removed**: {removed:,}",
         f"- **Final output rows**: {len(df_final):,}",
