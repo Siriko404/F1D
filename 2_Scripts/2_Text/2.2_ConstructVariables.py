@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import re
@@ -7,221 +6,453 @@ from datetime import datetime
 import sys
 import os
 import shutil
+import hashlib
+import json
+import time
 
 # ==============================================================================
 # Setup
 # ==============================================================================
 
+
 def setup_logging():
-    log_dir = Path(__file__).parent.parent.parent / '3_Logs' / '2.2_ConstructVariables'
+    log_dir = Path(__file__).parent.parent.parent / "3_Logs" / "2.2_ConstructVariables"
     log_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     log_path = log_dir / f"{timestamp}.log"
-    
+
     class DualWriter:
         def __init__(self, path):
-            self.file = open(path, 'w', encoding='utf-8')
+            self.file = open(path, "w", encoding="utf-8")
             self.stdout = sys.stdout
+
         def write(self, msg):
             self.stdout.write(msg)
             self.file.write(msg)
             self.file.flush()
+
         def flush(self):
             self.stdout.flush()
             self.file.flush()
-    
+
     sys.stdout = DualWriter(log_path)
     return log_path
 
-def update_latest_symlink(latest_dir, output_dir):
+
+def update_latest_symlink(latest_dir, output_dir, print_fn=print):
+    """
+    Update 'latest' to point to the output directory.
+    Raises SystemExit on failure with non-zero exit code.
+
+    Args:
+        latest_dir: Path to the 'latest' symlink/directory
+        output_dir: Path to the output directory to link/copy
+        print_fn: Print function for logging (default: print)
+
+    Raises:
+        SystemExit: With exit code 1 on critical failure
+    """
+    # Remove existing latest (whether symlink, junction, or directory)
     if latest_dir.exists() or latest_dir.is_symlink():
         try:
-            if latest_dir.is_symlink(): os.unlink(str(latest_dir))
-            else: shutil.rmtree(str(latest_dir))
-        except Exception: pass
+            if latest_dir.is_symlink():
+                os.unlink(str(latest_dir))
+            else:
+                shutil.rmtree(str(latest_dir))
+        except PermissionError as e:
+            print_fn(f"ERROR: Permission denied removing old 'latest': {e}")
+            print_fn(f"  Path: {latest_dir}")
+            sys.exit(1)
+        except FileNotFoundError:
+            pass  # Not an error - doesn't exist yet
+        except OSError as e:
+            print_fn(f"ERROR: Failed to remove old 'latest': {e}")
+            print_fn(f"  Path: {latest_dir}")
+            sys.exit(1)
+
+    # Try symlink first (preferred)
     try:
         os.symlink(str(output_dir), str(latest_dir), target_is_directory=True)
-        print(f"\nUpdated 'latest' -> {output_dir.name}")
-    except OSError:
+        print_fn(f"\nUpdated 'latest' -> {output_dir.name}")
+    except PermissionError as e:
+        # Symlink failed (likely no admin rights on Windows)
+        # Fall back to copytree
+        print_fn(f"WARNING: Symlink creation failed (permission denied)")
+        print_fn(f"  Falling back to directory copy...")
         try:
             shutil.copytree(str(output_dir), str(latest_dir))
-            print(f"\nCopied outputs to 'latest'")
-        except Exception: pass
+            print_fn(f"\nCopied outputs to 'latest' (symlink not available)")
+        except OSError as e2:
+            print_fn(f"ERROR: Symlink and copytree both failed: {e2}")
+            print_fn(f"  Symlink error: {e}")
+            print_fn(f"  Output dir: {output_dir}")
+            print_fn(f"  Latest dir: {latest_dir}")
+            sys.exit(1)
+    except OSError as e:
+        # Other OSError (e.g., source doesn't exist)
+        print_fn(f"ERROR: Symlink creation failed: {e}")
+        print_fn(f"  Output dir: {output_dir}")
+        print_fn(f"  Latest dir: {latest_dir}")
+        sys.exit(1)
+
+
+def compute_file_checksum(filepath, algorithm="sha256"):
+    h = hashlib.new(algorithm)
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def print_stat(label, before=None, after=None, value=None, indent=2):
+    prefix = " " * indent
+    if before is not None and after is not None:
+        delta = after - before
+        pct = (delta / before * 100) if before != 0 else 0
+        sign = "+" if delta >= 0 else ""
+        print(f"{prefix}{label}: {before:,} -> {after:,} ({sign}{pct:.1f}%)")
+    else:
+        v = value if value is not None else after
+        if isinstance(v, float):
+            print(f"{prefix}{label}: {v:,.2f}")
+        elif isinstance(v, int):
+            print(f"{prefix}{label}: {v:,}")
+        else:
+            print(f"{prefix}{label}: {v}")
+
+
+def analyze_missing_values(df):
+    missing = {}
+    for col in df.columns:
+        null_count = df[col].isna().sum()
+        if null_count > 0:
+            missing[col] = {
+                "count": int(null_count),
+                "percent": round(null_count / len(df) * 100, 2),
+            }
+    return missing
+
+
+def print_stats_summary(stats):
+    print("\n" + "=" * 60)
+    print("STATISTICS SUMMARY")
+    print("=" * 60)
+    inp = stats["input"]
+    out = stats["output"]
+    delta = inp["total_rows"] - out["final_rows"]
+    delta_pct = (delta / inp["total_rows"] * 100) if inp["total_rows"] > 0 else 0
+    print(f"\n{'Metric':<25} {'Value':>15}")
+    print("-" * 42)
+    print(f"{'Input Rows':<25} {inp['total_rows']:>15,}")
+    print(f"{'Output Rows':<25} {out['final_rows']:>15,}")
+    print(f"{'Rows Removed':<25} {delta:>15,}")
+    print(f"{'Removal Rate':<25} {delta_pct:>14.1f}%")
+    print(f"{'Duration (seconds)':<25} {stats['timing']['duration_seconds']:>15.2f}")
+    if stats["processing"]:
+        print(f"\n{'Processing Step':<30} {'Removed':>10}")
+        print("-" * 42)
+        for step, count in stats["processing"].items():
+            print(f"{step:<30} {count:>10,}")
+    print("=" * 60)
+
+
+def save_stats(stats, out_dir):
+    stats_path = out_dir / "stats.json"
+    with open(stats_path, "w", encoding="utf-8") as f:
+        json.dump(stats, f, indent=2, default=str)
+    print(f"Saved: {stats_path.name}")
+
 
 # ==============================================================================
 # Helper Loading Functions
 # ==============================================================================
 
+
 def load_manager_keywords(root):
-    path = root / '1_Inputs' / 'managerial_roles_extracted.txt'
-    with open(path, 'r') as f:
+    path = root / "1_Inputs" / "managerial_roles_extracted.txt"
+    with open(path, "r") as f:
         keywords = [line.strip() for line in f if line.strip()]
-    pattern = re.compile('|'.join(keywords), re.IGNORECASE)
+    pattern = re.compile("|".join(keywords), re.IGNORECASE)
     print(f"  Loaded {len(keywords)} manager keywords")
     return pattern
 
+
 def load_ceo_map(root):
-    manifest_path = root / '4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet'
-    df = pd.read_parquet(manifest_path, columns=['file_name', 'ceo_name', 'prev_ceo_name', 'gvkey', 'conm', 'sic', 'start_date'])
-    
+    manifest_path = (
+        root / "4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet"
+    )
+    df = pd.read_parquet(
+        manifest_path,
+        columns=[
+            "file_name",
+            "ceo_name",
+            "prev_ceo_name",
+            "gvkey",
+            "conm",
+            "sic",
+            "start_date",
+        ],
+    )
+
     # Extract last names
-    df['ceo_last'] = df['ceo_name'].fillna('').str.split().str[-1].str.lower()
-    df['prev_ceo_last'] = df['prev_ceo_name'].fillna('').str.split().str[-1].str.lower()
-    df['ceo_name_lower'] = df['ceo_name'].fillna('').str.lower()
-    df['prev_ceo_name_lower'] = df['prev_ceo_name'].fillna('').str.lower()
-    
+    df["ceo_last"] = df["ceo_name"].fillna("").str.split().str[-1].str.lower()
+    df["prev_ceo_last"] = df["prev_ceo_name"].fillna("").str.split().str[-1].str.lower()
+    df["ceo_name_lower"] = df["ceo_name"].fillna("").str.lower()
+    df["prev_ceo_name_lower"] = df["prev_ceo_name"].fillna("").str.lower()
+
     # Extract Year from start_date
-    df['year'] = pd.to_datetime(df['start_date']).dt.year
-    
+    df["year"] = pd.to_datetime(df["start_date"]).dt.year
+
     return df
+
 
 # ==============================================================================
 # Flagging Logic
 # ==============================================================================
 
+
 def flag_speakers(df, manager_pattern, manifest_df):
     # Merge manifest info for context (company name, ceo name)
     # We only need 'conm' and CEO cols for flagging, not everything
-    cols_to_merge = ['file_name', 'conm', 'ceo_name_lower', 'prev_ceo_name_lower', 'ceo_last', 'prev_ceo_last']
+    cols_to_merge = [
+        "file_name",
+        "conm",
+        "ceo_name_lower",
+        "prev_ceo_name_lower",
+        "ceo_last",
+        "prev_ceo_last",
+    ]
     # Merge only columns that are NOT in df already (except key)
-    cols_to_merge = [c for c in cols_to_merge if c not in df.columns or c == 'file_name']
-    
-    df = df.merge(manifest_df[cols_to_merge], on='file_name', how='left')
-    
+    cols_to_merge = [
+        c for c in cols_to_merge if c not in df.columns or c == "file_name"
+    ]
+
+    df = df.merge(manifest_df[cols_to_merge], on="file_name", how="left")
+
     # Fill NA
-    role = df['role'].fillna('')
-    employer = df['employer'].fillna('')
-    conm = df['conm'].fillna('')
-    speaker_name = df['speaker_name'].fillna('')
-    
+    role = df["role"].fillna("")
+    employer = df["employer"].fillna("")
+    conm = df["conm"].fillna("")
+    speaker_name = df["speaker_name"].fillna("")
+
     # Analyst
-    df['is_analyst'] = role.str.contains('analyst', case=False)
-    
+    df["is_analyst"] = role.str.contains("analyst", case=False)
+
     # Operator
-    df['is_operator'] = role.str.contains('operator', case=False)
-    
+    df["is_operator"] = role.str.contains("operator", case=False)
+
     # Manager
     # Keyword match
     is_keyword = role.str.contains(manager_pattern)
     # Employer match
     is_employer = employer.str.lower() == conm.str.lower()
-    
-    df['is_manager'] = (~df['is_analyst'] & ~df['is_operator']) & (is_keyword | is_employer)
-    
+
+    df["is_manager"] = (~df["is_analyst"] & ~df["is_operator"]) & (
+        is_keyword | is_employer
+    )
+
     # CEO (Tiered)
     speaker_lower = speaker_name.str.lower()
     speaker_last = speaker_name.str.split().str[-1].str.lower()
-    
-    is_ceo_exact = (speaker_lower == df['ceo_name_lower']) | (speaker_lower == df['prev_ceo_name_lower'])
-    is_ceo_last = (speaker_last == df['ceo_last']) | (speaker_last == df['prev_ceo_last'])
-    
-    df['is_ceo'] = is_ceo_exact | is_ceo_last
-    
+
+    is_ceo_exact = (speaker_lower == df["ceo_name_lower"]) | (
+        speaker_lower == df["prev_ceo_name_lower"]
+    )
+    is_ceo_last = (speaker_last == df["ceo_last"]) | (
+        speaker_last == df["prev_ceo_last"]
+    )
+
+    df["is_ceo"] = is_ceo_exact | is_ceo_last
+
     return df
+
 
 # ==============================================================================
 # Aggregation (Weighted - Ratio of Sums)
 # ==============================================================================
 
+
 def aggregate_weighted(df, sample_mask, context_mask, count_cols):
     subset = df[sample_mask & context_mask].copy()
-    if len(subset) == 0: return None
-    
+    if len(subset) == 0:
+        return None
+
     # Group by file
-    gb = subset.groupby('file_name')
-    
+    gb = subset.groupby("file_name")
+
     # Sum Counts and Totals
-    sums = gb[count_cols + ['total_tokens']].sum()
-    
+    sums = gb[count_cols + ["total_tokens"]].sum()
+
     # Calculate Pct (x100)
     results = {}
-    total_tokens = sums['total_tokens'].replace(0, np.nan)
-    
+    total_tokens = sums["total_tokens"].replace(0, np.nan)
+
     for col in count_cols:
-        cat = col.replace('_count', '')
+        cat = col.replace("_count", "")
         # Variable naming: Sample_Context_Cat_pct
         # We handle sample/context prefix outside
         pct = (sums[col] / total_tokens) * 100.0
-        results[f'{cat}_pct'] = pct
-        
+        results[f"{cat}_pct"] = pct
+
     return pd.DataFrame(results)
 
+
 def process_year(year, root, manager_pattern, manifest_df, out_dir):
-    in_path = root / f"4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
+    in_path = (
+        root
+        / f"4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
+    )
     if not in_path.exists():
         print(f"  Skipping {year}: Input not found")
-        return
-    
+        return None
+
     print(f"\nProcessing {year}...")
     df = pd.read_parquet(in_path)
-    
+    input_rows = len(df)
+
     # Flag
     df = flag_speakers(df, manager_pattern, manifest_df)
-    
-    print(f"  Analyst: {df['is_analyst'].sum():,}")
-    print(f"  Manager: {df['is_manager'].sum():,}")
-    
+
+    analyst_count = df["is_analyst"].sum()
+    manager_count = df["is_manager"].sum()
+    ceo_count = df["is_ceo"].sum()
+    operator_count = df["is_operator"].sum()
+
+    print(f"  Analyst: {analyst_count:,}")
+    print(f"  Manager: {manager_count:,}")
+    print(f"  CEO: {ceo_count:,}")
+
     # Identify count columns
-    count_cols = [c for c in df.columns if c.endswith('_count')]
-    
+    count_cols = [c for c in df.columns if c.endswith("_count")]
+
     # Define Aggregations
     # Legacy mainly cared about: Manager QA, Analyst QA (?), Manager Pres (?)
     # We will generate comprehensive set
-    
+
     samples = {
-        'Manager': df['is_manager'],
-        'Analyst': df['is_analyst'],
-        'CEO': df['is_ceo'],
-        'NonCEO_Manager': df['is_manager'] & ~df['is_ceo'],  # Managers excluding CEO
-        'Entire': pd.Series(True, index=df.index)
+        "Manager": df["is_manager"],
+        "Analyst": df["is_analyst"],
+        "CEO": df["is_ceo"],
+        "NonCEO_Manager": df["is_manager"] & ~df["is_ceo"],  # Managers excluding CEO
+        "Entire": pd.Series(True, index=df.index),
     }
-    
+
     contexts = {
-        'QA': df['context'] == 'qa',
-        'Pres': df['context'] == 'pres',
-        'All': df['context'].isin(['qa', 'pres'])
+        "QA": df["context"] == "qa",
+        "Pres": df["context"] == "pres",
+        "All": df["context"].isin(["qa", "pres"]),
     }
-    
+
     # Initialize result with metadata
     # Use manifest metadata
-    meta = manifest_df[manifest_df['year'] == year][['file_name', 'start_date', 'gvkey', 'conm', 'sic']].copy()
-    
+    meta = manifest_df[manifest_df["year"] == year][
+        ["file_name", "start_date", "gvkey", "conm", "sic"]
+    ].copy()
+
+    variables_created = 0
     for s_name, s_mask in samples.items():
         for c_name, c_mask in contexts.items():
             agg_df = aggregate_weighted(df, s_mask, c_mask, count_cols)
             if agg_df is not None:
                 # Rename columns
-                agg_df.columns = [f'{s_name}_{c_name}_{c}' for c in agg_df.columns]
+                agg_df.columns = [f"{s_name}_{c_name}_{c}" for c in agg_df.columns]
+                variables_created += len(agg_df.columns)
                 # Merge
-                meta = meta.merge(agg_df, on='file_name', how='left')
-    
+                meta = meta.merge(agg_df, on="file_name", how="left")
+
     # Fill NaN with 0? Or keep NaN for missing sections?
     # Legacy behavior: likely keep NaN or impute.
     # We will keep NaN to distinctions between "No Uncertainty" (0) and "No Text" (NaN).
-    
+
     out_path = out_dir / f"linguistic_variables_{year}.parquet"
     meta.to_parquet(out_path, index=False)
-    print(f"  Saved {out_path.name}: {len(meta):,} rows")
+    print(f"  Saved {out_path.name}: {len(meta):,} rows, {variables_created} variables")
+
+    return {
+        "rows": len(meta),
+        "cols": len(meta.columns),
+        "speaker_flags": {
+            "analyst": int(analyst_count),
+            "manager": int(manager_count),
+            "ceo": int(ceo_count),
+            "operator": int(operator_count),
+        },
+    }
+
 
 def main():
+    start_time = time.perf_counter()
+    start_iso = datetime.now().isoformat()
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+
     print("=== Step 2.2: Construct Variables (Weighted) ===")
     root = Path(__file__).parent.parent.parent
     setup_logging()
-    
-    out_base = root / '4_Outputs' / '2_Textual_Analysis'
-    out_dir = out_base / f'2.2_Variables' / datetime.now().strftime("%Y-%m-%d_%H%M%S")
+
+    out_base = root / "4_Outputs" / "2_Textual_Analysis"
+    out_dir = out_base / f"2.2_Variables" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Load References
+
+    stats = {
+        "step_id": "2.2_ConstructVariables",
+        "timestamp": timestamp,
+        "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
+        "processing": {},
+        "output": {"final_rows": 0, "final_columns": 0, "files": []},
+        "missing_values": {},
+        "speaker_flags": {},
+        "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
+    }
+
+    # Load References and checksum inputs
+    keywords_path = root / "1_Inputs" / "managerial_roles_extracted.txt"
+    manifest_path = (
+        root / "4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet"
+    )
+
+    stats["input"]["files"].append(str(keywords_path))
+    stats["input"]["checksums"]["managerial_roles_extracted.txt"] = (
+        compute_file_checksum(keywords_path)
+    )
+    stats["input"]["files"].append(str(manifest_path))
+    stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
+        compute_file_checksum(manifest_path)
+    )
+
     manager_pattern = load_manager_keywords(root)
     manifest_df = load_ceo_map(root)
-    
+    stats["input"]["total_rows"] = len(manifest_df)
+    stats["input"]["total_columns"] = len(manifest_df.columns)
+    print_stat("Manifest rows", value=len(manifest_df))
+
     # Process
+    output_rows = 0
+    output_cols = 0
+    total_speaker_flags = {"analyst": 0, "manager": 0, "ceo": 0, "operator": 0}
     for year in range(2002, 2019):
-        process_year(year, root, manager_pattern, manifest_df, out_dir)
-        
-    update_latest_symlink(out_base / '2.2_Variables' / 'latest', out_dir)
+        year_output = process_year(year, root, manager_pattern, manifest_df, out_dir)
+        if year_output:
+            output_rows += year_output["rows"]
+            output_cols = max(output_cols, year_output["cols"])
+            stats["output"]["files"].append(f"linguistic_variables_{year}.parquet")
+            if "speaker_flags" in year_output:
+                for k, v in year_output["speaker_flags"].items():
+                    total_speaker_flags[k] += v
+
+    stats["output"]["final_rows"] = output_rows
+    stats["output"]["final_columns"] = output_cols
+    stats["speaker_flags"] = total_speaker_flags
+
+    end_time = time.perf_counter()
+    stats["timing"]["end_iso"] = datetime.now().isoformat()
+    stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
+
+    print_stats_summary(stats)
+    save_stats(stats, out_dir)
+
+    update_latest_symlink(out_base / "2.2_Variables" / "latest", out_dir)
     print("\n=== Complete ===")
+
 
 if __name__ == "__main__":
     main()
