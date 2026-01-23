@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 """Test chunked_reader utility produces bitwise-identical results."""
 
+import pytest
 import pandas as pd
 from pathlib import Path
 import sys
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
+# Add 2_Scripts to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
-from chunked_reader import read_in_chunks, read_selected_columns, process_in_chunks
+from shared.chunked_reader import (
+    read_in_chunks,
+    read_selected_columns,
+    process_in_chunks,
+)
 
 
+@pytest.mark.unit
 def test_read_in_chunks():
     """Test that read_in_chunks produces same result as full read."""
     # Use a sample output file
@@ -19,8 +25,7 @@ def test_read_in_chunks():
     )
 
     if not test_file.exists():
-        print(f"Skipping test: {test_file} not found")
-        return
+        pytest.skip(f"{test_file} not found")
 
     # Read fully
     df_full = pd.read_parquet(test_file)
@@ -31,9 +36,9 @@ def test_read_in_chunks():
 
     # Verify identical
     assert df_full.equals(df_chunks), "Chunked read differs from full read!"
-    print("[OK] read_in_chunks produces identical results")
 
 
+@pytest.mark.unit
 def test_read_selected_columns():
     """Test that read_selected_columns reduces memory usage."""
     test_file = Path(
@@ -41,8 +46,7 @@ def test_read_selected_columns():
     )
 
     if not test_file.exists():
-        print(f"Skipping test: {test_file} not found")
-        return
+        pytest.skip(f"{test_file} not found")
 
     # Read full
     df_full = pd.read_parquet(test_file)
@@ -59,11 +63,8 @@ def test_read_selected_columns():
     assert list(df_selected.columns) == cols_to_read, "Column mismatch!"
     assert len(df_selected) == len(df_full), "Row count mismatch!"
 
-    print(
-        f"[OK] read_selected_columns works ({len(df_full)} cols -> {len(df_selected)} cols)"
-    )
 
-
+@pytest.mark.unit
 def test_process_in_chunks():
     """Test that process_in_chunks combines results correctly."""
     test_file = Path(
@@ -71,8 +72,7 @@ def test_process_in_chunks():
     )
 
     if not test_file.exists():
-        print(f"Skipping test: {test_file} not found")
-        return
+        pytest.skip(f"{test_file} not found")
 
     # Full read
     df_full = pd.read_parquet(test_file)
@@ -90,16 +90,3 @@ def test_process_in_chunks():
     )
 
     assert total == len(df_full), f"Row count mismatch: {total} vs {len(df_full)}"
-    print(f"[OK] process_in_chunks combines results correctly ({total} rows)")
-
-
-if __name__ == "__main__":
-    print("Testing chunked_reader utility...")
-    print()
-
-    test_read_in_chunks()
-    test_read_selected_columns()
-    test_process_in_chunks()
-
-    print()
-    print("All tests passed!")
