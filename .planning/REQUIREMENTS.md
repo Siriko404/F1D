@@ -88,42 +88,50 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STAT-01 | — | Pending |
-| STAT-02 | — | Pending |
-| STAT-03 | — | Pending |
-| STAT-04 | — | Pending |
-| STAT-05 | — | Pending |
-| STAT-06 | — | Pending |
-| STAT-07 | — | Pending |
-| STAT-08 | — | Pending |
-| STAT-09 | — | Pending |
-| STAT-10 | — | Pending |
-| STAT-11 | — | Pending |
-| STAT-12 | — | Pending |
-| SAMP-01 | — | Pending |
-| SAMP-02 | — | Pending |
-| SAMP-03 | — | Pending |
-| SAMP-04 | — | Pending |
-| SAMP-05 | — | Pending |
-| SAMP-06 | — | Pending |
-| SAMP-07 | — | Pending |
-| DOC-01 | — | Pending |
-| DOC-02 | — | Pending |
-| DOC-03 | — | Pending |
-| DOC-04 | — | Pending |
-| DOC-05 | — | Pending |
-| DOC-06 | — | Pending |
-| DOC-07 | — | Pending |
-| SUMM-01 | — | Pending |
-| SUMM-02 | — | Pending |
-| SUMM-03 | — | Pending |
-| SUMM-04 | — | Pending |
+| STAT-01 | Phase 1 | Pending |
+| STAT-02 | Phase 1 | Pending |
+| STAT-03 | Phase 1 | Pending |
+| STAT-04 | Phase 1 | Pending |
+| STAT-05 | Phase 1 | Pending |
+| STAT-06 | Phase 1 | Pending |
+| STAT-07 | Phase 1 | Pending |
+| STAT-08 | Phase 1 | Pending |
+| STAT-09 | Phase 1 | Pending |
+| STAT-10 | Phase 1 | Pending |
+| STAT-11 | Phase 1 | Pending |
+| STAT-12 | Phase 1 | Pending |
+| SAMP-01 | Phase 2 | Pending |
+| SAMP-02 | Phase 2 | Pending |
+| SAMP-03 | Phase 2 | Pending |
+| SAMP-04 | Phase 2 | Pending |
+| SAMP-05 | Phase 2 | Pending |
+| SAMP-06 | Phase 2 | Pending |
+| SAMP-07 | Phase 2 | Pending |
+| DOC-01 | Phase 5 | Pending |
+| DOC-02 | Phase 5 | Pending |
+| DOC-03 | Phase 5 | Pending |
+| DOC-04 | Phase 5 | Pending |
+| DOC-05 | Phase 5 | Pending |
+| DOC-06 | Phase 5 | Pending |
+| DOC-07 | Phase 5 | Pending |
+| SUMM-01 | Phase 4 | Pending |
+| SUMM-02 | Phase 4 | Pending |
+| SUMM-03 | Phase 4 | Pending |
+| SUMM-04 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 30 total
-- Mapped to phases: 0
-- Unmapped: 30 ⚠️
+- Mapped to phases: 30 ✓
+- Unmapped: 0
+
+**Phase Distribution:**
+- Phase 1 (Template & Pilot): 12 requirements (STAT-01-12)
+- Phase 2 (Step 1 Sample): 7 requirements (SAMP-01-07)
+- Phase 3 (Step 2 Text): rollout phase (inherits STAT pattern)
+- Phase 4 (Steps 3-4): 4 requirements (SUMM-01-04)
+- Phase 5 (README): 7 requirements (DOC-01-07)
+- Phase 6 (Verification): validation phase (verifies all)
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after initial definition*
+*Last updated: 2026-01-22 after roadmap creation*
