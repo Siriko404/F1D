@@ -34,6 +34,18 @@ import yaml
 import shutil
 import subprocess
 
+# Import shared symlink utility for 'latest' link management
+try:
+    from shared.symlink_utils import update_latest_link
+except ImportError:
+    # Fallback if shared/__init__.py hasn't run yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = _Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.symlink_utils import update_latest_link
+
 # Import shared validation modules (path will be added to sys.path by shared/__init__.py)
 try:
     from shared.subprocess_validation import validate_script_path
@@ -229,21 +241,11 @@ def main():
             shutil.copy2(manifest_source, manifest_dest)
             print_dual(f"Final manifest copied to: {manifest_dest}")
 
-        # Update latest symlink (directory junction on Windows)
-        if paths["latest_dir"].exists():
-            if paths["latest_dir"].is_symlink() or paths["latest_dir"].is_junction():
-                paths["latest_dir"].unlink()
-            else:
-                shutil.rmtree(paths["latest_dir"])
-
-        try:
-            paths["latest_dir"].symlink_to(
-                paths["output_dir"], target_is_directory=True
-            )
-            print_dual(f"Updated 'latest' -> {paths['output_dir'].name}")
-        except OSError:
-            shutil.copytree(paths["output_dir"], paths["latest_dir"])
-            print_dual(f"Copied outputs to 'latest' (symlink not available)")
+        # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
+        update_latest_link(
+            target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
+        )
+        print_dual(f"Updated 'latest' -> {paths['output_dir'].name}")
 
     else:
         print_dual("Status: FAILED")

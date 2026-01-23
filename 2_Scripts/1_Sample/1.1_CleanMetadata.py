@@ -46,7 +46,8 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import generate_variable_reference, update_latest_symlink
+from utils import generate_variable_reference
+from shared.symlink_utils import update_latest_link
 
 # Import shared validation module (for opt-in data validation)
 try:
@@ -607,8 +608,10 @@ def main():
     report_file.write_text("\n".join(report_lines), encoding="utf-8")
     print_dual(f"Report saved: {report_file}")
 
-    # Update latest symlink
-    update_latest_symlink(paths["latest_dir"], paths["output_dir"], print_dual)
+    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
+    update_latest_link(
+        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
+    )
 
     print_dual("\n" + "=" * 80)
     print_dual("Step 1.1 completed successfully.")

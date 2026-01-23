@@ -45,7 +45,8 @@ try:
     utils = importlib.util.module_from_spec(spec)
     sys.modules["utils"] = utils
     spec.loader.exec_module(utils)
-    from utils import generate_variable_reference, update_latest_symlink
+    from utils import generate_variable_reference
+    from shared.symlink_utils import update_latest_link
 except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
     sys.exit(1)
@@ -568,8 +569,10 @@ def main():
     var_ref_file = paths["output_dir"] / "variable_reference.csv"
     generate_variable_reference(monthly_df, var_ref_file, print_dual)
 
-    # Update latest symlink
-    update_latest_symlink(paths["latest_dir"], paths["output_dir"], print_dual)
+    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
+    update_latest_link(
+        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
+    )
 
     # Finalize timing and save stats
     end_time = time.perf_counter()
@@ -606,12 +609,12 @@ def main():
 
     # Add anomaly detection for numeric columns (tenure_range, ceo_count)
     # Check if there are any numeric columns suitable for anomaly detection
-    numeric_cols = df_monthly.select_dtypes(include=[np.number]).columns.tolist()
+    numeric_cols = monthly_df.select_dtypes(include=[np.number]).columns.tolist()
     # Filter to relevant numeric columns for tenure map
     anomaly_cols = [col for col in numeric_cols if col in ["tenure_range", "ceo_count"]]
     if anomaly_cols:
         stats["quality_anomalies"] = detect_anomalies_zscore(
-            df_monthly, anomaly_cols, threshold=3.0
+            monthly_df, anomaly_cols, threshold=3.0
         )
 
     # Print stats summary

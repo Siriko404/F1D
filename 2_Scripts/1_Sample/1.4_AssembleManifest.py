@@ -47,9 +47,9 @@ try:
     spec.loader.exec_module(utils)
     from utils import (
         generate_variable_reference,
-        update_latest_symlink,
         get_latest_output_dir,
     )
+    from shared.symlink_utils import update_latest_link
 except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
     sys.exit(1)
@@ -606,8 +606,10 @@ def main():
     report_file.write_text("\n".join(report_lines), encoding="utf-8")
     print_dual(f"Report saved: {report_file}")
 
-    # Update latest symlink
-    update_latest_symlink(paths["latest_dir"], paths["output_dir"], print_dual)
+    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
+    update_latest_link(
+        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
+    )
 
     # Finalize timing and save stats
     end_time = time.perf_counter()

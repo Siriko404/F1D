@@ -49,48 +49,28 @@ try:
     utils = importlib.util.module_from_spec(spec)
     sys.modules["utils"] = utils
     spec.loader.exec_module(utils)
-    from utils import generate_variable_reference, update_latest_symlink
+    from utils import generate_variable_reference
+    from shared.symlink_utils import update_latest_link
 except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
     sys.exit(1)
 import re
 import zipfile
 
-# Try rapidfuzz
-try:
+# Import string matching utilities from shared module
+# Add parent directory to sys.path for shared module imports
+script_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(script_dir))
+
+from shared.string_matching import (
+    load_matching_config,
+    get_scorer,
+    RAPIDFUZZ_AVAILABLE,
+)
+
+# Load RapidFuzz directly for fuzzy matching operations
+if RAPIDFUZZ_AVAILABLE:
     from rapidfuzz import fuzz, process
-
-    FUZZY_AVAILABLE = True
-    FUZZY_VERSION = "unknown"  # Could check with __version__
-except ImportError:
-    FUZZY_AVAILABLE = False
-    FUZZY_VERSION = None
-
-
-def warn_if_fuzzy_missing():
-    """Log warning if fuzzy matching is unavailable."""
-    if not FUZZY_AVAILABLE:
-        print("\n" + "=" * 60, file=sys.stderr)
-        print("WARNING: Optional dependency 'rapidfuzz' not installed", file=sys.stderr)
-        print("=" * 60, file=sys.stderr)
-        print("\nImpact on results:", file=sys.stderr)
-        print("  - Tier 3 (fuzzy name matching) will be SKIPPED", file=sys.stderr)
-        print("  - Lower entity matching rates expected", file=sys.stderr)
-        print("  - Companies matched via PERMNO/CUSIP are unaffected", file=sys.stderr)
-        print("\nInstallation:", file=sys.stderr)
-        print("  pip install rapidfuzz", file=sys.stderr)
-        print(
-            "\nNote: Fuzzy matching is optional. The script will continue",
-            file=sys.stderr,
-        )
-        print(
-            "      without it, using only exact matches (Tiers 1 & 2).", file=sys.stderr
-        )
-        print("=" * 60 + "\n", file=sys.stderr)
-
-
-# Call at script startup
-warn_if_fuzzy_missing()
 
 # ==============================================================================
 # Dual-write logging utility
@@ -759,9 +739,20 @@ def main():
     # ==========================================================================
     # TIER 3: Fuzzy Name Match
     # ==========================================================================
-    print_dual("\n  Tier 3: Fuzzy Name Match (threshold=92)...")
+    # Load fuzzy matching threshold from config
+    matching_config = load_matching_config()
+    fuzzy_threshold = matching_config.get("company_name", {}).get(
+        "default_threshold", 92.0
+    )
+    scorer_name = matching_config.get("company_name", {}).get(
+        "scorer", "token_sort_ratio"
+    )
 
-    if not FUZZY_AVAILABLE:
+    print_dual(
+        f"\n  Tier 3: Fuzzy Name Match (threshold={fuzzy_threshold:.0f}, scorer={scorer_name})..."
+    )
+
+    if not RAPIDFUZZ_AVAILABLE:
         print_dual("    WARNING: rapidfuzz not available, skipping")
     else:
         unmatched_mask = unique_df["gvkey"].isna()
@@ -807,11 +798,14 @@ def main():
             for i, (idx, row) in enumerate(tier3_candidates.iterrows(), 1):
                 query_name = row["company_name_norm"]
 
+                # Get the scorer function from config
+                scorer = get_scorer(scorer_name)
+
                 result = process.extractOne(
                     query_name,
                     choice_list,
-                    scorer=fuzz.token_sort_ratio,
-                    score_cutoff=92,
+                    scorer=scorer,
+                    score_cutoff=fuzzy_threshold,
                 )
 
                 if result is not None:
@@ -959,8 +953,10 @@ def main():
     var_ref_file = paths["output_dir"] / "variable_reference.csv"
     generate_variable_reference(df_linked, var_ref_file, print_dual)
 
-    # Update latest symlink
-    update_latest_symlink(paths["latest_dir"], paths["output_dir"], print_dual)
+    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
+    update_latest_link(
+        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
+    )
 
     # Finalize timing
     end_time = time.perf_counter()
