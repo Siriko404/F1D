@@ -939,6 +939,79 @@ All functions are deterministic:
 
 ---
 
+## parallel_utils.py
+
+Deterministic random number generation for parallel processing.
+
+### When to Use
+
+- **Parallel workers**: When using ProcessPoolExecutor or multiprocessing
+- **Reproducibility**: When random numbers must be deterministic across runs
+- **Parallel RNG**: When bootstrapping, Monte Carlo, or sampling in parallel
+- **Avoid seed collision**: When multiple workers need independent random streams
+
+### Functions
+
+- `spawn_worker_rng(worker_id, root_seed)`: Create deterministic RNG for parallel workers
+- `get_deterministic_random(seed)`: Create deterministic RNG for single-threaded use
+
+### API Reference
+
+#### `spawn_worker_rng(worker_id: int, root_seed: int) -> np.random.Generator`
+
+Create deterministic random number generator stream for a specific worker.
+
+```python
+from shared.parallel_utils import spawn_worker_rng
+
+# In parallel worker function
+rng = spawn_worker_rng(worker_id, root_seed=42)
+result = rng.uniform(size=1000)
+```
+
+**Parameters:**
+- `worker_id`: Worker identifier (used in seed propagation)
+- `root_seed`: Root seed for reproducibility (e.g., from config/project.yaml)
+
+**Returns:** `numpy.random.Generator` - Deterministic RNG instance for this worker
+
+**Determinism Guarantees:**
+- Same worker_id + root_seed always produces same random sequence
+- Different worker_ids produce independent random sequences
+- No adjacent seed collision (worker streams don't overlap)
+
+#### `get_deterministic_random(seed: int) -> np.random.Generator`
+
+Convenience function for single-threaded deterministic RNG.
+
+```python
+from shared.parallel_utils import get_deterministic_random
+
+rng = get_deterministic_random(42)
+sample = rng.integers(0, 100, size=10)
+```
+
+**Parameters:**
+- `seed`: Seed for deterministic random number generation
+
+**Returns:** `numpy.random.Generator` - Deterministic RNG instance
+
+### Determinism
+
+Uses NumPy's SeedSequence spawning to ensure:
+- Independent random streams for each worker
+- Overall reproducibility (same seed = same results)
+- No adjacent seed collision (unlike manual seed addition)
+
+**Reference:** https://numpy.org/doc/stable/reference/random/parallel.html
+
+**Anti-patterns to avoid:**
+- Manual seed addition: `worker_seed = root_seed + worker_id` (unsafe - adjacent seeds produce similar streams)
+- Shared RNG: Passing same RNG to all workers (breaks determinism, race conditions)
+- No seeding: Using `np.random.default_rng()` without seeds (non-deterministic)
+
+---
+
 ## Module Usage Example
 
 ```python
