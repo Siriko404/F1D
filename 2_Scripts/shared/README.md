@@ -244,6 +244,173 @@ All functions are deterministic:
 - statsmodels OLS produces identical results for same data and formula
 - Diagnostics extracted deterministically from fitted model
 - Graceful error handling for missing dependencies
+---
+
+## regression_validation.py
+
+Regression input validation to catch data issues before model estimation.
+
+### When to Use
+
+- **Input validation**: Validate regression inputs before running models
+- **Data quality checks**: Detect missing columns, type mismatches, missing values
+- **Sample size validation**: Ensure sufficient observations for regression
+- **Multicollinearity detection**: Check for high VIF in independent variables
+- **Fail fast**: Catch issues early with clear error messages
+
+### Security Features
+
+- Validates regression inputs before model estimation
+- Catches missing columns, type mismatches, and missing values
+- Provides clear error messages for debugging
+- Checks sample size and multicollinearity
+
+### API Reference
+
+#### `validate_columns(df, required_columns, optional_columns=None)`
+
+Validate that all required columns exist in DataFrame.
+
+```python
+from shared.regression_validation import validate_columns
+
+validate_columns(
+    df,
+    required_columns=['gvkey', 'year', 'ceo_id'],
+    optional_columns=['returns', 'market_cap']
+)
+```
+
+**Parameters:**
+- `df`: DataFrame to validate
+- `required_columns`: List of columns that must exist
+- `optional_columns`: List of columns that may exist (for validation only)
+
+**Raises:** `RegressionValidationError` if required columns missing
+
+#### `validate_data_types(df, type_requirements)`
+
+Validate DataFrame columns have expected data types.
+
+```python
+from shared.regression_validation import validate_data_types
+
+validate_data_types(
+    df,
+    type_requirements={
+        'year': 'int',
+        'ceo_id': 'int',
+        'returns': 'float'
+    }
+)
+```
+
+**Parameters:**
+- `df`: DataFrame to validate
+- `type_requirements`: Dict mapping column name to expected type (int, float, str, bool)
+
+**Raises:** `RegressionValidationError` if columns have unexpected types
+
+#### `validate_no_missing_independent(df, independent_vars, allow_na_ratio=0.0)`
+
+Validate independent variables have no missing values (or within threshold).
+
+```python
+from shared.regression_validation import validate_no_missing_independent
+
+validate_no_missing_independent(
+    df,
+    independent_vars=['size', 'leverage', 'profitability'],
+    allow_na_ratio=0.0  # No missing allowed
+)
+```
+
+**Parameters:**
+- `df`: DataFrame to validate
+- `independent_vars`: List of independent variable column names
+- `allow_na_ratio`: Maximum ratio of missing values allowed (0.0 = none allowed)
+
+**Raises:** `RegressionValidationError` if missing values exceed threshold
+
+#### `validate_regression_data(df, formula, required_columns=None, type_requirements=None, allow_na_independent=0.0)`
+
+Comprehensive validation of regression data before model estimation.
+
+```python
+from shared.regression_validation import validate_regression_data
+
+validate_regression_data(
+    df,
+    formula="linguistic_uncertainty ~ firm_controls + C(ceo_id)",
+    required_columns=['gvkey', 'year'],
+    allow_na_independent=0.0
+)
+```
+
+**Parameters:**
+- `df`: DataFrame to validate
+- `formula`: Regression formula (for parsing variable names)
+- `required_columns`: List of columns that must exist
+- `type_requirements`: Dict mapping column names to expected types
+- `allow_na_independent`: Max missing ratio for independent variables
+
+**Returns:** Validated DataFrame
+
+**Raises:** `RegressionValidationError` if validation fails
+
+**Note:** Parses formula to extract dependent and independent variables.
+
+#### `validate_sample_size(df, min_observations=30)`
+
+Validate DataFrame has minimum number of observations for regression.
+
+```python
+from shared.regression_validation import validate_sample_size
+
+validate_sample_size(df, min_observations=50)
+```
+
+**Parameters:**
+- `df`: DataFrame to validate
+- `min_observations`: Minimum number of observations required
+
+**Raises:** `RegressionValidationError` if sample size insufficient
+
+#### `check_multicollinearity(df, independent_vars, vif_threshold=10.0)`
+
+Check for multicollinearity using VIF (Variance Inflation Factor).
+
+```python
+from shared.regression_validation import check_multicollinearity
+
+vif_dict = check_multicollinearity(
+    df,
+    independent_vars=['size', 'leverage', 'profitability'],
+    vif_threshold=10.0
+)
+```
+
+**Parameters:**
+- `df`: DataFrame with independent variables
+- `independent_vars`: List of independent variable names
+- `vif_threshold`: VIF threshold for warning
+
+**Returns:** Dict mapping variable names to VIF values
+
+**Warning:** Logs warning if any variable has VIF > vif_threshold
+
+### Dependencies
+
+- `pandas`: Required
+- `numpy`: Required
+- `statsmodels`: Optional (raises ImportError if missing, skips VIF check)
+
+### Determinism
+
+All functions are deterministic:
+- Same data always produces same validation result
+- Type checks are consistent
+- Missing value thresholds are exact
 
 ---
 
