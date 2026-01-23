@@ -193,6 +193,24 @@ Plans:
 - [x] 09-02: Implement environment variable validation schema (Wave 1) ✅
 - [x] 09-03: Add input data validation layer (Wave 2) ✅
 
+### Phase 10: Performance Optimization
+**Goal**: Improve processing speed and reduce resource usage
+**Depends on**: Phase 9
+**Requirements**: From 10-RESEARCH.md - Performance optimization patterns (vectorization, parallelization, caching, chunked processing)
+**Success Criteria** (what must be TRUE):
+  1. All .iterrows() replaced with vectorized operations or .itertuples()
+  2. Year loops use parallelization with ProcessPoolExecutor (respect thread_count config)
+  3. Large Parquet files can use PyArrow dataset API for streaming or chunked processing
+  4. Repeated file reads use caching or lazy loading with duckdb/pyarrow
+**Status**: 📝 PLANNED (4 plans in 3 waves)
+**Plans**: 4 plans
+
+Plans:
+- [ ] 10-01: Replace iterrows() with vectorized operations in 2.1_TokenizeAndCount.py (Wave 1)
+- [ ] 10-02: Add parallelization for year loops in 2.1_TokenizeAndCount.py (Wave 2)
+- [ ] 10-03: Implement chunked processing utility with PyArrow dataset API (Wave 1)
+- [ ] 10-04: Add caching for repeated data loads in 4.1_EstimateCeoClarity.py (Wave 3)
+
 ## Progress
 
 **Execution Order:**
@@ -207,12 +225,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | | 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
  | | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
  | | | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
- | | | 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
- | | | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
-| ---
-| | 8. Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
-| | 9. Security Hardening | 0/3 | 📝 PLANNED | - |
+  | | | 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
+  | | | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
+  | | | 10. Performance Optimization | 0/4 | 📝 PLANNED | 2026-01-23 |
 
 ---
 *Roadmap created: 2026-01-22*
-*Total plans: 41 | Total requirements: 30 mapped*
+*Total plans: 45 | Total requirements: 30 mapped*
