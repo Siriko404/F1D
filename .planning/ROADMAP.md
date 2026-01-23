@@ -26,7 +26,7 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 - [x] **Phase 9: Security Hardening** - Add validation layers ✅ COMPLETED 2026-01-23
 - [x] **Phase 10: Performance Optimization** - Vectorize operations, add parallelization ✅ COMPLETED 2026-01-23
 - [x] **Phase 11: Testing Infrastructure** - Comprehensive test suite with pytest ✅ COMPLETED 2026-01-23
-- [ ] **Phase 12: Data Quality & Observability** - Quality reports and state tracking ○ PENDING
+- [ ] **Phase 12: Data Quality & Observability** - Quality reports and state tracking ○ IN PLANNING
 - [ ] **Phase 13: Script Refactoring** - Break down large scripts, improve modularity ○ PENDING
 - [ ] **Phase 14: Dependency Management** - Version pinning and compatibility testing ○ PENDING
 - [ ] **Phase 15: Scaling Preparation** - Remove scaling limits for future growth ○ PENDING
@@ -211,6 +211,45 @@ Plans:
 - [x] 10-03: Implement chunked processing utility with PyArrow dataset API (Wave 1) ✅
 - [x] 10-04: Add caching for repeated data loads in 4.1_EstimateCeoClarity.py (Wave 3) ✅
 
+### Phase 11: Testing Infrastructure
+**Goal**: Comprehensive test suite with pytest
+**Depends on**: Phase 10
+**Requirements**: Test infrastructure for unit, integration, regression tests
+**Success Criteria** (what must be TRUE):
+  1. pytest framework configured with proper markers (unit, integration, regression, slow)
+  2. Unit tests exist for shared modules (validation, chunked_reader)
+  3. Integration tests verify end-to-end pipeline execution
+  4. Regression tests ensure output stability with checksums
+  5. CI/CD workflow for automated testing
+**Status**: ✅ COMPLETED 2026-01-23 (7 plans in 2 waves)
+**Plans**: 7 plans
+
+Plans:
+- [x] 11-01: pytest framework configuration (commits from 11-02) ✅
+- [x] 11-02: Unit tests for shared modules (74 tests) ✅
+- [x] 11-03: Integration tests for pipeline (15 tests) ✅
+- [x] 11-04: Regression tests for output stability (5 tests) ✅
+- [x] 11-05: Data validation edge case tests (8 tests) ✅
+- [x] 11-06: Edge case tests for common scenarios (4 tests) ✅
+- [x] 11-07: CI/CD configuration with GitHub Actions (commits b474abb, 6f616e3, 1ad545c) ✅
+
+### Phase 12: Data Quality & Observability
+**Goal**: Quality reports and state tracking
+**Depends on**: Phase 11
+**Requirements**: OBS-01, OBS-02, OBS-03, OBS-04
+**Success Criteria** (what must be TRUE):
+  1. All scripts track memory usage (peak, average per operation)
+  2. All scripts track throughput (rows/second for data operations)
+  3. Output files have checksums (SHA-256) for reproducibility verification
+  4. Data quality anomalies are detected and flagged (outliers, missing values, inconsistencies)
+**Status**: 📝 PLANNED (3 plans in 3 waves)
+**Plans**: 3 plans
+
+Plans:
+- [ ] 12-01: Observability infrastructure (psutil, inline helpers, unit tests) (Wave 1)
+- [ ] 12-02: Rollout to Steps 1-2 (8 scripts) (Wave 2)
+- [ ] 12-03: Rollout to Steps 3-4 (11 scripts) and summary report (Wave 3)
+
 ## Progress
 
 **Execution Order:**
@@ -230,11 +269,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
 | 10. Performance Optimization | 4/4 | ✅ COMPLETED | 2026-01-23 |
 | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
+| 12. Data Quality & Observability | 0/3 | 📝 PLANNED | - |
 
 
 ---
 ---
 *Roadmap created: 2026-01-22*
-*Roadmap created: 2026-01-22*
-*Total plans: 49 | Total requirements: 30 mapped*
-*Total plans: 49 | Total requirements: 30 mapped*
+*Roadmap updated: 2026-01-23 (Phase 12 plans added)*
+*Total plans: 59 | Total requirements: 30 mapped*
