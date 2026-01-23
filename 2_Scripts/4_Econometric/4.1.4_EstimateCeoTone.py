@@ -52,6 +52,27 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import shared utilities
 from shared.symlink_utils import update_latest_link
+
+
+# Import shared path validation utilities
+try:
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.path_utils import (
+        validate_output_path,
+        ensure_output_dir,
+        validate_input_file,
+    )
+
 from shared.regression_validation import (
     validate_regression_data,
     validate_columns,
