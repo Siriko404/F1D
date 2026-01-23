@@ -107,7 +107,39 @@ These versions are pinned to ensure reproducibility and prevent unexpected chang
 Only used for optional dependencies:
 - rapidfuzz: >=3.14.0 (optional dependency for fuzzy matching)
 
-## Python Version Support
+## Python Compatibility
+
+**Supported Versions**: Python 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
+
+**Minimum Version**: Python 3.8
+**Latest Tested**: Python 3.13
+
+**Rationale**:
+- Broad compatibility ensures pipeline works on various environments
+- Python 3.8 is oldest stable version still receiving security updates
+- All dependencies support Python 3.8-3.13 range
+
+**Dependency Constraints**:
+- PyArrow 21.0.0 supports Python 3.8+ (compatible)
+- PyArrow 23.0.0+ requires Python 3.10+ (not compatible with 3.8-3.9)
+- NumPy 2.x and Pandas 2.x support Python 3.9+
+- Current pinned versions: PyArrow 21.0.0, NumPy 2.3.2, Pandas 2.2.3 (all compatible)
+
+**Testing**:
+- GitHub Actions tests all supported versions on every push/PR
+- Matrix: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
+- See `.github/workflows/test.yml` for CI/CD configuration
+
+**Version Pinning in requirements.txt**:
+- Python version range specified as comment: `# Python >= 3.8`
+- Actual version controlled by user environment
+
+**For Users**:
+- Recommended: Python 3.10 or 3.11 for best performance
+- Minimum: Python 3.8 (fully supported)
+- See UPGRADE_GUIDE.md for Python upgrade procedures
+
+## Python Version Support (Legacy)
 
 ### Target Range: 3.8 - 3.13
 
