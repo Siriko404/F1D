@@ -337,7 +337,11 @@ def setup_paths(config, timestamp):
 
 def load_manifest_with_permno(manifest_dir, ccm_file):
     """Load manifest with 100% PERMNO coverage via gvkey->CCM fallback."""
-    df = pd.read_parquet(manifest_dir / "master_sample_manifest.parquet")
+    # Column pruning: only reading needed columns
+    df = pd.read_parquet(
+        manifest_dir / "master_sample_manifest.parquet",
+        columns=["file_name", "gvkey", "start_date", "permno", "year"],
+    )
     df["start_date"] = pd.to_datetime(df["start_date"])
     df["year"] = df["start_date"].dt.year
 
@@ -348,7 +352,8 @@ def load_manifest_with_permno(manifest_dir, ccm_file):
     )
 
     # CCM fallback
-    ccm = pd.read_parquet(ccm_file)
+    # Column pruning: only reading needed columns
+    ccm = pd.read_parquet(ccm_file, columns=["gvkey", "LPERMNO"])
     ccm["gvkey_clean"] = ccm["gvkey"].astype(str).str.zfill(6)
     ccm["LPERMNO"] = pd.to_numeric(ccm["LPERMNO"], errors="coerce")
     gvkey_map = ccm.groupby("gvkey_clean")["LPERMNO"].first().to_dict()
