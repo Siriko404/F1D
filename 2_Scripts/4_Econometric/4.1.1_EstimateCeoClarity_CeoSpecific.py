@@ -57,6 +57,11 @@ from shared.reporting_utils import (
     save_variable_reference,
 )
 from shared.symlink_utils import update_latest_link
+from shared.regression_validation import (
+    validate_regression_data,
+    validate_columns,
+    validate_sample_size,
+)
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -549,6 +554,17 @@ def run_regression(df_sample, sample_name):
 
     formula = f"{dep_var} ~ C(ceo_id) + " + " + ".join(controls) + " + C(year)"
     print(f"  Formula: {formula[:80]}...")
+
+    # Validate regression data before estimation
+    print(f"  Validating regression data...")
+    try:
+        required_columns = [dep_var] + controls + ["ceo_id", "year"]
+        validate_columns(df_reg, required_columns)
+        validate_sample_size(df_reg, min_observations=100)
+        print(f"  Validation passed")
+    except Exception as e:
+        print(f"  Validation failed: {e}")
+        return None, None, None
 
     # Estimate model using shared function
     print(f"  Estimating... (this may take a minute)")
