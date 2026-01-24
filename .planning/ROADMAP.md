@@ -465,14 +465,18 @@ Plans:
     2. Utility functions consolidated (compute_file_checksum, print_stat, analyze_missing_values, update_latest_symlink)
     3. All scripts import from shared modules (no duplicate code)
     4. Error handling improved (specific exceptions, logging, re-raise or graceful handling)
-**Status**: 📝 PLANNED (gap closure phase from audit)
-**Plans**: 6 plans in 2 waves (2 gap closure + 4 completed)
+**Status**: 🔄 IN PROGRESS (gap closure with 2 additional plans created from verification gaps)
+**Plans**: 8 plans in 2 waves (6 completed + 2 gap closure pending)
 
 Plans:
 - [x] 23-01-PLAN.md — Create standalone dual_writer.py module (re-exports from observability_utils) ✅
-- [x] 23-02-PLAN.md — Document all utility functions in shared/README.md
-- [ ] 23-03-PLAN.md — Remove inline DualWriter from 12 scripts, import from shared
-- [ ] 23-04-PLAN.md — Improve error handling consistency in econometric scripts
+- [x] 23-02-PLAN.md — Document all utility functions in shared/README.md ✅
+- [x] 23-03-PLAN.md — Remove inline DualWriter from 1_Sample scripts (4 files) ✅
+- [x] 23-04-PLAN.md — Improve error handling in 4_Econometric scripts ✅
+- [x] 23-05-PLAN.md — Consolidate DualWriter and utility functions (partial - gaps found) ✅
+- [x] 23-06-PLAN.md — Remove utility functions from 3 scripts ✅
+- [ ] 23-07-PLAN.md — Restore 4.4_GenerateSummaryStats.py (CRITICAL: file deleted)
+- [ ] 23-08-PLAN.md — Remove inline DualWriter from remaining 4 scripts (gap closure)
 
 ### Phase 24: Complete Script Refactoring
 **Goal**: Reduce large scripts to <800 lines via actual code extraction (not just imports)
