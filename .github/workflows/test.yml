@@ -36,9 +36,9 @@ jobs:
         pip install -r requirements.txt
         pip install pytest pytest-cov
 
-    - name: Run tests with coverage
+    - name: Run unit and integration tests (skip E2E)
       run: |
-        pytest tests/ --cov=2_Scripts --cov-report=xml --cov-report=html --cov-report=term -v
+        pytest tests/ -m "not e2e" --cov=2_Scripts --cov-report=xml --cov-report=html --cov-report=term -v
 
     - name: Upload coverage to Codecov (optional)
       uses: codecov/codecov-action@v4
@@ -62,5 +62,52 @@ jobs:
         path: |
           .pytest_cache/
           test-results/
+        retention-days: 30
+        continue-on-error: true
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10']  # Run E2E on a single Python version for speed
+    needs: test  # Only run E2E if unit/integration tests pass
+    timeout-minutes: 30  # Extended timeout for E2E tests
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+
+    - name: Run E2E tests
+      run: |
+        pytest tests/ -m e2e -v --timeout=1200  # 20-minute timeout per test
+
+    - name: Upload E2E test logs as artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: e2e-test-logs-${{ matrix.python-version }}
+        path: |
+          .pytest_cache/
+          test-results/
+          3_Logs/
         retention-days: 30
         continue-on-error: true
