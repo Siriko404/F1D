@@ -62,7 +62,10 @@ from shared.regression_validation import (
     validate_columns,
     validate_sample_size,
 )
-from shared.regression_helpers import build_regression_sample
+from shared.regression_helpers import (
+    build_regression_sample,
+    prepare_regression_data,
+)
 from shared.observability_utils import (
     compute_file_checksum,
     print_stat,
@@ -233,57 +236,6 @@ def load_all_data(root, year_start, year_end, stats=None):
     print(f"  Unique firms: {combined['gvkey'].nunique():,}")
 
     return combined
-
-
-# ==============================================================================
-# Data Preparation
-# ==============================================================================
-
-
-def prepare_regression_data(df, stats=None):
-    """Filter to complete cases and assign industry samples."""
-    print("\n" + "=" * 60)
-    print("Preparing regression data")
-    print("=" * 60)
-
-    initial_n = len(df)
-
-    # Filter to non-null ceo_id
-    df = df[df["ceo_id"].notna()].copy()
-    print(f"  After ceo_id filter: {len(df):,} / {initial_n:,}")
-    if stats:
-        stats["processing"]["ceo_id_filter"] = initial_n - len(df)
-
-    # Define required variables
-    required = (
-        [CONFIG["dependent_var"]]
-        + CONFIG["linguistic_controls"]
-        + CONFIG["firm_controls"]
-        + ["ceo_id", "year"]
-    )
-
-    # Check which variables exist
-    missing_vars = [v for v in required if v not in df.columns]
-    if missing_vars:
-        print(f"  WARNING: Missing variables: {missing_vars}")
-        required = [v for v in required if v in df.columns]
-
-    # Filter to complete cases (vectorized)
-    complete_mask = df[required].notna().all(axis=1)
-    df = df[complete_mask].copy()
-    print(f"  After complete cases filter: {len(df):,}")
-
-    # Assign industry samples based on FF12
-    df["sample"] = "Main"
-    df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
-    df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
-
-    print(f"\n  Sample distribution:")
-    for sample in ["Main", "Finance", "Utility"]:
-        n = (df["sample"] == sample).sum()
-        print(f"    {sample}: {n:,} calls")
-
-    return df
 
 
 # ==============================================================================
@@ -732,7 +684,13 @@ def main(year_start=None, year_end=None):
     df = load_all_data(root, CONFIG["year_start"], CONFIG["year_end"], stats)
 
     # Prepare regression data
-    df = prepare_regression_data(df, stats)
+    df = prepare_regression_data(
+        df=df,
+        dependent_var=CONFIG["dependent_var"],
+        linguistic_controls=CONFIG["linguistic_controls"],
+        firm_controls=CONFIG["firm_controls"],
+        stats=stats,
+    )
 
     # Run regressions for each sample
     all_ceo_scores = []
