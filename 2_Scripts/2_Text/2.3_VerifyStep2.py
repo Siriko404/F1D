@@ -8,6 +8,10 @@ from datetime import datetime
 import numpy as np
 import psutil
 
+# Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
+# Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
+# Note: For this verification script, we load all columns to enable comprehensive missing value analysis.
+
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
@@ -183,6 +187,8 @@ def main():
 
         if vars_path.exists():
             validate_input_file(vars_path, must_exist=True)
+            # Note: Loading all columns for comprehensive missing value analysis
+            # analyze_missing_values() iterates over all columns to detect data quality issues
             df = pd.read_parquet(vars_path)
             rows = len(df)
             stats["output"]["final_rows"] += rows
