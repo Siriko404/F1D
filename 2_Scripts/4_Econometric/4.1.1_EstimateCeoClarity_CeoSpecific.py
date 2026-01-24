@@ -127,7 +127,6 @@ CONFIG = {
 # Data Preparation
 # ==============================================================================
 
-
 def load_all_data(root, year_start, year_end, stats=None):
     """Load and merge all input data sources."""
     print("\n" + "=" * 60)
@@ -237,11 +236,9 @@ def load_all_data(root, year_start, year_end, stats=None):
 
     return combined
 
-
 # ==============================================================================
 # Regression Estimation
 # ==============================================================================
-
 
 def run_regression(df_sample, sample_name):
     """Run OLS regression with CEO fixed effects for a single sample.
@@ -316,11 +313,9 @@ def run_regression(df_sample, sample_name):
 
     return model, df_reg, valid_ceos
 
-
 # ==============================================================================
 # Extract CEO Fixed Effects
 # ==============================================================================
-
 
 def extract_ceo_fixed_effects(model, df_reg, sample_name):
     """Extract gamma_i coefficients and compute Clarity scores."""
@@ -368,11 +363,9 @@ def extract_ceo_fixed_effects(model, df_reg, sample_name):
 
     return ceo_fe
 
-
 # ==============================================================================
 # Compute CEO-Level Statistics
 # ==============================================================================
-
 
 def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
     """Compute descriptive statistics per CEO.
@@ -422,11 +415,9 @@ def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
 
     return ceo_scores
 
-
 # ==============================================================================
 # Model Diagnostics
 # ==============================================================================
-
 
 def compute_diagnostics(model, sample_name, n_ceos, n_firms):
     """Compute model diagnostics."""
@@ -443,11 +434,9 @@ def compute_diagnostics(model, sample_name, n_ceos, n_firms):
         "bic": model.bic,
     }
 
-
 # ==============================================================================
 # Save Outputs
 # ==============================================================================
-
 
 def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=None):
     """Save all output files."""
@@ -543,11 +532,9 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
 
     return ceo_scores_df
 
-
 # ==============================================================================
 # Generate Report
 # ==============================================================================
-
 
 def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
     """Generate markdown report."""
@@ -616,11 +603,9 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
 
     print(f"  Saved: report_step4_1.md")
 
-
 # ==============================================================================
 # Main
 # ==============================================================================
-
 
 def main(year_start=None, year_end=None):
     """Main execution."""
@@ -797,7 +782,6 @@ def main(year_start=None, year_end=None):
     sys.stdout = dual_writer.terminal
 
     return 0
-
 
 if __name__ == "__main__":
     year_start = int(sys.argv[1]) if len(sys.argv) > 1 else None
