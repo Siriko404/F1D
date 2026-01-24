@@ -466,7 +466,7 @@ Plans:
     3. All scripts import from shared modules (no duplicate code)
     4. Error handling improved (specific exceptions, logging, re-raise or graceful handling)
 **Status**: 📝 PLANNED (gap closure phase from audit)
-**Plans**: 4 plans in 2 waves
+**Plans**: 6 plans in 2 waves (2 gap closure + 4 completed)
 
 Plans:
 - [x] 23-01-PLAN.md — Create standalone dual_writer.py module (re-exports from observability_utils) ✅
