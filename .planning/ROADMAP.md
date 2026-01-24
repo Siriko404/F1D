@@ -434,12 +434,10 @@ Plans:
     3. All integration tests pass locally and in CI/CD
     4. Test environment is reproducible (explicit PYTHONPATH, no implicit dependencies)
 **Status**: 📝 PLANNED (gap closure phase from audit)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 21-01: Add PYTHONPATH environment variable to integration test subprocess calls
-- [ ] 21-02: Fix AST parsing bugs in observability tests
-- [ ] 21-03: Verify all integration tests pass
+- [ ] 21-01: Fix integration test infrastructure (PYTHONPATH + AST parsing + verification)
 
 ### Phase 22: Recreate Missing Script & Evidence
 **Goal**: Restore script 4.4 and verification artifacts to complete documentation
@@ -531,7 +529,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
        | 18. Complete Phase 13 Refactoring | 9/9 | ✅ COMPLETED | 2026-01-24 |
       | 19. Scaling Infrastructure & Testing Integration | 4/4 | ✅ COMPLETED | 2026-01-24 |
        | 20. Restore Root README Documentation | 1/1 | ✅ COMPLETED | 2026-01-24 |
-      | 21. Fix Testing Infrastructure | 0/3 | 📝 PLANNED | - |
+      | 21. Fix Testing Infrastructure | 0/1 | 📝 PLANNED | - |
       | 22. Recreate Missing Script & Evidence | 0/2 | 📝 PLANNED | - |
       | 23. Core Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
       | 24. Complete Script Refactoring | 0/8 | 📝 PLANNED | - |
