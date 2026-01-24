@@ -44,17 +44,19 @@ This document describes the current capacity of the F1D data pipeline and provid
 
 ### 1. Deterministic Parallelization (15-01)
 
-**What Added:** `shared/parallel_utils.py` with SeedSequence spawning
+**Status:** **Planned** - Prototype available in git history
 
-**Components:**
+**Note:** The `parallel_utils.py` module was prototyped in Phase 15 but not integrated into the codebase. It can be resurrected from git history for future scaling work.
+
+**Planned Components:**
 - `create_worker_seed(root_seed, worker_id)` - Deterministic seed for each worker
 - `ThreadPoolExecutor` wrapper - Maintains reproducibility in parallel execution
 
-**Benefit:** Parallel workers maintain reproducibility (same input → same output)
+**Intended Benefit:** Parallel workers maintain reproducibility (same input → same output)
 
-**When to Use:** Add ProcessPoolExecutor to CPU-bound operations
+**When to Use (Future):** Add ProcessPoolExecutor to CPU-bound operations
 
-**Examples:**
+**Planned Examples:**
 - Tokenization (2.1): Split transcript text across workers
 - Fuzzy matching (1.2): Parallel candidate scoring
 - Bootstrapping (Step 4): Parallel coefficient estimation
@@ -65,8 +67,6 @@ This document describes the current capacity of the F1D data pipeline and provid
 determinism:
   thread_count: 4  # Number of parallel workers (default: 1)
 ```
-
-**Documentation:** [shared/parallel_utils.py](shared/parallel_utils.py)
 
 ---
 
@@ -330,9 +330,9 @@ chunk_processing:
 ### Improvement Priority
 
 1. **High:** Add parallelization to fuzzy matching (1.2)
-   - Use `shared/parallel_utils.py` for deterministic parallel RNG
-   - Score candidates in parallel across workers
-   - Expected: 2-4x speedup on 4-8 core systems
+    - Implement deterministic parallel RNG (prototype available in git history)
+    - Score candidates in parallel across workers
+    - Expected: 2-4x speedup on 4-8 core systems
 
 2. **Medium:** Add chunking to tokenization (2.1)
    - Use `shared/chunked_reader.py` for memory-aware processing
@@ -465,8 +465,8 @@ chunk_processing:
 
 ### Shared Modules
 
-- **[parallel_utils.py](shared/parallel_utils.py)** - Deterministic parallel RNG utilities
 - **[chunked_reader.py](shared/chunked_reader.py)** - Memory-aware chunked processing
+- **Note:** Deterministic parallel RNG was prototyped in Phase 15 but not integrated (available in git history)
 
 ### Phase 15 Plans
 
