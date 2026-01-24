@@ -10,8 +10,18 @@ import os
 import sys
 from pathlib import Path
 
-from shared.observability_utils import DualWriter
-from shared.symlink_utils import update_latest_link as update_latest_symlink
+# Import shared observability and symlink utilities
+try:
+    from shared.observability_utils import DualWriter
+    from shared.symlink_utils import update_latest_link as update_latest_symlink
+except ImportError:
+    # Add parent directory to path and retry
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    sys.path.insert(0, str(_script_dir))
+    from shared.observability_utils import DualWriter
+    from shared.symlink_utils import update_latest_link as update_latest_symlink
 
 
 def get_latest_output_dir(output_base, required_file=None):
@@ -116,5 +126,3 @@ def generate_variable_reference(df, output_path, print_fn=print):
     ref_df = pd.DataFrame(ref_data)
     ref_df.to_csv(output_path, index=False)
     print_fn(f"  Variable reference saved: {output_path}")
-
-        sys.exit(1)
