@@ -261,6 +261,29 @@ def import_module(name, path):
 
 
 # ==============================================================================
+# Prerequisite Checking
+# ==============================================================================
+
+
+def check_prerequisites(root, args):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {
+        "Compustat": root / "1_Inputs" / "Compustat",
+        "IBES": root / "1_Inputs" / "IBES",
+        "CRSP": root / "1_Inputs" / "CRSP",
+        "SDC": root / "1_Inputs" / "SDC",
+    }
+
+    required_steps = {
+        "1.4_AssembleManifest": "master_sample_manifest.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
+
+# ==============================================================================
 # Main
 # ==============================================================================
 
@@ -275,9 +298,21 @@ def main():
     )
     args = parser.parse_args()
 
+    root = Path(__file__).parent.parent.parent
+
+    # Handle dry-run mode
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root, args)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
+
+    # Check prerequisites before processing
+    check_prerequisites(root, args)
 
     dual_writer = DualWriter(paths["log_file"])
     sys.stdout = dual_writer
