@@ -9,6 +9,9 @@ import json
 import time
 import psutil
 
+# Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
+# Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
+
 # Import shared symlink utility for 'latest' link management
 try:
     from shared.symlink_utils import update_latest_link
@@ -428,7 +431,16 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir):
 
     print(f"\nProcessing {year}...")
     validate_input_file(in_path, must_exist=True)
-    df = pd.read_parquet(in_path)
+    # Column pruning: Load metadata columns and all count columns (dynamic from LM dictionary)
+    # First pass: get schema to identify count columns
+    all_cols = pd.read_parquet(in_path, columns=[]).columns.tolist()
+    count_cols = [c for c in all_cols if c.endswith("_count")]
+    # Second pass: load only needed columns
+    df = pd.read_parquet(
+        in_path,
+        columns=["file_name", "role", "employer", "speaker_name", "total_tokens"]
+        + count_cols,
+    )
     input_rows = len(df)
 
     # Flag
@@ -608,6 +620,7 @@ def main():
     )
     if first_year_file:
         validate_input_file(first_year_file, must_exist=True)
+        # Load all columns (need all numeric types for anomaly detection)
         first_year_df = pd.read_parquet(first_year_file)
         numeric_cols = first_year_df.select_dtypes(include=[np.number]).columns.tolist()
         if numeric_cols:
