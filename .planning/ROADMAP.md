@@ -320,49 +320,49 @@ Plans:
 - [x] 15-03: Implement chunked processing for large files (Wave 2) — Add MemoryAwareThrottler with config integration ✅
 - [x] 15-05: Document scaling limits and improvement paths (Wave 3) — Create SCALING.md with comprehensive scaling guide ✅
 
-### Phase 16: Phase Verification Reports
-**Goal**: Create VERIFICATION.md reports for all unverified phases (gap closure from milestone audit)
+### Phase 16: Critical Path Fixes
+**Goal**: Fix blocking issues that prevent pipeline execution (gap closure from milestone audit)
 **Depends on**: Phase 15
-**Gap Closure**: Closes gap from v1.0.0-MILESTONE-AUDIT.md — 13 phases (1-6, 8-12, 14-15) lack VERIFICATION.md files
+**Gap Closure**: Closes critical gaps from v1.0.0-MILESTONE-AUDIT.md — Step 4 path mismatch, no E2E test, orphaned parallel_utils
 **Success Criteria** (what must be TRUE):
-   1. VERIFICATION.md files exist for all 13 unverified phases
-   2. Each verification report confirms phase achieved its success criteria
-   3. All must-haves from each phase are verified
-   4. Tech debt and gaps are documented in each verification report
-**Status**: 📝 PLANNED (gap closure phase)
-**Plans**: 13 plans (one per unverified phase)
-
-Plans:
-- [ ] 16-01: Create VERIFICATION.md for Phase 1 (Template & Pilot)
-- [ ] 16-02: Create VERIFICATION.md for Phase 2 (Step 1 Sample)
-- [ ] 16-03: Create VERIFICATION.md for Phase 3 (Step 2 Text)
-- [ ] 16-04: Create VERIFICATION.md for Phase 4 (Steps 3-4 Financial & Econometric)
-- [ ] 16-05: Create VERIFICATION.md for Phase 5 (README & Documentation)
-- [ ] 16-06: Create VERIFICATION.md for Phase 6 (Pre-Submission Verification)
-- [ ] 16-07: Create VERIFICATION.md for Phase 8 (Tech Debt Cleanup)
-- [ ] 16-08: Create VERIFICATION.md for Phase 9 (Security Hardening)
-- [ ] 16-09: Create VERIFICATION.md for Phase 10 (Performance Optimization)
-- [ ] 16-10: Create VERIFICATION.md for Phase 11 (Testing Infrastructure)
-- [ ] 16-11: Create VERIFICATION.md for Phase 12 (Data Quality & Observability)
-- [ ] 16-12: Create VERIFICATION.md for Phase 14 (Dependency Management)
-- [ ] 16-13: Create VERIFICATION.md for Phase 15 (Scaling Preparation)
-
-### Phase 17: Scaling Infrastructure Integration
-**Goal**: Integrate orphaned scaling infrastructure (parallel_utils, chunked_reader) into script workflows
-**Depends on**: Phase 16
-**Gap Closure**: Closes gaps from v1.0.0-MILESTONE-AUDIT.md — parallel_utils and chunked_reader orphaned
-**Success Criteria** (what must be TRUE):
-   1. parallel_utils.spawn_worker_rng() used in scripts requiring parallelization (1.2_LinkEntities.py)
-   2. process_in_chunks() used in scripts reading large files (2.1, 2.2, 2.3)
-   3. MemoryAwareThrottler actively prevents OOM errors when memory > 80% threshold
-   4. Scaling infrastructure documented as active (not preparatory) in SCALING.md
+    1. Step 4 scripts use correct directory path (2_Textual_Analysis/2.2_Variables)
+    2. Full pipeline E2E test exists and runs all 17 scripts sequentially
+    3. E2E test verifies all outputs exist and have valid checksums
+    4. parallel_utils.py either integrated or removed with documentation updated
 **Status**: 📝 PLANNED (gap closure phase)
 **Plans**: 3 plans
 
 Plans:
-- [ ] 17-01: Integrate parallel_utils into fuzzy matching in 1.2_LinkEntities.py
-- [ ] 17-02: Refactor Step 2 scripts (2.1, 2.2, 2.3) to use process_in_chunks() with MemoryAwareThrottler
-- [ ] 17-03: Update SCALING.md to document active scaling infrastructure usage
+- [ ] 16-01: Fix Step 4 path mismatch in 3 scripts (4.1, 4.1.1, 4.1.3)
+- [ ] 16-02: Create full pipeline E2E test (tests/integration/test_full_pipeline.py)
+- [ ] 16-03: Handle orphaned parallel_utils (integrate or remove and update docs)
+
+### Phase 17: Verification Reports
+**Goal**: Create VERIFICATION.md reports for all unverified phases (gap closure from milestone audit)
+**Depends on**: Phase 16
+**Gap Closure**: Closes gap from v1.0.0-MILESTONE-AUDIT.md — 13 phases lack VERIFICATION.md files
+**Success Criteria** (what must be TRUE):
+    1. VERIFICATION.md files exist for all 13 unverified phases
+    2. Each verification report confirms phase achieved its success criteria
+    3. All must-haves from each phase are verified
+    4. Tech debt and gaps are documented in each verification report
+**Status**: 📝 PLANNED (gap closure phase)
+**Plans**: 13 plans (one per unverified phase)
+
+Plans:
+- [ ] 17-01: Create VERIFICATION.md for Phase 1 (Template & Pilot)
+- [ ] 17-02: Create VERIFICATION.md for Phase 2 (Step 1 Sample)
+- [ ] 17-03: Create VERIFICATION.md for Phase 3 (Step 2 Text)
+- [ ] 17-04: Create VERIFICATION.md for Phase 4 (Steps 3-4 Financial & Econometric)
+- [ ] 17-05: Create VERIFICATION.md for Phase 5 (README & Documentation)
+- [ ] 17-06: Create VERIFICATION.md for Phase 6 (Pre-Submission Verification)
+- [ ] 17-07: Create VERIFICATION.md for Phase 8 (Tech Debt Cleanup)
+- [ ] 17-08: Create VERIFICATION.md for Phase 9 (Security Hardening)
+- [ ] 17-09: Create VERIFICATION.md for Phase 10 (Performance Optimization)
+- [ ] 17-10: Create VERIFICATION.md for Phase 11 (Testing Infrastructure)
+- [ ] 17-11: Create VERIFICATION.md for Phase 12 (Data Quality & Observability)
+- [ ] 17-12: Create VERIFICATION.md for Phase 14 (Dependency Management)
+- [ ] 17-13: Create VERIFICATION.md for Phase 15 (Scaling Preparation)
 
 ### Phase 18: Complete Phase 13 Refactoring
 **Goal**: Complete Phase 13 refactoring by connecting shared modules and reducing script line counts
@@ -381,21 +381,25 @@ Plans:
 - [ ] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder)
 - [ ] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines
 
-### Phase 19: Column Pruning & Testing Fixes
-**Goal**: Complete column pruning rollout and fix integration test path issues
+### Phase 19: Scaling Infrastructure & Testing Integration
+**Goal**: Integrate orphaned scaling infrastructure, complete column pruning, fix testing issues
 **Depends on**: Phase 18
-**Gap Closure**: Closes gaps from v1.0.0-MILESTONE-AUDIT.md — column pruning partial, test path issues
+**Gap Closure**: Closes gaps from v1.0.0-MILESTONE-AUDIT.md — parallel_utils orphaned, chunked_reader throttling not integrated, column pruning partial, test path issues
 **Success Criteria** (what must be TRUE):
-   1. All Step 2 scripts (2.1, 2.2, 2.3) use PyArrow columns= parameter
-   2. All Step 3 scripts (3.0, 3.1, 3.3) use PyArrow columns= parameter
-   3. Integration tests resolve paths correctly and pass on all systems
-   4. CI/CD workflow runs all integration tests without path errors
+    1. parallel_utils.py either integrated into scripts or removed with documentation updated
+    2. process_in_chunks() with MemoryAwareThrottler used in scripts reading large files (2.1, 2.2, 2.3)
+    3. All Step 2 scripts (2.1, 2.2, 2.3) use PyArrow columns= parameter
+    4. All Step 3 scripts (3.0, 3.1, 3.3) use PyArrow columns= parameter
+    5. Integration tests resolve paths correctly and pass on all systems
+    6. CI/CD workflow runs all integration tests without path errors
 **Status**: 📝 PLANNED (gap closure phase)
-**Plans**: 2 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 19-01: Apply PyArrow column pruning to remaining Step 2 and Step 3 scripts
-- [ ] 19-02: Fix integration test path resolution using absolute paths or __file__ reference
+- [ ] 19-01: Handle orphaned parallel_utils (integrate or remove and update SCALING.md)
+- [ ] 19-02: Refactor Step 2 scripts (2.1, 2.2, 2.3) to use process_in_chunks() with MemoryAwareThrottler
+- [ ] 19-03: Apply PyArrow column pruning to remaining Step 2 and Step 3 scripts
+- [ ] 19-04: Fix integration test path resolution using absolute paths or __file__ reference
 
 ## Progress
 
@@ -420,10 +424,15 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
   | 13. Script Refactoring | 10/10 | ✅ COMPLETED | 2026-01-23 |
   | 14. Dependency Management | 4/4 | ✅ COMPLETED | 2026-01-23 |
   | 15. Scaling Preparation | 5/5 | ✅ COMPLETED | 2026-01-24 |
+  | 16. Critical Path Fixes | 0/3 | 📝 PLANNED | - |
+  | 17. Verification Reports | 0/13 | 📝 PLANNED | - |
+  | 18. Complete Phase 13 Refactoring | 0/3 | 📝 PLANNED | - |
+  | 19. Scaling Infrastructure & Testing Integration | 0/4 | 📝 PLANNED | - |
 
 
 ---
 ---
  *Roadmap created: 2026-01-22*
- *Roadmap updated: 2026-01-24 (Phase 15 complete)*
- *Total plans: 78 | Total requirements: 30 mapped*
+ *Roadmap updated: 2026-01-24 (Phase 15 complete, Phase 16-19 added for gap closure)*
+ *Total plans: 106 (78 completed + 23 planned + 5 verified)*
+ *Total requirements: 30 mapped*
