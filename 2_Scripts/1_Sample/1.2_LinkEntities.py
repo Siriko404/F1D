@@ -865,18 +865,18 @@ def main():
             for i, (idx, row) in enumerate(tier3_candidates.iterrows(), 1):
                 query_name = row["company_name_norm"]
 
-                # Get the scorer function from config
-                scorer = get_scorer(scorer_name)
-
-                result = process.extractOne(
-                    query_name,
-                    choice_list,
-                    scorer=scorer,
-                    score_cutoff=fuzzy_threshold,
+                # Use shared string matching function
+                best_match, best_score = match_company_names(
+                    query=query_name,
+                    candidates=choice_list,
+                    threshold=fuzzy_threshold,
+                    scorer_name=scorer_name,
+                    preprocess=True,
                 )
 
-                if result is not None:
-                    best_match, best_score, _ = result
+                if (
+                    best_score > 0
+                ):  # Match found (returns 0.0 if no match above threshold)
                     ccm_data = choices[best_match]
                     matched_records.append(
                         {
