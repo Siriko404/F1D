@@ -44,9 +44,9 @@ This document describes the current capacity of the F1D data pipeline and provid
 
 ### 1. Deterministic Parallelization (15-01)
 
-**Status:** **Planned** - Prototype available in git history
+**Status:** **Planned** - Removed in Phase 16-03, available in git history
 
-**Note:** The `parallel_utils.py` module was prototyped in Phase 15 but not integrated into the codebase. It can be resurrected from git history for future scaling work.
+**Note:** The `parallel_utils.py` module was prototyped in Phase 15 but removed in Phase 16-03 (commit 02288a0). It can be resurrected from git history for future scaling work.
 
 **Planned Components:**
 - `create_worker_seed(root_seed, worker_id)` - Deterministic seed for each worker
@@ -466,7 +466,7 @@ chunk_processing:
 ### Shared Modules
 
 - **[chunked_reader.py](shared/chunked_reader.py)** - Memory-aware chunked processing
-- **Note:** Deterministic parallel RNG was prototyped in Phase 15 but not integrated (available in git history)
+- **Note:** Deterministic parallel RNG was prototyped in Phase 15 but removed in Phase 16-03 (commit 02288a0)
 
 ### Phase 15 Plans
 
