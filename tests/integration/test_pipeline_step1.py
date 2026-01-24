@@ -10,13 +10,16 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+# Get repository root from test file location
+REPO_ROOT = Path(__file__).parent.parent.parent
+
 pytestmark = pytest.mark.integration  # Mark all tests in this file as integration
 
 
 @pytest.fixture(scope="session")
 def config():
     """Load project configuration."""
-    config_path = Path("config/project.yaml")
+    config_path = REPO_ROOT / "config/project.yaml"
     if not config_path.exists():
         pytest.skip(f"Config file not found: {config_path}")
     with open(config_path) as f:
@@ -35,7 +38,7 @@ def sample_input_data():
 def test_step1_full_pipeline(sample_input_data, config, tmp_path):
     """Test Step 1 (1.1_CleanMetadata) runs end-to-end."""
     # Arrange
-    script_path = Path("2_Scripts/1_Sample/1.1_CleanMetadata.py")
+    script_path = REPO_ROOT / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
 
     if not script_path.exists():
         pytest.skip(f"Script not found: {script_path}")
@@ -51,7 +54,7 @@ def test_step1_full_pipeline(sample_input_data, config, tmp_path):
     assert result.returncode == 0, f"Script failed: {result.stderr}"
 
     # Verify output files exist
-    output_dir = Path("4_Outputs/1.1_CleanMetadata/latest")
+    output_dir = REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest"
     assert output_dir.exists(), "Output directory not created"
 
     # Check for expected output files
@@ -68,7 +71,7 @@ def test_step1_full_pipeline(sample_input_data, config, tmp_path):
 def test_stats_json_generation_step1(config):
     """Test that stats.json is generated with required fields."""
     # Arrange
-    stats_path = Path("4_Outputs/1.1_CleanMetadata/latest/stats.json")
+    stats_path = REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
 
     if not stats_path.exists():
         pytest.skip(f"stats.json not found (run 1.1_CleanMetadata.py first)")
@@ -99,8 +102,10 @@ def test_stats_json_generation_step1(config):
 def test_row_count_validation_step1():
     """Test that output row count is validated in stats.json."""
     # Arrange
-    stats_path = Path("4_Outputs/1.1_CleanMetadata/latest/stats.json")
-    output_path = Path("4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet")
+    stats_path = REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
+    output_path = (
+        REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet"
+    )
 
     if not stats_path.exists() or not output_path.exists():
         pytest.skip("Run 1.1_CleanMetadata.py first")
