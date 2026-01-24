@@ -540,14 +540,17 @@ Plans:
 **Goal**: Ensure all 17 scripts can be run sequentially and individually manually (not with any orchestrator script)
 **Depends on**: Phase 25
 **Urgent**: Pipeline has issues with functionality - scripts need to run independently
-**Plans**: 5 plans in 3 waves
+**Plans**: 8 plans (5 completed, 3 gap closure)
 
 Plans:
-- [ ] 25.1-01: Create dependency checking utilities (Wave 1)
-- [ ] 25.1-02: Add CLI validation to Step 1 scripts (Wave 2)
-- [ ] 25.1-03: Add CLI validation to Step 2 scripts (Wave 2)
-- [ ] 25.1-04: Add CLI validation to Step 3 scripts (Wave 2)
-- [ ] 25.1-05: Add CLI validation to Step 4 scripts (Wave 3)
+- [x] 25.1-01: Create dependency checking utilities (Wave 1) ✅
+- [x] 25.1-02: Add CLI validation to Step 1 scripts (Wave 2) ✅
+- [x] 25.1-03: Add CLI validation to Step 2 scripts (Wave 2) ✅
+- [x] 25.1-04: Add CLI validation to Step 3 scripts (Wave 2) ✅
+- [x] 25.1-05: Add CLI validation to Step 4 scripts (Wave 3) ✅ (partial)
+- [ ] 25.1-06: Add CLI validation to 1.0_BuildSampleManifest.py (Wave 1 - gap closure)
+- [ ] 25.1-07: Add CLI validation to Step 4.1x scripts (Wave 1 - gap closure)
+- [ ] 25.1-08: Add CLI validation to Step 4 regression scripts (Wave 1 - gap closure)
 
 **Details:**
 Phase 25.1 makes all 17 pipeline scripts executable independently by hand, without relying on pytest orchestrator (test_full_pipeline.py). Currently, scripts validate some inputs via shared utilities but lack comprehensive dependency checking and CLI validation.
