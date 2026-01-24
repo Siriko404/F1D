@@ -78,30 +78,13 @@ from shared.regression_validation import (
     validate_columns,
     validate_sample_size,
 )
-
-# ==============================================================================
-# Dual-write logging utility
-# ==============================================================================
-
-
-class DualWriter:
-    """Writes to both stdout and log file verbatim"""
-
-    def __init__(self, log_path):
-        self.terminal = sys.stdout
-        self.log = open(log_path, "w", encoding="utf-8")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
-    def close(self):
-        self.log.close()
-
+from shared.observability_utils import (
+    DualWriter,
+    compute_file_checksum,
+    analyze_missing_values,
+    print_stats_summary,
+    save_stats,
+)
 
 # ==============================================================================
 # Configuration
