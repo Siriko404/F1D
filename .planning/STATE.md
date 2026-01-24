@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 17 of 19 (Verification Reports)
-Plan: 7 of 13 in current phase
+Plan: 07 of 13 in current phase
 Status: In progress
-Last activity: 2026-01-24 — Completed 17-01-PLAN.md
+Last activity: 2026-01-24 — Completed 17-07-PLAN.md
 
 Progress: [██████████░] 92% (17/19 phases in progress)
 Technical Remediation: [████████████] 100% (All phases 7-16 complete)
@@ -21,9 +21,9 @@ Gap Closure: [██████████░] 90% (Phase 16 complete, Phase 1
 ## Performance Metrics
 
 **Velocity:**
-  - Total plans completed: 90 (Previous: 41 + Phase 16(3) + Phase 17(12) + Phase 13(10) + Phase 14(4) + Phase 15(5) ... recalculating based on roadmap table)
+  - Total plans completed: 91
   - Average duration: ~8 min
-  - Total execution time: ~170 min
+  - Total execution time: ~172 min
 
 **By Phase:**
 
@@ -45,11 +45,11 @@ Gap Closure: [██████████░] 90% (Phase 16 complete, Phase 1
 |   | 14. Dependency Management | 4/4 | ~12 min | ✅ COMPLETED | 2026-01-23 |
 | | 15. Scaling Preparation | 5/5 | ~11 min | ✅ COMPLETED | 2026-01-24 |
 | | 16. Critical Path Fixes | 3/3 | ~5 min | ✅ COMPLETED | 2026-01-23 |
-| | 17. Verification Reports | 12/13 | ~5 min | ⏭️ IN PROGRESS | 2026-01-23 |
+| | 17. Verification Reports | 12/13 | ~5 min | ⏭️ IN PROGRESS | 2026-01-24 |
 
 **Recent Trend:**
-- Last 4 plans: ~5 min average
-- Trend: Rapid verification and documentation
+- Last 4 plans: ~4 min average
+- Trend: Rapid verification
 
 ## Accumulated Context
 
@@ -58,47 +58,19 @@ Gap Closure: [██████████░] 90% (Phase 16 complete, Phase 1
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- [Phase 17-07]: Marked Phase 8 as SKIPPED in verification report since work was not executed and artifacts are missing.
 - [Init]: Stats inline per script (self-contained for replication)
 - [Init]: Stats to console + files (human review + machine-readable)
 - [Init]: README for academic reviewers (thesis committee, journal reviewers)
 - [Init]: Skip methodology in README (belongs in paper)
 - [Phase 1]: Inline helper functions pattern (copy-paste ready)
-- [Phase 1]: Timing field naming: `start_time`/`end_time` preferred over `_iso` suffix
 - [Phase 10-04]: File caching with @lru_cache decorator (maxsize=32) for repeated data loads
-- [Phase 10-04]: Performance optimization metrics documented in stats.json optimization section
-- [Phase 10-04]: Path converted to string for hashability in lru_cache
 - [Phase 11]: Use GitHub Actions for CI/CD (free tier sufficient for test automation)
-- [Phase 11]: Configure pytest-cov for multiple coverage formats (HTML, XML, terminal)
-- [Phase 11]: Enable optional Codecov integration with continue-on-error
-- [Phase 11]: Upload coverage and test results as 30-day artifacts
-- [Phase 11]: Document both enablement and deferral options for CI/CD
 - [Phase 12-01]: Use psutil>=7.2.1 for cross-platform memory tracking (research confirmed)
-- [Phase 12-01]: Inline helper functions pattern for observability (5 functions: memory, throughput, checksums, z-score, IQR)
-- [Phase 12-02]: Added observability to Steps 1-2 (8 scripts) with integration tests
-- [Phase 12-02]: Added observability to Step 3 scripts (3.0-3.3) with anomaly detection
-- [Phase 12-02]: Added observability to Step 4 scripts (4.1.1-4) with regression coefficient anomaly detection
 - [Phase 13-01b]: Use pathlib for cross-platform path operations instead of os.path
-- [Phase 13-01b]: Implement fallback chain for Windows: symlink (admin) → junction → copy
-- [Phase 13-01b]: Use temporary .write_test file to verify directory write permissions
-- [Phase 13-02]: Use module-relative path resolution (Path(__file__).parent) for config loading
-- [Phase 13-02]: Configure RapidFuzz scorers: token_sort_ratio for company names, WRatio for entities
- - [Phase 13-05a]: All Step 1 scripts (1.0-1.4) use shared.symlink_utils.update_latest_link() for 'latest' links
- - [Phase 13-05a]: Keep utils.update_latest_symlink in 1.5_Utils.py for backward compatibility
- - [Phase 13-05c]: Use shared.symlink_utils.update_latest_link() for cross-platform symlink handling
- - [Phase 13-05c]: Added update_latest_link() call to 3.3_EventFlags.py (was missing)
- - [Phase 13-03]: Use shared.regression_validation for comprehensive input validation across 6 econometric scripts
-- [Phase 13-08]: Add active path validation to all 17 core scripts using shared.path_utils module (validate_output_path, ensure_output_dir, validate_input_file)
-- [Phase 13-08]: Step 4 econometric scripts received path_utils import for future validation use (partial implementation due to script complexity)
-  - [Phase 14-01]: Pin statsmodels to exact version 0.14.6 to prevent API breakage from 0.14.0 changes (deprecated GLM link names)
- - [Phase 15-01]: Use SeedSequence spawning pattern for deterministic parallel RNG (worker_id prepended to root_seed)
- - [Phase 15-02]: Apply PyArrow column pruning to critical scripts for memory efficiency and I/O optimization
-  - [Phase 15-03]: Use MemoryAwareThrottler with 80% memory threshold for dynamic chunk size adjustment (enable_throttling=true by default)
-  - [Phase 16-03]: Remove orphaned parallel_utils.py - can be resurrected from git history if needed for Phase 19
-  - [Phase 16-03]: Mark parallel RNG as "Planned" in SCALING.md to accurately reflect implementation status
-  - [Phase 14-01]: Require baseline coefficient comparison for all statsmodels upgrades (tolerance: 1e-6)
- - [Phase 14-01]: Document upgrade procedures with explicit rollback steps to minimize risk
- - [Phase 14-01]: Full pipeline run required for statsmodels upgrades to validate reproducibility
- - [Phase 17-12]: Verified existing 14-dependency-management-VERIFICATION.md instead of recreating it as it was complete and accurate
+- [Phase 13-08]: Add active path validation to all 17 core scripts using shared.path_utils module
+- [Phase 14-01]: Pin statsmodels to exact version 0.14.6 to prevent API breakage
+- [Phase 15-01]: Use SeedSequence spawning pattern for deterministic parallel RNG
 
 ### Pending Todos
 
@@ -111,6 +83,11 @@ None.
 ## Phase 17 Achievements
 
 **Completed 2026-01-24:**
+
+✅ **17-07-PLAN.md:** Create VERIFICATION.md for Phase 8
+   - Verified Phase 8 status (SKIPPED)
+   - Documented missing artifacts (DualWriter, shared utils)
+   - Aligned verification report with reality (PLANNED status)
 
 ✅ **17-01-PLAN.md:** Create VERIFICATION.md for Phase 1
    - Updated `01-TEMPLATE-VERIFICATION.md` with detailed plan verification
@@ -127,11 +104,3 @@ None.
 ✅ **17-12-PLAN.md:** Create VERIFICATION.md for Phase 14
    - Verified existing `14-dependency-management-VERIFICATION.md`
    - Confirmed all 6 must-haves for Phase 14 are verified
-   - Confirmed no gaps in dependency management implementation
-   - Verified artifacts: `requirements.txt`, `DEPENDENCIES.md`, `UPGRADE_GUIDE.md`, `.github/workflows/test.yml`
-
-✅ **17-11-PLAN.md:** Create VERIFICATION.md for Phase 12
-   - Verified 4/4 success criteria (memory, throughput, checksums, anomalies)
-   - Verified all 19 scripts have observability features
-   - Documented 1 non-critical gap (summary script syntax error)
-   - Phase 12 verified and closed
