@@ -22,6 +22,17 @@ except ImportError:
     sys.path.insert(0, str(script_dir))
     from shared.symlink_utils import update_latest_link
 
+# Import memory tracking decorator
+try:
+    from shared.chunked_reader import track_memory_usage
+except ImportError:
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.chunked_reader import track_memory_usage
+
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
@@ -460,9 +471,11 @@ def process_year_worker(
     year_stats["avg_tokens_per_doc"] = round(result["total_tokens"].mean(), 2)
     year_stats["output_rows"] = len(result)
 
-    # Save
+    # Save with memory tracking
     out_path = out_dir / f"linguistic_counts_{year}.parquet"
-    result.to_parquet(out_path, index=False)
+    print(f"  Saving {out_path.name}...")
+    save_result = save_output_with_tracking(result, out_path)
+    # Note: memory stats saved to save_output operation
     print(f"  Saved {out_path.name} ({time.time() - t0:.1f}s)")
     return year, year_stats
 
@@ -550,6 +563,36 @@ def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir)
     return result, year_stats
 
 
+# ==============================================================================
+# Memory-tracked operations
+# ==============================================================================
+
+
+@track_memory_usage("load_documents")
+def load_documents_with_tracking(manifest_path, lm_path):
+    """Load manifest and dictionary with memory tracking"""
+    validate_input_file(manifest_path, must_exist=True)
+    manifest = pd.read_parquet(manifest_path, columns=["file_name"])
+    valid_files = set(manifest["file_name"])
+
+    validate_input_file(lm_path, must_exist=True)
+    vocab_list, cat_sets = load_lm_dictionary(lm_path)
+
+    return {
+        "manifest": manifest,
+        "valid_files": valid_files,
+        "vocab_list": vocab_list,
+        "cat_sets": cat_sets,
+    }
+
+
+@track_memory_usage("save_output")
+def save_output_with_tracking(df, output_path):
+    """Save output with memory tracking"""
+    df.to_parquet(output_path, index=False)
+    return {"path": str(output_path)}
+
+
 def main():
     print("=== Step 2.1: Tokenize & Count (Legacy Compatible) ===")
     root = Path(__file__).parent.parent.parent
@@ -567,7 +610,6 @@ def main():
 
     # Memory tracking at script start
     mem_start = get_process_memory_mb()
-    all_memory_values = [mem_start["rss_mb"]]
 
     stats = {
         "step_id": "2.1_TokenizeAndCount",
@@ -585,9 +627,10 @@ def main():
         "output": {"final_rows": 0, "final_columns": 0, "files": [], "checksums": {}},
         "missing_values": {},
         "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
+        "memory_mb": {},  # Added for operation-level memory tracking
     }
 
-    # Load Manifest
+    # Load documents with memory tracking
     manifest_path = (
         root
         / "4_Outputs"
@@ -595,20 +638,22 @@ def main():
         / "latest"
         / "master_sample_manifest.parquet"
     )
-    validate_input_file(manifest_path, must_exist=True)
-    manifest = pd.read_parquet(manifest_path, columns=["file_name"])
-    valid_files = set(manifest["file_name"])
+    lm_path = root / "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
+
+    print("Loading manifest and dictionary...")
+    load_result = load_documents_with_tracking(manifest_path, lm_path)
+    manifest = load_result["manifest"]
+    vocab_list = load_result["vocab_list"]
+    cat_sets = load_result["cat_sets"]
+    stats["memory_mb"]["load_documents"] = load_result["memory_mb"]
+
+    valid_files = load_result["valid_files"]
     print(f"Universe: {len(valid_files):,} files")
 
     stats["input"]["files"].append(str(manifest_path))
     stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
         compute_file_checksum(manifest_path)
     )
-
-    # Load Dict
-    lm_path = root / "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
-    validate_input_file(lm_path, must_exist=True)
-    vocab_list, cat_sets = load_lm_dictionary(lm_path)
 
     stats["input"]["files"].append(str(lm_path))
     stats["input"]["checksums"]["Loughran-McDonald_MasterDictionary.csv"] = (
@@ -725,13 +770,11 @@ def main():
 
     # Memory tracking at script end
     mem_end = get_process_memory_mb()
-    all_memory_values.append(mem_end["rss_mb"])
 
     # Add memory stats to stats
     stats["memory"] = {
         "start_mb": round(mem_start["rss_mb"], 2),
         "end_mb": round(mem_end["rss_mb"], 2),
-        "peak_mb": round(max(all_memory_values), 2),
         "delta_mb": round(mem_end["rss_mb"] - mem_start["rss_mb"], 2),
     }
 
