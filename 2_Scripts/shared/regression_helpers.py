@@ -76,45 +76,279 @@ def load_reg_data(
     return df
 
 
-def build_regression_sample(
-    df: pd.DataFrame,
-    filters: List[Dict],
-    sample_size: Optional[int] = None,
-    random_seed: Optional[int] = None,
+def _check_missing_values(
+    df: pd.DataFrame, required_vars: Dict[str, List[str]]
+) -> Dict[str, int]:
+    """
+    Check for missing values in required variables.
+
+    Args:
+        df: DataFrame to check
+        required_vars: Dictionary mapping variable types to column names
+                              (e.g., {'dependent': ['y'], 'independent': ['x1'], 'controls': ['c1']})
+
+    Returns:
+        Dictionary mapping variable names to missing counts
+    """
+    missing_counts = {}
+    all_vars = []
+    for var_type, var_list in required_vars.items():
+        all_vars.extend(var_list)
+
+    for var in all_vars:
+        if var in df.columns:
+            missing_count = df[var].isna().sum()
+            if missing_count > 0:
+                missing_counts[var] = int(missing_count)
+
+    return missing_counts
+
+
+def _assign_industry_codes(
+    df: pd.DataFrame, sic_col: str, classification: str = "FF12"
 ) -> pd.DataFrame:
     """
-    Build filtered regression sample from DataFrame.
+    Assign Fama-French industry classification codes based on SIC code.
+
+    Args:
+        df: DataFrame with SIC codes
+        sic_col: Column name containing SIC codes
+        classification: Industry classification (FF12, FF48, or None)
+
+    Returns:
+        DataFrame with added 'industry_code' column
+
+    Note:
+        Loads SIC code lookup tables from 1_Inputs/ directory.
+        FF12: 12 industry classifications
+        FF48: 48 industry classifications
+    """
+    from pathlib import Path
+
+    df = df.copy()
+
+    # Skip if classification not requested or SIC column missing
+    if classification is None or sic_col not in df.columns:
+        return df
+
+    # Determine SIC lookup file based on classification
+    input_dir = Path(__file__).parent.parent.parent / "1_Inputs"
+
+    if classification == "FF12":
+        sic_file = input_dir / "Siccodes12.zip"
+    elif classification == "FF48":
+        sic_file = input_dir / "Siccodes48.zip"
+    else:
+        raise ValueError(
+            f"Unsupported classification: {classification}. Use FF12 or FF48."
+        )
+
+    # Load SIC code lookup table
+    if not sic_file.exists():
+        raise FileNotFoundError(f"SIC code file not found: {sic_file}")
+
+    try:
+        sic_lookup = pd.read_parquet(sic_file)
+    except Exception:
+        # Try CSV if parquet fails
+        try:
+            sic_lookup = pd.read_csv(sic_file)
+        except Exception as e:
+            raise ValueError(f"Could not load SIC lookup file: {e}")
+
+    # Check required columns in SIC lookup
+    sic_col_lower = sic_col.lower()
+    sic_lookup_cols = [col.lower() for col in sic_lookup.columns]
+
+    if sic_col_lower not in sic_lookup_cols:
+        available = [col for col in sic_lookup.columns]
+        raise ValueError(
+            f"SIC column '{sic_col}' not found in SIC lookup file. "
+            f"Available columns: {available}"
+        )
+
+    # Find the actual column name in lookup (case-insensitive)
+    lookup_sic_col = sic_lookup.columns[sic_lookup_cols.index(sic_col_lower)]
+
+    # Identify industry code column
+    industry_col_candidates = [
+        col
+        for col in sic_lookup.columns
+        if col.lower() in ["industry", "ff", "industry_code"]
+    ]
+    if not industry_col_candidates:
+        raise ValueError("Industry code column not found in SIC lookup file")
+
+    industry_col = industry_col_candidates[0]
+
+    # Merge industry codes to DataFrame
+    df = df.merge(
+        sic_lookup[[lookup_sic_col, industry_col]],
+        left_on=sic_col,
+        right_on=lookup_sic_col,
+        how="left",
+    )
+
+    # Rename industry column to standard name
+    df = df.rename(columns={industry_col: "industry_code"})
+
+    return df
+
+
+def build_regression_sample(
+    df: pd.DataFrame,
+    required_vars: Dict[str, List[str]],
+    filters: Optional[List[Dict]] = None,
+    year_range: Optional[Tuple[int, int]] = None,
+    min_sample_size: int = 100,
+    max_sample_size: Optional[int] = None,
+    random_seed: Optional[int] = None,
+    industry_classification: str = "FF12",
+    sic_col: str = "sic",
+) -> pd.DataFrame:
+    """
+    Build filtered regression sample with comprehensive validation.
 
     Args:
         df: Input DataFrame
-        filters: List of filter dictionaries
-        sample_size: Maximum sample size (None = use all)
+        required_vars: Dictionary mapping variable types to column names
+                         (e.g., {'dependent': ['y'], 'independent': ['x1', 'x2'],
+                          'controls': ['c1', 'c2']})
+        filters: List of filter dicts with structure:
+            - column: Column name to filter on
+            - operation: Comparison operation (eq, gt, lt, ge, le, ne, in, not_in)
+            - value: Value to compare against (single value or list)
+        year_range: Tuple of (min_year, max_year) for year filtering
+        min_sample_size: Minimum sample size (raises error if below)
+        max_sample_size: Maximum sample size (samples down if above)
         random_seed: Random seed for reproducibility
+        industry_classification: Industry classification (FF12, FF48, or None)
+        sic_col: Column name for SIC code
 
     Returns:
         Filtered sample DataFrame
+
+    Raises:
+        ValueError: If required variables missing or sample size insufficient
+
+    Example:
+        >>> df = pd.DataFrame({'y': [1, 2, 3], 'x1': [4, 5, 6],
+        ...                      'year': [2020, 2021, 2022], 'sic': [1234, 5678, 9123]})
+        >>> required_vars = {'dependent': ['y'], 'independent': ['x1'], 'controls': []}
+        >>> filters = [{'column': 'year', 'operation': 'ge', 'value': 2020}]
+        >>> sample = build_regression_sample(df, required_vars, filters=filters,
+        ...                              min_sample_size=3)
     """
     sample = df.copy()
 
-    # Apply filters
-    for f in filters:
-        col = f.get("column")
-        values = f.get("values")
-        min_val = f.get("min_val")
-        max_val = f.get("max_val")
+    # Step 1: Validate required_vars structure and check columns exist
+    if not isinstance(required_vars, dict):
+        raise ValueError(
+            "required_vars must be a dictionary with keys: dependent, independent, controls"
+        )
 
-        if col and values is not None:
-            sample = sample[sample[col].isin(values)]
-        if col and min_val is not None and max_val is not None:
-            sample = sample[(sample[col] >= min_val) & (sample[col] <= max_val)]
+    all_required_columns = []
+    for var_type, var_list in required_vars.items():
+        if not isinstance(var_list, list):
+            raise ValueError(
+                f"required_vars['{var_type}'] must be a list of column names"
+            )
+        all_required_columns.extend(var_list)
 
-    # Apply sample size limit
-    if sample_size and len(sample) > sample_size:
-        if random_seed is not None:
-            sample = sample.sample(n=sample_size, random_state=random_seed)
+    # Check if all required columns exist in DataFrame
+    missing_columns = set(all_required_columns) - set(sample.columns)
+    if missing_columns:
+        raise ValueError(
+            f"Missing required columns: {sorted(missing_columns)}. "
+            f"Available: {sorted(sample.columns)}"
+        )
+
+    # Step 2: Apply filters
+    if filters:
+        for f in filters:
+            col = f.get("column")
+            operation = f.get("operation", "eq")
+            value = f.get("value")
+
+            if not col or col not in sample.columns:
+                continue
+
+            if operation == "eq":
+                sample = sample[sample[col] == value]
+            elif operation == "gt":
+                sample = sample[sample[col] > value]
+            elif operation == "lt":
+                sample = sample[sample[col] < value]
+            elif operation == "ge":
+                sample = sample[sample[col] >= value]
+            elif operation == "le":
+                sample = sample[sample[col] <= value]
+            elif operation == "ne":
+                sample = sample[sample[col] != value]
+            elif operation == "in":
+                if isinstance(value, (list, tuple, set)):
+                    sample = sample[sample[col].isin(value)]
+                else:
+                    raise ValueError(
+                        f"'in' operation requires a list of values, got {type(value)}"
+                    )
+            elif operation == "not_in":
+                if isinstance(value, (list, tuple, set)):
+                    sample = sample[~sample[col].isin(value)]
+                else:
+                    raise ValueError(
+                        f"'not_in' operation requires a list of values, got {type(value)}"
+                    )
+            else:
+                raise ValueError(
+                    f"Unsupported filter operation: {operation}. "
+                    f"Use eq, gt, lt, ge, le, ne, in, not_in"
+                )
+
+    # Step 3: Apply year_range filter if specified
+    if year_range is not None:
+        min_year, max_year = year_range
+        if "year" in sample.columns:
+            sample = sample[(sample["year"] >= min_year) & (sample["year"] <= max_year)]
         else:
-            sample = sample.head(sample_size)
+            import warnings
 
+            warnings.warn(
+                f"year_range specified but 'year' column not found in DataFrame"
+            )
+
+    # Step 4: Check for missing values in required variables
+    missing_counts = _check_missing_values(sample, required_vars)
+    if missing_counts:
+        import warnings
+
+        missing_str = ", ".join(
+            [f"{var}: {count}" for var, count in missing_counts.items()]
+        )
+        warnings.warn(f"Missing values in required variables: {missing_str}")
+
+    # Step 5: Assign industry codes if industry_classification specified
+    if industry_classification is not None:
+        try:
+            sample = _assign_industry_codes(sample, sic_col, industry_classification)
+        except (FileNotFoundError, ValueError) as e:
+            import warnings
+
+            warnings.warn(f"Could not assign industry codes: {e}")
+
+    # Step 6: Validate sample size
+    from shared.regression_validation import validate_sample_size
+
+    validate_sample_size(sample, min_observations=min_sample_size)
+
+    # Step 7: Apply max_sample_size cap with random sampling if specified
+    if max_sample_size is not None and len(sample) > max_sample_size:
+        if random_seed is not None:
+            sample = sample.sample(n=max_sample_size, random_state=random_seed)
+        else:
+            sample = sample.head(max_sample_size)
+
+    # Step 8: Return sample with metadata
     return sample
 
 
