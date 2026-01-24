@@ -65,6 +65,36 @@ except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
     sys.exit(1)
 
+
+def load_config():
+    """Load configuration from project.yaml"""
+    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
+
+
+def setup_paths(config):
+    """Set up all required paths"""
+    root = Path(__file__).parent.parent.parent
+
+    paths = {
+        "root": root,
+        "execucomp": root / "1_Inputs" / "Execucomp" / "comp_execucomp.parquet",
+    }
+
+    # Create timestamped output directory
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    output_base = root / config["paths"]["outputs"] / "1.3_BuildTenureMap"
+    paths["output_dir"] = output_base / timestamp
+    paths["log_file"] = output_base / f"{timestamp}.log"
+
+    # Update latest symlink
+    update_latest_link(paths["output_dir"])
+
+    return paths, timestamp
+
+
 # ==============================================================================
 # Dual-write logging utility
 # ==============================================================================
