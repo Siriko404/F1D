@@ -466,13 +466,13 @@ Plans:
     3. All scripts import from shared modules (no duplicate code)
     4. Error handling improved (specific exceptions, logging, re-raise or graceful handling)
 **Status**: 📝 PLANNED (gap closure phase from audit)
-**Plans**: TBD
+**Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 23-01: Extract DualWriter class to shared module (Wave 1)
-- [ ] 23-02: Consolidate utility functions to shared module (Wave 1)
-- [ ] 23-03: Update all scripts to import shared modules (Wave 2)
-- [ ] 23-04: Improve error handling consistency in econometric scripts (Wave 2)
+- [ ] 23-01-PLAN.md — Create standalone dual_writer.py module (re-exports from observability_utils)
+- [ ] 23-02-PLAN.md — Document all utility functions in shared/README.md
+- [ ] 23-03-PLAN.md — Remove inline DualWriter from 12 scripts, import from shared
+- [ ] 23-04-PLAN.md — Improve error handling consistency in econometric scripts
 
 ### Phase 24: Complete Script Refactoring
 **Goal**: Reduce large scripts to <800 lines via actual code extraction (not just imports)
@@ -536,8 +536,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 
 ---
-   ---
+    ---
 *Roadmap created: 2026-01-22*
 *Roadmap updated: 2026-01-24 (Phases 20-24 added for gap closure from v1.2.0 audit)*
-*Total plans: 111 (111 completed) + 21 planned (gap closure phases)*
+*Total plans: 115 (111 completed) + 4 planned (gap closure phases)*
 *Total requirements: 30 mapped*
