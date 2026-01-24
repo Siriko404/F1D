@@ -39,6 +39,7 @@ import hashlib
 import json
 import time
 from functools import lru_cache
+import argparse
 
 # Try importing statsmodels
 try:
@@ -51,35 +52,58 @@ except ImportError:
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# Import shared utilities
-from shared.symlink_utils import update_latest_link
-from shared.observability_utils import (
-    DualWriter,
-    compute_file_checksum,
-    print_stat,
-    analyze_missing_values,
-    print_stats_summary,
-    save_stats,
-)
+# ==============================================================================
+# CLI Arguments & Prerequisites
+# ==============================================================================
 
-CONFIG = {
-    "dependent_var": "Manager_QA_Uncertainty_pct",
-    "linguistic_controls": [
-        "Manager_Pres_Uncertainty_pct",
-        "Analyst_QA_Uncertainty_pct",
-        "Entire_All_Negative_pct",
-    ],
-    "firm_controls": ["StockRet", "MarketRet", "EPS_Growth", "SurpDec"],
-    "min_calls_per_ceo": 5,
-    "year_start": 2002,
-    "year_end": 2018,
-    "samples": {
-        "Main": {"exclude_ff12": [8, 11], "include_ff12": None},
-        "Finance": {"exclude_ff12": None, "include_ff12": [11]},
-        "Utility": {"exclude_ff12": None, "include_ff12": [8]},
-    },
-}
 
+def parse_arguments():
+    """Parse command-line arguments for 4.1_EstimateCeoClarity.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 4.1: Estimate CEO Clarity
+
+Estimates CEO clarity scores using panel regression with CEO
+fixed effects. Regresses readability measures on CEO and firm
+characteristics, extracting CEO-specific clarity coefficients.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        choices=["baseline", "extended", "regime"],
+        default="baseline",
+        help="Clarity model specification (default: baseline)",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "2.2_ConstructVariables": "linguistic_variables.parquet",
+        "3.1_FirmControls": "firm_controls.parquet",
+        "3.2_MarketVariables": "market_variables.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
+
+# ==============================================================================
+# Cached File Loading (Performance Optimization)
 # ==============================================================================
 # Cached File Loading (Performance Optimization)
 # ==============================================================================
@@ -665,7 +689,7 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
 # ==============================================================================
 
 
-def main(year_start=None, year_end=None):
+def main(year_start=None, year_end=None, model=None):
     """Main execution."""
     start_time = datetime.now()
     start_iso = start_time.isoformat()
@@ -687,6 +711,10 @@ def main(year_start=None, year_end=None):
         CONFIG["year_start"] = year_start
     if year_end:
         CONFIG["year_end"] = year_end
+    if model:
+        # Model parameter is parsed but current script doesn't use it
+        # Keep for future extensibility
+        pass
 
     # Setup paths
     root = Path(__file__).resolve().parents[2]
@@ -831,6 +859,14 @@ def main(year_start=None, year_end=None):
 
 
 if __name__ == "__main__":
-    year_start = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    year_end = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    sys.exit(main(year_start, year_end))
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
+    sys.exit(main(model=args.model))
