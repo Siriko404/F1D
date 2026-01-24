@@ -5,25 +5,26 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
-**Current focus:** Phase 17 - Verification Reports
+**Current focus:** Phase 18 - Complete Phase 13 Refactoring
 
 ## Current Position
 
-Phase: 17 of 19 (Verification Reports)
-Plan: 13 of 13 in current phase
-Status: Phase complete
-Last activity: 2026-01-24 - Completed 17-04-PLAN.md
+Phase: 18 of 19 (Complete Phase 13 Refactoring)
+Plan: 3 of 3 (plans created)
+Status: Plans created, ready for execution
+Last activity: 2026-01-23 - Created 18-01-PLAN.md, 18-02-PLAN.md, 18-03-PLAN.md
 
-Progress: [███████████] 94% (17/19 phases complete)
+Progress: [██████████░] 89% (17/19 phases complete, 18 planned)
 Technical Remediation: [████████████] 100% (All phases 7-16 complete)
-Gap Closure: [███████████] 95% (Phase 16-17 complete)
+Gap Closure: [██████████░] 95% (Phase 16-17 complete, 18 planned)
 
 ## Performance Metrics
 
 **Velocity:**
    - Total plans completed: 93
-  - Average duration: ~8 min
-  - Total execution time: ~184 min
+   - Plans created but not executed: 3
+   - Average duration: ~8 min
+   - Total execution time: ~184 min
 
 **By Phase:**
 
@@ -46,6 +47,7 @@ Gap Closure: [███████████] 95% (Phase 16-17 complete)
 | | 15. Scaling Preparation | 5/5 | ~11 min | ✅ COMPLETED | 2026-01-24 |
 | | 16. Critical Path Fixes | 3/3 | ~5 min | ✅ COMPLETED | 2026-01-23 |
 | | 17. Verification Reports | 13/13 | ~17 min | ✅ COMPLETED | 2026-01-24 |
+| | 18. Complete Phase 13 Refactoring | 0/3 | ~0 min | 📝 PLANNED | 2026-01-23 |
 
 **Recent Trend:**
 - Last 4 plans: ~5 min average
@@ -132,3 +134,24 @@ None.
 ✅ **17-12-PLAN.md:** Create VERIFICATION.md for Phase 14
    - Verified existing `14-dependency-management-VERIFICATION.md`
    - Confirmed all 6 must-haves for Phase 14 are verified
+
+## Phase 18 Plans Created
+
+**Created 2026-01-23:**
+
+📋 **18-01-PLAN.md:** Refactor 1.2_LinkEntities.py to use shared.string_matching.match_company_names()
+   - Replaces inline RapidFuzz fuzzy matching with shared module call
+   - Targets line count reduction from 1043 to <1020 lines
+   - Addresses Phase 13 gap: string_matching module exists but not used by 1.2
+
+📋 **18-02-PLAN.md:** Complete build_regression_sample() implementation with actual logic
+   - Enhances regression_helpers.py with robust sample construction
+   - Adds required variable validation, missing value checks, industry assignment (FF12/FF48)
+   - Targets line count increase from 145 to ~200-250 lines
+   - Addresses Phase 13 gap: build_regression_sample() was too generic
+
+📋 **18-03-PLAN.md:** Extract additional code from large scripts to reduce line counts to <800 lines
+   - Uses enhanced build_regression_sample() in 5 Step 4 econometric scripts
+   - Extracts code from 3.0 and 3.1 Step 3 financial scripts
+   - Targets reducing 6 large scripts: 1089→<800 (4.1.1), 944→<800 (4.1.2), 979→<800 (4.1.3), 998→<800 (4.2), 945→<800 (4.3), 978→<800 (3.1)
+   - Addresses Phase 13 gap: 8/9 scripts still >800 lines (now 6/9 after plan 18-03)
