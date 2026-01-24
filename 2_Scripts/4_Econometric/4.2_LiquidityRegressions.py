@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """
-==============================================================================
 STEP 4.2: Liquidity Regressions (OLS and 2SLS)
 ==============================================================================
 
@@ -122,7 +121,6 @@ from shared.observability_utils import (
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# ==============================================================================
 # Configuration
 # ==============================================================================
 
@@ -342,7 +340,6 @@ def run_first_stage(df, out_dir):
 
         output_lines.append(f"\n--- Endogenous: {label} ---")
 
-        # Build regression
         controls = CONFIG["linguistic_controls"] + CONFIG["firm_controls"]
         controls = [c for c in controls if c in df.columns and c != endog_var]
 
@@ -353,7 +350,6 @@ def run_first_stage(df, out_dir):
             output_lines.append(f"  Insufficient observations: {len(reg_df)}")
             continue
 
-        # Add constant and year dummies
         reg_df["year"] = reg_df["year"].astype(str)
         formula = (
             f"{endog_var} ~ {CONFIG['instrument']} + "
@@ -373,12 +369,11 @@ def run_first_stage(df, out_dir):
         try:
             model = smf.ols(formula, data=reg_df).fit(cov_type="HC1")
 
-            # Get instrument stats
             inst = CONFIG["instrument"]
             coef = model.params.get(inst, np.nan)
             t_stat = model.tvalues.get(inst, np.nan)
             p_val = model.pvalues.get(inst, np.nan)
-            f_stat = t_stat**2  # For single instrument
+            f_stat = t_stat**2
 
             output_lines.append(f"  N = {int(model.nobs):,}")
             output_lines.append(f"  R-squared = {model.rsquared:.4f}")
@@ -407,9 +402,7 @@ def run_first_stage(df, out_dir):
 
             # Save full summary
             with open(out_dir / "first_stage_full.txt", "a") as f:
-                f.write(f"\n{'=' * 80}\n")
-                f.write(f"Endogenous: {label}\n")
-                f.write(f"{'=' * 80}\n")
+                f.write(f"\n{'=' * 80}\nEndogenous: {label}\n{'=' * 80}\n")
                 f.write(model.summary().as_text())
                 f.write("\n")
 
@@ -469,10 +462,9 @@ def run_ols_regression(
 
         # Save full results
         with open(out_file, "a") as f:
-            f.write(f"\n{'=' * 80}\n")
-            f.write(f"Sample: {sample_name}\n")
-            f.write(f"Dependent: {dep_var}\n")
-            f.write(f"{'=' * 80}\n")
+            f.write(
+                f"\n{'=' * 80}\nSample: {sample_name}\nDependent: {dep_var}\n{'=' * 80}\n"
+            )
             f.write(model.summary().as_text())
             f.write("\n")
 
@@ -537,19 +529,15 @@ def run_iv_regression(
         return None
 
     try:
-        # Prepare variables - ensure float64
         y = reg_df[dep_var].astype(np.float64)
 
-        # Exogenous controls (including Clarity)
         exog_cols = [c for c in controls if c in reg_df.columns]
         exog_cols += [c for c in year_dummies.columns]
         exog_data = reg_df[exog_cols].astype(np.float64)
         exog = sm.add_constant(exog_data)
 
-        # Endogenous variable
         endog = reg_df[[uncertainty_var]].astype(np.float64)
 
-        # Instrument
         instruments = reg_df[[CONFIG["instrument"]]].astype(np.float64)
 
         # Run IV2SLS
@@ -568,12 +556,9 @@ def run_iv_regression(
 
         # Save full results
         with open(out_file, "a") as f:
-            f.write(f"\n{'=' * 80}\n")
-            f.write(f"Sample: {sample_name}\n")
-            f.write(f"Dependent: {dep_var}\n")
-            f.write(f"Endogenous: {uncertainty_var}\n")
-            f.write(f"Instrument: {CONFIG['instrument']}\n")
-            f.write(f"{'=' * 80}\n")
+            f.write(
+                f"\n{'=' * 80}\nSample: {sample_name}\nDependent: {dep_var}\nEndogenous: {uncertainty_var}\nInstrument: {CONFIG['instrument']}\n{'=' * 80}\n"
+            )
             f.write(str(model.summary))
             f.write(f"\n\nKleibergen-Paap F-stat: {kp_f:.2f}")
             if kp_f < 10:
@@ -596,7 +581,6 @@ def run_iv_regression(
         return None
 
 
-# Main
 def main():
     start_time = datetime.now()
     start_iso = start_time.isoformat()
