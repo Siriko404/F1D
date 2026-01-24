@@ -10,26 +10,7 @@ import os
 import sys
 from pathlib import Path
 
-
-class DualWriter:
-    """Writes to both stdout and log file verbatim"""
-
-    def __init__(self, log_path):
-        self.terminal = sys.stdout
-        self.log_path = log_path
-        self.log = open(log_path, "w", encoding="utf-8")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-        self.log.flush()
-
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
-    def close(self):
-        self.log.close()
+from shared.observability_utils import DualWriter
 
 
 def get_latest_output_dir(output_base, required_file=None):

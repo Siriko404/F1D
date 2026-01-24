@@ -60,6 +60,7 @@ try:
         ensure_output_dir,
         validate_input_file,
     )
+    from shared.observability_utils import DualWriter
 except ImportError:
     import sys as _sys
     from pathlib import Path as _Path
@@ -71,6 +72,7 @@ except ImportError:
         ensure_output_dir,
         validate_input_file,
     )
+    from shared.observability_utils import DualWriter
 
 from shared.regression_validation import (
     validate_columns,
@@ -84,6 +86,27 @@ import json
 
 warnings.filterwarnings("ignore")
 
+# ==============================================================================
+# Configuration
+# ==============================================================================
+
+ROOT = Path(__file__).resolve().parents[2]
+
+CONFIG = {
+    # Key variables
+    "clarity_var_regime": "ClarityRegime",
+    "clarity_var_ceo": "ClarityCEO",
+    "uncertainty_var": "Manager_QA_Uncertainty_pct",
+    # Firm controls
+    "firm_controls": ["Size", "BM", "Lev", "ROA"],
+    # Observation window (days)
+    "forward_window_days": 365,
+    # Sample filter (exclude Finance and Utilities)
+    "exclude_ff12": [8, 11],
+}
+
+# ==============================================================================
+# Statistics Helpers
 # ==============================================================================
 # Configuration
 # ==============================================================================
