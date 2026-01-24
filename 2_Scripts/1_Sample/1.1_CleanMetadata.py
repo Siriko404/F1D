@@ -25,6 +25,10 @@ Deterministic: true
 import sys
 import os
 from pathlib import Path
+import argparse
+
+# Add 2_Scripts to sys.path for shared module imports (works when running directly)
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -34,19 +38,22 @@ import time
 import json
 import hashlib
 import importlib.util
-import sys
 from pathlib import Path
 import psutil
 
 # Dynamic import for 1.5_Utils.py to comply with naming convention
 # (Python modules cannot start with numbers, so we use importlib)
-utils_path = Path(__file__).parent / "1.5_Utils.py"
-spec = importlib.util.spec_from_file_location("utils", utils_path)
-utils = importlib.util.module_from_spec(spec)
-sys.modules["utils"] = utils
-spec.loader.exec_module(utils)
+try:
+    utils_path = Path(__file__).parent / "1.5_Utils.py"
+    spec = importlib.util.spec_from_file_location("utils", utils_path)
+    utils = importlib.util.module_from_spec(spec)
+    sys.modules["utils"] = utils
+    spec.loader.exec_module(utils)
+    from utils import generate_variable_reference
+except ImportError:
+    pass  # 1.5_Utils.py may not exist
 
-from utils import generate_variable_reference
+from shared.symlink_utils import update_latest_link
 from shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
@@ -97,6 +104,57 @@ except ImportError:
 def print_dual(msg):
     """Print to both terminal and log"""
     print(msg, flush=True)
+
+
+# ==============================================================================
+# CLI argument parsing and prerequisite validation
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 1.1_CleanMetadata.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 1.1: Clean Metadata & Event Filtering
+
+Cleans Unified-info, deduplicates exact rows, resolves file_name
+collisions, and filters for earnings calls (event_type='1') in
+target date range (2002-2018).
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    parser.add_argument(
+        "--year-start", type=int, help="Start year for filtering (default: from config)"
+    )
+
+    parser.add_argument(
+        "--year-end", type=int, help="End year for filtering (default: from config)"
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root, args):
+    """Validate all required inputs exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {
+        "Unified-info.parquet": root / "1_Inputs" / "Unified-info.parquet",
+    }
+
+    # 1.1 has no prerequisite steps (first in pipeline)
+    required_steps = {}
+
+    validate_prerequisites(required_files, required_steps)
+
+    return args
 
 
 # ==============================================================================
@@ -416,4 +474,26 @@ def main():
 
 
 if __name__ == "__main__":
+    # Parse arguments and check prerequisites
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    # Handle dry-run mode
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root, args)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    # Check prerequisites
+    check_prerequisites(root, args)
+
+    # Override config values if arguments provided
+    config = load_config()
+    if args.year_start:
+        config["data"]["year_start"] = args.year_start
+    if args.year_end:
+        config["data"]["year_end"] = args.year_end
+
+    # Run main processing with updated config
     sys.exit(main())
