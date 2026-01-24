@@ -129,7 +129,25 @@ class DualWriter:
 def load_manifest(manifest_path, stats=None):
     """Load sample manifest."""
     print("\nLoading manifest...")
-    df = pd.read_parquet(manifest_path)
+    try:
+        df = pd.read_parquet(manifest_path)
+    except FileNotFoundError as e:
+        print(f"ERROR: Manifest file not found: {e}", file=_sys.stderr)
+        print(f"  File: {manifest_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except PermissionError as e:
+        print(f"ERROR: Permission denied reading manifest: {e}", file=_sys.stderr)
+        print(f"  File: {manifest_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except OSError as e:
+        print(f"ERROR: OS error reading manifest: {e}", file=_sys.stderr)
+        print(f"  File: {manifest_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except Exception as e:
+        print(f"ERROR: Failed to load manifest: {e}", file=_sys.stderr)
+        print(f"  File: {manifest_path}", file=_sys.stderr)
+        _sys.exit(1)
+
     print(f"  Manifest: {len(df):,} calls")
 
     if stats:
@@ -151,7 +169,23 @@ def load_linguistic_variables(linguistic_dir, year_start, year_end, stats=None):
             print(f"  WARNING: Missing {path.name}")
             continue
 
-        df = pd.read_parquet(path)
+        try:
+            df = pd.read_parquet(path)
+        except FileNotFoundError:
+            print(f"  WARNING: File not found: {path.name}")
+            continue
+        except PermissionError as e:
+            print(
+                f"ERROR: Permission denied reading {path.name}: {e}", file=_sys.stderr
+            )
+            _sys.exit(1)
+        except OSError as e:
+            print(f"ERROR: OS error reading {path.name}: {e}", file=_sys.stderr)
+            _sys.exit(1)
+        except Exception as e:
+            print(f"ERROR: Failed to load {path.name}: {e}", file=_sys.stderr)
+            _sys.exit(1)
+
         dfs.append(df)
         print(f"  {year}: {len(df):,} calls")
 
@@ -163,7 +197,8 @@ def load_linguistic_variables(linguistic_dir, year_start, year_end, stats=None):
             )
 
     if not dfs:
-        raise ValueError("No linguistic variables files found")
+        print("ERROR: No linguistic variables files found", file=_sys.stderr)
+        _sys.exit(1)
 
     return pd.concat(dfs, ignore_index=True)
 
@@ -179,7 +214,23 @@ def load_financial_controls(financial_dir, year_start, year_end, stats=None):
             print(f"  WARNING: Missing {path.name}")
             continue
 
-        df = pd.read_parquet(path)
+        try:
+            df = pd.read_parquet(path)
+        except FileNotFoundError:
+            print(f"  WARNING: File not found: {path.name}")
+            continue
+        except PermissionError as e:
+            print(
+                f"ERROR: Permission denied reading {path.name}: {e}", file=_sys.stderr
+            )
+            _sys.exit(1)
+        except OSError as e:
+            print(f"ERROR: OS error reading {path.name}: {e}", file=_sys.stderr)
+            _sys.exit(1)
+        except Exception as e:
+            print(f"ERROR: Failed to load {path.name}: {e}", file=_sys.stderr)
+            _sys.exit(1)
+
         dfs.append(df)
 
         if stats:
@@ -189,7 +240,8 @@ def load_financial_controls(financial_dir, year_start, year_end, stats=None):
             )
 
     if not dfs:
-        raise ValueError("No financial controls files found")
+        print("ERROR: No financial controls files found", file=_sys.stderr)
+        _sys.exit(1)
 
     return pd.concat(dfs, ignore_index=True)
 
@@ -205,7 +257,23 @@ def load_market_variables(financial_dir, year_start, year_end, stats=None):
             print(f"  WARNING: Missing {path.name}")
             continue
 
-        df = pd.read_parquet(path)
+        try:
+            df = pd.read_parquet(path)
+        except FileNotFoundError:
+            print(f"  WARNING: File not found: {path.name}")
+            continue
+        except PermissionError as e:
+            print(
+                f"ERROR: Permission denied reading {path.name}: {e}", file=_sys.stderr
+            )
+            _sys.exit(1)
+        except OSError as e:
+            print(f"ERROR: OS error reading {path.name}: {e}", file=_sys.stderr)
+            _sys.exit(1)
+        except Exception as e:
+            print(f"ERROR: Failed to load {path.name}: {e}", file=_sys.stderr)
+            _sys.exit(1)
+
         dfs.append(df)
 
         if stats:
@@ -215,7 +283,8 @@ def load_market_variables(financial_dir, year_start, year_end, stats=None):
             )
 
     if not dfs:
-        raise ValueError("No market variables files found")
+        print("ERROR: No market variables files found", file=_sys.stderr)
+        _sys.exit(1)
 
     return pd.concat(dfs, ignore_index=True)
 
@@ -362,7 +431,28 @@ def compute_descriptive_statistics(df, output_path, stats=None):
     desc_df = pd.DataFrame(stats_rows)
 
     # Save to CSV
-    desc_df.to_csv(output_path, index=False)
+    try:
+        desc_df.to_csv(output_path, index=False)
+    except PermissionError as e:
+        print(
+            f"ERROR: Permission denied writing descriptive_statistics.csv: {e}",
+            file=_sys.stderr,
+        )
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except OSError as e:
+        print(
+            f"ERROR: OS error writing descriptive_statistics.csv: {e}", file=_sys.stderr
+        )
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except Exception as e:
+        print(
+            f"ERROR: Failed to save descriptive_statistics.csv: {e}", file=_sys.stderr
+        )
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+
     print(f"  Saved: descriptive_statistics.csv ({len(numeric_cols)} variables)")
 
     # Print sample
@@ -407,7 +497,24 @@ def compute_correlation_matrix(df, output_path, stats=None):
     corr_matrix = df[existing_vars].corr(method="pearson")
 
     # Save to CSV
-    corr_matrix.to_csv(output_path)
+    try:
+        corr_matrix.to_csv(output_path)
+    except PermissionError as e:
+        print(
+            f"ERROR: Permission denied writing correlation_matrix.csv: {e}",
+            file=_sys.stderr,
+        )
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except OSError as e:
+        print(f"ERROR: OS error writing correlation_matrix.csv: {e}", file=_sys.stderr)
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except Exception as e:
+        print(f"ERROR: Failed to save correlation_matrix.csv: {e}", file=_sys.stderr)
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+
     print(
         f"  Saved: correlation_matrix.csv ({len(existing_vars)}x{len(existing_vars)})"
     )
@@ -471,7 +578,25 @@ def compute_panel_balance(df, output_path, stats=None):
 
     # Save to CSV
     # Create multi-section CSV with proper formatting
-    with open(output_path, "w", newline="") as f:
+    try:
+        f = open(output_path, "w", newline="")
+    except FileNotFoundError as e:
+        print(f"ERROR: Output directory not found: {e}", file=_sys.stderr)
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except PermissionError as e:
+        print(
+            f"ERROR: Permission denied creating panel_balance.csv: {e}",
+            file=_sys.stderr,
+        )
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except OSError as e:
+        print(f"ERROR: OS error creating panel_balance.csv: {e}", file=_sys.stderr)
+        print(f"  Output path: {output_path}", file=_sys.stderr)
+        _sys.exit(1)
+
+    with f:
         writer = csv.writer(f)
         writer.writerow(["Panel Balance Summary", "", "", "", ""])
 
@@ -733,8 +858,25 @@ def main():
 
     # Save stats.json
     stats_path = out_dir / "stats.json"
-    with open(stats_path, "w") as f:
-        json.dump(stats, f, indent=2)
+    try:
+        with open(stats_path, "w") as f:
+            json.dump(stats, f, indent=2)
+    except FileNotFoundError as e:
+        print(f"ERROR: Output directory not found: {e}", file=_sys.stderr)
+        print(f"  Output path: {stats_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except PermissionError as e:
+        print(f"ERROR: Permission denied writing stats.json: {e}", file=_sys.stderr)
+        print(f"  Output path: {stats_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except OSError as e:
+        print(f"ERROR: OS error writing stats.json: {e}", file=_sys.stderr)
+        print(f"  Output path: {stats_path}", file=_sys.stderr)
+        _sys.exit(1)
+    except Exception as e:
+        print(f"ERROR: Failed to save stats.json: {e}", file=_sys.stderr)
+        print(f"  Output path: {stats_path}", file=_sys.stderr)
+        _sys.exit(1)
 
     print("\n" + "=" * 80)
     print("COMPLETE")
@@ -748,7 +890,22 @@ def main():
     print("  - summary_report.md")
 
     # Update latest symlink
-    update_latest_link(out_dir, out_dir.parent / "latest")
+    try:
+        update_latest_link(out_dir, out_dir.parent / "latest")
+    except PermissionError as e:
+        print(
+            f"ERROR: Permission denied updating latest symlink: {e}", file=_sys.stderr
+        )
+        print(f"  Directory: {out_dir}", file=_sys.stderr)
+        _sys.exit(1)
+    except OSError as e:
+        print(f"ERROR: OS error updating latest symlink: {e}", file=_sys.stderr)
+        print(f"  Directory: {out_dir}", file=_sys.stderr)
+        _sys.exit(1)
+    except Exception as e:
+        print(f"ERROR: Failed to update latest symlink: {e}", file=_sys.stderr)
+        print(f"  Directory: {out_dir}", file=_sys.stderr)
+        _sys.exit(1)
 
     # Restore stdout
     _sys.stdout = dual_writer.original_stdout
