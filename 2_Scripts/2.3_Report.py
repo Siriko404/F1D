@@ -30,25 +30,7 @@ from pathlib import Path
 # Add script directory to path to import shared modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from shared.symlink_utils import update_latest_link
-
-
-# Setup logging (Dual Writer)
-class DualWriter:
-    def __init__(self, filepath):
-        self.file = open(filepath, "w", encoding="utf-8")
-        self.stdout = sys.stdout
-
-    def write(self, message):
-        self.stdout.write(message)
-        self.file.write(message)
-        self.file.flush()
-
-    def flush(self):
-        self.stdout.flush()
-        self.file.flush()
-
-    def close(self):
-        self.file.close()
+from shared.observability_utils import DualWriter
 
 
 def setup_logging(output_dir):
