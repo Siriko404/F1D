@@ -320,6 +320,83 @@ Plans:
 - [x] 15-03: Implement chunked processing for large files (Wave 2) — Add MemoryAwareThrottler with config integration ✅
 - [x] 15-05: Document scaling limits and improvement paths (Wave 3) — Create SCALING.md with comprehensive scaling guide ✅
 
+### Phase 16: Phase Verification Reports
+**Goal**: Create VERIFICATION.md reports for all unverified phases (gap closure from milestone audit)
+**Depends on**: Phase 15
+**Gap Closure**: Closes gap from v1.0.0-MILESTONE-AUDIT.md — 13 phases (1-6, 8-12, 14-15) lack VERIFICATION.md files
+**Success Criteria** (what must be TRUE):
+   1. VERIFICATION.md files exist for all 13 unverified phases
+   2. Each verification report confirms phase achieved its success criteria
+   3. All must-haves from each phase are verified
+   4. Tech debt and gaps are documented in each verification report
+**Status**: 📝 PLANNED (gap closure phase)
+**Plans**: 13 plans (one per unverified phase)
+
+Plans:
+- [ ] 16-01: Create VERIFICATION.md for Phase 1 (Template & Pilot)
+- [ ] 16-02: Create VERIFICATION.md for Phase 2 (Step 1 Sample)
+- [ ] 16-03: Create VERIFICATION.md for Phase 3 (Step 2 Text)
+- [ ] 16-04: Create VERIFICATION.md for Phase 4 (Steps 3-4 Financial & Econometric)
+- [ ] 16-05: Create VERIFICATION.md for Phase 5 (README & Documentation)
+- [ ] 16-06: Create VERIFICATION.md for Phase 6 (Pre-Submission Verification)
+- [ ] 16-07: Create VERIFICATION.md for Phase 8 (Tech Debt Cleanup)
+- [ ] 16-08: Create VERIFICATION.md for Phase 9 (Security Hardening)
+- [ ] 16-09: Create VERIFICATION.md for Phase 10 (Performance Optimization)
+- [ ] 16-10: Create VERIFICATION.md for Phase 11 (Testing Infrastructure)
+- [ ] 16-11: Create VERIFICATION.md for Phase 12 (Data Quality & Observability)
+- [ ] 16-12: Create VERIFICATION.md for Phase 14 (Dependency Management)
+- [ ] 16-13: Create VERIFICATION.md for Phase 15 (Scaling Preparation)
+
+### Phase 17: Scaling Infrastructure Integration
+**Goal**: Integrate orphaned scaling infrastructure (parallel_utils, chunked_reader) into script workflows
+**Depends on**: Phase 16
+**Gap Closure**: Closes gaps from v1.0.0-MILESTONE-AUDIT.md — parallel_utils and chunked_reader orphaned
+**Success Criteria** (what must be TRUE):
+   1. parallel_utils.spawn_worker_rng() used in scripts requiring parallelization (1.2_LinkEntities.py)
+   2. process_in_chunks() used in scripts reading large files (2.1, 2.2, 2.3)
+   3. MemoryAwareThrottler actively prevents OOM errors when memory > 80% threshold
+   4. Scaling infrastructure documented as active (not preparatory) in SCALING.md
+**Status**: 📝 PLANNED (gap closure phase)
+**Plans**: 3 plans
+
+Plans:
+- [ ] 17-01: Integrate parallel_utils into fuzzy matching in 1.2_LinkEntities.py
+- [ ] 17-02: Refactor Step 2 scripts (2.1, 2.2, 2.3) to use process_in_chunks() with MemoryAwareThrottler
+- [ ] 17-03: Update SCALING.md to document active scaling infrastructure usage
+
+### Phase 18: Complete Phase 13 Refactoring
+**Goal**: Complete Phase 13 refactoring by connecting shared modules and reducing script line counts
+**Depends on**: Phase 17
+**Gap Closure**: Closes gaps from v1.0.0-MILESTONE-AUDIT.md — Phase 13 gaps (large scripts, string_matching, regression_helpers)
+**Success Criteria** (what must be TRUE):
+   1. 1.2_LinkEntities.py uses shared.string_matching.match_company_names() instead of inline RapidFuzz calls
+   2. regression_helpers.build_regression_sample() contains actual logic (not placeholder)
+   3. Large scripts (8/9 target scripts) reduced to <800 lines through code extraction
+   4. All extracted functions tested with unit tests
+**Status**: 📝 PLANNED (gap closure phase)
+**Plans**: 3 plans
+
+Plans:
+- [ ] 18-01: Refactor 1.2_LinkEntities.py to use match_company_names() from shared/string_matching.py
+- [ ] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder)
+- [ ] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines
+
+### Phase 19: Column Pruning & Testing Fixes
+**Goal**: Complete column pruning rollout and fix integration test path issues
+**Depends on**: Phase 18
+**Gap Closure**: Closes gaps from v1.0.0-MILESTONE-AUDIT.md — column pruning partial, test path issues
+**Success Criteria** (what must be TRUE):
+   1. All Step 2 scripts (2.1, 2.2, 2.3) use PyArrow columns= parameter
+   2. All Step 3 scripts (3.0, 3.1, 3.3) use PyArrow columns= parameter
+   3. Integration tests resolve paths correctly and pass on all systems
+   4. CI/CD workflow runs all integration tests without path errors
+**Status**: 📝 PLANNED (gap closure phase)
+**Plans**: 2 plans
+
+Plans:
+- [ ] 19-01: Apply PyArrow column pruning to remaining Step 2 and Step 3 scripts
+- [ ] 19-02: Fix integration test path resolution using absolute paths or __file__ reference
+
 ## Progress
 
 **Execution Order:**
