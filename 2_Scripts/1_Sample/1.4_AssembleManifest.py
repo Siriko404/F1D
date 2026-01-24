@@ -26,17 +26,19 @@ import sys
 import os
 from pathlib import Path
 from datetime import datetime
+import argparse
 import pandas as pd
 import numpy as np
 import yaml
 import shutil
 import importlib.util
-import sys
-from pathlib import Path
 import time
 import json
 import hashlib
 import psutil
+
+# Add parent directory to sys.path for shared module imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Dynamic import for 1.5_Utils.py to comply with naming convention
 try:
@@ -49,27 +51,112 @@ try:
         generate_variable_reference,
         get_latest_output_dir,
     )
-    from shared.symlink_utils import update_latest_link
-    from shared.observability_utils import (
-        DualWriter,
-        compute_file_checksum,
-        print_stat,
-        analyze_missing_values,
-        print_stats_summary,
-        save_stats,
-        get_process_memory_mb,
-        calculate_throughput,
-        detect_anomalies_zscore,
-        detect_anomalies_iqr,
-    )
-
-    from shared.symlink_utils import update_latest_link
 except ImportError as e:
-    print(f"Criticial Error importing utils: {e}")
+    print(f"Critical Error importing utils: {e}")
     sys.exit(1)
 
+from shared.symlink_utils import update_latest_link
+from shared.path_utils import validate_input_file, ensure_output_dir
+from shared.observability_utils import (
+    DualWriter,
+    compute_file_checksum,
+    print_stat,
+    analyze_missing_values,
+    print_stats_summary,
+    save_stats,
+    get_process_memory_mb,
+    calculate_throughput,
+    detect_anomalies_zscore,
+    detect_anomalies_iqr,
+)
+
+
+def print_dual(msg):
+    """Print message both to stdout and via DualWriter if available."""
+    print(msg, flush=True)
+
+
+def load_config():
+    """Load configuration from project.yaml"""
+    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
+
+
+def setup_paths(config):
+    """Set up all required paths"""
+    root = Path(__file__).parent.parent.parent
+
+    paths = {
+        "root": root,
+        "metadata": root
+        / "4_Outputs"
+        / "1.2_LinkEntities"
+        / "latest"
+        / "metadata_linked.parquet",
+        "tenure": root
+        / "4_Outputs"
+        / "1.3_BuildTenureMap"
+        / "latest"
+        / "tenure_monthly.parquet",
+    }
+
+    # Create timestamped output directory
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    output_base = root / config["paths"]["outputs"] / "1.4_AssembleManifest"
+    paths["output_dir"] = output_base / timestamp
+    paths["log_file"] = output_base / f"{timestamp}.log"
+    paths["latest_dir"] = output_base / "latest"
+
+    ensure_output_dir(paths["output_dir"])
+
+    return paths, timestamp
+
+
 # ==============================================================================
-# Dual-write logging utility
+# CLI argument parsing and prerequisite validation
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 1.4_AssembleManifest.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 1.4: Assemble Manifest
+
+Combines linked metadata and tenure map to create final master
+sample manifest. Merges CEO tenure information with firm
+identifiers to produce complete analysis universe.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "1.2_LinkEntities": "metadata_linked.parquet",
+        "1.3_BuildTenureMap": "tenure_monthly.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
+
+# ==============================================================================
+# Main processing
 # ==============================================================================
 
 
@@ -385,4 +472,19 @@ def main():
 
 
 if __name__ == "__main__":
+    # Parse arguments and check prerequisites
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    # Handle dry-run mode
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    # Check prerequisites
+    check_prerequisites(root)
+
+    # Run main processing
     sys.exit(main())
