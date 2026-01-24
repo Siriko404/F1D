@@ -377,3 +377,64 @@ def specify_regression_models(model_configs: List[Dict[str, any]]) -> Dict[str, 
         }
         for config in model_configs
     }
+
+
+def prepare_regression_data(
+    df: pd.DataFrame,
+    dependent_var: str,
+    linguistic_controls: List[str],
+    firm_controls: List[str],
+    stats: Optional[Dict] = None,
+) -> pd.DataFrame:
+    """
+    Filter to complete cases and assign industry samples.
+
+    Args:
+        df: DataFrame with regression data
+        dependent_var: Name of dependent variable
+        linguistic_controls: List of linguistic control variable names
+        firm_controls: List of firm control variable names
+        stats: Optional statistics dict to record filter counts
+
+    Returns:
+        Filtered DataFrame with 'sample' column assigned
+    """
+    print("\n" + "=" * 60)
+    print("Preparing regression data")
+    print("=" * 60)
+
+    initial_n = len(df)
+
+    # Filter to non-null ceo_id
+    df = df[df["ceo_id"].notna()].copy()
+    print(f"  After ceo_id filter: {len(df):,} / {initial_n:,}")
+    if stats:
+        stats["processing"]["ceo_id_filter"] = initial_n - len(df)
+
+    # Define required variables
+    required = (
+        [dependent_var] + linguistic_controls + firm_controls + ["ceo_id", "year"]
+    )
+
+    # Check which variables exist
+    missing_vars = [v for v in required if v not in df.columns]
+    if missing_vars:
+        print(f"  WARNING: Missing variables: {missing_vars}")
+        required = [v for v in required if v in df.columns]
+
+    # Filter to complete cases (vectorized)
+    complete_mask = df[required].notna().all(axis=1)
+    df = df[complete_mask].copy()
+    print(f"  After complete cases filter: {len(df):,}")
+
+    # Assign industry samples based on FF12
+    df["sample"] = "Main"
+    df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
+    df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
+
+    print(f"\n  Sample distribution:")
+    for sample in ["Main", "Finance", "Utility"]:
+        n = (df["sample"] == sample).sum()
+        print(f"    {sample}: {n:,} calls")
+
+    return df
