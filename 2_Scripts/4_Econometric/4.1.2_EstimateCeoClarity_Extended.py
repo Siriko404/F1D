@@ -42,6 +42,12 @@ import hashlib
 import json
 import time
 import psutil
+import argparse
+
+# Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
+# Script is in 2_Scripts/4_Econometric/, need to add 2_Scripts/ to path
+scripts_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(scripts_dir))
 
 # Try importing statsmodels
 try:
@@ -63,23 +69,11 @@ from shared.symlink_utils import update_latest_link
 
 
 # Import shared path validation utilities
-try:
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-    )
-except ImportError:
-    import sys as _sys
-    from pathlib import Path as _Path
-
-    _script_dir = Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-    )
+from shared.path_utils import (
+    validate_output_path,
+    ensure_output_dir,
+    validate_input_file,
+)
 
 from shared.regression_validation import (
     validate_regression_data,
@@ -99,6 +93,53 @@ from shared.observability_utils import (
     detect_anomalies_iqr,
     DualWriter,
 )
+
+# ==============================================================================
+# CLI Arguments & Prerequisites
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 4.1.2_EstimateCeoClarity_Extended.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 4.1.2: Estimate CEO Fixed Effects - Extended Controls Robustness
+
+Run 4 regressions to test robustness with extended financial controls:
+    1. Manager (Baseline) - Manager_QA_Uncertainty_pct with base controls
+    2. Manager (Extended) - + CurrentRatio, RD_Intensity, Volatility
+    3. CEO-Only (Baseline) - CEO_QA_Uncertainty_pct with base controls
+    4. CEO-Only (Extended) - + CurrentRatio, RD_Intensity, Volatility
+
+This tests whether adding financial/market controls changes CEO fixed
+effects estimates, providing evidence for robustness of the Clarity measure.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "2.2_ConstructVariables": "linguistic_variables.parquet",
+        "3.1_FirmControls": "firm_controls.parquet",
+        "3.2_MarketVariables": "market_variables.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
 
 # ==============================================================================
 # Configuration - 4 Models
@@ -777,6 +818,14 @@ def main(year_start=None, year_end=None):
 
 
 if __name__ == "__main__":
-    year_start = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    year_end = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    sys.exit(main(year_start, year_end))
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
+    sys.exit(main())
