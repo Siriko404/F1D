@@ -20,6 +20,7 @@ Deterministic: true
 """
 
 import sys
+import argparse
 from pathlib import Path
 from datetime import datetime, timedelta
 import pandas as pd
@@ -599,6 +600,49 @@ def compute_liquidity_for_year(year_manifest, crsp, config):
 
 
 # ==============================================================================
+# CLI and Prerequisites
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 3.2_MarketVariables.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 3.2: Build Market Variables
+
+Constructs market-level variables from CRSP and IBES
+data (returns, volume, analyst forecasts). Merges
+with master sample for analysis.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {
+        "CRSP": root / "1_Inputs" / "CRSP_DSF",
+        "IBES": root / "1_Inputs" / "IBES",
+    }
+
+    required_steps = {
+        "1.4_AssembleManifest": "master_sample_manifest.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
+
+# ==============================================================================
 # Main
 # ==============================================================================
 
@@ -810,4 +854,14 @@ def main():
 
 
 if __name__ == "__main__":
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
     main()
