@@ -45,6 +45,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import shared utilities
 from shared.symlink_utils import update_latest_link
+from shared.observability_utils import DualWriter
 
 # ==============================================================================
 # Statistics Helper Functions
@@ -92,24 +93,6 @@ def analyze_missing_values(df):
 
 
 # ==============================================================================
-# Dual Writer Class
-# ==============================================================================
-
-
-class DualWriter:
-    """Write output to both console and log file."""
-
-    def __init__(self, log_path):
-        self.log_path = log_path
-        self.log_file = open(log_path, "w", encoding="utf-8")
-        self.original_stdout = _sys.stdout
-
-    def write(self, text):
-        """Write to both stdout and log file."""
-        self.original_stdout.write(text)
-        self.original_stdout.flush()
-        self.log_file.write(text)
-        self.log_file.flush()
 
     def flush(self):
         """Flush both streams."""
