@@ -63,8 +63,8 @@ script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 from shared.string_matching import (
+    match_company_names,
     load_matching_config,
-    get_scorer,
     RAPIDFUZZ_AVAILABLE,
 )
 from shared.chunked_reader import track_memory_usage
@@ -88,9 +88,7 @@ except ImportError:
         validate_input_file,
     )
 
-# Load RapidFuzz directly for fuzzy matching operations
-if RAPIDFUZZ_AVAILABLE:
-    from rapidfuzz import fuzz, process
+# Using shared.string_matching.match_company_names() instead of direct RapidFuzz imports
 
 # ==============================================================================
 # Dual-write logging utility
