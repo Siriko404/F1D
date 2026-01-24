@@ -30,6 +30,18 @@ RapidFuzz enables Tier 3 fuzzy name matching in entity linking, which significan
 
 See DEPENDENCIES.md for details on optional dependencies and their impact.
 
+## Scaling and Performance
+
+The F1D pipeline is designed for academic replication with current dataset sizes (~50K transcripts). For larger datasets or performance optimization, see [2_Scripts/SCALING.md](2_Scripts/SCALING.md).
+
+**Quick Tips:**
+- **Memory**: Minimum 8GB RAM, recommended 16GB RAM
+- **Parallelization**: Set `thread_count: 4` in config for multi-core systems
+- **Chunked Processing**: Enable throttling via `config/project.yaml > chunk_processing`
+- **Monitoring**: Check `stats.json > memory_mb` for operation-level memory usage
+
+**For 2x-10x datasets**: See [SCALING.md](2_Scripts/SCALING.md) for configuration recommendations.
+
 ## Quick Start
 
 1. **Clone the repository:**
