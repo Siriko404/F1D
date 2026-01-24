@@ -17,6 +17,7 @@ import pyarrow.parquet as pq
 import psutil
 import time
 import logging
+import yaml
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -127,16 +128,18 @@ def process_in_chunks(
     columns: Optional[List[str]] = None,
     chunk_size: Optional[int] = None,
     combine_func: Optional[callable] = None,
+    enable_throttling: bool = True,
 ):
     """
-    Process file in chunks, combining results with optional combine_func.
+    Process file in chunks with optional memory-aware throttling.
 
     Args:
         file_path: Path to Parquet file
         process_func: Function taking DataFrame chunk, returning partial result
         columns: List of columns to read
-        chunk_size: Number of rows per chunk
+        chunk_size: Number of rows per chunk (None = use row groups or config default)
         combine_func: Function to combine partial results (default: list concatenation)
+        enable_throttling: Enable dynamic chunk size adjustment based on memory
 
     Returns:
         Combined result
@@ -148,13 +151,54 @@ def process_in_chunks(
         >>> total = process_in_chunks(
         ...     Path("large_file.parquet"),
         ...     count_rows,
-        ...     chunk_size=10000
+        ...     chunk_size=10000,
+        ...     enable_throttling=True
         ... )
     """
+    # Load config for throttling parameters
+    try:
+        config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+        with open(config_path) as f:
+            config = yaml.safe_load(f)
+            chunk_config = config.get("chunk_processing", {})
+    except Exception:
+        chunk_config = {}
+
+    # Initialize throttler if enabled
+    throttler = None
+    if enable_throttling and chunk_config.get("enable_throttling", True):
+        throttler = MemoryAwareThrottler(
+            max_memory_percent=chunk_config.get("max_memory_percent", 80.0)
+        )
+        if chunk_config.get("log_memory_status", True):
+            throttler.log_memory_status("chunked_processing_start")
+
+    # Determine chunk size
+    if chunk_size is None:
+        chunk_size = chunk_config.get("base_chunk_size", 10000)
+
+    # Adjust chunk size based on memory
+    if throttler:
+        chunk_size = throttler.get_recommended_chunk_size(chunk_size, file_path)
+
     results = []
+    chunk_num = 0
     for chunk in read_in_chunks(file_path, columns=columns, chunk_size=chunk_size):
+        # Log memory status periodically
+        if (
+            throttler
+            and chunk_num % 10 == 0
+            and chunk_config.get("log_memory_status", True)
+        ):
+            throttler.log_memory_status(f"chunk_{chunk_num}")
+
         result = process_func(chunk)
         results.append(result)
+        chunk_num += 1
+
+    # Log final memory status
+    if throttler and chunk_config.get("log_memory_status", True):
+        throttler.log_memory_status("chunked_processing_complete")
 
     if combine_func:
         return combine_func(results)
