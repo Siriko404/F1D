@@ -492,11 +492,11 @@ Plans:
     7. 4.3_TakeoverHazards.py remains <800 lines (currently 397 lines)
     8. 3.0_BuildFinancialFeatures.py remains <800 lines (currently 716 lines)
     9. All extracted functions have unit tests (parse_ff_industries, load_variable_descriptions)
-**Status**: 📝 PLANNED (gap closure phase from audit)
-**Plans**: TBD
+ **Status**: 📝 IN PROGRESS (gap closure phase from audit)
+ **Plans**: 8 plans
 
- Plans:
-- [ ] 24-01: Create shared/industry_utils.py with parse_ff_industries() function
+  Plans:
+- [x] 24-01: Create shared/industry_utils.py with parse_ff_industries() function ✅
 - [ ] 24-02: Create shared/metadata_utils.py with load_variable_descriptions() function
 - [ ] 24-03: Refactor 1.2_LinkEntities.py to use shared modules (reduce from 847 lines)
 - [ ] 24-04: Refactor 4.1.3_EstimateCeoClarity_Regime.py to use shared data_loading (reduce from 799 lines)
@@ -534,9 +534,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
       | 19. Scaling Infrastructure & Testing Integration | 4/4 | ✅ COMPLETED | 2026-01-24 |
        | 20. Restore Root README Documentation | 1/1 | ✅ COMPLETED | 2026-01-24 |
        | 21. Fix Testing Infrastructure | 1/1 | ✅ COMPLETED | 2026-01-24 |
-       | 22. Recreate Missing Script & Evidence | 2/2 | ✅ COMPLETED | 2026-01-24 |
-        | 23. Core Tech Debt Cleanup | 3/8 | ✅ IN PROGRESS | 2026-01-24 |
-      | 24. Complete Script Refactoring | 0/8 | 📝 PLANNED | - |
+        | 22. Recreate Missing Script & Evidence | 2/2 | ✅ COMPLETED | 2026-01-24 |
+         | 23. Core Tech Debt Cleanup | 8/8 | ✅ COMPLETED | 2026-01-24 |
+       | 24. Complete Script Refactoring | 1/8 | 📝 IN PROGRESS | 2026-01-24 |
 
 
 ---
