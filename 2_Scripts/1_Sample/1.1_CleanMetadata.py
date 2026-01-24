@@ -47,6 +47,18 @@ sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
 from utils import generate_variable_reference
+from shared.observability_utils import (
+    DualWriter,
+    compute_file_checksum,
+    print_stat,
+    analyze_missing_values,
+    print_stats_summary,
+    save_stats,
+    get_process_memory_mb,
+    calculate_throughput,
+    detect_anomalies_zscore,
+    detect_anomalies_iqr,
+)
 from shared.symlink_utils import update_latest_link
 from shared.chunked_reader import track_memory_usage
 
@@ -81,272 +93,10 @@ except ImportError:
         validate_input_file,
     )
 
-# ==============================================================================
-# Dual-write logging utility
-# ==============================================================================
-
-
-class DualWriter:
-    """Writes to both stdout and log file verbatim"""
-
-    def __init__(self, log_path):
-        self.terminal = sys.stdout
-        self.log = open(log_path, "w", encoding="utf-8")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-        self.log.flush()
-
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
-    def close(self):
-        self.log.close()
-
 
 def print_dual(msg):
     """Print to both terminal and log"""
     print(msg, flush=True)
-
-
-# ==============================================================================
-# Statistics Helpers
-# ==============================================================================
-
-
-def compute_file_checksum(filepath, algorithm="sha256"):
-    """Compute checksum for a file."""
-    h = hashlib.new(algorithm)
-    with open(filepath, "rb") as f:
-        for chunk in iter(lambda: f.read(8192), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
-def print_stat(label, before=None, after=None, value=None, indent=2):
-    """Print a statistic with consistent formatting.
-
-    Modes:
-        - Delta mode (before/after): "  Label: 1,000 -> 800 (-20.0%)"
-        - Value mode: "  Label: 1,000"
-    """
-    prefix = " " * indent
-    if before is not None and after is not None:
-        delta = after - before
-        pct = (delta / before * 100) if before != 0 else 0
-        sign = "+" if delta >= 0 else ""
-        print(f"{prefix}{label}: {before:,} -> {after:,} ({sign}{pct:.1f}%)")
-    else:
-        v = value if value is not None else after
-        if isinstance(v, float):
-            print(f"{prefix}{label}: {v:,.2f}")
-        elif isinstance(v, int):
-            print(f"{prefix}{label}: {v:,}")
-        else:
-            print(f"{prefix}{label}: {v}")
-
-
-def analyze_missing_values(df):
-    """Analyze missing values per column."""
-    missing = {}
-    for col in df.columns:
-        null_count = df[col].isna().sum()
-        if null_count > 0:
-            missing[col] = {
-                "count": int(null_count),
-                "percent": round(null_count / len(df) * 100, 2),
-            }
-    return missing
-
-
-def print_stats_summary(stats):
-    """Print formatted summary table."""
-    print("\n" + "=" * 60)
-    print("STATISTICS SUMMARY")
-    print("=" * 60)
-
-    # Input/Output comparison
-    inp = stats["input"]
-    out = stats["output"]
-    delta = inp["total_rows"] - out["final_rows"]
-    delta_pct = (delta / inp["total_rows"] * 100) if inp["total_rows"] > 0 else 0
-
-    print(f"\n{'Metric':<25} {'Value':>15}")
-    print("-" * 42)
-    print(f"{'Input Rows':<25} {inp['total_rows']:>15,}")
-    print(f"{'Output Rows':<25} {out['final_rows']:>15,}")
-    print(f"{'Rows Removed':<25} {delta:>15,}")
-    print(f"{'Removal Rate':<25} {delta_pct:>14.1f}%")
-    if "duration_seconds" in stats["timing"]:
-        print(
-            f"{'Duration (seconds)':<25} {stats['timing']['duration_seconds']:>15.2f}"
-        )
-
-    # Processing breakdown if available
-    if stats["processing"]:
-        print(f"\n{'Processing Step':<30} {'Removed':>10}")
-        print("-" * 42)
-        for step, count in stats["processing"].items():
-            print(f"{step:<30} {count:>10,}")
-
-    print("=" * 60)
-
-
-def save_stats(stats, out_dir):
-    """Save statistics to JSON file."""
-    stats_path = out_dir / "stats.json"
-    with open(stats_path, "w", encoding="utf-8") as f:
-        json.dump(stats, f, indent=2, default=str)
-    print(f"Saved: {stats_path.name}")
-
-
-# ==============================================================================
-# Observability Helpers
-# ==============================================================================
-
-
-def get_process_memory_mb():
-    """
-    Get current process memory usage in MB.
-
-    Returns:
-        Dict with keys:
-        - rss_mb: Resident Set Size (actual physical memory in use)
-        - vms_mb: Virtual Memory Size (total memory allocated)
-        - percent: Memory usage as percentage of system memory
-    """
-    process = psutil.Process()
-    mem_info = process.memory_info()
-    mem_percent = process.memory_percent()
-
-    return {
-        "rss_mb": mem_info.rss / (1024 * 1024),  # Resident Set Size
-        "vms_mb": mem_info.vms / (1024 * 1024),  # Virtual Memory Size
-        "percent": mem_percent,
-    }
-
-
-def calculate_throughput(rows_processed, duration_seconds):
-    """
-    Calculate throughput in rows per second.
-
-    Args:
-        rows_processed: Number of rows processed
-        duration_seconds: Duration in seconds
-
-    Returns:
-        Throughput in rows per second (rounded to 2 decimals)
-        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
-    """
-    if duration_seconds <= 0:
-        return 0.0
-    return round(rows_processed / duration_seconds, 2)
-
-
-def detect_anomalies_zscore(df, columns, threshold=3.0):
-    """
-    Detect anomalies using z-score (standard deviation) method.
-
-    Deterministic: Same input produces same output.
-
-    Args:
-        df: DataFrame to analyze
-        columns: List of column names to analyze
-        threshold: Number of standard deviations for cutoff (default 3.0)
-
-    Returns:
-        Dict mapping column_name -> anomaly info
-    """
-    anomalies = {}
-
-    for col in columns:
-        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
-            continue
-
-        # Drop NaN for z-score calculation
-        series = df[col].dropna()
-
-        if len(series) == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        mean = series.mean()
-        std = series.std()
-
-        if std == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        # Calculate z-scores: (value - mean) / std
-        z_scores = abs((series - mean) / std)
-
-        # Flag anomalies beyond threshold
-        anomaly_mask = z_scores > threshold
-        anomaly_indices = df[anomaly_mask].index.tolist()
-
-        anomalies[col] = {
-            "count": int(anomaly_mask.sum()),
-            "sample_anomalies": anomaly_indices[:10],  # Top 10 for review
-            "threshold": threshold,
-            "mean": round(mean, 4),
-            "std": round(std, 4),
-        }
-
-    return anomalies
-
-
-def detect_anomalies_iqr(df, columns, multiplier=3.0):
-    """
-    Detect anomalies using IQR (Interquartile Range) method.
-
-    Deterministic: Same input produces same output.
-
-    Args:
-        df: DataFrame to analyze
-        columns: List of column names to analyze
-        multiplier: IQR multiplier for cutoff (default 3.0 = strong outliers)
-
-    Returns:
-        Dict mapping column_name -> anomaly info
-    """
-    anomalies = {}
-
-    for col in columns:
-        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
-            continue
-
-        # Drop NaN for IQR calculation
-        series = df[col].dropna()
-
-        if len(series) == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        # Calculate IQR: Q3 - Q1 (75th - 25th percentile)
-        q1 = series.quantile(0.25)
-        q3 = series.quantile(0.75)
-        iqr = q3 - q1
-
-        if iqr == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        # Flag anomalies
-        lower_bound = q1 - multiplier * iqr
-        upper_bound = q3 + multiplier * iqr
-
-        anomaly_mask = (series < lower_bound) | (series > upper_bound)
-        anomaly_indices = df[anomaly_mask].index.tolist()
-
-        anomalies[col] = {
-            "count": int(anomaly_mask.sum()),
-            "sample_anomalies": anomaly_indices[:10],
-            "iqr_bounds": [round(lower_bound, 4), round(upper_bound, 4)],
-        }
-
-    return anomalies
 
 
 # ==============================================================================

@@ -34,7 +34,20 @@ import yaml
 import shutil
 import subprocess
 
+# Import shared observability utilities
+try:
+    from shared.observability_utils import DualWriter
+except ImportError:
+    # Fallback if shared/__init__.py hasn't run yet
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _script_dir = _Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.observability_utils import DualWriter
+
 # Import shared symlink utility for 'latest' link management
+    from shared.observability_utils import DualWriter
 try:
     from shared.symlink_utils import update_latest_link
 except ImportError:
@@ -76,30 +89,6 @@ except ImportError:
         ensure_output_dir,
         validate_input_file,
     )
-
-# ==============================================================================
-# Dual-write logging utility
-# ==============================================================================
-
-
-class DualWriter:
-    """Writes to both stdout and log file verbatim"""
-
-    def __init__(self, log_path):
-        self.terminal = sys.stdout
-        self.log = open(log_path, "w", encoding="utf-8")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-        self.log.flush()
-
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
-    def close(self):
-        self.log.close()
 
 
 def print_dual(msg):
