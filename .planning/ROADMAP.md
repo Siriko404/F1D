@@ -374,16 +374,19 @@ Plans:
    2. regression_helpers.build_regression_sample() contains actual logic (not placeholder)
    3. Large scripts (8/9 target scripts) reduced to <800 lines through code extraction
    4. All extracted functions tested with unit tests
-**Status**: 📝 PLANS CREATED (gap closure phase)
-**Plans**: 6 plans (2 waves)
+**Status**: 📝 GAP CLOSURE IN PROGRESS (1 gap remaining)
+**Plans**: 9 plans (3 waves)
 
  Plans:
  - [x] 18-01: Refactor 1.2_LinkEntities.py to use match_company_names() from shared/string_matching.py (Wave 1)
  - [x] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder) (Wave 1)
  - [x] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines (Wave 2)
- - [x] 18-06: Add comprehensive unit tests for regression_helpers.py functions (Gap closure)
- - [x] 18-07: Extract prepare_regression_data() from 4.1.1 to shared module (gap closure)
- - [ ] 18-08: Consolidate comments in 4.2 to reduce line count (gap closure)
+ - [x] 18-04: Fix 1.2_LinkEntities.py refactoring (Wave 2)
+ - [x] 18-05: Complete build_regression_sample() with FF12/FF48 support (Wave 2)
+ - [x] 18-06: Add comprehensive unit tests for regression_helpers.py functions (Wave 3)
+ - [x] 18-07: Extract prepare_regression_data() from 4.1.1 to shared module (Wave 3)
+ - [x] 18-08: Consolidate comments in 4.2 to reduce line count (Wave 3)
+ - [ ] 18-09: Reduce 4.1.1 from 805 to <800 lines by consolidating comments/blank lines (Gap closure)
 
 ### Phase 19: Scaling Infrastructure & Testing Integration
 **Goal**: Integrate orphaned scaling infrastructure, complete column pruning, fix testing issues
