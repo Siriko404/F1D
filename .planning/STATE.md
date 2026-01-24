@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
  Phase: 23 of 24 (Core Tech Debt Cleanup)
-    Plan: 8 of 8 (dual writer consolidation: 2026-01-24)
-    Status: Gap closure complete
-    Last activity: 2026-01-24 - Completed 23-08: Remove inline DualWriter from 4 scripts
+    Plan: 3 of 8 (dual writer consolidation: 2026-01-24)
+    Status: Gap closure in progress
+    Last activity: 2026-01-24 - Completed 23-03: Migrate scripts to import from shared modules
 
- Progress: [██████████░░] 98.8% (23/24 phases complete + 8/8 in Phase 23)
+  Progress: [██████████░░] 98.8% (23/24 phases complete + 3/8 in Phase 23)
    Technical Remediation: [████████████] 100% (All phases 7-16 complete)
    Gap Closure: [██████████░░] 87.5% (Phases 16-23.08 of gap closure complete)
 
@@ -52,7 +52,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | | 20. Restore README Documentation | 1/1 | ~5 min | ✅ COMPLETED | 2026-01-24 |
 | | 21. Fix Testing Infrastructure | 1/1 | ~8 min | ✅ COMPLETED | 2026-01-24 |
 | | 22. Recreate Missing Script & Evidence | 2/2 | ~4 min average | ✅ COMPLETED | 2026-01-24 |
-| | 23. Core Tech Debt Cleanup | 8/8 | ~7 min average | ✅ COMPLETED | 2026-01-24 |
+| | 23. Core Tech Debt Cleanup | 3/8 | ~13 min average | ✅ IN PROGRESS | 2026-01-24 |
 
 **Recent Trend:**
 - Last 4 plans: ~7 min average
@@ -65,17 +65,21 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- [Phase 23-03]: Migrated 3.4_Utils.py to use shared.symlink_utils (update_latest_link as update_latest_symlink for backward compatibility)
+- [Phase 23-03]: Migrated 4.4_GenerateSummaryStats.py to import utility functions from shared.observability_utils
+- [Phase 23-03]: Used custom Python script for complex file editing when sed commands failed
 - [Phase 23-08]: Consolidated DualWriter to shared.observability_utils module across 4 gap scripts
 - [Phase 23-08]: Removed duplicate import statements from try/except blocks to maintain clean code
 
 ### Blockers/Concerns
 
 **Remaining gap from VERIFICATION.md:**
-- 4.4_GenerateSummaryStats.py still has inline DualWriter class - this is a separate gap from Phase 22 (Plan 23-07) that needs to be addressed
+- 4.4_GenerateSummaryStats.py had inline utility functions (compute_file_checksum, print_stat, analyze_missing_values) - FIXED in Plan 23-03
+- 3.4_Utils.py had inline update_latest_symlink function - FIXED in Plan 23-03
 
 ## Session Continuity
 
-  Last session: 2026-01-24T18:50:48Z
-  Stopped at: Completed 23-04: Improve error handling in 4_Econometric scripts (SUMMARY committed)
+  Last session: 2026-01-24T18:59:44Z
+  Stopped at: Completed 23-03: Migrate scripts to import from shared modules
   Resume file: None
 
