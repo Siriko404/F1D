@@ -35,6 +35,7 @@ import warnings
 import hashlib
 import json
 import time
+import argparse
 
 # Add script directory to Python path for shared imports
 _script_dir = Path(__file__).parent.parent
@@ -45,7 +46,50 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import shared utilities
 from shared.symlink_utils import update_latest_link
-from shared.observability_utils import DualWriter, compute_file_checksum, print_stat, analyze_missing_values
+from shared.observability_utils import (
+    DualWriter,
+    compute_file_checksum,
+    print_stat,
+    analyze_missing_values,
+)
+
+
+def parse_arguments():
+    """Parse command-line arguments for 4.4_GenerateSummaryStats.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 4.4: Generate Summary Statistics
+
+Generates summary statistics and descriptive statistics
+for all econometric analyses. Produces tables and plots
+for results presentation.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
+        "4.2_LiquidityRegressions": "liquidity_results.parquet",
+        "4.3_TakeoverHazards": "takeover_results.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
 
 # Data Loading Functions
 # ==============================================================================
@@ -840,4 +884,14 @@ def main():
 
 
 if __name__ == "__main__":
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        _sys.exit(0)
+
+    check_prerequisites(root)
     _sys.exit(main())
