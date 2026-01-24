@@ -2,6 +2,26 @@
 
 This directory contains reusable utility modules for the F1D data pipeline.
 
+## Scaling Documentation
+
+For comprehensive information on pipeline scaling limits and improvement paths, see: **[SCALING.md](../SCALING.md)**
+
+**Topics covered:**
+- Current dataset size limits and memory requirements
+- Phase 15 scaling improvements (parallelization, column pruning, throttling)
+- Scaling paths for 2x, 10x, and 100x dataset sizes
+- Configuration recommendations for different system capacities
+- Bottleneck analysis and improvement priorities
+- Memory monitoring and performance debugging
+- Troubleshooting OOM errors
+
+**Quick Reference:**
+- Memory monitoring: `stats.json > memory_mb`
+- Throttling config: `config/project.yaml > chunk_processing`
+- Parallel RNG: `shared/parallel_utils.py`
+- Chunked processing: `shared/chunked_reader.py`
+
+
 ## chunked_reader.py
 
 PyArrow-based utilities for memory-efficient processing of large Parquet files.
