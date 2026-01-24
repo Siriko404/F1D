@@ -5,18 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
-**Current focus:** Phase 15 - Scaling Preparation
+**Current focus:** Phase 16 - Critical Path Fixes
 
 ## Current Position
 
-Phase: 16 of 16 (Critical Path Fixes) — In Progress (0/1 plans complete)
+Phase: 16 of 16 (Critical Path Fixes) — In Progress (3/6 plans complete)
 Technical Remediation: Phase 7-15 — 34 concerns addressed, COMPLETE
 Status: Original project 100% complete, Phase 7-15 complete, Phase 16 in progress
-Last activity: 2026-01-23 — Completed 16-01-PLAN.md
+Last activity: 2026-01-24 — Completed 16-03-PLAN.md
 
 Progress: [██████████] 100% (All 6 original phases complete)
 Technical Remediation: [████████████] 100% (All phases 7-15 complete)
-Gap Closure: [█░░░░░░░░░░] 17% (1/6 critical path plans complete)
+Gap Closure: [███░░░░░░░░] 50% (3/6 critical path plans complete)
 
 ## Performance Metrics
 
@@ -44,7 +44,7 @@ Gap Closure: [█░░░░░░░░░░] 17% (1/6 critical path plans co
 | | 13. Script Refactoring | 12/12 | ~9 min | ✅ COMPLETED | 2026-01-23 |
 |   | 14. Dependency Management | 4/4 | ~12 min | ✅ COMPLETED | 2026-01-23 |
 | | 15. Scaling Preparation | 5/5 | ~11 min | ✅ COMPLETED | 2026-01-24 |
-| | 16. Critical Path Fixes | 0/6 | ~5 min | ⏭️ IN PROGRESS | 2026-01-23 |
+| | 16. Critical Path Fixes | 3/6 | ~5 min | ⏭️ IN PROGRESS | 2026-01-24 |
 
 **Recent Trend:**
 - Last 4 plans: ~9 min average
@@ -91,8 +91,10 @@ Recent decisions affecting current work:
   - [Phase 14-01]: Pin statsmodels to exact version 0.14.6 to prevent API breakage from 0.14.0 changes (deprecated GLM link names)
  - [Phase 15-01]: Use SeedSequence spawning pattern for deterministic parallel RNG (worker_id prepended to root_seed)
  - [Phase 15-02]: Apply PyArrow column pruning to critical scripts for memory efficiency and I/O optimization
- - [Phase 15-03]: Use MemoryAwareThrottler with 80% memory threshold for dynamic chunk size adjustment (enable_throttling=true by default)
- - [Phase 14-01]: Require baseline coefficient comparison for all statsmodels upgrades (tolerance: 1e-6)
+  - [Phase 15-03]: Use MemoryAwareThrottler with 80% memory threshold for dynamic chunk size adjustment (enable_throttling=true by default)
+  - [Phase 16-03]: Remove orphaned parallel_utils.py - can be resurrected from git history if needed for Phase 19
+  - [Phase 16-03]: Mark parallel RNG as "Planned" in SCALING.md to accurately reflect implementation status
+  - [Phase 14-01]: Require baseline coefficient comparison for all statsmodels upgrades (tolerance: 1e-6)
  - [Phase 14-01]: Document upgrade procedures with explicit rollback steps to minimize risk
  - [Phase 14-01]: Full pipeline run required for statsmodels upgrades to validate reproducibility
 
@@ -999,15 +1001,26 @@ Phase 16 focuses on closing critical gaps identified in the v1.0.0 milestone aud
 
 ### Phase 16 Status
 
-**Plans Completed (1/6):**
+**Plans Completed (3/6):**
 - [x] 16-01: Fix Step 4 path mismatch (docstrings)
+- [x] 16-02: Create E2E pipeline test
+- [x] 16-03: Handle orphaned parallel_utils
 
 **Remaining Plans:**
-- [ ] 16-02: Create E2E pipeline test
-- [ ] 16-03: Handle orphaned parallel_utils
 - [ ] 16-04: Fix regression_helpers dead imports
 - [ ] 16-05: Remove inline RapidFuzz duplication
 - [ ] 16-06: Create VERIFICATION.md for gap closure phases
+
+**Phase 16 Achievements:**
+
+**16-03: Handle orphaned parallel_utils**
+- Deleted orphaned `2_Scripts/shared/parallel_utils.py` (created in Phase 15 but never imported - 0 references)
+- Deleted associated test `tests/unit/test_parallel_utils.py`
+- Updated `2_Scripts/shared/README.md` - removed parallel_utils.py section and references
+- Updated `2_Scripts/SCALING.md` - marked deterministic parallel RNG as "Planned" with note about git history
+- Documentation now accurately reflects current capabilities (no false claims about parallel RNG)
+- Git history preserves prototype for potential Phase 19 resurrection
+- ~3 min execution time
 
 **Next Steps:**
 - Plan 16-02 will create end-to-end pipeline test to verify full execution
@@ -1024,6 +1037,6 @@ Phase 15 successfully removes scaling limits for future growth by implementing d
 
 ## Session Continuity
 
-Last session: 2026-01-24T00:12:46Z
-Stopped at: Completed 15-05-PLAN.md (Phase 15 complete)
+Last session: 2026-01-24T01:18:39Z
+Stopped at: Completed 16-03-PLAN.md (orphaned parallel_utils.py removed, documentation updated)
 Resume file: None
