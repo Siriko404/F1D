@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-STEP 3.3: Build Event Flags
+STEP3.3: Build Event Flags
 ==============================================================================
 ID: 3.3_EventFlags
 Description: Computes takeover event flags from SDC M&A data.
@@ -19,6 +19,9 @@ Outputs:
     - 4_Outputs/3_Financial_Features/{timestamp}/event_flags_{year}.parquet
 
 Deterministic: true
+
+Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
+      chunked processing. Current implementation uses column pruning for memory optimization.
 ==============================================================================
 """
 
@@ -233,7 +236,8 @@ def setup_paths(config, timestamp):
 def load_manifest(manifest_dir):
     """Load manifest data"""
     manifest_file = manifest_dir / "master_sample_manifest.parquet"
-    df = pd.read_parquet(manifest_file)
+    # Column pruning: Load only required columns
+    df = pd.read_parquet(manifest_file, columns=["file_name", "gvkey", "start_date"])
 
     df["start_date"] = pd.to_datetime(df["start_date"])
     df["year"] = df["start_date"].dt.year
@@ -252,7 +256,18 @@ def load_sdc(sdc_file):
     """Load SDC M&A data"""
     print(f"  Loading SDC M&A data...")
 
-    df = pd.read_parquet(sdc_file)
+    # Column pruning: Load all SDC columns needed for takeover flag computation
+    df = pd.read_parquet(
+        sdc_file,
+        columns=[
+            "Target 6-digit CUSIP",
+            "Date Announced",
+            "Date Effective",
+            "Date Withdrawn",
+            "Deal Attitude",
+            "Deal Status",
+        ],
+    )
     print(f"  Raw SDC: {len(df):,} deals")
 
     # Normalize column names (SDC has spaces in names)
