@@ -12,6 +12,7 @@ from typing import Tuple
 from sklearn.feature_extraction.text import CountVectorizer
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import psutil
+import argparse
 
 # Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
@@ -78,6 +79,56 @@ def load_config():
     validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
+
+
+def parse_arguments():
+    """Parse command-line arguments for 2.1_TokenizeAndCount.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 2.1: Tokenize and Count
+
+Tokenizes earnings call transcripts using Loughran-McDonald
+master dictionary. Counts word frequencies and calculates
+linguistic measures (positive, negative, uncertainty words).
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    parser.add_argument(
+        "--dictionary",
+        type=str,
+        help="Path to LM dictionary file (default: 1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv)",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root, args):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    # Dictionary path (from argument or default)
+    dict_path = (
+        args.dictionary
+        if args.dictionary
+        else root / "1_Inputs" / "Loughran-McDonald_MasterDictionary_1993-2024.csv"
+    )
+
+    required_files = {
+        "LM dictionary": Path(dict_path),
+    }
+
+    required_steps = {
+        "1.4_AssembleManifest": "master_sample_manifest.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
 
 
 # ==============================================================================
@@ -606,7 +657,7 @@ def save_output_with_tracking(df, output_path):
     return {"path": str(output_path)}
 
 
-def main():
+def main(dictionary_path=None):
     print("=== Step 2.1: Tokenize & Count (Legacy Compatible) ===")
     root = Path(__file__).parent.parent.parent
     log_path = setup_logging()
@@ -651,7 +702,11 @@ def main():
         / "latest"
         / "master_sample_manifest.parquet"
     )
-    lm_path = root / "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
+    lm_path = (
+        dictionary_path
+        if dictionary_path
+        else root / "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
+    )
 
     print("Loading manifest and dictionary...")
     load_result = load_documents_with_tracking(manifest_path, lm_path)
@@ -824,4 +879,22 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Parse arguments and check prerequisites
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    # Handle dry-run mode
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root, args)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    # Check prerequisites
+    check_prerequisites(root, args)
+
+    # Override dictionary path if provided
+    dict_path = args.dictionary if args.dictionary else None
+
+    # Run main processing
+    main(dictionary_path=dict_path)
