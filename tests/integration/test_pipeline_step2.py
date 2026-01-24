@@ -9,13 +9,16 @@ import json
 from pathlib import Path
 import pandas as pd
 
+# Get repository root from test file location
+REPO_ROOT = Path(__file__).parent.parent.parent
+
 pytestmark = pytest.mark.integration
 
 
 def test_step2_full_pipeline():
     """Test Step 2 (2.1_TokenizeAndCount) runs end-to-end."""
     # Arrange
-    script_path = Path("2_Scripts/2_Text/2.1_TokenizeAndCount.py")
+    script_path = REPO_ROOT / "2_Scripts/2_Text/2.1_TokenizeAndCount.py"
 
     if not script_path.exists():
         pytest.skip(f"Script not found: {script_path}")
@@ -32,7 +35,7 @@ def test_step2_full_pipeline():
     assert result.returncode == 0, f"Script failed: {result.stderr}"
 
     # Verify output files exist
-    output_dir = Path("4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest")
+    output_dir = REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest"
     assert output_dir.exists(), "Output directory not created"
 
     # Check for expected output files (one per year)
@@ -47,8 +50,9 @@ def test_step2_full_pipeline():
 def test_output_file_format_step2():
     """Test that output files have correct schema."""
     # Arrange
-    output_file = Path(
-        "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
+    output_file = (
+        REPO_ROOT
+        / "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
     )
 
     if not output_file.exists():
@@ -75,8 +79,9 @@ def test_output_file_format_step2():
 def test_word_count_validation_step2():
     """Test that word counts are reasonable."""
     # Arrange
-    output_file = Path(
-        "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
+    output_file = (
+        REPO_ROOT
+        / "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
     )
 
     if not output_file.exists():
@@ -99,8 +104,9 @@ def test_word_count_validation_step2():
 def test_step2_multiple_years(year):
     """Test Step 2 output for specific years."""
     # Arrange
-    output_file = Path(
-        f"4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
+    output_file = (
+        REPO_ROOT
+        / f"4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
     )
 
     if not output_file.exists():
