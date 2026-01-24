@@ -673,6 +673,155 @@ Uses `pathlib.Path` for cross-platform path handling:
 
 ---
 
+## dependency_checker.py
+
+Validates prerequisites (input files, previous step outputs) for pipeline scripts.
+
+### When to Use
+
+- **Prerequisite validation**: Check inputs and previous step outputs before processing
+- **Manual script execution**: Ensure scripts can run individually without orchestrator
+- **Dependency checking**: Validate sequential pipeline dependencies are met
+- **Clear error messages**: Provide actionable next steps when dependencies are missing
+
+### Functions
+
+#### `validate_prerequisites(required_files, required_steps)`
+
+Main entry point - validates all inputs and prerequisite steps, prints error messages and exits if validation fails.
+
+```python
+from shared.dependency_checker import validate_prerequisites
+from pathlib import Path
+
+root = Path(__file__).parent.parent.parent
+
+# Define required inputs and prerequisite steps
+required_files = {
+    "Unified-info.parquet": root / "1_Inputs" / "Unified-info.parquet",
+    "LM dictionary": root / "1_Inputs" / "Loughran-McDonald_MasterDictionary_1993-2024.csv",
+}
+
+required_steps = {
+    "1.1_CleanMetadata": "metadata_cleaned.parquet",
+    "1.2_LinkEntities": "metadata_linked.parquet",
+}
+
+# Validate prerequisites (exits with clear error if validation fails)
+validate_prerequisites(required_files, required_steps)
+
+# Continue with main script logic
+```
+
+**Parameters:**
+- `required_files`: Dict of {name: Path} for input files to validate
+- `required_steps`: Dict of {step_name: expected_output_file} for prerequisite steps
+
+**Raises:** `SystemExit` with error code 1 if validation fails
+
+**Behavior:**
+- Checks each input file exists using `shared.path_utils.validate_input_file()`
+- Checks each prerequisite step's `latest/` directory exists and contains expected output file
+- Collects all errors (missing files, missing steps)
+- If errors exist: prints formatted error messages with next steps and calls `sys.exit(1)`
+- If no errors: prints success message
+
+#### `validate_prerequisite_step(step_name, expected_output_file, root)`
+
+Validates a single prerequisite step completed.
+
+**Parameters:**
+- `step_name`: Name of prerequisite step (e.g., "1.1_CleanMetadata")
+- `expected_output_file`: Expected output filename in `latest/` directory
+- `root`: Project root path
+
+**Returns:** True if valid, False otherwise
+
+**Behavior:**
+- Checks `4_Outputs/{step_name}/latest/` exists
+- Checks expected file exists in that directory
+- Returns False if validation fails
+
+#### `print_prerequisite_errors(errors)`
+
+Formats and prints prerequisite error messages.
+
+**Parameters:**
+- `errors`: List of error messages
+
+**Behavior:**
+- Prints separator line "ERROR: Prerequisites not met"
+- Lists all errors with numbering
+- Prints "To fix these issues:" section with actionable steps
+- Shows script execution order for missing prerequisites
+- Prints "For help, run with --help flag"
+
+#### `handle_missing_output(step_name, output_file, calling_script)`
+
+Prints error for missing prerequisite output.
+
+**Parameters:**
+- `step_name`: Name of step that should have been run
+- `output_file`: Expected output file name
+- `calling_script`: Name of current script
+
+**Raises:** `SystemExit` with error code 1
+
+**Behavior:**
+- Prints "ERROR: Missing prerequisite output" header
+- Shows expected file location
+- Prints script execution order
+- Exits with `sys.exit(1)`
+
+### Usage Example
+
+```python
+from shared.dependency_checker import validate_prerequisites
+from pathlib import Path
+
+root = Path(__file__).parent.parent.parent
+
+# Define required inputs and prerequisite steps
+required_files = {
+    "Unified-info.parquet": root / "1_Inputs" / "Unified-info.parquet",
+    "LM dictionary": root / "1_Inputs" / "Loughran-McDonald_MasterDictionary_1993-2024.csv",
+}
+
+required_steps = {
+    "1.1_CleanMetadata": "metadata_cleaned.parquet",
+    "1.2_LinkEntities": "metadata_linked.parquet",
+}
+
+# Validate prerequisites (exits with clear error if validation fails)
+validate_prerequisites(required_files, required_steps)
+
+# Continue with main script logic
+```
+
+### Design Notes
+
+- Uses existing `shared.path_utils` for file validation
+- Checks `latest/` symlinks for prerequisite step outputs
+- Provides actionable error messages with script execution commands
+- Designed for manual script execution (not orchestrator-only workflows)
+- Prints clear error messages before `sys.exit(1)` to avoid silent failures
+- Follows anti-patterns: never exits without printing clear error message
+
+### Dependencies
+
+- `shared.path_utils.validate_input_file`: For file existence validation
+- `pathlib.Path`: Cross-platform path operations
+- `sys`: For `sys.exit(1)` on validation failure
+
+### Determinism
+
+All functions are deterministic:
+- File existence checks produce same result for same state
+- Error messages are consistent for same inputs
+- No random or time-based operations
+
+---
+
 ## symlink_utils.py
 
 Cross-platform symlink and junction creation for 'latest' output links.
