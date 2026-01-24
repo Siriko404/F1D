@@ -483,27 +483,27 @@ Plans:
 **Depends on**: Phase 23
 **Gap Closure**: Closes gaps from v1.2.0-MILESTONE-AUDIT.md — Phase 13 large scripts (8/9 >800 lines), Phase 18 plan checker warnings
 **Success Criteria** (what must be TRUE):
-    1. 1.2_LinkEntities.py reduced to <800 lines (currently 1043 lines)
-    2. 4.1.1_EstimateCeoClarity_CeoSpecific.py reduced to <800 lines (currently 1089 lines)
-    3. 4.1.2_EstimateCeoClarity_Extended.py reduced to <800 lines (currently 944 lines)
-    4. 4.1.3_EstimateCeoClarity_Regime.py reduced to <800 lines (currently 979 lines)
-    5. 4.2_LiquidityRegressions.py reduced to <800 lines (currently 998 lines)
-    6. 4.3_TakeoverHazards.py reduced to <800 lines (currently 945 lines)
-    7. 3.1_FirmControls.py reduced to <800 lines (currently 978 lines)
-    8. 3.0_BuildFinancialFeatures.py reduced to <800 lines (currently 843 lines)
-    9. All extracted functions have unit tests
+    1. 1.2_LinkEntities.py reduced to <800 lines (currently 847 lines)
+    2. 4.1.3_EstimateCeoClarity_Regime.py reduced to <800 lines (currently 799 lines)
+    3. 3.1_FirmControls.py reduced to <800 lines (currently 801 lines)
+    4. 4.1.1_EstimateCeoClarity_CeoSpecific.py remains <800 lines (currently 789 lines)
+    5. 4.1.2_EstimateCeoClarity_Extended.py remains <800 lines (currently 782 lines)
+    6. 4.2_LiquidityRegressions.py remains <800 lines (currently 796 lines)
+    7. 4.3_TakeoverHazards.py remains <800 lines (currently 397 lines)
+    8. 3.0_BuildFinancialFeatures.py remains <800 lines (currently 716 lines)
+    9. All extracted functions have unit tests (parse_ff_industries, load_variable_descriptions)
 **Status**: 📝 PLANNED (gap closure phase from audit)
 **Plans**: TBD
 
-Plans:
-- [ ] 24-01: Refactor 1.2_LinkEntities.py (extract duplicate code to shared)
-- [ ] 24-02: Refactor 4.1.1_EstimateCeoClarity_CeoSpecific.py (extract data loading, filtering, reporting)
-- [ ] 24-03: Refactor 4.1.2_EstimateCeoClarity_Extended.py (extract data loading, filtering, reporting)
-- [ ] 24-04: Refactor 4.1.3_EstimateCeoClarity_Regime.py (extract data loading, filtering, reporting)
-- [ ] 24-05: Refactor 4.2_LiquidityRegressions.py (extract data loading, regression setup)
-- [ ] 24-06: Refactor 4.3_TakeoverHazards.py (extract data loading, regression setup)
-- [ ] 24-07: Refactor 3.1_FirmControls.py (extract merge logic, feature construction)
-- [ ] 24-08: Refactor 3.0_BuildFinancialFeatures.py (extract data loading, feature construction)
+ Plans:
+- [ ] 24-01: Create shared/industry_utils.py with parse_ff_industries() function
+- [ ] 24-02: Create shared/metadata_utils.py with load_variable_descriptions() function
+- [ ] 24-03: Refactor 1.2_LinkEntities.py to use shared modules (reduce from 847 lines)
+- [ ] 24-04: Refactor 4.1.3_EstimateCeoClarity_Regime.py to use shared data_loading (reduce from 799 lines)
+- [ ] 24-05: Refactor 3.1_FirmControls.py with inline consolidation (reduce from 801 lines)
+- [ ] 24-06: Verify 5 already-under-target scripts remain compliant (4.1.1, 4.1.2, 4.2, 4.3, 3.0)
+- [ ] 24-07: Write unit tests for extracted functions (industry_utils, metadata_utils)
+- [ ] 24-08: Final verification and update ROADMAP
 
 ## Progress
 
@@ -535,7 +535,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
        | 20. Restore Root README Documentation | 1/1 | ✅ COMPLETED | 2026-01-24 |
        | 21. Fix Testing Infrastructure | 1/1 | ✅ COMPLETED | 2026-01-24 |
        | 22. Recreate Missing Script & Evidence | 2/2 | ✅ COMPLETED | 2026-01-24 |
-       | 23. Core Tech Debt Cleanup | 2/4 | ✅ IN PROGRESS | 2026-01-24 |
+        | 23. Core Tech Debt Cleanup | 3/8 | ✅ IN PROGRESS | 2026-01-24 |
       | 24. Complete Script Refactoring | 0/8 | 📝 PLANNED | - |
 
 
@@ -543,5 +543,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
     ---
 *Roadmap created: 2026-01-22*
 *Roadmap updated: 2026-01-24 (Phases 20-24 added for gap closure from v1.2.0 audit)*
-*Total plans: 115 (111 completed) + 4 planned (gap closure phases)*
+*Total plans: 123 (111 completed) + 12 planned (gap closure phases)*
 *Total requirements: 30 mapped*
