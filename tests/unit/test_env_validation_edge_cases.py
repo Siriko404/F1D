@@ -1,18 +1,27 @@
 """Edge case tests for env_validation module."""
+
 import pytest
+import sys
+from pathlib import Path
+
+# Add 2_Scripts to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
 try:
-    from 2_Scripts.shared.env_validation import (
+    from shared.env_validation import (
         validate_env_schema,
         EnvValidationError,
     )
+
     ENV_VALIDATION_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
     ENV_VALIDATION_AVAILABLE = False
     pytest.skip("env_validation module not available", allow_module_level=True)
 
 
-@pytest.mark.skipif(not ENV_VALIDATION_AVAILABLE, reason="env_validation module not available")
+@pytest.mark.skipif(
+    not ENV_VALIDATION_AVAILABLE, reason="env_validation module not available"
+)
 def test_validate_env_schema_empty_string(monkeypatch):
     """Test environment validation handles empty string values."""
     monkeypatch.setenv("TEST_VAR", "")
