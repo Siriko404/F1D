@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
-Plan: 7 of 8 in current phase
-Status: In progress
-Last activity: 2026-01-24 - Completed 25.1-07 (Add CLI validation to 4.1.2, 4.1.3, 4.1.4 CEO clarity analysis scripts)
+Plan: 8 of 8 in current phase
+Status: Phase complete
+Last activity: 2026-01-24 - Completed 25.1-08 (Add CLI validation to Step 4 regression and summary scripts)
 
-Progress: [██████████░] 99.2% (126/126 plans complete, 25.1 in progress)
+Progress: [██████████░] 99.2% (126/126 plans complete, 25.1 complete)
 
 ## Phase 25.1 Achievements
 
@@ -61,6 +61,18 @@ Progress: [██████████░] 99.2% (126/126 plans complete, 25.
 - Fixed PYTHONPATH issues on Windows by adding parent directory to sys.path before shared imports
 - All three CEO clarity variant scripts can now run manually with prerequisite validation
 
+**Phase 25.1 PLAN 08 COMPLETE** - 3 tasks completed 2026-01-24
+- Added argparse CLI validation to Step 4.2 (Liquidity Regressions)
+- Added argparse CLI validation to Step 4.3 (Takeover Hazard Models)
+- Added argparse CLI validation to Step 4.4 (Generate Summary Statistics)
+- All three regression/summary scripts support --help and --dry-run flags
+- 4.2 validates prerequisite steps (4.1, 3.2) before processing
+- 4.3 validates prerequisite steps (4.1, 3.3) before processing
+- 4.4 validates prerequisite steps (4.1, 4.2, 4.3) before processing
+- Fixed PYTHONPATH issues on Windows by adding parent directory to sys.path before shared imports
+- All three regression/summary scripts can now run manually with prerequisite validation
+- Phase 25.1 complete: All 8 plans delivered CLI validation for pipeline scripts
+
 ## Phase 23 Achievements
 
 ✅ **Phase 23 COMPLETE** - All 8 plans completed 2026-01-24
@@ -101,16 +113,16 @@ Progress: [██████████░] 99.2% (126/126 plans complete, 25.
 
 ## Session Continuity
 
-        Last session: 2026-01-24T21:15:00Z
-        Stopped at: Phase 25 complete - All 120 plans executed, roadmap finished
+        Last session: 2026-01-24T23:40:44Z
+        Stopped at: Completed 25.1-08: Add CLI validation to Step 4 regression and summary scripts
         Resume file: None
 
-        Phase: 25 of 25 (Execute Full Pipeline E2E Test) ✅
-          Plan: 1 of 1 (Phase complete: 2026-01-24)
+        Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually) ✅
+          Plan: 8 of 8 (Phase complete: 2026-01-24)
           Status: ✅ COMPLETED
-          Last activity: 2026-01-24 - E2E test validation complete, data blocker identified
+          Last activity: 2026-01-24 - CLI validation added to 4.2, 4.3, 4.4 scripts
 
-         Progress: [██████████░] 99.2% (124/126 plans complete, 25.1 in progress)
+         Progress: [██████████░] 99.2% (126/126 plans complete, 25.1 complete)
           Technical Remediation: [████████████] 100% (All phases 7-25 complete)
           Gap Closure: [████████████] 100% (All gap closure phases complete)
           Post-Audit Validation: [████████████] 100% (All validation phases complete)
@@ -184,6 +196,10 @@ Recent decisions affecting current work:
 - [Phase 25.1-07]: Fixed PYTHONPATH for Windows by adding parent directory to sys.path before shared imports
 - [Phase 25.1-07]: Added argparse CLI validation to 4.1.2, 4.1.3, 4.1.4 CEO clarity analysis scripts
 - [Phase 25.1-07]: All three CEO clarity variant scripts validate prerequisite steps (2.2, 3.1, 3.2) before processing
+- [Phase 25.1-08]: Added sys.path.insert(0, ...) at module level for shared imports (Windows compatibility)
+- [Phase 25.1-08]: Used lazy imports for dependency_checker within check_prerequisites() function
+- [Phase 25.1-08]: Added argparse CLI validation to 4.2, 4.3, and 4.4 regression/summary scripts
+- [Phase 25.1-08]: All three regression/summary scripts validate prerequisite step outputs before processing
 
 ### Roadmap Evolution
 
