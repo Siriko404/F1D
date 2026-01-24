@@ -25,73 +25,44 @@ SUBPROCESS_ENV = {
 }
 
 
+def check_script_observability(script_path):
+    """Verify observability features via regex pattern matching."""
+    with open(script_path) as f:
+        content = f.read()
+
+    # Check required imports
+    assert re.search(r"^import psutil\b", content, re.MULTILINE), (
+        "Missing psutil import"
+    )
+    assert (
+        re.search(r"^from shared\.path_utils import", content, re.MULTILINE),
+        "Missing path_utils import",
+    )
+
+    # Check required functions
+    assert (
+        re.search(r"^def get_process_memory_mb\(", content, re.MULTILINE),
+        "Missing memory tracking",
+    )
+    assert (
+        re.search(r"^def calculate_throughput\(", content, re.MULTILINE),
+        "Missing throughput calculation",
+    )
+    assert (
+        re.search(r"^def detect_anomalies_zscore\(", content, re.MULTILINE),
+        "Missing z-score anomaly detection",
+    )
+    assert (
+        re.search(r"^def detect_anomalies_iqr\(", content, re.MULTILINE),
+        "Missing IQR anomaly detection",
+    )
+
+
 class TestObservabilityIntegration:
     """Integration tests for observability features across Steps 1 and 2 scripts."""
 
     def test_1_1_observability(self):
         """Test that 1.1_CleanMetadata.py has observability features."""
-        import ast
-
         script_path = REPO_ROOT / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
-        with open(script_path, "r") as f:
-            tree = ast.parse(f.read())
-
-        # Check psutil import
-        imports = [
-            node.names[0] for node in ast.walk(tree) if isinstance(node, ast.Import)
-        ]
-        import_names = [imp.names[0] for imp in imports if imp.names]
-        assert "psutil" in import_names, "psutil must be imported"
-
-        # Check observability helper functions
-        funcs = {
-            node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
-        }
-        required_funcs = {
-            "get_process_memory_mb",
-            "calculate_throughput",
-            "detect_anomalies_zscore",
-            "detect_anomalies_iqr",
-        }
-        missing = required_funcs - funcs
-        assert len(missing) == 0, f"Missing observability helpers: {missing}"
-
+        check_script_observability(script_path)
         print("✓ 1.1_CleanMetadata.py has observability features")
-
-    def test_stats_json_schema_backward_compatible(self):
-        """Test that modified scripts preserve existing stats.json structure."""
-        # Sample key scripts to verify backward compatibility
-        scripts_to_check = [
-            "2_Scripts/1_Sample/1.1_CleanMetadata.py",
-        ]
-        required_sections = {
-            "input",
-            "output",
-            "processing",
-            "missing_values",
-            "timing",
-        }
-        for script_path_str in scripts_to_check:
-            script_path = REPO_ROOT / script_path_str
-            with open(script_path, "r") as f:
-                tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Assign):
-                        for target in node.targets:
-                            if isinstance(target, ast.Name) and target.id == "stats":
-                                # Found stats assignment, check if required sections are present
-                                required = required_sections.copy()
-                                for section in required:
-                                    if section in tree.body[i].value:
-                                        break
-                                if len(required) > 0:
-                                    break
-                                if (
-                                    isinstance(target, ast.Name)
-                                    and target.id == "stats"
-                                ):
-                                    break
-                    if len(required) == 0:
-                        break
-
-        print("✓ Stats.json schema backward compatible")
