@@ -61,6 +61,20 @@ def load_config():
         return yaml.safe_load(f)
 
 
+def load_config():
+    """Load configuration from project.yaml"""
+    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
+
+
+def validate_input_file(file_path: Path, must_exist: bool = True) -> None:
+    """Validate that input file exists if required"""
+    if must_exist and not file_path.exists():
+        raise FileNotFoundError(f"Input file not found: {file_path}")
+    return None
+
+
 def setup_paths(config):
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
@@ -77,7 +91,7 @@ def setup_paths(config):
     paths["log_file"] = output_base / f"{timestamp}.log"
 
     # Update latest symlink
-    update_latest_link(paths["output_dir"])
+    update_latest_link(paths["output_dir"], link_path=paths["output_dir"])
 
     return paths, timestamp
 
