@@ -79,9 +79,23 @@ Recent decisions affecting current work:
  - [Phase 18-02]: Implement comprehensive filter operations (eq, gt, lt, ge, le, ne, in, not_in) for regression sample construction
 - [Phase 18-04]: Apply deviation Rule 3 to remove duplicate observability functions blocking line count target
 - [Phase 18-06]: Create comprehensive unit tests for regression_helpers.py (25 tests covering all functions, filter types, error handling)
- ### Pending Todos
+### Pending Todos
  
- - Restore/Recreate `4.4_GenerateSummaryStats.py` (Gap identified in Phase 17-04)
+  - Restore/Recreate `4.4_GenerateSummaryStats.py` (Gap identified in Phase 17-04)
+ 
+### Blockers/Concerns
+ 
+None.
+
+## Phase 18 Achievements
+
+**Completed 2026-01-24:**
+
+✅ **18-04-PLAN.md:** Fix 1.2_LinkEntities.py refactoring
+   - Replaced inline RapidFuzz.process.extractOne() calls with match_company_names() from shared.string_matching
+   - Removed duplicate observability function definitions (~245 lines)
+   - Reduced line count from 1090 to 847 (-243 lines, 22.3% reduction)
+   - Applied deviation Rule 3 to achieve line count success criterion (<1050 lines)
 
 ### Blockers/Concerns
 
@@ -90,7 +104,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24T06:19:41Z
-Stopped at: Completed 18-06-PLAN.md
+Stopped at: Completed 18-04-PLAN.md
 Resume file: None
 
 ## Phase 17 Achievements
@@ -164,3 +178,9 @@ Resume file: None
    - Extracts code from 3.0 and 3.1 Step 3 financial scripts
    - Targets reducing 6 large scripts: 1089→<800 (4.1.1), 944→<800 (4.1.2), 979→<800 (4.1.3), 998→<800 (4.2), 945→<800 (4.3), 978→<800 (3.1)
    - Addresses Phase 13 gap: 8/9 scripts still >800 lines (now 6/9 after plan 18-03)
+
+📋 **18-04-PLAN.md:** Fix 1.2_LinkEntities.py refactoring
+   - Replaces inline RapidFuzz.process.extractOne() calls with match_company_names()
+   - Removes duplicate observability function definitions (~245 lines)
+   - Reduces line count from 1090 to 847 (-243 lines, 22.3% reduction)
+   - Addresses Phase 13 gap: script has inline RapidFuzz calls and code duplication
