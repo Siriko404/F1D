@@ -17,6 +17,11 @@ determinism:
   random_seed: 42
   thread_count: 1
   sort_inputs: true
+chunk_processing:
+  max_memory_percent: 80.0
+  base_chunk_size: 10000
+  enable_throttling: true
+  log_memory_status: true
 logging:
   level: INFO
   format: '%(asctime)s [%(levelname)s] %(message)s'
