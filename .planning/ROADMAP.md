@@ -375,13 +375,15 @@ Plans:
    3. Large scripts (8/9 target scripts) reduced to <800 lines through code extraction
    4. All extracted functions tested with unit tests
 **Status**: 📝 PLANS CREATED (gap closure phase)
-**Plans**: 3 plans (2 waves)
+**Plans**: 6 plans (2 waves)
 
  Plans:
 - [x] 18-01: Refactor 1.2_LinkEntities.py to use match_company_names() from shared/string_matching.py (Wave 1)
 - [x] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder) (Wave 1)
 - [x] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines (Wave 2)
 - [x] 18-06: Add comprehensive unit tests for regression_helpers.py functions (Gap closure)
+- [ ] 18-07: Extract prepare_regression_data() from 4.1.1 to shared module (gap closure)
+- [ ] 18-08: Consolidate comments in 4.2 to reduce line count (gap closure)
 
 ### Phase 19: Scaling Infrastructure & Testing Integration
 **Goal**: Integrate orphaned scaling infrastructure, complete column pruning, fix testing issues
@@ -427,14 +429,14 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
   | 14. Dependency Management | 4/4 | ✅ COMPLETED | 2026-01-23 |
    | 15. Scaling Preparation | 5/5 | ✅ COMPLETED | 2026-01-24 |
    | 16. Critical Path Fixes | 3/3 | ✅ COMPLETED | 2026-01-23 |
-   | 17. Verification Reports | 13/13 | ✅ COMPLETED | 2026-01-24 |
-    | 18. Complete Phase 13 Refactoring | 3/3 | ✅ COMPLETED | 2026-01-24 |
-   | 19. Scaling Infrastructure & Testing Integration | 0/4 | 📝 PLANNED | - |
+     | 17. Verification Reports | 13/13 | ✅ COMPLETED | 2026-01-24 |
+     | 18. Complete Phase 13 Refactoring | 4/6 | 📝 IN PROGRESS | 2026-01-24 |
+    | 19. Scaling Infrastructure & Testing Integration | 0/4 | 📝 PLANNED | - |
 
 
 ---
----
+ ---
  *Roadmap created: 2026-01-22*
- *Roadmap updated: 2026-01-24 (Phase 15-17 complete, Phase 18-02 complete, Phase 16-19 added for gap closure)*
- *Total plans: 109 (93 completed + 1 executed + 15 planned)*
+ *Roadmap updated: 2026-01-24 (Phase 15-17 complete, Phase 18-02 complete, Phase 16-19 added for gap closure, Phase 18 gap closure plans 07-08 added)*
+ *Total plans: 111 (97 completed + 1 executed + 13 planned)*
  *Total requirements: 30 mapped*
