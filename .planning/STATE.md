@@ -841,6 +841,125 @@ Phase 14 focuses on dependency management to ensure long-term stability and comp
 **Remaining Plans:**
 - 14-04: Document RapidFuzz optional dependency with installation instructions
 
+## Phase 15 Achievements
+
+**Completed:** 2026-01-24
+**Plans:** 5/5 (15-01, 15-02, 15-03, 15-04, 15-05)
+**Verification:** 16/16 must-haves verified (100%)
+
+### Overview
+
+Phase 15 focused on removing scaling limits for future growth by implementing deterministic parallelization, column pruning for memory efficiency, memory-aware throttling, enhanced tracking, and comprehensive documentation. This was the final technical remediation phase (Phase 7-15), completing the entire 34-concern technical debt remediation roadmap.
+
+### Achievements
+
+**15-01: Deterministic Parallel RNG**
+- Created `parallel_utils.py` with deterministic RNG spawning utilities (85 lines)
+- `spawn_worker_rng()` function uses NumPy's SeedSequence spawning pattern
+- Each parallel worker gets independent random stream while maintaining reproducibility
+- 21 unit tests verify reproducibility, independence, and no collision
+- Documented in shared/README.md
+
+**15-02: Column Pruning for Parquet Files**
+- Updated 3 critical scripts with column-specific Parquet reads:
+  - `1.2_LinkEntities.py`: 2 pd.read_parquet() calls now use columns= parameter
+  - `1.4_AssembleManifest.py`: 2 pd.read_parquet() calls now use columns= parameter
+  - `3.2_MarketVariables.py`: 2 pd.read_parquet() calls now use columns= parameter
+- Memory reduction: 60-80% for large datasets (reading 2-10 columns instead of all)
+- All scripts produce identical results to baseline (no data loss)
+
+**15-03: Memory-Aware Chunked Processing**
+- Created `MemoryAwareThrottler` class in `chunked_reader.py` (6 methods)
+- Dynamic throttling based on memory pressure (max_memory_percent threshold)
+- 4 config parameters in project.yaml: max_memory_percent, base_chunk_size, enable_throttling, log_memory_status
+- Integrated into `process_in_chunks` function for automatic memory pressure detection
+- Reduces chunk size when memory > 80% threshold to prevent OOM errors
+
+**15-04: Enhanced Memory Usage Tracking**
+- Created `track_memory_usage` decorator in `chunked_reader.py`
+- Tracks memory (start/end/peak/delta) and timing for any wrapped function
+- Added to 3 scripts: `1.1_CleanMetadata.py`, `1.2_LinkEntities.py`, `2.1_TokenizeAndCount.py`
+- Memory telemetry added to stats.json memory_mb section for key operations
+- Foundation for memory-aware throttling in 15-03
+
+**15-05: Scaling Documentation**
+- Created `SCALING.md` (481 lines) with comprehensive scaling documentation
+- Documents current limits (10K samples, 20K documents)
+- Identifies bottlenecks with improvement priorities
+- 3 scaling paths: 2x, 10x, 100x dataset sizes
+- Hardware recommendations for 8GB, 16GB, 32GB RAM systems
+- OOM troubleshooting and memory monitoring guidance
+- Updated main README.md and shared/README.md with scaling section links
+
+### Technical Decisions
+
+1. **SeedSequence spawning for deterministic parallel RNG** — NumPy's recommended pattern ensures independent random streams while maintaining reproducibility
+2. **Column pruning pattern** — PyArrow's columns= parameter reduces memory footprint without changing results
+3. **Dynamic throttling** — Configurable threshold (80% by default) provides automatic adaptation to memory constraints
+4. **Decorator-based tracking** — @track_memory_usage provides clean operation-level telemetry without code duplication
+5. **Comprehensive documentation** — SCALING.md provides actionable guidance for users planning to scale pipeline
+
+### Files Created/Modified
+
+**Created:**
+- `2_Scripts/shared/parallel_utils.py` (85 lines)
+- `tests/unit/test_parallel_utils.py` (131 lines, 21 tests)
+- `SCALING.md` (481 lines)
+
+**Modified:**
+- `2_Scripts/shared/chunked_reader.py` — Added track_memory_usage decorator and MemoryAwareThrottler class
+- `1.1_CleanMetadata.py` — Added memory tracking with decorator
+- `1.2_LinkEntities.py` — Added column pruning and memory tracking
+- `1.4_AssembleManifest.py` — Added column pruning
+- `2.1_TokenizeAndCount.py` — Added memory tracking
+- `3.2_MarketVariables.py` — Added column pruning
+- `config/project.yaml` — Added chunk_processing section with throttling parameters
+- `2_Scripts/shared/README.md` — Updated with parallel_utils and scaling documentation
+- `README.md` — Added Scaling and Performance section
+
+### Verification Results
+
+**Phase 15 Final Verification:** 16/16 must-haves verified (100%)
+
+| Plan | Truths Verified |
+|------|-----------------|
+| 15-01 | 4/4 |
+| 15-02 | 4/4 |
+| 15-03 | 3/3 |
+| 15-04 | 3/3 |
+| 15-05 | 2/2 |
+
+**All artifacts verified:** 14/14 exist, are substantive, and properly wired
+**All key links verified:** 11/11 critical connections confirmed
+**No anti-patterns found:** No blockers, warnings, or stubs detected
+
+### Execution Summary
+
+**All 5 plans executed successfully:**
+
+✅ 15-01: Create deterministic parallelization (parallel_utils.py)
+✅ 15-02: Add column pruning for Parquet files (1.2, 1.4, 3.2)
+✅ 15-03: Implement chunked processing (MemoryAwareThrottler)
+✅ 15-04: Add memory usage monitoring (track_memory_usage decorator)
+✅ 15-05: Document scaling limits (SCALING.md)
+
+**Total execution time:** ~17 minutes across 3 waves
+**Total commits:** 18
+**Deviations:** None
+
+### Key Deliverables
+
+1. Deterministic parallel RNG utilities for reproducible parallel processing
+2. Column pruning in 3 critical scripts (60-80% memory reduction)
+3. Memory-aware throttling with dynamic chunk size adjustment
+4. Operation-level memory tracking with decorator pattern
+5. Comprehensive scaling documentation (SCALING.md)
+6. All 34 technical remediation concerns addressed (Phases 7-15 complete)
+
+### Phase 15 Complete
+
+Phase 15 successfully removes scaling limits for future growth by implementing deterministic parallelization, memory efficiency optimizations, and comprehensive scaling documentation. This completes the entire technical remediation roadmap (Phases 7-15), addressing all 34 concerns documented in CONCERNS.md.
+
 ## Session Continuity
 
 Last session: 2026-01-24T00:12:46Z
