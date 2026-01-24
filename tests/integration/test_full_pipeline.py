@@ -168,6 +168,7 @@ def test_full_pipeline_execution():
         try:
             result = subprocess.run(
                 ["python", str(script_path_obj)],
+                env=SUBPROCESS_ENV,
                 capture_output=True,
                 text=True,
                 timeout=600,  # 10-minute timeout per script

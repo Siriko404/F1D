@@ -33,6 +33,7 @@ def test_step3_full_pipeline():
     # Act - Run script via subprocess
     result = subprocess.run(
         ["python", str(script_path)],
+        env=SUBPROCESS_ENV,
         capture_output=True,
         text=True,
         timeout=600,
