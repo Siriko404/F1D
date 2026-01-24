@@ -378,12 +378,12 @@ Plans:
 **Plans**: 6 plans (2 waves)
 
  Plans:
-- [x] 18-01: Refactor 1.2_LinkEntities.py to use match_company_names() from shared/string_matching.py (Wave 1)
-- [x] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder) (Wave 1)
-- [x] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines (Wave 2)
-- [x] 18-06: Add comprehensive unit tests for regression_helpers.py functions (Gap closure)
-- [ ] 18-07: Extract prepare_regression_data() from 4.1.1 to shared module (gap closure)
-- [ ] 18-08: Consolidate comments in 4.2 to reduce line count (gap closure)
+ - [x] 18-01: Refactor 1.2_LinkEntities.py to use match_company_names() from shared/string_matching.py (Wave 1)
+ - [x] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder) (Wave 1)
+ - [x] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines (Wave 2)
+ - [x] 18-06: Add comprehensive unit tests for regression_helpers.py functions (Gap closure)
+ - [x] 18-07: Extract prepare_regression_data() from 4.1.1 to shared module (gap closure)
+ - [ ] 18-08: Consolidate comments in 4.2 to reduce line count (gap closure)
 
 ### Phase 19: Scaling Infrastructure & Testing Integration
 **Goal**: Integrate orphaned scaling infrastructure, complete column pruning, fix testing issues
