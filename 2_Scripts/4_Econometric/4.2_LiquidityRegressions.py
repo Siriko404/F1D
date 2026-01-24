@@ -47,6 +47,11 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import numpy as np
+import argparse
+
+# Add parent directory to path for shared module imports
+script_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(script_dir))
 
 # Try importing statsmodels
 try:
@@ -142,6 +147,42 @@ CONFIG = {
     ],
     "samples": {"Main": {"exclude_ff12": [8, 11]}},
 }
+
+
+def parse_arguments():
+    """Parse command-line arguments for 4.2_LiquidityRegressions.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 4.2: Liquidity Regressions
+
+Estimates liquidity regressions using CEO clarity scores as
+independent variable. Tests whether CEO clarity affects
+stock liquidity and trading costs.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
+        "3.2_MarketVariables": "market_variables.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
 
 
 # Data Loading
@@ -793,4 +834,14 @@ def main():
 
 
 if __name__ == "__main__":
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
     sys.exit(main())
