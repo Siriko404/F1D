@@ -38,32 +38,19 @@ import json
 import time
 import psutil
 
-# Dynamic import for 1.5_Utils.py to comply with naming convention
-try:
-    utils_path = Path(__file__).parent / "1.5_Utils.py"
-    spec = importlib.util.spec_from_file_location("utils", utils_path)
-    utils = importlib.util.module_from_spec(spec)
-    sys.modules["utils"] = utils
-    spec.loader.exec_module(utils)
-    from utils import generate_variable_reference
-    from shared.symlink_utils import update_latest_link
-    from shared.observability_utils import (
-        DualWriter,
-        compute_file_checksum,
-        print_stat,
-        analyze_missing_values,
-        print_stats_summary,
-        save_stats,
-        get_process_memory_mb,
-        calculate_throughput,
-        detect_anomalies_zscore,
-        detect_anomalies_iqr,
-    )
-
-    from shared.symlink_utils import update_latest_link
-except ImportError as e:
-    print(f"Criticial Error importing utils: {e}")
-    sys.exit(1)
+from shared.symlink_utils import update_latest_link
+from shared.observability_utils import (
+    DualWriter,
+    compute_file_checksum,
+    print_stat,
+    analyze_missing_values,
+    print_stats_summary,
+    save_stats,
+    get_process_memory_mb,
+    calculate_throughput,
+    detect_anomalies_zscore,
+    detect_anomalies_iqr,
+)
 
 
 def load_config():
