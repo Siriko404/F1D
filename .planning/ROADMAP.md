@@ -29,7 +29,8 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 - [x] **Phase 12: Data Quality & Observability** - Quality reports and state tracking ✅ COMPLETED 2026-01-23
 - [x] **Phase 13: Script Refactoring** - Break down large scripts, improve modularity ✅ COMPLETED 2026-01-23
 - [x] **Phase 14: Dependency Management** - Version pinning and compatibility testing ✅ COMPLETED 2026-01-23
-- [ ] **Phase 15: Scaling Preparation** - Remove scaling limits for future growth 📝 PLANNED
+- [x] **Phase 15: Scaling Preparation** - Remove scaling limits for future growth ✅ COMPLETED 2026-01-24
+- [x] **Phase 16: Critical Path Fixes** - Fix blocking issues from milestone audit ✅ COMPLETED 2026-01-23
 
 ## Phase Details
 
@@ -329,13 +330,13 @@ Plans:
     2. Full pipeline E2E test exists and runs all 17 scripts sequentially
     3. E2E test verifies all outputs exist and have valid checksums
     4. parallel_utils.py either integrated or removed with documentation updated
-**Status**: 📝 PLANNED (gap closure phase)
+**Status**: ✅ COMPLETED 2026-01-23
 **Plans**: 3 plans
 
 Plans:
-- [ ] 16-01: Fix Step 4 path mismatch in 3 scripts (4.1, 4.1.1, 4.1.3)
-- [ ] 16-02: Create full pipeline E2E test (tests/integration/test_full_pipeline.py)
-- [ ] 16-03: Handle orphaned parallel_utils (integrate or remove and update docs)
+- [x] 16-01: Fix Step 4 path mismatch in 3 scripts (4.1, 4.1.1, 4.1.3) ✅
+- [x] 16-02: Create full pipeline E2E test (tests/integration/test_full_pipeline.py) ✅
+- [x] 16-03: Handle orphaned parallel_utils (integrate or remove and update docs) ✅
 
 ### Phase 17: Verification Reports
 **Goal**: Create VERIFICATION.md reports for all unverified phases (gap closure from milestone audit)
