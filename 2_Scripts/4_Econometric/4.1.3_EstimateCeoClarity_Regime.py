@@ -12,8 +12,8 @@ Purpose:
     - Utility: Utility firms (FF12 code 8)
 
 Inputs:
-    - 4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
-    - 4_Outputs/2.4_Linguistic_Variables/latest/linguistic_variables_{year}.parquet
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
     - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
     - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
