@@ -36,37 +36,44 @@ See: .planning/PROJECT.md (updated 2026-01-22)
    - Graceful exception handling (skips files that fail to load)
    - Module compiles successfully, 60 lines
 
-✅ **24-03-PLAN.md:** Refactor 1.2_LinkEntities.py to use shared modules
-   - Added imports: from shared.industry_utils import parse_ff_industries
-   - Added imports: from shared.metadata_utils import load_variable_descriptions
-   - Removed inline parse_ff_industries() function (36 lines deleted)
-   - Removed inline load_variable_descriptions() function (22 lines deleted)
-   - Line count reduced from 847 to 787 lines (60 line reduction, under 800 target)
-   - Script compiles successfully, function calls use imported versions
+ ✅ **24-03-PLAN.md:** Refactor 1.2_LinkEntities.py to use shared modules
+    - Added imports: from shared.industry_utils import parse_ff_industries
+    - Added imports: from shared.metadata_utils import load_variable_descriptions
+    - Removed inline parse_ff_industries() function (36 lines deleted)
+    - Removed inline load_variable_descriptions() function (22 lines deleted)
+    - Line count reduced from 847 to 787 lines (60 line reduction, under 800 target)
+    - Script compiles successfully, function calls use imported versions
+
+✅ **24-04-PLAN.md:** Refactor 4.1.3_EstimateCeoClarity_Regime.py to use shared data_loading
+    - Added import: from shared.data_loading import load_all_data
+    - Removed inline load_all_data() function (110 lines deleted)
+    - Fixed pre-existing bug: Added stats initialization for observability tracking
+    - Line count reduced from 799 to 727 lines (72 line reduction, under 800 target)
+    - Script compiles successfully, all verification checks pass
 
 ## Session Continuity
 
-  Last session: 2026-01-24T19:46:37Z
-  Stopped at: Completed 24-03: Refactor 1.2_LinkEntities.py to use shared modules
-  Resume file: None
+   Last session: 2026-01-24T19:49:23Z
+   Stopped at: Completed 24-04: Refactor 4.1.3 to use shared data_loading
+   Resume file: None
 
 
   Phase: 24 of 24 (Complete Script Refactoring)
-    Plan: 3 of 8 (line count reduction in progress: 2026-01-24)
+    Plan: 4 of 8 (line count reduction in progress: 2026-01-24)
     Status: Gap closure in progress
-    Last activity: 2026-01-24 - Completed 24-03: Refactor 1.2 to use shared modules
+    Last activity: 2026-01-24 - Completed 24-04: Refactor 4.1.3 to use shared data loading
 
-   Progress: [██████████░░] 95.5% (107/112 plans complete + 3/8 in Phase 24)
+   Progress: [██████████░░] 95.7% (108/112 plans complete + 4/8 in Phase 24)
     Technical Remediation: [████████████] 100% (All phases 7-16 complete)
     Gap Closure: [███████████░] 96.2% (Phases 16-24.03 of gap closure complete)
 
 ## Performance Metrics
 
 **Velocity:**
-   - Total plans completed: 107
-   - Plans created but not executed: 6
-   - Average duration: ~8 min
-   - Total execution time: ~218 min
+    - Total plans completed: 108
+    - Plans created but not executed: 6
+    - Average duration: ~8 min
+    - Total execution time: ~222 min
 
 **By Phase:**
 
@@ -94,11 +101,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | | 20. Restore README Documentation | 1/1 | ~5 min | ✅ COMPLETED | 2026-01-24 |
 | | 21. Fix Testing Infrastructure | 1/1 | ~8 min | ✅ COMPLETED | 2026-01-24 |
 | | 22. Recreate Missing Script & Evidence | 2/2 | ~4 min average | ✅ COMPLETED | 2026-01-24 |
-| | 23. Core Tech Debt Cleanup | 8/8 | ~13 min average | ✅ COMPLETED | 2026-01-24 |
- | | 24. Complete Script Refactoring | 3/8 | ~1 min average | 📝 IN PROGRESS | 2026-01-24 |
+ | | 23. Core Tech Debt Cleanup | 8/8 | ~13 min average | ✅ COMPLETED | 2026-01-24 |
+ | | 24. Complete Script Refactoring | 4/8 | ~3 min average | 📝 IN PROGRESS | 2026-01-24 |
 
 **Recent Trend:**
-- Last 3 plans: ~1 min average (industry_utils, metadata_utils, 1.2 refactoring)
+- Last 4 plans: ~3 min average (industry_utils, metadata_utils, 1.2 refactoring, 4.1.3 data loading)
 - Trend: Shared module extraction for line count reduction
 
 ## Accumulated Context
@@ -113,6 +120,7 @@ Recent decisions affecting current work:
 - [Phase 23-03]: Used custom Python script for complex file editing when sed commands failed
 - [Phase 23-08]: Consolidated DualWriter to shared.observability_utils module across 4 gap scripts
 - [Phase 23-08]: Removed duplicate import statements from try/except blocks to maintain clean code
+- [Phase 24-04]: Fixed pre-existing bug in 4.1.3 - added stats initialization for observability tracking that was missing
 
 ### Blockers/Concerns
 
