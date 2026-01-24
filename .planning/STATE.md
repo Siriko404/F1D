@@ -45,28 +45,33 @@ See: .planning/PROJECT.md (updated 2026-01-22)
     - Script compiles successfully, function calls use imported versions
 
  ✅ **24-04-PLAN.md:** Refactor 4.1.3_EstimateCeoClarity_Regime.py to use shared data_loading
-     - Added import: from shared.data_loading import load_all_data
-     - Removed inline load_all_data() function (110 lines deleted)
-     - Fixed pre-existing bug: Added stats initialization for observability tracking
-     - Line count reduced from 799 to 727 lines (72 line reduction, under 800 target)
-     - Script compiles successfully, all verification checks pass
+      - Added import: from shared.data_loading import load_all_data
+      - Removed inline load_all_data() function (110 lines deleted)
+      - Fixed pre-existing bug: Added stats initialization for observability tracking
+      - Line count reduced from 799 to 727 lines (72 line reduction, under 800 target)
+      - Script compiles successfully, all verification checks pass
 
- ✅ **24-06-PLAN.md:** Verify 5 already-under-target scripts remain compliant
-     - Verified line counts: 4.1.1 (789), 4.1.2 (782), 4.2 (796), 4.3 (397), 3.0 (716)
-     - All scripts compile successfully without errors
-     - No regressions detected from Phase 24 refactoring
+  ✅ **24-05-PLAN.md:** Inline consolidation of 3.1_FirmControls.py (completed in 24-06 verification)
+      - Consolidated duplicate section headers (6 separator lines reduced to 1)
+      - Removed unused compute_firm_controls() function stub with TODO comments (11 lines)
+      - Line count reduced from 801 to 785 lines (16 line reduction, under 800 target)
+      - Script compiles successfully, no functional changes
 
- ## Session Continuity
+  ✅ **24-06-PLAN.md:** Verify 5 already-under-target scripts remain compliant
+      - Verified line counts: 4.1.1 (789), 4.1.2 (782), 4.2 (796), 4.3 (397), 3.0 (716)
+      - All scripts compile successfully without errors
+      - No regressions detected from Phase 24 refactoring
 
-    Last session: 2026-01-24T19:51:00Z
-    Stopped at: Completed 24-06: Verification of 5 already-under-target scripts
-    Resume file: None
+  ## Session Continuity
 
- 
-   Phase: 24 of 24 (Complete Script Refactoring)
-     Plan: 5 of 8 (line count reduction + verification: 2026-01-24)
-     Status: Gap closure in progress
-     Last activity: 2026-01-24 - Completed 24-06: Verified 5 scripts remain under 800 lines
+     Last session: 2026-01-24T19:51:00Z
+     Stopped at: Completed 24-05: Inline consolidation of 3.1_FirmControls.py
+     Resume file: None
+
+    Phase: 24 of 24 (Complete Script Refactoring)
+      Plan: 6 of 8 (line count reduction + verification: 2026-01-24)
+      Status: Gap closure in progress
+      Last activity: 2026-01-24 - Completed 24-05: Consolidated 3.1 to 785 lines
 
     Progress: [██████████░░] 96.4% (109/112 plans complete + 5/8 in Phase 24)
      Technical Remediation: [████████████] 100% (All phases 7-16 complete)
@@ -75,10 +80,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Performance Metrics
 
 **Velocity:**
-     - Total plans completed: 109
-     - Plans created but not executed: 5
+     - Total plans completed: 110
+     - Plans created but not executed: 4
      - Average duration: ~8 min
-     - Total execution time: ~223 min
+     - Total execution time: ~225 min
 
 **By Phase:**
 
@@ -107,11 +112,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | | 21. Fix Testing Infrastructure | 1/1 | ~8 min | ✅ COMPLETED | 2026-01-24 |
 | | 22. Recreate Missing Script & Evidence | 2/2 | ~4 min average | ✅ COMPLETED | 2026-01-24 |
  | | 23. Core Tech Debt Cleanup | 8/8 | ~13 min average | ✅ COMPLETED | 2026-01-24 |
- | | 24. Complete Script Refactoring | 5/8 | ~2 min average | 📝 IN PROGRESS | 2026-01-24 |
+  | | 24. Complete Script Refactoring | 6/8 | ~2 min average | 📝 IN PROGRESS | 2026-01-24 |
 
 **Recent Trend:**
-- Last 5 plans: ~2.4 min average (industry_utils, metadata_utils, 1.2 refactoring, 4.1.3 data loading, script verification)
-- Trend: Shared module extraction for line count reduction
+- Last 6 plans: ~2.3 min average (industry_utils, metadata_utils, 1.2 refactoring, 4.1.3 data loading, 3.1 inline consolidation, script verification)
+- Trend: Shared module extraction and inline consolidation for line count reduction
 
 ## Accumulated Context
 
