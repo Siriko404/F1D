@@ -33,6 +33,7 @@ Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
 
 import sys
 import os
+import argparse
 from pathlib import Path
 from datetime import datetime
 import pandas as pd
@@ -501,15 +502,85 @@ from shared.observability_utils import (
 )
 
 # Import shared path validation utilities
+# ==============================================================================
+# CLI and Prerequisites
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 3.1_FirmControls.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 3.1: Build Firm Controls
+
+Constructs firm-level control variables from Compustat
+data (size, leverage, profitability, etc.). Merges
+with master sample to create analysis dataset.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    parser.add_argument(
+        "--compustat-path",
+        type=str,
+        help="Path to Compustat directory (default: 1_Inputs/Compustat)",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root, args):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    # Compustat path (from argument or default)
+    compustat_path = (
+        args.compustat_path if args.compustat_path else root / "1_Inputs" / "Compustat"
+    )
+
+    required_files = {
+        "Compustat": Path(compustat_path),
+    }
+
+    required_steps = {
+        "1.4_AssembleManifest": "master_sample_manifest.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
+
 # Main
 # ==============================================================================
 
 
 def main():
     """Main execution"""
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    # Handle dry-run mode
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root, args)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    # Check prerequisites before processing
+    check_prerequisites(root, args)
+
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
+
+    # Override Compustat path if provided
+    if args.compustat_path:
+        paths["compustat_file"] = Path(args.compustat_path)
 
     # Setup logging
     dual_writer = DualWriter(paths["log_file"])
