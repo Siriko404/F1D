@@ -68,6 +68,8 @@ from shared.string_matching import (
     RAPIDFUZZ_AVAILABLE,
 )
 from shared.chunked_reader import track_memory_usage
+from shared.industry_utils import parse_ff_industries
+from shared.metadata_utils import load_variable_descriptions
 from shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
@@ -194,68 +196,6 @@ def normalize_company_name(name):
 
     name = " ".join(name.split())
     return name
-
-
-def parse_ff_industries(zip_path, num_industries):
-    """Parse Fama-French industry classification from SIC code ranges"""
-    with zipfile.ZipFile(zip_path, "r") as z:
-        txt_file = z.namelist()[0]
-        with z.open(txt_file) as f:
-            content = f.read().decode("utf-8")
-
-    industry_map = {}
-    lines = content.strip().split("\n")
-
-    current_industry_code = None
-    current_industry_name = None
-
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-
-        parts = stripped.split(maxsplit=2)
-        if len(parts) >= 2 and parts[0].isdigit():
-            current_industry_code = int(parts[0])
-            current_industry_name = parts[1]
-        elif stripped and current_industry_code is not None:
-            sic_range = stripped.split()[0] if stripped.split() else ""
-            if "-" in sic_range:
-                try:
-                    start, end = sic_range.split("-")
-                    for sic in range(int(start), int(end) + 1):
-                        industry_map[sic] = (
-                            current_industry_code,
-                            current_industry_name,
-                        )
-                except ValueError:
-                    continue
-
-    return industry_map
-
-
-def load_variable_descriptions(ref_files):
-    """Load variable descriptions from reference files"""
-    descriptions = {}
-
-    for source, path in ref_files.items():
-        if path.exists():
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-                for line in lines[1:]:  # Skip header
-                    parts = line.strip().split("\t")
-                    if len(parts) >= 3:
-                        var_name = parts[0].lower()
-                        var_desc = parts[2]
-                        descriptions[var_name] = {
-                            "source": source,
-                            "description": var_desc,
-                        }
-            except Exception:
-                pass
-
-    return descriptions
 
 
 # Generate_variable_reference and update_latest_symlink imported from step1_utils
