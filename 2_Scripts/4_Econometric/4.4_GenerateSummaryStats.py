@@ -45,66 +45,8 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import shared utilities
 from shared.symlink_utils import update_latest_link
-from shared.observability_utils import DualWriter
+from shared.observability_utils import DualWriter, compute_file_checksum, print_stat, analyze_missing_values
 
-# ==============================================================================
-# Statistics Helper Functions
-# ==============================================================================
-
-
-def compute_file_checksum(filepath, algorithm="sha256"):
-    """Compute checksum for a file."""
-    h = hashlib.new(algorithm)
-    with open(filepath, "rb") as f:
-        for chunk in iter(lambda: f.read(8192), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
-def print_stat(label, before=None, after=None, value=None, indent=2):
-    """Print a statistic with consistent formatting."""
-    prefix = " " * indent
-    if before is not None and after is not None:
-        delta = after - before
-        pct = (delta / before * 100) if before != 0 else 0
-        sign = "+" if delta >= 0 else ""
-        print(f"{prefix}{label}: {before:,} -> {after:,} ({sign}{pct:.1f}%)")
-    else:
-        v = value if value is not None else after
-        if isinstance(v, float):
-            print(f"{prefix}{label}: {v:,.2f}")
-        elif isinstance(v, int):
-            print(f"{prefix}{label}: {v:,}")
-        else:
-            print(f"{prefix}{label}: {v}")
-
-
-def analyze_missing_values(df):
-    """Analyze missing values per column."""
-    missing = {}
-    for col in df.columns:
-        null_count = df[col].isna().sum()
-        if null_count > 0:
-            missing[col] = {
-                "count": int(null_count),
-                "percent": round(null_count / len(df) * 100, 2),
-            }
-    return missing
-
-
-# ==============================================================================
-
-    def flush(self):
-        """Flush both streams."""
-        self.original_stdout.flush()
-        self.log_file.flush()
-
-    def close(self):
-        """Close log file and restore stdout."""
-        self.log_file.close()
-
-
-# ==============================================================================
 # Data Loading Functions
 # ==============================================================================
 
