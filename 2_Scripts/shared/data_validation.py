@@ -28,16 +28,16 @@ INPUT_SCHEMAS = {
         "required_columns": [
             "event_type",
             "file_name",
-            "date",
-            "speakers",
+            "start_date",
+            "speaker_record_count",
         ],
         "column_types": {
-            "event_type": "int",
-            "date": "object",  # String date representation
-            "speakers": "object",
+            "event_type": "object",  # String representation of event type
+            "start_date": "datetime64[ns]",
+            "speaker_record_count": "int64",
         },
         "value_ranges": {
-            "event_type": {"min": 0, "max": 10},
+            "speaker_record_count": {"min": 0},
         },
     },
     "Loughran-McDonald_MasterDictionary_1993-2024.csv": {

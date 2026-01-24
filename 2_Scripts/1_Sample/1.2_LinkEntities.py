@@ -311,8 +311,8 @@ def main():
     # Load entities with memory tracking
     print_dual("Loading cleaned metadata and CCM database...")
     load_result = load_entities_with_tracking(paths["metadata"], paths["ccm"])
-    df = load_result["df"]
-    ccm = load_result["ccm"]
+    df = load_result["result"]["df"]
+    ccm = load_result["result"]["ccm"]
     stats["memory_mb"]["load_entities"] = load_result["memory_mb"]
 
     total_calls = len(df)

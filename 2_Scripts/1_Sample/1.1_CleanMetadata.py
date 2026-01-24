@@ -261,11 +261,11 @@ def main():
     # Clean metadata with memory tracking
     print_dual("\nStep 1-2: Removing duplicates and resolving collisions...")
     clean_result = clean_metadata_with_tracking(df)
-    df_clean = clean_result["result"]
+    df_clean = clean_result["result"]["result"]
     stats["memory_mb"]["clean_metadata"] = clean_result["memory_mb"]
 
-    exact_dupes = clean_result["exact_dupes_removed"]
-    resolved = clean_result["collision_rows_resolved"]
+    exact_dupes = clean_result["result"]["exact_dupes_removed"]
+    resolved = clean_result["result"]["collision_rows_resolved"]
     stats["processing"]["exact_duplicates_removed"] = exact_dupes
     stats["processing"]["collision_rows_resolved"] = resolved
 
