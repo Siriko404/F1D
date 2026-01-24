@@ -93,8 +93,6 @@ from shared.regression_validation import (
 )
 
 import warnings
-import hashlib
-import json
 
 try:
     import statsmodels.api as sm
@@ -108,31 +106,22 @@ except ImportError as e:
     STATSMODELS_AVAILABLE = False
     LINEARMODELS_AVAILABLE = False
 
+# Import shared observability utilities
+from shared.observability_utils import (
+    compute_file_checksum,
+    print_stat,
+    analyze_missing_values,
+    print_stats_summary,
+    save_stats,
+    get_process_memory_mb,
+    calculate_throughput,
+    detect_anomalies_zscore,
+    detect_anomalies_iqr,
+    DualWriter,
+)
+
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# ==============================================================================
-# Dual-write logging
-# ==============================================================================
-
-
-class DualWriter:
-    def __init__(self, log_path):
-        self.terminal = sys.stdout
-        self.log = open(log_path, "w", encoding="utf-8")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
-    def close(self):
-        self.log.close()
-
-# ==============================================================================
-# Statistics Helpers
 # ==============================================================================
 # Configuration
 # ==============================================================================
@@ -140,11 +129,8 @@ class DualWriter:
 CONFIG = {
     "year_start": 2002,
     "year_end": 2018,
-    # Dependent variables (liquidity)
     "dep_vars": ["Delta_Amihud", "Delta_Corwin_Schultz"],
-    # Instrument
     "instrument": "shift_intensity_sale_ff48",
-    # Controls (matching 4.1.2 extended)
     "linguistic_controls": ["Analyst_QA_Uncertainty_pct", "Entire_All_Negative_pct"],
     "firm_controls": [
         "StockRet",
@@ -159,22 +145,17 @@ CONFIG = {
         "RD_Intensity",
         "Volatility",
     ],
-    # Industry samples (Main only - exclude Finance and Utilities)
     "samples": {"Main": {"exclude_ff12": [8, 11]}},
 }
 
-# ==============================================================================
+
 # Data Loading
-# ==============================================================================
-
-
 def load_all_data(root):
     """Load and merge all required data."""
     print("\n" + "=" * 60)
     print("Loading data")
     print("=" * 60)
 
-    # 1. Manifest
     manifest_path = (
         root
         / "4_Outputs"
@@ -196,7 +177,6 @@ def load_all_data(root):
     manifest["year"] = pd.to_datetime(manifest["start_date"]).dt.year
     print(f"  Manifest: {len(manifest):,} calls")
 
-    # 2. Linguistic variables (per year)
     all_ling = []
     for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
         lv_path = (
@@ -211,7 +191,6 @@ def load_all_data(root):
             lv = pd.read_parquet(lv_path)
             all_ling.append(lv)
     ling = pd.concat(all_ling, ignore_index=True)
-    # Keep needed columns
     ling_cols = [
         "file_name",
         "Manager_QA_Uncertainty_pct",
@@ -225,7 +204,6 @@ def load_all_data(root):
     ling = ling[ling_cols].drop_duplicates("file_name")
     print(f"  Linguistic: {len(ling):,} calls")
 
-    # 3. Firm controls (per year)
     all_fc = []
     for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
         fc_path = (
@@ -247,7 +225,6 @@ def load_all_data(root):
     firm = firm[fc_cols].drop_duplicates("file_name")
     print(f"  Firm controls: {len(firm):,} calls")
 
-    # 4. Market variables (per year)
     all_mv = []
     for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
         mv_path = (
@@ -275,7 +252,6 @@ def load_all_data(root):
     market = market[mv_cols].drop_duplicates("file_name")
     print(f"  Market variables: {len(market):,} calls")
 
-    # 5. Clarity scores - Regime (4.1)
     regime_path = (
         root / "4_Outputs" / "4.1_CeoClarity" / "latest" / "ceo_clarity_scores.parquet"
     )
@@ -290,7 +266,6 @@ def load_all_data(root):
         regime_clarity = pd.DataFrame()
         print("  WARNING: Regime Clarity not found")
 
-    # 6. Clarity scores - CEO (4.1.1)
     ceo_path = (
         root
         / "4_Outputs"
@@ -308,13 +283,11 @@ def load_all_data(root):
         ceo_clarity = pd.DataFrame()
         print("  WARNING: CEO Clarity not found")
 
-    # Merge all
     df = manifest.copy()
     df = df.merge(ling, on="file_name", how="left")
     df = df.merge(firm, on="file_name", how="left")
     df = df.merge(market, on="file_name", how="left")
 
-    # Merge clarity by ceo_id (convert to string for matching)
     df["ceo_id"] = df["ceo_id"].astype(str)
     if len(regime_clarity) > 0:
         # Assign industry sample for clarity matching
@@ -345,11 +318,8 @@ def load_all_data(root):
 
     return df
 
-# ==============================================================================
+
 # Phase 1: First Stage (Instrument Validity)
-# ==============================================================================
-
-
 def run_first_stage(df, out_dir):
     """Test instrument relevance for Q&A Uncertainty."""
     print("\n" + "=" * 60)
@@ -363,7 +333,6 @@ def run_first_stage(df, out_dir):
     output_lines.append("Instrument: shift_intensity_sale_ff48")
     output_lines.append("=" * 80 + "\n")
 
-    # Test for both Manager and CEO Q&A Uncertainty
     for endog_var, label in [
         ("Manager_QA_Uncertainty_pct", "Manager Q&A Uncertainty"),
         ("CEO_QA_Uncertainty_pct", "CEO Q&A Uncertainty"),
@@ -447,23 +416,18 @@ def run_first_stage(df, out_dir):
         except Exception as e:
             output_lines.append(f"  ERROR: {e}")
 
-    # Save
     with open(out_dir / "first_stage_results.txt", "w") as f:
         f.write("\n".join(output_lines))
     print(f"  Saved: first_stage_results.txt")
 
     return results
 
-# ==============================================================================
+
 # Phase 2: OLS Regressions
-# ==============================================================================
-
-
 def run_ols_regression(
     df, dep_var, clarity_var, uncertainty_var, pres_unc_var, sample_name, out_file
 ):
     """Run OLS regression (no instrument)."""
-    # Define all controls (excluding the endogenous uncertainty_var to avoid duplication)
     other_controls = (
         [clarity_var, pres_unc_var]
         + CONFIG["linguistic_controls"]
@@ -473,7 +437,6 @@ def run_ols_regression(
         c for c in other_controls if c in df.columns and c != uncertainty_var
     ]
 
-    # All variables needed for regression (including uncertainty_var explicitly)
     all_vars = [dep_var, uncertainty_var] + other_controls + ["year"]
     all_vars = [v for v in all_vars if v in df.columns]
     reg_df = df[all_vars].dropna().copy()
@@ -483,7 +446,6 @@ def run_ols_regression(
 
     reg_df["year"] = reg_df["year"].astype(str)
 
-    # Build formula - uncertainty_var and clarity_var are key variables
     rhs = []
     if clarity_var in reg_df.columns:
         rhs.append(clarity_var)
@@ -492,7 +454,6 @@ def run_ols_regression(
     rhs += [c for c in other_controls if c in reg_df.columns and c not in rhs]
     formula = f"{dep_var} ~ " + " + ".join(rhs) + " + C(year)"
 
-    # Validate regression data before estimation
     try:
         required_columns = (
             [dep_var, clarity_var, uncertainty_var] + other_controls + ["year"]
@@ -529,11 +490,8 @@ def run_ols_regression(
         print(f"  ERROR in OLS: {e}")
         return None
 
-# ==============================================================================
+
 # Phase 3: 2SLS Regressions
-# ==============================================================================
-
-
 def run_iv_regression(
     df, dep_var, clarity_var, uncertainty_var, pres_unc_var, sample_name, out_file
 ):
@@ -542,7 +500,6 @@ def run_iv_regression(
         print("  WARNING: linearmodels not available for IV regression")
         return None
 
-    # Prepare data
     controls = (
         [clarity_var, pres_unc_var]
         + CONFIG["linguistic_controls"]
@@ -557,24 +514,20 @@ def run_iv_regression(
     if len(reg_df) < 100:
         return None
 
-    # Cast all numeric columns to float64 to avoid dtype issues
     for col in reg_df.columns:
         if col != "year":
             reg_df[col] = pd.to_numeric(reg_df[col], errors="coerce").astype(np.float64)
 
-    # Drop any rows with NaN after conversion
     reg_df = reg_df.dropna()
 
     if len(reg_df) < 100:
         return None
 
-    # Create year dummies
     year_dummies = pd.get_dummies(
         reg_df["year"].astype(str), prefix="year", drop_first=True
     ).astype(np.float64)
     reg_df = pd.concat([reg_df.drop("year", axis=1), year_dummies], axis=1)
 
-    # Validate regression data before estimation
     try:
         required_columns = [dep_var, uncertainty_var, CONFIG["instrument"]] + controls
         validate_columns(reg_df, required_columns)
@@ -642,24 +595,19 @@ def run_iv_regression(
         print(f"  ERROR in IV: {e}")
         return None
 
-# ==============================================================================
+
 # Main
-# ==============================================================================
-
-
 def main():
     start_time = datetime.now()
     start_iso = start_time.isoformat()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
-    # Setup paths
     root = Path(__file__).resolve().parents[2]
     out_dir = root / "4_Outputs" / "4.2_LiquidityRegressions" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir = root / "3_Logs" / "4.2_LiquidityRegressions" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
-    # Initialize stats
     stats = {
         "step_id": "4.2_LiquidityRegressions",
         "timestamp": timestamp,
@@ -671,7 +619,6 @@ def main():
         "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
     }
 
-    # Setup logging
     log_path = log_dir / f"step4_2_{timestamp}.log"
     dual_writer = DualWriter(log_path)
     sys.stdout = dual_writer
@@ -682,18 +629,14 @@ def main():
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
 
-    # Load data
     df = load_all_data(root)
 
-    # Capture input stats
     stats["input"]["total_rows"] = len(df)
     stats["input"]["total_columns"] = len(df.columns)
     print_stat("Input rows", value=len(df))
 
-    # Phase 1: First Stage
     first_stage_results = run_first_stage(df, out_dir)
 
-    # Initialize output files
     ols_regime_file = out_dir / "ols_regime.txt"
     ols_ceo_file = out_dir / "ols_ceo.txt"
     iv_regime_file = out_dir / "iv_regime.txt"
@@ -705,7 +648,6 @@ def main():
 
     all_results = []
 
-    # Run by sample
     for sample_name, sample_filter in CONFIG["samples"].items():
         print(f"\n{'#' * 80}")
         print(f"# SAMPLE: {sample_name}")
@@ -793,7 +735,6 @@ def main():
                 res["Type"] = "CEO"
                 all_results.append(res)
 
-    # Save diagnostics
     if all_results:
         diag_df = pd.DataFrame(all_results)
         diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
@@ -806,7 +747,6 @@ def main():
         )
         stats["regressions"]["iv"] = len([r for r in all_results if r["Model"] == "IV"])
 
-    # Generate report
     report_lines = [
         "# Step 4.2: Liquidity Regression Results",
         "",
@@ -836,10 +776,8 @@ def main():
         f.write("\n".join(report_lines))
     print(f"  Saved: report_step4_2.md")
 
-    # Update symlink
     update_latest_link(out_dir, out_dir.parent / "latest")
 
-    # Summary
     duration = (datetime.now() - start_time).total_seconds()
     print("\n" + "=" * 80)
     print("COMPLETE")
@@ -848,7 +786,6 @@ def main():
     print(f"Output: {out_dir}")
     print(f"Models run: {len(all_results)}")
 
-    # Final stats
     stats["output"]["final_rows"] = (
         sum([len(df[~df["ff12_code"].isin(CONFIG["samples"]["Main"]["exclude_ff12"])])])
         if "Main" in CONFIG["samples"]
@@ -866,7 +803,6 @@ def main():
     stats["timing"]["end_iso"] = datetime.now().isoformat()
     stats["timing"]["duration_seconds"] = round(duration, 2)
 
-    # Save and print stats summary
     print_stats_summary(stats)
     save_stats(stats, out_dir)
 
@@ -874,6 +810,7 @@ def main():
     sys.stdout = dual_writer.terminal
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
