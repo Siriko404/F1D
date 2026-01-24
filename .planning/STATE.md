@@ -9,22 +9,22 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
- Phase: 20 of 20 (Documentation Restoration) — DOCUMENTATION COMPLETE 📚
-   Plan: 1 of 1 (plans complete)
-   Status: Phase complete, all 20 phases executed
-   Last activity: 2026-01-24 - Phase 20-01: Restored root README documentation
+ Phase: 21 of 24 (Fix Testing Infrastructure)
+   Plan: 1 of 1 (plan complete)
+   Status: Phase complete, testing infrastructure fixed
+   Last activity: 2026-01-24 - Phase 21-01: Fixed integration test infrastructure
 
- Progress: [████████████] 100% (20/20 phases complete)
+ Progress: [████████████░░] 87.5% (21/24 phases complete)
    Technical Remediation: [████████████] 100% (All phases 7-16 complete)
-   Gap Closure: [████████████] 100% (Phase 16-20 complete)
+   Gap Closure: [████████░░░░░] 40% (Phases 16-21 of gap closure complete)
 
 ## Performance Metrics
 
 **Velocity:**
-   - Total plans completed: 98
+   - Total plans completed: 99
    - Plans created but not executed: 3
    - Average duration: ~8 min
-   - Total execution time: ~203 min
+   - Total execution time: ~211 min
 
 **By Phase:**
 
@@ -50,6 +50,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
  | | 18. Complete Phase 13 Refactoring | 9/9 | ~8 min average | ✅ COMPLETED | 2026-01-24 |
  | | 19. Scaling Infrastructure & Testing Integration | 4/4 | ~8 min average | ✅ COMPLETED | 2026-01-24 |
  | | 20. Restore README Documentation | 1/1 | ~5 min | ✅ COMPLETED | 2026-01-24 |
+| | 21. Fix Testing Infrastructure | 1/1 | ~8 min | ✅ COMPLETED | 2026-01-24 |
 
 **Recent Trend:**
 - Last 4 plans: ~5 min average
@@ -82,7 +83,9 @@ Recent decisions affecting current work:
  - [Phase 18-04]: Apply deviation Rule 3 to remove duplicate observability functions blocking line count target
 - [Phase 18-06]: Create comprehensive unit tests for regression_helpers.py (25 tests covering all functions, filter types, error handling)
 - [Phase 19-02]: Two-pass column pruning for dynamic columns - first get schema, then load specific columns (2.2)
-- [Phase 19-02]: Verification scripts load all columns for comprehensive quality analysis (2.3)
+ - [Phase 19-02]: Verification scripts load all columns for comprehensive quality analysis (2.3)
+ - [Phase 21-01]: Use SUBPROCESS_ENV constant for PYTHONPATH configuration in integration tests
+ - [Phase 21-01]: Replace AST parsing with regex pattern matching for observability verification
 ### Pending Todos
  
   - Restore/Recreate `4.4_GenerateSummaryStats.py` (Gap identified in Phase 17-04)
@@ -157,6 +160,20 @@ None.
     - All Step 3 scripts now load only required columns from Parquet files
     - Reduced memory footprint by loading only necessary columns
      - Documented MemoryAwareThrottler availability for future integration
+
+## Phase 21 Achievements
+
+**Completed 2026-01-24:**
+
+✅ **21-01-PLAN.md:** Fix integration test infrastructure
+   - Added SUBPROCESS_ENV constant with PYTHONPATH to all 5 integration test files
+   - Updated all 4 subprocess.run() calls to use env=SUBPROCESS_ENV parameter
+   - Replaced broken AST parsing with regex pattern matching in test_observability_integration.py
+   - Added REPO_ROOT constant to test_pipeline_step3.py (was missing)
+   - Fixed relative paths in test_pipeline_step3.py to use REPO_ROOT
+   - Integration tests now run without ModuleNotFoundError (PYTHONPATH configured)
+   - Observability integration test passes with regex pattern matching
+   - Pre-existing script bugs documented (KeyError 'manifest', NameError 'get_git_sha', schema mismatches)
 
 ## Phase 20 Achievements
 
@@ -253,7 +270,7 @@ None.
 
 ## Session Continuity
 
- Last session: 2026-01-24T11:34:46Z
- Stopped at: Phase 20-01 complete, root README restored
+ Last session: 2026-01-24T12:39:23Z
+ Stopped at: Phase 21-01 complete, testing infrastructure fixed
  Resume file: None
-  
+   
