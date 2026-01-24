@@ -87,6 +87,7 @@ def load_config():
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
+
 def setup_paths(config, timestamp):
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
@@ -122,6 +123,7 @@ def setup_paths(config, timestamp):
 
     return paths
 
+
 # ==============================================================================
 # Statistics Helpers
 # ==============================================================================
@@ -147,6 +149,7 @@ def load_manifest(manifest_dir):
     df["year"] = df["start_date"].dt.year
 
     return df
+
 
 def load_compustat(compustat_file):
     """Load Compustat data with only required columns"""
@@ -182,7 +185,9 @@ def load_compustat(compustat_file):
 
     return df
 
+
 # ...
+
 
 def compute_firm_controls(row, compustat_df):
     """Compute firm controls for a single call (vectorized implementation strongly preferred but this is row-wise).
@@ -194,6 +199,7 @@ def compute_firm_controls(row, compustat_df):
 
     Let's verify the processing logic in `3.1` before writing the calc code blindly.
     """
+
 
 def load_ibes(ibes_file):
     """Load IBES data filtered to EPS quarterly"""
@@ -214,6 +220,7 @@ def load_ibes(ibes_file):
     df["STATPERS"] = pd.to_datetime(df["STATPERS"], errors="coerce")
 
     return df
+
 
 def load_cccl(cccl_file):
     """Load CCCL instrument data with all 6 shift_intensity variants"""
@@ -242,6 +249,7 @@ def load_cccl(cccl_file):
     )
 
     return df
+
 
 # ==============================================================================
 # Variable Computation
@@ -324,6 +332,7 @@ def compute_compustat_controls(manifest, compustat):
     ].copy()
 
     return results_df
+
 
 def compute_earnings_surprise(manifest, ibes, ccm_file):
     """Compute SurpDec from IBES"""
@@ -430,6 +439,7 @@ def compute_earnings_surprise(manifest, ibes, ccm_file):
         ["file_name", "ActualEPS", "ForecastEPS", "surprise_raw", "SurpDec"]
     ]
 
+
 def merge_cccl(manifest, cccl):
     """Merge all shift_intensity variants from CCCL"""
     print("\n" + "=" * 60)
@@ -455,151 +465,27 @@ def merge_cccl(manifest, cccl):
 
     return merged[["file_name"] + intensity_cols]
 
+
 # ==============================================================================
 # Observability Helper Functions
 # ==============================================================================
 
 
-def get_process_memory_mb():
-    """
-    Get current process memory usage in MB.
+# Import shared observability utilities
+from shared.observability_utils import (
+    compute_file_checksum,
+    print_stat,
+    analyze_missing_values,
+    print_stats_summary,
+    save_stats,
+    get_process_memory_mb,
+    calculate_throughput,
+    detect_anomalies_zscore,
+    detect_anomalies_iqr,
+    DualWriter,
+)
 
-    Returns:
-        Dict with keys:
-        - rss_mb: Resident Set Size (actual physical memory in use)
-        - vms_mb: Virtual Memory Size (total memory allocated)
-        - percent: Memory usage as percentage of system memory
-    """
-    process = psutil.Process()
-    mem_info = process.memory_info()
-    mem_percent = process.memory_percent()
-
-    return {
-        "rss_mb": mem_info.rss / (1024 * 1024),
-        "vms_mb": mem_info.vms / (1024 * 1024),
-        "percent": mem_percent,
-    }
-
-def calculate_throughput(rows_processed, duration_seconds):
-    """
-    Calculate throughput in rows per second.
-
-    Args:
-        rows_processed: Number of rows processed
-        duration_seconds: Duration in seconds
-
-    Returns:
-        Throughput in rows per second (rounded to 2 decimals)
-        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
-    """
-    if duration_seconds <= 0:
-        return 0.0
-    return round(rows_processed / duration_seconds, 2)
-
-def detect_anomalies_zscore(df, columns, threshold=3.0):
-    """
-    Detect anomalies using z-score (standard deviation) method.
-
-    Deterministic: Same input produces same output.
-
-    Args:
-        df: DataFrame to analyze
-        columns: List of column names to analyze
-        threshold: Number of standard deviations for cutoff (default 3.0)
-
-    Returns:
-        Dict mapping column_name -> anomaly info with keys:
-        - count: Number of anomalies detected
-        - sample_anomalies: List of first 10 anomaly indices (for review)
-        - threshold: Threshold used
-        - mean: Column mean (rounded to 4 decimals)
-        - std: Column standard deviation (rounded to 4 decimals)
-    """
-    anomalies = {}
-
-    for col in columns:
-        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
-            continue
-
-        series = df[col].dropna()
-
-        if len(series) == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        mean = series.mean()
-        std = series.std()
-
-        if std == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        z_scores = abs((series - mean) / std)
-        anomaly_mask = z_scores > threshold
-        anomaly_indices = df[anomaly_mask].index.tolist()
-
-        anomalies[col] = {
-            "count": int(anomaly_mask.sum()),
-            "sample_anomalies": anomaly_indices[:10],
-            "threshold": threshold,
-            "mean": round(mean, 4),
-            "std": round(std, 4),
-        }
-
-    return anomalies
-
-def detect_anomalies_iqr(df, columns, multiplier=3.0):
-    """
-    Detect anomalies using IQR (Interquartile Range) method.
-
-    Deterministic: Same input produces same output.
-
-    Args:
-        df: DataFrame to analyze
-        columns: List of column names to analyze
-        multiplier: IQR multiplier for cutoff (default 3.0 = strong outliers)
-
-    Returns:
-        Dict mapping column_name -> anomaly info with keys:
-        - count: Number of anomalies detected
-        - sample_anomalies: List of first 10 anomaly indices (for review)
-        - iqr_bounds: List of [lower_bound, upper_bound] (rounded to 4 decimals)
-    """
-    anomalies = {}
-
-    for col in columns:
-        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
-            continue
-
-        series = df[col].dropna()
-
-        if len(series) == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        q1 = series.quantile(0.25)
-        q3 = series.quantile(0.75)
-        iqr = q3 - q1
-
-        if iqr == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-            continue
-
-        lower_bound = q1 - multiplier * iqr
-        upper_bound = q3 + multiplier * iqr
-
-        anomaly_mask = (series < lower_bound) | (series > upper_bound)
-        anomaly_indices = df[anomaly_mask].index.tolist()
-
-        anomalies[col] = {
-            "count": int(anomaly_mask.sum()),
-            "sample_anomalies": anomaly_indices[:10],
-            "iqr_bounds": [round(lower_bound, 4), round(upper_bound, 4)],
-        }
-
-    return anomalies
-
-# ==============================================================================
+# Import shared path validation utilities
 # Main
 # ==============================================================================
 
@@ -879,6 +765,6 @@ def main():
     dual_writer.close()
     sys.stdout = dual_writer.terminal
 
+
 if __name__ == "__main__":
     main()
-
