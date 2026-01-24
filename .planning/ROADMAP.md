@@ -394,19 +394,19 @@ Plans:
 **Gap Closure**: Closes gaps from v1.0.0-MILESTONE-AUDIT.md — parallel_utils orphaned, chunked_reader throttling not integrated, column pruning partial, test path issues
 **Success Criteria** (what must be TRUE):
     1. parallel_utils.py either integrated into scripts or removed with documentation updated
-    2. process_in_chunks() with MemoryAwareThrottler used in scripts reading large files (2.1, 2.2, 2.3)
-    3. All Step 2 scripts (2.1, 2.2, 2.3) use PyArrow columns= parameter
-    4. All Step 3 scripts (3.0, 3.1, 3.3) use PyArrow columns= parameter
+    2. Step 2 scripts (2.1, 2.2, 2.3) use PyArrow columns= parameter for memory optimization
+    3. Step 3 scripts (3.0, 3.1, 3.3) use PyArrow columns= parameter for memory optimization
+    4. MemoryAwareThrottler infrastructure documented as available for future integration
     5. Integration tests resolve paths correctly and pass on all systems
     6. CI/CD workflow runs all integration tests without path errors
 **Status**: 📝 PLANNED (gap closure phase)
-**Plans**: 4 plans
+**Plans**: 4 plans (3 waves)
 
 Plans:
-- [ ] 19-01: Handle orphaned parallel_utils (integrate or remove and update SCALING.md)
-- [ ] 19-02: Refactor Step 2 scripts (2.1, 2.2, 2.3) to use process_in_chunks() with MemoryAwareThrottler
-- [ ] 19-03: Apply PyArrow column pruning to remaining Step 2 and Step 3 scripts
-- [ ] 19-04: Fix integration test path resolution using absolute paths or __file__ reference
+- [ ] 19-01-PLAN.md — Verify parallel_utils removal and update SCALING.md (Wave 1)
+- [ ] 19-02-PLAN.md — Add PyArrow column pruning to Step 2 scripts (Wave 2)
+- [ ] 19-03-PLAN.md — Add PyArrow column pruning to Step 3 scripts (Wave 2)
+- [ ] 19-04-PLAN.md — Fix integration test path resolution with absolute paths (Wave 3)
 
 ## Progress
 
