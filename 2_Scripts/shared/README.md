@@ -958,6 +958,295 @@ All functions are deterministic:
 
 ---
 
+## Utility Functions
+
+The following utility functions are available across shared modules for logging, statistics tracking, and data analysis.
+
+### Logging and Output
+**Module:** `shared.observability_utils`
+
+#### `DualWriter`
+
+Class for dual-write logging (outputs to both stdout and log file).
+
+```python
+from shared.observability_utils import DualWriter
+
+# Initialize with log file path
+dw = DualWriter("path/to/log.txt")
+dw.write("Processing started\n")
+dw.write(f"Processed {n} rows\n")
+
+# Context manager usage
+with DualWriter("path/to/log.txt") as dw:
+    dw.write("Processing started\n")
+    # ... processing ...
+```
+
+**Features:**
+- Simultaneously writes to stdout and log file
+- Context manager support (automatic file closing)
+- Ensures log file directory exists before writing
+- Preserves exact formatting between console and log
+
+#### `compute_file_checksum(filepath, algorithm="sha256")`
+
+Compute file checksum for reproducibility verification.
+
+```python
+from shared.observability_utils import compute_file_checksum
+
+checksum = compute_file_checksum("output.parquet")
+# Returns: "a3f5c9..." (SHA-256 hex digest)
+```
+
+**Parameters:**
+- `filepath`: Path to file to checksum
+- `algorithm`: Hash algorithm to use (default: "sha256", supports any hashlib algorithm)
+
+**Returns:** Hexadecimal digest string
+
+#### `print_stat(label, before=None, after=None, value=None, indent=2)`
+
+Print formatted statistics with optional before/after values.
+
+```python
+from shared.observability_utils import print_stat
+
+print_stat("Rows processed", value=1000)
+# Output: "Rows processed: 1,000"
+
+print_stat("Memory usage", before=100, after=250)
+# Output: "Memory usage: 100 → 250 (+150)"
+```
+
+**Parameters:**
+- `label`: Description of the statistic
+- `before`: Initial value (optional)
+- `after`: Final value (optional)
+- `value`: Single value to display (optional)
+- `indent`: Number of spaces to indent (default: 2)
+
+**Behavior:**
+- If `value` provided: displays single value with thousands separator
+- If `before` and `after` provided: displays change with delta
+- Numbers formatted with commas for readability
+
+#### `print_stats_summary(stats)`
+
+Print formatted summary table from statistics dictionary.
+
+```python
+from shared.observability_utils import print_stats_summary
+
+stats = {
+    "input_rows": 10000,
+    "output_rows": 8500,
+    "duration_seconds": 2.5
+}
+print_stats_summary(stats)
+# Prints formatted table with all stats
+```
+
+**Parameters:**
+- `stats`: Dictionary of statistic names and values
+
+#### `save_stats(stats, out_dir)`
+
+Save statistics dictionary to JSON file.
+
+```python
+from shared.observability_utils import save_stats
+from pathlib import Path
+
+stats = {"n": 1000, "mean": 42.5}
+save_stats(stats, Path("4_Outputs/step1/2026-01-23_120000"))
+# Creates: 4_Outputs/step1/2026-01-23_120000/stats.json
+```
+
+**Parameters:**
+- `stats`: Dictionary of statistics to save
+- `out_dir`: Output directory path
+
+**Output:** Creates `stats.json` in specified directory with timestamped metadata
+
+### Data Analysis
+**Module:** `shared.observability_utils`
+
+#### `analyze_missing_values(df)`
+
+Analyze missing values per column in DataFrame.
+
+```python
+from shared.observability_utils import analyze_missing_values
+
+missing = analyze_missing_values(df)
+# Returns: {"col1": {"count": 10, "percent": 0.01}, ...}
+```
+
+**Returns:** Dictionary mapping column names to missing count and percentage
+
+**Output format:**
+```python
+{
+    "column_name": {
+        "count": 42,
+        "percent": 0.042  # 4.2% missing
+    }
+}
+```
+
+#### `get_process_memory_mb()`
+
+Get current process memory usage in megabytes.
+
+```python
+from shared.observability_utils import get_process_memory_mb
+
+memory = get_process_memory_mb()
+# Returns: {"rss_mb": 125.3, "vms_mb": 450.2, "percent": 6.2}
+```
+
+**Returns:** Dictionary with:
+- `rss_mb`: Resident Set Size (actual RAM used)
+- `vms_mb`: Virtual Memory Size (total memory allocated)
+- `percent`: Percentage of system RAM used
+
+#### `calculate_throughput(rows_processed, duration_seconds)`
+
+Calculate rows/second throughput.
+
+```python
+from shared.observability_utils import calculate_throughput
+
+throughput = calculate_throughput(10000, 5.0)
+# Returns: 2000.0 (rows per second)
+```
+
+**Parameters:**
+- `rows_processed`: Number of rows processed
+- `duration_seconds`: Time elapsed in seconds
+
+**Returns:** Rows per second (float)
+
+#### `detect_anomalies_zscore(df, columns, threshold=3.0)`
+
+Detect outliers using z-score method.
+
+```python
+from shared.observability_utils import detect_anomalies_zscore
+
+anomalies = detect_anomalies_zscore(df, columns=['returns', 'volume'])
+# Returns: {"returns": [index_list], "volume": [index_list]}
+```
+
+**Parameters:**
+- `df`: DataFrame to analyze
+- `columns`: List of column names to check
+- `threshold`: Z-score threshold (default: 3.0 = 3 standard deviations)
+
+**Returns:** Dictionary mapping column names to lists of anomalous row indices
+
+**Method:** Values beyond `threshold * std_dev` from mean are flagged
+
+#### `detect_anomalies_iqr(df, columns, multiplier=3.0)`
+
+Detect outliers using IQR (Interquartile Range) method.
+
+```python
+from shared.observability_utils import detect_anomalies_iqr
+
+anomalies = detect_anomalies_iqr(df, columns=['returns', 'volume'])
+# Returns: {"returns": [index_list], "volume": [index_list]}
+```
+
+**Parameters:**
+- `df`: DataFrame to analyze
+- `columns`: List of column names to check
+- `multiplier`: IQR multiplier (default: 3.0)
+
+**Returns:** Dictionary mapping column names to lists of anomalous row indices
+
+**Method:** Values outside `[Q1 - multiplier*IQR, Q3 + multiplier*IQR]` are flagged
+
+### Symlink and Link Management
+**Module:** `shared.symlink_utils`
+
+#### `update_latest_link(target_dir, link_path, verbose=True)`
+
+Update 'latest' symlink/junction to point to most recent output directory.
+
+```python
+from shared.symlink_utils import update_latest_link
+from pathlib import Path
+
+update_latest_link(
+    target_dir=Path("4_Outputs/step1/2026-01-23_120000"),
+    link_path=Path("4_Outputs/step1/latest"),
+    verbose=True
+)
+```
+
+**Parameters:**
+- `target_dir`: Directory to link to
+- `link_path`: Path where link should be created (e.g., 'latest')
+- `verbose`: If True, log warnings and status messages
+
+**Cross-platform behavior:**
+- **Unix**: Creates symbolic link
+- **Windows (admin)**: Tries symlink, then junction, then copy
+- **Windows (no admin)**: Tries junction, then copy
+- Falls back gracefully if primary method unavailable
+
+**See full documentation:** [symlink_utils.py](#symlink_utilspy) section below
+
+### Usage Example
+
+```python
+#!/usr/bin/env python3
+"""Example script using utility functions."""
+from pathlib import Path
+from shared.observability_utils import (
+    DualWriter,
+    compute_file_checksum,
+    print_stat,
+    analyze_missing_values,
+    get_process_memory_mb,
+)
+from shared.symlink_utils import update_latest_link
+
+# Set up dual-write logging
+output_dir = Path("4_Outputs/my_step/2026-01-23_120000")
+with DualWriter(output_dir / "process.log") as dw:
+    dw.write("Processing started\n")
+
+    # Compute checksum for reproducibility
+    checksum = compute_file_checksum("data.parquet")
+    dw.write(f"Data checksum: {checksum}\n")
+
+    # Print statistics with formatting
+    print_stat("Rows processed", value=1000)
+    print_stat("Memory usage (MB)", value=get_process_memory_mb()["rss_mb"])
+
+    # Analyze missing data
+    missing = analyze_missing_values(df)
+    dw.write(f"Missing values: {missing}\n")
+
+    # Update latest symlink
+    update_latest_link(output_dir, output_dir.parent / "latest")
+```
+
+### Module Reference Summary
+
+| Module | Purpose | Key Functions |
+|--------|---------|---------------|
+| `shared.observability_utils` | Core statistics and logging utilities | `DualWriter`, `compute_file_checksum`, `print_stat`, `analyze_missing_values`, `get_process_memory_mb` |
+| `shared.symlink_utils` | Cross-platform symlink/junction management | `update_latest_link`, `create_junction`, `is_junction` |
+| `shared.path_utils` | Path validation and directory creation | `validate_output_path`, `ensure_output_dir`, `validate_input_file` |
+| `shared.data_validation` | Input data validation layers | `validate_dataframe_schema`, `load_validated_parquet` |
+
+---
+
 ## Module Usage Example
 
 ```python
