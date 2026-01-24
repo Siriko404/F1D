@@ -57,7 +57,6 @@ except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
-# Import shared regression and reporting utilities
 from shared.regression_utils import run_fixed_effects_ols
 from shared.reporting_utils import (
     generate_regression_report,
@@ -66,7 +65,6 @@ from shared.reporting_utils import (
 )
 from shared.symlink_utils import update_latest_link
 
-# Import shared path validation utilities
 try:
     from shared.path_utils import (
         validate_output_path,
@@ -105,7 +103,6 @@ except ImportError as e:
     STATSMODELS_AVAILABLE = False
     LINEARMODELS_AVAILABLE = False
 
-# Import shared observability utilities
 from shared.observability_utils import (
     compute_file_checksum,
     print_stat,
@@ -400,7 +397,6 @@ def run_first_stage(df, out_dir):
                 }
             )
 
-            # Save full summary
             with open(out_dir / "first_stage_full.txt", "a") as f:
                 f.write(f"\n{'=' * 80}\nEndogenous: {label}\n{'=' * 80}\n")
                 f.write(model.summary().as_text())
