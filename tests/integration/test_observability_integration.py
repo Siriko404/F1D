@@ -15,6 +15,9 @@ import pytest
 import ast
 from pathlib import Path
 
+# Get repository root from test file location
+REPO_ROOT = Path(__file__).parent.parent.parent
+
 
 class TestObservabilityIntegration:
     """Integration tests for observability features across Steps 1 and 2 scripts."""
@@ -23,17 +26,21 @@ class TestObservabilityIntegration:
         """Test that 1.1_CleanMetadata.py has observability features."""
         import ast
 
-        script_path = Path("2_Scripts/1_Sample/1.1_CleanMetadata.py")
+        script_path = REPO_ROOT / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
         with open(script_path, "r") as f:
             tree = ast.parse(f.read())
 
         # Check psutil import
-        imports = [node.names[0] for node in ast.walk(tree) if isinstance(node, ast.Import)]
+        imports = [
+            node.names[0] for node in ast.walk(tree) if isinstance(node, ast.Import)
+        ]
         import_names = [imp.names[0] for imp in imports if imp.names]
         assert "psutil" in import_names, "psutil must be imported"
 
         # Check observability helper functions
-        funcs = {node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
+        funcs = {
+            node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
+        }
         required_funcs = {
             "get_process_memory_mb",
             "calculate_throughput",
@@ -52,10 +59,14 @@ class TestObservabilityIntegration:
             "2_Scripts/1_Sample/1.1_CleanMetadata.py",
         ]
         required_sections = {
-            "input", "output", "processing", "missing_values", "timing"
+            "input",
+            "output",
+            "processing",
+            "missing_values",
+            "timing",
         }
         for script_path_str in scripts_to_check:
-            script_path = Path(script_path_str)
+            script_path = REPO_ROOT / script_path_str
             with open(script_path, "r") as f:
                 tree = ast.parse(f.read())
                 for node in ast.walk(tree):
@@ -69,7 +80,10 @@ class TestObservabilityIntegration:
                                         break
                                 if len(required) > 0:
                                     break
-                                if isinstance(target, ast.Name) and target.id == "stats":
+                                if (
+                                    isinstance(target, ast.Name)
+                                    and target.id == "stats"
+                                ):
                                     break
                     if len(required) == 0:
                         break
