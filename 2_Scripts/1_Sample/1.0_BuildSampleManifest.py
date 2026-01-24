@@ -46,7 +46,7 @@ except ImportError:
     _sys.path.insert(0, str(_script_dir))
     from shared.observability_utils import DualWriter
 
-# Import shared symlink utility for 'latest' link management
+    # Import shared symlink utility for 'latest' link management
     from shared.observability_utils import DualWriter
 try:
     from shared.symlink_utils import update_latest_link
@@ -209,8 +209,22 @@ def main():
             break
 
         # Execute subscript with validated absolute path
+        # Set PYTHONPATH to include 2_Scripts directory for shared module imports
+        env = os.environ.copy()
+        scripts_root = str(Path(__file__).parent.parent.parent)
+        # Use os.pathsep for cross-platform compatibility (':' on Unix, ';' on Windows)
+        existing_path = env.get("PYTHONPATH", "")
+        env["PYTHONPATH"] = (
+            f"{existing_path}{os.pathsep}{scripts_root}"
+            if existing_path
+            else scripts_root
+        )
+
         result = subprocess.run(
-            [sys.executable, str(validated_path)], capture_output=True, text=True
+            [sys.executable, str(validated_path)],
+            capture_output=True,
+            text=True,
+            env=env,
         )
 
         # Print output
