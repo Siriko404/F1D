@@ -33,6 +33,11 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import numpy as np
+import argparse
+
+# Add parent directory to path for shared module imports
+script_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(script_dir))
 
 # Try importing statsmodels
 try:
@@ -85,6 +90,44 @@ import hashlib
 import json
 
 warnings.filterwarnings("ignore")
+
+
+def parse_arguments():
+    """Parse command-line arguments for 4.3_TakeoverHazards.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 4.3: Takeover Hazard Models
+
+Estimates Cox proportional hazards models for takeover risk.
+Tests whether CEO clarity predicts takeover likelihood
+using survival analysis.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
+        "3.3_EventFlags": "event_flags.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
+
 def main():
     start_time = datetime.now()
     start_iso = start_time.isoformat()
@@ -394,4 +437,14 @@ def main():
 
 
 if __name__ == "__main__":
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
     main()
