@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
-Plan: 4 of TBD in current phase
-Status: In progress
-Last activity: 2026-01-24 - Completed 25.1-04: Add CLI validation to Step 3 financial scripts
+Plan: 5 of TBD in current phase
+Status: Partially complete
+Last activity: 2026-01-24 - Partially completed 25.1-05 (Task 1 complete, tasks 2-7 skipped due to Windows PYTHONPATH issues)
 
 Progress: [██████████░] 99.2% (124/126 plans complete, 25.1 in progress)
 
