@@ -25,6 +25,9 @@ Outputs:
     - 4_Outputs/3_Financial_Features/{timestamp}/firm_controls_{year}.parquet
 
 Deterministic: true
+
+Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
+      chunked processing. Current implementation uses column pruning for memory optimization.
 ==============================================================================
 """
 
@@ -140,7 +143,8 @@ def load_manifest(manifest_dir):
         raise FileNotFoundError(f"Manifest not found: {manifest_file}")
 
     validate_input_file(manifest_file, must_exist=True)
-    df = pd.read_parquet(manifest_file)
+    # Column pruning: Load only required columns
+    df = pd.read_parquet(manifest_file, columns=["file_name", "gvkey", "start_date"])
     print(f"  Loaded manifest: {len(df):,} calls")
 
     # Ensure gvkey is string and zero-padded
@@ -205,7 +209,20 @@ def load_ibes(ibes_file):
     """Load IBES data filtered to EPS quarterly"""
     print(f"  Loading IBES...")
 
-    df = pd.read_parquet(ibes_file)
+    # Column pruning: Load only required columns
+    df = pd.read_parquet(
+        ibes_file,
+        columns=[
+            "MEASURE",
+            "FISCALP",
+            "TICKER",
+            "CUSIP",
+            "FPEDATS",
+            "STATPERS",
+            "MEANEST",
+            "ACTUAL",
+        ],
+    )
     print(f"  Raw IBES: {len(df):,} rows")
 
     # Filter to EPS quarterly only
@@ -226,7 +243,20 @@ def load_cccl(cccl_file):
     """Load CCCL instrument data with all 6 shift_intensity variants"""
     print(f"  Loading CCCL instrument...")
 
-    df = pd.read_parquet(cccl_file)
+    # Column pruning: Load gvkey, year, and all shift_intensity variants
+    df = pd.read_parquet(
+        cccl_file,
+        columns=[
+            "gvkey",
+            "year",
+            "shift_intensity_sale_ff12",
+            "shift_intensity_mkvalt_ff12",
+            "shift_intensity_sale_ff48",
+            "shift_intensity_mkvalt_ff48",
+            "shift_intensity_sale_sic2",
+            "shift_intensity_mkvalt_sic2",
+        ],
+    )
     print(f"  Loaded CCCL: {len(df):,} rows, {df['gvkey'].nunique():,} unique gvkeys")
 
     # Keep gvkey, year, and all shift_intensity variants
@@ -341,7 +371,8 @@ def compute_earnings_surprise(manifest, ibes, ccm_file):
     print("=" * 60)
 
     # Load CCM for LPERMNO linking
-    ccm = pd.read_parquet(ccm_file)
+    # Column pruning: Load only required columns
+    ccm = pd.read_parquet(ccm_file, columns=["cusip", "LPERMNO", "gvkey"])
     ccm["cusip8"] = ccm["cusip"].astype(str).str[:8]
     ccm["LPERMNO"] = pd.to_numeric(ccm["LPERMNO"], errors="coerce")
     ccm_cusip = ccm[["cusip8", "LPERMNO", "gvkey"]].drop_duplicates().dropna()
