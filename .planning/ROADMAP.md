@@ -450,7 +450,7 @@ Plans:
     4. validation_report.md exists (schema validation report)
     5. comparison_report.md exists (statistics comparison to paper tables)
 **Status**: 📝 PLANNED (gap closure phase from audit)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 - [ ] 22-01: Recreate 4.4_GenerateSummaryStats.py or integrate into 4.1
