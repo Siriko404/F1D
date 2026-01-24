@@ -87,7 +87,6 @@ def load_config():
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
-
 def setup_paths(config, timestamp):
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
@@ -123,12 +122,8 @@ def setup_paths(config, timestamp):
 
     return paths
 
-
 # ==============================================================================
 # Statistics Helpers
-# ==============================================================================
-
-
 # ==============================================================================
 # Data Loading
 # ==============================================================================
@@ -152,7 +147,6 @@ def load_manifest(manifest_dir):
     df["year"] = df["start_date"].dt.year
 
     return df
-
 
 def load_compustat(compustat_file):
     """Load Compustat data with only required columns"""
@@ -188,9 +182,7 @@ def load_compustat(compustat_file):
 
     return df
 
-
 # ...
-
 
 def compute_firm_controls(row, compustat_df):
     """Compute firm controls for a single call (vectorized implementation strongly preferred but this is row-wise).
@@ -202,7 +194,6 @@ def compute_firm_controls(row, compustat_df):
 
     Let's verify the processing logic in `3.1` before writing the calc code blindly.
     """
-
 
 def load_ibes(ibes_file):
     """Load IBES data filtered to EPS quarterly"""
@@ -223,7 +214,6 @@ def load_ibes(ibes_file):
     df["STATPERS"] = pd.to_datetime(df["STATPERS"], errors="coerce")
 
     return df
-
 
 def load_cccl(cccl_file):
     """Load CCCL instrument data with all 6 shift_intensity variants"""
@@ -252,7 +242,6 @@ def load_cccl(cccl_file):
     )
 
     return df
-
 
 # ==============================================================================
 # Variable Computation
@@ -335,7 +324,6 @@ def compute_compustat_controls(manifest, compustat):
     ].copy()
 
     return results_df
-
 
 def compute_earnings_surprise(manifest, ibes, ccm_file):
     """Compute SurpDec from IBES"""
@@ -442,7 +430,6 @@ def compute_earnings_surprise(manifest, ibes, ccm_file):
         ["file_name", "ActualEPS", "ForecastEPS", "surprise_raw", "SurpDec"]
     ]
 
-
 def merge_cccl(manifest, cccl):
     """Merge all shift_intensity variants from CCCL"""
     print("\n" + "=" * 60)
@@ -467,7 +454,6 @@ def merge_cccl(manifest, cccl):
         print(f"  Shift intensity columns: {intensity_cols}")
 
     return merged[["file_name"] + intensity_cols]
-
 
 # ==============================================================================
 # Observability Helper Functions
@@ -494,7 +480,6 @@ def get_process_memory_mb():
         "percent": mem_percent,
     }
 
-
 def calculate_throughput(rows_processed, duration_seconds):
     """
     Calculate throughput in rows per second.
@@ -510,7 +495,6 @@ def calculate_throughput(rows_processed, duration_seconds):
     if duration_seconds <= 0:
         return 0.0
     return round(rows_processed / duration_seconds, 2)
-
 
 def detect_anomalies_zscore(df, columns, threshold=3.0):
     """
@@ -564,7 +548,6 @@ def detect_anomalies_zscore(df, columns, threshold=3.0):
 
     return anomalies
 
-
 def detect_anomalies_iqr(df, columns, multiplier=3.0):
     """
     Detect anomalies using IQR (Interquartile Range) method.
@@ -615,7 +598,6 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
         }
 
     return anomalies
-
 
 # ==============================================================================
 # Main
@@ -896,7 +878,6 @@ def main():
 
     dual_writer.close()
     sys.stdout = dual_writer.terminal
-
 
 if __name__ == "__main__":
     main()

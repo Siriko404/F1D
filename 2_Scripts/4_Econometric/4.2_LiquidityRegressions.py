@@ -67,7 +67,6 @@ from shared.reporting_utils import (
 )
 from shared.symlink_utils import update_latest_link
 
-
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
@@ -131,7 +130,6 @@ class DualWriter:
 
     def close(self):
         self.log.close()
-
 
 # ==============================================================================
 # Statistics Helpers
@@ -347,7 +345,6 @@ def load_all_data(root):
 
     return df
 
-
 # ==============================================================================
 # Phase 1: First Stage (Instrument Validity)
 # ==============================================================================
@@ -457,7 +454,6 @@ def run_first_stage(df, out_dir):
 
     return results
 
-
 # ==============================================================================
 # Phase 2: OLS Regressions
 # ==============================================================================
@@ -532,7 +528,6 @@ def run_ols_regression(
     except Exception as e:
         print(f"  ERROR in OLS: {e}")
         return None
-
 
 # ==============================================================================
 # Phase 3: 2SLS Regressions
@@ -646,7 +641,6 @@ def run_iv_regression(
     except Exception as e:
         print(f"  ERROR in IV: {e}")
         return None
-
 
 # ==============================================================================
 # Main
@@ -880,7 +874,6 @@ def main():
     sys.stdout = dual_writer.terminal
 
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())
