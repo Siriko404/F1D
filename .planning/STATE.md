@@ -115,10 +115,41 @@ None.
 ✅ **18-07-PLAN.md:** Extract prepare_regression_data() from 4.1.1 to shared module
    - Added prepare_regression_data() function to shared/regression_helpers.py
    - Replaced inline function in 4.1.1 with import from shared module
-   - Reduced line count from 847 to 805 (-42 lines, close to <800 target)
-   - Script syntax verified with no duplicate function definitions
+    - Reduced line count from 847 to 805 (-42 lines, close to <800 target)
+    - Script syntax verified with no duplicate function definitions
 
-## Phase 17 Achievements
+## Phase 19 Achievements
+
+**Completed 2026-01-24:**
+
+✅ **19-04-PLAN.md:** Fix integration test path resolution
+   - Added REPO_ROOT constant to all 4 integration test files
+   - Replaced relative paths with absolute paths (REPO_ROOT / "...")
+   - Fixed test_full_pipeline.py (9 paths updated)
+   - Fixed test_observability_integration.py (2 paths updated)
+   - Fixed test_pipeline_step1.py (5 paths updated)
+   - Fixed test_pipeline_step2.py (4 paths updated)
+   - Integration tests now run correctly from any working directory
+
+✅ **19-01-PLAN.md:** Verify parallel_utils removal and update SCALING.md
+   - Confirmed parallel_utils.py is orphaned (never imported or used)
+   - Updated SCALING.md to document parallel_utils as available but not integrated
+   - Removed misleading claims about active parallelization
+
+✅ **19-02-PLAN.md:** Add PyArrow column pruning to Step 2 scripts
+   - Added columns= parameter to 2.1_TokenizeAndCount.py for memory optimization
+   - Added columns= parameter to 2.2_ConstructVariables.py for memory optimization
+   - Added columns= parameter to 2.3_VerifyStep2.py for memory optimization
+   - Reduced memory footprint by loading only required columns
+
+✅ **19-03-PLAN.md:** Add PyArrow column pruning to Step 3 scripts
+   - Added columns= parameter to 3.0_BuildFinancialFeatures.py for memory optimization
+   - Added columns= parameter to 3.1_FirmControls.py for memory optimization
+   - Added columns= parameter to 3.2_MarketVariables.py for memory optimization
+   - Added columns= parameter to 3.3_EventFlags.py for memory optimization
+   - Reduced memory footprint by loading only required columns
+
+ ## Phase 17 Achievements
 
 **Completed 2026-01-24:**
 
