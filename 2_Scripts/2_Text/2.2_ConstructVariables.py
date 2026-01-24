@@ -8,6 +8,7 @@ import hashlib
 import json
 import time
 import psutil
+import argparse
 
 # Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
@@ -55,6 +56,41 @@ def setup_logging():
 
     sys.stdout = DualWriter(log_path)
     return log_path
+
+
+def parse_arguments():
+    """Parse command-line arguments for 2.2_ConstructVariables.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 2.2: Construct Text Variables
+
+Constructs text-based variables from word counts (clarity, tone,
+complexity). Calculates linguistic measures for regression
+analysis (fog index, word length, etc.).
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "2.1_TokenizeAndCount": "linguistic_counts.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
 
 
 def compute_file_checksum(filepath, algorithm="sha256"):
@@ -624,4 +660,14 @@ def main():
 
 
 if __name__ == "__main__":
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
     main()
