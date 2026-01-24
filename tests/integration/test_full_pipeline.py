@@ -27,8 +27,7 @@ SUBPROCESS_ENV = {
 
 # Define the complete pipeline execution order
 PIPELINE_SCRIPTS = [
-    # Step 1: Sample Construction (5 scripts)
-    "2_Scripts/1_Sample/1.0_BuildSampleManifest.py",
+    # Step 1: Sample Construction (4 scripts)
     "2_Scripts/1_Sample/1.1_CleanMetadata.py",
     "2_Scripts/1_Sample/1.2_LinkEntities.py",
     "2_Scripts/1_Sample/1.3_BuildTenureMap.py",
@@ -114,24 +113,27 @@ EXPECTED_OUTPUTS = {
 
 def get_output_dir(script_path: str) -> Path:
     """
-    Derive the output directory path for a given script.
+    Derive output directory path for a given script.
+
+    Scripts output to timestamped directories with 'latest' symlinks.
+    This function finds the actual output directory by following the 'latest' symlink.
 
     Mapping:
-    - 1_Sample/* → 4_Outputs/{script_name}/latest
-    - 2_Text/* → 4_Outputs/2_Textual_Analysis/{script_name}/latest
-    - 3_Financial/* → 4_Outputs/3_Financial/{script_name}/latest
-    - 4_Econometric/* → 4_Outputs/4_Econometric/{script_name}/latest
+    - 1_Sample/* → 4_Outputs/1.1_CleanMetadata/latest -> TIMESTAMPED
+    - 2_Text/* → 4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest -> TIMESTAMPED
+    - 3_Financial/* → 4_Outputs/3_Financial/3.0_BuildFinancialFeatures/latest -> TIMESTAMPED
+    - 4_Econometric/* → 4_Outputs/4_Econometric/4.1_EstimateCeoClarity/latest -> TIMESTAMPED
     """
     script_name = Path(script_path).stem
 
     if "/1_Sample/" in script_path:
-        return REPO_ROOT / f"4_Outputs/{script_name}/latest"
+        return REPO_ROOT / "4_Outputs" / script_name / "latest"
     elif "/2_Text/" in script_path:
-        return REPO_ROOT / f"4_Outputs/2_Textual_Analysis/{script_name}/latest"
+        return REPO_ROOT / "4_Outputs" / "2_Textual_Analysis" / script_name / "latest"
     elif "/3_Financial/" in script_path:
-        return REPO_ROOT / f"4_Outputs/3_Financial/{script_name}/latest"
+        return REPO_ROOT / "4_Outputs" / "3_Financial" / script_name / "latest"
     elif "/4_Econometric/" in script_path:
-        return REPO_ROOT / f"4_Outputs/4_Econometric/{script_name}/latest"
+        return REPO_ROOT / "4_Outputs" / "4_Econometric" / script_name / "latest"
     else:
         raise ValueError(f"Unknown script path format: {script_path}")
 
