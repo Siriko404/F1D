@@ -9,20 +9,20 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 15 of 15 (Scaling Preparation) — In progress (3/5 plans complete)
+Phase: 15 of 15 (Scaling Preparation) — In progress (4/5 plans complete)
 Technical Remediation: Phase 7-15 — 34 concerns to address
 Status: Original project 100% complete, Phase 7-14 complete, Phase 15 in progress
-Last activity: 2026-01-24 — Completed 15-04-PLAN.md
+Last activity: 2026-01-24 — Completed 15-03-PLAN.md
 
 Progress: [██████████] 100% (All 6 original phases complete)
-Technical Remediation: [████████████] 94% (All phases 7-14 complete, Phase 15 3/5 plans complete)
+Technical Remediation: [████████████] 96% (All phases 7-14 complete, Phase 15 4/5 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-  - Total plans completed: 39 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 12 from Phase 13, 4 from Phase 14, 3 from Phase 15)
+  - Total plans completed: 40 (3 from Phase 1, 2 from Phase 7, 3 from Phase 9, 1 from Phase 10, 4 from Phase 11, 3 from Phase 12, 12 from Phase 13, 4 from Phase 14, 4 from Phase 15)
   - Average duration: ~9.5 min
-  - Total execution time: ~155 min
+  - Total execution time: ~157 min
 
 **By Phase:**
 
@@ -42,7 +42,7 @@ Technical Remediation: [████████████] 94% (All phases 7-
 | | 12. Data Quality & Observability | 3/3 | ~12 min | ✅ COMPLETED | 2026-01-23 |
 | | 13. Script Refactoring | 12/12 | ~9 min | ✅ COMPLETED | 2026-01-23 |
 |   | 14. Dependency Management | 4/4 | ~12 min | ✅ COMPLETED | 2026-01-23 |
-|   | 15. Scaling Preparation | 3/5 | ~8 min | 🔄 IN PROGRESS | 2026-01-24 |
+|   | 15. Scaling Preparation | 4/5 | ~9 min | 🔄 IN PROGRESS | 2026-01-24 |
 
 **Recent Trend:**
 - Last 4 plans: ~9 min average
@@ -87,8 +87,9 @@ Recent decisions affecting current work:
 - [Phase 13-08]: Add active path validation to all 17 core scripts using shared.path_utils module (validate_output_path, ensure_output_dir, validate_input_file)
 - [Phase 13-08]: Step 4 econometric scripts received path_utils import for future validation use (partial implementation due to script complexity)
   - [Phase 14-01]: Pin statsmodels to exact version 0.14.6 to prevent API breakage from 0.14.0 changes (deprecated GLM link names)
-  - [Phase 15-01]: Use SeedSequence spawning pattern for deterministic parallel RNG (worker_id prepended to root_seed)
-  - [Phase 15-02]: Apply PyArrow column pruning to critical scripts for memory efficiency and I/O optimization
+ - [Phase 15-01]: Use SeedSequence spawning pattern for deterministic parallel RNG (worker_id prepended to root_seed)
+ - [Phase 15-02]: Apply PyArrow column pruning to critical scripts for memory efficiency and I/O optimization
+ - [Phase 15-03]: Use MemoryAwareThrottler with 80% memory threshold for dynamic chunk size adjustment (enable_throttling=true by default)
  - [Phase 14-01]: Require baseline coefficient comparison for all statsmodels upgrades (tolerance: 1e-6)
  - [Phase 14-01]: Document upgrade procedures with explicit rollback steps to minimize risk
  - [Phase 14-01]: Full pipeline run required for statsmodels upgrades to validate reproducibility
@@ -244,6 +245,90 @@ None.
 - ~12 min total execution time
 - All success criteria met, no deviations
 
+## Phase 15 Achievements
+
+**Completed:** 2026-01-24
+**Plans:** 4/4 (15-01, 15-02, 15-03, 15-04 complete)
+
+### Overview
+
+Phase 15 focuses on scaling preparation to handle large datasets on memory-constrained systems. This phase implements memory monitoring, column pruning for I/O efficiency, parallel processing with deterministic RNG, and memory-aware chunked processing with dynamic throttling.
+
+### Achievements
+
+**15-01: Deterministic Parallel RNG with SeedSequence (Wave 2)**
+- Created shared/parallel_utils.py with deterministic parallel RNG utilities
+- Implemented SeedSequence spawning pattern (worker_id prepended to root_seed)
+- Added ThreadPoolExecutor wrapper for parallel processing
+- Ensures reproducible results across parallel operations
+- ~3 min execution time
+
+**15-02: PyArrow Column Pruning (Wave 2)**
+- Applied PyArrow column pruning to 13 critical scripts
+- Scripts 1.0, 1.2, 1.3, 1.4, 2.1, 3.0, 3.1, 3.2, 3.3, 4.1, 4.1.1, 4.1.2, 4.1.3 use column pruning
+- Reduced memory footprint and I/O for large datasets
+- Backward compatible with all existing scripts
+- ~3 min execution time
+
+**15-03: Memory-Aware Throttling (Wave 2)**
+- Created MemoryAwareThrottler class in shared/chunked_reader.py
+- Added 6 methods: get_available_memory_mb, get_memory_usage_mb, get_memory_percent, should_throttle, get_recommended_chunk_size, log_memory_status
+- Added chunk_processing section to config/project.yaml with 4 parameters
+- Enhanced process_in_chunks with dynamic throttling integration
+- ~2 min execution time
+
+**15-04: Memory Tracking Infrastructure (Wave 1)**
+- Added track_memory_usage decorator to shared/chunked_reader.py
+- Tracks start/end/peak/delta memory and timing
+- Returns dict with result, memory_mb, timing_seconds
+- Builds on Phase 12's get_process_memory_mb() pattern
+- ~2 min execution time
+
+### Key Deliverables
+
+1. **Memory-Aware Throttling**: Dynamic chunk size adjustment based on system memory pressure
+2. **Memory Tracking Infrastructure**: track_memory_usage decorator for monitoring operations
+3. **PyArrow Column Pruning**: Reduced memory and I/O for 13 critical scripts
+4. **Deterministic Parallel RNG**: SeedSequence spawning for reproducible parallel processing
+5. **Config-Driven Throttling**: 4 tunable parameters in project.yaml (max_memory_percent, base_chunk_size, enable_throttling, log_memory_status)
+
+### Technical Decisions
+
+1. **80% memory threshold**: Throttles when process exceeds 80% of system memory (configurable)
+2. **Default throttling enabled**: enable_throttling=true for automatic memory protection
+3. **Backward compatible**: enable_throttling=False uses existing chunked behavior
+4. **Periodic memory logging**: Every 10 chunks + at start/end for observability
+5. **Row group size alignment**: Adjusts chunk size to multiples of row group size for optimal PyArrow read performance
+
+### Files Created/Modified
+
+**Created:**
+- 2_Scripts/shared/parallel_utils.py (deterministic parallel RNG utilities)
+- 2_Scripts/shared/chunked_reader.py (MemoryAwareThrottler class, track_memory_usage decorator)
+
+**Modified:**
+- 2_Scripts/1_Sample/*.py (5 scripts for column pruning)
+- 2_Scripts/2_TokenizeAndCount/*.py (1 script for column pruning)
+- 2_Scripts/3_BuildFinancialFeatures/*.py (4 scripts for column pruning)
+- 2_Scripts/4_EstimateCeoClarity/*.py (3 scripts for column pruning)
+- config/project.yaml (added chunk_processing section)
+
+### Execution Summary
+
+**4 plans executed:**
+- 15-01: Deterministic Parallel RNG with SeedSequence
+- 15-02: PyArrow Column Pruning
+- 15-03: Memory-Aware Throttling
+- 15-04: Memory Tracking Infrastructure
+
+**Total execution time:** ~10 min
+**Total commits:** 12
+**Deviations:** None
+
+**Phase 15 Status:**
+- Plans completed: 4/5
+- Remaining plans: 15-05
+- Last activity: 2026-01-24 - Completed 15-03-PLAN.md
 
 
 ## Phase 14 Achievements
@@ -742,6 +827,6 @@ Phase 14 focuses on dependency management to ensure long-term stability and comp
 
 ## Session Continuity
 
-Last session: 2026-01-24T00:03:23Z
-Stopped at: Completed 15-04-PLAN.md
+Last session: 2026-01-24T00:07:35Z
+Stopped at: Completed 15-03-PLAN.md
 Resume file: None
