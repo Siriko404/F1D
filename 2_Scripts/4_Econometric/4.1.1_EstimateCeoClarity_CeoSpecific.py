@@ -39,6 +39,49 @@ import hashlib
 import json
 import time
 import psutil
+import argparse
+
+# ==============================================================================
+# CLI Arguments & Prerequisites
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 4.1.1_EstimateCeoClarity_CeoSpecific.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 4.1.1: Estimate CEO-Specific Clarity
+
+Estimates CEO-specific clarity scores using CEO fixed effects
+regression. Extracts CEO coefficients as time-invariant
+clarity measures.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "2.2_ConstructVariables": "linguistic_variables.parquet",
+        "3.1_FirmControls": "firm_controls.parquet",
+        "3.2_MarketVariables": "market_variables.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
 
 # Try importing statsmodels
 try:
@@ -126,6 +169,7 @@ CONFIG = {
 # ==============================================================================
 # Data Preparation
 # ==============================================================================
+
 
 def load_all_data(root, year_start, year_end, stats=None):
     """Load and merge all input data sources."""
@@ -236,9 +280,11 @@ def load_all_data(root, year_start, year_end, stats=None):
 
     return combined
 
+
 # ==============================================================================
 # Regression Estimation
 # ==============================================================================
+
 
 def run_regression(df_sample, sample_name):
     """Run OLS regression with CEO fixed effects for a single sample.
@@ -313,9 +359,11 @@ def run_regression(df_sample, sample_name):
 
     return model, df_reg, valid_ceos
 
+
 # ==============================================================================
 # Extract CEO Fixed Effects
 # ==============================================================================
+
 
 def extract_ceo_fixed_effects(model, df_reg, sample_name):
     """Extract gamma_i coefficients and compute Clarity scores."""
@@ -363,9 +411,11 @@ def extract_ceo_fixed_effects(model, df_reg, sample_name):
 
     return ceo_fe
 
+
 # ==============================================================================
 # Compute CEO-Level Statistics
 # ==============================================================================
+
 
 def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
     """Compute descriptive statistics per CEO.
@@ -415,9 +465,11 @@ def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
 
     return ceo_scores
 
+
 # ==============================================================================
 # Model Diagnostics
 # ==============================================================================
+
 
 def compute_diagnostics(model, sample_name, n_ceos, n_firms):
     """Compute model diagnostics."""
@@ -434,9 +486,11 @@ def compute_diagnostics(model, sample_name, n_ceos, n_firms):
         "bic": model.bic,
     }
 
+
 # ==============================================================================
 # Save Outputs
 # ==============================================================================
+
 
 def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=None):
     """Save all output files."""
@@ -532,9 +586,11 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
 
     return ceo_scores_df
 
+
 # ==============================================================================
 # Generate Report
 # ==============================================================================
+
 
 def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
     """Generate markdown report."""
@@ -603,9 +659,11 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
 
     print(f"  Saved: report_step4_1.md")
 
+
 # ==============================================================================
 # Main
 # ==============================================================================
+
 
 def main(year_start=None, year_end=None):
     """Main execution."""
@@ -783,7 +841,16 @@ def main(year_start=None, year_end=None):
 
     return 0
 
+
 if __name__ == "__main__":
-    year_start = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    year_end = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    sys.exit(main(year_start, year_end))
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
+    sys.exit(main())
