@@ -439,9 +439,11 @@ def run_regression(df_sample, sample_name):
 
     try:
         model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
-    except Exception as e:
-        print(f"  ERROR: Regression failed: {e}")
-        return None, None, None
+    except ValueError as e:
+        print(f"ERROR: Regression failed: {e}", file=sys.stderr)
+        print(f"  Formula: {formula[:80]}...", file=sys.stderr)
+        print(f"  Observations: {len(df_reg)}", file=sys.stderr)
+        sys.exit(1)
 
     duration = (datetime.now() - start_time).total_seconds()
 

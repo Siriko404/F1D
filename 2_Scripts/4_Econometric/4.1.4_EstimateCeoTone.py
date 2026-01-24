@@ -383,18 +383,22 @@ def run_regression(df_sample, model_name, model_spec, sample_name):
         validate_columns(df_reg, required_columns)
         validate_sample_size(df_reg, min_observations=100)
         print(f"    Validation passed")
-    except Exception as e:
-        print(f"    Validation failed: {e}")
-        return None, None, None
+    except ValueError as e:
+        print(f"ERROR: Validation failed: {e}", file=sys.stderr)
+        print(f"  Variable: {dep_var}", file=sys.stderr)
+        print(f"  Controls: {controls}", file=sys.stderr)
+        sys.exit(1)
 
     # Estimate model
     start_time = datetime.now()
 
     try:
         model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
-    except Exception as e:
-        print(f"    ERROR: Regression failed: {e}")
-        return None, None, None
+    except ValueError as e:
+        print(f"ERROR: Regression failed: {e}", file=sys.stderr)
+        print(f"  Formula: {formula}", file=sys.stderr)
+        print(f"  Observations: {len(df_reg)}", file=sys.stderr)
+        sys.exit(1)
 
     duration = (datetime.now() - start_time).total_seconds()
 
