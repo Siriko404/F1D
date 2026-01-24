@@ -28,6 +28,7 @@ try:
         ensure_output_dir,
         validate_input_file,
     )
+    from shared.observability_utils import DualWriter
 except ImportError:
     import sys as _sys
     from pathlib import Path as _Path
@@ -39,6 +40,7 @@ except ImportError:
         ensure_output_dir,
         validate_input_file,
     )
+    from shared.observability_utils import DualWriter
 
 # ==============================================================================
 # Setup
@@ -50,20 +52,6 @@ def setup_logging():
     ensure_output_dir(log_dir)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     log_path = log_dir / f"{timestamp}.log"
-
-    class DualWriter:
-        def __init__(self, path):
-            self.file = open(path, "w", encoding="utf-8")
-            self.stdout = sys.stdout
-
-        def write(self, msg):
-            self.stdout.write(msg)
-            self.file.write(msg)
-            self.file.flush()
-
-        def flush(self):
-            self.stdout.flush()
-            self.file.flush()
 
     sys.stdout = DualWriter(log_path)
     return log_path
