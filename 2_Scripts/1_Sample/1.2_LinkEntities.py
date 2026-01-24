@@ -31,6 +31,7 @@ Deterministic: true
 import sys
 import os
 from pathlib import Path
+import argparse
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -41,6 +42,9 @@ import hashlib
 import json
 import time
 import psutil
+
+# Add parent directory to sys.path for shared module imports (works when running directly)
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Dynamic import for 1.5_Utils.py to comply with naming convention
 try:
@@ -113,6 +117,58 @@ def print_dual(msg):
     print(msg, flush=True)
 
 
+# ==============================================================================
+# CLI argument parsing and prerequisite validation
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 1.2_LinkEntities.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 1.2: Link Entities
+
+Links cleaned metadata to CRSP/Compustat CCM data using CUSIP,
+ticker, and fuzzy name matching. Identifies firms and tracks
+company names over time.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {
+        "CRSPCompustat_CCM/": root / "1_Inputs" / "CRSPCompustat_CCM",
+    }
+
+    required_steps = {
+        "1.1_CleanMetadata": "metadata_cleaned.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
+
+# ==============================================================================
+# Configuration and setup
+# ==============================================================================
+# Configuration and setup
+# ==============================================================================
+# Configuration and setup
+# ==============================================================================
+# Configuration and setup
+# ==============================================================================
+# Configuration and setup
 # ==============================================================================
 # Configuration and setup
 # ==============================================================================
@@ -784,4 +840,19 @@ def main():
 
 
 if __name__ == "__main__":
+    # Parse arguments and check prerequisites
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    # Handle dry-run mode
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    # Check prerequisites
+    check_prerequisites(root)
+
+    # Run main processing
     sys.exit(main())
