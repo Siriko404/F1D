@@ -25,6 +25,7 @@ markers = [
     "integration: marks tests as integration tests",
     "regression: marks tests as regression tests",
     "unit: marks tests as unit tests",
+    "e2e: marks tests as end-to-end pipeline tests",
 ]
 
 [tool.coverage.run]
