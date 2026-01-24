@@ -42,8 +42,9 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 - [x] **Phase 23: Core Tech Debt Cleanup** - Eliminate code duplication in logging layer ✅ COMPLETED 2026-01-24
 - [x] **Phase 24: Complete Script Refactoring** - Reduce large scripts to <800 lines ✅ COMPLETED 2026-01-24
 
-**Post-Audit Validation:** (25)
+**Post-Audit Validation:** (25-25.1)
 - [x] **Phase 25: Execute Full Pipeline E2E Test** - Validate all 17 scripts execute successfully end-to-end ✅ COMPLETED 2026-01-24
+- [ ] **Phase 25.1: Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED)** - Urgent: Ensure scripts run independently manually (NOT PLANNED YET)
 
 ## Phase Details
 
@@ -534,6 +535,31 @@ Plans:
 Plans:
 - [x] 25-01-PLAN.md — Execute full pipeline E2E test and document results ✅
 
+### Phase 25.1: Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED)
+
+**Goal**: Ensure all 17 scripts can be run sequentially and individually manually (not with any orchestrator script)
+**Depends on**: Phase 25
+**Urgent**: Pipeline has issues with functionality - scripts need to run independently
+**Plans**: 5 plans in 3 waves
+
+Plans:
+- [ ] 25.1-01: Create dependency checking utilities (Wave 1)
+- [ ] 25.1-02: Add CLI validation to Step 1 scripts (Wave 2)
+- [ ] 25.1-03: Add CLI validation to Step 2 scripts (Wave 2)
+- [ ] 25.1-04: Add CLI validation to Step 3 scripts (Wave 2)
+- [ ] 25.1-05: Add CLI validation to Step 4 scripts (Wave 3)
+
+**Details:**
+Phase 25.1 makes all 17 pipeline scripts executable independently by hand, without relying on pytest orchestrator (test_full_pipeline.py). Currently, scripts validate some inputs via shared utilities but lack comprehensive dependency checking and CLI validation.
+
+The phase adds:
+1. Shared dependency_checker.py module for prerequisite validation
+2. argparse-based CLI validation to all 17 scripts
+3. Prerequisite checking for scripts that depend on previous steps
+4. Clear error messages with actionable next steps for missing dependencies
+
+Scripts updated: 1.1-1.4 (Step 1), 2.1-2.3 (Step 2), 3.0-3.3 (Step 3), 4.1, 4.1.1-4.1.4, 4.2-4.3 (Step 4)
+
 ## Progress
 
 **Execution Order:**
@@ -566,8 +592,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
          | 22. Recreate Missing Script & Evidence | 2/2 | ✅ COMPLETED | 2026-01-24 |
           | 23. Core Tech Debt Cleanup | 8/8 | ✅ COMPLETED | 2026-01-24 |
           | 24. Complete Script Refactoring | 8/8 | ✅ COMPLETED | 2026-01-24 |
-          | 25. Execute Full Pipeline E2E Test | 1/1 | ✅ COMPLETED | 2026-01-24 |
- 
+           | 25. Execute Full Pipeline E2E Test | 1/1 | ✅ COMPLETED | 2026-01-24 |
+            | 25.1. Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED) | 0/5 | PLANNED | 2026-01-24 |
+
+
 
 ---
      ---
@@ -575,5 +603,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 *Roadmap updated: 2026-01-24 (Phases 20-24 added for gap closure from v1.2.0 audit)*
 *Roadmap updated: 2026-01-24 (Phase 25 added for post-audit validation)*
 *Roadmap updated: 2026-01-24 (All 120 plans complete - 100%)*
-*Total plans: 120 (120 completed)*
+*Roadmap updated: 2026-01-24 (Phase 25.1 inserted - urgent work for manual script execution)*
+*Total plans: 125 (120 completed, 5 planned)*
 *Total requirements: 30 mapped*
