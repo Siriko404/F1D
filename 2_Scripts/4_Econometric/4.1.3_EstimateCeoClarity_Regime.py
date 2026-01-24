@@ -38,6 +38,11 @@ import hashlib
 import json
 import time
 import psutil
+import argparse
+
+# Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
+scripts_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(scripts_dir))
 
 # Try importing statsmodels
 try:
@@ -77,23 +82,54 @@ from shared.observability_utils import (
 )
 
 # Import shared path validation utilities
-try:
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-    )
-except ImportError:
-    import sys as _sys
-    from pathlib import Path as _Path
+from shared.path_utils import (
+    validate_output_path,
+    ensure_output_dir,
+    validate_input_file,
+)
 
-    _script_dir = Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
+
+# ==============================================================================
+# CLI Arguments & Prerequisites
+# ==============================================================================
+
+
+def parse_arguments():
+    """Parse command-line arguments for 4.1.3_EstimateCeoClarity_Regime.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 4.1.3: Estimate Regime-Based Clarity
+
+Estimates clarity models in different regimes (pre/post crisis,
+different CEO tenure periods). Identifies how clarity effects
+vary across conditions.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {}
+
+    required_steps = {
+        "2.2_ConstructVariables": "linguistic_variables.parquet",
+        "3.1_FirmControls": "firm_controls.parquet",
+        "3.2_MarketVariables": "market_variables.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
+
 
 # ==============================================================================
 # Configuration
@@ -722,6 +758,14 @@ def main(year_start=None, year_end=None):
 
 
 if __name__ == "__main__":
-    year_start = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    year_end = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    sys.exit(main(year_start, year_end))
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    check_prerequisites(root)
+    sys.exit(main())
