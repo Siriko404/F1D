@@ -33,6 +33,7 @@ from datetime import datetime
 import yaml
 import shutil
 import subprocess
+import argparse
 
 # Import shared observability utilities
 try:
@@ -89,6 +90,56 @@ except ImportError:
         ensure_output_dir,
         validate_input_file,
     )
+
+
+def parse_arguments():
+    """Parse command-line arguments for 1.0_BuildSampleManifest.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 1.0: Build Sample Manifest (Orchestrator)
+
+Orchestrates 4-substep process to build the master sample
+manifest that defines the universe of analysis before any text
+processing occurs.
+
+Substeps:
+    1.1 - Clean Metadata & Filter Events
+    1.2 - Entity Resolution (CCM Linking)
+    1.3 - CEO Tenure Map Construction
+    1.4 - Manifest Assembly & CEO Filtering
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    parser.add_argument(
+        "--skip",
+        type=str,
+        nargs="+",
+        help="Skip specific substeps (e.g., --skip 1.1 1.2)",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs exist."""
+    from shared.dependency_checker import validate_prerequisites
+    from shared.path_utils import validate_input_file
+
+    required_files = {
+        "config/project.yaml": root / "config/project.yaml",
+        "1_Inputs/Unified-info.parquet": root / "1_Inputs/Unified-info.parquet",
+    }
+
+    required_steps = {}
+
+    validate_prerequisites(required_files, required_steps)
 
 
 def print_dual(msg):
@@ -285,4 +336,17 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        print(
+            "✓ Ready to execute: python 2_Scripts/1_Sample/1.0_BuildSampleManifest.py"
+        )
+        sys.exit(0)
+
+    check_prerequisites(root)
+    main()
