@@ -5,9 +5,24 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
-**Current focus:** ROADMAP COMPLETE - All 120 plans executed (100%)
+**Current focus:** Fix pipeline scripts to run manually without orchestrator dependency
 
 ## Current Position
+
+Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
+Plan: 1 of TBD in current phase
+Status: In progress
+Last activity: 2026-01-24 - Completed 25.1-01: Create dependency_checker module
+
+Progress: [██████████░] 99.2% (121/122 plans complete, 25.1 in progress)
+
+## Phase 25.1 Achievements
+
+**Phase 25.1 PLAN 01 COMPLETE** - 1 plan completed 2026-01-24
+- Created dependency_checker.py module with 4 functions for prerequisite validation
+- Added comprehensive documentation to shared/README.md
+- Enables all 17 pipeline scripts to validate dependencies before processing
+- Provides clear error messages with actionable next steps
 
 ## Phase 23 Achievements
 
@@ -58,18 +73,18 @@ See: .planning/PROJECT.md (updated 2026-01-22)
           Status: ✅ COMPLETED
           Last activity: 2026-01-24 - E2E test validation complete, data blocker identified
 
-       Progress: [████████████] 100% (120/120 plans complete, all phases done)
-        Technical Remediation: [████████████] 100% (All phases 7-25 complete)
-        Gap Closure: [████████████] 100% (All gap closure phases complete)
-        Post-Audit Validation: [████████████] 100% (All validation phases complete)
+        Progress: [██████████░] 99.2% (121/122 plans complete, 25.1 in progress)
+         Technical Remediation: [████████████] 100% (All phases 7-25 complete)
+         Gap Closure: [████████████] 100% (All gap closure phases complete)
+         Post-Audit Validation: [████████████] 100% (All validation phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-      - Total plans completed: 120
+      - Total plans completed: 121
       - Plans created but not executed: 0
       - Average duration: ~8 min
-      - Total execution time: ~237 min
+      - Total execution time: ~239 min
 
 **By Phase:**
 
@@ -99,11 +114,12 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | | 22. Recreate Missing Script & Evidence | 2/2 | ~4 min average | ✅ COMPLETED | 2026-01-24 |
   | | 23. Core Tech Debt Cleanup | 8/8 | ~13 min average | ✅ COMPLETED | 2026-01-24 |
   | | 24. Complete Script Refactoring | 8/8 | ✅ COMPLETED | 2026-01-24 |
-  | | 25. Execute Full Pipeline E2E Test | 1/1 | 4 min | ✅ COMPLETED | 2026-01-24 |
-
+   | | 25. Execute Full Pipeline E2E Test | 1/1 | 4 min | ✅ COMPLETED | 2026-01-24 |
+  | | 25.1. Fix Pipeline Scripts To Run Manually | 1/TBD | 2 min average | 🔄 IN PROGRESS | 2026-01-24 |
+ 
 **Recent Trend:**
-- Last 1 plan: 4 min (E2E test execution with PYTHONPATH fix)
-- Trend: Phase 25 complete - All 120 plans now complete, full roadmap finished
+- Last 1 plan: 2 min (dependency_checker module creation)
+- Trend: Phase 25.1 in progress - Adding prerequisite validation to enable manual script execution
 
 ## Accumulated Context
 
@@ -122,8 +138,22 @@ Recent decisions affecting current work:
 - [Phase 25-01]: Fixed cross-platform PYTHONPATH separator bug (changed hardcoded `:` to `os.pathsep` for Windows compatibility)
 - [Phase 25-01]: Validated E2E test infrastructure works correctly, identified input data schema blocker
 - [Phase 25]: All 120 plans complete, full roadmap finished, milestone achieved
+- [Phase 25.1-01]: Created dependency_checker.py module with 4 functions for prerequisite validation
+- [Phase 25.1-01]: Used existing shared.path_utils.validate_input_file() for file validation (Don't hand-roll)
+- [Phase 25.1-01]: Check latest/ symlinks for prerequisite step outputs (Research Pattern 3)
+- [Phase 25.1-01]: Provide actionable error messages with script commands (Research Pattern 4)
+
+### Roadmap Evolution
+
+- Phase 25.1 inserted after Phase 25: Fix pipeline scripts to run sequentially and individually manually not with any orchestrator script (URGENT)
 
 ### Blockers/Concerns
+
+**Phase 25.1 blocker (manual script execution):**
+- Pipeline scripts currently designed to run via orchestrator (test_full_pipeline.py)
+- Individual scripts lack prerequisite checking and clear error messages
+- Goal of Phase 25.1: Enable manual sequential execution of all 17 scripts
+- Next: Integrate dependency_checker into each pipeline script
 
 **Data blocker (identified but not part of phase scope):**
 - Input data schema mismatch blocks pipeline execution (documented in e2e_execution_report_20260124_160430.md)
@@ -134,6 +164,6 @@ Recent decisions affecting current work:
 
  ## Session Continuity
 
-   Last session: 2026-01-24T19:51:00Z
-   Stopped at: Completed 24-06: Verified 5 already-under-target scripts remain compliant
-   Resume file: None
+    Last session: 2026-01-24T22:56:53Z
+    Stopped at: Completed 25.1-01: Create dependency_checker module
+    Resume file: None
