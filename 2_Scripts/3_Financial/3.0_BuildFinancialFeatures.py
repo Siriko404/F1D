@@ -4,6 +4,9 @@
 STEP 3: Build Financial Features (Orchestrator)
 ==============================================================================
 Coordinates 3.1, 3.2, 3.3 to write ALL outputs to a single timestamped folder.
+
+Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
+      chunked processing. Current implementation uses column pruning for memory optimization.
 ==============================================================================
 """
 
@@ -337,7 +340,10 @@ def main():
     # Load manifest once
     print("\nLoading manifest...")
     manifest_path = paths["manifest_dir"] / "master_sample_manifest.parquet"
-    manifest = pd.read_parquet(manifest_path)
+    # Column pruning: Load only required columns to reduce memory footprint
+    manifest = pd.read_parquet(
+        manifest_path, columns=["file_name", "gvkey", "start_date"]
+    )
     manifest["start_date"] = pd.to_datetime(manifest["start_date"])
     manifest["year"] = manifest["start_date"].dt.year
     manifest["gvkey"] = manifest["gvkey"].astype(str).str.zfill(6)
@@ -708,4 +714,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
