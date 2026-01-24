@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
-Plan: 5 of TBD in current phase
-Status: Partially complete
-Last activity: 2026-01-24 - Partially completed 25.1-05 (Task 1 complete, tasks 2-7 skipped due to Windows PYTHONPATH issues)
+Plan: 6 of 8 in current phase
+Status: In progress
+Last activity: 2026-01-24 - Completed 25.1-06 (Add CLI validation to 1.0_BuildSampleManifest.py orchestrator)
 
-Progress: [██████████░] 99.2% (124/126 plans complete, 25.1 in progress)
+Progress: [██████████░] 99.2% (125/126 plans complete, 25.1 in progress)
 
 ## Phase 25.1 Achievements
 
@@ -44,6 +44,13 @@ Progress: [██████████░] 99.2% (124/126 plans complete, 25.
 - Fixed pre-existing IndentationError in 3.4_Utils.py
 - Added shared module import handling in 3.4_Utils.py
 - All Step 3 scripts can now run manually with prerequisite validation
+
+**Phase 25.1 PLAN 06 COMPLETE** - 1 task completed 2026-01-24
+- Added argparse CLI validation to Step 1 orchestrator script (1.0_BuildSampleManifest.py)
+- Orchestrator now supports --help and --dry-run flags
+- Validates config/project.yaml and Unified-info.parquet before running substeps
+- Orchestrator can run manually with prerequisite validation
+- Dry-run mode validates prerequisites without executing substeps
 
 ## Phase 23 Achievements
 
@@ -102,10 +109,10 @@ Progress: [██████████░] 99.2% (124/126 plans complete, 25.
 ## Performance Metrics
 
 **Velocity:**
-      - Total plans completed: 124
-      - Plans created but not executed: 2
+      - Total plans completed: 125
+      - Plans created but not executed: 1
       - Average duration: ~8 min
-      - Total execution time: ~256 min
+      - Total execution time: ~261 min
 
 **By Phase:**
 
@@ -136,10 +143,10 @@ Progress: [██████████░] 99.2% (124/126 plans complete, 25.
   | | 23. Core Tech Debt Cleanup | 8/8 | ~13 min average | ✅ COMPLETED | 2026-01-24 |
   | | 24. Complete Script Refactoring | 8/8 | ✅ COMPLETED | 2026-01-24 |
    | | 25. Execute Full Pipeline E2E Test | 1/1 | 4 min | ✅ COMPLETED | 2026-01-24 |
-  | | 25.1. Fix Pipeline Scripts To Run Manually | 1/TBD | 2 min average | 🔄 IN PROGRESS | 2026-01-24 |
+   | | 25.1. Fix Pipeline Scripts To Run Manually | 6/TBD | 5 min average | 🔄 IN PROGRESS | 2026-01-24 |
  
 **Recent Trend:**
-- Last 1 plan: 0 min (Step 3 financial scripts CLI validation - continuation session)
+- Last 1 plan: 5 min (Step 1 orchestrator CLI validation)
 - Trend: Phase 25.1 in progress - Adding prerequisite validation to enable manual script execution
 
 ## Accumulated Context
@@ -163,6 +170,8 @@ Recent decisions affecting current work:
 - [Phase 25.1-01]: Used existing shared.path_utils.validate_input_file() for file validation (Don't hand-roll)
 - [Phase 25.1-01]: Check latest/ symlinks for prerequisite step outputs (Research Pattern 3)
 - [Phase 25.1-01]: Provide actionable error messages with script commands (Research Pattern 4)
+- [Phase 25.1-06]: Orchestrator script validates config/project.yaml and Unified-info.parquet before running substeps
+- [Phase 25.1-06]: Dry-run mode enables validation-only execution without running substeps
 
 ### Roadmap Evolution
 
@@ -185,6 +194,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-        Last session: 2026-01-24T23:21:19Z
-        Stopped at: Completed 25.1-02: Add CLI validation to Step 1 sample construction scripts
+        Last session: 2026-01-24T23:35:00Z
+        Stopped at: Completed 25.1-06: Add CLI validation to Step 1 orchestrator script
         Resume file: None
