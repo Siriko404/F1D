@@ -11,12 +11,18 @@ Tests verify that observability features work end-to-end in modified scripts:
 Run with: pytest tests/integration/test_observability_integration.py -v -m integration --tb=short
 """
 
-import pytest
-import ast
+import os
+import re
 from pathlib import Path
 
 # Get repository root from test file location
 REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Environment for subprocess calls (includes PYTHONPATH for module resolution)
+SUBPROCESS_ENV = {
+    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
+    **os.environ,  # Preserve existing environment variables
+}
 
 
 class TestObservabilityIntegration:

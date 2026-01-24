@@ -7,6 +7,7 @@ from Step 1 (Sample) through Step 4 (Econometric), ensuring data flows correctly
 Purpose: Close the critical testing gap identified in the v1.0.0 milestone audit.
 """
 
+import os
 import pytest
 import subprocess
 import json
@@ -17,6 +18,12 @@ pytestmark = pytest.mark.e2e  # Mark all tests in this file as E2E
 
 # Get repository root from test file location
 REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Environment for subprocess calls (includes PYTHONPATH for module resolution)
+SUBPROCESS_ENV = {
+    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
+    **os.environ,  # Preserve existing environment variables
+}
 
 # Define the complete pipeline execution order
 PIPELINE_SCRIPTS = [

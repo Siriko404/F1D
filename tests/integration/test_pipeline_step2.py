@@ -3,6 +3,7 @@ Integration tests for Step 2 (Text Processing).
 Tests end-to-end pipeline execution for text processing scripts.
 """
 
+import os
 import pytest
 import subprocess
 import json
@@ -11,6 +12,12 @@ import pandas as pd
 
 # Get repository root from test file location
 REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Environment for subprocess calls (includes PYTHONPATH for module resolution)
+SUBPROCESS_ENV = {
+    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
+    **os.environ,  # Preserve existing environment variables
+}
 
 pytestmark = pytest.mark.integration
 

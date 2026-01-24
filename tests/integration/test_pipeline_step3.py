@@ -3,6 +3,7 @@ Integration tests for Step 3 (Financial Features).
 Tests end-to-end pipeline execution for financial feature scripts.
 """
 
+import os
 import pytest
 import subprocess
 import json
@@ -11,11 +12,20 @@ import pandas as pd
 
 pytestmark = pytest.mark.integration
 
+# Get repository root from test file location
+REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Environment for subprocess calls (includes PYTHONPATH for module resolution)
+SUBPROCESS_ENV = {
+    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
+    **os.environ,  # Preserve existing environment variables
+}
+
 
 def test_step3_full_pipeline():
     """Test Step 3 (3.0_BuildFinancialFeatures) runs end-to-end."""
     # Arrange
-    script_path = Path("2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py")
+    script_path = REPO_ROOT / "2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py"
 
     if not script_path.exists():
         pytest.skip(f"Script not found: {script_path}")
@@ -32,8 +42,8 @@ def test_step3_full_pipeline():
     assert result.returncode == 0, f"Script failed: {result.stderr}"
 
     # Verify output files exist
-    output_dir = Path(
-        "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest"
+    output_dir = (
+        REPO_ROOT / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest"
     )
     assert output_dir.exists(), "Output directory not created"
 
@@ -52,8 +62,9 @@ def test_step3_full_pipeline():
 def test_merge_diagnostics_step3():
     """Test that merge diagnostics are recorded in stats.json."""
     # Arrange
-    stats_path = Path(
-        "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/stats.json"
+    stats_path = (
+        REPO_ROOT
+        / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/stats.json"
     )
 
     if not stats_path.exists():
@@ -83,8 +94,9 @@ def test_merge_diagnostics_step3():
 def test_financial_variables_validation():
     """Test that financial variables are computed correctly."""
     # Arrange
-    output_file = Path(
-        "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/financial_features.parquet"
+    output_file = (
+        REPO_ROOT
+        / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/financial_features.parquet"
     )
 
     if not output_file.exists():
@@ -124,8 +136,9 @@ def test_financial_variables_validation():
 def test_step3_data_source_integration(data_source):
     """Test that data source merges are successful."""
     # Arrange
-    stats_path = Path(
-        "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/stats.json"
+    stats_path = (
+        REPO_ROOT
+        / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/stats.json"
     )
 
     if not stats_path.exists():

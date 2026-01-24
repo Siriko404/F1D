@@ -3,6 +3,7 @@ Integration tests for Step 1 (Sample Construction).
 Tests end-to-end pipeline execution for sample construction scripts.
 """
 
+import os
 import pytest
 import subprocess
 import json
@@ -12,6 +13,12 @@ import yaml
 
 # Get repository root from test file location
 REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Environment for subprocess calls (includes PYTHONPATH for module resolution)
+SUBPROCESS_ENV = {
+    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
+    **os.environ,  # Preserve existing environment variables
+}
 
 pytestmark = pytest.mark.integration  # Mark all tests in this file as integration
 
