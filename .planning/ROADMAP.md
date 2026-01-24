@@ -374,13 +374,13 @@ Plans:
    2. regression_helpers.build_regression_sample() contains actual logic (not placeholder)
    3. Large scripts (8/9 target scripts) reduced to <800 lines through code extraction
    4. All extracted functions tested with unit tests
-**Status**: 📝 PLANNED (gap closure phase)
-**Plans**: 3 plans
+**Status**: 📝 PLANS CREATED (gap closure phase)
+**Plans**: 3 plans (2 waves)
 
 Plans:
-- [ ] 18-01: Refactor 1.2_LinkEntities.py to use match_company_names() from shared/string_matching.py
-- [ ] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder)
-- [ ] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines
+- [ ] 18-01: Refactor 1.2_LinkEntities.py to use match_company_names() from shared/string_matching.py (Wave 1)
+- [ ] 18-02: Complete build_regression_sample() implementation with actual logic (not placeholder) (Wave 1)
+- [ ] 18-03: Extract additional code from large scripts to reduce line counts to <800 lines (Wave 2)
 
 ### Phase 19: Scaling Infrastructure & Testing Integration
 **Goal**: Integrate orphaned scaling infrastructure, complete column pruning, fix testing issues
@@ -424,16 +424,16 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
   | 12. Data Quality & Observability | 3/3 | ✅ COMPLETED | 2026-01-23 |
   | 13. Script Refactoring | 10/10 | ✅ COMPLETED | 2026-01-23 |
   | 14. Dependency Management | 4/4 | ✅ COMPLETED | 2026-01-23 |
-  | 15. Scaling Preparation | 5/5 | ✅ COMPLETED | 2026-01-24 |
-  | 16. Critical Path Fixes | 0/3 | 📝 PLANNED | - |
-  | 17. Verification Reports | 12/13 | ⏭️ IN PROGRESS | - |
-  | 18. Complete Phase 13 Refactoring | 0/3 | 📝 PLANNED | - |
-  | 19. Scaling Infrastructure & Testing Integration | 0/4 | 📝 PLANNED | - |
+   | 15. Scaling Preparation | 5/5 | ✅ COMPLETED | 2026-01-24 |
+   | 16. Critical Path Fixes | 3/3 | ✅ COMPLETED | 2026-01-23 |
+   | 17. Verification Reports | 13/13 | ✅ COMPLETED | 2026-01-24 |
+   | 18. Complete Phase 13 Refactoring | 0/3 | 📝 PLANNED (plans created) | - |
+   | 19. Scaling Infrastructure & Testing Integration | 0/4 | 📝 PLANNED | - |
 
 
 ---
 ---
  *Roadmap created: 2026-01-22*
- *Roadmap updated: 2026-01-24 (Phase 15 complete, Phase 16-19 added for gap closure)*
- *Total plans: 106 (78 completed + 23 planned + 5 verified)*
+ *Roadmap updated: 2026-01-24 (Phase 15-17 complete, Phase 18 plans created, Phase 16-19 added for gap closure)*
+ *Total plans: 109 (93 completed + 13 planned + 3 created)*
  *Total requirements: 30 mapped*
