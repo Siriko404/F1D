@@ -128,10 +128,6 @@ def setup_paths(config, timestamp):
 
 
 # ==============================================================================
-# Statistics Helpers
-# ==============================================================================
-# Data Loading
-# ==============================================================================
 # Data Loading
 # ==============================================================================
 
@@ -191,18 +187,6 @@ def load_compustat(compustat_file):
 
 
 # ...
-
-
-def compute_firm_controls(row, compustat_df):
-    """Compute firm controls for a single call (vectorized implementation strongly preferred but this is row-wise).
-
-    Wait, the original script might use a merge approach. Let's check the context.
-    The previous view showed 'compute_firm_controls' was NOT visible in lines 1-100.
-    I should check how variables are constructed.
-    Based on typical structure, there's likely a merge then vectorized calc.
-
-    Let's verify the processing logic in `3.1` before writing the calc code blindly.
-    """
 
 
 def load_ibes(ibes_file):
