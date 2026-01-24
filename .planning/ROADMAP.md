@@ -406,7 +406,105 @@ Plans:
 - [x] 19-01-PLAN.md — Verify parallel_utils removal and update SCALING.md (Wave 1) ✅
 - [x] 19-02-PLAN.md — Add PyArrow column pruning to Step 2 scripts (Wave 2) ✅
 - [x] 19-03-PLAN.md — Add PyArrow column pruning to Step 3 scripts (Wave 2) ✅
-- [x] 19-04-PLAN.md — Fix integration test path resolution with absolute paths (Wave 3) ✅
+ - [x] 19-04-PLAN.md — Fix integration test path resolution with absolute paths (Wave 3) ✅
+
+### Phase 20: Restore Root README Documentation
+**Goal**: Reintegrate detached documentation from Phase 5 into root README.md for reviewers
+**Depends on**: Phase 19
+**Gap Closure**: Closes gaps from v1.2.0-MILESTONE-AUDIT.md — Phase 5 docs detached (pipeline diagram, program-to-output mapping, variable codebook)
+**Success Criteria** (what must be TRUE):
+    1. Root README.md includes pipeline flow diagram (from .planning/phases/05-readme-documentation/pipeline_diagram.md)
+    2. Root README.md includes program-to-output mapping (from .planning/phases/05-readme-documentation/program_to_output.md)
+    3. Root README.md includes variable codebook (from .planning/phases/05-readme-documentation/variable_codebook.md)
+    4. Root README.md includes detailed step-by-step execution instructions (from .planning/phases/05-readme-documentation/execution_instructions.md)
+    5. No documentation artifacts remain orphaned in planning directory
+**Status**: 📝 PLANNED (gap closure phase from audit)
+**Plans**: TBD
+
+Plans:
+- [ ] 20-01: Integrate pipeline diagram into root README.md
+- [ ] 20-02: Integrate program-to-output mapping into root README.md
+- [ ] 20-03: Integrate variable codebook into root README.md
+- [ ] 20-04: Restore detailed execution instructions to root README.md
+
+### Phase 21: Fix Testing Infrastructure
+**Goal**: Resolve environment configuration and test code issues preventing integration tests from running
+**Depends on**: Phase 20
+**Gap Closure**: Closes gaps from v1.2.0-MILESTONE-AUDIT.md — PYTHONPATH issues, AST parsing bugs in observability tests
+**Success Criteria** (what must be TRUE):
+    1. All integration test subprocess calls include PYTHONPATH environment variable
+    2. Observability tests use robust AST parsing (not fragile alias object parsing)
+    3. All integration tests pass locally and in CI/CD
+    4. Test environment is reproducible (explicit PYTHONPATH, no implicit dependencies)
+**Status**: 📝 PLANNED (gap closure phase from audit)
+**Plans**: TBD
+
+Plans:
+- [ ] 21-01: Add PYTHONPATH environment variable to integration test subprocess calls
+- [ ] 21-02: Fix AST parsing bugs in observability tests
+- [ ] 21-03: Verify all integration tests pass
+
+### Phase 22: Recreate Missing Script & Evidence
+**Goal**: Restore script 4.4 and verification artifacts to complete documentation
+**Depends on**: Phase 21
+**Gap Closure**: Closes gaps from v1.2.0-MILESTONE-AUDIT.md — Phase 4 (script 4.4 missing) and Phase 6 (evidence artifacts missing)
+**Success Criteria** (what must be TRUE):
+    1. 4.4_GenerateSummaryStats.py exists and generates summary statistics
+    2. OR script 4.4 functionality integrated into 4.1 with documentation
+    3. env_test.log exists (fresh environment test results)
+    4. validation_report.md exists (schema validation report)
+    5. comparison_report.md exists (statistics comparison to paper tables)
+**Status**: 📝 PLANNED (gap closure phase from audit)
+**Plans**: TBD
+
+Plans:
+- [ ] 22-01: Recreate 4.4_GenerateSummaryStats.py or integrate into 4.1
+- [ ] 22-02: Generate or document verification artifacts (env_test.log, validation_report.md, comparison_report.md)
+
+### Phase 23: Core Tech Debt Cleanup
+**Goal**: Eliminate code duplication in logging and statistics tracking layer
+**Depends on**: Phase 22
+**Gap Closure**: Closes gaps from v1.2.0-MILESTONE-AUDIT.md — Phase 8 tech debt (DualWriter, utility functions, error handling)
+**Success Criteria** (what must be TRUE):
+    1. DualWriter class extracted to shared module (2_Scripts/shared/dual_writer.py)
+    2. Utility functions consolidated (compute_file_checksum, print_stat, analyze_missing_values, update_latest_symlink)
+    3. All scripts import from shared modules (no duplicate code)
+    4. Error handling improved (specific exceptions, logging, re-raise or graceful handling)
+**Status**: 📝 PLANNED (gap closure phase from audit)
+**Plans**: TBD
+
+Plans:
+- [ ] 23-01: Extract DualWriter class to shared module (Wave 1)
+- [ ] 23-02: Consolidate utility functions to shared module (Wave 1)
+- [ ] 23-03: Update all scripts to import shared modules (Wave 2)
+- [ ] 23-04: Improve error handling consistency in econometric scripts (Wave 2)
+
+### Phase 24: Complete Script Refactoring
+**Goal**: Reduce large scripts to <800 lines via actual code extraction (not just imports)
+**Depends on**: Phase 23
+**Gap Closure**: Closes gaps from v1.2.0-MILESTONE-AUDIT.md — Phase 13 large scripts (8/9 >800 lines), Phase 18 plan checker warnings
+**Success Criteria** (what must be TRUE):
+    1. 1.2_LinkEntities.py reduced to <800 lines (currently 1043 lines)
+    2. 4.1.1_EstimateCeoClarity_CeoSpecific.py reduced to <800 lines (currently 1089 lines)
+    3. 4.1.2_EstimateCeoClarity_Extended.py reduced to <800 lines (currently 944 lines)
+    4. 4.1.3_EstimateCeoClarity_Regime.py reduced to <800 lines (currently 979 lines)
+    5. 4.2_LiquidityRegressions.py reduced to <800 lines (currently 998 lines)
+    6. 4.3_TakeoverHazards.py reduced to <800 lines (currently 945 lines)
+    7. 3.1_FirmControls.py reduced to <800 lines (currently 978 lines)
+    8. 3.0_BuildFinancialFeatures.py reduced to <800 lines (currently 843 lines)
+    9. All extracted functions have unit tests
+**Status**: 📝 PLANNED (gap closure phase from audit)
+**Plans**: TBD
+
+Plans:
+- [ ] 24-01: Refactor 1.2_LinkEntities.py (extract duplicate code to shared)
+- [ ] 24-02: Refactor 4.1.1_EstimateCeoClarity_CeoSpecific.py (extract data loading, filtering, reporting)
+- [ ] 24-03: Refactor 4.1.2_EstimateCeoClarity_Extended.py (extract data loading, filtering, reporting)
+- [ ] 24-04: Refactor 4.1.3_EstimateCeoClarity_Regime.py (extract data loading, filtering, reporting)
+- [ ] 24-05: Refactor 4.2_LiquidityRegressions.py (extract data loading, regression setup)
+- [ ] 24-06: Refactor 4.3_TakeoverHazards.py (extract data loading, regression setup)
+- [ ] 24-07: Refactor 3.1_FirmControls.py (extract merge logic, feature construction)
+- [ ] 24-08: Refactor 3.0_BuildFinancialFeatures.py (extract data loading, feature construction)
 
 ## Progress
 
@@ -416,30 +514,35 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Template & Pilot | 3/3 | ✅ COMPLETED | 2026-01-22 |
-| 2. Step 1 Sample | 6/6 | ✅ COMPLETED | 2026-01-22 |
-| 3. Step 2 Text | 3/3 | ✅ COMPLETED | 2026-01-22 |
-| 4. Steps 3-4 Financial & Econometric | 10/10 | ✅ COMPLETED | 2026-01-22 |
-| 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
-| 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
- | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
- | 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
- | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
- | 10. Performance Optimization | 4/4 | ✅ COMPLETED | 2026-01-23 |
-  | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
-  | 12. Data Quality & Observability | 3/3 | ✅ COMPLETED | 2026-01-23 |
-  | 13. Script Refactoring | 10/10 | ✅ COMPLETED | 2026-01-23 |
-  | 14. Dependency Management | 4/4 | ✅ COMPLETED | 2026-01-23 |
-   | 15. Scaling Preparation | 5/5 | ✅ COMPLETED | 2026-01-24 |
-   | 16. Critical Path Fixes | 3/3 | ✅ COMPLETED | 2026-01-23 |
-     | 17. Verification Reports | 13/13 | ✅ COMPLETED | 2026-01-24 |
-      | 18. Complete Phase 13 Refactoring | 9/9 | ✅ COMPLETED | 2026-01-24 |
-     | 19. Scaling Infrastructure & Testing Integration | 4/4 | ✅ COMPLETED | 2026-01-24 |
+| | 1. Template & Pilot | 3/3 | ✅ COMPLETED | 2026-01-22 |
+| | 2. Step 1 Sample | 6/6 | ✅ COMPLETED | 2026-01-22 |
+| | 3. Step 2 Text | 3/3 | ✅ COMPLETED | 2026-01-22 |
+| | 4. Steps 3-4 Financial & Econometric | 10/10 | ✅ COMPLETED | 2026-01-22 |
+| | 5. README & Documentation | 9/9 | ✅ COMPLETED | 2026-01-22 |
+| | 6. Pre-Submission Verification | 1/1 | ✅ COMPLETED | 2026-01-22 |
+  | 7. Critical Bug Fixes | 2/2 | ✅ COMPLETED | 2026-01-23 |
+  | 8. Tech Debt Cleanup | 4/4 | ✅ COMPLETED | 2026-01-23 |
+  | 9. Security Hardening | 3/3 | ✅ COMPLETED | 2026-01-23 |
+  | 10. Performance Optimization | 4/4 | ✅ COMPLETED | 2026-01-23 |
+   | 11. Testing Infrastructure | 7/7 | ✅ COMPLETED | 2026-01-23 |
+   | 12. Data Quality & Observability | 3/3 | ✅ COMPLETED | 2026-01-23 |
+   | 13. Script Refactoring | 10/10 | ✅ COMPLETED | 2026-01-23 |
+   | 14. Dependency Management | 4/4 | ✅ COMPLETED | 2026-01-23 |
+    | 15. Scaling Preparation | 5/5 | ✅ COMPLETED | 2026-01-24 |
+    | 16. Critical Path Fixes | 3/3 | ✅ COMPLETED | 2026-01-23 |
+      | 17. Verification Reports | 13/13 | ✅ COMPLETED | 2026-01-24 |
+       | 18. Complete Phase 13 Refactoring | 9/9 | ✅ COMPLETED | 2026-01-24 |
+      | 19. Scaling Infrastructure & Testing Integration | 4/4 | ✅ COMPLETED | 2026-01-24 |
+      | 20. Restore Root README Documentation | 0/4 | 📝 PLANNED | - |
+      | 21. Fix Testing Infrastructure | 0/3 | 📝 PLANNED | - |
+      | 22. Recreate Missing Script & Evidence | 0/2 | 📝 PLANNED | - |
+      | 23. Core Tech Debt Cleanup | 0/4 | 📝 PLANNED | - |
+      | 24. Complete Script Refactoring | 0/8 | 📝 PLANNED | - |
 
 
 ---
    ---
 *Roadmap created: 2026-01-22*
-*Roadmap updated: 2026-01-24 (Phase 19 complete - all 19 phases executed and verified)*
-*Total plans: 111 (111 completed)*
+*Roadmap updated: 2026-01-24 (Phases 20-24 added for gap closure from v1.2.0 audit)*
+*Total plans: 111 (111 completed) + 21 planned (gap closure phases)*
 *Total requirements: 30 mapped*
