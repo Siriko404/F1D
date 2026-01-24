@@ -26,19 +26,34 @@ import sys
 import os
 from pathlib import Path
 from datetime import datetime
+import argparse
 import pandas as pd
 import numpy as np
 import yaml
 import shutil
 import importlib.util
-import sys
-from pathlib import Path
 import hashlib
 import json
 import time
 import psutil
 
+# Add parent directory to sys.path for shared module imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Dynamic import for 1.5_Utils.py to comply with naming convention
+try:
+    utils_path = Path(__file__).parent / "1.5_Utils.py"
+    spec = importlib.util.spec_from_file_location("utils", utils_path)
+    utils = importlib.util.module_from_spec(spec)
+    sys.modules["utils"] = utils
+    spec.loader.exec_module(utils)
+    from utils import generate_variable_reference
+except ImportError as e:
+    print(f"Critical Error importing utils: {e}")
+    sys.exit(1)
+
 from shared.symlink_utils import update_latest_link
+from shared.path_utils import validate_input_file, ensure_output_dir
 from shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
@@ -53,6 +68,11 @@ from shared.observability_utils import (
 )
 
 
+def print_dual(msg):
+    """Print message both to stdout and via DualWriter if available."""
+    print(msg, flush=True)
+
+
 def load_config():
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
@@ -61,18 +81,49 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def load_config():
-    """Load configuration from project.yaml"""
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
-    with open(config_path, "r") as f:
-        return yaml.safe_load(f)
+# ==============================================================================
+# CLI argument parsing and prerequisite validation
+# ==============================================================================
 
 
-def validate_input_file(file_path: Path, must_exist: bool = True) -> None:
-    """Validate that input file exists if required"""
-    if must_exist and not file_path.exists():
-        raise FileNotFoundError(f"Input file not found: {file_path}")
-    return None
+def parse_arguments():
+    """Parse command-line arguments for 1.3_BuildTenureMap.py."""
+    parser = argparse.ArgumentParser(
+        description="""
+STEP 1.3: Build Tenure Map
+
+Constructs CEO/firm monthly tenure mapping by tracking CEO
+appointments from metadata. Creates panel dataset linking
+CEOs to firms over time.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
+    )
+
+    return parser.parse_args()
+
+
+def check_prerequisites(root):
+    """Validate all required inputs and prerequisite steps exist."""
+    from shared.dependency_checker import validate_prerequisites
+
+    required_files = {
+        "comp_execucomp.parquet": root
+        / "1_Inputs"
+        / "Execucomp"
+        / "comp_execucomp.parquet",
+    }
+
+    required_steps = {
+        "1.2_LinkEntities": "metadata_linked.parquet",
+    }
+
+    validate_prerequisites(required_files, required_steps)
 
 
 def setup_paths(config):
@@ -89,9 +140,9 @@ def setup_paths(config):
     output_base = root / config["paths"]["outputs"] / "1.3_BuildTenureMap"
     paths["output_dir"] = output_base / timestamp
     paths["log_file"] = output_base / f"{timestamp}.log"
+    paths["latest_dir"] = output_base / "latest"
 
-    # Update latest symlink
-    update_latest_link(paths["output_dir"], link_path=paths["output_dir"])
+    ensure_output_dir(paths["output_dir"])
 
     return paths, timestamp
 
@@ -392,4 +443,19 @@ def main():
 
 
 if __name__ == "__main__":
+    # Parse arguments and check prerequisites
+    args = parse_arguments()
+    root = Path(__file__).parent.parent.parent
+
+    # Handle dry-run mode
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        check_prerequisites(root)
+        print("✓ All prerequisites validated")
+        sys.exit(0)
+
+    # Check prerequisites
+    check_prerequisites(root)
+
+    # Run main processing
     sys.exit(main())
