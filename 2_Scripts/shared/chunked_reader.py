@@ -6,6 +6,7 @@ Provides functions to read large Parquet files in chunks, reducing
 memory footprint while maintaining deterministic processing.
 
 Ref: 10-RESEARCH.md Pattern 5 - PyArrow Dataset API
+Ref: 15-RESEARCH.md Pattern 4 - Memory-Aware Throttling
 """
 
 from pathlib import Path
@@ -15,6 +16,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import psutil
 import time
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 
 def read_in_chunks(
@@ -207,3 +212,95 @@ def track_memory_usage(operation_name: str):
         return wrapper
 
     return decorator
+
+
+class MemoryAwareThrottler:
+    """
+    Adjusts processing parameters based on available memory.
+
+    Monitors system memory usage and recommends chunk size adjustments
+    to prevent OOM errors on memory-constrained systems.
+
+    Ref: 15-RESEARCH.md Pattern 4 - Memory-Aware Throttling
+    Builds on track_memory_usage from 15-04.
+    """
+
+    def __init__(self, max_memory_percent: float = 80.0):
+        """
+        Initialize memory throttler.
+
+        Args:
+            max_memory_percent: Memory usage percentage that triggers throttling
+        """
+        self.max_memory_percent = max_memory_percent
+        self.process = psutil.Process()
+
+    def get_available_memory_mb(self) -> float:
+        """Get available system memory in MB."""
+        mem = psutil.virtual_memory()
+        return mem.available / (1024 * 1024)
+
+    def get_memory_usage_mb(self) -> float:
+        """Get current process memory usage in MB."""
+        mem_info = self.process.memory_info()
+        return mem_info.rss / (1024 * 1024)
+
+    def get_memory_percent(self) -> float:
+        """Get memory usage as percentage of system memory."""
+        return self.process.memory_percent()
+
+    def should_throttle(self) -> bool:
+        """
+        Check if processing should be throttled.
+
+        Returns:
+            True if memory usage exceeds max_memory_percent threshold
+        """
+        return self.get_memory_percent() > self.max_memory_percent
+
+    def get_recommended_chunk_size(
+        self, base_size: int = 10000, file_path: Path = None
+    ) -> int:
+        """
+        Adjust chunk size based on memory pressure.
+
+        Args:
+            base_size: Base chunk size (rows per chunk)
+            file_path: Optional path to Parquet file for row group size
+
+        Returns:
+            Recommended chunk size (rows per chunk)
+        """
+        if self.should_throttle():
+            # Reduce chunk size to 50% when memory is constrained
+            recommended = base_size // 2
+        else:
+            recommended = base_size
+
+        # If file provided, adjust to multiple of row group size
+        if file_path and file_path.exists():
+            try:
+                parquet_file = pq.ParquetFile(file_path)
+                row_group_size = parquet_file.metadata.row_group(0).num_rows
+                # Round to nearest multiple of row group size
+                recommended = max(
+                    row_group_size, (recommended // row_group_size) * row_group_size
+                )
+            except Exception:
+                pass
+
+        return recommended
+
+    def log_memory_status(self, operation_name: str):
+        """
+        Log current memory status for observability.
+
+        Args:
+            operation_name: Name of operation being logged
+        """
+        logger.info(
+            f"Memory status for {operation_name}: "
+            f"{self.get_memory_usage_mb():.2f} MB "
+            f"({self.get_memory_percent():.1f}%), "
+            f"available: {self.get_available_memory_mb():.2f} MB"
+        )
