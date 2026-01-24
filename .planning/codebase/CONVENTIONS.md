@@ -1,183 +1,201 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-01-22
+**Analysis Date:** 2026-01-24
 
 ## Naming Patterns
 
 **Files:**
-- Pattern: `<Stage>.<Step>[.<Substep>]_<PascalCaseName>.py`
-- Examples: `1.1_CleanMetadata.py`, `2.1_TokenizeAndCount.py`, `4.1.1_EstimateCeoClarity_CeoSpecific.py`
-- Stage mapping: 1=Inputs, 2=Scripts, 3=Logs, 4=Outputs (from naming scheme in scripts)
-- Utility files: `<Stage>_<Number>_Utils.py` (e.g., `1.5_Utils.py`, `3.4_Utils.py`)
+- Main scripts: `X.Y_<Name>.py` pattern (e.g., `1.0_BuildSampleManifest.py`, `2.1_TokenizeAndCount.py`)
+- Shared modules: `2_Scripts/shared/<module>.py` using snake_case (e.g., `data_validation.py`, `path_utils.py`)
+- Test files: `test_<module>.py` placed in appropriate test directories (`tests/unit/`, `tests/integration/`, `tests/regression/`)
 
 **Functions:**
-- snake_case naming: `load_config()`, `setup_paths()`, `compute_file_checksum()`, `print_stat()`
-- Descriptive names: `generate_variable_reference()`, `update_latest_symlink()`, `analyze_missing_values()`
+- snake_case (e.g., `validate_dataframe_schema`, `load_config`, `setup_logging`)
+- Descriptive names indicating action and purpose
 
 **Variables:**
-- snake_case naming: `df`, `config`, `paths`, `timestamp`, `stats`
-- Descriptive names: `original_count`, `exact_dupes`, `year_stats`, `vocab_sets`
+- snake_case (e.g., `script_path`, `allowed_dir`, `config`, `timestamp`)
+- Clear, descriptive names
 
 **Classes:**
-- PascalCase naming: `DualWriter`
+- PascalCase for classes (e.g., `DataValidationError`, `PathValidationError`, `TestValidateScriptPath`)
 
 **Constants:**
-- UPPER_CASE: `STATSMODELS_AVAILABLE`, `FUZZ_AVAILABLE`
+- UPPER_SNAKE_CASE (e.g., `ALLOWED_SCRIPT_DIR`, `INPUT_SCHEMAS`, `RAPIDFUZZ_AVAILABLE`)
+
+**Types:**
+- Type hints used extensively via `typing` module
+- `Dict[str, Any]`, `Optional[str]`, `Path`, `Tuple`, etc.
+- All function signatures include type hints
 
 ## Code Style
 
 **Formatting:**
-- No formal formatter configured (no .prettierrc, black, or autopep8 found)
-- Manual indentation (4 spaces apparent from files)
-- Line length appears ~80-120 characters
+- Ruff for linting (no explicit config detected, using defaults)
+- Black for formatting (implied by code style, no explicit config)
+- 88-character line length implied by Black default
 
 **Linting:**
-- No formal linter configured (no .eslintrc, .pylintrc, pyproject.toml)
-- .ruff_cache directory exists but no ruff config found
-- Manual code review appears to be primary enforcement
+- Ruff used (`.ruff_cache` present in repo)
+- No custom ruff configuration in `pyproject.toml`
 
-**Shebang:**
-- Python scripts use: `#!/usr/bin/env python3`
+**Comments:**
+- Section dividers: `# =============================================================================` or `# ================================================================================`
+- Inline comments for complex logic
+- Inline TODO notes for future work
 
 ## Import Organization
 
 **Order:**
-1. Standard library imports (sys, os, pathlib, datetime)
-2. Third-party imports (pandas, numpy, yaml)
-3. Local imports (dynamic importlib.util for utility modules)
+1. Standard library imports (os, sys, pathlib, datetime, typing, etc.)
+2. Third-party imports (pandas, numpy, yaml, scipy, sklearn, etc.)
+3. Local imports (from shared.* or relative imports)
 
 **Pattern:**
 ```python
-import sys
+# Standard library
 import os
+import sys
 from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import importlib.util
+from typing import Dict, Any, Optional
 
-# Dynamic import for utility modules (Python cannot import modules starting with numbers)
-utils_path = Path(__file__).parent / "1.5_Utils.py"
-spec = importlib.util.spec_from_file_location("utils", utils_path)
-utils = importlib.util.module_from_spec(spec)
-sys.modules["utils"] = utils
-spec.loader.exec_module(utils)
-from utils import generate_variable_reference, update_latest_symlink
+# Third-party
+import pandas as pd
+import yaml
+
+# Local (shared modules)
+from shared.data_validation import validate_dataframe_schema
+from shared.path_utils import validate_output_path
 ```
 
-**Path Aliases:**
-- None used - all paths use explicit `Path()` objects with relative paths
+**Import fallback pattern:**
+```python
+try:
+    from shared.observability_utils import DualWriter
+except ImportError:
+    # Fallback if shared/__init__.py hasn't run yet
+    import sys as _sys
+    from pathlib import Path as _Path
+    _script_dir = _Path(__file__).parent.parent
+    _sys.path.insert(0, str(_script_dir))
+    from shared.observability_utils import DualWriter
+```
+
+**Path resolution:**
+- Use `pathlib.Path` exclusively for file paths
+- Resolve to absolute paths: `Path(file).resolve()`
+- Relative to `__file__`: `Path(__file__).parent.parent / "config"`
 
 ## Error Handling
 
-**Patterns:**
-- Try-except with specific exception types
-- Critical errors use `sys.exit(1)` after printing error message
-- Optional dependencies checked with try-except and warning printed
+**Custom exceptions:**
+- `DataValidationError`: Raised when input data validation fails
+- `PathValidationError`: Raised when path validation fails
+- `EnvValidationError`: Raised when environment variable validation fails
 
-**Import error handling:**
+**Exception raising patterns:**
+```python
+# With descriptive messages
+raise ValueError(f"Script must be .py file: {script_path}")
+raise FileNotFoundError(f"Script not found: {script_path}")
+raise PathValidationError(f"Path does not exist: {path}")
+```
+
+**Type validation:**
+```python
+# Check types before processing
+if not isinstance(value, expected_type):
+    raise TypeError(f"Expected {expected_type}, got {type(value)}")
+```
+
+**Optional dependencies:**
 ```python
 try:
-    from rapidfuzz import fuzz, process
-    FUZZ_AVAILABLE = True
+    from rapidfuzz import fuzz
+    RAPIDFUZZ_AVAILABLE = True
 except ImportError:
-    FUZZ_AVAILABLE = False
-    print("Warning: rapidfuzz not available, skipping fuzzy matching")
+    RAPIDFUZZ_AVAILABLE = False
+    warnings.warn("RapidFuzz not installed", ImportWarning)
 ```
-
-**Critical import handling:**
-```python
-try:
-    utils_path = Path(__file__).parent / "1.5_Utils.py"
-    spec = importlib.util.spec_from_file_location("utils", utils_path)
-    utils = importlib.util.module_from_spec(spec)
-    sys.modules["utils"] = utils
-    spec.loader.exec_module(utils)
-    from utils import generate_variable_reference, update_latest_symlink
-except ImportError as e:
-    print(f"Criticial Error importing utils: {e}")
-    sys.exit(1)
-```
-
-**File operation handling:**
-```python
-try:
-    os.symlink(str(output_dir), str(latest_dir), target_is_directory=True)
-except OSError:
-    try:
-        shutil.copytree(str(output_dir), str(latest_dir))
-    except Exception as e:
-        print_fn(f"Warning: Could not create 'latest': {e}")
-```
-
-**Optional features:**
-- Optional features degraded gracefully (e.g., fuzzy matching, statsmodels)
 
 ## Logging
 
-**Framework:** Custom DualWriter class (not using Python's logging module)
+**Framework:**
+- Custom `DualWriter` from `shared.observability_utils`
+- Dual output: terminal stdout AND log file simultaneously
 
-**Patterns:**
-- DualWriter class writes verbatim to both stdout and log file
-- Setup at script start: `sys.stdout = DualWriter(log_path)`
-- Restore before exit: `sys.stdout = dual_writer.terminal; dual_writer.close()`
-
-**DualWriter class pattern:**
+**Pattern:**
 ```python
-class DualWriter:
-    """Writes to both stdout and log file verbatim"""
-    def __init__(self, log_path):
-        self.terminal = sys.stdout
-        self.log = open(log_path, "w", encoding="utf-8")
+from shared.observability_utils import DualWriter
 
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-        self.log.flush()
+# Setup dual logging
+dual_writer = DualWriter(log_path)
+sys.stdout = dual_writer
 
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
+# Use print for all logging (mirrored to both)
+print("Processing data...")
+print(f"Processed {count} rows", flush=True)
 
-    def close(self):
-        self.log.close()
+# Restore stdout
+sys.stdout = dual_writer.terminal
+dual_writer.close()
 ```
 
-**When/how to log:**
-- Every print statement goes to both terminal and log
-- Progress indicators with step descriptions
-- Statistics summaries formatted with `print_stat()` helper
-- Flush frequently to ensure log persistence
+**Log file locations:**
+- `3_Logs/<script_name>/<timestamp>.log`
+- Timestamp format: `%Y-%m-%d_%H%M%S`
+
+**Print pattern:**
+- Use `print()` with `flush=True` for immediate output
+- Progress prints mirrored verbatim between terminal and log file
 
 ## Comments
 
 **When to Comment:**
-- Script headers with metadata blocks
-- Section dividers: `# ==============================================================================`
-- Step descriptions: `# Step 1: Removing exact duplicate rows...`
+- Module headers with triple quotes describing purpose
+- Section dividers with `# ===================================================================`
 - Inline comments for complex logic
+- Security notes for validation functions
 
-**Docstring pattern:**
+**Module header pattern:**
+```python
+#!/usr/bin/env python3
+"""
+===============================================================================
+SHARED MODULE: Path Utilities
+===============================================================================
+ID: shared/path_utils
+Description: Provides robust path validation and directory creation helpers
+
+Inputs:
+    - Path objects for validation (pathlib.Path)
+    - Optional validation flags (must_exist, must_be_writable)
+
+Outputs:
+    - Validated Path objects (resolved to absolute paths)
+    - Created directories (if needed)
+    - Available disk space in GB
+
+Deterministic: true
+===============================================================================
+"""
+```
+
+**Contract headers for scripts:**
 ```python
 """
 ==============================================================================
-STEP 1.1: Clean Metadata & Event Filtering
+STEP 1: Build Sample Manifest (Orchestrator)
 ==============================================================================
-ID: 1.1_CleanMetadata
-Description: Loads Unified-info, deduplicates exact rows, resolves file_name
-             collisions, and filters for earnings calls (event_type='1') in
-             the target date range (2002-2018).
+ID: 1.0_BuildSampleManifest
+Description: Orchestrates the 4-substep process to build the master sample
 
 Inputs:
-    - 1_Inputs/Unified-info.parquet
     - config/project.yaml
 
 Outputs:
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/metadata_cleaned.parquet
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/variable_reference.csv
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/report_step_1_1.md
-    - 3_Logs/1.1_CleanMetadata/{timestamp}.log
+    - 4_Outputs/1.0_BuildSampleManifest/{timestamp}/master_sample_manifest.parquet
+    - 3_Logs/1.0_BuildSampleManifest/{timestamp}.log
 
 Deterministic: true
 ==============================================================================
@@ -185,103 +203,78 @@ Deterministic: true
 ```
 
 **JSDoc/TSDoc:**
-- Not applicable (Python codebase)
-- Function docstrings are plain text, not typed
+- Google-style docstrings with Args, Returns, Raises sections
+```python
+def validate_dataframe_schema(
+    df: pd.DataFrame,
+    schema_name: str,
+    file_path: Path,
+    strict: bool = True
+) -> None:
+    """
+    Validate DataFrame against expected schema.
+
+    Args:
+        df: DataFrame to validate
+        schema_name: Name of schema to use (key in INPUT_SCHEMAS)
+        file_path: Path to source file (for error messages)
+        strict: If True, raise on validation failure; if False, warn and continue
+
+    Raises:
+        DataValidationError: If validation fails and strict=True
+    """
+```
 
 ## Function Design
 
 **Size:**
-- No explicit size limits observed
-- Functions typically 10-30 lines
-- Helper functions for statistics: `print_stat()`, `analyze_missing_values()`, `save_stats()`
-- Processing functions can be longer (50-100 lines) when necessary
+- Functions typically 20-50 lines
+- Helper functions can be shorter (10-20 lines)
+- Complex functions broken into smaller helpers
 
 **Parameters:**
-- Explicit parameter lists (no *args, **kwargs in main functions)
-- Common parameters: `df` (DataFrame), `config` (dict), `paths` (dict), `timestamp` (str)
-- Optional print function: `print_fn=print` for utilities
+- Type hints required for all parameters
+- Default values for optional parameters
+- Use `Optional[T]` for nullable parameters
+```python
+def load_validated_parquet(
+    file_path: Path,
+    schema_name: Optional[str] = None,
+    strict: bool = True
+) -> pd.DataFrame:
+```
 
 **Return Values:**
-- DataFrames for data transformations
-- Dictionaries for statistics/configurations
-- Paths for directory setup
-- None for side-effect functions (logging, file writing)
+- Type hints required for return values
+- Return typed objects (DataFrames, Paths, dicts)
+- Use `-> None` for void functions
+```python
+def validate_dataframe_schema(...) -> None:
+def load_validated_parquet(...) -> pd.DataFrame:
+def get_process_memory_mb() -> Dict[str, float]:
+```
 
 ## Module Design
 
 **Exports:**
-- Utility modules export named functions: `generate_variable_reference`, `update_latest_symlink`, `get_latest_output_dir`, `load_master_variable_definitions`
-- Main scripts are executable (no imports, just `if __name__ == "__main__": main()`)
+- Exported via `from module import function_name`
+- No `__all__` declarations detected
+- All public functions exported by default
 
 **Barrel Files:**
-- Not used
-- Each step imports utility modules dynamically via importlib
+- `2_Scripts/shared/` contains utility modules imported by main scripts
+- No explicit barrel/__init__.py detected
 
-**Configuration:**
-- Central config: `config/project.yaml` (YAML)
-- Loading pattern: `yaml.safe_load()` from `Path(__file__).parent.parent.parent / "config" / "project.yaml"`
-- No environment variables used (except possibly for path resolution)
+**Shared utilities pattern:**
+- Common utilities in `2_Scripts/shared/`
+- Modules: `data_validation.py`, `path_utils.py`, `subprocess_validation.py`, `string_matching.py`, etc.
+- Each module has clear purpose and security notes
 
-## Data Processing Patterns
-
-**Paths:**
-- Always use `pathlib.Path` for file operations
-- Relative paths from project root: `root = Path(__file__).parent.parent.parent`
-- Consistent directory structure: `1_Inputs/`, `2_Scripts/`, `3_Logs/`, `4_Outputs/`
-
-**DataFrames:**
-- Pandas for all data manipulation
-- Parquet format for intermediate files: `.to_parquet()`, `.read_parquet()`
-- CSV for references/reports: `.to_csv()`, `.read_csv()`
-- JSON for statistics: `json.dump()` with `indent=2, default=str`
-
-**Statistics Collection:**
-- Consistent stats dictionary structure:
-```python
-stats = {
-    "step_id": "1.1_CleanMetadata",
-    "timestamp": timestamp,
-    "input": {"files": [], "checksums": {}, "total_rows": 0},
-    "processing": {},
-    "output": {"final_rows": 0},
-    "missing_values": {},
-    "timing": {"start_time": ..., "end_time": ..., "duration_seconds": 0.0}
-}
-```
-
-**Checksums:**
-- SHA256 for file integrity: `compute_file_checksum(filepath, algorithm="sha256")`
-- 8KB chunks for memory efficiency
-
-**Timestamps:**
-- ISO format: `datetime.now().isoformat()`
-- Directory format: `datetime.now().strftime("%Y-%m-%d_%H%M%S")`
-
-**Symlinks:**
-- Latest directory is symlink to timestamped directory
-- Fallback to copytree on Windows without admin rights
-- Pattern: `update_latest_symlink(latest_dir, output_dir, print_fn)`
-
-## Script Structure
-
-**Main script template:**
-1. Header docstring (ID, Description, Inputs, Outputs, Deterministic)
-2. Imports (std lib, third-party, local via importlib)
-3. DualWriter class definition
-4. Statistics helper functions
-5. Configuration/path setup functions
-6. Main processing functions
-7. `main()` entry point with:
-   - Load config
-   - Setup paths
-   - Setup dual logging
-   - Initialize stats
-   - Processing steps
-   - Generate reports
-   - Update symlink
-   - Save stats
-8. `if __name__ == "__main__": sys.exit(main())`
+**Determinism:**
+- All scripts declare `Deterministic: true` in contract header
+- Functions use deterministic algorithms (e.g., z-score with fixed threshold)
+- Hash-based checksums (SHA-256) for regression testing
 
 ---
 
-*Convention analysis: 2026-01-22*
+*Convention analysis: 2026-01-24*

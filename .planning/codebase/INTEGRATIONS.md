@@ -1,116 +1,166 @@
 # External Integrations
 
-**Analysis Date:** 2026-01-22
+**Analysis Date:** 2026-01-24
 
 ## APIs & External Services
 
-**None Detected:**
-- No external API calls detected in codebase
-- No HTTP/HTTPS network requests
-- All processing is local file-based
+**None detected**
+
+The pipeline operates entirely on local files and does not integrate with any external APIs or web services.
+
+- No HTTP requests to external services
+- No webhooks or callbacks
+- No API keys or authentication tokens required
 
 ## Data Storage
 
 **Databases:**
-- None (file-based storage only)
+- None (no external database connections)
+
+**Local Data Files:**
+All data stored locally in `1_Inputs/` directory:
+- **Earnings Call Data:**
+  - `Unified-info.parquet` (55 MB) - Call metadata
+  - `speaker_data_2002.parquet` through `speaker_data_2018.parquet` (2.5 GB total) - Transcript data
+  - `managerial_roles_extracted.txt` - Role definitions
+
+- **Text Processing Resources:**
+  - `Loughran-McDonald_MasterDictionary_1993-2024.csv` (9 MB) - Financial sentiment dictionary
+  - Format: CSV (text file)
+
+- **Financial Data:**
+  - `CRSPCompustat_CCM/` - Linking table (GVKEY-PERMNO)
+  - `CRSP_DSF/` - Daily stock returns
+  - `comp_na_daily_all/` - Compustat North America daily
+  - `tr_ibes/` - IBES analyst forecasts
+  - `Execucomp/` - Executive compensation data
+  - Format: Parquet files
+
+- **Event Data:**
+  - `SDC/` - M&A deal data (Thomson Reuters SDC database files)
+  - `CEO Dismissal Data 2021.02.03.xlsx` - Excel file
+  - Format: Proprietary data files, Excel
+
+- **Reference Data:**
+  - `Siccodes12.zip`, `Siccodes48.zip` - Industry classification codes
+  - `CCCL instrument/instrument_shift_intensity_2005_2022.parquet` - Instrumental variable data
+  - `master_variable_definitions.csv` - Variable definitions
 
 **File Storage:**
-- Local filesystem in `1_Inputs/` directory
-- Data formats: Parquet (`.parquet`), CSV (`.csv`), Excel (`.xlsx`)
-- Output storage: Timestamped directories in `4_Outputs/`
+- **Primary:** Local filesystem
+- **Format:** Parquet (columnar), CSV, Excel, ZIP
+- **Client:** pandas.read_parquet() (PyArrow engine), pandas.read_csv(), pandas.read_excel()
 
 **Caching:**
-- None (direct file reads)
+- None (no external caching services)
+- Local file caching via Parquet format
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- None required (local data processing only)
+- None (no authentication required)
+
+**Implementation:**
+- No user accounts or identity management
+- No third-party auth (OAuth, SSO, etc.)
+- All data access is local file-based
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None (manual log file review in `3_Logs/`)
+- None (no external error tracking services)
 
 **Logs:**
-- Approach: Custom dual-write logger (stdout + file) in each script
-- Location: `3_Logs/{step_name}/{timestamp}.log`
-- Format: Plain text with optional sibling `.jsonl`
-- No centralized logging service
+- **Approach:** Local file logging to `3_Logs/` directory
+- **Format:** Plain text logs with timestamps
+- **Implementation:** DualWriter class in `2_Scripts/shared/observability_utils.py`
+  - Writes same output to stdout and log file
+  - No remote logging or aggregation
+
+**System Monitoring:**
+- psutil 7.2.1 for local memory/CPU tracking
+- Logged to console and log files
+- No external monitoring dashboards or APM tools
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- None (local execution only)
+- GitHub (version control and issue tracking)
+- No production hosting required (local execution pipeline)
 
 **CI Pipeline:**
-- None (manual script execution)
-- No GitHub Actions, GitLab CI, or other automation
+- **Service:** GitHub Actions (`.github/workflows/test.yml`)
+- **Trigger:** Push to main/master branches, pull requests
+- **Matrix Testing:** Python 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
+- **Test Types:**
+  - Unit and integration tests (pytest, skip E2E)
+  - E2E tests (separate job, Python 3.10 only)
+- **Coverage:**
+  - pytest-cov for coverage reports
+  - Optional Codecov upload (fail_on_error: false)
+  - Coverage artifacts uploaded as GitHub artifacts
+- **Timeout:** 30 minutes for E2E tests
+
+**Deployment:**
+- None (local execution only)
+- No Docker containers
+- No cloud platforms (AWS, GCP, Azure)
 
 ## Environment Configuration
 
 **Required env vars:**
-- None (configuration via `config/project.yaml`)
+- None for basic operation
+
+**Optional env vars:**
+- None detected
 
 **Secrets location:**
-- No secrets required (all data is local files)
-- No API keys or credentials
+- No secrets required
+- No .env files
+- No secret management (no external secrets vaults)
+- All data is local files in `1_Inputs/`
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None (no webhook endpoints)
+- None
 
 **Outgoing:**
-- None (no external service notifications)
+- None
 
-## Data Source Integrations
+## Third-Party Data Sources
 
-**WRDS Datasets (Downloaded & Local):**
-The pipeline integrates with multiple financial data sources from Wharton Research Data Services (WRDS), but all data is downloaded and stored locally:
+**Commercial Data Providers:**
+- **Capital IQ** - Earnings call transcripts (source data in `1_Inputs/`)
+  - Format: Local Parquet files (pre-downloaded)
+  - No API integration (offline processing)
+- **CRSP** - Stock return data (source data in `1_Inputs/`)
+  - Format: Local Parquet files (pre-downloaded)
+  - No API integration
+- **Compustat** - Financial statement data (source data in `1_Inputs/`)
+  - Format: Local Parquet files (pre-downloaded)
+  - No API integration
+- **IBES** - Analyst forecasts (source data in `1_Inputs/`)
+  - Format: Local files (pre-downloaded)
+  - No API integration
+- **Execucomp** - Executive compensation data (source data in `1_Inputs/`)
+  - Format: Local files (pre-downloaded)
+  - No API integration
+- **Thomson Reuters SDC** - M&A deal data (source data in `1_Inputs/SDC/`)
+  - Format: Proprietary database files (pre-downloaded)
+  - No API integration
 
-- **EventStudy** (`1_Inputs/Unified-info.parquet`, `1_Inputs/speaker_data_YYYY.parquet`)
-  - Purpose: Earnings call transcripts 2002-2018
-  - Access: Institutional subscription (downloaded locally)
-  - No live API connection
+**Note:** All commercial data sources are provided as pre-downloaded local files. No live API connections to data providers.
 
-- **Loughran-McDonald** (`1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv`)
-  - Purpose: Financial sentiment dictionary
-  - Source: Public GitHub repository
-  - No authentication required
+## Build Dependencies
 
-- **CRSP-Compustat CCM** (`1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet`)
-  - Purpose: GVKEY-PERMNO linkage, quarterly fundamentals
-  - Access: WRDS subscription (downloaded locally)
-
-- **CRSP DSF** (`1_Inputs/CRSP_DSF/CRSP_DSF_*.parquet`)
-  - Purpose: Daily stock returns and prices
-  - Access: WRDS subscription (downloaded locally)
-
-- **Compustat North America Daily** (`1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet`)
-  - Purpose: Daily fundamental data
-  - Access: WRDS subscription (downloaded locally)
-
-- **IBES** (`1_Inputs/tr_ibes/`)
-  - Purpose: Analyst forecasts and actuals
-  - Access: WRDS subscription (downloaded locally)
-
-- **Execucomp** (`1_Inputs/Execucomp/comp_execucomp.parquet`)
-  - Purpose: Executive compensation data
-  - Access: WRDS subscription (downloaded locally)
-
-- **SDC Platinum** (`1_Inputs/SDC/sdc-ma-merged.parquet`)
-  - Purpose: Merger and acquisition data
-  - Access: WRDS subscription (downloaded locally)
-
-- **CCCL Instrument** (`1_Inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet`)
-  - Purpose: Industry-level competition shift intensity
-  - Source: Provided by data provider
-  - No authentication required
-
-**Integration Pattern:**
-All WRDS data is downloaded manually and stored locally. The pipeline reads from these static files using pandas/pyarrow. No live database connections or API calls.
+**External Compilers:**
+- g++ (GNU C++ compiler) or compatible
+  - Used for compiling C++ tokenization utilities
+  - Configured in `config/project.yaml` (step_03.compiler)
+  - Flags: -std=c++17 -O2 -Wall -Wextra
+  - Required for: Step 3 text processing (2.1_TokenizeAndCount.py)
 
 ---
 
-*Integration audit: 2026-01-22*
+*Integration audit: 2026-01-24*
