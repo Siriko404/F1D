@@ -13,6 +13,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import psutil
 
+# Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
+# Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
+
 # Import shared symlink utility for 'latest' link management
 try:
     from shared.symlink_utils import update_latest_link
@@ -416,7 +419,18 @@ def process_year_worker(
     }
 
     validate_input_file(input_path, must_exist=True)
-    df = pd.read_parquet(input_path)
+    df = pd.read_parquet(
+        input_path,
+        columns=[
+            "file_name",
+            "speaker_text",
+            "speaker_number",
+            "context",
+            "role",
+            "speaker_name",
+            "employer",
+        ],
+    )
     initial_rows = len(df)
     year_stats["input_rows"] = initial_rows
 
@@ -501,7 +515,18 @@ def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir)
     }
 
     validate_input_file(input_path, must_exist=True)
-    df = pd.read_parquet(input_path)
+    df = pd.read_parquet(
+        input_path,
+        columns=[
+            "file_name",
+            "speaker_text",
+            "speaker_number",
+            "context",
+            "role",
+            "speaker_name",
+            "employer",
+        ],
+    )
     initial_rows = len(df)
     year_stats["input_rows"] = initial_rows
 
