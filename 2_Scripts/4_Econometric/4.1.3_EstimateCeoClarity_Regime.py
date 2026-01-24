@@ -62,6 +62,7 @@ from shared.regression_validation import (
     validate_sample_size,
 )
 from shared.regression_helpers import build_regression_sample
+from shared.data_loading import load_all_data
 from shared.observability_utils import (
     compute_file_checksum,
     print_stat,
@@ -116,118 +117,8 @@ CONFIG = {
     },
 }
 
+
 # ==============================================================================
-# Data Loading
-# ==============================================================================
-def load_all_data(root, year_start, year_end, stats=None):
-    """Load and merge all input data sources."""
-    print("\n" + "=" * 60)
-    print("Loading and merging data")
-    print("=" * 60)
-
-    # Load manifest
-    manifest_path = (
-        root
-        / "4_Outputs"
-        / "1.0_BuildSampleManifest"
-        / "latest"
-        / "master_sample_manifest.parquet"
-    )
-    manifest = pd.read_parquet(
-        manifest_path,
-        columns=[
-            "file_name",
-            "gvkey",
-            "start_date",
-            "ceo_id",
-            "ceo_name",
-            "ff12_code",
-            "ff12_name",
-        ],
-    )
-    print(f"  Manifest: {len(manifest):,} calls")
-    if stats:
-        stats["input"]["files"].append(str(manifest_path))
-        stats["input"]["checksums"]["manifest"] = compute_file_checksum(manifest_path)
-
-    # Load linguistic variables, firm controls, market variables per year
-    all_data = []
-
-    for year in range(year_start, year_end + 1):
-        # Linguistic variables
-        # Linguistic variables
-        lv_path = (
-            root
-            / "4_Outputs"
-            / "2_Textual_Analysis"
-            / "2.2_Variables"
-            / "latest"
-            / f"linguistic_variables_{year}.parquet"
-        )
-        if not lv_path.exists():
-            print(f"  WARNING: Missing linguistic_variables_{year}.parquet")
-            continue
-
-        lv = pd.read_parquet(lv_path)
-
-        # Drop columns that would conflict with manifest (keep manifest versions)
-        lv_drop_cols = [c for c in ["gvkey", "year", "start_date"] if c in lv.columns]
-        if lv_drop_cols:
-            lv = lv.drop(columns=lv_drop_cols)
-
-        # Firm controls
-        fc_path = (
-            root
-            / "4_Outputs"
-            / "3_Financial_Features"
-            / "latest"
-            / f"firm_controls_{year}.parquet"
-        )
-        fc = pd.read_parquet(fc_path) if fc_path.exists() else pd.DataFrame()
-
-        # Market variables
-        mv_path = (
-            root
-            / "4_Outputs"
-            / "3_Financial_Features"
-            / "latest"
-            / f"market_variables_{year}.parquet"
-        )
-        mv = pd.read_parquet(mv_path) if mv_path.exists() else pd.DataFrame()
-
-        # Merge for this year
-        # Manifest contains all files; filter to this year based on linguistic variables
-        year_files = set(lv["file_name"])
-        mf_year = manifest[manifest["file_name"].isin(year_files)].copy()
-
-        # Merge linguistic variables
-        merged = mf_year.merge(lv, on="file_name", how="left")
-
-        # Merge firm controls
-        if len(fc) > 0:
-            fc_cols = ["file_name"] + [
-                c for c in fc.columns if c in CONFIG["firm_controls"]
-            ]
-            merged = merged.merge(fc[fc_cols], on="file_name", how="left")
-
-        # Merge market variables
-        if len(mv) > 0:
-            mv_cols = ["file_name"] + [
-                c for c in mv.columns if c in CONFIG["firm_controls"]
-            ]
-            merged = merged.merge(mv[mv_cols], on="file_name", how="left")
-
-        merged["year"] = year
-        all_data.append(merged)
-        print(f"  {year}: {len(merged):,} calls")
-
-    combined = pd.concat(all_data, ignore_index=True)
-    print(f"\n  Total: {len(combined):,} calls")
-    print(f"  Unique CEOs: {combined['ceo_id'].nunique():,}")
-    print(f"  Unique firms: {combined['gvkey'].nunique():,}")
-
-    return combined
-
 # ==============================================================================
 # Data Preparation
 # ==============================================================================
@@ -275,6 +166,7 @@ def prepare_regression_data(df, stats=None):
         print(f"    {sample}: {n:,} calls")
 
     return df
+
 
 # ==============================================================================
 # Regression Estimation
@@ -352,9 +244,11 @@ def run_regression(df_sample, sample_name):
 
     return model, df_reg, valid_ceos
 
+
 # ==============================================================================
 # Extract CEO Fixed Effects
 # ==============================================================================
+
 
 def extract_ceo_fixed_effects(model, df_reg, sample_name):
     """Extract gamma_i coefficients and compute Clarity scores."""
@@ -401,6 +295,7 @@ def extract_ceo_fixed_effects(model, df_reg, sample_name):
     )
 
     return ceo_fe
+
 
 # ==============================================================================
 # Compute CEO-Level Statistics
@@ -455,6 +350,7 @@ def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
 
     return ceo_scores
 
+
 # ==============================================================================
 # Model Diagnostics
 # ==============================================================================
@@ -474,6 +370,7 @@ def compute_diagnostics(model, sample_name, n_ceos, n_firms):
         "aic": model.aic,
         "bic": model.bic,
     }
+
 
 # ==============================================================================
 # Save Outputs
@@ -574,6 +471,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
 
     return ceo_scores_df
 
+
 # ==============================================================================
 # Generate Report
 # ==============================================================================
@@ -646,6 +544,7 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
 
     print(f"  Saved: report_step4_1.md")
 
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -654,7 +553,35 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
 def main(year_start=None, year_end=None):
     """Main execution."""
     start_time = datetime.now()
+    start_iso = start_time.isoformat()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
+
+    # Initialize observability
+    mem_start = get_process_memory_mb()
+    memory_readings = [mem_start["rss_mb"]]
+
+    stats = {
+        "step_id": "4.1.3_EstimateCeoClarity_Regime",
+        "timestamp": timestamp,
+        "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
+        "processing": {},
+        "regressions": {},
+        "output": {"final_rows": 0, "final_columns": 0, "files": [], "checksums": {}},
+        "missing_values": {},
+        "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
+        "memory": {
+            "start_mb": mem_start["rss_mb"],
+            "end_mb": 0.0,
+            "peak_mb": 0.0,
+            "delta_mb": 0.0,
+        },
+        "throughput": {
+            "rows_per_second": 0.0,
+            "total_rows": 0,
+            "duration_seconds": 0.0,
+        },
+        "quality_anomalies": {},
+    }
 
     # Override config if provided
     if year_start:
@@ -792,6 +719,7 @@ def main(year_start=None, year_end=None):
     sys.stdout = dual_writer.terminal
 
     return 0
+
 
 if __name__ == "__main__":
     year_start = int(sys.argv[1]) if len(sys.argv) > 1 else None
