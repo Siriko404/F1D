@@ -15,6 +15,8 @@ import time
 
 pytestmark = pytest.mark.e2e  # Mark all tests in this file as E2E
 
+# Get repository root from test file location
+REPO_ROOT = Path(__file__).parent.parent.parent
 
 # Define the complete pipeline execution order
 PIPELINE_SCRIPTS = [
@@ -116,13 +118,13 @@ def get_output_dir(script_path: str) -> Path:
     script_name = Path(script_path).stem
 
     if "/1_Sample/" in script_path:
-        return Path(f"4_Outputs/{script_name}/latest")
+        return REPO_ROOT / f"4_Outputs/{script_name}/latest"
     elif "/2_Text/" in script_path:
-        return Path(f"4_Outputs/2_Textual_Analysis/{script_name}/latest")
+        return REPO_ROOT / f"4_Outputs/2_Textual_Analysis/{script_name}/latest"
     elif "/3_Financial/" in script_path:
-        return Path(f"4_Outputs/3_Financial/{script_name}/latest")
+        return REPO_ROOT / f"4_Outputs/3_Financial/{script_name}/latest"
     elif "/4_Econometric/" in script_path:
-        return Path(f"4_Outputs/4_Econometric/{script_name}/latest")
+        return REPO_ROOT / f"4_Outputs/4_Econometric/{script_name}/latest"
     else:
         raise ValueError(f"Unknown script path format: {script_path}")
 
@@ -238,7 +240,7 @@ def test_full_pipeline_execution():
     print(f"  Average per script: {total_duration / len(PIPELINE_SCRIPTS):.2f}s")
 
     # Verify final critical outputs exist (Step 4 results)
-    final_outputs_dir = Path("4_Outputs/4_Econometric/4.3_TakeoverHazards/latest")
+    final_outputs_dir = REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
     assert final_outputs_dir.exists(), "Final Step 4 output directory not created"
 
     # Check for at least one output file from the final script
@@ -265,11 +267,13 @@ def test_pipeline_data_flow():
     but verifies the pipeline's data structure is intact.
     """
     # Check Step 1 final output exists
-    step1_output = Path("4_Outputs/1.4_AssembleManifest/latest")
+    step1_output = REPO_ROOT / "4_Outputs/1.4_AssembleManifest/latest"
     assert step1_output.exists(), f"Step 1 output directory missing: {step1_output}"
 
     # Check Step 2 final output exists (critical for Step 4)
-    step2_output = Path("4_Outputs/2_Textual_Analysis/2.2_ConstructVariables/latest")
+    step2_output = (
+        REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.2_ConstructVariables/latest"
+    )
     assert step2_output.exists(), f"Step 2 output directory missing: {step2_output}"
 
     # Verify linguistic_variables.parquet exists (Step 4 needs this)
@@ -280,11 +284,11 @@ def test_pipeline_data_flow():
     )
 
     # Check Step 3 outputs exist
-    step3_output = Path("4_Outputs/3_Financial/3.3_EventFlags/latest")
+    step3_output = REPO_ROOT / "4_Outputs/3_Financial/3.3_EventFlags/latest"
     assert step3_output.exists(), f"Step 3 output directory missing: {step3_output}"
 
     # Check Step 4 outputs exist
-    step4_output = Path("4_Outputs/4_Econometric/4.3_TakeoverHazards/latest")
+    step4_output = REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
     assert step4_output.exists(), f"Step 4 output directory missing: {step4_output}"
 
     # Verify at least one output file in Step 4
