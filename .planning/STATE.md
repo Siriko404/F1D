@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
  Phase: 18 of 19 (Complete Phase 13 Refactoring)
-Plan: 3 of 3 (plans complete)
-Status: Phase complete
-Last activity: 2026-01-24 - Completed 18-06-PLAN.md (unit tests for regression_helpers.py)
+ Plan: 5 of 6 (plans complete)
+ Status: In progress
+ Last activity: 2026-01-24 - Completed 18-01-PLAN.md (use shared.string_matching.match_company_names())
 
- Progress: [███████████] 94% (18/19 phases complete, 19 planned)
+ Progress: [████████████] 87% (18/19 phases complete, 19 planned)
 Technical Remediation: [████████████] 100% (All phases 7-16 complete)
 Gap Closure: [███████████] 100% (Phase 16-18 complete, ready for Phase 19)
 
@@ -90,6 +90,12 @@ None.
 ## Phase 18 Achievements
 
 **Completed 2026-01-24:**
+
+✅ **18-01-PLAN.md:** Use shared.string_matching.match_company_names()
+   - Verified work already completed by 18-04
+   - 1.2_LinkEntities.py uses match_company_names() from shared module
+   - Line count reduced to 847 (<1020 target, 19.7% reduction from 1043)
+   - All inline RapidFuzz calls replaced with shared function
 
 ✅ **18-04-PLAN.md:** Fix 1.2_LinkEntities.py refactoring
    - Replaced inline RapidFuzz.process.extractOne() calls with match_company_names() from shared.string_matching
