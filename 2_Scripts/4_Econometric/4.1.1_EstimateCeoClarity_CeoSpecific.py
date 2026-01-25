@@ -41,6 +41,11 @@ import time
 import psutil
 import argparse
 
+# Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
+# Script is in 2_Scripts/4_Econometric/, need to add 2_Scripts/ to path
+scripts_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(scripts_dir))
+
 # ==============================================================================
 # CLI Arguments & Prerequisites
 # ==============================================================================
