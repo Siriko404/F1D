@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
 Plan: 10 of 10 in current phase
 Status: ✅ PHASE COMPLETE
-Last activity: 2026-01-25 - Completed Quick Task 012: Fixed Windows Unicode character in 4.1.1_EstimateCeoClarity_CeoSpecific.py
+Last activity: 2026-01-25 - Completed Quick Task 013: Fixed Windows Unicode character in 4.1.2_EstimateCeoClarity_Extended.py
 
 Progress: [██████████░] 100% (130/130 plans complete)
 
@@ -264,6 +264,7 @@ Recent decisions affecting current work:
 | 010 | Verify Step 3.4_Utils.py is a library module - confirmed no CLI, imports via importlib.util | 2026-01-25 | N/A | [010-verify-step34-dryrun](./quick/010-verify-step34-dryrun/) |
 | 011 | Verify Step 4.1 dry run functionality - fixed missing imports, CONFIG dict, Windows Unicode | 2026-01-25 | e9f9344 | [011-verify-step41-dryrun](./quick/011-verify-step41-dryrun/) |
 | 012 | Verify Step 4.1.1 dry run functionality - fixed Windows Unicode character in 4.1.1 script | 2026-01-25 | dfc0789 | [012-verify-step411-dryrun](./quick/012-verify-step411-dryrun/) |
+| 013 | Verify Step 4.1.2 dry run functionality - fixed Windows Unicode character in 4.1.2 script | 2026-01-25 | 4a748c3 | [013-verify-step412-dryrun](./quick/013-verify-step412-dryrun/) |
 
 ### Blockers/Concerns
 
