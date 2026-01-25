@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
 Plan: 10 of 10 in current phase
 Status: ✅ PHASE COMPLETE
-Last activity: 2026-01-25 - Completed Quick Task 016: Fixed Windows Unicode character in 4.2_LiquidityRegressions.py
+Last activity: 2026-01-25 - Completed Quick Task 017: Fixed Windows Unicode character in 4.3_TakeoverHazards.py
 
 Progress: [██████████░] 100% (130/130 plans complete)
 
@@ -268,6 +268,7 @@ Recent decisions affecting current work:
 | 014 | Verify Step 4.1.3 dry run functionality - fixed Windows Unicode character in 4.1.3 script | 2026-01-25 | be5ed13 | [014-verify-step413-dryrun](./quick/014-verify-step413-dryrun/) |
 | 015 | Verify Step 4.1.4 dry run functionality - fixed Windows Unicode character in 4.1.4 script | 2026-01-25 | 7a87e55 | [015-verify-step414-dryrun](./quick/015-verify-step414-dryrun/) |
 | 016 | Verify Step 4.2 dry run functionality - fixed Windows Unicode character in 4.2 script | 2026-01-25 | 4ae2b67 | [016-verify-step42-dryrun](./quick/016-verify-step42-dryrun/) |
+| 017 | Verify Step 4.3 dry run functionality - fixed Windows Unicode character in 4.3 script | 2026-01-25 | 8ad994f | [017-verify-step43-dryrun](./quick/017-verify-step43-dryrun/) |
 
 ### Blockers/Concerns
 
