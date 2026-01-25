@@ -32,21 +32,30 @@ def validate_prerequisites(
     Validates all required inputs and prerequisite step outputs.
 
     Args:
-        required_files: Dict of {name: Path} for input files to check
-        required_steps: Dict of {step_name: expected_output_file} for prerequisite steps
+        required_files: Dict of {name: Path} for input files or directories to check
+        required_steps: Dict of {name: expected_output_file} for prerequisite steps
 
     Raises:
         SystemExit: If validation fails with error code 1
     """
     errors = []
 
-    # Check input files
+    # Check input files and directories
     if required_files:
         from shared.path_utils import validate_input_file, PathValidationError
 
         for name, path in required_files.items():
             try:
-                validate_input_file(path, must_exist=True)
+                # Check if it's a directory (name ends with /) or file
+                if name.endswith("/"):
+                    # Directory validation
+                    if not path.exists():
+                        errors.append(f"Missing input directory: {name} ({path})")
+                    elif not path.is_dir():
+                        errors.append(f"Path exists but is not a directory: {name} ({path})")
+                else:
+                    # File validation
+                    validate_input_file(path, must_exist=True)
             except PathValidationError as e:
                 errors.append(f"Missing input file: {name} ({path})")
 
