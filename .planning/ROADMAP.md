@@ -44,7 +44,7 @@ This roadmap transforms an existing 4-stage research data pipeline into a fully 
 
 **Post-Audit Validation:** (25-25.1)
 - [x] **Phase 25: Execute Full Pipeline E2E Test** - Validate all 17 scripts execute successfully end-to-end ✅ COMPLETED 2026-01-24
-- [ ] **Phase 25.1: Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED)** - Urgent: Ensure scripts run independently manually (NOT PLANNED YET)
+- [x] **Phase 25.1: Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED)** - Urgent: Ensure scripts run independently manually ✅ COMPLETED 2026-01-25
 
 ## Phase Details
 
@@ -540,17 +540,20 @@ Plans:
 **Goal**: Ensure all 17 scripts can be run sequentially and individually manually (not with any orchestrator script)
 **Depends on**: Phase 25
 **Urgent**: Pipeline has issues with functionality - scripts need to run independently
-**Plans**: 8 plans (5 completed, 3 gap closure)
+**Status**: ✅ COMPLETED 2026-01-25 (10 plans in 2 waves, all gap closure complete)
+**Verification**: 21/21 scripts verified (100%) - all scripts support --help, --dry-run, and prerequisite validation
 
 Plans:
 - [x] 25.1-01: Create dependency checking utilities (Wave 1) ✅
 - [x] 25.1-02: Add CLI validation to Step 1 scripts (Wave 2) ✅
 - [x] 25.1-03: Add CLI validation to Step 2 scripts (Wave 2) ✅
 - [x] 25.1-04: Add CLI validation to Step 3 scripts (Wave 2) ✅
-- [x] 25.1-05: Add CLI validation to Step 4 scripts (Wave 3) ✅ (partial)
-- [x] 25.1-06: Add CLI validation to 1.0_BuildSampleManifest.py (Wave 1 - gap closure)
-- [x] 25.1-07: Add CLI validation to Step 4.1x scripts (Wave 1 - gap closure)
-- [x] 25.1-08: Add CLI validation to Step 4 regression scripts (Wave 1 - gap closure)
+- [x] 25.1-05: Add CLI validation to Step 4 scripts (Wave 3) ✅
+- [x] 25.1-06: Add CLI validation to 1.0_BuildSampleManifest.py (Wave 1 - gap closure) ✅
+- [x] 25.1-07: Add CLI validation to Step 4.1x scripts (Wave 1 - gap closure) ✅
+- [x] 25.1-08: Add CLI validation to Step 4 regression scripts (Wave 1 - gap closure) ✅
+- [x] 25.1-09: Add CLI validation to 2.3_Report.py (Wave 2 - gap closure) ✅
+- [x] 25.1-10: Fix sys.path in 4.1.1 for shared imports (Wave 2 - gap closure) ✅
 
 **Details:**
 Phase 25.1 makes all 17 pipeline scripts executable independently by hand, without relying on pytest orchestrator (test_full_pipeline.py). Currently, scripts validate some inputs via shared utilities but lack comprehensive dependency checking and CLI validation.
@@ -596,7 +599,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
           | 23. Core Tech Debt Cleanup | 8/8 | ✅ COMPLETED | 2026-01-24 |
           | 24. Complete Script Refactoring | 8/8 | ✅ COMPLETED | 2026-01-24 |
            | 25. Execute Full Pipeline E2E Test | 1/1 | ✅ COMPLETED | 2026-01-24 |
-            | 25.1. Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED) | 0/5 | PLANNED | 2026-01-24 |
+            | 25.1. Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED) | 10/10 | ✅ COMPLETED | 2026-01-25 |
 
 
 
@@ -607,5 +610,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 *Roadmap updated: 2026-01-24 (Phase 25 added for post-audit validation)*
 *Roadmap updated: 2026-01-24 (All 120 plans complete - 100%)*
 *Roadmap updated: 2026-01-24 (Phase 25.1 inserted - urgent work for manual script execution)*
-*Total plans: 125 (120 completed, 5 planned)*
+*Roadmap updated: 2026-01-25 (Phase 25.1 complete - all 21 pipeline scripts support manual execution)*
+*Total plans: 130 (130 completed - 100%)*
 *Total requirements: 30 mapped*
