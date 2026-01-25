@@ -65,7 +65,7 @@ def validate_prerequisites(
         print_prerequisite_errors(errors)
         sys.exit(1)
     else:
-        print("✓ All prerequisites validated")
+        print("[OK] All prerequisites validated")
 
 
 def validate_prerequisite_step(
