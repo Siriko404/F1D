@@ -41,6 +41,10 @@ import time
 from functools import lru_cache
 import argparse
 
+# Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
+scripts_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(scripts_dir))
+
 # Try importing statsmodels
 try:
     import statsmodels.formula.api as smf
@@ -49,6 +53,16 @@ try:
 except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
+
+# Import shared utility modules
+from shared.observability_utils import (
+    compute_file_checksum,
+    print_stats_summary,
+    save_stats,
+    analyze_missing_values,
+    DualWriter,
+)
+from shared.symlink_utils import update_latest_link
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -103,7 +117,29 @@ def check_prerequisites(root):
 
 
 # ==============================================================================
-# Cached File Loading (Performance Optimization)
+# Configuration
+# ==============================================================================
+
+CONFIG = {
+    "dependent_var": "Manager_QA_Uncertainty_pct_mean",
+    "linguistic_controls": [
+        "Manager_Pres_Uncertainty_pct_mean",
+        "Analyst_Pres_Uncertainty_pct_mean",
+        "Analyst_QA_Uncertainty_pct_mean",
+        "Entire_All_Negative_pct_mean",
+    ],
+    "firm_controls": [
+        "StockRet",
+        "MarketRet",
+        "EPS_Growth",
+        "SurpDec",
+    ],
+    "min_calls_per_ceo": 5,
+    "year_start": 2002,
+    "year_end": 2018,
+}
+
+
 # ==============================================================================
 # Cached File Loading (Performance Optimization)
 # ==============================================================================
@@ -865,7 +901,7 @@ if __name__ == "__main__":
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
         check_prerequisites(root)
-        print("✓ All prerequisites validated")
+        print("[OK] All prerequisites validated")
         sys.exit(0)
 
     check_prerequisites(root)
