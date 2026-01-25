@@ -887,7 +887,7 @@ if __name__ == "__main__":
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
         check_prerequisites(root, args)
-        print("✓ All prerequisites validated")
+        print("[OK] All prerequisites validated")
         sys.exit(0)
 
     # Check prerequisites
