@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
 Plan: 10 of 10 in current phase
 Status: ✅ PHASE COMPLETE
-Last activity: 2026-01-25 - Completed 25.1-10 (Fix sys.path for 4.1.1 shared imports)
+Last activity: 2026-01-25 - Completed Quick Task 001: Fixed path resolution, directory validation, and Windows Unicode bugs
 
 Progress: [██████████░] 100% (130/130 plans complete)
 
@@ -238,6 +238,12 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 25.1 inserted after Phase 25: Fix pipeline scripts to run sequentially and individually manually not with any orchestrator script (URGENT)
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 001 | Verify Step 1.1 dry run functionality - found and fixed 3 bugs (path resolution, directory validation, Windows Unicode) | 2026-01-25 | 1183f12 | [001-verify-step1-dryrun](./quick/001-verify-step1-dryrun/) |
 
 ### Blockers/Concerns
 
