@@ -88,6 +88,10 @@ from shared.observability_utils import (
     compute_linking_input_stats,
     compute_linking_process_stats,
     compute_linking_output_stats,
+    collect_fuzzy_match_samples,
+    collect_tier_match_samples,
+    collect_unmatched_samples,
+    collect_before_after_samples,
 )
 
 # Import shared path validation utilities
@@ -432,6 +436,7 @@ def main():
     unique_df["sic"] = np.nan
     unique_df["link_method"] = np.nan
     unique_df["link_quality"] = np.nan
+    unique_df["fuzzy_score"] = np.nan
 
     # Convert to object type
     for col in ["gvkey", "conm", "sic", "link_method"]:
@@ -672,6 +677,9 @@ def main():
                     "link_quality"
                 ]
 
+                # Store fuzzy scores for sample collection
+                unique_df.loc[update_df.index, "fuzzy_score"] = update_df["fuzzy_score"]
+
                 unique_df = unique_df.reset_index()
 
     tier3_matched = unique_df["gvkey"].notna().sum()
@@ -681,6 +689,21 @@ def main():
 
     # Compute entity linking process statistics
     stats["linking_process"] = compute_linking_process_stats(unique_df, stats)
+
+    # Collect fuzzy match and tier match samples
+    print_dual("\nCollecting matching samples for quality review...")
+    fuzzy_samples = collect_fuzzy_match_samples(unique_df, n_samples=5)
+    tier_samples = collect_tier_match_samples(unique_df, n_samples=3)
+
+    # Store samples in linking_process stats
+    stats["linking_process"]["samples"] = {
+        "fuzzy_matches": fuzzy_samples,
+        "tier_matches": tier_samples,
+    }
+    print_dual(f"  Collected {len(fuzzy_samples.get('high_score', []))} high-score fuzzy matches")
+    print_dual(f"  Collected {len(fuzzy_samples.get('borderline', []))} borderline fuzzy matches")
+    print_dual(f"  Collected {len(tier_samples.get('tier1', []))} Tier 1 examples")
+    print_dual(f"  Collected {len(tier_samples.get('tier2', []))} Tier 2 examples")
 
     # ==========================================================================
     # BROADCAST RESULTS back to full dataset
@@ -723,6 +746,12 @@ def main():
 
     stats["linking"]["total_matched_companies"] = len(matched_companies)
     stats["linking"]["total_matched_calls"] = int(total_matched_calls)
+
+    # Collect unmatched samples
+    print_dual("\nCollecting unmatched company samples...")
+    unmatched_samples = collect_unmatched_samples(df_original=df, unique_df=unique_df, n_samples=5)
+    stats["linking_process"]["samples"]["unmatched"] = unmatched_samples
+    print_dual(f"  Collected {len(unmatched_samples)} unmatched company samples")
 
     # ==========================================================================
     # Filter unmatched and add FF industries
@@ -772,6 +801,12 @@ def main():
 
     # Compute entity linking output statistics
     stats["linking_output"] = compute_linking_output_stats(df_linked)
+
+    # Collect before/after samples
+    print_dual("\nCollecting before/after linking samples...")
+    before_after_samples = collect_before_after_samples(df_original=df, df_linked=df_linked, n_samples=3)
+    stats["linking_output"]["samples"] = {"before_after": before_after_samples}
+    print_dual(f"  Collected {len(before_after_samples)} before/after examples")
 
     # Save output with memory tracking
     output_file = paths["output_dir"] / "metadata_linked.parquet"
@@ -937,6 +972,129 @@ def main():
             f"  ({stats['input']['total_rows']:,} calls -> {stats['linking'].get('unique_companies', 0):,} unique companies)",
             "",
         ])
+
+    # Add matching samples section
+    if "linking_process" in stats and "samples" in stats["linking_process"]:
+        samples = stats["linking_process"]["samples"]
+
+        report_lines.extend([
+            "## MATCHING SAMPLES",
+            "",
+            "### Fuzzy Name Match Examples",
+            "",
+        ])
+
+        # High-score fuzzy matches
+        if "fuzzy_matches" in samples and "high_score" in samples["fuzzy_matches"]:
+            high_scores = samples["fuzzy_matches"]["high_score"]
+            if len(high_scores) > 0:
+                report_lines.extend([
+                    "**High-Score Matches (>98)**",
+                    "",
+                    "| Query Name | Matched Name | Score | GVKEY | SIC |",
+                    "|------------|--------------|-------|-------|-----|",
+                ])
+                for sample in high_scores:
+                    report_lines.append(
+                        f"| {sample.get('company_name', 'N/A')[:30]} | {sample.get('matched_name', 'N/A')[:30]} | {sample.get('score', 0):.1f} | {sample.get('gvkey', 'N/A')} | {sample.get('sic', 'N/A')} |"
+                    )
+                report_lines.append("")
+            else:
+                report_lines.extend(["No high-score fuzzy matches available.", ""])
+
+        # Borderline fuzzy matches
+        if "fuzzy_matches" in samples and "borderline" in samples["fuzzy_matches"]:
+            borderline = samples["fuzzy_matches"]["borderline"]
+            if len(borderline) > 0:
+                report_lines.extend([
+                    "**Borderline Matches (92-95)**",
+                    "",
+                    "| Query Name | Matched Name | Score | GVKEY | SIC |",
+                    "|------------|--------------|-------|-------|-----|",
+                ])
+                for sample in borderline:
+                    report_lines.append(
+                        f"| {sample.get('company_name', 'N/A')[:30]} | {sample.get('matched_name', 'N/A')[:30]} | {sample.get('score', 0):.1f} | {sample.get('gvkey', 'N/A')} | {sample.get('sic', 'N/A')} |"
+                    )
+                report_lines.append("")
+            else:
+                report_lines.extend(["No borderline fuzzy matches available.", ""])
+
+        # Tier 1 (PERMNO) examples
+        if "tier_matches" in samples and "tier1" in samples["tier_matches"]:
+            tier1 = samples["tier_matches"]["tier1"]
+            if len(tier1) > 0:
+                report_lines.extend([
+                    "### Tier 1 (PERMNO) Match Examples",
+                    "",
+                    "| Company | PERMNO | GVKEY | Matched Name | SIC |",
+                    "|---------|--------|-------|--------------|-----|",
+                ])
+                for sample in tier1:
+                    report_lines.append(
+                        f"| {sample.get('company_id', 'N/A')[:20]} | {sample.get('permno', 'N/A')} | {sample.get('gvkey', 'N/A')} | {sample.get('conm', 'N/A')[:30]} | {sample.get('sic', 'N/A')} |"
+                    )
+                report_lines.append("")
+            else:
+                report_lines.extend(["No Tier 1 examples available.", ""])
+
+        # Tier 2 (CUSIP8) examples
+        if "tier_matches" in samples and "tier2" in samples["tier_matches"]:
+            tier2 = samples["tier_matches"]["tier2"]
+            if len(tier2) > 0:
+                report_lines.extend([
+                    "### Tier 2 (CUSIP8) Match Examples",
+                    "",
+                    "| Company | CUSIP8 | GVKEY | Matched Name | SIC |",
+                    "|---------|--------|-------|--------------|-----|",
+                ])
+                for sample in tier2:
+                    report_lines.append(
+                        f"| {sample.get('company_id', 'N/A')[:20]} | {sample.get('cusip8', 'N/A')} | {sample.get('gvkey', 'N/A')} | {sample.get('conm', 'N/A')[:30]} | {sample.get('sic', 'N/A')} |"
+                    )
+                report_lines.append("")
+            else:
+                report_lines.extend(["No Tier 2 examples available.", ""])
+
+        # Unmatched samples
+        if "unmatched" in samples and len(samples["unmatched"]) > 0:
+            report_lines.extend([
+                "### Unmatched Companies (Sample)",
+                "",
+                "| Company Name | Has PERMNO | Has CUSIP | Has Ticker | Likely Reason |",
+                "|--------------|------------|-----------|------------|---------------|",
+            ])
+            for sample in samples["unmatched"][:10]:
+                report_lines.append(
+                    f"| {sample.get('company_name', 'N/A')[:30]} | {'Yes' if sample.get('has_permno', False) else 'No'} | {'Yes' if sample.get('has_cusip', False) else 'No'} | {'Yes' if sample.get('has_ticker', False) else 'No'} | {sample.get('likely_reason', 'unknown')} |"
+                )
+            report_lines.append("")
+        else:
+            report_lines.extend(["No unmatched companies.", ""])
+
+        # Before/After examples
+        if "linking_output" in stats and "samples" in stats["linking_output"] and "before_after" in stats["linking_output"]["samples"]:
+            before_after = stats["linking_output"]["samples"]["before_after"]
+            if len(before_after) > 0:
+                report_lines.extend([
+                    "### Before/After Examples",
+                    "",
+                    "Shows the transformation from original to linked fields:",
+                    "",
+                ])
+                for i, example in enumerate(before_after, 1):
+                    before = example.get("before", {})
+                    after = example.get("after", {})
+                    report_lines.extend([
+                        f"**Example {i}:**",
+                        "",
+                        f"- **Company ID:** {before.get('company_id', 'N/A')}",
+                        f"- **Before:** name='{before.get('company_name', 'N/A')[:40]}', ticker='{before.get('company_ticker', 'N/A')}', permno={before.get('permno', 'N/A')}, cusip={before.get('cusip', 'N/A')[:8]}",
+                        f"- **After:** gvkey='{after.get('gvkey', 'N/A')}', conm='{after.get('conm', 'N/A')[:40]}', sic={after.get('sic', 'N/A')}, ff12='{after.get('ff12_name', 'N/A')[:30]}', method={after.get('link_method', 'N/A')}, quality={after.get('link_quality', 0)}",
+                        "",
+                    ])
+            else:
+                report_lines.extend(["No before/after examples available.", ""])
 
     # Add output summary section
     report_lines.extend([
