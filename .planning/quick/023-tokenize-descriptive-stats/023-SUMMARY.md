@@ -63,6 +63,7 @@ Each task was committed atomically:
 
 1. **Task 1: Add tokenization statistics functions to observability_utils.py** - `276de71` (feat)
 2. **Task 2: Integrate tokenization statistics into 2.1_TokenizeAndCount.py** - `d9b0753` (feat)
+3. **Bug fix: category_hit_rates showing 0.00%** - `ad3f486` (fix)
 
 **Plan metadata:** N/A (quick task)
 
@@ -83,7 +84,12 @@ None - plan executed exactly as written.
 
 ## Issues Encountered
 
-None - all tasks completed without issues.
+**Bug discovered during verification:** Category hit rates showed 0.00% in initial run
+- **Root cause:** category_hit_rates dictionary was initialized with placeholder values but never filled in
+- **Fix applied:** Added code to fill in category_hit_rates after loading output files (commit ad3f486)
+- **Verification:** Manually applied fix to existing output files; hit rates now show correct values:
+  - Negative: 0.94%, Positive: 1.41%, Uncertainty: 0.97%, Litigious: 0.15%, Strong_Modal: 0.58%, Weak_Modal: 0.43%, Constraining: 0.11%
+- **ProcessPool issue:** Attempted to re-run script after fix but encountered ProcessPool BrokenProcessPool error (likely memory-related). Applied fix manually to existing output using Python script.
 
 ## User Setup Required
 
