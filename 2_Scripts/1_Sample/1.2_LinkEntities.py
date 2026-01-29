@@ -85,6 +85,9 @@ from shared.observability_utils import (
     calculate_throughput,
     detect_anomalies_zscore,
     detect_anomalies_iqr,
+    compute_linking_input_stats,
+    compute_linking_process_stats,
+    compute_linking_output_stats,
 )
 
 # Import shared path validation utilities
@@ -388,6 +391,9 @@ def main():
     )
     stats["linking"]["ccm_records"] = len(ccm)
 
+    # Compute entity linking input statistics
+    stats["linking_input"] = compute_linking_input_stats(df, ccm)
+
     # ==========================================================================
     # DEDUP-INDEX OPTIMIZATION
     # ==========================================================================
@@ -673,6 +679,9 @@ def main():
 
     stats["linking"]["tier3_matched"] = int(tier3_matched)
 
+    # Compute entity linking process statistics
+    stats["linking_process"] = compute_linking_process_stats(unique_df, stats)
+
     # ==========================================================================
     # BROADCAST RESULTS back to full dataset
     # ==========================================================================
@@ -761,6 +770,9 @@ def main():
     stats["linking"]["ff12_matched"] = int(ff12_matched)
     stats["linking"]["ff48_matched"] = int(ff48_matched)
 
+    # Compute entity linking output statistics
+    stats["linking_output"] = compute_linking_output_stats(df_linked)
+
     # Save output with memory tracking
     output_file = paths["output_dir"] / "metadata_linked.parquet"
     print_dual(f"\nSaving linked metadata...")
@@ -824,6 +836,210 @@ def main():
         stats["quality_anomalies"] = detect_anomalies_zscore(
             df_linked, anomaly_cols, threshold=3.0
         )
+
+    # Generate comprehensive entity linking report
+    print_dual("\nGenerating entity linking report...")
+    report_lines = [
+        "# Step 1.2: Entity Resolution (CCM Linking) Report",
+        "",
+        f"**Generated:** {timestamp}",
+        f"**Input:** metadata_cleaned.parquet ({stats['input']['total_rows']:,} rows)",
+        f"**Output:** metadata_linked.parquet ({stats['output']['final_rows']:,} rows)",
+        "",
+        "## INPUT DATA",
+        "",
+        "### Source Metadata (from Step 1.1)",
+        "",
+        f"- **Total calls**: {stats['input']['total_rows']:,}",
+    ]
+
+    # Add input metadata stats
+    if "linking_input" in stats and "input_metadata" in stats["linking_input"]:
+        im = stats["linking_input"]["input_metadata"]
+        report_lines.extend([
+            f"- **Unique companies**: {im.get('unique_companies', 0):,}",
+            f"- **Columns**: {im.get('column_count', 0)}",
+            f"- **Memory footprint**: {im.get('memory_mb', 0):.2f} MB",
+            "",
+        ])
+
+    # Add reference database stats
+    if "linking_input" in stats and "reference_database" in stats["linking_input"]:
+        rd = stats["linking_input"]["reference_database"]
+        report_lines.extend([
+            "### Reference Database (CCM)",
+            "",
+            f"- **Total CCM records**: {rd.get('total_records', 0):,}",
+            f"- **Unique GVKEYs**: {rd.get('unique_gvkey', 0):,}",
+            f"- **Unique LPERMNOs**: {rd.get('unique_lpermno', 0):,}",
+        ])
+
+        if "date_coverage" in rd:
+            dc = rd["date_coverage"]
+            report_lines.extend([
+                f"- **Date coverage**: {dc.get('earliest', 'N/A')} to {dc.get('latest', 'N/A')} ({dc.get('span_days', 0):,} days)",
+            ])
+        report_lines.append("")
+
+    # Add identifier coverage
+    if "linking_input" in stats and "coverage_metrics" in stats["linking_input"]:
+        cm = stats["linking_input"]["coverage_metrics"]
+        report_lines.extend([
+            "### Identifier Coverage",
+            "",
+            f"- **PERMNO**: {cm.get('permno_coverage_pct', 0):.1f}% of companies",
+            f"- **CUSIP**: {cm.get('cusip_coverage_pct', 0):.1f}% of companies",
+            f"- **Ticker**: {cm.get('ticker_coverage_pct', 0):.1f}% of companies",
+            f"- **Company name**: {cm.get('name_coverage_pct', 0):.1f}% of companies",
+            "",
+        ])
+
+    # Add matching process section
+    report_lines.extend([
+        "## MATCHING PROCESS",
+        "",
+        "### 4-Tier Matching Funnel",
+        "",
+        "| Tier | Method | Candidates | Matched | Cumulative | Match Rate |",
+        "|------|--------|------------|---------|------------|------------|",
+    ])
+
+    if "linking_process" in stats and "funnel_analysis" in stats["linking_process"]:
+        fa = stats["linking_process"]["funnel_analysis"]
+        mr = stats["linking_process"].get("match_rates", {})
+
+        report_lines.extend([
+            f"| 1 | PERMNO+Date | {fa.get('tier1_candidates', 0):,} | {fa.get('tier1_matched', 0):,} | {fa.get('tier1_matched', 0):,} | {mr.get('tier1_match_pct', 0):.1f}% |",
+            f"| 2 | CUSIP8+Date | {fa.get('tier2_candidates', 0):,} | {fa.get('tier2_matched', 0):,} | {fa.get('tier1_matched', 0) + fa.get('tier2_matched', 0):,} | {mr.get('tier2_match_pct', 0):.1f}% |",
+            f"| 3 | Fuzzy Name | {fa.get('tier3_candidates', 0):,} | {fa.get('tier3_matched', 0):,} | {fa.get('total_matched', 0):,} | {mr.get('tier3_match_pct', 0):.1f}% |",
+            "",
+        ])
+
+    # Add link quality distribution
+    if "linking_process" in stats and "link_quality_distribution" in stats["linking_process"]:
+        lqd = stats["linking_process"]["link_quality_distribution"]
+        if "error" not in lqd:
+            report_lines.extend([
+                "### Link Quality Distribution",
+                "",
+                f"- **Quality 100 (PERMNO)**: {lqd.get('quality_100_count', 0):,} companies ({lqd.get('quality_100_pct', 0):.1f}%)",
+                f"- **Quality 90 (CUSIP8)**: {lqd.get('quality_90_count', 0):,} companies ({lqd.get('quality_90_pct', 0):.1f}%)",
+                f"- **Quality 80 (Fuzzy)**: {lqd.get('quality_80_count', 0):,} companies ({lqd.get('quality_80_pct', 0):.1f}%)",
+                "",
+            ])
+
+    # Add dedup-index optimization
+    if "linking" in stats:
+        report_lines.extend([
+            "### Dedup-Index Optimization",
+            "",
+            f"- **Compression ratio**: {stats['linking'].get('compression_ratio', 0):.1f}x",
+            f"  ({stats['input']['total_rows']:,} calls -> {stats['linking'].get('unique_companies', 0):,} unique companies)",
+            "",
+        ])
+
+    # Add output summary section
+    report_lines.extend([
+        "## OUTPUT SUMMARY",
+        "",
+        "### Linkage Success",
+        "",
+    ])
+
+    if "linking_output" in stats and "linkage_summary" in stats["linking_output"]:
+        ls = stats["linking_output"]["linkage_summary"]
+        report_lines.extend([
+            f"- **Total calls linked**: {ls.get('total_calls_linked', 0):,} ({stats['output']['final_rows']:,})",
+            f"- **Unique companies linked**: {ls.get('unique_companies_linked', 0):,}",
+            f"- **Unique GVKEYs assigned**: {ls.get('unique_gvkey_assigned', 0):,}",
+            f"- **Company linkage rate**: {ls.get('company_linkage_rate', 0):.1f}%",
+            f"- **Average calls per company**: {ls.get('calls_per_company_avg', 0):.2f}",
+            "",
+        ])
+
+    # Add industry coverage
+    if "linking_output" in stats and "industry_coverage" in stats["linking_output"]:
+        ic = stats["linking_output"]["industry_coverage"]
+        if "error" not in ic:
+            report_lines.extend([
+                "### Industry Coverage",
+                "",
+                f"- **FF12**: {ic.get('ff12_assigned', 0):,} assigned ({ic.get('ff12_completion_pct', 0):.1f}%), {ic.get('ff12_unique_industries', 0):,} unique industries",
+                f"- **FF48**: {ic.get('ff48_assigned', 0):,} assigned ({ic.get('ff48_completion_pct', 0):.1f}%), {ic.get('ff48_unique_industries', 0):,} unique industries",
+                "",
+            ])
+
+    # Add SIC distribution
+    if "linking_output" in stats and "sic_distribution" in stats["linking_output"]:
+        sd = stats["linking_output"]["sic_distribution"]
+        if "error" not in sd:
+            report_lines.extend([
+                "### SIC Distribution",
+                "",
+                f"- **Unique SIC codes**: {sd.get('unique_sic_codes', 0):,}",
+                "",
+                "Top 10 SIC Industries:",
+                "",
+                "| SIC | Count | Percentage |",
+                "|-----|-------|------------|",
+            ])
+            for industry in sd.get('top_industries', [])[:10]:
+                report_lines.append(f"| {industry.get('sic', 'N/A')} | {industry.get('count', 0):,} | {industry.get('percentage', 0):.2f}% |")
+            report_lines.append("")
+
+    # Add quality metrics
+    if "linking_output" in stats and "quality_metrics" in stats["linking_output"]:
+        qm = stats["linking_output"]["quality_metrics"]
+        if "error" not in qm:
+            report_lines.extend([
+                "### Linkage Quality Metrics",
+                "",
+                f"- **Average link quality**: {qm.get('avg_link_quality', 0):.2f}",
+            ])
+
+            if "link_quality_by_method" in qm:
+                report_lines.extend([
+                    "",
+                    "Link Quality by Method:",
+                    "",
+                    "| Method | Avg Quality |",
+                    "|--------|-------------|",
+                ])
+                for method, avg_quality in qm["link_quality_by_method"].items():
+                    report_lines.append(f"| {method} | {avg_quality:.2f} |")
+                report_lines.append("")
+
+    # Add temporal coverage
+    if "linking_output" in stats and "temporal_coverage" in stats["linking_output"]:
+        tc = stats["linking_output"]["temporal_coverage"]
+        report_lines.extend([
+            "### Temporal Coverage",
+            "",
+            f"- **Date range**: {tc.get('earliest_date', 'N/A')} to {tc.get('latest_date', 'N/A')}",
+            "",
+        ])
+
+    # Add output files section
+    report_lines.extend([
+        "## Output Files",
+        "",
+        f"- Linked metadata: `{output_file.name}`",
+        f"- Variable reference: `{var_ref_file.name}`",
+        f"- Statistics: `stats.json`",
+        "",
+        "## Columns",
+        "",
+        f"Total columns: {stats['output']['final_columns']}",
+        "",
+        "```",
+        ", ".join(df_linked.columns.tolist()),
+        "```",
+    ])
+
+    # Write report
+    report_file = paths["output_dir"] / "report_step_1_2.md"
+    report_file.write_text("\n".join(report_lines), encoding="utf-8")
+    print_dual(f"Report saved: {report_file}")
 
     # Print and save stats summary
     print_stats_summary(stats)
