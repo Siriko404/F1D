@@ -1674,6 +1674,472 @@ def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, 
     return samples
 
 
+def compute_manifest_input_stats(df_metadata: pd.DataFrame, df_tenure: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze input data characteristics for manifest assembly.
+
+    Provides comprehensive statistics about linked metadata (from step 1.2)
+    and CEO tenure panel (from step 1.3) including industry coverage and
+    temporal coverage.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_metadata: Linked metadata DataFrame (from step 1.2, with gvkey, start_date, ff12_code, ff48_code)
+        df_tenure: Tenure monthly DataFrame (from step 1.3, with gvkey, year, month, ceo_id)
+
+    Returns:
+        Dictionary with keys:
+        - linked_metadata: {total_calls, unique_gvkey, columns, memory_mb}
+        - tenure_panel: {total_firm_months, unique_firms, unique_ceos,
+                        date_range: {earliest, latest, span_years}}
+        - industry_coverage: {ff12_count, ff48_count}
+        - temporal_coverage: {year_range: {earliest, latest}, call_count_per_year}
+    """
+    stats = {}
+
+    # Linked metadata characteristics
+    stats["linked_metadata"] = {
+        "total_calls": int(len(df_metadata)),
+        "unique_gvkey": int(df_metadata["gvkey"].nunique()) if "gvkey" in df_metadata.columns else 0,
+        "columns": int(len(df_metadata.columns)),
+        "memory_mb": round(df_metadata.memory_usage(deep=True).sum() / (1024 * 1024), 2),
+    }
+
+    # Tenure panel characteristics
+    stats["tenure_panel"] = {
+        "total_firm_months": int(len(df_tenure)),
+        "unique_firms": int(df_tenure["gvkey"].nunique()) if "gvkey" in df_tenure.columns else 0,
+        "unique_ceos": int(df_tenure["ceo_id"].nunique()) if "ceo_id" in df_tenure.columns else 0,
+    }
+
+    # Tenure date coverage
+    if "year" in df_tenure.columns:
+        year_series = df_tenure["year"].dropna()
+        if len(year_series) > 0:
+            stats["tenure_panel"]["date_range"] = {
+                "earliest": int(year_series.min()),
+                "latest": int(year_series.max()),
+                "span_years": int(year_series.max() - year_series.min()),
+            }
+
+    # Industry coverage from metadata
+    if "ff12_code" in df_metadata.columns:
+        stats["industry_coverage"] = {
+            "ff12_count": int(df_metadata["ff12_code"].nunique()),
+        }
+    else:
+        stats["industry_coverage"] = {"ff12_count": 0}
+
+    if "ff48_code" in df_metadata.columns:
+        stats["industry_coverage"]["ff48_count"] = int(df_metadata["ff48_code"].nunique())
+    else:
+        stats["industry_coverage"]["ff48_count"] = 0
+
+    # Temporal coverage from metadata
+    if "start_date" in df_metadata.columns:
+        df_metadata_temp = df_metadata.copy()
+        df_metadata_temp["start_date"] = pd.to_datetime(df_metadata_temp["start_date"])
+        df_metadata_temp = df_metadata_temp.dropna(subset=["start_date"])
+
+        if len(df_metadata_temp) > 0:
+            years = df_metadata_temp["start_date"].dt.year
+            year_counts = years.value_counts().sort_index()
+            stats["temporal_coverage"] = {
+                "year_range": {
+                    "earliest": int(years.min()),
+                    "latest": int(years.max()),
+                },
+                "call_count_per_year": {str(int(y)): int(c) for y, c in year_counts.items()},
+            }
+        else:
+            stats["temporal_coverage"] = {"error": "No valid dates"}
+    else:
+        stats["temporal_coverage"] = {"error": "start_date column not found"}
+
+    return stats
+
+
+def compute_manifest_process_stats(
+    df_metadata: pd.DataFrame,
+    merged_df: pd.DataFrame,
+    df_matched: pd.DataFrame,
+    stats_dict: Dict[str, Any],
+) -> Dict[str, Any]:
+    """
+    Analyze merge and CEO filtering process outcomes.
+
+    Provides detailed statistics about the merge between metadata and tenure
+    panel, including match rate by year, unmatched analysis, and CEO filtering
+    impact.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_metadata: Original metadata DataFrame (before merge)
+        merged_df: DataFrame after merge operation
+        df_matched: DataFrame with matched calls (ceo_id not null)
+        stats_dict: Statistics dictionary containing merge stats from main execution
+
+    Returns:
+        Dictionary with keys:
+        - merge_outcome: {left_rows, right_rows, result_rows, matched_count,
+                         unmatched_count, match_rate_pct}
+        - match_rate_by_year: [{year, total_calls, matched_calls, match_rate_pct}]
+        - unmatched_analysis: {unique_gvkey_unmatched, calls_unmatched,
+                              temporal_distribution: {year: count}}
+        - ceo_filtering: {total_ceos_before_filter, ceos_above_threshold,
+                         ceos_dropped, threshold_value, calls_dropped}
+    """
+    stats = {}
+
+    # Merge outcome
+    left_rows = len(df_metadata)
+    right_rows = stats_dict.get("merges", {}).get("ceo_tenure_join", {}).get("right_rows", 0)
+    result_rows = len(merged_df)
+    matched_count = int(merged_df["ceo_id"].notna().sum()) if "ceo_id" in merged_df.columns else 0
+    unmatched_count = int(merged_df["ceo_id"].isna().sum()) if "ceo_id" in merged_df.columns else 0
+    match_rate_pct = round(matched_count / left_rows * 100, 2) if left_rows > 0 else 0.0
+
+    stats["merge_outcome"] = {
+        "left_rows": int(left_rows),
+        "right_rows": int(right_rows),
+        "result_rows": int(result_rows),
+        "matched_count": matched_count,
+        "unmatched_count": unmatched_count,
+        "match_rate_pct": match_rate_pct,
+    }
+
+    # Match rate by year
+    if "year" in merged_df.columns and "ceo_id" in merged_df.columns:
+        match_by_year = []
+        for year in sorted(merged_df["year"].unique()):
+            year_df = merged_df[merged_df["year"] == year]
+            year_total = len(year_df)
+            year_matched = int(year_df["ceo_id"].notna().sum())
+            year_rate = round(year_matched / year_total * 100, 2) if year_total > 0 else 0.0
+
+            match_by_year.append({
+                "year": int(year),
+                "total_calls": year_total,
+                "matched_calls": year_matched,
+                "match_rate_pct": year_rate,
+            })
+        stats["match_rate_by_year"] = match_by_year
+    else:
+        stats["match_rate_by_year"] = []
+
+    # Unmatched analysis
+    unmatched_df = merged_df[merged_df["ceo_id"].isna()] if "ceo_id" in merged_df.columns else pd.DataFrame()
+
+    if len(unmatched_df) > 0:
+        unique_gvkey_unmatched = int(unmatched_df["gvkey"].nunique()) if "gvkey" in unmatched_df.columns else 0
+
+        # Temporal distribution of unmatched
+        temporal_dist = {}
+        if "year" in unmatched_df.columns:
+            year_counts = unmatched_df["year"].value_counts().sort_index()
+            temporal_dist = {str(int(y)): int(c) for y, c in year_counts.items()}
+
+        stats["unmatched_analysis"] = {
+            "unique_gvkey_unmatched": unique_gvkey_unmatched,
+            "calls_unmatched": int(len(unmatched_df)),
+            "temporal_distribution": temporal_dist,
+        }
+    else:
+        stats["unmatched_analysis"] = {
+            "unique_gvkey_unmatched": 0,
+            "calls_unmatched": 0,
+            "temporal_distribution": {},
+        }
+
+    # CEO filtering statistics
+    if "ceo_id" in df_matched.columns:
+        ceo_counts = df_matched["ceo_id"].value_counts()
+        total_ceos_before_filter = len(ceo_counts)
+
+        # Get threshold from processing stats or use default
+        threshold = stats_dict.get("processing", {}).get("min_call_threshold", 5)
+        ceos_above_threshold = int((ceo_counts >= threshold).sum())
+        ceos_dropped = total_ceos_before_filter - ceos_above_threshold
+
+        # Calculate calls dropped
+        calls_dropped = stats_dict.get("processing", {}).get("below_threshold_calls_removed", 0)
+
+        stats["ceo_filtering"] = {
+            "total_ceos_before_filter": total_ceos_before_filter,
+            "ceos_above_threshold": ceos_above_threshold,
+            "ceos_dropped": ceos_dropped,
+            "threshold_value": threshold,
+            "calls_dropped": calls_dropped,
+        }
+    else:
+        stats["ceo_filtering"] = {"error": "ceo_id column not found"}
+
+    return stats
+
+
+def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze final manifest characteristics.
+
+    Provides comprehensive statistics about the final master sample manifest,
+    including panel dimensions, call concentration, industry coverage, temporal
+    coverage, and predecessor coverage.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_final: Final manifest DataFrame (must contain file_name, gvkey, ceo_id, ceo_name,
+                 prev_ceo_id, start_date, ff12_code, ff12_name, ff48_code, ff48_name)
+
+    Returns:
+        Dictionary with keys:
+        - panel_dimensions: {total_calls, unique_gvkey, unique_ceos, date_range}
+        - call_concentration: {calls_per_ceo: {mean, median, min, max, std},
+                             distribution_buckets: {bucket: {count, pct}}}
+        - industry_coverage_ff12: [{ff12_code, ff12_name, call_count, percentage}]
+        - industry_coverage_ff48: {unique_industries, completion_pct}
+        - temporal_coverage: [{year, call_count, unique_firms, unique_ceos}]
+        - predecessor_coverage: {pct_with_prev_ceo, pct_without_prev_ceo}
+    """
+    stats = {}
+
+    # Panel dimensions
+    total_calls = len(df_final)
+    unique_gvkey = int(df_final["gvkey"].nunique()) if "gvkey" in df_final.columns else 0
+    unique_ceos = int(df_final["ceo_id"].nunique()) if "ceo_id" in df_final.columns else 0
+
+    stats["panel_dimensions"] = {
+        "total_calls": total_calls,
+        "unique_gvkey": unique_gvkey,
+        "unique_ceos": unique_ceos,
+    }
+
+    # Date range
+    if "start_date" in df_final.columns:
+        df_final_temp = df_final.copy()
+        df_final_temp["start_date"] = pd.to_datetime(df_final_temp["start_date"])
+        date_col = df_final_temp["start_date"].dropna()
+
+        if len(date_col) > 0:
+            stats["panel_dimensions"]["date_range"] = {
+                "earliest": date_col.min().isoformat(),
+                "latest": date_col.max().isoformat(),
+            }
+
+    # Call concentration
+    if "ceo_id" in df_final.columns:
+        calls_per_ceo = df_final.groupby("ceo_id").size()
+
+        stats["call_concentration"] = {
+            "calls_per_ceo": {
+                "mean": round(float(calls_per_ceo.mean()), 2),
+                "median": round(float(calls_per_ceo.median()), 2),
+                "min": int(calls_per_ceo.min()),
+                "max": int(calls_per_ceo.max()),
+                "std": round(float(calls_per_ceo.std()), 2),
+            }
+        }
+
+        # Call distribution buckets
+        buckets = {
+            "<10": 0,
+            "10-50": 0,
+            "50-100": 0,
+            "100+": 0,
+        }
+
+        buckets["<10"] = int((calls_per_ceo < 10).sum())
+        buckets["10-50"] = int(((calls_per_ceo >= 10) & (calls_per_ceo < 50)).sum())
+        buckets["50-100"] = int(((calls_per_ceo >= 50) & (calls_per_ceo < 100)).sum())
+        buckets["100+"] = int((calls_per_ceo >= 100).sum())
+
+        # Calculate percentages
+        bucket_stats = {}
+        for bucket_name, count in buckets.items():
+            bucket_pct = round(count / len(calls_per_ceo) * 100, 2) if len(calls_per_ceo) > 0 else 0.0
+            bucket_stats[bucket_name] = {
+                "count": count,
+                "pct": bucket_pct,
+            }
+
+        stats["call_concentration"]["distribution_buckets"] = bucket_stats
+
+    # Industry coverage FF12
+    if "ff12_code" in df_final.columns:
+        ff12_counts = df_final["ff12_code"].value_counts()
+        industry_coverage = []
+
+        for ff12_code in ff12_counts.index[:10]:  # Top 10 industries
+            count = int(ff12_counts[ff12_code])
+            percentage = round(count / total_calls * 100, 2) if total_calls > 0 else 0.0
+
+            # Get industry name if available
+            ff12_name = ""
+            if "ff12_name" in df_final.columns:
+                name_rows = df_final[df_final["ff12_code"] == ff12_code]["ff12_name"]
+                if len(name_rows) > 0:
+                    ff12_name = str(name_rows.iloc[0]) if pd.notna(name_rows.iloc[0]) else ""
+
+            industry_coverage.append({
+                "ff12_code": str(ff12_code) if pd.notna(ff12_code) else "",
+                "ff12_name": ff12_name,
+                "call_count": count,
+                "percentage": percentage,
+            })
+
+        stats["industry_coverage_ff12"] = industry_coverage
+
+        # Top 5 industries summary
+        stats["industry_coverage_ff12_top_5"] = industry_coverage[:5]
+    else:
+        stats["industry_coverage_ff12"] = []
+        stats["industry_coverage_ff12_top_5"] = []
+
+    # Industry coverage FF48
+    if "ff48_code" in df_final.columns:
+        unique_ff48 = int(df_final["ff48_code"].nunique())
+        ff48_assigned = int(df_final["ff48_code"].notna().sum())
+
+        stats["industry_coverage_ff48"] = {
+            "unique_industries": unique_ff48,
+            "completion_pct": round(ff48_assigned / total_calls * 100, 2) if total_calls > 0 else 0.0,
+        }
+    else:
+        stats["industry_coverage_ff48"] = {"unique_industries": 0, "completion_pct": 0.0}
+
+    # Temporal coverage by year
+    if "start_date" in df_final.columns:
+        df_final_temp = df_final.copy()
+        df_final_temp["start_date"] = pd.to_datetime(df_final_temp["start_date"])
+        df_final_temp["year"] = df_final_temp["start_date"].dt.year
+
+        temporal_coverage = []
+        for year in sorted(df_final_temp["year"].unique()):
+            year_df = df_final_temp[df_final_temp["year"] == year]
+
+            temporal_coverage.append({
+                "year": int(year),
+                "call_count": int(len(year_df)),
+                "unique_firms": int(year_df["gvkey"].nunique()) if "gvkey" in year_df.columns else 0,
+                "unique_ceos": int(year_df["ceo_id"].nunique()) if "ceo_id" in year_df.columns else 0,
+            })
+
+        stats["temporal_coverage"] = temporal_coverage
+    else:
+        stats["temporal_coverage"] = []
+
+    # Predecessor coverage
+    if "prev_ceo_id" in df_final.columns:
+        with_predecessor = int(df_final["prev_ceo_id"].notna().sum())
+        without_predecessor = int(df_final["prev_ceo_id"].isna().sum())
+
+        stats["predecessor_coverage"] = {
+            "pct_with_prev_ceo": round(with_predecessor / total_calls * 100, 2) if total_calls > 0 else 0.0,
+            "pct_without_prev_ceo": round(without_predecessor / total_calls * 100, 2) if total_calls > 0 else 0.0,
+        }
+    else:
+        stats["predecessor_coverage"] = {"error": "prev_ceo_id column not found"}
+
+    return stats
+
+
+def collect_ceo_distribution_samples(df_final: pd.DataFrame, n_samples: int = 5) -> Dict[str, Any]:
+    """
+    Collect CEO distribution examples from final manifest.
+
+    Provides samples of top/bottom CEOs by call count, single-call CEOs,
+    and multi-firm CEOs to illustrate sample concentration characteristics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_final: Final manifest DataFrame (must contain ceo_id, ceo_name, gvkey)
+        n_samples: Number of samples to collect per category (default: 5)
+
+    Returns:
+        Dictionary with keys:
+        - top_ceos: List of top N CEOs by call count
+        - bottom_ceos: List of bottom N CEOs by call count (above threshold)
+        - single_call_ceos: {count, percentage}
+        - multi_firm_ceos: List of CEOs spanning multiple firms
+    """
+    samples = {
+        "top_ceos": [],
+        "bottom_ceos": [],
+        "single_call_ceos": {"count": 0, "percentage": 0.0},
+        "multi_firm_ceos": [],
+    }
+
+    if "ceo_id" not in df_final.columns:
+        return samples
+
+    # Calculate call counts per CEO
+    ceo_stats = df_final.groupby("ceo_id").agg({
+        "file_name": "count",  # Call count
+        "gvkey": "nunique",    # Unique firms
+    }).rename(columns={"file_name": "call_count", "gvkey": "firm_count"})
+
+    # Get CEO names
+    if "ceo_name" in df_final.columns:
+        ceo_names = df_final.groupby("ceo_id")["ceo_name"].first()
+    else:
+        ceo_names = pd.Series(dtype=str)
+
+    total_ceos = len(ceo_stats)
+    total_calls = len(df_final)
+
+    # Top CEOs by call count
+    top_ceos_df = ceo_stats.nlargest(n_samples, "call_count")
+    for ceo_id, row in top_ceos_df.iterrows():
+        ceo_name = str(ceo_names.get(ceo_id, "")) if ceo_id in ceo_names.index else ""
+        percentage = round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
+
+        samples["top_ceos"].append({
+            "ceo_id": str(ceo_id),
+            "ceo_name": ceo_name,
+            "call_count": int(row["call_count"]),
+            "unique_firms": int(row["firm_count"]),
+            "percentage": percentage,
+        })
+
+    # Bottom CEOs by call count (minimum 1 call, smallest counts first)
+    bottom_ceos_df = ceo_stats[ceo_stats["call_count"] > 0].nsmallest(n_samples, "call_count")
+    for ceo_id, row in bottom_ceos_df.iterrows():
+        ceo_name = str(ceo_names.get(ceo_id, "")) if ceo_id in ceo_names.index else ""
+        percentage = round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
+
+        samples["bottom_ceos"].append({
+            "ceo_id": str(ceo_id),
+            "ceo_name": ceo_name,
+            "call_count": int(row["call_count"]),
+            "unique_firms": int(row["firm_count"]),
+            "percentage": percentage,
+        })
+
+    # Single call CEOs
+    single_call_count = int((ceo_stats["call_count"] == 1).sum())
+    samples["single_call_ceos"] = {
+        "count": single_call_count,
+        "percentage": round(single_call_count / total_ceos * 100, 2) if total_ceos > 0 else 0.0,
+    }
+
+    # Multi-firm CEOs
+    multi_firm_df = ceo_stats[ceo_stats["firm_count"] > 1].nlargest(n_samples, "firm_count")
+    for ceo_id, row in multi_firm_df.iterrows():
+        ceo_name = str(ceo_names.get(ceo_id, "")) if ceo_id in ceo_names.index else ""
+
+        samples["multi_firm_ceos"].append({
+            "ceo_id": str(ceo_id),
+            "ceo_name": ceo_name,
+            "call_count": int(row["call_count"]),
+            "firm_count": int(row["firm_count"]),
+        })
+
+    return samples
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
