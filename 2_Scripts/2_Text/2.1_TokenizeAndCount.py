@@ -971,12 +971,13 @@ def main(dictionary_path=None):
 
     print("Loading manifest and dictionary...")
     load_result = load_documents_with_tracking(manifest_path, lm_path)
-    manifest = load_result["manifest"]
-    vocab_list = load_result["vocab_list"]
-    cat_sets = load_result["cat_sets"]
+    # Decorator wraps result in {"result": ..., "memory_mb": ..., "timing_seconds": ...}
+    manifest = load_result["result"]["manifest"]
+    vocab_list = load_result["result"]["vocab_list"]
+    cat_sets = load_result["result"]["cat_sets"]
     stats["memory_mb"]["load_documents"] = load_result["memory_mb"]
 
-    valid_files = load_result["valid_files"]
+    valid_files = load_result["result"]["valid_files"]
     print(f"Universe: {len(valid_files):,} files")
 
     stats["input"]["files"].append(str(manifest_path))
@@ -1088,6 +1089,19 @@ def main(dictionary_path=None):
         print("Computing output statistics...")
         from shared.observability_utils import compute_tokenize_output_stats
         stats["tokenize_output"] = compute_tokenize_output_stats(output_dfs, cat_sets)
+
+        # Fill in category_hit_rates now that we have output data
+        total_tokens_all = stats["processing"]["total_tokens"]
+        df_all = pd.concat(output_dfs, ignore_index=True)
+        for cat_name in cat_sets.keys():
+            col_name = f"{cat_name}_count"
+            if col_name in df_all.columns:
+                hit_count = int(df_all[col_name].sum())
+                hit_rate_pct = round(hit_count / total_tokens_all * 100, 2) if total_tokens_all > 0 else 0.0
+                stats["tokenize_process"]["category_hit_rates"][cat_name] = {
+                    "hit_count": hit_count,
+                    "hit_rate_pct": hit_rate_pct,
+                }
 
     # Output files
     output_files = list(out_dir.glob("linguistic_counts_*.parquet"))
