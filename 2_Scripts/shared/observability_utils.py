@@ -2140,6 +2140,412 @@ def collect_ceo_distribution_samples(df_final: pd.DataFrame, n_samples: int = 5)
     return samples
 
 
+def compute_tokenize_input_stats(
+    manifest_df: pd.DataFrame,
+    lm_dict_path: Path,
+    vocab_list: List[str],
+    cat_sets: Dict[str, set],
+) -> Dict[str, Any]:
+    """
+    Analyze input data and LM dictionary for tokenization.
+
+    Provides comprehensive statistics about the manifest file and
+    Loughran-McDonald master dictionary, including vocabulary size,
+    category word counts, overlap analysis, and word length characteristics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        manifest_df: Manifest DataFrame (from step 1.4)
+        lm_dict_path: Path to LM dictionary CSV file
+        vocab_list: List of vocabulary words (from load_lm_dictionary)
+        cat_sets: Dictionary mapping category names to word sets
+
+    Returns:
+        Dictionary with keys:
+        - manifest_stats: {total_files, unique_companies (if available),
+                          date_range (if available), event_type_dist (if available)}
+        - dictionary_stats: {total_words, vocabulary_size, avg_word_length,
+                           word_length_distribution: {bucket: count}}
+        - category_breakdown: {category: {word_count, sample_words}}
+        - overlap_analysis: {words_in_multiple_categories, category_overlaps: {cat_pair: count}}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Manifest analysis
+    stats["manifest_stats"] = {
+        "total_files": int(len(manifest_df)),
+    }
+
+    # Check for additional manifest columns
+    if "gvkey" in manifest_df.columns:
+        stats["manifest_stats"]["unique_companies"] = int(manifest_df["gvkey"].nunique())
+
+    if "start_date" in manifest_df.columns:
+        manifest_df_temp = manifest_df.copy()
+        manifest_df_temp["start_date"] = pd.to_datetime(manifest_df_temp["start_date"])
+        date_col = manifest_df_temp["start_date"].dropna()
+        if len(date_col) > 0:
+            stats["manifest_stats"]["date_range"] = {
+                "earliest": date_col.min().isoformat(),
+                "latest": date_col.max().isoformat(),
+            }
+
+    if "event_type" in manifest_df.columns:
+        event_counts = manifest_df["event_type"].value_counts().sort_index()
+        stats["manifest_stats"]["event_type_dist"] = {
+            str(int(et)): int(count) for et, count in event_counts.items()
+        }
+
+    # LM dictionary analysis
+    stats["dictionary_stats"] = {
+        "total_words": len(vocab_list),
+        "vocabulary_size": len(vocab_list),
+    }
+
+    # Word length characteristics
+    word_lengths = [len(w) for w in vocab_list]
+    stats["dictionary_stats"]["avg_word_length"] = round(float(np.mean(word_lengths)), 2)
+
+    # Word length distribution buckets
+    length_buckets = {
+        "1-3": 0,
+        "4-6": 0,
+        "7-9": 0,
+        "10-12": 0,
+        "13+": 0,
+    }
+
+    for wl in word_lengths:
+        if wl <= 3:
+            length_buckets["1-3"] += 1
+        elif wl <= 6:
+            length_buckets["4-6"] += 1
+        elif wl <= 9:
+            length_buckets["7-9"] += 1
+        elif wl <= 12:
+            length_buckets["10-12"] += 1
+        else:
+            length_buckets["13+"] += 1
+
+    stats["dictionary_stats"]["word_length_distribution"] = length_buckets
+
+    # Category breakdown
+    stats["category_breakdown"] = {}
+    for cat_name, cat_words in cat_sets.items():
+        # Get first 10 sample words (sorted for determinism)
+        sample_words = sorted(list(cat_words))[:10]
+        stats["category_breakdown"][cat_name] = {
+            "word_count": int(len(cat_words)),
+            "sample_words": sample_words,
+        }
+
+    # Overlap analysis
+    overlap_stats = {
+        "words_in_multiple_categories": 0,
+        "category_overlaps": {},
+    }
+
+    # Count words appearing in multiple categories
+    all_words = {}
+    for cat_name, cat_words in cat_sets.items():
+        for word in cat_words:
+            if word not in all_words:
+                all_words[word] = []
+            all_words[word].append(cat_name)
+
+    multi_cat_words = {w: cats for w, cats in all_words.items() if len(cats) > 1}
+    overlap_stats["words_in_multiple_categories"] = int(len(multi_cat_words))
+
+    # Category pair overlaps
+    category_names = sorted(cat_sets.keys())
+    for i, cat1 in enumerate(category_names):
+        for cat2 in category_names[i + 1:]:
+            overlap = cat_sets[cat1] & cat_sets[cat2]
+            if len(overlap) > 0:
+                overlap_stats["category_overlaps"][f"{cat1}_{cat2}"] = int(len(overlap))
+
+    stats["overlap_analysis"] = overlap_stats
+
+    return stats
+
+
+def compute_tokenize_process_stats(
+    per_year_stats: List[Dict[str, Any]],
+    cat_sets: Dict[str, set],
+    vocab_list: List[str],
+    duration_seconds: float,
+) -> Dict[str, Any]:
+    """
+    Analyze tokenization process performance and coverage.
+
+    Provides detailed statistics about tokenization volume, vocabulary
+    coverage, category hit rates, efficiency metrics, and yearly trends.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        per_year_stats: List of per-year statistics dictionaries from processing
+        cat_sets: Dictionary mapping category names to word sets
+        vocab_list: List of vocabulary words
+        duration_seconds: Total processing duration
+
+    Returns:
+        Dictionary with keys:
+        - volume_metrics: {total_input_rows, total_output_rows, total_tokens,
+                          total_vocab_hits}
+        - coverage_metrics: {vocab_hit_rate, oov_rate}
+        - category_hit_rates: {category: {hit_count, hit_rate_pct}}
+        - efficiency_metrics: {docs_per_second, tokens_per_second,
+                              tokens_per_doc: {mean, median, min, max},
+                              workers_used, years_processed}
+        - yearly_trends: {tokens_per_year: {year: count},
+                         vocab_hits_per_year: {year: count}}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Volume metrics
+    total_input_rows = sum(s.get("input_rows", 0) for s in per_year_stats)
+    total_output_rows = sum(s.get("output_rows", 0) for s in per_year_stats)
+    total_tokens = sum(s.get("total_tokens", 0) for s in per_year_stats)
+    total_vocab_hits = sum(s.get("vocab_hits", 0) for s in per_year_stats)
+
+    stats["volume_metrics"] = {
+        "total_input_rows": int(total_input_rows),
+        "total_output_rows": int(total_output_rows),
+        "total_tokens": int(total_tokens),
+        "total_vocab_hits": int(total_vocab_hits),
+    }
+
+    # Coverage metrics
+    vocab_hit_rate = round(total_vocab_hits / total_tokens * 100, 2) if total_tokens > 0 else 0.0
+    oov_rate = round(100.0 - vocab_hit_rate, 2) if total_tokens > 0 else 0.0
+
+    stats["coverage_metrics"] = {
+        "vocab_hit_rate": vocab_hit_rate,
+        "oov_rate": oov_rate,
+    }
+
+    # Category hit rates (percentage of total tokens)
+    # This requires re-aggregating category counts from output files
+    # Since we don't have access to output data here, we'll provide placeholder
+    # that will be filled during script execution
+    stats["category_hit_rates"] = {}
+    for cat_name in cat_sets.keys():
+        stats["category_hit_rates"][cat_name] = {
+            "hit_count": 0,  # To be filled during script execution
+            "hit_rate_pct": 0.0,  # To be filled during script execution
+        }
+
+    # Efficiency metrics
+    docs_per_second = round(total_output_rows / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    tokens_per_second = round(total_tokens / duration_seconds, 2) if duration_seconds > 0 else 0.0
+
+    tokens_per_doc_values = [s.get("avg_tokens_per_doc", 0) for s in per_year_stats if s.get("output_rows", 0) > 0]
+
+    tokens_per_doc_stats = {
+        "mean": round(float(np.mean(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
+        "median": round(float(np.median(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
+        "min": round(float(np.min(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
+        "max": round(float(np.max(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
+    }
+
+    stats["efficiency_metrics"] = {
+        "docs_per_second": docs_per_second,
+        "tokens_per_second": tokens_per_second,
+        "tokens_per_doc": tokens_per_doc_stats,
+        "workers_used": len(per_year_stats),  # Approximate
+        "years_processed": len(per_year_stats),
+    }
+
+    # Yearly trends
+    tokens_per_year = {}
+    vocab_hits_per_year = {}
+
+    for year_stat in per_year_stats:
+        year = year_stat.get("year")
+        if year is not None:
+            tokens_per_year[str(year)] = year_stat.get("total_tokens", 0)
+            vocab_hits_per_year[str(year)] = year_stat.get("vocab_hits", 0)
+
+    stats["yearly_trends"] = {
+        "tokens_per_year": tokens_per_year,
+        "vocab_hits_per_year": vocab_hits_per_year,
+    }
+
+    return stats
+
+
+def compute_tokenize_output_stats(
+    output_dfs: List[pd.DataFrame],
+    cat_sets: Dict[str, set],
+) -> Dict[str, Any]:
+    """
+    Analyze linguistic counts output from tokenization.
+
+    Provides comprehensive statistics about category count distributions,
+    total tokens statistics, speaker-level analysis (if available),
+    and sparsity analysis.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        output_dfs: List of per-year DataFrames with linguistic counts
+                    (must contain {category}_count columns and total_tokens)
+        cat_sets: Dictionary mapping category names to word sets
+
+    Returns:
+        Dictionary with keys:
+        - category_distributions: {category: {mean, median, std, min, max,
+                                             q25, q75, zeros_count, zeros_pct,
+                                             percentiles: {p10, p25, p50, p75, p90, p95, p99}}}
+        - total_tokens_stats: {mean, median, std, min, max,
+                              percentiles: {p10, p25, p50, p75, p90, p95, p99}}
+        - speaker_analysis: (if role column exists) {documents_per_role: {role: count},
+                                                    avg_tokens_per_role: {role: avg},
+                                                    avg_category_per_role: {role: {category: avg}}}
+        - sparsity_analysis: {zero_counts_per_category: {category: {count, pct}},
+                             documents_with_no_matches: count}
+    """
+    import numpy as np
+
+    # Concatenate all output DataFrames for analysis
+    if len(output_dfs) == 0:
+        return {
+            "category_distributions": {},
+            "total_tokens_stats": {},
+            "speaker_analysis": {"error": "No output data"},
+            "sparsity_analysis": {},
+        }
+
+    df_all = pd.concat(output_dfs, ignore_index=True)
+
+    stats = {}
+
+    # Category distributions
+    stats["category_distributions"] = {}
+    for cat_name in cat_sets.keys():
+        col_name = f"{cat_name}_count"
+        if col_name not in df_all.columns:
+            continue
+
+        cat_series = df_all[col_name]
+
+        # Basic statistics
+        cat_stats = {
+            "mean": round(float(cat_series.mean()), 4),
+            "median": round(float(cat_series.median()), 4),
+            "std": round(float(cat_series.std()), 4),
+            "min": int(cat_series.min()),
+            "max": int(cat_series.max()),
+        }
+
+        # Quartiles
+        cat_stats["q25"] = round(float(cat_series.quantile(0.25)), 4)
+        cat_stats["q75"] = round(float(cat_series.quantile(0.75)), 4)
+
+        # Zero counts
+        zeros_count = int((cat_series == 0).sum())
+        cat_stats["zeros_count"] = zeros_count
+        cat_stats["zeros_pct"] = round(zeros_count / len(cat_series) * 100, 2) if len(cat_series) > 0 else 0.0
+
+        # Percentiles
+        cat_stats["percentiles"] = {
+            "p10": round(float(cat_series.quantile(0.10)), 4),
+            "p25": round(float(cat_series.quantile(0.25)), 4),
+            "p50": round(float(cat_series.quantile(0.50)), 4),
+            "p75": round(float(cat_series.quantile(0.75)), 4),
+            "p90": round(float(cat_series.quantile(0.90)), 4),
+            "p95": round(float(cat_series.quantile(0.95)), 4),
+            "p99": round(float(cat_series.quantile(0.99)), 4),
+        }
+
+        stats["category_distributions"][cat_name] = cat_stats
+
+    # Total tokens statistics
+    if "total_tokens" in df_all.columns:
+        tokens_series = df_all["total_tokens"]
+        stats["total_tokens_stats"] = {
+            "mean": round(float(tokens_series.mean()), 2),
+            "median": round(float(tokens_series.median()), 2),
+            "std": round(float(tokens_series.std()), 2),
+            "min": int(tokens_series.min()),
+            "max": int(tokens_series.max()),
+            "percentiles": {
+                "p10": round(float(tokens_series.quantile(0.10)), 2),
+                "p25": round(float(tokens_series.quantile(0.25)), 2),
+                "p50": round(float(tokens_series.quantile(0.50)), 2),
+                "p75": round(float(tokens_series.quantile(0.75)), 2),
+                "p90": round(float(tokens_series.quantile(0.90)), 2),
+                "p95": round(float(tokens_series.quantile(0.95)), 2),
+                "p99": round(float(tokens_series.quantile(0.99)), 2),
+            },
+        }
+
+    # Speaker-level analysis (if role column exists)
+    if "role" in df_all.columns:
+        role_stats = {}
+
+        # Documents per role
+        role_counts = df_all["role"].value_counts().sort_index()
+        role_stats["documents_per_role"] = {
+            str(role): int(count) for role, count in role_counts.items()
+        }
+
+        # Average tokens per role
+        if "total_tokens" in df_all.columns:
+            tokens_by_role = df_all.groupby("role")["total_tokens"].mean().sort_index()
+            role_stats["avg_tokens_per_role"] = {
+                str(role): round(float(avg), 2) for role, avg in tokens_by_role.items()
+            }
+
+        # Average category counts per role
+        role_stats["avg_category_per_role"] = {}
+        for cat_name in cat_sets.keys():
+            col_name = f"{cat_name}_count"
+            if col_name in df_all.columns:
+                cat_by_role = df_all.groupby("role")[col_name].mean().sort_index()
+                role_stats["avg_category_per_role"][cat_name] = {
+                    str(role): round(float(avg), 4) for role, avg in cat_by_role.items()
+                }
+
+        stats["speaker_analysis"] = role_stats
+    else:
+        stats["speaker_analysis"] = {"error": "role column not found"}
+
+    # Sparsity analysis
+    stats["sparsity_analysis"] = {
+        "zero_counts_per_category": {},
+        "documents_with_no_matches": 0,
+    }
+
+    for cat_name in cat_sets.keys():
+        col_name = f"{cat_name}_count"
+        if col_name not in df_all.columns:
+            continue
+
+        zeros_count = int((df_all[col_name] == 0).sum())
+        zeros_pct = round(zeros_count / len(df_all) * 100, 2) if len(df_all) > 0 else 0.0
+
+        stats["sparsity_analysis"]["zero_counts_per_category"][cat_name] = {
+            "count": zeros_count,
+            "pct": zeros_pct,
+        }
+
+    # Documents with no linguistic matches (all categories zero)
+    cat_cols = [f"{cat}_count" for cat in cat_sets.keys() if f"{cat}_count" in df_all.columns]
+    if cat_cols:
+        # Check if all category columns are zero
+        zero_mask = (df_all[cat_cols] == 0).all(axis=1)
+        stats["sparsity_analysis"]["documents_with_no_matches"] = int(zero_mask.sum())
+
+    return stats
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
