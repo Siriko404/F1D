@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 25.1 of 27 (Fix Pipeline Scripts To Run Manually)
-Plan: 10 of 10 in current phase
-Status: ✅ PHASE COMPLETE
-Last activity: 2026-01-29 - Completed Quick Task 020: Entity linking statistics for academic presentation
+Phase: 26 of 27 (Repository Cleanup and Archive Organization)
+Plan: 02 of 4 in current phase
+Status: In Progress
+Last activity: 2026-01-29 - Completed Phase 26-02: Archive Organization
 
-Progress: [██████████] 100% (133/133 plans complete)
+Progress: [██████████░] 99.6% (135/137 plans complete)
 
 ## Phase 25.1 Achievements
 
@@ -139,6 +139,24 @@ Progress: [██████████] 100% (133/133 plans complete)
 - Documented root cause analysis and resolution path
 - Verified E2E test infrastructure is production-ready
 
+## Phase 26 Achievements
+
+**Phase 26-02 COMPLETE** - 1 plan completed 2026-01-29
+- Categorized all 81 flat archive files into 5 subdirectories (backups, debug, docs, legacy, test_outputs)
+- Created comprehensive manifest.json with 249 files including git tracking status for rollback capability
+- Moved ARCHIVE_BROKEN_STEP4 from 2_Scripts/4_Econometric/ to .___archive/legacy/
+- Consolidated additional legacy scripts (ARCHIVE/ with obsolete utils and broken Step 2)
+- No loose files remaining in archive root (only manifest.json)
+- Archive fully organized with complete audit trail
+
+**Phase 26-01 COMPLETE** - 1 plan completed 2026-01-29
+- Consolidated scattered archive directories (2_Scripts/ARCHIVE, 2_Scripts/ARCHIVE_OLD) into .___archive/
+- Created 5 categorized subdirectories: backups/, legacy/, debug/, docs/, test_outputs/
+- Each subdirectory has descriptive README.md explaining its purpose
+- Moved 41 files from ARCHIVE_OLD/ and 17+ files from ARCHIVE/ to legacy/
+- Categorized debug scripts into investigations/ and verification/ subdirectories
+- No archive directories remain in 2_Scripts/ or its subdirectories
+
 ## Session Continuity
 
         Last session: 2026-01-24T23:40:44Z
@@ -244,6 +262,13 @@ Recent decisions affecting current work:
 - [Quick Task 009]: Fixed Windows Unicode character in 3.3_EventFlags.py - removed redundant print with checkmark, dependency_checker already prints [OK]
 - [Quick Task 011]: Fixed 4.1_EstimateCeoClarity.py - added sys.path.insert, missing imports (DualWriter, observability_utils, symlink_utils), CONFIG dictionary, and fixed Unicode checkmark
 - [Quick Task 019]: Added comprehensive descriptive statistics to 1.1_CleanMetadata with compute_input_stats, compute_temporal_stats, compute_entity_stats functions for academic presentation
+- [Quick Task 020]: Added entity linking statistics to 1.2_LinkEntities for academic presentation
+- [Phase 26-01]: Consolidated archive directories into .___archive/ with 5 categorized subdirectories (backups, legacy, debug, docs, test_outputs)
+- [Phase 26-01]: Used .___archive/ naming (leading underscore) to keep archive at top of listings while marking as non-executable
+- [Phase 26-01]: Each archive category has README.md explaining purpose and contents for self-documentation
+- [Phase 26-02]: Categorized 81 flat archive files into 5 subdirectories with manifest.json inventory
+- [Phase 26-02]: Created JSON manifest with git tracking status for selective restoration capability
+- [Phase 26-02]: Moved ARCHIVE_BROKEN_STEP4 to legacy/ removing broken code from active scripts
 
 ### Roadmap Evolution
 
@@ -278,10 +303,10 @@ Recent decisions affecting current work:
 ### Blockers/Concerns
 
 **Phase 25.1 blocker (manual script execution):**
-- Pipeline scripts currently designed to run via orchestrator (test_full_pipeline.py)
-- Individual scripts lack prerequisite checking and clear error messages
-- Goal of Phase 25.1: Enable manual sequential execution of all 17 scripts
-- Next: Integrate dependency_checker into each pipeline script
+- RESOLVED: Pipeline scripts now support manual execution with CLI validation
+- All 21 pipeline scripts have --help and --dry-run flags
+- All scripts validate prerequisite steps before processing
+- Phase 25.1 complete: Manual execution fully enabled
 
 **Data blocker (identified but not part of phase scope):**
 - Input data schema mismatch blocks pipeline execution (documented in e2e_execution_report_20260124_160430.md)
@@ -292,16 +317,16 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-        Last session: 2026-01-29T20:14:14Z
-        Stopped at: Completed Quick Task 020 - Entity linking statistics
+        Last session: 2026-01-29T20:56:39Z
+        Stopped at: Completed Phase 26-02: Archive Organization
         Resume file: None
 
-        Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually) ✅
-          Plan: 10 of 10 (Phase complete: 2026-01-25)
+        Phase: 26 of 27 (Repository Cleanup and Archive Organization)
+          Plan: 02 of 04 (Plan complete: 2026-01-29)
           Status: ✅ COMPLETED
-          Last activity: 2026-01-29 - Quick Task 020: Added entity linking statistics to 1.2_LinkEntities
+          Last activity: 2026-01-29 - Organized 249 archive files with manifest.json
 
-         Progress: [██████████] 100% (133/133 plans complete)
+         Progress: [██████████░] 99.6% (135/137 plans complete)
           Technical Remediation: [████████████] 100% (All phases 7-25 complete)
           Gap Closure: [████████████] 100% (All gap closure phases complete)
           Post-Audit Validation: [████████████] 100% (All validation phases complete)
