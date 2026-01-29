@@ -215,6 +215,267 @@ def save_stats(stats, out_dir):
     print(f"Saved: {stats_path.name}")
 
 
+def generate_tokenization_report(stats, out_dir):
+    """
+    Generate comprehensive tokenization report in markdown format.
+
+    Creates publication-ready report with INPUT, PROCESS, and OUTPUT sections.
+
+    Args:
+        stats: Statistics dictionary with tokenize_input, tokenize_process, tokenize_output keys
+        out_dir: Output directory path
+    """
+    report_path = out_dir / "report_step_2_1.md"
+
+    with open(report_path, "w", encoding="utf-8") as f:
+        # Title
+        f.write("# Step 2.1: Tokenize and Count - Report\n\n")
+        f.write(f"**Generated:** {stats.get('timestamp', 'N/A')}\n\n")
+        f.write("---\n\n")
+
+        # INPUT DATA SECTION
+        f.write("## INPUT DATA\n\n")
+
+        # Manifest File
+        f.write("### Manifest File (from step 1.4)\n\n")
+        if "tokenize_input" in stats and "manifest_stats" in stats["tokenize_input"]:
+            ms = stats["tokenize_input"]["manifest_stats"]
+            f.write(f"- **Total files:** {ms.get('total_files', 'N/A'):,}\n")
+
+            if "unique_companies" in ms:
+                f.write(f"- **Unique companies:** {ms['unique_companies']:,}\n")
+
+            if "date_range" in ms:
+                dr = ms["date_range"]
+                f.write(f"- **Date range:** {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')}\n")
+
+            if "event_type_dist" in ms:
+                f.write("\n**Event Type Distribution:**\n\n")
+                f.write("| Event Type | Count |\n")
+                f.write("|-----------|-------|\n")
+                for et, count in sorted(ms["event_type_dist"].items(), key=lambda x: int(x[0])):
+                    f.write(f"| {et} | {count:,} |\n")
+
+        f.write("\n")
+
+        # LM Dictionary
+        f.write("### Loughran-McDonald Dictionary\n\n")
+        if "tokenize_input" in stats and "dictionary_stats" in stats["tokenize_input"]:
+            ds = stats["tokenize_input"]["dictionary_stats"]
+            f.write(f"- **Total vocabulary words:** {ds.get('total_words', 'N/A'):,}\n")
+            f.write(f"- **Vocabulary size:** {ds.get('vocabulary_size', 'N/A'):,}\n")
+            f.write(f"- **Average word length:** {ds.get('avg_word_length', 'N/A'):.2f}\n")
+
+            if "word_length_distribution" in ds:
+                f.write("\n**Word Length Distribution:**\n\n")
+                f.write("| Length Range | Count |\n")
+                f.write("|--------------|-------|\n")
+                for bucket, count in ds["word_length_distribution"].items():
+                    f.write(f"| {bucket} | {count:,} |\n")
+
+        f.write("\n")
+
+        # Category Breakdown
+        if "tokenize_input" in stats and "category_breakdown" in stats["tokenize_input"]:
+            f.write("**Words per Category:**\n\n")
+            f.write("| Category | Word Count | Sample Words |\n")
+            f.write("|----------|------------|--------------|\n")
+
+            cb = stats["tokenize_input"]["category_breakdown"]
+            for cat_name in sorted(cb.keys()):
+                cat_info = cb[cat_name]
+                sample_words = ", ".join(cat_info.get("sample_words", [])[:5])
+                f.write(f"| {cat_name} | {cat_info['word_count']:,} | {sample_words} |\n")
+
+        f.write("\n")
+
+        # Overlap Analysis
+        if "tokenize_input" in stats and "overlap_analysis" in stats["tokenize_input"]:
+            oa = stats["tokenize_input"]["overlap_analysis"]
+            f.write(f"**Category Overlap:** {oa.get('words_in_multiple_categories', 0):,} words appear in multiple categories\n\n")
+
+            if "category_overlaps" in oa and oa["category_overlaps"]:
+                f.write("| Category Pair | Overlapping Words |\n")
+                f.write("|---------------|-------------------|\n")
+                for pair, count in sorted(oa["category_overlaps"].items(), key=lambda x: x[1], reverse=True):
+                    f.write(f"| {pair} | {count:,} |\n")
+
+        f.write("\n---\n\n")
+
+        # TOKENIZATION PROCESS SECTION
+        f.write("## TOKENIZATION PROCESS\n\n")
+
+        # Volume Metrics
+        f.write("### Volume Metrics\n\n")
+        if "tokenize_process" in stats and "volume_metrics" in stats["tokenize_process"]:
+            vm = stats["tokenize_process"]["volume_metrics"]
+            f.write(f"- **Total input rows:** {vm.get('total_input_rows', 'N/A'):,}\n")
+            f.write(f"- **Total output rows:** {vm.get('total_output_rows', 'N/A'):,}\n")
+            f.write(f"- **Total tokens:** {vm.get('total_tokens', 'N/A'):,}\n")
+            f.write(f"- **Total vocabulary hits:** {vm.get('total_vocab_hits', 'N/A'):,}\n")
+
+        f.write("\n")
+
+        # Coverage Metrics
+        f.write("### Coverage Metrics\n\n")
+        if "tokenize_process" in stats and "coverage_metrics" in stats["tokenize_process"]:
+            cm = stats["tokenize_process"]["coverage_metrics"]
+            f.write(f"- **Vocabulary hit rate:** {cm.get('vocab_hit_rate', 'N/A'):.2f}%\n")
+            f.write(f"- **Out-of-vocabulary rate:** {cm.get('oov_rate', 'N/A'):.2f}%\n")
+
+        f.write("\n")
+
+        # Category Hit Rates
+        if "tokenize_process" in stats and "category_hit_rates" in stats["tokenize_process"]:
+            chr = stats["tokenize_process"]["category_hit_rates"]
+            f.write("**Per-Category Hit Rates:**\n\n")
+            f.write("| Category | Hit Count | Hit Rate % |\n")
+            f.write("|----------|-----------|------------|\n")
+            for cat_name in sorted(chr.keys()):
+                cat_info = chr[cat_name]
+                f.write(f"| {cat_name} | {cat_info.get('hit_count', 0):,} | {cat_info.get('hit_rate_pct', 0.0):.2f}% |\n")
+
+        f.write("\n")
+
+        # Efficiency Metrics
+        f.write("### Efficiency Metrics\n\n")
+        if "tokenize_process" in stats and "efficiency_metrics" in stats["tokenize_process"]:
+            em = stats["tokenize_process"]["efficiency_metrics"]
+            f.write(f"- **Documents per second:** {em.get('docs_per_second', 'N/A'):,.2f}\n")
+            f.write(f"- **Tokens per second:** {em.get('tokens_per_second', 'N/A'):,.2f}\n")
+
+            if "tokens_per_doc" in em:
+                tpd = em["tokens_per_doc"]
+                f.write(f"- **Average tokens per document:** {tpd.get('mean', 'N/A'):.2f}\n")
+                f.write(f"- **Median tokens per document:** {tpd.get('median', 'N/A'):.2f}\n")
+                f.write(f"- **Min tokens per document:** {tpd.get('min', 'N/A'):,}\n")
+                f.write(f"- **Max tokens per document:** {tpd.get('max', 'N/A'):,}\n")
+
+            f.write(f"- **Years processed:** {em.get('years_processed', 'N/A')}\n")
+
+        f.write("\n")
+
+        # Yearly Trends
+        f.write("### Yearly Trends\n\n")
+        if "tokenize_process" in stats and "yearly_trends" in stats["tokenize_process"]:
+            yt = stats["tokenize_process"]["yearly_trends"]
+
+            if "tokens_per_year" in yt:
+                f.write("**Tokens per Year:**\n\n")
+                f.write("| Year | Tokens | Vocab Hits |\n")
+                f.write("|------|--------|------------|\n")
+
+                tokens_by_year = yt["tokens_per_year"]
+                vocab_by_year = yt.get("vocab_hits_per_year", {})
+
+                for year in sorted(tokens_by_year.keys(), key=int):
+                    tokens = tokens_by_year[year]
+                    vocab_hits = vocab_by_year.get(year, 0)
+                    f.write(f"| {year} | {tokens:,} | {vocab_hits:,} |\n")
+
+        f.write("\n---\n\n")
+
+        # OUTPUT SUMMARY SECTION
+        f.write("## OUTPUT SUMMARY\n\n")
+
+        # Category Count Distributions
+        f.write("### Category Count Distributions\n\n")
+        if "tokenize_output" in stats and "category_distributions" in stats["tokenize_output"]:
+            cd = stats["tokenize_output"]["category_distributions"]
+
+            for cat_name in sorted(cd.keys()):
+                cat_stats = cd[cat_name]
+                f.write(f"**{cat_name}:**\n\n")
+                f.write(f"- Mean: {cat_stats.get('mean', 0):.2f}\n")
+                f.write(f"- Median: {cat_stats.get('median', 0):.2f}\n")
+                f.write(f"- Std: {cat_stats.get('std', 0):.2f}\n")
+                f.write(f"- Min: {cat_stats.get('min', 0):,}\n")
+                f.write(f"- Max: {cat_stats.get('max', 0):,}\n")
+                f.write(f"- 25th percentile: {cat_stats.get('q25', 0):.2f}\n")
+                f.write(f"- 75th percentile: {cat_stats.get('q75', 0):.2f}\n")
+                f.write(f"- Zero count (%): {cat_stats.get('zeros_pct', 0):.2f}%\n\n")
+
+        # Total Tokens Statistics
+        f.write("### Total Tokens Statistics\n\n")
+        if "tokenize_output" in stats and "total_tokens_stats" in stats["tokenize_output"]:
+            tts = stats["tokenize_output"]["total_tokens_stats"]
+            f.write(f"- Mean: {tts.get('mean', 0):.2f}\n")
+            f.write(f"- Median: {tts.get('median', 0):.2f}\n")
+            f.write(f"- Std: {tts.get('std', 0):.2f}\n")
+            f.write(f"- Min: {tts.get('min', 0):,}\n")
+            f.write(f"- Max: {tts.get('max', 0):,}\n")
+
+            if "percentiles" in tts:
+                p = tts["percentiles"]
+                f.write(f"- 10th percentile: {p.get('p10', 0):.2f}\n")
+                f.write(f"- 25th percentile: {p.get('p25', 0):.2f}\n")
+                f.write(f"- 50th percentile: {p.get('p50', 0):.2f}\n")
+                f.write(f"- 75th percentile: {p.get('p75', 0):.2f}\n")
+                f.write(f"- 90th percentile: {p.get('p90', 0):.2f}\n")
+                f.write(f"- 95th percentile: {p.get('p95', 0):.2f}\n")
+                f.write(f"- 99th percentile: {p.get('p99', 0):.2f}\n")
+
+        f.write("\n")
+
+        # Speaker-Level Analysis
+        f.write("### Speaker-Level Analysis\n\n")
+        if "tokenize_output" in stats and "speaker_analysis" in stats["tokenize_output"]:
+            sa = stats["tokenize_output"]["speaker_analysis"]
+
+            if "error" in sa:
+                f.write(f"*{sa['error']}*\n\n")
+            else:
+                if "documents_per_role" in sa:
+                    f.write("**Documents per Role:**\n\n")
+                    f.write("| Role | Count |\n")
+                    f.write("|------|-------|\n")
+                    for role, count in sorted(sa["documents_per_role"].items()):
+                        f.write(f"| {role} | {count:,} |\n")
+                    f.write("\n")
+
+                if "avg_tokens_per_role" in sa:
+                    f.write("**Average Tokens per Role:**\n\n")
+                    f.write("| Role | Avg Tokens |\n")
+                    f.write("|------|-----------|\n")
+                    for role, avg in sorted(sa["avg_tokens_per_role"].items()):
+                        f.write(f"| {role} | {avg:.2f} |\n")
+                    f.write("\n")
+
+        # Sparsity Analysis
+        f.write("### Sparsity Analysis\n\n")
+        if "tokenize_output" in stats and "sparsity_analysis" in stats["tokenize_output"]:
+            sp = stats["tokenize_output"]["sparsity_analysis"]
+
+            if "zero_counts_per_category" in sp:
+                f.write("**Zero Count Percentage by Category:**\n\n")
+                f.write("| Category | Zero Count | Zero % |\n")
+                f.write("|----------|------------|--------|\n")
+                for cat_name in sorted(sp["zero_counts_per_category"].keys()):
+                    zc = sp["zero_counts_per_category"][cat_name]
+                    f.write(f"| {cat_name} | {zc['count']:,} | {zc['pct']:.2f}% |\n")
+
+            f.write("\n")
+            if "documents_with_no_matches" in sp:
+                f.write(f"**Documents with no linguistic matches:** {sp['documents_with_no_matches']:,}\n")
+
+        f.write("\n---\n\n")
+
+        # PROCESS SUMMARY (existing)
+        f.write("## PROCESS SUMMARY\n\n")
+        f.write(f"- **Years processed:** {stats.get('processing', {}).get('years_processed', 'N/A')}\n")
+        f.write(f"- **Years skipped:** {stats.get('processing', {}).get('years_skipped', 'N/A')}\n")
+        f.write(f"- **Duration:** {stats.get('timing', {}).get('duration_seconds', 'N/A'):.2f} seconds\n")
+
+        f.write("\n---\n\n")
+
+        # OUTPUT SUMMARY (existing)
+        f.write("## OUTPUT SUMMARY\n\n")
+        f.write(f"- **Final record count:** {stats.get('output', {}).get('final_rows', 'N/A'):,}\n")
+        f.write(f"- **Files generated:** {len(stats.get('output', {}).get('files', []))}\n")
+
+    print(f"Generated: {report_path.name}")
+
+
 # ==============================================================================
 # Observability Helpers
 # ==============================================================================
@@ -729,6 +990,13 @@ def main(dictionary_path=None):
     )
     stats["processing"]["vocabulary_size"] = len(vocab_list)
 
+    # Compute INPUT statistics (manifest + LM dictionary)
+    print("\nComputing input statistics...")
+    from shared.observability_utils import compute_tokenize_input_stats
+    stats["tokenize_input"] = compute_tokenize_input_stats(
+        manifest, lm_path, vocab_list, cat_sets
+    )
+
     # Process
     config = load_config()
     years = range(2002, 2019)
@@ -796,6 +1064,30 @@ def main(dictionary_path=None):
     stats["processing"]["years_skipped"] = (
         len(years) - stats["processing"]["years_processed"]
     )
+
+    # Compute PROCESS statistics
+    print("\nComputing process statistics...")
+    from shared.observability_utils import compute_tokenize_process_stats
+    duration_seconds = stats["timing"]["duration_seconds"]
+    stats["tokenize_process"] = compute_tokenize_process_stats(
+        stats["processing"]["per_year"], cat_sets, vocab_list, duration_seconds
+    )
+
+    # Collect output DataFrames for output statistics
+    print("\nLoading output files for statistics...")
+    output_dfs = []
+    for year in sorted(results.keys()):
+        if results[year].get("skipped") is None:
+            out_path = out_dir / f"linguistic_counts_{year}.parquet"
+            if out_path.exists():
+                df_year = pd.read_parquet(out_path)
+                output_dfs.append(df_year)
+
+    # Compute OUTPUT statistics
+    if output_dfs:
+        print("Computing output statistics...")
+        from shared.observability_utils import compute_tokenize_output_stats
+        stats["tokenize_output"] = compute_tokenize_output_stats(output_dfs, cat_sets)
 
     # Output files
     output_files = list(out_dir.glob("linguistic_counts_*.parquet"))
@@ -873,6 +1165,10 @@ def main(dictionary_path=None):
         )
 
     save_stats(stats, out_dir)
+
+    # Generate comprehensive report
+    print("\nGenerating report...")
+    generate_tokenization_report(stats, out_dir)
 
     update_latest_link(out_dir, out_base / "2.1_Tokenized" / "latest")
     print("\n=== Complete ===")
