@@ -943,6 +943,269 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
+def collect_fuzzy_match_samples(unique_df: pd.DataFrame, n_samples: int = 5) -> Dict[str, Any]:
+    """
+    Collect fuzzy name match examples for review.
+
+    Provides samples of Tier 3 fuzzy matches, including both high-score (>98)
+    and borderline (92-95) cases to assess matching quality.
+
+    Deterministic: Same input produces same output (sorted, limited samples).
+
+    Args:
+        unique_df: DataFrame with unique companies after matching (must contain link_method, company_name, conm, gvkey, sic)
+        n_samples: Number of samples to collect per category (default: 5)
+
+    Returns:
+        Dictionary with keys:
+        - high_score: List of high-score fuzzy matches (>98)
+        - borderline: List of borderline fuzzy matches (92-95)
+        Each sample contains: company_id, company_name, conm (matched name), score, gvkey, sic
+    """
+    samples = {"high_score": [], "borderline": []}
+
+    # Filter for fuzzy matches
+    fuzzy_mask = unique_df["link_method"] == "name_fuzzy"
+    fuzzy_df = unique_df[fuzzy_mask].copy()
+
+    if len(fuzzy_df) == 0:
+        return samples
+
+    # Check if fuzzy_score column exists (it might not in unique_df after processing)
+    # If not, we'll use link_quality as a proxy (80 for fuzzy matches)
+    if "fuzzy_score" in fuzzy_df.columns:
+        fuzzy_df["score"] = fuzzy_df["fuzzy_score"]
+    else:
+        # All fuzzy matches have link_quality = 80, but we don't have actual scores
+        # Return empty samples since we can't distinguish high vs borderline
+        return samples
+
+    # Get high-score matches (>98)
+    high_score_df = fuzzy_df[fuzzy_df["score"] > 98].sort_values("score", ascending=False)
+    for _, row in high_score_df.head(n_samples).iterrows():
+        samples["high_score"].append({
+            "company_id": str(row.get("company_id", "")),
+            "company_name": str(row.get("company_name", "")) if pd.notna(row.get("company_name")) else "",
+            "matched_name": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
+            "score": round(float(row.get("score", 0)), 1),
+            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
+            "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+        })
+
+    # Get borderline matches (92-95)
+    borderline_df = fuzzy_df[(fuzzy_df["score"] >= 92) & (fuzzy_df["score"] <= 95)].sort_values("score", ascending=False)
+    for _, row in borderline_df.head(n_samples).iterrows():
+        samples["borderline"].append({
+            "company_id": str(row.get("company_id", "")),
+            "company_name": str(row.get("company_name", "")) if pd.notna(row.get("company_name")) else "",
+            "matched_name": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
+            "score": round(float(row.get("score", 0)), 1),
+            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
+            "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+        })
+
+    return samples
+
+
+def collect_tier_match_samples(unique_df: pd.DataFrame, n_samples: int = 3) -> Dict[str, Any]:
+    """
+    Collect Tier 1 and Tier 2 match examples for review.
+
+    Provides samples of high-quality PERMNO and CUSIP8 matches to demonstrate
+    precise identifier-based linkage.
+
+    Deterministic: Same input produces same output (random seed set).
+
+    Args:
+        unique_df: DataFrame with unique companies after matching (must contain link_method, permno/cusip8, gvkey, conm, sic, link_quality)
+        n_samples: Number of samples to collect per tier (default: 3)
+
+    Returns:
+        Dictionary with keys:
+        - tier1: List of Tier 1 (PERMNO) match examples
+        - tier2: List of Tier 2 (CUSIP8) match examples
+        Each sample contains: company_id, permno/cusip8, gvkey, conm, sic, link_quality
+    """
+    import random
+
+    samples = {"tier1": [], "tier2": []}
+
+    # Set random seed for deterministic sampling
+    random.seed(42)
+
+    # Tier 1: PERMNO matches
+    tier1_mask = unique_df["link_method"] == "permno_date"
+    tier1_df = unique_df[tier1_mask].copy()
+
+    if len(tier1_df) > 0:
+        # Sample n_samples random examples
+        sample_size = min(n_samples, len(tier1_df))
+        tier1_samples = tier1_df.sample(n=sample_size, random_state=42)
+
+        for _, row in tier1_samples.iterrows():
+            samples["tier1"].append({
+                "company_id": str(row.get("company_id", "")),
+                "permno": str(row.get("permno", "")) if pd.notna(row.get("permno")) else "",
+                "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
+                "conm": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
+                "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+                "link_quality": int(row.get("link_quality", 100)),
+            })
+
+    # Tier 2: CUSIP8 matches
+    tier2_mask = unique_df["link_method"] == "cusip8_date"
+    tier2_df = unique_df[tier2_mask].copy()
+
+    if len(tier2_df) > 0:
+        # Sample n_samples random examples
+        sample_size = min(n_samples, len(tier2_df))
+        tier2_samples = tier2_df.sample(n=sample_size, random_state=42)
+
+        for _, row in tier2_samples.iterrows():
+            samples["tier2"].append({
+                "company_id": str(row.get("company_id", "")),
+                "cusip8": str(row.get("cusip8", "")) if pd.notna(row.get("cusip8")) else "",
+                "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
+                "conm": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
+                "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+                "link_quality": int(row.get("link_quality", 90)),
+            })
+
+    return samples
+
+
+def collect_unmatched_samples(df_original: pd.DataFrame, unique_df: pd.DataFrame, n_samples: int = 5) -> List[Dict[str, Any]]:
+    """
+    Collect unmatched company samples for analysis.
+
+    Provides examples of companies that could not be matched, with information
+    about what identifiers were available to diagnose matching failures.
+
+    Deterministic: Same input produces same output (sorted, limited samples).
+
+    Args:
+        df_original: Original metadata DataFrame (before linking, must contain company_id, company_name, permno, cusip, company_ticker)
+        unique_df: DataFrame with unique companies after matching (must contain company_id, gvkey)
+        n_samples: Number of samples to collect (default: 5)
+
+    Returns:
+        List of unmatched company samples, each containing:
+        - company_id, company_name, has_permno, has_cusip, has_ticker, likely_reason
+    """
+    import random
+
+    # Set random seed for deterministic sampling
+    random.seed(42)
+
+    samples = []
+
+    # Find unmatched companies (gvkey is NaN in unique_df)
+    unmatched_mask = unique_df["gvkey"].isna()
+    unmatched_company_ids = set(unique_df[unmatched_mask]["company_id"].unique())
+
+    if len(unmatched_company_ids) == 0:
+        return samples
+
+    # Get unmatched companies from original df
+    unmatched_df = df_original[df_original["company_id"].isin(unmatched_company_ids)].drop_duplicates("company_id")
+
+    # Sample n_samples unmatched companies
+    sample_size = min(n_samples, len(unmatched_df))
+    unmatched_samples = unmatched_df.sample(n=sample_size, random_state=42)
+
+    for _, row in unmatched_samples.iterrows():
+        # Check what identifiers are available
+        has_permno = pd.notna(row.get("permno")) and str(row.get("permno", "")) != ""
+        has_cusip = pd.notna(row.get("cusip")) and str(row.get("cusip", "")) != ""
+        has_ticker = pd.notna(row.get("company_ticker")) and str(row.get("company_ticker", "")) != ""
+        has_name = pd.notna(row.get("company_name")) and str(row.get("company_name", "")) != ""
+
+        # Classify likely reason for no match
+        if not has_permno and not has_cusip and not has_ticker:
+            likely_reason = "missing_identifiers"
+        elif has_name:
+            likely_reason = "no_ccm_match"
+        else:
+            likely_reason = "unknown"
+
+        samples.append({
+            "company_id": str(row.get("company_id", "")),
+            "company_name": str(row.get("company_name", "")) if pd.notna(row.get("company_name")) else "",
+            "has_permno": bool(has_permno),
+            "has_cusip": bool(has_cusip),
+            "has_ticker": bool(has_ticker),
+            "likely_reason": likely_reason,
+        })
+
+    return samples
+
+
+def collect_before_after_samples(df_original: pd.DataFrame, df_linked: pd.DataFrame, n_samples: int = 3) -> List[Dict[str, Any]]:
+    """
+    Collect before/after examples showing the linking transformation.
+
+    Provides concrete examples of how company records are enriched with CCM
+    data through the entity linking process.
+
+    Deterministic: Same input produces same output (random seed set).
+
+    Args:
+        df_original: Original metadata DataFrame (must contain company_id, company_name, company_ticker, permno, cusip)
+        df_linked: Final linked metadata DataFrame (must contain company_id, gvkey, conm, sic, ff12_name, ff48_name, link_method, link_quality)
+        n_samples: Number of samples to collect (default: 3)
+
+    Returns:
+        List of before/after examples, each containing:
+        - before: {company_id, company_name, company_ticker, permno, cusip}
+        - after: {gvkey, conm, sic, ff12_name, ff48_name, link_method, link_quality}
+    """
+    import random
+
+    # Set random seed for deterministic sampling
+    random.seed(42)
+
+    samples = []
+
+    # Sample successfully linked companies
+    linked_companies = df_linked["company_id"].unique()
+    sample_size = min(n_samples, len(linked_companies))
+    sampled_ids = random.sample(list(linked_companies), sample_size)
+
+    for company_id in sampled_ids:
+        # Get original record
+        original_rows = df_original[df_original["company_id"] == company_id]
+        if len(original_rows) == 0:
+            continue
+        orig_row = original_rows.iloc[0]
+
+        # Get linked record
+        linked_rows = df_linked[df_linked["company_id"] == company_id]
+        if len(linked_rows) == 0:
+            continue
+        link_row = linked_rows.iloc[0]
+
+        samples.append({
+            "before": {
+                "company_id": str(orig_row.get("company_id", "")),
+                "company_name": str(orig_row.get("company_name", "")) if pd.notna(orig_row.get("company_name")) else "",
+                "company_ticker": str(orig_row.get("company_ticker", "")) if pd.notna(orig_row.get("company_ticker")) else "",
+                "permno": str(orig_row.get("permno", "")) if pd.notna(orig_row.get("permno")) else "",
+                "cusip": str(orig_row.get("cusip", "")) if pd.notna(orig_row.get("cusip")) else "",
+            },
+            "after": {
+                "gvkey": str(link_row.get("gvkey", "")) if pd.notna(link_row.get("gvkey")) else "",
+                "conm": str(link_row.get("conm", "")) if pd.notna(link_row.get("conm")) else "",
+                "sic": int(link_row["sic"]) if pd.notna(link_row.get("sic")) else None,
+                "ff12_name": str(link_row.get("ff12_name", "")) if pd.notna(link_row.get("ff12_name")) else "",
+                "ff48_name": str(link_row.get("ff48_name", "")) if pd.notna(link_row.get("ff48_name")) else "",
+                "link_method": str(link_row.get("link_method", "")) if pd.notna(link_row.get("link_method")) else "",
+                "link_quality": int(link_row.get("link_quality", 0)),
+            }
+        })
+
+    return samples
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
