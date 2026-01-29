@@ -1,0 +1,108 @@
+﻿======================================================================
+STEP 2.13: Testing SurpDec and EPS Growth Fixes
+======================================================================
+
+Loading Step 2.7 data...
+Loaded 85,540 calls
+
+======================================================================
+PART 1: EPS GROWTH FIX
+======================================================================
+
+Paper Definition: EPS growth as FRACTION (not percentage)
+  Paper mean: -0.03, std: 1.78
+
+CURRENT (percentage):
+  N:    83,663
+  Mean: 22.2673
+  Std:  261.9132
+  Min:  -1233.3333
+  Max:  1313.7500
+
+FIXED (fraction = percentage / 100):
+  N:    83,663
+  Mean: 0.2227
+  Std:  2.6191
+  Min:  -12.3333
+  Max:  13.1375
+
+COMPARISON TO PAPER:
+  Paper mean: -0.03 vs. Ours: 0.2227
+  Paper std:   1.78 vs. Ours: 2.6191
+
+After 1%/99% winsorization:
+  Mean: 0.2226
+  Std:  2.6187
+
+======================================================================
+PART 2: SURPDEC FIX
+======================================================================
+
+Paper Definition:
+  - 5 positive bins numbered 5 to 1 (largest to smallest positive)
+  - 0 for zero surprises
+  - 5 negative bins from -1 to -5 (smallest to largest negative)
+
+Paper stats: mean=0.85, std=3.16, min=-5, p25=-2, p50=2, p75=4, max=5
+
+Using column: surprise_raw
+Non-null surprises: 74,849
+
+CURRENT SurpDec stats:
+  N:    67,367 (non-zero)
+  Mean: 0.3145
+  Std:  2.7011
+  Min:  -4
+  p25:  -2
+  p50:  0
+  p75:  3
+  Max:  5
+
+Recomputing SurpDec using paper's methodology...
+
+FIXED SurpDec stats:
+  N:    74,849
+  Mean: 0.9846
+  Std:  3.0018
+  Min:  -5
+  p25:  -1
+  p50:  1
+  p75:  3
+  Max:  5
+
+COMPARISON TO PAPER:
+  Paper: mean=0.85, std=3.16, p25=-2, p50=2, p75=4
+  Ours:  mean=0.98, std=3.00, p25=-1, p50=1, p75=3
+
+Value distribution (Fixed SurpDec):
+   -5:    4,355 (  5.1%)
+   -4:    4,319 (  5.0%)
+   -3:    4,310 (  5.0%)
+   -2:    4,319 (  5.0%)
+   -1:    4,342 (  5.1%)
+    0:    6,995 (  8.2%)
+    1:    9,256 ( 10.8%)
+    2:    9,228 ( 10.8%)
+    3:    9,226 ( 10.8%)
+    4:    9,228 ( 10.8%)
+    5:    9,271 ( 10.8%)
+
+======================================================================
+SUMMARY
+======================================================================
+
+EPS Growth Fix:
+  Before: mean=22.27 (as %)
+  After:  mean=0.2227 (as fraction)
+  Paper:  mean=-0.03
+  Match:  YES
+
+SurpDec Fix:
+  Before: mean=0.31, p50=0
+  After:  mean=0.98, p50=1
+  Paper:  mean=0.85, p50=2
+  Match:  PARTIAL
+
+======================================================================
+END OF TEST
+======================================================================

@@ -1,0 +1,15 @@
+gvkey
+conm
+tic
+cusip
+cik
+sic
+naics
+LINKPRIM
+LIID
+LINKTYPE
+LPERMNO
+LPERMCO
+LINKDT
+LINKENDDT
+CONML

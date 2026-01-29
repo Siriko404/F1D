@@ -1,0 +1,79 @@
+
+
+### **1. The Econometric Model**
+
+[cite_start]The estimation relies on the following Ordinary Least Squares (OLS) regression equation[cite: 345]:
+
+$$UncAnsCEO_{i,t} = \alpha + \gamma_{i} \cdot CEO_{i,t} + \beta_{s} \cdot Speech_{i,t}^{s} + \beta_{k} \cdot FirmChars_{i,t}^{k} + Year_{t} + \epsilon_{i,t}$$
+
+Where:
+* **$UncAnsCEO_{i,t}$:** The dependent variable (how fuzzy the CEO's answers are).
+* **$CEO_{i,t}$:** An indicator (dummy) variable for the specific CEO $i$.
+* **$\gamma_{i}$:** The **CEO Fixed Effect**. This coefficient represents the CEO's personal, persistent tendency to use uncertainty words, distinct from the firm's situation.
+* **$Speech_{i,t}^{s}$:** Linguistic control variables (e.g., how fuzzy the presentation was).
+* **$FirmChars_{i,t}^{k}$:** Firm-level controls (financial performance).
+* **$Year_{t}$:** Time fixed effects (controlling for global events like the 2008 crisis).
+* **$\epsilon_{i,t}$:** The residual (unexplained) uncertainty in that specific call.
+
+---
+
+### **2. Calculating "Clarity" from the Model**
+
+The regression produces a coefficient $\gamma_{i}$ for every CEO. A high $\gamma_{i}$ means the CEO uses *many* uncertainty words (they are a "fuzzy talker").
+
+[cite_start]Because the authors want to measure **Clarity** (the opposite of uncertainty), they define the final variable as the negative of this coefficient[cite: 346]:
+
+$$ClarityCEO_{i} = -\gamma_{i}$$
+
+* **Result:** A higher $ClarityCEO$ score indicates a CEO who rarely uses uncertainty words in their answers, relative to the controls.
+* [cite_start]**Standardization:** For the final analysis, this value is standardized to have a mean of 0 and a standard deviation of 1[cite: 385].
+
+---
+
+### **3. Construction of Variables**
+
+[cite_start]Below is the detailed construction of every variable used in Equation 4, based on the text and Table A.1[cite: 1088, 1089, 1091, 1100].
+
+#### **A. The Dependent Variable**
+* **Variable:** **$UncAnsCEO$** (Uncertainty in Answers)
+* **Construction:**
+    1.  The authors isolate the "Answers" (Q&A) portion of the transcript.
+    2.  They filter for words spoken specifically by the CEO.
+    3.  [cite_start]They count the number of "uncertainty words" using the Loughran and McDonald (2011) list (297 words including *approximately, probably, maybe, could, believe*)[cite: 260].
+    4.  **Formula:**
+    $$UncAnsCEO = \frac{\text{Count of Uncertainty Words in Answers}}{\text{Total Words in Answers}} \times 100$$
+    * [cite_start]*Note:* The average is 0.79%[cite: 283].
+
+#### **B. The Key Linguistic Control**
+* **Variable:** **$UncPreCEO$** (Uncertainty in Presentation)
+* [cite_start]**Purpose:** This captures the "Firm Effect"—the uncertainty driven by the company's culture or current economic reality[cite: 364].
+* **Construction:**
+    1.  Isolate the "Presentation" (scripted) portion of the transcript.
+    2.  Filter for words spoken by the CEO.
+    3.  Count uncertainty words from the same Loughran and McDonald list.
+    4.  **Formula:**
+    $$UncPreCEO = \frac{\text{Count of Uncertainty Words in Presentation}}{\text{Total Words in Presentation}} \times 100$$
+
+#### **C. Other Linguistic Controls ($Speech_{i,t}^{s}$)**
+To ensure the CEO's word choice isn't just mirroring the analyst or the general mood, they control for:
+
+* **$UncQue$** (Uncertainty in Questions)
+    * [cite_start]**Construction:** The percentage of uncertainty words used by **analysts** in their questions during the Q&A[cite: 365, 1090]. This controls for the possibility that vague questions solicit vague answers.
+* **$NegCall$** (Negativity)
+    * [cite_start]**Construction:** The percentage of **negative words** (from the Loughran and McDonald negative word list) relative to total words spoken by all participants (CEO, CFO, analysts) during the entire call[cite: 376, 1090]. This controls for bad news, which naturally creates uncertainty.
+
+#### **D. Firm Characteristic Controls ($FirmChars_{i,t}^{k}$)**
+[cite_start]These variables control for the firm's financial performance and stock behavior at the time of the call[cite: 375, 1021, 1100].
+
+* **$SurpDec$** (Earnings Surprise Decile)
+    * **Construction:**
+        1.  Calculate the raw surprise: $(\text{Actual Earnings} - \text{Consensus Forecast}) / \text{Share Price}$.
+        2.  Group firms into 10 bins (deciles).
+        3.  Bins range from -5 (largest negative surprise) to -1 (smallest negative), 0 (no surprise), and 1 (smallest positive) to 5 (largest positive).
+        4.  The absolute value ($SurpDecAbs$) is often used to measure the *magnitude* of news, regardless of direction.
+* **$EPS Growth$**
+    * [cite_start]**Construction:** The percentage growth in Earnings Per Share compared to the same quarter in the previous year (year-over-year)[cite: 1094].
+* **$StockRet$** (Stock Return)
+    * **Construction:** The stock return (in %) over the previous quarter. [cite_start]Specifically, it measures the return from 5 days after the *previous* quarter's earnings call to 5 days before the *current* call[cite: 1107].
+* **$MarketRet$** (Market Return)
+    * [cite_start]**Construction:** The value-weighted market return over the same period as $StockRet$[cite: 1106].

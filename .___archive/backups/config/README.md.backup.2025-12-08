@@ -1,0 +1,964 @@
+# F1D Project - Technical Reference
+
+## Project Description
+
+This project processes earnings call transcripts to generate linguistic measures based on the Loughran-McDonald (LM) dictionary and estimate CEO communication styles. It extracts speech by speaker role and context, tokenizes text, counts dictionary matches, links results to CRSP-Compustat Merged (CCM) database with Fama-French industry classifications, and estimates CEO fixed effects to measure persistent communication clarity.
+
+**Data scope**: 17 years (2002-2018)
+**Input data**: Speaker-level earnings call transcripts
+**Output data**:
+- Call-level linguistic measures (4 measures per call)
+- Financial control variables (stock returns, EPS growth, earnings surprises)
+- CEO Clarity scores (persistent communication style for 3,306 CEOs)
+- CCM linkage and industry classifications
+
+---
+
+## Processing Steps
+
+### STEP 00: Unified Info Check
+
+**Script**: `2.0_UnifiedInfoCheck.py`
+
+**Inputs**:
+- `1_Inputs/Unified-info.parquet`
+
+**Process**:
+1. Read Unified-info parquet file
+2. Identify exact duplicate rows (all columns identical)
+3. Remove exact duplicates, keep one copy
+4. Identify file_name with multiple non-identical rows
+5. Write collision report
+
+**Outputs**:
+- `4_Outputs/2.0_UnifiedInfoCheck/{timestamp}/unified_info_duplicate_file_names.csv`
+- `4_Outputs/2.0_UnifiedInfoCheck/{timestamp}/report_step_00.md`
+- `3_Logs/2.0_UnifiedInfoCheck/{timestamp}.log`
+
+---
+
+### STEP 00b: Master Tenure Map
+
+**Script**: `2.0b_BuildMasterTenureMap.py`
+
+**Inputs**:
+- `1_Inputs/CEO Dismissal Data 2021.02.03.xlsx`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Load CEO Dismissal dataset
+2. Deduplicate exact records
+3. Construct tenure timeline per company (gvkey):
+   - **Start Date**: `Predecessor_End_Date + 1 day` (Strict Chaining)
+   - **First CEO**: Defaults to `1990-01-01`
+   - **End Date**: Explicit `leftofc` date
+   - **Active CEOs**: If `leftofc` is NULL and `Still There` is valid, set End Date to `2100-01-01`
+4. Validate date integrity
+
+**Outputs**:
+- `4_Outputs/2.0b_BuildMasterTenureMap/{timestamp}/master_tenure_map.parquet`
+- `4_Outputs/2.0b_BuildMasterTenureMap/{timestamp}/master_tenure_map.csv`
+- `3_Logs/2.0b_BuildMasterTenureMap/{timestamp}.log`
+
+---
+
+### STEP 01: Build LM Dictionaries
+
+**Script**: `2.1_BuildLmClarityDictionary.py`
+
+**Inputs**:
+- `1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Read LM Master Dictionary CSV
+2. Filter rows where `Uncertainty > 0` → Uncertainty dictionary
+3. Filter rows where `Negative > 0` → Negative dictionary
+4. Normalize Word field to uppercase, match `[A-Z]+` pattern
+5. Write two separate parquet files
+
+**Outputs**:
+- `4_Outputs/2.1_BuildLmClarityDictionary/{timestamp}/lm_Uncertainty_dictionary.parquet`
+  - Columns: `token` (STRING), `source_flag` (STRING)
+  - 297 rows
+- `4_Outputs/2.1_BuildLmClarityDictionary/{timestamp}/lm_Negative_dictionary.parquet`
+  - Columns: `token` (STRING), `source_flag` (STRING)
+  - 2,345 rows
+- `4_Outputs/2.1_BuildLmClarityDictionary/{timestamp}/report_step_01.md`
+- `3_Logs/2.1_BuildLmClarityDictionary/{timestamp}.log`
+
+---
+
+### STEP 02: Extract Filtered Docs
+
+**C++ Pipeline (v2)**:
+
+#### 2.2v2a: Parquet to JSON (Orchestrator)
+
+**Script**: `2.2v2a_ParquetToJson.py`
+
+**Inputs**:
+- `1_Inputs/speaker_data_YYYY.parquet` (17 files, 2002-2018)
+- `1_Inputs/Unified-info.parquet`
+- Config: `config/project.yaml`
+
+**Process**:
+1. For each year (2002-2018):
+   - Read speaker_data parquet
+   - Convert to JSON format
+   - Call `2.2v2b_ProcessManagerDocs.exe`
+   - Read JSON output
+   - Convert back to parquet
+   - Partition by year
+2. Generate report via `2.2v2c_GenerateReport.py`
+
+**Outputs**: Calls `2.2v2b_ProcessManagerDocs.exe`
+
+#### 2.2v2b: Process Manager Docs (C++ Processor)
+
+**Binary**: `2.2v2b_ProcessManagerDocs.exe` (compiled from `2.2v2b_ProcessManagerDocs.cpp`)
+
+**Inputs** (via JSON):
+- Speaker data records
+- Unified-info data
+
+**Process**:
+1. Filter by context and role to create 4 datasets:
+   - **manager_qa**: `context == 'qa'` AND managerial roles
+   - **manager_pres**: `context == 'pres'` AND managerial roles
+   - **analyst_qa**: `context == 'qa'` AND analyst roles
+   - **entire_call**: ALL speakers (managers, analysts, operators) in ALL contexts (qa, pres) - no filtering
+2. Managerial role detection: Check `role` field for keywords (PRESIDENT, CEO, CFO, VP, DIRECTOR, etc.)
+3. Analyst role detection: Check `role` or `speaker_name` for "Analyst"
+4. Entire call: Accept all speaker turns regardless of role or context
+5. Concatenate `speaker_text` per file_name, sorted by speaker_number
+6. Join with Unified-info on file_name to get start_date
+7. Output JSON
+
+**Outputs** (via JSON):
+- `{dataset}_docs_YYYY.json` (temporary)
+
+#### 2.2v2e: Resort By Year (Archived)
+
+**Script**: `2.2v2e_ResortByYear.py`
+
+**Status**: Archived/Obsolete. The C++ processor now correctly handles year assignment from `start_date`, making this post-processing step unnecessary.
+
+---
+
+### STEP 03: Tokenize and Count
+
+**C++ Pipeline**:
+
+#### 2.3a: Tokenize and Count (Orchestrator)
+
+**Script**: `2.3a_TokenizeAndCount.py`
+
+**Inputs**:
+- `4_Outputs/2.2_ExtractFilteredDocs/latest/{dataset}_docs_YYYY.parquet` (68 files)
+- `4_Outputs/2.1_BuildLmClarityDictionary/latest/lm_Uncertainty_dictionary.parquet`
+- `4_Outputs/2.1_BuildLmClarityDictionary/latest/lm_Negative_dictionary.parquet`
+- Config: `config/project.yaml`
+
+**Process**:
+1. For each dataset (manager_qa, manager_pres, analyst_qa, entire_call):
+   - For each year (2002-2018):
+     - For each quarter (1-4):
+       - Convert parquet to JSON
+       - Call `2.3b_TokenizeText.exe` with Uncertainty dictionary
+       - Call `2.3b_TokenizeText.exe` with Negative dictionary
+       - Aggregate quarter results to year level
+       - Convert JSON to parquet
+2. Generate report via `2.3c_GenerateReport.py`
+
+**Outputs**: Calls `2.3b_TokenizeText.exe`
+
+#### 2.3b: Tokenize Text (C++ Tokenizer)
+
+**Binary**: `2.3b_TokenizeText.exe` (compiled from `2.3b_TokenizeText.cpp`)
+
+**Inputs** (via JSON):
+- Document text records
+- Dictionary tokens
+
+**Process**:
+1. Load dictionary into hash set
+2. For each document:
+   - Convert text to uppercase
+   - Replace non-letter characters with space: `[^A-Z]` → ` `
+   - Split on whitespace to get tokens matching `[A-Z]+`
+   - Count total tokens
+   - Count tokens present in dictionary
+   - Calculate percentage: `hits / total_tokens`
+   - Track top 5 matched tokens by frequency
+3. Output JSON
+
+**Outputs** (via JSON):
+- Tokenization results per document
+
+**Final Outputs**:
+- `4_Outputs/2.3_TokenizeAndCount/{timestamp}/{dataset}_call_YYYY.parquet` (68 files)
+  - Columns:
+    - `file_name` (STRING)
+    - `start_date` (STRING)
+    - `total_word_tokens` (INT)
+    - `Uncertainty_hits` (INT)
+    - `Negative_hits` (INT)
+    - `unc_pct` (FLOAT)
+    - `neg_pct` (FLOAT)
+    - `top5_uncertainty` (STRING - JSON array)
+    - `top5_negative` (STRING - JSON array)
+    - `process_version` (STRING)
+  - 4 datasets × 17 years = 68 files total
+- `3_Logs/2.3_TokenizeAndCount/{timestamp}.log`
+
+---
+
+### STEP 04: Build Measure Panels
+
+**Script**: `2.4_BuildF1dPanel.py`
+
+**Inputs**:
+- `4_Outputs/2.3_TokenizeAndCount/latest/{dataset}_call_YYYY.parquet` (68 files)
+- `1_Inputs/Unified-info.parquet`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Deduplicate Unified-info (exact row deduplication only)
+2. Define 4 measures from dataset × dictionary combinations:
+   - **MaQaUnc**: manager_qa dataset × Uncertainty dictionary
+   - **MaPresUnc**: manager_pres dataset × Uncertainty dictionary
+   - **AnaQaUnc**: analyst_qa dataset × Uncertainty dictionary
+   - **EntireCallNeg**: entire_call dataset × Negative dictionary
+3. For each measure and year:
+   - Read call-level data from appropriate dataset file
+   - Extract relevant columns (total_tokens, hits, pct) for the dictionary
+   - LEFT JOIN with Unified-info on file_name
+   - If multiple Unified-info rows exist for file_name:
+     - Sort by validation_timestamp, then start_date
+     - Take first row
+     - Set had_duplicate_metadata = TRUE
+   - Write panel parquet file
+
+**Outputs**:
+- `4_Outputs/2.4_BuildF1dPanel/{timestamp}/{measure}_panel_YYYY.parquet` (68 files)
+  - Columns:
+    - `file_name` (STRING)
+    - `start_date` (STRING)
+    - `business_quarter` (STRING)
+    - `permno` (STRING/FLOAT)
+    - `company_name` (STRING)
+    - `company_id` (STRING)
+    - `cusip` (STRING)
+    - `sedol` (STRING)
+    - `isin` (STRING)
+    - `company_ticker` (STRING)
+    - `total_tokens_{measure}` (INT)
+    - `{Measure}_hits` (INT)
+    - `{Measure}_pct` (FLOAT)
+    - `process_version` (STRING)
+    - `had_duplicate_metadata` (BOOL)
+  - 4 measures × 17 years = 68 files total
+- `4_Outputs/2.4_BuildF1dPanel/{timestamp}/report_step_04.md`
+- `3_Logs/2.4_BuildF1dPanel/{timestamp}.log`
+
+---
+
+### STEP 05: Link CCM and Industries
+
+**Script**: `2.5_LinkCcmAndIndustries.py`
+
+**Inputs**:
+- `4_Outputs/2.4_BuildF1dPanel/latest/{measure}_panel_YYYY.parquet` (68 files)
+- `1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet`
+- `1_Inputs/Siccodes12.zip`
+- `1_Inputs/Siccodes48.zip`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Load CCM database (32,421 link records)
+2. Parse Fama-French industry mappings:
+   - FF12: 5,450 SIC codes mapped to 12 industries
+   - FF48: 5,054 SIC codes mapped to 48 industries
+3. For each year (2002-2018):
+   - Load and merge 4 measure panels on file_name (FULL OUTER JOIN)
+   - Result: One row per file_name with all 4 measures as columns
+   - Multi-tier CCM linking:
+     - **Tier 1**: Match PERMNO + date within [LINKDT, LINKENDDT]
+       - Quality score: 100
+     - **Tier 2**: Match CUSIP (first 8 chars) + date within link period
+       - Quality score: 90
+     - **Tier 3**: Fuzzy match company_name to CCM conm
+       - Use rapidfuzz library
+       - Minimum threshold: 92
+       - Quality score: 70-80 based on match strength
+     - **Tier 4**: Match ticker + date within link period
+       - Quality score: 60
+   - Filter: Drop rows where gvkey is NULL
+   - Map SIC code to FF12 and FF48 industries
+   - Write parquet file
+
+**Tier Execution Order**: 1 → 2 → 3 → 4 (only unmatched records proceed to next tier)
+
+**Outputs**:
+- `4_Outputs/2.5_LinkCcmAndIndustries/{timestamp}/f1d_enriched_YYYY.parquet` (17 files)
+  - **Core Identifiers**:
+    - `file_name` (STRING)
+    - `start_date` (STRING)
+    - `business_quarter` (STRING)
+    - `permno` (FLOAT)
+    - `company_name` (STRING)
+    - `company_id` (STRING)
+    - `cusip` (STRING)
+    - `sedol` (STRING)
+    - `isin` (STRING)
+    - `company_ticker` (STRING)
+    - `process_version` (STRING)
+    - `had_duplicate_metadata` (BOOL)
+  - **MaQaUnc Measure**:
+    - `total_tokens_maqaunc` (INT)
+    - `MaQaUnc_hits` (INT)
+    - `MaQaUnc_pct` (FLOAT)
+  - **MaPresUnc Measure**:
+    - `total_tokens_mapresunc` (INT)
+    - `MaPresUnc_hits` (INT)
+    - `MaPresUnc_pct` (FLOAT)
+  - **AnaQaUnc Measure**:
+    - `total_tokens_anaqaunc` (INT)
+    - `AnaQaUnc_hits` (INT)
+    - `AnaQaUnc_pct` (FLOAT)
+  - **EntireCallNeg Measure**:
+    - `total_tokens_entirecallneg` (INT)
+    - `EntireCallNeg_hits` (INT)
+    - `EntireCallNeg_pct` (FLOAT)
+  - **CCM Linkage**:
+    - `LPERMNO` (FLOAT) - Linked CRSP PERMNO from CCM (Reliable)
+    - `gvkey` (STRING) - NEVER NULL in final output
+    - `ccm_conm` (STRING)
+    - `ccm_sic` (INT)
+    - `ccm_cusip` (STRING)
+    - `ccm_linkprim` (STRING)
+    - `ccm_linktype` (STRING)
+    - `link_method` (STRING)
+    - `link_quality_score` (INT)
+    - `fuzzy_match_score` (FLOAT)
+    - `fuzzy_matched_name` (STRING)
+    - `fuzzy_needs_review` (BOOL)
+  - **Industry Classifications**:
+    - `ff12_code` (INT)
+    - `ff12_name` (STRING)
+    - `ff48_code` (INT)
+    - `ff48_name` (STRING)
+  - Total columns: 39
+- `4_Outputs/2.5_LinkCcmAndIndustries/{timestamp}/unmatched_calls_audit.csv`
+  - 121,464 rows (calls excluded due to no gvkey match)
+- `4_Outputs/2.5_LinkCcmAndIndustries/{timestamp}/report_step_2_5.md`
+- `3_Logs/2.5_LinkCcmAndIndustries/{timestamp}.log`
+
+**Final Dataset Statistics**:
+- Total calls in final output: 286,652
+- gvkey coverage: 100% (by construction, NULL rows filtered)
+- Calls excluded: 121,464 (documented in audit file)
+
+---
+
+---
+
+### STEP 00c: Build Monthly Tenure Panel
+
+**Script**: `2.0c_BuildMonthlyTenurePanel.py`
+
+**Inputs**:
+- `4_Outputs/2.0b_BuildMasterTenureMap/latest/master_tenure_map.parquet`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Load Master Tenure Map
+2. Expand each tenure range to monthly rows (Frequency: Month Start)
+3. Resolve conflicts (keep last entry for duplicate month-keys)
+4. Save Monthly Panel
+
+**Outputs**:
+- `4_Outputs/2.0c_BuildMonthlyTenurePanel/{timestamp}/master_tenure_monthly.parquet`
+  - Columns: `gvkey`, `year`, `month`, `date`, `ceo_id`, `ceo_name`, `ceo_interim_status`, `tenure_seq`, `coname`
+- `3_Logs/2.0c_BuildMonthlyTenurePanel/{timestamp}.log`
+
+---
+
+### STEP 02.5b: Link Calls to CEO
+
+**Script**: `2.5b_LinkCallsToCeo.py`
+
+**Inputs**:
+- `4_Outputs/2.5_LinkCcmAndIndustries/latest/f1d_enriched_YYYY.parquet`
+- `4_Outputs/2.0c_BuildMonthlyTenurePanel/latest/master_tenure_monthly.parquet`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Load Enriched Call Data and Monthly Tenure Panel
+2. For each year (2002-2018):
+   - Extract `year` and `month` from call `start_date`
+   - Left Join Call Data with Tenure Panel on `[gvkey, year, month]`
+   - Separate Matched and Unmatched calls
+3. Save Matched calls with CEO info
+4. Save Unmatched calls to audit file
+
+**Outputs**:
+- `4_Outputs/2.5b_LinkCallsToCeo/{timestamp}/f1d_enriched_ceo_YYYY.parquet`
+  - Adds columns: `ceo_id`, `ceo_name`, `ceo_interim_status`, `tenure_seq`, `match_method`
+- `4_Outputs/2.5b_LinkCallsToCeo/{timestamp}/unmatched_calls_audit.csv`
+- `3_Logs/2.5b_LinkCallsToCeo/{timestamp}.log`
+
+> **Note**: The expected match rate is approximately 50%. This is due to the CEO Dismissal dataset covering a smaller subset of companies (S&P 1500 focus) compared to the broader coverage of the Earnings Calls dataset. Unmatched calls are preserved in the audit file.
+
+---
+
+### STEP 02.5c: Filter Calls and CEOs
+
+**Script**: `2.5c_FilterCallsAndCeos.py`
+
+**Inputs**:
+- `4_Outputs/2.5b_LinkCallsToCeo/latest/f1d_enriched_ceo_YYYY.parquet`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Load calls with CEO linkage
+2. Count calls per CEO across all years
+3. Filter to CEOs with ≥ min_calls_threshold (default: 5 calls)
+4. Separate matched and dropped calls
+5. Save both datasets
+
+**Outputs**:
+- `4_Outputs/2.5c_FilterCeos/{timestamp}/f1d_enriched_ceo_YYYY.parquet`
+  - Calls where CEO has ≥5 total calls across the sample
+- `4_Outputs/2.5c_FilterCeos/{timestamp}/f1d_dropped_ceo_calls_YYYY.parquet`
+  - Calls where CEO has <5 total calls (excluded from analysis)
+- `3_Logs/2.5c_FilterCeos/{timestamp}.log`
+
+---
+
+### STEP 07: Build Financial Controls
+
+**Script**: `2.7_BuildFinancialControls.py`
+
+**Inputs**:
+- `4_Outputs/2.5c_FilterCeos/latest/f1d_enriched_ceo_YYYY.parquet`
+- `1_Inputs/tr_ibes/tr_ibes.parquet` (I/B/E/S earnings surprise data)
+- `1_Inputs/CRSP/dsf.parquet` (daily stock returns)
+- `1_Inputs/CRSP/dsi.parquet` (market index returns)
+- Config: `config/project.yaml`
+
+**Process**:
+1. Load calls with CEO linkage
+2. Compute stock returns (5 days after previous call → 5 days before current call)
+   - Min 20 trading days required
+3. Compute market returns (same window)
+4. Link I/B/E/S surprise data (within ±3 days of call)
+5. Compute EPS growth (year-over-year, 4 quarters lag)
+6. Winsorize EPS growth at [1%, 99%]
+7. Create surprise decile bins
+8. Save call-level data with all controls
+
+**Outputs**:
+- `4_Outputs/2.7_BuildFinancialControls/{timestamp}/calls_with_controls_YYYY.parquet`
+  - All columns from Step 2.5c plus:
+    - `StockRet`: Cumulative stock return
+    - `MarketRet`: Cumulative market return
+    - `EPS_Growth`: YoY EPS growth (winsorized)
+    - `SurpDec`: Earnings surprise decile
+    - `ibes_matched`: Match indicator
+- `4_Outputs/2.7_BuildFinancialControls/{timestamp}/report_step_07.md`
+- `3_Logs/2.7_BuildFinancialControls/{timestamp}.log`
+
+---
+
+### STEP 08: Estimate CEO Clarity
+
+**Script**: `2.8_EstimateCeoClarity.py`
+
+**Inputs**:
+- `4_Outputs/2.7_BuildFinancialControls/latest/calls_with_controls_YYYY.parquet`
+- Config: `config/project.yaml`
+
+**Process**:
+1. Load calls with financial controls
+2. Filter to complete cases (all controls non-null)
+3. Filter to CEOs with ≥5 calls
+4. Estimate OLS regression with CEO fixed effects:
+   ```
+   UncAnsCEO_it = α + γ_i·CEO_i + β_s·Speech_it + β_k·FirmChars_it + Year_t + ε_it
+   ```
+   Where:
+   - **UncAnsCEO**: Manager Q&A Uncertainty (dependent variable)
+   - **Speech controls**: UncPreCEO, UncQue, NegCall
+   - **Firm controls**: SurpDec, EPS_Growth, StockRet, MarketRet
+   - **Fixed effects**: CEO_ID, year
+5. Extract CEO fixed effects (γ_i coefficients)
+6. Compute Clarity scores: `ClarityCEO = -γ_i` (standardized)
+7. Merge back to call level
+8. Save CEO-level scores and call-level data
+
+**Outputs**:
+- `4_Outputs/2.8_EstimateCeoClarity/{timestamp}/ceo_clarity_scores.parquet`
+  - CEO-level dataset with Clarity scores
+  - Columns: CEO_ID, gamma_i, ClarityCEO_raw, ClarityCEO, ceo_name, n_calls, avg_UncAnsCEO, etc.
+- `4_Outputs/2.8_EstimateCeoClarity/{timestamp}/calls_with_clarity_YYYY.parquet`
+  - Call-level data with ClarityCEO merged
+- `4_Outputs/2.8_EstimateCeoClarity/{timestamp}/regression_results.txt`
+  - Full regression output from statsmodels
+- `4_Outputs/2.8_EstimateCeoClarity/{timestamp}/model_diagnostics.csv`
+  - R², AIC, BIC, F-statistic, etc.
+- `4_Outputs/2.8_EstimateCeoClarity/{timestamp}/report_step_08.md`
+- `3_Logs/2.8_EstimateCeoClarity/{timestamp}.log`
+
+---
+
+## Variable Name Reference
+
+### Input Files
+
+**speaker_data_YYYY.parquet**:
+- `file_name`: Transcript identifier
+- `speaker_name`: Name of speaker
+- `employer`: Speaker's employer
+- `role`: Speaker's role/title
+- `speaker_number`: Speaker sequence number
+- `speaker_text`: Spoken text content
+- `context`: Speech context ("qa" or "pres")
+- `section`: Transcript section
+- `last_update`: Last modification timestamp
+
+**Unified-info.parquet**:
+- `file_name`: Transcript identifier (matches speaker_data)
+- `company_name`: Company name
+- `start_date`: Call start datetime (ISO format)
+- `business_quarter`: Quarter string (e.g., "2014Q3")
+- `permno`: CRSP PERMNO identifier
+- `company_id`: Company identifier
+- `cusip`: CUSIP identifier
+- `sedol`: SEDOL identifier
+- `isin`: ISIN identifier
+- `company_ticker`: Stock ticker symbol
+- `validation_timestamp`: Metadata validation timestamp
+
+**Loughran-McDonald_MasterDictionary_1993-2024.csv**:
+- `Word`: Dictionary word (uppercase)
+- `Uncertainty`: Uncertainty flag (>0 if uncertain word)
+- `Weak_Modal`: Weak modal flag (>0 if weak modal)
+- `Negative`: Negative flag (>0 if negative word)
+- Other columns ignored
+
+**CEO Dismissal Data 2021.02.03.xlsx**:
+- `gvkey`: Company identifier
+- `coname`: Company name
+- `exec_fullname`: CEO full name
+- `co_per_rol`: Person identifier
+- `leftofc`: Date left office
+- `Interim & Co-CEO`: Status flags
+- `Still There`: Active status marker
+- `year`: Fiscal year
+- `tenure_no`: Tenure sequence number
+
+**CRSPCompustat_CCM.parquet**:
+- `gvkey`: Compustat Global Company Key
+- `conm`: Company name
+- `tic`: Ticker
+- `cusip`: 9-digit CUSIP
+- `sic`: SIC code
+- `LPERMNO`: Linked CRSP PERMNO
+- `LINKDT`: Link start date
+- `LINKENDDT`: Link end date
+- `LINKPRIM`: Link priority (P/C/J/N)
+- `LINKTYPE`: Link type (LC/LU/LS/etc.)
+
+### Intermediate Files
+
+**master_tenure_map.parquet** (Step 00b):
+- `gvkey`: Company identifier
+- `co_per_rol`: Person identifier
+- `exec_fullname`: CEO full name
+- `tenure_start_date`: Calculated start date
+- `tenure_end_date`: Calculated end date
+- `Interim & Co-CEO`: Original status flags
+- `is_active`: Active status flag
+- `tenure_seq`: Sequence number
+- `year`: Original record year
+- `coname`: Company name
+- `dismissal_dataset_id`: Original record ID
+
+**{dataset}_docs_YYYY.parquet** (Step 2.2):
+- `file_name`: Transcript identifier
+- `doc_text`: Concatenated speech text (sorted by speaker_number)
+- `approx_char_len`: Character count of doc_text
+- `start_date`: Call start datetime
+- `year`: Year from start_date (INT)
+- `quarter`: Quarter number (1-4)
+
+**{dataset}_call_YYYY.parquet** (Step 2.3):
+- `file_name`: Transcript identifier
+- `start_date`: Call start datetime
+- `total_word_tokens`: Count of `[A-Z]+` tokens
+- `Uncertainty_hits`: Tokens in Uncertainty dictionary
+- `Negative_hits`: Tokens in Negative dictionary
+- `unc_pct`: `Uncertainty_hits / total_word_tokens`
+- `neg_pct`: `Negative_hits / total_word_tokens`
+- `top5_uncertainty`: JSON array of top 5 Uncertainty tokens
+- `top5_negative`: JSON array of top 5 Negative tokens
+- `process_version`: Version string
+
+**{measure}_panel_YYYY.parquet** (Step 2.4):
+- `file_name`: Transcript identifier
+- `start_date`: Call start datetime
+- `business_quarter`: Quarter string
+- `permno`: CRSP identifier
+- `company_name`: Company name
+- `company_id`: Company identifier
+- `cusip`: CUSIP identifier
+- `sedol`: SEDOL identifier
+- `isin`: ISIN identifier
+- `company_ticker`: Stock ticker
+- `total_tokens_{measure}`: Token count for measure
+- `{Measure}_hits`: Dictionary hits for measure
+- `{Measure}_pct`: Percentage for measure
+- `process_version`: Version string
+- `had_duplicate_metadata`: Flag for duplicate Unified-info rows
+
+**f1d_enriched_ceo_YYYY.parquet** (Step 2.5b):
+- All columns from f1d_enriched_YYYY.parquet plus:
+  - `ceo_id`: CEO person identifier
+  - `ceo_name`: CEO full name
+  - `ceo_interim_status`: Interim/Co-CEO status
+  - `tenure_seq`: CEO tenure sequence number
+  - `match_method`: CEO matching method indicator
+
+**calls_with_controls_YYYY.parquet** (Step 2.7):
+- All columns from f1d_enriched_ceo_YYYY.parquet plus:
+  - `StockRet`: Cumulative stock return (between-call window)
+  - `MarketRet`: Cumulative market return (same window)
+  - `EPS_Growth`: Year-over-year EPS growth (winsorized at [1%, 99%])
+  - `SurpDec`: Earnings surprise decile bin
+  - `ibes_matched`: I/B/E/S match indicator
+  - `prev_call_date`: Previous earnings call date
+  - `ret_window_days`: Trading days in return window
+  - `ibes_anndats`: I/B/E/S announcement date
+
+### Final Outputs
+
+**f1d_enriched_YYYY.parquet** (Step 2.5):
+See complete column list in Step 05 outputs section above.
+
+**ceo_clarity_scores.parquet** (Step 2.8):
+- `CEO_ID`: CEO person identifier
+- `gamma_i`: CEO fixed effect coefficient (γ_i)
+- `ClarityCEO_raw`: Raw clarity score (-γ_i)
+- `ClarityCEO`: Standardized clarity score
+- `ceo_name`: CEO full name
+- `n_calls`: Number of calls for this CEO
+- `avg_UncAnsCEO`: Average Manager Q&A Uncertainty
+- `std_UncAnsCEO`: Standard deviation of UncAnsCEO
+- `first_call_date`: Date of first call
+- `last_call_date`: Date of last call
+- `n_firms`: Number of distinct firms
+
+**calls_with_clarity_YYYY.parquet** (Step 2.8):
+- All columns from calls_with_controls_YYYY.parquet plus:
+  - `ClarityCEO`: CEO's standardized clarity score (merged from ceo_clarity_scores)
+  - `gamma_i`: CEO fixed effect coefficient
+
+### Measure Naming Convention
+
+**Measure codes**:
+- `MaQaUnc`: Manager Q&A Uncertainty
+- `MaPresUnc`: Manager Presentation Uncertainty
+- `AnaQaUnc`: Analyst Q&A Uncertainty
+- `EntireCallNeg`: Entire Call Negative (all speakers, all contexts)
+
+**Dataset codes**:
+- `manager_qa`: Managerial speech in Q&A context
+- `manager_pres`: Managerial speech in presentation context
+- `analyst_qa`: Analyst speech in Q&A context
+- `entire_call`: All speakers (managers, analysts, operators) in all contexts (qa, pres)
+
+**Dictionary codes**:
+- `Uncertainty`: LM Uncertainty dictionary (297 tokens)
+- `Negative`: LM Negative dictionary (2,345 tokens)
+
+---
+
+## Configuration
+
+**File**: `config/project.yaml`
+
+**Key parameters**:
+- `year_start`: 2002
+- `year_end`: 2018
+- `random_seed`: 42
+- `thread_count`: 1
+- `process_version`: "F1D.1.0"
+- `fuzzy_threshold`: 92
+- `input_paths`: Dictionary of input file paths
+- `managerial_role_keywords`: List of role keywords
+- `exclusion_keywords`: List of exclusion keywords
+
+---
+
+## Output Directory Structure
+
+```
+4_Outputs/
+├── 2.0_UnifiedInfoCheck/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.0b_BuildMasterTenureMap/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.0c_BuildMonthlyTenurePanel/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.1_BuildLmClarityDictionary/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.2_ExtractFilteredDocs/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.3_TokenizeAndCount/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.4_BuildF1dPanel/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.5_LinkCcmAndIndustries/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.5b_LinkCallsToCeo/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.5c_FilterCeos/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+├── 2.7_BuildFinancialControls/
+│   ├── {timestamp}/
+│   └── latest/ → {timestamp}/
+└── 2.8_EstimateCeoClarity/
+    ├── {timestamp}/
+    └── latest/ → {timestamp}/
+```
+
+Each step creates timestamped output folder and updates `latest/` symlink.
+
+---
+
+## Log Files
+
+**Location**: `3_Logs/2.{step}_{Name}/{timestamp}.log`
+
+**Content**:
+- All stdout/stderr output from script
+- Progress messages
+- Warnings
+- Error messages
+- Execution statistics
+
+---
+
+## Determinism Guarantees
+
+**Fixed values**:
+- Random seed: 42
+- Thread count: 1
+- Sort order: Explicit in all groupby/merge operations
+- Tie-breaking: Deterministic rules for duplicates
+
+**No dependencies on**:
+- Filesystem ordering
+- Wall-clock time (except for timestamps in output paths)
+- Floating-point non-determinism
+- Parallel execution order
+
+**Reproducibility**: Running same script with same inputs produces bitwise-identical outputs.
+
+---
+
+## Data Quality Controls
+
+**Applied in Step 2.2**:
+- Year alignment: Year and quarter derived from start_date field
+- Speaker ordering: Text concatenation respects speaker_number for deterministic ordering
+- JSON escaping: Proper handling of special characters (backslash, quote, newline)
+
+**Applied in Step 2.5**:
+- Fuzzy threshold: Minimum 92% similarity for Tier 3 matches
+- Unmatched filter: Only keep records with valid gvkey
+- Result: 100% gvkey coverage in final dataset
+
+**Excluded data**:
+- 121,464 calls without CCM match (documented in unmatched_calls_audit.csv)
+
+---
+
+## Build Instructions
+
+The pipeline includes C++ components that must be compiled before first use. Build scripts are provided for convenience.
+
+### Compiling C++ Processors
+
+```bash
+# Build Step 2.2 C++ processor (Extract Filtered Docs)
+cd 2_Scripts
+2.2v2b_Build.bat
+
+# Build Step 2.3 C++ processor (Tokenize & Count)
+2.3b_Build.bat
+```
+
+### Build Script Details
+
+- **2.2v2b_Build.bat**: Compiles `2.2v2b_ProcessManagerDocs.cpp` → `2.2v2b_ProcessManagerDocs.exe`
+- **2.3b_Build.bat**: Compiles `2.3b_TokenizeText.cpp` → `2.3b_TokenizeText.exe`
+- **Compiler**: g++ with C++17 standard, O2 optimization
+- **Dependencies**: Standard C++ library only (no external dependencies)
+
+**Note**: Pre-compiled binaries are included in the repository. Rebuilding is only necessary if you modify the C++ source files.
+
+---
+
+## Execution Commands
+
+```bash
+# Step 00
+python 2_Scripts/2.0_UnifiedInfoCheck.py
+
+# Step 01
+python 2_Scripts/2.1_BuildLmClarityDictionary.py
+
+# Step 02 (C++ pipeline)
+python 2_Scripts/2.2v2a_ParquetToJson.py
+
+# Step 03 (C++ pipeline)
+python 2_Scripts/2.3a_TokenizeAndCount.py
+
+# Step 04
+python 2_Scripts/2.4_BuildF1dPanel.py
+
+# Step 05
+python 2_Scripts/2.5_LinkCcmAndIndustries.py
+
+# Step 05b
+python 2_Scripts/2.5b_LinkCallsToCeo.py
+
+# Step 05c
+python 2_Scripts/2.5c_FilterCeos.py
+
+# Step 07
+python 2_Scripts/2.7_BuildFinancialControls.py
+
+# Step 08
+python 2_Scripts/2.8_EstimateCeoClarity.py
+```
+
+**Note**: All scripts read configuration from `config/project.yaml`. No command-line arguments required.
+
+---
+
+## File Counts
+
+- Input speaker_data files: 17 (one per year)
+- Step 2.2 output files: 68 (4 datasets × 17 years)
+- Step 2.3 output files: 68 (4 datasets × 17 years)
+- Step 2.4 output files: 68 (4 measures × 17 years)
+- Step 2.5 output files: 17 (one per year, all measures merged)
+
+**Total final records**: 286,652 calls with 100% gvkey coverage
+
+---
+
+## Data Sizes
+
+- Input speaker_data: ~5GB total
+- Step 2.2 outputs: ~16GB
+- Step 2.3 outputs: ~73MB
+- Step 2.4 outputs: ~64MB
+- Step 2.5 outputs: ~35MB (17 files, ~2MB each)
+
+---
+
+## Dependencies
+
+**Python**:
+- pyarrow
+- pandas
+- pyyaml
+- rapidfuzz
+- matplotlib
+- seaborn
+- statsmodels (for Step 2.8 regression)
+- scipy (for diagnostics)
+
+**C++**:
+- g++ (C++17)
+- Standard library only (no external dependencies)
+
+---
+
+## Version
+
+**Process version**: F1D.1.0
+**Last updated**: 2025-12-05
+
+## Recent Changes
+
+### 2025-12-05: Step 2.8 Implementation (CEO Clarity Estimation)
+
+**New Step Added:**
+- Implemented Step 2.8 (Estimate CEO Clarity) with OLS regression and CEO fixed effects
+- Model: `UncAnsCEO = alpha + g_i*CEO_i + beta_s*Speech + beta_k*FirmChars + Year + epsilon`
+- Extracted CEO fixed effects (g_i) as persistent communication style measure
+- Generated CEO Clarity scores (ClarityCEO = -g_i, standardized)
+
+**Results:**
+- 73,428 calls with complete controls used in regression
+- 3,306 CEOs with clarity scores
+- R²=0.3941 (39.4% variance explained)
+- All linguistic controls highly significant (p<0.001)
+- Top CEO: Jeffrey P. Bezos (Clarity = 2.573)
+- 95.4% call coverage with clarity scores
+
+**Outputs:**
+- `ceo_clarity_scores.parquet`: CEO-level clarity scores
+- `calls_with_clarity_YYYY.parquet`: Call-level data with merged clarity scores
+- Full regression diagnostics and reports
+
+### 2025-12-04: Step 2.7 Coverage Improvements
+
+**Critical Fixes:**
+- **Compustat GVKEY Matching**: Fixed format mismatch (23.3% → 99.6% coverage)
+  - Applied zero-padding normalization to match Compustat format (6-digit strings)
+- **IBES Linking**: Complete rewrite using LPERMNO as bridge identifier (0% → 87.9% coverage)
+  - Dual-path approach: CUSIP8→LPERMNO + TICKER→LPERMNO
+  - Test coverage on 1000-call sample: 93.3%
+  - Full dataset: 75,194/85,540 calls matched
+
+**Technical Details:**
+- Tested multiple linking approaches per user feedback
+- Used CCM (CRSP-Compustat Merged) as universal linking table
+- ±45 day fiscal quarter window for IBES matching
+- Winsorized EPS growth at [1%, 99%] percentiles
+
+### 2025-11-29: Audit & Cleanup
+
+**Audit & Cleanup**
+- Verified pipeline integrity against documentation (Audit passed)
+- Archived obsolete scripts (`2.2v2d`, `test_entire_call`)
+- Updated configuration to match production paths
+- Verified C++ build process and documentation
+
+**New Dataset: entire_call**
+- Added 4th dataset type: `entire_call` (all speakers, all contexts)
+- Includes managers, analysts, and operators across both Q&A and presentation sections
+
+**New Measure: EntireCallNeg**
+- Replaced `MaQaNeg` with `EntireCallNeg` (Entire Call × Negative)
+
+**C++ Code Rewrite**
+- Step 2.2 C++ processor (`2.2v2b_ProcessManagerDocs.cpp`) completely rewritten for robustness
+- Verified on test years: 2003, 2010, 2017
