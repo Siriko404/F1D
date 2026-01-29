@@ -566,6 +566,37 @@ The phase adds:
 
 Scripts updated: 1.1-1.4 (Step 1), 2.1-2.3 (Step 2), 3.0-3.3 (Step 3), 4.1, 4.1.1-4.1.4, 4.2-4.3 (Step 4)
 
+### Phase 26: Repository Cleanup & Archive Organization
+
+**Goal**: Clean up messy repository by removing useless files, backups, and legacy files to an organized archive
+**Depends on**: Phase 25.1
+**Status**: 📝 PLANNED
+**Plans**: 4 plans (2 waves)
+
+Plans:
+- [ ] 26-01-PLAN.md — Organize existing archive files into categorized structure (Wave 1)
+- [ ] 26-02-PLAN.md — Categorize flat archive files and create comprehensive manifest (Wave 1)
+- [ ] 26-03-PLAN.md — Clean up root directory per CLAUDE.md naming convention (Wave 2)
+- [ ] 26-04-PLAN.md — Validate repository still functions after cleanup (Wave 2)
+
+**Details:**
+Phase 26 cleans up the repository which currently contains 187 files scattered across multiple archive directories (.___archive/, 2_Scripts/ARCHIVE/, 2_Scripts/ARCHIVE_OLD/, 2_Scripts/4_Econometric/ARCHIVE_BROKEN_STEP4/), plus non-standard files in root violating CLAUDE.md naming convention.
+
+The phase will:
+
+1. Consolidate all scattered archive directories into .___archive/ with 5 categorized subdirectories (backups/, legacy/, debug/, docs/, test_outputs/)
+2. Categorize 187 flat archive files into organized structure with README.md documentation
+3. Move non-standard root files to archive (backups, docs) following CLAUDE.md naming convention
+4. Create manifest.json with complete file inventory for rollback capability
+5. Validate all 21 pipeline scripts still work, imports are intact, and repository is functional
+
+Archive categories:
+- `backups/` - Time-stamped backups and compressed archives (.zip, .rar, config backups)
+- `legacy/` - Old script versions and replaced implementations (ARCHIVE/, ARCHIVE_OLD/, ARCHIVE_BROKEN_STEP4/)
+- `debug/` - Debug scripts and investigation files (debug_*.py, investigate_*.py, check_*.py, verify_*.py)
+- `docs/` - Superseded documentation and reports (audit reports, analysis docs, presentations)
+- `test_outputs/` - Test execution logs and temporary outputs (test logs, nul, temp files)
+
 ## Progress
 
 **Execution Order:**
@@ -600,6 +631,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
           | 24. Complete Script Refactoring | 8/8 | ✅ COMPLETED | 2026-01-24 |
            | 25. Execute Full Pipeline E2E Test | 1/1 | ✅ COMPLETED | 2026-01-24 |
             | 25.1. Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED) | 10/10 | ✅ COMPLETED | 2026-01-25 |
+| 26. Repository Cleanup & Archive Organization | 0/4 | 📝 PLANNED | - |
 
 
 
