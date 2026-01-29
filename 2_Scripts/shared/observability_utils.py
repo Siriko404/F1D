@@ -300,6 +300,372 @@ def detect_anomalies_iqr(
     return anomalies
 
 
+def compute_input_stats(df: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze raw input data characteristics.
+
+    Provides comprehensive descriptive statistics for input data including
+    record counts, column types, distributions, and cardinality analysis.
+
+    Deterministic: Same input produces same output (no random operations).
+
+    Args:
+        df: DataFrame to analyze
+
+    Returns:
+        Dictionary with keys:
+        - record_count: Total number of rows
+        - column_count: Total number of columns
+        - memory_mb: Memory footprint in MB
+        - column_types: Dict with counts of numeric, datetime, string, bool columns
+        - numeric_stats: Dict mapping column_name -> {min, max, mean, median, std, q25, q75}
+        - datetime_stats: Dict mapping column_name -> {min_date, max_date, span_days}
+        - string_stats: Dict mapping column_name -> {avg_length, max_length, unique_count, empty_count}
+        - cardinality: Dict mapping column_name -> distinct_count
+    """
+    import numpy as np
+
+    stats = {
+        "record_count": int(len(df)),
+        "column_count": int(len(df.columns)),
+        "memory_mb": round(df.memory_usage(deep=True).sum() / (1024 * 1024), 2),
+    }
+
+    # Column type distribution
+    type_counts = {
+        "numeric": 0,
+        "datetime": 0,
+        "string": 0,
+        "bool": 0,
+        "other": 0,
+    }
+
+    for col in df.columns:
+        if pd.api.types.is_numeric_dtype(df[col]):
+            type_counts["numeric"] += 1
+        elif pd.api.types.is_datetime64_any_dtype(df[col]):
+            type_counts["datetime"] += 1
+        elif pd.api.types.is_bool_dtype(df[col]):
+            type_counts["bool"] += 1
+        elif pd.api.types.is_string_dtype(df[col]) or df[col].dtype == "object":
+            type_counts["string"] += 1
+        else:
+            type_counts["other"] += 1
+
+    stats["column_types"] = type_counts
+
+    # Numeric column statistics
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    stats["numeric_stats"] = {}
+    for col in numeric_cols:
+        series = df[col].dropna()
+        if len(series) > 0:
+            stats["numeric_stats"][col] = {
+                "min": round(float(series.min()), 4),
+                "max": round(float(series.max()), 4),
+                "mean": round(float(series.mean()), 4),
+                "median": round(float(series.median()), 4),
+                "std": round(float(series.std()), 4),
+                "q25": round(float(series.quantile(0.25)), 4),
+                "q75": round(float(series.quantile(0.75)), 4),
+            }
+
+    # Datetime column statistics
+    datetime_cols = df.select_dtypes(include=["datetime64", "datetime64[ns]"]).columns.tolist()
+    stats["datetime_stats"] = {}
+    for col in datetime_cols:
+        series = df[col].dropna()
+        if len(series) > 0:
+            min_date = series.min()
+            max_date = series.max()
+            span_days = (max_date - min_date).days
+            stats["datetime_stats"][col] = {
+                "min_date": min_date.isoformat() if pd.notna(min_date) else None,
+                "max_date": max_date.isoformat() if pd.notna(max_date) else None,
+                "span_days": int(span_days),
+            }
+
+    # String column statistics
+    string_cols = df.select_dtypes(include=["object", "string"]).columns.tolist()
+    stats["string_stats"] = {}
+    for col in string_cols:
+        # Skip if column looks like it was already processed as datetime
+        if col in datetime_cols:
+            continue
+        series = df[col].dropna()
+        if len(series) > 0:
+            # Convert to string and compute length statistics
+            str_lengths = series.astype(str).str.len()
+            stats["string_stats"][col] = {
+                "avg_length": round(float(str_lengths.mean()), 2),
+                "max_length": int(str_lengths.max()),
+                "unique_count": int(series.nunique()),
+                "empty_count": int((series == "").sum()),
+            }
+
+    # Cardinality analysis for key categorical columns
+    stats["cardinality"] = {}
+    categorical_cols = (
+        df.select_dtypes(include=["object", "string", "category"]).columns.tolist()
+    )
+    for col in categorical_cols:
+        if col in datetime_cols:
+            continue
+        distinct_count = df[col].nunique()
+        stats["cardinality"][col] = int(distinct_count)
+
+    return stats
+
+
+def compute_temporal_stats(df: pd.DataFrame, date_col: str = "start_date") -> Dict[str, Any]:
+    """
+    Analyze temporal coverage of the dataset.
+
+    Provides detailed temporal statistics including year, month, quarter,
+    and day-of-week distributions.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df: DataFrame to analyze
+        date_col: Name of date column to analyze (default: 'start_date')
+
+    Returns:
+        Dictionary with keys:
+        - year_distribution: Dict mapping year -> count
+        - month_distribution: Dict mapping month_num (1-12) -> count
+        - quarter_distribution: Dict mapping quarter (1-4) -> count
+        - day_of_week_distribution: Dict mapping day (0=Mon, 6=Sun) -> count
+        - date_range: {earliest: ISO date, latest: ISO date, span_days: int}
+        - calls_per_year: {mean: float, median: float, min: int, max: int}
+        - target_year_coverage: Dict mapping year -> coverage_percentage
+    """
+    # Ensure date column is datetime
+    if date_col not in df.columns:
+        return {
+            "error": f"Column '{date_col}' not found in DataFrame",
+            "year_distribution": {},
+            "month_distribution": {},
+            "quarter_distribution": {},
+            "day_of_week_distribution": {},
+            "date_range": {},
+            "calls_per_year": {},
+            "target_year_coverage": {},
+        }
+
+    df_temp = df[[date_col]].copy()
+    df_temp[date_col] = pd.to_datetime(df_temp[date_col])
+    df_temp = df_temp.dropna(subset=[date_col])
+
+    if len(df_temp) == 0:
+        return {
+            "error": "No valid dates found",
+            "year_distribution": {},
+            "month_distribution": {},
+            "quarter_distribution": {},
+            "day_of_week_distribution": {},
+            "date_range": {},
+            "calls_per_year": {},
+            "target_year_coverage": {},
+        }
+
+    # Extract temporal components
+    df_temp["year"] = df_temp[date_col].dt.year
+    df_temp["month"] = df_temp[date_col].dt.month
+    df_temp["quarter"] = df_temp[date_col].dt.quarter
+    df_temp["day_of_week"] = df_temp[date_col].dt.dayofweek
+
+    # Year distribution
+    year_counts = df_temp["year"].value_counts().sort_index()
+    year_dist = {int(year): int(count) for year, count in year_counts.items()}
+
+    # Month distribution
+    month_counts = df_temp["month"].value_counts().sort_index()
+    month_dist = {int(month): int(count) for month, count in month_counts.items()}
+
+    # Quarter distribution
+    quarter_counts = df_temp["quarter"].value_counts().sort_index()
+    quarter_dist = {int(q): int(count) for q, count in quarter_counts.items()}
+
+    # Day of week distribution
+    dow_counts = df_temp["day_of_week"].value_counts().sort_index()
+    dow_dist = {int(dow): int(count) for dow, count in dow_counts.items()}
+
+    # Date range
+    earliest = df_temp[date_col].min()
+    latest = df_temp[date_col].max()
+    span_days = (latest - earliest).days
+
+    # Calls per year statistics
+    year_values = df_temp["year"].values
+    calls_per_year = {
+        "mean": round(float(year_counts.mean()), 2),
+        "median": round(float(year_counts.median()), 2),
+        "min": int(year_counts.min()),
+        "max": int(year_counts.max()),
+    }
+
+    # Target year coverage (2002-2018)
+    target_years = range(2002, 2019)
+    coverage = {}
+    for year in target_years:
+        if year in year_dist:
+            coverage[str(year)] = round(year_dist[year] / len(df_temp) * 100, 2)
+        else:
+            coverage[str(year)] = 0.0
+
+    return {
+        "year_distribution": year_dist,
+        "month_distribution": month_dist,
+        "quarter_distribution": quarter_dist,
+        "day_of_week_distribution": dow_dist,
+        "date_range": {
+            "earliest": earliest.isoformat(),
+            "latest": latest.isoformat(),
+            "span_days": int(span_days),
+        },
+        "calls_per_year": calls_per_year,
+        "target_year_coverage": coverage,
+    }
+
+
+def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze entity and quality characteristics of the dataset.
+
+    Provides statistics about company coverage, geographic distribution,
+    data quality scores, speaker data availability, and processing lags.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df: DataFrame to analyze
+
+    Returns:
+        Dictionary with keys:
+        - company_coverage: {unique_companies: int, avg_calls_per_company: float}
+        - geographic_coverage: {unique_cities: int, top_cities: [{city, count}]}
+        - data_quality_distribution: {mean, median, histogram: {bucket_range: count}}
+        - speaker_coverage: {percent_with_speaker_data: float, speaker_record_distribution}
+        - processing_lag_stats: {mean_hours, median_hours, min_hours, max_hours}
+    """
+    stats = {}
+
+    # Company coverage
+    if "company_id" in df.columns:
+        unique_companies = df["company_id"].nunique()
+        avg_calls = df.groupby("company_id").size().mean()
+        stats["company_coverage"] = {
+            "unique_companies": int(unique_companies),
+            "avg_calls_per_company": round(float(avg_calls), 2),
+        }
+    elif "company_ticker" in df.columns:
+        unique_companies = df["company_ticker"].nunique()
+        avg_calls = df.groupby("company_ticker").size().mean()
+        stats["company_coverage"] = {
+            "unique_companies": int(unique_companies),
+            "avg_calls_per_company": round(float(avg_calls), 2),
+        }
+    else:
+        stats["company_coverage"] = {
+            "unique_companies": 0,
+            "avg_calls_per_company": 0.0,
+        }
+
+    # Geographic coverage
+    if "city" in df.columns:
+        unique_cities = df["city"].nunique()
+        city_counts = df["city"].value_counts().head(10)  # Top 10 cities
+        top_cities = [
+            {"city": str(city), "count": int(count)}
+            for city, count in city_counts.items()
+        ]
+        stats["geographic_coverage"] = {
+            "unique_cities": int(unique_cities),
+            "top_cities": top_cities,
+        }
+    else:
+        stats["geographic_coverage"] = {
+            "unique_cities": 0,
+            "top_cities": [],
+        }
+
+    # Data quality score distribution
+    if "data_quality_score" in df.columns:
+        quality_scores = df["data_quality_score"].dropna()
+        if len(quality_scores) > 0:
+            mean_quality = quality_scores.mean()
+            median_quality = quality_scores.median()
+
+            # Create histogram buckets
+            try:
+                min_score = quality_scores.min()
+                max_score = quality_scores.max()
+                if min_score != max_score:
+                    buckets = pd.cut(
+                        quality_scores, bins=5, retbins=True, include_lowest=True
+                    )
+                    bucket_counts = quality_scores.groupby(buckets[0]).count()
+                    histogram = {
+                        f"{round(interval.left, 2)}-{round(interval.right, 2)}": int(
+                            count
+                        )
+                        for interval, count in bucket_counts.items()
+                    }
+                else:
+                    histogram = {"all_same_value": int(len(quality_scores))}
+            except Exception:
+                histogram = {"error": "Could not create histogram"}
+
+            stats["data_quality_distribution"] = {
+                "mean": round(float(mean_quality), 4),
+                "median": round(float(median_quality), 4),
+                "histogram": histogram,
+            }
+        else:
+            stats["data_quality_distribution"] = {"error": "No quality scores available"}
+    else:
+        stats["data_quality_distribution"] = {"error": "Column not found"}
+
+    # Speaker data coverage
+    if "has_speaker_data" in df.columns:
+        with_speaker = df[df["has_speaker_data"] == True].shape[0]
+        percent_with_speaker = round(with_speaker / len(df) * 100, 2)
+        stats["speaker_coverage"] = {
+            "percent_with_speaker_data": percent_with_speaker,
+        }
+
+        # Speaker record count distribution
+        if "speaker_record_count" in df.columns:
+            speaker_counts = df["speaker_record_count"].dropna()
+            if len(speaker_counts) > 0:
+                stats["speaker_coverage"]["speaker_record_distribution"] = {
+                    "mean": round(float(speaker_counts.mean()), 2),
+                    "median": round(float(speaker_counts.median()), 2),
+                    "min": int(speaker_counts.min()),
+                    "max": int(speaker_counts.max()),
+                }
+    else:
+        stats["speaker_coverage"] = {"error": "Column not found"}
+
+    # Processing lag statistics
+    if "processing_lag_hours" in df.columns:
+        lag_values = df["processing_lag_hours"].dropna()
+        if len(lag_values) > 0:
+            stats["processing_lag_stats"] = {
+                "mean_hours": round(float(lag_values.mean()), 2),
+                "median_hours": round(float(lag_values.median()), 2),
+                "min_hours": round(float(lag_values.min()), 2),
+                "max_hours": round(float(lag_values.max()), 2),
+            }
+        else:
+            stats["processing_lag_stats"] = {"error": "No lag data available"}
+    else:
+        stats["processing_lag_stats"] = {"error": "Column not found"}
+
+    return stats
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
