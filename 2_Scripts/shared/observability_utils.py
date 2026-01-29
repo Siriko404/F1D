@@ -1206,6 +1206,474 @@ def collect_before_after_samples(df_original: pd.DataFrame, df_linked: pd.DataFr
     return samples
 
 
+def compute_tenure_input_stats(df_input: pd.DataFrame, df_ceo: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze Execucomp input data for CEO tenure mapping.
+
+    Provides comprehensive statistics about the Execucomp dataset characteristics,
+    including CEO subset analysis, date field coverage, and executive name availability.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_input: Full Execucomp DataFrame
+        df_ceo: CEO subset DataFrame (filtered by ceoann='CEO' or becameceo not null)
+
+    Returns:
+        Dictionary with keys:
+        - overall_execucomp: {total_records, unique_gvkey, unique_execid, date_range}
+        - ceo_subset: {ceo_records, pct_of_total, unique_ceo_firms, unique_ceo_executives}
+        - date_field_coverage: {becameceo_available_pct, leftofc_available_pct}
+        - ceo_indicators: {ceoann_ceo_count, becameceo_nonnull_count}
+        - name_coverage: {exec_fullname_available_pct}
+    """
+    stats = {}
+
+    # Overall Execucomp characteristics
+    stats["overall_execucomp"] = {
+        "total_records": int(len(df_input)),
+        "unique_gvkey": int(df_input["gvkey"].nunique()) if "gvkey" in df_input.columns else 0,
+        "unique_execid": int(df_input["execid"].nunique()) if "execid" in df_input.columns else 0,
+    }
+
+    # Date range from year column
+    if "year" in df_input.columns:
+        year_series = df_input["year"].dropna()
+        if len(year_series) > 0:
+            stats["overall_execucomp"]["date_range"] = {
+                "earliest_year": int(year_series.min()),
+                "latest_year": int(year_series.max()),
+                "span_years": int(year_series.max() - year_series.min()),
+            }
+
+    # CEO subset analysis
+    total_records = len(df_input)
+    ceo_records = len(df_ceo)
+
+    stats["ceo_subset"] = {
+        "ceo_records": int(ceo_records),
+        "pct_of_total": round(ceo_records / total_records * 100, 2) if total_records > 0 else 0.0,
+        "unique_ceo_firms": int(df_ceo["gvkey"].nunique()) if "gvkey" in df_ceo.columns else 0,
+        "unique_ceo_executives": int(df_ceo["execid"].nunique()) if "execid" in df_ceo.columns else 0,
+    }
+
+    # Date field coverage
+    if "becameceo" in df_ceo.columns:
+        becameceo_available = df_ceo["becameceo"].notna().sum()
+        stats["date_field_coverage"] = {
+            "becameceo_available_pct": round(becameceo_available / len(df_ceo) * 100, 2) if len(df_ceo) > 0 else 0.0,
+        }
+
+    if "leftofc" in df_ceo.columns:
+        leftofc_available = df_ceo["leftofc"].notna().sum()
+        stats["date_field_coverage"]["leftofc_available_pct"] = round(leftofc_available / len(df_ceo) * 100, 2) if len(df_ceo) > 0 else 0.0
+
+    # CEO indicators
+    if "ceoann" in df_ceo.columns:
+        ceoann_ceo_count = (df_ceo["ceoann"] == "CEO").sum()
+        stats["ceo_indicators"] = {
+            "ceoann_ceo_count": int(ceoann_ceo_count),
+        }
+
+    if "becameceo" in df_ceo.columns:
+        becameceo_nonnull = df_ceo["becameceo"].notna().sum()
+        stats["ceo_indicators"]["becameceo_nonnull_count"] = int(becameceo_nonnull)
+
+    # Executive name coverage
+    if "exec_fullname" in df_ceo.columns:
+        name_available = df_ceo["exec_fullname"].notna().sum()
+        stats["name_coverage"] = {
+            "exec_fullname_available_pct": round(name_available / len(df_ceo) * 100, 2) if len(df_ceo) > 0 else 0.0,
+        }
+
+    return stats
+
+
+def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze tenure episode construction and linking process.
+
+    Provides detailed statistics about episode building, tenure length distribution,
+    predecessor linking success, and date validity checks.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        episodes_df: DataFrame with tenure episodes (must contain gvkey, execid, start_date, end_date, prev_execid)
+
+    Returns:
+        Dictionary with keys:
+        - episode_counts: {total_episodes, episodes_per_firm: {mean, median, min, max},
+                         episodes_per_ceo: {mean, median, min, max}}
+        - tenure_distribution: {mean_months, median_months, min_months, max_months, std_months,
+                               buckets: {<1yr, 1-3yr, 3-5yr, 5-10yr, 10+yr: {count, pct}}}
+        - predecessor_linking: {linked_count, orphan_count, link_rate_pct}
+        - date_validity: {future_dates, end_before_start, active_ceo_count}
+    """
+    stats = {}
+
+    # Ensure datetime columns
+    if "start_date" in episodes_df.columns:
+        episodes_df["start_date"] = pd.to_datetime(episodes_df["start_date"])
+    if "end_date" in episodes_df.columns:
+        episodes_df["end_date"] = pd.to_datetime(episodes_df["end_date"])
+
+    # Episode counts
+    total_episodes = len(episodes_df)
+
+    # Episodes per firm
+    if "gvkey" in episodes_df.columns:
+        episodes_per_firm = episodes_df.groupby("gvkey").size()
+        stats["episode_counts"] = {
+            "total_episodes": int(total_episodes),
+            "episodes_per_firm": {
+                "mean": round(float(episodes_per_firm.mean()), 2),
+                "median": round(float(episodes_per_firm.median()), 2),
+                "min": int(episodes_per_firm.min()),
+                "max": int(episodes_per_firm.max()),
+            }
+        }
+
+    # Episodes per CEO
+    if "execid" in episodes_df.columns:
+        episodes_per_ceo = episodes_df.groupby("execid").size()
+        stats["episode_counts"]["episodes_per_ceo"] = {
+            "mean": round(float(episodes_per_ceo.mean()), 2),
+            "median": round(float(episodes_per_ceo.median()), 2),
+            "min": int(episodes_per_ceo.min()),
+            "max": int(episodes_per_ceo.max()),
+        }
+
+    # Tenure length distribution
+    if "start_date" in episodes_df.columns and "end_date" in episodes_df.columns:
+        # Calculate tenure in months
+        episodes_df["tenure_months"] = (
+            (episodes_df["end_date"] - episodes_df["start_date"]).dt.total_seconds() / (30 * 24 * 3600)
+        )
+
+        tenure_months = episodes_df["tenure_months"].dropna()
+
+        stats["tenure_distribution"] = {
+            "mean_months": round(float(tenure_months.mean()), 2),
+            "median_months": round(float(tenure_months.median()), 2),
+            "min_months": round(float(tenure_months.min()), 2),
+            "max_months": round(float(tenure_months.max()), 2),
+            "std_months": round(float(tenure_months.std()), 2),
+        }
+
+        # Tenure buckets
+        buckets = {
+            "<1 year": 0,
+            "1-3 years": 0,
+            "3-5 years": 0,
+            "5-10 years": 0,
+            "10+ years": 0,
+        }
+
+        buckets["<1 year"] = int((tenure_months < 12).sum())
+        buckets["1-3 years"] = int(((tenure_months >= 12) & (tenure_months < 36)).sum())
+        buckets["3-5 years"] = int(((tenure_months >= 36) & (tenure_months < 60)).sum())
+        buckets["5-10 years"] = int(((tenure_months >= 60) & (tenure_months < 120)).sum())
+        buckets["10+ years"] = int((tenure_months >= 120).sum())
+
+        # Calculate percentages
+        bucket_stats = {}
+        for bucket_name, count in buckets.items():
+            bucket_pct = round(count / total_episodes * 100, 2) if total_episodes > 0 else 0.0
+            bucket_stats[bucket_name] = {
+                "count": count,
+                "pct": bucket_pct,
+            }
+
+        stats["tenure_distribution"]["buckets"] = bucket_stats
+
+    # Predecessor linking
+    if "prev_execid" in episodes_df.columns:
+        linked_count = episodes_df["prev_execid"].notna().sum()
+        orphan_count = episodes_df["prev_execid"].isna().sum()
+
+        stats["predecessor_linking"] = {
+            "linked_count": int(linked_count),
+            "orphan_count": int(orphan_count),
+            "link_rate_pct": round(linked_count / total_episodes * 100, 2) if total_episodes > 0 else 0.0,
+        }
+
+    # Date validity checks
+    today = pd.Timestamp.now()
+
+    if "start_date" in episodes_df.columns:
+        future_dates = int((episodes_df["start_date"] > today).sum())
+        stats["date_validity"] = {
+            "future_dates": future_dates,
+        }
+
+    if "start_date" in episodes_df.columns and "end_date" in episodes_df.columns:
+        end_before_start = int((episodes_df["end_date"] < episodes_df["start_date"]).sum())
+        stats["date_validity"]["end_before_start"] = end_before_start
+
+        # Count active CEOs (end_date imputed to 2025-12-31 or future dates)
+        active_ceo_cutoff = pd.Timestamp("2025-01-01")
+        active_ceo_count = int((episodes_df["end_date"] >= active_ceo_cutoff).sum())
+        stats["date_validity"]["active_ceo_count"] = active_ceo_count
+
+    return stats
+
+
+def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze monthly tenure panel output characteristics.
+
+    Provides comprehensive statistics about the monthly panel, including temporal coverage,
+    CEO turnover rates, predecessor information coverage, and multi-CEO firm analysis.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        monthly_df: Monthly tenure panel DataFrame (must contain gvkey, year, month, date, ceo_id, prev_ceo_id)
+
+    Returns:
+        Dictionary with keys:
+        - panel_dimensions: {total_firm_months, unique_firms, unique_ceos, date_range: {earliest, latest, span_years}}
+        - temporal_coverage: [{year, firm_months, unique_firms, unique_ceos}]
+        - turnover_metrics: {turnover_events, turnover_rate_per_100_firm_years}
+        - predecessor_coverage: {with_predecessor_pct, without_predecessor_pct}
+        - multi_ceo_analysis: {firms_with_multiple_ceos, max_ceos_per_firm}
+        - ceo_careers: {ceos_multiple_firms, ceos_multiple_episodes_same_firm}
+    """
+    stats = {}
+
+    # Panel dimensions
+    total_firm_months = len(monthly_df)
+
+    stats["panel_dimensions"] = {
+        "total_firm_months": int(total_firm_months),
+        "unique_firms": int(monthly_df["gvkey"].nunique()) if "gvkey" in monthly_df.columns else 0,
+        "unique_ceos": int(monthly_df["ceo_id"].nunique()) if "ceo_id" in monthly_df.columns else 0,
+    }
+
+    # Date range
+    if "date" in monthly_df.columns:
+        monthly_df["date"] = pd.to_datetime(monthly_df["date"])
+        date_col = monthly_df["date"].dropna()
+
+        if len(date_col) > 0:
+            earliest = date_col.min()
+            latest = date_col.max()
+            span_years = round((latest - earliest).days / 365.25, 2)
+
+            stats["panel_dimensions"]["date_range"] = {
+                "earliest": earliest.isoformat(),
+                "latest": latest.isoformat(),
+                "span_years": span_years,
+            }
+
+    # Temporal coverage by year
+    if "year" in monthly_df.columns:
+        temporal_coverage = []
+
+        for year in sorted(monthly_df["year"].unique()):
+            year_df = monthly_df[monthly_df["year"] == year]
+
+            temporal_coverage.append({
+                "year": int(year),
+                "firm_months": int(len(year_df)),
+                "unique_firms": int(year_df["gvkey"].nunique()) if "gvkey" in year_df.columns else 0,
+                "unique_ceos": int(year_df["ceo_id"].nunique()) if "ceo_id" in year_df.columns else 0,
+            })
+
+        stats["temporal_coverage"] = temporal_coverage
+
+    # CEO turnover analysis (prev_ceo_id changes indicate transitions)
+    if "gvkey" in monthly_df.columns and "prev_ceo_id" in monthly_df.columns:
+        # Sort by firm and date
+        monthly_df_sorted = monthly_df.sort_values(["gvkey", "year", "month"])
+
+        # Find prev_ceo_id changes within each firm (indicates CEO transitions)
+        monthly_df_sorted["prev_ceo_id_shifted"] = monthly_df_sorted.groupby("gvkey")["prev_ceo_id"].shift(1)
+
+        # Count transitions (where prev_ceo_id changes)
+        transitions_mask = (
+            monthly_df_sorted["prev_ceo_id"].notna() &
+            monthly_df_sorted["prev_ceo_id_shifted"].notna() &
+            (monthly_df_sorted["prev_ceo_id"] != monthly_df_sorted["prev_ceo_id_shifted"])
+        )
+
+        turnover_events = int(transitions_mask.sum())
+
+        stats["turnover_metrics"] = {
+            "turnover_events": turnover_events,
+        }
+
+        # Calculate firm-years for turnover rate
+        if "year" in monthly_df.columns and "gvkey" in monthly_df.columns:
+            firm_years = monthly_df[["gvkey", "year"]].drop_duplicates().shape[0]
+            if firm_years > 0:
+                turnover_rate = round(turnover_events / firm_years * 100, 2)
+                stats["turnover_metrics"]["turnover_rate_per_100_firm_years"] = turnover_rate
+
+    # Predecessor coverage
+    if "prev_ceo_id" in monthly_df.columns:
+        with_predecessor = monthly_df["prev_ceo_id"].notna().sum()
+        without_predecessor = monthly_df["prev_ceo_id"].isna().sum()
+
+        stats["predecessor_coverage"] = {
+            "with_predecessor_pct": round(with_predecessor / total_firm_months * 100, 2) if total_firm_months > 0 else 0.0,
+            "without_predecessor_pct": round(without_predecessor / total_firm_months * 100, 2) if total_firm_months > 0 else 0.0,
+        }
+
+    # Multi-CEO firm analysis
+    if "gvkey" in monthly_df.columns and "ceo_id" in monthly_df.columns:
+        ceos_per_firm = monthly_df.groupby("gvkey")["ceo_id"].nunique()
+        firms_with_multiple = int((ceos_per_firm > 1).sum())
+
+        stats["multi_ceo_analysis"] = {
+            "firms_with_multiple_ceos": firms_with_multiple,
+            "max_ceos_per_firm": int(ceos_per_firm.max()) if len(ceos_per_firm) > 0 else 0,
+        }
+
+    # CEO career analysis
+    if "ceo_id" in monthly_df.columns and "gvkey" in monthly_df.columns:
+        # CEOs spanning multiple firms
+        firms_per_ceo = monthly_df.groupby("ceo_id")["gvkey"].nunique()
+        ceos_multiple_firms = int((firms_per_ceo > 1).sum())
+
+        stats["ceo_careers"] = {
+            "ceos_multiple_firms": ceos_multiple_firms,
+        }
+
+    return stats
+
+
+def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, n_samples: int = 3) -> Dict[str, Any]:
+    """
+    Collect qualitative tenure episode and transition examples for review.
+
+    Provides sample episodes (short/long tenures), CEO transitions, and overlap
+    resolution cases for methodology discussions and quality assessment.
+
+    Deterministic: Same input produces same output (sorted, limited samples).
+
+    Args:
+        episodes_df: DataFrame with tenure episodes (must contain gvkey, exec_fullname, start_date, end_date, prev_exec_fullname)
+        monthly_df: Monthly tenure panel DataFrame (must contain gvkey, year, month, date, ceo_name, prev_ceo_name)
+        n_samples: Number of samples to collect per category (default: 3)
+
+    Returns:
+        Dictionary with keys:
+        - short_tenures: List of short tenure examples (<12 months)
+        - long_tenures: List of long tenure examples (>120 months)
+        - transitions: List of CEO transition examples
+        - overlaps: List of overlap resolution examples
+    """
+    samples = {
+        "short_tenures": [],
+        "long_tenures": [],
+        "transitions": [],
+        "overlaps": [],
+    }
+
+    # Ensure datetime columns
+    if "start_date" in episodes_df.columns:
+        episodes_df["start_date"] = pd.to_datetime(episodes_df["start_date"])
+    if "end_date" in episodes_df.columns:
+        episodes_df["end_date"] = pd.to_datetime(episodes_df["end_date"])
+
+    # Calculate tenure in months
+    if "start_date" in episodes_df.columns and "end_date" in episodes_df.columns:
+        episodes_df["tenure_months"] = (
+            (episodes_df["end_date"] - episodes_df["start_date"]).dt.total_seconds() / (30 * 24 * 3600)
+        )
+    else:
+        episodes_df["tenure_months"] = pd.Series([0] * len(episodes_df))
+
+    # Short tenure examples (<12 months)
+    short_tenures_df = episodes_df[episodes_df["tenure_months"] < 12].sort_values("tenure_months")
+
+    for _, row in short_tenures_df.head(n_samples).iterrows():
+        samples["short_tenures"].append({
+            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
+            "ceo_name": str(row.get("exec_fullname", "")) if pd.notna(row.get("exec_fullname")) else "",
+            "start_date": row.get("start_date").isoformat() if pd.notna(row.get("start_date")) else "",
+            "end_date": row.get("end_date").isoformat() if pd.notna(row.get("end_date")) else "",
+            "tenure_months": round(float(row.get("tenure_months", 0)), 1),
+        })
+
+    # Long tenure examples (>120 months)
+    long_tenures_df = episodes_df[episodes_df["tenure_months"] > 120].sort_values("tenure_months", ascending=False)
+
+    for _, row in long_tenures_df.head(n_samples).iterrows():
+        samples["long_tenures"].append({
+            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
+            "ceo_name": str(row.get("exec_fullname", "")) if pd.notna(row.get("exec_fullname")) else "",
+            "start_date": row.get("start_date").isoformat() if pd.notna(row.get("start_date")) else "",
+            "end_date": row.get("end_date").isoformat() if pd.notna(row.get("end_date")) else "",
+            "tenure_months": round(float(row.get("tenure_months", 0)), 1),
+        })
+
+    # CEO transition examples (predecessor -> successor)
+    if "prev_exec_fullname" in episodes_df.columns:
+        transitions_df = episodes_df[
+            episodes_df["prev_exec_fullname"].notna() &
+            (episodes_df["prev_exec_fullname"] != "")
+        ].copy()
+
+        # Calculate gap days between predecessor end and successor start
+        transitions_df = transitions_df.sort_values(["gvkey", "start_date"])
+
+        for _, row in transitions_df.head(n_samples).iterrows():
+            # Try to find the predecessor episode to calculate gap
+            gvkey = row.get("gvkey")
+            successor_start = row.get("start_date")
+
+            # Find predecessor episode (same firm, earlier start_date)
+            predecessor_mask = (
+                (transitions_df["gvkey"] == gvkey) &
+                (transitions_df["exec_fullname"] == row.get("prev_exec_fullname"))
+            )
+            predecessor_episode = transitions_df[predecessor_mask]
+
+            gap_days = None
+            if len(predecessor_episode) > 0:
+                predecessor_end = predecessor_episode.iloc[0].get("end_date")
+                if pd.notna(predecessor_end) and pd.notna(successor_start):
+                    gap_days = int((successor_start - predecessor_end).days)
+
+            samples["transitions"].append({
+                "gvkey": str(gvkey) if pd.notna(gvkey) else "",
+                "prev_ceo_name": str(row.get("prev_exec_fullname", "")) if pd.notna(row.get("prev_exec_fullname")) else "",
+                "new_ceo_name": str(row.get("exec_fullname", "")) if pd.notna(row.get("exec_fullname")) else "",
+                "transition_date": successor_start.isoformat() if pd.notna(successor_start) else "",
+                "gap_days": gap_days,
+            })
+
+    # Overlap resolution examples (from monthly panel)
+    # Find firms with multiple CEOs in the same year/month
+    if "gvkey" in monthly_df.columns and "year" in monthly_df.columns and "month" in monthly_df.columns:
+        # Count CEOs per firm-month
+        ceo_counts = monthly_df.groupby(["gvkey", "year", "month"])["ceo_id"].nunique()
+        # Only single CEO per month after resolution, so we need to look for potential overlaps
+        # by checking if prev_ceo_id exists and is different from ceo_id
+        overlap_candidates = monthly_df[
+            monthly_df["prev_ceo_id"].notna() &
+            (monthly_df["prev_ceo_id"] != monthly_df["ceo_id"])
+        ].copy()
+
+        if len(overlap_candidates) > 0:
+            # Sample n_samples overlap candidates
+            overlap_samples = overlap_candidates.head(n_samples)
+
+            for _, row in overlap_samples.iterrows():
+                samples["overlaps"].append({
+                    "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
+                    "resolved_ceo": str(row.get("ceo_name", "")) if pd.notna(row.get("ceo_name")) else "",
+                    "overlapped_ceo": str(row.get("prev_ceo_name", "")) if pd.notna(row.get("prev_ceo_name")) else "",
+                    "overlap_period": f"{int(row.get('year', 0))}-{int(row.get('month', 0))}" if pd.notna(row.get("year")) else "",
+                    "resolution_reason": "later_ceo_takes_precedence",
+                })
+
+    return samples
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
