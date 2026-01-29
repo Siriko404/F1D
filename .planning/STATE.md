@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually)
+Phase: 25.1 of 27 (Fix Pipeline Scripts To Run Manually)
 Plan: 10 of 10 in current phase
 Status: ✅ PHASE COMPLETE
-Last activity: 2026-01-29 - Completed Quick Task 019: Comprehensive descriptive statistics for academic presentation
+Last activity: 2026-01-29 - Completed Quick Task 020: Entity linking statistics for academic presentation
 
-Progress: [██████████░] 100% (131/131 plans complete)
+Progress: [██████████] 100% (133/133 plans complete)
 
 ## Phase 25.1 Achievements
 
@@ -248,6 +248,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 25.1 inserted after Phase 25: Fix pipeline scripts to run sequentially and individually manually not with any orchestrator script (URGENT)
+- Phase 26 added: Repository cleanup and archive organization - clean up messy repo by moving useless/backup/legacy files to organized archive
 
 ### Quick Tasks Completed
 
@@ -272,6 +273,7 @@ Recent decisions affecting current work:
 | 017 | Verify Step 4.3 dry run functionality - fixed Windows Unicode character in 4.3 script | 2026-01-25 | 8ad994f | [017-verify-step43-dryrun](./quick/017-verify-step43-dryrun/) |
 | 018 | Verify Step 4.4 dry run functionality - fixed Windows Unicode character in 4.4 script | 2026-01-25 | cef05a3 | [018-verify-step44-dryrun](./quick/018-verify-step44-dryrun/) |
 | 019 | Add comprehensive descriptive statistics to 1.1_CleanMetadata for academic presentation | 2026-01-29 | b3b0eef | [019-comprehensive-descriptive-stats](./quick/019-comprehensive-descriptive-stats/) |
+| 020 | Add entity linking statistics to 1.2_LinkEntities for academic presentation | 2026-01-29 | 8fafef5 | [020-entity-linking-stats](./quick/020-entity-linking-stats/) |
 
 ### Blockers/Concerns
 
@@ -290,14 +292,14 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-        Last session: 2026-01-29T19:47:48Z
-        Stopped at: Completed Quick Task 019 - Comprehensive descriptive statistics
+        Last session: 2026-01-29T20:14:14Z
+        Stopped at: Completed Quick Task 020 - Entity linking statistics
         Resume file: None
 
         Phase: 25.1 of 26 (Fix Pipeline Scripts To Run Manually) ✅
           Plan: 10 of 10 (Phase complete: 2026-01-25)
           Status: ✅ COMPLETED
-          Last activity: 2026-01-29 - Quick Task 019: Added comprehensive descriptive statistics to 1.1_CleanMetadata
+          Last activity: 2026-01-29 - Quick Task 020: Added entity linking statistics to 1.2_LinkEntities
 
          Progress: [██████████] 100% (133/133 plans complete)
           Technical Remediation: [████████████] 100% (All phases 7-25 complete)
