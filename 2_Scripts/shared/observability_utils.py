@@ -666,6 +666,283 @@ def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
+def compute_linking_input_stats(df_input: pd.DataFrame, df_ccm: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze input and reference data for entity linking.
+
+    Provides comprehensive statistics about the input metadata and CCM reference
+    database, including coverage analysis of key identifiers used in matching.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_input: Input metadata DataFrame (from step 1.1)
+        df_ccm: CCM reference database DataFrame
+
+    Returns:
+        Dictionary with keys:
+        - input_metadata: {record_count, unique_companies, column_count, memory_mb}
+        - reference_database: {total_records, unique_gvkey, unique_lpermno,
+                               date_coverage: {earliest: ISO, latest: ISO, span_days}}
+        - coverage_metrics: {permno_coverage_pct, cusip_coverage_pct,
+                             ticker_coverage_pct, name_coverage_pct}
+    """
+    stats = {}
+
+    # Input metadata characteristics
+    stats["input_metadata"] = {
+        "record_count": int(len(df_input)),
+        "unique_companies": int(df_input["company_id"].nunique()) if "company_id" in df_input.columns else 0,
+        "column_count": int(len(df_input.columns)),
+        "memory_mb": round(df_input.memory_usage(deep=True).sum() / (1024 * 1024), 2),
+    }
+
+    # CCM reference database characteristics
+    stats["reference_database"] = {
+        "total_records": int(len(df_ccm)),
+        "unique_gvkey": int(df_ccm["gvkey"].nunique()) if "gvkey" in df_ccm.columns else 0,
+        "unique_lpermno": int(df_ccm["LPERMNO"].nunique()) if "LPERMNO" in df_ccm.columns else 0,
+    }
+
+    # CCM date coverage
+    if "LINKDT" in df_ccm.columns and "LINKENDDT_dt" in df_ccm.columns:
+        linkdt = df_ccm["LINKDT"].dropna()
+        linkenddt = df_ccm["LINKENDDT_dt"].dropna()
+        if len(linkdt) > 0 and len(linkenddt) > 0:
+            stats["reference_database"]["date_coverage"] = {
+                "earliest": linkdt.min().isoformat(),
+                "latest": linkenddt.max().isoformat(),
+                "span_days": int((linkenddt.max() - linkdt.min()).days),
+            }
+
+    # Coverage analysis - what percentage of input companies have each identifier
+    total_companies = stats["input_metadata"]["unique_companies"]
+
+    coverage = {}
+    if "permno" in df_input.columns:
+        permno_available = df_input[df_input["permno"].notna() & (df_input["permno"] != "")]["company_id"].nunique()
+        coverage["permno_coverage_pct"] = round(permno_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+
+    if "cusip" in df_input.columns:
+        cusip_available = df_input[df_input["cusip"].notna() & (df_input["cusip"] != "")]["company_id"].nunique()
+        coverage["cusip_coverage_pct"] = round(cusip_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+
+    if "company_ticker" in df_input.columns:
+        ticker_available = df_input[df_input["company_ticker"].notna() & (df_input["company_ticker"] != "")]["company_id"].nunique()
+        coverage["ticker_coverage_pct"] = round(ticker_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+
+    if "company_name" in df_input.columns:
+        name_available = df_input[df_input["company_name"].notna() & (df_input["company_name"] != "")]["company_id"].nunique()
+        coverage["name_coverage_pct"] = round(name_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+
+    stats["coverage_metrics"] = coverage
+
+    return stats
+
+
+def compute_linking_process_stats(unique_df: pd.DataFrame, stats_dict: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Analyze 4-tier matching process outcomes.
+
+    Provides detailed funnel analysis of the entity linking process, including
+    match rates at each tier, link quality distribution, and attrition tracking.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        unique_df: DataFrame with unique companies after matching (contains gvkey, link_quality, link_method)
+        stats_dict: Statistics dictionary containing tier match counts from main execution
+
+    Returns:
+        Dictionary with keys:
+        - funnel_analysis: {tier1_candidates, tier1_matched, tier2_candidates, tier2_matched,
+                            tier3_candidates, tier3_matched, total_matched}
+        - match_rates: {tier1_match_pct, tier2_match_pct, tier3_match_pct, overall_match_pct}
+        - link_quality_distribution: {quality_100_count, quality_90_count, quality_80_count}
+        - link_method_distribution: {permno_date_count, cusip8_date_count, name_fuzzy_count}
+    """
+    stats = {}
+
+    # Get tier counts from stats_dict (populated by main execution)
+    tier1_matched = stats_dict.get("linking", {}).get("tier1_matched", 0)
+    tier2_matched = stats_dict.get("linking", {}).get("tier2_matched", 0)
+    tier3_matched = stats_dict.get("linking", {}).get("tier3_matched", 0)
+    total_unique = stats_dict.get("linking", {}).get("unique_companies", len(unique_df))
+
+    # Calculate candidates (approximately - unmatched before each tier)
+    tier1_candidates = total_unique
+    tier2_candidates = total_unique - tier1_matched
+    tier3_candidates = total_unique - tier2_matched
+
+    stats["funnel_analysis"] = {
+        "tier1_candidates": int(tier1_candidates),
+        "tier1_matched": int(tier1_matched),
+        "tier2_candidates": int(tier2_candidates),
+        "tier2_matched": int(tier2_matched - tier1_matched) if tier2_matched > tier1_matched else 0,
+        "tier3_candidates": int(tier3_candidates),
+        "tier3_matched": int(tier3_matched - tier2_matched) if tier3_matched > tier2_matched else 0,
+        "total_matched": int(tier3_matched),
+    }
+
+    # Match rate calculations
+    stats["match_rates"] = {}
+    if tier1_candidates > 0:
+        stats["match_rates"]["tier1_match_pct"] = round(tier1_matched / tier1_candidates * 100, 2)
+    if tier2_candidates > 0:
+        tier2_new_matches = stats["funnel_analysis"]["tier2_matched"]
+        stats["match_rates"]["tier2_match_pct"] = round(tier2_new_matches / tier2_candidates * 100, 2)
+    if tier3_candidates > 0:
+        tier3_new_matches = stats["funnel_analysis"]["tier3_matched"]
+        stats["match_rates"]["tier3_match_pct"] = round(tier3_new_matches / tier3_candidates * 100, 2)
+    if total_unique > 0:
+        stats["match_rates"]["overall_match_pct"] = round(tier3_matched / total_unique * 100, 2)
+
+    # Link quality distribution (from link_quality column)
+    if "link_quality" in unique_df.columns:
+        quality_counts = unique_df["link_quality"].value_counts().sort_index()
+        stats["link_quality_distribution"] = {
+            "quality_100_count": int(quality_counts.get(100, 0)),
+            "quality_90_count": int(quality_counts.get(90, 0)),
+            "quality_80_count": int(quality_counts.get(80, 0)),
+        }
+
+        # Add percentages
+        total_quality_matches = sum(stats["link_quality_distribution"].values())
+        if total_quality_matches > 0:
+            stats["link_quality_distribution"]["quality_100_pct"] = round(
+                stats["link_quality_distribution"]["quality_100_count"] / total_quality_matches * 100, 2
+            )
+            stats["link_quality_distribution"]["quality_90_pct"] = round(
+                stats["link_quality_distribution"]["quality_90_count"] / total_quality_matches * 100, 2
+            )
+            stats["link_quality_distribution"]["quality_80_pct"] = round(
+                stats["link_quality_distribution"]["quality_80_count"] / total_quality_matches * 100, 2
+            )
+
+    # Link method distribution (from link_method column)
+    if "link_method" in unique_df.columns:
+        method_counts = unique_df["link_method"].value_counts()
+        stats["link_method_distribution"] = {
+            "permno_date_count": int(method_counts.get("permno_date", 0)),
+            "cusip8_date_count": int(method_counts.get("cusip8_date", 0)),
+            "name_fuzzy_count": int(method_counts.get("name_fuzzy", 0)),
+        }
+
+    return stats
+
+
+def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Analyze linked entities output characteristics.
+
+    Provides comprehensive statistics about the final linked dataset, including
+    linkage success rates, industry coverage, SIC distribution, and quality metrics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_linked: Final linked metadata DataFrame (with gvkey, ff12_code, ff48_name, sic, etc.)
+
+    Returns:
+        Dictionary with keys:
+        - linkage_summary: {total_calls_linked, unique_companies_linked, unique_gvkey_assigned,
+                           linkage_success_rate, calls_per_company_avg}
+        - industry_coverage: {ff12_assigned, ff12_unique_industries, ff12_completion_pct,
+                             ff48_assigned, ff48_unique_industries, ff48_completion_pct}
+        - sic_distribution: {unique_sic_codes, top_industries: [{sic, count, percentage}]}
+        - quality_metrics: {avg_link_quality, link_quality_by_method: {method: avg_quality}}
+        - temporal_coverage: {earliest_date: ISO, latest_date: ISO} (if date column exists)
+    """
+    stats = {}
+
+    total_calls = len(df_linked)
+
+    # Linkage success summary
+    unique_companies = df_linked["company_id"].nunique() if "company_id" in df_linked.columns else 0
+    unique_gvkey = df_linked["gvkey"].nunique() if "gvkey" in df_linked.columns else 0
+
+    stats["linkage_summary"] = {
+        "total_calls_linked": int(total_calls),
+        "unique_companies_linked": int(unique_companies),
+        "unique_gvkey_assigned": int(unique_gvkey),
+        "calls_per_company_avg": round(total_calls / unique_companies, 2) if unique_companies > 0 else 0.0,
+    }
+
+    # Calculate linkage success rate (from input perspective - not available here, only relative stats)
+    # The success rate relative to unique companies
+    if unique_companies > 0:
+        stats["linkage_summary"]["company_linkage_rate"] = round(unique_gvkey / unique_companies * 100, 2)
+
+    # Industry coverage - FF12
+    if "ff12_code" in df_linked.columns:
+        ff12_assigned = df_linked["ff12_code"].notna().sum()
+        ff12_unique = df_linked["ff12_code"].nunique()
+        stats["industry_coverage"] = {
+            "ff12_assigned": int(ff12_assigned),
+            "ff12_unique_industries": int(ff12_unique),
+            "ff12_completion_pct": round(ff12_assigned / total_calls * 100, 2) if total_calls > 0 else 0.0,
+        }
+    else:
+        stats["industry_coverage"] = {"error": "FF12 columns not found"}
+
+    # Industry coverage - FF48
+    if "ff48_code" in df_linked.columns:
+        ff48_assigned = df_linked["ff48_code"].notna().sum()
+        ff48_unique = df_linked["ff48_code"].nunique()
+        stats["industry_coverage"]["ff48_assigned"] = int(ff48_assigned)
+        stats["industry_coverage"]["ff48_unique_industries"] = int(ff48_unique)
+        stats["industry_coverage"]["ff48_completion_pct"] = round(ff48_assigned / total_calls * 100, 2) if total_calls > 0 else 0.0
+
+    # SIC code distribution
+    if "sic" in df_linked.columns:
+        sic_counts = df_linked["sic"].value_counts().head(10)  # Top 10 SICs
+        top_industries = []
+        for sic, count in sic_counts.items():
+            top_industries.append({
+                "sic": int(sic) if pd.notna(sic) else None,
+                "count": int(count),
+                "percentage": round(count / total_calls * 100, 2) if total_calls > 0 else 0.0,
+            })
+
+        stats["sic_distribution"] = {
+            "unique_sic_codes": int(df_linked["sic"].nunique()),
+            "top_industries": top_industries,
+        }
+    else:
+        stats["sic_distribution"] = {"error": "SIC column not found"}
+
+    # Quality metrics
+    if "link_quality" in df_linked.columns:
+        quality_values = df_linked["link_quality"].dropna()
+        if len(quality_values) > 0:
+            stats["quality_metrics"] = {
+                "avg_link_quality": round(float(quality_values.mean()), 2),
+            }
+
+            # Link quality by method
+            if "link_method" in df_linked.columns:
+                quality_by_method = df_linked.groupby("link_method")["link_quality"].mean().sort_index()
+                stats["quality_metrics"]["link_quality_by_method"] = {
+                    method: round(float(avg_quality), 2)
+                    for method, avg_quality in quality_by_method.items()
+                }
+        else:
+            stats["quality_metrics"] = {"error": "No quality data available"}
+    else:
+        stats["quality_metrics"] = {"error": "link_quality column not found"}
+
+    # Temporal coverage
+    if "start_date" in df_linked.columns:
+        date_col = pd.to_datetime(df_linked["start_date"]).dropna()
+        if len(date_col) > 0:
+            stats["temporal_coverage"] = {
+                "earliest_date": date_col.min().isoformat(),
+                "latest_date": date_col.max().isoformat(),
+            }
+
+    return stats
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
