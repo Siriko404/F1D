@@ -1870,8 +1870,8 @@ def compute_manifest_process_stats(
             "total_ceos_before_filter": total_ceos_before_filter,
             "ceos_above_threshold": ceos_above_threshold,
             "ceos_dropped": ceos_dropped,
-            "threshold_value": threshold,
-            "calls_dropped": calls_dropped,
+            "threshold_value": int(threshold),
+            "calls_dropped": int(calls_dropped),
         }
     else:
         stats["ceo_filtering"] = {"error": "ceo_id column not found"}

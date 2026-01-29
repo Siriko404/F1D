@@ -68,6 +68,10 @@ from shared.observability_utils import (
     calculate_throughput,
     detect_anomalies_zscore,
     detect_anomalies_iqr,
+    compute_manifest_input_stats,
+    compute_manifest_process_stats,
+    compute_manifest_output_stats,
+    collect_ceo_distribution_samples,
 )
 
 
@@ -241,6 +245,10 @@ def main():
     print_dual(f"  Unique firms: {tenure['gvkey'].nunique():,}")
     print_dual(f"  Unique CEOs: {tenure['ceo_id'].nunique():,}\n")
 
+    # Compute manifest input statistics
+    print_dual("Computing manifest input statistics...")
+    stats["manifest_input"] = compute_manifest_input_stats(metadata, tenure)
+
     # Prepare for join
     print_dual("Preparing data for join...")
     metadata["start_date"] = pd.to_datetime(metadata["start_date"])
@@ -304,6 +312,10 @@ def main():
     df_matched = merged[merged["ceo_id"].notna()].copy()
     print_dual(f"  Remaining: {len(df_matched):,} calls\n")
 
+    # Compute manifest process statistics (after merge, before filtering)
+    print_dual("Computing manifest process statistics...")
+    stats["manifest_process"] = compute_manifest_process_stats(metadata, merged, df_matched, stats)
+
     # Apply minimum call threshold
     min_calls = config.get("step_02_5c", {}).get("min_calls_threshold", 5)
     print_dual(f"Applying minimum call threshold (>= {min_calls} calls per CEO)...")
@@ -325,12 +337,21 @@ def main():
     # Track processing stats
     stats["processing"]["unmatched_calls_removed"] = int(unmatched)
     stats["processing"]["below_threshold_calls_removed"] = dropped_calls
+    stats["processing"]["min_call_threshold"] = min_calls
 
     # Drop temporary columns
     df_final = df_final.drop(columns=["year", "month"])
 
     # Sort for determinism
     df_final = df_final.sort_values("file_name").reset_index(drop=True)
+
+    # Compute manifest output statistics
+    print_dual("Computing manifest output statistics...")
+    stats["manifest_output"] = compute_manifest_output_stats(df_final)
+
+    # Collect CEO distribution samples
+    print_dual("Collecting CEO distribution samples...")
+    stats["ceo_samples"] = collect_ceo_distribution_samples(df_final, n_samples=5)
 
     # Save output
     output_file = paths["output_dir"] / "master_sample_manifest.parquet"
@@ -363,27 +384,323 @@ def main():
     var_ref_file = paths["output_dir"] / "variable_reference.csv"
     generate_variable_reference(df_final, var_ref_file, print_dual)
 
-    # Generate summary report
+    # Generate comprehensive manifest report
+    print_dual("Generating comprehensive manifest report...")
+    report_file = paths["output_dir"] / "report_step_1_4.md"
+
+    # Build comprehensive report
     report_lines = [
         "# Step 1.4: Manifest Assembly & CEO Filtering - Report",
         "",
         f"**Timestamp**: {timestamp}",
         "",
-        "## Summary",
+    ]
+
+    # INPUT DATA SOURCES section
+    report_lines.extend([
+        "## INPUT DATA SOURCES",
         "",
-        f"- **Input calls (linked metadata)**: {len(metadata):,}",
-        f"- **Matched to CEO**: {matched:,} ({matched / len(metadata) * 100:.1f}%)",
-        f"- **Unmatched to CEO**: {unmatched:,} ({unmatched / len(metadata) * 100:.1f}%)",
-        f"- **Minimum call threshold**: {min_calls}",
-        f"- **Valid CEOs**: {len(valid_ceos):,}",
-        f"- **Dropped CEOs**: {len(ceo_counts) - len(valid_ceos):,}",
-        f"- **Final manifest size**: {len(df_final):,} calls",
+        "### Linked Metadata (from step 1.2)",
         "",
-        "## CEO Distribution",
+    ])
+
+    if "manifest_input" in stats and "linked_metadata" in stats["manifest_input"]:
+        input_meta = stats["manifest_input"]["linked_metadata"]
+        report_lines.extend([
+            f"- **Total calls**: {input_meta.get('total_calls', 0):,}",
+            f"- **Unique firms (gvkey)**: {input_meta.get('unique_gvkey', 0):,}",
+            f"- **Columns**: {input_meta.get('columns', 0)}",
+            f"- **Memory footprint**: {input_meta.get('memory_mb', 0):.2f} MB",
+            "",
+        ])
+
+    if "manifest_input" in stats and "industry_coverage" in stats["manifest_input"]:
+        ind_cov = stats["manifest_input"]["industry_coverage"]
+        report_lines.extend([
+            "**Industry coverage:**",
+            f"- FF12 unique industries: {ind_cov.get('ff12_count', 0)}",
+            f"- FF48 unique industries: {ind_cov.get('ff48_count', 0)}",
+            "",
+        ])
+
+    if "manifest_input" in stats and "temporal_coverage" in stats["manifest_input"]:
+        temp_cov = stats["manifest_input"]["temporal_coverage"]
+        if "year_range" in temp_cov:
+            yr = temp_cov["year_range"]
+            report_lines.extend([
+                "**Temporal range:**",
+                f"- Earliest call: {yr.get('earliest', 'N/A')}",
+                f"- Latest call: {yr.get('latest', 'N/A')}",
+                "",
+            ])
+
+    # CEO Tenure Panel section
+    report_lines.extend([
+        "### CEO Tenure Panel (from step 1.3)",
         "",
-        f"- **Mean calls per CEO**: {df_final.groupby('ceo_id').size().mean():.1f}",
-        f"- **Median calls per CEO**: {df_final.groupby('ceo_id').size().median():.0f}",
-        f"- **Max calls (single CEO)**: {df_final.groupby('ceo_id').size().max():.0f}",
+    ])
+
+    if "manifest_input" in stats and "tenure_panel" in stats["manifest_input"]:
+        tenure = stats["manifest_input"]["tenure_panel"]
+        report_lines.extend([
+            f"- **Total firm-months**: {tenure.get('total_firm_months', 0):,}",
+            f"- **Unique firms**: {tenure.get('unique_firms', 0):,}",
+            f"- **Unique CEOs**: {tenure.get('unique_ceos', 0):,}",
+        ])
+        if "date_range" in tenure:
+            dr = tenure["date_range"]
+            report_lines.extend([
+                f"- **Date coverage**: {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')} ({dr.get('span_years', 0)} years)",
+            ])
+        report_lines.append("")
+
+    # MERGE PROCESS section
+    report_lines.extend([
+        "## MERGE PROCESS",
+        "",
+        "### Join Outcome",
+        "",
+    ])
+
+    if "manifest_process" in stats and "merge_outcome" in stats["manifest_process"]:
+        mo = stats["manifest_process"]["merge_outcome"]
+        report_lines.extend([
+            f"- **Left rows (metadata)**: {mo.get('left_rows', 0):,}",
+            f"- **Right rows (tenure)**: {mo.get('right_rows', 0):,}",
+            f"- **Matched calls**: {mo.get('matched_count', 0):,}",
+            f"- **Unmatched calls**: {mo.get('unmatched_count', 0):,}",
+            f"- **Match rate**: {mo.get('match_rate_pct', 0):.2f}%",
+            "",
+            "*Join on (gvkey, year, month) with 6-digit zero-padded gvkey*",
+            "",
+        ])
+
+    # Match rate by year table
+    if "manifest_process" in stats and "match_rate_by_year" in stats["manifest_process"]:
+        report_lines.extend([
+            "### Match Rate by Year",
+            "",
+            "| Year | Total Calls | Matched Calls | Match Rate % |",
+            "|------|-------------|---------------|--------------|",
+        ])
+        for yr in stats["manifest_process"]["match_rate_by_year"]:
+            report_lines.append(
+                f"| {yr['year']} | {yr['total_calls']:,} | {yr['matched_calls']:,} | {yr['match_rate_pct']:.1f}% |"
+            )
+        report_lines.append("")
+
+    # Unmatched analysis
+    if "manifest_process" in stats and "unmatched_analysis" in stats["manifest_process"]:
+        ua = stats["manifest_process"]["unmatched_analysis"]
+        report_lines.extend([
+            "### Unmatched Analysis",
+            "",
+            f"- **Unique firms (gvkey) without CEO tenure data**: {ua.get('unique_gvkey_unmatched', 0):,}",
+            f"- **Calls unmatched**: {ua.get('calls_unmatched', 0):,}",
+            "",
+        ])
+        if ua.get("temporal_distribution"):
+            report_lines.extend([
+                "**Temporal distribution of unmatched calls:**",
+                "",
+                "| Year | Unmatched Calls |",
+                "|------|-----------------|",
+            ])
+            for yr, count in sorted(ua["temporal_distribution"].items()):
+                report_lines.append(f"| {yr} | {count:,} |")
+            report_lines.append("")
+
+    # CEO filtering
+    if "manifest_process" in stats and "ceo_filtering" in stats["manifest_process"]:
+        cf = stats["manifest_process"]["ceo_filtering"]
+        report_lines.extend([
+            "### CEO Filtering",
+            "",
+            f"- **Minimum call threshold**: {cf.get('threshold_value', 5)}",
+            f"- **CEOs before filter**: {cf.get('total_ceos_before_filter', 0):,}",
+            f"- **CEOs above threshold**: {cf.get('ceos_above_threshold', 0):,}",
+            f"- **CEOs dropped**: {cf.get('ceos_dropped', 0):,}",
+            f"- **Calls dropped**: {cf.get('calls_dropped', 0):,}",
+            "",
+        ])
+
+    # OUTPUT: FINAL MANIFEST section
+    report_lines.extend([
+        "## OUTPUT: FINAL MANIFEST",
+        "",
+        "### Panel Dimensions",
+        "",
+    ])
+
+    if "manifest_output" in stats and "panel_dimensions" in stats["manifest_output"]:
+        pdims = stats["manifest_output"]["panel_dimensions"]
+        report_lines.extend([
+            f"- **Total calls**: {pdims.get('total_calls', 0):,}",
+            f"- **Unique firms (gvkey)**: {pdims.get('unique_gvkey', 0):,}",
+            f"- **Unique CEOs**: {pdims.get('unique_ceos', 0):,}",
+        ])
+        if "date_range" in pdims:
+            dr = pdims["date_range"]
+            report_lines.extend([
+                f"- **Date range**: {dr.get('earliest', 'N/A')[:10]} to {dr.get('latest', 'N/A')[:10]}",
+            ])
+        report_lines.append("")
+
+    # Call concentration
+    if "manifest_output" in stats and "call_concentration" in stats["manifest_output"]:
+        cc = stats["manifest_output"]["call_concentration"]
+        if "calls_per_ceo" in cc:
+            cpc = cc["calls_per_ceo"]
+            report_lines.extend([
+                "### Call Concentration",
+                "",
+                f"- **Mean calls per CEO**: {cpc.get('mean', 0):.2f}",
+                f"- **Median calls per CEO**: {cpc.get('median', 0):.2f}",
+                f"- **Min calls per CEO**: {cpc.get('min', 0)}",
+                f"- **Max calls per CEO**: {cpc.get('max', 0):,}",
+                f"- **Std dev**: {cpc.get('std', 0):.2f}",
+                "",
+            ])
+        if "distribution_buckets" in cc:
+            report_lines.extend([
+                "**Call distribution buckets:**",
+                "",
+                "| Bucket | Count | Percentage |",
+                "|--------|-------|------------|",
+            ])
+            for bucket_name, bucket_data in cc["distribution_buckets"].items():
+                report_lines.append(
+                    f"| {bucket_name} | {bucket_data['count']:,} | {bucket_data['pct']:.1f}% |"
+                )
+            report_lines.append("")
+
+    # Industry coverage FF12
+    if "manifest_output" in stats and "industry_coverage_ff12" in stats["manifest_output"]:
+        ff12 = stats["manifest_output"]["industry_coverage_ff12"]
+        if ff12:
+            report_lines.extend([
+                "### Industry Coverage (FF12)",
+                "",
+                "| FF12 Code | Industry Name | Call Count | Percentage |",
+                "|-----------|---------------|------------|------------|",
+            ])
+            for ind in ff12[:10]:  # Top 10
+                report_lines.append(
+                    f"| {ind['ff12_code']} | {ind['ff12_name']} | {ind['call_count']:,} | {ind['percentage']:.1f}% |"
+                )
+            report_lines.append("")
+
+    # Industry coverage FF48
+    if "manifest_output" in stats and "industry_coverage_ff48" in stats["manifest_output"]:
+        ff48 = stats["manifest_output"]["industry_coverage_ff48"]
+        report_lines.extend([
+            "### Industry Coverage (FF48)",
+            "",
+            f"- **Unique industries**: {ff48.get('unique_industries', 0)}",
+            f"- **Completion percentage**: {ff48.get('completion_pct', 0):.1f}%",
+            "",
+        ])
+
+    # Temporal coverage
+    if "manifest_output" in stats and "temporal_coverage" in stats["manifest_output"]:
+        tc = stats["manifest_output"]["temporal_coverage"]
+        if tc:
+            report_lines.extend([
+                "### Temporal Coverage",
+                "",
+                "| Year | Call Count | Unique Firms | Unique CEOs |",
+                "|------|------------|--------------|-------------|",
+            ])
+            for yr in tc:
+                report_lines.append(
+                    f"| {yr['year']} | {yr['call_count']:,} | {yr['unique_firms']:,} | {yr['unique_ceos']:,} |"
+                )
+            report_lines.append("")
+
+    # Predecessor coverage
+    if "manifest_output" in stats and "predecessor_coverage" in stats["manifest_output"]:
+        pc = stats["manifest_output"]["predecessor_coverage"]
+        report_lines.extend([
+            "### Predecessor Coverage",
+            "",
+            f"- **Calls with predecessor CEO**: {pc.get('pct_with_prev_ceo', 0):.1f}%",
+            f"- **Calls without predecessor**: {pc.get('pct_without_prev_ceo', 0):.1f}%",
+            "",
+        ])
+
+    # CEO DISTRIBUTION SAMPLES section
+    report_lines.extend([
+        "## CEO DISTRIBUTION SAMPLES",
+        "",
+    ])
+
+    # Top CEOs
+    if "ceo_samples" in stats and "top_ceos" in stats["ceo_samples"]:
+        top_ceos = stats["ceo_samples"]["top_ceos"]
+        if top_ceos:
+            report_lines.extend([
+                "### Top CEOs by Call Count",
+                "",
+                "| CEO ID | CEO Name | Call Count | Unique Firms | Percentage |",
+                "|--------|----------|------------|--------------|------------|",
+            ])
+            for ceo in top_ceos:
+                report_lines.append(
+                    f"| {ceo['ceo_id']} | {ceo['ceo_name']} | {ceo['call_count']:,} | {ceo['unique_firms']} | {ceo['percentage']:.1f}% |"
+                )
+            report_lines.append("")
+
+    # Bottom CEOs
+    if "ceo_samples" in stats and "bottom_ceos" in stats["ceo_samples"]:
+        bottom_ceos = stats["ceo_samples"]["bottom_ceos"]
+        if bottom_ceos:
+            report_lines.extend([
+                "### Bottom CEOs by Call Count (above threshold)",
+                "",
+                "| CEO ID | CEO Name | Call Count | Unique Firms | Percentage |",
+                "|--------|----------|------------|--------------|------------|",
+            ])
+            for ceo in bottom_ceos:
+                report_lines.append(
+                    f"| {ceo['ceo_id']} | {ceo['ceo_name']} | {ceo['call_count']} | {ceo['unique_firms']} | {ceo['percentage']:.2f}% |"
+                )
+            report_lines.append("")
+
+    # Single call CEOs
+    if "ceo_samples" in stats and "single_call_ceos" in stats["ceo_samples"]:
+        scc = stats["ceo_samples"]["single_call_ceos"]
+        report_lines.extend([
+            "### Single-Call CEOs",
+            "",
+            f"- **Count**: {scc.get('count', 0)}",
+            f"- **Percentage of all CEOs**: {scc.get('percentage', 0):.1f}%",
+            "",
+        ])
+
+    # Multi-firm CEOs
+    if "ceo_samples" in stats and "multi_firm_ceos" in stats["ceo_samples"]:
+        mfc = stats["ceo_samples"]["multi_firm_ceos"]
+        if mfc:
+            report_lines.extend([
+                "### Multi-Firm CEOs",
+                "",
+                "Sample of CEOs spanning multiple firms:",
+                "",
+                "| CEO ID | CEO Name | Call Count | Firm Count |",
+                "|--------|----------|------------|------------|",
+            ])
+            for ceo in mfc:
+                report_lines.append(
+                    f"| {ceo['ceo_id']} | {ceo['ceo_name']} | {ceo['call_count']:,} | {ceo['firm_count']} |"
+                )
+            report_lines.append("")
+
+    # Next Steps section
+    report_lines.extend([
+        "## Next Steps",
+        "",
+        "This manifest defines the **Universe of Analysis**. All text processing",
+        "in Step 2 will be restricted to `file_name` values present in this manifest.",
         "",
         "## Columns in Manifest",
         "",
@@ -398,14 +715,9 @@ def main():
         "- `prev_ceo_name`: Previous CEO's full name",
         "- `start_date`: Call date",
         "- `ff48_code`, `ff48_name`: Industry classification",
-        "",
-        "## Next Steps",
-        "",
-        "This manifest defines the **Universe of Analysis**. All text processing",
-        "in Step 2 will be restricted to `file_name` values present in this manifest.",
-    ]
+    ])
 
-    report_file = paths["output_dir"] / "report_step_1_4.md"
+    # Write report
     report_file.write_text("\n".join(report_lines), encoding="utf-8")
     print_dual(f"Report saved: {report_file}")
 
