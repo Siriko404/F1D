@@ -52,7 +52,9 @@ def validate_prerequisites(
                     if not path.exists():
                         errors.append(f"Missing input directory: {name} ({path})")
                     elif not path.is_dir():
-                        errors.append(f"Path exists but is not a directory: {name} ({path})")
+                        errors.append(
+                            f"Path exists but is not a directory: {name} ({path})"
+                        )
                 else:
                     # File validation
                     validate_input_file(path, must_exist=True)
@@ -83,24 +85,27 @@ def validate_prerequisite_step(
     """
     Validates a single prerequisite step has completed.
 
+    Uses timestamp-based resolution instead of symlinks.
+
     Args:
         step_name: Name of step (e.g., "1.1_CleanMetadata")
-        expected_output_file: Expected output filename in latest/ directory
+        expected_output_file: Expected output filename
         root: Project root path
 
     Returns:
         True if valid, False otherwise
     """
-    # Check latest/ directory exists
-    latest_dir = root / "4_Outputs" / step_name / "latest"
+    from shared.path_utils import get_latest_output_dir, OutputResolutionError
 
-    if not latest_dir.exists():
+    output_base = root / "4_Outputs" / step_name
+
+    try:
+        latest_dir = get_latest_output_dir(
+            output_base, required_file=expected_output_file
+        )
+        return (latest_dir / expected_output_file).exists()
+    except OutputResolutionError:
         return False
-
-    # Check expected output file exists
-    expected_file = latest_dir / expected_output_file
-
-    return expected_file.exists()
 
 
 def print_prerequisite_errors(errors: List[str]) -> None:
