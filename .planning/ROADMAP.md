@@ -597,6 +597,35 @@ Archive categories:
 - `docs/` - Superseded documentation and reports (audit reports, analysis docs, presentations)
 - `test_outputs/` - Test execution logs and temporary outputs (test logs, nul, temp files)
 
+### Phase 27: Remove Symlink Mechanism
+
+**Goal:** Remove the symlink mechanism completely from the pipeline - make scripts write outputs to timestamped folders without any symlinks, and consume inputs by finding the latest timestamped folder by time
+**Depends on:** Phase 26
+**Status:** 📝 PLANNED
+**Plans:** 6 plans (4 waves)
+
+Plans:
+- [ ] 27-01-PLAN.md — Add get_latest_output_dir() to shared/path_utils.py, update dependency_checker and data_loading (Wave 1)
+- [ ] 27-02-PLAN.md — Update Step 1-2 reader scripts to use timestamp-based resolution (Wave 2)
+- [ ] 27-03-PLAN.md — Update Step 3 and Step 4.1.x reader scripts (Wave 2)
+- [ ] 27-04-PLAN.md — Update remaining Step 4 scripts and test files (Wave 2)
+- [ ] 27-05-PLAN.md — Remove symlink creation from all 20 pipeline scripts (Wave 3)
+- [ ] 27-06-PLAN.md — Delete symlink_utils.py and clean up duplicate utilities (Wave 4)
+
+**Details:**
+This phase removes the symlink/junction/copy mechanism used for `latest/` directories. Scripts will:
+1. Write outputs to timestamped folders only (no symlink creation)
+2. Read inputs by finding the most recent timestamped folder (using get_latest_output_dir())
+
+Migration order is critical: Update all READERS before removing WRITERS.
+
+**Key changes:**
+- Add get_latest_output_dir() to shared/path_utils.py (consolidated from 1.5_Utils and 3.4_Utils)
+- Update 20+ scripts to use dynamic path resolution for reading prerequisites
+- Remove update_latest_link() calls from 20 scripts
+- Delete shared/symlink_utils.py (216 lines)
+- Clean up existing latest/ directories/symlinks
+
 ## Progress
 
 **Execution Order:**
@@ -632,6 +661,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
            | 25. Execute Full Pipeline E2E Test | 1/1 | ✅ COMPLETED | 2026-01-24 |
             | 25.1. Fix Pipeline Scripts To Run Sequentially And Individually Manually Not With Any Orchestrator Script (INSERTED) | 10/10 | ✅ COMPLETED | 2026-01-25 |
 | 26. Repository Cleanup & Archive Organization | 4/4 | ✅ COMPLETED | 2026-01-29 |
+| 27. Remove Symlink Mechanism | 0/6 | 📝 PLANNED | - |
 
 
 
@@ -644,5 +674,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 *Roadmap updated: 2026-01-24 (Phase 25.1 inserted - urgent work for manual script execution)*
 *Roadmap updated: 2026-01-25 (Phase 25.1 complete - all 21 pipeline scripts support manual execution)*
 *Roadmap updated: 2026-01-29 (Phase 26 complete - repository cleaned and organized)*
-*Total plans: 134 (134 completed - 100%)*
+*Roadmap updated: 2026-01-30 (Phase 27 planned - 6 plans in 4 waves to remove symlink mechanism)*
+*Total plans: 143 (137 completed, 6 planned)*
 *Total requirements: 30 mapped*
