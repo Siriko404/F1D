@@ -68,7 +68,6 @@ from shared.reporting_utils import (
     save_model_diagnostics,
     save_variable_reference,
 )
-from shared.symlink_utils import update_latest_link
 
 try:
     from shared.path_utils import (
@@ -798,7 +797,6 @@ def main():
         f.write("\n".join(report_lines))
     print(f"  Saved: report_step4_2.md")
 
-    update_latest_link(out_dir, out_dir.parent / "latest")
 
     duration = (datetime.now() - start_time).total_seconds()
     print("\n" + "=" * 80)

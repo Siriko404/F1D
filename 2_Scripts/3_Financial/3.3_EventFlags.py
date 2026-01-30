@@ -47,7 +47,6 @@ sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
 from utils import DualWriter, generate_variable_reference
-from shared.symlink_utils import update_latest_link
 
 try:
     from shared.path_utils import (
@@ -227,7 +226,6 @@ def setup_paths(config, timestamp):
     output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
-    paths["latest_dir"] = output_base / "latest"
 
     # Log directory
     log_base = root / config["paths"]["logs"] / "3_Financial_Features"
@@ -552,8 +550,6 @@ def main():
         print(f"  Saved {year}: {len(group):,} calls -> {output_file.name}")
         stats["output"]["files"].append(f"event_flags_{year}.parquet")
 
-    # Update latest link
-    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     stats["output"]["final_rows"] = len(result)
     stats["output"]["final_columns"] = len(result.columns)

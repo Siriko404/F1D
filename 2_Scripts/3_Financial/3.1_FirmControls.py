@@ -57,7 +57,6 @@ from utils import (
     get_latest_output_dir,
     generate_variable_reference,
 )
-from shared.symlink_utils import update_latest_link
 from shared.financial_utils import compute_financial_controls_quarterly
 
 # Import shared path validation utilities
@@ -126,7 +125,6 @@ def setup_paths(config, timestamp):
     output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
-    paths["latest_dir"] = output_base / "latest"
 
     # Log directory
     log_base = root / config["paths"]["logs"] / "3_Financial_Features"
@@ -776,9 +774,6 @@ def main():
 
     # Generate variable reference
     generate_variable_reference(result, paths["output_dir"] / "variable_reference.csv")
-
-    # Update latest link
-    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     # Output stats
     stats["output"]["final_rows"] = len(result)

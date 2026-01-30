@@ -62,7 +62,6 @@ from shared.observability_utils import (
     analyze_missing_values,
     DualWriter,
 )
-from shared.symlink_utils import update_latest_link
 from shared.path_utils import get_latest_output_dir
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -843,9 +842,6 @@ def main(year_start=None, year_end=None, model=None):
         # Generate report
         duration = (datetime.now() - start_time).total_seconds()
         generate_report(all_ceo_scores, all_diagnostics, out_dir, duration)
-
-    # Update symlink
-    update_latest_link(out_dir, out_dir.parent / "latest")
 
     # Final summary
     duration = (datetime.now() - start_time).total_seconds()

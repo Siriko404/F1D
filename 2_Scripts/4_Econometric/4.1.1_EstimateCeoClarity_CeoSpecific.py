@@ -104,7 +104,6 @@ from shared.reporting_utils import (
     save_model_diagnostics,
     save_variable_reference,
 )
-from shared.symlink_utils import update_latest_link
 from shared.regression_validation import (
     validate_regression_data,
     validate_columns,
@@ -788,7 +787,6 @@ def main(year_start=None, year_end=None):
         generate_report(all_ceo_scores, all_diagnostics, out_dir, duration)
 
     # Update symlink
-    update_latest_link(out_dir, out_dir.parent / "latest")
 
     # Final summary
     duration = (datetime.now() - start_time).total_seconds()

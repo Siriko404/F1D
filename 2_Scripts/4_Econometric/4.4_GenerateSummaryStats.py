@@ -45,7 +45,6 @@ _sys.path.insert(0, str(_script_dir))
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import shared utilities
-from shared.symlink_utils import update_latest_link
 from shared.path_utils import (
     get_latest_output_dir,
     OutputResolutionError,
@@ -870,24 +869,6 @@ def main():
     print("  - correlation_matrix.csv")
     print("  - panel_balance.csv")
     print("  - summary_report.md")
-
-    # Update latest symlink
-    try:
-        update_latest_link(out_dir, out_dir.parent / "latest")
-    except PermissionError as e:
-        print(
-            f"ERROR: Permission denied updating latest symlink: {e}", file=_sys.stderr
-        )
-        print(f"  Directory: {out_dir}", file=_sys.stderr)
-        _sys.exit(1)
-    except OSError as e:
-        print(f"ERROR: OS error updating latest symlink: {e}", file=_sys.stderr)
-        print(f"  Directory: {out_dir}", file=_sys.stderr)
-        _sys.exit(1)
-    except Exception as e:
-        print(f"ERROR: Failed to update latest symlink: {e}", file=_sys.stderr)
-        print(f"  Directory: {out_dir}", file=_sys.stderr)
-        _sys.exit(1)
 
     # Restore stdout
     _sys.stdout = dual_writer.original_stdout

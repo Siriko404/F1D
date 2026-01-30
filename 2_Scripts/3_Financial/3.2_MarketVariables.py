@@ -85,8 +85,6 @@ spec.loader.exec_module(utils)
 
 from utils import DualWriter, generate_variable_reference
 
-from shared.symlink_utils import update_latest_link
-
 
 try:
     from shared.path_utils import (
@@ -494,8 +492,6 @@ def setup_paths(config, timestamp):
     paths["output_dir"] = output_base / timestamp
 
     ensure_output_dir(paths["output_dir"])
-
-    paths["latest_dir"] = output_base / "latest"
 
     log_base = root / config["paths"]["logs"] / "3_Financial_Features"
 
@@ -1087,8 +1083,6 @@ def main():
     generate_variable_reference(
         all_df, paths["output_dir"] / "market_variable_reference.csv"
     )
-
-    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     stats["output"]["final_rows"] = len(all_df)
 

@@ -32,7 +32,6 @@ sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
 from utils import DualWriter, generate_variable_reference
-from shared.symlink_utils import update_latest_link
 
 try:
     from shared.path_utils import (
@@ -247,7 +246,6 @@ def setup_paths(config, timestamp):
     output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
     paths["output_dir"] = output_base / timestamp
     paths["output_dir"].mkdir(parents=True, exist_ok=True)
-    paths["latest_dir"] = output_base / "latest"
 
     log_base = root / config["paths"]["logs"] / "3_Financial_Features"
     log_base.mkdir(parents=True, exist_ok=True)
@@ -690,9 +688,6 @@ def main():
     with open(paths["output_dir"] / "report_step3.md", "w") as f:
         f.write(report)
     print("  Generated report_step3.md")
-
-    # Update latest link
-    update_latest_link(paths["latest_dir"], paths["output_dir"])
 
     # Finalize timing and stats
     end_time = time.perf_counter()

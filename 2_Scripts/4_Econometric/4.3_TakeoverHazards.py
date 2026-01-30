@@ -55,8 +55,6 @@ from shared.reporting_utils import (
     save_model_diagnostics,
     save_variable_reference,
 )
-from shared.symlink_utils import update_latest_link
-
 
 # Import shared path validation utilities
 try:
@@ -540,24 +538,6 @@ def main():
     }
     pd.DataFrame([summary]).to_csv(out_dir / "takeover_event_summary.csv", index=False)
     print(f"  Saved: takeover_event_summary.csv")
-
-    # Update latest symlink
-    try:
-        update_latest_link(out_dir, out_dir.parent / "latest")
-    except PermissionError as e:
-        print(f"ERROR: Permission denied updating latest symlink: {e}", file=sys.stderr)
-        print(f"  Directory: {out_dir}", file=sys.stderr)
-        sys.exit(1)
-    except OSError as e:
-        print(f"ERROR: OS error updating latest symlink: {e}", file=sys.stderr)
-        print(f"  Directory: {out_dir}", file=sys.stderr)
-        sys.exit(1)
-    except Exception as e:
-        print(f"ERROR: Failed to update latest symlink: {e}", file=sys.stderr)
-        print(f"  Directory: {out_dir}", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"  Created 'latest' copy")
 
     # Summary
     end_time = datetime.now()
