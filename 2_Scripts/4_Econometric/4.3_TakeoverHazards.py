@@ -64,6 +64,8 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
+        OutputResolutionError,
     )
     from shared.observability_utils import DualWriter
 except ImportError:
@@ -76,6 +78,8 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
+        OutputResolutionError,
     )
     from shared.observability_utils import DualWriter
 

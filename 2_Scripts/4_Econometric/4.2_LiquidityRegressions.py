@@ -75,6 +75,8 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
+        OutputResolutionError,
     )
 except ImportError:
     import sys as _sys
@@ -86,6 +88,8 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
+        OutputResolutionError,
     )
 
 from shared.regression_validation import (
@@ -192,13 +196,11 @@ def load_all_data(root):
     print("Loading data")
     print("=" * 60)
 
-    manifest_path = (
-        root
-        / "4_Outputs"
-        / "1.0_BuildSampleManifest"
-        / "latest"
-        / "master_sample_manifest.parquet"
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        required_file="master_sample_manifest.parquet",
     )
+    manifest_path = manifest_dir / "master_sample_manifest.parquet"
     manifest = pd.read_parquet(
         manifest_path,
         columns=[
@@ -215,17 +217,16 @@ def load_all_data(root):
 
     all_ling = []
     for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
-        lv_path = (
-            root
-            / "4_Outputs"
-            / "2_Textual_Analysis"
-            / "2.2_Variables"
-            / "latest"
-            / f"linguistic_variables_{year}.parquet"
-        )
-        if lv_path.exists():
+        try:
+            lv_dir = get_latest_output_dir(
+                root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                required_file=f"linguistic_variables_{year}.parquet",
+            )
+            lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
             lv = pd.read_parquet(lv_path)
             all_ling.append(lv)
+        except OutputResolutionError:
+            continue
     ling = pd.concat(all_ling, ignore_index=True)
     ling_cols = [
         "file_name",
@@ -242,16 +243,16 @@ def load_all_data(root):
 
     all_fc = []
     for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
-        fc_path = (
-            root
-            / "4_Outputs"
-            / "3_Financial_Features"
-            / "latest"
-            / f"firm_controls_{year}.parquet"
-        )
-        if fc_path.exists():
+        try:
+            fc_dir = get_latest_output_dir(
+                root / "4_Outputs" / "3_Financial_Features",
+                required_file=f"firm_controls_{year}.parquet",
+            )
+            fc_path = fc_dir / f"firm_controls_{year}.parquet"
             fc = pd.read_parquet(fc_path)
             all_fc.append(fc)
+        except OutputResolutionError:
+            continue
     firm = pd.concat(all_fc, ignore_index=True)
     fc_cols = ["file_name"] + [c for c in CONFIG["firm_controls"] if c in firm.columns]
     fc_cols.append(
@@ -263,16 +264,16 @@ def load_all_data(root):
 
     all_mv = []
     for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
-        mv_path = (
-            root
-            / "4_Outputs"
-            / "3_Financial_Features"
-            / "latest"
-            / f"market_variables_{year}.parquet"
-        )
-        if mv_path.exists():
+        try:
+            mv_dir = get_latest_output_dir(
+                root / "4_Outputs" / "3_Financial_Features",
+                required_file=f"market_variables_{year}.parquet",
+            )
+            mv_path = mv_dir / f"market_variables_{year}.parquet"
             mv = pd.read_parquet(mv_path)
             all_mv.append(mv)
+        except OutputResolutionError:
+            continue
     market = pd.concat(all_mv, ignore_index=True)
     mv_cols = [
         "file_name",
@@ -288,34 +289,34 @@ def load_all_data(root):
     market = market[mv_cols].drop_duplicates("file_name")
     print(f"  Market variables: {len(market):,} calls")
 
-    regime_path = (
-        root / "4_Outputs" / "4.1_CeoClarity" / "latest" / "ceo_clarity_scores.parquet"
-    )
-    if regime_path.exists():
+    try:
+        regime_dir = get_latest_output_dir(
+            root / "4_Outputs" / "4.1_CeoClarity",
+            required_file="ceo_clarity_scores.parquet",
+        )
+        regime_path = regime_dir / "ceo_clarity_scores.parquet"
         regime_clarity = pd.read_parquet(
             regime_path, columns=["ceo_id", "ClarityCEO", "sample"]
         )
         regime_clarity = regime_clarity.rename(columns={"ClarityCEO": "ClarityRegime"})
         regime_clarity["ceo_id"] = regime_clarity["ceo_id"].astype(str)
         print(f"  Regime Clarity: {len(regime_clarity):,} CEOs")
-    else:
+    except OutputResolutionError:
         regime_clarity = pd.DataFrame()
         print("  WARNING: Regime Clarity not found")
 
-    ceo_path = (
-        root
-        / "4_Outputs"
-        / "4.1.1_CeoClarity_CEO_Only"
-        / "latest"
-        / "ceo_clarity_scores.parquet"
-    )
-    if ceo_path.exists():
+    try:
+        ceo_dir = get_latest_output_dir(
+            root / "4_Outputs" / "4.1.1_CeoClarity_CEO_Only",
+            required_file="ceo_clarity_scores.parquet",
+        )
+        ceo_path = ceo_dir / "ceo_clarity_scores.parquet"
         ceo_clarity = pd.read_parquet(
             ceo_path, columns=["ceo_id", "ClarityCEO", "sample"]
         )
         ceo_clarity["ceo_id"] = ceo_clarity["ceo_id"].astype(str)
         print(f"  CEO Clarity: {len(ceo_clarity):,} CEOs")
-    else:
+    except OutputResolutionError:
         ceo_clarity = pd.DataFrame()
         print("  WARNING: CEO Clarity not found")
 
