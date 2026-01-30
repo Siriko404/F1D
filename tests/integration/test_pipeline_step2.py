@@ -9,9 +9,23 @@ import subprocess
 import json
 from pathlib import Path
 import pandas as pd
+import sys
 
 # Get repository root from test file location
 REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Add 2_Scripts to path for shared module imports
+sys.path.insert(0, str(REPO_ROOT / "2_Scripts"))
+from shared.path_utils import get_latest_output_dir, OutputResolutionError
+
+
+def resolve_output_dir(base_path: Path) -> Path:
+    """Resolve output directory using timestamp or fallback to /latest/."""
+    try:
+        return get_latest_output_dir(base_path)
+    except OutputResolutionError:
+        return base_path / "latest"
+
 
 # Environment for subprocess calls (includes PYTHONPATH for module resolution)
 SUBPROCESS_ENV = {
@@ -43,7 +57,9 @@ def test_step2_full_pipeline():
     assert result.returncode == 0, f"Script failed: {result.stderr}"
 
     # Verify output files exist
-    output_dir = REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest"
+    output_dir = resolve_output_dir(
+        REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized"
+    )
     assert output_dir.exists(), "Output directory not created"
 
     # Check for expected output files (one per year)
@@ -59,8 +75,8 @@ def test_output_file_format_step2():
     """Test that output files have correct schema."""
     # Arrange
     output_file = (
-        REPO_ROOT
-        / "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
+        resolve_output_dir(REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        / "linguistic_counts_2002.parquet"
     )
 
     if not output_file.exists():
@@ -88,8 +104,8 @@ def test_word_count_validation_step2():
     """Test that word counts are reasonable."""
     # Arrange
     output_file = (
-        REPO_ROOT
-        / "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
+        resolve_output_dir(REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        / "linguistic_counts_2002.parquet"
     )
 
     if not output_file.exists():
@@ -113,8 +129,8 @@ def test_step2_multiple_years(year):
     """Test Step 2 output for specific years."""
     # Arrange
     output_file = (
-        REPO_ROOT
-        / f"4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
+        resolve_output_dir(REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        / f"linguistic_counts_{year}.parquet"
     )
 
     if not output_file.exists():

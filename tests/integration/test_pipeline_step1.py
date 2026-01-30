@@ -10,9 +10,23 @@ import json
 from pathlib import Path
 import pandas as pd
 import yaml
+import sys
 
 # Get repository root from test file location
 REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Add 2_Scripts to path for shared module imports
+sys.path.insert(0, str(REPO_ROOT / "2_Scripts"))
+from shared.path_utils import get_latest_output_dir, OutputResolutionError
+
+
+def resolve_output_dir(base_path: Path) -> Path:
+    """Resolve output directory using timestamp or fallback to /latest/."""
+    try:
+        return get_latest_output_dir(base_path)
+    except OutputResolutionError:
+        return base_path / "latest"
+
 
 # Environment for subprocess calls (includes PYTHONPATH for module resolution)
 SUBPROCESS_ENV = {
@@ -62,7 +76,7 @@ def test_step1_full_pipeline(sample_input_data, config, tmp_path):
     assert result.returncode == 0, f"Script failed: {result.stderr}"
 
     # Verify output files exist
-    output_dir = REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest"
+    output_dir = resolve_output_dir(REPO_ROOT / "4_Outputs/1.1_CleanMetadata")
     assert output_dir.exists(), "Output directory not created"
 
     # Check for expected output files

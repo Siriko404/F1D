@@ -13,6 +13,19 @@ import hashlib
 import json
 import pandas as pd
 from pathlib import Path
+import sys
+
+# Add 2_Scripts to path for shared module imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
+from shared.path_utils import get_latest_output_dir, OutputResolutionError
+
+
+def resolve_output_dir(base_path: Path) -> Path:
+    """Resolve output directory using timestamp or fallback to /latest/."""
+    try:
+        return get_latest_output_dir(base_path)
+    except OutputResolutionError:
+        return base_path / "latest"
 
 
 def compute_dataframe_checksum(df: pd.DataFrame) -> str:
@@ -30,30 +43,40 @@ def compute_file_checksum(filepath: Path) -> str:
 
 def generate_baseline_checksums():
     """Generate baseline checksums from existing outputs."""
-    # Define key output files to track
+    # Get repository root
+    repo_root = Path(__file__).parent.parent.parent
+
+    # Define key output directories and filenames
     key_outputs = {
-        "step1_cleaned_metadata": "4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet",
-        "step3_financial_features": "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/financial_features.parquet",
+        "step1_cleaned_metadata": (
+            repo_root / "4_Outputs/1.1_CleanMetadata",
+            "cleaned_metadata.parquet",
+        ),
+        "step3_financial_features": (
+            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures",
+            "financial_features.parquet",
+        ),
     }
 
     # Add Step 2 yearly outputs
     for year in range(2002, 2019):
         key_outputs[f"step2_linguistic_counts_{year}"] = (
-            f"4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
+            repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized",
+            f"linguistic_counts_{year}.parquet",
         )
 
     # Compute checksums
     baseline_checksums = {}
     missing_files = []
 
-    for key, file_path in key_outputs.items():
-        path = Path(file_path)
+    for key, (output_dir, filename) in key_outputs.items():
+        path = resolve_output_dir(output_dir) / filename
         if path.exists():
             checksum = compute_file_checksum(path)
             baseline_checksums[key] = checksum
             print(f"[OK] {key}: {checksum[:32]}...")
         else:
-            print(f"[SKIP] {key}: File not found ({file_path})")
+            print(f"[SKIP] {key}: File not found ({path})")
             missing_files.append(key)
 
     # Add metadata

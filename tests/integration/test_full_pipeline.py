@@ -13,6 +13,12 @@ import subprocess
 import json
 from pathlib import Path
 import time
+import sys
+
+# Add 2_Scripts to path for shared module imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
+
+from shared.path_utils import get_latest_output_dir, OutputResolutionError
 
 pytestmark = pytest.mark.e2e  # Mark all tests in this file as E2E
 
@@ -115,27 +121,48 @@ def get_output_dir(script_path: str) -> Path:
     """
     Derive output directory path for a given script.
 
-    Scripts output to timestamped directories with 'latest' symlinks.
-    This function finds the actual output directory by following the 'latest' symlink.
+    Scripts output to timestamped directories. Uses get_latest_output_dir()
+    to find the most recent output directory by timestamp.
 
     Mapping:
-    - 1_Sample/* → 4_Outputs/1.1_CleanMetadata/latest -> TIMESTAMPED
-    - 2_Text/* → 4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest -> TIMESTAMPED
-    - 3_Financial/* → 4_Outputs/3_Financial/3.0_BuildFinancialFeatures/latest -> TIMESTAMPED
-    - 4_Econometric/* → 4_Outputs/4_Econometric/4.1_EstimateCeoClarity/latest -> TIMESTAMPED
+    - 1_Sample/* → 4_Outputs/1.1_CleanMetadata/ -> TIMESTAMPED
+    - 2_Text/* → 4_Outputs/2_Textual_Analysis/2.1_Tokenized/ -> TIMESTAMPED
+    - 3_Financial/* → 4_Outputs/3_Financial/3.0_BuildFinancialFeatures/ -> TIMESTAMPED
+    - 4_Econometric/* → 4_Outputs/4_Econometric/4.1_EstimateCeoClarity/ -> TIMESTAMPED
     """
     script_name = Path(script_path).stem
 
-    if "/1_Sample/" in script_path:
-        return REPO_ROOT / "4_Outputs" / script_name / "latest"
-    elif "/2_Text/" in script_path:
-        return REPO_ROOT / "4_Outputs" / "2_Textual_Analysis" / script_name / "latest"
-    elif "/3_Financial/" in script_path:
-        return REPO_ROOT / "4_Outputs" / "3_Financial" / script_name / "latest"
-    elif "/4_Econometric/" in script_path:
-        return REPO_ROOT / "4_Outputs" / "4_Econometric" / script_name / "latest"
-    else:
-        raise ValueError(f"Unknown script path format: {script_path}")
+    try:
+        if "/1_Sample/" in script_path:
+            return get_latest_output_dir(REPO_ROOT / "4_Outputs" / script_name)
+        elif "/2_Text/" in script_path:
+            return get_latest_output_dir(
+                REPO_ROOT / "4_Outputs" / "2_Textual_Analysis" / script_name
+            )
+        elif "/3_Financial/" in script_path:
+            return get_latest_output_dir(
+                REPO_ROOT / "4_Outputs" / "3_Financial" / script_name
+            )
+        elif "/4_Econometric/" in script_path:
+            return get_latest_output_dir(
+                REPO_ROOT / "4_Outputs" / "4_Econometric" / script_name
+            )
+        else:
+            raise ValueError(f"Unknown script path format: {script_path}")
+    except OutputResolutionError:
+        # Fallback to /latest/ path for tests that run before outputs exist
+        if "/1_Sample/" in script_path:
+            return REPO_ROOT / "4_Outputs" / script_name / "latest"
+        elif "/2_Text/" in script_path:
+            return (
+                REPO_ROOT / "4_Outputs" / "2_Textual_Analysis" / script_name / "latest"
+            )
+        elif "/3_Financial/" in script_path:
+            return REPO_ROOT / "4_Outputs" / "3_Financial" / script_name / "latest"
+        elif "/4_Econometric/" in script_path:
+            return REPO_ROOT / "4_Outputs" / "4_Econometric" / script_name / "latest"
+        else:
+            raise ValueError(f"Unknown script path format: {script_path}")
 
 
 @pytest.mark.slow
@@ -250,7 +277,14 @@ def test_full_pipeline_execution():
     print(f"  Average per script: {total_duration / len(PIPELINE_SCRIPTS):.2f}s")
 
     # Verify final critical outputs exist (Step 4 results)
-    final_outputs_dir = REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
+    try:
+        final_outputs_dir = get_latest_output_dir(
+            REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards"
+        )
+    except OutputResolutionError:
+        final_outputs_dir = (
+            REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
+        )
     assert final_outputs_dir.exists(), "Final Step 4 output directory not created"
 
     # Check for at least one output file from the final script

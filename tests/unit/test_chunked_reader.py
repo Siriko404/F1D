@@ -14,14 +14,24 @@ from shared.chunked_reader import (
     read_selected_columns,
     process_in_chunks,
 )
+from shared.path_utils import get_latest_output_dir, OutputResolutionError
+
+
+def resolve_output_dir(base_path: Path) -> Path:
+    """Resolve output directory using timestamp or fallback to /latest/."""
+    try:
+        return get_latest_output_dir(base_path)
+    except OutputResolutionError:
+        return base_path / "latest"
 
 
 @pytest.mark.unit
 def test_read_in_chunks():
     """Test that read_in_chunks produces same result as full read."""
     # Use a sample output file
-    test_file = Path(
-        "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
+    test_file = (
+        resolve_output_dir(Path("4_Outputs/2_Textual_Analysis/2.1_Tokenized"))
+        / "linguistic_counts_2002.parquet"
     )
 
     if not test_file.exists():
@@ -41,8 +51,9 @@ def test_read_in_chunks():
 @pytest.mark.unit
 def test_read_selected_columns():
     """Test that read_selected_columns reduces memory usage."""
-    test_file = Path(
-        "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
+    test_file = (
+        resolve_output_dir(Path("4_Outputs/2_Textual_Analysis/2.1_Tokenized"))
+        / "linguistic_counts_2002.parquet"
     )
 
     if not test_file.exists():
@@ -67,8 +78,9 @@ def test_read_selected_columns():
 @pytest.mark.unit
 def test_process_in_chunks():
     """Test that process_in_chunks combines results correctly."""
-    test_file = Path(
-        "4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet"
+    test_file = (
+        resolve_output_dir(Path("4_Outputs/2_Textual_Analysis/2.1_Tokenized"))
+        / "linguistic_counts_2002.parquet"
     )
 
     if not test_file.exists():
