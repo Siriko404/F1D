@@ -47,19 +47,6 @@ except ImportError:
     _sys.path.insert(0, str(_script_dir))
     from shared.observability_utils import DualWriter
 
-    # Import shared symlink utility for 'latest' link management
-    from shared.observability_utils import DualWriter
-try:
-    from shared.symlink_utils import update_latest_link
-except ImportError:
-    # Fallback if shared/__init__.py hasn't run yet
-    import sys as _sys
-    from pathlib import Path as _Path
-
-    _script_dir = _Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from shared.symlink_utils import update_latest_link
-
 # Import shared validation modules (path will be added to sys.path by shared/__init__.py)
 try:
     from shared.subprocess_validation import validate_script_path
@@ -180,8 +167,6 @@ def setup_paths(config):
     output_base = root / config["paths"]["outputs"] / "1.0_BuildSampleManifest"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
-
-    paths["latest_dir"] = output_base / "latest"
 
     # Create log directory
     log_base = root / config["paths"]["logs"] / "1.0_BuildSampleManifest"
@@ -315,12 +300,6 @@ def main():
         manifest_dest = paths["output_dir"] / "master_sample_manifest.parquet"
         shutil.copy2(manifest_source, manifest_dest)
         print_dual(f"Final manifest copied to: {manifest_dest}")
-
-        # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
-        update_latest_link(
-            target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
-        )
-        print_dual(f"Updated 'latest' -> {paths['output_dir'].name}")
 
     else:
         print_dual("Status: FAILED")

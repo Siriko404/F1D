@@ -13,15 +13,6 @@ import argparse
 # Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
 
-# Import shared symlink utility for 'latest' link management
-try:
-    from shared.symlink_utils import update_latest_link
-except ImportError:
-    # Fallback if shared/__init__.py hasn't run yet
-    script_dir = Path(__file__).parent.parent
-    sys.path.insert(0, str(script_dir))
-    from shared.symlink_utils import update_latest_link
-
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
@@ -668,7 +659,6 @@ def main():
     print_stats_summary(stats)
     save_stats(stats, out_dir)
 
-    update_latest_link(out_dir, out_base / "2.2_Variables" / "latest")
     print("\n=== Complete ===")
 
 

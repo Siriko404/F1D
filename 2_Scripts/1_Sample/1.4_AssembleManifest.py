@@ -55,7 +55,6 @@ except ImportError as e:
     print(f"Critical Error importing utils: {e}")
     sys.exit(1)
 
-from shared.symlink_utils import update_latest_link
 from shared.path_utils import (
     validate_input_file,
     ensure_output_dir,
@@ -116,7 +115,6 @@ def setup_paths(config):
     output_base = root / config["paths"]["outputs"] / "1.4_AssembleManifest"
     paths["output_dir"] = output_base / timestamp
     paths["log_file"] = output_base / f"{timestamp}.log"
-    paths["latest_dir"] = output_base / "latest"
 
     ensure_output_dir(paths["output_dir"])
 
@@ -798,11 +796,6 @@ def main():
     # Write report
     report_file.write_text("\n".join(report_lines), encoding="utf-8")
     print_dual(f"Report saved: {report_file}")
-
-    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
-    update_latest_link(
-        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
-    )
 
     # Finalize timing and save stats
     end_time = time.perf_counter()

@@ -52,7 +52,6 @@ except ImportError as e:
     print(f"Critical Error importing utils: {e}")
     sys.exit(1)
 
-from shared.symlink_utils import update_latest_link
 from shared.path_utils import validate_input_file, ensure_output_dir
 from shared.observability_utils import (
     DualWriter,
@@ -144,7 +143,6 @@ def setup_paths(config):
     output_base = root / config["paths"]["outputs"] / "1.3_BuildTenureMap"
     paths["output_dir"] = output_base / timestamp
     paths["log_file"] = output_base / f"{timestamp}.log"
-    paths["latest_dir"] = output_base / "latest"
 
     ensure_output_dir(paths["output_dir"])
 
@@ -187,10 +185,14 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             oe = ti["overall_execucomp"]
             lines.append(f"- **Total records:** {oe.get('total_records', 0):,}")
             lines.append(f"- **Unique firms (gvkey):** {oe.get('unique_gvkey', 0):,}")
-            lines.append(f"- **Unique executives (execid):** {oe.get('unique_execid', 0):,}")
+            lines.append(
+                f"- **Unique executives (execid):** {oe.get('unique_execid', 0):,}"
+            )
             if "date_range" in oe:
                 dr = oe["date_range"]
-                lines.append(f"- **Date range:** {dr.get('earliest_year', 'N/A')} - {dr.get('latest_year', 'N/A')} ({dr.get('span_years', 0)} years)")
+                lines.append(
+                    f"- **Date range:** {dr.get('earliest_year', 'N/A')} - {dr.get('latest_year', 'N/A')} ({dr.get('span_years', 0)} years)"
+                )
             lines.append("")
 
         # CEO Subset
@@ -198,9 +200,13 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### CEO Subset")
             lines.append("")
             cs = ti["ceo_subset"]
-            lines.append(f"- **CEO records:** {cs.get('ceo_records', 0):,} ({cs.get('pct_of_total', 0):.1f}% of total)")
+            lines.append(
+                f"- **CEO records:** {cs.get('ceo_records', 0):,} ({cs.get('pct_of_total', 0):.1f}% of total)"
+            )
             lines.append(f"- **Unique CEO firms:** {cs.get('unique_ceo_firms', 0):,}")
-            lines.append(f"- **Unique CEO executives:** {cs.get('unique_ceo_executives', 0):,}")
+            lines.append(
+                f"- **Unique CEO executives:** {cs.get('unique_ceo_executives', 0):,}"
+            )
             lines.append("")
 
         # Date Field Coverage
@@ -208,8 +214,12 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### Date Field Coverage")
             lines.append("")
             dfc = ti["date_field_coverage"]
-            lines.append(f"- **becameceo available:** {dfc.get('becameceo_available_pct', 0):.1f}%")
-            lines.append(f"- **leftofc available:** {dfc.get('leftofc_available_pct', 0):.1f}%")
+            lines.append(
+                f"- **becameceo available:** {dfc.get('becameceo_available_pct', 0):.1f}%"
+            )
+            lines.append(
+                f"- **leftofc available:** {dfc.get('leftofc_available_pct', 0):.1f}%"
+            )
             lines.append("")
 
         # CEO Indicators
@@ -217,8 +227,12 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### CEO Indicators")
             lines.append("")
             ci = ti["ceo_indicators"]
-            lines.append(f"- **Records with ceoann='CEO':** {ci.get('ceoann_ceo_count', 0):,}")
-            lines.append(f"- **Records with becameceo non-null:** {ci.get('becameceo_nonnull_count', 0):,}")
+            lines.append(
+                f"- **Records with ceoann='CEO':** {ci.get('ceoann_ceo_count', 0):,}"
+            )
+            lines.append(
+                f"- **Records with becameceo non-null:** {ci.get('becameceo_nonnull_count', 0):,}"
+            )
             lines.append("")
 
         # Name Coverage
@@ -226,7 +240,9 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### Executive Name Coverage")
             lines.append("")
             nc = ti["name_coverage"]
-            lines.append(f"- **exec_fullname available:** {nc.get('exec_fullname_available_pct', 0):.1f}%")
+            lines.append(
+                f"- **exec_fullname available:** {nc.get('exec_fullname_available_pct', 0):.1f}%"
+            )
             lines.append("")
 
     # ========================================================================
@@ -246,10 +262,14 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append(f"- **Total episodes:** {ec.get('total_episodes', 0):,}")
             if "episodes_per_firm" in ec:
                 epf = ec["episodes_per_firm"]
-                lines.append(f"- **Episodes per firm:** mean={epf.get('mean', 0):.1f}, median={epf.get('median', 0):.1f}, min={epf.get('min', 0)}, max={epf.get('max', 0)}")
+                lines.append(
+                    f"- **Episodes per firm:** mean={epf.get('mean', 0):.1f}, median={epf.get('median', 0):.1f}, min={epf.get('min', 0)}, max={epf.get('max', 0)}"
+                )
             if "episodes_per_ceo" in ec:
                 epc = ec["episodes_per_ceo"]
-                lines.append(f"- **Episodes per CEO:** mean={epc.get('mean', 0):.1f}, median={epc.get('median', 0):.1f}, min={epc.get('min', 0)}, max={epc.get('max', 0)}")
+                lines.append(
+                    f"- **Episodes per CEO:** mean={epc.get('mean', 0):.1f}, median={epc.get('median', 0):.1f}, min={epc.get('min', 0)}, max={epc.get('max', 0)}"
+                )
             lines.append("")
 
         # Tenure Length Distribution
@@ -259,17 +279,27 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             td = tp["tenure_distribution"]
             lines.append(f"- **Mean:** {td.get('mean_months', 0):.1f} months")
             lines.append(f"- **Median:** {td.get('median_months', 0):.1f} months")
-            lines.append(f"- **Range:** {td.get('min_months', 0):.1f} - {td.get('max_months', 0):.1f} months")
+            lines.append(
+                f"- **Range:** {td.get('min_months', 0):.1f} - {td.get('max_months', 0):.1f} months"
+            )
             lines.append(f"- **Std dev:** {td.get('std_months', 0):.1f} months")
             lines.append("")
             lines.append("| Tenure Bucket | Count | Percentage |")
             lines.append("|---------------|-------|------------|")
             if "buckets" in td:
                 buckets = td["buckets"]
-                for bucket_name in ["<1 year", "1-3 years", "3-5 years", "5-10 years", "10+ years"]:
+                for bucket_name in [
+                    "<1 year",
+                    "1-3 years",
+                    "3-5 years",
+                    "5-10 years",
+                    "10+ years",
+                ]:
                     if bucket_name in buckets:
                         b = buckets[bucket_name]
-                        lines.append(f"| {bucket_name} | {b.get('count', 0):,} | {b.get('pct', 0):.1f}% |")
+                        lines.append(
+                            f"| {bucket_name} | {b.get('count', 0):,} | {b.get('pct', 0):.1f}% |"
+                        )
             lines.append("")
 
         # Predecessor Linking
@@ -277,8 +307,12 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### Predecessor Linking")
             lines.append("")
             pl = tp["predecessor_linking"]
-            lines.append(f"- **Episodes linked to predecessor:** {pl.get('linked_count', 0):,} ({pl.get('link_rate_pct', 0):.1f}%)")
-            lines.append(f"- **Orphan episodes (no predecessor):** {pl.get('orphan_count', 0):,}")
+            lines.append(
+                f"- **Episodes linked to predecessor:** {pl.get('linked_count', 0):,} ({pl.get('link_rate_pct', 0):.1f}%)"
+            )
+            lines.append(
+                f"- **Orphan episodes (no predecessor):** {pl.get('orphan_count', 0):,}"
+            )
             lines.append("")
 
         # Date Validity
@@ -286,9 +320,15 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### Date Validity")
             lines.append("")
             dv = tp["date_validity"]
-            lines.append(f"- **Episodes with future start dates:** {dv.get('future_dates', 0)}")
-            lines.append(f"- **Episodes with end before start:** {dv.get('end_before_start', 0)}")
-            lines.append(f"- **Active CEOs (end date imputed):** {dv.get('active_ceo_count', 0)}")
+            lines.append(
+                f"- **Episodes with future start dates:** {dv.get('future_dates', 0)}"
+            )
+            lines.append(
+                f"- **Episodes with end before start:** {dv.get('end_before_start', 0)}"
+            )
+            lines.append(
+                f"- **Active CEOs (end date imputed):** {dv.get('active_ceo_count', 0)}"
+            )
             lines.append("")
 
     # ========================================================================
@@ -305,12 +345,16 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### Panel Dimensions")
             lines.append("")
             pdim = tos["panel_dimensions"]
-            lines.append(f"- **Total firm-months:** {pdim.get('total_firm_months', 0):,}")
+            lines.append(
+                f"- **Total firm-months:** {pdim.get('total_firm_months', 0):,}"
+            )
             lines.append(f"- **Unique firms:** {pdim.get('unique_firms', 0):,}")
             lines.append(f"- **Unique CEOs:** {pdim.get('unique_ceos', 0):,}")
             if "date_range" in pdim:
                 dr = pdim["date_range"]
-                lines.append(f"- **Date range:** {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')} ({dr.get('span_years', 0):.1f} years)")
+                lines.append(
+                    f"- **Date range:** {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')} ({dr.get('span_years', 0):.1f} years)"
+                )
             lines.append("")
 
         # Temporal Coverage
@@ -320,7 +364,9 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("| Year | Firm-Months | Unique Firms | Unique CEOs |")
             lines.append("|------|-------------|--------------|-------------|")
             for year_data in tos["temporal_coverage"]:
-                lines.append(f"| {year_data.get('year', 'N/A')} | {year_data.get('firm_months', 0):,} | {year_data.get('unique_firms', 0):,} | {year_data.get('unique_ceos', 0):,} |")
+                lines.append(
+                    f"| {year_data.get('year', 'N/A')} | {year_data.get('firm_months', 0):,} | {year_data.get('unique_firms', 0):,} | {year_data.get('unique_ceos', 0):,} |"
+                )
             lines.append("")
 
         # CEO Turnover
@@ -329,7 +375,9 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("")
             tm = tos["turnover_metrics"]
             lines.append(f"- **Turnover events:** {tm.get('turnover_events', 0):,}")
-            lines.append(f"- **Turnover rate:** {tm.get('turnover_rate_per_100_firm_years', 0):.1f} per 100 firm-years")
+            lines.append(
+                f"- **Turnover rate:** {tm.get('turnover_rate_per_100_firm_years', 0):.1f} per 100 firm-years"
+            )
             lines.append("")
 
         # Predecessor Coverage
@@ -337,8 +385,12 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### Predecessor Coverage")
             lines.append("")
             pc = tos["predecessor_coverage"]
-            lines.append(f"- **Firm-months with predecessor info:** {pc.get('with_predecessor_pct', 0):.1f}%")
-            lines.append(f"- **Firm-months without predecessor:** {pc.get('without_predecessor_pct', 0):.1f}%")
+            lines.append(
+                f"- **Firm-months with predecessor info:** {pc.get('with_predecessor_pct', 0):.1f}%"
+            )
+            lines.append(
+                f"- **Firm-months without predecessor:** {pc.get('without_predecessor_pct', 0):.1f}%"
+            )
             lines.append("")
 
         # Multi-CEO Firms
@@ -346,8 +398,12 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### Multi-CEO Firms")
             lines.append("")
             mc = tos["multi_ceo_analysis"]
-            lines.append(f"- **Firms with multiple CEOs:** {mc.get('firms_with_multiple_ceos', 0):,}")
-            lines.append(f"- **Maximum CEOs per firm:** {mc.get('max_ceos_per_firm', 0)}")
+            lines.append(
+                f"- **Firms with multiple CEOs:** {mc.get('firms_with_multiple_ceos', 0):,}"
+            )
+            lines.append(
+                f"- **Maximum CEOs per firm:** {mc.get('max_ceos_per_firm', 0)}"
+            )
             lines.append("")
 
         # CEO Careers
@@ -355,7 +411,9 @@ def generate_tenure_report(stats, output_dir, print_func=print):
             lines.append("### CEO Career Analysis")
             lines.append("")
             cc = tos["ceo_careers"]
-            lines.append(f"- **CEOs spanning multiple firms:** {cc.get('ceos_multiple_firms', 0):,}")
+            lines.append(
+                f"- **CEOs spanning multiple firms:** {cc.get('ceos_multiple_firms', 0):,}"
+            )
             lines.append("")
 
     # ========================================================================
@@ -371,42 +429,66 @@ def generate_tenure_report(stats, output_dir, print_func=print):
         if "short_tenures" in ts and len(ts["short_tenures"]) > 0:
             lines.append("### Short Tenure Examples (<1 year)")
             lines.append("")
-            lines.append("| GVKEY | CEO Name | Start Date | End Date | Tenure (Months) |")
-            lines.append("|-------|----------|------------|----------|-----------------|")
+            lines.append(
+                "| GVKEY | CEO Name | Start Date | End Date | Tenure (Months) |"
+            )
+            lines.append(
+                "|-------|----------|------------|----------|-----------------|"
+            )
             for sample in ts["short_tenures"]:
-                lines.append(f"| {sample.get('gvkey', 'N/A')} | {sample.get('ceo_name', 'N/A')} | {sample.get('start_date', 'N/A')[:10]} | {sample.get('end_date', 'N/A')[:10]} | {sample.get('tenure_months', 0):.1f} |")
+                lines.append(
+                    f"| {sample.get('gvkey', 'N/A')} | {sample.get('ceo_name', 'N/A')} | {sample.get('start_date', 'N/A')[:10]} | {sample.get('end_date', 'N/A')[:10]} | {sample.get('tenure_months', 0):.1f} |"
+                )
             lines.append("")
 
         # Long Tenures
         if "long_tenures" in ts and len(ts["long_tenures"]) > 0:
             lines.append("### Long Tenure Examples (10+ years)")
             lines.append("")
-            lines.append("| GVKEY | CEO Name | Start Date | End Date | Tenure (Months) |")
-            lines.append("|-------|----------|------------|----------|-----------------|")
+            lines.append(
+                "| GVKEY | CEO Name | Start Date | End Date | Tenure (Months) |"
+            )
+            lines.append(
+                "|-------|----------|------------|----------|-----------------|"
+            )
             for sample in ts["long_tenures"]:
-                lines.append(f"| {sample.get('gvkey', 'N/A')} | {sample.get('ceo_name', 'N/A')} | {sample.get('start_date', 'N/A')[:10]} | {sample.get('end_date', 'N/A')[:10]} | {sample.get('tenure_months', 0):.1f} |")
+                lines.append(
+                    f"| {sample.get('gvkey', 'N/A')} | {sample.get('ceo_name', 'N/A')} | {sample.get('start_date', 'N/A')[:10]} | {sample.get('end_date', 'N/A')[:10]} | {sample.get('tenure_months', 0):.1f} |"
+                )
             lines.append("")
 
         # Transitions
         if "transitions" in ts and len(ts["transitions"]) > 0:
             lines.append("### CEO Transition Examples")
             lines.append("")
-            lines.append("| GVKEY | Predecessor CEO | Successor CEO | Transition Date | Gap Days |")
-            lines.append("|-------|-----------------|---------------|-----------------|----------|")
+            lines.append(
+                "| GVKEY | Predecessor CEO | Successor CEO | Transition Date | Gap Days |"
+            )
+            lines.append(
+                "|-------|-----------------|---------------|-----------------|----------|"
+            )
             for sample in ts["transitions"]:
-                gap = sample.get('gap_days')
+                gap = sample.get("gap_days")
                 gap_str = f"{gap}" if gap is not None else "N/A"
-                lines.append(f"| {sample.get('gvkey', 'N/A')} | {sample.get('prev_ceo_name', 'N/A')} | {sample.get('new_ceo_name', 'N/A')} | {sample.get('transition_date', 'N/A')[:10]} | {gap_str} |")
+                lines.append(
+                    f"| {sample.get('gvkey', 'N/A')} | {sample.get('prev_ceo_name', 'N/A')} | {sample.get('new_ceo_name', 'N/A')} | {sample.get('transition_date', 'N/A')[:10]} | {gap_str} |"
+                )
             lines.append("")
 
         # Overlaps
         if "overlaps" in ts and len(ts["overlaps"]) > 0:
             lines.append("### Overlap Resolution Examples")
             lines.append("")
-            lines.append("| GVKEY | Resolved CEO | Overlapped CEO | Period | Resolution |")
-            lines.append("|-------|--------------|----------------|--------|------------|")
+            lines.append(
+                "| GVKEY | Resolved CEO | Overlapped CEO | Period | Resolution |"
+            )
+            lines.append(
+                "|-------|--------------|----------------|--------|------------|"
+            )
             for sample in ts["overlaps"]:
-                lines.append(f"| {sample.get('gvkey', 'N/A')} | {sample.get('resolved_ceo', 'N/A')} | {sample.get('overlapped_ceo', 'N/A')} | {sample.get('overlap_period', 'N/A')} | {sample.get('resolution_reason', 'N/A')} |")
+                lines.append(
+                    f"| {sample.get('gvkey', 'N/A')} | {sample.get('resolved_ceo', 'N/A')} | {sample.get('overlapped_ceo', 'N/A')} | {sample.get('overlap_period', 'N/A')} | {sample.get('resolution_reason', 'N/A')} |"
+                )
             lines.append("")
 
     # Write report
@@ -640,7 +722,9 @@ def main():
     stats["tenure_output"] = compute_tenure_output_stats(monthly_df)
 
     print_dual("Collecting tenure samples...")
-    stats["tenure_samples"] = collect_tenure_samples(episodes_df, monthly_df, n_samples=3)
+    stats["tenure_samples"] = collect_tenure_samples(
+        episodes_df, monthly_df, n_samples=3
+    )
 
     # Save output
     output_file = paths["output_dir"] / "tenure_monthly.parquet"
@@ -661,11 +745,6 @@ def main():
     # Generate variable reference
     var_ref_file = paths["output_dir"] / "variable_reference.csv"
     generate_variable_reference(monthly_df, var_ref_file, print_dual)
-
-    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
-    update_latest_link(
-        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
-    )
 
     # Finalize timing and save stats
     end_time = time.perf_counter()

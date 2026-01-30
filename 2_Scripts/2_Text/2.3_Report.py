@@ -29,7 +29,6 @@ from pathlib import Path
 
 # Add script directory to path to import shared modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from shared.symlink_utils import update_latest_link
 from shared.observability_utils import DualWriter
 from shared.path_utils import get_latest_output_dir
 
@@ -316,14 +315,6 @@ def main():
     except Exception as e:
         logging.error(f"HTML generation failed: {e}")
         sys.exit(1)
-
-    # Update latest symlink
-    try:
-        latest_link = Path(config["paths"]["outputs"]) / step_id / "latest"
-        update_latest_link(Path(output_dir), latest_link)
-        logging.info(f"Updated latest link: {latest_link}")
-    except Exception as e:
-        logging.warning(f"Failed to update latest link: {e}")
 
     logging.info("Execution complete.")
 

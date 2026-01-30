@@ -53,7 +53,6 @@ try:
 except ImportError:
     pass  # 1.5_Utils.py may not exist
 
-from shared.symlink_utils import update_latest_link
 from shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
@@ -188,8 +187,6 @@ def setup_paths(config):
     output_base = root / config["paths"]["outputs"] / "1.1_CleanMetadata"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
-
-    paths["latest_dir"] = output_base / "latest"
 
     # Create log directory
     log_base = root / config["paths"]["logs"] / "1.1_CleanMetadata"
@@ -456,228 +453,278 @@ def main():
     ]
 
     # Add column type distribution
-    col_types = stats.get('input_descriptive', {}).get('column_types', {})
+    col_types = stats.get("input_descriptive", {}).get("column_types", {})
     for col_type, count in col_types.items():
         report_lines.append(f"| {col_type.capitalize()} | {count} |")
 
-    report_lines.extend([
-        "",
-        "### Key Distributions",
-        "",
-    ])
+    report_lines.extend(
+        [
+            "",
+            "### Key Distributions",
+            "",
+        ]
+    )
 
     # Add data quality score distribution if available
-    if 'data_quality_score' in stats.get('input_descriptive', {}).get('numeric_stats', {}):
-        qs = stats['input_descriptive']['numeric_stats']['data_quality_score']
-        report_lines.extend([
-            f"**Data Quality Score**:",
-            f"- Mean: {qs.get('mean', 0):.4f}",
-            f"- Median: {qs.get('median', 0):.4f}",
-            f"- Std: {qs.get('std', 0):.4f}",
-            f"- Range: [{qs.get('min', 0):.4f}, {qs.get('max', 0):.4f}]",
-            "",
-        ])
+    if "data_quality_score" in stats.get("input_descriptive", {}).get(
+        "numeric_stats", {}
+    ):
+        qs = stats["input_descriptive"]["numeric_stats"]["data_quality_score"]
+        report_lines.extend(
+            [
+                f"**Data Quality Score**:",
+                f"- Mean: {qs.get('mean', 0):.4f}",
+                f"- Median: {qs.get('median', 0):.4f}",
+                f"- Std: {qs.get('std', 0):.4f}",
+                f"- Range: [{qs.get('min', 0):.4f}, {qs.get('max', 0):.4f}]",
+                "",
+            ]
+        )
 
     # Add processing lag distribution if available
-    if 'processing_lag_hours' in stats.get('input_descriptive', {}).get('numeric_stats', {}):
-        lag = stats['input_descriptive']['numeric_stats']['processing_lag_hours']
-        report_lines.extend([
-            f"**Processing Lag (hours)**:",
-            f"- Mean: {lag.get('mean', 0):.2f}",
-            f"- Median: {lag.get('median', 0):.2f}",
-            f"- Range: [{lag.get('min', 0):.2f}, {lag.get('max', 0):.2f}]",
-            "",
-        ])
+    if "processing_lag_hours" in stats.get("input_descriptive", {}).get(
+        "numeric_stats", {}
+    ):
+        lag = stats["input_descriptive"]["numeric_stats"]["processing_lag_hours"]
+        report_lines.extend(
+            [
+                f"**Processing Lag (hours)**:",
+                f"- Mean: {lag.get('mean', 0):.2f}",
+                f"- Median: {lag.get('median', 0):.2f}",
+                f"- Range: [{lag.get('min', 0):.2f}, {lag.get('max', 0):.2f}]",
+                "",
+            ]
+        )
 
     # Add date range from datetime stats
-    if 'start_date' in stats.get('input_descriptive', {}).get('datetime_stats', {}):
-        ds = stats['input_descriptive']['datetime_stats']['start_date']
-        report_lines.extend([
-            f"**Date Range (Source Data)**:",
-            f"- Earliest: {ds.get('min_date', 'N/A')}",
-            f"- Latest: {ds.get('max_date', 'N/A')}",
-            f"- Span: {ds.get('span_days', 0)} days",
-            "",
-        ])
+    if "start_date" in stats.get("input_descriptive", {}).get("datetime_stats", {}):
+        ds = stats["input_descriptive"]["datetime_stats"]["start_date"]
+        report_lines.extend(
+            [
+                f"**Date Range (Source Data)**:",
+                f"- Earliest: {ds.get('min_date', 'N/A')}",
+                f"- Latest: {ds.get('max_date', 'N/A')}",
+                f"- Span: {ds.get('span_days', 0)} days",
+                "",
+            ]
+        )
 
-    report_lines.extend([
-        "## TEMPORAL COVERAGE",
-        "",
-        "### Calls per Year",
-        "",
-        "| Year | Count | Percentage |",
-        "|------|-------|------------|",
-    ])
+    report_lines.extend(
+        [
+            "## TEMPORAL COVERAGE",
+            "",
+            "### Calls per Year",
+            "",
+            "| Year | Count | Percentage |",
+            "|------|-------|------------|",
+        ]
+    )
 
     # Add year distribution
-    year_dist = stats.get('temporal_coverage', {}).get('year_distribution', {})
+    year_dist = stats.get("temporal_coverage", {}).get("year_distribution", {})
     total_calls = sum(year_dist.values())
     for year in sorted(year_dist.keys()):
         count = year_dist[year]
         pct = (count / total_calls * 100) if total_calls > 0 else 0
         report_lines.append(f"| {year} | {count:,} | {pct:.2f}% |")
 
-    report_lines.extend([
-        "",
-        "### Monthly Distribution",
-        "",
-        "| Month | Count |",
-        "|-------|-------|",
-    ])
+    report_lines.extend(
+        [
+            "",
+            "### Monthly Distribution",
+            "",
+            "| Month | Count |",
+            "|-------|-------|",
+        ]
+    )
 
     # Add month distribution
-    month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    month_dist = stats.get('temporal_coverage', {}).get('month_distribution', {})
+    month_names = [
+        "",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ]
+    month_dist = stats.get("temporal_coverage", {}).get("month_distribution", {})
     for month_num in sorted(month_dist.keys()):
         count = month_dist[month_num]
-        month_name = month_names[month_num] if month_num < len(month_names) else f"Month {month_num}"
+        month_name = (
+            month_names[month_num]
+            if month_num < len(month_names)
+            else f"Month {month_num}"
+        )
         report_lines.append(f"| {month_name} | {count:,} |")
 
-    report_lines.extend([
-        "",
-        "### Quarter Distribution",
-        "",
-        "| Quarter | Count |",
-        "|---------|-------|",
-    ])
+    report_lines.extend(
+        [
+            "",
+            "### Quarter Distribution",
+            "",
+            "| Quarter | Count |",
+            "|---------|-------|",
+        ]
+    )
 
     # Add quarter distribution
-    q_dist = stats.get('temporal_coverage', {}).get('quarter_distribution', {})
+    q_dist = stats.get("temporal_coverage", {}).get("quarter_distribution", {})
     for q in sorted(q_dist.keys()):
         count = q_dist[q]
         report_lines.append(f"| Q{q} | {count:,} |")
 
-    report_lines.extend([
-        "",
-        "### Day of Week Distribution",
-        "",
-        "| Day | Count |",
-        "|-----|-------|",
-    ])
+    report_lines.extend(
+        [
+            "",
+            "### Day of Week Distribution",
+            "",
+            "| Day | Count |",
+            "|-----|-------|",
+        ]
+    )
 
     # Add day of week distribution
     dow_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    dow_dist = stats.get('temporal_coverage', {}).get('day_of_week_distribution', {})
+    dow_dist = stats.get("temporal_coverage", {}).get("day_of_week_distribution", {})
     for dow in sorted(dow_dist.keys()):
         count = dow_dist[dow]
         day_name = dow_names[dow] if dow < len(dow_names) else f"Day {dow}"
         report_lines.append(f"| {day_name} | {count:,} |")
 
     # Add date range from temporal stats
-    if 'date_range' in stats.get('temporal_coverage', {}):
-        dr = stats['temporal_coverage']['date_range']
-        report_lines.extend([
-            "",
-            f"**Date Range (Filtered Data)**: {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')} ({dr.get('span_days', 0)} days)",
-            "",
-        ])
+    if "date_range" in stats.get("temporal_coverage", {}):
+        dr = stats["temporal_coverage"]["date_range"]
+        report_lines.extend(
+            [
+                "",
+                f"**Date Range (Filtered Data)**: {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')} ({dr.get('span_days', 0)} days)",
+                "",
+            ]
+        )
 
-    report_lines.extend([
-        "## ENTITY CHARACTERISTICS",
-        "",
-    ])
+    report_lines.extend(
+        [
+            "## ENTITY CHARACTERISTICS",
+            "",
+        ]
+    )
 
     # Add company coverage
-    if 'company_coverage' in stats.get('entity_characteristics', {}):
-        cc = stats['entity_characteristics']['company_coverage']
-        report_lines.extend([
-            f"**Company Coverage**:",
-            f"- Unique companies: {cc.get('unique_companies', 0):,}",
-            f"- Average calls per company: {cc.get('avg_calls_per_company', 0):.2f}",
-            "",
-        ])
+    if "company_coverage" in stats.get("entity_characteristics", {}):
+        cc = stats["entity_characteristics"]["company_coverage"]
+        report_lines.extend(
+            [
+                f"**Company Coverage**:",
+                f"- Unique companies: {cc.get('unique_companies', 0):,}",
+                f"- Average calls per company: {cc.get('avg_calls_per_company', 0):.2f}",
+                "",
+            ]
+        )
 
     # Add geographic coverage
-    if 'geographic_coverage' in stats.get('entity_characteristics', {}):
-        gc = stats['entity_characteristics']['geographic_coverage']
-        report_lines.extend([
-            f"**Geographic Coverage**:",
-            f"- Unique cities: {gc.get('unique_cities', 0):,}",
-            "",
-            "Top 5 Cities:",
-            "",
-            "| City | Count |",
-            "|------|-------|",
-        ])
-        for city_info in gc.get('top_cities', [])[:5]:
+    if "geographic_coverage" in stats.get("entity_characteristics", {}):
+        gc = stats["entity_characteristics"]["geographic_coverage"]
+        report_lines.extend(
+            [
+                f"**Geographic Coverage**:",
+                f"- Unique cities: {gc.get('unique_cities', 0):,}",
+                "",
+                "Top 5 Cities:",
+                "",
+                "| City | Count |",
+                "|------|-------|",
+            ]
+        )
+        for city_info in gc.get("top_cities", [])[:5]:
             report_lines.append(f"| {city_info['city']} | {city_info['count']:,} |")
         report_lines.append("")
 
     # Add data quality distribution
-    if 'data_quality_distribution' in stats.get('entity_characteristics', {}):
-        dq = stats['entity_characteristics']['data_quality_distribution']
-        if 'error' not in dq:
-            report_lines.extend([
-                f"**Data Quality Score Distribution**:",
-                f"- Mean: {dq.get('mean', 0):.4f}",
-                f"- Median: {dq.get('median', 0):.4f}",
-                "",
-            ])
-            if 'histogram' in dq and 'error' not in dq['histogram']:
-                report_lines.extend([
-                    "Histogram:",
+    if "data_quality_distribution" in stats.get("entity_characteristics", {}):
+        dq = stats["entity_characteristics"]["data_quality_distribution"]
+        if "error" not in dq:
+            report_lines.extend(
+                [
+                    f"**Data Quality Score Distribution**:",
+                    f"- Mean: {dq.get('mean', 0):.4f}",
+                    f"- Median: {dq.get('median', 0):.4f}",
                     "",
-                    "| Bucket | Count |",
-                    "|--------|-------|",
-                ])
-                for bucket, count in dq['histogram'].items():
+                ]
+            )
+            if "histogram" in dq and "error" not in dq["histogram"]:
+                report_lines.extend(
+                    [
+                        "Histogram:",
+                        "",
+                        "| Bucket | Count |",
+                        "|--------|-------|",
+                    ]
+                )
+                for bucket, count in dq["histogram"].items():
                     report_lines.append(f"| {bucket} | {count:,} |")
                 report_lines.append("")
 
     # Add speaker coverage
-    if 'speaker_coverage' in stats.get('entity_characteristics', {}):
-        sc = stats['entity_characteristics']['speaker_coverage']
-        if 'error' not in sc:
-            report_lines.extend([
-                f"**Speaker Data Coverage**: {sc.get('percent_with_speaker_data', 0):.2f}%",
-                "",
-            ])
-            if 'speaker_record_distribution' in sc:
-                srd = sc['speaker_record_distribution']
-                report_lines.extend([
-                    f"Speaker Record Count Distribution:",
-                    f"- Mean: {srd.get('mean', 0):.2f}",
-                    f"- Median: {srd.get('median', 0):.2f}",
-                    f"- Range: [{srd.get('min', 0):,}, {srd.get('max', 0):,}]",
+    if "speaker_coverage" in stats.get("entity_characteristics", {}):
+        sc = stats["entity_characteristics"]["speaker_coverage"]
+        if "error" not in sc:
+            report_lines.extend(
+                [
+                    f"**Speaker Data Coverage**: {sc.get('percent_with_speaker_data', 0):.2f}%",
                     "",
-                ])
+                ]
+            )
+            if "speaker_record_distribution" in sc:
+                srd = sc["speaker_record_distribution"]
+                report_lines.extend(
+                    [
+                        f"Speaker Record Count Distribution:",
+                        f"- Mean: {srd.get('mean', 0):.2f}",
+                        f"- Median: {srd.get('median', 0):.2f}",
+                        f"- Range: [{srd.get('min', 0):,}, {srd.get('max', 0):,}]",
+                        "",
+                    ]
+                )
 
-    report_lines.extend([
-        "## PROCESS SUMMARY",
-        "",
-        f"- **Input rows**: {original_count:,}",
-        f"- **Exact duplicates removed**: {exact_dupes:,}",
-        f"- **Collision rows resolved**: {resolved:,}",
-        f"- **Non-earnings calls removed**: {len(df_clean) - len(df_filtered) if 'event_type' in df_clean.columns else 0:,}",
-        f"- **Out-of-range years removed**: {removed:,}",
-        "",
-        "## OUTPUT SUMMARY",
-        "",
-        f"- **Final output rows**: {len(df_final):,}",
-        "",
-        "## Output Files",
-        "",
-        f"- Cleaned metadata: `{output_file.name}`",
-        f"- Variable reference: `{var_ref_file.name}`",
-        "",
-        "## Columns",
-        "",
-        f"Total columns: {len(df_final.columns)}",
-        "",
-        "```",
-        ", ".join(df_final.columns.tolist()),
-        "```",
-    ])
+    report_lines.extend(
+        [
+            "## PROCESS SUMMARY",
+            "",
+            f"- **Input rows**: {original_count:,}",
+            f"- **Exact duplicates removed**: {exact_dupes:,}",
+            f"- **Collision rows resolved**: {resolved:,}",
+            f"- **Non-earnings calls removed**: {len(df_clean) - len(df_filtered) if 'event_type' in df_clean.columns else 0:,}",
+            f"- **Out-of-range years removed**: {removed:,}",
+            "",
+            "## OUTPUT SUMMARY",
+            "",
+            f"- **Final output rows**: {len(df_final):,}",
+            "",
+            "## Output Files",
+            "",
+            f"- Cleaned metadata: `{output_file.name}`",
+            f"- Variable reference: `{var_ref_file.name}`",
+            "",
+            "## Columns",
+            "",
+            f"Total columns: {len(df_final.columns)}",
+            "",
+            "```",
+            ", ".join(df_final.columns.tolist()),
+            "```",
+        ]
+    )
 
     report_file = paths["output_dir"] / "report_step_1_1.md"
     report_file.write_text("\n".join(report_lines), encoding="utf-8")
     print_dual(f"Report saved: {report_file}")
-
-    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
-    update_latest_link(
-        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
-    )
 
     print_dual("\n" + "=" * 80)
     print_dual("Step 1.1 completed successfully.")

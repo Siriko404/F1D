@@ -17,15 +17,6 @@ import argparse
 # Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
 
-# Import shared symlink utility for 'latest' link management
-try:
-    from shared.symlink_utils import update_latest_link
-except ImportError:
-    # Fallback if shared/__init__.py hasn't run yet
-    script_dir = Path(__file__).parent.parent
-    sys.path.insert(0, str(script_dir))
-    from shared.symlink_utils import update_latest_link
-
 # Import memory tracking decorator
 try:
     from shared.chunked_reader import track_memory_usage
@@ -1258,7 +1249,6 @@ def main(dictionary_path=None):
     print("\nGenerating report...")
     generate_tokenization_report(stats, out_dir)
 
-    update_latest_link(out_dir, out_base / "2.1_Tokenized" / "latest")
     print("\n=== Complete ===")
 
 

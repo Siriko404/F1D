@@ -54,7 +54,6 @@ try:
     sys.modules["utils"] = utils
     spec.loader.exec_module(utils)
     from utils import generate_variable_reference
-    from shared.symlink_utils import update_latest_link
 except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
     sys.exit(1)
@@ -221,8 +220,6 @@ def setup_paths(config):
     output_base = root / config["paths"]["outputs"] / "1.2_LinkEntities"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
-
-    paths["latest_dir"] = output_base / "latest"
 
     log_base = root / config["paths"]["logs"] / "1.2_LinkEntities"
     ensure_output_dir(log_base)
@@ -837,11 +834,6 @@ def main():
     # Generate enhanced variable reference
     var_ref_file = paths["output_dir"] / "variable_reference.csv"
     generate_variable_reference(df_linked, var_ref_file, print_dual)
-
-    # Update latest symlink using shared utility (handles symlinks, junctions, copy fallback)
-    update_latest_link(
-        target_dir=paths["output_dir"], link_path=paths["latest_dir"], verbose=True
-    )
 
     # Finalize timing
     end_time = time.perf_counter()
