@@ -52,11 +52,7 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import (
-    DualWriter,
-    get_latest_output_dir,
-    generate_variable_reference,
-)
+from utils import generate_variable_reference
 from shared.financial_utils import compute_financial_controls_quarterly
 
 # Import shared path validation utilities
@@ -79,6 +75,9 @@ except ImportError:
         validate_input_file,
         get_latest_output_dir,
     )
+
+# Import DualWriter from shared.observability_utils
+from shared.observability_utils import DualWriter
 
 # ==============================================================================
 # Configuration

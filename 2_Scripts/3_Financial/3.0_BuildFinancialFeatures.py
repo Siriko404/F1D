@@ -31,7 +31,7 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import DualWriter, generate_variable_reference
+from utils import generate_variable_reference
 
 try:
     from shared.path_utils import (
@@ -48,6 +48,9 @@ except ImportError:
         validate_input_file,
         get_latest_output_dir,
     )
+
+# Import DualWriter from shared.observability_utils
+from shared.observability_utils import DualWriter
 
 # ==============================================================================
 # Stats Helper Functions

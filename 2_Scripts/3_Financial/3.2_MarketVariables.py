@@ -83,7 +83,7 @@ sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
 
-from utils import DualWriter, generate_variable_reference
+from utils import generate_variable_reference
 
 
 try:
@@ -96,13 +96,15 @@ try:
 
 except ImportError:
     # Fallback if shared/__init__.py hasn't run yet
-
     from shared.path_utils import (
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
         get_latest_output_dir,
     )
+
+# Import DualWriter from shared.observability_utils
+from shared.observability_utils import DualWriter
 
 
 # Import shared observability utilities (new Step 3.2 statistics functions)
