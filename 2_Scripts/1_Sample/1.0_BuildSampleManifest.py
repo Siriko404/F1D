@@ -78,6 +78,8 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
+        OutputResolutionError,
     )
 except ImportError:
     import sys as _sys
@@ -89,6 +91,8 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
+        OutputResolutionError,
     )
 
 
@@ -303,14 +307,11 @@ def main():
         print_dual("All substeps completed successfully.")
 
         # Copy final manifest to orchestrator output
-        manifest_source = (
-            paths["root"]
-            / "4_Outputs"
-            / "1.4_AssembleManifest"
-            / "latest"
-            / "master_sample_manifest.parquet"
+        manifest_dir = get_latest_output_dir(
+            paths["root"] / "4_Outputs" / "1.4_AssembleManifest",
+            required_file="master_sample_manifest.parquet",
         )
-        validate_input_file(manifest_source, must_exist=True)
+        manifest_source = manifest_dir / "master_sample_manifest.parquet"
         manifest_dest = paths["output_dir"] / "master_sample_manifest.parquet"
         shutil.copy2(manifest_source, manifest_dest)
         print_dual(f"Final manifest copied to: {manifest_dest}")

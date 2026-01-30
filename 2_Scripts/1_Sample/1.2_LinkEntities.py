@@ -100,6 +100,7 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
 except ImportError:
     import sys as _sys
@@ -111,6 +112,7 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
 
 # Using shared.string_matching.match_company_names() instead of direct RapidFuzz imports
@@ -197,13 +199,15 @@ def load_config():
 def setup_paths(config):
     root = Path(__file__).parent.parent.parent
 
+    # Resolve input from prior step using timestamp-based resolution
+    metadata_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.1_CleanMetadata",
+        required_file="metadata_cleaned.parquet",
+    )
+
     paths = {
         "root": root,
-        "metadata": root
-        / "4_Outputs"
-        / "1.1_CleanMetadata"
-        / "latest"
-        / "metadata_cleaned.parquet",
+        "metadata": metadata_dir / "metadata_cleaned.parquet",
         "ccm": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
         "ccm_varref": root
         / "1_Inputs"
@@ -700,8 +704,12 @@ def main():
         "fuzzy_matches": fuzzy_samples,
         "tier_matches": tier_samples,
     }
-    print_dual(f"  Collected {len(fuzzy_samples.get('high_score', []))} high-score fuzzy matches")
-    print_dual(f"  Collected {len(fuzzy_samples.get('borderline', []))} borderline fuzzy matches")
+    print_dual(
+        f"  Collected {len(fuzzy_samples.get('high_score', []))} high-score fuzzy matches"
+    )
+    print_dual(
+        f"  Collected {len(fuzzy_samples.get('borderline', []))} borderline fuzzy matches"
+    )
     print_dual(f"  Collected {len(tier_samples.get('tier1', []))} Tier 1 examples")
     print_dual(f"  Collected {len(tier_samples.get('tier2', []))} Tier 2 examples")
 
@@ -749,7 +757,9 @@ def main():
 
     # Collect unmatched samples
     print_dual("\nCollecting unmatched company samples...")
-    unmatched_samples = collect_unmatched_samples(df_original=df, unique_df=unique_df, n_samples=5)
+    unmatched_samples = collect_unmatched_samples(
+        df_original=df, unique_df=unique_df, n_samples=5
+    )
     stats["linking_process"]["samples"]["unmatched"] = unmatched_samples
     print_dual(f"  Collected {len(unmatched_samples)} unmatched company samples")
 
@@ -804,7 +814,9 @@ def main():
 
     # Collect before/after samples
     print_dual("\nCollecting before/after linking samples...")
-    before_after_samples = collect_before_after_samples(df_original=df, df_linked=df_linked, n_samples=3)
+    before_after_samples = collect_before_after_samples(
+        df_original=df, df_linked=df_linked, n_samples=3
+    )
     stats["linking_output"]["samples"] = {"before_after": before_after_samples}
     print_dual(f"  Collected {len(before_after_samples)} before/after examples")
 
@@ -891,109 +903,132 @@ def main():
     # Add input metadata stats
     if "linking_input" in stats and "input_metadata" in stats["linking_input"]:
         im = stats["linking_input"]["input_metadata"]
-        report_lines.extend([
-            f"- **Unique companies**: {im.get('unique_companies', 0):,}",
-            f"- **Columns**: {im.get('column_count', 0)}",
-            f"- **Memory footprint**: {im.get('memory_mb', 0):.2f} MB",
-            "",
-        ])
+        report_lines.extend(
+            [
+                f"- **Unique companies**: {im.get('unique_companies', 0):,}",
+                f"- **Columns**: {im.get('column_count', 0)}",
+                f"- **Memory footprint**: {im.get('memory_mb', 0):.2f} MB",
+                "",
+            ]
+        )
 
     # Add reference database stats
     if "linking_input" in stats and "reference_database" in stats["linking_input"]:
         rd = stats["linking_input"]["reference_database"]
-        report_lines.extend([
-            "### Reference Database (CCM)",
-            "",
-            f"- **Total CCM records**: {rd.get('total_records', 0):,}",
-            f"- **Unique GVKEYs**: {rd.get('unique_gvkey', 0):,}",
-            f"- **Unique LPERMNOs**: {rd.get('unique_lpermno', 0):,}",
-        ])
+        report_lines.extend(
+            [
+                "### Reference Database (CCM)",
+                "",
+                f"- **Total CCM records**: {rd.get('total_records', 0):,}",
+                f"- **Unique GVKEYs**: {rd.get('unique_gvkey', 0):,}",
+                f"- **Unique LPERMNOs**: {rd.get('unique_lpermno', 0):,}",
+            ]
+        )
 
         if "date_coverage" in rd:
             dc = rd["date_coverage"]
-            report_lines.extend([
-                f"- **Date coverage**: {dc.get('earliest', 'N/A')} to {dc.get('latest', 'N/A')} ({dc.get('span_days', 0):,} days)",
-            ])
+            report_lines.extend(
+                [
+                    f"- **Date coverage**: {dc.get('earliest', 'N/A')} to {dc.get('latest', 'N/A')} ({dc.get('span_days', 0):,} days)",
+                ]
+            )
         report_lines.append("")
 
     # Add identifier coverage
     if "linking_input" in stats and "coverage_metrics" in stats["linking_input"]:
         cm = stats["linking_input"]["coverage_metrics"]
-        report_lines.extend([
-            "### Identifier Coverage",
-            "",
-            f"- **PERMNO**: {cm.get('permno_coverage_pct', 0):.1f}% of companies",
-            f"- **CUSIP**: {cm.get('cusip_coverage_pct', 0):.1f}% of companies",
-            f"- **Ticker**: {cm.get('ticker_coverage_pct', 0):.1f}% of companies",
-            f"- **Company name**: {cm.get('name_coverage_pct', 0):.1f}% of companies",
-            "",
-        ])
+        report_lines.extend(
+            [
+                "### Identifier Coverage",
+                "",
+                f"- **PERMNO**: {cm.get('permno_coverage_pct', 0):.1f}% of companies",
+                f"- **CUSIP**: {cm.get('cusip_coverage_pct', 0):.1f}% of companies",
+                f"- **Ticker**: {cm.get('ticker_coverage_pct', 0):.1f}% of companies",
+                f"- **Company name**: {cm.get('name_coverage_pct', 0):.1f}% of companies",
+                "",
+            ]
+        )
 
     # Add matching process section
-    report_lines.extend([
-        "## MATCHING PROCESS",
-        "",
-        "### 4-Tier Matching Funnel",
-        "",
-        "| Tier | Method | Candidates | Matched | Cumulative | Match Rate |",
-        "|------|--------|------------|---------|------------|------------|",
-    ])
+    report_lines.extend(
+        [
+            "## MATCHING PROCESS",
+            "",
+            "### 4-Tier Matching Funnel",
+            "",
+            "| Tier | Method | Candidates | Matched | Cumulative | Match Rate |",
+            "|------|--------|------------|---------|------------|------------|",
+        ]
+    )
 
     if "linking_process" in stats and "funnel_analysis" in stats["linking_process"]:
         fa = stats["linking_process"]["funnel_analysis"]
         mr = stats["linking_process"].get("match_rates", {})
 
-        report_lines.extend([
-            f"| 1 | PERMNO+Date | {fa.get('tier1_candidates', 0):,} | {fa.get('tier1_matched', 0):,} | {fa.get('tier1_matched', 0):,} | {mr.get('tier1_match_pct', 0):.1f}% |",
-            f"| 2 | CUSIP8+Date | {fa.get('tier2_candidates', 0):,} | {fa.get('tier2_matched', 0):,} | {fa.get('tier1_matched', 0) + fa.get('tier2_matched', 0):,} | {mr.get('tier2_match_pct', 0):.1f}% |",
-            f"| 3 | Fuzzy Name | {fa.get('tier3_candidates', 0):,} | {fa.get('tier3_matched', 0):,} | {fa.get('total_matched', 0):,} | {mr.get('tier3_match_pct', 0):.1f}% |",
-            "",
-        ])
+        report_lines.extend(
+            [
+                f"| 1 | PERMNO+Date | {fa.get('tier1_candidates', 0):,} | {fa.get('tier1_matched', 0):,} | {fa.get('tier1_matched', 0):,} | {mr.get('tier1_match_pct', 0):.1f}% |",
+                f"| 2 | CUSIP8+Date | {fa.get('tier2_candidates', 0):,} | {fa.get('tier2_matched', 0):,} | {fa.get('tier1_matched', 0) + fa.get('tier2_matched', 0):,} | {mr.get('tier2_match_pct', 0):.1f}% |",
+                f"| 3 | Fuzzy Name | {fa.get('tier3_candidates', 0):,} | {fa.get('tier3_matched', 0):,} | {fa.get('total_matched', 0):,} | {mr.get('tier3_match_pct', 0):.1f}% |",
+                "",
+            ]
+        )
 
     # Add link quality distribution
-    if "linking_process" in stats and "link_quality_distribution" in stats["linking_process"]:
+    if (
+        "linking_process" in stats
+        and "link_quality_distribution" in stats["linking_process"]
+    ):
         lqd = stats["linking_process"]["link_quality_distribution"]
         if "error" not in lqd:
-            report_lines.extend([
-                "### Link Quality Distribution",
-                "",
-                f"- **Quality 100 (PERMNO)**: {lqd.get('quality_100_count', 0):,} companies ({lqd.get('quality_100_pct', 0):.1f}%)",
-                f"- **Quality 90 (CUSIP8)**: {lqd.get('quality_90_count', 0):,} companies ({lqd.get('quality_90_pct', 0):.1f}%)",
-                f"- **Quality 80 (Fuzzy)**: {lqd.get('quality_80_count', 0):,} companies ({lqd.get('quality_80_pct', 0):.1f}%)",
-                "",
-            ])
+            report_lines.extend(
+                [
+                    "### Link Quality Distribution",
+                    "",
+                    f"- **Quality 100 (PERMNO)**: {lqd.get('quality_100_count', 0):,} companies ({lqd.get('quality_100_pct', 0):.1f}%)",
+                    f"- **Quality 90 (CUSIP8)**: {lqd.get('quality_90_count', 0):,} companies ({lqd.get('quality_90_pct', 0):.1f}%)",
+                    f"- **Quality 80 (Fuzzy)**: {lqd.get('quality_80_count', 0):,} companies ({lqd.get('quality_80_pct', 0):.1f}%)",
+                    "",
+                ]
+            )
 
     # Add dedup-index optimization
     if "linking" in stats:
-        report_lines.extend([
-            "### Dedup-Index Optimization",
-            "",
-            f"- **Compression ratio**: {stats['linking'].get('compression_ratio', 0):.1f}x",
-            f"  ({stats['input']['total_rows']:,} calls -> {stats['linking'].get('unique_companies', 0):,} unique companies)",
-            "",
-        ])
+        report_lines.extend(
+            [
+                "### Dedup-Index Optimization",
+                "",
+                f"- **Compression ratio**: {stats['linking'].get('compression_ratio', 0):.1f}x",
+                f"  ({stats['input']['total_rows']:,} calls -> {stats['linking'].get('unique_companies', 0):,} unique companies)",
+                "",
+            ]
+        )
 
     # Add matching samples section
     if "linking_process" in stats and "samples" in stats["linking_process"]:
         samples = stats["linking_process"]["samples"]
 
-        report_lines.extend([
-            "## MATCHING SAMPLES",
-            "",
-            "### Fuzzy Name Match Examples",
-            "",
-        ])
+        report_lines.extend(
+            [
+                "## MATCHING SAMPLES",
+                "",
+                "### Fuzzy Name Match Examples",
+                "",
+            ]
+        )
 
         # High-score fuzzy matches
         if "fuzzy_matches" in samples and "high_score" in samples["fuzzy_matches"]:
             high_scores = samples["fuzzy_matches"]["high_score"]
             if len(high_scores) > 0:
-                report_lines.extend([
-                    "**High-Score Matches (>98)**",
-                    "",
-                    "| Query Name | Matched Name | Score | GVKEY | SIC |",
-                    "|------------|--------------|-------|-------|-----|",
-                ])
+                report_lines.extend(
+                    [
+                        "**High-Score Matches (>98)**",
+                        "",
+                        "| Query Name | Matched Name | Score | GVKEY | SIC |",
+                        "|------------|--------------|-------|-------|-----|",
+                    ]
+                )
                 for sample in high_scores:
                     report_lines.append(
                         f"| {sample.get('company_name', 'N/A')[:30]} | {sample.get('matched_name', 'N/A')[:30]} | {sample.get('score', 0):.1f} | {sample.get('gvkey', 'N/A')} | {sample.get('sic', 'N/A')} |"
@@ -1006,12 +1041,14 @@ def main():
         if "fuzzy_matches" in samples and "borderline" in samples["fuzzy_matches"]:
             borderline = samples["fuzzy_matches"]["borderline"]
             if len(borderline) > 0:
-                report_lines.extend([
-                    "**Borderline Matches (92-95)**",
-                    "",
-                    "| Query Name | Matched Name | Score | GVKEY | SIC |",
-                    "|------------|--------------|-------|-------|-----|",
-                ])
+                report_lines.extend(
+                    [
+                        "**Borderline Matches (92-95)**",
+                        "",
+                        "| Query Name | Matched Name | Score | GVKEY | SIC |",
+                        "|------------|--------------|-------|-------|-----|",
+                    ]
+                )
                 for sample in borderline:
                     report_lines.append(
                         f"| {sample.get('company_name', 'N/A')[:30]} | {sample.get('matched_name', 'N/A')[:30]} | {sample.get('score', 0):.1f} | {sample.get('gvkey', 'N/A')} | {sample.get('sic', 'N/A')} |"
@@ -1024,12 +1061,14 @@ def main():
         if "tier_matches" in samples and "tier1" in samples["tier_matches"]:
             tier1 = samples["tier_matches"]["tier1"]
             if len(tier1) > 0:
-                report_lines.extend([
-                    "### Tier 1 (PERMNO) Match Examples",
-                    "",
-                    "| Company | PERMNO | GVKEY | Matched Name | SIC |",
-                    "|---------|--------|-------|--------------|-----|",
-                ])
+                report_lines.extend(
+                    [
+                        "### Tier 1 (PERMNO) Match Examples",
+                        "",
+                        "| Company | PERMNO | GVKEY | Matched Name | SIC |",
+                        "|---------|--------|-------|--------------|-----|",
+                    ]
+                )
                 for sample in tier1:
                     report_lines.append(
                         f"| {sample.get('company_id', 'N/A')[:20]} | {sample.get('permno', 'N/A')} | {sample.get('gvkey', 'N/A')} | {sample.get('conm', 'N/A')[:30]} | {sample.get('sic', 'N/A')} |"
@@ -1042,12 +1081,14 @@ def main():
         if "tier_matches" in samples and "tier2" in samples["tier_matches"]:
             tier2 = samples["tier_matches"]["tier2"]
             if len(tier2) > 0:
-                report_lines.extend([
-                    "### Tier 2 (CUSIP8) Match Examples",
-                    "",
-                    "| Company | CUSIP8 | GVKEY | Matched Name | SIC |",
-                    "|---------|--------|-------|--------------|-----|",
-                ])
+                report_lines.extend(
+                    [
+                        "### Tier 2 (CUSIP8) Match Examples",
+                        "",
+                        "| Company | CUSIP8 | GVKEY | Matched Name | SIC |",
+                        "|---------|--------|-------|--------------|-----|",
+                    ]
+                )
                 for sample in tier2:
                     report_lines.append(
                         f"| {sample.get('company_id', 'N/A')[:20]} | {sample.get('cusip8', 'N/A')} | {sample.get('gvkey', 'N/A')} | {sample.get('conm', 'N/A')[:30]} | {sample.get('sic', 'N/A')} |"
@@ -1058,12 +1099,14 @@ def main():
 
         # Unmatched samples
         if "unmatched" in samples and len(samples["unmatched"]) > 0:
-            report_lines.extend([
-                "### Unmatched Companies (Sample)",
-                "",
-                "| Company Name | Has PERMNO | Has CUSIP | Has Ticker | Likely Reason |",
-                "|--------------|------------|-----------|------------|---------------|",
-            ])
+            report_lines.extend(
+                [
+                    "### Unmatched Companies (Sample)",
+                    "",
+                    "| Company Name | Has PERMNO | Has CUSIP | Has Ticker | Likely Reason |",
+                    "|--------------|------------|-----------|------------|---------------|",
+                ]
+            )
             for sample in samples["unmatched"][:10]:
                 report_lines.append(
                     f"| {sample.get('company_name', 'N/A')[:30]} | {'Yes' if sample.get('has_permno', False) else 'No'} | {'Yes' if sample.get('has_cusip', False) else 'No'} | {'Yes' if sample.get('has_ticker', False) else 'No'} | {sample.get('likely_reason', 'unknown')} |"
@@ -1073,96 +1116,118 @@ def main():
             report_lines.extend(["No unmatched companies.", ""])
 
         # Before/After examples
-        if "linking_output" in stats and "samples" in stats["linking_output"] and "before_after" in stats["linking_output"]["samples"]:
+        if (
+            "linking_output" in stats
+            and "samples" in stats["linking_output"]
+            and "before_after" in stats["linking_output"]["samples"]
+        ):
             before_after = stats["linking_output"]["samples"]["before_after"]
             if len(before_after) > 0:
-                report_lines.extend([
-                    "### Before/After Examples",
-                    "",
-                    "Shows the transformation from original to linked fields:",
-                    "",
-                ])
+                report_lines.extend(
+                    [
+                        "### Before/After Examples",
+                        "",
+                        "Shows the transformation from original to linked fields:",
+                        "",
+                    ]
+                )
                 for i, example in enumerate(before_after, 1):
                     before = example.get("before", {})
                     after = example.get("after", {})
-                    report_lines.extend([
-                        f"**Example {i}:**",
-                        "",
-                        f"- **Company ID:** {before.get('company_id', 'N/A')}",
-                        f"- **Before:** name='{before.get('company_name', 'N/A')[:40]}', ticker='{before.get('company_ticker', 'N/A')}', permno={before.get('permno', 'N/A')}, cusip={before.get('cusip', 'N/A')[:8]}",
-                        f"- **After:** gvkey='{after.get('gvkey', 'N/A')}', conm='{after.get('conm', 'N/A')[:40]}', sic={after.get('sic', 'N/A')}, ff12='{after.get('ff12_name', 'N/A')[:30]}', method={after.get('link_method', 'N/A')}, quality={after.get('link_quality', 0)}",
-                        "",
-                    ])
+                    report_lines.extend(
+                        [
+                            f"**Example {i}:**",
+                            "",
+                            f"- **Company ID:** {before.get('company_id', 'N/A')}",
+                            f"- **Before:** name='{before.get('company_name', 'N/A')[:40]}', ticker='{before.get('company_ticker', 'N/A')}', permno={before.get('permno', 'N/A')}, cusip={before.get('cusip', 'N/A')[:8]}",
+                            f"- **After:** gvkey='{after.get('gvkey', 'N/A')}', conm='{after.get('conm', 'N/A')[:40]}', sic={after.get('sic', 'N/A')}, ff12='{after.get('ff12_name', 'N/A')[:30]}', method={after.get('link_method', 'N/A')}, quality={after.get('link_quality', 0)}",
+                            "",
+                        ]
+                    )
             else:
                 report_lines.extend(["No before/after examples available.", ""])
 
     # Add output summary section
-    report_lines.extend([
-        "## OUTPUT SUMMARY",
-        "",
-        "### Linkage Success",
-        "",
-    ])
+    report_lines.extend(
+        [
+            "## OUTPUT SUMMARY",
+            "",
+            "### Linkage Success",
+            "",
+        ]
+    )
 
     if "linking_output" in stats and "linkage_summary" in stats["linking_output"]:
         ls = stats["linking_output"]["linkage_summary"]
-        report_lines.extend([
-            f"- **Total calls linked**: {ls.get('total_calls_linked', 0):,} ({stats['output']['final_rows']:,})",
-            f"- **Unique companies linked**: {ls.get('unique_companies_linked', 0):,}",
-            f"- **Unique GVKEYs assigned**: {ls.get('unique_gvkey_assigned', 0):,}",
-            f"- **Company linkage rate**: {ls.get('company_linkage_rate', 0):.1f}%",
-            f"- **Average calls per company**: {ls.get('calls_per_company_avg', 0):.2f}",
-            "",
-        ])
+        report_lines.extend(
+            [
+                f"- **Total calls linked**: {ls.get('total_calls_linked', 0):,} ({stats['output']['final_rows']:,})",
+                f"- **Unique companies linked**: {ls.get('unique_companies_linked', 0):,}",
+                f"- **Unique GVKEYs assigned**: {ls.get('unique_gvkey_assigned', 0):,}",
+                f"- **Company linkage rate**: {ls.get('company_linkage_rate', 0):.1f}%",
+                f"- **Average calls per company**: {ls.get('calls_per_company_avg', 0):.2f}",
+                "",
+            ]
+        )
 
     # Add industry coverage
     if "linking_output" in stats and "industry_coverage" in stats["linking_output"]:
         ic = stats["linking_output"]["industry_coverage"]
         if "error" not in ic:
-            report_lines.extend([
-                "### Industry Coverage",
-                "",
-                f"- **FF12**: {ic.get('ff12_assigned', 0):,} assigned ({ic.get('ff12_completion_pct', 0):.1f}%), {ic.get('ff12_unique_industries', 0):,} unique industries",
-                f"- **FF48**: {ic.get('ff48_assigned', 0):,} assigned ({ic.get('ff48_completion_pct', 0):.1f}%), {ic.get('ff48_unique_industries', 0):,} unique industries",
-                "",
-            ])
+            report_lines.extend(
+                [
+                    "### Industry Coverage",
+                    "",
+                    f"- **FF12**: {ic.get('ff12_assigned', 0):,} assigned ({ic.get('ff12_completion_pct', 0):.1f}%), {ic.get('ff12_unique_industries', 0):,} unique industries",
+                    f"- **FF48**: {ic.get('ff48_assigned', 0):,} assigned ({ic.get('ff48_completion_pct', 0):.1f}%), {ic.get('ff48_unique_industries', 0):,} unique industries",
+                    "",
+                ]
+            )
 
     # Add SIC distribution
     if "linking_output" in stats and "sic_distribution" in stats["linking_output"]:
         sd = stats["linking_output"]["sic_distribution"]
         if "error" not in sd:
-            report_lines.extend([
-                "### SIC Distribution",
-                "",
-                f"- **Unique SIC codes**: {sd.get('unique_sic_codes', 0):,}",
-                "",
-                "Top 10 SIC Industries:",
-                "",
-                "| SIC | Count | Percentage |",
-                "|-----|-------|------------|",
-            ])
-            for industry in sd.get('top_industries', [])[:10]:
-                report_lines.append(f"| {industry.get('sic', 'N/A')} | {industry.get('count', 0):,} | {industry.get('percentage', 0):.2f}% |")
+            report_lines.extend(
+                [
+                    "### SIC Distribution",
+                    "",
+                    f"- **Unique SIC codes**: {sd.get('unique_sic_codes', 0):,}",
+                    "",
+                    "Top 10 SIC Industries:",
+                    "",
+                    "| SIC | Count | Percentage |",
+                    "|-----|-------|------------|",
+                ]
+            )
+            for industry in sd.get("top_industries", [])[:10]:
+                report_lines.append(
+                    f"| {industry.get('sic', 'N/A')} | {industry.get('count', 0):,} | {industry.get('percentage', 0):.2f}% |"
+                )
             report_lines.append("")
 
     # Add quality metrics
     if "linking_output" in stats and "quality_metrics" in stats["linking_output"]:
         qm = stats["linking_output"]["quality_metrics"]
         if "error" not in qm:
-            report_lines.extend([
-                "### Linkage Quality Metrics",
-                "",
-                f"- **Average link quality**: {qm.get('avg_link_quality', 0):.2f}",
-            ])
+            report_lines.extend(
+                [
+                    "### Linkage Quality Metrics",
+                    "",
+                    f"- **Average link quality**: {qm.get('avg_link_quality', 0):.2f}",
+                ]
+            )
 
             if "link_quality_by_method" in qm:
-                report_lines.extend([
-                    "",
-                    "Link Quality by Method:",
-                    "",
-                    "| Method | Avg Quality |",
-                    "|--------|-------------|",
-                ])
+                report_lines.extend(
+                    [
+                        "",
+                        "Link Quality by Method:",
+                        "",
+                        "| Method | Avg Quality |",
+                        "|--------|-------------|",
+                    ]
+                )
                 for method, avg_quality in qm["link_quality_by_method"].items():
                     report_lines.append(f"| {method} | {avg_quality:.2f} |")
                 report_lines.append("")
@@ -1170,29 +1235,33 @@ def main():
     # Add temporal coverage
     if "linking_output" in stats and "temporal_coverage" in stats["linking_output"]:
         tc = stats["linking_output"]["temporal_coverage"]
-        report_lines.extend([
-            "### Temporal Coverage",
-            "",
-            f"- **Date range**: {tc.get('earliest_date', 'N/A')} to {tc.get('latest_date', 'N/A')}",
-            "",
-        ])
+        report_lines.extend(
+            [
+                "### Temporal Coverage",
+                "",
+                f"- **Date range**: {tc.get('earliest_date', 'N/A')} to {tc.get('latest_date', 'N/A')}",
+                "",
+            ]
+        )
 
     # Add output files section
-    report_lines.extend([
-        "## Output Files",
-        "",
-        f"- Linked metadata: `{output_file.name}`",
-        f"- Variable reference: `{var_ref_file.name}`",
-        f"- Statistics: `stats.json`",
-        "",
-        "## Columns",
-        "",
-        f"Total columns: {stats['output']['final_columns']}",
-        "",
-        "```",
-        ", ".join(df_linked.columns.tolist()),
-        "```",
-    ])
+    report_lines.extend(
+        [
+            "## Output Files",
+            "",
+            f"- Linked metadata: `{output_file.name}`",
+            f"- Variable reference: `{var_ref_file.name}`",
+            f"- Statistics: `stats.json`",
+            "",
+            "## Columns",
+            "",
+            f"Total columns: {stats['output']['final_columns']}",
+            "",
+            "```",
+            ", ".join(df_linked.columns.tolist()),
+            "```",
+        ]
+    )
 
     # Write report
     report_file = paths["output_dir"] / "report_step_1_2.md"
