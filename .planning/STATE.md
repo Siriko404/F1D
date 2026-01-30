@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
  ## Current Position
 
 Phase: 27 of 27 (Remove Symlink Mechanism)
-Plan: 04 of 6 in current phase
+Plan: 05 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-30 - Completed 27-04-PLAN.md
+Last activity: 2026-01-30 - Completed 27-05-PLAN.md
 
-Progress: [██████████] 100% (141/143 plans complete)
+Progress: [██████████] 98% (142/143 plans complete)
 
 ## Phase 25.1 Achievements
 
@@ -195,12 +195,22 @@ Progress: [██████████] 100% (141/143 plans complete)
 - All validation tests passed (22/22 scripts respond to --help, 5/5 shared modules import)
 - Repository fully functional after cleanup
 
-## Phase 27 Achievements
+ ## Phase 27 Achievements
 
 **Phase 27 IN PROGRESS** - Removing symlink mechanism from pipeline
 - 27-01 COMPLETE: Added get_latest_output_dir() to shared/path_utils.py, updated dependency_checker.py and data_loading.py
 - 27-02 COMPLETE: Updated Step 1-2 reader scripts to use timestamp-based resolution (verified 1.0-1.4, 2.1-2.3, 2.3_VerifyStep2, 2.3_Report)
 - 27-03 COMPLETE: Verified Step 3 and Step 4.1.x reader scripts already use get_latest_output_dir() (no code changes needed)
+- 27-04 COMPLETE: Updated remaining Step 4 scripts and test files to use get_latest_output_dir()
+- 27-05 COMPLETE: Removed symlink creation from all 20 pipeline scripts
+
+ **Phase 27-05 COMPLETE** - 2026-01-30
+ - Removed update_latest_link imports from all 20 pipeline scripts (Steps 1-4)
+ - Removed paths[latest_dir] definitions from Step 1-3 scripts
+ - Removed update_latest_link() calls from all writer scripts
+ - All scripts now write only to timestamped directories (no symlinks)
+ - All 20 scripts verified to compile without syntax errors
+ - Ready for Plan 27-06: Delete symlink_utils.py and clean up remaining utilities
 
  **Phase 27-03 COMPLETE** - 2026-01-30
  - Verified 3.0_BuildFinancialFeatures.py uses get_latest_output_dir() for manifest resolution
@@ -353,9 +363,12 @@ Recent decisions affecting current work:
  - [Phase 27-02]: Step 1 scripts (1.0, 1.2-1.4) confirmed using get_latest_output_dir() for reading prerequisite outputs
  - [Phase 27-02]: Step 2 scripts (2.1-2.3 + 2.3_VerifyStep2) confirmed using get_latest_output_dir() for reading prerequisite outputs
  - [Phase 27-02]: No hardcoded /latest/ paths remain in reader code for Steps 1-2 - all migrated in Phase 27-01
- - [Phase 27-04]: Test files use fallback pattern - try get_latest_output_dir(), fallback to /latest/ if not found
- - [Phase 27-04]: Fixed 4.3_TakeoverHazards.py missing load_data() function - added complete implementation using get_latest_output_dir()
- - [Phase 27-04]: All Step 4 scripts now compliant for timestamp-based resolution - ready for Plan 27-05 (remove symlink creation)
+  - [Phase 27-04]: Test files use fallback pattern - try get_latest_output_dir(), fallback to /latest/ if not found
+  - [Phase 27-04]: Fixed 4.3_TakeoverHazards.py missing load_data() function - added complete implementation using get_latest_output_dir()
+  - [Phase 27-04]: All Step 4 scripts now compliant for timestamp-based resolution - ready for Plan 27-05 (remove symlink creation)
+  - [Phase 27-05]: All 20 pipeline scripts no longer create symlinks - writers only create timestamped directories
+  - [Phase 27-05]: Symlink mechanism successfully removed from entire pipeline
+  - [Phase 27-05]: Ready for Plan 27-06: Delete symlink_utils.py and clean up remaining utilities
 
 ### Roadmap Evolution
 
@@ -408,9 +421,9 @@ Recent decisions affecting current work:
 
  ## Session Continuity
 
-        Last session: 2026-01-30T18:22:00Z
-        Stopped at: Completed 27-04-PLAN.md
-        Resume file: None
+         Last session: 2026-01-30T18:45:00Z
+         Stopped at: Completed 27-05-PLAN.md
+         Resume file: None
 
         Phase: 27 of 27 (Remove Symlink Mechanism)
           Plan: 04 of 06
