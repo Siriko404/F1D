@@ -73,6 +73,7 @@ from shared.path_utils import (
     validate_output_path,
     ensure_output_dir,
     validate_input_file,
+    get_latest_output_dir,
 )
 
 from shared.regression_validation import (
@@ -225,14 +226,18 @@ def load_all_data(root, year_start, year_end, stats=None):
     print("Loading and merging data")
     print("=" * 60)
 
-    # Load manifest
-    manifest_path = (
-        root
-        / "4_Outputs"
-        / "1.0_BuildSampleManifest"
-        / "latest"
-        / "master_sample_manifest.parquet"
+    # Resolve directories using timestamp-based resolution
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        required_file="master_sample_manifest.parquet",
     )
+    lv_dir = get_latest_output_dir(
+        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables"
+    )
+    fc_dir = get_latest_output_dir(root / "4_Outputs" / "3_Financial_Features")
+
+    # Load manifest
+    manifest_path = manifest_dir / "master_sample_manifest.parquet"
     manifest = pd.read_parquet(
         manifest_path,
         columns=[
@@ -255,14 +260,7 @@ def load_all_data(root, year_start, year_end, stats=None):
 
     for year in range(year_start, year_end + 1):
         # Linguistic variables (from 2.2_Variables - same as 4.1 and 4.1.1)
-        lv_path = (
-            root
-            / "4_Outputs"
-            / "2_Textual_Analysis"
-            / "2.2_Variables"
-            / "latest"
-            / f"linguistic_variables_{year}.parquet"
-        )
+        lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
         if not lv_path.exists():
             print(f"  WARNING: Missing linguistic_variables_{year}.parquet")
             continue
@@ -275,23 +273,11 @@ def load_all_data(root, year_start, year_end, stats=None):
             lv = lv.drop(columns=lv_drop_cols)
 
         # Firm controls
-        fc_path = (
-            root
-            / "4_Outputs"
-            / "3_Financial_Features"
-            / "latest"
-            / f"firm_controls_{year}.parquet"
-        )
+        fc_path = fc_dir / f"firm_controls_{year}.parquet"
         fc = pd.read_parquet(fc_path) if fc_path.exists() else pd.DataFrame()
 
         # Market variables
-        mv_path = (
-            root
-            / "4_Outputs"
-            / "3_Financial_Features"
-            / "latest"
-            / f"market_variables_{year}.parquet"
-        )
+        mv_path = fc_dir / f"market_variables_{year}.parquet"
         mv = pd.read_parquet(mv_path) if mv_path.exists() else pd.DataFrame()
 
         # Filter manifest to this year's files

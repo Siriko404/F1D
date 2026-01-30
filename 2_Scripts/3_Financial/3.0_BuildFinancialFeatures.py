@@ -39,6 +39,7 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
 except ImportError:
     # Fallback if shared/__init__.py hasn't run yet
@@ -46,6 +47,7 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
 
 # ==============================================================================
@@ -214,10 +216,17 @@ def load_config():
 
 def setup_paths(config, timestamp):
     root = Path(__file__).parent.parent.parent
+
+    # Resolve manifest directory using timestamp-based resolution
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+
     paths = {
         "root": root,
         "script_dir": Path(__file__).parent,
-        "manifest_dir": root / "4_Outputs" / "1.0_BuildSampleManifest" / "latest",
+        "manifest_dir": manifest_dir,
         "compustat_file": root
         / "1_Inputs"
         / "comp_na_daily_all"
