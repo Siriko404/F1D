@@ -233,7 +233,8 @@ def detect_anomalies_zscore(
 
         z_scores = abs((series - mean) / std)
         anomaly_mask = z_scores > threshold
-        anomaly_indices = df[anomaly_mask].index.tolist()
+        # Get indices from series (not df) since mask is based on series with dropna
+        anomaly_indices = series[anomaly_mask].index.tolist()
 
         anomalies[col] = {
             "count": int(anomaly_mask.sum()),
