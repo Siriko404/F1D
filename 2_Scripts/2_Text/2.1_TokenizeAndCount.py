@@ -43,6 +43,7 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
     from shared.observability_utils import DualWriter
 except ImportError:
@@ -55,6 +56,7 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
     from shared.observability_utils import DualWriter
 
@@ -247,13 +249,17 @@ def generate_tokenization_report(stats, out_dir):
 
             if "date_range" in ms:
                 dr = ms["date_range"]
-                f.write(f"- **Date range:** {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')}\n")
+                f.write(
+                    f"- **Date range:** {dr.get('earliest', 'N/A')} to {dr.get('latest', 'N/A')}\n"
+                )
 
             if "event_type_dist" in ms:
                 f.write("\n**Event Type Distribution:**\n\n")
                 f.write("| Event Type | Count |\n")
                 f.write("|-----------|-------|\n")
-                for et, count in sorted(ms["event_type_dist"].items(), key=lambda x: int(x[0])):
+                for et, count in sorted(
+                    ms["event_type_dist"].items(), key=lambda x: int(x[0])
+                ):
                     f.write(f"| {et} | {count:,} |\n")
 
         f.write("\n")
@@ -264,7 +270,9 @@ def generate_tokenization_report(stats, out_dir):
             ds = stats["tokenize_input"]["dictionary_stats"]
             f.write(f"- **Total vocabulary words:** {ds.get('total_words', 'N/A'):,}\n")
             f.write(f"- **Vocabulary size:** {ds.get('vocabulary_size', 'N/A'):,}\n")
-            f.write(f"- **Average word length:** {ds.get('avg_word_length', 'N/A'):.2f}\n")
+            f.write(
+                f"- **Average word length:** {ds.get('avg_word_length', 'N/A'):.2f}\n"
+            )
 
             if "word_length_distribution" in ds:
                 f.write("\n**Word Length Distribution:**\n\n")
@@ -276,7 +284,10 @@ def generate_tokenization_report(stats, out_dir):
         f.write("\n")
 
         # Category Breakdown
-        if "tokenize_input" in stats and "category_breakdown" in stats["tokenize_input"]:
+        if (
+            "tokenize_input" in stats
+            and "category_breakdown" in stats["tokenize_input"]
+        ):
             f.write("**Words per Category:**\n\n")
             f.write("| Category | Word Count | Sample Words |\n")
             f.write("|----------|------------|--------------|\n")
@@ -285,19 +296,25 @@ def generate_tokenization_report(stats, out_dir):
             for cat_name in sorted(cb.keys()):
                 cat_info = cb[cat_name]
                 sample_words = ", ".join(cat_info.get("sample_words", [])[:5])
-                f.write(f"| {cat_name} | {cat_info['word_count']:,} | {sample_words} |\n")
+                f.write(
+                    f"| {cat_name} | {cat_info['word_count']:,} | {sample_words} |\n"
+                )
 
         f.write("\n")
 
         # Overlap Analysis
         if "tokenize_input" in stats and "overlap_analysis" in stats["tokenize_input"]:
             oa = stats["tokenize_input"]["overlap_analysis"]
-            f.write(f"**Category Overlap:** {oa.get('words_in_multiple_categories', 0):,} words appear in multiple categories\n\n")
+            f.write(
+                f"**Category Overlap:** {oa.get('words_in_multiple_categories', 0):,} words appear in multiple categories\n\n"
+            )
 
             if "category_overlaps" in oa and oa["category_overlaps"]:
                 f.write("| Category Pair | Overlapping Words |\n")
                 f.write("|---------------|-------------------|\n")
-                for pair, count in sorted(oa["category_overlaps"].items(), key=lambda x: x[1], reverse=True):
+                for pair, count in sorted(
+                    oa["category_overlaps"].items(), key=lambda x: x[1], reverse=True
+                ):
                     f.write(f"| {pair} | {count:,} |\n")
 
         f.write("\n---\n\n")
@@ -307,47 +324,75 @@ def generate_tokenization_report(stats, out_dir):
 
         # Volume Metrics
         f.write("### Volume Metrics\n\n")
-        if "tokenize_process" in stats and "volume_metrics" in stats["tokenize_process"]:
+        if (
+            "tokenize_process" in stats
+            and "volume_metrics" in stats["tokenize_process"]
+        ):
             vm = stats["tokenize_process"]["volume_metrics"]
             f.write(f"- **Total input rows:** {vm.get('total_input_rows', 'N/A'):,}\n")
-            f.write(f"- **Total output rows:** {vm.get('total_output_rows', 'N/A'):,}\n")
+            f.write(
+                f"- **Total output rows:** {vm.get('total_output_rows', 'N/A'):,}\n"
+            )
             f.write(f"- **Total tokens:** {vm.get('total_tokens', 'N/A'):,}\n")
-            f.write(f"- **Total vocabulary hits:** {vm.get('total_vocab_hits', 'N/A'):,}\n")
+            f.write(
+                f"- **Total vocabulary hits:** {vm.get('total_vocab_hits', 'N/A'):,}\n"
+            )
 
         f.write("\n")
 
         # Coverage Metrics
         f.write("### Coverage Metrics\n\n")
-        if "tokenize_process" in stats and "coverage_metrics" in stats["tokenize_process"]:
+        if (
+            "tokenize_process" in stats
+            and "coverage_metrics" in stats["tokenize_process"]
+        ):
             cm = stats["tokenize_process"]["coverage_metrics"]
-            f.write(f"- **Vocabulary hit rate:** {cm.get('vocab_hit_rate', 'N/A'):.2f}%\n")
+            f.write(
+                f"- **Vocabulary hit rate:** {cm.get('vocab_hit_rate', 'N/A'):.2f}%\n"
+            )
             f.write(f"- **Out-of-vocabulary rate:** {cm.get('oov_rate', 'N/A'):.2f}%\n")
 
         f.write("\n")
 
         # Category Hit Rates
-        if "tokenize_process" in stats and "category_hit_rates" in stats["tokenize_process"]:
+        if (
+            "tokenize_process" in stats
+            and "category_hit_rates" in stats["tokenize_process"]
+        ):
             chr = stats["tokenize_process"]["category_hit_rates"]
             f.write("**Per-Category Hit Rates:**\n\n")
             f.write("| Category | Hit Count | Hit Rate % |\n")
             f.write("|----------|-----------|------------|\n")
             for cat_name in sorted(chr.keys()):
                 cat_info = chr[cat_name]
-                f.write(f"| {cat_name} | {cat_info.get('hit_count', 0):,} | {cat_info.get('hit_rate_pct', 0.0):.2f}% |\n")
+                f.write(
+                    f"| {cat_name} | {cat_info.get('hit_count', 0):,} | {cat_info.get('hit_rate_pct', 0.0):.2f}% |\n"
+                )
 
         f.write("\n")
 
         # Efficiency Metrics
         f.write("### Efficiency Metrics\n\n")
-        if "tokenize_process" in stats and "efficiency_metrics" in stats["tokenize_process"]:
+        if (
+            "tokenize_process" in stats
+            and "efficiency_metrics" in stats["tokenize_process"]
+        ):
             em = stats["tokenize_process"]["efficiency_metrics"]
-            f.write(f"- **Documents per second:** {em.get('docs_per_second', 'N/A'):,.2f}\n")
-            f.write(f"- **Tokens per second:** {em.get('tokens_per_second', 'N/A'):,.2f}\n")
+            f.write(
+                f"- **Documents per second:** {em.get('docs_per_second', 'N/A'):,.2f}\n"
+            )
+            f.write(
+                f"- **Tokens per second:** {em.get('tokens_per_second', 'N/A'):,.2f}\n"
+            )
 
             if "tokens_per_doc" in em:
                 tpd = em["tokens_per_doc"]
-                f.write(f"- **Average tokens per document:** {tpd.get('mean', 'N/A'):.2f}\n")
-                f.write(f"- **Median tokens per document:** {tpd.get('median', 'N/A'):.2f}\n")
+                f.write(
+                    f"- **Average tokens per document:** {tpd.get('mean', 'N/A'):.2f}\n"
+                )
+                f.write(
+                    f"- **Median tokens per document:** {tpd.get('median', 'N/A'):.2f}\n"
+                )
                 f.write(f"- **Min tokens per document:** {tpd.get('min', 'N/A'):,}\n")
                 f.write(f"- **Max tokens per document:** {tpd.get('max', 'N/A'):,}\n")
 
@@ -380,7 +425,10 @@ def generate_tokenization_report(stats, out_dir):
 
         # Category Count Distributions
         f.write("### Category Count Distributions\n\n")
-        if "tokenize_output" in stats and "category_distributions" in stats["tokenize_output"]:
+        if (
+            "tokenize_output" in stats
+            and "category_distributions" in stats["tokenize_output"]
+        ):
             cd = stats["tokenize_output"]["category_distributions"]
 
             for cat_name in sorted(cd.keys()):
@@ -397,7 +445,10 @@ def generate_tokenization_report(stats, out_dir):
 
         # Total Tokens Statistics
         f.write("### Total Tokens Statistics\n\n")
-        if "tokenize_output" in stats and "total_tokens_stats" in stats["tokenize_output"]:
+        if (
+            "tokenize_output" in stats
+            and "total_tokens_stats" in stats["tokenize_output"]
+        ):
             tts = stats["tokenize_output"]["total_tokens_stats"]
             f.write(f"- Mean: {tts.get('mean', 0):.2f}\n")
             f.write(f"- Median: {tts.get('median', 0):.2f}\n")
@@ -419,7 +470,10 @@ def generate_tokenization_report(stats, out_dir):
 
         # Speaker-Level Analysis
         f.write("### Speaker-Level Analysis\n\n")
-        if "tokenize_output" in stats and "speaker_analysis" in stats["tokenize_output"]:
+        if (
+            "tokenize_output" in stats
+            and "speaker_analysis" in stats["tokenize_output"]
+        ):
             sa = stats["tokenize_output"]["speaker_analysis"]
 
             if "error" in sa:
@@ -443,7 +497,10 @@ def generate_tokenization_report(stats, out_dir):
 
         # Sparsity Analysis
         f.write("### Sparsity Analysis\n\n")
-        if "tokenize_output" in stats and "sparsity_analysis" in stats["tokenize_output"]:
+        if (
+            "tokenize_output" in stats
+            and "sparsity_analysis" in stats["tokenize_output"]
+        ):
             sp = stats["tokenize_output"]["sparsity_analysis"]
 
             if "zero_counts_per_category" in sp:
@@ -456,22 +513,34 @@ def generate_tokenization_report(stats, out_dir):
 
             f.write("\n")
             if "documents_with_no_matches" in sp:
-                f.write(f"**Documents with no linguistic matches:** {sp['documents_with_no_matches']:,}\n")
+                f.write(
+                    f"**Documents with no linguistic matches:** {sp['documents_with_no_matches']:,}\n"
+                )
 
         f.write("\n---\n\n")
 
         # PROCESS SUMMARY (existing)
         f.write("## PROCESS SUMMARY\n\n")
-        f.write(f"- **Years processed:** {stats.get('processing', {}).get('years_processed', 'N/A')}\n")
-        f.write(f"- **Years skipped:** {stats.get('processing', {}).get('years_skipped', 'N/A')}\n")
-        f.write(f"- **Duration:** {stats.get('timing', {}).get('duration_seconds', 'N/A'):.2f} seconds\n")
+        f.write(
+            f"- **Years processed:** {stats.get('processing', {}).get('years_processed', 'N/A')}\n"
+        )
+        f.write(
+            f"- **Years skipped:** {stats.get('processing', {}).get('years_skipped', 'N/A')}\n"
+        )
+        f.write(
+            f"- **Duration:** {stats.get('timing', {}).get('duration_seconds', 'N/A'):.2f} seconds\n"
+        )
 
         f.write("\n---\n\n")
 
         # OUTPUT SUMMARY (existing)
         f.write("## OUTPUT SUMMARY\n\n")
-        f.write(f"- **Final record count:** {stats.get('output', {}).get('final_rows', 'N/A'):,}\n")
-        f.write(f"- **Files generated:** {len(stats.get('output', {}).get('files', []))}\n")
+        f.write(
+            f"- **Final record count:** {stats.get('output', {}).get('final_rows', 'N/A'):,}\n"
+        )
+        f.write(
+            f"- **Files generated:** {len(stats.get('output', {}).get('files', []))}\n"
+        )
 
     print(f"Generated: {report_path.name}")
 
@@ -956,13 +1025,11 @@ def main(dictionary_path=None):
     }
 
     # Load documents with memory tracking
-    manifest_path = (
-        root
-        / "4_Outputs"
-        / "1.4_AssembleManifest"
-        / "latest"
-        / "master_sample_manifest.parquet"
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.4_AssembleManifest",
+        required_file="master_sample_manifest.parquet",
     )
+    manifest_path = manifest_dir / "master_sample_manifest.parquet"
     lm_path = (
         dictionary_path
         if dictionary_path
@@ -994,6 +1061,7 @@ def main(dictionary_path=None):
     # Compute INPUT statistics (manifest + LM dictionary)
     print("\nComputing input statistics...")
     from shared.observability_utils import compute_tokenize_input_stats
+
     stats["tokenize_input"] = compute_tokenize_input_stats(
         manifest, lm_path, vocab_list, cat_sets
     )
@@ -1069,6 +1137,7 @@ def main(dictionary_path=None):
     # Compute PROCESS statistics
     print("\nComputing process statistics...")
     from shared.observability_utils import compute_tokenize_process_stats
+
     duration_seconds = stats["timing"]["duration_seconds"]
     stats["tokenize_process"] = compute_tokenize_process_stats(
         stats["processing"]["per_year"], cat_sets, vocab_list, duration_seconds
@@ -1088,6 +1157,7 @@ def main(dictionary_path=None):
     if output_dfs:
         print("Computing output statistics...")
         from shared.observability_utils import compute_tokenize_output_stats
+
         stats["tokenize_output"] = compute_tokenize_output_stats(output_dfs, cat_sets)
 
         # Fill in category_hit_rates now that we have output data
@@ -1097,7 +1167,11 @@ def main(dictionary_path=None):
             col_name = f"{cat_name}_count"
             if col_name in df_all.columns:
                 hit_count = int(df_all[col_name].sum())
-                hit_rate_pct = round(hit_count / total_tokens_all * 100, 2) if total_tokens_all > 0 else 0.0
+                hit_rate_pct = (
+                    round(hit_count / total_tokens_all * 100, 2)
+                    if total_tokens_all > 0
+                    else 0.0
+                )
                 stats["tokenize_process"]["category_hit_rates"][cat_name] = {
                     "hit_count": hit_count,
                     "hit_rate_pct": hit_rate_pct,
