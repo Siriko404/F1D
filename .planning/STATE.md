@@ -7,14 +7,14 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
 **Current focus:** All pipeline scripts support manual execution - ready for production use
 
-## Current Position
+ ## Current Position
 
 Phase: 27 of 27 (Remove Symlink Mechanism)
-Plan: 03 of 6 in current phase
+Plan: 04 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-30 - Completed 27-03-PLAN.md
+Last activity: 2026-01-30 - Completed 27-04-PLAN.md
 
-Progress: [██████████] 100% (140/143 plans complete)
+Progress: [██████████] 100% (141/143 plans complete)
 
 ## Phase 25.1 Achievements
 
@@ -202,16 +202,27 @@ Progress: [██████████] 100% (140/143 plans complete)
 - 27-02 COMPLETE: Updated Step 1-2 reader scripts to use timestamp-based resolution (verified 1.0-1.4, 2.1-2.3, 2.3_VerifyStep2, 2.3_Report)
 - 27-03 COMPLETE: Verified Step 3 and Step 4.1.x reader scripts already use get_latest_output_dir() (no code changes needed)
 
-**Phase 27-03 COMPLETE** - 2026-01-30
-- Verified 3.0_BuildFinancialFeatures.py uses get_latest_output_dir() for manifest resolution
-- Verified 3.1_FirmControls.py uses get_latest_output_dir() for manifest resolution
-- Verified 3.2_MarketVariables.py uses get_latest_output_dir() for manifest resolution
-- Verified 3.3_EventFlags.py uses get_latest_output_dir() for manifest resolution
-- Verified 4.1_EstimateCeoClarity.py uses get_latest_output_dir() for manifest, linguistic vars, financial features
-- Verified 4.1.1_EstimateCeoClarity_CeoSpecific.py uses get_latest_output_dir() for all prerequisites
-- Verified 4.1.2_EstimateCeoClarity_Extended.py uses get_latest_output_dir() for all prerequisites
-- All 7 scripts verified to compile without syntax errors
-- No hardcoded /latest/ reading paths found in Steps 3-4.1.2
+ **Phase 27-03 COMPLETE** - 2026-01-30
+ - Verified 3.0_BuildFinancialFeatures.py uses get_latest_output_dir() for manifest resolution
+ - Verified 3.1_FirmControls.py uses get_latest_output_dir() for manifest resolution
+ - Verified 3.2_MarketVariables.py uses get_latest_output_dir() for manifest resolution
+ - Verified 3.3_EventFlags.py uses get_latest_output_dir() for manifest resolution
+ - Verified 4.1_EstimateCeoClarity.py uses get_latest_output_dir() for manifest, linguistic vars, financial features
+ - Verified 4.1.1_EstimateCeoClarity_CeoSpecific.py uses get_latest_output_dir() for all prerequisites
+ - Verified 4.1.2_EstimateCeoClarity_Extended.py uses get_latest_output_dir() for all prerequisites
+ - All 7 scripts verified to compile without syntax errors
+ - No hardcoded /latest/ reading paths found in Steps 3-4.1.2
+
+**Phase 27-04 COMPLETE** - 2026-01-30
+ - Updated remaining Step 4 scripts (4.1.3, 4.1.4, 4.2, 4.3, 4.4) to use get_latest_output_dir()
+ - Fixed critical bug in 4.3_TakeoverHazards.py - added missing load_data() function with resolver
+ - Updated 7 test files to use get_latest_output_dir() with fallback pattern:
+   - test_full_pipeline.py, test_pipeline_step1.py, test_pipeline_step2.py
+   - test_pipeline_step3.py, test_chunked_reader.py
+   - test_output_stability.py, generate_baseline_checksums.py
+ - All test files use resolve_output_dir() helper with try/except fallback to /latest/
+ - All 12 files (5 scripts + 7 tests) verified to compile without syntax errors
+ - No hardcoded /latest/ paths remain for READING data in Step 4 scripts or tests
 
 ## Session Continuity
 
@@ -338,10 +349,13 @@ Recent decisions affecting current work:
 - [Quick Task 023]: Added comprehensive tokenization descriptive statistics to 2.1_TokenizeAndCount.py following INPUT/PROCESS/OUTPUT framework
 - [Quick Task 023]: Added compute_tokenize_input_stats, compute_tokenize_process_stats, compute_tokenize_output_stats to observability_utils.py
 - [Quick Task 023]: Created generate_tokenization_report() function for publication-ready markdown report with LM dictionary analysis, category hit rates, speaker-level analysis, and sparsity metrics
-- [Phase 27-02]: Verified all Step 1-2 reader scripts use get_latest_output_dir() for timestamp-based resolution
-- [Phase 27-02]: Step 1 scripts (1.0, 1.2-1.4) confirmed using get_latest_output_dir() for reading prerequisite outputs
-- [Phase 27-02]: Step 2 scripts (2.1-2.3 + 2.3_VerifyStep2) confirmed using get_latest_output_dir() for reading prerequisite outputs
-- [Phase 27-02]: No hardcoded /latest/ paths remain in reader code for Steps 1-2 - all migrated in Phase 27-01
+ - [Phase 27-02]: Verified all Step 1-2 reader scripts use get_latest_output_dir() for timestamp-based resolution
+ - [Phase 27-02]: Step 1 scripts (1.0, 1.2-1.4) confirmed using get_latest_output_dir() for reading prerequisite outputs
+ - [Phase 27-02]: Step 2 scripts (2.1-2.3 + 2.3_VerifyStep2) confirmed using get_latest_output_dir() for reading prerequisite outputs
+ - [Phase 27-02]: No hardcoded /latest/ paths remain in reader code for Steps 1-2 - all migrated in Phase 27-01
+ - [Phase 27-04]: Test files use fallback pattern - try get_latest_output_dir(), fallback to /latest/ if not found
+ - [Phase 27-04]: Fixed 4.3_TakeoverHazards.py missing load_data() function - added complete implementation using get_latest_output_dir()
+ - [Phase 27-04]: All Step 4 scripts now compliant for timestamp-based resolution - ready for Plan 27-05 (remove symlink creation)
 
 ### Roadmap Evolution
 
@@ -392,18 +406,18 @@ Recent decisions affecting current work:
   - Follow-up task required to fix data or schema alignment
   - Note: This is EXPECTED for a validation task - E2E test successfully identified the issue
 
-## Session Continuity
+ ## Session Continuity
 
-        Last session: 2026-01-30T16:47:00Z
-        Stopped at: Completed 27-03-PLAN.md
+        Last session: 2026-01-30T18:22:00Z
+        Stopped at: Completed 27-04-PLAN.md
         Resume file: None
 
         Phase: 27 of 27 (Remove Symlink Mechanism)
-          Plan: 03 of 06
+          Plan: 04 of 06
           Status: In progress
-          Last activity: 2026-01-30 - Completed 27-03: Verified Step 3 and 4.1.x scripts use get_latest_output_dir()
+          Last activity: 2026-01-30 - Completed 27-04: Updated remaining Step 4 scripts and test files
 
-         Progress: [██████████] 98% (140/143 plans complete)
+         Progress: [██████████] 98% (141/143 plans complete)
           Technical Remediation: [████████████] 100% (All phases 7-25 complete)
           Gap Closure: [████████████] 100% (All gap closure phases complete)
           Post-Audit Validation: [████████████] 100% (All validation phases complete)
