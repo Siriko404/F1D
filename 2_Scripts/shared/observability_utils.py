@@ -2924,6 +2924,1689 @@ def compute_constructvariables_output_stats(
     return stats
 
 
+def compute_financial_input_stats(
+    manifest_df: pd.DataFrame,
+    compustat_df: pd.DataFrame,
+    ibes_df: pd.DataFrame,
+    cccl_df: pd.DataFrame = None,
+) -> Dict[str, Any]:
+    """
+    Analyze input data for Step 3.1 Firm Controls.
+
+    Provides comprehensive statistics about manifest (sample calls),
+    Compustat (financial data), IBES (earnings forecasts), and CCCL
+    (competition instrument) datasets.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        manifest_df: Master manifest DataFrame (from step 1.4)
+        compustat_df: Compustat quarterly data DataFrame
+        ibes_df: IBES forecast DataFrame
+        cccl_df: CCCL instrument DataFrame (optional)
+
+    Returns:
+        Dictionary with keys:
+        - manifest_stats: {total_calls, unique_gvkey, date_range, calls_per_year}
+        - compustat_stats: {total_observations, unique_gvkey, date_range,
+                            quarters_covered, memory_mb}
+        - ibes_stats: {total_forecasts, unique_tickers, eps_qtr_records,
+                       measure_types, date_range}
+        - cccl_stats: {total_records, unique_gvkey, years_covered,
+                       intensity_variants_available} (if provided)
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Manifest statistics
+    stats["manifest_stats"] = {
+        "total_calls": int(len(manifest_df)),
+    }
+
+    if "gvkey" in manifest_df.columns:
+        stats["manifest_stats"]["unique_gvkey"] = int(manifest_df["gvkey"].nunique())
+
+    if "start_date" in manifest_df.columns:
+        manifest_df_temp = manifest_df.copy()
+        manifest_df_temp["start_date"] = pd.to_datetime(manifest_df_temp["start_date"])
+        date_col = manifest_df_temp["start_date"].dropna()
+        if len(date_col) > 0:
+            stats["manifest_stats"]["date_range"] = {
+                "earliest": date_col.min().isoformat(),
+                "latest": date_col.max().isoformat(),
+            }
+
+    # Calls per year
+    if "start_date" in manifest_df.columns:
+        manifest_df_temp = manifest_df.copy()
+        manifest_df_temp["start_date"] = pd.to_datetime(manifest_df_temp["start_date"])
+        calls_per_year = manifest_df_temp["start_date"].dt.year.value_counts().sort_index()
+        stats["manifest_stats"]["calls_per_year"] = {
+            str(int(y)): int(c) for y, c in calls_per_year.items()
+        }
+
+    # Compustat statistics
+    stats["compustat_stats"] = {
+        "total_observations": int(len(compustat_df)),
+    }
+
+    if "gvkey" in compustat_df.columns:
+        stats["compustat_stats"]["unique_gvkey"] = int(compustat_df["gvkey"].nunique())
+
+    if "datadate" in compustat_df.columns:
+        compustat_df_temp = compustat_df.copy()
+        compustat_df_temp["datadate"] = pd.to_datetime(compustat_df_temp["datadate"])
+        date_col = compustat_df_temp["datadate"].dropna()
+        if len(date_col) > 0:
+            stats["compustat_stats"]["date_range"] = {
+                "earliest": date_col.min().isoformat(),
+                "latest": date_col.max().isoformat(),
+            }
+            # Count unique quarters
+            compustat_df_temp["year_quarter"] = (
+                compustat_df_temp["datadate"].dt.year.astype(str) + "Q" +
+                compustat_df_temp["datadate"].dt.quarter.astype(str)
+            )
+            stats["compustat_stats"]["quarters_covered"] = int(compustat_df_temp["year_quarter"].nunique())
+
+    stats["compustat_stats"]["memory_mb"] = round(
+        compustat_df.memory_usage(deep=True).sum() / (1024 * 1024), 2
+    )
+
+    # IBES statistics
+    stats["ibes_stats"] = {
+        "total_forecasts": int(len(ibes_df)),
+    }
+
+    if "TICKER" in ibes_df.columns:
+        stats["ibes_stats"]["unique_tickers"] = int(ibes_df["TICKER"].nunique())
+
+    # Count EPS/QTR records
+    if "MEASURE" in ibes_df.columns and "FISCALP" in ibes_df.columns:
+        eps_qtr_mask = (ibes_df["MEASURE"] == "EPS") & (ibes_df["FISCALP"] == "QTR")
+        stats["ibes_stats"]["eps_qtr_records"] = int(eps_qtr_mask.sum())
+
+    if "MEASURE" in ibes_df.columns:
+        measure_counts = ibes_df["MEASURE"].value_counts()
+        stats["ibes_stats"]["measure_types"] = {
+            str(m): int(c) for m, c in measure_counts.items()
+        }
+
+    if "FPEDATS" in ibes_df.columns:
+        ibes_df_temp = ibes_df.copy()
+        ibes_df_temp["FPEDATS"] = pd.to_datetime(ibes_df_temp["FPEDATS"])
+        date_col = ibes_df_temp["FPEDATS"].dropna()
+        if len(date_col) > 0:
+            stats["ibes_stats"]["date_range"] = {
+                "earliest": date_col.min().isoformat(),
+                "latest": date_col.max().isoformat(),
+            }
+
+    # CCCL statistics (optional)
+    if cccl_df is not None and len(cccl_df) > 0:
+        stats["cccl_stats"] = {
+            "total_records": int(len(cccl_df)),
+        }
+
+        if "gvkey" in cccl_df.columns:
+            stats["cccl_stats"]["unique_gvkey"] = int(cccl_df["gvkey"].nunique())
+
+        if "year" in cccl_df.columns:
+            years = sorted(cccl_df["year"].unique())
+            stats["cccl_stats"]["years_covered"] = [int(y) for y in years]
+            stats["cccl_stats"]["year_range"] = {
+                "earliest": int(min(years)),
+                "latest": int(max(years)),
+            }
+
+        # Count shift_intensity variants
+        intensity_cols = [c for c in cccl_df.columns if c.startswith("shift_intensity")]
+        stats["cccl_stats"]["intensity_variants_available"] = len(intensity_cols)
+        stats["cccl_stats"]["intensity_variant_names"] = intensity_cols
+
+    return stats
+
+
+def compute_financial_process_stats(
+    merge_results: Dict[str, Dict[str, int]],
+    variables_computed: List[str],
+    coverage_rates: Dict[str, float],
+    duration_seconds: float,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.1 Firm Controls process outcomes.
+
+    Provides detailed statistics about merge success rates, variable
+    construction coverage, and processing efficiency.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        merge_results: Dict with merge stats for Compustat, IBES, CCCL
+                       Each entry: {left_rows, right_rows, matched, unmatched_left}
+        variables_computed: List of variable names computed
+        coverage_rates: Dict mapping variable_name -> coverage_percentage
+        duration_seconds: Total processing duration
+
+    Returns:
+        Dictionary with keys:
+        - merge_outcomes: {compustat_controls: {...}, ibes_surprise: {...},
+                          cccl_instrument: {...}}
+        - variable_coverage: {variable_name: {count, pct}}
+        - overall_coverage_stats: {avg_coverage_pct, variables_above_90_pct,
+                                   variables_below_50_pct}
+        - efficiency_metrics: {calls_processed, variables_computed,
+                              duration_seconds}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Merge outcomes
+    stats["merge_outcomes"] = {}
+    for merge_name, merge_stats in merge_results.items():
+        left_rows = merge_stats.get("left_rows", 0)
+        right_rows = merge_stats.get("right_rows", 0)
+        matched = merge_stats.get("matched", 0)
+        unmatched = merge_stats.get("unmatched_left", 0)
+
+        match_rate = round(matched / left_rows * 100, 2) if left_rows > 0 else 0.0
+
+        stats["merge_outcomes"][merge_name] = {
+            "left_rows": int(left_rows),
+            "right_rows": int(right_rows),
+            "matched": int(matched),
+            "unmatched": int(unmatched),
+            "match_rate_pct": match_rate,
+        }
+
+    # Variable coverage
+    stats["variable_coverage"] = {}
+    for var_name in sorted(variables_computed):
+        stats["variable_coverage"][var_name] = {
+            "count": 0,  # To be filled with actual data
+            "pct": round(coverage_rates.get(var_name, 0.0), 2),
+        }
+
+    # Overall coverage statistics
+    coverage_values = list(coverage_rates.values())
+    if coverage_values:
+        stats["overall_coverage_stats"] = {
+            "avg_coverage_pct": round(float(np.mean(coverage_values)), 2),
+            "median_coverage_pct": round(float(np.median(coverage_values)), 2),
+            "min_coverage_pct": round(float(np.min(coverage_values)), 2),
+            "max_coverage_pct": round(float(np.max(coverage_values)), 2),
+            "variables_above_90_pct": int(sum(1 for v in coverage_values if v >= 90)),
+            "variables_above_75_pct": int(sum(1 for v in coverage_values if v >= 75)),
+            "variables_below_50_pct": int(sum(1 for v in coverage_values if v < 50)),
+        }
+    else:
+        stats["overall_coverage_stats"] = {"error": "No coverage data available"}
+
+    # Efficiency metrics
+    total_calls = merge_results.get("compustat_controls", {}).get("left_rows", 0)
+
+    stats["efficiency_metrics"] = {
+        "calls_processed": int(total_calls),
+        "variables_computed": len(variables_computed),
+        "duration_seconds": round(duration_seconds, 2),
+        "calls_per_second": round(total_calls / duration_seconds, 2) if duration_seconds > 0 else 0.0,
+    }
+
+    return stats
+
+
+def compute_financial_output_stats(
+    df_output: pd.DataFrame,
+    variable_names: List[str],
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.1 Firm Controls output characteristics.
+
+    Provides comprehensive statistics about firm control variable
+    distributions, winsorization effects, and correlation structure.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_output: Output DataFrame with firm control variables
+                   (must contain Size, BM, Lev, ROA, EPS_Growth, etc.)
+        variable_names: List of variable names to analyze
+
+    Returns:
+        Dictionary with keys:
+        - variable_distributions: {var_name: {mean, median, std, min, max,
+                                              q25, q75, percentiles, zeros, nans}}
+        - winsorization_effects: {var_name: {pre_winsor_count, post_winsor_count,
+                                            values_capped_at_upper, values_capped_at_lower}}
+        - correlation_structure: Not available without full correlation matrix
+        - cross_sectional_stats: {variable_name: {std_by_year, year_range}}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Variable distributions
+    stats["variable_distributions"] = {}
+    for var_name in sorted(variable_names):
+        if var_name not in df_output.columns:
+            stats["variable_distributions"][var_name] = {"error": "Variable not found"}
+            continue
+
+        var_series = df_output[var_name]
+
+        # Basic statistics
+        var_stats = {
+            "mean": round(float(var_series.mean()), 4),
+            "median": round(float(var_series.median()), 4),
+            "std": round(float(var_series.std()), 4),
+            "min": round(float(var_series.min()), 4),
+            "max": round(float(var_series.max()), 4),
+            "q25": round(float(var_series.quantile(0.25)), 4),
+            "q75": round(float(var_series.quantile(0.75)), 4),
+        }
+
+        # Percentiles
+        var_stats["percentiles"] = {
+            "p1": round(float(var_series.quantile(0.01)), 4),
+            "p5": round(float(var_series.quantile(0.05)), 4),
+            "p10": round(float(var_series.quantile(0.10)), 4),
+            "p90": round(float(var_series.quantile(0.90)), 4),
+            "p95": round(float(var_series.quantile(0.95)), 4),
+            "p99": round(float(var_series.quantile(0.99)), 4),
+        }
+
+        # Missing and zero analysis
+        var_stats["nans"] = {
+            "count": int(var_series.isna().sum()),
+            "pct": round(var_series.isna().sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+        }
+        var_stats["zeros"] = {
+            "count": int((var_series == 0).sum()),
+            "pct": round((var_series == 0).sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+        }
+
+        stats["variable_distributions"][var_name] = var_stats
+
+    # Winsorization effects (estimated from p01/p99)
+    stats["winsorization_effects"] = {}
+    for var_name in sorted(variable_names):
+        if var_name not in df_output.columns or var_name not in stats["variable_distributions"]:
+            continue
+
+        var_series = df_output[var_name].dropna()
+        if len(var_series) == 0:
+            continue
+
+        p01 = stats["variable_distributions"][var_name]["percentiles"]["p1"]
+        p99 = stats["variable_distributions"][var_name]["percentiles"]["p99"]
+
+        # Count values at bounds (indicating winsorization)
+        upper_capped = int((var_series >= p99).sum())
+        lower_capped = int((var_series <= p01).sum())
+
+        stats["winsorization_effects"][var_name] = {
+            "upper_bound": p99,
+            "lower_bound": p01,
+            "values_at_or_above_upper": upper_capped,
+            "values_at_or_below_lower": lower_capped,
+        }
+
+    return stats
+
+
+def compute_market_input_stats(
+    manifest_df: pd.DataFrame,
+    crsp_file: Path,
+    ccm_df: pd.DataFrame = None,
+) -> Dict[str, Any]:
+    """
+    Analyze input data for Step 3.2 Market Variables.
+
+    Provides comprehensive statistics about manifest (sample calls),
+    CRSP (stock price data), and CCM (linking table) datasets.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        manifest_df: Master manifest DataFrame (from step 1.4)
+        crsp_file: Path to CRSP DSF directory
+        ccm_df: CCM linking DataFrame (optional)
+
+    Returns:
+        Dictionary with keys:
+        - manifest_stats: {total_calls, unique_gvkey, date_range,
+                          permno_coverage_before_ccm, permno_coverage_after_ccm}
+        - crsp_stats: {files_available, total_observations, date_range,
+                       unique_permnos, memory_estimate_mb}
+        - ccm_stats: {total_links, unique_gvkey, unique_lpermno, date_coverage}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Manifest statistics
+    stats["manifest_stats"] = {
+        "total_calls": int(len(manifest_df)),
+    }
+
+    if "gvkey" in manifest_df.columns:
+        stats["manifest_stats"]["unique_gvkey"] = int(manifest_df["gvkey"].nunique())
+
+    if "start_date" in manifest_df.columns:
+        manifest_df_temp = manifest_df.copy()
+        manifest_df_temp["start_date"] = pd.to_datetime(manifest_df_temp["start_date"])
+        date_col = manifest_df_temp["start_date"].dropna()
+        if len(date_col) > 0:
+            stats["manifest_stats"]["date_range"] = {
+                "earliest": date_col.min().isoformat(),
+                "latest": date_col.max().isoformat(),
+            }
+
+    # PERMNO coverage
+    if "permno" in manifest_df.columns:
+        permno_before = int(manifest_df["permno"].notna().sum())
+        stats["manifest_stats"]["permno_coverage_before_ccm"] = {
+            "count": permno_before,
+            "pct": round(permno_before / len(manifest_df) * 100, 2) if len(manifest_df) > 0 else 0.0,
+        }
+
+    # CRSP statistics
+    crsp_files = list(crsp_file.glob("CRSP_DSF_*.parquet")) if crsp_file.exists() else []
+
+    stats["crsp_stats"] = {
+        "files_available": len(crsp_files),
+        "file_names": sorted([f.name for f in crsp_files]),
+    }
+
+    if crsp_files:
+        # Sample a few files to estimate
+        sample_files = crsp_files[:3]
+        total_obs = 0
+        unique_permnos = set()
+
+        for f in sample_files:
+            df_sample = pd.read_parquet(f, columns=["PERMNO"])
+            total_obs += len(df_sample)
+            if "PERMNO" in df_sample.columns:
+                unique_permnos.update(df_sample["PERMNO"].dropna().unique())
+
+        stats["crsp_stats"]["sampled_observations"] = int(total_obs)
+        stats["crsp_stats"]["unique_permnos_sampled"] = int(len(unique_permnos))
+
+        # Get date range from filename
+        if crsp_files:
+            years = []
+            for f in crsp_files:
+                try:
+                    year_str = f.stem.split("_")[-2]  # CRSP_DSF_YYYY_Q.parquet
+                    if year_str.isdigit():
+                        years.append(int(year_str))
+                except (IndexError, ValueError):
+                    pass
+            if years:
+                stats["crsp_stats"]["year_range"] = {
+                    "earliest": min(years),
+                    "latest": max(years),
+                }
+
+    # CCM statistics
+    if ccm_df is not None and len(ccm_df) > 0:
+        stats["ccm_stats"] = {
+            "total_links": int(len(ccm_df)),
+        }
+
+        if "gvkey" in ccm_df.columns:
+            stats["ccm_stats"]["unique_gvkey"] = int(ccm_df["gvkey"].nunique())
+
+        if "LPERMNO" in ccm_df.columns:
+            stats["ccm_stats"]["unique_lpermno"] = int(ccm_df["LPERMNO"].nunique())
+
+        # Date coverage
+        if "LINKDT" in ccm_df.columns:
+            linkdt = ccm_df["LINKDT"].dropna()
+            if len(linkdt) > 0:
+                stats["ccm_stats"]["link_date_range"] = {
+                    "earliest": linkdt.min().isoformat() if hasattr(linkdt.min(), 'isoformat') else str(linkdt.min()),
+                    "latest": linkdt.max().isoformat() if hasattr(linkdt.max(), 'isoformat') else str(linkdt.max()),
+                }
+
+    return stats
+
+
+def compute_market_process_stats(
+    per_year_stats: List[Dict[str, Any]],
+    window_params: Dict[str, int],
+    duration_seconds: float,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.2 Market Variables process outcomes.
+
+    Provides detailed statistics about return computation coverage,
+    liquidity measure construction, and window-based calculations.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        per_year_stats: List of per-year statistics from processing
+        window_params: Dict with window configuration (days_after, days_before,
+                       baseline_start, baseline_end, event_window_days)
+        duration_seconds: Total processing duration
+
+    Returns:
+        Dictionary with keys:
+        - coverage_metrics: {stock_ret_coverage: {count, pct},
+                             amihud_coverage: {count, pct},
+                             corwin_schultz_coverage: {count, pct}}
+        - window_configuration: {return_window_days, baseline_window_days,
+                                  event_window_days}
+        - yearly_coverage: {year: {stock_ret_pct, amihud_pct, vol_pct}}
+        - efficiency_metrics: {calls_processed, duration_seconds, years_processed}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Coverage aggregation
+    total_calls = sum(s.get("calls", 0) for s in per_year_stats)
+    total_stock_ret = sum(s.get("stock_ret_computed", 0) for s in per_year_stats)
+    total_amihud = sum(s.get("amihud_computed", 0) for s in per_year_stats)
+
+    stats["coverage_metrics"] = {
+        "stock_ret_coverage": {
+            "count": int(total_stock_ret),
+            "pct": round(total_stock_ret / total_calls * 100, 2) if total_calls > 0 else 0.0,
+        },
+        "amihud_coverage": {
+            "count": int(total_amihud),
+            "pct": round(total_amihud / total_calls * 100, 2) if total_calls > 0 else 0.0,
+        },
+    }
+
+    # Window configuration
+    stats["window_configuration"] = {
+        "return_window_days_after": window_params.get("days_after_prev_call", 5),
+        "return_window_days_before": window_params.get("days_before_current_call", 5),
+        "baseline_start": window_params.get("baseline_start", -35),
+        "baseline_end": window_params.get("baseline_end", -6),
+        "event_window_days": window_params.get("event_days", 5),
+    }
+
+    # Yearly coverage
+    stats["yearly_coverage"] = {}
+    for year_stat in per_year_stats:
+        year = year_stat.get("year")
+        if year is not None:
+            calls = year_stat.get("calls", 0)
+            stock_ret = year_stat.get("stock_ret_computed", 0)
+            amihud = year_stat.get("amihud_computed", 0)
+
+            stats["yearly_coverage"][str(year)] = {
+                "stock_ret_pct": round(stock_ret / calls * 100, 2) if calls > 0 else 0.0,
+                "amihud_pct": round(amihud / calls * 100, 2) if calls > 0 else 0.0,
+            }
+
+    # Efficiency metrics
+    stats["efficiency_metrics"] = {
+        "calls_processed": int(total_calls),
+        "duration_seconds": round(duration_seconds, 2),
+        "years_processed": len(per_year_stats),
+        "calls_per_second": round(total_calls / duration_seconds, 2) if duration_seconds > 0 else 0.0,
+    }
+
+    return stats
+
+
+def compute_market_output_stats(
+    df_output: pd.DataFrame,
+    variable_names: List[str],
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.2 Market Variables output characteristics.
+
+    Provides comprehensive statistics about market variable
+    distributions, liquidity measures, and volatility metrics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_output: Output DataFrame with market variables
+                   (StockRet, MarketRet, Amihud, Corwin_Schultz, etc.)
+        variable_names: List of variable names to analyze
+
+    Returns:
+        Dictionary with keys:
+        - variable_distributions: {var_name: {mean, median, std, min, max,
+                                              q25, q75, percentiles, zeros, nans}}
+        - liquidity_analysis: {amihud_stats: {...}, corwin_schultz_stats: {...},
+                              delta_amihud_stats: {...}}
+        - return_analysis: {stock_ret_stats: {...}, market_ret_stats: {...},
+                           excess_return_stats: {...}}
+        - volatility_stats: {mean, median, std, percentiles}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Variable distributions
+    stats["variable_distributions"] = {}
+    for var_name in sorted(variable_names):
+        if var_name not in df_output.columns:
+            stats["variable_distributions"][var_name] = {"error": "Variable not found"}
+            continue
+
+        var_series = df_output[var_name]
+
+        # Basic statistics
+        var_stats = {
+            "mean": round(float(var_series.mean()), 4),
+            "median": round(float(var_series.median()), 4),
+            "std": round(float(var_series.std()), 4),
+            "min": round(float(var_series.min()), 4),
+            "max": round(float(var_series.max()), 4),
+            "q25": round(float(var_series.quantile(0.25)), 4),
+            "q75": round(float(var_series.quantile(0.75)), 4),
+        }
+
+        # Percentiles
+        var_stats["percentiles"] = {
+            "p1": round(float(var_series.quantile(0.01)), 4),
+            "p5": round(float(var_series.quantile(0.05)), 4),
+            "p10": round(float(var_series.quantile(0.10)), 4),
+            "p90": round(float(var_series.quantile(0.90)), 4),
+            "p95": round(float(var_series.quantile(0.95)), 4),
+            "p99": round(float(var_series.quantile(0.99)), 4),
+        }
+
+        # Missing and zero analysis
+        var_stats["nans"] = {
+            "count": int(var_series.isna().sum()),
+            "pct": round(var_series.isna().sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+        }
+        var_stats["zeros"] = {
+            "count": int((var_series == 0).sum()),
+            "pct": round((var_series == 0).sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+        }
+
+        stats["variable_distributions"][var_name] = var_stats
+
+    # Liquidity analysis
+    stats["liquidity_analysis"] = {}
+    if "Amihud" in df_output.columns:
+        amihud = df_output["Amihud"].dropna()
+        if len(amihud) > 0:
+            stats["liquidity_analysis"]["amihud_stats"] = {
+                "mean": round(float(amihud.mean()), 6),
+                "median": round(float(amihud.median()), 6),
+                "std": round(float(amihud.std()), 6),
+                "min": round(float(amihud.min()), 6),
+                "max": round(float(amihud.max()), 6),
+            }
+
+    if "Corwin_Schultz" in df_output.columns:
+        cs = df_output["Corwin_Schultz"].dropna()
+        if len(cs) > 0:
+            stats["liquidity_analysis"]["corwin_schultz_stats"] = {
+                "mean": round(float(cs.mean()), 6),
+                "median": round(float(cs.median()), 6),
+                "std": round(float(cs.std()), 6),
+                "min": round(float(cs.min()), 6),
+                "max": round(float(cs.max()), 6),
+            }
+
+    if "Delta_Amihud" in df_output.columns:
+        delta_amihud = df_output["Delta_Amihud"].dropna()
+        if len(delta_amihud) > 0:
+            stats["liquidity_analysis"]["delta_amihud_stats"] = {
+                "mean": round(float(delta_amihud.mean()), 6),
+                "median": round(float(delta_amihud.median()), 6),
+                "std": round(float(delta_amihud.std()), 6),
+                "min": round(float(delta_amihud.min()), 6),
+                "max": round(float(delta_amihud.max()), 6),
+                "positive_pct": round((delta_amihud > 0).sum() / len(delta_amihud) * 100, 2),
+            }
+
+    # Return analysis
+    stats["return_analysis"] = {}
+    if "StockRet" in df_output.columns:
+        stock_ret = df_output["StockRet"].dropna()
+        if len(stock_ret) > 0:
+            stats["return_analysis"]["stock_ret_stats"] = {
+                "mean": round(float(stock_ret.mean()), 4),
+                "median": round(float(stock_ret.median()), 4),
+                "std": round(float(stock_ret.std()), 4),
+                "min": round(float(stock_ret.min()), 4),
+                "max": round(float(stock_ret.max()), 4),
+                "positive_pct": round((stock_ret > 0).sum() / len(stock_ret) * 100, 2),
+            }
+
+    if "MarketRet" in df_output.columns:
+        market_ret = df_output["MarketRet"].dropna()
+        if len(market_ret) > 0:
+            stats["return_analysis"]["market_ret_stats"] = {
+                "mean": round(float(market_ret.mean()), 4),
+                "median": round(float(market_ret.median()), 4),
+                "std": round(float(market_ret.std()), 4),
+                "min": round(float(market_ret.min()), 4),
+                "max": round(float(market_ret.max()), 4),
+            }
+
+    # Excess returns (StockRet - MarketRet)
+    if "StockRet" in df_output.columns and "MarketRet" in df_output.columns:
+        excess_ret = (df_output["StockRet"] - df_output["MarketRet"]).dropna()
+        if len(excess_ret) > 0:
+            stats["return_analysis"]["excess_return_stats"] = {
+                "mean": round(float(excess_ret.mean()), 4),
+                "median": round(float(excess_ret.median()), 4),
+                "std": round(float(excess_ret.std()), 4),
+                "min": round(float(excess_ret.min()), 4),
+                "max": round(float(excess_ret.max()), 4),
+            }
+
+    # Volatility statistics
+    if "Volatility" in df_output.columns:
+        vol = df_output["Volatility"].dropna()
+        if len(vol) > 0:
+            stats["volatility_stats"] = {
+                "mean": round(float(vol.mean()), 4),
+                "median": round(float(vol.median()), 4),
+                "std": round(float(vol.std()), 4),
+                "min": round(float(vol.min()), 4),
+                "max": round(float(vol.max()), 4),
+                "percentiles": {
+                    "p10": round(float(vol.quantile(0.10)), 4),
+                    "p25": round(float(vol.quantile(0.25)), 4),
+                    "p50": round(float(vol.quantile(0.50)), 4),
+                    "p75": round(float(vol.quantile(0.75)), 4),
+                    "p90": round(float(vol.quantile(0.90)), 4),
+                },
+            }
+
+    return stats
+
+
+def compute_event_flags_input_stats(
+    manifest_df: pd.DataFrame,
+    sdc_df: pd.DataFrame,
+) -> Dict[str, Any]:
+    """
+    Analyze input data for Step 3.3 Event Flags.
+
+    Provides comprehensive statistics about manifest (sample calls)
+    and SDC M&A (merger and acquisition) datasets.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        manifest_df: Master manifest DataFrame (from step 1.4)
+        sdc_df: SDC M&A DataFrame
+
+    Returns:
+        Dictionary with keys:
+        - manifest_stats: {total_calls, unique_gvkey, with_cusip_count, with_cusip_pct}
+        - sdc_stats: {total_deals, unique_target_cusips, date_range,
+                      deal_attitude_distribution, deal_status_distribution}
+        - matching_potential: {manifest_with_cusip_in_sdc: count, pct}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Manifest statistics
+    stats["manifest_stats"] = {
+        "total_calls": int(len(manifest_df)),
+    }
+
+    if "gvkey" in manifest_df.columns:
+        stats["manifest_stats"]["unique_gvkey"] = int(manifest_df["gvkey"].nunique())
+
+    # CUSIP coverage
+    if "cusip" in manifest_df.columns:
+        with_cusip = int(manifest_df["cusip"].notna().sum())
+        stats["manifest_stats"]["with_cusip_count"] = with_cusip
+        stats["manifest_stats"]["with_cusip_pct"] = round(
+            with_cusip / len(manifest_df) * 100, 2 if len(manifest_df) > 0 else 0.0
+        )
+
+    if "start_date" in manifest_df.columns:
+        manifest_df_temp = manifest_df.copy()
+        manifest_df_temp["start_date"] = pd.to_datetime(manifest_df_temp["start_date"])
+        date_col = manifest_df_temp["start_date"].dropna()
+        if len(date_col) > 0:
+            stats["manifest_stats"]["date_range"] = {
+                "earliest": date_col.min().isoformat(),
+                "latest": date_col.max().isoformat(),
+            }
+
+    # SDC statistics
+    stats["sdc_stats"] = {
+        "total_deals": int(len(sdc_df)),
+    }
+
+    # Unique target CUSIPs
+    if "Target 6-digit CUSIP" in sdc_df.columns or "target_cusip6" in sdc_df.columns:
+        cusip_col = "target_cusip6" if "target_cusip6" in sdc_df.columns else "Target 6-digit CUSIP"
+        stats["sdc_stats"]["unique_target_cusips"] = int(sdc_df[cusip_col].nunique())
+
+    # Date range
+    if "Date Announced" in sdc_df.columns or "date_announced" in sdc_df.columns:
+        date_col = "date_announced" if "date_announced" in sdc_df.columns else "Date Announced"
+        sdc_temp = sdc_df.copy()
+        sdc_temp[date_col] = pd.to_datetime(sdc_temp[date_col])
+        date_series = sdc_temp[date_col].dropna()
+        if len(date_series) > 0:
+            stats["sdc_stats"]["date_range"] = {
+                "earliest": date_series.min().isoformat(),
+                "latest": date_series.max().isoformat(),
+            }
+
+    # Deal attitude distribution
+    if "Deal Attitude" in sdc_df.columns or "deal_attitude" in sdc_df.columns:
+        attitude_col = "deal_attitude" if "deal_attitude" in sdc_df.columns else "Deal Attitude"
+        attitude_counts = sdc_df[attitude_col].value_counts()
+        stats["sdc_stats"]["deal_attitude_distribution"] = {
+            str(att): int(count) for att, count in attitude_counts.items()
+        }
+
+    # Deal status distribution
+    if "Deal Status" in sdc_df.columns or "deal_status" in sdc_df.columns:
+        status_col = "deal_status" if "deal_status" in sdc_df.columns else "Deal Status"
+        status_counts = sdc_df[status_col].value_counts()
+        stats["sdc_stats"]["deal_status_distribution"] = {
+            str(status): int(count) for status, count in status_counts.items()
+        }
+
+    # Matching potential (estimate)
+    stats["matching_potential"] = {
+        "note": "Exact matching requires CUSIP6 comparison - estimated from available data"
+    }
+
+    return stats
+
+
+def compute_event_flags_process_stats(
+    takeover_count: int,
+    takeover_by_type: Dict[str, int],
+    duration_stats: Dict[str, float],
+    total_calls: int,
+    duration_seconds: float,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.3 Event Flags process outcomes.
+
+    Provides detailed statistics about takeover event detection,
+    deal type classification, and duration analysis.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        takeover_count: Total number of takeover events detected
+        takeover_by_type: Dict mapping deal_type -> count
+        duration_stats: Dict with duration statistics (mean, median, etc.)
+        total_calls: Total number of calls processed
+        duration_seconds: Total processing duration
+
+    Returns:
+        Dictionary with keys:
+        - takeover_detection: {total_events, event_rate_pct, events_per_year}
+        - deal_type_distribution: {friendly: {count, pct}, uninvited: {count, pct}}
+        - duration_analysis: {mean_quarters, median_quarters, min_quarters, max_quarters,
+                             duration_buckets: {bucket: {count, pct}}}
+        - efficiency_metrics: {calls_processed, events_detected, duration_seconds}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Takeover detection
+    event_rate = round(takeover_count / total_calls * 100, 2) if total_calls > 0 else 0.0
+
+    stats["takeover_detection"] = {
+        "total_events": int(takeover_count),
+        "total_calls": int(total_calls),
+        "event_rate_pct": event_rate,
+    }
+
+    # Deal type distribution
+    friendly_count = takeover_by_type.get("Friendly", 0)
+    uninvited_count = takeover_by_type.get("Uninvited", 0)
+    total_typed = friendly_count + uninvited_count
+
+    stats["deal_type_distribution"] = {
+        "friendly": {
+            "count": int(friendly_count),
+            "pct": round(friendly_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+        },
+        "uninvited": {
+            "count": int(uninvited_count),
+            "pct": round(uninvited_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+        },
+    }
+
+    # Duration analysis
+    if duration_stats:
+        stats["duration_analysis"] = {
+            "mean_quarters": round(float(duration_stats.get("mean", 0)), 2),
+            "median_quarters": round(float(duration_stats.get("median", 0)), 2),
+            "min_quarters": round(float(duration_stats.get("min", 0)), 2),
+            "max_quarters": round(float(duration_stats.get("max", 0)), 2),
+        }
+
+        # Duration buckets
+        buckets = {
+            "<1 quarter": 0,
+            "1-2 quarters": 0,
+            "2-3 quarters": 0,
+            "3+ quarters": 0,
+        }
+        # These would be populated from actual duration data
+        stats["duration_analysis"]["duration_buckets"] = buckets
+
+    # Efficiency metrics
+    stats["efficiency_metrics"] = {
+        "calls_processed": int(total_calls),
+        "events_detected": int(takeover_count),
+        "duration_seconds": round(duration_seconds, 2),
+        "calls_per_second": round(total_calls / duration_seconds, 2) if duration_seconds > 0 else 0.0,
+    }
+
+    return stats
+
+
+def compute_event_flags_output_stats(
+    df_output: pd.DataFrame,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.3 Event Flags output characteristics.
+
+    Provides comprehensive statistics about takeover event flags,
+    deal type classifications, and survival analysis durations.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        df_output: Output DataFrame with event flags
+                   (Takeover, Takeover_Type, Duration)
+
+    Returns:
+        Dictionary with keys:
+        - takeover_flag_stats: {total_events, no_events, event_rate_pct}
+        - deal_type_stats: {friendly: {count, pct}, uninvited: {count, pct},
+                            not_applicable: {count, pct}}
+        - duration_stats: {overall: {mean, median, std, min, max},
+                          for_takeovers_only: {mean, median, std, min, max}}
+        - yearly_analysis: {year: {takeover_count, takeover_pct, avg_duration}}
+    """
+    import numpy as np
+
+    stats = {}
+
+    total_calls = len(df_output)
+
+    # Takeover flag statistics
+    if "Takeover" in df_output.columns:
+        takeover_count = int(df_output["Takeover"].sum())
+        no_takeover_count = int((df_output["Takeover"] == 0).sum())
+        takeover_rate = round(takeover_count / total_calls * 100, 2) if total_calls > 0 else 0.0
+
+        stats["takeover_flag_stats"] = {
+            "total_events": takeover_count,
+            "no_events": no_takeover_count,
+            "event_rate_pct": takeover_rate,
+        }
+
+    # Deal type statistics
+    if "Takeover_Type" in df_output.columns:
+        type_counts = df_output["Takeover_Type"].value_counts()
+
+        friendly_count = int(type_counts.get("Friendly", 0))
+        uninvited_count = int(type_counts.get("Uninvited", 0))
+        na_count = int(df_output["Takeover_Type"].isna().sum())
+        total_typed = friendly_count + uninvited_count + na_count
+
+        stats["deal_type_stats"] = {
+            "friendly": {
+                "count": friendly_count,
+                "pct": round(friendly_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+            },
+            "uninvited": {
+                "count": uninvited_count,
+                "pct": round(uninvited_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+            },
+            "not_applicable": {
+                "count": na_count,
+                "pct": round(na_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+            },
+        }
+
+    # Duration statistics
+    if "Duration" in df_output.columns:
+        duration_all = df_output["Duration"]
+        duration_takeovers = df_output[df_output["Takeover"] == 1]["Duration"] if "Takeover" in df_output.columns else pd.Series()
+
+        stats["duration_stats"] = {
+            "overall": {
+                "mean": round(float(duration_all.mean()), 2),
+                "median": round(float(duration_all.median()), 2),
+                "std": round(float(duration_all.std()), 2),
+                "min": round(float(duration_all.min()), 2),
+                "max": round(float(duration_all.max()), 2),
+            }
+        }
+
+        if len(duration_takeovers) > 0:
+            stats["duration_stats"]["for_takeovers_only"] = {
+                "mean": round(float(duration_takeovers.mean()), 2),
+                "median": round(float(duration_takeovers.median()), 2),
+                "std": round(float(duration_takeovers.std()), 2),
+                "min": round(float(duration_takeovers.min()), 2),
+                "max": round(float(duration_takeovers.max()), 2),
+            }
+
+    # Yearly analysis
+    if "year" in df_output.columns and "Takeover" in df_output.columns:
+        stats["yearly_analysis"] = {}
+        for year in sorted(df_output["year"].unique()):
+            year_df = df_output[df_output["year"] == year]
+            year_takeover = int(year_df["Takeover"].sum())
+            year_total = len(year_df)
+
+            year_duration = year_df[year_df["Takeover"] == 1]["Duration"]
+            avg_duration = round(float(year_duration.mean()), 2) if len(year_duration) > 0 else 0.0
+
+            stats["yearly_analysis"][str(year)] = {
+                "takeover_count": year_takeover,
+                "takeover_pct": round(year_takeover / year_total * 100, 2) if year_total > 0 else 0.0,
+                "avg_duration": avg_duration,
+            }
+
+    return stats
+
+
+# ============================================================================
+# Step 3 Financial Features Statistics - Wrapper Functions
+# These functions provide consistent naming for Step 3 sub-steps
+# ============================================================================
+
+def compute_step31_input_stats(
+    manifest_df: pd.DataFrame,
+    compustat_df: pd.DataFrame,
+    ibes_df: pd.DataFrame,
+    cccl_df: pd.DataFrame = None,
+    ccm_df: pd.DataFrame = None,
+) -> Dict[str, Any]:
+    """
+    Analyze input data for Step 3.1 (Firm Controls).
+
+    Wrapper function for compute_financial_input_stats that provides
+    Step 3.1 specific analysis including manifest, Compustat, IBES, CCCL,
+    and CCM linkage statistics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        manifest_df: Master manifest DataFrame (from step 1.4)
+        compustat_df: Compustat quarterly data DataFrame
+        ibes_df: IBES forecast DataFrame
+        cccl_df: CCCL instrument DataFrame (optional)
+        ccm_df: CCM linkage DataFrame (optional, for analysis)
+
+    Returns:
+        Dictionary with keys:
+        - manifest_stats: {total_calls, unique_gvkey, date_range, calls_per_year}
+        - compustat_stats: {total_observations, unique_gvkey, date_range, quarters_covered}
+        - ibes_stats: {total_forecasts, unique_tickers, eps_qtr_records, date_range}
+        - cccl_stats: {total_records, unique_gvkey, years_covered, intensity_variants}
+        - ccm_stats: {linkages_available, unique_gvkey_linked} (if ccm_df provided)
+    """
+    stats = compute_financial_input_stats(manifest_df, compustat_df, ibes_df, cccl_df)
+
+    # Add CCM analysis if provided
+    if ccm_df is not None and len(ccm_df) > 0:
+        stats["ccm_stats"] = {
+            "linkages_available": int(len(ccm_df)),
+        }
+        if "gvkey" in ccm_df.columns:
+            stats["ccm_stats"]["unique_gvkey_linked"] = int(ccm_df["gvkey"].nunique())
+        if "LPERMNO" in ccm_df.columns:
+            stats["ccm_stats"]["unique_permno_linked"] = int(ccm_df["LPERMNO"].nunique())
+
+    return stats
+
+
+def compute_step31_process_stats(
+    merge_results: Dict[str, Dict[str, int]],
+    variable_coverage_df: pd.DataFrame = None,
+    winsorized_cols: List[str] = None,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.1 (Firm Controls) construction process.
+
+    Wrapper function for compute_financial_process_stats that provides
+    detailed analysis of merge quality, variable construction, and
+    winsorization impact.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        merge_results: Dict with merge stats for Compustat, IBES, CCCL
+        variable_coverage_df: DataFrame with variable coverage information
+        winsorized_cols: List of columns that were winsorized
+
+    Returns:
+        Dictionary with keys:
+        - merge_quality_metrics: {compustat_merge, ibes_merge, cccl_merge}
+        - variable_construction_metrics: {coverage_by_variable, overall_stats}
+        - winsorization_impact: {winsorized_columns, tail_trimming_pct}
+        - data_quality_indicators: {missing_patterns, extreme_values}
+    """
+    # Extract variables from merge results
+    variables_computed = []
+    coverage_rates = {}
+
+    if variable_coverage_df is not None and len(variable_coverage_df) > 0:
+        # Build variables list and coverage from DataFrame
+        for col in variable_coverage_df.columns:
+            if col in ["Size", "BM", "Lev", "ROA", "EPS_Growth", "SurpDec", "CurrentRatio", "RD_Intensity"]:
+                non_null = variable_coverage_df[col].notna().sum()
+                total = len(variable_coverage_df)
+                variables_computed.append(col)
+                coverage_rates[col] = round(non_null / total * 100, 2) if total > 0 else 0.0
+
+    # Use default duration if not available
+    duration_seconds = 0.0
+
+    stats = compute_financial_process_stats(
+        merge_results,
+        variables_computed,
+        coverage_rates,
+        duration_seconds,
+    )
+
+    # Add winsorization impact
+    if winsorized_cols:
+        stats["winsorization_impact"] = {
+            "winsorized_columns": winsorized_cols,
+            "num_winsorized": len(winsorized_cols),
+            "method": "1%/99% percentile winsorization",
+        }
+    else:
+        stats["winsorization_impact"] = {"note": "No winsorization info provided"}
+
+    return stats
+
+
+def compute_step31_output_stats(
+    output_df: pd.DataFrame,
+    variables_list: List[str] = None,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.1 (Firm Controls) output.
+
+    Wrapper function for compute_financial_output_stats that provides
+    comprehensive descriptive statistics for all firm control variables.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        output_df: Output DataFrame with firm controls
+        variables_list: List of variables to analyze (optional, auto-detected)
+
+    Returns:
+        Dictionary with keys:
+        - variable_distributions: {var_name: {count, mean, median, std, min, max, percentiles}}
+        - correlation_matrix: {Size: {BM: corr, Lev: corr, ...}, ...}
+        - distribution_analysis: {size_deciles, bm_quintiles, leverage_categories}
+        - temp_decile_trends: {SurpDec: {year: avg_decile}}
+        - shift_intensity_summary: {variant: {mean, median, std, coverage}}
+    """
+    # Auto-detect variables if not provided
+    if variables_list is None:
+        variables_list = [
+            "Size", "BM", "Lev", "ROA", "EPS_Growth",
+            "SurpDec", "CurrentRatio", "RD_Intensity"
+        ]
+
+    # Add shift intensity variants if present
+    shift_cols = [c for c in output_df.columns if c.startswith("shift_intensity_")]
+    variables_list.extend(shift_cols)
+
+    stats = compute_financial_output_stats(output_df, variables_list)
+
+    return stats
+
+
+def compute_step32_input_stats(
+    manifest_with_permno_df: pd.DataFrame,
+    crsp_df_by_year: Dict[str, pd.DataFrame],
+    ccm_df: pd.DataFrame = None,
+) -> Dict[str, Any]:
+    """
+    Analyze input data for Step 3.2 (Market Variables).
+
+    Wrapper function for compute_market_input_stats that provides
+    Step 3.2 specific analysis including manifest with PERMNO,
+    CRSP data by year, and CCM linkage statistics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        manifest_with_permno_df: Manifest DataFrame with PERMNO column
+        crsp_df_by_year: Dict mapping year -> CRSP DataFrame for that year
+        ccm_df: CCM linkage DataFrame (optional)
+
+    Returns:
+        Dictionary with keys:
+        - manifest_stats: {total_records, unique_gvkey, unique_permno, years_present}
+        - crsp_stats_by_year: {year: {observations, unique_stocks, date_range}}
+        - ccm_linkage_stats: {linkages_available, unique_gvkey_with_permno}
+        - permno_coverage_stats: {direct_permno_count, ccm_fallback_count, coverage_rate}
+    """
+    # Analyze manifest
+    stats = {}
+    stats["manifest_stats"] = {
+        "total_records": int(len(manifest_with_permno_df)),
+    }
+
+    if "gvkey" in manifest_with_permno_df.columns:
+        stats["manifest_stats"]["unique_gvkey"] = int(manifest_with_permno_df["gvkey"].nunique())
+
+    # PERMNO coverage analysis
+    if "permno" in manifest_with_permno_df.columns:
+        direct_permno = manifest_with_permno_df["permno"].notna().sum()
+        stats["manifest_stats"]["unique_permno"] = int(manifest_with_permno_df["permno"].nunique())
+        stats["manifest_stats"]["permno_coverage_pct"] = round(
+            direct_permno / len(manifest_with_permno_df) * 100, 2
+        )
+
+    # Temporal coverage
+    if "start_date" in manifest_with_permno_df.columns:
+        manifest_temp = manifest_with_permno_df.copy()
+        manifest_temp["start_date"] = pd.to_datetime(manifest_temp["start_date"])
+        dates = manifest_temp["start_date"].dropna()
+        if len(dates) > 0:
+            stats["manifest_stats"]["date_range"] = {
+                "earliest": dates.min().isoformat(),
+                "latest": dates.max().isoformat(),
+            }
+        years = manifest_temp["start_date"].dt.year.unique()
+        stats["manifest_stats"]["years_present"] = sorted([int(y) for y in years])
+
+    # CRSP statistics by year
+    stats["crsp_stats_by_year"] = {}
+    for year, crsp_df in sorted(crsp_df_by_year.items(), key=lambda x: str(x[0])):
+        year_stats = {
+            "observations": int(len(crsp_df)),
+        }
+        if "PERMNO" in crsp_df.columns:
+            year_stats["unique_stocks"] = int(crsp_df["PERMNO"].nunique())
+
+        # Check data quality
+        if "date" in crsp_df.columns:
+            crsp_temp = crsp_df.copy()
+            crsp_temp["date"] = pd.to_datetime(crsp_temp["date"])
+            dates = crsp_temp["date"].dropna()
+            if len(dates) > 0:
+                year_stats["date_range"] = {
+                    "earliest": dates.min().isoformat(),
+                    "latest": dates.max().isoformat(),
+                }
+
+        # Data availability checks
+        data_cols = ["RET", "VOL", "VWRETD", "ASKHI", "BIDLO", "PRC"]
+        available_cols = [c for c in data_cols if c in crsp_df.columns]
+        year_stats["data_columns_available"] = available_cols
+
+        stats["crsp_stats_by_year"][str(year)] = year_stats
+
+    # CCM linkage statistics
+    if ccm_df is not None and len(ccm_df) > 0:
+        stats["ccm_linkage_stats"] = {
+            "linkages_available": int(len(ccm_df)),
+        }
+        if "gvkey" in ccm_df.columns:
+            stats["ccm_linkage_stats"]["unique_gvkey_linked"] = int(ccm_df["gvkey"].nunique())
+
+    return stats
+
+
+def compute_step32_process_stats(
+    per_year_stats: List[Dict[str, Any]],
+    return_windows: List[Dict[str, Any]] = None,
+    liquidity_windows: List[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.2 (Market Variables) construction process.
+
+    Wrapper function for compute_market_process_stats that provides
+    detailed analysis of return computation, liquidity measures,
+    and delta calculations.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        per_year_stats: List of per-year statistics dictionaries
+        return_windows: List of return window statistics (optional)
+        liquidity_windows: List of liquidity window statistics (optional)
+
+    Returns:
+        Dictionary with keys:
+        - return_metrics: {stock_ret_coverage, market_ret_coverage, window_validity}
+        - liquidity_metrics: {amihud_coverage, corwin_schultz_coverage}
+        - volatility_metrics: {annualization_validity, avg_volatility}
+        - coverage_trends: {by_year: {stock_ret_pct, amihud_pct}}
+        - data_quality_by_year: {missing_data_patterns}
+    """
+    stats = {}
+
+    # Aggregate per-year statistics
+    total_records = 0
+    stock_ret_covered = 0
+    amihud_covered = 0
+
+    coverage_trends = {}
+
+    for year_stat in per_year_stats:
+        year = year_stat.get("year", "unknown")
+        total = year_stat.get("total_records", 0)
+        stock_ret = year_stat.get("stock_ret_count", 0)
+        amihud = year_stat.get("amihud_count", 0)
+
+        total_records += total
+        stock_ret_covered += stock_ret
+        amihud_covered += amihud
+
+        coverage_trends[str(year)] = {
+            "stock_ret_pct": round(stock_ret / total * 100, 2) if total > 0 else 0.0,
+            "amihud_pct": round(amihud / total * 100, 2) if total > 0 else 0.0,
+        }
+
+    # Return metrics
+    stats["return_metrics"] = {
+        "stock_ret_coverage": {
+            "count": int(stock_ret_covered),
+            "pct": round(stock_ret_covered / total_records * 100, 2) if total_records > 0 else 0.0,
+        },
+    }
+
+    # Liquidity metrics
+    stats["liquidity_metrics"] = {
+        "amihud_coverage": {
+            "count": int(amihud_covered),
+            "pct": round(amihud_covered / total_records * 100, 2) if total_records > 0 else 0.0,
+        },
+    }
+
+    # Coverage trends
+    stats["coverage_trends"] = coverage_trends
+
+    # Analyze return windows if provided
+    if return_windows:
+        valid_windows = sum(1 for w in return_windows if w.get("valid", False))
+        stats["return_metrics"]["window_validity"] = {
+            "valid_windows": int(valid_windows),
+            "total_windows": len(return_windows),
+            "validity_pct": round(valid_windows / len(return_windows) * 100, 2) if return_windows else 0.0,
+        }
+
+        # Average window length
+        window_lengths = [w.get("window_length_days", 0) for w in return_windows if w.get("window_length_days", 0) > 0]
+        if window_lengths:
+            stats["return_metrics"]["avg_window_length_days"] = round(float(np.mean(window_lengths)), 2)
+
+    # Analyze liquidity windows if provided
+    if liquidity_windows:
+        amihud_valid = sum(1 for w in liquidity_windows if w.get("amihud_valid", False))
+        cs_valid = sum(1 for w in liquidity_windows if w.get("corwin_schultz_valid", False))
+
+        stats["liquidity_metrics"]["corwin_schultz_coverage"] = {
+            "count": int(cs_valid),
+            "pct": round(cs_valid / len(liquidity_windows) * 100, 2) if liquidity_windows else 0.0,
+        }
+
+    return stats
+
+
+def compute_step32_output_stats(
+    output_df: pd.DataFrame,
+    variables_list: List[str] = None,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.2 (Market Variables) output.
+
+    Wrapper function for compute_market_output_stats that provides
+    comprehensive descriptive statistics for all market variables.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        output_df: Output DataFrame with market variables
+        variables_list: List of variables to analyze (optional, auto-detected)
+
+    Returns:
+        Dictionary with keys:
+        - variable_distributions: {var_name: {mean, median, std, percentiles, zeros}}
+        - return_analysis: {stock_ret_stats, market_ret_stats, positive_return_pct}
+        - liquidity_analysis: {amihud_stats, corwin_schultz_stats}
+        - delta_analysis: {delta_amihud_stats, delta_corwin_schultz_stats, sign_distribution}
+        - volatility_analysis: {annualized_volatility_stats}
+        - correlation_matrix: Pearson correlations between market variables
+        - temporal_trends: Average values by year
+    """
+    # Auto-detect variables if not provided
+    if variables_list is None:
+        variables_list = [
+            "StockRet", "MarketRet", "Amihud", "Corwin_Schultz",
+            "Delta_Amihud", "Delta_Corwin_Schultz", "Volatility"
+        ]
+
+    stats = compute_market_output_stats(output_df, variables_list)
+
+    return stats
+
+
+def compute_step33_input_stats(
+    manifest_df: pd.DataFrame,
+    sdc_df: pd.DataFrame,
+) -> Dict[str, Any]:
+    """
+    Analyze input data for Step 3.3 (Event Flags).
+
+    Wrapper function for compute_event_flags_input_stats that provides
+    Step 3.3 specific analysis including manifest with CUSIP and
+    SDC M&A deal statistics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        manifest_df: Manifest DataFrame (with cusip column)
+        sdc_df: SDC M&A data DataFrame
+
+    Returns:
+        Dictionary with keys:
+        - manifest_stats: {total_records, unique_gvkey, cusip_availability, years_present}
+        - sdc_deal_stats: {total_deals, unique_target_cusips, date_range, deal_status_dist}
+        - cusip_linkage_potential: {manifest_cusip6_available, sdc_cusip6_overlap}
+    """
+    return compute_event_flags_input_stats(manifest_df, sdc_df)
+
+
+def compute_step33_process_stats(
+    match_results: Dict[str, Any],
+    takeover_flags_df: pd.DataFrame = None,
+    window_days: int = 365,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.3 (Event Flags) construction process.
+
+    Wrapper function for compute_event_flags_process_stats that provides
+    detailed analysis of CUSIP matching, takeover detection, deal type
+    classification, and duration computation.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        match_results: Dictionary with matching statistics
+        takeover_flags_df: DataFrame with takeover flags
+        window_days: Matching window in days (default 365)
+
+    Returns:
+        Dictionary with keys:
+        - matching_metrics: {cusip6_match_rate, unmatched_analysis}
+        - takeover_detection_metrics: {takeover_events, window_validity, multiple_deals}
+        - deal_type_classification: {takeover_type_distribution, classification_accuracy}
+        - duration_analysis: {duration_distribution, censored_observations, censoring_rate}
+    """
+    return compute_event_flags_process_stats(match_results, takeover_flags_df, window_days)
+
+
+def compute_step33_output_stats(
+    output_df: pd.DataFrame,
+) -> Dict[str, Any]:
+    """
+    Analyze Step 3.3 (Event Flags) output.
+
+    Wrapper function for compute_event_flags_output_stats that provides
+    comprehensive descriptive statistics for takeover flags, types, and
+    duration analysis.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        output_df: Output DataFrame with event flags
+
+    Returns:
+        Dictionary with keys:
+        - takeover_flag_analysis: {binary_distribution, takeover_frequency_by_year, takeover_rate}
+        - takeover_type_analysis: {type_distribution, type_distribution_by_year}
+        - duration_analysis: {for_takeovers, for_censored, survival_analysis_preview}
+        - temporal_patterns: {takeover_frequency_trends, type_trends}
+    """
+    return compute_event_flags_output_stats(output_df)
+
+
+def generate_financial_report_markdown(
+    input_stats: Dict[str, Any],
+    process_stats: Dict[str, Any],
+    output_stats: Dict[str, Any],
+    step_name: str,
+    output_path: Path,
+) -> None:
+    """
+    Generate comprehensive markdown report for Step 3 financial features.
+
+    Creates a publication-ready markdown report with INPUT/PROCESS/OUTPUT
+    statistics for presentation to supervisors.
+
+    Args:
+        input_stats: Input statistics dictionary
+        process_stats: Process statistics dictionary
+        output_stats: Output statistics dictionary
+        step_name: Name of the step (e.g., "3.1_FirmControls")
+        output_path: Path to save the markdown report
+    """
+    lines = []
+    lines.append(f"# Step {step_name}: Financial Features Report")
+    lines.append("")
+    lines.append(f"**Generated:** {pd.Timestamp.now().isoformat()}")
+    lines.append("")
+
+    # INPUT section
+    lines.append("## 1. INPUT STATISTICS")
+    lines.append("")
+
+    if "manifest_stats" in input_stats:
+        lines.append("### Master Manifest")
+        ms = input_stats["manifest_stats"]
+        lines.append(f"- **Total Calls:** {ms.get('total_calls', 0):,}")
+        lines.append(f"- **Unique GVKEY:** {ms.get('unique_gvkey', 0):,}")
+
+        if "date_range" in ms:
+            lines.append(f"- **Date Range:** {ms['date_range'].get('earliest', 'N/A')} to {ms['date_range'].get('latest', 'N/A')}")
+
+        if "calls_per_year" in ms:
+            lines.append("")
+            lines.append("| Year | Calls |")
+            lines.append("|------|-------|")
+            for year, count in sorted(ms["calls_per_year"].items(), key=lambda x: int(x[0]) if x[0].isdigit() else 0):
+                lines.append(f"| {year} | {count:,} |")
+
+    if "compustat_stats" in input_stats:
+        lines.append("")
+        lines.append("### Compustat Data")
+        cs = input_stats["compustat_stats"]
+        lines.append(f"- **Total Observations:** {cs.get('total_observations', 0):,}")
+        lines.append(f"- **Unique GVKEY:** {cs.get('unique_gvkey', 0):,}")
+        lines.append(f"- **Memory Footprint:** {cs.get('memory_mb', 0):.2f} MB")
+
+        if "date_range" in cs:
+            lines.append(f"- **Date Range:** {cs['date_range'].get('earliest', 'N/A')} to {cs['date_range'].get('latest', 'N/A')}")
+
+    if "ibes_stats" in input_stats:
+        lines.append("")
+        lines.append("### IBES Forecast Data")
+        ibes = input_stats["ibes_stats"]
+        lines.append(f"- **Total Forecasts:** {ibes.get('total_forecasts', 0):,}")
+        lines.append(f"- **Unique Tickers:** {ibes.get('unique_tickers', 0):,}")
+        lines.append(f"- ** EPS/QTR Records:** {ibes.get('eps_qtr_records', 0):,}")
+
+    if "crsp_stats" in input_stats:
+        lines.append("")
+        lines.append("### CRSP Stock Price Data")
+        crsp = input_stats["crsp_stats"]
+        lines.append(f"- **Files Available:** {crsp.get('files_available', 0)}")
+
+        if "year_range" in crsp:
+            yr = crsp["year_range"]
+            lines.append(f"- **Year Range:** {yr.get('earliest', 'N/A')} to {yr.get('latest', 'N/A')}")
+
+    if "sdc_stats" in input_stats:
+        lines.append("")
+        lines.append("### SDC M&A Data")
+        sdc = input_stats["sdc_stats"]
+        lines.append(f"- **Total Deals:** {sdc.get('total_deals', 0):,}")
+        lines.append(f"- **Unique Target CUSIPs:** {sdc.get('unique_target_cusips', 0):,}")
+
+        if "deal_attitude_distribution" in sdc:
+            lines.append("")
+            lines.append("**Deal Attitude Distribution:**")
+            for attitude, count in sdc["deal_attitude_distribution"].items():
+                lines.append(f"  - {attitude}: {count:,}")
+
+    # PROCESS section
+    lines.append("")
+    lines.append("## 2. PROCESS STATISTICS")
+    lines.append("")
+
+    if "merge_outcomes" in process_stats:
+        lines.append("### Merge Outcomes")
+        lines.append("")
+        lines.append("| Data Source | Match Rate | Matched | Unmatched |")
+        lines.append("|-------------|------------|---------|-----------|")
+
+        for merge_name, merge_stats in process_stats["merge_outcomes"].items():
+            matched = merge_stats.get("matched", 0)
+            unmatched = merge_stats.get("unmatched", 0)
+            rate = merge_stats.get("match_rate_pct", 0)
+            lines.append(f"| {merge_name} | {rate:.1f}% | {matched:,} | {unmatched:,} |")
+
+    if "coverage_metrics" in process_stats:
+        lines.append("")
+        lines.append("### Variable Coverage")
+        cm = process_stats["coverage_metrics"]
+
+        if "stock_ret_coverage" in cm:
+            src = cm["stock_ret_coverage"]
+            lines.append(f"- **StockRet:** {src['count']:,} ({src['pct']:.1f}%)")
+
+        if "amihud_coverage" in cm:
+            am = cm["amihud_coverage"]
+            lines.append(f"- **Amihud:** {am['count']:,} ({am['pct']:.1f}%)")
+
+        if "overall_coverage_stats" in process_stats:
+            ocs = process_stats["overall_coverage_stats"]
+            lines.append("")
+            lines.append("**Overall Coverage Statistics:**")
+            lines.append(f"- **Average Coverage:** {ocs.get('avg_coverage_pct', 0):.1f}%")
+            lines.append(f"- **Variables Above 90% Coverage:** {ocs.get('variables_above_90_pct', 0)}")
+            lines.append(f"- **Variables Below 50% Coverage:** {ocs.get('variables_below_50_pct', 0)}")
+
+    if "takeover_detection" in process_stats:
+        lines.append("")
+        lines.append("### Event Detection")
+        td = process_stats["takeover_detection"]
+        lines.append(f"- **Total Takeover Events:** {td.get('total_events', 0):,}")
+        lines.append(f"- **Event Rate:** {td.get('event_rate_pct', 0):.2f}%")
+
+        if "deal_type_distribution" in process_stats:
+            lines.append("")
+            lines.append("**Deal Type Distribution:**")
+            dtd = process_stats["deal_type_distribution"]
+            if "friendly" in dtd:
+                lines.append(f"  - Friendly: {dtd['friendly']['count']:,} ({dtd['friendly']['pct']:.1f}%)")
+            if "uninvited" in dtd:
+                lines.append(f"  - Uninvited: {dtd['uninvited']['count']:,} ({dtd['uninvited']['pct']:.1f}%)")
+
+    if "efficiency_metrics" in process_stats:
+        lines.append("")
+        lines.append("### Processing Efficiency")
+        em = process_stats["efficiency_metrics"]
+        lines.append(f"- **Duration:** {em.get('duration_seconds', 0):.2f} seconds")
+        lines.append(f"- **Throughput:** {em.get('calls_per_second', 0):.0f} calls/second")
+
+    # OUTPUT section
+    lines.append("")
+    lines.append("## 3. OUTPUT STATISTICS")
+    lines.append("")
+
+    if "variable_distributions" in output_stats:
+        lines.append("### Variable Summary Statistics")
+        lines.append("")
+        lines.append("| Variable | Mean | Median | Std Dev | Min | Max | Missing % |")
+        lines.append("|----------|------|--------|---------|-----|-----|-----------|")
+
+        for var_name, var_stats in sorted(output_stats["variable_distributions"].items()):
+            if "error" in var_stats:
+                continue
+
+            mean = var_stats.get("mean", "N/A")
+            median = var_stats.get("median", "N/A")
+            std = var_stats.get("std", "N/A")
+            min_val = var_stats.get("min", "N/A")
+            max_val = var_stats.get("max", "N/A")
+            missing = var_stats.get("nans", {}).get("pct", 0)
+
+            lines.append(f"| {var_name} | {mean} | {median} | {std} | {min_val} | {max_val} | {missing}% |")
+
+    if "liquidity_analysis" in output_stats:
+        lines.append("")
+        lines.append("### Liquidity Measures")
+        la = output_stats["liquidity_analysis"]
+
+        if "amihud_stats" in la:
+            am = la["amihud_stats"]
+            lines.append(f"**Amihud Illiquidity:**")
+            lines.append(f"- Mean: {am.get('mean', 0):.6f}")
+            lines.append(f"- Median: {am.get('median', 0):.6f}")
+
+        if "corwin_schultz_stats" in la:
+            cs = la["corwin_schultz_stats"]
+            lines.append("")
+            lines.append(f"**Corwin-Schultz Spread:**")
+            lines.append(f"- Mean: {cs.get('mean', 0):.6f}")
+            lines.append(f"- Median: {cs.get('median', 0):.6f}")
+
+    if "return_analysis" in output_stats:
+        lines.append("")
+        lines.append("### Return Statistics")
+        ra = output_stats["return_analysis"]
+
+        if "stock_ret_stats" in ra:
+            sr = ra["stock_ret_stats"]
+            lines.append(f"**Stock Returns:**")
+            lines.append(f"- Mean: {sr.get('mean', 0):.2f}%")
+            lines.append(f"- Std Dev: {sr.get('std', 0):.2f}%")
+            lines.append(f"- Positive Returns %: {sr.get('positive_pct', 0):.1f}%")
+
+    if "duration_stats" in output_stats:
+        lines.append("")
+        lines.append("### Event Duration Analysis")
+        ds = output_stats["duration_stats"]
+
+        if "for_takeovers_only" in ds:
+            dto = ds["for_takeovers_only"]
+            lines.append(f"**Takeover Duration (quarters):**")
+            lines.append(f"- Mean: {dto.get('mean', 0):.2f}")
+            lines.append(f"- Median: {dto.get('median', 0):.2f}")
+            lines.append(f"- Range: {dto.get('min', 0):.2f} to {dto.get('max', 0):.2f}")
+
+    # Write report
+    report_content = "\n".join(lines)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(report_content)
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
