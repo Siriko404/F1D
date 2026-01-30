@@ -370,6 +370,10 @@ Recent decisions affecting current work:
 - [Quick Task 023]: Added comprehensive tokenization descriptive statistics to 2.1_TokenizeAndCount.py following INPUT/PROCESS/OUTPUT framework
 - [Quick Task 023]: Added compute_tokenize_input_stats, compute_tokenize_process_stats, compute_tokenize_output_stats to observability_utils.py
 - [Quick Task 023]: Created generate_tokenization_report() function for publication-ready markdown report with LM dictionary analysis, category hit rates, speaker-level analysis, and sparsity metrics
+- [Quick Task 025]: Added variable construction descriptive statistics to 2.2_ConstructVariables.py following INPUT/PROCESS/OUTPUT framework
+- [Quick Task 025]: Added compute_constructvariables_input_stats, compute_constructvariables_process_stats, compute_constructvariables_output_stats to observability_utils.py
+- [Quick Task 025]: Created generate_variable_construction_report() function for publication-ready markdown with speaker flagging, variable creation, sample/context aggregates, and NaN/0 analysis
+- [Quick Task 025]: NaN vs 0 distinction explicitly documented: NaN = no text in section (missing data), 0 = text but no linguistic matches
  - [Phase 27-02]: Verified all Step 1-2 reader scripts use get_latest_output_dir() for timestamp-based resolution
  - [Phase 27-02]: Step 1 scripts (1.0, 1.2-1.4) confirmed using get_latest_output_dir() for reading prerequisite outputs
  - [Phase 27-02]: Step 2 scripts (2.1-2.3 + 2.3_VerifyStep2) confirmed using get_latest_output_dir() for reading prerequisite outputs
@@ -415,6 +419,7 @@ Recent decisions affecting current work:
 | 022 | Add comprehensive descriptive statistics to 1.4_AssembleManifest for academic presentation | 2026-01-29 | 19cefe1 | [022-add-comprehensive-descriptive-stats-to-1](./quick/022-add-comprehensive-descriptive-stats-to-1/) |
 | 023 | Add tokenization descriptive statistics to 2.1_TokenizeAndCount for academic presentation | 2026-01-29 | 113d282 | [023-tokenize-descriptive-stats](./quick/023-tokenize-descriptive-stats/) |
 | 024 | Debug and verify script 2.1 at full scale - confirmed working, no bugs found | 2026-01-30 | N/A | [024-debug-script-21](./quick/024-debug-script-21/) |
+| 025 | Add variable construction descriptive statistics to 2.2_ConstructVariables for academic presentation | 2026-01-30 | 6d043ae | [025-add-constructvariables-descriptive-stats](./quick/025-add-constructvariables-descriptive-stats/) |
 
 ### Blockers/Concerns
 
@@ -433,8 +438,8 @@ Recent decisions affecting current work:
 
  ## Session Continuity
 
-          Last session: 2026-01-30T19:05:00Z
-          Stopped at: Completed 27-06-PLAN.md
+          Last session: 2026-01-30T19:56:29Z
+          Stopped at: Completed quick-025-PLAN.md
           Resume file: None
 
          Phase: 27 of 27 (Remove Symlink Mechanism)
