@@ -86,6 +86,8 @@ from shared.path_utils import (
     validate_output_path,
     ensure_output_dir,
     validate_input_file,
+    get_latest_output_dir,
+    OutputResolutionError,
 )
 
 

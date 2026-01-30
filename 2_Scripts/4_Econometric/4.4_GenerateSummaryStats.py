@@ -46,6 +46,10 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import shared utilities
 from shared.symlink_utils import update_latest_link
+from shared.path_utils import (
+    get_latest_output_dir,
+    OutputResolutionError,
+)
 from shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
@@ -751,31 +755,40 @@ def main():
     print("Loading and merging data")
     print("=" * 60)
 
+    # Resolve manifest path using get_latest_output_dir
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.4_AssembleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
     manifest = load_manifest(
-        root
-        / "4_Outputs"
-        / "1.4_AssembleManifest"
-        / "latest"
-        / "master_sample_manifest.parquet",
+        manifest_dir / "master_sample_manifest.parquet",
         stats,
     )
 
+    # Resolve linguistic variables path
+    linguistic_dir = get_latest_output_dir(
+        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+    )
     linguistic = load_linguistic_variables(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables" / "latest",
+        linguistic_dir,
         year_start,
         year_end,
         stats,
     )
 
+    # Resolve financial controls path
+    financial_dir = get_latest_output_dir(
+        root / "4_Outputs" / "3_Financial_Features",
+    )
     firm_controls = load_financial_controls(
-        root / "4_Outputs" / "3_Financial_Features" / "latest",
+        financial_dir,
         year_start,
         year_end,
         stats,
     )
 
     market_vars = load_market_variables(
-        root / "4_Outputs" / "3_Financial_Features" / "latest",
+        financial_dir,
         year_start,
         year_end,
         stats,
