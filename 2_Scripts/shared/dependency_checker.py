@@ -164,7 +164,7 @@ def handle_missing_output(
     print()
     print(f"Required output from {step_name} not found:")
     print(f"  Expected file: {output_file}")
-    print(f"  Location: 4_Outputs/{step_name}/latest/")
+    print(f"  Location: 4_Outputs/{step_name}/<timestamp>/")
     print()
     print(f"Please run the pipeline in order:")
     print(
