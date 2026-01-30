@@ -31,6 +31,12 @@ class PathValidationError(Exception):
     pass
 
 
+class OutputResolutionError(Exception):
+    """Raised when output directory resolution fails."""
+
+    pass
+
+
 def validate_output_path(
     path: Path, must_exist: bool = False, must_be_writable: bool = True
 ) -> Path:
@@ -128,3 +134,50 @@ def get_available_disk_space(path: Path) -> float:
 
     stat = shutil.disk_usage(path)
     return stat.free / (1024**3)  # Convert to GB
+
+
+def get_latest_output_dir(
+    output_base: Path, required_file: Optional[str] = None
+) -> Path:
+    """
+    Find the most recent timestamped output directory.
+
+    Directories are expected to follow YYYY-MM-DD_HHMMSS naming convention.
+    Sorting by name ensures chronological order without parsing timestamps.
+
+    Args:
+        output_base: Base directory containing timestamped subdirectories
+        required_file: If provided, only consider directories containing this file
+
+    Returns:
+        Path to the most recent valid timestamped directory
+
+    Raises:
+        OutputResolutionError: If no valid directory found
+    """
+    if not output_base.exists():
+        raise OutputResolutionError(f"Output base directory not found: {output_base}")
+
+    # Find directories starting with a digit (timestamp pattern)
+    timestamped_dirs = [
+        d for d in output_base.iterdir() if d.is_dir() and d.name[0].isdigit()
+    ]
+
+    if not timestamped_dirs:
+        raise OutputResolutionError(
+            f"No timestamped directories found in: {output_base}"
+        )
+
+    # Sort by name descending (newest first)
+    sorted_dirs = sorted(timestamped_dirs, key=lambda d: d.name, reverse=True)
+
+    # Filter by required file if specified
+    if required_file:
+        for d in sorted_dirs:
+            if (d / required_file).exists():
+                return d
+        raise OutputResolutionError(
+            f"No directory contains required file '{required_file}' in: {output_base}"
+        )
+
+    return sorted_dirs[0]
