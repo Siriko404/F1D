@@ -2546,6 +2546,384 @@ def compute_tokenize_output_stats(
     return stats
 
 
+def compute_constructvariables_input_stats(
+    tokenized_dir: Path,
+    manifest_df: pd.DataFrame,
+    years_range: tuple = (2002, 2019),
+) -> Dict[str, Any]:
+    """
+    Analyze input data for variable construction.
+
+    Provides comprehensive statistics about tokenized input files,
+    master manifest characteristics, linguistic categories, and
+    total tokens available for variable construction.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        tokenized_dir: Directory containing linguistic_counts_*.parquet files
+        manifest_df: Master manifest DataFrame (from step 1.0)
+        years_range: Tuple of (start_year, end_year) to process
+
+    Returns:
+        Dictionary with keys:
+        - tokenized_files_stats: {files_present, files_missing,
+                                  total_rows, rows_per_year: {year: count}}
+        - manifest_stats: {unique_gvkey, unique_ceos,
+                          temporal_coverage: {earliest_start, latest_start}}
+        - linguistic_categories: {count, category_names, sample_categories}
+        - total_tokens_available: Sum of total_tokens across all input files
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Tokenized files analysis
+    stats["tokenized_files_stats"] = {
+        "files_present": [],
+        "files_missing": [],
+        "total_rows": 0,
+        "rows_per_year": {},
+    }
+
+    total_tokens = 0
+    start_year, end_year = years_range
+
+    for year in range(start_year, end_year + 1):
+        file_path = tokenized_dir / f"linguistic_counts_{year}.parquet"
+        if file_path.exists():
+            stats["tokenized_files_stats"]["files_present"].append(year)
+            # Read just to get row count and total_tokens
+            df_year = pd.read_parquet(file_path, columns=["total_tokens"])
+            row_count = len(df_year)
+            stats["tokenized_files_stats"]["rows_per_year"][str(year)] = int(row_count)
+            stats["tokenized_files_stats"]["total_rows"] += row_count
+            total_tokens += df_year["total_tokens"].sum()
+        else:
+            stats["tokenized_files_stats"]["files_missing"].append(year)
+
+    # Manifest analysis
+    stats["manifest_stats"] = {}
+
+    if "gvkey" in manifest_df.columns:
+        stats["manifest_stats"]["unique_gvkey"] = int(manifest_df["gvkey"].nunique())
+
+    if "ceo_name" in manifest_df.columns:
+        stats["manifest_stats"]["unique_ceos"] = int(manifest_df["ceo_name"].nunique())
+
+    if "start_date" in manifest_df.columns:
+        manifest_df_temp = manifest_df.copy()
+        manifest_df_temp["start_date"] = pd.to_datetime(manifest_df_temp["start_date"])
+        date_col = manifest_df_temp["start_date"].dropna()
+        if len(date_col) > 0:
+            stats["manifest_stats"]["temporal_coverage"] = {
+                "earliest_start": date_col.min().isoformat(),
+                "latest_start": date_col.max().isoformat(),
+            }
+
+    # Linguistic categories (from first available file)
+    stats["linguistic_categories"] = {
+        "count": 0,
+        "category_names": [],
+        "sample_categories": [],
+    }
+
+    if stats["tokenized_files_stats"]["files_present"]:
+        first_year = stats["tokenized_files_stats"]["files_present"][0]
+        first_file = tokenized_dir / f"linguistic_counts_{first_year}.parquet"
+        if first_file.exists():
+            all_cols = pd.read_parquet(first_file, columns=[]).columns.tolist()
+            count_cols = sorted([c for c in all_cols if c.endswith("_count")])
+            category_names = sorted(set([c.replace("_count", "") for c in count_cols]))
+            stats["linguistic_categories"]["count"] = len(category_names)
+            stats["linguistic_categories"]["category_names"] = category_names
+            # Sample first 5 categories
+            stats["linguistic_categories"]["sample_categories"] = category_names[:5]
+
+    stats["total_tokens_available"] = int(total_tokens)
+
+    return stats
+
+
+def compute_constructvariables_process_stats(
+    per_year_stats: List[Dict[str, Any]],
+    total_speaker_flags: Dict[str, int],
+    variables_created: int,
+    duration_seconds: float,
+) -> Dict[str, Any]:
+    """
+    Analyze variable construction process.
+
+    Provides detailed statistics about speaker flagging success rates,
+    context distribution, variable creation breakdown, NaN vs zero analysis,
+    and efficiency metrics.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        per_year_stats: List of per-year statistics from process_year function
+        total_speaker_flags: Dict with analyst, manager, ceo, operator counts
+        variables_created: Total number of variables created
+        duration_seconds: Total processing duration
+
+    Returns:
+        Dictionary with keys:
+        - speaker_flagging_metrics: {total_speakers_flagged, flagging_rate_pct,
+                                    role_distribution: {role: count, pct}}
+        - context_distribution: Not available from current stats (requires input data)
+        - variable_creation_breakdown: {total_variables,
+                                       variables_per_combo: 5x3=15 combos,
+                                       variables_per_category: N categories}
+        - nan_vs_zero_analysis: Not available from current stats (requires output data)
+        - efficiency_metrics: {calls_processed, calls_per_second,
+                              variables_per_second}
+    """
+    import numpy as np
+
+    stats = {}
+
+    # Speaker flagging metrics
+    total_flagged = sum(total_speaker_flags.values())
+    # Estimate total speakers from input rows (approximate)
+    total_input_rows = sum(s.get("rows", 0) for s in per_year_stats)
+    flagging_rate = round(total_flagged / total_input_rows * 100, 2) if total_input_rows > 0 else 0.0
+
+    stats["speaker_flagging_metrics"] = {
+        "total_speakers_flagged": total_flagged,
+        "total_speakers_unflagged": max(0, total_input_rows - total_flagged),
+        "flagging_rate_pct": flagging_rate,
+        "role_distribution": {},
+    }
+
+    for role, count in sorted(total_speaker_flags.items()):
+        role_pct = round(count / total_flagged * 100, 2) if total_flagged > 0 else 0.0
+        stats["speaker_flagging_metrics"]["role_distribution"][role] = {
+            "count": count,
+            "pct": role_pct,
+        }
+
+    # Context distribution (not available without input data)
+    stats["context_distribution"] = {
+        "note": "Context distribution requires input token data - not available from process stats",
+    }
+
+    # Variable creation breakdown
+    # 5 samples (Manager, Analyst, CEO, NonCEO_Manager, Entire)
+    # 3 contexts (QA, Pres, All)
+    # N categories (from linguistic_counts columns)
+    num_samples = 5
+    num_contexts = 3
+    combos = num_samples * num_contexts  # 15
+    categories_per_combo = variables_created // combos if combos > 0 else 0
+
+    stats["variable_creation_breakdown"] = {
+        "total_variables": variables_created,
+        "num_samples": num_samples,
+        "num_contexts": num_contexts,
+        "total_combinations": combos,
+        "categories_per_combo": categories_per_combo,
+        "variables_per_combo": {},
+    }
+
+    # Breakdown by sample-context combination
+    samples = ["Manager", "Analyst", "CEO", "NonCEO_Manager", "Entire"]
+    contexts = ["QA", "Pres", "All"]
+    for sample in samples:
+        for context in contexts:
+            combo_key = f"{sample}_{context}"
+            stats["variable_creation_breakdown"]["variables_per_combo"][combo_key] = categories_per_combo
+
+    # NaN vs zero analysis (not available without output data)
+    stats["nan_vs_zero_analysis"] = {
+        "note": "NaN vs zero analysis requires output data - not available from process stats",
+    }
+
+    # Efficiency metrics
+    calls_processed = sum(s.get("rows", 0) for s in per_year_stats)
+    calls_per_second = round(calls_processed / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    variables_per_second = round(variables_created / duration_seconds, 2) if duration_seconds > 0 else 0.0
+
+    stats["efficiency_metrics"] = {
+        "calls_processed": calls_processed,
+        "calls_per_second": calls_per_second,
+        "variables_created": variables_created,
+        "variables_per_second": variables_per_second,
+        "years_processed": len(per_year_stats),
+    }
+
+    return stats
+
+
+def compute_constructvariables_output_stats(
+    output_dfs: List[pd.DataFrame],
+    samples: List[str],
+    contexts: List[str],
+    categories: List[str],
+) -> Dict[str, Any]:
+    """
+    Analyze linguistic variables output from variable construction.
+
+    Provides comprehensive statistics about variable distributions,
+    sample-context aggregates, temporal trends, and NaN vs zero analysis.
+
+    Deterministic: Same input produces same output (sorted outputs).
+
+    Args:
+        output_dfs: List of per-year DataFrames with linguistic variables
+        samples: List of sample names (e.g., ["Manager", "Analyst", "CEO", ...])
+        contexts: List of context names (e.g., ["QA", "Pres", "All"])
+        categories: List of linguistic category names (e.g., ["uncertainty", "negative"])
+
+    Returns:
+        Dictionary with keys:
+        - variable_distributions: {variable_name: {mean, median, std, min, max,
+                                                   q25, q75, percentiles, zeros, nans}}
+        - sample_aggregates: {sample_name: {mean_vars, median_vars, etc.}}
+        - context_aggregates: {context_name: {mean_vars, median_vars, etc.}}
+        - temporal_trends: {variable_name: {year: avg_value}}
+        - nan_vs_zero_analysis: {total_values, nan_count, nan_pct, zero_count, zero_pct}
+    """
+    import numpy as np
+
+    if len(output_dfs) == 0:
+        return {
+            "variable_distributions": {},
+            "sample_aggregates": {},
+            "context_aggregates": {},
+            "temporal_trends": {},
+            "nan_vs_zero_analysis": {"error": "No output data"},
+        }
+
+    # Concatenate all output DataFrames for analysis
+    df_all = pd.concat(output_dfs, ignore_index=True)
+
+    stats = {}
+
+    # Identify all variable columns (sample_context_category_pct format)
+    var_cols = [c for c in df_all.columns if c.endswith("_pct")]
+
+    # Variable distributions
+    stats["variable_distributions"] = {}
+    for var_col in sorted(var_cols):
+        var_series = df_all[var_col]
+
+        # Basic statistics
+        var_stats = {
+            "mean": round(float(var_series.mean()), 4),
+            "median": round(float(var_series.median()), 4),
+            "std": round(float(var_series.std()), 4),
+            "min": round(float(var_series.min()), 4),
+            "max": round(float(var_series.max()), 4),
+            "q25": round(float(var_series.quantile(0.25)), 4),
+            "q75": round(float(var_series.quantile(0.75)), 4),
+        }
+
+        # Percentiles
+        var_stats["percentiles"] = {
+            "p10": round(float(var_series.quantile(0.10)), 4),
+            "p25": round(float(var_series.quantile(0.25)), 4),
+            "p50": round(float(var_series.quantile(0.50)), 4),
+            "p75": round(float(var_series.quantile(0.75)), 4),
+            "p90": round(float(var_series.quantile(0.90)), 4),
+            "p95": round(float(var_series.quantile(0.95)), 4),
+            "p99": round(float(var_series.quantile(0.99)), 4),
+        }
+
+        # Zero vs NaN analysis
+        zeros_count = int((var_series == 0).sum())
+        nans_count = int(var_series.isna().sum())
+        total_count = len(var_series)
+
+        var_stats["zeros"] = {
+            "count": zeros_count,
+            "pct": round(zeros_count / total_count * 100, 2) if total_count > 0 else 0.0,
+        }
+        var_stats["nans"] = {
+            "count": nans_count,
+            "pct": round(nans_count / total_count * 100, 2) if total_count > 0 else 0.0,
+        }
+
+        stats["variable_distributions"][var_col] = var_stats
+
+    # Sample aggregates (average across all variables for each sample)
+    stats["sample_aggregates"] = {}
+    for sample in sorted(samples):
+        sample_cols = [c for c in var_cols if c.startswith(f"{sample}_")]
+        if sample_cols:
+            # Get all values for this sample's variables
+            sample_values = df_all[sample_cols].values.flatten()
+            sample_values = sample_values[~pd.isna(sample_values)]
+
+            if len(sample_values) > 0:
+                stats["sample_aggregates"][sample] = {
+                    "mean": round(float(np.mean(sample_values)), 4),
+                    "median": round(float(np.median(sample_values)), 4),
+                    "std": round(float(np.std(sample_values)), 4),
+                    "min": round(float(np.min(sample_values)), 4),
+                    "max": round(float(np.max(sample_values)), 4),
+                    "num_variables": len(sample_cols),
+                }
+            else:
+                stats["sample_aggregates"][sample] = {"error": "No data"}
+
+    # Context aggregates (average across all variables for each context)
+    stats["context_aggregates"] = {}
+    for context in sorted(contexts):
+        context_cols = [c for c in var_cols if f"_{context}_" in c]
+        if context_cols:
+            context_values = df_all[context_cols].values.flatten()
+            context_values = context_values[~pd.isna(context_values)]
+
+            if len(context_values) > 0:
+                stats["context_aggregates"][context] = {
+                    "mean": round(float(np.mean(context_values)), 4),
+                    "median": round(float(np.median(context_values)), 4),
+                    "std": round(float(np.std(context_values)), 4),
+                    "min": round(float(np.min(context_values)), 4),
+                    "max": round(float(np.max(context_values)), 4),
+                    "num_variables": len(context_cols),
+                }
+            else:
+                stats["context_aggregates"][context] = {"error": "No data"}
+
+    # Temporal trends (average per year for key variables)
+    stats["temporal_trends"] = {}
+
+    # Select key variables for trend analysis
+    key_variables = []
+    for sample in ["Manager", "Analyst", "CEO"]:
+        for context in ["QA", "Pres"]:
+            for category in categories[:3]:  # First 3 categories
+                var_name = f"{sample}_{context}_{category}_pct"
+                if var_name in var_cols:
+                    key_variables.append(var_name)
+
+    for var_col in sorted(key_variables):
+        stats["temporal_trends"][var_col] = {}
+        for i, df_year in enumerate(output_dfs):
+            if var_col in df_year.columns:
+                year_avg = round(float(df_year[var_col].mean()), 4)
+                # Infer year from index position (2002 + i)
+                year = 2002 + i
+                stats["temporal_trends"][var_col][str(year)] = year_avg
+
+    # Overall NaN vs zero analysis
+    total_values = len(df_all) * len(var_cols) if var_cols else 0
+    total_nans = sum(df_all[c].isna().sum() for c in var_cols)
+    total_zeros = sum((df_all[c] == 0).sum() for c in var_cols)
+
+    stats["nan_vs_zero_analysis"] = {
+        "total_values": total_values,
+        "nan_count": int(total_nans),
+        "nan_pct": round(total_nans / total_values * 100, 2) if total_values > 0 else 0.0,
+        "zero_count": int(total_zeros),
+        "zero_pct": round(total_zeros / total_values * 100, 2) if total_values > 0 else 0.0,
+        "explanation": "NaN = no text in section (missing data), 0 = text but no linguistic matches",
+    }
+
+    return stats
+
+
 class DualWriter:
     """
     Writes to both stdout and log file verbatim.
