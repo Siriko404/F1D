@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 27 of 27 (Remove Symlink Mechanism)
-Plan: 01 of 6 in current phase
+Plan: 03 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-30 - Completed 27-01-PLAN.md
+Last activity: 2026-01-30 - Completed 27-03-PLAN.md
 
-Progress: [██████████] 100% (138/143 plans complete)
+Progress: [██████████] 100% (140/143 plans complete)
 
 ## Phase 25.1 Achievements
 
@@ -195,6 +195,24 @@ Progress: [██████████] 100% (138/143 plans complete)
 - All validation tests passed (22/22 scripts respond to --help, 5/5 shared modules import)
 - Repository fully functional after cleanup
 
+## Phase 27 Achievements
+
+**Phase 27 IN PROGRESS** - Removing symlink mechanism from pipeline
+- 27-01 COMPLETE: Added get_latest_output_dir() to shared/path_utils.py, updated dependency_checker.py and data_loading.py
+- 27-02 COMPLETE: Updated Step 1-2 reader scripts to use timestamp-based resolution (verified 1.0-1.4, 2.1-2.3, 2.3_VerifyStep2, 2.3_Report)
+- 27-03 COMPLETE: Verified Step 3 and Step 4.1.x reader scripts already use get_latest_output_dir() (no code changes needed)
+
+**Phase 27-03 COMPLETE** - 2026-01-30
+- Verified 3.0_BuildFinancialFeatures.py uses get_latest_output_dir() for manifest resolution
+- Verified 3.1_FirmControls.py uses get_latest_output_dir() for manifest resolution
+- Verified 3.2_MarketVariables.py uses get_latest_output_dir() for manifest resolution
+- Verified 3.3_EventFlags.py uses get_latest_output_dir() for manifest resolution
+- Verified 4.1_EstimateCeoClarity.py uses get_latest_output_dir() for manifest, linguistic vars, financial features
+- Verified 4.1.1_EstimateCeoClarity_CeoSpecific.py uses get_latest_output_dir() for all prerequisites
+- Verified 4.1.2_EstimateCeoClarity_Extended.py uses get_latest_output_dir() for all prerequisites
+- All 7 scripts verified to compile without syntax errors
+- No hardcoded /latest/ reading paths found in Steps 3-4.1.2
+
 ## Session Continuity
 
         Last session: 2026-01-24T23:40:44Z
@@ -320,6 +338,10 @@ Recent decisions affecting current work:
 - [Quick Task 023]: Added comprehensive tokenization descriptive statistics to 2.1_TokenizeAndCount.py following INPUT/PROCESS/OUTPUT framework
 - [Quick Task 023]: Added compute_tokenize_input_stats, compute_tokenize_process_stats, compute_tokenize_output_stats to observability_utils.py
 - [Quick Task 023]: Created generate_tokenization_report() function for publication-ready markdown report with LM dictionary analysis, category hit rates, speaker-level analysis, and sparsity metrics
+- [Phase 27-02]: Verified all Step 1-2 reader scripts use get_latest_output_dir() for timestamp-based resolution
+- [Phase 27-02]: Step 1 scripts (1.0, 1.2-1.4) confirmed using get_latest_output_dir() for reading prerequisite outputs
+- [Phase 27-02]: Step 2 scripts (2.1-2.3 + 2.3_VerifyStep2) confirmed using get_latest_output_dir() for reading prerequisite outputs
+- [Phase 27-02]: No hardcoded /latest/ paths remain in reader code for Steps 1-2 - all migrated in Phase 27-01
 
 ### Roadmap Evolution
 
@@ -372,16 +394,16 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-        Last session: 2026-01-30T16:37:20Z
-        Stopped at: Completed 27-01-PLAN.md
+        Last session: 2026-01-30T16:47:00Z
+        Stopped at: Completed 27-03-PLAN.md
         Resume file: None
 
         Phase: 27 of 27 (Remove Symlink Mechanism)
-          Plan: 01 of 06
+          Plan: 03 of 06
           Status: In progress
-          Last activity: 2026-01-30 - Completed 27-01: Add timestamp-based resolution to shared modules
+          Last activity: 2026-01-30 - Completed 27-03: Verified Step 3 and 4.1.x scripts use get_latest_output_dir()
 
-         Progress: [██████████] 97% (138/143 plans complete)
+         Progress: [██████████] 98% (140/143 plans complete)
           Technical Remediation: [████████████] 100% (All phases 7-25 complete)
           Gap Closure: [████████████] 100% (All gap closure phases complete)
           Post-Audit Validation: [████████████] 100% (All validation phases complete)
