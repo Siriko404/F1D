@@ -53,31 +53,27 @@ sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
 from utils import generate_variable_reference
-from shared.financial_utils import compute_financial_controls_quarterly
+
+# Add parent directory to sys.path for shared module imports
+import sys as _sys
+from pathlib import Path as _Path
+
+_script_dir = Path(__file__).parent.parent
+_sys.path.insert(0, str(_script_dir))
 
 # Import shared path validation utilities
-try:
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-    )
-except ImportError:
-    import sys as _sys
-    from pathlib import Path as _Path
-
-    _script_dir = Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-    )
+from shared.path_utils import (
+    validate_output_path,
+    ensure_output_dir,
+    validate_input_file,
+    get_latest_output_dir,
+)
 
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import DualWriter
+
+# Import financial utilities
+from shared.financial_utils import compute_financial_controls_quarterly
 
 # ==============================================================================
 # Configuration
