@@ -86,14 +86,28 @@ analysis (fog index, word length, etc.).
 def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from shared.dependency_checker import validate_prerequisites
+    from shared.path_utils import get_latest_output_dir
 
     required_files = {}
 
-    required_steps = {
-        "2.1_TokenizeAndCount": "linguistic_counts.parquet",
+    # Check tokenized files from step 2.1
+    tokenized_dir = get_latest_output_dir(
+        root / "4_Outputs" / "2_Textual_Analysis" / "2.1_Tokenized",
+        required_file="linguistic_counts_2002.parquet",
+    )
+
+    # Check manifest from step 1.4
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.4_AssembleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+
+    # Validate required files exist
+    required_files = {
+        "managerial_roles_extracted.txt": root / "1_Inputs" / "managerial_roles_extracted.txt",
     }
 
-    validate_prerequisites(required_files, required_steps)
+    validate_prerequisites(required_files, {})
 
 
 def compute_file_checksum(filepath, algorithm="sha256"):
@@ -328,7 +342,7 @@ def load_manager_keywords(root):
 
 def load_ceo_map(root):
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -446,7 +460,10 @@ def aggregate_weighted(df, sample_mask, context_mask, count_cols):
         pct = (sums[col] / total_tokens) * 100.0
         results[f"{cat}_pct"] = pct
 
-    return pd.DataFrame(results)
+    result_df = pd.DataFrame(results)
+    result_df.index.name = "file_name"
+    result_df = result_df.reset_index()
+    return result_df
 
 
 def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_dir):
@@ -464,7 +481,7 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     # Second pass: load only needed columns
     df = pd.read_parquet(
         in_path,
-        columns=["file_name", "role", "employer", "speaker_name", "total_tokens"]
+        columns=["file_name", "context", "role", "employer", "speaker_name", "total_tokens"]
         + count_cols,
     )
     input_rows = len(df)
@@ -513,9 +530,10 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
         for c_name, c_mask in contexts.items():
             agg_df = aggregate_weighted(df, s_mask, c_mask, count_cols)
             if agg_df is not None:
-                # Rename columns
-                agg_df.columns = [f"{s_name}_{c_name}_{c}" for c in agg_df.columns]
-                variables_created += len(agg_df.columns)
+                # Rename columns (exclude file_name)
+                rename_map = {c: f"{s_name}_{c_name}_{c}" for c in agg_df.columns if c != "file_name"}
+                agg_df = agg_df.rename(columns=rename_map)
+                variables_created += len(rename_map)
                 # Merge
                 meta = meta.merge(agg_df, on="file_name", how="left")
 
@@ -530,6 +548,7 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     return {
         "rows": len(meta),
         "cols": len(meta.columns),
+        "variables_created": variables_created,
         "speaker_flags": {
             "analyst": int(analyst_count),
             "manager": int(manager_count),
@@ -838,6 +857,8 @@ def main():
             if "speaker_flags" in year_output:
                 for k, v in year_output["speaker_flags"].items():
                     total_speaker_flags[k] += v
+            if "variables_created" in year_output:
+                total_variables_created += year_output["variables_created"]
             # Collect per-year stats
             per_year_stats.append(year_output)
 
@@ -848,11 +869,6 @@ def main():
     end_time = time.perf_counter()
     stats["timing"]["end_iso"] = datetime.now().isoformat()
     stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
-
-    # Calculate total variables created
-    # From output_cols minus metadata columns (file_name, start_date, gvkey, conm, sic)
-    metadata_cols = 5
-    total_variables_created = output_cols - metadata_cols
 
     # Collect process statistics for variable construction
     from shared.observability_utils import compute_constructvariables_process_stats
