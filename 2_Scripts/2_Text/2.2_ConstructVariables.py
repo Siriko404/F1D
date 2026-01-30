@@ -259,7 +259,8 @@ def detect_anomalies_zscore(df, columns, threshold=3.0):
 
         # Flag anomalies beyond threshold
         anomaly_mask = z_scores > threshold
-        anomaly_indices = df[anomaly_mask].index.tolist()
+        # Get indices from the series (which has NaNs dropped)
+        anomaly_indices = series[anomaly_mask].index.tolist()
 
         anomalies[col] = {
             "count": int(anomaly_mask.sum()),
@@ -313,7 +314,8 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
         upper_bound = q3 + multiplier * iqr
 
         anomaly_mask = (series < lower_bound) | (series > upper_bound)
-        anomaly_indices = df[anomaly_mask].index.tolist()
+        # Get indices from the series (which has NaNs dropped)
+        anomaly_indices = series[anomaly_mask].index.tolist()
 
         anomalies[col] = {
             "count": int(anomaly_mask.sum()),
@@ -475,8 +477,8 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     print(f"\nProcessing {year}...")
     validate_input_file(in_path, must_exist=True)
     # Column pruning: Load metadata columns and all count columns (dynamic from LM dictionary)
-    # First pass: get schema to identify count columns
-    all_cols = pd.read_parquet(in_path, columns=[]).columns.tolist()
+    # First pass: get schema to identify count columns (load empty DataFrame to get column names)
+    all_cols = pd.read_parquet(in_path).columns.tolist()
     count_cols = [c for c in all_cols if c.endswith("_count")]
     # Second pass: load only needed columns
     df = pd.read_parquet(
