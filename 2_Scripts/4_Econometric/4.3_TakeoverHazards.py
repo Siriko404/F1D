@@ -95,6 +95,151 @@ import json
 
 warnings.filterwarnings("ignore")
 
+# Configuration
+CONFIG = {
+    "year_start": 2002,
+    "year_end": 2018,
+    "clarity_var_regime": "ClarityRegime",
+    "clarity_var_ceo": "ClarityCEO",
+    "uncertainty_var": "Manager_QA_Uncertainty_pct",
+    "firm_controls": [
+        "StockRet",
+        "MarketRet",
+        "EPS_Growth",
+        "SurpDec",
+        "Size",
+        "BM",
+        "Lev",
+        "ROA",
+    ],
+    "exclude_ff12": [8, 11],
+}
+
+# Global ROOT will be set in main()
+ROOT = None
+
+
+def load_data():
+    """Load and merge all required data for takeover hazard models."""
+    print("\n" + "=" * 60)
+    print("Loading data")
+    print("=" * 60)
+
+    # Load manifest
+    manifest_dir = get_latest_output_dir(
+        ROOT / "4_Outputs" / "1.0_BuildSampleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+    manifest_path = manifest_dir / "master_sample_manifest.parquet"
+    manifest = pd.read_parquet(
+        manifest_path,
+        columns=[
+            "file_name",
+            "gvkey",
+            "start_date",
+            "ceo_id",
+            "ff12_code",
+            "ff48_code",
+        ],
+    )
+    manifest["year"] = pd.to_datetime(manifest["start_date"]).dt.year
+    print(f"  Manifest: {len(manifest):,} calls")
+
+    # Load linguistic variables
+    all_ling = []
+    for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
+        try:
+            lv_dir = get_latest_output_dir(
+                ROOT / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                required_file=f"linguistic_variables_{year}.parquet",
+            )
+            lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
+            lv = pd.read_parquet(lv_path)
+            all_ling.append(lv)
+        except OutputResolutionError:
+            continue
+    ling = pd.concat(all_ling, ignore_index=True) if all_ling else pd.DataFrame()
+    ling_cols = ["file_name", "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct"]
+    ling_cols = [c for c in ling_cols if c in ling.columns]
+    if ling_cols:
+        ling = ling[ling_cols].drop_duplicates("file_name")
+    print(f"  Linguistic: {len(ling):,} calls")
+
+    # Load clarity scores
+    try:
+        clarity_dir = get_latest_output_dir(
+            ROOT / "4_Outputs" / "4.1_CeoClarity",
+            required_file="ceo_clarity_scores.parquet",
+        )
+        clarity_path = clarity_dir / "ceo_clarity_scores.parquet"
+        clarity = pd.read_parquet(
+            clarity_path, columns=["ceo_id", "ClarityCEO", "sample"]
+        )
+        clarity["ceo_id"] = clarity["ceo_id"].astype(str)
+        print(f"  Clarity scores: {len(clarity):,} CEOs")
+    except OutputResolutionError:
+        clarity = pd.DataFrame()
+        print("  WARNING: Clarity scores not found")
+
+    # Load firm controls
+    all_fc = []
+    for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
+        try:
+            fc_dir = get_latest_output_dir(
+                ROOT / "4_Outputs" / "3_Financial_Features",
+                required_file=f"firm_controls_{year}.parquet",
+            )
+            fc_path = fc_dir / f"firm_controls_{year}.parquet"
+            fc = pd.read_parquet(fc_path)
+            all_fc.append(fc)
+        except OutputResolutionError:
+            continue
+    firm = pd.concat(all_fc, ignore_index=True) if all_fc else pd.DataFrame()
+    fc_cols = ["file_name"] + [c for c in CONFIG["firm_controls"] if c in firm.columns]
+    if fc_cols and len(firm) > 0:
+        firm = firm[fc_cols].drop_duplicates("file_name")
+    print(f"  Firm controls: {len(firm):,} calls")
+
+    # Load event flags
+    try:
+        events_dir = get_latest_output_dir(
+            ROOT / "4_Outputs" / "3.3_EventFlags",
+            required_file="event_flags.parquet",
+        )
+        events_path = events_dir / "event_flags.parquet"
+        events = pd.read_parquet(events_path)
+        print(f"  Event flags: {len(events):,} calls")
+    except OutputResolutionError:
+        events = pd.DataFrame()
+        print("  WARNING: Event flags not found")
+
+    # Merge all data
+    df = manifest.copy()
+    if len(ling) > 0:
+        df = df.merge(ling, on="file_name", how="left")
+    if len(clarity) > 0:
+        df["sample_clarity"] = "Main"
+        df.loc[df["ff12_code"] == 11, "sample_clarity"] = "Finance"
+        df.loc[df["ff12_code"] == 8, "sample_clarity"] = "Utility"
+        df["ceo_id"] = df["ceo_id"].astype(str)
+        df = df.merge(
+            clarity[["ceo_id", "ClarityCEO", "sample"]],
+            left_on=["ceo_id", "sample_clarity"],
+            right_on=["ceo_id", "sample"],
+            how="left",
+        )
+        df = df.rename(columns={"ClarityCEO": "ClarityRegime"})
+    if len(firm) > 0:
+        df = df.merge(firm, on="file_name", how="left")
+    if len(events) > 0:
+        df = df.merge(events, on="file_name", how="left")
+
+    print(f"\n  Combined: {len(df):,} calls")
+    print(f"  With ClarityRegime: {df['ClarityRegime'].notna().sum():,}")
+    print(f"  With Uncertainty: {df['Manager_QA_Uncertainty_pct'].notna().sum():,}")
+
+    return df
+
 
 def parse_arguments():
     """Parse command-line arguments for 4.3_TakeoverHazards.py."""
@@ -133,9 +278,14 @@ def check_prerequisites(root):
 
 
 def main():
+    global ROOT
     start_time = datetime.now()
     start_iso = start_time.isoformat()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
+
+    # Set ROOT if not already set
+    if ROOT is None:
+        ROOT = Path(__file__).resolve().parents[2]
 
     # Setup output directories
     out_dir = ROOT / "4_Outputs" / "4.3_TakeoverHazards" / timestamp
