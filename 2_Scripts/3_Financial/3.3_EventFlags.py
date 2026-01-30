@@ -64,6 +64,22 @@ except ImportError:
         get_latest_output_dir,
     )
 
+# Import shared observability utilities (new Step 3.3 statistics functions)
+try:
+    from shared.observability_utils import (
+        get_process_memory_mb,
+        calculate_throughput,
+        detect_anomalies_zscore,
+        detect_anomalies_iqr,
+        compute_step33_input_stats,
+        compute_step33_process_stats,
+        compute_step33_output_stats,
+        generate_financial_report_markdown,
+    )
+    HAS_OBSERVABILITY = True
+except ImportError:
+    HAS_OBSERVABILITY = False
+
 # ==============================================================================
 # Statistics Helpers
 # ==============================================================================
@@ -510,6 +526,14 @@ def main():
     sdc = load_sdc(paths["sdc_file"])
     print_stat("SDC deals", value=len(sdc))
 
+    # Collect INPUT statistics for Step 3.3 (if observability available)
+    if HAS_OBSERVABILITY:
+        print("\nCollecting INPUT statistics...")
+        stats["step33_input"] = compute_step33_input_stats(
+            manifest_df=manifest,
+            sdc_df=sdc,
+        )
+
     # Compute takeover flags
     event_flags = compute_takeover_flags(manifest, sdc)
     stats["processing"]["takeover_events"] = int(event_flags["Takeover"].sum())
@@ -535,6 +559,20 @@ def main():
     }
     print_stat("Rows after merge", before=before_rows, after=after_rows)
 
+    # Collect PROCESS statistics for Step 3.3 (if observability available)
+    if HAS_OBSERVABILITY:
+        print("\nCollecting PROCESS statistics...")
+        match_results = {
+            "manifest_rows": len(manifest),
+            "sdc_rows": len(sdc),
+            "matched_rows": len(event_flags[event_flags["Takeover"] == 1]),
+        }
+        stats["step33_process"] = compute_step33_process_stats(
+            match_results=match_results,
+            takeover_flags_df=event_flags,
+            window_days=365,
+        )
+
     # Analyze missing values
     print("\nAnalyzing missing values...")
     missing = analyze_missing_values(result)
@@ -553,6 +591,25 @@ def main():
 
     stats["output"]["final_rows"] = len(result)
     stats["output"]["final_columns"] = len(result.columns)
+
+    # Collect OUTPUT statistics for Step 3.3 (if observability available)
+    if HAS_OBSERVABILITY:
+        print("\nCollecting OUTPUT statistics...")
+        stats["step33_output"] = compute_step33_output_stats(
+            output_df=result,
+        )
+
+        # Generate report
+        print("\nGenerating Step 3.3 report...")
+        report_path = paths["output_dir"] / "report_step_3_3.md"
+        generate_financial_report_markdown(
+            input_stats=stats.get("step33_input", {}),
+            process_stats=stats.get("step33_process", {}),
+            output_stats=stats.get("step33_output", {}),
+            step_name="3.3_EventFlags",
+            output_path=report_path,
+        )
+        print(f"  Report saved to: {report_path.name}")
 
     # Finalize timing
     end_time = time.perf_counter()

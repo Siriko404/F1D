@@ -504,6 +504,10 @@ from shared.observability_utils import (
     calculate_throughput,
     detect_anomalies_zscore,
     detect_anomalies_iqr,
+    compute_step31_input_stats,
+    compute_step31_process_stats,
+    compute_step31_output_stats,
+    generate_financial_report_markdown,
     DualWriter,
 )
 
@@ -669,6 +673,15 @@ def main():
     print_stat("CCCL rows", value=len(cccl))
     stats["input"]["total_rows"] += len(cccl)
 
+    # Collect INPUT statistics for Step 3.1
+    print("\nCollecting INPUT statistics...")
+    stats["step31_input"] = compute_step31_input_stats(
+        manifest_df=manifest,
+        compustat_df=compustat,
+        ibes_df=ibes,
+        cccl_df=cccl,
+    )
+
     # Compute variables with merge diagnostics
     print("\nComputing variables...")
 
@@ -764,6 +777,19 @@ def main():
                 "percent": round(n / len(result) * 100, 2),
             }
 
+    # Collect PROCESS statistics for Step 3.1
+    print("\nCollecting PROCESS statistics...")
+    merge_results = {
+        "compustat_controls": stats["merges"].get("compustat_controls", {}),
+        "ibes_surprise": stats["merges"].get("ibes_surprise", {}),
+        "cccl_instrument": stats["merges"].get("cccl_instrument", {}),
+    }
+    stats["step31_process"] = compute_step31_process_stats(
+        merge_results=merge_results,
+        variable_coverage_df=result,
+        winsorized_cols=["Size", "BM", "Lev", "ROA"],  # TODO: Track actual winsorized cols
+    )
+
     # Save by year
     print("\nSaving outputs by year...")
     for year, group in result.groupby("year"):
@@ -781,6 +807,29 @@ def main():
 
     # Missing values analysis
     stats["missing_values"] = analyze_missing_values(result)
+
+    # Collect OUTPUT statistics for Step 3.1
+    print("\nCollecting OUTPUT statistics...")
+    variables_list = ["Size", "BM", "Lev", "ROA", "EPS_Growth", "SurpDec", "CurrentRatio", "RD_Intensity"]
+    # Add shift intensity variants if present
+    shift_cols = [c for c in result.columns if c.startswith("shift_intensity_")]
+    variables_list.extend(shift_cols)
+    stats["step31_output"] = compute_step31_output_stats(
+        output_df=result,
+        variables_list=variables_list,
+    )
+
+    # Generate report
+    print("\nGenerating Step 3.1 report...")
+    report_path = paths["output_dir"] / "report_step_3_1.md"
+    generate_financial_report_markdown(
+        input_stats=stats["step31_input"],
+        process_stats=stats["step31_process"],
+        output_stats=stats["step31_output"],
+        step_name="3.1_FirmControls",
+        output_path=report_path,
+    )
+    print(f"  Report saved to: {report_path.name}")
 
     # Timing
     end_time = time.perf_counter()

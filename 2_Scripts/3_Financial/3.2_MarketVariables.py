@@ -105,6 +105,25 @@ except ImportError:
     )
 
 
+# Import shared observability utilities (new Step 3.2 statistics functions)
+try:
+    from shared.observability_utils import (
+        get_process_memory_mb,
+        calculate_throughput,
+        detect_anomalies_zscore,
+        detect_anomalies_iqr,
+        compute_step32_input_stats,
+        compute_step32_process_stats,
+        compute_step32_output_stats,
+        generate_financial_report_markdown,
+    )
+    from shared.observability_utils import save_stats as save_stats_shared
+    # Use local save_stats to avoid conflicts
+    HAS_OBSERVABILITY = True
+except ImportError:
+    HAS_OBSERVABILITY = False
+
+
 def compute_file_checksum(filepath, algorithm="sha256"):
     """Compute checksum for a file."""
 
@@ -1001,7 +1020,22 @@ def main():
 
     print_stat("Input columns", value=len(manifest.columns))
 
+    # Collect INPUT statistics for Step 3.2 (if observability available)
+    if HAS_OBSERVABILITY:
+        print("\nCollecting INPUT statistics...")
+        # CRSP data by year will be collected during processing
+        stats["step32_input"] = {
+            "manifest_stats": {
+                "total_records": int(len(manifest)),
+                "unique_gvkey": int(manifest["gvkey"].nunique()) if "gvkey" in manifest.columns else 0,
+                "unique_permno": int(manifest["permno"].nunique()) if "permno" in manifest.columns else 0,
+                "years_present": [int(y) for y in years],
+            },
+            "crsp_stats_by_year": {},  # Will be populated during processing
+        }
+
     all_results = []
+    per_year_stats_list = []  # For PROCESS statistics
 
     for year in years:
         print(f"\n{'=' * 40}")
@@ -1026,6 +1060,21 @@ def main():
         print(f"  CRSP loaded: {len(crsp):,} observations")
 
         stats["processing"][f"crsp_observations_{year}"] = len(crsp)
+
+        # Collect CRSP stats for INPUT statistics
+        if HAS_OBSERVABILITY and "step32_input" in stats:
+            stats["step32_input"]["crsp_stats_by_year"][str(year)] = {
+                "observations": int(len(crsp)),
+                "unique_stocks": int(crsp["PERMNO"].nunique()) if "PERMNO" in crsp.columns else 0,
+            }
+
+        # Collect per-year stats for PROCESS statistics
+        per_year_stats_list.append({
+            "year": year,
+            "total_records": len(year_manifest),
+            "stock_ret_count": int(year_manifest["StockRet"].notna().sum()) if "StockRet" in year_manifest.columns else 0,
+            "amihud_count": int(year_manifest["Amihud"].notna().sum()) if "Amihud" in year_manifest.columns else 0,
+        })
 
         # Compute (vectorized within year)
 
@@ -1089,6 +1138,32 @@ def main():
     stats["output"]["final_columns"] = len(all_df.columns)
 
     stats["missing_values"] = analyze_missing_values(all_df)
+
+    # Collect PROCESS and OUTPUT statistics for Step 3.2 (if observability available)
+    if HAS_OBSERVABILITY and per_year_stats_list:
+        print("\nCollecting PROCESS statistics...")
+        stats["step32_process"] = compute_step32_process_stats(
+            per_year_stats=per_year_stats_list,
+        )
+
+        print("\nCollecting OUTPUT statistics...")
+        variables_list = ["StockRet", "MarketRet", "Amihud", "Corwin_Schultz", "Delta_Amihud", "Delta_Corwin_Schultz", "Volatility"]
+        stats["step32_output"] = compute_step32_output_stats(
+            output_df=all_df,
+            variables_list=variables_list,
+        )
+
+        # Generate report
+        print("\nGenerating Step 3.2 report...")
+        report_path = paths["output_dir"] / "report_step_3_2.md"
+        generate_financial_report_markdown(
+            input_stats=stats.get("step32_input", {}),
+            process_stats=stats.get("step32_process", {}),
+            output_stats=stats.get("step32_output", {}),
+            step_name="3.2_MarketVariables",
+            output_path=report_path,
+        )
+        print(f"  Report saved to: {report_path.name}")
 
     end_time = time.perf_counter()
 
