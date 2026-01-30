@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
  ## Current Position
 
-Phase: 27 of 27 (Remove Symlink Mechanism)
-Plan: 06 of 6 in current phase - **PHASE COMPLETE**
+Phase: Quick Tasks
+Plan: 027 of N - **PLAN COMPLETE**
 Status: COMPLETED
-Last activity: 2026-01-30 - Completed quick task 026: Debug script 2.2 - fixed schema detection, variable reporting, and anomaly detection bugs
+Last activity: 2026-01-30 - Completed quick task 027: Comprehensive descriptive statistics for Step 3 financial features
 
 Progress: [███████████] 100% (143/143 plans complete)
 
-**Phase 27 COMPLETE** - Symlink mechanism completely removed from pipeline
+**Quick Task 027 COMPLETE** - Comprehensive descriptive statistics for Step 3 financial features
 
 ## Phase 25.1 Achievements
 
@@ -384,6 +384,10 @@ Recent decisions affecting current work:
   - [Phase 27-05]: All 20 pipeline scripts no longer create symlinks - writers only create timestamped directories
   - [Phase 27-05]: Symlink mechanism successfully removed from entire pipeline
   - [Phase 27-05]: Ready for Plan 27-06: Delete symlink_utils.py and clean up remaining utilities
+ - [Quick Task 027]: Created wrapper functions (compute_step31/32/33_*) for Step 3 statistics, delegates to existing compute_financial/market/event_flags_* implementations
+ - [Quick Task 027]: Used HAS_OBSERVABILITY flag in 3.2 and 3.3 for graceful fallback when shared modules unavailable
+ - [Quick Task 027]: Each Step 3 sub-script (3.1, 3.2, 3.3) generates its own report_step_3_X.md with comprehensive INPUT/PROCESS/OUTPUT statistics
+ - [Quick Task 027]: Statistics collected at three key points: INPUT (data loading), PROCESS (computation/merges), OUTPUT (final results)
 
 ### Roadmap Evolution
 
@@ -421,6 +425,7 @@ Recent decisions affecting current work:
 | 024 | Debug and verify script 2.1 at full scale - confirmed working, no bugs found | 2026-01-30 | N/A | [024-debug-script-21](./quick/024-debug-script-21/) |
 | 025 | Add variable construction descriptive statistics to 2.2_ConstructVariables for academic presentation | 2026-01-30 | 653352b | [025-add-constructvariables-descriptive-stats](./quick/025-add-constructvariables-descriptive-stats/) |
 | 026 | Debug script 2.2 - fixed schema detection, variable reporting, and anomaly detection bugs | 2026-01-30 | 7f80165 | [026-debug-and-verify-script-22](./quick/026-debug-and-verify-script-22/) |
+| 027 | Add comprehensive descriptive statistics to Step 3 financial features (3.1, 3.2, 3.3) for academic presentation | 2026-01-30 | 13250d1 | [027-comprehensive-descriptive-stats-step3](./quick/027-comprehensive-descriptive-stats-step3/) |
 
 ### Blockers/Concerns
 
@@ -439,19 +444,34 @@ Recent decisions affecting current work:
 
  ## Session Continuity
 
-          Last session: 2026-01-30T19:56:29Z
-          Stopped at: Completed quick-025-PLAN.md
+          Last session: 2026-01-30T20:52:15Z
+          Stopped at: Completed quick-027-PLAN.md
           Resume file: None
 
-         Phase: 27 of 27 (Remove Symlink Mechanism)
-           Plan: 06 of 06 - **PHASE COMPLETE**
+         Phase: Quick Tasks
+           Plan: 027 - **PLAN COMPLETE**
            Status: ✅ COMPLETED
-           Last activity: 2026-01-30 - Completed 27-06: Deleted symlink_utils.py and cleaned up duplicate utilities
+           Last activity: 2026-01-30 - Added comprehensive descriptive statistics to Step 3 financial features (3.1, 3.2, 3.3)
 
           Progress: [███████████] 100% (143/143 plans complete)
            Technical Remediation: [████████████] 100% (All phases 7-25 complete)
            Gap Closure: [████████████] 100% (All gap closure phases complete)
            Post-Audit Validation: [████████████] 100% (All validation phases complete)
+
+        ## Quick Task 027 Summary
+
+        **Task:** Add comprehensive descriptive statistics to Step 3 financial features
+        **Status:** ✅ COMPLETE - Statistics functions and integration complete
+        **Duration:** 9 minutes
+        **Commits:**
+        - 2d9442b: Added 9 wrapper functions for Step 3 statistics to observability_utils.py
+        - 13250d1: Integrated statistics collection into 3.1, 3.2, 3.3 scripts
+        **Features:**
+        - compute_step31_input_stats/process_stats/output_stats for Firm Controls (3.1)
+        - compute_step32_input_stats/process_stats/output_stats for Market Variables (3.2)
+        - compute_step33_input_stats/process_stats/output_stats for Event Flags (3.3)
+        - Each script generates report_step_3_X.md with INPUT/PROCESS/OUTPUT sections
+        - Graceful fallback (HAS_OBSERVABILITY flag) in 3.2 and 3.3
 
         ## Quick Task 023 Verification
 
