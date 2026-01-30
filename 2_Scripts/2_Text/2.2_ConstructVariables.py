@@ -21,7 +21,12 @@ try:
         validate_input_file,
         get_latest_output_dir,
     )
-    from shared.observability_utils import DualWriter
+    from shared.observability_utils import (
+        DualWriter,
+        compute_constructvariables_input_stats,
+        compute_constructvariables_process_stats,
+        compute_constructvariables_output_stats,
+    )
 except ImportError:
     import sys as _sys
     from pathlib import Path as _Path
@@ -34,7 +39,12 @@ except ImportError:
         validate_input_file,
         get_latest_output_dir,
     )
-    from shared.observability_utils import DualWriter
+    from shared.observability_utils import (
+        DualWriter,
+        compute_constructvariables_input_stats,
+        compute_constructvariables_process_stats,
+        compute_constructvariables_output_stats,
+    )
 
 # ==============================================================================
 # Setup
@@ -529,6 +539,221 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     }
 
 
+def generate_variable_construction_report(stats, output_path):
+    """
+    Generate publication-ready markdown report for variable construction.
+
+    Args:
+        stats: Statistics dictionary with constructvariables_input,
+               constructvariables_process, constructvariables_output keys
+        output_path: Path to save the markdown report
+    """
+    lines = []
+    lines.append("# Step 2.2: Construct Variables Report\n")
+    lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+
+    # INPUT DATA section
+    lines.append("## INPUT DATA\n")
+
+    if "constructvariables_input" in stats:
+        inp = stats["constructvariables_input"]
+
+        # Tokenized Files
+        lines.append("### Tokenized Files (from step 2.1)\n")
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
+        token_stats = inp.get("tokenized_files_stats", {})
+        lines.append(f"| Files present | {len(token_stats.get('files_present', []))} |")
+        lines.append(f"| Files missing | {len(token_stats.get('files_missing', []))} |")
+        lines.append(f"| Total rows | {token_stats.get('total_rows', 0):,} |")
+        lines.append(f"| Total tokens | {inp.get('total_tokens_available', 0):,} |\n")
+
+        # Rows per year table
+        if token_stats.get("rows_per_year"):
+            lines.append("**Rows per year:**\n")
+            lines.append("| Year | Rows |")
+            lines.append("|------|------|")
+            for year, rows in sorted(token_stats["rows_per_year"].items()):
+                lines.append(f"| {year} | {rows:,} |")
+            lines.append("")
+
+        # Manifest Stats
+        lines.append("### Master Manifest (from step 1.0)\n")
+        manifest_stats = inp.get("manifest_stats", {})
+        if manifest_stats:
+            lines.append("| Metric | Value |")
+            lines.append("|--------|-------|")
+            if "unique_gvkey" in manifest_stats:
+                lines.append(f"| Unique companies (gvkey) | {manifest_stats['unique_gvkey']:,} |")
+            if "unique_ceos" in manifest_stats:
+                lines.append(f"| Unique CEOs | {manifest_stats['unique_ceos']:,} |")
+            if "temporal_coverage" in manifest_stats:
+                tc = manifest_stats["temporal_coverage"]
+                lines.append(f"| Earliest start_date | {tc.get('earliest_start', 'N/A')} |")
+                lines.append(f"| Latest start_date | {tc.get('latest_start', 'N/A')} |")
+            lines.append("")
+
+        # Linguistic Categories
+        lines.append("### Linguistic Categories\n")
+        cat_info = inp.get("linguistic_categories", {})
+        lines.append(f"- **Total categories:** {cat_info.get('count', 0)}")
+        sample_cats = cat_info.get('sample_categories', [])
+        if sample_cats:
+            lines.append(f"- **Sample categories:** {', '.join(sample_cats)}")
+        all_cats = cat_info.get('category_names', [])
+        if all_cats:
+            lines.append(f"- **All categories:** {', '.join(all_cats)}")
+        lines.append("")
+
+    # VARIABLE CONSTRUCTION PROCESS section
+    lines.append("## VARIABLE CONSTRUCTION PROCESS\n")
+
+    if "constructvariables_process" in stats:
+        proc = stats["constructvariables_process"]
+
+        # Speaker Flagging Metrics
+        lines.append("### Speaker Flagging Metrics\n")
+        flag_metrics = proc.get("speaker_flagging_metrics", {})
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
+        lines.append(f"| Total speakers flagged | {flag_metrics.get('total_speakers_flagged', 0):,} |")
+        lines.append(f"| Total speakers unflagged | {flag_metrics.get('total_speakers_unflagged', 0):,} |")
+        lines.append(f"| Flagging rate | {flag_metrics.get('flagging_rate_pct', 0):.2f}% |\n")
+
+        # Role distribution
+        role_dist = flag_metrics.get("role_distribution", {})
+        if role_dist:
+            lines.append("**Role distribution:**\n")
+            lines.append("| Role | Count | Percentage |")
+            lines.append("|------|-------|------------|")
+            for role, info in sorted(role_dist.items()):
+                lines.append(f"| {role.capitalize()} | {info['count']:,} | {info['pct']:.2f}% |")
+            lines.append("")
+
+        # Variable Creation Breakdown
+        lines.append("### Variable Creation Breakdown\n")
+        var_breakdown = proc.get("variable_creation_breakdown", {})
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
+        lines.append(f"| Total variables created | {var_breakdown.get('total_variables', 0)} |")
+        lines.append(f"| Number of samples | {var_breakdown.get('num_samples', 0)} |")
+        lines.append(f"| Number of contexts | {var_breakdown.get('num_contexts', 0)} |")
+        lines.append(f"| Total combinations | {var_breakdown.get('total_combinations', 0)} |")
+        lines.append(f"| Categories per combo | {var_breakdown.get('categories_per_combo', 0)} |\n")
+
+        # Efficiency Metrics
+        lines.append("### Efficiency Metrics\n")
+        eff = proc.get("efficiency_metrics", {})
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
+        lines.append(f"| Calls processed | {eff.get('calls_processed', 0):,} |")
+        lines.append(f"| Calls per second | {eff.get('calls_per_second', 0):.2f} |")
+        lines.append(f"| Variables created | {eff.get('variables_created', 0)} |")
+        lines.append(f"| Variables per second | {eff.get('variables_per_second', 0):.2f} |")
+        lines.append(f"| Years processed | {eff.get('years_processed', 0)} |\n")
+
+    # OUTPUT SUMMARY section
+    lines.append("## OUTPUT SUMMARY\n")
+
+    if "constructvariables_output" in stats:
+        outp = stats["constructvariables_output"]
+
+        # Variable Distributions (sample of key variables)
+        lines.append("### Variable Distributions (Key Variables)\n")
+        lines.append("*Sample of key linguistic variables with descriptive statistics*\n")
+
+        var_dist = outp.get("variable_distributions", {})
+        # Select a subset of key variables to display
+        key_vars = [k for k in sorted(var_dist.keys()) if "Manager_QA" in k or "Analyst_Pres" in k][:10]
+
+        if key_vars:
+            lines.append("| Variable | Mean | Median | Std | Min | Max | Zeros % | NaN % |")
+            lines.append("|----------|------|--------|-----|-----|-----|---------|--------|")
+            for var in key_vars:
+                v = var_dist[var]
+                lines.append(f"| {var} | {v['mean']:.4f} | {v['median']:.4f} | {v['std']:.4f} | {v['min']:.4f} | {v['max']:.4f} | {v['zeros']['pct']:.2f}% | {v['nans']['pct']:.2f}% |")
+            lines.append("")
+
+        # Sample Aggregates
+        lines.append("### Sample Aggregates\n")
+        sample_agg = outp.get("sample_aggregates", {})
+        if sample_agg:
+            lines.append("| Sample | Mean | Median | Std | Min | Max | Num Variables |")
+            lines.append("|--------|------|--------|-----|-----|-----|----------------|")
+            for sample, info in sorted(sample_agg.items()):
+                if "error" not in info:
+                    lines.append(f"| {sample} | {info['mean']:.4f} | {info['median']:.4f} | {info['std']:.4f} | {info['min']:.4f} | {info['max']:.4f} | {info['num_variables']} |")
+            lines.append("")
+
+        # Context Aggregates
+        lines.append("### Context Aggregates\n")
+        ctx_agg = outp.get("context_aggregates", {})
+        if ctx_agg:
+            lines.append("| Context | Mean | Median | Std | Min | Max | Num Variables |")
+            lines.append("|---------|------|--------|-----|-----|-----|----------------|")
+            for ctx, info in sorted(ctx_agg.items()):
+                if "error" not in info:
+                    lines.append(f"| {ctx} | {info['mean']:.4f} | {info['median']:.4f} | {info['std']:.4f} | {info['min']:.4f} | {info['max']:.4f} | {info['num_variables']} |")
+            lines.append("")
+
+        # Temporal Trends (sample)
+        lines.append("### Temporal Trends (Sample)\n")
+        lines.append("*Average values per year for key variables*\n")
+
+        trends = outp.get("temporal_trends", {})
+        if trends:
+            # Select 3 key variables for trend display
+            trend_vars = [k for k in sorted(trends.keys()) if "Manager_QA" in k][:3]
+
+            for var in trend_vars:
+                var_trends = trends[var]
+                if var_trends:
+                    lines.append(f"**{var}:**\n")
+                    lines.append("| Year | Average |")
+                    lines.append("|------|---------|")
+                    for year, avg in sorted(var_trends.items()):
+                        lines.append(f"| {year} | {avg:.4f} |")
+                    lines.append("")
+
+        # NaN vs Zero Analysis
+        lines.append("### NaN vs Zero Analysis\n")
+        nan_zero = outp.get("nan_vs_zero_analysis", {})
+        if "explanation" in nan_zero:
+            lines.append(f"**Methodological Note:** {nan_zero['explanation']}\n")
+
+        lines.append("| Metric | Count | Percentage |")
+        lines.append("|--------|-------|------------|")
+        lines.append(f"| Total values | {nan_zero.get('total_values', 0):,} | - |")
+        lines.append(f"| NaN (no text in section) | {nan_zero.get('nan_count', 0):,} | {nan_zero.get('nan_pct', 0):.2f}% |")
+        lines.append(f"| Zero (text, no matches) | {nan_zero.get('zero_count', 0):,} | {nan_zero.get('zero_pct', 0):.2f}% |\n")
+
+    # PROCESS SUMMARY (existing)
+    lines.append("## PROCESS SUMMARY\n")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
+    if "timing" in stats:
+        lines.append(f"| Duration (seconds) | {stats['timing'].get('duration_seconds', 0):.2f} |")
+    if "output" in stats:
+        lines.append(f"| Final rows | {stats['output'].get('final_rows', 0):,} |")
+        lines.append(f"| Final columns | {stats['output'].get('final_columns', 0)} |")
+    lines.append("")
+
+    # OUTPUT SUMMARY (existing)
+    lines.append("## OUTPUT SUMMARY (Files Generated)\n")
+    if "output" in stats:
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
+        lines.append(f"| Files generated | {len(stats['output'].get('files', []))} |")
+        lines.append("")
+
+    # Write report
+    report_content = "\n".join(lines)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(report_content)
+
+    print(f"Report generated: {output_path.name}")
+
+
 def main():
     start_time = time.perf_counter()
     start_iso = datetime.now().isoformat()
@@ -588,10 +813,20 @@ def main():
     stats["input"]["total_columns"] = len(manifest_df.columns)
     print_stat("Manifest rows", value=len(manifest_df))
 
+    # Collect input statistics for variable construction
+    from shared.observability_utils import compute_constructvariables_input_stats
+    stats["constructvariables_input"] = compute_constructvariables_input_stats(
+        tokenized_dir, manifest_df, years_range=(2002, 2019)
+    )
+    print(f"  Input stats collected: {stats['constructvariables_input']['tokenized_files_stats']['total_rows']:,} tokenized rows")
+
     # Process
     output_rows = 0
     output_cols = 0
     total_speaker_flags = {"analyst": 0, "manager": 0, "ceo": 0, "operator": 0}
+    per_year_stats = []
+    total_variables_created = 0
+
     for year in range(2002, 2019):
         year_output = process_year(
             year, root, manager_pattern, manifest_df, out_dir, tokenized_dir
@@ -603,6 +838,8 @@ def main():
             if "speaker_flags" in year_output:
                 for k, v in year_output["speaker_flags"].items():
                     total_speaker_flags[k] += v
+            # Collect per-year stats
+            per_year_stats.append(year_output)
 
     stats["output"]["final_rows"] = output_rows
     stats["output"]["final_columns"] = output_cols
@@ -611,6 +848,18 @@ def main():
     end_time = time.perf_counter()
     stats["timing"]["end_iso"] = datetime.now().isoformat()
     stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
+
+    # Calculate total variables created
+    # From output_cols minus metadata columns (file_name, start_date, gvkey, conm, sic)
+    metadata_cols = 5
+    total_variables_created = output_cols - metadata_cols
+
+    # Collect process statistics for variable construction
+    from shared.observability_utils import compute_constructvariables_process_stats
+    stats["constructvariables_process"] = compute_constructvariables_process_stats(
+        per_year_stats, total_speaker_flags, total_variables_created, stats["timing"]["duration_seconds"]
+    )
+    print(f"  Process stats: {total_variables_created} variables created, {sum(total_speaker_flags.values()):,} speakers flagged")
 
     # Memory tracking at script end
     mem_end = get_process_memory_mb()
@@ -655,6 +904,35 @@ def main():
             stats["quality_anomalies"] = detect_anomalies_zscore(
                 first_year_df, numeric_cols, threshold=3.0
             )
+
+    # Collect output statistics for variable construction
+    # Load all output files for analysis
+    output_dfs = []
+    for year in range(2002, 2019):
+        year_file = out_dir / f"linguistic_variables_{year}.parquet"
+        if year_file.exists():
+            try:
+                df_year = pd.read_parquet(year_file)
+                output_dfs.append(df_year)
+            except Exception as e:
+                print(f"  Warning: Could not load {year_file}: {e}")
+
+    if output_dfs:
+        # Define samples, contexts, and categories for analysis
+        samples = ["Manager", "Analyst", "CEO", "NonCEO_Manager", "Entire"]
+        contexts = ["QA", "Pres", "All"]
+        # Extract categories from input stats
+        categories = stats.get("constructvariables_input", {}).get("linguistic_categories", {}).get("category_names", [])
+
+        from shared.observability_utils import compute_constructvariables_output_stats
+        stats["constructvariables_output"] = compute_constructvariables_output_stats(
+            output_dfs, samples, contexts, categories
+        )
+        print(f"  Output stats: analyzed {len(output_dfs)} years, {len(samples)} samples, {len(contexts)} contexts")
+
+    # Generate report
+    report_path = out_dir / "report_step_2_2.md"
+    generate_variable_construction_report(stats, report_path)
 
     print_stats_summary(stats)
     save_stats(stats, out_dir)
