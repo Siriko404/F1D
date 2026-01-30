@@ -28,6 +28,7 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
     from shared.observability_utils import DualWriter
 except ImportError:
@@ -40,6 +41,7 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
     from shared.observability_utils import DualWriter
 
@@ -324,9 +326,11 @@ def load_manager_keywords(root):
 
 
 def load_ceo_map(root):
-    manifest_path = (
-        root / "4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet"
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        required_file="master_sample_manifest.parquet",
     )
+    manifest_path = manifest_dir / "master_sample_manifest.parquet"
     validate_input_file(manifest_path, must_exist=True)
     df = pd.read_parquet(
         manifest_path,
@@ -444,11 +448,8 @@ def aggregate_weighted(df, sample_mask, context_mask, count_cols):
     return pd.DataFrame(results)
 
 
-def process_year(year, root, manager_pattern, manifest_df, out_dir):
-    in_path = (
-        root
-        / f"4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
-    )
+def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_dir):
+    in_path = tokenized_dir / f"linguistic_counts_{year}.parquet"
     if not in_path.exists():
         print(f"  Skipping {year}: Input not found")
         return None
@@ -567,8 +568,18 @@ def main():
 
     # Load References and checksum inputs
     keywords_path = root / "1_Inputs" / "managerial_roles_extracted.txt"
-    manifest_path = (
-        root / "4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet"
+
+    # Resolve manifest path using timestamp-based directory resolution
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+    manifest_path = manifest_dir / "master_sample_manifest.parquet"
+
+    # Resolve tokenized input directory using timestamp-based resolution
+    tokenized_dir = get_latest_output_dir(
+        root / "4_Outputs" / "2_Textual_Analysis" / "2.1_Tokenized",
+        required_file="linguistic_counts_2002.parquet",
     )
 
     stats["input"]["files"].append(str(keywords_path))
@@ -591,7 +602,9 @@ def main():
     output_cols = 0
     total_speaker_flags = {"analyst": 0, "manager": 0, "ceo": 0, "operator": 0}
     for year in range(2002, 2019):
-        year_output = process_year(year, root, manager_pattern, manifest_df, out_dir)
+        year_output = process_year(
+            year, root, manager_pattern, manifest_df, out_dir, tokenized_dir
+        )
         if year_output:
             output_rows += year_output["rows"]
             output_cols = max(output_cols, year_output["cols"])

@@ -19,6 +19,7 @@ try:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
 except ImportError:
     import sys as _sys
@@ -30,6 +31,7 @@ except ImportError:
         validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        get_latest_output_dir,
     )
 
 
@@ -197,6 +199,23 @@ def main():
 
     out_base = root / "4_Outputs" / "2_Textual_Analysis"
 
+    # Resolve directories using timestamp-based resolution (once, before loop)
+    try:
+        tokenized_dir = get_latest_output_dir(
+            out_base / "2.1_Tokenized",
+            required_file="linguistic_counts_2002.parquet",
+        )
+    except FileNotFoundError:
+        tokenized_dir = None
+
+    try:
+        variables_dir = get_latest_output_dir(
+            out_base / "2.2_Variables",
+            required_file="linguistic_variables_2002.parquet",
+        )
+    except FileNotFoundError:
+        variables_dir = None
+
     years = range(2002, 2019)
     all_ok = True
 
@@ -206,22 +225,27 @@ def main():
     print("-" * 80)
 
     for year in years:
+        # Build paths from resolved directories (not hardcoded /latest/)
         counts_path = (
-            out_base / f"2.1_Tokenized/latest/linguistic_counts_{year}.parquet"
+            tokenized_dir / f"linguistic_counts_{year}.parquet"
+            if tokenized_dir
+            else None
         )
         vars_path = (
-            out_base / f"2.2_Variables/latest/linguistic_variables_{year}.parquet"
+            variables_dir / f"linguistic_variables_{year}.parquet"
+            if variables_dir
+            else None
         )
 
-        counts_ok = "OK" if counts_path.exists() else "MISSING"
-        vars_ok = "OK" if vars_path.exists() else "MISSING"
+        counts_ok = "OK" if counts_path and counts_path.exists() else "MISSING"
+        vars_ok = "OK" if vars_path and vars_path.exists() else "MISSING"
 
         stats["processing"]["total_files_verified"] += 2
 
         rows = 0
         missing_dep = 0
 
-        if vars_path.exists():
+        if vars_path and vars_path.exists():
             validate_input_file(vars_path, must_exist=True)
             # Note: Loading all columns for comprehensive missing value analysis
             # analyze_missing_values() iterates over all columns to detect data quality issues
@@ -250,7 +274,7 @@ def main():
         else:
             stats["processing"]["files_failed"] += 1
 
-        if counts_path.exists():
+        if counts_path and counts_path.exists():
             checksum = compute_file_checksum(counts_path)
             stats["input"]["checksums"][counts_path.name] = checksum
             stats["input"]["files"].append(str(counts_path))

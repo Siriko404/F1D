@@ -5,11 +5,10 @@ ID: 2.3
 Description: Generates an HTML Verification Report consolidating execution stats,
              vagueness metrics, and data samples.
 Inputs:
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/*.parquet
+    - 4_Outputs/2_Textual_Analysis/2.2_Variables/<timestamp>/*.parquet (resolved via get_latest_output_dir)
     - config/project.yaml
 Outputs:
     - 4_Outputs/2.3_Report/YYYY-MM-DD_HHMMSS/report.html
-    - 4_Outputs/2.3_Report/latest/
 Deterministic: true
 ================================================================================
 """
@@ -32,6 +31,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from shared.symlink_utils import update_latest_link
 from shared.observability_utils import DualWriter
+from shared.path_utils import get_latest_output_dir
 
 
 def parse_arguments():
@@ -43,13 +43,13 @@ STEP 2.3: Generate Verification Report
 Generates an HTML verification report consolidating execution stats,
 vagueness metrics, and data samples from Step 2.2 output.
         """.strip(),
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Validate inputs and prerequisites without executing'
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and prerequisites without executing",
     )
 
     return parser.parse_args()
@@ -59,12 +59,9 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from shared.dependency_checker import validate_prerequisites
 
-    # Check for any parquet file in 2.2_Variables/latest/ directory
-    # Note: Step 2.2 uses 2_Textual_Analysis/2.2_Variables/ pattern, not 2.2_ConstructVariables/
     required_files = {}
 
-    # Use required_steps with the correct pattern that dependency_checker expects
-    # 2.2_ConstructVariables creates latest/ at 4_Outputs/2.2_ConstructVariables/latest/
+    # Validate Step 2.2 output exists (uses timestamp-based resolution internally)
     required_steps = {
         "2.2_ConstructVariables": "linguistic_variables.parquet",
     }
@@ -112,30 +109,21 @@ def main():
     logging.info(f"Starting {step_id} - Verification Report Generation")
     logging.info(f"Output Directory: {output_dir}")
 
-    # 3. Find Input Data (Step 2.2 Variables)
-    input_base = os.path.join(
-        config["paths"]["outputs"], "2_Textual_Analysis", "2.2_Variables", "latest"
+    # 3. Find Input Data (Step 2.2 Variables) using timestamp-based resolution
+    variables_base = (
+        Path(config["paths"]["outputs"]) / "2_Textual_Analysis" / "2.2_Variables"
     )
-    parquet_files = glob.glob(os.path.join(input_base, "*.parquet"))
-
-    if not parquet_files:
-        logging.error(f"No parquet files found in {input_base}")
-        # Try checking if there is no 'latest' link but there are timestamped folders
-        parent_dir = os.path.join(
-            config["paths"]["outputs"], "2_Textual_Analysis", "2.2_Variables"
+    input_base = str(variables_base)  # Default for error reporting
+    try:
+        input_dir = get_latest_output_dir(
+            variables_base,
+            required_file="linguistic_variables_2002.parquet",
         )
-        if os.path.exists(parent_dir):
-            subdirs = sorted(
-                [
-                    d
-                    for d in os.listdir(parent_dir)
-                    if os.path.isdir(os.path.join(parent_dir, d)) and d != "latest"
-                ]
-            )
-            if subdirs:
-                fallback_dir = os.path.join(parent_dir, subdirs[-1])
-                logging.info(f"Falling back to most recent directory: {fallback_dir}")
-                parquet_files = glob.glob(os.path.join(fallback_dir, "*.parquet"))
+        input_base = str(input_dir)
+        parquet_files = glob.glob(os.path.join(input_base, "*.parquet"))
+    except FileNotFoundError as e:
+        logging.error(f"No valid output directory found: {e}")
+        parquet_files = []
 
     if not parquet_files:
         logging.error("Could not find any input parquet files. Aborting.")
