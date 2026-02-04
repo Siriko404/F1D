@@ -67,7 +67,12 @@ All v1.0 phases are complete. See archived v1.0 ROADMAP section below for refere
   3. `4_Outputs/3_Financial_V2/` folder accepts timestamped outputs from V2 scripts
   4. `3_Logs/3_Financial_V2/` and `3_Logs/4_Econometric_V2/` folders exist for logs
   5. V2 script naming follows existing convention: `{step}.{substep}_{Name}.py`
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
+
+Plans:
+- [ ] 28-01-PLAN.md — Create Financial_V2 folder structure with comprehensive README
+- [ ] 28-02-PLAN.md — Create Econometric_V2 folder structure with comprehensive README
+- [ ] 28-03-PLAN.md — Create and run V2 structure validation script
 
 ### Phase 29: H1 Cash Holdings Variables
 **Goal**: Construct all dependent, moderator, and control variables for H1 (Cash Holdings) hypothesis
