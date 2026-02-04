@@ -85,7 +85,10 @@ Plans:
   3. Operating Cash Flow Volatility control (trailing 5-year StdDev OANCF/AT) computed
   4. Current Ratio control (ACT/LCT) and standard controls (Tobin's Q, ROA, Capex/AT, Dividend Payer, Firm Size) available
   5. Output saved to `4_Outputs/3_Financial_V2/` with stats.json documenting variable distributions
-**Plans**: TBD
+**Plans**: 1 plan in 1 wave
+
+Plans:
+- [ ] 29-01-PLAN.md — Create 3.1_H1Variables.py script with all H1 variables and execute
 
 ### Phase 30: H2 Investment Efficiency Variables
 **Goal**: Construct all dependent and control variables for H2 (Investment Efficiency) hypothesis
