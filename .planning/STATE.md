@@ -68,6 +68,9 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [v2.0 Roadmap] Regression phases (33-35) can parallelize after econometric infrastructure
 - [v2.0 Research] No new dependencies needed - existing pandas/statsmodels/linearmodels stack sufficient
 - [v2.0 Research] Investment efficiency calculation (Biddle et al. 2009) needs verification during implementation
+- [28-01 Financial_V2] README includes all three hypotheses with exact formulas and Compustat field sources
+- [28-01 Financial_V2] Scripts numbered 3.1_H1Variables.py, 3.2_H2Variables.py, 3.3_H3Variables.py
+- [28-01 Financial_V2] H1, H2, H3 can run in parallel (no interdependencies)
 - [28-02 Econometric_V2] Econometric script numbering: 4.0_Infra, 4.1-4.3_Regressions, 4.4-4.6_Robustness, 4.7_Identification, 4.8_Publication
 - [28-02 Econometric_V2] Mean-centering required before creating interaction terms
 - [28-02 Econometric_V2] First-stage F > 10 threshold enforced for 2SLS validity
