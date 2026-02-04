@@ -1,511 +1,512 @@
-# Architecture Patterns: Inline Descriptive Statistics for Research Data Pipelines
+# Architecture Patterns: Hypothesis Testing Integration
 
-**Domain:** Research data pipeline observability and documentation
-**Researched:** 2026-01-22
-**Confidence:** HIGH (based on direct codebase analysis)
+**Domain:** F1D Data Pipeline - Econometric Analysis
+**Researched:** 2026-02-04
+**Focus:** Integrating hypothesis testing (H1-H3) with existing 4-stage pipeline
 
-## Recommended Architecture
+## Executive Summary
 
-The architecture extends the existing pipeline pattern to embed statistics collection and reporting **inline within each script**, preserving the no-shared-module constraint while adding structured observability.
+The F1D pipeline follows a clean 4-stage architecture (Sample -> Text -> Financial -> Econometric) with shared modules providing reusable patterns. Hypothesis testing scripts integrate naturally into Stage 4 (Econometric), following established patterns for FE regression, 2SLS, and subsample analysis. **No fundamental architecture changes required** - new scripts follow existing conventions and leverage existing shared modules.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                          EXISTING SCRIPT PATTERN                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Contract Header → Load Config → Setup DualWriter → Process → Save Outputs │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    ↓ EXTEND TO ↓
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         ENHANCED SCRIPT PATTERN                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Contract Header                                                            │
-│       ↓                                                                     │
-│  Load Config                                                                │
-│       ↓                                                                     │
-│  Setup DualWriter + Initialize stats = {}                                   │
-│       ↓                                                                     │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │  PROCESSING LOOP                                                    │   │
-│  │    1. Read input → stats['input_rows'] = len(df)                    │   │
-│  │    2. Process    → accumulate counts, timings                       │   │
-│  │    3. Transform  → stats['output_rows'] = len(result)               │   │
-│  │    4. print_stat("Rows", input=X, output=Y) → formats + prints      │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│       ↓                                                                     │
-│  Finalize stats (compute derived: delta_pct, per-year summaries)            │
-│       ↓                                                                     │
-│  Print summary table (via DualWriter → console + log)                       │
-│       ↓                                                                     │
-│  Save outputs:                                                              │
-│    - data.parquet                                                           │
-│    - stats.json          ← NEW: structured statistics                       │
-│    - variable_reference.csv                                                 │
-│    - report_step_X_X.md  ← ENHANCED: includes stats tables                  │
-│       ↓                                                                     │
-│  Update latest symlink                                                      │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+## Current Architecture
 
-### Component Boundaries
-
-| Component | Responsibility | Location | Communicates With |
-|-----------|----------------|----------|-------------------|
-| **DualWriter** | Mirror stdout to log file | Inline in each script | sys.stdout |
-| **Stats Dict** | Accumulate metrics during processing | Local variable in main() | print_stat helper |
-| **print_stat()** | Format and print individual metrics | Inline helper function | DualWriter (stdout) |
-| **print_stats_summary()** | Format and print summary table | Inline helper function | DualWriter (stdout) |
-| **save_stats()** | Write stats.json to output dir | Inline helper function | Output directory |
-| **Report Generator** | Embed stats in markdown report | Existing report logic | stats dict |
-
-### Data Flow for Statistics Collection
+### Pipeline Structure
 
 ```
-Input File
-    │
-    ├──► Read Phase
-    │       │
-    │       ├─ stats['input_rows'] = len(df)
-    │       ├─ stats['input_columns'] = len(df.columns)
-    │       └─ print(f"  Loaded {len(df):,} rows")  ← Already exists
-    │
-    ├──► Transform Phase (per-step specific)
-    │       │
-    │       ├─ stats['filter_X_removed'] = count
-    │       ├─ stats['match_rate'] = matched/total
-    │       └─ print(f"  Removed {count:,} rows")   ← Already exists
-    │
-    ├──► Output Phase
-    │       │
-    │       ├─ stats['output_rows'] = len(result)
-    │       ├─ stats['delta_pct'] = (out-in)/in * 100
-    │       └─ print(f"  Final: {len(result):,} rows")
-    │
-    └──► Finalize Phase
-            │
-            ├─ print_stats_summary(stats)  ← NEW: formatted table
-            ├─ save_stats(stats, out_dir)  ← NEW: stats.json
-            └─ embed_stats_in_report()     ← ENHANCED
+2_Scripts/
+  1_Sample/         # Stage 1: Sample construction
+    1.0_BuildSampleManifest.py
+    1.1_CleanMetadata.py
+    1.2_LinkEntities.py
+    1.3_BuildTenureMap.py
+    1.4_AssembleManifest.py
+    
+  2_Text/           # Stage 2: Text processing
+    2.1_TokenizeAndCount.py
+    2.2_ConstructVariables.py
+    2.3_Report.py
+    
+  3_Financial/      # Stage 3: Financial features
+    3.0_BuildFinancialFeatures.py
+    3.1_FirmControls.py
+    3.2_MarketVariables.py
+    3.3_EventFlags.py
+    
+  4_Econometric/    # Stage 4: Regression analysis
+    4.1_EstimateCeoClarity.py          # Base FE regression
+    4.1.1_EstimateCeoClarity_CeoSpecific.py
+    4.1.2_EstimateCeoClarity_Extended.py
+    4.1.3_EstimateCeoClarity_Regime.py
+    4.1.4_EstimateCeoTone.py
+    4.2_LiquidityRegressions.py        # OLS + 2SLS with IV
+    4.3_TakeoverHazards.py             # Cox PH survival
+    4.4_GenerateSummaryStats.py
+    
+  shared/           # Reusable modules
+    path_utils.py
+    dependency_checker.py
+    regression_utils.py
+    regression_helpers.py
+    regression_validation.py
+    data_loading.py
+    observability_utils.py
+    reporting_utils.py
 ```
 
-## Patterns to Follow
+### Data Flow Pattern
 
-### Pattern 1: Inline Stats Dictionary
+```
+1_Inputs/
+    |
+    v
+4_Outputs/1.x_Sample/      <- manifest, ceo_id, gvkey, ff12_code
+    |
+    v
+4_Outputs/2.x_Text/        <- linguistic_variables_{year}.parquet
+    |                         (uncertainty_pct, negative_pct, etc.)
+    v
+4_Outputs/3.x_Financial/   <- firm_controls_{year}.parquet
+    |                         market_variables_{year}.parquet
+    v
+4_Outputs/4.x_Econometric/ <- ceo_clarity_scores.parquet
+                              regression_results_{sample}.txt
+                              model_diagnostics.csv
+```
 
-Initialize a `stats` dictionary at the start of main() and accumulate metrics throughout processing.
+### Key Conventions
 
-**What:** Single dictionary accumulates all metrics for the run
-**When:** Every script
-**Why:** No shared module needed, naturally scoped to run lifetime
+| Pattern | Convention | Example |
+|---------|------------|---------|
+| Script naming | `{step}_{substep}_{Name}.py` | `4.1.3_EstimateCeoClarity_Regime.py` |
+| Output dirs | `4_Outputs/{step}_{Name}/{timestamp}/` | `4_Outputs/4.1_CeoClarity/2026-02-04_123456/` |
+| Log dirs | `3_Logs/{step}_{Name}/{timestamp}/` | `3_Logs/4.1_CeoClarity/2026-02-04_123456/` |
+| Latest resolution | Timestamp-sorted directories (no symlinks) | `get_latest_output_dir()` |
+| Prerequisite check | `dependency_checker.validate_prerequisites()` | Check 4.1 before 4.2 |
+| Merge key | `file_name` for call-level, `ceo_id` for CEO-level | All merges use these keys |
+
+## Shared Modules Analysis
+
+### Existing Modules (Reuse Directly)
+
+| Module | Purpose | Integration Notes |
+|--------|---------|-------------------|
+| `path_utils.py` | `get_latest_output_dir()`, path validation | Use for all file I/O |
+| `dependency_checker.py` | `validate_prerequisites()` | Add prereqs for new scripts |
+| `regression_utils.py` | `run_fixed_effects_ols()`, `extract_ceo_fixed_effects()` | Core FE pattern |
+| `regression_validation.py` | `validate_columns()`, `validate_sample_size()` | Pre-regression validation |
+| `regression_helpers.py` | `build_regression_sample()`, filters | Sample construction |
+| `data_loading.py` | `load_all_data()` | Multi-source data merge |
+| `observability_utils.py` | `DualWriter`, stats, checksums | Logging pattern |
+| `reporting_utils.py` | Reports, diagnostics | Output generation |
+
+### New Module Needed
 
 ```python
-def main():
-    # ... setup ...
-    
-    # Initialize stats collector
-    stats = {
-        'step_id': '1.1_CleanMetadata',
-        'timestamp': timestamp,
-        'input': {},
-        'processing': {},
-        'output': {},
-        'timing': {}
+# shared/hypothesis_utils.py (NEW)
+"""
+Hypothesis testing utilities for H1-H3 regressions.
+
+Purpose:
+  - Subsample splitting by manager tenure
+  - Additional outcome variable construction
+  - 2SLS instrumentation helpers
+  - FE decomposition analysis
+"""
+
+def split_by_manager_tenure(df: pd.DataFrame, 
+                           tenure_thresholds: list = [3, 5, 10]) -> dict:
+    """Split sample by manager tenure for subsample analysis."""
+    pass
+
+def construct_cash_holdings_vars(df: pd.DataFrame) -> pd.DataFrame:
+    """Construct cash holdings outcome variables (H1)."""
+    pass
+
+def construct_investment_efficiency_vars(df: pd.DataFrame) -> pd.DataFrame:
+    """Construct investment efficiency outcome variables (H2)."""
+    pass
+
+def construct_payout_stability_vars(df: pd.DataFrame) -> pd.DataFrame:
+    """Construct payout stability outcome variables (H3)."""
+    pass
+
+def run_iv_regression(df: pd.DataFrame, 
+                      dep_var: str,
+                      endog_var: str,
+                      instrument: str,
+                      exog_vars: list) -> dict:
+    """Run 2SLS IV regression with diagnostics."""
+    pass
+
+def decompose_manager_fe(model, ceo_col: str = "ceo_id") -> pd.DataFrame:
+    """Decompose manager fixed effects into clarity scores."""
+    pass
+```
+
+**Rationale:** While `regression_utils.py` handles basic FE OLS, hypothesis testing requires additional utilities for subsample analysis, IV regression, and outcome construction that don't fit the existing module scope.
+
+## Integration Points
+
+### 1. Manager Fixed Effects (Extension of 4.1 Pattern)
+
+**Existing pattern in 4.1_EstimateCeoClarity.py:**
+```python
+# Extract CEO fixed effects
+ceo_params = {p: model.params[p] for p in model.params.index if p.startswith("C(ceo_id)")}
+ceo_fe["ClarityCEO"] = -ceo_fe["gamma_i"]  # Standardized
+```
+
+**New scripts follow identical pattern:**
+- `4.5_EstimateManagerUncertainty.py` - Same FE extraction, different dependent variable
+- Store output in same format: `ceo_clarity_scores.parquet` compatible schema
+
+### 2. 2SLS Instrumentation (Extension of 4.2 Pattern)
+
+**Existing pattern in 4.2_LiquidityRegressions.py:**
+```python
+from linearmodels.iv import IV2SLS
+
+# First stage: Endogenous ~ Instrument + Controls
+first_stage = smf.ols(formula, data=df).fit()
+kp_f = first_stage.fvalue  # Kleibergen-Paap F-stat
+
+# Second stage: IV2SLS
+model = IV2SLS(y, exog, endog, instruments).fit(cov_type="robust")
+```
+
+**H1-H3 scripts use identical pattern:**
+- Same instrument: `shift_intensity_sale_ff48` (CCCL)
+- Same validation: F-stat > 10 for strong instrument
+- First stage + 2SLS in separate phases
+
+### 3. Subsample Analysis (Extension of 4.1.3 Pattern)
+
+**Existing pattern in 4.1.3_EstimateCeoClarity_Regime.py:**
+```python
+CONFIG = {
+    "samples": {
+        "Main": {"exclude_ff12": [8, 11], "include_ff12": None},
+        "Finance": {"exclude_ff12": None, "include_ff12": [11]},
+        "Utility": {"exclude_ff12": None, "include_ff12": [8]},
     }
-    
-    # During processing
-    stats['input']['total_rows'] = len(df)
-    
-    # After filtering
-    stats['processing']['duplicates_removed'] = exact_dupes
-    stats['processing']['event_filter_removed'] = removed
-    
-    # After save
-    stats['output']['final_rows'] = len(df_final)
-    stats['output']['columns'] = len(df_final.columns)
+}
+
+for sample_name in ["Main", "Finance", "Utility"]:
+    df_sample = df[df["sample"] == sample_name].copy()
+    # Run regression on subsample
 ```
 
-### Pattern 2: Typed Stats Helper Function (Inline)
-
-Define a small helper function inline to standardize metric printing.
-
-**What:** Helper function that formats and prints metrics consistently
-**When:** Replace ad-hoc print statements
-**Why:** Consistent formatting, easier to parse logs programmatically
-
+**H1-H3 add tenure-based subsamples:**
 ```python
-def print_stat(label, before=None, after=None, value=None, indent=2):
-    """Print a statistic with consistent formatting.
-    
-    Modes:
-        - Delta mode (before/after): "  Label: 1,000 -> 800 (-20.0%)"
-        - Value mode: "  Label: 1,000"
-    """
-    prefix = " " * indent
-    if before is not None and after is not None:
-        delta = after - before
-        pct = (delta / before * 100) if before != 0 else 0
-        sign = "+" if delta >= 0 else ""
-        print(f"{prefix}{label}: {before:,} -> {after:,} ({sign}{pct:.1f}%)")
-    else:
-        v = value if value is not None else after
-        print(f"{prefix}{label}: {v:,}")
-```
-
-**Usage:**
-```python
-print_stat("Rows", before=initial_rows, after=len(df_cleaned))
-# Output: "  Rows: 50,000 -> 45,000 (-10.0%)"
-
-print_stat("Unique CEOs", value=df['ceo_id'].nunique())
-# Output: "  Unique CEOs: 2,345"
-```
-
-### Pattern 3: Summary Table at End of Script
-
-Print a formatted summary table before saving outputs.
-
-**What:** ASCII table summarizing key metrics
-**When:** End of main(), before save
-**Why:** Quick visual check, appears in both console and log
-
-```python
-def print_stats_summary(stats):
-    """Print formatted summary table."""
-    print("\n" + "=" * 60)
-    print("STATISTICS SUMMARY")
-    print("=" * 60)
-    
-    # Input/Output comparison
-    print("\n| Stage     | Metric          | Value       |")
-    print("|-----------|-----------------|-------------|")
-    print(f"| Input     | Total Rows      | {stats['input']['total_rows']:>11,} |")
-    print(f"| Output    | Final Rows      | {stats['output']['final_rows']:>11,} |")
-    print(f"| Delta     | Rows Removed    | {stats['output']['total_removed']:>11,} |")
-    
-    # Processing breakdown
-    print("\n| Filter           | Removed    | % of Input |")
-    print("|------------------|------------|------------|")
-    for name, count in stats['processing'].items():
-        pct = count / stats['input']['total_rows'] * 100
-        print(f"| {name:<16} | {count:>10,} | {pct:>9.2f}% |")
-    
-    print("=" * 60)
-```
-
-### Pattern 4: Structured stats.json Output
-
-Save statistics as JSON alongside other outputs for programmatic access.
-
-**What:** Machine-readable statistics file
-**When:** Always, alongside parquet and report outputs
-**Where:** `4_Outputs/{step}/{timestamp}/stats.json`
-**Why:** Enables automated validation, cross-step analysis, CI checks
-
-```python
-import json
-
-def save_stats(stats, out_dir):
-    """Save statistics to JSON file."""
-    stats_path = out_dir / 'stats.json'
-    with open(stats_path, 'w') as f:
-        json.dump(stats, f, indent=2, default=str)
-    print(f"Saved: stats.json")
-```
-
-**Output format:**
-```json
-{
-  "step_id": "1.1_CleanMetadata",
-  "timestamp": "2026-01-22_143052",
-  "input": {
-    "total_rows": 50000,
-    "columns": 25,
-    "source": "Unified-info.parquet"
-  },
-  "processing": {
-    "duplicates_removed": 123,
-    "collision_rows_resolved": 45,
-    "event_filter_removed": 5000,
-    "date_filter_removed": 200
-  },
-  "output": {
-    "final_rows": 44632,
-    "columns": 24,
-    "files": ["metadata_cleaned.parquet", "variable_reference.csv"]
-  },
-  "timing": {
-    "total_seconds": 12.5,
-    "load_seconds": 2.1,
-    "process_seconds": 10.4
-  }
+CONFIG = {
+    "samples": {
+        "Main": {"exclude_ff12": [8, 11]},
+        "EarlyTenure": {"tenure_max": 3},      # New
+        "MidTenure": {"tenure_min": 3, "tenure_max": 7},  # New
+        "LateTenure": {"tenure_min": 7},       # New
+    }
 }
 ```
 
-### Pattern 5: Enhanced Report with Stats Tables
+### 4. Outcome Variables (Extension of 3.x Pattern)
 
-Extend existing markdown report generation to include descriptive statistics.
+**Existing pattern in 3.1_FirmControls.py:**
+- Construct firm-level financial variables
+- Output per-year parquet files
+- Merge on `file_name`
 
-**What:** Embed stats tables in report_step_X_X.md
-**When:** Report generation phase (already exists)
-**Why:** Human-readable documentation with numbers
+**New H1-H3 outcomes constructed in 3.x (or new 3.5 step):**
+
+| Hypothesis | Outcome Variable | Source | Construction |
+|------------|------------------|--------|--------------|
+| H1 | `CashHoldings` | Compustat | che / at |
+| H1 | `ExcessCash` | Compustat | che/at - industry median |
+| H2 | `InvestmentQ` | Compustat | capx / ppent regressed on q |
+| H2 | `InvestmentEfficiency` | Compustat | Residual from investment-q regression |
+| H3 | `PayoutStability` | Compustat | std(div + repurchase) / mean |
+
+## New Scripts Specification
+
+### Stage 3 Extensions (Financial Features)
+
+```
+3_Financial/
+  3.5_HypothesisOutcomes.py  (NEW)
+    - Inputs: Compustat annual, 1.4 manifest
+    - Outputs: hypothesis_outcomes_{year}.parquet
+      - file_name, gvkey, year
+      - CashHoldings, ExcessCash
+      - InvestmentQ, InvestmentEfficiency  
+      - PayoutStability, PayoutVolatility
+```
+
+### Stage 4 Extensions (Econometric)
+
+```
+4_Econometric/
+  4.5_CashHoldingsRegression.py  (NEW - H1)
+    - Prerequisites: 4.1, 3.5
+    - Model: CashHoldings ~ Uncertainty + ClarityFE + Controls + FE
+    - Variants: OLS, 2SLS, subsample by tenure
+    - Outputs: 4.5_CashHoldings/{timestamp}/
+    
+  4.6_InvestmentEfficiencyRegression.py  (NEW - H2)
+    - Prerequisites: 4.1, 3.5
+    - Model: InvestmentEfficiency ~ Uncertainty + ClarityFE + Controls + FE
+    - Variants: OLS, 2SLS, subsample by tenure
+    - Outputs: 4.6_InvestmentEfficiency/{timestamp}/
+    
+  4.7_PayoutStabilityRegression.py  (NEW - H3)
+    - Prerequisites: 4.1, 3.5
+    - Model: PayoutStability ~ Uncertainty + ClarityFE + Controls + FE
+    - Variants: OLS, 2SLS, subsample by tenure
+    - Outputs: 4.7_PayoutStability/{timestamp}/
+    
+  4.8_SubsampleAnalysis.py  (NEW - Cross-cutting)
+    - Prerequisites: 4.5, 4.6, 4.7
+    - Runs all H1-H3 regressions across tenure subsamples
+    - Consolidates results for comparison
+    - Outputs: 4.8_SubsampleAnalysis/{timestamp}/
+    
+  4.9_RobustnessTests.py  (NEW - Optional)
+    - Alternative specifications
+    - Placebo tests
+    - Sensitivity analysis
+```
+
+## Dependency Graph
+
+```
+                    ┌──────────────────┐
+                    │ 1.4_Manifest     │
+                    └────────┬─────────┘
+                             │
+         ┌───────────────────┼───────────────────┐
+         │                   │                   │
+         v                   v                   v
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ 2.2_LingVars    │ │ 3.1_FirmCtrls   │ │ 3.5_HypOutcomes │
+└────────┬────────┘ └────────┬────────┘ └────────┬────────┘
+         │                   │                   │  (NEW)
+         └───────────────────┼───────────────────┘
+                             │
+                             v
+                    ┌────────────────────┐
+                    │ 4.1_CeoClarity     │
+                    │  (Manager FE)      │
+                    └────────┬───────────┘
+                             │
+         ┌───────────────────┼───────────────────┐
+         │                   │                   │
+         v                   v                   v
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ 4.5_CashHolding │ │ 4.6_InvestEff   │ │ 4.7_PayoutStab  │
+│      (H1)       │ │      (H2)       │ │      (H3)       │
+└────────┬────────┘ └────────┬────────┘ └────────┬────────┘
+         │                   │                   │  (NEW)
+         └───────────────────┼───────────────────┘
+                             │
+                             v
+                    ┌─────────────────┐
+                    │ 4.8_Subsample   │
+                    │    Analysis     │
+                    └─────────────────┘
+                             (NEW)
+```
+
+## Script Template for H1-H3
+
+Based on existing 4.1 and 4.2 patterns, each hypothesis script follows:
 
 ```python
-def generate_report(stats, df_final, out_dir, timestamp):
-    """Generate markdown report with embedded statistics."""
+#!/usr/bin/env python3
+"""
+STEP 4.X: Hypothesis [N] - [Outcome] Regression
+==============================================================================
+
+Purpose:
+    Test H[N]: [Statement]
     
-    report_lines = [
-        f"# Step {stats['step_id']}: Report",
-        "",
-        f"**Timestamp**: {timestamp}",
-        "",
-        "## Descriptive Statistics",
-        "",
-        "### Row Counts",
-        "",
-        "| Stage | Count |",
-        "|-------|-------|",
-        f"| Input | {stats['input']['total_rows']:,} |",
-        f"| Output | {stats['output']['final_rows']:,} |",
-        f"| Removed | {stats['input']['total_rows'] - stats['output']['final_rows']:,} |",
-        "",
-        "### Processing Breakdown",
-        "",
-        "| Filter | Removed | % of Input |",
-        "|--------|---------|------------|",
-    ]
-    
-    for name, count in stats['processing'].items():
-        pct = count / stats['input']['total_rows'] * 100
-        report_lines.append(f"| {name} | {count:,} | {pct:.2f}% |")
-    
-    # Add column-level stats if applicable
-    if 'column_stats' in stats:
-        report_lines.extend([
-            "",
-            "### Variable Summary",
-            "",
-            "| Variable | Type | Non-Null | Unique | Min | Max | Mean |",
-            "|----------|------|----------|--------|-----|-----|------|",
-        ])
-        for col, cs in stats['column_stats'].items():
-            report_lines.append(
-                f"| {col} | {cs['dtype']} | {cs['non_null']:,} | {cs.get('unique', 'N/A')} | "
-                f"{cs.get('min', 'N/A')} | {cs.get('max', 'N/A')} | {cs.get('mean', 'N/A'):.2f} |"
-            )
-    
-    report_file = out_dir / f"report_step_{stats['step_id'].replace('.', '_')}.md"
-    report_file.write_text("\n".join(report_lines), encoding='utf-8')
+Structure:
+    Phase 1: OLS (baseline)
+    Phase 2: 2SLS (instrumented)
+    Phase 3: Subsample analysis
+
+Inputs:
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
+    - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
+    - 4_Outputs/4.1_CeoClarity/latest/ceo_clarity_scores.parquet
+    - 4_Outputs/3.5_HypothesisOutcomes/latest/hypothesis_outcomes_{year}.parquet
+
+Outputs:
+    - 4_Outputs/4.X_[Outcome]/{timestamp}/ols_results.txt
+    - 4_Outputs/4.X_[Outcome]/{timestamp}/iv_results.txt
+    - 4_Outputs/4.X_[Outcome]/{timestamp}/subsample_results.csv
+    - 4_Outputs/4.X_[Outcome]/{timestamp}/model_diagnostics.csv
+    - 4_Outputs/4.X_[Outcome]/{timestamp}/report_step4_X.md
+
+Deterministic: true
+==============================================================================
+"""
+
+import sys
+from pathlib import Path
+from datetime import datetime
+import pandas as pd
+import numpy as np
+import argparse
+
+# Standard imports (identical to 4.1, 4.2)
+script_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(script_dir))
+
+from shared.regression_utils import run_fixed_effects_ols
+from shared.regression_validation import validate_columns, validate_sample_size
+from shared.path_utils import get_latest_output_dir, OutputResolutionError
+from shared.observability_utils import DualWriter, print_stats_summary, save_stats
+from shared.dependency_checker import validate_prerequisites
+from shared.hypothesis_utils import run_iv_regression  # NEW module
+
+# CONFIG follows 4.1 pattern
+CONFIG = {
+    "year_start": 2002,
+    "year_end": 2018,
+    "dependent_var": "[OUTCOME_VAR]",
+    "uncertainty_var": "Manager_QA_Uncertainty_pct",
+    "clarity_var": "ClarityCEO",
+    "instrument": "shift_intensity_sale_ff48",
+    "firm_controls": ["Size", "BM", "Lev", "ROA", ...],
+    "samples": {
+        "Main": {"exclude_ff12": [8, 11]},
+        "EarlyTenure": {"tenure_max": 3},
+        "LateTenure": {"tenure_min": 7},
+    }
+}
+
+def check_prerequisites(root):
+    required_steps = {
+        "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
+        "3.5_HypothesisOutcomes": "hypothesis_outcomes.parquet",  # NEW
+    }
+    validate_prerequisites({}, required_steps)
+
+def load_data(root):
+    # Pattern from 4.2_LiquidityRegressions.py
+    pass
+
+def run_ols_regression(df, sample_name, out_file):
+    # Pattern from 4.2_LiquidityRegressions.py
+    pass
+
+def run_iv_regression(df, sample_name, out_file):
+    # Pattern from 4.2_LiquidityRegressions.py
+    pass
+
+def main():
+    # Standard initialization (identical to 4.1, 4.2)
+    pass
 ```
+
+## Build Order Recommendation
+
+Based on dependency analysis, the recommended implementation order:
+
+### Phase 1: Foundation (Week 1)
+1. **3.5_HypothesisOutcomes.py** - Construct outcome variables for H1-H3
+   - Cash holdings from Compustat
+   - Investment efficiency calculation
+   - Payout stability metrics
+   - *Rationale: Data foundation needed before regressions*
+
+2. **shared/hypothesis_utils.py** - Shared utilities
+   - Subsample splitting logic
+   - Additional regression helpers
+   - *Rationale: Avoid code duplication across H1-H3 scripts*
+
+### Phase 2: Core Hypotheses (Week 2)
+3. **4.5_CashHoldingsRegression.py** (H1)
+   - Start with simplest outcome
+   - OLS + 2SLS structure
+   - *Rationale: Establish pattern for H2, H3*
+
+4. **4.6_InvestmentEfficiencyRegression.py** (H2)
+   - Follow 4.5 pattern
+   - Investment-specific controls
+   - *Rationale: Similar structure to H1*
+
+5. **4.7_PayoutStabilityRegression.py** (H3)
+   - Follow 4.5/4.6 pattern
+   - Payout-specific controls
+   - *Rationale: Completes hypothesis set*
+
+### Phase 3: Analysis (Week 3)
+6. **4.8_SubsampleAnalysis.py**
+   - Consolidate across H1-H3
+   - Tenure-based splits
+   - *Rationale: Cross-cutting analysis after individual hypotheses*
+
+7. **4.9_RobustnessTests.py** (Optional)
+   - Alternative specifications
+   - Sensitivity analysis
+   - *Rationale: Polish after core implementation*
+
+## Component Boundaries
+
+### Modified Components
+
+| Component | Modification | Risk |
+|-----------|--------------|------|
+| `config/project.yaml` | Add step_45, step_46, step_47, step_48 sections | LOW - additive |
+| `shared/__init__.py` | Export new hypothesis_utils | LOW - additive |
+
+### New Components
+
+| Component | Type | Dependencies |
+|-----------|------|--------------|
+| `shared/hypothesis_utils.py` | Shared module | regression_utils, regression_validation |
+| `3_Financial/3.5_HypothesisOutcomes.py` | Script | 1.4 manifest, Compustat |
+| `4_Econometric/4.5_CashHoldingsRegression.py` | Script | 4.1, 3.5, shared/* |
+| `4_Econometric/4.6_InvestmentEfficiencyRegression.py` | Script | 4.1, 3.5, shared/* |
+| `4_Econometric/4.7_PayoutStabilityRegression.py` | Script | 4.1, 3.5, shared/* |
+| `4_Econometric/4.8_SubsampleAnalysis.py` | Script | 4.5, 4.6, 4.7 |
+
+### Unchanged Components
+
+All Stage 1, Stage 2, existing Stage 3 (3.0-3.4), and existing Stage 4 (4.1-4.4) scripts remain unchanged.
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: Shared Stats Module
+Based on existing codebase patterns:
 
-**What:** Creating a `stats_utils.py` or shared module for statistics
-**Why bad:** Violates inline constraint; creates dependency; complicates reproducibility
-**Instead:** Copy the 3 small helper functions into each script (DRY is secondary to independence)
-
-### Anti-Pattern 2: Logging Framework Overhead
-
-**What:** Using Python's `logging` module with handlers, formatters, etc.
-**Why bad:** Adds complexity; DualWriter already handles dual output; harder to read logs
-**Instead:** Continue using print() through DualWriter; simple and effective
-
-### Anti-Pattern 3: Stats in Logs Only
-
-**What:** Only printing statistics to console/log without structured output
-**Why bad:** Hard to aggregate across runs; can't validate programmatically; logs get deleted
-**Instead:** Always save stats.json alongside parquet outputs
-
-### Anti-Pattern 4: Inline Stats Everywhere
-
-**What:** Computing and printing stats at every line of code
-**Why bad:** Clutters output; obscures important metrics; slows processing
-**Instead:** Collect in phases (input/process/output), print summary at end
-
-### Anti-Pattern 5: Mixing Run Metadata with Data Statistics
-
-**What:** Storing stats.json in `3_Logs/` instead of `4_Outputs/`
-**Why bad:** Stats describe the DATA produced, not just the run; belongs with outputs
-**Instead:** 
-- `3_Logs/` = ephemeral run logs (can be deleted)
-- `4_Outputs/` = timestamped artifacts including stats.json (persistent)
-
-## Build Order Implications
-
-### Phase Ordering for Implementation
-
-The statistics infrastructure can be added to scripts in any order, but recommend:
-
-```
-Phase 1: Template and pilot
-├── Define stats schema for one representative script (e.g., 1.1_CleanMetadata)
-├── Add inline helpers (print_stat, print_stats_summary, save_stats)
-├── Test: verify console output matches log file exactly
-└── Test: verify stats.json is valid JSON and contains expected fields
-
-Phase 2: Roll out to Step 1 (Sample construction)
-├── 1.1_CleanMetadata.py
-├── 1.2_LinkEntities.py
-├── 1.3_BuildTenureMap.py
-└── 1.4_AssembleManifest.py
-
-Phase 3: Roll out to Step 2 (Text processing)
-├── 2.1_TokenizeAndCount.py
-└── 2.2_ConstructVariables.py
-
-Phase 4: Roll out to Step 3-4 (Financial/Econometric)
-├── 3.X scripts
-└── 4.X scripts
-
-Phase 5: Root README.md documentation
-└── Comprehensive project documentation with pipeline overview
-```
-
-**Rationale:**
-1. Start with a pilot to validate the pattern
-2. Step 1 scripts are simpler, establish baseline
-3. Step 2 has per-year loops, tests accumulation pattern
-4. Steps 3-4 have complex outputs, test integration with existing reports
-5. README last, after all scripts updated (can reference complete stats)
-
-## Where Files Should Live
-
-### Output Location Decision Matrix
-
-| File Type | Location | Rationale |
-|-----------|----------|-----------|
-| `stats.json` | `4_Outputs/{step}/{timestamp}/` | Describes data produced; timestamped with run |
-| `report_step_X_X.md` | `4_Outputs/{step}/{timestamp}/` | Human summary; already here |
-| `variable_reference.csv` | `4_Outputs/{step}/{timestamp}/` | Data dictionary; already here |
-| `{timestamp}.log` | `3_Logs/{step}/` | Ephemeral run record; already here |
-| `README.md` | Project root | Project-level documentation |
-
-### stats.json vs Log Files
-
-**3_Logs/ (Run Records)**
-- Full console output (via DualWriter)
-- Can be cleaned up periodically
-- For debugging "what happened during this run"
-
-**4_Outputs/stats.json (Data Description)**
-- Structured metrics about the DATA produced
-- Preserved with outputs (timestamped)
-- For validation "is this output reasonable?"
-- Machine-readable for automated checks
-
-## README Structure for Academic Documentation
-
-### Root README.md Structure
-
-```markdown
-# F1D Clarity Measure Pipeline
-
-## Overview
-[2-3 paragraphs describing the project purpose and methodology]
-
-## Data Sources
-| Source | Description | Location |
-|--------|-------------|----------|
-| LM Dictionary | Loughran-McDonald Master Dictionary | `1_Inputs/` |
-| Unified Info | Call metadata | `1_Inputs/` |
-| Speaker Data | Transcript text by year | `1_Inputs/` |
-
-## Pipeline Steps
-
-### Step 1: Sample Construction
-| Step | Script | Description | Key Outputs |
-|------|--------|-------------|-------------|
-| 1.1 | CleanMetadata | Filter and deduplicate metadata | metadata_cleaned.parquet |
-| 1.2 | LinkEntities | Link calls to firms and CEOs | ... |
-
-### Step 2: Textual Analysis
-...
-
-### Step 3: Financial Features
-...
-
-### Step 4: Econometric Estimation
-...
-
-## Running the Pipeline
-
-\`\`\`bash
-# Execute steps in order
-python 2_Scripts/1_Sample/1.1_CleanMetadata.py
-python 2_Scripts/1_Sample/1.2_LinkEntities.py
-...
-\`\`\`
-
-## Output Structure
-
-\`\`\`
-4_Outputs/
-├── 1.1_CleanMetadata/
-│   ├── 2026-01-22_143052/
-│   │   ├── metadata_cleaned.parquet
-│   │   ├── variable_reference.csv
-│   │   ├── stats.json                 ← Descriptive statistics
-│   │   └── report_step_1_1.md
-│   └── latest -> 2026-01-22_143052/
-...
-\`\`\`
-
-## Variable Definitions
-[Link to master variable dictionary or include inline]
-
-## Reproducibility
-- Config: `config/project.yaml`
-- Random seed: 42 (pinned)
-- Thread count: 1 (deterministic)
-
-## Citation
-[Academic citation format]
-```
-
-## Integration with Existing DualWriter Pattern
-
-The existing DualWriter class needs NO modification. Statistics flow through it naturally:
-
-```python
-# Existing pattern (works unchanged)
-class DualWriter:
-    def __init__(self, log_path):
-        self.terminal = sys.stdout
-        self.log = open(log_path, 'w', encoding='utf-8')
-    
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-        self.log.flush()
-    
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
-# Stats printing flows through automatically
-sys.stdout = DualWriter(log_path)
-
-# All prints go to both terminal and log
-print_stat("Rows", before=1000, after=800)  # → terminal + log
-print_stats_summary(stats)                   # → terminal + log
-```
-
-The only addition is saving `stats.json` separately for machine consumption.
+1. **Don't duplicate data loading logic** - Use `shared/data_loading.py` or extend it
+2. **Don't skip prerequisite validation** - Always call `validate_prerequisites()`
+3. **Don't hardcode paths** - Use `get_latest_output_dir()` for timestamp resolution
+4. **Don't skip dual logging** - Use `DualWriter` for all scripts
+5. **Don't create new merge keys** - Use `file_name` (call-level) or `ceo_id` (CEO-level)
+6. **Don't skip regression validation** - Use `validate_columns()` and `validate_sample_size()`
 
 ## Scalability Considerations
 
-| Concern | Current Scale | Future Scale | Approach |
-|---------|--------------|--------------|----------|
-| Per-script stats | ~10-20 metrics | ~50+ metrics | Nested dict structure handles growth |
-| Per-year aggregation | 17 years | 50+ years | Loop accumulation already works |
-| Cross-step validation | Manual | Automated | stats.json enables CI checks |
-| Large column stats | ~25 columns | 100+ columns | Sample-based stats for performance |
+| Concern | Current Scale | At 10x Scale | Mitigation |
+|---------|---------------|--------------|------------|
+| Memory | ~6MB/year parquet | 60MB/year | Column pruning already implemented |
+| I/O | 17 years × 3 files | Same | LRU cache in place (4.1) |
+| Regression time | ~60s per model | Same | Not I/O bound |
+| Output size | ~1MB per step | ~10MB | Timestamped dirs handle this |
 
 ## Sources
 
-- **Primary:** Direct analysis of existing codebase
-  - `2_Scripts/1_Sample/1.1_CleanMetadata.py` - DualWriter pattern, report generation
-  - `2_Scripts/2_Text/2.1_TokenizeAndCount.py` - Per-year loop pattern
-  - `2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py` - Complex output pattern
-  - `config/project.yaml` - Configuration structure
-- **Confidence:** HIGH (patterns derived from existing working code)
+- Direct code analysis of existing scripts (HIGH confidence)
+- `config/project.yaml` configuration structure (HIGH confidence)
+- Existing shared module implementations (HIGH confidence)
+- No external sources needed - architecture derived from codebase
+
+## Quality Gate Checklist
+
+- [x] Integration points clearly identified (4.1 FE pattern, 4.2 2SLS pattern, 4.1.3 subsample pattern)
+- [x] New vs modified components explicit (table above)
+- [x] Build order considers existing dependencies (3-phase rollout)
+- [x] Data flow documented (dependency graph)
+- [x] Shared module reuse maximized (6 existing modules)
+- [x] New shared module justified (hypothesis_utils.py)

@@ -1,234 +1,307 @@
-# Feature Landscape: Academic Research Pipeline Documentation & Statistics
+# Feature Landscape: Hypothesis Testing Pipeline
 
-**Domain:** Empirical Finance Research Data Pipeline
-**Researched:** 2026-01-22
-**Context:** Thesis/journal replication package for CEO communication clarity research
+**Domain:** Empirical Finance Hypothesis Testing (Panel Regressions)
+**Researched:** 2026-02-04
+**Mode:** Features dimension for milestone research
+**Context:** Adding hypothesis testing capabilities to existing F1D data pipeline
 
 ## Executive Summary
 
-Academic replication packages have evolved from "code available upon request" to rigorous, standardized requirements enforced by data editors. The AEA's Data and Code Availability Policy (DCAS) and the Social Science Data Editors' template README define the baseline. For empirical finance specifically, sample construction transparency and variable definitions are critical due to the complexity of entity linking across databases (CRSP, Compustat, Execucomp, transcript data).
+This feature landscape maps what hypothesis testing scripts in empirical finance typically provide, categorized by necessity level. The three hypotheses involve panel regressions with interaction terms, fixed effects, and robustness checks against corporate finance outcomes (cash holdings, investment efficiency, dividend volatility).
 
-This research identifies features in three categories:
-1. **Table Stakes**: Required for acceptance by journals/thesis committees
-2. **Differentiators**: Exceed typical standards, impress reviewers
-3. **Anti-Features**: Things to deliberately NOT build for this context
+**Existing infrastructure (already built):**
+- OLS panel regressions with fixed effects (`statsmodels`)
+- 2SLS instrumental variable regressions (`linearmodels`)
+- CEO fixed effects extraction
+- Clustered standard errors (HC1, firm-level)
+- DualWriter logging, stats.json output
+- CLI with `--dry-run` and `--help`
+
+**Key additions needed:** Interaction terms, hypothesis-specific variable construction, structured robustness checks, publication-quality output formatting.
 
 ---
 
 ## Table Stakes
 
-Features users/reviewers expect. Missing = replication package rejection or major revision requests.
+Features users (academic reviewers, PhD committees) expect. Missing = results are not credible.
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| **README with execution instructions** | DCAS #13 requirement; reviewers need step-by-step guidance | Low | Must include: overview, how to run, output mapping |
-| **Data Availability Statement** | DCAS #1; explains how to obtain CRSP/Compustat/transcripts | Low | Required even if data cannot be redistributed |
-| **Variable codebook/metadata** | DCAS #5; reviewers need variable definitions | Medium | Labels for all columns in output datasets |
-| **Software requirements list** | DCAS #13; Python version, packages, versions | Low | `requirements.txt` or equivalent |
-| **Computational requirements** | DCAS #13; runtime, memory, storage estimates | Low | Per-step and total estimates |
-| **Random seed documentation** | Reproducibility requirement; all RNGs must be seeded | Low | Already in config, just needs documentation |
-| **Sample construction statistics** | Finance standard; show how universe narrows at each filter | Medium | Input rows -> filter 1 -> filter 2 -> final N |
-| **Row counts per step** | Basic audit trail; reviewers verify pipeline integrity | Low | Input/output counts for each script |
-| **Program-to-output mapping** | DCAS #13; which script produces which table/figure | Low | Table in README mapping scripts to outputs |
-| **Data citations** | DCAS #6; proper citations for WRDS, LM Dictionary, etc. | Low | Bibliography in README or paper |
-| **Missing value documentation** | Standard practice; explain why observations drop | Medium | Per-variable missing counts and reasons |
+| Feature | Why Expected | Complexity | Depends On | Notes |
+|---------|--------------|------------|------------|-------|
+| **Baseline OLS with Fixed Effects** | Standard empirical finance specification | Low | statsmodels | Already implemented in 4.1/4.2 |
+| **Firm + Year + Industry Fixed Effects** | Controls for unobserved heterogeneity | Low | existing FE infrastructure | 4.1 uses CEO + Year FE; add Firm FE |
+| **Interaction Terms (X * Z)** | Core hypothesis mechanism (leverage moderates uncertainty) | Medium | regression_helpers.py | H1 requires Speech_Uncertainty × Firm_Leverage |
+| **Clustered Standard Errors** | Correct for within-cluster correlation | Low | statsmodels `cov_type` | Already implemented (HC1); need firm-level clustering |
+| **Complete Case Filtering** | Valid inference requires no missing DV/IV | Low | build_regression_sample() | Already implemented |
+| **Winsorization** | Outlier treatment standard in finance | Low | pandas/numpy | Apply at 1%/99% per variable |
+| **Sample Size Reporting** | N per model, pre/post filtering | Low | stats.json pattern | Already implemented |
+| **Coefficient Table Output** | β, SE, t-stat, p-value per variable | Low | statsmodels summary | Already implemented |
+| **R-squared Reporting** | Within/Adjusted R² per model | Low | statsmodels | Already implemented |
+| **Model Diagnostics (VIF, F-stat)** | Multicollinearity, joint significance | Medium | statsmodels | Partial in 4.2; expand |
+| **Lag Structure (t+1 outcomes)** | Temporal precedence for causality | Low | pandas shift/merge | Merge lagged outcomes |
 
-### Table Stakes: Sample Construction Documentation
+### Baseline Regression Specification
 
-For empirical finance, sample construction is scrutinized heavily. Required elements:
+Per methodology in hypothesis file, each hypothesis requires:
 
-| Element | Description | Complexity |
-|---------|-------------|------------|
-| Universe definition | Starting point: all earnings calls 2002-2018 | Low |
-| Filter cascade | Sequential filters with counts at each step | Medium |
-| Entity linking success rates | % matched by each tier (CUSIP, ticker, name) | Medium |
-| CEO identification rate | % of calls matched to CEO in Execucomp | Medium |
-| Industry distribution | Calls by FF12 industry code | Low |
-| Time distribution | Calls by year | Low |
-| Firm/CEO counts | Unique GVKEYs, unique CEOs | Low |
+```
+Y_{i,t+1} = α + β₁ Speech_Uncertainty_{i,t} 
+              + β₂ Firm_Leverage_{i,t} 
+              + β₃ (Speech_Uncertainty_{i,t} × Firm_Leverage_{i,t}) 
+              + Σ γ_k Controls_{k,i,t} 
+              + Firm_FE_i + Year_FE_t + Industry_FE_j 
+              + ε_{i,t}
+```
 
-### Table Stakes: Summary Statistics
-
-Standard descriptive statistics table expected in every empirical paper:
-
-| Statistic | Required For | Notes |
-|-----------|--------------|-------|
-| N (observations) | All variables | Non-missing count |
-| Mean | Continuous variables | |
-| Std Dev | Continuous variables | |
-| Min | Continuous variables | |
-| P25, Median, P75 | Continuous variables | Distribution shape |
-| Max | Continuous variables | |
+**Required coefficients to report:**
+- β₁ > 0: Main effect (vagueness → outcome)
+- β₃ < 0: Interaction effect (debt discipline moderates)
 
 ---
 
 ## Differentiators
 
-Features that set the package apart. Not expected, but valued by reviewers and committees.
+Features that distinguish publication-quality work. Not strictly required but valued by top journals.
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Pipeline flow diagram** | Visual understanding of 4-stage process | Low | Mermaid/ASCII diagram in README |
-| **Per-script timing reports** | Shows computational effort, helps replicators plan | Low | Already have timestamps in logs |
-| **Structured statistics output (JSON/CSV)** | Machine-readable for meta-analysis | Medium | Parallel to console output |
-| **Input file checksums** | Bitwise reproducibility verification | Low | MD5/SHA256 of input files in logs |
-| **Winsorization/outlier documentation** | Transparency on data cleaning decisions | Medium | Before/after distributions |
-| **Correlation matrix of key variables** | Standard in finance papers, useful for multicollinearity | Medium | For regression variables |
-| **Panel balance diagnostics** | Shows coverage gaps by firm-year | Medium | Helpful for fixed effects justification |
-| **Version control integration** | Git SHA in logs links outputs to exact code version | Low | Already partially implemented |
-| **Processing metrics (memory, throughput)** | Helps replicators with resource planning | Medium | Peak memory, rows/second |
-| **Data quality flags** | Explicit warnings for anomalies | Medium | e.g., "5 firms have >100 calls" |
-| **Transformation summaries** | Before/after stats for each data transformation | High | Shows what each step does to data |
-| **Interactive sample explorer** | Jupyter notebook for ad-hoc analysis | Medium | Bonus for thesis defense |
+| Feature | Value Proposition | Complexity | Depends On | Notes |
+|---------|-------------------|------------|------------|-------|
+| **Subsample Analysis** | Split by leverage, growth, crisis periods | Medium | sample filtering | H1: low/high leverage; H2: high/low Tobin's Q |
+| **Alternative Specifications** | Different DV constructions, control sets | Medium | modular regression | Robustness for reviewer skepticism |
+| **Instrumental Variable (2SLS)** | Endogeneity mitigation | High | linearmodels | Already implemented in 4.2; extend to H1-H3 |
+| **Quantile Regression** | Heterogeneity at distribution tails | Medium | statsmodels.quantile | H1: 25th/50th/75th percentile cash |
+| **Difference-in-Differences** | Causal identification around events | High | Event study setup | Around CEO turnovers, leverage shocks |
+| **Propensity Score Matching** | Balance high/low vagueness samples | High | scikit-learn or custom | Pre-regression matching |
+| **Marginal Effects Calculation** | Economic magnitude at mean/median | Medium | Manual or statsmodels | Effect size at average leverage |
+| **LaTeX Table Output** | Publication-ready formatting | Medium | stargazer or manual | Multi-model comparison tables |
+| **Falsification Tests** | Placebo outcomes show no effect | Medium | Same regression on unrelated DV | Test on inventory/assets, advertising |
+| **Economic Significance** | Standardized coefficients, $ impact | Medium | Post-estimation calculation | 1-SD change in X → Y change |
+| **Coefficient Stability** | Oster (2019) bounds for omitted variable bias | High | External package | Beyond typical publication requirements |
 
-### Differentiators: Enhanced Audit Trail
+### Subsample Specifications (from hypothesis file)
 
-Beyond basic counts, impressive packages include:
-
-| Element | Description | Complexity |
-|---------|-------------|------------|
-| Config snapshot in logs | Full resolved config at execution time | Low |
-| Intermediate file checksums | Verify pipeline stages independently | Medium |
-| Merge diagnostics | 1:1, 1:m, m:1 merge type verification | Medium |
-| Duplicate detection | Explicit checks and resolution documentation | Medium |
-
-### Differentiators: Regression-Ready Statistics
-
-For the econometric stage specifically:
-
-| Element | Description | Complexity |
-|---------|-------------|------------|
-| Within/between variation | For fixed effects models | Medium |
-| Cluster size distribution | For clustered standard errors | Low |
-| Treatment/control balance | If applicable | Medium |
-| First-stage diagnostics | For IV regressions | Medium |
+| Hypothesis | Subsample Splits | Purpose |
+|------------|------------------|---------|
+| H1 (Cash) | Low/high leverage (median split) | Test discipline-of-debt mechanism |
+| H1 (Cash) | Pre/post-2008 crisis | Economic uncertainty context |
+| H1 (Cash) | High/low FCF (median split) | Agency problem severity |
+| H2 (Investment) | High/low Tobin's Q (1.5 threshold) | Growth opportunity context |
+| H2 (Investment) | Low-growth vs high-growth industries | Sector-specific effects |
+| H3 (Payout) | Mature/young firms (20-year threshold) | Firm lifecycle effects |
+| H3 (Payout) | High/low institutional ownership | Governance quality |
 
 ---
 
 ## Anti-Features
 
-Features to explicitly NOT build. Common mistakes in this domain.
+Features to explicitly NOT build. Common over-engineering mistakes.
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|-------------------|
-| **Shared statistics module/library** | Breaks self-contained replication; each script must stand alone | Inline stats logic per script; copy-paste is acceptable |
-| **Aggregate pipeline summary report** | Overengineering; per-script stats are sufficient | Let each script report its own statistics |
-| **Methodology rationale in README** | Belongs in paper/thesis, not code docs | README = "how to run", Paper = "why we did this" |
-| **Automated testing framework** | Overkill for academic pipeline; verification scripts exist | Keep simple verification scripts |
-| **Interactive dashboards/web UI** | This is batch processing for replication | Static outputs (CSV, Parquet, Markdown) |
-| **Real-time monitoring** | Not a production system | Timestamped logs are sufficient |
-| **Configuration GUI** | Adds complexity, breaks reproducibility | YAML config is standard |
-| **Database backend** | Overengineering for thesis-scale data | Parquet files are appropriate |
-| **Parallel processing** | Breaks determinism unless carefully managed | Single-threaded execution (already in config) |
-| **Elaborate visualization pipeline** | Figures belong in paper, not replication code | Export data for separate visualization |
-| **Synthetic/mock data generation** | Never fabricate data without explicit approval | Use real data only |
-| **Cross-platform compatibility testing** | Academic reviewers typically use one platform | Document your platform; don't test all |
-
-### Anti-Features: Documentation Scope
-
-| Don't Document | Why | Where It Belongs |
-|----------------|-----|------------------|
-| Economic intuition for variables | Academic content | Paper Section 2 (Hypothesis Development) |
-| Literature review of methods | Academic content | Paper Section 1 (Introduction) |
-| Robustness test rationale | Academic content | Paper Section 5 (Robustness) |
-| Detailed Loughran-McDonald dictionary explanation | External reference | Cite original paper |
+| **Interactive Dashboard** | Academic replication = batch scripts, not web apps | Timestamped output files |
+| **Automated Model Selection** | Cherry-picking risk; reviewers want explicit choices | Pre-specified models from methodology |
+| **Machine Learning Prediction** | Causal inference ≠ prediction; confuses contribution | Stick to interpretable OLS/2SLS |
+| **Real-time Database Updates** | Frozen sample for replication | Static data snapshots |
+| **GUI for Specification Tweaks** | Researcher degrees of freedom problem | Config-driven, version-controlled |
+| **Bayesian Estimation** | Non-standard for corporate finance journals | Frequentist with clustered SEs |
+| **Bootstrap Everything** | Overkill when analytical SEs available | Reserve for specific tests (e.g., mediation) |
+| **Fancy Visualization Suite** | Tables, not charts, for regression results | Simple coefficient plots if any |
+| **Multi-Language Support** | English-only for academic papers | Single language |
+| **Cloud Deployment** | Local reproducibility is sufficient | `python script.py` workflow |
 
 ---
 
 ## Feature Dependencies
 
 ```
-README (foundation)
-    |
-    +-- Data Availability Statement (required component)
-    +-- Software Requirements (required component)
-    +-- Computational Requirements (required component)
-    +-- Program-to-Output Mapping (required component)
-    |
-Sample Construction Stats (Step 1)
-    |
-    +-- Entity Linking Rates (depends on Step 1.2)
-    +-- CEO Match Rates (depends on Step 1.3-1.4)
-    |
-Per-Script Statistics (Steps 1-4)
-    |
-    +-- Row Counts (basic)
-    +-- Missing Value Counts (builds on row counts)
-    +-- Distribution Statistics (builds on data quality)
-    |
-Summary Statistics Table (final output)
-    |
-    +-- Depends on: All per-script stats aggregated
-    +-- Used by: Paper Table 1 (Descriptive Statistics)
+┌─────────────────────────────────────────────────────────────┐
+│                    HYPOTHESIS TESTING PIPELINE              │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────┐                                       │
+│  │ Variable        │ ◄── Depends on Steps 1-3:             │
+│  │ Construction    │     - Speech Uncertainty (2.2)        │
+│  │ (H1, H2, H3)    │     - Financial controls (3.x)        │
+│  └────────┬────────┘     - CEO clarity scores (4.1)        │
+│           │                                                 │
+│           ▼                                                 │
+│  ┌─────────────────┐                                       │
+│  │ Sample          │ ◄── Winsorization, complete cases,    │
+│  │ Preparation     │     industry/year filters             │
+│  └────────┬────────┘                                       │
+│           │                                                 │
+│           ▼                                                 │
+│  ┌─────────────────┐    ┌─────────────────┐               │
+│  │ Baseline        │───▶│ Interaction     │               │
+│  │ Regression      │    │ Terms           │               │
+│  └────────┬────────┘    └────────┬────────┘               │
+│           │                      │                         │
+│           ▼                      ▼                         │
+│  ┌─────────────────────────────────────────┐               │
+│  │        ROBUSTNESS CHECKS                │               │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ │               │
+│  │  │Subsamples│ │Alt Specs │ │  2SLS    │ │               │
+│  │  └──────────┘ └──────────┘ └──────────┘ │               │
+│  └────────────────────┬────────────────────┘               │
+│                       │                                     │
+│                       ▼                                     │
+│  ┌─────────────────────────────────────────┐               │
+│  │        OUTPUT GENERATION                 │               │
+│  │  - stats.json (diagnostics)              │               │
+│  │  - regression_results.txt (full)         │               │
+│  │  - report.md (summary tables)            │               │
+│  │  - LaTeX tables (publication)            │               │
+│  └─────────────────────────────────────────┘               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Hypothesis-Specific Features
+
+### H1: Cash Holdings ~ Speech Uncertainty × Leverage
+
+**DV Construction:**
+```python
+# Cash Holdings = CHE / AT (already available as Cash_Holdings)
+df['Cash_Holdings'] = df['che'] / df['at']
+```
+
+**Interaction Term:**
+```python
+# Moderator × IV
+df['Uncertainty_x_Leverage'] = df['Speech_Uncertainty'] * df['Firm_Leverage']
+```
+
+**Controls Required:**
+| Variable | Compustat Code | Already Available? |
+|----------|----------------|-------------------|
+| Operating CF Volatility | 5-yr std(OANCF/AT) | Need to compute |
+| Firm Size | ln(AT) | Likely in 3.x |
+| Current Ratio | ACT/LCT | Likely in 3.x |
+| Tobin's Q | (MVE + Debt) / AT | Likely in 3.x |
+| ROA | NI/AT | Yes (3.x) |
+| CapEx | CAPX/AT | Need to verify |
+| Dividend Payer | DVC > 0 dummy | Need to compute |
+
+### H2: Investment Efficiency ~ Speech Uncertainty
+
+**DV Construction (complex):**
+```python
+# Option 1: Efficiency score based on over/underinvestment classification
+# Overinvest = (CAPX/DP > 1.5) AND (Sales_Growth < industry median)
+# Underinvest = (CAPX/DP < 0.75) AND (Tobin's Q > 1.5)
+
+# Option 2: Residual-based (Biddle et al. 2009)
+# Regress ∆ROA(t+2) on CAPX(t)/AT, take absolute residual
+```
+
+**Additional Controls:**
+| Variable | Purpose |
+|----------|---------|
+| Analyst Forecast Dispersion | Information asymmetry proxy |
+| Industry CapEx Intensity | Sector norms |
+| Free Cash Flow | Agency problem proxy |
+
+### H3: Payout Stability ~ Speech Uncertainty
+
+**DV Construction:**
+```python
+# DV1: Stability = negative of (std(∆DPS) / mean(DPS)) over 5 years
+# DV2: Flexibility = % of years with dividend change > 5%
+df['DPS'] = df['dvc'] / df['csho']
+df['Delta_DPS'] = df.groupby('gvkey')['DPS'].diff()
+```
+
+**Additional Controls:**
+| Variable | Purpose |
+|----------|---------|
+| Earnings Volatility | Fundamental uncertainty |
+| FCF Growth | Capacity to pay |
+| Firm Maturity | Age or dividend history |
+
+---
+
+## Output Specifications
+
+### Required Output Files (Table Stakes)
+
+| File | Content | Format |
+|------|---------|--------|
+| `hypothesis_X_baseline.txt` | Full regression output | statsmodels summary |
+| `hypothesis_X_diagnostics.csv` | N, R², F-stat, VIF per model | CSV |
+| `stats.json` | Observability metrics | JSON |
+| `report.md` | Summary tables | Markdown |
+
+### Publication-Quality Output (Differentiator)
+
+| File | Content | Format |
+|------|---------|--------|
+| `table_X.tex` | Multi-column coefficient table | LaTeX |
+| `coefficient_plot.png` | Visual comparison across models | PNG |
+| `robustness_summary.csv` | All specifications side-by-side | CSV |
 
 ---
 
 ## MVP Recommendation
 
-For initial milestone, prioritize in this order:
+For initial implementation, prioritize:
 
-### Must Have (Table Stakes)
-1. **README.md** with DCAS-compliant structure
-   - Data availability statement for WRDS data
-   - Software requirements (requirements.txt)
-   - Execution instructions
-   - Program-to-output mapping
-   
-2. **Per-script row counts** (input/output)
-   - Already partially present in some scripts
-   - Standardize format across all scripts
-   
-3. **Sample construction cascade**
-   - Document the filter funnel in Step 1
-   - Show: Universe -> Earnings Calls -> Linked -> CEO-matched -> Final
-   
-4. **Variable codebook**
-   - For final analysis dataset
-   - Column name, type, description, source step
+### Phase 1: Core Hypothesis Testing
+1. **Variable construction** for H1, H2, H3 DVs and controls
+2. **Interaction term support** in regression formula
+3. **Baseline regressions** with firm + year + industry FE
+4. **Standard output** (stats.json, regression_results.txt, report.md)
 
-### Should Have (Differentiators)
-5. **Pipeline diagram** (visual in README)
-6. **Summary statistics CSV** (for Paper Table 1)
-7. **Timing per step** (already in logs, just aggregate)
-8. **Correlation matrix** (for regression variables)
+### Phase 2: Robustness Infrastructure
+5. **Subsample analysis** framework (config-driven splits)
+6. **Alternative specifications** (different control sets)
+7. **2SLS extension** (already have infrastructure from 4.2)
 
-### Defer to Post-MVP
-- Structured JSON statistics output
-- Processing metrics (memory, throughput)
-- Interactive Jupyter explorer
-- Transformation summaries
+### Phase 3: Publication Polish
+8. **LaTeX table generation**
+9. **Economic significance calculation**
+10. **Falsification tests**
+
+**Defer to post-thesis:**
+- Propensity score matching
+- Difference-in-differences
+- Coefficient stability bounds (Oster)
 
 ---
 
-## Complexity Estimates
+## Complexity Assessment
 
-| Feature | Effort | Dependencies |
-|---------|--------|--------------|
-| README structure | 2-4 hours | None |
-| requirements.txt | 30 min | None |
-| Per-script row counts | 1-2 hours per script | None |
-| Sample construction cascade | 2-3 hours | Step 1 scripts |
-| Variable codebook | 2-3 hours | All output schemas |
-| Pipeline diagram | 1 hour | README structure |
-| Summary statistics table | 2-3 hours | Final dataset |
-| Correlation matrix | 1-2 hours | Regression variables |
+| Feature Category | Complexity | Estimated Effort | Priority |
+|------------------|------------|------------------|----------|
+| Variable Construction | Medium | 4-8 hours | P0 |
+| Interaction Terms | Low | 1-2 hours | P0 |
+| Baseline Regressions | Low | 2-4 hours | P0 |
+| Fixed Effects (Firm/Year/Industry) | Low | 2-3 hours | P0 |
+| Clustered SEs | Low | 1 hour | P0 |
+| Subsample Framework | Medium | 4-6 hours | P1 |
+| 2SLS Extension | Low | 2-3 hours | P1 |
+| LaTeX Output | Medium | 4-6 hours | P2 |
+| Quantile Regression | Medium | 3-4 hours | P2 |
+| Economic Significance | Medium | 2-3 hours | P2 |
 
 ---
 
 ## Sources
 
-### HIGH Confidence (Official Standards)
-- AEA Data and Code Availability Policy (February 2024): https://www.aeaweb.org/journals/data/data-code-policy
-- Data and Code Availability Standard (DCAS) v1.0: https://datacodestandard.org/
-- Social Science Data Editors Template README: https://social-science-data-editors.github.io/template_README/
+- **Hypothesis Methodology:** F1DV2 Hypothesis List.txt (project file)
+- **Existing Infrastructure:**
+  - `2_Scripts/shared/regression_helpers.py`
+  - `2_Scripts/shared/regression_utils.py`
+  - `2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py`
+  - `2_Scripts/4_Econometric/4.2_LiquidityRegressions.py`
+- **Econometric Patterns:** 
+  - Loughran & McDonald (2011) - uncertainty measurement
+  - Dzielinski, Wagner, Zeckhauser (2017) - vague talker decomposition
+  - Jensen (1986) - discipline of debt
+  - Biddle et al. (2009) - investment efficiency residuals
+- **Confidence:** HIGH for existing infrastructure assessment; MEDIUM for academic expectations (based on methodology file and standard practices)
 
-### MEDIUM Confidence (Verified Best Practices)
-- AEA Data Editor FAQ: https://www.aeaweb.org/journals/data/faq
-- Social Science Data Editors Guidance: https://social-science-data-editors.github.io/guidance/
+---
 
-### Project-Specific (Existing Codebase)
-- Current script structure in 2_Scripts/
-- PROJECT.md requirements
-- Existing logging patterns (DualWriter)
-- Existing verification patterns (2.3_VerifyStep2.py)
+*Research conducted: 2026-02-04*
+*Mode: Features dimension for hypothesis testing milestone*
