@@ -1,71 +1,115 @@
-# Requirements: F1D Data Pipeline
+# Requirements: F1D Hypothesis Testing Pipeline
 
-**Defined:** 2026-01-22
-**Core Value:** Every script must produce verifiable, reproducible results with complete audit trails
+**Defined:** 2026-02-04
+**Core Value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
 
-## v1 Requirements
+## v2.0 Requirements
 
-Requirements for initial release. Each maps to roadmap phases.
+Requirements for hypothesis testing implementation. V2 extends existing pipeline with separate scripts in dedicated folders.
 
-### Per-Script Statistics
+**Key Constraints:**
+- Use existing sample (firms, time period) from v1.0 implementation
+- Use existing text measures (speech uncertainty) from Step 2
+- All V2 scripts in separate folders: `3_Financial_V2/`, `4_Econometric_V2/`, etc.
+- Outputs to `4_Outputs/3_Financial_V2/`, `4_Outputs/4_Econometric_V2/`, etc.
 
-- [x] **STAT-01**: Each script outputs input row count at start of processing
-- [x] **STAT-02**: Each script outputs output row count at end of processing
-- [x] **STAT-03**: Each script outputs row delta (input - output) with percentage
-- [x] **STAT-04**: Each script outputs per-variable missing value counts
-- [x] **STAT-05**: Each script outputs per-variable missing value percentages
-- [x] **STAT-06**: Each script outputs processing duration in seconds
-- [x] **STAT-07**: Each script outputs timestamp of execution start/end
-- [x] **STAT-08**: Each script outputs stats.json file alongside data outputs
-- [x] **STAT-09**: Each script outputs input file MD5/SHA256 checksums
-- [x] **STAT-10**: Each script with merges outputs merge diagnostics (matched/unmatched counts)
-- [x] **STAT-11**: Each script with merges outputs merge type verification (1:1, 1:m, m:1)
-- [x] **STAT-12**: Stats designed from data scientist POV with script-specific metrics
+### H1: Cash Holdings Variables & Regression
 
-### Sample Construction Documentation
+- [ ] **H1-01**: Construct Cash Holdings DV = Cash and Cash Equivalents (CHE) / Total Assets (AT)
+- [ ] **H1-02**: Construct Firm Leverage moderator = Total Debt (DLTT + DLC) / Total Assets (AT)
+- [ ] **H1-03**: Construct Operating Cash Flow Volatility control = StdDev(OANCF/AT) over trailing 5 years
+- [ ] **H1-04**: Construct Current Ratio control = Current Assets (ACT) / Current Liabilities (LCT)
+- [ ] **H1-05**: Include standard controls: Tobin's Q, ROA, Capex/AT, Dividend Payer dummy, Firm Size
+- [ ] **H1-06**: Merge with existing speech uncertainty measures from Step 2 outputs
+- [ ] **H1-07**: Run OLS: CashHoldings_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
+- [ ] **H1-08**: Cluster standard errors at firm level
+- [ ] **H1-09**: Test β1 > 0 (vagueness increases cash) and β3 < 0 (leverage attenuates)
+- [ ] **H1-10**: Output coefficient table and stats.json
 
-- [x] **SAMP-01**: Step 1 outputs filter cascade table (universe → filter₁ → filter₂ → final N)
-- [x] **SAMP-02**: Step 1.2 outputs entity linking success rates by method (CUSIP, ticker, fuzzy name)
-- [x] **SAMP-03**: Step 1.3/1.4 outputs CEO identification rates (% calls matched to CEO)
-- [x] **SAMP-04**: Step 1 outputs industry distribution (calls by Fama-French industry)
-- [x] **SAMP-05**: Step 1 outputs time distribution (calls by year)
-- [x] **SAMP-06**: Step 1 outputs unique firm count (distinct GVKEYs)
-- [x] **SAMP-07**: Step 1 outputs unique CEO count
+### H2: Investment Efficiency Variables & Regression
 
-### README Documentation
+- [ ] **H2-01**: Construct Overinvestment Dummy = 1 if Capex/Depreciation > 1.5 AND Sales Growth < industry-year median
+- [ ] **H2-02**: Construct Underinvestment Dummy = 1 if Capex/Depreciation < 0.75 AND Tobin's Q > 1.5
+- [ ] **H2-03**: Construct Efficiency Score DV = 1 - (% Overinvestment + % Underinvestment years) over 5-year window
+- [ ] **H2-04**: Alternative DV: Residual from ∆ROA(t+2) ~ Capex(t)/AT regression
+- [ ] **H2-05**: Include controls: Tobin's Q, Cash Flow Volatility, Industry CapEx Intensity, Analyst Dispersion
+- [ ] **H2-06**: Include standard controls: Firm Size, ROA, Free Cash Flow, Earnings Volatility
+- [ ] **H2-07**: Merge with existing speech uncertainty measures from Step 2 outputs
+- [ ] **H2-08**: Run OLS: Efficiency_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
+- [ ] **H2-09**: Test β1 < 0 (vagueness lowers efficiency) and β3 > 0 (leverage improves efficiency)
+- [ ] **H2-10**: Output coefficient table and stats.json
 
-- [x] **DOC-01**: README includes requirements.txt with Python version and all package versions
-- [x] **DOC-02**: README includes step-by-step execution instructions
-- [x] **DOC-03**: README includes program-to-output mapping (script → table/figure)
-- [x] **DOC-04**: README includes pipeline flow diagram (Mermaid or ASCII)
-- [x] **DOC-05**: README includes variable codebook for final analysis datasets
-- [x] **DOC-06**: README documents each script's purpose, inputs, and outputs
-- [x] **DOC-07**: README documents data sources (CRSP, Compustat, transcripts)
+### H3: Payout Policy Variables & Regression
 
-### Summary Statistics
+- [ ] **H3-01**: Construct Dividend Policy Stability DV = -StdDev(∆DPS/mean DPS) over trailing 5 years
+- [ ] **H3-02**: Construct Payout Flexibility DV = % years with dividend change (|∆DPS| > 5%) over 5-year window
+- [ ] **H3-03**: Include controls: Earnings Volatility (StdDev EPS over 5 years), FCF Growth, Firm Maturity
+- [ ] **H3-04**: Include standard controls: Firm Size, ROA, Tobin's Q, Cash Holdings
+- [ ] **H3-05**: Merge with existing speech uncertainty measures from Step 2 outputs
+- [ ] **H3-06**: Run OLS for Stability: Stability_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
+- [ ] **H3-07**: Run OLS for Flexibility: Flexibility_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
+- [ ] **H3-08**: Test for Stability: β1 < 0, β3 < 0; for Flexibility: β1 > 0, β3 > 0
+- [ ] **H3-09**: Output coefficient table and stats.json
 
-- [x] **SUMM-01**: Final dataset includes descriptive statistics (N, Mean, SD, Min, P25, Median, P75, Max)
-- [x] **SUMM-02**: Final dataset includes correlation matrix for regression variables
-- [x] **SUMM-03**: Final dataset includes panel balance diagnostics (coverage by firm-year)
-- [x] **SUMM-04**: Summary statistics exportable as CSV for paper Table 1
+### Econometric Infrastructure
 
-## v2 Requirements
+- [ ] **ECON-01**: Implement panel OLS with firm + year + industry fixed effects (Fama-French 48)
+- [ ] **ECON-02**: Implement interaction term creation with mean-centering (avoid multicollinearity)
+- [ ] **ECON-03**: Implement clustered standard errors (firm-level with double-clustering option)
+- [ ] **ECON-04**: Implement 2SLS with instruments: manager's prior-firm vagueness, industry-peer average vagueness
+- [ ] **ECON-05**: Validate instruments with first-stage F > 10, Hansen J overidentification test
+- [ ] **ECON-06**: Apply Newey-West adjustment for heteroskedasticity and autocorrelation
+- [ ] **ECON-07**: Check multicollinearity with VIF < 5 threshold
+
+### Robustness Checks
+
+- [ ] **ROBUST-01**: Subsample by leverage (below/above median debt/assets)
+- [ ] **ROBUST-02**: Subsample by growth (Tobin's Q above/below 1.5)
+- [ ] **ROBUST-03**: Subsample by free cash flow (above/below median FCF/assets)
+- [ ] **ROBUST-04**: Subsample by time period (pre/post-2008 crisis)
+- [ ] **ROBUST-05**: Alternative uncertainty measure: weak modals only
+- [ ] **ROBUST-06**: Exclude crisis years (2008-2009) sensitivity
+- [ ] **ROBUST-07**: Reverse causality check: regress uncertainty on lagged outcome
+
+### Identification Strategies
+
+- [ ] **IDENT-01**: Manager fixed effects with within-manager variation
+- [ ] **IDENT-02**: Propensity score matching for high/low vagueness firms
+- [ ] **IDENT-03**: Falsification test on placebo DV (e.g., inventory/assets for H1)
+
+### Publication Output
+
+- [ ] **PUB-01**: Generate coefficient tables with β, SE, t-stat, p-value, R², N
+- [ ] **PUB-02**: Generate LaTeX-formatted regression tables
+- [ ] **PUB-03**: Calculate economic significance (1-SD change interpretation)
+- [ ] **PUB-04**: Report marginal effects at mean leverage
+- [ ] **PUB-05**: Output stats.json with all regression diagnostics
+
+### V2 Pipeline Structure
+
+- [ ] **STRUCT-01**: Create 2_Scripts/3_Financial_V2/ folder for H1/H2/H3 variable construction
+- [ ] **STRUCT-02**: Create 2_Scripts/4_Econometric_V2/ folder for hypothesis regressions
+- [ ] **STRUCT-03**: Output to 4_Outputs/3_Financial_V2/ with timestamped directories
+- [ ] **STRUCT-04**: Output to 4_Outputs/4_Econometric_V2/ with timestamped directories
+- [ ] **STRUCT-05**: Logs to 3_Logs/3_Financial_V2/ and 3_Logs/4_Econometric_V2/
+- [ ] **STRUCT-06**: Follow existing script naming convention: {step}.{substep}_{Name}.py
+
+## v3.0 Requirements (Future)
 
 Deferred to future release. Tracked but not in current roadmap.
 
-### Enhanced Observability
+### Advanced Econometrics
 
-- **OBS-01**: Memory usage tracking per script
-- **OBS-02**: Throughput metrics (rows/second)
-- **OBS-03**: Intermediate file checksums between steps
-- **OBS-04**: Data quality anomaly flags
+- **ADV-01**: Quantile regression at 25th/50th/75th percentiles
+- **ADV-02**: Difference-in-differences around CEO turnovers or leverage shocks
+- **ADV-03**: Coefficient stability bounds (Oster 2019)
+- **ADV-04**: Wild bootstrap for small-cluster inference
 
-### Advanced Documentation
+### Extended Scope
 
-- **ADOC-01**: Data Availability Statement (WRDS access instructions)
-- **ADOC-02**: Computational requirements (runtime, memory estimates)
-- **ADOC-03**: Interactive Jupyter sample explorer
-- **ADOC-04**: Transformation summaries (before/after for each step)
+- **EXT-01**: Cross-country analysis with Global Compustat
+- **EXT-02**: LLM-based uncertainty (FinBERT/GPT embeddings)
+- **EXT-03**: Interactive exploration dashboard
 
 ## Out of Scope
 
@@ -73,67 +117,82 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Shared statistics module | Breaks self-contained replication; each script must stand alone |
-| Aggregate pipeline summary | Per-script stats are sufficient |
-| Methodology rationale in README | Belongs in paper/thesis, not code docs |
-| Automated testing framework | Verification scripts exist, formal testing deferred |
-| Interactive dashboards/web UI | Batch processing for replication |
-| Real-time monitoring | Timestamped logs are sufficient |
-| Cross-platform compatibility testing | Document platform; don't test all |
-| ydata-profiling or similar | Overkill for embedded stats |
+| Rebuilding speech uncertainty | Already exists in Step 2 outputs |
+| New sample construction | Use existing v1.0 sample (firms, time period) |
+| Modifying existing scripts | V2 is extension only, separate folders |
+| Real-time analysis | Batch processing for replication |
+| Video/audio analysis | Text transcripts per methodology |
+| Cross-country analysis | U.S. firms only per thesis scope |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
 
- | Requirement | Phase | Status |
+| Requirement | Phase | Status |
 |-------------|-------|--------|
-| STAT-01 | Phase 1 | ✅ COMPLETED |
-| STAT-02 | Phase 1 | ✅ COMPLETED |
-| STAT-03 | Phase 1 | ✅ COMPLETED |
-| STAT-04 | Phase 1 | ✅ COMPLETED |
-| STAT-05 | Phase 1 | ✅ COMPLETED |
-| STAT-06 | Phase 1 | ✅ COMPLETED |
-| STAT-07 | Phase 1 | ✅ COMPLETED |
-| STAT-08 | Phase 1 | ✅ COMPLETED |
-| STAT-09 | Phase 1 | ✅ COMPLETED |
-| STAT-10 | Phase 1 | ✅ COMPLETED |
-| STAT-11 | Phase 1 | ✅ COMPLETED |
-| STAT-12 | Phase 1 | ✅ COMPLETED |
-| SAMP-01 | Phase 2 | ✅ COMPLETED |
-| SAMP-02 | Phase 2 | ✅ COMPLETED |
-| SAMP-03 | Phase 2 | ✅ COMPLETED |
-| SAMP-04 | Phase 2 | ✅ COMPLETED |
-| SAMP-05 | Phase 2 | ✅ COMPLETED |
-| SAMP-06 | Phase 2 | ✅ COMPLETED |
-| SAMP-07 | Phase 2 | ✅ COMPLETED |
-| DOC-01 | Phase 5 | ✅ COMPLETED |
-| DOC-02 | Phase 5 | ✅ COMPLETED |
-| DOC-03 | Phase 5 | ✅ COMPLETED |
-| DOC-04 | Phase 5 | ✅ COMPLETED |
-| DOC-05 | Phase 5 | ✅ COMPLETED |
-| DOC-06 | Phase 5 | ✅ COMPLETED |
-| DOC-07 | Phase 5 | ✅ COMPLETED |
-| SUMM-01 | Phase 4 | ✅ COMPLETED |
-| SUMM-02 | Phase 4 | ✅ COMPLETED |
-| SUMM-03 | Phase 4 | ✅ COMPLETED |
-| SUMM-04 | Phase 4 | ✅ COMPLETED |
+| H1-01 | TBD | Pending |
+| H1-02 | TBD | Pending |
+| H1-03 | TBD | Pending |
+| H1-04 | TBD | Pending |
+| H1-05 | TBD | Pending |
+| H1-06 | TBD | Pending |
+| H1-07 | TBD | Pending |
+| H1-08 | TBD | Pending |
+| H1-09 | TBD | Pending |
+| H1-10 | TBD | Pending |
+| H2-01 | TBD | Pending |
+| H2-02 | TBD | Pending |
+| H2-03 | TBD | Pending |
+| H2-04 | TBD | Pending |
+| H2-05 | TBD | Pending |
+| H2-06 | TBD | Pending |
+| H2-07 | TBD | Pending |
+| H2-08 | TBD | Pending |
+| H2-09 | TBD | Pending |
+| H2-10 | TBD | Pending |
+| H3-01 | TBD | Pending |
+| H3-02 | TBD | Pending |
+| H3-03 | TBD | Pending |
+| H3-04 | TBD | Pending |
+| H3-05 | TBD | Pending |
+| H3-06 | TBD | Pending |
+| H3-07 | TBD | Pending |
+| H3-08 | TBD | Pending |
+| H3-09 | TBD | Pending |
+| ECON-01 | TBD | Pending |
+| ECON-02 | TBD | Pending |
+| ECON-03 | TBD | Pending |
+| ECON-04 | TBD | Pending |
+| ECON-05 | TBD | Pending |
+| ECON-06 | TBD | Pending |
+| ECON-07 | TBD | Pending |
+| ROBUST-01 | TBD | Pending |
+| ROBUST-02 | TBD | Pending |
+| ROBUST-03 | TBD | Pending |
+| ROBUST-04 | TBD | Pending |
+| ROBUST-05 | TBD | Pending |
+| ROBUST-06 | TBD | Pending |
+| ROBUST-07 | TBD | Pending |
+| IDENT-01 | TBD | Pending |
+| IDENT-02 | TBD | Pending |
+| IDENT-03 | TBD | Pending |
+| PUB-01 | TBD | Pending |
+| PUB-02 | TBD | Pending |
+| PUB-03 | TBD | Pending |
+| PUB-04 | TBD | Pending |
+| PUB-05 | TBD | Pending |
+| STRUCT-01 | TBD | Pending |
+| STRUCT-02 | TBD | Pending |
+| STRUCT-03 | TBD | Pending |
+| STRUCT-04 | TBD | Pending |
+| STRUCT-05 | TBD | Pending |
+| STRUCT-06 | TBD | Pending |
 
 **Coverage:**
-- v1 requirements: 30 total
-- Mapped to phases: 30 ✓
-- Unmapped: 0
-- Completed: 30/30 (100%)
-
-**Phase Distribution:**
-- Phase 1 (Template & Pilot): 12 requirements (STAT-01-12) ✅ COMPLETED
-- Phase 2 (Step 1 Sample): 7 requirements (SAMP-01-07) ✅ COMPLETED
-- Phase 3 (Step 2 Text): rollout phase (inherits STAT pattern) ✅ COMPLETED
-- Phase 4 (Steps 3-4): 4 requirements (SUMM-01-04) ✅ COMPLETED
-- Phase 5 (README): 7 requirements (DOC-01-07) ✅ COMPLETED
-- Phase 6 (Verification): validation phase (verifies all) ✅ COMPLETED
+- v2.0 requirements: 55 total
+- Mapped to phases: 0 (TBD by roadmapper)
+- Unmapped: 55 ⚠️
 
 ---
-*Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after Phase 6 completion*
-*Status: ALL REQUIREMENTS MET (30/30)*
+*Requirements defined: 2026-02-04*
+*Last updated: 2026-02-04 after clarification (use existing sample and text measures)*
