@@ -1,0 +1,10 @@
+# Econometric V2 Outputs Directory
+
+Timestamped output folders will be created here by scripts.
+
+Format: YYYY-MM-DD_HHMMSS/
+
+Contains:
+- Regression results (coefficient tables, statistics)
+- stats.json files with all diagnostics
+- LaTeX-formatted tables for publication
