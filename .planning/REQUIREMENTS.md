@@ -87,12 +87,12 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 
 ### V2 Pipeline Structure
 
-- [ ] **STRUCT-01**: Create 2_Scripts/3_Financial_V2/ folder for H1/H2/H3 variable construction
-- [ ] **STRUCT-02**: Create 2_Scripts/4_Econometric_V2/ folder for hypothesis regressions
-- [ ] **STRUCT-03**: Output to 4_Outputs/3_Financial_V2/ with timestamped directories
-- [ ] **STRUCT-04**: Output to 4_Outputs/4_Econometric_V2/ with timestamped directories
-- [ ] **STRUCT-05**: Logs to 3_Logs/3_Financial_V2/ and 3_Logs/4_Econometric_V2/
-- [ ] **STRUCT-06**: Follow existing script naming convention: {step}.{substep}_{Name}.py
+- [x] **STRUCT-01**: Create 2_Scripts/3_Financial_V2/ folder for H1/H2/H3 variable construction
+- [x] **STRUCT-02**: Create 2_Scripts/4_Econometric_V2/ folder for hypothesis regressions
+- [x] **STRUCT-03**: Output to 4_Outputs/3_Financial_V2/ with timestamped directories
+- [x] **STRUCT-04**: Output to 4_Outputs/4_Econometric_V2/ with timestamped directories
+- [x] **STRUCT-05**: Logs to 3_Logs/3_Financial_V2/ and 3_Logs/4_Econometric_V2/
+- [x] **STRUCT-06**: Follow existing script naming convention: {step}.{substep}_{Name}.py
 
 ## v3.0 Requirements (Future)
 
