@@ -57,10 +57,27 @@ from shared.observability_utils import DualWriter
 
 
 def load_config():
-    """Load configuration from project.yaml"""
+    """Load configuration from project.yaml
+
+    Auto-detects project root by looking for the standard top-level folders.
+    """
     import yaml
 
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    # Search upward for project root (max 3 levels)
+    root = None
+    for level in range(4):
+        check_path = Path(__file__).resolve().parents[level]
+        if all((check_path / d).exists() for d in ["2_Scripts", "3_Logs", "4_Outputs"]):
+            root = check_path
+            break
+
+    # Fallback
+    if root is None:
+        candidate1 = Path(__file__).parent.parent.resolve()
+        candidate2 = Path(__file__).parent.parent.parent.resolve()
+        root = candidate1 if (candidate1 / "2_Scripts").exists() else candidate2
+
+    config_path = root / "config" / "project.yaml"
     if config_path.exists():
         with open(config_path, "r") as f:
             return yaml.safe_load(f)
@@ -68,8 +85,30 @@ def load_config():
 
 
 def setup_paths(timestamp):
-    """Set up all required paths for validation script"""
-    root = Path(__file__).parent.parent.parent
+    """Set up all required paths for validation script
+
+    Auto-detects project root by looking for the standard top-level folders.
+    """
+    # Start from script location and search upward for project root
+    # Project root contains: 1_Inputs, 2_Scripts, 3_Logs, 4_Outputs
+    script_dir = Path(__file__).parent.parent.resolve()
+    root = None
+
+    # Search upward for project root (max 3 levels)
+    for level in range(4):
+        check_path = Path(__file__).resolve().parents[level]
+        if all((check_path / d).exists() for d in ["2_Scripts", "3_Logs", "4_Outputs"]):
+            root = check_path
+            break
+
+    # Fallback: Use the directory containing 2_Scripts
+    if root is None:
+        # Try parent.parent (F1D level) or parent.parent.parent (if F1D is nested)
+        candidate1 = Path(__file__).parent.parent.resolve()
+        candidate2 = Path(__file__).parent.parent.parent.resolve()
+
+        # Check which one has 2_Scripts
+        root = candidate1 if (candidate1 / "2_Scripts").exists() else candidate2
 
     paths = {
         "root": root,
@@ -135,7 +174,8 @@ class ValidationResult:
             f"  {self.description}",
         ]
         for check in self.checks:
-            symbol = "\u2713" if check["passed"] else "\u2717"
+            # Use ASCII-compatible symbols for Windows console
+            symbol = "[OK]" if check["passed"] else "[X]"
             lines.append(f"  {symbol} {check['name']}")
             if check["details"] and not check["passed"]:
                 lines.append(f"      {check['details']}")
@@ -589,6 +629,8 @@ def main(args=None):
 
     # Set up dual-writer for logging
     if not parsed_args.dry_run:
+        # Ensure parent directory exists
+        paths["log_file"].parent.mkdir(parents=True, exist_ok=True)
         dual_writer = DualWriter(paths["log_file"])
         if not parsed_args.quiet:
             sys.stdout = dual_writer
