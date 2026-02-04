@@ -1,313 +1,368 @@
 # Coding Conventions
 
-**Analysis Date:** 2025-01-29
+**Analysis Date:** 2025-02-04
 
 ## Naming Patterns
 
 **Files:**
-- Pattern: `<Stage>.<Step>[.<Substep>]_<PascalCaseName>.py`
-- Examples:
-  - `1.1_CleanMetadata.py` - Step 1.1 script
-  - `2.1_TokenizeAndCount.py` - Step 2.1 script
-  - `4.1.1_EstimateCeoClarity_CeoSpecific.py` - Step 4.1.1 script
-- Shared modules: `shared/<module_name>.py` (e.g., `shared/path_utils.py`)
-- Test files: `test_<module_name>.py` in `tests/unit/`, `tests/integration/`, `tests/regression/`
+- Follow strict naming pattern: `<Stage>.<Step>[.<Substep>]_<PascalCaseName>[.<ext>]`
+- Examples: `1.1_CleanMetadata.py`, `3.1_FirmControls.py`, `4.1.2_EstimateCeoClarity_Extended.py`
+- Regex: `^(1|2|3|4)\.(\d+)(?:\.(\d+))?_[A-Z][A-Za-z0-9]*(?:_[A-Z][A-Za-z0-9]*)*(?:\.[A-Za-z0-9]+)?$`
+- Stage mapping: `1=Inputs`, `2=Scripts`, `3=Logs`, `4=Outputs`
 
 **Functions:**
 - snake_case for all function names
-- Descriptive verbs: `validate_output_path`, `compute_file_checksum`, `load_matching_config`
-- Private/internal functions prefix with underscore: `_match_many_to_many_fallback()`
+- Descriptive verbs: `load_manifest`, `compute_compustat_controls`, `validate_dataframe_schema`
+- Test functions: `test_<function_name>_<scenario>`
 
 **Variables:**
-- snake_case for variables
-- Constants: UPPER_SNAKE_CASE (e.g., `RAPIDFUZZ_AVAILABLE`, `ENV_SCHEMA`)
-- DataFrame variables: descriptive names like `metadata_cleaned`, `linguistic_counts`
-- Configuration keys: snake_case in YAML (e.g., `random_seed`, `thread_count`)
+- snake_case for local variables: `manifest_df`, `compustat_df`, `stats`
+- Constants: UPPER_SNAKE_CASE: `INPUT_SCHEMAS`, `ALLOWED_SCRIPT_DIR`
+- Private module-level: leading underscore not commonly used
 
-**Types/Classes:**
-- PascalCase for exceptions: `PathValidationError`, `DataValidationError`, `EnvValidationError`
-- PascalCase for classes: `DualWriter`, `Capture`
-- Schema constants: UPPER_SNAKE_CASE (e.g., `INPUT_SCHEMAS`, `ENV_SCHEMA`)
+**Types:**
+- Type hints used extensively in function signatures
+- Example: `def load_manifest(manifest_dir) -> pd.DataFrame:`
+- Example: `def compute_firm_controls(row: pd.Series, compustat_df: pd.DataFrame, year: int) -> dict:`
+- Use `from typing import Dict, List, Optional, Any, Tuple`
+
+**Classes:**
+- PascalCase for class names: `DataValidationError`, `DualWriter`, `MemoryAwareThrottler`
+- Test classes: `Test<FunctionName>` (e.g., `TestValidateDataFrameSchema`)
 
 ## Code Style
 
 **Formatting:**
-- No explicit formatter detected (no `.black`, `.isort`, or `.ruff` config files found)
-- Manual formatting appears consistent with 4-space indentation
-- Line length: Not explicitly enforced, but generally under 100-120 characters
+- No explicit formatter detected (no .prettierrc, black.toml, or similar)
+- Use 4-space indentation (Python PEP 8 standard)
+- Line length appears to follow standard Python conventions
 
 **Linting:**
-- No explicit linter configuration found in root directory
-- Code follows clean, readable Python conventions
+- No explicit linter config file (.eslintrc, ruff.toml)
+- Code follows clean Python conventions with consistent patterns
 
-**Shebang:**
-- Executable scripts use: `#!/usr/bin/env python3`
-- All main processing scripts include this
-
-**Import Organization:**
+## Import Organization
 
 **Order:**
-1. Standard library imports (sys, os, pathlib, argparse, datetime)
-2. Third-party imports (pandas, numpy, yaml, psutil)
-3. Local imports (shared modules, project-specific imports)
+1. Standard library imports (`import sys`, `import os`, `from pathlib import Path`)
+2. Third-party imports (`import pandas as pd`, `import yaml`, `import pytest`)
+3. Local/shared module imports (`from shared.observability_utils import DualWriter`)
 
-**Path manipulation for imports:**
+**Path setup for shared modules:**
 ```python
-# Add 2_Scripts to sys.path for shared module imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add parent directory to sys.path for shared module imports
+import sys as _sys
+from pathlib import Path as _Path
+
+_script_dir = Path(__file__).parent.parent
+_sys.path.insert(0, str(_script_dir))
+
+from shared.observability_utils import DualWriter
+from shared.path_utils import validate_input_file
 ```
 
 **Path Aliases:**
-- None used - direct imports via `sys.path.insert(0, ...)` pattern
-- Shared modules imported as `from shared.module_name import function_name`
+- Use absolute paths from project root
+- Root directory: `Path(__file__).parent.parent.parent` (from script in `2_Scripts/`)
+- Config: `root / "config" / "project.yaml"`
+- Inputs: `root / "1_Inputs"`
+- Outputs: `root / "4_Outputs"`
+- Logs: `root / "3_Logs"`
 
 ## Error Handling
 
-**Custom Exceptions:**
-- Define project-specific exception classes inheriting from `Exception`
-- Examples:
-  - `PathValidationError` - Path validation failures in `shared/path_utils.py`
-  - `DataValidationError` - Schema validation failures in `shared/data_validation.py`
-  - `EnvValidationError` - Environment variable validation in `shared/env_validation.py`
+**Patterns:**
 
-**Exception Pattern:**
+1. **Custom Exception Classes:**
 ```python
-class PathValidationError(Exception):
-    """Raised when path validation fails."""
+class DataValidationError(Exception):
+    """Raised when input data validation fails."""
     pass
 
-# Usage
-if must_exist and not path.exists():
-    raise PathValidationError(f"Path does not exist: {path}")
+class OutputResolutionError(Exception):
+    """Raised when output directory resolution fails."""
+    pass
 ```
 
-**Graceful Degradation:**
-- Optional dependencies (like RapidFuzz) use try/except with fallbacks
+2. **File Validation with Errors:**
 ```python
-try:
-    from rapidfuzz import fuzz, process, utils
-    RAPIDFUZZ_AVAILABLE = True
-except ImportError:
-    RAPIDFUZZ_AVAILABLE = False
+from shared.path_utils import validate_input_file, OutputResolutionError
+
+def load_config():
+    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    validate_input_file(config_path, must_exist=True)
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
 ```
 
-**Validation Pattern:**
-- Validate early, fail fast
-- Check prerequisites before main processing
-- Use `argparse` for CLI argument validation
+3. **Fail-Fast on Missing Inputs:**
+```python
+if not manifest_file.exists():
+    raise FileNotFoundError(f"Manifest not found: {manifest_file}")
+```
+
+4. **Graceful Degradation (optional):**
+```python
+# In non-strict mode, warn instead of raising
+if strict:
+    raise DataValidationError(error_msg)
+else:
+    print(f"WARNING: {error_msg}", file=sys.stderr)
+```
+
+5. **Subprocess Error Handling:**
+```python
+if result.returncode != 0:
+    print_dual(
+        f"\nERROR: Substep {step['id']} failed with exit code {result.returncode}"
+    )
+    if result.stderr:
+        print_dual(f"STDERR:\n{result.stderr}")
+    success = False
+    break
+```
 
 ## Logging
 
-**Framework:** Dual output pattern (terminal + log file)
+**Framework:** DualWriter (custom in `shared/observability_utils.py`)
 
-**Patterns:**
-- Use `DualWriter` class from `shared/observability_utils.py`
-- Writes identical output to stdout and log file simultaneously
-
-**Example:**
+**Pattern:**
 ```python
 from shared.observability_utils import DualWriter
-from pathlib import Path
 
-log_path = logs_dir / f"{timestamp}.log"
-dual_writer = DualWriter(log_path)
-sys.stdout = dual_writer  # Redirect stdout to write to both
+# Setup dual logging (stdout + file)
+log_file = paths["log_file"]
+dual_writer = DualWriter(log_file)
+sys.stdout = dual_writer
 
-# Now all print statements go to both terminal and log
-print("Processing complete")
+# All print statements go to both terminal and log file
+print("Processing data...")
+print_dual("Message with custom function")
+
+# Restore stdout when done
+sys.stdout = dual_writer.terminal
 dual_writer.close()
 ```
 
-**Log Header:**
-Each script logs:
-- Script ID (e.g., `1.1_CleanMetadata`)
-- Start/end timestamps (ISO format)
-- Git SHA
-- Configuration snapshot
-- Input file checksums
-- Progress statistics (row counts, timing, missing values)
+**Log location:** `3_Logs/<StepName>/<timestamp>.log`
 
-**Progress Messages:**
-- Consistent formatting with `print_stat()` helper
-```python
-print_stat("Rows Processed", value=len(df))
-print_stat("Duration (seconds)", value=duration)
-```
+**When to log:**
+- Script start/end with timestamp
+- Major processing steps
+- Row counts before/after operations
+- Merge/join statistics
+- Error conditions
+- Warnings for non-fatal issues
 
 ## Comments
 
 **When to Comment:**
-- Module headers: Every script includes detailed docstring header
-- Function docstrings: All public functions have docstrings
-- Inline comments: Complex logic, data transformations, validation rules
+- Module header with contract block (required)
+- Complex business logic explanations
+- Algorithm justifications
+- Data source references
+- External library citations
 
-**Module Header Format:**
+**Contract Header (each script):**
 ```python
+#!/usr/bin/env python3
 """
 ==============================================================================
-STEP X.Y: Step Name
+STEP <X>.<Y>: <PascalCase Name>
 ==============================================================================
-ID: X.Y_StepName
-Description: Multi-line description of what the script does
+ID: <X>_<Y>_<Name>
+Description: <What this step does>
+
+<Additional details about inputs/outputs/methodology>
 
 Inputs:
-    - input_file_path
+    - <path to input 1>
+    - <path to input 2>
 
 Outputs:
-    - output_file_path
+    - <path to output 1>
+    - <path to output 2>
 
 Deterministic: true
 ==============================================================================
 """
 ```
 
-**Function Docstring Format:**
+**Documentation Comments:**
 ```python
-def validate_output_path(path: Path, must_exist: bool = False) -> Path:
+def calculate_firm_controls(
+    row: pd.Series, compustat_df: pd.DataFrame, year: int
+) -> dict:
     """
-    Validate output path exists and is accessible.
+    Calculate firm-level control variables from Compustat data.
 
     Args:
-        path: Path to validate
-        must_exist: If True, raise error if path doesn't exist
+        row: DataFrame row with firm identifiers (gvkey, datadate)
+        compustat_df: Compustat data with firm metrics
+        year: Fiscal year for data selection
 
     Returns:
-        Validated Path object (resolved to absolute)
-
-    Raises:
-        PathValidationError: If validation fails
+        Dictionary with: size (log assets), leverage, profitability,
+        market_to_book, capex_intensity, r_intensity, dividend_payer
     """
 ```
 
-**JSDoc/TSDoc:**
-- Not applicable (Python codebase, not TypeScript)
+**Inline Comments:**
+- Use for explaining WHY, not WHAT
+- Example: `# Treat missing R&D as 0 (common practice in finance literature)`
 
 ## Function Design
 
-**Size:** No strict limit, but generally:
-- Helper functions: 10-50 lines
-- Main processing functions: 50-200 lines
-- Scripts: 200-500 lines total (split into multiple functions)
+**Size:**
+- Prefer functions under 50 lines
+- Large functions allowed for orchestration (e.g., `main()` functions)
+- Shared module utilities kept focused
 
 **Parameters:**
-- Type hints required for all function parameters
-- Use keyword arguments for optional parameters
-- Default values specified in function signature
+- Use type hints for all parameters
+- Default values for optional parameters: `strict: bool = True`
+- Use `**kwargs` sparingly
 
 **Return Values:**
-- Always specify return type in type hints
+- Always return concrete types (dict, DataFrame, tuple)
+- Use `None` for failure/missing data cases
 - Return early for error conditions
-- Use tuples for multiple return values: `return (best_match, score)`
 
-**Example:**
+**Pattern:**
 ```python
-def match_company_names(
-    query: str,
-    candidates: List[str],
-    threshold: Optional[float] = None,
-    scorer_name: str = "WRatio",
-    preprocess: bool = True,
-) -> Tuple[str, float]:
-    """
-    Find best matching company name using RapidFuzz.
+def function_name(param1: Type, param2: Type) -> ReturnType:
+    """Brief description."""
+    # Setup
+    result = []
 
-    Returns:
-        (best_match, score) tuple. Returns (query, 0.0) if no match.
-    """
-    # Implementation...
+    # Processing
+    for item in items:
+        processed = transform(item)
+        result.append(processed)
+
+    # Return
+    return pd.DataFrame(result)
 ```
 
 ## Module Design
 
 **Exports:**
-- Public functions exported directly
-- Internal functions prefixed with underscore
-- Constants (schemas, configurations) exported as UPPER_SNAKE_CASE
+- Shared modules use `__all__` for explicit exports
+- Example from `shared/dual_writer.py`:
+```python
+__all__ = ["DualWriter"]
+```
 
 **Barrel Files:**
-- `shared/` directory acts as a barrel for common utilities
-- Individual modules in `shared/` imported directly
-
-**Example:**
+- `shared/__init__.py` exports commonly used utilities:
 ```python
-# In shared/path_utils.py
-def validate_output_path(...) -> Path: ...
-def ensure_output_dir(...) -> Path: ...
-class PathValidationError(Exception): ...
-
-# Usage in scripts
-from shared.path_utils import validate_output_path, ensure_output_dir
+from .observability_utils import DualWriter
+from .industry_utils import parse_ff_industries
+from .metadata_utils import load_variable_descriptions
+from .path_utils import get_latest_output_dir, OutputResolutionError
 ```
 
-## Configuration
+**Shared Module Organization:**
+- `shared/observability_utils.py` - Statistics, monitoring, logging
+- `shared/path_utils.py` - Path resolution, validation
+- `shared/data_validation.py` - Schema validation
+- `shared/financial_utils.py` - Financial calculations
+- `shared/regression_helpers.py` - Statistical modeling
+- `shared/dual_writer.py` - Logging re-export
 
-**Central Config:**
-- All configuration in `config/project.yaml`
-- Loaded via `yaml.safe_load()`
-- Structure: top-level sections (project, data, paths, determinism, logging, step_XX)
+## Determinism Guidelines
 
-**Config Loading Pattern:**
+**Randomness Control:**
+- Read seeds from `config/project.yaml`:
 ```python
-config_path = Path(__file__).parent.parent / "config" / "project.yaml"
-with open(config_path) as f:
-    config = yaml.safe_load(f)
-
-year_start = config["data"]["year_start"]
-year_end = config["data"]["year_end"]
+config = yaml.safe_load(config_file)
+random_seed = config["determinism"]["random_seed"]
+np.random.seed(random_seed)
 ```
 
-**Determinism Settings:**
-- `random_seed: 42` - Fixed seed for RNG
-- `thread_count: 1` - Single-threaded for reproducibility
-- `sort_inputs: true` - Sort dataframes before processing
-
-## Data Processing Conventions
-
-**DataFrame Operations:**
-- Use pandas for all data manipulation
-- Validate schemas before processing (using `shared/data_validation.py`)
-- Compute checksums for outputs (SHA-256)
-
-**File Naming:**
-- Timestamped output directories: `YYYY-MM-DD_HHMMSS/`
-- `latest/` symlink points to most recent run
-- Parquet format for data files (`.parquet`)
-- CSV for human-readable outputs
-
-**Path Resolution:**
-- Use `pathlib.Path` for all path operations
-- Resolve paths to absolute: `path.resolve()`
-- Use `pathlib` for cross-platform compatibility
-
-**Script Structure:**
-1. Shebang and docstring header
-2. Imports (standard, third-party, local)
-3. CLI argument parsing
-4. Prerequisite validation
-5. Main processing logic
-6. Output generation and statistics
-7. Symlink update to `latest/`
-
-**Contract Header (each script):**
+**Thread Count:**
+- Pin thread counts from config:
 ```python
-"""
-==============================================================================
-STEP X.Y: Step Name
-==============================================================================
-ID: X.Y_StepName
-Description: ...
+thread_count = config["determinism"]["thread_count"]
+```
 
-Inputs:
-    - path/to/input
+**Sort Order:**
+- Always sort before processing to avoid filesystem order effects:
+```python
+compustat_df = compustat_df.sort_values(["gvkey", "datadate"])
+```
 
-Outputs:
-    - path/to/output
+**Checksum Tracking:**
+- Compute input file checksums for reproducibility:
+```python
+from shared.observability_utils import compute_file_checksum
+checksum = compute_file_checksum(input_path)
+stats["input"]["checksums"][filename] = checksum
+```
 
-Deterministic: true
-==============================================================================
-"""
+## Data Processing Patterns
+
+**Column Pruning:**
+```python
+# Load only required columns to save memory
+required_cols = ["gvkey", "datadate", "atq", "ceqq"]
+df = pd.read_parquet(file_path, columns=required_cols)
+```
+
+**Vectorized Operations:**
+```python
+# Use merge_asof instead of iterrows for matching
+merged = pd.merge_asof(
+    manifest_sorted,
+    compustat_sorted,
+    left_on="start_date",
+    right_on="datadate",
+    by="gvkey",
+    direction="backward",
+)
+```
+
+**Winsorization:**
+```python
+if winsorize:
+    p1, p99 = df[col].quantile([0.01, 0.99])
+    df[col] = df[col].clip(lower=p1, upper=p99)
+```
+
+## Observable Patterns
+
+**Statistics Collection:**
+```python
+stats = {
+    "step_id": "3.1_FirmControls",
+    "timestamp": timestamp,
+    "input": {"files": [], "checksums": {}, "total_rows": 0},
+    "processing": {},
+    "output": {"final_rows": 0, "files": [], "checksums": {}},
+    "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
+    "memory": {"start_mb": mem_start, "end_mb": 0.0, "peak_mb": 0.0},
+    "throughput": {"rows_per_second": 0.0},
+}
+```
+
+**Memory Tracking:**
+```python
+from shared.observability_utils import get_process_memory_mb
+mem_start = get_process_memory_mb()
+# ... processing ...
+mem_end = get_process_memory_mb()
+stats["memory"]["delta_mb"] = mem_end["rss_mb"] - mem_start["rss_mb"]
+```
+
+**Timing:**
+```python
+import time
+start_time = time.perf_counter()
+# ... processing ...
+duration = time.perf_counter() - start_time
+stats["timing"]["duration_seconds"] = round(duration, 2)
 ```
 
 ---
 
-*Convention analysis: 2025-01-29*
+*Convention analysis: 2025-02-04*

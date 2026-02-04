@@ -1,250 +1,181 @@
 # Codebase Structure
 
-**Analysis Date:** 2025-01-29
+**Analysis Date:** 2025-02-04
 
 ## Directory Layout
 
 ```
 F1D/
-├── 1_Inputs/                          # Raw data sources (read-only)
-│   ├── CCCL instrument/               # SEC comment letters instrument
-│   ├── Compustat/                     # Compustat quarterly data
-│   ├── CRSP_DSF/                      # CRSP daily stock returns
-│   ├── CRSPCompustat_CCM/             # CRSP-Compustat merged linkage
-│   ├── Execucomp/                     # Executive compensation data
-│   ├── SDC/                           # M&A deal data
-│   ├── tr_ibes/                       # IBES analyst forecasts
-│   ├── Loughran-McDonald*.csv         # Linguistic dictionary
-│   ├── Unified-info.parquet           # Earnings call metadata
-│   └── speaker_data_*.parquet         # Transcript data (yearly)
-├── 2_Scripts/                         # Processing pipeline
-│   ├── 1_Sample/                      # Phase 1: Sample construction
-│   │   ├── 1.1_CleanMetadata.py
-│   │   ├── 1.2_LinkEntities.py
-│   │   ├── 1.3_BuildTenureMap.py
-│   │   ├── 1.4_AssembleManifest.py
-│   │   └── 1.5_Utils.py               # Script-specific utilities
-│   ├── 2_Text/                        # Phase 2: Text processing
-│   │   ├── 2.1_TokenizeAndCount.py
-│   │   ├── 2.2_ConstructVariables.py
-│   │   └── 2.3_Report.py              # Verification & reporting
-│   ├── 3_Financial/                   # Phase 3: Financial features
-│   │   ├── 3.1_FirmControls.py
-│   │   ├── 3.2_MarketVariables.py
-│   │   ├── 3.3_EventFlags.py
-│   │   ├── 3.4_Utils.py               # Script-specific utilities
-│   │   └── 3.0_BuildFinancialFeatures.py  # Orchestrator (archived)
-│   ├── 4_Econometric/                 # Phase 4: Econometric analysis
-│   │   ├── 4.1_EstimateCeoClarity.py
-│   │   ├── 4.1.1_EstimateCeoClarity_CeoSpecific.py
-│   │   ├── 4.1.2_EstimateCeoClarity_Extended.py
-│   │   ├── 4.1.3_EstimateCeoClarity_Regime.py
-│   │   ├── 4.1.4_EstimateCeoTone.py
-│   │   ├── 4.2_LiquidityRegressions.py
-│   │   ├── 4.3_TakeoverHazards.py
-│   │   └── 4.4_GenerateSummaryStats.py
-│   ├── shared/                        # Shared utilities (20+ modules)
-│   │   ├── observability_utils.py
-│   │   ├── path_utils.py
-│   │   ├── data_validation.py
-│   │   ├── regression_utils.py
-│   │   ├── regression_helpers.py
-│   │   ├── regression_validation.py
-│   │   ├── string_matching.py
-│   │   ├── financial_utils.py
-│   │   ├── symlink_utils.py
-│   │   ├── chunked_reader.py
-│   │   ├── reporting_utils.py
-│   │   ├── cli_validation.py
-│   │   ├── env_validation.py
-│   │   ├── subprocess_validation.py
-│   │   ├── dependency_checker.py
-│   │   ├── metadata_utils.py
-│   │   ├── industry_utils.py
-│   │   ├── data_loading.py
-│   │   └── __init__.py
-│   ├── ARCHIVE/                       # Deprecated scripts (kept for reference)
-│   └── ARCHIVE_OLD/                   # Previous versions
-├── 3_Logs/                            # Execution logs
-│   ├── 1.1_CleanMetadata/
-│   ├── 1.2_LinkEntities/
-│   ├── ... (one subdir per script)
-│   └── {step_name}/{timestamp}.log    # Timestamped log files
-├── 4_Outputs/                         # Processed data & results
-│   ├── 1.1_CleanMetadata/
-│   │   └── {timestamp}/
-│   │       ├── metadata_cleaned.parquet
-│   │       ├── variable_reference.csv
-│   │       └── latest/                # Symlink to most recent run
-│   ├── 1.2_LinkEntities/
-│   ├── ... (one subdir per script)
-│   └── {step_name}/{timestamp}/
-├── config/
-│   └── project.yaml                   # Central configuration (paths, seeds, params)
-├── tests/                             # Test suite
-│   ├── unit/                          # Unit tests for shared modules
-│   ├── integration/                   # End-to-end pipeline tests
-│   ├── regression/                    # Output stability tests
-│   ├── fixtures/                      # Test data
-│   └── conftest.py                    # Pytest configuration & fixtures
-├── .planning/                         # Project planning & docs
-│   ├── codebase/                      # Codebase analysis docs (this file)
-│   ├── phases/                        # Implementation phases
-│   ├── quick/                         # Quick verification tasks
-│   └── STATE.md                       # Project state & decisions
-├── .github/
-│   └── workflows/                     # CI/CD configuration
-├── .claude/
-│   └── settings.json                  # Claude Code project settings
-├── README.md                          # Project documentation
-├── prd.md                             # Product requirements document
-├── DEPENDENCIES.md                    # Dependency documentation
-├── UPGRADE_GUIDE.md                   # Upgrade procedures
-├── pyproject.toml                     # Poetry/pytest configuration
-├── requirements.txt                   # Python dependencies
-└── .gitignore
+├── 1_Inputs/          # Raw data files (read-only)
+├── 2_Scripts/         # Pipeline processing scripts
+├── 3_Logs/            # Execution logs (timestamped)
+├── 4_Outputs/         # Pipeline outputs (timestamped)
+├── config/            # Configuration files
+├── tests/             # Unit and integration tests
+├── .___archive/       # Legacy and debug code (git-ignored)
+├── .claude/           # Claude Code project settings
+├── .github/           # GitHub Actions workflows
+├── .planning/         # Planning documents and phase specs
+├── README.md          # Project documentation
+├── requirements.txt   # Python dependencies
+├── pyproject.toml     # Pytest and coverage configuration
+└── SCALING.md         # Scaling documentation
 ```
 
 ## Directory Purposes
 
 **1_Inputs/:**
-- Purpose: Raw, immutable data sources from external providers
-- Contains: Earnings call transcripts, financial data (CRSP, Compustat, IBES), reference files (LM dictionary, CEO data)
-- Key files: `Unified-info.parquet`, `speaker_data_*.parquet`, `Loughran-McDonald_MasterDictionary_1993-2024.csv`
+- Purpose: Raw input data files (read-only, never modified by pipeline)
+- Contains: Earnings call transcripts, financial databases (Compustat, CRSP, IBES), reference dictionaries, event data
+- Key files: `Unified-info.parquet`, `speaker_data_{year}.parquet`, `Loughran-McDonald_MasterDictionary_1993-2024.csv`, `CRSPCompustat_CCM/`, `comp_na_daily_all/`, `tr_ibes/`, `SDC/`, `CCCL instrument/`
 
 **2_Scripts/:**
-- Purpose: Data processing pipeline (4 phases, 18 active scripts)
-- Contains: Sequential scripts for sample building, text processing, financial features, econometric analysis
-- Key files: `1_Sample/1.4_AssembleManifest.py` (outputs master_sample_manifest), `4_Econometric/4.1_EstimateCeoClarity.py` (estimates CEO clarity)
-
-**2_Scripts/shared/:**
-- Purpose: Reusable utilities for I/O, validation, regression, string matching
-- Contains: 20+ modules providing common functionality across pipeline scripts
-- Key files: `observability_utils.py` (DualWriter), `data_validation.py` (schema validation), `string_matching.py` (fuzzy matching)
+- Purpose: Main pipeline processing scripts organized by stage
+- Contains: Stage directories (1_Sample, 2_Text, 3_Financial, 4_Econometric) and shared utility modules
+- Key files: `1_Sample/1.1_CleanMetadata.py`, `1_Sample/1.2_LinkEntities.py`, `1_Sample/1.4_AssembleManifest.py`, `2_Text/2.1_TokenizeAndCount.py`, `2_Text/2.2_ConstructVariables.py`, `3_Financial/3.1_FirmControls.py`, `3_Financial/3.2_MarketVariables.py`, `4_Econometric/4.1_EstimateCeoClarity.py`, `shared/` (20+ utility modules)
 
 **3_Logs/:**
-- Purpose: Execution logs with progress stats, errors, checksums
-- Contains: One subdirectory per script with timestamped `.log` files
-- Key files: `3_Logs/{step_name}/{timestamp}.log` (full execution trace)
+- Purpose: Execution logs mirroring terminal output
+- Contains: One subdirectory per pipeline step, each with timestamped `.log` files
+- Key files: `{StepName}/{timestamp}.log` files matching script execution runs
 
 **4_Outputs/:**
-- Purpose: Processed datasets, regression results, reports
-- Contains: One subdirectory per script, each with timestamped runs and `latest/` symlink
-- Key files: `master_sample_manifest.parquet`, `ceo_clarity_scores.parquet`, `regression_results.txt`
-
-**tests/:**
-- Purpose: Unit, integration, and regression tests
-- Contains: Test files, fixtures, pytest configuration
-- Key files: `conftest.py` (shared fixtures), `unit/test_data_validation.py`, `regression/test_output_stability.py`
+- Purpose: Pipeline outputs organized by step with timestamped runs
+- Contains: One subdirectory per pipeline step, each with timestamped subdirectories and `latest/` symlink
+- Key files: `1.0_BuildSampleManifest/latest/master_sample_manifest.parquet`, `2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet`, `3_Financial_Features/latest/firm_controls_{year}.parquet`, `3_Financial_Features/latest/market_variables_{year}.parquet`
 
 **config/:**
-- Purpose: Central configuration for the entire pipeline
-- Contains: `project.yaml` (single source of truth for paths, seeds, processing parameters)
-- Key files: `config/project.yaml`
+- Purpose: Centralized configuration for all pipeline steps
+- Contains: `project.yaml` (paths, thresholds, parameters)
+- Key files: `project.yaml`
+
+**tests/:**
+- Purpose: Unit and integration tests for shared utilities and pipeline validation
+- Contains: `unit/`, `integration/`, `conftest.py` (pytest fixtures)
+- Key files: `conftest.py`, `unit/test_data_validation.py`, `unit/test_fuzzy_matching.py`, `unit/test_env_validation.py`
+
+**.planning/:**
+- Purpose: Planning documents, phase specifications, quick task specs
+- Contains: `codebase/`, `phases/`, `quick/`
+- Generated: Yes (by GSD commands)
+
+**.___archive/:**
+- Purpose: Legacy scripts, debug code, broken implementations (preserved for reference)
+- Contains: `legacy/`, `debug/`, `docs/`
+- Committed: Yes (git-ignored via `.gitignore`)
 
 ## Key File Locations
 
 **Entry Points:**
-- `2_Scripts/1_Sample/1.1_CleanMetadata.py`: First script in pipeline (cleans metadata)
-- `2_Scripts/4_Econometric/4.4_GenerateSummaryStats.py`: Final script (generates summary statistics)
+- `2_Scripts/1_Sample/1.1_CleanMetadata.py`: First step in pipeline (metadata cleaning)
+- `2_Scripts/1_Sample/1.0_BuildSampleManifest.py`: Legacy manifest builder (preserved for reference)
+- `2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py`: Econometric analysis entry point
 
 **Configuration:**
-- `config/project.yaml`: Central configuration (paths, seeds, thread count, step-specific params)
+- `config/project.yaml`: Central configuration (all paths, seeds, thresholds, per-step params)
 - `pyproject.toml`: Pytest configuration, coverage settings
 - `requirements.txt`: Python dependencies
+- `.claude/settings.json`: Claude Code project permissions and settings
 
 **Core Logic:**
-- `2_Scripts/1_Sample/1.4_AssembleManifest.py`: Assembles final sample manifest
-- `2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py`: Estimates CEO clarity (main model)
-- `2_Scripts/shared/regression_utils.py`: Fixed effects regression helpers
-- `2_Scripts/shared/string_matching.py`: Company name fuzzy matching
+- `2_Scripts/1_Sample/`: Sample construction (clean, link entities, build tenure, assemble manifest)
+- `2_Scripts/2_Text/`: Text processing (tokenize, count, construct linguistic variables)
+- `2_Scripts/3_Financial/`: Financial features (firm controls, market variables, event flags)
+- `2_Scripts/4_Econometric/`: Econometric analysis (CEO clarity, liquidity, takeover hazards)
 
 **Testing:**
-- `tests/conftest.py`: Pytest fixtures and configuration
-- `tests/unit/test_data_validation.py`: Schema validation tests
-- `tests/regression/test_output_stability.py`: Bitwise output reproducibility tests
+- `tests/conftest.py`: Pytest fixtures (sample DataFrames, configs, paths)
+- `tests/unit/test_*.py`: Unit tests for shared utilities
+- `tests/integration/`: Integration tests for pipeline workflows
 
 ## Naming Conventions
 
 **Files:**
-- Pipeline scripts: `{Step}.{Substep}_{PascalCaseName}.py` (e.g., `1.1_CleanMetadata.py`)
-- Shared modules: `{category}_{utility}.py` (e.g., `observability_utils.py`, `path_utils.py`)
-- Test files: `test_{module}.py` (e.g., `test_data_validation.py`)
-- Outputs: `{dataset}_{year}.parquet` or `{description}.parquet` (e.g., `linguistic_variables_2002.parquet`)
+- Pipeline steps: `<Stage>.<Step>_<PascalCaseName>.py` (e.g., `1.1_CleanMetadata.py`, `3.1_FirmControls.py`)
+- Substeps: `<Stage>.<Step>.<Substep>_<PascalCaseName>.py` (e.g., `4.1.1_EstimateCeoClarity_CeoSpecific.py`)
+- Utility modules: `<snake_case>.py` (e.g., `dual_writer.py`, `path_utils.py`)
+- Test files: `test_<snake_case>.py` (e.g., `test_data_validation.py`)
+- Config files: `<name>.yaml` (e.g., `project.yaml`)
 
 **Directories:**
-- Phase directories: `{PhaseNumber}_{Theme}/` (e.g., `1_Sample/`, `2_Text/`, `3_Financial/`, `4_Econometric/`)
-- Log directories: `{Step}_{Description}/` (e.g., `1.1_CleanMetadata/`, `4.1_EstimateCeoClarity/`)
-- Output directories: `{Step}_{Description}/{timestamp}/` (e.g., `1.4_AssembleManifest/2025-01-24_153000/`)
+- Pipeline stages: `<Stage>_<PascalCaseName>/` (e.g., `1_Sample/`, `3_Financial/`)
+- Output steps: `<Step>_<PascalCaseName>/` (e.g., `1.4_AssembleManifest/`)
+- Timestamped runs: `YYYY-MM-DD_HHMMSS/`
+- Testing: `unit/`, `integration/`, `fixtures/`
+
+**Functions:**
+- Pipeline functions: `snake_case` (e.g., `load_config()`, `setup_paths()`, `check_prerequisites()`)
+- Utility functions: `snake_case` with descriptive names (e.g., `validate_input_file()`, `get_latest_output_dir()`)
+- Test functions: `test_<snake_case>` (e.g., `test_validate_parquet_schema()`)
 
 **Variables:**
-- Linguistic variables: `{Speaker}_{Context}_{Category}_pct` (e.g., `Manager_QA_Uncertainty_pct`)
-- Financial controls: PascalCase from Compustat fields (e.g., `Size`, `BM`, `Lev`, `ROA`)
-- Regression outputs: `{Measure}_{suffix}` (e.g., `ClarityCEO`, `ClarityRegime`, `StockRet`)
+- Local variables: `snake_case` (e.g., `metadata_df`, `output_dir`)
+- Constants: `UPPER_SNAKE_CASE` (e.g., `STATSMODELS_AVAILABLE`)
+- Configuration keys: `snake_case` (e.g., `random_seed`, `year_start`)
 
 ## Where to Add New Code
 
-**New Feature (New Processing Step):**
-- Primary code: `2_Scripts/{PhaseNumber}_{Theme}/{Step}.{Substep}_{PascalCaseName}.py`
-- Tests: `tests/unit/test_{step_name}.py`
-- If script is 4.1.5 (variant of 4.1): Place in `2_Scripts/4_Econometric/4.1.5_{Description}.py`
+**New Pipeline Step (e.g., new Step 3.5):**
+- Primary code: `2_Scripts/3_Financial/3.5_<PascalCaseName>.py`
+- Tests: `tests/unit/test_3_5_<name>.py` or `tests/integration/test_step_3_5.py`
+- Outputs: `4_Outputs/3.5_<PascalCaseName>/{timestamp}/`
+- Logs: `3_Logs/3.5_<PascalCaseName>/{timestamp}.log`
+- Config: Add `step_03_5:` section to `config/project.yaml`
 
-**New Component/Module (Shared Utility):**
-- Implementation: `2_Scripts/shared/{category}_{utility}.py`
-- Tests: `tests/unit/test_{utility}.py`
-- Example: `2_Scripts/shared/timing_utils.py` → `tests/unit/test_timing_utils.py`
+**New Shared Utility:**
+- Implementation: `2_Scripts/shared/<snake_case>.py`
+- Tests: `tests/unit/test_<snake_case>.py`
+- Re-export: Add to `2_Scripts/shared/__init__.py` if meant for public API
+- Documentation: Include contract header with ID, Description, Inputs, Outputs, Deterministic
 
-**New Regression Model (Variant of Existing):**
-- Implementation: `2_Scripts/4_Econometric/4.{StepNumber}.{Variant}_{Description}.py`
-- Example: `4.1.5_EstimateCeoClarity_WithBoardIndependence.py`
-- Update regression helpers: `2_Scripts/shared/regression_helpers.py` if new data patterns
+**New Component/Module (new pipeline stage):**
+- Implementation: `2_Scripts/<Stage>_<PascalCaseName>/`
+- Configuration: Add to `config/project.yaml` under new top-level key
+- Outputs: `4_Outputs/<Stage>_<PascalCaseName>/`
+- Logs: `3_Logs/<Stage>_<PascalCaseName>/`
 
 **Utilities:**
-- Shared helpers: `2_Scripts/shared/{category}_utils.py`
-- Example: `2_Scripts/shared/nlp_utils.py` for text processing helpers
-
-**Test Fixtures:**
-- Test data: `tests/fixtures/{dataset}.{extension}`
-- Shared fixtures: `tests/conftest.py` (add new `@pytest.fixture` functions)
+- Shared helpers: `2_Scripts/shared/<snake_case>.py` (e.g., `string_matching.py`, `industry_utils.py`)
+- Script-specific utilities: `<Stage>_<Name>/<Step>.<Substep>_Utils.py` (e.g., `1_Sample/1.5_Utils.py`, `3_Financial/3.4_Utils.py`)
 
 ## Special Directories
 
-**ARCHIVE/:**
-- Purpose: Deprecated scripts kept for reference (not executed)
-- Generated: No (manually moved when deprecated)
+**`2_Scripts/shared/`:**
+- Purpose: Shared utility modules for cross-cutting concerns
+- Generated: No
 - Committed: Yes
-- Example: Old orchestrator scripts, broken iterations
+- Key modules: `dual_writer.py`, `path_utils.py`, `observability_utils.py`, `data_validation.py`, `regression_utils.py`, `financial_utils.py`, `string_matching.py`, `industry_utils.py`, `chunked_reader.py`
 
-**ARCHIVE_OLD/:**
-- Purpose: Previous versions of scripts (before major refactoring)
-- Generated: No (manually moved when superseded)
+**`4_Outputs/latest/`:**
+- Purpose: Symlinks to most recent successful outputs (auto-created after each successful run)
+- Generated: Yes
+- Committed: No (symlinks are machine-specific)
+- Pattern: Each step creates `latest/` pointing to its timestamped directory
+
+**`3_Logs/`:**
+- Purpose: Execution logs with terminal output capture
+- Generated: Yes
+- Committed: Yes (for audit trail)
+- Pattern: `{StepName}/{YYYY-MM-DD_HHMMSS}.log`
+
+**`.___archive/`:**
+- Purpose: Legacy, debug, and broken code (not used in active pipeline)
+- Generated: No
 - Committed: Yes
-- Example: `2.0b_BuildMasterTenureMap.py` (superseded by Phase 1 scripts)
+- Contains: `legacy/` (old implementations), `debug/` (investigation scripts), `docs/` (old documentation)
 
-**___Archive/ (root level):**
-- Purpose: Temporary exploration/debug scripts
-- Generated: No (ad-hoc development)
-- Committed: Yes (for traceability)
-- Example: `investigate_linking.py`, `debug_coverage.py`
+**`tests/fixtures/`:**
+- Purpose: Test data and sample files for unit tests
+- Generated: No (hand-written test data)
+- Committed: Yes
+- Contains: `sample_yaml/`, sample parquet files, mock configs
 
-**.planning/:**
-- Purpose: Project planning documents, phase plans, quick verification tasks
+**`.planning/`:**
+- Purpose: GSD planning documents, phase specs, codebase analysis
 - Generated: Yes (by GSD commands)
 - Committed: Yes
-- Subdirectories: `codebase/` (analysis docs), `phases/` (implementation plans), `quick/` (verification tasks)
-
-**BACKUP_*:**
-- Purpose: Timestamped backups of critical files (e.g., `config/project.yaml`)
-- Generated: Yes (before major changes)
-- Committed: Yes
-- Example: `BACKUP_20260114_191340/project.yaml`
-
-**.github/workflows/:**
-- Purpose: CI/CD pipeline configuration (GitHub Actions)
-- Generated: No (manually created)
-- Committed: Yes
-- Used by: GitHub Actions on push/PR
+- Contains: `codebase/` (this file), `phases/`, `quick/`
 
 ---
 
-*Structure analysis: 2025-01-29*
+*Structure analysis: 2025-02-04*

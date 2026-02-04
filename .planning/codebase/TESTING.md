@@ -1,86 +1,92 @@
 # Testing Patterns
 
-**Analysis Date:** 2025-01-29
+**Analysis Date:** 2025-02-04
 
 ## Test Framework
 
 **Runner:**
-- pytest 8.0+ (specified in `pyproject.toml`)
-- Config: `pyproject.toml` with pytest settings
+- pytest 8.3.3
+- Config: `pyproject.toml`
+
+**Configuration (`pyproject.toml`):**
+```toml
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "-ra",  # Show extra test summary info
+    "-q",   # Quiet mode
+    "--strict-markers",
+    "--strict-config",
+    "--import-mode=importlib",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "regression: marks tests as regression tests",
+    "unit: marks tests as unit tests",
+    "e2e: marks tests as end-to-end pipeline tests",
+]
+```
 
 **Assertion Library:**
-- pytest's built-in `assert` statement
-- `pytest.raises()` for exception testing
+- pytest built-in assertions
+- pytest.raises for exception testing
 
 **Run Commands:**
 ```bash
 # Run all tests
 pytest
 
-# Run only unit tests
-pytest -m unit
+# Run with coverage (configured in pyproject.toml)
+pytest --cov=2_Scripts
 
-# Run only integration tests
-pytest -m integration
+# Run specific test types
+pytest -m unit              # Unit tests only
+pytest -m integration       # Integration tests only
+pytest -m "not slow"        # Exclude slow tests
 
-# Run only regression tests
-pytest -m regression
-
-# Exclude slow tests
-pytest -m "not slow"
-
-# Run with coverage
-pytest --cov=2_Scripts --cov-report=html
-
-# Run specific test file
+# Run specific file
 pytest tests/unit/test_data_validation.py
 
-# Verbose output
+# Verbose mode
 pytest -v
-```
 
-**pytest Configuration:**
-```toml
-[tool.pytest.ini_options]
-minversion = "8.0"
-addopts = ["-ra", "-q", "--strict-markers", "--strict-config", "--import-mode=importlib"]
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+# Quiet mode (default in config)
+pytest -q
 ```
 
 ## Test File Organization
 
 **Location:**
-- Co-located with source: No
-- Separate directory: Yes (`tests/` directory at project root)
+- Co-located in `tests/` directory at project root
+- Separated by type: `tests/unit/`, `tests/integration/`, `tests/regression/`
 
 **Naming:**
-- Unit tests: `test_<module_name>.py` in `tests/unit/`
-- Integration tests: `test_<feature>.py` in `tests/integration/`
-- Regression tests: `test_<subject>.py` in `tests/regression/`
-- Edge case tests: `test_<module>_edge_cases.py` in `tests/unit/`
+- Pattern: `test_<module_name>.py`
+- Examples: `test_data_validation.py`, `test_chunked_reader.py`, `test_full_pipeline.py`
 
 **Structure:**
 ```
 tests/
 ├── conftest.py                 # Shared fixtures
-├── fixtures/                   # Test data and mocks
-│   ├── sample_yaml/
-│   │   └── project.yaml        # Sample config
-│   └── baseline_checksums.json # Regression baseline
-├── unit/                       # Unit tests
+├── fixtures/                   # Test data and fixtures
+│   └── baseline_checksums.json # Regression baselines
+├── unit/                       # Unit tests for shared modules
 │   ├── test_data_validation.py
-│   ├── test_env_validation.py
-│   ├── test_subprocess_validation.py
-│   ├── test_fuzzy_matching.py
 │   ├── test_chunked_reader.py
-│   ├── test_observability_helpers.py
-│   └── *_edge_cases.py         # Edge case tests
-├── integration/                # Integration tests
-│   └── e2e_test_*.py           # End-to-end pipeline tests
-└── regression/                 # Regression tests
+│   ├── test_env_validation.py
+│   └── test_observability_helpers.py
+├── integration/                # Integration tests for pipeline steps
+│   ├── test_pipeline_step1.py
+│   ├── test_pipeline_step2.py
+│   ├── test_pipeline_step3.py
+│   ├── test_full_pipeline.py
+│   └── test_observability_integration.py
+└── regression/                 # Regression tests (checksum-based)
     ├── test_output_stability.py
     └── generate_baseline_checksums.py
 ```
@@ -90,9 +96,10 @@ tests/
 **Suite Organization:**
 ```python
 """
-Unit tests for module_name.
+Unit tests for data_validation module.
 
-Tests description of what's being tested.
+Tests schema validation, DataValidationError exceptions, and
+load_validated_parquet function.
 """
 
 import pytest
@@ -103,57 +110,123 @@ import sys
 # Add 2_Scripts to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
-from shared.module_name import function_name, ExceptionClass
+from shared.data_validation import (
+    validate_dataframe_schema,
+    DataValidationError,
+    load_validated_parquet,
+    INPUT_SCHEMAS,
+)
 
 
-class TestFunctionality:
-    """Tests for function_name feature group."""
+class TestValidateDataFrameSchema:
+    """Tests for validate_dataframe_schema function."""
 
-    def test_success_case(self, sample_fixture):
-        """Test success scenario."""
-        result = function_name(sample_fixture)
-        assert result == expected_value
+    def test_validate_dataframe_schema_success_with_real_data(
+        self, sample_parquet_file_with_schema
+    ):
+        """Test schema validation passes for valid DataFrame matching Unified-info schema."""
+        df = pd.read_parquet(sample_parquet_file_with_schema)
+        # Should not raise for valid schema match
+        validate_dataframe_schema(
+            df, "Unified-info.parquet", sample_parquet_file_with_schema
+        )
 
-    def test_edge_case(self, sample_fixture):
-        """Test edge case (empty, null, boundary values)."""
-        result = function_name(edge_case_value)
-        assert result == expected_edge_result
-
-
-class TestExceptions:
-    """Tests for exception handling."""
-
-    def test_raises_on_invalid_input(self):
-        """Test that appropriate exception is raised."""
-        with pytest.raises(ExceptionClass, match="error message"):
-            function_name(invalid_input)
+    def test_validate_dataframe_schema_missing_columns_with_real_schema(
+        self, sample_parquet_file_with_schema
+    ):
+        """Test schema validation fails for missing required columns using actual schema."""
+        df = pd.DataFrame({"event_type": [1, 2]})
+        with pytest.raises(DataValidationError, match="Missing columns"):
+            validate_dataframe_schema(
+                df, "Unified-info.parquet", sample_parquet_file_with_schema
+            )
 ```
 
 **Patterns:**
 
-**Setup Pattern:**
-- Use `pytest.fixture` for setup
-- Scope options: `function` (default), `class`, `module`, `session`
-- Session-scoped fixtures for expensive operations (loading test data)
+1. **Setup:**
+   - Add `2_Scripts` to sys.path at module level
+   - Import functions and classes from shared modules
+   - Use descriptive test class names: `Test<FunctionName>`
 
-**Example from `conftest.py`:**
+2. **Teardown:**
+   - No explicit teardown needed (pytest handles fixtures automatically)
+   - Temporary files created with `tmp_path` fixture auto-cleaned
+
+3. **Assertion Pattern:**
+   - Use pytest's context managers for exceptions:
+   ```python
+   with pytest.raises(DataValidationError, match="Missing columns"):
+       validate_dataframe_schema(invalid_df, schema_name, file_path)
+   ```
+
+   - Direct assertions for return values:
+   ```python
+   assert len(df) == 3
+   assert "file_name" in df.columns
+   assert current_checksum == expected_checksum
+   ```
+
+## Mocking
+
+**Framework:** No explicit mocking framework detected (unittest.mock not used in patterns)
+
+**Patterns:**
+- Use real data files from `tests/fixtures/`
+- Skip tests if fixtures not available:
+```python
+@pytest.fixture(scope="session")
+def sample_config_path(test_data_dir):
+    """Path to sample project.yaml for testing."""
+    config_path = test_data_dir / "sample_yaml" / "project.yaml"
+    if not config_path.exists():
+        pytest.skip(f"Sample config not found: {config_path}")
+    return config_path
+```
+
+**What to Mock:**
+- External file I/O (not common - prefer real fixtures)
+- Time-dependent operations (not currently mocked)
+
+**What NOT to Mock:**
+- pandas operations (use real DataFrames)
+- File path resolution (use real paths with tmp_path)
+- Data validation logic (test actual behavior)
+
+## Fixtures and Factories
+
+**Test Data:**
+Located in `tests/fixtures/`:
+- `baseline_checksums.json` - Regression test baselines
+- `sample_yaml/` - Sample configuration files
+- Parquet files created dynamically in tests
+
+**Location:**
 ```python
 @pytest.fixture(scope="session")
 def test_data_dir():
     """Path to test data directory (shared across all tests)."""
     return Path(__file__).parent / "fixtures"
+```
 
+**Fixture Patterns from `conftest.py`:**
 
+1. **Sample DataFrame:**
+```python
 @pytest.fixture
 def sample_dataframe():
     """Create a sample DataFrame for testing."""
-    return pd.DataFrame({
-        "file_name": ["test1.docx", "test2.docx", "test3.docx"],
-        "Total_Words": [100, 200, 150],
-        "MaQaUnc_pct": [0.5, 0.75, 0.6],
-    })
+    return pd.DataFrame(
+        {
+            "file_name": ["test1.docx", "test2.docx", "test3.docx"],
+            "Total_Words": [100, 200, 150],
+            "MaQaUnc_pct": [0.5, 0.75, 0.6],
+        }
+    )
+```
 
-
+2. **Temporary Parquet File:**
+```python
 @pytest.fixture
 def sample_parquet_file(tmp_path, sample_dataframe):
     """Create a temporary Parquet file for testing."""
@@ -162,13 +235,28 @@ def sample_parquet_file(tmp_path, sample_dataframe):
     return file_path
 ```
 
-**Teardown Pattern:**
-- Use `tmp_path` fixture for temporary files (auto-cleanup)
-- Fixture cleanup via `yield`:
+3. **Mock Configuration:**
+```python
+@pytest.fixture
+def mock_project_config(tmp_path):
+    """Create a minimal project.yaml for testing."""
+    config_data = {
+        "project": {"name": "F1D_Test", "version": "1.0.0"},
+        "data": {"year_start": 2002, "year_end": 2005},
+        "determinism": {"random_seed": 42, "thread_count": 1},
+    }
+    config_path = tmp_path / "project.yaml"
+    with open(config_path, "w") as f:
+        yaml.dump(config_data, f)
+    return config_path
+```
+
+4. **Output Capture:**
 ```python
 @pytest.fixture
 def capture_output():
     """Capture stdout and stderr for testing console output."""
+
     class Capture:
         def __init__(self):
             self.stdout_buf = StringIO()
@@ -192,159 +280,11 @@ def capture_output():
     sys.stderr = capture.old_stderr
 ```
 
-**Assertion Pattern:**
-- Use `assert` for simple comparisons
-- Use `pytest.raises` context manager for exceptions
-- Use `capsys` fixture for capturing stdout/stderr
-- Use `monkeypatch` fixture for modifying environment/dependencies
-
-**Example:**
-```python
-def test_validate_dataframe_schema_success(self, sample_parquet_file):
-    """Test schema validation passes for valid DataFrame."""
-    df = pd.read_parquet(sample_parquet_file)
-    # Should not raise for valid schema match
-    validate_dataframe_schema(df, "schema_name", sample_parquet_file)
-
-
-def test_validate_dataframe_schema_missing_columns(self):
-    """Test schema validation fails for missing required columns."""
-    df = pd.DataFrame({"col1": [1, 2]})  # Missing required columns
-    with pytest.raises(DataValidationError, match="Missing columns"):
-        validate_dataframe_schema(df, "schema_name", Path("test.parquet"))
-
-
-def test_prints_warning(self, capsys):
-    """Test that warning is printed to console."""
-    function_that_warns()
-    captured = capsys.readouterr()
-    assert "WARNING:" in captured.out
-```
-
-## Mocking
-
-**Framework:** pytest built-ins (monkeypatch, tmp_path, capsys, fixtures)
-
-**Patterns:**
-
-**Environment Variable Mocking:**
-```python
-def test_with_env_var(self, monkeypatch):
-    """Test with specific environment variable."""
-    monkeypatch.setenv("WRDS_USERNAME", "test_user")
-    result = function_using_env()
-    assert result == expected
-```
-
-**Module/Function Mocking:**
-```python
-def test_with_mocked_function(self, monkeypatch):
-    """Test with mocked function."""
-    def mock_validate(schema):
-        raise EnvValidationError("Test error")
-
-    import shared.env_validation as env_mod
-    original_validate = env_mod.validate_env_schema
-    env_mod.validate_env_schema = mock_validate
-
-    # Test code here...
-
-    # Restore original function
-    env_mod.validate_env_schema = original_validate
-```
-
-**File System Mocking:**
-```python
-def test_with_temp_file(self, tmp_path):
-    """Test with temporary file."""
-    # tmp_path is auto-cleanup fixture
-    test_file = tmp_path / "test.parquet"
-    df.to_parquet(test_file)
-    result = process_file(test_file)
-    assert result == expected
-```
-
-**What to Mock:**
-- External dependencies (WRDS API, file system, network calls)
-- Environment variables
-- Expensive operations (database queries, API calls)
-- Time-dependent operations (use `monkeypatch.setattr` for datetime)
-
-**What NOT to Mock:**
-- Shared utility functions (test them directly)
-- Simple data processing functions
-- Pandas operations (use real DataFrames)
-
-## Fixtures and Factories
-
-**Test Data:**
-```python
-# From conftest.py
-@pytest.fixture
-def sample_dataframe():
-    """Create a sample DataFrame for testing."""
-    return pd.DataFrame({
-        "file_name": ["test1.docx", "test2.docx", "test3.docx"],
-        "Total_Words": [100, 200, 150],
-        "MaQaUnc_pct": [0.5, 0.75, 0.6],
-    })
-
-
-@pytest.fixture
-def sample_parquet_file_with_schema(tmp_path):
-    """Create a temporary Parquet file matching Unified-info schema."""
-    df = pd.DataFrame({
-        "event_type": [1, 1, 2],
-        "file_name": ["call1.docx", "call2.docx", "call3.docx"],
-        "date": ["2002-01-15", "2002-02-20", "2002-03-10"],
-        "speakers": ["CEO,CFO", "CEO", "CFO"],
-    })
-    file_path = tmp_path / "unified_info_test.parquet"
-    df.to_parquet(file_path)
-    return file_path
-
-
-@pytest.fixture
-def mock_project_config(tmp_path):
-    """Create a minimal project.yaml for testing."""
-    config_data = {
-        "project": {"name": "F1D_Test", "version": "1.0.0"},
-        "data": {"year_start": 2002, "year_end": 2005},
-        "determinism": {"random_seed": 42, "thread_count": 1},
-    }
-    config_path = tmp_path / "project.yaml"
-    import yaml
-    with open(config_path, "w") as f:
-        yaml.dump(config_data, f)
-    return config_path
-```
-
-**Location:**
-- Shared fixtures in `tests/conftest.py`
-- Test-specific fixtures in test files
-- Test data in `tests/fixtures/`
-
-**Factory Pattern:**
-- Use fixture functions to create test data
-- Parameterize fixtures for multiple scenarios
-- Use `tmp_path` for auto-cleanup
-
 ## Coverage
 
-**Requirements:** None enforced (no coverage thresholds in config)
-
-**View Coverage:**
-```bash
-# Generate HTML coverage report
-pytest --cov=2_Scripts --cov-report=html
-
-# View report
-open htmlcov/index.html  # macOS
-start htmlcov/index.html  # Windows
-xdg-open htmlcov/index.html  # Linux
-```
-
-**Coverage Configuration:**
+**Requirements:**
+- No explicit coverage target enforced
+- Coverage configured in `pyproject.toml`:
 ```toml
 [tool.coverage.run]
 source = ["2_Scripts"]
@@ -366,179 +306,204 @@ exclude_lines = [
 ]
 ```
 
+**View Coverage:**
+```bash
+pytest --cov=2_Scripts --cov-report=html
+# Open htmlcov/index.html for detailed report
+```
+
 ## Test Types
 
 **Unit Tests:**
-- **Scope:** Individual functions, classes, modules
-- **Approach:** Test smallest units in isolation
-- **Location:** `tests/unit/`
-- **Examples:**
-  - `test_data_validation.py` - Schema validation functions
-  - `test_env_validation.py` - Environment variable validation
-  - `test_subprocess_validation.py` - Subprocess execution validation
-  - `test_fuzzy_matching.py` - String matching functions
-  - `test_chunked_reader.py` - Chunked data reading
-  - `test_observability_helpers.py` - Statistics and monitoring helpers
+- Scope: Individual functions and classes in shared modules
+- Approach: Isolated testing with sample data
+- Location: `tests/unit/`
+- Examples:
+  - `test_data_validation.py` - Schema validation logic
+  - `test_chunked_reader.py` - Chunked reading utilities
+  - `test_env_validation.py` - Environment validation
 
 **Integration Tests:**
-- **Scope:** Multiple components working together
-- **Approach:** Test interactions between modules
-- **Location:** `tests/integration/`
-- **Examples:**
-  - End-to-end pipeline tests
-  - Multi-step workflow tests
-  - File: `e2e_test_*.py`
+- Scope: End-to-end execution of individual pipeline steps
+- Approach: Run scripts via subprocess, verify outputs
+- Location: `tests/integration/`
+- Marked with: `@pytest.mark.integration`
+- Pattern:
+```python
+def test_step1_full_pipeline(sample_input_data, config, tmp_path):
+    """Test Step 1 (1.1_CleanMetadata) runs end-to-end."""
+    script_path = REPO_ROOT / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
+
+    # Run script via subprocess
+    result = subprocess.run(
+        ["python", str(script_path)],
+        env=SUBPROCESS_ENV,
+        capture_output=True,
+        text=True,
+    )
+
+    # Assert
+    assert result.returncode == 0
+    assert output_dir.exists()
+```
+
+**E2E Tests:**
+- Scope: Full pipeline execution (all 17 scripts)
+- Framework: pytest with subprocess execution
+- Location: `tests/integration/test_full_pipeline.py`
+- Marked with: `@pytest.mark.e2e` and `@pytest.mark.slow`
+- Purpose: Close critical testing gap identified in milestone audit
+- Runtime: ~15-20 minutes for full pipeline
+- Pattern:
+```python
+@pytest.mark.slow
+def test_full_pipeline_execution():
+    """Test end-to-end execution of the full pipeline (all 17 scripts)."""
+    for script_path in PIPELINE_SCRIPTS:
+        result = subprocess.run(
+            ["python", str(script_path)],
+            env=SUBPROCESS_ENV,
+            timeout=600,
+        )
+        assert result.returncode == 0
+        # Verify expected outputs exist
+```
 
 **Regression Tests:**
-- **Scope:** Detect changes in output over time
-- **Approach:** Compare SHA-256 checksums to baseline
-- **Location:** `tests/regression/`
-- **Example:** `test_output_stability.py`
-
-**Regression Test Pattern:**
+- Scope: Detect regressions via checksum comparison
+- Approach: Compare SHA-256 checksums of output files to baseline
+- Location: `tests/regression/test_output_stability.py`
+- Marked with: `@pytest.mark.regression`
+- Pattern:
 ```python
-def compute_dataframe_checksum(df: pd.DataFrame) -> str:
-    """Compute SHA-256 checksum of a DataFrame."""
-    return hashlib.sha256(
-        pd.util.hash_pandas_object(df, index=False).values.tobytes()
-    ).hexdigest()
-
-
-@pytest.fixture(scope="session")
-def baseline_checksums():
-    """Load baseline checksums for regression testing."""
-    baseline_path = Path("tests/fixtures/baseline_checksums.json")
-    if not baseline_path.exists():
-        pytest.skip(f"Baseline checksums not found: {baseline_path}")
-    with open(baseline_path) as f:
-        return json.load(f)
-
-
 def test_regression_step1_output_stability(baseline_checksums):
     """Test that Step 1 output hasn't changed from baseline."""
-    output_file = Path("4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet")
-    if not output_file.exists():
-        pytest.skip(f"Output file not found (run 1.1_CleanMetadata.py first)")
-
     current_checksum = compute_file_checksum(output_file)
     expected_checksum = baseline_checksums.get("step1_cleaned_metadata")
-
-    if expected_checksum is None:
-        pytest.skip("No baseline checksum (run with --update-baseline)")
 
     assert current_checksum == expected_checksum, (
         f"Regression detected!\n"
         f"Expected: {expected_checksum}\n"
-        f"Got: {current_checksum}"
+        f"Got: {current_checksum}\n"
     )
 ```
 
 ## Common Patterns
 
 **Async Testing:**
-- Not applicable (no async code in codebase)
+- Not used (synchronous Python codebase)
 
 **Error Testing:**
 ```python
-def test_raises_exception_with_message(self):
-    """Test exception is raised with specific message."""
+def test_load_validated_parquet_validation_failure(self, tmp_path):
+    """Load Parquet file with invalid schema raises error."""
+    df = pd.DataFrame({"col1": [1, 2, 3]})
+    invalid_file = tmp_path / "invalid.parquet"
+    df.to_parquet(invalid_file)
+
     with pytest.raises(DataValidationError, match="Missing columns"):
-        validate_dataframe_schema(invalid_df, "schema_name", Path("test.parquet"))
-
-
-def test_exception_message_format(self):
-    """Test exception message includes required information."""
-    with pytest.raises(EnvValidationError) as exc_info:
-        validate_env_schema(test_schema)
-    error_msg = str(exc_info.value)
-    assert "Required environment variable not set" in error_msg
-    assert "TEST_VAR" in error_msg
-    assert "Important test variable" in error_msg
+        load_validated_parquet(invalid_file, schema_name="Unified-info.parquet")
 ```
 
 **Parameterized Tests:**
 ```python
 @pytest.mark.parametrize(
-    "env_name,env_spec",
+    "strict_mode,should_raise",
     [
-        ("WRDS_USERNAME", {"required": False, "type": str, "description": "WRDS username"}),
-        ("API_TIMEOUT_SECONDS", {"required": False, "type": int, "default": 30}),
+        (True, True),
+        (False, False),
     ],
 )
-def test_validate_env_with_actual_schema(self, env_name, env_spec, monkeypatch):
-    """Test validation with actual ENV_SCHEMA entries."""
-    # Test code using env_name and env_spec...
+def test_validate_dataframe_schema_strict_mode(
+    self, strict_mode, should_raise, sample_parquet_file_with_schema
+):
+    """Test strict mode controls whether errors are raised."""
+    if should_raise:
+        with pytest.raises(DataValidationError):
+            validate_dataframe_schema(
+                df, "Unified-info.parquet",
+                sample_parquet_file_with_schema,
+                strict=strict_mode,
+            )
 ```
 
-**Skipping Tests:**
+**Skip Conditions:**
 ```python
-def test_with_conditional_skip(self, sample_fixture):
-    """Skip test if condition not met."""
-    if not sample_fixture.exists():
-        pytest.skip(f"Sample fixture not found: {sample_fixture}")
-    # Test code...
-
-
-def test_skip_if_module_missing(self):
-    """Skip test if optional dependency not available."""
-    pytest.importorskip("rapidfuzz")  # Skip if rapidfuzz not installed
-    # Test code using rapidfuzz...
+def test_step1_full_pipeline(sample_input_data, config, tmp_path):
+    if not script_path.exists():
+        pytest.skip(f"Script not found: {script_path}")
 ```
 
-**Testing with Missing Optional Dependencies:**
+**Integration Test Environment:**
 ```python
-def test_graceful_degradation_without_rapidfuzz(self, monkeypatch):
-    """Test fallback behavior when RapidFuzz is unavailable."""
-    # Mock rapidfuzz as unavailable
-    monkeypatch.setattr("shared.string_matching.RAPIDFUZZ_AVAILABLE, False)
+# Environment for subprocess calls (includes PYTHONPATH)
+SUBPROCESS_ENV = {
+    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
+    **os.environ,
+}
+```
 
-    result = match_company_names("Test", ["Candidate1", "Candidate2"])
+**Subprocess Testing:**
+```python
+result = subprocess.run(
+    ["python", str(script_path)],
+    env=SUBPROCESS_ENV,
+    capture_output=True,
+    text=True,
+    timeout=600,
+)
 
-    # Should return query with 0.0 score (fallback behavior)
-    assert result == ("Test", 0.0)
+assert result.returncode == 0, f"Script failed: {result.stderr}"
 ```
 
 ## Test Markers
 
-**Available Markers:**
-- `slow` - Marks tests as slow (deselect with `-m "not slow"`)
-- `integration` - Marks integration tests
-- `regression` - Marks regression tests
-- `unit` - Marks unit tests
-- `e2e` - Marks end-to-end pipeline tests
-
 **Usage:**
 ```python
+# Mark entire test file
+pytestmark = pytest.mark.integration
+
+# Mark individual test
 @pytest.mark.slow
-def test_slow_operation():
-    """Test that takes a long time."""
-    # Slow test code...
+def test_full_pipeline_execution():
+    ...
 
-
-@pytest.mark.regression  # Mark all tests in file
+# Mark parameterized tests
+@pytest.mark.regression
 def test_regression_step1_output_stability():
-    """Regression test for Step 1."""
-    # Regression test code...
+    ...
 ```
 
-**Running with Markers:**
+**Running by marker:**
 ```bash
-# Run only unit tests
-pytest -m unit
-
-# Run only integration tests
-pytest -m integration
-
-# Run only regression tests
-pytest -m regression
-
-# Exclude slow tests
-pytest -m "not slow"
-
-# Run only fast unit tests
-pytest -m "unit and not slow"
+pytest -m unit           # Unit tests only
+pytest -m integration    # Integration tests only
+pytest -m "not slow"     # Exclude slow tests
+pytest -m "e2e or slow"  # E2E or slow tests
 ```
+
+## Baseline Management
+
+**Generating Baselines:**
+Located at `tests/regression/generate_baseline_checksums.py`
+- Computes SHA-256 checksums for key output files
+- Updates `tests/fixtures/baseline_checksums.json`
+- Run after intentional changes to expected outputs
+
+**Pattern:**
+```python
+def compute_dataframe_checksum(df: pd.DataFrame) -> str:
+    """Compute SHA-256 checksum of a DataFrame."""
+    return hashlib.sha256(
+        pd.util.hash_pandas_object(df, index=False).values.tobytes()
+    ).hexdigest()
+```
+
+**Key Outputs Tracked:**
+- `step1_cleaned_metadata` - Step 1 cleaned metadata
+- `step2_linguistic_counts_<year>` - Step 2 yearly outputs (2002-2018)
+- `step3_financial_features` - Step 3 financial features
 
 ---
 
-*Testing analysis: 2025-01-29*
+*Testing analysis: 2025-02-04*

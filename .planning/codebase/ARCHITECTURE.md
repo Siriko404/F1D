@@ -1,204 +1,171 @@
 # Architecture
 
-**Analysis Date:** 2025-01-29
+**Analysis Date:** 2025-02-04
 
 ## Pattern Overview
 
 **Overall:** Sequential Pipeline with Shared Utilities
 
 **Key Characteristics:**
-- **Sequential execution**: Scripts run in dependency order (Phase 1 → 2 → 3 → 4)
-- **No orchestrator**: Each script is independently executable (no parent runner)
-- **Deterministic outputs**: Timestamped directories with symlinks to `latest/`
-- **Dual-write logging**: All output mirrored to stdout and log files
-- **Shared utilities**: Common functionality in `2_Scripts/shared/`
-- **Config-driven**: Single `config/project.yaml` as source of truth
+- Four-stage sequential data processing pipeline (Sample → Text → Financial → Econometric)
+- Each stage produces timestamped outputs with `latest/` symlinks for downstream consumption
+- Direct-run scripts (no orchestrator) with configuration-driven behavior from `config/project.yaml`
+- Shared utility modules in `2_Scripts/shared/` for cross-cutting concerns
+- Parquet-based data persistence with contract headers declaring inputs/outputs
 
 ## Layers
 
-**Pipeline Scripts (2_Scripts/):**
-- Purpose: Data processing and analysis logic
-- Location: `2_Scripts/{1_Sample,2_Text,3_Financial,4_Econometric}/`
-- Contains: 18 active scripts across 4 phases
-- Depends on: Shared utilities, input data from `1_Inputs/`
-- Used by: Researchers running the pipeline
+**Configuration Layer:**
+- Purpose: Centralized runtime configuration and path management
+- Location: `config/project.yaml`
+- Contains: Project metadata, data paths, step-specific parameters, thresholds
+- Depends on: Nothing
+- Used by: All pipeline scripts via `load_config()`
 
-**Shared Utilities (2_Scripts/shared/):**
-- Purpose: Reusable functions for validation, I/O, observability
-- Location: `2_Scripts/shared/*.py`
-- Contains: 20+ modules for path validation, data loading, regression, string matching
-- Depends on: pandas, numpy, yaml, scipy, statsmodels
-- Used by: All pipeline scripts
+**Shared Utilities Layer:**
+- Purpose: Reusable functions for logging, validation, path operations, statistics
+- Location: `2_Scripts/shared/`
+- Contains: Observability helpers, path validation, data loading, regression utilities, string matching, financial calculations
+- Depends on: Third-party libraries (pandas, numpy, statsmodels, rapidfuzz)
+- Used by: All pipeline stages
 
-**Input Data Layer (1_Inputs/):**
-- Purpose: Raw data sources (earnings calls, financial data, dictionaries)
-- Location: `1_Inputs/{CRSP_DSF,comp_na_daily_all,Execucomp,SDC,tr_ibes,CCCL instrument}/`
-- Contains: Parquet files, CSV dictionaries, Excel files
-- Depends on: External data providers (WRDS, SEC)
-- Used by: Phase 1 and Phase 3 scripts
+**Stage 1 - Sample Construction Layer:**
+- Purpose: Build master sample manifest from raw earnings call metadata
+- Location: `2_Scripts/1_Sample/`
+- Contains: Metadata cleaning, entity linking, tenure mapping, manifest assembly
+- Depends on: `1_Inputs/Unified-info.parquet`, `CRSPCompustat_CCM/`, `shared/` utilities
+- Used by: Stage 2 (Text Processing) and Stage 3 (Financial Features)
 
-**Output Layer (4_Outputs/):**
-- Purpose: Processed data, regression results, reports
-- Location: `4_Outputs/{step_name}/{timestamp}/`
-- Contains: Parquet datasets, CSV summaries, markdown reports, LaTeX tables
-- Depends on: Pipeline scripts
-- Used by: Phase 4 scripts, researchers
+**Stage 2 - Text Processing Layer:**
+- Purpose: Tokenize transcripts and construct linguistic variables
+- Location: `2_Scripts/2_Text/`
+- Contains: Tokenization, word counting, linguistic measure construction, verification
+- Depends on: `1_Inputs/speaker_data_{year}.parquet`, `Loughran-McDonald_MasterDictionary_1993-2024.csv`, Stage 1 outputs
+- Used by: Stage 4 (Econometric Analysis)
 
-**Log Layer (3_Logs/):**
-- Purpose: Execution logs for reproducibility and debugging
-- Location: `3_Logs/{step_name}/{timestamp}.log`
-- Contains: Timestamped execution logs with progress stats, checksums, errors
-- Depends on: Pipeline scripts (via DualWriter)
-- Used by: Researchers for validation
+**Stage 3 - Financial Features Layer:**
+- Purpose: Compute firm-level controls and market variables
+- Location: `2_Scripts/3_Financial/`
+- Contains: Firm controls (Size, BM, Lev, ROA, EPS_Growth), market variables (returns, surprise), event flags
+- Depends on: `1_Inputs/comp_na_daily_all/`, `tr_ibes/`, `CRSP_DSF/`, `CCCL instrument/`, Stage 1 outputs
+- Used by: Stage 4 (Econometric Analysis)
 
-**Test Layer (tests/):**
-- Purpose: Unit, integration, regression tests
-- Location: `tests/{unit,integration,regression}/`
-- Contains: pytest fixtures, test data, validation scripts
-- Depends on: Shared utilities, pipeline scripts
-- Used by: CI/CD, developers
+**Stage 4 - Econometric Analysis Layer:**
+- Purpose: Estimate CEO clarity scores and run regressions
+- Location: `2_Scripts/4_Econometric/`
+- Contains: CEO fixed effects estimation, liquidity regressions, takeover hazards, summary statistics
+- Depends on: Stage 1 (manifest), Stage 2 (linguistic variables), Stage 3 (financial controls)
+- Used by: Final research outputs
+
+**Testing Layer:**
+- Purpose: Unit and integration tests for shared utilities and pipeline steps
+- Location: `tests/`
+- Contains: Test fixtures, unit tests for validation, fuzzy matching, environment checks
+- Depends on: Shared utilities, pytest framework
+- Used by: Development workflow
 
 ## Data Flow
 
-**Phase 1: Sample Construction (1_Sample/):**
+**Sample Construction Flow:**
 
-1. Load `Unified-info.parquet` (428K earnings call metadata records)
-2. Clean metadata: deduplicate, validate dates, filter event_type='1' (earnings calls)
-3. Link entities: 4-tier strategy (PERMNO+date → CUSIP8+date → fuzzy name → ticker)
-4. Build tenure map: Track CEO tenures from Execucomp, resolve overlaps
-5. Assemble manifest: Merge all datasets, apply 5-call minimum threshold
-6. Output: `master_sample_manifest.parquet` (~286K calls)
-
-**Phase 2: Text Processing (2_Text/):**
-
-1. Load `master_sample_manifest.parquet` + `speaker_data_*.parquet` (yearly)
-2. Tokenize: Split Q&A text into tokens, count LM dictionary categories
-3. Aggregate: Sum counts to call level by speaker type (Manager, CEO, Analyst)
-4. Construct variables: Compute percentages (e.g., Manager_QA_Uncertainty_pct = Uncertainty / word_tokens)
-5. Output: `linguistic_variables_*.parquet` (one per year, 2002-2018)
-
-**Phase 3: Financial Features (3_Financial/):**
-
-1. Load `master_sample_manifest.parquet` + financial datasets (Compustat, CRSP, IBES, SDC)
-2. Compute firm controls: Size, BM, Lev, ROA, RD_Intensity (lagged 1 fiscal year)
-3. Compute market variables: StockRet, MarketRet, Volatility, Amihud liquidity (event windows)
-4. Flag events: Takeover events from SDC (3-tier matching)
-5. Output: `firm_controls_*.parquet`, `market_variables_*.parquet`, `event_flags_*.parquet`
-
-**Phase 4: Econometric Analysis (4_Econometric/):**
-
-1. Load all Phase 1-3 outputs + linguistic variables
-2. Estimate CEO clarity: OLS with CEO fixed effects, extract gamma_i, standardize
-3. Robustness checks: CEO-specific controls, extended controls, firm regime effects
-4. IV analysis: First-stage ClarityCEO ~ CCCL instrument, second-stage Delta_Amihud
-5. Survival analysis: Cox PH takeover hazards, Fine-Gray competing risks
-6. Generate summary: Descriptive stats, correlation matrices, balance tables
-7. Output: `ceo_clarity_scores.parquet`, regression results (TXT, CSV, LaTeX)
+1. `1.1_CleanMetadata.py` loads `Unified-info.parquet`, deduplicates, filters for earnings calls (event_type='1'), validates date range (2002-2018)
+2. `1.2_LinkEntities.py` links calls to firms via 4-tier strategy: PERMNO+date → CUSIP8+date → fuzzy matching → unmatched audit
+3. `1.3_BuildTenureMap.py` constructs CEO tenure timeline from speaker data, builds monthly panel
+4. `1.4_AssembleManifest.py` joins metadata + tenure, filters for CEOs with ≥5 calls, produces `master_sample_manifest.parquet`
 
 **State Management:**
-- No global state (each script loads config from `config/project.yaml`)
-- Outputs are immutable (timestamped directories never modified)
-- Symlinks (`latest/`) provide stable references to most recent outputs
-- Logs capture full execution state (git SHA, config snapshot, input checksums)
+- Each step writes to timestamped subdirectory: `4_Outputs/{StepName}/{YYYY-MM-DD_HHMMSS}/`
+- `latest/` symlink points to most recent successful output for downstream resolution
+- State is immutable (timestamped outputs never modified)
+- Inputs validated via `get_latest_output_dir()` with required file checks
+
+**Text Processing Flow:**
+
+1. `2.1_TokenizeAndCount.py` tokenizes transcripts using LM dictionary, counts word frequencies per call
+2. `2.2_ConstructVariables.py` computes linguistic measures (clarity, tone, complexity) from word counts
+3. `2.3_Report.py` generates verification reports and descriptive statistics
+
+**Financial Features Flow:**
+
+1. `3.1_FirmControls.py` merges Compustat quarterly data, computes Size, BM, Lev, ROA, EPS_Growth, SurpDec
+2. `3.2_MarketVariables.py` calculates stock returns, market returns, event windows around calls
+3. `3.3_EventFlags.py` adds takeover flags from SDC and CEO dismissal data
+4. `3.0_BuildFinancialFeatures.py` orchestrates all financial feature construction
+
+**Econometric Analysis Flow:**
+
+1. `4.1_EstimateCeoClarity.py` runs fixed effects OLS by FF12 industry (main/finance/utility), extracts CEO-specific clarity coefficients
+2. `4.2_LiquidityRegressions.py` estimates liquidity models with CEO clarity as independent variable
+3. `4.3_TakeoverHazards.py` runs hazard models for takeover probability
+4. `4.4_GenerateSummaryStats.py` produces final summary statistics and tables
 
 ## Key Abstractions
 
-**DualWriter (observability_utils.py):**
-- Purpose: Synchronized output to stdout and log file
-- Examples: `2_Scripts/shared/observability_utils.py:303`
-- Pattern: Context manager that writes identical content to two streams
+**DualWriter:**
+- Purpose: Synchronized stdout + file logging for progress tracking
+- Examples: `2_Scripts/shared/observability_utils.py`, `2_Scripts/shared/dual_writer.py`
+- Pattern: Context manager that writes identical output to terminal and log file via `sys.stdout` redirection
 
-**Variable Reference (reporting_utils.py):**
-- Purpose: Track variable definitions, sources, and transformations
-- Examples: `2_Scripts/shared/reporting_utils.py:109`
-- Pattern: Generate CSV documenting all variables created by a script
+**Path Resolution with Timestamps:**
+- Purpose: Locate outputs from prior steps without hardcoding paths
+- Examples: `shared/path_utils.py:get_latest_output_dir()`
+- Pattern: `get_latest_output_dir(base_dir, required_file="X.parquet")` scans timestamped subdirs, returns most recent with required file, raises `OutputResolutionError` if not found
 
-**Schema Validation (data_validation.py):**
-- Purpose: Validate DataFrames against expected columns and types
-- Examples: `2_Scripts/shared/data_validation.py:68`
-- Pattern: Decorator/wrapper around `pd.read_parquet()` with schema checks
+**Contract Headers:**
+- Purpose: Declare script inputs/outputs/determinism in docstring
+- Examples: All scripts in `2_Scripts/*/`
+- Pattern: Triple-quoted docstring with ID, Description, Inputs, Outputs, Deterministic fields
 
-**Four-Tier Entity Linking (string_matching.py):**
-- Purpose: Match company names across datasets with fallback strategy
-- Examples: `2_Scripts/shared/string_matching.py:104`
-- Pattern: Try exact match → fuzzy match (RapidFuzz) → ticker match → fail
+**Graceful Degradation for Optional Dependencies:**
+- Purpose: Allow pipeline to run without optional packages (e.g., rapidfuzz, statsmodels)
+- Examples: `shared/regression_utils.py:STATSMODELS_AVAILABLE`, `shared/string_matching.py`
+- Pattern: Try-import with `STATSMODELS_AVAILABLE` flag, raise ImportError at point-of-use if missing
 
-**Fixed Effects Extraction (regression_utils.py):**
-- Purpose: Extract CEO-specific coefficients from OLS with entity dummies
-- Examples: `2_Scripts/shared/regression_utils.py:71`
-- Pattern: Fit `y ~ C(ceo_id) + X`, extract gamma_i, compute ClarityCEO = -gamma_i
+**Memory-Aware Processing:**
+- Purpose: Handle large datasets without OOM errors
+- Examples: `shared/chunked_reader.py:MemoryAwareThrottler`, column pruning in Step 2/3 scripts
+- Pattern: Monitor memory via psutil, throttle batch sizes, use `usecols` parameter in `pd.read_parquet()`
 
 ## Entry Points
 
-**Pipeline Scripts:**
-- Location: `2_Scripts/{1_Sample,2_Text,3_Financial,4_Econometric}/*.py`
-- Triggers: Manual execution by researcher or CI/CD
-- Responsibilities:
-  - Load config from `config/project.yaml`
-  - Validate prerequisites (input files, dependencies)
-  - Execute data processing
-  - Write outputs to `4_Outputs/{step_name}/{timestamp}/`
-  - Update `latest/` symlink
-  - Log progress to `3_Logs/{step_name}/{timestamp}.log`
+**Direct Script Execution:**
+- Location: All `2_Scripts/*/*.py` files
+- Triggers: Manual command line execution: `python 2_Scripts/1_Sample/1.1_CleanMetadata.py`
+- Responsibilities: Parse CLI args (`--dry-run`), validate prerequisites, load config, execute step, write outputs
 
-**Test Suite:**
-- Location: `tests/{unit,integration,regression}/test_*.py`
-- Triggers: `pytest` command
-- Responsibilities:
-  - Validate shared utility functions
-  - Check data pipeline integrity
-  - Regression testing (output stability)
-
-**Shared Modules:**
+**Shared Module Imports:**
 - Location: `2_Scripts/shared/*.py`
-- Triggers: Imported by pipeline scripts
-- Responsibilities:
-  - Path validation (`path_utils.py`)
-  - Data loading with validation (`data_validation.py`)
-  - Observability (`observability_utils.py`)
-  - Regression helpers (`regression_helpers.py`)
-  - String matching (`string_matching.py`)
+- Triggers: Imported by pipeline scripts via `from shared.x import y`
+- Responsibilities: Provide reusable utilities, handle cross-cutting concerns
+
+**Test Execution:**
+- Location: `tests/unit/*.py`, `tests/integration/*.py`
+- Triggers: `pytest` command
+- Responsibilities: Validate shared utilities, check contract compliance
 
 ## Error Handling
 
-**Strategy:** Explicit validation with clear error messages, fail-fast on contract violations
+**Strategy:** Fail-fast with validation → clear error messages → audit trails
 
 **Patterns:**
-- **Path validation**: Raise `PathValidationError` if input files missing
-- **Schema validation**: Raise `DataValidationError` if DataFrame columns/types incorrect
-- **Regression validation**: Raise `RegressionValidationError` if insufficient data, multicollinearity
-- **Subprocess validation**: Validate script paths before `subprocess.run()` (security)
-- **Environment validation**: Schema-based env var checking (preparatory for .env support)
-
-**Logging:**
-- All exceptions logged with full traceback to `3_Logs/`
-- DualWriter ensures errors visible in terminal and log file
-- Progress stats (row counts, memory usage, timing) logged at each major step
+- **Path Validation:** `PathValidationError` raised by `shared/path_utils.py` for missing/unwritable paths
+- **Output Resolution:** `OutputResolutionError` raised when `get_latest_output_dir()` cannot find required file
+- **Dependency Validation:** `ImportError` raised at point-of-use for optional dependencies (statsmodels, rapidfuzz)
+- **Prerequisite Checking:** `check_prerequisites()` functions validate inputs from prior steps before execution
+- **Graceful Degradation:** Try-import blocks allow pipeline to continue without optional features (e.g., Tier 3 fuzzy matching without rapidfuzz)
 
 ## Cross-Cutting Concerns
 
-**Logging:** DualWriter pattern ensures identical stdout and log file output
+**Logging:** DualWriter pattern writes verbatim output to terminal + log file (`3_Logs/{StepName}/{timestamp}.log`)
 
-**Validation:**
-- Input files: `validate_input_file()` from `path_utils.py`
-- Data schemas: `validate_dataframe_schema()` from `data_validation.py`
-- Regression data: `validate_regression_data()` from `regression_validation.py`
-- CLI arguments: `parse_arguments_*()` functions in `cli_validation.py`
+**Validation:** Shared utilities in `shared/env_validation.py`, `shared/data_validation.py`, `shared/cli_validation.py` check environment, data schemas, CLI arguments
 
-**Authentication:** Not currently used (no external API calls in current codebase)
+**Authentication:** Not applicable (local data processing, no external APIs)
 
-**Determinism:**
-- Random seed set from `config/project.yaml` (default: 42)
-- Single-threaded execution by default (thread_count: 1)
-- Input sorting before processing (sort_inputs: true)
-- Output checksums (SHA-256) logged for verification
+**Configuration:** Centralized in `config/project.yaml`, loaded via `load_config()` in each script
 
-**Reproducibility:**
-- Each script logs: git SHA, config snapshot, input file checksums
-- Timestamped outputs preserve execution history
-- `latest/` symlinks provide convenient access to recent outputs
-- Regression tests compare checksums to detect drift
+**Determinism:** Seeds set from config (`random_seed: 42`), thread counts pinned, input sorting enforced, checksums computed for reproducibility
 
 ---
 
-*Architecture analysis: 2025-01-29*
+*Architecture analysis: 2025-02-04*

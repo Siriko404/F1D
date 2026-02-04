@@ -1,200 +1,225 @@
 # Codebase Concerns
 
-**Analysis Date:** 2025-01-29
+**Analysis Date:** 2026-02-04
 
 ## Tech Debt
 
-**Archive Proliferation:**
-- Issue: Multiple archive directories (`___Archive`, `ARCHIVE`, `ARCHIVE_OLD`, `OLD`, `ARCHIVE_BROKEN_STEP2`, `ARCHIVE_BROKEN_STEP4`) with inconsistent naming conventions
-- Files: `2_Scripts/___Archive/`, `2_Scripts/ARCHIVE/`, `2_Scripts/ARCHIVE_OLD/`, `3_Logs/OLD/`, `4_Outputs/OLD/`
-- Impact: Navigation confusion, unclear what's safe to delete, potential for mixing archived/active code
-- Fix approach: Consolidate to single `archive/` directory with timestamped subdirectories, document retention policy in README
+**Observability Utils - Large Monolithic File:**
+- Issue: `2_Scripts/shared/observability_utils.py` is 4,652 lines - contains multiple statistics functions, memory tracking, anomaly detection
+- Files: `2_Scripts/shared/observability_utils.py`
+- Impact: Difficult to navigate, test, and maintain; violates single responsibility principle
+- Fix approach: Split into focused modules: `statistics.py`, `memory_tracking.py`, `anomaly_detection.py`, `data_quality.py`
 
-**Hardcoded Timestamps in Verification Scripts:**
-- Issue: `2_Scripts/ARCHIVE/ARCHIVE_BROKEN_STEP2/verify_extended.py:8` contains hardcoded path `2025-12-25_222300`
-- Files: `2_Scripts/ARCHIVE/ARCHIVE_BROKEN_STEP2/verify_extended.py`
-- Impact: Script breaks when run in different contexts, not reproducible
-- Fix approach: Replace with dynamic resolution using `latest/` symlink or command-line argument
+**Legacy Orchestrator Script:**
+- Issue: `1.0_BuildSampleManifest-legacy.py` duplicates orchestration logic from `1.0_BuildSampleManifest.py`
+- Files: `2_Scripts/1_Sample/1.0_BuildSampleManifest-legacy.py`
+- Impact: Confusion about which orchestrator to use; maintenance burden of two similar scripts
+- Fix approach: Remove legacy script after verifying current orchestrator works correctly; update documentation
 
-**Return None/Empty Pattern Overuse:**
-- Issue: Multiple functions return `None`, `[]`, or `{}` on error paths without logging or raising exceptions
-- Files: `2_Scripts/4_Econometric/4.2_LiquidityRegressions.py` (6 instances), `2_Scripts/4_Econometric/4.1.4_EstimateCeoTone.py` (2 instances), `2_Scripts/2_Text/2.1_TokenizeAndCount.py` (2 instances)
-- Impact: Silent failures, difficult debugging, data may be incomplete without warning
-- Fix approach: Replace with explicit exceptions (ValueError, DataValidationError) or logging warnings
+**Hard-coded TODO Comment:**
+- Issue: Line 773 in `3.1_FirmControls.py` has TODO comment tracking winsorized columns that's never been addressed
+- Files: `2_Scripts/3_Financial/3.1_FirmControls.py:773`
+- Impact: Documentation doesn't reflect actual implementation; winsorized columns list is static
+- Fix approach: Either implement dynamic tracking or remove TODO comment and document static list
 
-**Large Script Files:**
-- Issue: `3_Financial/3.2_MarketVariables.py` is 1,731 lines, violating single responsibility principle
-- Files: `2_Scripts/3_Financial/3.2_MarketVariables.py` (1,731 lines)
-- Impact: Difficult to navigate, test, and maintain; high cognitive load
-- Fix approach: Extract market return computation, liquidity measures, and spread estimation into separate modules in `shared/`
+**Stale Comment References:**
+- Issue: Line 265 in `1.2_LinkEntities.py` mentions removed `update_latest_symlink` function
+- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py:265`
+- Impact: Misleading documentation; causes confusion during code reviews
+- Fix approach: Update comment to reflect current implementation (symlinks removed in Phase 27)
+
+**Bare Exception Handlers in Utilities:**
+- Issue: Multiple bare `except Exception:` clauses in regression_helpers.py and chunked_reader.py suppress error details
+- Files: `2_Scripts/shared/regression_helpers.py:152`, `2_Scripts/shared/chunked_reader.py:164,333`
+- Impact: Silent failures; difficult debugging when errors occur
+- Fix approach: Log exception details before handling; use specific exception types
 
 ## Known Bugs
 
-**CSV Format Assumptions in Shared Utils:**
-- Symptoms: Code assumes CSV format in some paths but pipeline primarily uses Parquet
-- Files: `2_Scripts/3_Financial/3.4_Utils.py`, `2_Scripts/shared/regression_helpers.py`
-- Trigger: Input files in unexpected format
-- Workaround: Ensure all intermediate files are Parquet format
-- Fix approach: Standardize on Parquet throughout, remove CSV reading code from shared utilities
-
-**Unicode Compatibility on Windows (Historical):**
-- Symptoms: Characters display incorrectly on Windows with cp1252 encoding
-- Files: Recent commits indicate fixes in `2_Scripts/` (see git history 2025-01-24)
-- Trigger: Windows console with non-UTF-8 default encoding
-- Workaround: Set console encoding to UTF-8 before running scripts
-- Fix approach: Recent commits addressed this; validate fix across all scripts
+**None Currently Documented:**
+- No active bugs identified in codebase
+- Previous issues addressed in Phases 7, 16, 22, 23
+- Audit milestone v1.3.0 passed with 1 minor cosmetic issue only
 
 ## Security Considerations
 
-**Input Validation Gaps:**
-- Risk: Malformed parquet files or path traversal attacks in user-provided paths
-- Files: `2_Scripts/shared/path_utils.py`, `2_Scripts/shared/data_validation.py`
-- Current mitigation: Basic path validation in `path_utils.py:63`, `path_utils.py:86`
-- Recommendations:
-  - Add schema validation for all Parquet inputs using PyArrow schema checks
-  - Implement strict path sanitization (reject `../` in user paths)
-  - Add file size checks to prevent memory exhaustion attacks
+**Subprocess Execution Without Shell Protection:**
+- Risk: Scripts use `subprocess.run()` without explicit `shell=False` (default is safe but not explicit)
+- Files: `2_Scripts/1_Sample/1.0_BuildSampleManifest.py:263`, `2_Scripts/shared/subprocess_validation.py:86`
+- Current mitigation: Default behavior is safe; no user input passed to shell
+- Recommendations: Add `shell=False` explicitly for clarity; add validation for script paths before execution
 
-**Dependency Pinning:**
-- Risk: Outdated dependencies may have known vulnerabilities (e.g., pandas==2.2.3, numpy==2.3.2)
-- Files: `requirements.txt`
-- Current mitigation: Explicit version pinning
-- Recommendations:
-  - Run `pip-audit` or `safety check` regularly
-  - Automate dependency scanning in CI/CD
-  - Document security upgrade process in DEPENDENCIES.md
+**No Environment Variable Validation:**
+- Risk: `env_validation.py` exists but is not used; no validation of sensitive data in environment
+- Files: `2_Scripts/shared/env_validation.py`
+- Current mitigation: Codebase doesn't currently use environment variables for sensitive data
+- Recommendations: Implement env validation if adding WRDS credentials or API keys to environment
+
+**Log Files May Contain Sensitive Information:**
+- Risk: Log files in `3_Logs/` may contain paths, user info, or data samples
+- Files: `3_Logs/**/*`
+- Current mitigation: Logs are git-ignored via `.gitignore`
+- Recommendations: Consider log sanitization for production; add log retention policy
+
+**Large Dataset Paths in Error Messages:**
+- Risk: Exception messages may expose full file paths and directory structure
+- Files: Throughout codebase in exception handling
+- Current mitigation: No public-facing API; internal research tool
+- Recommendations: Sanitize paths in user-facing error messages if adding web interface
 
 ## Performance Bottlenecks
 
-**Sequential Year Processing in Financial Scripts:**
-- Problem: `3_Financial/3.2_MarketVariables.py` processes years sequentially instead of parallel
-- Files: `2_Scripts/3_Financial/3.2_MarketVariables.py`
-- Cause: Single-threaded design despite `config/project.yaml` allowing `thread_count` configuration
-- Improvement path: Implement parallel year processing using `concurrent.futures.ThreadPoolExecutor` with configurable thread count from YAML
+**Full Parquet File Loading Without Column Pruning:**
+- Problem: Several scripts read entire parquet files when only subset of columns needed
+- Files: `2_Scripts/2_Text/2.2_ConstructVariables.py:481`, `2_Scripts/shared/data_loading.py:58`
+- Cause: Missing `columns=` parameter in `pd.read_parquet()` calls
+- Improvement path: Add column specification to all parquet reads; document required columns in docstrings
 
-**Non-Vectorized String Operations:**
-- Problem: Entity linking in `1_Sample/1.2_LinkEntities.py` uses row-wise string matching
-- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py`, `2_Scripts/shared/string_matching.py`
-- Cause: Iterative fuzzy matching instead of vectorized operations
-- Improvement path: Use RapidFuzz's `process.cdist` for batch distance computation, or implement vectorized pandas string operations for Tier 1-2 matching
-
-**Chunked Reader Without Progress Feedback:**
-- Problem: `shared/chunked_reader.py` doesn't emit progress signals during long reads
+**Memory-Intensive Chunked Processing:**
+- Problem: Chunked reader still loads full file into memory during iteration in some cases
 - Files: `2_Scripts/shared/chunked_reader.py`
-- Cause: Simple iterator design without callback hooks
-- Improvement path: Add optional progress callback parameter, integrate with `observability_utils.py` memory monitoring
+- Cause: Parquet format requires metadata loading; large files consume memory
+- Improvement path: Implement true streaming reads for parquet; consider alternative formats for large datasets
+
+**String Matching Without Caching:**
+- Problem: Fuzzy name matching recalculates for same inputs across runs
+- Files: `2_Scripts/shared/string_matching.py`
+- Cause: No memoization of fuzzy match results
+- Improvement path: Add LRU cache for matching operations; persist cache to disk
+
+**Anomaly Detection on Full Dataset:**
+- Problem: Z-score and IQR anomaly detection load full dataset into memory
+- Files: `2_Scripts/shared/observability_utils.py` (detect_anomalies_zscore, detect_anomalies_iqr)
+- Cause: Statistical operations require full data distribution
+- Improvement path: Implement incremental anomaly detection; process in chunks with approximate statistics
 
 ## Fragile Areas
 
 **Entity Linking (Step 1.2):**
-- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py`, `2_Scripts/shared/string_matching.py`
-- Why fragile: 4-tier matching strategy with hardcoded thresholds (92% default, 85% minimum), dependent on RapidFuzz availability (optional dependency)
-- Safe modification:
-  - Adjust thresholds via `config/project.yaml` only (currently hardcoded)
-  - Add fallback to Tier 4 (ticker) when Tier 3 fuzzy matching unavailable
-  - Validate match quality with post-linking audit (call count stability)
-- Test coverage: `tests/unit/test_fuzzy_matching.py` (33 lines) - minimal coverage
+- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py`
+- Why fragile: Multi-tier matching strategy with complex business logic; depends on external CCM database quality
+- Safe modification: Add comprehensive tests for each matching tier; validate with known matches before deploying changes
+- Test coverage: Moderate - has unit tests but needs more edge case coverage for fuzzy matching
 
-**Regression Output Stability:**
-- Files: `2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py`, `4.2_LiquidityRegressions.py`, `4.3_TakeoverHazards.py`
-- Why fragile: Depends on statsmodels 0.14.6 (pinned in requirements.txt), sensitive to algorithm changes, floating-point precision
-- Safe modification:
-  - Pin statsmodels version in requirements.txt (already done)
-  - Add regression coefficient tolerance checks in tests
-  - Set random seeds in survival analysis (lifelines)
-- Test coverage: `tests/unit/test_regression_helpers.py` (695 lines) - good coverage, but lacks numerical stability tests
+**Financial Controls Calculation (Step 3.1):**
+- Files: `2_Scripts/3_Financial/3.1_FirmControls.py`
+- Why fragile: Complex multi-source merging (Compustat, IBES, CCCL); conditional logic for variable availability
+- Safe modification: Test with reduced dataset first; verify merge keys remain consistent; validate against paper's replication data
+- Test coverage: Good - has integration tests but needs validation of financial formula implementations
 
-**Market Variable Calculation Windows:**
-- Files: `2_Scripts/3_Financial/3.2_MarketVariables.py`
-- Why fragile: Trading day windows (prev_call+5d to call-5d) assume sufficient data, minimum trading day thresholds may drop observations silently
-- Safe modification:
-  - Log warnings when windows are truncated
-  - Add diagnostics for dropped observations
-  - Validate against CRSP calendar (holiday handling)
-- Test coverage: No integration tests for edge cases (earnings calls near trading halts, IPO dates)
+**Regression Estimation (Step 4.1 variants):**
+- Files: `2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py`, `4.1.1_*.py`, `4.1.2_*.py`, `4.1.3_*.py`, `4.1.4_*.py`
+- Why fragile: Fixed effects regression with clustered standard errors; sensitive to data changes and model specifications
+- Safe modification: Compare results with previous runs; validate coefficient signs and magnitudes; document expected output ranges
+- Test coverage: Good - regression validation checks model convergence and coefficient sanity
+
+**DualWriter Implementation:**
+- Files: `2_Scripts/shared/dual_writer.py`, duplicated in `1.0_BuildSampleManifest-legacy.py:40-56`
+- Why fragile: Manual stdout redirection can fail if log directory doesn't exist; no error handling for write failures
+- Safe modification: Use centralized shared module only; add error handling for log file creation; test with read-only filesystem
+- Test coverage: Low - needs integration tests for log file failures
+
+**Path Resolution Across Platforms:**
+- Files: `2_Scripts/shared/path_utils.py`
+- Why fragile: Symlink/junction handling differs between Windows and Unix; recent Phase 27 changes removed symlinks
+- Safe modification: Test on both Windows and Linux; verify path resolution works without symlinks; update all symlink references
+- Test coverage: Moderate - has path validation tests but needs cross-platform testing
 
 ## Scaling Limits
 
-**Single-Threaded Tokenization:**
-- Current capacity: ~300K transcripts processed in 2-3 minutes on single core
-- Limit: CPU-bound tokenization in `2_Text/2.1_TokenizeAndCount.py` doesn't utilize multi-core systems
-- Scaling path: Implement multiprocessing with shared memory for dictionary lookup, or migrate tokenization to C++ (already using C++17 compiler in config)
+**Current capacity:**
+- Sample size: ~297,000 earnings call transcripts (2002-2018)
+- Output files: 2,345 parquet files
+- OLD directory: 21GB of historical outputs
 
-**Memory-Heavy Linguistic Variable Construction:**
-- Current capacity: Designed for 8GB RAM minimum, 16GB recommended
-- Limit: `2_Text/2.2_ConstructVariables.py` loads full-year datasets into memory
-- Scaling path: Already has `shared/chunked_reader.py` infrastructure, but not used consistently; implement chunked aggregation with reduce operation
+**Limit:**
+- Single-machine processing with `thread_count: 1` enforced for determinism
+- No distributed processing capability
+- Chunked processing designed for machines with <16GB RAM
 
-**Year-Based File Organization:**
-- Current capacity: 17 years (2002-2018) of data
-- Limit: Hardcoded year range assumptions in multiple scripts, assumes ~17 output files per step
-- Scaling path: Refactor to use data-driven file discovery (glob patterns) instead of year iteration
+**Scaling path:**
+- Implement Dask or Ray for distributed processing
+- Add database backend for intermediate results
+- Design for parallel processing with deterministic aggregation
+- Consider cloud processing for larger datasets (e.g., all conference calls, not just earnings)
 
 ## Dependencies at Risk
 
-**statsmodels 0.14.6:**
-- Risk: Pinned to specific version due to breaking changes in 0.14.0+ (deprecated GLM link names)
-- Impact: Cannot upgrade statsmodels without refactoring regression code (`4_Econometric/`)
-- Migration plan: See DEPENDENCIES.md; requires updating all `smf.ols()` calls to use new API, testing coefficient stability
+**statsmodels:**
+- Risk: Pinned to 0.14.6 for reproducibility; 0.14.0+ introduced breaking GLM link name changes
+- Impact: Regression results may change with version upgrade
+- Migration plan: Document GLM link name mappings; add regression coefficient validation; test upgrade in isolated environment
 
-**pyarrow 21.0.0:**
-- Risk: Pinned for Python 3.8-3.13 compatibility; 23.0.0+ requires Python >= 3.10
-- Impact: Missing out on performance improvements in newer pyarrow versions
-- Migration plan: Upgrade minimum Python version to 3.10, update pin in requirements.txt, benchmark parquet read performance
+**pyarrow:**
+- Risk: Pinned to 21.0.0 for Python 3.8-3.13 compatibility; 23.0.0+ requires Python >= 3.10
+- Impact: Cannot upgrade to newer pyarrow with performance improvements
+- Migration plan: Upgrade Python requirement to 3.10+; test parquet compatibility with newer pyarrow versions
 
-**RapidFuzz (Optional):**
-- Risk: Graceful degradation when missing, but Tier 3 entity linking silently disabled
-- Impact: Lower entity match rates in `1_Sample/1.2_LinkEntities.py`
-- Migration plan: Make RapidFuzz required rather than optional, add clear error message if unavailable
-
-**lifelines 0.30.0:**
-- Risk: Survival analysis library used in `4.3_TakeoverHazards.py` for Cox proportional hazards
-- Impact: API changes in lifelines could break Fine-Gray competing risks models
-- Migration plan: Pin version in requirements.txt (already done), add version compatibility checks in script
+**rapidfuzz (Optional):**
+- Risk: Graceful degradation to fuzzy matching without it, but match rate is lower
+- Impact: Entity linking quality depends on rapidfuzz availability
+- Migration plan: Make rapidfuzz required; document performance impact; add installation validation
 
 ## Missing Critical Features
 
 **Automated Data Validation Pipeline:**
-- Problem: No automated validation that outputs match expected schemas and value ranges
-- Blocks: Confidence in regression results, reproducibility guarantees
-- Recommendations: Implement schema validation using PyArrow metadata, add value range checks for key variables (Uncertainty_pct should be 0-100, etc.)
+- Problem: No automated validation of output data quality between pipeline steps
+- Blocks: Confidence in results after code changes; automated re-running of pipeline
+- Recommendation: Add pytest fixtures that load and validate output schemas; add data quality checks (no nulls in required columns, value ranges)
 
-**Incremental Processing Support:**
-- Problem: Cannot re-run individual years without reprocessing entire pipeline
-- Blocks: Efficient updates when new data arrives, iterative development
-- Recommendations: Implement dependency tracking (e.g., using `luigi` or `make`), add skip-if-exists logic with checksum validation
+**Incremental Processing:**
+- Problem: Pipeline processes all data from scratch each run; no change detection
+- Blocks: Rapid iteration during development; efficient re-processing after upstream data updates
+- Recommendation: Implement input file checksum tracking; skip unchanged steps; add incremental mode
 
-**Comprehensive Logging Standardization:**
-- Problem: Inconsistent logging patterns across scripts (some use print, some use logging module)
-- Blocks: Production monitoring, debugging distributed runs
-- Recommendations: Mandate `shared/observability_utils.py` usage across all scripts, add structured logging (JSON format) for log aggregation
+**Configuration Validation:**
+- Problem: `config/project.yaml` is not validated against schema before use
+- Blocks: Early detection of configuration errors; documentation of valid config values
+- Recommendation: Add JSON schema for config; validate on script startup; provide clear error messages
+
+**Reproducibility Report Generation:**
+- Problem: No automated generation of reproducibility reports (code version, config, data checksums)
+- Blocks: Verification of published results; audit trail for research outputs
+- Recommendation: Auto-generate reproducibility manifest with each run; include git SHA, config snapshot, input checksums
 
 ## Test Coverage Gaps
 
-**Untested E2E Pipeline Execution:**
-- What's not tested: Full pipeline from `1.1_CleanMetadata.py` through `4.4_GenerateSummaryStats.py` with real data
-- Files: `tests/integration/test_full_pipeline.py` exists but likely uses mock fixtures
-- Risk: Integration failures between steps, data lineage breaks
-- Priority: High - should validate each step's outputs can be consumed by next step
+**Untested area: Financial Formula Implementations:**
+- What's not tested: correctness of Size, BM, Lev, ROA calculations in `3.1_FirmControls.py`
+- Files: `2_Scripts/3_Financial/3.1_FirmControls.py`
+- Risk: Incorrect financial control variables could bias all downstream regression results
+- Priority: High
 
-**Untested Edge Cases in Entity Linking:**
-- What's not tested: Fuzzy matching with typos, abbreviations (Inc vs Incorporated), multi-word company names
-- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py`, `tests/unit/test_fuzzy_matching.py` (33 lines)
-- Risk: Incorrect GVKEY assignments, biased sample
-- Priority: High - entity linking is foundational to all downstream analysis
+**Untested area: Tenure Map Construction Logic:**
+- What's not tested: CEO tenure assignment and episode boundary detection in `1.3_BuildTenureMap.py`
+- Files: `2_Scripts/1_Sample/1.3_BuildTenureMap.py`
+- Risk: Incorrect tenure assignment could affect CEO-fixed effects models
+- Priority: Medium
 
-**Untested Error Recovery in Chunked Reading:**
-- What's not tested: Behavior when Parquet files are corrupted, incomplete row groups, memory pressure during chunking
-- Files: `2_Scripts/shared/chunked_reader.py`, `tests/unit/test_chunked_reader.py` (92 lines)
-- Risk: Silent data loss, incomplete processing
-- Priority: Medium - add fault injection tests
+**Untested area: Fuzzy Matching Edge Cases:**
+- What's not tested: Company name matching with special characters, abbreviations, edge cases
+- Files: `2_Scripts/shared/string_matching.py`
+- Risk: Missed matches or false positives in entity linking
+- Priority: Medium
 
-**Untested Windows-Specific Behaviors:**
-- What's not tested: Symlink creation on Windows (requires admin), path length limits (260 char), case-insensitive filesystem issues
-- Files: `2_Scripts/shared/symlink_utils.py`, tests no Windows-specific fixtures
-- Risk: Pipeline fails on Windows environments despite README claiming Windows support
-- Priority: Medium - document Windows limitations or add Windows CI
+**Untested area: Cross-Platform Path Handling:**
+- What's not tested: Path resolution on Linux/macOS after Phase 27 symlink removal
+- Files: `2_Scripts/shared/path_utils.py`, all scripts using path utilities
+- Risk: Pipeline may fail on non-Windows platforms
+- Priority: Medium
+
+**Untested area: Anomaly Detection Accuracy:**
+- What's not tested: Statistical power of Z-score and IQR methods for detecting real data issues
+- Files: `2_Scripts/shared/observability_utils.py` (detect_anomalies_zscore, detect_anomalies_iqr)
+- Risk: False positives (wasted investigation) or false negatives (missed data issues)
+- Priority: Low
+
+**Untested area: Memory Throttling Effectiveness:**
+- What's not tested: Whether memory-aware throttling actually prevents OOM errors
+- Files: `2_Scripts/shared/chunked_reader.py` (MemoryAwareThrottler)
+- Risk: May still experience out-of-memory errors on large datasets
+- Priority: Low
 
 ---
 
-*Concerns audit: 2025-01-29*
+*Concerns audit: 2026-02-04*
