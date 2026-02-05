@@ -9,26 +9,26 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 32 - Econometric Infrastructure
-Plan: 02 of 02
+Phase: 33 - H1 Cash Holdings Regression
+Plan: 01 of 01
 Status: Phase Complete
-Last activity: 2026-02-05 — Completed Phase 32 (Econometric Infrastructure) - 2/2 plans done
+Last activity: 2026-02-05 — Completed Phase 33 (H1 Cash Holdings Regression) - 1/1 plans done
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite
-[████████░░░░░░░░░░] 5/11 phases (45%)
+[█████████░░░░░░░░] 6/11 phases (55%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
 Phase 30: H2 Investment Vars      [COMPLETE - 2/2 plans done]
 Phase 31: H3 Payout Policy Vars   [COMPLETE - 1/1 plans done]
 Phase 32: Econometric Infra       [COMPLETE - 2/2 plans done]
-Phase 33: H1 Regression           [READY]
+Phase 33: H1 Regression           [COMPLETE - 1/1 plans done]
 Phase 34: H2 Regression           [READY]
 Phase 35: H3 Regression           [READY]
-Phase 36: Robustness Checks       [BLOCKED by 33, 34, 35]
+Phase 36: Robustness Checks       [BLOCKED by 34, 35]
 Phase 37: Identification          [BLOCKED by 36]
 Phase 38: Publication Output      [BLOCKED by 37]
 ```
@@ -110,6 +110,13 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [32-02 Econometric Infra] Hansen J / Sargan overidentification test for over-identified models
 - [32-02 Econometric Infra] Publication-ready LaTeX table generation via make_regression_table() in latex_tables.py (533 lines)
 - [32-02 Econometric Infra] Significance stars: *** p<0.01, ** p<0.05, * p<0.10; booktabs format (toprule, midrule, bottomrule)
+- [33-01 H1 Regression] H1 Cash Holdings regression script 4.1_H1CashHoldingsRegression.py (887 lines)
+- [33-01 H1 Regression] 24 regressions executed: 6 uncertainty measures x 4 specifications (primary, pooled, year_only, double_cluster)
+- [33-01 H1 Regression] One-tailed hypothesis tests: H1a (beta1 > 0), H1b (beta3 < 0)
+- [33-01 H1 Regression] Primary spec results: N=16,667-21,690, R2=0.128-0.133
+- [33-01 H1 Regression] H1a: 0/6 measures significant; H1b: 1/6 significant (Manager_QA_Weak_Modal_pct, p=0.0216)
+- [33-01 H1 Regression] Fixed double-clustering bug in panel_ols.py (cluster columns in MultiIndex after set_index)
+- [33-01 H1 Regression] Relaxed condition number threshold to 1000 (VIF is primary diagnostic for FE models)
 
 ### From v1.0 (carry forward)
 
@@ -139,16 +146,26 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
-| Phases Complete | 27/27 | 5/11 |
-| Plans Complete | 143/143 | 10/154 |
+| Phases Complete | 27/27 | 6/11 |
+| Plans Complete | 143/143 | 11/154 |
 | Requirements Complete | 30/30 | 35/55 |
-| Scripts CLI-Ready | 21/21 | 5/5 |
+| Scripts CLI-Ready | 21/21 | 6/5 |
 
 ## Session Continuity
 
 ### Last Session (2026-02-05)
 
 **Completed:**
+- 33-01: H1 Cash Holdings Regression
+  - Created 4.1_H1CashHoldingsRegression.py (887 lines) with complete regression pipeline
+  - Executed 24 regressions (6 uncertainty measures x 4 specifications)
+  - Primary spec: Firm + Year FE, clustered SE at firm level
+  - N ranges 16,667-21,690; R2 ranges 0.128-0.133
+  - H1a (beta1 > 0): 0/6 measures significant
+  - H1b (beta3 < 0): 1/6 measures significant (Manager_QA_Weak_Modal_pct, p=0.0216)
+  - Fixed double-clustering bug in panel_ols.py (cluster columns in MultiIndex)
+  - Relaxed condition number threshold to 1000 (VIF is primary diagnostic)
+  - Generated H1_Regression_Results.parquet, stats.json, H1_RESULTS.md
 - 32-02: IV2SLS Regression and LaTeX Tables
   - Created iv_regression.py (530 lines) with run_iv2sls() using linearmodels.IV2SLS
   - First-stage F-stat validation with threshold 10.0; WeakInstrumentError raised if F < 10
@@ -193,12 +210,12 @@ None currently.
   - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
 
 **Next Session:**
-- Phase 32 is complete - Phases 33-35 (H1/H2/H3 Regressions) are ready to proceed
-- Panel OLS infrastructure supports all required fixed effects configurations
-- IV2SLS infrastructure with first-stage F validation and Hansen J test ready
-- Mean-centering utilities enable Uncertainty x Leverage interaction terms
-- VIF diagnostics will catch multicollinearity during model specification
-- LaTeX table generation ready for publication output
+- Phase 33 is complete - Phases 34-35 (H2/H3 Regressions) are ready to proceed
+- H1 regression pattern established (measures x specifications loop)
+- Double-clustering fix available in panel_ols.py for all future regressions
+- VIF condition threshold relaxation pattern established for FE models
+- One-tailed hypothesis test pattern ready for H2/H3
+- H1 results: weak support for leverage moderation hypothesis (H1b)
 
 ---
 *Last updated: 2026-02-05*
