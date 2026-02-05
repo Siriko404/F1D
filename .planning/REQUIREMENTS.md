@@ -20,11 +20,11 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 - [x] **H1-03**: Construct Operating Cash Flow Volatility control = StdDev(OANCF/AT) over trailing 5 years
 - [x] **H1-04**: Construct Current Ratio control = Current Assets (ACT) / Current Liabilities (LCT)
 - [x] **H1-05**: Include standard controls: Tobin's Q, ROA, Capex/AT, Dividend Payer dummy, Firm Size
-- [ ] **H1-06**: Merge with existing speech uncertainty measures from Step 2 outputs
-- [ ] **H1-07**: Run OLS: CashHoldings_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
-- [ ] **H1-08**: Cluster standard errors at firm level
-- [ ] **H1-09**: Test β1 > 0 (vagueness increases cash) and β3 < 0 (leverage attenuates)
-- [ ] **H1-10**: Output coefficient table and stats.json
+- [x] **H1-06**: Merge with existing speech uncertainty measures from Step 2 outputs
+- [x] **H1-07**: Run OLS: CashHoldings_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
+- [x] **H1-08**: Cluster standard errors at firm level
+- [x] **H1-09**: Test β1 > 0 (vagueness increases cash) and β3 < 0 (leverage attenuates)
+- [x] **H1-10**: Output coefficient table and stats.json
 
 ### H2: Investment Efficiency Variables & Regression
 
@@ -53,13 +53,13 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 
 ### Econometric Infrastructure
 
-- [ ] **ECON-01**: Implement panel OLS with firm + year + industry fixed effects (Fama-French 48)
-- [ ] **ECON-02**: Implement interaction term creation with mean-centering (avoid multicollinearity)
-- [ ] **ECON-03**: Implement clustered standard errors (firm-level with double-clustering option)
-- [ ] **ECON-04**: Implement 2SLS with instruments: manager's prior-firm vagueness, industry-peer average vagueness
-- [ ] **ECON-05**: Validate instruments with first-stage F > 10, Hansen J overidentification test
-- [ ] **ECON-06**: Apply Newey-West adjustment for heteroskedasticity and autocorrelation
-- [ ] **ECON-07**: Check multicollinearity with VIF < 5 threshold
+- [x] **ECON-01**: Implement panel OLS with firm + year + industry fixed effects (Fama-French 48)
+- [x] **ECON-02**: Implement interaction term creation with mean-centering (avoid multicollinearity)
+- [x] **ECON-03**: Implement clustered standard errors (firm-level with double-clustering option)
+- [x] **ECON-04**: Implement 2SLS with instruments: manager's prior-firm vagueness, industry-peer average vagueness
+- [x] **ECON-05**: Validate instruments with first-stage F > 10, Hansen J overidentification test
+- [x] **ECON-06**: Apply Newey-West adjustment for heteroskedasticity and autocorrelation
+- [x] **ECON-07**: Check multicollinearity with VIF < 5 threshold
 
 ### Robustness Checks
 
@@ -152,18 +152,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | H3-03 | Phase 31 | Complete |
 | H3-04 | Phase 31 | Complete |
 | H3-05 | Phase 31 | Pending |
-| ECON-01 | Phase 32 | Pending |
-| ECON-02 | Phase 32 | Pending |
-| ECON-03 | Phase 32 | Pending |
-| ECON-04 | Phase 32 | Pending |
-| ECON-05 | Phase 32 | Pending |
-| ECON-06 | Phase 32 | Pending |
-| ECON-07 | Phase 32 | Pending |
-| H1-06 | Phase 33 | Pending |
-| H1-07 | Phase 33 | Pending |
-| H1-08 | Phase 33 | Pending |
-| H1-09 | Phase 33 | Pending |
-| H1-10 | Phase 33 | Pending |
+| ECON-01 | Phase 32 | Complete |
+| ECON-02 | Phase 32 | Complete |
+| ECON-03 | Phase 32 | Complete |
+| ECON-04 | Phase 32 | Complete |
+| ECON-05 | Phase 32 | Complete |
+| ECON-06 | Phase 32 | Complete |
+| ECON-07 | Phase 32 | Complete |
+| H1-06 | Phase 33 | Complete |
+| H1-07 | Phase 33 | Complete |
+| H1-08 | Phase 33 | Complete |
+| H1-09 | Phase 33 | Complete |
+| H1-10 | Phase 33 | Complete |
 | H2-07 | Phase 34 | Pending |
 | H2-08 | Phase 34 | Pending |
 | H2-09 | Phase 34 | Pending |
