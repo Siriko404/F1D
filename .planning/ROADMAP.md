@@ -105,8 +105,8 @@ Plans:
 
 Plans:
 - [x] 30-01-PLAN.md — Create 3.2_H2Variables.py with investment efficiency variables and Biddle ROA residuals
-- [ ] 30-02-PLAN.md — (Gap Closure) Add analyst_dispersion via CCM CUSIP-GVKEY linking to IBES
-**Status**: Gap found — analyst_dispersion missing (H2-05); CCM linking now available
+- [x] 30-02-PLAN.md — (Gap Closure) Add analyst_dispersion via CCM CUSIP-GVKEY linking to IBES
+**Completed**: 2026-02-05 — 2/2 plans executed, 6/6 requirements verified (gap closed)
 
 ### Phase 31: H3 Payout Policy Variables
 **Goal**: Construct all dependent and control variables for H3 (Payout Policy) hypothesis
@@ -214,7 +214,7 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 |-------|------|----------------|--------|-----------|
 | 28 | V2 Structure Setup | 3/3 | COMPLETE | 2026-02-04 |
 | 29 | H1 Cash Holdings Variables | 1/1 | COMPLETE | 2026-02-04 |
-| 30 | H2 Investment Efficiency Variables | 1/1 | COMPLETE | 2026-02-05 |
+| 30 | H2 Investment Efficiency Variables | 2/2 | COMPLETE | 2026-02-05 |
 | 31 | H3 Payout Policy Variables | 0/TBD | PLANNED | — |
 | 32 | Econometric Infrastructure | 0/TBD | PLANNED | — |
 | 33 | H1 Cash Holdings Regression | 0/TBD | PLANNED | — |

@@ -22,7 +22,7 @@ v2.0 Hypothesis Testing Suite
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
-Phase 30: H2 Investment Vars      [COMPLETE - 1/1 plans done]
+Phase 30: H2 Investment Vars      [COMPLETE - 2/2 plans done]
 Phase 31: H3 Payout Policy Vars   [READY]
 Phase 32: Econometric Infra       [READY]
 Phase 33: H1 Regression           [BLOCKED by 32]
@@ -80,7 +80,7 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [29-01 Variables] Compustat column mappings: `cshoq` (not `cshopq`), `dvy` (not `dvcy`) based on actual schema
 - [29-01 Variables] Use PyArrow schema inspection before reading Compustat to avoid OOM from reading all 679 columns
 - [29-01 Variables] Multiple observations per gvkey-year from firm controls merge retained for analysis flexibility
-- [30-01 Variables] IBES analyst dispersion skipped (requires CUSIP-GVKEY linking via CCM)
+- [30-01 Variables] Analyst dispersion skipped in initial run (requires CUSIP-GVKEY linking via CCM)
 - [30-02 Variables] CCM linking for analyst dispersion: LINKPRIM in ['P','C'] AND LINKTYPE in ['LU','LC']
 - [30-02 Variables] Analyst dispersion = STDEV / |MEANEST|, filtered NUMEST >= 2 AND |MEANEST| >= 0.01
 - [30-02 Variables] 77.41% H2 coverage for analyst_dispersion (22,360/28,887 obs)
@@ -119,9 +119,9 @@ None currently.
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
 | Phases Complete | 27/27 | 3/11 |
-| Plans Complete | 143/143 | 6/154 |
-| Requirements Complete | 30/30 | 18/55 |
-| Scripts CLI-Ready | 21/21 | 3/3 |
+| Plans Complete | 143/143 | 7/154 |
+| Requirements Complete | 30/30 | 23/55 |
+| Scripts CLI-Ready | 21/21 | 4/4 |
 
 ## Session Continuity
 

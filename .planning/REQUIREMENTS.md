@@ -28,12 +28,12 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 
 ### H2: Investment Efficiency Variables & Regression
 
-- [ ] **H2-01**: Construct Overinvestment Dummy = 1 if Capex/Depreciation > 1.5 AND Sales Growth < industry-year median
-- [ ] **H2-02**: Construct Underinvestment Dummy = 1 if Capex/Depreciation < 0.75 AND Tobin's Q > 1.5
-- [ ] **H2-03**: Construct Efficiency Score DV = 1 - (% Overinvestment + % Underinvestment years) over 5-year window
-- [ ] **H2-04**: Alternative DV: Residual from ∆ROA(t+2) ~ Capex(t)/AT regression
-- [ ] **H2-05**: Include controls: Tobin's Q, Cash Flow Volatility, Industry CapEx Intensity, Analyst Dispersion
-- [ ] **H2-06**: Include standard controls: Firm Size, ROA, Free Cash Flow, Earnings Volatility
+- [x] **H2-01**: Construct Overinvestment Dummy = 1 if Capex/Depreciation > 1.5 AND Sales Growth < industry-year median
+- [x] **H2-02**: Construct Underinvestment Dummy = 1 if Capex/Depreciation < 0.75 AND Tobin's Q > 1.5
+- [x] **H2-03**: Construct Efficiency Score DV = 1 - (% Overinvestment + % Underinvestment years) over 5-year window
+- [x] **H2-04**: Alternative DV: Residual from ∆ROA(t+2) ~ Capex(t)/AT regression
+- [x] **H2-05**: Include controls: Tobin's Q, Cash Flow Volatility, Industry CapEx Intensity, Analyst Dispersion
+- [x] **H2-06**: Include standard controls: Firm Size, ROA, Free Cash Flow, Earnings Volatility
 - [ ] **H2-07**: Merge with existing speech uncertainty measures from Step 2 outputs
 - [ ] **H2-08**: Run OLS: Efficiency_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
 - [ ] **H2-09**: Test β1 < 0 (vagueness lowers efficiency) and β3 > 0 (leverage improves efficiency)
