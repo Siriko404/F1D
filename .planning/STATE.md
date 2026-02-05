@@ -9,16 +9,16 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 34 - H2 Investment Efficiency Regression
+Phase: 35 - H3 Payout Policy Regression
 Plan: 01 of 01
 Status: Phase Complete
-Last activity: 2026-02-05 — Completed Phase 34 (H2 Investment Efficiency Regression) - 1/1 plans done
+Last activity: 2026-02-05 — Completed Phase 35 (H3 Payout Policy Regression) - 1/1 plans done
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite
-[██████████░░░░░░░] 7/11 phases (64%)
+[███████████░░░░░░] 8/11 phases (73%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -27,8 +27,8 @@ Phase 31: H3 Payout Policy Vars   [COMPLETE - 1/1 plans done]
 Phase 32: Econometric Infra       [COMPLETE - 2/2 plans done]
 Phase 33: H1 Regression           [COMPLETE - 1/1 plans done]
 Phase 34: H2 Regression           [COMPLETE - 1/1 plans done]
-Phase 35: H3 Regression           [READY]
-Phase 36: Robustness Checks       [BLOCKED by 35]
+Phase 35: H3 Regression           [COMPLETE - 1/1 plans done]
+Phase 36: Robustness Checks       [READY]
 Phase 37: Identification          [BLOCKED by 36]
 Phase 38: Publication Output      [BLOCKED by 37]
 ```
@@ -125,6 +125,16 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [34-01 H2 Regression] H2b (beta3 > 0): 0/6 measures significant for both DVs
 - [34-01 H2 Regression] Merged H1 leverage data into H2 regression (H2 variables lack leverage column)
 - [34-01 H2 Regression] No support found for speech uncertainty reducing investment efficiency
+- [35-01 H3 Regression] H3 Payout Policy regression script 4.3_H3PayoutPolicyRegression.py (1,050 lines)
+- [35-01 H3 Regression] 48 regressions executed: 2 DVs x 6 uncertainty measures x 4 specifications
+- [35-01 H3 Regression] DVs: div_stability (higher = more stable), payout_flexibility (higher = more flexible)
+- [35-01 H3 Regression] Primary spec results: N=180K-244K, R2=0.021-0.045
+- [35-01 H3 Regression] H3a_stability (beta1 < 0): 1/6 significant (CEO_Pres_Uncertainty_pct, p=0.0010)
+- [35-01 H3 Regression] H3b_stability (beta3 < 0): 0/6 significant
+- [35-01 H3 Regression] H3a_flexibility (beta1 > 0): 1/6 significant (Manager_QA_Weak_Modal_pct, p=0.0037)
+- [35-01 H3 Regression] H3b_flexibility (beta3 > 0): 0/6 significant
+- [35-01 H3 Regression] DV-specific hypothesis directions: stability tests beta < 0, flexibility tests beta > 0
+- [35-01 H3 Regression] Sample expands 1566% after speech merge (16K -> 260K obs) due to multiple speech calls per firm-year
 
 ### From v1.0 (carry forward)
 
@@ -154,10 +164,10 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
-| Phases Complete | 27/27 | 7/11 |
-| Plans Complete | 143/143 | 12/154 |
-| Requirements Complete | 30/30 | 39/55 |
-| Scripts CLI-Ready | 21/21 | 7/7 |
+| Phases Complete | 27/27 | 8/11 |
+| Plans Complete | 143/143 | 13/154 |
+| Requirements Complete | 30/30 | 43/55 |
+| Scripts CLI-Ready | 21/21 | 8/8 |
 
 ## Session Continuity
 
@@ -218,13 +228,11 @@ None currently.
   - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
 
 **Next Session:**
-- Phase 34 is complete - Phase 35 (H3 Payout Policy Regression) is ready to proceed
-- H1 regression pattern established (measures x specifications loop)
-- H2 regression complete with 48 regressions; null results for H2 hypotheses
-- H2 required merging H1 leverage data (deviation handled automatically)
-- Double-clustering fix available in panel_ols.py for all future regressions
-- VIF condition threshold relaxation pattern established for FE models
-- One-tailed hypothesis test pattern ready for H3
+- Phase 35 is complete - Phase 36 (Robustness Checks) is ready to proceed
+- All three hypothesis regression phases complete (H1, H2, H3)
+- H3 regression pattern established with DV-specific hypothesis test directions
+- Sample expansion pattern (speech merge creates multiple obs per H3 record) documented
+- Ready for robustness checks: alternative specifications, subsample analyses, placebo tests
 
 ---
 *Last updated: 2026-02-05*
