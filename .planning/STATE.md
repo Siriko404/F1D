@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 30 - H2 Investment Efficiency Variables
-Plan: 01 of 01
+Plan: 02 of 02
 Status: Phase Complete
-Last activity: 2026-02-05 — Completed H2 Investment Efficiency variables construction and verification (plan 30-01)
+Last activity: 2026-02-05 — Completed analyst dispersion gap closure (plan 30-02)
 
 ### Progress
 
@@ -81,6 +81,10 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [29-01 Variables] Use PyArrow schema inspection before reading Compustat to avoid OOM from reading all 679 columns
 - [29-01 Variables] Multiple observations per gvkey-year from firm controls merge retained for analysis flexibility
 - [30-01 Variables] IBES analyst dispersion skipped (requires CUSIP-GVKEY linking via CCM)
+- [30-02 Variables] CCM linking for analyst dispersion: LINKPRIM in ['P','C'] AND LINKTYPE in ['LU','LC']
+- [30-02 Variables] Analyst dispersion = STDEV / |MEANEST|, filtered NUMEST >= 2 AND |MEANEST| >= 0.01
+- [30-02 Variables] 77.41% H2 coverage for analyst_dispersion (22,360/28,887 obs)
+- [30-02 Variables] H2-05 requirement SATISFIED via CCM CUSIP-GVKEY mapping
 - [30-01 Variables] Filter base to sample manifest BEFORE merging to reduce memory usage (10x improvement)
 - [30-01 Variables] FF48 industry classification with FF12 fallback for thin cells (<5 firms)
 - [30-01 Variables] Mutual exclusivity enforced: firms cannot be both over and under-investing
@@ -115,15 +119,21 @@ None currently.
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
 | Phases Complete | 27/27 | 3/11 |
-| Plans Complete | 143/143 | 5/154 |
-| Requirements Complete | 30/30 | 17/55 |
-| Scripts CLI-Ready | 21/21 | 2/3 |
+| Plans Complete | 143/143 | 6/154 |
+| Requirements Complete | 30/30 | 18/55 |
+| Scripts CLI-Ready | 21/21 | 3/3 |
 
 ## Session Continuity
 
 ### Last Session (2026-02-05)
 
 **Completed:**
+- 30-02: Analyst Dispersion Gap Closure
+  - Created 3.2a_AnalystDispersionPatch.py (637 lines)
+  - Implemented CCM CUSIP-GVKEY linking with LINKPRIM/LINKTYPE filtering
+  - Computed analyst_dispersion = STDEV / |MEANEST| from IBES
+  - Patched H2 output to 14 columns, 77.41% coverage (22,360/28,887 obs)
+  - H2-05 requirement NOW SATISFIED
 - 30-01: H2 Investment Efficiency Variables construction
   - Created 3.2_H2Variables.py (1,679 lines)
   - Fixed IBES column names (uppercase), memory optimization, datadate handling
