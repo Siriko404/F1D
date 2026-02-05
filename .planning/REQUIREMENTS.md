@@ -15,11 +15,11 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 
 ### H1: Cash Holdings Variables & Regression
 
-- [ ] **H1-01**: Construct Cash Holdings DV = Cash and Cash Equivalents (CHE) / Total Assets (AT)
-- [ ] **H1-02**: Construct Firm Leverage moderator = Total Debt (DLTT + DLC) / Total Assets (AT)
-- [ ] **H1-03**: Construct Operating Cash Flow Volatility control = StdDev(OANCF/AT) over trailing 5 years
-- [ ] **H1-04**: Construct Current Ratio control = Current Assets (ACT) / Current Liabilities (LCT)
-- [ ] **H1-05**: Include standard controls: Tobin's Q, ROA, Capex/AT, Dividend Payer dummy, Firm Size
+- [x] **H1-01**: Construct Cash Holdings DV = Cash and Cash Equivalents (CHE) / Total Assets (AT)
+- [x] **H1-02**: Construct Firm Leverage moderator = Total Debt (DLTT + DLC) / Total Assets (AT)
+- [x] **H1-03**: Construct Operating Cash Flow Volatility control = StdDev(OANCF/AT) over trailing 5 years
+- [x] **H1-04**: Construct Current Ratio control = Current Assets (ACT) / Current Liabilities (LCT)
+- [x] **H1-05**: Include standard controls: Tobin's Q, ROA, Capex/AT, Dividend Payer dummy, Firm Size
 - [ ] **H1-06**: Merge with existing speech uncertainty measures from Step 2 outputs
 - [ ] **H1-07**: Run OLS: CashHoldings_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
 - [ ] **H1-08**: Cluster standard errors at firm level
@@ -130,17 +130,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STRUCT-01 | Phase 28 | Pending |
-| STRUCT-02 | Phase 28 | Pending |
-| STRUCT-03 | Phase 28 | Pending |
-| STRUCT-04 | Phase 28 | Pending |
-| STRUCT-05 | Phase 28 | Pending |
-| STRUCT-06 | Phase 28 | Pending |
-| H1-01 | Phase 29 | Pending |
-| H1-02 | Phase 29 | Pending |
-| H1-03 | Phase 29 | Pending |
-| H1-04 | Phase 29 | Pending |
-| H1-05 | Phase 29 | Pending |
+| STRUCT-01 | Phase 28 | Complete |
+| STRUCT-02 | Phase 28 | Complete |
+| STRUCT-03 | Phase 28 | Complete |
+| STRUCT-04 | Phase 28 | Complete |
+| STRUCT-05 | Phase 28 | Complete |
+| STRUCT-06 | Phase 28 | Complete |
+| H1-01 | Phase 29 | Complete |
+| H1-02 | Phase 29 | Complete |
+| H1-03 | Phase 29 | Complete |
+| H1-04 | Phase 29 | Complete |
+| H1-05 | Phase 29 | Complete |
 | H2-01 | Phase 30 | Pending |
 | H2-02 | Phase 30 | Pending |
 | H2-03 | Phase 30 | Pending |

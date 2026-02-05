@@ -75,7 +75,7 @@ Plans:
 - [x] 28-03-PLAN.md — Create and run V2 structure validation script
 **Completed**: 2026-02-04 — 3/3 plans executed, 6/6 requirements verified
 
-### Phase 29: H1 Cash Holdings Variables
+### Phase 29: H1 Cash Holdings Variables ✓
 **Goal**: Construct all dependent, moderator, and control variables for H1 (Cash Holdings) hypothesis
 **Depends on**: Phase 28
 **Requirements**: H1-01, H1-02, H1-03, H1-04, H1-05
@@ -88,7 +88,8 @@ Plans:
 **Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 29-01-PLAN.md — Create 3.1_H1Variables.py script with all H1 variables and execute
+- [x] 29-01-PLAN.md — Create 3.1_H1Variables.py script with all H1 variables and execute
+**Completed**: 2026-02-04 — 1/1 plans executed, 5/5 requirements verified
 
 ### Phase 30: H2 Investment Efficiency Variables
 **Goal**: Construct all dependent and control variables for H2 (Investment Efficiency) hypothesis
@@ -206,8 +207,8 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 
 | Phase | Name | Plans Complete | Status | Completed |
 |-------|------|----------------|--------|-----------|
-| 28 | V2 Structure Setup | 0/TBD | PLANNED | — |
-| 29 | H1 Cash Holdings Variables | 0/TBD | PLANNED | — |
+| 28 | V2 Structure Setup | 3/3 | COMPLETE | 2026-02-04 |
+| 29 | H1 Cash Holdings Variables | 1/1 | COMPLETE | 2026-02-04 |
 | 30 | H2 Investment Efficiency Variables | 0/TBD | PLANNED | — |
 | 31 | H3 Payout Policy Variables | 0/TBD | PLANNED | — |
 | 32 | Econometric Infrastructure | 0/TBD | PLANNED | — |

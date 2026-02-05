@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 Phase: 29 - H1 Cash Holdings Variables
 Plan: 01 of 01
-Status: In Progress
-Last activity: 2026-02-04 — Completed H1 Cash Holdings variables construction (plan 29-01)
+Status: Phase Complete
+Last activity: 2026-02-04 — Completed H1 Cash Holdings variables construction and verification (plan 29-01)
 
 ### Progress
 
@@ -110,10 +110,10 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
-| Phases Complete | 27/27 | 1/11 |
-| Plans Complete | 143/143 | 3/154 |
-| Requirements Mapped | 30/30 | 55/55 |
-| Scripts CLI-Ready | 21/21 | — |
+| Phases Complete | 27/27 | 2/11 |
+| Plans Complete | 143/143 | 4/154 |
+| Requirements Complete | 30/30 | 11/55 |
+| Scripts CLI-Ready | 21/21 | 1/3 |
 
 ## Session Continuity
 
