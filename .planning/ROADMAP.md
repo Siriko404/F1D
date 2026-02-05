@@ -168,7 +168,10 @@ Plans:
   3. Coefficient table reports beta1 < 0 (vagueness lowers efficiency) and beta3 > 0 (leverage improves efficiency)
   4. Both primary DV (Efficiency Score) and alternative DV (ROA residual) tested
   5. stats.json output includes all regression diagnostics
-**Plans**: TBD
+**Plans**: 1 plan in 1 wave
+
+Plans:
+- [ ] 34-01-PLAN.md — Create 4.2_H2InvestmentEfficiencyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
 
 ### Phase 35: H3 Payout Policy Regression
 **Goal**: Run and validate OLS/2SLS regressions for H3 (Speech Uncertainty & Payout Policy)
