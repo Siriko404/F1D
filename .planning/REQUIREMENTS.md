@@ -45,11 +45,11 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 - [x] **H3-02**: Construct Payout Flexibility DV = % years with dividend change (|∆DPS| > 5%) over 5-year window
 - [x] **H3-03**: Include controls: Earnings Volatility (StdDev EPS over 5 years), FCF Growth, Firm Maturity
 - [x] **H3-04**: Include standard controls: Firm Size, ROA, Tobin's Q, Cash Holdings
-- [ ] **H3-05**: Merge with existing speech uncertainty measures from Step 2 outputs
-- [ ] **H3-06**: Run OLS for Stability: Stability_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
-- [ ] **H3-07**: Run OLS for Flexibility: Flexibility_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
-- [ ] **H3-08**: Test for Stability: β1 < 0, β3 < 0; for Flexibility: β1 > 0, β3 > 0
-- [ ] **H3-09**: Output coefficient table and stats.json
+- [x] **H3-05**: Merge with existing speech uncertainty measures from Step 2 outputs
+- [x] **H3-06**: Run OLS for Stability: Stability_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
+- [x] **H3-07**: Run OLS for Flexibility: Flexibility_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
+- [x] **H3-08**: Test for Stability: β1 < 0, β3 < 0; for Flexibility: β1 > 0, β3 > 0
+- [x] **H3-09**: Output coefficient table and stats.json
 
 ### Econometric Infrastructure
 
@@ -151,7 +151,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | H3-02 | Phase 31 | Complete |
 | H3-03 | Phase 31 | Complete |
 | H3-04 | Phase 31 | Complete |
-| H3-05 | Phase 31 | Pending |
+| H3-05 | Phase 35 | Complete |
 | ECON-01 | Phase 32 | Complete |
 | ECON-02 | Phase 32 | Complete |
 | ECON-03 | Phase 32 | Complete |
@@ -168,10 +168,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | H2-08 | Phase 34 | Complete |
 | H2-09 | Phase 34 | Complete |
 | H2-10 | Phase 34 | Complete |
-| H3-06 | Phase 35 | Pending |
-| H3-07 | Phase 35 | Pending |
-| H3-08 | Phase 35 | Pending |
-| H3-09 | Phase 35 | Pending |
+| H3-06 | Phase 35 | Complete |
+| H3-07 | Phase 35 | Complete |
+| H3-08 | Phase 35 | Complete |
+| H3-09 | Phase 35 | Complete |
 | ROBUST-01 | Phase 36 | Pending |
 | ROBUST-02 | Phase 36 | Pending |
 | ROBUST-03 | Phase 36 | Pending |

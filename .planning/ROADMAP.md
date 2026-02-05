@@ -174,7 +174,7 @@ Plans:
 - [x] 34-01-PLAN.md — Create 4.2_H2InvestmentEfficiencyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
 **Completed**: 2026-02-05 — 1/1 plans executed, 4/4 requirements verified. Results: No support for H2 hypotheses (0/6 measures significant for both H2a and H2b).
 
-### Phase 35: H3 Payout Policy Regression
+### Phase 35: H3 Payout Policy Regression ✓
 **Goal**: Run and validate OLS/2SLS regressions for H3 (Speech Uncertainty & Payout Policy)
 **Depends on**: Phase 31, Phase 32
 **Requirements**: H3-06, H3-07, H3-08, H3-09
@@ -187,7 +187,8 @@ Plans:
 **Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 35-01-PLAN.md — Create 4.3_H3PayoutPolicyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
+- [x] 35-01-PLAN.md — Create 4.3_H3PayoutPolicyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
+**Completed**: 2026-02-05 — 1/1 plans executed, 4/4 requirements verified. Results: H3a_stability 1/6 significant (CEO_Pres_Uncertainty_pct), H3b_stability 0/6; H3a_flexibility 1/6 (Manager_QA_Weak_Modal_pct), H3b_flexibility 0/6.
 
 ### Phase 36: Robustness Checks
 **Goal**: Validate hypothesis results across subsamples and alternative specifications
@@ -239,7 +240,7 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 | 32 | Econometric Infrastructure | 2/2 | COMPLETE | 2026-02-05 |
 | 33 | H1 Cash Holdings Regression | 1/1 | COMPLETE | 2026-02-05 |
 | 34 | H2 Investment Efficiency Regression | 1/1 | COMPLETE | 2026-02-05 |
-| 35 | H3 Payout Policy Regression | 0/TBD | PLANNED | — |
+| 35 | H3 Payout Policy Regression | 1/1 | COMPLETE | 2026-02-05 |
 | 36 | Robustness Checks | 0/TBD | PLANNED | — |
 | 37 | Identification Strategies | 0/TBD | PLANNED | — |
 | 38 | Publication Output | 0/TBD | PLANNED | — |
