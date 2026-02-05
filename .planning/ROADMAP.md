@@ -4,9 +4,9 @@
 
 This roadmap extends the existing F1D data processing pipeline with hypothesis testing capabilities for empirical finance research. Building on the v1.0 foundation (27 phases, 143 plans) that established observability and documentation, v2.0 implements three empirical hypotheses: H1 (Speech Uncertainty & Cash Holdings), H2 (Speech Uncertainty & Investment Efficiency), and H3 (Speech Uncertainty & Payout Policy). The work leverages existing sample construction and text measures from v1.0 while adding new variable construction and panel econometric regressions with fixed effects, interaction terms, and robustness checks.
 
-**Milestone:** v2.0 Hypothesis Testing Suite
-**Phases:** 28-38 (11 phases, continuing from v1.0 Phase 27)
-**Requirements:** 55 total across 8 categories
+**Milestone:** v2.0 Hypothesis Testing Suite — COMPLETE
+**Phases:** 28-35 completed; 36-38 cancelled (hypotheses not supported)
+**Requirements:** 40/55 completed (15 requirements in cancelled phases not pursued)
 
 ## v1.0 Completed Phases (1-27)
 
@@ -190,46 +190,47 @@ Plans:
 - [x] 35-01-PLAN.md — Create 4.3_H3PayoutPolicyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
 **Completed**: 2026-02-05 — 1/1 plans executed, 4/4 requirements verified. Results: H3a_stability 1/6 significant (CEO_Pres_Uncertainty_pct), H3b_stability 0/6; H3a_flexibility 1/6 (Manager_QA_Weak_Modal_pct), H3b_flexibility 0/6.
 
-### Phase 36: Robustness Checks
-**Goal**: Validate hypothesis results across subsamples and alternative specifications
-**Depends on**: Phase 33, Phase 34, Phase 35
-**Requirements**: ROBUST-01, ROBUST-02, ROBUST-03, ROBUST-04, ROBUST-05, ROBUST-06, ROBUST-07
-**Success Criteria** (what must be TRUE):
-  1. Leverage subsample analysis (above/below median) shows coefficient pattern consistency
-  2. Growth subsample (Tobin's Q above/below 1.5) shows expected moderation effects
-  3. FCF subsample analysis completed
-  4. Pre/post-2008 time period splits show temporal stability
-  5. Alternative uncertainty measure (weak modals only) replicates main findings
-  6. Crisis year exclusion (2008-2009) sensitivity documented
-  7. Reverse causality check (regress uncertainty on lagged outcome) shows no evidence of reverse causation
-**Plans**: TBD
+### Phase 36: Robustness Checks — CANCELLED
+**Status**: CANCELLED (Hypotheses not supported)
+**Reason**: All three core hypotheses (H1, H2, H3) showed minimal to no statistical support in primary regressions. Pursuing robustness checks for null results would not be scientifically meaningful.
+**Requirements**: ROBUST-01 through ROBUST-07 — NOT PURSUED
 
-### Phase 37: Identification Strategies
-**Goal**: Address endogeneity concerns with manager fixed effects, propensity score matching, and falsification tests
-**Depends on**: Phase 36
-**Requirements**: IDENT-01, IDENT-02, IDENT-03
-**Success Criteria** (what must be TRUE):
-  1. Manager fixed effects regression runs with sufficient within-manager variation (mover check)
-  2. Propensity score matching for high/low vagueness firms shows consistent treatment effects
-  3. Falsification test on placebo DV (e.g., inventory/assets for H1) shows null effect
-**Plans**: TBD
+### Phase 37: Identification Strategies — CANCELLED
+**Status**: CANCELLED (Hypotheses not supported)
+**Reason**: Identification strategies (manager FE, PSM, falsification tests) are designed to strengthen causal claims from supported hypotheses. With null results, these are not applicable.
+**Requirements**: IDENT-01 through IDENT-03 — NOT PURSUED
 
-### Phase 38: Publication Output
-**Goal**: Generate publication-ready tables and economic significance calculations
-**Depends on**: Phase 37
-**Requirements**: PUB-01, PUB-02, PUB-03, PUB-04, PUB-05
-**Success Criteria** (what must be TRUE):
-  1. Coefficient tables include beta, SE, t-stat, p-value, R-squared, N for all hypotheses
-  2. LaTeX-formatted regression tables ready for paper submission
-  3. Economic significance calculated (1-SD change in uncertainty effect on outcomes)
-  4. Marginal effects reported at mean leverage for interaction terms
-  5. Complete stats.json with all regression diagnostics for replication
-**Plans**: TBD
+### Phase 38: Publication Output — CANCELLED
+**Status**: CANCELLED (Hypotheses not supported)
+**Reason**: Publication tables for null results would document absence of predicted relationships. The regression outputs from Phases 33-35 already contain all necessary documentation of the null findings.
+**Requirements**: PUB-01 through PUB-05 — NOT PURSUED
+
+---
+
+## v2.0 Hypothesis Testing Summary
+
+**Conclusion**: The empirical analysis found no consistent support for the hypothesized relationships between managerial speech uncertainty and corporate financial policies.
+
+### H1: Cash Holdings
+- **H1a** (vagueness → higher cash): 0/6 uncertainty measures significant
+- **H1b** (leverage attenuates effect): 1/6 measures significant (Manager_QA_Weak_Modal_pct only)
+
+### H2: Investment Efficiency
+- **H2a** (vagueness → lower efficiency): 0/6 uncertainty measures significant
+- **H2b** (leverage improves efficiency): 0/6 measures significant
+
+### H3: Payout Policy
+- **H3a_stability** (vagueness → less stability): 1/6 measures significant (CEO_Pres_Uncertainty_pct)
+- **H3b_stability** (leverage → more stability): 0/6 measures significant
+- **H3a_flexibility** (vagueness → more flexibility): 1/6 measures significant (Manager_QA_Weak_Modal_pct)
+- **H3b_flexibility** (leverage → less flexibility): 0/6 measures significant
+
+**Interpretation**: The speech uncertainty measures derived from earnings call transcripts do not systematically predict cash holdings, investment efficiency, or payout policy stability as theorized. This null result is itself a finding that contributes to the literature by documenting what does NOT work.
 
 ## Progress
 
 **v2.0 Execution Order:**
-Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 (Infrastructure) → Phases 33-35 (Regressions, can parallelize) → Phase 36 (Robustness) → Phase 37 (Identification) → Phase 38 (Publication)
+Phase 28 (Structure) → Phases 29-31 (Variables, parallelized) → Phase 32 (Infrastructure) → Phases 33-35 (Regressions, parallelized) → [Phases 36-38 CANCELLED]
 
 | Phase | Name | Plans Complete | Status | Completed |
 |-------|------|----------------|--------|-----------|
@@ -241,29 +242,31 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 | 33 | H1 Cash Holdings Regression | 1/1 | COMPLETE | 2026-02-05 |
 | 34 | H2 Investment Efficiency Regression | 1/1 | COMPLETE | 2026-02-05 |
 | 35 | H3 Payout Policy Regression | 1/1 | COMPLETE | 2026-02-05 |
-| 36 | Robustness Checks | 0/TBD | PLANNED | — |
-| 37 | Identification Strategies | 0/TBD | PLANNED | — |
-| 38 | Publication Output | 0/TBD | PLANNED | — |
+| 36 | Robustness Checks | — | CANCELLED | — |
+| 37 | Identification Strategies | — | CANCELLED | — |
+| 38 | Publication Output | — | CANCELLED | — |
+
+**v2.0 Summary:** 8/8 active phases completed, 13 plans executed, 40 requirements verified. 3 phases cancelled due to null hypothesis results.
 
 ## Requirement Coverage
 
-All 55 v2.0 requirements mapped to phases:
+v2.0 requirements by status:
 
-| Category | Requirements | Phase |
-|----------|--------------|-------|
-| V2 Structure | STRUCT-01, STRUCT-02, STRUCT-03, STRUCT-04, STRUCT-05, STRUCT-06 | Phase 28 |
-| H1 Variables | H1-01, H1-02, H1-03, H1-04, H1-05 | Phase 29 |
-| H2 Variables | H2-01, H2-02, H2-03, H2-04, H2-05, H2-06 | Phase 30 |
-| H3 Variables | H3-01, H3-02, H3-03, H3-04, H3-05 | Phase 31 |
-| Econometrics | ECON-01, ECON-02, ECON-03, ECON-04, ECON-05, ECON-06, ECON-07 | Phase 32 |
-| H1 Regression | H1-06, H1-07, H1-08, H1-09, H1-10 | Phase 33 |
-| H2 Regression | H2-07, H2-08, H2-09, H2-10 | Phase 34 |
-| H3 Regression | H3-06, H3-07, H3-08, H3-09 | Phase 35 |
-| Robustness | ROBUST-01, ROBUST-02, ROBUST-03, ROBUST-04, ROBUST-05, ROBUST-06, ROBUST-07 | Phase 36 |
-| Identification | IDENT-01, IDENT-02, IDENT-03 | Phase 37 |
-| Publication | PUB-01, PUB-02, PUB-03, PUB-04, PUB-05 | Phase 38 |
+| Category | Requirements | Phase | Status |
+|----------|--------------|-------|--------|
+| V2 Structure | STRUCT-01 through STRUCT-06 | Phase 28 | ✓ COMPLETE |
+| H1 Variables | H1-01 through H1-05 | Phase 29 | ✓ COMPLETE |
+| H2 Variables | H2-01 through H2-06 | Phase 30 | ✓ COMPLETE |
+| H3 Variables | H3-01 through H3-05 | Phase 31 | ✓ COMPLETE |
+| Econometrics | ECON-01 through ECON-07 | Phase 32 | ✓ COMPLETE |
+| H1 Regression | H1-06 through H1-10 | Phase 33 | ✓ COMPLETE |
+| H2 Regression | H2-07 through H2-10 | Phase 34 | ✓ COMPLETE |
+| H3 Regression | H3-06 through H3-09 | Phase 35 | ✓ COMPLETE |
+| Robustness | ROBUST-01 through ROBUST-07 | Phase 36 | ✗ NOT PURSUED |
+| Identification | IDENT-01 through IDENT-03 | Phase 37 | ✗ NOT PURSUED |
+| Publication | PUB-01 through PUB-05 | Phase 38 | ✗ NOT PURSUED |
 
-**Coverage:** 55/55 requirements mapped (100%)
+**Coverage:** 40/55 requirements completed (73%); 15 requirements not pursued due to null hypothesis results
 
 ---
 *Roadmap created: 2026-01-22 (v1.0)*

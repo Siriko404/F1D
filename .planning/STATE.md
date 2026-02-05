@@ -5,35 +5,50 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite - Phase 32 complete, ready for regression phases
+**Current focus:** v2.0 Hypothesis Testing Suite — COMPLETE (null results, Phases 36-38 cancelled)
 
 ## Current Position
 
 Phase: 35 - H3 Payout Policy Regression
 Plan: 01 of 01
-Status: Phase Complete
-Last activity: 2026-02-05 — Completed Phase 35 (H3 Payout Policy Regression) - 1/1 plans done
+Status: MILESTONE COMPLETE
+Last activity: 2026-02-05 — v2.0 milestone concluded; Phases 36-38 cancelled (hypotheses not supported)
 
 ### Progress
 
 ```
-v2.0 Hypothesis Testing Suite
-[███████████░░░░░░] 8/11 phases (73%)
+v2.0 Hypothesis Testing Suite — COMPLETE
+[████████████████░░] 8/8 active phases (100%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
 Phase 30: H2 Investment Vars      [COMPLETE - 2/2 plans done]
 Phase 31: H3 Payout Policy Vars   [COMPLETE - 1/1 plans done]
 Phase 32: Econometric Infra       [COMPLETE - 2/2 plans done]
-Phase 33: H1 Regression           [COMPLETE - 1/1 plans done]
-Phase 34: H2 Regression           [COMPLETE - 1/1 plans done]
-Phase 35: H3 Regression           [COMPLETE - 1/1 plans done]
-Phase 36: Robustness Checks       [READY]
-Phase 37: Identification          [BLOCKED by 36]
-Phase 38: Publication Output      [BLOCKED by 37]
+Phase 33: H1 Regression           [COMPLETE - 1/1 plans done] → H1a: 0/6, H1b: 1/6
+Phase 34: H2 Regression           [COMPLETE - 1/1 plans done] → H2a: 0/6, H2b: 0/6
+Phase 35: H3 Regression           [COMPLETE - 1/1 plans done] → H3a: 1/6, H3b: 0/6
+Phase 36: Robustness Checks       [CANCELLED - null results]
+Phase 37: Identification          [CANCELLED - null results]
+Phase 38: Publication Output      [CANCELLED - null results]
 ```
 
-## v2.0 Milestone Goals
+## v2.0 Hypothesis Testing Results
+
+**Conclusion**: No consistent statistical support for hypothesized relationships between managerial speech uncertainty and corporate financial policies.
+
+| Hypothesis | Prediction | Result | Significant Measures |
+|------------|------------|--------|---------------------|
+| H1a | Uncertainty → ↑ Cash | NOT SUPPORTED | 0/6 |
+| H1b | Leverage attenuates H1a | WEAK | 1/6 (QA_Weak_Modal) |
+| H2a | Uncertainty → ↓ Efficiency | NOT SUPPORTED | 0/6 |
+| H2b | Leverage improves H2a | NOT SUPPORTED | 0/6 |
+| H3a | Uncertainty → ↓ Stability | WEAK | 1/6 (CEO_Pres_Uncertainty) |
+| H3b | Leverage → ↑ Stability | NOT SUPPORTED | 0/6 |
+
+**Implication**: Phases 36-38 (Robustness, Identification, Publication) cancelled as scientifically inappropriate for null results.
+
+## v2.0 Milestone Goals — CONCLUDED
 
 **Hypothesis 1: Cash Holdings (H1)**
 - Vague managers hoard more cash (precautionary motive)
@@ -162,77 +177,34 @@ None currently.
 
 ## Performance Metrics
 
-| Metric | v1.0 Final | v2.0 Current |
-|--------|------------|--------------|
-| Phases Complete | 27/27 | 8/11 |
-| Plans Complete | 143/143 | 13/154 |
-| Requirements Complete | 30/30 | 43/55 |
+| Metric | v1.0 Final | v2.0 Final |
+|--------|------------|------------|
+| Phases Complete | 27/27 | 8/8 active (3 cancelled) |
+| Plans Complete | 143/143 | 13/13 |
+| Requirements Complete | 30/30 | 40/40 active (15 not pursued) |
 | Scripts CLI-Ready | 21/21 | 8/8 |
+| Hypotheses Supported | — | 0/3 (null results) |
 
 ## Session Continuity
 
 ### Last Session (2026-02-05)
 
 **Completed:**
-- 33-01: H1 Cash Holdings Regression
-  - Created 4.1_H1CashHoldingsRegression.py (887 lines) with complete regression pipeline
-  - Executed 24 regressions (6 uncertainty measures x 4 specifications)
-  - Primary spec: Firm + Year FE, clustered SE at firm level
-  - N ranges 16,667-21,690; R2 ranges 0.128-0.133
-  - H1a (beta1 > 0): 0/6 measures significant
-  - H1b (beta3 < 0): 1/6 measures significant (Manager_QA_Weak_Modal_pct, p=0.0216)
-  - Fixed double-clustering bug in panel_ols.py (cluster columns in MultiIndex)
-  - Relaxed condition number threshold to 1000 (VIF is primary diagnostic)
-  - Generated H1_Regression_Results.parquet, stats.json, H1_RESULTS.md
-- 32-02: IV2SLS Regression and LaTeX Tables
-  - Created iv_regression.py (530 lines) with run_iv2sls() using linearmodels.IV2SLS
-  - First-stage F-stat validation with threshold 10.0; WeakInstrumentError raised if F < 10
-  - Hansen J / Sargan overidentification test for over-identified models
-  - Created latex_tables.py (533 lines) with make_regression_table(), make_iv_table()
-  - Booktabs format LaTeX tables with significance stars (*, **, ***)
-  - All 7 ECON requirements satisfied (ECON-01 through ECON-07)
-- 32-01: Econometric Infrastructure (Panel OLS, Centering, Diagnostics)
-  - Created panel_ols.py (531 lines) with run_panel_ols() using linearmodels.PanelOLS
-  - Firm + year + industry fixed effects with drop_absorbed=False, check_rank=True
-  - Clustered SE at firm level with double-clustering option
-  - HAC/Newey-West adjustment via cov_type='kernel', kernel='bartlett'
-  - VIF diagnostics post-fit with threshold 5.0 warnings
-  - Console output with significance stars (*, **, ***)
-  - Created centering.py (340 lines) with center_continuous(), create_interaction()
-  - Mean-centering reduces VIF for interaction terms
-  - Created diagnostics.py (413 lines) with compute_vif(), check_multicollinearity()
-  - Condition number detection for ill-conditioned matrices (>30)
-  - Custom exceptions: CollinearityError, MulticollinearityError
-- 31-01: H3 Payout Policy Variables construction
-  - Created 3.3_H3Variables.py (1,140 lines)
-  - Fixed Unicode Delta character, cartesian product issues in H1 controls merge
-  - Fixed observability_utils to skip list values in stats summary
-  - Generated H3_PayoutPolicy.parquet with 16,616 dividend-paying firm observations
-  - 2 DVs: div_stability (99.8% coverage), payout_flexibility (100% coverage)
-  - 3 H3 controls: earnings_volatility, fcf_growth, firm_maturity
-  - Standard controls from H1: firm_size, roa, tobins_q, cash_holdings
-  - Filtered to dividend payers only (DVs undefined for never-payers)
-- 30-02: Analyst Dispersion Gap Closure
-  - Created 3.2a_AnalystDispersionPatch.py (637 lines)
-  - Implemented CCM CUSIP-GVKEY linking with LINKPRIM/LINKTYPE filtering
-  - Computed analyst_dispersion = STDEV / |MEANEST| from IBES
-  - Patched H2 output to 14 columns, 77.41% coverage (22,360/28,887 obs)
-  - H2-05 requirement NOW SATISFIED
-- 30-01: H2 Investment Efficiency Variables construction
-  - Created 3.2_H2Variables.py (1,679 lines)
-  - Fixed IBES column names (uppercase), memory optimization, datadate handling
-  - Generated H2_InvestmentEfficiency.parquet with 28,887 observations
-  - 13 variables computed: overinvest_dummy, underinvest_dummy, efficiency_score, roa_residual
-  - Controls: tobins_q, cf_volatility, industry_capex_intensity, firm_size, roa, fcf, earnings_volatility
-  - FF48/FF12 industry classification with fallback for thin cells
-  - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
+- v2.0 Milestone concluded with null hypothesis results
+- Phases 36-38 cancelled (Robustness, Identification, Publication) — not scientifically meaningful for null results
+- All regression outputs preserved in 4_Outputs/4_Econometric_V2/ for documentation
+
+**Regression Results Summary:**
+- H1 (Cash Holdings): Primary spec N=16,667-21,690, R²=0.128-0.133. H1a: 0/6, H1b: 1/6
+- H2 (Investment Efficiency): Primary spec N=256K-342K, R²=0.002-0.003. H2a: 0/6, H2b: 0/6
+- H3 (Payout Policy): Primary spec N=180K-244K, R²=0.021-0.045. H3a: 1/6 (stability), H3b: 0/6
+
+**Interpretation:**
+The speech uncertainty measures derived from earnings call transcripts do not systematically predict corporate financial policies as theorized. The null finding contributes to the literature by documenting what does NOT work.
 
 **Next Session:**
-- Phase 35 is complete - Phase 36 (Robustness Checks) is ready to proceed
-- All three hypothesis regression phases complete (H1, H2, H3)
-- H3 regression pattern established with DV-specific hypothesis test directions
-- Sample expansion pattern (speech merge creates multiple obs per H3 record) documented
-- Ready for robustness checks: alternative specifications, subsample analyses, placebo tests
+- v2.0 milestone complete — no further phases planned
+- Project ready for archival or new research direction
 
 ---
 *Last updated: 2026-02-05*
