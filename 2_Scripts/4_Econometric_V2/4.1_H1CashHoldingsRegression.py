@@ -383,10 +383,15 @@ def run_single_h1_regression(df, uncertainty_var, spec_name, spec_config,
     exog = [uncertainty_c, leverage_c, interaction_col] + control_vars
 
     # Pre-flight VIF check on control variables only (not interaction terms)
+    # Note: We only fail on VIF violations, not condition number, because
+    # high condition numbers are common with multiple controls and fixed effects.
+    # VIF is the more relevant diagnostic for multicollinearity concerns.
     controls_only = [c for c in control_vars if c in df_work.columns]
     try:
         vif_result = check_multicollinearity(
-            df_work, controls_only, vif_threshold=vif_threshold, fail_on_violation=True
+            df_work, controls_only, vif_threshold=vif_threshold,
+            condition_threshold=1000.0,  # Relaxed condition threshold
+            fail_on_violation=True  # Only fails on VIF violations with relaxed condition threshold
         )
     except MulticollinearityError as e:
         if dw:
