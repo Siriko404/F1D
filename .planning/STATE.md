@@ -9,23 +9,23 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 28 - V2 Structure Setup
-Plan: 03 of 03
-Status: Phase Complete
-Last activity: 2026-02-04 — Completed V2 structure validation (plan 28-03)
+Phase: 29 - H1 Cash Holdings Variables
+Plan: 01 of 01
+Status: In Progress
+Last activity: 2026-02-04 — Completed H1 Cash Holdings variables construction (plan 29-01)
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite
-[█░░░░░░░░░░░░░░░░░░░] 1/11 phases (9%)
+[██░░░░░░░░░░░░░░░░░] 2/11 phases (18%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
-Phase 29: H1 Cash Holdings Vars   [READY]
+Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
 Phase 30: H2 Investment Vars      [READY]
 Phase 31: H3 Payout Policy Vars   [READY]
 Phase 32: Econometric Infra       [READY]
-Phase 33: H1 Regression           [BLOCKED by 29, 32]
+Phase 33: H1 Regression           [BLOCKED by 32]
 Phase 34: H2 Regression           [BLOCKED by 30, 32]
 Phase 35: H3 Regression           [BLOCKED by 31, 32]
 Phase 36: Robustness Checks       [BLOCKED by 33, 34, 35]
@@ -77,6 +77,9 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [28-03 Validation] Automated validation script confirms all 6 STRUCT requirements satisfied
 - [28-03 Validation] Smart project root detection for nested directory execution
 - [28-03 Validation] ASCII console output for Windows compatibility
+- [29-01 Variables] Compustat column mappings: `cshoq` (not `cshopq`), `dvy` (not `dvcy`) based on actual schema
+- [29-01 Variables] Use PyArrow schema inspection before reading Compustat to avoid OOM from reading all 679 columns
+- [29-01 Variables] Multiple observations per gvkey-year from firm controls merge retained for analysis flexibility
 
 ### From v1.0 (carry forward)
 
@@ -114,22 +117,22 @@ None currently.
 
 ## Session Continuity
 
-### Last Session (2026-02-04)
+### Last Session (2026-02-05)
 
 **Completed:**
-- Requirements gathered and validated (55 requirements, 8 categories)
-- Research summary completed (HIGH confidence, no new dependencies)
-- Roadmap created (11 phases, 28-38)
-- STATE.md updated with v2.0 context
-- 28-01: Financial_V2 folder structure with README
-- 28-02: Econometric_V2 folder structure with README
-- 28-03: V2 structure validation script created and executed (6/6 requirements passed)
+- 29-01: H1 Cash Holdings Variables construction
+  - Fixed Compustat column mappings (cshoq, dvy)
+  - Added PyArrow schema inspection to avoid OOM
+  - Generated H1_CashHoldings.parquet with 448,004 observations
+  - All 9 H1 variables computed: Cash Holdings, Leverage, OCF Volatility, Current Ratio, Tobin's Q, ROA, Capex/AT, Dividend Payer, Firm Size
+  - Winsorization applied at 1%/99%
+  - stats.json documents variable distributions
 
 **Next Session:**
-- Phase 28 is complete - proceed to variable construction phases (29-31)
-- Can parallelize Phases 29, 30, 31 (H1/H2/H3 variable construction)
+- Phase 29 is complete - can proceed to Phase 30 (H2 Investment Vars) or Phase 31 (H3 Payout Policy Vars)
+- Can parallelize Phases 30, 31 (H2/H3 variable construction)
 - Phase 32 (Econometric Infrastructure) can also proceed in parallel
-- All 6 STRUCT requirements validated: Financial_V2, Econometric_V2 folders exist with READMEs, output/log folders with .gitkeep, naming conventions documented
+- Once Phase 32 completes, Phase 33 (H1 Regression) can proceed with H1_CashHoldings.parquet as input
 
 ---
-*Last updated: 2026-02-04*
+*Last updated: 2026-02-05*
