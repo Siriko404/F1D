@@ -118,7 +118,10 @@ Plans:
   3. Controls (Earnings Volatility, FCF Growth, Firm Maturity) computed
   4. Standard controls (Firm Size, ROA, Tobin's Q, Cash Holdings) available from existing pipeline
   5. Output saved with stats.json documenting distributions for both DVs
-**Plans**: TBD
+**Plans**: 1 plan in 1 wave
+
+Plans:
+- [ ] 31-01-PLAN.md — Create 3.3_H3Variables.py with payout policy variables and execute
 
 ### Phase 32: Econometric Infrastructure
 **Goal**: Build reusable econometric utilities for panel regressions with fixed effects, interaction terms, and robustness diagnostics
@@ -215,7 +218,7 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 | 28 | V2 Structure Setup | 3/3 | COMPLETE | 2026-02-04 |
 | 29 | H1 Cash Holdings Variables | 1/1 | COMPLETE | 2026-02-04 |
 | 30 | H2 Investment Efficiency Variables | 2/2 | COMPLETE | 2026-02-05 |
-| 31 | H3 Payout Policy Variables | 0/TBD | PLANNED | — |
+| 31 | H3 Payout Policy Variables | 0/1 | PLANNED | — |
 | 32 | Econometric Infrastructure | 0/TBD | PLANNED | — |
 | 33 | H1 Cash Holdings Regression | 0/TBD | PLANNED | — |
 | 34 | H2 Investment Efficiency Regression | 0/TBD | PLANNED | — |
