@@ -1382,7 +1382,9 @@ def main():
     efficiency_score_filtered = efficiency_score_df.merge(
         base_keys, on=["gvkey", "fiscal_year"], how="inner"
     ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
-    print(f"  Efficiency scores (filtered): {len(efficiency_score_filtered):,} unique firm-years")
+    print(
+        f"  Efficiency scores (filtered): {len(efficiency_score_filtered):,} unique firm-years"
+    )
 
     # Merge efficiency score (much smaller now)
     h2_data = h2_data.merge(
@@ -1401,7 +1403,9 @@ def main():
     roa_residual_filtered = roa_residual_df.merge(
         base_keys, on=["gvkey", "fiscal_year"], how="inner"
     ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
-    print(f"  ROA residuals (filtered): {len(roa_residual_filtered):,} unique firm-years")
+    print(
+        f"  ROA residuals (filtered): {len(roa_residual_filtered):,} unique firm-years"
+    )
 
     # Merge ROA residual (much smaller now)
     h2_data = h2_data.merge(
@@ -1464,17 +1468,24 @@ def main():
     # For now, skip analyst dispersion merge as we need proper CUSIP-GVKEY mapping
     print(f"  analyst_dispersion: skipped (requires CUSIP-GVKEY mapping)")
 
-    # Merge remaining controls
+    # Merge remaining controls - handle dataframes with and without datadate
     for var_name, var_df in [
         ("firm_size", firm_size_df),
         ("roa", roa_df),
         ("fcf", fcf_df),
         ("earnings_volatility", earnings_volatility_df),
     ]:
-        # Keep the most recent datadate for each gvkey-fiscal_year
-        var_df_sorted = var_df.sort_values(
-            ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
-        ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
+        # Handle different dataframe structures
+        if "datadate" in var_df.columns:
+            # Keep the most recent datadate for each gvkey-fiscal_year
+            var_df_sorted = var_df.sort_values(
+                ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
+            ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
+        else:
+            # Just ensure unique gvkey-fiscal_year
+            var_df_sorted = var_df.drop_duplicates(
+                subset=["gvkey", "fiscal_year"], keep="first"
+            )
 
         h2_data = h2_data.merge(
             var_df_sorted[["gvkey", "fiscal_year", var_name]],
