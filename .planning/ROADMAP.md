@@ -184,7 +184,10 @@ Plans:
   3. Flexibility regression runs with expected signs (beta1 > 0, beta3 > 0)
   4. Both DVs (Stability and Flexibility) tested independently
   5. stats.json output includes all regression diagnostics for both models
-**Plans**: TBD
+**Plans**: 1 plan in 1 wave
+
+Plans:
+- [ ] 35-01-PLAN.md — Create 4.3_H3PayoutPolicyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
 
 ### Phase 36: Robustness Checks
 **Goal**: Validate hypothesis results across subsamples and alternative specifications
