@@ -152,7 +152,10 @@ Plans:
   3. Standard errors clustered at firm level
   4. Coefficient table reports beta1 > 0 (vagueness increases cash) and beta3 < 0 (leverage attenuates) with significance tests
   5. stats.json output includes R-squared, N, F-stat, and all coefficients
-**Plans**: TBD
+**Plans**: 1 plan in 1 wave
+
+Plans:
+- [ ] 33-01-PLAN.md — Create 4.1_H1CashHoldingsRegression.py and execute 24 regressions (6 measures x 4 specs)
 
 ### Phase 34: H2 Investment Efficiency Regression
 **Goal**: Run and validate OLS/2SLS regressions for H2 (Speech Uncertainty & Investment Efficiency)
