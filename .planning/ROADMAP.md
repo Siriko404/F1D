@@ -101,11 +101,12 @@ Plans:
   3. Efficiency Score DV computed (1 - % inefficient years over 5-year window)
   4. Alternative DV (residual from Delta-ROA regression) computed per Biddle et al. methodology
   5. Controls (Tobin's Q, Cash Flow Volatility, Industry CapEx Intensity, Analyst Dispersion, Firm Size, ROA, FCF, Earnings Volatility) available
-**Plans**: 1 plan in 1 wave
+**Plans**: 2 plans in 1 wave
 
 Plans:
-- [x] 30-01-PLAN.md — Create 3.2_H2Variables.py with investment efficiency variables, IBES linking, and Biddle ROA residuals
-**Completed**: 2026-02-05 — 1/1 plans executed, 6/6 requirements verified
+- [x] 30-01-PLAN.md — Create 3.2_H2Variables.py with investment efficiency variables and Biddle ROA residuals
+- [ ] 30-02-PLAN.md — (Gap Closure) Add analyst_dispersion via CCM CUSIP-GVKEY linking to IBES
+**Status**: Gap found — analyst_dispersion missing (H2-05); CCM linking now available
 
 ### Phase 31: H3 Payout Policy Variables
 **Goal**: Construct all dependent and control variables for H3 (Payout Policy) hypothesis
