@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite - Phase 28 complete, ready for Phases 29-31
+**Current focus:** v2.0 Hypothesis Testing Suite - Phase 31 complete, ready for Phase 32
 
 ## Current Position
 
-Phase: 30 - H2 Investment Efficiency Variables
-Plan: 02 of 02
+Phase: 31 - H3 Payout Policy Variables
+Plan: 01 of 01
 Status: Phase Complete
-Last activity: 2026-02-05 — Completed analyst dispersion gap closure (plan 30-02)
+Last activity: 2026-02-05 — Completed H3 payout policy variables (plan 31-01)
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite
-[███░░░░░░░░░░░░░░░░] 3/11 phases (27%)
+[████░░░░░░░░░░░░░░░] 4/11 phases (36%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
 Phase 30: H2 Investment Vars      [COMPLETE - 2/2 plans done]
-Phase 31: H3 Payout Policy Vars   [READY]
+Phase 31: H3 Payout Policy Vars   [COMPLETE - 1/1 plans done]
 Phase 32: Econometric Infra       [READY]
 Phase 33: H1 Regression           [BLOCKED by 32]
 Phase 34: H2 Regression           [BLOCKED by 32]
-Phase 35: H3 Regression           [BLOCKED by 31, 32]
+Phase 35: H3 Regression           [BLOCKED by 32]
 Phase 36: Robustness Checks       [BLOCKED by 33, 34, 35]
 Phase 37: Identification          [BLOCKED by 36]
 Phase 38: Publication Output      [BLOCKED by 37]
@@ -88,6 +88,14 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [30-01 Variables] Filter base to sample manifest BEFORE merging to reduce memory usage (10x improvement)
 - [30-01 Variables] FF48 industry classification with FF12 fallback for thin cells (<5 firms)
 - [30-01 Variables] Mutual exclusivity enforced: firms cannot be both over and under-investing
+- [31-01 Variables] Dividend Policy Stability = -StdDev(ΔDPS) / |Mean(DPS)| over trailing 5 years (H3-01 DV)
+- [31-01 Variables] Payout Flexibility = % years with |ΔDPS| > 5% of prior DPS over 5-year window (H3-02 DV)
+- [31-01 Variables] Annualize quarterly DPS/EPS BEFORE computing rolling windows (avoids within-year distortion)
+- [31-01 Variables] Filter to dividend payers only (stability/flexibility undefined for never-payers)
+- [31-01 Variables] FCF Growth uses absolute value in denominator to handle negative FCF gracefully
+- [31-01 Variables] Allow negative RE/TE as valid immaturity signal (per DeAngelo et al.)
+- [31-01 Variables] Minimum 2 years required in 5-year rolling window for variable computation
+- [31-01 Variables] H1 controls aggregated via mean to get one row per gvkey-year (H1 has multiple obs per firm-year)
 
 ### From v1.0 (carry forward)
 
@@ -118,16 +126,25 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
-| Phases Complete | 27/27 | 3/11 |
-| Plans Complete | 143/143 | 7/154 |
-| Requirements Complete | 30/30 | 23/55 |
-| Scripts CLI-Ready | 21/21 | 4/4 |
+| Phases Complete | 27/27 | 4/11 |
+| Plans Complete | 143/143 | 8/154 |
+| Requirements Complete | 30/30 | 28/55 |
+| Scripts CLI-Ready | 21/21 | 5/5 |
 
 ## Session Continuity
 
 ### Last Session (2026-02-05)
 
 **Completed:**
+- 31-01: H3 Payout Policy Variables construction
+  - Created 3.3_H3Variables.py (1,140 lines)
+  - Fixed Unicode Delta character, cartesian product issues in H1 controls merge
+  - Fixed observability_utils to skip list values in stats summary
+  - Generated H3_PayoutPolicy.parquet with 16,616 dividend-paying firm observations
+  - 2 DVs: div_stability (99.8% coverage), payout_flexibility (100% coverage)
+  - 3 H3 controls: earnings_volatility, fcf_growth, firm_maturity
+  - Standard controls from H1: firm_size, roa, tobins_q, cash_holdings
+  - Filtered to dividend payers only (DVs undefined for never-payers)
 - 30-02: Analyst Dispersion Gap Closure
   - Created 3.2a_AnalystDispersionPatch.py (637 lines)
   - Implemented CCM CUSIP-GVKEY linking with LINKPRIM/LINKTYPE filtering
@@ -144,10 +161,9 @@ None currently.
   - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
 
 **Next Session:**
-- Phase 30 is complete - can proceed to Phase 31 (H3 Payout Policy Vars) or Phase 32 (Econometric Infrastructure)
-- Phase 31 can parallelize with Phase 32
-- Once Phase 32 completes, Phases 33-34 (H1/H2 Regression) can proceed
-- Phase 35 (H3 Regression) requires both Phase 31 and Phase 32
+- Phase 31 is complete - should proceed to Phase 32 (Econometric Infrastructure)
+- Once Phase 32 completes, Phases 33-35 (H1/H2/H3 Regression) can proceed
+- Phase 35 (H3 Regression) now has H3 variables available from Phase 31
 
 ---
 *Last updated: 2026-02-05*
