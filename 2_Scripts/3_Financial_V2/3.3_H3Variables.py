@@ -233,11 +233,14 @@ def load_h1_standard_controls(h1_output_dir):
     """
     Load standard controls from H1 output (firm_size, roa, tobins_q, cash_holdings).
 
+    H1 output has multiple observations per gvkey-fiscal_year (from different files).
+    This function aggregates to one row per gvkey-fiscal_year by taking the mean.
+
     Args:
         h1_output_dir: Path to H1 output directory
 
     Returns:
-        DataFrame with standard controls
+        DataFrame with standard controls (one row per gvkey-fiscal_year)
     """
     h1_file = h1_output_dir / "H1_CashHoldings.parquet"
     if not h1_file.exists():
@@ -252,7 +255,11 @@ def load_h1_standard_controls(h1_output_dir):
     # Ensure gvkey is zero-padded
     controls["gvkey"] = controls["gvkey"].astype(str).str.zfill(6)
 
-    print(f"  Loaded H1 standard controls: {len(controls):,} observations")
+    # Aggregate to one row per gvkey-fiscal_year (take mean)
+    before_agg = len(controls)
+    controls = controls.groupby(["gvkey", "fiscal_year"], as_index=False).mean()
+    after_agg = len(controls)
+    print(f"  Loaded H1 standard controls: {after_agg:,} unique firm-years (aggregated from {before_agg:,} obs)")
 
     return controls
 
@@ -937,8 +944,11 @@ def main():
             print(f"  {col}: {n_valid:,} valid")
 
     # Add file_name column from manifest
+    # Note: Multiple files (speeches) can exist per gvkey-year.
+    # We take one file_name as a reference (not unique identifier).
+    file_ref = manifest[["gvkey", "year", "file_name"]].drop_duplicates(subset=["gvkey", "year"], keep="first")
     h3_data = h3_data.merge(
-        manifest[["gvkey", "year", "file_name"]].drop_duplicates(),
+        file_ref,
         left_on=["gvkey", "fiscal_year"],
         right_on=["gvkey", "year"],
         how="left",

@@ -132,8 +132,8 @@ def print_stats_summary(stats: Dict[str, Any]) -> None:
         print(f"\n{'Processing Step':<30} {'Removed':>10}")
         print("-" * 42)
         for step, count in stats["processing"].items():
-            # Skip dict values (like variable_coverage) that can't be formatted as numbers
-            if isinstance(count, dict):
+            # Skip non-numeric values (dicts, lists) that can't be formatted as numbers
+            if isinstance(count, (dict, list)):
                 continue
             print(f"{step:<30} {count:>10,}")
 
