@@ -124,7 +124,7 @@ Plans:
 - [x] 31-01-PLAN.md — Create 3.3_H3Variables.py with payout policy variables and execute
 **Completed**: 2026-02-05 — 1/1 plans executed, 4/4 requirements verified (H3-05 text measure merge in Phase 35)
 
-### Phase 32: Econometric Infrastructure
+### Phase 32: Econometric Infrastructure ✓
 **Goal**: Build reusable econometric utilities for panel regressions with fixed effects, interaction terms, and robustness diagnostics
 **Depends on**: Phase 28
 **Requirements**: ECON-01, ECON-02, ECON-03, ECON-04, ECON-05, ECON-06, ECON-07
@@ -138,8 +138,9 @@ Plans:
 **Plans**: 2 plans in 1 wave
 
 Plans:
-- [ ] 32-01-PLAN.md — Panel OLS, mean-centering, and diagnostics modules (ECON-01, ECON-02, ECON-03, ECON-06, ECON-07)
-- [ ] 32-02-PLAN.md — IV2SLS infrastructure and LaTeX table generation (ECON-04, ECON-05)
+- [x] 32-01-PLAN.md — Panel OLS, mean-centering, and diagnostics modules (ECON-01, ECON-02, ECON-03, ECON-06, ECON-07)
+- [x] 32-02-PLAN.md — IV2SLS infrastructure and LaTeX table generation (ECON-04, ECON-05)
+**Completed**: 2026-02-05 — 2/2 plans executed, 7/7 requirements verified
 
 ### Phase 33: H1 Cash Holdings Regression
 **Goal**: Run and validate OLS/2SLS regressions for H1 (Speech Uncertainty & Cash Holdings)
@@ -224,7 +225,7 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 | 29 | H1 Cash Holdings Variables | 1/1 | COMPLETE | 2026-02-04 |
 | 30 | H2 Investment Efficiency Variables | 2/2 | COMPLETE | 2026-02-05 |
 | 31 | H3 Payout Policy Variables | 1/1 | COMPLETE | 2026-02-05 |
-| 32 | Econometric Infrastructure | 0/2 | PLANNED | — |
+| 32 | Econometric Infrastructure | 2/2 | COMPLETE | 2026-02-05 |
 | 33 | H1 Cash Holdings Regression | 0/TBD | PLANNED | — |
 | 34 | H2 Investment Efficiency Regression | 0/TBD | PLANNED | — |
 | 35 | H3 Payout Policy Regression | 0/TBD | PLANNED | — |

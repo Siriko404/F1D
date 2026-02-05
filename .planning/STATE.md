@@ -5,20 +5,20 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite - Phase 32 plan 01 complete
+**Current focus:** v2.0 Hypothesis Testing Suite - Phase 32 complete, ready for regression phases
 
 ## Current Position
 
 Phase: 32 - Econometric Infrastructure
-Plan: 01 of 01
+Plan: 02 of 02
 Status: Phase Complete
-Last activity: 2026-02-05 — Completed Panel OLS, centering, and diagnostics infrastructure (plan 32-01)
+Last activity: 2026-02-05 — Completed Phase 32 (Econometric Infrastructure) - 2/2 plans done
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite
-[████░░░░░░░░░░░░░░░] 4/11 phases (36%)
+[████████░░░░░░░░░░] 5/11 phases (45%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -97,14 +97,19 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [31-01 Variables] Minimum 2 years required in 5-year rolling window for variable computation
 - [31-01 Variables] H1 controls aggregated via mean to get one row per gvkey-year (H1 has multiple obs per firm-year)
 - [31-01 Variables] H3 variables computed: div_stability (99.8%), payout_flexibility (100%), earnings_volatility (100%), fcf_growth (97.2%), firm_maturity (97.8%)
-- [32-01 Econometric Infra] Panel OLS with firm + year + industry FE via run_panel_ols() in panel_ols.py
+- [32-01 Econometric Infra] Panel OLS with firm + year + industry FE via run_panel_ols() in panel_ols.py (531 lines)
 - [32-01 Econometric Infra] Clustered standard errors at firm level with double-clustering option
 - [32-01 Econometric Infra] HAC/Newey-West adjustment via cov_type='kernel'
 - [32-01 Econometric Infra] VIF diagnostics with threshold 5.0 for multicollinearity warnings
-- [32-01 Econometric Infra] Mean-centering for interaction terms via center_continuous() in centering.py
+- [32-01 Econometric Infra] Mean-centering for interaction terms via center_continuous() in centering.py (340 lines)
 - [32-01 Econometric Infra] Centering reduces artificial multicollinearity between main effects and interactions
-- [32-01 Econometric Infra] VIF calculation using statsmodels variance_inflation_factor() in diagnostics.py
+- [32-01 Econometric Infra] VIF calculation using statsmodels variance_inflation_factor() in diagnostics.py (413 lines)
 - [32-01 Econometric Infra] Condition number detection for ill-conditioned design matrices (>30 threshold)
+- [32-02 Econometric Infra] IV2SLS regression wrapper via run_iv2sls() in iv_regression.py (530 lines)
+- [32-02 Econometric Infra] First-stage F-stat validation with threshold 10.0; WeakInstrumentError raised if F < 10
+- [32-02 Econometric Infra] Hansen J / Sargan overidentification test for over-identified models
+- [32-02 Econometric Infra] Publication-ready LaTeX table generation via make_regression_table() in latex_tables.py (533 lines)
+- [32-02 Econometric Infra] Significance stars: *** p<0.01, ** p<0.05, * p<0.10; booktabs format (toprule, midrule, bottomrule)
 
 ### From v1.0 (carry forward)
 
@@ -135,8 +140,8 @@ None currently.
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
 | Phases Complete | 27/27 | 5/11 |
-| Plans Complete | 143/143 | 9/154 |
-| Requirements Complete | 30/30 | 28/55 |
+| Plans Complete | 143/143 | 10/154 |
+| Requirements Complete | 30/30 | 35/55 |
 | Scripts CLI-Ready | 21/21 | 5/5 |
 
 ## Session Continuity
@@ -144,6 +149,13 @@ None currently.
 ### Last Session (2026-02-05)
 
 **Completed:**
+- 32-02: IV2SLS Regression and LaTeX Tables
+  - Created iv_regression.py (530 lines) with run_iv2sls() using linearmodels.IV2SLS
+  - First-stage F-stat validation with threshold 10.0; WeakInstrumentError raised if F < 10
+  - Hansen J / Sargan overidentification test for over-identified models
+  - Created latex_tables.py (533 lines) with make_regression_table(), make_iv_table()
+  - Booktabs format LaTeX tables with significance stars (*, **, ***)
+  - All 7 ECON requirements satisfied (ECON-01 through ECON-07)
 - 32-01: Econometric Infrastructure (Panel OLS, Centering, Diagnostics)
   - Created panel_ols.py (531 lines) with run_panel_ols() using linearmodels.PanelOLS
   - Firm + year + industry fixed effects with drop_absorbed=False, check_rank=True
@@ -181,10 +193,12 @@ None currently.
   - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
 
 **Next Session:**
-- Phase 32-01 is complete - ready for Phases 33-35 (H1/H2/H3 Regressions)
+- Phase 32 is complete - Phases 33-35 (H1/H2/H3 Regressions) are ready to proceed
 - Panel OLS infrastructure supports all required fixed effects configurations
+- IV2SLS infrastructure with first-stage F validation and Hansen J test ready
 - Mean-centering utilities enable Uncertainty x Leverage interaction terms
 - VIF diagnostics will catch multicollinearity during model specification
+- LaTeX table generation ready for publication output
 
 ---
 *Last updated: 2026-02-05*
