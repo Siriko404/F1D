@@ -88,14 +88,15 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [30-01 Variables] Filter base to sample manifest BEFORE merging to reduce memory usage (10x improvement)
 - [30-01 Variables] FF48 industry classification with FF12 fallback for thin cells (<5 firms)
 - [30-01 Variables] Mutual exclusivity enforced: firms cannot be both over and under-investing
-- [31-01 Variables] Dividend Policy Stability = -StdDev(ΔDPS) / |Mean(DPS)| over trailing 5 years (H3-01 DV)
-- [31-01 Variables] Payout Flexibility = % years with |ΔDPS| > 5% of prior DPS over 5-year window (H3-02 DV)
+- [31-01 Variables] Dividend Policy Stability = -StdDev(Delta DPS) / |Mean(DPS)| over trailing 5 years (H3-01 DV)
+- [31-01 Variables] Payout Flexibility = % years with |Delta DPS| > 5% of prior DPS over 5-year window (H3-02 DV)
 - [31-01 Variables] Annualize quarterly DPS/EPS BEFORE computing rolling windows (avoids within-year distortion)
 - [31-01 Variables] Filter to dividend payers only (stability/flexibility undefined for never-payers)
 - [31-01 Variables] FCF Growth uses absolute value in denominator to handle negative FCF gracefully
 - [31-01 Variables] Allow negative RE/TE as valid immaturity signal (per DeAngelo et al.)
 - [31-01 Variables] Minimum 2 years required in 5-year rolling window for variable computation
 - [31-01 Variables] H1 controls aggregated via mean to get one row per gvkey-year (H1 has multiple obs per firm-year)
+- [31-01 Variables] H3 variables computed: div_stability (99.8%), payout_flexibility (100%), earnings_volatility (100%), fcf_growth (97.2%), firm_maturity (97.8%)
 
 ### From v1.0 (carry forward)
 

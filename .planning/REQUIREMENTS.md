@@ -41,10 +41,10 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 
 ### H3: Payout Policy Variables & Regression
 
-- [ ] **H3-01**: Construct Dividend Policy Stability DV = -StdDev(∆DPS/mean DPS) over trailing 5 years
-- [ ] **H3-02**: Construct Payout Flexibility DV = % years with dividend change (|∆DPS| > 5%) over 5-year window
-- [ ] **H3-03**: Include controls: Earnings Volatility (StdDev EPS over 5 years), FCF Growth, Firm Maturity
-- [ ] **H3-04**: Include standard controls: Firm Size, ROA, Tobin's Q, Cash Holdings
+- [x] **H3-01**: Construct Dividend Policy Stability DV = -StdDev(∆DPS/mean DPS) over trailing 5 years
+- [x] **H3-02**: Construct Payout Flexibility DV = % years with dividend change (|∆DPS| > 5%) over 5-year window
+- [x] **H3-03**: Include controls: Earnings Volatility (StdDev EPS over 5 years), FCF Growth, Firm Maturity
+- [x] **H3-04**: Include standard controls: Firm Size, ROA, Tobin's Q, Cash Holdings
 - [ ] **H3-05**: Merge with existing speech uncertainty measures from Step 2 outputs
 - [ ] **H3-06**: Run OLS for Stability: Stability_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
 - [ ] **H3-07**: Run OLS for Flexibility: Flexibility_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + FEs
@@ -141,16 +141,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | H1-03 | Phase 29 | Complete |
 | H1-04 | Phase 29 | Complete |
 | H1-05 | Phase 29 | Complete |
-| H2-01 | Phase 30 | Pending |
-| H2-02 | Phase 30 | Pending |
-| H2-03 | Phase 30 | Pending |
-| H2-04 | Phase 30 | Pending |
-| H2-05 | Phase 30 | Pending |
-| H2-06 | Phase 30 | Pending |
-| H3-01 | Phase 31 | Pending |
-| H3-02 | Phase 31 | Pending |
-| H3-03 | Phase 31 | Pending |
-| H3-04 | Phase 31 | Pending |
+| H2-01 | Phase 30 | Complete |
+| H2-02 | Phase 30 | Complete |
+| H2-03 | Phase 30 | Complete |
+| H2-04 | Phase 30 | Complete |
+| H2-05 | Phase 30 | Complete |
+| H2-06 | Phase 30 | Complete |
+| H3-01 | Phase 31 | Complete |
+| H3-02 | Phase 31 | Complete |
+| H3-03 | Phase 31 | Complete |
+| H3-04 | Phase 31 | Complete |
 | H3-05 | Phase 31 | Pending |
 | ECON-01 | Phase 32 | Pending |
 | ECON-02 | Phase 32 | Pending |
