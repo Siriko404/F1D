@@ -91,7 +91,7 @@ Plans:
 - [x] 29-01-PLAN.md — Create 3.1_H1Variables.py script with all H1 variables and execute
 **Completed**: 2026-02-04 — 1/1 plans executed, 5/5 requirements verified
 
-### Phase 30: H2 Investment Efficiency Variables
+### Phase 30: H2 Investment Efficiency Variables ✓
 **Goal**: Construct all dependent and control variables for H2 (Investment Efficiency) hypothesis
 **Depends on**: Phase 28
 **Requirements**: H2-01, H2-02, H2-03, H2-04, H2-05, H2-06
@@ -104,7 +104,8 @@ Plans:
 **Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 30-01-PLAN.md — Create 3.2_H2Variables.py with investment efficiency variables, IBES linking, and Biddle ROA residuals
+- [x] 30-01-PLAN.md — Create 3.2_H2Variables.py with investment efficiency variables, IBES linking, and Biddle ROA residuals
+**Completed**: 2026-02-05 — 1/1 plans executed, 6/6 requirements verified
 
 ### Phase 31: H3 Payout Policy Variables
 **Goal**: Construct all dependent and control variables for H3 (Payout Policy) hypothesis
@@ -212,7 +213,7 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 |-------|------|----------------|--------|-----------|
 | 28 | V2 Structure Setup | 3/3 | COMPLETE | 2026-02-04 |
 | 29 | H1 Cash Holdings Variables | 1/1 | COMPLETE | 2026-02-04 |
-| 30 | H2 Investment Efficiency Variables | 0/1 | PLANNED | — |
+| 30 | H2 Investment Efficiency Variables | 1/1 | COMPLETE | 2026-02-05 |
 | 31 | H3 Payout Policy Variables | 0/TBD | PLANNED | — |
 | 32 | Econometric Infrastructure | 0/TBD | PLANNED | — |
 | 33 | H1 Cash Holdings Regression | 0/TBD | PLANNED | — |

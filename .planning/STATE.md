@@ -9,24 +9,24 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 29 - H1 Cash Holdings Variables
+Phase: 30 - H2 Investment Efficiency Variables
 Plan: 01 of 01
 Status: Phase Complete
-Last activity: 2026-02-04 — Completed H1 Cash Holdings variables construction and verification (plan 29-01)
+Last activity: 2026-02-05 — Completed H2 Investment Efficiency variables construction and verification (plan 30-01)
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite
-[██░░░░░░░░░░░░░░░░░] 2/11 phases (18%)
+[███░░░░░░░░░░░░░░░░] 3/11 phases (27%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
-Phase 30: H2 Investment Vars      [READY]
+Phase 30: H2 Investment Vars      [COMPLETE - 1/1 plans done]
 Phase 31: H3 Payout Policy Vars   [READY]
 Phase 32: Econometric Infra       [READY]
 Phase 33: H1 Regression           [BLOCKED by 32]
-Phase 34: H2 Regression           [BLOCKED by 30, 32]
+Phase 34: H2 Regression           [BLOCKED by 32]
 Phase 35: H3 Regression           [BLOCKED by 31, 32]
 Phase 36: Robustness Checks       [BLOCKED by 33, 34, 35]
 Phase 37: Identification          [BLOCKED by 36]
@@ -80,6 +80,10 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [29-01 Variables] Compustat column mappings: `cshoq` (not `cshopq`), `dvy` (not `dvcy`) based on actual schema
 - [29-01 Variables] Use PyArrow schema inspection before reading Compustat to avoid OOM from reading all 679 columns
 - [29-01 Variables] Multiple observations per gvkey-year from firm controls merge retained for analysis flexibility
+- [30-01 Variables] IBES analyst dispersion skipped (requires CUSIP-GVKEY linking via CCM)
+- [30-01 Variables] Filter base to sample manifest BEFORE merging to reduce memory usage (10x improvement)
+- [30-01 Variables] FF48 industry classification with FF12 fallback for thin cells (<5 firms)
+- [30-01 Variables] Mutual exclusivity enforced: firms cannot be both over and under-investing
 
 ### From v1.0 (carry forward)
 
@@ -110,29 +114,30 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
-| Phases Complete | 27/27 | 2/11 |
-| Plans Complete | 143/143 | 4/154 |
-| Requirements Complete | 30/30 | 11/55 |
-| Scripts CLI-Ready | 21/21 | 1/3 |
+| Phases Complete | 27/27 | 3/11 |
+| Plans Complete | 143/143 | 5/154 |
+| Requirements Complete | 30/30 | 17/55 |
+| Scripts CLI-Ready | 21/21 | 2/3 |
 
 ## Session Continuity
 
 ### Last Session (2026-02-05)
 
 **Completed:**
-- 29-01: H1 Cash Holdings Variables construction
-  - Fixed Compustat column mappings (cshoq, dvy)
-  - Added PyArrow schema inspection to avoid OOM
-  - Generated H1_CashHoldings.parquet with 448,004 observations
-  - All 9 H1 variables computed: Cash Holdings, Leverage, OCF Volatility, Current Ratio, Tobin's Q, ROA, Capex/AT, Dividend Payer, Firm Size
-  - Winsorization applied at 1%/99%
-  - stats.json documents variable distributions
+- 30-01: H2 Investment Efficiency Variables construction
+  - Created 3.2_H2Variables.py (1,679 lines)
+  - Fixed IBES column names (uppercase), memory optimization, datadate handling
+  - Generated H2_InvestmentEfficiency.parquet with 28,887 observations
+  - 13 variables computed: overinvest_dummy, underinvest_dummy, efficiency_score, roa_residual
+  - Controls: tobins_q, cf_volatility, industry_capex_intensity, firm_size, roa, fcf, earnings_volatility
+  - FF48/FF12 industry classification with fallback for thin cells
+  - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
 
 **Next Session:**
-- Phase 29 is complete - can proceed to Phase 30 (H2 Investment Vars) or Phase 31 (H3 Payout Policy Vars)
-- Can parallelize Phases 30, 31 (H2/H3 variable construction)
-- Phase 32 (Econometric Infrastructure) can also proceed in parallel
-- Once Phase 32 completes, Phase 33 (H1 Regression) can proceed with H1_CashHoldings.parquet as input
+- Phase 30 is complete - can proceed to Phase 31 (H3 Payout Policy Vars) or Phase 32 (Econometric Infrastructure)
+- Phase 31 can parallelize with Phase 32
+- Once Phase 32 completes, Phases 33-34 (H1/H2 Regression) can proceed
+- Phase 35 (H3 Regression) requires both Phase 31 and Phase 32
 
 ---
 *Last updated: 2026-02-05*
