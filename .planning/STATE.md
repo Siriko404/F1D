@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite - Phase 31 complete, ready for Phase 32
+**Current focus:** v2.0 Hypothesis Testing Suite - Phase 32 plan 02 complete
 
 ## Current Position
 
-Phase: 31 - H3 Payout Policy Variables
-Plan: 01 of 01
+Phase: 32 - Econometric Infrastructure
+Plan: 02 of 02
 Status: Phase Complete
-Last activity: 2026-02-05 — Completed H3 payout policy variables (plan 31-01)
+Last activity: 2026-02-05 — Completed IV regression and LaTeX tables infrastructure (plan 32-02)
 
 ### Progress
 
@@ -24,10 +24,10 @@ Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
 Phase 30: H2 Investment Vars      [COMPLETE - 2/2 plans done]
 Phase 31: H3 Payout Policy Vars   [COMPLETE - 1/1 plans done]
-Phase 32: Econometric Infra       [READY]
-Phase 33: H1 Regression           [BLOCKED by 32]
-Phase 34: H2 Regression           [BLOCKED by 32]
-Phase 35: H3 Regression           [BLOCKED by 32]
+Phase 32: Econometric Infra       [COMPLETE - 2/2 plans done]
+Phase 33: H1 Regression           [READY]
+Phase 34: H2 Regression           [READY]
+Phase 35: H3 Regression           [READY]
 Phase 36: Robustness Checks       [BLOCKED by 33, 34, 35]
 Phase 37: Identification          [BLOCKED by 36]
 Phase 38: Publication Output      [BLOCKED by 37]
@@ -97,6 +97,12 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [31-01 Variables] Minimum 2 years required in 5-year rolling window for variable computation
 - [31-01 Variables] H1 controls aggregated via mean to get one row per gvkey-year (H1 has multiple obs per firm-year)
 - [31-01 Variables] H3 variables computed: div_stability (99.8%), payout_flexibility (100%), earnings_volatility (100%), fcf_growth (97.2%), firm_maturity (97.8%)
+- [32-02 Econometric Infra] IV2SLS wrapper with first-stage F-stat validation via run_iv2sls() in iv_regression.py
+- [32-02 Econometric Infra] First-stage F < 10 raises WeakInstrumentError (hard fail) to prevent biased 2SLS
+- [32-02 Econometric Infra] Hansen J / Sargan test only runs when over-identified (n_instr > n_endog)
+- [32-02 Econometric Infra] LaTeX table generation via make_regression_table() and make_iv_table() in latex_tables.py
+- [32-02 Econometric Infra] Booktabs three-line format: toprule, midrule, bottomrule
+- [32-02 Econometric Infra] Significance stars: *** p<0.01, ** p<0.05, * p<0.10
 
 ### From v1.0 (carry forward)
 
@@ -109,7 +115,6 @@ Phase 38: Publication Output      [BLOCKED by 37]
 ### Research Flags
 
 - **Phase 30 (H2 Variables):** Investment efficiency residual calculation (Biddle et al. 2009) is non-trivial - verify exact methodology
-- **Phase 32 (Econometrics):** linearmodels API for `first_stage.diagnostics` syntax may need version verification
 
 ### Known Pitfalls (from research)
 
@@ -127,9 +132,9 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
-| Phases Complete | 27/27 | 4/11 |
-| Plans Complete | 143/143 | 8/154 |
-| Requirements Complete | 30/30 | 28/55 |
+| Phases Complete | 27/27 | 5/11 |
+| Plans Complete | 143/143 | 10/154 |
+| Requirements Complete | 30/30 | 30/55 |
 | Scripts CLI-Ready | 21/21 | 5/5 |
 
 ## Session Continuity
@@ -137,6 +142,13 @@ None currently.
 ### Last Session (2026-02-05)
 
 **Completed:**
+- 32-02: IV Regression and LaTeX Tables infrastructure
+  - Created iv_regression.py (530 lines) with run_iv2sls() and WeakInstrumentError
+  - First-stage F-stat validation with threshold=10.0 (hard fail if below)
+  - Hansen J / Sargan overidentification test for over-identified models
+  - Created latex_tables.py (533 lines) with booktabs table generation
+  - make_regression_table() and make_iv_table() for publication output
+  - Significance stars: *** p<0.01, ** p<0.05, * p<0.10
 - 31-01: H3 Payout Policy Variables construction
   - Created 3.3_H3Variables.py (1,140 lines)
   - Fixed Unicode Delta character, cartesian product issues in H1 controls merge
@@ -162,9 +174,9 @@ None currently.
   - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
 
 **Next Session:**
-- Phase 31 is complete - should proceed to Phase 32 (Econometric Infrastructure)
-- Once Phase 32 completes, Phases 33-35 (H1/H2/H3 Regression) can proceed
-- Phase 35 (H3 Regression) now has H3 variables available from Phase 31
+- Phase 32 is complete - ready for Phases 33-35 (H1/H2/H3 Regressions)
+- Phases 33-35 can now proceed in parallel using shared IV and LaTeX infrastructure
+- All dependent variables (H1 cash holdings, H2 investment efficiency, H3 payout stability) are available
 
 ---
 *Last updated: 2026-02-05*
