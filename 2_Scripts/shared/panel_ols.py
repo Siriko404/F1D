@@ -367,8 +367,16 @@ def run_panel_ols(
         fit_kwargs['cov_type'] = 'clustered'
 
         if cluster_cols is not None and len(cluster_cols) > 1:
-            # Double clustering
-            cluster_df = df_work.loc[exog_data.index, cluster_cols].reset_index(drop=True)
+            # Double clustering - need to get cluster columns from index
+            # After set_index([entity_col, time_col]), these are in the index
+            cluster_df = pd.DataFrame(index=exog_data.index)
+            for col in cluster_cols:
+                if col in df_work.index.names:
+                    # Column is in the MultiIndex
+                    cluster_df[col] = exog_data.index.get_level_values(col)
+                elif col in df_work.columns:
+                    # Column is still in columns (before set_index)
+                    cluster_df[col] = df_work.loc[exog_data.index, col]
             fit_kwargs['clusters'] = cluster_df
         elif cluster_cols is not None and len(cluster_cols) == 1:
             # Single cluster on specific column
