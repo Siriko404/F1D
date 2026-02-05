@@ -24,13 +24,13 @@ Inputs:
       (speech uncertainty measures at call level)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/{timestamp}/H1_Regression_Results.parquet
+    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_Regression_Results.parquet
       (all regression coefficients, SEs, p-values, diagnostics)
-    - 4_Outputs/4_Econometric_V2/{timestamp}/stats.json
+    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/stats.json
       (regression summaries, hypothesis tests, execution metadata)
-    - 4_Outputs/4_Econometric_V2/{timestamp}/H1_RESULTS.md
+    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_RESULTS.md
       (human-readable summary of key findings)
-    - 3_Logs/4_Econometric_V2/{timestamp}_H1.log
+    - 3_Logs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}_H1.log
       (execution log with dual-writer output)
 
 Deterministic: true
@@ -156,13 +156,13 @@ def setup_paths(config, timestamp):
         "speech_dir": speech_dir,
     }
 
-    # Output directory
-    output_base = root / "4_Outputs" / "4_Econometric_V2"
+    # Output directory - organize by script name
+    output_base = root / "4_Outputs" / "4_Econometric_V2" / "4.1_H1CashHoldingsRegression"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
-    # Log directory
-    log_base = root / "3_Logs" / "4_Econometric_V2"
+    # Log directory - organize by script name
+    log_base = root / "3_Logs" / "4_Econometric_V2" / "4.1_H1CashHoldingsRegression"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H1.log"
 
