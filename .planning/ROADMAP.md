@@ -158,7 +158,7 @@ Plans:
 - [x] 33-01-PLAN.md — Create 4.1_H1CashHoldingsRegression.py and execute 24 regressions (6 measures x 4 specs)
 **Completed**: 2026-02-05 — 1/1 plans executed, 5/5 requirements verified
 
-### Phase 34: H2 Investment Efficiency Regression
+### Phase 34: H2 Investment Efficiency Regression ✓
 **Goal**: Run and validate OLS/2SLS regressions for H2 (Speech Uncertainty & Investment Efficiency)
 **Depends on**: Phase 30, Phase 32
 **Requirements**: H2-07, H2-08, H2-09, H2-10
@@ -171,7 +171,8 @@ Plans:
 **Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 34-01-PLAN.md — Create 4.2_H2InvestmentEfficiencyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
+- [x] 34-01-PLAN.md — Create 4.2_H2InvestmentEfficiencyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
+**Completed**: 2026-02-05 — 1/1 plans executed, 4/4 requirements verified. Results: No support for H2 hypotheses (0/6 measures significant for both H2a and H2b).
 
 ### Phase 35: H3 Payout Policy Regression
 **Goal**: Run and validate OLS/2SLS regressions for H3 (Speech Uncertainty & Payout Policy)
@@ -234,7 +235,7 @@ Phase 28 (Structure) → Phases 29-31 (Variables, can parallelize) → Phase 32 
 | 31 | H3 Payout Policy Variables | 1/1 | COMPLETE | 2026-02-05 |
 | 32 | Econometric Infrastructure | 2/2 | COMPLETE | 2026-02-05 |
 | 33 | H1 Cash Holdings Regression | 1/1 | COMPLETE | 2026-02-05 |
-| 34 | H2 Investment Efficiency Regression | 0/TBD | PLANNED | — |
+| 34 | H2 Investment Efficiency Regression | 1/1 | COMPLETE | 2026-02-05 |
 | 35 | H3 Payout Policy Regression | 0/TBD | PLANNED | — |
 | 36 | Robustness Checks | 0/TBD | PLANNED | — |
 | 37 | Identification Strategies | 0/TBD | PLANNED | — |

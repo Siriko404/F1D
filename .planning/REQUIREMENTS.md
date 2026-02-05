@@ -34,10 +34,10 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 - [x] **H2-04**: Alternative DV: Residual from ∆ROA(t+2) ~ Capex(t)/AT regression
 - [x] **H2-05**: Include controls: Tobin's Q, Cash Flow Volatility, Industry CapEx Intensity, Analyst Dispersion
 - [x] **H2-06**: Include standard controls: Firm Size, ROA, Free Cash Flow, Earnings Volatility
-- [ ] **H2-07**: Merge with existing speech uncertainty measures from Step 2 outputs
-- [ ] **H2-08**: Run OLS: Efficiency_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
-- [ ] **H2-09**: Test β1 < 0 (vagueness lowers efficiency) and β3 > 0 (leverage improves efficiency)
-- [ ] **H2-10**: Output coefficient table and stats.json
+- [x] **H2-07**: Merge with existing speech uncertainty measures from Step 2 outputs
+- [x] **H2-08**: Run OLS: Efficiency_{t+1} ~ Uncertainty_t + Leverage_t + Uncertainty×Leverage + Controls + Firm_FE + Year_FE + Industry_FE
+- [x] **H2-09**: Test β1 < 0 (vagueness lowers efficiency) and β3 > 0 (leverage improves efficiency)
+- [x] **H2-10**: Output coefficient table and stats.json
 
 ### H3: Payout Policy Variables & Regression
 
@@ -164,10 +164,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | H1-08 | Phase 33 | Complete |
 | H1-09 | Phase 33 | Complete |
 | H1-10 | Phase 33 | Complete |
-| H2-07 | Phase 34 | Pending |
-| H2-08 | Phase 34 | Pending |
-| H2-09 | Phase 34 | Pending |
-| H2-10 | Phase 34 | Pending |
+| H2-07 | Phase 34 | Complete |
+| H2-08 | Phase 34 | Complete |
+| H2-09 | Phase 34 | Complete |
+| H2-10 | Phase 34 | Complete |
 | H3-06 | Phase 35 | Pending |
 | H3-07 | Phase 35 | Pending |
 | H3-08 | Phase 35 | Pending |
