@@ -177,8 +177,8 @@ def load_compustat(compustat_file):
 
     # Required columns for H1 variables
     # Quarterly fields (q suffix): at, che, dltt, dlc, act, lct, ceq
-    # Annual fields (y suffix): oancf, ib, capx, dvc
-    # Price and shares: csho, prcc_f
+    # Annual fields (y suffix): oancf, ib, capx, dv
+    # Price and shares: csho, prcc
     # Date fields: datadate, fyearq (fiscal year quarterly)
     required_cols = [
         "gvkey",
@@ -195,25 +195,28 @@ def load_compustat(compustat_file):
         "lctq",
         # Equity (quarterly)
         "ceqq",
-        "cshopq",
-        "prccq",
+        "cshoq",  # Common Shares Outstanding Quarterly
+        "prccq",  # Price Close Quarterly
         # Annual fields for some variables
-        "oancfy",
-        "iby",
-        "capxy",
-        "dvcy",
+        "oancfy",  # Operating Cash Flow Annual
+        "iby",     # Income Before Extra Items Annual
+        "capxy",   # Capital Expenditures Annual
+        "dvy",     # Dividends Annual (not dvcy)
     ]
 
-    # Filter to columns that exist
-    try:
-        df = pd.read_parquet(compustat_file, columns=required_cols)
-    except Exception as e:
-        # If some columns don't exist, try reading all and filter later
-        print(f"  Warning: Could not read specific columns, reading all data: {e}")
-        df = pd.read_parquet(compustat_file)
-        # Keep only columns that exist in the file
-        existing_cols = [c for c in required_cols if c in df.columns]
-        df = df[existing_cols]
+    # Check which columns actually exist
+    import pyarrow.parquet as pq
+    pf = pq.ParquetFile(compustat_file)
+    available_cols = set(pf.schema_arrow.names)
+
+    # Filter to only columns that exist
+    cols_to_read = [c for c in required_cols if c in available_cols]
+
+    if len(cols_to_read) < len(required_cols):
+        missing = set(required_cols) - set(cols_to_read)
+        print(f"  Warning: Missing columns will be unavailable: {missing}")
+
+    df = pd.read_parquet(compustat_file, columns=cols_to_read)
 
     print(f"  Loaded Compustat: {len(df):,} observations")
 
@@ -394,21 +397,26 @@ def compute_tobins_q(compustat_df: pd.DataFrame) -> pd.DataFrame:
     """
     Compute Tobin's Q = (AT + Market Equity - CEQ) / AT
 
-    Market Equity = csho * prcc_f (shares outstanding * price)
+    Market Equity = cshoq * prccq (shares outstanding * price)
 
     Args:
-        compustat_df: Compustat data with atq, ceqq, cshopq, prccq columns
+        compustat_df: Compustat data with atq, ceqq, cshoq, prccq columns
 
     Returns:
         DataFrame with gvkey, fiscal_year, tobins_q
     """
     print("\nComputing Tobin's Q...")
 
+    # Check if required columns exist
+    if "cshoq" not in compustat_df.columns or "prccq" not in compustat_df.columns:
+        print("  Warning: cshoq or prccq not available, returning empty")
+        return pd.DataFrame(columns=["gvkey", "fiscal_year", "datadate", "tobins_q"])
+
     # Require positive AT
     df = compustat_df[(compustat_df["atq"] > 0)].copy()
 
     # Compute market equity (handle missing as NaN)
-    df["market_equity"] = df["cshopq"] * df["prccq"]
+    df["market_equity"] = df["cshoq"] * df["prccq"]
 
     # Compute Tobin's Q
     # (AT + ME - CEQ) / AT
@@ -478,20 +486,25 @@ def compute_capex_at(compustat_df: pd.DataFrame) -> pd.DataFrame:
 
 def compute_dividend_payer(compustat_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Compute Dividend Payer = Indicator(DVC > 0)
+    Compute Dividend Payer = Indicator(DV > 0)
 
     Args:
-        compustat_df: Compustat data with dvcy column
+        compustat_df: Compustat data with dvy column (Dividends Annual)
 
     Returns:
         DataFrame with gvkey, fiscal_year, dividend_payer
     """
     print("\nComputing Dividend Payer indicator...")
 
+    # Check if dvy column exists
+    if "dvy" not in compustat_df.columns:
+        print("  Warning: dvy not available, returning empty")
+        return pd.DataFrame(columns=["gvkey", "fiscal_year", "datadate", "dividend_payer"])
+
     df = compustat_df.copy()
 
     # Compute dividend payer indicator
-    df["dividend_payer"] = (df["dvcy"].fillna(0) > 0).astype(int)
+    df["dividend_payer"] = (df["dvy"].fillna(0) > 0).astype(int)
 
     result = df[["gvkey", "fiscal_year", "datadate", "dividend_payer"]].copy()
 
