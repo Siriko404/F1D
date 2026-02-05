@@ -9,16 +9,16 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 33 - H1 Cash Holdings Regression
+Phase: 34 - H2 Investment Efficiency Regression
 Plan: 01 of 01
 Status: Phase Complete
-Last activity: 2026-02-05 — Completed Phase 33 (H1 Cash Holdings Regression) - 1/1 plans done
+Last activity: 2026-02-05 — Completed Phase 34 (H2 Investment Efficiency Regression) - 1/1 plans done
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite
-[█████████░░░░░░░░] 6/11 phases (55%)
+[██████████░░░░░░░] 7/11 phases (64%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -26,9 +26,9 @@ Phase 30: H2 Investment Vars      [COMPLETE - 2/2 plans done]
 Phase 31: H3 Payout Policy Vars   [COMPLETE - 1/1 plans done]
 Phase 32: Econometric Infra       [COMPLETE - 2/2 plans done]
 Phase 33: H1 Regression           [COMPLETE - 1/1 plans done]
-Phase 34: H2 Regression           [READY]
+Phase 34: H2 Regression           [COMPLETE - 1/1 plans done]
 Phase 35: H3 Regression           [READY]
-Phase 36: Robustness Checks       [BLOCKED by 34, 35]
+Phase 36: Robustness Checks       [BLOCKED by 35]
 Phase 37: Identification          [BLOCKED by 36]
 Phase 38: Publication Output      [BLOCKED by 37]
 ```
@@ -117,6 +117,14 @@ Phase 38: Publication Output      [BLOCKED by 37]
 - [33-01 H1 Regression] H1a: 0/6 measures significant; H1b: 1/6 significant (Manager_QA_Weak_Modal_pct, p=0.0216)
 - [33-01 H1 Regression] Fixed double-clustering bug in panel_ols.py (cluster columns in MultiIndex after set_index)
 - [33-01 H1 Regression] Relaxed condition number threshold to 1000 (VIF is primary diagnostic for FE models)
+- [34-01 H2 Regression] H2 Investment Efficiency regression script 4.2_H2InvestmentEfficiencyRegression.py (999 lines)
+- [34-01 H2 Regression] 48 regressions executed: 2 DVs x 6 uncertainty measures x 4 specifications
+- [34-01 H2 Regression] DVs: efficiency_score (primary), roa_residual (alternative)
+- [34-01 H2 Regression] Primary spec results: N=256K-342K, R2=0.002-0.003 (efficiency_score), R2=0.0004-0.0005 (roa_residual)
+- [34-01 H2 Regression] H2a (beta1 < 0): 0/6 measures significant for both DVs
+- [34-01 H2 Regression] H2b (beta3 > 0): 0/6 measures significant for both DVs
+- [34-01 H2 Regression] Merged H1 leverage data into H2 regression (H2 variables lack leverage column)
+- [34-01 H2 Regression] No support found for speech uncertainty reducing investment efficiency
 
 ### From v1.0 (carry forward)
 
@@ -146,10 +154,10 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Current |
 |--------|------------|--------------|
-| Phases Complete | 27/27 | 6/11 |
-| Plans Complete | 143/143 | 11/154 |
-| Requirements Complete | 30/30 | 35/55 |
-| Scripts CLI-Ready | 21/21 | 6/5 |
+| Phases Complete | 27/27 | 7/11 |
+| Plans Complete | 143/143 | 12/154 |
+| Requirements Complete | 30/30 | 39/55 |
+| Scripts CLI-Ready | 21/21 | 7/7 |
 
 ## Session Continuity
 
@@ -210,12 +218,13 @@ None currently.
   - Biddle et al. (2009) ROA residual via cross-sectional OLS by industry-year
 
 **Next Session:**
-- Phase 33 is complete - Phases 34-35 (H2/H3 Regressions) are ready to proceed
+- Phase 34 is complete - Phase 35 (H3 Payout Policy Regression) is ready to proceed
 - H1 regression pattern established (measures x specifications loop)
+- H2 regression complete with 48 regressions; null results for H2 hypotheses
+- H2 required merging H1 leverage data (deviation handled automatically)
 - Double-clustering fix available in panel_ols.py for all future regressions
 - VIF condition threshold relaxation pattern established for FE models
-- One-tailed hypothesis test pattern ready for H2/H3
-- H1 results: weak support for leverage moderation hypothesis (H1b)
+- One-tailed hypothesis test pattern ready for H3
 
 ---
 *Last updated: 2026-02-05*
