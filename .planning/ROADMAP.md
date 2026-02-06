@@ -5,8 +5,10 @@
 This roadmap extends the existing F1D data processing pipeline with hypothesis testing capabilities for empirical finance research. Building on the v1.0 foundation (27 phases, 143 plans) that established observability and documentation, v2.0 implements three empirical hypotheses: H1 (Speech Uncertainty & Cash Holdings), H2 (Speech Uncertainty & Investment Efficiency), and H3 (Speech Uncertainty & Payout Policy). The work leverages existing sample construction and text measures from v1.0 while adding new variable construction and panel econometric regressions with fixed effects, interaction terms, and robustness checks.
 
 **Milestone:** v2.0 Hypothesis Testing Suite — ACTIVE
-**Phases:** 28-35 completed; 36-38 cancelled; 39-40 planned (new hypotheses H4, H5)
+**Phases:** 28-38 completed/cancelled; Phase 40 planned (H5 novel hypothesis)
 **Requirements:** 40/55 completed (15 requirements in cancelled phases not pursued); H5 requirements TBD
+
+**v2.0 Summary:** H1-H3 hypotheses showed null results. Phases 35-38 cancelled. Phase 40 (H5) added as novel hypothesis with higher likelihood of success.
 
 ## v1.0 Completed Phases (1-27)
 
@@ -178,90 +180,74 @@ Plans:
 **Goal**: Run and validate OLS/2SLS regressions for H3 (Speech Uncertainty & Payout Policy)
 **Depends on**: Phase 31, Phase 32
 **Requirements**: H3-06, H3-07, H3-08, H3-09
-**Success Criteria** (what must be TRUE):
-  1. Speech uncertainty measures from Step 2 successfully merged with H3 variables
-  2. Stability regression runs with expected signs (beta1 < 0, beta3 < 0)
-  3. Flexibility regression runs with expected signs (beta1 > 0, beta3 > 0)
-  4. Both DVs (Stability and Flexibility) tested independently
-  5. stats.json output includes all regression diagnostics for both models
-**Plans**: 1 plan in 1 wave
+**Status**: COMPLETE
+**Results**: H3a_stability 1/6 significant (CEO_Pres_Uncertainty_pct); H3b_stability 0/6; H3a_flexibility 1/6 (Manager_QA_Weak_Modal_pct); H3b_flexibility 0/6
+**Completed**: 2026-02-05 — 1/1 plans executed
 
 Plans:
-- [x] 35-01-PLAN.md — Create 4.3_H3PayoutPolicyRegression.py and execute 48 regressions (6 measures x 4 specs x 2 DVs)
-**Completed**: 2026-02-05 — 1/1 plans executed, 4/4 requirements verified. Results: H3a_stability 1/6 significant (CEO_Pres_Uncertainty_pct), H3b_stability 0/6; H3a_flexibility 1/6 (Manager_QA_Weak_Modal_pct), H3b_flexibility 0/6.
+- [x] 35-01-PLAN.md — Create 4.3_H3PayoutPolicyRegression.py and execute 48 regressions
 
 ### Phase 36: Robustness Checks — CANCELLED
-**Status**: CANCELLED (Hypotheses not supported)
-**Reason**: All three core hypotheses (H1, H2, H3) showed minimal to no statistical support in primary regressions. Pursuing robustness checks for null results would not be scientifically meaningful.
+**Status**: CANCELLED (H1-H3 hypotheses not supported)
+**Reason**: All three core hypotheses showed minimal to no statistical support. Pursuing robustness checks for null results would not be scientifically meaningful.
 **Requirements**: ROBUST-01 through ROBUST-07 — NOT PURSUED
 
 ### Phase 37: Identification Strategies — CANCELLED
-**Status**: CANCELLED (Hypotheses not supported)
-**Reason**: Identification strategies (manager FE, PSM, falsification tests) are designed to strengthen causal claims from supported hypotheses. With null results, these are not applicable.
+**Status**: CANCELLED (H1-H3 hypotheses not supported)
+**Reason**: Identification strategies are designed to strengthen causal claims from supported hypotheses. With null results, these are not applicable.
 **Requirements**: IDENT-01 through IDENT-03 — NOT PURSUED
 
 ### Phase 38: Publication Output — CANCELLED
-**Status**: CANCELLED (Hypotheses not supported)
-**Reason**: Publication tables for null results would document absence of predicted relationships. The regression outputs from Phases 33-35 already contain all necessary documentation of the null findings.
+**Status**: CANCELLED (H1-H3 hypotheses not supported)
+**Reason**: Publication tables for null results would document absence of predicted relationships. The regression outputs from Phases 33-35 already contain all necessary documentation.
 **Requirements**: PUB-01 through PUB-05 — NOT PURSUED
-
-### Phase 39: Leverage Disciplines Managers and Lowers Speech Uncertainty ✓
-**Goal**: Test reverse causal direction - does leverage discipline managers and lower speech uncertainty?
-**Depends on**: Phase 32
-**Requirements**: H4-01 through H4-10 (see phase documentation)
-**Success Criteria** (what must be TRUE):
-  1. H4 analysis dataset created with lagged leverage (t-1) and all 6 uncertainty measures
-  2. 6 PanelOLS regressions executed with identical FE structure (Firm + Year + Industry)
-  3. H4 hypothesis (β₁ < 0) tested with one-tailed p-values at α = 0.05
-  4. Results document how many of 6 measures support the discipline hypothesis
-  5. Coefficient table and H4_RESULTS.md generated for documentation
-**Plans**: 2 plans in 2 waves
-
-Plans:
-- [x] 39-01-PLAN.md — H4 data preparation: merge sources, create lagged leverage, verify variables, VIF diagnostics
-- [x] 39-02-PLAN.md — H4 regression execution: 6 PanelOLS regressions, one-tailed tests, results summary
-**Completed**: 2026-02-05 — 2/2 plans executed, 10/10 requirements verified. Results: H4 partially supported (3/6 measures significant). Manager speech measures show debt discipline effect; CEO measures do not.
-
-### Phase 40: H5 Speech Uncertainty Predicts Financial Outcome Uncertainty
-**Goal**: Test whether higher speech uncertainty predicts uncertainty (volatility) of financial outcomes of the firm
-**Depends on**: Phase 39
-**Requirements**: H5-01 through H5-10 (to be defined)
-**Success Criteria** (what must be TRUE):
-  1. [To be planned]
-**Plans**: 0 plans
-
-Plans:
-- [ ] TBD (run /gsd-plan-phase 40 to break down)
-
-**Details:**
-This hypothesis examines whether managerial speech uncertainty (potentially measured via Shannon's entropy or existing vagueness measures) predicts the uncertainty/volatility of financial outcomes such as earnings volatility, return volatility, or cash flow volatility. Unlike H1-H3 which tested level effects, H5 tests variance-to-variance relationships.
 
 ---
 
-## v2.0 Hypothesis Testing Summary
+## v2.0 New Hypotheses (Post Null Results)
 
-**Conclusion**: The empirical analysis found no consistent support for the hypothesized relationships between managerial speech uncertainty and corporate financial policies.
+### Phase 40: H5 Speech Uncertainty Predicts Analyst Forecast Dispersion
+**Goal**: Test whether hedging language (weak modal verbs) predicts analyst disagreement beyond what general uncertainty words predict
+**Depends on**: Phase 32 (Econometric Infrastructure)
+**Requirements**: H5-01 through H5-10 (to be defined during planning)
+**Status**: CONTEXT COMPLETE — Ready for planning
+**Success Criteria** (what must be TRUE):
+  1. H5 analysis dataset created with forward dispersion (t+1) and all uncertainty measures
+  2. Primary regression tests Weak_Modal effect controlling for Uncertainty (incremental contribution)
+  3. Secondary regression tests Q&A-Presentation gap as novel predictor
+  4. Robustness checks without lagged DV, without NUMEST, CEO-only measures
+  5. Results document whether hedging adds beyond general uncertainty
+**Plans**: TBD (run /gsd-plan-phase 40 to break down)
 
-### H1: Cash Holdings
-- **H1a** (vagueness → higher cash): 0/6 uncertainty measures significant
-- **H1b** (leverage attenuates effect): 1/6 measures significant (Manager_QA_Weak_Modal_pct only)
+**Literature Position:**
+- General uncertainty → dispersion is ESTABLISHED (Loughran & McDonald 2011, Price et al. 2012)
+- Novel contribution: Does **hedging language** (weak modals: may/might/could) add beyond general uncertainty?
+- Secondary contribution: Does **spontaneous-scripted gap** (Q&A - Presentation) reveal hidden uncertainty?
 
-### H2: Investment Efficiency
-- **H2a** (vagueness → lower efficiency): 0/6 uncertainty measures significant
-- **H2b** (leverage improves efficiency): 0/6 measures significant
-
-### H3: Payout Policy
-- **H3a_stability** (vagueness → less stability): 1/6 measures significant (CEO_Pres_Uncertainty_pct)
-- **H3b_stability** (leverage → more stability): 0/6 measures significant
-- **H3a_flexibility** (vagueness → more flexibility): 1/6 measures significant (Manager_QA_Weak_Modal_pct)
-- **H3b_flexibility** (leverage → less flexibility): 0/6 measures significant
-
-**Interpretation**: The speech uncertainty measures derived from earnings call transcripts do not systematically predict cash holdings, investment efficiency, or payout policy stability as theorized. This null result is itself a finding that contributes to the literature by documenting what does NOT work.
+**Key Design Decisions (from CONTEXT.md):**
+- DV: Analyst Dispersion = STDEV / |MEANEST|, NUMEST ≥ 3, |MEANEST| ≥ 0.05
+- Timing: Speech_t → Dispersion_{t+1} (next quarter)
+- Primary IV: Manager_QA_Weak_Modal_pct (novel)
+- Control for established effect: Manager_QA_Uncertainty_pct
+- FE: Firm + Year; SE: Clustered at firm level
 
 ## Progress
 
-**v2.0 Execution Order:**
-Phase 28 (Structure) → Phases 29-31 (Variables, parallelized) → Phase 32 (Infrastructure) → Phases 33-35 (Regressions, parallelized) → [Phases 36-38 CANCELLED]
+**v2.0 Execution Summary:**
+- Phases 28-35: Completed (H1-H3 variable construction and regressions)
+- Phases 36-38: Cancelled (null results make robustness/identification/publication scientifically inappropriate)
+- Phase 40: NEW — H5 hypothesis with higher likelihood of success
+
+**v2.0 Hypothesis Testing Results:**
+
+| Hypothesis | Prediction | Result | Significant Measures |
+|------------|------------|--------|---------------------|
+| H1a | Uncertainty → ↑ Cash | NOT SUPPORTED | 0/6 |
+| H1b | Leverage attenuates H1a | WEAK | 1/6 (QA_Weak_Modal) |
+| H2a | Uncertainty → ↓ Efficiency | NOT SUPPORTED | 0/6 |
+| H2b | Leverage improves H2a | NOT SUPPORTED | 0/6 |
+| H3a | Uncertainty → ↓ Stability | WEAK | 1/6 (CEO_Pres_Uncertainty) |
+| H3b | Leverage → ↑ Stability | NOT SUPPORTED | 0/6 |
 
 | Phase | Name | Plans Complete | Status | Completed |
 |-------|------|----------------|--------|-----------|
@@ -276,10 +262,7 @@ Phase 28 (Structure) → Phases 29-31 (Variables, parallelized) → Phase 32 (In
 | 36 | Robustness Checks | — | CANCELLED | — |
 | 37 | Identification Strategies | — | CANCELLED | — |
 | 38 | Publication Output | — | CANCELLED | — |
-| 39 | Leverage Disciplines Managers and Lowers Speech Uncertainty | 2/2 | COMPLETE | 2026-02-05 |
-| 40 | H5 Speech Uncertainty Predicts Financial Outcome Uncertainty | 0/0 | PLANNED | — |
-
-**v2.0 Summary:** 9/9 active phases completed, 15 plans executed, 50 requirements verified. 3 phases cancelled due to null hypothesis results. Phase 40 planned with variance-to-variance hypothesis.
+| 40 | H5 Speech → Analyst Dispersion | 0/TBD | CONTEXT COMPLETE | — |
 
 ## Requirement Coverage
 
@@ -298,20 +281,12 @@ v2.0 requirements by status:
 | Robustness | ROBUST-01 through ROBUST-07 | Phase 36 | ✗ NOT PURSUED |
 | Identification | IDENT-01 through IDENT-03 | Phase 37 | ✗ NOT PURSUED |
 | Publication | PUB-01 through PUB-05 | Phase 38 | ✗ NOT PURSUED |
-| H4 Variables | H4-01 through H4-05 | Phase 39 | ✓ COMPLETE |
-| H4 Regression | H4-06 through H4-10 | Phase 39 | ✓ COMPLETE |
-| H5 Variables | H5-01 through H5-05 | Phase 40 | ○ PLANNED |
-| H5 Regression | H5-06 through H5-10 | Phase 40 | ○ PLANNED |
+| H5 Hypothesis | H5-01 through H5-10 | Phase 40 | ○ PLANNED |
 
-**Phase 39 Plan Breakdown:**
-| Plan | Wave | Objective | Requirements |
-|------|------|-----------|--------------|
-| 39-01 | 1 | H4 Data Preparation & VIF Diagnostics | H4-01 through H4-05 |
-| 39-02 | 2 | H4 Regression Execution & Results | H4-06 through H4-10 |
-
-**Coverage:** 50/55 requirements completed (91%); 15 requirements not pursued; 10 requirements planned for Phase 40
+**Coverage:** 40/55 requirements completed (73%); 15 requirements not pursued; 10 requirements planned for Phase 40
 
 ---
 *Roadmap created: 2026-01-22 (v1.0)*
 *v1.0 completed: 2026-01-30 (27 phases, 143 plans)*
 *v2.0 roadmap created: 2026-02-04 (11 phases, 55 requirements)*
+*v2.0 updated: 2026-02-05 (H1-H3 null results; Phases 36-38 cancelled; Phase 40 added)*
