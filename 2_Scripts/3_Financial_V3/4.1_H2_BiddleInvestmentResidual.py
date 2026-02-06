@@ -52,6 +52,7 @@ import json
 import time
 import psutil
 import warnings
+import gc
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
@@ -161,28 +162,29 @@ def load_compustat_investment(compustat_file):
     print(f"  Loading Compustat data...")
 
     # Required columns for Biddle (2009) investment construction
+    # Note: Compustat uses 'q' suffix for quarterly, 'y' suffix for annual
     required_cols = [
         "gvkey",
         "datadate",
-        "fyear",  # Fiscal year
+        "fyearq",  # Fiscal Year Quarterly (used as fyear)
         "sic",  # SIC code for industry classification
         # Investment components
-        "capx",  # Capital Expenditures
-        "xrd",  # Research and Development
-        "aqcy",  # Acquisitions (optional)
-        "sppey",  # Sale of Property, Plant, Equipment (optional)
-        # Assets and equity
-        "at",  # Total Assets
-        "mkvalt",  # Market Value of Equity
-        "ceq",  # Common Equity
-        # Sales
-        "sale",  # Sales
+        "capxy",  # Capital Expenditures Annual
+        "xrdy",  # Research and Development Annual
+        "aqcy",  # Acquisitions Annual (optional)
+        "sppey",  # Sale of Property, Plant, Equipment Annual (optional)
+        # Assets and equity (quarterly)
+        "atq",  # Total Assets Quarterly
+        "mkvaltq",  # Market Value of Equity Quarterly
+        "ceqq",  # Common Equity Quarterly
+        # Sales (quarterly)
+        "saleq",  # Sales Quarterly
         # Control variables
-        "oancf",  # Operating Cash Flow
-        "dltt",  # Long-Term Debt
-        "dlc",  # Debt in Current Liabilities
-        "csho",  # Common Shares Outstanding
-        "prcc",  # Price Close
+        "oancfy",  # Operating Cash Flow Annual
+        "dlttq",  # Long-Term Debt Quarterly
+        "dlcq",  # Debt in Current Liabilities Quarterly
+        "cshoq",  # Common Shares Outstanding Quarterly
+        "prccq",  # Price Close Quarterly
     ]
 
     # Check which columns actually exist using PyArrow
@@ -212,8 +214,29 @@ def load_compustat_investment(compustat_file):
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
 
     # Add fiscal year field if fyear not available
-    if "fyear" not in df.columns:
+    if "fyearq" in df.columns:
+        df["fyear"] = df["fyearq"].astype("Int64")
+    else:
         df["fyear"] = df["datadate"].dt.year
+
+    # Rename columns to simpler names for consistency
+    # Map quarterly/annual names to simple names used in construction functions
+    column_mapping = {
+        "atq": "at",
+        "capxy": "capx",
+        "xrdy": "xrd",
+        "aqcy": "aqc",
+        "sppey": "sppe",
+        "mkvaltq": "mkvalt",
+        "ceqq": "ceq",
+        "saleq": "sale",
+        "oancfy": "oancf",
+        "dlttq": "dltt",
+        "dlcq": "dlc",
+        "cshoq": "csho",
+        "prccq": "prcc",
+    }
+    df = df.rename(columns=column_mapping)
 
     return df
 
@@ -268,10 +291,10 @@ def construct_investment(df, winsorize=True):
     """Construct Investment = (CapEx + R&D + Acq - AssetSales) / lagged(AT)
 
     Per Biddle (2009), investment is total capital expenditure scaled by lagged assets.
-    If Acquisitions (AQCY) or Asset Sales (SPPEY) are missing, uses simplified measure.
+    If Acquisitions (AQC) or Asset Sales (SPPE) are missing, uses simplified measure.
 
     Args:
-        df: Compustat dataframe with investment components
+        df: Compustat dataframe with investment components (renamed from q/y suffixes)
         winsorize: If True, winsorize at 1% and 99% by year
 
     Returns:
@@ -293,18 +316,18 @@ def construct_investment(df, winsorize=True):
     investment_components = df_work["capx"].fillna(0) + df_work["xrd"].fillna(0)
 
     # Add Acquisitions if available
-    if "aqcy" in df_work.columns:
-        investment_components += df_work["aqcy"].fillna(0)
-        print("  Included Acquisitions (AQCY)")
+    if "aqc" in df_work.columns:
+        investment_components += df_work["aqc"].fillna(0)
+        print("  Included Acquisitions (AQC)")
     else:
-        print("  Acquisitions (AQCY) not available - using simplified measure")
+        print("  Acquisitions (AQC) not available - using simplified measure")
 
     # Subtract Asset Sales if available
-    if "sppey" in df_work.columns:
-        investment_components -= df_work["sppey"].fillna(0)
-        print("  Included Asset Sales (SPPEY)")
+    if "sppe" in df_work.columns:
+        investment_components -= df_work["sppe"].fillna(0)
+        print("  Included Asset Sales (SPPE)")
     else:
-        print("  Asset Sales (SPPEY) not available - using simplified measure")
+        print("  Asset Sales (SPPE) not available - using simplified measure")
 
     # Compute Investment
     df_work["Investment"] = investment_components / df_work["at_lag"]
@@ -513,7 +536,6 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
     print(f"  Valid observations for regression: {len(reg_data):,}")
 
     # Track regression results
-    regression_results = []
     residual_list = []
     thin_cells = []
 
@@ -522,9 +544,18 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
 
     n_cells = 0
     n_regressions = 0
+    total_cells = len(grouped)
 
-    for (industry, year), group in grouped:
+    # Pre-allocate list for efficiency
+    results_buffer = []
+    buffer_size = 1000
+
+    for i, ((industry, year), group) in enumerate(grouped):
         n_cells += 1
+
+        # Progress indicator every 50 cells
+        if (i + 1) % 50 == 0:
+            print(f"  Progress: {i+1}/{total_cells} cells processed...")
 
         # Check minimum observations
         if len(group) < min_obs:
@@ -544,48 +575,42 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
 
             n_regressions += 1
 
-            # Store residuals with their identifiers
-            for idx, res in zip(group.index, residuals):
-                residual_list.append({
-                    "index": idx,
-                    "InvestmentResidual": res,
-                    "predicted": predicted[list(group.index).index(idx)],
-                    "industry": industry,
-                    "year": year,
-                    "r2": model.rsquared,
-                    "n_obs": len(group),
+            # Store residuals more efficiently - avoid intermediate dict
+            indices = group.index.values
+            for j, (idx, res, pred) in enumerate(zip(indices, residuals, predicted)):
+                results_buffer.append({
+                    "index": int(idx),
+                    "gvkey": group["gvkey"].iloc[j],
+                    "fyear": int(group["fyear"].iloc[j]),
+                    "ff48_code": int(industry),
+                    "InvestmentResidual": float(res),
+                    "Investment": float(group["Investment"].iloc[j]),
+                    "TobinQ_lag": float(group["TobinQ_lag"].iloc[j]),
+                    "SalesGrowth_lag": float(group["SalesGrowth_lag"].iloc[j]),
+                    "predicted_investment": float(pred),
+                    "first_stage_r2": float(model.rsquared),
+                    "first_stage_n": int(len(group)),
                 })
+
+                # Flush buffer periodically
+                if len(results_buffer) >= buffer_size:
+                    residual_list.extend(results_buffer)
+                    results_buffer = []
 
         except Exception as e:
             print(f"  Warning: Regression failed for {ff_industry}={industry}, year={year}: {e}")
             continue
+
+    # Flush remaining buffer
+    if results_buffer:
+        residual_list.extend(results_buffer)
 
     if not residual_list:
         print("  Error: No residuals computed")
         return pd.DataFrame()
 
     # Build result DataFrame
-    result_df = pd.DataFrame(residual_list)
-
-    # Join back to original data to get gvkey and fyear
-    result_list = []
-    for _, row in result_df.iterrows():
-        orig_idx = row["index"]
-        if orig_idx in reg_data.index:
-            result_list.append({
-                "gvkey": reg_data.loc[orig_idx, "gvkey"],
-                "fyear": reg_data.loc[orig_idx, "fyear"],
-                "ff48_code": row["industry"],
-                "InvestmentResidual": row["InvestmentResidual"],
-                "Investment": reg_data.loc[orig_idx, "Investment"],
-                "TobinQ_lag": reg_data.loc[orig_idx, "TobinQ_lag"],
-                "SalesGrowth_lag": reg_data.loc[orig_idx, "SalesGrowth_lag"],
-                "predicted_investment": row["predicted"],
-                "first_stage_r2": row["r2"],
-                "first_stage_n": row["n_obs"],
-            })
-
-    result = pd.DataFrame(result_list)
+    result = pd.DataFrame(residual_list)
 
     print(f"\nFirst-stage regression summary:")
     print(f"  Total cells: {n_cells}")
@@ -834,6 +859,45 @@ def main():
     compustat = assign_ff48(compustat, ff48_map, ff12_map)
 
     # ========================================================================
+    # Filter to Sample Firms FIRST (critical optimization)
+    # ========================================================================
+
+    print("\n" + "=" * 60)
+    print("Filtering Compustat to Sample Firms")
+    print("=" * 60)
+
+    # Get unique gvkeys from manifest
+    sample_gvkeys = set(manifest["gvkey"].unique())
+    print(f"  Sample firms: {len(sample_gvkeys):,}")
+
+    # Filter Compustat to sample firms
+    compustat = compustat[compustat["gvkey"].isin(sample_gvkeys)].copy()
+    print(f"  Compustat after sample filter: {len(compustat):,} observations")
+
+    # CRITICAL: Compustat contains quarterly data but we need annual observations
+    # For Biddle (2009), we need one observation per firm-year
+    # Use the last (quarterly) observation for each gvkey-fyear as the annual value
+    # This is standard practice when working with quarterly Compustat data
+    print("\n" + "-" * 60)
+    print("Aggregating to annual observations")
+    print("-" * 60)
+
+    # Count observations before deduplication
+    obs_before = len(compustat)
+    print(f"  Observations before deduplication: {obs_before:,}")
+
+    # Sort by gvkey, fyear, datadate to get the last observation
+    compustat = compustat.sort_values(["gvkey", "fyear", "datadate"])
+
+    # Keep only the last observation per gvkey-fyear (most recent quarter)
+    # This gives us annual values (typically Q4 or the most recent reported quarter)
+    compustat = compustat.drop_duplicates(subset=["gvkey", "fyear"], keep="last")
+
+    obs_after = len(compustat)
+    print(f"  Observations after deduplication: {obs_after:,}")
+    print(f"  Duplicates removed: {obs_before - obs_after:,}")
+
+    # ========================================================================
     # Construct Variables
     # ========================================================================
 
@@ -873,19 +937,27 @@ def main():
     print("Merging Variables for First-Stage Regression")
     print("=" * 60)
 
-    # Start with investment and merge all predictors
-    first_stage_data = investment_df.copy()
+    # Start with investment and merge all predictors - use reduce() for efficiency
+    from functools import reduce
 
-    for df_to_merge, merge_keys in [
-        (tobins_q_df, ["gvkey", "fyear", "TobinQ_lag"]),
-        (sales_growth_df, ["gvkey", "fyear", "SalesGrowth_lag"]),
-        (compustat[["gvkey", "fyear", "ff48_code"]].drop_duplicates(), ["gvkey", "fyear", "ff48_code"]),
-    ]:
-        first_stage_data = first_stage_data.merge(
-            df_to_merge[merge_keys],
-            on=["gvkey", "fyear"],
-            how="left",
-        )
+    # Add ff48_code to investment_df first
+    investment_with_ff = investment_df.merge(
+        compustat[["gvkey", "fyear", "ff48_code"]].drop_duplicates(),
+        on=["gvkey", "fyear"],
+        how="left",
+    )
+
+    # Merge all dataframes at once
+    dfs_to_merge = [
+        investment_with_ff,
+        tobins_q_df[["gvkey", "fyear", "TobinQ_lag"]],
+        sales_growth_df[["gvkey", "fyear", "SalesGrowth_lag"]],
+    ]
+
+    first_stage_data = reduce(
+        lambda left, right: pd.merge(left, right, on=["gvkey", "fyear"], how="inner"),
+        dfs_to_merge
+    )
 
     print(f"  First-stage data: {len(first_stage_data):,} observations")
 
@@ -909,6 +981,19 @@ def main():
     validation = validate_residuals(residuals_df)
     stats["processing"]["residual_validation"] = validation
 
+    # Save intermediate residuals to disk first
+    residuals_file = paths["output_dir"] / "_residuals_intermediate.parquet"
+    residuals_df.to_parquet(residuals_file, index=False)
+    print(f"  Saved intermediate residuals: {residuals_file.name}")
+
+    # Clean up large intermediate dataframes to free memory
+    print("\nCleaning up memory...")
+    del first_stage_data
+    del residuals_df
+    gc.collect()
+    mem_after_cleanup = get_process_memory_mb()
+    print(f"  Memory after cleanup: {mem_after_cleanup['rss_mb']:.1f} MB")
+
     # ========================================================================
     # Merge with Controls
     # ========================================================================
@@ -917,46 +1002,64 @@ def main():
     print("Merging with Controls")
     print("=" * 60)
 
-    # Merge controls with residuals
-    final_output = residuals_df.merge(
-        controls_df,
-        on=["gvkey", "fyear"],
-        how="left",
-    )
+    # Reload residuals from disk (already has Investment, TobinQ_lag, SalesGrowth_lag)
+    final_output = pd.read_parquet(residuals_file)
+    print(f"  Reloaded residuals: {len(final_output):,} observations")
 
-    # Also add TobinQ and SalesGrowth (non-lagged) for controls
+    # Deduplicate controls to avoid memory bloat during merge
+    controls_unique = controls_df.drop_duplicates(subset=["gvkey", "fyear"])
+    print(f"  Controls deduplicated: {len(controls_df):,} -> {len(controls_unique):,}")
+
+    # Merge controls one at a time to reduce memory pressure
+    print("  Merging CashFlow...")
     final_output = final_output.merge(
-        tobins_q_df[["gvkey", "fyear", "TobinQ"]],
+        controls_unique[["gvkey", "fyear", "CashFlow"]],
         on=["gvkey", "fyear"],
         how="left",
     )
+    gc.collect()
+
+    print("  Merging Size...")
     final_output = final_output.merge(
-        sales_growth_df[["gvkey", "fyear", "SalesGrowth"]],
+        controls_unique[["gvkey", "fyear", "Size"]],
         on=["gvkey", "fyear"],
         how="left",
     )
+    gc.collect()
+
+    print("  Merging Leverage...")
+    final_output = final_output.merge(
+        controls_unique[["gvkey", "fyear", "Leverage"]],
+        on=["gvkey", "fyear"],
+        how="left",
+    )
+    gc.collect()
+
+    # Deduplicate and merge TobinQ (non-lagged)
+    tobins_q_unique = tobins_q_df.drop_duplicates(subset=["gvkey", "fyear"])
+    print("  Merging TobinQ (non-lagged)...")
+    final_output = final_output.merge(
+        tobins_q_unique[["gvkey", "fyear", "TobinQ"]],
+        on=["gvkey", "fyear"],
+        how="left",
+    )
+    gc.collect()
+
+    # Deduplicate and merge SalesGrowth (non-lagged)
+    sales_growth_unique = sales_growth_df.drop_duplicates(subset=["gvkey", "fyear"])
+    print("  Merging SalesGrowth (non-lagged)...")
+    final_output = final_output.merge(
+        sales_growth_unique[["gvkey", "fyear", "SalesGrowth"]],
+        on=["gvkey", "fyear"],
+        how="left",
+    )
+    gc.collect()
+
+    # Clean up intermediate file
+    residuals_file.unlink()
+    print(f"  Cleaned up intermediate file")
 
     print(f"  Final output: {len(final_output):,} observations")
-
-    # ========================================================================
-    # Filter to Sample
-    # ========================================================================
-
-    print("\n" + "=" * 60)
-    print("Filtering to Sample Manifest")
-    print("=" * 60)
-
-    # Prepare manifest for merge
-    manifest_for_merge = manifest[["gvkey", "year"]].drop_duplicates().copy()
-    manifest_for_merge.rename(columns={"year": "fyear"}, inplace=True)
-
-    final_output = final_output.merge(
-        manifest_for_merge,
-        on=["gvkey", "fyear"],
-        how="inner",
-    )
-
-    print(f"  After filtering to sample: {len(final_output):,} observations")
 
     # ========================================================================
     # Write Outputs
