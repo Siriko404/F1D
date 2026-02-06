@@ -280,14 +280,13 @@ def run_all_h4_regressions(df: pd.DataFrame, dw=None) -> dict:
         try:
             result = run_panel_ols(
                 df=reg_df,
-                dependent_var=dv,
-                independent_vars=exog_vars,
+                dependent=dv,
+                exog=exog_vars,
                 entity_col='gvkey',
                 time_col='fiscal_year',
                 entity_effects=True,
                 time_effects=True,
-                cov_type='clustered',
-                cluster_entity=True
+                cov_type='clustered'
             )
 
             # Extract leverage coefficient stats
@@ -1429,6 +1428,10 @@ def main():
             'n_firms': int(analysis_df['gvkey'].nunique()),
             'year_range': [int(analysis_df['fiscal_year'].min()), int(analysis_df['fiscal_year'].max())],
         }
+
+        # Initialize timing for regression-only mode
+        start_time = time.time()
+        start_mem = get_process_memory_mb()
 
     else:
         # Normal mode: setup paths
