@@ -5,20 +5,20 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite — COMPLETE (null results, Phases 36-38 cancelled)
+**Current focus:** v2.0 Hypothesis Testing Suite — ACTIVE (Phase 39: New hypothesis, reverse causal direction)
 
 ## Current Position
 
-Phase: 35 - H3 Payout Policy Regression
-Plan: 01 of 01
-Status: MILESTONE COMPLETE
-Last activity: 2026-02-05 — v2.0 milestone concluded; Phases 36-38 cancelled (hypotheses not supported)
+Phase: 39 - Leverage Disciplines Managers and Lowers Speech Uncertainty
+Plan: 39-01
+Status: IN PROGRESS — 1/2 plans complete (H4 data preparation done, regression execution pending)
+Last activity: 2026-02-05 — Completed H4 data preparation (445,563 obs, 2,428 firms, all variables ready)
 
 ### Progress
 
 ```
-v2.0 Hypothesis Testing Suite — COMPLETE
-[████████████████░░] 8/8 active phases (100%)
+v2.0 Hypothesis Testing Suite — ACTIVE
+[████████████████░░░] 8/10 phases (80%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -31,6 +31,8 @@ Phase 35: H3 Regression           [COMPLETE - 1/1 plans done] → H3a: 1/6, H3b:
 Phase 36: Robustness Checks       [CANCELLED - null results]
 Phase 37: Identification          [CANCELLED - null results]
 Phase 38: Publication Output      [CANCELLED - null results]
+Phase 39: Leverage → Speech Discipline [IN PROGRESS - 1/2 plans] → 39-01 COMPLETE
+Phase 40: H5 Speech → Outcome Volatility [PLANNED - 0/0 plans]
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -65,6 +67,16 @@ Phase 38: Publication Output      [CANCELLED - null results]
 - Leverage promotes smoothing
 - Regression: Stability ~ Uncertainty + Leverage + Uncertainty×Leverage + Controls + FEs
 
+**Hypothesis 4: Leverage Disciplines Speech (H4)** — *NEW*
+- Higher leverage disciplines managers (debt monitoring hypothesis)
+- Debt holders and covenant restrictions constrain vague language
+- Regression: Speech Uncertainty ~ Leverage + Controls + FEs (reverse direction from H1-H3)
+
+**Hypothesis 5: Speech Uncertainty Predicts Financial Outcome Uncertainty (H5)** — *NEW*
+- Higher speech uncertainty (possibly Shannon's entropy) predicts uncertainty of financial outcomes
+- Variance-to-variance relationship: uncertain speech → volatile earnings/returns/cash flows
+- Regression: Financial Outcome Volatility ~ Speech Uncertainty + Controls + FEs
+
 ## Key Constraints
 
 - Use existing sample (firms, time period) from v1.0 implementation
@@ -75,9 +87,14 @@ Phase 38: Publication Output      [CANCELLED - null results]
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- **2026-02-05**: Phase 39 added — "Higher leverage disciplines managers and lowers uncertainty in speech" (reverse causal hypothesis: leverage → speech discipline)
+- **2026-02-05**: Phase 40 added — "H5 Speech Uncertainty Predicts Financial Outcome Uncertainty" (variance-to-variance: speech uncertainty → financial outcome uncertainty, e.g. Shannon's entropy)
+
 ### Decisions
 
-- [v2.0 Roadmap] 11 phases (28-38) covering 55 requirements
+- [v2.0 Roadmap] 11 phases (28-38) covering 55 requirements; Phases 39-40 added as 12th-13th phases
 - [v2.0 Roadmap] Phase numbering continues from v1.0 (ended at Phase 27)
 - [v2.0 Roadmap] Variables phases (29-31) can parallelize after structure setup
 - [v2.0 Roadmap] Regression phases (33-35) can parallelize after econometric infrastructure
@@ -150,6 +167,13 @@ Phase 38: Publication Output      [CANCELLED - null results]
 - [35-01 H3 Regression] H3b_flexibility (beta3 > 0): 0/6 significant
 - [35-01 H3 Regression] DV-specific hypothesis directions: stability tests beta < 0, flexibility tests beta > 0
 - [35-01 H3 Regression] Sample expands 1566% after speech merge (16K -> 260K obs) due to multiple speech calls per firm-year
+- [39-01 H4 Data Prep] H4 data preparation script 4.4_H4_LeverageDiscipline.py (946 lines)
+- [39-01 H4 Data Prep] Lagged leverage (t-1) created via groupby shift on gvkey, dropping first year per firm
+- [39-01 H4 Data Prep] H4_Analysis_Dataset.parquet: 445,563 obs, 2,428 firms, 19 columns
+- [39-01 H4 Data Prep] All 6 uncertainty DVs available (75.5%-99.1% coverage)
+- [39-01 H4 Data Prep] VIF diagnostics: All values < 5.0 (max 1.79 for tobins_q)
+- [39-01 H4 Data Prep] Weak correlations between leverage_lag1 and uncertainty DVs (-0.02 to +0.02)
+- [39-01 H4 Data Prep] Fixed pandas 3.x compatibility: aggregate() split, Series.int() conversion, duplicate column handling
 
 ### From v1.0 (carry forward)
 
@@ -190,21 +214,23 @@ None currently.
 ### Last Session (2026-02-05)
 
 **Completed:**
-- v2.0 Milestone concluded with null hypothesis results
-- Phases 36-38 cancelled (Robustness, Identification, Publication) — not scientifically meaningful for null results
-- All regression outputs preserved in 4_Outputs/4_Econometric_V2/ for documentation
+- Phase 39-01: H4 Data Preparation
+  - Created 4.4_H4_LeverageDiscipline.py (946 lines)
+  - Generated H4_Analysis_Dataset.parquet (445,563 obs, 2,428 firms)
+  - Lagged leverage (t-1) properly computed with groupby shift
+  - VIF diagnostics passed (all < 5.0)
+  - Fixed pandas 3.x compatibility issues
 
-**Regression Results Summary:**
-- H1 (Cash Holdings): Primary spec N=16,667-21,690, R²=0.128-0.133. H1a: 0/6, H1b: 1/6
-- H2 (Investment Efficiency): Primary spec N=256K-342K, R²=0.002-0.003. H2a: 0/6, H2b: 0/6
-- H3 (Payout Policy): Primary spec N=180K-244K, R²=0.021-0.045. H3a: 1/6 (stability), H3b: 0/6
-
-**Interpretation:**
-The speech uncertainty measures derived from earnings call transcripts do not systematically predict corporate financial policies as theorized. The null finding contributes to the literature by documenting what does NOT work.
+**H4 Dataset Summary:**
+- N=445,563 observations across 2,428 firms (2002-2018)
+- 6 uncertainty DVs available (75.5%-99.1% coverage)
+- leverage_lag1: 100% coverage, mean=0.2405
+- Weak correlations with uncertainty DVs (-0.02 to +0.02)
 
 **Next Session:**
-- v2.0 milestone complete — no further phases planned
-- Project ready for archival or new research direction
+- Plan 39-02: H4 Regression Execution
+- Run 6 regressions (one per uncertainty DV)
+- Test H4: beta1 < 0 (leverage reduces speech uncertainty)
 
 ---
-*Last updated: 2026-02-05*
+*Last updated: 2026-02-05 (Phase 40 added)*
