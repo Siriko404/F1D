@@ -10,15 +10,15 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 39 - Leverage Disciplines Managers and Lowers Speech Uncertainty
-Plan: 39-01
-Status: IN PROGRESS — 1/2 plans complete (H4 data preparation done, regression execution pending)
-Last activity: 2026-02-05 — Completed H4 data preparation (445,563 obs, 2,428 firms, all variables ready)
+Plan: 39-02
+Status: COMPLETE — 2/2 plans done (H4 regression execution complete)
+Last activity: 2026-02-05 — Completed H4 regressions (3/6 measures significant)
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite — ACTIVE
-[████████████████░░░] 8/10 phases (80%)
+[████████████████░░░] 8.5/10 phases (85%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -31,7 +31,7 @@ Phase 35: H3 Regression           [COMPLETE - 1/1 plans done] → H3a: 1/6, H3b:
 Phase 36: Robustness Checks       [CANCELLED - null results]
 Phase 37: Identification          [CANCELLED - null results]
 Phase 38: Publication Output      [CANCELLED - null results]
-Phase 39: Leverage → Speech Discipline [IN PROGRESS - 1/2 plans] → 39-01 COMPLETE
+Phase 39: Leverage → Speech Discipline [COMPLETE - 2/2 plans] → H4: 3/6 significant
 Phase 40: H5 Speech → Outcome Volatility [PLANNED - 0/0 plans]
 ```
 
@@ -47,6 +47,7 @@ Phase 40: H5 Speech → Outcome Volatility [PLANNED - 0/0 plans]
 | H2b | Leverage improves H2a | NOT SUPPORTED | 0/6 |
 | H3a | Uncertainty → ↓ Stability | WEAK | 1/6 (CEO_Pres_Uncertainty) |
 | H3b | Leverage → ↑ Stability | NOT SUPPORTED | 0/6 |
+| H4 | Leverage → ↓ Uncertainty | PARTIAL | 3/6 (Mgr QA, Mgr/CEO Weak Modal) |
 
 **Implication**: Phases 36-38 (Robustness, Identification, Publication) cancelled as scientifically inappropriate for null results.
 
@@ -141,6 +142,20 @@ Phase 40: H5 Speech → Outcome Volatility [PLANNED - 0/0 plans]
 - [32-02 Econometric Infra] First-stage F-stat validation with threshold 10.0; WeakInstrumentError raised if F < 10
 - [32-02 Econometric Infra] Hansen J / Sargan overidentification test for over-identified models
 - [32-02 Econometric Infra] Publication-ready LaTeX table generation via make_regression_table() in latex_tables.py (533 lines)
+- [39-01 H4 Data Prep] H4 data preparation script 4.4_H4_LeverageDiscipline.py (946 lines)
+- [39-01 H4 Data Prep] Lagged leverage (t-1) created via groupby shift on gvkey, dropping first year per firm
+- [39-01 H4 Data Prep] H4_Analysis_Dataset.parquet: 445,563 obs, 2,428 firms, 19 columns
+- [39-01 H4 Data Prep] All 6 uncertainty DVs available (75.5%-99.1% coverage)
+- [39-01 H4 Data Prep] VIF diagnostics: All values < 5.0 (max 1.79 for tobins_q)
+- [39-01 H4 Data Prep] Weak correlations between leverage_lag1 and uncertainty DVs (-0.02 to +0.02)
+- [39-01 H4 Data Prep] Fixed pandas 3.x compatibility: aggregate() split, Series.int() conversion, duplicate column handling
+- [39-02 H4 Regression] H4 regression execution extended with one-tailed p-value testing (beta < 0)
+- [39-02 H4 Regression] one_tailed_pvalue() function for directional hypothesis testing
+- [39-02 H4 Regression] run_all_h4_regressions() executes 6 PanelOLS regressions with conditional controls
+- [39-02 H4 Regression] Presentation control included for QA regressions (controls for presentation uncertainty)
+- [39-02 H4 Regression] H4 results: 3/6 measures significant at p < 0.05 (one-tailed)
+- [39-02 H4 Regression] Significant: Manager_QA_Uncertainty (beta=-0.066), Manager_QA_Weak_Modal (beta=-0.046), CEO_QA_Weak_Modal (beta=-0.048)
+- [39-02 H4 Regression] All regressions use Firm + Year FE, firm-clustered SE (N=180K-245K, R2=0.002-0.032)
 - [32-02 Econometric Infra] Significance stars: *** p<0.01, ** p<0.05, * p<0.10; booktabs format (toprule, midrule, bottomrule)
 - [33-01 H1 Regression] H1 Cash Holdings regression script 4.1_H1CashHoldingsRegression.py (887 lines)
 - [33-01 H1 Regression] 24 regressions executed: 6 uncertainty measures x 4 specifications (primary, pooled, year_only, double_cluster)
@@ -221,16 +236,26 @@ None currently.
   - VIF diagnostics passed (all < 5.0)
   - Fixed pandas 3.x compatibility issues
 
-**H4 Dataset Summary:**
-- N=445,563 observations across 2,428 firms (2002-2018)
-- 6 uncertainty DVs available (75.5%-99.1% coverage)
-- leverage_lag1: 100% coverage, mean=0.2405
-- Weak correlations with uncertainty DVs (-0.02 to +0.02)
+- Phase 39-02: H4 Regression Execution
+  - Extended 4.4_H4_LeverageDiscipline.py with regression functions
+  - Implemented one_tailed_pvalue() for directional hypothesis testing
+  - Executed 6 PanelOLS regressions (one per uncertainty DV)
+  - H4 results: 3/6 measures significant at p < 0.05 (one-tailed)
+  - Significant: Manager_QA_Uncertainty (beta=-0.066, p=0.007)
+  - Significant: Manager_QA_Weak_Modal (beta=-0.046, p=0.002)
+  - Significant: CEO_QA_Weak_Modal (beta=-0.048, p=0.025)
+  - Generated H4_Regression_Results.parquet, H4_Coefficient_Table.tex, H4_RESULTS.md
+
+**H4 Results Summary:**
+- Manager measures show discipline effect (QA Uncertainty, Weak Modal significant)
+- CEO measures show weaker/no effect (only Weak Modal marginally significant)
+- Presentation uncertainty measures show no significant leverage effect
 
 **Next Session:**
-- Plan 39-02: H4 Regression Execution
-- Run 6 regressions (one per uncertainty DV)
-- Test H4: beta1 < 0 (leverage reduces speech uncertainty)
+- Plan 40-01: H5 Speech Uncertainty Predicts Financial Outcome Volatility
+- New hypothesis: Speech uncertainty -> outcome volatility (variance-to-variance)
+- Requires outcome volatility variable construction
+
 
 ---
 *Last updated: 2026-02-05 (Phase 40 added)*
