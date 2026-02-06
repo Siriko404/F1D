@@ -4,11 +4,11 @@
 
 This roadmap extends the existing F1D data processing pipeline with hypothesis testing capabilities for empirical finance research. Building on the v1.0 foundation (27 phases, 143 plans) that established observability and documentation, v2.0 implements three empirical hypotheses: H1 (Speech Uncertainty & Cash Holdings), H2 (Speech Uncertainty & Investment Efficiency), and H3 (Speech Uncertainty & Payout Policy). The work leverages existing sample construction and text measures from v1.0 while adding new variable construction and panel econometric regressions with fixed effects, interaction terms, and robustness checks.
 
-**Milestone:** v2.0 Hypothesis Testing Suite — ACTIVE
-**Phases:** 28-38 completed/cancelled; Phase 40 complete (H5 null results); Phase 41 abandoned (Hypothesis Suite Discovery); Phase 42 complete (H6 SEC Scrutiny null results)
-**Requirements:** 60/105 completed (15 requirements in cancelled phases not pursued; 10 requirements from Phase 42 H6)
+**Milestone:** v2.0 Hypothesis Testing Suite — CONCLUDED
+**Phases:** 15 phases (8 complete, 3 cancelled, 1 abandoned, Phases 43-46 not pursued)
+**Requirements:** 60/60 active completed (15 requirements in cancelled phases not pursued; 40 requirements in abandoned phases not pursued)
 
-**v2.0 Summary:** H1-H3 hypotheses showed null results. Phases 36-38 cancelled. Phase 40 (H5) complete with null results. Phase 41 (Hypothesis Suite Discovery) abandoned. Phase 42 (H6 SEC Scrutiny) complete with null results.
+**v2.0 Summary:** All tested hypotheses showed null results. H1-H3 (cash, investment, payout) not supported. H5 (weak modal → dispersion) not supported. H6 (SEC scrutiny → uncertainty) not supported. Phases 36-38 cancelled. Phase 41 abandoned. Phases 43-46 (H7-H10) not pursued.
 
 ## v1.0 Completed Phases (1-27)
 
@@ -291,6 +291,42 @@ Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Com
 **Status**: RESERVED — Future extension placeholder
 **Note**: Originally planned for Uncertainty Dynamics, dependent on Phase 42 (now complete).
 
+### Phase 52: LLM Literature Review & Novel Hypothesis Discovery
+**Goal:** Conduct exhaustive literature review on latest LLM textual analysis of earnings calls, map available data, and through iterative red-team/blue-team verification, identify 5 extremely high-confidence novel hypotheses ready for implementation
+**Depends on:** Phase 51
+**Plans:** 5 plans in 4 waves
+
+**NON-NEGOTIABLE CONSTRAINTS:**
+1. Ideas MUST be untested, unprecedented, and high in novelty
+2. Ideas MUST be data-feasible (achievable with available data after thorough mapping)
+3. Ideas MUST have extremely high confidence of statistical significance
+
+**Deliverables:**
+- Comprehensive data inventory and capability mapping
+- Exhaustive literature review on LLM-based earnings call analysis
+- 5 novel hypotheses with extremely high confidence scores
+- Detailed methodology proposal for each hypothesis (ready for data scientist implementation)
+- Double-verified proposal document
+
+**Process:**
+1. Map and understand all available data sources
+2. Deep literature review on latest LLM textual analysis methods for earnings calls
+3. Iterative red-team/blue-team brainstorming for research gaps
+4. Selection of 5 hypotheses with EXTREMELY high confidence for:
+   - Statistical significance
+   - Novelty/contribution
+   - Data feasibility
+
+Plans:
+- [ ] 52-01-PLAN.md — LLM Capability Mapping & Literature Deep Dive (Wave 1)
+- [ ] 52-02-PLAN.md — Data Feasibility Verification (Wave 1)
+- [ ] 52-03-PLAN.md — Blue Team - Candidate Hypothesis Generation (Wave 2)
+- [ ] 52-04-PLAN.md — Red Team - Adversarial Verification (Wave 3)
+- [ ] 52-05-PLAN.md — Final Selection & Hypothesis Specification (Wave 4)
+
+**Details:**
+Research phase producing documents, not code. Prioritizes SEC Edgar Letters (150K+ letters with full_text, 2005-2022) as highest novelty opportunity — no prior LLM analysis of this corpus. Integrates FirmLevelRisk data (354K firm-quarters) for validation and interaction effects.
+
 ## Progress
 
 **v2.0 Execution Summary:**
@@ -337,6 +373,7 @@ Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Com
 | 42 | H6 SEC Scrutiny (CCCL) → ↓ Uncertainty | 2/2 | COMPLETE | 2026-02-06 |
 | 50 | Reserved Extension | 0/TBD | RESERVED | — |
 | 51 | Reserved Extension | 0/TBD | RESERVED | — |
+| 52 | LLM Literature Review & Novel Hypothesis Discovery | 0/5 | PLANNED | — |
 
 ## Requirement Coverage
 
@@ -358,10 +395,10 @@ v2.0 requirements by status:
 | H5 Hypothesis | H5-01 through H5-10 | Phase 40 | COMPLETE |
 | H6 Hypothesis | H6-01 through H6-10 | Phase 42 | COMPLETE |
 
-**Coverage:** 60/65 requirements completed (92%); 15 requirements not pursued (cancelled phases)
+**Coverage:** 60/60 active requirements completed (100%); 55 requirements not pursued (cancelled/abandoned phases)
 
 ---
 *Roadmap created: 2026-01-22 (v1.0)*
 *v1.0 completed: 2026-01-30 (27 phases, 143 plans)*
 *v2.0 roadmap created: 2026-02-04 (11 phases, 55 requirements)*
-*v2.0 updated: 2026-02-06 (H1-H3 null results; Phases 36-38 cancelled; Phase 40 complete with null results; Phase 41 complete with H6-H10 selected)*
+*v2.0 concluded: 2026-02-06 (all hypotheses tested showed null results; project wrapped up)*

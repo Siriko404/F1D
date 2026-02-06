@@ -10,14 +10,24 @@
 
 Phase 52 represents a strategic pivot from dictionary-based textual analysis (which produced null results across H1-H6) to LLM-based approaches for earnings call analysis. This research synthesizes the latest (2023-2026) developments in LLM textual analysis of financial disclosures and establishes a rigorous red-team/blue-team methodology for identifying 5 novel hypotheses with extremely high confidence for statistical significance.
 
+**CRITICAL UPDATE (2026-02-06):** Initial research MISSED two major data sources that dramatically expand hypothesis possibilities:
+
+1. **SEC Edgar Comment Letters (150K+ letters, 2005-2022):** Full TEXT of SEC-firm regulatory correspondence. This is a GOLDMINE for LLM analysis — no prior academic work has applied LLMs to extract SEC concerns, severity, or topic content from these letters.
+
+2. **FirmLevelRisk (354K firm-quarters, 2002-2022):** Hassan et al. (2019) political risk measures computed from the SAME earnings calls. Provides validated benchmark measures (PRisk, 8 topic-specific risks, event exposures) for comparison and interaction effects.
+
 The key insight from recent literature: **LLMs have fundamentally changed what's measurable in earnings calls**. Beyond sentiment, modern approaches extract:
 1. **Reasoning quality** - How well does management explain cause-effect relationships?
 2. **Response evasiveness** - Does the CEO answer what was actually asked?
 3. **Information novelty** - What's new vs. repeated boilerplate?
-4. **Tone-text misalignment** - Does audio confidence match textual uncertainty?
+4. **Regulatory concern extraction** - What specific issues does the SEC raise? (NEW!)
 5. **Strategic narrative shifts** - How does story change quarter-over-quarter?
 
-**Primary recommendation:** Use LLMs to construct novel, semantically-rich text measures that go beyond dictionary counts. Focus on Q&A dynamics (evasiveness, response quality) and temporal patterns (narrative consistency) as the highest-novelty, highest-power research frontiers.
+**Primary recommendation:** Prioritize hypotheses using SEC Edgar Letters (Tier 1) because:
+- Full letter TEXT available for LLM analysis (not just receipt counts)
+- No prior LLM-based academic analysis of this corpus
+- Creates natural regulatory shock → firm response → market outcome chain
+- Large sample with rich textual content
 
 ---
 
@@ -303,18 +313,59 @@ Based on literature review, these areas have minimal prior testing:
 
 ## Data Feasibility Assessment Framework
 
-### Available Data Inventory (from Phase 41)
+### Complete Data Inventory (Updated 2026-02-06)
 
-| Data Source | Observations | Key Variables | Coverage |
-|-------------|--------------|---------------|----------|
-| Earnings Calls | 112,968 | Full transcript, speaker roles | 2002-2018 |
-| LM Dictionary 2024 | 86,000 words | 8 categories + Complexity | 1993-2024 |
-| IBES | 25.5M | Dispersion, forecast error, revisions | Full coverage |
-| Execucomp | 370,000 | Salary, bonus, TDC1 | 4,170 firms |
-| CEO Dismissal | 1,059 events | Forced turnover indicator | 1996-2021 |
-| SDC M&A | 95,000 deals | Target/acquirer, premium | 1999-2025 |
-| CRSP DSF | 96 quarters | Daily returns, volume | 1999-2017 |
-| CCCL | 145,000 | SEC comment letters | 2006-2018 |
+**IMPORTANT:** This inventory reflects ALL available data sources in `1_Inputs/`. Previous research missed several critical datasets.
+
+#### Core Text Data
+
+| Data Source | File(s) | Observations | Key Variables | Coverage |
+|-------------|---------|--------------|---------------|----------|
+| **Earnings Call Transcripts** | speaker_data_YYYY.parquet (17 files) | 112,968 calls | Full transcript, speaker roles, speaker_text | 2002-2018 |
+| **Unified Call Metadata** | Unified-info.parquet | 465,434 records | company_name, cusip, isin, permno, data_quality_score | 2002-2018 |
+| **LM Dictionary 2024** | Loughran-McDonald_MasterDictionary_1993-2024.csv | 86,553 words | 8 categories + NEW Complexity (53 words) | 1993-2024 |
+
+#### SEC Regulatory Data (NEW - PREVIOUSLY MISSED)
+
+| Data Source | File(s) | Observations | Key Variables | Coverage |
+|-------------|---------|--------------|---------------|----------|
+| **SEC Edgar Comment Letters** | SEC Edgar Letters/*.parquet (72 files) | ~150,000+ letters | letter_id, cik, form_type, filing_date, **full_text** (raw letter content) | **2005-2022** |
+| **CCCL Instrument** | CCCL instrument/*.parquet | 145,000+ firm-years | gvkey, cik, sic, ff12, ff48, cccl_count, **6 shift_intensity variants** | 2005-2022 |
+
+**SEC Edgar Letters - KEY INSIGHT:** These are the ACTUAL TEXT of SEC comment letters sent to firms. This enables:
+- LLM extraction of SEC concerns/topics
+- Firm-specific regulatory scrutiny measures (beyond industry-level CCCL)
+- Question-response analysis of SEC-firm correspondence
+- Linguistic analysis of SEC examiner language
+
+#### Financial Outcome Data
+
+| Data Source | File(s) | Observations | Key Variables | Coverage |
+|-------------|---------|--------------|---------------|----------|
+| **IBES Analyst Estimates** | tr_ibes/tr_ibes.parquet | 25.5M estimates | MEANEST, STDEV, NUMEST, ACTUAL, forecast error | 1999-2024 |
+| **Execucomp** | Execucomp/comp_execucomp.parquet | 370,545 exec-years | salary, bonus, TDC1, option_awards, pceo, pcfo, **titleann** | 4,170 firms |
+| **CEO Dismissal** | CEO Dismissal Data 2021.02.03.xlsx | 1,059 events | Forced turnover indicator | 1996-2021 |
+| **SDC M&A** | SDC/sdc-ma-merged.parquet | 142,457 deals | Target/Acquiror CUSIP, Deal Value, **Deal Premium**, Deal Attitude | 1999-2025 |
+| **CRSP Daily Returns** | CRSP_DSF/*.parquet (96 files) | ~1.3B daily obs | ret, prc, vol, shrout (daily) | 1999-2022 |
+| **Compustat Fundamentals** | comp_na_daily_all/comp_na_daily_all.parquet | Large | All Compustat annual/quarterly variables | Full |
+| **CCM Linking Table** | CRSPCompustat_CCM/CRSPCompustat_CCM.parquet | 2.4M links | gvkey ↔ permno linking | Full |
+
+#### Risk and Sentiment Data (NEW - PREVIOUSLY MISSED)
+
+| Data Source | File(s) | Observations | Key Variables | Coverage |
+|-------------|---------|--------------|---------------|----------|
+| **FirmLevelRisk** | FirmLevelRisk/firmquarter_2022q1.csv | 354,518 firm-quarters | **PRisk, NPRisk, Sentiment, PRiskT_economic/environment/trade/institutions/health/security/tax/technology**, Covid_Exposure, Brexit_Exposure | 2002-2022 |
+
+**FirmLevelRisk - KEY INSIGHT:** This is Hassan et al. (2019) "Firm-Level Political Risk" data with:
+- **PRisk/NPRisk:** Political risk from earnings call text (their original measure)
+- **8 Topic-specific political risks:** Economic, environment, trade, institutions, health, security, tax, technology
+- **Event exposures:** Covid, Brexit, SARS, H1N1, Zika, Ebola
+- **Sentiment:** Call-level sentiment measures
+
+This provides VALIDATED alternative text measures from the SAME earnings calls we have, enabling:
+- Benchmarking our LLM measures against established PRisk
+- Using their topic-specific risks as IVs or controls
+- Studying interactions between political risk topics and uncertainty
 
 ### Text Measure Variables Available (1,785 total)
 
@@ -323,15 +374,50 @@ Based on literature review, these areas have minimal prior testing:
 - **Categories:** Uncertainty, Weak Modal, Strong Modal, Positive, Negative, Litigious, Constraining, Complexity
 - **Contexts:** Presentation (Pres), Q&A, Overall
 
-### Merge Feasibility Matrix
+### Merge Feasibility Matrix (Updated)
 
 | Dataset A | Dataset B | Key | Expected N | Feasibility |
 |-----------|-----------|-----|------------|-------------|
 | Text measures | CRSP returns | GVKEY + date | ~60,000 | HIGH |
 | Text measures | IBES | GVKEY + quarter | ~50,000 | HIGH |
 | Text measures | Execucomp | GVKEY + year | ~20,000 | HIGH |
-| Text measures | SDC M&A (target) | GVKEY + year | ~3,000 | MEDIUM |
+| Text measures | FirmLevelRisk | GVKEY + quarter | ~100,000+ | **HIGH** (same calls!) |
+| Text measures | SEC Edgar Letters | CIK + year | ~30,000+ | **HIGH** |
+| Text measures | SDC M&A (target) | CUSIP/GVKEY + year | ~3,000 | MEDIUM |
 | Text measures | CEO dismissal | GVKEY + year | ~800 | MEDIUM |
+| SEC Letters | CRSP returns | CIK → GVKEY → date | ~50,000 | HIGH |
+| FirmLevelRisk | Outcomes | GVKEY + quarter | ~100,000+ | HIGH |
+
+### NEW Hypothesis Opportunities from Additional Data
+
+#### SEC Edgar Letters (Full Text Available!)
+
+The SEC Edgar Letters contain the **actual regulatory correspondence** between the SEC and firms:
+- 72 quarterly files covering 2005-2022
+- Contains `full_text` field with complete letter content
+- Can extract: SEC concerns, topics, severity, firm responses
+
+**Novel Hypothesis Candidates from SEC Letters:**
+
+| # | Hypothesis | IV (from SEC Letters) | DV | Novelty |
+|---|------------|----------------------|----|----|
+| 8 | SEC Concern Topic → Firm Behavior Change | LLM-extracted SEC concern topics | Future earnings call language change | SEC forces transparency |
+| 9 | SEC Letter Severity → Stock Reaction | LLM-rated severity of SEC comments | CAR around letter receipt | Regulatory pressure signal |
+| 10 | SEC Question Specificity → Disclosure Quality | LLM-measured question precision | Subsequent 10-K readability | SEC shapes disclosure |
+| 11 | Repeat SEC Scrutiny → Management Turnover | Count of SEC letters to firm | CEO/CFO departure | Regulatory pressure on executives |
+
+#### FirmLevelRisk (Validated Political Risk Measures)
+
+The Hassan et al. (2019) data provides established text measures from the SAME earnings calls:
+
+**Novel Hypothesis Candidates using FirmLevelRisk:**
+
+| # | Hypothesis | IV | DV | Novelty |
+|---|------------|----|----|---------|
+| 12 | Political Risk Topic × Uncertainty → Investment | PRiskT_* interacted with our uncertainty | CapEx efficiency | Topic-specific risk channels |
+| 13 | Political Risk Sentiment Mismatch → Returns | PRisk sentiment vs. our uncertainty gap | CAR | Inconsistent risk communication |
+| 14 | Covid/Brexit Exposure → Analyst Dispersion | Covid_Exposure, Brexit_Exposure | Forecast dispersion | Event-driven uncertainty transmission |
+| 15 | Topic-Specific Risk → Sector Returns | PRiskT_* (8 topics) | Industry-adjusted returns | Granular political risk pricing |
 
 ### Power Analysis Summary
 
@@ -400,19 +486,48 @@ For panel data with Firm + Year FE, using existing sample sizes:
   - Pre-specified sample filters
 - **Output:** 5 hypothesis specification documents ready for implementation
 
-### High-Priority Hypothesis Candidates (Initial List)
+### High-Priority Hypothesis Candidates (Updated with New Data)
 
-Based on this research, these candidates have highest novelty potential:
+Based on this research AND the newly discovered data sources, these candidates have highest novelty potential:
+
+#### Tier 1: Highest Novelty (SEC Edgar Letters + LLM)
 
 | # | Hypothesis | IV | DV | Novelty Rationale |
 |---|------------|----|----|-------------------|
-| 1 | CEO Q&A Evasiveness → Negative Returns | LLM-measured response relevance | CAR around call | Evasiveness QUALITY not word counts |
-| 2 | Narrative Inconsistency → Volatility | Embedding similarity across quarters | Realized volatility | Temporal dimension novel |
-| 3 | FLS Specificity → Analyst Accuracy | Quantitative vs. vague guidance | Forecast error | FLS QUALITY not presence |
-| 4 | CEO-CFO Tone Alignment → M&A Premium | Cross-speaker sentiment gap | Deal premium | Multi-speaker dynamics |
-| 5 | Information Novelty → Price Discovery | New vs. repeated content ratio | Trading volume | Semantic novelty measure |
-| 6 | LM Complexity → Investment Efficiency | New 2024 Complexity category | Biddle residual | New dictionary category |
-| 7 | Question Re-asking → Bad News Revelation | Analyst persistence pattern | SUE | Analyst behavior as signal |
+| 1 | **SEC Letter Topics → Earnings Call Language Change** | LLM-extracted concern topics from SEC letters | Change in next earnings call uncertainty/specificity | Novel use of SEC letter TEXT (not just receipt) |
+| 2 | **SEC Question Specificity → Disclosure Quality** | LLM-measured precision of SEC questions | 10-K readability, earnings call FLS quality | SEC as disclosure quality enforcer |
+| 3 | **Regulatory Correspondence Sentiment → Stock Reaction** | LLM tone analysis of SEC-firm back-and-forth | CAR around letter sequence | Full correspondence dynamics |
+
+#### Tier 2: High Novelty (LLM + Earnings Calls)
+
+| # | Hypothesis | IV | DV | Novelty Rationale |
+|---|------------|----|----|-------------------|
+| 4 | CEO Q&A Evasiveness → Negative Returns | LLM-measured response relevance | CAR around call | Evasiveness QUALITY not word counts |
+| 5 | Narrative Inconsistency → Volatility | Embedding similarity across quarters | Realized volatility | Temporal dimension novel |
+| 6 | FLS Specificity → Analyst Accuracy | Quantitative vs. vague guidance | Forecast error | FLS QUALITY not presence |
+| 7 | CEO-CFO Tone Alignment → M&A Premium | Cross-speaker sentiment gap | Deal premium | Multi-speaker dynamics |
+
+#### Tier 3: Medium Novelty (Political Risk Integration)
+
+| # | Hypothesis | IV | DV | Novelty Rationale |
+|---|------------|----|----|-------------------|
+| 8 | Political Risk × Uncertainty Interaction → Investment | PRiskT_* × our uncertainty | CapEx efficiency | Topic-specific risk channels |
+| 9 | PRisk-Uncertainty Mismatch → Returns | PRisk sentiment vs. uncertainty gap | CAR | Inconsistent risk signals |
+| 10 | Topic-Specific Political Risk → Sector Rotation | PRiskT_economic/trade/tax | Industry returns | Granular political risk pricing |
+
+#### Tier 4: Dictionary Extension
+
+| # | Hypothesis | IV | DV | Novelty Rationale |
+|---|------------|----|----|-------------------|
+| 11 | LM Complexity → Investment Efficiency | New 2024 Complexity category | Biddle residual | New dictionary category |
+| 12 | Information Novelty → Price Discovery | Embedding-based content novelty | Trading volume | Semantic novelty measure |
+| 13 | Question Re-asking → Bad News Revelation | Analyst persistence pattern | SUE | Analyst behavior as signal |
+
+**RECOMMENDATION:** Tier 1 hypotheses using SEC Edgar Letters represent the highest novelty because:
+1. The SEC letter TEXT has never been analyzed with LLMs in academic literature
+2. Direct regulatory-firm text exchange creates causal identification opportunities
+3. Large sample size (150K+ letters) with rich text content
+4. Can establish regulatory language → firm behavior → market outcomes chain
 
 **Note:** Final selection requires red-team verification in Plans 52-03 and 52-04.
 
@@ -540,8 +655,88 @@ Based on this research, these candidates have highest novelty potential:
 3. Red-team must KILL weak hypotheses ruthlessly
 4. Final 5 must survive ALL adversarial challenges
 5. Pre-specification before any data analysis
+6. **Prioritize SEC Edgar Letters — highest novelty potential (NEW)**
+7. **Leverage FirmLevelRisk for validation and interaction effects (NEW)**
+
+---
+
+## Appendix: Complete File Inventory
+
+### 1_Inputs/ Directory Structure (as of 2026-02-06)
+
+```
+1_Inputs/
+├── CCCL instrument/
+│   ├── instrument_shift_intensity_2005_2022.parquet (15 MB, CCCL shift-share instrument)
+│   └── instrument_variable_reference.csv (variable definitions)
+│
+├── CEO Dismissal Data 2021.02.03.xlsx (2.5 MB, 1,059 forced turnover events)
+│
+├── CRSPCompustat_CCM/
+│   ├── CRSPCompustat_CCM.parquet (2.4 MB, GVKEY-PERMNO linking)
+│   └── CRSP_CCM_Variable_Reference.csv
+│
+├── CRSP_DSF/ (1.3 GB total, 96 quarterly files)
+│   ├── CRSP_DSF_1999_Q1.parquet through CRSP_DSF_2022_Q4.parquet
+│   └── CRSP_DSF_Variable_Reference.csv
+│
+├── Execucomp/
+│   ├── comp_execucomp.parquet (44 MB, 370,545 executive-years)
+│   └── vr.csv (variable reference)
+│
+├── FirmLevelRisk/ [NEW - PREVIOUSLY MISSED]
+│   └── firmquarter_2022q1.csv (80 MB, 354,518 firm-quarters)
+│       - PRisk, NPRisk, Sentiment (aggregate measures)
+│       - PRiskT_* (8 topic-specific political risks)
+│       - Covid/Brexit/SARS/H1N1/Zika/Ebola exposure
+│
+├── Loughran-McDonald_MasterDictionary_1993-2024.csv (9 MB, 86,553 words)
+├── Loughran-McDonald_MasterDictionary_1993-2024-profile.md
+│
+├── SDC/
+│   ├── sdc-ma-merged.parquet (26 MB, 142,457 M&A deals)
+│   └── sdc-ma-merged-profile.md
+│
+├── SEC Edgar Letters/ [NEW - PREVIOUSLY MISSED] (15 GB total, 72 files)
+│   ├── letters_2005_Q1.parquet through letters_2022_Q4.parquet
+│   │   - letter_id, cik, form_type, filing_date
+│   │   - full_text (ACTUAL LETTER CONTENT - key for LLM analysis)
+│   │   - calendar_year
+│   └── ~150,000+ total letters
+│
+├── Siccodes12.zip, Siccodes48.zip (FF industry classifications)
+│
+├── Unified-info.parquet (55 MB, 465,434 call metadata records)
+├── Unified-info-profile.md
+│
+├── comp_na_daily_all/
+│   └── comp_na_daily_all.parquet (467 MB, Compustat fundamentals)
+│
+├── speaker_data_2002.parquet through speaker_data_2018.parquet (5.2 GB total)
+├── speaker_data_2002-profile.md, speaker_data_2014-profile.md
+│
+├── tr_ibes/
+│   ├── tr_ibes.parquet (356 MB, 25.5M analyst estimates)
+│   └── tr_ibes_dataset_profile.md
+│
+└── master_variable_definitions.csv, managerial_roles_extracted.txt
+```
+
+### Key Linking Variables Across Datasets
+
+| From | To | Link Key | Notes |
+|------|-----|----------|-------|
+| Earnings Calls | Compustat | gvkey | Direct match |
+| Earnings Calls | CRSP | gvkey → permno (via CCM) | Use LINKPRIM='P' |
+| Earnings Calls | IBES | cusip (8-digit) | Standardize format |
+| Earnings Calls | FirmLevelRisk | gvkey + quarter | Same source calls! |
+| SEC Letters | Compustat | cik | Direct match |
+| SEC Letters | CRSP | cik → gvkey → permno | Two-step link |
+| Execucomp | Compustat | gvkey + year | Direct match |
+| SDC M&A | Compustat | cusip (6-digit) → gvkey | Standardize CUSIP |
 
 ---
 
 *Research conducted for Phase 52: LLM Literature Review & Novel Hypothesis Discovery*
 *Project: F1D Earnings Call Analysis*
+*Last Updated: 2026-02-06 (Added SEC Edgar Letters and FirmLevelRisk data sources)*
