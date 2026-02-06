@@ -4,8 +4,8 @@
 
 This roadmap extends the existing F1D data processing pipeline with hypothesis testing capabilities for empirical finance research. Building on the v1.0 foundation (27 phases, 143 plans) that established observability and documentation, v2.0 implements three empirical hypotheses: H1 (Speech Uncertainty & Cash Holdings), H2 (Speech Uncertainty & Investment Efficiency), and H3 (Speech Uncertainty & Payout Policy). The work leverages existing sample construction and text measures from v1.0 while adding new variable construction and panel econometric regressions with fixed effects, interaction terms, and robustness checks.
 
-**Milestone:** v2.0 Hypothesis Testing Suite — COMPLETE
-**Phases:** 28-35 completed; 36-38 cancelled (hypotheses not supported)
+**Milestone:** v2.0 Hypothesis Testing Suite — ACTIVE
+**Phases:** 28-35 completed; 36-38 cancelled; 39 planned (new hypothesis)
 **Requirements:** 40/55 completed (15 requirements in cancelled phases not pursued)
 
 ## v1.0 Completed Phases (1-27)
@@ -205,6 +205,22 @@ Plans:
 **Reason**: Publication tables for null results would document absence of predicted relationships. The regression outputs from Phases 33-35 already contain all necessary documentation of the null findings.
 **Requirements**: PUB-01 through PUB-05 — NOT PURSUED
 
+### Phase 39: Leverage Disciplines Managers and Lowers Speech Uncertainty
+**Goal**: Test reverse causal direction - does leverage discipline managers and lower speech uncertainty?
+**Depends on**: Phase 32
+**Requirements**: H4-01 through H4-10 (see phase documentation)
+**Success Criteria** (what must be TRUE):
+  1. H4 analysis dataset created with lagged leverage (t-1) and all 6 uncertainty measures
+  2. 6 PanelOLS regressions executed with identical FE structure (Firm + Year + Industry)
+  3. H4 hypothesis (β₁ < 0) tested with one-tailed p-values at α = 0.05
+  4. Results document how many of 6 measures support the discipline hypothesis
+  5. Coefficient table and H4_RESULTS.md generated for documentation
+**Plans**: 2 plans in 2 waves
+
+Plans:
+- [ ] 39-01-PLAN.md — H4 data preparation: merge sources, create lagged leverage, verify variables, VIF diagnostics
+- [ ] 39-02-PLAN.md — H4 regression execution: 6 PanelOLS regressions, one-tailed tests, results summary
+
 ---
 
 ## v2.0 Hypothesis Testing Summary
@@ -245,8 +261,9 @@ Phase 28 (Structure) → Phases 29-31 (Variables, parallelized) → Phase 32 (In
 | 36 | Robustness Checks | — | CANCELLED | — |
 | 37 | Identification Strategies | — | CANCELLED | — |
 | 38 | Publication Output | — | CANCELLED | — |
+| 39 | Leverage Disciplines Managers and Lowers Speech Uncertainty | 0/2 | PLANNED | — |
 
-**v2.0 Summary:** 8/8 active phases completed, 13 plans executed, 40 requirements verified. 3 phases cancelled due to null hypothesis results.
+**v2.0 Summary:** 8/8 active phases completed, 13 plans executed, 40 requirements verified. 3 phases cancelled due to null hypothesis results. Phase 39 planned with 2 plans for reverse causality testing.
 
 ## Requirement Coverage
 
@@ -265,8 +282,16 @@ v2.0 requirements by status:
 | Robustness | ROBUST-01 through ROBUST-07 | Phase 36 | ✗ NOT PURSUED |
 | Identification | IDENT-01 through IDENT-03 | Phase 37 | ✗ NOT PURSUED |
 | Publication | PUB-01 through PUB-05 | Phase 38 | ✗ NOT PURSUED |
+| H4 Variables | H4-01 through H4-05 | Phase 39 | ○ PLANNED |
+| H4 Regression | H4-06 through H4-10 | Phase 39 | ○ PLANNED |
 
-**Coverage:** 40/55 requirements completed (73%); 15 requirements not pursued due to null hypothesis results
+**Phase 39 Plan Breakdown:**
+| Plan | Wave | Objective | Requirements |
+|------|------|-----------|--------------|
+| 39-01 | 1 | H4 Data Preparation & VIF Diagnostics | H4-01 through H4-05 |
+| 39-02 | 2 | H4 Regression Execution & Results | H4-06 through H4-10 |
+
+**Coverage:** 40/55 requirements completed (73%); 15 requirements not pursued; 10 requirements planned for Phase 39
 
 ---
 *Roadmap created: 2026-01-22 (v1.0)*
