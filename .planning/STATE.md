@@ -9,16 +9,16 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 40 - H5 Speech Uncertainty Predicts Analyst Dispersion
-Plan: 02
-Status: COMPLETE — H5 hypothesis tested, NOT SUPPORTED
-Last activity: 2026-02-05 — Plan 40-02 executed, H5 regressions show null results
+Phase: 41 - Hypothesis Suite Discovery
+Plan: 01
+Status: COMPLETE — Data inventory with 11 sources documented, 16+ feasible IV-DV combinations
+Last activity: 2026-02-06 — Plan 41-01 executed, comprehensive data inventory created
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null
-[████████████████████] 8/8 active phases (100%)
+[███████████████████   ] 9/12 active phases (75%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -34,7 +34,7 @@ Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
 Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
-Phase 41: Hypothesis Suite Discovery [PLANNED - 4/4 plans in 4 waves]
+Phase 41: Hypothesis Suite Discovery [ACTIVE - 1/4 plans done]
 Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 ```
 
@@ -113,6 +113,11 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 - [Phase 40 Plan 01] GVKEY standardization to string with leading zeros (zfill(6)) for cross-dataset compatibility
 - [Phase 40 Plan 01] Placeholder CUSIP filtering: 00000000, nan, NaN, None excluded
 - [Phase 40 Plan 01] NumpyEncoder for JSON serialization of numpy types in stats.json
+- [Phase 41-01 Data Inventory] 11 input sources verified: earnings calls (112K), LM dict (86K words), IBES (25.5M), Execucomp (370K), CEO dismissal (1,059 events), SDC M&A (95K deals), CRSP DSF (96 quarters), CCCL (145K)
+- [Phase 41-01 Data Inventory] 1,785 text measure variables available (15 speaker roles x 8 categories x 3 contexts)
+- [Phase 41-01 Feasibility] HIGH: Weak Modal -> M&A Target (95K deals), Stock Returns (CRSP), Analyst Dispersion (264K H5 verified)
+- [Phase 41-01 Feasibility] MEDIUM: Weak Modal -> CEO Turnover (1,059 events), Compensation (4,170 firms)
+- [Phase 41-01 Feasibility] Literature review (41-02) to focus ONLY on feasible IV-DV combinations
 
 ### From v1.0 (carry forward)
 
@@ -146,10 +151,39 @@ None currently.
 
 ## Session Continuity
 
-### Current Session (2026-02-05)
+### Current Session (2026-02-06)
 
 **Completed:**
-- Phase 40 Plan 01 executed successfully
+- Phase 41 Plan 01 executed successfully
+- Created comprehensive data inventory (41-01-DATA_INVENTORY.md)
+- Documented 11 input data sources with locations, sizes, coverage:
+  - Earnings calls: 112,968 calls (2002-2018), 4.7 GB
+  - LM Dictionary: 86,554 words, 8 sentiment categories
+  - IBES: 25.5M rows (1999-2024), verified for analyst dispersion
+  - Execucomp: 370K obs, 4,170 firms (1992-2025)
+  - CEO dismissal: 1,059 dismissals (2002-2018)
+  - SDC M&A: 95,452 deals (2002-2018)
+  - CRSP DSF: 96 quarterly files (1999-2022)
+  - CCCL instrument: 145,693 obs (2005-2022)
+- Documented 1,785 text measure variables (15 speaker roles x 8 categories x 3 contexts)
+- Created merge feasibility matrix for all dataset combinations
+- Identified 16+ feasible IV-DV hypothesis combinations
+- Provided recommendations for focused literature review (Plan 02)
+
+**Phase 41 Plan 01 Findings:**
+- HIGH feasibility: Weak Modal -> M&A Target (95K deals)
+- HIGH feasibility: Uncertainty/Weak Modal -> Stock Returns (CRSP 1999-2022)
+- MEDIUM feasibility: Uncertainty/Weak Modal -> CEO Turnover (1,059 events)
+- MEDIUM feasibility: Uncertainty/Weak Modal -> Compensation (4,170 firms)
+- HIGH feasibility: H6 CCCL shift-share instrument available (145K obs)
+
+**Next Session:**
+- Phase 41 Plan 02: Literature Review focused on feasible hypotheses
+- Search literature for: speech -> M&A, CEO turnover, compensation, stock returns
+
+### Previous Session (2026-02-05)
+
+**Phase 40 Plan 01 executed:**
 - Created 3.5_H5Variables.py with memory-efficient IBES loading (PyArrow row groups)
 - Generated H5_AnalystDispersion.parquet with 850,889 observations (264,504 complete cases)
 - Implemented CCM CUSIP-GVKEY linking (LINKPRIM='P', 71.6% match rate)
@@ -168,15 +202,5 @@ None currently.
 - Pooled OLS (no FE): Uncertainty significant, but not with Firm FE
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity
 
-**Deviations Handled (8 auto-fixes total):**
-1-5. From Plan 01 (IBES loading, CCM, GVKEY, CUSIP, NumpyEncoder)
-6. Missing gvkey/fiscal_year in regression subset (blocking)
-7. JSON bool serialization error
-8. uncertainty_gap not added to regression dataframe
-
-**Next Session:**
-- Consider Phase 41: Hypothesis Suite Discovery (literature review for new hypotheses)
-- Or discuss H5 null results and next steps
-
 ---
-*Last updated: 2026-02-05 (Phase 40 Plan 02 complete, H5 NOT SUPPORTED)*
+*Last updated: 2026-02-06 (Phase 41 Plan 01 complete, data inventory finished)*
