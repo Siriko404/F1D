@@ -262,6 +262,10 @@ def prepare_regression_data(df, uncertainty_cols, dw=None):
         if col in df.columns:
             strict_df[col] = df[col]
 
+    # Also add uncertainty_gap for gap model (H5-B)
+    if 'uncertainty_gap' in df.columns:
+        strict_df['uncertainty_gap'] = df['uncertainty_gap']
+
     # Count unique firms and time periods
     n_firms = strict_df['gvkey'].nunique()
     years = sorted(strict_df['fiscal_year'].unique())
@@ -351,7 +355,8 @@ def run_single_h5_regression(df, uncertainty_var, model_type, spec_name, spec_co
         return None
 
     # Drop rows where any exog or DV is missing
-    complete_cols = exog + ['dispersion_lead']
+    # Include gvkey and fiscal_year for panel structure
+    complete_cols = exog + ['dispersion_lead', 'gvkey', 'fiscal_year']
     df_reg = df_work[complete_cols].dropna()
 
     if len(df_reg) < 100:
@@ -774,6 +779,8 @@ def save_stats(stats, output_dir, dw=None):
                 return float(obj)
             if isinstance(obj, np.ndarray):
                 return obj.tolist()
+            if isinstance(obj, (bool, np.bool_)):
+                return bool(obj)
             return super().default(obj)
 
     with open(stats_path, 'w') as f:
