@@ -235,12 +235,34 @@ Plans:
 - Control for established effect: Manager_QA_Uncertainty_pct
 - FE: Firm + Year; SE: Clustered at firm level
 
+### Phase 41: Hypothesis Suite Discovery — Novel Hypotheses with Data-Feasibility & Statistical Confidence
+**Goal**: Conduct an extremely thorough and deep literature review to identify untested hypotheses that are: (1) feasible with currently available data, (2) novel with true research gaps, and (3) have high confidence of statistically significant results
+**Depends on**: Phase 40 (H5 Analyst Dispersion)
+**Status**: PLANNED — 4 plans in 4 waves
+**Success Criteria** (what must be TRUE):
+  1. Comprehensive literature review completed across relevant domains (accounting, finance, linguistics, psychology)
+  2. Data feasibility matrix created mapping all available data sources to potential hypothesis variables
+  3. Novel research gaps identified with no prior published tests
+  4. Statistical power analysis conducted to ensure high confidence in significant results
+  5. Hypothesis suite selected and formally specified (to be named after discovery)
+**Plans**: 4 plans in 4 waves
+
+Plans:
+- [ ] 41-01-PLAN.md — Conduct PRISMA 2020 literature review, create evidence matrix, identify research gaps
+- [ ] 41-02-PLAN.md — Verify data availability for all candidate hypotheses, create feasibility matrix
+- [ ] 41-03-PLAN.md — Conduct statistical power analysis, rank hypotheses by power confidence
+- [ ] 41-04-PLAN.md — Select hypothesis suite, formalize specifications, update ROADMAP/REQUIREMENTS
+
+**Details:**
+Discovery phase with 4 sequential plans: (01) Literature review using PRISMA 2020 methodology to identify tested vs. untested hypotheses; (02) Data feasibility assessment verifying IV/DV/control availability and estimating sample sizes; (03) Statistical power analysis calculating power for meaningful effect sizes; (04) Hypothesis suite selection and formal specification for Phase 42+ development
+
 ## Progress
 
 **v2.0 Execution Summary:**
 - Phases 28-35: Completed (H1-H3 variable construction and regressions)
 - Phases 36-38: Cancelled (null results make robustness/identification/publication scientifically inappropriate)
-- Phase 40: NEW — H5 hypothesis with higher likelihood of success
+- Phase 40: PLANNED — H5 hypothesis with higher likelihood of success
+- Phase 41: NEW — Hypothesis Suite Discovery (literature review for novel, data-feasible hypotheses)
 
 **v2.0 Hypothesis Testing Results:**
 
@@ -267,6 +289,7 @@ Plans:
 | 37 | Identification Strategies | — | CANCELLED | — |
 | 38 | Publication Output | — | CANCELLED | — |
 | 40 | H5 Speech → Analyst Dispersion | 0/2 | PLANNED | — |
+| 41 | Hypothesis Suite Discovery | 0/4 | PLANNED | — |
 
 ## Requirement Coverage
 

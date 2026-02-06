@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite — H1-H3 null results; Phase 40 (H5) context complete
+**Current focus:** v2.0 Hypothesis Testing Suite — H1-H3 null results; Phase 40 (H5) context complete; Phase 41 (Hypothesis Suite Discovery) added
 
 ## Current Position
 
-Phase: 40 - H5 Speech Uncertainty Predicts Analyst Dispersion
+Phase: 41 - Hypothesis Suite Discovery
 Plan: —
-Status: CONTEXT COMPLETE — Ready for planning
-Last activity: 2026-02-05 — Phase 40 context discussion completed with full specification
+Status: PLANNED — 4 plans in 4 waves ready for execution
+Last activity: 2026-02-05 — Phase 41 plans created (literature review, data feasibility, power analysis, hypothesis selection)
 
 ### Progress
 
@@ -34,6 +34,7 @@ Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
 Phase 40: H5 Speech → Analyst Dispersion [CONTEXT COMPLETE - 0/TBD plans]
+Phase 41: Hypothesis Suite Discovery [PLANNED - 4/4 plans in 4 waves]
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -85,6 +86,7 @@ Phase 40: H5 Speech → Analyst Dispersion [CONTEXT COMPLETE - 0/TBD plans]
 - **2026-02-05**: Phases 36-38 cancelled (null results from H1-H3)
 - **2026-02-05**: Phase 40 added — "H5 Speech Uncertainty Predicts Analyst Dispersion" (novel hypothesis with higher confidence)
 - **2026-02-05**: Phase 40 context discussion completed with full specification
+- **2026-02-05**: Phase 41 added — "Hypothesis Suite Discovery" (deep literature review for novel, data-feasible, high-confidence hypotheses)
 
 ### Decisions
 
@@ -166,4 +168,4 @@ The speech uncertainty measures derived from earnings call transcripts do not sy
 - Create 4.5_H5DispersionRegression.py script
 
 ---
-*Last updated: 2026-02-05 (Phase 40 context complete)*
+*Last updated: 2026-02-05 (Phase 41 added)*
