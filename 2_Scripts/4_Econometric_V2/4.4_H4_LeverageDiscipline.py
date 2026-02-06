@@ -369,12 +369,16 @@ def aggregate_speech_to_firmyear(speech_df, uncertainty_cols, dw=None):
     # Group by gvkey and fiscal_year
     group_cols = ['gvkey', 'fiscal_year']
 
-    # Compute mean of uncertainty columns, count of file_name
-    agg_dict = {col: 'mean' for col in uncertainty_cols}
-    agg_dict['file_name'] = 'count'
+    # First aggregate numeric columns with mean
+    numeric_cols = [c for c in uncertainty_cols if c in df.columns]
+    agg_df = df.groupby(group_cols, as_index=False)[numeric_cols].mean()
 
-    agg_df = df.groupby(group_cols, as_index=False).agg(agg_dict)
-    agg_df = agg_df.rename(columns={'file_name': 'n_calls'})
+    # Count calls per firm-year
+    call_counts = df.groupby(group_cols, as_index=False)['file_name'].count()
+    call_counts = call_counts.rename(columns={'file_name': 'n_calls'})
+
+    # Merge the aggregations
+    agg_df = agg_df.merge(call_counts, on=group_cols)
 
     if dw:
         mean_calls = agg_df['n_calls'].mean()
@@ -415,7 +419,16 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
     """
     # Step 1: Merge H1 with H3
     merge_cols = ['gvkey', 'fiscal_year']
-    merged_df = h1_df.merge(h3_df, on=merge_cols, how='outer')
+    # H3 has only firm_maturity and earnings_volatility (select columns in load_h3_variables)
+    # But to be safe, handle potential duplicates with suffixes
+    merged_df = h1_df.merge(h3_df, on=merge_cols, how='outer', suffixes=('', '_h3'))
+
+    # If there were duplicates, coalesce to prefer H1 values for controls
+    # (H1 has the full set of controls, H3 only adds firm_maturity and earnings_volatility)
+    for col in ['firm_size', 'roa', 'tobins_q', 'cash_holdings']:
+        if f'{col}_h3' in merged_df.columns:
+            merged_df[col] = merged_df[col].fillna(merged_df[f'{col}_h3'])
+            merged_df = merged_df.drop(columns=[f'{col}_h3'])
 
     if dw:
         h1_only = merged_df['firm_maturity'].isna() & merged_df['leverage'].notna()
@@ -425,7 +438,16 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
         dw.write(f"    H1 only: {h1_only.sum():,}, H3 only: {h3_only.sum():,}, Both: {both.sum():,}\n")
 
     # Step 2: Merge with speech uncertainty
-    merged_df = merged_df.merge(speech_agg_df, on=merge_cols, how='inner')
+    # Use suffixes to handle any duplicate column names
+    merged_df = merged_df.merge(speech_agg_df, on=merge_cols, how='inner', suffixes=('', '_speech'))
+
+    # Coalesce any duplicated columns (prefer original values)
+    for col in merged_df.columns:
+        if col.endswith('_speech'):
+            orig_col = col.replace('_speech', '')
+            if orig_col in merged_df.columns:
+                merged_df[orig_col] = merged_df[orig_col].fillna(merged_df[col])
+                merged_df = merged_df.drop(columns=[col])
 
     if dw:
         dw.write(f"  After speech merge: {len(merged_df):,} obs (complete cases only)\n")
@@ -444,19 +466,38 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
     core_cols = ['gvkey', 'fiscal_year', 'leverage', 'leverage_lag1']
     control_cols = FINANCIAL_CONTROLS.copy()
 
-    # Build full column list
+    # Build full column list (preserve order, remove duplicates)
     all_cols = core_cols + control_cols + uncertainty_measures + [analyst_uncertainty_var]
 
-    # Add presentation controls that exist in data
-    presentation_cols = [c for c in PRESENTATION_CONTROL_MAP.values() if c is not None]
+    # Add presentation controls that exist in data (avoid duplicates)
+    presentation_cols = [c for c in PRESENTATION_CONTROL_MAP.values()
+                        if c is not None and c not in all_cols]
     all_cols.extend(presentation_cols)
 
     # Add n_calls for reference
     all_cols.append('n_calls')
 
+    # Remove any duplicates while preserving order
+    seen = set()
+    unique_cols = []
+    for col in all_cols:
+        if col not in seen:
+            seen.add(col)
+            unique_cols.append(col)
+
     # Select available columns only
-    available_cols = [c for c in all_cols if c in merged_df.columns]
+    available_cols = [c for c in unique_cols if c in merged_df.columns]
+
+    # Also check if merged_df itself has duplicate columns and deduplicate if needed
+    if len(merged_df.columns) != len(set(merged_df.columns)):
+        # DataFrame has duplicate columns - need to deduplicate
+        # Keep first occurrence of each column
+        merged_df = merged_df.loc[:, ~merged_df.columns.duplicated(keep='first')]
+
     analysis_df = merged_df[available_cols].copy()
+
+    # Final check: remove any duplicate columns in analysis_df
+    analysis_df = analysis_df.loc[:, ~analysis_df.columns.duplicated(keep='first')]
 
     # Rename analyst uncertainty to shorter name for regression
     if analyst_uncertainty_var in analysis_df.columns:
@@ -498,6 +539,11 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
 
         for var in uncertainty_measures:
             avail = analysis_df[var].notna().sum()
+            # Convert scalar to int (handle pandas 3.x Series behavior)
+            try:
+                avail = int(avail.iloc[0] if hasattr(avail, 'iloc') else avail)
+            except (AttributeError, IndexError):
+                avail = int(avail)
             total = len(analysis_df)
             pct = avail / total * 100
             dw.write(f"  {var}: {avail:,}/{total:,} ({pct:.1f}%)\n")
@@ -505,6 +551,10 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
         for var in ['analyst_qa_uncertainty'] + FINANCIAL_CONTROLS:
             if var in analysis_df.columns:
                 avail = analysis_df[var].notna().sum()
+                try:
+                    avail = int(avail.iloc[0] if hasattr(avail, 'iloc') else avail)
+                except (AttributeError, IndexError):
+                    avail = int(avail)
                 total = len(analysis_df)
                 pct = avail / total * 100
                 dw.write(f"  {var}: {avail:,}/{total:,} ({pct:.1f}%)\n")
@@ -856,9 +906,16 @@ def main():
         # Variable availability
         for var in UNCERTAINTY_MEASURES + ['analyst_qa_uncertainty'] + FINANCIAL_CONTROLS:
             if var in analysis_df.columns:
+                n_valid = analysis_df[var].notna().sum()
+                # Convert scalar to int (handle pandas 3.x Series behavior)
+                try:
+                    n_valid = int(n_valid.iloc[0] if hasattr(n_valid, 'iloc') else n_valid)
+                except (AttributeError, IndexError):
+                    n_valid = int(n_valid)
+                pct_valid = float(n_valid / len(analysis_df) * 100)
                 stats['variable_availability'][var] = {
-                    'n_valid': int(analysis_df[var].notna().sum()),
-                    'pct_valid': float(analysis_df[var].notna().sum() / len(analysis_df) * 100),
+                    'n_valid': n_valid,
+                    'pct_valid': pct_valid,
                 }
 
         # Save outputs
