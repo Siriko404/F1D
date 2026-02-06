@@ -9,16 +9,16 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 41 - Hypothesis Suite Discovery
-Plan: 03
-Status: COMPLETE — Power analysis confirms all hypotheses have adequate statistical power
-Last activity: 2026-02-06 — Plan 41-03 executed, 5 hypotheses recommended for Phase 42
+Phase: 42 - H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty
+Plan: 01
+Status: COMPLETE — H6 variables constructed with CCCL instrument merged with speech uncertainty
+Last activity: 2026-02-06 — Plan 42-01 executed, H6_CCCL_Speech.parquet generated (22,273 obs)
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null
-[███████████████████   ] 10/12 active phases (83%)
+[████████████████████  ] 11/12 active phases (92%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -34,8 +34,8 @@ Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
 Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
-Phase 41: Hypothesis Suite Discovery [ACTIVE - 3/4 plans done]
-Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
+Phase 41: Hypothesis Suite Discovery [COMPLETE - 3/4 plans done]
+Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [ACTIVE - 1/TBD plans done]
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -126,6 +126,13 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 - [Phase 41-03 Power Analysis] Perfect scores (1.00): H6, H9, H11, H4, H15 (SELECT for Phase 42)
 - [Phase 41-03 Power Analysis] Effect size benchmarks: 5% cash/assets, 10% M&A probability, 50 bps returns, 20% turnover risk, 10% comp change
 - [Phase 41-03 Power Analysis] H7/H12 (turnover) have adequate 82% power with 1,059 dismissal events; rated RESERVE
+- [Phase 42-01 H6 Variables] CCCL instrument is ANNUAL (year column) not quarterly - merge on gvkey+year
+- [Phase 42-01 H6 Variables] Aggregate speech measures to firm-year level to match CCCL frequency
+- [Phase 42-01 H6 Variables] Lagged CCCL (t-1) via groupby().shift(1) ensures temporal ordering for causal identification
+- [Phase 42-01 H6 Variables] Uncertainty_Gap = QA_Uncertainty - Pres_Uncertainty captures spontaneous vs prepared speech
+- [Phase 42-01 H6 Variables] H6 sample: 22,273 firm-year observations (2,357 firms, 2006-2018 after lag)
+- [Phase 42-01 H6 Variables] Primary instrument: shift_intensity_mkvalt_ff48 (FF48 x market value, normalized 0-1)
+- [Phase 42-01 H6 Variables] 6 CCCL variants available: FF48/Sales, FF12/Market Value, FF12/Sales, SIC2/Market Value, SIC2/Sales
 
 ### From v1.0 (carry forward)
 
@@ -162,34 +169,33 @@ None currently.
 ### Current Session (2026-02-06)
 
 **Completed:**
-- Phase 41 Plan 03 executed successfully
-- Created power analysis document (41-03-STATISTICAL_POWER_ANALYSIS.md)
-  - Panel fixed effects power function with design effect adjustment
-  - Power calculated for H1-H3 existing samples (all >99% for small effects)
-  - Power calculated for 11 candidate hypotheses (H4, H6-H15)
-  - 9/11 Excellent (>90%), 2/11 Adequate (>80%), 0/11 Marginal or Low
-  - Documented minimum detectable effect sizes for each hypothesis
-- Created summary and selection framework (41-03-SUMMARY.md)
-  - Effect size benchmarks with economic interpretation
-  - Selection framework: 30% novelty + 40% feasibility + 30% power
-  - Ranked table with all 11 hypotheses scored
-  - Top 5 hypotheses recommended for Phase 42: H6, H9, H11, H4, H15
-  - H7/H12 (turnover) rated RESERVE due to adequate (82%) vs excellent (>90%) power
+- Phase 42 Plan 01 executed successfully
+- Created 3.6_H6Variables.py script (663 lines)
+  - Loads CCCL shift-share instrument (145K firm-years, 6 variants)
+  - Loads speech uncertainty measures (2002-2018, 6 measures)
+  - Merges on gvkey + fiscal_year (annual data)
+  - Creates lagged CCCL exposure (t-1) via groupby().shift(1)
+  - Computes Uncertainty_Gap = QA_Uncertainty - Pres_Uncertainty
+- Generated H6_CCCL_Speech.parquet (22,273 observations, 2,357 firms, 2006-2018)
+  - 6 CCCL variants + 6 lagged variants
+  - 6 speech uncertainty measures
+  - Uncertainty_Gap for mechanism testing
+- Created 42-01-SUMMARY.md with complete documentation
 
-**Phase 41 Plan 03 Findings:**
-- Power is NOT a constraint: all hypotheses have >80% power for small effects
-- H1-H3 null results are NOT due to low power (99%+ power confirmed)
-- All 11 hypotheses can detect economically meaningful effects
-- Selection should focus on novelty and theoretical mechanism, not statistical power
-- M&A hypotheses (H6, H11) leverage 95K deals with minimal literature
-- Gap measure hypotheses (H9, H4, H15) test novel uncertainty differential
-- Turnover hypotheses (H7, H12) have adequate 82% power with 1,059 events
+**Phase 42 Plan 01 Findings:**
+- Merge rate: 16.9% (24,671 of 145,693 CCCL obs matched speech data)
+- After lagging: 22,273 observations (2,357 firms)
+- Year range: 2006-2018 (2005 data lost to lag)
+- Uncertainty Gap mean: -0.0434 (more uncertain in Presentation than Q&A)
+- All 6 CCCL variants have 100% coverage
+- Sample size sufficient for firm fixed effects with year clustering
 
 **Next Session:**
-- Phase 41 Plan 04: Hypothesis Suite Selection
-- Final selection of 3-5 hypotheses for Phase 42 implementation
-- Create detailed variable specifications for selected hypotheses
-- Document control variables and estimation strategies
+- Phase 42 Plan 02: H6 Regression Analysis
+- Test whether SEC scrutiny (CCCL exposure) reduces speech uncertainty
+- Firm + Year FE with SE clustered at firm level
+- Primary outcome: Manager_QA_Uncertainty_pct
+- Robustness: All 6 uncertainty measures, 6 CCCL variants
 
 ### Previous Session (2026-02-05)
 
@@ -213,4 +219,4 @@ None currently.
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity
 
 ---
-*Last updated: 2026-02-06 (Phase 40 complete: H5 null results; Phase 41 Plan 03 complete, power analysis confirms all hypotheses have adequate power, 5 hypotheses recommended for Phase 42)*
+*Last updated: 2026-02-06 (Phase 42 Plan 01 complete: H6 variables constructed, CCCL instrument merged with speech uncertainty, 22,273 firm-year observations ready for regression analysis)*
