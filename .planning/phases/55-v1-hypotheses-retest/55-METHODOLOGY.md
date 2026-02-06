@@ -837,3 +837,660 @@ model = PanelOLS(
 **Full Reporting:** All 11 specs (pre-registered approach)
 
 ---
+
+## Hypothesis 2: Managerial Speech Uncertainty -> Takeover Target Probability
+
+### Hypothesis Statement
+
+**H8a:** Higher managerial speech uncertainty predicts HIGHER takeover target probability.
+
+**Directional Prediction:**
+- beta_Uncertainty > 0 in logit model (uncertainty increases takeover odds)
+- More uncertain speech -> signals weakness -> attracts acquirers
+
+**Theoretical Mechanism:**
+1. Managerial uncertainty increases perceived information asymmetry
+2. High uncertainty signals managerial weakness or lack of clarity
+3. Perceived weakness makes firm vulnerable to acquisition
+4. Acquirers target firms with undervalued assets or poor management
+5. Result: Higher takeover probability
+
+**Counter-Hypothesis (Null):**
+- No relationship between speech uncertainty and takeover probability
+- Any observed correlation is due to omitted variables or sampling variation
+
+### Dependent Variables
+
+#### Primary: Binary Takeover Indicator
+
+**Definition:**
+```
+TakeoverTarget_{i,t+1} = 1  if firm i is target in completed deal in year t+1
+                         = 0  otherwise (non-target firm)
+```
+
+**Data Source:** SDC Platinum M&A Database
+- Location: `1_Inputs/SDC/`
+- Primary table: M&A transactions
+- Target identification: Company-level matching
+
+**Key Fields (SDC):**
+```
+DealID       - Unique deal identifier
+TargetGVKEY  - Target company identifier (if available)
+TargetCUSIP  - Target CUSIP
+TargetName   - Target company name
+AnnounceDate - Deal announcement date
+CompleteDate - Deal completion date
+DealStatus   - Completed, Withdrawn, Pending
+DealValue    - Transaction value (USD)
+```
+
+**Takeover Definition (Primary):**
+1. **Completed deals only** (DealStatus = "Completed")
+2. **Target identification:** Match on GVKEY via CUSIP
+3. **Timing:** Deal announcement/completion in year t+1
+4. **Exclusions:**
+   - Spin-offs, recapitalizations, share repurchases
+   - Private deals (no public target data)
+   - Partial acquisitions (<50% ownership)
+
+**Rationale for Completed Deals:**
+- Only completed deals represent actual change of control
+- Withdrawn deals may reflect failed negotiations (different mechanism)
+- Aligns with standard M&A literature (Ambrose 1990, Meghouar 2024)
+
+#### Robustness 1: Announced Deals
+
+**Definition:**
+```
+TakeoverTarget_{i,t+1} = 1  if firm i is target in announced deal (completed or withdrawn)
+                         = 0  otherwise
+```
+
+**Purpose:**
+- Tests if uncertainty predicts deal initiation (not just completion)
+- Includes deals that were announced but not completed
+- May capture different mechanism (uncertainty -> deal interest)
+
+#### Robustness 2: Hostile Deals Only
+
+**Definition:**
+```
+TakeoverTarget_{i,t+1} = 1  if firm i is target in hostile deal in year t+1
+                         = 0  otherwise
+```
+
+**Purpose:**
+- Tests if uncertainty specifically predicts hostile takeovers
+- Hostile deals may be more sensitive to perceived weakness
+- Smaller sample but stronger mechanism
+
+#### Robustness 3: Time-to-Event (Cox Proportional Hazards)
+
+**Definition:**
+```
+Survival time = Time from observation to takeover (or censoring)
+```
+
+**Model:**
+```
+h(t|X) = h0(t) * exp(beta1*Uncertainty + gamma*Controls)
+```
+
+**Where:**
+- h(t|X) = Hazard rate at time t
+- h0(t) = Baseline hazard
+- beta1 = Log hazard ratio for uncertainty
+
+**Censoring:**
+- Event: Takeover completion
+- Censored: End of sample period without takeover
+- Censored: Delisting not due to M&A
+
+**Purpose:**
+- Uses time-to-event information more efficiently
+- Handles varying time horizons across firms
+- Standard survival analysis approach
+
+**Implementation:**
+```python
+from lifelines import CoxPHFitter
+
+# Prepare data: each row is a firm-year observation
+df['time_to_takeover'] = ...  # Calculate time until takeover or censoring
+df['takeover_event'] = ...     # 1 if takeover, 0 if censored
+
+# Fit Cox model
+cph = CoxPHFitter()
+cph.fit(df, duration_col='time_to_takeover', event_col='takeover_event',
+        covariates=['Uncertainty', 'Size', 'Leverage', 'ROA', 'MTB', 'Liquidity', 'Efficiency', 'Returns'])
+```
+
+### Independent Variables
+
+#### Primary: Managerial Speech Uncertainty Measures
+
+Same as Hypothesis 1 (H7):
+
+**V2 Uncertainty Variables:**
+```
+Manager_QA_Uncertainty_pct     - Manager uncertainty in Q&A context
+CEO_QA_Uncertainty_pct         - CEO uncertainty in Q&A context
+Manager_Pres_Uncertainty_pct   - Manager uncertainty in Presentation context
+CEO_Pres_Uncertainty_pct       - CEO uncertainty in Presentation context
+```
+
+**Timing Specification:**
+- Uncertainty measured at year t (speech during fiscal year t)
+- Predicts takeover status at year t+1 (forward-looking)
+- Ensures temporal ordering for causal interpretation
+
+#### Alternative Independent Variables
+
+For robustness testing:
+```
+QA_Uncertainty_pct             - Combined Q&A uncertainty (all speakers)
+Pres_Uncertainty_pct           - Combined Presentation uncertainty
+Uncertainty_Gap                - QA_Uncertainty - Pres_Uncertainty
+CEO_Uncertainty_Avg            - CEO uncertainty across both contexts
+Uncertainty_Change             - Change in uncertainty from t-1 to t
+```
+
+**Uncertainty Change Specification:**
+```python
+# Test if increasing uncertainty predicts takeover
+df['Uncertainty_Change'] = df.groupby('gvkey')['Manager_QA_Uncertainty_pct'].diff()
+```
+
+### Control Variables
+
+#### Required Controls (from M&A prediction literature)
+
+| Variable | Measure | Compustat Field | Expected Sign | Rationale |
+|----------|---------|----------------|---------------|-----------|
+| **Size** | log(Assets) | log(AT) | Negative | Larger firms harder to acquire |
+| **Leverage** | Total Debt / Assets | (DLTT + DLC) / AT | Positive | Highly leveraged = vulnerable |
+| **ROA** | Return on Assets | IB / AT | Negative | Underperformers targeted |
+| **MTB** | Market-to-Book | (PRC * CSHO) / CEQ | Negative | Low MTB = undervaluation |
+| **Liquidity** | Current Ratio | ACT / LCT | Negative | Low liquidity = distress = target |
+| **Efficiency** | Asset Turnover | SALE / AT | Negative | Inefficient operations = opportunity |
+| **Stock Returns** | Abnormal returns | Calculation from CRSP | Negative | Poor performance = target |
+| **R&D Intensity** | R&D / Assets | XRD / AT | Ambiguous | Innovation attracts or protects |
+
+#### Control Variable Construction Details
+
+**Firm Size:**
+```
+Size_{i,t} = log(AT_{i,t})
+```
+Use log of total assets (book value)
+Larger firms require more capital to acquire -> less likely targets
+
+**Leverage:**
+```
+Leverage_{i,t} = (DLTT_{i,t} + DLC_{i,t}) / AT_{i,t}
+```
+Winsorize at 1%/99%
+High leverage -> financial distress -> acquisition target
+
+**ROA (Return on Assets):**
+```
+ROA_{i,t} = IB_{i,t} / AT_{i,t}
+```
+Winsorize at 1%/99%
+Low ROA -> underperformance -> acquisition target
+
+**MTB (Market-to-Book):**
+```
+MTB_{i,t} = (PRC_{i,t} * CSHO_{i,t}) / CEQ_{i,t}
+```
+Low MTB -> undervalued assets -> acquisition target
+
+**Liquidity (Current Ratio):**
+```
+Liquidity_{i,t} = ACT_{i,t} / LCT_{i,t}
+```
+Winsorize at 1%/99%
+Low liquidity -> cash-constrained -> vulnerable
+
+**Efficiency (Asset Turnover):**
+```
+Efficiency_{i,t} = SALE_{i,t} / AT_{i,t}
+```
+Winsorize at 1%/99%
+Low efficiency -> operational improvement opportunity
+
+**Stock Returns:**
+```
+Returns_{i,t} = product_{d=1}^{D}(1 + RET_{i,t,d}) - 1 - MarketReturn_{i,t}
+```
+Calculate abnormal returns (market-adjusted)
+Negative abnormal returns -> poor performance -> target
+
+**R&D Intensity:**
+```
+RD_Intensity_{i,t} = XRD_{i,t} / AT_{i,t}
+```
+Set to 0 if missing (many firms don't report R&D)
+Interpretation: High R&D may attract (innovation value) or protect (complexity)
+
+### Primary Regression Equation
+
+#### Specification 1 (Primary): Logit with Firm + Year FE, Firm-Clustered SE
+
+**Equation:**
+```
+logit(P(TakeoverTarget_{i,t+1}=1)) = beta0 + beta1*Uncertainty_{i,t}
+                                     + gamma1*Size_{i,t}
+                                     + gamma2*Leverage_{i,t}
+                                     + gamma3*ROA_{i,t}
+                                     + gamma4*MTB_{i,t}
+                                     + gamma5*Liquidity_{i,t}
+                                     + gamma6*Efficiency_{i,t}
+                                     + gamma7*Returns_{i,t}
+                                     + gamma8*RD_Intensity_{i,t}
+                                     + alpha_i
+                                     + delta_t
+                                     + epsilon_{i,t}
+```
+
+**Where:**
+- alpha_i = Firm fixed effects (controls for time-invariant firm characteristics)
+- delta_t = Year fixed effects (controls for macroeconomic M&A waves)
+- epsilon_{i,t} = Error term
+- SE clustered at firm level
+
+**Implementation (statsmodels):**
+```python
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+# Logit regression with firm clustering
+formula = ('TakeoverTarget_lag1 ~ Uncertainty + Size + Leverage + ROA + MTB + '
+           'Liquidity + Efficiency + Returns + RD_Intensity + '
+           'C(firm_id) + C(fyear)')
+
+# Note: statsmodels doesn't directly support FE in Logit
+# Use conditional logit or include firm dummies manually
+# Alternative: Use firm-clustering without FE
+
+# Primary specification (with clustering)
+model = sm.Logit(
+    df['TakeoverTarget_lag1'],
+    sm.add_constant(df[['Uncertainty', 'Size', 'Leverage', 'ROA', 'MTB',
+                        'Liquidity', 'Efficiency', 'Returns', 'RD_Intensity',
+                        'fyear_dummies']])
+)
+
+results = model.fit(
+    cov_type='cluster',
+    cov_kwds={'groups': df['gvkey']}
+)
+```
+
+**Note on Firm FE in Logit:**
+- Traditional logit with firm dummies suffers from incidental parameters problem
+- Alternatives:
+  1. Conditional logit (clogit) - handles firm effects correctly
+  2. No firm FE, include firm-level controls
+  3. Random effects logit
+
+**Recommended Approach:**
+- Primary: Year FE only, firm-clustered SE
+- Robustness: Conditional logit for firm effects
+
+**Hypothesis Test:**
+- H0: beta1 = 0 (no effect of uncertainty on takeover probability)
+- H1: beta1 > 0 (uncertainty increases takeover probability)
+- Test: One-tailed z-test (directional hypothesis)
+- Significance: p < 0.05 (primary), FDR-corrected for multiple IVs
+
+#### Timing Justification
+
+**Why Uncertainty_t -> Takeover_{t+1}:**
+
+1. **Causal Ordering:** Speech in year t cannot affect takeover decisions in same year
+2. **Deal Timing:** M&A transactions take time to negotiate and complete
+3. **Information Incorporation:** Acquirers gradually assess target quality
+4. **Alignment with Literature:** Standard prediction framework uses t -> t+1
+
+**Alternative Timings (for robustness):**
+- Uncertainty_t -> Takeover_t (same-year) - concurrent relationship
+- Uncertainty_{t-1} -> Takeover_t (longer lag) - persistence
+- Uncertainty_t -> Takeover_{t+2} (two-year horizon) - longer prediction window
+
+### Data Sources
+
+#### Summary of Data Requirements for H2
+
+| Data Category | Source | File/Database | Key Variables | Status |
+|---------------|--------|---------------|---------------|--------|
+| **Speech Uncertainty** | V2 Pipeline | 4_Outputs/2_Textual_Analysis/2.2_Variables/ | Manager_QA_Uncertainty_pct, etc. | Available |
+| **M&A Data** | SDC Platinum | 1_Inputs/SDC/ | DealID, TargetGVKEY, AnnounceDate, CompleteDate, DealStatus | Need verification |
+| **Financial Data** | Compustat Annual | 1_Inputs/Compustat/ | AT, DLTT, DLC, IB, CEQ, ACT, LCT, SALE, XRD | Available |
+| **Stock Data** | CRSP Daily | 1_Inputs/CRSP/DSF/ | RET, PRC, CSHO (for abnormal returns) | Available |
+
+#### SDC Platinum M&A Database
+
+**Purpose:** Identify takeover targets
+
+**Data Access:**
+- WRDS (Wharton Research Data Services)
+- Bloomberg Terminal
+- Thomson Reuters direct subscription
+
+**Key Fields for Matching:**
+```
+DealID          - Unique deal identifier
+TargetNation    - Target country (filter = "United States")
+TargetPrimarySICCode - Target SIC industry
+TargetCUSIP     - Target CUSIP (6-digit or 8-digit)
+TargetName      - Target company name
+AnnounceDate    - Deal announcement date
+EffectiveDate   - Deal completion date
+DealStatus      - "Completed", "Withdrawn", "Pending"
+DealValue       - Transaction value (millions USD)
+AcquisitionFlag - "A" for asset acquisition, "S" for stock acquisition
+PublicTarget    - "Y" if target is public company
+```
+
+**Matching Procedure:**
+
+**Step 1: Load SDC data**
+```python
+sdc = pd.read_sas('1_Inputs/SDC/SDC_M&A.sas7bdat')
+
+# Filter to relevant deals
+sdc = sdc[
+    (sdc['TargetNation'] == 'United States') &
+    (sdc['PublicTarget'] == 'Y') &
+    (sdc['DealStatus'].isin(['Completed', 'Withdrawn'])) &
+    (sdc['DealValue'] > 1000000)  # Exclude micro-deals
+]
+```
+
+**Step 2: Match to GVKEY via CUSIP**
+```python
+# Use CUSIP-Compustat link table
+cusip_link = pd.read_sas('1_Inputs/Compustat/cusip_link.sas7bdat')
+
+# Merge SDC with Compustat via CUSIP
+sdc['TargetCUSIP6'] = sdc['TargetCUSIP'].str[:6]
+sdc = sdc.merge(cusip_link, left_on='TargetCUSIP6', right_on='CUSIP', how='left')
+sdc_gvkey = sdc[sdc['GVKEY'].notna()]
+```
+
+**Step 3: Create takeover indicator**
+```python
+# Extract announcement year
+sdc_gvkey['announcement_year'] = pd.to_datetime(sdc_gvkey['AnnounceDate']).dt.year
+
+# Create target indicator
+takeovers = sdc_gvkey[['GVKEY', 'announcement_year', 'DealID', 'DealStatus']].drop_duplicates()
+takeovers['TakeoverTarget'] = 1
+```
+
+**Step 4: Merge with sample**
+```python
+# Merge takeover indicator to firm-year data
+df = df.merge(
+    takeovers[['GVKEY', 'announcement_year', 'TakeoverTarget', 'DealStatus']],
+    left_on=['gvkey', 'fyear'],
+    right_on=['GVKEY', 'announcement_year'],
+    how='left'
+)
+
+# Set non-targets to 0
+df['TakeoverTarget'] = df['TakeoverTarget'].fillna(0)
+
+# Create lagged takeover indicator (Uncertainty_t -> Takeover_{t+1})
+df['TakeoverTarget_lag1'] = df.groupby('gvkey')['TakeoverTarget'].shift(-1)
+```
+
+### Sample Construction
+
+#### Starting Point: Same as H1
+
+**Source:** V2 sample manifest
+**Period:** 2002-2018
+**Firms:** ~2,500+ unique firms
+**Observations:** ~30,000+ firm-years
+
+#### Sample Construction Steps
+
+**Step 1: Start from H1 sample**
+- Use the same sample construction as Hypothesis 1
+- Already includes firms with speech uncertainty data
+- Already merged with CRSP and Compustat
+
+**Step 2: Merge SDC takeover data**
+- Follow matching procedure above
+- Match on GVKEY + year
+- Keep both completed and announced deals (for robustness)
+
+**Step 3: Apply M&A-specific exclusions**
+```python
+# Exclude deals where target is not our sample firms
+# (some SDC deals may be outside our V2 sample)
+
+# Require deal value >= $1M (exclude micro-deals)
+sdc = sdc[sdc['DealValue'] >= 1000000]
+
+# Exclude spin-offs and recapitalizations
+sdc = sdc[~sdc['DealType'].isin(['Spinoff', 'Recapitalization'])]
+```
+
+**Step 4: Create target and non-target samples**
+```python
+# Targets: Firms with takeover in t+1
+targets = df[df['TakeoverTarget_lag1'] == 1]
+
+# Non-targets: Firms without takeover in t+1
+non_targets = df[df['TakeoverTarget_lag1'] == 0]
+
+# Optional: Match targets to non-targets by industry + size
+# (for case-control matching)
+```
+
+**Step 5: Final regression sample**
+```python
+# Combine targets and non-targets
+regression_sample = pd.concat([targets, non_targets])
+
+# Require all controls available
+regression_sample = regression_sample.dropna(
+    subset=['Uncertainty', 'Size', 'Leverage', 'ROA', 'MTB',
+            'Liquidity', 'Efficiency', 'Returns']
+)
+```
+
+#### Final Sample Size Targets
+
+**Expected Sample Size (based on V2 + SDC):**
+| Metric | Target | Rationale |
+|--------|--------|-----------|
+| **Firms** | 2,000 - 2,500 | V2 sample with SDC matching |
+| **Firm-years** | 25,000 - 35,000 | Before takeover indicator |
+| **Takeover events** | 200 - 400 | ~1-2% annual takeover rate |
+| **Non-target obs** | 24,000 - 34,000 | Remaining observations |
+
+**Takeover Rate Assumptions:**
+- Historical M&A activity: ~1-2% of public firms per year
+- With 2,000 firms over 15 years: 300-600 expected events
+- Sufficient for logistic regression (rule of thumb: 10 events per predictor)
+- We have 8-9 predictors: need ~80-100 events minimum
+
+**Power Analysis:**
+- Based on logistic regression power calculations
+- With 300 events and 25,000 non-events
+- Power >90% to detect odds ratio of 1.15 (15% increase per SD)
+- Small effects (OR < 1.10) may be underpowered
+
+### Robustness Specifications
+
+#### Specification 1 (Primary): Logit with Year FE, Firm-Clustered SE
+
+**Model:** Logistic regression
+**FE:** Year dummies (no firm FE due to incidental parameters)
+**Clustering:** Firm-level
+**Timing:** Uncertainty_t -> Takeover_{t+1}
+**IV:** Manager_QA_Uncertainty_pct
+**DV:** Binary takeover indicator (completed deals)
+
+```python
+import statsmodels.api as sm
+
+# Add year dummies
+year_dummies = pd.get_dummies(df['fyear'], prefix='Y', drop_first=True)
+X = pd.concat([
+    df[['Uncertainty', 'Size', 'Leverage', 'ROA', 'MTB',
+        'Liquidity', 'Efficiency', 'Returns', 'RD_Intensity']],
+    year_dummies
+], axis=1)
+X = sm.add_constant(X)
+
+# Logit with firm clustering
+model = sm.Logit(df['TakeoverTarget_lag1'], X)
+results = model.fit(cov_type='cluster', cov_kwds={'groups': df['gvkey']})
+```
+
+#### Specification 2: Pooled Logit (No FE)
+
+**Model:** Logistic regression without fixed effects
+**SE:** Firm-clustered
+**Purpose:** Test sensitivity to FE inclusion
+
+```python
+model = sm.Logit(df['TakeoverTarget_lag1'],
+                 sm.add_constant(df[['Uncertainty', 'Size', 'Leverage', 'ROA', 'MTB',
+                                     'Liquidity', 'Efficiency', 'Returns', 'RD_Intensity']]))
+results = model.fit(cov_type='cluster', cov_kwds={'groups': df['gvkey']})
+```
+
+#### Specification 3: Cox Proportional Hazards
+
+**Model:** Survival analysis (time-to-event)
+**Purpose:** Uses time information more efficiently
+
+```python
+from lifelines import CoxPHFitter
+
+# Prepare survival data
+survival_df = df.copy()
+survival_df['duration'] = ...  # Time to takeover or censoring
+survival_df['event'] = ...     # 1 if takeover, 0 if censored
+
+cph = CoxPHFitter()
+cph.fit(survival_df, duration_col='duration', event_col='event',
+        covariates=['Uncertainty', 'Size', 'Leverage', 'ROA', 'MTB',
+                    'Liquidity', 'Efficiency', 'Returns'])
+```
+
+#### Specification 4: Conditional Logit (Firm Effects)
+
+**Model:** Conditional logistic regression with firm effects
+**Purpose:** Properly handles firm fixed effects in logit
+
+```python
+from statsmodels.discrete.conditional_models import ConditionalLogit
+
+# Conditional logit handles firm effects correctly
+# Requires grouping by firm
+clogit = ConditionalLogit(
+    df['TakeoverTarget_lag1'],
+    df[['Uncertainty', 'Size', 'Leverage', 'ROA', 'MTB',
+        'Liquidity', 'Efficiency', 'Returns', 'RD_Intensity']],
+    groups=df['gvkey']
+)
+results = clogit.fit()
+```
+
+#### Specification 5: Alternative Dependent Variables
+
+**5A: Announced Deals**
+```python
+# Include withdrawn deals as takeover targets
+model = sm.Logit(df['TakeoverAnnounced_lag1'], X)
+results = model.fit(cov_type='cluster', cov_kwds={'groups': df['gvkey']})
+```
+
+**5B: Hostile Deals Only**
+```python
+# Subset to hostile deals
+hostile = df[df['DealAttitude'] == 'Hostile']
+model = sm.Logit(hostile['TakeoverTarget_lag1'],
+                 sm.add_constant(hostile[covariates]))
+results = model.fit(cov_type='cluster', cov_kwds={'groups': hostile['gvkey']})
+```
+
+**5C: Deal Value (Continuous)**
+```python
+# For targets only: log(DealValue)
+# OLS regression for transaction value
+targets_only = df[df['TakeoverTarget_lag1'] == 1]
+model = sm.OLS(
+    np.log(targets_only['DealValue']),
+    sm.add_constant(targets_only[['Uncertainty', 'Size', 'Leverage', ...]])
+)
+results = model.fit(cov_type='cluster', cov_kwds={'groups': targets_only['gvkey']})
+```
+
+#### Specification 6: Alternative Independent Variables
+
+**6A: CEO-only measures**
+```python
+# CEO_QA_Uncertainty_pct instead of Manager_QA_Uncertainty_pct
+X = df[['CEO_QA_Uncertainty', 'Size', 'Leverage', ...]]
+```
+
+**6B: Presentation-only measures**
+```python
+# Manager_Pres_Uncertainty_pct (prepared speech)
+X = df[['Manager_Pres_Uncertainty', 'Size', 'Leverage', ...]]
+```
+
+**6C: Uncertainty Change**
+```python
+# Change in uncertainty from t-1 to t
+df['Uncertainty_Change'] = df.groupby('gvkey')['Uncertainty'].diff()
+X = df[['Uncertainty_Change', 'Size', 'Leverage', ...]]
+```
+
+#### Specification 7: Alternative Timing
+
+**7A: Same-year (Uncertainty_t -> Takeover_t)**
+```python
+# Tests concurrent relationship
+model = sm.Logit(df['TakeoverTarget'], X)
+```
+
+**7B: Two-year horizon (Uncertainty_t -> Takeover_{t+2})**
+```python
+# Longer prediction window
+df['TakeoverTarget_lag2'] = df.groupby('gvkey')['TakeoverTarget'].shift(-2)
+model = sm.Logit(df['TakeoverTarget_lag2'], X)
+```
+
+#### Robustness Summary Table
+
+| Spec | DV | IV | FE | Clustering | Timing | Purpose |
+|------|-----|-----|----|------------|--------|---------|
+| 1 (Primary) | Completed (binary) | Manager_QA | Year | Firm | t -> t+1 | Main test |
+| 2 | Completed (binary) | Manager_QA | None | Firm | t -> t+1 | No FE sensitivity |
+| 3 | Time-to-event | Manager_QA | None | - | Duration | Cox PH model |
+| 4 | Completed (binary) | Manager_QA | Firm | Firm | t -> t+1 | Conditional logit |
+| 5A | Announced (binary) | Manager_QA | Year | Firm | t -> t+1 | Deal initiation |
+| 5B | Hostile (binary) | Manager_QA | Year | Firm | t -> t+1 | Hostile deals |
+| 5C | Deal Value (cont) | Manager_QA | Year | Firm | t -> t+1 | Transaction economics |
+| 6A | Completed (binary) | CEO_QA | Year | Firm | t -> t+1 | CEO-only IV |
+| 6B | Completed (binary) | Manager_Pres | Year | Firm | t -> t+1 | Prepared speech |
+| 6C | Completed (binary) | Uncertainty_Change | Year | Firm | t -> t+1 | Change in uncertainty |
+| 7A | Completed (binary) | Manager_QA | Year | Firm | t -> t | Concurrent |
+| 7B | Completed (binary) | Manager_QA | Year | Firm | t -> t+2 | Longer horizon |
+
+**Total Robustness Specifications:** 12 specifications
+**Primary Reporting:** Spec 1
+**Full Reporting:** All 12 specs (pre-registered approach)
+
+---
