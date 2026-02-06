@@ -348,11 +348,13 @@ Hypothesis 2 from 52-HYPOTHESIS-SPECIFICATIONS.md — tests interaction effect o
 ### Phase 54: H6 Implementation Audit
 **Goal:** Conduct expert audit of H6 (SEC Scrutiny/CCCL) implementation to determine whether null results stem from research design flaws, variable construction issues, or genuine null effects
 **Depends on:** Phase 42 (H6 CCCL Regression)
-**Status:** NOT PLANNED YET
-**Plans:** 0 plans
+**Status:** READY FOR EXECUTION
+**Plans:** 3 plans in 3 waves
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 54 to break down)
+- [ ] 54-01-PLAN.md — Audit model specification (FE, clustering, FDR, pre-trends)
+- [ ] 54-02-PLAN.md — Audit data construction (CCCL shift-share, merge, lag, aggregation)
+- [ ] 54-03-PLAN.md — Synthesize findings and produce final audit report
 
 **Details:**
 Expert finance researcher audit (+20 years experience) with thorough literature review. Examines H6 implementation for potential research design flaws: variable construction (CCCL shift-share instrument, speech uncertainty aggregation), model specification (fixed effects, clustering, FDR correction), sample selection, and identification strategy (parallel trends, pre-trends test failure). Determines whether null results are implementation problems or genuine empirical findings.
