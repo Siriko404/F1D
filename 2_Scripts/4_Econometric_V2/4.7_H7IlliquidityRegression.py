@@ -834,7 +834,14 @@ def generate_results_markdown(results, output_dir, sample_stats, dv_col='amihud_
     lines.append("")
 
     # Count significant results
-    primary_results = [r for r in results if r['spec'] == 'primary' and 'error' not in r]
+    # Filter to primary spec only with Amihud DV and no alternative IV/timing
+    primary_results = [
+        r for r in results
+        if r['spec'] == 'primary' and 'error' not in r
+        and r.get('dv_type') == 'Amihud (2002)'
+        and r.get('iv_type') is None
+        and r.get('timing') is None
+    ]
     fdr_signif = [r for r in primary_results if r.get('fdr_significant', False)]
     raw_signif = [r for r in primary_results if r.get('p_one_sided', 1) < 0.05]
 
@@ -849,8 +856,8 @@ def generate_results_markdown(results, output_dir, sample_stats, dv_col='amihud_
         lines.append("NOT SUPPORTED - No significant effects of uncertainty on illiquidity")
 
     lines.append("")
-    lines.append(f"- Primary spec: {len(raw_signif)}/6 measures significant (p < 0.05, one-tailed)")
-    lines.append(f"- After FDR correction: {len(fdr_signif)}/6 measures significant")
+    lines.append(f"- Primary spec: {len(raw_signif)}/4 measures significant (p < 0.05, one-tailed)")
+    lines.append(f"- After FDR correction: {len(fdr_signif)}/4 measures significant")
     lines.append("")
 
     # Primary specification results table
@@ -895,13 +902,13 @@ def generate_results_markdown(results, output_dir, sample_stats, dv_col='amihud_
 
     lines.append("| Spec | Entity FE | Time FE | Cluster | N | Signif (p<0.05) | Avg Beta |")
     lines.append("|---|---|---|---|---|---|---|")
-    lines.append("| primary | Yes | Yes | firm | " + f"{primary_results[0]['n']:,}" + f" | {len(raw_signif)}/6 | " + f"{np.mean([r['coefficient'] for r in primary_results if not np.isnan(r['coefficient'])]):.6f} |")
+    lines.append("| primary | Yes | Yes | firm | " + f"{primary_results[0]['n']:,}" + f" | {len(raw_signif)}/4 | " + f"{np.mean([r['coefficient'] for r in primary_results if not np.isnan(r['coefficient'])]):.6f} |")
 
     for spec_name, summ in spec_summary.items():
         fe = 'Yes' if 'firm' in spec_name or spec_name == 'double_cluster' else 'No'
         te = 'Yes' if spec_name in ['primary', 'double_cluster'] else 'No'
         cl = 'firm+year' if spec_name == 'double_cluster' else 'firm'
-        lines.append(f"| {spec_name} | {fe} | {te} | {cl} | {summ['n']:,} | {summ['n_signif']}/6 | {summ['avg_beta']:.6f} |")
+        lines.append(f"| {spec_name} | {fe} | {te} | {cl} | {summ['n']:,} | {summ['n_signif']}/4 | {summ['avg_beta']:.6f} |")
 
     lines.append("")
 
