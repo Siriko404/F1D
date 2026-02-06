@@ -1494,3 +1494,470 @@ model = sm.Logit(df['TakeoverTarget_lag2'], X)
 **Full Reporting:** All 12 specs (pre-registered approach)
 
 ---
+
+## Implementation Plan
+
+### Sequential Execution Strategy
+
+**Decision:** Implement H1 (Illiquidity) first, then apply learnings to H2 (Takeover).
+
+**Rationale:**
+1. **Dang et al. (2022) provides clear template** for H1 - direct methodological guidance
+2. **Data availability is simpler** - CRSP data already integrated, no SDC access needed initially
+3. **Stronger literature base** - Amihud (2002) is dominant standard vs more fragmented M&A literature
+4. **Learnings transfer to H2** - Panel regression approach, data merging, variable construction all applicable
+5. **Risk mitigation** - If issues arise, easier to debug on continuous DV (illiquidity) than binary DV (takeover)
+
+### Phase 1: Hypothesis 1 (Illiquidity) Implementation
+
+#### Plan 55-03: Construct H1 Variables
+
+**Script:** `2_Scripts/3_Financial_V2/3.5_H7IlliquidityVariables.py`
+
+**Steps:**
+1. Load V2 sample manifest
+2. Load CRSP daily stock data via CCM link
+3. Calculate Amihud illiquidity ratio for each firm-year:
+   - Daily dollar volume = |PRC| * VOL
+   - Daily illiquidity = |RET| / dollar volume
+   - Annual illiquidity = mean(daily illiquidity) * 1e6
+4. Calculate Roll spread for each firm-year:
+   - First-order autocovariance of returns
+   - SPRD = 2 * sqrt(-autocovariance) if negative
+5. Calculate bid-ask spread (if data available)
+6. Merge Compustat financial data for controls
+7. Merge V2 uncertainty measures
+8. Apply sample exclusions:
+   - Financial firms (SIC 6000-6999)
+   - Utilities (SIC 4900-4999)
+   - Positive assets requirement
+   - Minimum 50 trading days
+9. Winsorize continuous variables at 1%/99%
+10. Create lagged dependent variable (t -> t+1)
+11. Output: `4_Outputs/3_Financial_V2/H7_Illiquidity_Sample.parquet`
+
+**Output Variables:**
+```
+gvkey, fyear
+Illiquidity_Amihud           - Primary DV
+Illiquidity_Roll             - Robustness DV 1
+Illiquidity_BidAsk           - Robustness DV 2 (if available)
+Manager_QA_Uncertainty_pct   - Primary IV
+CEO_QA_Uncertainty_pct       - Alternative IV
+Manager_Pres_Uncertainty_pct - Alternative IV
+CEO_Pres_Uncertainty_pct     - Alternative IV
+Size                         - Control: log(Market Cap)
+Leverage                     - Control: Debt/Assets
+ROA                          - Control: Return on Assets
+MTB                          - Control: Market-to-Book
+Volatility                   - Control: Stock return volatility
+Returns                      - Control: Cumulative returns
+CurrentRatio                 - Control: Current Assets/Current Liabilities
+Volume                       - Control: Log trading volume
+```
+
+#### Plan 55-04: Run H1 Primary Regression
+
+**Script:** `2_Scripts/4_Econometric_V2/4.7_H7IlliquidityRegression.py`
+
+**Steps:**
+1. Load H1 sample from 55-03 output
+2. Verify data quality (missing values, outliers)
+3. Generate descriptive statistics
+4. Run primary regression (Spec 1):
+   - PanelOLS with Firm + Year FE
+   - Firm-clustered SE
+   - DV: Amihud illiquidity at t+1
+   - IV: Manager_QA_Uncertainty_pct at t
+5. Extract coefficients, standard errors, p-values
+6. Calculate FDR-corrected p-values (4 IVs)
+7. Output: `4_Outputs/4_Econometric_V2/H7_Primary_Results.parquet`
+
+**Output Tables:**
+```
+Table 1: Descriptive Statistics
+Table 2: Correlation Matrix
+Table 3: Primary Regression Results (Firm+Year FE)
+Table 4: FDR-Corrected Results
+```
+
+#### Plan 55-05: Run H1 Robustness Suite
+
+**Script:** `2_Scripts/4_Econometric_V2/4.7_H7IlliquidityRegression.py` (continued)
+
+**Steps:**
+1. Run all 10 robustness specifications (Specs 2-7)
+2. Collect results for each specification
+3. Generate comparison table across all specs
+4. Assess consistency of uncertainty coefficient across specs
+5. Output: `4_Outputs/4_Econometric_V2/H7_Robustness_Results.parquet`
+
+**Robustness Output:**
+```
+Table 5: Robustness Comparison (All 11 Specs)
+Figure 1: Coefficient Plot (Uncertainty beta across specs)
+Figure 2: t-stat Plot (Statistical significance across specs)
+```
+
+### Phase 2: Hypothesis 2 (Takeover) Implementation
+
+#### Plan 55-06: Construct H2 Variables
+
+**Script:** `2_Scripts/3_Financial_V2/3.6_H8TakeoverVariables.py`
+
+**Steps:**
+1. Load H1 sample as base (already has uncertainty and controls)
+2. Load SDC Platinum M&A data
+3. Match SDC to sample via CUSIP -> GVKEY
+4. Create takeover indicators:
+   - TakeoverTarget_Completed: 1 if target in completed deal
+   - TakeoverTarget_Announced: 1 if target in announced deal
+   - TakeoverTarget_Hostile: 1 if target in hostile deal
+5. Create lagged takeover indicators (t -> t+1)
+6. Calculate additional controls:
+   - Asset Turnover (SALE/AT)
+   - R&D Intensity (XRD/AT, 0 if missing)
+   - Abnormal returns (market-adjusted)
+7. Merge with H1 sample
+8. Apply M&A-specific exclusions
+9. Output: `4_Outputs/3_Financial_V2/H8_Takeover_Sample.parquet`
+
+**Output Variables (in addition to H1):**
+```
+TakeoverTarget_lag1          - Primary DV (completed deals)
+TakeoverAnnounced_lag1       - Robustness DV (announced deals)
+TakeoverHostile_lag1         - Robustness DV (hostile deals)
+DealValue                    - Transaction value (for robustness)
+Efficiency                   - Control: Asset Turnover
+RD_Intensity                 - Control: R&D/Assets
+AbnormalReturns              - Control: Market-adjusted returns
+```
+
+#### Plan 55-07: Run H2 Primary Regression
+
+**Script:** `2_Scripts/4_Econometric_V2/4.8_H8TakeoverRegression.py`
+
+**Steps:**
+1. Load H2 sample from 55-06 output
+2. Verify takeover rate (~1-2% expected)
+3. Generate descriptive statistics (targets vs non-targets)
+4. Run primary regression (Spec 1):
+   - Logit with Year FE
+   - Firm-clustered SE
+   - DV: Binary takeover indicator at t+1
+   - IV: Manager_QA_Uncertainty_pct at t
+5. Extract coefficients, standard errors, p-values
+6. Calculate odds ratios
+7. Calculate FDR-corrected p-values
+8. Output: `4_Outputs/4_Econometric_V2/H8_Primary_Results.parquet`
+
+**Output Tables:**
+```
+Table 6: Takeover Descriptive Statistics
+Table 7: Target vs Non-Target Comparison
+Table 8: Primary Logit Results (Year FE, Firm-Clustered)
+Table 9: Odds Ratios
+```
+
+#### Plan 55-08: Run H2 Robustness Suite
+
+**Script:** `2_Scripts/4_Econometric_V2/4.8_H8TakeoverRegression.py` (continued)
+
+**Steps:**
+1. Run all 11 robustness specifications (Specs 2-7)
+2. Run Cox proportional hazards model (Spec 3)
+3. Run conditional logit (Spec 4)
+4. Collect results for each specification
+5. Generate comparison table across all specs
+6. Assess consistency of uncertainty coefficient across specs
+7. Output: `4_Outputs/4_Econometric_V2/H8_Robustness_Results.parquet`
+
+**Robustness Output:**
+```
+Table 10: Robustness Comparison (All 12 Specs)
+Figure 3: Odds Ratio Plot (Uncertainty OR across specs)
+Figure 4: Hazard Ratio (Cox PH model)
+```
+
+#### Plan 55-09: Synthesis and Reporting
+
+**Script:** `2_Scripts/4_Econometric_V2/4.9_H7H8_Synthesis.py`
+
+**Steps:**
+1. Load H1 and H2 results
+2. Compare to V1 null results
+3. Generate summary tables
+4. Create final report
+5. Output: `4_Outputs/4_Econometric_V2/H7H8_Final_Report.parquet`
+
+**Final Report:**
+```
+- Executive Summary
+- Methodology Summary
+- H1 Results (Primary + Robustness)
+- H2 Results (Primary + Robustness)
+- Comparison to Literature (Dang 2022, etc.)
+- Comparison to V1 Results
+- Conclusions and Implications
+```
+
+### Implementation Checklist
+
+**Phase 1 (H1):**
+- [ ] Construct Amihud illiquidity variable
+- [ ] Construct Roll spread variable
+- [ ] Merge CRSP, Compustat, V2 text data
+- [ ] Apply sample exclusions
+- [ ] Generate descriptive statistics
+- [ ] Run primary regression (Firm+Year FE)
+- [ ] Run 10 robustness specifications
+- [ ] Compare results across specifications
+- [ ] Document H1 findings
+
+**Phase 2 (H2):**
+- [ ] Load and merge SDC data
+- [ ] Create takeover indicators
+- [ ] Create additional controls (Efficiency, R&D)
+- [ ] Generate takeover descriptive statistics
+- [ ] Run primary logit regression
+- [ ] Run Cox PH model
+- [ ] Run conditional logit
+- [ ] Run 8 additional robustness specs
+- [ ] Document H2 findings
+
+**Phase 3 (Synthesis):**
+- [ ] Compare H1/H2 to V1 results
+- [ ] Compare to literature benchmarks
+- [ ] Generate final report
+- [ ] Update STATE.md
+- [ ] Archive outputs
+
+---
+
+## Success Criteria
+
+### For Each Hypothesis
+
+#### Implementation Success
+
+**Code Execution:**
+- [ ] Scripts execute without errors
+- [ ] All variables constructed per specification
+- [ ] Regressions run with correct FE and clustering
+- [ ] Output files generated successfully
+
+**Data Quality:**
+- [ ] Sample size meets targets (>15,000 obs for H1, >25,000 for H2)
+- [ ] Descriptive statistics reasonable (no extreme outliers)
+- [ ] Correlation matrix shows no perfect multicollinearity
+- [ ] Missing data <5% for all variables
+
+**Methodology Adherence:**
+- [ ] All regression equations match specification
+- [ ] All controls included as specified
+- [ ] Fixed effects implemented correctly
+- [ ] Clustering implemented correctly
+- [ ] Timing (t -> t+1) implemented correctly
+
+**Robustness Execution:**
+- [ ] All robustness specifications executed
+- [ ] Results comparable across specifications
+- [ ] FDR correction applied to multiple IVs
+- [ ] Diagnostic statistics generated
+
+#### Scientific Success
+
+**Primary Criterion (Any One):**
+1. **Statistical Significance:**
+   - Uncertainty coefficient significant at p < 0.05 (one-tailed, FDR-corrected)
+   - Consistent direction across specifications
+   - Economically meaningful magnitude
+
+2. **Consistent Direction:**
+   - Uncertainty coefficient has expected sign in >70% of specifications
+   - Even if not significant, consistent direction suggests pattern
+   - Narrow confidence intervals suggest precise estimates
+
+3. **Precise Estimates:**
+   - Confidence intervals exclude zero in some specifications
+   - Effect size within literature benchmarks
+   - Statistical power sufficient (>80%)
+
+**All Outcomes Valued:**
+- **Null Result:** No significant effect, but precisely estimated (narrow CI)
+- **Mixed Result:** Significant in some specs, not others (interesting pattern)
+- **Significant Result:** Clear support for hypothesis (ideal outcome)
+
+**Interpretation Guidelines:**
+- Null result with precise estimates = "No evidence of relationship" (valid finding)
+- Null result with wide CIs = "Inconclusive" (power limitation)
+- Mixed result = "Relationship depends on specification" (novel finding)
+- Significant result = "Hypothesis supported" (publishable)
+
+### For H1 (Illiquidity) Specifically
+
+**Implementation Success:**
+- Amihud illiquidity calculated correctly (verified against formula)
+- Roll spread calculated for valid observations
+- Minimum 50 trading days filter applied
+- Industry exclusions (financial, utilities) applied
+- Winsorization at 1%/99% applied
+- Lagged DV construction correct (t -> t+1)
+
+**Scientific Success Benchmarks:**
+- **Dang et al. (2022) coefficient:** 0.0065 for Amihud
+- **Expected direction:** beta > 0 (uncertainty increases illiquidity)
+- **Economic magnitude:** 0.1-1.0 increase in illiquidity per SD uncertainty
+- **Statistical significance:** t-stat > 1.645 (one-tailed 5%)
+
+**Success Interpretation:**
+- |beta| > 0.005, p < 0.05: **Strong support** (matches literature magnitude)
+- |beta| > 0.001, p < 0.05: **Moderate support** (smaller effect)
+- beta > 0, p > 0.05: **Weak support** (right direction, not significant)
+- beta < 0: **No support** (wrong direction)
+
+### For H2 (Takeover) Specifically
+
+**Implementation Success:**
+- SDC data merged correctly (takeover rate ~1-2%)
+- Takeover indicator defined correctly (completed deals)
+- Year fixed effects implemented in logit
+- Firm clustering implemented
+- Additional controls (Efficiency, R&D) calculated
+
+**Scientific Success Benchmarks:**
+- **Expected odds ratio:** OR > 1.10 (10% increase in takeover odds per SD uncertainty)
+- **Statistical significance:** z-stat > 1.645 (one-tailed 5%)
+- **Literature benchmarks:** Meghouar (2024) ORs 1.05-1.20 for significant predictors
+
+**Success Interpretation:**
+- OR > 1.20, p < 0.05: **Strong support** (economically meaningful)
+- OR > 1.10, p < 0.05: **Moderate support** (small effect)
+- OR > 1.00, p > 0.05: **Weak support** (right direction, not significant)
+- OR < 1.00: **No support** (wrong direction - uncertainty reduces takeover risk)
+
+### Overall Phase Success
+
+**Minimum Requirements:**
+1. Both hypotheses tested with full robustness suites
+2. Implementation verified (code works, methodology correct)
+3. Results documented with comparison to V1 and literature
+4. No unresolved blockers or data issues
+
+**Ideal Outcome:**
+- At least one hypothesis shows significant effect
+- Results consistent across robustness specs
+- Effect sizes comparable to literature
+- Clear contribution to knowledge (novel finding or confirmation)
+
+**Acceptable Outcome (Null Results):**
+- Precisely estimated null effects
+- Robustness confirms null across specifications
+- Conclusive that no relationship exists
+- Publishable as "no evidence of relationship"
+
+**Unacceptable Outcome:**
+- Inconclusive due to data limitations
+- Implementation errors preventing analysis
+- Unable to complete robustness suite
+- No clear conclusion possible
+
+---
+
+## Comparison to V1 Implementation
+
+### V1 Suspected Flaws
+
+Based on Phase 55-01 literature review and V2 null results, V1 may have had:
+
+1. **Incorrect Illiquidity Calculation:**
+   - V1 may have used wrong formula or aggregation
+   - May not have scaled correctly (1e6 multiplier)
+   - May not have required minimum trading days
+
+2. **Wrong Fixed Effects:**
+   - V1 may have omitted Firm FE (between-firm only)
+   - V1 may have included Industry FE (redundant with Firm FE)
+   - V1 may not have clustered SE correctly
+
+3. **Incorrect Timing:**
+   - V1 may have used contemporaneous timing (t -> t)
+   - May not have created proper lag structure
+
+4. **Missing Controls:**
+   - V1 may have omitted important control variables
+   - May not have winsorized outliers
+
+5. **Takeover Definition Issues:**
+   - V1 may have used incorrect takeover definition
+   - May not have matched SDC correctly
+
+### V2 Improvements
+
+This methodology addresses all suspected V1 flaws:
+
+| Suspected V1 Flaw | V2 Solution | Rationale |
+|------------------|-------------|-----------|
+| Wrong illiquidity formula | Amihud (2002) exact formula | Literature standard |
+| No minimum trading days | Require 50+ days | Prevents noisy measures |
+| Missing Firm FE | PanelOLS with entity_effects | Controls for firm heterogeneity |
+| Redundant Industry FE | Omitted | Collinear with Firm FE |
+| No clustering | Firm-clustered SE | Petersen (2009) standard |
+| Wrong timing | t -> t+1 lag | Causal ordering |
+| Missing controls | Full literature-based controls | Dang et al. (2022) template |
+| Takeover definition | Completed deals via SDC | Standard M&A literature |
+
+### Expected Differences from V1
+
+If V1 had implementation flaws, V2 may find:
+- **Different coefficients** (if V1 formula wrong)
+- **Different significance** (if V1 SE wrong)
+- **Different sample size** (if V1 exclusions wrong)
+- **Any significant effect** (if V1 null due to error)
+
+If V1 was correctly implemented:
+- **Similar coefficients** (replication)
+- **Same null results** (confirmation of no effect)
+- **Confidence in null findings** (methodology verified)
+
+---
+
+## Final Notes
+
+### Pre-Registration
+
+This methodology specification serves as pre-registration:
+- All hypotheses specified before implementation
+- All regression equations defined
+- All robustness tests enumerated
+- Success criteria established
+
+**No p-hacking:** Results will be reported regardless of outcome.
+**No specification searching:** Primary specification is pre-specified.
+**Full disclosure:** All robustness specs will be reported.
+
+### Reproducibility
+
+All code will be:
+- Version controlled (git)
+- CLI-accessible with --help and --dry-run
+- Self-contained (all imports and dependencies)
+- Documented with inline comments
+- Output timestamps for provenance
+
+### Reporting
+
+Results will be reported in:
+- SUMMARY.md files (internal documentation)
+- STATE.md updates (project status)
+- Research report (final deliverable)
+- Comparison to V1 results
+- Comparison to literature benchmarks
+
+---
+
+**Document Status:** COMPLETE
+**Last Updated:** 2026-02-06
+**Phase:** 55-02 (Methodology Specification)
+**Total Lines:** 1,600+
+**Ready for Implementation:** YES
