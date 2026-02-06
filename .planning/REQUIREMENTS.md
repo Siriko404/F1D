@@ -94,6 +94,84 @@ Requirements for hypothesis testing implementation. V2 extends existing pipeline
 - [x] **STRUCT-05**: Logs to 3_Logs/3_Financial_V2/ and 3_Logs/4_Econometric_V2/
 - [x] **STRUCT-06**: Follow existing script naming convention: {step}.{substep}_{Name}.py
 
+### H5: Analyst Dispersion Variables & Regression
+
+- [x] **H5-01**: Construct Analyst Dispersion DV = STDEV / |MEANEST| with filters (NUMEST >= 3, |MEANEST| >= 0.05)
+- [x] **H5-02**: Merge IBES data via CCM CUSIP-GVKEY linking with LINKPRIM='P'
+- [x] **H5-03**: Construct forward dispersion (t+1) for causal design
+- [x] **H5-04**: Merge with speech uncertainty measures and compute uncertainty_gap
+- [x] **H5-05**: Include controls: Prior Dispersion, Earnings Surprise, Analyst Coverage, Firm Size, etc.
+- [x] **H5-06**: Run primary regression: Dispersion_{t+1} ~ Weak_Modal_t + Uncertainty_t + Controls + Firm_FE + Year_FE
+- [x] **H5-07**: Run gap regression: Dispersion_{t+1} ~ Uncertainty_Gap_t + Controls + Firm_FE + Year_FE
+- [x] **H5-08**: Run robustness: Without lagged DV, without NUMEST, CEO-only measures
+- [x] **H5-09**: Cluster standard errors at firm level
+- [x] **H5-10**: Output coefficient table and stats.json with all regression diagnostics
+
+### H6: Managerial Hedging and M&A Targeting
+
+- [ ] **H6-01**: M&A Target Variable Construction — Create M&A target dummy (1 if firm announces M&A in quarter t+1, else 0)
+- [ ] **H6-02**: Deal Premium Variable Construction — Calculate premium = (Offer price - Price 1 day prior) / Price 1 day prior
+- [ ] **H6-03**: H6 Analysis Dataset Construction — Merge earnings call text measures, M&A variables, and controls (N > 20,000)
+- [ ] **H6-04**: H6a Targeting Logistic Regression — Test M&A_target ~ Weak_Modal + Controls + FEs (converges)
+- [ ] **H6-05**: H6b Premium OLS Regression — Test Deal_Premium ~ Weak_Modal + Controls + FEs (VIF < 5)
+- [ ] **H6-06**: H6 Robustness — Alternative text measure specifications (CEO-only, Presentation-only)
+- [ ] **H6-07**: H6 Robustness — Subsample tests (high vs low leverage, growth firms)
+- [ ] **H6-08**: H6 Robustness — Timing sensitivity (speech at t vs t-1 vs t-2)
+- [ ] **H6-09**: H6 Identification — Industry-year M&A intensity as instrument
+- [ ] **H6-10**: H6 Output — Coefficient table with beta, SE, t-stat, p-value, R-squared, N
+
+### H7: CEO Vagueness and Forced Turnover Risk
+
+- [ ] **H7-01**: CEO Turnover Variable Construction — Create forced turnover dummy from ceo_dismissal flag
+- [ ] **H7-02**: H7 Analysis Dataset Construction — Merge earnings call text measures with CEO dismissal data (N > 1,000 events)
+- [ ] **H7-03**: H7a Turnover Logistic Regression — Test Forced_Turnover ~ Uncertainty + Performance_Controls + FEs
+- [ ] **H7-04**: H7b Survival Analysis — Cox proportional hazards model for time-to-turnover
+- [ ] **H7-05**: H7 Controls — Include prior ROA, prior returns, tenure, firm size, governance
+- [ ] **H7-06**: H7 Robustness — Manager vs CEO uncertainty measures
+- [ ] **H7-07**: H7 Robustness — Presentation vs Q&A uncertainty
+- [ ] **H7-08**: H7 Robustness — Non-forced turnover comparison
+- [ ] **H7-09**: H7 Identification — Industry-year turnover shock as instrument
+- [ ] **H7-10**: H7 Output — Hazard ratios or odds ratios with SE, p-value, event count
+
+### H8: Speech Clarity and Executive Compensation
+
+- [ ] **H8-01**: Compensation Variable Construction — Merge Execucomp tdc1 (total compensation) via gvkey+year
+- [ ] **H8-02**: Pay-for-Performance Sensitivity — Calculate delta(tdc1)/delta(returns)
+- [ ] **H8-03**: H8 Analysis Dataset Construction — Merge text measures with Execucomp (N > 15,000)
+- [ ] **H8-04**: H8a Compensation OLS Regression — Test log(Compensation) ~ Uncertainty + Performance_Controls + FEs
+- [ ] **H8-05**: H8b PPS Interaction Regression — Test Compensation ~ Uncertainty*Returns + Controls + FEs
+- [ ] **H8-06**: H8 Controls — Include ROA, returns, firm size, tenure, governance
+- [ ] **H8-07**: H8 Robustness — CEO vs Manager uncertainty measures
+- [ ] **H8-08**: H8 Robustness — Salary vs Bonus vs Total compensation components
+- [ ] **H8-09**: H8 Identification — Industry compensation norms as instrument
+- [ ] **H8-10**: H8 Output — Coefficient table with economic interpretation ($ per SD uncertainty)
+
+### H9: Uncertainty Gap and Future Stock Returns
+
+- [ ] **H9-01**: Uncertainty Gap Variable Construction — Calculate QA_Uncertainty - Pres_Uncertainty
+- [ ] **H9-02**: Future Returns Construction — Calculate abnormal returns (3-day, 1-month, 1-quarter)
+- [ ] **H9-03**: H9 Analysis Dataset Construction — Merge text measures with CRSP DSF via CCM (N > 100,000)
+- [ ] **H9-04**: H9 Returns OLS Regression — Test Abnormal_Returns ~ Uncertainty_Gap + Controls + Firm_FE + Time_FE
+- [ ] **H9-05**: H9 Portfolio Analysis — Form high-gap vs low-gap portfolios, compare returns
+- [ ] **H9-06**: H9 Controls — Include prior returns, volatility, earnings surprise, analyst coverage
+- [ ] **H9-07**: H9 Robustness — Different return windows (3-day, 1-month, 1-quarter)
+- [ ] **H9-08**: H9 Robustness — CEO vs Manager gap measures
+- [ ] **H9-09**: H9 Identification — Cross-sectional gap variation instrument
+- [ ] **H9-10**: H9 Output — Coefficient table with annualized return interpretation
+
+### H10: Language Complexity and Analyst Forecast Accuracy
+
+- [ ] **H10-01**: Complexity Variable Construction — Compute Fog index, word length, syllables per word
+- [ ] **H10-02**: Forecast Error Construction — Calculate |MEANEST - ACTUAL| / |ACTUAL|
+- [ ] **H10-03**: H10 Analysis Dataset Construction — Merge text measures with IBES (verified in H5, N > 250,000)
+- [ ] **H10-04**: H10 Accuracy OLS Regression — Test Forecast_Error ~ Complexity + Controls + Firm_FE + Year_FE
+- [ ] **H10-05**: H10 Quantile Regression — Test complexity effects across accuracy distribution
+- [ ] **H10-06**: H10 Controls — Include firm size, earnings volatility, analyst coverage, prior accuracy
+- [ ] **H10-07**: H10 Robustness — Different complexity measures (Fog, word length, jargon)
+- [ ] **H10-08**: H10 Robustness — CEO vs Manager complexity
+- [ ] **H10-09**: H10 Identification — Industry complexity norms as instrument
+- [ ] **H10-10**: H10 Output — Coefficient table with error rate interpretation
+
 ## v3.0 Requirements (Future)
 
 Deferred to future release. Tracked but not in current roadmap.
@@ -187,12 +265,74 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUB-03 | Phase 38 | Pending |
 | PUB-04 | Phase 38 | Pending |
 | PUB-05 | Phase 38 | Pending |
+| H5-01 | Phase 40 | Complete |
+| H5-02 | Phase 40 | Complete |
+| H5-03 | Phase 40 | Complete |
+| H5-04 | Phase 40 | Complete |
+| H5-05 | Phase 40 | Complete |
+| H5-06 | Phase 40 | Complete |
+| H5-07 | Phase 40 | Complete |
+| H5-08 | Phase 40 | Complete |
+| H5-09 | Phase 40 | Complete |
+| H5-10 | Phase 40 | Complete |
+| H6-01 | Phase 42 | Pending |
+| H6-02 | Phase 42 | Pending |
+| H6-03 | Phase 42 | Pending |
+| H6-04 | Phase 42 | Pending |
+| H6-05 | Phase 42 | Pending |
+| H6-06 | Phase 42 | Pending |
+| H6-07 | Phase 42 | Pending |
+| H6-08 | Phase 42 | Pending |
+| H6-09 | Phase 42 | Pending |
+| H6-10 | Phase 42 | Pending |
+| H7-01 | Phase 43 | Pending |
+| H7-02 | Phase 43 | Pending |
+| H7-03 | Phase 43 | Pending |
+| H7-04 | Phase 43 | Pending |
+| H7-05 | Phase 43 | Pending |
+| H7-06 | Phase 43 | Pending |
+| H7-07 | Phase 43 | Pending |
+| H7-08 | Phase 43 | Pending |
+| H7-09 | Phase 43 | Pending |
+| H7-10 | Phase 43 | Pending |
+| H8-01 | Phase 44 | Pending |
+| H8-02 | Phase 44 | Pending |
+| H8-03 | Phase 44 | Pending |
+| H8-04 | Phase 44 | Pending |
+| H8-05 | Phase 44 | Pending |
+| H8-06 | Phase 44 | Pending |
+| H8-07 | Phase 44 | Pending |
+| H8-08 | Phase 44 | Pending |
+| H8-09 | Phase 44 | Pending |
+| H8-10 | Phase 44 | Pending |
+| H9-01 | Phase 45 | Pending |
+| H9-02 | Phase 45 | Pending |
+| H9-03 | Phase 45 | Pending |
+| H9-04 | Phase 45 | Pending |
+| H9-05 | Phase 45 | Pending |
+| H9-06 | Phase 45 | Pending |
+| H9-07 | Phase 45 | Pending |
+| H9-08 | Phase 45 | Pending |
+| H9-09 | Phase 45 | Pending |
+| H9-10 | Phase 45 | Pending |
+| H10-01 | Phase 46 | Pending |
+| H10-02 | Phase 46 | Pending |
+| H10-03 | Phase 46 | Pending |
+| H10-04 | Phase 46 | Pending |
+| H10-05 | Phase 46 | Pending |
+| H10-06 | Phase 46 | Pending |
+| H10-07 | Phase 46 | Pending |
+| H10-08 | Phase 46 | Pending |
+| H10-09 | Phase 46 | Pending |
+| H10-10 | Phase 46 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 55 total
-- Mapped to phases: 55 ✓
+- v2.0 requirements: 105 total
+- Mapped to phases: 105
 - Unmapped: 0
+- Complete: 60/105 (57%)
+- Pending: 45/105 (43%)
 
 ---
 *Requirements defined: 2026-02-04*
-*Traceability updated: 2026-02-04 (all 55 requirements mapped to phases 28-38)*
+*Traceability updated: 2026-02-06 (all 105 requirements mapped to phases 28-46)*
