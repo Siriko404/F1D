@@ -206,27 +206,30 @@ Plans:
 
 ## v2.0 New Hypotheses (Post Null Results)
 
-### Phase 40: H5 Speech Uncertainty Predicts Analyst Forecast Dispersion
+### Phase 40: H5 Speech Uncertainty Predicts Analyst Forecast Dispersion ✓
 **Goal**: Test whether hedging language (weak modal verbs) predicts analyst disagreement beyond what general uncertainty words predict
 **Depends on**: Phase 32 (Econometric Infrastructure)
 **Requirements**: H5-01 through H5-10
-**Status**: PLANNED — 2 plans in 2 waves
+**Status**: COMPLETE — 2 plans in 2 waves executed
+**Results**: H5 NOT SUPPORTED — Weak Modal measures do not predict dispersion with Firm+Year FE. Gap significant in pooled OLS but not with Firm FE (between-firm vs within-firm effect).
+**Completed**: 2026-02-05 — 2/2 plans executed, 9/9 must-haves verified
+
 **Success Criteria** (what must be TRUE):
-  1. H5 analysis dataset created with forward dispersion (t+1) and all uncertainty measures
-  2. Primary regression tests Weak_Modal effect controlling for Uncertainty (incremental contribution)
-  3. Secondary regression tests Q&A-Presentation gap as novel predictor
-  4. Robustness checks without lagged DV, without NUMEST, CEO-only measures
-  5. Results document whether hedging adds beyond general uncertainty
+  1. H5 analysis dataset created with forward dispersion (t+1) and all uncertainty measures ✓
+  2. Primary regression tests Weak_Modal effect controlling for Uncertainty (incremental contribution) ✓
+  3. Secondary regression tests Q&A-Presentation gap as novel predictor ✓
+  4. Robustness checks without lagged DV, without NUMEST, CEO-only measures ✓
+  5. Results document whether hedging adds beyond general uncertainty ✓
 **Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 40-01-PLAN.md — Create 3.5_H5Variables.py with refined analyst dispersion and controls
-- [ ] 40-02-PLAN.md — Create 4.5_H5DispersionRegression.py with primary, gap, and robustness models
+- [x] 40-01-PLAN.md — Create 3.5_H5Variables.py with refined analyst dispersion and controls
+- [x] 40-02-PLAN.md — Create 4.5_H5DispersionRegression.py with primary, gap, and robustness models
 
 **Literature Position:**
 - General uncertainty → dispersion is ESTABLISHED (Loughran & McDonald 2011, Price et al. 2012)
-- Novel contribution: Does **hedging language** (weak modals: may/might/could) add beyond general uncertainty?
-- Secondary contribution: Does **spontaneous-scripted gap** (Q&A - Presentation) reveal hidden uncertainty?
+- Novel contribution tested: Does **hedging language** (weak modals: may/might/could) add beyond general uncertainty?
+- Secondary contribution tested: Does **spontaneous-scripted gap** (Q&A - Presentation) reveal hidden uncertainty?
 
 **Key Design Decisions (from CONTEXT.md):**
 - DV: Analyst Dispersion = STDEV / |MEANEST|, NUMEST ≥ 3, |MEANEST| ≥ 0.05
@@ -235,9 +238,15 @@ Plans:
 - Control for established effect: Manager_QA_Uncertainty_pct
 - FE: Firm + Year; SE: Clustered at firm level
 
+**H5 Results Summary:**
+- H5-A (Weak Modal): NOT SUPPORTED in primary spec (Firm + Year FE). Weak Modal coefficients insignificant.
+- H5-B (Gap): MIXED. Significant in pooled OLS (beta=0.014, p<0.001) but insignificant with Firm FE.
+- Interpretation: Speech-dispersion relationship driven by firm heterogeneity, not within-firm causal effects.
+- Sample: 258,560 observations (primary spec), 2,027 firms, 2002-2018, R²_within=0.079
+
 ### Phase 41: Hypothesis Suite Discovery — Novel Hypotheses with Data-Feasibility & Statistical Confidence
 **Goal**: Conduct an extremely thorough and deep literature review to identify untested hypotheses that are: (1) feasible with currently available data, (2) novel with true research gaps, and (3) have high confidence of statistically significant results
-**Depends on**: Phase 40 (H5 Analyst Dispersion)
+**Depends on**: Phase 40 (H5 Analyst Dispersion) — COMPLETE
 **Status**: PLANNED — 4 plans in 4 waves
 **Success Criteria** (what must be TRUE):
   1. Comprehensive literature review completed across relevant domains (accounting, finance, linguistics, psychology)
@@ -281,8 +290,8 @@ Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Com
 **v2.0 Execution Summary:**
 - Phases 28-35: Completed (H1-H3 variable construction and regressions)
 - Phases 36-38: Cancelled (null results make robustness/identification/publication scientifically inappropriate)
-- Phase 40: PLANNED — H5 hypothesis with higher likelihood of success
-- Phase 41: NEW — Hypothesis Suite Discovery (literature review for novel, data-feasible hypotheses)
+- Phase 40: COMPLETE — H5 hypothesis null results (weak modal does not predict dispersion with Firm FE)
+- Phase 41: PLANNED — Hypothesis Suite Discovery (literature review for novel, data-feasible hypotheses)
 
 **v2.0 Hypothesis Testing Results:**
 
@@ -294,6 +303,8 @@ Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Com
 | H2b | Leverage improves H2a | NOT SUPPORTED | 0/6 |
 | H3a | Uncertainty → ↓ Stability | WEAK | 1/6 (CEO_Pres_Uncertainty) |
 | H3b | Leverage → ↑ Stability | NOT SUPPORTED | 0/6 |
+| H5a | Weak Modal → ↑ Dispersion (controlling for Uncertainty) | NOT SUPPORTED | 0/6 (primary spec) |
+| H5b | Uncertainty Gap → ↑ Dispersion | MIXED | Sig. pooled OLS, insig. Firm FE |
 
 | Phase | Name | Plans Complete | Status | Completed |
 |-------|------|----------------|--------|-----------|
@@ -308,7 +319,7 @@ Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Com
 | 36 | Robustness Checks | — | CANCELLED | — |
 | 37 | Identification Strategies | — | CANCELLED | — |
 | 38 | Publication Output | — | CANCELLED | — |
-| 40 | H5 Speech → Analyst Dispersion | 0/2 | PLANNED | — |
+| 40 | H5 Speech → Analyst Dispersion | 2/2 | COMPLETE | 2026-02-05 |
 | 41 | Hypothesis Suite Discovery | 0/4 | PLANNED | — |
 | 42 | H6 SEC Scrutiny (CCCL) → ↓ Uncertainty | 0/TBD | NOT PLANNED | — |
 
@@ -329,12 +340,12 @@ v2.0 requirements by status:
 | Robustness | ROBUST-01 through ROBUST-07 | Phase 36 | ✗ NOT PURSUED |
 | Identification | IDENT-01 through IDENT-03 | Phase 37 | ✗ NOT PURSUED |
 | Publication | PUB-01 through PUB-05 | Phase 38 | ✗ NOT PURSUED |
-| H5 Hypothesis | H5-01 through H5-10 | Phase 40 | ○ PLANNED |
+| H5 Hypothesis | H5-01 through H5-10 | Phase 40 | ✓ COMPLETE |
 
-**Coverage:** 40/55 requirements completed (73%); 15 requirements not pursued; 10 requirements planned for Phase 40
+**Coverage:** 50/55 requirements completed (91%); 15 requirements not pursued; 10 requirements completed for Phase 40
 
 ---
 *Roadmap created: 2026-01-22 (v1.0)*
 *v1.0 completed: 2026-01-30 (27 phases, 143 plans)*
 *v2.0 roadmap created: 2026-02-04 (11 phases, 55 requirements)*
-*v2.0 updated: 2026-02-05 (H1-H3 null results; Phases 36-38 cancelled; Phase 40 planned with 2 plans)*
+*v2.0 updated: 2026-02-05 (H1-H3 null results; Phases 36-38 cancelled; Phase 40 complete with null results)*

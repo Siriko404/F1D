@@ -208,4 +208,4 @@ None currently.
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity
 
 ---
-*Last updated: 2026-02-06 (Phase 41 Plan 02 complete, literature review finished, 10 novel hypotheses ranked)*
+*Last updated: 2026-02-06 (Phase 40 complete: H5 null results; Phase 41 Plan 02 complete, literature review finished, 10 novel hypotheses ranked)*
