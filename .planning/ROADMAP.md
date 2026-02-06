@@ -209,15 +209,19 @@ Plans:
 ### Phase 40: H5 Speech Uncertainty Predicts Analyst Forecast Dispersion
 **Goal**: Test whether hedging language (weak modal verbs) predicts analyst disagreement beyond what general uncertainty words predict
 **Depends on**: Phase 32 (Econometric Infrastructure)
-**Requirements**: H5-01 through H5-10 (to be defined during planning)
-**Status**: CONTEXT COMPLETE — Ready for planning
+**Requirements**: H5-01 through H5-10
+**Status**: PLANNED — 2 plans in 2 waves
 **Success Criteria** (what must be TRUE):
   1. H5 analysis dataset created with forward dispersion (t+1) and all uncertainty measures
   2. Primary regression tests Weak_Modal effect controlling for Uncertainty (incremental contribution)
   3. Secondary regression tests Q&A-Presentation gap as novel predictor
   4. Robustness checks without lagged DV, without NUMEST, CEO-only measures
   5. Results document whether hedging adds beyond general uncertainty
-**Plans**: TBD (run /gsd-plan-phase 40 to break down)
+**Plans**: 2 plans in 2 waves
+
+Plans:
+- [ ] 40-01-PLAN.md — Create 3.5_H5Variables.py with refined analyst dispersion and controls
+- [ ] 40-02-PLAN.md — Create 4.5_H5DispersionRegression.py with primary, gap, and robustness models
 
 **Literature Position:**
 - General uncertainty → dispersion is ESTABLISHED (Loughran & McDonald 2011, Price et al. 2012)
@@ -262,7 +266,7 @@ Plans:
 | 36 | Robustness Checks | — | CANCELLED | — |
 | 37 | Identification Strategies | — | CANCELLED | — |
 | 38 | Publication Output | — | CANCELLED | — |
-| 40 | H5 Speech → Analyst Dispersion | 0/TBD | CONTEXT COMPLETE | — |
+| 40 | H5 Speech → Analyst Dispersion | 0/2 | PLANNED | — |
 
 ## Requirement Coverage
 
@@ -289,4 +293,4 @@ v2.0 requirements by status:
 *Roadmap created: 2026-01-22 (v1.0)*
 *v1.0 completed: 2026-01-30 (27 phases, 143 plans)*
 *v2.0 roadmap created: 2026-02-04 (11 phases, 55 requirements)*
-*v2.0 updated: 2026-02-05 (H1-H3 null results; Phases 36-38 cancelled; Phase 40 added)*
+*v2.0 updated: 2026-02-05 (H1-H3 null results; Phases 36-38 cancelled; Phase 40 planned with 2 plans)*
