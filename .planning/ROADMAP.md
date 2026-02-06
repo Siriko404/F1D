@@ -256,6 +256,26 @@ Plans:
 **Details:**
 Discovery phase with 4 sequential plans: (01) Literature review using PRISMA 2020 methodology to identify tested vs. untested hypotheses; (02) Data feasibility assessment verifying IV/DV/control availability and estimating sample sizes; (03) Statistical power analysis calculating power for meaningful effect sizes; (04) Hypothesis suite selection and formal specification for Phase 42+ development
 
+### Phase 42: H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty
+**Goal**: Test whether SEC scrutiny through Conference Call Comment Letters (CCCL) exposure causes managers to speak with less uncertainty
+**Depends on**: Phase 41
+**Requirements**: H6-01 through H6-10 (TBD)
+**Status**: PLANNED — 2 plans in 2 waves
+**Success Criteria** (what must be TRUE):
+  1. CCCL data from inputs folder successfully loaded and processed
+  2. Industry-level CCCL shift-share computed (how much each industry received comment letters)
+  3. Firm-level CCCL exposure computed (shift-share × firm size proxy: sales or market cap)
+  4. Regression tests SEC scrutiny → reduced speech uncertainty measures
+  5. Results document whether larger/more exposed firms hedge less in speech
+**Plans**: 2 plans in 2 waves
+
+Plans:
+- [ ] 42-01-PLAN.md — Create 3.6_H6Variables.py merging CCCL instrument with speech measures
+- [ ] 42-02-PLAN.md — Create 4.6_H6CCCLRegression.py with FDR correction and pre-trends
+
+**Details:**
+Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Comment Letters) makes manager speech LESS uncertain. Identification strategy uses shift-share design: industry CCCL exposure × firm size (sales/market cap). Larger firms are more exposed to scrutiny. Data available in 1_Inputs folder. This reverses the typical "uncertainty is bad" framing — here scrutiny disciplines vague speech.
+
 ## Progress
 
 **v2.0 Execution Summary:**
@@ -290,6 +310,7 @@ Discovery phase with 4 sequential plans: (01) Literature review using PRISMA 202
 | 38 | Publication Output | — | CANCELLED | — |
 | 40 | H5 Speech → Analyst Dispersion | 0/2 | PLANNED | — |
 | 41 | Hypothesis Suite Discovery | 0/4 | PLANNED | — |
+| 42 | H6 SEC Scrutiny (CCCL) → ↓ Uncertainty | 0/TBD | NOT PLANNED | — |
 
 ## Requirement Coverage
 
