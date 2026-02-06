@@ -5,10 +5,10 @@
 This roadmap extends the existing F1D data processing pipeline with hypothesis testing capabilities for empirical finance research. Building on the v1.0 foundation (27 phases, 143 plans) that established observability and documentation, v2.0 implements three empirical hypotheses: H1 (Speech Uncertainty & Cash Holdings), H2 (Speech Uncertainty & Investment Efficiency), and H3 (Speech Uncertainty & Payout Policy). The work leverages existing sample construction and text measures from v1.0 while adding new variable construction and panel econometric regressions with fixed effects, interaction terms, and robustness checks.
 
 **Milestone:** v2.0 Hypothesis Testing Suite — ACTIVE
-**Phases:** 28-38 completed/cancelled; Phase 40 complete (H5 null results); Phase 41 complete (Hypothesis Suite Discovery); Phases 42+ planned (H6-H10 selected hypotheses)
-**Requirements:** 50/105 completed (15 requirements in cancelled phases not pursued; 50 new requirements from H6-H10)
+**Phases:** 28-38 completed/cancelled; Phase 40 complete (H5 null results); Phase 41 abandoned (Hypothesis Suite Discovery); Phase 42 complete (H6 SEC Scrutiny null results)
+**Requirements:** 60/105 completed (15 requirements in cancelled phases not pursued; 10 requirements from Phase 42 H6)
 
-**v2.0 Summary:** H1-H3 hypotheses showed null results. Phases 36-38 cancelled. Phase 40 (H5) complete with null results. Phase 41 complete: selected 5 novel hypotheses (H6-H10) for Phases 42+ testing.
+**v2.0 Summary:** H1-H3 hypotheses showed null results. Phases 36-38 cancelled. Phase 40 (H5) complete with null results. Phase 41 (Hypothesis Suite Discovery) abandoned. Phase 42 (H6 SEC Scrutiny) complete with null results.
 
 ## v1.0 Completed Phases (1-27)
 
@@ -244,36 +244,10 @@ Plans:
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity, not within-firm causal effects.
 - Sample: 258,560 observations (primary spec), 2,027 firms, 2002-2018, R²_within=0.079
 
-### Phase 41: Hypothesis Suite Discovery — Novel Hypotheses with Data-Feasibility & Statistical Confidence
-**Goal**: Conduct an extremely thorough and deep literature review to identify untested hypotheses that are: (1) feasible with currently available data, (2) novel with true research gaps, and (3) have high confidence of statistically significant results
-**Depends on**: Phase 40 (H5 Analyst Dispersion) — COMPLETE
-**Status**: COMPLETE — 4 plans in 4 waves executed
-**Results:** Selected 5 novel hypotheses (H6-H10) with complete specifications for Phase 42+ development
-**Completed**: 2026-02-06 — 4/4 plans executed, hypothesis suite selected
-
-**Success Criteria** (what must be TRUE):
-  1. Comprehensive literature review completed across relevant domains (accounting, finance, linguistics, psychology) ✓
-  2. Data feasibility matrix created mapping all available data sources to potential hypothesis variables ✓
-  3. Novel research gaps identified with no prior published tests ✓
-  4. Statistical power analysis conducted to ensure high confidence in significant results ✓
-  5. Hypothesis suite selected and formally specified ✓
-**Plans**: 4 plans in 4 waves
-
-Plans:
-- [x] 41-01-PLAN.md — Data inventory: 11 sources, 1,785 text measures, merge feasibility matrix
-- [x] 41-02-PLAN.md — Literature review: PRISMA 2020, evidence matrix, 10 novel hypotheses
-- [x] 41-03-PLAN.md — Statistical power analysis: all hypotheses >80% power for meaningful effects
-- [x] 41-04-PLAN.md — Hypothesis suite selection: H6-H10 selected with full specifications
-
-**Details:**
-Discovery phase completed with 4 sequential plans: (01) Data inventory documenting 11 input sources and 1,785 text measures; (02) Literature review using PRISMA 2020 methodology identifying 10 novel hypotheses; (03) Statistical power analysis confirming all hypotheses have adequate power; (04) Hypothesis suite selection choosing 5 hypotheses (H6-H10) for Phase 42+ development.
-
-**Selected Hypotheses (H6-H10):**
-- **H6:** Managerial Hedging and M&A Targeting (weak modals -> M&A likelihood/premium)
-- **H7:** CEO Vagueness and Forced Turnover Risk (uncertainty -> forced turnover)
-- **H8:** Speech Clarity and Executive Compensation (uncertainty -> total compensation/PPS)
-- **H9:** Uncertainty Gap and Future Stock Returns (QA-Pres gap -> abnormal returns)
-- **H10:** Language Complexity and Analyst Forecast Accuracy (complexity -> forecast error)
+### Phase 41: Hypothesis Suite Discovery — ABANDONED
+**Status**: ABANDONED — Phase executed but results discarded
+**Reason**: Phase 41 completed with 5 hypotheses (H6-H10) selected, but the entire hypothesis suite was later abandoned. Phase 42 was repurposed for a different hypothesis (SEC Scrutiny/CCCL).
+**Note**: All Phase 41 outputs (data inventory, literature review, power analysis, hypothesis specifications) have been removed. Phase 43-46 (H7-H10) are no longer planned.
 
 ### Phase 42: H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty ✓
 **Goal**: Test whether SEC scrutiny through Conference Call Comment Letters (CCCL) exposure causes managers to speak with less uncertainty
@@ -305,135 +279,17 @@ Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Com
 - Pre-trends: FAILED (future CCCL significant at p<0.05)
 - Sample: 22,273 firm-year observations (2,357 firms, 2006-2018)
 
-### Phase 42-A: H6 Managerial Hedging and M&A Targeting — MOVED
-**Status**: The original "H6 Managerial Hedging and M&A Targeting" hypothesis from Phase 41 discovery has been moved to a future phase. Phase 42 was used for the CCCL SEC Scrutiny hypothesis instead.
-**Note**: Phase 42 in the ROADMAP was originally planned for M&A targeting, but the CCCL hypothesis was prioritized and executed. The M&A targeting hypothesis remains available for future testing.
-
----
-
-### Phase 43: H7 CEO Vagueness and Forced Turnover Risk
-**Goal**: Test whether managerial speech uncertainty/vagueness in Q&A predicts higher probability of forced CEO turnover
-**Depends on**: Phase 41 (Hypothesis Suite Discovery)
-**Requirements**: H7-01 through H7-10
-**Status**: NOT PLANNED YET
-**Success Criteria** (what must be TRUE):
-  1. H7 analysis dataset created with CEO turnover dummy and uncertainty measures
-  2. Logistic regression tests uncertainty -> forced turnover likelihood
-  3. Survival analysis alternative for time-to-turnover
-  4. Controls for performance, tenure, firm characteristics
-  5. Results document whether boards discipline unclear communicators
-**Plans**: TBD (run /gsd:plan-phase 43 to break down)
-
-Plans:
-- [ ] TBD (run /gsd:plan-phase 43 to break down)
-
-**Details:**
-Novel hypothesis: Boards discipline unclear communicators; vagueness signals problems or incompetence. Data: CEO dismissal (1,059 events 2002-2018) + text measures. IV: CEO_QA_Uncertainty_pct. DV: Forced turnover dummy. Methodology: Logistic regression or Cox proportional hazards.
-
----
-
-### Phase 44: H8 Speech Clarity and Executive Compensation
-**Goal**: Test whether CEO speech clarity (lower uncertainty) predicts higher total compensation and pay-for-performance sensitivity
-**Depends on**: Phase 41 (Hypothesis Suite Discovery)
-**Requirements**: H8-01 through H8-10
-**Status**: NOT PLANNED YET
-**Success Criteria** (what must be TRUE):
-  1. H8 analysis dataset created with compensation data and uncertainty measures
-  2. OLS regression tests uncertainty -> total compensation
-  3. OLS regression with interaction tests uncertainty -> pay-for-performance sensitivity
-  4. Controls for performance, firm characteristics, governance
-  5. Results document whether boards price communication quality into CEO pay
-**Plans**: TBD (run /gsd:plan-phase 44 to break down)
-
-Plans:
-- [ ] TBD (run /gsd:plan-phase 44 to break down)
-
-**Details:**
-Novel hypothesis: Clear communication valued by boards; unclear speech reduces perceived compensation. Data: Execucomp (370K obs, 4,170 firms) + text measures. IV: CEO_QA_Uncertainty_pct (inverse clarity). DV: Total compensation (tdc1), pay-for-performance sensitivity.
-
----
-
-### Phase 45: H9 Uncertainty Gap and Future Stock Returns
-**Goal**: Test whether Q&A-Presentation uncertainty gap predicts future abnormal stock returns
-**Depends on**: Phase 41 (Hypothesis Suite Discovery)
-**Requirements**: H9-01 through H9-10
-**Status**: NOT PLANNED YET
-**Success Criteria** (what must be TRUE):
-  1. H9 analysis dataset created with uncertainty gap and future returns
-  2. OLS regression tests gap -> future abnormal returns (multiple horizons)
-  3. Portfolio analysis of high-gap vs. low-gap firms
-  4. Controls for prior returns, volatility, earnings surprise
-  5. Results document whether inconsistency predicts returns
-**Plans**: TBD (run /gsd:plan-phase 45 to break down)
-
-Plans:
-- [ ] TBD (run /gsd:plan-phase 45 to break down)
-
-**Details:**
-Novel hypothesis: Large gap (QA >> Pres) = scripted + unprepared = bad signal to markets. Data: CRSP DSF (1999-2022) + text measures. IV: uncertainty_gap = QA_Uncertainty - Pres_Uncertainty. DV: Future abnormal returns (3-day, 1-month, 1-quarter). Large sample: 113K observations.
-
----
-
-### Phase 46: H10 Language Complexity and Analyst Forecast Accuracy
-**Goal**: Test whether earnings call complexity predicts higher analyst forecast error (lower accuracy)
-**Depends on**: Phase 41 (Hypothesis Suite Discovery)
-**Requirements**: H10-01 through H10-10
-**Status**: NOT PLANNED YET
-**Success Criteria** (what must be TRUE):
-  1. H10 analysis dataset created with complexity measures and forecast error
-  2. OLS regression tests complexity -> forecast error
-  3. Quantile regression for different accuracy levels
-  4. Controls for firm characteristics, forecast environment
-  5. Results document whether complexity confuses analysts or signals competence
-**Plans**: TBD (run /gsd:plan-phase 46 to break down)
-
-Plans:
-- [ ] TBD (run /gsd:plan-phase 46 to break down)
-
-**Details:**
-Novel hypothesis: Complex speech confuses analysts OR signals sophisticated operations. Data: IBES (264K complete cases verified in H5) + text measures. IV: Complexity score (Fog index, word length). DV: Forecast error = |MEANEST - ACTUAL| / |ACTUAL|. Direction ambiguous.
-
 ---
 
 ## Reserved Phases (Future Extension)
 
-### Phase 50: SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty
-**Goal**: Test whether SEC scrutiny through Conference Call Comment Letters (CCCL) exposure causes managers to speak with less uncertainty
-**Depends on**: Phase 41
-**Requirements**: H50-01 through H50-10 (TBD)
-**Status**: NOT PLANNED YET
-**Success Criteria** (what must be TRUE):
-  1. CCCL data from inputs folder successfully loaded and processed
-  2. Industry-level CCCL shift-share computed (how much each industry received comment letters)
-  3. Firm-level CCCL exposure computed (shift-share x firm size proxy: sales or market cap)
-  4. Regression tests SEC scrutiny -> reduced speech uncertainty measures
-  5. Results document whether larger/more exposed firms hedge less in speech
-**Plans**: TBD (run /gsd:plan-phase 50 to break down)
+### Phase 50: Reserved Extension
+**Status**: RESERVED — Future extension placeholder
+**Note**: Originally planned for SEC Scrutiny (CCCL) hypothesis, but that was executed as Phase 42 instead.
 
-Plans:
-- [ ] TBD (run /gsd:plan-phase 50 to break down)
-
-**Details:**
-Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Comment Letters) makes manager speech LESS uncertain. Identification strategy uses shift-share design: industry CCCL exposure x firm size (sales/market cap). Larger firms are more exposed to scrutiny. Data available in 1_Inputs folder. This reverses the typical "uncertainty is bad" framing — here scrutiny disciplines vague speech.
-
-### Phase 51: Uncertainty Dynamics Predictors
-**Goal**: Test whether changes in uncertainty (velocity, acceleration, jerk) in manager and analyst speech have predictive power for market outcomes and information processing
-**Depends on**: Phase 42
-**Requirements**: H43-01 through H43-10 (TBD)
-**Status**: NOT PLANNED — 0 plans in 0 waves
-**Success Criteria** (what must be TRUE):
-  1. Temporal derivatives of uncertainty measures computed (velocity, acceleration, jerk)
-  2. Manager uncertainty dynamics compared to analyst uncertainty dynamics
-  3. Regression models test predictive power of uncertainty changes vs. levels
-  4. Market reaction outcomes (returns, volatility, dispersion) linked to uncertainty dynamics
-  5. Results document whether rate of change contains information beyond uncertainty levels
-**Plans**: 0 plans (run /gsd-plan-phase 43 to break down)
-
-Plans:
-- [ ] 43-01-PLAN.md — TBD (run /gsd-plan-phase 43 to break down)
-
-**Details:**
-Novel hypothesis exploring dynamic properties of speech uncertainty. Instead of testing uncertainty levels, test whether the *rate of change* in uncertainty (velocity), *acceleration* in uncertainty, and *jerk* (rate of change of acceleration) predict market outcomes. Compare manager vs. analyst uncertainty dynamics — do they converge/diverge predictably? Does rapid increase in uncertainty signal information arrival? Uses existing speech measures from Step 2 outputs with temporal differencing.
+### Phase 51: Reserved Extension
+**Status**: RESERVED — Future extension placeholder
+**Note**: Originally planned for Uncertainty Dynamics, dependent on Phase 42 (now complete).
 
 ## Progress
 
@@ -441,10 +297,11 @@ Novel hypothesis exploring dynamic properties of speech uncertainty. Instead of 
 - Phases 28-35: Completed (H1-H3 variable construction and regressions)
 - Phases 36-38: Cancelled (null results make robustness/identification/publication scientifically inappropriate)
 - Phase 40: COMPLETE — H5 hypothesis null results (weak modal does not predict dispersion with Firm FE)
-- Phase 41: COMPLETE — Hypothesis Suite Discovery (selected 5 novel hypotheses: H6-H10)
-- Phases 42-46: NOT PLANNED YET — H6-H10 hypothesis testing phases
-- Phase 50: RESERVED — SEC Scrutiny (CCCL) hypothesis (future extension)
-- Phase 51: RESERVED — Uncertainty Dynamics (future extension)
+- Phase 41: ABANDONED — Hypothesis Suite Discovery (executed but results discarded)
+- Phase 42: COMPLETE — H6 SEC Scrutiny (CCCL) null results
+- Phases 43-46: REMOVED — were products of Phase 41, now abandoned
+- Phase 50: RESERVED — Future extension placeholder
+- Phase 51: RESERVED — Future extension placeholder
 
 **v2.0 Hypothesis Testing Results:**
 
@@ -476,14 +333,10 @@ Novel hypothesis exploring dynamic properties of speech uncertainty. Instead of 
 | 37 | Identification Strategies | — | CANCELLED | — |
 | 38 | Publication Output | — | CANCELLED | — |
 | 40 | H5 Speech → Analyst Dispersion | 2/2 | COMPLETE | 2026-02-05 |
-| 41 | Hypothesis Suite Discovery | 4/4 | COMPLETE | 2026-02-06 |
+| 41 | Hypothesis Suite Discovery | 4/4 | ABANDONED | 2026-02-06 |
 | 42 | H6 SEC Scrutiny (CCCL) → ↓ Uncertainty | 2/2 | COMPLETE | 2026-02-06 |
-| 43 | H7 Uncertainty → CEO Turnover | 0/TBD | NOT PLANNED | — |
-| 44 | H8 Speech Clarity → Compensation | 0/TBD | NOT PLANNED | — |
-| 45 | H9 Uncertainty Gap → Returns | 0/TBD | NOT PLANNED | — |
-| 46 | H10 Complexity → Forecast Accuracy | 0/TBD | NOT PLANNED | — |
-| 50 | Managerial Hedging → M&A Targeting | 0/TBD | RESERVED | — |
-| 51 | Uncertainty Dynamics Predictors | 0/TBD | RESERVED | — |
+| 50 | Reserved Extension | 0/TBD | RESERVED | — |
+| 51 | Reserved Extension | 0/TBD | RESERVED | — |
 
 ## Requirement Coverage
 
@@ -504,12 +357,8 @@ v2.0 requirements by status:
 | Publication | PUB-01 through PUB-05 | Phase 38 | NOT PURSUED |
 | H5 Hypothesis | H5-01 through H5-10 | Phase 40 | COMPLETE |
 | H6 Hypothesis | H6-01 through H6-10 | Phase 42 | COMPLETE |
-| H7 Hypothesis | H7-01 through H7-10 | Phase 43 | NOT PLANNED |
-| H8 Hypothesis | H8-01 through H8-10 | Phase 44 | NOT PLANNED |
-| H9 Hypothesis | H9-01 through H9-10 | Phase 45 | NOT PLANNED |
-| H10 Hypothesis | H10-01 through H10-10 | Phase 46 | NOT PLANNED |
 
-**Coverage:** 60/105 requirements completed (57%); 15 requirements not pursued (cancelled phases); 40 new requirements from H7-H10 (Phases 43-46)
+**Coverage:** 60/65 requirements completed (92%); 15 requirements not pursued (cancelled phases)
 
 ---
 *Roadmap created: 2026-01-22 (v1.0)*
