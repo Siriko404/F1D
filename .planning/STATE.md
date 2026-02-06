@@ -10,15 +10,15 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 41 - Hypothesis Suite Discovery
-Plan: 01
-Status: COMPLETE — Data inventory with 11 sources documented, 16+ feasible IV-DV combinations
-Last activity: 2026-02-06 — Plan 41-01 executed, comprehensive data inventory created
+Plan: 02
+Status: COMPLETE — Literature review identified 10 novel, data-feasible hypotheses
+Last activity: 2026-02-06 — Plan 41-02 executed, ranked hypotheses for power analysis
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null
-[███████████████████   ] 9/12 active phases (75%)
+[███████████████████   ] 10/12 active phases (83%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -34,7 +34,7 @@ Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
 Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
-Phase 41: Hypothesis Suite Discovery [ACTIVE - 1/4 plans done]
+Phase 41: Hypothesis Suite Discovery [ACTIVE - 2/4 plans done]
 Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 ```
 
@@ -117,7 +117,10 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 - [Phase 41-01 Data Inventory] 1,785 text measure variables available (15 speaker roles x 8 categories x 3 contexts)
 - [Phase 41-01 Feasibility] HIGH: Weak Modal -> M&A Target (95K deals), Stock Returns (CRSP), Analyst Dispersion (264K H5 verified)
 - [Phase 41-01 Feasibility] MEDIUM: Weak Modal -> CEO Turnover (1,059 events), Compensation (4,170 firms)
-- [Phase 41-01 Feasibility] Literature review (41-02) to focus ONLY on feasible IV-DV combinations
+- [Phase 41-02 Literature Review] 10 novel hypotheses identified, 6 Tier-1 (>=0.85) prioritized for power analysis
+- [Phase 41-02 Literature Review] H6: Weak Modals->M&A Target (1.00), H9: Uncertainty Gap->Returns (1.00), H11: Uncertainty->M&A Premium (1.00), H4: Gap->Volatility (1.00), H15: Cross-Speaker->Q (0.85), H7: Uncertainty->Turnover (0.85)
+- [Phase 41-02 Literature Review] Established relationships to skip: tone->returns (LM 2011), uncertainty->dispersion (Price 2012), H1-H3 null results
+- [Phase 41-02 Literature Review] Evidence gaps: minimal literature on speech->M&A, speech->turnover, speech->compensation, gap->returns
 
 ### From v1.0 (carry forward)
 
@@ -154,32 +157,34 @@ None currently.
 ### Current Session (2026-02-06)
 
 **Completed:**
-- Phase 41 Plan 01 executed successfully
-- Created comprehensive data inventory (41-01-DATA_INVENTORY.md)
-- Documented 11 input data sources with locations, sizes, coverage:
-  - Earnings calls: 112,968 calls (2002-2018), 4.7 GB
-  - LM Dictionary: 86,554 words, 8 sentiment categories
-  - IBES: 25.5M rows (1999-2024), verified for analyst dispersion
-  - Execucomp: 370K obs, 4,170 firms (1992-2025)
-  - CEO dismissal: 1,059 dismissals (2002-2018)
-  - SDC M&A: 95,452 deals (2002-2018)
-  - CRSP DSF: 96 quarterly files (1999-2022)
-  - CCCL instrument: 145,693 obs (2005-2022)
-- Documented 1,785 text measure variables (15 speaker roles x 8 categories x 3 contexts)
-- Created merge feasibility matrix for all dataset combinations
-- Identified 16+ feasible IV-DV hypothesis combinations
-- Provided recommendations for focused literature review (Plan 02)
+- Phase 41 Plan 02 executed successfully
+- Created PRISMA 2020 literature search protocol (41-02-PRISMA_FLOW.md)
+  - Data-first approach: search focused on feasible IV-DV combinations from Plan 01
+  - Search strings for weak modals/hedging, M&A, CEO turnover, compensation, returns
+  - Inclusion/exclusion criteria skip tested hypotheses (H1-H3 null, tone->returns)
+- Created evidence matrix (41-02-EVIDENCE_MATRIX.md)
+  - Mapped 21+ studies to text measures and outcome categories
+  - Grouped by M&A, Turnover, Compensation, Returns, Analyst outcomes
+  - Identified established vs. novel for each IV-DV combination
+- Documented evidence gaps (41-02-EVIDENCE_GAPS.md)
+  - 10 novel hypotheses with full specification (IV, DV, controls, theory)
+  - H6-H15 with scoring by theoretical motivation (40%), novelty (30%), feasibility (30%)
+- Created literature review summary (41-02-SUMMARY.md)
+  - Tier 1 (>=0.85): H6 Weak Modals->M&A, H9 Gap->Returns, H11 Uncertainty->Premium, H4 Gap->Volatility, H15 Cross-Speaker->Q, H7 Uncertainty->Turnover
+  - Tier 2 (0.65-0.85): H8 Clarity->Comp, H12 Weak Modals->Turnover, H10 Complexity->Accuracy, H13 Uncertainty Volatility, H14 Uncertainty->Revisions
+  - Recommended 6 hypotheses for power analysis in Plan 03
 
-**Phase 41 Plan 01 Findings:**
-- HIGH feasibility: Weak Modal -> M&A Target (95K deals)
-- HIGH feasibility: Uncertainty/Weak Modal -> Stock Returns (CRSP 1999-2022)
-- MEDIUM feasibility: Uncertainty/Weak Modal -> CEO Turnover (1,059 events)
-- MEDIUM feasibility: Uncertainty/Weak Modal -> Compensation (4,170 firms)
-- HIGH feasibility: H6 CCCL shift-share instrument available (145K obs)
+**Phase 41 Plan 02 Findings:**
+- Minimal literature on: speech->M&A, speech->turnover, speech->compensation, gap->returns
+- Highest novelty: Weak Modals->M&A Target (no prior tests, 95K deals)
+- Novel measure: Uncertainty Gap (Q&A-Pres) -> Returns (not studied before)
+- Skip: tone->returns (established), uncertainty->dispersion (H5 tested), H1-H3 null results
 
 **Next Session:**
-- Phase 41 Plan 02: Literature Review focused on feasible hypotheses
-- Search literature for: speech -> M&A, CEO turnover, compensation, stock returns
+- Phase 41 Plan 03: Statistical Power Analysis
+- Calculate ex-ante power for Tier 1 hypotheses
+- Assess minimum detectable effect sizes
+- Verify H7 (turnover) has sufficient power with 1,059 events
 
 ### Previous Session (2026-02-05)
 
@@ -203,4 +208,4 @@ None currently.
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity
 
 ---
-*Last updated: 2026-02-06 (Phase 41 Plan 01 complete, data inventory finished)*
+*Last updated: 2026-02-06 (Phase 41 Plan 02 complete, literature review finished, 10 novel hypotheses ranked)*
