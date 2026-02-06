@@ -325,13 +325,15 @@ def run_panel_ols(
 
     # Check for missing values in regression data
     missing_exog = exog_data.isna().sum()
+    # Initialize complete_idx before conditional (fixes UnboundLocalError when industry_effects=True)
+    complete_idx = exog_data.notna().all(axis=1) & dependent_data.notna()
+
     if missing_exog.sum() > 0:
         warnings_collected.append(
             f"Missing values in exog variables: {missing_exog[missing_exog > 0].to_dict()}. "
             "Dropping observations with missing values."
         )
         # Use complete cases
-        complete_idx = exog_data.notna().all(axis=1) & dependent_data.notna()
         exog_data = exog_data[complete_idx]
         dependent_data = dependent_data[complete_idx]
 
@@ -348,7 +350,8 @@ def run_panel_ols(
     # Add industry effects if requested
     if industry_effects and industry_col in df_work.columns:
         # Need to align industry column with filtered data
-        industry_data = df_work.loc[complete_idx if complete_idx.all() else df_work.index, industry_col]
+        # Use exog_data.index which already has complete_idx filter applied
+        industry_data = df_work.loc[exog_data.index, industry_col]
         model_kwargs['other_effects'] = industry_data
 
     try:
