@@ -122,6 +122,32 @@ SPECS = {
     'double_cluster': {'entity_effects': True, 'time_effects': True, 'cluster_entity': True, 'cluster_time': True},
 }
 
+# =============================================================================
+# Robustness Configuration
+# =============================================================================
+
+ROBUSTNESS_CONFIG = {
+    'alternative_dvs': {
+        'roll_spread': 'Roll (1984) implicit spread',
+        'bidask_spread': 'Bid-ask spread (if available)',
+    },
+    'alternative_specs': {
+        'firm_only': {'entity_effects': True, 'time_effects': False, 'cluster_entity': True},
+        'pooled': {'entity_effects': False, 'time_effects': False, 'cluster_entity': True},
+        'double_cluster': {'entity_effects': True, 'time_effects': True, 'cluster_entity': True, 'cluster_time': True},
+    },
+    'alternative_ivs': {
+        'ceo_only': ['CEO_QA_Uncertainty_pct', 'CEO_Pres_Uncertainty_pct'],
+        'presentation_only': ['Manager_Pres_Uncertainty_pct', 'CEO_Pres_Uncertainty_pct'],
+        'qa_only': ['Manager_QA_Uncertainty_pct', 'CEO_QA_Uncertainty_pct'],
+    },
+    'timing_tests': {
+        'concurrent': 0,   # Uncertainty_t -> Illiquidity_t
+        'forward': -1,     # Uncertainty_t -> Illiquidity_{t+1} (primary)
+        'lead': -2,        # Uncertainty_t -> Illiquidity_{t+2}
+    },
+}
+
 # ==============================================================================
 # Path Setup
 # ==============================================================================
@@ -295,9 +321,105 @@ def validate_data(df, dv_col, uncertainty_vars, control_vars, dw=None):
                 dw.write(f"      {var}: {n_missing:,} ({pct_missing:.1f}%)\n")
 
 
-# ==============================================================================
-# Regression Functions
-# ==============================================================================
+# =============================================================================
+# Robustness Helper Functions
+# =============================================================================
+
+
+def create_alternative_dvs(df, dw=None):
+    """
+    Create alternative dependent variables for robustness testing.
+
+    Creates forward-looking versions of alternative illiquidity measures:
+    - Roll (1984) spread: roll_spread_fwd
+    - Bid-ask spread (if available): bidask_spread_fwd
+
+    Args:
+        df: Panel data with illiquidity measures
+        dw: DualWriter for logging
+
+    Returns:
+        DataFrame with additional DV columns
+    """
+    df_work = df.copy()
+
+    # Reset index temporarily to work with columns
+    if isinstance(df_work.index, pd.MultiIndex):
+        df_work = df_work.reset_index()
+
+    # Roll spread (should exist from variable construction)
+    if 'roll_spread' in df_work.columns:
+        df_work['roll_spread_fwd'] = df_work.groupby('gvkey')['roll_spread'].shift(-1)
+        if dw:
+            n_roll = df_work['roll_spread_fwd'].notna().sum()
+            dw.write(f"  Created roll_spread_fwd: {n_roll:,} observations\n")
+    else:
+        if dw:
+            dw.write(f"  WARNING: roll_spread not in data\n")
+
+    # Bid-ask spread (if available)
+    if 'bidask_spread' in df_work.columns:
+        df_work['bidask_spread_fwd'] = df_work.groupby('gvkey')['bidask_spread'].shift(-1)
+        if dw:
+            n_bidask = df_work['bidask_spread_fwd'].notna().sum()
+            dw.write(f"  Created bidask_spread_fwd: {n_bidask:,} observations\n")
+    else:
+        if dw:
+            dw.write(f"  NOTE: bidask_spread not in data (optional DV)\n")
+
+    return df_work
+
+
+def create_timing_variants(df, dv_base='amihud_illiquidity', lags=[0, -1, -2], dw=None):
+    """
+    Create DV variants for different timing assumptions.
+
+    Args:
+        df: Panel data (should have gvkey in index or columns)
+        dv_base: Base DV column name (current period illiquidity)
+        lags: List of lag values (0 = concurrent, -1 = forward, -2 = lead)
+        dw: DualWriter for logging
+
+    Returns:
+        dict with timing_name -> (df, dv_col)
+    """
+    # Work with copy
+    df_work = df.copy()
+
+    # Reset index if MultiIndex to access gvkey easily
+    was_multiindex = isinstance(df_work.index, pd.MultiIndex)
+    if was_multiindex:
+        index_names = df_work.index.names
+        df_work = df_work.reset_index()
+
+    timing_variants = {}
+    timing_names = {0: 'concurrent', -1: 'forward', -2: 'lead'}
+
+    for lag in lags:
+        df_lag = df_work.copy()
+
+        if lag == 0:
+            dv_name = dv_base
+            # No shifting needed for concurrent
+            # Just remove rows with missing DV
+        else:
+            dv_name = f'{dv_base}_lag{abs(lag)}'
+            df_lag[dv_name] = df_lag.groupby('gvkey')[dv_base].shift(lag)
+
+        # Remove missing DV
+        df_lag = df_lag[df_lag[dv_name].notna()]
+
+        # Set back MultiIndex if needed
+        if was_multiindex:
+            df_lag = df_lag.set_index(index_names)
+
+        timing_variants[timing_names[lag]] = (df_lag, dv_name)
+
+        if dw:
+            n_obs = len(df_lag)
+            dw.write(f"  Timing {timing_names[lag]} ({dv_name}): {n_obs:,} observations\n")
+
+    return timing_variants
 
 
 def run_h7_regression(df, uncertainty_var, dv_col='amihud_lag1',
