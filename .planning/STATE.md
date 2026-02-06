@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 55 - V1 Hypotheses Re-Test
-Plan: 3 of 9
-Status: **In Progress** - H7 illiquidity variables constructed, H7 regression next
-Last activity: 2026-02-06 - Plan 55-02 complete; H7 illiquidity dataset created (39,408 obs)
+Plan: 4 of 9
+Status: **In Progress** - H7 illiquidity regression complete; H7a NOT SUPPORTED (0/4 measures significant)
+Last activity: 2026-02-06 - Plan 55-04 complete; H7 regression executed with null results
 
 ### Next Phase
 
@@ -45,7 +45,7 @@ Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
 Phase 52: LLM Lit Review & Novel Hyp [COMPLETE - 5/5 plans] → 5 hypotheses specified
 Phase 53: H2 PRisk x Uncertainty     [COMPLETE - 3/3 plans] → H2: NOT SUPPORTED
 Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms implementation sound, null results genuine
-Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 3/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables complete → H1: Uncertainty→Illiquidity, H2: Uncertainty→Takeover
+Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 4/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig)
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -65,6 +65,7 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 3/9 plans] → 55-01 Lit Rev
 | H6-A | CCCL → ↓ Uncertainty | NULL | 0/6 (FDR-corrected) |
 | H6-B | QA effect > Pres effect | NULL | 1/2 QA effects larger |
 | H6-C | CCCL → ↓ Uncertainty Gap | NULL | p=0.22 |
+| H7a | Uncertainty → ↑ Illiquidity | NOT SUPPORTED | 0/4 (FDR-corrected) |
 
 **Implication**: Phases 36-38 (Robustness, Identification, Publication) cancelled as scientifically inappropriate for null results.
 
@@ -224,6 +225,11 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 3/9 plans] → 55-01 Lit Rev
 - [Phase 55-02 Methodology] FDR correction applied across 4 IVs per hypothesis (Benjamini-Hochberg)
 - [Phase 55-02 Methodology] Sequential implementation: H1 first (pilot), then H2 using learnings
 - [Phase 56 Added] Tone Dynamics Predictive Power — tests whether dynamics (velocity, acceleration, jerk) of management tone (LM dictionary measures) have predictive power for future outcomes beyond static levels
+- [Phase 55-04 H7 Regression] PanelOLS regression executed: 4 uncertainty measures x 4 specifications = 16 regressions
+- [Phase 55-04 H7 Regression] Sample: 3,706 obs, 2,283 firms, 2002-2018 (after control missingness filter)
+- [Phase 55-04 H7 Regression] H7a NOT SUPPORTED: 0/4 measures significant after FDR correction
+- [Phase 55-04 H7 Regression] Average coefficient: -0.0002 (wrong direction), no consistent pattern across specs
+- [Phase 55-04 H7 Regression] All robustness specs agree: null results (pooled shows negative, but without FE)
 
 ### From v1.0 (carry forward)
 
@@ -288,7 +294,30 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 3/9 plans] → 55-01 Lit Rev
 
 ### Current Session (2026-02-06)
 
-**Phase 55-02 COMPLETE:**
+**Phase 55-04 COMPLETE:**
+- Created H7 illiquidity regression script (4.7_H7IlliquidityRegression.py, 901 lines)
+- PanelOLS regression with Firm + Year FE, firm-clustered SE
+- 4 uncertainty measures tested (Manager/CEO x QA/Pres)
+- 4 specifications: primary, firm_only, pooled, double_cluster
+- FDR correction applied across measures
+- Results: H7a NOT SUPPORTED (0/4 measures significant)
+- Sample: 3,706 obs, 2,283 firms, 2002-2018
+- Outputs: parquet, markdown, JSON
+
+**Phase 55-04 Decisions:**
+- Use 4 uncertainty measures (Weak Modal not available in H7 data)
+- Pass gvkey/year as columns to run_panel_ols (function handles MultiIndex)
+- One-tailed p-value: p_one = p_two/2 if coef > 0, else 1 - p_two/2
+- FDR correction applied only to primary spec results
+
+**Phase 55-03 COMPLETE (Earlier):**
+- Created H7 illiquidity variable construction script (3.7_H7IlliquidityVariables.py, 955 lines)
+- Amihud (2002) illiquidity calculated: 137,533 firm-year observations from CRSP daily data
+- Roll (1984) spread computed: 88,051 valid firm-year observations
+- Analysis dataset: 39,408 firm-year observations with DV, IVs, and controls
+- Forward-looking DV constructed: Illiquidity at t+1 aligned with Uncertainty at t
+
+**Phase 55-02 COMPLETE (Earlier):**
 - Created comprehensive methodology specification (55-METHODOLOGY.md, 1,963 lines)
 - H1 (Illiquidity): Amihud (2002) primary DV, Roll (1984) robustness, PanelOLS with Firm+Year FE
 - H2 (Takeover): SDC Platinum binary takeover indicator, logit primary model, Cox PH alternative
