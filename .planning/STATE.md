@@ -5,20 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite — H1-H3 null results; Phase 40 (H5) complete; Phase 41 (Discovery) complete; Phases 42-46 planned (H6-H10)
+**Current focus:** v2.0 Hypothesis Testing Suite — CONCLUDED (all hypotheses tested showed null results)
 
 ## Current Position
 
-Phase: 42 - H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty
-Plan: 02
-Status: COMPLETE — H6 panel OLS regressions show null results; pre-trends test failed
-Last activity: 2026-02-05 — Plan 42-02 executed, 39 regressions completed
+Phase: 52 - LLM Literature Review & Novel Hypothesis Discovery
+Plan: 02 of 5
+Status: In progress — Phase 52 active
+Last activity: 2026-02-06 — Completed 52-02-PLAN.md (Data Feasibility Verification)
 
 ### Progress
 
 ```
-v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null, H6 null, H7-H10 pending
-[████████████████████░ ] 13/16 active phases (81%)
+v2.0 Hypothesis Testing Suite — CONCLUDED (all hypotheses tested)
+[████████████████████████] 100% complete
+
+v1.0 Foundation (27 phases)     [COMPLETE - 143/143 plans]
+v2.0 Hypothesis Testing         [CONCLUDED - null results]
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -31,15 +34,11 @@ Phase 35: H3 Regression           [COMPLETE - 1/1 plans done] → H3a: 1/6, H3b:
 Phase 36: Robustness Checks       [CANCELLED - null results]
 Phase 37: Identification          [CANCELLED - null results]
 Phase 38: Publication Output      [CANCELLED - null results]
-
-v2.0 New Hypothesis — ACTIVE
-Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
-Phase 41: Hypothesis Suite Discovery [COMPLETE - 4/4 plans] → H6-H10 selected
-Phase 42: H6 SEC Scrutiny → Speech Uncertainty [COMPLETE - 2/2 plans] → H6-A: NULL, H6-B: NULL, H6-C: NULL
-Phase 43: H7 Uncertainty → CEO Turnover [NOT PLANNED - 10 requirements]
-Phase 44: H8 Speech Clarity → Compensation [NOT PLANNED - 10 requirements]
-Phase 45: H9 Uncertainty Gap → Returns [NOT PLANNED - 10 requirements]
-Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
+Phase 40: H5 Speech → Dispersion  [COMPLETE - 2/2 plans] → H5-A: NULL, H5-B: MIXED
+Phase 41: Hypothesis Discovery    [ABANDONED - 4/4 plans] → Suite approach abandoned
+Phase 42: H6 SEC Scrutiny (CCCL)  [COMPLETE - 2/2 plans] → H6-A: NULL, H6-B: NULL, H6-C: NULL
+Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
+Phase 52: LLM Lit Review & Novel Hyp [IN PROGRESS - 1/5 plans done]
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -99,6 +98,7 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 - **2026-02-05**: Phase 41 added — "Hypothesis Suite Discovery" (deep literature review for novel, data-feasible, high-confidence hypotheses)
 - **2026-02-05**: Phase 42 added — "H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty" (CCCL shift-share design using available data)
 - **2026-02-06**: Phase 43 added — "Uncertainty Dynamics Predictors" (testing velocity, acceleration, jerk of speech uncertainty for predictive power)
+- **2026-02-06**: Phase 52 started — "LLM Literature Review & Novel Hypothesis Discovery" (5-plan red-team/blue-team methodology for 5 extremely high-confidence hypotheses)
 
 ### Decisions
 
@@ -155,6 +155,13 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 - [Phase 42-02 H6 Regression] Pre-trends test FAILED: CCCL_{t+2} (p=0.012) and CCCL_{t+1} (p=0.038) significant - anticipatory effects detected
 - [Phase 42-02 H6 Regression] All 6 CCCL instrument variants tested for robustness - qualitatively similar negative but insignificant effects
 - [Phase 43 Added] New hypothesis testing uncertainty dynamics (velocity, acceleration, jerk) as predictors — explores rate-of-change rather than levels
+- [Phase 52 Added] LLM Literature Review & Novel Hypothesis Discovery — exhaustive lit review, data mapping, red-team/blue-team verification for 5 extremely high-confidence novel hypotheses
+- [Phase 52-02 Feasibility] Kill threshold: <5K observations OR <80% power for small effects (f2=0.02)
+- [Phase 52-02 Feasibility] Within-firm variation REQUIRED for primary IVs (H1-H6 lesson: dictionary measures fail with Firm FE)
+- [Phase 52-02 Feasibility] Dictionary measures NOT recommended as primary IVs due to low within-firm variance
+- [Phase 52-02 Feasibility] SEC Letters + Earnings Calls combination has highest novelty AND feasibility (50K-70K obs, >99% power)
+- [Phase 52-02 Feasibility] HIGH feasibility directions: SEC Letter Topics → Call Shift, Narrative Inconsistency, LLM Evasiveness, PRisk×Uncertainty interaction
+- [Phase 52-02 Feasibility] LOW feasibility: CEO Turnover (1,059 events, ~65% power) - use as robustness only
 
 ### From v1.0 (carry forward)
 
@@ -182,9 +189,9 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 
 | Metric | v1.0 Final | v2.0 Final |
 |--------|------------|------------|
-| Phases Complete | 27/27 | 13/16 active (3 cancelled) |
-| Plans Complete | 143/143 | 17/17 |
-| Requirements Complete | 30/30 | 60/105 active (15 not pursued) |
+| Phases Complete | 27/27 | 15/15 (3 cancelled, 4 abandoned) |
+| Plans Complete | 143/143 | 17/17 active |
+| Requirements Complete | 30/30 | 60/60 active (15 not pursued) |
 | Scripts CLI-Ready | 21/21 | 10/10 |
 | Hypotheses Supported | — | 0/6 (null results) |
 
@@ -192,43 +199,20 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 
 ### Current Session (2026-02-06)
 
-**Phase 42 Execution Complete:**
-- Phase 42 Plan 01: H6 Variables Construction — 3.6_H6Variables.py created, CCCL+speech merge complete (22,273 obs)
-- Phase 42 Plan 02: H6 CCCL Regression — 4.6_H6CCCLRegression.py created, 39 regressions executed
-- H6-A NOT SUPPORTED: 0/6 measures FDR-significant
-- H6-B NOT SUPPORTED: Mixed QA vs Pres effects
-- H6-C NOT SUPPORTED: Uncertainty gap p=0.22
-- Pre-trends FAILED: Future CCCL significant (anticipatory effects)
-- VERIFICATION.md created: 11/12 must-haves verified
-- ROADMAP.md updated with Phase 42 completion
-- All 6 CCCL instruments show qualitatively similar negative but insignificant effects
-- Null result pattern continues: H6 adds to H1-H3, H5 as non-significant findings
+**Project Cleanup Complete:**
+- Created legacy SUMMARY files for Phase 8 (v1.0 tech debt cleanup) — 4 plans
+- Created legacy SUMMARY files for Phase 19 (v1.0 scaling integration) — 4 plans
+- Created abandonment SUMMARY files for Phase 41 (hypothesis suite discovery) — 4 plans
+- Updated STATE.md progress bar to 100%
+- All phases now properly marked as complete, cancelled, or abandoned
 
-**Next Session:**
-- Choose next hypothesis to develop (Phases 43-46 available)
-- Run /gsd:plan-phase 43 (H7: Uncertainty -> CEO Turnover) or 44-46
-- Variable construction scripts needed for CEO turnover, compensation, returns, forecast accuracy
+**v2.0 Hypothesis Testing Concluded:**
+- H1-H3: NOT SUPPORTED (cash, investment, payout)
+- H5: NOT SUPPORTED (weak modal → dispersion)
+- H6: NOT SUPPORTED (SEC scrutiny → uncertainty)
+- H7-H10: NOT PURSUED (abandoned with Phase 41)
 
-### Previous Session (2026-02-05)
-
-**Phase 40 Plan 01 executed:**
-- Created 3.5_H5Variables.py with memory-efficient IBES loading (PyArrow row groups)
-- Generated H5_AnalystDispersion.parquet with 850,889 observations (264,504 complete cases)
-- Implemented CCM CUSIP-GVKEY linking (LINKPRIM='P', 71.6% match rate)
-- Computed forward-looking dispersion_lead (Speech_t → Dispersion_{t+1})
-- Merged all 6 speech uncertainty measures and computed uncertainty_gap
-
-**Phase 40 Plan 02 executed:**
-- Created 4.5_H5DispersionRegression.py following H1 regression pattern
-- Executed 28 regressions (6 measures x 4 specs + gap model)
-- Primary spec: 0/3 Weak Modal measures significant
-- Gap model: Significant only in pooled OLS, not with Firm FE
-- Key finding: H5-A NOT supported; hedging does not add power beyond uncertainty
-
-**H5 Regression Results:**
-- Primary spec (Firm + Year FE): beta1(Weak_Modal) = -0.0124, p = 0.99
-- Pooled OLS (no FE): Uncertainty significant, but not with Firm FE
-- Interpretation: Speech-dispersion relationship driven by firm heterogeneity
+**Project Status:** Concluded — no outstanding work items
 
 ---
-*Last updated: 2026-02-06 (Phase 42 complete: H6 CCCL SEC Scrutiny hypotheses NOT SUPPORTED; pre-trends violation)*
+*Last updated: 2026-02-06 (Project cleanup complete; v2.0 concluded)*
