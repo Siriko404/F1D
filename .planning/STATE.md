@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite — H1-H3 null results; Phase 40 (H5) context complete; Phase 41 (Hypothesis Suite Discovery) added
+**Current focus:** v2.0 Hypothesis Testing Suite — H1-H3 null results; Phase 40 (H5) Plan 01 complete; Phases 41-42 planned
 
 ## Current Position
 
-Phase: 41 - Hypothesis Suite Discovery
-Plan: —
-Status: PLANNED — 4 plans in 4 waves ready for execution
-Last activity: 2026-02-05 — Phase 41 plans created (literature review, data feasibility, power analysis, hypothesis selection)
+Phase: 40 - H5 Speech Uncertainty Predicts Analyst Dispersion
+Plan: 01
+Status: COMPLETE — H5 analysis dataset generated with 850,889 observations
+Last activity: 2026-02-05 — Plan 40-01 executed, H5_AnalystDispersion.parquet created
 
 ### Progress
 
@@ -33,8 +33,9 @@ Phase 37: Identification          [CANCELLED - null results]
 Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
-Phase 40: H5 Speech → Analyst Dispersion [CONTEXT COMPLETE - 0/TBD plans]
+Phase 40: H5 Speech → Analyst Dispersion [PLAN 01 COMPLETE - 1/TBD plans]
 Phase 41: Hypothesis Suite Discovery [PLANNED - 4/4 plans in 4 waves]
+Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -87,6 +88,7 @@ Phase 41: Hypothesis Suite Discovery [PLANNED - 4/4 plans in 4 waves]
 - **2026-02-05**: Phase 40 added — "H5 Speech Uncertainty Predicts Analyst Dispersion" (novel hypothesis with higher confidence)
 - **2026-02-05**: Phase 40 context discussion completed with full specification
 - **2026-02-05**: Phase 41 added — "Hypothesis Suite Discovery" (deep literature review for novel, data-feasible, high-confidence hypotheses)
+- **2026-02-05**: Phase 42 added — "H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty" (CCCL shift-share design using available data)
 
 ### Decisions
 
@@ -104,6 +106,11 @@ Phase 41: Hypothesis Suite Discovery [PLANNED - 4/4 plans in 4 waves]
 - [Phase 40 Context] Robustness: Without lagged DV (Nickell bias), without NUMEST (bad control), CEO-only measures
 - [Phase 40 Red Team] General uncertainty → dispersion is established; Weak Modal as primary IV is novel contribution
 - [Phase 40 Red Team] If Weak Modal insignificant, frame as "hedging does not add beyond uncertainty" — still publishable
+- [Phase 40 Plan 01] IBES loading via PyArrow row-group aggregation for memory efficiency (25M+ rows)
+- [Phase 40 Plan 01] CCM LINKPRIM='P' (string) not integer for primary link selection
+- [Phase 40 Plan 01] GVKEY standardization to string with leading zeros (zfill(6)) for cross-dataset compatibility
+- [Phase 40 Plan 01] Placeholder CUSIP filtering: 00000000, nan, NaN, None excluded
+- [Phase 40 Plan 01] NumpyEncoder for JSON serialization of numpy types in stats.json
 
 ### From v1.0 (carry forward)
 
@@ -137,35 +144,34 @@ None currently.
 
 ## Session Continuity
 
-### Last Session (2026-02-05)
+### Current Session (2026-02-05)
 
 **Completed:**
-- v2.0 Milestone concluded with null hypothesis results for H1-H3
-- Phases 36-38 cancelled (Robustness, Identification, Publication) — not scientifically meaningful for null results
-- All regression outputs preserved in 4_Outputs/4_Econometric_V2/ for documentation
-- Phase 40 (H5) context discussion completed with full specification
+- Phase 40 Plan 01 executed successfully
+- Created 3.5_H5Variables.py with memory-efficient IBES loading (PyArrow row groups)
+- Generated H5_AnalystDispersion.parquet with 850,889 observations (264,504 complete cases)
+- Implemented CCM CUSIP-GVKEY linking (LINKPRIM='P', 71.6% match rate)
+- Computed forward-looking dispersion_lead (Speech_t → Dispersion_{t+1})
+- Merged all 6 speech uncertainty measures and computed uncertainty_gap
 
-**Phase 40 Context Discussion Summary:**
-- Literature review confirmed general uncertainty → dispersion is established
-- Identified Weak Modal (hedging verbs) as novel primary IV
-- Specified DV: Analyst Dispersion with NUMEST ≥ 3, |MEANEST| ≥ 0.05
-- Timing: Speech_t → Dispersion_{t+1} (forward-looking)
-- 9 control variables including Prior Dispersion (lagged DV)
-- Red-teamed specification: addressed Nickell bias, bad control, novelty concerns
-- Created 40-CONTEXT.md with complete specification
+**H5 Analysis Dataset Summary:**
+- Total: 850,889 observations; Complete cases: 264,504
+- 8,693 unique firms; 97.9 avg quarters per firm
+- Years: 1996-2024 (29 years)
+- Dispersion persistence: 0.340 (moderate autocorrelation)
+- Uncertainty gap: mean=-0.041 (Q&A slightly less uncertain than Pres)
 
-**Regression Results Summary (H1-H3):**
-- H1 (Cash Holdings): Primary spec N=16,667-21,690, R²=0.128-0.133. H1a: 0/6, H1b: 1/6
-- H2 (Investment Efficiency): Primary spec N=256K-342K, R²=0.002-0.003. H2a: 0/6, H2b: 0/6
-- H3 (Payout Policy): Primary spec N=180K-244K, R²=0.021-0.045. H3a: 1/6, H3b: 0/6
-
-**Interpretation:**
-The speech uncertainty measures derived from earnings call transcripts do not systematically predict corporate financial policies as theorized. Phase 40 (H5) tests a different mechanism: speech → analyst disagreement (information processing).
+**Deviations Handled (5 auto-fixes):**
+1. Memory-efficient IBES loading via PyArrow row-group aggregation
+2. CCM LINKPRIM='P' (string) not integer 1
+3. GVKEY string standardization (zfill(6))
+4. Placeholder CUSIP filtering (00000000, nan, NaN, None)
+5. NumpyEncoder for JSON serialization
 
 **Next Session:**
-- Plan Phase 40: Break down into executable plans
-- Define H5 requirements (H5-01 through H5-10)
-- Create 4.5_H5DispersionRegression.py script
+- Plan Phase 40 Plan 02: H5 Dispersion Regression script
+- Create 4.5_H5DispersionRegression.py
+- Test H5: Does Manager_QA_Weak_Modal_pct predict dispersion_lead?
 
 ---
-*Last updated: 2026-02-05 (Phase 41 added)*
+*Last updated: 2026-02-05 (Phase 40 Plan 01 complete)*
