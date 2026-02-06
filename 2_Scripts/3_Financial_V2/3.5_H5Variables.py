@@ -163,8 +163,8 @@ def load_manifest(manifest_dir, logger):
 def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
     """Load IBES analyst forecast data using memory-efficient chunked processing
 
-    For large IBES files (>20M rows), we use PyArrow to read row group by row group
-    and apply filters incrementally to manage memory.
+    For large IBES files (>20M rows), we aggregate to CUSIP8-period level within
+    each row group to dramatically reduce memory usage before concatenating.
     """
     logger.write(f"\nLoading IBES data from: {ibes_file}")
     validate_input_file(ibes_file, must_exist=True)
@@ -177,7 +177,7 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
     try:
         import pyarrow.parquet as pq
 
-        logger.write(f"  Reading with PyArrow (filtered by row group)...")
+        logger.write(f"  Reading with PyArrow (aggregated by row group)...")
 
         # Read only required columns
         cols = ["CUSIP", "FPEDATS", "FISCALP", "NUMEST", "MEANEST", "STDEV", "ACTUAL"]
@@ -189,8 +189,8 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
         total_rows = parquet_file.metadata.num_rows
         logger.write(f"  Total IBES rows: {total_rows:,}")
 
-        # Read in batches and apply filters incrementally
-        logger.write(f"  Reading row groups with inline filtering...")
+        # Read in batches, aggregate within each batch, then combine
+        logger.write(f"  Reading and aggregating row groups...")
 
         all_chunks = []
         num_row_groups = parquet_file.num_row_groups
@@ -203,22 +203,53 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
             # Convert to pandas
             chunk = table.to_pandas()
 
-            # Apply filters to reduce memory
+            # Apply filters (filter out placeholder CUSIPs)
             chunk = chunk[chunk["NUMEST"] >= numest_min].copy()
             chunk = chunk[chunk["MEANEST"].abs() >= meanest_min].copy()
-            chunk = chunk.dropna(subset=["STDEV", "MEANEST", "FPEDATS"])
+            chunk = chunk.dropna(subset=["STDEV", "MEANEST", "FPEDATS", "CUSIP"])
 
-            if len(chunk) > 0:
-                all_chunks.append(chunk)
+            if len(chunk) == 0:
+                continue
+
+            # Extract CUSIP8 BEFORE converting to string
+            # This ensures we can filter out invalid CUSIPs
+            chunk["cusip8"] = chunk["CUSIP"].astype(str).str[:8]
+
+            # Filter out invalid CUSIP8 values (placeholders)
+            chunk = chunk[~chunk["cusip8"].isin(["00000000", "nan", "NaN", "None"])].copy()
+
+            if len(chunk) == 0:
+                continue
+
+            # Compute dispersion within chunk
+            chunk["dispersion"] = chunk["STDEV"] / chunk["MEANEST"].abs()
+
+            # Extract fiscal period
+            chunk["fpedats"] = pd.to_datetime(chunk["FPEDATS"])
+            chunk["fiscal_year"] = chunk["fpedats"].dt.year
+            chunk["fiscal_quarter"] = chunk["fpedats"].dt.quarter
+
+            # Take the most recent forecast per CUSIP8-period (aggregate!)
+            chunk = chunk.sort_values(["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
+                                      ascending=[True, True, True, False])
+            chunk = chunk.drop_duplicates(subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first")
+
+            # Select only columns we need
+            chunk_agg = chunk[[
+                "cusip8", "fiscal_year", "fiscal_quarter",
+                "dispersion", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
+            ]].copy()
+
+            all_chunks.append(chunk_agg)
 
             if (i + 1) % 5 == 0 or i == num_row_groups - 1:
                 kept = sum(len(c) for c in all_chunks)
-                logger.write(f"  Processed {i+1}/{num_row_groups} row groups, kept {kept:,} rows")
+                logger.write(f"  Processed {i+1}/{num_row_groups} row groups, aggregated to {kept:,} unique CUSIP8-periods")
 
-        # Concatenate filtered chunks
+        # Concatenate aggregated chunks (much smaller now)
         if all_chunks:
             df = pd.concat(all_chunks, ignore_index=True)
-            logger.write(f"  Final: {len(df):,} IBES observations (after filters)")
+            logger.write(f"  Final: {len(df):,} unique CUSIP8-period observations")
         else:
             logger.write("  Warning: No data passed filters!")
             df = pd.DataFrame(columns=cols)
@@ -233,15 +264,39 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
             # Apply filters
             chunk = chunk[chunk["NUMEST"] >= numest_min].copy()
             chunk = chunk[chunk["MEANEST"].abs() >= meanest_min].copy()
-            chunk = chunk.dropna(subset=["STDEV", "MEANEST", "FPEDATS"])
-            if len(chunk) > 0:
-                chunks.append(chunk)
+            chunk = chunk.dropna(subset=["STDEV", "MEANEST", "FPEDATS", "CUSIP"])
+            if len(chunk) == 0:
+                continue
+
+            # Extract CUSIP8 and filter invalid values
+            chunk["cusip8"] = chunk["CUSIP"].astype(str).str[:8]
+            chunk = chunk[~chunk["cusip8"].isin(["00000000", "nan", "NaN", "None"])].copy()
+            if len(chunk) == 0:
+                continue
+
+            # Same aggregation logic as above
+            chunk["dispersion"] = chunk["STDEV"] / chunk["MEANEST"].abs()
+            chunk["fpedats"] = pd.to_datetime(chunk["FPEDATS"])
+            chunk["fiscal_year"] = chunk["fpedats"].dt.year
+            chunk["fiscal_quarter"] = chunk["fpedats"].dt.quarter
+
+            chunk = chunk.sort_values(["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
+                                      ascending=[True, True, True, False])
+            chunk = chunk.drop_duplicates(subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first")
+
+            chunks.append(chunk[[
+                "cusip8", "fiscal_year", "fiscal_quarter",
+                "dispersion", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
+            ]])
 
         if chunks:
             df = pd.concat(chunks, ignore_index=True)
-            logger.write(f"  Loaded {len(df):,} IBES observations (after filters)")
+            logger.write(f"  Loaded {len(df):,} unique CUSIP8-period observations")
         else:
-            df = pd.DataFrame(columns=cols)
+            df = pd.DataFrame(columns=[
+                "cusip8", "fiscal_year", "fiscal_quarter",
+                "dispersion", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
+            ])
 
     except Exception as e:
         logger.write(f"  Error reading IBES: {e}")
@@ -367,54 +422,53 @@ def load_h2_controls(h2_dir, logger):
 
 def compute_analyst_dispersion(ibes_df, ccm_df, logger, numest_min=3, meanest_min=0.05):
     """
-    Compute analyst forecast dispersion with forward-looking timing.
+    Process analyst forecast dispersion with forward-looking timing.
 
-    Dispersion = STDEV / |MEANEST|
-
-    Filters:
-        - NUMEST >= numest_min (default 3)
-        - |MEANEST| >= meanest_min (default 0.05)
+    Note: Data is already pre-aggregated in load_ibes() to reduce memory.
+    This function handles CCM linking and winsorization.
 
     Forward-looking: Speech_t predicts Dispersion_{t+1}
     """
     logger.write("\n" + "="*80)
-    logger.write("Computing Analyst Dispersion (H5 Dependent Variable)")
+    logger.write("Processing Analyst Dispersion (H5 Dependent Variable)")
     logger.write("="*80)
 
-    # Create working copy
+    # Data is already aggregated from load_ibes
     df = ibes_df.copy()
 
-    # Extract CUSIP8
-    df["cusip8"] = df["CUSIP"].astype(str).str[:8]
+    # Check if we have raw or pre-aggregated data
+    if "CUSIP" in df.columns:
+        # Raw data path - need to compute dispersion
+        logger.write(f"  Processing raw IBES data: {len(df):,} observations")
 
-    # Apply filters
-    logger.write(f"\nApplying filters:")
-    logger.write(f"  Initial observations: {len(df):,}")
+        # Extract CUSIP8
+        df["cusip8"] = df["CUSIP"].astype(str).str[:8]
 
-    df = df[df["NUMEST"] >= numest_min].copy()
-    logger.write(f"  After NUMEST >= {numest_min}: {len(df):,}")
+        # Compute dispersion
+        df["dispersion"] = df["STDEV"] / df["MEANEST"].abs()
 
-    df = df[df["MEANEST"].abs() >= meanest_min].copy()
-    logger.write(f"  After |MEANEST| >= {meanest_min}: {len(df):,}")
+        # Extract fiscal period
+        df["fpedats"] = pd.to_datetime(df["FPEDATS"])
+        df["fiscal_year"] = df["fpedats"].dt.year
+        df["fiscal_quarter"] = df["fpedats"].dt.quarter
 
-    # Drop rows with missing STDEV or MEANEST
-    df = df.dropna(subset=["STDEV", "MEANEST", "FPEDATS"])
-    logger.write(f"  After dropping missing: {len(df):,}")
+        # Aggregate to CUSIP8-period
+        df = df.sort_values(["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
+                            ascending=[True, True, True, False])
+        df = df.drop_duplicates(subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first")
 
-    # Compute dispersion
-    df["dispersion"] = df["STDEV"] / df["MEANEST"].abs()
+        # Select columns
+        df = df[["cusip8", "fiscal_year", "fiscal_quarter", "dispersion",
+                 "NUMEST", "MEANEST", "STDEV", "ACTUAL"]].copy()
+    else:
+        # Pre-aggregated data from load_ibes
+        logger.write(f"  Using pre-aggregated data: {len(df):,} unique CUSIP8-period observations")
 
-    # Extract fiscal year and quarter from FPEDATS
-    df["fpedats"] = pd.to_datetime(df["FPEDATS"])
-    df["fiscal_year"] = df["fpedats"].dt.year
-    df["fiscal_quarter"] = df["fpedats"].dt.quarter
-
-    # Create time period for quarterly matching
-    df["period"] = df["fiscal_year"].astype(str) + "Q" + df["fiscal_quarter"].astype(str)
-
-    # Take the most recent forecast per CUSIP8-period
-    df = df.sort_values(["cusip8", "period", "FPEDATS"], ascending=[True, True, False])
-    df = df.drop_duplicates(subset=["cusip8", "period"], keep="first")
+        # Verify required columns
+        required = ["cusip8", "fiscal_year", "fiscal_quarter", "dispersion"]
+        missing = [c for c in required if c not in df.columns]
+        if missing:
+            raise ValueError(f"Missing required columns: {missing}")
 
     logger.write(f"\n  Unique CUSIP8-period observations: {len(df):,}")
 
@@ -438,7 +492,7 @@ def compute_analyst_dispersion(ibes_df, ccm_df, logger, numest_min=3, meanest_mi
 
     # Create dataframe for merging
     dispersion_df = df[[
-        "cusip8", "fiscal_year", "fiscal_quarter", "period",
+        "cusip8", "fiscal_year", "fiscal_quarter",
         "dispersion_winsorized", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
     ]].rename(columns={"dispersion_winsorized": "dispersion"})
 
@@ -450,8 +504,13 @@ def compute_analyst_dispersion(ibes_df, ccm_df, logger, numest_min=3, meanest_mi
         ccm = ccm_df.copy()
         ccm["cusip8"] = ccm["cusip"].astype(str).str[:8]
 
-        # Create lookup: cusip8 -> gvkey (using LINKPRIM=1 for primary link)
-        ccm_primary = ccm[ccm["LINKPRIM"] == 1].copy()
+        # Convert GVKEY to string with leading zeros (6-digit format)
+        # This ensures compatibility with Compustat and speech data
+        ccm["gvkey"] = ccm["gvkey"].astype(str).str.zfill(6)
+
+        # Create lookup: cusip8 -> gvkey (using LINKPRIM='P' for primary link)
+        # LINKPRIM is a string: 'P'=Primary, 'C'=CompuSTAT, 'J'=Justification, 'N'=None
+        ccm_primary = ccm[ccm["LINKPRIM"] == "P"].copy()
         cusip_to_gvkey = ccm_primary.drop_duplicates(subset=["cusip8"], keep="first")[["cusip8", "gvkey"]]
 
         # Merge
@@ -1013,25 +1072,29 @@ Examples:
             if col in ["gvkey"]:
                 continue
             if pd.api.types.is_numeric_dtype(final_df[col]):
-                var_stats[col] = {
-                    "count": int(final_df[col].notna().sum()),
-                    "mean": float(final_df[col].mean()) if final_df[col].notna().any() else None,
-                    "std": float(final_df[col].std()) if final_df[col].notna().any() else None,
-                    "min": float(final_df[col].min()) if final_df[col].notna().any() else None,
-                    "max": float(final_df[col].max()) if final_df[col].notna().any() else None,
-                    "p1": float(final_df[col].quantile(0.01)) if final_df[col].notna().any() else None,
-                    "p25": float(final_df[col].quantile(0.25)) if final_df[col].notna().any() else None,
-                    "p50": float(final_df[col].quantile(0.50)) if final_df[col].notna().any() else None,
-                    "p75": float(final_df[col].quantile(0.75)) if final_df[col].notna().any() else None,
-                    "p99": float(final_df[col].quantile(0.99)) if final_df[col].notna().any() else None,
-                }
+                non_null_count = int(final_df[col].notna().sum())
+                if non_null_count > 0:
+                    var_stats[col] = {
+                        "count": non_null_count,
+                        "mean": float(final_df[col].mean()),
+                        "std": float(final_df[col].std()),
+                        "min": float(final_df[col].min()),
+                        "max": float(final_df[col].max()),
+                        "p1": float(final_df[col].quantile(0.01)),
+                        "p25": float(final_df[col].quantile(0.25)),
+                        "p50": float(final_df[col].quantile(0.50)),
+                        "p75": float(final_df[col].quantile(0.75)),
+                        "p99": float(final_df[col].quantile(0.99)),
+                    }
+                else:
+                    var_stats[col] = {"count": 0}
 
         stats["output_stats"]["variables"] = var_stats
         stats["output_stats"]["sample"] = {
-            "n_total": len(final_df),
-            "n_firms": int(final_df["gvkey"].nunique()),
-            "n_quarters": int(final_df["fiscal_quarter"].nunique()),
-            "years": list(sorted(final_df["fiscal_year"].unique())),
+            "n_total": int(len(final_df)),
+            "n_firms": int(final_df["gvkey"].nunique()) if "gvkey" in final_df.columns else 0,
+            "n_quarters": int(final_df["fiscal_quarter"].nunique()) if "fiscal_quarter" in final_df.columns else 0,
+            "years": [int(y) for y in sorted(final_df["fiscal_year"].unique())] if "fiscal_year" in final_df.columns else [],
         }
 
         # Compute dispersion persistence
@@ -1043,8 +1106,20 @@ Examples:
 
         # Save stats.json
         stats_file = paths["output_dir"] / "stats.json"
+
+        # Custom JSON encoder to handle numpy types
+        class NumpyEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, np.integer):
+                    return int(obj)
+                if isinstance(obj, np.floating):
+                    return float(obj)
+                if isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                return super().default(obj)
+
         with open(stats_file, "w") as f:
-            json.dump(stats, f, indent=2)
+            json.dump(stats, f, indent=2, cls=NumpyEncoder)
 
         logger.write(f"\nSaved stats to: {stats_file}")
 
@@ -1062,7 +1137,7 @@ Examples:
 
         # Update stats file with final status
         with open(stats_file, "w") as f:
-            json.dump(stats, f, indent=2)
+            json.dump(stats, f, indent=2, cls=NumpyEncoder)
 
         return 0
 
@@ -1078,7 +1153,7 @@ Examples:
         try:
             stats_file = paths["output_dir"] / "stats.json"
             with open(stats_file, "w") as f:
-                json.dump(stats, f, indent=2)
+                json.dump(stats, f, indent=2, cls=NumpyEncoder)
         except:
             pass
 
