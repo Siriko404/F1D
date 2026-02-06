@@ -275,24 +275,39 @@ Discovery phase completed with 4 sequential plans: (01) Data inventory documenti
 - **H9:** Uncertainty Gap and Future Stock Returns (QA-Pres gap -> abnormal returns)
 - **H10:** Language Complexity and Analyst Forecast Accuracy (complexity -> forecast error)
 
-### Phase 42: H6 Managerial Hedging and M&A Targeting
-**Goal**: Test whether hedging language (weak modals: may/might/could) in earnings calls predicts M&A targeting likelihood and deal premiums
+### Phase 42: H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty ✓
+**Goal**: Test whether SEC scrutiny through Conference Call Comment Letters (CCCL) exposure causes managers to speak with less uncertainty
 **Depends on**: Phase 41 (Hypothesis Suite Discovery)
 **Requirements**: H6-01 through H6-10
-**Status**: NOT PLANNED YET
+**Status**: COMPLETE — 2 plans in 2 waves executed
+**Results**: H6-A NOT SUPPORTED (0/6 measures significant), H6-B NOT SUPPORTED (mixed), H6-C NOT SUPPORTED (p=0.22). Pre-trends test FAILED (future CCCL significant).
+**Completed**: 2026-02-06 — 2/2 plans executed, 11/12 must-haves verified
+
 **Success Criteria** (what must be TRUE):
-  1. H6 analysis dataset created with M&A target dummies and weak modal measures
-  2. Logistic regression tests hedging -> targeting likelihood
-  3. OLS regression tests hedging -> deal premium (on deal sample)
-  4. Controls for firm characteristics, governance, market conditions
-  5. Results document whether hedging predicts M&A outcomes
-**Plans**: TBD (run /gsd:plan-phase 42 to break down)
+  1. CCCL data from inputs folder successfully loaded and processed ✓
+  2. Industry-level CCCL shift-share computed (how much each industry received comment letters) ✓
+  3. Firm-level CCCL exposure computed (shift-share x firm size proxy: sales or market cap) ✓
+  4. Regression tests SEC scrutiny -> reduced speech uncertainty measures ✓
+  5. Results document whether larger/more exposed firms hedge less in speech ✓
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 42 to break down)
+- [x] 42-01-PLAN.md — Create 3.6_H6Variables.py merging CCCL instrument with speech measures
+- [x] 42-02-PLAN.md — Create 4.6_H6CCCLRegression.py with FDR correction and pre-trends
 
 **Details:**
-Novel hypothesis: Managerial hedging language (weak modals) signals strategic ambiguity or undervaluation, attracting acquirers. Tests both targeting likelihood (logistic) and deal premium (OLS on deals). Data: SDC M&A (95K deals 2002-2018) + earnings call text measures. IV: Manager_QA_Weak_Modal_pct, CEO_QA_Weak_Modal_pct. DV: M&A target dummy, Deal premium.
+Novel hypothesis: SEC scrutiny through audit letters (CCCL = Conference Call Comment Letters) makes manager speech LESS uncertain. Identification strategy uses shift-share design: industry CCCL exposure x firm size (sales/market cap). Larger firms are more exposed to scrutiny. Data available in 1_Inputs folder. This reverses the typical "uncertainty is bad" framing — here scrutiny disciplines vague speech.
+
+**H6 Results Summary:**
+- H6-A (CCCL reduces uncertainty): NOT SUPPORTED (0/6 measures FDR-significant)
+- H6-B (Stronger in Q&A than Pres): NOT SUPPORTED (mixed evidence)
+- H6-C (CCCL reduces gap): NOT SUPPORTED (p=0.2186)
+- Pre-trends: FAILED (future CCCL significant at p<0.05)
+- Sample: 22,273 firm-year observations (2,357 firms, 2006-2018)
+
+### Phase 42-A: H6 Managerial Hedging and M&A Targeting — MOVED
+**Status**: The original "H6 Managerial Hedging and M&A Targeting" hypothesis from Phase 41 discovery has been moved to a future phase. Phase 42 was used for the CCCL SEC Scrutiny hypothesis instead.
+**Note**: Phase 42 in the ROADMAP was originally planned for M&A targeting, but the CCCL hypothesis was prioritized and executed. The M&A targeting hypothesis remains available for future testing.
 
 ---
 
@@ -443,6 +458,9 @@ Novel hypothesis exploring dynamic properties of speech uncertainty. Instead of 
 | H3b | Leverage → ↑ Stability | NOT SUPPORTED | 0/6 |
 | H5a | Weak Modal → ↑ Dispersion (controlling for Uncertainty) | NOT SUPPORTED | 0/6 (primary spec) |
 | H5b | Uncertainty Gap → ↑ Dispersion | MIXED | Sig. pooled OLS, insig. Firm FE |
+| H6a | SEC Scrutiny (CCCL) → ↓ Uncertainty | NOT SUPPORTED | 0/6 (FDR-corrected) |
+| H6b | CCCL effect stronger in Q&A than Pres | NOT SUPPORTED | Mixed evidence |
+| H6c | CCCL → ↓ Uncertainty Gap | NOT SUPPORTED | p=0.2186 |
 
 | Phase | Name | Plans Complete | Status | Completed |
 |-------|------|----------------|--------|-----------|
@@ -459,12 +477,12 @@ Novel hypothesis exploring dynamic properties of speech uncertainty. Instead of 
 | 38 | Publication Output | — | CANCELLED | — |
 | 40 | H5 Speech → Analyst Dispersion | 2/2 | COMPLETE | 2026-02-05 |
 | 41 | Hypothesis Suite Discovery | 4/4 | COMPLETE | 2026-02-06 |
-| 42 | H6 Managerial Hedging → M&A Targeting | 0/TBD | NOT PLANNED | — |
+| 42 | H6 SEC Scrutiny (CCCL) → ↓ Uncertainty | 2/2 | COMPLETE | 2026-02-06 |
 | 43 | H7 Uncertainty → CEO Turnover | 0/TBD | NOT PLANNED | — |
 | 44 | H8 Speech Clarity → Compensation | 0/TBD | NOT PLANNED | — |
 | 45 | H9 Uncertainty Gap → Returns | 0/TBD | NOT PLANNED | — |
 | 46 | H10 Complexity → Forecast Accuracy | 0/TBD | NOT PLANNED | — |
-| 50 | SEC Scrutiny (CCCL) → ↓ Uncertainty | 0/TBD | RESERVED | — |
+| 50 | Managerial Hedging → M&A Targeting | 0/TBD | RESERVED | — |
 | 51 | Uncertainty Dynamics Predictors | 0/TBD | RESERVED | — |
 
 ## Requirement Coverage
@@ -485,13 +503,13 @@ v2.0 requirements by status:
 | Identification | IDENT-01 through IDENT-03 | Phase 37 | NOT PURSUED |
 | Publication | PUB-01 through PUB-05 | Phase 38 | NOT PURSUED |
 | H5 Hypothesis | H5-01 through H5-10 | Phase 40 | COMPLETE |
-| H6 Hypothesis | H6-01 through H6-10 | Phase 42 | NOT PLANNED |
+| H6 Hypothesis | H6-01 through H6-10 | Phase 42 | COMPLETE |
 | H7 Hypothesis | H7-01 through H7-10 | Phase 43 | NOT PLANNED |
 | H8 Hypothesis | H8-01 through H8-10 | Phase 44 | NOT PLANNED |
 | H9 Hypothesis | H9-01 through H9-10 | Phase 45 | NOT PLANNED |
 | H10 Hypothesis | H10-01 through H10-10 | Phase 46 | NOT PLANNED |
 
-**Coverage:** 50/105 requirements completed (48%); 15 requirements not pursued (cancelled phases); 50 new requirements from H6-H10 (Phases 42-46)
+**Coverage:** 60/105 requirements completed (57%); 15 requirements not pursued (cancelled phases); 40 new requirements from H7-H10 (Phases 43-46)
 
 ---
 *Roadmap created: 2026-01-22 (v1.0)*
