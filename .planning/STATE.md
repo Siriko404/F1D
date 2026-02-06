@@ -5,20 +5,20 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite — ACTIVE (Phase 39: New hypothesis, reverse causal direction)
+**Current focus:** v2.0 Hypothesis Testing Suite — ACTIVE (Phase 40: H5 variance-to-variance hypothesis, PLANNED)
 
 ## Current Position
 
 Phase: 39 - Leverage Disciplines Managers and Lowers Speech Uncertainty
-Plan: 39-02
-Status: COMPLETE — 2/2 plans done (H4 regression execution complete)
-Last activity: 2026-02-05 — Completed H4 regressions (3/6 measures significant)
+Plan: —
+Status: PHASE COMPLETE — 2/2 plans done, 10/10 requirements verified
+Last activity: 2026-02-05 — Phase 39 complete, H4 partially supported (3/6 measures significant)
 
 ### Progress
 
 ```
 v2.0 Hypothesis Testing Suite — ACTIVE
-[████████████████░░░] 8.5/10 phases (85%)
+[████████████████░░░] 9/10 phases (90%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -218,11 +218,11 @@ None currently.
 
 | Metric | v1.0 Final | v2.0 Final |
 |--------|------------|------------|
-| Phases Complete | 27/27 | 8/8 active (3 cancelled) |
-| Plans Complete | 143/143 | 13/13 |
-| Requirements Complete | 30/30 | 40/40 active (15 not pursued) |
-| Scripts CLI-Ready | 21/21 | 8/8 |
-| Hypotheses Supported | — | 0/3 (null results) |
+| Phases Complete | 27/27 | 9/9 active (3 cancelled) |
+| Plans Complete | 143/143 | 15/15 |
+| Requirements Complete | 30/30 | 50/50 active (15 not pursued) |
+| Scripts CLI-Ready | 21/21 | 9/9 |
+| Hypotheses Supported | — | H4: 3/6 partial; H1-H3: null |
 
 ## Session Continuity
 
