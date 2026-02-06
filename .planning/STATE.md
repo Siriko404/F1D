@@ -10,14 +10,14 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 40 - H5 Speech Uncertainty Predicts Analyst Dispersion
-Plan: 01
-Status: COMPLETE — H5 analysis dataset generated with 850,889 observations
-Last activity: 2026-02-05 — Plan 40-01 executed, H5_AnalystDispersion.parquet created
+Plan: 02
+Status: COMPLETE — H5 hypothesis tested, NOT SUPPORTED
+Last activity: 2026-02-05 — Plan 40-02 executed, H5 regressions show null results
 
 ### Progress
 
 ```
-v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null)
+v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null
 [████████████████████] 8/8 active phases (100%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
@@ -33,7 +33,7 @@ Phase 37: Identification          [CANCELLED - null results]
 Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
-Phase 40: H5 Speech → Analyst Dispersion [PLAN 01 COMPLETE - 1/TBD plans]
+Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
 Phase 41: Hypothesis Suite Discovery [PLANNED - 4/4 plans in 4 waves]
 Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 ```
@@ -50,6 +50,8 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 | H2b | Leverage improves H2a | NOT SUPPORTED | 0/6 |
 | H3a | Uncertainty → ↓ Stability | WEAK | 1/6 (CEO_Pres_Uncertainty) |
 | H3b | Leverage → ↑ Stability | NOT SUPPORTED | 0/6 |
+| H5-A | Hedging → ↑ Dispersion (beyond Uncertainty) | NOT SUPPORTED | 0/3 Weak Modal |
+| H5-B | Uncertainty Gap → ↑ Dispersion | MIXED | Sig only w/o Firm FE |
 
 **Implication**: Phases 36-38 (Robustness, Identification, Publication) cancelled as scientifically inappropriate for null results.
 
@@ -154,24 +156,27 @@ None currently.
 - Computed forward-looking dispersion_lead (Speech_t → Dispersion_{t+1})
 - Merged all 6 speech uncertainty measures and computed uncertainty_gap
 
-**H5 Analysis Dataset Summary:**
-- Total: 850,889 observations; Complete cases: 264,504
-- 8,693 unique firms; 97.9 avg quarters per firm
-- Years: 1996-2024 (29 years)
-- Dispersion persistence: 0.340 (moderate autocorrelation)
-- Uncertainty gap: mean=-0.041 (Q&A slightly less uncertain than Pres)
+**Phase 40 Plan 02 executed:**
+- Created 4.5_H5DispersionRegression.py following H1 regression pattern
+- Executed 28 regressions (6 measures x 4 specs + gap model)
+- Primary spec: 0/3 Weak Modal measures significant
+- Gap model: Significant only in pooled OLS, not with Firm FE
+- Key finding: H5-A NOT supported; hedging does not add power beyond uncertainty
 
-**Deviations Handled (5 auto-fixes):**
-1. Memory-efficient IBES loading via PyArrow row-group aggregation
-2. CCM LINKPRIM='P' (string) not integer 1
-3. GVKEY string standardization (zfill(6))
-4. Placeholder CUSIP filtering (00000000, nan, NaN, None)
-5. NumpyEncoder for JSON serialization
+**H5 Regression Results:**
+- Primary spec (Firm + Year FE): beta1(Weak_Modal) = -0.0124, p = 0.99
+- Pooled OLS (no FE): Uncertainty significant, but not with Firm FE
+- Interpretation: Speech-dispersion relationship driven by firm heterogeneity
+
+**Deviations Handled (8 auto-fixes total):**
+1-5. From Plan 01 (IBES loading, CCM, GVKEY, CUSIP, NumpyEncoder)
+6. Missing gvkey/fiscal_year in regression subset (blocking)
+7. JSON bool serialization error
+8. uncertainty_gap not added to regression dataframe
 
 **Next Session:**
-- Plan Phase 40 Plan 02: H5 Dispersion Regression script
-- Create 4.5_H5DispersionRegression.py
-- Test H5: Does Manager_QA_Weak_Modal_pct predict dispersion_lead?
+- Consider Phase 41: Hypothesis Suite Discovery (literature review for new hypotheses)
+- Or discuss H5 null results and next steps
 
 ---
-*Last updated: 2026-02-05 (Phase 40 Plan 01 complete)*
+*Last updated: 2026-02-05 (Phase 40 Plan 02 complete, H5 NOT SUPPORTED)*
