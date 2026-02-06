@@ -217,10 +217,14 @@ def prepare_regression_data(df, uncertainty_cols, cccl_col, dw=None):
     # Check which uncertainty measures are available
     available_measures = [c for c in uncertainty_cols if c in df.columns]
 
+    # Include uncertainty_gap if present
+    if 'uncertainty_gap' in df.columns:
+        available_measures.append('uncertainty_gap')
+
     if dw:
         dw.write(f"  Available uncertainty measures: {available_measures}\n")
 
-    # Build regression dataset
+    # Build regression dataset with all uncertainty measures
     reg_df = df[required_cols + available_measures].copy()
 
     # Drop rows where CCCL or identifiers are missing
@@ -374,7 +378,7 @@ def run_single_h6_regression(df, uncertainty_var, cccl_var, spec_name, spec_conf
 # ==============================================================================
 
 
-def run_pre_trends_test(df, uncertainty_var, cccl_base_var, dw=None):
+def run_pre_trends_test(df, uncertainty_var, cccl_lag_var, dw=None):
     """
     Run pre-trends test (falsification check).
 
@@ -384,35 +388,35 @@ def run_pre_trends_test(df, uncertainty_var, cccl_base_var, dw=None):
 
     Identification: Leads (t-2, t-1) should be insignificant (no anticipatory effects).
     Current (t) should be negative and significant.
+
+    Note: We use lagged CCCL (t-1) to create leads by shifting:
+        CCCL_lead2 = CCCL_lag shifted forward by 2
+        CCCL_lead1 = CCCL_lag shifted forward by 1
+        CCCL_current = CCCL_lag
     """
     df_work = df.copy()
-
-    # Create leads and current treatment
-    # We need CCCL_{t+2}, CCCL_{t+1}, CCCL_t for this test
-    # In the data, we have CCCL_lag (t-1), so we need to reconstruct
 
     # Sort by firm and year
     df_work = df_work.sort_values(['gvkey', 'fiscal_year']).copy()
 
-    # Get the base CCCL variable (non-lagged)
-    # The lagged variables were created from non-lagged ones
-    # CCCL_t = CCCL_lag shifted forward by 1
-    cccl_nonlag_col = cccl_base_var.replace('_lag', '')
+    # Create forward shifts (leads) from the lagged variable
+    # If CCCL_lag is CCCL_{t-1}, then:
+    #   shift(-2, groupby) on CCCL_lag gives CCCL_{t+1} relative to current row
+    #   We need to be careful about what we're measuring
 
-    if cccl_nonlag_col not in df_work.columns:
-        # If we don't have the non-lagged version, we can't run pre-trends
-        if dw:
-            dw.write(f"  WARNING: Pre-trends test skipped - missing {cccl_nonlag_col}\n")
-        return None
+    # For pre-trends, we want to test if FUTURE CCCL predicts CURRENT uncertainty
+    # CCCL_{t+1} and CCCL_{t+2} should not predict Uncertainty_t
 
-    # Create lead variables (CCCL_{t+1}, CCCL_{t+2})
-    # Lead = future value relative to current t
-    df_work['cccl_lead1'] = df_work.groupby('gvkey')[cccl_nonlag_col].shift(-1)
-    df_work['cccl_lead2'] = df_work.groupby('gvkey')[cccl_nonlag_col].shift(-2)
-    df_work['cccl_current'] = df_work[cccl_nonlag_col]
+    # CCCL_lag in the data is CCCL_{year-1}
+    # So CCCL_lag shifted forward by 1 is CCCL_{year} (contemporaneous)
+    # And CCCL_lag shifted forward by 2 is CCCL_{year+1} (future)
 
-    # Build regression with leads and current
-    exog_vars = ['cccl_lead2', 'cccl_lead1', 'cccl_current']
+    df_work['cccl_future1'] = df_work.groupby('gvkey')[cccl_lag_var].shift(-1)
+    df_work['cccl_future2'] = df_work.groupby('gvkey')[cccl_lag_var].shift(-2)
+    df_work['cccl_contemp'] = df_work[cccl_lag_var]
+
+    # Build regression with future leads and contemporaneous
+    exog_vars = ['cccl_future2', 'cccl_future1', 'cccl_contemp']
 
     # Drop missing
     complete_cols = exog_vars + [uncertainty_var, 'gvkey', 'fiscal_year']
@@ -421,7 +425,26 @@ def run_pre_trends_test(df, uncertainty_var, cccl_base_var, dw=None):
     if len(df_reg) < 100:
         if dw:
             dw.write(f"  WARNING: Pre-trends test - insufficient observations ({len(df_reg)})\n")
-        return None
+        return {
+            'uncertainty_var': uncertainty_var,
+            'note': 'insufficient_obs',
+        }
+
+    # Check for variation in CCCL variables
+    has_variation = False
+    for var in exog_vars:
+        if df_reg[var].std() > 0:
+            has_variation = True
+            break
+
+    if not has_variation:
+        if dw:
+            dw.write(f"  WARNING: Pre-trends test - no variation in CCCL variables\n")
+            dw.write(f"    CCCL is sparse (many zeros). Cannot run pre-trends test.\n")
+        return {
+            'uncertainty_var': uncertainty_var,
+            'note': 'no_variation',
+        }
 
     try:
         result = run_panel_ols(
@@ -439,7 +462,10 @@ def run_pre_trends_test(df, uncertainty_var, cccl_base_var, dw=None):
     except Exception as e:
         if dw:
             dw.write(f"  WARNING: Pre-trends test failed: {e}\n")
-        return None
+        return {
+            'uncertainty_var': uncertainty_var,
+            'note': 'regression_failed',
+        }
 
     # Extract coefficients
     coeffs_df = result['coefficients']
@@ -458,23 +484,24 @@ def run_pre_trends_test(df, uncertainty_var, cccl_base_var, dw=None):
             sig = "***" if res['p_value'] < 0.01 else "**" if res['p_value'] < 0.05 else "*" if res['p_value'] < 0.1 else ""
             dw.write(f"    {var}: beta={res['beta']:.4f}, p={res['p_value']:.4f} {sig}\n")
 
-    # Check if leads are insignificant (p > 0.05)
-    lead1_insig = results.get('cccl_lead1', {}).get('p_value', 1) > 0.05
-    lead2_insig = results.get('cccl_lead2', {}).get('p_value', 1) > 0.05
-    current_sig_neg = results.get('cccl_current', {}).get('p_value', 1) < 0.05 and results.get('cccl_current', {}).get('beta', 0) < 0
+    # Check if future leads are insignificant (p > 0.05)
+    future1_insig = results.get('cccl_future1', {}).get('p_value', 1) > 0.05
+    future2_insig = results.get('cccl_future2', {}).get('p_value', 1) > 0.05
+    contemp_sig_neg = results.get('cccl_contemp', {}).get('p_value', 1) < 0.05 and results.get('cccl_contemp', {}).get('beta', 0) < 0
 
-    pre_trends_pass = lead1_insig and lead2_insig
+    pre_trends_pass = future1_insig and future2_insig
 
     return {
         'uncertainty_var': uncertainty_var,
-        'lead2_beta': results.get('cccl_lead2', {}).get('beta'),
-        'lead2_p': results.get('cccl_lead2', {}).get('p_value'),
-        'lead1_beta': results.get('cccl_lead1', {}).get('beta'),
-        'lead1_p': results.get('cccl_lead1', {}).get('p_value'),
-        'current_beta': results.get('cccl_current', {}).get('beta'),
-        'current_p': results.get('cccl_current', {}).get('p_value'),
+        'future2_beta': results.get('cccl_future2', {}).get('beta'),
+        'future2_p': results.get('cccl_future2', {}).get('p_value'),
+        'future1_beta': results.get('cccl_future1', {}).get('beta'),
+        'future1_p': results.get('cccl_future1', {}).get('p_value'),
+        'contemp_beta': results.get('cccl_contemp', {}).get('beta'),
+        'contemp_p': results.get('cccl_contemp', {}).get('p_value'),
         'pre_trends_pass': pre_trends_pass,
-        'current_significant_negative': current_sig_neg,
+        'contemp_significant_negative': contemp_sig_neg,
+        'note': 'success' if all(k in results for k in exog_vars) else 'missing_coeffs',
     }
 
 
@@ -633,10 +660,11 @@ def run_gap_analysis(reg_df, cccl_var, vif_threshold=5.0, dw=None):
     return result
 
 
-def run_instrument_robustness(reg_df, uncertainty_var, cccl_variants, specs,
+def run_instrument_robustness(df, uncertainty_var, cccl_variants, specs,
                               vif_threshold=5.0, dw=None):
     """
     Run robustness checks with alternative CCCL instruments.
+    Tests all 6 CCCL variants against the primary uncertainty measure.
     """
     results = []
 
@@ -647,21 +675,37 @@ def run_instrument_robustness(reg_df, uncertainty_var, cccl_variants, specs,
     primary_spec = specs['primary']
 
     for cccl_var in cccl_variants:
-        if cccl_var not in reg_df.columns:
+        if cccl_var not in df.columns:
+            if dw:
+                dw.write(f"  Skipping {cccl_var}: not in data\n")
             continue
 
         if dw:
             dw.write(f"\n  Instrument: {cccl_var}\n")
 
+        # Prepare data with this specific CCCL variant
+        # Need to drop missing for this specific CCCL variable
+        complete_cols = [cccl_var, uncertainty_var, 'gvkey', 'fiscal_year']
+        df_reg = df[complete_cols].dropna()
+
+        if len(df_reg) < 100:
+            if dw:
+                dw.write(f"    Insufficient observations: {len(df_reg)}\n")
+            continue
+
         result = run_single_h6_regression(
-            reg_df, uncertainty_var, cccl_var, 'robustness_instrument',
-            primary_spec, vif_threshold, dw
+            df_reg, uncertainty_var, cccl_var, 'robustness_instrument',
+            primary_spec, vif_threshold, dw=None  # Suppress verbose output
         )
 
         if result:
             results.append(result)
             if dw:
-                dw.write(f"    beta={result['beta_cccl']:.4f}, p={result['p_value_one_tail']:.4f}\n")
+                sig = '***' if result['p_value_one_tail'] < 0.01 else '**' if result['p_value_one_tail'] < 0.05 else '*' if result['p_value_one_tail'] < 0.1 else ''
+                dw.write(f"    beta={result['beta_cccl']:.4f}, p={result['p_value_one_tail']:.4f} {sig}\n")
+
+    if dw:
+        dw.write(f"\n  Summary: {len(results)}/{len(cccl_variants)} instruments tested\n")
 
     return results
 
@@ -795,8 +839,15 @@ def generate_results_markdown(results, fdr_map, pre_trends, mechanism_comp,
     lines.append("| Uncertainty Measure | N | Firms | Years | R2 | beta_CCCL (SE) | p1 (one-tail) | FDR q | H6-A |")
     lines.append("|---|---|---|---|---|---|---|---|---|")
 
-    for r in results:
-        if r['spec'] == 'primary' and 'robustness' not in r['spec']:
+    # Only include actual primary results (not duplicates from mechanism test)
+    primary_measures = ['Manager_QA_Uncertainty_pct', 'Manager_QA_Weak_Modal_pct',
+                       'Manager_Pres_Uncertainty_pct', 'CEO_QA_Uncertainty_pct',
+                       'CEO_QA_Weak_Modal_pct', 'CEO_Pres_Uncertainty_pct']
+
+    for measure in primary_measures:
+        matching = [r for r in results if r['spec'] == 'primary' and r['uncertainty_var'] == measure]
+        if matching:
+            r = matching[0]
             uncertainty = r['uncertainty_var']
             n = r['n_obs']
             n_firms = r.get('n_firms', '-')
@@ -839,8 +890,10 @@ def generate_results_markdown(results, fdr_map, pre_trends, mechanism_comp,
     lines.append("")
 
     # Count significant results for primary spec
-    primary_sig = [r for r in results if r['spec'] == 'primary' and r.get('h6a_supported')]
-    fdr_sig = [r for r in results if r['spec'] == 'primary' and r.get('fdr_significant')]
+    primary_sig = [r for r in results if r['spec'] == 'primary' and r.get('h6a_supported')
+                   and r['uncertainty_var'] in primary_measures]
+    fdr_sig = [r for r in results if r['spec'] == 'primary' and r.get('fdr_significant')
+               and r['uncertainty_var'] in primary_measures]
 
     lines.append(f"**H6-A (CCCL reduces uncertainty):**")
     lines.append(f"- Uncorrected (p < 0.05): {len(primary_sig)}/6 measures significant")
@@ -864,29 +917,58 @@ def generate_results_markdown(results, fdr_map, pre_trends, mechanism_comp,
     if pre_trends:
         lines.append("## Pre-trends Test (Falsification)")
         lines.append("")
-        lines.append("Tests for anticipatory effects using CCCL leads (t-2, t-1).")
-        lines.append("Identification assumption: Leads should be insignificant.")
-        lines.append("")
-
-        lines.append("| Variable | Beta | p-value | Significant (p<0.05) |")
-        lines.append("|---|---|---|---|")
-
-        for var in ['lead2', 'lead1', 'current']:
-            beta = pre_trends.get(f'{var}_beta')
-            p = pre_trends.get(f'{var}_p')
-            if beta is not None:
-                sig = "Yes" if p < 0.05 else "No"
-                lines.append(f"| CCCL_{var} | {beta:.4f} | {p:.4f} | {sig} |")
-
-        lines.append("")
-        if pre_trends.get('pre_trends_pass'):
-            lines.append("**Pre-trends test: PASSED** - Leads are insignificant, no anticipatory effects detected.")
+        note = pre_trends.get('note', '')
+        if note == 'no_variation':
+            lines.append("Tests for anticipatory effects using future CCCL exposure.")
+            lines.append("")
+            lines.append("**Pre-trends test: SKIPPED** - CCCL instrument has insufficient variation (sparse).")
+            lines.append("The CCCL shift-share instrument is highly sparse with most observations at zero.")
+            lines.append("This makes pre-trends testing infeasible as leads would have no variation.")
+        elif note and note != 'success':
+            lines.append(f"**Pre-trends test: SKIPPED** - {note}")
         else:
-            lines.append("**Pre-trends test: FAILED** - Some leads are significant, potential parallel trends violation.")
+            lines.append("Tests for anticipatory effects using future CCCL exposure.")
+            lines.append("Identification assumption: Future CCCL should not predict current uncertainty.")
+            lines.append("")
 
-        if pre_trends.get('current_significant_negative'):
-            lines.append(" Current period (CCCL_t) is significant and negative as expected.")
-        lines.append("")
+            lines.append("| Variable | Beta | p-value | Significant (p<0.05) |")
+            lines.append("|---|---|---|---|")
+
+            var_labels = {
+                'future2_beta': 'CCCL_{t+2}',
+                'future1_beta': 'CCCL_{t+1}',
+                'contemp_beta': 'CCCL_t'
+            }
+            var_p = {
+                'future2_beta': 'future2_p',
+                'future1_beta': 'future1_p',
+                'contemp_beta': 'contemp_p'
+            }
+
+            has_coeffs = False
+            for var_key in ['future2_beta', 'future1_beta', 'contemp_beta']:
+                beta = pre_trends.get(var_key)
+                p_key = var_p[var_key]
+                p = pre_trends.get(p_key)
+                if beta is not None and not np.isnan(beta):
+                    has_coeffs = True
+                    sig = "Yes" if p < 0.05 else "No"
+                    label = var_labels[var_key]
+                    lines.append(f"| {label} | {beta:.4f} | {p:.4f} | {sig} |")
+
+            if has_coeffs:
+                lines.append("")
+                if pre_trends.get('pre_trends_pass'):
+                    lines.append("**Pre-trends test: PASSED** - Future CCCL effects are insignificant, no anticipatory effects detected.")
+                else:
+                    lines.append("**Pre-trends test: FAILED** - Future CCCL effects are significant, suggesting potential")
+                    lines.append("anticipatory effects or pre-trends violation. This weakens the causal interpretation.")
+
+                if pre_trends.get('contemp_significant_negative'):
+                    lines.append(" Contemporaneous period (CCCL_t) is significant and negative as expected.")
+                else:
+                    lines.append(" Contemporaneous period (CCCL_t) is not significant.")
+            lines.append("")
 
     # Mechanism test
     if mechanism_comp:
@@ -932,6 +1014,11 @@ def generate_results_markdown(results, fdr_map, pre_trends, mechanism_comp,
             lines.append("managers become more consistent across spontaneous and prepared speech under scrutiny.")
         else:
             lines.append("**Interpretation:** CCCL does not significantly reduce the uncertainty gap.")
+        lines.append("")
+    else:
+        lines.append("## Gap Analysis (H6-C)")
+        lines.append("")
+        lines.append("Gap analysis results not available.")
         lines.append("")
 
     # Robustness summary
@@ -1132,7 +1219,7 @@ def main():
         # Run pre-trends test
         dw.write("\n[6] Running pre-trends test...\n")
         pre_trends = run_pre_trends_test(
-            reg_df, 'Manager_QA_Uncertainty_pct',
+            h6_df, 'Manager_QA_Uncertainty_pct',
             primary_cccl, dw=dw
         )
         if pre_trends:
@@ -1141,7 +1228,7 @@ def main():
         # Run instrument robustness
         dw.write("\n[7] Running instrument robustness checks...\n")
         robustness_results = run_instrument_robustness(
-            reg_df, 'Manager_QA_Uncertainty_pct', CCCL_VARIANTS, SPECS,
+            h6_df, 'Manager_QA_Uncertainty_pct', CCCL_VARIANTS, SPECS,
             vif_threshold=5.0, dw=dw
         )
         all_results.extend(robustness_results)
