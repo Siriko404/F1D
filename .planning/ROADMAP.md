@@ -331,11 +331,12 @@ Plans:
 **Details:**
 Research phase producing documents, not code. Prioritizes SEC Edgar Letters (150K+ letters with full_text, 2005-2022) as highest novelty opportunity — no prior LLM analysis of this corpus. Integrates FirmLevelRisk data (354K firm-quarters) for validation and interaction effects.
 
-### Phase 53: H2 PRisk × Uncertainty → Investment Efficiency
+### Phase 53: H2 PRisk × Uncertainty → Investment Efficiency ✓
 **Goal:** Test whether compound uncertainty from political risk (PRisk) and managerial linguistic uncertainty interaction predicts decreased investment efficiency
 **Depends on:** Phase 52 (Hypothesis Specifications)
-**Status:** READY FOR EXECUTION
-**Plans:** 3 plans in 3 waves
+**Status:** COMPLETE — 3 plans in 3 waves executed
+**Results:** H2 NOT SUPPORTED — PRisk_x_Uncertainty coefficient = +0.0001 (p=0.8413), wrong direction. Robustness: 0/4 specifications support H2.
+**Completed:** 2026-02-06 — 3/3 plans executed, 5/5 must-haves verified
 
 Plans:
 - [x] 53-01-PLAN.md — Construct correct Biddle (2009) investment residual (NOT Phase 30's roa_residual)
@@ -344,6 +345,13 @@ Plans:
 
 **Details:**
 Hypothesis 2 from 52-HYPOTHESIS-SPECIFICATIONS.md — tests interaction effect of PRisk × LM_Uncertainty on Investment Efficiency. No LLM required; both measures are pre-computed (Hassan PRisk from FirmLevelRisk, LM Uncertainty from dictionary). Implementation uses V3 folder structure to separate external risk interaction hypotheses from V2 linguistic uncertainty main effects.
+
+**H2 Results Summary:**
+- H2-A (Compound Uncertainty -> Investment Efficiency): NOT SUPPORTED
+- Primary: beta=+0.0001, p_one=0.5793 (wrong direction)
+- Robustness: 0/4 specifications support H2 (Industry FE positive significant, lagged IV negative but insignificant)
+- Sample: 24,826 observations (2,242 firms, 2002-2018), R²=0.0955
+- Conclusion: Political and managerial uncertainty affect investment through independent channels, not multiplicatively
 
 ### Phase 54: H6 Implementation Audit
 **Goal:** Conduct expert audit of H6 (SEC Scrutiny/CCCL) implementation to determine whether null results stem from research design flaws, variable construction issues, or genuine null effects
@@ -366,14 +374,22 @@ Expert finance researcher audit with thorough literature review. Examined H6 imp
 ### Phase 55: V1 Hypotheses Re-Test
 **Goal:** Re-test the two main V1 hypotheses (Uncertainty → Illiquidity, Uncertainty → Takeover Target Probability) to determine if prior null results were due to implementation flaws rather than genuine effects
 **Depends on:** Phase 54 (H6 Implementation Audit - for audit methodology reference)
-**Status:** NOT PLANNED YET
-**Plans:** TBD (run /gsd:plan-phase 55 to break down)
+**Status:** PLANNED — 9 plans in 9 waves
+**Plans:** 9 plans (literature review, methodology, H7 implementation, H7 robustness, H8 implementation, H8 robustness, synthesis)
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 55 to break down)
+- [ ] 55-01-PLAN.md — Exhaustive literature review (20+ years) for both hypotheses
+- [ ] 55-02-PLAN.md — Methodology specification document (before implementation)
+- [ ] 55-03-PLAN.md — H7 Illiquidity variable construction (Amihud, Roll measures)
+- [ ] 55-04-PLAN.md — H7 Illiquidity primary regression (FE + clustering)
+- [ ] 55-05-PLAN.md — H7 Illiquidity robustness suite (alt DVs, specs, IVs, timing)
+- [ ] 55-06-PLAN.md — H8 Takeover variable construction (SDC data, binary indicator)
+- [ ] 55-07-PLAN.md — H8 Takeover primary regression (logit, Cox PH)
+- [ ] 55-08-PLAN.md — H8 Takeover robustness suite (alt DVs, specs, IVs, timing)
+- [ ] 55-09-PLAN.md — Synthesis report (V1 comparison, literature comparison, conclusions)
 
 **Details:**
-The two core hypotheses from V1 showed null results, but implementation may have been flawed. This phase will: (1) Conduct thorough literature review on uncertainty-illiquidity and uncertainty-takeover relationships, (2) Audit original V1 implementation for code, specification, and data construction issues, (3) Re-specify hypotheses with correct methodology if flaws are found, (4) Re-implement and re-test with corrected approach. Both hypotheses use established dependent variables (illiquidity measures, takeover probability) with speech uncertainty as independent variable.
+Fresh re-implementation based on literature best practices (NOT V1 code audit). Hypothesis 1 (H7): Managerial Speech Uncertainty -> Stock Illiquidity (Amihud 2002 measure). Hypothesis 2 (H8): Managerial Speech Uncertainty -> Takeover Target Probability (SDC Platinum data). Sequential pilot: H7 first (Dang et al. 2022 provides template), then H8. Full robustness suite regardless of primary result (pre-registered approach).
 
 ---
 
@@ -388,6 +404,9 @@ The two core hypotheses from V1 showed null results, but implementation may have
 - Phases 43-46: REMOVED — were products of Phase 41, now abandoned
 - Phase 50: RESERVED — Future extension placeholder
 - Phase 51: RESERVED — Future extension placeholder
+- Phase 52: COMPLETE — LLM Literature Review & Novel Hypothesis Discovery (5 hypotheses specified)
+- Phase 53: COMPLETE — H2 PRisk × Uncertainty → Investment Efficiency (NOT SUPPORTED)
+- Phase 54: COMPLETE — H6 Implementation Audit (implementation sound, null results are genuine)
 
 **v2.0 Hypothesis Testing Results:**
 
@@ -404,6 +423,7 @@ The two core hypotheses from V1 showed null results, but implementation may have
 | H6a | SEC Scrutiny (CCCL) → ↓ Uncertainty | NOT SUPPORTED | 0/6 (FDR-corrected) |
 | H6b | CCCL effect stronger in Q&A than Pres | NOT SUPPORTED | Mixed evidence |
 | H6c | CCCL → ↓ Uncertainty Gap | NOT SUPPORTED | p=0.2186 |
+| H2-V3 (Phase 53) | PRisk × Uncertainty → ↓ Investment Efficiency | NOT SUPPORTED | beta=+0.0001, p=0.841 (wrong direction) |
 
 | Phase | Name | Plans Complete | Status | Completed |
 |-------|------|----------------|--------|-----------|
@@ -424,6 +444,7 @@ The two core hypotheses from V1 showed null results, but implementation may have
 | 50 | Reserved Extension | 0/TBD | RESERVED | — |
 | 51 | Reserved Extension | 0/TBD | RESERVED | — |
 | 52 | LLM Literature Review & Novel Hypothesis Discovery | 5/5 | COMPLETE | 2026-02-06 |
+| 53 | H2 PRisk × Uncertainty → Investment Efficiency | 3/3 | COMPLETE | 2026-02-06 |
 | 54 | H6 Implementation Audit | 4/4 | COMPLETE | 2026-02-06 |
 | 55 | V1 Hypotheses Re-Test | 0/TBD | NOT PLANNED | — |
 
