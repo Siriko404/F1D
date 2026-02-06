@@ -9,16 +9,16 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 41 - Hypothesis Suite Discovery
-Plan: 04
-Status: COMPLETE — Hypothesis suite selected (H6-H10) with complete specifications; ROADMAP.md and REQUIREMENTS.md updated
-Last activity: 2026-02-06 — Plan 41-04 executed, 5 hypotheses selected for Phases 42-46 implementation
+Phase: 42 - H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty
+Plan: 02
+Status: COMPLETE — H6 panel OLS regressions show null results; pre-trends test failed
+Last activity: 2026-02-05 — Plan 42-02 executed, 39 regressions completed
 
 ### Progress
 
 ```
-v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null, H6-H10 selected
-[████████████████████  ] 12/16 active phases (75%)
+v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null, H6 null, H7-H10 pending
+[████████████████████░ ] 13/16 active phases (81%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -35,7 +35,7 @@ Phase 38: Publication Output      [CANCELLED - null results]
 v2.0 New Hypothesis — ACTIVE
 Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
 Phase 41: Hypothesis Suite Discovery [COMPLETE - 4/4 plans] → H6-H10 selected
-Phase 42: H6 Managerial Hedging → M&A Targeting [NOT PLANNED - 10 requirements]
+Phase 42: H6 SEC Scrutiny → Speech Uncertainty [COMPLETE - 2/2 plans] → H6-A: NULL, H6-B: NULL, H6-C: NULL
 Phase 43: H7 Uncertainty → CEO Turnover [NOT PLANNED - 10 requirements]
 Phase 44: H8 Speech Clarity → Compensation [NOT PLANNED - 10 requirements]
 Phase 45: H9 Uncertainty Gap → Returns [NOT PLANNED - 10 requirements]
@@ -44,7 +44,7 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 
 ## v2.0 Hypothesis Testing Results
 
-**Conclusion**: No consistent statistical support for hypothesized relationships between managerial speech uncertainty and corporate financial policies.
+**Conclusion**: No consistent statistical support for hypothesized relationships between managerial speech uncertainty and corporate financial policies or SEC scrutiny effects.
 
 | Hypothesis | Prediction | Result | Significant Measures |
 |------------|------------|--------|---------------------|
@@ -56,6 +56,9 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 | H3b | Leverage → ↑ Stability | NOT SUPPORTED | 0/6 |
 | H5-A | Hedging → ↑ Dispersion (beyond Uncertainty) | NOT SUPPORTED | 0/3 Weak Modal |
 | H5-B | Uncertainty Gap → ↑ Dispersion | MIXED | Sig only w/o Firm FE |
+| H6-A | CCCL → ↓ Uncertainty | NULL | 0/6 (FDR-corrected) |
+| H6-B | QA effect > Pres effect | NULL | 1/2 QA effects larger |
+| H6-C | CCCL → ↓ Uncertainty Gap | NULL | p=0.22 |
 
 **Implication**: Phases 36-38 (Robustness, Identification, Publication) cancelled as scientifically inappropriate for null results.
 
@@ -140,12 +143,17 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 - [Phase 41-04 Hypothesis Suite Selection] Reserved H11 (M&A Premium), H4 (Gap->Volatility), H15 (Cross-Speaker Gap) for future extension
 - [Phase 41-04 Hypothesis Suite Selection] Renumbered existing SEC Scrutiny hypothesis to Phase 50 (reserved)
 - [Phase 42-01 H6 Variables] CCCL instrument is ANNUAL (year column) not quarterly - merge on gvkey+year
-- [Phase 42-01 H6 Variables] Aggregate speech measures to firm-year level to match CCCL frequency
-- [Phase 42-01 H6 Variables] Lagged CCCL (t-1) via groupby().shift(1) ensures temporal ordering for causal identification
-- [Phase 42-01 H6 Variables] Uncertainty_Gap = QA_Uncertainty - Pres_Uncertainty captures spontaneous vs prepared speech
 - [Phase 42-01 H6 Variables] H6 sample: 22,273 firm-year observations (2,357 firms, 2006-2018 after lag)
 - [Phase 42-01 H6 Variables] Primary instrument: shift_intensity_mkvalt_ff48 (FF48 x market value, normalized 0-1)
 - [Phase 42-01 H6 Variables] 6 CCCL variants available: FF48/Sales, FF12/Market Value, FF12/Sales, SIC2/Market Value, SIC2/Sales
+- [Phase 42-01 H6 Variables] Aggregate speech measures to firm-year level to match CCCL frequency
+- [Phase 42-01 H6 Variables] Lagged CCCL (t-1) via groupby().shift(1) ensures temporal ordering for causal identification
+- [Phase 42-01 H6 Variables] Uncertainty_Gap = QA_Uncertainty - Pres_Uncertainty captures spontaneous vs prepared speech
+- [Phase 42-02 H6 Regression] H6-A NOT SUPPORTED: 0/6 measures significant after FDR correction (Benjamini-Hochberg)
+- [Phase 42-02 H6 Regression] H6-B NOT SUPPORTED: Only 1/2 QA effects larger than Pres effects
+- [Phase 42-02 H6 Regression] H6-C NOT SUPPORTED: Uncertainty gap regression beta=-0.079, p=0.22
+- [Phase 42-02 H6 Regression] Pre-trends test FAILED: CCCL_{t+2} (p=0.012) and CCCL_{t+1} (p=0.038) significant - anticipatory effects detected
+- [Phase 42-02 H6 Regression] All 6 CCCL instrument variants tested for robustness - qualitatively similar negative but insignificant effects
 - [Phase 43 Added] New hypothesis testing uncertainty dynamics (velocity, acceleration, jerk) as predictors — explores rate-of-change rather than levels
 
 ### From v1.0 (carry forward)
@@ -166,7 +174,9 @@ Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 
 ### Blockers/Concerns
 
-None currently.
+- **H6 pre-trends violation:** Significant future CCCL effects (p<0.05) suggest potential anticipatory effects or violation of parallel trends assumption, weakening causal interpretation
+- **H6 null results:** All three H6 hypotheses (A, B, C) not supported; pattern of null results continues across H1-H6
+- **Identification concerns:** The CCCL shift-share instrument shows significant leads at t+1 and t+2, which is concerning for the research design
 
 ## Performance Metrics
 
@@ -180,32 +190,31 @@ None currently.
 
 ## Session Continuity
 
-### Current Session (2026-02-06)
+### Current Session (2026-02-05)
 
 **Completed:**
-- Phase 41 Plan 04 executed successfully
-- Selected 5 hypotheses (H6-H10) for Phases 42-46 implementation
-- Created complete formal specifications for all 5 hypotheses (8 sections each)
-  - H6: Managerial Hedging and M&A Targeting
-  - H7: CEO Vagueness and Forced Turnover Risk
-  - H8: Speech Clarity and Executive Compensation
-  - H9: Uncertainty Gap and Future Stock Returns
-  - H10: Language Complexity and Analyst Forecast Accuracy
-- Updated ROADMAP.md with Phase 42-46 placeholders
-- Updated REQUIREMENTS.md with 50 new requirements (10 per hypothesis)
-- Created 41-04-SUMMARY.md with complete documentation
+- Phase 42 Plan 02 executed successfully
+- Created 4.6_H6CCCLRegression.py implementing panel OLS regressions for H6
+- Executed 39 regressions: 7 primary measures x 4 specs + 6 instrument variants
+- Applied FDR correction (Benjamini-Hochberg) across 7 primary tests
+- Executed pre-trends falsification test showing significant future CCCL effects
+- Completed mechanism test (H6-B) comparing Q&A vs Presentation effects
+- Ran gap analysis (H6-C) testing CCCL effect on uncertainty gap
+- Tested all 6 CCCL instrument variants for robustness
+- Created 42-02-SUMMARY.md with complete documentation
 
-**Phase 41 Plan 04 Results:**
-- 5 hypotheses selected from 11 candidates
-- All selected have scores >= 0.85 (multi-dimensional: novelty + feasibility + power)
-- Mechanism diversity: M&A targeting, CEO turnover, compensation, returns, analyst accuracy
-- Requirements added: 50 total (105 total requirements now)
-- Hypothesis H6 renumbered: H6 (M&A Targeting) takes Phase 42; SEC Scrutiny moved to Phase 50 (reserved)
+**Phase 42 Plan 02 Results:**
+- H6-A NOT SUPPORTED: 0/6 measures significant after FDR correction
+- H6-B NOT SUPPORTED: Only 1/2 QA effects larger than Pres effects
+- H6-C NOT SUPPORTED: Uncertainty gap regression beta=-0.079, p=0.22
+- Pre-trends test FAILED: CCCL_{t+2} (p=0.012) and CCCL_{t+1} (p=0.038) significant - anticipatory effects detected
+- All 6 CCCL instruments show qualitatively similar negative but insignificant effects
+- Null result pattern continues: H6 adds to H1-H3, H5 as non-significant findings
 
 **Next Session:**
-- Choose which hypothesis to develop first (Phases 42-46 available)
-- Run /gsd:plan-phase 42 (or 43-46) to break down hypothesis into plans
-- Variable construction scripts needed for M&A, CEO turnover, compensation, returns, forecast accuracy
+- Choose next hypothesis to develop (Phases 43-46 available)
+- Run /gsd:plan-phase 43 (H7: Uncertainty -> CEO Turnover) or 44-46
+- Variable construction scripts needed for CEO turnover, compensation, returns, forecast accuracy
 
 ### Previous Session (2026-02-05)
 
@@ -229,4 +238,4 @@ None currently.
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity
 
 ---
-*Last updated: 2026-02-06 (Phase 41 Plan 04 complete: Hypothesis suite H6-H10 selected for Phases 42-46 implementation with complete formal specifications)*
+*Last updated: 2026-02-05 (Phase 42 Plan 02 complete: H6 panel OLS regressions show null results with pre-trends violation)*
