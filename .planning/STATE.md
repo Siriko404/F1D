@@ -5,20 +5,20 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Every hypothesis test must produce verifiable, reproducible regression results exactly as specified in the methodology
-**Current focus:** v2.0 Hypothesis Testing Suite — H1-H3 null results; Phase 40 (H5) Plan 01 complete; Phases 41-42 planned
+**Current focus:** v2.0 Hypothesis Testing Suite — H1-H3 null results; Phase 40 (H5) complete; Phase 41 (Discovery) complete; Phases 42-46 planned (H6-H10)
 
 ## Current Position
 
-Phase: 42 - H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty
-Plan: 01
-Status: COMPLETE — H6 variables constructed with CCCL instrument merged with speech uncertainty
-Last activity: 2026-02-06 — Plan 42-01 executed, H6_CCCL_Speech.parquet generated (22,273 obs)
+Phase: 41 - Hypothesis Suite Discovery
+Plan: 04
+Status: COMPLETE — Hypothesis suite selected (H6-H10) with complete specifications; ROADMAP.md and REQUIREMENTS.md updated
+Last activity: 2026-02-06 — Plan 41-04 executed, 5 hypotheses selected for Phases 42-46 implementation
 
 ### Progress
 
 ```
-v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null
-[████████████████████  ] 11/12 active phases (92%)
+v2.0 Hypothesis Testing Suite — CONCLUDED (H1-H3 null), H5 null, H6-H10 selected
+[████████████████████  ] 12/16 active phases (75%)
 
 Phase 28: V2 Structure Setup      [COMPLETE - 3/3 plans done]
 Phase 29: H1 Cash Holdings Vars   [COMPLETE - 1/1 plans done]
@@ -34,8 +34,12 @@ Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
 Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
-Phase 41: Hypothesis Suite Discovery [COMPLETE - 3/4 plans done]
-Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [ACTIVE - 1/TBD plans done]
+Phase 41: Hypothesis Suite Discovery [COMPLETE - 4/4 plans] → H6-H10 selected
+Phase 42: H6 Managerial Hedging → M&A Targeting [NOT PLANNED - 10 requirements]
+Phase 43: H7 Uncertainty → CEO Turnover [NOT PLANNED - 10 requirements]
+Phase 44: H8 Speech Clarity → Compensation [NOT PLANNED - 10 requirements]
+Phase 45: H9 Uncertainty Gap → Returns [NOT PLANNED - 10 requirements]
+Phase 46: H10 Complexity → Forecast Accuracy [NOT PLANNED - 10 requirements]
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -91,6 +95,7 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [ACTIVE - 1/TBD plans done]
 - **2026-02-05**: Phase 40 context discussion completed with full specification
 - **2026-02-05**: Phase 41 added — "Hypothesis Suite Discovery" (deep literature review for novel, data-feasible, high-confidence hypotheses)
 - **2026-02-05**: Phase 42 added — "H6 SEC Scrutiny (CCCL) Reduces Manager Speech Uncertainty" (CCCL shift-share design using available data)
+- **2026-02-06**: Phase 43 added — "Uncertainty Dynamics Predictors" (testing velocity, acceleration, jerk of speech uncertainty for predictive power)
 
 ### Decisions
 
@@ -126,6 +131,14 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [ACTIVE - 1/TBD plans done]
 - [Phase 41-03 Power Analysis] Perfect scores (1.00): H6, H9, H11, H4, H15 (SELECT for Phase 42)
 - [Phase 41-03 Power Analysis] Effect size benchmarks: 5% cash/assets, 10% M&A probability, 50 bps returns, 20% turnover risk, 10% comp change
 - [Phase 41-03 Power Analysis] H7/H12 (turnover) have adequate 82% power with 1,059 dismissal events; rated RESERVE
+- [Phase 41-04 Hypothesis Suite Selection] Selected 5 hypotheses (H6-H10) for Phases 42-46 implementation
+- [Phase 41-04 Hypothesis Suite Selection] H6: Managerial Hedging and M&A Targeting (score 1.00) - weak modals -> M&A likelihood/premium
+- [Phase 41-04 Hypothesis Suite Selection] H7: CEO Vagueness and Forced Turnover Risk (score 0.85) - uncertainty -> forced turnover
+- [Phase 41-04 Hypothesis Suite Selection] H8: Speech Clarity and Executive Compensation (score 0.85) - uncertainty -> total compensation/PPS
+- [Phase 41-04 Hypothesis Suite Selection] H9: Uncertainty Gap and Future Stock Returns (score 1.00) - QA-Pres gap -> abnormal returns
+- [Phase 41-04 Hypothesis Suite Selection] H10: Language Complexity and Analyst Forecast Accuracy (score 0.65) - complexity -> forecast error
+- [Phase 41-04 Hypothesis Suite Selection] Reserved H11 (M&A Premium), H4 (Gap->Volatility), H15 (Cross-Speaker Gap) for future extension
+- [Phase 41-04 Hypothesis Suite Selection] Renumbered existing SEC Scrutiny hypothesis to Phase 50 (reserved)
 - [Phase 42-01 H6 Variables] CCCL instrument is ANNUAL (year column) not quarterly - merge on gvkey+year
 - [Phase 42-01 H6 Variables] Aggregate speech measures to firm-year level to match CCCL frequency
 - [Phase 42-01 H6 Variables] Lagged CCCL (t-1) via groupby().shift(1) ensures temporal ordering for causal identification
@@ -133,6 +146,7 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [ACTIVE - 1/TBD plans done]
 - [Phase 42-01 H6 Variables] H6 sample: 22,273 firm-year observations (2,357 firms, 2006-2018 after lag)
 - [Phase 42-01 H6 Variables] Primary instrument: shift_intensity_mkvalt_ff48 (FF48 x market value, normalized 0-1)
 - [Phase 42-01 H6 Variables] 6 CCCL variants available: FF48/Sales, FF12/Market Value, FF12/Sales, SIC2/Market Value, SIC2/Sales
+- [Phase 43 Added] New hypothesis testing uncertainty dynamics (velocity, acceleration, jerk) as predictors — explores rate-of-change rather than levels
 
 ### From v1.0 (carry forward)
 
@@ -169,33 +183,29 @@ None currently.
 ### Current Session (2026-02-06)
 
 **Completed:**
-- Phase 42 Plan 01 executed successfully
-- Created 3.6_H6Variables.py script (663 lines)
-  - Loads CCCL shift-share instrument (145K firm-years, 6 variants)
-  - Loads speech uncertainty measures (2002-2018, 6 measures)
-  - Merges on gvkey + fiscal_year (annual data)
-  - Creates lagged CCCL exposure (t-1) via groupby().shift(1)
-  - Computes Uncertainty_Gap = QA_Uncertainty - Pres_Uncertainty
-- Generated H6_CCCL_Speech.parquet (22,273 observations, 2,357 firms, 2006-2018)
-  - 6 CCCL variants + 6 lagged variants
-  - 6 speech uncertainty measures
-  - Uncertainty_Gap for mechanism testing
-- Created 42-01-SUMMARY.md with complete documentation
+- Phase 41 Plan 04 executed successfully
+- Selected 5 hypotheses (H6-H10) for Phases 42-46 implementation
+- Created complete formal specifications for all 5 hypotheses (8 sections each)
+  - H6: Managerial Hedging and M&A Targeting
+  - H7: CEO Vagueness and Forced Turnover Risk
+  - H8: Speech Clarity and Executive Compensation
+  - H9: Uncertainty Gap and Future Stock Returns
+  - H10: Language Complexity and Analyst Forecast Accuracy
+- Updated ROADMAP.md with Phase 42-46 placeholders
+- Updated REQUIREMENTS.md with 50 new requirements (10 per hypothesis)
+- Created 41-04-SUMMARY.md with complete documentation
 
-**Phase 42 Plan 01 Findings:**
-- Merge rate: 16.9% (24,671 of 145,693 CCCL obs matched speech data)
-- After lagging: 22,273 observations (2,357 firms)
-- Year range: 2006-2018 (2005 data lost to lag)
-- Uncertainty Gap mean: -0.0434 (more uncertain in Presentation than Q&A)
-- All 6 CCCL variants have 100% coverage
-- Sample size sufficient for firm fixed effects with year clustering
+**Phase 41 Plan 04 Results:**
+- 5 hypotheses selected from 11 candidates
+- All selected have scores >= 0.85 (multi-dimensional: novelty + feasibility + power)
+- Mechanism diversity: M&A targeting, CEO turnover, compensation, returns, analyst accuracy
+- Requirements added: 50 total (105 total requirements now)
+- Hypothesis H6 renumbered: H6 (M&A Targeting) takes Phase 42; SEC Scrutiny moved to Phase 50 (reserved)
 
 **Next Session:**
-- Phase 42 Plan 02: H6 Regression Analysis
-- Test whether SEC scrutiny (CCCL exposure) reduces speech uncertainty
-- Firm + Year FE with SE clustered at firm level
-- Primary outcome: Manager_QA_Uncertainty_pct
-- Robustness: All 6 uncertainty measures, 6 CCCL variants
+- Choose which hypothesis to develop first (Phases 42-46 available)
+- Run /gsd:plan-phase 42 (or 43-46) to break down hypothesis into plans
+- Variable construction scripts needed for M&A, CEO turnover, compensation, returns, forecast accuracy
 
 ### Previous Session (2026-02-05)
 
@@ -219,4 +229,4 @@ None currently.
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity
 
 ---
-*Last updated: 2026-02-06 (Phase 42 Plan 01 complete: H6 variables constructed, CCCL instrument merged with speech uncertainty, 22,273 firm-year observations ready for regression analysis)*
+*Last updated: 2026-02-06 (Phase 41 Plan 04 complete: Hypothesis suite H6-H10 selected for Phases 42-46 implementation with complete formal specifications)*
