@@ -348,16 +348,32 @@ Hypothesis 2 from 52-HYPOTHESIS-SPECIFICATIONS.md — tests interaction effect o
 ### Phase 54: H6 Implementation Audit
 **Goal:** Conduct expert audit of H6 (SEC Scrutiny/CCCL) implementation to determine whether null results stem from research design flaws, variable construction issues, or genuine null effects
 **Depends on:** Phase 42 (H6 CCCL Regression)
-**Status:** READY FOR EXECUTION
-**Plans:** 3 plans in 3 waves
+**Status:** COMPLETE
+**Completed:** 2026-02-06
+**Plans:** 4 plans in 4 waves
 
 Plans:
-- [ ] 54-01-PLAN.md — Audit model specification (FE, clustering, FDR, pre-trends)
-- [ ] 54-02-PLAN.md — Audit data construction (CCCL shift-share, merge, lag, aggregation)
-- [ ] 54-03-PLAN.md — Synthesize findings and produce final audit report
+- [x] 54-00-PLAN.md — Exhaustive literature review (shift-share, SEC scrutiny, comment letters)
+- [x] 54-01-PLAN.md — Audit model specification (FE, clustering, FDR, pre-trends)
+- [x] 54-02-PLAN.md — Audit data construction (CCCL shift-share, merge, lag, aggregation)
+- [x] 54-03-PLAN.md — Synthesize findings and produce final audit report
 
 **Details:**
-Expert finance researcher audit (+20 years experience) with thorough literature review. Examines H6 implementation for potential research design flaws: variable construction (CCCL shift-share instrument, speech uncertainty aggregation), model specification (fixed effects, clustering, FDR correction), sample selection, and identification strategy (parallel trends, pre-trends test failure). Determines whether null results are implementation problems or genuine empirical findings.
+Expert finance researcher audit with thorough literature review. Examined H6 implementation for potential research design flaws: variable construction (CCCL shift-share instrument, speech uncertainty aggregation), model specification (fixed effects, clustering, FDR correction), sample selection, and identification strategy (parallel trends, pre-trends test failure).
+
+**Audit Result:** Implementation is SOUND; null H6 results are likely GENUINE EMPIRICAL FINDINGS, not implementation errors. Pre-trends violation interpreted as anticipatory SEC scrutiny (substantive), not design flaw. See 54-AUDIT-REPORT.md for comprehensive documentation.
+
+### Phase 55: V1 Hypotheses Re-Test
+**Goal:** Re-test the two main V1 hypotheses (Uncertainty → Illiquidity, Uncertainty → Takeover Target Probability) to determine if prior null results were due to implementation flaws rather than genuine effects
+**Depends on:** Phase 54 (H6 Implementation Audit - for audit methodology reference)
+**Status:** NOT PLANNED YET
+**Plans:** TBD (run /gsd:plan-phase 55 to break down)
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 55 to break down)
+
+**Details:**
+The two core hypotheses from V1 showed null results, but implementation may have been flawed. This phase will: (1) Conduct thorough literature review on uncertainty-illiquidity and uncertainty-takeover relationships, (2) Audit original V1 implementation for code, specification, and data construction issues, (3) Re-specify hypotheses with correct methodology if flaws are found, (4) Re-implement and re-test with corrected approach. Both hypotheses use established dependent variables (illiquidity measures, takeover probability) with speech uncertainty as independent variable.
 
 ---
 
@@ -408,6 +424,8 @@ Expert finance researcher audit (+20 years experience) with thorough literature 
 | 50 | Reserved Extension | 0/TBD | RESERVED | — |
 | 51 | Reserved Extension | 0/TBD | RESERVED | — |
 | 52 | LLM Literature Review & Novel Hypothesis Discovery | 5/5 | COMPLETE | 2026-02-06 |
+| 54 | H6 Implementation Audit | 4/4 | COMPLETE | 2026-02-06 |
+| 55 | V1 Hypotheses Re-Test | 0/TBD | NOT PLANNED | — |
 
 ## Requirement Coverage
 
