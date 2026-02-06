@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 52 - LLM Literature Review & Novel Hypothesis Discovery
-Plan: 03 of 5 complete
+Plan: 04 of 5 complete
 Status: In progress — Phase 52 active
-Last activity: 2026-02-06 — Completed 52-03-PLAN.md (Blue Team Candidate Hypothesis Generation)
+Last activity: 2026-02-06 — Completed 52-04-PLAN.md (Red Team Adversarial Verification)
 
 ### Progress
 
@@ -38,7 +38,7 @@ Phase 40: H5 Speech → Dispersion  [COMPLETE - 2/2 plans] → H5-A: NULL, H5-B:
 Phase 41: Hypothesis Discovery    [ABANDONED - 4/4 plans] → Suite approach abandoned
 Phase 42: H6 SEC Scrutiny (CCCL)  [COMPLETE - 2/2 plans] → H6-A: NULL, H6-B: NULL, H6-C: NULL
 Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
-Phase 52: LLM Lit Review & Novel Hyp [IN PROGRESS - 3/5 plans done]
+Phase 52: LLM Lit Review & Novel Hyp [IN PROGRESS - 4/5 plans done]
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -173,6 +173,13 @@ Phase 52: LLM Lit Review & Novel Hyp [IN PROGRESS - 3/5 plans done]
 - [Phase 52-03 Blue Team] Scoring: 14 candidates with score ≥0.95 (priority for Red Team)
 - [Phase 52-03 Blue Team] Top 3 perfect scores (1.00): H1 (SEC Topics→Call), H3 (PRisk×Uncertainty), H4 (SEC Receipt→ΔPRisk)
 - [Phase 52-03 Blue Team] 25 candidates advance to Red Team (threshold ≥0.70); H18 borderline (0.67); H27 excluded
+- [Phase 52-04 Red Team] 17 candidates KILLED (68% kill rate) - ruthless adversarial verification
+- [Phase 52-04 Red Team] H10 (Narrative Drift) KILLED: Liu et al. (2024) direct prior test - claimed novelty was FALSE
+- [Phase 52-04 Red Team] H7 (Mediation) KILLED: Our H6 null results contradict proposed mechanism
+- [Phase 52-04 Red Team] H15 (Uncertainty Gap) KILLED: Same construct as failed H5-B
+- [Phase 52-04 Red Team] Dictionary measures (H24/H25/H26) KILLED: H1-H6 pattern predicts null results
+- [Phase 52-04 Red Team] 13 survivors at ≥0.85 threshold after score adjustments
+- [Phase 52-04 Red Team] Top 5 recommended: H1 (SEC Topics→Call, 1.00), H3 (PRisk×Uncertainty, 1.00), H6 (SEC→Q&A, 0.94), H17 (Info Consistency, 0.93), H22 (PRisk Vol, 0.93)
 
 ### From v1.0 (carry forward)
 
@@ -217,14 +224,25 @@ Phase 52: LLM Lit Review & Novel Hyp [IN PROGRESS - 3/5 plans done]
   - 27 hypotheses generated across 4 tiers
   - 14 priority candidates with score ≥0.95
   - 25 candidates advance to Red Team
+- Completed 52-04: Red Team Adversarial Verification
+  - 17 candidates KILLED (68% kill rate)
+  - 13 candidates SURVIVE at ≥0.85 threshold
+  - Top 5 recommended for final selection
 
-**Phase 52-03 Key Outputs:**
-- 52-03-CANDIDATE-HYPOTHESES.md with full specifications
-- 5E Rule compliance verified for all candidates
-- Weighted scoring applied (N×0.35 + F×0.35 + C×0.30)
-- Ranked list ready for Red Team adversarial verification
+**Phase 52-04 Key Outputs:**
+- 52-04-ADVERSARIAL-VERIFICATION.md with 984 lines of kill documentation
+- Kill reasons documented for each eliminated hypothesis
+- Revised scores calculated post-adversarial challenges
+- Top 5 recommended: H1, H3, H6, H17, H22
 
-**Next:** 52-04-PLAN.md (Red Team Adversarial Verification)
+**Key Kills:**
+- H10: Liu et al. (2024) directly tests this - FALSE novelty claim
+- H7: Our H6 null results contradict mechanism
+- H15: Same construct as failed H5-B
+- H21: Hassan (2019) covers this relationship
+- H24/H25/H26: Dictionary measure concerns
+
+**Next:** 52-05-PLAN.md (Final Selection & Specification)
 
 ---
-*Last updated: 2026-02-06 (52-03 Blue Team Candidate Hypothesis Generation complete)*
+*Last updated: 2026-02-06 (52-04 Red Team Adversarial Verification complete)*
