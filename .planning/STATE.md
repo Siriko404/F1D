@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 55 - V1 Hypotheses Re-Test
-Plan: 1 of 9
-Status: **In Progress** - Literature review complete, methodology specification next
-Last activity: 2026-02-06 - Plan 55-01 complete; exhaustive literature review done
+Plan: 2 of 9
+Status: **In Progress** - Methodology specification complete, variable construction next
+Last activity: 2026-02-06 - Plan 55-02 complete; 1,963-line methodology specification created
 
 ### Next Phase
 
@@ -45,7 +45,7 @@ Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
 Phase 52: LLM Lit Review & Novel Hyp [COMPLETE - 5/5 plans] → 5 hypotheses specified
 Phase 53: H2 PRisk x Uncertainty     [COMPLETE - 3/3 plans] → H2: NOT SUPPORTED
 Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms implementation sound, null results genuine
-Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 1/9 plans] → 55-01 Literature Review complete → Uncertainty → Illiquidity/Takeover
+Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 2/9 plans] → 55-01 Lit Review, 55-02 Methodology spec complete → H1: Uncertainty→Illiquidity, H2: Uncertainty→Takeover
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -207,6 +207,22 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 1/9 plans] → 55-01 Literat
 - [Phase 53-01 Memory Optimization] Sample-filtering-first, intermediate disk spill, gc.collect() between merges to avoid MemoryError
 - [Phase 54 Added] H6 Implementation Audit — expert audit to determine if null results stem from research design flaws, variable construction issues, or genuine effects
 - [Phase 55 Added] V1 Hypotheses Re-Test — re-test Uncertainty → Illiquidity and Uncertainty → Takeover Target Probability hypotheses; suspected implementation flaws in original V1 code, specs, or data construction
+- [Phase 55-01 Literature] Dang et al. (2022) identified as foundational paper for H1 with direct methodological template
+- [Phase 55-01 Literature] Amihud (2002) illiquidity measure: ILLIQ = (1/D) * sum(|RET| / VOLD) with 6000+ citations
+- [Phase 55-01 Literature] Roll (1984) implicit spread: SPRD = 2 * sqrt(-cov(r_t, r_{t-1))) for robustness
+- [Phase 55-01 Literature] M&A prediction literature: Logit regression standard (Ambrose 1990), Meghouar (2024) modern approaches
+- [Phase 55-01 Literature] Pilot decision: H1 (Illiquidity) first due to Dang et al. (2022) template availability
+- [Phase 55-02 Methodology] Use Amihud (2002) exact formula: ILLIQ = (1/D) * sum(|RET| / (|PRC| * VOL)) * 1e6
+- [Phase 55-02 Methodology] Require minimum 50 trading days per year for illiquidity calculation
+- [Phase 55-02 Methodology] PanelOLS with Firm + Year FE, firm-clustered SE for H1 (Cameron & Miller 2015, Petersen 2009)
+- [Phase 55-02 Methodology] Logit with Year FE, firm-clustered SE for H2 primary; Cox PH as alternative
+- [Phase 55-02 Methodology] Timing: Uncertainty_t -> Outcome_{t+1} for causal ordering (Dang 2022 template)
+- [Phase 55-02 Methodology] Winsorization at 1%/99% for all continuous variables
+- [Phase 55-02 Methodology] Exclude financial firms (SIC 6000-6999) and utilities (SIC 4900-4999)
+- [Phase 55-02 Methodology] SDC Platinum for takeover identification: completed deals primary, announced for robustness
+- [Phase 55-02 Methodology] Pre-registered robustness: 11 specs for H1, 12 specs for H2 (all must be run and reported)
+- [Phase 55-02 Methodology] FDR correction applied across 4 IVs per hypothesis (Benjamini-Hochberg)
+- [Phase 55-02 Methodology] Sequential implementation: H1 first (pilot), then H2 using learnings
 - [Phase 56 Added] Tone Dynamics Predictive Power — tests whether dynamics (velocity, acceleration, jerk) of management tone (LM dictionary measures) have predictive power for future outcomes beyond static levels
 
 ### From v1.0 (carry forward)
@@ -272,7 +288,28 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 1/9 plans] → 55-01 Literat
 
 ### Current Session (2026-02-06)
 
-**Phase 53-01 COMPLETE:**
+**Phase 55-02 COMPLETE:**
+- Created comprehensive methodology specification (55-METHODOLOGY.md, 1,963 lines)
+- H1 (Illiquidity): Amihud (2002) primary DV, Roll (1984) robustness, PanelOLS with Firm+Year FE
+- H2 (Takeover): SDC Platinum binary takeover indicator, logit primary model, Cox PH alternative
+- Exact regression equations with Greek notation for both hypotheses
+- Variable definitions with formulas: Amihud ILLIQ = (1/D) * sum(|RET| / (|PRC| * VOL)) * 1e6
+- Sample construction: Exclude financial/utilities, require 50+ trading days, winsorize at 1%/99%
+- Robustness specifications: 11 for H1, 12 for H2 (pre-registered approach)
+- Implementation plan for remaining 7 plans (55-03 through 55-09)
+- SUMMARY.md created with full documentation
+
+**Phase 55-02 Decisions:**
+- Sequential implementation: H1 first (Dang 2022 template), then H2 using learnings
+- Use Amihud (2002) exact formula with 1e6 scaling for interpretability
+- PanelOLS with Firm + Year FE, firm-clustered SE for H1 (Cameron & Miller 2015, Petersen 2009)
+- Logit with Year FE, firm-clustered SE for H2 (incidental parameters problem with firm FE in logit)
+- Timing: Uncertainty_t -> Outcome_{t+1} for causal ordering
+- Pre-registered robustness: All specs must be run and reported regardless of outcome
+- FDR correction applied across 4 IVs per hypothesis (Benjamini-Hochberg)
+
+**Phase 55-01 COMPLETE (Earlier):**
+- Exhaustive literature review (55-LITERATURE.md, 688 lines)
 - Constructed Biddle (2009) investment residual as DV for H2 regression
 - Script: 2_Scripts/3_Financial_V3/4.1_H2_BiddleInvestmentResidual.py
 - Output: 33,862 firm-year observations with InvestmentResidual DV + Biddle controls
