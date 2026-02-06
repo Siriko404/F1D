@@ -424,7 +424,8 @@ def create_timing_variants(df, dv_base='amihud_illiquidity', lags=[0, -1, -2], d
 
 def run_h7_regression(df, uncertainty_var, dv_col='amihud_lag1',
                      controls=None, spec_name='primary', spec_config=None,
-                     vif_threshold=5.0, dw=None):
+                     vif_threshold=5.0, dv_type='Amihud (2002)',
+                     iv_type=None, timing=None, dw=None):
     """
     Run single H7 regression.
 
@@ -438,6 +439,9 @@ def run_h7_regression(df, uncertainty_var, dv_col='amihud_lag1',
         controls: List of control variable names
         spec_name: Specification name for reporting
         spec_config: Dictionary with entity_effects, time_effects, cluster_entity
+        dv_type: Label for dependent variable type (for robustness tracking)
+        iv_type: Label for IV type (for robustness tracking)
+        timing: Label for timing assumption (for robustness tracking)
 
     Returns:
         dict with coefficients, SEs, p-values, diagnostics
@@ -529,6 +533,9 @@ def run_h7_regression(df, uncertainty_var, dv_col='amihud_lag1',
             'entity_effects': False,
             'time_effects': False,
             'warnings': [],
+            'dv_type': dv_type,
+            'iv_type': iv_type,
+            'timing': timing,
         }
 
     # Extract results for uncertainty variable
@@ -568,6 +575,9 @@ def run_h7_regression(df, uncertainty_var, dv_col='amihud_lag1',
         'entity_effects': summary['entity_effects'],
         'time_effects': summary['time_effects'],
         'warnings': result.get('warnings', []),
+        'dv_type': dv_type,
+        'iv_type': iv_type,
+        'timing': timing,
     }
 
 
@@ -598,6 +608,133 @@ def run_all_h7_regressions(df, uncertainty_measures, specs, control_vars,
                             f"beta={result['coefficient']:.6f} (p1={result['p_one_sided']:.4f})\n")
                 else:
                     dw.write(f"    ERROR: {result['error']}\n")
+
+    return results
+
+
+def run_robustness_suite(df, uncertainty_measures, control_vars,
+                         vif_threshold=5.0, dw=None):
+    """
+    Run full robustness suite for H7.
+
+    Dimensions:
+    1. Alternative DVs (Roll spread, bid-ask spread)
+    2. Alternative specs (Firm only, Pooled, Double-cluster) - uses primary DV
+    3. Alternative IVs (CEO-only, Presentation-only, QA-only)
+    4. Timing variants (concurrent, forward, lead)
+
+    Args:
+        df: Panel data with MultiIndex (gvkey, year)
+        uncertainty_measures: List of primary uncertainty IVs
+        control_vars: List of control variable names
+        vif_threshold: VIF threshold for multicollinearity check
+        dw: DualWriter for logging
+
+    Returns:
+        List of robustness result dictionaries
+    """
+    results = []
+    df_work = df.copy()
+
+    if dw:
+        dw.write("\n=== Robustness Suite ===\n")
+
+    # Dimension 1: Alternative DVs (Roll spread, bid-ask spread)
+    if dw:
+        dw.write("\n[Dimension 1] Alternative Dependent Variables\n")
+
+    # Check if alternative DVs exist
+    alt_dvs = []
+    if 'roll_spread' in df_work.columns:
+        alt_dvs.append(('roll_spread', 'Roll (1984)'))
+    if 'bidask_spread' in df_work.columns:
+        alt_dvs.append(('bidask_spread', 'Bid-Ask Spread'))
+
+    for dv_col, dv_label in alt_dvs:
+        if dw:
+            dw.write(f"  Testing DV: {dv_label}\n")
+
+        # Create forward-looking DV
+        if isinstance(df_work.index, pd.MultiIndex):
+            df_alt = df_work.reset_index()
+        else:
+            df_alt = df_work.copy()
+
+        df_alt[f'{dv_col}_fwd'] = df_alt.groupby('gvkey')[dv_col].shift(-1)
+        df_alt = df_alt[df_alt[f'{dv_col}_fwd'].notna()]
+        df_alt = df_alt.set_index(['gvkey', 'year'])
+
+        for uv in uncertainty_measures:
+            if uv not in df_alt.columns:
+                continue
+            result = run_h7_regression(
+                df_alt, uv, f'{dv_col}_fwd', control_vars,
+                spec_name='primary',
+                spec_config=SPECS['primary'],
+                vif_threshold=vif_threshold,
+                dv_type=dv_label,
+                dw=dw
+            )
+            if result and 'error' not in result:
+                results.append(result)
+
+    # Dimension 2: Alternative specs (use primary DV - already in run_all_h7_regressions)
+    # This is handled by the main regression loop with SPECS dict
+
+    # Dimension 3: Alternative IVs
+    if dw:
+        dw.write("\n[Dimension 2] Alternative Independent Variables\n")
+
+    for iv_type, ivs in ROBUSTNESS_CONFIG['alternative_ivs'].items():
+        if dw:
+            dw.write(f"  Testing IV type: {iv_type}\n")
+
+        for uv in ivs:
+            if uv not in df_work.columns:
+                continue
+            result = run_h7_regression(
+                df_work, uv, 'amihud_lag1', control_vars,
+                spec_name='primary',
+                spec_config=SPECS['primary'],
+                vif_threshold=vif_threshold,
+                dv_type='Amihud (2002)',
+                iv_type=iv_type,
+                dw=dw
+            )
+            if result and 'error' not in result:
+                results.append(result)
+
+    # Dimension 4: Timing variants
+    if dw:
+        dw.write("\n[Dimension 3] Timing Tests\n")
+
+    # Need to use amihud_illiquidity (current period) to create timing variants
+    if 'amihud_illiquidity' in df_work.columns:
+        timing_variants = create_timing_variants(
+            df_work, 'amihud_illiquidity', [0, -1, -2], dw
+        )
+
+        for timing_name, (df_t, dv_col) in timing_variants.items():
+            if dw:
+                dw.write(f"  Testing timing: {timing_name} ({dv_col})\n")
+
+            for uv in uncertainty_measures:
+                if uv not in df_t.columns:
+                    continue
+                result = run_h7_regression(
+                    df_t, uv, dv_col, control_vars,
+                    spec_name='primary',
+                    spec_config=SPECS['primary'],
+                    vif_threshold=vif_threshold,
+                    dv_type='Amihud (2002)',
+                    timing=timing_name,
+                    dw=None  # Suppress verbose output
+                )
+                if result and 'error' not in result:
+                    results.append(result)
+
+    if dw:
+        dw.write(f"\nRobustness suite complete: {len(results)} results\n")
 
     return results
 
@@ -652,7 +789,7 @@ def save_regression_results(results, output_dir, dw=None):
     Creates DataFrame with columns:
     - uncertainty_var, spec, coefficient, se, p_two_sided, p_one_sided, p_fdr
     - n, n_firms, r2_within, r2, f_statistic, f_pvalue
-    - fdr_significant
+    - fdr_significant, dv_type, iv_type, timing (for robustness tracking)
     """
     rows = []
 
@@ -675,6 +812,9 @@ def save_regression_results(results, output_dir, dw=None):
             'f_pvalue': r.get('f_pvalue', np.nan),
             'entity_effects': r.get('entity_effects', False),
             'time_effects': r.get('time_effects', False),
+            'dv_type': r.get('dv_type', 'Amihud (2002)'),
+            'iv_type': r.get('iv_type', None),
+            'timing': r.get('timing', None),
         })
 
     results_df = pd.DataFrame(rows)
@@ -787,6 +927,92 @@ def generate_results_markdown(results, output_dir, sample_stats, dv_col='amihud_
     lines.append(f"- N (firms): {sample_stats['n_firms']:,}")
     lines.append(f"- Years: {sample_stats['year_min']}-{sample_stats['year_max']}")
     lines.append("")
+
+    # Robustness tests section
+    robustness_results = [r for r in results if 'error' not in r and (
+        r.get('dv_type') != 'Amihud (2002)' or
+        r.get('iv_type') is not None or
+        r.get('timing') is not None
+    )]
+
+    if robustness_results:
+        lines.append("## Robustness Tests")
+        lines.append("")
+        lines.append("### Alternative Dependent Variables")
+        lines.append("")
+
+        alt_dv_results = [r for r in robustness_results if r.get('dv_type') != 'Amihud (2002)']
+        if alt_dv_results:
+            dv_groups = {}
+            for r in alt_dv_results:
+                dv_type = r.get('dv_type', 'Unknown')
+                if dv_type not in dv_groups:
+                    dv_groups[dv_type] = []
+                dv_groups[dv_type].append(r)
+
+            for dv_type, group in dv_groups.items():
+                n_sig = sum(1 for r in group if r.get('p_one_sided', 1) < 0.05)
+                avg_beta = np.mean([r['coefficient'] for r in group if not np.isnan(r['coefficient'])])
+                lines.append(f"**{dv_type}:** {n_sig}/{len(group)} significant, avg beta = {avg_beta:.6f}")
+            lines.append("")
+        else:
+            lines.append("No alternative DVs available in data.")
+            lines.append("")
+
+        lines.append("### Alternative Independent Variables")
+        lines.append("")
+
+        alt_iv_results = [r for r in robustness_results if r.get('iv_type') is not None]
+        if alt_iv_results:
+            iv_groups = {}
+            for r in alt_iv_results:
+                iv_type = r.get('iv_type', 'Unknown')
+                if iv_type not in iv_groups:
+                    iv_groups[iv_type] = []
+                iv_groups[iv_type].append(r)
+
+            for iv_type, group in iv_groups.items():
+                n_sig = sum(1 for r in group if r.get('p_one_sided', 1) < 0.05)
+                avg_beta = np.mean([r['coefficient'] for r in group if not np.isnan(r['coefficient'])])
+                lines.append(f"**{iv_type}:** {n_sig}/{len(group)} significant, avg beta = {avg_beta:.6f}")
+            lines.append("")
+        else:
+            lines.append("No alternative IV tests run.")
+            lines.append("")
+
+        lines.append("### Timing Tests")
+        lines.append("")
+
+        timing_results = [r for r in robustness_results if r.get('timing') is not None]
+        if timing_results:
+            timing_groups = {}
+            for r in timing_results:
+                timing = r.get('timing', 'Unknown')
+                if timing not in timing_groups:
+                    timing_groups[timing] = []
+                timing_groups[timing].append(r)
+
+            for timing, group in timing_groups.items():
+                n_sig = sum(1 for r in group if r.get('p_one_sided', 1) < 0.05)
+                avg_beta = np.mean([r['coefficient'] for r in group if not np.isnan(r['coefficient'])])
+                lines.append(f"**{timing}:** {n_sig}/{len(group)} significant, avg beta = {avg_beta:.6f}")
+            lines.append("")
+        else:
+            lines.append("No timing tests run.")
+            lines.append("")
+
+        # Overall robustness conclusion
+        total_rob = len(robustness_results)
+        rob_sig = sum(1 for r in robustness_results if r.get('p_one_sided', 1) < 0.05)
+        rob_pct = rob_sig / total_rob * 100 if total_rob > 0 else 0
+
+        lines.append(f"**Robustness Summary:** {rob_sig}/{total_rob} ({rob_pct:.1f}%) robustness tests significant (p < 0.05)")
+        lines.append("")
+    else:
+        lines.append("## Robustness Tests")
+        lines.append("")
+        lines.append("No robustness tests run.")
+        lines.append("")
 
     # Hypothesis conclusion
     lines.append("## Hypothesis Conclusion")
@@ -957,9 +1183,20 @@ def main():
             dv_col=dv_col, vif_threshold=5.0, dw=dw
         )
 
-        # Apply FDR correction
-        dw.write("\n[5] Applying FDR correction...\n")
+        # Apply FDR correction to primary results
+        dw.write("\n[5] Applying FDR correction to primary results...\n")
         results = apply_fdr_correction(results, alpha=0.05, dw=dw)
+
+        # Run robustness suite (alternative DVs, IVs, timing)
+        dw.write("\n[6] Running robustness suite...\n")
+        robustness_results = run_robustness_suite(
+            reg_df, UNCERTAINTY_MEASURES, CONTROL_VARS,
+            vif_threshold=5.0, dw=dw
+        )
+
+        # Combine primary and robustness results
+        all_results = results + robustness_results
+        dw.write(f"\n  Total results: {len(all_results)} ({len(results)} primary + {len(robustness_results)} robustness)\n")
 
         stats['regressions'] = [{
             'spec': r['spec'],
@@ -970,17 +1207,22 @@ def main():
             'p_one_sided': r['p_one_sided'],
             'p_fdr': r.get('p_fdr', np.nan),
             'fdr_significant': r.get('fdr_significant', False),
-        } for r in results]
+            'dv_type': r.get('dv_type', 'Amihud (2002)'),
+            'iv_type': r.get('iv_type'),
+            'timing': r.get('timing'),
+        } for r in all_results]
 
         # Save outputs
-        dw.write("\n[6] Saving outputs...\n")
-        results_df = save_regression_results(results, paths["output_dir"], dw)
-        generate_results_markdown(results, paths["output_dir"], stats['sample_stats'], dv_col, dw)
+        dw.write("\n[7] Saving outputs...\n")
+        results_df = save_regression_results(all_results, paths["output_dir"], dw)
+        generate_results_markdown(all_results, paths["output_dir"], stats['sample_stats'], dv_col, dw)
 
         stats['output']['regression_results'] = {
             'file': 'H7_Regression_Results.parquet',
             'rows': int(len(results_df)),
-            'regressions': len(results),
+            'regressions': len(all_results),
+            'primary': len(results),
+            'robustness': len(robustness_results),
         }
 
         # Final stats
@@ -991,6 +1233,14 @@ def main():
         stats['memory']['rss_mb_start'] = start_mem['rss_mb']
         stats['memory']['rss_mb_end'] = end_mem['rss_mb']
 
+        # Robustness summary
+        stats['robustness'] = {
+            'total': len(robustness_results),
+            'alt_dv': len([r for r in robustness_results if r.get('dv_type') != 'Amihud (2002)']),
+            'alt_iv': len([r for r in robustness_results if r.get('iv_type')]),
+            'timing': len([r for r in robustness_results if r.get('timing')]),
+        }
+
         save_stats(stats, paths["output_dir"], dw)
 
         # Summary
@@ -998,15 +1248,21 @@ def main():
         dw.write("EXECUTION SUMMARY\n")
         dw.write("=" * 80 + "\n")
         dw.write(f"  Duration: {stats['timing']['duration_seconds']:.2f} seconds\n")
-        dw.write(f"  Regressions: {len(results)}\n")
+        dw.write(f"  Total regressions: {len(all_results)}\n")
+        dw.write(f"    Primary: {len(results)}\n")
+        dw.write(f"    Robustness: {len(robustness_results)}\n")
         dw.write(f"  Output directory: {paths['output_dir']}\n")
 
         # Count significant results
         primary_fdr_signif = sum(1 for r in results if r['spec'] == 'primary' and r.get('fdr_significant', False))
         primary_raw_signif = sum(1 for r in results if r['spec'] == 'primary' and r.get('p_one_sided', 1) < 0.05)
 
-        dw.write(f"\n  Primary spec - H7a (beta > 0): {primary_raw_signif}/6 significant (raw)")
-        dw.write(f"\n  Primary spec - H7a (beta > 0): {primary_fdr_signif}/6 significant (FDR-corrected)")
+        dw.write(f"\n  Primary spec - H7a (beta > 0): {primary_raw_signif}/4 significant (raw)")
+        dw.write(f"\n  Primary spec - H7a (beta > 0): {primary_fdr_signif}/4 significant (FDR-corrected)")
+
+        # Robustness summary
+        rob_sig = sum(1 for r in robustness_results if r.get('p_one_sided', 1) < 0.05)
+        dw.write(f"\n  Robustness tests: {rob_sig}/{len(robustness_results)} significant (p<0.05)")
         dw.write("=" * 80 + "\n")
         dw.write("COMPLETE\n")
 
