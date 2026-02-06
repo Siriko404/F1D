@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 41 - Hypothesis Suite Discovery
-Plan: 02
-Status: COMPLETE — Literature review identified 10 novel, data-feasible hypotheses
-Last activity: 2026-02-06 — Plan 41-02 executed, ranked hypotheses for power analysis
+Plan: 03
+Status: COMPLETE — Power analysis confirms all hypotheses have adequate statistical power
+Last activity: 2026-02-06 — Plan 41-03 executed, 5 hypotheses recommended for Phase 42
 
 ### Progress
 
@@ -34,7 +34,7 @@ Phase 38: Publication Output      [CANCELLED - null results]
 
 v2.0 New Hypothesis — ACTIVE
 Phase 40: H5 Speech → Analyst Dispersion [COMPLETE - 2/2 plans] → H5-A: NOT SUPPORTED, H5-B: MIXED
-Phase 41: Hypothesis Suite Discovery [ACTIVE - 2/4 plans done]
+Phase 41: Hypothesis Suite Discovery [ACTIVE - 3/4 plans done]
 Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 ```
 
@@ -121,6 +121,11 @@ Phase 42: H6 SEC Scrutiny (CCCL) → ↓ Uncertainty [NOT PLANNED - 0/TBD plans]
 - [Phase 41-02 Literature Review] H6: Weak Modals->M&A Target (1.00), H9: Uncertainty Gap->Returns (1.00), H11: Uncertainty->M&A Premium (1.00), H4: Gap->Volatility (1.00), H15: Cross-Speaker->Q (0.85), H7: Uncertainty->Turnover (0.85)
 - [Phase 41-02 Literature Review] Established relationships to skip: tone->returns (LM 2011), uncertainty->dispersion (Price 2012), H1-H3 null results
 - [Phase 41-02 Literature Review] Evidence gaps: minimal literature on speech->M&A, speech->turnover, speech->compensation, gap->returns
+- [Phase 41-03 Power Analysis] All 11 hypotheses have >80% power for small effects; 9/11 Excellent (>90%), 2/11 Adequate (80-90%)
+- [Phase 41-03 Power Analysis] H1-H3 null results NOT due to low power (99%+ power confirmed)
+- [Phase 41-03 Power Analysis] Perfect scores (1.00): H6, H9, H11, H4, H15 (SELECT for Phase 42)
+- [Phase 41-03 Power Analysis] Effect size benchmarks: 5% cash/assets, 10% M&A probability, 50 bps returns, 20% turnover risk, 10% comp change
+- [Phase 41-03 Power Analysis] H7/H12 (turnover) have adequate 82% power with 1,059 dismissal events; rated RESERVE
 
 ### From v1.0 (carry forward)
 
@@ -157,34 +162,34 @@ None currently.
 ### Current Session (2026-02-06)
 
 **Completed:**
-- Phase 41 Plan 02 executed successfully
-- Created PRISMA 2020 literature search protocol (41-02-PRISMA_FLOW.md)
-  - Data-first approach: search focused on feasible IV-DV combinations from Plan 01
-  - Search strings for weak modals/hedging, M&A, CEO turnover, compensation, returns
-  - Inclusion/exclusion criteria skip tested hypotheses (H1-H3 null, tone->returns)
-- Created evidence matrix (41-02-EVIDENCE_MATRIX.md)
-  - Mapped 21+ studies to text measures and outcome categories
-  - Grouped by M&A, Turnover, Compensation, Returns, Analyst outcomes
-  - Identified established vs. novel for each IV-DV combination
-- Documented evidence gaps (41-02-EVIDENCE_GAPS.md)
-  - 10 novel hypotheses with full specification (IV, DV, controls, theory)
-  - H6-H15 with scoring by theoretical motivation (40%), novelty (30%), feasibility (30%)
-- Created literature review summary (41-02-SUMMARY.md)
-  - Tier 1 (>=0.85): H6 Weak Modals->M&A, H9 Gap->Returns, H11 Uncertainty->Premium, H4 Gap->Volatility, H15 Cross-Speaker->Q, H7 Uncertainty->Turnover
-  - Tier 2 (0.65-0.85): H8 Clarity->Comp, H12 Weak Modals->Turnover, H10 Complexity->Accuracy, H13 Uncertainty Volatility, H14 Uncertainty->Revisions
-  - Recommended 6 hypotheses for power analysis in Plan 03
+- Phase 41 Plan 03 executed successfully
+- Created power analysis document (41-03-STATISTICAL_POWER_ANALYSIS.md)
+  - Panel fixed effects power function with design effect adjustment
+  - Power calculated for H1-H3 existing samples (all >99% for small effects)
+  - Power calculated for 11 candidate hypotheses (H4, H6-H15)
+  - 9/11 Excellent (>90%), 2/11 Adequate (>80%), 0/11 Marginal or Low
+  - Documented minimum detectable effect sizes for each hypothesis
+- Created summary and selection framework (41-03-SUMMARY.md)
+  - Effect size benchmarks with economic interpretation
+  - Selection framework: 30% novelty + 40% feasibility + 30% power
+  - Ranked table with all 11 hypotheses scored
+  - Top 5 hypotheses recommended for Phase 42: H6, H9, H11, H4, H15
+  - H7/H12 (turnover) rated RESERVE due to adequate (82%) vs excellent (>90%) power
 
-**Phase 41 Plan 02 Findings:**
-- Minimal literature on: speech->M&A, speech->turnover, speech->compensation, gap->returns
-- Highest novelty: Weak Modals->M&A Target (no prior tests, 95K deals)
-- Novel measure: Uncertainty Gap (Q&A-Pres) -> Returns (not studied before)
-- Skip: tone->returns (established), uncertainty->dispersion (H5 tested), H1-H3 null results
+**Phase 41 Plan 03 Findings:**
+- Power is NOT a constraint: all hypotheses have >80% power for small effects
+- H1-H3 null results are NOT due to low power (99%+ power confirmed)
+- All 11 hypotheses can detect economically meaningful effects
+- Selection should focus on novelty and theoretical mechanism, not statistical power
+- M&A hypotheses (H6, H11) leverage 95K deals with minimal literature
+- Gap measure hypotheses (H9, H4, H15) test novel uncertainty differential
+- Turnover hypotheses (H7, H12) have adequate 82% power with 1,059 events
 
 **Next Session:**
-- Phase 41 Plan 03: Statistical Power Analysis
-- Calculate ex-ante power for Tier 1 hypotheses
-- Assess minimum detectable effect sizes
-- Verify H7 (turnover) has sufficient power with 1,059 events
+- Phase 41 Plan 04: Hypothesis Suite Selection
+- Final selection of 3-5 hypotheses for Phase 42 implementation
+- Create detailed variable specifications for selected hypotheses
+- Document control variables and estimation strategies
 
 ### Previous Session (2026-02-05)
 
@@ -208,4 +213,4 @@ None currently.
 - Interpretation: Speech-dispersion relationship driven by firm heterogeneity
 
 ---
-*Last updated: 2026-02-06 (Phase 40 complete: H5 null results; Phase 41 Plan 02 complete, literature review finished, 10 novel hypotheses ranked)*
+*Last updated: 2026-02-06 (Phase 40 complete: H5 null results; Phase 41 Plan 03 complete, power analysis confirms all hypotheses have adequate power, 5 hypotheses recommended for Phase 42)*
