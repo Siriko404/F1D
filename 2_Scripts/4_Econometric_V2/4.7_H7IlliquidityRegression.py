@@ -233,7 +233,12 @@ def prepare_regression_data(df, uncertainty_vars, control_vars, dv_col='amihud_l
         before_agg = len(df_work)
 
     # Group by gvkey and year, take mean of all numeric columns
-    agg_cols = [dv_col] + uncertainty_vars + control_vars + ['trading_days']
+    # Include alternative DVs for robustness testing
+    alternative_dvs = ['roll_spread_lag1', 'log_amihud_lag1']
+    agg_cols = (
+        [dv_col] + uncertainty_vars + control_vars + ['trading_days'] +
+            [col for col in alternative_dvs if col in df_work.columns]
+    )
     df_work = df_work.groupby(['gvkey', 'year'], as_index=False)[agg_cols].mean()
 
     if dw:
@@ -597,7 +602,7 @@ def run_all_h7_regressions(df, uncertainty_measures, specs, control_vars,
 
             result = run_h7_regression(
                 df, uncertainty_var, dv_col, control_vars,
-                spec_name, spec_config, vif_threshold, dw
+                spec_name, spec_config, vif_threshold, dw=dw
             )
 
             results.append(result)
@@ -618,10 +623,10 @@ def run_robustness_suite(df, uncertainty_measures, control_vars,
     Run full robustness suite for H7.
 
     Dimensions:
-    1. Alternative DVs (Roll spread, bid-ask spread)
+    1. Alternative DVs (Roll spread, bid-ask spread) - use existing lag1 columns
     2. Alternative specs (Firm only, Pooled, Double-cluster) - uses primary DV
     3. Alternative IVs (CEO-only, Presentation-only, QA-only)
-    4. Timing variants (concurrent, forward, lead)
+    4. Timing variants (skip if current-period illiquidity not available)
 
     Args:
         df: Panel data with MultiIndex (gvkey, year)
@@ -640,48 +645,52 @@ def run_robustness_suite(df, uncertainty_measures, control_vars,
         dw.write("\n=== Robustness Suite ===\n")
 
     # Dimension 1: Alternative DVs (Roll spread, bid-ask spread)
+    # Note: H7 data has lag1 DVs (already forward-looking), so use directly
     if dw:
         dw.write("\n[Dimension 1] Alternative Dependent Variables\n")
 
-    # Check if alternative DVs exist
+    # Check which alternative DVs exist (lag1 versions are forward-looking)
     alt_dvs = []
-    if 'roll_spread' in df_work.columns:
-        alt_dvs.append(('roll_spread', 'Roll (1984)'))
-    if 'bidask_spread' in df_work.columns:
-        alt_dvs.append(('bidask_spread', 'Bid-Ask Spread'))
+    if 'roll_spread_lag1' in df_work.columns:
+        alt_dvs.append(('roll_spread_lag1', 'Roll (1984)'))
+    # Add log_amihud as another alternative DV
+    if 'log_amihud_lag1' in df_work.columns:
+        alt_dvs.append(('log_amihud_lag1', 'Log Amihud'))
 
     for dv_col, dv_label in alt_dvs:
         if dw:
-            dw.write(f"  Testing DV: {dv_label}\n")
+            # Count non-null observations for this DV
+            n_obs = df_work[dv_col].notna().sum()
+            dw.write(f"  Testing DV: {dv_label} ({dv_col}) - {n_obs} obs\n")
 
-        # Create forward-looking DV
+        # Filter to rows with non-null DV
         if isinstance(df_work.index, pd.MultiIndex):
             df_alt = df_work.reset_index()
         else:
             df_alt = df_work.copy()
 
-        df_alt[f'{dv_col}_fwd'] = df_alt.groupby('gvkey')[dv_col].shift(-1)
-        df_alt = df_alt[df_alt[f'{dv_col}_fwd'].notna()]
+        df_alt = df_alt[df_alt[dv_col].notna()]
+        if len(df_alt) == 0:
+            if dw:
+                dw.write(f"    SKIPPED: No valid observations\n")
+            continue
         df_alt = df_alt.set_index(['gvkey', 'year'])
 
         for uv in uncertainty_measures:
             if uv not in df_alt.columns:
                 continue
             result = run_h7_regression(
-                df_alt, uv, f'{dv_col}_fwd', control_vars,
+                df_alt, uv, dv_col, control_vars,
                 spec_name='primary',
                 spec_config=SPECS['primary'],
                 vif_threshold=vif_threshold,
                 dv_type=dv_label,
-                dw=dw
+                dw=None  # Suppress verbose output
             )
             if result and 'error' not in result:
                 results.append(result)
 
-    # Dimension 2: Alternative specs (use primary DV - already in run_all_h7_regressions)
-    # This is handled by the main regression loop with SPECS dict
-
-    # Dimension 3: Alternative IVs
+    # Dimension 2: Alternative IVs
     if dw:
         dw.write("\n[Dimension 2] Alternative Independent Variables\n")
 
@@ -699,39 +708,17 @@ def run_robustness_suite(df, uncertainty_measures, control_vars,
                 vif_threshold=vif_threshold,
                 dv_type='Amihud (2002)',
                 iv_type=iv_type,
-                dw=dw
+                dw=None  # Suppress verbose output
             )
             if result and 'error' not in result:
                 results.append(result)
 
-    # Dimension 4: Timing variants
+    # Dimension 3: Timing variants
+    # Skip if current-period illiquidity not available (only lag1 in H7 data)
     if dw:
         dw.write("\n[Dimension 3] Timing Tests\n")
-
-    # Need to use amihud_illiquidity (current period) to create timing variants
-    if 'amihud_illiquidity' in df_work.columns:
-        timing_variants = create_timing_variants(
-            df_work, 'amihud_illiquidity', [0, -1, -2], dw
-        )
-
-        for timing_name, (df_t, dv_col) in timing_variants.items():
-            if dw:
-                dw.write(f"  Testing timing: {timing_name} ({dv_col})\n")
-
-            for uv in uncertainty_measures:
-                if uv not in df_t.columns:
-                    continue
-                result = run_h7_regression(
-                    df_t, uv, dv_col, control_vars,
-                    spec_name='primary',
-                    spec_config=SPECS['primary'],
-                    vif_threshold=vif_threshold,
-                    dv_type='Amihud (2002)',
-                    timing=timing_name,
-                    dw=None  # Suppress verbose output
-                )
-                if result and 'error' not in result:
-                    results.append(result)
+        dw.write("  SKIPPED: Current-period illiquidity not available in H7 data\n")
+        dw.write("  (H7 uses forward-looking DVs by design: amihud_lag1, roll_spread_lag1)\n")
 
     if dw:
         dw.write(f"\nRobustness suite complete: {len(results)} results\n")
