@@ -331,6 +331,34 @@ Plans:
 **Details:**
 Research phase producing documents, not code. Prioritizes SEC Edgar Letters (150K+ letters with full_text, 2005-2022) as highest novelty opportunity — no prior LLM analysis of this corpus. Integrates FirmLevelRisk data (354K firm-quarters) for validation and interaction effects.
 
+### Phase 53: H2 PRisk × Uncertainty → Investment Efficiency
+**Goal:** Test whether compound uncertainty from political risk (PRisk) and managerial linguistic uncertainty interaction predicts decreased investment efficiency
+**Depends on:** Phase 52 (Hypothesis Specifications)
+**Status:** READY FOR EXECUTION
+**Plans:** 3 plans in 3 waves
+
+Plans:
+- [x] 53-01-PLAN.md — Construct correct Biddle (2009) investment residual (NOT Phase 30's roa_residual)
+- [x] 53-02-PLAN.md — Merge PRisk and Uncertainty, standardize, create interaction term
+- [x] 53-03-PLAN.md — Execute primary regression and robustness checks
+
+**Details:**
+Hypothesis 2 from 52-HYPOTHESIS-SPECIFICATIONS.md — tests interaction effect of PRisk × LM_Uncertainty on Investment Efficiency. No LLM required; both measures are pre-computed (Hassan PRisk from FirmLevelRisk, LM Uncertainty from dictionary). Implementation uses V3 folder structure to separate external risk interaction hypotheses from V2 linguistic uncertainty main effects.
+
+### Phase 54: H6 Implementation Audit
+**Goal:** Conduct expert audit of H6 (SEC Scrutiny/CCCL) implementation to determine whether null results stem from research design flaws, variable construction issues, or genuine null effects
+**Depends on:** Phase 42 (H6 CCCL Regression)
+**Status:** NOT PLANNED YET
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 54 to break down)
+
+**Details:**
+Expert finance researcher audit (+20 years experience) with thorough literature review. Examines H6 implementation for potential research design flaws: variable construction (CCCL shift-share instrument, speech uncertainty aggregation), model specification (fixed effects, clustering, FDR correction), sample selection, and identification strategy (parallel trends, pre-trends test failure). Determines whether null results are implementation problems or genuine empirical findings.
+
+---
+
 ## Progress
 
 **v2.0 Execution Summary:**
