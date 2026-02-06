@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 54 - H6 Implementation Audit
-Plan: 4 of 4
-Status: **COMPLETE** — Full audit completed
-Last activity: 2026-02-06 — Plan 54-03 audit synthesis completed, 54-AUDIT-REPORT.md delivered
+Phase: 53 - H2 PRisk x Uncertainty -> Investment Efficiency
+Plan: 1 of 2
+Status: **IN PROGRESS** — Plan 53-01 complete, Plan 53-02 pending
+Last activity: 2026-02-06 — Plan 53-01 Biddle (2009) investment residual constructed
 
 ### Progress
 
@@ -39,6 +39,7 @@ Phase 41: Hypothesis Discovery    [ABANDONED - 4/4 plans] → Suite approach aba
 Phase 42: H6 SEC Scrutiny (CCCL)  [COMPLETE - 2/2 plans] → H6-A: NULL, H6-B: NULL, H6-C: NULL
 Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
 Phase 52: LLM Lit Review & Novel Hyp [COMPLETE - 5/5 plans] → 5 hypotheses specified
+Phase 53: H2 PRisk x Uncertainty     [IN PROGRESS - 1/2 plans] → 53-01 complete (Biddle DV constructed)
 Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms implementation sound, null results genuine
 Phase 55: V1 Hypotheses Re-Test      [NOT PLANNED] → Uncertainty → Illiquidity/Takeover
 ```
@@ -192,6 +193,14 @@ Phase 55: V1 Hypotheses Re-Test      [NOT PLANNED] → Uncertainty → Illiquidi
 - [Phase 52-05 Final Selection] H5: PRisk Volatility → Stock Volatility (score 0.93) - dynamics not levels
 - [Phase 52-05 Final Selection] Implementation order: H2 first (no LLM), H5 second (no LLM), then H1/H3/H4 (LLM required)
 - [Phase 52-05 Final Selection] LLM cost estimate: $850-1,400 for 340K API calls
+- [Phase 53-01 Biddle DV] Investment = (CapEx + R&D + Acq - AssetSales) / lag(AT) - Biddle (2009) specification
+- [Phase 53-01 Biddle DV] First-stage: Investment ~ TobinQ_lag + SalesGrowth_lag by FF48-year, residual = InvestmentResidual
+- [Phase 53-01 Biddle DV] Sample: 33,862 firm-year observations (42,020 after deduplication, 36,821 valid for regression)
+- [Phase 53-01 Biddle DV] First-stage mean R2: 0.147 (558 regressions across 985 FF48-year cells, 427 cells too thin)
+- [Phase 53-01 Biddle DV] Quarterly deduplication: keep='last' on gvkey-fyear for Q4/most recent observation as annual value
+- [Phase 53-01 Biddle DV] Output: H2_InvestmentResiduals.parquet with InvestmentResidual DV + Biddle controls (CashFlow, Size, Leverage, TobinQ, SalesGrowth)
+- [Phase 53-01 V3 Folder] Created 3_Financial_V3/ folder for external risk (PRisk) interaction hypotheses, separate from V2 linguistic uncertainty main effects
+- [Phase 53-01 Memory Optimization] Sample-filtering-first, intermediate disk spill, gc.collect() between merges to avoid MemoryError
 - [Phase 54 Added] H6 Implementation Audit — expert audit to determine if null results stem from research design flaws, variable construction issues, or genuine effects
 - [Phase 55 Added] V1 Hypotheses Re-Test — re-test Uncertainty → Illiquidity and Uncertainty → Takeover Target Probability hypotheses; suspected implementation flaws in original V1 code, specs, or data construction
 
@@ -258,10 +267,30 @@ Phase 55: V1 Hypotheses Re-Test      [NOT PLANNED] → Uncertainty → Illiquidi
 
 ### Current Session (2026-02-06)
 
-**Phase 53 Added:**
-- Phase 53 created for H2 (PRisk × Uncertainty → Investment Efficiency)
-- No LLM required; uses pre-computed Hassan PRisk and LM Uncertainty dictionary
-- Status: NOT PLANNED YET — awaiting /gsd:plan-phase 53
+**Phase 53-01 COMPLETE:**
+- Constructed Biddle (2009) investment residual as DV for H2 regression
+- Script: 2_Scripts/3_Financial_V3/4.1_H2_BiddleInvestmentResidual.py
+- Output: 33,862 firm-year observations with InvestmentResidual DV + Biddle controls
+- First-stage: 558 regressions across 985 FF48-year cells (mean R2 = 0.147)
+- Investment = (CapEx + R&D + Acq - AssetSales) / lag(AT), winsorized at 1%/99%
+- Deduplicated Compustat quarterly data to annual (164,997 -> 42,020 observations)
+- V3 folder structure created for external risk (PRisk) interaction hypotheses
+- SUMMARY.md created with full documentation
+
+**Phase 53-01 Decisions:**
+- Biddle (2009) specification correct: Investment ~ TobinQ_lag + SalesGrowth_lag by FF48-year
+- Quarterly deduplication required: keep='last' on gvkey-fyear for Q4/most recent
+- Sample-filtering-first optimization to avoid processing 956K Compustat rows
+- Memory optimization: intermediate disk spill, gc.collect() between merges
+
+**Deviations Fixed (Rule 3 - Blocking):**
+- Compustat column names: q/y suffixes (atq, capxy, xrdy) not simple names
+- Quarterly data causing 2.4M duplicate rows - fixed with deduplication
+- MemoryError during merge - fixed with disk spill and gc.collect()
+
+**Next Steps:**
+- Plan 53-02: Merge InvestmentResidual with PRisk for H2 regression
+- Plan 53-02 will test: PRisk × Uncertainty → Investment Efficiency
 
 **Phase 52 COMPLETE (Previous Session):**
 - Completed 52-01: Literature Review & Evidence Matrix
@@ -398,4 +427,4 @@ Phase 55: V1 Hypotheses Re-Test      [NOT PLANNED] → Uncertainty → Illiquidi
 - Phase 54-03: Final audit summary and determination on re-test vs documentation
 
 ---
-*Last updated: 2026-02-06 (Phase 54-02 Complete)*
+*Last updated: 2026-02-06 (Phase 53-01 Complete)*
