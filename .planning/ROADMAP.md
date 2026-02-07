@@ -399,16 +399,15 @@ Fresh re-implementation based on literature best practices (NOT V1 code audit). 
 - CUSIP-GVKEY crosswalk created (22,977 mappings) for future M&A research
 
 ### Phase 56: CEO/Management Uncertainty as Persistent Style
-**Goal:** Re-implement V1 tests of CEO/management speech uncertainty as a persistent style trait in V2 framework
+**Goal:** Replicate Dzieliński, Wagner, Zeckhauser (2020) CEO fixed effects extraction methodology to estimate CEO communication style as a persistent trait
 **Depends on:** Phase 55 (V1 Hypotheses Re-Test)
-**Status:** PLANNED — 0 plans
-**Plans:**
+**Status:** PLANNED — 1 plan in 1 wave
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 56 to break down)
+- [ ] 56-01-PLAN.md — CEO Fixed Effects extraction (Equation 4, Table 3, Table IA.1, Figure 3)
 
 **Details:**
-Tests whether managerial speech uncertainty functions as a persistent style trait (stable within-manager over time) rather than situational response. V1 implementation found evidence of persistence; this phase re-implements those tests in the V2 framework with proper econometric infrastructure (Firm+Year FE, clustered SE, FDR correction). Measures include within-manager correlation, ICC (intraclass correlation), and autocorrelation of uncertainty measures over time.
+Replicates Dzieliński, Wagner, Zeckhauser (2020) "Straight talkers and vague talkers" CEO fixed effects extraction methodology (Equation 4). Estimates CEO communication style as a time-invariant personal trait via CEO fixed effects regression, then validates the measure through robustness specifications. Outcome regressions (Tables 5-7) are NOT in scope - this phase focuses on CEO style extraction only. Implements both paper (2003-2015) and extended (2002-2018) sample periods.
 
 ---
 
@@ -468,7 +467,7 @@ Tests whether managerial speech uncertainty functions as a persistent style trai
 | 53 | H2 PRisk × Uncertainty → Investment Efficiency | 3/3 | COMPLETE | 2026-02-06 |
 | 54 | H6 Implementation Audit | 4/4 | COMPLETE | 2026-02-06 |
 | 55 | V1 Hypotheses Re-Test | 9/9 | COMPLETE | 2026-02-06 |
-| 56 | CEO/Management Uncertainty as Persistent Style | 0/TBD | PLANNED | — |
+| 56 | CEO/Management Uncertainty as Persistent Style | 0/1 | PLANNED | — |
 
 ## Requirement Coverage
 
