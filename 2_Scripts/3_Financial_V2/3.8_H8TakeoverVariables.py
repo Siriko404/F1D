@@ -140,6 +140,7 @@ def setup_paths(timestamp):
         "manifest_dir": manifest_dir,
         "h7_dir": h7_dir,
         "sdc_file": root / CONFIG['sdc_file'],
+        "ccm_file": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
     }
 
     # Output directory
@@ -282,6 +283,50 @@ def load_h7_data(h7_path):
     return df
 
 
+def load_ccm_link(ccm_path):
+    """
+    Load CRSP-Compustat link table for CUSIP-GVKEY mapping.
+
+    Creates a mapping from 6-digit CUSIP to GVKEY using the CCM link table.
+    Filters to primary links (LINKPRIM='P' or 'C') and active links.
+
+    Args:
+        ccm_path: Path to CRSPCompustat_CCM.parquet
+
+    Returns:
+        DataFrame with cusip6, gvkey mapping
+    """
+    print("\nLoading CRSP-Compustat CCM link table...")
+
+    ccm = pd.read_parquet(ccm_path)
+    print(f"  Loaded CCM: {len(ccm):,} link records")
+
+    # Standardize column names (handle case variations)
+    ccm.columns = [c.lower() for c in ccm.columns]
+
+    # Ensure cusip is 6-digit string
+    if 'cusip' in ccm.columns:
+        ccm['cusip'] = ccm['cusip'].astype(str).str[:6].str.upper()
+        # Filter out invalid CUSIPs
+        ccm = ccm[~ccm['cusip'].isin(['nan', 'none', ''])]
+    else:
+        raise ValueError("CCM data missing 'cusip' column")
+
+    # Filter to primary links (LINKPRIM='P' or 'C')
+    if 'linkprim' in ccm.columns:
+        ccm = ccm[ccm['linkprim'].isin(['P', 'C', 'p', 'c'])]
+        print(f"  Filtered to primary links: {len(ccm):,}")
+
+    # Get most recent GVKEY for each CUSIP (in case of multiple matches)
+    ccm_map = ccm.groupby('cusip')['gvkey'].last().reset_index()
+    ccm_map.columns = ['cusip6', 'gvkey']
+    ccm_map['gvkey'] = ccm_map['gvkey'].astype(str).str.zfill(6)
+
+    print(f"  Unique CUSIP-GVKEY mappings: {len(ccm_map):,}")
+
+    return ccm_map
+
+
 def create_forward_takeover(takeover_df):
     """
     Create forward-looking takeover indicator.
@@ -353,7 +398,7 @@ def load_firm_controls(firm_controls_dir, year_start, year_end):
     return combined
 
 
-def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df):
+def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df, ccm_map):
     """
     Merge takeover data with uncertainty and controls.
 
@@ -362,6 +407,7 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df):
         h7_df: H7 data with uncertainty measures (with gvkey, year)
         controls_df: Firm controls
         manifest_df: Sample manifest for filtering
+        ccm_map: CUSIP-GVKEY mapping from CCM link table
 
     Returns:
         Analysis-ready dataset for H8
@@ -370,37 +416,56 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df):
     print("Merging H8 Data")
     print("=" * 60)
 
-    # Step 1: Load manifest to get CUSIP-GVKEY mapping
-    print("\nStep 1: Loading manifest for CUSIP-GVKEY mapping...")
-    manifest_cols = ['gvkey', 'cusip', 'year'] if 'cusip' in manifest_df.columns else ['gvkey', 'year']
-    manifest_subset = manifest_df[manifest_cols].drop_duplicates() if 'cusip' in manifest_df.columns else manifest_df[['gvkey', 'year']].drop_duplicates()
+    # Step 1: Prepare manifest for GVKEY filtering
+    print("\nStep 1: Preparing manifest for sample firms...")
+    # Add year to manifest from start_date
+    manifest_df = manifest_df.copy()
+    manifest_df['start_date'] = pd.to_datetime(manifest_df['start_date'])
+    manifest_df['year'] = manifest_df['start_date'].dt.year
 
-    # Ensure consistent types
-    manifest_subset['gvkey'] = manifest_subset['gvkey'].astype(str).str.zfill(6)
-    if 'cusip' in manifest_subset.columns:
-        manifest_subset['cusip'] = manifest_subset['cusip'].astype(str).str[:6]
+    # Get sample GVKEYs
+    sample_gvkeys = manifest_df['gvkey'].unique()
+    print(f"  Sample firms: {len(sample_gvkeys):,}")
 
-    print(f"  Manifest: {len(manifest_subset):,} unique gvkey-years")
+    # Step 2: Map takeover CUSIPs to GVKEYs using CCM link table
+    print("\nStep 2: Mapping CUSIPs to GVKEYs using CCM...")
+    print(f"  CCM mappings available: {len(ccm_map):,}")
 
-    # Step 2: Map takeover CUSIPs to GVKEYs using manifest
-    print("\nStep 2: Mapping CUSIPs to GVKEYs...")
-    takeover_df['cusip'] = takeover_df['cusip'].astype(str).str[:6]
-
-    # Merge takeover with manifest to get gvkey
+    # Merge takeover data with CCM mapping
     takeover_with_gvkey = takeover_df.merge(
-        manifest_subset,
-        on=['cusip', 'year'],
-        how='left'
+        ccm_map,
+        left_on='cusip',
+        right_on='cusip6',
+        how='inner'
     )
+    print(f"  Matched CUSIPs: {len(takeover_with_gvkey):,} observations")
+    print(f"  Unique GVKEYs: {takeover_with_gvkey['gvkey'].nunique():,}")
 
-    # Drop observations without GVKEY match
-    n_before = len(takeover_with_gvkey)
-    takeover_with_gvkey = takeover_with_gvkey[takeover_with_gvkey['gvkey'].notna()].copy()
-    takeover_with_gvkey['gvkey'] = takeover_with_gvkey['gvkey'].astype(str).str.zfill(6)
-    print(f"  Matched {len(takeover_with_gvkey):,}/{n_before:,} takeover observations to GVKEYs")
+    # Create forward-looking takeover indicator at firm-year level
+    takeover_with_gvkey = takeover_with_gvkey.sort_values(['gvkey', 'year'])
+    takeover_with_gvkey['takeover_fwd'] = takeover_with_gvkey.groupby('gvkey')['takeover_completed'].shift(-1)
+    takeover_with_gvkey['takeover_fwd'] = takeover_with_gvkey['takeover_fwd'].fillna(0).astype(int)
+
+    # Aggregate to firm-year level (1 if any takeover in year)
+    takeover_firm_year = takeover_with_gvkey.groupby(['gvkey', 'year']).agg({
+        'takeover_fwd': 'max',
+        'takeover_announced': 'max',
+        'takeover_hostile': 'max',
+    }).reset_index()
+
+    print(f"  Firm-year takeover observations: {len(takeover_firm_year):,}")
+    print(f"  Takeover events (t+1): {takeover_firm_year['takeover_fwd'].sum():,}")
+
+    # Also create market-wide takeover rate for robustness
+    takeover_by_year = takeover_with_gvkey.groupby('year').agg({
+        'takeover_fwd': 'mean',
+        'gvkey': 'count'
+    }).reset_index()
+    takeover_by_year.columns = ['year', 'takeover_rate_year', 'n_takeovers_year']
+    print(f"  Annual takeover rate range: {takeover_by_year['takeover_rate_year'].min():.2%} - {takeover_by_year['takeover_rate_year'].max():.2%}")
 
     # Step 3: Start with H7 data (has uncertainty measures and some controls)
-    print("\nStep 3: Merging with H7 base data...")
+    print("\nStep 3: Preparing H7 base data...")
     h8_df = h7_df.copy()
 
     # Select H7 columns we need
@@ -415,15 +480,22 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df):
     h8_df = h7_df[h7_cols].copy()
     print(f"  H7 base: {len(h8_df):,} observations")
 
-    # Step 4: Merge takeover indicators
-    print("\nStep 4: Merging takeover indicators...")
-    takeover_merge = takeover_with_gvkey[['gvkey', 'year', 'takeover_fwd', 'takeover_announced_fwd', 'takeover_hostile_fwd']].copy()
-    h8_df = h8_df.merge(takeover_merge, on=['gvkey', 'year'], how='left')
+    # Step 4: Merge firm-level takeover indicators
+    print("\nStep 4: Merging firm-level takeover indicators...")
+
+    h8_df = h8_df.merge(takeover_firm_year, on=['gvkey', 'year'], how='left')
+    h8_df = h8_df.merge(takeover_by_year, on='year', how='left')
+
+    # Fill missing takeover_fwd with 0 (not a target)
     h8_df['takeover_fwd'] = h8_df['takeover_fwd'].fillna(0).astype(int)
-    h8_df['takeover_announced_fwd'] = h8_df['takeover_announced_fwd'].fillna(0).astype(int)
-    h8_df['takeover_hostile_fwd'] = h8_df['takeover_hostile_fwd'].fillna(0).astype(int)
-    print(f"  After takeover merge: {len(h8_df):,} observations")
-    print(f"  Takeover targets (t+1): {h8_df['takeover_fwd'].sum():,}")
+    h8_df['takeover_announced'] = h8_df['takeover_announced'].fillna(0).astype(int)
+    h8_df['takeover_hostile'] = h8_df['takeover_hostile'].fillna(0).astype(int)
+
+    n_takeovers = h8_df['takeover_fwd'].sum()
+    takeover_rate = h8_df['takeover_fwd'].mean()
+    print(f"  Firms with takeover data: {(h8_df['takeover_fwd'].notna() | (h8_df['takeover_fwd'] == 0)).sum():,}")
+    print(f"  Takeover targets (t+1): {n_takeovers:,}")
+    print(f"  Takeover rate: {takeover_rate:.2%}")
 
     # Step 5: Merge additional firm controls if available
     if controls_df is not None and len(controls_df) > 0:
@@ -456,23 +528,23 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df):
 
     # Step 6: Filter to sample firms
     print("\nStep 6: Filtering to sample firms...")
-    sample_firms = manifest_subset['gvkey'].unique()
-    h8_df = h8_df[h8_df['gvkey'].isin(sample_firms)]
+    h8_df = h8_df[h8_df['gvkey'].isin(sample_gvkeys)]
     print(f"  After sample filter: {len(h8_df):,} observations")
 
     # Step 7: Apply missing data handling
     print("\nStep 7: Handling missing data...")
 
     # For logistic regression, require DV and primary IV
-    required_vars = ['takeover_fwd']
+    required_vars = ['takeover_fwd']  # Now we have firm-level takeover data
     primary_iv = 'Manager_QA_Uncertainty_pct' if 'Manager_QA_Uncertainty_pct' in h8_df.columns else uncertainty_cols[0] if uncertainty_cols else None
     if primary_iv:
         required_vars.append(primary_iv)
 
-    n_before_missing = len(h8_df)
-    h8_df = h8_df.dropna(subset=required_vars)
-    n_after_missing = len(h8_df)
-    print(f"  Dropped {n_before_missing - n_after_missing:,} observations with missing DV/IV")
+    if required_vars:
+        n_before_missing = len(h8_df)
+        h8_df = h8_df.dropna(subset=required_vars)
+        n_after_missing = len(h8_df)
+        print(f"  Dropped {n_before_missing - n_after_missing:,} observations with missing IV/DV")
 
     # For controls, require at least 80% availability
     control_cols_in_df = [c for c in h8_df.columns if c in ['Size', 'Lev', 'ROA', 'BM', 'CurrentRatio', 'Efficiency', 'StockRet', 'RD_Intensity', 'Volatility']]
@@ -484,6 +556,14 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df):
         h8_df = h8_df.drop(columns=['n_missing_controls'])
 
     print(f"  Final sample: {len(h8_df):,} observations")
+
+    # Validate takeover variation
+    takeover_var = h8_df['takeover_fwd'].var()
+    if takeover_var == 0:
+        print(f"  WARNING: No variation in takeover_fwd (all zeros)")
+        print(f"  Regression will not be possible without takeover events")
+    else:
+        print(f"  Takeover_fwd variance: {takeover_var:.6f}")
 
     return h8_df
 
@@ -823,6 +903,12 @@ def main():
         print(f"  Warning: Could not load firm controls: {e}")
         controls_df = pd.DataFrame()
 
+    # Load CCM link table for CUSIP-GVKEY mapping
+    print("\nCRSP-Compustat CCM Link Table:")
+    stats["input"]["files"].append(str(paths["ccm_file"]))
+    stats["input"]["checksums"][paths["ccm_file"].name] = compute_file_checksum(paths["ccm_file"])
+    ccm_map = load_ccm_link(paths["ccm_file"])
+
     # ========================================================================
     # Merge Data
     # ========================================================================
@@ -831,7 +917,7 @@ def main():
     print("Merging and Constructing Sample")
     print("=" * 60)
 
-    h8_df = merge_h8_data(sdc_df, h7_df, controls_df, manifest)
+    h8_df = merge_h8_data(sdc_df, h7_df, controls_df, manifest, ccm_map)
     h8_df = apply_sample_construction(h8_df, CONFIG)
 
     # ========================================================================
