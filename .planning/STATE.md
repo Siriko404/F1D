@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 55 - V1 Hypotheses Re-Test
-Plan: 7 of 9
-Status: **In Progress** - H8 takeover regression complete with CUSIP-GVKEY mapping; primary spec failed to converge due to rare events (16 takeovers)
-Last activity: 2026-02-06 - Plan 55-07 complete; H8 regression executed (pooled spec shows 1/4 sig, primary spec failed convergence)
+Plan: 8 of 9
+Status: **In Progress** - H8 robustness suite complete; 30 robustness tests executed across 5 dimensions (alt DVs, alt IVs, timing, Cox PH); results NOT ROBUST (0/30 sig)
+Last activity: 2026-02-06 - Plan 55-08 complete; H8 robustness suite executed (alternative DVs, alternative IVs, timing tests, Cox PH)
 
 ### Next Phase
 
-**Plan 55-08: H9 Speech Uncertainty -> Future Returns** — Ready to start
+**Plan 55-09: H7/H8 Synthesis and Reporting** — Ready to start
 **Blockers:** None
 
 ### Progress
@@ -46,7 +46,7 @@ Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
 Phase 52: LLM Lit Review & Novel Hyp [COMPLETE - 5/5 plans] → 5 hypotheses specified
 Phase 53: H2 PRisk x Uncertainty     [COMPLETE - 3/3 plans] → H2: NOT SUPPORTED
 Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms implementation sound, null results genuine
-Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 7/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete, 55-07 Takeover Regression complete → H8 (Takeover): NOT SUPPORTED (primary spec failed convergence, pooled: 1/4 sig, low power due to 16 events)
+Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 8/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete, 55-07 Takeover Regression complete → H8 (Takeover): NOT SUPPORTED (primary spec failed convergence, pooled: 1/4 sig, low power due to 16 events); 55-08 Robustness Suite complete → H8 Robustness: NOT ROBUST (0/30 sig across 5 dimensions: alt DVs, alt IVs, timing, Cox PH)
 Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 ```
 
@@ -211,6 +211,9 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 - [Phase 53-01 Memory Optimization] Sample-filtering-first, intermediate disk spill, gc.collect() between merges to avoid MemoryError
 - [Phase 54 Added] H6 Implementation Audit — expert audit to determine if null results stem from research design flaws, variable construction issues, or genuine effects
 - [Phase 55 Added] V1 Hypotheses Re-Test — re-test Uncertainty → Illiquidity and Uncertainty → Takeover Target Probability hypotheses; suspected implementation flaws in original V1 code, specs, or data construction
+- [Phase 55-08 Robustness] H8 robustness suite with 5 dimensions (alt DVs, alt IVs, timing tests, Cox PH, alternative specs) implemented
+- [Phase 55-08 Robustness] Robustness results: 0/30 tests significant across all dimensions, confirming H8 NOT ROBUST
+- [Phase 55-08 Robustness] Low statistical power due to rare events (16 completed, 29 announced, 7 hostile) limits interpretation
 - [Phase 56 Added] CEO/Management Uncertainty as Persistent Style — Re-implement V1 tests of managerial speech uncertainty as persistent style trait in V2 framework
 - [Phase 55-01 Literature] Dang et al. (2022) identified as foundational paper for H1 with direct methodological template
 - [Phase 55-01 Literature] Amihud (2002) illiquidity measure: ILLIQ = (1/D) * sum(|RET| / VOLD) with 6000+ citations
@@ -413,6 +416,32 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 - Timing: Uncertainty_t -> Outcome_{t+1} for causal ordering
 - Pre-registered robustness: All specs must be run and reported regardless of outcome
 - FDR correction applied across 4 IVs per hypothesis (Benjamini-Hochberg)
+
+**Current Session (2026-02-06):**
+
+**Phase 55-08 COMPLETE:**
+- H8 robustness suite implemented (4.8_H8TakeoverRegression.py extended with 468 lines)
+- H8_ROBUSTNESS_CONFIG with 5 dimensions: alternative DVs, alternative specs, alternative IVs, timing tests, Cox PH
+- create_takeover_timing_variants() for concurrent/forward/lead timing tests
+- run_h8_cox_ph() for survival analysis (Cox proportional hazards)
+- run_h8_robustness_suite() main loop covering all dimensions
+- 30 robustness tests executed: 12 timing, 8 alt DV, 6 alt IV, 4 Cox PH
+- Results: 0/30 robustness tests significant, confirming H8 NOT ROBUST
+- generate_h8_results_report() extended with robustness sections and assessment
+- 1 commit: f9aa674 (robustness implementation)
+- Outputs: H8_Regression_Results.parquet (38 results), H8_RESULTS.md (comprehensive report)
+- Low statistical power due to rare events (16 completed, 29 announced, 7 hostile takeovers)
+- Pre-registered approach honored: full robustness suite regardless of primary result
+- SUMMARY.md created at .planning/phases/55-v1-hypotheses-retest/55-08-SUMMARY.md
+
+**Phase 55-08 Key Findings:**
+- Robustness suite successfully implemented across 5 dimensions
+- Alternative DVs available: takeover_announced (29 events), takeover_hostile (7 events)
+- Alternative IVs tested: CEO-only (2 vars), Presentation-only (2 vars), QA-only (2 vars)
+- Timing tests: concurrent (shift back), forward (primary), lead (shift forward)
+- Cox PH survival analysis implemented but limited by binary duration with rare events
+- All robustness tests confirm null primary results: NOT ROBUST
+- Low power limitation is fundamental with rare events in short time period (2002-2004)
 
 **Phase 55-01 COMPLETE (Earlier):**
 - Exhaustive literature review (55-LITERATURE.md, 688 lines)
