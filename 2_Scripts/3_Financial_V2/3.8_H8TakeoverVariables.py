@@ -156,6 +156,167 @@ def setup_paths(timestamp):
 
 
 # ==============================================================================
+# Data Loading Functions
+# ==============================================================================
+
+
+def load_sdc_data(sdc_path, year_start, year_end):
+    """
+    Load and process SDC Platinum M&A data.
+
+    Creates binary takeover indicator at firm-year level.
+
+    Args:
+        sdc_path: Path to SDC parquet file
+        year_start, year_end: Sample period
+
+    Returns:
+        DataFrame with gvkey (from CUSIP), year, and takeover indicators
+    """
+    print("\nLoading SDC M&A data...")
+
+    # Load SDC data
+    df = pd.read_parquet(sdc_path)
+    print(f"  Loaded SDC: {len(df):,} deals")
+
+    # Key SDC fields from actual data:
+    # - Target 6-digit CUSIP (target identifier)
+    # - Date Announced (announcement date)
+    # - Deal Status (Completed, Pending, Withdrawn, etc.)
+    # - Deal Attitude (Friendly, Hostile, Unsolicited, Neutral, No Applicable)
+    # - Target Public Status (Public, Private, Subsidiary, etc.)
+    # - Deal Value (USD Millions)
+
+    # Filter to required columns
+    required_cols = [
+        'Target 6-digit CUSIP',
+        'Date Announced',
+        'Date Effective',
+        'Deal Status',
+        'Deal Attitude',
+        'Target Public Status',
+        'Deal Value (USD Millions)',
+    ]
+
+    # Check which columns exist
+    available_cols = [c for c in required_cols if c in df.columns]
+    df = df[available_cols].copy()
+
+    # Convert date and extract year
+    df['Date Announced'] = pd.to_datetime(df['Date Announced'])
+    df['year'] = df['Date Announced'].dt.year
+
+    # Filter to sample period
+    df = df[df['year'].between(year_start, year_end)]
+    print(f"  Filtered to {year_start}-{year_end}: {len(df):,} deals")
+
+    # Filter to public targets only (our sample is public firms)
+    if 'Target Public Status' in df.columns:
+        df_public = df[df['Target Public Status'] == 'Public'].copy()
+        print(f"  Public targets: {len(df_public):,} deals")
+    else:
+        df_public = df.copy()
+        print("  Warning: Target Public Status not available, using all deals")
+
+    # Create takeover indicators
+    # Primary: Completed deals
+    if 'Deal Status' in df_public.columns:
+        df_public['takeover_completed'] = (df_public['Deal Status'] == 'Completed').astype(int)
+        completed_count = df_public['takeover_completed'].sum()
+        print(f"  Completed deals: {completed_count:,}")
+    else:
+        df_public['takeover_completed'] = 1  # All rows are announced
+        print("  Warning: Deal Status not available, using all as completed")
+
+    # Robustness 1: All announced deals
+    df_public['takeover_announced'] = 1  # All rows are announced by definition
+
+    # Robustness 2: Hostile/unsolicited deals
+    if 'Deal Attitude' in df_public.columns:
+        hostile_indicators = ['Hostile', 'Unsolicited']
+        df_public['takeover_hostile'] = df_public['Deal Attitude'].isin(hostile_indicators).astype(int)
+        hostile_count = df_public['takeover_hostile'].sum()
+        print(f"  Hostile/unsolicited deals: {hostile_count:,}")
+    else:
+        df_public['takeover_hostile'] = 0
+        print("  Warning: Deal Attitude not available, hostile = 0")
+
+    # Aggregate to CUSIP-year level (1 if any takeover in year)
+    # We use CUSIP as identifier; will map to GVKEY later
+    takeover = df_public.groupby(['Target 6-digit CUSIP', 'year']).agg({
+        'takeover_completed': 'max',
+        'takeover_announced': 'max',
+        'takeover_hostile': 'max',
+    }).reset_index()
+
+    takeover = takeover.rename(columns={'Target 6-digit CUSIP': 'cusip'})
+
+    print(f"  Aggregated to {len(takeover):,} CUSIP-year observations")
+
+    return takeover
+
+
+def load_h7_data(h7_path):
+    """
+    Load H7 illiquidity data as base dataset.
+
+    This dataset already contains:
+    - gvkey, year
+    - Uncertainty measures (Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, etc.)
+    - Some controls (Volatility, StockRet)
+
+    Args:
+        h7_path: Path to H7_Illiquidity.parquet
+
+    Returns:
+        DataFrame with gvkey, year, and IVs
+    """
+    print("\nLoading H7 illiquidity data (base with uncertainty measures)...")
+
+    df = pd.read_parquet(h7_path)
+    print(f"  Loaded H7: {len(df):,} observations")
+
+    # Ensure gvkey is string
+    df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+
+    return df
+
+
+def create_forward_takeover(takeover_df):
+    """
+    Create forward-looking takeover indicator.
+
+    Takeover_{t+1} indicates whether firm becomes target in NEXT year.
+    This allows for causal interpretation: uncertainty_t affects takeover_{t+1}.
+
+    Args:
+        takeover_df: DataFrame with takeover indicators
+
+    Returns:
+        DataFrame with added takeover_fwd column
+    """
+    print("\nCreating forward-looking takeover indicator (t -> t+1)...")
+
+    takeover_df = takeover_df.sort_values(['cusip', 'year'])
+    takeover_df['takeover_fwd'] = takeover_df.groupby('cusip')['takeover_completed'].shift(-1)
+    takeover_df['takeover_fwd'] = takeover_df['takeover_fwd'].fillna(0).astype(int)
+
+    # Also create forward versions of alternative definitions
+    takeover_df['takeover_announced_fwd'] = takeover_df.groupby('cusip')['takeover_announced'].shift(-1)
+    takeover_df['takeover_announced_fwd'] = takeover_df['takeover_announced_fwd'].fillna(0).astype(int)
+
+    takeover_df['takeover_hostile_fwd'] = takeover_df.groupby('cusip')['takeover_hostile'].shift(-1)
+    takeover_df['takeover_hostile_fwd'] = takeover_df['takeover_hostile_fwd'].fillna(0).astype(int)
+
+    n_takeovers = takeover_df['takeover_fwd'].sum()
+    takeover_rate = takeover_df['takeover_fwd'].mean()
+    print(f"  Forward takeover events (t+1): {n_takeovers:,}")
+    print(f"  Takeover rate: {takeover_rate:.2%}")
+
+    return takeover_df
+
+
+# ==============================================================================
 # CLI and Prerequisites
 # ==============================================================================
 
