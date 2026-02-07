@@ -328,8 +328,12 @@ def load_data(root, args):
         mv["year"] = year
 
         # Merge: linguistic -> firm controls -> market controls -> manifest
-        df_year = lv.merge(fc, on=["file_name", "year"], how="left")
-        df_year = df_year.merge(mv, on=["file_name", "year"], how="left")
+        # Drop redundant columns from firm/market controls to avoid duplicate merge columns
+        fc_merge = fc[["file_name", "year", "SurpDec", "EPS_Growth"]]
+        mv_merge = mv[["file_name", "year", "StockRet", "MarketRet"]]
+
+        df_year = lv.merge(fc_merge, on=["file_name", "year"], how="left")
+        df_year = df_year.merge(mv_merge, on=["file_name", "year"], how="left")
         df_year = df_year.merge(manifest, on="file_name", how="left")
 
         all_data.append(df_year)
@@ -844,13 +848,15 @@ def generate_report(outputs, sample_stats, output_path):
 
     # Add sample statistics for each period
     for period_name, stats in sample_stats.items():
+        n_firms = stats.get('n_firms', 'N/A')
+        n_firms_str = f"{n_firms:,}" if isinstance(n_firms, int) else str(n_firms)
         lines.extend([
             f"### {period_name.capitalize()} Period",
             "",
             f"- **Year range:** {stats['year_start']}-{stats['year_end']}",
             f"- **N observations (calls):** {stats['n_obs']:,}",
             f"- **N CEOs (with >=5 calls):** {stats['n_ceos']:,}",
-            f"- **N firms:** {stats.get('n_firms', 'N/A'):,}",
+            f"- **N firms:** {n_firms_str}",
             "",
         ])
 
