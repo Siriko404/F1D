@@ -593,6 +593,114 @@ def check_prerequisites(paths):
 
 
 # ==============================================================================
+# Descriptive Statistics and Output
+# ==============================================================================
+
+
+def compute_h8_stats(df, config):
+    """
+    Compute descriptive statistics for H8 dataset.
+
+    Special handling for binary takeover indicator.
+
+    Args:
+        df: H8 dataset
+        config: Configuration dict
+
+    Returns:
+        Dictionary of statistics
+    """
+    print("\n" + "=" * 60)
+    print("Computing H8 Statistics")
+    print("=" * 60)
+
+    stats = {
+        'n_obs': len(df),
+        'n_firms': df['gvkey'].nunique(),
+        'n_years': df['year'].nunique(),
+        'year_range': (int(df['year'].min()), int(df['year'].max())),
+    }
+
+    # Takeover rate (DV)
+    stats['takeover_rate'] = float(df['takeover_fwd'].mean())
+    stats['n_takeovers'] = int(df['takeover_fwd'].sum())
+
+    print(f"  Observations: {stats['n_obs']:,}")
+    print(f"  Firms: {stats['n_firms']:,}")
+    print(f"  Years: {stats['year_range'][0]}-{stats['year_range'][1]}")
+    print(f"  Takeover events (t+1): {stats['n_takeovers']:,}")
+    print(f"  Takeover rate: {stats['takeover_rate']:.2%}")
+
+    # Validate takeover rate
+    if stats['takeover_rate'] < config['takeover_rate_min']:
+        print(f"  WARNING: Takeover rate {stats['takeover_rate']:.2%} below minimum {config['takeover_rate_min']:.2%}")
+    if stats['takeover_rate'] > config['takeover_rate_max']:
+        print(f"  WARNING: Takeover rate {stats['takeover_rate']:.2%} above maximum {config['takeover_rate_max']:.2%}")
+    if stats['n_takeovers'] < config['min_takeover_events']:
+        print(f"  WARNING: Takeover events {stats['n_takeovers']} below minimum {config['min_takeover_events']}")
+
+    # Alternative takeover definitions
+    if 'takeover_announced_fwd' in df.columns:
+        stats['takeover_announced_rate'] = float(df['takeover_announced_fwd'].mean())
+        stats['n_announced'] = int(df['takeover_announced_fwd'].sum())
+        print(f"  Announced takeover rate: {stats['takeover_announced_rate']:.2%}")
+
+    if 'takeover_hostile_fwd' in df.columns:
+        stats['takeover_hostile_rate'] = float(df['takeover_hostile_fwd'].mean())
+        stats['n_hostile'] = int(df['takeover_hostile_fwd'].sum())
+        print(f"  Hostile takeover rate: {stats['takeover_hostile_rate']:.2%}")
+
+    # Uncertainty measures (IVs)
+    print("\n  Uncertainty Measures:")
+    uncertainty_measures = [c for c in df.columns if 'Uncertainty_pct' in c]
+    stats['uncertainty_measures'] = {}
+    for uv in uncertainty_measures:
+        if uv in df.columns and df[uv].notna().sum() > 0:
+            stats['uncertainty_measures'][uv] = {
+                'mean': float(df[uv].mean()),
+                'std': float(df[uv].std()),
+                'min': float(df[uv].min()),
+                'max': float(df[uv].max()),
+                'n': int(df[uv].notna().sum()),
+                'missing': int(df[uv].isna().sum()),
+            }
+            print(f"    {uv}: mean={stats['uncertainty_measures'][uv]['mean']:.4f}, n={stats['uncertainty_measures'][uv]['n']:,}")
+
+    # Controls
+    control_vars = ['Size', 'Lev', 'ROA', 'BM', 'CurrentRatio', 'Efficiency', 'StockRet', 'Volatility', 'RD_Intensity']
+    print("\n  Control Variables:")
+    stats['controls'] = {}
+    for cv in control_vars:
+        if cv in df.columns and df[cv].notna().sum() > 0:
+            stats['controls'][cv] = {
+                'mean': float(df[cv].mean()),
+                'std': float(df[cv].std()),
+                'min': float(df[cv].min()),
+                'max': float(df[cv].max()),
+                'n': int(df[cv].notna().sum()),
+                'missing': int(df[cv].isna().sum()),
+            }
+            print(f"    {cv}: mean={stats['controls'][cv]['mean']:.4f}, n={stats['controls'][cv]['n']:,}")
+
+    return stats
+
+
+def update_latest_symlink(output_dir):
+    """Update the latest/ symlink to point to the new output directory."""
+    try:
+        latest_link = output_dir.parent / "latest"
+        if latest_link.exists():
+            if latest_link.is_symlink():
+                latest_link.unlink()
+            elif latest_link.is_dir():
+                import shutil
+                shutil.rmtree(latest_link)
+        latest_link.symlink_to(output_dir)
+    except Exception as e:
+        print(f"  Warning: Could not create latest symlink: {e}")
+
+
+# ==============================================================================
 # Main
 # ==============================================================================
 
@@ -668,10 +776,182 @@ def main():
         },
     }
 
-    print("\n[TODO] Implementation continues in next tasks...")
-    print("This is Task 1: Script header and setup")
+    # ========================================================================
+    # Load Data
+    # ========================================================================
 
-    # Close logging
+    print("\nLoading data...")
+
+    # Load manifest
+    print("\nManifest:")
+    manifest_file = paths["manifest_dir"] / "master_sample_manifest.parquet"
+    stats["input"]["files"].append(str(manifest_file))
+    stats["input"]["checksums"][manifest_file.name] = compute_file_checksum(manifest_file)
+    manifest = pd.read_parquet(manifest_file)
+    manifest['gvkey'] = manifest['gvkey'].astype(str).str.zfill(6)
+    print(f"  Manifest: {len(manifest):,} observations")
+
+    # Load SDC data
+    print("\nSDC M&A Data:")
+    stats["input"]["files"].append(str(paths["sdc_file"]))
+    stats["input"]["checksums"][paths["sdc_file"].name] = compute_file_checksum(paths["sdc_file"])
+    sdc_df = load_sdc_data(paths["sdc_file"], CONFIG['year_start'], CONFIG['year_end'])
+    stats["input"]["total_rows"] += len(sdc_df)
+
+    # Create forward takeover indicator
+    sdc_df = create_forward_takeover(sdc_df)
+    stats["processing"]["takeover_indicators"] = ["takeover_fwd", "takeover_announced_fwd", "takeover_hostile_fwd"]
+
+    # Load H7 data (base with uncertainty measures)
+    print("\nH7 Illiquidity Data:")
+    h7_file = paths["h7_dir"] / "H7_Illiquidity.parquet"
+    stats["input"]["files"].append(str(h7_file))
+    stats["input"]["checksums"][h7_file.name] = compute_file_checksum(h7_file)
+    h7_df = load_h7_data(h7_file)
+    stats["input"]["total_rows"] += len(h7_df)
+
+    # Load firm controls
+    print("\nFirm Controls:")
+    try:
+        controls_df = load_firm_controls(
+            paths["root"] / "4_Outputs" / "3_Financial_Features",
+            CONFIG['year_start'],
+            CONFIG['year_end']
+        )
+    except Exception as e:
+        print(f"  Warning: Could not load firm controls: {e}")
+        controls_df = pd.DataFrame()
+
+    # ========================================================================
+    # Merge Data
+    # ========================================================================
+
+    print("\n" + "=" * 60)
+    print("Merging and Constructing Sample")
+    print("=" * 60)
+
+    h8_df = merge_h8_data(sdc_df, h7_df, controls_df, manifest)
+    h8_df = apply_sample_construction(h8_df, CONFIG)
+
+    # ========================================================================
+    # Apply Winsorization
+    # ========================================================================
+
+    print("\n" + "=" * 60)
+    print("Applying Winsorization (1%/99%)")
+    print("=" * 60)
+
+    continuous_vars = [c for c in h8_df.columns if c in [
+        'Size', 'Lev', 'ROA', 'BM', 'CurrentRatio', 'Efficiency', 'StockRet', 'Volatility'
+    ]]
+
+    for var in continuous_vars:
+        if var in h8_df.columns and h8_df[var].notna().sum() > 0:
+            before_mean = h8_df[var].mean()
+            h8_df[var] = winsorize_series(h8_df[var], lower=CONFIG['winsor_lower'], upper=CONFIG['winsor_upper'])
+            after_mean = h8_df[var].mean()
+            stats["processing"]["winsorization"][var] = {
+                "before_mean": round(float(before_mean), 4),
+                "after_mean": round(float(after_mean), 4),
+            }
+            print(f"  {var}: winsorized")
+
+    # ========================================================================
+    # Compute Statistics
+    # ========================================================================
+
+    h8_stats = compute_h8_stats(h8_df, CONFIG)
+    stats["takeover_stats"] = {
+        "n_obs": h8_stats["n_obs"],
+        "n_firms": h8_stats["n_firms"],
+        "n_years": h8_stats["n_years"],
+        "year_range": h8_stats["year_range"],
+        "takeover_rate": h8_stats["takeover_rate"],
+        "n_takeovers": h8_stats["n_takeovers"],
+    }
+
+    # ========================================================================
+    # Prepare Output
+    # ========================================================================
+
+    print("\n" + "=" * 60)
+    print("Preparing Output")
+    print("=" * 60)
+
+    # Sort by gvkey, year
+    final_output = h8_df.sort_values(["gvkey", "year"]).reset_index(drop=True)
+
+    print(f"  Final output rows: {len(final_output):,}")
+
+    # ========================================================================
+    # Write Outputs
+    # ========================================================================
+
+    print("\n" + "=" * 60)
+    print("Writing Outputs")
+    print("=" * 60)
+
+    # Write parquet file
+    output_file = paths["output_dir"] / "H8_Takeover.parquet"
+    final_output.to_parquet(output_file, index=False)
+    print(f"  Wrote: {output_file.name}")
+    stats["output"]["files"].append(output_file.name)
+    stats["output"]["checksums"][output_file.name] = compute_file_checksum(output_file)
+    stats["output"]["final_rows"] = len(final_output)
+
+    # Write stats.json
+    stats["processing"]["h8_stats"] = h8_stats
+    save_stats(stats, paths["output_dir"])
+    print(f"  Wrote: stats.json")
+
+    # Update latest symlink
+    update_latest_symlink(paths["output_dir"])
+
+    # ========================================================================
+    # Final Summary
+    # ========================================================================
+
+    # Timing
+    end_time = time.perf_counter()
+    stats["timing"]["end_iso"] = datetime.now().isoformat()
+    stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
+
+    # Memory tracking
+    mem_end = get_process_memory_mb()
+    memory_readings.append(mem_end["rss_mb"])
+    stats["memory"]["end_mb"] = mem_end["rss_mb"]
+    stats["memory"]["peak_mb"] = round(max(memory_readings), 2)
+    stats["memory"]["delta_mb"] = round(mem_end["rss_mb"] - mem_start["rss_mb"], 2)
+
+    # Throughput
+    duration_seconds = end_time - start_time
+    if duration_seconds > 0:
+        throughput = calculate_throughput(len(final_output), duration_seconds)
+        stats["throughput"] = {
+            "rows_per_second": throughput,
+            "total_rows": len(final_output),
+            "duration_seconds": round(duration_seconds, 3),
+        }
+
+    # Detect anomalies
+    print("\nDetecting anomalies...")
+    numeric_cols = [c for c in final_output.columns if final_output[c].dtype in ['float64', 'int64']]
+    anomalies = detect_anomalies_zscore(final_output, numeric_cols, threshold=3.0)
+    total_anomalies = sum(a["count"] for a in anomalies.values())
+    print(f"  Anomalies detected (z>3): {total_anomalies}")
+
+    # Print summary
+    print_stats_summary(stats)
+
+    print("\n" + "=" * 60)
+    print("SUMMARY")
+    print("=" * 60)
+    print(f"H8 Takeover Variables constructed: {len(final_output):,} observations")
+    print(f"Takeover rate: {h8_stats['takeover_rate']:.2%}")
+    print(f"Takeover events: {h8_stats['n_takeovers']:,}")
+    print(f"\nOutputs saved to: {paths['output_dir']}")
+    print(f"Log saved to: {paths['log_file']}")
+
     dual_writer.close()
     sys.stdout = dual_writer.terminal
 
