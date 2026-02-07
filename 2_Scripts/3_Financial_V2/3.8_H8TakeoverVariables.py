@@ -316,6 +316,234 @@ def create_forward_takeover(takeover_df):
     return takeover_df
 
 
+def load_firm_controls(firm_controls_dir, year_start, year_end):
+    """
+    Load and merge firm controls from V2 pipeline.
+
+    Args:
+        firm_controls_dir: Path to firm controls directory
+        year_start, year_end: Sample period
+
+    Returns:
+        DataFrame with firm controls at gvkey-year level
+    """
+    print("\nLoading firm controls...")
+
+    # Find all firm_controls_*.parquet files
+    control_files = sorted(firm_controls_dir.glob("firm_controls_*.parquet"))
+
+    if not control_files:
+        print("  Warning: No firm_controls files found")
+        return pd.DataFrame()
+
+    dfs = []
+    for f in control_files:
+        df = pd.read_parquet(f)
+        dfs.append(df)
+
+    combined = pd.concat(dfs, ignore_index=True)
+    print(f"  Combined firm controls: {len(combined):,} rows")
+
+    # Ensure gvkey is string
+    combined['gvkey'] = combined['gvkey'].astype(str).str.zfill(6)
+
+    # Filter to sample period
+    combined = combined[combined['year'].between(year_start, year_end)]
+
+    return combined
+
+
+def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df):
+    """
+    Merge takeover data with uncertainty and controls.
+
+    Args:
+        takeover_df: SDC takeover data (with cusip, year)
+        h7_df: H7 data with uncertainty measures (with gvkey, year)
+        controls_df: Firm controls
+        manifest_df: Sample manifest for filtering
+
+    Returns:
+        Analysis-ready dataset for H8
+    """
+    print("\n" + "=" * 60)
+    print("Merging H8 Data")
+    print("=" * 60)
+
+    # Step 1: Load manifest to get CUSIP-GVKEY mapping
+    print("\nStep 1: Loading manifest for CUSIP-GVKEY mapping...")
+    manifest_cols = ['gvkey', 'cusip', 'year'] if 'cusip' in manifest_df.columns else ['gvkey', 'year']
+    manifest_subset = manifest_df[manifest_cols].drop_duplicates() if 'cusip' in manifest_df.columns else manifest_df[['gvkey', 'year']].drop_duplicates()
+
+    # Ensure consistent types
+    manifest_subset['gvkey'] = manifest_subset['gvkey'].astype(str).str.zfill(6)
+    if 'cusip' in manifest_subset.columns:
+        manifest_subset['cusip'] = manifest_subset['cusip'].astype(str).str[:6]
+
+    print(f"  Manifest: {len(manifest_subset):,} unique gvkey-years")
+
+    # Step 2: Map takeover CUSIPs to GVKEYs using manifest
+    print("\nStep 2: Mapping CUSIPs to GVKEYs...")
+    takeover_df['cusip'] = takeover_df['cusip'].astype(str).str[:6]
+
+    # Merge takeover with manifest to get gvkey
+    takeover_with_gvkey = takeover_df.merge(
+        manifest_subset,
+        on=['cusip', 'year'],
+        how='left'
+    )
+
+    # Drop observations without GVKEY match
+    n_before = len(takeover_with_gvkey)
+    takeover_with_gvkey = takeover_with_gvkey[takeover_with_gvkey['gvkey'].notna()].copy()
+    takeover_with_gvkey['gvkey'] = takeover_with_gvkey['gvkey'].astype(str).str.zfill(6)
+    print(f"  Matched {len(takeover_with_gvkey):,}/{n_before:,} takeover observations to GVKEYs")
+
+    # Step 3: Start with H7 data (has uncertainty measures and some controls)
+    print("\nStep 3: Merging with H7 base data...")
+    h8_df = h7_df.copy()
+
+    # Select H7 columns we need
+    h7_cols = ['gvkey', 'year']
+    # Add uncertainty measures
+    uncertainty_cols = [c for c in h7_df.columns if 'Uncertainty_pct' in c]
+    h7_cols.extend(uncertainty_cols)
+    # Add existing controls
+    control_cols = [c for c in h7_df.columns if c in ['Volatility', 'StockRet', 'trading_days']]
+    h7_cols.extend(control_cols)
+
+    h8_df = h7_df[h7_cols].copy()
+    print(f"  H7 base: {len(h8_df):,} observations")
+
+    # Step 4: Merge takeover indicators
+    print("\nStep 4: Merging takeover indicators...")
+    takeover_merge = takeover_with_gvkey[['gvkey', 'year', 'takeover_fwd', 'takeover_announced_fwd', 'takeover_hostile_fwd']].copy()
+    h8_df = h8_df.merge(takeover_merge, on=['gvkey', 'year'], how='left')
+    h8_df['takeover_fwd'] = h8_df['takeover_fwd'].fillna(0).astype(int)
+    h8_df['takeover_announced_fwd'] = h8_df['takeover_announced_fwd'].fillna(0).astype(int)
+    h8_df['takeover_hostile_fwd'] = h8_df['takeover_hostile_fwd'].fillna(0).astype(int)
+    print(f"  After takeover merge: {len(h8_df):,} observations")
+    print(f"  Takeover targets (t+1): {h8_df['takeover_fwd'].sum():,}")
+
+    # Step 5: Merge additional firm controls if available
+    if controls_df is not None and len(controls_df) > 0:
+        print("\nStep 5: Merging additional firm controls...")
+        # Get control columns that exist
+        available_controls = []
+        for cv in MNA_CONTROL_VARS:
+            # Map generic names to actual column names
+            if cv == 'size' and 'Size' in controls_df.columns:
+                available_controls.append('Size')
+            elif cv == 'leverage' and 'Lev' in controls_df.columns:
+                available_controls.append('Lev')
+            elif cv == 'roa' and 'ROA' in controls_df.columns:
+                available_controls.append('ROA')
+            elif cv == 'mtb' and 'BM' in controls_df.columns:
+                available_controls.append('BM')
+            elif cv == 'liquidity' and 'CurrentRatio' in controls_df.columns:
+                available_controls.append('CurrentRatio')
+            elif cv == 'efficiency' and 'Efficiency' in controls_df.columns:
+                available_controls.append('Efficiency')
+            elif cv == 'stock_ret' and 'StockRet' in controls_df.columns:
+                available_controls.append('StockRet')
+            elif cv == 'rd_intensity' and 'RD_Intensity' in controls_df.columns:
+                available_controls.append('RD_Intensity')
+
+        if available_controls:
+            controls_merge = controls_df[['gvkey', 'year'] + available_controls].drop_duplicates()
+            h8_df = h8_df.merge(controls_merge, on=['gvkey', 'year'], how='left')
+            print(f"  Merged controls: {available_controls}")
+
+    # Step 6: Filter to sample firms
+    print("\nStep 6: Filtering to sample firms...")
+    sample_firms = manifest_subset['gvkey'].unique()
+    h8_df = h8_df[h8_df['gvkey'].isin(sample_firms)]
+    print(f"  After sample filter: {len(h8_df):,} observations")
+
+    # Step 7: Apply missing data handling
+    print("\nStep 7: Handling missing data...")
+
+    # For logistic regression, require DV and primary IV
+    required_vars = ['takeover_fwd']
+    primary_iv = 'Manager_QA_Uncertainty_pct' if 'Manager_QA_Uncertainty_pct' in h8_df.columns else uncertainty_cols[0] if uncertainty_cols else None
+    if primary_iv:
+        required_vars.append(primary_iv)
+
+    n_before_missing = len(h8_df)
+    h8_df = h8_df.dropna(subset=required_vars)
+    n_after_missing = len(h8_df)
+    print(f"  Dropped {n_before_missing - n_after_missing:,} observations with missing DV/IV")
+
+    # For controls, require at least 80% availability
+    control_cols_in_df = [c for c in h8_df.columns if c in ['Size', 'Lev', 'ROA', 'BM', 'CurrentRatio', 'Efficiency', 'StockRet', 'RD_Intensity', 'Volatility']]
+    if control_cols_in_df:
+        h8_df['n_missing_controls'] = h8_df[control_cols_in_df].isna().sum(axis=1)
+        max_missing = len(control_cols_in_df) * 0.2  # Allow up to 20% missing
+        h8_df = h8_df[h8_df['n_missing_controls'] <= max_missing].copy()
+        print(f"  Dropped observations with >20% missing controls")
+        h8_df = h8_df.drop(columns=['n_missing_controls'])
+
+    print(f"  Final sample: {len(h8_df):,} observations")
+
+    return h8_df
+
+
+def apply_sample_construction(df, config):
+    """
+    Apply sample construction filters.
+
+    - Exclude financial firms (if SIC available)
+    - Exclude utilities (if SIC available)
+    - Require minimum firm years (not implemented without additional data)
+
+    Args:
+        df: Input dataframe
+        config: Configuration dict
+
+    Returns:
+        Filtered dataframe
+    """
+    print("\n" + "=" * 60)
+    print("Applying Sample Construction")
+    print("=" * 60)
+
+    n_before = len(df)
+
+    # For H8, we rely on H7 sample which already has exclusions applied
+    print(f"  Using H7 sample (exclusions already applied)")
+    print(f"  Sample: {len(df):,} firm-year observations")
+
+    # Count unique firms and years
+    n_firms = df['gvkey'].nunique()
+    n_years = df['year'].nunique()
+    year_range = f"{df['year'].min()}-{df['year'].max()}"
+
+    print(f"  Firms: {n_firms:,}")
+    print(f"  Years: {n_years} ({year_range})")
+
+    return df
+
+
+def winsorize_series(s, lower=0.01, upper=0.99):
+    """
+    Winsorize a series at specified percentiles.
+
+    Args:
+        s: Series to winsorize
+        lower: Lower percentile (default: 0.01)
+        upper: Upper percentile (default: 0.99)
+
+    Returns:
+        Winsorized series
+    """
+    if s.notna().sum() == 0:
+        return s
+
+    lower_bound = s.quantile(lower)
+    upper_bound = s.quantile(upper)
+    return s.clip(lower=lower_bound, upper=upper_bound)
+
+
 # ==============================================================================
 # CLI and Prerequisites
 # ==============================================================================
