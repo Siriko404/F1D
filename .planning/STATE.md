@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 55 - V1 Hypotheses Re-Test
-Plan: 4 of 9
-Status: **In Progress** - H7 illiquidity regression complete; H7a NOT SUPPORTED (0/4 measures significant)
-Last activity: 2026-02-06 - Plan 55-04 complete; H7 regression executed with null results
+Plan: 5 of 9
+Status: **In Progress** - H7 robustness suite complete; H7a NOT SUPPORTED (0/4 measures significant)
+Last activity: 2026-02-06 - Plan 55-05 complete; H7 robustness suite executed (30 total regressions)
 
 ### Next Phase
 
@@ -45,7 +45,7 @@ Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
 Phase 52: LLM Lit Review & Novel Hyp [COMPLETE - 5/5 plans] → 5 hypotheses specified
 Phase 53: H2 PRisk x Uncertainty     [COMPLETE - 3/3 plans] → H2: NOT SUPPORTED
 Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms implementation sound, null results genuine
-Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 4/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig)
+Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 5/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -230,6 +230,11 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 4/9 plans] → 55-01 Lit Rev
 - [Phase 55-04 H7 Regression] H7a NOT SUPPORTED: 0/4 measures significant after FDR correction
 - [Phase 55-04 H7 Regression] Average coefficient: -0.0002 (wrong direction), no consistent pattern across specs
 - [Phase 55-04 H7 Regression] All robustness specs agree: null results (pooled shows negative, but without FE)
+- [Phase 55-05 H7 Robustness] Full robustness suite executed: 30 total regressions (16 primary + 14 robustness)
+- [Phase 55-05 H7 Robustness] Alternative DVs: Roll (1984) (0/4 sig), Log Amihud (0/4 sig)
+- [Phase 55-05 H7 Robustness] Alternative IVs: CEO-only (0/2 sig), Presentation-only (0/2 sig), QA-only (0/2 sig)
+- [Phase 55-05 H7 Robustness] Timing tests: SKIPPED (current-period illiquidity not available)
+- [Phase 55-05 H7 Robustness] Overall robustness: 0/14 (0.0%) tests significant at p < 0.05
 
 ### From v1.0 (carry forward)
 
@@ -294,7 +299,25 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 4/9 plans] → 55-01 Lit Rev
 
 ### Current Session (2026-02-06)
 
-**Phase 55-04 COMPLETE:**
+**Phase 55-05 COMPLETE:**
+- Implemented and executed full robustness suite for H7 (4.7_H7IlliquidityRegression.py updated)
+- 4 commits: d9d082d, 7847c68, b67035e, e0cf711
+- Robustness dimensions: Alternative DVs (Roll, Log Amihud), Alternative IVs (CEO-only, Pres-only, QA-only), Timing (skipped)
+- 30 total regressions: 16 primary + 14 robustness
+- Results: H7a NOT SUPPORTED (0/4 primary significant, 0/14 robustness significant)
+- Sample: 3,706 obs, 2,283 firms, 2002-2018
+- Outputs: parquet, markdown, JSON saved to 4_Outputs/4_Econometric_V2/4.7_H7IlliquidityRegression/
+- Fixed bugs: positional argument bug (dw->timing), alternative DV aggregation, primary results table filtering
+- SUMMARY.md created at .planning/phases/55-v1-hypotheses-retest/55-05-SUMMARY.md
+
+**Phase 55-05 Key Findings:**
+- H7 robustness suite confirms null results across all dimensions
+- Alternative DVs (Roll spread, Log Amihud): 0/8 significant
+- Alternative IVs (CEO-only, Presentation-only, QA-only): 0/6 significant
+- Timing tests skipped (current-period illiquidity not available in H7 data)
+- Conclusion: H7 null results are robust to alternative specifications, DVs, and IVs
+
+**Phase 55-04 COMPLETE (Earlier):**
 - Created H7 illiquidity regression script (4.7_H7IlliquidityRegression.py, 901 lines)
 - PanelOLS regression with Firm + Year FE, firm-clustered SE
 - 4 uncertainty measures tested (Manager/CEO x QA/Pres)
