@@ -10,13 +10,14 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 55 - V1 Hypotheses Re-Test
-Plan: 5 of 9
-Status: **In Progress** - H7 robustness suite complete; H7a NOT SUPPORTED (0/4 measures significant)
-Last activity: 2026-02-06 - Plan 55-05 complete; H7 robustness suite executed (30 total regressions)
+Plan: 6 of 9
+Status: **In Progress** - H8 takeover variables script complete; firm-level takeover merge blocked by missing CUSIP-GVKEY mapping
+Last activity: 2026-02-06 - Plan 55-06 complete; H8 takeover variables constructed (12,408 obs) but takeover_fwd=0 due to missing CUSIP-GVKEY mapping
 
 ### Next Phase
 
-**Phase 56: Tone Dynamics Predictive Power** — /gsd:plan-phase 56
+**Plan 55-07: H8 Takeover Regression** — BLOCKED; requires CUSIP-GVKEY mapping for firm-level takeover indicator
+**Alternative:** Skip to 55-08 (H9) or resolve CUSIP-GVKEY mapping via CRSP link table
 
 ### Progress
 
@@ -45,7 +46,8 @@ Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
 Phase 52: LLM Lit Review & Novel Hyp [COMPLETE - 5/5 plans] → 5 hypotheses specified
 Phase 53: H2 PRisk x Uncertainty     [COMPLETE - 3/3 plans] → H2: NOT SUPPORTED
 Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms implementation sound, null results genuine
-Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 5/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig
+Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 6/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete (12,408 obs) but BLOCKED - missing CUSIP-GVKEY mapping for firm-level takeover indicator
+Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -208,6 +210,7 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 5/9 plans] → 55-01 Lit Rev
 - [Phase 53-01 Memory Optimization] Sample-filtering-first, intermediate disk spill, gc.collect() between merges to avoid MemoryError
 - [Phase 54 Added] H6 Implementation Audit — expert audit to determine if null results stem from research design flaws, variable construction issues, or genuine effects
 - [Phase 55 Added] V1 Hypotheses Re-Test — re-test Uncertainty → Illiquidity and Uncertainty → Takeover Target Probability hypotheses; suspected implementation flaws in original V1 code, specs, or data construction
+- [Phase 56 Added] CEO/Management Uncertainty as Persistent Style — Re-implement V1 tests of managerial speech uncertainty as persistent style trait in V2 framework
 - [Phase 55-01 Literature] Dang et al. (2022) identified as foundational paper for H1 with direct methodological template
 - [Phase 55-01 Literature] Amihud (2002) illiquidity measure: ILLIQ = (1/D) * sum(|RET| / VOLD) with 6000+ citations
 - [Phase 55-01 Literature] Roll (1984) implicit spread: SPRD = 2 * sqrt(-cov(r_t, r_{t-1))) for robustness
@@ -235,6 +238,12 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 5/9 plans] → 55-01 Lit Rev
 - [Phase 55-05 H7 Robustness] Alternative IVs: CEO-only (0/2 sig), Presentation-only (0/2 sig), QA-only (0/2 sig)
 - [Phase 55-05 H7 Robustness] Timing tests: SKIPPED (current-period illiquidity not available)
 - [Phase 55-05 H7 Robustness] Overall robustness: 0/14 (0.0%) tests significant at p < 0.05
+- [Phase 55-06 H8 Takeover Variables] Script created (3.8_H8TakeoverVariables.py, 973 lines) with SDC data processing
+- [Phase 55-06 H8 Takeover Variables] SDC data loaded: 142,457 deals -> 95,452 (2002-2018) -> 20,283 public targets -> 16,140 completed
+- [Phase 55-06 H8 Takeover Variables] H8 sample constructed: 12,408 obs, 1,484 firms, 2002-2004 only (limited by H7 data)
+- [Phase 55-06 H8 Takeover Variables] BLOCKER: No CUSIP-GVKEY mapping available; takeover_fwd = 0 for all observations
+- [Phase 55-06 H8 Takeover Variables] SDC CUSIP-level data cannot merge with GVKEY-level H7 data without crosswalk
+- [Phase 55-06 H8 Takeover Variables] Required for H8 regression: Add CUSIP to manifest via CRSP link table or use WRDS crosswalk
 
 ### From v1.0 (carry forward)
 
@@ -254,6 +263,8 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 5/9 plans] → 55-01 Lit Rev
 
 ### Blockers/Concerns
 
+- **H8 regression BLOCKED:** No CUSIP-GVKEY mapping available; SDC takeover data (CUSIP-level) cannot merge with H7 data (GVKEY-level)
+- **H8 required fix:** Add CUSIP to sample manifest via CRSP link table or use external WRDS crosswalk before 55-07 can proceed
 - **H6 pre-trends violation:** Significant future CCCL effects (p<0.05) suggest potential anticipatory effects or violation of parallel trends assumption, weakening causal interpretation
 - **H6 null results:** All three H6 hypotheses (A, B, C) not supported; pattern of null results continues across H1-H6
 - **Identification concerns:** The CCCL shift-share instrument shows significant leads at t+1 and t+2, which is concerning for the research design
@@ -298,6 +309,22 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 5/9 plans] → 55-01 Lit Rev
 ## Session Continuity
 
 ### Current Session (2026-02-06)
+
+**Phase 55-06 COMPLETE:**
+- H8 takeover variables script created (3.8_H8TakeoverVariables.py, 973 lines)
+- 5 commits: 6271da7 (header), 2f9b6f6 (SDC load), 629efb6 (merge), f1c6a00 (stats), 65cd033 (path fix)
+- SDC data processed: 142,457 deals -> 95,452 (2002-2018) -> 20,283 public targets -> 16,140 completed -> 1,250 forward events
+- H8 sample constructed: 12,408 obs, 1,484 firms, 2002-2004 (limited by H7 data)
+- Output: H8_Takeover.parquet saved with uncertainty measures and controls
+- BLOCKER: No CUSIP-GVKEY mapping; takeover_fwd = 0 for all observations
+- Script logic complete but H8 regression blocked without firm-level takeover variation
+- SUMMARY.md created at .planning/phases/55-v1-hypotheses-retest/55-06-SUMMARY.md
+
+**Phase 55-06 Key Findings:**
+- H8 regression CANNOT proceed without CUSIP-GVKEY mapping
+- SDC data (CUSIP-level) cannot merge with H7 data (GVKEY-level)
+- Market-wide takeover rate available but not sufficient for firm-level regression
+- Required fix: Add CUSIP to manifest via CRSP link table
 
 **Phase 55-05 COMPLETE:**
 - Implemented and executed full robustness suite for H7 (4.7_H7IlliquidityRegression.py updated)
@@ -557,4 +584,4 @@ Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 5/9 plans] → 55-01 Lit Rev
 - Phase 54-03: Final audit summary and determination on re-test vs documentation
 
 ---
-*Last updated: 2026-02-06 (Phase 53-01 Complete)*
+*Last updated: 2026-02-06 (Phase 55-06 Complete)*
