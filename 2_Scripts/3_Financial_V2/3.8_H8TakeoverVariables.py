@@ -122,22 +122,22 @@ def setup_paths(timestamp):
             required_file="master_sample_manifest.parquet",
         )
 
-    # Resolve textual analysis directory
-    text_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
-        required_file_pattern="linguistic_variables_",
-    )
-
     # Resolve H7 illiquidity output (for base dataset with uncertainty measures)
-    h7_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
-        required_file="H7_Illiquidity.parquet",
-    )
+    # Find directory containing H7_Illiquidity.parquet
+    v2_base = root / "4_Outputs" / "3_Financial_V2"
+    h7_dir = None
+    if v2_base.exists():
+        for d in sorted(v2_base.iterdir(), reverse=True):
+            if d.is_dir() and (d / "H7_Illiquidity.parquet").exists():
+                h7_dir = d
+                break
+
+    if h7_dir is None:
+        raise FileNotFoundError(f"H7_Illiquidity.parquet not found in {v2_base}")
 
     paths = {
         "root": root,
         "manifest_dir": manifest_dir,
-        "text_dir": text_dir,
         "h7_dir": h7_dir,
         "sdc_file": root / CONFIG['sdc_file'],
     }
@@ -583,7 +583,8 @@ def check_prerequisites(paths):
 
     all_ok = True
     for name, path in required_files.items():
-        if path.exists():
+        path_exists = path.exists() if not isinstance(path, dict) else any(p.exists() for p in path.values())
+        if path_exists:
             print(f"  [OK] {name}: {path}")
         else:
             print(f"  [MISSING] {name}: {path}")
