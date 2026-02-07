@@ -10,14 +10,14 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 55 - V1 Hypotheses Re-Test
-Plan: 6 of 9
-Status: **In Progress** - H8 takeover variables script complete; firm-level takeover merge blocked by missing CUSIP-GVKEY mapping
-Last activity: 2026-02-06 - Plan 55-06 complete; H8 takeover variables constructed (12,408 obs) but takeover_fwd=0 due to missing CUSIP-GVKEY mapping
+Plan: 7 of 9
+Status: **In Progress** - H8 takeover regression complete with CUSIP-GVKEY mapping; primary spec failed to converge due to rare events (16 takeovers)
+Last activity: 2026-02-06 - Plan 55-07 complete; H8 regression executed (pooled spec shows 1/4 sig, primary spec failed convergence)
 
 ### Next Phase
 
-**Plan 55-07: H8 Takeover Regression** — BLOCKED; requires CUSIP-GVKEY mapping for firm-level takeover indicator
-**Alternative:** Skip to 55-08 (H9) or resolve CUSIP-GVKEY mapping via CRSP link table
+**Plan 55-08: H9 Speech Uncertainty -> Future Returns** — Ready to start
+**Blockers:** None
 
 ### Progress
 
@@ -46,7 +46,7 @@ Phase 43-46: H7-H10 Hypotheses    [NOT PURSUED - abandoned with Phase 41]
 Phase 52: LLM Lit Review & Novel Hyp [COMPLETE - 5/5 plans] → 5 hypotheses specified
 Phase 53: H2 PRisk x Uncertainty     [COMPLETE - 3/3 plans] → H2: NOT SUPPORTED
 Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms implementation sound, null results genuine
-Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 6/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete (12,408 obs) but BLOCKED - missing CUSIP-GVKEY mapping for firm-level takeover indicator
+Phase 55: V1 Hypotheses Re-Test      [IN PROGRESS - 7/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete, 55-07 Takeover Regression complete → H8 (Takeover): NOT SUPPORTED (primary spec failed convergence, pooled: 1/4 sig, low power due to 16 events)
 Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 ```
 
@@ -68,6 +68,7 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 | H6-B | QA effect > Pres effect | NULL | 1/2 QA effects larger |
 | H6-C | CCCL → ↓ Uncertainty Gap | NULL | p=0.22 |
 | H7a | Uncertainty → ↑ Illiquidity | NOT SUPPORTED | 0/4 (FDR-corrected) |
+| H8a | Uncertainty → ↑ Takeover Probability | NOT SUPPORTED | Primary: failed convergence; Pooled: 1/4 (low power, 16 events) |
 
 **Implication**: Phases 36-38 (Robustness, Identification, Publication) cancelled as scientifically inappropriate for null results.
 
@@ -310,7 +311,24 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 
 ### Current Session (2026-02-06)
 
-**Phase 55-06 COMPLETE:**
+**Phase 55-07 COMPLETE:**
+- CUSIP-GVKEY crosswalk created from CRSP-COMPUSTAT CCM link table (22,977 unique mappings)
+- H8 takeover variables script modified to use CCM mapping (3.8_H8TakeoverVariables.py)
+- H8 regression script created (4.8_H8TakeoverRegression.py, 820 lines)
+- 2 commits: c1e9c27 (H8 script fix), 1251988 (regression script)
+- H8 sample regenerated: 12,408 obs, 1,484 firms, 2002-2004, 16 takeover events (0.13% rate)
+- H8 regression executed: Primary spec failed convergence (perfect prediction), Pooled spec shows 1/4 sig
+- Results: H8a NOT SUPPORTED (low statistical power due to rare events)
+- SUMMARY.md created at .planning/phases/55-v1-hypotheses-retest/55-07-SUMMARY.md
+
+**Phase 55-07 Key Findings:**
+- CCM link table enables CUSIP-GVKEY mapping with 24.6% SDC match rate (5,790/23,501 deals)
+- Firm-level takeover indicator now has variation (16 events vs 0 before)
+- Primary logit spec failed due to perfect prediction with 1,484 firm dummies and only 16 events
+- Pooled spec converged: Manager_Pres_Uncertainty_pct significant (p=0.004, OR=9.35) but lacks FE controls
+- Low power due to limited sample period (2002-2004, only 3 years)
+
+**Phase 55-06 COMPLETE (Earlier):**
 - H8 takeover variables script created (3.8_H8TakeoverVariables.py, 973 lines)
 - 5 commits: 6271da7 (header), 2f9b6f6 (SDC load), 629efb6 (merge), f1c6a00 (stats), 65cd033 (path fix)
 - SDC data processed: 142,457 deals -> 95,452 (2002-2018) -> 20,283 public targets -> 16,140 completed -> 1,250 forward events
@@ -359,6 +377,15 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 - Pass gvkey/year as columns to run_panel_ols (function handles MultiIndex)
 - One-tailed p-value: p_one = p_two/2 if coef > 0, else 1 - p_two/2
 - FDR correction applied only to primary spec results
+
+**Phase 55-07 Decisions:**
+- Use CRSP-COMPUSTAT CCM link table (LINKPRIM='P') for CUSIP-GVKEY mapping (22,977 unique pairs)
+- Filter CCM to primary links only for most reliable GVKEY-CUSIP pairs
+- Truncate 8-digit CUSIPs to 6-digit for SDC matching
+- Keep most recent CUSIP per GVKEY (by LINKDT) to handle CUSIP changes over time
+- Logistic regression with firm FE fails with rare events (16 takeover events) due to perfect prediction
+- Pooled OLS (no FE) is viable alternative when FE causes convergence issues
+- Low statistical power is fundamental limitation for rare events (takeovers, CEO turnover)
 
 **Phase 55-03 COMPLETE (Earlier):**
 - Created H7 illiquidity variable construction script (3.7_H7IlliquidityVariables.py, 955 lines)
