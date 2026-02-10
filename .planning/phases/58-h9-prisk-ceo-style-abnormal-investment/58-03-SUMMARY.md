@@ -123,6 +123,14 @@ None - no external service configuration required.
 
 **Blockers:** None - ready to proceed with 58-04 (PRiskFY dataset needed first)
 
+## Self-Check: PASSED
+
+- [OK] SUMMARY.md created: .planning/phases/58-h9-prisk-ceo-style-abnormal-investment/58-03-SUMMARY.md
+- [OK] Script exists: 2_Scripts/5_Financial_V3/5.8_H9_AbnormalInvestment.py
+- [OK] Bug fix commit: f55416d (fix duplicate rows in first-stage regression)
+- [OK] Summary commit: 6a6ad33 (docs: complete Biddle abnormal investment summary)
+- [OK] STATE.md updated: Position at 58-03 complete, decisions added
+
 ---
 *Phase: 58-h9-prisk-ceo-style-abnormal-investment*
 *Completed: 2026-02-10*
