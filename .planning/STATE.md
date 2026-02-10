@@ -10,14 +10,13 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 58 - H9 PRisk × CEO Style → Abnormal Investment
-Plan: 1 of 4
-Status: **In Progress** - StyleFrozen construction complete (7,125 firm-years, 493 firms, 471 CEOs). Next: PRiskFY construction (58-02)
-Last activity: 2026-02-10 - Completed 58-01: StyleFrozen construction with memory-efficient processing
+Plan: 3 of 4
+Status: **In Progress** - StyleFrozen (7,125 obs), AbsAbInv (80,048 obs) complete. PRiskFY (58-02) pending, then 58-04 regression.
+Last activity: 2026-02-10 - Completed 58-03: Biddle abnormal investment (80,048 firm-years, AbsAbInv mean=0.1915)
 
 ### Next Phase
 
-**Phase 58-02:** Construct PRiskFY (fiscal year policy risk from quarterly)
-**Phase 58-03:** Construct AbsAbInv (Biddle abnormal investment)
+**Phase 58-02:** Construct PRiskFY (fiscal year policy risk from quarterly) - NEEDED FOR 58-04
 **Phase 58-04:** Merge variables and run H9 regression
 **Blockers:** None
 
@@ -51,7 +50,7 @@ Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms im
 Phase 55: V1 Hypotheses Re-Test      [COMPLETE - 9/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete, 55-07 Takeover Regression complete → H8 (Takeover): NOT SUPPORTED (primary spec failed convergence, pooled: 1/4 sig, low power due to 16 events); 55-08 Robustness Suite complete → H8 Robustness: NOT ROBUST (0/30 sig across 5 dimensions: alt DVs, alt IVs, timing, Cox PH); 55-09 Synthesis complete → V1 null results validated as GENUINE EMPIRICAL FINDINGS (not implementation artifacts); comprehensive report (55-SYNTHESIS.md) created with literature comparison (Dang 2022, Hajek 2024, Gao 2023), implementation audit, recommendations
 Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
-Phase 58: H9 PRisk × CEO Style → Abnormal Investment [IN PROGRESS - 1/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY, 58-03 AbsAbInv, 58-04 Regression pending
+Phase 58: H9 PRisk × CEO Style → Abnormal Investment [IN PROGRESS - 2/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-03 AbsAbInv complete (80,048 firm-years); 58-02 PRiskFY, 58-04 Regression pending
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -351,6 +350,19 @@ Phase 58: H9 PRisk × CEO Style → Abnormal Investment [IN PROGRESS - 1/4 plans
 - [CEO Selection] Dominant CEO per firm-year via max calls, with earlier first_call_date tiebreaker
 - [Output Coverage] 7,125 firm-years, 493 firms, 471 CEOs (2002-2018), 2.0% of Compustat universe
 - [StyleFrozen Distribution] Mean=-0.0054, SD=1.0003 (~N(0,1) as expected from ClarityCEO standardization)
+
+### Phase 58-03 Abnormal Investment Decisions
+
+- [Biddle Specification] TotalInv_{t+1} = (capx_{t+1} + xrd_{t+1} + aqc_{t+1} - sppe_{t+1}) / at_t (denominator is at_t, not at_{t+1})
+- [Investment Missingness] CAPX required non-missing; R&D/AQC/SPPE set to 0 if missing
+- [First-Stage Cell Rule] Require N >= 30 per (ind2, fyear) cell; fallback to ind1 if too small
+- [Two-Pass Regression] Process sufficient ind2 cells first, then handle ind1 fallback for unprocessed observations only (prevents duplicates)
+- [Winsorization Timing] Apply 1%/99% winsorization AFTER first-stage regression, not before
+- [Output Coverage] 80,048 firm-years, 11,256 firms, 2003-2017, AbsAbInv mean=0.1915
+- [Control Missingness] ln_at/lev/cash: 0% missing, roa: 0.0% missing, mb: 6.4% missing
+
+### Phase 58-03 Synthesis Decisions
+
 - [Audit Synthesis] Comprehensive 54-AUDIT-REPORT.md created (400+ lines) with executive summary and detailed findings
 - [Audit Synthesis] FINAL VERDICT: Implementation is SOUND; null H6 results are GENUINE EMPIRICAL FINDINGS, not implementation errors
 - [Audit Synthesis] Pre-trends violation interpreted as SUBSTANTIVE (anticipatory SEC scrutiny per Cassell et al. 2021), not design flaw
