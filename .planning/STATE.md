@@ -11,13 +11,12 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 Phase: 58 - H9 PRisk × CEO Style → Abnormal Investment
 Plan: 3 of 4
-Status: **In Progress** - StyleFrozen (7,125 obs), AbsAbInv (80,048 obs) complete. PRiskFY (58-02) pending, then 58-04 regression.
-Last activity: 2026-02-10 - Completed 58-03: Biddle abnormal investment (80,048 firm-years, AbsAbInv mean=0.1915)
+Status: **In Progress** - StyleFrozen (7,125 obs), PRiskFY (65,664 obs), AbsAbInv (80,048 obs) complete. 58-04 regression pending.
+Last activity: 2026-02-10 - Completed 58-02: PRiskFY construction (65,664 firm-years, 7,869 firms, 2002-2021)
 
 ### Next Phase
 
-**Phase 58-02:** Construct PRiskFY (fiscal year policy risk from quarterly) - NEEDED FOR 58-04
-**Phase 58-04:** Merge variables and run H9 regression
+**Phase 58-04:** Merge variables and run H9 regression - NEEDED FOR COMPLETION
 **Blockers:** None
 
 ### Progress
@@ -50,7 +49,7 @@ Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms im
 Phase 55: V1 Hypotheses Re-Test      [COMPLETE - 9/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete, 55-07 Takeover Regression complete → H8 (Takeover): NOT SUPPORTED (primary spec failed convergence, pooled: 1/4 sig, low power due to 16 events); 55-08 Robustness Suite complete → H8 Robustness: NOT ROBUST (0/30 sig across 5 dimensions: alt DVs, alt IVs, timing, Cox PH); 55-09 Synthesis complete → V1 null results validated as GENUINE EMPIRICAL FINDINGS (not implementation artifacts); comprehensive report (55-SYNTHESIS.md) created with literature comparison (Dang 2022, Hajek 2024, Gao 2023), implementation audit, recommendations
 Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
-Phase 58: H9 PRisk × CEO Style → Abnormal Investment [IN PROGRESS - 2/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-03 AbsAbInv complete (80,048 firm-years); 58-02 PRiskFY, 58-04 Regression pending
+Phase 58: H9 PRisk × CEO Style → Abnormal Investment [IN PROGRESS - 3/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression pending
 ```
 
 ## v2.0 Hypothesis Testing Results
