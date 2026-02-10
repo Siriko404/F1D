@@ -731,14 +731,14 @@ def run_h9_regression(panel, model_type='primary', verbose=True):
     # Prepare data for regression
     reg_data = panel.copy()
 
-    # Set MultiIndex for panel data
-    reg_data = reg_data.set_index(['gvkey', 'fyear'])
+    # Add gvkey and fyear as columns for panel_ols (they will be used to set index)
+    reg_data = reg_data.reset_index(drop=True)
 
     if verbose:
         print(f"\nRegression data:")
         print(f"  - N_obs: {len(reg_data):,}")
-        print(f"  - N_firms: {reg_data.index.get_level_values('gvkey').nunique():,}")
-        print(f"  - N_years: {reg_data.index.get_level_values('fyear').nunique():,}")
+        print(f"  - N_firms: {reg_data['gvkey'].nunique():,}")
+        print(f"  - N_years: {reg_data['fyear'].nunique():,}")
 
     # Run regression using shared panel_ols module
     try:
@@ -799,7 +799,7 @@ def format_regression_results(result, output_dir):
     # Save full model summary to text file
     summary_file = output_dir / "h9_regression_output.txt"
     with open(summary_file, 'w') as f:
-        f.write(str(result['model'].summary()))
+        f.write(str(result['model'].summary))
     print(f"[OK] Full summary saved to: {summary_file}")
 
     return results_df
