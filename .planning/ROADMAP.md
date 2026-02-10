@@ -409,6 +409,33 @@ Plans:
 **Details:**
 Replicates Dzieliński, Wagner, Zeckhauser (2020) "Straight talkers and vague talkers" CEO fixed effects extraction methodology (Equation 4). Estimates CEO communication style as a time-invariant personal trait via CEO fixed effects regression, then validates the measure through robustness specifications. Outcome regressions (Tables 5-7) are NOT in scope - this phase focuses on CEO style extraction only. Implements both paper (2003-2015) and extended (2002-2018) sample periods.
 
+### Phase 57: V1 LaTeX Thesis Draft
+**Goal:** Create academically rigorous LaTeX thesis draft documenting V1 analyses (H7 Illiquidity, H8 Takeover Probability hypotheses) with publication-quality tables and exhibits
+**Depends on:** Phase 55 (V1 Hypotheses Re-Test - all results available)
+**Status:** PLANNED — TBD plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 57 to break down)
+
+**Details:**
+Create comprehensive LaTeX thesis document following the template structure at `draft template.md`. Document will include all standard academic components: title page, abstract, introduction, literature review, methodology, data, results, robustness, conclusion, references, and appendices. All tables and exhibits will be formatted to academic publication standards (AFA, AER, JFE style). Focus on V1 hypotheses (H7: Speech Uncertainty → Stock Illiquidity; H8: Speech Uncertainty → Takeover Probability) with null results framed as contribution to publication bias correction. Integration points for regression outputs from Phases 55-03 through 55-08.
+
+### Phase 58: H9 PRisk × CEO Style → Abnormal Investment ✓
+**Goal:** Test whether Hassan PRisk changes Biddle-style abnormal investment more when the CEO has a persistently vague communication style (Dzieliński-style CEO trait)
+**Depends on:** Phase 56 (CEO/Management Uncertainty as Persistent Style - for style_frozen variable)
+**Status:** COMPLETE — 4 plans in 2 waves executed
+**Results:** H9 NOT SUPPORTED — Interaction term β3 = -0.0000 (p=0.7574), CEO style does NOT moderate PRisk → abnormal investment
+**Completed:** 2026-02-10 — 4/4 plans executed, 12/12 must-haves verified
+
+Plans:
+- [x] 58-01-PLAN.md — Construct StyleFrozen (CEO vagueness at firm-year level with frozen constraint)
+- [x] 58-02-PLAN.md — Construct PRiskFY (fiscal-year PRisk from quarterly Hassan data)
+- [x] 58-03-PLAN.md — Construct AbsAbInv + Controls (Biddle abnormal investment measure)
+- [x] 58-04-PLAN.md — Merge FINAL_PANEL and run H9 regression
+
+**Details:**
+Tests the interaction effect of Political Risk (PRisk) and CEO vagueness style (from Phase 56) on absolute abnormal investment (AbsAbInv). Final sample: 5,295 firm-years, 432 firms, 418 CEOs (2003-2017). Specification: AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_{i,t} + β2·StyleFrozen_{i,t} + β3·(PRiskFY × StyleFrozen) + γ'Controls + FirmFE + YearFE + ε. **H9 Result:** β3 insignificant (p=0.76), indicating CEO communication style does NOT moderate the effect of policy risk on abnormal investment.
+
 ---
 
 ## Progress
@@ -444,6 +471,7 @@ Replicates Dzieliński, Wagner, Zeckhauser (2020) "Straight talkers and vague ta
 | H2-V3 (Phase 53) | PRisk × Uncertainty → ↓ Investment Efficiency | NOT SUPPORTED | beta=+0.0001, p=0.841 (wrong direction) |
 | H7a (Phase 55) | Uncertainty → ↑ Illiquidity | NOT SUPPORTED | 0/4 primary, 0/14 robustness (FDR-corrected) |
 | H8a (Phase 55) | Uncertainty → ↑ Takeover Probability | NOT SUPPORTED | Primary failed convergence, 0/30 robustness |
+| H9 (Phase 58) | PRisk × CEO Style → Abnormal Investment | NOT SUPPORTED | beta3=-0.0000, p=0.757 (interaction insignificant) |
 
 | Phase | Name | Plans Complete | Status | Completed |
 |-------|------|----------------|--------|-----------|
@@ -467,7 +495,10 @@ Replicates Dzieliński, Wagner, Zeckhauser (2020) "Straight talkers and vague ta
 | 53 | H2 PRisk × Uncertainty → Investment Efficiency | 3/3 | COMPLETE | 2026-02-06 |
 | 54 | H6 Implementation Audit | 4/4 | COMPLETE | 2026-02-06 |
 | 55 | V1 Hypotheses Re-Test | 9/9 | COMPLETE | 2026-02-06 |
+| 58 | H9 PRisk × CEO Style → Abnormal Investment | 4/4 | COMPLETE | 2026-02-10 |
 | 56 | CEO/Management Uncertainty as Persistent Style | 0/1 | PLANNED | — |
+| 57 | V1 LaTeX Thesis Draft | 0/TBD | PLANNED | — |
+| 58 | H9 PRisk × CEO Style → Abnormal Investment | 4/4 | COMPLETE | 2026-02-10 |
 
 ## Requirement Coverage
 
