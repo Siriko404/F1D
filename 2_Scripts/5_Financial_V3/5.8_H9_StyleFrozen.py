@@ -42,6 +42,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 import json
+import gc
 
 import pandas as pd
 import numpy as np
@@ -63,6 +64,7 @@ from path_utils import (
     PathValidationError,
     OutputResolutionError
 )
+from chunked_reader import read_selected_columns, read_in_chunks
 
 
 def load_ceo_clarity(base_path: Path) -> pd.DataFrame:
@@ -156,7 +158,13 @@ def load_manifest_calls(base_path: Path) -> pd.DataFrame:
 
 def load_compustat_dates(base_path: Path) -> pd.DataFrame:
     """
-    Load Compustat fiscal year-end dates.
+    Load Compustat fiscal year-end dates with memory-efficient filtering.
+
+    Uses read_selected_columns to only load required columns, reducing
+    memory footprint. Filters by fyear before applying datetime conversion.
+
+    Note: Compustat file uses 'fyearq' (fiscal year from quarterly data),
+    which we rename to 'fyear' for consistency.
 
     Args:
         base_path: Base path to project directory
@@ -165,23 +173,44 @@ def load_compustat_dates(base_path: Path) -> pd.DataFrame:
         DataFrame with columns: gvkey, datadate, fyear
     """
     print("\n" + "=" * 80)
-    print("LOADING COMPUSTAT FISCAL YEAR-END DATES")
+    print("LOADING COMPUSTAT FISCAL YEAR-END DATES (Memory-Efficient)")
     print("=" * 80)
 
     file_path = base_path / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
 
     try:
         validate_input_file(file_path)
-        df = pd.read_parquet(file_path)
+
+        # Load only required columns first (memory-efficient)
+        # Note: Compustat file uses 'fyearq' for fiscal year
+        print("[INFO] Loading only required columns: gvkey, datadate, fyearq")
+        df = read_selected_columns(file_path, ['gvkey', 'datadate', 'fyearq'])
         print(f"[OK] Loaded Compustat: {len(df):,} observations")
 
-        # Select required columns
-        df = df[['gvkey', 'datadate', 'fyear']].copy()
-        df['datadate'] = pd.to_datetime(df['datadate'])
+        # Rename fyearq to fyear for consistency
+        df = df.rename(columns={'fyearq': 'fyear'})
 
-        # Filter: valid datadate, sample period
-        df = df.dropna(subset=['datadate', 'fyear'])
+        # Force garbage collection after loading
+        gc.collect()
+
+        # Filter by numeric fyear FIRST (cheaper operation)
+        df = df.dropna(subset=['fyear'])
         df = df[(df['fyear'] >= 2002) & (df['fyear'] <= 2018)]
+        print(f"[OK] Filtered to 2002-2018: {len(df):,} observations")
+
+        # Drop rows with missing datadate
+        df = df.dropna(subset=['datadate'])
+
+        # Convert datadate to datetime AFTER filtering (reduces conversions)
+        df['datadate'] = pd.to_datetime(df['datadate'], errors='coerce')
+        df = df.dropna(subset=['datadate'])
+
+        # Deduplicate by (gvkey, fyear) keeping latest datadate
+        df = df.sort_values('datadate').drop_duplicates(
+            subset=['gvkey', 'fyear'], keep='last'
+        )
+
+        gc.collect()
 
         print(f"  - After filtering (2002-2018, non-missing): {len(df):,} firm-years")
         print(f"  - Unique firms: {df['gvkey'].nunique():,}")
@@ -261,14 +290,22 @@ def assign_ceo_to_fy(
     manifest_filtered = manifest[manifest['ceo_id'].isin(valid_ceos)].copy()
     print(f"[OK] Filtered to CEOs with >= {min_calls_total} total calls: {len(manifest_filtered):,} calls")
 
+    # Only keep columns needed for merge
+    manifest_filtered = manifest_filtered[['file_name', 'gvkey', 'start_date', 'ceo_id', 'ceo_name']]
+    gc.collect()
+
     # Join manifest to fiscal year grid
     # For each firm-year, we need to know which calls occurred <= fy_end
     fy_grid_expanded = fy_grid.merge(
-        manifest_filtered[['file_name', 'gvkey', 'start_date', 'ceo_id', 'ceo_name']],
+        manifest_filtered,
         on='gvkey',
         how='inner'
     )
     print(f"[OK] Joined manifest to FY grid: {len(fy_grid_expanded):,} call-FY combinations")
+
+    # Free memory: no longer need manifest_filtered
+    del manifest_filtered
+    gc.collect()
 
     # Apply frozen constraint: keep only calls where start_date <= fy_end
     fy_grid_expanded = fy_grid_expanded[
@@ -303,6 +340,10 @@ def assign_ceo_to_fy(
     # Select first CEO per (gvkey, fyear)
     dominant_ceo = ceo_calls_per_fy.groupby(['gvkey', 'fyear']).first().reset_index()
 
+    # Free memory
+    del fy_grid_expanded, ceo_calls_per_fy
+    gc.collect()
+
     print(f"[OK] Selected dominant CEO per firm-year: {len(dominant_ceo):,} firm-years")
 
     # Filter by min_calls_fy
@@ -324,11 +365,17 @@ def assign_ceo_to_fy(
     )
     dominant_ceo = dominant_ceo.rename(columns={'n_calls': 'n_calls_total'})
 
+    # Clean up columns - remove first_call_date which was only for tiebreaking
+    if 'first_call_date' in dominant_ceo.columns:
+        dominant_ceo = dominant_ceo.drop(columns=['first_call_date'])
+
     # Reorder columns
     dominant_ceo = dominant_ceo[[
         'gvkey', 'fyear', 'fy_end', 'ceo_id', 'ceo_name',
         'n_calls_fy', 'n_calls_total'
     ]]
+
+    gc.collect()
 
     return dominant_ceo
 
@@ -530,10 +577,14 @@ def generate_report(
 
     print(f"\n[OK] Report written: {report_path}")
 
-    # Write stats to JSON
+    # Write stats to JSON - convert numpy/pandas types to native Python
     stats_path = output_dir / "stats.json"
     with open(stats_path, 'w') as f:
-        json.dump(stats, f, indent=2)
+        json.dump({
+            k: int(v) if isinstance(v, (np.integer, int)) else
+               float(v) if isinstance(v, (np.floating, float)) else v
+            for k, v in stats.items()
+        }, f, indent=2)
     print(f"[OK] Stats written: {stats_path}")
 
     return stats
