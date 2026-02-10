@@ -9,15 +9,16 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: 55 - V1 Hypotheses Re-Test
-Plan: 9 of 9
-Status: **COMPLETE** - Comprehensive synthesis report created; V1 null results validated as genuine; H7 and H8 both NOT SUPPORTED with robust methodology; literature comparison documented; recommendations provided
-Last activity: 2026-02-10 - Completed quick task 031: V2 hypothesis documentation - created publication-quality documentation for all 8 V2 hypotheses (H1-H8)
+Phase: 58 - H9 PRisk × CEO Style → Abnormal Investment
+Plan: 1 of 4
+Status: **In Progress** - StyleFrozen construction complete (7,125 firm-years, 493 firms, 471 CEOs). Next: PRiskFY construction (58-02)
+Last activity: 2026-02-10 - Completed 58-01: StyleFrozen construction with memory-efficient processing
 
 ### Next Phase
 
-**Phase 56: CEO/Management Uncertainty as Persistent Style** — Ready to start (re-implement V1 persistence tests in V2 framework)
-**Phase 57: V1 LaTeX Thesis Draft** — Also ready to start (create academic thesis document with LaTeX)
+**Phase 58-02:** Construct PRiskFY (fiscal year policy risk from quarterly)
+**Phase 58-03:** Construct AbsAbInv (Biddle abnormal investment)
+**Phase 58-04:** Merge variables and run H9 regression
 **Blockers:** None
 
 ### Progress
@@ -50,6 +51,7 @@ Phase 54: H6 Implementation Audit   [COMPLETE - 4/4 plans] → Audit confirms im
 Phase 55: V1 Hypotheses Re-Test      [COMPLETE - 9/9 plans] → 55-01 Lit Review, 55-02 Methodology, 55-03 Variables, 55-04 Regression complete, 55-05 Robustness complete → H7 (Illiquidity): NOT SUPPORTED (0/4 sig), Robustness: 0/14 sig; 55-06 Takeover Variables complete, 55-07 Takeover Regression complete → H8 (Takeover): NOT SUPPORTED (primary spec failed convergence, pooled: 1/4 sig, low power due to 16 events); 55-08 Robustness Suite complete → H8 Robustness: NOT ROBUST (0/30 sig across 5 dimensions: alt DVs, alt IVs, timing, Cox PH); 55-09 Synthesis complete → V1 null results validated as GENUINE EMPIRICAL FINDINGS (not implementation artifacts); comprehensive report (55-SYNTHESIS.md) created with literature comparison (Dang 2022, Hajek 2024, Gao 2023), implementation audit, recommendations
 Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
+Phase 58: H9 PRisk × CEO Style → Abnormal Investment [IN PROGRESS - 1/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY, 58-03 AbsAbInv, 58-04 Regression pending
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -235,6 +237,7 @@ Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically 
 - [Phase 55-02 Methodology] FDR correction applied across 4 IVs per hypothesis (Benjamini-Hochberg)
 - [Phase 55-02 Methodology] Sequential implementation: H1 first (pilot), then H2 using learnings
 - [Phase 56 Added] Tone Dynamics Predictive Power — tests whether dynamics (velocity, acceleration, jerk) of management tone (LM dictionary measures) have predictive power for future outcomes beyond static levels
+- [Phase 58 Added] H9 PRisk × CEO Style → Abnormal Investment — tests interaction effect of Political Risk (PRisk) and CEO vagueness style (Dzieliński-style CEO trait) on absolute Biddle abnormal investment; blueprint specified in H9 spec.txt
 - [Phase 55-04 H7 Regression] PanelOLS regression executed: 4 uncertainty measures x 4 specifications = 16 regressions
 - [Phase 55-04 H7 Regression] Sample: 3,706 obs, 2,283 firms, 2002-2018 (after control missingness filter)
 - [Phase 55-04 H7 Regression] H7a NOT SUPPORTED: 0/4 measures significant after FDR correction
@@ -283,6 +286,23 @@ Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically 
 | 031 | Create publication-quality documentation for V2 hypotheses (H1-H8) | 2026-02-10 | d30491f | [031-v2-hypothesis-docs](./quick/031-v2-hypothesis-docs/) |
 | 030 | Audit investment efficiency implementation vs Biddle (2009) methodology | 2026-02-07 | 317d3cb | [030-audit-investment-efficiency](./quick/030-audit-investment-efficiency/) |
 
+### Phase 58: H9 PRisk × CEO Style → Abnormal Investment
+
+**Started:** 2026-02-10
+**Status:** In Progress (1/4 plans complete)
+
+**Plans:**
+- 58-01: StyleFrozen construction (COMPLETE) - CEO Clarity scores assigned to firm-years using frozen constraint
+- 58-02: PRiskFY construction (PENDING) - Fiscal year aggregation of Hassan PRisk
+- 58-03: AbsAbInv construction (PENDING) - Biddle abnormal investment
+- 58-04: Merge and regression (PENDING) - H9 regression with interaction term
+
+**Progress:**
+- StyleFrozen dataset created: 7,125 firm-years, 493 firms, 471 CEOs
+- Frozen constraint verified: start_date <= fy_end
+- CEO turnover: 1 firm (0.2%), CEO moves: 21
+- Output: 4_Outputs/5.8_H9_StyleFrozen/2026-02-10_150202/
+
 ### Phase 54-01 Audit Decisions
 
 - [Model Spec Audit] Panel OLS specification validated: Firm+Year FE with firm-clustered SE follows Cameron & Miller (2015) best practices
@@ -322,6 +342,41 @@ Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically 
 - [Future Research] Alternative measures: LLM-based semantic uncertainty, cross-speaker gaps, uncertainty dynamics; Alternative outcomes: analyst forecasts, market reactions, credit markets
 - [Methodological Lessons] Exhaustive literature review essential; fresh implementation more rigorous than code audit; pre-registered robustness prevents p-hacking; null results are valid scientific contributions
 
+### Phase 58-01 StyleFrozen Decisions
+
+- [Compustat Column Mapping] Use fyearq (fiscal year from quarterly data) and rename to fyear for consistency
+- [Memory Strategy] Column-first loading with read_selected_columns() to avoid OOM on large files
+- [CEO Filtering] Apply Phase 56 threshold (n_calls >= 5) before merging to reduce data volume
+- [Frozen Constraint] Strict implementation of start_date <= fy_end to prevent look-ahead bias
+- [CEO Selection] Dominant CEO per firm-year via max calls, with earlier first_call_date tiebreaker
+- [Output Coverage] 7,125 firm-years, 493 firms, 471 CEOs (2002-2018), 2.0% of Compustat universe
+- [StyleFrozen Distribution] Mean=-0.0054, SD=1.0003 (~N(0,1) as expected from ClarityCEO standardization)
+- [Audit Synthesis] Comprehensive 54-AUDIT-REPORT.md created (400+ lines) with executive summary and detailed findings
+- [Audit Synthesis] FINAL VERDICT: Implementation is SOUND; null H6 results are GENUINE EMPIRICAL FINDINGS, not implementation errors
+- [Audit Synthesis] Pre-trends violation interpreted as SUBSTANTIVE (anticipatory SEC scrutiny per Cassell et al. 2021), not design flaw
+- [Audit Synthesis] Recommendation: Proceed with reporting null findings as valid scientific results
+- [Audit Synthesis] ROADMAP.md and STATE.md updated with Phase 54 completion
+
+### Phase 55-09 Synthesis Decisions
+
+- [V1 Null Results Validation] V1 null results were GENUINE EMPIRICAL FINDINGS, not implementation artifacts
+- [V1 Null Results Validation] Fresh re-implementation using literature-standard methodology (Dang 2022, Amihud 2002, Roll 1984, Ambrose/Meghouar) confirms V1 null findings
+- [H7 Conclusion] Speech uncertainty does NOT predict stock illiquidity (0/4 primary sig, 0/14 robustness sig)
+- [H8 Conclusion] Speech uncertainty does NOT reliably predict takeover probability (primary failed convergence, 0/30 robustness sig)
+- [Literature Comparison] Results DO NOT ALIGN with Dang (2022), Hajek (2024), Gao (2023); possible explanations: different text sources (SEC filings/news vs calls), publication bias, sample limitations, true null effects
+- [Implementation Quality] Both H7 (Amihud illiquidity, PanelOLS with FE) and H8 (Logit, SDC merging) methodologies verified SOUND
+- [Publication Strategy] Pursue publication of null results to correct publication bias; emphasize methodology and transparency
+- [Future Research] Alternative measures: LLM-based semantic uncertainty, cross-speaker gaps, uncertainty dynamics; Alternative outcomes: analyst forecasts, market reactions, credit markets
+- [Methodological Lessons] Exhaustive literature review essential; fresh implementation more rigorous than code audit; pre-registered robustness prevents p-hacking; null results are valid scientific contributions
+
+## Self-Check: PASSED
+
+All files and commits verified for Phase 58-01:
+- 2_Scripts/5_Financial_V3/5.8_H9_StyleFrozen.py: FOUND
+- 4_Outputs/5.8_H9_StyleFrozen/2026-02-10_150202/style_frozen.parquet: FOUND
+- .planning/phases/58-h9-prisk-ceo-style-abnormal-investment/58-01-SUMMARY.md: FOUND
+- Commit ec1f199: FOUND
+
 ## Performance Metrics
 
 | Metric | v1.0 Final | v2.0 Final |
@@ -344,6 +399,15 @@ Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically 
 - Documented hypothesis test outcomes with clear support/reject conclusions
 - Included sample statistics, robustness checks, and economic interpretations
 - 2 commits: d30491f (docs: hypothesis files), 641fc96 (docs: summary)
+
+**Phase 58-01 COMPLETE:**
+- Created StyleFrozen construction script with memory-efficient processing
+- Fixed Compustat column mapping (fyearq -> fyear)
+- Generated style_frozen.parquet: 7,125 firm-years, 493 firms, 471 CEOs (2002-2018)
+- Applied frozen constraint: start_date <= fy_end
+- CEO turnover: 1 firm (0.2%), CEO moves: 21 CEOs
+- Commit: ec1f199 (feat: StyleFrozen construction)
+- SUMMARY: 58-01-SUMMARY.md created
 - SUMMARY.md created at .planning/quick/031-v2-hypothesis-docs/031-SUMMARY.md
 
 **Quick Task 031 Key Findings:**
