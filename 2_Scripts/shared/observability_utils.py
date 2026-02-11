@@ -24,10 +24,14 @@ Deterministic: true
 """
 
 import hashlib
+import logging
 import psutil
 import pandas as pd
 from typing import Dict, List, Optional, Any
 from pathlib import Path
+
+# Configure logger for this module
+logger = logging.getLogger(__name__)
 
 
 def compute_file_checksum(filepath: Path, algorithm: str = "sha256") -> str:
