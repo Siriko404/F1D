@@ -1,40 +1,39 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-SHARED MODULE: Observability and Statistics Helpers
+OBSERVABILITY PACKAGE
 ================================================================================
-ID: shared/observability_utils
-Description: [DEPRECATED] Provides backward compatibility for existing imports.
+ID: shared/observability
+Description: Provides reusable functions for statistics, monitoring,
+             anomaly detection, and performance tracking.
 
-This file now re-exports all symbols from the shared.observability package.
-Please update your imports to use the new package structure:
+This package splits the monolithic observability_utils.py into focused modules
+while maintaining 100% backward compatibility.
 
-    OLD: from shared.observability_utils import DualWriter
-    NEW: from shared.observability import DualWriter
+Modules:
+    - logging: DualWriter class for dual stdout/file logging
+    - stats: Statistics and analysis functions (print_stat, analyze_missing_values, etc.)
+    - files: File utility functions (compute_file_checksum)
+    - memory: Memory tracking utilities (get_process_memory_mb)
+    - throughput: Performance measurement functions (calculate_throughput)
+    - anomalies: Anomaly detection functions (detect_anomalies_zscore, detect_anomalies_iqr)
 
-All existing imports will continue to work without changes.
-The actual implementation has been moved to:
-    - shared.observability.logging: DualWriter
-    - shared.observability.stats: Statistics functions
-    - shared.observability.files: File utilities
-    - shared.observability.memory: Memory tracking
-    - shared.observability.throughput: Performance measurement
-    - shared.observability.anomalies: Anomaly detection
+Backward Compatibility:
+    All symbols are re-exported from this package, so existing imports continue to work:
+    - from shared.observability_utils import DualWriter  # Still works
+    - from shared.observability import DualWriter  # New preferred way
 
 Deterministic: true
 ================================================================================
 """
 
-# Re-export all symbols from observability package for backward compatibility
-from shared.observability import (
-    # Logging
-    DualWriter,
-    # Statistics (general)
+# Re-export all public symbols for backward compatibility
+from .logging import DualWriter
+from .stats import (
     print_stat,
     analyze_missing_values,
     print_stats_summary,
     save_stats,
-    # Statistics (step-specific)
     compute_input_stats,
     compute_temporal_stats,
     compute_entity_stats,
@@ -78,16 +77,18 @@ from shared.observability import (
     compute_step33_process_stats,
     compute_step33_output_stats,
     generate_financial_report_markdown,
-    # Files
-    compute_file_checksum,
-    # Memory
-    get_process_memory_mb,
-    # Throughput
-    calculate_throughput,
-    # Anomalies
+)
+from .files import compute_file_checksum
+from .memory import get_process_memory_mb
+from .throughput import calculate_throughput
+from .anomalies import (
     detect_anomalies_zscore,
     detect_anomalies_iqr,
 )
+
+# Configure logger for this module
+import logging
+logger = logging.getLogger(__name__)
 
 __all__ = [
     # Logging
