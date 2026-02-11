@@ -101,10 +101,10 @@ def sample_parquet_file_with_schema(tmp_path):
     """Create a temporary Parquet file matching Unified-info schema."""
     df = pd.DataFrame(
         {
-            "event_type": [1, 1, 2],
+            "event_type": ["1", "1", "2"],  # String for object dtype
             "file_name": ["call1.docx", "call2.docx", "call3.docx"],
-            "date": ["2002-01-15", "2002-02-20", "2002-03-10"],
-            "speakers": ["CEO,CFO", "CEO", "CFO"],
+            "start_date": pd.to_datetime(["2002-01-15", "2002-02-20", "2002-03-10"]),
+            "speaker_record_count": [2, 1, 1],  # Matches schema
         }
     )
     file_path = tmp_path / "unified_info_test.parquet"
