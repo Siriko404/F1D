@@ -498,7 +498,64 @@ Tests the interaction effect of Political Risk (PRisk) and CEO vagueness style (
 | 58 | H9 PRisk × CEO Style → Abnormal Investment | 4/4 | COMPLETE | 2026-02-10 |
 | 56 | CEO/Management Uncertainty as Persistent Style | 0/1 | PLANNED | — |
 | 57 | V1 LaTeX Thesis Draft | 0/TBD | PLANNED | — |
-| 58 | H9 PRisk × CEO Style → Abnormal Investment | 4/4 | COMPLETE | 2026-02-10 |
+
+---
+
+## v3.0 Codebase Cleanup & Optimization
+
+**Milestone:** v3.0 Codebase Cleanup & Optimization
+**Phases:** 5 phases (59-63)
+**Started:** 2026-02-10
+**Goal:** Fix critical bugs, improve code organization, add comprehensive documentation, optimize performance while preserving all functionality
+
+| Phase | Name | Plans Complete | Status | Completed |
+|-------|------|----------------|--------|-----------|
+| 59 | Critical Bug Fixes | 3/3 | COMPLETE | 2026-02-11 |
+| 60 | Code Organization | 5/5 | COMPLETE | 2026-02-11 |
+| 61 | Documentation | TBD | PLANNED | — |
+| 62 | Performance Optimization | TBD | PLANNED | — |
+| 63 | Testing & Validation | TBD | PLANNED | — |
+
+### Phase 59: Critical Bug Fixes ✓
+**Goal**: Fix H7-H8 data truncation bug and improve error handling
+**Depends on**: Phase 58 (H9 Complete)
+**Status**: COMPLETE — 3 plans in 3 waves executed
+**Completed**: 2026-02-11
+
+Plans:
+- [x] 59-01-PLAN.md — H7-H8 Data Truncation Bug Fix
+- [x] 59-02-PLAN.md — Exception-based Error Handling
+- [x] 59-03-PLAN.md — calculate_throughput Error Handling
+
+### Phase 60: Code Organization ✓
+**Goal**: Clean up file clutter and improve code structure
+**Depends on**: Phase 59 (bugs fixed)
+**Status**: COMPLETE — 5 plans in 4 waves executed
+**Completed**: 2026-02-11
+
+Plans:
+- [x] 60-01-PLAN.md — Archive Backup Files
+- [x] 60-02-PLAN.md — Version Structure Clarification
+- [x] 60-03-PLAN.md — Split Monolithic Utilities
+- [x] 60-04-PLAN.md — Code Quality Setup (Ruff)
+- [x] 60-04-B-PLAN.md — Code Quality Reporting (mypy/vulture)
+
+### Phase 61: Documentation
+**Goal**: Comprehensive documentation for codebase
+**Depends on**: Phase 60
+**Status**: PLANNED — TBD plans
+
+### Phase 62: Performance Optimization
+**Goal**: Optimize pipeline performance
+**Depends on**: Phase 60
+**Status**: PLANNED — TBD plans
+
+### Phase 63: Testing & Validation
+**Goal**: Enhanced testing coverage
+**Depends on**: Phase 60, Phase 62
+**Status**: PLANNED — TBD plans
+
+---
 
 ## Requirement Coverage
 
