@@ -28,18 +28,14 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import warnings
-import hashlib
-import json
-import time
-from functools import lru_cache
 import argparse
+import sys
+import warnings
+from datetime import datetime
+from functools import lru_cache
+from pathlib import Path
+
+import pandas as pd
 
 # Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
 scripts_dir = Path(__file__).parent.parent
@@ -56,11 +52,11 @@ except ImportError:
 
 # Import shared utility modules
 from shared.observability_utils import (
+    DualWriter,
+    analyze_missing_values,
     compute_file_checksum,
     print_stats_summary,
     save_stats,
-    analyze_missing_values,
-    DualWriter,
 )
 from shared.path_utils import get_latest_output_dir
 
@@ -322,7 +318,7 @@ def prepare_regression_data(df, stats=None):
     df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
     df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
 
-    print(f"\n  Sample distribution:")
+    print("\n  Sample distribution:")
     for sample in ["Main", "Finance", "Utility"]:
         n = (df["sample"] == sample).sum()
         print(f"    {sample}: {n:,} calls")
@@ -343,7 +339,7 @@ def run_regression(df_sample, sample_name):
         df_reg: DataFrame used for regression (ceo_id converted to string)
         valid_ceos: Set of valid CEO IDs (numeric) that passed the min calls filter
     """
-    print(f"\n" + "=" * 60)
+    print("\n" + "=" * 60)
     print(f"Running regression: {sample_name}")
     print("=" * 60)
 
@@ -378,7 +374,7 @@ def run_regression(df_sample, sample_name):
     print(f"  Formula: {formula[:80]}...")
 
     # Estimate model
-    print(f"  Estimating... (this may take a minute)")
+    print("  Estimating... (this may take a minute)")
     start_time = datetime.now()
 
     try:
@@ -562,7 +558,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
         diag_df = pd.DataFrame(all_diagnostics)
         diag_path = out_dir / "model_diagnostics.csv"
         diag_df.to_csv(diag_path, index=False)
-        print(f"  Saved: model_diagnostics.csv")
+        print("  Saved: model_diagnostics.csv")
 
     # Variable reference
     var_ref = pd.DataFrame(
@@ -627,7 +623,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
     )
     var_ref_path = out_dir / "variable_reference.csv"
     var_ref.to_csv(var_ref_path, index=False)
-    print(f"  Saved: variable_reference.csv")
+    print("  Saved: variable_reference.csv")
 
     return ceo_scores_df
 
@@ -702,7 +698,7 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: report_step4_1.md")
+    print("  Saved: report_step4_1.md")
 
 
 # ==============================================================================

@@ -16,8 +16,9 @@ Deterministic: true
 """
 
 import logging
-import psutil
 from typing import Dict
+
+import psutil
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)

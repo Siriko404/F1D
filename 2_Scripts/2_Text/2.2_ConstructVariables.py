@@ -1,49 +1,45 @@
-import pandas as pd
-import numpy as np
-import re
-from pathlib import Path
-from datetime import datetime
-import sys
+import argparse
 import hashlib
 import json
+import re
+import sys
 import time
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 import psutil
-import argparse
 
 # Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
 
 # Import shared path validation utilities
 try:
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-    )
     from shared.observability_utils import (
         DualWriter,
         compute_constructvariables_input_stats,
-        compute_constructvariables_process_stats,
         compute_constructvariables_output_stats,
+        compute_constructvariables_process_stats,
+    )
+    from shared.path_utils import (
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
     )
 except ImportError:
     import sys as _sys
-    from pathlib import Path as _Path
 
     _script_dir = Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-    )
     from shared.observability_utils import (
         DualWriter,
-        compute_constructvariables_input_stats,
-        compute_constructvariables_process_stats,
-        compute_constructvariables_output_stats,
+    )
+    from shared.path_utils import (
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
     )
 
 # ==============================================================================
@@ -91,20 +87,22 @@ def check_prerequisites(root):
     required_files = {}
 
     # Check tokenized files from step 2.1
-    tokenized_dir = get_latest_output_dir(
+    get_latest_output_dir(
         root / "4_Outputs" / "2_Textual_Analysis" / "2.1_Tokenized",
         required_file="linguistic_counts_2002.parquet",
     )
 
     # Check manifest from step 1.4
-    manifest_dir = get_latest_output_dir(
+    get_latest_output_dir(
         root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     # Validate required files exist
     required_files = {
-        "managerial_roles_extracted.txt": root / "1_Inputs" / "managerial_roles_extracted.txt",
+        "managerial_roles_extracted.txt": root
+        / "1_Inputs"
+        / "managerial_roles_extracted.txt",
     }
 
     validate_prerequisites(required_files, {})
@@ -483,10 +481,17 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     # Second pass: load only needed columns
     df = pd.read_parquet(
         in_path,
-        columns=["file_name", "context", "role", "employer", "speaker_name", "total_tokens"]
+        columns=[
+            "file_name",
+            "context",
+            "role",
+            "employer",
+            "speaker_name",
+            "total_tokens",
+        ]
         + count_cols,
     )
-    input_rows = len(df)
+    len(df)
 
     # Flag
     df = flag_speakers(df, manager_pattern, manifest_df)
@@ -533,7 +538,11 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
             agg_df = aggregate_weighted(df, s_mask, c_mask, count_cols)
             if agg_df is not None:
                 # Rename columns (exclude file_name)
-                rename_map = {c: f"{s_name}_{c_name}_{c}" for c in agg_df.columns if c != "file_name"}
+                rename_map = {
+                    c: f"{s_name}_{c_name}_{c}"
+                    for c in agg_df.columns
+                    if c != "file_name"
+                }
                 agg_df = agg_df.rename(columns=rename_map)
                 variables_created += len(rename_map)
                 # Merge
@@ -605,12 +614,16 @@ def generate_variable_construction_report(stats, output_path):
             lines.append("| Metric | Value |")
             lines.append("|--------|-------|")
             if "unique_gvkey" in manifest_stats:
-                lines.append(f"| Unique companies (gvkey) | {manifest_stats['unique_gvkey']:,} |")
+                lines.append(
+                    f"| Unique companies (gvkey) | {manifest_stats['unique_gvkey']:,} |"
+                )
             if "unique_ceos" in manifest_stats:
                 lines.append(f"| Unique CEOs | {manifest_stats['unique_ceos']:,} |")
             if "temporal_coverage" in manifest_stats:
                 tc = manifest_stats["temporal_coverage"]
-                lines.append(f"| Earliest start_date | {tc.get('earliest_start', 'N/A')} |")
+                lines.append(
+                    f"| Earliest start_date | {tc.get('earliest_start', 'N/A')} |"
+                )
                 lines.append(f"| Latest start_date | {tc.get('latest_start', 'N/A')} |")
             lines.append("")
 
@@ -618,10 +631,10 @@ def generate_variable_construction_report(stats, output_path):
         lines.append("### Linguistic Categories\n")
         cat_info = inp.get("linguistic_categories", {})
         lines.append(f"- **Total categories:** {cat_info.get('count', 0)}")
-        sample_cats = cat_info.get('sample_categories', [])
+        sample_cats = cat_info.get("sample_categories", [])
         if sample_cats:
             lines.append(f"- **Sample categories:** {', '.join(sample_cats)}")
-        all_cats = cat_info.get('category_names', [])
+        all_cats = cat_info.get("category_names", [])
         if all_cats:
             lines.append(f"- **All categories:** {', '.join(all_cats)}")
         lines.append("")
@@ -637,9 +650,15 @@ def generate_variable_construction_report(stats, output_path):
         flag_metrics = proc.get("speaker_flagging_metrics", {})
         lines.append("| Metric | Value |")
         lines.append("|--------|-------|")
-        lines.append(f"| Total speakers flagged | {flag_metrics.get('total_speakers_flagged', 0):,} |")
-        lines.append(f"| Total speakers unflagged | {flag_metrics.get('total_speakers_unflagged', 0):,} |")
-        lines.append(f"| Flagging rate | {flag_metrics.get('flagging_rate_pct', 0):.2f}% |\n")
+        lines.append(
+            f"| Total speakers flagged | {flag_metrics.get('total_speakers_flagged', 0):,} |"
+        )
+        lines.append(
+            f"| Total speakers unflagged | {flag_metrics.get('total_speakers_unflagged', 0):,} |"
+        )
+        lines.append(
+            f"| Flagging rate | {flag_metrics.get('flagging_rate_pct', 0):.2f}% |\n"
+        )
 
         # Role distribution
         role_dist = flag_metrics.get("role_distribution", {})
@@ -648,7 +667,9 @@ def generate_variable_construction_report(stats, output_path):
             lines.append("| Role | Count | Percentage |")
             lines.append("|------|-------|------------|")
             for role, info in sorted(role_dist.items()):
-                lines.append(f"| {role.capitalize()} | {info['count']:,} | {info['pct']:.2f}% |")
+                lines.append(
+                    f"| {role.capitalize()} | {info['count']:,} | {info['pct']:.2f}% |"
+                )
             lines.append("")
 
         # Variable Creation Breakdown
@@ -656,11 +677,17 @@ def generate_variable_construction_report(stats, output_path):
         var_breakdown = proc.get("variable_creation_breakdown", {})
         lines.append("| Metric | Value |")
         lines.append("|--------|-------|")
-        lines.append(f"| Total variables created | {var_breakdown.get('total_variables', 0)} |")
+        lines.append(
+            f"| Total variables created | {var_breakdown.get('total_variables', 0)} |"
+        )
         lines.append(f"| Number of samples | {var_breakdown.get('num_samples', 0)} |")
         lines.append(f"| Number of contexts | {var_breakdown.get('num_contexts', 0)} |")
-        lines.append(f"| Total combinations | {var_breakdown.get('total_combinations', 0)} |")
-        lines.append(f"| Categories per combo | {var_breakdown.get('categories_per_combo', 0)} |\n")
+        lines.append(
+            f"| Total combinations | {var_breakdown.get('total_combinations', 0)} |"
+        )
+        lines.append(
+            f"| Categories per combo | {var_breakdown.get('categories_per_combo', 0)} |\n"
+        )
 
         # Efficiency Metrics
         lines.append("### Efficiency Metrics\n")
@@ -670,7 +697,9 @@ def generate_variable_construction_report(stats, output_path):
         lines.append(f"| Calls processed | {eff.get('calls_processed', 0):,} |")
         lines.append(f"| Calls per second | {eff.get('calls_per_second', 0):.2f} |")
         lines.append(f"| Variables created | {eff.get('variables_created', 0)} |")
-        lines.append(f"| Variables per second | {eff.get('variables_per_second', 0):.2f} |")
+        lines.append(
+            f"| Variables per second | {eff.get('variables_per_second', 0):.2f} |"
+        )
         lines.append(f"| Years processed | {eff.get('years_processed', 0)} |\n")
 
     # OUTPUT SUMMARY section
@@ -681,18 +710,30 @@ def generate_variable_construction_report(stats, output_path):
 
         # Variable Distributions (sample of key variables)
         lines.append("### Variable Distributions (Key Variables)\n")
-        lines.append("*Sample of key linguistic variables with descriptive statistics*\n")
+        lines.append(
+            "*Sample of key linguistic variables with descriptive statistics*\n"
+        )
 
         var_dist = outp.get("variable_distributions", {})
         # Select a subset of key variables to display
-        key_vars = [k for k in sorted(var_dist.keys()) if "Manager_QA" in k or "Analyst_Pres" in k][:10]
+        key_vars = [
+            k
+            for k in sorted(var_dist.keys())
+            if "Manager_QA" in k or "Analyst_Pres" in k
+        ][:10]
 
         if key_vars:
-            lines.append("| Variable | Mean | Median | Std | Min | Max | Zeros % | NaN % |")
-            lines.append("|----------|------|--------|-----|-----|-----|---------|--------|")
+            lines.append(
+                "| Variable | Mean | Median | Std | Min | Max | Zeros % | NaN % |"
+            )
+            lines.append(
+                "|----------|------|--------|-----|-----|-----|---------|--------|"
+            )
             for var in key_vars:
                 v = var_dist[var]
-                lines.append(f"| {var} | {v['mean']:.4f} | {v['median']:.4f} | {v['std']:.4f} | {v['min']:.4f} | {v['max']:.4f} | {v['zeros']['pct']:.2f}% | {v['nans']['pct']:.2f}% |")
+                lines.append(
+                    f"| {var} | {v['mean']:.4f} | {v['median']:.4f} | {v['std']:.4f} | {v['min']:.4f} | {v['max']:.4f} | {v['zeros']['pct']:.2f}% | {v['nans']['pct']:.2f}% |"
+                )
             lines.append("")
 
         # Sample Aggregates
@@ -700,21 +741,31 @@ def generate_variable_construction_report(stats, output_path):
         sample_agg = outp.get("sample_aggregates", {})
         if sample_agg:
             lines.append("| Sample | Mean | Median | Std | Min | Max | Num Variables |")
-            lines.append("|--------|------|--------|-----|-----|-----|----------------|")
+            lines.append(
+                "|--------|------|--------|-----|-----|-----|----------------|"
+            )
             for sample, info in sorted(sample_agg.items()):
                 if "error" not in info:
-                    lines.append(f"| {sample} | {info['mean']:.4f} | {info['median']:.4f} | {info['std']:.4f} | {info['min']:.4f} | {info['max']:.4f} | {info['num_variables']} |")
+                    lines.append(
+                        f"| {sample} | {info['mean']:.4f} | {info['median']:.4f} | {info['std']:.4f} | {info['min']:.4f} | {info['max']:.4f} | {info['num_variables']} |"
+                    )
             lines.append("")
 
         # Context Aggregates
         lines.append("### Context Aggregates\n")
         ctx_agg = outp.get("context_aggregates", {})
         if ctx_agg:
-            lines.append("| Context | Mean | Median | Std | Min | Max | Num Variables |")
-            lines.append("|---------|------|--------|-----|-----|-----|----------------|")
+            lines.append(
+                "| Context | Mean | Median | Std | Min | Max | Num Variables |"
+            )
+            lines.append(
+                "|---------|------|--------|-----|-----|-----|----------------|"
+            )
             for ctx, info in sorted(ctx_agg.items()):
                 if "error" not in info:
-                    lines.append(f"| {ctx} | {info['mean']:.4f} | {info['median']:.4f} | {info['std']:.4f} | {info['min']:.4f} | {info['max']:.4f} | {info['num_variables']} |")
+                    lines.append(
+                        f"| {ctx} | {info['mean']:.4f} | {info['median']:.4f} | {info['std']:.4f} | {info['min']:.4f} | {info['max']:.4f} | {info['num_variables']} |"
+                    )
             lines.append("")
 
         # Temporal Trends (sample)
@@ -745,15 +796,21 @@ def generate_variable_construction_report(stats, output_path):
         lines.append("| Metric | Count | Percentage |")
         lines.append("|--------|-------|------------|")
         lines.append(f"| Total values | {nan_zero.get('total_values', 0):,} | - |")
-        lines.append(f"| NaN (no text in section) | {nan_zero.get('nan_count', 0):,} | {nan_zero.get('nan_pct', 0):.2f}% |")
-        lines.append(f"| Zero (text, no matches) | {nan_zero.get('zero_count', 0):,} | {nan_zero.get('zero_pct', 0):.2f}% |\n")
+        lines.append(
+            f"| NaN (no text in section) | {nan_zero.get('nan_count', 0):,} | {nan_zero.get('nan_pct', 0):.2f}% |"
+        )
+        lines.append(
+            f"| Zero (text, no matches) | {nan_zero.get('zero_count', 0):,} | {nan_zero.get('zero_pct', 0):.2f}% |\n"
+        )
 
     # PROCESS SUMMARY (existing)
     lines.append("## PROCESS SUMMARY\n")
     lines.append("| Metric | Value |")
     lines.append("|--------|-------|")
     if "timing" in stats:
-        lines.append(f"| Duration (seconds) | {stats['timing'].get('duration_seconds', 0):.2f} |")
+        lines.append(
+            f"| Duration (seconds) | {stats['timing'].get('duration_seconds', 0):.2f} |"
+        )
     if "output" in stats:
         lines.append(f"| Final rows | {stats['output'].get('final_rows', 0):,} |")
         lines.append(f"| Final columns | {stats['output'].get('final_columns', 0)} |")
@@ -785,7 +842,7 @@ def main():
     setup_logging()
 
     out_base = root / "4_Outputs" / "2_Textual_Analysis"
-    out_dir = out_base / f"2.2_Variables" / timestamp
+    out_dir = out_base / "2.2_Variables" / timestamp
     ensure_output_dir(out_dir)
 
     # Memory tracking at script start
@@ -836,10 +893,13 @@ def main():
 
     # Collect input statistics for variable construction
     from shared.observability_utils import compute_constructvariables_input_stats
+
     stats["constructvariables_input"] = compute_constructvariables_input_stats(
         tokenized_dir, manifest_df, years_range=(2002, 2019)
     )
-    print(f"  Input stats collected: {stats['constructvariables_input']['tokenized_files_stats']['total_rows']:,} tokenized rows")
+    print(
+        f"  Input stats collected: {stats['constructvariables_input']['tokenized_files_stats']['total_rows']:,} tokenized rows"
+    )
 
     # Process
     output_rows = 0
@@ -874,10 +934,16 @@ def main():
 
     # Collect process statistics for variable construction
     from shared.observability_utils import compute_constructvariables_process_stats
+
     stats["constructvariables_process"] = compute_constructvariables_process_stats(
-        per_year_stats, total_speaker_flags, total_variables_created, stats["timing"]["duration_seconds"]
+        per_year_stats,
+        total_speaker_flags,
+        total_variables_created,
+        stats["timing"]["duration_seconds"],
     )
-    print(f"  Process stats: {total_variables_created} variables created, {sum(total_speaker_flags.values()):,} speakers flagged")
+    print(
+        f"  Process stats: {total_variables_created} variables created, {sum(total_speaker_flags.values()):,} speakers flagged"
+    )
 
     # Memory tracking at script end
     mem_end = get_process_memory_mb()
@@ -940,13 +1006,20 @@ def main():
         samples = ["Manager", "Analyst", "CEO", "NonCEO_Manager", "Entire"]
         contexts = ["QA", "Pres", "All"]
         # Extract categories from input stats
-        categories = stats.get("constructvariables_input", {}).get("linguistic_categories", {}).get("category_names", [])
+        categories = (
+            stats.get("constructvariables_input", {})
+            .get("linguistic_categories", {})
+            .get("category_names", [])
+        )
 
         from shared.observability_utils import compute_constructvariables_output_stats
+
         stats["constructvariables_output"] = compute_constructvariables_output_stats(
             output_dfs, samples, contexts, categories
         )
-        print(f"  Output stats: analyzed {len(output_dfs)} years, {len(samples)} samples, {len(contexts)} contexts")
+        print(
+            f"  Output stats: analyzed {len(output_dfs)} years, {len(samples)} samples, {len(contexts)} contexts"
+        )
 
     # Generate report
     report_path = out_dir / "report_step_2_2.md"

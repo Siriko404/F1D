@@ -42,42 +42,37 @@ Deterministic: true
 ================================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import json
+import gc
+import sys
 import time
 import warnings
-import gc
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
+# Import diagnostics for VIF calculation
+from shared.diagnostics import compute_vif
 
 # Import observability utilities
 from shared.observability_utils import (
-    compute_file_checksum,
-    print_stat,
-    save_stats,
-    get_process_memory_mb,
     calculate_throughput,
+    compute_file_checksum,
+    get_process_memory_mb,
+    save_stats,
 )
-
-# Import diagnostics for VIF calculation
-from shared.diagnostics import compute_vif
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+)
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings("ignore")
@@ -161,18 +156,18 @@ def load_prisk(prisk_file, year_range=(2002, 2018)):
 
     # Read TAB-separated file
     print(f"  Reading: {prisk_file.name}")
-    df = pd.read_csv(prisk_file, sep='\t')
+    df = pd.read_csv(prisk_file, sep="\t")
 
     print(f"  Loaded: {len(df):,} observations")
 
     # Normalize gvkey - zero-pad to 6 characters
-    df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Parse date format "2002q1" -> year, quarter
     def parse_quarter_date(date_str):
         """Parse '2002q1' format into (year, quarter)"""
         try:
-            parts = date_str.lower().strip().split('q')
+            parts = date_str.lower().strip().split("q")
             year = int(parts[0])
             quarter = int(parts[1]) if len(parts) > 1 else 1
             return year, quarter
@@ -180,34 +175,34 @@ def load_prisk(prisk_file, year_range=(2002, 2018)):
             return None, None
 
     # Apply date parsing
-    parsed = df['date'].apply(parse_quarter_date)
-    df['year'] = [x[0] if x else None for x in parsed]
-    df['quarter'] = [x[1] if x else None for x in parsed]
+    parsed = df["date"].apply(parse_quarter_date)
+    df["year"] = [x[0] if x else None for x in parsed]
+    df["quarter"] = [x[1] if x else None for x in parsed]
 
     # Filter to valid years
-    df = df[df['year'].between(year_range[0], year_range[1])]
+    df = df[df["year"].between(year_range[0], year_range[1])]
     print(f"  Filtered to {year_range[0]}-{year_range[1]}: {len(df):,} observations")
 
     # Aggregate quarterly data to firm-year: mean(PRisk) across quarters
-    print(f"  Aggregating to firm-year (mean across quarters)...")
+    print("  Aggregating to firm-year (mean across quarters)...")
 
     # Primary aggregation
-    prisk_agg = df.groupby(['gvkey', 'year'], as_index=False)['PRisk'].mean()
+    prisk_agg = df.groupby(["gvkey", "year"], as_index=False)["PRisk"].mean()
 
     # Optionally include NPRisk if available
-    if 'NPRisk' in df.columns:
-        nprisk_agg = df.groupby(['gvkey', 'year'], as_index=False)['NPRisk'].mean()
-        prisk_agg = prisk_agg.merge(nprisk_agg, on=['gvkey', 'year'], how='left')
+    if "NPRisk" in df.columns:
+        nprisk_agg = df.groupby(["gvkey", "year"], as_index=False)["NPRisk"].mean()
+        prisk_agg = prisk_agg.merge(nprisk_agg, on=["gvkey", "year"], how="left")
         print("  Included NPRisk (alternative measure)")
 
     # Optionally include topic-specific PRisk measures
-    prisk_topics = [col for col in df.columns if col.startswith('PRiskT_')]
+    prisk_topics = [col for col in df.columns if col.startswith("PRiskT_")]
     if prisk_topics:
-        topic_agg = df.groupby(['gvkey', 'year'], as_index=False)[prisk_topics].mean()
-        prisk_agg = prisk_agg.merge(topic_agg, on=['gvkey', 'year'], how='left')
+        topic_agg = df.groupby(["gvkey", "year"], as_index=False)[prisk_topics].mean()
+        prisk_agg = prisk_agg.merge(topic_agg, on=["gvkey", "year"], how="left")
         print(f"  Included {len(prisk_topics)} topic-specific PRisk measures")
 
-    n_firms = prisk_agg['gvkey'].nunique()
+    n_firms = prisk_agg["gvkey"].nunique()
     n_obs = len(prisk_agg)
 
     print(f"  PRisk aggregated to {n_obs:,} firm-year observations ({n_firms:,} firms)")
@@ -229,17 +224,17 @@ def validate_prisk(df):
     print("PRisk Distribution Validation")
     print("-" * 60)
 
-    if 'PRisk' not in df.columns:
+    if "PRisk" not in df.columns:
         print("  [ERROR] PRisk column not found")
         return {}
 
     prisk_stats = {
-        "mean": float(df['PRisk'].mean()),
-        "std": float(df['PRisk'].std()),
-        "min": float(df['PRisk'].min()),
-        "max": float(df['PRisk'].max()),
-        "n_missing": int(df['PRisk'].isna().sum()),
-        "n_zero": int((df['PRisk'] == 0).sum()),
+        "mean": float(df["PRisk"].mean()),
+        "std": float(df["PRisk"].std()),
+        "min": float(df["PRisk"].min()),
+        "max": float(df["PRisk"].max()),
+        "n_missing": int(df["PRisk"].isna().sum()),
+        "n_zero": int((df["PRisk"] == 0).sum()),
         "n": len(df),
     }
 
@@ -251,13 +246,13 @@ def validate_prisk(df):
     print(f"  Zero values: {prisk_stats['n_zero']:,}")
 
     # Check for sufficient variation
-    if prisk_stats['std'] > 0:
-        print(f"  [OK] Sufficient variation (std > 0)")
+    if prisk_stats["std"] > 0:
+        print("  [OK] Sufficient variation (std > 0)")
     else:
-        print(f"  [WARNING] No variation in PRisk (std = 0)")
+        print("  [WARNING] No variation in PRisk (std = 0)")
 
     # Check for excessive zeros
-    zero_pct = prisk_stats['n_zero'] / prisk_stats['n'] * 100
+    zero_pct = prisk_stats["n_zero"] / prisk_stats["n"] * 100
     if zero_pct > 50:
         print(f"  [WARNING] {zero_pct:.1f}% of observations have PRisk = 0")
 
@@ -294,13 +289,15 @@ def load_uncertainty_measures(ling_vars_dir, year_range=(2002, 2018)):
     print("-" * 60)
 
     if not ling_vars_dir.exists():
-        raise FileNotFoundError(f"Linguistic variables directory not found: {ling_vars_dir}")
+        raise FileNotFoundError(
+            f"Linguistic variables directory not found: {ling_vars_dir}"
+        )
 
     # Find the most recent timestamped directory with full year coverage
     timestamped_dirs = sorted(
         [d for d in ling_vars_dir.iterdir() if d.is_dir() and d.name[0].isdigit()],
         key=lambda x: x.name,
-        reverse=True
+        reverse=True,
     )
 
     # Find a directory with all required years
@@ -308,11 +305,13 @@ def load_uncertainty_measures(ling_vars_dir, year_range=(2002, 2018)):
     for ts_dir in timestamped_dirs:
         # Check if all years are available
         years_available = [
-            int(f.name.split('_')[-1].replace('.parquet', ''))
-            for f in ts_dir.glob('linguistic_variables_*.parquet')
-            if f.name.startswith('linguistic_variables_')
+            int(f.name.split("_")[-1].replace(".parquet", ""))
+            for f in ts_dir.glob("linguistic_variables_*.parquet")
+            if f.name.startswith("linguistic_variables_")
         ]
-        if all(year in years_available for year in range(year_range[0], year_range[1] + 1)):
+        if all(
+            year in years_available for year in range(year_range[0], year_range[1] + 1)
+        ):
             data_dir = ts_dir
             print(f"  Using directory: {ts_dir.name}")
             break
@@ -340,46 +339,50 @@ def load_uncertainty_measures(ling_vars_dir, year_range=(2002, 2018)):
     print(f"  Loaded: {len(df):,} call-level observations")
 
     # Ensure gvkey is string and zero-padded
-    df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Extract year from start_date
-    df['start_date'] = pd.to_datetime(df['start_date'])
-    df['year'] = df['start_date'].dt.year
+    df["start_date"] = pd.to_datetime(df["start_date"])
+    df["year"] = df["start_date"].dt.year
 
     # Primary measure: Manager_QA_Uncertainty_pct
-    primary_col = 'Manager_QA_Uncertainty_pct'
+    primary_col = "Manager_QA_Uncertainty_pct"
     if primary_col not in df.columns:
-        raise ValueError(f"Primary measure {primary_col} not found in linguistic variables")
+        raise ValueError(
+            f"Primary measure {primary_col} not found in linguistic variables"
+        )
 
     # Aggregate call-level to firm-year: mean(Uncertainty_pct)
-    print(f"  Aggregating to firm-year (mean across calls)...")
+    print("  Aggregating to firm-year (mean across calls)...")
 
     # Primary aggregation
-    agg_dict = {primary_col: 'mean'}
+    agg_dict = {primary_col: "mean"}
 
     # Alternative measures if available
     alternative_cols = [
-        'CEO_QA_Uncertainty_pct',
-        'Manager_Pres_Uncertainty_pct',
-        'CEO_Pres_Uncertainty_pct',
+        "CEO_QA_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
     ]
 
     for col in alternative_cols:
         if col in df.columns:
-            agg_dict[col] = 'mean'
+            agg_dict[col] = "mean"
             print(f"  Included: {col}")
 
-    uncertainty_agg = df.groupby(['gvkey', 'year'], as_index=False).agg(agg_dict)
+    uncertainty_agg = df.groupby(["gvkey", "year"], as_index=False).agg(agg_dict)
 
     # Flatten column names (if using agg with dict, names get preserved)
     uncertainty_agg.columns = [
         col[0] if isinstance(col, tuple) else col for col in uncertainty_agg.columns
     ]
 
-    n_firms = uncertainty_agg['gvkey'].nunique()
+    n_firms = uncertainty_agg["gvkey"].nunique()
     n_obs = len(uncertainty_agg)
 
-    print(f"  Uncertainty aggregated to {n_obs:,} firm-year observations ({n_firms:,} firms)")
+    print(
+        f"  Uncertainty aggregated to {n_obs:,} firm-year observations ({n_firms:,} firms)"
+    )
 
     return uncertainty_agg
 
@@ -398,7 +401,7 @@ def validate_uncertainty(df):
     print("Uncertainty Distribution Validation")
     print("-" * 60)
 
-    primary_col = 'Manager_QA_Uncertainty_pct'
+    primary_col = "Manager_QA_Uncertainty_pct"
 
     if primary_col not in df.columns:
         print(f"  [ERROR] {primary_col} column not found")
@@ -421,13 +424,13 @@ def validate_uncertainty(df):
     print(f"    Missing: {uncertainty_stats['n_missing']:,}")
 
     # Check for sufficient variation
-    if uncertainty_stats['std'] > 0:
-        print(f"  [OK] Sufficient variation (std > 0)")
+    if uncertainty_stats["std"] > 0:
+        print("  [OK] Sufficient variation (std > 0)")
     else:
         print(f"  [WARNING] No variation in {primary_col} (std = 0)")
 
     # Compare with alternative measures if available
-    alternative_cols = ['CEO_QA_Uncertainty_pct', 'Manager_Pres_Uncertainty_pct']
+    alternative_cols = ["CEO_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct"]
     for col in alternative_cols:
         if col in df.columns:
             corr = df[[primary_col, col]].corr().iloc[0, 1]
@@ -470,20 +473,29 @@ def load_investment_residuals(residual_dir):
     df = pd.read_parquet(residuals_file)
 
     # Normalize column names - fyear vs year
-    if 'fyear' in df.columns and 'year' not in df.columns:
-        df.rename(columns={'fyear': 'year'}, inplace=True)
+    if "fyear" in df.columns and "year" not in df.columns:
+        df.rename(columns={"fyear": "year"}, inplace=True)
 
     # Ensure gvkey is zero-padded
-    df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Ensure year is integer
-    df['year'] = df['year'].astype(int)
+    df["year"] = df["year"].astype(int)
 
     print(f"  Loaded: {len(df):,} firm-year observations")
 
     # Report key columns
-    key_cols = ['InvestmentResidual', 'TobinQ_lag', 'SalesGrowth_lag',
-                'CashFlow', 'Size', 'Leverage', 'TobinQ', 'SalesGrowth', 'ff48_code']
+    key_cols = [
+        "InvestmentResidual",
+        "TobinQ_lag",
+        "SalesGrowth_lag",
+        "CashFlow",
+        "Size",
+        "Leverage",
+        "TobinQ",
+        "SalesGrowth",
+        "ff48_code",
+    ]
     for col in key_cols:
         if col in df.columns:
             n_valid = df[col].notna().sum()
@@ -521,34 +533,28 @@ def merge_all_sources(investment_df, prisk_df, uncertainty_df):
 
     # Left merge PRisk
     merged = investment_df.merge(
-        prisk_df,
-        on=['gvkey', 'year'],
-        how='left',
-        indicator='prisk_merge'
+        prisk_df, on=["gvkey", "year"], how="left", indicator="prisk_merge"
     )
-    n_prisk_match = (merged['prisk_merge'] == 'both').sum()
+    n_prisk_match = (merged["prisk_merge"] == "both").sum()
     print(f"  After PRisk merge: {len(merged):,} ({n_prisk_match:,} matched)")
 
     # Left merge Uncertainty
     merged = merged.merge(
-        uncertainty_df,
-        on=['gvkey', 'year'],
-        how='left',
-        indicator='uncertainty_merge'
+        uncertainty_df, on=["gvkey", "year"], how="left", indicator="uncertainty_merge"
     )
-    n_unc_match = (merged['uncertainty_merge'] == 'both').sum()
+    n_unc_match = (merged["uncertainty_merge"] == "both").sum()
     print(f"  After Uncertainty merge: {len(merged):,} ({n_unc_match:,} matched)")
 
     # Report missingness by variable
     print("\n  Missingness:")
-    for col in ['InvestmentResidual', 'PRisk', 'Manager_QA_Uncertainty_pct']:
+    for col in ["InvestmentResidual", "PRisk", "Manager_QA_Uncertainty_pct"]:
         if col in merged.columns:
             n_missing = merged[col].isna().sum()
             pct_missing = n_missing / len(merged) * 100
             print(f"    {col}: {n_missing:,} ({pct_missing:.1f}%)")
 
     # Listwise deletion: drop rows with missing key variables
-    key_vars = ['InvestmentResidual', 'PRisk', 'Manager_QA_Uncertainty_pct']
+    key_vars = ["InvestmentResidual", "PRisk", "Manager_QA_Uncertainty_pct"]
     before_drop = len(merged)
     merged = merged.dropna(subset=key_vars)
     after_drop = len(merged)
@@ -556,10 +562,12 @@ def merge_all_sources(investment_df, prisk_df, uncertainty_df):
     print(f"\n  Listwise deletion on {key_vars}:")
     print(f"    Before: {before_drop:,}")
     print(f"    After:  {after_drop:,}")
-    print(f"    Dropped: {before_drop - after_drop:,} ({(before_drop - after_drop) / before_drop * 100:.1f}%)")
+    print(
+        f"    Dropped: {before_drop - after_drop:,} ({(before_drop - after_drop) / before_drop * 100:.1f}%)"
+    )
 
     # Clean up indicator columns
-    merged = merged.drop(columns=['prisk_merge', 'uncertainty_merge'], errors='ignore')
+    merged = merged.drop(columns=["prisk_merge", "uncertainty_merge"], errors="ignore")
 
     return merged
 
@@ -586,29 +594,34 @@ def apply_sample_filters(df, year_range=(2002, 2018), winsorize=True):
     print("Applying Sample Filters")
     print("-" * 60)
 
-    before_filter = len(df)
+    len(df)
 
     # Filter to year range
-    df = df[df['year'].between(year_range[0], year_range[1])].copy()
+    df = df[df["year"].between(year_range[0], year_range[1])].copy()
     print(f"  After year filter ({year_range[0]}-{year_range[1]}): {len(df):,}")
 
     # Note: Financial/utility exclusions already applied in Plan 53-01
-    print(f"  Note: Financial/utility exclusions applied in Plan 53-01")
+    print("  Note: Financial/utility exclusions applied in Plan 53-01")
 
     # Winsorize key continuous variables at 1%/99% by year
     if winsorize:
         vars_to_winsorize = [
-            'InvestmentResidual',
-            'PRisk',
-            'Manager_QA_Uncertainty_pct',
-            'CashFlow', 'Size', 'Leverage', 'TobinQ', 'SalesGrowth'
+            "InvestmentResidual",
+            "PRisk",
+            "Manager_QA_Uncertainty_pct",
+            "CashFlow",
+            "Size",
+            "Leverage",
+            "TobinQ",
+            "SalesGrowth",
         ]
 
         for var in vars_to_winsorize:
             if var in df.columns:
-                df[var] = df.groupby('year')[var].transform(
+                df[var] = df.groupby("year")[var].transform(
                     lambda x: x.clip(lower=x.quantile(0.01), upper=x.quantile(0.99))
-                    if x.notna().sum() > 0 else x
+                    if x.notna().sum() > 0
+                    else x
                 )
 
         print(f"  Winsorized at 1%/99% by year: {vars_to_winsorize}")
@@ -642,7 +655,7 @@ def standardize_variables(df, columns=None):
     print("-" * 60)
 
     if columns is None:
-        columns = ['PRisk', 'Manager_QA_Uncertainty_pct']
+        columns = ["PRisk", "Manager_QA_Uncertainty_pct"]
 
     df_std = df.copy()
     std_params = {}
@@ -656,10 +669,7 @@ def standardize_variables(df, columns=None):
         mean_val = df[col].mean()
         std_val = df[col].std()
 
-        std_params[col] = {
-            "mean": float(mean_val),
-            "std": float(std_val)
-        }
+        std_params[col] = {"mean": float(mean_val), "std": float(std_val)}
 
         # Create standardized column
         std_col_name = f"{col}_std"
@@ -677,8 +687,12 @@ def standardize_variables(df, columns=None):
     return df_std, std_params
 
 
-def create_interaction_term(df, col1='PRisk_std', col2='Manager_QA_Uncertainty_pct_std',
-                            interaction_name='PRisk_x_Uncertainty'):
+def create_interaction_term(
+    df,
+    col1="PRisk_std",
+    col2="Manager_QA_Uncertainty_pct_std",
+    interaction_name="PRisk_x_Uncertainty",
+):
     """
     Create interaction term as product of standardized variables.
 
@@ -731,7 +745,7 @@ def validate_interaction(df):
     print("-" * 60)
 
     # Key variables
-    key_vars = ['PRisk_std', 'Manager_QA_Uncertainty_pct_std', 'PRisk_x_Uncertainty']
+    key_vars = ["PRisk_std", "Manager_QA_Uncertainty_pct_std", "PRisk_x_Uncertainty"]
 
     # Check all exist
     missing = [v for v in key_vars if v not in df.columns]
@@ -746,7 +760,7 @@ def validate_interaction(df):
     print("  " + "-" * 50)
     for i, var1 in enumerate(key_vars):
         row = []
-        for j, var2 in enumerate(key_vars):
+        for j, _var2 in enumerate(key_vars):
             val = corr_matrix.iloc[i, j]
             row.append(f"{val:.3f}")
         print(f"    {var1:<35} {'  '.join(row)}")
@@ -757,13 +771,13 @@ def validate_interaction(df):
         vif_df = compute_vif(df, key_vars, vif_threshold=10.0)
 
         for _, row in vif_df.iterrows():
-            var = row['variable']
-            vif = row['VIF']
-            exceeded = row['threshold_exceeded']
+            var = row["variable"]
+            vif = row["VIF"]
+            exceeded = row["threshold_exceeded"]
             status = "*** EXCEEDS 10" if exceeded else "OK"
             print(f"    {var:<35} VIF={vif:.2f}  {status}")
 
-        vif_results = vif_df.to_dict('records')
+        vif_results = vif_df.to_dict("records")
 
     except Exception as e:
         print(f"    Could not compute VIF: {e}")
@@ -812,13 +826,20 @@ def prepare_final_dataset(df):
 
     # Core columns for regression
     core_cols = [
-        'gvkey', 'year', 'ff48_code',
-        'InvestmentResidual',
-        'PRisk_x_Uncertainty',
-        'PRisk_std',
-        'Manager_QA_Uncertainty_pct_std',
-        'CashFlow', 'Size', 'Leverage', 'TobinQ', 'SalesGrowth',
-        'TobinQ_lag', 'SalesGrowth_lag',
+        "gvkey",
+        "year",
+        "ff48_code",
+        "InvestmentResidual",
+        "PRisk_x_Uncertainty",
+        "PRisk_std",
+        "Manager_QA_Uncertainty_pct_std",
+        "CashFlow",
+        "Size",
+        "Leverage",
+        "TobinQ",
+        "SalesGrowth",
+        "TobinQ_lag",
+        "SalesGrowth_lag",
     ]
 
     # Select available columns
@@ -826,18 +847,20 @@ def prepare_final_dataset(df):
 
     # Add alternative measures if available
     alternative_uncertainty = [
-        'CEO_QA_Uncertainty_pct', 'Manager_Pres_Uncertainty_pct', 'CEO_Pres_Uncertainty_pct'
+        "CEO_QA_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
     ]
     for col in alternative_uncertainty:
         if col in df.columns:
             output_cols.append(col)
 
     # Add NPRisk if available
-    if 'NPRisk' in df.columns:
-        output_cols.append('NPRisk')
+    if "NPRisk" in df.columns:
+        output_cols.append("NPRisk")
 
     # Add topic-specific PRisk if available
-    prisk_topics = [col for col in df.columns if col.startswith('PRiskT_')]
+    prisk_topics = [col for col in df.columns if col.startswith("PRiskT_")]
     output_cols.extend(prisk_topics)
 
     # Remove duplicates and create final dataset
@@ -964,7 +987,9 @@ def main():
             print("  3. Load InvestmentResiduals from Plan 53-01 output")
             print("  4. Merge on [gvkey, year]")
             print("  5. Standardize: PRisk_std, Uncertainty_std")
-            print("  6. Create interaction: PRisk_x_Uncertainty = PRisk_std * Uncertainty_std")
+            print(
+                "  6. Create interaction: PRisk_x_Uncertainty = PRisk_std * Uncertainty_std"
+            )
             print("  7. Validate: correlation matrix, VIF")
             print(f"\nOutput would be written to: {paths['output_dir']}")
             sys.exit(0)
@@ -982,6 +1007,7 @@ def main():
     log_file = open(paths["log_file"], "w", buffering=1)
 
     import builtins
+
     builtin_print = builtins.print
 
     def print_both(*args_log, **kwargs):
@@ -1036,14 +1062,18 @@ def main():
     stats["processing"]["prisk"] = prisk_stats
 
     # Load Uncertainty
-    uncertainty_df = load_uncertainty_measures(paths["ling_vars_dir"], year_range=(2002, 2018))
+    uncertainty_df = load_uncertainty_measures(
+        paths["ling_vars_dir"], year_range=(2002, 2018)
+    )
     uncertainty_stats = validate_uncertainty(uncertainty_df)
     stats["processing"]["uncertainty"] = uncertainty_stats
 
     # Load InvestmentResiduals
     residuals_file = paths["residual_dir"] / "H2_InvestmentResiduals.parquet"
     stats["input"]["files"].append(str(residuals_file))
-    stats["input"]["checksums"][residuals_file.name] = compute_file_checksum(residuals_file)
+    stats["input"]["checksums"][residuals_file.name] = compute_file_checksum(
+        residuals_file
+    )
 
     investment_df = load_investment_residuals(paths["residual_dir"])
     print(f"\n  Base sample: {len(investment_df):,} observations")
@@ -1068,7 +1098,9 @@ def main():
     gc.collect()
 
     # Apply sample filters
-    filtered_df = apply_sample_filters(merged_df, year_range=(2002, 2018), winsorize=True)
+    filtered_df = apply_sample_filters(
+        merged_df, year_range=(2002, 2018), winsorize=True
+    )
     stats["processing"]["filters"] = {
         "before_filters": len(merged_df),
         "after_filters": len(filtered_df),
@@ -1084,17 +1116,16 @@ def main():
 
     # Standardize
     std_df, std_params = standardize_variables(
-        filtered_df,
-        columns=['PRisk', 'Manager_QA_Uncertainty_pct']
+        filtered_df, columns=["PRisk", "Manager_QA_Uncertainty_pct"]
     )
     stats["processing"]["standardization_params"] = std_params
 
     # Create interaction term
     interaction_df = create_interaction_term(
         std_df,
-        col1='PRisk_std',
-        col2='Manager_QA_Uncertainty_pct_std',
-        interaction_name='PRisk_x_Uncertainty'
+        col1="PRisk_std",
+        col2="Manager_QA_Uncertainty_pct_std",
+        interaction_name="PRisk_x_Uncertainty",
     )
 
     # Validate interaction
@@ -1116,7 +1147,7 @@ def main():
     final_df = prepare_final_dataset(interaction_df)
 
     # Sort by gvkey and year
-    final_df = final_df.sort_values(['gvkey', 'year']).reset_index(drop=True)
+    final_df = final_df.sort_values(["gvkey", "year"]).reset_index(drop=True)
 
     # Clean up
     del interaction_df
@@ -1156,7 +1187,7 @@ def main():
             "n_obs": len(final_df),
             "n_firms": final_df["gvkey"].nunique(),
             "year_range": [int(final_df["year"].min()), int(final_df["year"].max())],
-        }
+        },
     }
 
     # Write stats.json
@@ -1169,7 +1200,7 @@ def main():
         latest_link.unlink()
     try:
         latest_link.symlink_to(paths["output_dir"])
-        print(f"  Updated latest/ symlink")
+        print("  Updated latest/ symlink")
     except OSError:
         # Symlink creation may fail on Windows
         pass
@@ -1203,9 +1234,13 @@ def main():
     print(f"Final dataset: {len(final_df):,} observations")
     print(f"  Firms: {final_df['gvkey'].nunique():,}")
     print(f"  Years: {final_df['year'].min()}-{final_df['year'].max()}")
-    print(f"\nKey variables:")
-    print(f"  PRisk_x_Uncertainty: mean={stats['variables']['PRisk_x_Uncertainty']['mean']:.4f}, std={stats['variables']['PRisk_x_Uncertainty']['std']:.4f}")
-    print(f"  InvestmentResidual: mean={stats['variables']['InvestmentResidual']['mean']:.4f}, std={stats['variables']['InvestmentResidual']['std']:.4f}")
+    print("\nKey variables:")
+    print(
+        f"  PRisk_x_Uncertainty: mean={stats['variables']['PRisk_x_Uncertainty']['mean']:.4f}, std={stats['variables']['PRisk_x_Uncertainty']['std']:.4f}"
+    )
+    print(
+        f"  InvestmentResidual: mean={stats['variables']['InvestmentResidual']['mean']:.4f}, std={stats['variables']['InvestmentResidual']['std']:.4f}"
+    )
     print(f"\nOutputs saved to: {paths['output_dir']}")
     print(f"Log saved to: {paths['log_file']}")
 

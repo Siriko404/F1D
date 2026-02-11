@@ -31,18 +31,12 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import warnings
-import hashlib
-import json
-import time
-import psutil
 import argparse
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 # Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
 # Script is in 2_Scripts/4_Econometric/, need to add 2_Scripts/ to path
@@ -59,39 +53,22 @@ except ImportError:
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
 # Import shared regression and reporting utilities
-from shared.regression_utils import run_fixed_effects_ols
-from shared.reporting_utils import (
-    generate_regression_report,
-    save_model_diagnostics,
-    save_variable_reference,
+from shared.observability_utils import (
+    DualWriter,
+    analyze_missing_values,
+    compute_file_checksum,
+    print_stats_summary,
+    save_stats,
 )
-
 
 # Import shared path validation utilities
 from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
     get_latest_output_dir,
 )
-
+from shared.regression_utils import run_fixed_effects_ols
 from shared.regression_validation import (
-    validate_regression_data,
     validate_columns,
     validate_sample_size,
-)
-from shared.regression_helpers import build_regression_sample
-from shared.observability_utils import (
-    compute_file_checksum,
-    print_stat,
-    analyze_missing_values,
-    print_stats_summary,
-    save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
-    detect_anomalies_iqr,
-    DualWriter,
 )
 
 # ==============================================================================
@@ -364,7 +341,7 @@ def prepare_regression_data(df, model_config, model_name):
 
 def run_regression(df_sample, model_config, model_name, sample_name):
     """Run OLS regression with CEO fixed effects."""
-    print(f"\n" + "=" * 60)
+    print("\n" + "=" * 60)
     print(f"Regression: {model_name} / {sample_name}")
     print("=" * 60)
 
@@ -383,7 +360,7 @@ def run_regression(df_sample, model_config, model_name, sample_name):
     )
 
     if len(df_reg) < 100:
-        print(f"  WARNING: Too few observations, skipping")
+        print("  WARNING: Too few observations, skipping")
         return None, None, None
 
     # Convert to string for categorical treatment
@@ -400,18 +377,18 @@ def run_regression(df_sample, model_config, model_name, sample_name):
     print(f"  N controls: {len(controls)}")
 
     # Validate regression data before estimation
-    print(f"  Validating regression data...")
+    print("  Validating regression data...")
     try:
         required_columns = [dep_var] + controls + ["ceo_id", "year"]
         validate_columns(df_reg, required_columns)
         validate_sample_size(df_reg, min_observations=100)
-        print(f"  Validation passed")
+        print("  Validation passed")
     except Exception as e:
         print(f"  Validation failed: {e}")
         return None, None, None
 
     # Estimate model using shared function
-    print(f"  Estimating...")
+    print("  Estimating...")
     start_time = datetime.now()
 
     try:
@@ -568,7 +545,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
         diag_df = pd.DataFrame(all_diagnostics)
         diag_path = out_dir / "model_diagnostics.csv"
         diag_df.to_csv(diag_path, index=False)
-        print(f"  Saved: model_diagnostics.csv")
+        print("  Saved: model_diagnostics.csv")
 
     return ceo_scores_df
 
@@ -630,7 +607,7 @@ def generate_report(all_diagnostics, out_dir, duration):
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: report_step4_1_2.md")
+    print("  Saved: report_step4_1_2.md")
 
 
 # ==============================================================================

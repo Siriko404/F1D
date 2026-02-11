@@ -19,14 +19,13 @@ Deterministic: true
 ================================================================================
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import pandas as pd
 
 # Import existing shared modules
-from shared.regression_utils import run_fixed_effects_ols
-from shared.regression_validation import validate_regression_data, validate_sample_size
+from shared.regression_validation import validate_sample_size
 
 
 def load_reg_data(
@@ -92,7 +91,7 @@ def _check_missing_values(
     """
     missing_counts = {}
     all_vars = []
-    for var_type, var_list in required_vars.items():
+    for _var_type, var_list in required_vars.items():
         all_vars.extend(var_list)
 
     for var in all_vars:
@@ -314,7 +313,8 @@ def build_regression_sample(
             import warnings
 
             warnings.warn(
-                f"year_range specified but 'year' column not found in DataFrame"
+                "year_range specified but 'year' column not found in DataFrame",
+                stacklevel=2,
             )
 
     # Step 4: Check for missing values in required variables
@@ -325,7 +325,9 @@ def build_regression_sample(
         missing_str = ", ".join(
             [f"{var}: {count}" for var, count in missing_counts.items()]
         )
-        warnings.warn(f"Missing values in required variables: {missing_str}")
+        warnings.warn(
+            f"Missing values in required variables: {missing_str}", stacklevel=2
+        )
 
     # Step 5: Assign industry codes if industry_classification specified
     if industry_classification is not None:
@@ -334,10 +336,9 @@ def build_regression_sample(
         except (FileNotFoundError, ValueError) as e:
             import warnings
 
-            warnings.warn(f"Could not assign industry codes: {e}")
+            warnings.warn(f"Could not assign industry codes: {e}", stacklevel=2)
 
     # Step 6: Validate sample size
-    from shared.regression_validation import validate_sample_size
 
     validate_sample_size(sample, min_observations=min_sample_size)
 
@@ -432,7 +433,7 @@ def prepare_regression_data(
     df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
     df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
 
-    print(f"\n  Sample distribution:")
+    print("\n  Sample distribution:")
     for sample in ["Main", "Finance", "Utility"]:
         n = (df["sample"] == sample).sum()
         print(f"    {sample}: {n:,} calls")

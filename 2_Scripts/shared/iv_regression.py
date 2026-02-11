@@ -26,14 +26,13 @@ Deterministic: true
 ================================================================================
 """
 
-from typing import Any, Dict, List, Optional, Tuple
-import warnings
-
+from typing import Any, Dict, List, Optional
 
 # Try importing linearmodels, provide helpful error if missing
 try:
     from linearmodels.iv.model import IV2SLS
     from linearmodels.iv.results import IVResults
+
     LINEARMODELS_AVAILABLE = True
 except ImportError:
     LINEARMODELS_AVAILABLE = False
@@ -41,7 +40,6 @@ except ImportError:
     IVResults = None
 
 import pandas as pd
-import numpy as np
 
 
 class WeakInstrumentError(Exception):
@@ -55,6 +53,7 @@ class WeakInstrumentError(Exception):
         f_stat: The actual first-stage F-statistic
         threshold: The threshold that was not met
     """
+
     def __init__(self, message: str, f_stat: float = None, threshold: float = None):
         super().__init__(message)
         self.f_stat = f_stat
@@ -71,7 +70,7 @@ def _add_constant_to_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         DataFrame with added 'const' column (all 1.0)
     """
     df = df.copy()
-    df['const'] = 1.0
+    df["const"] = 1.0
     return df
 
 
@@ -85,12 +84,12 @@ def _format_star(pvalue: float) -> str:
         String with significance stars: '***', '**', '*', or ''
     """
     if pvalue < 0.01:
-        return '***'
+        return "***"
     elif pvalue < 0.05:
-        return '**'
+        return "**"
     elif pvalue < 0.10:
-        return '*'
-    return ''
+        return "*"
+    return ""
 
 
 def _format_number(value: float, decimals: int = 3) -> str:
@@ -103,7 +102,7 @@ def _format_number(value: float, decimals: int = 3) -> str:
     Returns:
         Formatted string
     """
-    return f'{value:.{decimals}f}'
+    return f"{value:.{decimals}f}"
 
 
 def run_iv2sls(
@@ -113,11 +112,11 @@ def run_iv2sls(
     endog: str,
     instruments: List[str],
     add_constant: bool = True,
-    cov_type: str = 'robust',
+    cov_type: str = "robust",
     cluster_col: Optional[str] = None,
     f_threshold: float = 10.0,
     fail_on_weak: bool = True,
-    save_first_stage: bool = True
+    save_first_stage: bool = True,
 ) -> Dict[str, Any]:
     """Run Two-Stage Least Squares (2SLS) regression with instrument validation.
 
@@ -197,22 +196,22 @@ def run_iv2sls(
     # Add constant to exog if requested
     if add_constant:
         df_reg = _add_constant_to_dataframe(df_reg)
-        exog_with_const = exog + ['const']
+        exog_with_const = exog + ["const"]
     else:
         exog_with_const = exog.copy()
 
     # Handle clustering
     cov_kwargs = {}
-    if cov_type == 'clustered' and cluster_col is not None:
-        cov_kwargs['cov_type'] = 'clustered'
-        cov_kwargs['clusters'] = df_reg[[cluster_col]].reset_index(drop=True)
-    elif cov_type == 'kernel':
-        cov_kwargs['cov_type'] = 'kernel'
-        cov_kwargs['kernel'] = 'bartlett'
-    elif cov_type == 'robust':
-        cov_kwargs['cov_type'] = 'robust'
+    if cov_type == "clustered" and cluster_col is not None:
+        cov_kwargs["cov_type"] = "clustered"
+        cov_kwargs["clusters"] = df_reg[[cluster_col]].reset_index(drop=True)
+    elif cov_type == "kernel":
+        cov_kwargs["cov_type"] = "kernel"
+        cov_kwargs["kernel"] = "bartlett"
+    elif cov_type == "robust":
+        cov_kwargs["cov_type"] = "robust"
     else:
-        cov_kwargs['cov_type'] = 'unadjusted'
+        cov_kwargs["cov_type"] = "unadjusted"
 
     # Build and fit IV2SLS model
     # IV2SLS signature: IV2SLS(dependent, exog, endog, instruments)
@@ -220,7 +219,7 @@ def run_iv2sls(
         dependent=df_reg[dependent],
         exog=df_reg[exog_with_const],
         endog=df_reg[[endog]],
-        instruments=df_reg[instruments]
+        instruments=df_reg[instruments],
     )
 
     result = model.fit(**cov_kwargs)
@@ -231,10 +230,14 @@ def run_iv2sls(
 
     # Get first-stage F-stat for endogenous variable
     if endog in diagnostics_df.index:
-        f_stat = float(diagnostics_df.loc[endog, 'f.stat'])
-        f_pval = float(diagnostics_df.loc[endog, 'f.pval'])
-        partial_rsq = float(diagnostics_df.loc[endog, 'partial.rsquared'])
-        shea_rsq = float(diagnostics_df.loc[endog, 'shea.rsquared']) if 'shea.rsquared' in diagnostics_df.columns else None
+        f_stat = float(diagnostics_df.loc[endog, "f.stat"])
+        f_pval = float(diagnostics_df.loc[endog, "f.pval"])
+        partial_rsq = float(diagnostics_df.loc[endog, "partial.rsquared"])
+        shea_rsq = (
+            float(diagnostics_df.loc[endog, "shea.rsquared"])
+            if "shea.rsquared" in diagnostics_df.columns
+            else None
+        )
     else:
         # If endog not directly in diagnostics, try alternative access
         f_stat = float(first_stage.individual[endog].f_stat)
@@ -243,16 +246,20 @@ def run_iv2sls(
         shea_rsq = None
 
     # First-stage F validation
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("FIRST-STAGE DIAGNOSTICS")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print(f"Endogenous variable: {endog}")
     print(f"First-stage F-stat: {f_stat:.2f} (threshold: {f_threshold})")
-    print(f"First-stage p-value: {f_pval:.4f}" if f_pval is not None else "First-stage p-value: N/A")
+    print(
+        f"First-stage p-value: {f_pval:.4f}"
+        if f_pval is not None
+        else "First-stage p-value: N/A"
+    )
     print(f"Partial R-squared: {partial_rsq:.4f}")
     if shea_rsq is not None:
         print(f"Shea's R-squared: {shea_rsq:.4f}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     # Check for weak instruments
     if f_stat < f_threshold:
@@ -271,26 +278,23 @@ def run_iv2sls(
     n_instr = len(instruments)
     n_endog = 1  # Currently only single endogenous supported
 
-    overid_test = {
-        'stat': None,
-        'pval': None,
-        'valid': False,
-        'note': None
-    }
+    overid_test = {"stat": None, "pval": None, "valid": False, "note": None}
 
     if n_instr > n_endog:
         # Over-identified: can run Sargan/Hansen J test
         sargan = result.sargan
-        overid_test['stat'] = float(sargan.stat)
-        overid_test['pval'] = float(sargan.pval)
-        overid_test['valid'] = True
-        overid_test['reject_null'] = sargan.pval < 0.05
+        overid_test["stat"] = float(sargan.stat)
+        overid_test["pval"] = float(sargan.pval)
+        overid_test["valid"] = True
+        overid_test["reject_null"] = sargan.pval < 0.05
 
         # Interpret results
         # H0: Instruments are valid (uncorrelated with error, exogenous)
         # Reject H0 (p < 0.05) -> instruments may be invalid
-        if overid_test['reject_null']:
-            interpretation = "p < 0.05: instruments may be invalid (correlated with error)"
+        if overid_test["reject_null"]:
+            interpretation = (
+                "p < 0.05: instruments may be invalid (correlated with error)"
+            )
             warnings_list.append(
                 f"Sargan test rejects null (p={sargan.pval:.3f}): "
                 f"Instruments may be invalid"
@@ -298,82 +302,85 @@ def run_iv2sls(
         else:
             interpretation = "p >= 0.05: instruments appear valid"
 
-        print(f"\nOVERIDENTIFICATION TEST (Sargan / Hansen J)")
-        print(f"{'='*70}")
+        print("\nOVERIDENTIFICATION TEST (Sargan / Hansen J)")
+        print(f"{'=' * 70}")
         print(f"Test statistic: {overid_test['stat']:.3f}")
         print(f"p-value: {overid_test['pval']:.3f}")
         print(f"Interpretation: {interpretation}")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
     else:
-        overid_test['note'] = (
+        overid_test["note"] = (
             f"Exactly identified ({n_instr} instrument(s) for {n_endog} "
             f"endogenous variable): Sargan/Hansen J test not available"
         )
-        print(f"\nOVERIDENTIFICATION TEST")
-        print(f"{'='*70}")
-        print(overid_test['note'])
-        print(f"{'='*70}")
+        print("\nOVERIDENTIFICATION TEST")
+        print(f"{'=' * 70}")
+        print(overid_test["note"])
+        print(f"{'=' * 70}")
 
     # Build coefficients DataFrame
     coef_names = result.params.index.tolist()
-    coefficients = pd.DataFrame({
-        'variable': coef_names,
-        'coefficient': result.params.values,
-        'std_error': result.std_errors.values,
-        't_stat': result.tstats.values,
-        'p_value': result.pvalues.values,
-        'stars': [_format_star(p) for p in result.pvalues.values]
-    })
+    coefficients = pd.DataFrame(
+        {
+            "variable": coef_names,
+            "coefficient": result.params.values,
+            "std_error": result.std_errors.values,
+            "t_stat": result.tstats.values,
+            "p_value": result.pvalues.values,
+            "stars": [_format_star(p) for p in result.pvalues.values],
+        }
+    )
 
     # Format for display
-    coefficients['coef_formatted'] = coefficients.apply(
-        lambda row: _format_number(row['coefficient'], 3) + row['stars'],
-        axis=1
+    coefficients["coef_formatted"] = coefficients.apply(
+        lambda row: _format_number(row["coefficient"], 3) + row["stars"], axis=1
     )
-    coefficients['se_formatted'] = coefficients['std_error'].apply(
-        lambda x: '(' + _format_number(x, 3) + ')'
+    coefficients["se_formatted"] = coefficients["std_error"].apply(
+        lambda x: "(" + _format_number(x, 3) + ")"
     )
 
     # Print coefficient table
-    print(f"\nIV2SLS RESULTS")
-    print(f"{'='*70}")
+    print("\nIV2SLS RESULTS")
+    print(f"{'=' * 70}")
     print(f"Dependent variable: {dependent}")
     print(f"Endogenous variable: {endog}")
     print(f"Instruments: {', '.join(instruments)}")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     for var in coef_names:
-        row = coefficients[coefficients['variable'] == var].iloc[0]
+        row = coefficients[coefficients["variable"] == var].iloc[0]
         print(f"{var:20s} {row['coef_formatted']:>15s}")
         print(f"{'':20s} {row['se_formatted']:>15s}")
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"Observations: {int(result.nobs):,}")
     print(f"R-squared: {result.rsquared:.4f}")
-    if hasattr(result, 'f_statistic') and result.f_statistic is not None:
+    if hasattr(result, "f_statistic") and result.f_statistic is not None:
         print(f"F-statistic: {result.f_statistic.stat:.3f}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     # Build summary dictionary
     summary = {
-        'n_obs': int(result.nobs),
-        'rsquared': float(result.rsquared),
-        'f_statistic': float(result.f_statistic.stat) if hasattr(result, 'f_statistic') and result.f_statistic is not None else None,
-        'cov_type': cov_type,
-        'dependent': dependent,
-        'endog': endog,
-        'instruments': instruments,
-        'exog': exog
+        "n_obs": int(result.nobs),
+        "rsquared": float(result.rsquared),
+        "f_statistic": float(result.f_statistic.stat)
+        if hasattr(result, "f_statistic") and result.f_statistic is not None
+        else None,
+        "cov_type": cov_type,
+        "dependent": dependent,
+        "endog": endog,
+        "instruments": instruments,
+        "exog": exog,
     }
 
     # Build first-stage dictionary
     first_stage_dict = {
-        'f_stat': f_stat,
-        'f_pval': f_pval,
-        'partial_rsquared': partial_rsq,
-        'shea_rsquared': shea_rsq,
-        'threshold': f_threshold,
-        'above_threshold': f_stat >= f_threshold
+        "f_stat": f_stat,
+        "f_pval": f_pval,
+        "partial_rsquared": partial_rsq,
+        "shea_rsquared": shea_rsq,
+        "threshold": f_threshold,
+        "above_threshold": f_stat >= f_threshold,
     }
 
     # Optionally save first-stage predictions
@@ -381,23 +388,23 @@ def run_iv2sls(
         # Get first-stage predictions for the endogenous variable
         # first_stage is a FirstStageResults object
         # Access predictions via the fitted first-stage model
-        if hasattr(first_stage, 'individual'):
+        if hasattr(first_stage, "individual"):
             first_stage_model = first_stage.individual[endog]
-            if hasattr(first_stage_model, 'fitted_values'):
-                first_stage_dict['predictions'] = first_stage_model.fitted_values
+            if hasattr(first_stage_model, "fitted_values"):
+                first_stage_dict["predictions"] = first_stage_model.fitted_values
             else:
                 # Try to get predictions differently
-                first_stage_dict['predictions'] = None
+                first_stage_dict["predictions"] = None
         else:
-            first_stage_dict['predictions'] = None
+            first_stage_dict["predictions"] = None
 
     return {
-        'model': result,
-        'coefficients': coefficients,
-        'summary': summary,
-        'first_stage': first_stage_dict,
-        'overid_test': overid_test,
-        'warnings': warnings_list
+        "model": result,
+        "coefficients": coefficients,
+        "summary": summary,
+        "first_stage": first_stage_dict,
+        "overid_test": overid_test,
+        "warnings": warnings_list,
     }
 
 
@@ -407,12 +414,12 @@ def run_iv2sls_panel(
     exog: List[str],
     endog: str,
     instruments: List[str],
-    entity_col: str = 'gvkey',
-    time_col: str = 'year',
+    entity_col: str = "gvkey",
+    time_col: str = "year",
     add_constant: bool = True,
-    cov_type: str = 'robust',
+    cov_type: str = "robust",
     f_threshold: float = 10.0,
-    fail_on_weak: bool = True
+    fail_on_weak: bool = True,
 ) -> Dict[str, Any]:
     """Run 2SLS regression with panel data structure.
 
@@ -455,14 +462,14 @@ def run_iv2sls_panel(
         cov_type=cov_type,
         f_threshold=f_threshold,
         fail_on_weak=fail_on_weak,
-        save_first_stage=True
+        save_first_stage=True,
     )
 
     # Add panel metadata to summary
-    result['summary']['entity_col'] = entity_col
-    result['summary']['time_col'] = time_col
-    result['summary']['n_entities'] = df_panel.index.get_level_values(0).nunique()
-    result['summary']['n_periods'] = df_panel.index.get_level_values(1).nunique()
+    result["summary"]["entity_col"] = entity_col
+    result["summary"]["time_col"] = time_col
+    result["summary"]["n_entities"] = df_panel.index.get_level_values(0).nunique()
+    result["summary"]["n_periods"] = df_panel.index.get_level_values(1).nunique()
 
     return result
 
@@ -500,7 +507,7 @@ def summarize_iv_results(result_dict: Dict[str, Any]) -> str:
         f"R-squared: {result_dict['summary']['rsquared']:.4f}",
     ]
 
-    if result_dict['summary']['f_statistic']:
+    if result_dict["summary"]["f_statistic"]:
         lines.append(f"F-statistic: {result_dict['summary']['f_statistic']:.3f}")
 
     lines.append("")
@@ -508,7 +515,7 @@ def summarize_iv_results(result_dict: Dict[str, Any]) -> str:
     lines.append("COEFFICIENTS")
     lines.append("-" * 70)
 
-    coef_df = result_dict['coefficients']
+    coef_df = result_dict["coefficients"]
     for _, row in coef_df.iterrows():
         lines.append(f"{row['variable']:20s} {row['coef_formatted']:>15s}")
         lines.append(f"{'':20s} {row['se_formatted']:>15s}")
@@ -527,4 +534,6 @@ if __name__ == "__main__":
     if LINEARMODELS_AVAILABLE:
         print("Module ready for use. See docstring for run_iv2sls() usage.")
     else:
-        print("ERROR: linearmodels not installed. Install with: pip install linearmodels")
+        print(
+            "ERROR: linearmodels not installed. Install with: pip install linearmodels"
+        )

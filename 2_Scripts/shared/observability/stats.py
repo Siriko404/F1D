@@ -15,10 +15,11 @@ Deterministic: true
 
 import json
 import logging
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
-from typing import Dict, List, Optional, Any
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -124,33 +125,11 @@ def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
         stats: Statistics dictionary to save
         out_dir: Output directory path
     """
-    import json
 
     stats_path = out_dir / "stats.json"
     with open(stats_path, "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=2, default=str)
     print(f"Saved: {stats_path.name}")
-
-
-def get_process_memory_mb() -> Dict[str, float]:
-    """
-    Get current process memory usage in MB.
-
-    Returns:
-        Dictionary with keys:
-        - rss_mb: Resident Set Size (actual physical memory in use)
-        - vms_mb: Virtual Memory Size (total memory allocated)
-        - percent: Memory usage as percentage of system memory
-    """
-    process = psutil.Process()
-    mem_info = process.memory_info()
-    mem_percent = process.memory_percent()
-
-    return {
-        "rss_mb": mem_info.rss / (1024 * 1024),
-        "vms_mb": mem_info.vms / (1024 * 1024),
-        "percent": mem_percent,
-    }
 
 
 def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
@@ -363,7 +342,9 @@ def compute_input_stats(df: pd.DataFrame) -> Dict[str, Any]:
             }
 
     # Datetime column statistics
-    datetime_cols = df.select_dtypes(include=["datetime64", "datetime64[ns]"]).columns.tolist()
+    datetime_cols = df.select_dtypes(
+        include=["datetime64", "datetime64[ns]"]
+    ).columns.tolist()
     stats["datetime_stats"] = {}
     for col in datetime_cols:
         series = df[col].dropna()
@@ -397,9 +378,9 @@ def compute_input_stats(df: pd.DataFrame) -> Dict[str, Any]:
 
     # Cardinality analysis for key categorical columns
     stats["cardinality"] = {}
-    categorical_cols = (
-        df.select_dtypes(include=["object", "string", "category"]).columns.tolist()
-    )
+    categorical_cols = df.select_dtypes(
+        include=["object", "string", "category"]
+    ).columns.tolist()
     for col in categorical_cols:
         if col in datetime_cols:
             continue
@@ -409,7 +390,9 @@ def compute_input_stats(df: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-def compute_temporal_stats(df: pd.DataFrame, date_col: str = "start_date") -> Dict[str, Any]:
+def compute_temporal_stats(
+    df: pd.DataFrame, date_col: str = "start_date"
+) -> Dict[str, Any]:
     """
     Analyze temporal coverage of the dataset.
 
@@ -489,7 +472,7 @@ def compute_temporal_stats(df: pd.DataFrame, date_col: str = "start_date") -> Di
     span_days = (latest - earliest).days
 
     # Calls per year statistics
-    year_values = df_temp["year"].values
+    df_temp["year"].values
     calls_per_year = {
         "mean": round(float(year_counts.mean()), 2),
         "median": round(float(year_counts.median()), 2),
@@ -615,13 +598,15 @@ def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
                 "histogram": histogram,
             }
         else:
-            stats["data_quality_distribution"] = {"error": "No quality scores available"}
+            stats["data_quality_distribution"] = {
+                "error": "No quality scores available"
+            }
     else:
         stats["data_quality_distribution"] = {"error": "Column not found"}
 
     # Speaker data coverage
     if "has_speaker_data" in df.columns:
-        with_speaker = df[df["has_speaker_data"] == True].shape[0]
+        with_speaker = df[df["has_speaker_data"]].shape[0]
         percent_with_speaker = round(with_speaker / len(df) * 100, 2)
         stats["speaker_coverage"] = {
             "percent_with_speaker_data": percent_with_speaker,
@@ -658,7 +643,9 @@ def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-def compute_linking_input_stats(df_input: pd.DataFrame, df_ccm: pd.DataFrame) -> Dict[str, Any]:
+def compute_linking_input_stats(
+    df_input: pd.DataFrame, df_ccm: pd.DataFrame
+) -> Dict[str, Any]:
     """
     Analyze input and reference data for entity linking.
 
@@ -684,7 +671,9 @@ def compute_linking_input_stats(df_input: pd.DataFrame, df_ccm: pd.DataFrame) ->
     # Input metadata characteristics
     stats["input_metadata"] = {
         "record_count": int(len(df_input)),
-        "unique_companies": int(df_input["company_id"].nunique()) if "company_id" in df_input.columns else 0,
+        "unique_companies": int(df_input["company_id"].nunique())
+        if "company_id" in df_input.columns
+        else 0,
         "column_count": int(len(df_input.columns)),
         "memory_mb": round(df_input.memory_usage(deep=True).sum() / (1024 * 1024), 2),
     }
@@ -692,8 +681,12 @@ def compute_linking_input_stats(df_input: pd.DataFrame, df_ccm: pd.DataFrame) ->
     # CCM reference database characteristics
     stats["reference_database"] = {
         "total_records": int(len(df_ccm)),
-        "unique_gvkey": int(df_ccm["gvkey"].nunique()) if "gvkey" in df_ccm.columns else 0,
-        "unique_lpermno": int(df_ccm["LPERMNO"].nunique()) if "LPERMNO" in df_ccm.columns else 0,
+        "unique_gvkey": int(df_ccm["gvkey"].nunique())
+        if "gvkey" in df_ccm.columns
+        else 0,
+        "unique_lpermno": int(df_ccm["LPERMNO"].nunique())
+        if "LPERMNO" in df_ccm.columns
+        else 0,
     }
 
     # CCM date coverage
@@ -712,27 +705,53 @@ def compute_linking_input_stats(df_input: pd.DataFrame, df_ccm: pd.DataFrame) ->
 
     coverage = {}
     if "permno" in df_input.columns:
-        permno_available = df_input[df_input["permno"].notna() & (df_input["permno"] != "")]["company_id"].nunique()
-        coverage["permno_coverage_pct"] = round(permno_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+        permno_available = df_input[
+            df_input["permno"].notna() & (df_input["permno"] != "")
+        ]["company_id"].nunique()
+        coverage["permno_coverage_pct"] = (
+            round(permno_available / total_companies * 100, 2)
+            if total_companies > 0
+            else 0.0
+        )
 
     if "cusip" in df_input.columns:
-        cusip_available = df_input[df_input["cusip"].notna() & (df_input["cusip"] != "")]["company_id"].nunique()
-        coverage["cusip_coverage_pct"] = round(cusip_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+        cusip_available = df_input[
+            df_input["cusip"].notna() & (df_input["cusip"] != "")
+        ]["company_id"].nunique()
+        coverage["cusip_coverage_pct"] = (
+            round(cusip_available / total_companies * 100, 2)
+            if total_companies > 0
+            else 0.0
+        )
 
     if "company_ticker" in df_input.columns:
-        ticker_available = df_input[df_input["company_ticker"].notna() & (df_input["company_ticker"] != "")]["company_id"].nunique()
-        coverage["ticker_coverage_pct"] = round(ticker_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+        ticker_available = df_input[
+            df_input["company_ticker"].notna() & (df_input["company_ticker"] != "")
+        ]["company_id"].nunique()
+        coverage["ticker_coverage_pct"] = (
+            round(ticker_available / total_companies * 100, 2)
+            if total_companies > 0
+            else 0.0
+        )
 
     if "company_name" in df_input.columns:
-        name_available = df_input[df_input["company_name"].notna() & (df_input["company_name"] != "")]["company_id"].nunique()
-        coverage["name_coverage_pct"] = round(name_available / total_companies * 100, 2) if total_companies > 0 else 0.0
+        name_available = df_input[
+            df_input["company_name"].notna() & (df_input["company_name"] != "")
+        ]["company_id"].nunique()
+        coverage["name_coverage_pct"] = (
+            round(name_available / total_companies * 100, 2)
+            if total_companies > 0
+            else 0.0
+        )
 
     stats["coverage_metrics"] = coverage
 
     return stats
 
 
-def compute_linking_process_stats(unique_df: pd.DataFrame, stats_dict: Dict[str, Any]) -> Dict[str, Any]:
+def compute_linking_process_stats(
+    unique_df: pd.DataFrame, stats_dict: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Analyze 4-tier matching process outcomes.
 
@@ -770,24 +789,36 @@ def compute_linking_process_stats(unique_df: pd.DataFrame, stats_dict: Dict[str,
         "tier1_candidates": int(tier1_candidates),
         "tier1_matched": int(tier1_matched),
         "tier2_candidates": int(tier2_candidates),
-        "tier2_matched": int(tier2_matched - tier1_matched) if tier2_matched > tier1_matched else 0,
+        "tier2_matched": int(tier2_matched - tier1_matched)
+        if tier2_matched > tier1_matched
+        else 0,
         "tier3_candidates": int(tier3_candidates),
-        "tier3_matched": int(tier3_matched - tier2_matched) if tier3_matched > tier2_matched else 0,
+        "tier3_matched": int(tier3_matched - tier2_matched)
+        if tier3_matched > tier2_matched
+        else 0,
         "total_matched": int(tier3_matched),
     }
 
     # Match rate calculations
     stats["match_rates"] = {}
     if tier1_candidates > 0:
-        stats["match_rates"]["tier1_match_pct"] = round(tier1_matched / tier1_candidates * 100, 2)
+        stats["match_rates"]["tier1_match_pct"] = round(
+            tier1_matched / tier1_candidates * 100, 2
+        )
     if tier2_candidates > 0:
         tier2_new_matches = stats["funnel_analysis"]["tier2_matched"]
-        stats["match_rates"]["tier2_match_pct"] = round(tier2_new_matches / tier2_candidates * 100, 2)
+        stats["match_rates"]["tier2_match_pct"] = round(
+            tier2_new_matches / tier2_candidates * 100, 2
+        )
     if tier3_candidates > 0:
         tier3_new_matches = stats["funnel_analysis"]["tier3_matched"]
-        stats["match_rates"]["tier3_match_pct"] = round(tier3_new_matches / tier3_candidates * 100, 2)
+        stats["match_rates"]["tier3_match_pct"] = round(
+            tier3_new_matches / tier3_candidates * 100, 2
+        )
     if total_unique > 0:
-        stats["match_rates"]["overall_match_pct"] = round(tier3_matched / total_unique * 100, 2)
+        stats["match_rates"]["overall_match_pct"] = round(
+            tier3_matched / total_unique * 100, 2
+        )
 
     # Link quality distribution (from link_quality column)
     if "link_quality" in unique_df.columns:
@@ -802,13 +833,22 @@ def compute_linking_process_stats(unique_df: pd.DataFrame, stats_dict: Dict[str,
         total_quality_matches = sum(stats["link_quality_distribution"].values())
         if total_quality_matches > 0:
             stats["link_quality_distribution"]["quality_100_pct"] = round(
-                stats["link_quality_distribution"]["quality_100_count"] / total_quality_matches * 100, 2
+                stats["link_quality_distribution"]["quality_100_count"]
+                / total_quality_matches
+                * 100,
+                2,
             )
             stats["link_quality_distribution"]["quality_90_pct"] = round(
-                stats["link_quality_distribution"]["quality_90_count"] / total_quality_matches * 100, 2
+                stats["link_quality_distribution"]["quality_90_count"]
+                / total_quality_matches
+                * 100,
+                2,
             )
             stats["link_quality_distribution"]["quality_80_pct"] = round(
-                stats["link_quality_distribution"]["quality_80_count"] / total_quality_matches * 100, 2
+                stats["link_quality_distribution"]["quality_80_count"]
+                / total_quality_matches
+                * 100,
+                2,
             )
 
     # Link method distribution (from link_method column)
@@ -850,20 +890,26 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
     total_calls = len(df_linked)
 
     # Linkage success summary
-    unique_companies = df_linked["company_id"].nunique() if "company_id" in df_linked.columns else 0
+    unique_companies = (
+        df_linked["company_id"].nunique() if "company_id" in df_linked.columns else 0
+    )
     unique_gvkey = df_linked["gvkey"].nunique() if "gvkey" in df_linked.columns else 0
 
     stats["linkage_summary"] = {
         "total_calls_linked": int(total_calls),
         "unique_companies_linked": int(unique_companies),
         "unique_gvkey_assigned": int(unique_gvkey),
-        "calls_per_company_avg": round(total_calls / unique_companies, 2) if unique_companies > 0 else 0.0,
+        "calls_per_company_avg": round(total_calls / unique_companies, 2)
+        if unique_companies > 0
+        else 0.0,
     }
 
     # Calculate linkage success rate (from input perspective - not available here, only relative stats)
     # The success rate relative to unique companies
     if unique_companies > 0:
-        stats["linkage_summary"]["company_linkage_rate"] = round(unique_gvkey / unique_companies * 100, 2)
+        stats["linkage_summary"]["company_linkage_rate"] = round(
+            unique_gvkey / unique_companies * 100, 2
+        )
 
     # Industry coverage - FF12
     if "ff12_code" in df_linked.columns:
@@ -872,7 +918,9 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
         stats["industry_coverage"] = {
             "ff12_assigned": int(ff12_assigned),
             "ff12_unique_industries": int(ff12_unique),
-            "ff12_completion_pct": round(ff12_assigned / total_calls * 100, 2) if total_calls > 0 else 0.0,
+            "ff12_completion_pct": round(ff12_assigned / total_calls * 100, 2)
+            if total_calls > 0
+            else 0.0,
         }
     else:
         stats["industry_coverage"] = {"error": "FF12 columns not found"}
@@ -883,18 +931,24 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
         ff48_unique = df_linked["ff48_code"].nunique()
         stats["industry_coverage"]["ff48_assigned"] = int(ff48_assigned)
         stats["industry_coverage"]["ff48_unique_industries"] = int(ff48_unique)
-        stats["industry_coverage"]["ff48_completion_pct"] = round(ff48_assigned / total_calls * 100, 2) if total_calls > 0 else 0.0
+        stats["industry_coverage"]["ff48_completion_pct"] = (
+            round(ff48_assigned / total_calls * 100, 2) if total_calls > 0 else 0.0
+        )
 
     # SIC code distribution
     if "sic" in df_linked.columns:
         sic_counts = df_linked["sic"].value_counts().head(10)  # Top 10 SICs
         top_industries = []
         for sic, count in sic_counts.items():
-            top_industries.append({
-                "sic": int(sic) if pd.notna(sic) else None,
-                "count": int(count),
-                "percentage": round(count / total_calls * 100, 2) if total_calls > 0 else 0.0,
-            })
+            top_industries.append(
+                {
+                    "sic": int(sic) if pd.notna(sic) else None,
+                    "count": int(count),
+                    "percentage": round(count / total_calls * 100, 2)
+                    if total_calls > 0
+                    else 0.0,
+                }
+            )
 
         stats["sic_distribution"] = {
             "unique_sic_codes": int(df_linked["sic"].nunique()),
@@ -913,7 +967,9 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
 
             # Link quality by method
             if "link_method" in df_linked.columns:
-                quality_by_method = df_linked.groupby("link_method")["link_quality"].mean().sort_index()
+                quality_by_method = (
+                    df_linked.groupby("link_method")["link_quality"].mean().sort_index()
+                )
                 stats["quality_metrics"]["link_quality_by_method"] = {
                     method: round(float(avg_quality), 2)
                     for method, avg_quality in quality_by_method.items()
@@ -935,7 +991,9 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-def collect_fuzzy_match_samples(unique_df: pd.DataFrame, n_samples: int = 5) -> Dict[str, Any]:
+def collect_fuzzy_match_samples(
+    unique_df: pd.DataFrame, n_samples: int = 5
+) -> Dict[str, Any]:
     """
     Collect fuzzy name match examples for review.
 
@@ -973,33 +1031,55 @@ def collect_fuzzy_match_samples(unique_df: pd.DataFrame, n_samples: int = 5) -> 
         return samples
 
     # Get high-score matches (>98)
-    high_score_df = fuzzy_df[fuzzy_df["score"] > 98].sort_values("score", ascending=False)
+    high_score_df = fuzzy_df[fuzzy_df["score"] > 98].sort_values(
+        "score", ascending=False
+    )
     for _, row in high_score_df.head(n_samples).iterrows():
-        samples["high_score"].append({
-            "company_id": str(row.get("company_id", "")),
-            "company_name": str(row.get("company_name", "")) if pd.notna(row.get("company_name")) else "",
-            "matched_name": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
-            "score": round(float(row.get("score", 0)), 1),
-            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
-            "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
-        })
+        samples["high_score"].append(
+            {
+                "company_id": str(row.get("company_id", "")),
+                "company_name": str(row.get("company_name", ""))
+                if pd.notna(row.get("company_name"))
+                else "",
+                "matched_name": str(row.get("conm", ""))
+                if pd.notna(row.get("conm"))
+                else "",
+                "score": round(float(row.get("score", 0)), 1),
+                "gvkey": str(row.get("gvkey", ""))
+                if pd.notna(row.get("gvkey"))
+                else "",
+                "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+            }
+        )
 
     # Get borderline matches (92-95)
-    borderline_df = fuzzy_df[(fuzzy_df["score"] >= 92) & (fuzzy_df["score"] <= 95)].sort_values("score", ascending=False)
+    borderline_df = fuzzy_df[
+        (fuzzy_df["score"] >= 92) & (fuzzy_df["score"] <= 95)
+    ].sort_values("score", ascending=False)
     for _, row in borderline_df.head(n_samples).iterrows():
-        samples["borderline"].append({
-            "company_id": str(row.get("company_id", "")),
-            "company_name": str(row.get("company_name", "")) if pd.notna(row.get("company_name")) else "",
-            "matched_name": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
-            "score": round(float(row.get("score", 0)), 1),
-            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
-            "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
-        })
+        samples["borderline"].append(
+            {
+                "company_id": str(row.get("company_id", "")),
+                "company_name": str(row.get("company_name", ""))
+                if pd.notna(row.get("company_name"))
+                else "",
+                "matched_name": str(row.get("conm", ""))
+                if pd.notna(row.get("conm"))
+                else "",
+                "score": round(float(row.get("score", 0)), 1),
+                "gvkey": str(row.get("gvkey", ""))
+                if pd.notna(row.get("gvkey"))
+                else "",
+                "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+            }
+        )
 
     return samples
 
 
-def collect_tier_match_samples(unique_df: pd.DataFrame, n_samples: int = 3) -> Dict[str, Any]:
+def collect_tier_match_samples(
+    unique_df: pd.DataFrame, n_samples: int = 3
+) -> Dict[str, Any]:
     """
     Collect Tier 1 and Tier 2 match examples for review.
 
@@ -1035,14 +1115,22 @@ def collect_tier_match_samples(unique_df: pd.DataFrame, n_samples: int = 3) -> D
         tier1_samples = tier1_df.sample(n=sample_size, random_state=42)
 
         for _, row in tier1_samples.iterrows():
-            samples["tier1"].append({
-                "company_id": str(row.get("company_id", "")),
-                "permno": str(row.get("permno", "")) if pd.notna(row.get("permno")) else "",
-                "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
-                "conm": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
-                "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
-                "link_quality": int(row.get("link_quality", 100)),
-            })
+            samples["tier1"].append(
+                {
+                    "company_id": str(row.get("company_id", "")),
+                    "permno": str(row.get("permno", ""))
+                    if pd.notna(row.get("permno"))
+                    else "",
+                    "gvkey": str(row.get("gvkey", ""))
+                    if pd.notna(row.get("gvkey"))
+                    else "",
+                    "conm": str(row.get("conm", ""))
+                    if pd.notna(row.get("conm"))
+                    else "",
+                    "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+                    "link_quality": int(row.get("link_quality", 100)),
+                }
+            )
 
     # Tier 2: CUSIP8 matches
     tier2_mask = unique_df["link_method"] == "cusip8_date"
@@ -1054,19 +1142,29 @@ def collect_tier_match_samples(unique_df: pd.DataFrame, n_samples: int = 3) -> D
         tier2_samples = tier2_df.sample(n=sample_size, random_state=42)
 
         for _, row in tier2_samples.iterrows():
-            samples["tier2"].append({
-                "company_id": str(row.get("company_id", "")),
-                "cusip8": str(row.get("cusip8", "")) if pd.notna(row.get("cusip8")) else "",
-                "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
-                "conm": str(row.get("conm", "")) if pd.notna(row.get("conm")) else "",
-                "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
-                "link_quality": int(row.get("link_quality", 90)),
-            })
+            samples["tier2"].append(
+                {
+                    "company_id": str(row.get("company_id", "")),
+                    "cusip8": str(row.get("cusip8", ""))
+                    if pd.notna(row.get("cusip8"))
+                    else "",
+                    "gvkey": str(row.get("gvkey", ""))
+                    if pd.notna(row.get("gvkey"))
+                    else "",
+                    "conm": str(row.get("conm", ""))
+                    if pd.notna(row.get("conm"))
+                    else "",
+                    "sic": int(row["sic"]) if pd.notna(row.get("sic")) else None,
+                    "link_quality": int(row.get("link_quality", 90)),
+                }
+            )
 
     return samples
 
 
-def collect_unmatched_samples(df_original: pd.DataFrame, unique_df: pd.DataFrame, n_samples: int = 5) -> List[Dict[str, Any]]:
+def collect_unmatched_samples(
+    df_original: pd.DataFrame, unique_df: pd.DataFrame, n_samples: int = 5
+) -> List[Dict[str, Any]]:
     """
     Collect unmatched company samples for analysis.
 
@@ -1099,7 +1197,9 @@ def collect_unmatched_samples(df_original: pd.DataFrame, unique_df: pd.DataFrame
         return samples
 
     # Get unmatched companies from original df
-    unmatched_df = df_original[df_original["company_id"].isin(unmatched_company_ids)].drop_duplicates("company_id")
+    unmatched_df = df_original[
+        df_original["company_id"].isin(unmatched_company_ids)
+    ].drop_duplicates("company_id")
 
     # Sample n_samples unmatched companies
     sample_size = min(n_samples, len(unmatched_df))
@@ -1109,8 +1209,13 @@ def collect_unmatched_samples(df_original: pd.DataFrame, unique_df: pd.DataFrame
         # Check what identifiers are available
         has_permno = pd.notna(row.get("permno")) and str(row.get("permno", "")) != ""
         has_cusip = pd.notna(row.get("cusip")) and str(row.get("cusip", "")) != ""
-        has_ticker = pd.notna(row.get("company_ticker")) and str(row.get("company_ticker", "")) != ""
-        has_name = pd.notna(row.get("company_name")) and str(row.get("company_name", "")) != ""
+        has_ticker = (
+            pd.notna(row.get("company_ticker"))
+            and str(row.get("company_ticker", "")) != ""
+        )
+        has_name = (
+            pd.notna(row.get("company_name")) and str(row.get("company_name", "")) != ""
+        )
 
         # Classify likely reason for no match
         if not has_permno and not has_cusip and not has_ticker:
@@ -1120,19 +1225,25 @@ def collect_unmatched_samples(df_original: pd.DataFrame, unique_df: pd.DataFrame
         else:
             likely_reason = "unknown"
 
-        samples.append({
-            "company_id": str(row.get("company_id", "")),
-            "company_name": str(row.get("company_name", "")) if pd.notna(row.get("company_name")) else "",
-            "has_permno": bool(has_permno),
-            "has_cusip": bool(has_cusip),
-            "has_ticker": bool(has_ticker),
-            "likely_reason": likely_reason,
-        })
+        samples.append(
+            {
+                "company_id": str(row.get("company_id", "")),
+                "company_name": str(row.get("company_name", ""))
+                if pd.notna(row.get("company_name"))
+                else "",
+                "has_permno": bool(has_permno),
+                "has_cusip": bool(has_cusip),
+                "has_ticker": bool(has_ticker),
+                "likely_reason": likely_reason,
+            }
+        )
 
     return samples
 
 
-def collect_before_after_samples(df_original: pd.DataFrame, df_linked: pd.DataFrame, n_samples: int = 3) -> List[Dict[str, Any]]:
+def collect_before_after_samples(
+    df_original: pd.DataFrame, df_linked: pd.DataFrame, n_samples: int = 3
+) -> List[Dict[str, Any]]:
     """
     Collect before/after examples showing the linking transformation.
 
@@ -1176,29 +1287,53 @@ def collect_before_after_samples(df_original: pd.DataFrame, df_linked: pd.DataFr
             continue
         link_row = linked_rows.iloc[0]
 
-        samples.append({
-            "before": {
-                "company_id": str(orig_row.get("company_id", "")),
-                "company_name": str(orig_row.get("company_name", "")) if pd.notna(orig_row.get("company_name")) else "",
-                "company_ticker": str(orig_row.get("company_ticker", "")) if pd.notna(orig_row.get("company_ticker")) else "",
-                "permno": str(orig_row.get("permno", "")) if pd.notna(orig_row.get("permno")) else "",
-                "cusip": str(orig_row.get("cusip", "")) if pd.notna(orig_row.get("cusip")) else "",
-            },
-            "after": {
-                "gvkey": str(link_row.get("gvkey", "")) if pd.notna(link_row.get("gvkey")) else "",
-                "conm": str(link_row.get("conm", "")) if pd.notna(link_row.get("conm")) else "",
-                "sic": int(link_row["sic"]) if pd.notna(link_row.get("sic")) else None,
-                "ff12_name": str(link_row.get("ff12_name", "")) if pd.notna(link_row.get("ff12_name")) else "",
-                "ff48_name": str(link_row.get("ff48_name", "")) if pd.notna(link_row.get("ff48_name")) else "",
-                "link_method": str(link_row.get("link_method", "")) if pd.notna(link_row.get("link_method")) else "",
-                "link_quality": int(link_row.get("link_quality", 0)),
+        samples.append(
+            {
+                "before": {
+                    "company_id": str(orig_row.get("company_id", "")),
+                    "company_name": str(orig_row.get("company_name", ""))
+                    if pd.notna(orig_row.get("company_name"))
+                    else "",
+                    "company_ticker": str(orig_row.get("company_ticker", ""))
+                    if pd.notna(orig_row.get("company_ticker"))
+                    else "",
+                    "permno": str(orig_row.get("permno", ""))
+                    if pd.notna(orig_row.get("permno"))
+                    else "",
+                    "cusip": str(orig_row.get("cusip", ""))
+                    if pd.notna(orig_row.get("cusip"))
+                    else "",
+                },
+                "after": {
+                    "gvkey": str(link_row.get("gvkey", ""))
+                    if pd.notna(link_row.get("gvkey"))
+                    else "",
+                    "conm": str(link_row.get("conm", ""))
+                    if pd.notna(link_row.get("conm"))
+                    else "",
+                    "sic": int(link_row["sic"])
+                    if pd.notna(link_row.get("sic"))
+                    else None,
+                    "ff12_name": str(link_row.get("ff12_name", ""))
+                    if pd.notna(link_row.get("ff12_name"))
+                    else "",
+                    "ff48_name": str(link_row.get("ff48_name", ""))
+                    if pd.notna(link_row.get("ff48_name"))
+                    else "",
+                    "link_method": str(link_row.get("link_method", ""))
+                    if pd.notna(link_row.get("link_method"))
+                    else "",
+                    "link_quality": int(link_row.get("link_quality", 0)),
+                },
             }
-        })
+        )
 
     return samples
 
 
-def compute_tenure_input_stats(df_input: pd.DataFrame, df_ceo: pd.DataFrame) -> Dict[str, Any]:
+def compute_tenure_input_stats(
+    df_input: pd.DataFrame, df_ceo: pd.DataFrame
+) -> Dict[str, Any]:
     """
     Analyze Execucomp input data for CEO tenure mapping.
 
@@ -1224,8 +1359,12 @@ def compute_tenure_input_stats(df_input: pd.DataFrame, df_ceo: pd.DataFrame) -> 
     # Overall Execucomp characteristics
     stats["overall_execucomp"] = {
         "total_records": int(len(df_input)),
-        "unique_gvkey": int(df_input["gvkey"].nunique()) if "gvkey" in df_input.columns else 0,
-        "unique_execid": int(df_input["execid"].nunique()) if "execid" in df_input.columns else 0,
+        "unique_gvkey": int(df_input["gvkey"].nunique())
+        if "gvkey" in df_input.columns
+        else 0,
+        "unique_execid": int(df_input["execid"].nunique())
+        if "execid" in df_input.columns
+        else 0,
     }
 
     # Date range from year column
@@ -1244,21 +1383,31 @@ def compute_tenure_input_stats(df_input: pd.DataFrame, df_ceo: pd.DataFrame) -> 
 
     stats["ceo_subset"] = {
         "ceo_records": int(ceo_records),
-        "pct_of_total": round(ceo_records / total_records * 100, 2) if total_records > 0 else 0.0,
-        "unique_ceo_firms": int(df_ceo["gvkey"].nunique()) if "gvkey" in df_ceo.columns else 0,
-        "unique_ceo_executives": int(df_ceo["execid"].nunique()) if "execid" in df_ceo.columns else 0,
+        "pct_of_total": round(ceo_records / total_records * 100, 2)
+        if total_records > 0
+        else 0.0,
+        "unique_ceo_firms": int(df_ceo["gvkey"].nunique())
+        if "gvkey" in df_ceo.columns
+        else 0,
+        "unique_ceo_executives": int(df_ceo["execid"].nunique())
+        if "execid" in df_ceo.columns
+        else 0,
     }
 
     # Date field coverage
     if "becameceo" in df_ceo.columns:
         becameceo_available = df_ceo["becameceo"].notna().sum()
         stats["date_field_coverage"] = {
-            "becameceo_available_pct": round(becameceo_available / len(df_ceo) * 100, 2) if len(df_ceo) > 0 else 0.0,
+            "becameceo_available_pct": round(becameceo_available / len(df_ceo) * 100, 2)
+            if len(df_ceo) > 0
+            else 0.0,
         }
 
     if "leftofc" in df_ceo.columns:
         leftofc_available = df_ceo["leftofc"].notna().sum()
-        stats["date_field_coverage"]["leftofc_available_pct"] = round(leftofc_available / len(df_ceo) * 100, 2) if len(df_ceo) > 0 else 0.0
+        stats["date_field_coverage"]["leftofc_available_pct"] = (
+            round(leftofc_available / len(df_ceo) * 100, 2) if len(df_ceo) > 0 else 0.0
+        )
 
     # CEO indicators
     if "ceoann" in df_ceo.columns:
@@ -1275,7 +1424,9 @@ def compute_tenure_input_stats(df_input: pd.DataFrame, df_ceo: pd.DataFrame) -> 
     if "exec_fullname" in df_ceo.columns:
         name_available = df_ceo["exec_fullname"].notna().sum()
         stats["name_coverage"] = {
-            "exec_fullname_available_pct": round(name_available / len(df_ceo) * 100, 2) if len(df_ceo) > 0 else 0.0,
+            "exec_fullname_available_pct": round(name_available / len(df_ceo) * 100, 2)
+            if len(df_ceo) > 0
+            else 0.0,
         }
 
     return stats
@@ -1323,7 +1474,7 @@ def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
                 "median": round(float(episodes_per_firm.median()), 2),
                 "min": int(episodes_per_firm.min()),
                 "max": int(episodes_per_firm.max()),
-            }
+            },
         }
 
     # Episodes per CEO
@@ -1340,8 +1491,8 @@ def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
     if "start_date" in episodes_df.columns and "end_date" in episodes_df.columns:
         # Calculate tenure in months
         episodes_df["tenure_months"] = (
-            (episodes_df["end_date"] - episodes_df["start_date"]).dt.total_seconds() / (30 * 24 * 3600)
-        )
+            episodes_df["end_date"] - episodes_df["start_date"]
+        ).dt.total_seconds() / (30 * 24 * 3600)
 
         tenure_months = episodes_df["tenure_months"].dropna()
 
@@ -1365,13 +1516,17 @@ def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
         buckets["<1 year"] = int((tenure_months < 12).sum())
         buckets["1-3 years"] = int(((tenure_months >= 12) & (tenure_months < 36)).sum())
         buckets["3-5 years"] = int(((tenure_months >= 36) & (tenure_months < 60)).sum())
-        buckets["5-10 years"] = int(((tenure_months >= 60) & (tenure_months < 120)).sum())
+        buckets["5-10 years"] = int(
+            ((tenure_months >= 60) & (tenure_months < 120)).sum()
+        )
         buckets["10+ years"] = int((tenure_months >= 120).sum())
 
         # Calculate percentages
         bucket_stats = {}
         for bucket_name, count in buckets.items():
-            bucket_pct = round(count / total_episodes * 100, 2) if total_episodes > 0 else 0.0
+            bucket_pct = (
+                round(count / total_episodes * 100, 2) if total_episodes > 0 else 0.0
+            )
             bucket_stats[bucket_name] = {
                 "count": count,
                 "pct": bucket_pct,
@@ -1387,7 +1542,9 @@ def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
         stats["predecessor_linking"] = {
             "linked_count": int(linked_count),
             "orphan_count": int(orphan_count),
-            "link_rate_pct": round(linked_count / total_episodes * 100, 2) if total_episodes > 0 else 0.0,
+            "link_rate_pct": round(linked_count / total_episodes * 100, 2)
+            if total_episodes > 0
+            else 0.0,
         }
 
     # Date validity checks
@@ -1400,7 +1557,9 @@ def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
         }
 
     if "start_date" in episodes_df.columns and "end_date" in episodes_df.columns:
-        end_before_start = int((episodes_df["end_date"] < episodes_df["start_date"]).sum())
+        end_before_start = int(
+            (episodes_df["end_date"] < episodes_df["start_date"]).sum()
+        )
         stats["date_validity"]["end_before_start"] = end_before_start
 
         # Count active CEOs (end_date imputed to 2025-12-31 or future dates)
@@ -1439,8 +1598,12 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
 
     stats["panel_dimensions"] = {
         "total_firm_months": int(total_firm_months),
-        "unique_firms": int(monthly_df["gvkey"].nunique()) if "gvkey" in monthly_df.columns else 0,
-        "unique_ceos": int(monthly_df["ceo_id"].nunique()) if "ceo_id" in monthly_df.columns else 0,
+        "unique_firms": int(monthly_df["gvkey"].nunique())
+        if "gvkey" in monthly_df.columns
+        else 0,
+        "unique_ceos": int(monthly_df["ceo_id"].nunique())
+        if "ceo_id" in monthly_df.columns
+        else 0,
     }
 
     # Date range
@@ -1466,12 +1629,18 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
         for year in sorted(monthly_df["year"].unique()):
             year_df = monthly_df[monthly_df["year"] == year]
 
-            temporal_coverage.append({
-                "year": int(year),
-                "firm_months": int(len(year_df)),
-                "unique_firms": int(year_df["gvkey"].nunique()) if "gvkey" in year_df.columns else 0,
-                "unique_ceos": int(year_df["ceo_id"].nunique()) if "ceo_id" in year_df.columns else 0,
-            })
+            temporal_coverage.append(
+                {
+                    "year": int(year),
+                    "firm_months": int(len(year_df)),
+                    "unique_firms": int(year_df["gvkey"].nunique())
+                    if "gvkey" in year_df.columns
+                    else 0,
+                    "unique_ceos": int(year_df["ceo_id"].nunique())
+                    if "ceo_id" in year_df.columns
+                    else 0,
+                }
+            )
 
         stats["temporal_coverage"] = temporal_coverage
 
@@ -1481,13 +1650,18 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
         monthly_df_sorted = monthly_df.sort_values(["gvkey", "year", "month"])
 
         # Find prev_ceo_id changes within each firm (indicates CEO transitions)
-        monthly_df_sorted["prev_ceo_id_shifted"] = monthly_df_sorted.groupby("gvkey")["prev_ceo_id"].shift(1)
+        monthly_df_sorted["prev_ceo_id_shifted"] = monthly_df_sorted.groupby("gvkey")[
+            "prev_ceo_id"
+        ].shift(1)
 
         # Count transitions (where prev_ceo_id changes)
         transitions_mask = (
-            monthly_df_sorted["prev_ceo_id"].notna() &
-            monthly_df_sorted["prev_ceo_id_shifted"].notna() &
-            (monthly_df_sorted["prev_ceo_id"] != monthly_df_sorted["prev_ceo_id_shifted"])
+            monthly_df_sorted["prev_ceo_id"].notna()
+            & monthly_df_sorted["prev_ceo_id_shifted"].notna()
+            & (
+                monthly_df_sorted["prev_ceo_id"]
+                != monthly_df_sorted["prev_ceo_id_shifted"]
+            )
         )
 
         turnover_events = int(transitions_mask.sum())
@@ -1501,7 +1675,9 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
             firm_years = monthly_df[["gvkey", "year"]].drop_duplicates().shape[0]
             if firm_years > 0:
                 turnover_rate = round(turnover_events / firm_years * 100, 2)
-                stats["turnover_metrics"]["turnover_rate_per_100_firm_years"] = turnover_rate
+                stats["turnover_metrics"]["turnover_rate_per_100_firm_years"] = (
+                    turnover_rate
+                )
 
     # Predecessor coverage
     if "prev_ceo_id" in monthly_df.columns:
@@ -1509,8 +1685,14 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
         without_predecessor = monthly_df["prev_ceo_id"].isna().sum()
 
         stats["predecessor_coverage"] = {
-            "with_predecessor_pct": round(with_predecessor / total_firm_months * 100, 2) if total_firm_months > 0 else 0.0,
-            "without_predecessor_pct": round(without_predecessor / total_firm_months * 100, 2) if total_firm_months > 0 else 0.0,
+            "with_predecessor_pct": round(with_predecessor / total_firm_months * 100, 2)
+            if total_firm_months > 0
+            else 0.0,
+            "without_predecessor_pct": round(
+                without_predecessor / total_firm_months * 100, 2
+            )
+            if total_firm_months > 0
+            else 0.0,
         }
 
     # Multi-CEO firm analysis
@@ -1520,7 +1702,9 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
 
         stats["multi_ceo_analysis"] = {
             "firms_with_multiple_ceos": firms_with_multiple,
-            "max_ceos_per_firm": int(ceos_per_firm.max()) if len(ceos_per_firm) > 0 else 0,
+            "max_ceos_per_firm": int(ceos_per_firm.max())
+            if len(ceos_per_firm) > 0
+            else 0,
         }
 
     # CEO career analysis
@@ -1536,7 +1720,9 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, n_samples: int = 3) -> Dict[str, Any]:
+def collect_tenure_samples(
+    episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, n_samples: int = 3
+) -> Dict[str, Any]:
     """
     Collect qualitative tenure episode and transition examples for review.
 
@@ -1573,40 +1759,64 @@ def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, 
     # Calculate tenure in months
     if "start_date" in episodes_df.columns and "end_date" in episodes_df.columns:
         episodes_df["tenure_months"] = (
-            (episodes_df["end_date"] - episodes_df["start_date"]).dt.total_seconds() / (30 * 24 * 3600)
-        )
+            episodes_df["end_date"] - episodes_df["start_date"]
+        ).dt.total_seconds() / (30 * 24 * 3600)
     else:
         episodes_df["tenure_months"] = pd.Series([0] * len(episodes_df))
 
     # Short tenure examples (<12 months)
-    short_tenures_df = episodes_df[episodes_df["tenure_months"] < 12].sort_values("tenure_months")
+    short_tenures_df = episodes_df[episodes_df["tenure_months"] < 12].sort_values(
+        "tenure_months"
+    )
 
     for _, row in short_tenures_df.head(n_samples).iterrows():
-        samples["short_tenures"].append({
-            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
-            "ceo_name": str(row.get("exec_fullname", "")) if pd.notna(row.get("exec_fullname")) else "",
-            "start_date": row.get("start_date").isoformat() if pd.notna(row.get("start_date")) else "",
-            "end_date": row.get("end_date").isoformat() if pd.notna(row.get("end_date")) else "",
-            "tenure_months": round(float(row.get("tenure_months", 0)), 1),
-        })
+        samples["short_tenures"].append(
+            {
+                "gvkey": str(row.get("gvkey", ""))
+                if pd.notna(row.get("gvkey"))
+                else "",
+                "ceo_name": str(row.get("exec_fullname", ""))
+                if pd.notna(row.get("exec_fullname"))
+                else "",
+                "start_date": row.get("start_date").isoformat()
+                if pd.notna(row.get("start_date"))
+                else "",
+                "end_date": row.get("end_date").isoformat()
+                if pd.notna(row.get("end_date"))
+                else "",
+                "tenure_months": round(float(row.get("tenure_months", 0)), 1),
+            }
+        )
 
     # Long tenure examples (>120 months)
-    long_tenures_df = episodes_df[episodes_df["tenure_months"] > 120].sort_values("tenure_months", ascending=False)
+    long_tenures_df = episodes_df[episodes_df["tenure_months"] > 120].sort_values(
+        "tenure_months", ascending=False
+    )
 
     for _, row in long_tenures_df.head(n_samples).iterrows():
-        samples["long_tenures"].append({
-            "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
-            "ceo_name": str(row.get("exec_fullname", "")) if pd.notna(row.get("exec_fullname")) else "",
-            "start_date": row.get("start_date").isoformat() if pd.notna(row.get("start_date")) else "",
-            "end_date": row.get("end_date").isoformat() if pd.notna(row.get("end_date")) else "",
-            "tenure_months": round(float(row.get("tenure_months", 0)), 1),
-        })
+        samples["long_tenures"].append(
+            {
+                "gvkey": str(row.get("gvkey", ""))
+                if pd.notna(row.get("gvkey"))
+                else "",
+                "ceo_name": str(row.get("exec_fullname", ""))
+                if pd.notna(row.get("exec_fullname"))
+                else "",
+                "start_date": row.get("start_date").isoformat()
+                if pd.notna(row.get("start_date"))
+                else "",
+                "end_date": row.get("end_date").isoformat()
+                if pd.notna(row.get("end_date"))
+                else "",
+                "tenure_months": round(float(row.get("tenure_months", 0)), 1),
+            }
+        )
 
     # CEO transition examples (predecessor -> successor)
     if "prev_exec_fullname" in episodes_df.columns:
         transitions_df = episodes_df[
-            episodes_df["prev_exec_fullname"].notna() &
-            (episodes_df["prev_exec_fullname"] != "")
+            episodes_df["prev_exec_fullname"].notna()
+            & (episodes_df["prev_exec_fullname"] != "")
         ].copy()
 
         # Calculate gap days between predecessor end and successor start
@@ -1618,9 +1828,8 @@ def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, 
             successor_start = row.get("start_date")
 
             # Find predecessor episode (same firm, earlier start_date)
-            predecessor_mask = (
-                (transitions_df["gvkey"] == gvkey) &
-                (transitions_df["exec_fullname"] == row.get("prev_exec_fullname"))
+            predecessor_mask = (transitions_df["gvkey"] == gvkey) & (
+                transitions_df["exec_fullname"] == row.get("prev_exec_fullname")
             )
             predecessor_episode = transitions_df[predecessor_mask]
 
@@ -1630,24 +1839,36 @@ def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, 
                 if pd.notna(predecessor_end) and pd.notna(successor_start):
                     gap_days = int((successor_start - predecessor_end).days)
 
-            samples["transitions"].append({
-                "gvkey": str(gvkey) if pd.notna(gvkey) else "",
-                "prev_ceo_name": str(row.get("prev_exec_fullname", "")) if pd.notna(row.get("prev_exec_fullname")) else "",
-                "new_ceo_name": str(row.get("exec_fullname", "")) if pd.notna(row.get("exec_fullname")) else "",
-                "transition_date": successor_start.isoformat() if pd.notna(successor_start) else "",
-                "gap_days": gap_days,
-            })
+            samples["transitions"].append(
+                {
+                    "gvkey": str(gvkey) if pd.notna(gvkey) else "",
+                    "prev_ceo_name": str(row.get("prev_exec_fullname", ""))
+                    if pd.notna(row.get("prev_exec_fullname"))
+                    else "",
+                    "new_ceo_name": str(row.get("exec_fullname", ""))
+                    if pd.notna(row.get("exec_fullname"))
+                    else "",
+                    "transition_date": successor_start.isoformat()
+                    if pd.notna(successor_start)
+                    else "",
+                    "gap_days": gap_days,
+                }
+            )
 
     # Overlap resolution examples (from monthly panel)
     # Find firms with multiple CEOs in the same year/month
-    if "gvkey" in monthly_df.columns and "year" in monthly_df.columns and "month" in monthly_df.columns:
+    if (
+        "gvkey" in monthly_df.columns
+        and "year" in monthly_df.columns
+        and "month" in monthly_df.columns
+    ):
         # Count CEOs per firm-month
-        ceo_counts = monthly_df.groupby(["gvkey", "year", "month"])["ceo_id"].nunique()
+        monthly_df.groupby(["gvkey", "year", "month"])["ceo_id"].nunique()
         # Only single CEO per month after resolution, so we need to look for potential overlaps
         # by checking if prev_ceo_id exists and is different from ceo_id
         overlap_candidates = monthly_df[
-            monthly_df["prev_ceo_id"].notna() &
-            (monthly_df["prev_ceo_id"] != monthly_df["ceo_id"])
+            monthly_df["prev_ceo_id"].notna()
+            & (monthly_df["prev_ceo_id"] != monthly_df["ceo_id"])
         ].copy()
 
         if len(overlap_candidates) > 0:
@@ -1655,18 +1876,30 @@ def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, 
             overlap_samples = overlap_candidates.head(n_samples)
 
             for _, row in overlap_samples.iterrows():
-                samples["overlaps"].append({
-                    "gvkey": str(row.get("gvkey", "")) if pd.notna(row.get("gvkey")) else "",
-                    "resolved_ceo": str(row.get("ceo_name", "")) if pd.notna(row.get("ceo_name")) else "",
-                    "overlapped_ceo": str(row.get("prev_ceo_name", "")) if pd.notna(row.get("prev_ceo_name")) else "",
-                    "overlap_period": f"{int(row.get('year', 0))}-{int(row.get('month', 0))}" if pd.notna(row.get("year")) else "",
-                    "resolution_reason": "later_ceo_takes_precedence",
-                })
+                samples["overlaps"].append(
+                    {
+                        "gvkey": str(row.get("gvkey", ""))
+                        if pd.notna(row.get("gvkey"))
+                        else "",
+                        "resolved_ceo": str(row.get("ceo_name", ""))
+                        if pd.notna(row.get("ceo_name"))
+                        else "",
+                        "overlapped_ceo": str(row.get("prev_ceo_name", ""))
+                        if pd.notna(row.get("prev_ceo_name"))
+                        else "",
+                        "overlap_period": f"{int(row.get('year', 0))}-{int(row.get('month', 0))}"
+                        if pd.notna(row.get("year"))
+                        else "",
+                        "resolution_reason": "later_ceo_takes_precedence",
+                    }
+                )
 
     return samples
 
 
-def compute_manifest_input_stats(df_metadata: pd.DataFrame, df_tenure: pd.DataFrame) -> Dict[str, Any]:
+def compute_manifest_input_stats(
+    df_metadata: pd.DataFrame, df_tenure: pd.DataFrame
+) -> Dict[str, Any]:
     """
     Analyze input data characteristics for manifest assembly.
 
@@ -1693,16 +1926,24 @@ def compute_manifest_input_stats(df_metadata: pd.DataFrame, df_tenure: pd.DataFr
     # Linked metadata characteristics
     stats["linked_metadata"] = {
         "total_calls": int(len(df_metadata)),
-        "unique_gvkey": int(df_metadata["gvkey"].nunique()) if "gvkey" in df_metadata.columns else 0,
+        "unique_gvkey": int(df_metadata["gvkey"].nunique())
+        if "gvkey" in df_metadata.columns
+        else 0,
         "columns": int(len(df_metadata.columns)),
-        "memory_mb": round(df_metadata.memory_usage(deep=True).sum() / (1024 * 1024), 2),
+        "memory_mb": round(
+            df_metadata.memory_usage(deep=True).sum() / (1024 * 1024), 2
+        ),
     }
 
     # Tenure panel characteristics
     stats["tenure_panel"] = {
         "total_firm_months": int(len(df_tenure)),
-        "unique_firms": int(df_tenure["gvkey"].nunique()) if "gvkey" in df_tenure.columns else 0,
-        "unique_ceos": int(df_tenure["ceo_id"].nunique()) if "ceo_id" in df_tenure.columns else 0,
+        "unique_firms": int(df_tenure["gvkey"].nunique())
+        if "gvkey" in df_tenure.columns
+        else 0,
+        "unique_ceos": int(df_tenure["ceo_id"].nunique())
+        if "ceo_id" in df_tenure.columns
+        else 0,
     }
 
     # Tenure date coverage
@@ -1724,7 +1965,9 @@ def compute_manifest_input_stats(df_metadata: pd.DataFrame, df_tenure: pd.DataFr
         stats["industry_coverage"] = {"ff12_count": 0}
 
     if "ff48_code" in df_metadata.columns:
-        stats["industry_coverage"]["ff48_count"] = int(df_metadata["ff48_code"].nunique())
+        stats["industry_coverage"]["ff48_count"] = int(
+            df_metadata["ff48_code"].nunique()
+        )
     else:
         stats["industry_coverage"]["ff48_count"] = 0
 
@@ -1742,7 +1985,9 @@ def compute_manifest_input_stats(df_metadata: pd.DataFrame, df_tenure: pd.DataFr
                     "earliest": int(years.min()),
                     "latest": int(years.max()),
                 },
-                "call_count_per_year": {str(int(y)): int(c) for y, c in year_counts.items()},
+                "call_count_per_year": {
+                    str(int(y)): int(c) for y, c in year_counts.items()
+                },
             }
         else:
             stats["temporal_coverage"] = {"error": "No valid dates"}
@@ -1787,10 +2032,16 @@ def compute_manifest_process_stats(
 
     # Merge outcome
     left_rows = len(df_metadata)
-    right_rows = stats_dict.get("merges", {}).get("ceo_tenure_join", {}).get("right_rows", 0)
+    right_rows = (
+        stats_dict.get("merges", {}).get("ceo_tenure_join", {}).get("right_rows", 0)
+    )
     result_rows = len(merged_df)
-    matched_count = int(merged_df["ceo_id"].notna().sum()) if "ceo_id" in merged_df.columns else 0
-    unmatched_count = int(merged_df["ceo_id"].isna().sum()) if "ceo_id" in merged_df.columns else 0
+    matched_count = (
+        int(merged_df["ceo_id"].notna().sum()) if "ceo_id" in merged_df.columns else 0
+    )
+    unmatched_count = (
+        int(merged_df["ceo_id"].isna().sum()) if "ceo_id" in merged_df.columns else 0
+    )
     match_rate_pct = round(matched_count / left_rows * 100, 2) if left_rows > 0 else 0.0
 
     stats["merge_outcome"] = {
@@ -1809,23 +2060,35 @@ def compute_manifest_process_stats(
             year_df = merged_df[merged_df["year"] == year]
             year_total = len(year_df)
             year_matched = int(year_df["ceo_id"].notna().sum())
-            year_rate = round(year_matched / year_total * 100, 2) if year_total > 0 else 0.0
+            year_rate = (
+                round(year_matched / year_total * 100, 2) if year_total > 0 else 0.0
+            )
 
-            match_by_year.append({
-                "year": int(year),
-                "total_calls": year_total,
-                "matched_calls": year_matched,
-                "match_rate_pct": year_rate,
-            })
+            match_by_year.append(
+                {
+                    "year": int(year),
+                    "total_calls": year_total,
+                    "matched_calls": year_matched,
+                    "match_rate_pct": year_rate,
+                }
+            )
         stats["match_rate_by_year"] = match_by_year
     else:
         stats["match_rate_by_year"] = []
 
     # Unmatched analysis
-    unmatched_df = merged_df[merged_df["ceo_id"].isna()] if "ceo_id" in merged_df.columns else pd.DataFrame()
+    unmatched_df = (
+        merged_df[merged_df["ceo_id"].isna()]
+        if "ceo_id" in merged_df.columns
+        else pd.DataFrame()
+    )
 
     if len(unmatched_df) > 0:
-        unique_gvkey_unmatched = int(unmatched_df["gvkey"].nunique()) if "gvkey" in unmatched_df.columns else 0
+        unique_gvkey_unmatched = (
+            int(unmatched_df["gvkey"].nunique())
+            if "gvkey" in unmatched_df.columns
+            else 0
+        )
 
         # Temporal distribution of unmatched
         temporal_dist = {}
@@ -1856,7 +2119,9 @@ def compute_manifest_process_stats(
         ceos_dropped = total_ceos_before_filter - ceos_above_threshold
 
         # Calculate calls dropped
-        calls_dropped = stats_dict.get("processing", {}).get("below_threshold_calls_removed", 0)
+        calls_dropped = stats_dict.get("processing", {}).get(
+            "below_threshold_calls_removed", 0
+        )
 
         stats["ceo_filtering"] = {
             "total_ceos_before_filter": total_ceos_before_filter,
@@ -1899,8 +2164,12 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
 
     # Panel dimensions
     total_calls = len(df_final)
-    unique_gvkey = int(df_final["gvkey"].nunique()) if "gvkey" in df_final.columns else 0
-    unique_ceos = int(df_final["ceo_id"].nunique()) if "ceo_id" in df_final.columns else 0
+    unique_gvkey = (
+        int(df_final["gvkey"].nunique()) if "gvkey" in df_final.columns else 0
+    )
+    unique_ceos = (
+        int(df_final["ceo_id"].nunique()) if "ceo_id" in df_final.columns else 0
+    )
 
     stats["panel_dimensions"] = {
         "total_calls": total_calls,
@@ -1950,7 +2219,11 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
         # Calculate percentages
         bucket_stats = {}
         for bucket_name, count in buckets.items():
-            bucket_pct = round(count / len(calls_per_ceo) * 100, 2) if len(calls_per_ceo) > 0 else 0.0
+            bucket_pct = (
+                round(count / len(calls_per_ceo) * 100, 2)
+                if len(calls_per_ceo) > 0
+                else 0.0
+            )
             bucket_stats[bucket_name] = {
                 "count": count,
                 "pct": bucket_pct,
@@ -1972,14 +2245,18 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
             if "ff12_name" in df_final.columns:
                 name_rows = df_final[df_final["ff12_code"] == ff12_code]["ff12_name"]
                 if len(name_rows) > 0:
-                    ff12_name = str(name_rows.iloc[0]) if pd.notna(name_rows.iloc[0]) else ""
+                    ff12_name = (
+                        str(name_rows.iloc[0]) if pd.notna(name_rows.iloc[0]) else ""
+                    )
 
-            industry_coverage.append({
-                "ff12_code": str(ff12_code) if pd.notna(ff12_code) else "",
-                "ff12_name": ff12_name,
-                "call_count": count,
-                "percentage": percentage,
-            })
+            industry_coverage.append(
+                {
+                    "ff12_code": str(ff12_code) if pd.notna(ff12_code) else "",
+                    "ff12_name": ff12_name,
+                    "call_count": count,
+                    "percentage": percentage,
+                }
+            )
 
         stats["industry_coverage_ff12"] = industry_coverage
 
@@ -1996,10 +2273,15 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
 
         stats["industry_coverage_ff48"] = {
             "unique_industries": unique_ff48,
-            "completion_pct": round(ff48_assigned / total_calls * 100, 2) if total_calls > 0 else 0.0,
+            "completion_pct": round(ff48_assigned / total_calls * 100, 2)
+            if total_calls > 0
+            else 0.0,
         }
     else:
-        stats["industry_coverage_ff48"] = {"unique_industries": 0, "completion_pct": 0.0}
+        stats["industry_coverage_ff48"] = {
+            "unique_industries": 0,
+            "completion_pct": 0.0,
+        }
 
     # Temporal coverage by year
     if "start_date" in df_final.columns:
@@ -2011,12 +2293,18 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
         for year in sorted(df_final_temp["year"].unique()):
             year_df = df_final_temp[df_final_temp["year"] == year]
 
-            temporal_coverage.append({
-                "year": int(year),
-                "call_count": int(len(year_df)),
-                "unique_firms": int(year_df["gvkey"].nunique()) if "gvkey" in year_df.columns else 0,
-                "unique_ceos": int(year_df["ceo_id"].nunique()) if "ceo_id" in year_df.columns else 0,
-            })
+            temporal_coverage.append(
+                {
+                    "year": int(year),
+                    "call_count": int(len(year_df)),
+                    "unique_firms": int(year_df["gvkey"].nunique())
+                    if "gvkey" in year_df.columns
+                    else 0,
+                    "unique_ceos": int(year_df["ceo_id"].nunique())
+                    if "ceo_id" in year_df.columns
+                    else 0,
+                }
+            )
 
         stats["temporal_coverage"] = temporal_coverage
     else:
@@ -2028,8 +2316,12 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
         without_predecessor = int(df_final["prev_ceo_id"].isna().sum())
 
         stats["predecessor_coverage"] = {
-            "pct_with_prev_ceo": round(with_predecessor / total_calls * 100, 2) if total_calls > 0 else 0.0,
-            "pct_without_prev_ceo": round(without_predecessor / total_calls * 100, 2) if total_calls > 0 else 0.0,
+            "pct_with_prev_ceo": round(with_predecessor / total_calls * 100, 2)
+            if total_calls > 0
+            else 0.0,
+            "pct_without_prev_ceo": round(without_predecessor / total_calls * 100, 2)
+            if total_calls > 0
+            else 0.0,
         }
     else:
         stats["predecessor_coverage"] = {"error": "prev_ceo_id column not found"}
@@ -2037,7 +2329,9 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-def collect_ceo_distribution_samples(df_final: pd.DataFrame, n_samples: int = 5) -> Dict[str, Any]:
+def collect_ceo_distribution_samples(
+    df_final: pd.DataFrame, n_samples: int = 5
+) -> Dict[str, Any]:
     """
     Collect CEO distribution examples from final manifest.
 
@@ -2068,10 +2362,16 @@ def collect_ceo_distribution_samples(df_final: pd.DataFrame, n_samples: int = 5)
         return samples
 
     # Calculate call counts per CEO
-    ceo_stats = df_final.groupby("ceo_id").agg({
-        "file_name": "count",  # Call count
-        "gvkey": "nunique",    # Unique firms
-    }).rename(columns={"file_name": "call_count", "gvkey": "firm_count"})
+    ceo_stats = (
+        df_final.groupby("ceo_id")
+        .agg(
+            {
+                "file_name": "count",  # Call count
+                "gvkey": "nunique",  # Unique firms
+            }
+        )
+        .rename(columns={"file_name": "call_count", "gvkey": "firm_count"})
+    )
 
     # Get CEO names
     if "ceo_name" in df_final.columns:
@@ -2086,48 +2386,64 @@ def collect_ceo_distribution_samples(df_final: pd.DataFrame, n_samples: int = 5)
     top_ceos_df = ceo_stats.nlargest(n_samples, "call_count")
     for ceo_id, row in top_ceos_df.iterrows():
         ceo_name = str(ceo_names.get(ceo_id, "")) if ceo_id in ceo_names.index else ""
-        percentage = round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
+        percentage = (
+            round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
+        )
 
-        samples["top_ceos"].append({
-            "ceo_id": str(ceo_id),
-            "ceo_name": ceo_name,
-            "call_count": int(row["call_count"]),
-            "unique_firms": int(row["firm_count"]),
-            "percentage": percentage,
-        })
+        samples["top_ceos"].append(
+            {
+                "ceo_id": str(ceo_id),
+                "ceo_name": ceo_name,
+                "call_count": int(row["call_count"]),
+                "unique_firms": int(row["firm_count"]),
+                "percentage": percentage,
+            }
+        )
 
     # Bottom CEOs by call count (minimum 1 call, smallest counts first)
-    bottom_ceos_df = ceo_stats[ceo_stats["call_count"] > 0].nsmallest(n_samples, "call_count")
+    bottom_ceos_df = ceo_stats[ceo_stats["call_count"] > 0].nsmallest(
+        n_samples, "call_count"
+    )
     for ceo_id, row in bottom_ceos_df.iterrows():
         ceo_name = str(ceo_names.get(ceo_id, "")) if ceo_id in ceo_names.index else ""
-        percentage = round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
+        percentage = (
+            round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
+        )
 
-        samples["bottom_ceos"].append({
-            "ceo_id": str(ceo_id),
-            "ceo_name": ceo_name,
-            "call_count": int(row["call_count"]),
-            "unique_firms": int(row["firm_count"]),
-            "percentage": percentage,
-        })
+        samples["bottom_ceos"].append(
+            {
+                "ceo_id": str(ceo_id),
+                "ceo_name": ceo_name,
+                "call_count": int(row["call_count"]),
+                "unique_firms": int(row["firm_count"]),
+                "percentage": percentage,
+            }
+        )
 
     # Single call CEOs
     single_call_count = int((ceo_stats["call_count"] == 1).sum())
     samples["single_call_ceos"] = {
         "count": single_call_count,
-        "percentage": round(single_call_count / total_ceos * 100, 2) if total_ceos > 0 else 0.0,
+        "percentage": round(single_call_count / total_ceos * 100, 2)
+        if total_ceos > 0
+        else 0.0,
     }
 
     # Multi-firm CEOs
-    multi_firm_df = ceo_stats[ceo_stats["firm_count"] > 1].nlargest(n_samples, "firm_count")
+    multi_firm_df = ceo_stats[ceo_stats["firm_count"] > 1].nlargest(
+        n_samples, "firm_count"
+    )
     for ceo_id, row in multi_firm_df.iterrows():
         ceo_name = str(ceo_names.get(ceo_id, "")) if ceo_id in ceo_names.index else ""
 
-        samples["multi_firm_ceos"].append({
-            "ceo_id": str(ceo_id),
-            "ceo_name": ceo_name,
-            "call_count": int(row["call_count"]),
-            "firm_count": int(row["firm_count"]),
-        })
+        samples["multi_firm_ceos"].append(
+            {
+                "ceo_id": str(ceo_id),
+                "ceo_name": ceo_name,
+                "call_count": int(row["call_count"]),
+                "firm_count": int(row["firm_count"]),
+            }
+        )
 
     return samples
 
@@ -2173,7 +2489,9 @@ def compute_tokenize_input_stats(
 
     # Check for additional manifest columns
     if "gvkey" in manifest_df.columns:
-        stats["manifest_stats"]["unique_companies"] = int(manifest_df["gvkey"].nunique())
+        stats["manifest_stats"]["unique_companies"] = int(
+            manifest_df["gvkey"].nunique()
+        )
 
     if "start_date" in manifest_df.columns:
         manifest_df_temp = manifest_df.copy()
@@ -2199,7 +2517,9 @@ def compute_tokenize_input_stats(
 
     # Word length characteristics
     word_lengths = [len(w) for w in vocab_list]
-    stats["dictionary_stats"]["avg_word_length"] = round(float(np.mean(word_lengths)), 2)
+    stats["dictionary_stats"]["avg_word_length"] = round(
+        float(np.mean(word_lengths)), 2
+    )
 
     # Word length distribution buckets
     length_buckets = {
@@ -2254,7 +2574,7 @@ def compute_tokenize_input_stats(
     # Category pair overlaps
     category_names = sorted(cat_sets.keys())
     for i, cat1 in enumerate(category_names):
-        for cat2 in category_names[i + 1:]:
+        for cat2 in category_names[i + 1 :]:
             overlap = cat_sets[cat1] & cat_sets[cat2]
             if len(overlap) > 0:
                 overlap_stats["category_overlaps"][f"{cat1}_{cat2}"] = int(len(overlap))
@@ -2314,7 +2634,9 @@ def compute_tokenize_process_stats(
     }
 
     # Coverage metrics
-    vocab_hit_rate = round(total_vocab_hits / total_tokens * 100, 2) if total_tokens > 0 else 0.0
+    vocab_hit_rate = (
+        round(total_vocab_hits / total_tokens * 100, 2) if total_tokens > 0 else 0.0
+    )
     oov_rate = round(100.0 - vocab_hit_rate, 2) if total_tokens > 0 else 0.0
 
     stats["coverage_metrics"] = {
@@ -2334,16 +2656,32 @@ def compute_tokenize_process_stats(
         }
 
     # Efficiency metrics
-    docs_per_second = round(total_output_rows / duration_seconds, 2) if duration_seconds > 0 else 0.0
-    tokens_per_second = round(total_tokens / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    docs_per_second = (
+        round(total_output_rows / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    )
+    tokens_per_second = (
+        round(total_tokens / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    )
 
-    tokens_per_doc_values = [s.get("avg_tokens_per_doc", 0) for s in per_year_stats if s.get("output_rows", 0) > 0]
+    tokens_per_doc_values = [
+        s.get("avg_tokens_per_doc", 0)
+        for s in per_year_stats
+        if s.get("output_rows", 0) > 0
+    ]
 
     tokens_per_doc_stats = {
-        "mean": round(float(np.mean(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
-        "median": round(float(np.median(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
-        "min": round(float(np.min(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
-        "max": round(float(np.max(tokens_per_doc_values)), 2) if tokens_per_doc_values else 0.0,
+        "mean": round(float(np.mean(tokens_per_doc_values)), 2)
+        if tokens_per_doc_values
+        else 0.0,
+        "median": round(float(np.median(tokens_per_doc_values)), 2)
+        if tokens_per_doc_values
+        else 0.0,
+        "min": round(float(np.min(tokens_per_doc_values)), 2)
+        if tokens_per_doc_values
+        else 0.0,
+        "max": round(float(np.max(tokens_per_doc_values)), 2)
+        if tokens_per_doc_values
+        else 0.0,
     }
 
     stats["efficiency_metrics"] = {
@@ -2403,7 +2741,6 @@ def compute_tokenize_output_stats(
         - sparsity_analysis: {zero_counts_per_category: {category: {count, pct}},
                              documents_with_no_matches: count}
     """
-    import numpy as np
 
     # Concatenate all output DataFrames for analysis
     if len(output_dfs) == 0:
@@ -2443,7 +2780,11 @@ def compute_tokenize_output_stats(
         # Zero counts
         zeros_count = int((cat_series == 0).sum())
         cat_stats["zeros_count"] = zeros_count
-        cat_stats["zeros_pct"] = round(zeros_count / len(cat_series) * 100, 2) if len(cat_series) > 0 else 0.0
+        cat_stats["zeros_pct"] = (
+            round(zeros_count / len(cat_series) * 100, 2)
+            if len(cat_series) > 0
+            else 0.0
+        )
 
         # Percentiles
         cat_stats["percentiles"] = {
@@ -2521,7 +2862,9 @@ def compute_tokenize_output_stats(
             continue
 
         zeros_count = int((df_all[col_name] == 0).sum())
-        zeros_pct = round(zeros_count / len(df_all) * 100, 2) if len(df_all) > 0 else 0.0
+        zeros_pct = (
+            round(zeros_count / len(df_all) * 100, 2) if len(df_all) > 0 else 0.0
+        )
 
         stats["sparsity_analysis"]["zero_counts_per_category"][cat_name] = {
             "count": zeros_count,
@@ -2529,7 +2872,9 @@ def compute_tokenize_output_stats(
         }
 
     # Documents with no linguistic matches (all categories zero)
-    cat_cols = [f"{cat}_count" for cat in cat_sets.keys() if f"{cat}_count" in df_all.columns]
+    cat_cols = [
+        f"{cat}_count" for cat in cat_sets.keys() if f"{cat}_count" in df_all.columns
+    ]
     if cat_cols:
         # Check if all category columns are zero
         zero_mask = (df_all[cat_cols] == 0).all(axis=1)
@@ -2566,7 +2911,6 @@ def compute_constructvariables_input_stats(
         - linguistic_categories: {count, category_names, sample_categories}
         - total_tokens_available: Sum of total_tokens across all input files
     """
-    import numpy as np
 
     stats = {}
 
@@ -2670,7 +3014,6 @@ def compute_constructvariables_process_stats(
         - efficiency_metrics: {calls_processed, calls_per_second,
                               variables_per_second}
     """
-    import numpy as np
 
     stats = {}
 
@@ -2678,7 +3021,11 @@ def compute_constructvariables_process_stats(
     total_flagged = sum(total_speaker_flags.values())
     # Estimate total speakers from input rows (approximate)
     total_input_rows = sum(s.get("rows", 0) for s in per_year_stats)
-    flagging_rate = round(total_flagged / total_input_rows * 100, 2) if total_input_rows > 0 else 0.0
+    flagging_rate = (
+        round(total_flagged / total_input_rows * 100, 2)
+        if total_input_rows > 0
+        else 0.0
+    )
 
     stats["speaker_flagging_metrics"] = {
         "total_speakers_flagged": total_flagged,
@@ -2723,7 +3070,9 @@ def compute_constructvariables_process_stats(
     for sample in samples:
         for context in contexts:
             combo_key = f"{sample}_{context}"
-            stats["variable_creation_breakdown"]["variables_per_combo"][combo_key] = categories_per_combo
+            stats["variable_creation_breakdown"]["variables_per_combo"][combo_key] = (
+                categories_per_combo
+            )
 
     # NaN vs zero analysis (not available without output data)
     stats["nan_vs_zero_analysis"] = {
@@ -2732,8 +3081,12 @@ def compute_constructvariables_process_stats(
 
     # Efficiency metrics
     calls_processed = sum(s.get("rows", 0) for s in per_year_stats)
-    calls_per_second = round(calls_processed / duration_seconds, 2) if duration_seconds > 0 else 0.0
-    variables_per_second = round(variables_created / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    calls_per_second = (
+        round(calls_processed / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    )
+    variables_per_second = (
+        round(variables_created / duration_seconds, 2) if duration_seconds > 0 else 0.0
+    )
 
     stats["efficiency_metrics"] = {
         "calls_processed": calls_processed,
@@ -2828,7 +3181,9 @@ def compute_constructvariables_output_stats(
 
         var_stats["zeros"] = {
             "count": zeros_count,
-            "pct": round(zeros_count / total_count * 100, 2) if total_count > 0 else 0.0,
+            "pct": round(zeros_count / total_count * 100, 2)
+            if total_count > 0
+            else 0.0,
         }
         var_stats["nans"] = {
             "count": nans_count,
@@ -2907,9 +3262,13 @@ def compute_constructvariables_output_stats(
     stats["nan_vs_zero_analysis"] = {
         "total_values": total_values,
         "nan_count": int(total_nans),
-        "nan_pct": round(total_nans / total_values * 100, 2) if total_values > 0 else 0.0,
+        "nan_pct": round(total_nans / total_values * 100, 2)
+        if total_values > 0
+        else 0.0,
         "zero_count": int(total_zeros),
-        "zero_pct": round(total_zeros / total_values * 100, 2) if total_values > 0 else 0.0,
+        "zero_pct": round(total_zeros / total_values * 100, 2)
+        if total_values > 0
+        else 0.0,
         "explanation": "NaN = no text in section (missing data), 0 = text but no linguistic matches",
     }
 
@@ -2947,7 +3306,6 @@ def compute_financial_input_stats(
         - cccl_stats: {total_records, unique_gvkey, years_covered,
                        intensity_variants_available} (if provided)
     """
-    import numpy as np
 
     stats = {}
 
@@ -2973,7 +3331,9 @@ def compute_financial_input_stats(
     if "start_date" in manifest_df.columns:
         manifest_df_temp = manifest_df.copy()
         manifest_df_temp["start_date"] = pd.to_datetime(manifest_df_temp["start_date"])
-        calls_per_year = manifest_df_temp["start_date"].dt.year.value_counts().sort_index()
+        calls_per_year = (
+            manifest_df_temp["start_date"].dt.year.value_counts().sort_index()
+        )
         stats["manifest_stats"]["calls_per_year"] = {
             str(int(y)): int(c) for y, c in calls_per_year.items()
         }
@@ -2997,10 +3357,13 @@ def compute_financial_input_stats(
             }
             # Count unique quarters
             compustat_df_temp["year_quarter"] = (
-                compustat_df_temp["datadate"].dt.year.astype(str) + "Q" +
-                compustat_df_temp["datadate"].dt.quarter.astype(str)
+                compustat_df_temp["datadate"].dt.year.astype(str)
+                + "Q"
+                + compustat_df_temp["datadate"].dt.quarter.astype(str)
             )
-            stats["compustat_stats"]["quarters_covered"] = int(compustat_df_temp["year_quarter"].nunique())
+            stats["compustat_stats"]["quarters_covered"] = int(
+                compustat_df_temp["year_quarter"].nunique()
+            )
 
     stats["compustat_stats"]["memory_mb"] = round(
         compustat_df.memory_usage(deep=True).sum() / (1024 * 1024), 2
@@ -3143,7 +3506,9 @@ def compute_financial_process_stats(
         "calls_processed": int(total_calls),
         "variables_computed": len(variables_computed),
         "duration_seconds": round(duration_seconds, 2),
-        "calls_per_second": round(total_calls / duration_seconds, 2) if duration_seconds > 0 else 0.0,
+        "calls_per_second": round(total_calls / duration_seconds, 2)
+        if duration_seconds > 0
+        else 0.0,
     }
 
     return stats
@@ -3175,7 +3540,6 @@ def compute_financial_output_stats(
         - correlation_structure: Not available without full correlation matrix
         - cross_sectional_stats: {variable_name: {std_by_year, year_range}}
     """
-    import numpy as np
 
     stats = {}
 
@@ -3212,11 +3576,15 @@ def compute_financial_output_stats(
         # Missing and zero analysis
         var_stats["nans"] = {
             "count": int(var_series.isna().sum()),
-            "pct": round(var_series.isna().sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+            "pct": round(var_series.isna().sum() / len(var_series) * 100, 2)
+            if len(var_series) > 0
+            else 0.0,
         }
         var_stats["zeros"] = {
             "count": int((var_series == 0).sum()),
-            "pct": round((var_series == 0).sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+            "pct": round((var_series == 0).sum() / len(var_series) * 100, 2)
+            if len(var_series) > 0
+            else 0.0,
         }
 
         stats["variable_distributions"][var_name] = var_stats
@@ -3224,7 +3592,10 @@ def compute_financial_output_stats(
     # Winsorization effects (estimated from p01/p99)
     stats["winsorization_effects"] = {}
     for var_name in sorted(variable_names):
-        if var_name not in df_output.columns or var_name not in stats["variable_distributions"]:
+        if (
+            var_name not in df_output.columns
+            or var_name not in stats["variable_distributions"]
+        ):
             continue
 
         var_series = df_output[var_name].dropna()
@@ -3274,7 +3645,6 @@ def compute_market_input_stats(
                        unique_permnos, memory_estimate_mb}
         - ccm_stats: {total_links, unique_gvkey, unique_lpermno, date_coverage}
     """
-    import numpy as np
 
     stats = {}
 
@@ -3301,11 +3671,15 @@ def compute_market_input_stats(
         permno_before = int(manifest_df["permno"].notna().sum())
         stats["manifest_stats"]["permno_coverage_before_ccm"] = {
             "count": permno_before,
-            "pct": round(permno_before / len(manifest_df) * 100, 2) if len(manifest_df) > 0 else 0.0,
+            "pct": round(permno_before / len(manifest_df) * 100, 2)
+            if len(manifest_df) > 0
+            else 0.0,
         }
 
     # CRSP statistics
-    crsp_files = list(crsp_file.glob("CRSP_DSF_*.parquet")) if crsp_file.exists() else []
+    crsp_files = (
+        list(crsp_file.glob("CRSP_DSF_*.parquet")) if crsp_file.exists() else []
+    )
 
     stats["crsp_stats"] = {
         "files_available": len(crsp_files),
@@ -3360,8 +3734,12 @@ def compute_market_input_stats(
             linkdt = ccm_df["LINKDT"].dropna()
             if len(linkdt) > 0:
                 stats["ccm_stats"]["link_date_range"] = {
-                    "earliest": linkdt.min().isoformat() if hasattr(linkdt.min(), 'isoformat') else str(linkdt.min()),
-                    "latest": linkdt.max().isoformat() if hasattr(linkdt.max(), 'isoformat') else str(linkdt.max()),
+                    "earliest": linkdt.min().isoformat()
+                    if hasattr(linkdt.min(), "isoformat")
+                    else str(linkdt.min()),
+                    "latest": linkdt.max().isoformat()
+                    if hasattr(linkdt.max(), "isoformat")
+                    else str(linkdt.max()),
                 }
 
     return stats
@@ -3396,7 +3774,6 @@ def compute_market_process_stats(
         - yearly_coverage: {year: {stock_ret_pct, amihud_pct, vol_pct}}
         - efficiency_metrics: {calls_processed, duration_seconds, years_processed}
     """
-    import numpy as np
 
     stats = {}
 
@@ -3408,11 +3785,15 @@ def compute_market_process_stats(
     stats["coverage_metrics"] = {
         "stock_ret_coverage": {
             "count": int(total_stock_ret),
-            "pct": round(total_stock_ret / total_calls * 100, 2) if total_calls > 0 else 0.0,
+            "pct": round(total_stock_ret / total_calls * 100, 2)
+            if total_calls > 0
+            else 0.0,
         },
         "amihud_coverage": {
             "count": int(total_amihud),
-            "pct": round(total_amihud / total_calls * 100, 2) if total_calls > 0 else 0.0,
+            "pct": round(total_amihud / total_calls * 100, 2)
+            if total_calls > 0
+            else 0.0,
         },
     }
 
@@ -3435,7 +3816,9 @@ def compute_market_process_stats(
             amihud = year_stat.get("amihud_computed", 0)
 
             stats["yearly_coverage"][str(year)] = {
-                "stock_ret_pct": round(stock_ret / calls * 100, 2) if calls > 0 else 0.0,
+                "stock_ret_pct": round(stock_ret / calls * 100, 2)
+                if calls > 0
+                else 0.0,
                 "amihud_pct": round(amihud / calls * 100, 2) if calls > 0 else 0.0,
             }
 
@@ -3444,7 +3827,9 @@ def compute_market_process_stats(
         "calls_processed": int(total_calls),
         "duration_seconds": round(duration_seconds, 2),
         "years_processed": len(per_year_stats),
-        "calls_per_second": round(total_calls / duration_seconds, 2) if duration_seconds > 0 else 0.0,
+        "calls_per_second": round(total_calls / duration_seconds, 2)
+        if duration_seconds > 0
+        else 0.0,
     }
 
     return stats
@@ -3477,7 +3862,6 @@ def compute_market_output_stats(
                            excess_return_stats: {...}}
         - volatility_stats: {mean, median, std, percentiles}
     """
-    import numpy as np
 
     stats = {}
 
@@ -3514,11 +3898,15 @@ def compute_market_output_stats(
         # Missing and zero analysis
         var_stats["nans"] = {
             "count": int(var_series.isna().sum()),
-            "pct": round(var_series.isna().sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+            "pct": round(var_series.isna().sum() / len(var_series) * 100, 2)
+            if len(var_series) > 0
+            else 0.0,
         }
         var_stats["zeros"] = {
             "count": int((var_series == 0).sum()),
-            "pct": round((var_series == 0).sum() / len(var_series) * 100, 2) if len(var_series) > 0 else 0.0,
+            "pct": round((var_series == 0).sum() / len(var_series) * 100, 2)
+            if len(var_series) > 0
+            else 0.0,
         }
 
         stats["variable_distributions"][var_name] = var_stats
@@ -3556,7 +3944,9 @@ def compute_market_output_stats(
                 "std": round(float(delta_amihud.std()), 6),
                 "min": round(float(delta_amihud.min()), 6),
                 "max": round(float(delta_amihud.max()), 6),
-                "positive_pct": round((delta_amihud > 0).sum() / len(delta_amihud) * 100, 2),
+                "positive_pct": round(
+                    (delta_amihud > 0).sum() / len(delta_amihud) * 100, 2
+                ),
             }
 
     # Return analysis
@@ -3641,7 +4031,6 @@ def compute_event_flags_input_stats(
                       deal_attitude_distribution, deal_status_distribution}
         - matching_potential: {manifest_with_cusip_in_sdc: count, pct}
     """
-    import numpy as np
 
     stats = {}
 
@@ -3678,12 +4067,18 @@ def compute_event_flags_input_stats(
 
     # Unique target CUSIPs
     if "Target 6-digit CUSIP" in sdc_df.columns or "target_cusip6" in sdc_df.columns:
-        cusip_col = "target_cusip6" if "target_cusip6" in sdc_df.columns else "Target 6-digit CUSIP"
+        cusip_col = (
+            "target_cusip6"
+            if "target_cusip6" in sdc_df.columns
+            else "Target 6-digit CUSIP"
+        )
         stats["sdc_stats"]["unique_target_cusips"] = int(sdc_df[cusip_col].nunique())
 
     # Date range
     if "Date Announced" in sdc_df.columns or "date_announced" in sdc_df.columns:
-        date_col = "date_announced" if "date_announced" in sdc_df.columns else "Date Announced"
+        date_col = (
+            "date_announced" if "date_announced" in sdc_df.columns else "Date Announced"
+        )
         sdc_temp = sdc_df.copy()
         sdc_temp[date_col] = pd.to_datetime(sdc_temp[date_col])
         date_series = sdc_temp[date_col].dropna()
@@ -3695,7 +4090,9 @@ def compute_event_flags_input_stats(
 
     # Deal attitude distribution
     if "Deal Attitude" in sdc_df.columns or "deal_attitude" in sdc_df.columns:
-        attitude_col = "deal_attitude" if "deal_attitude" in sdc_df.columns else "Deal Attitude"
+        attitude_col = (
+            "deal_attitude" if "deal_attitude" in sdc_df.columns else "Deal Attitude"
+        )
         attitude_counts = sdc_df[attitude_col].value_counts()
         stats["sdc_stats"]["deal_attitude_distribution"] = {
             str(att): int(count) for att, count in attitude_counts.items()
@@ -3747,12 +4144,13 @@ def compute_event_flags_process_stats(
                              duration_buckets: {bucket: {count, pct}}}
         - efficiency_metrics: {calls_processed, events_detected, duration_seconds}
     """
-    import numpy as np
 
     stats = {}
 
     # Takeover detection
-    event_rate = round(takeover_count / total_calls * 100, 2) if total_calls > 0 else 0.0
+    event_rate = (
+        round(takeover_count / total_calls * 100, 2) if total_calls > 0 else 0.0
+    )
 
     stats["takeover_detection"] = {
         "total_events": int(takeover_count),
@@ -3768,11 +4166,15 @@ def compute_event_flags_process_stats(
     stats["deal_type_distribution"] = {
         "friendly": {
             "count": int(friendly_count),
-            "pct": round(friendly_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+            "pct": round(friendly_count / total_typed * 100, 2)
+            if total_typed > 0
+            else 0.0,
         },
         "uninvited": {
             "count": int(uninvited_count),
-            "pct": round(uninvited_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+            "pct": round(uninvited_count / total_typed * 100, 2)
+            if total_typed > 0
+            else 0.0,
         },
     }
 
@@ -3800,7 +4202,9 @@ def compute_event_flags_process_stats(
         "calls_processed": int(total_calls),
         "events_detected": int(takeover_count),
         "duration_seconds": round(duration_seconds, 2),
-        "calls_per_second": round(total_calls / duration_seconds, 2) if duration_seconds > 0 else 0.0,
+        "calls_per_second": round(total_calls / duration_seconds, 2)
+        if duration_seconds > 0
+        else 0.0,
     }
 
     return stats
@@ -3830,7 +4234,6 @@ def compute_event_flags_output_stats(
                           for_takeovers_only: {mean, median, std, min, max}}
         - yearly_analysis: {year: {takeover_count, takeover_pct, avg_duration}}
     """
-    import numpy as np
 
     stats = {}
 
@@ -3840,7 +4243,9 @@ def compute_event_flags_output_stats(
     if "Takeover" in df_output.columns:
         takeover_count = int(df_output["Takeover"].sum())
         no_takeover_count = int((df_output["Takeover"] == 0).sum())
-        takeover_rate = round(takeover_count / total_calls * 100, 2) if total_calls > 0 else 0.0
+        takeover_rate = (
+            round(takeover_count / total_calls * 100, 2) if total_calls > 0 else 0.0
+        )
 
         stats["takeover_flag_stats"] = {
             "total_events": takeover_count,
@@ -3860,22 +4265,32 @@ def compute_event_flags_output_stats(
         stats["deal_type_stats"] = {
             "friendly": {
                 "count": friendly_count,
-                "pct": round(friendly_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+                "pct": round(friendly_count / total_typed * 100, 2)
+                if total_typed > 0
+                else 0.0,
             },
             "uninvited": {
                 "count": uninvited_count,
-                "pct": round(uninvited_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+                "pct": round(uninvited_count / total_typed * 100, 2)
+                if total_typed > 0
+                else 0.0,
             },
             "not_applicable": {
                 "count": na_count,
-                "pct": round(na_count / total_typed * 100, 2) if total_typed > 0 else 0.0,
+                "pct": round(na_count / total_typed * 100, 2)
+                if total_typed > 0
+                else 0.0,
             },
         }
 
     # Duration statistics
     if "Duration" in df_output.columns:
         duration_all = df_output["Duration"]
-        duration_takeovers = df_output[df_output["Takeover"] == 1]["Duration"] if "Takeover" in df_output.columns else pd.Series()
+        duration_takeovers = (
+            df_output[df_output["Takeover"] == 1]["Duration"]
+            if "Takeover" in df_output.columns
+            else pd.Series()
+        )
 
         stats["duration_stats"] = {
             "overall": {
@@ -3905,11 +4320,15 @@ def compute_event_flags_output_stats(
             year_total = len(year_df)
 
             year_duration = year_df[year_df["Takeover"] == 1]["Duration"]
-            avg_duration = round(float(year_duration.mean()), 2) if len(year_duration) > 0 else 0.0
+            avg_duration = (
+                round(float(year_duration.mean()), 2) if len(year_duration) > 0 else 0.0
+            )
 
             stats["yearly_analysis"][str(year)] = {
                 "takeover_count": year_takeover,
-                "takeover_pct": round(year_takeover / year_total * 100, 2) if year_total > 0 else 0.0,
+                "takeover_pct": round(year_takeover / year_total * 100, 2)
+                if year_total > 0
+                else 0.0,
                 "avg_duration": avg_duration,
             }
 
@@ -3920,6 +4339,7 @@ def compute_event_flags_output_stats(
 # Step 3 Financial Features Statistics - Wrapper Functions
 # These functions provide consistent naming for Step 3 sub-steps
 # ============================================================================
+
 
 def compute_step31_input_stats(
     manifest_df: pd.DataFrame,
@@ -3962,7 +4382,9 @@ def compute_step31_input_stats(
         if "gvkey" in ccm_df.columns:
             stats["ccm_stats"]["unique_gvkey_linked"] = int(ccm_df["gvkey"].nunique())
         if "LPERMNO" in ccm_df.columns:
-            stats["ccm_stats"]["unique_permno_linked"] = int(ccm_df["LPERMNO"].nunique())
+            stats["ccm_stats"]["unique_permno_linked"] = int(
+                ccm_df["LPERMNO"].nunique()
+            )
 
     return stats
 
@@ -4000,11 +4422,22 @@ def compute_step31_process_stats(
     if variable_coverage_df is not None and len(variable_coverage_df) > 0:
         # Build variables list and coverage from DataFrame
         for col in variable_coverage_df.columns:
-            if col in ["Size", "BM", "Lev", "ROA", "EPS_Growth", "SurpDec", "CurrentRatio", "RD_Intensity"]:
+            if col in [
+                "Size",
+                "BM",
+                "Lev",
+                "ROA",
+                "EPS_Growth",
+                "SurpDec",
+                "CurrentRatio",
+                "RD_Intensity",
+            ]:
                 non_null = variable_coverage_df[col].notna().sum()
                 total = len(variable_coverage_df)
                 variables_computed.append(col)
-                coverage_rates[col] = round(non_null / total * 100, 2) if total > 0 else 0.0
+                coverage_rates[col] = (
+                    round(non_null / total * 100, 2) if total > 0 else 0.0
+                )
 
     # Use default duration if not available
     duration_seconds = 0.0
@@ -4056,8 +4489,14 @@ def compute_step31_output_stats(
     # Auto-detect variables if not provided
     if variables_list is None:
         variables_list = [
-            "Size", "BM", "Lev", "ROA", "EPS_Growth",
-            "SurpDec", "CurrentRatio", "RD_Intensity"
+            "Size",
+            "BM",
+            "Lev",
+            "ROA",
+            "EPS_Growth",
+            "SurpDec",
+            "CurrentRatio",
+            "RD_Intensity",
         ]
 
     # Add shift intensity variants if present
@@ -4102,12 +4541,16 @@ def compute_step32_input_stats(
     }
 
     if "gvkey" in manifest_with_permno_df.columns:
-        stats["manifest_stats"]["unique_gvkey"] = int(manifest_with_permno_df["gvkey"].nunique())
+        stats["manifest_stats"]["unique_gvkey"] = int(
+            manifest_with_permno_df["gvkey"].nunique()
+        )
 
     # PERMNO coverage analysis
     if "permno" in manifest_with_permno_df.columns:
         direct_permno = manifest_with_permno_df["permno"].notna().sum()
-        stats["manifest_stats"]["unique_permno"] = int(manifest_with_permno_df["permno"].nunique())
+        stats["manifest_stats"]["unique_permno"] = int(
+            manifest_with_permno_df["permno"].nunique()
+        )
         stats["manifest_stats"]["permno_coverage_pct"] = round(
             direct_permno / len(manifest_with_permno_df) * 100, 2
         )
@@ -4158,7 +4601,9 @@ def compute_step32_input_stats(
             "linkages_available": int(len(ccm_df)),
         }
         if "gvkey" in ccm_df.columns:
-            stats["ccm_linkage_stats"]["unique_gvkey_linked"] = int(ccm_df["gvkey"].nunique())
+            stats["ccm_linkage_stats"]["unique_gvkey_linked"] = int(
+                ccm_df["gvkey"].nunique()
+            )
 
     return stats
 
@@ -4218,7 +4663,9 @@ def compute_step32_process_stats(
     stats["return_metrics"] = {
         "stock_ret_coverage": {
             "count": int(stock_ret_covered),
-            "pct": round(stock_ret_covered / total_records * 100, 2) if total_records > 0 else 0.0,
+            "pct": round(stock_ret_covered / total_records * 100, 2)
+            if total_records > 0
+            else 0.0,
         },
     }
 
@@ -4226,7 +4673,9 @@ def compute_step32_process_stats(
     stats["liquidity_metrics"] = {
         "amihud_coverage": {
             "count": int(amihud_covered),
-            "pct": round(amihud_covered / total_records * 100, 2) if total_records > 0 else 0.0,
+            "pct": round(amihud_covered / total_records * 100, 2)
+            if total_records > 0
+            else 0.0,
         },
     }
 
@@ -4239,22 +4688,34 @@ def compute_step32_process_stats(
         stats["return_metrics"]["window_validity"] = {
             "valid_windows": int(valid_windows),
             "total_windows": len(return_windows),
-            "validity_pct": round(valid_windows / len(return_windows) * 100, 2) if return_windows else 0.0,
+            "validity_pct": round(valid_windows / len(return_windows) * 100, 2)
+            if return_windows
+            else 0.0,
         }
 
         # Average window length
-        window_lengths = [w.get("window_length_days", 0) for w in return_windows if w.get("window_length_days", 0) > 0]
+        window_lengths = [
+            w.get("window_length_days", 0)
+            for w in return_windows
+            if w.get("window_length_days", 0) > 0
+        ]
         if window_lengths:
-            stats["return_metrics"]["avg_window_length_days"] = round(float(np.mean(window_lengths)), 2)
+            stats["return_metrics"]["avg_window_length_days"] = round(
+                float(np.mean(window_lengths)), 2
+            )
 
     # Analyze liquidity windows if provided
     if liquidity_windows:
-        amihud_valid = sum(1 for w in liquidity_windows if w.get("amihud_valid", False))
-        cs_valid = sum(1 for w in liquidity_windows if w.get("corwin_schultz_valid", False))
+        sum(1 for w in liquidity_windows if w.get("amihud_valid", False))
+        cs_valid = sum(
+            1 for w in liquidity_windows if w.get("corwin_schultz_valid", False)
+        )
 
         stats["liquidity_metrics"]["corwin_schultz_coverage"] = {
             "count": int(cs_valid),
-            "pct": round(cs_valid / len(liquidity_windows) * 100, 2) if liquidity_windows else 0.0,
+            "pct": round(cs_valid / len(liquidity_windows) * 100, 2)
+            if liquidity_windows
+            else 0.0,
         }
 
     return stats
@@ -4289,8 +4750,13 @@ def compute_step32_output_stats(
     # Auto-detect variables if not provided
     if variables_list is None:
         variables_list = [
-            "StockRet", "MarketRet", "Amihud", "Corwin_Schultz",
-            "Delta_Amihud", "Delta_Corwin_Schultz", "Volatility"
+            "StockRet",
+            "MarketRet",
+            "Amihud",
+            "Corwin_Schultz",
+            "Delta_Amihud",
+            "Delta_Corwin_Schultz",
+            "Volatility",
         ]
 
     stats = compute_market_output_stats(output_df, variables_list)
@@ -4350,7 +4816,9 @@ def compute_step33_process_stats(
         - deal_type_classification: {takeover_type_distribution, classification_accuracy}
         - duration_analysis: {duration_distribution, censored_observations, censoring_rate}
     """
-    return compute_event_flags_process_stats(match_results, takeover_flags_df, window_days)
+    return compute_event_flags_process_stats(
+        match_results, takeover_flags_df, window_days
+    )
 
 
 def compute_step33_output_stats(
@@ -4415,13 +4883,18 @@ def generate_financial_report_markdown(
         lines.append(f"- **Unique GVKEY:** {ms.get('unique_gvkey', 0):,}")
 
         if "date_range" in ms:
-            lines.append(f"- **Date Range:** {ms['date_range'].get('earliest', 'N/A')} to {ms['date_range'].get('latest', 'N/A')}")
+            lines.append(
+                f"- **Date Range:** {ms['date_range'].get('earliest', 'N/A')} to {ms['date_range'].get('latest', 'N/A')}"
+            )
 
         if "calls_per_year" in ms:
             lines.append("")
             lines.append("| Year | Calls |")
             lines.append("|------|-------|")
-            for year, count in sorted(ms["calls_per_year"].items(), key=lambda x: int(x[0]) if x[0].isdigit() else 0):
+            for year, count in sorted(
+                ms["calls_per_year"].items(),
+                key=lambda x: int(x[0]) if x[0].isdigit() else 0,
+            ):
                 lines.append(f"| {year} | {count:,} |")
 
     if "compustat_stats" in input_stats:
@@ -4433,7 +4906,9 @@ def generate_financial_report_markdown(
         lines.append(f"- **Memory Footprint:** {cs.get('memory_mb', 0):.2f} MB")
 
         if "date_range" in cs:
-            lines.append(f"- **Date Range:** {cs['date_range'].get('earliest', 'N/A')} to {cs['date_range'].get('latest', 'N/A')}")
+            lines.append(
+                f"- **Date Range:** {cs['date_range'].get('earliest', 'N/A')} to {cs['date_range'].get('latest', 'N/A')}"
+            )
 
     if "ibes_stats" in input_stats:
         lines.append("")
@@ -4451,14 +4926,18 @@ def generate_financial_report_markdown(
 
         if "year_range" in crsp:
             yr = crsp["year_range"]
-            lines.append(f"- **Year Range:** {yr.get('earliest', 'N/A')} to {yr.get('latest', 'N/A')}")
+            lines.append(
+                f"- **Year Range:** {yr.get('earliest', 'N/A')} to {yr.get('latest', 'N/A')}"
+            )
 
     if "sdc_stats" in input_stats:
         lines.append("")
         lines.append("### SDC M&A Data")
         sdc = input_stats["sdc_stats"]
         lines.append(f"- **Total Deals:** {sdc.get('total_deals', 0):,}")
-        lines.append(f"- **Unique Target CUSIPs:** {sdc.get('unique_target_cusips', 0):,}")
+        lines.append(
+            f"- **Unique Target CUSIPs:** {sdc.get('unique_target_cusips', 0):,}"
+        )
 
         if "deal_attitude_distribution" in sdc:
             lines.append("")
@@ -4481,7 +4960,9 @@ def generate_financial_report_markdown(
             matched = merge_stats.get("matched", 0)
             unmatched = merge_stats.get("unmatched", 0)
             rate = merge_stats.get("match_rate_pct", 0)
-            lines.append(f"| {merge_name} | {rate:.1f}% | {matched:,} | {unmatched:,} |")
+            lines.append(
+                f"| {merge_name} | {rate:.1f}% | {matched:,} | {unmatched:,} |"
+            )
 
     if "coverage_metrics" in process_stats:
         lines.append("")
@@ -4500,9 +4981,15 @@ def generate_financial_report_markdown(
             ocs = process_stats["overall_coverage_stats"]
             lines.append("")
             lines.append("**Overall Coverage Statistics:**")
-            lines.append(f"- **Average Coverage:** {ocs.get('avg_coverage_pct', 0):.1f}%")
-            lines.append(f"- **Variables Above 90% Coverage:** {ocs.get('variables_above_90_pct', 0)}")
-            lines.append(f"- **Variables Below 50% Coverage:** {ocs.get('variables_below_50_pct', 0)}")
+            lines.append(
+                f"- **Average Coverage:** {ocs.get('avg_coverage_pct', 0):.1f}%"
+            )
+            lines.append(
+                f"- **Variables Above 90% Coverage:** {ocs.get('variables_above_90_pct', 0)}"
+            )
+            lines.append(
+                f"- **Variables Below 50% Coverage:** {ocs.get('variables_below_50_pct', 0)}"
+            )
 
     if "takeover_detection" in process_stats:
         lines.append("")
@@ -4516,16 +5003,22 @@ def generate_financial_report_markdown(
             lines.append("**Deal Type Distribution:**")
             dtd = process_stats["deal_type_distribution"]
             if "friendly" in dtd:
-                lines.append(f"  - Friendly: {dtd['friendly']['count']:,} ({dtd['friendly']['pct']:.1f}%)")
+                lines.append(
+                    f"  - Friendly: {dtd['friendly']['count']:,} ({dtd['friendly']['pct']:.1f}%)"
+                )
             if "uninvited" in dtd:
-                lines.append(f"  - Uninvited: {dtd['uninvited']['count']:,} ({dtd['uninvited']['pct']:.1f}%)")
+                lines.append(
+                    f"  - Uninvited: {dtd['uninvited']['count']:,} ({dtd['uninvited']['pct']:.1f}%)"
+                )
 
     if "efficiency_metrics" in process_stats:
         lines.append("")
         lines.append("### Processing Efficiency")
         em = process_stats["efficiency_metrics"]
         lines.append(f"- **Duration:** {em.get('duration_seconds', 0):.2f} seconds")
-        lines.append(f"- **Throughput:** {em.get('calls_per_second', 0):.0f} calls/second")
+        lines.append(
+            f"- **Throughput:** {em.get('calls_per_second', 0):.0f} calls/second"
+        )
 
     # OUTPUT section
     lines.append("")
@@ -4538,7 +5031,9 @@ def generate_financial_report_markdown(
         lines.append("| Variable | Mean | Median | Std Dev | Min | Max | Missing % |")
         lines.append("|----------|------|--------|---------|-----|-----|-----------|")
 
-        for var_name, var_stats in sorted(output_stats["variable_distributions"].items()):
+        for var_name, var_stats in sorted(
+            output_stats["variable_distributions"].items()
+        ):
             if "error" in var_stats:
                 continue
 
@@ -4549,7 +5044,9 @@ def generate_financial_report_markdown(
             max_val = var_stats.get("max", "N/A")
             missing = var_stats.get("nans", {}).get("pct", 0)
 
-            lines.append(f"| {var_name} | {mean} | {median} | {std} | {min_val} | {max_val} | {missing}% |")
+            lines.append(
+                f"| {var_name} | {mean} | {median} | {std} | {min_val} | {max_val} | {missing}% |"
+            )
 
     if "liquidity_analysis" in output_stats:
         lines.append("")
@@ -4558,14 +5055,14 @@ def generate_financial_report_markdown(
 
         if "amihud_stats" in la:
             am = la["amihud_stats"]
-            lines.append(f"**Amihud Illiquidity:**")
+            lines.append("**Amihud Illiquidity:**")
             lines.append(f"- Mean: {am.get('mean', 0):.6f}")
             lines.append(f"- Median: {am.get('median', 0):.6f}")
 
         if "corwin_schultz_stats" in la:
             cs = la["corwin_schultz_stats"]
             lines.append("")
-            lines.append(f"**Corwin-Schultz Spread:**")
+            lines.append("**Corwin-Schultz Spread:**")
             lines.append(f"- Mean: {cs.get('mean', 0):.6f}")
             lines.append(f"- Median: {cs.get('median', 0):.6f}")
 
@@ -4576,7 +5073,7 @@ def generate_financial_report_markdown(
 
         if "stock_ret_stats" in ra:
             sr = ra["stock_ret_stats"]
-            lines.append(f"**Stock Returns:**")
+            lines.append("**Stock Returns:**")
             lines.append(f"- Mean: {sr.get('mean', 0):.2f}%")
             lines.append(f"- Std Dev: {sr.get('std', 0):.2f}%")
             lines.append(f"- Positive Returns %: {sr.get('positive_pct', 0):.1f}%")
@@ -4588,7 +5085,7 @@ def generate_financial_report_markdown(
 
         if "for_takeovers_only" in ds:
             dto = ds["for_takeovers_only"]
-            lines.append(f"**Takeover Duration (quarters):**")
+            lines.append("**Takeover Duration (quarters):**")
             lines.append(f"- Mean: {dto.get('mean', 0):.2f}")
             lines.append(f"- Median: {dto.get('median', 0):.2f}")
             lines.append(f"- Range: {dto.get('min', 0):.2f} to {dto.get('max', 0):.2f}")
@@ -4597,7 +5094,6 @@ def generate_financial_report_markdown(
     report_content = "\n".join(lines)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(report_content)
-
 
 
 __all__ = [

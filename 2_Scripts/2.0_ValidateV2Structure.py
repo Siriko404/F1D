@@ -27,29 +27,24 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
 import json
+import sys
 
 # Add parent directory to sys.path for shared module imports
 import sys as _sys
-from pathlib import Path as _Path
+from datetime import datetime
+from pathlib import Path
 
 _script_dir = Path(__file__).parent.parent
 _sys.path.insert(0, str(_script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import DualWriter
+from shared.path_utils import (
+    ensure_output_dir,
+)
 
 # ==============================================================================
 # Configuration
@@ -91,7 +86,7 @@ def setup_paths(timestamp):
     """
     # Start from script location and search upward for project root
     # Project root contains: 1_Inputs, 2_Scripts, 3_Logs, 4_Outputs
-    script_dir = Path(__file__).parent.parent.resolve()
+    Path(__file__).parent.parent.resolve()
     root = None
 
     # Search upward for project root (max 3 levels)
@@ -157,11 +152,7 @@ class ValidationResult:
 
     def add_check(self, check_name: str, passed: bool, details: str = ""):
         """Add a validation check result"""
-        self.checks.append({
-            "name": check_name,
-            "passed": passed,
-            "details": details
-        })
+        self.checks.append({"name": check_name, "passed": passed, "details": details})
         if not passed:
             self.passed = False
             self.failures.append(f"{check_name}: {details}")
@@ -196,48 +187,63 @@ def check_financial_v2_script_folder(paths) -> ValidationResult:
     - README contains "Input/Output Mapping" section
     """
     result = ValidationResult(
-        "STRUCT-01",
-        "Financial_V2 script folder with complete README"
+        "STRUCT-01", "Financial_V2 script folder with complete README"
     )
 
     folder = paths["scripts_financial_v2"]
-    result.add_check("Folder exists: 2_Scripts/3_Financial_V2/", folder.exists(),
-                     f"Folder not found: {folder}")
+    result.add_check(
+        "Folder exists: 2_Scripts/3_Financial_V2/",
+        folder.exists(),
+        f"Folder not found: {folder}",
+    )
 
     if not folder.exists():
         return result
 
     readme = folder / "README.md"
-    result.add_check("README.md exists", readme.exists(),
-                     f"README not found: {readme}")
+    result.add_check("README.md exists", readme.exists(), f"README not found: {readme}")
 
     if readme.exists():
         content = readme.read_text(encoding="utf-8")
 
         # Check for hypothesis sections
-        result.add_check("Contains Hypothesis 1 section",
-                         "Hypothesis 1" in content or "## H1" in content or "H1 Cash Holdings" in content,
-                         "Hypothesis 1 section not found in README")
+        result.add_check(
+            "Contains Hypothesis 1 section",
+            "Hypothesis 1" in content
+            or "## H1" in content
+            or "H1 Cash Holdings" in content,
+            "Hypothesis 1 section not found in README",
+        )
 
-        result.add_check("Contains Hypothesis 2 section",
-                         "Hypothesis 2" in content or "## H2" in content or "H2 Investment" in content,
-                         "Hypothesis 2 section not found in README")
+        result.add_check(
+            "Contains Hypothesis 2 section",
+            "Hypothesis 2" in content
+            or "## H2" in content
+            or "H2 Investment" in content,
+            "Hypothesis 2 section not found in README",
+        )
 
-        result.add_check("Contains Hypothesis 3 section",
-                         "Hypothesis 3" in content or "## H3" in content or "H3 Payout" in content,
-                         "Hypothesis 3 section not found in README")
+        result.add_check(
+            "Contains Hypothesis 3 section",
+            "Hypothesis 3" in content or "## H3" in content or "H3 Payout" in content,
+            "Hypothesis 3 section not found in README",
+        )
 
         # Check for Compustat fields
         compustat_fields = ["CHE", "AT", "DLTT"]
         fields_found = sum(1 for field in compustat_fields if field in content)
-        result.add_check("Documents Compustat fields",
-                         fields_found >= 2,
-                         f"Compustat fields not documented (found {fields_found}/3)")
+        result.add_check(
+            "Documents Compustat fields",
+            fields_found >= 2,
+            f"Compustat fields not documented (found {fields_found}/3)",
+        )
 
         # Check for Input/Output Mapping
-        result.add_check("Contains Input/Output Mapping section",
-                         "Input/Output Mapping" in content or "Input/Output" in content,
-                         "Input/Output Mapping section not found")
+        result.add_check(
+            "Contains Input/Output Mapping section",
+            "Input/Output Mapping" in content or "Input/Output" in content,
+            "Input/Output Mapping section not found",
+        )
 
     return result
 
@@ -256,48 +262,62 @@ def check_econometric_v2_script_folder(paths) -> ValidationResult:
     - README contains regression equations
     """
     result = ValidationResult(
-        "STRUCT-02",
-        "Econometric_V2 script folder with complete README"
+        "STRUCT-02", "Econometric_V2 script folder with complete README"
     )
 
     folder = paths["scripts_econometric_v2"]
-    result.add_check("Folder exists: 2_Scripts/4_Econometric_V2/", folder.exists(),
-                     f"Folder not found: {folder}")
+    result.add_check(
+        "Folder exists: 2_Scripts/4_Econometric_V2/",
+        folder.exists(),
+        f"Folder not found: {folder}",
+    )
 
     if not folder.exists():
         return result
 
     readme = folder / "README.md"
-    result.add_check("README.md exists", readme.exists(),
-                     f"README not found: {readme}")
+    result.add_check("README.md exists", readme.exists(), f"README not found: {readme}")
 
     if readme.exists():
         content = readme.read_text(encoding="utf-8")
 
         # Check for infrastructure section
-        result.add_check("Contains Econometric Infrastructure section",
-                         "Econometric Infrastructure" in content or "Infrastructure" in content,
-                         "Econometric Infrastructure section not found")
+        result.add_check(
+            "Contains Econometric Infrastructure section",
+            "Econometric Infrastructure" in content or "Infrastructure" in content,
+            "Econometric Infrastructure section not found",
+        )
 
         # Check for hypothesis regression sections
-        result.add_check("Contains H1 Cash Holdings regression",
-                         "H1 Cash Holdings" in content or "Cash Holdings Regression" in content,
-                         "H1 regression section not found")
+        result.add_check(
+            "Contains H1 Cash Holdings regression",
+            "H1 Cash Holdings" in content or "Cash Holdings Regression" in content,
+            "H1 regression section not found",
+        )
 
-        result.add_check("Contains H2 Investment Efficiency regression",
-                         "H2 Investment Efficiency" in content or "Investment Efficiency Regression" in content,
-                         "H2 regression section not found")
+        result.add_check(
+            "Contains H2 Investment Efficiency regression",
+            "H2 Investment Efficiency" in content
+            or "Investment Efficiency Regression" in content,
+            "H2 regression section not found",
+        )
 
-        result.add_check("Contains H3 Payout Policy regression",
-                         "H3 Payout Policy" in content or "Payout Policy Regression" in content,
-                         "H3 regression section not found")
+        result.add_check(
+            "Contains H3 Payout Policy regression",
+            "H3 Payout Policy" in content or "Payout Policy Regression" in content,
+            "H3 regression section not found",
+        )
 
         # Check for regression equations (look for beta notation or equation patterns)
         equation_indicators = ["beta_", "beta_0", "= beta", "Fixed Effects", "firm_FE"]
-        equations_found = sum(1 for indicator in equation_indicators if indicator in content)
-        result.add_check("Contains regression equations",
-                         equations_found >= 2,
-                         f"Regression equations not documented (found {equations_found}/5 indicators)")
+        equations_found = sum(
+            1 for indicator in equation_indicators if indicator in content
+        )
+        result.add_check(
+            "Contains regression equations",
+            equations_found >= 2,
+            f"Regression equations not documented (found {equations_found}/5 indicators)",
+        )
 
     return result
 
@@ -311,31 +331,36 @@ def check_financial_v2_outputs_folder(paths) -> ValidationResult:
     - .gitkeep exists in folder
     - No naming conflicts with 4_Outputs/3_Financial/
     """
-    result = ValidationResult(
-        "STRUCT-03",
-        "Financial_V2 outputs folder with .gitkeep"
-    )
+    result = ValidationResult("STRUCT-03", "Financial_V2 outputs folder with .gitkeep")
 
     folder = paths["outputs_financial_v2"]
-    result.add_check("Folder exists: 4_Outputs/3_Financial_V2/", folder.exists(),
-                     f"Folder not found: {folder}")
+    result.add_check(
+        "Folder exists: 4_Outputs/3_Financial_V2/",
+        folder.exists(),
+        f"Folder not found: {folder}",
+    )
 
     if folder.exists():
         gitkeep = folder / ".gitkeep"
-        result.add_check(".gitkeep exists", gitkeep.exists(),
-                         f".gitkeep not found: {gitkeep}")
+        result.add_check(
+            ".gitkeep exists", gitkeep.exists(), f".gitkeep not found: {gitkeep}"
+        )
 
         # Check for naming conflicts with v1.0
         v1_folder = paths["outputs_financial_v1"]
         if v1_folder.exists():
             # No conflict if folders are separate (which they are by name)
-            result.add_check("No naming conflicts with v1.0 outputs",
-                             True,
-                             "V2 folder is separate from v1.0")
+            result.add_check(
+                "No naming conflicts with v1.0 outputs",
+                True,
+                "V2 folder is separate from v1.0",
+            )
         else:
-            result.add_check("No naming conflicts with v1.0 outputs",
-                             True,
-                             "v1.0 folder does not exist (not a conflict)")
+            result.add_check(
+                "No naming conflicts with v1.0 outputs",
+                True,
+                "v1.0 folder does not exist (not a conflict)",
+            )
 
     return result
 
@@ -350,29 +375,36 @@ def check_econometric_v2_outputs_folder(paths) -> ValidationResult:
     - No naming conflicts with 4_Outputs/4_Econometric/
     """
     result = ValidationResult(
-        "STRUCT-04",
-        "Econometric_V2 outputs folder with .gitkeep"
+        "STRUCT-04", "Econometric_V2 outputs folder with .gitkeep"
     )
 
     folder = paths["outputs_econometric_v2"]
-    result.add_check("Folder exists: 4_Outputs/4_Econometric_V2/", folder.exists(),
-                     f"Folder not found: {folder}")
+    result.add_check(
+        "Folder exists: 4_Outputs/4_Econometric_V2/",
+        folder.exists(),
+        f"Folder not found: {folder}",
+    )
 
     if folder.exists():
         gitkeep = folder / ".gitkeep"
-        result.add_check(".gitkeep exists", gitkeep.exists(),
-                         f".gitkeep not found: {gitkeep}")
+        result.add_check(
+            ".gitkeep exists", gitkeep.exists(), f".gitkeep not found: {gitkeep}"
+        )
 
         # Check for naming conflicts with v1.0
         v1_folder = paths["outputs_econometric_v1"]
         if v1_folder.exists():
-            result.add_check("No naming conflicts with v1.0 outputs",
-                             True,
-                             "V2 folder is separate from v1.0")
+            result.add_check(
+                "No naming conflicts with v1.0 outputs",
+                True,
+                "V2 folder is separate from v1.0",
+            )
         else:
-            result.add_check("No naming conflicts with v1.0 outputs",
-                             True,
-                             "v1.0 folder does not exist (not a conflict)")
+            result.add_check(
+                "No naming conflicts with v1.0 outputs",
+                True,
+                "v1.0 folder does not exist (not a conflict)",
+            )
 
     return result
 
@@ -389,36 +421,49 @@ def check_logs_folders(paths) -> ValidationResult:
     - No naming conflicts with existing v1.0 log folders
     """
     result = ValidationResult(
-        "STRUCT-05",
-        "Financial_V2 and Econometric_V2 logs folders with .gitkeep"
+        "STRUCT-05", "Financial_V2 and Econometric_V2 logs folders with .gitkeep"
     )
 
     # Financial_V2 logs
     fin_folder = paths["logs_financial_v2"]
-    result.add_check("Folder exists: 3_Logs/3_Financial_V2/", fin_folder.exists(),
-                     f"Folder not found: {fin_folder}")
+    result.add_check(
+        "Folder exists: 3_Logs/3_Financial_V2/",
+        fin_folder.exists(),
+        f"Folder not found: {fin_folder}",
+    )
 
     if fin_folder.exists():
         fin_gitkeep = fin_folder / ".gitkeep"
-        result.add_check("3_Financial_V2/.gitkeep exists", fin_gitkeep.exists(),
-                         f".gitkeep not found: {fin_gitkeep}")
+        result.add_check(
+            "3_Financial_V2/.gitkeep exists",
+            fin_gitkeep.exists(),
+            f".gitkeep not found: {fin_gitkeep}",
+        )
 
     # Econometric_V2 logs
     econ_folder = paths["logs_econometric_v2"]
-    result.add_check("Folder exists: 3_Logs/4_Econometric_V2/", econ_folder.exists(),
-                     f"Folder not found: {econ_folder}")
+    result.add_check(
+        "Folder exists: 3_Logs/4_Econometric_V2/",
+        econ_folder.exists(),
+        f"Folder not found: {econ_folder}",
+    )
 
     if econ_folder.exists():
         econ_gitkeep = econ_folder / ".gitkeep"
-        result.add_check("4_Econometric_V2/.gitkeep exists", econ_gitkeep.exists(),
-                         f".gitkeep not found: {econ_gitkeep}")
+        result.add_check(
+            "4_Econometric_V2/.gitkeep exists",
+            econ_gitkeep.exists(),
+            f".gitkeep not found: {econ_gitkeep}",
+        )
 
     # Check for conflicts
     v1_fin = paths["logs_financial_v1"]
     v1_econ = paths["logs_econometric_v1"]
-    result.add_check("No naming conflicts with v1.0 log folders",
-                     fin_folder != v1_fin and econ_folder != v1_econ,
-                     "V2 log folders are separate from v1.0")
+    result.add_check(
+        "No naming conflicts with v1.0 log folders",
+        fin_folder != v1_fin and econ_folder != v1_econ,
+        "V2 log folders are separate from v1.0",
+    )
 
     return result
 
@@ -433,8 +478,7 @@ def check_naming_convention(paths) -> ValidationResult:
     - Examples include: 3.1_H1Variables.py, 4.1_H1Regression.py
     """
     result = ValidationResult(
-        "STRUCT-06",
-        "Script naming convention documented in READMEs"
+        "STRUCT-06", "Script naming convention documented in READMEs"
     )
 
     # Check Financial_V2 README
@@ -444,31 +488,39 @@ def check_naming_convention(paths) -> ValidationResult:
 
         # Check for naming convention documentation
         naming_found = (
-            "{step}.{substep}" in content or
-            "3.1_H1Variables" in content or
-            "3.2_H2Variables" in content or
-            "3.3_H3Variables" in content
+            "{step}.{substep}" in content
+            or "3.1_H1Variables" in content
+            or "3.2_H2Variables" in content
+            or "3.3_H3Variables" in content
         )
-        result.add_check("Financial_V2 README documents script naming",
-                         naming_found,
-                         "Script naming pattern not found in Financial_V2 README")
+        result.add_check(
+            "Financial_V2 README documents script naming",
+            naming_found,
+            "Script naming pattern not found in Financial_V2 README",
+        )
 
         # Check for specific examples
         examples_found = (
-            "3.1_H1Variables.py" in content or
-            "3.2_H2Variables.py" in content or
-            "3.3_H3Variables.py" in content
+            "3.1_H1Variables.py" in content
+            or "3.2_H2Variables.py" in content
+            or "3.3_H3Variables.py" in content
         )
-        result.add_check("Financial_V2 README includes script examples",
-                         examples_found,
-                         "Script examples not found in Financial_V2 README")
+        result.add_check(
+            "Financial_V2 README includes script examples",
+            examples_found,
+            "Script examples not found in Financial_V2 README",
+        )
     else:
-        result.add_check("Financial_V2 README documents script naming",
-                         False,
-                         "Financial_V2 README not found")
-        result.add_check("Financial_V2 README includes script examples",
-                         False,
-                         "Financial_V2 README not found")
+        result.add_check(
+            "Financial_V2 README documents script naming",
+            False,
+            "Financial_V2 README not found",
+        )
+        result.add_check(
+            "Financial_V2 README includes script examples",
+            False,
+            "Financial_V2 README not found",
+        )
 
     # Check Econometric_V2 README
     econ_readme = paths["scripts_econometric_v2"] / "README.md"
@@ -477,31 +529,39 @@ def check_naming_convention(paths) -> ValidationResult:
 
         # Check for naming convention documentation
         naming_found = (
-            "{step}.{substep}" in content or
-            "4.0_EconometricInfra" in content or
-            "4.1_H1Regression" in content
+            "{step}.{substep}" in content
+            or "4.0_EconometricInfra" in content
+            or "4.1_H1Regression" in content
         )
-        result.add_check("Econometric_V2 README documents script naming",
-                         naming_found,
-                         "Script naming pattern not found in Econometric_V2 README")
+        result.add_check(
+            "Econometric_V2 README documents script naming",
+            naming_found,
+            "Script naming pattern not found in Econometric_V2 README",
+        )
 
         # Check for specific examples
         examples_found = (
-            "4.0_EconometricInfra.py" in content or
-            "4.1_H1Regression.py" in content or
-            "4.2_H2Regression.py" in content or
-            "4.3_H3Regression.py" in content
+            "4.0_EconometricInfra.py" in content
+            or "4.1_H1Regression.py" in content
+            or "4.2_H2Regression.py" in content
+            or "4.3_H3Regression.py" in content
         )
-        result.add_check("Econometric_V2 README includes script examples",
-                         examples_found,
-                         "Script examples not found in Econometric_V2 README")
+        result.add_check(
+            "Econometric_V2 README includes script examples",
+            examples_found,
+            "Script examples not found in Econometric_V2 README",
+        )
     else:
-        result.add_check("Econometric_V2 README documents script naming",
-                         False,
-                         "Econometric_V2 README not found")
-        result.add_check("Econometric_V2 README includes script examples",
-                         False,
-                         "Econometric_V2 README not found")
+        result.add_check(
+            "Econometric_V2 README documents script naming",
+            False,
+            "Econometric_V2 README not found",
+        )
+        result.add_check(
+            "Econometric_V2 README includes script examples",
+            False,
+            "Econometric_V2 README not found",
+        )
 
     return result
 
@@ -518,7 +578,7 @@ def run_all_validations(paths) -> dict:
         "total": 6,
         "passed": 0,
         "failed": 0,
-        "all_passed": True
+        "all_passed": True,
     }
 
     # Run all validation checks
@@ -531,7 +591,7 @@ def run_all_validations(paths) -> dict:
         ("STRUCT-06", check_naming_convention),
     ]
 
-    for name, validator in validators:
+    for _name, validator in validators:
         result = validator(paths)
         results["validations"].append(result)
         if result.passed:
@@ -577,7 +637,7 @@ def save_stats(results: dict, paths: dict, timestamp: str):
             "failed": results["failed"],
             "all_passed": results["all_passed"],
         },
-        "details": []
+        "details": [],
     }
 
     for result in results["validations"]:
@@ -585,7 +645,7 @@ def save_stats(results: dict, paths: dict, timestamp: str):
             "name": result.name,
             "description": result.description,
             "passed": result.passed,
-            "checks": result.checks
+            "checks": result.checks,
         }
         stats["details"].append(detail)
 
@@ -611,12 +671,12 @@ def main(args=None):
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Run validation without creating output files"
+        help="Run validation without creating output files",
     )
     parser.add_argument(
         "--quiet",
         action="store_true",
-        help="Suppress terminal output (still write to log)"
+        help="Suppress terminal output (still write to log)",
     )
 
     parsed_args = parser.parse_args(args)
@@ -668,6 +728,7 @@ def main(args=None):
     except Exception as e:
         print(f"\nERROR: Validation failed with exception: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
 
         # Restore stdout if dual-writer was set up

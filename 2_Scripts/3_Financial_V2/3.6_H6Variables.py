@@ -36,35 +36,31 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
 import json
-import time
+import sys
 import warnings
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
-    get_process_memory_mb,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
 
 # Suppress warnings for cleaner output
@@ -97,7 +93,10 @@ def setup_paths(config, timestamp):
     paths = {
         "root": root,
         "linguistics_dir": linguistics_dir,
-        "cccl_file": root / "1_Inputs" / "CCCL instrument" / "instrument_shift_intensity_2005_2022.parquet",
+        "cccl_file": root
+        / "1_Inputs"
+        / "CCCL instrument"
+        / "instrument_shift_intensity_2005_2022.parquet",
     }
 
     # Output directory
@@ -159,10 +158,12 @@ def load_cccl_instrument(cccl_file, logger):
     logger.write(f"  CCCL variants ({len(cccl_variants)}): {', '.join(cccl_variants)}")
 
     # Log CCCL coverage statistics
-    logger.write(f"\n  CCCL coverage by variant:")
+    logger.write("\n  CCCL coverage by variant:")
     for variant in cccl_variants:
         non_null = df[variant].notna().sum()
-        logger.write(f"    {variant}: {non_null:,} non-null ({non_null/len(df)*100:.1f}%)")
+        logger.write(
+            f"    {variant}: {non_null:,} non-null ({non_null / len(df) * 100:.1f}%)"
+        )
 
     # Log year range
     year_min = df["fiscal_year"].min()
@@ -189,7 +190,9 @@ def load_speech_measures(linguistics_dir, logger, min_year=2002, max_year=2018):
     parquet_files = sorted(linguistics_dir.glob("linguistic_variables_*.parquet"))
 
     if not parquet_files:
-        raise FileNotFoundError(f"No linguistic_variables files found in {linguistics_dir}")
+        raise FileNotFoundError(
+            f"No linguistic_variables files found in {linguistics_dir}"
+        )
 
     # Define the 6 uncertainty measures we need
     uncertainty_measures = [
@@ -225,8 +228,7 @@ def load_speech_measures(linguistics_dir, logger, min_year=2002, max_year=2018):
 
     # Filter to year range
     combined = combined[
-        (combined["fiscal_year"] >= min_year) &
-        (combined["fiscal_year"] <= max_year)
+        (combined["fiscal_year"] >= min_year) & (combined["fiscal_year"] <= max_year)
     ].copy()
 
     logger.write(f"  After year filter ({min_year}-{max_year}): {len(combined):,}")
@@ -236,14 +238,18 @@ def load_speech_measures(linguistics_dir, logger, min_year=2002, max_year=2018):
     logger.write(f"\n  Available uncertainty measures ({len(available_measures)}):")
     for m in available_measures:
         non_null = combined[m].notna().sum()
-        logger.write(f"    {m}: {non_null:,} non-null ({non_null/len(combined)*100:.1f}%)")
+        logger.write(
+            f"    {m}: {non_null:,} non-null ({non_null / len(combined) * 100:.1f}%)"
+        )
 
     # Aggregate to firm-year level (take mean if multiple calls per year)
     # Note: CCCL is annual, so we aggregate speech to annual
     id_cols = ["gvkey", "fiscal_year"]
     agg_cols = available_measures
 
-    speech_agg = combined[id_cols + agg_cols].groupby(id_cols)[agg_cols].mean().reset_index()
+    speech_agg = (
+        combined[id_cols + agg_cols].groupby(id_cols)[agg_cols].mean().reset_index()
+    )
 
     logger.write(f"\n  Aggregated to firm-year level: {len(speech_agg):,} observations")
     logger.write(f"  Unique firms: {speech_agg['gvkey'].nunique():,}")
@@ -262,31 +268,31 @@ def merge_cccl_speech(cccl_df, speech_df, logger):
 
     Merge key: gvkey + fiscal_year (CCCL is annual)
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Merging CCCL Instrument with Speech Measures")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     logger.write(f"\n  CCCL observations: {len(cccl_df):,}")
     logger.write(f"  Speech observations: {len(speech_df):,}")
 
     # Merge on gvkey + fiscal_year (inner join - complete cases only)
-    merged = cccl_df.merge(
-        speech_df,
-        on=["gvkey", "fiscal_year"],
-        how="inner"
-    )
+    merged = cccl_df.merge(speech_df, on=["gvkey", "fiscal_year"], how="inner")
 
-    logger.write(f"\n  Merged: {len(merged):,} observations with both CCCL and speech data")
+    logger.write(
+        f"\n  Merged: {len(merged):,} observations with both CCCL and speech data"
+    )
 
     # Calculate merge success rate
     cccl_firms = set(cccl_df["gvkey"].unique())
     speech_firms = set(speech_df["gvkey"].unique())
     merged_firms = set(merged["gvkey"].unique())
 
-    logger.write(f"\n  Firm overlap:")
+    logger.write("\n  Firm overlap:")
     logger.write(f"    CCCL firms: {len(cccl_firms):,}")
     logger.write(f"    Speech firms: {len(speech_firms):,}")
-    logger.write(f"    Overlap: {len(merged_firms):,} ({len(merged_firms)/len(cccl_firms)*100:.1f}% of CCCL firms)")
+    logger.write(
+        f"    Overlap: {len(merged_firms):,} ({len(merged_firms) / len(cccl_firms) * 100:.1f}% of CCCL firms)"
+    )
 
     # Check merge rate
     merge_rate = len(merged) / len(cccl_df) * 100
@@ -305,9 +311,9 @@ def create_lagged_cccl(df, cccl_variants, logger):
     Lagged treatment ensures temporal ordering: CCCL_{t-1} predicts Speech_t.
     This avoids reverse causality (speech affecting future CCCL exposure).
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Creating Lagged CCCL Exposure (t-1)")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     # Sort by firm and year
     df = df.sort_values(["gvkey", "fiscal_year"]).copy()
@@ -321,7 +327,9 @@ def create_lagged_cccl(df, cccl_variants, logger):
         logger.write(f"  {lag_col}: {non_null:,} non-null")
 
     # Log lag statistics
-    logger.write(f"\n  After lagging: {df['shift_intensity_mkvalt_ff48_lag'].notna().sum():,} observations with lagged CCCL")
+    logger.write(
+        f"\n  After lagging: {df['shift_intensity_mkvalt_ff48_lag'].notna().sum():,} observations with lagged CCCL"
+    )
 
     return df
 
@@ -336,16 +344,23 @@ def compute_uncertainty_gap(df, logger):
     This measure captures the difference between spontaneous and prepared
     speech uncertainty, which is a mechanism test for H6.
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Computing Uncertainty Gap (Q&A - Presentation)")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
-    if "Manager_QA_Uncertainty_pct" in df.columns and "Manager_Pres_Uncertainty_pct" in df.columns:
-        df["uncertainty_gap"] = df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
+    if (
+        "Manager_QA_Uncertainty_pct" in df.columns
+        and "Manager_Pres_Uncertainty_pct" in df.columns
+    ):
+        df["uncertainty_gap"] = (
+            df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
+        )
 
         # Log statistics
         valid_gap = df["uncertainty_gap"].notna()
-        logger.write(f"\n  Uncertainty gap statistics ({valid_gap.sum():,} observations):")
+        logger.write(
+            f"\n  Uncertainty gap statistics ({valid_gap.sum():,} observations):"
+        )
         logger.write(f"    Mean: {df.loc[valid_gap, 'uncertainty_gap'].mean():.4f}")
         logger.write(f"    Std: {df.loc[valid_gap, 'uncertainty_gap'].std():.4f}")
         logger.write(f"    Min: {df.loc[valid_gap, 'uncertainty_gap'].min():.4f}")
@@ -357,12 +372,18 @@ def compute_uncertainty_gap(df, logger):
         zero_gap = (df["uncertainty_gap"] == 0).sum()
         total = pos_gap + neg_gap + zero_gap
 
-        logger.write(f"\n  Distribution:")
-        logger.write(f"    Positive gap (more uncertain in Q&A): {pos_gap:,} ({pos_gap/total*100:.1f}%)")
-        logger.write(f"    Negative gap (more uncertain in Pres): {neg_gap:,} ({neg_gap/total*100:.1f}%)")
-        logger.write(f"    Zero gap: {zero_gap:,} ({zero_gap/total*100:.1f}%)")
+        logger.write("\n  Distribution:")
+        logger.write(
+            f"    Positive gap (more uncertain in Q&A): {pos_gap:,} ({pos_gap / total * 100:.1f}%)"
+        )
+        logger.write(
+            f"    Negative gap (more uncertain in Pres): {neg_gap:,} ({neg_gap / total * 100:.1f}%)"
+        )
+        logger.write(f"    Zero gap: {zero_gap:,} ({zero_gap / total * 100:.1f}%)")
     else:
-        logger.write("  Warning: Cannot compute uncertainty_gap - missing required columns")
+        logger.write(
+            "  Warning: Cannot compute uncertainty_gap - missing required columns"
+        )
         df["uncertainty_gap"] = np.nan
 
     return df
@@ -374,18 +395,19 @@ def filter_sample(df, logger, min_year=2005, max_year=2018):
 
     CCCL data starts in 2005, speech data ends in 2018.
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Filtering to Sample Period")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     logger.write(f"\n  Before filter: {len(df):,} observations")
 
     df_filtered = df[
-        (df["fiscal_year"] >= min_year) &
-        (df["fiscal_year"] <= max_year)
+        (df["fiscal_year"] >= min_year) & (df["fiscal_year"] <= max_year)
     ].copy()
 
-    logger.write(f"  After filter ({min_year}-{max_year}): {len(df_filtered):,} observations")
+    logger.write(
+        f"  After filter ({min_year}-{max_year}): {len(df_filtered):,} observations"
+    )
 
     # Count unique firms
     n_firms = df_filtered["gvkey"].nunique()
@@ -408,12 +430,12 @@ def main():
 Examples:
   python 3.6_H6Variables.py              # Run with default settings
   python 3.6_H6Variables.py --dry-run    # Validate inputs without processing
-        """
+        """,
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Validate inputs and print planned operations without processing"
+        help="Validate inputs and print planned operations without processing",
     )
     args = parser.parse_args()
 
@@ -436,9 +458,9 @@ Examples:
     logger.write(f"Python version: {sys.version}")
 
     if args.dry_run:
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("DRY RUN MODE - Validating inputs only")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
     # Stats collection
     stats = {
@@ -453,11 +475,13 @@ Examples:
 
     try:
         # Step 1: Load CCCL instrument
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("STEP 1: Loading CCCL Shift-Share Instrument")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
-        cccl_df, cccl_variants, cccl_checksum = load_cccl_instrument(paths["cccl_file"], logger)
+        cccl_df, cccl_variants, cccl_checksum = load_cccl_instrument(
+            paths["cccl_file"], logger
+        )
         stats["input_files"]["cccl_instrument"] = {
             "path": str(paths["cccl_file"]),
             "rows": len(cccl_df),
@@ -466,13 +490,12 @@ Examples:
         }
 
         # Step 2: Load speech measures
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("STEP 2: Loading Speech Uncertainty Measures")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
         speech_df, uncertainty_measures = load_speech_measures(
-            paths["linguistics_dir"], logger,
-            min_year=2005, max_year=2018
+            paths["linguistics_dir"], logger, min_year=2005, max_year=2018
         )
         stats["input_files"]["linguistic_variables"] = {
             "path": str(paths["linguistics_dir"]),
@@ -481,13 +504,17 @@ Examples:
         }
 
         if args.dry_run:
-            logger.write("\n" + "="*80)
+            logger.write("\n" + "=" * 80)
             logger.write("DRY RUN COMPLETE - All inputs validated successfully")
-            logger.write("="*80)
+            logger.write("=" * 80)
             logger.write("\nPlanned operations:")
-            logger.write("  1. Merge CCCL instrument with speech measures on gvkey + fiscal_year")
+            logger.write(
+                "  1. Merge CCCL instrument with speech measures on gvkey + fiscal_year"
+            )
             logger.write("  2. Create lagged CCCL exposure (t-1) for all 6 variants")
-            logger.write("  3. Compute uncertainty_gap = QA_Uncertainty - Pres_Uncertainty")
+            logger.write(
+                "  3. Compute uncertainty_gap = QA_Uncertainty - Pres_Uncertainty"
+            )
             logger.write("  4. Filter to 2005-2018 sample period")
             logger.write("  5. Output H6_CCCL_Speech.parquet")
             return 0
@@ -508,14 +535,16 @@ Examples:
         final_df = filter_sample(merged_df, logger)
 
         # Step 7: Prepare output columns
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("Preparing Final Dataset")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
         # Keep only observations with lagged CCCL (t-1)
         final_df = final_df[final_df["shift_intensity_mkvalt_ff48_lag"].notna()].copy()
 
-        logger.write(f"\n  Final sample (with lagged CCCL): {len(final_df):,} observations")
+        logger.write(
+            f"\n  Final sample (with lagged CCCL): {len(final_df):,} observations"
+        )
         logger.write(f"  Unique firms: {final_df['gvkey'].nunique():,}")
 
         # Define output columns
@@ -546,9 +575,9 @@ Examples:
         logger.write(f"  File size: {output_file.stat().st_size / 1024 / 1024:.1f} MB")
 
         # Compute statistics for stats.json
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("Computing Variable Statistics")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
         # CCCL coverage statistics
         cccl_coverage = {}
@@ -620,13 +649,15 @@ Examples:
         logger.write(f"\nSaved stats to: {stats_file}")
 
         # Final summary
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("EXECUTION COMPLETE")
-        logger.write("="*80)
+        logger.write("=" * 80)
         logger.write(f"Output file: {output_file}")
         logger.write(f"Final sample: {len(final_df):,} observations")
         logger.write(f"Unique firms: {final_df['gvkey'].nunique():,}")
-        logger.write(f"Year range: {final_df['fiscal_year'].min()}-{final_df['fiscal_year'].max()}")
+        logger.write(
+            f"Year range: {final_df['fiscal_year'].min()}-{final_df['fiscal_year'].max()}"
+        )
         logger.write(f"End time: {datetime.now().isoformat()}")
 
         stats["end_time"] = datetime.now().isoformat()
@@ -641,6 +672,7 @@ Examples:
     except Exception as e:
         logger.write(f"\nERROR: {e}")
         import traceback
+
         logger.write(traceback.format_exc())
         stats["status"] = "failed"
         stats["error"] = str(e)

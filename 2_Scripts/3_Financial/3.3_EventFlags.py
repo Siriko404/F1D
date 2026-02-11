@@ -25,19 +25,18 @@ Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
 ==============================================================================
 """
 
-import sys
 import argparse
-import os
-from pathlib import Path
-from datetime import datetime, timedelta
-import pandas as pd
-import numpy as np
-import yaml
-import importlib.util
 import hashlib
+import importlib.util
 import json
+import sys
 import time
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 import psutil
+import yaml
 
 # Dynamic import for 3.4_Utils.py
 utils_path = Path(__file__).parent / "3.4_Utils.py"
@@ -46,38 +45,35 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import generate_variable_reference
 
 # Add parent directory to sys.path for shared module imports
 import sys as _sys
-from pathlib import Path as _Path
 
 _script_dir = Path(__file__).parent.parent
 _sys.path.insert(0, str(_script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import DualWriter
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+)
 
 # Import shared observability utilities (new Step 3.3 statistics functions)
 try:
     from shared.observability_utils import (
-        get_process_memory_mb,
         calculate_throughput,
-        detect_anomalies_zscore,
-        detect_anomalies_iqr,
         compute_step33_input_stats,
-        compute_step33_process_stats,
         compute_step33_output_stats,
+        compute_step33_process_stats,
+        detect_anomalies_iqr,
+        detect_anomalies_zscore,
         generate_financial_report_markdown,
+        get_process_memory_mb,
     )
+
     HAS_OBSERVABILITY = True
 except ImportError:
     HAS_OBSERVABILITY = False
@@ -279,7 +275,7 @@ def load_manifest(manifest_dir):
 
 def load_sdc(sdc_file):
     """Load SDC M&A data"""
-    print(f"  Loading SDC M&A data...")
+    print("  Loading SDC M&A data...")
 
     # Column pruning: Load all SDC columns needed for takeover flag computation
     df = pd.read_parquet(
@@ -323,7 +319,7 @@ def load_sdc(sdc_file):
     print(f"  Unique target CUSIPs: {df['target_cusip6'].nunique():,}")
 
     # Categorize deal attitude
-    print(f"\n  Deal Attitude distribution:")
+    print("\n  Deal Attitude distribution:")
     if "deal_attitude" in df.columns:
         print(df["deal_attitude"].value_counts())
 
@@ -409,7 +405,7 @@ def compute_takeover_flags(manifest, sdc):
     print(
         f"\n  Takeover events: {takeover_count:,} / {len(manifest):,} ({takeover_count / len(manifest) * 100:.2f}%)"
     )
-    print(f"\n  Takeover Type distribution:")
+    print("\n  Takeover Type distribution:")
     print(results_df[results_df["Takeover"] == 1]["Takeover_Type"].value_counts())
 
     return results_df
@@ -590,7 +586,6 @@ def main():
         print(f"  Saved {year}: {len(group):,} calls -> {output_file.name}")
         stats["output"]["files"].append(f"event_flags_{year}.parquet")
 
-
     stats["output"]["final_rows"] = len(result)
     stats["output"]["final_columns"] = len(result.columns)
 
@@ -655,7 +650,7 @@ def main():
     print("SUMMARY")
     print("=" * 60)
     print(f"Total calls processed: {len(result):,}")
-    print(f"\nVariable coverage:")
+    print("\nVariable coverage:")
     print(
         f"  Takeover: {result['Takeover'].sum():,} events ({result['Takeover'].mean() * 100:.2f}%)"
     )

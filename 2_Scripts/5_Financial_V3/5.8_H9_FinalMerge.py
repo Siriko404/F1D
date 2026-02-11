@@ -46,46 +46,41 @@ Deterministic: true
 ================================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import json
-import time
 import gc
 import io
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 # Ensure UTF-8 output for Windows
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
+# Suppress warnings for cleaner output
+import warnings
 
 from shared.observability_utils import (
-    print_stat,
-    save_stats,
     get_process_memory_mb,
+    save_stats,
 )
 
 # Import regression utilities
 from shared.panel_ols import run_panel_ols
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+)
 
-# Suppress warnings for cleaner output
-import warnings
 warnings.filterwarnings("ignore")
 
 # ==============================================================================
@@ -138,8 +133,7 @@ def load_style_frozen(style_frozen_base):
 
     try:
         style_dir = get_latest_output_dir(
-            style_frozen_base,
-            required_file="style_frozen.parquet"
+            style_frozen_base, required_file="style_frozen.parquet"
         )
         print(f"[OK] Found StyleFrozen directory: {style_dir.name}")
 
@@ -148,16 +142,16 @@ def load_style_frozen(style_frozen_base):
         print(f"[OK] Loaded StyleFrozen: {len(df):,} firm-years")
 
         # Verify required columns
-        required_cols = ['gvkey', 'fyear', 'style_frozen']
+        required_cols = ["gvkey", "fyear", "style_frozen"]
         missing_cols = set(required_cols) - set(df.columns)
         if missing_cols:
             raise ValueError(f"Missing columns in StyleFrozen: {missing_cols}")
 
         # Ensure gvkey is string and zero-padded
-        df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+        df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
         # Ensure fyear is integer
-        df['fyear'] = pd.to_numeric(df['fyear'], errors='coerce').astype('int64')
+        df["fyear"] = pd.to_numeric(df["fyear"], errors="coerce").astype("int64")
 
         print(f"  - GVKEY format: {df['gvkey'].iloc[0]} (zero-padded to 6 chars)")
         print(f"  - FYEAR dtype: {df['fyear'].dtype}")
@@ -188,10 +182,7 @@ def load_priskfy(priskfy_base):
     print("=" * 80)
 
     try:
-        prisk_dir = get_latest_output_dir(
-            priskfy_base,
-            required_file="priskfy.parquet"
-        )
+        prisk_dir = get_latest_output_dir(priskfy_base, required_file="priskfy.parquet")
         print(f"[OK] Found PRiskFY directory: {prisk_dir.name}")
 
         file_path = prisk_dir / "priskfy.parquet"
@@ -199,16 +190,16 @@ def load_priskfy(priskfy_base):
         print(f"[OK] Loaded PRiskFY: {len(df):,} firm-years")
 
         # Verify required columns
-        required_cols = ['gvkey', 'fyear', 'PRiskFY']
+        required_cols = ["gvkey", "fyear", "PRiskFY"]
         missing_cols = set(required_cols) - set(df.columns)
         if missing_cols:
             raise ValueError(f"Missing columns in PRiskFY: {missing_cols}")
 
         # Ensure gvkey is string and zero-padded
-        df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+        df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
         # Ensure fyear is integer
-        df['fyear'] = pd.to_numeric(df['fyear'], errors='coerce').astype('int64')
+        df["fyear"] = pd.to_numeric(df["fyear"], errors="coerce").astype("int64")
 
         print(f"  - GVKEY format: {df['gvkey'].iloc[0]} (zero-padded to 6 chars)")
         print(f"  - FYEAR dtype: {df['fyear'].dtype}")
@@ -216,7 +207,9 @@ def load_priskfy(priskfy_base):
         print(f"  - FYEAR range: {df['fyear'].min()}-{df['fyear'].max()}")
         print(f"  - PRiskFY mean: {df['PRiskFY'].mean():.2f}")
         print(f"  - PRiskFY std: {df['PRiskFY'].std():.2f}")
-        print(f"  - PRiskFY min/max: {df['PRiskFY'].min():.2f} / {df['PRiskFY'].max():.2f}")
+        print(
+            f"  - PRiskFY min/max: {df['PRiskFY'].min():.2f} / {df['PRiskFY'].max():.2f}"
+        )
 
         return df
 
@@ -241,8 +234,7 @@ def load_abnormal_investment(abnormal_inv_base):
 
     try:
         abinv_dir = get_latest_output_dir(
-            abnormal_inv_base,
-            required_file="abnormal_investment.parquet"
+            abnormal_inv_base, required_file="abnormal_investment.parquet"
         )
         print(f"[OK] Found AbnormalInvestment directory: {abinv_dir.name}")
 
@@ -251,20 +243,20 @@ def load_abnormal_investment(abnormal_inv_base):
         print(f"[OK] Loaded AbnormalInvestment: {len(df):,} firm-years")
 
         # Verify required columns
-        required_cols = ['gvkey', 'fyear', 'AbsAbInv']
+        required_cols = ["gvkey", "fyear", "AbsAbInv"]
         missing_cols = set(required_cols) - set(df.columns)
         if missing_cols:
             raise ValueError(f"Missing columns in AbnormalInvestment: {missing_cols}")
 
         # Control columns
-        control_cols = ['ln_at_t', 'lev_t', 'cash_t', 'roa_t', 'mb_t', 'SalesGrowth']
+        control_cols = ["ln_at_t", "lev_t", "cash_t", "roa_t", "mb_t", "SalesGrowth"]
         existing_controls = [c for c in control_cols if c in df.columns]
 
         # Ensure gvkey is string and zero-padded
-        df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+        df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
         # Ensure fyear is integer
-        df['fyear'] = pd.to_numeric(df['fyear'], errors='coerce').astype('int64')
+        df["fyear"] = pd.to_numeric(df["fyear"], errors="coerce").astype("int64")
 
         print(f"  - GVKEY format: {df['gvkey'].iloc[0]} (zero-padded to 6 chars)")
         print(f"  - FYEAR dtype: {df['fyear'].dtype}")
@@ -310,7 +302,7 @@ def merge_final_panel(style_df, prisk_df, abinv_df, verbose=True):
 
     # Start with abnormal_investment as base
     if verbose:
-        print(f"\n[STEP 1] Base dataset: AbnormalInvestment")
+        print("\n[STEP 1] Base dataset: AbnormalInvestment")
         print(f"  - N_obs: {len(abinv_df):,}")
         print(f"  - N_firms: {abinv_df['gvkey'].nunique():,}")
 
@@ -319,67 +311,67 @@ def merge_final_panel(style_df, prisk_df, abinv_df, verbose=True):
     # Memory check
     mem_before = get_process_memory_mb()
     if verbose:
-        print(f"  - Memory: {mem_before['rss_mb']:.1f} MB ({mem_before['percent']:.1f}%)")
+        print(
+            f"  - Memory: {mem_before['rss_mb']:.1f} MB ({mem_before['percent']:.1f}%)"
+        )
 
     gc.collect()
 
     # Merge PRiskFY
     if verbose:
-        print(f"\n[STEP 2] Merging PRiskFY on (gvkey, fyear)")
+        print("\n[STEP 2] Merging PRiskFY on (gvkey, fyear)")
 
     # Select only columns we need from PRiskFY
-    prisk_cols = ['gvkey', 'fyear', 'PRiskFY', 'n_quarters_used']
+    prisk_cols = ["gvkey", "fyear", "PRiskFY", "n_quarters_used"]
     prisk_merge = prisk_df[prisk_cols].copy()
 
     n_before = len(panel)
     panel = pd.merge(
-        panel,
-        prisk_merge,
-        on=['gvkey', 'fyear'],
-        how='left',
-        validate='one_to_one'
+        panel, prisk_merge, on=["gvkey", "fyear"], how="left", validate="one_to_one"
     )
     n_after = len(panel)
 
     if verbose:
         print(f"  - N_obs before: {n_before:,}")
         print(f"  - N_obs after: {n_after:,}")
-        print(f"  - PRiskFY matches: {panel['PRiskFY'].notna().sum():,} ({panel['PRiskFY'].notna().sum()/len(panel)*100:.1f}%)")
+        print(
+            f"  - PRiskFY matches: {panel['PRiskFY'].notna().sum():,} ({panel['PRiskFY'].notna().sum() / len(panel) * 100:.1f}%)"
+        )
 
     gc.collect()
 
     # Merge StyleFrozen
     if verbose:
-        print(f"\n[STEP 3] Merging StyleFrozen on (gvkey, fyear)")
+        print("\n[STEP 3] Merging StyleFrozen on (gvkey, fyear)")
 
     # Select only columns we need from StyleFrozen
-    style_cols = ['gvkey', 'fyear', 'style_frozen', 'ceo_id', 'ceo_name', 'n_calls_fy']
+    style_cols = ["gvkey", "fyear", "style_frozen", "ceo_id", "ceo_name", "n_calls_fy"]
     style_merge = style_df[style_cols].copy()
 
     n_before = len(panel)
     panel = pd.merge(
-        panel,
-        style_merge,
-        on=['gvkey', 'fyear'],
-        how='left',
-        validate='one_to_one'
+        panel, style_merge, on=["gvkey", "fyear"], how="left", validate="one_to_one"
     )
     n_after = len(panel)
 
     if verbose:
         print(f"  - N_obs before: {n_before:,}")
         print(f"  - N_obs after: {n_after:,}")
-        print(f"  - style_frozen matches: {panel['style_frozen'].notna().sum():,} ({panel['style_frozen'].notna().sum()/len(panel)*100:.1f}%)")
+        print(
+            f"  - style_frozen matches: {panel['style_frozen'].notna().sum():,} ({panel['style_frozen'].notna().sum() / len(panel) * 100:.1f}%)"
+        )
 
     gc.collect()
 
     # Final memory check
     mem_after = get_process_memory_mb()
     if verbose:
-        print(f"\n[MERGE COMPLETE]")
+        print("\n[MERGE COMPLETE]")
         print(f"  - Final N_obs: {len(panel):,}")
         print(f"  - Final N_firms: {panel['gvkey'].nunique():,}")
-        print(f"  - Final N_ceos: {panel['ceo_id'].notna().sum() > 0 and panel['ceo_id'].nunique() or 0:,}")
+        print(
+            f"  - Final N_ceos: {panel['ceo_id'].notna().sum() > 0 and panel['ceo_id'].nunique() or 0:,}"
+        )
         print(f"  - Memory: {mem_after['rss_mb']:.1f} MB ({mem_after['percent']:.1f}%)")
 
     return panel
@@ -414,42 +406,50 @@ def apply_sample_filters(panel, verbose=True):
     # Filter 1: AbsAbInv not missing
     filter_name = "AbsAbInv missing"
     n_before = len(panel)
-    panel = panel.dropna(subset=['AbsAbInv'])
+    panel = panel.dropna(subset=["AbsAbInv"])
     n_after = len(panel)
     filters[filter_name] = n_before - n_after
     if verbose:
         print(f"\n[{filter_name}]")
-        print(f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name]/n_start*100:.2f}%)")
+        print(
+            f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name] / n_start * 100:.2f}%)"
+        )
 
     # Filter 2: PRiskFY not missing
     filter_name = "PRiskFY missing"
     n_before = len(panel)
-    panel = panel.dropna(subset=['PRiskFY'])
+    panel = panel.dropna(subset=["PRiskFY"])
     n_after = len(panel)
     filters[filter_name] = n_before - n_after
     if verbose:
         print(f"\n[{filter_name}]")
-        print(f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name]/n_start*100:.2f}%)")
+        print(
+            f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name] / n_start * 100:.2f}%)"
+        )
 
     # Filter 3: style_frozen not missing
     filter_name = "style_frozen missing"
     n_before = len(panel)
-    panel = panel.dropna(subset=['style_frozen'])
+    panel = panel.dropna(subset=["style_frozen"])
     n_after = len(panel)
     filters[filter_name] = n_before - n_after
     if verbose:
         print(f"\n[{filter_name}]")
-        print(f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name]/n_start*100:.2f}%)")
+        print(
+            f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name] / n_start * 100:.2f}%)"
+        )
 
     # Filter 4: Controls not missing
-    control_cols = ['ln_at_t', 'lev_t', 'cash_t', 'roa_t', 'mb_t', 'SalesGrowth']
+    control_cols = ["ln_at_t", "lev_t", "cash_t", "roa_t", "mb_t", "SalesGrowth"]
     existing_controls = [c for c in control_cols if c in panel.columns]
 
     if verbose:
-        print(f"\n[Control missingness check]")
+        print("\n[Control missingness check]")
         for col in existing_controls:
             n_missing = panel[col].isna().sum()
-            print(f"  - {col}: {n_missing:,} missing ({n_missing/len(panel)*100:.2f}%)")
+            print(
+                f"  - {col}: {n_missing:,} missing ({n_missing / len(panel) * 100:.2f}%)"
+            )
 
     # Drop observations with any missing control
     filter_name = "Controls missing"
@@ -459,25 +459,31 @@ def apply_sample_filters(panel, verbose=True):
     filters[filter_name] = n_before - n_after
     if verbose:
         print(f"\n[{filter_name}]")
-        print(f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name]/n_start*100:.2f}%)")
+        print(
+            f"  - Dropped: {filters[filter_name]:,} ({filters[filter_name] / n_start * 100:.2f}%)"
+        )
 
     n_end = len(panel)
     total_dropped = n_start - n_end
 
     if verbose:
-        print(f"\n[FILTER SUMMARY]")
+        print("\n[FILTER SUMMARY]")
         print(f"  - Starting N: {n_start:,}")
         print(f"  - Final N: {n_end:,}")
-        print(f"  - Total dropped: {total_dropped:,} ({total_dropped/n_start*100:.2f}%)")
+        print(
+            f"  - Total dropped: {total_dropped:,} ({total_dropped / n_start * 100:.2f}%)"
+        )
         print(f"  - Final N_firms: {panel['gvkey'].nunique():,}")
-        print(f"  - Final N_ceos: {panel['ceo_id'].notna().sum() > 0 and panel['ceo_id'].nunique() or 0:,}")
+        print(
+            f"  - Final N_ceos: {panel['ceo_id'].notna().sum() > 0 and panel['ceo_id'].nunique() or 0:,}"
+        )
         print(f"  - FYEAR range: {panel['fyear'].min()}-{panel['fyear'].max()}")
 
     # Verify no missing values in key variables
-    key_vars = ['AbsAbInv', 'PRiskFY', 'style_frozen'] + existing_controls
+    key_vars = ["AbsAbInv", "PRiskFY", "style_frozen"] + existing_controls
     missing_check = panel[key_vars].isna().sum()
     if verbose and missing_check.sum() > 0:
-        print(f"\n[WARNING] Missing values remain:")
+        print("\n[WARNING] Missing values remain:")
         print(missing_check[missing_check > 0])
 
     return panel, filters
@@ -502,16 +508,20 @@ def create_interaction_term(panel, verbose=True):
     print("=" * 80)
 
     # Create interaction term
-    panel['interact'] = panel['PRiskFY'] * panel['style_frozen']
+    panel["interact"] = panel["PRiskFY"] * panel["style_frozen"]
 
     if verbose:
-        print(f"\nInteraction term: PRiskFY * style_frozen")
+        print("\nInteraction term: PRiskFY * style_frozen")
         print(f"  - Mean: {panel['interact'].mean():.4f}")
         print(f"  - Std: {panel['interact'].std():.4f}")
         print(f"  - Min: {panel['interact'].min():.4f}")
         print(f"  - Max: {panel['interact'].max():.4f}")
-        print(f"  - Correlation with PRiskFY: {panel['interact'].corr(panel['PRiskFY']):.4f}")
-        print(f"  - Correlation with style_frozen: {panel['interact'].corr(panel['style_frozen']):.4f}")
+        print(
+            f"  - Correlation with PRiskFY: {panel['interact'].corr(panel['PRiskFY']):.4f}"
+        )
+        print(
+            f"  - Correlation with style_frozen: {panel['interact'].corr(panel['style_frozen']):.4f}"
+        )
 
     return panel
 
@@ -557,7 +567,7 @@ def run_sanity_checks(panel, output_dir=None):
     lines.append("-" * 40)
     lines.append(f"N_obs: {len(panel):,}")
     lines.append(f"N_firms: {panel['gvkey'].nunique():,}")
-    if 'ceo_id' in panel.columns:
+    if "ceo_id" in panel.columns:
         lines.append(f"N_ceos: {panel['ceo_id'].nunique():,}")
     lines.append(f"FYEAR range: {panel['fyear'].min()}-{panel['fyear'].max()}")
     lines.append("")
@@ -568,25 +578,25 @@ def run_sanity_checks(panel, output_dir=None):
     lines.append("-" * 40)
 
     prisk_stats = {
-        'mean': float(panel['PRiskFY'].mean()),
-        'sd': float(panel['PRiskFY'].std()),
-        'p1': float(panel['PRiskFY'].quantile(0.01)),
-        'p99': float(panel['PRiskFY'].quantile(0.99)),
-        'min': float(panel['PRiskFY'].min()),
-        'max': float(panel['PRiskFY'].max()),
-        'min_fyear': int(panel['fyear'].min()),
-        'max_fyear': int(panel['fyear'].max()),
+        "mean": float(panel["PRiskFY"].mean()),
+        "sd": float(panel["PRiskFY"].std()),
+        "p1": float(panel["PRiskFY"].quantile(0.01)),
+        "p99": float(panel["PRiskFY"].quantile(0.99)),
+        "min": float(panel["PRiskFY"].min()),
+        "max": float(panel["PRiskFY"].max()),
+        "min_fyear": int(panel["fyear"].min()),
+        "max_fyear": int(panel["fyear"].max()),
     }
 
     for key, val in prisk_stats.items():
-        if key in ['min_fyear', 'max_fyear']:
+        if key in ["min_fyear", "max_fyear"]:
             print(f"  - {key}: {val}")
             lines.append(f"{key}: {val}")
         else:
             print(f"  - {key}: {val:.4f}")
             lines.append(f"{key}: {val:.4f}")
 
-    checks['prisk_coverage'] = prisk_stats
+    checks["prisk_coverage"] = prisk_stats
     lines.append("")
 
     # Check b: StyleFrozen Coverage
@@ -595,12 +605,12 @@ def run_sanity_checks(panel, output_dir=None):
     lines.append("-" * 40)
 
     style_stats = {
-        'mean': float(panel['style_frozen'].mean()),
-        'sd': float(panel['style_frozen'].std()),
-        'p1': float(panel['style_frozen'].quantile(0.01)),
-        'p99': float(panel['style_frozen'].quantile(0.99)),
-        'min': float(panel['style_frozen'].min()),
-        'max': float(panel['style_frozen'].max()),
+        "mean": float(panel["style_frozen"].mean()),
+        "sd": float(panel["style_frozen"].std()),
+        "p1": float(panel["style_frozen"].quantile(0.01)),
+        "p99": float(panel["style_frozen"].quantile(0.99)),
+        "min": float(panel["style_frozen"].min()),
+        "max": float(panel["style_frozen"].max()),
     }
 
     for key, val in style_stats.items():
@@ -608,13 +618,15 @@ def run_sanity_checks(panel, output_dir=None):
         lines.append(f"{key}: {val:.4f}")
 
     # Check variance by firm (CEOs may move)
-    if 'ceo_id' in panel.columns:
-        ceo_var = panel.groupby('ceo_id')['style_frozen'].var()
+    if "ceo_id" in panel.columns:
+        ceo_var = panel.groupby("ceo_id")["style_frozen"].var()
         n_ceos_with_var = (ceo_var > 0).sum()
-        print(f"  - N_ceos with within-CEO variance > 0: {n_ceos_with_var} (should be 0)")
+        print(
+            f"  - N_ceos with within-CEO variance > 0: {n_ceos_with_var} (should be 0)"
+        )
         lines.append(f"N_ceos_with_variance>0: {n_ceos_with_var} (should be 0)")
 
-    checks['style_coverage'] = style_stats
+    checks["style_coverage"] = style_stats
     lines.append("")
 
     # Check c: DV and Controls
@@ -622,21 +634,36 @@ def run_sanity_checks(panel, output_dir=None):
     lines.append("DV AND CONTROLS")
     lines.append("-" * 40)
 
-    dv_cols = ['AbsAbInv', 'TotalInv', 'SalesGrowth', 'ln_at_t', 'lev_t', 'cash_t', 'roa_t', 'mb_t']
+    dv_cols = [
+        "AbsAbInv",
+        "TotalInv",
+        "SalesGrowth",
+        "ln_at_t",
+        "lev_t",
+        "cash_t",
+        "roa_t",
+        "mb_t",
+    ]
     existing_dv = [c for c in dv_cols if c in panel.columns]
 
     for col in existing_dv:
         stats = {
-            'mean': float(panel[col].mean()),
-            'sd': float(panel[col].std()),
-            'p1': float(panel[col].quantile(0.01)),
-            'p99': float(panel[col].quantile(0.99)),
+            "mean": float(panel[col].mean()),
+            "sd": float(panel[col].std()),
+            "p1": float(panel[col].quantile(0.01)),
+            "p99": float(panel[col].quantile(0.99)),
         }
-        print(f"  - {col}: mean={stats['mean']:.4f}, sd={stats['sd']:.4f}, p1={stats['p1']:.4f}, p99={stats['p99']:.4f}")
-        lines.append(f"{col}: mean={stats['mean']:.4f}, sd={stats['sd']:.4f}, p1={stats['p1']:.4f}, p99={stats['p99']:.4f}")
+        print(
+            f"  - {col}: mean={stats['mean']:.4f}, sd={stats['sd']:.4f}, p1={stats['p1']:.4f}, p99={stats['p99']:.4f}"
+        )
+        lines.append(
+            f"{col}: mean={stats['mean']:.4f}, sd={stats['sd']:.4f}, p1={stats['p1']:.4f}, p99={stats['p99']:.4f}"
+        )
 
-    checks['dv_controls'] = {col: {'mean': float(panel[col].mean()), 'sd': float(panel[col].std())}
-                               for col in existing_dv}
+    checks["dv_controls"] = {
+        col: {"mean": float(panel[col].mean()), "sd": float(panel[col].std())}
+        for col in existing_dv
+    }
     lines.append("")
 
     # Check d: Biddle Cell Viability
@@ -644,8 +671,8 @@ def run_sanity_checks(panel, output_dir=None):
     lines.append("BIDDLE CELL VIABILITY")
     lines.append("-" * 40)
 
-    if 'ind2' in panel.columns:
-        cell_counts = panel.groupby(['ind2', 'fyear']).size()
+    if "ind2" in panel.columns:
+        cell_counts = panel.groupby(["ind2", "fyear"]).size()
         viable_cells = (cell_counts >= 30).sum()
         total_cells = len(cell_counts)
         pct_viable = viable_cells / total_cells * 100 if total_cells > 0 else 0
@@ -656,10 +683,10 @@ def run_sanity_checks(panel, output_dir=None):
         lines.append(f"Total cells: {total_cells:,}")
         lines.append(f"Cells with N >= 30: {viable_cells:,} ({pct_viable:.1f}%)")
 
-        checks['biddle_viability'] = {
-            'total_cells': int(total_cells),
-            'viable_cells': int(viable_cells),
-            'pct_viable': float(pct_viable),
+        checks["biddle_viability"] = {
+            "total_cells": int(total_cells),
+            "viable_cells": int(viable_cells),
+            "pct_viable": float(pct_viable),
         }
     else:
         print("  - ind2 column not available, skipping cell viability check")
@@ -671,8 +698,8 @@ def run_sanity_checks(panel, output_dir=None):
     # Save to file if output_dir provided
     if output_dir:
         sanity_file = output_dir / "sanity_checks.txt"
-        with open(sanity_file, 'w') as f:
-            f.write('\n'.join(lines))
+        with open(sanity_file, "w") as f:
+            f.write("\n".join(lines))
         print(f"\n[OK] Sanity checks saved to: {sanity_file}")
 
     return checks
@@ -683,7 +710,7 @@ def run_sanity_checks(panel, output_dir=None):
 # ==============================================================================
 
 
-def run_h9_regression(panel, model_type='primary', verbose=True):
+def run_h9_regression(panel, model_type="primary", verbose=True):
     """
     Run H9 regression with interaction term.
 
@@ -708,25 +735,25 @@ def run_h9_regression(panel, model_type='primary', verbose=True):
     print("=" * 80)
 
     # Define regression variables
-    dependent = 'AbsAbInv'
+    dependent = "AbsAbInv"
 
     # Independent variables
-    exog = ['PRiskFY', 'style_frozen', 'interact']
+    exog = ["PRiskFY", "style_frozen", "interact"]
 
     # Control variables
-    control_cols = ['ln_at_t', 'lev_t', 'cash_t', 'roa_t', 'mb_t', 'SalesGrowth']
+    control_cols = ["ln_at_t", "lev_t", "cash_t", "roa_t", "mb_t", "SalesGrowth"]
     existing_controls = [c for c in control_cols if c in panel.columns]
     exog.extend(existing_controls)
 
     if verbose:
-        print(f"\nModel Specification:")
+        print("\nModel Specification:")
         print(f"  - Dependent: {dependent}")
-        print(f"  - Independent: PRiskFY, style_frozen, interact")
+        print("  - Independent: PRiskFY, style_frozen, interact")
         print(f"  - Controls: {', '.join(existing_controls)}")
-        print(f"  - Fixed Effects: Firm (gvkey), Year (fyear)")
-        print(f"  - Std Errors: Clustered by gvkey (firm)")
-        print(f"\nKey coefficient of interest:")
-        print(f"  - beta3 (interact = PRiskFY * style_frozen)")
+        print("  - Fixed Effects: Firm (gvkey), Year (fyear)")
+        print("  - Std Errors: Clustered by gvkey (firm)")
+        print("\nKey coefficient of interest:")
+        print("  - beta3 (interact = PRiskFY * style_frozen)")
 
     # Prepare data for regression
     reg_data = panel.copy()
@@ -735,7 +762,7 @@ def run_h9_regression(panel, model_type='primary', verbose=True):
     reg_data = reg_data.reset_index(drop=True)
 
     if verbose:
-        print(f"\nRegression data:")
+        print("\nRegression data:")
         print(f"  - N_obs: {len(reg_data):,}")
         print(f"  - N_firms: {reg_data['gvkey'].nunique():,}")
         print(f"  - N_years: {reg_data['fyear'].nunique():,}")
@@ -746,15 +773,15 @@ def run_h9_regression(panel, model_type='primary', verbose=True):
             df=reg_data,
             dependent=dependent,
             exog=exog,
-            entity_col='gvkey',
-            time_col='fyear',
+            entity_col="gvkey",
+            time_col="fyear",
             entity_effects=True,
             time_effects=True,
             industry_effects=False,
-            cov_type='clustered',
+            cov_type="clustered",
             cluster_cols=None,  # Default to entity (firm) clustering
             check_collinearity=True,
-            vif_threshold=5.0
+            vif_threshold=5.0,
         )
 
         return result
@@ -780,12 +807,12 @@ def format_regression_results(result, output_dir):
     print("=" * 80)
 
     # Extract coefficients
-    coeffs = result['coefficients'].copy()
-    coeffs['p_value'] = result['model'].pvalues
-    coeffs['variable'] = coeffs.index
+    coeffs = result["coefficients"].copy()
+    coeffs["p_value"] = result["model"].pvalues
+    coeffs["variable"] = coeffs.index
 
     # Reorder columns
-    cols = ['variable', 'Coefficient', 'Std. Error', 't-stat', 'p_value']
+    cols = ["variable", "Coefficient", "Std. Error", "t-stat", "p_value"]
     results_df = coeffs[cols].copy()
 
     # Reset index for cleaner output
@@ -798,8 +825,8 @@ def format_regression_results(result, output_dir):
 
     # Save full model summary to text file
     summary_file = output_dir / "h9_regression_output.txt"
-    with open(summary_file, 'w') as f:
-        f.write(str(result['model'].summary))
+    with open(summary_file, "w") as f:
+        f.write(str(result["model"].summary))
     print(f"[OK] Full summary saved to: {summary_file}")
 
     return results_df
@@ -824,38 +851,34 @@ def generate_report(panel, reg_result, sanity_checks, output_dir):
     print("GENERATING SUMMARY REPORT")
     print("=" * 80)
 
-    coeffs = reg_result['coefficients']
-    summary = reg_result['summary']
+    coeffs = reg_result["coefficients"]
+    summary = reg_result["summary"]
 
     # Extract key coefficients
-    beta1 = coeffs.loc['PRiskFY', 'Coefficient']
-    beta1_se = coeffs.loc['PRiskFY', 'Std. Error']
-    beta1_t = coeffs.loc['PRiskFY', 't-stat']
-    beta1_p = reg_result['model'].pvalues.loc['PRiskFY']
+    beta1 = coeffs.loc["PRiskFY", "Coefficient"]
+    beta1_se = coeffs.loc["PRiskFY", "Std. Error"]
+    beta1_t = coeffs.loc["PRiskFY", "t-stat"]
+    beta1_p = reg_result["model"].pvalues.loc["PRiskFY"]
 
-    beta2 = coeffs.loc['style_frozen', 'Coefficient']
-    beta2_se = coeffs.loc['style_frozen', 'Std. Error']
-    beta2_t = coeffs.loc['style_frozen', 't-stat']
-    beta2_p = reg_result['model'].pvalues.loc['style_frozen']
+    beta2 = coeffs.loc["style_frozen", "Coefficient"]
+    beta2_se = coeffs.loc["style_frozen", "Std. Error"]
+    beta2_t = coeffs.loc["style_frozen", "t-stat"]
+    beta2_p = reg_result["model"].pvalues.loc["style_frozen"]
 
-    beta3 = coeffs.loc['interact', 'Coefficient']
-    beta3_se = coeffs.loc['interact', 'Std. Error']
-    beta3_t = coeffs.loc['interact', 't-stat']
-    beta3_p = reg_result['model'].pvalues.loc['interact']
+    beta3 = coeffs.loc["interact", "Coefficient"]
+    beta3_se = coeffs.loc["interact", "Std. Error"]
+    beta3_t = coeffs.loc["interact", "t-stat"]
+    beta3_p = reg_result["model"].pvalues.loc["interact"]
 
     # Interpret beta3
     if beta3_p < 0.01:
-        sig = '***'
-        sig_level = 'p < 0.01'
+        sig_level = "p < 0.01"
     elif beta3_p < 0.05:
-        sig = '**'
-        sig_level = 'p < 0.05'
+        sig_level = "p < 0.05"
     elif beta3_p < 0.10:
-        sig = '*'
-        sig_level = 'p < 0.10'
+        sig_level = "p < 0.10"
     else:
-        sig = ''
-        sig_level = f'p = {beta3_p:.4f} (not significant)'
+        sig_level = f"p = {beta3_p:.4f} (not significant)"
 
     if beta3 > 0 and beta3_p < 0.05:
         interpretation = f"""
@@ -933,15 +956,15 @@ PRisk -> abnormal investment relationship.
         "",
         "### Key Coefficients",
         "",
-        f"| Variable | Coefficient | Std.Error | t-stat | p-value |",
-        f"|----------|-------------|-----------|--------|---------|",
+        "| Variable | Coefficient | Std.Error | t-stat | p-value |",
+        "|----------|-------------|-----------|--------|---------|",
         f"| PRiskFY | {beta1:.4f} | {beta1_se:.4f} | {beta1_t:.2f} | {beta1_p:.4f} |",
         f"| StyleFrozen | {beta2:.4f} | {beta2_se:.4f} | {beta2_t:.2f} | {beta2_p:.4f} |",
         f"| **Interact (PRiskFY x StyleFrozen)** | **{beta3:.4f}** | **{beta3_se:.4f}** | **{beta3_t:.2f}** | **{beta3_p:.4f}** |",
         "",
-        f"Significance: *** p<0.01, ** p<0.05, * p<0.10",
+        "Significance: *** p<0.01, ** p<0.05, * p<0.10",
         "",
-        f"### Interpretation of Beta3 (Interaction Term)",
+        "### Interpretation of Beta3 (Interaction Term)",
         interpretation,
         "",
         "### Model Fit",
@@ -958,7 +981,8 @@ PRisk -> abnormal investment relationship.
         "",
         "## Conclusion",
         "",
-        "**H9 Result:**" + (" **SUPPORTED**" if beta3_p < 0.05 else " **NOT SUPPORTED**"),
+        "**H9 Result:**"
+        + (" **SUPPORTED**" if beta3_p < 0.05 else " **NOT SUPPORTED**"),
         "",
         f"The interaction term (PRiskFY x StyleFrozen) is {'statistically significant' if beta3_p < 0.05 else 'not significant'} at the 5% level.",
         "",
@@ -969,8 +993,8 @@ PRisk -> abnormal investment relationship.
 
     # Save report
     report_file = output_dir / "report_step58_04.md"
-    with open(report_file, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(report_lines))
+    with open(report_file, "w", encoding="utf-8") as f:
+        f.write("\n".join(report_lines))
 
     print(f"[OK] Report saved to: {report_file}")
     print(interpretation)
@@ -998,25 +1022,25 @@ Examples:
 
   # Robustness specification
   python 5.8_H9_FinalMerge.py --model-type robustness
-        """
+        """,
     )
     parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Load data and verify merge, but skip regression'
+        "--dry-run",
+        action="store_true",
+        help="Load data and verify merge, but skip regression",
     )
     parser.add_argument(
-        '--model-type',
+        "--model-type",
         type=str,
-        default='primary',
-        choices=['primary', 'robustness'],
-        help='Model type (default: primary)'
+        default="primary",
+        choices=["primary", "robustness"],
+        help="Model type (default: primary)",
     )
 
     args = parser.parse_args()
 
     # Generate timestamp
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
     # Setup paths
     paths = setup_paths(timestamp)
@@ -1033,10 +1057,10 @@ Examples:
 
     # Collect statistics
     stats = {
-        'input': {},
-        'output': {},
-        'processing': {},
-        'timing': {},
+        "input": {},
+        "output": {},
+        "processing": {},
+        "timing": {},
     }
 
     try:
@@ -1045,21 +1069,21 @@ Examples:
         # ---------------------------------------------------------------------
 
         # Load StyleFrozen
-        style_df = load_style_frozen(paths['style_frozen_base'])
-        stats['input']['style_frozen_obs'] = len(style_df)
-        stats['input']['style_frozen_firms'] = style_df['gvkey'].nunique()
+        style_df = load_style_frozen(paths["style_frozen_base"])
+        stats["input"]["style_frozen_obs"] = len(style_df)
+        stats["input"]["style_frozen_firms"] = style_df["gvkey"].nunique()
         gc.collect()
 
         # Load PRiskFY
-        prisk_df = load_priskfy(paths['priskfy_base'])
-        stats['input']['priskfy_obs'] = len(prisk_df)
-        stats['input']['priskfy_firms'] = prisk_df['gvkey'].nunique()
+        prisk_df = load_priskfy(paths["priskfy_base"])
+        stats["input"]["priskfy_obs"] = len(prisk_df)
+        stats["input"]["priskfy_firms"] = prisk_df["gvkey"].nunique()
         gc.collect()
 
         # Load AbnormalInvestment
-        abinv_df = load_abnormal_investment(paths['abnormal_inv_base'])
-        stats['input']['abinv_obs'] = len(abinv_df)
-        stats['input']['abinv_firms'] = abinv_df['gvkey'].nunique()
+        abinv_df = load_abnormal_investment(paths["abnormal_inv_base"])
+        stats["input"]["abinv_obs"] = len(abinv_df)
+        stats["input"]["abinv_firms"] = abinv_df["gvkey"].nunique()
         gc.collect()
 
         # ---------------------------------------------------------------------
@@ -1067,8 +1091,8 @@ Examples:
         # ---------------------------------------------------------------------
 
         panel = merge_final_panel(style_df, prisk_df, abinv_df)
-        stats['output']['merged_obs'] = len(panel)
-        stats['output']['merged_firms'] = panel['gvkey'].nunique()
+        stats["output"]["merged_obs"] = len(panel)
+        stats["output"]["merged_firms"] = panel["gvkey"].nunique()
         gc.collect()
 
         # ---------------------------------------------------------------------
@@ -1076,9 +1100,9 @@ Examples:
         # ---------------------------------------------------------------------
 
         panel, filters = apply_sample_filters(panel)
-        stats['output']['final_obs'] = len(panel)
-        stats['output']['final_firms'] = panel['gvkey'].nunique()
-        stats['processing']['filters'] = filters
+        stats["output"]["final_obs"] = len(panel)
+        stats["output"]["final_firms"] = panel["gvkey"].nunique()
+        stats["processing"]["filters"] = filters
         gc.collect()
 
         # ---------------------------------------------------------------------
@@ -1092,7 +1116,7 @@ Examples:
         # STEP 5: Save final panel
         # ---------------------------------------------------------------------
 
-        final_panel_path = paths['output_dir'] / "final_panel.parquet"
+        final_panel_path = paths["output_dir"] / "final_panel.parquet"
         panel.to_parquet(final_panel_path, index=False)
         print(f"\n[OK] Final panel saved to: {final_panel_path}")
         gc.collect()
@@ -1101,7 +1125,7 @@ Examples:
         # STEP 6: Run sanity checks
         # ---------------------------------------------------------------------
 
-        sanity_checks = run_sanity_checks(panel, paths['output_dir'])
+        sanity_checks = run_sanity_checks(panel, paths["output_dir"])
 
         # ---------------------------------------------------------------------
         # STEP 7: Run regression (skip if dry-run)
@@ -1113,8 +1137,8 @@ Examples:
             print("=" * 80)
         else:
             reg_result = run_h9_regression(panel, model_type=args.model_type)
-            results_df = format_regression_results(reg_result, paths['output_dir'])
-            generate_report(panel, reg_result, sanity_checks, paths['output_dir'])
+            format_regression_results(reg_result, paths["output_dir"])
+            generate_report(panel, reg_result, sanity_checks, paths["output_dir"])
 
         # ---------------------------------------------------------------------
         # Timing and Statistics
@@ -1122,7 +1146,7 @@ Examples:
 
         end_time = time.time()
         duration = end_time - start_time
-        stats['timing']['duration_seconds'] = duration
+        stats["timing"]["duration_seconds"] = duration
 
         print("\n" + "=" * 80)
         print("EXECUTION COMPLETE")
@@ -1130,14 +1154,16 @@ Examples:
         print(f"Duration: {duration:.1f} seconds")
 
         # Save stats
-        save_stats(stats, paths['output_dir'])
+        save_stats(stats, paths["output_dir"])
 
         # Memory check
         mem_final = get_process_memory_mb()
-        print(f"Final memory: {mem_final['rss_mb']:.1f} MB ({mem_final['percent']:.1f}%)")
+        print(
+            f"Final memory: {mem_final['rss_mb']:.1f} MB ({mem_final['percent']:.1f}%)"
+        )
 
         print("\nOutput files:")
-        for f in paths['output_dir'].iterdir():
+        for f in paths["output_dir"].iterdir():
             print(f"  - {f.name}")
 
         return 0
@@ -1145,9 +1171,10 @@ Examples:
     except Exception as e:
         print(f"\n[ERROR] Execution failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

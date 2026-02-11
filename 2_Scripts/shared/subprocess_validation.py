@@ -16,7 +16,6 @@ Source: https://cwe.mitre.org/data/definitions/427.html
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
 
 def validate_script_path(script_path: Path, allowed_dir: Path) -> Path:

@@ -4,8 +4,9 @@ Shared utilities for Step 1 scripts.
 Provides common functions for variable reference generation.
 """
 
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 
 def load_master_variable_definitions():

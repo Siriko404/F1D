@@ -35,38 +35,32 @@ Deterministic: true
 ================================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime, timedelta
-import pandas as pd
-import numpy as np
-import yaml
-import json
+import gc
+import sys
 import time
 import warnings
-import gc
+from datetime import datetime, timedelta
+from pathlib import Path
+
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import observability utilities
 from shared.observability_utils import (
-    compute_file_checksum,
-    print_stat,
-    save_stats,
-    get_process_memory_mb,
     calculate_throughput,
+    compute_file_checksum,
+    get_process_memory_mb,
+    save_stats,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    validate_input_file,
 )
 
 # Suppress warnings for cleaner output
@@ -94,7 +88,10 @@ def setup_paths(config, timestamp):
     paths = {
         "root": root,
         "prisk_file": root / "1_Inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
-        "compustat_file": root / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet",
+        "compustat_file": root
+        / "1_Inputs"
+        / "comp_na_daily_all"
+        / "comp_na_daily_all.parquet",
     }
 
     # Output directory
@@ -132,15 +129,15 @@ def construct_cal_q_end(date_str):
         pandas.Timestamp for quarter-end date, or NaT if parsing fails
     """
     try:
-        parts = str(date_str).lower().strip().split('q')
+        parts = str(date_str).lower().strip().split("q")
         year = int(parts[0])
         quarter = int(parts[1]) if len(parts) > 1 else 1
 
         # Map quarter to month-end date
         quarter_end_months = {
-            1: (3, 31),   # Q1: March 31
-            2: (6, 30),   # Q2: June 30
-            3: (9, 30),   # Q3: September 30
+            1: (3, 31),  # Q1: March 31
+            2: (6, 30),  # Q2: June 30
+            3: (9, 30),  # Q3: September 30
             4: (12, 31),  # Q4: December 31
         }
 
@@ -185,66 +182,71 @@ def load_prisk_data(prisk_file):
     # Read TAB-separated file - specify dtypes for memory efficiency
     print(f"  Reading: {prisk_file.name}")
     # Read only needed columns to save memory
-    usecols = ['gvkey', 'date', 'PRisk', 'NPRisk', 'PSentiment']
-    df = pd.read_csv(prisk_file, sep='\t', usecols=usecols)
+    usecols = ["gvkey", "date", "PRisk", "NPRisk", "PSentiment"]
+    df = pd.read_csv(prisk_file, sep="\t", usecols=usecols)
     print(f"  Loaded: {len(df):,} raw quarterly observations")
 
     # Normalize gvkey - zero-pad to 6 characters
-    df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Check required columns
-    required_cols = ['gvkey', 'date', 'PRisk']
+    required_cols = ["gvkey", "date", "PRisk"]
     missing = [col for col in required_cols if col not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns in PRisk data: {missing}")
 
     # Drop rows with missing PRisk (can't compute without it)
     before_drop = len(df)
-    df = df.dropna(subset=['PRisk'])
+    df = df.dropna(subset=["PRisk"])
     if len(df) < before_drop:
         print(f"  Dropped {before_drop - len(df):,} rows with missing PRisk")
 
     # Construct calendar quarter-end dates (vectorized for speed)
-    print(f"  Constructing cal_q_end from date format 'YYYYQq'...")
+    print("  Constructing cal_q_end from date format 'YYYYQq'...")
     # Vectorized parsing is much faster than apply
-    df['cal_q_end'] = pd.to_datetime(df['date'].apply(parse_date_quarter), errors='coerce')
+    df["cal_q_end"] = pd.to_datetime(
+        df["date"].apply(parse_date_quarter), errors="coerce"
+    )
 
     # Check for parsing failures
-    n_failed = df['cal_q_end'].isna().sum()
+    n_failed = df["cal_q_end"].isna().sum()
     if n_failed > 0:
         print(f"  [WARNING] Failed to parse {n_failed:,} dates")
-        df = df.dropna(subset=['cal_q_end'])
+        df = df.dropna(subset=["cal_q_end"])
 
     # Create cal_yearq string for uniqueness (e.g., "2002Q1")
-    df['cal_year'] = df['cal_q_end'].dt.year.astype('int16')
-    df['cal_quarter'] = df['cal_q_end'].dt.quarter.astype('int8')
-    df['cal_yearq'] = df['cal_year'].astype(str) + 'Q' + df['cal_quarter'].astype(str)
+    df["cal_year"] = df["cal_q_end"].dt.year.astype("int16")
+    df["cal_quarter"] = df["cal_q_end"].dt.quarter.astype("int8")
+    df["cal_yearq"] = df["cal_year"].astype(str) + "Q" + df["cal_quarter"].astype(str)
 
     # Deduplicate: keep max PRisk for each (gvkey, cal_yearq)
     before_dedup = len(df)
-    df = df.sort_values('PRisk', ascending=False) \
-         .drop_duplicates(subset=['gvkey', 'cal_yearq'], keep='first')
+    df = df.sort_values("PRisk", ascending=False).drop_duplicates(
+        subset=["gvkey", "cal_yearq"], keep="first"
+    )
     n_duplicates = before_dedup - len(df)
 
     if n_duplicates > 0:
-        print(f"  Removed {n_duplicates:,} duplicate (gvkey, cal_yearq) rows (kept max PRisk)")
+        print(
+            f"  Removed {n_duplicates:,} duplicate (gvkey, cal_yearq) rows (kept max PRisk)"
+        )
 
     # Optional: keep NPRisk and PSentiment if available
-    optional_cols = ['NPRisk', 'PSentiment']
+    optional_cols = ["NPRisk", "PSentiment"]
     available_optional = [col for col in optional_cols if col in df.columns]
     if available_optional:
         print(f"  Included optional columns: {available_optional}")
 
-    output_cols = ['gvkey', 'cal_yearq', 'cal_q_end', 'PRisk'] + available_optional
+    output_cols = ["gvkey", "cal_yearq", "cal_q_end", "PRisk"] + available_optional
     df = df[output_cols].copy()
 
     # Downcast numeric types for memory efficiency
-    df['PRisk'] = df['PRisk'].astype('float32')
+    df["PRisk"] = df["PRisk"].astype("float32")
     for col in available_optional:
-        if col in df.columns and df[col].dtype in ['float64', 'float32']:
-            df[col] = df[col].astype('float32')
+        if col in df.columns and df[col].dtype in ["float64", "float32"]:
+            df[col] = df[col].astype("float32")
 
-    n_firms = df['gvkey'].nunique()
+    n_firms = df["gvkey"].nunique()
     n_quarters = len(df)
 
     print(f"  PRisk data: {n_quarters:,} firm-quarter observations ({n_firms:,} firms)")
@@ -260,7 +262,7 @@ def parse_date_quarter(date_str):
 
     Vectorized helper for construct_cal_q_end.
     """
-    parts = str(date_str).lower().strip().split('q')
+    parts = str(date_str).lower().strip().split("q")
     if len(parts) != 2:
         return None
     try:
@@ -310,34 +312,34 @@ def load_compustat_dates(compustat_file, year_range=(2002, 2022)):
 
     # Read parquet - select only needed columns to save memory
     # Note: Compustat uses fyearq (fiscal year from quarterly data)
-    cols_to_read = ['gvkey', 'datadate', 'fyearq']
+    cols_to_read = ["gvkey", "datadate", "fyearq"]
     df = pd.read_parquet(compustat_file, columns=cols_to_read)
 
     print(f"  Loaded: {len(df):,} observations")
 
     # Normalize gvkey
-    df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Ensure datadate is datetime
-    df['datadate'] = pd.to_datetime(df['datadate'])
+    df["datadate"] = pd.to_datetime(df["datadate"])
 
     # Rename fyearq to fyear for consistency
-    df = df.rename(columns={'fyearq': 'fyear'})
+    df = df.rename(columns={"fyearq": "fyear"})
 
     # Ensure fyear is integer
-    df['fyear'] = df['fyear'].astype(int)
+    df["fyear"] = df["fyear"].astype(int)
 
     # Filter to year range
-    df = df[df['fyear'].between(year_range[0], year_range[1])].copy()
+    df = df[df["fyear"].between(year_range[0], year_range[1])].copy()
 
     # Create unique (gvkey, fyear, datadate) combinations
     # Some firms may have multiple datadates per fyear (rare), keep first
     before_dedup = len(df)
-    df = df.drop_duplicates(subset=['gvkey', 'fyear'], keep='first')
+    df = df.drop_duplicates(subset=["gvkey", "fyear"], keep="first")
     if len(df) < before_dedup:
         print(f"  Deduplicated: {before_dedup - len(df):,} rows removed")
 
-    n_firms = df['gvkey'].nunique()
+    n_firms = df["gvkey"].nunique()
     n_firm_years = len(df)
 
     print(f"  Fiscal year grid: {n_firm_years:,} firm-years ({n_firms:,} firms)")
@@ -351,8 +353,14 @@ def load_compustat_dates(compustat_file, year_range=(2002, 2022)):
 # ==============================================================================
 
 
-def compute_prisk_fy(prisk_df, compustat_df, min_quarters=2, window_days=366,
-                     temp_dir=None, batch_size=1000):
+def compute_prisk_fy(
+    prisk_df,
+    compustat_df,
+    min_quarters=2,
+    window_days=366,
+    temp_dir=None,
+    batch_size=1000,
+):
     """
     Compute PRiskFY (fiscal-year PRisk) using 366-day rolling window.
 
@@ -377,17 +385,17 @@ def compute_prisk_fy(prisk_df, compustat_df, min_quarters=2, window_days=366,
         DataFrame with gvkey, fyear, datadate, PRiskFY, n_quarters_used
     """
     print("\n" + "-" * 60)
-    print(f"Computing PRiskFY (Fiscal-Year Aggregation)")
+    print("Computing PRiskFY (Fiscal-Year Aggregation)")
     print("-" * 60)
     print(f"  Window: {window_days} days (approximately one year)")
     print(f"  Minimum quarters: {min_quarters}")
     print(f"  Batch size: {batch_size:,} firm-years per batch")
 
     # Prepare PRisk data for efficient merging - use only needed columns
-    prisk_subset = prisk_df[['gvkey', 'cal_q_end', 'PRisk']].copy()
+    prisk_subset = prisk_df[["gvkey", "cal_q_end", "PRisk"]].copy()
 
     # Convert to smaller data types for memory efficiency
-    prisk_subset['PRisk'] = prisk_subset['PRisk'].astype('float32')
+    prisk_subset["PRisk"] = prisk_subset["PRisk"].astype("float32")
 
     # Setup for batched processing
     temp_files = []
@@ -397,58 +405,60 @@ def compute_prisk_fy(prisk_df, compustat_df, min_quarters=2, window_days=366,
     n_processed = 0
     n_valid = 0
 
-    print(f"\n  Processing firm-years...")
+    print("\n  Processing firm-years...")
 
     # Process firms in groups to minimize memory
     # First, identify firms with PRisk data (filter early)
-    firms_with_prisk = set(prisk_subset['gvkey'].unique())
-    compustat_subset = compustat_df[
-        compustat_df['gvkey'].isin(firms_with_prisk)
-    ].copy()
+    firms_with_prisk = set(prisk_subset["gvkey"].unique())
+    compustat_subset = compustat_df[compustat_df["gvkey"].isin(firms_with_prisk)].copy()
 
     n_firms_filtered = len(compustat_subset) - len(compustat_df)
     print(f"  Filtered out {n_firms_filtered:,} firm-years without PRisk data")
 
     # Process firm by firm
-    for gvkey, compustat_group in compustat_subset.groupby('gvkey'):
+    for gvkey, compustat_group in compustat_subset.groupby("gvkey"):
         # Get PRisk data for this firm
-        firm_prisk = prisk_subset[prisk_subset['gvkey'] == gvkey].copy()
+        firm_prisk = prisk_subset[prisk_subset["gvkey"] == gvkey].copy()
 
         if len(firm_prisk) == 0:
             continue
 
         # For each firm-year, find quarters in window
         for _, row in compustat_group.iterrows():
-            fy_end = row['datadate']
-            fyear = row['fyear']
+            fy_end = row["datadate"]
+            fyear = row["fyear"]
             lower_bound = fy_end - timedelta(days=window_days)
 
             # Select quarters in window: lower_bound < cal_q_end <= fy_end
             quarters_in_window = firm_prisk[
-                (firm_prisk['cal_q_end'] > lower_bound) &
-                (firm_prisk['cal_q_end'] <= fy_end)
+                (firm_prisk["cal_q_end"] > lower_bound)
+                & (firm_prisk["cal_q_end"] <= fy_end)
             ]
 
             n_quarters = len(quarters_in_window)
 
             # Apply minimum quarters rule
             if n_quarters >= min_quarters:
-                priskfy = float(quarters_in_window['PRisk'].mean())
+                priskfy = float(quarters_in_window["PRisk"].mean())
 
-                batch_results.append({
-                    'gvkey': gvkey,
-                    'fyear': int(fyear),
-                    'datadate': fy_end,
-                    'PRiskFY': priskfy,
-                    'n_quarters_used': int(n_quarters)
-                })
+                batch_results.append(
+                    {
+                        "gvkey": gvkey,
+                        "fyear": int(fyear),
+                        "datadate": fy_end,
+                        "PRiskFY": priskfy,
+                        "n_quarters_used": int(n_quarters),
+                    }
+                )
                 n_valid += 1
 
             n_processed += 1
 
             # Periodic progress update
             if n_processed % 10000 == 0:
-                print(f"    Processed: {n_processed:,}/{n_total:,} ({n_processed/n_total*100:.1f}%)")
+                print(
+                    f"    Processed: {n_processed:,}/{n_total:,} ({n_processed / n_total * 100:.1f}%)"
+                )
                 # Force garbage collection periodically
                 gc.collect()
 
@@ -474,14 +484,16 @@ def compute_prisk_fy(prisk_df, compustat_df, min_quarters=2, window_days=366,
         gc.collect()
 
     if n_processed % 10000 != 0:
-        print(f"    Processed: {n_processed:,}/{n_total:,} ({n_processed/n_total*100:.1f}%)")
+        print(
+            f"    Processed: {n_processed:,}/{n_total:,} ({n_processed / n_total * 100:.1f}%)"
+        )
 
     # Combine all batches
     print(f"\n  Combining {len(temp_files)} batches...")
     if temp_files:
-        result_df = pd.concat([
-            pd.read_parquet(f) for f in temp_files
-        ], ignore_index=True)
+        result_df = pd.concat(
+            [pd.read_parquet(f) for f in temp_files], ignore_index=True
+        )
 
         # Clean up temp files
         for f in temp_files:
@@ -489,13 +501,17 @@ def compute_prisk_fy(prisk_df, compustat_df, min_quarters=2, window_days=366,
         gc.collect()
     else:
         # Should not happen, but handle edge case
-        result_df = pd.DataFrame(columns=['gvkey', 'fyear', 'datadate', 'PRiskFY', 'n_quarters_used'])
+        result_df = pd.DataFrame(
+            columns=["gvkey", "fyear", "datadate", "PRiskFY", "n_quarters_used"]
+        )
 
     n_firm_years_valid = len(result_df)
-    n_firms = result_df['gvkey'].nunique()
+    n_firms = result_df["gvkey"].nunique()
 
     print(f"\n  Valid firm-years: {n_firm_years_valid:,} ({n_firms:,} firms)")
-    print(f"  Coverage: {n_firm_years_valid}/{n_total} ({n_firm_years_valid/n_total*100:.1f}%)")
+    print(
+        f"  Coverage: {n_firm_years_valid}/{n_total} ({n_firm_years_valid / n_total * 100:.1f}%)"
+    )
 
     return result_df
 
@@ -519,20 +535,20 @@ def validate_prisk_fy(df):
         return {}
 
     # Basic checks
-    n_missing_prisk = df['PRiskFY'].isna().sum()
-    n_insufficient_quarters = (df['n_quarters_used'] < 2).sum()
+    n_missing_prisk = df["PRiskFY"].isna().sum()
+    n_insufficient_quarters = (df["n_quarters_used"] < 2).sum()
 
     print(f"  Total observations: {len(df):,}")
     print(f"  Missing PRiskFY: {n_missing_prisk:,}")
     print(f"  Insufficient quarters (< 2): {n_insufficient_quarters:,}")
 
     if n_missing_prisk > 0:
-        print(f"  [ERROR] Found missing PRiskFY values (should have been dropped)")
+        print("  [ERROR] Found missing PRiskFY values (should have been dropped)")
     if n_insufficient_quarters > 0:
-        print(f"  [ERROR] Found n_quarters_used < 2 (should have been dropped)")
+        print("  [ERROR] Found n_quarters_used < 2 (should have been dropped)")
 
     # PRiskFY distribution
-    print(f"\n  PRiskFY Distribution:")
+    print("\n  PRiskFY Distribution:")
     print(f"    Mean: {df['PRiskFY'].mean():.4f}")
     print(f"    Std:  {df['PRiskFY'].std():.4f}")
     print(f"    Min:  {df['PRiskFY'].min():.4f}")
@@ -543,30 +559,34 @@ def validate_prisk_fy(df):
     print(f"    p99:  {df['PRiskFY'].quantile(0.99):.4f}")
 
     # n_quarters_used distribution
-    print(f"\n  n_quarters_used Distribution:")
-    quarter_counts = df['n_quarters_used'].value_counts().sort_index()
+    print("\n  n_quarters_used Distribution:")
+    quarter_counts = df["n_quarters_used"].value_counts().sort_index()
     for n_q, count in quarter_counts.items():
         pct = count / len(df) * 100
         print(f"    {n_q} quarters: {count:,} ({pct:.1f}%)")
 
     # Coverage by year
-    print(f"\n  Fyear Coverage:")
-    year_counts = df.groupby('fyear').size()
-    print(f"    Min year: {df['fyear'].min()} (N={year_counts.loc[df['fyear'].min()]:,})")
-    print(f"    Max year: {df['fyear'].max()} (N={year_counts.loc[df['fyear'].max()]:,})")
+    print("\n  Fyear Coverage:")
+    year_counts = df.groupby("fyear").size()
+    print(
+        f"    Min year: {df['fyear'].min()} (N={year_counts.loc[df['fyear'].min()]:,})"
+    )
+    print(
+        f"    Max year: {df['fyear'].max()} (N={year_counts.loc[df['fyear'].max()]:,})"
+    )
     print(f"    Average per year: {year_counts.mean():.0f}")
 
     stats = {
         "n_obs": int(len(df)),
-        "n_firms": int(df['gvkey'].nunique()),
-        "fyear_min": int(df['fyear'].min()),
-        "fyear_max": int(df['fyear'].max()),
-        "priskfy_mean": float(df['PRiskFY'].mean()),
-        "priskfy_std": float(df['PRiskFY'].std()),
-        "priskfy_min": float(df['PRiskFY'].min()),
-        "priskfy_max": float(df['PRiskFY'].max()),
-        "priskfy_p1": float(df['PRiskFY'].quantile(0.01)),
-        "priskfy_p99": float(df['PRiskFY'].quantile(0.99)),
+        "n_firms": int(df["gvkey"].nunique()),
+        "fyear_min": int(df["fyear"].min()),
+        "fyear_max": int(df["fyear"].max()),
+        "priskfy_mean": float(df["PRiskFY"].mean()),
+        "priskfy_std": float(df["PRiskFY"].std()),
+        "priskfy_min": float(df["PRiskFY"].min()),
+        "priskfy_max": float(df["PRiskFY"].max()),
+        "priskfy_p1": float(df["PRiskFY"].quantile(0.01)),
+        "priskfy_p99": float(df["PRiskFY"].quantile(0.99)),
         "n_quarters_distribution": quarter_counts.to_dict(),
         "missing_priskfy": int(n_missing_prisk),
         "insufficient_quarters": int(n_insufficient_quarters),
@@ -592,7 +612,7 @@ def generate_report(stats, output_dir):
 
     content = f"""# Step 58-02: PRiskFY Construction Report
 
-**Generated:** {stats.get('timestamp', datetime.now().isoformat())}
+**Generated:** {stats.get("timestamp", datetime.now().isoformat())}
 
 ---
 
@@ -644,27 +664,27 @@ Construct PRiskFY (fiscal-year policy risk exposure) at firm-year level for H9 r
 
 ### Sample Characteristics
 
-- **Total Observations:** {stats.get('output', {}).get('final_rows', 'N/A'):,}
-- **Unique Firms:** {stats.get('variables', {}).get('sample', {}).get('n_firms', 'N/A'):,}
-- **Fyear Range:** {stats.get('variables', {}).get('sample', {}).get('year_range', ['N/A', 'N/A'])[0]}-{stats.get('variables', {}).get('sample', {}).get('year_range', ['N/A', 'N/A'])[1]}
+- **Total Observations:** {stats.get("output", {}).get("final_rows", "N/A"):,}
+- **Unique Firms:** {stats.get("variables", {}).get("sample", {}).get("n_firms", "N/A"):,}
+- **Fyear Range:** {stats.get("variables", {}).get("sample", {}).get("year_range", ["N/A", "N/A"])[0]}-{stats.get("variables", {}).get("sample", {}).get("year_range", ["N/A", "N/A"])[1]}
 
 ### PRiskFY Distribution
 
-- **Mean:** {stats.get('variables', {}).get('PRiskFY', {}).get('mean', 'N/A')}
-- **Std Dev:** {stats.get('variables', {}).get('PRiskFY', {}).get('std', 'N/A')}
-- **Min:** {stats.get('variables', {}).get('PRiskFY', {}).get('min', 'N/A')}
-- **Max:** {stats.get('variables', {}).get('PRiskFY', {}).get('max', 'N/A')}
-- **1st percentile:** {stats.get('variables', {}).get('PRiskFY', {}).get('p1', 'N/A')}
-- **99th percentile:** {stats.get('variables', {}).get('PRiskFY', {}).get('p99', 'N/A')}
+- **Mean:** {stats.get("variables", {}).get("PRiskFY", {}).get("mean", "N/A")}
+- **Std Dev:** {stats.get("variables", {}).get("PRiskFY", {}).get("std", "N/A")}
+- **Min:** {stats.get("variables", {}).get("PRiskFY", {}).get("min", "N/A")}
+- **Max:** {stats.get("variables", {}).get("PRiskFY", {}).get("max", "N/A")}
+- **1st percentile:** {stats.get("variables", {}).get("PRiskFY", {}).get("p1", "N/A")}
+- **99th percentile:** {stats.get("variables", {}).get("PRiskFY", {}).get("p99", "N/A")}
 
 ### Quarters Used Distribution
 
-{_format_quarter_dist(stats.get('variables', {}).get('n_quarters_distribution', {}))}
+{_format_quarter_dist(stats.get("variables", {}).get("n_quarters_distribution", {}))}
 
 ### Data Quality Checks
 
-- **Missing PRiskFY:** {stats.get('variables', {}).get('missing_priskfy', 'N/A'):,} (should be 0)
-- **Insufficient quarters (< 2):** {stats.get('variables', {}).get('insufficient_quarters', 'N/A'):,} (should be 0)
+- **Missing PRiskFY:** {stats.get("variables", {}).get("missing_priskfy", "N/A"):,} (should be 0)
+- **Insufficient quarters (< 2):** {stats.get("variables", {}).get("insufficient_quarters", "N/A"):,} (should be 0)
 
 ---
 
@@ -702,7 +722,7 @@ AbsAbInv_(i,t+1) = beta0 + beta1*PRiskFY_(i,t) + beta2*StyleFrozen_(i,t)
 *Step 58-02: PRiskFY Construction*
 """
 
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(content)
 
     print(f"\n  Wrote report: {report_path.name}")
@@ -837,8 +857,12 @@ def main():
             print("  3. Deduplicate (gvkey, cal_yearq) keeping max PRisk")
             print("  4. Load Compustat fiscal year-end dates")
             print("  5. For each firm-year:")
-            print(f"     - Define {args.window_days}-day window: (fy_end - {args.window_days}d, fy_end]")
-            print(f"     - Select quarters in window (min {args.min_quarters} required)")
+            print(
+                f"     - Define {args.window_days}-day window: (fy_end - {args.window_days}d, fy_end]"
+            )
+            print(
+                f"     - Select quarters in window (min {args.min_quarters} required)"
+            )
             print("     - Compute PRiskFY = mean(PRisk of quarters)")
             print("  6. Validate: no missing values, all n_quarters_used >= 2")
             print(f"\nOutput would be written to: {paths['output_dir']}")
@@ -857,6 +881,7 @@ def main():
     log_file = open(paths["log_file"], "w", buffering=1)
 
     import builtins
+
     builtin_print = builtins.print
 
     def print_both(*args_log, **kwargs):
@@ -909,19 +934,24 @@ def main():
     prisk_df = load_prisk_data(prisk_file)
     stats["processing"]["prisk"] = {
         "n_raw_quarters": len(prisk_df),
-        "n_firms": int(prisk_df['gvkey'].nunique()),
-        "date_range": [str(prisk_df['cal_q_end'].min()), str(prisk_df['cal_q_end'].max())],
+        "n_firms": int(prisk_df["gvkey"].nunique()),
+        "date_range": [
+            str(prisk_df["cal_q_end"].min()),
+            str(prisk_df["cal_q_end"].max()),
+        ],
     }
 
     # Load Compustat
     compustat_file = paths["compustat_file"]
     stats["input"]["files"].append(str(compustat_file))
-    stats["input"]["checksums"][compustat_file.name] = compute_file_checksum(compustat_file)
+    stats["input"]["checksums"][compustat_file.name] = compute_file_checksum(
+        compustat_file
+    )
 
     compustat_df = load_compustat_dates(compustat_file, year_range=(2002, 2022))
     stats["processing"]["compustat"] = {
         "n_firm_years": len(compustat_df),
-        "n_firms": int(compustat_df['gvkey'].nunique()),
+        "n_firms": int(compustat_df["gvkey"].nunique()),
     }
 
     # ========================================================================
@@ -942,7 +972,7 @@ def main():
         min_quarters=args.min_quarters,
         window_days=args.window_days,
         temp_dir=temp_dir,
-        batch_size=2000  # Process 2000 firm-years per batch
+        batch_size=2000,  # Process 2000 firm-years per batch
     )
 
     # Clean up intermediate dataframes
@@ -963,22 +993,22 @@ def main():
     # Add sample info
     stats["variables"]["sample"] = {
         "n_obs": len(priskfy_df),
-        "n_firms": priskfy_df['gvkey'].nunique(),
-        "year_range": [int(priskfy_df['fyear'].min()), int(priskfy_df['fyear'].max())],
+        "n_firms": priskfy_df["gvkey"].nunique(),
+        "year_range": [int(priskfy_df["fyear"].min()), int(priskfy_df["fyear"].max())],
     }
 
     # Add PRiskFY stats
     stats["variables"]["PRiskFY"] = {
-        "mean": float(priskfy_df['PRiskFY'].mean()),
-        "std": float(priskfy_df['PRiskFY'].std()),
-        "min": float(priskfy_df['PRiskFY'].min()),
-        "max": float(priskfy_df['PRiskFY'].max()),
-        "p1": float(priskfy_df['PRiskFY'].quantile(0.01)),
-        "p99": float(priskfy_df['PRiskFY'].quantile(0.99)),
+        "mean": float(priskfy_df["PRiskFY"].mean()),
+        "std": float(priskfy_df["PRiskFY"].std()),
+        "min": float(priskfy_df["PRiskFY"].min()),
+        "max": float(priskfy_df["PRiskFY"].max()),
+        "p1": float(priskfy_df["PRiskFY"].quantile(0.01)),
+        "p99": float(priskfy_df["PRiskFY"].quantile(0.99)),
     }
 
     # Sort by gvkey and fyear
-    priskfy_df = priskfy_df.sort_values(['gvkey', 'fyear']).reset_index(drop=True)
+    priskfy_df = priskfy_df.sort_values(["gvkey", "fyear"]).reset_index(drop=True)
 
     # ========================================================================
     # Write Outputs
@@ -1009,7 +1039,7 @@ def main():
         latest_link.unlink()
     try:
         latest_link.symlink_to(paths["output_dir"])
-        print(f"  Updated latest/ symlink")
+        print("  Updated latest/ symlink")
     except OSError:
         # Symlink creation may fail on Windows
         pass
@@ -1043,7 +1073,7 @@ def main():
     print(f"Output dataset: {len(priskfy_df):,} observations")
     print(f"  Firms: {priskfy_df['gvkey'].nunique():,}")
     print(f"  Fyears: {priskfy_df['fyear'].min()}-{priskfy_df['fyear'].max()}")
-    print(f"\nPRiskFY statistics:")
+    print("\nPRiskFY statistics:")
     print(f"  Mean: {stats['variables']['PRiskFY']['mean']:.4f}")
     print(f"  Std:  {stats['variables']['PRiskFY']['std']:.4f}")
     print(f"  Min:  {stats['variables']['PRiskFY']['min']:.4f}")

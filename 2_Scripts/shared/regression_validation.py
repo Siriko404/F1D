@@ -20,9 +20,10 @@ pattern incrementally as needed.
 Deterministic: true
 """
 
-import pandas as pd
+from typing import Dict, List
+
 import numpy as np
-from typing import List, Dict, Optional
+import pandas as pd
 
 
 class RegressionValidationError(Exception):
@@ -59,7 +60,8 @@ def validate_columns(
 
             warnings.warn(
                 f"Optional columns missing: {sorted(optional_missing)}. "
-                f"Proceeding without them."
+                f"Proceeding without them.",
+                stacklevel=2,
             )
 
 
@@ -239,7 +241,7 @@ def check_multicollinearity(
     except ImportError:
         import warnings
 
-        warnings.warn("statsmodels not available. Skipping VIF check.")
+        warnings.warn("statsmodels not available. Skipping VIF check.", stacklevel=2)
         return {}
 
     # Prepare data (add constant, handle missing values)
@@ -261,11 +263,12 @@ def check_multicollinearity(
 
                     warnings.warn(
                         f"High multicollinearity detected for '{var}': VIF = {vif:.2f}. "
-                        f"Threshold: {vif_threshold}"
+                        f"Threshold: {vif_threshold}",
+                        stacklevel=2,
                     )
             except Exception as e:
                 import warnings
 
-                warnings.warn(f"Could not calculate VIF for '{var}': {e}")
+                warnings.warn(f"Could not calculate VIF for '{var}': {e}", stacklevel=2)
 
     return vif_dict

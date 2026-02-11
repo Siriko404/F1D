@@ -16,7 +16,6 @@ Deterministic: true
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)

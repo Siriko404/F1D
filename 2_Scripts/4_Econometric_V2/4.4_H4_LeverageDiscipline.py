@@ -41,17 +41,17 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
 import json
-import time
 import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 from scipy import stats
 
 # Add parent directory to sys.path for shared module imports
@@ -59,26 +59,18 @@ script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
+from shared.diagnostics import check_multicollinearity, format_vif_table
 from shared.observability_utils import (
     DualWriter,
-    compute_file_checksum,
-    print_stat,
-    analyze_missing_values,
-    print_stats_summary,
-    save_stats,
     get_process_memory_mb,
-    calculate_throughput,
+    save_stats,
 )
-
-from shared.diagnostics import check_multicollinearity, format_vif_table
 from shared.panel_ols import run_panel_ols
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+)
 
 # ==============================================================================
 # Configuration
@@ -102,7 +94,7 @@ def get_git_sha():
             ["git", "rev-parse", "--short", "HEAD"],
             capture_output=True,
             text=True,
-            check=False
+            check=False,
         )
         if result.returncode == 0:
             return result.stdout.strip()
@@ -113,48 +105,48 @@ def get_git_sha():
 
 # H4: 6 uncertainty DVs (same as H1-H3)
 UNCERTAINTY_MEASURES = [
-    'Manager_QA_Uncertainty_pct',
-    'CEO_QA_Uncertainty_pct',
-    'Manager_QA_Weak_Modal_pct',
-    'CEO_QA_Weak_Modal_pct',
-    'Manager_Pres_Uncertainty_pct',
-    'CEO_Pres_Uncertainty_pct',
+    "Manager_QA_Uncertainty_pct",
+    "CEO_QA_Uncertainty_pct",
+    "Manager_QA_Weak_Modal_pct",
+    "CEO_QA_Weak_Modal_pct",
+    "Manager_Pres_Uncertainty_pct",
+    "CEO_Pres_Uncertainty_pct",
 ]
 
 # Analyst uncertainty control (from linguistic variables)
-ANALYST_UNCERTAINTY_VAR = 'Analyst_QA_Uncertainty_pct'
+ANALYST_UNCERTAINTY_VAR = "Analyst_QA_Uncertainty_pct"
 
 # Presentation controls for QA DVs (to control for presentation uncertainty)
 PRESENTATION_CONTROL_MAP = {
-    'Manager_QA_Uncertainty_pct': 'Manager_Pres_Uncertainty_pct',
-    'CEO_QA_Uncertainty_pct': 'CEO_Pres_Uncertainty_pct',
-    'Manager_QA_Weak_Modal_pct': None,  # No direct presentation equivalent
-    'CEO_QA_Weak_Modal_pct': None,
-    'Manager_Pres_Uncertainty_pct': None,  # Already a presentation DV
-    'CEO_Pres_Uncertainty_pct': None,
+    "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
+    "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
+    "Manager_QA_Weak_Modal_pct": None,  # No direct presentation equivalent
+    "CEO_QA_Weak_Modal_pct": None,
+    "Manager_Pres_Uncertainty_pct": None,  # Already a presentation DV
+    "CEO_Pres_Uncertainty_pct": None,
 }
 
 # Financial controls (from H1 and H3)
 FINANCIAL_CONTROLS = [
-    'firm_size',
-    'tobins_q',
-    'roa',
-    'cash_holdings',
-    'dividend_payer',
-    'firm_maturity',
-    'earnings_volatility',
+    "firm_size",
+    "tobins_q",
+    "roa",
+    "cash_holdings",
+    "dividend_payer",
+    "firm_maturity",
+    "earnings_volatility",
 ]
 
 # Base specification for VIF check (continuous vars only)
 VIF_COLUMNS = [
-    'leverage_lag1',
-    'analyst_qa_uncertainty',
-    'firm_size',
-    'tobins_q',
-    'roa',
-    'cash_holdings',
-    'firm_maturity',
-    'earnings_volatility',
+    "leverage_lag1",
+    "analyst_qa_uncertainty",
+    "firm_size",
+    "tobins_q",
+    "roa",
+    "cash_holdings",
+    "firm_maturity",
+    "earnings_volatility",
 ]
 
 # ==============================================================================
@@ -162,7 +154,9 @@ VIF_COLUMNS = [
 # ==============================================================================
 
 
-def one_tailed_pvalue(coef: float, se: float, df_resid: int, alternative: str = 'less') -> float:
+def one_tailed_pvalue(
+    coef: float, se: float, df_resid: int, alternative: str = "less"
+) -> float:
     """
     Calculate one-tailed p-value for directional hypothesis.
 
@@ -183,10 +177,10 @@ def one_tailed_pvalue(coef: float, se: float, df_resid: int, alternative: str = 
     t_stat = coef / se
     p_two_tailed = 2 * (1 - stats.t.cdf(abs(t_stat), df=df_resid))
 
-    if alternative == 'less':
+    if alternative == "less":
         # Testing beta < 0
         return p_two_tailed / 2 if coef < 0 else 1 - p_two_tailed / 2
-    elif alternative == 'greater':
+    elif alternative == "greater":
         # Testing beta > 0
         return p_two_tailed / 2 if coef > 0 else 1 - p_two_tailed / 2
     else:
@@ -221,42 +215,46 @@ def run_all_h4_regressions(df: pd.DataFrame, dw=None) -> dict:
             - f_pvalue: F-test p-value
     """
     dependent_vars = [
-        'Manager_QA_Uncertainty_pct',
-        'CEO_QA_Uncertainty_pct',
-        'Manager_QA_Weak_Modal_pct',
-        'CEO_QA_Weak_Modal_pct',
-        'Manager_Pres_Uncertainty_pct',
-        'CEO_Pres_Uncertainty_pct'
+        "Manager_QA_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct",
+        "CEO_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
     ]
 
     # Presentation control mapping (control for presentation uncertainty in QA regressions)
     pres_control_map = {
-        'Manager_QA_Uncertainty_pct': 'Manager_Pres_Uncertainty_pct',
-        'CEO_QA_Uncertainty_pct': 'CEO_Pres_Uncertainty_pct',
-        'Manager_QA_Weak_Modal_pct': 'Manager_Pres_Uncertainty_pct',
-        'CEO_QA_Weak_Modal_pct': 'CEO_Pres_Uncertainty_pct',
-        'Manager_Pres_Uncertainty_pct': None,  # No control for presentation DV
-        'CEO_Pres_Uncertainty_pct': None
+        "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct": "Manager_Pres_Uncertainty_pct",
+        "CEO_QA_Weak_Modal_pct": "CEO_Pres_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct": None,  # No control for presentation DV
+        "CEO_Pres_Uncertainty_pct": None,
     }
 
     # Base controls (always included)
     base_controls = [
-        'analyst_qa_uncertainty',
-        'firm_size', 'tobins_q', 'roa',
-        'cash_holdings', 'dividend_payer',
-        'firm_maturity', 'earnings_volatility'
+        "analyst_qa_uncertainty",
+        "firm_size",
+        "tobins_q",
+        "roa",
+        "cash_holdings",
+        "dividend_payer",
+        "firm_maturity",
+        "earnings_volatility",
     ]
 
     results = {}
 
     for dv in dependent_vars:
         if dw:
-            dw.write(f"\n{'='*60}\n")
+            dw.write(f"\n{'=' * 60}\n")
             dw.write(f"Running H4 regression: {dv}\n")
-            dw.write(f"{'='*60}\n")
+            dw.write(f"{'=' * 60}\n")
 
         # Build exog vars for this DV
-        exog_vars = ['leverage_lag1'] + base_controls
+        exog_vars = ["leverage_lag1"] + base_controls
         pres_control = pres_control_map.get(dv)
         if pres_control and pres_control in df.columns:
             exog_vars.append(pres_control)
@@ -264,12 +262,12 @@ def run_all_h4_regressions(df: pd.DataFrame, dw=None) -> dict:
                 dw.write(f"  Including presentation control: {pres_control}\n")
 
         # Prepare data (drop missing for this specification)
-        reg_df = df[[dv] + exog_vars + ['gvkey', 'fiscal_year']].dropna().copy()
+        reg_df = df[[dv] + exog_vars + ["gvkey", "fiscal_year"]].dropna().copy()
 
         if len(reg_df) == 0:
             if dw:
                 dw.write(f"  WARNING: No valid observations for {dv}\n")
-            results[dv] = {'error': 'No valid observations'}
+            results[dv] = {"error": "No valid observations"}
             continue
 
         if dw:
@@ -282,53 +280,63 @@ def run_all_h4_regressions(df: pd.DataFrame, dw=None) -> dict:
                 df=reg_df,
                 dependent=dv,
                 exog=exog_vars,
-                entity_col='gvkey',
-                time_col='fiscal_year',
+                entity_col="gvkey",
+                time_col="fiscal_year",
                 entity_effects=True,
                 time_effects=True,
-                cov_type='clustered'
+                cov_type="clustered",
             )
 
             # Extract leverage coefficient stats
             # run_panel_ols returns coefficients as DataFrame with 'Coefficient', 'Std. Error', 't-stat' columns
-            coef_df = result['coefficients']
-            if 'leverage_lag1' in coef_df.index:
-                coef = coef_df.loc['leverage_lag1', 'Coefficient']
-                se = coef_df.loc['leverage_lag1', 'Std. Error']
+            coef_df = result["coefficients"]
+            if "leverage_lag1" in coef_df.index:
+                coef = coef_df.loc["leverage_lag1", "Coefficient"]
+                se = coef_df.loc["leverage_lag1", "Std. Error"]
             else:
                 coef = np.nan
                 se = np.nan
 
             # Calculate one-tailed p-value for H4: beta1 < 0
             if not np.isnan(coef) and not np.isnan(se) and se > 0:
-                df_resid = result['summary'].get('nobs', 0) - len(exog_vars) - 2  # Approximate
-                p_one_tailed = one_tailed_pvalue(coef, se, df_resid, alternative='less')
+                df_resid = (
+                    result["summary"].get("nobs", 0) - len(exog_vars) - 2
+                )  # Approximate
+                p_one_tailed = one_tailed_pvalue(coef, se, df_resid, alternative="less")
             else:
                 p_one_tailed = np.nan
 
             # Store results
             results[dv] = {
-                'result': result,
-                'coef': float(coef) if not np.isnan(coef) else np.nan,
-                'se': float(se) if not np.isnan(se) else np.nan,
-                'p_one_tailed': float(p_one_tailed) if not np.isnan(p_one_tailed) else np.nan,
-                'significant_05': (p_one_tailed < 0.05 and coef < 0) if not np.isnan(p_one_tailed) else False,
-                'nobs': int(result['summary']['nobs']),
-                'rsquared': float(result['summary']['rsquared']),
-                'f_stat': result['summary'].get('f_statistic', np.nan),
-                'f_pvalue': result['summary'].get('f_pvalue', np.nan),
-                'exog_vars': exog_vars
+                "result": result,
+                "coef": float(coef) if not np.isnan(coef) else np.nan,
+                "se": float(se) if not np.isnan(se) else np.nan,
+                "p_one_tailed": float(p_one_tailed)
+                if not np.isnan(p_one_tailed)
+                else np.nan,
+                "significant_05": (p_one_tailed < 0.05 and coef < 0)
+                if not np.isnan(p_one_tailed)
+                else False,
+                "nobs": int(result["summary"]["nobs"]),
+                "rsquared": float(result["summary"]["rsquared"]),
+                "f_stat": result["summary"].get("f_statistic", np.nan),
+                "f_pvalue": result["summary"].get("f_pvalue", np.nan),
+                "exog_vars": exog_vars,
             }
 
             if dw:
-                sig_marker = '***' if results[dv]['significant_05'] else ''
-                dw.write(f"  Leverage (lag1): {coef:.4f} (SE={se:.4f}, p={p_one_tailed:.3f}){sig_marker}\n")
-                dw.write(f"  N={results[dv]['nobs']:,}, R²={results[dv]['rsquared']:.4f}\n")
+                sig_marker = "***" if results[dv]["significant_05"] else ""
+                dw.write(
+                    f"  Leverage (lag1): {coef:.4f} (SE={se:.4f}, p={p_one_tailed:.3f}){sig_marker}\n"
+                )
+                dw.write(
+                    f"  N={results[dv]['nobs']:,}, R²={results[dv]['rsquared']:.4f}\n"
+                )
 
         except Exception as e:
             if dw:
                 dw.write(f"  ERROR: {str(e)}\n")
-            results[dv] = {'error': str(e)}
+            results[dv] = {"error": str(e)}
 
     return results
 
@@ -348,32 +356,36 @@ def save_regression_results(results: dict, output_dir: Path, dw=None):
     # Flatten results for DataFrame
     rows = []
     for dv, res in results.items():
-        if 'error' in res:
-            rows.append({
-                'dependent_var': dv,
-                'error': res.get('error'),
-                'leverage_coef': np.nan,
-                'leverage_se': np.nan,
-                'leverage_p_one_tailed': np.nan,
-                'significant_at_05': False,
-                'nobs': 0,
-                'rsquared': np.nan,
-                'f_stat': np.nan,
-                'f_pvalue': np.nan
-            })
+        if "error" in res:
+            rows.append(
+                {
+                    "dependent_var": dv,
+                    "error": res.get("error"),
+                    "leverage_coef": np.nan,
+                    "leverage_se": np.nan,
+                    "leverage_p_one_tailed": np.nan,
+                    "significant_at_05": False,
+                    "nobs": 0,
+                    "rsquared": np.nan,
+                    "f_stat": np.nan,
+                    "f_pvalue": np.nan,
+                }
+            )
             continue
 
-        rows.append({
-            'dependent_var': dv,
-            'leverage_coef': res['coef'],
-            'leverage_se': res['se'],
-            'leverage_p_one_tailed': res['p_one_tailed'],
-            'significant_at_05': res['significant_05'],
-            'nobs': res['nobs'],
-            'rsquared': res['rsquared'],
-            'f_stat': res['f_stat'],
-            'f_pvalue': res['f_pvalue']
-        })
+        rows.append(
+            {
+                "dependent_var": dv,
+                "leverage_coef": res["coef"],
+                "leverage_se": res["se"],
+                "leverage_p_one_tailed": res["p_one_tailed"],
+                "significant_at_05": res["significant_05"],
+                "nobs": res["nobs"],
+                "rsquared": res["rsquared"],
+                "f_stat": res["f_stat"],
+                "f_pvalue": res["f_pvalue"],
+            }
+        )
 
     results_df = pd.DataFrame(rows)
     results_path = output_dir / "H4_Regression_Results.parquet"
@@ -423,57 +435,63 @@ def generate_h4_summary(results: dict, output_dir: Path, dw=None):
     sig_count = 0
     neg_count = 0  # Count negative coefficients even if not significant
     for dv, res in sorted(results.items()):
-        if 'error' in res:
+        if "error" in res:
             summary_lines.append(f"| {dv} | ERROR | - | - | - | - | - |")
             continue
 
-        sig = "Yes" if res['significant_05'] else "No"
-        if res['significant_05']:
+        sig = "Yes" if res["significant_05"] else "No"
+        if res["significant_05"]:
             sig_count += 1
-        if res['coef'] < 0:
+        if res["coef"] < 0:
             neg_count += 1
 
         summary_lines.append(
             f"| {dv} | {res['coef']:.4f} | {res['se']:.4f} | {res['p_one_tailed']:.3f} | {sig} | {res['nobs']:,} | {res['rsquared']:.4f} |"
         )
 
-    summary_lines.extend([
-        "",
-        "## Hypothesis Support",
-        "",
-        f"- **Significant negative coefficients: {sig_count}/6** (p < 0.05, one-tailed)",
-        f"- **Negative coefficients (all): {neg_count}/6**",
-        f"- H4 supported if beta1 < 0 and p < 0.05 (one-tailed)",
-        "",
-        "### Interpretation",
-        "- If beta1 < 0 and significant: Higher leverage disciplines managers -> less vague speech",
-        "- Economic magnitude: A 10pp increase in leverage -> beta1 * 10 change in uncertainty %",
-        "",
-        "### Economic Significance",
-        "- For context, average speech uncertainty ranges from 2-8% across measures",
-        "- A coefficient of -0.01 means 10pp more leverage reduces uncertainty by 0.1pp",
-        "",
-        "## Detailed Results",
-        "",
-        "See H4_Regression_Results.parquet for full coefficient tables.",
-        "",
-        "## Regression Diagnostics",
-        "",
-        "| DV | N | R² | F-stat | F-pvalue |",
-        "|---|-------|------|--------|----------|",
-    ])
+    summary_lines.extend(
+        [
+            "",
+            "## Hypothesis Support",
+            "",
+            f"- **Significant negative coefficients: {sig_count}/6** (p < 0.05, one-tailed)",
+            f"- **Negative coefficients (all): {neg_count}/6**",
+            "- H4 supported if beta1 < 0 and p < 0.05 (one-tailed)",
+            "",
+            "### Interpretation",
+            "- If beta1 < 0 and significant: Higher leverage disciplines managers -> less vague speech",
+            "- Economic magnitude: A 10pp increase in leverage -> beta1 * 10 change in uncertainty %",
+            "",
+            "### Economic Significance",
+            "- For context, average speech uncertainty ranges from 2-8% across measures",
+            "- A coefficient of -0.01 means 10pp more leverage reduces uncertainty by 0.1pp",
+            "",
+            "## Detailed Results",
+            "",
+            "See H4_Regression_Results.parquet for full coefficient tables.",
+            "",
+            "## Regression Diagnostics",
+            "",
+            "| DV | N | R² | F-stat | F-pvalue |",
+            "|---|-------|------|--------|----------|",
+        ]
+    )
 
     for dv, res in sorted(results.items()):
-        if 'error' in res:
+        if "error" in res:
             summary_lines.append(f"| {dv} | ERROR | - | - | - |")
         else:
-            f_str = f"{res['f_stat']:.2f}" if not np.isnan(res['f_stat']) else "N/A"
-            fp_str = f"{res['f_pvalue']:.4f}" if not np.isnan(res['f_pvalue']) else "N/A"
-            summary_lines.append(f"| {dv} | {res['nobs']:,} | {res['rsquared']:.4f} | {f_str} | {fp_str} |")
+            f_str = f"{res['f_stat']:.2f}" if not np.isnan(res["f_stat"]) else "N/A"
+            fp_str = (
+                f"{res['f_pvalue']:.4f}" if not np.isnan(res["f_pvalue"]) else "N/A"
+            )
+            summary_lines.append(
+                f"| {dv} | {res['nobs']:,} | {res['rsquared']:.4f} | {f_str} | {fp_str} |"
+            )
 
     summary_path = output_dir / "H4_RESULTS.md"
-    with open(summary_path, 'w') as f:
-        f.write('\n'.join(summary_lines))
+    with open(summary_path, "w") as f:
+        f.write("\n".join(summary_lines))
 
     if dw:
         dw.write(f"\nSaved summary: {summary_path}\n")
@@ -495,70 +513,84 @@ def generate_latex_table(results: dict, output_dir: Path, dw=None):
     """
     # Variable labels for display
     var_labels = {
-        'leverage_lag1': 'Leverage$_{t-1}$',
-        'analyst_qa_uncertainty': 'Analyst Uncertainty',
-        'Manager_Pres_Uncertainty_pct': 'Pres. Uncertainty (Mgr)',
-        'CEO_Pres_Uncertainty_pct': 'Pres. Uncertainty (CEO)',
-        'firm_size': 'Firm Size',
-        'tobins_q': "Tobin's Q",
-        'roa': 'ROA',
-        'cash_holdings': 'Cash Holdings',
-        'dividend_payer': 'Dividend Payer',
-        'firm_maturity': 'Firm Maturity',
-        'earnings_volatility': 'Earnings Volatility',
+        "leverage_lag1": "Leverage$_{t-1}$",
+        "analyst_qa_uncertainty": "Analyst Uncertainty",
+        "Manager_Pres_Uncertainty_pct": "Pres. Uncertainty (Mgr)",
+        "CEO_Pres_Uncertainty_pct": "Pres. Uncertainty (CEO)",
+        "firm_size": "Firm Size",
+        "tobins_q": "Tobin's Q",
+        "roa": "ROA",
+        "cash_holdings": "Cash Holdings",
+        "dividend_payer": "Dividend Payer",
+        "firm_maturity": "Firm Maturity",
+        "earnings_volatility": "Earnings Volatility",
     }
 
     # DV names for column headers
     dv_names = {
-        'Manager_QA_Uncertainty_pct': 'QA Unc.',
-        'CEO_QA_Uncertainty_pct': 'QA Unc.',
-        'Manager_QA_Weak_Modal_pct': 'Weak Modal',
-        'CEO_QA_Weak_Modal_pct': 'Weak Modal',
-        'Manager_Pres_Uncertainty_pct': 'Pres. Unc.',
-        'CEO_Pres_Uncertainty_pct': 'Pres. Unc.',
+        "Manager_QA_Uncertainty_pct": "QA Unc.",
+        "CEO_QA_Uncertainty_pct": "QA Unc.",
+        "Manager_QA_Weak_Modal_pct": "Weak Modal",
+        "CEO_QA_Weak_Modal_pct": "Weak Modal",
+        "Manager_Pres_Uncertainty_pct": "Pres. Unc.",
+        "CEO_Pres_Uncertainty_pct": "Pres. Unc.",
     }
 
     # Order of variables for table
     var_order = [
-        'leverage_lag1',
-        'analyst_qa_uncertainty',
+        "leverage_lag1",
+        "analyst_qa_uncertainty",
     ]
 
     lines = []
     lines.append(r"\begin{table}[htbp]")
     lines.append(r"\centering")
-    lines.append(r"\caption{H4 Results: Leverage Discipline Effect on Speech Uncertainty}")
+    lines.append(
+        r"\caption{H4 Results: Leverage Discipline Effect on Speech Uncertainty}"
+    )
     lines.append(r"\label{tab:h4_leverage_discipline}")
     lines.append(r"\begin{tabular}{lcccccc}")
 
     # Header
     lines.append(r"\toprule")
-    dvs = ['Manager_QA_Uncertainty_pct', 'CEO_QA_Uncertainty_pct',
-           'Manager_QA_Weak_Modal_pct', 'CEO_QA_Weak_Modal_pct',
-           'Manager_Pres_Uncertainty_pct', 'CEO_Pres_Uncertainty_pct']
+    dvs = [
+        "Manager_QA_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct",
+        "CEO_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
+    ]
 
-    lines.append(" & " + " & ".join([f"({i+1})" for i in range(6)]) + r" \\")
+    lines.append(" & " + " & ".join([f"({i + 1})" for i in range(6)]) + r" \\")
     lines.append(" & " + " & ".join([f"{dv_names.get(dv, dv)}" for dv in dvs]) + r" \\")
     lines.append(r"\midrule")
 
     # Get all variables from first successful regression
     all_exog_vars = set()
     for res in results.values():
-        if 'exog_vars' in res:
-            all_exog_vars.update(res['exog_vars'])
+        if "exog_vars" in res:
+            all_exog_vars.update(res["exog_vars"])
             break
 
     # Add presentation control to var_order if used
     presentation_used = any(
-        res.get('exog_vars', []).count('Manager_Pres_Uncertainty_pct') > 0
+        res.get("exog_vars", []).count("Manager_Pres_Uncertainty_pct") > 0
         for res in results.values()
     )
     if presentation_used:
-        var_order.append('Manager_Pres_Uncertainty_pct')
+        var_order.append("Manager_Pres_Uncertainty_pct")
 
     # Then controls
-    control_vars = ['firm_size', 'tobins_q', 'roa', 'cash_holdings',
-                    'dividend_payer', 'firm_maturity', 'earnings_volatility']
+    control_vars = [
+        "firm_size",
+        "tobins_q",
+        "roa",
+        "cash_holdings",
+        "dividend_payer",
+        "firm_maturity",
+        "earnings_volatility",
+    ]
     for v in control_vars:
         if v in all_exog_vars:
             var_order.append(v)
@@ -571,20 +603,25 @@ def generate_latex_table(results: dict, output_dir: Path, dw=None):
 
         for dv in dvs:
             res = results.get(dv, {})
-            if 'error' in res or 'result' not in res:
+            if "error" in res or "result" not in res:
                 coef_row.append("")
                 se_row.append("")
                 continue
 
-            coef_df = res['result']['coefficients']
+            coef_df = res["result"]["coefficients"]
             if var in coef_df.index:
-                beta = float(coef_df.loc[var, 'Coefficient'])
-                se = float(coef_df.loc[var, 'Std. Error'])
-                pval = float(coef_df.loc[var, 't-stat'])  # Use t-stat, will convert to p-value
+                beta = float(coef_df.loc[var, "Coefficient"])
+                se = float(coef_df.loc[var, "Std. Error"])
+                pval = float(
+                    coef_df.loc[var, "t-stat"]
+                )  # Use t-stat, will convert to p-value
 
                 # Get p-value from result if available
-                if hasattr(res['result']['model'], 'pvalues') and var in res['result']['model'].pvalues.index:
-                    pval = float(res['result']['model'].pvalues[var])
+                if (
+                    hasattr(res["result"]["model"], "pvalues")
+                    and var in res["result"]["model"].pvalues.index
+                ):
+                    pval = float(res["result"]["model"].pvalues[var])
 
                 # Add stars
                 if pval < 0.01:
@@ -612,7 +649,7 @@ def generate_latex_table(results: dict, output_dir: Path, dw=None):
     n_row = ["N"]
     for dv in dvs:
         res = results.get(dv, {})
-        if 'error' in res:
+        if "error" in res:
             n_row.append("")
         else:
             n_row.append(f"{res['nobs']:,}")
@@ -622,7 +659,7 @@ def generate_latex_table(results: dict, output_dir: Path, dw=None):
     r2_row = ["R$^2$"]
     for dv in dvs:
         res = results.get(dv, {})
-        if 'error' in res:
+        if "error" in res:
             r2_row.append("")
         else:
             r2_row.append(f"{res['rsquared']:.3f}")
@@ -638,14 +675,18 @@ def generate_latex_table(results: dict, output_dir: Path, dw=None):
     lines.append(r"\end{tabular}")
     lines.append(r"\begin{tablenotes}[flushleft]")
     lines.append(r"\small")
-    lines.append(r"\item Standard errors in parentheses. *** p<0.01, ** p<0.05, * p<0.10.")
-    lines.append(r"\item H4 tests whether higher leverage reduces speech uncertainty (one-tailed test).")
+    lines.append(
+        r"\item Standard errors in parentheses. *** p<0.01, ** p<0.05, * p<0.10."
+    )
+    lines.append(
+        r"\item H4 tests whether higher leverage reduces speech uncertainty (one-tailed test)."
+    )
     lines.append(r"\end{tablenotes}")
     lines.append(r"\end{table}")
 
     latex_path = output_dir / "H4_Coefficient_Table.tex"
-    with open(latex_path, 'w') as f:
-        f.write('\n'.join(lines))
+    with open(latex_path, "w") as f:
+        f.write("\n".join(lines))
 
     if dw:
         dw.write(f"\nSaved LaTeX table: {latex_path}\n")
@@ -754,7 +795,7 @@ def load_h3_variables(h3_dir, dw=None):
     df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Select only gvkey, fiscal_year, and the two H3-specific controls
-    df = df[['gvkey', 'fiscal_year', 'firm_maturity', 'earnings_volatility']].copy()
+    df = df[["gvkey", "fiscal_year", "firm_maturity", "earnings_volatility"]].copy()
 
     return df
 
@@ -780,12 +821,14 @@ def load_speech_uncertainty(speech_dir, uncertainty_cols, dw=None):
         total_rows += len(df)
 
     if dw:
-        dw.write(f"  Loaded speech uncertainty: {total_rows:,} calls across {len(speech_files)} years\n")
+        dw.write(
+            f"  Loaded speech uncertainty: {total_rows:,} calls across {len(speech_files)} years\n"
+        )
 
     combined = pd.concat(dfs, ignore_index=True)
 
     # Select only needed columns
-    required_cols = ['file_name', 'gvkey', 'start_date'] + uncertainty_cols
+    required_cols = ["file_name", "gvkey", "start_date"] + uncertainty_cols
     available_cols = [c for c in required_cols if c in combined.columns]
     missing_cols = set(required_cols) - set(available_cols)
 
@@ -806,7 +849,7 @@ def load_speech_uncertainty(speech_dir, uncertainty_cols, dw=None):
 # ==============================================================================
 
 
-def create_lagged_leverage(df, leverage_col='leverage', group_col='gvkey', dw=None):
+def create_lagged_leverage(df, leverage_col="leverage", group_col="gvkey", dw=None):
     """
     Create lagged leverage variable (t-1) within firm boundaries.
 
@@ -824,27 +867,29 @@ def create_lagged_leverage(df, leverage_col='leverage', group_col='gvkey', dw=No
     df_work = df.copy()
 
     # Sort by gvkey and fiscal_year for proper lagging
-    df_work = df_work.sort_values([group_col, 'fiscal_year'])
+    df_work = df_work.sort_values([group_col, "fiscal_year"])
 
     # Create lagged leverage within each firm
-    df_work['leverage_lag1'] = df_work.groupby(group_col)[leverage_col].shift(1)
+    df_work["leverage_lag1"] = df_work.groupby(group_col)[leverage_col].shift(1)
 
     # Validate: Check for cross-entity leakage
     # The first observation for each firm should have NaN lag
     first_obs = df_work.groupby(group_col).head(1)
-    if not first_obs['leverage_lag1'].isna().all():
+    if not first_obs["leverage_lag1"].isna().all():
         raise ValueError("Cross-entity leakage detected in lagged leverage!")
 
     # Check for gaps > 1 year
-    df_work['year_diff'] = df_work.groupby(group_col)['fiscal_year'].diff()
-    large_gaps = df_work[df_work['year_diff'] > 1]
+    df_work["year_diff"] = df_work.groupby(group_col)["fiscal_year"].diff()
+    large_gaps = df_work[df_work["year_diff"] > 1]
     if not large_gaps.empty and dw:
         n_large_gaps = len(large_gaps)
-        dw.write(f"  Warning: {n_large_gaps} observations have gaps > 1 year in fiscal_year\n")
+        dw.write(
+            f"  Warning: {n_large_gaps} observations have gaps > 1 year in fiscal_year\n"
+        )
 
     if dw:
         before_count = len(df_work)
-        after_count = df_work['leverage_lag1'].notna().sum()
+        after_count = df_work["leverage_lag1"].notna().sum()
         dropped = before_count - after_count
         dw.write(f"  Lagged leverage created: {after_count:,} obs with valid lag\n")
         dw.write(f"    Dropped: {dropped:,} obs (first year per firm)\n")
@@ -865,22 +910,24 @@ def aggregate_speech_to_firmyear(speech_df, uncertainty_cols, dw=None):
     df["fiscal_year"] = df["start_date"].dt.year
 
     # Group by gvkey and fiscal_year
-    group_cols = ['gvkey', 'fiscal_year']
+    group_cols = ["gvkey", "fiscal_year"]
 
     # First aggregate numeric columns with mean
     numeric_cols = [c for c in uncertainty_cols if c in df.columns]
     agg_df = df.groupby(group_cols, as_index=False)[numeric_cols].mean()
 
     # Count calls per firm-year
-    call_counts = df.groupby(group_cols, as_index=False)['file_name'].count()
-    call_counts = call_counts.rename(columns={'file_name': 'n_calls'})
+    call_counts = df.groupby(group_cols, as_index=False)["file_name"].count()
+    call_counts = call_counts.rename(columns={"file_name": "n_calls"})
 
     # Merge the aggregations
     agg_df = agg_df.merge(call_counts, on=group_cols)
 
     if dw:
-        mean_calls = agg_df['n_calls'].mean()
-        dw.write(f"  Aggregated to {len(agg_df):,} firm-years, mean {mean_calls:.2f} calls per firm-year\n")
+        mean_calls = agg_df["n_calls"].mean()
+        dw.write(
+            f"  Aggregated to {len(agg_df):,} firm-years, mean {mean_calls:.2f} calls per firm-year\n"
+        )
 
     return agg_df
 
@@ -890,8 +937,16 @@ def aggregate_speech_to_firmyear(speech_df, uncertainty_cols, dw=None):
 # ==============================================================================
 
 
-def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
-                            analyst_uncertainty_var, vif_columns, vif_threshold=5.0, dw=None):
+def prepare_analysis_dataset(
+    h1_df,
+    h3_df,
+    speech_agg_df,
+    uncertainty_measures,
+    analyst_uncertainty_var,
+    vif_columns,
+    vif_threshold=5.0,
+    dw=None,
+):
     """
     Prepare complete H4 analysis dataset by merging all data sources.
 
@@ -916,64 +971,75 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
         DataFrame with all required variables for H4 regressions
     """
     # Step 1: Merge H1 with H3
-    merge_cols = ['gvkey', 'fiscal_year']
+    merge_cols = ["gvkey", "fiscal_year"]
     # H3 has only firm_maturity and earnings_volatility (select columns in load_h3_variables)
     # But to be safe, handle potential duplicates with suffixes
-    merged_df = h1_df.merge(h3_df, on=merge_cols, how='outer', suffixes=('', '_h3'))
+    merged_df = h1_df.merge(h3_df, on=merge_cols, how="outer", suffixes=("", "_h3"))
 
     # If there were duplicates, coalesce to prefer H1 values for controls
     # (H1 has the full set of controls, H3 only adds firm_maturity and earnings_volatility)
-    for col in ['firm_size', 'roa', 'tobins_q', 'cash_holdings']:
-        if f'{col}_h3' in merged_df.columns:
-            merged_df[col] = merged_df[col].fillna(merged_df[f'{col}_h3'])
-            merged_df = merged_df.drop(columns=[f'{col}_h3'])
+    for col in ["firm_size", "roa", "tobins_q", "cash_holdings"]:
+        if f"{col}_h3" in merged_df.columns:
+            merged_df[col] = merged_df[col].fillna(merged_df[f"{col}_h3"])
+            merged_df = merged_df.drop(columns=[f"{col}_h3"])
 
     if dw:
-        h1_only = merged_df['firm_maturity'].isna() & merged_df['leverage'].notna()
-        h3_only = merged_df['leverage'].isna() & merged_df['firm_maturity'].notna()
-        both = merged_df['leverage'].notna() & merged_df['firm_maturity'].notna()
+        h1_only = merged_df["firm_maturity"].isna() & merged_df["leverage"].notna()
+        h3_only = merged_df["leverage"].isna() & merged_df["firm_maturity"].notna()
+        both = merged_df["leverage"].notna() & merged_df["firm_maturity"].notna()
         dw.write(f"  After H1-H3 merge: {len(merged_df):,} obs\n")
-        dw.write(f"    H1 only: {h1_only.sum():,}, H3 only: {h3_only.sum():,}, Both: {both.sum():,}\n")
+        dw.write(
+            f"    H1 only: {h1_only.sum():,}, H3 only: {h3_only.sum():,}, Both: {both.sum():,}\n"
+        )
 
     # Step 2: Merge with speech uncertainty
     # Use suffixes to handle any duplicate column names
-    merged_df = merged_df.merge(speech_agg_df, on=merge_cols, how='inner', suffixes=('', '_speech'))
+    merged_df = merged_df.merge(
+        speech_agg_df, on=merge_cols, how="inner", suffixes=("", "_speech")
+    )
 
     # Coalesce any duplicated columns (prefer original values)
     for col in merged_df.columns:
-        if col.endswith('_speech'):
-            orig_col = col.replace('_speech', '')
+        if col.endswith("_speech"):
+            orig_col = col.replace("_speech", "")
             if orig_col in merged_df.columns:
                 merged_df[orig_col] = merged_df[orig_col].fillna(merged_df[col])
                 merged_df = merged_df.drop(columns=[col])
 
     if dw:
-        dw.write(f"  After speech merge: {len(merged_df):,} obs (complete cases only)\n")
+        dw.write(
+            f"  After speech merge: {len(merged_df):,} obs (complete cases only)\n"
+        )
 
     # Step 3: Create lagged leverage
     merged_df = create_lagged_leverage(merged_df, dw=dw)
 
     # Step 4: Drop observations without valid lag (first year per firm)
-    merged_df = merged_df.dropna(subset=['leverage_lag1'])
+    merged_df = merged_df.dropna(subset=["leverage_lag1"])
 
     if dw:
         dw.write(f"  After dropping missing lags: {len(merged_df):,} obs\n")
 
     # Step 5: Select and rename variables for analysis
     # Include all uncertainty measures, analyst uncertainty, presentation controls
-    core_cols = ['gvkey', 'fiscal_year', 'leverage', 'leverage_lag1']
+    core_cols = ["gvkey", "fiscal_year", "leverage", "leverage_lag1"]
     control_cols = FINANCIAL_CONTROLS.copy()
 
     # Build full column list (preserve order, remove duplicates)
-    all_cols = core_cols + control_cols + uncertainty_measures + [analyst_uncertainty_var]
+    all_cols = (
+        core_cols + control_cols + uncertainty_measures + [analyst_uncertainty_var]
+    )
 
     # Add presentation controls that exist in data (avoid duplicates)
-    presentation_cols = [c for c in PRESENTATION_CONTROL_MAP.values()
-                        if c is not None and c not in all_cols]
+    presentation_cols = [
+        c
+        for c in PRESENTATION_CONTROL_MAP.values()
+        if c is not None and c not in all_cols
+    ]
     all_cols.extend(presentation_cols)
 
     # Add n_calls for reference
-    all_cols.append('n_calls')
+    all_cols.append("n_calls")
 
     # Remove any duplicates while preserving order
     seen = set()
@@ -990,21 +1056,23 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
     if len(merged_df.columns) != len(set(merged_df.columns)):
         # DataFrame has duplicate columns - need to deduplicate
         # Keep first occurrence of each column
-        merged_df = merged_df.loc[:, ~merged_df.columns.duplicated(keep='first')]
+        merged_df = merged_df.loc[:, ~merged_df.columns.duplicated(keep="first")]
 
     analysis_df = merged_df[available_cols].copy()
 
     # Final check: remove any duplicate columns in analysis_df
-    analysis_df = analysis_df.loc[:, ~analysis_df.columns.duplicated(keep='first')]
+    analysis_df = analysis_df.loc[:, ~analysis_df.columns.duplicated(keep="first")]
 
     # Rename analyst uncertainty to shorter name for regression
     if analyst_uncertainty_var in analysis_df.columns:
-        analysis_df = analysis_df.rename(columns={analyst_uncertainty_var: 'analyst_qa_uncertainty'})
+        analysis_df = analysis_df.rename(
+            columns={analyst_uncertainty_var: "analyst_qa_uncertainty"}
+        )
 
     # Step 6: VIF diagnostics on base specification
     vif_vars = [c for c in vif_columns if c in analysis_df.columns]
     if dw:
-        dw.write(f"\n[4] Running VIF diagnostics on base specification...\n")
+        dw.write("\n[4] Running VIF diagnostics on base specification...\n")
         dw.write(f"  Variables: {vif_vars}\n")
 
     try:
@@ -1013,18 +1081,22 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
             vif_vars,
             vif_threshold=vif_threshold,
             condition_threshold=1000.0,
-            fail_on_violation=False  # Log warning but continue
+            fail_on_violation=False,  # Log warning but continue
         )
 
         if dw:
-            dw.write(str(format_vif_table(vif_result['vif_results'], vif_threshold)) + "\n")
+            dw.write(
+                str(format_vif_table(vif_result["vif_results"], vif_threshold)) + "\n"
+            )
 
-            if vif_result['vif_violations']:
-                dw.write(f"  WARNING: VIF violations detected: {vif_result['vif_violations']}\n")
+            if vif_result["vif_violations"]:
+                dw.write(
+                    f"  WARNING: VIF violations detected: {vif_result['vif_violations']}\n"
+                )
             else:
                 dw.write(f"  OK: All VIF values < {vif_threshold}\n")
 
-            if vif_result['condition_number']:
+            if vif_result["condition_number"]:
                 dw.write(f"  Condition number: {vif_result['condition_number']:.2f}\n")
 
     except Exception as e:
@@ -1033,24 +1105,24 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
 
     # Step 7: Validate variable availability
     if dw:
-        dw.write(f"\n[5] Variable availability...\n")
+        dw.write("\n[5] Variable availability...\n")
 
         for var in uncertainty_measures:
             avail = analysis_df[var].notna().sum()
             # Convert scalar to int (handle pandas 3.x Series behavior)
             try:
-                avail = int(avail.iloc[0] if hasattr(avail, 'iloc') else avail)
+                avail = int(avail.iloc[0] if hasattr(avail, "iloc") else avail)
             except (AttributeError, IndexError):
                 avail = int(avail)
             total = len(analysis_df)
             pct = avail / total * 100
             dw.write(f"  {var}: {avail:,}/{total:,} ({pct:.1f}%)\n")
 
-        for var in ['analyst_qa_uncertainty'] + FINANCIAL_CONTROLS:
+        for var in ["analyst_qa_uncertainty"] + FINANCIAL_CONTROLS:
             if var in analysis_df.columns:
                 avail = analysis_df[var].notna().sum()
                 try:
-                    avail = int(avail.iloc[0] if hasattr(avail, 'iloc') else avail)
+                    avail = int(avail.iloc[0] if hasattr(avail, "iloc") else avail)
                 except (AttributeError, IndexError):
                     avail = int(avail)
                 total = len(analysis_df)
@@ -1059,12 +1131,14 @@ def prepare_analysis_dataset(h1_df, h3_df, speech_agg_df, uncertainty_measures,
 
     # Final stats
     if dw:
-        dw.write(f"\n[6] Final analysis dataset...\n")
+        dw.write("\n[6] Final analysis dataset...\n")
         dw.write(f"  N observations: {len(analysis_df):,}\n")
         dw.write(f"  N unique firms: {analysis_df['gvkey'].nunique():,}\n")
-        dw.write(f"  Year range: {analysis_df['fiscal_year'].min()}-{analysis_df['fiscal_year'].max()}\n")
+        dw.write(
+            f"  Year range: {analysis_df['fiscal_year'].min()}-{analysis_df['fiscal_year'].max()}\n"
+        )
 
-    return analysis_df, vif_result if 'vif_result' in locals() else None
+    return analysis_df, vif_result if "vif_result" in locals() else None
 
 
 # ==============================================================================
@@ -1077,7 +1151,9 @@ def save_analysis_dataset(df, output_path, dw=None):
     df.to_parquet(output_path, index=False)
 
     if dw:
-        dw.write(f"\nSaved: {output_path.name} ({len(df):,} rows, {len(df.columns)} cols)\n")
+        dw.write(
+            f"\nSaved: {output_path.name} ({len(df):,} rows, {len(df.columns)} cols)\n"
+        )
 
     return output_path
 
@@ -1089,14 +1165,14 @@ def save_vif_results(vif_result, output_path, dw=None):
 
     # Convert VIF DataFrame to dict for JSON serialization
     vif_dict = {
-        'vif_results': vif_result['vif_results'].to_dict('records'),
-        'condition_number': vif_result['condition_number'],
-        'vif_violations': vif_result['vif_violations'],
-        'condition_violation': vif_result['condition_violation'],
-        'pass': vif_result['pass'],
+        "vif_results": vif_result["vif_results"].to_dict("records"),
+        "condition_number": vif_result["condition_number"],
+        "vif_violations": vif_result["vif_violations"],
+        "condition_violation": vif_result["condition_violation"],
+        "pass": vif_result["pass"],
     }
 
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         json.dump(vif_dict, f, indent=2, default=str)
 
     if dw:
@@ -1118,11 +1194,15 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
     # Hypothesis
     lines.append("## Hypothesis")
     lines.append("")
-    lines.append("**H4: Higher leverage disciplines managers and lowers speech uncertainty**")
+    lines.append(
+        "**H4: Higher leverage disciplines managers and lowers speech uncertainty**"
+    )
     lines.append("")
     lines.append("Model Specification:")
     lines.append("```")
-    lines.append("Uncertainty_t = beta0 + beta1*Leverage_{t-1} + beta2*Analyst_Uncertainty_t")
+    lines.append(
+        "Uncertainty_t = beta0 + beta1*Leverage_{t-1} + beta2*Analyst_Uncertainty_t"
+    )
     lines.append("                + beta3*Presentation_Uncertainty_t + gamma*Controls")
     lines.append("                + Firm FE + Year FE + epsilon")
     lines.append("```")
@@ -1135,7 +1215,9 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
     lines.append("")
     lines.append(f"- **N observations:** {len(df):,}")
     lines.append(f"- **N unique firms:** {df['gvkey'].nunique():,}")
-    lines.append(f"- **Year range:** {df['fiscal_year'].min()}-{df['fiscal_year'].max()}")
+    lines.append(
+        f"- **Year range:** {df['fiscal_year'].min()}-{df['fiscal_year'].max()}"
+    )
     lines.append(f"- **Mean calls per firm-year:** {df['n_calls'].mean():.2f}")
     lines.append("")
 
@@ -1161,7 +1243,7 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
     lines.append("| Variable | N Valid | % Valid | Mean | Std | Min | Max |")
     lines.append("|---|---|---|---|---|---|---|")
 
-    key_vars = ['leverage', 'leverage_lag1', 'analyst_qa_uncertainty']
+    key_vars = ["leverage", "leverage_lag1", "analyst_qa_uncertainty"]
     for var in key_vars:
         if var in df.columns:
             valid = df[var].notna().sum()
@@ -1170,7 +1252,9 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
             std = df[var].std()
             min_val = df[var].min()
             max_val = df[var].max()
-            lines.append(f"| {var} | {valid:,} | {pct:.1f}% | {mean:.4f} | {std:.4f} | {min_val:.4f} | {max_val:.4f} |")
+            lines.append(
+                f"| {var} | {valid:,} | {pct:.1f}% | {mean:.4f} | {std:.4f} | {min_val:.4f} | {max_val:.4f} |"
+            )
 
     lines.append("")
 
@@ -1198,16 +1282,16 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
     lines.append("| Variable | VIF | Status |")
     lines.append("|---|---|---|")
 
-    if vif_result and 'vif_results' in vif_result:
-        vif_df = vif_result['vif_results']
+    if vif_result and "vif_results" in vif_result:
+        vif_df = vif_result["vif_results"]
         for _, row in vif_df.iterrows():
-            var = row['variable']
-            vif = row['VIF']
-            exceeded = row['threshold_exceeded']
+            var = row["variable"]
+            vif = row["VIF"]
+            exceeded = row["threshold_exceeded"]
             status = "*** EXCEEDS" if exceeded else "OK"
             lines.append(f"| {var} | {vif:.2f} | {status} |")
 
-        if vif_result['condition_number']:
+        if vif_result["condition_number"]:
             lines.append("")
             lines.append(f"**Condition number:** {vif_result['condition_number']:.2f}")
 
@@ -1221,7 +1305,7 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
 
     for var in UNCERTAINTY_MEASURES:
         if var in df.columns:
-            corr = df['leverage_lag1'].corr(df[var])
+            corr = df["leverage_lag1"].corr(df[var])
             lines.append(f"| {var} | {corr:.4f} |")
 
     lines.append("")
@@ -1243,8 +1327,8 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
     lines.append("")
 
     output_path = output_dir / "H4_DATA_SUMMARY.md"
-    with open(output_path, 'w') as f:
-        f.write('\n'.join(lines))
+    with open(output_path, "w") as f:
+        f.write("\n".join(lines))
 
     if dw:
         dw.write(f"Saved: {output_path.name}\n")
@@ -1255,7 +1339,7 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
 def save_stats(stats, output_dir, dw=None):
     """Save statistics dictionary to JSON file"""
     stats_path = output_dir / "stats.json"
-    with open(stats_path, 'w') as f:
+    with open(stats_path, "w") as f:
         json.dump(stats, f, indent=2, default=str)
 
     if dw:
@@ -1299,30 +1383,33 @@ def load_existing_analysis_dataset(root, dw=None):
 
 def update_stats_with_regressions(stats, regression_results, dw=None):
     """Update stats dictionary with regression results."""
-    stats['regression_results'] = {}
+    stats["regression_results"] = {}
 
     for dv, res in regression_results.items():
-        if 'error' in res:
-            stats['regression_results'][dv] = {'error': res['error']}
+        if "error" in res:
+            stats["regression_results"][dv] = {"error": res["error"]}
         else:
-            stats['regression_results'][dv] = {
-                'leverage_coef': float(res['coef']),
-                'leverage_se': float(res['se']),
-                'leverage_p_one_tailed': float(res['p_one_tailed']),
-                'significant_at_05': bool(res['significant_05']),
-                'nobs': int(res['nobs']),
-                'rsquared': float(res['rsquared']),
-                'f_stat': float(res['f_stat']) if not np.isnan(res['f_stat']) else None,
-                'f_pvalue': float(res['f_pvalue']) if not np.isnan(res['f_pvalue']) else None,
+            stats["regression_results"][dv] = {
+                "leverage_coef": float(res["coef"]),
+                "leverage_se": float(res["se"]),
+                "leverage_p_one_tailed": float(res["p_one_tailed"]),
+                "significant_at_05": bool(res["significant_05"]),
+                "nobs": int(res["nobs"]),
+                "rsquared": float(res["rsquared"]),
+                "f_stat": float(res["f_stat"]) if not np.isnan(res["f_stat"]) else None,
+                "f_pvalue": float(res["f_pvalue"])
+                if not np.isnan(res["f_pvalue"])
+                else None,
             }
 
     # Count significant results
-    sig_count = sum(1 for res in regression_results.values()
-                    if res.get('significant_05', False))
-    stats['hypothesis_support'] = {
-        'significant_negative_count': sig_count,
-        'total_regressions': len(regression_results),
-        'h4_supported': sig_count > 0,
+    sig_count = sum(
+        1 for res in regression_results.values() if res.get("significant_05", False)
+    )
+    stats["hypothesis_support"] = {
+        "significant_negative_count": sig_count,
+        "total_regressions": len(regression_results),
+        "h4_supported": sig_count > 0,
     }
 
     return stats
@@ -1341,17 +1428,17 @@ def parse_args():
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Validate inputs and setup without running data preparation"
+        help="Validate inputs and setup without running data preparation",
     )
     parser.add_argument(
         "--prepare-only",
         action="store_true",
-        help="Run data preparation only (skip regression execution)"
+        help="Run data preparation only (skip regression execution)",
     )
     parser.add_argument(
         "--regressions-only",
         action="store_true",
-        help="Skip data preparation, run regressions on existing analysis dataset"
+        help="Skip data preparation, run regressions on existing analysis dataset",
     )
     return parser.parse_args()
 
@@ -1371,16 +1458,16 @@ def main():
 
     # Initialize stats
     stats = {
-        'step_id': '4.4_H4_LeverageDiscipline',
-        'timestamp': timestamp,
-        'git_sha': get_git_sha(),
-        'input': {},
-        'processing': {},
-        'output': {},
-        'vif_diagnostics': {},
-        'variable_availability': {},
-        'timing': {},
-        'memory': {},
+        "step_id": "4.4_H4_LeverageDiscipline",
+        "timestamp": timestamp,
+        "git_sha": get_git_sha(),
+        "input": {},
+        "processing": {},
+        "output": {},
+        "vif_diagnostics": {},
+        "variable_availability": {},
+        "timing": {},
+        "memory": {},
     }
 
     # Track if we're doing regressions
@@ -1397,7 +1484,9 @@ def main():
         )
 
         # Use timestamp for new outputs
-        output_base = root / "4_Outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
+        output_base = (
+            root / "4_Outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
+        )
         output_dir = output_base / timestamp
         ensure_output_dir(output_dir)
 
@@ -1415,7 +1504,7 @@ def main():
         dw.write("=" * 80 + "\n")
         dw.write(f"Timestamp: {timestamp}\n")
         dw.write(f"Git SHA: {get_git_sha()}\n")
-        dw.write(f"Mode: --regressions-only (using existing dataset)\n")
+        dw.write("Mode: --regressions-only (using existing dataset)\n")
         dw.write("")
 
         # Load existing analysis dataset
@@ -1423,10 +1512,13 @@ def main():
         analysis_df, _ = load_existing_analysis_dataset(root, dw)
 
         vif_result = None  # Will load from existing stats if needed
-        stats['processing']['analysis_dataset'] = {
-            'n_obs': int(len(analysis_df)),
-            'n_firms': int(analysis_df['gvkey'].nunique()),
-            'year_range': [int(analysis_df['fiscal_year'].min()), int(analysis_df['fiscal_year'].max())],
+        stats["processing"]["analysis_dataset"] = {
+            "n_obs": int(len(analysis_df)),
+            "n_firms": int(analysis_df["gvkey"].nunique()),
+            "year_range": [
+                int(analysis_df["fiscal_year"].min()),
+                int(analysis_df["fiscal_year"].max()),
+            ],
         }
 
         # Initialize timing for regression-only mode
@@ -1463,34 +1555,38 @@ def main():
         try:
             # Build list of all speech columns we need
             speech_cols = UNCERTAINTY_MEASURES + [ANALYST_UNCERTAINTY_VAR]
-            speech_cols.extend([c for c in PRESENTATION_CONTROL_MAP.values() if c is not None])
+            speech_cols.extend(
+                [c for c in PRESENTATION_CONTROL_MAP.values() if c is not None]
+            )
 
             # Load H1 variables
             dw.write("\n[1] Loading H1 variables (leverage + base controls)...\n")
             h1_df = load_h1_variables(paths["h1_dir"], dw)
 
-            stats['input']['h1_variables'] = {
-                'rows': int(len(h1_df)),
-                'source': str(paths["h1_dir"]),
+            stats["input"]["h1_variables"] = {
+                "rows": int(len(h1_df)),
+                "source": str(paths["h1_dir"]),
             }
 
             # Load H3 variables
-            dw.write("\n[2] Loading H3 variables (firm_maturity, earnings_volatility)...\n")
+            dw.write(
+                "\n[2] Loading H3 variables (firm_maturity, earnings_volatility)...\n"
+            )
             h3_df = load_h3_variables(paths["h3_dir"], dw)
 
-            stats['input']['h3_variables'] = {
-                'rows': int(len(h3_df)),
-                'source': str(paths["h3_dir"]),
+            stats["input"]["h3_variables"] = {
+                "rows": int(len(h3_df)),
+                "source": str(paths["h3_dir"]),
             }
 
             # Load speech uncertainty
             dw.write("\n[3] Loading speech uncertainty data...\n")
             speech_df = load_speech_uncertainty(paths["speech_dir"], speech_cols, dw)
 
-            stats['input']['speech_uncertainty'] = {
-                'calls': int(len(speech_df)),
-                'years': int(speech_df['start_date'].dt.year.nunique()),
-                'source': str(paths["speech_dir"]),
+            stats["input"]["speech_uncertainty"] = {
+                "calls": int(len(speech_df)),
+                "years": int(speech_df["start_date"].dt.year.nunique()),
+                "source": str(paths["speech_dir"]),
             }
 
             if args.dry_run:
@@ -1501,67 +1597,81 @@ def main():
             dw.write("\n[4] Aggregating speech data to firm-year level...\n")
             speech_agg = aggregate_speech_to_firmyear(speech_df, speech_cols, dw)
 
-            stats['processing']['aggregation'] = {
-                'firm_years': int(len(speech_agg)),
+            stats["processing"]["aggregation"] = {
+                "firm_years": int(len(speech_agg)),
             }
 
             # Prepare analysis dataset
             dw.write("\n[5] Preparing H4 analysis dataset...\n")
             analysis_df, vif_result = prepare_analysis_dataset(
-                h1_df, h3_df, speech_agg,
+                h1_df,
+                h3_df,
+                speech_agg,
                 UNCERTAINTY_MEASURES,
                 ANALYST_UNCERTAINTY_VAR,
                 VIF_COLUMNS,
                 vif_threshold=5.0,
-                dw=dw
+                dw=dw,
             )
 
-            stats['processing']['analysis_dataset'] = {
-                'n_obs': int(len(analysis_df)),
-                'n_firms': int(analysis_df['gvkey'].nunique()),
-                'year_range': [int(analysis_df['fiscal_year'].min()), int(analysis_df['fiscal_year'].max())],
+            stats["processing"]["analysis_dataset"] = {
+                "n_obs": int(len(analysis_df)),
+                "n_firms": int(analysis_df["gvkey"].nunique()),
+                "year_range": [
+                    int(analysis_df["fiscal_year"].min()),
+                    int(analysis_df["fiscal_year"].max()),
+                ],
             }
 
             # VIF diagnostics
             if vif_result:
-                stats['vif_diagnostics'] = {
-                    'condition_number': vif_result['condition_number'],
-                    'vif_violations': vif_result['vif_violations'],
-                    'pass': vif_result['pass'],
-                    'vif_values': {row['variable']: row['VIF']
-                                  for _, row in vif_result['vif_results'].iterrows()},
+                stats["vif_diagnostics"] = {
+                    "condition_number": vif_result["condition_number"],
+                    "vif_violations": vif_result["vif_violations"],
+                    "pass": vif_result["pass"],
+                    "vif_values": {
+                        row["variable"]: row["VIF"]
+                        for _, row in vif_result["vif_results"].iterrows()
+                    },
                 }
 
             # Variable availability
-            for var in UNCERTAINTY_MEASURES + ['analyst_qa_uncertainty'] + FINANCIAL_CONTROLS:
+            for var in (
+                UNCERTAINTY_MEASURES + ["analyst_qa_uncertainty"] + FINANCIAL_CONTROLS
+            ):
                 if var in analysis_df.columns:
                     n_valid = analysis_df[var].notna().sum()
                     # Convert scalar to int (handle pandas 3.x Series behavior)
                     try:
-                        n_valid = int(n_valid.iloc[0] if hasattr(n_valid, 'iloc') else n_valid)
+                        n_valid = int(
+                            n_valid.iloc[0] if hasattr(n_valid, "iloc") else n_valid
+                        )
                     except (AttributeError, IndexError):
                         n_valid = int(n_valid)
                     pct_valid = float(n_valid / len(analysis_df) * 100)
-                    stats['variable_availability'][var] = {
-                        'n_valid': n_valid,
-                        'pct_valid': pct_valid,
+                    stats["variable_availability"][var] = {
+                        "n_valid": n_valid,
+                        "pct_valid": pct_valid,
                     }
 
             # Save outputs
             dw.write("\n[6] Saving outputs...\n")
-            save_analysis_dataset(analysis_df, output_dir / "H4_Analysis_Dataset.parquet", dw)
+            save_analysis_dataset(
+                analysis_df, output_dir / "H4_Analysis_Dataset.parquet", dw
+            )
             save_vif_results(vif_result, output_dir / "vif_diagnostics.json", dw)
             generate_data_summary_markdown(analysis_df, vif_result, output_dir, dw)
 
-            stats['output']['analysis_dataset'] = {
-                'file': 'H4_Analysis_Dataset.parquet',
-                'rows': int(len(analysis_df)),
-                'columns': len(analysis_df.columns),
+            stats["output"]["analysis_dataset"] = {
+                "file": "H4_Analysis_Dataset.parquet",
+                "rows": int(len(analysis_df)),
+                "columns": len(analysis_df.columns),
             }
 
         except Exception as e:
             dw.write(f"\nERROR in data preparation: {e}\n")
             import traceback
+
             dw.write(traceback.format_exc())
             raise
 
@@ -1571,7 +1681,9 @@ def main():
             if not args.regressions_only:
                 # If we just did data prep, update timing stats
                 end_prep_time = time.time()
-                dw.write(f"\n[Data prep completed in {end_prep_time - start_time:.2f} seconds]\n")
+                dw.write(
+                    f"\n[Data prep completed in {end_prep_time - start_time:.2f} seconds]\n"
+                )
 
             dw.write("\n" + "=" * 80 + "\n")
             dw.write("H4 REGRESSION EXECUTION\n")
@@ -1590,21 +1702,25 @@ def main():
             stats = update_stats_with_regressions(stats, regression_results, dw)
 
             # Summary stats
-            sig_count = stats['hypothesis_support']['significant_negative_count']
-            dw.write(f"\n[H4 Hypothesis Summary]\n")
+            sig_count = stats["hypothesis_support"]["significant_negative_count"]
+            dw.write("\n[H4 Hypothesis Summary]\n")
             dw.write(f"  Significant negative coefficients: {sig_count}/6\n")
             if sig_count > 0:
-                dw.write(f"  H4 SUPPORTED: Leverage disciplines managers, reducing speech uncertainty\n")
+                dw.write(
+                    "  H4 SUPPORTED: Leverage disciplines managers, reducing speech uncertainty\n"
+                )
             else:
-                dw.write(f"  H4 NOT SUPPORTED: No significant negative relationship found\n")
+                dw.write(
+                    "  H4 NOT SUPPORTED: No significant negative relationship found\n"
+                )
 
         # Final stats
         end_time = time.time()
         end_mem = get_process_memory_mb()
 
-        stats['timing']['duration_seconds'] = end_time - start_time
-        stats['memory']['rss_mb_start'] = start_mem['rss_mb']
-        stats['memory']['rss_mb_end'] = end_mem['rss_mb']
+        stats["timing"]["duration_seconds"] = end_time - start_time
+        stats["memory"]["rss_mb_start"] = start_mem["rss_mb"]
+        stats["memory"]["rss_mb_end"] = end_mem["rss_mb"]
 
         save_stats(stats, output_dir, dw)
 
@@ -1613,17 +1729,19 @@ def main():
         dw.write("EXECUTION SUMMARY\n")
         dw.write("=" * 80 + "\n")
         dw.write(f"  Duration: {stats['timing']['duration_seconds']:.2f} seconds\n")
-        dw.write(f"  Analysis dataset: {len(analysis_df):,} obs, {analysis_df['gvkey'].nunique():,} firms\n")
+        dw.write(
+            f"  Analysis dataset: {len(analysis_df):,} obs, {analysis_df['gvkey'].nunique():,} firms\n"
+        )
         dw.write(f"  Output directory: {output_dir}\n")
 
-        if 'hypothesis_support' in stats:
-            sig_count = stats['hypothesis_support']['significant_negative_count']
+        if "hypothesis_support" in stats:
+            sig_count = stats["hypothesis_support"]["significant_negative_count"]
             dw.write(f"  H4 support: {sig_count}/6 measures significant at p<0.05\n")
 
-        if 'vif_result' in locals() and vif_result:
-            vif_pass = "PASS" if vif_result['pass'] else "WARNING"
+        if "vif_result" in locals() and vif_result:
+            vif_pass = "PASS" if vif_result["pass"] else "WARNING"
             dw.write(f"  VIF check: {vif_pass}\n")
-            if vif_result['vif_violations']:
+            if vif_result["vif_violations"]:
                 dw.write(f"    Violations: {vif_result['vif_violations']}\n")
 
         dw.write("=" * 80 + "\n")
@@ -1632,6 +1750,7 @@ def main():
     except Exception as e:
         dw.write(f"\nERROR: {e}\n")
         import traceback
+
         dw.write(traceback.format_exc())
         raise
     finally:

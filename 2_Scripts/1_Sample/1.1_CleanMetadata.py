@@ -22,24 +22,20 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
 import argparse
+import sys
+from pathlib import Path
 
 # Add 2_Scripts to sys.path for shared module imports (works when running directly)
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import shutil
-import time
-import json
-import hashlib
 import importlib.util
+import time
+from datetime import datetime
 from pathlib import Path
-import psutil
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Dynamic import for 1.5_Utils.py to comply with naming convention
 # (Python modules cannot start with numbers, so we use importlib)
@@ -53,22 +49,21 @@ try:
 except ImportError:
     pass  # 1.5_Utils.py may not exist
 
+from shared.chunked_reader import track_memory_usage
 from shared.observability_utils import (
     DualWriter,
-    compute_file_checksum,
-    print_stat,
     analyze_missing_values,
-    print_stats_summary,
-    save_stats,
-    get_process_memory_mb,
     calculate_throughput,
-    detect_anomalies_zscore,
-    detect_anomalies_iqr,
+    compute_entity_stats,
+    compute_file_checksum,
     compute_input_stats,
     compute_temporal_stats,
-    compute_entity_stats,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
+    print_stat,
+    print_stats_summary,
+    save_stats,
 )
-from shared.chunked_reader import track_memory_usage
 
 # Import shared validation module (for opt-in data validation)
 try:
@@ -85,9 +80,9 @@ except ImportError:
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
-        validate_output_path,
         ensure_output_dir,
         validate_input_file,
+        validate_output_path,
     )
 except ImportError:
     import sys as _sys
@@ -96,7 +91,6 @@ except ImportError:
     _script_dir = _Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
     from shared.path_utils import (
-        validate_output_path,
         ensure_output_dir,
         validate_input_file,
     )
@@ -382,7 +376,7 @@ def main():
 
     # Save output with memory tracking
     output_file = paths["output_dir"] / "metadata_cleaned.parquet"
-    print_dual(f"\nSaving cleaned metadata...")
+    print_dual("\nSaving cleaned metadata...")
     save_result = save_output_with_tracking(df_final, output_file)
     stats["memory_mb"]["save_output"] = save_result["memory_mb"]
     print_dual(f"Saved cleaned metadata: {output_file}")
@@ -472,7 +466,7 @@ def main():
         qs = stats["input_descriptive"]["numeric_stats"]["data_quality_score"]
         report_lines.extend(
             [
-                f"**Data Quality Score**:",
+                "**Data Quality Score**:",
                 f"- Mean: {qs.get('mean', 0):.4f}",
                 f"- Median: {qs.get('median', 0):.4f}",
                 f"- Std: {qs.get('std', 0):.4f}",
@@ -488,7 +482,7 @@ def main():
         lag = stats["input_descriptive"]["numeric_stats"]["processing_lag_hours"]
         report_lines.extend(
             [
-                f"**Processing Lag (hours)**:",
+                "**Processing Lag (hours)**:",
                 f"- Mean: {lag.get('mean', 0):.2f}",
                 f"- Median: {lag.get('median', 0):.2f}",
                 f"- Range: [{lag.get('min', 0):.2f}, {lag.get('max', 0):.2f}]",
@@ -501,7 +495,7 @@ def main():
         ds = stats["input_descriptive"]["datetime_stats"]["start_date"]
         report_lines.extend(
             [
-                f"**Date Range (Source Data)**:",
+                "**Date Range (Source Data)**:",
                 f"- Earliest: {ds.get('min_date', 'N/A')}",
                 f"- Latest: {ds.get('max_date', 'N/A')}",
                 f"- Span: {ds.get('span_days', 0)} days",
@@ -621,7 +615,7 @@ def main():
         cc = stats["entity_characteristics"]["company_coverage"]
         report_lines.extend(
             [
-                f"**Company Coverage**:",
+                "**Company Coverage**:",
                 f"- Unique companies: {cc.get('unique_companies', 0):,}",
                 f"- Average calls per company: {cc.get('avg_calls_per_company', 0):.2f}",
                 "",
@@ -633,7 +627,7 @@ def main():
         gc = stats["entity_characteristics"]["geographic_coverage"]
         report_lines.extend(
             [
-                f"**Geographic Coverage**:",
+                "**Geographic Coverage**:",
                 f"- Unique cities: {gc.get('unique_cities', 0):,}",
                 "",
                 "Top 5 Cities:",
@@ -652,7 +646,7 @@ def main():
         if "error" not in dq:
             report_lines.extend(
                 [
-                    f"**Data Quality Score Distribution**:",
+                    "**Data Quality Score Distribution**:",
                     f"- Mean: {dq.get('mean', 0):.4f}",
                     f"- Median: {dq.get('median', 0):.4f}",
                     "",
@@ -685,7 +679,7 @@ def main():
                 srd = sc["speaker_record_distribution"]
                 report_lines.extend(
                     [
-                        f"Speaker Record Count Distribution:",
+                        "Speaker Record Count Distribution:",
                         f"- Mean: {srd.get('mean', 0):.2f}",
                         f"- Median: {srd.get('median', 0):.2f}",
                         f"- Range: [{srd.get('min', 0):,}, {srd.get('max', 0):,}]",

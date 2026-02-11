@@ -42,7 +42,7 @@ def validate_prerequisites(
 
     # Check input files and directories
     if required_files:
-        from shared.path_utils import validate_input_file, PathValidationError
+        from shared.path_utils import PathValidationError, validate_input_file
 
         for name, path in required_files.items():
             try:
@@ -58,7 +58,7 @@ def validate_prerequisites(
                 else:
                     # File validation
                     validate_input_file(path, must_exist=True)
-            except PathValidationError as e:
+            except PathValidationError:
                 errors.append(f"Missing input file: {name} ({path})")
 
     # Check prerequisite steps
@@ -95,7 +95,7 @@ def validate_prerequisite_step(
     Returns:
         True if valid, False otherwise
     """
-    from shared.path_utils import get_latest_output_dir, OutputResolutionError
+    from shared.path_utils import OutputResolutionError, get_latest_output_dir
 
     output_base = root / "4_Outputs" / step_name
 
@@ -166,7 +166,7 @@ def handle_missing_output(
     print(f"  Expected file: {output_file}")
     print(f"  Location: 4_Outputs/{step_name}/<timestamp>/")
     print()
-    print(f"Please run the pipeline in order:")
+    print("Please run the pipeline in order:")
     print(
         f"  1. {step_name}: python 2_Scripts/{step_name.split('_')[0]}/{step_name}.py"
     )

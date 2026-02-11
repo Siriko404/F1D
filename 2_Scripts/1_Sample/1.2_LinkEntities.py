@@ -28,20 +28,16 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
 import argparse
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import shutil
 import importlib.util
-import hashlib
-import json
+import sys
 import time
-import psutil
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports (works when running directly)
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -58,60 +54,54 @@ except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
     sys.exit(1)
 import re
-import zipfile
 
 # Import string matching utilities from shared module
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
-from shared.string_matching import (
-    match_company_names,
-    load_matching_config,
-    RAPIDFUZZ_AVAILABLE,
-)
 from shared.chunked_reader import track_memory_usage
 from shared.industry_utils import parse_ff_industries
-from shared.metadata_utils import load_variable_descriptions
 from shared.observability_utils import (
     DualWriter,
-    compute_file_checksum,
-    print_stat,
     analyze_missing_values,
-    print_stats_summary,
-    save_stats,
-    get_process_memory_mb,
     calculate_throughput,
-    detect_anomalies_zscore,
-    detect_anomalies_iqr,
-    compute_linking_input_stats,
-    compute_linking_process_stats,
-    compute_linking_output_stats,
+    collect_before_after_samples,
     collect_fuzzy_match_samples,
     collect_tier_match_samples,
     collect_unmatched_samples,
-    collect_before_after_samples,
+    compute_file_checksum,
+    compute_linking_input_stats,
+    compute_linking_output_stats,
+    compute_linking_process_stats,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
+    print_stats_summary,
+    save_stats,
+)
+from shared.string_matching import (
+    RAPIDFUZZ_AVAILABLE,
+    load_matching_config,
+    match_company_names,
 )
 
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
-        validate_output_path,
         ensure_output_dir,
-        validate_input_file,
         get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
     )
 except ImportError:
     import sys as _sys
-    from pathlib import Path as _Path
 
     _script_dir = Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
     from shared.path_utils import (
-        validate_output_path,
         ensure_output_dir,
-        validate_input_file,
         get_latest_output_dir,
+        validate_input_file,
     )
 
 # Using shared.string_matching.match_company_names() instead of direct RapidFuzz imports
@@ -629,7 +619,7 @@ def main():
             total = len(tier3_candidates)
             progress_interval = max(500, total // 20)
 
-            for i, (idx, row) in enumerate(tier3_candidates.iterrows(), 1):
+            for i, (_idx, row) in enumerate(tier3_candidates.iterrows(), 1):
                 query_name = row["company_name_norm"]
 
                 # Use shared string matching function
@@ -763,7 +753,7 @@ def main():
     # ==========================================================================
     # Filter unmatched and add FF industries
     # ==========================================================================
-    print_dual(f"\nFiltering calls without GVKEY...")
+    print_dual("\nFiltering calls without GVKEY...")
     df_linked = df[df["gvkey"].notna()].copy()
     removed = len(df) - len(df_linked)
     print_dual(f"  Removed {removed:,} unmatched calls")
@@ -819,7 +809,7 @@ def main():
 
     # Save output with memory tracking
     output_file = paths["output_dir"] / "metadata_linked.parquet"
-    print_dual(f"\nSaving linked metadata...")
+    print_dual("\nSaving linked metadata...")
     save_result = save_output_with_tracking(df_linked, output_file)
     stats["memory_mb"]["save_output"] = save_result["memory_mb"]
     print_dual(f"Saved linked metadata: {output_file}")
@@ -1243,7 +1233,7 @@ def main():
             "",
             f"- Linked metadata: `{output_file.name}`",
             f"- Variable reference: `{var_ref_file.name}`",
-            f"- Statistics: `stats.json`",
+            "- Statistics: `stats.json`",
             "",
             "## Columns",
             "",

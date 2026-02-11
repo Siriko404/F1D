@@ -28,19 +28,16 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
 import logging
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import hashlib
-import json
+import sys
 import time
-import psutil
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -50,24 +47,21 @@ script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import (
     DualWriter,
+    calculate_throughput,
     compute_file_checksum,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
     print_stat,
-    analyze_missing_values,
     print_stats_summary,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
 
 # ==============================================================================
@@ -168,7 +162,7 @@ def load_compustat_h3(compustat_file, sample_gvkeys=None):
     Returns:
         DataFrame with H3-required columns
     """
-    print(f"  Loading Compustat data...")
+    print("  Loading Compustat data...")
 
     # Required columns for H3 variables
     required_cols = [
@@ -180,17 +174,18 @@ def load_compustat_h3(compustat_file, sample_gvkeys=None):
         # Earnings data (quarterly)
         "epspxq",  # EPS Basic - Excl Extra Items - Quarterly
         # Retained earnings and equity (quarterly)
-        "req",     # Retained Earnings - Quarterly
-        "seqq",    # Stockholders Equity - Quarterly
+        "req",  # Retained Earnings - Quarterly
+        "seqq",  # Stockholders Equity - Quarterly
         # Cash flow data (annual)
         "oancfy",  # Operating Cash Flow - Annual
-        "capxy",   # Capital Expenditures - Annual
+        "capxy",  # Capital Expenditures - Annual
         # Assets (quarterly)
-        "atq",     # Total Assets - Quarterly
+        "atq",  # Total Assets - Quarterly
     ]
 
     # Check which columns actually exist using PyArrow schema inspection
     import pyarrow.parquet as pq
+
     pf = pq.ParquetFile(compustat_file)
     available_cols = set(pf.schema_arrow.names)
 
@@ -254,7 +249,9 @@ def load_h1_standard_controls(h1_output_dir):
     df = pd.read_parquet(h1_file)
 
     # Extract standard control columns
-    controls = df[["gvkey", "fiscal_year", "firm_size", "roa", "tobins_q", "cash_holdings"]].copy()
+    controls = df[
+        ["gvkey", "fiscal_year", "firm_size", "roa", "tobins_q", "cash_holdings"]
+    ].copy()
 
     # Ensure gvkey is zero-padded
     controls["gvkey"] = controls["gvkey"].astype(str).str.zfill(6)
@@ -263,7 +260,9 @@ def load_h1_standard_controls(h1_output_dir):
     before_agg = len(controls)
     controls = controls.groupby(["gvkey", "fiscal_year"], as_index=False).mean()
     after_agg = len(controls)
-    print(f"  Loaded H1 standard controls: {after_agg:,} unique firm-years (aggregated from {before_agg:,} obs)")
+    print(
+        f"  Loaded H1 standard controls: {after_agg:,} unique firm-years (aggregated from {before_agg:,} obs)"
+    )
 
     return controls
 
@@ -273,7 +272,9 @@ def load_h1_standard_controls(h1_output_dir):
 # ==============================================================================
 
 
-def annualize_quarterly_data(compustat_df: pd.DataFrame, value_col: str) -> pd.DataFrame:
+def annualize_quarterly_data(
+    compustat_df: pd.DataFrame, value_col: str
+) -> pd.DataFrame:
     """
     Aggregate quarterly data to fiscal year level.
 
@@ -333,13 +334,12 @@ def compute_div_stability(
         group = group.sort_values("fiscal_year")
 
         # Compute rolling stability for each year
-        for idx, row in group.iterrows():
+        for _idx, row in group.iterrows():
             fy = row["fiscal_year"]
 
             # Get trailing window (inclusive of current year)
             window_data = group[
-                (group["fiscal_year"] > fy - window - 1)
-                & (group["fiscal_year"] <= fy)
+                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
             ]["dps"]
 
             # Require minimum observations
@@ -355,11 +355,13 @@ def compute_div_stability(
                         std_dev_delta = delta_dps.std()
                         # Stability = -StdDev(Delta DPS) / |Mean(DPS)|
                         div_stability = -std_dev_delta / abs(mean_dps)
-                        results.append({
-                            "gvkey": gvkey,
-                            "fiscal_year": fy,
-                            "div_stability": div_stability,
-                        })
+                        results.append(
+                            {
+                                "gvkey": gvkey,
+                                "fiscal_year": fy,
+                                "div_stability": div_stability,
+                            }
+                        )
 
     result = pd.DataFrame(results)
 
@@ -373,7 +375,10 @@ def compute_div_stability(
 
 
 def compute_payout_flexibility(
-    compustat_df: pd.DataFrame, min_years: int = 2, window: int = 5, threshold: float = 0.05
+    compustat_df: pd.DataFrame,
+    min_years: int = 2,
+    window: int = 5,
+    threshold: float = 0.05,
 ) -> pd.DataFrame:
     """
     Compute Payout Flexibility = % of years with |Delta DPS| > threshold% of prior DPS over 5-year window.
@@ -419,13 +424,12 @@ def compute_payout_flexibility(
         group["is_significant_change"] = group["relative_change"] > threshold
 
         # Compute rolling flexibility
-        for idx, row in group.iterrows():
+        for _idx, row in group.iterrows():
             fy = row["fiscal_year"]
 
             # Get trailing window (inclusive of current year)
             window_data = group[
-                (group["fiscal_year"] > fy - window - 1)
-                & (group["fiscal_year"] <= fy)
+                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
             ]
 
             # Count valid observations and significant changes
@@ -435,11 +439,13 @@ def compute_payout_flexibility(
             # Require minimum observations
             if valid_obs >= min_years:
                 payout_flex = n_changes / valid_obs
-                results.append({
-                    "gvkey": gvkey,
-                    "fiscal_year": fy,
-                    "payout_flexibility": payout_flex,
-                })
+                results.append(
+                    {
+                        "gvkey": gvkey,
+                        "fiscal_year": fy,
+                        "payout_flexibility": payout_flex,
+                    }
+                )
 
     result = pd.DataFrame(results)
 
@@ -484,23 +490,24 @@ def compute_earnings_volatility(
         group = group.sort_values("fiscal_year")
 
         # Compute rolling StdDev for each year
-        for idx, row in group.iterrows():
+        for _idx, row in group.iterrows():
             fy = row["fiscal_year"]
 
             # Get trailing window (inclusive of current year)
             window_data = group[
-                (group["fiscal_year"] > fy - window - 1)
-                & (group["fiscal_year"] <= fy)
+                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
             ]["eps"]
 
             # Require minimum observations
             if window_data.notna().sum() >= min_years:
                 eps_vol = window_data.std()
-                results.append({
-                    "gvkey": gvkey,
-                    "fiscal_year": fy,
-                    "earnings_volatility": eps_vol,
-                })
+                results.append(
+                    {
+                        "gvkey": gvkey,
+                        "fiscal_year": fy,
+                        "earnings_volatility": eps_vol,
+                    }
+                )
 
     result = pd.DataFrame(results)
 
@@ -532,9 +539,9 @@ def compute_fcf_growth(compustat_df: pd.DataFrame) -> pd.DataFrame:
 
     # Filter to rows with valid data
     df = compustat_df[
-        (compustat_df["atq"] > 0) &
-        (compustat_df["oancfy"].notna()) &
-        (compustat_df["capxy"].notna())
+        (compustat_df["atq"] > 0)
+        & (compustat_df["oancfy"].notna())
+        & (compustat_df["capxy"].notna())
     ].copy()
 
     # Compute FCF = (OANCF - CAPX) / AT
@@ -566,11 +573,13 @@ def compute_fcf_growth(compustat_df: pd.DataFrame) -> pd.DataFrame:
         # Collect results
         for _, row in group.iterrows():
             if pd.notna(row["fcf_growth"]):
-                results.append({
-                    "gvkey": gvkey,
-                    "fiscal_year": row["fiscal_year"],
-                    "fcf_growth": row["fcf_growth"],
-                })
+                results.append(
+                    {
+                        "gvkey": gvkey,
+                        "fiscal_year": row["fiscal_year"],
+                        "fcf_growth": row["fcf_growth"],
+                    }
+                )
 
     result = pd.DataFrame(results)
 
@@ -603,8 +612,7 @@ def compute_firm_maturity(compustat_df: pd.DataFrame) -> pd.DataFrame:
 
     # Filter to rows with valid equity > 0
     df = compustat_df[
-        (compustat_df["seqq"].notna()) &
-        (compustat_df["seqq"] > 0)
+        (compustat_df["seqq"].notna()) & (compustat_df["seqq"] > 0)
     ].copy()
 
     # Compute firm maturity = RE / TE
@@ -657,16 +665,17 @@ def flag_dividend_payers(compustat_df: pd.DataFrame, window: int = 5) -> pd.Data
 
             # Check if any DPS > 0 in trailing window
             window_data = group[
-                (group["fiscal_year"] > fy - window - 1)
-                & (group["fiscal_year"] <= fy)
+                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
             ]["dps"]
 
             is_payer = (window_data > 0).any()
-            results.append({
-                "gvkey": gvkey,
-                "fiscal_year": fy,
-                "is_div_payer": is_payer,
-            })
+            results.append(
+                {
+                    "gvkey": gvkey,
+                    "fiscal_year": fy,
+                    "is_div_payer": is_payer,
+                }
+            )
 
     result = pd.DataFrame(results)
 
@@ -752,7 +761,11 @@ def check_prerequisites(paths, args):
     for name, path in required_files.items():
         if path.exists():
             size_mb = path.stat().st_size / (1024 * 1024) if path.is_file() else 0
-            print(f"  [OK] {name}: {path} ({size_mb:.1f} MB)" if size_mb > 0 else f"  [OK] {name}: {path}")
+            print(
+                f"  [OK] {name}: {path} ({size_mb:.1f} MB)"
+                if size_mb > 0
+                else f"  [OK] {name}: {path}"
+            )
         else:
             print(f"  [MISSING] {name}: {path}")
             all_ok = False
@@ -789,12 +802,16 @@ def main():
         if prereq_ok:
             print("\n[OK] All prerequisites validated")
             print("\nWould compute:")
-            print("  - Dividend Policy Stability (H3-01): -StdDev(Delta DPS) / |Mean(DPS)|")
+            print(
+                "  - Dividend Policy Stability (H3-01): -StdDev(Delta DPS) / |Mean(DPS)|"
+            )
             print("  - Payout Flexibility (H3-02): % years with |Delta DPS| > 5%")
             print("  - Earnings Volatility (H3-03): StdDev(annual EPS)")
             print("  - FCF Growth (H3-03): YoY growth in (OANCF-CAPX)/AT")
             print("  - Firm Maturity (H3-03): RE / TE ratio")
-            print("  - Standard controls from H1: firm_size, roa, tobins_q, cash_holdings")
+            print(
+                "  - Standard controls from H1: firm_size, roa, tobins_q, cash_holdings"
+            )
             print(f"\nOutput would be written to: {paths['output_dir']}")
             sys.exit(0)
         else:
@@ -939,7 +956,16 @@ def main():
     if h1_controls is not None:
         print("\nMerging H1 standard controls...")
         h3_data = h3_data.merge(
-            h1_controls[["gvkey", "fiscal_year", "firm_size", "roa", "tobins_q", "cash_holdings"]],
+            h1_controls[
+                [
+                    "gvkey",
+                    "fiscal_year",
+                    "firm_size",
+                    "roa",
+                    "tobins_q",
+                    "cash_holdings",
+                ]
+            ],
             on=["gvkey", "fiscal_year"],
             how="left",
         )
@@ -950,7 +976,9 @@ def main():
     # Add file_name column from manifest
     # Note: Multiple files (speeches) can exist per gvkey-year.
     # We take one file_name as a reference (not unique identifier).
-    file_ref = manifest[["gvkey", "year", "file_name"]].drop_duplicates(subset=["gvkey", "year"], keep="first")
+    file_ref = manifest[["gvkey", "year", "file_name"]].drop_duplicates(
+        subset=["gvkey", "year"], keep="first"
+    )
     h3_data = h3_data.merge(
         file_ref,
         left_on=["gvkey", "fiscal_year"],
@@ -969,7 +997,7 @@ def main():
     print("=" * 60)
 
     before_count = len(h3_data)
-    h3_data_filtered = h3_data[h3_data["is_div_payer"] == True].copy()
+    h3_data_filtered = h3_data[h3_data["is_div_payer"]].copy()
     after_count = len(h3_data_filtered)
 
     print(f"  Before filter: {before_count:,} observations")
@@ -1001,8 +1029,12 @@ def main():
             h3_data[var] = winsorize_series(h3_data[var], lower=0.01, upper=0.99)
             after_mean = h3_data[var].mean()
             stats["processing"]["winsorization"][var] = {
-                "before_mean": round(float(before_mean), 4) if pd.notna(before_mean) else None,
-                "after_mean": round(float(after_mean), 4) if pd.notna(after_mean) else None,
+                "before_mean": round(float(before_mean), 4)
+                if pd.notna(before_mean)
+                else None,
+                "after_mean": round(float(after_mean), 4)
+                if pd.notna(after_mean)
+                else None,
             }
             print(f"  {var}: winsorized")
 
@@ -1034,10 +1066,18 @@ def main():
         if var in h3_data.columns:
             var_data = h3_data[var]
             stats["variables"][var] = {
-                "mean": round(float(var_data.mean()), 4) if var_data.notna().sum() > 0 else None,
-                "std": round(float(var_data.std()), 4) if var_data.notna().sum() > 1 else None,
-                "min": round(float(var_data.min()), 4) if var_data.notna().sum() > 0 else None,
-                "max": round(float(var_data.max()), 4) if var_data.notna().sum() > 0 else None,
+                "mean": round(float(var_data.mean()), 4)
+                if var_data.notna().sum() > 0
+                else None,
+                "std": round(float(var_data.std()), 4)
+                if var_data.notna().sum() > 1
+                else None,
+                "min": round(float(var_data.min()), 4)
+                if var_data.notna().sum() > 0
+                else None,
+                "max": round(float(var_data.max()), 4)
+                if var_data.notna().sum() > 0
+                else None,
                 "n": int(var_data.notna().sum()),
                 "missing_count": int(var_data.isna().sum()),
             }
@@ -1077,9 +1117,7 @@ def main():
     final_output.to_parquet(output_file, index=False)
     print(f"  Wrote: {output_file.name}")
     stats["output"]["files"].append(output_file.name)
-    stats["output"]["checksums"][output_file.name] = compute_file_checksum(
-        output_file
-    )
+    stats["output"]["checksums"][output_file.name] = compute_file_checksum(output_file)
 
     # Write stats.json
     stats["output"]["final_rows"] = len(final_output)
@@ -1139,9 +1177,9 @@ def main():
     print("SUMMARY")
     print("=" * 60)
     print(f"H3 Variables computed: {len(final_output):,} observations")
-    print(f"  Dependent variables: div_stability, payout_flexibility")
-    print(f"  H3-specific controls: earnings_volatility, fcf_growth, firm_maturity")
-    print(f"  Standard controls: firm_size, roa, tobins_q, cash_holdings")
+    print("  Dependent variables: div_stability, payout_flexibility")
+    print("  H3-specific controls: earnings_volatility, fcf_growth, firm_maturity")
+    print("  Standard controls: firm_size, roa, tobins_q, cash_holdings")
     print(f"\nOutputs saved to: {paths['output_dir']}")
     print(f"Log saved to: {paths['log_file']}")
 

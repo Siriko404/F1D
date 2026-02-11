@@ -2,15 +2,15 @@
 Shared utilities for all pipeline scripts.
 """
 
-from .observability_utils import DualWriter
+from .centering import center_continuous, create_interaction
+from .diagnostics import check_multicollinearity, compute_vif
 from .industry_utils import parse_ff_industries
 from .metadata_utils import load_variable_descriptions
-from .path_utils import get_latest_output_dir, OutputResolutionError
+from .observability_utils import DualWriter
 
 # Econometric infrastructure (Phase 32)
 from .panel_ols import run_panel_ols
-from .centering import center_continuous, create_interaction
-from .diagnostics import compute_vif, check_multicollinearity
+from .path_utils import OutputResolutionError, get_latest_output_dir
 
 __all__ = [
     "DualWriter",

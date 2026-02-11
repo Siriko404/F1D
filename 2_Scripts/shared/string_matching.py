@@ -10,10 +10,11 @@ outputs: Fuzzy match results with scores
 deterministic: true
 """
 
-import yaml
-from pathlib import Path
-from typing import Dict, Any, List, Tuple, Optional
 import warnings
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 # Try rapidfuzz
 try:
@@ -33,6 +34,7 @@ def warn_if_rapidfuzz_missing():
             "RapidFuzz not installed. Fuzzy matching will be disabled. "
             "Install: pip install rapidfuzz",
             ImportWarning,
+            stacklevel=2,
         )
 
 
@@ -56,7 +58,8 @@ def load_matching_config() -> Dict[str, Any]:
 
     if not config_path.exists():
         warnings.warn(
-            f"Config file not found: {config_path.resolve()}. Using defaults."
+            f"Config file not found: {config_path.resolve()}. Using defaults.",
+            stacklevel=2,
         )
         return {}
 
@@ -64,7 +67,7 @@ def load_matching_config() -> Dict[str, Any]:
         with open(config_path) as f:
             config = yaml.safe_load(f)
     except yaml.YAMLError as e:
-        warnings.warn(f"Error parsing config file: {e}. Using defaults.")
+        warnings.warn(f"Error parsing config file: {e}. Using defaults.", stacklevel=2)
         return {}
 
     return config.get("string_matching", {})
@@ -212,10 +215,13 @@ def match_many_to_many(
     try:
         scores = process.cdist(queries_processed, targets_processed, scorer=scorer)
     except Exception as e:
-        warnings.warn(f"cdist failed: {e}. Falling back to extractOne for each query.")
+        warnings.warn(
+            f"cdist failed: {e}. Falling back to extractOne for each query.",
+            stacklevel=2,
+        )
         # Fallback: process each query individually
         return _match_many_to_many_fallback(
-            queries_processed, targets, targets_processed, threshold, scorer, preprocess
+            queries, queries_processed, targets, targets_processed, threshold, scorer, preprocess
         )
 
     # Collect results above threshold
@@ -231,6 +237,7 @@ def match_many_to_many(
 
 def _match_many_to_many_fallback(
     queries: List[str],
+    queries_processed: List[str],
     targets: List[str],
     targets_processed: List[str],
     threshold: float,

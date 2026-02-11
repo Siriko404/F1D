@@ -18,11 +18,12 @@ Deterministic: true
 ================================================================================
 """
 
-import pandas as pd
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
-from shared.path_utils import get_latest_output_dir, OutputResolutionError
+import pandas as pd
+
+from shared.path_utils import OutputResolutionError, get_latest_output_dir
 
 
 def load_all_data(

@@ -31,19 +31,16 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
 import logging
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import hashlib
-import json
+import sys
 import time
-import psutil
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -53,24 +50,21 @@ script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import (
     DualWriter,
+    calculate_throughput,
     compute_file_checksum,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
     print_stat,
-    analyze_missing_values,
     print_stats_summary,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
 
 # ==============================================================================
@@ -177,7 +171,7 @@ def load_firm_controls(firm_controls_dir):
 
 def load_compustat(compustat_file):
     """Load Compustat data with only required columns for H1 variables"""
-    print(f"  Loading Compustat data...")
+    print("  Loading Compustat data...")
 
     # Required columns for H1 variables
     # Quarterly fields (q suffix): at, che, dltt, dlc, act, lct, ceq
@@ -203,13 +197,14 @@ def load_compustat(compustat_file):
         "prccq",  # Price Close Quarterly
         # Annual fields for some variables
         "oancfy",  # Operating Cash Flow Annual
-        "iby",     # Income Before Extra Items Annual
-        "capxy",   # Capital Expenditures Annual
-        "dvy",     # Dividends Annual (not dvcy)
+        "iby",  # Income Before Extra Items Annual
+        "capxy",  # Capital Expenditures Annual
+        "dvy",  # Dividends Annual (not dvcy)
     ]
 
     # Check which columns actually exist
     import pyarrow.parquet as pq
+
     pf = pq.ParquetFile(compustat_file)
     available_cols = set(pf.schema_arrow.names)
 
@@ -342,23 +337,24 @@ def compute_ocf_volatility(
         group = group.sort_values("fiscal_year")
 
         # Compute rolling standard deviation
-        for idx, row in group.iterrows():
+        for _idx, row in group.iterrows():
             fy = row["fiscal_year"]
 
             # Get trailing window (inclusive of current year)
             window_data = group[
-                (group["fiscal_year"] > fy - window - 1)
-                & (group["fiscal_year"] <= fy)
+                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
             ]["ocf_at"]
 
             # Require minimum observations
             if window_data.notna().sum() >= min_years:
                 ocf_vol = window_data.std()
-                results.append({
-                    "gvkey": gvkey,
-                    "fiscal_year": fy,
-                    "ocf_volatility": ocf_vol,
-                })
+                results.append(
+                    {
+                        "gvkey": gvkey,
+                        "fiscal_year": fy,
+                        "ocf_volatility": ocf_vol,
+                    }
+                )
 
     result = pd.DataFrame(results)
 
@@ -503,7 +499,9 @@ def compute_dividend_payer(compustat_df: pd.DataFrame) -> pd.DataFrame:
     # Check if dvy column exists
     if "dvy" not in compustat_df.columns:
         print("  Warning: dvy not available, returning empty")
-        return pd.DataFrame(columns=["gvkey", "fiscal_year", "datadate", "dividend_payer"])
+        return pd.DataFrame(
+            columns=["gvkey", "fiscal_year", "datadate", "dividend_payer"]
+        )
 
     df = compustat_df.copy()
 
@@ -797,9 +795,7 @@ def main():
 
     # Start with a base of unique firm-years from Compustat
     # Use the most recent datadate for each gvkey-fiscal_year combination
-    compustat_vars = compustat_df_subset = compustat[
-        ["gvkey", "fiscal_year", "datadate"]
-    ].copy()
+    compustat_vars = compustat[["gvkey", "fiscal_year", "datadate"]].copy()
 
     # For each gvkey-fiscal_year, keep the most recent datadate
     compustat_vars = compustat_vars.sort_values(
@@ -928,10 +924,18 @@ def main():
         if var in h1_data.columns:
             var_data = h1_data[var]
             stats["variables"][var] = {
-                "mean": round(float(var_data.mean()), 4) if var_data.notna().sum() > 0 else None,
-                "std": round(float(var_data.std()), 4) if var_data.notna().sum() > 1 else None,
-                "min": round(float(var_data.min()), 4) if var_data.notna().sum() > 0 else None,
-                "max": round(float(var_data.max()), 4) if var_data.notna().sum() > 0 else None,
+                "mean": round(float(var_data.mean()), 4)
+                if var_data.notna().sum() > 0
+                else None,
+                "std": round(float(var_data.std()), 4)
+                if var_data.notna().sum() > 1
+                else None,
+                "min": round(float(var_data.min()), 4)
+                if var_data.notna().sum() > 0
+                else None,
+                "max": round(float(var_data.max()), 4)
+                if var_data.notna().sum() > 0
+                else None,
                 "n": int(var_data.notna().sum()),
                 "missing_count": int(var_data.isna().sum()),
             }
@@ -971,9 +975,7 @@ def main():
     final_output.to_parquet(output_file, index=False)
     print(f"  Wrote: {output_file.name}")
     stats["output"]["files"].append(output_file.name)
-    stats["output"]["checksums"][output_file.name] = compute_file_checksum(
-        output_file
-    )
+    stats["output"]["checksums"][output_file.name] = compute_file_checksum(output_file)
 
     # Write stats.json
     stats["output"]["final_rows"] = len(final_output)

@@ -27,18 +27,14 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
 import logging
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import hashlib
-import json
+import sys
 import time
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -48,23 +44,19 @@ script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import (
     DualWriter,
+    calculate_throughput,
     compute_file_checksum,
-    print_stat,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
     print_stats_summary,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
 )
 
 # ==============================================================================
@@ -73,35 +65,35 @@ from shared.observability_utils import (
 
 # H8 Takeover Variables Configuration
 CONFIG = {
-    'year_start': 2002,
-    'year_end': 2018,
-    'sdc_file': '1_Inputs/SDC/sdc-ma-merged.parquet',
-    'min_firm_years': 3,
-    'winsor_lower': 0.01,
-    'winsor_upper': 0.99,
+    "year_start": 2002,
+    "year_end": 2018,
+    "sdc_file": "1_Inputs/SDC/sdc-ma-merged.parquet",
+    "min_firm_years": 3,
+    "winsor_lower": 0.01,
+    "winsor_upper": 0.99,
     # Takeover rate validation thresholds
-    'takeover_rate_min': 0.005,  # 0.5% minimum annual takeover rate
-    'takeover_rate_max': 0.05,   # 5% maximum annual takeover rate
-    'min_takeover_events': 100,   # Minimum takeover events in sample
+    "takeover_rate_min": 0.005,  # 0.5% minimum annual takeover rate
+    "takeover_rate_max": 0.05,  # 5% maximum annual takeover rate
+    "min_takeover_events": 100,  # Minimum takeover events in sample
 }
 
 # Takeover type definitions
 TAKEOVER_TYPES = {
-    'primary': 'completed',     # Completed deals (primary)
-    'announced': 'announced',   # Announced deals (robustness)
-    'hostile': 'hostile',       # Hostile/unsolicited deals (robustness)
+    "primary": "completed",  # Completed deals (primary)
+    "announced": "announced",  # Announced deals (robustness)
+    "hostile": "hostile",  # Hostile/unsolicited deals (robustness)
 }
 
 # M&A prediction literature control variables
 MNA_CONTROL_VARS = [
-    'size',          # Firm size (log assets or market cap)
-    'leverage',      # Debt / Assets
-    'roa',           # Return on Assets
-    'mtb',           # Market-to-book ratio
-    'liquidity',     # Current ratio or quick ratio
-    'efficiency',    # Asset turnover (Sales / Assets)
-    'stock_ret',     # Stock returns (abnormal returns)
-    'rd_intensity',  # R&D / Assets (if available)
+    "size",  # Firm size (log assets or market cap)
+    "leverage",  # Debt / Assets
+    "roa",  # Return on Assets
+    "mtb",  # Market-to-book ratio
+    "liquidity",  # Current ratio or quick ratio
+    "efficiency",  # Asset turnover (Sales / Assets)
+    "stock_ret",  # Stock returns (abnormal returns)
+    "rd_intensity",  # R&D / Assets (if available)
 ]
 
 # ==============================================================================
@@ -119,7 +111,7 @@ def setup_paths(timestamp):
             root / "4_Outputs" / "1.4_AssembleManifest",
             required_file="master_sample_manifest.parquet",
         )
-    except Exception as e:
+    except Exception:
         # Fallback to 1.0_BuildSampleManifest
         manifest_dir = get_latest_output_dir(
             root / "4_Outputs" / "1.0_BuildSampleManifest",
@@ -143,8 +135,11 @@ def setup_paths(timestamp):
         "root": root,
         "manifest_dir": manifest_dir,
         "h7_dir": h7_dir,
-        "sdc_file": root / CONFIG['sdc_file'],
-        "ccm_file": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
+        "sdc_file": root / CONFIG["sdc_file"],
+        "ccm_file": root
+        / "1_Inputs"
+        / "CRSPCompustat_CCM"
+        / "CRSPCompustat_CCM.parquet",
     }
 
     # Output directory
@@ -194,13 +189,13 @@ def load_sdc_data(sdc_path, year_start, year_end):
 
     # Filter to required columns
     required_cols = [
-        'Target 6-digit CUSIP',
-        'Date Announced',
-        'Date Effective',
-        'Deal Status',
-        'Deal Attitude',
-        'Target Public Status',
-        'Deal Value (USD Millions)',
+        "Target 6-digit CUSIP",
+        "Date Announced",
+        "Date Effective",
+        "Deal Status",
+        "Deal Attitude",
+        "Target Public Status",
+        "Deal Value (USD Millions)",
     ]
 
     # Check which columns exist
@@ -208,16 +203,16 @@ def load_sdc_data(sdc_path, year_start, year_end):
     df = df[available_cols].copy()
 
     # Convert date and extract year
-    df['Date Announced'] = pd.to_datetime(df['Date Announced'])
-    df['year'] = df['Date Announced'].dt.year
+    df["Date Announced"] = pd.to_datetime(df["Date Announced"])
+    df["year"] = df["Date Announced"].dt.year
 
     # Filter to sample period
-    df = df[df['year'].between(year_start, year_end)]
+    df = df[df["year"].between(year_start, year_end)]
     print(f"  Filtered to {year_start}-{year_end}: {len(df):,} deals")
 
     # Filter to public targets only (our sample is public firms)
-    if 'Target Public Status' in df.columns:
-        df_public = df[df['Target Public Status'] == 'Public'].copy()
+    if "Target Public Status" in df.columns:
+        df_public = df[df["Target Public Status"] == "Public"].copy()
         print(f"  Public targets: {len(df_public):,} deals")
     else:
         df_public = df.copy()
@@ -225,36 +220,46 @@ def load_sdc_data(sdc_path, year_start, year_end):
 
     # Create takeover indicators
     # Primary: Completed deals
-    if 'Deal Status' in df_public.columns:
-        df_public['takeover_completed'] = (df_public['Deal Status'] == 'Completed').astype(int)
-        completed_count = df_public['takeover_completed'].sum()
+    if "Deal Status" in df_public.columns:
+        df_public["takeover_completed"] = (
+            df_public["Deal Status"] == "Completed"
+        ).astype(int)
+        completed_count = df_public["takeover_completed"].sum()
         print(f"  Completed deals: {completed_count:,}")
     else:
-        df_public['takeover_completed'] = 1  # All rows are announced
+        df_public["takeover_completed"] = 1  # All rows are announced
         print("  Warning: Deal Status not available, using all as completed")
 
     # Robustness 1: All announced deals
-    df_public['takeover_announced'] = 1  # All rows are announced by definition
+    df_public["takeover_announced"] = 1  # All rows are announced by definition
 
     # Robustness 2: Hostile/unsolicited deals
-    if 'Deal Attitude' in df_public.columns:
-        hostile_indicators = ['Hostile', 'Unsolicited']
-        df_public['takeover_hostile'] = df_public['Deal Attitude'].isin(hostile_indicators).astype(int)
-        hostile_count = df_public['takeover_hostile'].sum()
+    if "Deal Attitude" in df_public.columns:
+        hostile_indicators = ["Hostile", "Unsolicited"]
+        df_public["takeover_hostile"] = (
+            df_public["Deal Attitude"].isin(hostile_indicators).astype(int)
+        )
+        hostile_count = df_public["takeover_hostile"].sum()
         print(f"  Hostile/unsolicited deals: {hostile_count:,}")
     else:
-        df_public['takeover_hostile'] = 0
+        df_public["takeover_hostile"] = 0
         print("  Warning: Deal Attitude not available, hostile = 0")
 
     # Aggregate to CUSIP-year level (1 if any takeover in year)
     # We use CUSIP as identifier; will map to GVKEY later
-    takeover = df_public.groupby(['Target 6-digit CUSIP', 'year']).agg({
-        'takeover_completed': 'max',
-        'takeover_announced': 'max',
-        'takeover_hostile': 'max',
-    }).reset_index()
+    takeover = (
+        df_public.groupby(["Target 6-digit CUSIP", "year"])
+        .agg(
+            {
+                "takeover_completed": "max",
+                "takeover_announced": "max",
+                "takeover_hostile": "max",
+            }
+        )
+        .reset_index()
+    )
 
-    takeover = takeover.rename(columns={'Target 6-digit CUSIP': 'cusip'})
+    takeover = takeover.rename(columns={"Target 6-digit CUSIP": "cusip"})
 
     print(f"  Aggregated to {len(takeover):,} CUSIP-year observations")
 
@@ -282,7 +287,7 @@ def load_h7_data(h7_path):
     print(f"  Loaded H7: {len(df):,} observations")
 
     # Ensure gvkey is string
-    df['gvkey'] = df['gvkey'].astype(str).str.zfill(6)
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     return df
 
@@ -309,22 +314,22 @@ def load_ccm_link(ccm_path):
     ccm.columns = [c.lower() for c in ccm.columns]
 
     # Ensure cusip is 6-digit string
-    if 'cusip' in ccm.columns:
-        ccm['cusip'] = ccm['cusip'].astype(str).str[:6].str.upper()
+    if "cusip" in ccm.columns:
+        ccm["cusip"] = ccm["cusip"].astype(str).str[:6].str.upper()
         # Filter out invalid CUSIPs
-        ccm = ccm[~ccm['cusip'].isin(['nan', 'none', ''])]
+        ccm = ccm[~ccm["cusip"].isin(["nan", "none", ""])]
     else:
         raise ValueError("CCM data missing 'cusip' column")
 
     # Filter to primary links (LINKPRIM='P' or 'C')
-    if 'linkprim' in ccm.columns:
-        ccm = ccm[ccm['linkprim'].isin(['P', 'C', 'p', 'c'])]
+    if "linkprim" in ccm.columns:
+        ccm = ccm[ccm["linkprim"].isin(["P", "C", "p", "c"])]
         print(f"  Filtered to primary links: {len(ccm):,}")
 
     # Get most recent GVKEY for each CUSIP (in case of multiple matches)
-    ccm_map = ccm.groupby('cusip')['gvkey'].last().reset_index()
-    ccm_map.columns = ['cusip6', 'gvkey']
-    ccm_map['gvkey'] = ccm_map['gvkey'].astype(str).str.zfill(6)
+    ccm_map = ccm.groupby("cusip")["gvkey"].last().reset_index()
+    ccm_map.columns = ["cusip6", "gvkey"]
+    ccm_map["gvkey"] = ccm_map["gvkey"].astype(str).str.zfill(6)
 
     print(f"  Unique CUSIP-GVKEY mappings: {len(ccm_map):,}")
 
@@ -346,19 +351,29 @@ def create_forward_takeover(takeover_df):
     """
     print("\nCreating forward-looking takeover indicator (t -> t+1)...")
 
-    takeover_df = takeover_df.sort_values(['cusip', 'year'])
-    takeover_df['takeover_fwd'] = takeover_df.groupby('cusip')['takeover_completed'].shift(-1)
-    takeover_df['takeover_fwd'] = takeover_df['takeover_fwd'].fillna(0).astype(int)
+    takeover_df = takeover_df.sort_values(["cusip", "year"])
+    takeover_df["takeover_fwd"] = takeover_df.groupby("cusip")[
+        "takeover_completed"
+    ].shift(-1)
+    takeover_df["takeover_fwd"] = takeover_df["takeover_fwd"].fillna(0).astype(int)
 
     # Also create forward versions of alternative definitions
-    takeover_df['takeover_announced_fwd'] = takeover_df.groupby('cusip')['takeover_announced'].shift(-1)
-    takeover_df['takeover_announced_fwd'] = takeover_df['takeover_announced_fwd'].fillna(0).astype(int)
+    takeover_df["takeover_announced_fwd"] = takeover_df.groupby("cusip")[
+        "takeover_announced"
+    ].shift(-1)
+    takeover_df["takeover_announced_fwd"] = (
+        takeover_df["takeover_announced_fwd"].fillna(0).astype(int)
+    )
 
-    takeover_df['takeover_hostile_fwd'] = takeover_df.groupby('cusip')['takeover_hostile'].shift(-1)
-    takeover_df['takeover_hostile_fwd'] = takeover_df['takeover_hostile_fwd'].fillna(0).astype(int)
+    takeover_df["takeover_hostile_fwd"] = takeover_df.groupby("cusip")[
+        "takeover_hostile"
+    ].shift(-1)
+    takeover_df["takeover_hostile_fwd"] = (
+        takeover_df["takeover_hostile_fwd"].fillna(0).astype(int)
+    )
 
-    n_takeovers = takeover_df['takeover_fwd'].sum()
-    takeover_rate = takeover_df['takeover_fwd'].mean()
+    n_takeovers = takeover_df["takeover_fwd"].sum()
+    takeover_rate = takeover_df["takeover_fwd"].mean()
     print(f"  Forward takeover events (t+1): {n_takeovers:,}")
     print(f"  Takeover rate: {takeover_rate:.2%}")
 
@@ -394,10 +409,10 @@ def load_firm_controls(firm_controls_dir, year_start, year_end):
     print(f"  Combined firm controls: {len(combined):,} rows")
 
     # Ensure gvkey is string
-    combined['gvkey'] = combined['gvkey'].astype(str).str.zfill(6)
+    combined["gvkey"] = combined["gvkey"].astype(str).str.zfill(6)
 
     # Filter to sample period
-    combined = combined[combined['year'].between(year_start, year_end)]
+    combined = combined[combined["year"].between(year_start, year_end)]
 
     return combined
 
@@ -424,11 +439,11 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df, ccm_map):
     print("\nStep 1: Preparing manifest for sample firms...")
     # Add year to manifest from start_date
     manifest_df = manifest_df.copy()
-    manifest_df['start_date'] = pd.to_datetime(manifest_df['start_date'])
-    manifest_df['year'] = manifest_df['start_date'].dt.year
+    manifest_df["start_date"] = pd.to_datetime(manifest_df["start_date"])
+    manifest_df["year"] = manifest_df["start_date"].dt.year
 
     # Get sample GVKEYs
-    sample_gvkeys = manifest_df['gvkey'].unique()
+    sample_gvkeys = manifest_df["gvkey"].unique()
     print(f"  Sample firms: {len(sample_gvkeys):,}")
 
     # Step 2: Map takeover CUSIPs to GVKEYs using CCM link table
@@ -437,48 +452,60 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df, ccm_map):
 
     # Merge takeover data with CCM mapping
     takeover_with_gvkey = takeover_df.merge(
-        ccm_map,
-        left_on='cusip',
-        right_on='cusip6',
-        how='inner'
+        ccm_map, left_on="cusip", right_on="cusip6", how="inner"
     )
     print(f"  Matched CUSIPs: {len(takeover_with_gvkey):,} observations")
     print(f"  Unique GVKEYs: {takeover_with_gvkey['gvkey'].nunique():,}")
 
     # Create forward-looking takeover indicator at firm-year level
-    takeover_with_gvkey = takeover_with_gvkey.sort_values(['gvkey', 'year'])
-    takeover_with_gvkey['takeover_fwd'] = takeover_with_gvkey.groupby('gvkey')['takeover_completed'].shift(-1)
-    takeover_with_gvkey['takeover_fwd'] = takeover_with_gvkey['takeover_fwd'].fillna(0).astype(int)
+    takeover_with_gvkey = takeover_with_gvkey.sort_values(["gvkey", "year"])
+    takeover_with_gvkey["takeover_fwd"] = takeover_with_gvkey.groupby("gvkey")[
+        "takeover_completed"
+    ].shift(-1)
+    takeover_with_gvkey["takeover_fwd"] = (
+        takeover_with_gvkey["takeover_fwd"].fillna(0).astype(int)
+    )
 
     # Aggregate to firm-year level (1 if any takeover in year)
-    takeover_firm_year = takeover_with_gvkey.groupby(['gvkey', 'year']).agg({
-        'takeover_fwd': 'max',
-        'takeover_announced': 'max',
-        'takeover_hostile': 'max',
-    }).reset_index()
+    takeover_firm_year = (
+        takeover_with_gvkey.groupby(["gvkey", "year"])
+        .agg(
+            {
+                "takeover_fwd": "max",
+                "takeover_announced": "max",
+                "takeover_hostile": "max",
+            }
+        )
+        .reset_index()
+    )
 
     print(f"  Firm-year takeover observations: {len(takeover_firm_year):,}")
     print(f"  Takeover events (t+1): {takeover_firm_year['takeover_fwd'].sum():,}")
 
     # Also create market-wide takeover rate for robustness
-    takeover_by_year = takeover_with_gvkey.groupby('year').agg({
-        'takeover_fwd': 'mean',
-        'gvkey': 'count'
-    }).reset_index()
-    takeover_by_year.columns = ['year', 'takeover_rate_year', 'n_takeovers_year']
-    print(f"  Annual takeover rate range: {takeover_by_year['takeover_rate_year'].min():.2%} - {takeover_by_year['takeover_rate_year'].max():.2%}")
+    takeover_by_year = (
+        takeover_with_gvkey.groupby("year")
+        .agg({"takeover_fwd": "mean", "gvkey": "count"})
+        .reset_index()
+    )
+    takeover_by_year.columns = ["year", "takeover_rate_year", "n_takeovers_year"]
+    print(
+        f"  Annual takeover rate range: {takeover_by_year['takeover_rate_year'].min():.2%} - {takeover_by_year['takeover_rate_year'].max():.2%}"
+    )
 
     # Step 3: Start with H7 data (has uncertainty measures and some controls)
     print("\nStep 3: Preparing H7 base data...")
     h8_df = h7_df.copy()
 
     # Select H7 columns we need
-    h7_cols = ['gvkey', 'year']
+    h7_cols = ["gvkey", "year"]
     # Add uncertainty measures
-    uncertainty_cols = [c for c in h7_df.columns if 'Uncertainty_pct' in c]
+    uncertainty_cols = [c for c in h7_df.columns if "Uncertainty_pct" in c]
     h7_cols.extend(uncertainty_cols)
     # Add existing controls
-    control_cols = [c for c in h7_df.columns if c in ['Volatility', 'StockRet', 'trading_days']]
+    control_cols = [
+        c for c in h7_df.columns if c in ["Volatility", "StockRet", "trading_days"]
+    ]
     h7_cols.extend(control_cols)
 
     h8_df = h7_df[h7_cols].copy()
@@ -487,17 +514,19 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df, ccm_map):
     # Step 4: Merge firm-level takeover indicators
     print("\nStep 4: Merging firm-level takeover indicators...")
 
-    h8_df = h8_df.merge(takeover_firm_year, on=['gvkey', 'year'], how='left')
-    h8_df = h8_df.merge(takeover_by_year, on='year', how='left')
+    h8_df = h8_df.merge(takeover_firm_year, on=["gvkey", "year"], how="left")
+    h8_df = h8_df.merge(takeover_by_year, on="year", how="left")
 
     # Fill missing takeover_fwd with 0 (not a target)
-    h8_df['takeover_fwd'] = h8_df['takeover_fwd'].fillna(0).astype(int)
-    h8_df['takeover_announced'] = h8_df['takeover_announced'].fillna(0).astype(int)
-    h8_df['takeover_hostile'] = h8_df['takeover_hostile'].fillna(0).astype(int)
+    h8_df["takeover_fwd"] = h8_df["takeover_fwd"].fillna(0).astype(int)
+    h8_df["takeover_announced"] = h8_df["takeover_announced"].fillna(0).astype(int)
+    h8_df["takeover_hostile"] = h8_df["takeover_hostile"].fillna(0).astype(int)
 
-    n_takeovers = h8_df['takeover_fwd'].sum()
-    takeover_rate = h8_df['takeover_fwd'].mean()
-    print(f"  Firms with takeover data: {(h8_df['takeover_fwd'].notna() | (h8_df['takeover_fwd'] == 0)).sum():,}")
+    n_takeovers = h8_df["takeover_fwd"].sum()
+    takeover_rate = h8_df["takeover_fwd"].mean()
+    print(
+        f"  Firms with takeover data: {(h8_df['takeover_fwd'].notna() | (h8_df['takeover_fwd'] == 0)).sum():,}"
+    )
     print(f"  Takeover targets (t+1): {n_takeovers:,}")
     print(f"  Takeover rate: {takeover_rate:.2%}")
 
@@ -508,39 +537,47 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df, ccm_map):
         available_controls = []
         for cv in MNA_CONTROL_VARS:
             # Map generic names to actual column names
-            if cv == 'size' and 'Size' in controls_df.columns:
-                available_controls.append('Size')
-            elif cv == 'leverage' and 'Lev' in controls_df.columns:
-                available_controls.append('Lev')
-            elif cv == 'roa' and 'ROA' in controls_df.columns:
-                available_controls.append('ROA')
-            elif cv == 'mtb' and 'BM' in controls_df.columns:
-                available_controls.append('BM')
-            elif cv == 'liquidity' and 'CurrentRatio' in controls_df.columns:
-                available_controls.append('CurrentRatio')
-            elif cv == 'efficiency' and 'Efficiency' in controls_df.columns:
-                available_controls.append('Efficiency')
-            elif cv == 'stock_ret' and 'StockRet' in controls_df.columns:
-                available_controls.append('StockRet')
-            elif cv == 'rd_intensity' and 'RD_Intensity' in controls_df.columns:
-                available_controls.append('RD_Intensity')
+            if cv == "size" and "Size" in controls_df.columns:
+                available_controls.append("Size")
+            elif cv == "leverage" and "Lev" in controls_df.columns:
+                available_controls.append("Lev")
+            elif cv == "roa" and "ROA" in controls_df.columns:
+                available_controls.append("ROA")
+            elif cv == "mtb" and "BM" in controls_df.columns:
+                available_controls.append("BM")
+            elif cv == "liquidity" and "CurrentRatio" in controls_df.columns:
+                available_controls.append("CurrentRatio")
+            elif cv == "efficiency" and "Efficiency" in controls_df.columns:
+                available_controls.append("Efficiency")
+            elif cv == "stock_ret" and "StockRet" in controls_df.columns:
+                available_controls.append("StockRet")
+            elif cv == "rd_intensity" and "RD_Intensity" in controls_df.columns:
+                available_controls.append("RD_Intensity")
 
         if available_controls:
-            controls_merge = controls_df[['gvkey', 'year'] + available_controls].drop_duplicates()
-            h8_df = h8_df.merge(controls_merge, on=['gvkey', 'year'], how='left')
+            controls_merge = controls_df[
+                ["gvkey", "year"] + available_controls
+            ].drop_duplicates()
+            h8_df = h8_df.merge(controls_merge, on=["gvkey", "year"], how="left")
             print(f"  Merged controls: {available_controls}")
 
     # Step 6: Filter to sample firms
     print("\nStep 6: Filtering to sample firms...")
-    h8_df = h8_df[h8_df['gvkey'].isin(sample_gvkeys)]
+    h8_df = h8_df[h8_df["gvkey"].isin(sample_gvkeys)]
     print(f"  After sample filter: {len(h8_df):,} observations")
 
     # Step 7: Apply missing data handling
     print("\nStep 7: Handling missing data...")
 
     # For logistic regression, require DV and primary IV
-    required_vars = ['takeover_fwd']  # Now we have firm-level takeover data
-    primary_iv = 'Manager_QA_Uncertainty_pct' if 'Manager_QA_Uncertainty_pct' in h8_df.columns else uncertainty_cols[0] if uncertainty_cols else None
+    required_vars = ["takeover_fwd"]  # Now we have firm-level takeover data
+    primary_iv = (
+        "Manager_QA_Uncertainty_pct"
+        if "Manager_QA_Uncertainty_pct" in h8_df.columns
+        else uncertainty_cols[0]
+        if uncertainty_cols
+        else None
+    )
     if primary_iv:
         required_vars.append(primary_iv)
 
@@ -548,24 +585,41 @@ def merge_h8_data(takeover_df, h7_df, controls_df, manifest_df, ccm_map):
         n_before_missing = len(h8_df)
         h8_df = h8_df.dropna(subset=required_vars)
         n_after_missing = len(h8_df)
-        print(f"  Dropped {n_before_missing - n_after_missing:,} observations with missing IV/DV")
+        print(
+            f"  Dropped {n_before_missing - n_after_missing:,} observations with missing IV/DV"
+        )
 
     # For controls, require at least 80% availability
-    control_cols_in_df = [c for c in h8_df.columns if c in ['Size', 'Lev', 'ROA', 'BM', 'CurrentRatio', 'Efficiency', 'StockRet', 'RD_Intensity', 'Volatility']]
+    control_cols_in_df = [
+        c
+        for c in h8_df.columns
+        if c
+        in [
+            "Size",
+            "Lev",
+            "ROA",
+            "BM",
+            "CurrentRatio",
+            "Efficiency",
+            "StockRet",
+            "RD_Intensity",
+            "Volatility",
+        ]
+    ]
     if control_cols_in_df:
-        h8_df['n_missing_controls'] = h8_df[control_cols_in_df].isna().sum(axis=1)
+        h8_df["n_missing_controls"] = h8_df[control_cols_in_df].isna().sum(axis=1)
         max_missing = len(control_cols_in_df) * 0.2  # Allow up to 20% missing
-        h8_df = h8_df[h8_df['n_missing_controls'] <= max_missing].copy()
-        print(f"  Dropped observations with >20% missing controls")
-        h8_df = h8_df.drop(columns=['n_missing_controls'])
+        h8_df = h8_df[h8_df["n_missing_controls"] <= max_missing].copy()
+        print("  Dropped observations with >20% missing controls")
+        h8_df = h8_df.drop(columns=["n_missing_controls"])
 
     print(f"  Final sample: {len(h8_df):,} observations")
 
     # Validate takeover variation
-    takeover_var = h8_df['takeover_fwd'].var()
+    takeover_var = h8_df["takeover_fwd"].var()
     if takeover_var == 0:
-        print(f"  WARNING: No variation in takeover_fwd (all zeros)")
-        print(f"  Regression will not be possible without takeover events")
+        print("  WARNING: No variation in takeover_fwd (all zeros)")
+        print("  Regression will not be possible without takeover events")
     else:
         print(f"  Takeover_fwd variance: {takeover_var:.6f}")
 
@@ -591,15 +645,15 @@ def apply_sample_construction(df, config):
     print("Applying Sample Construction")
     print("=" * 60)
 
-    n_before = len(df)
+    len(df)
 
     # For H8, we rely on H7 sample which already has exclusions applied
-    print(f"  Using H7 sample (exclusions already applied)")
+    print("  Using H7 sample (exclusions already applied)")
     print(f"  Sample: {len(df):,} firm-year observations")
 
     # Count unique firms and years
-    n_firms = df['gvkey'].nunique()
-    n_years = df['year'].nunique()
+    n_firms = df["gvkey"].nunique()
+    n_years = df["year"].nunique()
     year_range = f"{df['year'].min()}-{df['year'].max()}"
 
     print(f"  Firms: {n_firms:,}")
@@ -667,7 +721,11 @@ def check_prerequisites(paths):
 
     all_ok = True
     for name, path in required_files.items():
-        path_exists = path.exists() if not isinstance(path, dict) else any(p.exists() for p in path.values())
+        path_exists = (
+            path.exists()
+            if not isinstance(path, dict)
+            else any(p.exists() for p in path.values())
+        )
         if path_exists:
             print(f"  [OK] {name}: {path}")
         else:
@@ -700,15 +758,15 @@ def compute_h8_stats(df, config):
     print("=" * 60)
 
     stats = {
-        'n_obs': len(df),
-        'n_firms': df['gvkey'].nunique(),
-        'n_years': df['year'].nunique(),
-        'year_range': (int(df['year'].min()), int(df['year'].max())),
+        "n_obs": len(df),
+        "n_firms": df["gvkey"].nunique(),
+        "n_years": df["year"].nunique(),
+        "year_range": (int(df["year"].min()), int(df["year"].max())),
     }
 
     # Takeover rate (DV)
-    stats['takeover_rate'] = float(df['takeover_fwd'].mean())
-    stats['n_takeovers'] = int(df['takeover_fwd'].sum())
+    stats["takeover_rate"] = float(df["takeover_fwd"].mean())
+    stats["n_takeovers"] = int(df["takeover_fwd"].sum())
 
     print(f"  Observations: {stats['n_obs']:,}")
     print(f"  Firms: {stats['n_firms']:,}")
@@ -717,55 +775,75 @@ def compute_h8_stats(df, config):
     print(f"  Takeover rate: {stats['takeover_rate']:.2%}")
 
     # Validate takeover rate
-    if stats['takeover_rate'] < config['takeover_rate_min']:
-        print(f"  WARNING: Takeover rate {stats['takeover_rate']:.2%} below minimum {config['takeover_rate_min']:.2%}")
-    if stats['takeover_rate'] > config['takeover_rate_max']:
-        print(f"  WARNING: Takeover rate {stats['takeover_rate']:.2%} above maximum {config['takeover_rate_max']:.2%}")
-    if stats['n_takeovers'] < config['min_takeover_events']:
-        print(f"  WARNING: Takeover events {stats['n_takeovers']} below minimum {config['min_takeover_events']}")
+    if stats["takeover_rate"] < config["takeover_rate_min"]:
+        print(
+            f"  WARNING: Takeover rate {stats['takeover_rate']:.2%} below minimum {config['takeover_rate_min']:.2%}"
+        )
+    if stats["takeover_rate"] > config["takeover_rate_max"]:
+        print(
+            f"  WARNING: Takeover rate {stats['takeover_rate']:.2%} above maximum {config['takeover_rate_max']:.2%}"
+        )
+    if stats["n_takeovers"] < config["min_takeover_events"]:
+        print(
+            f"  WARNING: Takeover events {stats['n_takeovers']} below minimum {config['min_takeover_events']}"
+        )
 
     # Alternative takeover definitions
-    if 'takeover_announced_fwd' in df.columns:
-        stats['takeover_announced_rate'] = float(df['takeover_announced_fwd'].mean())
-        stats['n_announced'] = int(df['takeover_announced_fwd'].sum())
+    if "takeover_announced_fwd" in df.columns:
+        stats["takeover_announced_rate"] = float(df["takeover_announced_fwd"].mean())
+        stats["n_announced"] = int(df["takeover_announced_fwd"].sum())
         print(f"  Announced takeover rate: {stats['takeover_announced_rate']:.2%}")
 
-    if 'takeover_hostile_fwd' in df.columns:
-        stats['takeover_hostile_rate'] = float(df['takeover_hostile_fwd'].mean())
-        stats['n_hostile'] = int(df['takeover_hostile_fwd'].sum())
+    if "takeover_hostile_fwd" in df.columns:
+        stats["takeover_hostile_rate"] = float(df["takeover_hostile_fwd"].mean())
+        stats["n_hostile"] = int(df["takeover_hostile_fwd"].sum())
         print(f"  Hostile takeover rate: {stats['takeover_hostile_rate']:.2%}")
 
     # Uncertainty measures (IVs)
     print("\n  Uncertainty Measures:")
-    uncertainty_measures = [c for c in df.columns if 'Uncertainty_pct' in c]
-    stats['uncertainty_measures'] = {}
+    uncertainty_measures = [c for c in df.columns if "Uncertainty_pct" in c]
+    stats["uncertainty_measures"] = {}
     for uv in uncertainty_measures:
         if uv in df.columns and df[uv].notna().sum() > 0:
-            stats['uncertainty_measures'][uv] = {
-                'mean': float(df[uv].mean()),
-                'std': float(df[uv].std()),
-                'min': float(df[uv].min()),
-                'max': float(df[uv].max()),
-                'n': int(df[uv].notna().sum()),
-                'missing': int(df[uv].isna().sum()),
+            stats["uncertainty_measures"][uv] = {
+                "mean": float(df[uv].mean()),
+                "std": float(df[uv].std()),
+                "min": float(df[uv].min()),
+                "max": float(df[uv].max()),
+                "n": int(df[uv].notna().sum()),
+                "missing": int(df[uv].isna().sum()),
             }
-            print(f"    {uv}: mean={stats['uncertainty_measures'][uv]['mean']:.4f}, n={stats['uncertainty_measures'][uv]['n']:,}")
+            print(
+                f"    {uv}: mean={stats['uncertainty_measures'][uv]['mean']:.4f}, n={stats['uncertainty_measures'][uv]['n']:,}"
+            )
 
     # Controls
-    control_vars = ['Size', 'Lev', 'ROA', 'BM', 'CurrentRatio', 'Efficiency', 'StockRet', 'Volatility', 'RD_Intensity']
+    control_vars = [
+        "Size",
+        "Lev",
+        "ROA",
+        "BM",
+        "CurrentRatio",
+        "Efficiency",
+        "StockRet",
+        "Volatility",
+        "RD_Intensity",
+    ]
     print("\n  Control Variables:")
-    stats['controls'] = {}
+    stats["controls"] = {}
     for cv in control_vars:
         if cv in df.columns and df[cv].notna().sum() > 0:
-            stats['controls'][cv] = {
-                'mean': float(df[cv].mean()),
-                'std': float(df[cv].std()),
-                'min': float(df[cv].min()),
-                'max': float(df[cv].max()),
-                'n': int(df[cv].notna().sum()),
-                'missing': int(df[cv].isna().sum()),
+            stats["controls"][cv] = {
+                "mean": float(df[cv].mean()),
+                "std": float(df[cv].std()),
+                "min": float(df[cv].min()),
+                "max": float(df[cv].max()),
+                "n": int(df[cv].notna().sum()),
+                "missing": int(df[cv].isna().sum()),
             }
-            print(f"    {cv}: mean={stats['controls'][cv]['mean']:.4f}, n={stats['controls'][cv]['n']:,}")
+            print(
+                f"    {cv}: mean={stats['controls'][cv]['mean']:.4f}, n={stats['controls'][cv]['n']:,}"
+            )
 
     return stats
 
@@ -779,6 +857,7 @@ def update_latest_symlink(output_dir):
                 latest_link.unlink()
             elif latest_link.is_dir():
                 import shutil
+
                 shutil.rmtree(latest_link)
         latest_link.symlink_to(output_dir)
     except Exception as e:
@@ -871,21 +950,29 @@ def main():
     print("\nManifest:")
     manifest_file = paths["manifest_dir"] / "master_sample_manifest.parquet"
     stats["input"]["files"].append(str(manifest_file))
-    stats["input"]["checksums"][manifest_file.name] = compute_file_checksum(manifest_file)
+    stats["input"]["checksums"][manifest_file.name] = compute_file_checksum(
+        manifest_file
+    )
     manifest = pd.read_parquet(manifest_file)
-    manifest['gvkey'] = manifest['gvkey'].astype(str).str.zfill(6)
+    manifest["gvkey"] = manifest["gvkey"].astype(str).str.zfill(6)
     print(f"  Manifest: {len(manifest):,} observations")
 
     # Load SDC data
     print("\nSDC M&A Data:")
     stats["input"]["files"].append(str(paths["sdc_file"]))
-    stats["input"]["checksums"][paths["sdc_file"].name] = compute_file_checksum(paths["sdc_file"])
-    sdc_df = load_sdc_data(paths["sdc_file"], CONFIG['year_start'], CONFIG['year_end'])
+    stats["input"]["checksums"][paths["sdc_file"].name] = compute_file_checksum(
+        paths["sdc_file"]
+    )
+    sdc_df = load_sdc_data(paths["sdc_file"], CONFIG["year_start"], CONFIG["year_end"])
     stats["input"]["total_rows"] += len(sdc_df)
 
     # Create forward takeover indicator
     sdc_df = create_forward_takeover(sdc_df)
-    stats["processing"]["takeover_indicators"] = ["takeover_fwd", "takeover_announced_fwd", "takeover_hostile_fwd"]
+    stats["processing"]["takeover_indicators"] = [
+        "takeover_fwd",
+        "takeover_announced_fwd",
+        "takeover_hostile_fwd",
+    ]
 
     # Load H7 data (base with uncertainty measures)
     print("\nH7 Illiquidity Data:")
@@ -900,8 +987,8 @@ def main():
     try:
         controls_df = load_firm_controls(
             paths["root"] / "4_Outputs" / "3_Financial_Features",
-            CONFIG['year_start'],
-            CONFIG['year_end']
+            CONFIG["year_start"],
+            CONFIG["year_end"],
         )
     except Exception as e:
         print(f"  Warning: Could not load firm controls: {e}")
@@ -910,7 +997,9 @@ def main():
     # Load CCM link table for CUSIP-GVKEY mapping
     print("\nCRSP-Compustat CCM Link Table:")
     stats["input"]["files"].append(str(paths["ccm_file"]))
-    stats["input"]["checksums"][paths["ccm_file"].name] = compute_file_checksum(paths["ccm_file"])
+    stats["input"]["checksums"][paths["ccm_file"].name] = compute_file_checksum(
+        paths["ccm_file"]
+    )
     ccm_map = load_ccm_link(paths["ccm_file"])
 
     # ========================================================================
@@ -932,14 +1021,28 @@ def main():
     print("Applying Winsorization (1%/99%)")
     print("=" * 60)
 
-    continuous_vars = [c for c in h8_df.columns if c in [
-        'Size', 'Lev', 'ROA', 'BM', 'CurrentRatio', 'Efficiency', 'StockRet', 'Volatility'
-    ]]
+    continuous_vars = [
+        c
+        for c in h8_df.columns
+        if c
+        in [
+            "Size",
+            "Lev",
+            "ROA",
+            "BM",
+            "CurrentRatio",
+            "Efficiency",
+            "StockRet",
+            "Volatility",
+        ]
+    ]
 
     for var in continuous_vars:
         if var in h8_df.columns and h8_df[var].notna().sum() > 0:
             before_mean = h8_df[var].mean()
-            h8_df[var] = winsorize_series(h8_df[var], lower=CONFIG['winsor_lower'], upper=CONFIG['winsor_upper'])
+            h8_df[var] = winsorize_series(
+                h8_df[var], lower=CONFIG["winsor_lower"], upper=CONFIG["winsor_upper"]
+            )
             after_mean = h8_df[var].mean()
             stats["processing"]["winsorization"][var] = {
                 "before_mean": round(float(before_mean), 4),
@@ -993,7 +1096,7 @@ def main():
     # Write stats.json
     stats["processing"]["h8_stats"] = h8_stats
     save_stats(stats, paths["output_dir"])
-    print(f"  Wrote: stats.json")
+    print("  Wrote: stats.json")
 
     # Update latest symlink
     update_latest_symlink(paths["output_dir"])
@@ -1034,7 +1137,9 @@ def main():
 
     # Detect anomalies
     print("\nDetecting anomalies...")
-    numeric_cols = [c for c in final_output.columns if final_output[c].dtype in ['float64', 'int64']]
+    numeric_cols = [
+        c for c in final_output.columns if final_output[c].dtype in ["float64", "int64"]
+    ]
     anomalies = detect_anomalies_zscore(final_output, numeric_cols, threshold=3.0)
     total_anomalies = sum(a["count"] for a in anomalies.values())
     print(f"  Anomalies detected (z>3): {total_anomalies}")

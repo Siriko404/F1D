@@ -10,19 +10,17 @@ Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import yaml
-import pandas as pd
-import numpy as np
 import importlib.util
-import hashlib
+import sys
 import time
-import json
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 import psutil
+import yaml
 
 # Dynamic import for 3.4_Utils.py
 utils_path = Path(__file__).parent / "3.4_Utils.py"
@@ -31,25 +29,26 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import generate_variable_reference
-
 # Add parent directory to sys.path for shared module imports
 import sys as _sys
-from pathlib import Path as _Path
+
+from utils import generate_variable_reference
 
 _script_dir = Path(__file__).parent.parent
 _sys.path.insert(0, str(_script_dir))
 
 # Import shared path validation utilities
+# Import DualWriter from shared.observability_utils
+from shared.observability_utils import (
+    DualWriter,
+    analyze_missing_values,
+    compute_file_checksum,
+    print_stats_summary,
+    save_stats,
+)
 from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
     get_latest_output_dir,
 )
-
-# Import DualWriter from shared.observability_utils
-from shared.observability_utils import DualWriter
 
 # ==============================================================================
 # Stats Helper Functions
@@ -97,6 +96,29 @@ def calculate_throughput(rows_processed, duration_seconds):
     if duration_seconds <= 0:
         return 0.0
     return round(rows_processed / duration_seconds, 2)
+
+
+def get_git_sha():
+    """
+    Get the current git commit SHA.
+
+    Returns:
+        str: Git commit SHA, or 'unknown' if not in a git repository
+    """
+    try:
+        import subprocess
+
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+        return "unknown"
+    except Exception:
+        return "unknown"
 
 
 def detect_anomalies_zscore(df, columns, threshold=3.0):
@@ -548,7 +570,7 @@ def main():
 
         crsp = step32.load_crsp_for_years(paths["crsp_dir"], [year - 1, year])
         if crsp is None:
-            print(f"    No CRSP data, skipping")
+            print("    No CRSP data, skipping")
             continue
 
         total_crsp_rows += len(crsp)

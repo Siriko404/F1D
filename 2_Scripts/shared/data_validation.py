@@ -16,11 +16,11 @@ Source: Pandas DataFrame validation patterns
 Source: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.dtypes.html
 """
 
-import pandas as pd
-from pathlib import Path
-from typing import Dict, Any, Optional
 import sys
+from pathlib import Path
+from typing import Optional
 
+import pandas as pd
 
 # Schemas for key input files
 INPUT_SCHEMAS = {
@@ -128,7 +128,7 @@ def validate_dataframe_schema(
             if max_val is not None and (df[col] > max_val).any():
                 count = (df[col] > max_val).sum()
                 errors.append(f"Column '{col}': {count} values above max ({max_val})")
-        except TypeError as e:
+        except TypeError:
             # Handle case where column type doesn't support comparison (e.g., strings vs int)
             actual_type = str(df[col].dtype)
             errors.append(

@@ -6,9 +6,9 @@ Declared Outputs: parse_ff_industries() function
 deterministic: true
 """
 
+import zipfile
 from pathlib import Path
 from typing import Dict, Tuple
-import zipfile
 
 
 def parse_ff_industries(

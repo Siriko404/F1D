@@ -26,14 +26,15 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
+import argparse
 import os
-from pathlib import Path
-from datetime import datetime
-import yaml
 import shutil
 import subprocess
-import argparse
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import yaml
 
 # Import shared observability utilities
 try:
@@ -62,11 +63,11 @@ except ImportError:
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
         OutputResolutionError,
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
     )
 except ImportError:
     import sys as _sys
@@ -75,11 +76,9 @@ except ImportError:
     _script_dir = _Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
     from shared.path_utils import (
-        validate_output_path,
         ensure_output_dir,
-        validate_input_file,
         get_latest_output_dir,
-        OutputResolutionError,
+        validate_input_file,
     )
 
 
@@ -121,7 +120,6 @@ Substeps:
 def check_prerequisites(root):
     """Validate all required inputs exist."""
     from shared.dependency_checker import validate_prerequisites
-    from shared.path_utils import validate_input_file
 
     required_files = {
         "config/project.yaml": root / "config/project.yaml",

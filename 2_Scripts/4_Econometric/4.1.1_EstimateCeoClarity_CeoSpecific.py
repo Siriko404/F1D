@@ -28,18 +28,13 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import warnings
-import hashlib
-import json
-import time
-import psutil
 import argparse
+import sys
+import warnings
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 # Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
 # Script is in 2_Scripts/4_Econometric/, need to add 2_Scripts/ to path
@@ -98,53 +93,42 @@ except ImportError:
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
 # Import shared regression and reporting utilities
-from shared.regression_utils import run_fixed_effects_ols
-from shared.reporting_utils import (
-    generate_regression_report,
-    save_model_diagnostics,
-    save_variable_reference,
+from shared.data_loading import load_all_data
+from shared.observability_utils import (
+    DualWriter,
+    analyze_missing_values,
+    compute_file_checksum,
+    get_process_memory_mb,
+    print_stats_summary,
+    save_stats,
 )
+from shared.regression_helpers import (
+    prepare_regression_data,
+)
+from shared.regression_utils import run_fixed_effects_ols
 from shared.regression_validation import (
-    validate_regression_data,
     validate_columns,
     validate_sample_size,
 )
-from shared.regression_helpers import (
-    build_regression_sample,
-    prepare_regression_data,
+from shared.reporting_utils import (
+    generate_regression_report,
+    save_model_diagnostics,
 )
-from shared.observability_utils import (
-    compute_file_checksum,
-    print_stat,
-    analyze_missing_values,
-    print_stats_summary,
-    save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
-    detect_anomalies_iqr,
-    DualWriter,
-)
-from shared.data_loading import load_all_data
 
 # Import shared path validation utilities
 try:
     from shared.path_utils import (
-        validate_output_path,
         ensure_output_dir,
-        validate_input_file,
         get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
     )
 except ImportError:
     import sys as _sys
-    from pathlib import Path as _Path
 
     _script_dir = Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
     from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
         get_latest_output_dir,
     )
 
@@ -284,7 +268,7 @@ def run_regression(df_sample, sample_name):
         df_reg: DataFrame used for regression (ceo_id converted to string)
         valid_ceos: Set of valid CEO IDs (numeric) that passed the min calls filter
     """
-    print(f"\n" + "=" * 60)
+    print("\n" + "=" * 60)
     print(f"Running regression: {sample_name}")
     print("=" * 60)
 
@@ -319,18 +303,18 @@ def run_regression(df_sample, sample_name):
     print(f"  Formula: {formula[:80]}...")
 
     # Validate regression data before estimation
-    print(f"  Validating regression data...")
+    print("  Validating regression data...")
     try:
         required_columns = [dep_var] + controls + ["ceo_id", "year"]
         validate_columns(df_reg, required_columns)
         validate_sample_size(df_reg, min_observations=100)
-        print(f"  Validation passed")
+        print("  Validation passed")
     except Exception as e:
         print(f"  Validation failed: {e}")
         return None, None, None
 
     # Estimate model using shared function
-    print(f"  Estimating... (this may take a minute)")
+    print("  Estimating... (this may take a minute)")
     start_time = datetime.now()
 
     try:
@@ -502,12 +486,12 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
 
     # Model diagnostics
     if all_diagnostics:
-        diag_df = pd.DataFrame(all_diagnostics)
+        pd.DataFrame(all_diagnostics)
         # Combine all model diagnostics into single CSV
         for sample_name, model in all_models.items():
             if model is not None:
-                diag_path = save_model_diagnostics(model, sample_name, out_dir)
-        print(f"  Saved: model_diagnostics.csv")
+                save_model_diagnostics(model, sample_name, out_dir)
+        print("  Saved: model_diagnostics.csv")
 
     # Variable reference
     var_ref = pd.DataFrame(
@@ -572,7 +556,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
     )
     var_ref_path = out_dir / "variable_reference.csv"
     var_ref.to_csv(var_ref_path, index=False)
-    print(f"  Saved: variable_reference.csv")
+    print("  Saved: variable_reference.csv")
 
     return ceo_scores_df
 
@@ -647,7 +631,7 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: report_step4_1.md")
+    print("  Saved: report_step4_1.md")
 
 
 # ==============================================================================
@@ -663,7 +647,7 @@ def main(year_start=None, year_end=None):
 
     # Initialize observability
     mem_start = get_process_memory_mb()
-    memory_readings = [mem_start["rss_mb"]]
+    [mem_start["rss_mb"]]
 
     stats = {
         "step_id": "4.1.1_EstimateCeoClarity_CeoSpecific",

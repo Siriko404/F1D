@@ -46,20 +46,24 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
+
 # Custom exceptions
 class CollinearityError(Exception):
     """Raised when perfect collinearity is detected in the design matrix."""
+
     pass
 
 
 class MulticollinearityError(Exception):
     """Raised when VIF threshold is exceeded (high multicollinearity)."""
+
     pass
 
 
 # Import linearmodels - handle gracefully if not available
 try:
     from linearmodels.panel.model import PanelOLS
+
     LINEARMODELS_AVAILABLE = True
 except ImportError:
     PanelOLS = None
@@ -67,10 +71,7 @@ except ImportError:
 
 
 def _check_thin_cells(
-    df: pd.DataFrame,
-    industry_col: str,
-    time_col: str,
-    min_firms: int = 5
+    df: pd.DataFrame, industry_col: str, time_col: str, min_firms: int = 5
 ) -> Tuple[bool, Dict[str, int]]:
     """
     Check for thin industry-year cells.
@@ -99,7 +100,7 @@ def _format_coefficient_table(
     coefficients: pd.DataFrame,
     pvalues: pd.Series,
     vif_df: Optional[pd.DataFrame] = None,
-    vif_threshold: float = 5.0
+    vif_threshold: float = 5.0,
 ) -> str:
     """
     Format coefficient table for console output with significance stars.
@@ -129,9 +130,9 @@ def _format_coefficient_table(
     lines.append("-" * 80)
 
     for var in coefficients.index:
-        coef = coefficients.loc[var, 'Coefficient']
-        se = coefficients.loc[var, 'Std. Error']
-        tstat = coefficients.loc[var, 't-stat']
+        coef = coefficients.loc[var, "Coefficient"]
+        se = coefficients.loc[var, "Std. Error"]
+        tstat = coefficients.loc[var, "t-stat"]
 
         # Get p-value
         pval = pvalues.get(var, np.nan)
@@ -139,15 +140,15 @@ def _format_coefficient_table(
         # Significance stars
         if not np.isnan(pval):
             if pval < 0.01:
-                stars = '***'
+                stars = "***"
             elif pval < 0.05:
-                stars = '**'
+                stars = "**"
             elif pval < 0.10:
-                stars = '*'
+                stars = "*"
             else:
-                stars = ''
+                stars = ""
         else:
-            stars = ''
+            stars = ""
 
         # Format coefficient with stars
         coef_str = f"{coef:>10.4f}{stars:>3}"
@@ -158,7 +159,9 @@ def _format_coefficient_table(
         else:
             pval_str = f"{pval:.4f}"
 
-        lines.append(f"{var:<20} {coef_str:>15} {se:>12.4f} {tstat:>10.2f} {pval_str:>10}")
+        lines.append(
+            f"{var:<20} {coef_str:>15} {se:>12.4f} {tstat:>10.2f} {pval_str:>10}"
+        )
 
     lines.append("-" * 80)
     lines.append("Significance: * p<0.10, ** p<0.05, *** p<0.01")
@@ -170,9 +173,9 @@ def _format_coefficient_table(
         lines.append("-" * 80)
 
         for _, row in vif_df.iterrows():
-            var = row['variable']
-            vif = row['VIF']
-            exceeded = row.get('threshold_exceeded', False)
+            var = row["variable"]
+            vif = row["VIF"]
+            exceeded = row.get("threshold_exceeded", False)
 
             if exceeded:
                 status = f"*** WARNING: Exceeds {vif_threshold} threshold"
@@ -190,18 +193,18 @@ def run_panel_ols(
     df: pd.DataFrame,
     dependent: str,
     exog: List[str],
-    entity_col: str = 'gvkey',
-    time_col: str = 'year',
-    industry_col: str = 'ff48_code',
+    entity_col: str = "gvkey",
+    time_col: str = "year",
+    industry_col: str = "ff48_code",
     entity_effects: bool = True,
     time_effects: bool = True,
     industry_effects: bool = False,
-    cov_type: str = 'clustered',
+    cov_type: str = "clustered",
     cluster_cols: Optional[List[str]] = None,
-    kernel: str = 'bartlett',
+    kernel: str = "bartlett",
     min_industry_firms: int = 5,
     check_collinearity: bool = True,
-    vif_threshold: float = 5.0
+    vif_threshold: float = 5.0,
 ) -> Dict[str, Any]:
     """
     Run panel OLS regression with fixed effects and clustered standard errors.
@@ -270,9 +273,7 @@ def run_panel_ols(
     """
     # Verify linearmodels available
     if not LINEARMODELS_AVAILABLE:
-        raise ImportError(
-            "linearmodels is required. Install: pip install linearmodels"
-        )
+        raise ImportError("linearmodels is required. Install: pip install linearmodels")
 
     warnings_collected: List[str] = []
 
@@ -304,7 +305,7 @@ def run_panel_ols(
                 f"This may cause noisy estimates."
             )
             warnings_collected.append(msg)
-            warnings.warn(msg, UserWarning)
+            warnings.warn(msg, UserWarning, stacklevel=2)
 
     # Warn about firm + industry FE collinearity
     if entity_effects and industry_effects:
@@ -314,7 +315,7 @@ def run_panel_ols(
             "This may cause rank deficiency. Use check_rank=True to detect."
         )
         warnings_collected.append(msg)
-        warnings.warn(msg, UserWarning)
+        warnings.warn(msg, UserWarning, stacklevel=2)
 
     # Set MultiIndex for panel data
     df_work = df_work.set_index([entity_col, time_col])
@@ -339,12 +340,12 @@ def run_panel_ols(
 
     # Build model
     model_kwargs = {
-        'dependent': dependent_data,
-        'exog': exog_data,
-        'entity_effects': entity_effects,
-        'time_effects': time_effects,
-        'drop_absorbed': False,
-        'check_rank': True
+        "dependent": dependent_data,
+        "exog": exog_data,
+        "entity_effects": entity_effects,
+        "time_effects": time_effects,
+        "drop_absorbed": False,
+        "check_rank": True,
     }
 
     # Add industry effects if requested
@@ -352,22 +353,22 @@ def run_panel_ols(
         # Need to align industry column with filtered data
         # Use exog_data.index which already has complete_idx filter applied
         industry_data = df_work.loc[exog_data.index, industry_col]
-        model_kwargs['other_effects'] = industry_data
+        model_kwargs["other_effects"] = industry_data
 
     try:
         model = PanelOLS(**model_kwargs)
     except Exception as e:
-        if 'rank' in str(e).lower() or 'collinear' in str(e).lower():
+        if "rank" in str(e).lower() or "collinear" in str(e).lower():
             raise CollinearityError(
                 f"Perfect collinearity detected in design matrix: {e}"
             ) from e
         raise
 
     # Prepare fit kwargs based on covariance type
-    fit_kwargs = {'debiased': True}
+    fit_kwargs = {"debiased": True}
 
-    if cov_type == 'clustered':
-        fit_kwargs['cov_type'] = 'clustered'
+    if cov_type == "clustered":
+        fit_kwargs["cov_type"] = "clustered"
 
         if cluster_cols is not None and len(cluster_cols) > 1:
             # Double clustering - need to get cluster columns from index
@@ -380,65 +381,69 @@ def run_panel_ols(
                 elif col in df_work.columns:
                     # Column is still in columns (before set_index)
                     cluster_df[col] = df_work.loc[exog_data.index, col]
-            fit_kwargs['clusters'] = cluster_df
+            fit_kwargs["clusters"] = cluster_df
         elif cluster_cols is not None and len(cluster_cols) == 1:
             # Single cluster on specific column
             if cluster_cols[0] == entity_col:
-                fit_kwargs['cluster_entity'] = True
+                fit_kwargs["cluster_entity"] = True
             elif cluster_cols[0] == time_col:
-                fit_kwargs['cluster_time'] = True
+                fit_kwargs["cluster_time"] = True
         else:
             # Default: cluster at entity level
-            fit_kwargs['cluster_entity'] = True
+            fit_kwargs["cluster_entity"] = True
 
-    elif cov_type == 'kernel':
-        fit_kwargs['cov_type'] = 'kernel'
-        fit_kwargs['kernel'] = kernel
+    elif cov_type == "kernel":
+        fit_kwargs["cov_type"] = "kernel"
+        fit_kwargs["kernel"] = kernel
         # bandwidth=None lets linearmodels auto-select
     else:
-        fit_kwargs['cov_type'] = 'robust'
+        fit_kwargs["cov_type"] = "robust"
 
     # Fit model
     try:
         result = model.fit(**fit_kwargs)
     except Exception as e:
-        if 'rank' in str(e).lower() or 'singular' in str(e).lower():
+        if "rank" in str(e).lower() or "singular" in str(e).lower():
             raise CollinearityError(
                 f"Perfect collinearity during estimation: {e}"
             ) from e
         raise
 
     # Extract coefficients and statistics
-    coefficients_df = pd.DataFrame({
-        'Coefficient': result.params,
-        'Std. Error': result.std_errors,
-        't-stat': result.tstats,
-    })
+    coefficients_df = pd.DataFrame(
+        {
+            "Coefficient": result.params,
+            "Std. Error": result.std_errors,
+            "t-stat": result.tstats,
+        }
+    )
 
     # Build summary
     f_stat = None
     f_pval = None
-    if hasattr(result, 'f_statistic') and result.f_statistic is not None:
+    if hasattr(result, "f_statistic") and result.f_statistic is not None:
         f_stat = float(result.f_statistic.stat)
         f_pval = float(result.f_statistic.pval)
 
     summary = {
-        'rsquared': float(result.rsquared),
-        'rsquared_within': float(result.rsquared_within) if hasattr(result, 'rsquared_within') else None,
-        'nobs': int(result.nobs),
-        'entity_effects': entity_effects,
-        'time_effects': time_effects,
-        'industry_effects': industry_effects,
-        'cov_type': cov_type,
-        'f_statistic': f_stat,
-        'f_pvalue': f_pval,
+        "rsquared": float(result.rsquared),
+        "rsquared_within": float(result.rsquared_within)
+        if hasattr(result, "rsquared_within")
+        else None,
+        "nobs": int(result.nobs),
+        "entity_effects": entity_effects,
+        "time_effects": time_effects,
+        "industry_effects": industry_effects,
+        "cov_type": cov_type,
+        "f_statistic": f_stat,
+        "f_pvalue": f_pval,
     }
 
     # Diagnostics (VIF)
     diagnostics = {
-        'residual_std': None,
-        'condition_number': None,
-        'vif': None,
+        "residual_std": None,
+        "condition_number": None,
+        "vif": None,
     }
 
     vif_df = None
@@ -449,7 +454,9 @@ def run_panel_ols(
         except ImportError:
             # If diagnostics module not yet created, compute here
             try:
-                from statsmodels.stats.outliers_influence import variance_inflation_factor
+                from statsmodels.stats.outliers_influence import (
+                    variance_inflation_factor,
+                )
                 from statsmodels.tools.tools import add_constant
 
                 def compute_vif(df_local, cols, add_constant=True):
@@ -460,11 +467,13 @@ def run_panel_ols(
                     for i, col in enumerate(cols):
                         if col in df_vif.columns:
                             vif_val = variance_inflation_factor(df_vif.values, i)
-                            vif_data.append({
-                                'variable': col,
-                                'VIF': vif_val,
-                                'threshold_exceeded': vif_val > vif_threshold
-                            })
+                            vif_data.append(
+                                {
+                                    "variable": col,
+                                    "VIF": vif_val,
+                                    "threshold_exceeded": vif_val > vif_threshold,
+                                }
+                            )
                     return pd.DataFrame(vif_data)
             except ImportError:
                 compute_vif = None
@@ -476,7 +485,7 @@ def run_panel_ols(
                 vif_df = compute_vif(exog_for_vif, exog, add_constant=True)
 
                 # Check for VIF violations
-                high_vif = vif_df[vif_df['threshold_exceeded']]
+                high_vif = vif_df[vif_df["threshold_exceeded"]]
                 if len(high_vif) > 0:
                     vif_warning = (
                         f"High VIF detected: {high_vif['variable'].tolist()} "
@@ -484,27 +493,24 @@ def run_panel_ols(
                         f"Threshold: {vif_threshold}"
                     )
                     warnings_collected.append(vif_warning)
-                    warnings.warn(f"WARNING: {vif_warning}", UserWarning)
+                    warnings.warn(f"WARNING: {vif_warning}", UserWarning, stacklevel=2)
 
-                diagnostics['vif'] = vif_df.to_dict('records')
+                diagnostics["vif"] = vif_df.to_dict("records")
 
             except Exception as e:
                 warnings_collected.append(f"VIF computation failed: {e}")
 
     # Condition number from result if available
-    if hasattr(result, 'condition_number'):
-        diagnostics['condition_number'] = float(result.condition_number)
+    if hasattr(result, "condition_number"):
+        diagnostics["condition_number"] = float(result.condition_number)
 
     # Residual standard deviation
-    if hasattr(result, 'resids'):
-        diagnostics['residual_std'] = float(np.std(result.resids))
+    if hasattr(result, "resids"):
+        diagnostics["residual_std"] = float(np.std(result.resids))
 
     # Print formatted output
     output_str = _format_coefficient_table(
-        coefficients_df,
-        result.pvalues,
-        vif_df,
-        vif_threshold
+        coefficients_df, result.pvalues, vif_df, vif_threshold
     )
 
     # Add summary section
@@ -512,11 +518,11 @@ def run_panel_ols(
     output_str += "-" * 40 + "\n"
     output_str += f"  Observations:     {summary['nobs']:,}\n"
     output_str += f"  R-squared:        {summary['rsquared']:.4f}\n"
-    if summary['rsquared_within'] is not None:
+    if summary["rsquared_within"] is not None:
         output_str += f"  R-squared (within): {summary['rsquared_within']:.4f}\n"
     if f_stat is not None:
         output_str += f"  F-statistic:      {f_stat:.2f} (p-value: {f_pval:.4f})\n"
-    output_str += f"\n  Fixed Effects:\n"
+    output_str += "\n  Fixed Effects:\n"
     output_str += f"    Entity (firm):   {summary['entity_effects']}\n"
     output_str += f"    Time (year):     {summary['time_effects']}\n"
     output_str += f"    Industry:        {summary['industry_effects']}\n"
@@ -526,17 +532,17 @@ def run_panel_ols(
     print(output_str)
 
     return {
-        'model': result,
-        'coefficients': coefficients_df,
-        'summary': summary,
-        'diagnostics': diagnostics,
-        'warnings': warnings_collected,
+        "model": result,
+        "coefficients": coefficients_df,
+        "summary": summary,
+        "diagnostics": diagnostics,
+        "warnings": warnings_collected,
     }
 
 
 # Export symbols
 __all__ = [
-    'run_panel_ols',
-    'CollinearityError',
-    'MulticollinearityError',
+    "run_panel_ols",
+    "CollinearityError",
+    "MulticollinearityError",
 ]

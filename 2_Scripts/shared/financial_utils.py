@@ -21,8 +21,8 @@ Deterministic: true
 ================================================================================
 """
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from shared.data_validation import FinancialCalculationError
 
@@ -59,7 +59,11 @@ def calculate_firm_controls(
     ]
 
     if firm_data.empty:
-        available_years = compustat_df[compustat_df["gvkey"] == str(gvkey).zfill(6)]["fyear"].unique() if "gvkey" in compustat_df.columns else []
+        available_years = (
+            compustat_df[compustat_df["gvkey"] == str(gvkey).zfill(6)]["fyear"].unique()
+            if "gvkey" in compustat_df.columns
+            else []
+        )
         raise FinancialCalculationError(
             f"Cannot calculate firm controls: no Compustat data found. "
             f"gvkey={gvkey}, year={year}. "

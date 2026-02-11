@@ -37,20 +37,17 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
 import logging
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import hashlib
-import json
+import sys
 import time
-import psutil
 import warnings
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -60,31 +57,27 @@ script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
-# Import DualWriter from shared.observability_utils
-from shared.observability_utils import (
-    DualWriter,
-    compute_file_checksum,
-    print_stat,
-    analyze_missing_values,
-    print_stats_summary,
-    save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
-)
+# Import statsmodels for OLS regressions
+import statsmodels.api as sm
 
 # Import industry utilities
 from shared.industry_utils import parse_ff_industries
 
-# Import statsmodels for OLS regressions
-import statsmodels.api as sm
+# Import DualWriter from shared.observability_utils
+from shared.observability_utils import (
+    calculate_throughput,
+    compute_file_checksum,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
+    print_stat,
+    print_stats_summary,
+    save_stats,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+)
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings("ignore")
@@ -164,7 +157,7 @@ def load_manifest(manifest_dir):
 
 def load_compustat_h2(compustat_file):
     """Load Compustat data with only required columns for H2 variables"""
-    print(f"  Loading Compustat data...")
+    print("  Loading Compustat data...")
 
     # Required columns for H2 variables
     # Quarterly fields (q suffix): at, dp (depreciation), sale, ib, che, ceq, csho, prcc, dltt, dlc
@@ -229,7 +222,7 @@ def load_compustat_h2(compustat_file):
 
 def load_ibes(ibes_file):
     """Load IBES analyst forecast data"""
-    print(f"  Loading IBES data...")
+    print("  Loading IBES data...")
 
     # IBES columns are uppercase in the parquet file
     required_cols = [
@@ -518,7 +511,7 @@ def compute_efficiency_score(df, min_years=3, window=5):
     chunks = []
     chunk_size = 1000  # Process firms in chunks
 
-    for i, (gvkey, group) in enumerate(df_subset.groupby("gvkey")):
+    for _i, (gvkey, group) in enumerate(df_subset.groupby("gvkey")):
         # Sort the group
         group = group.sort_values("fiscal_year").reset_index(drop=True)
 
@@ -810,7 +803,7 @@ def compute_cf_volatility(df, min_years=3, window=5):
     # Use rolling std - much more efficient
     results = []
 
-    for gvkey, group in df_comp.groupby("gvkey"):
+    for _gvkey, group in df_comp.groupby("gvkey"):
         group = group.sort_values("fiscal_year").reset_index(drop=True)
 
         # Compute rolling std
@@ -935,7 +928,7 @@ def compute_earnings_volatility(df, min_years=3, window=5):
     # Use rolling std - much more efficient
     results = []
 
-    for gvkey, group in df_comp.groupby("gvkey"):
+    for _gvkey, group in df_comp.groupby("gvkey"):
         group = group.sort_values("fiscal_year").reset_index(drop=True)
 
         # Compute rolling std
@@ -1179,7 +1172,7 @@ def main():
     # Load IBES (skip for now due to memory issues - 25M rows)
     print("\nIBES:")
     print("  Warning: Skipping IBES analyst dispersion (requires CUSIP-GVKEY linking)")
-    ibes = pd.DataFrame()  # Empty dataframe
+    pd.DataFrame()  # Empty dataframe
     print_stat("IBES rows", value=0)
 
     # ========================================================================
@@ -1301,9 +1294,7 @@ def main():
     print("  Skipping analyst dispersion (IBES data not loaded)")
 
     # Empty dataframe for compatibility
-    analyst_dispersion_df = pd.DataFrame(
-        columns=["gvkey", "fiscal_year", "analyst_dispersion"]
-    )
+    pd.DataFrame(columns=["gvkey", "fiscal_year", "analyst_dispersion"])
 
     # ------------------------------------------------------------
     # Control Variables (H2-05, H2-06)
@@ -1470,7 +1461,7 @@ def main():
 
     # Merge analyst dispersion (via CUSIP8 - note this will have limited coverage)
     # For now, skip analyst dispersion merge as we need proper CUSIP-GVKEY mapping
-    print(f"  analyst_dispersion: skipped (requires CUSIP-GVKEY mapping)")
+    print("  analyst_dispersion: skipped (requires CUSIP-GVKEY mapping)")
 
     # Merge remaining controls - handle dataframes with and without datadate
     for var_name, var_df in [

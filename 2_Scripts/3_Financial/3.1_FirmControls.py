@@ -31,19 +31,16 @@ Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
 import importlib.util
-import hashlib
-import json
+import sys
 import time
-import psutil
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Dynamic import for 3.4_Utils.py
 utils_path = Path(__file__).parent / "3.4_Utils.py"
@@ -52,28 +49,25 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-from utils import generate_variable_reference
-
 # Add parent directory to sys.path for shared module imports
 import sys as _sys
-from pathlib import Path as _Path
+
+from utils import generate_variable_reference
 
 _script_dir = Path(__file__).parent.parent
 _sys.path.insert(0, str(_script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
+# Import financial utilities
+from shared.financial_utils import compute_financial_controls_quarterly
 
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import DualWriter
-
-# Import financial utilities
-from shared.financial_utils import compute_financial_controls_quarterly
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+)
 
 # ==============================================================================
 # Configuration
@@ -155,7 +149,7 @@ def load_manifest(manifest_dir):
 
 def load_compustat(compustat_file):
     """Load Compustat data with only required columns"""
-    print(f"  Loading Compustat (metadata only scan first)...")
+    print("  Loading Compustat (metadata only scan first)...")
 
     # Read only needed columns to save memory
     required_cols = [
@@ -193,7 +187,7 @@ def load_compustat(compustat_file):
 
 def load_ibes(ibes_file):
     """Load IBES data filtered to EPS quarterly"""
-    print(f"  Loading IBES...")
+    print("  Loading IBES...")
 
     # Column pruning: Load only required columns
     df = pd.read_parquet(
@@ -227,7 +221,7 @@ def load_ibes(ibes_file):
 
 def load_cccl(cccl_file):
     """Load CCCL instrument data with all 6 shift_intensity variants"""
-    print(f"  Loading CCCL instrument...")
+    print("  Loading CCCL instrument...")
 
     # Column pruning: Load gvkey, year, and all shift_intensity variants
     df = pd.read_parquet(
@@ -284,7 +278,7 @@ def compute_compustat_controls(manifest, compustat):
     print(f"  Compustat controls computed for {compustat['gvkey'].nunique():,} firms")
 
     # Optimized Matching using merge_asof
-    print(f"  Matching calls to Compustat quarters (vectorized)...")
+    print("  Matching calls to Compustat quarters (vectorized)...")
 
     # Prepare Manifest
     # Ensure datetime and sorted
@@ -373,14 +367,14 @@ def compute_earnings_surprise(manifest, ibes, ccm_file):
     ibes_linked["surprise_raw"] = ibes_linked["ACTUAL"] - ibes_linked["MEANEST"]
 
     # Match to manifest
-    print(f"  Matching calls to IBES forecasts...")
+    print("  Matching calls to IBES forecasts...")
 
     ibes_grouped = {gvkey: group for gvkey, group in ibes_linked.groupby("gvkey")}
 
     results = []
     matched = 0
 
-    for idx, row in manifest.iterrows():
+    for _idx, row in manifest.iterrows():
         gvkey = row["gvkey"]
         call_date = row["start_date"]
 
@@ -490,20 +484,18 @@ def merge_cccl(manifest, cccl):
 
 # Import shared observability utilities
 from shared.observability_utils import (
-    compute_file_checksum,
-    print_stat,
     analyze_missing_values,
+    calculate_throughput,
+    compute_file_checksum,
+    compute_step31_input_stats,
+    compute_step31_output_stats,
+    compute_step31_process_stats,
+    detect_anomalies_zscore,
+    generate_financial_report_markdown,
+    get_process_memory_mb,
+    print_stat,
     print_stats_summary,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
-    detect_anomalies_iqr,
-    compute_step31_input_stats,
-    compute_step31_process_stats,
-    compute_step31_output_stats,
-    generate_financial_report_markdown,
-    DualWriter,
 )
 
 # Import shared path validation utilities
@@ -531,12 +523,6 @@ with master sample to create analysis dataset.
         help="Validate inputs and prerequisites without executing",
     )
 
-    parser.add_argument(
-        "--compustat-path",
-        type=str,
-        help="Path to Compustat directory (default: 1_Inputs/Compustat)",
-    )
-
     return parser.parse_args()
 
 
@@ -544,9 +530,9 @@ def check_prerequisites(root, args):
     """Validate all required inputs and prerequisite steps exist."""
     from shared.dependency_checker import validate_prerequisites
 
-    # Compustat path (from argument or default)
+    # Compustat path (hardcoded - no flags needed)
     compustat_path = (
-        args.compustat_path if args.compustat_path else root / "1_Inputs" / "Compustat"
+        root / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
     )
 
     required_files = {
@@ -582,10 +568,6 @@ def main():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
-
-    # Override Compustat path if provided
-    if args.compustat_path:
-        paths["compustat_file"] = Path(args.compustat_path)
 
     # Setup logging
     dual_writer = DualWriter(paths["log_file"])
@@ -782,7 +764,12 @@ def main():
     stats["step31_process"] = compute_step31_process_stats(
         merge_results=merge_results,
         variable_coverage_df=result,
-        winsorized_cols=["Size", "BM", "Lev", "ROA"],  # TODO: Track actual winsorized cols
+        winsorized_cols=[
+            "Size",
+            "BM",
+            "Lev",
+            "ROA",
+        ],  # TODO: Track actual winsorized cols
     )
 
     # Save by year
@@ -805,7 +792,16 @@ def main():
 
     # Collect OUTPUT statistics for Step 3.1
     print("\nCollecting OUTPUT statistics...")
-    variables_list = ["Size", "BM", "Lev", "ROA", "EPS_Growth", "SurpDec", "CurrentRatio", "RD_Intensity"]
+    variables_list = [
+        "Size",
+        "BM",
+        "Lev",
+        "ROA",
+        "EPS_Growth",
+        "SurpDec",
+        "CurrentRatio",
+        "RD_Intensity",
+    ]
     # Add shift intensity variants if present
     shift_cols = [c for c in result.columns if c.startswith("shift_intensity_")]
     variables_list.extend(shift_cols)

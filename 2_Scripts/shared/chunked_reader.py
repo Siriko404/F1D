@@ -9,14 +9,15 @@ Ref: 10-RESEARCH.md Pattern 5 - PyArrow Dataset API
 Ref: 15-RESEARCH.md Pattern 4 - Memory-Aware Throttling
 """
 
+import logging
+import time
 from pathlib import Path
-from typing import Iterator, Optional, List
+from typing import Iterator, List, Optional
+
 import pandas as pd
+import psutil
 import pyarrow as pa
 import pyarrow.parquet as pq
-import psutil
-import time
-import logging
 import yaml
 
 # Configure logger

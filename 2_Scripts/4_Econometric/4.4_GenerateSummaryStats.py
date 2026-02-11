@@ -24,18 +24,16 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys as _sys
-import os
-import csv
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import warnings
-import hashlib
-import json
-import time
 import argparse
+import csv
+import json
+import sys as _sys
+import warnings
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 # Add script directory to Python path for shared imports
 _script_dir = Path(__file__).parent.parent
@@ -45,15 +43,13 @@ _sys.path.insert(0, str(_script_dir))
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import shared utilities
-from shared.path_utils import (
-    get_latest_output_dir,
-    OutputResolutionError,
-)
 from shared.observability_utils import (
     DualWriter,
-    compute_file_checksum,
-    print_stat,
     analyze_missing_values,
+    compute_file_checksum,
+)
+from shared.path_utils import (
+    get_latest_output_dir,
 )
 
 
@@ -359,7 +355,7 @@ def filter_complete_cases(df, stats=None):
         df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
         df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
 
-    print(f"\n  Sample distribution:")
+    print("\n  Sample distribution:")
     for sample in ["Main", "Finance", "Utility"]:
         n = (df["sample"] == sample).sum()
         print(f"    {sample}: {n:,} calls")
@@ -462,7 +458,7 @@ def compute_correlation_matrix(df, output_path, stats=None):
     existing_vars = [v for v in key_vars if v in df.columns]
 
     if len(existing_vars) < 2:
-        print(f"  WARNING: Not enough variables for correlation matrix")
+        print("  WARNING: Not enough variables for correlation matrix")
         return None
 
     # Compute correlation matrix
@@ -589,7 +585,7 @@ def compute_panel_balance(df, output_path, stats=None):
                 calls_str = format(int(row["N Calls"]), ",")
                 writer.writerow([int(year), row["gvkey"], row["ceo_id"], calls_str, ""])
 
-    print(f"\n  Saved: panel_balance.csv")
+    print("\n  Saved: panel_balance.csv")
 
     if stats:
         stats["output"]["panel_balance"] = {
@@ -696,7 +692,7 @@ def generate_summary_report(
     with open(output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: summary_report.md")
+    print("  Saved: summary_report.md")
 
 
 # ==============================================================================

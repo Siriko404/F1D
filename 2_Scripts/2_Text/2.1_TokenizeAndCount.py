@@ -1,18 +1,19 @@
-import pandas as pd
-import numpy as np
-from pathlib import Path
+import argparse
+import hashlib
+import json
 import re
-import yaml
 import sys
 import time
-import json
-import hashlib
-from datetime import datetime
-from typing import Tuple
-from sklearn.feature_extraction.text import CountVectorizer
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from datetime import datetime
+from pathlib import Path
+from typing import Tuple
+
+import numpy as np
+import pandas as pd
 import psutil
-import argparse
+import yaml
+from sklearn.feature_extraction.text import CountVectorizer
 
 # Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future chunked processing.
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
@@ -22,7 +23,6 @@ try:
     from shared.chunked_reader import track_memory_usage
 except ImportError:
     import sys as _sys
-    from pathlib import Path as _Path
 
     _script_dir = Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
@@ -30,26 +30,24 @@ except ImportError:
 
 # Import shared path validation utilities
 try:
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-    )
     from shared.observability_utils import DualWriter
+    from shared.path_utils import (
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
+    )
 except ImportError:
     import sys as _sys
-    from pathlib import Path as _Path
 
     _script_dir = Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-    )
     from shared.observability_utils import DualWriter
+    from shared.path_utils import (
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
+    )
 
 # ==============================================================================
 # Setup & Config
@@ -848,7 +846,7 @@ def process_year_worker(
     # Save with memory tracking
     out_path = out_dir / f"linguistic_counts_{year}.parquet"
     print(f"  Saving {out_path.name}...")
-    save_result = save_output_with_tracking(result, out_path)
+    save_output_with_tracking(result, out_path)
     # Note: memory stats saved to save_output operation
     print(f"  Saved {out_path.name} ({time.time() - t0:.1f}s)")
     return year, year_stats
@@ -981,12 +979,12 @@ def save_output_with_tracking(df, output_path):
 def main(dictionary_path=None):
     print("=== Step 2.1: Tokenize & Count (Legacy Compatible) ===")
     root = Path(__file__).parent.parent.parent
-    log_path = setup_logging()
+    setup_logging()
 
     # Output Setup
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out_base = root / "4_Outputs" / "2_Textual_Analysis"
-    out_dir = out_base / f"2.1_Tokenized" / timestamp
+    out_dir = out_base / "2.1_Tokenized" / timestamp
     ensure_output_dir(out_dir)
 
     # Initialize Stats

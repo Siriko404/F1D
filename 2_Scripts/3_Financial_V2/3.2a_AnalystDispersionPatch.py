@@ -37,34 +37,30 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import hashlib
 import json
+import sys
 import time
 import warnings
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 from shared.observability_utils import (
     compute_file_checksum,
     get_process_memory_mb,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
 
 # Suppress warnings for cleaner output
@@ -97,7 +93,10 @@ def setup_paths(config):
 
     paths = {
         "root": root,
-        "ccm_file": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
+        "ccm_file": root
+        / "1_Inputs"
+        / "CRSPCompustat_CCM"
+        / "CRSPCompustat_CCM.parquet",
         "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
         "h2_output_dir": h2_output_dir,
         "h2_parquet": h2_output_dir / "H2_InvestmentEfficiency.parquet",
@@ -120,7 +119,7 @@ def setup_paths(config):
 # ==============================================================================
 
 
-def load_ccm(ccm_file, linkprim_filter=["P", "C"], linktype_filter=["LU", "LC"]):
+def load_ccm(ccm_file, linkprim_filter=None, linktype_filter=None):
     """Load CCM data with proper filters for valid CUSIP-GVKEY links
 
     Filters:
@@ -130,7 +129,11 @@ def load_ccm(ccm_file, linkprim_filter=["P", "C"], linktype_filter=["LU", "LC"])
     Returns:
         DataFrame with gvkey, cusip8 columns for mapping
     """
-    print(f"\nLoading CCM data...")
+    if linktype_filter is None:
+        linktype_filter = ["LU", "LC"]
+    if linkprim_filter is None:
+        linkprim_filter = ["P", "C"]
+    print("\nLoading CCM data...")
     print(f"  File: {ccm_file}")
 
     validate_input_file(ccm_file, must_exist=True)
@@ -150,14 +153,18 @@ def load_ccm(ccm_file, linkprim_filter=["P", "C"], linktype_filter=["LU", "LC"])
     ccm = ccm[ccm["LINKTYPE"].isin(linktype_filter)].copy()
     after_filter = len(ccm)
 
-    print(f"  After LINKPRIM in {linkprim_filter} AND LINKTYPE in {linktype_filter}: {after_filter:,} rows")
+    print(
+        f"  After LINKPRIM in {linkprim_filter} AND LINKTYPE in {linktype_filter}: {after_filter:,} rows"
+    )
     print(f"  Filtered out: {before_filter - after_filter:,} rows")
 
     # Create gvkey_str (zero-padded to 6 chars) to match H2 output format
     ccm["gvkey_str"] = ccm["gvkey"].astype(str).str.zfill(6)
 
     # Keep only needed columns and deduplicate (keep first for ties)
-    ccm_map = ccm[["cusip", "gvkey_str"]].drop_duplicates(subset=["cusip"], keep="first")
+    ccm_map = ccm[["cusip", "gvkey_str"]].drop_duplicates(
+        subset=["cusip"], keep="first"
+    )
 
     print(f"  Unique CUSIP-GVKEY mappings: {len(ccm_map):,}")
 
@@ -174,7 +181,7 @@ def load_ibes(ibes_file, numest_min=2, meanest_abs_min=0.01):
     Returns:
         DataFrame with cusip, year, analyst_dispersion columns
     """
-    print(f"\nLoading IBES data...")
+    print("\nLoading IBES data...")
     print(f"  File: {ibes_file}")
 
     validate_input_file(ibes_file, must_exist=True)
@@ -183,6 +190,7 @@ def load_ibes(ibes_file, numest_min=2, meanest_abs_min=0.01):
     required_cols = ["CUSIP", "STATPERS", "NUMEST", "MEANEST", "STDEV"]
 
     import pyarrow.parquet as pq
+
     pf = pq.ParquetFile(ibes_file)
     available_cols = set(pf.schema_arrow.names)
 
@@ -195,7 +203,9 @@ def load_ibes(ibes_file, numest_min=2, meanest_abs_min=0.01):
     print(f"  Checksum: {checksum}")
 
     # Load IBES data
-    print(f"  Reading {len(cols_to_read)} columns from {pf.metadata.num_rows:,} rows...")
+    print(
+        f"  Reading {len(cols_to_read)} columns from {pf.metadata.num_rows:,} rows..."
+    )
     ibes = pd.read_parquet(ibes_file, columns=cols_to_read)
 
     print(f"  Loaded: {len(ibes):,} rows")
@@ -230,9 +240,7 @@ def load_ibes(ibes_file, numest_min=2, meanest_abs_min=0.01):
 
     # Take median by cusip-year (robust to outliers)
     dispersion = (
-        ibes.groupby(["cusip", "year"])["analyst_dispersion"]
-        .median()
-        .reset_index()
+        ibes.groupby(["cusip", "year"])["analyst_dispersion"].median().reset_index()
     )
 
     print(f"  Unique CUSIP-year observations: {len(dispersion):,}")
@@ -251,7 +259,7 @@ def map_ibes_to_gvkey(ibes_dispersion, ccm_map):
     Returns:
         DataFrame with gvkey_str, year, analyst_dispersion columns
     """
-    print(f"\nMapping IBES to GVKEY via CCM...")
+    print("\nMapping IBES to GVKEY via CCM...")
 
     # Merge on CUSIP
     dispersion_gvkey = ibes_dispersion.merge(
@@ -270,7 +278,9 @@ def map_ibes_to_gvkey(ibes_dispersion, ccm_map):
         .reset_index()
     )
 
-    print(f"  After gvkey-year aggregation: {len(dispersion_gvkey):,} unique observations")
+    print(
+        f"  After gvkey-year aggregation: {len(dispersion_gvkey):,} unique observations"
+    )
     print(f"  Deduplication removed: {before_dedup - len(dispersion_gvkey):,} rows")
 
     return dispersion_gvkey
@@ -283,7 +293,7 @@ def map_ibes_to_gvkey(ibes_dispersion, ccm_map):
 
 def load_h2_output(h2_parquet):
     """Load existing H2 Investment Efficiency output"""
-    print(f"\nLoading existing H2 output...")
+    print("\nLoading existing H2 output...")
     print(f"  File: {h2_parquet}")
 
     validate_input_file(h2_parquet, must_exist=True)
@@ -301,7 +311,7 @@ def merge_analyst_dispersion(h2_df, dispersion_gvkey):
     Returns:
         Updated H2 dataframe with analyst_dispersion column
     """
-    print(f"\nMerging analyst_dispersion into H2 data...")
+    print("\nMerging analyst_dispersion into H2 data...")
 
     # Ensure fiscal_year is int for matching
     h2_df["fiscal_year"] = h2_df["fiscal_year"].astype(int)
@@ -317,15 +327,21 @@ def merge_analyst_dispersion(h2_df, dispersion_gvkey):
     n_matched = h2_merged["analyst_dispersion"].notna().sum()
     n_total = len(h2_merged)
 
-    print(f"  Matched: {n_matched:,} / {n_total:,} observations ({n_matched/n_total*100:.2f}%)")
-    print(f"  Missing: {n_total - n_matched:,} observations ({(n_total-n_matched)/n_total*100:.2f}%)")
+    print(
+        f"  Matched: {n_matched:,} / {n_total:,} observations ({n_matched / n_total * 100:.2f}%)"
+    )
+    print(
+        f"  Missing: {n_total - n_matched:,} observations ({(n_total - n_matched) / n_total * 100:.2f}%)"
+    )
 
     return h2_merged
 
 
 def winsorize_analyst_dispersion(df, lower=0.01, upper=0.99):
     """Apply winsorization to analyst_dispersion (1%, 99%)"""
-    print(f"\nApplying winsorization to analyst_dispersion ({lower*100:.0f}%, {upper*100:.0f}%)...")
+    print(
+        f"\nApplying winsorization to analyst_dispersion ({lower * 100:.0f}%, {upper * 100:.0f}%)..."
+    )
 
     dispersion = df["analyst_dispersion"].copy()
     before_mean = dispersion.mean()
@@ -344,9 +360,11 @@ def winsorize_analyst_dispersion(df, lower=0.01, upper=0.99):
     return df
 
 
-def update_stats(stats_file, dispersion_series, ccm_checksum, ibes_checksum, processing_info):
+def update_stats(
+    stats_file, dispersion_series, ccm_checksum, ibes_checksum, processing_info
+):
     """Update stats.json with analyst_dispersion statistics"""
-    print(f"\nUpdating stats.json...")
+    print("\nUpdating stats.json...")
 
     # Load existing stats
     with open(stats_file, "r") as f:
@@ -382,11 +400,13 @@ def update_stats(stats_file, dispersion_series, ccm_checksum, ibes_checksum, pro
     with open(stats_file, "w") as f:
         json.dump(stats, f, indent=2)
 
-    print(f"  Updated stats.json with analyst_dispersion statistics:")
+    print("  Updated stats.json with analyst_dispersion statistics:")
     print(f"    mean: {stats['variables']['analyst_dispersion']['mean']}")
     print(f"    std: {stats['variables']['analyst_dispersion']['std']}")
     print(f"    n: {stats['variables']['analyst_dispersion']['n']}")
-    print(f"    missing_count: {stats['variables']['analyst_dispersion']['missing_count']}")
+    print(
+        f"    missing_count: {stats['variables']['analyst_dispersion']['missing_count']}"
+    )
 
 
 # ==============================================================================
@@ -459,6 +479,7 @@ def main():
     # Setup logging
     log_file = open(paths["log_file"], "w", buffering=1)
     import builtins
+
     builtin_print = builtins.print
 
     def print_both(*args, **kwargs):
@@ -507,11 +528,17 @@ def main():
         processing_info["cusip_overlap_count"] = len(overlap)
         processing_info["ccm_unique_cusips"] = len(ccm_cusips)
         processing_info["ibes_unique_cusips"] = len(ibes_cusips)
-        processing_info["cusip_match_rate"] = round(len(overlap) / len(ibes_cusips) * 100, 2) if len(ibes_cusips) > 0 else 0
+        processing_info["cusip_match_rate"] = (
+            round(len(overlap) / len(ibes_cusips) * 100, 2)
+            if len(ibes_cusips) > 0
+            else 0
+        )
 
         print(f"\n  CCM unique CUSIPs: {len(ccm_cusips):,}")
         print(f"  IBES unique CUSIPs: {len(ibes_cusips):,}")
-        print(f"  Overlap (matched): {len(overlap):,} ({len(overlap)/len(ibes_cusips)*100:.2f}% of IBES)")
+        print(
+            f"  Overlap (matched): {len(overlap):,} ({len(overlap) / len(ibes_cusips) * 100:.2f}% of IBES)"
+        )
 
         # Check H2 output
         h2 = load_h2_output(paths["h2_parquet"])
@@ -525,9 +552,11 @@ def main():
 
         print(f"\n  H2 GVKEYs: {len(h2_gvkeys):,}")
         print(f"  Dispersion GVKEYs: {len(matched_gvkeys):,}")
-        print(f"  Potential H2 matches: {len(potential_matches):,} ({len(potential_matches)/len(h2_gvkeys)*100:.2f}% of H2)")
+        print(
+            f"  Potential H2 matches: {len(potential_matches):,} ({len(potential_matches) / len(h2_gvkeys) * 100:.2f}% of H2)"
+        )
 
-        print(f"\n[OK] Dry run complete. Would add analyst_dispersion to:")
+        print("\n[OK] Dry run complete. Would add analyst_dispersion to:")
         print(f"  {paths['h2_parquet']}")
         print(f"\nExpected coverage: ~{len(potential_matches)} firm-years")
 
@@ -575,7 +604,9 @@ def main():
 
     h2_merged = merge_analyst_dispersion(h2, dispersion_gvkey)
     processing_info["h2_rows_after"] = len(h2_merged)
-    processing_info["analyst_dispersion_matched"] = int(h2_merged["analyst_dispersion"].notna().sum())
+    processing_info["analyst_dispersion_matched"] = int(
+        h2_merged["analyst_dispersion"].notna().sum()
+    )
     processing_info["analyst_dispersion_coverage"] = round(
         processing_info["analyst_dispersion_matched"] / len(h2_merged) * 100, 2
     )
@@ -622,10 +653,10 @@ def main():
     print("=" * 70)
     print(f"Execution time: {duration:.2f} seconds")
     print(f"Memory delta: {mem_end['rss_mb'] - mem_start['rss_mb']:.2f} MB")
-    print(f"\n analyst_dispersion added:")
+    print("\n analyst_dispersion added:")
     print(f"  Matched: {processing_info['analyst_dispersion_matched']:,} observations")
     print(f"  Coverage: {processing_info['analyst_dispersion_coverage']:.2f}%")
-    print(f"\nOutputs:")
+    print("\nOutputs:")
     print(f"  Parquet: {output_file}")
     print(f"  Stats: {paths['h2_stats']}")
     print(f"  Log: {paths['log_file']}")

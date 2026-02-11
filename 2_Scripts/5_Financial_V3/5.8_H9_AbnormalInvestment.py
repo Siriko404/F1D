@@ -33,41 +33,35 @@ Deterministic: true
 ================================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import json
+import sys
 import time
-import psutil
 import warnings
-import gc
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-)
+# Import statsmodels for first-stage OLS
+import statsmodels.api as sm
 
 # Import observability utilities
 from shared.observability_utils import (
+    calculate_throughput,
     compute_file_checksum,
+    get_process_memory_mb,
     print_stat,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
 )
-
-# Import statsmodels for first-stage OLS
-import statsmodels.api as sm
+from shared.path_utils import (
+    ensure_output_dir,
+)
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings("ignore")
@@ -122,7 +116,6 @@ def load_compustat(compustat_file, fyear_min=2002, fyear_max=2018):
 
     # Check which columns exist using PyArrow
     import pyarrow.parquet as pq
-    import pyarrow as pa
 
     pf = pq.ParquetFile(compustat_file)
     available_cols = set(pf.schema_arrow.names)
@@ -137,23 +130,23 @@ def load_compustat(compustat_file, fyear_min=2002, fyear_max=2018):
         "sic",
         # Investment components (annual)
         "capxy",  # Capital Expenditures Annual (REQUIRED)
-        "xrdy",   # Research and Development Annual (optional)
-        "aqcy",   # Acquisitions Annual (optional)
+        "xrdy",  # Research and Development Annual (optional)
+        "aqcy",  # Acquisitions Annual (optional)
         "sppey",  # Sale of Property, Plant, Equipment Annual (optional)
         # Assets and sales (use quarterly for at, annual for sale)
-        "atq",    # Total Assets Quarterly
+        "atq",  # Total Assets Quarterly
         "saleq",  # Sales Quarterly
         "saley",  # Sales Annual (backup)
         # Control variables
-        "oibdpq", # Operating Income Before Depreciation Quarterly (preferred for ROA)
-        "niq",    # Net Income Quarterly (fallback for ROA)
-        "niy",    # Net Income Annual (backup)
+        "oibdpq",  # Operating Income Before Depreciation Quarterly (preferred for ROA)
+        "niq",  # Net Income Quarterly (fallback for ROA)
+        "niy",  # Net Income Annual (backup)
         "dlttq",  # Long-Term Debt Quarterly
-        "dlcq",   # Debt in Current Liabilities Quarterly
-        "cheq",   # Cash and Equivalents Quarterly
+        "dlcq",  # Debt in Current Liabilities Quarterly
+        "cheq",  # Cash and Equivalents Quarterly
         "prccq",  # Price Close Quarterly
         "cshoq",  # Common Shares Outstanding Quarterly
-        "mkvaltq", # Market Value of Equity Quarterly
+        "mkvaltq",  # Market Value of Equity Quarterly
     ]
 
     # Filter to only columns that exist
@@ -179,7 +172,9 @@ def load_compustat(compustat_file, fyear_min=2002, fyear_max=2018):
     # Convert to pandas
     df = table.to_pandas()
 
-    print(f"  Loaded Compustat: {len(df):,} observations (fyear {fyear_min}-{fyear_max})")
+    print(
+        f"  Loaded Compustat: {len(df):,} observations (fyear {fyear_min}-{fyear_max})"
+    )
 
     # Normalize gvkey
     df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
@@ -218,8 +213,22 @@ def load_compustat(compustat_file, fyear_min=2002, fyear_max=2018):
         print("  Using annual sales (saley) as saleq is missing")
 
     # Convert numeric columns
-    numeric_cols = ["sic", "capx", "xrd", "aqc", "sppe", "at", "sale",
-                    "oibdp", "ni", "dltt", "dlc", "che", "prcc_f", "csho"]
+    numeric_cols = [
+        "sic",
+        "capx",
+        "xrd",
+        "aqc",
+        "sppe",
+        "at",
+        "sale",
+        "oibdp",
+        "ni",
+        "dltt",
+        "dlc",
+        "che",
+        "prcc_f",
+        "csho",
+    ]
     for col in numeric_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
@@ -369,10 +378,14 @@ def construct_investment(df):
     df["sppe_tp1"] = df["sppe_tp1"].fillna(0)
 
     # Construct TotalInv = (capx + xrd + aqc - sppe) / at_t
-    df["TotalInv"] = (df["capx_tp1"] + df["xrd_tp1"] + df["aqc_tp1"] - df["sppe_tp1"]) / df["at_t"]
+    df["TotalInv"] = (
+        df["capx_tp1"] + df["xrd_tp1"] + df["aqc_tp1"] - df["sppe_tp1"]
+    ) / df["at_t"]
 
     print(f"  TotalInv computed for {len(df):,} observations")
-    print(f"  TotalInv mean: {df['TotalInv'].mean():.4f}, std: {df['TotalInv'].std():.4f}")
+    print(
+        f"  TotalInv mean: {df['TotalInv'].mean():.4f}, std: {df['TotalInv'].std():.4f}"
+    )
 
     return df
 
@@ -415,7 +428,9 @@ def construct_sales_growth(df):
     df["SalesGrowth"] = (df["sale_t"] - df["sale_tm1"]) / df["sale_tm1"]
 
     print(f"  SalesGrowth computed for {len(df):,} observations")
-    print(f"  SalesGrowth mean: {df['SalesGrowth'].mean():.4f}, std: {df['SalesGrowth'].std():.4f}")
+    print(
+        f"  SalesGrowth mean: {df['SalesGrowth'].mean():.4f}, std: {df['SalesGrowth'].std():.4f}"
+    )
 
     return df
 
@@ -444,10 +459,14 @@ def run_first_stage_regression(df, min_cell_size=30):
     Returns:
         DataFrame with AbsAbInv column and first-stage diagnostics
     """
-    print(f"\nRunning first-stage regressions by (ind2, fyear) with min_cell_size={min_cell_size}...")
+    print(
+        f"\nRunning first-stage regressions by (ind2, fyear) with min_cell_size={min_cell_size}..."
+    )
 
     # Prepare data for regression
-    reg_data = df.dropna(subset=["TotalInv", "SalesGrowth", "ind2", "ind1", "fyear"]).copy()
+    reg_data = df.dropna(
+        subset=["TotalInv", "SalesGrowth", "ind2", "ind1", "fyear"]
+    ).copy()
 
     if len(reg_data) == 0:
         raise ValueError("No valid data for first-stage regression")
@@ -487,7 +506,9 @@ def run_first_stage_regression(df, min_cell_size=30):
     # Process cells with sufficient size
     for i, ((ind2, fyear), group) in enumerate(cells_with_sufficient_size):
         if (i + 1) % 50 == 0:
-            print(f"  Progress: {i+1}/{len(cells_with_sufficient_size)} sufficient cells processed...")
+            print(
+                f"  Progress: {i + 1}/{len(cells_with_sufficient_size)} sufficient cells processed..."
+            )
 
         n_obs = len(group)
 
@@ -503,31 +524,37 @@ def run_first_stage_regression(df, min_cell_size=30):
             residuals = Y - predicted
 
             # Store results and mark as processed
-            for j, (idx, res, pred) in enumerate(zip(group.index, residuals, predicted)):
-                results_buffer.append({
-                    "index": int(idx),
-                    "gvkey": group["gvkey"].iloc[j],
-                    "fyear": int(group["fyear"].iloc[j]),
-                    "TotalInv": float(group["TotalInv"].iloc[j]),
-                    "SalesGrowth": float(group["SalesGrowth"].iloc[j]),
-                    "AbInv": float(res),  # Residual (can be negative)
-                    "predicted_investment": float(pred),
-                    "first_stage_n": int(n_obs),
-                    "first_stage_r2": float(model.rsquared),
-                    "industry_type": "ind2",
-                    "industry_code": int(ind2),
-                })
+            for j, (idx, res, pred) in enumerate(
+                zip(group.index, residuals, predicted)
+            ):
+                results_buffer.append(
+                    {
+                        "index": int(idx),
+                        "gvkey": group["gvkey"].iloc[j],
+                        "fyear": int(group["fyear"].iloc[j]),
+                        "TotalInv": float(group["TotalInv"].iloc[j]),
+                        "SalesGrowth": float(group["SalesGrowth"].iloc[j]),
+                        "AbInv": float(res),  # Residual (can be negative)
+                        "predicted_investment": float(pred),
+                        "first_stage_n": int(n_obs),
+                        "first_stage_r2": float(model.rsquared),
+                        "industry_type": "ind2",
+                        "industry_code": int(ind2),
+                    }
+                )
                 processed_indices.add(idx)
 
             # Track cell statistics
-            cell_stats.append({
-                "industry_type": "ind2",
-                "industry_code": int(ind2),
-                "fyear": int(fyear),
-                "n": int(n_obs),
-                "r2": float(model.rsquared),
-                "coef_sales_growth": float(model.params[1]),
-            })
+            cell_stats.append(
+                {
+                    "industry_type": "ind2",
+                    "industry_code": int(ind2),
+                    "fyear": int(fyear),
+                    "n": int(n_obs),
+                    "r2": float(model.rsquared),
+                    "coef_sales_growth": float(model.params[1]),
+                }
+            )
 
         except Exception as e:
             print(f"  Warning: Regression failed for ind2={ind2}, fyear={fyear}: {e}")
@@ -536,7 +563,12 @@ def run_first_stage_regression(df, min_cell_size=30):
 
     # Second pass: Handle ind1 fallback for unprocessed observations
     # Group unprocessed observations by (ind1, fyear)
-    unprocessed_indices = [idx for _, group in cells_too_small for idx in group.index if idx not in processed_indices]
+    unprocessed_indices = [
+        idx
+        for _, group in cells_too_small
+        for idx in group.index
+        if idx not in processed_indices
+    ]
 
     if unprocessed_indices:
         unprocessed_data = reg_data.loc[unprocessed_indices]
@@ -559,34 +591,42 @@ def run_first_stage_regression(df, min_cell_size=30):
                     residuals = Y - predicted
 
                     # Store results for this group
-                    for k, (idx, res, pred) in enumerate(zip(group.index, residuals, predicted)):
-                        results_buffer.append({
-                            "index": int(idx),
-                            "gvkey": group["gvkey"].iloc[k],
-                            "fyear": int(group["fyear"].iloc[k]),
-                            "TotalInv": float(group["TotalInv"].iloc[k]),
-                            "SalesGrowth": float(group["SalesGrowth"].iloc[k]),
-                            "AbInv": float(res),
-                            "predicted_investment": float(pred),
-                            "first_stage_n": int(n_obs),
-                            "first_stage_r2": float(model.rsquared),
-                            "industry_type": "ind1_fallback",
-                            "industry_code": int(ind1),
-                        })
+                    for k, (idx, res, pred) in enumerate(
+                        zip(group.index, residuals, predicted)
+                    ):
+                        results_buffer.append(
+                            {
+                                "index": int(idx),
+                                "gvkey": group["gvkey"].iloc[k],
+                                "fyear": int(group["fyear"].iloc[k]),
+                                "TotalInv": float(group["TotalInv"].iloc[k]),
+                                "SalesGrowth": float(group["SalesGrowth"].iloc[k]),
+                                "AbInv": float(res),
+                                "predicted_investment": float(pred),
+                                "first_stage_n": int(n_obs),
+                                "first_stage_r2": float(model.rsquared),
+                                "industry_type": "ind1_fallback",
+                                "industry_code": int(ind1),
+                            }
+                        )
                         processed_indices.add(idx)
 
                     # Track cell statistics
-                    cell_stats.append({
-                        "industry_type": "ind1_fallback",
-                        "industry_code": int(ind1),
-                        "fyear": int(fyear),
-                        "n": int(n_obs),
-                        "r2": float(model.rsquared),
-                        "coef_sales_growth": float(model.params[1]),
-                    })
+                    cell_stats.append(
+                        {
+                            "industry_type": "ind1_fallback",
+                            "industry_code": int(ind1),
+                            "fyear": int(fyear),
+                            "n": int(n_obs),
+                            "r2": float(model.rsquared),
+                            "coef_sales_growth": float(model.params[1]),
+                        }
+                    )
 
                 except Exception as e:
-                    print(f"  Warning: Fallback regression failed for ind1={ind1}, fyear={fyear}: {e}")
+                    print(
+                        f"  Warning: Fallback regression failed for ind1={ind1}, fyear={fyear}: {e}"
+                    )
                     thin_cells_ind1.append((ind1, fyear, n_obs, str(e)))
                     n_observations_dropped += len(group)
                     continue
@@ -606,17 +646,25 @@ def run_first_stage_regression(df, min_cell_size=30):
     result_df["AbsAbInv"] = result_df["AbInv"].abs()
 
     # Print summary
-    pct_cells_with_n_ge_30 = (n_cells_with_n_ge_30 / total_cells_ind2 * 100) if total_cells_ind2 > 0 else 0
-    pct_observations_dropped = (n_observations_dropped / len(reg_data) * 100) if len(reg_data) > 0 else 0
+    pct_cells_with_n_ge_30 = (
+        (n_cells_with_n_ge_30 / total_cells_ind2 * 100) if total_cells_ind2 > 0 else 0
+    )
+    pct_observations_dropped = (
+        (n_observations_dropped / len(reg_data) * 100) if len(reg_data) > 0 else 0
+    )
 
-    print(f"\nFirst-stage regression summary:")
+    print("\nFirst-stage regression summary:")
     print(f"  Total (ind2, fyear) cells: {total_cells_ind2}")
-    print(f"  Cells with N >= {min_cell_size}: {n_cells_with_n_ge_30} ({pct_cells_with_n_ge_30:.1f}%)")
+    print(
+        f"  Cells with N >= {min_cell_size}: {n_cells_with_n_ge_30} ({pct_cells_with_n_ge_30:.1f}%)"
+    )
     print(f"  Cells using ind1 fallback: {n_cells_fallback_to_ind1}")
-    print(f"  Observations dropped: {n_observations_dropped:,} ({pct_observations_dropped:.1f}%)")
+    print(
+        f"  Observations dropped: {n_observations_dropped:,} ({pct_observations_dropped:.1f}%)"
+    )
     print(f"  Final observations with residuals: {len(result_df):,}")
 
-    print(f"\nAbsAbInv statistics:")
+    print("\nAbsAbInv statistics:")
     print(f"  Mean: {result_df['AbsAbInv'].mean():.6f}")
     print(f"  Std: {result_df['AbsAbInv'].std():.6f}")
     print(f"  Min: {result_df['AbsAbInv'].min():.6f}")
@@ -625,13 +673,17 @@ def run_first_stage_regression(df, min_cell_size=30):
     # Cell diagnostics DataFrame
     cell_diagnostics = pd.DataFrame(cell_stats)
 
-    return result_df, cell_diagnostics, {
-        "total_cells": total_cells_ind2,
-        "cells_with_n_ge_30": n_cells_with_n_ge_30,
-        "cells_fallback_to_ind1": n_cells_fallback_to_ind1,
-        "observations_dropped": n_observations_dropped,
-        "final_observations": len(result_df),
-    }
+    return (
+        result_df,
+        cell_diagnostics,
+        {
+            "total_cells": total_cells_ind2,
+            "cells_with_n_ge_30": n_cells_with_n_ge_30,
+            "cells_fallback_to_ind1": n_cells_fallback_to_ind1,
+            "observations_dropped": n_observations_dropped,
+            "final_observations": len(result_df),
+        },
+    )
 
 
 # ==============================================================================
@@ -662,29 +714,27 @@ def construct_controls(df):
     print("  Computed ln_at_t (log assets)")
 
     # Leverage: (dltt + dlc) / at_t
-    df["lev_t"] = ((df["dltt"].fillna(0) + df["dlc"].fillna(0)) / df["at_t"])
+    df["lev_t"] = (df["dltt"].fillna(0) + df["dlc"].fillna(0)) / df["at_t"]
     print("  Computed lev_t (leverage)")
 
     # Cash: che / at_t
-    df["cash_t"] = (df["che"].fillna(0) / df["at_t"])
+    df["cash_t"] = df["che"].fillna(0) / df["at_t"]
     print("  Computed cash_t (cash/assets)")
 
     # ROA: oibdp / at_t (preferred) or ni / at_t (fallback)
     df["roa_t"] = np.where(
-        df["oibdp"].notna(),
-        df["oibdp"] / df["at_t"],
-        df["ni"] / df["at_t"]
+        df["oibdp"].notna(), df["oibdp"] / df["at_t"], df["ni"] / df["at_t"]
     )
     n_oibdp = df["oibdp"].notna().sum()
     n_ni_fallback = df["oibdp"].isna().sum() & df["ni"].notna().sum()
-    print(f"  Computed roa_t: {n_oibdp:,} from OIBDP, {n_ni_fallback:,} from NI fallback")
+    print(
+        f"  Computed roa_t: {n_oibdp:,} from OIBDP, {n_ni_fallback:,} from NI fallback"
+    )
 
     # Market-to-book: (prcc_f * csho) / at_t
     df["mve_t"] = df["prcc_f"] * df["csho"]
     df["mb_t"] = np.where(
-        (df["mve_t"].notna()) & (df["mve_t"] > 0),
-        df["mve_t"] / df["at_t"],
-        np.nan
+        (df["mve_t"].notna()) & (df["mve_t"] > 0), df["mve_t"] / df["at_t"], np.nan
     )
     n_mb_valid = df["mb_t"].notna().sum()
     print(f"  Computed mb_t: {n_mb_valid:,} valid observations")
@@ -712,7 +762,7 @@ def winsorize_by_fyear(df, variables, lower=0.01, upper=0.99):
     Returns:
         DataFrame with winsorized variables
     """
-    print(f"\nWinsorizing at {lower*100:.0f}%/{upper*100:.0f}% by fyear...")
+    print(f"\nWinsorizing at {lower * 100:.0f}%/{upper * 100:.0f}% by fyear...")
 
     for var in variables:
         if var not in df.columns:
@@ -721,7 +771,9 @@ def winsorize_by_fyear(df, variables, lower=0.01, upper=0.99):
 
         # Compute percentile bounds by fyear
         bounds = df.groupby("fyear")[var].agg(
-            lambda x: (x.quantile(lower), x.quantile(upper)) if x.notna().sum() > 0 else (np.nan, np.nan)
+            lambda x: (x.quantile(lower), x.quantile(upper))
+            if x.notna().sum() > 0
+            else (np.nan, np.nan)
         )
 
         # Apply winsorization
@@ -736,7 +788,8 @@ def winsorize_by_fyear(df, variables, lower=0.01, upper=0.99):
         # Apply winsorization by group
         df[var] = df.groupby("fyear")[var].transform(
             lambda x: x.clip(lower=x.quantile(lower), upper=x.quantile(upper))
-            if x.notna().sum() > 0 else x
+            if x.notna().sum() > 0
+            else x
         )
 
         print(f"  Winsorized {var}")
@@ -775,14 +828,22 @@ def generate_report(df, cell_diagnostics, regression_stats, output_dir, stats):
         f.write("## Sample Construction\n\n")
         f.write("| Stage | N | Pct |\n")
         f.write("|-------|---|-----|\n")
-        f.write(f"| Input (Compustat) | {stats['input'].get('total_rows', 'N/A'):,} | 100% |\n")
-        f.write(f"| Final sample | {len(df):,} | {(len(df) / stats['input'].get('total_rows', 1) * 100):.1f}% |\n\n")
+        f.write(
+            f"| Input (Compustat) | {stats['input'].get('total_rows', 'N/A'):,} | 100% |\n"
+        )
+        f.write(
+            f"| Final sample | {len(df):,} | {(len(df) / stats['input'].get('total_rows', 1) * 100):.1f}% |\n\n"
+        )
 
         f.write("## First-Stage Regression Diagnostics\n\n")
         f.write(f"- **Total (ind2, fyear) cells:** {regression_stats['total_cells']}\n")
         f.write(f"- **Cells with N >= 30:** {regression_stats['cells_with_n_ge_30']}\n")
-        f.write(f"- **Cells using ind1 fallback:** {regression_stats['cells_fallback_to_ind1']}\n")
-        f.write(f"- **Observations dropped:** {regression_stats['observations_dropped']:,}\n\n")
+        f.write(
+            f"- **Cells using ind1 fallback:** {regression_stats['cells_fallback_to_ind1']}\n"
+        )
+        f.write(
+            f"- **Observations dropped:** {regression_stats['observations_dropped']:,}\n\n"
+        )
 
         f.write("### First-Stage R2 Distribution\n\n")
         if "first_stage_r2" in df.columns:
@@ -821,13 +882,17 @@ def generate_report(df, cell_diagnostics, regression_stats, output_dir, stats):
                 f.write(f"- Std: {desc['std']:.6f}\n")
                 f.write(f"- Min: {desc['min']:.6f}\n")
                 f.write(f"- Max: {desc['max']:.6f}\n")
-                f.write(f"- Missing: {missing:,} ({missing/len(df)*100:.1f}%)\n\n")
+                f.write(f"- Missing: {missing:,} ({missing / len(df) * 100:.1f}%)\n\n")
 
         f.write("## Methodology Notes\n\n")
         f.write("### Investment Specification (Biddle 2009)\n\n")
         f.write("```\n")
-        f.write("TotalInv_{t+1} = (capx_{t+1} + xrd_{t+1} + aqc_{t+1} - sppe_{t+1}) / at_t\n")
-        f.write("Expected Inv: TotalInv_{i,t+1} = a_{ind2,t} + b_{ind2,t} * SalesGrowth_{i,t} + e\n")
+        f.write(
+            "TotalInv_{t+1} = (capx_{t+1} + xrd_{t+1} + aqc_{t+1} - sppe_{t+1}) / at_t\n"
+        )
+        f.write(
+            "Expected Inv: TotalInv_{i,t+1} = a_{ind2,t} + b_{ind2,t} * SalesGrowth_{i,t} + e\n"
+        )
         f.write("AbsAbInv_{t+1} = |e|\n")
         f.write("```\n\n")
 
@@ -977,6 +1042,7 @@ def main():
     log_file = open(paths["log_file"], "w", buffering=1)
 
     import builtins
+
     builtin_print = builtins.print
 
     def print_both(*args, **kwargs):
@@ -1026,9 +1092,7 @@ def main():
         paths["compustat_file"]
     )
     compustat = load_compustat(
-        paths["compustat_file"],
-        fyear_min=args.fyear_min,
-        fyear_max=args.fyear_max
+        paths["compustat_file"], fyear_min=args.fyear_min, fyear_max=args.fyear_max
     )
     print_stat("Compustat rows", value=len(compustat))
     stats["input"]["total_rows"] = len(compustat)
@@ -1041,7 +1105,7 @@ def main():
     print("Industry Classification")
     print("=" * 60)
 
-    n_before_industry = len(compustat)
+    len(compustat)
     compustat = assign_industry(compustat)
     stats["processing"]["after_industry_filter"] = len(compustat)
 
@@ -1104,10 +1168,26 @@ def main():
     print("=" * 60)
 
     # Select original variables from compustat for controls
-    control_vars = ["gvkey", "fyear", "at_t", "dltt", "dlc", "che", "oibdp", "ni", "prcc_f", "csho", "sic", "ind2", "ind1"]
+    control_vars = [
+        "gvkey",
+        "fyear",
+        "at_t",
+        "dltt",
+        "dlc",
+        "che",
+        "oibdp",
+        "ni",
+        "prcc_f",
+        "csho",
+        "sic",
+        "ind2",
+        "ind1",
+    ]
 
     # Get unique rows from compustat with control variables
-    compustat_controls = compustat[control_vars + ["sale_t", "sale_tm1"]].drop_duplicates(subset=["gvkey", "fyear"])
+    compustat_controls = compustat[
+        control_vars + ["sale_t", "sale_tm1"]
+    ].drop_duplicates(subset=["gvkey", "fyear"])
 
     # Merge with results
     result_df = result_df.merge(compustat_controls, on=["gvkey", "fyear"], how="left")
@@ -1134,7 +1214,16 @@ def main():
     print("Winsorizing Variables")
     print("=" * 60)
 
-    vars_to_winsorize = ["AbsAbInv", "TotalInv", "SalesGrowth", "ln_at_t", "lev_t", "cash_t", "roa_t", "mb_t"]
+    vars_to_winsorize = [
+        "AbsAbInv",
+        "TotalInv",
+        "SalesGrowth",
+        "ln_at_t",
+        "lev_t",
+        "cash_t",
+        "roa_t",
+        "mb_t",
+    ]
     result_df = winsorize_by_fyear(result_df, vars_to_winsorize, lower=0.01, upper=0.99)
 
     # ========================================================================
@@ -1166,13 +1255,15 @@ def main():
 
     print(f"  Final output: {len(final_output):,} observations")
     print(f"  Firms: {final_output['gvkey'].nunique():,}")
-    print(f"  Fiscal years: {final_output['fyear'].min()}-{final_output['fyear'].max()}")
+    print(
+        f"  Fiscal years: {final_output['fyear'].min()}-{final_output['fyear'].max()}"
+    )
 
     # Check missingness
     print("\n  Missingness in controls:")
     for var in ["ln_at_t", "lev_t", "cash_t", "roa_t", "mb_t"]:
         n_missing = final_output[var].isna().sum()
-        print(f"    {var}: {n_missing:,} ({n_missing/len(final_output)*100:.1f}%)")
+        print(f"    {var}: {n_missing:,} ({n_missing / len(final_output) * 100:.1f}%)")
 
     # ========================================================================
     # Write Outputs
@@ -1191,7 +1282,9 @@ def main():
     stats["output"]["final_rows"] = len(final_output)
 
     # Generate report
-    report_path = generate_report(final_output, cell_diagnostics, regression_stats, paths["output_dir"], stats)
+    report_path = generate_report(
+        final_output, cell_diagnostics, regression_stats, paths["output_dir"], stats
+    )
     stats["output"]["files"].append(report_path.name)
 
     # Write stats.json

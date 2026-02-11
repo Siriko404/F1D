@@ -21,16 +21,12 @@ Deterministic: true
 ================================================================================
 """
 
-from typing import Any, Dict, List, Optional, Tuple, Union
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 
 def format_coefficient(
-    beta: float,
-    se: float,
-    pvalue: float,
-    decimals: int = 3,
-    show_stars: bool = True
+    beta: float, se: float, pvalue: float, decimals: int = 3, show_stars: bool = True
 ) -> Tuple[str, str]:
     """Format coefficient with significance stars and standard error.
 
@@ -74,10 +70,12 @@ def _get_significance_note() -> str:
     Returns:
         LaTeX-formatted significance note string
     """
-    return r"\item Note: Standard errors in parentheses. *** p<0.01, ** p<0.05, * p<0.10."
+    return (
+        r"\item Note: Standard errors in parentheses. *** p<0.01, ** p<0.05, * p<0.10."
+    )
 
 
-def _format_number(value: Any, decimals: int = 2, format_type: str = 'decimal') -> str:
+def _format_number(value: Any, decimals: int = 2, format_type: str = "decimal") -> str:
     """Format a number for LaTeX table display.
 
     Args:
@@ -91,7 +89,7 @@ def _format_number(value: Any, decimals: int = 2, format_type: str = 'decimal') 
     if value is None:
         return ""
 
-    if format_type == 'integer':
+    if format_type == "integer":
         # Format with comma separators (e.g., 1,234)
         return f"{int(value):,}"
     else:
@@ -103,13 +101,13 @@ def make_regression_table(
     model_names: List[str],
     variable_order: Optional[List[str]] = None,
     variable_labels: Optional[Dict[str, str]] = None,
-    include_stats: List[str] = ['N', 'R2', 'F'],
-    caption: str = '',
-    label: str = '',
+    include_stats: List[str] = None,
+    caption: str = "",
+    label: str = "",
     output_path: Optional[Path] = None,
     decimals: int = 3,
-    dep_var_name: str = '',
-    include_fe_rows: bool = True
+    dep_var_name: str = "",
+    include_fe_rows: bool = True,
 ) -> str:
     """Generate publication-ready LaTeX regression table.
 
@@ -144,6 +142,8 @@ def make_regression_table(
         ...     label='tab:vagueness_cash'
         ... )
     """
+    if include_stats is None:
+        include_stats = ["N", "R2", "F"]
     if variable_labels is None:
         variable_labels = {}
 
@@ -152,8 +152,8 @@ def make_regression_table(
     # Collect all variable names across models
     all_vars = []
     for r in results:
-        if 'coefficients' in r:
-            vars_in_model = r['coefficients']['variable'].tolist()
+        if "coefficients" in r:
+            vars_in_model = r["coefficients"]["variable"].tolist()
             for var in vars_in_model:
                 if var not in all_vars:
                     all_vars.append(var)
@@ -168,7 +168,7 @@ def make_regression_table(
         display_vars = all_vars
 
     # Filter out constant from display (typically shown separately or not at all)
-    display_vars = [v for v in display_vars if v != 'const']
+    display_vars = [v for v in display_vars if v != "const"]
 
     # Build LaTeX table
     lines = []
@@ -183,14 +183,14 @@ def make_regression_table(
         lines.append(f"\\label{{{label}}}")
 
     # Column specification: left column for variables, then one per model
-    col_spec = 'l' + 'c' * n_models
+    col_spec = "l" + "c" * n_models
     lines.append(f"\\begin{{tabular}}{{{col_spec}}}")
 
     # Top rule
     lines.append(r"\toprule")
 
     # Model number row
-    lines.append("& " + " & ".join([f"({i+1})" for i in range(n_models)]) + r" \\")
+    lines.append("& " + " & ".join([f"({i + 1})" for i in range(n_models)]) + r" \\")
     # Model name row
     lines.append("& " + " & ".join(model_names) + r" \\")
     # Midrule
@@ -198,7 +198,9 @@ def make_regression_table(
 
     # Dependent variable row (if specified)
     if dep_var_name:
-        lines.append(f"\\multicolumn{{{n_models+1}}}{{l}}{{\\textit{{Dependent variable: {dep_var_name}}}}} \\\\")
+        lines.append(
+            f"\\multicolumn{{{n_models + 1}}}{{l}}{{\\textit{{Dependent variable: {dep_var_name}}}}} \\\\"
+        )
         lines.append(r"\midrule")
 
     # Coefficient rows
@@ -207,17 +209,17 @@ def make_regression_table(
         coef_row = [display_name]
         se_row = [""]
 
-        for i, r in enumerate(results):
-            coef_df = r.get('coefficients')
+        for _i, r in enumerate(results):
+            coef_df = r.get("coefficients")
             if coef_df is not None:
-                var_rows = coef_df[coef_df['variable'] == var]
+                var_rows = coef_df[coef_df["variable"] == var]
                 if len(var_rows) > 0:
                     row = var_rows.iloc[0]
                     beta, se = format_coefficient(
-                        row['coefficient'],
-                        row['std_error'],
-                        row['p_value'],
-                        decimals=decimals
+                        row["coefficient"],
+                        row["std_error"],
+                        row["p_value"],
+                        decimals=decimals,
                     )
                     coef_row.append(beta)
                     se_row.append(se)
@@ -236,51 +238,51 @@ def make_regression_table(
 
     # Statistics rows
     for stat in include_stats:
-        if stat == 'N':
-            row = ['Observations']
+        if stat == "N":
+            row = ["Observations"]
             for r in results:
-                summary = r.get('summary', {})
-                n_obs = summary.get('n_obs') or summary.get('nobs')
-                row.append(_format_number(n_obs, decimals=0, format_type='integer'))
+                summary = r.get("summary", {})
+                n_obs = summary.get("n_obs") or summary.get("nobs")
+                row.append(_format_number(n_obs, decimals=0, format_type="integer"))
             lines.append(" & ".join(row) + r" \\")
 
-        elif stat == 'R2':
-            row = ['R$^2$']
+        elif stat == "R2":
+            row = ["R$^2$"]
             for r in results:
-                summary = r.get('summary', {})
-                rsq = summary.get('rsquared') or summary.get('rsquared_within')
+                summary = r.get("summary", {})
+                rsq = summary.get("rsquared") or summary.get("rsquared_within")
                 row.append(_format_number(rsq, decimals=2))
             lines.append(" & ".join(row) + r" \\")
 
-        elif stat == 'adj_R2':
-            row = ['Adj. R$^2$']
+        elif stat == "adj_R2":
+            row = ["Adj. R$^2$"]
             for r in results:
-                summary = r.get('summary', {})
-                adj_rsq = summary.get('rsquared_adj')
+                summary = r.get("summary", {})
+                adj_rsq = summary.get("rsquared_adj")
                 row.append(_format_number(adj_rsq, decimals=2))
             lines.append(" & ".join(row) + r" \\")
 
-        elif stat == 'F':
-            row = ['F-statistic']
+        elif stat == "F":
+            row = ["F-statistic"]
             for r in results:
-                summary = r.get('summary', {})
-                f_stat = summary.get('f_statistic')
+                summary = r.get("summary", {})
+                f_stat = summary.get("f_statistic")
                 row.append(_format_number(f_stat, decimals=2))
             lines.append(" & ".join(row) + r" \\")
 
-        elif stat == 'FE_entity' and include_fe_rows:
-            row = ['Entity FE']
+        elif stat == "FE_entity" and include_fe_rows:
+            row = ["Entity FE"]
             for r in results:
-                summary = r.get('summary', {})
-                has_fe = summary.get('entity_effects', False)
+                summary = r.get("summary", {})
+                has_fe = summary.get("entity_effects", False)
                 row.append("Yes" if has_fe else "No")
             lines.append(" & ".join(row) + r" \\")
 
-        elif stat == 'FE_time' and include_fe_rows:
-            row = ['Year FE']
+        elif stat == "FE_time" and include_fe_rows:
+            row = ["Year FE"]
             for r in results:
-                summary = r.get('summary', {})
-                has_fe = summary.get('time_effects', False)
+                summary = r.get("summary", {})
+                has_fe = summary.get("time_effects", False)
                 row.append("Yes" if has_fe else "No")
             lines.append(" & ".join(row) + r" \\")
 
@@ -303,7 +305,7 @@ def make_regression_table(
     if output_path:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(latex_str)
 
     return latex_str
@@ -314,7 +316,7 @@ def make_iv_table(
     model_names: List[str],
     include_first_stage: bool = True,
     include_hansen_j: bool = True,
-    **kwargs
+    **kwargs,
 ) -> str:
     """Generate LaTeX table specialized for IV regression results.
 
@@ -345,26 +347,28 @@ def make_iv_table(
         return latex
 
     # Insert IV-specific statistics before \bottomrule
-    lines = latex.split('\n')
-    bottomrule_idx = next(i for i, line in enumerate(lines) if r'\bottomrule' in line)
+    lines = latex.split("\n")
+    bottomrule_idx = next(i for i, line in enumerate(lines) if r"\bottomrule" in line)
 
     iv_lines = []
 
     # First-stage F-stat row
     if include_first_stage:
-        f_row = ['First-stage F']
+        f_row = ["First-stage F"]
         for r in results:
-            first_stage = r.get('first_stage', {})
-            f_stat = first_stage.get('f_stat')
-            f_row.append(_format_number(f_stat, decimals=2) if f_stat is not None else "")
+            first_stage = r.get("first_stage", {})
+            f_stat = first_stage.get("f_stat")
+            f_row.append(
+                _format_number(f_stat, decimals=2) if f_stat is not None else ""
+            )
         iv_lines.append(" & ".join(f_row) + r" \\")
 
     # Hansen J test row
     if include_hansen_j:
-        hansen_row = ['Hansen J p-val']
+        hansen_row = ["Hansen J p-val"]
         for r in results:
-            overid = r.get('overid_test', {})
-            pval = overid.get('pval')
+            overid = r.get("overid_test", {})
+            pval = overid.get("pval")
             if pval is not None:
                 hansen_row.append(f"{pval:.3f}")
             else:
@@ -372,7 +376,12 @@ def make_iv_table(
         iv_lines.append(" & ".join(hansen_row) + r" \\")
 
     # Insert IV lines before bottomrule
-    lines = lines[:bottomrule_idx] + iv_lines + [lines[bottomrule_idx]] + lines[bottomrule_idx + 1:]
+    lines = (
+        lines[:bottomrule_idx]
+        + iv_lines
+        + [lines[bottomrule_idx]]
+        + lines[bottomrule_idx + 1 :]
+    )
 
     return "\n".join(lines)
 
@@ -380,7 +389,7 @@ def make_iv_table(
 def make_summary_table(
     data: Dict[str, Any],
     title: str = "Summary Statistics",
-    output_path: Optional[Path] = None
+    output_path: Optional[Path] = None,
 ) -> str:
     """Generate LaTeX table for summary statistics.
 
@@ -424,7 +433,7 @@ def make_summary_table(
     if output_path:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(latex_str)
 
     return latex_str
@@ -434,7 +443,7 @@ def make_correlation_table(
     corr_matrix: Any,
     variable_labels: Optional[Dict[str, str]] = None,
     title: str = "Correlation Matrix",
-    output_path: Optional[Path] = None
+    output_path: Optional[Path] = None,
 ) -> str:
     """Generate LaTeX table for correlation matrix.
 
@@ -457,11 +466,11 @@ def make_correlation_table(
     lines.append(r"\begin{table}[htbp]")
     lines.append(r"\centering")
     lines.append(f"\\caption{{{title}}}")
-    lines.append(r"\begin{tabular}{" + 'l' + 'c' * n_vars + "}")
+    lines.append(r"\begin{tabular}{" + "l" + "c" * n_vars + "}")
     lines.append(r"\toprule")
 
     # Header row
-    header = ['']
+    header = [""]
     for var in corr_matrix.columns:
         header.append(variable_labels.get(var, var))
     lines.append(" & ".join(header) + r" \\")
@@ -470,7 +479,7 @@ def make_correlation_table(
     # Data rows
     for i, var_row in enumerate(corr_matrix.index):
         row = [variable_labels.get(var_row, var_row)]
-        for j, var_col in enumerate(corr_matrix.columns):
+        for j, _var_col in enumerate(corr_matrix.columns):
             if i == j:
                 row.append("1.00")
             else:
@@ -487,7 +496,7 @@ def make_correlation_table(
     if output_path:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(latex_str)
 
     return latex_str
@@ -495,36 +504,38 @@ def make_correlation_table(
 
 if __name__ == "__main__":
     # Simple demonstration
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     # Create sample regression results
     np.random.seed(42)
     sample_results = [
         {
-            'coefficients': pd.DataFrame({
-                'variable': ['vagueness', 'leverage', 'size', 'const'],
-                'coefficient': [0.123, -0.456, 0.789, 0.012],
-                'std_error': [0.045, 0.078, 0.089, 0.003],
-                'p_value': [0.001, 0.023, 0.150, 0.001]
-            }),
-            'summary': {
-                'n_obs': 1234,
-                'rsquared': 0.45,
-                'rsquared_adj': 0.44,
-                'f_statistic': 25.3,
-                'entity_effects': True,
-                'time_effects': True
-            }
+            "coefficients": pd.DataFrame(
+                {
+                    "variable": ["vagueness", "leverage", "size", "const"],
+                    "coefficient": [0.123, -0.456, 0.789, 0.012],
+                    "std_error": [0.045, 0.078, 0.089, 0.003],
+                    "p_value": [0.001, 0.023, 0.150, 0.001],
+                }
+            ),
+            "summary": {
+                "n_obs": 1234,
+                "rsquared": 0.45,
+                "rsquared_adj": 0.44,
+                "f_statistic": 25.3,
+                "entity_effects": True,
+                "time_effects": True,
+            },
         }
     ]
 
     latex = make_regression_table(
         results=sample_results,
-        model_names=['OLS'],
-        variable_labels={'vagueness': 'Speech Uncertainty', 'leverage': 'Leverage'},
-        caption='Sample Regression Table',
-        dep_var_name='Cash Holdings'
+        model_names=["OLS"],
+        variable_labels={"vagueness": "Speech Uncertainty", "leverage": "Leverage"},
+        caption="Sample Regression Table",
+        dep_var_name="Cash Holdings",
     )
 
     print("LaTeX Tables Module")

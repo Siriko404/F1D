@@ -35,20 +35,17 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-import logging
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import hashlib
-import json
-import time
-import psutil
 import gc
+import logging
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -58,24 +55,20 @@ script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import (
     DualWriter,
+    calculate_throughput,
     compute_file_checksum,
-    print_stat,
-    analyze_missing_values,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
     print_stats_summary,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
 
 # ==============================================================================
@@ -134,7 +127,10 @@ def setup_paths(config, timestamp):
         "linguistic_dir": linguistic_dir,
         "market_dir": market_dir,
         "crsp_dir": root / "1_Inputs" / "CRSP_DSF",
-        "ccm_file": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
+        "ccm_file": root
+        / "1_Inputs"
+        / "CRSPCompustat_CCM"
+        / "CRSPCompustat_CCM.parquet",
     }
 
     # Output directory
@@ -202,7 +198,18 @@ def load_crsp_for_years(crsp_dir, years):
             fp = crsp_dir / f"CRSP_DSF_{year}_Q{q}.parquet"
             if fp.exists():
                 try:
-                    df = pd.read_parquet(fp, columns=["PERMNO", "date", "RET", "VOL", "PRC", "ASKHI", "BIDLO"])
+                    df = pd.read_parquet(
+                        fp,
+                        columns=[
+                            "PERMNO",
+                            "date",
+                            "RET",
+                            "VOL",
+                            "PRC",
+                            "ASKHI",
+                            "BIDLO",
+                        ],
+                    )
                     all_data.append(df)
                 except Exception as e:
                     print(f"    Warning reading {fp.name}: {e}")
@@ -249,7 +256,9 @@ def load_linguistic_variables(linguistic_dir, years):
 
     # Select uncertainty measures
     uncertainty_cols = [
-        "file_name", "gvkey", "start_date",
+        "file_name",
+        "gvkey",
+        "start_date",
         "Manager_QA_Uncertainty_pct",
         "CEO_QA_Uncertainty_pct",
         "Manager_Pres_Uncertainty_pct",
@@ -292,8 +301,11 @@ def load_market_variables(market_dir, years):
     combined["gvkey"] = combined["gvkey"].astype(str).str.zfill(6)
 
     # Select useful variables
-    market_cols = [c for c in ["file_name", "gvkey", "year", "StockRet", "Volatility"]
-                   if c in combined.columns]
+    market_cols = [
+        c
+        for c in ["file_name", "gvkey", "year", "StockRet", "Volatility"]
+        if c in combined.columns
+    ]
 
     result = combined[market_cols].copy() if market_cols else None
 
@@ -338,10 +350,10 @@ def calculate_amihud_illiquidity(crsp_df, permno_list=None, min_days=50):
 
     # Filter valid observations
     valid = crsp_df[
-        (crsp_df["RET"].notna()) &
-        (crsp_df["RET"].between(-0.66, 0.66)) &  # Exclude extreme returns
-        (crsp_df["VOL"] > 0) &
-        (crsp_df["PRC"] > 0)
+        (crsp_df["RET"].notna())
+        & (crsp_df["RET"].between(-0.66, 0.66))  # Exclude extreme returns
+        & (crsp_df["VOL"] > 0)
+        & (crsp_df["PRC"] > 0)
     ].copy()
 
     # Calculate dollar volume (CRSP: VOL * PRC)
@@ -351,10 +363,14 @@ def calculate_amihud_illiquidity(crsp_df, permno_list=None, min_days=50):
     valid["daily_illiq"] = valid["RET"].abs() / valid["dollar_volume"]
 
     # Aggregate to firm-year level
-    illiq = (valid.groupby(["PERMNO", "year"])
-             .agg(amihud_illiquity=("daily_illiq", "mean"),
-                  trading_days=("daily_illiq", "count"))
-             .reset_index())
+    illiq = (
+        valid.groupby(["PERMNO", "year"])
+        .agg(
+            amihud_illiquity=("daily_illiq", "mean"),
+            trading_days=("daily_illiq", "count"),
+        )
+        .reset_index()
+    )
 
     # Require minimum trading days
     illiq = illiq[illiq["trading_days"] >= min_days].copy()
@@ -397,27 +413,22 @@ def calculate_roll_spread(crsp_df, permno_list=None, min_days=50):
 
     # Filter valid returns
     valid = crsp_df[
-        (crsp_df["RET"].notna()) &
-        (crsp_df["RET"].between(-0.66, 0.66))
+        (crsp_df["RET"].notna()) & (crsp_df["RET"].between(-0.66, 0.66))
     ].copy()
 
     def roll_for_group(group):
         if len(group) < min_days:
-            return pd.Series({
-                "roll_spread": np.nan,
-                "autocov": np.nan,
-                "n_obs": len(group)
-            })
+            return pd.Series(
+                {"roll_spread": np.nan, "autocov": np.nan, "n_obs": len(group)}
+            )
 
         # Calculate first-order autocovariance
         # autocov = E[(X_t - mu) * (X_{t-1} - mu)]
         rets = group["RET"].values
         if len(rets) < 2:
-            return pd.Series({
-                "roll_spread": np.nan,
-                "autocov": np.nan,
-                "n_obs": len(group)
-            })
+            return pd.Series(
+                {"roll_spread": np.nan, "autocov": np.nan, "n_obs": len(group)}
+            )
 
         # Manual autocovariance calculation at lag 1
         mean_ret = np.mean(rets)
@@ -426,21 +437,23 @@ def calculate_roll_spread(crsp_df, permno_list=None, min_days=50):
         autocov = np.mean(deviations[1:] * deviations[:-1])
 
         if autocov >= 0:
-            return pd.Series({
-                "roll_spread": np.nan,
+            return pd.Series(
+                {"roll_spread": np.nan, "autocov": autocov, "n_obs": len(group)}
+            )
+
+        return pd.Series(
+            {
+                "roll_spread": 2 * np.sqrt(-autocov),
                 "autocov": autocov,
-                "n_obs": len(group)
-            })
+                "n_obs": len(group),
+            }
+        )
 
-        return pd.Series({
-            "roll_spread": 2 * np.sqrt(-autocov),
-            "autocov": autocov,
-            "n_obs": len(group)
-        })
-
-    roll = (valid.groupby(["PERMNO", "year"])
-            .apply(roll_for_group, include_groups=False)
-            .reset_index())
+    roll = (
+        valid.groupby(["PERMNO", "year"])
+        .apply(roll_for_group, include_groups=False)
+        .reset_index()
+    )
 
     # Count valid spreads
     n_valid = roll["roll_spread"].notna().sum()
@@ -464,8 +477,7 @@ def calculate_stock_volatility_and_returns(crsp_df, permno_list=None, min_days=5
     Returns:
         DataFrame with PERMNO, year, Volatility, StockRet
     """
-    print("
-Calculating stock volatility and returns from CRSP...")
+    print("Calculating stock volatility and returns from CRSP...")
 
     # Filter to sample permnos if provided
     if permno_list is not None:
@@ -476,8 +488,7 @@ Calculating stock volatility and returns from CRSP...")
 
     # Filter valid returns
     valid = crsp_df[
-        (crsp_df["RET"].notna()) &
-        (crsp_df["RET"].between(-0.66, 0.66))
+        (crsp_df["RET"].notna()) & (crsp_df["RET"].between(-0.66, 0.66))
     ].copy()
 
     # Calculate annual metrics for each firm-year
@@ -485,24 +496,18 @@ Calculating stock volatility and returns from CRSP...")
         rets = group["RET"].dropna()
         n = len(rets)
         if n < min_days:
-            return pd.Series({
-                "Volatility": np.nan,
-                "StockRet": np.nan,
-                "n_obs": n
-            })
+            return pd.Series({"Volatility": np.nan, "StockRet": np.nan, "n_obs": n})
         # Daily volatility (std dev), annualized by sqrt(252) and convert to percent
-        vol = rets.std() * 100 * (252 ** 0.5)
+        vol = rets.std() * 100 * (252**0.5)
         # Annual stock return: (1 + r1*r2*...*rn) - 1, * 100
         stock_ret = ((1 + rets).prod() - 1) * 100
-        return pd.Series({
-            "Volatility": vol,
-            "StockRet": stock_ret,
-            "n_obs": n
-        })
+        return pd.Series({"Volatility": vol, "StockRet": stock_ret, "n_obs": n})
 
-    metrics_df = (valid.groupby(["PERMNO", "year"])
-                    .apply(calc_metrics, include_groups=False)
-                    .reset_index())
+    metrics_df = (
+        valid.groupby(["PERMNO", "year"])
+        .apply(calc_metrics, include_groups=False)
+        .reset_index()
+    )
 
     # Require minimum trading days
     metrics_df = metrics_df[metrics_df["n_obs"] >= min_days].copy()
@@ -510,9 +515,13 @@ Calculating stock volatility and returns from CRSP...")
     print(f"  Computed metrics for {len(metrics_df):,} firm-years")
     if len(metrics_df) > 0:
         if metrics_df["Volatility"].notna().any():
-            print(f"    Volatility - Mean: {metrics_df['Volatility'].mean():.2f}%, Median: {metrics_df['Volatility'].median():.2f}%")
+            print(
+                f"    Volatility - Mean: {metrics_df['Volatility'].mean():.2f}%, Median: {metrics_df['Volatility'].median():.2f}%"
+            )
         if metrics_df["StockRet"].notna().any():
-            print(f"    StockRet - Mean: {metrics_df['StockRet'].mean():.2f}%, Median: {metrics_df['StockRet'].median():.2f}%")
+            print(
+                f"    StockRet - Mean: {metrics_df['StockRet'].mean():.2f}%, Median: {metrics_df['StockRet'].median():.2f}%"
+            )
 
     return metrics_df[["PERMNO", "year", "Volatility", "StockRet"]]
 
@@ -540,12 +549,16 @@ def apply_sample_restrictions(df, config):
 
     # Exclude financial firms (SIC 6000-6999)
     if "sic" in df.columns:
-        df = df[~df["sic"].between(config["sic_financial"][0], config["sic_financial"][1])].copy()
+        df = df[
+            ~df["sic"].between(config["sic_financial"][0], config["sic_financial"][1])
+        ].copy()
         print(f"  After financial exclusion: {len(df):,} rows")
 
     # Exclude utilities (SIC 4900-4999)
     if "sic" in df.columns:
-        df = df[~df["sic"].between(config["sic_utilities"][0], config["sic_utilities"][1])].copy()
+        df = df[
+            ~df["sic"].between(config["sic_utilities"][0], config["sic_utilities"][1])
+        ].copy()
         print(f"  After utilities exclusion: {len(df):,} rows")
 
     # Require minimum years per firm
@@ -554,7 +567,7 @@ def apply_sample_restrictions(df, config):
     print(f"  After min years per firm: {len(df):,} rows")
 
     excluded = initial_rows - len(df)
-    print(f"  Total excluded: {excluded:,} ({excluded/initial_rows*100:.1f}%)")
+    print(f"  Total excluded: {excluded:,} ({excluded / initial_rows * 100:.1f}%)")
 
     return df
 
@@ -730,7 +743,9 @@ def main():
 
     # Load CRSP data
     print("\nCRSP Daily Stock Data:")
-    crsp = load_crsp_for_years(paths["crsp_dir"], list(range(year_range[0]-1, year_range[1]+2)))
+    crsp = load_crsp_for_years(
+        paths["crsp_dir"], list(range(year_range[0] - 1, year_range[1] + 2))
+    )
     if crsp is None:
         print("[ERROR] Failed to load CRSP data")
         sys.exit(1)
@@ -760,7 +775,9 @@ def main():
     stats["processing"]["variables_computed"].append("roll_spread")
 
     # Calculate stock volatility and returns from CRSP daily data
-    volatility_df = calculate_stock_volatility_and_returns(crsp, permno_list, cfg["min_trading_days"])
+    volatility_df = calculate_stock_volatility_and_returns(
+        crsp, permno_list, cfg["min_trading_days"]
+    )
     stats["processing"]["variables_computed"].append("stock_volatility_returns")
 
     # Free CRSP memory
@@ -780,12 +797,18 @@ def main():
 
     # Aggregate linguistic variables to firm-year level
     print("\nAggregating linguistic variables to firm-year...")
-    linguistic_agg = df.groupby(["gvkey", "year"]).agg({
-        "Manager_QA_Uncertainty_pct": "mean",
-        "CEO_QA_Uncertainty_pct": "mean",
-        "Manager_Pres_Uncertainty_pct": "mean",
-        "CEO_Pres_Uncertainty_pct": "mean",
-    }).reset_index()
+    linguistic_agg = (
+        df.groupby(["gvkey", "year"])
+        .agg(
+            {
+                "Manager_QA_Uncertainty_pct": "mean",
+                "CEO_QA_Uncertainty_pct": "mean",
+                "Manager_Pres_Uncertainty_pct": "mean",
+                "CEO_Pres_Uncertainty_pct": "mean",
+            }
+        )
+        .reset_index()
+    )
 
     print(f"  Linguistic firm-year observations: {len(linguistic_agg):,}")
 
@@ -809,30 +832,36 @@ def main():
 
     # Merge illiquidity measures
     if crosswalk is not None:
-        amihud_df = amihud_df.merge(crosswalk, left_on="PERMNO", right_on="permno", how="left")
-        roll_df = roll_df.merge(crosswalk, left_on="PERMNO", right_on="permno", how="left")
+        amihud_df = amihud_df.merge(
+            crosswalk, left_on="PERMNO", right_on="permno", how="left"
+        )
+        roll_df = roll_df.merge(
+            crosswalk, left_on="PERMNO", right_on="permno", how="left"
+        )
 
         # Merge to linguistic data
         df = linguistic_agg.merge(
-            amihud_df[["gvkey", "year", "amihud_illiquidity", "log_amihud", "trading_days"]],
+            amihud_df[
+                ["gvkey", "year", "amihud_illiquidity", "log_amihud", "trading_days"]
+            ],
             on=["gvkey", "year"],
-            how="left"
+            how="left",
         )
 
         df = df.merge(
-            roll_df[["gvkey", "year", "roll_spread"]],
-            on=["gvkey", "year"],
-            how="left"
+            roll_df[["gvkey", "year", "roll_spread"]], on=["gvkey", "year"], how="left"
         )
 
         # Merge volatility/returns via permno crosswalk
-        volatility_df = volatility_df.merge(crosswalk, left_on="PERMNO", right_on="permno", how="left")
+        volatility_df = volatility_df.merge(
+            crosswalk, left_on="PERMNO", right_on="permno", how="left"
+        )
 
         # Merge volatility/returns to linguistic data
         df = df.merge(
             volatility_df[["gvkey", "year", "Volatility", "StockRet"]],
             on=["gvkey", "year"],
-            how="left"
+            how="left",
         )
 
         print(f"  After merging illiquidity: {len(df):,} observations")
@@ -847,7 +876,7 @@ def main():
         df = df.merge(
             market[["gvkey", "year", "StockRet", "Volatility"]],
             on=["gvkey", "year"],
-            how="left"
+            how="left",
         )
         print(f"  After merging market variables: {len(df):,} observations")
 
@@ -882,16 +911,20 @@ def main():
     print("Sample Construction")
     print("=" * 60)
 
-    initial_sample = len(regression_sample)
+    len(regression_sample)
     regression_sample = apply_sample_restrictions(regression_sample, cfg)
 
     # Winsorize continuous variables
     print("\nApplying winsorization (1%/99%)...")
 
     continuous_vars = [
-        "amihud_lag1", "log_amihud_lag1", "roll_spread_lag1",
-        "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
-        "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
+        "amihud_lag1",
+        "log_amihud_lag1",
+        "roll_spread_lag1",
+        "Manager_QA_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
     ]
 
     if "Volatility" in regression_sample.columns:
@@ -900,17 +933,24 @@ def main():
         continuous_vars.append("StockRet")
 
     for var in continuous_vars:
-        if var in regression_sample.columns and regression_sample[var].notna().sum() > 0:
+        if (
+            var in regression_sample.columns
+            and regression_sample[var].notna().sum() > 0
+        ):
             before_mean = regression_sample[var].mean()
             regression_sample[var] = winsorize_series(
                 regression_sample[var],
                 lower=cfg["winsorize_lower"],
-                upper=cfg["winsorize_upper"]
+                upper=cfg["winsorize_upper"],
             )
             after_mean = regression_sample[var].mean()
             stats["processing"]["winsorization"][var] = {
-                "before_mean": round(float(before_mean), 4) if not pd.isna(before_mean) else None,
-                "after_mean": round(float(after_mean), 4) if not pd.isna(after_mean) else None,
+                "before_mean": round(float(before_mean), 4)
+                if not pd.isna(before_mean)
+                else None,
+                "after_mean": round(float(after_mean), 4)
+                if not pd.isna(after_mean)
+                else None,
             }
             print(f"  {var}: winsorized")
 
@@ -928,10 +968,15 @@ def main():
     print("=" * 60)
 
     output_columns = [
-        "gvkey", "year",
-        "amihud_lag1", "log_amihud_lag1", "roll_spread_lag1",
-        "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
-        "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
+        "gvkey",
+        "year",
+        "amihud_lag1",
+        "log_amihud_lag1",
+        "roll_spread_lag1",
+        "Manager_QA_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
     ]
 
     if "Volatility" in final_sample.columns:
@@ -945,14 +990,24 @@ def main():
         if var in final_sample.columns:
             var_data = final_sample[var]
             stats["variables"][var] = {
-                "mean": round(float(var_data.mean()), 4) if var_data.notna().sum() > 0 else None,
-                "std": round(float(var_data.std()), 4) if var_data.notna().sum() > 1 else None,
-                "min": round(float(var_data.min()), 4) if var_data.notna().sum() > 0 else None,
-                "max": round(float(var_data.max()), 4) if var_data.notna().sum() > 0 else None,
+                "mean": round(float(var_data.mean()), 4)
+                if var_data.notna().sum() > 0
+                else None,
+                "std": round(float(var_data.std()), 4)
+                if var_data.notna().sum() > 1
+                else None,
+                "min": round(float(var_data.min()), 4)
+                if var_data.notna().sum() > 0
+                else None,
+                "max": round(float(var_data.max()), 4)
+                if var_data.notna().sum() > 0
+                else None,
                 "n": int(var_data.notna().sum()),
                 "missing_count": int(var_data.isna().sum()),
             }
-            print(f"  {var}: mean={stats['variables'][var]['mean']}, n={stats['variables'][var]['n']}")
+            print(
+                f"  {var}: mean={stats['variables'][var]['mean']}, n={stats['variables'][var]['n']}"
+            )
 
     # ========================================================================
     # Prepare Final Output
@@ -1024,8 +1079,11 @@ def main():
     # Detect anomalies
     print("\nDetecting anomalies...")
     numeric_cols = [
-        "amihud_lag1", "log_amihud_lag1", "roll_spread_lag1",
-        "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
+        "amihud_lag1",
+        "log_amihud_lag1",
+        "roll_spread_lag1",
+        "Manager_QA_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct",
     ]
     anomalies = detect_anomalies_zscore(final_output, numeric_cols, threshold=3.0)
     total_anomalies = sum(a["count"] for a in anomalies.values())
@@ -1038,9 +1096,9 @@ def main():
     print("SUMMARY")
     print("=" * 60)
     print(f"H7 Variables computed: {len(final_output):,} observations")
-    print(f"  Primary DV: Amihud illiquidity (t+1)")
-    print(f"  Robustness DV: Roll spread (t+1)")
-    print(f"  IVs: 4 speech uncertainty measures")
+    print("  Primary DV: Amihud illiquidity (t+1)")
+    print("  Robustness DV: Roll spread (t+1)")
+    print("  IVs: 4 speech uncertainty measures")
     print(f"\nOutputs saved to: {paths['output_dir']}")
     print(f"Log saved to: {paths['log_file']}")
 

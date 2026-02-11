@@ -21,7 +21,6 @@ Deterministic: true
 """
 
 import argparse
-from pathlib import Path
 
 
 def parse_arguments_4_1_step4_clarity():

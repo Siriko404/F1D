@@ -38,34 +38,21 @@ Deterministic: true
 
 """
 
-import sys
-
 import argparse
-
+import gc
+import hashlib
+import importlib.util
+import json
+import sys
+import time
+import warnings
+from datetime import datetime
 from pathlib import Path
 
-from datetime import datetime, timedelta
-
-import pandas as pd
-
 import numpy as np
-
-import yaml
-
-import importlib.util
-
-import warnings
-
-import gc
-
-import time
-
-import hashlib
-
-import json
-
+import pandas as pd
 import psutil
-
+import yaml
 
 warnings.filterwarnings("ignore")
 
@@ -83,39 +70,37 @@ sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
 
-from utils import generate_variable_reference
-
 # Add parent directory to sys.path for shared module imports
 import sys as _sys
-from pathlib import Path as _Path
+
+from utils import generate_variable_reference
 
 _script_dir = Path(__file__).parent.parent
 _sys.path.insert(0, str(_script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import DualWriter
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+)
 
 # Import shared observability utilities (new Step 3.2 statistics functions)
 try:
     from shared.observability_utils import (
-        get_process_memory_mb,
         calculate_throughput,
-        detect_anomalies_zscore,
-        detect_anomalies_iqr,
         compute_step32_input_stats,
-        compute_step32_process_stats,
         compute_step32_output_stats,
+        compute_step32_process_stats,
+        detect_anomalies_iqr,
+        detect_anomalies_zscore,
         generate_financial_report_markdown,
+        get_process_memory_mb,
     )
     from shared.observability_utils import save_stats as save_stats_shared
+
     # Use local save_stats to avoid conflicts
     HAS_OBSERVABILITY = True
 except ImportError:
@@ -909,18 +894,25 @@ with master sample for analysis.
 def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
 
-    from shared.dependency_checker import validate_prerequisites
+    # Check CRSP directory exists
+    crsp_dir = root / "1_Inputs" / "CRSP_DSF"
+    if not crsp_dir.exists():
+        raise FileNotFoundError(f"CRSP directory not found: {crsp_dir}")
 
-    required_files = {
-        "CRSP": root / "1_Inputs" / "CRSP_DSF",
-        "IBES": root / "1_Inputs" / "IBES",
-    }
+    # Check CCM file exists
+    ccm_file = root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
+    if not ccm_file.exists():
+        raise FileNotFoundError(f"CCM file not found: {ccm_file}")
 
-    required_steps = {
-        "1.4_AssembleManifest": "master_sample_manifest.parquet",
-    }
+    # Check manifest prerequisite
+    from shared.path_utils import get_latest_output_dir
 
-    validate_prerequisites(required_files, required_steps)
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+    if not manifest_dir.exists():
+        raise FileNotFoundError("Manifest output not found from Step 1.4")
 
 
 # ==============================================================================
@@ -1025,8 +1017,12 @@ def main():
         stats["step32_input"] = {
             "manifest_stats": {
                 "total_records": int(len(manifest)),
-                "unique_gvkey": int(manifest["gvkey"].nunique()) if "gvkey" in manifest.columns else 0,
-                "unique_permno": int(manifest["permno"].nunique()) if "permno" in manifest.columns else 0,
+                "unique_gvkey": int(manifest["gvkey"].nunique())
+                if "gvkey" in manifest.columns
+                else 0,
+                "unique_permno": int(manifest["permno"].nunique())
+                if "permno" in manifest.columns
+                else 0,
                 "years_present": [int(y) for y in years],
             },
             "crsp_stats_by_year": {},  # Will be populated during processing
@@ -1051,7 +1047,7 @@ def main():
         crsp = load_crsp_for_years(paths["crsp_dir"], [year - 1, year])
 
         if crsp is None:
-            print(f"  WARNING: No CRSP data, skipping")
+            print("  WARNING: No CRSP data, skipping")
 
             continue
 
@@ -1063,16 +1059,24 @@ def main():
         if HAS_OBSERVABILITY and "step32_input" in stats:
             stats["step32_input"]["crsp_stats_by_year"][str(year)] = {
                 "observations": int(len(crsp)),
-                "unique_stocks": int(crsp["PERMNO"].nunique()) if "PERMNO" in crsp.columns else 0,
+                "unique_stocks": int(crsp["PERMNO"].nunique())
+                if "PERMNO" in crsp.columns
+                else 0,
             }
 
         # Collect per-year stats for PROCESS statistics
-        per_year_stats_list.append({
-            "year": year,
-            "total_records": len(year_manifest),
-            "stock_ret_count": int(year_manifest["StockRet"].notna().sum()) if "StockRet" in year_manifest.columns else 0,
-            "amihud_count": int(year_manifest["Amihud"].notna().sum()) if "Amihud" in year_manifest.columns else 0,
-        })
+        per_year_stats_list.append(
+            {
+                "year": year,
+                "total_records": len(year_manifest),
+                "stock_ret_count": int(year_manifest["StockRet"].notna().sum())
+                if "StockRet" in year_manifest.columns
+                else 0,
+                "amihud_count": int(year_manifest["Amihud"].notna().sum())
+                if "Amihud" in year_manifest.columns
+                else 0,
+            }
+        )
 
         # Compute (vectorized within year)
 
@@ -1145,7 +1149,15 @@ def main():
         )
 
         print("\nCollecting OUTPUT statistics...")
-        variables_list = ["StockRet", "MarketRet", "Amihud", "Corwin_Schultz", "Delta_Amihud", "Delta_Corwin_Schultz", "Volatility"]
+        variables_list = [
+            "StockRet",
+            "MarketRet",
+            "Amihud",
+            "Corwin_Schultz",
+            "Delta_Amihud",
+            "Delta_Corwin_Schultz",
+            "Volatility",
+        ]
         stats["step32_output"] = compute_step32_output_stats(
             output_df=all_df,
             variables_list=variables_list,

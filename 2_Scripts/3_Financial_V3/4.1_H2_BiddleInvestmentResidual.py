@@ -40,47 +40,42 @@ Deterministic: true
 ================================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import json
-import time
-import psutil
-import warnings
 import gc
+import sys
+import time
+import warnings
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
-# Import observability utilities
-from shared.observability_utils import (
-    compute_file_checksum,
-    print_stat,
-    save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
-)
+# Import statsmodels for first-stage OLS
+import statsmodels.api as sm
 
 # Import industry utilities
 from shared.industry_utils import parse_ff_industries
 
-# Import statsmodels for first-stage OLS
-import statsmodels.api as sm
+# Import observability utilities
+from shared.observability_utils import (
+    calculate_throughput,
+    compute_file_checksum,
+    get_process_memory_mb,
+    print_stat,
+    save_stats,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+)
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings("ignore")
@@ -122,7 +117,9 @@ def setup_paths(config, timestamp):
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V3" / "4.1_H2_BiddleInvestmentResidual"
+    output_base = (
+        root / "4_Outputs" / "3_Financial_V3" / "4.1_H2_BiddleInvestmentResidual"
+    )
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
@@ -159,7 +156,7 @@ def load_manifest(manifest_dir):
 
 def load_compustat_investment(compustat_file):
     """Load Compustat data with required fields for Biddle investment residual"""
-    print(f"  Loading Compustat data...")
+    print("  Loading Compustat data...")
 
     # Required columns for Biddle (2009) investment construction
     # Note: Compustat uses 'q' suffix for quarterly, 'y' suffix for annual
@@ -359,7 +356,11 @@ def construct_tobins_q(df, winsorize=True):
     print("\nConstructing Tobin's Q...")
 
     # Check required fields
-    if "mkvalt" not in df.columns or "csho" not in df.columns or "prcc" not in df.columns:
+    if (
+        "mkvalt" not in df.columns
+        or "csho" not in df.columns
+        or "prcc" not in df.columns
+    ):
         print("  Warning: Market value fields not all available")
         # Try to construct market equity from csho * prcc
         if "csho" in df.columns and "prcc" in df.columns:
@@ -387,7 +388,8 @@ def construct_tobins_q(df, winsorize=True):
     if winsorize:
         df_work["TobinQ_lag"] = df_work.groupby("fyear")["TobinQ_lag"].transform(
             lambda x: x.clip(lower=x.quantile(0.01), upper=x.quantile(0.99))
-            if x.notna().sum() > 0 else x
+            if x.notna().sum() > 0
+            else x
         )
         print("  Winsorized TobinQ_lag at 1%/99% by year")
 
@@ -412,7 +414,9 @@ def construct_sales_growth(df, winsorize=True):
 
     if "sale" not in df.columns:
         print("  Warning: SALE not available")
-        return pd.DataFrame(columns=["gvkey", "fyear", "SalesGrowth", "SalesGrowth_lag"])
+        return pd.DataFrame(
+            columns=["gvkey", "fyear", "SalesGrowth", "SalesGrowth_lag"]
+        )
 
     # Sort by gvkey and fyear
     df_work = df.sort_values(["gvkey", "fyear"]).copy()
@@ -430,9 +434,12 @@ def construct_sales_growth(df, winsorize=True):
 
     # Winsorize at 1% and 99% by year
     if winsorize:
-        df_work["SalesGrowth_lag"] = df_work.groupby("fyear")["SalesGrowth_lag"].transform(
+        df_work["SalesGrowth_lag"] = df_work.groupby("fyear")[
+            "SalesGrowth_lag"
+        ].transform(
             lambda x: x.clip(lower=x.quantile(0.01), upper=x.quantile(0.99))
-            if x.notna().sum() > 0 else x
+            if x.notna().sum() > 0
+            else x
         )
         print("  Winsorized SalesGrowth_lag at 1%/99% by year")
 
@@ -493,7 +500,8 @@ def construct_biddle_controls(df, winsorize=True):
         for var in ["CashFlow", "Size", "Leverage"]:
             df_work[var] = df_work.groupby("fyear")[var].transform(
                 lambda x: x.clip(lower=x.quantile(0.01), upper=x.quantile(0.99))
-                if x.notna().sum() > 0 else x
+                if x.notna().sum() > 0
+                else x
             )
         print("  Winsorized controls at 1%/99% by year")
 
@@ -555,7 +563,7 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
 
         # Progress indicator every 50 cells
         if (i + 1) % 50 == 0:
-            print(f"  Progress: {i+1}/{total_cells} cells processed...")
+            print(f"  Progress: {i + 1}/{total_cells} cells processed...")
 
         # Check minimum observations
         if len(group) < min_obs:
@@ -578,19 +586,21 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
             # Store residuals more efficiently - avoid intermediate dict
             indices = group.index.values
             for j, (idx, res, pred) in enumerate(zip(indices, residuals, predicted)):
-                results_buffer.append({
-                    "index": int(idx),
-                    "gvkey": group["gvkey"].iloc[j],
-                    "fyear": int(group["fyear"].iloc[j]),
-                    "ff48_code": int(industry),
-                    "InvestmentResidual": float(res),
-                    "Investment": float(group["Investment"].iloc[j]),
-                    "TobinQ_lag": float(group["TobinQ_lag"].iloc[j]),
-                    "SalesGrowth_lag": float(group["SalesGrowth_lag"].iloc[j]),
-                    "predicted_investment": float(pred),
-                    "first_stage_r2": float(model.rsquared),
-                    "first_stage_n": int(len(group)),
-                })
+                results_buffer.append(
+                    {
+                        "index": int(idx),
+                        "gvkey": group["gvkey"].iloc[j],
+                        "fyear": int(group["fyear"].iloc[j]),
+                        "ff48_code": int(industry),
+                        "InvestmentResidual": float(res),
+                        "Investment": float(group["Investment"].iloc[j]),
+                        "TobinQ_lag": float(group["TobinQ_lag"].iloc[j]),
+                        "SalesGrowth_lag": float(group["SalesGrowth_lag"].iloc[j]),
+                        "predicted_investment": float(pred),
+                        "first_stage_r2": float(model.rsquared),
+                        "first_stage_n": int(len(group)),
+                    }
+                )
 
                 # Flush buffer periodically
                 if len(results_buffer) >= buffer_size:
@@ -598,7 +608,9 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
                     results_buffer = []
 
         except Exception as e:
-            print(f"  Warning: Regression failed for {ff_industry}={industry}, year={year}: {e}")
+            print(
+                f"  Warning: Regression failed for {ff_industry}={industry}, year={year}: {e}"
+            )
             continue
 
     # Flush remaining buffer
@@ -612,7 +624,7 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
     # Build result DataFrame
     result = pd.DataFrame(residual_list)
 
-    print(f"\nFirst-stage regression summary:")
+    print("\nFirst-stage regression summary:")
     print(f"  Total cells: {n_cells}")
     print(f"  Regressions run: {n_regressions}")
     print(f"  Thin cells (<{min_obs} obs): {len(thin_cells)}")
@@ -621,13 +633,17 @@ def run_first_stage_regressions(df, min_obs=20, ff_industry="ff48_code"):
         print(f"  Sample thin cells: {thin_cells[:5]}")
 
     # Residual statistics
-    print(f"\nInvestmentResidual statistics:")
+    print("\nInvestmentResidual statistics:")
     print(f"  Mean: {result['InvestmentResidual'].mean():.6f} (should be ~0)")
     print(f"  Std: {result['InvestmentResidual'].std():.6f}")
     print(f"  Min: {result['InvestmentResidual'].min():.6f}")
     print(f"  Max: {result['InvestmentResidual'].max():.6f}")
-    print(f"  Overinvestment (>0): {(result['InvestmentResidual'] > 0).sum():,} ({(result['InvestmentResidual'] > 0).sum() / len(result) * 100:.1f}%)")
-    print(f"  Underinvestment (<0): {(result['InvestmentResidual'] < 0).sum():,} ({(result['InvestmentResidual'] < 0).sum() / len(result) * 100:.1f}%)")
+    print(
+        f"  Overinvestment (>0): {(result['InvestmentResidual'] > 0).sum():,} ({(result['InvestmentResidual'] > 0).sum() / len(result) * 100:.1f}%)"
+    )
+    print(
+        f"  Underinvestment (<0): {(result['InvestmentResidual'] < 0).sum():,} ({(result['InvestmentResidual'] < 0).sum() / len(result) * 100:.1f}%)"
+    )
 
     return result
 
@@ -649,8 +665,12 @@ def validate_residuals(residuals_df):
         "min": float(residuals_df["InvestmentResidual"].min()),
         "max": float(residuals_df["InvestmentResidual"].max()),
         "n": len(residuals_df),
-        "pct_overinvest": float((residuals_df["InvestmentResidual"] > 0).sum() / len(residuals_df) * 100),
-        "pct_underinvest": float((residuals_df["InvestmentResidual"] < 0).sum() / len(residuals_df) * 100),
+        "pct_overinvest": float(
+            (residuals_df["InvestmentResidual"] > 0).sum() / len(residuals_df) * 100
+        ),
+        "pct_underinvest": float(
+            (residuals_df["InvestmentResidual"] < 0).sum() / len(residuals_df) * 100
+        ),
     }
 
     # Check mean ~ 0 (OLS property)
@@ -787,6 +807,7 @@ def main():
     log_file = open(paths["log_file"], "w", buffering=1)
 
     import builtins
+
     builtin_print = builtins.print
 
     def print_both(*args, **kwargs):
@@ -956,7 +977,7 @@ def main():
 
     first_stage_data = reduce(
         lambda left, right: pd.merge(left, right, on=["gvkey", "fyear"], how="inner"),
-        dfs_to_merge
+        dfs_to_merge,
     )
 
     print(f"  First-stage data: {len(first_stage_data):,} observations")
@@ -1057,7 +1078,7 @@ def main():
 
     # Clean up intermediate file
     residuals_file.unlink()
-    print(f"  Cleaned up intermediate file")
+    print("  Cleaned up intermediate file")
 
     print(f"  Final output: {len(final_output):,} observations")
 
@@ -1090,7 +1111,11 @@ def main():
     # Ensure columns exist
     output_columns = [c for c in output_columns if c in final_output.columns]
 
-    final_for_output = final_output[output_columns].sort_values(["gvkey", "fyear"]).reset_index(drop=True)
+    final_for_output = (
+        final_output[output_columns]
+        .sort_values(["gvkey", "fyear"])
+        .reset_index(drop=True)
+    )
 
     # Write parquet
     output_file = paths["output_dir"] / "H2_InvestmentResiduals.parquet"
@@ -1110,9 +1135,15 @@ def main():
             "n": int(final_for_output["InvestmentResidual"].notna().sum()),
         },
         "first_stage_summary": {
-            "mean_r2": float(final_for_output["first_stage_r2"].mean()) if "first_stage_r2" in final_for_output.columns else None,
-            "median_r2": float(final_for_output["first_stage_r2"].median()) if "first_stage_r2" in final_for_output.columns else None,
-            "n_industries": int(final_for_output["ff48_code"].nunique()) if "ff48_code" in final_for_output.columns else None,
+            "mean_r2": float(final_for_output["first_stage_r2"].mean())
+            if "first_stage_r2" in final_for_output.columns
+            else None,
+            "median_r2": float(final_for_output["first_stage_r2"].median())
+            if "first_stage_r2" in final_for_output.columns
+            else None,
+            "n_industries": int(final_for_output["ff48_code"].nunique())
+            if "ff48_code" in final_for_output.columns
+            else None,
         },
     }
 
@@ -1125,11 +1156,14 @@ def main():
         latest_link.unlink()
     try:
         latest_link.symlink_to(paths["output_dir"])
-        print(f"  Updated latest/ symlink")
+        print("  Updated latest/ symlink")
     except OSError:
         # Symlink creation may fail on Windows - use junction instead
         import subprocess
-        subprocess.run(["mklink", "/J", str(latest_link), str(paths["output_dir"])], shell=True)
+
+        subprocess.run(
+            ["mklink", "/J", str(latest_link), str(paths["output_dir"])], shell=True
+        )
 
     # ========================================================================
     # Final Summary
@@ -1158,8 +1192,12 @@ def main():
     print("SUMMARY")
     print("=" * 60)
     print(f"Investment residuals computed: {len(final_for_output):,} observations")
-    print(f"  InvestmentResidual mean: {stats['variables']['InvestmentResidual']['mean']:.6f}")
-    print(f"  First-stage mean R2: {stats['variables']['first_stage_summary']['mean_r2']:.4f}")
+    print(
+        f"  InvestmentResidual mean: {stats['variables']['InvestmentResidual']['mean']:.6f}"
+    )
+    print(
+        f"  First-stage mean R2: {stats['variables']['first_stage_summary']['mean_r2']:.4f}"
+    )
     print(f"\nOutputs saved to: {paths['output_dir']}")
     print(f"Log saved to: {paths['log_file']}")
 

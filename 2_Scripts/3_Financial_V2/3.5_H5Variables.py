@@ -36,40 +36,31 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
 import argparse
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
-import hashlib
 import json
-import time
+import sys
 import warnings
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-)
-
 # Import DualWriter from shared.observability_utils
 from shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
-    print_stat,
-    analyze_missing_values,
-    print_stats_summary,
-    save_stats,
-    get_process_memory_mb,
+)
+from shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
 
 # Suppress warnings for cleaner output
@@ -123,8 +114,14 @@ def setup_paths(config, timestamp):
         "h2_dir": h2_dir,
         "linguistics_dir": linguistics_dir,
         "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
-        "ccm_file": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
-        "compustat_file": root / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet",
+        "ccm_file": root
+        / "1_Inputs"
+        / "CRSPCompustat_CCM"
+        / "CRSPCompustat_CCM.parquet",
+        "compustat_file": root
+        / "1_Inputs"
+        / "comp_na_daily_all"
+        / "comp_na_daily_all.parquet",
     }
 
     # Output directory
@@ -177,7 +174,7 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
     try:
         import pyarrow.parquet as pq
 
-        logger.write(f"  Reading with PyArrow (aggregated by row group)...")
+        logger.write("  Reading with PyArrow (aggregated by row group)...")
 
         # Read only required columns
         cols = ["CUSIP", "FPEDATS", "FISCALP", "NUMEST", "MEANEST", "STDEV", "ACTUAL"]
@@ -190,7 +187,7 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
         logger.write(f"  Total IBES rows: {total_rows:,}")
 
         # Read in batches, aggregate within each batch, then combine
-        logger.write(f"  Reading and aggregating row groups...")
+        logger.write("  Reading and aggregating row groups...")
 
         all_chunks = []
         num_row_groups = parquet_file.num_row_groups
@@ -216,7 +213,9 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
             chunk["cusip8"] = chunk["CUSIP"].astype(str).str[:8]
 
             # Filter out invalid CUSIP8 values (placeholders)
-            chunk = chunk[~chunk["cusip8"].isin(["00000000", "nan", "NaN", "None"])].copy()
+            chunk = chunk[
+                ~chunk["cusip8"].isin(["00000000", "nan", "NaN", "None"])
+            ].copy()
 
             if len(chunk) == 0:
                 continue
@@ -230,21 +229,35 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
             chunk["fiscal_quarter"] = chunk["fpedats"].dt.quarter
 
             # Take the most recent forecast per CUSIP8-period (aggregate!)
-            chunk = chunk.sort_values(["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
-                                      ascending=[True, True, True, False])
-            chunk = chunk.drop_duplicates(subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first")
+            chunk = chunk.sort_values(
+                ["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
+                ascending=[True, True, True, False],
+            )
+            chunk = chunk.drop_duplicates(
+                subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first"
+            )
 
             # Select only columns we need
-            chunk_agg = chunk[[
-                "cusip8", "fiscal_year", "fiscal_quarter",
-                "dispersion", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
-            ]].copy()
+            chunk_agg = chunk[
+                [
+                    "cusip8",
+                    "fiscal_year",
+                    "fiscal_quarter",
+                    "dispersion",
+                    "NUMEST",
+                    "MEANEST",
+                    "STDEV",
+                    "ACTUAL",
+                ]
+            ].copy()
 
             all_chunks.append(chunk_agg)
 
             if (i + 1) % 5 == 0 or i == num_row_groups - 1:
                 kept = sum(len(c) for c in all_chunks)
-                logger.write(f"  Processed {i+1}/{num_row_groups} row groups, aggregated to {kept:,} unique CUSIP8-periods")
+                logger.write(
+                    f"  Processed {i + 1}/{num_row_groups} row groups, aggregated to {kept:,} unique CUSIP8-periods"
+                )
 
         # Concatenate aggregated chunks (much smaller now)
         if all_chunks:
@@ -270,7 +283,9 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
 
             # Extract CUSIP8 and filter invalid values
             chunk["cusip8"] = chunk["CUSIP"].astype(str).str[:8]
-            chunk = chunk[~chunk["cusip8"].isin(["00000000", "nan", "NaN", "None"])].copy()
+            chunk = chunk[
+                ~chunk["cusip8"].isin(["00000000", "nan", "NaN", "None"])
+            ].copy()
             if len(chunk) == 0:
                 continue
 
@@ -280,27 +295,50 @@ def load_ibes(ibes_file, logger, numest_min=3, meanest_min=0.05):
             chunk["fiscal_year"] = chunk["fpedats"].dt.year
             chunk["fiscal_quarter"] = chunk["fpedats"].dt.quarter
 
-            chunk = chunk.sort_values(["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
-                                      ascending=[True, True, True, False])
-            chunk = chunk.drop_duplicates(subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first")
+            chunk = chunk.sort_values(
+                ["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
+                ascending=[True, True, True, False],
+            )
+            chunk = chunk.drop_duplicates(
+                subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first"
+            )
 
-            chunks.append(chunk[[
-                "cusip8", "fiscal_year", "fiscal_quarter",
-                "dispersion", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
-            ]])
+            chunks.append(
+                chunk[
+                    [
+                        "cusip8",
+                        "fiscal_year",
+                        "fiscal_quarter",
+                        "dispersion",
+                        "NUMEST",
+                        "MEANEST",
+                        "STDEV",
+                        "ACTUAL",
+                    ]
+                ]
+            )
 
         if chunks:
             df = pd.concat(chunks, ignore_index=True)
             logger.write(f"  Loaded {len(df):,} unique CUSIP8-period observations")
         else:
-            df = pd.DataFrame(columns=[
-                "cusip8", "fiscal_year", "fiscal_quarter",
-                "dispersion", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
-            ])
+            df = pd.DataFrame(
+                columns=[
+                    "cusip8",
+                    "fiscal_year",
+                    "fiscal_quarter",
+                    "dispersion",
+                    "NUMEST",
+                    "MEANEST",
+                    "STDEV",
+                    "ACTUAL",
+                ]
+            )
 
     except Exception as e:
         logger.write(f"  Error reading IBES: {e}")
         import traceback
+
         logger.write(traceback.format_exc())
         raise
 
@@ -350,7 +388,9 @@ def load_linguistic_variables(linguistics_dir, logger):
     parquet_files = sorted(linguistics_dir.glob("linguistic_variables_*.parquet"))
 
     if not parquet_files:
-        raise FileNotFoundError(f"No linguistic_variables files found in {linguistics_dir}")
+        raise FileNotFoundError(
+            f"No linguistic_variables files found in {linguistics_dir}"
+        )
 
     dfs = []
     for pf in parquet_files:
@@ -364,11 +404,17 @@ def load_linguistic_variables(linguistics_dir, logger):
 
     # Key columns needed
     speech_cols = [
-        "file_name", "start_date", "gvkey",
-        "Manager_QA_Uncertainty_pct", "Manager_QA_Weak_Modal_pct",
-        "Manager_Pres_Uncertainty_pct", "Manager_Pres_Weak_Modal_pct",
-        "CEO_QA_Uncertainty_pct", "CEO_QA_Weak_Modal_pct",
-        "CEO_Pres_Uncertainty_pct", "CEO_Pres_Weak_Modal_pct",
+        "file_name",
+        "start_date",
+        "gvkey",
+        "Manager_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "Manager_Pres_Weak_Modal_pct",
+        "CEO_QA_Uncertainty_pct",
+        "CEO_QA_Weak_Modal_pct",
+        "CEO_Pres_Uncertainty_pct",
+        "CEO_Pres_Weak_Modal_pct",
     ]
 
     # Check which columns exist
@@ -429,9 +475,9 @@ def compute_analyst_dispersion(ibes_df, ccm_df, logger, numest_min=3, meanest_mi
 
     Forward-looking: Speech_t predicts Dispersion_{t+1}
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Processing Analyst Dispersion (H5 Dependent Variable)")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     # Data is already aggregated from load_ibes
     df = ibes_df.copy()
@@ -453,16 +499,32 @@ def compute_analyst_dispersion(ibes_df, ccm_df, logger, numest_min=3, meanest_mi
         df["fiscal_quarter"] = df["fpedats"].dt.quarter
 
         # Aggregate to CUSIP8-period
-        df = df.sort_values(["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
-                            ascending=[True, True, True, False])
-        df = df.drop_duplicates(subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first")
+        df = df.sort_values(
+            ["cusip8", "fiscal_year", "fiscal_quarter", "FPEDATS"],
+            ascending=[True, True, True, False],
+        )
+        df = df.drop_duplicates(
+            subset=["cusip8", "fiscal_year", "fiscal_quarter"], keep="first"
+        )
 
         # Select columns
-        df = df[["cusip8", "fiscal_year", "fiscal_quarter", "dispersion",
-                 "NUMEST", "MEANEST", "STDEV", "ACTUAL"]].copy()
+        df = df[
+            [
+                "cusip8",
+                "fiscal_year",
+                "fiscal_quarter",
+                "dispersion",
+                "NUMEST",
+                "MEANEST",
+                "STDEV",
+                "ACTUAL",
+            ]
+        ].copy()
     else:
         # Pre-aggregated data from load_ibes
-        logger.write(f"  Using pre-aggregated data: {len(df):,} unique CUSIP8-period observations")
+        logger.write(
+            f"  Using pre-aggregated data: {len(df):,} unique CUSIP8-period observations"
+        )
 
         # Verify required columns
         required = ["cusip8", "fiscal_year", "fiscal_quarter", "dispersion"]
@@ -477,24 +539,32 @@ def compute_analyst_dispersion(ibes_df, ccm_df, logger, numest_min=3, meanest_mi
     p99 = df["dispersion"].quantile(0.99)
     df["dispersion_winsorized"] = df["dispersion"].clip(lower=p1, upper=p99)
 
-    logger.write(f"\n  Dispersion statistics (before winsorization):")
+    logger.write("\n  Dispersion statistics (before winsorization):")
     logger.write(f"    Mean: {df['dispersion'].mean():.4f}")
     logger.write(f"    Std: {df['dispersion'].std():.4f}")
     logger.write(f"    Min: {df['dispersion'].min():.4f}")
     logger.write(f"    Max: {df['dispersion'].max():.4f}")
     logger.write(f"    P1: {p1:.4f}, P99: {p99:.4f}")
 
-    logger.write(f"\n  Dispersion statistics (after winsorization):")
+    logger.write("\n  Dispersion statistics (after winsorization):")
     logger.write(f"    Mean: {df['dispersion_winsorized'].mean():.4f}")
     logger.write(f"    Std: {df['dispersion_winsorized'].std():.4f}")
     logger.write(f"    Min: {df['dispersion_winsorized'].min():.4f}")
     logger.write(f"    Max: {df['dispersion_winsorized'].max():.4f}")
 
     # Create dataframe for merging
-    dispersion_df = df[[
-        "cusip8", "fiscal_year", "fiscal_quarter",
-        "dispersion_winsorized", "NUMEST", "MEANEST", "STDEV", "ACTUAL"
-    ]].rename(columns={"dispersion_winsorized": "dispersion"})
+    dispersion_df = df[
+        [
+            "cusip8",
+            "fiscal_year",
+            "fiscal_quarter",
+            "dispersion_winsorized",
+            "NUMEST",
+            "MEANEST",
+            "STDEV",
+            "ACTUAL",
+        ]
+    ].rename(columns={"dispersion_winsorized": "dispersion"})
 
     # Link to GVKEY using CCM
     if ccm_df is not None:
@@ -511,14 +581,12 @@ def compute_analyst_dispersion(ibes_df, ccm_df, logger, numest_min=3, meanest_mi
         # Create lookup: cusip8 -> gvkey (using LINKPRIM='P' for primary link)
         # LINKPRIM is a string: 'P'=Primary, 'C'=CompuSTAT, 'J'=Justification, 'N'=None
         ccm_primary = ccm[ccm["LINKPRIM"] == "P"].copy()
-        cusip_to_gvkey = ccm_primary.drop_duplicates(subset=["cusip8"], keep="first")[["cusip8", "gvkey"]]
+        cusip_to_gvkey = ccm_primary.drop_duplicates(subset=["cusip8"], keep="first")[
+            ["cusip8", "gvkey"]
+        ]
 
         # Merge
-        dispersion_df = dispersion_df.merge(
-            cusip_to_gvkey,
-            on="cusip8",
-            how="left"
-        )
+        dispersion_df = dispersion_df.merge(cusip_to_gvkey, on="cusip8", how="left")
 
         n_matched = dispersion_df["gvkey"].notna().sum()
         logger.write(f"  Matched {n_matched:,} observations to GVKEY")
@@ -539,9 +607,9 @@ def create_forward_looking_dispersion(dispersion_df, logger):
 
     Speech at quarter t predicts dispersion at quarter t+1.
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Creating Forward-Looking Dispersion Variables")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     # Filter to observations with valid GVKEY
     df = dispersion_df[dispersion_df["gvkey"].notna()].copy()
@@ -557,8 +625,12 @@ def create_forward_looking_dispersion(dispersion_df, logger):
     # Create dispersion_lead (next quarter) - shift(-1) gets next quarter
     df["dispersion_lead"] = df.groupby("gvkey")["dispersion"].shift(-1)
 
-    logger.write(f"\n  Observations with dispersion_lead (t+1): {df['dispersion_lead'].notna().sum():,}")
-    logger.write(f"  Observations without lead (last quarter for firm): {df['dispersion_lead'].isna().sum():,}")
+    logger.write(
+        f"\n  Observations with dispersion_lead (t+1): {df['dispersion_lead'].notna().sum():,}"
+    )
+    logger.write(
+        f"  Observations without lead (last quarter for firm): {df['dispersion_lead'].isna().sum():,}"
+    )
 
     # Compute persistence correlation
     valid = df[["prior_dispersion", "dispersion_lead"]].dropna()
@@ -581,9 +653,9 @@ def compute_earnings_surprise(dispersion_df, logger):
     This is determined BEFORE the earnings call (it's the announced results),
     so it's a confounding control, not a mediator.
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Computing Earnings Surprise")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     df = dispersion_df.copy()
 
@@ -595,7 +667,7 @@ def compute_earnings_surprise(dispersion_df, logger):
     p99 = df["earnings_surprise"].quantile(0.99)
     df["earnings_surprise"] = df["earnings_surprise"].clip(lower=p1, upper=p99)
 
-    logger.write(f"\n  Earnings surprise statistics:")
+    logger.write("\n  Earnings surprise statistics:")
     logger.write(f"    Mean: {df['earnings_surprise'].mean():.4f}")
     logger.write(f"    Std: {df['earnings_surprise'].std():.4f}")
     logger.write(f"    Min: {df['earnings_surprise'].min():.4f}")
@@ -615,9 +687,9 @@ def compute_loss_dummy(compustat_df, dispersion_df, logger):
 
     Merges from Compustat quarterly data.
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Computing Loss Dummy")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     # Filter Compustat to required columns
     comp = compustat_df[["gvkey", "fyearq", "fqtr", "niq"]].dropna().copy()
@@ -633,7 +705,9 @@ def compute_loss_dummy(compustat_df, dispersion_df, logger):
     loss_df = comp.drop_duplicates(subset=["gvkey", "fiscal_year", "fiscal_quarter"])
 
     logger.write(f"  Loss dummy observations: {len(loss_df):,}")
-    logger.write(f"  Loss firms: {loss_df['loss_dummy'].sum():,} ({loss_df['loss_dummy'].mean()*100:.1f}%)")
+    logger.write(
+        f"  Loss firms: {loss_df['loss_dummy'].sum():,} ({loss_df['loss_dummy'].mean() * 100:.1f}%)"
+    )
 
     return loss_df[["gvkey", "fiscal_year", "fiscal_quarter", "loss_dummy"]].copy()
 
@@ -649,9 +723,9 @@ def merge_speech_measures(speech_df, dispersion_df, logger):
 
     The start_date in linguistic variables needs to be matched to fiscal quarter.
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Merging Speech Measures")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     # Convert start_date to datetime
     speech = speech_df.copy()
@@ -666,26 +740,37 @@ def merge_speech_measures(speech_df, dispersion_df, logger):
     # For simplicity, we'll use calendar year
 
     # Get unique gvkey-year-quarter with speech measures (take mean if multiple)
-    speech_cols = [c for c in speech.columns if "pct" in c or c in ["gvkey", "fiscal_year", "fiscal_quarter"]]
+    speech_cols = [
+        c
+        for c in speech.columns
+        if "pct" in c or c in ["gvkey", "fiscal_year", "fiscal_quarter"]
+    ]
 
-    speech_agg = speech[speech_cols].groupby(["gvkey", "fiscal_year", "fiscal_quarter"]).mean().reset_index()
+    speech_agg = (
+        speech[speech_cols]
+        .groupby(["gvkey", "fiscal_year", "fiscal_quarter"])
+        .mean()
+        .reset_index()
+    )
 
     logger.write(f"  Speech observations: {len(speech_agg):,}")
 
     # Check which speech measures are available
     available_measures = [c for c in speech_agg.columns if "pct" in c]
     logger.write(f"  Available speech measures: {len(available_measures)}")
-    for m in ["Manager_QA_Uncertainty_pct", "Manager_QA_Weak_Modal_pct",
-              "Manager_Pres_Uncertainty_pct", "CEO_QA_Uncertainty_pct"]:
+    for m in [
+        "Manager_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct",
+    ]:
         if m in available_measures:
             non_null = speech_agg[m].notna().sum()
             logger.write(f"    {m}: {non_null:,} non-null")
 
     # Merge with dispersion data
     merged = dispersion_df.merge(
-        speech_agg,
-        on=["gvkey", "fiscal_year", "fiscal_quarter"],
-        how="left"
+        speech_agg, on=["gvkey", "fiscal_year", "fiscal_quarter"], how="left"
     )
 
     n_merged = merged[available_measures].notna().any(axis=1).sum()
@@ -702,17 +787,22 @@ def compute_uncertainty_gap(merged_df, logger):
     Gap > 0: Manager more uncertain in spontaneous speech (Q&A)
     Gap < 0: Manager more uncertain in prepared remarks (Presentation)
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Computing Uncertainty Gap (H5-B)")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     df = merged_df.copy()
 
     # Compute uncertainty gap
-    if "Manager_QA_Uncertainty_pct" in df.columns and "Manager_Pres_Uncertainty_pct" in df.columns:
-        df["uncertainty_gap"] = df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
+    if (
+        "Manager_QA_Uncertainty_pct" in df.columns
+        and "Manager_Pres_Uncertainty_pct" in df.columns
+    ):
+        df["uncertainty_gap"] = (
+            df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
+        )
 
-        logger.write(f"\n  Uncertainty gap statistics:")
+        logger.write("\n  Uncertainty gap statistics:")
         logger.write(f"    Mean: {df['uncertainty_gap'].mean():.4f}")
         logger.write(f"    Std: {df['uncertainty_gap'].std():.4f}")
         logger.write(f"    Min: {df['uncertainty_gap'].min():.4f}")
@@ -721,10 +811,16 @@ def compute_uncertainty_gap(merged_df, logger):
         # Percentage positive vs negative
         pos_gap = (df["uncertainty_gap"] > 0).sum()
         neg_gap = (df["uncertainty_gap"] < 0).sum()
-        logger.write(f"\n    Positive gap (more uncertain in Q&A): {pos_gap:,} ({pos_gap/df['uncertainty_gap'].notna().sum()*100:.1f}%)")
-        logger.write(f"    Negative gap (more uncertain in Pres): {neg_gap:,} ({neg_gap/df['uncertainty_gap'].notna().sum()*100:.1f}%)")
+        logger.write(
+            f"\n    Positive gap (more uncertain in Q&A): {pos_gap:,} ({pos_gap / df['uncertainty_gap'].notna().sum() * 100:.1f}%)"
+        )
+        logger.write(
+            f"    Negative gap (more uncertain in Pres): {neg_gap:,} ({neg_gap / df['uncertainty_gap'].notna().sum() * 100:.1f}%)"
+        )
     else:
-        logger.write("  Warning: Cannot compute uncertainty_gap - missing required columns")
+        logger.write(
+            "  Warning: Cannot compute uncertainty_gap - missing required columns"
+        )
         df["uncertainty_gap"] = np.nan
 
     return df
@@ -739,16 +835,20 @@ def merge_control_variables(merged_df, h1_df, h2_df, logger):
     """
     Merge control variables from H1 and H2 outputs.
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Merging Control Variables")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     df = merged_df.copy()
 
     # Merge H1 controls (firm_size, leverage)
     if h1_df is not None:
         h1_cols = ["gvkey", "fiscal_year"]
-        available_h1 = [c for c in h1_df.columns if c in ["firm_size", "leverage", "tobins_q", "roa", "capex_at"]]
+        available_h1 = [
+            c
+            for c in h1_df.columns
+            if c in ["firm_size", "leverage", "tobins_q", "roa", "capex_at"]
+        ]
         h1_merge = h1_df[h1_cols + available_h1].drop_duplicates()
 
         df = df.merge(h1_merge, on=["gvkey", "fiscal_year"], how="left")
@@ -757,7 +857,11 @@ def merge_control_variables(merged_df, h1_df, h2_df, logger):
     # Merge H2 controls (earnings_volatility, tobins_q if not in H1)
     if h2_df is not None:
         h2_cols = ["gvkey", "fiscal_year"]
-        available_h2 = [c for c in h2_df.columns if c in ["earnings_volatility", "tobins_q", "cf_volatility"]]
+        available_h2 = [
+            c
+            for c in h2_df.columns
+            if c in ["earnings_volatility", "tobins_q", "cf_volatility"]
+        ]
         h2_merge = h2_df[h2_cols + available_h2].drop_duplicates()
 
         df = df.merge(h2_merge, on=["gvkey", "fiscal_year"], how="left")
@@ -786,24 +890,31 @@ def prepare_final_dataset(df, logger):
         - firm_size, leverage, tobins_q, earnings_volatility
         - All 6 speech uncertainty measures
     """
-    logger.write("\n" + "="*80)
+    logger.write("\n" + "=" * 80)
     logger.write("Preparing Final H5 Analysis Dataset")
-    logger.write("="*80)
+    logger.write("=" * 80)
 
     # Define required columns
     id_cols = ["gvkey", "fiscal_year", "fiscal_quarter"]
     dv_cols = ["dispersion_lead", "prior_dispersion"]
     control_cols = [
-        "earnings_surprise", "loss_dummy",
-        "firm_size", "leverage", "tobins_q", "earnings_volatility"
+        "earnings_surprise",
+        "loss_dummy",
+        "firm_size",
+        "leverage",
+        "tobins_q",
+        "earnings_volatility",
     ]
 
     # Speech measures - all uncertainty-related
     speech_measure_cols = [
-        "Manager_QA_Uncertainty_pct", "Manager_QA_Weak_Modal_pct",
-        "Manager_Pres_Uncertainty_pct", "Manager_Pres_Weak_Modal_pct",
-        "CEO_QA_Uncertainty_pct", "CEO_QA_Weak_Modal_pct",
-        "uncertainty_gap"
+        "Manager_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "Manager_Pres_Weak_Modal_pct",
+        "CEO_QA_Uncertainty_pct",
+        "CEO_QA_Weak_Modal_pct",
+        "uncertainty_gap",
     ]
 
     # Get analyst coverage from NUMEST (log transform)
@@ -830,12 +941,14 @@ def prepare_final_dataset(df, logger):
     logger.write(f"  Average quarters per firm: {avg_quarters:.1f}")
 
     # Check missing data for key variables
-    logger.write(f"\n  Missing data analysis:")
+    logger.write("\n  Missing data analysis:")
     for col in dv_cols + control_cols[:4]:
         if col in df_final.columns:
             n_missing = df_final[col].isna().sum()
             n_total = len(df_final)
-            logger.write(f"    {col}: {n_missing:,} missing ({n_missing/n_total*100:.1f}%)")
+            logger.write(
+                f"    {col}: {n_missing:,} missing ({n_missing / n_total * 100:.1f}%)"
+            )
 
     # Select output columns
     available_cols = [c for c in output_cols if c in df_final.columns]
@@ -869,24 +982,24 @@ Examples:
   python 3.5_H5Variables.py              # Run with default settings
   python 3.5_H5Variables.py --dry-run    # Validate inputs without processing
   python 3.5_H5Variables.py --numest-min 2  # Use NUMEST >= 2 instead of 3
-        """
+        """,
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Validate inputs and print planned operations without processing"
+        help="Validate inputs and print planned operations without processing",
     )
     parser.add_argument(
         "--numest-min",
         type=int,
         default=3,
-        help="Minimum NUMEST threshold (default: 3)"
+        help="Minimum NUMEST threshold (default: 3)",
     )
     parser.add_argument(
         "--meanest-min",
         type=float,
         default=0.05,
-        help="Minimum |MEANEST| threshold (default: 0.05)"
+        help="Minimum |MEANEST| threshold (default: 0.05)",
     )
     args = parser.parse_args()
 
@@ -909,9 +1022,9 @@ Examples:
     logger.write(f"Python version: {sys.version}")
 
     if args.dry_run:
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("DRY RUN MODE - Validating inputs only")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
     # Stats collection
     stats = {
@@ -929,9 +1042,9 @@ Examples:
 
     try:
         # Step 1: Load inputs
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("STEP 1: Loading Input Data")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
         manifest = load_manifest(paths["manifest_dir"], logger)
         stats["input_files"]["manifest"] = {
@@ -939,9 +1052,12 @@ Examples:
             "rows": len(manifest),
         }
 
-        ibes_df, ibes_checksum = load_ibes(paths["ibes_file"], logger,
-                                            numest_min=args.numest_min,
-                                            meanest_min=args.meanest_min)
+        ibes_df, ibes_checksum = load_ibes(
+            paths["ibes_file"],
+            logger,
+            numest_min=args.numest_min,
+            meanest_min=args.meanest_min,
+        )
         stats["input_files"]["ibes"] = {
             "path": str(paths["ibes_file"]),
             "rows": len(ibes_df),
@@ -984,9 +1100,9 @@ Examples:
         }
 
         if args.dry_run:
-            logger.write("\n" + "="*80)
+            logger.write("\n" + "=" * 80)
             logger.write("DRY RUN COMPLETE - All inputs validated successfully")
-            logger.write("="*80)
+            logger.write("=" * 80)
             logger.write("\nPlanned operations:")
             logger.write("  1. Compute analyst dispersion with filters:")
             logger.write(f"     - NUMEST >= {args.numest_min}")
@@ -994,19 +1110,25 @@ Examples:
             logger.write("  2. Winsorize dispersion at 1%/99%")
             logger.write("  3. Link IBES to GVKEY via CCM")
             logger.write("  4. Create forward-looking dispersion_lead (t+1)")
-            logger.write("  5. Compute earnings_surprise = |ACTUAL - MEANEST| / |MEANEST|")
+            logger.write(
+                "  5. Compute earnings_surprise = |ACTUAL - MEANEST| / |MEANEST|"
+            )
             logger.write("  6. Compute loss_dummy from Compustat")
             logger.write("  7. Merge speech measures from linguistic variables")
-            logger.write("  8. Compute uncertainty_gap = QA_Uncertainty - Pres_Uncertainty")
+            logger.write(
+                "  8. Compute uncertainty_gap = QA_Uncertainty - Pres_Uncertainty"
+            )
             logger.write("  9. Merge control variables from H1/H2")
             logger.write("  10. Output H5_AnalystDispersion.parquet")
             return 0
 
         # Step 2: Compute analyst dispersion
         dispersion_df = compute_analyst_dispersion(
-            ibes_df, ccm_df, logger,
+            ibes_df,
+            ccm_df,
+            logger,
             numest_min=args.numest_min,
-            meanest_min=args.meanest_min
+            meanest_min=args.meanest_min,
         )
         stats["processing_steps"]["analyst_dispersion"] = {
             "rows": len(dispersion_df),
@@ -1023,23 +1145,33 @@ Examples:
         loss_df = compute_loss_dummy(compustat_df, forward_df, logger)
 
         # Step 6: Merge all components
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("Merging All Variables")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
         # Start with forward dispersion
-        merged = forward_df[[
-            "gvkey", "fiscal_year", "fiscal_quarter",
-            "dispersion", "prior_dispersion", "dispersion_lead",
-            "NUMEST"
-        ]].copy()
+        merged = forward_df[
+            [
+                "gvkey",
+                "fiscal_year",
+                "fiscal_quarter",
+                "dispersion",
+                "prior_dispersion",
+                "dispersion_lead",
+                "NUMEST",
+            ]
+        ].copy()
 
         # Merge earnings surprise
-        merged = merged.merge(surprise_df, on=["gvkey", "fiscal_year", "fiscal_quarter"], how="left")
+        merged = merged.merge(
+            surprise_df, on=["gvkey", "fiscal_year", "fiscal_quarter"], how="left"
+        )
         logger.write(f"  After merging earnings_surprise: {len(merged):,}")
 
         # Merge loss dummy
-        merged = merged.merge(loss_df, on=["gvkey", "fiscal_year", "fiscal_quarter"], how="left")
+        merged = merged.merge(
+            loss_df, on=["gvkey", "fiscal_year", "fiscal_quarter"], how="left"
+        )
         logger.write(f"  After merging loss_dummy: {len(merged):,}")
 
         # Step 7: Merge speech measures
@@ -1063,9 +1195,9 @@ Examples:
         logger.write(f"  File size: {output_file.stat().st_size / 1024 / 1024:.1f} MB")
 
         # Compute variable statistics for stats.json
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("Computing Variable Statistics")
-        logger.write("="*80)
+        logger.write("=" * 80)
 
         var_stats = {}
         for col in final_df.columns:
@@ -1092,17 +1224,28 @@ Examples:
         stats["output_stats"]["variables"] = var_stats
         stats["output_stats"]["sample"] = {
             "n_total": int(len(final_df)),
-            "n_firms": int(final_df["gvkey"].nunique()) if "gvkey" in final_df.columns else 0,
-            "n_quarters": int(final_df["fiscal_quarter"].nunique()) if "fiscal_quarter" in final_df.columns else 0,
-            "years": [int(y) for y in sorted(final_df["fiscal_year"].unique())] if "fiscal_year" in final_df.columns else [],
+            "n_firms": int(final_df["gvkey"].nunique())
+            if "gvkey" in final_df.columns
+            else 0,
+            "n_quarters": int(final_df["fiscal_quarter"].nunique())
+            if "fiscal_quarter" in final_df.columns
+            else 0,
+            "years": [int(y) for y in sorted(final_df["fiscal_year"].unique())]
+            if "fiscal_year" in final_df.columns
+            else [],
         }
 
         # Compute dispersion persistence
-        if "dispersion_lead" in final_df.columns and "prior_dispersion" in final_df.columns:
+        if (
+            "dispersion_lead" in final_df.columns
+            and "prior_dispersion" in final_df.columns
+        ):
             valid = final_df[["dispersion_lead", "prior_dispersion"]].dropna()
             if len(valid) > 1:
                 persistence = valid["dispersion_lead"].corr(valid["prior_dispersion"])
-                stats["output_stats"]["sample"]["dispersion_persistence"] = float(persistence)
+                stats["output_stats"]["sample"]["dispersion_persistence"] = float(
+                    persistence
+                )
 
         # Save stats.json
         stats_file = paths["output_dir"] / "stats.json"
@@ -1124,9 +1267,9 @@ Examples:
         logger.write(f"\nSaved stats to: {stats_file}")
 
         # Final summary
-        logger.write("\n" + "="*80)
+        logger.write("\n" + "=" * 80)
         logger.write("EXECUTION COMPLETE")
-        logger.write("="*80)
+        logger.write("=" * 80)
         logger.write(f"Output file: {output_file}")
         logger.write(f"Final sample: {len(final_df):,} observations")
         logger.write(f"Unique firms: {final_df['gvkey'].nunique():,}")
@@ -1144,6 +1287,7 @@ Examples:
     except Exception as e:
         logger.write(f"\nERROR: {e}")
         import traceback
+
         logger.write(traceback.format_exc())
         stats["status"] = "failed"
         stats["error"] = str(e)

@@ -41,13 +41,13 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
 import argparse
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 # Add parent directory to path for shared module imports
 script_dir = Path(__file__).parent.parent
@@ -62,42 +62,31 @@ except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
-from shared.regression_utils import run_fixed_effects_ols
-from shared.reporting_utils import (
-    generate_regression_report,
-    save_model_diagnostics,
-    save_variable_reference,
-)
 
 try:
     from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
         OutputResolutionError,
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
     )
 except ImportError:
     import sys as _sys
-    from pathlib import Path as _Path
 
     _script_dir = Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
     from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
         OutputResolutionError,
+        get_latest_output_dir,
     )
 
+import warnings
+
 from shared.regression_validation import (
-    validate_regression_data,
     validate_columns,
     validate_sample_size,
 )
-
-import warnings
 
 try:
     import statsmodels.api as sm
@@ -112,16 +101,10 @@ except ImportError as e:
     LINEARMODELS_AVAILABLE = False
 
 from shared.observability_utils import (
-    compute_file_checksum,
+    DualWriter,
     print_stat,
-    analyze_missing_values,
     print_stats_summary,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
-    detect_anomalies_iqr,
-    DualWriter,
 )
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -421,9 +404,9 @@ def run_first_stage(df, out_dir):
             output_lines.append(f"  F-statistic: {f_stat:.2f}")
 
             if f_stat >= 10:
-                output_lines.append(f"  [OK] Strong instrument (F >= 10)")
+                output_lines.append("  [OK] Strong instrument (F >= 10)")
             else:
-                output_lines.append(f"  [WEAK] Weak instrument (F < 10)")
+                output_lines.append("  [WEAK] Weak instrument (F < 10)")
 
             results.append(
                 {
@@ -448,7 +431,7 @@ def run_first_stage(df, out_dir):
 
     with open(out_dir / "first_stage_results.txt", "w") as f:
         f.write("\n".join(output_lines))
-    print(f"  Saved: first_stage_results.txt")
+    print("  Saved: first_stage_results.txt")
 
     return results
 
@@ -695,7 +678,7 @@ def main():
             print(f"\n  --- {dep_var} ---")
 
             # Regime model
-            print(f"    Regime OLS...")
+            print("    Regime OLS...")
             res = run_ols_regression(
                 df_sample,
                 dep_var,
@@ -710,7 +693,7 @@ def main():
                 res["Type"] = "Regime"
                 all_results.append(res)
 
-            print(f"    Regime IV...")
+            print("    Regime IV...")
             res = run_iv_regression(
                 df_sample,
                 dep_var,
@@ -726,7 +709,7 @@ def main():
                 all_results.append(res)
 
             # CEO model
-            print(f"    CEO OLS...")
+            print("    CEO OLS...")
             res = run_ols_regression(
                 df_sample,
                 dep_var,
@@ -741,7 +724,7 @@ def main():
                 res["Type"] = "CEO"
                 all_results.append(res)
 
-            print(f"    CEO IV...")
+            print("    CEO IV...")
             res = run_iv_regression(
                 df_sample,
                 dep_var,
@@ -759,7 +742,7 @@ def main():
     if all_results:
         diag_df = pd.DataFrame(all_results)
         diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
-        print(f"\n  Saved: model_diagnostics.csv")
+        print("\n  Saved: model_diagnostics.csv")
 
         # Capture regression stats
         stats["regressions"]["first_stage"] = len(first_stage_results)
@@ -795,8 +778,7 @@ def main():
 
     with open(out_dir / "report_step4_2.md", "w") as f:
         f.write("\n".join(report_lines))
-    print(f"  Saved: report_step4_2.md")
-
+    print("  Saved: report_step4_2.md")
 
     duration = (datetime.now() - start_time).total_seconds()
     print("\n" + "=" * 80)

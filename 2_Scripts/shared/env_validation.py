@@ -17,8 +17,7 @@ Source: Python os.environ documentation
 
 import os
 import sys
-from typing import Dict, Any, Optional
-
+from typing import Any, Dict
 
 # Define environment variable schema for future use
 ENV_SCHEMA = {

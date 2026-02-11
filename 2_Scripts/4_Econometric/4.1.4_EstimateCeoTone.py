@@ -28,17 +28,13 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import warnings
-import hashlib
-import json
-import time
 import argparse
+import sys
+import warnings
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 # Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
 scripts_dir = Path(__file__).parent.parent
@@ -59,27 +55,21 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 # Import shared path validation utilities
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-    validate_input_file,
-    get_latest_output_dir,
-    OutputResolutionError,
-)
-
-from shared.regression_validation import (
-    validate_regression_data,
-    validate_columns,
-    validate_sample_size,
-)
 from shared.observability_utils import (
     DualWriter,
-    compute_file_checksum,
     analyze_missing_values,
+    compute_file_checksum,
     print_stats_summary,
     save_stats,
 )
-
+from shared.path_utils import (
+    OutputResolutionError,
+    get_latest_output_dir,
+)
+from shared.regression_validation import (
+    validate_columns,
+    validate_sample_size,
+)
 
 # ==============================================================================
 # CLI Arguments & Prerequisites
@@ -395,12 +385,12 @@ def run_regression(df_sample, model_name, model_spec, sample_name):
     formula = f"{dep_var} ~ C(ceo_id) + " + " + ".join(controls) + " + C(year)"
 
     # Validate regression data before estimation
-    print(f"    Validating regression data...")
+    print("    Validating regression data...")
     try:
         required_columns = [dep_var] + controls + ["ceo_id", "year"]
         validate_columns(df_reg, required_columns)
         validate_sample_size(df_reg, min_observations=100)
-        print(f"    Validation passed")
+        print("    Validation passed")
     except ValueError as e:
         print(f"ERROR: Validation failed: {e}", file=sys.stderr)
         print(f"  Variable: {dep_var}", file=sys.stderr)
@@ -577,7 +567,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
         diag_df = pd.DataFrame(all_diagnostics)
         diag_path = out_dir / "model_diagnostics.csv"
         diag_df.to_csv(diag_path, index=False)
-        print(f"  Saved: model_diagnostics.csv")
+        print("  Saved: model_diagnostics.csv")
 
     return ceo_scores_df
 
@@ -624,7 +614,7 @@ def generate_report(all_diagnostics, out_dir, duration):
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: report_step4_1_4.md")
+    print("  Saved: report_step4_1_4.md")
 
 
 # ==============================================================================
@@ -661,6 +651,15 @@ def main(year_start=None, year_end=None):
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
     print(f"Years: {CONFIG['year_start']}-{CONFIG['year_end']}")
+
+    # Initialize stats dict for observability
+    stats = {
+        "step_id": "4.1.4_EstimateCeoTone",
+        "timestamp": timestamp,
+        "timing": {"start_iso": start_time.isoformat(), "end_iso": "", "duration_seconds": 0},
+        "missing_values": {},
+        "regressions": {},
+    }
 
     # Load data
     df = load_all_data(root, CONFIG["year_start"], CONFIG["year_end"])
@@ -725,7 +724,7 @@ def main(year_start=None, year_end=None):
 
     # Save outputs
     if all_ceo_scores:
-        save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats)
+        save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir)
 
         # Generate report
         duration = (datetime.now() - start_time).total_seconds()

@@ -28,12 +28,12 @@ Outputs:
 ==============================================================================
 """
 
-import sys
-from pathlib import Path
-from datetime import datetime
-import pandas as pd
-import numpy as np
 import argparse
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 # Add parent directory to path for shared module imports
 script_dir = Path(__file__).parent.parent
@@ -49,47 +49,40 @@ except ImportError:
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
 # Import shared regression and reporting utilities
-from shared.regression_utils import run_fixed_effects_ols
-from shared.reporting_utils import (
-    generate_regression_report,
-    save_model_diagnostics,
-    save_variable_reference,
-)
 
 # Import shared path validation utilities
 try:
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-        OutputResolutionError,
+    from shared.observability_utils import (
+        DualWriter,
+        print_stat,
+        print_stats_summary,
+        save_stats,
     )
-    from shared.observability_utils import DualWriter
+    from shared.path_utils import (
+        OutputResolutionError,
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
+    )
 except ImportError:
     import sys as _sys
-    from pathlib import Path as _Path
 
     _script_dir = Path(__file__).parent.parent
     _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        validate_output_path,
-        ensure_output_dir,
-        validate_input_file,
-        get_latest_output_dir,
-        OutputResolutionError,
+    from shared.observability_utils import (
+        DualWriter,
+        print_stat,
+        print_stats_summary,
+        save_stats,
     )
-    from shared.observability_utils import DualWriter
+    from shared.path_utils import (
+        OutputResolutionError,
+        get_latest_output_dir,
+    )
 
-from shared.regression_validation import (
-    validate_columns,
-    validate_sample_size,
-)
 
-from lifelines import CoxPHFitter
 import warnings
-import hashlib
-import json
 
 warnings.filterwarnings("ignore")
 
@@ -115,6 +108,37 @@ CONFIG = {
 
 # Global ROOT will be set in main()
 ROOT = None
+
+
+# ==============================================================================
+# Survival Analysis Functions (Stubs - V1 legacy code)
+# ==============================================================================
+
+
+def run_cox_ph(df, time_col, event_col, formula):
+    """
+    Run Cox Proportional Hazards model.
+
+    NOTE: This is a stub function for V1 legacy code.
+    The full implementation requires lifelines or statsmodels survival.
+    """
+    raise NotImplementedError(
+        "run_cox_ph: Cox PH model not implemented. "
+        "Install lifelines (pip install lifelines) and implement using lifelines.CoxPHFitter"
+    )
+
+
+def run_fine_gray(df, time_col, event_col, formula):
+    """
+    Run Fine-Gray competing risks model.
+
+    NOTE: This is a stub function for V1 legacy code.
+    The full implementation requires lifelines or statsmodels survival.
+    """
+    raise NotImplementedError(
+        "run_fine_gray: Fine-Gray model not implemented. "
+        "Install lifelines (pip install lifelines) and implement using lifelines.FineGrayAFTFitter"
+    )
 
 
 def load_data():
@@ -514,7 +538,7 @@ def main():
     if results:
         results_df = pd.DataFrame(results)
         results_df.to_csv(out_dir / "hazard_ratios.csv", index=False)
-        print(f"  Saved: hazard_ratios.csv")
+        print("  Saved: hazard_ratios.csv")
 
         # Capture survival model stats
         stats["survival_models"]["cox_ph_all"] = len(
@@ -537,7 +561,7 @@ def main():
         "Pct_Takeover": df_main["Takeover"].mean() * 100,
     }
     pd.DataFrame([summary]).to_csv(out_dir / "takeover_event_summary.csv", index=False)
-    print(f"  Saved: takeover_event_summary.csv")
+    print("  Saved: takeover_event_summary.csv")
 
     # Summary
     end_time = datetime.now()

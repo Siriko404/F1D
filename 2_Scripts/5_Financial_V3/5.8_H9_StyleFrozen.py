@@ -37,34 +37,33 @@ Deterministic: true
 ================================================================================
 """
 
-import sys
 import argparse
-from pathlib import Path
-from datetime import datetime
-import json
 import gc
-
-import pandas as pd
-import numpy as np
-import sys
 import io
+import json
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 # Ensure UTF-8 output for Windows
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "shared"))
 
+from chunked_reader import read_selected_columns
 from path_utils import (
-    get_latest_output_dir,
-    ensure_output_dir,
-    validate_input_file,
+    OutputResolutionError,
     PathValidationError,
-    OutputResolutionError
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
-from chunked_reader import read_selected_columns, read_in_chunks
 
 
 def load_ceo_clarity(base_path: Path) -> pd.DataFrame:
@@ -85,7 +84,7 @@ def load_ceo_clarity(base_path: Path) -> pd.DataFrame:
     try:
         ceo_dir = get_latest_output_dir(
             base_path / "4_Outputs" / "4.1.1_CeoClarity_CEO_Only",
-            required_file="ceo_clarity_scores.parquet"
+            required_file="ceo_clarity_scores.parquet",
         )
         print(f"[OK] Found CEO Clarity directory: {ceo_dir}")
 
@@ -94,13 +93,23 @@ def load_ceo_clarity(base_path: Path) -> pd.DataFrame:
         print(f"[OK] Loaded CEO Clarity scores: {len(df):,} CEOs")
 
         # Verify expected columns
-        expected_cols = ['ceo_id', 'gamma_i', 'ClarityCEO_raw', 'ClarityCEO',
-                        'n_calls', 'ceo_name', 'first_call_date', 'last_call_date']
+        expected_cols = [
+            "ceo_id",
+            "gamma_i",
+            "ClarityCEO_raw",
+            "ClarityCEO",
+            "n_calls",
+            "ceo_name",
+            "first_call_date",
+            "last_call_date",
+        ]
         missing_cols = set(expected_cols) - set(df.columns)
         if missing_cols:
             raise ValueError(f"Missing columns in CEO Clarity data: {missing_cols}")
 
-        print(f"  - ClarityCEO range: [{df['ClarityCEO'].min():.3f}, {df['ClarityCEO'].max():.3f}]")
+        print(
+            f"  - ClarityCEO range: [{df['ClarityCEO'].min():.3f}, {df['ClarityCEO'].max():.3f}]"
+        )
         print(f"  - Mean ClarityCEO: {df['ClarityCEO'].mean():.3f} (should be ~0)")
         print(f"  - Std ClarityCEO: {df['ClarityCEO'].std():.3f} (should be ~1)")
 
@@ -128,7 +137,7 @@ def load_manifest_calls(base_path: Path) -> pd.DataFrame:
     try:
         manifest_dir = get_latest_output_dir(
             base_path / "4_Outputs" / "1.4_AssembleManifest",
-            required_file="master_sample_manifest.parquet"
+            required_file="master_sample_manifest.parquet",
         )
         print(f"[OK] Found manifest directory: {manifest_dir}")
 
@@ -137,13 +146,13 @@ def load_manifest_calls(base_path: Path) -> pd.DataFrame:
         print(f"[OK] Loaded manifest: {len(df):,} calls")
 
         # Verify required columns
-        required_cols = ['file_name', 'gvkey', 'start_date', 'ceo_id', 'ceo_name']
+        required_cols = ["file_name", "gvkey", "start_date", "ceo_id", "ceo_name"]
         missing_cols = set(required_cols) - set(df.columns)
         if missing_cols:
             raise ValueError(f"Missing columns in manifest: {missing_cols}")
 
         # Ensure start_date is datetime
-        df['start_date'] = pd.to_datetime(df['start_date'])
+        df["start_date"] = pd.to_datetime(df["start_date"])
 
         print(f"  - Date range: {df['start_date'].min()} to {df['start_date'].max()}")
         print(f"  - Unique firms: {df['gvkey'].nunique():,}")
@@ -176,7 +185,9 @@ def load_compustat_dates(base_path: Path) -> pd.DataFrame:
     print("LOADING COMPUSTAT FISCAL YEAR-END DATES (Memory-Efficient)")
     print("=" * 80)
 
-    file_path = base_path / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
+    file_path = (
+        base_path / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
+    )
 
     try:
         validate_input_file(file_path)
@@ -184,30 +195,30 @@ def load_compustat_dates(base_path: Path) -> pd.DataFrame:
         # Load only required columns first (memory-efficient)
         # Note: Compustat file uses 'fyearq' for fiscal year
         print("[INFO] Loading only required columns: gvkey, datadate, fyearq")
-        df = read_selected_columns(file_path, ['gvkey', 'datadate', 'fyearq'])
+        df = read_selected_columns(file_path, ["gvkey", "datadate", "fyearq"])
         print(f"[OK] Loaded Compustat: {len(df):,} observations")
 
         # Rename fyearq to fyear for consistency
-        df = df.rename(columns={'fyearq': 'fyear'})
+        df = df.rename(columns={"fyearq": "fyear"})
 
         # Force garbage collection after loading
         gc.collect()
 
         # Filter by numeric fyear FIRST (cheaper operation)
-        df = df.dropna(subset=['fyear'])
-        df = df[(df['fyear'] >= 2002) & (df['fyear'] <= 2018)]
+        df = df.dropna(subset=["fyear"])
+        df = df[(df["fyear"] >= 2002) & (df["fyear"] <= 2018)]
         print(f"[OK] Filtered to 2002-2018: {len(df):,} observations")
 
         # Drop rows with missing datadate
-        df = df.dropna(subset=['datadate'])
+        df = df.dropna(subset=["datadate"])
 
         # Convert datadate to datetime AFTER filtering (reduces conversions)
-        df['datadate'] = pd.to_datetime(df['datadate'], errors='coerce')
-        df = df.dropna(subset=['datadate'])
+        df["datadate"] = pd.to_datetime(df["datadate"], errors="coerce")
+        df = df.dropna(subset=["datadate"])
 
         # Deduplicate by (gvkey, fyear) keeping latest datadate
-        df = df.sort_values('datadate').drop_duplicates(
-            subset=['gvkey', 'fyear'], keep='last'
+        df = df.sort_values("datadate").drop_duplicates(
+            subset=["gvkey", "fyear"], keep="last"
         )
 
         gc.collect()
@@ -238,14 +249,14 @@ def build_fy_grid(compustat: pd.DataFrame) -> pd.DataFrame:
     print("=" * 80)
 
     # Create fy_end (fiscal year-end date)
-    fy_grid = compustat[['gvkey', 'fyear', 'datadate']].copy()
-    fy_grid = fy_grid.rename(columns={'datadate': 'fy_end'})
+    fy_grid = compustat[["gvkey", "fyear", "datadate"]].copy()
+    fy_grid = fy_grid.rename(columns={"datadate": "fy_end"})
     fy_grid = fy_grid.drop_duplicates()
 
     # Ensure one row per (gvkey, fyear)
     # If duplicates exist (rare), keep the one with latest datadate
-    fy_grid = fy_grid.sort_values('fy_end').drop_duplicates(
-        subset=['gvkey', 'fyear'], keep='last'
+    fy_grid = fy_grid.sort_values("fy_end").drop_duplicates(
+        subset=["gvkey", "fyear"], keep="last"
     )
 
     print(f"[OK] Built fiscal year grid: {len(fy_grid):,} firm-years")
@@ -259,7 +270,7 @@ def assign_ceo_to_fy(
     manifest: pd.DataFrame,
     ceo_clarity: pd.DataFrame,
     min_calls_fy: int = 1,
-    min_calls_total: int = 5
+    min_calls_total: int = 5,
 ) -> pd.DataFrame:
     """
     Assign CEOs to firm-years using frozen constraint.
@@ -286,22 +297,24 @@ def assign_ceo_to_fy(
     print("=" * 80)
 
     # Filter manifest to CEOs with sufficient calls
-    valid_ceos = ceo_clarity[ceo_clarity['n_calls'] >= min_calls_total]['ceo_id']
-    manifest_filtered = manifest[manifest['ceo_id'].isin(valid_ceos)].copy()
-    print(f"[OK] Filtered to CEOs with >= {min_calls_total} total calls: {len(manifest_filtered):,} calls")
+    valid_ceos = ceo_clarity[ceo_clarity["n_calls"] >= min_calls_total]["ceo_id"]
+    manifest_filtered = manifest[manifest["ceo_id"].isin(valid_ceos)].copy()
+    print(
+        f"[OK] Filtered to CEOs with >= {min_calls_total} total calls: {len(manifest_filtered):,} calls"
+    )
 
     # Only keep columns needed for merge
-    manifest_filtered = manifest_filtered[['file_name', 'gvkey', 'start_date', 'ceo_id', 'ceo_name']]
+    manifest_filtered = manifest_filtered[
+        ["file_name", "gvkey", "start_date", "ceo_id", "ceo_name"]
+    ]
     gc.collect()
 
     # Join manifest to fiscal year grid
     # For each firm-year, we need to know which calls occurred <= fy_end
-    fy_grid_expanded = fy_grid.merge(
-        manifest_filtered,
-        on='gvkey',
-        how='inner'
+    fy_grid_expanded = fy_grid.merge(manifest_filtered, on="gvkey", how="inner")
+    print(
+        f"[OK] Joined manifest to FY grid: {len(fy_grid_expanded):,} call-FY combinations"
     )
-    print(f"[OK] Joined manifest to FY grid: {len(fy_grid_expanded):,} call-FY combinations")
 
     # Free memory: no longer need manifest_filtered
     del manifest_filtered
@@ -309,36 +322,43 @@ def assign_ceo_to_fy(
 
     # Apply frozen constraint: keep only calls where start_date <= fy_end
     fy_grid_expanded = fy_grid_expanded[
-        fy_grid_expanded['start_date'] <= fy_grid_expanded['fy_end']
+        fy_grid_expanded["start_date"] <= fy_grid_expanded["fy_end"]
     ]
-    print(f"[OK] Applied frozen constraint (start_date <= fy_end): {len(fy_grid_expanded):,} combinations")
+    print(
+        f"[OK] Applied frozen constraint (start_date <= fy_end): {len(fy_grid_expanded):,} combinations"
+    )
 
     # Count calls per (gvkey, fyear, ceo_id)
-    ceo_calls_per_fy = fy_grid_expanded.groupby(
-        ['gvkey', 'fyear', 'ceo_id', 'ceo_name']
-    ).size().reset_index(name='n_calls_fy')
+    ceo_calls_per_fy = (
+        fy_grid_expanded.groupby(["gvkey", "fyear", "ceo_id", "ceo_name"])
+        .size()
+        .reset_index(name="n_calls_fy")
+    )
 
-    print(f"[OK] Counted calls per CEO-FY: {len(ceo_calls_per_fy):,} unique CEO-FY combinations")
+    print(
+        f"[OK] Counted calls per CEO-FY: {len(ceo_calls_per_fy):,} unique CEO-FY combinations"
+    )
 
     # Select CEO with max calls for each (gvkey, fyear)
     # Sort by n_calls_fy descending, then select first per group
-    ceo_calls_per_fy = ceo_calls_per_fy.sort_values('n_calls_fy', ascending=False)
+    ceo_calls_per_fy = ceo_calls_per_fy.sort_values("n_calls_fy", ascending=False)
 
     # Get first_call_date for tiebreaker
-    ceo_first_call = ceo_clarity[['ceo_id', 'first_call_date']].copy()
+    ceo_first_call = ceo_clarity[["ceo_id", "first_call_date"]].copy()
 
     # Merge to get first_call_date
-    ceo_calls_per_fy = ceo_calls_per_fy.merge(ceo_first_call, on='ceo_id', how='left')
-    ceo_calls_per_fy['first_call_date'] = pd.to_datetime(ceo_calls_per_fy['first_call_date'])
+    ceo_calls_per_fy = ceo_calls_per_fy.merge(ceo_first_call, on="ceo_id", how="left")
+    ceo_calls_per_fy["first_call_date"] = pd.to_datetime(
+        ceo_calls_per_fy["first_call_date"]
+    )
 
     # Sort by n_calls_fy (desc), then first_call_date (asc) for tiebreaker
     ceo_calls_per_fy = ceo_calls_per_fy.sort_values(
-        ['n_calls_fy', 'first_call_date'],
-        ascending=[False, True]
+        ["n_calls_fy", "first_call_date"], ascending=[False, True]
     )
 
     # Select first CEO per (gvkey, fyear)
-    dominant_ceo = ceo_calls_per_fy.groupby(['gvkey', 'fyear']).first().reset_index()
+    dominant_ceo = ceo_calls_per_fy.groupby(["gvkey", "fyear"]).first().reset_index()
 
     # Free memory
     del fy_grid_expanded, ceo_calls_per_fy
@@ -347,33 +367,38 @@ def assign_ceo_to_fy(
     print(f"[OK] Selected dominant CEO per firm-year: {len(dominant_ceo):,} firm-years")
 
     # Filter by min_calls_fy
-    dominant_ceo = dominant_ceo[dominant_ceo['n_calls_fy'] >= min_calls_fy]
-    print(f"[OK] Filtered to >= {min_calls_fy} calls in FY: {len(dominant_ceo):,} firm-years")
+    dominant_ceo = dominant_ceo[dominant_ceo["n_calls_fy"] >= min_calls_fy]
+    print(
+        f"[OK] Filtered to >= {min_calls_fy} calls in FY: {len(dominant_ceo):,} firm-years"
+    )
 
     # Merge with fy_grid to get fy_end
     dominant_ceo = dominant_ceo.merge(
-        fy_grid[['gvkey', 'fyear', 'fy_end']],
-        on=['gvkey', 'fyear'],
-        how='left'
+        fy_grid[["gvkey", "fyear", "fy_end"]], on=["gvkey", "fyear"], how="left"
     )
 
     # Add n_calls_total from CEO Clarity
     dominant_ceo = dominant_ceo.merge(
-        ceo_clarity[['ceo_id', 'n_calls']],
-        on='ceo_id',
-        how='left'
+        ceo_clarity[["ceo_id", "n_calls"]], on="ceo_id", how="left"
     )
-    dominant_ceo = dominant_ceo.rename(columns={'n_calls': 'n_calls_total'})
+    dominant_ceo = dominant_ceo.rename(columns={"n_calls": "n_calls_total"})
 
     # Clean up columns - remove first_call_date which was only for tiebreaking
-    if 'first_call_date' in dominant_ceo.columns:
-        dominant_ceo = dominant_ceo.drop(columns=['first_call_date'])
+    if "first_call_date" in dominant_ceo.columns:
+        dominant_ceo = dominant_ceo.drop(columns=["first_call_date"])
 
     # Reorder columns
-    dominant_ceo = dominant_ceo[[
-        'gvkey', 'fyear', 'fy_end', 'ceo_id', 'ceo_name',
-        'n_calls_fy', 'n_calls_total'
-    ]]
+    dominant_ceo = dominant_ceo[
+        [
+            "gvkey",
+            "fyear",
+            "fy_end",
+            "ceo_id",
+            "ceo_name",
+            "n_calls_fy",
+            "n_calls_total",
+        ]
+    ]
 
     gc.collect()
 
@@ -381,8 +406,7 @@ def assign_ceo_to_fy(
 
 
 def create_style_frozen(
-    dominant_ceo: pd.DataFrame,
-    ceo_clarity: pd.DataFrame
+    dominant_ceo: pd.DataFrame, ceo_clarity: pd.DataFrame
 ) -> pd.DataFrame:
     """
     Create style_frozen variable by merging CEO Clarity scores.
@@ -401,27 +425,34 @@ def create_style_frozen(
 
     # Merge ClarityCEO scores
     style_frozen = dominant_ceo.merge(
-        ceo_clarity[['ceo_id', 'ClarityCEO']],
-        on='ceo_id',
-        how='left'
+        ceo_clarity[["ceo_id", "ClarityCEO"]], on="ceo_id", how="left"
     )
 
     # Rename for output
-    style_frozen = style_frozen.rename(columns={
-        'fy_end': 'datadate',
-        'ClarityCEO': 'style_frozen'
-    })
+    style_frozen = style_frozen.rename(
+        columns={"fy_end": "datadate", "ClarityCEO": "style_frozen"}
+    )
 
     # Reorder columns
-    style_frozen = style_frozen[[
-        'gvkey', 'fyear', 'datadate', 'style_frozen', 'ceo_id',
-        'ceo_name', 'n_calls_fy', 'n_calls_total'
-    ]]
+    style_frozen = style_frozen[
+        [
+            "gvkey",
+            "fyear",
+            "datadate",
+            "style_frozen",
+            "ceo_id",
+            "ceo_name",
+            "n_calls_fy",
+            "n_calls_total",
+        ]
+    ]
 
     print(f"[OK] Created style_frozen: {len(style_frozen):,} firm-years")
     print(f"  - style_frozen mean: {style_frozen['style_frozen'].mean():.4f}")
     print(f"  - style_frozen std: {style_frozen['style_frozen'].std():.4f}")
-    print(f"  - style_frozen range: [{style_frozen['style_frozen'].min():.3f}, {style_frozen['style_frozen'].max():.3f}]")
+    print(
+        f"  - style_frozen range: [{style_frozen['style_frozen'].min():.3f}, {style_frozen['style_frozen'].max():.3f}]"
+    )
 
     return style_frozen
 
@@ -431,7 +462,7 @@ def generate_report(
     dominant_ceo: pd.DataFrame,
     ceo_clarity: pd.DataFrame,
     compustat: pd.DataFrame,
-    output_dir: Path
+    output_dir: Path,
 ) -> dict:
     """
     Generate summary report with coverage statistics.
@@ -452,85 +483,87 @@ def generate_report(
 
     # Calculate statistics
     n_obs = len(style_frozen)
-    n_firms = style_frozen['gvkey'].nunique()
-    n_ceos = style_frozen['ceo_id'].nunique()
-    fyear_min = int(style_frozen['fyear'].min())
-    fyear_max = int(style_frozen['fyear'].max())
+    n_firms = style_frozen["gvkey"].nunique()
+    n_ceos = style_frozen["ceo_id"].nunique()
+    fyear_min = int(style_frozen["fyear"].min())
+    fyear_max = int(style_frozen["fyear"].max())
 
     # CEO turnover: count firms with multiple CEOs across years
-    ceo_count_per_firm = style_frozen.groupby('gvkey')['ceo_id'].nunique()
+    ceo_count_per_firm = style_frozen.groupby("gvkey")["ceo_id"].nunique()
     n_firms_with_turnover = (ceo_count_per_firm > 1).sum()
     turnover_rate = n_firms_with_turnover / n_firms * 100
 
     # CEO moves: count CEOs with multiple firms
-    firm_count_per_ceo = style_frozen.groupby('ceo_id')['gvkey'].nunique()
+    firm_count_per_ceo = style_frozen.groupby("ceo_id")["gvkey"].nunique()
     n_ceos_with_moves = (firm_count_per_ceo > 1).sum()
 
     # Coverage vs Compustat
-    n_compustat_fy = compustat['gvkey'].nunique()  # Unique firms in Compustat
+    n_compustat_fy = compustat["gvkey"].nunique()  # Unique firms in Compustat
     coverage_rate = n_firms / n_compustat_fy * 100
 
     # Style distribution
-    style_mean = style_frozen['style_frozen'].mean()
-    style_std = style_frozen['style_frozen'].std()
-    style_min = style_frozen['style_frozen'].min()
-    style_max = style_frozen['style_frozen'].max()
+    style_mean = style_frozen["style_frozen"].mean()
+    style_std = style_frozen["style_frozen"].std()
+    style_min = style_frozen["style_frozen"].min()
+    style_max = style_frozen["style_frozen"].max()
 
     # Calls distribution
-    n_calls_fy_mean = style_frozen['n_calls_fy'].mean()
-    n_calls_fy_median = style_frozen['n_calls_fy'].median()
-    n_calls_fy_max = style_frozen['n_calls_fy'].max()
+    n_calls_fy_mean = style_frozen["n_calls_fy"].mean()
+    n_calls_fy_median = style_frozen["n_calls_fy"].median()
+    n_calls_fy_max = style_frozen["n_calls_fy"].max()
 
     stats = {
-        'n_obs': n_obs,
-        'n_firms': n_firms,
-        'n_ceos': n_ceos,
-        'fyear_min': fyear_min,
-        'fyear_max': fyear_max,
-        'n_firms_with_turnover': n_firms_with_turnover,
-        'turnover_rate_pct': turnover_rate,
-        'n_ceos_with_moves': n_ceos_with_moves,
-        'coverage_rate_pct': coverage_rate,
-        'style_mean': style_mean,
-        'style_std': style_std,
-        'style_min': style_min,
-        'style_max': style_max,
-        'n_calls_fy_mean': n_calls_fy_mean,
-        'n_calls_fy_median': n_calls_fy_median,
-        'n_calls_fy_max': n_calls_fy_max
+        "n_obs": n_obs,
+        "n_firms": n_firms,
+        "n_ceos": n_ceos,
+        "fyear_min": fyear_min,
+        "fyear_max": fyear_max,
+        "n_firms_with_turnover": n_firms_with_turnover,
+        "turnover_rate_pct": turnover_rate,
+        "n_ceos_with_moves": n_ceos_with_moves,
+        "coverage_rate_pct": coverage_rate,
+        "style_mean": style_mean,
+        "style_std": style_std,
+        "style_min": style_min,
+        "style_max": style_max,
+        "n_calls_fy_mean": n_calls_fy_mean,
+        "n_calls_fy_median": n_calls_fy_median,
+        "n_calls_fy_max": n_calls_fy_max,
     }
 
     # Print statistics
-    print(f"\n[STATS] STYLEFROZEN DATASET STATISTICS")
-    print(f"-" * 40)
+    print("\n[STATS] STYLEFROZEN DATASET STATISTICS")
+    print("-" * 40)
     print(f"Observations (firm-years): {n_obs:,}")
     print(f"Unique firms (gvkey): {n_firms:,}")
     print(f"Unique CEOs: {n_ceos:,}")
     print(f"Fiscal year range: {fyear_min}-{fyear_max}")
-    print(f"")
-    print(f"CEO turnover:")
-    print(f"  - Firms with multiple CEOs: {n_firms_with_turnover:,} ({turnover_rate:.1f}%)")
+    print("")
+    print("CEO turnover:")
+    print(
+        f"  - Firms with multiple CEOs: {n_firms_with_turnover:,} ({turnover_rate:.1f}%)"
+    )
     print(f"  - CEOs with multiple firms: {n_ceos_with_moves:,}")
-    print(f"")
-    print(f"Coverage vs Compustat:")
+    print("")
+    print("Coverage vs Compustat:")
     print(f"  - Compustat firms (2002-2018): {n_compustat_fy:,}")
     print(f"  - StyleFrozen firms: {n_firms:,}")
     print(f"  - Coverage rate: {coverage_rate:.1f}%")
-    print(f"")
-    print(f"StyleFrozen distribution (ClarityCEO):")
+    print("")
+    print("StyleFrozen distribution (ClarityCEO):")
     print(f"  - Mean: {style_mean:.4f} (expected ~0)")
     print(f"  - Std: {style_std:.4f} (expected ~1)")
     print(f"  - Range: [{style_min:.3f}, {style_max:.3f}]")
-    print(f"  - Negative = more vague, Positive = more clear")
-    print(f"")
-    print(f"Calls per fiscal year (by selected CEO):")
+    print("  - Negative = more vague, Positive = more clear")
+    print("")
+    print("Calls per fiscal year (by selected CEO):")
     print(f"  - Mean: {n_calls_fy_mean:.1f}")
     print(f"  - Median: {n_calls_fy_median:.1f}")
     print(f"  - Max: {n_calls_fy_max:.0f}")
 
     # Write report to markdown
     report_path = output_dir / "report_step58_01.md"
-    with open(report_path, 'w') as f:
+    with open(report_path, "w") as f:
         f.write("# Step 58-01: StyleFrozen Construction Report\n\n")
         f.write(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
         f.write("## Dataset Statistics\n\n")
@@ -540,7 +573,9 @@ def generate_report(
         f.write(f"- **Fiscal year range:** {fyear_min}-{fyear_max}\n\n")
         f.write("## Frozen Constraint Verification\n\n")
         f.write("[OK] Frozen constraint applied: `start_date <= fy_end`\n")
-        f.write("[OK] Only CEO-firm assignments observable as of fiscal year-end are used\n")
+        f.write(
+            "[OK] Only CEO-firm assignments observable as of fiscal year-end are used\n"
+        )
         f.write("[OK] No look-ahead bias introduced\n\n")
         f.write("## CEO Selection Method\n\n")
         f.write("For each firm-year:\n")
@@ -549,7 +584,9 @@ def generate_report(
         f.write("3. Select CEO with MAX calls (dominant CEO)\n")
         f.write("4. Tiebreaker: CEO with earlier first_call_date (longer tenure)\n\n")
         f.write("## CEO Turnover and Moves\n\n")
-        f.write(f"- **Firms with CEO turnover:** {n_firms_with_turnover:,} ({turnover_rate:.1f}%)\n")
+        f.write(
+            f"- **Firms with CEO turnover:** {n_firms_with_turnover:,} ({turnover_rate:.1f}%)\n"
+        )
         f.write(f"- **CEOs who moved between firms:** {n_ceos_with_moves:,}\n")
         f.write("  - CEO Clarity is a personal trait, not firm-specific\n")
         f.write("  - Each firm-year gets the serving CEO's style score\n\n")
@@ -558,33 +595,50 @@ def generate_report(
         f.write(f"- **StyleFrozen firms:** {n_firms:,}\n")
         f.write(f"- **Coverage rate:** {coverage_rate:.1f}%\n\n")
         f.write("## StyleFrozen Distribution\n\n")
-        f.write(f"- **Mean:** {style_mean:.4f} (expected ~0 from ClarityCEO standardization)\n")
-        f.write(f"- **Std:** {style_std:.4f} (expected ~1 from ClarityCEO standardization)\n")
+        f.write(
+            f"- **Mean:** {style_mean:.4f} (expected ~0 from ClarityCEO standardization)\n"
+        )
+        f.write(
+            f"- **Std:** {style_std:.4f} (expected ~1 from ClarityCEO standardization)\n"
+        )
         f.write(f"- **Range:** [{style_min:.3f}, {style_max:.3f}]\n")
-        f.write(f"- **Interpretation:** Negative = more vague, Positive = more clear\n\n")
+        f.write(
+            "- **Interpretation:** Negative = more vague, Positive = more clear\n\n"
+        )
         f.write("## Calls per Fiscal Year\n\n")
         f.write(f"- **Mean:** {n_calls_fy_mean:.1f} calls")
         f.write(f"- **Median:** {n_calls_fy_median:.1f} calls")
         f.write(f"- **Max:** {n_calls_fy_max:.0f} calls\n\n")
         f.write("## Output Files\n\n")
         f.write(f"1. `style_frozen.parquet` - Main dataset with {n_obs:,} firm-years\n")
-        f.write(f"2. `stats.json` - Detailed statistics\n")
-        f.write(f"3. `report_step58_01.md` - This report\n\n")
+        f.write("2. `stats.json` - Detailed statistics\n")
+        f.write("3. `report_step58_01.md` - This report\n\n")
         f.write("## Next Steps\n\n")
         f.write("1. Review report and verify frozen constraint was correctly applied\n")
-        f.write("2. Use style_frozen.parquet in 58-04 (merge with PRiskFY and AbsAbInv)\n")
-        f.write("3. Run H9 regression: AbsAbInv ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen\n\n")
+        f.write(
+            "2. Use style_frozen.parquet in 58-04 (merge with PRiskFY and AbsAbInv)\n"
+        )
+        f.write(
+            "3. Run H9 regression: AbsAbInv ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen\n\n"
+        )
 
     print(f"\n[OK] Report written: {report_path}")
 
     # Write stats to JSON - convert numpy/pandas types to native Python
     stats_path = output_dir / "stats.json"
-    with open(stats_path, 'w') as f:
-        json.dump({
-            k: int(v) if isinstance(v, (np.integer, int)) else
-               float(v) if isinstance(v, (np.floating, float)) else v
-            for k, v in stats.items()
-        }, f, indent=2)
+    with open(stats_path, "w") as f:
+        json.dump(
+            {
+                k: int(v)
+                if isinstance(v, (np.integer, int))
+                else float(v)
+                if isinstance(v, (np.floating, float))
+                else v
+                for k, v in stats.items()
+            },
+            f,
+            indent=2,
+        )
     print(f"[OK] Stats written: {stats_path}")
 
     return stats
@@ -598,19 +652,19 @@ def main():
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Validate inputs and exit without generating outputs"
+        help="Validate inputs and exit without generating outputs",
     )
     parser.add_argument(
         "--min-calls-fy",
         type=int,
         default=1,
-        help="Minimum calls by CEO in fiscal year (default: 1)"
+        help="Minimum calls by CEO in fiscal year (default: 1)",
     )
     parser.add_argument(
         "--min-calls-total",
         type=int,
         default=5,
-        help="Minimum total calls by CEO from Phase 56 (default: 5)"
+        help="Minimum total calls by CEO from Phase 56 (default: 5)",
     )
 
     args = parser.parse_args()
@@ -637,7 +691,7 @@ def main():
         manifest,
         ceo_clarity,
         min_calls_fy=args.min_calls_fy,
-        min_calls_total=args.min_calls_total
+        min_calls_total=args.min_calls_total,
     )
 
     # Create style_frozen variable
@@ -661,13 +715,7 @@ def main():
     print(f"\n[OK] Output directory: {output_dir}")
 
     # Generate report
-    stats = generate_report(
-        style_frozen,
-        dominant_ceo,
-        ceo_clarity,
-        compustat,
-        output_dir
-    )
+    generate_report(style_frozen, dominant_ceo, ceo_clarity, compustat, output_dir)
 
     # Write style_frozen.parquet
     output_path = output_dir / "style_frozen.parquet"
@@ -678,7 +726,7 @@ def main():
     print("STEP 58-01 COMPLETE")
     print("=" * 80)
     print(f"Completed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"\nOutputs:")
+    print("\nOutputs:")
     print(f"  1. {output_path}")
     print(f"  2. {output_dir / 'report_step58_01.md'}")
     print(f"  3. {output_dir / 'stats.json'}")

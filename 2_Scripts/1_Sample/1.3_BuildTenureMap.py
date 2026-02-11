@@ -22,20 +22,16 @@ Deterministic: true
 ==============================================================================
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime
 import argparse
-import pandas as pd
-import numpy as np
-import yaml
-import shutil
 import importlib.util
-import hashlib
-import json
+import sys
 import time
-import psutil
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import yaml
 
 # Add parent directory to sys.path for shared module imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -52,23 +48,22 @@ except ImportError as e:
     print(f"Critical Error importing utils: {e}")
     sys.exit(1)
 
-from shared.path_utils import validate_input_file, ensure_output_dir
 from shared.observability_utils import (
     DualWriter,
-    compute_file_checksum,
-    print_stat,
     analyze_missing_values,
+    calculate_throughput,
+    collect_tenure_samples,
+    compute_file_checksum,
+    compute_tenure_input_stats,
+    compute_tenure_output_stats,
+    compute_tenure_process_stats,
+    detect_anomalies_zscore,
+    get_process_memory_mb,
+    print_stat,
     print_stats_summary,
     save_stats,
-    get_process_memory_mb,
-    calculate_throughput,
-    detect_anomalies_zscore,
-    detect_anomalies_iqr,
-    compute_tenure_input_stats,
-    compute_tenure_process_stats,
-    compute_tenure_output_stats,
-    collect_tenure_samples,
 )
+from shared.path_utils import ensure_output_dir, validate_input_file
 
 
 def print_dual(msg):
@@ -655,7 +650,7 @@ def main():
     total_episodes = len(episodes_df)
     progress_interval = max(500, total_episodes // 20)
 
-    for i, (idx, row) in enumerate(episodes_df.iterrows(), 1):
+    for i, (_idx, row) in enumerate(episodes_df.iterrows(), 1):
         # Generate monthly dates
         months = pd.date_range(
             start=row["start_date"].to_period("M").to_timestamp(),

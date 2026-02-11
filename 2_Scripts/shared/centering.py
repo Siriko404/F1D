@@ -38,15 +38,11 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-import numpy as np
 import pandas as pd
 
 
 def center_continuous(
-    df: pd.DataFrame,
-    columns: List[str],
-    suffix: str = '_c',
-    save_means: bool = True
+    df: pd.DataFrame, columns: List[str], suffix: str = "_c", save_means: bool = True
 ) -> Tuple[pd.DataFrame, Dict[str, float]]:
     """
     Mean-center continuous variables for interaction term creation.
@@ -113,7 +109,7 @@ def create_interaction(
     var1: str,
     var2: str,
     name: Optional[str] = None,
-    center_first: bool = True
+    center_first: bool = True,
 ) -> pd.DataFrame:
     """
     Create interaction term from two variables.
@@ -158,8 +154,8 @@ def create_interaction(
     use_centered = center_first
 
     # Check if variables are already centered
-    var1_centered = var1.endswith('_c')
-    var2_centered = var2.endswith('_c')
+    var1_centered = var1.endswith("_c")
+    var2_centered = var2.endswith("_c")
 
     # If center_first requested but variables not centered, warn and center
     if center_first and not (var1_centered and var2_centered):
@@ -173,20 +169,24 @@ def create_interaction(
 
         if var1_c not in df_out.columns:
             import warnings
+
             warnings.warn(
                 f"Creating interaction with non-centered variable '{var1}'. "
                 f"This may cause high multicollinearity. "
                 f"Consider centering first with center_continuous().",
-                UserWarning
+                UserWarning,
+                stacklevel=2,
             )
             use_centered = False
         elif var2_c not in df_out.columns:
             import warnings
+
             warnings.warn(
                 f"Creating interaction with non-centered variable '{var2}'. "
                 f"This may cause high multicollinearity. "
                 f"Consider centering first with center_continuous().",
-                UserWarning
+                UserWarning,
+                stacklevel=2,
             )
             use_centered = False
 
@@ -204,8 +204,8 @@ def create_interaction(
     # Determine interaction column name
     if name is None:
         # Use base names without _c suffix for cleaner names
-        var1_base = var1_use[:-2] if var1_use.endswith('_c') else var1_use
-        var2_base = var2_use[:-2] if var2_use.endswith('_c') else var2_use
+        var1_base = var1_use[:-2] if var1_use.endswith("_c") else var1_use
+        var2_base = var2_use[:-2] if var2_use.endswith("_c") else var2_use
         name = f"{var1_base}_x_{var2_base}"
 
     # Create interaction
@@ -219,7 +219,7 @@ def save_centered_intermediates(
     centered_cols: List[str],
     means: Dict[str, float],
     output_dir: Path,
-    prefix: str = 'centered'
+    prefix: str = "centered",
 ) -> Path:
     """
     Save centered variables to parquet for debugging/auditing.
@@ -259,8 +259,7 @@ def save_centered_intermediates(
 
     if not cols_to_save:
         raise ValueError(
-            f"No centered columns found in DataFrame. "
-            f"Requested: {centered_cols}"
+            f"No centered columns found in DataFrame. Requested: {centered_cols}"
         )
 
     # Save parquet with centered variables
@@ -269,7 +268,7 @@ def save_centered_intermediates(
 
     # Save means dict as JSON
     json_path = output_dir / f"{prefix}_means.json"
-    with open(json_path, 'w') as f:
+    with open(json_path, "w") as f:
         json.dump(means, f, indent=2)
 
     return parquet_path
@@ -282,7 +281,7 @@ def compute_marginal_effect(
     var2: str,
     var1_centered: bool = True,
     var2_centered: bool = True,
-    means: Optional[Dict[str, float]] = None
+    means: Optional[Dict[str, float]] = None,
 ) -> Dict[str, float]:
     """
     Compute marginal effect of var1 on outcome, conditional on var2.
@@ -323,9 +322,9 @@ def compute_marginal_effect(
     var2_mean = float(df[var2].mean(skipna=True))
 
     result = {
-        'interaction_mean': interaction_mean,
-        'var2_mean': var2_mean,
-        'avg_marginal_effect': var2_mean,  # ME = coef_var1 + coef_interaction * var2
+        "interaction_mean": interaction_mean,
+        "var2_mean": var2_mean,
+        "avg_marginal_effect": var2_mean,  # ME = coef_var1 + coef_interaction * var2
     }
 
     return result
@@ -333,8 +332,8 @@ def compute_marginal_effect(
 
 # Export symbols
 __all__ = [
-    'center_continuous',
-    'create_interaction',
-    'save_centered_intermediates',
-    'compute_marginal_effect',
+    "center_continuous",
+    "create_interaction",
+    "save_centered_intermediates",
+    "compute_marginal_effect",
 ]

@@ -39,14 +39,17 @@ from typing import Any, Dict, List
 import numpy as np
 import pandas as pd
 
+
 # Custom exceptions (also defined in panel_ols.py for consistency)
 class CollinearityError(Exception):
     """Raised when perfect collinearity is detected in the design matrix."""
+
     pass
 
 
 class MulticollinearityError(Exception):
     """Raised when VIF threshold is exceeded (high multicollinearity)."""
+
     pass
 
 
@@ -54,6 +57,7 @@ class MulticollinearityError(Exception):
 try:
     from statsmodels.stats.outliers_influence import variance_inflation_factor
     from statsmodels.tools.tools import add_constant
+
     STATSMODELS_AVAILABLE = True
 except ImportError:
     STATSMODELS_AVAILABLE = False
@@ -65,7 +69,7 @@ def compute_vif(
     df: pd.DataFrame,
     columns: List[str],
     add_constant_col: bool = True,
-    vif_threshold: float = 5.0
+    vif_threshold: float = 5.0,
 ) -> pd.DataFrame:
     """
     Compute Variance Inflation Factor (VIF) for continuous regressors.
@@ -138,7 +142,9 @@ def compute_vif(
 
     for col in columns:
         if col not in df_vif.columns:
-            warnings.warn(f"Column '{col}' not in VIF DataFrame. Skipping.")
+            warnings.warn(
+                f"Column '{col}' not in VIF DataFrame. Skipping.", stacklevel=2
+            )
             continue
 
         try:
@@ -148,19 +154,19 @@ def compute_vif(
             # Compute VIF
             vif_value = float(variance_inflation_factor(df_vif.values, col_idx))
 
-            vif_data.append({
-                'variable': col,
-                'VIF': vif_value,
-                'threshold_exceeded': vif_value > vif_threshold
-            })
+            vif_data.append(
+                {
+                    "variable": col,
+                    "VIF": vif_value,
+                    "threshold_exceeded": vif_value > vif_threshold,
+                }
+            )
         except Exception as e:
-            warnings.warn(f"Could not compute VIF for '{col}': {e}")
+            warnings.warn(f"Could not compute VIF for '{col}': {e}", stacklevel=2)
             # Still add entry with NaN VIF
-            vif_data.append({
-                'variable': col,
-                'VIF': np.nan,
-                'threshold_exceeded': False
-            })
+            vif_data.append(
+                {"variable": col, "VIF": np.nan, "threshold_exceeded": False}
+            )
 
     return pd.DataFrame(vif_data)
 
@@ -170,7 +176,7 @@ def check_multicollinearity(
     columns: List[str],
     vif_threshold: float = 5.0,
     condition_threshold: float = 30.0,
-    fail_on_violation: bool = False
+    fail_on_violation: bool = False,
 ) -> Dict[str, Any]:
     """
     Comprehensive multicollinearity check with VIF and condition number.
@@ -212,7 +218,7 @@ def check_multicollinearity(
     vif_df = compute_vif(df, columns, vif_threshold=vif_threshold)
 
     # Find VIF violations
-    vif_violations = vif_df[vif_df['threshold_exceeded']]['variable'].tolist()
+    vif_violations = vif_df[vif_df["threshold_exceeded"]]["variable"].tolist()
 
     if vif_violations:
         msg = (
@@ -221,7 +227,7 @@ def check_multicollinearity(
             f"This may cause unstable coefficient estimates."
         )
         warnings_list.append(msg)
-        warnings.warn(msg, UserWarning)
+        warnings.warn(msg, UserWarning, stacklevel=2)
 
     # Compute condition number
     condition_number = None
@@ -251,7 +257,7 @@ def check_multicollinearity(
                         f"This indicates potential numerical instability."
                     )
                     warnings_list.append(msg)
-                    warnings.warn(msg, UserWarning)
+                    warnings.warn(msg, UserWarning, stacklevel=2)
 
     except Exception as e:
         warnings_list.append(f"Could not compute condition number: {e}")
@@ -268,19 +274,16 @@ def check_multicollinearity(
         )
 
     return {
-        'vif_results': vif_df,
-        'condition_number': condition_number,
-        'vif_violations': vif_violations,
-        'condition_violation': condition_violation,
-        'pass': pass_check,
-        'warnings': warnings_list,
+        "vif_results": vif_df,
+        "condition_number": condition_number,
+        "vif_violations": vif_violations,
+        "condition_violation": condition_violation,
+        "pass": pass_check,
+        "warnings": warnings_list,
     }
 
 
-def format_vif_table(
-    vif_df: pd.DataFrame,
-    threshold: float = 5.0
-) -> str:
+def format_vif_table(vif_df: pd.DataFrame, threshold: float = 5.0) -> str:
     """
     Format VIF results as a console table with threshold context.
 
@@ -312,7 +315,11 @@ def format_vif_table(
     lines.append("=" * 60)
 
     # Check for any violations first
-    has_violations = vif_df['threshold_exceeded'].any() if 'threshold_exceeded' in vif_df.columns else False
+    has_violations = (
+        vif_df["threshold_exceeded"].any()
+        if "threshold_exceeded" in vif_df.columns
+        else False
+    )
 
     if has_violations:
         lines.append("")
@@ -326,9 +333,9 @@ def format_vif_table(
 
     # Rows
     for _, row in vif_df.iterrows():
-        var = row.get('variable', '')
-        vif_val = row.get('VIF', np.nan)
-        exceeded = row.get('threshold_exceeded', False)
+        var = row.get("variable", "")
+        vif_val = row.get("VIF", np.nan)
+        exceeded = row.get("threshold_exceeded", False)
 
         if np.isnan(vif_val):
             vif_str = "N/A"
@@ -358,9 +365,7 @@ def format_vif_table(
 
 
 def compute_condition_number(
-    df: pd.DataFrame,
-    columns: List[str],
-    add_constant: bool = True
+    df: pd.DataFrame, columns: List[str], add_constant: bool = True
 ) -> float:
     """
     Compute condition number of the design matrix.
@@ -404,10 +409,10 @@ def compute_condition_number(
 
 # Export symbols
 __all__ = [
-    'compute_vif',
-    'check_multicollinearity',
-    'format_vif_table',
-    'compute_condition_number',
-    'CollinearityError',
-    'MulticollinearityError',
+    "compute_vif",
+    "check_multicollinearity",
+    "format_vif_table",
+    "compute_condition_number",
+    "CollinearityError",
+    "MulticollinearityError",
 ]
