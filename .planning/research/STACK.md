@@ -1,235 +1,263 @@
-# Technology Stack
+# Stack: v3.0 Codebase Cleanup & Optimization
 
-**Project:** F1D Data Pipeline Observability & Documentation
-**Researched:** 2026-01-22
-**Mode:** Stack dimension for observability additions
+**Project:** F1D Data Processing Pipeline
+**Research Date:** 2026-02-10
+**Milestone:** v3.0 - Codebase Cleanup & Optimization
 
 ## Executive Summary
 
-This stack recommendation focuses on **lightweight additions** to an existing pandas/numpy-based research pipeline. The goal is comprehensive descriptive statistics and documentation without restructuring the existing architecture.
+This milestone focuses on codebase health and technical debt reduction, not new features. The existing stack (pandas, numpy, statsmodels, linearmodels, PyArrow, pytest) is fundamentally sound. The cleanup requires minimal new tooling - primarily code quality utilities (Ruff), profiling tools (py-spy), and documentation enhancements.
 
-**Key principle:** Use what you already have (pandas, numpy) enhanced with minimal targeted libraries. Avoid heavy profiling frameworks designed for web-scale data engineering.
+**Key principle:** Preserve all existing functionality while improving maintainability, performance, and documentation.
 
-## Recommended Stack
+---
 
-### Core Framework (Already In Place)
-| Technology | Version | Purpose | Why Keep |
-|------------|---------|---------|----------|
-| pandas | 3.0.x | Data manipulation | Already used, mature `df.describe()` and statistical methods. |
-| numpy | 2.x | Numerical operations | Already used, provides fast array statistics. |
-| PyYAML | 6.x | Config loading | Already used for `project.yaml`. |
+## 1. Code Quality Tools
 
-**Note:** pandas 3.0.0 was released January 21, 2026, requiring Python >=3.11. If the project uses an older Python, stay on pandas 2.2.x (Python >=3.9).
+| Tool | Version | Purpose | Why for v3.0 |
+|------|---------|---------|-------------|
+| **Ruff** | 0.9+ | Linter, formatter, import sorter | Replaces Black+isort+flake8. 100x faster. Single config for consistency. |
+| **mypy** | 1.15+ | Static type checking | Catch type errors during refactoring. Critical for monolithic utility split. |
+| **vulture** | 2.0+ | Dead code finder | Identify unused functions during V1/V2/V3 consolidation. |
 
-### Statistics Reporting (New Additions)
+### Ruff Configuration
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| skimpy | 0.0.20 | Console statistics display | **PRIMARY CHOICE.** Lightweight, produces rich console-formatted summary statistics like R's `skimr`. Works with both pandas and Polars DataFrames. Minimal dependencies. MIT license. |
-| scipy.stats | 1.17.x | Statistical tests | For normality tests, distribution fitting if needed. Already a common dependency in academic research. Only add if statistical tests are required beyond descriptive stats. |
+```toml
+# pyproject.toml (add to existing)
+[tool.ruff]
+line-length = 100
+target-version = "py38"
 
-**Confidence: HIGH** - Verified via PyPI (skimpy 0.0.20 released Jan 3, 2026; scipy 1.17.0 released Jan 10, 2026).
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]  # line too long (handled by formatter)
 
-### Console Formatting
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| rich | 14.2.x | Formatted console output | **RECOMMENDED.** skimpy uses rich internally. If adding more console formatting beyond skimpy, use rich directly for tables, progress bars, and styled output. Already production-stable. |
-| tabulate | 0.9.x | Simple table formatting | **ALTERNATIVE.** If rich is too heavy or you want plain-text tables compatible with log files. Supports markdown, grid, and plain formats. Last release Oct 2022 but stable and widely used. |
-
-**Confidence: HIGH** - Verified via PyPI (rich 14.2.0 Oct 2025).
-
-### Structured Output
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| json (stdlib) | N/A | JSON output | **USE STDLIB.** Python's built-in json module is sufficient for stats export. No extra dependency. |
-| pandas.to_json() | N/A | DataFrame to JSON | Already available. Use `orient='records'` or `orient='table'` for structured output. |
-| pandas.to_csv() | N/A | CSV output | Already available. Ideal for stats tables that academic reviewers can open in Excel. |
-
-**Confidence: HIGH** - Standard library, no verification needed.
-
-### Timing & Profiling
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| time (stdlib) | N/A | Basic timing | **USE STDLIB.** `time.perf_counter()` for high-resolution step timing. Zero dependencies. |
-| contextlib (stdlib) | N/A | Context managers | Create reusable timing context managers for step profiling. |
-
-**Confidence: HIGH** - Standard library.
-
-### Documentation
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| Markdown | N/A | README format | **Standard for GitHub.** Academic reviewers expect README.md. No tooling needed beyond text editor. |
-| Python docstrings | N/A | Code documentation | Already using contract headers. Expand with NumPy-style docstrings if API documentation is needed. |
-
-## Alternatives Considered
-
-| Category | Recommended | Alternative | Why Not Alternative |
-|----------|-------------|-------------|---------------------|
-| EDA/Profiling | skimpy | ydata-profiling | ydata-profiling (v4.18.1) is excellent but overkill for this use case. It generates full HTML reports with visualizations, correlations, interactions. Too heavy for "add stats to each script" - designed for one-time EDA exploration, not pipeline observability. Also has significant dependencies. |
-| Console display | rich/skimpy | prettytable | prettytable is simpler but less feature-rich. rich is already a transitive dependency via skimpy. |
-| Stats export | stdlib json | dataclasses-json | Unnecessary complexity. pandas + json stdlib handles all needs. |
-| Profiling | time stdlib | memory_profiler, line_profiler | Only needed for debugging performance issues, not for routine observability. Adds complexity. |
-
-## What NOT to Use
-
-| Technology | Why Avoid |
-|------------|-----------|
-| **ydata-profiling** | Overkill. Designed for interactive EDA, not embedded pipeline stats. Heavy dependencies (400KB wheel + Jinja2, pandas, scipy, etc.). Creates HTML reports rather than console+file output. |
-| **dataprep** | Similar to ydata-profiling - designed for exploratory analysis, not pipeline observability. |
-| **Great Expectations** | Data validation framework, not observability. Overkill for descriptive statistics. |
-| **Dagster/Prefect/Airflow observability** | Wrong paradigm. These are orchestration tools. The existing pipeline is script-based, not DAG-based. |
-| **Prometheus/Grafana** | Designed for production services, not batch research pipelines. |
-| **pandas-profiling** | Deprecated name for ydata-profiling. Same concerns apply. |
-| **sweetviz** | HTML report generation for EDA. Same concerns as ydata-profiling. |
-
-## Installation
-
-```bash
-# Minimal addition (skimpy bundles rich as dependency)
-pip install skimpy>=0.0.20
-
-# If scipy.stats is needed for statistical tests
-pip install scipy>=1.17.0
-
-# For simple markdown table generation without rich styling
-pip install tabulate>=0.9.0
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 ```
 
-### Requirements Addition
+**Rationale:** Single tool for all code quality. Reduces configuration complexity. Rust-based for speed on large codebase (61 scripts).
 
-Add to project requirements:
+---
+
+## 2. Performance Profiling Tools
+
+| Tool | Purpose | When to Use |
+|------|---------|-------------|
+| **py-spy** | Sampling profiler (minimal overhead) | Profile running scripts without code changes. |
+| **Scalene** | Line-level CPU + memory profiling | Deep dive into memory bottlenecks. |
+| **cProfile** (built-in) | Function-level profiling | Quick checks for function call overhead. |
+
+### Profiling Strategy
+
+1. **Baseline:** Profile each major script before optimization
+2. **Target:** Top 3 bottlenecks per script
+3. **Validate:** After optimization, verify improvement and identical results
+
+**Targeted optimizations:**
+- `.apply(lambda)` -> vectorized operations (10-100x speedup)
+- `.iterrows()` -> vectorized or `.to_dict('records')` (50-1000x speedup)
+- `.groupby().apply()` -> `.groupby().agg()` (5-50x speedup)
+- Reduce `pd.concat()` calls by pre-allocating or list-of-dicts pattern
+
+---
+
+## 3. Documentation Tools
+
+| Tool | Purpose | Recommendation |
+|------|---------|----------------|
+| **Markdown** | Documentation format | RECOMMENDED - Simple, works with existing READMEs |
+| **mkdocs-material** | Optional web docs | SKIP - Overkill for single-researcher project |
+| **Sphinx** | API documentation | SKIP - API docs unnecessary for research code |
+
+**Rationale:** Academic reviewers need procedural documentation, not API docs. Existing `shared/README.md` (1,500 lines) works well. Extend with per-script docstrings.
+
+### Documentation Structure
+
 ```
-# Observability additions
-skimpy>=0.0.20        # Console statistics display
-tabulate>=0.9.0       # Plain-text table formatting (optional)
-# scipy>=1.17.0       # Only if statistical tests needed
+F1D/
+├── README.md                          # Repo-level overview
+├── 2_Scripts/
+│   ├── shared/
+│   │   └── README.md                  # Shared utilities docs
+│   ├── 1_Sample/
+│   │   └── README.md                  # Stage 1 docs
+│   ├── 2_Text/
+│   │   └── README.md                  # Stage 2 docs
+│   ├── 3_Financial/
+│   │   └── README.md                  # Stage 3 V1 docs
+│   ├── 3_Financial_V2/
+│   │   └── README.md                  # Stage 3 V2 docs (H1-H8)
+│   ├── 5_Financial_V3/
+│   │   └── README.md                  # Stage 3 V3 docs (H9)
+│   ├── 4_Econometric/
+│   │   └── README.md                  # Stage 4 V1 docs
+│   ├── 4_Econometric_V2/
+│   │   └── README.md                  # Stage 4 V2 docs (H1-H9)
+│   └── 4_Econometric_V3/
+│       └── README.md                  # Stage 4 V3 docs
+└── docs/
+    └── VARIABLE_CATALOG.md            # All constructed variables
 ```
 
-## Usage Patterns
+---
 
-### Pattern 1: Quick DataFrame Summary to Console
+## 4. Testing & Validation Tools
+
+| Tool | Purpose | Priority |
+|------|---------|----------|
+| **pytest** (existing) | Test runner | Keep |
+| **pytest-cov** | Coverage reporting | ADD - missing from requirements |
+| **pandera** | DataFrame schema validation | HIGH - validate parquet schemas at key points |
+
+### Pandera Integration
 
 ```python
-from skimpy import skim
+import pandera as pa
+from pandera.typing import Series, DataFrame
 
-# Prints formatted summary to console
-skim(df)
+# Schema for critical outputs
+class MasterManifestSchema(pa.DataFrameModel):
+    file_name: Series[str]
+    gvkey: Series[str] = pa.Field(nullable=True)
+    ceo_id: Series[str]
+    start_date: Series[pd.DatetimeTZDtype]
+    Total_Words: Series[int] = pa.Field(ge=0)
+
+class ManifestValidation:
+    """Validate master sample manifest schema."""
+    pass
 ```
 
-### Pattern 2: Stats to Dual Log (Console + File)
+**Why Pandera:** Lightweight (<1MB), native pandas integration, decorator-based validation. Sufficient for research pipeline (not production data engineering).
 
+---
+
+## 5. What NOT to Add
+
+| Tool | Why to Skip |
+|------|-------------|
+| **Polars** | Pandas 3.0 + vectorization sufficient. Migration = feature creep. |
+| **Great Expectations** | Pandera is lighter. GE is production overkill. |
+| **Sphinx/MkDocs** | Markdown READMEs sufficient for academic review. |
+| **pre-commit** | Git hook complexity for single-user project. |
+| **Docker** | Dependency pinning works. Containerization = overkill. |
+| **dask/modin** | Datasets fit in memory. Unnecessary complexity. |
+
+---
+
+## 6. Version Updates for v3.0
+
+### Current Stack (from requirements.txt)
+
+```
+# Core Data Science
+pandas==2.2.3  -> Upgrade to 3.0.x for performance
+numpy==2.3.2
+scipy>=1.16.1
+
+# Statistical Modeling - Keep pinned
+statsmodels==0.14.6  # 0.14.0 had breaking GLM changes
+scikit-learn>=1.7.2
+lifelines>=0.30.0
+
+# Data Formats
+PyYAML>=6.0.2
+pyarrow==21.0.0  # 23.0+ requires Python >=3.10
+rapidfuzz>=3.14.0
+
+# Utilities
+psutil>=7.2.1
+python-dateutil>=2.9.0
+openpyxl>=3.1.5
+
+# Testing (existing)
+pytest
+pytest-cov  # ADD
+```
+
+### New Additions for v3.0
+
+```
+# Code Quality (NEW)
+ruff>=0.9.0
+mypy>=1.15.0
+vulture>=2.0
+
+# Profiling (NEW)
+py-spy>=0.3.14  # Optional for optimization
+
+# Testing (NEW)
+pandera>=0.21.0
+```
+
+---
+
+## 7. Refactoring Strategy
+
+### Splitting `observability_utils.py` (4,652 lines)
+
+**Target structure:**
+```
+shared/
+├── observability/
+│   ├── __init__.py              # Re-exports for backward compatibility
+│   ├── logging.py               # DualWriter class
+│   ├── stats.py                 # print_stat, analyze_missing_values
+│   ├── files.py                 # compute_file_checksum
+│   ├── memory.py                # get_process_memory_mb
+│   ├── throughput.py            # calculate_throughput
+│   └── anomalies.py             # detect_anomalies_zscore/iqr
+```
+
+**Backward compatibility:**
 ```python
-import pandas as pd
-import json
-from datetime import datetime
+# __init__.py re-exports all public API
+from .logging import DualWriter
+from .stats import print_stat, analyze_missing_values
+# ... etc
 
-def compute_stats(df, name):
-    """Compute descriptive statistics for a DataFrame."""
-    stats = {
-        'name': name,
-        'timestamp': datetime.now().isoformat(),
-        'shape': {'rows': len(df), 'columns': len(df.columns)},
-        'dtypes': df.dtypes.value_counts().to_dict(),
-        'missing': df.isnull().sum().to_dict(),
-        'numeric_summary': df.describe().to_dict()
-    }
-    return stats
-
-def log_stats(stats, print_fn, json_path=None):
-    """Log stats to console and optionally to JSON file."""
-    print_fn(f"Dataset: {stats['name']}")
-    print_fn(f"  Shape: {stats['shape']['rows']:,} rows x {stats['shape']['columns']} columns")
-    print_fn(f"  Missing: {sum(stats['missing'].values()):,} total null values")
-    
-    if json_path:
-        with open(json_path, 'w') as f:
-            json.dump(stats, f, indent=2, default=str)
+# Old imports still work:
+# from shared.observability_utils import DualWriter  # Still valid
 ```
 
-### Pattern 3: Step Timing Context Manager
+---
 
-```python
-import time
-from contextlib import contextmanager
+## 8. Implementation Priority
 
-@contextmanager
-def timed_step(name, print_fn):
-    """Context manager for timing pipeline steps."""
-    print_fn(f"[START] {name}")
-    start = time.perf_counter()
-    try:
-        yield
-    finally:
-        elapsed = time.perf_counter() - start
-        print_fn(f"[END] {name}: {elapsed:.2f}s")
-```
+### Phase 1: Code Quality Setup
+1. Configure Ruff in pyproject.toml
+2. Run Ruff on entire codebase, auto-fix issues
+3. Add mypy to shared utilities (progressive rollout)
 
-### Pattern 4: Rich Tables for Console (if skimpy insufficient)
+### Phase 2: Performance Profiling
+1. Profile top 5 scripts with py-spy
+2. Identify bottlenecks
+3. Vectorize targeted operations
+4. Verify identical outputs
 
-```python
-from rich.console import Console
-from rich.table import Table
+### Phase 3: Refactoring
+1. Split observability_utils.py
+2. Update imports across all scripts
+3. Archive backup files
+4. Clarify V1/V2/V3 directory documentation
 
-def print_stats_table(stats_dict, console=None):
-    """Print statistics as a rich table."""
-    if console is None:
-        console = Console()
-    
-    table = Table(title="Variable Statistics")
-    table.add_column("Variable", style="cyan")
-    table.add_column("Count", justify="right")
-    table.add_column("Mean", justify="right")
-    table.add_column("Std", justify="right")
-    
-    for var, stat in stats_dict.items():
-        table.add_row(var, str(stat['count']), f"{stat['mean']:.2f}", f"{stat['std']:.2f}")
-    
-    console.print(table)
-```
+### Phase 4: Documentation
+1. Write repo-level README
+2. Write script-level docstrings (61 scripts)
+3. Write directory READMEs
+4. Create variable catalog
 
-## Integration with Existing Pipeline
-
-The existing pipeline already has:
-- `DualWriter` class for console+file logging
-- `print_dual()` function for synchronized output
-- Timestamped output directories
-- YAML config loading
-
-**Recommendation:** Keep these patterns. Add statistics computation functions that use `print_dual()` for output. Store structured stats in JSON alongside existing parquet outputs.
-
-## Version Compatibility Matrix
-
-| Library | Min Python | Notes |
-|---------|------------|-------|
-| pandas 3.0.x | 3.11+ | Major release Jan 2026 |
-| pandas 2.2.x | 3.9+ | Use if Python < 3.11 |
-| skimpy 0.0.20 | 3.10+ | Production stable |
-| scipy 1.17.x | 3.11+ | Current release |
-| scipy 1.14.x | 3.10+ | Use if Python < 3.11 |
-| rich 14.x | 3.8+ | Wide compatibility |
-| tabulate 0.9.x | 3.7+ | Wide compatibility |
-
-## Confidence Assessment
-
-| Recommendation | Confidence | Reason |
-|----------------|------------|--------|
-| Use skimpy for console stats | HIGH | Verified current on PyPI, purpose-built for this use case |
-| Use pandas built-in methods | HIGH | Standard practice, already in use |
-| Avoid ydata-profiling | HIGH | Overkill verified via documentation review |
-| Use stdlib for timing | HIGH | Standard practice, no dependencies |
-| Use tabulate for plain tables | MEDIUM | Stable but not updated since Oct 2022 |
-| Version recommendations | HIGH | All verified via PyPI as of Jan 2026 |
+---
 
 ## Sources
 
-- PyPI: ydata-profiling 4.18.1 (https://pypi.org/project/ydata-profiling/) - Released Jan 13, 2026
-- PyPI: skimpy 0.0.20 (https://pypi.org/project/skimpy/) - Released Jan 3, 2026  
-- PyPI: pandas 3.0.0 (https://pypi.org/project/pandas/) - Released Jan 21, 2026
-- PyPI: rich 14.2.0 (https://pypi.org/project/rich/) - Released Oct 9, 2025
-- PyPI: tabulate 0.9.0 (https://pypi.org/project/tabulate/) - Released Oct 6, 2022
-- PyPI: scipy 1.17.0 (https://pypi.org/project/scipy/) - Released Jan 10, 2026
-- Existing project: config/project.yaml, 2_Scripts/*.py (reviewed for current patterns)
+- Ruff documentation: https://docs.astral.sh/ruff/
+- Pandera documentation: https://pandera.readthedocs.io/
+- py-spy GitHub: https://github.com/benfred/py-spy
+- Pandas 3.0 release notes: https://pandas.pydata.org/docs/whatsnew/v3.0.0.html
+
+---
+
+*Stack research: 2026-02-10*

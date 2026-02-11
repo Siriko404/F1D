@@ -1,187 +1,164 @@
-# Project Research Summary
+# Research Summary: v3.0 Codebase Cleanup & Optimization
 
-**Project:** F1D Hypothesis Testing Pipeline (v2.0 Milestone)
-**Domain:** Empirical Finance Panel Econometrics
-**Researched:** 2026-02-04
+**Project:** F1D Data Processing Pipeline
+**Research Date:** 2026-02-10
+**Milestone:** v3.0 - Codebase Cleanup & Optimization
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This research synthesis covers adding hypothesis testing capabilities (H1-H3) to the existing F1D data pipeline, which already has a mature 4-stage architecture (Sample → Text → Financial → Econometric). The good news: **no fundamental architecture changes are required**. The existing patterns for fixed-effects regression (4.1), 2SLS instrumentation (4.2), and subsample analysis (4.1.3) provide proven templates. New hypothesis scripts integrate naturally as stage 4 extensions (4.5, 4.6, 4.7) following established conventions.
+This milestone addresses accumulated technical debt in the F1D research data pipeline. The pipeline is functional (all 9 hypotheses tested, null results validated) but suffers from organizational issues, performance bottlenecks, and documentation gaps. The cleanup improves maintainability, performance, and documentation while preserving **all existing functionality and bitwise-identical reproducibility**.
 
-The recommended approach is **incremental extension**: build a new outcome variable construction step (3.5), create a small shared module for hypothesis-specific utilities (`hypothesis_utils.py`), then implement each hypothesis as a separate script following existing patterns. Stack additions are minimal—the current pandas/numpy/statsmodels/linearmodels stack handles all requirements. The only new capability needed is proper interaction term handling with mean-centering.
+**Key principle:** NO active code is archived. All V1/V2/V3 versions remain functional. Cleanup focuses on removing backup file clutter, clarifying structure through documentation, and fixing known bugs.
 
-**Key risks and mitigations:**
-1. **FE Collinearity Trap** — Using firm + year + industry FE simultaneously can absorb time-invariant variables silently. Mitigation: Use `drop_absorbed=False` in linearmodels, run VIF diagnostics before adding FE dimensions.
-2. **Weak Instruments in 2SLS** — Existing IV infrastructure from 4.2 works, but weak instruments produce worse-than-OLS bias. Mitigation: Enforce F > 10 rule with automatic validation.
-3. **Manager FE Connectivity** — CEO fixed effects require "movers" between firms; with low mover fraction, CEO FE conflates with firm culture. Mitigation: Check connectivity before running manager FE regressions.
+---
 
 ## Key Findings
 
-### Recommended Stack
+### Stack Additions (Minimal)
 
-The existing stack (pandas 3.0.x, numpy 2.x, statsmodels, linearmodels) is fully sufficient. **No new major dependencies required.** For enhanced observability during hypothesis testing, skimpy provides lightweight console statistics. scipy.stats can be added if advanced statistical tests (normality, distribution fitting) are needed beyond descriptive statistics.
+**New tools needed:**
+- **Ruff** (0.9+) - Unified linter/formatter replacing Black+isort+flake8
+- **mypy** (1.15+) - Static type checking for refactoring safety
+- **py-spy** (0.3+) - Profiler for performance optimization
+- **pandera** (0.21+) - DataFrame schema validation
+- **pytest-cov** - Coverage reporting
 
-**Core technologies (already in place):**
-- **pandas 3.0.x / numpy 2.x:** Core data manipulation and array statistics
-- **statsmodels:** OLS with formula API, fixed effects via categorical encoding
-- **linearmodels:** PanelOLS with entity/time FE, IV2SLS for endogeneity correction
-- **PyYAML:** Config loading from project.yaml
+**What NOT to add:**
+- Polars (pandas 3.0 sufficient)
+- Great Expectations (pandera lighter)
+- Sphinx/MkDocs (markdown sufficient)
+- Docker (unnecessary for single-user research)
 
-**Optional additions (lightweight):**
-- **skimpy 0.0.20:** Console statistics display (like R's `skimr`)
-- **scipy.stats 1.17.x:** Only if statistical tests beyond descriptive stats are needed
+### Architecture: Preserve, Simplify, Document
 
-### Expected Features
+**Current structure (preserved):**
+```
+1_Sample -> 2_Text -> 3_Financial -> 4_Econometric
 
-The hypothesis testing pipeline must produce publication-quality econometric results that satisfy academic reviewers and thesis committees.
+Three parallel versions (all ACTIVE):
+3_Financial/ + 4_Econometric/       (V1 - Original)
+3_Financial_V2/ + 4_Econometric_V2/ (V2 - H1-H8)
+5_Financial_V3/ + 4_Econometric_V3/ (V3 - H9)
+```
 
-**Must have (table stakes):**
-- Baseline OLS with firm + year + industry fixed effects
-- Interaction terms (Speech_Uncertainty × Firm_Leverage) with proper centering
-- Clustered standard errors (firm-level minimum)
-- Complete case filtering with sample size reporting
-- Winsorization at 1%/99% percentiles
-- Coefficient tables (β, SE, t-stat, p-value, R², F-stat)
-- Lag structure for outcomes (t+1)
+**Cleanup actions:**
+1. Archive backup files only (`*-legacy.py`, `*.bak`, `*_old.py`)
+2. Clarify V1/V2/V3 through README files (not renaming)
+3. Split monolithic `observability_utils.py` (4,652 lines) into focused modules
+4. Add comprehensive README documentation
 
-**Should have (differentiators):**
-- Subsample analysis (leverage splits, crisis periods, growth opportunities)
-- Alternative specifications (different control sets)
-- 2SLS with instrument diagnostics (F-stat, J-test)
-- Economic significance calculations (1-SD change interpretation)
-- LaTeX table output for publication
+### Critical Bugs to Fix
 
-**Defer (post-thesis):**
-- Propensity score matching
-- Difference-in-differences event studies
-- Coefficient stability bounds (Oster 2019)
-- Quantile regression
+| Bug | Impact | Fix |
+|-----|--------|-----|
+| H7-H8 data truncation | H8 uses 2002-2004 only (12K vs 39K obs) | Calculate Volatility inline in H7 |
+| Empty DataFrame returns | Error messages lost | Raise exceptions |
+| Division by zero guards | Masks data quality issues | Log warnings, raise exceptions |
 
-### Architecture Approach
+### Performance Opportunities
 
-The existing architecture extends naturally. New scripts slot into Stage 3 (outcome variables) and Stage 4 (hypothesis regressions) without modifying upstream stages. All scripts follow the established naming convention (`{step}.{substep}_{Name}.py`), use shared modules for path resolution and validation, and output to timestamped directories with dual logging.
+**Identified bottlenecks:**
+- `.apply(lambda)` in tokenization → vectorize (10-100x speedup)
+- `.iterrows()` in tenure mapping → vectorize (50-1000x speedup)
+- `.groupby().apply()` in financials → `.groupby().agg()` (5-50x speedup)
+- Excessive `pd.concat()` calls → pre-allocate or list-of-dicts
 
-**New components:**
-1. **3.5_HypothesisOutcomes.py** — Constructs DV variables (CashHoldings, InvestmentEfficiency, PayoutStability)
-2. **shared/hypothesis_utils.py** — Interaction term centering, subsample splitting, IV diagnostics
-3. **4.5_CashHoldingsRegression.py (H1)** — OLS + 2SLS for cash holdings hypothesis
-4. **4.6_InvestmentEfficiencyRegression.py (H2)** — OLS + 2SLS for investment efficiency hypothesis
-5. **4.7_PayoutStabilityRegression.py (H3)** — OLS + 2SLS for payout stability hypothesis
-6. **4.8_SubsampleAnalysis.py** — Consolidated subsample analysis across H1-H3
+**Optimization strategy:** Profile first, target top 3 bottlenecks per script, verify identical outputs.
 
-### Critical Pitfalls
+### Documentation Needs
 
-The top 5 pitfalls from research, ranked by severity:
+**Required deliverables:**
+1. **Repo-level README** - Project overview for academic reviewers
+2. **Directory READMEs** - Purpose of each major folder (clarify V1/V2/V3)
+3. **Script docstrings** - Header on all 61 scripts (purpose, inputs, outputs)
+4. **Variable catalog** - Complete reference for all constructed variables
 
-1. **FE Collinearity Trap (H1)** — Firm + industry FE are redundant (firms don't change industries). Use `drop_absorbed=False, check_rank=True` in linearmodels. Run VIF before adding FE dimensions. If condition number > 30, investigate.
-
-2. **Interaction Multicollinearity (H2)** — Raw `X × Z` is correlated with both `X` and `Z`. **Always center continuous variables before creating interactions.** Use within-group centering for panel data.
-
-3. **Weak Instruments in 2SLS (H3)** — F < 10 on first stage means 2SLS is more biased than OLS. **Enforce F > 10 programmatically.** Report first-stage diagnostics prominently. Use LIML instead of 2SLS if instruments are weak.
-
-4. **Manager FE Connectivity (H5)** — With few CEO "movers" between firms, CEO FE conflates manager style with firm culture. Check mover fraction before running manager FE. If < 5% movers, interpret carefully or use alternative approaches.
-
-5. **Multiple Testing in Subsamples (H7)** — Running 10+ subsample tests guarantees false positives. **Use interaction terms instead of separate regressions** (one test for heterogeneity, not 10 subsample tests). If subsample tests necessary, apply Bonferroni correction.
+---
 
 ## Implications for Roadmap
 
-Based on research, suggested 4-phase structure:
+### Recommended Phase Structure
 
-### Phase 1: Variable Construction Foundation
-**Rationale:** All hypothesis regressions depend on outcome variables (CashHoldings, InvestmentEfficiency, PayoutStability) that don't yet exist. Build data foundation before any regressions.
-**Delivers:** 
-- `3.5_HypothesisOutcomes.py` with hypothesis-specific DVs
-- Validated outcome variables merged with manifest
-- Control variable completeness check
-**Addresses:** Variable Construction (Priority P0 from FEATURES.md)
-**Avoids:** Missing transformation code (Pitfall 4 from replication section)
+**Phase 59: Bug Fixes**
+- Fix H7-H8 data truncation (calculate Volatility inline)
+- Fix empty DataFrame returns pattern
+- Add regression tests
 
-### Phase 2: Shared Infrastructure
-**Rationale:** Avoid code duplication across H1-H3. Build reusable utilities before implementing individual hypotheses.
-**Delivers:**
-- `shared/hypothesis_utils.py` module
-- Interaction term creation with centering
-- IV diagnostics wrapper (F-stat check, J-test)
-- Subsample splitting utilities
-- Panel connectivity check for manager FE
-**Uses:** statsmodels, linearmodels (existing stack)
-**Implements:** Core utilities referenced by all 4.5-4.7 scripts
+**Phase 60: Archive & Cleanup**
+- Move `*-legacy.py`, `*.bak` to `.___archive/`
+- Set up Ruff configuration
+- Run code quality tools
 
-### Phase 3: Core Hypothesis Implementation
-**Rationale:** With foundation in place, implement each hypothesis following established 4.1/4.2 patterns. Scripts are independent after shared infrastructure exists.
-**Delivers:**
-- `4.5_CashHoldingsRegression.py` (H1: Uncertainty → Cash Holdings)
-- `4.6_InvestmentEfficiencyRegression.py` (H2: Uncertainty → Investment)
-- `4.7_PayoutStabilityRegression.py` (H3: Uncertainty → Payout Stability)
-- Baseline OLS + 2SLS for each hypothesis
-- stats.json, regression_results.txt, report.md outputs
-**Addresses:** Baseline regressions, interaction terms, clustered SEs (P0 from FEATURES.md)
-**Avoids:** Formula errors (Pitfall H11), clustering inconsistency (Pitfall H6)
+**Phase 61: Utility Refactoring**
+- Split `observability_utils.py` into submodules
+- Update imports across all scripts
+- Verify backward compatibility
 
-### Phase 4: Robustness & Publication Polish
-**Rationale:** After core results established, add robustness checks and publication-ready output.
-**Delivers:**
-- `4.8_SubsampleAnalysis.py` — tenure, leverage, crisis period splits
-- LaTeX table generation
-- Economic significance calculations
-- Falsification tests (placebo outcomes)
-**Addresses:** Subsample analysis, alternative specs, LaTeX output (P1-P2 from FEATURES.md)
-**Avoids:** Multiple testing inflation (Pitfall H7)
+**Phase 62: Documentation**
+- Write repo-level README
+- Write directory READMEs
+- Write script docstrings
+- Create variable catalog
 
-### Phase Ordering Rationale
+**Phase 63: Performance Optimization** (Optional, lower priority)
+- Profile top 5 scripts
+- Vectorize targeted operations
+- Verify identical outputs
 
-- **Phase 1 before Phase 2:** Variable construction must exist before utilities that operate on them can be tested.
-- **Phase 2 before Phase 3:** Shared utilities prevent 3x code duplication and ensure consistent pitfall prevention across hypotheses.
-- **Phase 3 as single phase (not 3 separate):** H1, H2, H3 scripts are independent after Phase 2; can be parallelized.
-- **Phase 4 after Phase 3:** Robustness checks only make sense after baseline results exist.
+**Phase 64: Validation**
+- Run full pipeline end-to-end
+- Verify bitwise identical outputs
+- Final documentation review
 
-### Research Flags
-
-**Phases likely needing deeper research during planning:**
-- **Phase 1 (Variable Construction):** Investment efficiency calculation (Biddle et al. 2009 residual method) is non-trivial. Need to verify exact methodology.
-- **Phase 2 (IV Diagnostics):** linearmodels API for `first_stage.diagnostics` syntax may need verification against current library version.
-
-**Phases with standard patterns (skip research-phase):**
-- **Phase 3 (Hypothesis Regressions):** Follows established 4.1/4.2 patterns exactly. Well-documented in existing codebase.
-- **Phase 4 (Subsample Analysis):** Follows established 4.1.3 pattern. Standard econometric practice.
+---
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | No new dependencies; pandas/statsmodels/linearmodels verified on PyPI |
-| Features | HIGH | Based on standard empirical finance publication requirements |
-| Architecture | HIGH | Derived from direct codebase analysis of existing 4.1-4.4 scripts |
-| Pitfalls | MEDIUM-HIGH | Econometric theory verified; linearmodels syntax needs version check |
+| Stack | HIGH | Minimal additions, all well-established tools |
+| Features | HIGH | Based on direct codebase audit |
+| Architecture | HIGH | Existing structure preserved, only documentation added |
+| Pitfalls | HIGH | Reproducibility preservation well-understood |
 
 **Overall confidence:** HIGH
 
-### Gaps to Address
+---
 
-1. **linearmodels version verification:** Some syntax (e.g., `other_effects`, `first_stage.diagnostics`) should be verified against installed version during implementation.
+## Risk Assessment
 
-2. **Investment efficiency calculation:** The Biddle et al. (2009) residual-based method requires two-stage estimation. Implementation details need verification against original paper.
+| Risk | Probability | Impact | Mitigation |
+|------|------------|--------|------------|
+| Breaking reproducibility | MEDIUM | CRITICAL | Bitwise comparison tests before/after |
+| Import path errors | MEDIUM | HIGH | Re-exports in __init__.py |
+| Documentation becomes stale | LOW | MEDIUM | Verify docs match code |
+| Performance changes results | LOW | CRITICAL | Bitwise comparison tests |
+| Archive breaks references | LOW | HIGH | Check references before moving |
 
-3. **Wild bootstrap for small clusters:** If subsample analysis produces < 50 clusters, wild bootstrap may be needed for inference. This requires additional library (not in current stack).
+---
 
-4. **CRSP-Compustat link methodology:** Existing pipeline handles this, but merge success rates should be documented for each hypothesis sample.
+## Quality Gates
+
+Before concluding v3.0:
+
+1. **Reproducibility verified** - All regression outputs bitwise identical
+2. **All scripts run** - No import errors or runtime failures
+3. **Tests pass** - All existing tests + new regression tests
+4. **Documentation complete** - READMEs, docstrings, variable catalog
+5. **Code quality improved** - Ruff passes, dead code identified
+
+---
 
 ## Sources
 
-### Primary (HIGH confidence)
-- **Existing codebase:** `regression_utils.py`, `regression_helpers.py`, `regression_validation.py` — established patterns
-- **PyPI verified:** pandas 3.0.0, scipy 1.17.0, skimpy 0.0.20, linearmodels (Jan 2026)
-- **AEA Data Editor guidelines:** Replication package requirements
-
-### Secondary (MEDIUM confidence)
-- **linearmodels documentation:** bashtage.github.io/linearmodels/ — IV2SLS, PanelOLS syntax
-- **Econometric theory:** Stock-Yogo weak instrument thresholds, AKM connectivity requirements
-
-### Tertiary (LOW confidence - verify during implementation)
-- **Biddle et al. (2009):** Investment efficiency residual methodology
-- **Oster (2019):** Coefficient stability bounds (deferred to post-thesis)
+| Source | Type | Confidence |
+|--------|------|------------|
+| Codebase audit | Direct | HIGH |
+| `.planning/codebase/CONCERNS.md` | Internal | HIGH |
+| Stack research | Compiled | HIGH |
+| Python best practices | Industry | MEDIUM |
 
 ---
-*Research completed: 2026-02-04*
-*Ready for roadmap: yes*
+
+*Research summary: 2026-02-10*
