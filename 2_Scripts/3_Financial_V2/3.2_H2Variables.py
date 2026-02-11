@@ -25,8 +25,8 @@ Variables Computed:
 Inputs:
     - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat raw data)
-    - 1_Inputs/Siccodes48.zip (Fama-French 48 industry classifications)
-    - 1_Inputs/Siccodes12.zip (Fama-French 12 industry classifications)
+    - 1_Inputs/FF1248/Siccodes48.zip (Fama-French 48 industry classifications)
+    - 1_Inputs/FF1248/Siccodes12.zip (Fama-French 12 industry classifications)
     - 1_Inputs/tr_ibes/tr_ibes.parquet (IBES analyst forecasts)
 
 Outputs:
@@ -120,8 +120,8 @@ def setup_paths(config, timestamp):
         / "1_Inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
-        "siccodes48_file": root / "1_Inputs" / "Siccodes48.zip",
-        "siccodes12_file": root / "1_Inputs" / "Siccodes12.zip",
+        "siccodes48_file": root / "1_Inputs" / "FF1248" / "Siccodes48.zip",
+        "siccodes12_file": root / "1_Inputs" / "FF1248" / "Siccodes12.zip",
         "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
     }
 
