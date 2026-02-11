@@ -1,368 +1,253 @@
 # Coding Conventions
 
-**Analysis Date:** 2025-02-04
+**Analysis Date:** 2025-02-10
 
 ## Naming Patterns
 
 **Files:**
-- Follow strict naming pattern: `<Stage>.<Step>[.<Substep>]_<PascalCaseName>[.<ext>]`
-- Examples: `1.1_CleanMetadata.py`, `3.1_FirmControls.py`, `4.1.2_EstimateCeoClarity_Extended.py`
-- Regex: `^(1|2|3|4)\.(\d+)(?:\.(\d+))?_[A-Z][A-Za-z0-9]*(?:_[A-Z][A-Za-z0-9]*)*(?:\.[A-Za-z0-9]+)?$`
-- Stage mapping: `1=Inputs`, `2=Scripts`, `3=Logs`, `4=Outputs`
+- `snake_case.py` for all Python files
+- Test files: `test_<module>.py` in `tests/unit/` or `tests/integration/`
+- Edge case tests: `test_<module>_edge_cases.py`
+- Script naming: `<major>.<minor>_DescriptiveName.py` (e.g., `3.1_H1Variables.py`)
+- Shared utilities: `descriptive_name.py` in `2_Scripts/shared/`
 
 **Functions:**
-- snake_case for all function names
-- Descriptive verbs: `load_manifest`, `compute_compustat_controls`, `validate_dataframe_schema`
-- Test functions: `test_<function_name>_<scenario>`
+- `snake_case` for all functions
+- Private/internal functions: `_leading_underscore` (e.g., `_check_missing_values`, `_assign_industry_codes`)
+- Class methods: `snake_case` (not camelCase)
+- Functions that compute: prefix with `compute_` (e.g., `compute_cash_holdings`, `compute_leverage`)
+- Functions that validate: prefix with `validate_` (e.g., `validate_dataframe_schema`, `validate_columns`)
 
 **Variables:**
-- snake_case for local variables: `manifest_df`, `compustat_df`, `stats`
-- Constants: UPPER_SNAKE_CASE: `INPUT_SCHEMAS`, `ALLOWED_SCRIPT_DIR`
-- Private module-level: leading underscore not commonly used
+- `snake_case` for all variables
+- Constants: `UPPER_SNAKE_CASE` (e.g., `INPUT_SCHEMAS`, `ENV_SCHEMA`, `STATSMODELS_AVAILABLE`)
+- DataFrames: `df` for generic, `result_<name>` for return values (e.g., `result = df.merge()`)
+- Temporary loop variables: single letters or short names (e.g., `for gvkey, group in df.groupby()`)
 
-**Types:**
-- Type hints used extensively in function signatures
-- Example: `def load_manifest(manifest_dir) -> pd.DataFrame:`
-- Example: `def compute_firm_controls(row: pd.Series, compustat_df: pd.DataFrame, year: int) -> dict:`
-- Use `from typing import Dict, List, Optional, Any, Tuple`
-
-**Classes:**
-- PascalCase for class names: `DataValidationError`, `DualWriter`, `MemoryAwareThrottler`
-- Test classes: `Test<FunctionName>` (e.g., `TestValidateDataFrameSchema`)
+**Types/Classes:**
+- `PascalCase` for class names (rare - mostly exceptions in this codebase)
+- Exception suffix: `Error` for custom exceptions (e.g., `DataValidationError`, `RegressionValidationError`, `PathValidationError`)
 
 ## Code Style
 
 **Formatting:**
-- No explicit formatter detected (no .prettierrc, black.toml, or similar)
-- Use 4-space indentation (Python PEP 8 standard)
-- Line length appears to follow standard Python conventions
+- Ruff is used for linting (`.ruff_cache/` present)
+- No explicit `.ruff.toml` or `.pylintrc` - using Ruff defaults
+- Line length appears to be standard (80-120 characters based on code)
+- Indentation: 4 spaces (Python standard)
 
-**Linting:**
-- No explicit linter config file (.eslintrc, ruff.toml)
-- Code follows clean Python conventions with consistent patterns
+**Import Organization:**
 
-## Import Organization
+Standard order observed in `2_Scripts/3_Financial_V2/3.1_H1Variables.py`:
 
-**Order:**
-1. Standard library imports (`import sys`, `import os`, `from pathlib import Path`)
-2. Third-party imports (`import pandas as pd`, `import yaml`, `import pytest`)
-3. Local/shared module imports (`from shared.observability_utils import DualWriter`)
-
-**Path setup for shared modules:**
 ```python
-# Add parent directory to sys.path for shared module imports
-import sys as _sys
-from pathlib import Path as _Path
+#!/usr/bin/env python3
 
-_script_dir = Path(__file__).parent.parent
-_sys.path.insert(0, str(_script_dir))
+# 1. Standard library imports (grouped)
+import sys
+import os
+import argparse
+from pathlib import Path
+from datetime import datetime
+import hashlib
+import json
+import time
 
-from shared.observability_utils import DualWriter
-from shared.path_utils import validate_input_file
+# 2. Third-party imports
+import pandas as pd
+import numpy as np
+import yaml
+import psutil
+
+# 3. Local/application imports (absolute from 2_Scripts)
+from shared.path_utils import (
+    validate_output_path,
+    ensure_output_dir,
+)
+from shared.observability_utils import (
+    DualWriter,
+    compute_file_checksum,
+)
 ```
 
 **Path Aliases:**
-- Use absolute paths from project root
-- Root directory: `Path(__file__).parent.parent.parent` (from script in `2_Scripts/`)
-- Config: `root / "config" / "project.yaml"`
-- Inputs: `root / "1_Inputs"`
-- Outputs: `root / "4_Outputs"`
-- Logs: `root / "3_Logs"`
+- No path aliases configured
+- Use `from shared.<module> import <name>` for shared utilities
+- Add to sys.path when needed: `sys.path.insert(0, str(Path(__file__).parent.parent))`
 
 ## Error Handling
 
 **Patterns:**
 
-1. **Custom Exception Classes:**
+1. **Custom Exceptions:**
 ```python
 class DataValidationError(Exception):
     """Raised when input data validation fails."""
     pass
 
-class OutputResolutionError(Exception):
-    """Raised when output directory resolution fails."""
+class RegressionValidationError(Exception):
+    """Raised when regression input validation fails."""
+    pass
+
+class PathValidationError(Exception):
+    """Raised when path validation fails."""
     pass
 ```
 
-2. **File Validation with Errors:**
+2. **Exception Raising:**
 ```python
-from shared.path_utils import validate_input_file, OutputResolutionError
+# Clear, descriptive messages with context
+raise RegressionValidationError(
+    f"Missing required columns: {sorted(missing)}. "
+    f"Available: {sorted(df.columns)}"
+)
 
-def load_config():
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
-    validate_input_file(config_path, must_exist=True)
-    with open(config_path, "r") as f:
-        return yaml.safe_load(f)
+# Include what went wrong AND what was expected
+raise DataValidationError(
+    f"Validation failed for {file_path.name}:\n"
+    f"  File: {file_path}\n"
+    f"  Errors:\n    - " + "\n    - ".join(errors)
+)
 ```
 
-3. **Fail-Fast on Missing Inputs:**
+3. **Graceful Import Handling:**
 ```python
-if not manifest_file.exists():
-    raise FileNotFoundError(f"Manifest not found: {manifest_file}")
+try:
+    import statsmodels.formula.api as smf
+    STATSMODELS_AVAILABLE = True
+except ImportError:
+    STATSMODELS_AVAILABLE = False
+
+# Later check before use
+if not STATSMODELS_AVAILABLE:
+    raise ImportError("statsmodels required. Install: pip install statsmodels")
 ```
 
-4. **Graceful Degradation (optional):**
-```python
-# In non-strict mode, warn instead of raising
-if strict:
-    raise DataValidationError(error_msg)
-else:
-    print(f"WARNING: {error_msg}", file=sys.stderr)
-```
-
-5. **Subprocess Error Handling:**
-```python
-if result.returncode != 0:
-    print_dual(
-        f"\nERROR: Substep {step['id']} failed with exit code {result.returncode}"
-    )
-    if result.stderr:
-        print_dual(f"STDERR:\n{result.stderr}")
-    success = False
-    break
-```
+4. **Validation Functions Return or Raise:**
+- Validation functions either return normally (success) or raise custom exception
+- Use `strict` parameter to control behavior: `strict=True` raises, `strict=False` warns
 
 ## Logging
 
-**Framework:** DualWriter (custom in `shared/observability_utils.py`)
+**Framework:** Custom `DualWriter` from `shared.observability_utils`
 
-**Pattern:**
+**Patterns:**
+
 ```python
+# Setup logging to both file and terminal
 from shared.observability_utils import DualWriter
-
-# Setup dual logging (stdout + file)
-log_file = paths["log_file"]
-dual_writer = DualWriter(log_file)
+dual_writer = DualWriter(log_file_path)
 sys.stdout = dual_writer
 
-# All print statements go to both terminal and log file
-print("Processing data...")
-print_dual("Message with custom function")
+# Print output goes to both destinations
+print("=" * 60)
+print("STEP 3.1: H1 Cash Holdings Variables")
+print(f"Timestamp: {timestamp}")
+print("=" * 60)
 
-# Restore stdout when done
-sys.stdout = dual_writer.terminal
+# Cleanup at end
 dual_writer.close()
+sys.stdout = dual_writer.terminal
 ```
 
-**Log location:** `3_Logs/<StepName>/<timestamp>.log`
+**When to Log:**
+- Section headers with `===` separators
+- Progress updates with row counts: `print(f"  Loaded manifest: {len(df):,} calls")`
+- Warnings to stderr: `print(f"WARNING: {message}", file=sys.stderr)`
+- Statistics via helper: `print_stat("Manifest rows", value=len(manifest))`
 
-**When to log:**
-- Script start/end with timestamp
-- Major processing steps
-- Row counts before/after operations
-- Merge/join statistics
-- Error conditions
-- Warnings for non-fatal issues
+**Helper Functions:**
+- `print_stat(label, before/after/value, indent=2)` - formatted statistics
+- `print_stats_summary(stats_dict)` - summary table from statistics dict
+- `save_stats(stats_dict, output_dir)` - write `stats.json`
 
 ## Comments
 
 **When to Comment:**
-- Module header with contract block (required)
-- Complex business logic explanations
-- Algorithm justifications
-- Data source references
-- External library citations
+- Module-level docstrings explaining purpose, security notes, determinism
+- Function docstrings with Args/Returns/Raises (Google style)
+- Inline comments for non-obvious logic (financial formulas, data transformations)
+- Section separators in scripts: `# ==============================================================================`
 
-**Contract Header (each script):**
+**Docstring Pattern:**
+
+```python
+def compute_cash_holdings(compustat_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Compute Cash Holdings = CHE / AT
+
+    Args:
+        compustat_df: Compustat data with atq, cheq columns
+
+    Returns:
+        DataFrame with gvkey, fiscal_year, cash_holdings
+    """
+```
+
+**Module Docstring Pattern:**
+
 ```python
 #!/usr/bin/env python3
 """
-==============================================================================
-STEP <X>.<Y>: <PascalCase Name>
-==============================================================================
-ID: <X>_<Y>_<Name>
-Description: <What this step does>
-
-<Additional details about inputs/outputs/methodology>
+================================================================================
+SHARED MODULE: Regression Utilities
+================================================================================
+ID: shared/regression_utils
+Description: Provides common fixed effects OLS regression patterns for
+             econometric analysis. Handles statsmodels import errors gracefully
+             and extracts CEO fixed effects and model diagnostics.
 
 Inputs:
-    - <path to input 1>
-    - <path to input 2>
+    - pandas DataFrame with regression data
+    - statsmodels.formula.api (optional, raises ImportError if missing)
 
 Outputs:
-    - <path to output 1>
-    - <path to output 2>
+    - Fitted statsmodels OLS models
+    - CEO fixed effects as pandas Series
+    - Regression diagnostics as dictionary
 
 Deterministic: true
-==============================================================================
+================================================================================
 """
 ```
 
-**Documentation Comments:**
-```python
-def calculate_firm_controls(
-    row: pd.Series, compustat_df: pd.DataFrame, year: int
-) -> dict:
-    """
-    Calculate firm-level control variables from Compustat data.
-
-    Args:
-        row: DataFrame row with firm identifiers (gvkey, datadate)
-        compustat_df: Compustat data with firm metrics
-        year: Fiscal year for data selection
-
-    Returns:
-        Dictionary with: size (log assets), leverage, profitability,
-        market_to_book, capex_intensity, r_intensity, dividend_payer
-    """
-```
-
-**Inline Comments:**
-- Use for explaining WHY, not WHAT
-- Example: `# Treat missing R&D as 0 (common practice in finance literature)`
+**JSDoc/TSDoc:**
+- Not applicable (Python codebase)
+- Use Google-style Python docstrings with Args/Returns/Raises sections
 
 ## Function Design
 
 **Size:**
-- Prefer functions under 50 lines
-- Large functions allowed for orchestration (e.g., `main()` functions)
-- Shared module utilities kept focused
+- Functions should be < 50 lines
+- Split large computations into multiple helper functions
+- Each function does one thing well
 
 **Parameters:**
-- Use type hints for all parameters
-- Default values for optional parameters: `strict: bool = True`
-- Use `**kwargs` sparingly
+- Use type hints for all parameters: `df: pd.DataFrame`, `strict: bool = True`
+- Optional parameters with sensible defaults
+- DataFrames passed as first argument (method chaining style)
 
 **Return Values:**
-- Always return concrete types (dict, DataFrame, tuple)
-- Use `None` for failure/missing data cases
-- Return early for error conditions
-
-**Pattern:**
-```python
-def function_name(param1: Type, param2: Type) -> ReturnType:
-    """Brief description."""
-    # Setup
-    result = []
-
-    # Processing
-    for item in items:
-        processed = transform(item)
-        result.append(processed)
-
-    # Return
-    return pd.DataFrame(result)
-```
+- Always return typed values: `-> pd.DataFrame`, `-> Dict[str, Any]`
+- Return None for validation functions (raise on error)
+- Return Series/DataFrame for data transformations
+- Return dict for statistics/results
 
 ## Module Design
 
 **Exports:**
-- Shared modules use `__all__` for explicit exports
-- Example from `shared/dual_writer.py`:
-```python
-__all__ = ["DualWriter"]
-```
+- `__init__.py` in `shared/` defines explicit `__all__` list
+- Re-export commonly used utilities at package level
 
 **Barrel Files:**
-- `shared/__init__.py` exports commonly used utilities:
-```python
-from .observability_utils import DualWriter
-from .industry_utils import parse_ff_industries
-from .metadata_utils import load_variable_descriptions
-from .path_utils import get_latest_output_dir, OutputResolutionError
-```
+- `2_Scripts/shared/__init__.py` acts as barrel for shared utilities
+- Explicit exports: `DualWriter`, `parse_ff_industries`, `run_panel_ols`, etc.
 
-**Shared Module Organization:**
-- `shared/observability_utils.py` - Statistics, monitoring, logging
-- `shared/path_utils.py` - Path resolution, validation
-- `shared/data_validation.py` - Schema validation
-- `shared/financial_utils.py` - Financial calculations
-- `shared/regression_helpers.py` - Statistical modeling
-- `shared/dual_writer.py` - Logging re-export
-
-## Determinism Guidelines
-
-**Randomness Control:**
-- Read seeds from `config/project.yaml`:
-```python
-config = yaml.safe_load(config_file)
-random_seed = config["determinism"]["random_seed"]
-np.random.seed(random_seed)
-```
-
-**Thread Count:**
-- Pin thread counts from config:
-```python
-thread_count = config["determinism"]["thread_count"]
-```
-
-**Sort Order:**
-- Always sort before processing to avoid filesystem order effects:
-```python
-compustat_df = compustat_df.sort_values(["gvkey", "datadate"])
-```
-
-**Checksum Tracking:**
-- Compute input file checksums for reproducibility:
-```python
-from shared.observability_utils import compute_file_checksum
-checksum = compute_file_checksum(input_path)
-stats["input"]["checksums"][filename] = checksum
-```
-
-## Data Processing Patterns
-
-**Column Pruning:**
-```python
-# Load only required columns to save memory
-required_cols = ["gvkey", "datadate", "atq", "ceqq"]
-df = pd.read_parquet(file_path, columns=required_cols)
-```
-
-**Vectorized Operations:**
-```python
-# Use merge_asof instead of iterrows for matching
-merged = pd.merge_asof(
-    manifest_sorted,
-    compustat_sorted,
-    left_on="start_date",
-    right_on="datadate",
-    by="gvkey",
-    direction="backward",
-)
-```
-
-**Winsorization:**
-```python
-if winsorize:
-    p1, p99 = df[col].quantile([0.01, 0.99])
-    df[col] = df[col].clip(lower=p1, upper=p99)
-```
-
-## Observable Patterns
-
-**Statistics Collection:**
-```python
-stats = {
-    "step_id": "3.1_FirmControls",
-    "timestamp": timestamp,
-    "input": {"files": [], "checksums": {}, "total_rows": 0},
-    "processing": {},
-    "output": {"final_rows": 0, "files": [], "checksums": {}},
-    "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
-    "memory": {"start_mb": mem_start, "end_mb": 0.0, "peak_mb": 0.0},
-    "throughput": {"rows_per_second": 0.0},
-}
-```
-
-**Memory Tracking:**
-```python
-from shared.observability_utils import get_process_memory_mb
-mem_start = get_process_memory_mb()
-# ... processing ...
-mem_end = get_process_memory_mb()
-stats["memory"]["delta_mb"] = mem_end["rss_mb"] - mem_start["rss_mb"]
-```
-
-**Timing:**
-```python
-import time
-start_time = time.perf_counter()
-# ... processing ...
-duration = time.perf_counter() - start_time
-stats["timing"]["duration_seconds"] = round(duration, 2)
-```
+**Shared Utilities Location:**
+- `2_Scripts/shared/<module>.py` for reusable code
+- Organized by purpose: `regression_utils.py`, `data_validation.py`, `path_utils.py`
+- Import as: `from shared.<module> import <function>`
 
 ---
 
-*Convention analysis: 2025-02-04*
+*Convention analysis: 2025-02-10*
