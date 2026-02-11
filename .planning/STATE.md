@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 61-documentation (v3.0 Documentation)
-Status: Phase 61 Plan 04 COMPLETE (3/TBD plans)
-Last activity: 2026-02-11 - Completed 61-04: V2/V3 variable catalog
+Status: Phase 61 Plan 03 COMPLETE (4/TBD plans)
+Last activity: 2026-02-11 - Completed 61-03: V1 variable catalog
 
 ### Next Phase
 
@@ -51,7 +51,7 @@ Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically 
 Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression complete (5,295 obs, interaction NOT SIGNIFICANT p=0.76, H9 NOT SUPPORTED)
 Phase 59: Critical Bug Fixes [COMPLETE - 3/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Exception-based Error Handling COMPLETE (FinancialCalculationError added to data_validation.py, empty returns replaced with raises in calculate_firm_controls and calculate_firm_controls_quarterly, 8 unit/integration tests created); 59-03 calculate_throughput Error Handling COMPLETE (raises ValueError with logging, 10 unit tests, H1/H2/H3/H7/H8 callers updated with try/except)
 Phase 60: Code Organization [COMPLETE - 5/5 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified); 60-02 Create READMEs COMPLETE (created 6 README.md files for Financial V1/V3, Econometric V1/V3, Sample, Text directories; clarified V1/V2/V3 structure through documentation; no directory renaming per constraint); 60-03 Observability Package Structure COMPLETE (split 4,668-line observability_utils.py into 7 focused modules: logging, stats, files, memory, throughput, anomalies; maintained 100% backward compatibility via re-exports; 54/55 calling scripts verified); 60-04-A Ruff Linting and Formatting COMPLETE (configured Ruff in pyproject.toml with Black-compatible settings; auto-fixed 830 issues; fixed 5 critical undefined-name bugs; formatted codebase; reduced errors from 1038 to 175); 60-04-B Type Checking and Dead Code Detection COMPLETE (configured mypy for progressive rollout with 221 type errors documented; ran vulture finding 17 dead code candidates; created comprehensive CODE-QUALITY-REPORT.md with B+ baseline grade; recommendations provided for type hints rollout)
-Phase 61: Documentation [IN PROGRESS - 3/TBD plans] → 61-01 Repository-Level README Enhancement COMPLETE (verified all 8 DOC-01 requirements; enhanced License and Contact sections; README.md 1,452 lines with comprehensive project overview, installation, quick start, pipeline structure, data sources, computational requirements; all referenced paths validated); 61-02 Script Header Standardization COMPLETE (standardized headers across all 79 Python scripts with Dependencies, Author, Date fields; created SCRIPT_DOCSTANDARD.md and DOCSTRING_COMPLIANCE.md; 100% DOC-02 compliance achieved; all shared modules have complete module-level docstrings with Main Functions sections); 61-04 V2/V3 Variable Catalog COMPLETE (comprehensive catalog of 39+ hypothesis-specific variables for H1-H9; source scripts, formulas, sample characteristics documented; V1 to V2/V3 cross-reference created; deterministic construction properties documented)
+Phase 61: Documentation [IN PROGRESS - 4/TBD plans] → 61-01 Repository-Level README Enhancement COMPLETE (verified all 8 DOC-01 requirements; enhanced License and Contact sections; README.md 1,452 lines with comprehensive project overview, installation, quick start, pipeline structure, data sources, computational requirements; all referenced paths validated); 61-02 Script Header Standardization COMPLETE (standardized headers across all 79 Python scripts with Dependencies, Author, Date fields; created SCRIPT_DOCSTANDARD.md and DOCSTRING_COMPLIANCE.md; 100% DOC-02 compliance achieved; all shared modules have complete module-level docstrings with Main Functions sections); 61-03 V1 Variable Catalog COMPLETE (comprehensive catalog of 132 V1 variables from F1D pipeline; organized by pipeline step: Sample identifiers (28), Text/Linguistic (72), Financial (13), Market (6), Model (13); searchable indices: alphabetical list, category index, data dictionary with field abbreviations; linguistic variable formulas and statistics documented); 61-04 V2/V3 Variable Catalog COMPLETE (comprehensive catalog of 39+ hypothesis-specific variables for H1-H9; source scripts, formulas, sample characteristics documented; V1 to V2/V3 cross-reference created; deterministic construction properties documented)
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -145,6 +145,9 @@ Phase 61: Documentation [IN PROGRESS - 3/TBD plans] → 61-01 Repository-Level R
 - [Phase 61-02 Header Standardization] Date format must be ISO 8601 (YYYY-MM-DD) for all Date fields in headers
 - [Phase 61-02 Header Standardization] Main Functions section limits to key exported functions (5 max) to keep docstrings concise
 - [Phase 61-02 Header Standardization] Deterministic Flag set to "true" for all pipeline scripts to indicate reproducible behavior
+- [Phase 61-03 V1 Variable Catalog] Catalog format: Organized by pipeline step rather than alphabetical for research context preservation
+- [Phase 61-03 V1 Variable Catalog] Search indices: Collapsible Markdown section to reduce visual clutter while maintaining full searchability
+- [Phase 61-03 V1 Variable Catalog] Variable naming pattern: {Speaker}_{Context}_{Category}_pct for all 72 linguistic variables with 5 speaker types (Manager, CEO, NonCEO_Manager, Analyst, Entire), 3 contexts (QA, Pres, All), 7 categories (Negative, Positive, Uncertainty, Litigious, Strong_Modal, Weak_Modal, Constraining)
 - [Phase 41-01 Feasibility] HIGH: Weak Modal -> M&A Target (95K deals), Stock Returns (CRSP), Analyst Dispersion (264K H5 verified)
 - [Phase 41-01 Feasibility] MEDIUM: Weak Modal -> CEO Turnover (1,059 events), Compensation (4,170 firms)
 - [Phase 41-02 Literature Review] 10 novel hypotheses identified, 6 Tier-1 (>=0.85) prioritized for power analysis
@@ -480,7 +483,22 @@ All files and commits verified for Phase 58-01:
 
 ### Current Session (2026-02-11)
 
-**Phase 60-04-B COMPLETE:**
+**Phase 61-03 COMPLETE:**
+- Created comprehensive V1 variable catalog: docs/VARIABLE_CATALOG_V1.md
+- Documented all 132 V1 variables from F1D pipeline organized by step
+- Step 1: Sample identifiers (28), Step 2: Text/Linguistic (72), Step 3: Financial (13), Market (6), Step 4: Model (13)
+- Added searchable indices: alphabetical list, category index, data dictionary
+- Included linguistic variable formulas and complete statistics
+- 1 commit: e013b45 (V1 variable catalog)
+- SUMMARY: 61-03-SUMMARY.md created
+
+**Phase 61-03 Key Changes:**
+- Catalog format: Organized by pipeline step for research context
+- Variable naming pattern: {Speaker}_{Context}_{Category}_pct documented
+- Data dictionary with all Compustat/CRSP/IBES field abbreviations
+- Searchable Markdown indices for quick variable lookup
+
+**Phase 60-04-B COMPLETE (Earlier):**
 - Configured mypy for progressive type checking rollout (exclude non-shared scripts)
 - Ran mypy on shared utilities: 221 type errors in 17 files documented
 - Ran vulture: 17 dead code candidates (13 imports, 4 variables) identified
