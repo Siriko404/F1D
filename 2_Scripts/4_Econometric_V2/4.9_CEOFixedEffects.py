@@ -44,6 +44,12 @@ Outputs:
     - 4_Outputs/4.9_CEOFixedEffects/{timestamp}/report_step56.md
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 4.1-4.8
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

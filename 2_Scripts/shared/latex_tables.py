@@ -18,6 +18,12 @@ Outputs:
     - Optionally writes to file
 
 Deterministic: true
+Dependencies:
+    - Utility module for LaTeX table generation
+    - Uses: pandas
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

@@ -1,3 +1,34 @@
+#!/usr/bin/env python3
+"""
+==============================================================================
+STEP 2.2: Construct Linguistic Variables
+==============================================================================
+ID: 2.2_ConstructVariables
+Description: Constructs linguistic variables from word frequency data.
+
+Purpose: Aggregates word-level statistics into call-level linguistic
+         measures for regression analysis.
+
+Inputs:
+    - 4_Outputs/2.1_TokenizeAndCount/latest/word_counts.parquet
+    - Linguistic dictionary files
+
+Outputs:
+    - 4_Outputs/2_Textual_Analysis/2.2_Variables/{timestamp}/linguistic_variables.parquet
+    - stats.json
+    - {timestamp}.log
+
+Dependencies:
+    - Requires: Step 2.1
+    - Uses: pandas, numpy
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+==============================================================================
+"""
+
 import argparse
 import hashlib
 import json
@@ -60,6 +91,12 @@ def setup_logging():
 def parse_arguments():
     """Parse command-line arguments for 2.2_ConstructVariables.py."""
     parser = argparse.ArgumentParser(
+Dependencies:
+    - Requires: Step 2.1
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
         description="""
 STEP 2.2: Construct Text Variables
 

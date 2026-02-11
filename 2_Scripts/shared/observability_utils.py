@@ -22,6 +22,12 @@ The actual implementation has been moved to:
     - shared.observability.anomalies: Anomaly detection
 
 Deterministic: true
+Dependencies:
+    - Utility module for observability (deprecated - use observability/ subpackage)
+    - Uses: pandas, numpy, time
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

@@ -1,9 +1,29 @@
+#!/usr/bin/env python3
 """
-ID: industry_utils
-Description: Fama-French industry classification utilities
-Declared Inputs: Fama-French industry classification files (FF_Industry_Portfolios.zip)
-Declared Outputs: parse_ff_industries() function
-deterministic: true
+================================================================================
+SHARED MODULE: Industry Classification Utilities
+================================================================================
+ID: shared/industry_utils
+Description: Fama-French industry classification utilities.
+
+Purpose: Parse and handle Fama-French industry classifications from SIC codes.
+
+Inputs:
+    - Fama-French industry classification files (FF_Industry_Portfolios.zip)
+    - SIC codes
+
+Outputs:
+    - Industry classification mappings
+
+Dependencies:
+    - Utility module for industry classifications
+    - Uses: pandas, numpy
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
 """
 
 import zipfile

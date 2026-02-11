@@ -17,6 +17,12 @@ Outputs:
     - Printed error messages with actionable next steps
 
 Deterministic: true
+Dependencies:
+    - Utility module for dependency checking
+    - Uses: sys, importlib
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

@@ -3,6 +3,9 @@
 ==============================================================================
 STEP 4.1: Estimate CEO Fixed Effects & Compute Clarity Scores
 ==============================================================================
+ID: 4.1_EstimateCeoClarity
+Description: Estimate CEO "Clarity" as a personal communication trait using
+             fixed effects OLS regression by industry.
 
 Purpose:
     Estimate CEO "Clarity" as a personal communication trait using fixed effects
@@ -25,6 +28,12 @@ Outputs:
     - 4_Outputs/4.1_CeoClarity/{timestamp}/report_step4_1.md
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.1
+    - Uses: shared.regression_utils, shared.panel_ols, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

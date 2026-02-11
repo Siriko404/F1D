@@ -1,41 +1,38 @@
 #!/usr/bin/env python3
-
 """
-
 ==============================================================================
-
 STEP 3.2: Build Market Variables (VECTORIZED + CHUNKED)
-
 ==============================================================================
-
 ID: 3.2_MarketVariables
-
 Description: Computes stock returns and liquidity measures from CRSP.
-
              Uses vectorized pandas operations with year-based chunking
-
              for memory efficiency.
 
-
-
 Variables Computed:
-
     - StockRet: Compound stock return (prev_call+5d to call-5d)
-
     - MarketRet: Value-weighted market return over same window
-
     - Amihud: Illiquidity measure (mean of |ret|/volume)
-
     - Corwin_Schultz: High-low spread estimator
-
     - Delta_Amihud, Delta_Corwin_Schultz: Event - Baseline
 
+Inputs:
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - 1_Inputs/CRSP/*.parquet
 
+Outputs:
+    - 4_Outputs/3_Financial_Features/{timestamp}/market_variables_{year}.parquet
+    - stats.json
+    - {timestamp}.log
 
 Deterministic: true
 
-==============================================================================
+Dependencies:
+    - Requires: Step 1.4
+    - Uses: 3.4_Utils, shared.financial_utils, pandas
 
+Author: Thesis Author
+Date: 2026-02-11
+==============================================================================
 """
 
 import argparse

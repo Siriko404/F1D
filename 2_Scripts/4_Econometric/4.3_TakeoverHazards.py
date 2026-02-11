@@ -3,6 +3,7 @@
 ==============================================================================
 STEP 4.3: Takeover Hazards (Cox PH and Fine-Gray Competing Risks)
 ==============================================================================
+ID: 4.3_TakeoverHazards
 Description: Analyzes how CEO Clarity and Q&A Uncertainty predict takeover
              probability using survival analysis.
 
@@ -24,7 +25,18 @@ Inputs:
     - 1_Inputs/SDC/sdc-ma-merged.parquet
 
 Outputs:
-    - 4_Outputs/4.3_TakeoverHazards/TIMESTAMP/
+    - 4_Outputs/4.3_TakeoverHazards/{timestamp}/
+    - stats.json
+    - {timestamp}.log
+
+Deterministic: true
+
+Dependencies:
+    - Requires: Step 3.3
+    - Uses: shared.regression_utils, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

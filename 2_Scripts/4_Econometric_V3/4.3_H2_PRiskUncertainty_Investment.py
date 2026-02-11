@@ -31,6 +31,12 @@ Outputs:
       (execution log with dual-writer output)
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 4.2_H2_PRiskUncertaintyMerge
+    - Uses: shared.regression_utils, shared.panel_ols, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

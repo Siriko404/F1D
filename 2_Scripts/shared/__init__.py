@@ -1,5 +1,29 @@
+#!/usr/bin/env python3
 """
-Shared utilities for all pipeline scripts.
+================================================================================
+SHARED PACKAGE: Shared Utilities
+================================================================================
+ID: shared
+Description: Shared utilities for all pipeline scripts.
+
+Purpose: Provides common utilities and modules used across pipeline steps.
+
+Exports:
+    - centering: Variable centering functions
+    - diagnostics: Regression diagnostics
+    - industry_utils: Fama-French industry classifications
+    - metadata_utils: Variable descriptions
+    - observability_utils: Logging and statistics
+    - panel_ols: Panel OLS regression
+    - path_utils: Output path resolution
+
+Dependencies:
+    - Package initialization
+    - Re-exports: centering, diagnostics, panel_ols, path_utils, etc.
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
 """
 
 from .centering import center_continuous, create_interaction

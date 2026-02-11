@@ -18,6 +18,12 @@ Outputs:
     - Available disk space in GB
 
 Deterministic: true
+Dependencies:
+    - Utility module for path utilities
+    - Uses: pathlib
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

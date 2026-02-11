@@ -20,6 +20,12 @@ Outputs:
     - CSV file with variable reference table
 
 Deterministic: true
+Dependencies:
+    - Utility module for reporting
+    - Uses: pandas, pathlib
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

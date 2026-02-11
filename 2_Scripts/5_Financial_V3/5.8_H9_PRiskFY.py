@@ -32,6 +32,12 @@ Declared Outputs:
     - priskfy.parquet: gvkey, fyear, PRiskFY, n_quarters_used
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 4.x
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

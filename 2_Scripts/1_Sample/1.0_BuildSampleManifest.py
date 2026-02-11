@@ -23,6 +23,12 @@ Outputs:
     - 3_Logs/1.0_BuildSampleManifest/{timestamp}.log
 
 Deterministic: true
+Dependencies:
+    - Requires: 1_Inputs/Unified-info.parquet
+    - Uses: pandas, yaml
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

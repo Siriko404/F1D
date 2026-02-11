@@ -33,6 +33,12 @@ Outputs:
     - 3_Logs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}_H6.log
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.6_H6Variables
+    - Uses: shared.regression_utils, shared.panel_ols, shared.diagnostics, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

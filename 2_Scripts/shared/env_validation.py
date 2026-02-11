@@ -1,18 +1,32 @@
+#!/usr/bin/env python3
 """
-Environment Variable Validation Module
+================================================================================
+SHARED MODULE: Environment Variable Validation
+================================================================================
+ID: shared/env_validation
+Description: Schema-based validation for environment variables.
 
-Provides schema-based validation for environment variables, ready for future
-use when adding external services (WRDS credentials, API keys).
+Purpose: Validates environment variables against defined schema for future
+         use when adding external services (WRDS credentials, API keys).
 
 Security:
-- Validates environment variables against defined schema
-- Applies defaults for optional variables
-- Raises clear errors on validation failures
+    - Validates environment variables against defined schema
+    - Applies defaults for optional variables
+    - Raises clear errors on validation failures
 
-Note: Current codebase doesn't use environment variables yet.
-This module is preparatory infrastructure for future .env support.
+Inputs:
+    - Environment variable names and schemas
 
-Source: Python os.environ documentation
+Outputs:
+    - Validated environment variables
+
+Dependencies:
+    - Utility module for environment validation
+    - Uses: os, sys
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
 """
 
 import os

@@ -7,6 +7,12 @@ id: shared.string_matching
 description: String matching utilities with config-driven thresholds using RapidFuzz
 inputs: config/project.yaml (string_matching section)
 outputs: Fuzzy match results with scores
+Dependencies:
+    - Utility module for string matching
+    - Uses: pandas, numpy, fuzzywuzzy
+
+Author: Thesis Author
+Date: 2026-02-11
 deterministic: true
 """
 

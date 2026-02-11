@@ -22,6 +22,12 @@ Deterministic: true
 
 Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
       chunked processing. Current implementation uses column pruning for memory optimization.
+Dependencies:
+    - Requires: Step 3.1
+    - Uses: 3.4_Utils, pandas
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

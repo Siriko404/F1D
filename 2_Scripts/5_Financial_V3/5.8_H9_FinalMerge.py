@@ -43,6 +43,12 @@ Declared Outputs:
     - sanity_checks: Mandatory verification of data quality
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 5.8_H9_*
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

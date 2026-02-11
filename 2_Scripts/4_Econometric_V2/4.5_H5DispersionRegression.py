@@ -34,6 +34,12 @@ Outputs:
     - 3_Logs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}_H5.log
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.5_H5Variables
+    - Uses: shared.regression_utils, shared.panel_ols, shared.diagnostics, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

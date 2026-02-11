@@ -3,6 +3,8 @@
 ==============================================================================
 STEP 4.4: Generate Summary Statistics
 ==============================================================================
+ID: 4.4_GenerateSummaryStats
+Description: Generate comprehensive summary statistics for analysis dataset.
 
 Purpose:
     Generate comprehensive summary statistics for analysis dataset including
@@ -21,6 +23,12 @@ Outputs:
     - 4_Outputs/4.1_CeoClarity/{timestamp}/summary_report.md
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.x
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
 """
-Regression Validation Module
-
-Provides regression input validation to catch data issues before model
-estimation. Validates columns, data types, missing values, and sample size.
+================================================================================
+SHARED MODULE: Regression Validation
+================================================================================
+ID: shared/regression_validation
+Description: Provides regression input validation to catch data issues.
 
 Purpose: Ensure regression models run correctly and produce valid results
-by validating inputs before estimation.
+         by validating inputs before estimation.
 
-Security:
-- Validates regression inputs before model estimation
-- Catches missing columns, type mismatches, and missing values
-- Provides clear error messages for debugging
-- Checks sample size and multicollinearity
+Inputs:
+    - Regression DataFrames
+    - Variable specifications
 
-Note: Validation is opt-in per script. Scripts can adopt this
-pattern incrementally as needed.
+Outputs:
+    - Validation results
+    - Error messages for debugging
 
+Dependencies:
+    - Utility module for regression validation
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
+"""
 Deterministic: true
 """
 

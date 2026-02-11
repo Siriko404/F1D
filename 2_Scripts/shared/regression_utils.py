@@ -18,6 +18,12 @@ Outputs:
     - Regression diagnostics as dictionary
 
 Deterministic: true
+Dependencies:
+    - Utility module for regression utilities
+    - Uses: pandas, numpy, statsmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

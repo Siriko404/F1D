@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
+==============================================================================
 STEP 4.2: Liquidity Regressions (OLS and 2SLS)
 ==============================================================================
+ID: 4.2_LiquidityRegressions
+Description: Test whether CEO/Manager communication affects market liquidity
+             around earnings calls using IV regression.
 
 Purpose:
     Test whether CEO/Manager communication affects market liquidity around
@@ -38,6 +42,12 @@ Outputs:
     - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/report_step4_2.md
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.3
+    - Uses: shared.regression_utils, shared.panel_ols, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

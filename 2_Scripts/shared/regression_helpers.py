@@ -16,6 +16,12 @@ Outputs:
     - Model configuration dictionaries
 
 Deterministic: true
+Dependencies:
+    - Utility module for regression helpers
+    - Uses: pandas, numpy, statsmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

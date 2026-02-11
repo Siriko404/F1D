@@ -39,6 +39,12 @@ Key Specification:
     - Rationale: Standardization yields interpretable coefficients (one SD change)
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 4.1_H2_BiddleInvestmentResidual
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

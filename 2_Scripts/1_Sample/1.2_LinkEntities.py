@@ -25,6 +25,12 @@ Outputs:
     - 3_Logs/1.2_LinkEntities/{timestamp}.log
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 1.1
+    - Uses: pandas, numpy, fuzzywuzzy
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

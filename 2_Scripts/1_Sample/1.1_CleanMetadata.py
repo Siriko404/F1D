@@ -19,6 +19,12 @@ Outputs:
     - 3_Logs/1.1_CleanMetadata/{timestamp}.log
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 1.0
+    - Uses: 1.5_Utils, pandas, yaml
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-STEP 4.1: Estimate CEO Fixed Effects & Compute Clarity Scores
+STEP 4.1.3: Estimate CEO Clarity (Regime Analysis)
 ==============================================================================
+ID: 4.1.3_EstimateCeoClarity_Regime
+Description: Estimate CEO "Clarity" across different time periods/regimes.
+
 Purpose:
     Estimate CEO "Clarity" as a personal communication trait using fixed effects
     OLS regression. Runs 3 separate regressions by FF12 industry classification:
@@ -24,6 +27,12 @@ Outputs:
     - 4_Outputs/4.1_CeoClarity/{timestamp}/report_step4_1.md
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.1
+    - Uses: shared.regression_utils, shared.panel_ols, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

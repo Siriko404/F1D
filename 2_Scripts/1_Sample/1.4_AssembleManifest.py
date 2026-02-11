@@ -19,6 +19,12 @@ Outputs:
     - 3_Logs/1.4_AssembleManifest/{timestamp}.log
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 1.3
+    - Uses: 1.5_Utils, pandas
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

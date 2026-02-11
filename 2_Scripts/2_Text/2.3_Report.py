@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 ================================================================================
 Script: 2.3_Report.py
@@ -10,6 +11,12 @@ Inputs:
 Outputs:
     - 4_Outputs/2.3_Report/YYYY-MM-DD_HHMMSS/report.html
 Deterministic: true
+Dependencies:
+    - Requires: Step 2.2
+    - Uses: pandas, markdown
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

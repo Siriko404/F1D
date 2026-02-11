@@ -30,6 +30,12 @@ Declared Outputs:
     - format_vif_table() returns formatted string for console output
 
 Deterministic: true
+Dependencies:
+    - Utility module for regression diagnostics
+    - Uses: pandas, numpy, statsmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

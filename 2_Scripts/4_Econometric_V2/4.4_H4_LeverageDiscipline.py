@@ -38,6 +38,12 @@ Outputs:
       (execution log with dual-writer output)
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.x
+    - Uses: shared.regression_utils, shared.panel_ols, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

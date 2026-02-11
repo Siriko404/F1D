@@ -15,6 +15,12 @@ Outputs:
     - Combined DataFrame with all data sources merged
 
 Deterministic: true
+Dependencies:
+    - Utility module for data loading
+    - Uses: pandas, pathlib
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

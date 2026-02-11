@@ -31,6 +31,12 @@ Declared Outputs:
     - save_centered_intermediates() saves parquet + JSON for audit trail
 
 Deterministic: true
+Dependencies:
+    - Utility module for mean-centering variables
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

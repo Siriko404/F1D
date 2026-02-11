@@ -1,19 +1,42 @@
+#!/usr/bin/env python3
 """
-Data Validation Module
+================================================================================
+SHARED MODULE: Data Validation
+================================================================================
+ID: shared/data_validation
+Description: Provides schema-based validation for input files.
 
-Provides schema-based validation for input files to catch corrupted or
-malicious data early in the pipeline.
+Purpose: Validates input files against expected schemas to catch corrupted
+         or malicious data early in the pipeline.
 
 Security:
-- Validates input files against expected schemas before processing
-- Checks required columns, column types, and value ranges
-- Supports strict mode (raise error) vs non-strict (warn and continue)
+    - Validates input files against expected schemas before processing
+    - Checks required columns, column types, and value ranges
+    - Supports strict mode (raise error) vs non-strict (warn and continue)
 
-Note: Validation is opt-in per script. Scripts can adopt this
-pattern incrementally as needed.
+Inputs:
+    - pandas DataFrame
+    - Schema definition
 
-Source: Pandas DataFrame validation patterns
+Outputs:
+    - Validation result (pass/fail)
+    - Error messages (if validation fails)
+
+Dependencies:
+    - Utility module for data validation
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
+"""
 Source: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.dtypes.html
+Dependencies:
+    - Utility module for data validation
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 """
 
 import sys

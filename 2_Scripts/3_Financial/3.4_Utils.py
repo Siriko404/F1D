@@ -1,7 +1,31 @@
 #!/usr/bin/env python3
 """
-Shared utilities for Step 3 scripts.
-Provides common functions for variable reference generation.
+==============================================================================
+STEP 3.4: Utilities for Step 3
+==============================================================================
+ID: 3.4_Utils
+Description: Shared utilities for Step 3 scripts.
+
+Purpose: Provides common functions for variable reference generation
+         and other Step 3 operations.
+
+Inputs:
+    - Variable definition files
+    - DataFrames requiring variable references
+
+Outputs:
+    - Variable reference files
+    - Variable lookup dictionaries
+
+Dependencies:
+    - Utility module for Step 3
+    - Uses: pandas, numpy
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+==============================================================================
 """
 
 from pathlib import Path

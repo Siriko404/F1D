@@ -1,9 +1,28 @@
+#!/usr/bin/env python3
 """
-ID: metadata_utils
-Description: Variable description loading utilities
-Declared Inputs: Variable reference files (tab-separated with headers)
-Declared Outputs: load_variable_descriptions() function
-deterministic: true
+================================================================================
+SHARED MODULE: Metadata Utilities
+================================================================================
+ID: shared/metadata_utils
+Description: Variable description loading utilities.
+
+Purpose: Load and manage variable descriptions from reference files.
+
+Inputs:
+    - Variable reference files (tab-separated with headers)
+
+Outputs:
+    - load_variable_descriptions() function
+
+Dependencies:
+    - Utility module for metadata handling
+    - Uses: json, pathlib
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
 """
 
 from pathlib import Path

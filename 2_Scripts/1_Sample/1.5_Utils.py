@@ -1,7 +1,31 @@
 #!/usr/bin/env python3
 """
-Shared utilities for Step 1 scripts.
-Provides common functions for variable reference generation.
+==============================================================================
+STEP 1.5: Utilities for Step 1
+==============================================================================
+ID: 1.5_Utils
+Description: Shared utilities for Step 1 scripts.
+
+Purpose: Provides common functions for variable reference generation
+         and other Step 1 operations.
+
+Inputs:
+    - Variable definition files
+    - DataFrames requiring variable references
+
+Outputs:
+    - Variable reference files
+    - Variable lookup dictionaries
+
+Dependencies:
+    - Utility module for Step 1
+    - Uses: pandas, numpy
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+==============================================================================
 """
 
 from pathlib import Path

@@ -1,16 +1,32 @@
+#!/usr/bin/env python3
 """
-Subprocess Path Validation Module
+================================================================================
+SHARED MODULE: Subprocess Validation
+================================================================================
+ID: shared/subprocess_validation
+Description: Secure subprocess execution with path validation.
 
-Provides secure subprocess execution with path validation to prevent
-path traversal attacks (CWE-427: Uncontrolled Search Path Element).
+Purpose: Provides secure subprocess execution to prevent path traversal attacks
+         (CWE-427: Uncontrolled Search Path Element).
 
 Security:
-- Validates all script paths are within allowed directories
-- Uses absolute paths (Path.resolve())
-- Prevents execution of scripts outside intended directories
+    - Validates all script paths are within allowed directories
+    - Uses absolute paths (Path.resolve())
+    - Prevents execution of scripts outside intended directories
 
-Source: Python subprocess and pathlib documentation
-Source: https://cwe.mitre.org/data/definitions/427.html
+Inputs:
+    - Script paths to validate
+
+Outputs:
+    - Validated subprocess execution
+
+Dependencies:
+    - Utility module for subprocess validation
+    - Uses: subprocess, sys
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
 """
 
 import subprocess

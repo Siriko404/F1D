@@ -1,12 +1,33 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-STEP 3: Build Financial Features (Orchestrator)
+STEP 3.0: Build Financial Features (Orchestrator)
 ==============================================================================
-Coordinates 3.1, 3.2, 3.3 to write ALL outputs to a single timestamped folder.
+ID: 3.0_BuildFinancialFeatures
+Description: Coordinates 3.1, 3.2, 3.3 to write ALL outputs to a single
+             timestamped folder.
 
-Note: MemoryAwareThrottler from shared/chunked_reader.py is available for future
-      chunked processing. Current implementation uses column pruning for memory optimization.
+Purpose: Orchestrates the execution of Step 3.1, 3.2, and 3.3 scripts
+         to build financial features with unified output directory.
+
+Inputs:
+    - 4_Outputs/2.2_Variables/latest/*.parquet
+    - 1_Inputs/compustat/*.parquet
+    - 1_Inputs/tr_ibes/*.parquet
+
+Outputs:
+    - 4_Outputs/3_Financial_Features/{timestamp}/*.parquet
+    - stats.json
+    - {timestamp}.log
+
+Dependencies:
+    - Requires: Step 2.2
+    - Uses: pandas, numpy
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

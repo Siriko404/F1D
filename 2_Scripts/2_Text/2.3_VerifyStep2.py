@@ -1,3 +1,31 @@
+#!/usr/bin/env python3
+"""
+==============================================================================
+STEP 2.3: Verify Step 2 Output
+==============================================================================
+ID: 2.3_VerifyStep2
+Description: Verification script for Step 2 output validation.
+
+Purpose: Validates the output of Step 2.2 for completeness and correctness.
+
+Inputs:
+    - 4_Outputs/2.2_Variables/latest/*.parquet
+
+Outputs:
+    - Validation report
+    - Log file
+
+Dependencies:
+    - Requires: Step 2.2
+    - Uses: pandas, yaml
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+==============================================================================
+"""
+
 import argparse
 import hashlib
 import json
@@ -41,6 +69,12 @@ def get_process_memory_mb():
         - rss_mb: Resident Set Size (actual physical memory in use)
         - vms_mb: Virtual Memory Size (total memory allocated)
         - percent: Memory usage as percentage of system memory
+Dependencies:
+    - Requires: Step 2.2
+    - Uses: pandas, yaml
+
+Author: Thesis Author
+Date: 2026-02-11
     """
     process = psutil.Process()
     mem_info = process.memory_info()

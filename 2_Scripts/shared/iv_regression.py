@@ -23,6 +23,12 @@ Outputs:
     - Warnings list for any issues detected
 
 Deterministic: true
+Dependencies:
+    - Utility module for IV regression
+    - Uses: linearmodels, pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

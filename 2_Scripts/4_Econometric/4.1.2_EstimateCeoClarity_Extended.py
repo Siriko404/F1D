@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-STEP 4.1.2: Estimate CEO Fixed Effects - Extended Controls Robustness
+STEP 4.1.2: Estimate CEO Clarity (Extended Controls Robustness)
 ==============================================================================
+ID: 4.1.2_EstimateCeoClarity_Extended
+Description: Run robustness tests with extended financial controls.
 
 Purpose:
     Run 4 regressions to test robustness with extended financial controls:
@@ -28,6 +30,12 @@ Outputs:
     - 4_Outputs/4.1.2_CeoClarity_Extended/{timestamp}/report_step4_1_2.md
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.1
+    - Uses: shared.regression_utils, shared.panel_ols, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

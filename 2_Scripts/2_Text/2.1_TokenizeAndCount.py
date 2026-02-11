@@ -1,3 +1,34 @@
+#!/usr/bin/env python3
+"""
+==============================================================================
+STEP 2.1: Tokenize and Count
+==============================================================================
+ID: 2.1_TokenizeAndCount
+Description: Tokenizes earnings call transcripts and counts word occurrences.
+
+Purpose: Processes raw transcript files to generate word frequency statistics
+         for linguistic analysis.
+
+Inputs:
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - 1_Inputs/transcript/*.txt files
+
+Outputs:
+    - 4_Outputs/2_Textual_Analysis/2.1_TokenizeAndCount/{timestamp}/word_counts.parquet
+    - stats.json
+    - {timestamp}.log
+
+Dependencies:
+    - Requires: Step 1.4
+    - Uses: shared.chunked_reader, sklearn, pandas, numpy
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+==============================================================================
+"""
+
 import argparse
 import hashlib
 import json
@@ -75,6 +106,12 @@ def load_config():
 def parse_arguments():
     """Parse command-line arguments for 2.1_TokenizeAndCount.py."""
     parser = argparse.ArgumentParser(
+Dependencies:
+    - Requires: Step 1.4
+    - Uses: shared.chunked_reader, sklearn, pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
         description="""
 STEP 2.1: Tokenize and Count
 

@@ -1,14 +1,13 @@
-# Location: 2_Scripts/shared/dual_writer.py
+#!/usr/bin/env python3
 """
 ================================================================================
 SHARED MODULE: Dual Writer for Logging
 ================================================================================
 ID: shared.dual_writer
-Description: Re-exports DualWriter class from observability_utils module.
-             Provides clean import path: from shared.dual_writer import DualWriter
+Description: Re-exports DualWriter class from observability module.
 
 Purpose: DualWriter writes to both stdout and log file verbatim.
-         Extracted to eliminate duplication across 12+ scripts.
+         Provides clean import path for backward compatibility.
 
 Inputs:
     - log_path: Path to log file
@@ -16,7 +15,12 @@ Inputs:
 Outputs:
     - DualWriter class instance
 
-Deterministic: true
+Dependencies:
+    - Utility module for dual output writes
+    - Re-exports: shared.observability.logging.DualWriter
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

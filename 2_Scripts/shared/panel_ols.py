@@ -37,6 +37,12 @@ Declared Outputs:
         - warnings: list of warning messages
 
 Deterministic: true
+Dependencies:
+    - Utility module for panel OLS regression
+    - Uses: linearmodels, pandas, numpy, statsmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

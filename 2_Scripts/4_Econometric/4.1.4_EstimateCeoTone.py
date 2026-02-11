@@ -3,6 +3,9 @@
 ==============================================================================
 STEP 4.1.4: Estimate CEO Tone (Net Sentiment as Personal Style)
 ==============================================================================
+ID: 4.1.4_EstimateCeoTone
+Description: Estimate CEO "Tone" (Net Sentiment = Positive - Negative)
+             as a persistent communication trait using fixed effects.
 
 Purpose:
     Estimate CEO "Tone" (Net Sentiment = Positive - Negative) as a persistent
@@ -25,6 +28,12 @@ Outputs:
     - 4_Outputs/4.1.4_CeoTone/{timestamp}/report_step4_1_4.md
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.1
+    - Uses: shared.regression_utils, shared.panel_ols, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

@@ -2,26 +2,34 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
-SCRIPT 5.8: H9 StyleFrozen Construction
+STEP 5.8: H9 StyleFrozen Construction
 ================================================================================
-Purpose: Construct StyleFrozen (CEO vagueness style) at firm-year level for H9
-         regression. Assign time-invariant CEO Clarity scores to firm-years
-         using frozen constraint (no future information).
+ID: 5.8_H9_StyleFrozen
+Description: Construct StyleFrozen (CEO vagueness style) at firm-year level.
+
+Purpose: Assign time-invariant CEO Clarity scores to firm-years using
+         frozen constraint (no future information).
 
 Inputs:
-    1. CEO Clarity scores from Phase 56:
-       4_Outputs/4.1.1_CeoClarity_CEO_Only/latest/ceo_clarity_scores.parquet
-    2. Manifest (call-level CEO assignments):
-       4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    3. Compustat (fiscal year-end dates):
-       1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet
+    - 4_Outputs/4.1.1_CeoClarity_CEO_Only/latest/ceo_clarity_scores.parquet
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet
 
 Outputs:
-    1. style_frozen.parquet - CEO style at firm-year level
-       Columns: gvkey, fyear, datadate, style_frozen, ceo_id, ceo_name,
-                n_calls_fy, n_calls_total
-    2. report_step58_01.md - Summary report with coverage statistics
-    3. stats.json - Detailed statistics
+    - 4_Outputs/5_Financial_V3/5.8_H9_StyleFrozen/{timestamp}/style_frozen.parquet
+    - stats.json
+    - report_step58_01.md
+
+Dependencies:
+    - Requires: Step 4.1.1
+    - Uses: pandas, numpy
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
+"""
 
 Frozen Constraint: Only use CEO-firm assignments observable as of fiscal
                    year-end (call.start_date <= fy_end). This prevents
@@ -34,6 +42,12 @@ CEO Moves: Same ceo_id may appear with multiple gvkeys over time.
            CEO Clarity is a personal trait, not firm-specific.
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 4.x
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

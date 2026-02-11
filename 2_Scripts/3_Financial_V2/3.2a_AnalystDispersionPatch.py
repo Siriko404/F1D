@@ -34,6 +34,12 @@ Outputs:
         Updated with analyst_dispersion statistics
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.2_H2Variables
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

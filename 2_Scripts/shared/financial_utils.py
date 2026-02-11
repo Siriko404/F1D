@@ -18,6 +18,12 @@ Outputs:
     - DataFrame with computed financial features
 
 Deterministic: true
+Dependencies:
+    - Utility module for financial calculations
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

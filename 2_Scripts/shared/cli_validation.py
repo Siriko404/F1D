@@ -17,6 +17,12 @@ Outputs:
     - check_prerequisites_step4_takeover() - Validates 4.1, 3.3 outputs
 
 Deterministic: true
+Dependencies:
+    - Utility module for CLI argument validation
+    - Uses: argparse, sys
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

@@ -34,6 +34,12 @@ Outputs:
       (execution log with dual-writer output)
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.1_H1Variables
+    - Uses: shared.regression_utils, shared.panel_ols, shared.diagnostics, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

@@ -19,6 +19,12 @@ Outputs:
     - 3_Logs/1.3_BuildTenureMap/{timestamp}.log
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 1.2
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

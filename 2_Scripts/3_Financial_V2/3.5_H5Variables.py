@@ -33,6 +33,12 @@ Outputs:
     - 4_Outputs/3_Financial_V2/3.5_H5Variables/{timestamp}/stats.json
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 2.2
+    - Uses: shared.financial_utils, pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

@@ -30,6 +30,12 @@ Declared Outputs:
     - Controls: ln_at_t, lev_t, cash_t, roa_t, mb_t, SalesGrowth_t
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 4.x
+    - Uses: pandas, numpy, statsmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

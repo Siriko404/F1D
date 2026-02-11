@@ -28,6 +28,12 @@ Outputs:
     - 4_Outputs/4_Econometric_V2/{timestamp}/stats.json
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.7_H7IlliquidityVariables
+    - Uses: shared.regression_utils, shared.panel_ols, shared.diagnostics, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

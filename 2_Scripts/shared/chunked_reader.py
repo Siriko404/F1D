@@ -1,12 +1,31 @@
 #!/usr/bin/env python3
 """
-PyArrow chunked reading utilities for memory-efficient processing.
+================================================================================
+SHARED MODULE: Chunked Reader for Memory-Efficient Processing
+================================================================================
+ID: shared/chunked_reader
+Description: PyArrow chunked reading utilities for memory-efficient processing.
 
-Provides functions to read large Parquet files in chunks, reducing
-memory footprint while maintaining deterministic processing.
+Purpose: Provides functions to read large Parquet files in chunks, reducing
+         memory footprint while maintaining deterministic processing.
 
-Ref: 10-RESEARCH.md Pattern 5 - PyArrow Dataset API
-Ref: 15-RESEARCH.md Pattern 4 - Memory-Aware Throttling
+Inputs:
+    - Large Parquet file paths
+    - Chunk size specifications
+
+Outputs:
+    - Chunked data iterators
+    - Memory tracking decorators
+
+Dependencies:
+    - Utility module for memory-aware chunked processing
+    - Uses: pandas, numpy, psutil, pyarrow
+
+Deterministic: true
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
 """
 
 import logging

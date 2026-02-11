@@ -30,6 +30,12 @@ Outputs:
     - 4_Outputs/4_Econometric_V2/{timestamp}/stats.json
 
 Deterministic: true
+Dependencies:
+    - Requires: Step 3.8_H8TakeoverVariables
+    - Uses: shared.regression_utils, shared.panel_ols, shared.diagnostics, linearmodels
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 
