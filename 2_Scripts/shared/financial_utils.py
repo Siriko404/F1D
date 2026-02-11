@@ -146,9 +146,10 @@ def compute_financial_features(
 
         controls = calculate_firm_controls(row, compustat_df, year)
         if controls:
-            row_copy = row.copy()
-            row_copy.update(controls)
-            features.append(row_copy)
+            # Create a dict from the row and update with controls
+            row_dict = row.to_dict()
+            row_dict.update(controls)
+            features.append(row_dict)
 
     return pd.DataFrame(features)
 
