@@ -11,6 +11,7 @@ Tests verify that observability features work end-to-end in modified scripts:
 Run with: pytest tests/integration/test_observability_integration.py -v -m integration --tb=short
 """
 
+import pytest
 import re
 from pathlib import Path
 
