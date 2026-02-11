@@ -495,7 +495,11 @@ def compute_efficiency_score(df, min_years=3, window=5):
     Inefficient = overinvest_dummy | underinvest_dummy
     Rolling 5-year window (t-4 to t), minimum 3 years required
 
-    Memory-efficient: processes groups in chunks, avoids full dataframe copies
+    OPTIMIZATION (Phase 62-02): Vectorized groupby().rolling().transform()
+    - Before: for gvkey, group in df.groupby("gvkey"): rolling().sum()/.count()
+    - After: df.groupby("gvkey")["inefficient"].transform(lambda x: x.rolling(...).sum()/.count())
+    - Expected speedup: 10-50x for thousands of gvkey groups
+    - Ref: 62-RESEARCH.md Pattern 3, 62-02-PLAN.md Task 1
     """
     print("\nComputing Efficiency Score (5-year rolling)...")
 
@@ -508,75 +512,36 @@ def compute_efficiency_score(df, min_years=3, window=5):
         (df_subset["overinvest_dummy"] == 1) | (df_subset["underinvest_dummy"] == 1)
     ).astype(int)
 
-    # Sort by gvkey and fiscal_year
-    df_subset = df_subset.sort_values(["gvkey", "fiscal_year"])
+    # OPTIMIZATION: Vectorized rolling via groupby().transform()
+    # Sort once at beginning
+    df_sorted = df_subset.sort_values(["gvkey", "fiscal_year"]).copy()
 
-    # Use rolling window computation - more efficient
-    # For each gvkey, compute rolling sum and count
-    results = []
-    chunks = []
-    chunk_size = 1000  # Process firms in chunks
+    # Compute rolling sum and count per gvkey group in one vectorized operation
+    # This replaces the slow for-loop with single C-level operations
+    df_sorted["rolling_sum"] = (
+        df_sorted.groupby("gvkey")["inefficient"]
+        .transform(lambda x: x.rolling(window=window, min_periods=min_years).sum())
+    )
+    df_sorted["rolling_count"] = (
+        df_sorted.groupby("gvkey")["inefficient"]
+        .transform(lambda x: x.rolling(window=window, min_periods=min_years).count())
+    )
 
-    for _i, (gvkey, group) in enumerate(df_subset.groupby("gvkey")):
-        # Sort the group
-        group = group.sort_values("fiscal_year").reset_index(drop=True)
+    # Compute efficiency score where we have enough data
+    df_sorted["efficiency_score"] = 1 - (
+        df_sorted["rolling_sum"] / df_sorted["rolling_count"]
+    )
 
-        # Compute rolling sum and count (shifted to look backward)
-        rolling_sum = (
-            group["inefficient"].rolling(window=window, min_periods=min_years).sum()
-        )
-        rolling_count = (
-            group["inefficient"].rolling(window=window, min_periods=min_years).count()
-        )
-
-        # Compute efficiency score where we have enough data
-        mask = rolling_count >= min_years
-        if mask.any():
-            # Create result for this firm
-            valid_idx = group.index[mask]
-            efficiency_vals = 1 - (
-                rolling_sum.loc[valid_idx].values / rolling_count.loc[valid_idx].values
-            )
-            chunks.append(
-                {
-                    "gvkey": gvkey,
-                    "fiscal_year": group.loc[valid_idx, "fiscal_year"].values,
-                    "efficiency_score": efficiency_vals,
-                }
-            )
-
-        # Consolidate chunks periodically
-        if len(chunks) >= chunk_size:
-            for chunk in chunks:
-                results.append(
-                    pd.DataFrame(
-                        {
-                            "gvkey": chunk["gvkey"],
-                            "fiscal_year": chunk["fiscal_year"],
-                            "efficiency_score": chunk["efficiency_score"],
-                        }
-                    )
-                )
-            chunks.clear()
-
-    # Process remaining chunks
-    for chunk in chunks:
-        results.append(
-            pd.DataFrame(
-                {
-                    "gvkey": chunk["gvkey"],
-                    "fiscal_year": chunk["fiscal_year"],
-                    "efficiency_score": chunk["efficiency_score"],
-                }
-            )
-        )
+    # Filter to valid observations only (where rolling count >= min_years)
+    result = df_sorted[df_sorted["rolling_count"] >= min_years][
+        ["gvkey", "fiscal_year", "efficiency_score"]
+    ].reset_index(drop=True)
 
     # Clean up intermediate data
-    del df_subset
+    del df_subset, df_sorted
 
-    if results:
-        result = pd.concat(results, ignore_index=True)
-        n_computed = result["efficiency_score"].notna().sum()
+    n_computed = len(result)
+    if n_computed > 0:
         print(f"  Computed efficiency_score for {n_computed:,} observations")
         print(f"  Mean efficiency: {result['efficiency_score'].mean():.3f}")
     else:
@@ -794,7 +759,14 @@ def compute_tobins_q(df):
 
 
 def compute_cf_volatility(df, min_years=3, window=5):
-    """Compute CF Volatility = StdDev(OANCF/AT) over trailing 5 years"""
+    """Compute CF Volatility = StdDev(OANCF/AT) over trailing 5 years
+
+    OPTIMIZATION (Phase 62-02): Vectorized groupby().rolling().transform()
+    - Before: for gvkey, group in df.groupby("gvkey"): rolling().std()
+    - After: df.groupby("gvkey")["ocf_at"].transform(lambda x: x.rolling(...).std())
+    - Expected speedup: 10-50x for thousands of gvkey groups
+    - Ref: 62-RESEARCH.md Pattern 3, 62-02-PLAN.md Task 1
+    """
     print("\nComputing CF Volatility (5-year rolling)...")
 
     # Require positive AT and valid OCF
@@ -803,33 +775,26 @@ def compute_cf_volatility(df, min_years=3, window=5):
     # Compute OCF/AT ratio
     df_comp["ocf_at"] = df_comp["oancfy"] / df_comp["atq"]
 
-    # Sort by gvkey and fiscal_year
-    df_comp = df_comp.sort_values(["gvkey", "fiscal_year"])
+    # OPTIMIZATION: Vectorized rolling via groupby().transform()
+    # Sort once at beginning
+    df_sorted = df_comp.sort_values(["gvkey", "fiscal_year"]).copy()
 
-    # Use rolling std - much more efficient
-    results = []
+    # Compute rolling std per gvkey group in one vectorized operation
+    # This replaces the slow for-loop with a single C-level operation
+    df_sorted["cf_volatility"] = (
+        df_sorted.groupby("gvkey")["ocf_at"]
+        .transform(lambda x: x.rolling(window=window, min_periods=min_years).std())
+    )
 
-    for _gvkey, group in df_comp.groupby("gvkey"):
-        group = group.sort_values("fiscal_year").reset_index(drop=True)
+    # Filter to valid observations only (where rolling std was computed)
+    result = df_sorted[df_sorted["cf_volatility"].notna()][
+        ["gvkey", "fiscal_year", "cf_volatility"]
+    ].reset_index(drop=True)
 
-        # Compute rolling std
-        rolling_std = (
-            group["ocf_at"].rolling(window=window, min_periods=min_years).std()
-        )
-
-        # Keep only valid observations
-        mask = rolling_std.notna()
-        if mask.any():
-            group_subset = group.loc[mask].copy()
-            group_subset["cf_volatility"] = rolling_std.loc[mask].values
-            results.append(group_subset[["gvkey", "fiscal_year", "cf_volatility"]])
-
-    if results:
-        result = pd.concat(results, ignore_index=True)
-        n_computed = result["cf_volatility"].notna().sum()
+    n_computed = len(result)
+    if n_computed > 0:
         print(f"  Computed cf_volatility for {n_computed:,} observations")
     else:
-        result = pd.DataFrame(columns=["gvkey", "fiscal_year", "cf_volatility"])
         print("  Warning: No CF volatility computed (insufficient data)")
 
     return result
@@ -921,40 +886,39 @@ def compute_fcf(df):
 
 
 def compute_earnings_volatility(df, min_years=3, window=5):
-    """Compute Earnings Volatility = StdDev(ROA) over trailing 5 years"""
+    """Compute Earnings Volatility = StdDev(ROA) over trailing 5 years
+
+    OPTIMIZATION (Phase 62-02): Vectorized groupby().rolling().transform()
+    - Before: for gvkey, group in df.groupby("gvkey"): rolling().std()
+    - After: df.groupby("gvkey")["roa"].transform(lambda x: x.rolling(...).std())
+    - Expected speedup: 10-50x for thousands of gvkey groups
+    - Ref: 62-RESEARCH.md Pattern 3, 62-02-PLAN.md Task 1
+    """
     print("\nComputing Earnings Volatility (5-year rolling StdDev of ROA)...")
 
     # Compute ROA first
     df_comp = df[df["atq"] > 0].copy()
     df_comp["roa"] = df_comp["iby"] / df_comp["atq"]
 
-    # Sort by gvkey and fiscal_year
-    df_comp = df_comp.sort_values(["gvkey", "fiscal_year"])
+    # OPTIMIZATION: Vectorized rolling via groupby().transform()
+    # Sort once at beginning
+    df_sorted = df_comp.sort_values(["gvkey", "fiscal_year"]).copy()
 
-    # Use rolling std - much more efficient
-    results = []
+    # Compute rolling std per gvkey group in one vectorized operation
+    df_sorted["earnings_volatility"] = (
+        df_sorted.groupby("gvkey")["roa"]
+        .transform(lambda x: x.rolling(window=window, min_periods=min_years).std())
+    )
 
-    for _gvkey, group in df_comp.groupby("gvkey"):
-        group = group.sort_values("fiscal_year").reset_index(drop=True)
+    # Filter to valid observations only (where rolling std was computed)
+    result = df_sorted[df_sorted["earnings_volatility"].notna()][
+        ["gvkey", "fiscal_year", "earnings_volatility"]
+    ].reset_index(drop=True)
 
-        # Compute rolling std
-        rolling_std = group["roa"].rolling(window=window, min_periods=min_years).std()
-
-        # Keep only valid observations
-        mask = rolling_std.notna()
-        if mask.any():
-            group_subset = group.loc[mask].copy()
-            group_subset["earnings_volatility"] = rolling_std.loc[mask].values
-            results.append(
-                group_subset[["gvkey", "fiscal_year", "earnings_volatility"]]
-            )
-
-    if results:
-        result = pd.concat(results, ignore_index=True)
-        n_computed = result["earnings_volatility"].notna().sum()
+    n_computed = len(result)
+    if n_computed > 0:
         print(f"  Computed earnings_volatility for {n_computed:,} observations")
     else:
-        result = pd.DataFrame(columns=["gvkey", "fiscal_year", "earnings_volatility"])
         print("  Warning: No earnings volatility computed (insufficient data)")
 
     return result
