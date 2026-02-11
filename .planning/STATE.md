@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 59-critical-bug-fixes (v3.0 Codebase Cleanup & Optimization)
-Plan: 59-01 (H7-H8 Data Truncation Bug Fix)
-Status: Plan 1 of 3 complete
-Last activity: 2026-02-11 - Completed Plan 59-01: Fixed H7-H8 data truncation bug
+Plan: 59-03 (calculate_throughput Error Handling)
+Status: Plan 3 of 3 complete (Phase 59 COMPLETE)
+Last activity: 2026-02-11 - Completed Plan 59-03: calculate_throughput() raises ValueError with logging
 
 ### Next Phase
 
-**Action:** Execute Plan 59-02 (Empty DataFrame Returns) or 59-03 (Division by Zero Guards)
+**Action:** Phase 59 complete. Proceed to next phase or await further instructions.
 **Blockers:** None
 
 ### Progress
@@ -50,7 +50,7 @@ Phase 55: V1 Hypotheses Re-Test      [COMPLETE - 9/9 plans] → 55-01 Lit Review
 Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
 Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression complete (5,295 obs, interaction NOT SIGNIFICANT p=0.76, H9 NOT SUPPORTED)
-Phase 59: Critical Bug Fixes [IN PROGRESS - 1/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Empty DataFrame Returns PENDING; 59-03 Division by Zero Guards PENDING
+Phase 59: Critical Bug Fixes [COMPLETE - 3/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Exception-based Error Handling COMPLETE (FinancialCalculationError added to data_validation.py, empty returns replaced with raises in calculate_firm_controls and calculate_firm_controls_quarterly, 8 unit/integration tests created); 59-03 calculate_throughput Error Handling COMPLETE (raises ValueError with logging, 10 unit tests, H1/H2/H3/H7/H8 callers updated with try/except)
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -357,6 +357,14 @@ Phase 59: Critical Bug Fixes [IN PROGRESS - 1/3 plans] → 59-01 H7-H8 Data Trun
 - [H7 Volatility Calculation] Call calculate_stock_volatility_and_returns() in H7 main() before CRSP memory cleanup (line 759)
 - [Column Name Preservation] Volatility and StockRet column names preserved exactly for H8 compatibility
 - [Market Variables Fallback] Existing market_variables merge preserved as fallback (redundant but safe)
+
+### Phase 59-03 Bug Fix Decisions
+
+- [calculate_throughput Error Handling] calculate_throughput() raises ValueError for duration_seconds <= 0 (not silent 0.0)
+- [Context-Rich Error Messages] Error messages include duration_seconds and rows_processed values plus start_time/end_time hint
+- [Non-Critical Error Handling] Throughput calculation is not pipeline-critical; callers log warnings and continue execution
+- [Extended Coverage] Updated H1, H2, H3 beyond plan-specified H7, H8 for consistency across all V2 variable scripts
+- [Unit Test Coverage] 10 unit tests created for throughput calculation edge cases (zero, negative, large, small values)
 - [80% Coverage Threshold] Year coverage test requires 80% minimum per year (allows valid missingness)
 - [Separate Baseline File] baseline_h7_h8.json separate from baseline_checksums.json to avoid conflicts
 - [CRSP Data Reuse] Volatility calculation placed before `del crsp` to avoid redundant data loading
@@ -410,11 +418,29 @@ All files and commits verified for Phase 58-01:
 | Scripts CLI-Ready | 21/21 | 10/10 |
 | Hypotheses Supported | — | 0/6 (null results) |
 
+### Phase 59-02 Exception-based Error Handling Decisions
+
+- [Exception-based Error Handling] FinancialCalculationError exception class added to shared/data_validation.py
+- [Exception-based Error Handling] calculate_firm_controls() raises FinancialCalculationError with context (gvkey, year, available years, total records)
+- [Exception-based Error Handling] calculate_firm_controls_quarterly() raises FinancialCalculationError with context (gvkey, datadate, CCM note)
+- [Exception-based Error Handling] compute_financial_features() fixed: row.to_dict().update() preserves control columns (was dropping them before)
+- [Exception-based Error Handling] Exception pattern established: FinancialCalculationError for calculation failures, DataValidationError for input validation
+- [Exception-based Error Handling] Test coverage: 8 tests (5 unit, 3 integration) all passing
+
 ## Session Continuity
 
 ### Current Session (2026-02-11)
 
-**Phase 59-01 COMPLETE:**
+**Phase 59-02 COMPLETE:**
+- Replaced silent empty returns with informative FinancialCalculationError exceptions
+- Added FinancialCalculationError exception class to data_validation.py
+- Updated calculate_firm_controls() and calculate_firm_controls_quarterly() to raise exceptions
+- Created unit tests (5 tests) and integration tests (3 tests)
+- Fixed bugs: scalar fillna() in quarterly function, DataFrame column preservation in compute_financial_features
+- 5 commits: deda741 (exception class), df55358 (annual controls), a7f4c82 (quarterly controls), d18d546 (unit tests), c5711a5 (integration tests)
+- SUMMARY.md created at .planning/phases/59-critical-bug-fixes/59-02-SUMMARY.md
+
+**Phase 59-01 COMPLETE (Earlier):**
 - Fixed H7-H8 data truncation bug where Volatility/StockRet were 100% missing for 2005-2018
 - Called calculate_stock_volatility_and_returns() in H7 main() (line 759)
 - Created regression test suite: tests/regression/test_h7_h8_data_coverage.py (5 tests)
