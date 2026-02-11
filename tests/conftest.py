@@ -2,6 +2,22 @@
 Pytest configuration and shared fixtures for testing.
 
 This file provides common fixtures used across all test files.
+
+PYTEST CONFIGURATION
+
+Subprocess Testing Pattern:
+    Integration tests invoke pipeline scripts via subprocess.run().
+    These scripts import from 'shared' modules, requiring PYTHONPATH
+    to be set for subprocess to find 2_Scripts/shared/.
+
+    Always use the subprocess_env fixture for subprocess calls:
+
+        def test_my_script(subprocess_env):
+            result = subprocess.run(
+                ["python", "script.py"],
+                env=subprocess_env,  # Critical: enables shared imports
+                ...
+            )
 """
 
 import pytest
@@ -10,6 +26,39 @@ import pandas as pd
 import sys
 from io import StringIO
 import yaml
+
+
+@pytest.fixture(scope="session")
+def repo_root():
+    """Path to repository root directory."""
+    return Path(__file__).parent.parent
+
+
+@pytest.fixture(scope="session")
+def subprocess_env():
+    """
+    Provide environment variables for subprocess calls in integration tests.
+
+    Sets PYTHONPATH to enable subprocess to import shared modules.
+    All integration tests that invoke scripts via subprocess should use this:
+
+        result = subprocess.run(
+            ["python", str(script_path)],
+            env=subprocess_env,
+            ...
+        )
+
+    Returns:
+        Dict[str, str]: Environment variables with PYTHONPATH set
+    """
+    import os
+    from pathlib import Path
+
+    repo_root = Path(__file__).parent.parent
+    return {
+        "PYTHONPATH": str(repo_root / "2_Scripts"),
+        **os.environ,  # Preserve existing environment variables
+    }
 
 
 @pytest.fixture(scope="session")
