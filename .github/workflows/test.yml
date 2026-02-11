@@ -34,7 +34,18 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest pytest-cov
+        pip install pytest pytest-cov pytest-mypy
+
+    - name: Type check with mypy
+      run: |
+        # Run mypy on shared modules only
+        mypy 2_Scripts/shared/financial_utils.py || true
+        mypy 2_Scripts/shared/panel_ols.py || true
+        mypy 2_Scripts/shared/iv_regression.py || true
+        mypy 2_Scripts/shared/data_validation.py || true
+        # Or use pytest-mypy
+        pytest tests/unit/test_types.py -v -m mypy_testing || true
+      continue-on-error: true  # Don't fail CI initially
 
     - name: Run unit and integration tests (skip E2E)
       run: |
