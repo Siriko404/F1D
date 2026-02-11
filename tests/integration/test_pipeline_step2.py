@@ -3,7 +3,6 @@ Integration tests for Step 2 (Text Processing).
 Tests end-to-end pipeline execution for text processing scripts.
 """
 
-import os
 import pytest
 import subprocess
 import json
@@ -11,12 +10,17 @@ from pathlib import Path
 import pandas as pd
 import sys
 
-# Get repository root from test file location
-REPO_ROOT = Path(__file__).parent.parent.parent
+pytestmark = pytest.mark.integration
 
-# Add 2_Scripts to path for shared module imports
-sys.path.insert(0, str(REPO_ROOT / "2_Scripts"))
+# Add 2_Scripts to path for shared module imports (for direct imports)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 from shared.path_utils import get_latest_output_dir, OutputResolutionError
+
+
+@pytest.fixture(scope="session")
+def repo_root():
+    """Path to repository root directory."""
+    return Path(__file__).parent.parent.parent
 
 
 def resolve_output_dir(base_path: Path) -> Path:
@@ -27,19 +31,10 @@ def resolve_output_dir(base_path: Path) -> Path:
         return base_path / "latest"
 
 
-# Environment for subprocess calls (includes PYTHONPATH for module resolution)
-SUBPROCESS_ENV = {
-    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
-    **os.environ,  # Preserve existing environment variables
-}
-
-pytestmark = pytest.mark.integration
-
-
-def test_step2_full_pipeline():
+def test_step2_full_pipeline(repo_root, subprocess_env):
     """Test Step 2 (2.1_TokenizeAndCount) runs end-to-end."""
     # Arrange
-    script_path = REPO_ROOT / "2_Scripts/2_Text/2.1_TokenizeAndCount.py"
+    script_path = repo_root / "2_Scripts/2_Text/2.1_TokenizeAndCount.py"
 
     if not script_path.exists():
         pytest.skip(f"Script not found: {script_path}")
@@ -47,7 +42,7 @@ def test_step2_full_pipeline():
     # Act - Run script via subprocess
     result = subprocess.run(
         ["python", str(script_path)],
-        env=SUBPROCESS_ENV,
+        env=subprocess_env,
         capture_output=True,
         text=True,
         timeout=600,  # 10 minute timeout
@@ -58,7 +53,7 @@ def test_step2_full_pipeline():
 
     # Verify output files exist
     output_dir = resolve_output_dir(
-        REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized"
+        repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized"
     )
     assert output_dir.exists(), "Output directory not created"
 
@@ -71,11 +66,11 @@ def test_step2_full_pipeline():
             pytest.fail(f"Expected output file not found: {filename}")
 
 
-def test_output_file_format_step2():
+def test_output_file_format_step2(repo_root):
     """Test that output files have correct schema."""
     # Arrange
     output_file = (
-        resolve_output_dir(REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        resolve_output_dir(repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
         / "linguistic_counts_2002.parquet"
     )
 
@@ -100,11 +95,11 @@ def test_output_file_format_step2():
     assert (df["Total_Words"] >= 0).all(), "Word counts should be non-negative"
 
 
-def test_word_count_validation_step2():
+def test_word_count_validation_step2(repo_root):
     """Test that word counts are reasonable."""
     # Arrange
     output_file = (
-        resolve_output_dir(REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        resolve_output_dir(repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
         / "linguistic_counts_2002.parquet"
     )
 
@@ -125,11 +120,11 @@ def test_word_count_validation_step2():
 
 
 @pytest.mark.parametrize("year", [2002, 2010, 2018])
-def test_step2_multiple_years(year):
+def test_step2_multiple_years(year, repo_root):
     """Test Step 2 output for specific years."""
     # Arrange
     output_file = (
-        resolve_output_dir(REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        resolve_output_dir(repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
         / f"linguistic_counts_{year}.parquet"
     )
 

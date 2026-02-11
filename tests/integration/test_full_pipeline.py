@@ -7,7 +7,6 @@ from Step 1 (Sample) through Step 4 (Econometric), ensuring data flows correctly
 Purpose: Close the critical testing gap identified in the v1.0.0 milestone audit.
 """
 
-import os
 import pytest
 import subprocess
 import json
@@ -22,14 +21,11 @@ from shared.path_utils import get_latest_output_dir, OutputResolutionError
 
 pytestmark = pytest.mark.e2e  # Mark all tests in this file as E2E
 
-# Get repository root from test file location
-REPO_ROOT = Path(__file__).parent.parent.parent
 
-# Environment for subprocess calls (includes PYTHONPATH for module resolution)
-SUBPROCESS_ENV = {
-    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
-    **os.environ,  # Preserve existing environment variables
-}
+@pytest.fixture(scope="session")
+def repo_root():
+    """Path to repository root directory."""
+    return Path(__file__).parent.parent.parent
 
 # Define the complete pipeline execution order
 PIPELINE_SCRIPTS = [
@@ -117,7 +113,7 @@ EXPECTED_OUTPUTS = {
 }
 
 
-def get_output_dir(script_path: str) -> Path:
+def get_output_dir(script_path: str, repo_root: Path) -> Path:
     """
     Derive output directory path for a given script.
 
@@ -134,39 +130,39 @@ def get_output_dir(script_path: str) -> Path:
 
     try:
         if "/1_Sample/" in script_path:
-            return get_latest_output_dir(REPO_ROOT / "4_Outputs" / script_name)
+            return get_latest_output_dir(repo_root / "4_Outputs" / script_name)
         elif "/2_Text/" in script_path:
             return get_latest_output_dir(
-                REPO_ROOT / "4_Outputs" / "2_Textual_Analysis" / script_name
+                repo_root / "4_Outputs" / "2_Textual_Analysis" / script_name
             )
         elif "/3_Financial/" in script_path:
             return get_latest_output_dir(
-                REPO_ROOT / "4_Outputs" / "3_Financial" / script_name
+                repo_root / "4_Outputs" / "3_Financial" / script_name
             )
         elif "/4_Econometric/" in script_path:
             return get_latest_output_dir(
-                REPO_ROOT / "4_Outputs" / "4_Econometric" / script_name
+                repo_root / "4_Outputs" / "4_Econometric" / script_name
             )
         else:
             raise ValueError(f"Unknown script path format: {script_path}")
     except OutputResolutionError:
         # Fallback to /latest/ path for tests that run before outputs exist
         if "/1_Sample/" in script_path:
-            return REPO_ROOT / "4_Outputs" / script_name / "latest"
+            return repo_root / "4_Outputs" / script_name / "latest"
         elif "/2_Text/" in script_path:
             return (
-                REPO_ROOT / "4_Outputs" / "2_Textual_Analysis" / script_name / "latest"
+                repo_root / "4_Outputs" / "2_Textual_Analysis" / script_name / "latest"
             )
         elif "/3_Financial/" in script_path:
-            return REPO_ROOT / "4_Outputs" / "3_Financial" / script_name / "latest"
+            return repo_root / "4_Outputs" / "3_Financial" / script_name / "latest"
         elif "/4_Econometric/" in script_path:
-            return REPO_ROOT / "4_Outputs" / "4_Econometric" / script_name / "latest"
+            return repo_root / "4_Outputs" / "4_Econometric" / script_name / "latest"
         else:
             raise ValueError(f"Unknown script path format: {script_path}")
 
 
 @pytest.mark.slow
-def test_full_pipeline_execution():
+def test_full_pipeline_execution(repo_root, subprocess_env):
     """
     Test end-to-end execution of the full pipeline (all 17 scripts).
 
@@ -186,7 +182,7 @@ def test_full_pipeline_execution():
         print(f"[{i}/{len(PIPELINE_SCRIPTS)}] Running: {script_path}")
         print(f"{'=' * 70}")
 
-        script_path_obj = Path(script_path)
+        script_path_obj = repo_root / script_path
 
         # Verify script exists
         if not script_path_obj.exists():
@@ -197,7 +193,7 @@ def test_full_pipeline_execution():
         try:
             result = subprocess.run(
                 ["python", str(script_path_obj)],
-                env=SUBPROCESS_ENV,
+                env=subprocess_env,
                 capture_output=True,
                 text=True,
                 timeout=600,  # 10-minute timeout per script
@@ -234,7 +230,7 @@ def test_full_pipeline_execution():
             pytest.fail(error_msg)
 
         # Verify output directory exists
-        output_dir = get_output_dir(script_path)
+        output_dir = get_output_dir(script_path, repo_root)
         if not output_dir.exists():
             pytest.fail(
                 f"Output directory not created: {output_dir}\n"
@@ -279,11 +275,11 @@ def test_full_pipeline_execution():
     # Verify final critical outputs exist (Step 4 results)
     try:
         final_outputs_dir = get_latest_output_dir(
-            REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards"
+            repo_root / "4_Outputs/4_Econometric/4.3_TakeoverHazards"
         )
     except OutputResolutionError:
         final_outputs_dir = (
-            REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
+            repo_root / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
         )
     assert final_outputs_dir.exists(), "Final Step 4 output directory not created"
 
@@ -297,7 +293,7 @@ def test_full_pipeline_execution():
 
 
 @pytest.mark.slow
-def test_pipeline_data_flow():
+def test_pipeline_data_flow(repo_root):
     """
     Test that data flows correctly between pipeline steps.
 
@@ -311,12 +307,12 @@ def test_pipeline_data_flow():
     but verifies the pipeline's data structure is intact.
     """
     # Check Step 1 final output exists
-    step1_output = REPO_ROOT / "4_Outputs/1.4_AssembleManifest/latest"
+    step1_output = repo_root / "4_Outputs/1.4_AssembleManifest/latest"
     assert step1_output.exists(), f"Step 1 output directory missing: {step1_output}"
 
     # Check Step 2 final output exists (critical for Step 4)
     step2_output = (
-        REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.2_ConstructVariables/latest"
+        repo_root / "4_Outputs/2_Textual_Analysis/2.2_ConstructVariables/latest"
     )
     assert step2_output.exists(), f"Step 2 output directory missing: {step2_output}"
 
@@ -328,11 +324,11 @@ def test_pipeline_data_flow():
     )
 
     # Check Step 3 outputs exist
-    step3_output = REPO_ROOT / "4_Outputs/3_Financial/3.3_EventFlags/latest"
+    step3_output = repo_root / "4_Outputs/3_Financial/3.3_EventFlags/latest"
     assert step3_output.exists(), f"Step 3 output directory missing: {step3_output}"
 
     # Check Step 4 outputs exist
-    step4_output = REPO_ROOT / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
+    step4_output = repo_root / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
     assert step4_output.exists(), f"Step 4 output directory missing: {step4_output}"
 
     # Verify at least one output file in Step 4
@@ -345,7 +341,7 @@ def test_pipeline_data_flow():
 
 
 @pytest.mark.slow
-def test_pipeline_stats_json_structure():
+def test_pipeline_stats_json_structure(repo_root):
     """
     Verify that all scripts generated valid stats.json files with required fields.
 
@@ -356,7 +352,7 @@ def test_pipeline_stats_json_structure():
     invalid_stats = []
 
     for script_path in PIPELINE_SCRIPTS:
-        output_dir = get_output_dir(script_path)
+        output_dir = get_output_dir(script_path, repo_root)
         stats_path = output_dir / "stats.json"
 
         if not stats_path.exists():

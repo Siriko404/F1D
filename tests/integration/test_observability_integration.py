@@ -11,18 +11,14 @@ Tests verify that observability features work end-to-end in modified scripts:
 Run with: pytest tests/integration/test_observability_integration.py -v -m integration --tb=short
 """
 
-import os
 import re
 from pathlib import Path
 
-# Get repository root from test file location
-REPO_ROOT = Path(__file__).parent.parent.parent
 
-# Environment for subprocess calls (includes PYTHONPATH for module resolution)
-SUBPROCESS_ENV = {
-    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
-    **os.environ,  # Preserve existing environment variables
-}
+@pytest.fixture(scope="session")
+def repo_root():
+    """Path to repository root directory."""
+    return Path(__file__).parent.parent.parent
 
 
 def check_script_observability(script_path):
@@ -61,8 +57,8 @@ def check_script_observability(script_path):
 class TestObservabilityIntegration:
     """Integration tests for observability features across Steps 1 and 2 scripts."""
 
-    def test_1_1_observability(self):
+    def test_1_1_observability(self, repo_root):
         """Test that 1.1_CleanMetadata.py has observability features."""
-        script_path = REPO_ROOT / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
+        script_path = repo_root / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
         check_script_observability(script_path)
         print("✓ 1.1_CleanMetadata.py has observability features")

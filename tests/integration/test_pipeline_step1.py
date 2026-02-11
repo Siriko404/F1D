@@ -3,7 +3,6 @@ Integration tests for Step 1 (Sample Construction).
 Tests end-to-end pipeline execution for sample construction scripts.
 """
 
-import os
 import pytest
 import subprocess
 import json
@@ -12,11 +11,11 @@ import pandas as pd
 import yaml
 import sys
 
-# Get repository root from test file location
-REPO_ROOT = Path(__file__).parent.parent.parent
+pytestmark = pytest.mark.integration  # Mark all tests in this file as integration
 
-# Add 2_Scripts to path for shared module imports
-sys.path.insert(0, str(REPO_ROOT / "2_Scripts"))
+
+# Add 2_Scripts to path for shared module imports (for direct imports)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 from shared.path_utils import get_latest_output_dir, OutputResolutionError
 
 
@@ -27,20 +26,19 @@ def resolve_output_dir(base_path: Path) -> Path:
     except OutputResolutionError:
         return base_path / "latest"
 
-
-# Environment for subprocess calls (includes PYTHONPATH for module resolution)
-SUBPROCESS_ENV = {
-    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
-    **os.environ,  # Preserve existing environment variables
-}
-
 pytestmark = pytest.mark.integration  # Mark all tests in this file as integration
 
 
 @pytest.fixture(scope="session")
-def config():
+def repo_root():
+    """Path to repository root directory."""
+    return Path(__file__).parent.parent.parent
+
+
+@pytest.fixture(scope="session")
+def config(repo_root):
     """Load project configuration."""
-    config_path = REPO_ROOT / "config/project.yaml"
+    config_path = repo_root / "config/project.yaml"
     if not config_path.exists():
         pytest.skip(f"Config file not found: {config_path}")
     with open(config_path) as f:
@@ -56,10 +54,10 @@ def sample_input_data():
     return None
 
 
-def test_step1_full_pipeline(sample_input_data, config, tmp_path):
+def test_step1_full_pipeline(sample_input_data, config, repo_root, subprocess_env, tmp_path):
     """Test Step 1 (1.1_CleanMetadata) runs end-to-end."""
     # Arrange
-    script_path = REPO_ROOT / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
+    script_path = repo_root / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
 
     if not script_path.exists():
         pytest.skip(f"Script not found: {script_path}")
@@ -67,7 +65,7 @@ def test_step1_full_pipeline(sample_input_data, config, tmp_path):
     # Act - Run script via subprocess
     result = subprocess.run(
         ["python", str(script_path)],
-        env=SUBPROCESS_ENV,
+        env=subprocess_env,
         capture_output=True,
         text=True,
     )
@@ -76,7 +74,7 @@ def test_step1_full_pipeline(sample_input_data, config, tmp_path):
     assert result.returncode == 0, f"Script failed: {result.stderr}"
 
     # Verify output files exist
-    output_dir = resolve_output_dir(REPO_ROOT / "4_Outputs/1.1_CleanMetadata")
+    output_dir = resolve_output_dir(repo_root / "4_Outputs/1.1_CleanMetadata")
     assert output_dir.exists(), "Output directory not created"
 
     # Check for expected output files
@@ -90,10 +88,10 @@ def test_step1_full_pipeline(sample_input_data, config, tmp_path):
         assert file_path.exists(), f"Expected output file not found: {filename}"
 
 
-def test_stats_json_generation_step1(config):
+def test_stats_json_generation_step1(config, repo_root):
     """Test that stats.json is generated with required fields."""
     # Arrange
-    stats_path = REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
+    stats_path = repo_root / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
 
     if not stats_path.exists():
         pytest.skip(f"stats.json not found (run 1.1_CleanMetadata.py first)")
@@ -121,12 +119,12 @@ def test_stats_json_generation_step1(config):
     assert len(stats["outputs"]["files"]) > 0, "No output files tracked"
 
 
-def test_row_count_validation_step1():
+def test_row_count_validation_step1(repo_root):
     """Test that output row count is validated in stats.json."""
     # Arrange
-    stats_path = REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
+    stats_path = repo_root / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
     output_path = (
-        REPO_ROOT / "4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet"
+        repo_root / "4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet"
     )
 
     if not stats_path.exists() or not output_path.exists():

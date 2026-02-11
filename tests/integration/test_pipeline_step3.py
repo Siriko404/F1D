@@ -3,7 +3,6 @@ Integration tests for Step 3 (Financial Features).
 Tests end-to-end pipeline execution for financial feature scripts.
 """
 
-import os
 import pytest
 import subprocess
 import json
@@ -13,12 +12,15 @@ import sys
 
 pytestmark = pytest.mark.integration
 
-# Get repository root from test file location
-REPO_ROOT = Path(__file__).parent.parent.parent
-
-# Add 2_Scripts to path for shared module imports
-sys.path.insert(0, str(REPO_ROOT / "2_Scripts"))
+# Add 2_Scripts to path for shared module imports (for direct imports)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 from shared.path_utils import get_latest_output_dir, OutputResolutionError
+
+
+@pytest.fixture(scope="session")
+def repo_root():
+    """Path to repository root directory."""
+    return Path(__file__).parent.parent.parent
 
 
 def resolve_output_dir(base_path: Path) -> Path:
@@ -29,17 +31,10 @@ def resolve_output_dir(base_path: Path) -> Path:
         return base_path / "latest"
 
 
-# Environment for subprocess calls (includes PYTHONPATH for module resolution)
-SUBPROCESS_ENV = {
-    "PYTHONPATH": str(REPO_ROOT / "2_Scripts"),
-    **os.environ,  # Preserve existing environment variables
-}
-
-
-def test_step3_full_pipeline():
+def test_step3_full_pipeline(repo_root, subprocess_env):
     """Test Step 3 (3.0_BuildFinancialFeatures) runs end-to-end."""
     # Arrange
-    script_path = REPO_ROOT / "2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py"
+    script_path = repo_root / "2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py"
 
     if not script_path.exists():
         pytest.skip(f"Script not found: {script_path}")
@@ -47,7 +42,7 @@ def test_step3_full_pipeline():
     # Act - Run script via subprocess
     result = subprocess.run(
         ["python", str(script_path)],
-        env=SUBPROCESS_ENV,
+        env=subprocess_env,
         capture_output=True,
         text=True,
         timeout=600,
@@ -58,7 +53,7 @@ def test_step3_full_pipeline():
 
     # Verify output files exist
     output_dir = resolve_output_dir(
-        REPO_ROOT / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+        repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
     )
     assert output_dir.exists(), "Output directory not created"
 
@@ -74,12 +69,12 @@ def test_step3_full_pipeline():
             pytest.fail(f"Expected output file not found: {filename}")
 
 
-def test_merge_diagnostics_step3():
+def test_merge_diagnostics_step3(repo_root):
     """Test that merge diagnostics are recorded in stats.json."""
     # Arrange
     stats_path = (
         resolve_output_dir(
-            REPO_ROOT / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
         )
         / "stats.json"
     )
@@ -108,12 +103,12 @@ def test_merge_diagnostics_step3():
         )
 
 
-def test_financial_variables_validation():
+def test_financial_variables_validation(repo_root):
     """Test that financial variables are computed correctly."""
     # Arrange
     output_file = (
         resolve_output_dir(
-            REPO_ROOT / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
         )
         / "financial_features.parquet"
     )
@@ -152,12 +147,12 @@ def test_financial_variables_validation():
 
 
 @pytest.mark.parametrize("data_source", ["Compustat", "CRSP", "IBES"])
-def test_step3_data_source_integration(data_source):
+def test_step3_data_source_integration(data_source, repo_root):
     """Test that data source merges are successful."""
     # Arrange
     stats_path = (
         resolve_output_dir(
-            REPO_ROOT / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
         )
         / "stats.json"
     )
