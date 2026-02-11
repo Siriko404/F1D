@@ -445,6 +445,74 @@ def calculate_roll_spread(crsp_df, permno_list=None, min_days=50):
     return roll[["PERMNO", "year", "roll_spread", "autocov", "n_obs"]]
 
 
+def calculate_stock_volatility_and_returns(crsp_df, permno_list=None, min_days=50):
+    """
+    Calculate annualized stock return volatility and annual stock returns from CRSP daily data.
+
+    Volatility = Annualized standard deviation of daily returns * 100
+    StockRet = Cumulative annual return * 100
+
+    Args:
+        crsp_df: CRSP daily data with PERMNO, date, RET
+        permno_list: Optional list of PERMNOs to filter for
+        min_days: Minimum trading days required (default: 50)
+
+    Returns:
+        DataFrame with PERMNO, year, Volatility, StockRet
+    """
+    print("
+Calculating stock volatility and returns from CRSP...")
+
+    # Filter to sample permnos if provided
+    if permno_list is not None:
+        crsp_df = crsp_df[crsp_df["PERMNO"].isin(permno_list)].copy()
+
+    # Add year
+    crsp_df["year"] = crsp_df["date"].dt.year
+
+    # Filter valid returns
+    valid = crsp_df[
+        (crsp_df["RET"].notna()) &
+        (crsp_df["RET"].between(-0.66, 0.66))
+    ].copy()
+
+    # Calculate annual metrics for each firm-year
+    def calc_metrics(group):
+        rets = group["RET"].dropna()
+        n = len(rets)
+        if n < min_days:
+            return pd.Series({
+                "Volatility": np.nan,
+                "StockRet": np.nan,
+                "n_obs": n
+            })
+        # Daily volatility (std dev), annualized by sqrt(252) and convert to percent
+        vol = rets.std() * 100 * (252 ** 0.5)
+        # Annual stock return: (1 + r1*r2*...*rn) - 1, * 100
+        stock_ret = ((1 + rets).prod() - 1) * 100
+        return pd.Series({
+            "Volatility": vol,
+            "StockRet": stock_ret,
+            "n_obs": n
+        })
+
+    metrics_df = (valid.groupby(["PERMNO", "year"])
+                    .apply(calc_metrics, include_groups=False)
+                    .reset_index())
+
+    # Require minimum trading days
+    metrics_df = metrics_df[metrics_df["n_obs"] >= min_days].copy()
+
+    print(f"  Computed metrics for {len(metrics_df):,} firm-years")
+    if len(metrics_df) > 0:
+        if metrics_df["Volatility"].notna().any():
+            print(f"    Volatility - Mean: {metrics_df['Volatility'].mean():.2f}%, Median: {metrics_df['Volatility'].median():.2f}%")
+        if metrics_df["StockRet"].notna().any():
+            print(f"    StockRet - Mean: {metrics_df['StockRet'].mean():.2f}%, Median: {metrics_df['StockRet'].median():.2f}%")
+
+    return metrics_df[["PERMNO", "year", "Volatility", "StockRet"]]
+
+
 # ==============================================================================
 # Sample Construction Functions
 # ==============================================================================
@@ -687,6 +755,10 @@ def main():
     roll_df = calculate_roll_spread(crsp, permno_list, cfg["min_trading_days"])
     stats["processing"]["variables_computed"].append("roll_spread")
 
+    # Calculate stock volatility and returns from CRSP daily data
+    volatility_df = calculate_stock_volatility_and_returns(crsp, permno_list, cfg["min_trading_days"])
+    stats["processing"]["variables_computed"].append("stock_volatility_returns")
+
     # Free CRSP memory
     del crsp
     gc.collect()
@@ -749,11 +821,24 @@ def main():
             how="left"
         )
 
+        # Merge volatility/returns via permno crosswalk
+        volatility_df = volatility_df.merge(crosswalk, left_on="PERMNO", right_on="permno", how="left")
+
+        # Merge volatility/returns to linguistic data
+        df = df.merge(
+            volatility_df[["gvkey", "year", "Volatility", "StockRet"]],
+            on=["gvkey", "year"],
+            how="left"
+        )
+
         print(f"  After merging illiquidity: {len(df):,} observations")
         print(f"    Amihud valid: {df['amihud_illiquidity'].notna().sum():,}")
         print(f"    Roll spread valid: {df['roll_spread'].notna().sum():,}")
+        print(f"    Volatility valid: {df['Volatility'].notna().sum():,}")
+        print(f"    StockRet valid: {df['StockRet'].notna().sum():,}")
 
     # Merge market variables (for additional controls)
+    # Note: This is now a fallback since Volatility/StockRet are calculated directly from CRSP
     if market is not None:
         df = df.merge(
             market[["gvkey", "year", "StockRet", "Volatility"]],
