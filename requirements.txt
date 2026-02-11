@@ -31,3 +31,4 @@ rapidfuzz>=3.14.0
 pytest>=8.0.0
 pytest-benchmark>=4.0.0
 pytest-cov>=4.1.0
+pytest-mypy>=0.10.0
