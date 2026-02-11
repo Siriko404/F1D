@@ -14,8 +14,8 @@ Description: Links cleaned metadata to CCM database using 4-tier strategy:
 Inputs:
     - 4_Outputs/1.1_CleanMetadata/latest/metadata_cleaned.parquet
     - 1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet
-    - 1_Inputs/Siccodes12.zip
-    - 1_Inputs/Siccodes48.zip
+    - 1_Inputs/FF1248/Siccodes12.zip
+    - 1_Inputs/FF1248/Siccodes48.zip
     - config/project.yaml
 
 Outputs:
@@ -208,8 +208,8 @@ def setup_paths(config):
         / "1_Inputs"
         / "CRSPCompustat_CCM"
         / "CRSP_CCM_Variable_Reference.txt",
-        "ff12": root / "1_Inputs" / "Siccodes12.zip",
-        "ff48": root / "1_Inputs" / "Siccodes48.zip",
+        "ff12": root / "1_Inputs" / "FF1248" / "Siccodes12.zip",
+        "ff48": root / "1_Inputs" / "FF1248" / "Siccodes48.zip",
     }
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
