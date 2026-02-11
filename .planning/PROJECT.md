@@ -8,20 +8,24 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: v2.0 Hypothesis Testing Suite
+## Current Milestone: v3.0 Codebase Cleanup & Optimization
 
-**Goal:** Implement and test three empirical hypotheses linking speech uncertainty to corporate financial outcomes (cash holdings, investment efficiency, payout policy)
+**Started:** 2026-02-10
+**Goal:** Fix critical bugs, improve code organization, add comprehensive documentation, and optimize performance while preserving all functionality
 
-**Target features:**
-- H1: Speech Uncertainty & Precautionary Cash Holdings (vague managers hoard cash, debt disciplines)
-- H2: Speech Uncertainty & Investment Inefficiency (vagueness enables over/underinvestment)
-- H3: Speech Uncertainty & Payout Policy Stability (vagueness increases dividend volatility)
+**Target outcomes:**
+- Fix H7-H8 data truncation bug
+- Archive backup files only (keep all V1/V2/V3 active)
+- Split monolithic utilities for maintainability
+- Comprehensive documentation (repo README, script docstrings, variable catalog)
+- Performance optimizations (vectorization, eliminate anti-patterns)
+- Enhanced testing (regression tests, coverage improvement)
 
 ## Requirements
 
 ### Validated
 
-<!-- Shipped and confirmed valuable. v1.0 milestone complete. -->
+<!-- Shipped and confirmed valuable. Both v1.0 and v2.0 milestones complete. -->
 
 - ✓ Sample construction from speaker data with entity linking — v1.0
 - ✓ Text tokenization and word counting with dictionary lookups — v1.0
@@ -38,20 +42,23 @@ Every script must produce verifiable, reproducible results with complete audit t
 - ✓ Pipeline flow diagram and variable codebook — v1.0
 - ✓ CLI support with --help and --dry-run flags — v1.0
 - ✓ Manual script execution without orchestrator — v1.0
+- ✓ V2 folder structure for hypothesis testing scripts — v2.0
+- ✓ Cash holdings variables (CHE/AT, leverage, controls) — v2.0
+- ✓ Investment efficiency variables (over/underinvestment, Biddle residuals) — v2.0
+- ✓ Payout policy variables (dividend stability, flexibility) — v2.0
+- ✓ Panel econometric infrastructure (FE, clustering, 2SLS) — v2.0
+- ✓ H1-H3 regression execution (144 regressions) — v2.0
+- ✓ H5 analyst dispersion analysis (IBES merge, 28 regressions) — v2.0
+- ✓ H6 SEC scrutiny analysis (CCCL instrument, 39 regressions) — v2.0
 
-### Active
+### Not Pursued
 
-<!-- Current scope. Building toward v2.0 hypothesis testing. -->
+<!-- Requirements from cancelled/abandoned phases. Documented for completeness. -->
 
-- [ ] Speech uncertainty measurement using Loughran-McDonald uncertainty dictionary
-- [ ] Manager fixed-effect decomposition of vagueness (style vs. situational)
-- [ ] Cash holdings regression with leverage interactions (H1)
-- [ ] Investment efficiency metrics (over/underinvestment detection, H2)
-- [ ] Payout policy stability measures (dividend volatility, flexibility, H3)
-- [ ] Panel regression infrastructure with firm/year/industry fixed effects
-- [ ] 2SLS instrumentation for endogeneity robustness
-- [ ] Subsample analyses (leverage, growth, crisis periods)
-- [ ] Publication-ready regression tables
+- Robustness checks (subsample analyses) — cancelled due to null results
+- Identification strategies (manager FE, PSM) — cancelled due to null results
+- Publication output (LaTeX tables) — cancelled due to null results
+- H7-H10 hypotheses (turnover, compensation, returns, forecast accuracy) — abandoned with Phase 41
 
 ### Out of Scope
 
@@ -71,16 +78,15 @@ This is a thesis research project with an existing 4-stage pipeline:
 3. **Financial** (3_Financial): Build financial features, firm controls, market variables, event flags
 4. **Econometric** (4_Econometric): Run regressions for CEO clarity, tone, liquidity effects
 
+V2 extensions added:
+- **Financial_V2** (3_Financial_V2): Hypothesis-specific variable construction (H1-H3, H5, H6)
+- **Econometric_V2** (4_Econometric_V2): Hypothesis testing regressions with FE and clustering
+
 The pipeline follows strict conventions from CLAUDE.md:
 - Root structure: `1_Inputs/`, `2_Scripts/`, `3_Logs/`, `4_Outputs/`, `config/`
 - Naming: `<Stage>.<Step>_<PascalCaseName>.py`
 - All scripts read from `config/project.yaml`
-- Outputs go to timestamped directories with `latest` symlinks
-
-Current gaps identified in codebase mapping:
-- No requirements.txt (dependency management)
-- Scripts lack comprehensive statistics reporting
-- No README documenting the full pipeline
+- Outputs go to timestamped directories
 
 ## Constraints
 
@@ -96,10 +102,13 @@ Current gaps identified in codebase mapping:
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Stats inline per script | Self-contained for replication; reviewers can trace any number | — Pending |
-| Stats to console + files | Human review during runs + machine-readable for analysis | — Pending |
-| README for academic reviewers | Primary audience is thesis committee and journal reviewers | — Pending |
-| Skip methodology in README | Methodology belongs in paper; README covers "how to run" | — Pending |
+| Stats inline per script | Self-contained for replication; reviewers can trace any number | Implemented v1.0 |
+| Stats to console + files | Human review during runs + machine-readable for analysis | Implemented v1.0 |
+| README for academic reviewers | Primary audience is thesis committee and journal reviewers | Implemented v1.0 |
+| Skip methodology in README | Methodology belongs in paper; README covers "how to run" | Implemented v1.0 |
+| Cancel robustness phases on null results | Scientifically inappropriate to pursue robustness for unsupported hypotheses | Phases 36-38 cancelled |
+| Abandon hypothesis suite discovery | Single hypothesis (H6) tested directly; remaining H7-H10 not pursued | Phase 41 abandoned |
+| Document null results | Null findings are valid scientific results; documented in VERIFICATION.md | All phases documented |
 
 ---
-*Last updated: 2026-02-04 after v2.0 milestone initialization*
+*Last updated: 2026-02-06 (v2.0 concluded with null results)*
