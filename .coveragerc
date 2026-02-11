@@ -1,0 +1,47 @@
+# .coveragerc - Coverage.py configuration
+# See: https://coverage.readthedocs.io/
+
+[run]
+source = 2_Scripts
+branch = true
+omit =
+    */tests/*
+    */__pycache__/*
+    */ARCHIVE*
+    */ARCHIVE_OLD*
+    */V1*
+    .tox/*
+    */site-packages/*
+
+[report]
+# Minimum coverage required (used by coverage fail command)
+fail_under = 60
+
+# Precision for percentage reporting
+precision = 2
+
+# Skip files with no code
+skip_empty = True
+
+# Exclude lines from coverage calculation
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+
+[html]
+directory = htmlcov
+title = F1D Thesis Coverage Report
+
+[xml]
+output = coverage.xml
+
+[json]
+output = coverage.json
+
+[lcov]
+output = coverage.lcov

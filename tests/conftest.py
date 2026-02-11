@@ -18,6 +18,15 @@ Subprocess Testing Pattern:
                 env=subprocess_env,  # Critical: enables shared imports
                 ...
             )
+
+COVERAGE CONFIGURATION
+
+Coverage.py configuration is managed via:
+    - pyproject.toml [tool.coverage.*] sections
+    - .coveragerc file (local override)
+    - CI workflow pytest --cov flags
+
+Branch coverage is enabled to measure both line and branch coverage.
 """
 
 import pytest
