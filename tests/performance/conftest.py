@@ -63,6 +63,8 @@ def sample_entity_link_data():
         "gvkey": [np.nan] * n_unique,
         "conm": [np.nan] * n_unique,
         "sic": [np.nan] * n_unique,
+        "link_method": [np.nan] * n_unique,
+        "link_quality": [np.nan] * n_unique,
     })
 
     update_df = pd.DataFrame({
