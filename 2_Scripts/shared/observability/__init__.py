@@ -35,14 +35,17 @@ Date: 2026-02-11
 
 # Re-export all public symbols for backward compatibility
 # Configure logger for this module
-import logging
+import sys
+import logging as stdlib_logging
 
+# Import our local logging module (DualWriter)
+# Need to be careful not to shadow stdlib logging with our local module name
+from . import logging as observability_logging
 from .anomalies import (
     detect_anomalies_iqr,
     detect_anomalies_zscore,
 )
 from .files import compute_file_checksum
-from .logging import DualWriter
 from .memory import get_process_memory_mb
 from .stats import (
     analyze_missing_values,
@@ -95,7 +98,10 @@ from .stats import (
 )
 from .throughput import calculate_throughput
 
-logger = logging.getLogger(__name__)
+# Import DualWriter from our local logging module
+DualWriter = observability_logging.DualWriter
+
+logger = stdlib_logging.getLogger(__name__)
 
 __all__ = [
     # Logging
