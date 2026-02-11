@@ -28,8 +28,7 @@ Author: Thesis Author
 Date: 2026-02-11
 ================================================================================
 """
-Deterministic: true
-"""
+Deterministic: True
 
 from typing import Dict, List
 
@@ -273,13 +272,12 @@ def check_multicollinearity(
                     import warnings
 
                     warnings.warn(
-                        f"High multicollinearity detected for '{var}': VIF = {vif:.2f}. "
-                        f"Threshold: {vif_threshold}",
+                        f"High multicollinearity detected for var: VIF is {vif:.2f}, threshold is {vif_threshold}",
                         stacklevel=2,
                     )
             except Exception as e:
                 import warnings
 
-                warnings.warn(f"Could not calculate VIF for '{var}': {e}", stacklevel=2)
+                warnings.warn(f"Could not calculate VIF for var: {e}", stacklevel=2)
 
     return vif_dict
