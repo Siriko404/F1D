@@ -38,13 +38,83 @@ jobs:
 
     - name: Run unit and integration tests (skip E2E)
       run: |
-        pytest tests/ -m "not e2e" --cov=2_Scripts --cov-report=xml --cov-report=html --cov-report=term -v
+        pytest tests/ -m "not e2e" \
+          --cov=2_Scripts \
+          --cov-report=xml \
+          --cov-report=html \
+          --cov-report=term \
+          --cov-report=json \
+          --cov-fail-under=60 \
+          -v
+      env:
+        PYTHONPATH: ${{ github.workspace }}/2_Scripts
 
-    - name: Upload coverage to Codecov (optional)
+    - name: Coverage Summary
+      run: |
+        echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # Parse coverage.json for summary
+        python - << 'EOF'
+        import json
+        import sys
+        from pathlib import Path
+
+        coverage_file = Path("coverage.json")
+        if not coverage_file.exists():
+            sys.exit(0)
+
+        with open(coverage_file) as f:
+            data = json.load(f)
+
+        totals = data.get("totals", {})
+        files = data.get("files", [])
+
+        print("## Coverage Summary")
+        print(f"| Metric | Coverage |")
+        print(f"|--------|----------|")
+        print(f"| Line Coverage | {totals.get('line_covered', 0)}/{totals.get('line_total', 0)} ({totals.get('line_percent', 0):.1f}%) |")
+        print(f"| Branch Coverage | {totals.get('branch_covered', 0)}/{totals.get('branch_total', 0)} ({totals.get('branch_percent', 0):.1f}%) |")
+
+        # Critical shared modules
+        critical_files = [
+            "financial_utils.py",
+            "panel_ols.py",
+            "iv_regression.py",
+        ]
+
+        print("\n### Critical Modules (Tier 1 - Target 90%+)")
+        for file_info in files:
+            filename = Path(file_info["name"]).name
+            if filename in critical_files:
+                summary = file_info.get("summary", {})
+                line_pct = summary.get("percent_covered", 0)
+                status = "OK" if line_pct >= 90 else "NEEDS ATTENTION"
+                print(f"- **{filename}**: {line_pct:.1f}% [{status}]")
+
+        # Important shared modules
+        important_files = [
+            "data_validation.py",
+            "path_utils.py",
+            "chunked_reader.py",
+        ]
+
+        print("\n### Important Modules (Tier 2 - Target 80%+)")
+        for file_info in files:
+            filename = Path(file_info["name"]).name
+            if filename in important_files:
+                summary = file_info.get("summary", {})
+                line_pct = summary.get("percent_covered", 0)
+                status = "OK" if line_pct >= 80 else "NEEDS ATTENTION"
+                print(f"- **{filename}**: {line_pct:.1f}% [{status}]")
+        EOF
+
+    - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
-        fail_ci_if_error: false
+        fail_ci_if_error: false  # Keep false initially, enable after baseline established
+        token: ${{ secrets.CODECOV_TOKEN }}  # Optional for private repos
       continue-on-error: true
 
     - name: Upload coverage as artifact
