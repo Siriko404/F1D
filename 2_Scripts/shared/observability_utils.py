@@ -191,10 +191,22 @@ def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
 
     Returns:
         Throughput in rows per second (rounded to 2 decimals)
-        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
+
+    Raises:
+        ValueError: If duration_seconds <= 0 (indicates timing error in pipeline)
     """
     if duration_seconds <= 0:
-        return 0.0
+        logger.warning(
+            f"Invalid duration_seconds={duration_seconds} <= 0, "
+            f"rows_processed={rows_processed}. "
+            f"This may indicate a timing error in the pipeline "
+            f"(start_time/end_time not set correctly)."
+        )
+        raise ValueError(
+            f"Cannot calculate throughput: duration_seconds={duration_seconds} <= 0. "
+            f"rows_processed={rows_processed}. "
+            f"Check script timing logic (start_time/end_time)."
+        )
     return round(rows_processed / duration_seconds, 2)
 
 
