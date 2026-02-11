@@ -33,14 +33,6 @@ Author: Thesis Author
 Date: 2026-02-11
 ================================================================================
 """
-Source: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.dtypes.html
-Dependencies:
-    - Utility module for data validation
-    - Uses: pandas, numpy
-
-Author: Thesis Author
-Date: 2026-02-11
-"""
 
 import sys
 from pathlib import Path
