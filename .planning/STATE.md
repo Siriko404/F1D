@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 60-code-organization (v3.0 Codebase Cleanup & Optimization)
-Status: Phase 60-03 COMPLETE (3/3 plans)
-Last activity: 2026-02-11 - Phase 60-03: Split observability_utils.py into focused modules
+Status: Phase 60-04-A COMPLETE (4/4 plans)
+Last activity: 2026-02-11 - Phase 60-04-A: Ruff configuration and auto-fixes
 
 ### Next Phase
 
@@ -50,7 +50,7 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
 Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression complete (5,295 obs, interaction NOT SIGNIFICANT p=0.76, H9 NOT SUPPORTED)
 Phase 59: Critical Bug Fixes [COMPLETE - 3/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Exception-based Error Handling COMPLETE (FinancialCalculationError added to data_validation.py, empty returns replaced with raises in calculate_firm_controls and calculate_firm_controls_quarterly, 8 unit/integration tests created); 59-03 calculate_throughput Error Handling COMPLETE (raises ValueError with logging, 10 unit tests, H1/H2/H3/H7/H8 callers updated with try/except)
-Phase 60: Code Organization [COMPLETE - 3/3 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified); 60-02 Create READMEs COMPLETE (created 6 README.md files for Financial V1/V3, Econometric V1/V3, Sample, Text directories; clarified V1/V2/V3 structure through documentation; no directory renaming per constraint); 60-03 Observability Package Structure COMPLETE (split 4,668-line observability_utils.py into 7 focused modules: logging, stats, files, memory, throughput, anomalies; maintained 100% backward compatibility via re-exports; 54/55 calling scripts verified)
+Phase 60: Code Organization [COMPLETE - 4/4 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified); 60-02 Create READMEs COMPLETE (created 6 README.md files for Financial V1/V3, Econometric V1/V3, Sample, Text directories; clarified V1/V2/V3 structure through documentation; no directory renaming per constraint); 60-03 Observability Package Structure COMPLETE (split 4,668-line observability_utils.py into 7 focused modules: logging, stats, files, memory, throughput, anomalies; maintained 100% backward compatibility via re-exports; 54/55 calling scripts verified); 60-04-A Ruff Linting and Formatting COMPLETE (configured Ruff in pyproject.toml with Black-compatible settings; auto-fixed 830 issues; fixed 5 critical undefined-name bugs; formatted codebase; reduced errors from 1038 to 175)
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -450,11 +450,36 @@ All files and commits verified for Phase 58-01:
 - [Import Paths] Both paths work: `from shared.observability_utils import X` (old) and `from shared.observability import X` (new)
 - [Zero Breaking Changes] 54/55 calling scripts compile successfully (1 pre-existing unrelated syntax error in H7IlliquidityVariables.py)
 
+### Phase 60-04-A Ruff Linting and Formatting Decisions
+
+- [Ruff Configuration] Added [tool.ruff] to pyproject.toml with Black-compatible settings (line-length 88, double quotes, space indentation, target-version py39)
+- [Rule Selection] Enabled E4/E7/E9 (errors), F (Pyflakes), B (flake8-bugbear), W (warnings), I (isort); ignored E501 (handled by formatter)
+- [Per-File Ignores] E402 allowed for __init__.py (lazy imports), ALL ignored for .___archive, S101 allowed for tests (assert statements)
+- [Auto-Fix Results] 830 issues auto-fixed (import sorting, unused imports, formatting); 5 manual bug fixes (syntax errors, undefined names)
+- [Remaining Issues] 175 errors remain: 120 E402 (intentional - sys.path before imports), 29 F401 (unused imports - style), 26 others (minor style)
+- [Workflow Integration] Run `ruff check 2_Scripts/ --fix --unsafe-fixes` and `ruff format 2_Scripts/` before commits
+
 ## Session Continuity
 
 ### Current Session (2026-02-11)
 
-**Phase 60-03 COMPLETE:**
+**Phase 60-04-A COMPLETE:**
+- Configured Ruff linter/formatter in pyproject.toml with Black-compatible settings
+- Auto-fixed 830 issues: import sorting, unused imports, formatting
+- Fixed 5 critical bugs: syntax error in H7IlliquidityVariables.py, undefined names in string_matching.py, stats.py, 3.0_BuildFinancialFeatures.py, 4.1.4_EstimateCeoTone.py, 4.3_TakeoverHazards.py
+- Formatted codebase with ruff format (2 files changed)
+- Reduced lint errors from 1038 to 175 (remaining are mostly intentional E402)
+- 2 commits: f5f4b93 (60-04-A config), 4298507 (60-04-A auto-fixes)
+- SUMMARY: 60-04-A-SUMMARY.md created
+
+**Phase 60-04-A Key Changes:**
+- Ruff replaces flake8, isort, black with single fast Rust-based tool
+- Line length 88, double quotes, space indentation (Black-compatible)
+- Import sorting enabled for cleaner, alphabetically sorted imports
+- E501 ignored (formatter handles line length)
+- Per-file ignores: __init__.py (E402), .___archive (ALL), tests (S101)
+
+**Phase 60-03 COMPLETE (Earlier):**
 - Split 4,668-line observability_utils.py into 7 focused modules
 - Created 2_Scripts/shared/observability/ package with __init__.py, logging.py, stats.py, files.py, memory.py, throughput.py, anomalies.py
 - Updated observability_utils.py to be thin compatibility wrapper (154 lines, was 4,668)
