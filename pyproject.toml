@@ -57,7 +57,6 @@ exclude_lines = [
 ]
 precision = 2  # Report coverage to 2 decimal places
 skip_empty = true  # Don't fail on files with no code
-partial_branches = true  # Report partial branch coverage
 show_missing = true  # Show missing lines in report
 
 [tool.coverage.html]
