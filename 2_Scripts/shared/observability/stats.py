@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""
+"""
 ================================================================================
 OBSERVABILITY PACKAGE - STATS MODULE
 ================================================================================
@@ -22,7 +22,6 @@ from typing import Dict, List, Optional, Any
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
-
 
 
 def print_stat(
@@ -58,7 +57,6 @@ def print_stat(
             print(f"{prefix}{label}: {v}")
 
 
-
 def analyze_missing_values(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
     """
     Analyze missing values per column.
@@ -80,7 +78,6 @@ def analyze_missing_values(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
                 "percent": round(null_count / len(df) * 100, 2),
             }
     return missing
-
 
 
 def print_stats_summary(stats: Dict[str, Any]) -> None:
@@ -117,7 +114,6 @@ def print_stats_summary(stats: Dict[str, Any]) -> None:
             print(f"{step:<30} {count:>10,}")
 
     print("=" * 60)
-
 
 
 def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
@@ -296,7 +292,6 @@ def detect_anomalies_iqr(
     return anomalies
 
 
-
 def compute_input_stats(df: pd.DataFrame) -> Dict[str, Any]:
     """
     Analyze raw input data characteristics.
@@ -414,7 +409,6 @@ def compute_input_stats(df: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-
 def compute_temporal_stats(df: pd.DataFrame, date_col: str = "start_date") -> Dict[str, Any]:
     """
     Analyze temporal coverage of the dataset.
@@ -525,7 +519,6 @@ def compute_temporal_stats(df: pd.DataFrame, date_col: str = "start_date") -> Di
         "calls_per_year": calls_per_year,
         "target_year_coverage": coverage,
     }
-
 
 
 def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
@@ -665,7 +658,6 @@ def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-
 def compute_linking_input_stats(df_input: pd.DataFrame, df_ccm: pd.DataFrame) -> Dict[str, Any]:
     """
     Analyze input and reference data for entity linking.
@@ -738,7 +730,6 @@ def compute_linking_input_stats(df_input: pd.DataFrame, df_ccm: pd.DataFrame) ->
     stats["coverage_metrics"] = coverage
 
     return stats
-
 
 
 def compute_linking_process_stats(unique_df: pd.DataFrame, stats_dict: Dict[str, Any]) -> Dict[str, Any]:
@@ -830,7 +821,6 @@ def compute_linking_process_stats(unique_df: pd.DataFrame, stats_dict: Dict[str,
         }
 
     return stats
-
 
 
 def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
@@ -945,7 +935,6 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-
 def collect_fuzzy_match_samples(unique_df: pd.DataFrame, n_samples: int = 5) -> Dict[str, Any]:
     """
     Collect fuzzy name match examples for review.
@@ -1008,7 +997,6 @@ def collect_fuzzy_match_samples(unique_df: pd.DataFrame, n_samples: int = 5) -> 
         })
 
     return samples
-
 
 
 def collect_tier_match_samples(unique_df: pd.DataFrame, n_samples: int = 3) -> Dict[str, Any]:
@@ -1078,7 +1066,6 @@ def collect_tier_match_samples(unique_df: pd.DataFrame, n_samples: int = 3) -> D
     return samples
 
 
-
 def collect_unmatched_samples(df_original: pd.DataFrame, unique_df: pd.DataFrame, n_samples: int = 5) -> List[Dict[str, Any]]:
     """
     Collect unmatched company samples for analysis.
@@ -1145,7 +1132,6 @@ def collect_unmatched_samples(df_original: pd.DataFrame, unique_df: pd.DataFrame
     return samples
 
 
-
 def collect_before_after_samples(df_original: pd.DataFrame, df_linked: pd.DataFrame, n_samples: int = 3) -> List[Dict[str, Any]]:
     """
     Collect before/after examples showing the linking transformation.
@@ -1210,7 +1196,6 @@ def collect_before_after_samples(df_original: pd.DataFrame, df_linked: pd.DataFr
         })
 
     return samples
-
 
 
 def compute_tenure_input_stats(df_input: pd.DataFrame, df_ceo: pd.DataFrame) -> Dict[str, Any]:
@@ -1294,7 +1279,6 @@ def compute_tenure_input_stats(df_input: pd.DataFrame, df_ceo: pd.DataFrame) -> 
         }
 
     return stats
-
 
 
 def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
@@ -1427,7 +1411,6 @@ def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-
 def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
     """
     Analyze monthly tenure panel output characteristics.
@@ -1551,7 +1534,6 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
         }
 
     return stats
-
 
 
 def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, n_samples: int = 3) -> Dict[str, Any]:
@@ -1684,7 +1666,6 @@ def collect_tenure_samples(episodes_df: pd.DataFrame, monthly_df: pd.DataFrame, 
     return samples
 
 
-
 def compute_manifest_input_stats(df_metadata: pd.DataFrame, df_tenure: pd.DataFrame) -> Dict[str, Any]:
     """
     Analyze input data characteristics for manifest assembly.
@@ -1769,7 +1750,6 @@ def compute_manifest_input_stats(df_metadata: pd.DataFrame, df_tenure: pd.DataFr
         stats["temporal_coverage"] = {"error": "start_date column not found"}
 
     return stats
-
 
 
 def compute_manifest_process_stats(
@@ -1889,7 +1869,6 @@ def compute_manifest_process_stats(
         stats["ceo_filtering"] = {"error": "ceo_id column not found"}
 
     return stats
-
 
 
 def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
@@ -2058,7 +2037,6 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
     return stats
 
 
-
 def collect_ceo_distribution_samples(df_final: pd.DataFrame, n_samples: int = 5) -> Dict[str, Any]:
     """
     Collect CEO distribution examples from final manifest.
@@ -2152,7 +2130,6 @@ def collect_ceo_distribution_samples(df_final: pd.DataFrame, n_samples: int = 5)
         })
 
     return samples
-
 
 
 def compute_tokenize_input_stats(
@@ -2287,7 +2264,6 @@ def compute_tokenize_input_stats(
     return stats
 
 
-
 def compute_tokenize_process_stats(
     per_year_stats: List[Dict[str, Any]],
     cat_sets: Dict[str, set],
@@ -2394,7 +2370,6 @@ def compute_tokenize_process_stats(
     }
 
     return stats
-
 
 
 def compute_tokenize_output_stats(
@@ -2563,7 +2538,6 @@ def compute_tokenize_output_stats(
     return stats
 
 
-
 def compute_constructvariables_input_stats(
     tokenized_dir: Path,
     manifest_df: pd.DataFrame,
@@ -2661,7 +2635,6 @@ def compute_constructvariables_input_stats(
     stats["total_tokens_available"] = int(total_tokens)
 
     return stats
-
 
 
 def compute_constructvariables_process_stats(
@@ -2771,7 +2744,6 @@ def compute_constructvariables_process_stats(
     }
 
     return stats
-
 
 
 def compute_constructvariables_output_stats(
@@ -2944,7 +2916,6 @@ def compute_constructvariables_output_stats(
     return stats
 
 
-
 def compute_financial_input_stats(
     manifest_df: pd.DataFrame,
     compustat_df: pd.DataFrame,
@@ -3089,7 +3060,6 @@ def compute_financial_input_stats(
     return stats
 
 
-
 def compute_financial_process_stats(
     merge_results: Dict[str, Dict[str, int]],
     variables_computed: List[str],
@@ -3177,7 +3147,6 @@ def compute_financial_process_stats(
     }
 
     return stats
-
 
 
 def compute_financial_output_stats(
@@ -3277,7 +3246,6 @@ def compute_financial_output_stats(
         }
 
     return stats
-
 
 
 def compute_market_input_stats(
@@ -3399,7 +3367,6 @@ def compute_market_input_stats(
     return stats
 
 
-
 def compute_market_process_stats(
     per_year_stats: List[Dict[str, Any]],
     window_params: Dict[str, int],
@@ -3481,7 +3448,6 @@ def compute_market_process_stats(
     }
 
     return stats
-
 
 
 def compute_market_output_stats(
@@ -3652,7 +3618,6 @@ def compute_market_output_stats(
     return stats
 
 
-
 def compute_event_flags_input_stats(
     manifest_df: pd.DataFrame,
     sdc_df: pd.DataFrame,
@@ -3752,7 +3717,6 @@ def compute_event_flags_input_stats(
     return stats
 
 
-
 def compute_event_flags_process_stats(
     takeover_count: int,
     takeover_by_type: Dict[str, int],
@@ -3840,7 +3804,6 @@ def compute_event_flags_process_stats(
     }
 
     return stats
-
 
 
 def compute_event_flags_output_stats(
@@ -3958,7 +3921,6 @@ def compute_event_flags_output_stats(
 # These functions provide consistent naming for Step 3 sub-steps
 # ============================================================================
 
-
 def compute_step31_input_stats(
     manifest_df: pd.DataFrame,
     compustat_df: pd.DataFrame,
@@ -4003,7 +3965,6 @@ def compute_step31_input_stats(
             stats["ccm_stats"]["unique_permno_linked"] = int(ccm_df["LPERMNO"].nunique())
 
     return stats
-
 
 
 def compute_step31_process_stats(
@@ -4068,7 +4029,6 @@ def compute_step31_process_stats(
     return stats
 
 
-
 def compute_step31_output_stats(
     output_df: pd.DataFrame,
     variables_list: List[str] = None,
@@ -4107,7 +4067,6 @@ def compute_step31_output_stats(
     stats = compute_financial_output_stats(output_df, variables_list)
 
     return stats
-
 
 
 def compute_step32_input_stats(
@@ -4202,7 +4161,6 @@ def compute_step32_input_stats(
             stats["ccm_linkage_stats"]["unique_gvkey_linked"] = int(ccm_df["gvkey"].nunique())
 
     return stats
-
 
 
 def compute_step32_process_stats(
@@ -4302,7 +4260,6 @@ def compute_step32_process_stats(
     return stats
 
 
-
 def compute_step32_output_stats(
     output_df: pd.DataFrame,
     variables_list: List[str] = None,
@@ -4341,7 +4298,6 @@ def compute_step32_output_stats(
     return stats
 
 
-
 def compute_step33_input_stats(
     manifest_df: pd.DataFrame,
     sdc_df: pd.DataFrame,
@@ -4366,7 +4322,6 @@ def compute_step33_input_stats(
         - cusip_linkage_potential: {manifest_cusip6_available, sdc_cusip6_overlap}
     """
     return compute_event_flags_input_stats(manifest_df, sdc_df)
-
 
 
 def compute_step33_process_stats(
@@ -4398,7 +4353,6 @@ def compute_step33_process_stats(
     return compute_event_flags_process_stats(match_results, takeover_flags_df, window_days)
 
 
-
 def compute_step33_output_stats(
     output_df: pd.DataFrame,
 ) -> Dict[str, Any]:
@@ -4422,7 +4376,6 @@ def compute_step33_output_stats(
         - temporal_patterns: {takeover_frequency_trends, type_trends}
     """
     return compute_event_flags_output_stats(output_df)
-
 
 
 def generate_financial_report_markdown(
@@ -4644,6 +4597,8 @@ def generate_financial_report_markdown(
     report_content = "\n".join(lines)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(report_content)
+
+
 
 __all__ = [
     # General stats
