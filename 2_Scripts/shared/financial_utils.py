@@ -24,6 +24,8 @@ Deterministic: true
 import pandas as pd
 import numpy as np
 
+from shared.data_validation import FinancialCalculationError
+
 
 def calculate_firm_controls(
     row: pd.Series, compustat_df: pd.DataFrame, year: int
@@ -39,10 +41,17 @@ def calculate_firm_controls(
     Returns:
         Dictionary with: size (log assets), leverage, profitability,
         market_to_book, capex_intensity, r_intensity, dividend_payer
+
+    Raises:
+        FinancialCalculationError: If gvkey is missing or Compustat data not found for year
     """
     gvkey = row.get("gvkey")
     if gvkey is None:
-        return {}
+        raise FinancialCalculationError(
+            f"Cannot calculate firm controls: missing gvkey in row. "
+            f"Row columns: {list(row.index)}. "
+            f"Year: {year}"
+        )
 
     # Get firm's data for the year
     firm_data = compustat_df[
@@ -50,7 +59,13 @@ def calculate_firm_controls(
     ]
 
     if firm_data.empty:
-        return {}
+        available_years = compustat_df[compustat_df["gvkey"] == str(gvkey).zfill(6)]["fyear"].unique() if "gvkey" in compustat_df.columns else []
+        raise FinancialCalculationError(
+            f"Cannot calculate firm controls: no Compustat data found. "
+            f"gvkey={gvkey}, year={year}. "
+            f"Available years for this gvkey: {list(available_years)}. "
+            f"Total Compustat records: {len(compustat_df)}"
+        )
 
     data = firm_data.iloc[0]
 
@@ -115,6 +130,12 @@ def compute_financial_features(
 
     Returns:
         DataFrame with added financial control variables
+
+    Note:
+        calculate_firm_controls() may raise FinancialCalculationError if
+        gvkey is missing or Compustat data not found. The "if controls:"
+        check in this function provides defensive programming, but callers
+        should be aware that exceptions may be raised from the underlying function.
     """
     features = []
 
