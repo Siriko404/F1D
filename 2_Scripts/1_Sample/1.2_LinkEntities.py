@@ -7,7 +7,14 @@ ID: 1.2_LinkEntities
 Description: Links cleaned metadata to CCM database using 4-tier strategy:
              Tier 1 (PERMNO+Date), Tier 2 (CUSIP8+Date), Tier 3 (Fuzzy Name).
 
-             OPTIMIZATION: Deduplicates by company_id before matching,
+             OPTIMIZATION (Phase 62-01): Replaced chained .loc assignments with df.update()
+             - Before: 5 separate .loc[update_df.index, col] = update_df[col] calls
+             - After: Single df.update() operation
+             - Expected speedup: 2-5x for bulk updates
+             - Verified: Bitwise-identical outputs via df.equals()
+             Ref: 62-RESEARCH.md Pattern 1
+
+             DEDUP-INDEX: Deduplicates by company_id before matching,
              then broadcasts results to all related records.
              ~11k unique companies instead of 297k individual calls.
 
