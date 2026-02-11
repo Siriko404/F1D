@@ -231,8 +231,9 @@ def calculate_firm_controls_quarterly(
 
     # R&D Intensity: R&D / total assets (quarterly, treat missing as 0)
     # RD_Intensity: xrdq / atq
+    xrdq_val = data.get("xrdq")
     rd_intensity = (
-        data["xrdq"].fillna(0) / data["atq"]
+        (xrdq_val if pd.notna(xrdq_val) else 0) / data["atq"]
         if data.get("atq") and data["atq"] > 0
         else np.nan
     )
