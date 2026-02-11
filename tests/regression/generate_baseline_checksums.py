@@ -58,6 +58,17 @@ def generate_baseline_checksums():
         ),
     }
 
+    # H7/H8 checksums: Detect data truncation bug where Volatility/StockRet missing for 2005-2018
+    # If H7 output changes unexpectedly, check year coverage first
+    key_outputs["h7_illiquidity"] = (
+        repo_root / "4_Outputs/3_Financial_V2",
+        "H7_Illiquidity.parquet",
+    )
+    key_outputs["h8_takeover"] = (
+        repo_root / "4_Outputs/3_Financial_V2",
+        "H8_Takeover.parquet",
+    )
+
     # Add Step 2 yearly outputs
     for year in range(2002, 2019):
         key_outputs[f"step2_linguistic_counts_{year}"] = (
