@@ -1445,8 +1445,16 @@ All outputs are deterministic for a given input and configuration (see `config/p
 
 ## License
 
-[Specify your license here]
+This project is developed for academic research purposes. Data sources used in this pipeline (WRDS, CRSP, Compustat, IBES, SDC) have their own licensing terms and restrictions - see the Data Sources section for details.
+
+**Source Code:** This pipeline is provided as-is for academic replication and research purposes.
+
+**Data Access:** All financial data sources require institutional subscriptions through WRDS or commercial providers. See the Data Sources section for access requirements.
 
 ## Contact
 
-For questions or issues, please contact [your contact information].
+For questions about the F1D pipeline methodology, replication assistance, or collaboration inquiries, please refer to the project documentation at `.planning/ROADMAP.md` and `.planning/STATE.md`.
+
+**Data Access:** For questions about WRDS data access, contact your institution's WRDS representative or visit https://wrds.wharton.upenn.edu/.
+
+**Issues:** For bugs, feature requests, or code issues, please use the project's issue tracker.
