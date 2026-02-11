@@ -24,6 +24,12 @@ Outputs:
     - Exit code 0 if all checks pass, 1 if any fail
 
 Deterministic: true
+Dependencies:
+    - Utility script for validating V2 structure
+    - Uses: pandas, yaml
+
+Author: Thesis Author
+Date: 2026-02-11
 ==============================================================================
 """
 

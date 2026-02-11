@@ -12,6 +12,15 @@ Functions:
     - calculate_throughput: Calculate throughput in rows per second
 
 Deterministic: true
+Main Functions:
+    - calculate_throughput(): Calculate processing throughput (rows/second)
+
+Dependencies:
+    - Utility module for throughput measurement
+    - Uses: time, pandas
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

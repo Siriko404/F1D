@@ -12,6 +12,15 @@ Functions:
     - get_process_memory_mb: Get current process memory usage in MB
 
 Deterministic: true
+Main Functions:
+    - get_process_memory_mb(): Get current process memory usage in MB
+
+Dependencies:
+    - Utility module for memory tracking
+    - Uses: psutil, pandas
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

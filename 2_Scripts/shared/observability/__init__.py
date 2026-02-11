@@ -24,6 +24,12 @@ Backward Compatibility:
     - from shared.observability import DualWriter  # New preferred way
 
 Deterministic: true
+Dependencies:
+    - Package initialization
+    - Re-exports: logging, stats, files, memory, throughput, anomalies
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

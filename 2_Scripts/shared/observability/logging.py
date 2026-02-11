@@ -10,6 +10,15 @@ This module extracts the DualWriter class from the original observability_utils.
 DualWriter writes messages to both terminal and log file verbatim.
 
 Deterministic: true
+Main Functions:
+    - DualWriter: Class for dual stdout/file logging
+
+Dependencies:
+    - Utility module for logging configuration
+    - Uses: logging, sys
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

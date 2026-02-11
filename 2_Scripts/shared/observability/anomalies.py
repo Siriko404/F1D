@@ -13,6 +13,16 @@ Functions:
     - detect_anomalies_iqr: Detect anomalies using IQR method
 
 Deterministic: true
+Main Functions:
+    - detect_anomalies_zscore(): Detect anomalies using z-score method
+    - detect_anomalies_iqr(): Detect anomalies using IQR method
+
+Dependencies:
+    - Utility module for anomaly detection
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

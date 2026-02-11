@@ -10,6 +10,17 @@ This module extracts statistics functions from the original observability_utils.
 Includes general statistics functions and step-specific stats functions.
 
 Deterministic: true
+Main Functions:
+    - print_stat(): Print statistic with consistent formatting
+    - analyze_missing_values(): Analyze missing value patterns
+    - print_stats_summary(): Print summary of statistics
+
+Dependencies:
+    - Utility module for statistics
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 

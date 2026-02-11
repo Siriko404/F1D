@@ -12,6 +12,15 @@ Functions:
     - compute_file_checksum: Compute checksum for a file
 
 Deterministic: true
+Main Functions:
+    - compute_file_checksum(): Compute SHA256 checksum of file
+
+Dependencies:
+    - Utility module for file operations
+    - Uses: pandas, pathlib
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 
