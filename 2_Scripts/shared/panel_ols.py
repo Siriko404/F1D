@@ -73,11 +73,11 @@ class MulticollinearityError(Exception):
 
 # Import linearmodels - handle gracefully if not available
 try:
-    from linearmodels.panel.model import PanelOLS
+    from linearmodels.panel.model import PanelOLS  # type: ignore[import-untyped]
 
     LINEARMODELS_AVAILABLE = True
 except ImportError:
-    PanelOLS = None
+    PanelOLS = None  # type: ignore
     LINEARMODELS_AVAILABLE = False
 
 
@@ -376,7 +376,7 @@ def run_panel_ols(
         raise
 
     # Prepare fit kwargs based on covariance type
-    fit_kwargs = {"debiased": True}
+    fit_kwargs: Dict[str, Any] = {"debiased": True}
 
     if cov_type == "clustered":
         fit_kwargs["cov_type"] = "clustered"
@@ -451,7 +451,7 @@ def run_panel_ols(
     }
 
     # Diagnostics (VIF)
-    diagnostics = {
+    diagnostics: Dict[str, Any] = {
         "residual_std": None,
         "condition_number": None,
         "vif": None,
@@ -461,18 +461,24 @@ def run_panel_ols(
     if check_collinearity:
         # Import VIF computation
         try:
-            from shared.diagnostics import compute_vif
+            from shared.diagnostics import compute_vif as compute_vif_imported  # type: ignore[import-untyped]
+            compute_vif = compute_vif_imported
         except ImportError:
             # If diagnostics module not yet created, compute here
             try:
-                from statsmodels.stats.outliers_influence import (
+                from statsmodels.stats.outliers_influence import (  # type: ignore[import-untyped]
                     variance_inflation_factor,
                 )
-                from statsmodels.tools.tools import add_constant
+                from statsmodels.tools.tools import add_constant  # type: ignore[import-untyped]
 
-                def compute_vif(df_local, cols, add_constant=True):
+                def compute_vif(  # type: ignore[no-redef]
+                    df_local: pd.DataFrame,
+                    cols: list[str],
+                    add_constant_col: bool = True,
+                    vif_threshold_local: float = 5.0,
+                ) -> Any:
                     df_vif = df_local[cols].dropna()
-                    if add_constant:
+                    if add_constant_col:
                         df_vif = add_constant(df_vif)
                     vif_data = []
                     for i, col in enumerate(cols):
@@ -482,18 +488,22 @@ def run_panel_ols(
                                 {
                                     "variable": col,
                                     "VIF": vif_val,
-                                    "threshold_exceeded": vif_val > vif_threshold,
+                                    "threshold_exceeded": vif_val > vif_threshold_local,
                                 }
                             )
                     return pd.DataFrame(vif_data)
             except ImportError:
-                compute_vif = None
+                compute_vif = None  # type: ignore
 
         if compute_vif is not None:
             try:
                 # Get original df for VIF (before index set)
                 exog_for_vif = df[exog].dropna()
-                vif_df = compute_vif(exog_for_vif, exog, add_constant=True)
+                # Call with appropriate parameters based on function signature
+                if hasattr(compute_vif, "__code__") and "add_constant_col" in compute_vif.__code__.co_varnames:
+                    vif_df = compute_vif(exog_for_vif, exog, add_constant_col=True, vif_threshold_local=vif_threshold)  # type: ignore[call-arg]
+                else:
+                    vif_df = compute_vif(exog_for_vif, exog, add_constant=True)  # type: ignore[call-arg]
 
                 # Check for VIF violations
                 high_vif = vif_df[vif_df["threshold_exceeded"]]

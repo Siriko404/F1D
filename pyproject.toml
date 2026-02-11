@@ -27,6 +27,7 @@ markers = [
     "unit: marks tests as unit tests",
     "e2e: marks tests as end-to-end pipeline tests",
     "performance: marks tests as performance regression tests",
+    "mypy_testing: marks tests for mypy type checking",
 ]
 
 [tool.coverage.run]
@@ -98,7 +99,8 @@ line-ending = "auto"
 python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
-ignore_missing_imports = true
+ignore_missing_imports = false  # Now we have stubs for linearmodels
+check_untyped_defs = true
 
 # Progressive rollout: exclude most scripts initially
 exclude = [
@@ -107,10 +109,38 @@ exclude = [
     ".___archive/",
 ]
 
+# Add stubs to search path
+mypy_path = "$MYPY_CONFIG_FILE_DIR/2_Scripts/stubs"
+
 # Follow imports for type checking
 follow_imports = "normal"
+
+# Disable incremental mode initially to get fresh results
+# no_incremental = true  # Uncomment for debugging
+
+# Warnings to ignore for progressive adoption
+disable_error_code = [
+    "no-untyped-def",      # Allow untyped functions in old code
+    "no-untyped-call",      # Allow calls to untyped functions
+]
 
 # Enable strict mode for new shared modules only
 [[tool.mypy.overrides]]
 module = "shared.observability.*"
 strict = true
+
+# Gradually enable stricter checking for typed modules
+[[tool.mypy.overrides]]
+module = "shared.panel_ols"
+warn_return_any = false  # Too strict for gradual adoption
+disallow_untyped_defs = false  # Allow untyped defs initially
+
+[[tool.mypy.overrides]]
+module = "shared.iv_regression"
+warn_return_any = false
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "shared.financial_utils"
+warn_return_any = false
+disallow_untyped_defs = false

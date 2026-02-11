@@ -35,20 +35,20 @@ Date: 2026-02-11
 ================================================================================
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 # Try importing linearmodels, provide helpful error if missing
 try:
-    from linearmodels.iv.model import IV2SLS
-    from linearmodels.iv.results import IVResults
+    from linearmodels.iv.model import IV2SLS  # type: ignore[import-untyped]
+    from linearmodels.iv.results import IVResults  # type: ignore[import-untyped]
 
     LINEARMODELS_AVAILABLE = True
 except ImportError:
     LINEARMODELS_AVAILABLE = False
-    IV2SLS = None
-    IVResults = None
+    IV2SLS = None  # type: ignore
+    IVResults = None  # type: ignore
 
-import pandas as pd
+import pandas as pd  # type: ignore[import-untyped]
 
 
 class WeakInstrumentError(Exception):
@@ -63,7 +63,12 @@ class WeakInstrumentError(Exception):
         threshold: The threshold that was not met
     """
 
-    def __init__(self, message: str, f_stat: float = None, threshold: float = None):
+    def __init__(
+        self,
+        message: str,
+        f_stat: Optional[float] = None,
+        threshold: Optional[float] = None,
+    ) -> None:
         super().__init__(message)
         self.f_stat = f_stat
         self.threshold = threshold
@@ -234,8 +239,9 @@ def run_iv2sls(
     result = model.fit(**cov_kwargs)
 
     # Extract first-stage diagnostics
-    first_stage = result.first_stage
-    diagnostics_df = first_stage.diagnostics
+    # linearmodels IV2SLS results have first_stage attribute
+    first_stage = result.first_stage  # type: ignore[attr-defined]
+    diagnostics_df = first_stage.diagnostics  # type: ignore[attr-defined]
 
     # Get first-stage F-stat for endogenous variable
     if endog in diagnostics_df.index:
@@ -249,9 +255,9 @@ def run_iv2sls(
         )
     else:
         # If endog not directly in diagnostics, try alternative access
-        f_stat = float(first_stage.individual[endog].f_stat)
+        f_stat = float(first_stage.individual[endog].f_stat)  # type: ignore[attr-defined]
         f_pval = None
-        partial_rsq = float(first_stage.individual[endog].partial_rsquared)
+        partial_rsq = float(first_stage.individual[endog].partial_rsquared)  # type: ignore[attr-defined]
         shea_rsq = None
 
     # First-stage F validation
@@ -287,21 +293,21 @@ def run_iv2sls(
     n_instr = len(instruments)
     n_endog = 1  # Currently only single endogenous supported
 
-    overid_test = {"stat": None, "pval": None, "valid": False, "note": None}
+    overid_test: Dict[str, Any] = {"stat": None, "pval": None, "valid": False, "note": None}
 
     if n_instr > n_endog:
         # Over-identified: can run Sargan/Hansen J test
-        sargan = result.sargan
+        sargan = result.sargan  # type: ignore[attr-defined]
         overid_test["stat"] = float(sargan.stat)
         overid_test["pval"] = float(sargan.pval)
         overid_test["valid"] = True
-        overid_test["reject_null"] = sargan.pval < 0.05
+        overid_test["reject_null"] = sargan.pval < 0.05  # type: ignore[assignment]
 
         # Interpret results
         # H0: Instruments are valid (uncorrelated with error, exogenous)
         # Reject H0 (p < 0.05) -> instruments may be invalid
-        if overid_test["reject_null"]:
-            interpretation = (
+        if overid_test["reject_null"]:  # type: ignore[comparison-overlap]
+            interpretation = (  # type: ignore[assignment]
                 "p < 0.05: instruments may be invalid (correlated with error)"
             )
             warnings_list.append(
@@ -398,9 +404,9 @@ def run_iv2sls(
         # first_stage is a FirstStageResults object
         # Access predictions via the fitted first-stage model
         if hasattr(first_stage, "individual"):
-            first_stage_model = first_stage.individual[endog]
+            first_stage_model = first_stage.individual[endog]  # type: ignore[attr-defined]
             if hasattr(first_stage_model, "fitted_values"):
-                first_stage_dict["predictions"] = first_stage_model.fitted_values
+                first_stage_dict["predictions"] = first_stage_model.fitted_values  # type: ignore[attr-defined]
             else:
                 # Try to get predictions differently
                 first_stage_dict["predictions"] = None

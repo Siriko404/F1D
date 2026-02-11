@@ -30,15 +30,17 @@ Date: 2026-02-11
 ================================================================================
 """
 
+from typing import Dict, Union
+
 import numpy as np
-import pandas as pd
+import pandas as pd  # type: ignore[import-untyped]
 
 from shared.data_validation import FinancialCalculationError
 
 
 def calculate_firm_controls(
     row: pd.Series, compustat_df: pd.DataFrame, year: int
-) -> dict:
+) -> Dict[str, Union[float, int, None]]:
     """
     Calculate firm-level control variables from Compustat data.
 
@@ -169,7 +171,7 @@ def compute_financial_features(
 
 def calculate_firm_controls_quarterly(
     row: pd.Series, compustat_df: pd.DataFrame, datadate: pd.Timestamp
-) -> dict:
+) -> Dict[str, float]:
     """
     Calculate firm-level control variables from quarterly Compustat data.
 
