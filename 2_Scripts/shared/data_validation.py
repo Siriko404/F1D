@@ -65,6 +65,15 @@ class DataValidationError(Exception):
     pass
 
 
+# Exception usage guidance:
+# FinancialCalculationError: Use for financial calculation failures (missing gvkey, no data found)
+# DataValidationError: Use for input data validation failures (schema violations, invalid values)
+class FinancialCalculationError(Exception):
+    """Raised when financial metric calculation fails due to missing or invalid data."""
+
+    pass
+
+
 def validate_dataframe_schema(
     df: pd.DataFrame, schema_name: str, file_path: Path, strict: bool = True
 ) -> None:
