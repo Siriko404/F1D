@@ -30,6 +30,7 @@ Deterministic: true
 import sys
 import os
 import argparse
+import logging
 from pathlib import Path
 from datetime import datetime
 import pandas as pd
@@ -38,6 +39,9 @@ import yaml
 import hashlib
 import json
 import time
+
+# Configure logger for this module
+logger = logging.getLogger(__name__)
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
@@ -1012,10 +1016,18 @@ def main():
 
     # Throughput
     duration_seconds = end_time - start_time
-    if duration_seconds > 0:
+    try:
         throughput = calculate_throughput(len(final_output), duration_seconds)
         stats["throughput"] = {
             "rows_per_second": throughput,
+            "total_rows": len(final_output),
+            "duration_seconds": round(duration_seconds, 3),
+        }
+    except ValueError as e:
+        # Log but don't fail - throughput is not critical
+        logger.warning(f"Could not calculate throughput: {e}")
+        stats["throughput"] = {
+            "error": str(e),
             "total_rows": len(final_output),
             "duration_seconds": round(duration_seconds, 3),
         }
