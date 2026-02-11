@@ -427,11 +427,35 @@ All files and commits verified for Phase 58-01:
 - [Exception-based Error Handling] Exception pattern established: FinancialCalculationError for calculation failures, DataValidationError for input validation
 - [Exception-based Error Handling] Test coverage: 8 tests (5 unit, 3 integration) all passing
 
+### Phase 59-03 Division by Zero Guards Decisions
+
+- [calculate_throughput Error Handling] calculate_throughput() raises ValueError for duration_seconds <= 0 (not silent 0.0)
+- [Context-Rich Error Messages] Error messages include duration_seconds and rows_processed values plus start_time/end_time hint
+- [Non-Critical Error Handling] Throughput calculation is not pipeline-critical; callers log warnings and continue execution
+- [Extended Coverage] Updated H1, H2, H3 beyond plan-specified H7, H8 for consistency across all V2 variable scripts
+- [Unit Test Coverage] 10 unit tests created for throughput calculation edge cases (zero, negative, large, small values)
+
 ## Session Continuity
 
 ### Current Session (2026-02-11)
 
-**Phase 59-02 COMPLETE:**
+**Phase 59-03 COMPLETE:**
+- Replaced silent 0.0 returns with logging + ValueError in calculate_throughput()
+- Added logging import to observability_utils.py (logger configured)
+- calculate_throughput() now raises ValueError for duration_seconds <= 0
+- Warning logged before exception with debugging context (duration_seconds, rows_processed)
+- Updated H1, H2, H3, H7, H8 variable scripts with try/except error handling
+- Created unit tests: tests/unit/test_calculate_throughput.py (10 tests, all pass)
+- 5 commits: 93248fc (logging), 080fa17 (ValueError), 840f0f9 (H7/H8), 9ab1cc9 (H1/H2/H3), 054a07b (tests)
+- SUMMARY: 59-03-SUMMARY.md created
+
+**Phase 59-03 Key Changes:**
+- calculate_throughput() exposes timing errors instead of silently masking them
+- Error messages include input values for debugging (duration_seconds, rows_processed)
+- Callers handle ValueError gracefully (log warning, continue execution)
+- Extended coverage to all V2 variable scripts for consistency
+
+**Phase 59-02 COMPLETE (Earlier):**
 - Replaced silent empty returns with informative FinancialCalculationError exceptions
 - Added FinancialCalculationError exception class to data_validation.py
 - Updated calculate_firm_controls() and calculate_firm_controls_quarterly() to raise exceptions
