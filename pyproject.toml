@@ -46,3 +46,29 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
+
+[tool.ruff]
+# Same line length as Black (default)
+line-length = 88
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.lint]
+# Enable Pyflakes (F), pycodestyle (E), isort (I), and basic errors
+select = ["E4", "E7", "E9", "F", "B", "W", "I"]
+ignore = ["E501"]  # Line length handled by formatter
+
+# Allow auto-fix for all enabled rules
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]  # Import violations
+".___archive/**" = ["ALL"]  # Ignore archived code
+"tests/**" = ["S101"]  # Allow assert in tests
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
