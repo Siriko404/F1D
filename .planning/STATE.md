@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 60-code-organization (v3.0 Codebase Cleanup & Optimization)
-Status: Phase 60-04-A COMPLETE (4/4 plans)
-Last activity: 2026-02-11 - Phase 60-04-A: Ruff configuration and auto-fixes
+Status: Phase 60-04-B COMPLETE (5/5 plans)
+Last activity: 2026-02-11 - Phase 60-04-B: Type checking and dead code detection
 
 ### Next Phase
 
@@ -50,7 +50,7 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
 Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression complete (5,295 obs, interaction NOT SIGNIFICANT p=0.76, H9 NOT SUPPORTED)
 Phase 59: Critical Bug Fixes [COMPLETE - 3/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Exception-based Error Handling COMPLETE (FinancialCalculationError added to data_validation.py, empty returns replaced with raises in calculate_firm_controls and calculate_firm_controls_quarterly, 8 unit/integration tests created); 59-03 calculate_throughput Error Handling COMPLETE (raises ValueError with logging, 10 unit tests, H1/H2/H3/H7/H8 callers updated with try/except)
-Phase 60: Code Organization [COMPLETE - 4/4 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified); 60-02 Create READMEs COMPLETE (created 6 README.md files for Financial V1/V3, Econometric V1/V3, Sample, Text directories; clarified V1/V2/V3 structure through documentation; no directory renaming per constraint); 60-03 Observability Package Structure COMPLETE (split 4,668-line observability_utils.py into 7 focused modules: logging, stats, files, memory, throughput, anomalies; maintained 100% backward compatibility via re-exports; 54/55 calling scripts verified); 60-04-A Ruff Linting and Formatting COMPLETE (configured Ruff in pyproject.toml with Black-compatible settings; auto-fixed 830 issues; fixed 5 critical undefined-name bugs; formatted codebase; reduced errors from 1038 to 175)
+Phase 60: Code Organization [COMPLETE - 5/5 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified); 60-02 Create READMEs COMPLETE (created 6 README.md files for Financial V1/V3, Econometric V1/V3, Sample, Text directories; clarified V1/V2/V3 structure through documentation; no directory renaming per constraint); 60-03 Observability Package Structure COMPLETE (split 4,668-line observability_utils.py into 7 focused modules: logging, stats, files, memory, throughput, anomalies; maintained 100% backward compatibility via re-exports; 54/55 calling scripts verified); 60-04-A Ruff Linting and Formatting COMPLETE (configured Ruff in pyproject.toml with Black-compatible settings; auto-fixed 830 issues; fixed 5 critical undefined-name bugs; formatted codebase; reduced errors from 1038 to 175); 60-04-B Type Checking and Dead Code Detection COMPLETE (configured mypy for progressive rollout with 221 type errors documented; ran vulture finding 17 dead code candidates; created comprehensive CODE-QUALITY-REPORT.md with B+ baseline grade; recommendations provided for type hints rollout)
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -459,11 +459,38 @@ All files and commits verified for Phase 58-01:
 - [Remaining Issues] 175 errors remain: 120 E402 (intentional - sys.path before imports), 29 F401 (unused imports - style), 26 others (minor style)
 - [Workflow Integration] Run `ruff check 2_Scripts/ --fix --unsafe-fixes` and `ruff format 2_Scripts/` before commits
 
+### Phase 60-04-B Type Checking and Dead Code Detection Decisions
+
+- [Mypy Configuration] Added [tool.mypy] to pyproject.toml with python_version=3.9, warn_return_any, warn_unused_configs, ignore_missing_imports
+- [Progressive Rollout] Mypy excludes non-shared scripts initially: exclude = ["2_Scripts/[^s]*", "tests/", ".___archive/"]
+- [Strict Mode] Enabled for shared.observability.* modules to set quality standard for new code
+- [Mypy Results] 221 type errors in 17 files (31 checked): ~80 missing annotations, ~40 incompatible assignments, ~20 Optional handling, ~15 linearmodels types
+- [Vulture Results] 17 dead code candidates: 13 unused imports (validate_output_path x10, save_stats_shared, IVResults), 4 unused variables (save_means, num_industries, lm_dict_path, event_col x2)
+- [Code Quality Baseline] Overall B+ grade: A for syntax/formatting, C for type safety, B for dead code
+- [Documentation] Created 60-04-CODE-QUALITY-REPORT.md with comprehensive findings and recommendations
+- [Type Hints Priority] High: panel_ols.py, iv_regression.py, data_validation.py; Medium: chunked_reader.py, financial_utils.py, cli_validation.py
+- [Dead Code Action] Documented but not auto-deleted (manual review required: false positives from dynamic imports and __all__ exports)
+
 ## Session Continuity
 
 ### Current Session (2026-02-11)
 
-**Phase 60-04-A COMPLETE:**
+**Phase 60-04-B COMPLETE:**
+- Configured mypy for progressive type checking rollout (exclude non-shared scripts)
+- Ran mypy on shared utilities: 221 type errors in 17 files documented
+- Ran vulture: 17 dead code candidates (13 imports, 4 variables) identified
+- Created comprehensive CODE-QUALITY-REPORT.md with findings and recommendations
+- 3 commits: e9ef2bc (mypy config), d53aef9 (vulture results), b5bc840 (report), 8130514 (summary)
+- SUMMARY: 60-04-B-SUMMARY.md created
+
+**Phase 60-04-B Key Changes:**
+- Mypy installed and configured with progressive rollout strategy
+- Vulture installed for dead code detection
+- Type checking reveals ~120 errors in stats.py (complex nested dicts)
+- Strict mode for observability package sets quality standard
+- Code quality baseline: B+ (A for formatting, C for types, B for dead code)
+
+**Phase 60-04-A COMPLETE (Earlier):**
 - Configured Ruff linter/formatter in pyproject.toml with Black-compatible settings
 - Auto-fixed 830 issues: import sorting, unused imports, formatting
 - Fixed 5 critical bugs: syntax error in H7IlliquidityVariables.py, undefined names in string_matching.py, stats.py, 3.0_BuildFinancialFeatures.py, 4.1.4_EstimateCeoTone.py, 4.3_TakeoverHazards.py
