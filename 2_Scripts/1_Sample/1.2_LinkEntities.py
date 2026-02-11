@@ -499,16 +499,20 @@ def main():
             update_df["link_method"] = "permno_date"
             update_df["link_quality"] = 100
 
-            unique_df = unique_df.set_index("company_id")
-            update_df = update_df.set_index("company_id")
+            # OPTIMIZATION: Vectorized update replaces chained .loc assignments
+            # Ref: 62-RESEARCH.md Pattern 1, 62-01-PLAN.md Task 1
+            # Expected speedup: 2-5x for bulk updates
+            cols_to_update = ["gvkey", "conm", "sic", "link_method", "link_quality"]
 
-            unique_df.loc[update_df.index, "gvkey"] = update_df["gvkey"]
-            unique_df.loc[update_df.index, "conm"] = update_df["conm"]
-            unique_df.loc[update_df.index, "sic"] = update_df["sic"]
-            unique_df.loc[update_df.index, "link_method"] = update_df["link_method"]
-            unique_df.loc[update_df.index, "link_quality"] = update_df["link_quality"]
+            # Prepare update data with company_id as index
+            unique_df_idx = unique_df.set_index("company_id")
+            update_df_idx = update_df.set_index("company_id")[cols_to_update]
 
-            unique_df = unique_df.reset_index()
+            # Single in-place update (much faster than multiple .loc assignments)
+            unique_df_idx.update(update_df_idx)
+
+            # Reset index to restore company_id as column
+            unique_df = unique_df_idx.reset_index()
 
     tier1_matched = unique_df["gvkey"].notna().sum()
     print_dual(f"    [CHECK] Total matched after Tier 1: {tier1_matched:,}")
@@ -550,16 +554,20 @@ def main():
             update_df["link_method"] = "cusip8_date"
             update_df["link_quality"] = 90
 
-            unique_df = unique_df.set_index("company_id")
-            update_df = update_df.set_index("company_id")
+            # OPTIMIZATION: Vectorized update replaces chained .loc assignments
+            # Ref: 62-RESEARCH.md Pattern 1, 62-01-PLAN.md Task 1
+            # Expected speedup: 2-5x for bulk updates
+            cols_to_update = ["gvkey", "conm", "sic", "link_method", "link_quality"]
 
-            unique_df.loc[update_df.index, "gvkey"] = update_df["gvkey"]
-            unique_df.loc[update_df.index, "conm"] = update_df["conm"]
-            unique_df.loc[update_df.index, "sic"] = update_df["sic"]
-            unique_df.loc[update_df.index, "link_method"] = update_df["link_method"]
-            unique_df.loc[update_df.index, "link_quality"] = update_df["link_quality"]
+            # Prepare update data with company_id as index
+            unique_df_idx = unique_df.set_index("company_id")
+            update_df_idx = update_df.set_index("company_id")[cols_to_update]
 
-            unique_df = unique_df.reset_index()
+            # Single in-place update (much faster than multiple .loc assignments)
+            unique_df_idx.update(update_df_idx)
+
+            # Reset index to restore company_id as column
+            unique_df = unique_df_idx.reset_index()
 
     tier2_matched = unique_df["gvkey"].notna().sum()
     print_dual(f"    [CHECK] Total matched after Tier 2: {tier2_matched:,}")
@@ -663,21 +671,20 @@ def main():
                 update_df["link_method"] = "name_fuzzy"
                 update_df["link_quality"] = 80
 
-                unique_df = unique_df.set_index("company_id")
-                update_df = update_df.set_index("company_id")
+                # OPTIMIZATION: Vectorized update replaces chained .loc assignments
+                # Ref: 62-RESEARCH.md Pattern 1, 62-01-PLAN.md Task 1
+                # Expected speedup: 2-5x for bulk updates
+                cols_to_update = ["gvkey", "conm", "sic", "link_method", "link_quality", "fuzzy_score"]
 
-                unique_df.loc[update_df.index, "gvkey"] = update_df["gvkey"]
-                unique_df.loc[update_df.index, "conm"] = update_df["conm"]
-                unique_df.loc[update_df.index, "sic"] = update_df["sic"]
-                unique_df.loc[update_df.index, "link_method"] = update_df["link_method"]
-                unique_df.loc[update_df.index, "link_quality"] = update_df[
-                    "link_quality"
-                ]
+                # Prepare update data with company_id as index
+                unique_df_idx = unique_df.set_index("company_id")
+                update_df_idx = update_df.set_index("company_id")[cols_to_update]
 
-                # Store fuzzy scores for sample collection
-                unique_df.loc[update_df.index, "fuzzy_score"] = update_df["fuzzy_score"]
+                # Single in-place update (much faster than multiple .loc assignments)
+                unique_df_idx.update(update_df_idx)
 
-                unique_df = unique_df.reset_index()
+                # Reset index to restore company_id as column
+                unique_df = unique_df_idx.reset_index()
 
     tier3_matched = unique_df["gvkey"].notna().sum()
     print_dual(f"    [CHECK] Total matched after Tier 3: {tier3_matched:,}")
