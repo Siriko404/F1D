@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: Not started (roadmap created, ready to begin Phase 59)
-Plan: .planning/ROADMAP_V3.md
-Status: v3.0 roadmap approved, 5 phases ready to execute
-Last activity: 2026-02-10 - v3.0 roadmap created with 55 requirements across 5 phases
+Phase: 59-critical-bug-fixes (v3.0 Codebase Cleanup & Optimization)
+Plan: 59-01 (H7-H8 Data Truncation Bug Fix)
+Status: Plan 1 of 3 complete
+Last activity: 2026-02-11 - Completed Plan 59-01: Fixed H7-H8 data truncation bug
 
 ### Next Phase
 
-**Action:** Execute Phase 59 (Critical Bug Fixes) — `/gsd:plan-phase 59` or `/gsd:discuss-phase 59`
+**Action:** Execute Plan 59-02 (Empty DataFrame Returns) or 59-03 (Division by Zero Guards)
 **Blockers:** None
 
 ### Progress
@@ -50,6 +50,7 @@ Phase 55: V1 Hypotheses Re-Test      [COMPLETE - 9/9 plans] → 55-01 Lit Review
 Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans] → Re-implement V1 persistence tests in V2 framework
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
 Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression complete (5,295 obs, interaction NOT SIGNIFICANT p=0.76, H9 NOT SUPPORTED)
+Phase 59: Critical Bug Fixes [IN PROGRESS - 1/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Empty DataFrame Returns PENDING; 59-03 Division by Zero Guards PENDING
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -351,6 +352,16 @@ Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] �
 - [Output Coverage] 7,125 firm-years, 493 firms, 471 CEOs (2002-2018), 2.0% of Compustat universe
 - [StyleFrozen Distribution] Mean=-0.0054, SD=1.0003 (~N(0,1) as expected from ClarityCEO standardization)
 
+### Phase 59-01 Bug Fix Decisions
+
+- [H7 Volatility Calculation] Call calculate_stock_volatility_and_returns() in H7 main() before CRSP memory cleanup (line 759)
+- [Column Name Preservation] Volatility and StockRet column names preserved exactly for H8 compatibility
+- [Market Variables Fallback] Existing market_variables merge preserved as fallback (redundant but safe)
+- [80% Coverage Threshold] Year coverage test requires 80% minimum per year (allows valid missingness)
+- [Separate Baseline File] baseline_h7_h8.json separate from baseline_checksums.json to avoid conflicts
+- [CRSP Data Reuse] Volatility calculation placed before `del crsp` to avoid redundant data loading
+- [Regression Test Coverage] 5 test functions: year coverage, sample size, null detection, checksum stability (H7/H8)
+
 ### Phase 58-03 Abnormal Investment Decisions
 
 - [Biddle Specification] TotalInv_{t+1} = (capx_{t+1} + xrd_{t+1} + aqc_{t+1} - sppe_{t+1}) / at_t (denominator is at_t, not at_{t+1})
@@ -401,7 +412,23 @@ All files and commits verified for Phase 58-01:
 
 ## Session Continuity
 
-### Current Session (2026-02-10)
+### Current Session (2026-02-11)
+
+**Phase 59-01 COMPLETE:**
+- Fixed H7-H8 data truncation bug where Volatility/StockRet were 100% missing for 2005-2018
+- Called calculate_stock_volatility_and_returns() in H7 main() (line 759)
+- Created regression test suite: tests/regression/test_h7_h8_data_coverage.py (5 tests)
+- Added H7/H8 to baseline checksum generation
+- 3 commits: d26acaa (H7 fix), 3357273 (regression tests), 9da56af (baseline checksums)
+- SUMMARY: 59-01-SUMMARY.md created
+
+**Phase 59-01 Key Fix:**
+- H7 script now calculates Volatility and StockRet directly from CRSP daily data
+- Previous: Relied on external market_variables files (only 2002-2004 data)
+- Result: H8 will have ~39,408 observations instead of 12,408 (full 2002-2018 coverage)
+- Regression tests will prevent recurrence of data truncation bug
+
+### Previous Session (2026-02-10)
 
 **Quick Task 031 COMPLETE:**
 - Created publication-quality documentation for all 8 V2 hypotheses (H1-H8)
