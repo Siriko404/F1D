@@ -1,0 +1,280 @@
+2_Scripts\shared\subprocess_validation.py:68: error: Missing type parameters for generic type "CompletedProcess"  [type-arg]
+2_Scripts\shared\regression_utils.py:34: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\regression_utils.py:39: error: Incompatible default for argument "cluster_col" (default has type "None", argument has type "str")  [assignment]
+2_Scripts\shared\regression_utils.py:39: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\regression_utils.py:39: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\regression_utils.py:71: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
+2_Scripts\shared\regression_utils.py:88: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
+2_Scripts\shared\regression_utils.py:88: error: Missing type parameters for generic type "dict"  [type-arg]
+2_Scripts\shared\env_validation.py:88: error: Incompatible types in assignment (expression has type "int", variable has type "Optional[str]")  [assignment]
+2_Scripts\shared\env_validation.py:90: error: Incompatible types in assignment (expression has type "float", variable has type "Optional[str]")  [assignment]
+2_Scripts\shared\env_validation.py:92: error: Incompatible types in assignment (expression has type "bool", variable has type "Optional[str]")  [assignment]
+2_Scripts\shared\data_validation.py:106: error: "Collection[str]" has no attribute "items"  [attr-defined]
+2_Scripts\shared\data_validation.py:116: error: "Collection[str]" has no attribute "items"  [attr-defined]
+2_Scripts\shared\industry_utils.py:85: error: Incompatible return value type (got "dict[int, tuple[int, Optional[str]]]", expected "dict[int, tuple[int, str]]")  [return-value]
+2_Scripts\shared\chunked_reader.py:21: error: Library stubs not installed for "yaml"  [import-untyped]
+2_Scripts\shared\chunked_reader.py:21: note: Hint: "python3 -m pip install types-PyYAML"
+2_Scripts\shared\chunked_reader.py:21: note: (or run "mypy --install-types" to install all missing stub packages)
+2_Scripts\shared\chunked_reader.py:21: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+2_Scripts\shared\chunked_reader.py:126: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\chunked_reader.py:128: error: Function "builtins.callable" is not valid as a type  [valid-type]
+2_Scripts\shared\chunked_reader.py:128: note: Perhaps you meant "typing.Callable" instead of "callable"?
+2_Scripts\shared\chunked_reader.py:131: error: Function "builtins.callable" is not valid as a type  [valid-type]
+2_Scripts\shared\chunked_reader.py:131: note: Perhaps you meant "typing.Callable" instead of "callable"?
+2_Scripts\shared\chunked_reader.py:196: error: callable? not callable  [misc]
+2_Scripts\shared\chunked_reader.py:219: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\chunked_reader.py:235: error: Function is missing a type annotation  [no-untyped-def]
+2_Scripts\shared\chunked_reader.py:236: error: Function is missing a type annotation  [no-untyped-def]
+2_Scripts\shared\chunked_reader.py:286: error: Returning Any from function declared to return "float"  [no-any-return]
+2_Scripts\shared\chunked_reader.py:291: error: Returning Any from function declared to return "float"  [no-any-return]
+2_Scripts\shared\chunked_reader.py:295: error: Returning Any from function declared to return "float"  [no-any-return]
+2_Scripts\shared\chunked_reader.py:307: error: Incompatible default for argument "file_path" (default has type "None", argument has type "Path")  [assignment]
+2_Scripts\shared\chunked_reader.py:307: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\chunked_reader.py:307: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\chunked_reader.py:339: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\dependency_checker.py:29: error: Incompatible default for argument "required_files" (default has type "None", argument has type "dict[str, Path]")  [assignment]
+2_Scripts\shared\dependency_checker.py:29: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\dependency_checker.py:29: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\dependency_checker.py:29: error: Incompatible default for argument "required_steps" (default has type "None", argument has type "dict[str, str]")  [assignment]
+2_Scripts\shared\observability\stats.py:560: error: Dict entry 1 has incompatible type "str": "list[dict[str, object]]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:565: error: Dict entry 1 has incompatible type "str": "list[Never]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:593: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:598: error: Dict entry 2 has incompatible type "str": "dict[str, int]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:602: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:605: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:619: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:626: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:639: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:641: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:835: error: Incompatible types in assignment (expression has type "float", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:841: error: Incompatible types in assignment (expression has type "float", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:847: error: Incompatible types in assignment (expression has type "float", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:1015: error: Need type annotation for "samples"  [var-annotated]
+2_Scripts\shared\observability\stats.py:1103: error: Need type annotation for "samples"  [var-annotated]
+2_Scripts\shared\observability\stats.py:1190: error: Need type annotation for "samples" (hint: "samples: list[<type>] = ...")  [var-annotated]
+2_Scripts\shared\observability\stats.py:1374: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:1386: error: Dict entry 1 has incompatible type "str": "float"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:1619: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:1645: error: Incompatible types in assignment (expression has type "list[dict[str, int]]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:1746: error: Need type annotation for "samples"  [var-annotated]
+2_Scripts\shared\observability\stats.py:2075: error: Incompatible types in assignment (expression has type "list[dict[str, float]]", target has type "dict[str, float]")  [assignment]
+2_Scripts\shared\observability\stats.py:2077: error: Incompatible types in assignment (expression has type "list[Never]", target has type "dict[str, float]")  [assignment]
+2_Scripts\shared\observability\stats.py:2102: error: Dict entry 2 has incompatible type "str": "dict[str, int]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:2108: error: Dict entry 2 has incompatible type "str": "dict[Never, Never]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:2134: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:2187: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2197: error: Dict entry 0 has incompatible type "str": "dict[str, float]"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2232: error: Incompatible types in assignment (expression has type "dict[str, dict[str, float]]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2261: error: Incompatible types in assignment (expression has type "list[dict[str, object]]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:2264: error: Incompatible types in assignment (expression has type "list[dict[str, object]]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:2266: error: Incompatible types in assignment (expression has type "list[Never]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:2267: error: Incompatible types in assignment (expression has type "list[Never]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:2276: error: Dict entry 1 has incompatible type "str": "float"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2283: error: Dict entry 1 has incompatible type "str": "float"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2309: error: Incompatible types in assignment (expression has type "list[dict[str, int]]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:2311: error: Incompatible types in assignment (expression has type "list[Never]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:2319: error: Dict entry 0 has incompatible type "str": "float"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2322: error: Dict entry 1 has incompatible type "str": "float"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2327: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2393: error: "Collection[str]" has no attribute "append"  [attr-defined]
+2_Scripts\shared\observability\stats.py:2413: error: "Collection[str]" has no attribute "append"  [attr-defined]
+2_Scripts\shared\observability\stats.py:2439: error: "Collection[str]" has no attribute "append"  [attr-defined]
+2_Scripts\shared\observability\stats.py:2455: error: Missing type parameters for generic type "set"  [type-arg]
+2_Scripts\shared\observability\stats.py:2501: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2508: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2520: error: Incompatible types in assignment (expression has type "float", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2545: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2552: error: Incompatible types in assignment (expression has type "dict[str, object]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2564: error: Need type annotation for "all_words" (hint: "all_words: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\observability\stats.py:2580: error: Unsupported target for indexed assignment ("object")  [index]
+2_Scripts\shared\observability\stats.py:2582: error: Incompatible types in assignment (expression has type "dict[str, object]", target has type "dict[str, int]")  [assignment]
+2_Scripts\shared\observability\stats.py:2589: error: Missing type parameters for generic type "set"  [type-arg]
+2_Scripts\shared\observability\stats.py:2653: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2690: error: Dict entry 2 has incompatible type "str": "dict[str, float]"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2706: error: Dict entry 0 has incompatible type "str": "dict[str, Any]"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2707: error: Dict entry 1 has incompatible type "str": "dict[str, Any]"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:2715: error: Missing type parameters for generic type "set"  [type-arg]
+2_Scripts\shared\observability\stats.py:2756: error: Need type annotation for "stats" (hint: "stats: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\observability\stats.py:2790: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:2836: error: Value expression in dictionary comprehension has incompatible type "float"; expected type "int"  [misc]
+2_Scripts\shared\observability\stats.py:2845: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:2849: error: Incompatible types in assignment (expression has type "dict[str, dict[str, int]]", target has type "dict[str, object]")  [assignment]
+2_Scripts\shared\observability\stats.py:2869: error: Unsupported target for indexed assignment ("object")  [index]
+2_Scripts\shared\observability\stats.py:2889: error: Missing type parameters for generic type "tuple"  [type-arg]
+2_Scripts\shared\observability\stats.py:2931: error: "object" has no attribute "append"  [attr-defined]
+2_Scripts\shared\observability\stats.py:2935: error: Unsupported target for indexed assignment ("object")  [index]
+2_Scripts\shared\observability\stats.py:2936: error: Unsupported operand types for + ("object" and "int")  [operator]
+2_Scripts\shared\observability\stats.py:2939: error: "object" has no attribute "append"  [attr-defined]
+2_Scripts\shared\observability\stats.py:2968: error: Value of type "object" is not indexable  [index]
+2_Scripts\shared\observability\stats.py:2979: error: Incompatible types in assignment (expression has type "int", target has type "dict[str, object]")  [assignment]
+2_Scripts\shared\observability\stats.py:3145: error: Need type annotation for "stats" (hint: "stats: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\observability\stats.py:3167: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3182: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3188: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3325: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3337: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3354: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3387: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3396: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3412: error: Incompatible types in assignment (expression has type "list[int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3413: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3421: error: Incompatible types in assignment (expression has type "list[Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3459: error: Need type annotation for "stats" (hint: "stats: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\observability\stats.py:3500: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:3544: error: Need type annotation for "stats" (hint: "stats: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\observability\stats.py:3567: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3577: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3583: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3664: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3672: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3686: error: Dict entry 1 has incompatible type "str": "list[str]"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:3715: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3736: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:3802: error: Dict entry 0 has incompatible type "str": "int"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3803: error: Dict entry 1 has incompatible type "str": "int"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3804: error: Dict entry 2 has incompatible type "str": "int"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3805: error: Dict entry 3 has incompatible type "str": "int"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3806: error: Dict entry 4 has incompatible type "str": "int"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3827: error: Dict entry 0 has incompatible type "str": "int"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3828: error: Argument 1 to "round" has incompatible type "float"; expected "_SupportsRound2[dict[str, Any]]"  [arg-type]
+2_Scripts\shared\observability\stats.py:3828: note: Following member(s) of "float" have conflicts:
+2_Scripts\shared\observability\stats.py:3828: note:     Expected:
+2_Scripts\shared\observability\stats.py:3828: note:         def __round__(self, int, /) -> dict[str, Any]
+2_Scripts\shared\observability\stats.py:3828: note:     Got:
+2_Scripts\shared\observability\stats.py:3828: note:         @overload
+2_Scripts\shared\observability\stats.py:3828: note:         def __round__(self, None = ..., /) -> int
+2_Scripts\shared\observability\stats.py:3828: note:         @overload
+2_Scripts\shared\observability\stats.py:3828: note:         def __round__(self, SupportsIndex, /) -> float
+2_Scripts\shared\observability\stats.py:3829: error: Dict entry 2 has incompatible type "str": "int"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3830: error: Dict entry 3 has incompatible type "str": "object"; expected "str": "dict[str, Any]"  [dict-item]
+2_Scripts\shared\observability\stats.py:3866: error: Need type annotation for "stats" (hint: "stats: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\observability\stats.py:3889: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3899: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:3905: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:4049: error: No overload variant of "round" matches argument types "float", "float"  [call-overload]
+2_Scripts\shared\observability\stats.py:4049: note: Possible overload variants:
+2_Scripts\shared\observability\stats.py:4049: note:     def [_T] round(number: _SupportsRound1[_T], ndigits: None = ...) -> _T
+2_Scripts\shared\observability\stats.py:4049: note:     def [_T] round(number: _SupportsRound2[_T], ndigits: SupportsIndex) -> _T
+2_Scripts\shared\observability\stats.py:4058: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4086: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4097: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4105: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4111: error: Dict entry 0 has incompatible type "str": "str"; expected "str": "int"  [dict-item]
+2_Scripts\shared\observability\stats.py:4167: error: Dict entry 0 has incompatible type "str": "dict[str, float]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:4173: error: Dict entry 1 has incompatible type "str": "dict[str, float]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:4198: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:4266: error: Dict entry 0 has incompatible type "str": "dict[str, float]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:4272: error: Dict entry 1 has incompatible type "str": "dict[str, float]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:4278: error: Dict entry 2 has incompatible type "str": "dict[str, float]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:4296: error: Dict entry 0 has incompatible type "str": "dict[str, float]"; expected "str": "float"  [dict-item]
+2_Scripts\shared\observability\stats.py:4306: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:4327: error: Incompatible types in assignment (expression has type "dict[str, float]", target has type "float")  [assignment]
+2_Scripts\shared\observability\stats.py:4395: error: Incompatible default for argument "winsorized_cols" (default has type "None", argument has type "list[str]")  [assignment]
+2_Scripts\shared\observability\stats.py:4395: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\observability\stats.py:4395: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\observability\stats.py:4467: error: Incompatible default for argument "variables_list" (default has type "None", argument has type "list[str]")  [assignment]
+2_Scripts\shared\observability\stats.py:4467: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\observability\stats.py:4467: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\observability\stats.py:4564: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4569: error: Incompatible types in assignment (expression has type "list[int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4586: error: Incompatible types in assignment (expression has type "dict[str, Any]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4594: error: Incompatible types in assignment (expression has type "list[str]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4596: error: Incompatible types in assignment (expression has type "dict[str, int]", target has type "int")  [assignment]
+2_Scripts\shared\observability\stats.py:4613: error: Incompatible default for argument "return_windows" (default has type "None", argument has type "list[dict[str, Any]]")  [assignment]
+2_Scripts\shared\observability\stats.py:4613: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\observability\stats.py:4613: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\observability\stats.py:4614: error: Incompatible default for argument "liquidity_windows" (default has type "None", argument has type "list[dict[str, Any]]")  [assignment]
+2_Scripts\shared\observability\stats.py:4614: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\observability\stats.py:4614: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\observability\stats.py:4704: error: Argument 1 to "round" has incompatible type "float"; expected "_SupportsRound2[dict[str, float]]"  [arg-type]
+2_Scripts\shared\observability\stats.py:4704: note: Following member(s) of "float" have conflicts:
+2_Scripts\shared\observability\stats.py:4704: note:     Expected:
+2_Scripts\shared\observability\stats.py:4704: note:         def __round__(self, int, /) -> dict[str, float]
+2_Scripts\shared\observability\stats.py:4704: note:     Got:
+2_Scripts\shared\observability\stats.py:4704: note:         @overload
+2_Scripts\shared\observability\stats.py:4704: note:         def __round__(self, None = ..., /) -> int
+2_Scripts\shared\observability\stats.py:4704: note:         @overload
+2_Scripts\shared\observability\stats.py:4704: note:         def __round__(self, SupportsIndex, /) -> float
+2_Scripts\shared\observability\stats.py:4726: error: Incompatible default for argument "variables_list" (default has type "None", argument has type "list[str]")  [assignment]
+2_Scripts\shared\observability\stats.py:4726: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\observability\stats.py:4726: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\observability\stats.py:4819: error: Missing positional arguments "total_calls", "duration_seconds" in call to "compute_event_flags_process_stats"  [call-arg]
+2_Scripts\shared\observability\stats.py:4820: error: Argument 1 to "compute_event_flags_process_stats" has incompatible type "dict[str, Any]"; expected "int"  [arg-type]
+2_Scripts\shared\observability\stats.py:4820: error: Argument 3 to "compute_event_flags_process_stats" has incompatible type "int"; expected "dict[str, float]"  [arg-type]
+2_Scripts\shared\reporting_utils.py:31: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
+2_Scripts\shared\reporting_utils.py:32: error: Incompatible default for argument "formula" (default has type "None", argument has type "str")  [assignment]
+2_Scripts\shared\reporting_utils.py:32: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\reporting_utils.py:32: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\reporting_utils.py:74: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
+2_Scripts\shared\regression_validation.py:36: error: Incompatible default for argument "optional_columns" (default has type "None", argument has type "list[str]")  [assignment]
+2_Scripts\shared\regression_validation.py:36: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\regression_validation.py:36: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\regression_validation.py:94: error: "object" has no attribute "__iter__"; maybe "__dir__" or "__str__"? (not iterable)  [attr-defined]
+2_Scripts\shared\regression_validation.py:134: error: Incompatible default for argument "required_columns" (default has type "None", argument has type "list[str]")  [assignment]
+2_Scripts\shared\regression_validation.py:134: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\regression_validation.py:134: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\regression_validation.py:135: error: Incompatible default for argument "type_requirements" (default has type "None", argument has type "dict[str, str]")  [assignment]
+2_Scripts\shared\regression_validation.py:135: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\regression_validation.py:135: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\latex_tables.py:104: error: Incompatible default for argument "include_stats" (default has type "None", argument has type "list[str]")  [assignment]
+2_Scripts\shared\latex_tables.py:104: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\latex_tables.py:104: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\latex_tables.py:314: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
+2_Scripts\shared\financial_utils.py:32: error: Missing type parameters for generic type "dict"  [type-arg]
+2_Scripts\shared\financial_utils.py:163: error: Missing type parameters for generic type "dict"  [type-arg]
+2_Scripts\shared\cli_validation.py:26: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\cli_validation.py:56: error: Function is missing a type annotation  [no-untyped-def]
+2_Scripts\shared\cli_validation.py:66: error: Need type annotation for "required_files" (hint: "required_files: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\cli_validation.py:76: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\cli_validation.py:103: error: Function is missing a type annotation  [no-untyped-def]
+2_Scripts\shared\cli_validation.py:112: error: Need type annotation for "required_files" (hint: "required_files: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\cli_validation.py:121: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\cli_validation.py:142: error: Function is missing a type annotation  [no-untyped-def]
+2_Scripts\shared\cli_validation.py:151: error: Need type annotation for "required_files" (hint: "required_files: dict[<type>, <type>] = ...")  [var-annotated]
+2_Scripts\shared\regression_helpers.py:32: error: Missing type parameters for generic type "Dict"  [type-arg]
+2_Scripts\shared\regression_helpers.py:200: error: Missing type parameters for generic type "Dict"  [type-arg]
+2_Scripts\shared\regression_helpers.py:356: error: Function "builtins.any" is not valid as a type  [valid-type]
+2_Scripts\shared\regression_helpers.py:356: note: Perhaps you meant "typing.Any" instead of "any"?
+2_Scripts\shared\regression_helpers.py:388: error: Missing type parameters for generic type "Dict"  [type-arg]
+2_Scripts\shared\string_matching.py:17: error: Library stubs not installed for "yaml"  [import-untyped]
+2_Scripts\shared\string_matching.py:27: error: Incompatible types in assignment (expression has type "None", variable has type "str")  [assignment]
+2_Scripts\shared\string_matching.py:30: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\string_matching.py:30: note: Use "-> None" if function does not return a value
+2_Scripts\shared\string_matching.py:73: error: Returning Any from function declared to return "dict[str, Any]"  [no-any-return]
+2_Scripts\shared\string_matching.py:76: error: Function is missing a return type annotation  [no-untyped-def]
+2_Scripts\shared\string_matching.py:154: error: "None" object is not iterable  [misc]
+2_Scripts\shared\string_matching.py:238: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
+2_Scripts\shared\string_matching.py:253: error: "None" object is not iterable  [misc]
+2_Scripts\shared\string_matching.py:267: error: Call to untyped function "warn_if_rapidfuzz_missing" in typed context  [no-untyped-call]
+2_Scripts\shared\panel_ols.py:69: error: Cannot assign to a type  [misc]
+2_Scripts\shared\panel_ols.py:69: error: Incompatible types in assignment (expression has type "None", variable has type "type[PanelOLS]")  [assignment]
+2_Scripts\shared\panel_ols.py:371: error: Incompatible types in assignment (expression has type "str", target has type "bool")  [assignment]
+2_Scripts\shared\panel_ols.py:396: error: Incompatible types in assignment (expression has type "str", target has type "bool")  [assignment]
+2_Scripts\shared\panel_ols.py:397: error: Incompatible types in assignment (expression has type "str", target has type "bool")  [assignment]
+2_Scripts\shared\panel_ols.py:400: error: Incompatible types in assignment (expression has type "str", target has type "bool")  [assignment]
+2_Scripts\shared\panel_ols.py:404: error: Argument 1 to "fit" of "PanelOLS" has incompatible type "**dict[str, bool]"; expected "str"  [arg-type]
+2_Scripts\shared\panel_ols.py:462: error: Function is missing a type annotation  [no-untyped-def]
+2_Scripts\shared\panel_ols.py:462: error: All conditional function variants must have identical signatures  [misc]
+2_Scripts\shared\panel_ols.py:462: note: Original:
+2_Scripts\shared\panel_ols.py:462: note:     def compute_vif(df: Any, columns: list[str], add_constant_col: bool = ..., vif_threshold: float = ...) -> Any
+2_Scripts\shared\panel_ols.py:462: note: Redefinition:
+2_Scripts\shared\panel_ols.py:462: note:     def compute_vif(df_local: Any, cols: Any, add_constant: Any = ...) -> Any
+2_Scripts\shared\panel_ols.py:479: error: Incompatible types in assignment (expression has type "None", variable has type "Callable[[Any, list[str], bool, float], Any]")  [assignment]
+2_Scripts\shared\panel_ols.py:485: error: Unexpected keyword argument "add_constant" for "compute_vif"; did you mean "add_constant_col"?  [call-arg]
+2_Scripts\shared\panel_ols.py:505: error: Incompatible types in assignment (expression has type "float", target has type "None")  [assignment]
+2_Scripts\shared\panel_ols.py:509: error: Incompatible types in assignment (expression has type "float", target has type "None")  [assignment]
+2_Scripts\shared\iv_regression.py:39: error: Cannot assign to a type  [misc]
+2_Scripts\shared\iv_regression.py:39: error: Incompatible types in assignment (expression has type "None", variable has type "type[IV2SLS]")  [assignment]
+2_Scripts\shared\iv_regression.py:40: error: Cannot assign to a type  [misc]
+2_Scripts\shared\iv_regression.py:40: error: Incompatible types in assignment (expression has type "None", variable has type "type[IVResults]")  [assignment]
+2_Scripts\shared\iv_regression.py:57: error: Incompatible default for argument "f_stat" (default has type "None", argument has type "float")  [assignment]
+2_Scripts\shared\iv_regression.py:57: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+2_Scripts\shared\iv_regression.py:57: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+2_Scripts\shared\iv_regression.py:57: error: Incompatible default for argument "threshold" (default has type "None", argument has type "float")  [assignment]
+2_Scripts\shared\iv_regression.py:225: error: Argument 1 to "fit" of "_IVLSModelBase" has incompatible type "**dict[str, str]"; expected "bool"  [arg-type]
+2_Scripts\shared\iv_regression.py:228: error: "OLSResults" has no attribute "first_stage"  [attr-defined]
+2_Scripts\shared\iv_regression.py:285: error: "OLSResults" has no attribute "sargan"  [attr-defined]
+2_Scripts\shared\iv_regression.py:286: error: Incompatible types in assignment (expression has type "float", target has type "Optional[bool]")  [assignment]
+2_Scripts\shared\iv_regression.py:287: error: Incompatible types in assignment (expression has type "float", target has type "Optional[bool]")  [assignment]
+2_Scripts\shared\iv_regression.py:313: error: Incompatible types in assignment (expression has type "str", target has type "Optional[bool]")  [assignment]
+Found 221 errors in 17 files (checked 31 source files)
