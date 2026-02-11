@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 60-code-organization (v3.0 Codebase Cleanup & Optimization)
-Status: Phase 60-01 COMPLETE (1/1 plans, archived 3 files)
-Last activity: 2026-02-11 - Phase 60-01: archived legacy/backup files to .___archive/
+Status: Phase 60-02 COMPLETE (2/2 plans, 6 READMEs created)
+Last activity: 2026-02-11 - Phase 60-02: created README.md files for 6 major 2_Scripts/ directories
 
 ### Next Phase
 
@@ -50,7 +50,7 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
 Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression complete (5,295 obs, interaction NOT SIGNIFICANT p=0.76, H9 NOT SUPPORTED)
 Phase 59: Critical Bug Fixes [COMPLETE - 3/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Exception-based Error Handling COMPLETE (FinancialCalculationError added to data_validation.py, empty returns replaced with raises in calculate_firm_controls and calculate_firm_controls_quarterly, 8 unit/integration tests created); 59-03 calculate_throughput Error Handling COMPLETE (raises ValueError with logging, 10 unit tests, H1/H2/H3/H7/H8 callers updated with try/except)
-Phase 60: Code Organization [COMPLETE - 1/1 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified)
+Phase 60: Code Organization [COMPLETE - 2/2 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified); 60-02 Create READMEs COMPLETE (created 6 README.md files for Financial V1/V3, Econometric V1/V3, Sample, Text directories; clarified V1/V2/V3 structure through documentation; no directory renaming per constraint)
 ```
 
 ## v2.0 Hypothesis Testing Results
