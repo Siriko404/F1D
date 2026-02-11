@@ -169,10 +169,17 @@ def calculate_firm_controls_quarterly(
 
     Returns:
         Dictionary with: Size, BM, Lev, ROA, CurrentRatio, RD_Intensity
+
+    Raises:
+        FinancialCalculationError: If gvkey is missing or no data found before datadate
     """
     gvkey = row.get("gvkey")
     if gvkey is None:
-        return {}
+        raise FinancialCalculationError(
+            f"Cannot calculate quarterly firm controls: missing gvkey in row. "
+            f"Row columns: {list(row.index)}. "
+            f"Datadate: {datadate}"
+        )
 
     # Get firm's data closest to or before the specified date
     # Using merge_asof logic would be more efficient, but this is row-wise
@@ -182,7 +189,11 @@ def calculate_firm_controls_quarterly(
     ].sort_values("datadate", ascending=False)
 
     if firm_data.empty:
-        return {}
+        raise FinancialCalculationError(
+            f"Cannot calculate quarterly firm controls: no Compustat data found. "
+            f"gvkey={gvkey}, datadate={datadate}. "
+            f"This may indicate CCM link table issue or data gap."
+        )
 
     data = firm_data.iloc[0]
 
