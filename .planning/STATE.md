@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 60-code-organization (v3.0 Codebase Cleanup & Optimization)
-Status: Phase 59 COMPLETE (3/3 plans, 15/15 must-haves verified)
-Last activity: 2026-02-11 - Phase 59 verified: all critical bugs fixed
+Status: Phase 60-01 COMPLETE (1/1 plans, archived 3 files)
+Last activity: 2026-02-11 - Phase 60-01: archived legacy/backup files to .___archive/
 
 ### Next Phase
 
-**Action:** Execute Phase 60 (Code Organization) — `/gsd:execute-phase 60`
+**Action:** Continue Phase 60 or move to next phase
 **Blockers:** None
 
 ### Progress
@@ -50,6 +50,7 @@ Phase 56: CEO/Management Uncertainty as Persistent Style [PLANNED - 0/TBD plans]
 Phase 57: V1 LaTeX Thesis Draft [PLANNED - 0/TBD plans] → Create academically rigorous LaTeX thesis document for V1 analyses with publication-quality tables and exhibits
 Phase 58: H9 PRisk × CEO Style → Abnormal Investment [COMPLETE - 4/4 plans] → 58-01 StyleFrozen complete (7,125 firm-years, 493 firms, 471 CEOs); 58-02 PRiskFY complete (65,664 firm-years, 7,869 firms); 58-03 AbsAbInv complete (80,048 firm-years); 58-04 Regression complete (5,295 obs, interaction NOT SIGNIFICANT p=0.76, H9 NOT SUPPORTED)
 Phase 59: Critical Bug Fixes [COMPLETE - 3/3 plans] → 59-01 H7-H8 Data Truncation Bug Fix COMPLETE (called calculate_stock_volatility_and_returns in H7 main, created regression tests, added baseline checksums); 59-02 Exception-based Error Handling COMPLETE (FinancialCalculationError added to data_validation.py, empty returns replaced with raises in calculate_firm_controls and calculate_firm_controls_quarterly, 8 unit/integration tests created); 59-03 calculate_throughput Error Handling COMPLETE (raises ValueError with logging, 10 unit tests, H1/H2/H3/H7/H8 callers updated with try/except)
+Phase 60: Code Organization [COMPLETE - 1/1 plans] → 60-01 Archive Legacy Files COMPLETE (moved 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak to .___archive/, created README documentation, zero broken imports verified)
 ```
 
 ## v2.0 Hypothesis Testing Results
@@ -434,11 +435,32 @@ All files and commits verified for Phase 58-01:
 - [Extended Coverage] Updated H1, H2, H3 beyond plan-specified H7, H8 for consistency across all V2 variable scripts
 - [Unit Test Coverage] 10 unit tests created for throughput calculation edge cases (zero, negative, large, small values)
 
+### Phase 60-01 Archive Organization Decisions
+
+- [Archive Gitignore] .___archive/ directory is intentionally gitignored - archived files are for local reference only
+- [Archive Structure] Organized into subdirectories: legacy/, backups/, old_versions/, debug/, docs/, test_outputs/
+- [No Active Imports] Verified zero active imports of archived files before moving (grep across 2_Scripts/)
+- [Archive Documentation] Created .___archive/README.md with complete structure documentation and archive log
+
 ## Session Continuity
 
 ### Current Session (2026-02-11)
 
-**Phase 59-03 COMPLETE:**
+**Phase 60-01 COMPLETE:**
+- Moved legacy and backup files from active directories to .___archive/
+- Files archived: 1.0_BuildSampleManifest-legacy.py, 3.7_H7IlliquidityVariables.py.bak, STATE.md.bak
+- Created .___archive/old_versions/ subdirectory for future use
+- Created .___archive/README.md with complete documentation
+- Verified zero broken imports via grep across 2_Scripts/
+- No git commit (archive directory is gitignored)
+- SUMMARY: 60-01-SUMMARY.md created
+
+**Phase 60-01 Key Changes:**
+- Archive structure organized: legacy/, backups/, old_versions/, debug/, docs/, test_outputs/
+- Archive README created with log table for tracking future additions
+- Codebase is clean with no legacy files in active directories
+
+**Phase 59-03 COMPLETE (Earlier):**
 - Replaced silent 0.0 returns with logging + ValueError in calculate_throughput()
 - Added logging import to observability_utils.py (logger configured)
 - calculate_throughput() now raises ValueError for duration_seconds <= 0
