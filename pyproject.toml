@@ -26,18 +26,26 @@ markers = [
     "regression: marks tests as regression tests",
     "unit: marks tests as unit tests",
     "e2e: marks tests as end-to-end pipeline tests",
+    "performance: marks tests as performance regression tests",
 ]
 
 [tool.coverage.run]
 source = ["2_Scripts"]
+branch = true  # Enable branch coverage
 omit = [
     "*/tests/*",
     "*/__pycache__/*",
     "*/ARCHIVE*/*",
     "*/ARCHIVE_OLD*/*",
+    "*/V1*",  # Exclude V1 scripts from coverage calculation
 ]
 
 [tool.coverage.report]
+# Minimum coverage required (fail_under in pyproject.toml uses overall threshold)
+# Tier 1 (critical): 90%+ for financial_utils, panel_ols, iv_regression
+# Tier 2 (important): 80%+ for data_validation, path_utils, chunked_reader
+# Overall minimum: 60% (baseline for entire codebase)
+fail_under = 60
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
@@ -45,7 +53,21 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
+    "@abstractmethod",
 ]
+precision = 2  # Report coverage to 2 decimal places
+skip_empty = true  # Don't fail on files with no code
+partial_branches = true  # Report partial branch coverage
+show_missing = true  # Show missing lines in report
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.coverage.json]
+output = "coverage.json"
 
 [tool.ruff]
 # Same line length as Black (default)
