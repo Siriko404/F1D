@@ -18,6 +18,9 @@ Outputs:
     - Optionally writes to file
 
 Deterministic: true
+Main Functions:
+    - format_table_for_latex(): Format DataFrame for LaTeX output
+
 Dependencies:
     - Utility module for LaTeX table generation
     - Uses: pandas

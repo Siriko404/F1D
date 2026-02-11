@@ -18,6 +18,10 @@ Outputs:
     - Regression diagnostics as dictionary
 
 Deterministic: true
+Main Functions:
+    - run_fixed_effects_ols(): Run OLS regression with fixed effects
+    - extract_ceo_fixed_effects(): Extract CEO fixed effects from regression
+
 Dependencies:
     - Utility module for regression utilities
     - Uses: pandas, numpy, statsmodels

@@ -30,6 +30,10 @@ Declared Outputs:
     - format_vif_table() returns formatted string for console output
 
 Deterministic: true
+Main Functions:
+    - check_multicollinearity(): Check for high VIF values
+    - compute_vif(): Calculate variance inflation factors
+
 Dependencies:
     - Utility module for regression diagnostics
     - Uses: pandas, numpy, statsmodels

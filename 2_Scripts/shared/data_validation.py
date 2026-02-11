@@ -22,6 +22,9 @@ Outputs:
     - Validation result (pass/fail)
     - Error messages (if validation fails)
 
+Main Functions:
+    - validate_schema(): Validate DataFrame against schema
+
 Dependencies:
     - Utility module for data validation
     - Uses: pandas, numpy

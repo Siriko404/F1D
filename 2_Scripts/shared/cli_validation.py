@@ -17,6 +17,9 @@ Outputs:
     - check_prerequisites_step4_takeover() - Validates 4.1, 3.3 outputs
 
 Deterministic: true
+Main Functions:
+    - validate_cli_args(): Validate command-line arguments
+
 Dependencies:
     - Utility module for CLI argument validation
     - Uses: argparse, sys

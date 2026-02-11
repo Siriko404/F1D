@@ -37,6 +37,11 @@ Declared Outputs:
         - warnings: list of warning messages
 
 Deterministic: true
+Main Functions:
+    - run_panel_ols(): Execute panel regression with fixed effects
+    - compute_vif(): Calculate variance inflation factors
+    - check_collinearity(): Detect perfect multicollinearity
+
 Dependencies:
     - Utility module for panel OLS regression
     - Uses: linearmodels, pandas, numpy, statsmodels

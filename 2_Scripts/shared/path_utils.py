@@ -18,6 +18,10 @@ Outputs:
     - Available disk space in GB
 
 Deterministic: true
+Main Functions:
+    - get_latest_output_dir(): Get latest output directory by timestamp
+    - ensure_output_dir(): Create output directory if not exists
+
 Dependencies:
     - Utility module for path utilities
     - Uses: pathlib

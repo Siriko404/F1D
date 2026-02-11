@@ -15,6 +15,9 @@ Outputs:
     - Combined DataFrame with all data sources merged
 
 Deterministic: true
+Main Functions:
+    - load_parquet(): Load Parquet file with error handling
+
 Dependencies:
     - Utility module for data loading
     - Uses: pandas, pathlib

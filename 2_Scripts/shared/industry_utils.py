@@ -15,6 +15,9 @@ Inputs:
 Outputs:
     - Industry classification mappings
 
+Main Functions:
+    - parse_ff_industries(): Parse Fama-French industry classifications from SIC codes
+
 Dependencies:
     - Utility module for industry classifications
     - Uses: pandas, numpy

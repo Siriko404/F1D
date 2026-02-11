@@ -20,6 +20,9 @@ Inputs:
 Outputs:
     - Validated environment variables
 
+Main Functions:
+    - validate_env_vars(): Validate environment variables
+
 Dependencies:
     - Utility module for environment validation
     - Uses: os, sys

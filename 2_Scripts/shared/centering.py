@@ -31,6 +31,11 @@ Declared Outputs:
     - save_centered_intermediates() saves parquet + JSON for audit trail
 
 Deterministic: true
+Main Functions:
+    - center_continuous(): Mean-center continuous variables
+    - create_interaction(): Create interaction term from centered variables
+    - save_centered_intermediates(): Save centered variables and means for audit trail
+
 Dependencies:
     - Utility module for mean-centering variables
     - Uses: pandas, numpy

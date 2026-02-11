@@ -16,6 +16,9 @@ Outputs:
     - Model configuration dictionaries
 
 Deterministic: true
+Main Functions:
+    -  Various regression helper functions
+
 Dependencies:
     - Utility module for regression helpers
     - Uses: pandas, numpy, statsmodels

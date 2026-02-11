@@ -20,6 +20,9 @@ Outputs:
     - CSV file with variable reference table
 
 Deterministic: true
+Main Functions:
+    - generate_report(): Generate markdown report from results
+
 Dependencies:
     - Utility module for reporting
     - Uses: pandas, pathlib

@@ -17,6 +17,10 @@ Outputs:
     - Chunked data iterators
     - Memory tracking decorators
 
+Main Functions:
+    - read_in_chunks(): Read Parquet file in chunks using PyArrow
+    - track_memory_usage(): Decorator for memory tracking during execution
+
 Dependencies:
     - Utility module for memory-aware chunked processing
     - Uses: pandas, numpy, psutil, pyarrow

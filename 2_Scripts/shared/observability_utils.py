@@ -22,6 +22,11 @@ The actual implementation has been moved to:
     - shared.observability.anomalies: Anomaly detection
 
 Deterministic: true
+Main Functions:
+    - DualWriter: Class for dual stdout/file logging
+    - print_stat(): Print statistics with formatting
+    - get_process_memory_mb(): Get current process memory usage
+
 Dependencies:
     - Utility module for observability (deprecated - use observability/ subpackage)
     - Uses: pandas, numpy, time

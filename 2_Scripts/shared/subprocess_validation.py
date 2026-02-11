@@ -20,6 +20,9 @@ Inputs:
 Outputs:
     - Validated subprocess execution
 
+Main Functions:
+    - validate_subprocess_path(): Validate subprocess script path
+
 Dependencies:
     - Utility module for subprocess validation
     - Uses: subprocess, sys

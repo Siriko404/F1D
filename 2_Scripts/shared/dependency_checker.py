@@ -17,6 +17,9 @@ Outputs:
     - Printed error messages with actionable next steps
 
 Deterministic: true
+Main Functions:
+    - check_dependencies(): Verify required modules are available
+
 Dependencies:
     - Utility module for dependency checking
     - Uses: sys, importlib

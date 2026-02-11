@@ -14,6 +14,9 @@ Inputs:
 Outputs:
     - load_variable_descriptions() function
 
+Main Functions:
+    - load_variable_descriptions(): Load variable descriptions from reference files
+
 Dependencies:
     - Utility module for metadata handling
     - Uses: json, pathlib

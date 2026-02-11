@@ -23,6 +23,9 @@ Outputs:
     - Warnings list for any issues detected
 
 Deterministic: true
+Main Functions:
+    - run_iv_regression(): Execute instrumental variables regression
+
 Dependencies:
     - Utility module for IV regression
     - Uses: linearmodels, pandas, numpy

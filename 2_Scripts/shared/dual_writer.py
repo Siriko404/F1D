@@ -15,6 +15,9 @@ Inputs:
 Outputs:
     - DualWriter class instance
 
+Main Functions:
+    - DualWriter: Class for dual stdout/file logging
+
 Dependencies:
     - Utility module for dual output writes
     - Re-exports: shared.observability.logging.DualWriter

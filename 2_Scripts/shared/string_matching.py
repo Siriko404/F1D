@@ -7,6 +7,9 @@ id: shared.string_matching
 description: String matching utilities with config-driven thresholds using RapidFuzz
 inputs: config/project.yaml (string_matching section)
 outputs: Fuzzy match results with scores
+Main Functions:
+    - fuzzy_match(): Fuzzy string matching using Levenshtein distance
+
 Dependencies:
     - Utility module for string matching
     - Uses: pandas, numpy, fuzzywuzzy

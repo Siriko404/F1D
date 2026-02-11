@@ -17,6 +17,9 @@ Outputs:
     - Validation results
     - Error messages for debugging
 
+Main Functions:
+    - validate_regression_inputs(): Validate inputs before regression
+
 Dependencies:
     - Utility module for regression validation
     - Uses: pandas, numpy

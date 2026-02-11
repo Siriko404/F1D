@@ -18,6 +18,9 @@ Outputs:
     - DataFrame with computed financial features
 
 Deterministic: true
+Main Functions:
+    -  Various financial calculation utilities
+
 Dependencies:
     - Utility module for financial calculations
     - Uses: pandas, numpy
