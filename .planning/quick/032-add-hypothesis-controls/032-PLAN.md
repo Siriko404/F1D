@@ -109,6 +109,17 @@ Add control variables and results sections to all hypothesis documentation files
 
 ## Files Modified
 
+**Round 1 - Control Variables Descriptions:**
+- `4_Outputs/4_Econometric_V2/H1_Hypothesis_Documentation.md`
+- `4_Outputs/4_Econometric_V2/H2_Hypothesis_Documentation.md`
+- `4_Outputs/4_Econometric_V2/H3_Hypothesis_Documentation.md`
+- `4_Outputs/4_Econometric_V2/H4_Hypothesis_Documentation.md`
+- `4_Outputs/4_Econometric_V2/H5_Hypothesis_Documentation.md`
+- `4_Outputs/4_Econometric_V2/H6_Hypothesis_Documentation.md`
+- `4_Outputs/4_Econometric_V2/H7_Hypothesis_Documentation.md`
+- `4_Outputs/4_Econometric_V2/H8_Hypothesis_Documentation.md`
+
+**Round 2 - Control Variable Coefficient Results:**
 - `4_Outputs/4_Econometric_V2/H1_Hypothesis_Documentation.md`
 - `4_Outputs/4_Econometric_V2/H2_Hypothesis_Documentation.md`
 - `4_Outputs/4_Econometric_V2/H3_Hypothesis_Documentation.md`

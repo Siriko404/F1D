@@ -295,6 +295,7 @@ Phase 63: Testing & Validation [IN PROGRESS - 3/TBD plans] → 63-01 Integration
 |---|-------------|------|--------|-----------|
 | 031 | Create publication-quality documentation for V2 hypotheses (H1-H8) | 2026-02-10 | d30491f | [031-v2-hypothesis-docs](./quick/031-v2-hypothesis-docs/) |
 | 030 | Audit investment efficiency implementation vs Biddle (2009) methodology | 2026-02-07 | 317d3cb | [030-audit-investment-efficiency](./quick/030-audit-investment-efficiency/) |
+| 032 | Add control variables and coefficient results to H1-H8 documentation | 2026-02-11 | ef0a9d2 | [032-add-hypothesis-controls](./quick/032-add-hypothesis-controls/) |
 | 032 | Add control variables to H1-H8 hypothesis documentation | 2026-02-11 | c70147e | [032-add-hypothesis-controls](./quick/032-add-hypothesis-controls/) |
 
 ### Phase 58: H9 PRisk × CEO Style → Abnormal Investment
