@@ -34,3 +34,22 @@ $$
 **Note:** Significance level: p < 0.05 (one-tailed). H4 expects β₁ < 0. Bold indicates statistical significance. F-statistics test joint significance of all regressors.
 
 **Outcome:** H4 PARTIAL SUPPORT (3/6 significant)
+
+---
+
+## Control Variables
+
+| Variable | Description | Source |
+|----------|-------------|---------|
+| analyst_qa_uncertainty | Analyst Q&A uncertainty - Controls for analyst questioning environment | IBES/Phase 4 |
+| firm_size | Log(total assets) - Firm size | Compustat |
+| tobins_q | Tobin's Q - Market-to-book ratio | Compustat |
+| roa | Return on assets - Profitability | Compustat |
+| cash_holdings | Cash-to-assets ratio - Financial slack | Compustat |
+| dividend_payer | Dividend payer dummy - Payout policy | Compustat |
+| firm_maturity | Firm age - Lifecycle stage | Compustat |
+| earnings_volatility | Earnings volatility - Earnings risk | Compustat |
+| leverage_lag1 | Lagged leverage (t-1) - Key independent variable | Compustat |
+| presentation_uncertainty | Presentation uncertainty - Controls for prepared speech | Phase 4 |
+
+**All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**

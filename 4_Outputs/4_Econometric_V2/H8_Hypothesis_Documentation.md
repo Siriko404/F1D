@@ -51,3 +51,26 @@ $$
 | **Final Merged** | **5,295** | **432** |
 
 **Outcome:** H8 NOT SUPPORTED (interaction β₃ = -0.0000, p = 0.7574)
+
+---
+
+## Control Variables
+
+| Variable | Description | Source |
+|----------|-------------|---------|
+| ln_at_t | Log(total assets) - Firm size | Compustat |
+| lev_t | Debt-to-assets ratio - Leverage | Compustat |
+| cash_t | Cash-to-assets ratio - Financial slack | Compustat |
+| roa_t | Return on assets - Profitability | Compustat |
+| mb_t | Book-to-market ratio - Investment opportunities | Compustat |
+| SalesGrowth_t | Sales growth - Growth prospects | Compustat |
+
+**Variable Construction Notes:**
+- **AbsAbInv (DV)**: Absolute value of Biddle (2009) abnormal investment residual
+- **PRiskFY**: Hassan (2019) policy risk index, averaged over fiscal year (366-day window)
+- **StyleFrozen**: CEO communication clarity score, constructed using frozen constraint (no look-ahead bias)
+- **Frozen Constraint**: Only calls with start_date ≤ fiscal_year-end are included for each firm-year
+
+**All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**
+
+**Note:** This hypothesis was originally H9 in the pipeline but is documented as H8 for consistency with the hypothesis numbering scheme (H8 takeover was removed from documentation).

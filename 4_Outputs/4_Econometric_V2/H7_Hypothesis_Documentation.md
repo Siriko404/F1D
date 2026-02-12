@@ -48,3 +48,27 @@ $$
 | **Total robustness** | 14 specifications | **0/14** |
 
 **Outcome:** H7a NOT SUPPORTED (0/4 primary, 0/14 robustness)
+
+---
+
+## Control Variables
+
+| Variable | Description | Source |
+|----------|-------------|---------|
+| Volatility | Stock return volatility (annualized) - Market risk | CRSP Daily |
+| StockRet | Annual stock return - Market performance | CRSP Daily |
+
+**Primary Control Variables Used:**
+- Volatility: Controls for stock risk factors
+- StockRet: Controls for return performance
+
+**Alternative Dependent Variables (Robustness):**
+- Roll (1984) spread: Implicit bid-ask spread from serial covariance
+- Log Amihud: Log-transformed illiquidity measure
+
+**Alternative Independent Variables (Robustness):**
+- CEO only: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+- Presentation only: Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+- QA only: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct
+
+**All variables are winsorized at 1%/99% with minimum 50 trading days per year required.**

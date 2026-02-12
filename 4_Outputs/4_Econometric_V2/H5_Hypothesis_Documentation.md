@@ -48,3 +48,27 @@ $$
 **Note:** Gap = (QA_Uncertainty - Pres_Uncertainty). H5-B expects β₁ > 0.
 
 **Outcome:** H5-A NOT SUPPORTED (0/3 significant), H5-B MIXED (significant only without Firm FE)
+
+---
+
+## Control Variables
+
+| Variable | Description | Source |
+|----------|-------------|---------|
+| prior_dispersion | Lagged analyst dispersion - Controls for persistence | IBES |
+| earnings_surprise | Earnings surprise - Confounding control | IBES |
+| analyst_coverage | Number of analysts (log) - Information environment | IBES |
+| loss_dummy | Negative earnings dummy - Loss indicator | IBES |
+| firm_size | Log(total assets) - Firm size | Compustat |
+| leverage | Debt-to-assets ratio - Financial constraints | Compustat |
+| earnings_volatility | Earnings volatility - Earnings risk | Compustat |
+| tobins_q | Tobin's Q - Investment opportunities | Compustat |
+| manager_qa_uncertainty_pct | Manager Q&A uncertainty - General uncertainty control | Phase 4 |
+| manager_pres_uncertainty_pct | Manager presentation uncertainty - Prepared speech control | Phase 4 |
+
+**Robustness Controls (Alternative Specifications):**
+- no_lagged_dv: Excludes prior_dispersion (addresses Nickell bias)
+- no_numest: Excludes analyst_coverage (addresses bad control concern)
+- ceo_only: Uses CEO-specific measures instead of Manager aggregates
+
+**All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**

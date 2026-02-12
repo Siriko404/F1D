@@ -47,3 +47,26 @@ $$
 **Note:** Significance level: p < 0.05 (one-tailed). Bold indicates statistical significance.
 
 **Outcome:** H2a NOT SUPPORTED (0/12 significant), H2b NOT SUPPORTED (0/12 significant)
+
+---
+
+## Control Variables
+
+### For efficiency_score Dependent Variable
+
+| Variable | Description | Source |
+|----------|-------------|---------|
+| tobins_q | Tobin's Q - Investment opportunities | Compustat |
+| cf_volatility | Cash flow volatility - Cash flow risk | Compustat |
+| industry_capex_intensity | Industry capital expenditure intensity | Compustat |
+| analyst_dispersion | Analyst forecast dispersion - Information environment | IBES |
+| firm_size | Log(total assets) - Firm size | Compustat |
+| roa | Return on assets - Profitability | Compustat |
+| fcf | Free cash flow - Internal funds | Compustat |
+| earnings_volatility | Earnings volatility - Earnings risk | Compustat |
+
+### For roa_residual Dependent Variable
+
+The same control variables are used for both efficiency_score and roa_residual dependent variables.
+
+**All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**

@@ -53,3 +53,24 @@ $$
 | uncertainty_gap | -0.0791 | 0.1018 | -0.78 | 0.2186 | No |
 
 **Outcome:** H6-A NOT SUPPORTED (0/6 significant), H6-B NOT SUPPORTED, H6-C NOT SUPPORTED, Pre-trends FAILED
+
+---
+
+## Control Variables
+
+H6 uses a shift-share instrument (CCCL exposure) as the key independent variable. The model includes industry and year fixed effects but no additional control variables are included in the primary specification.
+
+**Instrument:**
+- `shift_intensity_mkvalt_ff48_lag`: CCCL exposure intensity (FF48 industry × market value, lagged t-1)
+
+**CCCL Variants (for robustness):**
+| Variant | Description |
+|----------|-------------|
+| shift_intensity_mkvalt_ff48_lag | FF48 × market value (primary) |
+| shift_intensity_sale_ff48_lag | FF48 × sales |
+| shift_intensity_mkvalt_ff12_lag | FF12 × market value |
+| shift_intensity_sale_ff12_lag | FF12 × sales |
+| shift_intensity_mkvalt_sic2_lag | SIC2 × market value |
+| shift_intensity_sale_sic2_lag | SIC2 × sales |
+
+**Note:** H6 uses 2SLS (Two-Stage Least Squares) with shift-share instrument for causal identification. The shift-share instrument exploits industry-level variation in CCCL exposure across states over time.

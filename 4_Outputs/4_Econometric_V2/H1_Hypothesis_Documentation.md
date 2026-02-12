@@ -34,3 +34,20 @@ $$
 **Note:** Significance level: p < 0.05 (one-tailed). Bold indicates statistical significance.
 
 **Outcome:** H1a NOT SUPPORTED (0/6 significant), H1b WEAK SUPPORT (1/6 significant)
+
+---
+
+## Control Variables
+
+| Variable | Description | Source |
+|----------|-------------|---------|
+| firm_size | Log(total assets) - Firm size control | Compustat (AT) |
+| tobins_q | Tobin's Q - Market-to-book ratio | Compustat |
+| roa | Return on assets - Profitability measure | Compustat |
+| capex_at | Capital expenditures / Total assets - Investment intensity | Compustat |
+| dividend_payer | Dividend payer dummy - Payout policy indicator | Compustat |
+| ocf_volatility | Operating cash flow volatility - Cash flow risk | Compustat |
+| current_ratio | Current ratio - Liquidity measure | Compustat |
+| leverage | Debt / Total assets - Leverage control | Compustat |
+
+**All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**

@@ -47,3 +47,20 @@ $$
 **Note:** Significance level: p < 0.05 (one-tailed). Bold indicates statistical significance.
 
 **Outcome:** H3a_stability WEAK SUPPORT (1/6), H3b_stability NOT SUPPORTED (0/6), H3a_flexibility WEAK SUPPORT (1/6), H3b_flexibility NOT SUPPORTED (0/6)
+
+---
+
+## Control Variables
+
+| Variable | Description | Source |
+|----------|-------------|---------|
+| earnings_volatility | Earnings volatility - Earnings risk | Compustat |
+| fcf_growth | Free cash flow growth - Cash flow dynamics | Compustat |
+| firm_maturity | Firm age - Lifecycle stage | Compustat |
+| firm_size | Log(total assets) - Firm size | Compustat |
+| roa | Return on assets - Profitability | Compustat |
+| tobins_q | Tobin's Q - Investment opportunities | Compustat |
+| cash_holdings | Cash-to-assets ratio - Financial slack | Compustat (H1) |
+| leverage | Debt-to-assets ratio - Financial constraints | Compustat (H1) |
+
+**All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**
