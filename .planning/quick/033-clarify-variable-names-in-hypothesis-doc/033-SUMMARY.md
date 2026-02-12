@@ -220,16 +220,36 @@ None - plan executed exactly as written.
 
 **Note:** 18 full variable names in table headers is correct - H8 doesn't use abbreviated variable names, so only H1-H7 contribute to the count.
 
+## Additional Work: Table Format Standardization
+
+**Task:** Standardize all regression tables to vertical academic format (added after initial completion)
+
+**What was done:**
+1. Identified H6 and H8 tables using horizontal format (Variable | Coefficient | Std. Error | p-value)
+2. Reformatted H6 Table 3 (Pre-trends Test) to vertical format
+3. Reformatted H6 Table 4 (Gap Analysis) to vertical format
+4. Reformatted H8 Table 1 (main regression results) to vertical format
+5. All tables now use consistent academic format:
+   - Variables in rows
+   - Models in columns
+   - Standard errors in parentheses below coefficients
+
+**Files modified:**
+- H6_Hypothesis_Documentation.md: Tables 3 & 4 reformatted
+- H8_Hypothesis_Documentation.md: Table 1 reformatted
+
+**Rationale:** Traditional academic regression table format (vertical) provides better readability and consistency across all hypothesis documentation.
+
 ## Commits
 
 | Commit | Message | Files Changed |
 |--------|---------|---------------|
 | 38bb55f | docs(quick-033): clarify variable names in hypothesis documentation | 8 files, 254 insertions(+), 289 deletions(-) |
+| 1a8488a | docs(quick-033): standardize regression tables to vertical academic format | 2 files, 62 insertions(+), 28 deletions(-) |
 
 **Commit details:**
-- 8 files changed: All H1-H8 hypothesis documentation files
-- 254 insertions: Full variable names added to table headers
-- 289 deletions: Abbreviated variable names removed
+- Commit 1: 8 files changed - Full variable names replaced abbreviations
+- Commit 2: 2 files changed - H6 and H8 tables reformatted to vertical
 
 ## Next Phase Readiness
 
