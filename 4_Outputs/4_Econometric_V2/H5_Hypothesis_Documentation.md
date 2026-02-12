@@ -29,71 +29,49 @@ $$
 ### Table 1: H5-A Analyst Dispersion Regression Results (Hedging Language)
 
 | Variable | (1) | (2) | (3) |
-|----------|--------|--------|--------|
-| | | | | |
-**Dependent Variable: Dispersion** | dispersion_lead | | | |
-| | | | | |
-**Uncertainty Measures** | | | | |
-Manager_QA_Weak_Modal_pct (β₁) | -0.0124** | Manager_Pres_Weak_Modal_pct | CEO_QA_Weak_Modal_pct |
-| | (0.0053) | -0.0037 | -0.0051 |
-| | -2.34 | (0.0075) | -0.49 |
-| | 0.9906 | 0.6891 | 0.8669 |
-| | **Yes** | No | No |
-| | | | | |
-**Controls (Example: Manager_QA_Weak_Modal)** | | | | |
-prior_dispersion | 0.2210*** | 0.2210*** | 0.2210*** |
+|----------|---------|---------|---------|
+| | **Manager_QA_Weak_Modal_pct** | **Manager_Pres_Weak_Modal_pct** | **CEO_QA_Weak_Modal_pct** |
+| | | | |
+| **Key Variable** | | | |
+| Weak Modal (β₁) | -0.0124** | -0.0037 | -0.0051 |
+| | (0.0053) | (0.0075) | (0.0104) |
+| | | | |
+| **Control Variables** | | | |
+| Prior dispersion | 0.2210*** | 0.2210*** | 0.2210*** |
 | | (0.0069) | (0.0069) | (0.0070) |
-| | 31.97 | 31.97 | 31.97 |
-| | <0.0001 | <0.0001 | <0.0001 |
-earnings_surprise | -0.0009** | -0.0009** | -0.0009** |
+| Earnings surprise | -0.0009** | -0.0009** | -0.0009** |
 | | (0.0004) | (0.0004) | (0.0004) |
-| | -2.35 | -2.35 | -2.35 |
-| | 0.019 | 0.019 | 0.019 |
-analyst_coverage | -0.0015 | -0.0015 | -0.0015 |
+| Analyst coverage | -0.0015 | -0.0015 | -0.0015 |
 | | (0.0012) | (0.0012) | (0.0012) |
-| | -1.26 | -1.26 | -1.26 |
-| | 0.208 | 0.208 | 0.208 |
-loss_dummy | -0.0018 | -0.0018 | -0.0018 |
+| Loss dummy | -0.0018 | -0.0018 | -0.0018 |
 | | (0.0050) | (0.0050) | (0.0050) |
-| | -0.36 | -0.36 | -0.36 |
-| | 0.718 | 0.718 | 0.718 |
-firm_size | 0.0001 | 0.0001 | 0.0001 |
+| Firm size | 0.0001 | 0.0001 | 0.0001 |
 | | (0.0001) | (0.0001) | (0.0001) |
-| | 1.45 | 1.45 | 1.45 |
-| | 0.147 | 0.147 | 0.147 |
-leverage | -0.0047 | -0.0047 | -0.0047 |
+| Leverage | -0.0047 | -0.0047 | -0.0047 |
 | | (0.0033) | (0.0033) | (0.0033) |
-| | -1.42 | -1.42 | -1.42 |
-| | 0.155 | 0.155 | 0.155 |
-earnings_volatility | 0.0003 | 0.0003 | 0.0003 |
+| Earnings volatility | 0.0003 | 0.0003 | 0.0003 |
 | | (0.0031) | (0.0031) | (0.0031) |
-| | 0.09 | 0.09 | 0.09 |
-| | 0.925 | 0.925 | 0.925 |
-tobins_q | 0.0039 | 0.0039 | 0.0039 |
+| Tobin's Q | 0.0039 | 0.0039 | 0.0039 |
 | | (0.0029) | (0.0029) | (0.0029) |
-| | 1.34 | 1.34 | 1.34 |
-| | 0.179 | 0.179 | 0.179 |
-Manager_QA_Uncertainty_pct (β₂ control) | 0.0036 | 0.0039 | -0.0026 |
+| Manager QA uncertainty | 0.0036 | 0.0039 | -0.0026 |
 | | (0.0025) | (0.0029) | (0.0022) |
-| | 1.44 | 1.34 | -1.18 |
-| | 0.150 | 0.180 | 0.239 |
-Manager_Pres_Uncertainty_pct (β₂ control) | 0.0039 | 0.0040 | -0.0040 |
+| Manager Pres uncertainty | 0.0039 | 0.0040 | -0.0040 |
 | | (0.0029) | (0.0034) | (0.0030) |
-| | 1.34 | 1.18 | -1.33 |
-| | 0.180 | 0.089 | 0.183 |
-| | | | | |
-**Fixed Effects** | Yes | Yes | Yes |
-**N** | 258,560 | 261,604 | 191,159 |
-**R²** | 0.0732 | 0.0732 | 0.0704 |
+| | | | |
+| **Fixed Effects** | Firm+Year | Firm+Year | Firm+Year |
+| **Observations** | 258,560 | 261,604 | 191,159 |
+| **R²** | 0.0732 | 0.0732 | 0.0704 |
 
 ### Table 2: H5-B Uncertainty Gap Regression Results
 
-| Specification | N | β₁ (SE) | t-stat | p₁ | Significant? |
+| Specification | Coefficient | Std. Error | t-stat | p-value | Significant? |
 |---|---|---|---|---|---|
-| **primary** (Firm + Year FE) | 258,235 | -0.0025 (0.0028) | -0.89 | 0.8135 | No |
-| **pooled** (No FE) | 258,235 | 0.0138*** (0.0018) | 7.67 | <0.0001 | **Yes** |
-| **year_only** (Year FE only) | 258,235 | 0.0090*** (0.0029) | 3.10 | 0.0010 | **Yes** |
-| **double_cluster** (Firm+Year FE, firm+year cluster) | 258,235 | -0.0025 (0.0028) | -0.89 | 0.8062 | No |
+| **Primary** (Firm+Year FE) | -0.0025 | (0.0028) | -0.89 | 0.8135 | No |
+| **Pooled OLS** (No FE) | 0.0138*** | (0.0018) | 7.67 | <0.0001 | Yes |
+| **Year FE** (Year FE only) | 0.0090*** | (0.0029) | 3.10 | 0.0010 | Yes |
+| **Double cluster** (Firm+Year FE, 2-way cluster) | -0.0025 | (0.0028) | -0.89 | 0.8062 | No |
+
+**Sample size:** N = 258,235 across all specifications
 
 **Notes:**
 - *** p < 0.01, ** p < 0.05, * p < 0.10

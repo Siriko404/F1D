@@ -26,25 +26,22 @@ $$
 ### Table 1: H6-A CCCL Reduces Uncertainty (Primary Specification)
 
 | Variable | (1) | (2) | (3) | (4) | (5) | (6) |
-|----------|--------|--------|--------|--------|--------|--------|
-| | | | | | | | |
-**Dependent Variable: Uncertainty** | Manager_QA | Manager_QA_Weak | Manager_Pres | CEO_QA | CEO_QA_Weak | CEO_Pres |
-| | | | | | | | |
-**CCCL Exposure (β_CCCL)** | -0.0918 | -0.0376 | -0.0005 | -0.0113 | -0.0412 | 0.0688 |
+|----------|---------|---------|---------|---------|---------|---------|
+| | **Manager_QA_Uncertainty_pct** | **Manager_QA_Weak_Modal_pct** | **Manager_Pres_Uncertainty_pct** | **CEO_QA_Uncertainty_pct** | **CEO_QA_Weak_Modal_pct** | **CEO_Pres_Uncertainty_pct** |
+| | | | | | | |
+| **CCCL Exposure (β_CCCL)** | -0.0918 | -0.0376 | -0.0005 | -0.0113 | -0.0412 | 0.0688 |
 | | (0.0660) | (0.0407) | (0.1066) | (0.1287) | (0.0794) | (0.0824) |
-| | -1.39 | -0.92 | -0.00 | -0.09 | -0.52 | 0.84 |
-| | 0.0821 | 0.1779 | 0.4980 | 0.4649 | 0.3019 | 0.7982 |
-| | No | No | No | No | No | No |
-| | | | | | | | |
-**Fixed Effects** | Yes | Yes | Yes | Yes | Yes | Yes |
-**N** | 21,988 | 21,988 | 22,089 | 16,784 | 16,784 | 16,655 |
-**R²** | 0.0002 | 0.0001 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
-**Firms** | 2,343 | 2,343 | 2,346 | 2,041 | 2,041 | 2,037 |
+| | | | | | | |
+| **Fixed Effects** | Firm+Year | Firm+Year | Firm+Year | Firm+Year | Firm+Year | Firm+Year |
+| **Observations** | 21,988 | 21,988 | 22,089 | 16,784 | 16,784 | 16,655 |
+| **Firms** | 2,343 | 2,343 | 2,346 | 2,041 | 2,041 | 2,037 |
+| **R²** | 0.0002 | 0.0001 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
 
 ### Table 2: H6-A CCCL Reduces Uncertainty (Alternative Instruments)
 
-| Instrument Variant | Manager_QA | Manager_QA_Weak | Manager_Pres | CEO_QA | CEO_QA_Weak | CEO_Pres |
-|---|---|---|---|---|---|---|
+| Instrument Variant | (1) | (2) | (3) | (4) | (5) | (6) |
+|---|---------|---------|---------|---------|---------|---------|
+| | **Manager_QA_Uncertainty_pct** | **Manager_QA_Weak_Modal_pct** | **Manager_Pres_Uncertainty_pct** | **CEO_QA_Uncertainty_pct** | **CEO_QA_Weak_Modal_pct** | **CEO_Pres_Uncertainty_pct** |
 | FF48 × market value (primary) | -0.092 | -0.038 | -0.001 | -0.011 | -0.041 | 0.069 |
 | FF48 × sales | -0.097** | -0.040 | -0.005 | -0.014 | -0.045 | 0.063 |
 | FF12 × market value | -0.091 | -0.039 | -0.004 | -0.012 | -0.043 | 0.067 |
@@ -62,19 +59,19 @@ $$
 
 ### Table 3: Pre-trends Test
 
-| Variable | Beta | SE | p-value | Significant (p<0.05) |
+| Variable | Coefficient | Std. Error | p-value | Significant |
 |---|---|---|---|---|
-| CCCL_{t+2} | -0.0910** | (0.0358) | 0.0118 | **Yes** |
-| CCCL_{t+1} | -0.0847** | (0.0405) | 0.0378 | **Yes** |
+| CCCL_{t+2} | -0.0910** | (0.0358) | 0.0118 | Yes |
+| CCCL_{t+1} | -0.0847** | (0.0405) | 0.0378 | Yes |
 | CCCL_t | -0.0514 | (0.0624) | 0.4079 | No |
 
 **Pre-trends test: FAILED** - Future CCCL effects are significant (violates parallel trends assumption)
 
 ### Table 4: H6-C Gap Analysis
 
-| Metric | β_CCCL | SE | t-stat | p (one-tailed) | H6-C |
-|---|---|---|---|---|
-| uncertainty_gap | -0.0791 | (0.1018) | -0.78 | 0.2186 | No |
+| Dependent Variable | Coefficient | Std. Error | t-stat | p-value | Supported |
+|---|---|---|---|---|---|
+| Uncertainty gap (QA - Pres) | -0.0791 | (0.1018) | -0.78 | 0.2186 | No |
 
 **Notes:** Gap = (QA_Uncertainty - Pres_Uncertainty). H6-C expects β_CCCL < 0.
 

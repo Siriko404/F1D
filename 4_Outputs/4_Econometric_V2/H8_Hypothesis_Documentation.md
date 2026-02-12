@@ -25,34 +25,34 @@ $$
 
 ### Table 1: H8 PRisk × CEO Style → Abnormal Investment
 
-| Variable | Coefficient | Std.Error | t-stat | p-value |
+| Variable | Coefficient | Std. Error | t-stat | p-value |
 |----------|-------------|-------------|---------|----------|
-**Key Variables** | | | | |
-PRiskFY (β₁) | 0.0000 | 0.0001 | 0.42 | 0.6713 |
-StyleFrozen (β₂) | -0.2245** | (0.1063) | -2.11 | 0.0348 |
-PRiskFY × StyleFrozen (β₃) | -0.0000 | 0.0000 | -0.31 | 0.7574 |
+| **Key Variables** | | | | |
+| PRiskFY (β₁) | 0.0000 | (0.0001) | 0.42 | 0.6713 |
+| StyleFrozen (β₂) | -0.2245** | (0.1063) | -2.11 | 0.0348 |
+| PRiskFY × StyleFrozen (β₃) | -0.0000 | (0.0000) | -0.31 | 0.7574 |
 | | | | | |
-**Controls** | | | | |
-ln_at_t | 0.0005 | (0.0014) | 0.38 | 0.703 |
-lev_t | 0.0002 | (0.0030) | 0.08 | 0.936 |
-cash_t | -0.0048 | (0.0108) | -0.44 | 0.658 |
-roa_t | -0.0102 | (0.0140) | -0.73 | 0.466 |
-mb_t | 0.0000 | (0.0003) | 0.00 | 0.998 |
-SalesGrowth_t | 0.0000 | (0.0000) | 0.03 | 0.975 |
+| **Control Variables** | | | | |
+| Firm size (ln_at) | 0.0005 | (0.0014) | 0.38 | 0.703 |
+| Leverage | 0.0002 | (0.0030) | 0.08 | 0.936 |
+| Cash | -0.0048 | (0.0108) | -0.44 | 0.658 |
+| ROA | -0.0102 | (0.0140) | -0.73 | 0.466 |
+| Market-to-book | 0.0000 | (0.0003) | 0.00 | 0.998 |
+| Sales growth | 0.0000 | (0.0000) | 0.03 | 0.975 |
 | | | | | |
-**Fixed Effects** | Yes | Yes | | |
-**N** | 5,295 | | |
-**R² (overall)** | 0.0056 | | |
-**R² (within)** | 0.0089 | | |
+| **Fixed Effects** | Firm+Year | | | |
+| **Observations** | 5,295 | | | |
+| **R² (overall)** | 0.0056 | | | |
+| **R² (within)** | 0.0089 | | | |
 
 ### Table 2: Sample Construction
 
-| Dataset | Observations | Firms |
+| Dataset | Firm-Year Obs. | Unique Firms |
 |---|---|---|
-| StyleFrozen | 7,125 | 493 |
-| PRiskFY | 65,664 | 7,869 |
-| AbsAbInv | 80,048 | 11,256 |
-| **Final Merged** | **5,295** | **432** |
+| StyleFrozen (CEO clarity) | 7,125 | 493 |
+| PRiskFY (policy risk) | 65,664 | 7,869 |
+| AbsAbInv (abnormal investment) | 80,048 | 11,256 |
+| **Final merged sample** | **5,295** | **432** |
 
 **Notes:**
 - *** p < 0.01, ** p < 0.05, * p < 0.10
