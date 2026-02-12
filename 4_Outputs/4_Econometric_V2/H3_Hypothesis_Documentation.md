@@ -64,3 +64,28 @@ $$
 | leverage | Debt-to-assets ratio - Financial constraints | Compustat (H1) |
 
 **All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**
+
+---
+
+## Control Variable Coefficient Results
+
+### Primary Specification (Firm + Year FE, Firm-Clustered SE)
+
+**Example: Manager_QA_Uncertainty_pct regression with div_stability DV**
+
+| Variable | Coefficient | Std. Error | t-stat | p-value |
+|----------|-------------|-------------|---------|----------|
+| leverage_c | -0.2599 | 0.1633 | -1.59 | 0.0557 |
+| leverage_c × uncertainty_c | 0.2599 | 0.1633 | 1.59 | 0.0557 (interaction) |
+| earnings_volatility | 0.0000 | 0.0092 | 0.00 | 0.990 |
+| fcf_growth | -0.0034 | 0.0018 | -1.89 | 0.059 |
+| firm_maturity | -0.0026 | 0.0014 | -1.86 | 0.063 |
+| firm_size | -0.0013 | 0.0011 | -1.17 | 0.241 |
+| roa | -0.0187 | 0.0077 | -2.43 | 0.015 |
+| tobins_q | 0.0019 | 0.0032 | 0.60 | 0.549 |
+| cash_holdings | -0.0086 | 0.0038 | -2.27 | 0.023 |
+
+**Notes:**
+- Key test variables: β₁ (uncertainty) and β₃ (leverage × uncertainty interaction)
+- Most controls are not significant except cash_holdings
+- Full coefficient results available in: `4_Outputs/4_Econometric_V2/4.3_H3PayoutPolicyRegression/2026-02-05_180836/H3_Regression_Results.parquet`

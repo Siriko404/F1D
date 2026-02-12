@@ -71,4 +71,24 @@ $$
 - Presentation only: Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
 - QA only: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct
 
+---
+
+## Control Variable Coefficient Results
+
+### Primary Specification (Firm + Year FE, Firm-Clustered SE)
+
+**Example: Manager_QA_Uncertainty_pct regression with Amihud lag1 DV**
+
+| Variable | Coefficient | Std. Error | t-stat | p-value |
+|----------|-------------|-------------|---------|----------|
+| Manager_QA_Uncertainty_pct (β₁) | 0.00125 | 0.00439 | 0.29 | 0.775 |
+| Volatility | 0.0000 | 0.0000 | -0.02 | 0.983 |
+| StockRet | 0.0000 | 0.0000 | 0.00 | 0.998 |
+
+**Notes:**
+- β₁ (uncertainty) is the key hypothesis test coefficient: H7a expects β₁ > 0
+- Uncertainty coefficient is positive but not significant
+- Control variables (Volatility, StockRet) are not significant
+- Full coefficient results available in: `4_Outputs/4_Econometric_V2/4.7_H7IlliquidityRegression/2026-02-06_184021/H7_Regression_Results.parquet`
+
 **All variables are winsorized at 1%/99% with minimum 50 trading days per year required.**

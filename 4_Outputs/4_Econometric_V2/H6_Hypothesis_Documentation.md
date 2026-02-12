@@ -73,4 +73,20 @@ H6 uses a shift-share instrument (CCCL exposure) as the key independent variable
 | shift_intensity_mkvalt_sic2_lag | SIC2 × market value |
 | shift_intensity_sale_sic2_lag | SIC2 × sales |
 
-**Note:** H6 uses 2SLS (Two-Stage Least Squares) with shift-share instrument for causal identification. The shift-share instrument exploits industry-level variation in CCCL exposure across states over time.
+**Note:** H6 uses 2SLS (Two-Stage Least Squares) with shift-share instrument for causal identification.
+
+---
+
+## Control Variable Coefficient Results
+
+### Primary Specification (Firm + Year FE, Firm-Clustered SE)
+
+H6 uses a shift-share instrument as the key independent variable. Traditional control variables are not included in the primary specification. The model tests whether CCCL exposure (instrument) reduces speech uncertainty.
+
+**Full coefficient results available in:** `4_Outputs/4_Econometric_V2/4.6_H6CCCLRegression/2026-02-05_224808/H6_Regression_Results.parquet`
+
+The H6 regression results file contains:
+- CCCL instrument coefficients (β₁) for each uncertainty measure
+- Standard errors and t-statistics
+- F-statistics and p-values
+- R² and within-R² for each specification The shift-share instrument exploits industry-level variation in CCCL exposure across states over time.

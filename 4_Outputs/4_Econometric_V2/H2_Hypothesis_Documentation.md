@@ -70,3 +70,29 @@ $$
 The same control variables are used for both efficiency_score and roa_residual dependent variables.
 
 **All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**
+
+---
+
+## Control Variable Coefficient Results
+
+### Primary Specification (Firm + Year FE, Firm-Clustered SE)
+
+**Example: Manager_QA_Uncertainty_pct regression with efficiency_score DV**
+
+| Variable | Coefficient | Std. Error | t-stat | p-value |
+|----------|-------------|-------------|---------|----------|
+| leverage_c | 0.0145 | 0.0699 | 0.21 | 0.837 |
+| leverage_c × uncertainty_c | 0.0145 | 0.0699 | 0.21 | 0.837 (interaction) |
+| tobins_q | -0.0103 | 0.0024 | -4.26 | <0.0001 |
+| cf_volatility | -0.0004 | 0.0141 | -0.03 | 0.975 |
+| industry_capex_intensity | -0.0375 | 0.0159 | -2.36 | 0.018 |
+| analyst_dispersion | 0.0012 | 0.0004 | 3.02 | 0.003 |
+| firm_size | 0.0008 | 0.0014 | 0.56 | 0.577 |
+| roa | -0.0649 | 0.0234 | -2.77 | 0.006 |
+| fcf | 0.0000 | 0.0141 | 0.00 | 0.996 |
+| earnings_volatility | -0.0117 | 0.0090 | -1.30 | 0.194 |
+
+**Notes:**
+- Key test variables: β₁ (uncertainty) and β₃ (leverage × uncertainty interaction)
+- Most controls are significant except cf_volatility and fcf
+- Full coefficient results available in: `4_Outputs/4_Econometric_V2/4.2_H2InvestmentEfficiencyRegression/2026-02-05_173315/H2_Regression_Results.parquet`

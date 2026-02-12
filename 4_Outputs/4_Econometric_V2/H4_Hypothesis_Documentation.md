@@ -53,3 +53,30 @@ $$
 | presentation_uncertainty | Presentation uncertainty - Controls for prepared speech | Phase 4 |
 
 **All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**
+
+---
+
+## Control Variable Coefficient Results
+
+### Primary Specification (Firm + Year FE, Firm-Clustered SE)
+
+**Example: Manager_QA_Uncertainty_pct regression (DV = Manager_QA_Uncertainty_pct)**
+
+| Variable | Coefficient | Std. Error | t-stat | p-value |
+|----------|-------------|-------------|---------|----------|
+| leverage_lag1 (β₁) | -0.0658 | 0.0269 | -2.45 | 0.0072 ** (significant) |
+| analyst_qa_uncertainty | 0.0764 | 0.0108 | 7.09 | <0.0001 ** (significant) |
+| firm_size | -0.0185 | 0.0113 | -1.64 | 0.101 |
+| tobins_q | -0.0009 | 0.0063 | -0.15 | 0.883 |
+| roa | -0.0103 | 0.0071 | -1.45 | 0.147 |
+| cash_holdings | 0.0034 | 0.0027 | 1.25 | 0.211 |
+| dividend_payer | -0.0057 | 0.0056 | -1.01 | 0.313 |
+| firm_maturity | 0.0005 | 0.0029 | 0.18 | 0.855 |
+| earnings_volatility | -0.0002 | 0.0054 | -0.04 | 0.969 |
+| presentation_uncertainty (for QA DVs) | 0.5239 | 0.0170 | 30.80 | <0.0001 ** (significant) |
+
+**Notes:**
+- β₁ (leverage_lag1) is the key hypothesis test coefficient: H4 expects β₁ < 0
+- Manager_QA_Uncertainty and Manager_QA_Weak_Modal show significant leverage effects (β₁ < 0)
+- Presentation uncertainty is included as control for QA DVs to distinguish prepared vs spontaneous speech
+- Full coefficient results available in: `4_Outputs/4_Econometric_V2/4.4_H4_LeverageDiscipline/2026-02-05_195212/H4_Regression_Results.parquet`
