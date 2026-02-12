@@ -21,27 +21,31 @@ $$
 
 ---
 
-## Results
+## Regression Results
 
-### Complete Results Table
+### Table 1: H8 PRisk × CEO Style → Abnormal Investment
 
-| Variable | Coefficient | Std.Error | t-stat | p-value | Significant? |
-|---|---|---|---|---|---|
-| **PRiskFY** (β₁) | 0.0000 | 0.0001 | 0.42 | 0.6713 | No |
-| **StyleFrozen** (β₂) | -0.2245 | 0.1063 | -2.11 | 0.0348 | **Yes** |
-| **PRiskFY × StyleFrozen** (β₃) | -0.0000 | 0.0000 | -0.31 | 0.7574 | No |
+| Variable | Coefficient | Std.Error | t-stat | p-value |
+|----------|-------------|-------------|---------|----------|
+**Key Variables** | | | | |
+PRiskFY (β₁) | 0.0000 | 0.0001 | 0.42 | 0.6713 |
+StyleFrozen (β₂) | -0.2245** | (0.1063) | -2.11 | 0.0348 |
+PRiskFY × StyleFrozen (β₃) | -0.0000 | 0.0000 | -0.31 | 0.7574 |
+| | | | | |
+**Controls** | | | | |
+ln_at_t | 0.0005 | (0.0014) | 0.38 | 0.703 |
+lev_t | 0.0002 | (0.0030) | 0.08 | 0.936 |
+cash_t | -0.0048 | (0.0108) | -0.44 | 0.658 |
+roa_t | -0.0102 | (0.0140) | -0.73 | 0.466 |
+mb_t | 0.0000 | (0.0003) | 0.00 | 0.998 |
+SalesGrowth_t | 0.0000 | (0.0000) | 0.03 | 0.975 |
+| | | | | |
+**Fixed Effects** | Yes | Yes | | |
+**N** | 5,295 | | |
+**R² (overall)** | 0.0056 | | |
+**R² (within)** | 0.0089 | | |
 
-### Model Fit
-
-| Statistic | Value |
-|---|---|
-| **N** | 5,295 |
-| **Firms** | 432 |
-| **CEOs** | 418 |
-| **R² (overall)** | 0.0056 |
-| **R² (within)** | 0.0089 |
-
-### Sample Construction
+### Table 2: Sample Construction
 
 | Dataset | Observations | Firms |
 |---|---|---|
@@ -49,6 +53,14 @@ $$
 | PRiskFY | 65,664 | 7,869 |
 | AbsAbInv | 80,048 | 11,256 |
 | **Final Merged** | **5,295** | **432** |
+
+**Notes:**
+- *** p < 0.01, ** p < 0.05, * p < 0.10
+- Dependent variable: AbsAbInv (t+1) - absolute value of Biddle (2009) abnormal investment residual
+- Standard errors clustered at firm level in parentheses
+- H8 tests β₃ ≠ 0: interaction term essentially zero (p = 0.7574)
+- β₂ (StyleFrozen/CEO vagueness) has a significant negative direct effect on abnormal investment
+- Full coefficient results available in: `4_Outputs/5.8_H9_FinalMerge/2026-02-10_160505/h9_regression_results.csv`
 
 **Outcome:** H8 NOT SUPPORTED (interaction β₃ = -0.0000, p = 0.7574)
 
@@ -72,29 +84,3 @@ $$
 - **Frozen Constraint**: Only calls with start_date ≤ fiscal_year-end are included for each firm-year
 
 **All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**
-
----
-
-## Control Variable Coefficient Results
-
-### Primary Specification (Firm + Year FE, Firm-Clustered SE)
-
-| Variable | Coefficient | Std. Error | t-stat | p-value |
-|----------|-------------|-------------|---------|----------|
-| PRiskFY (β₁) | 0.0000 | 0.0001 | 0.42 | 0.6713 |
-| StyleFrozen (β₂) | -0.2245 | 0.1063 | -2.11 | 0.0348 ** (significant) |
-| PRiskFY × StyleFrozen (β₃) | -0.0000 | 0.0000 | -0.31 | 0.7574 |
-| ln_at_t | 0.0005 | 0.0014 | 0.38 | 0.703 |
-| lev_t | 0.0002 | 0.0030 | 0.08 | 0.936 |
-| cash_t | -0.0048 | 0.0108 | -0.44 | 0.658 |
-| roa_t | -0.0102 | 0.0140 | -0.73 | 0.466 |
-| mb_t | 0.0000 | 0.0003 | 0.00 | 0.998 |
-| SalesGrowth_t | 0.0000 | 0.0000 | 0.03 | 0.975 |
-
-**Notes:**
-- β₃ (interaction term) is the key hypothesis test coefficient: H8 expects β₃ ≠ 0
-- β₃ is essentially zero (p = 0.7574), indicating CEO style does NOT moderate PRisk → abnormal investment relationship
-- StyleFrozen (CEO vagueness) has a significant negative direct effect on abnormal investment
-- Full coefficient results available in: `4_Outputs/5.8_H9_FinalMerge/2026-02-10_160505/h9_regression_results.csv`
-
-**Note:** This hypothesis was originally H9 in the pipeline but is documented as H8 for consistency with the hypothesis numbering scheme (H8 takeover was removed from documentation).

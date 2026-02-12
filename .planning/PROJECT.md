@@ -95,6 +95,7 @@ The pipeline follows strict conventions from CLAUDE.md:
 - **Academic standards**: Documentation must meet journal/thesis replication package requirements
 - **Existing structure**: Must preserve current directory layout and naming conventions
 - **No mocks**: Real data only; never fabricate test data without explicit approval
+- **Model requirement**: ALL GSD agents must use Sonnet model only (no Opus, no Haiku) - set via model_profile="budget" in config.json
 
 ## Key Decisions
 
@@ -109,6 +110,7 @@ The pipeline follows strict conventions from CLAUDE.md:
 | Cancel robustness phases on null results | Scientifically inappropriate to pursue robustness for unsupported hypotheses | Phases 36-38 cancelled |
 | Abandon hypothesis suite discovery | Single hypothesis (H6) tested directly; remaining H7-H10 not pursued | Phase 41 abandoned |
 | Document null results | Null findings are valid scientific results; documented in VERIFICATION.md | All phases documented |
+| Sonnet-only model policy | Cost optimization and consistent performance; Opus/Haiku not needed | config.json: model_profile="budget" |
 
 ---
-*Last updated: 2026-02-06 (v2.0 concluded with null results)*
+*Last updated: 2026-02-11 (model policy: Sonnet-only for all GSD agents)*

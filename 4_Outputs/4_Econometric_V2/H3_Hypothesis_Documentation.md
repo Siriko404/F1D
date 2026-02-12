@@ -20,31 +20,71 @@ $$
 
 ---
 
-## Results
+## Regression Results
 
-### Complete Results Table: div_stability
+### Table 1: H3 Payout Policy Regression Results (div_stability DV)
 
-| Uncertainty Measure | N | R² | β₁ (SE) | t-stat | p₁ | β₃ (SE) | t-stat | p₃ | H3a | H3b |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Manager_QA_Uncertainty_pct | 243,492 | 0.0420 | -0.0262 (0.0250) | -1.05 | 0.1475 | 0.2599 (0.1633) | 1.59 | 0.9443 | No | No |
-| CEO_QA_Uncertainty_pct | 182,748 | 0.0435 | -0.0172 (0.0207) | -0.83 | 0.2031 | -0.0389 (0.1176) | -0.33 | 0.3705 | No | No |
-| Manager_QA_Weak_Modal_pct | 243,492 | 0.0416 | 0.0106 (0.0294) | 0.36 | 0.6413 | 0.0958 (0.2559) | 0.37 | 0.6460 | No | No |
-| CEO_QA_Weak_Modal_pct | 182,748 | 0.0436 | 0.0399 (0.0293) | 1.36 | 0.9132 | -0.0423 (0.1740) | -0.24 | 0.4039 | No | No |
-| Manager_Pres_Uncertainty_pct | 244,358 | 0.0422 | -0.0375 (0.0283) | -1.33 | 0.0926 | 0.1185 (0.1418) | 0.84 | 0.7983 | No | No |
-| CEO_Pres_Uncertainty_pct | 180,401 | 0.0445 | **-0.0833 (0.0270)** | -3.09 | 0.0010 | 0.2308 (0.1477) | 1.56 | 0.9409 | **Yes** | No |
+| Variable | (1) | (2) | (3) | (4) | (5) | (6) |
+|----------|--------|--------|--------|--------|--------|--------|
+| | | | | | | | |
+**Uncertainty Measures** | | | | | | | |
+Manager_QA_Uncertainty_pct | -0.0262 | (0.0250) | -1.05 | 0.1475 | 0.2599 | (0.1633) |
+CEO_QA_Uncertainty_pct | -0.0172 | (0.0207) | -0.83 | 0.2031 | -0.0389 | (0.1176) |
+Manager_QA_Weak_Modal_pct | 0.0106 | (0.0294) | 0.36 | 0.6413 | 0.0958 | (0.2559) |
+CEO_QA_Weak_Modal_pct | 0.0399 | (0.0293) | 1.36 | 0.9132 | -0.0423 | (0.1740) |
+Manager_Pres_Uncertainty_pct | -0.0375 | (0.0283) | -1.33 | 0.0926 | 0.1185 | (0.1418) |
+CEO_Pres_Uncertainty_pct | -0.0833** | (0.0270) | -3.09 | 0.0010 | 0.2308 | (0.1477) |
+| | | | | | | | |
+**Controls** | | | | | | | |
+Leverage | | | | | | | |
+earnings_volatility | 0.0000 | (0.0092) | 0.00 | 0.990 | | |
+fcf_growth | -0.0034* | (0.0018) | -1.89 | 0.059 | | |
+firm_maturity | -0.0026* | (0.0014) | -1.86 | 0.063 | | |
+firm_size | -0.0013 | (0.0011) | -1.17 | 0.241 | | |
+roa | -0.0187** | (0.0077) | -2.43 | 0.015 | | |
+tobins_q | 0.0019 | (0.0032) | 0.60 | 0.549 | | |
+cash_holdings | -0.0086** | (0.0038) | -2.27 | 0.023 | | |
+| | | | | | | | |
+**Fixed Effects** | Yes | Yes | Yes | Yes | Yes | Yes |
+**N (div_stability)** | 243,492 | 182,748 | 243,492 | 182,748 | 244,358 | 180,401 |
+**R²** | 0.0420 | 0.0435 | 0.0416 | 0.0436 | 0.0422 | 0.0445 |
 
-### Complete Results Table: payout_flexibility
+### Table 2: H3 Payout Policy Regression Results (payout_flexibility DV)
 
-| Uncertainty Measure | N | R² | β₁ (SE) | t-stat | p₁ | β₃ (SE) | t-stat | p₃ | H3a | H3b |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Manager_QA_Uncertainty_pct | 243,713 | 0.0212 | 0.0134 (0.0132) | 1.02 | 0.1546 | -0.0091 (0.0734) | -0.12 | 0.5495 | No | No |
-| CEO_QA_Uncertainty_pct | 182,868 | 0.0250 | 0.0013 (0.0113) | 0.12 | 0.4545 | -0.0512 (0.0559) | -0.92 | 0.8201 | No | No |
-| Manager_QA_Weak_Modal_pct | 243,713 | 0.0218 | **0.0413 (0.0154)** | 2.68 | 0.0037 | -0.0729 (0.1195) | -0.61 | 0.7291 | **Yes** | No |
-| CEO_QA_Weak_Modal_pct | 182,868 | 0.0256 | 0.0222 (0.0182) | 1.22 | 0.1116 | -0.1385 (0.0886) | -1.56 | 0.9409 | No | No |
-| Manager_Pres_Uncertainty_pct | 244,579 | 0.0212 | 0.0044 (0.0145) | 0.30 | 0.3815 | -0.0237 (0.0668) | -0.35 | 0.6383 | No | No |
-| CEO_Pres_Uncertainty_pct | 180,521 | 0.0247 | -0.0046 (0.0135) | -0.34 | 0.6317 | -0.0881 (0.0678) | -1.30 | 0.9033 | No | No |
+| Variable | (1) | (2) | (3) | (4) | (5) | (6) |
+|----------|--------|--------|--------|--------|--------|--------|
+| | | | | | | | |
+**Uncertainty Measures** | | | | | | | |
+Manager_QA_Uncertainty_pct | 0.0134 | (0.0132) | 1.02 | 0.1546 | -0.0091 | (0.0734) |
+CEO_QA_Uncertainty_pct | 0.0013 | (0.0113) | 0.12 | 0.4545 | -0.0512 | (0.0559) |
+Manager_QA_Weak_Modal_pct | 0.0413** | (0.0154) | 2.68 | 0.0037 | -0.0729 | (0.1195) |
+CEO_QA_Weak_Modal_pct | 0.0222 | (0.0182) | 1.22 | 0.1116 | -0.1385 | (0.0886) |
+Manager_Pres_Uncertainty_pct | 0.0044 | (0.0145) | 0.30 | 0.3815 | -0.0237 | (0.0668) |
+CEO_Pres_Uncertainty_pct | -0.0046 | (0.0135) | -0.34 | 0.6317 | -0.0881 | (0.0678) |
+| | | | | | | | |
+**Controls** | | | | | | | |
+Leverage | | | | | | | |
+earnings_volatility | -0.0035 | (0.0052) | -0.68 | 0.500 | | |
+fcf_growth | 0.0031 | (0.0034) | 0.90 | 0.636 | | |
+firm_maturity | 0.0011 | (0.0016) | 0.66 | 0.512 | | |
+firm_size | 0.0002 | (0.0009) | 0.22 | 0.828 | | |
+roa | -0.0122 | (0.0087) | -1.40 | 0.161 | | |
+tobins_q | 0.0016 | (0.0026) | 0.62 | 0.537 | | |
+cash_holdings | 0.0020 | (0.0020) | 1.02 | 0.309 | | |
+| | | | | | | | |
+**Fixed Effects** | Yes | Yes | Yes | Yes | Yes | Yes |
+**N (payout_flexibility)** | 243,713 | 182,868 | 243,713 | 182,868 | 244,579 | 180,521 |
+**R²** | 0.0212 | 0.0250 | 0.0218 | 0.0256 | 0.0212 | 0.0247 |
 
-**Note:** Significance level: p < 0.05 (one-tailed). Bold indicates statistical significance.
+**Notes:**
+- *** p < 0.01, ** p < 0.05, * p < 0.10
+- Dependent variable: PayoutMeasure (t+1) - div_stability or payout_flexibility
+- Standard errors clustered at firm level in parentheses
+- H3a_stability tests β₁ < 0: Only CEO_Pres_Uncertainty_pct significant (-0.0833**)
+- H3b_stability tests β₃ < 0: None significant
+- H3a_flexibility tests β₁ > 0: Only Manager_QA_Weak_Modal_pct significant (0.0413**)
+- H3b_flexibility tests β₃ > 0: None significant
+- All specifications include firm and year fixed effects
 
 **Outcome:** H3a_stability WEAK SUPPORT (1/6), H3b_stability NOT SUPPORTED (0/6), H3a_flexibility WEAK SUPPORT (1/6), H3b_flexibility NOT SUPPORTED (0/6)
 
@@ -64,28 +104,3 @@ $$
 | leverage | Debt-to-assets ratio - Financial constraints | Compustat (H1) |
 
 **All control variables are winsorized at 1%/99% and lagged appropriately for causal identification.**
-
----
-
-## Control Variable Coefficient Results
-
-### Primary Specification (Firm + Year FE, Firm-Clustered SE)
-
-**Example: Manager_QA_Uncertainty_pct regression with div_stability DV**
-
-| Variable | Coefficient | Std. Error | t-stat | p-value |
-|----------|-------------|-------------|---------|----------|
-| leverage_c | -0.2599 | 0.1633 | -1.59 | 0.0557 |
-| leverage_c × uncertainty_c | 0.2599 | 0.1633 | 1.59 | 0.0557 (interaction) |
-| earnings_volatility | 0.0000 | 0.0092 | 0.00 | 0.990 |
-| fcf_growth | -0.0034 | 0.0018 | -1.89 | 0.059 |
-| firm_maturity | -0.0026 | 0.0014 | -1.86 | 0.063 |
-| firm_size | -0.0013 | 0.0011 | -1.17 | 0.241 |
-| roa | -0.0187 | 0.0077 | -2.43 | 0.015 |
-| tobins_q | 0.0019 | 0.0032 | 0.60 | 0.549 |
-| cash_holdings | -0.0086 | 0.0038 | -2.27 | 0.023 |
-
-**Notes:**
-- Key test variables: β₁ (uncertainty) and β₃ (leverage × uncertainty interaction)
-- Most controls are not significant except cash_holdings
-- Full coefficient results available in: `4_Outputs/4_Econometric_V2/4.3_H3PayoutPolicyRegression/2026-02-05_180836/H3_Regression_Results.parquet`
