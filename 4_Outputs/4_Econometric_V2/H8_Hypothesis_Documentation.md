@@ -25,25 +25,36 @@ $$
 
 ### Table 1: H8 PRisk × CEO Style → Abnormal Investment
 
-| Variable | Coefficient | Std. Error | t-stat | p-value |
-|----------|-------------|-------------|---------|----------|
-| **Key Variables** | | | | |
-| PRiskFY (β₁) | 0.0000 | (0.0001) | 0.42 | 0.6713 |
-| StyleFrozen (β₂) | -0.2245** | (0.1063) | -2.11 | 0.0348 |
-| PRiskFY × StyleFrozen (β₃) | -0.0000 | (0.0000) | -0.31 | 0.7574 |
-| | | | | |
-| **Control Variables** | | | | |
-| Firm size (ln_at) | 0.0005 | (0.0014) | 0.38 | 0.703 |
-| Leverage | 0.0002 | (0.0030) | 0.08 | 0.936 |
-| Cash | -0.0048 | (0.0108) | -0.44 | 0.658 |
-| ROA | -0.0102 | (0.0140) | -0.73 | 0.466 |
-| Market-to-book | 0.0000 | (0.0003) | 0.00 | 0.998 |
-| Sales growth | 0.0000 | (0.0000) | 0.03 | 0.975 |
-| | | | | |
-| **Fixed Effects** | Firm+Year | | | |
-| **Observations** | 5,295 | | | |
-| **R² (overall)** | 0.0056 | | | |
-| **R² (within)** | 0.0089 | | | |
+| Variable | (1) |
+|----------|---------|
+| | **PRisk × CEO Style** |
+| | |
+| **Key Variables** | |
+| PRiskFY (β₁) | 0.0000 |
+| | (0.0001) |
+| StyleFrozen (β₂) | -0.2245** |
+| | (0.1063) |
+| PRiskFY × StyleFrozen (β₃) | -0.0000 |
+| | (0.0000) |
+| | |
+| **Control Variables** | |
+| Firm size (ln_at) | 0.0005 |
+| | (0.0014) |
+| Leverage | 0.0002 |
+| | (0.0030) |
+| Cash | -0.0048 |
+| | (0.0108) |
+| ROA | -0.0102 |
+| | (0.0140) |
+| Market-to-book | 0.0000 |
+| | (0.0003) |
+| Sales growth | 0.0000 |
+| | (0.0000) |
+| | |
+| **Fixed Effects** | Firm+Year |
+| **Observations** | 5,295 |
+| **R² (overall)** | 0.0056 |
+| **R² (within)** | 0.0089 |
 
 ### Table 2: Sample Construction
 

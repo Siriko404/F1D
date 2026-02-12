@@ -59,21 +59,44 @@ $$
 
 ### Table 3: Pre-trends Test
 
-| Variable | Coefficient | Std. Error | p-value | Significant |
-|---|---|---|---|---|
-| CCCL_{t+2} | -0.0910** | (0.0358) | 0.0118 | Yes |
-| CCCL_{t+1} | -0.0847** | (0.0405) | 0.0378 | Yes |
-| CCCL_t | -0.0514 | (0.0624) | 0.4079 | No |
+| Variable | (1) |
+|----------|---------|
+| | **Manager_QA_Uncertainty_pct** |
+| | |
+| CCCL_{t+2} | -0.0910** |
+| | (0.0358) |
+| CCCL_{t+1} | -0.0847** |
+| | (0.0405) |
+| CCCL_t | -0.0514 |
+| | (0.0624) |
+| | |
+| **Fixed Effects** | Firm+Year |
+| **Observations** | 22,273 |
+
+**Notes:**
+- *** p < 0.01, ** p < 0.05, * p < 0.10
+- Standard errors clustered at firm level in parentheses
+- CCCL_{t+2} p = 0.0118**, CCCL_{t+1} p = 0.0378**, CCCL_t p = 0.4079
 
 **Pre-trends test: FAILED** - Future CCCL effects are significant (violates parallel trends assumption)
 
 ### Table 4: H6-C Gap Analysis
 
-| Dependent Variable | Coefficient | Std. Error | t-stat | p-value | Supported |
-|---|---|---|---|---|---|
-| Uncertainty gap (QA - Pres) | -0.0791 | (0.1018) | -0.78 | 0.2186 | No |
+| Variable | (1) |
+|----------|---------|
+| | **Uncertainty Gap (QA - Pres)** |
+| | |
+| CCCL_{t-1} (β_CCCL) | -0.0791 |
+| | (0.1018) |
+| | |
+| **Fixed Effects** | Firm+Year |
+| **Observations** | 22,273 |
+| **p-value** | 0.2186 |
 
-**Notes:** Gap = (QA_Uncertainty - Pres_Uncertainty). H6-C expects β_CCCL < 0.
+**Notes:**
+- Gap = (QA_Uncertainty - Pres_Uncertainty)
+- H6-C expects β_CCCL < 0
+- Standard errors clustered at firm level in parentheses
 
 **Outcome:** H6-A NOT SUPPORTED (0/6 significant), H6-B NOT SUPPORTED, H6-C NOT SUPPORTED, Pre-trends FAILED
 
