@@ -79,7 +79,10 @@ Critical bug fixes, code organization, documentation, performance optimization, 
 4. Version management approach is documented (deprecation strategy, single active version)
 5. Archive and legacy code handling strategy is specified (where legacy lives, when to archive)
 
-**Plans**: TBD (determined during planning)
+**Plans:** 1 plan
+
+Plans:
+- [ ] 65-01-PLAN.md — Create ARCHITECTURE_STANDARD.md with folder structure, module organization, data directories, version management, and archive strategy
 
 ---
 
@@ -165,13 +168,13 @@ Phases execute in numeric order: 65 -> 66 -> 67 -> 68
 | v2.0 Hypothesis Testing | 28-58 | 17+ | Complete | 2026-02-06 |
 | v3.0 Codebase Cleanup | 59-63 | 21 | Complete | 2026-02-11 |
 | v4.0 Folder Consolidation | 64 | 5 | Complete | 2026-02-12 |
-| v5.0 Architecture Standard | 65-68 | TBD | In Progress | - |
+| v5.0 Architecture Standard | 65-68 | 1+ | In Progress | - |
 
 **v5.0 Phase Progress:**
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 65. Architecture Standard Foundation | 0/TBD | Not started | - |
+| 65. Architecture Standard Foundation | 0/1 | Ready to execute | - |
 | 66. Code Quality Standard | 0/TBD | Not started | - |
 | 67. Configuration & Testing Standard | 0/TBD | Not started | - |
 | 68. Documentation & Tooling Standard | 0/TBD | Not started | - |
