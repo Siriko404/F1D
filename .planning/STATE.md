@@ -84,13 +84,12 @@ Stopped at: Phase 64 complete - Output folder consolidation finished
 Resume file: .planning/phases/64-folder-structure-consolidation/64-05-SUMMARY.md
 
 **Next Action:**
-Continue with Phase 65 (Config-Driven I/O) to implement centralized configuration.
+User to define new milestone for Architecture Standard Definition. Phases 65-68 will be removed from v4.0 and replanned after architecture standard is defined.
 
 **v4.0 Summary:**
-- Milestone: Script Organization & Refactoring
-- Phases: 5 (64-68)
-- Requirements: 28 categories, 134 sub-requirements
-- Goal: Consistent patterns for folder structure, I/O, logging, and naming
+- Milestone: Folder Structure Consolidation (Phase 64 only)
+- Phases: 1 (64 complete, 65-68 pending architecture standard)
+- Goal: V3 folders merged into V2, repository consolidated
 
 ---
 
