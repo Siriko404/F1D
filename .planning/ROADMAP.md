@@ -11,7 +11,7 @@ Data processing pipeline for F1D thesis research. Milestones track major project
 - Completed **v3.0** Codebase Cleanup & Optimization (Phases 59-63) - shipped 2026-02-11
 - Completed **v4.0** Folder Structure Consolidation (Phase 64) - shipped 2026-02-12
 - Completed **v5.0** Architecture Standard Definition (Phases 65-68) - shipped 2026-02-13
-- **Next:** v6.0 Architecture Standard Implementation (planned)
+- **Active:** v6.0 Architecture Standard Implementation (Phases 69-74)
 
 ## Phases
 
@@ -51,17 +51,172 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 
 ---
 
-## Progress
+## v6.0 Architecture Standard Implementation (In Progress)
 
-| Milestone | Phases | Plans | Status | Shipped |
-|-----------|--------|-------|--------|---------|
-| v1.0 MVP | 1-27 | 143 | Complete | 2026-01-30 |
-| v2.0 Hypothesis Testing | 28-58 | 17+ | Complete | 2026-02-06 |
-| v3.0 Codebase Cleanup | 59-63 | 21 | Complete | 2026-02-11 |
-| v4.0 Folder Consolidation | 64 | 5 | Complete | 2026-02-12 |
-| v5.0 Architecture Standard | 65-68 | 4 | Complete | 2026-02-13 |
-| v6.0 Implementation | TBD | - | Planned | - |
+**Milestone Goal:** Implement all standards defined in v5.0 across the codebase, transforming the repository into a portfolio-ready, industry-standard Python package.
+
+**Target Outcomes:**
+- src-layout package structure with proper imports
+- Type-safe configuration via pydantic-settings
+- Structured logging with context binding
+- CI/CD pipeline with automated quality gates
+- Comprehensive test suite with tier-based coverage
+
+### Phase 69: Architecture Migration
+
+**Goal:** Codebase uses src-layout structure with organized data directories and module tier classification.
+
+**Depends on:** Phase 68 (Architecture Standard defined)
+
+**Requirements:** ARCH-01, ARCH-02, ARCH-03
+
+**Success Criteria** (what must be TRUE):
+1. All code imports work from `src/f1d/` package structure
+2. Every module has a documented tier classification (1/2/3) in its docstring
+3. Data directories are organized by lifecycle (raw/interim/processed/external)
+4. Existing scripts continue to run with zero behavioral changes
+
+**Plans:** TBD
+
+Plans:
+- [ ] 69-01: Migrate to src-layout structure
+- [ ] 69-02: Establish module tier classification
+- [ ] 69-03: Organize data directories by lifecycle
 
 ---
 
-*Roadmap updated: 2026-02-13 (v5.0 shipped, ready for v6.0 planning)*
+### Phase 70: Type Hints Implementation
+
+**Goal:** Codebase has comprehensive type hints with mypy enforcement matching tier requirements.
+
+**Depends on:** Phase 69 (Architecture Migration)
+
+**Requirements:** TYPE-01, TYPE-02, TYPE-03
+
+**Success Criteria** (what must be TRUE):
+1. All Tier 1 modules have 100% type hint coverage (mypy passes with strict mode)
+2. All Tier 2 modules have 80% type hint coverage (mypy passes with moderate mode)
+3. mypy configuration in pyproject.toml enforces tier-based strictness
+4. Type checker passes without errors on full codebase
+
+**Plans:** TBD
+
+Plans:
+- [ ] 70-01: Add type hints to Tier 1 modules
+- [ ] 70-02: Add type hints to Tier 2 modules
+- [ ] 70-03: Configure mypy with tier-based strictness
+
+---
+
+### Phase 71: Configuration System
+
+**Goal:** Configuration is type-safe, validated, and supports environment variable overrides.
+
+**Depends on:** Phase 70 (Type Hints)
+
+**Requirements:** CONF-01, CONF-02, CONF-03
+
+**Success Criteria** (what must be TRUE):
+1. All configuration loaded through pydantic-settings BaseSettings subclass
+2. Existing config/project.yaml settings migrated to typed settings classes
+3. Environment variables override settings without code changes
+4. Invalid configuration values raise clear validation errors
+
+**Plans:** TBD
+
+Plans:
+- [ ] 71-01: Implement pydantic-settings base configuration
+- [ ] 71-02: Migrate YAML settings to typed classes
+- [ ] 71-03: Add environment variable integration
+
+---
+
+### Phase 72: Structured Logging
+
+**Goal:** All logging is structured, JSON-formatted, with request/operation context binding.
+
+**Depends on:** Phase 71 (Configuration System)
+
+**Requirements:** LOGG-01, LOGG-02, LOGG-03
+
+**Success Criteria** (what must be TRUE):
+1. All scripts use structlog for logging (not standard logging module)
+2. Log entries include bound context (operation ID, script name, timing)
+3. Console output is human-readable (colored, formatted)
+4. File output is JSON-formatted for machine parsing
+5. Existing log files continue to be written with enhanced structure
+
+**Plans:** TBD
+
+Plans:
+- [ ] 72-01: Integrate structlog for structured logging
+- [ ] 72-02: Implement context binding for tracking
+- [ ] 72-03: Configure dual output (console/file)
+
+---
+
+### Phase 73: CI/CD Pipeline
+
+**Goal:** Automated quality gates run on every commit with matching pre-commit hooks.
+
+**Depends on:** Phase 72 (Structured Logging)
+
+**Requirements:** CICD-01, CICD-02, CICD-03
+
+**Success Criteria** (what must be TRUE):
+1. pyproject.toml contains all tool configurations (ruff, mypy, pytest)
+2. GitHub Actions workflow runs lint, type-check, and test on push/PR
+3. Pre-commit hooks match CI configuration exactly
+4. CI fails on any quality gate violation (lint errors, type errors, test failures)
+
+**Plans:** TBD
+
+Plans:
+- [ ] 73-01: Create pyproject.toml with consolidated configs
+- [ ] 73-02: Set up GitHub Actions workflow
+- [ ] 73-03: Configure pre-commit hooks
+
+---
+
+### Phase 74: Testing Infrastructure
+
+**Goal:** Comprehensive test suite with factory fixtures and tier-based coverage targets.
+
+**Depends on:** Phase 73 (CI/CD Pipeline)
+
+**Requirements:** TEST-01, TEST-02, TEST-03, TEST-04
+
+**Success Criteria** (what must be TRUE):
+1. pytest infrastructure established with conftest.py at package root
+2. Tier 1 modules have 90% test coverage (unit tests)
+3. Tier 2 modules have 80% test coverage (integration tests)
+4. Factory fixtures generate test data without fixture pyramids
+5. CI reports coverage numbers and fails below thresholds
+
+**Plans:** TBD
+
+Plans:
+- [ ] 74-01: Establish pytest infrastructure
+- [ ] 74-02: Add Tier 1 unit tests
+- [ ] 74-03: Add Tier 2 integration tests
+- [ ] 74-04: Implement factory fixtures
+
+---
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
+
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 69. Architecture Migration | v6.0 | 0/3 | Not started | - |
+| 70. Type Hints | v6.0 | 0/3 | Not started | - |
+| 71. Configuration System | v6.0 | 0/3 | Not started | - |
+| 72. Structured Logging | v6.0 | 0/3 | Not started | - |
+| 73. CI/CD Pipeline | v6.0 | 0/3 | Not started | - |
+| 74. Testing Infrastructure | v6.0 | 0/4 | Not started | - |
+
+---
+
+*Roadmap updated: 2026-02-13 (v6.0 roadmap created)*
