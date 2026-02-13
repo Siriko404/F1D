@@ -104,7 +104,10 @@ Plans:
 7. Error handling pattern (custom exceptions, no bare except) is documented
 8. Function size limits and module organization rules are specified
 
-**Plans**: TBD (determined during planning)
+**Plans:** 1 plan
+
+Plans:
+- [ ] 66-01-PLAN.md — Create CODE_QUALITY_STANDARD.md with naming conventions (NAM-01 to NAM-05) and code quality standards (CODE-01 to CODE-05)
 
 ---
 
@@ -175,7 +178,7 @@ Phases execute in numeric order: 65 -> 66 -> 67 -> 68
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 65. Architecture Standard Foundation | 1/1 | ✓ Complete | 2026-02-13 |
-| 66. Code Quality Standard | 0/TBD | Ready to plan | - |
+| 66. Code Quality Standard | 0/1 | Planned | - |
 | 67. Configuration & Testing Standard | 0/TBD | Not started | - |
 | 68. Documentation & Tooling Standard | 0/TBD | Not started | - |
 
