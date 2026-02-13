@@ -2,27 +2,27 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-12)
+See: .planning/PROJECT.md (updated 2026-02-13)
 
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
-**Current focus:** v5.0 Architecture Standard Definition - COMPLETE
+**Current focus:** v6.0 Architecture Standard Implementation
 
 ## Current Position
 
-Milestone: v5.0 Architecture Standard Definition - COMPLETE
-Phase: 68 of 68 (Documentation and Tooling Standard) - COMPLETE
-Plan: 01 of 01 complete
-Status: v5.0 Milestone complete - ready for v6.0 planning
-Last activity: 2026-02-13 - DOC_TOOLING_STANDARD.md created with 10 requirements
+Milestone: v6.0 Architecture Standard Implementation
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-13 — Milestone v6.0 started
 
 Progress: [212 plans completed across all milestones]
 
 ```
-Milestone Progress - v5.0 Architecture Standard Definition
-[============================================] 100% complete (Phase 68 of 68)
+Milestone Progress - v6.0 Architecture Standard Implementation
+[                                            ] 0% complete (Phase 69 pending)
 
-Phase: 68 - Documentation and Tooling Standard
-Status: Complete (68-01-SUMMARY.md created)
+Phase: —
+Status: Defining requirements
 ```
 
 ## Performance Metrics
@@ -97,4 +97,4 @@ Run `/gsd:plan-milestone` to begin planning v6.0 implementation phase.
 
 ---
 
-*Last updated: 2026-02-13 (68-01 complete - v5.0 milestone complete)*
+*Last updated: 2026-02-13 (v6.0 milestone started)*

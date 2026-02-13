@@ -8,23 +8,18 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: Planning v6.0 Architecture Standard Implementation
+## Current Milestone: v6.0 Architecture Standard Implementation
 
 **Previous:** v5.0 Architecture Standard Definition (COMPLETE 2026-02-13)
-**Goal:** Implement the standards defined in v5.0 across the codebase
+**Goal:** Implement all standards defined in v5.0 across the codebase
 
-**Standards defined (v5.0):**
-- `docs/ARCHITECTURE_STANDARD.md` — Folder structure, module tiers, version management
-- `docs/CODE_QUALITY_STANDARD.md` — Naming conventions, docstrings, type hints
-- `docs/CONFIG_TESTING_STANDARD.md` — Configuration, logging, testing patterns
-- `docs/DOC_TOOLING_STANDARD.md` — Documentation, CI/CD, linting configuration
-
-**Implementation deferred to v6.0+:**
-- Migrate to src-layout structure
-- Add comprehensive type hints per tier
-- Implement pydantic-settings configuration
+**Target features:**
+- Migrate to src-layout structure per ARCHITECTURE_STANDARD.md
+- Implement type hints per tier requirements (100% Tier 1, 80% Tier 2)
+- Implement pydantic-settings configuration per CONFIG_TESTING_STANDARD.md
 - Add structured logging with structlog
-- Set up CI/CD pipeline
+- Set up CI/CD pipeline per DOC_TOOLING_STANDARD.md
+- Add comprehensive test suite with tier-based coverage targets
 
 ## Requirements
 
@@ -198,4 +193,4 @@ When working on ANY regression or econometric code:
 | structlog | Structured JSON logging with context binding | ✓ Decided v5.0 |
 
 ---
-*Last updated: 2026-02-13 (v5.0 shipped, ready for v6.0 planning)*
+*Last updated: 2026-02-13 (v6.0 milestone started)*
