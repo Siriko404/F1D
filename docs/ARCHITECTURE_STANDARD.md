@@ -1382,6 +1382,389 @@ if __name__ == "__main__":
 
 ---
 
+## 5. Archive and Legacy Code (ARCH-05)
+
+This section defines the archive structure, conventions, and legacy code handling policies.
+
+### Archive Directory Structure
+
+```
+.___archive/
+├── legacy/                    # V1 scripts and deprecated code
+│   ├── 3_Financial/           # V1 financial scripts
+│   │   ├── script_31*.py
+│   │   └── ...
+│   ├── 4_Econometric/         # V1 econometric scripts
+│   │   ├── script_41*.py
+│   │   └── ...
+│   └── deprecated/            # Other deprecated code
+│       ├── 2024-01/
+│       └── 2024-02/
+│
+├── backups/                   # Backup files
+│   ├── *.bak
+│   ├── *_backup.py
+│   └── *_old.py
+│
+├── experiments/               # Abandoned experiments
+│   ├── alternative_sample/
+│   ├── new_uncertainty_measure/
+│   └── ...
+│
+├── docs/                      # Old documentation versions
+│   ├── v1_docs/
+│   ├── v2_docs/
+│   └── ...
+│
+├── README.md                  # Archive documentation
+├── ARCHIVED.md                # Detailed archive log
+└── manifest.json              # Machine-readable archive index
+```
+
+### When to Archive
+
+Code should be moved to archive when:
+
+| Reason | Description | Destination |
+|--------|-------------|-------------|
+| **Replaced** | Newer implementation exists and is active | `legacy/` |
+| **Deprecated** | Functionality no longer recommended | `legacy/deprecated/` |
+| **Experimental** | Experiment didn't pan out | `experiments/` |
+| **Backup** | Temporary backup files older than 30 days | `backups/` |
+| **Old docs** | Previous documentation versions | `docs/` |
+
+### Archive Conventions
+
+#### 1. Maintain Original Structure
+
+When archiving, preserve the original directory structure:
+
+```
+# BEFORE (active code)
+2_Scripts/3_Financial/
+├── script_31_filter_data.py
+├── script_32_construct_variables.py
+└── script_33_merge_data.py
+
+# AFTER (archived)
+.___archive/legacy/3_Financial/
+├── script_31_filter_data.py
+├── script_32_construct_variables.py
+└── script_33_merge_data.py
+```
+
+#### 2. Add ARCHIVED.md
+
+Every archived item must have an ARCHIVED.md explaining:
+
+```markdown
+# Archived: 3_Financial (V1)
+
+**Archive Date:** 2024-02-15
+**Original Location:** 2_Scripts/3_Financial/
+**Archive Location:** .___archive/legacy/3_Financial/
+
+## Reason for Archival
+
+Replaced by V2 implementation (src/f1d/financial/) which includes:
+- Improved variable construction
+- Better error handling
+- Comprehensive test coverage
+- Cleaner API
+
+## Active Replacement
+
+- **Location:** src/f1d/financial/
+- **Main module:** variables.py
+- **Import path:** from f1d.financial import construct_variables
+
+## Historical Context
+
+V1 financial scripts were created during v1.0 development (2023-2024).
+They served their purpose but accumulated technical debt and lacked
+proper testing. V2 was created as a clean rewrite following the
+new architecture standard.
+
+## Reproducibility
+
+To reproduce results using V1 scripts:
+1. Check out git tag: v4.0.0
+2. Navigate to 2_Scripts/3_Financial/
+3. Run scripts in order: 31 -> 32 -> 33
+
+**Warning:** V1 scripts are not maintained. Use for reference only.
+
+## Key Files
+
+- `script_31_filter_data.py` - Initial data filtering
+- `script_32_construct_variables.py` - Variable construction
+- `script_33_merge_data.py` - Final merge
+
+## Known Issues
+
+- Missing null checks in script_32
+- Hardcoded paths in script_31
+- No unit tests
+```
+
+#### 3. Update manifest.json
+
+```json
+{
+  "manifest_version": "1.0",
+  "last_updated": "2024-02-15T10:30:00Z",
+  "archived_items": [
+    {
+      "id": "legacy-3-financial",
+      "original_path": "2_Scripts/3_Financial/",
+      "archive_path": "legacy/3_Financial/",
+      "date_archived": "2024-02-15",
+      "archived_by": "developer",
+      "reason": "Replaced by V2 implementation",
+      "replacement_path": "src/f1d/financial/",
+      "git_tag": "v4.0.0",
+      "notes": "V1 financial scripts - functional but superseded"
+    },
+    {
+      "id": "deprecated-old-utility",
+      "original_path": "src/f1d/shared/old_utility.py",
+      "archive_path": "legacy/deprecated/2024-02/old_utility.py",
+      "date_archived": "2024-02-20",
+      "archived_by": "developer",
+      "reason": "Deprecated - use new_utility.py instead",
+      "replacement_path": "src/f1d/shared/new_utility.py",
+      "deprecated_version": "5.1.0",
+      "removed_version": "6.0.0",
+      "notes": "Had performance issues, replaced with optimized version"
+    },
+    {
+      "id": "experiment-alternative-sample",
+      "original_path": "experiments/alternative_sample/",
+      "archive_path": "experiments/alternative_sample/",
+      "date_archived": "2024-01-10",
+      "archived_by": "developer",
+      "reason": "Experiment did not improve results",
+      "replacement_path": null,
+      "notes": "Alternative sampling approach - tested but abandoned"
+    }
+  ],
+  "statistics": {
+    "total_items": 3,
+    "by_category": {
+      "legacy": 1,
+      "deprecated": 1,
+      "experiments": 1
+    }
+  }
+}
+```
+
+### Legacy Code Policy
+
+#### Access Rules
+
+| Action | Allowed | Conditions |
+|--------|---------|------------|
+| Read archived code | Yes | Reference and reproducibility |
+| Run archived code | Yes | Check out appropriate git tag first |
+| Modify archived code | No | Archive is read-only |
+| Import archived code | No | Use active replacement |
+| Delete archived code | No | Git tracks history, archive preserves |
+
+#### Reference Guidelines
+
+When referencing legacy code:
+
+1. **For reproducibility verification:**
+   ```python
+   # To verify old results match new implementation
+   # 1. Check out git tag v4.0.0
+   # 2. Run legacy script: 2_Scripts/3_Financial/script_32_construct_variables.py
+   # 3. Compare output with new: src/f1d/financial/variables.py
+   ```
+
+2. **For understanding history:**
+   ```markdown
+   # In documentation
+   The variable construction approach evolved from V1 (see `.___archive/legacy/3_Financial/`)
+   to V2 (see `src/f1d/financial/`) with improved handling of missing values.
+   ```
+
+3. **Never for new work:**
+   ```python
+   # BAD: Importing from archive
+   import sys
+   sys.path.insert(0, '.___archive/legacy/3_Financial')
+   from script_32 import construct_variables  # NO!
+
+   # GOOD: Use active implementation
+   from f1d.financial import construct_variables
+   ```
+
+### Archive Maintenance
+
+#### Regular Cleanup
+
+**Monthly:** Review `backups/` directory
+
+```bash
+# Remove backup files older than 30 days
+find .___archive/backups/ -name "*.bak" -mtime +30 -delete
+find .___archive/backups/ -name "*_backup.py" -mtime +30 -delete
+```
+
+**Quarterly:** Review `experiments/` directory
+
+```bash
+# Check if any experiments should be documented or removed
+ls -la .___archive/experiments/
+
+# Update ARCHIVED.md for experiments that have conclusions
+```
+
+**Annually:** Review entire archive
+
+```bash
+# Audit archive manifest
+python scripts/audit_archive.py
+
+# Check for items that can be removed (after major version bump)
+# Note: Never remove during active major version
+```
+
+### Backup File Handling
+
+#### Automatic Backup Detection
+
+Files matching these patterns should be moved to `.___archive/backups/`:
+
+- `*.bak`
+- `*_backup.py`
+- `*_old.py`
+- `*.backup`
+- `*~` (editor backups)
+
+#### Backup Script
+
+```python
+# scripts/cleanup_backups.py
+"""Move backup files to archive."""
+
+import shutil
+from pathlib import Path
+from datetime import datetime
+
+BACKUP_PATTERNS = ["*.bak", "*_backup.py", "*_old.py", "*.backup"]
+ARCHIVE_DIR = Path(".___archive/backups")
+
+def archive_backups(root_dir: Path, dry_run: bool = False):
+    """Move backup files to archive directory."""
+    for pattern in BACKUP_PATTERNS:
+        for backup_file in root_dir.rglob(pattern):
+            # Skip if already in archive
+            if ".___archive" in str(backup_file):
+                continue
+
+            # Create dated subdirectory
+            date_dir = ARCHIVE_DIR / datetime.now().strftime("%Y-%m")
+            date_dir.mkdir(parents=True, exist_ok=True)
+
+            dest = date_dir / backup_file.name
+
+            if dry_run:
+                print(f"Would move: {backup_file} -> {dest}")
+            else:
+                shutil.move(str(backup_file), str(dest))
+                print(f"Archived: {backup_file} -> {dest}")
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+
+    archive_backups(Path("."), dry_run=args.dry_run)
+```
+
+### Experiment Archival
+
+When archiving an experiment:
+
+#### 1. Document the Experiment
+
+```markdown
+# Experiment: Alternative Sample Construction
+
+**Status:** Abandoned
+**Date:** 2024-01-10
+**Duration:** 2 weeks
+
+## Goal
+
+Test alternative sampling approach using propensity score matching
+instead of the current industry-size matching.
+
+## Results
+
+- **Sample size:** Reduced by 15%
+- **Balance:** Improved on observables
+- **Results:** No significant change in main coefficients
+- **Decision:** Not worth the complexity and sample size reduction
+
+## Lessons Learned
+
+1. PSM requires more careful specification than expected
+2. Industry-size matching is "good enough" for our purposes
+3. Sample size is more valuable than marginal balance improvement
+
+## Files
+
+- `alternative_matching.py` - Main experiment script
+- `results/` - Experiment outputs
+- `notes.md` - Development notes
+
+## Recommendation
+
+Keep current industry-size matching approach. The complexity of PSM
+doesn't justify the marginal improvement in balance.
+```
+
+#### 2. Clean Up Working Directory
+
+```bash
+# Move experiment to archive
+mv experiments/alternative_sample .___archive/experiments/
+
+# Update manifest
+python scripts/update_archive_manifest.py
+```
+
+### Rationale
+
+#### Why Archive Instead of Delete?
+
+1. **Reproducibility:** May need to verify old results
+2. **Historical value:** Shows evolution of approach
+3. **Learning opportunity:** Future developers can see what was tried
+4. **Git is not enough:** Archive explicitly marks code as non-active
+5. **Safe recovery:** Can restore if needed
+
+#### Why Maintain Structure?
+
+1. **Findability:** Easy to locate specific archived code
+2. **Context preservation:** Directory structure provides context
+3. **Minimal disruption:** Original code still works (in archived state)
+4. **Clear boundaries:** Archive is obviously separate from active code
+
+#### Why manifest.json?
+
+1. **Machine readable:** Tools can query archive status
+2. **Searchability:** Easy to find archived items by metadata
+3. **Audit trail:** Track what was archived when and why
+4. **Statistics:** Monitor archive growth and categories
+
+---
+
 ## References
 
 - [Python Packaging Authority - src-layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
