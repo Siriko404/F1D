@@ -34,14 +34,15 @@ Date: 2026-02-11
 
 import logging
 import time
+from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Iterator, List, Optional, Union
+from typing import Any, Callable, Dict, Iterator, List, Optional, TypeVar, Union, overload
 
 import pandas as pd
 import psutil
 import pyarrow as pa
 import pyarrow.parquet as pq
-import yaml  # type: ignore[import-untyped]
+import yaml
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -239,7 +240,10 @@ def process_in_chunks(
             return results
 
 
-def track_memory_usage(operation_name: str):
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def track_memory_usage(operation_name: str) -> Callable[[F], F]:
     """
     Decorator to track memory usage and timing of an operation.
 
@@ -249,14 +253,16 @@ def track_memory_usage(operation_name: str):
         operation_name: Name of operation being tracked
 
     Returns:
-        Dict with keys: result, memory_mb (start/end/peak/delta), timing_seconds
+        Decorated function that returns Dict with keys: result, memory_mb
+        (start/end/peak/delta), timing_seconds
 
     Ref: 15-RESEARCH.md Pattern 5 (Memory Monitoring Integration)
     Builds on Phase 12's get_process_memory_mb() pattern (see 12-01-SUMMARY.md)
     """
 
-    def decorator(func):
-        def wrapper(*args, **kwargs):
+    def decorator(func: F) -> F:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Dict[str, Any]:
             process = psutil.Process()
             mem_start = process.memory_info().rss / (1024 * 1024)
             start_time = time.perf_counter()
@@ -277,7 +283,7 @@ def track_memory_usage(operation_name: str):
                 "timing_seconds": end_time - start_time,
             }
 
-        return wrapper
+        return wrapper  # type: ignore[return-value]
 
     return decorator
 
@@ -359,7 +365,7 @@ class MemoryAwareThrottler:
 
         return recommended
 
-    def log_memory_status(self, operation_name: str):
+    def log_memory_status(self, operation_name: str) -> None:
         """
         Log current memory status for observability.
 

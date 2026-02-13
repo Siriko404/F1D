@@ -80,7 +80,7 @@ def run_fixed_effects_ols(
     return model
 
 
-def extract_ceo_fixed_effects(model, ceo_col: str = "ceo_id") -> pd.Series:
+def extract_ceo_fixed_effects(model: Any, ceo_col: str = "ceo_id") -> pd.Series:
     """
     Extract CEO fixed effects from fitted model.
 

@@ -325,7 +325,7 @@ def make_iv_table(
     model_names: List[str],
     include_first_stage: bool = True,
     include_hansen_j: bool = True,
-    **kwargs,
+    **kwargs: Any,
 ) -> str:
     """Generate LaTeX table specialized for IV regression results.
 
