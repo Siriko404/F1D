@@ -27,7 +27,7 @@ Date: 2026-02-11
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Collection
 
 import numpy as np
 import pandas as pd
@@ -535,7 +535,7 @@ def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
         - speaker_coverage: {percent_with_speaker_data: float, speaker_record_distribution}
         - processing_lag_stats: {mean_hours, median_hours, min_hours, max_hours}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Company coverage
     if "company_id" in df.columns:
@@ -584,6 +584,7 @@ def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
             median_quality = quality_scores.median()
 
             # Create histogram buckets
+            histogram: Dict[str, Any] = {}
             try:
                 min_score = quality_scores.min()
                 max_score = quality_scores.max()
@@ -677,7 +678,7 @@ def compute_linking_input_stats(
         - coverage_metrics: {permno_coverage_pct, cusip_coverage_pct,
                              ticker_coverage_pct, name_coverage_pct}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Input metadata characteristics
     stats["input_metadata"] = {
@@ -783,7 +784,7 @@ def compute_linking_process_stats(
         - link_quality_distribution: {quality_100_count, quality_90_count, quality_80_count}
         - link_method_distribution: {permno_date_count, cusip8_date_count, name_fuzzy_count}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Get tier counts from stats_dict (populated by main execution)
     tier1_matched = stats_dict.get("linking", {}).get("tier1_matched", 0)
@@ -896,7 +897,7 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
         - quality_metrics: {avg_link_quality, link_quality_by_method: {method: avg_quality}}
         - temporal_coverage: {earliest_date: ISO, latest_date: ISO} (if date column exists)
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     total_calls = len(df_linked)
 
@@ -1023,7 +1024,7 @@ def collect_fuzzy_match_samples(
         - borderline: List of borderline fuzzy matches (92-95)
         Each sample contains: company_id, company_name, conm (matched name), score, gvkey, sic
     """
-    samples = {"high_score": [], "borderline": []}
+    samples: Dict[str, List[Dict[str, Any]]] = {"high_score": [], "borderline": []}
 
     # Filter for fuzzy matches
     fuzzy_mask = unique_df["link_method"] == "name_fuzzy"
@@ -1111,7 +1112,7 @@ def collect_tier_match_samples(
     """
     import random
 
-    samples = {"tier1": [], "tier2": []}
+    samples: Dict[str, List[Dict[str, Any]]] = {"tier1": [], "tier2": []}
 
     # Set random seed for deterministic sampling
     random.seed(42)
@@ -1198,7 +1199,7 @@ def collect_unmatched_samples(
     # Set random seed for deterministic sampling
     random.seed(42)
 
-    samples = []
+    samples: List[Dict[str, Any]] = []
 
     # Find unmatched companies (gvkey is NaN in unique_df)
     unmatched_mask = unique_df["gvkey"].isna()
@@ -1365,7 +1366,7 @@ def compute_tenure_input_stats(
         - ceo_indicators: {ceoann_ceo_count, becameceo_nonnull_count}
         - name_coverage: {exec_fullname_available_pct}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Overall Execucomp characteristics
     stats["overall_execucomp"] = {
@@ -1464,7 +1465,7 @@ def compute_tenure_process_stats(episodes_df: pd.DataFrame) -> Dict[str, Any]:
         - predecessor_linking: {linked_count, orphan_count, link_rate_pct}
         - date_validity: {future_dates, end_before_start, active_ceo_count}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Ensure datetime columns
     if "start_date" in episodes_df.columns:
@@ -1602,7 +1603,7 @@ def compute_tenure_output_stats(monthly_df: pd.DataFrame) -> Dict[str, Any]:
         - multi_ceo_analysis: {firms_with_multiple_ceos, max_ceos_per_firm}
         - ceo_careers: {ceos_multiple_firms, ceos_multiple_episodes_same_firm}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Panel dimensions
     total_firm_months = len(monthly_df)
@@ -1754,7 +1755,7 @@ def collect_tenure_samples(
         - transitions: List of CEO transition examples
         - overlaps: List of overlap resolution examples
     """
-    samples = {
+    samples: Dict[str, List[Dict[str, Any]]] = {
         "short_tenures": [],
         "long_tenures": [],
         "transitions": [],
@@ -1932,7 +1933,7 @@ def compute_manifest_input_stats(
         - industry_coverage: {ff12_count, ff48_count}
         - temporal_coverage: {year_range: {earliest, latest}, call_count_per_year}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Linked metadata characteristics
     stats["linked_metadata"] = {
@@ -2039,7 +2040,7 @@ def compute_manifest_process_stats(
         - ceo_filtering: {total_ceos_before_filter, ceos_above_threshold,
                          ceos_dropped, threshold_value, calls_dropped}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Merge outcome
     left_rows = len(df_metadata)
@@ -2171,7 +2172,7 @@ def compute_manifest_output_stats(df_final: pd.DataFrame) -> Dict[str, Any]:
         - temporal_coverage: [{year, call_count, unique_firms, unique_ceos}]
         - predecessor_coverage: {pct_with_prev_ceo, pct_without_prev_ceo}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Panel dimensions
     total_calls = len(df_final)
@@ -2401,7 +2402,7 @@ def collect_ceo_distribution_samples(
             round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
         )
 
-        samples["top_ceos"].append(
+        samples["top_ceos"].append(  # type: ignore[attr-defined]
             {
                 "ceo_id": str(ceo_id),
                 "ceo_name": ceo_name,
@@ -2491,7 +2492,7 @@ def compute_tokenize_input_stats(
     """
     import numpy as np
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Manifest analysis
     stats["manifest_stats"] = {
@@ -2629,7 +2630,7 @@ def compute_tokenize_process_stats(
     """
     import numpy as np
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Volume metrics
     total_input_rows = sum(s.get("input_rows", 0) for s in per_year_stats)
@@ -2764,7 +2765,7 @@ def compute_tokenize_output_stats(
 
     df_all = pd.concat(output_dfs, ignore_index=True)
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Category distributions
     stats["category_distributions"] = {}
@@ -2923,7 +2924,7 @@ def compute_constructvariables_input_stats(
         - total_tokens_available: Sum of total_tokens across all input files
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Tokenized files analysis
     stats["tokenized_files_stats"] = {
@@ -3026,7 +3027,7 @@ def compute_constructvariables_process_stats(
                               variables_per_second}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Speaker flagging metrics
     total_flagged = sum(total_speaker_flags.values())
@@ -3153,7 +3154,7 @@ def compute_constructvariables_output_stats(
     # Concatenate all output DataFrames for analysis
     df_all = pd.concat(output_dfs, ignore_index=True)
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Identify all variable columns (sample_context_category_pct format)
     var_cols = [c for c in df_all.columns if c.endswith("_pct")]
@@ -3318,7 +3319,7 @@ def compute_financial_input_stats(
                        intensity_variants_available} (if provided)
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Manifest statistics
     stats["manifest_stats"] = {
@@ -3467,7 +3468,7 @@ def compute_financial_process_stats(
     """
     import numpy as np
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Merge outcomes
     stats["merge_outcomes"] = {}
@@ -3552,7 +3553,7 @@ def compute_financial_output_stats(
         - cross_sectional_stats: {variable_name: {std_by_year, year_range}}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Variable distributions
     stats["variable_distributions"] = {}
@@ -3657,7 +3658,7 @@ def compute_market_input_stats(
         - ccm_stats: {total_links, unique_gvkey, unique_lpermno, date_coverage}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Manifest statistics
     stats["manifest_stats"] = {
@@ -3786,7 +3787,7 @@ def compute_market_process_stats(
         - efficiency_metrics: {calls_processed, duration_seconds, years_processed}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Coverage aggregation
     total_calls = sum(s.get("calls", 0) for s in per_year_stats)
@@ -3874,7 +3875,7 @@ def compute_market_output_stats(
         - volatility_stats: {mean, median, std, percentiles}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Variable distributions
     stats["variable_distributions"] = {}
@@ -4043,7 +4044,7 @@ def compute_event_flags_input_stats(
         - matching_potential: {manifest_with_cusip_in_sdc: count, pct}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Manifest statistics
     stats["manifest_stats"] = {
@@ -4156,7 +4157,7 @@ def compute_event_flags_process_stats(
         - efficiency_metrics: {calls_processed, events_detected, duration_seconds}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Takeover detection
     event_rate = (
@@ -4246,7 +4247,7 @@ def compute_event_flags_output_stats(
         - yearly_analysis: {year: {takeover_count, takeover_pct, avg_duration}}
     """
 
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     total_calls = len(df_output)
 
@@ -4546,7 +4547,7 @@ def compute_step32_input_stats(
         - permno_coverage_stats: {direct_permno_count, ccm_fallback_count, coverage_rate}
     """
     # Analyze manifest
-    stats = {}
+    stats: Dict[str, Any] = {}
     stats["manifest_stats"] = {
         "total_records": int(len(manifest_with_permno_df)),
     }
@@ -4646,7 +4647,7 @@ def compute_step32_process_stats(
         - coverage_trends: {by_year: {stock_ret_pct, amihud_pct}}
         - data_quality_by_year: {missing_data_patterns}
     """
-    stats = {}
+    stats: Dict[str, Any] = {}
 
     # Aggregate per-year statistics
     total_records = 0
