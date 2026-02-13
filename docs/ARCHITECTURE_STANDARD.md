@@ -795,6 +795,301 @@ from f1d.shared.path_utils import (
 
 ---
 
+## 3. Data Directory Structure (ARCH-03)
+
+This section defines the data directory organization and mutability rules following Cookiecutter Data Science conventions.
+
+### Data Lifecycle Stages
+
+The `data/` directory is organized by data processing stage:
+
+```
+data/
+├── raw/           # Original immutable data (NEVER MODIFY)
+│   ├── transcripts/      # Raw earnings call transcripts
+│   ├── compustat/        # Compustat fundamental data
+│   ├── crsp/             # CRSP stock returns
+│   └── ibes/             # IBES analyst forecasts
+│
+├── interim/       # Intermediate processing (CAN REGENERATE)
+│   ├── sample/           # Sample construction intermediates
+│   ├── text/             # Text processing intermediates
+│   └── financial/        # Financial variable intermediates
+│
+├── processed/     # Final cleaned data (SOURCE FOR ANALYSIS)
+│   ├── manifest/         # Final analyst-CEO manifest
+│   ├── uncertainty/      # Final uncertainty measures
+│   └── variables/        # Final financial variables
+│
+└── external/      # Third-party reference data
+    ├── ff_factors/       # Fama-French factors
+    ├── gvkey_cik/        # GVKEY-CIK mapping
+    └── sic_codes/        # SIC code definitions
+```
+
+### Mutability Rules
+
+#### data/raw/ - READ ONLY
+
+**Purpose:** Original immutable data from external sources
+
+**Rules:**
+- NEVER modify files in this directory
+- NEVER delete files without archiving
+- NEVER overwrite existing files
+- All files should have original timestamps
+- Document data sources in `data/raw/README.md`
+
+**Git:** Partially tracked (small reference files only, large data gitignored)
+
+**Example structure:**
+```
+data/raw/
+├── README.md                    # Data sources documentation
+├── transcripts/
+│   ├── 2024-01-15_download.log  # Download metadata
+│   └── earnings_calls_2010_2023.parquet
+├── compustat/
+│   ├── 2024-01-10_download.log
+│   └── compustat_annual_2000_2023.parquet
+└── crsp/
+    ├── 2024-01-10_download.log
+    └── crsp_daily_2000_2023.parquet
+```
+
+#### data/interim/ - DELETABLE
+
+**Purpose:** Intermediate processing stages that can be regenerated
+
+**Rules:**
+- Files can be deleted and regenerated from raw data
+- Use dated subdirectories for versioning
+- Document what each file contains
+- Not source of truth - can be cleaned up
+
+**Git:** Ignored (regenerable)
+
+**Example structure:**
+```
+data/interim/
+├── sample/
+│   ├── 2024-01-15/
+│   │   ├── step1_initial_filter.parquet
+│   │   ├── step2_ceo_match.parquet
+│   │   └── step3_analyst_link.parquet
+│   └── 2024-01-20/
+│       └── ... (updated version)
+└── text/
+    ├── 2024-01-16/
+    │   ├── tokenized_transcripts.parquet
+    │   └── uncertainty_scores.parquet
+    └── ...
+```
+
+#### data/processed/ - CONTROLLED
+
+**Purpose:** Final cleaned datasets used for analysis
+
+**Rules:**
+- These are the source of truth for analysis
+- Changes require documentation and versioning
+- Use dated subdirectories for versioning
+- Changes should go through review process
+
+**Git:** Partially tracked (final datasets tracked, intermediate ignored)
+
+**Example structure:**
+```
+data/processed/
+├── manifest/
+│   ├── 2024-01-20/
+│   │   ├── manifest_final.parquet      # Final manifest
+│   │   ├── manifest_summary.yaml       # Summary statistics
+│   │   └── VALIDATION.md               # Validation report
+│   └── 2024-01-25/
+│       └── ... (updated version)
+├── uncertainty/
+│   └── 2024-01-22/
+│       ├── ceo_uncertainty.parquet
+│       └── uncertainty_summary.yaml
+└── variables/
+    └── 2024-01-24/
+        ├── financial_variables.parquet
+        └── variables_summary.yaml
+```
+
+#### data/external/ - REFERENCE
+
+**Purpose:** Third-party reference data not from primary sources
+
+**Rules:**
+- Document source and version
+- Include license information if applicable
+- Don't modify external data files
+- Update with explicit process
+
+**Git:** Tracked (usually small reference files)
+
+**Example structure:**
+```
+data/external/
+├── README.md                    # External data sources
+├── ff_factors/
+│   ├── README.md
+│   └── fama_french_3factor.csv
+├── gvkey_cik/
+│   ├── README.md
+│   └── gvkey_cik_mapping.csv
+└── sic_codes/
+    ├── README.md
+    └── sic_definitions.csv
+```
+
+### Results Directory Structure
+
+The `results/` directory contains analysis outputs:
+
+```
+results/
+├── figures/                  # Generated visualizations
+│   ├── uncertainty/
+│   │   ├── uncertainty_distribution.png
+│   │   └── uncertainty_over_time.png
+│   ├── regressions/
+│   │   ├── coefficient_plot.png
+│   │   └── residual_diagnostic.png
+│   └── descriptive/
+│       └── sample_composition.png
+│
+├── tables/                   # Generated tables
+│   ├── descriptive/
+│   │   ├── sample_stats.tex
+│   │   ├── sample_stats.csv
+│   │   └── variable_definitions.tex
+│   ├── regressions/
+│   │   ├── main_results.tex
+│   │   ├── main_results.csv
+│   │   └── robustness.tex
+│   └── correlations/
+│       └── correlation_matrix.csv
+│
+└── reports/                  # Generated reports
+    ├── 2024-01-30_analysis/
+    │   ├── analysis_summary.md
+    │   ├── full_report.pdf
+    │   └── supplementary_materials/
+    └── ...
+```
+
+### Current-to-Target Mapping
+
+The following table shows how current directories map to the target structure:
+
+| Current Location | Target Location | Content | Action Required |
+|------------------|-----------------|---------|-----------------|
+| `1_Inputs/` | `data/raw/` | Original data files | Move and document |
+| `4_Outputs/` (intermediate) | `data/interim/` | Processing intermediates | Move and organize |
+| `4_Outputs/` (final datasets) | `data/processed/` | Final cleaned data | Move and version |
+| `4_Outputs/` (figures) | `results/figures/` | Generated plots | Move |
+| `4_Outputs/` (tables) | `results/tables/` | Generated tables | Move |
+| `4_Outputs/` (reports) | `results/reports/` | Generated reports | Move |
+| `3_Logs/` | `logs/` | Execution logs | Move |
+
+### Data Documentation Requirements
+
+Every data directory MUST have a README.md documenting:
+
+#### For data/raw/:
+```markdown
+# Raw Data Sources
+
+## transcripts/
+- **Source:** Thomson Reuters StreetEvents
+- **Date Downloaded:** 2024-01-15
+- **Date Range:** 2010-2023
+- **Records:** 125,000 earnings calls
+- **Format:** Parquet
+
+## compustat/
+- **Source:** Compustat Annual
+- **Date Downloaded:** 2024-01-10
+- **Date Range:** 2000-2023
+- **Records:** 150,000 firm-years
+- **Format:** Parquet
+```
+
+#### For data/processed/:
+```markdown
+# Processed Data: manifest/2024-01-20
+
+## manifest_final.parquet
+- **Records:** 45,000 analyst-CEO pairs
+- **Variables:** analyst_id, ceo_id, gvkey, year, transcript_id
+- **Source Script:** src/f1d/sample/build_manifest.py
+- **Validation:** Passed all checks (see VALIDATION.md)
+- **Created:** 2024-01-20 14:32:00
+
+## Lineage
+1. Raw data: data/raw/transcripts/, data/raw/compustat/, data/raw/crsp/
+2. Interim: data/interim/sample/2024-01-15/
+3. Processing: Step 1 (filter) -> Step 2 (match) -> Step 3 (link)
+```
+
+### File Naming Conventions
+
+#### For data files:
+- Use lowercase with underscores: `ceo_uncertainty.parquet`
+- Include date for versioned files: `manifest_2024-01-20.parquet`
+- Use descriptive names: NOT `data1.parquet`, `new_data.parquet`
+
+#### For dated directories:
+- Use ISO format: `YYYY-MM-DD` (e.g., `2024-01-20`)
+- This ensures proper sorting
+- Represents the date of creation, not data coverage
+
+### Data File Formats
+
+#### Preferred Formats:
+| Use Case | Format | Why |
+|----------|--------|-----|
+| Tabular data | Parquet | Efficient, preserves types, compressed |
+| Small reference | CSV | Human readable, widely compatible |
+| Configuration | YAML | Human readable, structured |
+| Documentation | Markdown | Human readable, version controllable |
+
+#### Avoid:
+- Excel files (except for final deliverables)
+- Pickle files (security risk, version dependent)
+- JSON for large datasets (inefficient)
+- Proprietary formats
+
+### Rationale
+
+#### Why Separate Raw/Interim/Processed?
+
+1. **Immutability of raw data**: Never lose original data
+2. **Reproducibility**: Can always regenerate from raw
+3. **Clear lineage**: Know which data is source of truth
+4. **Storage efficiency**: Interim can be deleted when needed
+
+**Source:** [Cookiecutter Data Science - Data Organization](https://drivendata.co/blog/ccds-v2)
+
+#### Why Dated Subdirectories?
+
+1. **Versioning**: Clear history of data versions
+2. **Rollback**: Can use previous version if needed
+3. **Auditability**: Know when data was created
+4. **Sorting**: ISO format ensures chronological order
+
+#### Why Separate results/ from data/?
+
+1. **Different purpose**: data/ is input, results/ is output
+2. **Different git treatment**: results always gitignored
+3. **Clear semantics**: Analysts know where to find outputs
+4. **Industry standard**: Cookiecutter uses this pattern
+
+---
+
 ## References
 
 - [Python Packaging Authority - src-layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
