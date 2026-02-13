@@ -76,12 +76,12 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 3. Data directories are organized by lifecycle (raw/interim/processed/external)
 4. Existing scripts continue to run with zero behavioral changes
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 69-01: Migrate to src-layout structure
-- [ ] 69-02: Establish module tier classification
-- [ ] 69-03: Organize data directories by lifecycle
+- [ ] 69-01-PLAN.md — Migrate to src-layout structure (Wave 1)
+- [ ] 69-02-PLAN.md — Migrate stage scripts and establish tier classification (Wave 2)
+- [ ] 69-03-PLAN.md — Organize data directories by lifecycle (Wave 3)
 
 ---
 
@@ -210,7 +210,7 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 69. Architecture Migration | v6.0 | 0/3 | Not started | - |
+| 69. Architecture Migration | v6.0 | 3/3 | Ready to execute | - |
 | 70. Type Hints | v6.0 | 0/3 | Not started | - |
 | 71. Configuration System | v6.0 | 0/3 | Not started | - |
 | 72. Structured Logging | v6.0 | 0/3 | Not started | - |
@@ -219,4 +219,4 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 
 ---
 
-*Roadmap updated: 2026-02-13 (v6.0 roadmap created)*
+*Roadmap updated: 2026-02-13 (Phase 69 planned)*
