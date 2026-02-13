@@ -31,26 +31,6 @@ Date: 2026-02-11
 ================================================================================
 """
 
-Frozen Constraint: Only use CEO-firm assignments observable as of fiscal
-                   year-end (call.start_date <= fy_end). This prevents
-                   look-ahead bias.
-
-CEO Selection: For each firm-year, select the CEO with MOST calls in that
-               fiscal year. Tiebreaker: earlier first_call_date.
-
-CEO Moves: Same ceo_id may appear with multiple gvkeys over time.
-           CEO Clarity is a personal trait, not firm-specific.
-
-Deterministic: true
-Dependencies:
-    - Requires: Step 4.x
-    - Uses: pandas, numpy
-
-Author: Thesis Author
-Date: 2026-02-11
-================================================================================
-"""
-
 import argparse
 import gc
 import io
