@@ -23,7 +23,7 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import yaml  # type: ignore[import-untyped]
+import yaml
 
 # Try rapidfuzz
 try:
@@ -36,7 +36,7 @@ except ImportError:
     RAPIDFUZZ_VERSION = None
 
 
-def warn_if_rapidfuzz_missing():
+def warn_if_rapidfuzz_missing() -> None:
     """Log warning if RapidFuzz is unavailable."""
     if not RAPIDFUZZ_AVAILABLE:
         warnings.warn(
