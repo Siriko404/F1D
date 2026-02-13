@@ -1456,3 +1456,517 @@ logger.info("configuration_loaded", has_password=bool(env.wrds_password))
 
 ---
 
+## 6. Test Structure (TEST-01)
+
+This section defines the test directory structure and test type taxonomy.
+
+### Test Directory Structure
+
+```
+tests/
+├── __init__.py                   # Package marker
+├── conftest.py                   # Root-level shared fixtures
+│
+├── fixtures/                     # Test data files
+│   ├── sample_data/              # Sample parquet/csv files
+│   │   ├── sample_panel.parquet
+│   │   └── sample_transcripts.parquet
+│   └── baseline_checksums.json   # For regression tests
+│
+├── factories/                    # Test data factories
+│   ├── __init__.py
+│   ├── dataframe_factory.py      # DataFrame generation utilities
+│   └── config_factory.py         # Configuration generation utilities
+│
+├── unit/                         # Fast, isolated tests
+│   ├── __init__.py
+│   ├── conftest.py               # Unit-test-specific fixtures
+│   ├── test_path_utils.py        # Tests for path_utils module
+│   ├── test_panel_ols.py         # Tests for panel_ols module
+│   └── test_config.py            # Tests for configuration loading
+│
+├── integration/                  # Module interaction tests
+│   ├── __init__.py
+│   ├── conftest.py               # Integration-test-specific fixtures
+│   ├── test_pipeline.py          # End-to-end stage tests
+│   └── test_financial_econometric.py  # Cross-module tests
+│
+├── regression/                   # Output stability tests
+│   ├── __init__.py
+│   ├── conftest.py
+│   └── test_outputs.py           # Compare against baselines
+│
+├── e2e/                          # End-to-end pipeline tests
+│   ├── __init__.py
+│   └── test_full_pipeline.py     # Complete pipeline execution
+│
+└── performance/                  # Performance benchmarks
+    ├── __init__.py
+    ├── conftest.py               # Performance-specific fixtures
+    └── test_memory.py            # Memory usage tests
+```
+
+### Test Type Definitions
+
+| Type | Purpose | Speed | Dependencies | When to Use |
+|------|---------|-------|--------------|-------------|
+| **Unit** | Single function/method | Fast (< 1s) | Mocked | Testing individual logic |
+| **Integration** | Multiple modules | Medium (1-30s) | Real | Testing interactions |
+| **Regression** | Output comparison | Medium | Baselines | Preventing regressions |
+| **E2E** | Full pipeline | Slow (min+) | Full stack | Smoke testing |
+| **Performance** | Benchmarks | Varies | Full stack | Performance monitoring |
+
+### Test Type Details
+
+#### Unit Tests
+
+**Purpose:** Test individual functions in isolation
+
+**Characteristics:**
+- Fast execution (< 1 second each)
+- All external dependencies mocked
+- Test single function or method
+- No file I/O or network calls
+
+**Example:**
+```python
+# tests/unit/test_path_utils.py
+"""Unit tests for path utilities module."""
+
+import pytest
+from pathlib import Path
+from unittest.mock import patch
+
+from f1d.shared.path_utils import (
+    validate_output_path,
+    ensure_output_dir,
+    get_latest_output_dir,
+    PathValidationError,
+    OutputResolutionError,
+)
+
+
+class TestValidateOutputPath:
+    """Tests for validate_output_path function."""
+
+    def test_validate_output_path_existing_dir_returns_path(self, tmp_path):
+        """Test that existing directory returns validated path."""
+        result = validate_output_path(tmp_path, must_exist=True)
+        assert result == tmp_path.resolve()
+
+    def test_validate_output_path_nonexistent_with_must_exist_raises_error(self, tmp_path):
+        """Test that nonexistent path with must_exist=True raises error."""
+        nonexistent = tmp_path / "nonexistent"
+        with pytest.raises(PathValidationError, match="does not exist"):
+            validate_output_path(nonexistent, must_exist=True)
+
+    def test_validate_output_path_file_not_dir_raises_error(self, tmp_path):
+        """Test that file path (not directory) raises error."""
+        file_path = tmp_path / "file.txt"
+        file_path.touch()
+        with pytest.raises(PathValidationError, match="not a directory"):
+            validate_output_path(file_path, must_exist=True)
+```
+
+#### Integration Tests
+
+**Purpose:** Test interactions between modules
+
+**Characteristics:**
+- Medium execution time (1-30 seconds)
+- Real dependencies (no mocks)
+- Test data flow between modules
+- May use temporary databases/files
+
+**Example:**
+```python
+# tests/integration/test_financial_econometric.py
+"""Integration tests for financial to econometric pipeline."""
+
+import pytest
+from pathlib import Path
+import pandas as pd
+
+from f1d.financial.v1.variables import construct_variables
+from f1d.econometric.v1.regressions import run_panel_ols
+
+
+class TestFinancialToEconometric:
+    """Tests for financial-to-econometric integration."""
+
+    @pytest.fixture
+    def sample_data(self, test_data_dir: Path) -> pd.DataFrame:
+        """Load sample data for integration test."""
+        return pd.read_parquet(test_data_dir / "sample_panel.parquet")
+
+    def test_financial_to_regression_pipeline(self, sample_data):
+        """Test that financial variables can be used in regressions."""
+        # Construct financial variables
+        with_vars = construct_variables(sample_data)
+
+        # Run regression
+        result = run_panel_ols(
+            with_vars,
+            formula="investment ~ uncertainty + size + mtb",
+            entity_effects=True,
+            time_effects=True,
+        )
+
+        # Verify regression ran successfully
+        assert result.rsquared > 0
+        assert "uncertainty" in result.params.index
+```
+
+#### Regression Tests
+
+**Purpose:** Ensure outputs remain stable across changes
+
+**Characteristics:**
+- Compare outputs against baselines
+- Detect unintended changes
+- Use checksum comparison
+- Alert on drift
+
+**Example:**
+```python
+# tests/regression/test_outputs.py
+"""Regression tests for output stability."""
+
+import pytest
+import hashlib
+from pathlib import Path
+import pandas as pd
+
+
+class TestOutputRegression:
+    """Tests for output stability."""
+
+    @pytest.fixture
+    def baseline_checksums(self, test_data_dir: Path) -> dict:
+        """Load baseline checksums."""
+        import json
+        with open(test_data_dir / "baseline_checksums.json") as f:
+            return json.load(f)
+
+    def test_financial_variables_output_stability(
+        self,
+        sample_panel_data,
+        baseline_checksums
+    ):
+        """Test that financial variables output is stable."""
+        from f1d.financial.v1.variables import construct_variables
+
+        # Generate output
+        result = construct_variables(sample_panel_data)
+
+        # Compute checksum
+        checksum = hashlib.sha256(
+            pd.util.hash_pandas_object(result, index=True).values
+        ).hexdigest()
+
+        # Compare with baseline
+        expected = baseline_checksums["financial_variables"]
+        assert checksum == expected, (
+            f"Output checksum changed: {checksum[:8]}... != {expected[:8]}..."
+        )
+```
+
+#### E2E Tests
+
+**Purpose:** Test complete pipeline execution
+
+**Characteristics:**
+- Slow execution (minutes)
+- Full stack test
+- Minimal mocking
+- Run in CI for releases
+
+**Example:**
+```python
+# tests/e2e/test_full_pipeline.py
+"""End-to-end pipeline tests."""
+
+import pytest
+from pathlib import Path
+import pandas as pd
+
+
+@pytest.mark.e2e
+class TestFullPipeline:
+    """Tests for complete pipeline execution."""
+
+    @pytest.fixture
+    def sample_inputs(self, test_data_dir: Path) -> dict:
+        """Load all sample inputs."""
+        return {
+            "transcripts": pd.read_parquet(
+                test_data_dir / "sample_transcripts.parquet"
+            ),
+            "compustat": pd.read_parquet(
+                test_data_dir / "sample_compustat.parquet"
+            ),
+        }
+
+    @pytest.mark.slow
+    def test_full_pipeline_produces_outputs(self, sample_inputs, tmp_path):
+        """Test that full pipeline produces expected outputs."""
+        from f1d.sample.build_manifest import build_manifest
+        from f1d.text.uncertainty import compute_uncertainty
+        from f1d.financial.v1.variables import construct_variables
+        from f1d.econometric.v1.regressions import run_panel_ols
+
+        # Stage 1: Build manifest
+        manifest = build_manifest(
+            sample_inputs["transcripts"],
+            output_dir=tmp_path / "stage1"
+        )
+        assert len(manifest) > 0
+
+        # Stage 2: Compute uncertainty
+        uncertainty = compute_uncertainty(
+            manifest,
+            output_dir=tmp_path / "stage2"
+        )
+        assert "uncertainty" in uncertainty.columns
+
+        # Stage 3: Construct variables
+        variables = construct_variables(
+            sample_inputs["compustat"],
+            output_dir=tmp_path / "stage3"
+        )
+        assert len(variables) > 0
+
+        # Stage 4: Run regression
+        results = run_panel_ols(
+            variables,
+            formula="investment ~ uncertainty + controls",
+        )
+        assert results.rsquared > 0
+```
+
+#### Performance Tests
+
+**Purpose:** Monitor and benchmark performance
+
+**Characteristics:**
+- Measure execution time
+- Track memory usage
+- Set performance thresholds
+- Run periodically, not on every commit
+
+**Example:**
+```python
+# tests/performance/test_memory.py
+"""Performance tests for memory usage."""
+
+import pytest
+import pandas as pd
+import numpy as np
+
+
+@pytest.mark.performance
+class TestMemoryUsage:
+    """Tests for memory performance."""
+
+    def test_large_dataframe_memory_usage(self):
+        """Test memory usage with large DataFrame."""
+        import tracemalloc
+
+        tracemalloc.start()
+
+        # Create large DataFrame
+        df = pd.DataFrame({
+            f"col_{i}": np.random.randn(1_000_000)
+            for i in range(50)
+        })
+
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        # Assert peak memory is reasonable (< 500MB for this test)
+        peak_mb = peak / 1024 / 1024
+        assert peak_mb < 500, f"Peak memory too high: {peak_mb:.1f}MB"
+```
+
+### Running Specific Test Types
+
+```bash
+# Run all tests
+pytest
+
+# Run only unit tests
+pytest tests/unit/
+
+# Run only integration tests
+pytest tests/integration/
+
+# Run only regression tests
+pytest tests/regression/
+
+# Run only e2e tests (slow)
+pytest tests/e2e/ -m e2e
+
+# Run only performance tests
+pytest tests/performance/ -m performance
+
+# Skip slow tests
+pytest -m "not slow"
+```
+
+---
+
+## 7. Coverage Targets (TEST-02)
+
+This section defines tier-based coverage targets aligned with ARCHITECTURE_STANDARD.md module tiers.
+
+### Tier-Based Coverage Targets
+
+| Module Tier | Location | Target Coverage | Rationale |
+|-------------|----------|-----------------|-----------|
+| **Tier 1** (Core Shared) | `src/f1d/shared/` | 90% minimum | Critical utilities, widely used |
+| **Tier 2** (Stage-Specific) | `src/f1d/{stage}/` | 80% minimum | Important but localized |
+| **Tier 3** (Scripts) | `scripts/` | No requirement | Advisory only, exploratory |
+| **Overall Project** | All | 70% minimum | Baseline quality gate |
+
+### pyproject.toml Coverage Configuration
+
+```toml
+# pyproject.toml
+[tool.coverage.run]
+branch = true
+source = ["src/f1d"]
+omit = [
+    "tests/*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+fail_under = 70
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+show_missing = true
+skip_covered = true
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.pytest.ini_options]
+addopts = "--cov=f1d --cov-report=term-missing --cov-report=html"
+testpaths = ["tests"]
+```
+
+### Coverage Quality vs Quantity
+
+**Coverage theater to avoid:**
+- Tests with no assertions
+- Tests that pass when code is broken
+- Testing trivial getters/setters
+- 100% coverage with no behavior verification
+
+**Good coverage practices:**
+- Test behavior, not implementation
+- Cover edge cases and error paths
+- Test business logic thoroughly
+- Use branch coverage, not just line coverage
+
+### Coverage Commands
+
+```bash
+# Run tests with coverage
+pytest --cov=f1d --cov-report=term-missing
+
+# Run with HTML report
+pytest --cov=f1d --cov-report=html
+open htmlcov/index.html
+
+# Run with coverage for specific module
+pytest --cov=f1d.shared tests/unit/test_path_utils.py
+
+# Check coverage threshold (fails if < 70%)
+pytest --cov=f1d --cov-fail-under=70
+
+# Generate coverage badge
+coverage-badge -o coverage.svg -f
+```
+
+### Tier-Specific Coverage Enforcement
+
+For CI/CD enforcement of tier-specific targets:
+
+```yaml
+# .github/workflows/test.yml
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run tests with coverage
+        run: pytest --cov=f1d --cov-report=xml
+
+      - name: Check overall coverage
+        run: |
+          coverage report --fail-under=70
+
+      - name: Check Tier 1 coverage
+        run: |
+          coverage report --include="src/f1d/shared/*" --fail-under=90
+
+      - name: Check Tier 2 coverage
+        run: |
+          coverage report --include="src/f1d/financial/*,src/f1d/econometric/*" --fail-under=80
+```
+
+### Coverage Reports
+
+**Terminal output:**
+```
+Name                                      Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------
+src/f1d/__init__.py                           5      0   100%
+src/f1d/shared/__init__.py                    3      0   100%
+src/f1d/shared/path_utils.py                 45      2    96%   23-24
+src/f1d/shared/panel_ols.py                  78      8    90%   45-52
+-----------------------------------------------------------------------
+TOTAL                                       131     10    92%
+```
+
+**HTML report:** Interactive report showing covered/uncovered lines with syntax highlighting.
+
+### Rationale
+
+#### Why Tier-Based Coverage?
+
+1. **Risk-based:** Higher coverage where risk is higher
+2. **Practical:** 100% everywhere is unrealistic
+3. **Focused:** Effort directed at critical code
+4. **Measurable:** Clear targets for each tier
+
+#### Why 70% Overall?
+
+1. **Achievable:** Realistic for research code
+2. **Meaningful:** Catches major issues
+3. **Standard:** Common industry baseline
+4. **Improvable:** Can increase over time
+
+**Source:** [pytest-cov Documentation](https://pytest-cov.readthedocs.io/)
+
+---
+
