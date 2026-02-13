@@ -4,211 +4,376 @@
 
 ## Pattern Overview
 
-**Overall:** Sequential Pipeline with Shared Utilities
+**Overall:** Stage-based data processing pipeline with numbered scripts organized by processing phase.
 
 **Key Characteristics:**
-- 4-stage sequential processing pipeline (Sample Construction -> Text Processing -> Financial Features -> Econometric Analysis)
-- Shared utility layer (`2_Scripts/shared/`) providing cross-cutting functionality
-- Timestamped output directories for reproducibility and versioning
-- YAML-based configuration for parameter management
-- Deterministic processing with explicit random seeds
+- Numbered script naming convention (`Stage.Step_Description.py`)
+- Timestamp-based output versioning with `latest` symlink
+- V1 (legacy) and V2 (current) parallel structures for Financial and Econometric stages
+- Shared utilities module for cross-cutting concerns
+- Deterministic processing with YAML configuration
+- No formal Python package structure (scripts import via sys.path manipulation)
 
 ## Layers
 
-**Pipeline Scripts (Application Layer):**
-- Purpose: Execute specific data transformation steps
-- Location: `2_Scripts/{1_Sample,2_Text,3_Financial,4_Econometric}/`
-- Contains: Numbered step scripts (e.g., `1.0_BuildSampleManifest.py`, `2.1_TokenizeAndCount.py`)
-- Depends on: `shared/` utilities, `config/project.yaml`
-- Used by: Manual execution or CI/CD pipeline
+**Input Layer:**
+- Purpose: Raw data storage (no processing logic)
+- Location: `1_Inputs/`
+- Contains: Parquet files, CSVs, Excel files from external databases (CRSP, Compustat, IBES, SDC, Execucomp)
+- Depends on: External data providers
+- Used by: All Stage 1-3 scripts
 
-**Shared Utilities (Infrastructure Layer):**
-- Purpose: Reusable components for data validation, regression, logging, path handling
+**Processing Layer:**
+- Purpose: Data transformation and analysis
+- Location: `2_Scripts/`
+- Contains: Processing scripts organized by stage
+  - `1_Sample/` - Sample construction (5 scripts)
+  - `2_Text/` - Text processing (4 scripts)
+  - `3_Financial/` - V1 financial features (5 scripts)
+  - `3_Financial_V2/` - V2 hypothesis-specific variables (13 scripts)
+  - `4_Econometric/` - V1 econometric analysis (8 scripts)
+  - `4_Econometric_V2/` - V2 hypothesis-specific regressions (11 scripts)
+- Depends on: `1_Inputs/`, `config/project.yaml`, `2_Scripts/shared/`
+- Used by: Downstream processing scripts
+
+**Output Layer:**
+- Purpose: Persist processed data and logs
+- Location: `4_Outputs/`, `3_Logs/`
+- Contains: Timestamped directories with parquet files, JSON stats, MD reports
+- Depends on: Processing scripts
+- Used by: Downstream scripts, researchers
+
+**Shared Infrastructure Layer:**
+- Purpose: Reusable utilities and observability
 - Location: `2_Scripts/shared/`
-- Contains: Utility modules (`panel_ols.py`, `financial_utils.py`, `regression_helpers.py`, etc.)
-- Depends on: pandas, numpy, linearmodels, statsmodels
-- Used by: All pipeline scripts via `from shared.xxx import yyy`
-
-**Configuration Layer:**
-- Purpose: Centralized parameter management and pipeline settings
-- Location: `config/project.yaml`
-- Contains: Data paths, processing parameters, step configurations, output specifications
-- Depends on: None (static YAML)
-- Used by: All pipeline scripts via `yaml.safe_load()`
-
-**Observability Sub-package:**
-- Purpose: Logging, statistics collection, memory tracking, anomaly detection
-- Location: `2_Scripts/shared/observability/`
-- Contains: `logging.py`, `stats.py`, `memory.py`, `throughput.py`, `anomalies.py`, `files.py`
-- Depends on: pandas, numpy, time, psutil
-- Used by: All scripts via `from shared.observability_utils import DualWriter`
+- Contains: 22 utility modules including:
+  - `panel_ols.py` - Panel OLS regression with fixed effects
+  - `iv_regression.py` - Instrumental variable regression
+  - `financial_utils.py` - Financial calculations
+  - `path_utils.py` - Output directory resolution
+  - `observability_utils.py` - Logging and statistics
+  - `observability/` - Sub-package with anomaly detection, memory tracking
+- Depends on: External packages (pandas, linearmodels, numpy, statsmodels)
+- Used by: All processing scripts
 
 ## Data Flow
 
 **Main Pipeline Flow:**
 
-1. **Step 1: Sample Construction**
-   - Input: Raw earnings call transcripts (`1_Inputs/Unified-info.parquet`, `speaker_data_*.parquet`)
-   - Process: Clean metadata, link entities to financial databases, build tenure maps
-   - Output: `4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet`
-
-2. **Step 2: Text Processing**
-   - Input: `master_sample_manifest.parquet` + Loughran-McDonald dictionary
-   - Process: Tokenize text, count dictionary word categories, construct linguistic variables
-   - Output: `4_Outputs/2.2_ConstructVariables/latest/linguistic_variables.parquet`
-
-3. **Step 3: Financial Features**
-   - Input: `master_sample_manifest.parquet` + CRSP/Compustat/IBES data
-   - Process: Compute firm controls, market variables, event flags
-   - Output: `firm_controls.parquet`, `market_variables.parquet`, `event_flags.parquet`
-
-4. **Step 4: Econometric Analysis**
-   - Input: All processed parquet files
-   - Process: Estimate CEO clarity scores, run IV regressions, hazard models
-   - Output: CEO scores, regression tables (`.tex`), diagnostic reports
+```
+1_Inputs/
+    |
+    v
+Stage 1: Sample Construction (1_Sample/)
+    1.0_BuildSampleManifest.py [ORCHESTRATOR]
+        -> 1.1_CleanMetadata.py
+        -> 1.2_LinkEntities.py (4-tier entity matching)
+        -> 1.3_BuildTenureMap.py
+        -> 1.4_AssembleManifest.py
+    |
+    v
+4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    |
+    v
+Stage 2: Text Processing (2_Text/)
+    2.1_TokenizeAndCount.py (LM dictionary word counts)
+    2.2_ConstructVariables.py (linguistic measures)
+    2.3_Report.py / 2.3_VerifyStep2.py
+    |
+    v
+4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
+    |
+    v
+Stage 3: Financial Features (3_Financial/ or 3_Financial_V2/)
+    V1: 3.0_BuildFinancialFeatures.py, 3.1_FirmControls.py, 3.2_MarketVariables.py, 3.3_EventFlags.py
+    V2: 3.1_H1Variables.py through 3.13_H9_AbnormalInvestment.py
+    |
+    v
+4_Outputs/3_Financial_V2/latest/H*_*.parquet
+    |
+    v
+Stage 4: Econometric Analysis (4_Econometric/ or 4_Econometric_V2/)
+    V1: 4.1_EstimateCeoClarity.py, 4.2_LiquidityRegressions.py, 4.3_TakeoverHazards.py
+    V2: 4.1_H1CashHoldingsRegression.py through 4.11_H9_Regression.py
+    |
+    v
+4_Outputs/4_Econometric_V2/{script_name}/{timestamp}/results.parquet
+```
 
 **State Management:**
-- Intermediate outputs stored in timestamped directories under `4_Outputs/{step_name}/{timestamp}/`
-- Latest outputs symlinked via `latest/` subdirectory
-- Checksums computed for reproducibility verification
+- Latest outputs resolved via `get_latest_output_dir()` symlink resolution
+- Each run creates new timestamped directory (e.g., `2026-02-11_141310/`)
+- `latest` symlink points to most recent successful output
+- Checksums computed via SHA-256 for reproducibility verification
 - Processing stats saved as `stats.json` alongside outputs
 
 ## Key Abstractions
 
 **Script Header Pattern:**
-- Purpose: Standardized metadata and documentation for each script
-- Examples: All scripts in `2_Scripts/*/` follow this pattern
-- Pattern: Multi-line docstring with ID, Description, Inputs, Outputs, Dependencies, Deterministic flag
+- Purpose: Self-documenting script metadata
+- Examples: All scripts in `2_Scripts/`
+- Pattern:
+  ```python
+  #!/usr/bin/env python3
+  """
+  ==============================================================================
+  STEP X.Y: Description
+  ==============================================================================
+  ID: X.Y_ScriptName
+  Description: What the script does
 
-```python
-#!/usr/bin/env python3
-"""
-================================================================================
-STEP X.Y: Script Name
-================================================================================
-ID: X.Y_ScriptName
-Description: What this script does
+  Inputs:
+      - Path to input files
 
-Inputs:
-    - Input file paths
+  Outputs:
+      - Path to output files
 
-Outputs:
-    - Output file paths
+  Deterministic: true
+  Dependencies:
+      - Requires: Previous steps
+      - Uses: External packages
 
-Deterministic: true
-Dependencies:
-    - Requires: Previous step
-    - Uses: pandas, numpy
+  Author: Thesis Author
+  Date: YYYY-MM-DD
+  ==============================================================================
+  """
+  ```
 
-Author: Thesis Author
-Date: YYYY-MM-DD
-================================================================================
-"""
-```
+**Timestamped Output Pattern:**
+- Purpose: Reproducibility and version control
+- Examples: `4_Outputs/1.4_AssembleManifest/2026-02-11_141310/`
+- Pattern:
+  ```python
+  timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+  output_dir = root / "4_Outputs" / script_name / timestamp
+  ```
 
-**DualWriter Pattern:**
-- Purpose: Simultaneous logging to stdout and file
-- Examples: All pipeline scripts
-- Pattern: Context manager wrapping stdout/stderr
+**Path Resolution Pattern:**
+- Purpose: Find latest outputs from upstream scripts
+- Location: `2_Scripts/shared/path_utils.py`
+- Usage:
+  ```python
+  from shared.path_utils import get_latest_output_dir, OutputResolutionError
 
-```python
-from shared.observability_utils import DualWriter
+  manifest_dir = get_latest_output_dir(
+      root / "4_Outputs" / "1.4_AssembleManifest",
+      required_file="master_sample_manifest.parquet"
+  )
+  ```
 
-with DualWriter(log_path):
-    # All print() statements go to both console and log file
-    print("Processing...")
-```
-
-**Output Directory Resolution:**
-- Purpose: Find most recent output from previous step
-- Examples: All downstream scripts
-- Pattern: `get_latest_output_dir()` from `shared.path_utils`
-
-```python
-from shared.path_utils import get_latest_output_dir
-
-input_dir = get_latest_output_dir(base_dir / "1.4_AssembleManifest")
-input_file = input_dir / "master_sample_manifest.parquet"
-```
+**Import Fallback Pattern:**
+- Purpose: Handle script execution from any directory
+- Examples: All scripts using try/except import blocks
+- Pattern:
+  ```python
+  try:
+      from shared.path_utils import get_latest_output_dir
+  except ImportError:
+      import sys as _sys
+      from pathlib import Path as _Path
+      _script_dir = _Path(__file__).parent.parent
+      _sys.path.insert(0, str(_script_dir))
+      from shared.path_utils import get_latest_output_dir
+  ```
 
 **Panel OLS Regression:**
-- Purpose: Standardized panel regression with fixed effects and diagnostics
-- Examples: `4_Econometric/` scripts
-- Pattern: `run_panel_ols()` from `shared.panel_ols`
+- Purpose: Standardized panel regression with fixed effects
+- Location: `2_Scripts/shared/panel_ols.py`
+- Usage:
+  ```python
+  from shared.panel_ols import run_panel_ols, CollinearityError, MulticollinearityError
 
-```python
-from shared.panel_ols import run_panel_ols
-
-result = run_panel_ols(
-    df=panel_df,
-    dependent="MaQaUnc_pct",
-    exog=["SurpDec", "EPS_Growth", "StockRet"],
-    entity_col="gvkey",
-    time_col="year",
-    industry_col="ff48_code",
-    cluster_by_entity=True,
-)
-```
+  result = run_panel_ols(
+      df=panel_df,
+      dependent="CashHoldings",
+      exog=["Uncertainty", "Leverage", "Uncertainty_x_Leverage"],
+      entity_col="gvkey",
+      time_col="year",
+      industry_col="ff48_code",
+      cluster_by_entity=True,
+  )
+  ```
 
 ## Entry Points
 
-**Pipeline Scripts:**
-- Location: `2_Scripts/{1_Sample,2_Text,3_Financial,4_Econometric}/*.py`
-- Triggers: Direct execution via `python script.py` or `python -m script`
-- Responsibilities: Load config, validate inputs, transform data, save outputs
+**Orchestrator Script:**
+- Location: `2_Scripts/1_Sample/1.0_BuildSampleManifest.py`
+- Triggers: Manual execution via command line
+- Responsibilities: Runs Stage 1 substeps 1.1-1.4 via subprocess
+
+**Individual Scripts:**
+- Location: All `*.py` files in `2_Scripts/*/`
+- Triggers: Manual execution or via orchestrator
+- Responsibilities: Single processing step with defined inputs/outputs
 
 **Validation Script:**
 - Location: `2_Scripts/2.0_ValidateV2Structure.py`
-- Triggers: Manual validation or CI/CD
-- Responsibilities: Verify pipeline structure, check dependencies, validate configuration
+- Triggers: Manual or CI/CD
+- Responsibilities: Verify pipeline structure, check dependencies
 
 **Test Runner:**
-- Location: `tests/` (via pytest)
+- Location: `tests/` via pytest
 - Triggers: `pytest tests/` command
-- Responsibilities: Unit tests, integration tests, regression tests
+- Responsibilities: Unit, integration, regression tests
 
-**CLI Arguments:**
-- Most scripts accept `--config` for custom YAML path
-- All scripts use argparse for command-line interface
-- Deterministic mode enforced via `--seed` or config setting
+**CLI Interface:**
+- All scripts accept `--dry-run` flag for validation without execution
+- All scripts use `argparse` for argument parsing
+- Example:
+  ```bash
+  python 2_Scripts/1_Sample/1.1_CleanMetadata.py --dry-run
+  ```
 
 ## Error Handling
 
-**Strategy:** Explicit validation with custom exceptions
+**Strategy:** Fail-fast with detailed logging
+
+**Custom Exceptions (in `2_Scripts/shared/`):**
+- `OutputResolutionError` (`path_utils.py`) - Cannot resolve output directory
+- `CollinearityError` (`panel_ols.py`) - Perfect collinearity in design matrix
+- `MulticollinearityError` (`panel_ols.py`, `diagnostics.py`) - VIF threshold exceeded
+- `FinancialCalculationError` (`financial_utils.py`) - Invalid financial metric computation
 
 **Patterns:**
-- `PathValidationError` - Invalid file paths
-- `OutputResolutionError` - Cannot find output directory
-- `DataValidationError` - Schema mismatch in input data
-- `FinancialCalculationError` - Invalid financial metric computation
-- `CollinearityError` / `MulticollinearityError` - Regression design matrix issues
-
-**Example from `shared/financial_utils.py`:**
-```python
-from shared.data_validation import FinancialCalculationError
-
-if gvkey is None:
-    raise FinancialCalculationError(
-        f"Cannot calculate firm controls: missing gvkey in row. "
-        f"Row columns: {list(row.index)}. Year: {year}"
-    )
-```
+- `validate_input_file()` raises `FileNotFoundError` if input missing
+- `validate_output_path()` raises `ValueError` if output directory not writable
+- All exceptions logged via `DualWriter` to both console and timestamped log file
 
 ## Cross-Cutting Concerns
 
-**Logging:** DualWriter class in `shared/observability/logging.py` - writes to both console and timestamped log file in `3_Logs/`
+**Logging:**
+- Framework: Python `logging` module + custom `DualWriter`
+- Location: `2_Scripts/shared/observability_utils.py`, `observability/` sub-package
+- Pattern:
+  ```python
+  from shared.observability_utils import DualWriter
+  log_path = log_dir / f"{timestamp}.log"
+  sys.stdout = DualWriter(log_path)
+  ```
 
-**Validation:** Schema-based validation in `shared/data_validation.py` - checks required columns, types, value ranges before processing
+**Validation:**
+- Approach: Pre-flight checks before processing
+- Location: `2_Scripts/shared/path_utils.py`, `data_validation.py`
+- Pattern: `validate_input_file(path, must_exist=True)`
 
-**Authentication:** Not applicable (no external API authentication)
+**Configuration:**
+- Location: `config/project.yaml`
+- Loading:
+  ```python
+  import yaml
+  with open("config/project.yaml") as f:
+      config = yaml.safe_load(f)
+  ```
 
-**Memory Management:** `track_memory_usage` decorator and `MemoryAwareThrottler` in `shared/chunked_reader.py` - monitors memory and throttles processing
+**Determinism:**
+- Random seed: 42 (configurable in `project.yaml`)
+- Single-threaded processing by default (`thread_count: 1`)
+- Sorted inputs before processing (`sort_inputs: true`)
 
-**Configuration:** Centralized YAML in `config/project.yaml` with step-specific sections (e.g., `step_01`, `step_02`)
+**Memory Management:**
+- Location: `2_Scripts/shared/chunked_reader.py`
+- Pattern: `MemoryAwareThrottler` and `track_memory_usage` decorator
+- Configuration: `max_memory_percent: 80.0` in `project.yaml`
 
-**Checksums:** SHA-256 file checksums computed via `compute_file_checksum()` for reproducibility verification
+**Type Hints:**
+- Gradual mypy adoption with stubs for untyped packages
+- Stubs location: `2_Scripts/stubs/linearmodels*.pyi`
+- Strict mode enabled for `shared.observability.*` modules
 
-**Type Hints:** Gradual mypy adoption with stubs for untyped packages (`2_Scripts/stubs/linearmodels*.pyi`)
+## Version Management (V1 vs V2)
+
+**V1 (Legacy):**
+- Location: `2_Scripts/3_Financial/`, `2_Scripts/4_Econometric/`
+- Status: Functional but superseded
+- Contains: Hypothesis-agnostic variable construction
+- Scripts: `3.0_BuildFinancialFeatures.py`, `3.1_FirmControls.py`, `3.2_MarketVariables.py`, `3.3_EventFlags.py`
+
+**V2 (Current):**
+- Location: `2_Scripts/3_Financial_V2/`, `2_Scripts/4_Econometric_V2/`
+- Status: Active development
+- Contains: Hypothesis-specific variable scripts (H1-H9)
+- Scripts: `3.1_H1Variables.py` through `3.13_H9_AbnormalInvestment.py`
+- Regression scripts: `4.1_H1CashHoldingsRegression.py` through `4.11_H9_Regression.py`
+
+**Migration Pattern:**
+- V2 scripts named by hypothesis (e.g., `3.1_H1Variables.py`)
+- V2 outputs stored in parallel directory structure
+- V1 excluded from coverage in `pyproject.toml`: `*/V1*` in omit list
+
+## Testing Infrastructure
+
+**Location:** `tests/`
+
+**Structure:**
+```
+tests/
+├── conftest.py              # Shared fixtures
+├── fixtures/                # Test data files
+├── unit/                    # Unit tests (test_*.py)
+├── integration/             # Integration tests
+├── regression/              # Output stability tests
+└── performance/             # Performance benchmarks
+```
+
+**Key Fixtures (from `conftest.py`):**
+- `subprocess_env`: Sets PYTHONPATH for subprocess tests to find shared modules
+- `test_data_dir`: Path to `tests/fixtures/`
+- `sample_dataframe`: Minimal test DataFrame
+
+**Execution:**
+```bash
+pytest                              # Run all tests
+pytest tests/unit/                  # Unit tests only
+pytest -m integration               # Integration tests only
+pytest --cov=2_Scripts --cov-report=html  # With coverage
+```
+
+## Gaps vs Industry Standard Python Projects
+
+**Missing from Standard Layout:**
+
+1. **No `src/` Package Structure**
+   - Current: Flat scripts with sys.path manipulation
+   - Standard: `src/f1d/` package with `__init__.py` and proper imports
+   - Impact: Requires try/except import fallbacks; no namespace isolation
+
+2. **No `pyproject.toml` Build System**
+   - Current: `pyproject.toml` only for tool config (pytest, ruff, mypy)
+   - Standard: Build system configuration with `[build-system]`, package metadata
+   - Impact: Cannot `pip install -e .`; no version management
+
+3. **No `__init__.py` in Script Directories**
+   - Current: `2_Scripts/1_Sample/` etc. have no `__init__.py`
+   - Standard: Each directory is a Python package
+   - Impact: Cannot import across stages; scripts are isolated
+
+4. **No `setup.py` or `setup.cfg`**
+   - Current: No entry points defined
+   - Standard: Console scripts for CLI entry points
+   - Impact: Cannot run `f1d-run-stage 1` or similar
+
+5. **No Type Stub Generation**
+   - Current: Manual stubs in `stubs/` for linearmodels
+   - Standard: `py.typed` marker and distributed stubs
+   - Impact: Manual maintenance of type stubs
+
+6. **Mixed Output/Data Directories**
+   - Current: `4_Outputs/` contains both generated data and results
+   - Standard: Separate `data/processed/` and `results/` directories
+   - Impact: Difficult to gitignore only generated files
+
+7. **No CI/CD Artifact Publishing**
+   - Current: Outputs stay local
+   - Standard: Publish to artifact storage (S3, GCS) for reproducibility
+   - Impact: No remote backup of processed data
+
+**What Works Well:**
+
+1. **Timestamped Outputs** - Excellent for reproducibility
+2. **Shared Utilities** - Good DRY principle application
+3. **Script Headers** - Self-documenting with clear I/O contracts
+4. **Configuration-Driven** - YAML config for parameters
+5. **Comprehensive Testing** - Unit, integration, regression, performance
 
 ---
 

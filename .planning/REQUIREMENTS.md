@@ -1,10 +1,78 @@
 # Requirements: F1D Data Processing Pipeline
 
 **Defined:** 2026-02-12
-**Core Value:** All scripts must follow consistent patterns for folder structure, I/O, logging, and naming
-**Status:** Active — Defining requirements for v4.0 milestone
+**Core Value:** Every script must produce verifiable, reproducible results with complete audit trails
+**Status:** Active — v5.0 Architecture Standard Definition
 
-## v4.0 Requirements
+## v5.0 Requirements
+
+Requirements for Architecture Standard Definition milestone. v5.0 defines comprehensive standards for portfolio-ready repository quality. The output is ARCHITECTURE_STANDARD.md that guides subsequent implementation milestones (v6.0+).
+
+**Key Deliverable:** Single ARCHITECTURE_STANDARD.md document defining all standards.
+
+**Implementation:** Standards definition only. Actual refactoring deferred to v6.0+.
+
+---
+
+### ARCH — Architecture & Folder Structure
+
+- [ ] **ARCH-01**: Define canonical folder structure (src/f1d/, tests/, docs/, config/, data/)
+- [ ] **ARCH-02**: Define module organization with __init__.py pattern
+- [ ] **ARCH-03**: Define data directory structure (data/raw/, data/processed/, results/)
+- [ ] **ARCH-04**: Define version management approach (deprecate V1, single active version)
+- [ ] **ARCH-05**: Define archive and legacy code handling strategy
+
+### NAM — Naming Conventions
+
+- [ ] **NAM-01**: Define script naming convention (Stage.Step_Description.py pattern)
+- [ ] **NAM-02**: Define module naming convention (snake_case with clarity)
+- [ ] **NAM-03**: Define function/class naming (snake_case for functions, PascalCase for classes)
+- [ ] **NAM-04**: Define variable naming patterns (descriptive, consistent)
+- [ ] **NAM-05**: Define output file naming patterns (timestamped, script-identified)
+
+### CODE — Code Quality Standards
+
+- [ ] **CODE-01**: Define docstring standard (Google-style with Args/Returns/Raises/Examples)
+- [ ] **CODE-02**: Define type hint coverage requirements (strict mode targets per module tier)
+- [ ] **CODE-03**: Define import organization pattern (stdlib → third-party → local, no fallbacks)
+- [ ] **CODE-04**: Define error handling pattern (custom exceptions, no bare except, explicit propagation)
+- [ ] **CODE-05**: Define function size limits and module organization (max lines, single responsibility)
+
+### CONF — Configuration & I/O
+
+- [ ] **CONF-01**: Define config file structure (project.yaml schema with validation)
+- [ ] **CONF-02**: Define environment variable handling (secrets, optional dependencies)
+- [ ] **CONF-03**: Define path resolution pattern (eliminate sys.path.insert, proper package imports)
+- [ ] **CONF-04**: Define output directory pattern (timestamped runs, latest symlink, checksums)
+- [ ] **CONF-05**: Define logging pattern (structured logging, levels, output destinations)
+
+### TEST — Testing Standards
+
+- [ ] **TEST-01**: Define test structure (unit/integration/regression/e2e/performance)
+- [ ] **TEST-02**: Define coverage targets (Tier 1: 90%, Tier 2: 80%, Overall: 70%)
+- [ ] **TEST-03**: Define test naming convention (test_<module>_<function>_<scenario>)
+- [ ] **TEST-04**: Define fixture organization pattern (conftest.py, fixtures/, factories)
+- [ ] **TEST-05**: Define mocking and test data patterns (fixtures, fakes, mocks)
+
+### DOC — Documentation Standards
+
+- [ ] **DOC-01**: Define README structure (badges, description, quickstart, usage, API, license)
+- [ ] **DOC-02**: Define CHANGELOG format (Keep a Changelog format)
+- [ ] **DOC-03**: Define CONTRIBUTING guide structure (setup, workflow, standards, PR process)
+- [ ] **DOC-04**: Define API documentation approach (docstrings → MkDocs/Sphinx)
+- [ ] **DOC-05**: Define code comments and inline documentation standard (when to comment)
+
+### TOOL — Tooling & CI/CD
+
+- [ ] **TOOL-01**: Define pyproject.toml structure (build system, dependencies, tool configs)
+- [ ] **TOOL-02**: Define pre-commit hooks configuration (ruff, mypy, trailing whitespace)
+- [ ] **TOOL-03**: Define GitHub Actions workflow structure (test matrix, coverage, linting)
+- [ ] **TOOL-04**: Define .gitignore patterns (Python, data, IDE, OS-specific)
+- [ ] **TOOL-05**: Define linting/formatting configuration (ruff rules, mypy strictness levels)
+
+---
+
+## v4.0 Requirements (COMPLETE)
 
 Requirements for Script Organization & Refactoring milestone. V4 focuses on consolidating folder structure, standardizing I/O patterns, unifying logging, and enforcing naming conventions.
 
@@ -268,6 +336,24 @@ Requirements for Script Organization & Refactoring milestone. V4 focuses on cons
 
 ## Out of Scope
 
+Explicitly excluded from v5.0:
+
+| Feature | Reason |
+|---------|--------|
+| Actual refactoring | Implementation deferred to v6.0+ |
+| New features | Standards definition only |
+| New hypotheses | Complete in v2.0 |
+| Real-time processing | Batch processing per thesis scope |
+| Web interface | CLI only for replication |
+
+## v6.0 Requirements (Deferred)
+
+Implementation of the standards defined in v5.0. Will be replanned after v5.0 completes.
+
+---
+
+## v4.0 Out of Scope (Historical)
+
 Explicitly excluded from v4.0:
 
 | Feature | Reason |
@@ -283,7 +369,56 @@ Explicitly excluded from v4.0:
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
+### v5.0 Requirements (Architecture Standard)
+
+Which phases cover which requirements. To be updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| ARCH-01 | TBD | Pending |
+| ARCH-02 | TBD | Pending |
+| ARCH-03 | TBD | Pending |
+| ARCH-04 | TBD | Pending |
+| ARCH-05 | TBD | Pending |
+| NAM-01 | TBD | Pending |
+| NAM-02 | TBD | Pending |
+| NAM-03 | TBD | Pending |
+| NAM-04 | TBD | Pending |
+| NAM-05 | TBD | Pending |
+| CODE-01 | TBD | Pending |
+| CODE-02 | TBD | Pending |
+| CODE-03 | TBD | Pending |
+| CODE-04 | TBD | Pending |
+| CODE-05 | TBD | Pending |
+| CONF-01 | TBD | Pending |
+| CONF-02 | TBD | Pending |
+| CONF-03 | TBD | Pending |
+| CONF-04 | TBD | Pending |
+| CONF-05 | TBD | Pending |
+| TEST-01 | TBD | Pending |
+| TEST-02 | TBD | Pending |
+| TEST-03 | TBD | Pending |
+| TEST-04 | TBD | Pending |
+| TEST-05 | TBD | Pending |
+| DOC-01 | TBD | Pending |
+| DOC-02 | TBD | Pending |
+| DOC-03 | TBD | Pending |
+| DOC-04 | TBD | Pending |
+| DOC-05 | TBD | Pending |
+| TOOL-01 | TBD | Pending |
+| TOOL-02 | TBD | Pending |
+| TOOL-03 | TBD | Pending |
+| TOOL-04 | TBD | Pending |
+| TOOL-05 | TBD | Pending |
+
+**v5.0 Coverage:**
+- Requirements: 35 total
+- Mapped to phases: 0
+- Unmapped: 35 ⚠️
+
+---
+
+### v4.0 Requirements (Folder Consolidation) - COMPLETE
 
 | Requirement Category | Requirements | Phase | Sub-requirements | Status |
 |---------------------|--------------|-------|------------------|--------|
@@ -328,4 +463,4 @@ All v3.0 requirements have been completed. See git history for details.
 ---
 
 *Requirements defined: 2026-02-12*
-*Last updated: 2026-02-12 after roadmap creation*
+*Last updated: 2026-02-12 (v5.0 requirements defined)*
