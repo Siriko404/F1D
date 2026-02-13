@@ -890,3 +890,533 @@ def save_with_checksum(
 | Output file | descriptor_date_checksum | `manifest_20260213_a3f2b8c91d2f.parquet` |
 
 ---
+
+## 2. Docstring Standard (CODE-01)
+
+This section defines the docstring format for inline documentation. Scripts use the custom header format defined in SCRIPT_DOCSTANDARD.md; this section covers inline docstrings for functions, methods, classes, and modules.
+
+**Source:** [Google Python Style Guide - Docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings)
+
+### 2.1 Module Headers (Existing Standard)
+
+For script-level documentation, the project uses a custom header format defined in **SCRIPT_DOCSTANDARD.md**. This format includes:
+
+- Script ID and step number
+- Description and purpose
+- Inputs and outputs
+- Dependencies
+- Deterministic flag
+- Author and date
+
+**Reference:** See `docs/SCRIPT_DOCSTANDARD.md` for complete header template and examples.
+
+This section (CODE-01) adds inline docstrings for functions, methods, classes, and modules to complement the script headers.
+
+### 2.2 Docstring Requirements by Module Tier
+
+Docstring requirements vary by module tier as defined in ARCHITECTURE_STANDARD.md Section 2.
+
+| Tier | Args | Returns | Raises | Examples |
+|------|------|---------|--------|----------|
+| **Tier 1 (Core)** | Required | Required | Required | Required |
+| **Tier 2 (Stage)** | Required | Required | Required | Recommended |
+| **Tier 3 (Scripts)** | Recommended | If non-void | If exceptions | Optional |
+
+**Rationale:**
+
+- **Tier 1 (Core Shared):** Highest documentation bar - used across all stages, must be fully documented
+- **Tier 2 (Stage-Specific):** Standard documentation - used within pipeline stages
+- **Tier 3 (Scripts):** Lower bar - ad-hoc scripts, basic documentation acceptable
+
+### 2.3 Google-style Docstring Format
+
+Google-style docstrings provide a clean, readable format with structured sections.
+
+#### Complete Function Docstring
+
+```python
+def run_panel_ols(
+    df: pd.DataFrame,
+    dependent: str,
+    exog: List[str],
+    entity_col: str = "gvkey",
+    time_col: str = "year",
+) -> Dict[str, Any]:
+    """Execute panel regression with fixed effects.
+
+    Runs a PanelOLS regression with entity and time fixed effects,
+    clustered standard errors, and multicollinearity diagnostics.
+
+    Args:
+        df: DataFrame with panel data containing all variables.
+            Must include entity_col, time_col, dependent, and all
+            exogenous variables.
+        dependent: Name of the dependent variable column.
+        exog: List of exogenous variable column names.
+        entity_col: Column name for entity identifier.
+            Defaults to "gvkey".
+        time_col: Column name for time period.
+            Defaults to "year".
+
+    Returns:
+        Dictionary containing:
+            - model: Fitted PanelOLS object
+            - coefficients: DataFrame with beta, SE, t-stat, p-value
+            - summary: Dict with R2, adj_R2, N, F-stat
+            - diagnostics: Dict with VIF values, condition_number
+            - warnings: List of warning messages
+
+    Raises:
+        CollinearityError: If perfect collinearity detected in
+            design matrix.
+        MulticollinearityError: If VIF threshold exceeded for
+            any variable.
+        ValueError: If required columns missing from DataFrame.
+
+    Examples:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({
+        ...     "gvkey": [1, 1, 2, 2],
+        ...     "year": [2020, 2021, 2020, 2021],
+        ...     "cash_holdings": [0.1, 0.15, 0.08, 0.12],
+        ...     "uncertainty": [0.5, 0.4, 0.6, 0.55],
+        ...     "leverage": [0.3, 0.25, 0.4, 0.35],
+        ... })
+        >>> result = run_panel_ols(df, "cash_holdings", ["uncertainty", "leverage"])
+        >>> print(result["summary"]["r2"])
+        0.45
+    """
+    # Implementation...
+```
+
+#### Section Descriptions
+
+**1. Summary Line (Required)**
+
+- Single line ending with period
+- Starts with verb ("Execute", "Calculate", "Return")
+- Describes what function does
+
+**2. Extended Description (Recommended)**
+
+- More detail on behavior
+- Any important notes or caveats
+- Empty line separates from summary
+
+**3. Args Section (Required for Tier 1-2)**
+
+```python
+Args:
+    param_name: Description of parameter.
+        Can span multiple lines with proper indentation.
+    another_param: Description. Defaults to "value".
+```
+
+- List each parameter in order
+- Include type implicitly through description
+- Document default values
+- Multi-line descriptions indented
+
+**4. Returns Section (Required for non-void)**
+
+```python
+Returns:
+    Description of return value.
+
+Returns:
+    Dict containing:
+        - key1: Description of value1
+        - key2: Description of value2
+```
+
+- Describe what is returned
+- For complex returns, list structure
+- Be specific about types
+
+**5. Raises Section (Required if exceptions)**
+
+```python
+Raises:
+    ExceptionType: Description of when raised.
+    AnotherException: Different condition description.
+```
+
+- List all exceptions that can be raised
+- Describe the condition that triggers each
+- Include custom exceptions
+
+**6. Examples Section (Required for Tier 1)**
+
+```python
+Examples:
+    >>> from f1d.shared.panel_ols import run_panel_ols
+    >>> result = run_panel_ols(df, "y", ["x1", "x2"])
+    >>> print(result["summary"]["r2"])
+    0.45
+```
+
+- Use doctest format
+- Show import statement
+- Include expected output
+- Keep examples simple but realistic
+
+### 2.4 Simple Function Docstrings
+
+For simpler functions, a concise docstring is acceptable:
+
+```python
+def get_latest_output_dir(base_path: Path) -> Path:
+    """Find the most recent output directory by timestamp.
+
+    Args:
+        base_path: Base directory containing dated subdirectories.
+
+    Returns:
+        Path to the most recent dated subdirectory.
+
+    Raises:
+        OutputResolutionError: If no valid directories found.
+    """
+    ...
+```
+
+```python
+def compute_checksum(file_path: Path, length: int = 12) -> str:
+    """Compute SHA-256 checksum truncated to specified length.
+
+    Args:
+        file_path: Path to file for checksum computation.
+        length: Number of hex characters to return. Defaults to 12.
+
+    Returns:
+        Truncated hex digest string.
+    """
+    ...
+```
+
+### 2.5 Method Docstrings
+
+Methods follow the same format as functions:
+
+```python
+class DataValidator:
+    """Validates financial data for consistency and completeness."""
+
+    def validate_panel(self, df: pd.DataFrame) -> List[str]:
+        """Validate panel data structure and content.
+
+        Checks for required columns, missing values, and data types.
+
+        Args:
+            df: Panel DataFrame to validate.
+
+        Returns:
+            List of validation error messages. Empty if valid.
+
+        Examples:
+            >>> validator = DataValidator()
+            >>> errors = validator.validate_panel(df)
+            >>> len(errors)
+            0
+        """
+        ...
+
+    def _check_balance(self, df: pd.DataFrame) -> bool:
+        """Check if panel is balanced (internal method).
+
+        Args:
+            df: Panel DataFrame to check.
+
+        Returns:
+            True if panel is balanced, False otherwise.
+        """
+        ...
+```
+
+### 2.6 Class Docstrings
+
+Classes should have docstrings explaining their purpose and usage:
+
+```python
+class CollinearityError(Exception):
+    """Raised when perfect collinearity is detected in regression.
+
+    This exception indicates that the design matrix has perfect
+    multicollinearity, making regression impossible.
+
+    Attributes:
+        message: Explanation of the collinearity issue.
+        variables: List of collinear variable names.
+    """
+
+    def __init__(self, message: str, variables: List[str] = None):
+        """Initialize CollinearityError.
+
+        Args:
+            message: Explanation of the collinearity.
+            variables: List of collinear variable names.
+        """
+        self.message = message
+        self.variables = variables or []
+        super().__init__(self.message)
+```
+
+```python
+class DualWriter:
+    """Write output to both file and console simultaneously.
+
+    Provides a file-like object that duplicates writes to both
+    a log file and stdout. Used for capturing execution logs
+    while still displaying progress.
+
+    Attributes:
+        file: Open file handle for log file.
+        stdout: Reference to sys.stdout.
+
+    Examples:
+        >>> with open("output.log", "w") as f:
+        ...     writer = DualWriter(f)
+        ...     sys.stdout = writer
+        ...     print("This appears in both file and console")
+    """
+
+    def __init__(self, file: TextIO):
+        """Initialize DualWriter.
+
+        Args:
+            file: Open file handle to write logs to.
+        """
+        ...
+```
+
+### 2.7 Module Docstrings
+
+Every module MUST have a module-level docstring at the top of the file:
+
+```python
+"""Panel OLS regression utilities for F1D pipeline.
+
+This module provides standardized panel regression functions with
+fixed effects, clustered standard errors, and multicollinearity
+diagnostics. It wraps linearmodels.PanelOLS with additional
+validation and diagnostic capabilities.
+
+Main Functions:
+    run_panel_ols: Execute panel regression with fixed effects
+    compute_vif: Calculate variance inflation factors
+    check_collinearity: Detect perfect multicollinearity
+
+Example:
+    >>> from f1d.shared.panel_ols import run_panel_ols
+    >>> results = run_panel_ols(df, "cash_holdings", ["uncertainty"])
+    >>> print(results["summary"]["r2"])
+
+Dependencies:
+    linearmodels: For PanelOLS implementation
+    pandas: For DataFrame handling
+    numpy: For numerical operations
+"""
+```
+
+#### Module Docstring Requirements
+
+1. **First line:** Brief description of module purpose
+2. **Extended description:** More detail on what module provides
+3. **Main functions/classes:** List key public API
+4. **Example:** Show typical usage
+5. **Dependencies:** List required packages (if non-standard)
+
+### 2.8 Package __init__.py Docstrings
+
+Package __init__.py files should document the package:
+
+```python
+"""Shared utilities for F1D pipeline.
+
+This package contains cross-cutting utilities used across
+all stages of the data processing pipeline.
+
+Modules:
+    path_utils: Path resolution and output directory utilities
+    panel_ols: Panel OLS regression utilities
+    io_utils: Input/output utilities
+    observability: Logging and monitoring
+
+Public API:
+    get_latest_output_dir: Find latest output directory
+    run_panel_ols: Execute panel regression
+    OutputResolutionError: Path resolution exception
+    CollinearityError: Regression collinearity exception
+
+Example:
+    >>> from f1d.shared import get_latest_output_dir, run_panel_ols
+    >>> output = get_latest_output_dir("data/processed/manifest")
+"""
+
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.panel_ols import run_panel_ols, CollinearityError
+
+__all__ = [
+    "get_latest_output_dir",
+    "OutputResolutionError",
+    "run_panel_ols",
+    "CollinearityError",
+]
+```
+
+### 2.9 Docstring Anti-Patterns
+
+Avoid these common docstring mistakes:
+
+#### Anti-pattern 1: Missing or Minimal Docstring
+
+```python
+# BAD: No docstring
+def process_data(df):
+    return df.dropna()
+
+# BAD: Useless docstring
+def process_data(df):
+    """Process data."""
+    return df.dropna()
+
+# GOOD: Descriptive docstring
+def process_data(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove rows with missing values from DataFrame.
+
+    Args:
+        df: Input DataFrame with potential missing values.
+
+    Returns:
+        DataFrame with all rows containing NaN values removed.
+    """
+    return df.dropna()
+```
+
+#### Anti-pattern 2: Documentation by Assertion
+
+```python
+# BAD: Assumes reader knows what happens
+def run_regression(df, x, y):
+    """Runs the regression."""
+    ...
+
+# GOOD: Explains what and why
+def run_regression(df: pd.DataFrame, x: List[str], y: str) -> Dict:
+    """Execute OLS regression of y on x variables.
+
+    Performs ordinary least squares regression with the specified
+    dependent variable and exogenous variables.
+
+    Args:
+        df: DataFrame containing all regression variables.
+        x: List of exogenous variable column names.
+        y: Name of dependent variable column.
+
+    Returns:
+        Dictionary with coefficients, standard errors, and fit statistics.
+    """
+    ...
+```
+
+#### Anti-pattern 3: Missing Type Information
+
+```python
+# BAD: No types in docstring or signature
+def merge_data(left, right, key):
+    """Merge two dataframes."""
+    ...
+
+# GOOD: Types in both signature and docstring
+def merge_data(
+    left: pd.DataFrame,
+    right: pd.DataFrame,
+    key: str,
+) -> pd.DataFrame:
+    """Merge two DataFrames on specified key column.
+
+    Args:
+        left: Left DataFrame for merge.
+        right: Right DataFrame for merge.
+        key: Column name to merge on.
+
+    Returns:
+        Merged DataFrame.
+    """
+    ...
+```
+
+#### Anti-pattern 4: Missing Raises Documentation
+
+```python
+# BAD: Doesn't document exceptions
+def load_data(path):
+    """Load data from file."""
+    with open(path) as f:
+        return json.load(f)
+
+# GOOD: Documents all exceptions
+def load_data(path: Path) -> Dict:
+    """Load JSON data from file.
+
+    Args:
+        path: Path to JSON file.
+
+    Returns:
+        Parsed JSON data as dictionary.
+
+    Raises:
+        FileNotFoundError: If file does not exist.
+        json.JSONDecodeError: If file is not valid JSON.
+    """
+    with open(path) as f:
+        return json.load(f)
+```
+
+#### Anti-pattern 5: Examples That Don't Work
+
+```python
+# BAD: Example can't run as written
+def process(df):
+    """Process data.
+
+    Examples:
+        >>> result = process(data)  # 'data' undefined
+        >>> print(result)
+    """
+    ...
+
+# GOOD: Self-contained example
+def process(df: pd.DataFrame) -> pd.DataFrame:
+    """Process data by removing missing values.
+
+    Examples:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"a": [1, None, 3]})
+        >>> result = process(df)
+        >>> len(result)
+        2
+    """
+    ...
+```
+
+### 2.10 Docstring Checklist
+
+When writing docstrings, ensure:
+
+- [ ] Summary line ends with period
+- [ ] Summary line starts with verb
+- [ ] Args section lists all parameters
+- [ ] Args include types in description
+- [ ] Defaults documented in Args
+- [ ] Returns section for non-void functions
+- [ ] Returns describes structure for complex returns
+- [ ] Raises section lists all exceptions
+- [ ] Examples section for Tier 1 functions
+- [ ] Examples include import statements
+- [ ] Examples have expected output
+- [ ] Module has module-level docstring
+- [ ] Classes have class docstrings
+- [ ] No "documentation by assertion"
+
+---
