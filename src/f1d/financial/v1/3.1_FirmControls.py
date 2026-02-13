@@ -52,6 +52,8 @@ import yaml
 # Dynamic import for 3.4_Utils.py
 utils_path = Path(__file__).parent / "3.4_Utils.py"
 spec = importlib.util.spec_from_file_location("utils", utils_path)
+if spec is None or spec.loader is None:
+    raise ImportError(f"Could not load module from {utils_path}")
 utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
@@ -904,6 +906,8 @@ def main() -> int:
 
     dual_writer.close()
     sys.stdout = dual_writer.terminal
+
+    return 0
 
 
 if __name__ == "__main__":

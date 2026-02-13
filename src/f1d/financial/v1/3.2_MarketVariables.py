@@ -61,6 +61,9 @@ utils_path = Path(__file__).parent / "3.4_Utils.py"
 
 spec = importlib.util.spec_from_file_location("utils", utils_path)
 
+if spec is None or spec.loader is None:
+    raise ImportError(f"Could not load module from {utils_path}")
+
 utils = importlib.util.module_from_spec(spec)
 
 sys.modules["utils"] = utils
@@ -239,223 +242,11 @@ def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
 
     print(f"Saved: {stats_path.name}")
 
+    # ==============================================================================
 
-# ==============================================================================
+    # Observability Helper Functions (imported from observability_utils)
 
-# Observability Helper Functions
-
-# ==============================================================================
-
-
-def get_process_memory_mb() -> Dict[str, float]:
-    """
-
-    Get current process memory usage in MB.
-
-
-
-    Returns:
-
-        Dict with keys:
-
-        - rss_mb: Resident Set Size (actual physical memory in use)
-
-        - vms_mb: Virtual Memory Size (total memory allocated)
-
-        - percent: Memory usage as percentage of system memory
-
-    """
-
-    process = psutil.Process()
-
-    mem_info = process.memory_info()
-
-    mem_percent = process.memory_percent()
-
-    return {
-        "rss_mb": mem_info.rss / (1024 * 1024),
-        "vms_mb": mem_info.vms / (1024 * 1024),
-        "percent": mem_percent,
-    }
-
-
-def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
-    """
-
-    Calculate throughput in rows per second.
-
-
-
-    Args:
-
-        rows_processed: Number of rows processed
-
-        duration_seconds: Duration in seconds
-
-
-
-    Returns:
-
-        Throughput in rows per second (rounded to 2 decimals)
-
-        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
-
-    """
-
-    if duration_seconds <= 0:
-        return 0.0
-
-    return round(rows_processed / duration_seconds, 2)
-
-
-def detect_anomalies_zscore(df, columns, threshold=3.0):
-    """
-
-    Detect anomalies using z-score (standard deviation) method.
-
-
-
-    Deterministic: Same input produces same output.
-
-
-
-    Args:
-
-        df: DataFrame to analyze
-
-        columns: List of column names to analyze
-
-        threshold: Number of standard deviations for cutoff (default 3.0)
-
-
-
-    Returns:
-
-        Dict mapping column_name -> anomaly info with keys:
-
-        - count: Number of anomalies detected
-
-        - sample_anomalies: List of first 10 anomaly indices (for review)
-
-        - threshold: Threshold used
-
-        - mean: Column mean (rounded to 4 decimals)
-
-        - std: Column standard deviation (rounded to 4 decimals)
-
-    """
-
-    anomalies = {}
-
-    for col in columns:
-        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
-            continue
-
-        series = df[col].dropna()
-
-        if len(series) == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-
-            continue
-
-        mean = series.mean()
-
-        std = series.std()
-
-        if std == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-
-            continue
-
-        z_scores = abs((series - mean) / std)
-
-        anomaly_mask = z_scores > threshold
-
-        anomaly_indices = df[anomaly_mask].index.tolist()
-
-        anomalies[col] = {
-            "count": int(anomaly_mask.sum()),
-            "sample_anomalies": anomaly_indices[:10],
-            "threshold": threshold,
-            "mean": round(mean, 4),
-            "std": round(std, 4),
-        }
-
-    return anomalies
-
-
-def detect_anomalies_iqr(df, columns, multiplier=3.0):
-    """
-
-    Detect anomalies using IQR (Interquartile Range) method.
-
-
-
-    Deterministic: Same input produces same output.
-
-
-
-    Args:
-
-        df: DataFrame to analyze
-
-        columns: List of column names to analyze
-
-        multiplier: IQR multiplier for cutoff (default 3.0 = strong outliers)
-
-
-
-    Returns:
-
-        Dict mapping column_name -> anomaly info with keys:
-
-        - count: Number of anomalies detected
-
-        - sample_anomalies: List of first 10 anomaly indices (for review)
-
-        - iqr_bounds: List of [lower_bound, upper_bound] (rounded to 4 decimals)
-
-    """
-
-    anomalies = {}
-
-    for col in columns:
-        if col not in df.columns or not pd.api.types.is_numeric_dtype(df[col]):
-            continue
-
-        series = df[col].dropna()
-
-        if len(series) == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-
-            continue
-
-        q1 = series.quantile(0.25)
-
-        q3 = series.quantile(0.75)
-
-        iqr = q3 - q1
-
-        if iqr == 0:
-            anomalies[col] = {"count": 0, "sample_anomalies": []}
-
-            continue
-
-        lower_bound = q1 - multiplier * iqr
-
-        upper_bound = q3 + multiplier * iqr
-
-        anomaly_mask = (series < lower_bound) | (series > upper_bound)
-
-        anomaly_indices = df[anomaly_mask].index.tolist()
-
-        anomalies[col] = {
-            "count": int(anomaly_mask.sum()),
-            "sample_anomalies": anomaly_indices[:10],
-            "iqr_bounds": [round(lower_bound, 4), round(upper_bound, 4)],
-        }
-
-    return anomalies
+    # ==============================================================================
 
 
 # ==============================================================================
@@ -1285,6 +1076,8 @@ def main() -> int:
     dual_writer.close()
 
     sys.stdout = dual_writer.terminal
+
+    return 0
 
 
 if __name__ == "__main__":

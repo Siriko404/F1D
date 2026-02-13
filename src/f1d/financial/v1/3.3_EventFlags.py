@@ -48,6 +48,8 @@ import yaml
 # Dynamic import for 3.4_Utils.py
 utils_path = Path(__file__).parent / "3.4_Utils.py"
 spec = importlib.util.spec_from_file_location("utils", utils_path)
+if spec is None or spec.loader is None:
+    raise ImportError(f"Could not load module from {utils_path}")
 utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
@@ -178,46 +180,8 @@ def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
 
 
 # ==============================================================================
-# Observability Helper Functions
+# Observability Helper Functions (imported from observability_utils)
 # ==============================================================================
-
-
-def get_process_memory_mb() -> Dict[str, float]:
-    """
-    Get current process memory usage in MB.
-
-    Returns:
-        Dict with keys:
-        - rss_mb: Resident Set Size (actual physical memory in use)
-        - vms_mb: Virtual Memory Size (total memory allocated)
-        - percent: Memory usage as percentage of system memory
-    """
-    process = psutil.Process()
-    mem_info = process.memory_info()
-    mem_percent = process.memory_percent()
-
-    return {
-        "rss_mb": mem_info.rss / (1024 * 1024),
-        "vms_mb": mem_info.vms / (1024 * 1024),
-        "percent": mem_percent,
-    }
-
-
-def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
-    """
-    Calculate throughput in rows per second.
-
-    Args:
-        rows_processed: Number of rows processed
-        duration_seconds: Duration in seconds
-
-    Returns:
-        Throughput in rows per second (rounded to 2 decimals)
-        Returns 0.0 if duration_seconds <= 0 to avoid division by zero
-    """
-    if duration_seconds <= 0:
-        return 0.0
-    return round(rows_processed / duration_seconds, 2)
 
 
 # ==============================================================================
@@ -351,7 +315,7 @@ def compute_takeover_flags(manifest: pd.DataFrame, sdc: pd.DataFrame) -> pd.Data
     print("=" * 60)
 
     # Create lookup: cusip6 -> list of (date_announced, deal_attitude)
-    sdc_by_cusip = {}
+    sdc_by_cusip: Dict[str, List[Dict[str, Any]]] = {}
     for _, row in sdc.iterrows():
         cusip6 = row["target_cusip6"]
         if pd.notna(row["date_announced"]):
@@ -679,6 +643,8 @@ def main() -> int:
 
     dual_writer.close()
     sys.stdout = dual_writer.terminal
+
+    return 0
 
 
 if __name__ == "__main__":
