@@ -386,6 +386,415 @@ The src-layout pattern (placing code in `src/package/`) is recommended by PyPA o
 
 ---
 
+## 2. Module Organization (ARCH-02)
+
+This section defines the package structure, __init__.py conventions, and module organization patterns for the F1D project.
+
+### Package Structure
+
+The F1D package follows a hierarchical structure with clear separation of concerns:
+
+```
+src/f1d/                    # Main package (root)
+├── __init__.py             # Package metadata and public API
+│
+├── sample/                 # Stage 1: Sample construction
+│   ├── __init__.py
+│   ├── build_manifest.py   # Manifest construction
+│   └── filters.py          # Sample filters
+│
+├── text/                   # Stage 2: Text processing
+│   ├── __init__.py
+│   ├── tokenize.py         # Tokenization
+│   └── uncertainty.py      # Uncertainty measures
+│
+├── financial/              # Stage 3: Financial features
+│   ├── __init__.py
+│   ├── variables.py        # Variable construction
+│   └── investment.py       # Investment metrics
+│
+├── econometric/            # Stage 4: Econometric analysis
+│   ├── __init__.py
+│   ├── regressions.py      # Regression models
+│   └── diagnostics.py      # Model diagnostics
+│
+└── shared/                 # Shared utilities (cross-cutting)
+    ├── __init__.py
+    ├── path_utils.py       # Path resolution
+    ├── panel_ols.py        # Panel OLS utilities
+    ├── io_utils.py         # I/O utilities
+    └── observability/      # Logging and monitoring
+        ├── __init__.py
+        ├── logging.py      # Logging configuration
+        └── stats.py        # Execution statistics
+```
+
+### __init__.py Pattern
+
+Every package directory MUST have an `__init__.py` file. This file serves three purposes:
+
+1. **Marks directory as package**: Enables imports
+2. **Documents package purpose**: Via docstring
+3. **Defines public API**: Via re-exports
+
+#### Required Content
+
+```python
+# src/f1d/__init__.py
+"""F1D Data Processing Pipeline for CEO Uncertainty Research.
+
+This package implements a 4-stage data processing pipeline:
+1. Sample Construction - Build analyst-CEO manifest
+2. Text Processing - Tokenize and analyze conference calls
+3. Financial Features - Construct financial variables
+4. Econometric Analysis - Run panel regressions
+
+Example:
+    >>> from f1d import get_latest_output_dir
+    >>> output = get_latest_output_dir("data/processed/manifest")
+
+Attributes:
+    __version__: Package version (semantic versioning)
+    __author__: Package author
+"""
+
+__version__ = "5.0.0"
+__author__ = "Thesis Author"
+
+# Public API re-exports
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.panel_ols import run_panel_ols
+
+__all__ = [
+    # Path utilities
+    "get_latest_output_dir",
+    "OutputResolutionError",
+    # Econometric utilities
+    "run_panel_ols",
+]
+```
+
+#### Subpackage __init__.py Pattern
+
+```python
+# src/f1d/shared/__init__.py
+"""Shared utilities for F1D pipeline.
+
+This package contains cross-cutting utilities used across
+all stages of the data processing pipeline.
+
+Modules:
+    path_utils: Path resolution and output directory utilities
+    panel_ols: Panel OLS regression utilities
+    io_utils: Input/output utilities
+    observability: Logging and monitoring
+"""
+
+# Import key functions for clean API
+from f1d.shared.path_utils import (
+    get_latest_output_dir,
+    get_output_path,
+    OutputResolutionError,
+)
+from f1d.shared.panel_ols import run_panel_ols, CollinearityError
+
+__all__ = [
+    "get_latest_output_dir",
+    "get_output_path",
+    "OutputResolutionError",
+    "run_panel_ols",
+    "CollinearityError",
+]
+```
+
+#### Stage Package __init__.py Pattern
+
+```python
+# src/f1d/financial/__init__.py
+"""Financial feature engineering for F1D pipeline.
+
+Stage 3 of the pipeline - constructs financial variables
+from Compustat and CRSP data.
+
+Main Functions:
+    construct_variables: Build all financial variables
+    calculate_investment: Calculate investment metrics
+"""
+
+from f1d.financial.variables import construct_variables
+from f1d.financial.investment import calculate_investment
+
+__all__ = [
+    "construct_variables",
+    "calculate_investment",
+]
+```
+
+### __init__.py Best Practices
+
+#### DO:
+- Include comprehensive docstring with purpose and usage
+- Define `__version__` in top-level package only
+- Use `__all__` to explicitly declare public API
+- Re-export commonly used functions for convenience
+- Keep the file minimal - no heavy logic
+
+#### DON'T:
+- Put complex logic in `__init__.py`
+- Import everything from submodules (only public API)
+- Create circular dependencies
+- Leave `__init__.py` empty without docstring
+- Execute slow operations at import time
+
+### Module Example
+
+```python
+# src/f1d/shared/path_utils.py
+"""Path resolution utilities for F1D pipeline.
+
+This module provides utilities for resolving paths to data files
+and output directories, handling versioning and date-based naming.
+
+Example:
+    >>> from f1d.shared.path_utils import get_latest_output_dir
+    >>> latest = get_latest_output_dir("data/processed/manifest")
+    >>> print(latest)
+    data/processed/manifest/2024-01-15
+"""
+
+from pathlib import Path
+from typing import Optional
+from datetime import datetime
+
+
+class OutputResolutionError(Exception):
+    """Raised when output directory cannot be resolved."""
+    pass
+
+
+def get_latest_output_dir(base_path: str) -> Path:
+    """Find the most recent output directory.
+
+    Args:
+        base_path: Base directory containing dated subdirectories
+
+    Returns:
+        Path to the most recent dated subdirectory
+
+    Raises:
+        OutputResolutionError: If no valid directories found
+
+    Example:
+        >>> get_latest_output_dir("data/processed/manifest")
+        PosixPath('data/processed/manifest/2024-01-15')
+    """
+    base = Path(base_path)
+    if not base.exists():
+        raise OutputResolutionError(f"Base path does not exist: {base_path}")
+
+    # Find all dated directories
+    dated_dirs = [d for d in base.iterdir() if d.is_dir()]
+
+    if not dated_dirs:
+        raise OutputResolutionError(f"No output directories found in {base_path}")
+
+    # Sort by name (assumes YYYY-MM-DD format)
+    dated_dirs.sort(reverse=True)
+
+    return dated_dirs[0]
+```
+
+### Module Tier System
+
+Modules are organized into tiers based on their role and quality requirements:
+
+#### Tier 1: Core Shared Utilities (Highest Quality Bar)
+
+**Location:** `src/f1d/shared/`
+
+**Characteristics:**
+- Used across all stages
+- 100% test coverage required
+- Comprehensive docstrings
+- Type hints required
+- Breaking changes require deprecation period
+
+**Examples:**
+- `path_utils.py` - Path resolution
+- `panel_ols.py` - Panel OLS utilities
+- `io_utils.py` - I/O utilities
+
+**Quality Requirements:**
+- Test coverage: 100%
+- Documentation: Complete with examples
+- Review: Required for all changes
+- Stability: Breaking changes deprecated for 30+ days
+
+#### Tier 2: Stage-Specific Modules (Standard Quality)
+
+**Location:** `src/f1d/{stage}/`
+
+**Characteristics:**
+- Specific to one pipeline stage
+- 80%+ test coverage required
+- Standard docstrings
+- Type hints recommended
+
+**Examples:**
+- `sample/build_manifest.py`
+- `text/uncertainty.py`
+- `financial/variables.py`
+- `econometric/regressions.py`
+
+**Quality Requirements:**
+- Test coverage: 80%+
+- Documentation: Standard docstrings
+- Review: Recommended for significant changes
+- Stability: Normal change process
+
+#### Tier 3: Scripts and One-offs (Lower Quality Bar)
+
+**Location:** `scripts/` or stage-specific `scripts/` subdirectory
+
+**Characteristics:**
+- Ad-hoc analysis or data exploration
+- May not have tests
+- Minimal documentation acceptable
+- Not imported by other modules
+
+**Examples:**
+- Data validation scripts
+- One-time data migrations
+- Exploratory analysis
+
+**Quality Requirements:**
+- Test coverage: Optional
+- Documentation: Basic header comment
+- Review: Optional
+- Stability: No guarantees
+
+### Import Conventions
+
+#### Absolute Imports (Preferred)
+
+```python
+# CORRECT: Absolute imports
+from f1d.shared.path_utils import get_latest_output_dir
+from f1d.financial.variables import construct_variables
+from f1d.econometric.regressions import run_panel_ols
+
+# INCORRECT: Relative imports (avoid)
+from ..shared.path_utils import get_latest_output_dir
+from .variables import construct_variables
+```
+
+#### Import Order
+
+Follow PEP 8 import order:
+
+```python
+# Standard library
+import os
+from pathlib import Path
+from typing import Dict, List, Optional
+
+# Third-party packages
+import numpy as np
+import pandas as pd
+from linearmodels import PanelOLS
+
+# Local imports
+from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.logging import get_logger
+```
+
+### Anti-Patterns to Avoid
+
+#### 1. Empty __init__.py Without Docstring
+
+```python
+# BAD: Empty file
+# (literally empty)
+
+# GOOD: At minimum, has docstring
+"""Shared utilities for F1D pipeline."""
+```
+
+#### 2. Heavy Logic in __init__.py
+
+```python
+# BAD: Heavy computation at import time
+from f1d.shared.path_utils import get_latest_output_dir
+LATEST_DATA = get_latest_output_dir("data/processed")  # SLOW!
+
+# GOOD: Lazy evaluation
+def get_latest_data():
+    """Get latest data directory (lazy)."""
+    return get_latest_output_dir("data/processed")
+```
+
+#### 3. Circular Dependencies
+
+```python
+# BAD: module_a imports module_b, module_b imports module_a
+# module_a.py
+from .module_b import func_b
+
+# module_b.py
+from .module_a import func_a
+
+# GOOD: Refactor shared logic to third module
+# shared_logic.py
+def shared_func():
+    pass
+
+# module_a.py
+from .shared_logic import shared_func
+
+# module_b.py
+from .shared_logic import shared_func
+```
+
+#### 4. Importing Everything
+
+```python
+# BAD: Import everything
+from f1d.shared.path_utils import *
+
+# GOOD: Import only what you need
+from f1d.shared.path_utils import (
+    get_latest_output_dir,
+    OutputResolutionError,
+)
+```
+
+### Rationale
+
+#### Why __init__.py in Every Directory?
+
+1. **Explicit package structure**: Clear what is importable
+2. **Public API control**: Use `__all__` to define interface
+3. **Documentation**: Docstrings document package purpose
+4. **Re-exports**: Provide convenient import paths
+5. **Namespace management**: Prevent accidental shadowing
+
+#### Why Absolute Imports Over Relative?
+
+1. **Clarity**: Import path shows exact location
+2. **Refactoring**: Moving files doesn't break imports
+3. **Tooling**: IDEs and linters work better
+4. **Standard**: PEP 8 recommends absolute imports
+5. **Debugging**: Easier to trace import errors
+
+#### Why Module Tiers?
+
+1. **Risk management**: Higher tiers have higher stakes
+2. **Resource allocation**: Focus quality efforts on critical code
+3. **Clear expectations**: Developers know the bar for each tier
+4. **Scalability**: Allows rapid development where appropriate
+
+---
+
 ## References
 
 - [Python Packaging Authority - src-layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
