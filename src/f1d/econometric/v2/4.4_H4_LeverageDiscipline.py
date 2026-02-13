@@ -194,7 +194,7 @@ def one_tailed_pvalue(
         raise ValueError("alternative must be 'less' or 'greater'")
 
 
-def run_all_h4_regressions(df: pd.DataFrame, dw=None) -> dict:
+def run_all_h4_regressions(df: pd.DataFrame, dw: Any = None) -> Dict[str, Any]:
     """
     Run H4 regressions for all 6 uncertainty measures.
 
@@ -252,7 +252,7 @@ def run_all_h4_regressions(df: pd.DataFrame, dw=None) -> dict:
         "earnings_volatility",
     ]
 
-    results = {}
+    results: Dict[str, Any] = {}
 
     for dv in dependent_vars:
         if dw:
@@ -348,7 +348,9 @@ def run_all_h4_regressions(df: pd.DataFrame, dw=None) -> dict:
     return results
 
 
-def save_regression_results(results: dict, output_dir: Path, dw=None):
+def save_regression_results(
+    results: Dict[str, Any], output_dir: Path, dw: Any = None
+) -> Optional[Path]:
     """
     Save all regression results to parquet and JSON.
 
@@ -404,7 +406,9 @@ def save_regression_results(results: dict, output_dir: Path, dw=None):
     return results_path
 
 
-def generate_h4_summary(results: dict, output_dir: Path, dw=None):
+def generate_h4_summary(
+    results: Dict[str, Any], output_dir: Path, dw: Any = None
+) -> Optional[Path]:
     """
     Generate H4_RESULTS.md summary with hypothesis support table.
 
@@ -506,7 +510,9 @@ def generate_h4_summary(results: dict, output_dir: Path, dw=None):
     return summary_path
 
 
-def generate_latex_table(results: dict, output_dir: Path, dw=None):
+def generate_latex_table(
+    results: Dict[str, Any], output_dir: Path, dw: Any = None
+) -> Optional[Path]:
     """
     Generate LaTeX coefficient table with 6 columns (one per DV).
 
@@ -1343,7 +1349,9 @@ def generate_data_summary_markdown(df, vif_result, output_dir, dw=None):
     return output_path
 
 
-def save_stats(stats, output_dir, dw=None):
+def save_stats_with_log(
+    stats: Dict[str, Any], output_dir: Path, dw: Any = None
+) -> None:
     """Save statistics dictionary to JSON file"""
     stats_path = output_dir / "stats.json"
     with open(stats_path, "w") as f:
@@ -1351,8 +1359,6 @@ def save_stats(stats, output_dir, dw=None):
 
     if dw:
         dw.write(f"Saved: {stats_path.name}\n")
-
-    return stats_path
 
 
 def load_existing_analysis_dataset(root, dw=None):
@@ -1729,7 +1735,7 @@ def main():
         stats["memory"]["rss_mb_start"] = start_mem["rss_mb"]
         stats["memory"]["rss_mb_end"] = end_mem["rss_mb"]
 
-        save_stats(stats, output_dir, dw)
+        save_stats_with_log(stats, output_dir, dw)
 
         # Summary
         dw.write("\n" + "=" * 80 + "\n")

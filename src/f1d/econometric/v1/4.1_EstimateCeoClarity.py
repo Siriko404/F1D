@@ -43,6 +43,7 @@ import warnings
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 
@@ -110,7 +111,7 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
+    required_files: Dict[str, Path] = {}
 
     required_steps = {
         "2.2_ConstructVariables": "linguistic_variables.parquet",
@@ -125,7 +126,7 @@ def check_prerequisites(root):
 # Configuration
 # ==============================================================================
 
-CONFIG = {
+CONFIG: Dict[str, Any] = {
     "dependent_var": "Manager_QA_Uncertainty_pct_mean",
     "linguistic_controls": [
         "Manager_Pres_Uncertainty_pct_mean",
@@ -721,7 +722,7 @@ def main(year_start=None, year_end=None, model=None):
     start_iso = start_time.isoformat()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.1_EstimateCeoClarity",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},

@@ -42,6 +42,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 
@@ -81,7 +82,7 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
+    required_files: Dict[str, Path] = {}
 
     required_steps = {
         "2.2_ConstructVariables": "linguistic_variables.parquet",
@@ -147,7 +148,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # Configuration
 # ==============================================================================
 
-CONFIG = {
+CONFIG: Dict[str, Any] = {
     "dependent_var": "CEO_QA_Uncertainty_pct",
     "linguistic_controls": [
         "CEO_Pres_Uncertainty_pct",
@@ -170,7 +171,7 @@ CONFIG = {
 # ==============================================================================
 
 
-def load_all_data(root, year_start, year_end, stats=None):
+def load_all_data_for_ceo(root, year_start, year_end, stats=None):
     """Load and merge all input data sources."""
     print("\n" + "=" * 60)
     print("Loading and merging data")
@@ -658,7 +659,7 @@ def main(year_start=None, year_end=None):
     mem_start = get_process_memory_mb()
     [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.1.1_EstimateCeoClarity_CeoSpecific",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},

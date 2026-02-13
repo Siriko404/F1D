@@ -66,7 +66,7 @@ from f1d.shared.diagnostics import MulticollinearityError, check_multicollineari
 from f1d.shared.observability_utils import (
     DualWriter,
     get_process_memory_mb,
-    save_stats,
+    save_stats as shared_save_stats,  # type: ignore[attr-defined]
 )
 from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.path_utils import (
@@ -551,7 +551,7 @@ def run_all_h1_regressions(
     control_vars: List[str],
     vif_threshold: float = 5.0,
     dw: Any = None,
-) -> List[Dict[str, Any]]:
+) -> List[Optional[Dict[str, Any]]]:
     """
     Run all H1 regressions: 6 uncertainty measures x 4 specifications = 24 total.
 
@@ -574,16 +574,17 @@ def run_all_h1_regressions(
                 dw,
             )
 
-            results.append(result)
+            results.append(result)  # type: ignore[arg-type]
 
             if dw:
-                dw.write(
-                    f"  N={result['n_obs']}, R2={result['r_squared']:.4f}, "
-                    f"beta1={result['beta1']:.4f} (p1={result['beta1_p_one']:.4f}), "
-                    f"beta3={result['beta3']:.4f} (p3={result['beta3_p_one']:.4f})\n"
-                )
+                if result is not None:
+                    dw.write(
+                        f"  N={result['n_obs']}, R2={result['r_squared']:.4f}, "
+                        f"beta1={result['beta1']:.4f} (p1={result['beta1_p_one']:.4f}), "
+                        f"beta3={result['beta3']:.4f} (p3={result['beta3_p_one']:.4f})\n"
+                    )
 
-    return results
+    return results  # type: ignore[return-value]
 
 
 # ==============================================================================
@@ -593,7 +594,7 @@ def run_all_h1_regressions(
 
 def save_regression_results(
     results: List[Dict[str, Any]], output_dir: Path, dw: Any = None
-) -> None:
+) -> pd.DataFrame:
     """
     Save regression results to parquet file.
 
@@ -654,7 +655,7 @@ def save_regression_results(
 
 def generate_results_markdown(
     results: List[Dict[str, Any]], output_dir: Path, dw: Any = None
-) -> None:
+) -> Optional[Path]:
     """
     Generate human-readable markdown summary of H1 regression results.
     """
@@ -803,7 +804,9 @@ def generate_results_markdown(
     return output_path
 
 
-def save_stats(stats: Dict[str, Any], output_dir: Path, dw: Any = None) -> None:
+def save_stats(
+    stats: Dict[str, Any], output_dir: Path, dw: Any = None
+) -> Optional[Path]:
     """Save statistics dictionary to JSON file"""
     stats_path = output_dir / "stats.json"
     with open(stats_path, "w") as f:
@@ -901,7 +904,7 @@ def main() -> int:
 
         if args.dry_run:
             dw.write("\n[Dry run] Validation complete. Exiting.\n")
-            return
+            return 0
 
         # Aggregate speech to firm-year
         dw.write("\n[3] Aggregating speech data to firm-year level...\n")
@@ -935,6 +938,9 @@ def main() -> int:
             reg_df, UNCERTAINTY_MEASURES, SPECS, CONTROL_VARS, vif_threshold=5.0, dw=dw
         )
 
+        # Filter out None results (regressions that failed)
+        valid_results = [r for r in results if r is not None]
+
         stats["regressions"] = [
             {
                 "spec": r["spec"],
@@ -948,13 +954,13 @@ def main() -> int:
                 "beta3_p_one": r["beta3_p_one"],
                 "beta3_signif": r["beta3_signif"],
             }
-            for r in results
+            for r in valid_results
         ]
 
         # Save outputs
         dw.write("\n[6] Saving outputs...\n")
-        results_df = save_regression_results(results, paths["output_dir"], dw)
-        generate_results_markdown(results, paths["output_dir"], dw)
+        results_df = save_regression_results(valid_results, paths["output_dir"], dw)
+        generate_results_markdown(valid_results, paths["output_dir"], dw)
 
         stats["output"]["regression_results"] = {
             "file": "H1_Regression_Results.parquet",
@@ -977,15 +983,15 @@ def main() -> int:
         dw.write("EXECUTION SUMMARY\n")
         dw.write("=" * 80 + "\n")
         dw.write(f"  Duration: {stats['timing']['duration_seconds']:.2f} seconds\n")
-        dw.write(f"  Regressions: {len(results)}\n")
+        dw.write(f"  Regressions: {len(valid_results)}\n")
         dw.write(f"  Output directory: {paths['output_dir']}\n")
 
         # Count significant results
         primary_signif_h1a = sum(
-            1 for r in results if r["spec"] == "primary" and r["beta1_signif"]
+            1 for r in valid_results if r["spec"] == "primary" and r["beta1_signif"]
         )
         primary_signif_h1b = sum(
-            1 for r in results if r["spec"] == "primary" and r["beta3_signif"]
+            1 for r in valid_results if r["spec"] == "primary" and r["beta3_signif"]
         )
 
         dw.write(
@@ -1005,6 +1011,8 @@ def main() -> int:
         raise
     finally:
         dw.close()
+
+    return 0
 
 
 if __name__ == "__main__":
