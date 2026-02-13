@@ -285,15 +285,39 @@ Explicitly excluded from v4.0:
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement Category | Requirements | Phase |
-|---------------------|--------------|-------|
-| STR-01 through STR-05 | Folder structure consolidation | 64 |
-| IO-01 through IO-08 | Config-driven I/O | 65 |
-| LOG-01 through LOG-04 | Logging standardization | 66 |
-| NAM-01 through NAM-03 | Naming conventions | 67 |
-| VER-01 through VER-08 | Verification | 68 |
+| Requirement Category | Requirements | Phase | Sub-requirements | Status |
+|---------------------|--------------|-------|------------------|--------|
+| STR-01 | Merge 3_Financial_V3 into 3_Financial_V2 | 64 | 5 | Pending |
+| STR-02 | Merge 4_Econometric_V3 into 4_Econometric_V2 | 64 | 4 | Pending |
+| STR-03 | Merge 5_Financial_V3 into V2 folders | 64 | 7 | Pending |
+| STR-04 | Remove V3 folders | 64 | 4 | Pending |
+| STR-05 | Update Output folder structure | 64 | 5 | Pending |
+| IO-01 | Define Config-Driven Path Standard | 65 | 5 | Pending |
+| IO-02 | V1 Sample Scripts I/O | 65 | 5 | Pending |
+| IO-03 | V1 Text Scripts I/O | 65 | 5 | Pending |
+| IO-04 | V1 Financial Scripts I/O | 65 | 5 | Pending |
+| IO-05 | V1 Econometric Scripts I/O | 65 | 5 | Pending |
+| IO-06 | V2 Financial Scripts I/O | 65 | 13 | Pending |
+| IO-07 | V2 Econometric Scripts I/O | 65 | 12 | Pending |
+| IO-08 | Shared Utilities I/O Support | 65 | 4 | Pending |
+| LOG-01 | Audit Current Logging | 66 | 7 | Pending |
+| LOG-02 | Define Standard Logging Pattern | 66 | 5 | Pending |
+| LOG-03 | V1 Scripts Logging Standardization | 66 | 5 | Pending |
+| LOG-04 | V2 Scripts Logging Standardization | 66 | 3 | Pending |
+| NAM-01 | Define Naming Standard | 67 | 4 | Pending |
+| NAM-02 | Audit Current Names | 67 | 7 | Pending |
+| NAM-03 | Rename Non-Compliant Scripts | 67 | 5 | Pending |
+| VER-01 | V1 Sample Verification | 68 | 5 | Pending |
+| VER-02 | V1 Text Verification | 68 | 4 | Pending |
+| VER-03 | V1 Financial Verification | 68 | 5 | Pending |
+| VER-04 | V1 Econometric Verification | 68 | 4 | Pending |
+| VER-05 | V2 Financial Verification | 68 | 3 | Pending |
+| VER-06 | V2 Econometric Verification | 68 | 3 | Pending |
+| VER-07 | Test Suite Verification | 68 | 3 | Pending |
+| VER-08 | End-to-End Pipeline Verification | 68 | 4 | Pending |
 
-**Total Requirements:** 120 (mapping TBD)
+**Total Requirements:** 28 categories, 134 sub-requirements
+**Coverage:** 100% mapped to phases 64-68
 
 ---
 
@@ -304,4 +328,4 @@ All v3.0 requirements have been completed. See git history for details.
 ---
 
 *Requirements defined: 2026-02-12*
-*Last updated: 2026-02-12 after initial definition*
+*Last updated: 2026-02-12 after roadmap creation*
