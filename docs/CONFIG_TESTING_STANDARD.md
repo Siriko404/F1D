@@ -545,3 +545,402 @@ class DataSettings(BaseSettings):
 
 ---
 
+## 2. Environment Variable Handling (CONF-02)
+
+This section defines the pattern for secure handling of secrets and optional dependencies via environment variables.
+
+### EnvConfig Pattern
+
+Use pydantic-settings with SecretStr for secure secret management:
+
+```python
+# src/f1d/shared/env.py
+"""Environment variable handling with validation.
+
+This module provides secure handling of secrets and environment-specific
+configuration using pydantic-settings with SecretStr for sensitive data.
+
+Example:
+    >>> from f1d.shared.env import EnvConfig
+    >>> env = EnvConfig()
+    >>> if env.wrds_password:
+    ...     password = env.get_wrds_password()  # Only when needed
+"""
+
+import os
+from typing import Optional
+from pydantic import Field, SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class EnvConfig(BaseSettings):
+    """Environment-specific configuration with secrets handling.
+
+    Configuration is loaded from .env file with environment variable
+    overrides. Secrets are protected with SecretStr type.
+
+    Attributes:
+        wrds_username: Username for WRDS data access.
+        wrds_password: Password for WRDS (SecretStr - never logged).
+        linearmodels_enabled: Flag for optional linearmodels dependency.
+        api_timeout_seconds: Timeout for external API calls.
+        max_retries: Maximum retry attempts for API calls.
+
+    Example:
+        >>> env = EnvConfig()
+        >>> print(env.wrds_username)  # OK to print
+        >>> print(env.wrds_password)  # Shows 'SecretStr(...)'
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
+
+    # Secrets (use SecretStr to prevent logging)
+    wrds_username: Optional[str] = None
+    wrds_password: Optional[SecretStr] = None  # Never logged in plain text
+
+    # Optional dependency flags
+    linearmodels_enabled: bool = Field(
+        default=False,
+        alias="LINEARMODELS_ENABLED"
+    )
+
+    # API configuration
+    api_timeout_seconds: int = Field(default=30, ge=1, le=300)
+    max_retries: int = Field(default=3, ge=0, le=10)
+
+    def get_wrds_password(self) -> Optional[str]:
+        """Safely retrieve WRDS password.
+
+        Returns:
+            Password string or None if not configured.
+
+        Note:
+            Only call this when the password is actually needed.
+            Never log or print the returned value.
+        """
+        if self.wrds_password:
+            return self.wrds_password.get_secret_value()
+        return None
+
+
+# Usage
+env = EnvConfig()
+if env.linearmodels_enabled:
+    import linearmodels  # Only import when enabled
+```
+
+### .env File Structure
+
+Create a `.env` file for local secrets (gitignored):
+
+```bash
+# .env (DO NOT COMMIT)
+# WRDS credentials
+WRDS_USERNAME=your_username
+WRDS_PASSWORD=your_password
+
+# Optional dependencies
+LINEARMODELS_ENABLED=true
+
+# API settings
+API_TIMEOUT_SECONDS=60
+MAX_RETRIES=5
+```
+
+### .env.example Template
+
+Always provide a template file (tracked in git):
+
+```bash
+# .env.example (commit this file)
+# Copy to .env and fill in values
+
+# WRDS credentials (required for data download)
+WRDS_USERNAME=your_wrds_username
+WRDS_PASSWORD=your_wrds_password
+
+# Optional dependencies
+LINEARMODELS_ENABLED=false
+
+# API settings
+API_TIMEOUT_SECONDS=30
+MAX_RETRIES=3
+```
+
+### Environment Variable Naming Convention
+
+Use the `F1D_` prefix with `__` delimiter for nested values:
+
+| Environment Variable | Configuration Path |
+|---------------------|-------------------|
+| `F1D_DATA__YEAR_START=2005` | `config.data.year_start` |
+| `F1D_LOGGING__LEVEL=DEBUG` | `config.logging.level` |
+| `F1D_DETERMINISM__RANDOM_SEED=123` | `config.determinism.random_seed` |
+
+**Example:**
+```bash
+# Override configuration via environment
+export F1D_DATA__YEAR_START=2005
+export F1D_DATA__YEAR_END=2020
+export F1D_LOGGING__LEVEL=DEBUG
+
+# Python code automatically picks up overrides
+config = ProjectConfig.from_yaml(Path("config/project.yaml"))
+# config.data.year_start == 2005 (from env, not YAML)
+```
+
+### Security Best Practices
+
+#### DO:
+- Use `SecretStr` for all passwords, API keys, and tokens
+- Access secrets via `.get_secret_value()` only when needed
+- Keep `.env` in `.gitignore`
+- Provide `.env.example` for documentation
+- Use environment variables for deployment-specific settings
+
+#### DON'T:
+- Log `SecretStr` values directly (shows `SecretStr(...)`)
+- Print configuration dictionaries that contain secrets
+- Commit `.env` files to version control
+- Store secrets in YAML configuration files
+- Use plain strings for sensitive configuration
+
+### Logging Secrets Safely
+
+```python
+# BAD: Logging configuration directly
+logger.info(f"Configuration: {config.dict()}")  # May expose secrets
+
+# GOOD: Log non-sensitive configuration only
+logger.info(
+    "Configuration loaded",
+    extra={
+        "project": config.name,
+        "version": config.version,
+        "data_range": f"{config.data.year_start}-{config.data.year_end}",
+    }
+)
+
+# GOOD: SecretStr values are protected
+env = EnvConfig()
+print(env.wrds_password)  # Output: SecretStr('**********')
+```
+
+### Rationale
+
+#### Why SecretStr?
+
+1. **Prevents accidental exposure:** `print()` and `str()` show `SecretStr(...)`
+2. **Logging safety:** Structured logging won't serialize the actual value
+3. **Explicit access:** Must call `.get_secret_value()` to retrieve
+4. **Type safety:** Clear distinction between public and secret config
+
+**Source:** [Pydantic Secret Types](https://docs.pydantic.dev/latest/concepts/fields/#secret-types)
+
+---
+
+## 3. Path Resolution Pattern (CONF-03)
+
+This section defines the pattern for eliminating `sys.path.insert` hacks using proper src-layout package structure.
+
+### The Problem: sys.path.insert Anti-Pattern
+
+The current codebase has `sys.path.insert` in 20+ files:
+
+```python
+# BAD: sys.path.insert scattered throughout codebase
+import sys
+from pathlib import Path
+
+# Found in 20+ files
+sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
+
+from shared.panel_ols import run_panel_ols  # Fragile import
+```
+
+**Issues with this pattern:**
+- Import inconsistencies between scripts and tests
+- Different behavior when running as module vs script
+- Breakage when directory structure changes
+- No IDE support for imports
+- mypy and other tools can't resolve imports
+
+### The Solution: src-layout with Editable Install
+
+#### pyproject.toml Configuration
+
+```toml
+# pyproject.toml
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build-meta"
+
+[project]
+name = "f1d"
+version = "6.0.0"
+description = "F1D Data Processing Pipeline for CEO Uncertainty Research"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.12",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+]
+```
+
+#### Installation
+
+```bash
+# Install package in editable mode (one-time setup)
+pip install -e .
+
+# Or with dev dependencies
+pip install -e ".[dev]"
+```
+
+### Migration Pattern
+
+**Before (current code):**
+```python
+# 2_Scripts/3_Financial/script_32_construct_variables.py
+import sys
+from pathlib import Path
+
+# Anti-pattern: manipulating sys.path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from shared.panel_ols import run_panel_ols
+from shared.path_utils import get_latest_output_dir
+```
+
+**After (with src-layout):**
+```python
+# src/f1d/financial/v1/variables.py
+# Clean imports with no sys.path manipulation
+from f1d.shared.panel_ols import run_panel_ols
+from f1d.shared.path_utils import get_latest_output_dir
+```
+
+### Import Resolution
+
+With src-layout and editable install:
+
+```python
+# All imports use the f1d package namespace
+from f1d import get_latest_output_dir  # From top-level __init__.py
+from f1d.shared.panel_ols import run_panel_ols
+from f1d.financial.v1.variables import construct_variables
+from f1d.econometric.v2.regressions import run_panel_ols
+```
+
+### Verification
+
+After migration, verify imports work from any directory:
+
+```bash
+# Should work from project root
+python -c "from f1d.shared.panel_ols import run_panel_ols; print('OK')"
+
+# Should work from any subdirectory
+cd tests/unit
+python -c "from f1d.shared.panel_ols import run_panel_ols; print('OK')"
+
+# Should work when running as module
+python -m f1d.financial.v1.variables
+```
+
+### Migration Script
+
+Use this script to find and update sys.path.insert patterns:
+
+```python
+# scripts/migrate_imports.py
+"""Migration script for sys.path.insert elimination."""
+
+import re
+from pathlib import Path
+from typing import List, Tuple
+
+PATTERNS = [
+    # Pattern: sys.path.insert(0, ...)
+    (r'sys\.path\.insert\(0,\s*str\(Path\(__file__\)\.parent\.parent\)\)', ''),
+    (r'sys\.path\.insert\(0,\s*str\(Path\(__file__\)\.parent\.parent\.parent / "2_Scripts"\)\)', ''),
+    # Pattern: from shared.xxx import
+    (r'from shared\.', 'from f1d.shared.'),
+    # Pattern: from script_XX_ import
+    (r'from script_(\d+)_', 'from f1d.'),
+]
+
+def migrate_file(file_path: Path) -> Tuple[bool, List[str]]:
+    """Migrate a single file to use proper imports.
+
+    Args:
+        file_path: Path to Python file.
+
+    Returns:
+        Tuple of (modified, list of changes).
+    """
+    content = file_path.read_text()
+    original = content
+    changes = []
+
+    for pattern, replacement in PATTERNS:
+        matches = re.findall(pattern, content)
+        if matches:
+            content = re.sub(pattern, replacement, content)
+            changes.append(f"Replaced: {pattern}")
+
+    if content != original:
+        file_path.write_text(content)
+        return True, changes
+    return False, []
+
+def find_sys_path_files(root: Path) -> List[Path]:
+    """Find all Python files with sys.path.insert.
+
+    Args:
+        root: Root directory to search.
+
+    Returns:
+        List of files containing sys.path.insert.
+    """
+    files = []
+    for py_file in root.rglob("*.py"):
+        if "___archive" in str(py_file):
+            continue
+        content = py_file.read_text()
+        if "sys.path.insert" in content:
+            files.append(py_file)
+    return files
+
+if __name__ == "__main__":
+    root = Path(".")
+    files = find_sys_path_files(root)
+    print(f"Found {len(files)} files with sys.path.insert")
+    for f in files:
+        print(f"  {f}")
+```
+
+### Rationale
+
+#### Why src-layout?
+
+1. **Prevents import confusion:** Separates importable code from project files
+2. **Better editable installs:** `pip install -e .` works correctly
+3. **Early error detection:** Packaging issues surface before distribution
+4. **Industry standard:** PyPA recommendation for modern projects
+
+**Source:** [PyPA src-layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
+
+---
+
