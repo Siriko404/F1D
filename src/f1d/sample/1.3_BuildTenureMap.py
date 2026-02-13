@@ -47,9 +47,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
     utils_path = Path(__file__).parent / "1.5_Utils.py"
     spec = importlib.util.spec_from_file_location("utils", utils_path)
-    utils = importlib.util.module_from_spec(spec)
+    utils = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     sys.modules["utils"] = utils
-    spec.loader.exec_module(utils)
+    spec.loader.exec_module(utils)  # type: ignore[union-attr]
     from utils import generate_variable_reference
 except ImportError as e:
     print(f"Critical Error importing utils: {e}")
@@ -524,7 +524,7 @@ def main() -> int:
     mem_start = get_process_memory_mb()
     all_memory_values = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "1.3_BuildTenureMap",
         "timestamp": timestamp,
         "input": {

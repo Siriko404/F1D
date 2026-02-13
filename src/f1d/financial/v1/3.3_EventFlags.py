@@ -104,7 +104,7 @@ def print_stat(
     before: Optional[int] = None,
     after: Optional[int] = None,
     value: Optional[Any] = None,
-    indent: int = 2
+    indent: int = 2,
 ) -> None:
     """Print a statistic with consistent formatting.
 
@@ -478,7 +478,7 @@ def main() -> int:
     paths = setup_paths(config, timestamp)
 
     # Initialize stats with observability sections
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.3_EventFlags",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},

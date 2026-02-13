@@ -54,6 +54,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -1463,7 +1464,7 @@ def main():
     root = Path(__file__).parent.parent.parent
 
     # Initialize stats
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.4_H4_LeverageDiscipline",
         "timestamp": timestamp,
         "git_sha": get_git_sha(),

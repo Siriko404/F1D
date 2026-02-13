@@ -314,7 +314,7 @@ def prepare_regression_data(
     h1_df: pd.DataFrame,
     speech_agg_df: pd.DataFrame,
     uncertainty_cols: List[str],
-    dw: Any = None
+    dw: Any = None,
 ) -> pd.DataFrame:
     """
     Merge H1 variables with speech data and create lead dependent variable.
@@ -550,7 +550,7 @@ def run_all_h1_regressions(
     specs: Dict[str, Dict[str, bool]],
     control_vars: List[str],
     vif_threshold: float = 5.0,
-    dw: Any = None
+    dw: Any = None,
 ) -> List[Dict[str, Any]]:
     """
     Run all H1 regressions: 6 uncertainty measures x 4 specifications = 24 total.
@@ -859,7 +859,7 @@ def main() -> int:
     dw.write("")
 
     # Stats tracking
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.1_H1CashHoldingsRegression",
         "timestamp": timestamp,
         "git_sha": get_git_sha(),

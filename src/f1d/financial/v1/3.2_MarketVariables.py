@@ -122,7 +122,7 @@ def print_stat(
     before: Optional[int] = None,
     after: Optional[int] = None,
     value: Optional[Any] = None,
-    indent: int = 2
+    indent: int = 2,
 ) -> None:
     """Print a statistic with consistent formatting.
 
@@ -957,7 +957,7 @@ def main() -> int:
 
     print("=" * 60)
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.2_MarketVariables",
         "timestamp": timestamp,
         "input": {

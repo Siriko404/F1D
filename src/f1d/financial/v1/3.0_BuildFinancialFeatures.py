@@ -380,7 +380,7 @@ def main() -> int:
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]  # Track all memory readings for peak
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.0_BuildFinancialFeatures",
         "timestamp": timestamp,
         "git_sha": get_git_sha(),

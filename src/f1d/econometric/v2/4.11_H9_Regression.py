@@ -59,6 +59,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
@@ -100,9 +101,15 @@ def setup_paths(timestamp):
 
     paths = {
         "root": root,
-        "style_frozen_base": root / "4_Outputs" / "3_Financial_V2" / "3.11_H9_StyleFrozen",
+        "style_frozen_base": root
+        / "4_Outputs"
+        / "3_Financial_V2"
+        / "3.11_H9_StyleFrozen",
         "priskfy_base": root / "4_Outputs" / "3_Financial_V2" / "3.12_H9_PRiskFY",
-        "abnormal_inv_base": root / "4_Outputs" / "3_Financial_V2" / "3.13_H9_AbnormalInvestment",
+        "abnormal_inv_base": root
+        / "4_Outputs"
+        / "3_Financial_V2"
+        / "3.13_H9_AbnormalInvestment",
     }
 
     # Output directory
@@ -1062,7 +1069,7 @@ Examples:
     start_time = time.time()
 
     # Collect statistics
-    stats = {
+    stats: Dict[str, Any] = {
         "input": {},
         "output": {},
         "processing": {},

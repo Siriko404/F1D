@@ -283,7 +283,9 @@ def load_ibes(ibes_file: Path) -> pd.DataFrame:
     return df
 
 
-def build_ff_mappings(siccodes48_file: Path, siccodes12_file: Path) -> Tuple[Dict[int, Tuple[int, str]], Dict[int, Tuple[int, str]]]:
+def build_ff_mappings(
+    siccodes48_file: Path, siccodes12_file: Path
+) -> Tuple[Dict[int, Tuple[int, str]], Dict[int, Tuple[int, str]]]:
     """Build Fama-French industry mappings from SIC codes"""
     print("\nBuilding Fama-French industry mappings...")
 
@@ -304,7 +306,7 @@ def build_ff_mappings(siccodes48_file: Path, siccodes12_file: Path) -> Tuple[Dic
 def assign_ff_industries(
     df: pd.DataFrame,
     ff48_map: Dict[int, Tuple[int, str]],
-    ff12_map: Dict[int, Tuple[int, str]]
+    ff12_map: Dict[int, Tuple[int, str]],
 ) -> pd.DataFrame:
     """Assign Fama-French industry classifications based on SIC code"""
     print("\nAssigning FF industries...")
@@ -374,7 +376,9 @@ def compute_sales_growth(df: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def compute_industry_year_median(df: pd.DataFrame, value_col: str, min_firms: int = 5) -> pd.DataFrame:
+def compute_industry_year_median(
+    df: pd.DataFrame, value_col: str, min_firms: int = 5
+) -> pd.DataFrame:
     """Compute industry-year median with fallback to FF12 if FF48 cell < min_firms"""
     print(f"\nComputing industry-year median for {value_col}...")
 
@@ -407,7 +411,9 @@ def compute_industry_year_median(df: pd.DataFrame, value_col: str, min_firms: in
     return result
 
 
-def compute_overinvest_dummy(df: pd.DataFrame, ind_median_df: pd.DataFrame) -> pd.DataFrame:
+def compute_overinvest_dummy(
+    df: pd.DataFrame, ind_median_df: pd.DataFrame
+) -> pd.DataFrame:
     """Compute Overinvestment Dummy: 1 if capex_dp > 1.5 AND sales_growth < ind_median"""
     print("\nComputing Overinvestment Dummy...")
 
@@ -439,7 +445,9 @@ def compute_overinvest_dummy(df: pd.DataFrame, ind_median_df: pd.DataFrame) -> p
     return result
 
 
-def compute_underinvest_dummy(df: pd.DataFrame, tobins_q_df: pd.DataFrame) -> pd.DataFrame:
+def compute_underinvest_dummy(
+    df: pd.DataFrame, tobins_q_df: pd.DataFrame
+) -> pd.DataFrame:
     """Compute Underinvestment Dummy: 1 if capex_dp < 0.75 AND tobins_q > 1.5"""
     print("\nComputing Underinvestment Dummy...")
 
@@ -470,7 +478,9 @@ def compute_underinvest_dummy(df: pd.DataFrame, tobins_q_df: pd.DataFrame) -> pd
     return result
 
 
-def enforce_mutual_exclusivity(overinvest_df: pd.DataFrame, underinvest_df: pd.DataFrame) -> pd.DataFrame:
+def enforce_mutual_exclusivity(
+    overinvest_df: pd.DataFrame, underinvest_df: pd.DataFrame
+) -> pd.DataFrame:
     """Enforce mutual exclusivity: if both flags set, set both to 0"""
     print("\nEnforcing mutual exclusivity...")
 
@@ -500,7 +510,9 @@ def enforce_mutual_exclusivity(overinvest_df: pd.DataFrame, underinvest_df: pd.D
 # ==============================================================================
 
 
-def compute_efficiency_score(df: pd.DataFrame, min_years: int = 3, window: int = 5) -> pd.DataFrame:
+def compute_efficiency_score(
+    df: pd.DataFrame, min_years: int = 3, window: int = 5
+) -> pd.DataFrame:
     """Compute Efficiency Score = 1 - (# inefficient years / # years in window)
 
     Inefficient = overinvest_dummy | underinvest_dummy
@@ -529,13 +541,11 @@ def compute_efficiency_score(df: pd.DataFrame, min_years: int = 3, window: int =
 
     # Compute rolling sum and count per gvkey group in one vectorized operation
     # This replaces the slow for-loop with single C-level operations
-    df_sorted["rolling_sum"] = (
-        df_sorted.groupby("gvkey")["inefficient"]
-        .transform(lambda x: x.rolling(window=window, min_periods=min_years).sum())
+    df_sorted["rolling_sum"] = df_sorted.groupby("gvkey")["inefficient"].transform(
+        lambda x: x.rolling(window=window, min_periods=min_years).sum()
     )
-    df_sorted["rolling_count"] = (
-        df_sorted.groupby("gvkey")["inefficient"]
-        .transform(lambda x: x.rolling(window=window, min_periods=min_years).count())
+    df_sorted["rolling_count"] = df_sorted.groupby("gvkey")["inefficient"].transform(
+        lambda x: x.rolling(window=window, min_periods=min_years).count()
     )
 
     # Compute efficiency score where we have enough data
@@ -792,9 +802,8 @@ def compute_cf_volatility(df, min_years=3, window=5):
 
     # Compute rolling std per gvkey group in one vectorized operation
     # This replaces the slow for-loop with a single C-level operation
-    df_sorted["cf_volatility"] = (
-        df_sorted.groupby("gvkey")["ocf_at"]
-        .transform(lambda x: x.rolling(window=window, min_periods=min_years).std())
+    df_sorted["cf_volatility"] = df_sorted.groupby("gvkey")["ocf_at"].transform(
+        lambda x: x.rolling(window=window, min_periods=min_years).std()
     )
 
     # Filter to valid observations only (where rolling std was computed)
@@ -916,9 +925,8 @@ def compute_earnings_volatility(df, min_years=3, window=5):
     df_sorted = df_comp.sort_values(["gvkey", "fiscal_year"]).copy()
 
     # Compute rolling std per gvkey group in one vectorized operation
-    df_sorted["earnings_volatility"] = (
-        df_sorted.groupby("gvkey")["roa"]
-        .transform(lambda x: x.rolling(window=window, min_periods=min_years).std())
+    df_sorted["earnings_volatility"] = df_sorted.groupby("gvkey")["roa"].transform(
+        lambda x: x.rolling(window=window, min_periods=min_years).std()
     )
 
     # Filter to valid observations only (where rolling std was computed)
@@ -1095,7 +1103,7 @@ def main() -> int:
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.2_H2Variables",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0},

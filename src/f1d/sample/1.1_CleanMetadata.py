@@ -50,9 +50,9 @@ import yaml
 try:
     utils_path = Path(__file__).parent / "1.5_Utils.py"
     spec = importlib.util.spec_from_file_location("utils", utils_path)
-    utils = importlib.util.module_from_spec(spec)
+    utils = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     sys.modules["utils"] = utils
-    spec.loader.exec_module(utils)
+    spec.loader.exec_module(utils)  # type: ignore[union-attr]
     from utils import generate_variable_reference
 except ImportError:
     pass  # 1.5_Utils.py may not exist
@@ -153,7 +153,7 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> argparse.Namesp
     }
 
     # 1.1 has no prerequisite steps (first in pipeline)
-    required_steps = {}
+    required_steps: Dict[str, str] = {}
 
     validate_prerequisites(required_files, required_steps)
 
@@ -205,7 +205,7 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
 # ==============================================================================
 
 
-@track_memory_usage("load_metadata")
+@track_memory_usage("load_metadata")  # type: ignore[misc]
 def load_metadata_with_tracking(input_path: Path) -> Dict[str, Any]:
     """Load metadata with memory tracking"""
     validate_input_file(input_path, must_exist=True)
@@ -215,7 +215,7 @@ def load_metadata_with_tracking(input_path: Path) -> Dict[str, Any]:
     return df
 
 
-@track_memory_usage("clean_metadata")
+@track_memory_usage("clean_metadata")  # type: ignore[misc]
 def clean_metadata_with_tracking(df: pd.DataFrame) -> Dict[str, Any]:
     """Clean metadata (dedup + collision resolution) with memory tracking"""
     # Deduplication: Exact duplicates
@@ -249,7 +249,7 @@ def clean_metadata_with_tracking(df: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-@track_memory_usage("save_output")
+@track_memory_usage("save_output")  # type: ignore[misc]
 def save_output_with_tracking(df: pd.DataFrame, output_path: Path) -> Dict[str, str]:
     """Save output with memory tracking"""
     df.to_parquet(output_path, index=False)
@@ -280,7 +280,7 @@ def main() -> int:
     mem_start = get_process_memory_mb()
 
     # Initialize stats collector
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "1.1_CleanMetadata",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},

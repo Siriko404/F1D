@@ -50,14 +50,14 @@ try:
     from f1d.shared.observability_utils import DualWriter
 except ImportError:
     # Fallback for direct script execution during migration
-    from shared.observability_utils import DualWriter
+    from shared.observability_utils import DualWriter  # type: ignore[no-redef]
 
 # Import shared validation modules
 try:
     from f1d.shared.subprocess_validation import validate_script_path
 except ImportError:
     # Fallback for direct script execution during migration
-    from shared.subprocess_validation import validate_script_path
+    from shared.subprocess_validation import validate_script_path  # type: ignore[no-redef]
 
 # Import shared path validation utilities
 try:
@@ -70,7 +70,15 @@ try:
     )
 except ImportError:
     # Fallback for direct script execution during migration
-    from shared.path_utils import (
+    from shared.path_utils import (  # type: ignore[no-redef]
+        ensure_output_dir,
+        get_latest_output_dir,
+        validate_input_file,
+        validate_output_path,
+    )
+except ImportError:
+    # Fallback for direct script execution during migration
+    from shared.path_utils import (  # type: ignore[no-redef]
         ensure_output_dir,
         get_latest_output_dir,
         validate_input_file,
@@ -117,14 +125,14 @@ def check_prerequisites(root: Path) -> None:
     try:
         from f1d.shared.dependency_checker import validate_prerequisites
     except ImportError:
-        from shared.dependency_checker import validate_prerequisites
+        from shared.dependency_checker import validate_prerequisites  # type: ignore[no-redef]
 
     required_files = {
         "config/project.yaml": root / "config/project.yaml",
         "1_Inputs/Unified-info.parquet": root / "1_Inputs/Unified-info.parquet",
     }
 
-    required_steps = {}
+    required_steps: Dict[str, str] = {}
 
     validate_prerequisites(required_files, required_steps)
 

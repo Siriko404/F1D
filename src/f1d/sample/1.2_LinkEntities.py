@@ -60,9 +60,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
     utils_path = Path(__file__).parent / "1.5_Utils.py"
     spec = importlib.util.spec_from_file_location("utils", utils_path)
-    utils = importlib.util.module_from_spec(spec)
+    utils = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     sys.modules["utils"] = utils
-    spec.loader.exec_module(utils)
+    spec.loader.exec_module(utils)  # type: ignore[union-attr]
     from utils import generate_variable_reference
 except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
@@ -273,7 +273,7 @@ def normalize_company_name(name: Any) -> str:
 # ==============================================================================
 
 
-@track_memory_usage("load_entities")
+@track_memory_usage("load_entities")  # type: ignore[misc]
 def load_entities_with_tracking(metadata_path: Path, ccm_path: Path) -> Dict[str, Any]:
     """Load metadata and CCM entities with memory tracking"""
     # Load metadata with column pruning
@@ -315,8 +315,10 @@ def load_entities_with_tracking(metadata_path: Path, ccm_path: Path) -> Dict[str
     return {"df": df, "ccm": ccm}
 
 
-@track_memory_usage("entity_linking")
-def entity_linking_with_tracking(df: pd.DataFrame, ccm: pd.DataFrame, paths: Dict[str, Path]) -> Dict[str, str]:
+@track_memory_usage("entity_linking")  # type: ignore[misc]
+def entity_linking_with_tracking(
+    df: pd.DataFrame, ccm: pd.DataFrame, paths: Dict[str, Path]
+) -> Dict[str, str]:
     """Perform entity linking (dedup + matching + merge) with memory tracking"""
     # This function wraps the main linking logic
     # Return the linked result
@@ -333,7 +335,7 @@ def entity_linking_with_tracking(df: pd.DataFrame, ccm: pd.DataFrame, paths: Dic
     return {"result": "placeholder"}
 
 
-@track_memory_usage("save_output")
+@track_memory_usage("save_output")  # type: ignore[misc]
 def save_output_with_tracking(df: pd.DataFrame, output_path: Path) -> Dict[str, str]:
     """Save output with memory tracking"""
     df.to_parquet(output_path, index=False)
@@ -364,7 +366,7 @@ def main() -> int:
     mem_start = get_process_memory_mb()
 
     # Initialize stats
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "1.2_LinkEntities",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
@@ -682,7 +684,14 @@ def main() -> int:
                 # OPTIMIZATION: Vectorized update replaces chained .loc assignments
                 # Ref: 62-RESEARCH.md Pattern 1, 62-01-PLAN.md Task 1
                 # Expected speedup: 2-5x for bulk updates
-                cols_to_update = ["gvkey", "conm", "sic", "link_method", "link_quality", "fuzzy_score"]
+                cols_to_update = [
+                    "gvkey",
+                    "conm",
+                    "sic",
+                    "link_method",
+                    "link_quality",
+                    "fuzzy_score",
+                ]
 
                 # Prepare update data with company_id as index
                 unique_df_idx = unique_df.set_index("company_id")

@@ -273,7 +273,9 @@ def load_cccl(cccl_file: Path) -> pd.DataFrame:
 # ==============================================================================
 
 
-def compute_compustat_controls(manifest: pd.DataFrame, compustat: pd.DataFrame) -> pd.DataFrame:
+def compute_compustat_controls(
+    manifest: pd.DataFrame, compustat: pd.DataFrame
+) -> pd.DataFrame:
     """Compute Size, BM, Lev, ROA, EPS_Growth from Compustat (Vectorized with merge_asof)"""
     print("\n" + "=" * 60)
     print("Computing Compustat Controls (Optimized)")
@@ -351,7 +353,9 @@ def compute_compustat_controls(manifest: pd.DataFrame, compustat: pd.DataFrame) 
     return results_df
 
 
-def compute_earnings_surprise(manifest: pd.DataFrame, ibes: pd.DataFrame, ccm_file: Path) -> pd.DataFrame:
+def compute_earnings_surprise(
+    manifest: pd.DataFrame, ibes: pd.DataFrame, ccm_file: Path
+) -> pd.DataFrame:
     """Compute SurpDec from IBES"""
     print("\n" + "=" * 60)
     print("Computing Earnings Surprise (IBES)")
@@ -591,7 +595,7 @@ def main() -> int:
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.1_FirmControls",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},

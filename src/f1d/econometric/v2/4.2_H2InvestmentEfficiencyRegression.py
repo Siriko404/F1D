@@ -52,6 +52,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -968,7 +969,7 @@ def main():
     dw.write("")
 
     # Stats tracking
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.2_H2InvestmentEfficiencyRegression",
         "timestamp": timestamp,
         "git_sha": get_git_sha(),

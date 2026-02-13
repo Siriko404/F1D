@@ -710,7 +710,7 @@ def main() -> int:
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.1_H1Variables",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0},

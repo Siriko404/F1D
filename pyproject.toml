@@ -163,6 +163,8 @@ exclude = [
 module = ["f1d.shared.*"]
 strict = true
 # Note: strict = true enables all strict mode flags automatically
+# Ignore missing type stubs for pandas/numpy (common limitation)
+ignore_missing_imports = true
 
 # ==============================================================================
 # Tier 2: Stage-Specific Modules (80%+ coverage, moderate mode)
@@ -183,6 +185,10 @@ allow_untyped_defs = true
 # Allow some flexibility for complex pandas operations
 allow_any_expr = true
 allow_any_unimported = true
+
+# Ignore common decorator and dynamic import issues in stage modules
+warn_unused_ignores = false
+ignore_missing_imports = true
 
 # ==============================================================================
 # Third-Party Libraries (ignore missing type stubs)
