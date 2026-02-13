@@ -1420,3 +1420,356 @@ When writing docstrings, ensure:
 - [ ] No "documentation by assertion"
 
 ---
+
+## 3. Type Hint Coverage (CODE-02)
+
+This section defines type hint requirements based on the module tier system established in ARCHITECTURE_STANDARD.md. Type hints improve code readability, enable static analysis, and enhance IDE support.
+
+**Source:** [PEP 484 - Type Hints](https://peps.python.org/pep-0484/)
+
+### 3.1 Tier Requirements
+
+Type hint coverage requirements vary by module tier:
+
+| Tier | Coverage Target | mypy Mode | Enforcement |
+|------|-----------------|-----------|-------------|
+| **Tier 1 (Core Shared)** | 100% | `strict = true` | CI blocking |
+| **Tier 2 (Stage-Specific)** | 80%+ | `disallow_untyped_defs = false` | Warning |
+| **Tier 3 (Scripts)** | Optional | Excluded from mypy | None |
+
+**Tier 1 (Core Shared):**
+
+- Location: `src/f1d/shared/`
+- Coverage: 100% of public functions and methods
+- All parameters and return types must be annotated
+- mypy strict mode enabled
+- CI pipeline blocks on type errors
+
+**Tier 2 (Stage-Specific):**
+
+- Location: `src/f1d/{stage}/`
+- Coverage: 80%+ recommended
+- Public functions should have type hints
+- Gradual adoption allowed
+- mypy warnings (not blocking)
+
+**Tier 3 (Scripts):**
+
+- Location: `scripts/` or stage `scripts/` subdirectories
+- Coverage: Optional
+- Type hints encouraged but not required
+- Excluded from mypy checking
+
+### 3.2 mypy Configuration
+
+Configure mypy in `pyproject.toml` with tier-specific settings:
+
+```toml
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+check_untyped_defs = true
+disallow_incomplete_defs = true
+
+# Strict mode for Tier 1 (Core Shared)
+[[tool.mypy.overrides]]
+module = [
+    "f1d.shared.observability.*",
+    "f1d.shared.path_utils",
+    "f1d.shared.exceptions",
+]
+strict = true
+
+# Gradual adoption for Tier 2 (Stage-Specific)
+[[tool.mypy.overrides]]
+module = [
+    "f1d.shared.panel_ols",
+    "f1d.shared.io_utils",
+]
+disallow_untyped_defs = false
+warn_return_any = false
+
+# Exclude Tier 3 (Scripts) from type checking
+[[tool.mypy.overrides]]
+module = [
+    "scripts.*",
+    "f1d.*.scripts.*",
+]
+ignore_errors = true
+```
+
+### 3.3 Type Hint Examples
+
+#### Basic Type Hints
+
+```python
+from pathlib import Path
+from typing import Dict, List, Optional, Union
+
+# Basic types
+def get_name() -> str:
+    return "F1D Pipeline"
+
+def get_count(items: List[str]) -> int:
+    return len(items)
+
+# Optional types (can be None)
+def load_config(path: Optional[Path] = None) -> Dict[str, Any]:
+    if path is None:
+        path = Path("config/default.yaml")
+    ...
+
+# Union types (one of several types)
+def parse_value(value: Union[str, int, float]) -> float:
+    return float(value)
+```
+
+#### Collection Types
+
+```python
+from typing import Dict, List, Set, Tuple, Sequence
+
+# Lists
+def process_items(items: List[str]) -> List[int]:
+    return [len(item) for item in items]
+
+# Dictionaries
+def count_by_category(
+    items: List[str],
+) -> Dict[str, int]:
+    ...
+
+# Tuples (fixed-length, typed)
+def get_coordinates() -> Tuple[float, float]:
+    return (45.5, -122.6)
+
+# Sets
+def unique_items(items: List[str]) -> Set[str]:
+    return set(items)
+
+# Sequences (abstract, accepts list or tuple)
+def process_sequence(items: Sequence[int]) -> int:
+    return sum(items)
+```
+
+#### Pandas Types
+
+```python
+import pandas as pd
+from pandas import DataFrame, Series
+from typing import Any
+
+# DataFrame
+def load_data(path: Path) -> pd.DataFrame:
+    ...
+
+# Series
+def extract_column(df: pd.DataFrame, col: str) -> pd.Series:
+    ...
+
+# Any for complex pandas operations
+def summarize_results(df: pd.DataFrame) -> Dict[str, Any]:
+    ...
+```
+
+#### Callable Types
+
+```python
+from typing import Callable
+
+# Function parameter
+def apply_transform(
+    df: pd.DataFrame,
+    transform: Callable[[pd.DataFrame], pd.DataFrame],
+) -> pd.DataFrame:
+    return transform(df)
+
+# Function with specific signature
+ValidatorFunc = Callable[[pd.DataFrame], List[str]]
+
+def validate_and_fix(
+    df: pd.DataFrame,
+    validator: ValidatorFunc,
+) -> pd.DataFrame:
+    errors = validator(df)
+    if errors:
+        df = fix_errors(df, errors)
+    return df
+```
+
+### 3.4 Type Aliases
+
+Create type aliases for complex types to improve readability:
+
+```python
+from typing import Dict, List, Any, TypedDict
+
+# Simple type aliases
+DataFrameDict = Dict[str, pd.DataFrame]
+VariableList = List[str]
+RegressionResults = Dict[str, Any]
+
+# TypedDict for structured dictionaries
+class PanelDataSpec(TypedDict):
+    """Specification for panel data structure."""
+    entity_col: str
+    time_col: str
+    dependent: str
+    exog: VariableList
+
+# Usage
+def run_regression(
+    df: pd.DataFrame,
+    spec: PanelDataSpec,
+) -> RegressionResults:
+    ...
+```
+
+### 3.5 Generic Types and Protocols
+
+For advanced type hinting with generics:
+
+```python
+from typing import TypeVar, Generic, Protocol, runtime_checkable
+
+# Type variable for generic functions
+T = TypeVar("T")
+
+def first(items: List[T]) -> T:
+    return items[0]
+
+# Generic class
+class Container(Generic[T]):
+    def __init__(self, value: T) -> None:
+        self.value = value
+
+    def get(self) -> T:
+        return self.value
+
+# Protocol for duck typing
+@runtime_checkable
+class Summable(Protocol):
+    def __sum__(self) -> float:
+        ...
+
+def total(items: List[Summable]) -> float:
+    return sum(items)
+```
+
+### 3.6 Type Hint Anti-Patterns
+
+Avoid these common type hint mistakes:
+
+#### Anti-pattern 1: Using Any Without Justification
+
+```python
+# BAD: Any everywhere loses type safety
+def process(data: Any) -> Any:
+    ...
+
+# GOOD: Specific types where possible
+def process(df: pd.DataFrame) -> Dict[str, Any]:
+    ...
+
+# ACCEPTABLE: Any for genuinely dynamic data
+def parse_json(path: Path) -> Any:
+    """Parse JSON - structure unknown at compile time."""
+    ...
+```
+
+#### Anti-pattern 2: Missing Return Type Hints
+
+```python
+# BAD: No return type on public function
+def get_output_path(base: Path, name: str):
+    return base / name
+
+# GOOD: Return type specified
+def get_output_path(base: Path, name: str) -> Path:
+    return base / name
+```
+
+#### Anti-pattern 3: Incomplete Parameter Types
+
+```python
+# BAD: Some parameters lack types
+def run_regression(
+    df: pd.DataFrame,
+    dependent,
+    exog: List[str],
+) -> Dict:
+    ...
+
+# GOOD: All parameters typed
+def run_regression(
+    df: pd.DataFrame,
+    dependent: str,
+    exog: List[str],
+) -> Dict[str, Any]:
+    ...
+```
+
+#### Anti-pattern 4: Type Ignore Comments Without Justification
+
+```python
+# BAD: type: ignore without reason
+result = legacy_function()  # type: ignore
+
+# ACCEPTABLE: Documented reason
+result = legacy_function()  # type: ignore[no-untyped-call]  # Legacy code
+```
+
+### 3.7 Type Checking Commands
+
+Run mypy type checking:
+
+```bash
+# Check entire codebase
+mypy src/
+
+# Check specific module
+mypy src/f1d/shared/panel_ols.py
+
+# Check with strict mode
+mypy --strict src/f1d/shared/
+
+# Generate HTML report
+mypy --html-report ./mypy-report src/
+
+# Check specific error codes
+mypy --disable-error-code=import-untyped src/
+```
+
+### 3.8 Type Hint Coverage Verification
+
+Verify type hint coverage:
+
+```bash
+# Using mypy-report
+mypy --linecount-report ./type-coverage src/
+
+# Using coverage.py with mypy plugin
+pip install mypy-coverage-plugin
+coverage run -m pytest
+coverage report
+```
+
+### 3.9 Rationale
+
+**Why Type Hints?**
+
+1. **Catch errors before runtime:** Static analysis finds bugs early
+2. **Better IDE support:** Autocomplete, inline documentation
+3. **Self-documenting code:** Types serve as documentation
+4. **Easier refactoring:** IDE can safely rename and restructure
+5. **Cross-reference to ARCHITECTURE_STANDARD.md:** Module tiers guide quality bars
+
+**Why Tiered Requirements?**
+
+1. **Risk management:** Core shared code affects all stages
+2. **Resource allocation:** Focus effort on high-impact code
+3. **Practical adoption:** Gradual typing enables incremental improvement
+4. **Team velocity:** Lower bar for exploratory code
+
+---
