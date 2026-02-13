@@ -8,24 +8,30 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: v3.0 Codebase Cleanup & Optimization
+## Current Milestone: v4.0 Script Organization & Refactoring
 
-**Started:** 2026-02-10
-**Goal:** Fix critical bugs, improve code organization, add comprehensive documentation, and optimize performance while preserving all functionality
+**Started:** 2026-02-12
+**Goal:** Organize and refactor all scripts to follow consistent patterns for folder structure, I/O, logging, and naming conventions
 
 **Target outcomes:**
-- Fix H7-H8 data truncation bug
-- Archive backup files only (keep all V1/V2/V3 active)
-- Split monolithic utilities for maintainability
-- Comprehensive documentation (repo README, script docstrings, variable catalog)
-- Performance optimizations (vectorization, eliminate anti-patterns)
-- Enhanced testing (regression tests, coverage improvement)
+- Merge V3 folders into V2 (V3 was created by mistake)
+- Two active versions: V1 and V2, both in use
+- Config-driven I/O: All scripts read paths from config/project.yaml
+- Output pattern: `4_Outputs/[family]/[script]/[timestamp]`
+- Standardized logging across all scripts
+- Consistent naming conventions
+- Sequential refactoring with immediate verification after each script
+
+### Previous: v3.0 Codebase Cleanup & Optimization (COMPLETE)
+
+**Completed:** 2026-02-11
+**Goal:** Fix critical bugs, improve code organization, add comprehensive documentation, and optimize performance
 
 ## Requirements
 
 ### Validated
 
-<!-- Shipped and confirmed valuable. Both v1.0 and v2.0 milestones complete. -->
+<!-- Shipped and confirmed valuable. v1.0, v2.0, and v3.0 milestones complete. -->
 
 - ✓ Sample construction from speaker data with entity linking — v1.0
 - ✓ Text tokenization and word counting with dictionary lookups — v1.0
@@ -50,6 +56,27 @@ Every script must produce verifiable, reproducible results with complete audit t
 - ✓ H1-H3 regression execution (144 regressions) — v2.0
 - ✓ H5 analyst dispersion analysis (IBES merge, 28 regressions) — v2.0
 - ✓ H6 SEC scrutiny analysis (CCCL instrument, 39 regressions) — v2.0
+- ✓ H7-H8 data truncation bug fixed — v3.0
+- ✓ Exception-based error handling — v3.0
+- ✓ Observability package structure — v3.0
+- ✓ Ruff linting and formatting — v3.0
+- ✓ Type hints and progressive type checking — v3.0
+- ✓ Repository README enhancement — v3.0
+- ✓ Script header standardization — v3.0
+- ✓ V1/V2/V3 variable catalogs — v3.0
+- ✓ Performance optimizations — v3.0
+- ✓ Testing and validation infrastructure — v3.0
+
+### Active
+
+<!-- Current scope. Building toward these. -->
+
+- [ ] Merge V3 folders into V2 (3_Financial_V3, 4_Econometric_V3, 5_Financial_V3)
+- [ ] Config-driven I/O for all scripts
+- [ ] Standardized output pattern: 4_Outputs/[family]/[script]/[timestamp]
+- [ ] Consistent logging pattern across all scripts
+- [ ] Naming convention standardization
+- [ ] Sequential verification after each refactoring step
 
 ### Not Pursued
 
@@ -69,6 +96,7 @@ Every script must produce verifiable, reproducible results with complete audit t
 - Video/audio analysis — text transcripts only
 - Interactive dashboards — batch processing for replication
 - Causality claims without instrumentation — 2SLS required for causal inference
+- Adding new features or hypotheses — this milestone is refactoring only
 
 ## Context
 
@@ -113,4 +141,4 @@ The pipeline follows strict conventions from CLAUDE.md:
 | Sonnet-only model policy | Cost optimization and consistent performance; Opus/Haiku not needed | config.json: model_profile="budget" |
 
 ---
-*Last updated: 2026-02-11 (model policy: Sonnet-only for all GSD agents)*
+*Last updated: 2026-02-12 (v4.0 milestone started)*
