@@ -1,251 +1,307 @@
-# Requirements: F1D Codebase Cleanup & Optimization
+# Requirements: F1D Data Processing Pipeline
 
-**Defined:** 2026-02-10
-**Core Value:** Every cleanup change must preserve bitwise-identical outputs — reproducibility is non-negotiable
-**Status:** Active — Defining requirements for v3.0 milestone
+**Defined:** 2026-02-12
+**Core Value:** All scripts must follow consistent patterns for folder structure, I/O, logging, and naming
+**Status:** Active — Defining requirements for v4.0 milestone
 
-## v3.0 Requirements
+## v4.0 Requirements
 
-Requirements for codebase cleanup and optimization milestone. V3 focuses on technical debt reduction, documentation, and code quality while preserving all existing functionality.
+Requirements for Script Organization & Refactoring milestone. V4 focuses on consolidating folder structure, standardizing I/O patterns, unifying logging, and enforcing naming conventions.
 
 **Key Constraints:**
-- **NO active code is archived** — All V1/V2/V3 scripts remain functional
-- **Bitwise-identical outputs** — All changes must produce exact same results
-- **Backward compatibility** — Old import paths must continue to work during transition
+- **Two active versions only** — V1 and V2 (V3 was created by mistake, merge into V2)
+- **Sequential refactoring** — Each script refactored and verified immediately
+- **Config-driven I/O** — All paths from config/project.yaml
+- **Output pattern** — 4_Outputs/[family]/[script]/[timestamp]
 
 ---
 
-## Critical Bug Fixes
+## Folder Structure (STR)
 
-### BUG-01: H7-H8 Data Truncation — HIGH PRIORITY
+### STR-01: Merge 3_Financial_V3 into 3_Financial_V2
 
-- [ ] **BUG-01-01**: Calculate Volatility directly from CRSP daily returns within H7 script instead of relying on incomplete market_variables files
-- [ ] **BUG-01-02**: Verify H8 sample includes full 2002-2018 period (39,408 observations, not 12,408)
-- [ ] **BUG-01-03**: Add regression test to prevent recurrence of data truncation bug
-- [ ] **BUG-01-04**: Document Volatility calculation methodology in code comments
+- [ ] **STR-01-01**: Move 4.1_H2_BiddleInvestmentResidual.py to 3_Financial_V2 (rename to 3.9_H2_BiddleInvestmentResidual.py)
+- [ ] **STR-01-02**: Move 4.2_H2_PRiskUncertaintyMerge.py to 3_Financial_V2 (rename to 3.10_H2_PRiskUncertaintyMerge.py)
+- [ ] **STR-01-03**: Update imports in moved scripts
+- [ ] **STR-01-04**: Update all references to moved scripts
+- [ ] **STR-01-05**: Verify moved scripts run correctly
 
-**Current Issue:** Volatility and StockRet control variables are 100% missing for 2005-2018 in H7_Illiquidity.parquet, causing H8 to silently truncate to 2002-2004.
+### STR-02: Merge 4_Econometric_V3 into 4_Econometric_V2
 
-### BUG-02: Empty DataFrame Returns — HIGH PRIORITY
+- [ ] **STR-02-01**: Move 4.3_H2_PRiskUncertainty_Investment.py to 4_Econometric_V2 (rename to 4.10_H2_PRiskUncertainty_Investment.py)
+- [ ] **STR-02-02**: Update imports in moved script
+- [ ] **STR-02-03**: Update all references to moved script
+- [ ] **STR-02-04**: Verify moved script runs correctly
 
-- [ ] **BUG-02-01**: Audit all functions returning empty dicts/None/DataFrames on error paths
-- [ ] **BUG-02-02**: Replace empty returns with informative exceptions (include context about what failed)
-- [ ] **BUG-02-03**: Update error handling in shared/financial_utils.py and all V2 scripts
-- [ ] **BUG-02-04**: Add integration test that error messages propagate correctly
+### STR-03: Merge 5_Financial_V3 into V2 folders
 
-**Current Issue:** 100+ functions return empty containers on error, hiding useful debugging information.
+- [ ] **STR-03-01**: Move 5.8_H9_StyleFrozen.py to 3_Financial_V2 (rename to 3.11_H9_StyleFrozen.py)
+- [ ] **STR-03-02**: Move 5.8_H9_PRiskFY.py to 3_Financial_V2 (rename to 3.12_H9_PRiskFY.py)
+- [ ] **STR-03-03**: Move 5.8_H9_AbnormalInvestment.py to 3_Financial_V2 (rename to 3.13_H9_AbnormalInvestment.py)
+- [ ] **STR-03-04**: Move 5.8_H9_FinalMerge.py to 4_Econometric_V2 (rename to 4.11_H9_Regression.py - it's a regression script)
+- [ ] **STR-03-05**: Update imports in all moved scripts
+- [ ] **STR-03-06**: Update all references to moved scripts
+- [ ] **STR-03-07**: Verify all moved scripts run correctly
 
-### BUG-03: Division by Zero Guards — MEDIUM PRIORITY
+### STR-04: Remove V3 folders
 
-- [ ] **BUG-03-01**: Identify all functions returning 0.0 for duration_seconds <= 0
-- [ ] **BUG-03-02**: Replace silent masking with explicit logging + informative exceptions
-- [ ] **BUG-03-03**: Fix root cause in transcript timestamp calculations (2.1_TokenizeAndCount.py, 2.2_ConstructVariables.py)
+- [ ] **STR-04-01**: Remove empty 3_Financial_V3/ folder
+- [ ] **STR-04-02**: Remove empty 4_Econometric_V3/ folder
+- [ ] **STR-04-03**: Remove empty 5_Financial_V3/ folder
+- [ ] **STR-04-04**: Update any documentation referencing V3 folders
 
-**Current Issue:** Graceful degradation to 0.0 masks underlying data quality issues with transcript timestamps.
+### STR-05: Update Output folder structure
 
----
-
-## Code Organization
-
-### ORG-01: Archive Backup Files — HIGH PRIORITY
-
-- [ ] **ORG-01-01**: Move all `*-legacy.py` files to `.___archive/legacy/`
-- [ ] **ORG-01-02**: Move all `*.bak` files to `.___archive/backups/`
-- [ ] **ORG-01-03**: Move all `*_old.py` files to `.___archive/old_versions/`
-- [ ] **ORG-01-04**: Create README in `.___archive/` explaining archived contents
-- [ ] **ORG-01-05**: Verify no active scripts reference archived files
-
-**Files affected:**
-- `2_Scripts/1_Sample/1.0_BuildSampleManifest-legacy.py`
-- `2_Scripts/3_Financial_V2/3.7_H7IlliquidityVariables.py.bak`
-- Any other `*_backup.py`, `*_old.py`, `*~` files
-
-### ORG-02: Clarify V1/V2/V3 Structure — HIGH PRIORITY
-
-- [ ] **ORG-02-01**: Create README.md in `2_Scripts/3_Financial/` explaining V1 purpose
-- [ ] **ORG-02-02**: Create README.md in `2_Scripts/3_Financial_V2/` explaining V2 purpose (H1-H8)
-- [ ] **ORG-02-03**: Create README.md in `2_Scripts/5_Financial_V3/` explaining V3 purpose (H9)
-- [ ] **ORG-02-04**: Create README.md in `2_Scripts/4_Econometric/` explaining V1 purpose
-- [ ] **ORG-02-05**: Create README.md in `2_Scripts/4_Econometric_V2/` explaining V2 purpose
-- [ ] **ORG-02-06**: Create README.md in `2_Scripts/4_Econometric_V3/` explaining V3 purpose
-- [ ] **ORG-02-07**: Create README.md in `2_Scripts/shared/` explaining shared utilities
-- [ ] **ORG-02-08**: Create README.md in `2_Scripts/1_Sample/` explaining sample construction
-- [ ] **ORG-02-09**: Create README.md in `2_Scripts/2_Text/` explaining text processing
-
-**Key Point:** Clarification through documentation, NOT renaming or consolidating active directories.
-
-### ORG-03: Split Monolithic Utilities — MEDIUM PRIORITY
-
-- [ ] **ORG-03-01**: Create `shared/observability/` package directory
-- [ ] **ORG-03-02**: Extract DualWriter and logging code to `shared/observability/logging.py` (~500 lines)
-- [ ] **ORG-03-03**: Extract stats functions to `shared/observability/stats.py` (~800 lines)
-- [ ] **ORG-03-04**: Extract file utilities to `shared/observability/files.py` (~200 lines)
-- [ ] **ORG-03-05**: Extract memory utilities to `shared/observability/memory.py` (~150 lines)
-- [ ] **ORG-03-06**: Extract throughput utilities to `shared/observability/throughput.py` (~300 lines)
-- [ ] **ORG-03-07**: Extract anomaly detection to `shared/observability/anomalies.py` (~400 lines)
-- [ ] **ORG-03-08**: Create `shared/observability/__init__.py` with re-exports for backward compatibility
-- [ ] **ORG-03-09**: Update all 61 scripts to use new imports (old imports still work via re-export)
-- [ ] **ORG-03-10**: Run full pipeline to verify backward compatibility
-
-**Backward compatibility preserved:**
-```python
-# Old import (still works):
-from shared.observability_utils import DualWriter
-
-# New import (preferred):
-from shared.observability import DualWriter
-```
-
-### ORG-04: Code Quality Setup — MEDIUM PRIORITY
-
-- [ ] **ORG-04-01**: Install and configure Ruff in pyproject.toml
-- [ ] **ORG-04-02**: Run Ruff on entire codebase and auto-fix issues
-- [ ] **ORG-04-03**: Add mypy to shared utilities (progressive rollout)
-- [ ] **ORG-04-04**: Run vulture to identify dead code
-- [ ] **ORG-04-05**: Document code quality findings in report
+- [ ] **STR-05-01**: Move outputs from 4_Outputs/5.8_H9_*/ to 4_Outputs/3_Financial_V2/3.11_H9_StyleFrozen/
+- [ ] **STR-05-02**: Move outputs from 4_Outputs/5.8_H9_*/ to 4_Outputs/3_Financial_V2/3.12_H9_PRiskFY/
+- [ ] **STR-05-03**: Move outputs from 4_Outputs/5.8_H9_*/ to 4_Outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/
+- [ ] **STR-05-04**: Move outputs from 4_Outputs/5.8_H9_*/ to 4_Outputs/4_Econometric_V2/4.11_H9_Regression/
+- [ ] **STR-05-05**: Update config paths to new output locations
 
 ---
 
-## Documentation
+## I/O Pattern (IO)
 
-### DOC-01: Repository-Level README — HIGH PRIORITY
+### IO-01: Define Config-Driven Path Standard
 
-- [ ] **DOC-01-01**: Create comprehensive README.md in project root
-- [ ] **DOC-01-02**: Include project overview and purpose
-- [ ] **DOC-01-03**: Include installation and setup instructions
-- [ ] **DOC-01-04**: Include quick start guide for running pipeline
-- [ ] **DOC-01-05**: Include directory structure explanation
-- [ ] **DOC-01-06**: Include data sources and availability statement
-- [ ] **DOC-01-07**: Include computational requirements (Python version, RAM, runtime)
-- [ ] **DOC-01-08**: Include reference to thesis/paper if applicable
+- [ ] **IO-01-01**: Audit current I/O patterns across all scripts
+- [ ] **IO-01-02**: Define standard input path retrieval function (get_input_path)
+- [ ] **IO-01-03**: Define standard output path generation function (get_output_path)
+- [ ] **IO-01-04**: Update config/project.yaml with path templates for all stages
+- [ ] **IO-01-05**: Document I/O pattern in CLAUDE.md
 
-### DOC-02: Script-Level Docstrings — HIGH PRIORITY
+### IO-02: V1 Sample Scripts I/O
 
-- [ ] **DOC-02-01**: Add standardized header to all 61 pipeline scripts
-- [ ] **DOC-02-02**: Each script header includes: Purpose, Inputs, Outputs, Dependencies
-- [ ] **DOC-02-03**: Each script header includes: Deterministic flag, Author/Date
-- [ ] **DOC-02-04**: Verify all scripts follow same header format
-- [ ] **DOC-02-05**: Add module-level docstrings to shared utility modules
+- [ ] **IO-02-01**: Update 1.0_BuildSampleManifest.py to use config-driven I/O
+- [ ] **IO-02-02**: Update 1.1_CleanMetadata.py to use config-driven I/O
+- [ ] **IO-02-03**: Update 1.2_EntityLinking.py to use config-driven I/O
+- [ ] **IO-02-04**: Update 1.3_BuildTenureMap.py to use config-driven I/O
+- [ ] **IO-02-05**: Verify V1 Sample scripts produce correct outputs
 
-**Template:**
-```python
-#!/usr/bin/env python3
-"""
-STEP X.Y: {Script Name}
-===============================================================================
+### IO-03: V1 Text Scripts I/O
 
-Purpose:
-    {One-sentence description}
+- [ ] **IO-03-01**: Update 2.0_ValidateV2Structure.py to use config-driven I/O
+- [ ] **IO-03-02**: Update 2.1_TokenizeAndCount.py to use config-driven I/O
+- [ ] **IO-03-03**: Update 2.2_ConstructVariables.py to use config-driven I/O
+- [ ] **IO-03-04**: Update 2.3_VerifyTextOutputs.py to use config-driven I/O
+- [ ] **IO-03-05**: Verify V1 Text scripts produce correct outputs
 
-Inputs:
-    - 4_Outputs/{PreviousStep}/latest/{file1.parquet}
-    - 4_Outputs/{PreviousStep}/latest/{file2.parquet}
+### IO-04: V1 Financial Scripts I/O
 
-Outputs:
-    - 4_Outputs/{CurrentStep}/{timestamp}/{output.parquet}
-    - stats.json
-    - {timestamp}.log
+- [ ] **IO-04-01**: Update 3.0_BuildFinancialFeatures.py to use config-driven I/O
+- [ ] **IO-04-02**: Update 3.1_MergeFirmControls.py to use config-driven I/O
+- [ ] **IO-04-03**: Update 3.2_MarketVariables.py to use config-driven I/O
+- [ ] **IO-04-04**: Update 3.3_EventFlags.py to use config-driven I/O
+- [ ] **IO-04-05**: Verify V1 Financial scripts produce correct outputs
 
-Dependencies:
-    - Requires Step X.{Y-1}
-    - Uses: shared.module1, shared.module2
+### IO-05: V1 Econometric Scripts I/O
 
-Deterministic: true
-==============================================================================
-"""
-```
+- [ ] **IO-05-01**: Update 4.0_EstimateCeoClarity.py to use config-driven I/O
+- [ ] **IO-05-02**: Update 4.1.4_EstimateCeoTone.py to use config-driven I/O
+- [ ] **IO-05-03**: Update 4.2_EstimateLiquidityEffect.py to use config-driven I/O
+- [ ] **IO-05-04**: Update 4.3_TakeoverHazards.py to use config-driven I/O
+- [ ] **IO-05-05**: Verify V1 Econometric scripts produce correct outputs
 
-### DOC-03: Variable Catalog — MEDIUM PRIORITY
+### IO-06: V2 Financial Scripts I/O
 
-- [ ] **DOC-03-01**: Create `docs/VARIABLE_CATALOG.md` with all constructed variables
-- [ ] **DOC-03-02**: Catalog Sample variables (file_name, gvkey, ceo_id, tenure, etc.)
-- [ ] **DOC-03-03**: Catalog Text variables (uncertainty measures, tone, word counts)
-- [ ] **DOC-03-04**: Catalog Financial variables (V1 controls, V2 hypothesis variables, V3 H9 variables)
-- [ ] **DOC-03-05**: Catalog Econometric outputs (ClarityCEO, regression results)
-- [ ] **DOC-03-06**: Include formulas, source data fields, and construction methodology
-- [ ] **DOC-03-07**: Add search capability (alphabetical index, category index)
+- [ ] **IO-06-01**: Update 3.1_H1Variables.py to use config-driven I/O
+- [ ] **IO-06-02**: Update 3.2_H2Variables.py to use config-driven I/O
+- [ ] **IO-06-03**: Update 3.3_H3Variables.py to use config-driven I/O
+- [ ] **IO-06-04**: Update 3.5_H5Variables.py to use config-driven I/O
+- [ ] **IO-06-05**: Update 3.6_H6Variables.py to use config-driven I/O
+- [ ] **IO-06-06**: Update 3.7_H7IlliquidityVariables.py to use config-driven I/O
+- [ ] **IO-06-07**: Update 3.8_H8TakeoverVariables.py to use config-driven I/O
+- [ ] **IO-06-08**: Update 3.9_H2_BiddleInvestmentResidual.py (moved) to use config-driven I/O
+- [ ] **IO-06-09**: Update 3.10_H2_PRiskUncertaintyMerge.py (moved) to use config-driven I/O
+- [ ] **IO-06-10**: Update 3.11_H9_StyleFrozen.py (moved) to use config-driven I/O
+- [ ] **IO-06-11**: Update 3.12_H9_PRiskFY.py (moved) to use config-driven I/O
+- [ ] **IO-06-12**: Update 3.13_H9_AbnormalInvestment.py (moved) to use config-driven I/O
+- [ ] **IO-06-13**: Verify all V2 Financial scripts produce correct outputs
 
----
+### IO-07: V2 Econometric Scripts I/O
 
-## Performance Optimization
+- [ ] **IO-07-01**: Update 4.1_H1CashHoldingsRegression.py to use config-driven I/O
+- [ ] **IO-07-02**: Update 4.2_H2InvestmentEfficiencyRegression.py to use config-driven I/O
+- [ ] **IO-07-03**: Update 4.3_H3PayoutPolicyRegression.py to use config-driven I/O
+- [ ] **IO-07-04**: Update 4.4_H4_LeverageDiscipline.py to use config-driven I/O
+- [ ] **IO-07-05**: Update 4.5_H5DispersionRegression.py to use config-driven I/O
+- [ ] **IO-07-06**: Update 4.6_H6CCCLRegression.py to use config-driven I/O
+- [ ] **IO-07-07**: Update 4.7_H7IlliquidityRegression.py to use config-driven I/O
+- [ ] **IO-07-08**: Update 4.8_H8TakeoverRegression.py to use config-driven I/O
+- [ ] **IO-07-09**: Update 4.9_CEOFixedEffects.py to use config-driven I/O
+- [ ] **IO-07-10**: Update 4.10_H2_PRiskUncertainty_Investment.py (moved) to use config-driven I/O
+- [ ] **IO-07-11**: Update 4.11_H9_Regression.py (moved) to use config-driven I/O
+- [ ] **IO-07-12**: Verify all V2 Econometric scripts produce correct outputs
 
-### PERF-01: Vectorization — MEDIUM PRIORITY
+### IO-08: Shared Utilities I/O Support
 
-- [ ] **PERF-01-01**: Profile scripts with py-spy to identify `.apply(lambda)` bottlenecks
-- [ ] **PERF-01-02**: Replace `.apply(lambda)` with vectorized operations in `2.1_TokenizeAndCount.py`
-- [ ] **PERF-01-03**: Replace `.apply(lambda)` with vectorized operations in `3.2_MarketVariables.py`
-- [ ] **PERF-01-04**: Verify bitwise identical outputs after vectorization
-- [ ] **PERF-01-05**: Document speedup improvements
-
-### PERF-02: Eliminate Iterrows — MEDIUM PRIORITY
-
-- [ ] **PERF-02-01**: Replace `.iterrows()` in `1.3_BuildTenureMap.py` with vectorized alternative
-- [ ] **PERF-02-02**: Replace `.iterrows()` in `shared/financial_utils.py` with vectorized alternative
-- [ ] **PERF-02-03**: Verify bitwise identical outputs after replacement
-- [ ] **PERF-02-04**: Document speedup improvements
-
-### PERF-03: Optimize GroupBy — LOW PRIORITY
-
-- [ ] **PERF-03-01**: Replace `.groupby().apply()` with `.groupby().agg()` where applicable
-- [ ] **PERF-03-02**: Optimize rolling window calculations in `3.2_H2Variables.py`
-- [ ] **PERF-03-03**: Verify bitwise identical outputs after optimization
-- [ ] **PERF-03-04**: Document speedup improvements
+- [ ] **IO-08-01**: Create get_input_path() in shared/path_utils.py
+- [ ] **IO-08-02**: Create get_output_path() in shared/path_utils.py
+- [ ] **IO-08-03**: Create get_latest_output_dir() wrapper for config-driven paths
+- [ ] **IO-08-04**: Document path utility functions in module docstring
 
 ---
 
-## Testing & Validation
+## Logging (LOG)
 
-### TEST-01: Regression Tests — HIGH PRIORITY
+### LOG-01: Audit Current Logging
 
-- [ ] **TEST-01-01**: Create regression test for H7-H8 data truncation bug
-- [ ] **TEST-01-02**: Add bitwise comparison tests for critical outputs before/after cleanup
-- [ ] **TEST-01-03**: Create integration tests for multi-step workflows
-- [ ] **TEST-01-04**: Run full pipeline end-to-end and verify outputs
+- [ ] **LOG-01-01**: Audit logging implementation in V1 Sample scripts
+- [ ] **LOG-01-02**: Audit logging implementation in V1 Text scripts
+- [ ] **LOG-01-03**: Audit logging implementation in V1 Financial scripts
+- [ ] **LOG-01-04**: Audit logging implementation in V1 Econometric scripts
+- [ ] **LOG-01-05**: Audit logging implementation in V2 Financial scripts
+- [ ] **LOG-01-06**: Audit logging implementation in V2 Econometric scripts
+- [ ] **LOG-01-07**: Document logging inconsistencies and gaps
 
-### TEST-02: Schema Validation — LOW PRIORITY
+### LOG-02: Define Standard Logging Pattern
 
-- [ ] **TEST-02-01**: Add Pandera schemas for critical parquet outputs (master manifest, H1-H8 datasets)
-- [ ] **TEST-02-02**: Add schema validation to key merge operations
-- [ ] **TEST-02-03**: Document schema validation approach
+- [ ] **LOG-02-01**: Decide: Use observability_utils.logging or create new standard
+- [ ] **LOG-02-02**: Define required log fields (timestamp, script, level, message)
+- [ ] **LOG-02-03**: Define dual logging pattern (console + file)
+- [ ] **LOG-02-04**: Create setup_logging() function if not using existing
+- [ ] **LOG-02-05**: Document logging standard in CLAUDE.md
 
-### TEST-03: Coverage Expansion — LOW PRIORITY
+### LOG-03: V1 Scripts Logging Standardization
 
-- [ ] **TEST-03-01**: Measure current test coverage on shared utilities
-- [ ] **TEST-03-02**: Target 70% coverage on shared utilities (add tests if needed)
-- [ ] **TEST-03-03**: Document coverage report
+- [ ] **LOG-03-01**: Standardize logging in 1_Sample/ scripts
+- [ ] **LOG-03-02**: Standardize logging in 2_Text/ scripts
+- [ ] **LOG-03-03**: Standardize logging in 3_Financial/ scripts
+- [ ] **LOG-03-04**: Standardize logging in 4_Econometric/ scripts
+- [ ] **LOG-03-05**: Verify V1 scripts produce consistent logs
+
+### LOG-04: V2 Scripts Logging Standardization
+
+- [ ] **LOG-04-01**: Standardize logging in 3_Financial_V2/ scripts
+- [ ] **LOG-04-02**: Standardize logging in 4_Econometric_V2/ scripts
+- [ ] **LOG-04-03**: Verify V2 scripts produce consistent logs
+
+---
+
+## Naming Conventions (NAM)
+
+### NAM-01: Define Naming Standard
+
+- [ ] **NAM-01-01**: Define script naming pattern: {Stage}.{Step}_{PascalCaseName}.py
+- [ ] **NAM-01-02**: Define output folder naming: {Stage}_{Family}/{Stage}.{Step}_{Name}/
+- [ ] **NAM-01-03**: Document naming conventions in CLAUDE.md
+- [ ] **NAM-01-04**: Create naming validation script
+
+### NAM-02: Audit Current Names
+
+- [ ] **NAM-02-01**: Audit V1 Sample script names for compliance
+- [ ] **NAM-02-02**: Audit V1 Text script names for compliance
+- [ ] **NAM-02-03**: Audit V1 Financial script names for compliance
+- [ ] **NAM-02-04**: Audit V1 Econometric script names for compliance
+- [ ] **NAM-02-05**: Audit V2 Financial script names for compliance
+- [ ] **NAM-02-06**: Audit V2 Econometric script names for compliance
+- [ ] **NAM-02-07**: Create list of non-compliant names
+
+### NAM-03: Rename Non-Compliant Scripts
+
+- [ ] **NAM-03-01**: Rename non-compliant V1 scripts
+- [ ] **NAM-03-02**: Rename non-compliant V2 scripts
+- [ ] **NAM-03-03**: Update all import references after renaming
+- [ ] **NAM-03-04**: Update config paths after renaming
+- [ ] **NAM-03-05**: Verify renamed scripts run correctly
+
+---
+
+## Verification (VER)
+
+### VER-01: V1 Sample Verification
+
+- [ ] **VER-01-01**: Run 1.0_BuildSampleManifest.py and verify output
+- [ ] **VER-01-02**: Run 1.1_CleanMetadata.py and verify output
+- [ ] **VER-01-03**: Run 1.2_EntityLinking.py and verify output
+- [ ] **VER-01-04**: Run 1.3_BuildTenureMap.py and verify output
+- [ ] **VER-01-05**: Compare outputs to pre-refactoring baselines
+
+### VER-02: V1 Text Verification
+
+- [ ] **VER-02-01**: Run 2.1_TokenizeAndCount.py and verify output
+- [ ] **VER-02-02**: Run 2.2_ConstructVariables.py and verify output
+- [ ] **VER-02-03**: Run 2.3_VerifyTextOutputs.py and verify output
+- [ ] **VER-02-04**: Compare outputs to pre-refactoring baselines
+
+### VER-03: V1 Financial Verification
+
+- [ ] **VER-03-01**: Run 3.0_BuildFinancialFeatures.py and verify output
+- [ ] **VER-03-02**: Run 3.1_MergeFirmControls.py and verify output
+- [ ] **VER-03-03**: Run 3.2_MarketVariables.py and verify output
+- [ ] **VER-03-04**: Run 3.3_EventFlags.py and verify output
+- [ ] **VER-03-05**: Compare outputs to pre-refactoring baselines
+
+### VER-04: V1 Econometric Verification
+
+- [ ] **VER-04-01**: Run 4.0_EstimateCeoClarity.py and verify output
+- [ ] **VER-04-02**: Run 4.1.4_EstimateCeoTone.py and verify output
+- [ ] **VER-04-03**: Run 4.2_EstimateLiquidityEffect.py and verify output
+- [ ] **VER-04-04**: Compare outputs to pre-refactoring baselines
+
+### VER-05: V2 Financial Verification
+
+- [ ] **VER-05-01**: Run all 3_Financial_V2/ scripts and verify outputs
+- [ ] **VER-05-02**: Compare outputs to pre-refactoring baselines
+- [ ] **VER-05-03**: Verify H1-H9 variable construction
+
+### VER-06: V2 Econometric Verification
+
+- [ ] **VER-06-01**: Run all 4_Econometric_V2/ scripts and verify outputs
+- [ ] **VER-06-02**: Compare outputs to pre-refactoring baselines
+- [ ] **VER-06-03**: Verify H1-H9 regression results
+
+### VER-07: Test Suite Verification
+
+- [ ] **VER-07-01**: Run pytest on tests/ directory
+- [ ] **VER-07-02**: Verify all tests pass
+- [ ] **VER-07-03**: Update any broken tests
+
+### VER-08: End-to-End Pipeline Verification
+
+- [ ] **VER-08-01**: Run full V1 pipeline from start to finish
+- [ ] **VER-08-02**: Run full V2 pipeline from start to finish
+- [ ] **VER-08-03**: Compare final outputs to pre-refactoring baselines
+- [ ] **VER-08-04**: Document any differences and their causes
 
 ---
 
 ## Out of Scope
 
-Explicitly excluded from v3.0 cleanup:
+Explicitly excluded from v4.0:
 
 | Feature | Reason |
 |---------|--------|
-| Renaming active directories | V1/V2/V3 clarification through docs only |
-| Consolidating V1/V2/V3 | All versions serve different legitimate purposes |
-| Polars migration | Pandas 3.0 + vectorization sufficient |
-| Sphinx/MkDocs documentation | Markdown READMEs sufficient for academic review |
-| Docker containerization | Unnecessary for single-researcher project |
-| Great Expectations | Pandera is lighter, sufficient for research |
+| New hypotheses | This milestone is refactoring only |
+| New features | Refactoring only, no functionality changes |
+| Performance optimization | Already addressed in v3.0 |
+| Documentation enhancement | Already addressed in v3.0 |
+| Data changes | No changes to data processing logic |
+| Archive V1 or V2 | Both versions are active and in use |
 
 ---
 
 ## Traceability
 
-Requirements mapped to phases in ROADMAP_V3.md.
+Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement Category | Requirements | Phase |
 |---------------------|--------------|-------|
-| BUG-01 through BUG-03 | Critical bug fixes | 59 |
-| ORG-01 through ORG-04 | Code organization | 60 |
-| DOC-01 through DOC-03 | Documentation | 61 |
-| PERF-01 through PERF-03 | Performance optimization | 62 |
-| TEST-01 through TEST-03 | Testing & validation | 63 |
+| STR-01 through STR-05 | Folder structure consolidation | 64 |
+| IO-01 through IO-08 | Config-driven I/O | 65 |
+| LOG-01 through LOG-04 | Logging standardization | 66 |
+| NAM-01 through NAM-03 | Naming conventions | 67 |
+| VER-01 through VER-08 | Verification | 68 |
 
-**Total Requirements:** 55 (100% mapped to phases)
+**Total Requirements:** 120 (mapping TBD)
 
 ---
 
-*Requirements defined: 2026-02-10*
-*Last updated: 2026-02-10 (roadmap created)*
+## v3.0 Requirements (COMPLETE)
+
+All v3.0 requirements have been completed. See git history for details.
+
+---
+
+*Requirements defined: 2026-02-12*
+*Last updated: 2026-02-12 after initial definition*
