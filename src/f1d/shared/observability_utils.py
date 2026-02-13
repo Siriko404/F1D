@@ -1,54 +1,48 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-OBSERVABILITY PACKAGE
+SHARED MODULE: Observability and Statistics Helpers
 ================================================================================
-ID: shared/observability
-Description: Provides reusable functions for statistics, monitoring,
-             anomaly detection, and performance tracking.
+ID: shared/observability_utils
+Description: [DEPRECATED] Provides backward compatibility for existing imports.
 
-This package splits the monolithic observability_utils.py into focused modules
-while maintaining 100% backward compatibility.
+This file now re-exports all symbols from the shared.observability package.
+Please update your imports to use the new package structure:
 
-Modules:
-    - logging: DualWriter class for dual stdout/file logging
-    - stats: Statistics and analysis functions (print_stat, analyze_missing_values, etc.)
-    - files: File utility functions (compute_file_checksum)
-    - memory: Memory tracking utilities (get_process_memory_mb)
-    - throughput: Performance measurement functions (calculate_throughput)
-    - anomalies: Anomaly detection functions (detect_anomalies_zscore, detect_anomalies_iqr)
+    OLD: from f1d.shared.observability_utils import DualWriter
+    NEW: from f1d.shared.observability import DualWriter
 
-Backward Compatibility:
-    All symbols are re-exported from this package, so existing imports continue to work:
-    - from f1d.shared.observability_utils import DualWriter  # Still works
-    - from f1d.shared.observability import DualWriter  # New preferred way
+All existing imports will continue to work without changes.
+The actual implementation has been moved to:
+    - shared.observability.logging: DualWriter
+    - shared.observability.stats: Statistics functions
+    - shared.observability.files: File utilities
+    - shared.observability.memory: Memory tracking
+    - shared.observability.throughput: Performance measurement
+    - shared.observability.anomalies: Anomaly detection
 
 Deterministic: true
+Main Functions:
+    - DualWriter: Class for dual stdout/file logging
+    - print_stat(): Print statistics with formatting
+    - get_process_memory_mb(): Get current process memory usage
+
 Dependencies:
-    - Package initialization
-    - Re-exports: logging, stats, files, memory, throughput, anomalies
+    - Utility module for observability (deprecated - use observability/ subpackage)
+    - Uses: pandas, numpy, time
 
 Author: Thesis Author
 Date: 2026-02-11
 ================================================================================
 """
 
-# Re-export all public symbols for backward compatibility
-# Configure logger for this module
-import sys
-import logging as stdlib_logging
-
-# Import our local logging module (DualWriter)
-# Need to be careful not to shadow stdlib logging with our local module name
-from . import logging as observability_logging
-from .anomalies import (
-    detect_anomalies_iqr,
-    detect_anomalies_zscore,
-)
-from .files import compute_file_checksum
-from .memory import get_process_memory_mb
-from .stats import (
+# Re-export all symbols from observability package for backward compatibility
+from f1d.shared.observability import (
+    # Logging
+    DualWriter,
     analyze_missing_values,
+    # Throughput
+    calculate_throughput,
     collect_before_after_samples,
     collect_ceo_distribution_samples,
     collect_fuzzy_match_samples,
@@ -62,9 +56,12 @@ from .stats import (
     compute_event_flags_input_stats,
     compute_event_flags_output_stats,
     compute_event_flags_process_stats,
+    # Files
+    compute_file_checksum,
     compute_financial_input_stats,
     compute_financial_output_stats,
     compute_financial_process_stats,
+    # Statistics (step-specific)
     compute_input_stats,
     compute_linking_input_stats,
     compute_linking_output_stats,
@@ -91,17 +88,17 @@ from .stats import (
     compute_tokenize_input_stats,
     compute_tokenize_output_stats,
     compute_tokenize_process_stats,
+    detect_anomalies_iqr,
+    # Anomalies
+    detect_anomalies_zscore,
     generate_financial_report_markdown,
+    # Memory
+    get_process_memory_mb,
+    # Statistics (general)
     print_stat,
     print_stats_summary,
     save_stats,
 )
-from .throughput import calculate_throughput
-
-# Import DualWriter from our local logging module
-DualWriter = observability_logging.DualWriter
-
-logger = stdlib_logging.getLogger(__name__)
 
 __all__ = [
     # Logging

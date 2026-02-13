@@ -7,7 +7,7 @@ This package implements a 4-stage data processing pipeline:
 4. Econometric Analysis - Run panel regressions
 
 Example:
-    >>> from f1d.shared.path_utils import get_latest_output_dir
+    >>> from f1d import get_latest_output_dir
     >>> output = get_latest_output_dir("data/processed/manifest")
 
 Attributes:
@@ -18,4 +18,14 @@ Attributes:
 __version__ = "6.0.0"
 __author__ = "Thesis Author"
 
-__all__: list[str] = []
+# Public API re-exports from shared utilities
+from f1d.shared.path_utils import OutputResolutionError, get_latest_output_dir
+from f1d.shared.panel_ols import run_panel_ols
+
+__all__ = [
+    # Path utilities
+    "get_latest_output_dir",
+    "OutputResolutionError",
+    # Econometric utilities
+    "run_panel_ols",
+]

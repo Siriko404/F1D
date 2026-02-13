@@ -1,3 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "f1d"
+version = "6.0.0"
+description = "F1D Data Processing Pipeline for CEO Uncertainty Research"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "Thesis Author"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "pyyaml>=6.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = [
@@ -31,7 +61,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["2_Scripts"]
+source = ["src/f1d"]
 branch = true  # Enable branch coverage
 omit = [
     "*/tests/*",
@@ -126,21 +156,21 @@ disable_error_code = [
 
 # Enable strict mode for new shared modules only
 [[tool.mypy.overrides]]
-module = "shared.observability.*"
+module = "f1d.shared.observability.*"
 strict = true
 
 # Gradually enable stricter checking for typed modules
 [[tool.mypy.overrides]]
-module = "shared.panel_ols"
+module = "f1d.shared.panel_ols"
 warn_return_any = false  # Too strict for gradual adoption
 disallow_untyped_defs = false  # Allow untyped defs initially
 
 [[tool.mypy.overrides]]
-module = "shared.iv_regression"
+module = "f1d.shared.iv_regression"
 warn_return_any = false
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
-module = "shared.financial_utils"
+module = "f1d.shared.financial_utils"
 warn_return_any = false
 disallow_untyped_defs = false
