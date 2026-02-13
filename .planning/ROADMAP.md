@@ -99,12 +99,14 @@ Plans:
 3. mypy configuration in pyproject.toml enforces tier-based strictness
 4. Type checker passes without errors on full codebase
 
-**Plans:** 3 plans
+**Plans:** 5 plans
 
 Plans:
-- [ ] 70-01-PLAN.md — Add type hints to Tier 1 modules (src/f1d/shared/) (Wave 1)
-- [ ] 70-02-PLAN.md — Add type hints to Tier 2 modules (sample/text/financial/econometric) (Wave 1)
-- [ ] 70-03-PLAN.md — Configure mypy with tier-based strictness in pyproject.toml (Wave 2)
+- [x] 70-01-PLAN.md — Add type hints to Tier 1 modules (src/f1d/shared/) (Wave 1)
+- [x] 70-02-PLAN.md — Add type hints to Tier 2 modules (sample/text/financial/econometric) (Wave 1)
+- [x] 70-03-PLAN.md — Configure mypy with tier-based strictness in pyproject.toml (Wave 2)
+- [ ] 70-04-PLAN.md — Fix stats.py TypedDict refactoring (gap closure)
+- [ ] 70-05-PLAN.md — Fix Tier 2 module type errors (gap closure)
 
 ---
 
