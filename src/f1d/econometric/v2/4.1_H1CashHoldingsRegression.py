@@ -50,6 +50,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -79,7 +80,7 @@ from f1d.shared.path_utils import (
 # ==============================================================================
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
     if config_path.exists():
@@ -89,7 +90,7 @@ def load_config():
     return {}
 
 
-def get_git_sha():
+def get_git_sha() -> str:
     """Get current git commit SHA for reproducibility"""
     try:
         result = subprocess.run(
@@ -145,7 +146,7 @@ SPECS = {
 # ==============================================================================
 
 
-def setup_paths(config, timestamp):
+def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     """Set up all required paths using get_latest_output_dir"""
     root = Path(__file__).parent.parent.parent
 
@@ -187,7 +188,7 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 
 
-def load_h1_variables(h1_dir, dw=None):
+def load_h1_variables(h1_dir: Path, dw: Any = None) -> pd.DataFrame:
     """
     Load H1 Cash Holdings variables.
 
@@ -220,7 +221,9 @@ def load_h1_variables(h1_dir, dw=None):
     return df
 
 
-def load_speech_uncertainty(speech_dir, uncertainty_cols, dw=None):
+def load_speech_uncertainty(
+    speech_dir: Path, uncertainty_cols: List[str], dw: Any = None
+) -> pd.DataFrame:
     """
     Load all linguistic_variables_*.parquet files and concatenate.
 
@@ -269,7 +272,9 @@ def load_speech_uncertainty(speech_dir, uncertainty_cols, dw=None):
 # ==============================================================================
 
 
-def aggregate_speech_to_firmyear(speech_df, uncertainty_cols, dw=None):
+def aggregate_speech_to_firmyear(
+    speech_df: pd.DataFrame, uncertainty_cols: List[str], dw: Any = None
+) -> pd.DataFrame:
     """
     Aggregate call-level speech data to firm-year level.
 
@@ -305,7 +310,12 @@ def aggregate_speech_to_firmyear(speech_df, uncertainty_cols, dw=None):
 # ==============================================================================
 
 
-def prepare_regression_data(h1_df, speech_agg_df, uncertainty_cols, dw=None):
+def prepare_regression_data(
+    h1_df: pd.DataFrame,
+    speech_agg_df: pd.DataFrame,
+    uncertainty_cols: List[str],
+    dw: Any = None
+) -> pd.DataFrame:
     """
     Merge H1 variables with speech data and create lead dependent variable.
 
@@ -366,14 +376,14 @@ def prepare_regression_data(h1_df, speech_agg_df, uncertainty_cols, dw=None):
 
 
 def run_single_h1_regression(
-    df,
-    uncertainty_var,
-    spec_name,
-    spec_config,
-    control_vars,
-    vif_threshold=5.0,
-    dw=None,
-):
+    df: pd.DataFrame,
+    uncertainty_var: str,
+    spec_name: str,
+    spec_config: Dict[str, bool],
+    control_vars: List[str],
+    vif_threshold: float = 5.0,
+    dw: Any = None,
+) -> Optional[Dict[str, Any]]:
     """
     Run a single H1 regression with specified uncertainty measure and spec.
 
@@ -535,8 +545,13 @@ def run_single_h1_regression(
 
 
 def run_all_h1_regressions(
-    reg_df, uncertainty_measures, specs, control_vars, vif_threshold=5.0, dw=None
-):
+    reg_df: pd.DataFrame,
+    uncertainty_measures: List[str],
+    specs: Dict[str, Dict[str, bool]],
+    control_vars: List[str],
+    vif_threshold: float = 5.0,
+    dw: Any = None
+) -> List[Dict[str, Any]]:
     """
     Run all H1 regressions: 6 uncertainty measures x 4 specifications = 24 total.
 
@@ -576,7 +591,9 @@ def run_all_h1_regressions(
 # ==============================================================================
 
 
-def save_regression_results(results, output_dir, dw=None):
+def save_regression_results(
+    results: List[Dict[str, Any]], output_dir: Path, dw: Any = None
+) -> None:
     """
     Save regression results to parquet file.
 
@@ -635,7 +652,9 @@ def save_regression_results(results, output_dir, dw=None):
     return results_df
 
 
-def generate_results_markdown(results, output_dir, dw=None):
+def generate_results_markdown(
+    results: List[Dict[str, Any]], output_dir: Path, dw: Any = None
+) -> None:
     """
     Generate human-readable markdown summary of H1 regression results.
     """
@@ -784,7 +803,7 @@ def generate_results_markdown(results, output_dir, dw=None):
     return output_path
 
 
-def save_stats(stats, output_dir, dw=None):
+def save_stats(stats: Dict[str, Any], output_dir: Path, dw: Any = None) -> None:
     """Save statistics dictionary to JSON file"""
     stats_path = output_dir / "stats.json"
     with open(stats_path, "w") as f:
@@ -801,7 +820,7 @@ def save_stats(stats, output_dir, dw=None):
 # ==============================================================================
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
         description="H1 Cash Holdings Regression - Panel OLS with Uncertainty x Leverage interaction"
@@ -814,7 +833,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> int:
     """Main execution function"""
     args = parse_args()
 
