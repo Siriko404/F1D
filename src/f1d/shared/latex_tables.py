@@ -110,7 +110,7 @@ def make_regression_table(
     model_names: List[str],
     variable_order: Optional[List[str]] = None,
     variable_labels: Optional[Dict[str, str]] = None,
-    include_stats: List[str] = None,
+    include_stats: Optional[List[str]] = None,
     caption: str = "",
     label: str = "",
     output_path: Optional[Path] = None,

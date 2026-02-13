@@ -31,12 +31,12 @@ Date: 2026-02-11
 
 import zipfile
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 
 def parse_ff_industries(
     zip_path: Path, num_industries: int
-) -> Dict[int, Tuple[int, str]]:
+) -> Dict[int, Tuple[int, Optional[str]]]:
     """
     Parse Fama-French industry classification from SIC code ranges.
 

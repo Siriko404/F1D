@@ -33,7 +33,7 @@ Date: 2026-02-11
 from typing import Dict, Union
 
 import numpy as np
-import pandas as pd  # type: ignore[import-untyped]
+import pandas as pd
 
 from f1d.shared.data_validation import FinancialCalculationError
 

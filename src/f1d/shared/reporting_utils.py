@@ -33,12 +33,13 @@ Date: 2026-02-11
 """
 
 from pathlib import Path
+from typing import Any, Optional
 
 import pandas as pd
 
 
 def generate_regression_report(
-    model, sample_name: str, output_dir: Path, formula: str = None
+    model: Any, sample_name: str, output_dir: Path, formula: Optional[str] = None
 ) -> Path:
     """
     Generate markdown report for regression results.
@@ -80,7 +81,7 @@ def generate_regression_report(
     return report_path
 
 
-def save_model_diagnostics(model, sample_name: str, output_dir: Path) -> Path:
+def save_model_diagnostics(model: Any, sample_name: str, output_dir: Path) -> Path:
     """
     Save regression diagnostics to CSV.
 
