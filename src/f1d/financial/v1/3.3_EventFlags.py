@@ -39,6 +39,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import psutil
@@ -89,7 +90,7 @@ except ImportError:
 # ==============================================================================
 
 
-def compute_file_checksum(filepath, algorithm="sha256"):
+def compute_file_checksum(filepath: Path, algorithm: str = "sha256") -> str:
     """Compute checksum for a file."""
     h = hashlib.new(algorithm)
     with open(filepath, "rb") as f:
@@ -98,7 +99,13 @@ def compute_file_checksum(filepath, algorithm="sha256"):
     return h.hexdigest()
 
 
-def print_stat(label, before=None, after=None, value=None, indent=2):
+def print_stat(
+    label: str,
+    before: Optional[int] = None,
+    after: Optional[int] = None,
+    value: Optional[Any] = None,
+    indent: int = 2
+) -> None:
     """Print a statistic with consistent formatting.
 
     Modes:
@@ -121,7 +128,7 @@ def print_stat(label, before=None, after=None, value=None, indent=2):
             print(f"{prefix}{label}: {v}")
 
 
-def analyze_missing_values(df):
+def analyze_missing_values(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
     """Analyze missing values per column."""
     missing = {}
     for col in df.columns:
@@ -134,7 +141,7 @@ def analyze_missing_values(df):
     return missing
 
 
-def print_stats_summary(stats):
+def print_stats_summary(stats: Dict[str, Any]) -> None:
     """Print formatted summary table."""
     print("\n" + "=" * 60)
     print("STATISTICS SUMMARY")
@@ -162,7 +169,7 @@ def print_stats_summary(stats):
     print("=" * 60)
 
 
-def save_stats(stats, out_dir):
+def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
     """Save statistics to JSON file."""
     stats_path = out_dir / "stats.json"
     with open(stats_path, "w", encoding="utf-8") as f:
@@ -175,7 +182,7 @@ def save_stats(stats, out_dir):
 # ==============================================================================
 
 
-def get_process_memory_mb():
+def get_process_memory_mb() -> Dict[str, float]:
     """
     Get current process memory usage in MB.
 
@@ -196,7 +203,7 @@ def get_process_memory_mb():
     }
 
 
-def calculate_throughput(rows_processed, duration_seconds):
+def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
     """
     Calculate throughput in rows per second.
 
@@ -218,7 +225,7 @@ def calculate_throughput(rows_processed, duration_seconds):
 # ==============================================================================
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
     validate_input_file(config_path, must_exist=True)
@@ -226,7 +233,7 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def setup_paths(config, timestamp):
+def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
 
@@ -260,7 +267,7 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 
 
-def load_manifest(manifest_dir):
+def load_manifest(manifest_dir: Path) -> pd.DataFrame:
     """Load manifest data"""
     manifest_file = manifest_dir / "master_sample_manifest.parquet"
     # Column pruning: Load only required columns
@@ -279,7 +286,7 @@ def load_manifest(manifest_dir):
     return df
 
 
-def load_sdc(sdc_file):
+def load_sdc(sdc_file: Path) -> pd.DataFrame:
     """Load SDC M&A data"""
     print("  Loading SDC M&A data...")
 
@@ -337,7 +344,7 @@ def load_sdc(sdc_file):
 # ==============================================================================
 
 
-def compute_takeover_flags(manifest, sdc):
+def compute_takeover_flags(manifest: pd.DataFrame, sdc: pd.DataFrame) -> pd.DataFrame:
     """Compute takeover flags for each call"""
     print("\n" + "=" * 60)
     print("Computing Takeover Flags")
@@ -422,7 +429,7 @@ def compute_takeover_flags(manifest, sdc):
 # ==============================================================================
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse command-line arguments for 3.3_EventFlags.py."""
     parser = argparse.ArgumentParser(
         description="""
@@ -444,7 +451,7 @@ for corporate events affecting sample firms.
     return parser.parse_args()
 
 
-def check_prerequisites(root):
+def check_prerequisites(root: Path) -> None:
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
@@ -464,7 +471,7 @@ def check_prerequisites(root):
 # ==============================================================================
 
 
-def main():
+def main() -> int:
     """Main execution"""
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()

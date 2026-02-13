@@ -37,6 +37,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -81,7 +82,7 @@ from f1d.shared.path_utils import (
 # ==============================================================================
 
 
-def get_process_memory_mb():
+def get_process_memory_mb() -> Dict[str, float]:
     """
     Get current process memory usage in MB.
 
@@ -102,7 +103,7 @@ def get_process_memory_mb():
     }
 
 
-def calculate_throughput(rows_processed, duration_seconds):
+def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
     """
     Calculate throughput in rows per second.
 
@@ -119,7 +120,7 @@ def calculate_throughput(rows_processed, duration_seconds):
     return round(rows_processed / duration_seconds, 2)
 
 
-def get_git_sha():
+def get_git_sha() -> str:
     """
     Get the current git commit SHA.
 
@@ -142,7 +143,9 @@ def get_git_sha():
         return "unknown"
 
 
-def detect_anomalies_zscore(df, columns, threshold=3.0):
+def detect_anomalies_zscore(
+    df: pd.DataFrame, columns: List[str], threshold: float = 3.0
+) -> Dict[str, Dict[str, Any]]:
     """
     Detect anomalies using z-score (standard deviation) method.
 
@@ -195,7 +198,9 @@ def detect_anomalies_zscore(df, columns, threshold=3.0):
     return anomalies
 
 
-def detect_anomalies_iqr(df, columns, multiplier=3.0):
+def detect_anomalies_iqr(
+    df: pd.DataFrame, columns: List[str], multiplier: float = 3.0
+) -> Dict[str, Dict[str, Any]]:
     """
     Detect anomalies using IQR (Interquartile Range) method.
 
@@ -252,13 +257,13 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
 # ==============================================================================
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
 
-def setup_paths(config, timestamp):
+def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     root = Path(__file__).parent.parent.parent
 
     # Resolve manifest directory using timestamp-based resolution
@@ -304,7 +309,7 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 
 
-def import_module(name, path):
+def import_module(name: str, path: Path) -> Any:
     """Dynamically import a module by path."""
     spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
@@ -317,7 +322,7 @@ def import_module(name, path):
 # ==============================================================================
 
 
-def check_prerequisites(root, args):
+def check_prerequisites(root: Path, args: argparse.Namespace) -> None:
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
@@ -340,7 +345,7 @@ def check_prerequisites(root, args):
 # ==============================================================================
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(description="Step 3: Build Financial Features")
     parser.add_argument(
         "--dry-run", action="store_true", help="Show plan without executing"

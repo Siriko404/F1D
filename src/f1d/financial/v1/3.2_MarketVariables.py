@@ -45,6 +45,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -104,7 +105,7 @@ except ImportError:
     HAS_OBSERVABILITY = False
 
 
-def compute_file_checksum(filepath, algorithm="sha256"):
+def compute_file_checksum(filepath: Path, algorithm: str = "sha256") -> str:
     """Compute checksum for a file."""
 
     h = hashlib.new(algorithm)
@@ -116,7 +117,13 @@ def compute_file_checksum(filepath, algorithm="sha256"):
     return h.hexdigest()
 
 
-def print_stat(label, before=None, after=None, value=None, indent=2):
+def print_stat(
+    label: str,
+    before: Optional[int] = None,
+    after: Optional[int] = None,
+    value: Optional[Any] = None,
+    indent: int = 2
+) -> None:
     """Print a statistic with consistent formatting.
 
 
@@ -153,7 +160,7 @@ def print_stat(label, before=None, after=None, value=None, indent=2):
             print(f"{prefix}{label}: {v}")
 
 
-def analyze_missing_values(df):
+def analyze_missing_values(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
     """Analyze missing values per column."""
 
     missing = {}
@@ -170,7 +177,7 @@ def analyze_missing_values(df):
     return missing
 
 
-def print_stats_summary(stats):
+def print_stats_summary(stats: Dict[str, Any]) -> None:
     """Print formatted summary table."""
 
     print("\n" + "=" * 60)
@@ -222,7 +229,7 @@ def print_stats_summary(stats):
     print("=" * 60)
 
 
-def save_stats(stats, out_dir):
+def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
     """Save statistics to JSON file."""
 
     stats_path = out_dir / "stats.json"
@@ -240,7 +247,7 @@ def save_stats(stats, out_dir):
 # ==============================================================================
 
 
-def get_process_memory_mb():
+def get_process_memory_mb() -> Dict[str, float]:
     """
 
     Get current process memory usage in MB.
@@ -272,7 +279,7 @@ def get_process_memory_mb():
     }
 
 
-def calculate_throughput(rows_processed, duration_seconds):
+def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
     """
 
     Calculate throughput in rows per second.
@@ -458,7 +465,7 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
 # ==============================================================================
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
 
     validate_input_file(config_path, must_exist=True)
@@ -467,7 +474,7 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def setup_paths(config, timestamp):
+def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     root = Path(__file__).parent.parent.parent
 
     # Resolve manifest directory using timestamp-based resolution
@@ -508,7 +515,7 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 
 
-def load_manifest_with_permno(manifest_dir, ccm_file):
+def load_manifest_with_permno(manifest_dir: Path, ccm_file: Path) -> pd.DataFrame:
     """Load manifest with 100% PERMNO coverage via gvkey->CCM fallback."""
 
     # Column pruning: only reading needed columns
@@ -561,7 +568,7 @@ def load_manifest_with_permno(manifest_dir, ccm_file):
     return df
 
 
-def load_crsp_for_years(crsp_dir, years):
+def load_crsp_for_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]:
     """Load CRSP for specific years only."""
 
     all_data = []
@@ -606,7 +613,9 @@ def load_crsp_for_years(crsp_dir, years):
 # ==============================================================================
 
 
-def compute_returns_for_year(year_manifest, crsp, config):
+def compute_returns_for_year(
+    year_manifest: pd.DataFrame, crsp: pd.DataFrame, config: Dict[str, Any]
+) -> pd.DataFrame:
     """Vectorized stock return computation for one year."""
 
     days_after = (
@@ -699,7 +708,9 @@ def compute_returns_for_year(year_manifest, crsp, config):
     return year_manifest
 
 
-def compute_liquidity_for_year(year_manifest, crsp, config):
+def compute_liquidity_for_year(
+    year_manifest: pd.DataFrame, crsp: pd.DataFrame, config: Dict[str, Any]
+) -> pd.DataFrame:
     """Vectorized liquidity computation for one year."""
 
     event_days = config.get("step_09", {}).get("window_days", 5)
@@ -859,7 +870,7 @@ def compute_liquidity_for_year(year_manifest, crsp, config):
 # ==============================================================================
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse command-line arguments for 3.2_MarketVariables.py."""
 
     parser = argparse.ArgumentParser(
@@ -888,7 +899,7 @@ with master sample for analysis.
     return parser.parse_args()
 
 
-def check_prerequisites(root):
+def check_prerequisites(root: Path) -> None:
     """Validate all required inputs and prerequisite steps exist."""
 
     # Check CRSP directory exists
@@ -919,7 +930,7 @@ def check_prerequisites(root):
 # ==============================================================================
 
 
-def main():
+def main() -> int:
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
     config = load_config()

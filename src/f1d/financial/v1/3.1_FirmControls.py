@@ -43,6 +43,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -80,7 +81,7 @@ from f1d.shared.path_utils import (
 # ==============================================================================
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
     validate_input_file(config_path, must_exist=True)
@@ -88,7 +89,7 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def setup_paths(config, timestamp):
+def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
 
@@ -134,7 +135,7 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 
 
-def load_manifest(manifest_dir):
+def load_manifest(manifest_dir: Path) -> pd.DataFrame:
     """Load manifest data"""
     manifest_file = manifest_dir / "master_sample_manifest.parquet"
     if not manifest_file.exists():
@@ -153,7 +154,7 @@ def load_manifest(manifest_dir):
     return df
 
 
-def load_compustat(compustat_file):
+def load_compustat(compustat_file: Path) -> pd.DataFrame:
     """Load Compustat data with only required columns"""
     print("  Loading Compustat (metadata only scan first)...")
 
@@ -191,7 +192,7 @@ def load_compustat(compustat_file):
 # ...
 
 
-def load_ibes(ibes_file):
+def load_ibes(ibes_file: Path) -> pd.DataFrame:
     """Load IBES data filtered to EPS quarterly"""
     print("  Loading IBES...")
 
@@ -225,7 +226,7 @@ def load_ibes(ibes_file):
     return df
 
 
-def load_cccl(cccl_file):
+def load_cccl(cccl_file: Path) -> pd.DataFrame:
     """Load CCCL instrument data with all 6 shift_intensity variants"""
     print("  Loading CCCL instrument...")
 
@@ -272,7 +273,7 @@ def load_cccl(cccl_file):
 # ==============================================================================
 
 
-def compute_compustat_controls(manifest, compustat):
+def compute_compustat_controls(manifest: pd.DataFrame, compustat: pd.DataFrame) -> pd.DataFrame:
     """Compute Size, BM, Lev, ROA, EPS_Growth from Compustat (Vectorized with merge_asof)"""
     print("\n" + "=" * 60)
     print("Computing Compustat Controls (Optimized)")
@@ -350,7 +351,7 @@ def compute_compustat_controls(manifest, compustat):
     return results_df
 
 
-def compute_earnings_surprise(manifest, ibes, ccm_file):
+def compute_earnings_surprise(manifest: pd.DataFrame, ibes: pd.DataFrame, ccm_file: Path) -> pd.DataFrame:
     """Compute SurpDec from IBES"""
     print("\n" + "=" * 60)
     print("Computing Earnings Surprise (IBES)")
@@ -457,7 +458,7 @@ def compute_earnings_surprise(manifest, ibes, ccm_file):
     ]
 
 
-def merge_cccl(manifest, cccl):
+def merge_cccl(manifest: pd.DataFrame, cccl: pd.DataFrame) -> pd.DataFrame:
     """Merge all shift_intensity variants from CCCL"""
     print("\n" + "=" * 60)
     print("Merging CCCL Instrument")
@@ -510,7 +511,7 @@ from f1d.shared.observability_utils import (
 # ==============================================================================
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse command-line arguments for 3.1_FirmControls.py."""
     parser = argparse.ArgumentParser(
         description="""
@@ -532,7 +533,7 @@ with master sample to create analysis dataset.
     return parser.parse_args()
 
 
-def check_prerequisites(root, args):
+def check_prerequisites(root: Path, args: argparse.Namespace) -> None:
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
@@ -556,7 +557,7 @@ def check_prerequisites(root, args):
 # ==============================================================================
 
 
-def main():
+def main() -> int:
     """Main execution"""
     args = parse_arguments()
     root = Path(__file__).parent.parent.parent

@@ -29,11 +29,12 @@ Date: 2026-02-11
 """
 
 from pathlib import Path
+from typing import Any, Callable, Dict, Optional
 
 import pandas as pd
 
 
-def load_master_variable_definitions():
+def load_master_variable_definitions() -> Dict[str, Dict[str, str]]:
     """Load the master variable definitions CSV"""
     root = Path(__file__).parent.parent.parent
     master_path = root / "1_Inputs" / "master_variable_definitions.csv"
@@ -52,7 +53,11 @@ def load_master_variable_definitions():
         return {}
 
 
-def generate_variable_reference(df, output_path, print_fn=print):
+def generate_variable_reference(
+    df: pd.DataFrame,
+    output_path: Path,
+    print_fn: Callable[[str], None] = print
+) -> None:
     """
     Generate enhanced variable_reference.csv with source and description.
     Uses master_variable_definitions.csv for lookups.
