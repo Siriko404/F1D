@@ -1,147 +1,113 @@
 ---
 phase: 65-architecture-standard-foundation
-verified: 2026-02-13T06:40:11Z
+verified: 2026-02-13T06:45:00Z
 status: passed
-score: 7/7 must-haves verified
-re_verification: false
+score: 6/6 must-haves verified
+re_verification: true
+previous_status: passed
+previous_score: 7/7
+gaps_closed: []
+gaps_remaining: []
+regressions: []
 ---
 
 # Phase 65: Architecture Standard Foundation Verification Report
 
 **Phase Goal:** Define canonical folder structure and module organization that all subsequent standards build upon.
-**Verified:** 2026-02-13T06:40:11Z
+**Verified:** 2026-02-13T06:45:00Z
 **Status:** PASSED
-**Re-verification:** No - initial verification
+**Re-verification:** Yes - verifying V1/V2 active pipeline representation
 
 ## Goal Achievement
 
-### Observable Truths
+### Observable Truths (V1/V2 Pipeline Verification)
 
-| #   | Truth | Status | Evidence |
-| --- | ----- | ------ | -------- |
-| 1 | ARCHITECTURE_STANDARD.md exists in docs/ directory | VERIFIED | File exists at docs/ARCHITECTURE_STANDARD.md with 2318 lines (exceeds 200 line minimum) |
-| 2 | Section 1 defines canonical folder structure with src/f1d/, tests/, docs/, config/, data/ | VERIFIED | Section 1 "Folder Structure (ARCH-01)" at line 171 includes complete target structure with all required directories |
-| 3 | Section 2 defines __init__.py hierarchy and module organization pattern | VERIFIED | Section 2 "Module Organization (ARCH-02)" at line 389 includes __init__.py patterns, code examples, module tier system |
-| 4 | Section 3 defines data directory structure (raw/, interim/, processed/, results/) | VERIFIED | Section 3 "Data Directory Structure (ARCH-03)" at line 798 defines raw/, interim/, processed/, external/ with mutability rules |
-| 5 | Section 4 defines version management approach (V2 canonical, V1 archived) | VERIFIED | Section 4 "Version Management (ARCH-04)" at line 1093 defines "Single Active Version Policy" with V2 as canonical (src/f1d/), V1 archived (.___archive/legacy/) |
-| 6 | Section 5 defines archive and legacy code handling strategy | VERIFIED | Section 5 "Archive and Legacy Code (ARCH-05)" at line 1385 defines archive structure, conventions, legacy policy |
-| 7 | Document includes rationale for each architectural decision | VERIFIED | "Rationale" subsections present at lines 360, 771, 1066, 1360, 1742 - one per main section |
+| # | Truth | Status | Evidence |
+|---|-------|--------|----------|
+| 1 | No reference to V1 as "legacy", "archived", or "deprecated" | VERIFIED | Line 1126: "V1 and V2 represent different processing approaches, NOT legacy vs. canonical"; Line 1441: "There is no `legacy/` subdirectory for V1 scripts because V1 is an ACTIVE variant" |
+| 2 | No reference to V2 as "single active version" or "canonical version" | VERIFIED | Line 1111: "Multiple version variants may coexist as active processing approaches"; Lines 1167-1168: Both V1 and V2 listed as "Active variant" with "Full support" |
+| 3 | Both V1 and V2 described as ACTIVE pipeline variants | VERIFIED | Lines 1115-1123: Both V1 and V2 shown as "Active variant" in current state; Lines 229-244: Target structure shows v1/ and v2/ as "active variant"; Line 1127: "Both versions are actively maintained and used in the pipeline" |
+| 4 | Section 4 (Version Management) reflects both versions as active | VERIFIED | Section 4 (lines 1105-1402) explicitly defines "Multiple Active Versions" policy; Version Hierarchy table (lines 1165-1168) shows both V1 and V2 as "Active variant" with "Full support" |
+| 5 | Archive section does NOT include V1 as legacy | VERIFIED | Line 1409: "Archive is for truly deprecated/abandoned code ONLY. Version variants (V1, V2) that are active in the pipeline should NOT be archived"; Line 1441: "There is no `legacy/` subdirectory for V1 scripts because V1 is an ACTIVE variant, not deprecated code"; Lines 1455-1458: "DO NOT archive: Version variants (V1, V2) that are still active in the pipeline" |
+| 6 | Migration guide reflects both versions migrating to new structure | VERIFIED | Line 1286: "Both V1 and V2 are active variants and will BOTH migrate to the src/f1d/ package structure"; Lines 1299-1316: Migration Phase 3 explicitly covers "Move stage scripts (BOTH variants)"; Lines 1996-2028: Detailed instructions for migrating both V1 and V2 for Financial and Econometric stages; Line 2129: "V1 scripts are NOT archived - they are active variants and have been migrated alongside V2" |
 
-**Score:** 7/7 truths verified
+**Score:** 6/6 truths verified
 
-### Required Artifacts
+### Key Evidence Excerpts
 
-| Artifact | Expected | Status | Details |
-| -------- | -------- | ------ | ------- |
-| `docs/ARCHITECTURE_STANDARD.md` | Architecture standard documentation (min 200 lines) | VERIFIED | 2318 lines, comprehensive content |
+#### Section 4 - Version Management (ARCH-04)
 
-### Key Link Verification
+The document correctly states:
 
-| From | To | Via | Status | Details |
-| ---- | -- | --- | ------ | ------- |
-| `docs/ARCHITECTURE_STANDARD.md` | Current project structure | Migration guidance appendix | WIRED | Appendix A at line 1768 provides complete migration guide from current flat layout to target src-layout |
+> **Principle:** Multiple version variants may coexist as active processing approaches in the pipeline.
 
-### Requirements Coverage
+Version Hierarchy Table:
+```
+| Version | Status          | Location                              | Maintenance   |
+|---------|-----------------|---------------------------------------|---------------|
+| V1      | Active variant  | src/f1d/*/v1/ or 2_Scripts/*_V1/      | Full support  |
+| V2      | Active variant  | src/f1d/*/v2/ or 2_Scripts/*_V2/      | Full support  |
+```
 
-| Requirement | Status | Evidence |
-| ----------- | ------ | -------- |
-| ARCH-01 (Folder Structure) | SATISFIED | Section 1 defines canonical layout with src/f1d/, tests/, docs/, config/, data/, results/, logs/, .___archive/ |
-| ARCH-02 (Module Organization) | SATISFIED | Section 2 defines __init__.py patterns, module tier system (Tier 1-3), import conventions |
-| ARCH-03 (Data Directory) | SATISFIED | Section 3 defines data lifecycle stages (raw/interim/processed/external) with mutability rules |
-| ARCH-04 (Version Management) | SATISFIED | Section 4 defines single active version policy, semantic versioning, deprecation strategy |
-| ARCH-05 (Archive Strategy) | SATISFIED | Section 5 defines archive structure, conventions, manifest.json, legacy code policy |
+#### Section 5 - Archive and Deprecated Code (ARCH-05)
 
-### Anti-Patterns Found
+The document explicitly excludes V1 from archival:
 
-| File | Line | Pattern | Severity | Impact |
-| ---- | ---- | ------- | -------- | ------ |
-| None | - | - | - | - |
+> **Important:** Archive is for truly deprecated/abandoned code ONLY. Version variants (V1, V2) that are active in the pipeline should NOT be archived - they remain in active development.
 
-No TODO/FIXME/placeholder comments found. Document is complete and substantive.
+> **Note:** There is no `legacy/` subdirectory for V1 scripts because V1 is an ACTIVE variant, not deprecated code.
 
-### Human Verification Required
+**DO NOT archive:**
+- Version variants (V1, V2) that are still active in the pipeline
+- Code that serves different research purposes or methodology approaches
+- Any code that is actively maintained or used
 
-None - all verification items can be confirmed programmatically.
+#### Appendix A - Migration Guide
 
-### Quality Metrics
+The migration guide explicitly covers both variants:
 
-| Metric | Value | Threshold | Status |
-| ------ | ----- | --------- | ------ |
-| Document Lines | 2318 | >= 200 | PASS |
-| Sections Present | 5 main + 2 appendices | 5 main sections | PASS |
-| Rationale Subsections | 5 | >= 5 | PASS |
-| Code Examples | Multiple per relevant section | Present | PASS |
-| Migration Guide | Complete 6-phase guide | Present | PASS |
+> Both V1 and V2 are active variants and will BOTH migrate to the src/f1d/ package structure
 
-### Content Completeness
+Phase 3 covers both:
+```
+Phase 3: Move stage scripts (BOTH variants)
+├── Move 2_Scripts/3_Financial/ -> src/f1d/financial/v1/
+├── Move 2_Scripts/3_Financial_V2/ -> src/f1d/financial/v2/
+├── Move 2_Scripts/4_Econometric/ -> src/f1d/econometric/v1/
+├── Move 2_Scripts/4_Econometric_V2/ -> src/f1d/econometric/v2/
+```
 
-**Section 1: Folder Structure (ARCH-01)**
-- Complete target structure diagram (lines 177-282)
-- Directory descriptions table (lines 288-316)
-- File placement rules (lines 320-358)
-- Rationale subsection (line 360)
+And explicitly states:
+> **Note:** V1 scripts are NOT archived - they are active variants and have been migrated alongside V2.
 
-**Section 2: Module Organization (ARCH-02)**
-- Package structure diagram (lines 397-430)
-- __init__.py pattern with code examples (lines 432-531)
-- Module tier system (lines 607-675)
-- Import conventions (lines 677-709)
-- Anti-patterns to avoid (lines 711-769)
-- Rationale subsection (line 771)
+### Anti-Patterns Check
 
-**Section 3: Data Directory Structure (ARCH-03)**
-- Data lifecycle stages diagram (lines 803-828)
-- Mutability rules for each stage (lines 830-946)
-- Results directory structure (lines 948-982)
-- Current-to-target mapping (lines 984-997)
-- Data documentation requirements (lines 999-1036)
-- Rationale subsection (line 1066)
-
-**Section 4: Version Management (ARCH-04)**
-- Single active version policy (lines 1097-1148)
-- Package versioning with SemVer (lines 1150-1183)
-- Deprecation strategy with timeline (lines 1185-1259)
-- Migration path 6 phases (lines 1261-1297)
-- Breaking changes documentation (lines 1299-1349)
-- Rationale subsection (line 1360)
-
-**Section 5: Archive and Legacy Code (ARCH-05)**
-- Archive directory structure (lines 1389-1422)
-- When to archive criteria (lines 1424-1435)
-- Archive conventions with ARCHIVED.md template (lines 1437-1509)
-- manifest.json schema (lines 1510-1560)
-- Legacy code policy (lines 1562-1603)
-- Archive maintenance procedures (lines 1605-1633)
-- Rationale subsection (line 1742)
-
-**Appendix A: Migration Guide**
-- Current state documentation (lines 1773-1831)
-- Target state documentation (lines 1833-1865)
-- Key differences table (lines 1867-1877)
-- 6 migration phases with bash commands and verification (lines 1879-2174)
-- Breaking changes summary (lines 2178-2203)
-- Compatibility notes (lines 2205-2240)
-- Rollback plan (lines 2242-2255)
-- Timeline estimate (lines 2257-2267)
-
-**Appendix B: Related Standards**
-- Standards dependency table (lines 2294-2304)
+| Pattern | Search Location | Found | Status |
+|---------|-----------------|-------|--------|
+| V1 as "legacy" | Entire document | No | PASS |
+| V1 as "archived" (in active context) | Entire document | No | PASS |
+| V1 as "deprecated" (in version context) | Entire document | No | PASS |
+| V2 as "canonical version" | Entire document | No | PASS |
+| V2 as "single active version" | Entire document | No | PASS |
+| "Only V2" | Entire document | No | PASS |
 
 ### Summary
 
-Phase 65 successfully achieved its goal of defining the canonical folder structure and module organization that all subsequent standards (Phases 66-68) build upon. The ARCHITECTURE_STANDARD.md document is comprehensive (2318 lines), well-structured, and includes all required content:
+**PASSED**: The ARCHITECTURE_STANDARD.md correctly and accurately reflects that BOTH V1 and V2 scripts are active pipeline variants.
 
-1. **Complete folder structure** with src-layout pattern, including all required directories (src/f1d/, tests/, docs/, config/, data/)
-2. **Module organization patterns** with detailed __init__.py examples, module tier system, and import conventions
-3. **Data lifecycle management** with clear mutability rules for raw/interim/processed/external
-4. **Version management** with single active version policy, SemVer, and deprecation strategy
-5. **Archive strategy** with directory structure, conventions, and legacy code policy
-6. **Rationale for all decisions** in dedicated subsections
-7. **Migration guide** providing complete path from current to target state
+Key correct representations:
+1. V1 and V2 are explicitly described as "active variants" with "full support"
+2. No language positioning V2 as the "canonical" or "single active" version
+3. Archive section explicitly excludes V1 from being archived
+4. Migration guide covers BOTH variants migrating to the new structure
+5. Version hierarchy table shows both with equal status
 
-All 7 observable truths verified. All 5 requirements (ARCH-01 through ARCH-05) satisfied. No gaps or anti-patterns found.
+The document properly distinguishes between:
+- **Version variants (V1, V2)**: Active processing approaches, both maintained
+- **Deprecated/archived code**: Only truly replaced/abandoned code goes to .___archive/
+
+This is the correct representation of the project's version management strategy.
 
 ---
 
-_Verified: 2026-02-13T06:40:11Z_
-_Verifier: Claude (gsd-verifier)_
+_Verified: 2026-02-13T06:45:00Z_
