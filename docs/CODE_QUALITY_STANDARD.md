@@ -1773,3 +1773,358 @@ coverage report
 4. **Team velocity:** Lower bar for exploratory code
 
 ---
+
+## 4. Import Organization (CODE-03)
+
+This section defines the import organization pattern, following PEP 8 conventions. Proper import organization improves code readability and makes dependencies explicit.
+
+**Note:** This section restates conventions already defined in ARCHITECTURE_STANDARD.md Section 2.4 for completeness.
+
+**Source:** [PEP 8 - Imports](https://peps.python.org/pep-0008/#imports)
+
+### 4.1 Import Order
+
+Imports should be grouped in the following order, separated by blank lines:
+
+1. **Standard library** (alphabetical)
+2. **Third-party packages** (alphabetical)
+3. **Local imports** (absolute, alphabetical)
+
+```python
+#!/usr/bin/env python3
+"""Module demonstrating proper import organization."""
+
+# =============================================================================
+# 1. Standard library imports (alphabetical)
+# =============================================================================
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+# =============================================================================
+# 2. Third-party package imports (alphabetical)
+# =============================================================================
+import numpy as np
+import pandas as pd
+from linearmodels.panel import PanelOLS
+from scipy import stats
+
+# =============================================================================
+# 3. Local imports (absolute, alphabetical)
+# =============================================================================
+from f1d.shared.exceptions import (
+    CollinearityError,
+    DataValidationError,
+    F1DError,
+)
+from f1d.shared.observability import get_logger, Stats
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
+```
+
+### 4.2 Import Rules
+
+#### Rule 1: Absolute Imports Over Relative
+
+Always use absolute imports for clarity and refactoring safety:
+
+```python
+# GOOD: Absolute imports
+from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.panel_ols import run_panel_ols
+from f1d.financial.v2.variables import construct_variables
+
+# BAD: Relative imports (avoid in production code)
+from ..shared.path_utils import get_latest_output_dir
+from .variables import construct_variables
+```
+
+**Exception:** Relative imports acceptable in `__init__.py` for re-exports within the same package.
+
+#### Rule 2: Group Imports with Blank Lines
+
+Separate import groups with a single blank line:
+
+```python
+# Standard library
+import os
+from pathlib import Path
+
+# Third-party
+import pandas as pd
+
+# Local
+from f1d.shared.path_utils import get_latest_output_dir
+```
+
+#### Rule 3: Sort Alphabetically Within Each Group
+
+Sort imports alphabetically within each section:
+
+```python
+# GOOD: Alphabetical order
+from f1d.shared.exceptions import CollinearityError, DataValidationError
+from f1d.shared.observability import get_logger
+from f1d.shared.path_utils import get_latest_output_dir
+
+# BAD: Random order
+from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.exceptions import CollinearityError, DataValidationError
+from f1d.shared.observability import get_logger
+```
+
+#### Rule 4: Use `from X import Y` for Specific Items
+
+Import specific items rather than entire modules when possible:
+
+```python
+# GOOD: Import specific items
+from f1d.shared.path_utils import get_latest_output_dir
+from typing import Dict, List, Optional
+
+# ACCEPTABLE: Import module for module-level access
+import pandas as pd
+import numpy as np
+
+# BAD: Import everything
+from f1d.shared.path_utils import *
+```
+
+#### Rule 5: One Import Per Line for Multiple Items
+
+When importing multiple items from the same module, use parentheses for readability:
+
+```python
+# GOOD: Multiple imports with parentheses
+from f1d.shared.exceptions import (
+    CollinearityError,
+    DataValidationError,
+    F1DError,
+    OutputResolutionError,
+)
+
+# BAD: All on one line (too long)
+from f1d.shared.exceptions import CollinearityError, DataValidationError, F1DError, OutputResolutionError
+
+# BAD: Multiple import statements for same module
+from f1d.shared.exceptions import CollinearityError
+from f1d.shared.exceptions import DataValidationError
+from f1d.shared.exceptions import F1DError
+```
+
+### 4.3 Import Patterns
+
+#### Standard Library Imports
+
+```python
+# Common standard library imports for F1D
+import json
+import logging
+import os
+import re
+import sys
+import warnings
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
+```
+
+#### Third-Party Imports
+
+```python
+# Common third-party imports for F1D
+import numpy as np
+import pandas as pd
+import yaml
+from linearmodels.panel import PanelOLS
+from scipy import stats
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+```
+
+#### Local Imports
+
+```python
+# Local imports use the f1d package namespace
+from f1d import __version__
+from f1d.shared.exceptions import F1DError
+from f1d.shared.observability import get_logger, Stats
+from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.panel_ols import run_panel_ols
+```
+
+### 4.4 Import Anti-Patterns
+
+Avoid these common import mistakes:
+
+#### Anti-pattern 1: Star Imports
+
+```python
+# BAD: Star import pollutes namespace
+from pandas import *
+from f1d.shared.path_utils import *
+
+# GOOD: Import specific items
+import pandas as pd
+from f1d.shared.path_utils import get_latest_output_dir
+```
+
+#### Anti-pattern 2: Multiple Imports on One Line
+
+```python
+# BAD: Multiple imports on one line
+import os, sys, json
+
+# GOOD: One import per line
+import json
+import os
+import sys
+```
+
+#### Anti-pattern 3: Mixed Import Styles
+
+```python
+# BAD: Inconsistent style
+from pathlib import Path
+import pandas
+from datetime import datetime
+import numpy
+
+# GOOD: Consistent style
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+```
+
+#### Anti-pattern 4: Relative Imports in Production Code
+
+```python
+# BAD: Relative imports break when module moves
+from ..shared import path_utils
+from . import variables
+
+# GOOD: Absolute imports survive refactoring
+from f1d.shared import path_utils
+from f1d.financial.v2 import variables
+```
+
+#### Anti-pattern 5: Importing Inside Functions
+
+```python
+# BAD: Import inside function (unless avoiding circular import)
+def run_analysis():
+    from f1d.shared.panel_ols import run_panel_ols
+    ...
+
+# GOOD: Import at module level
+from f1d.shared.panel_ols import run_panel_ols
+
+def run_analysis():
+    ...
+```
+
+**Exception:** Import inside function acceptable for:
+- Avoiding circular imports
+- Lazy loading heavy dependencies
+- Optional dependencies
+
+```python
+# ACCEPTABLE: Lazy import to avoid circular dependency
+def get_config():
+    from f1d.config.loader import load_config  # Avoids circular import
+    return load_config()
+
+# ACCEPTABLE: Lazy import for optional dependency
+def plot_results(df):
+    try:
+        import matplotlib.pyplot as plt  # Optional dependency
+    except ImportError:
+        raise ImportError("matplotlib required for plotting")
+    ...
+```
+
+### 4.5 ruff isort Configuration
+
+Configure ruff to automatically organize imports:
+
+```toml
+[tool.ruff]
+select = ["I"]  # Enable isort rules
+
+[tool.ruff.isort]
+known-first-party = ["f1d"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+```
+
+Run ruff to organize imports:
+
+```bash
+# Check import order
+ruff check --select I src/
+
+# Auto-fix import order
+ruff check --select I --fix src/
+
+# Format entire codebase
+ruff format src/
+```
+
+### 4.6 Import Organization Checklist
+
+When organizing imports, ensure:
+
+- [ ] Imports grouped: stdlib, third-party, local
+- [ ] Blank line between each group
+- [ ] Alphabetical order within groups
+- [ ] Absolute imports used (not relative)
+- [ ] Specific imports (not `import *`)
+- [ ] Multiple imports in parentheses
+- [ ] No multiple imports on one line
+- [ ] No imports inside functions (unless necessary)
+- [ ] ruff isort configured and passing
+
+### 4.7 Cross-Reference
+
+This section aligns with:
+
+- **ARCHITECTURE_STANDARD.md Section 2.4:** Import conventions
+- **ARCHITECTURE_STANDARD.md Section 2.3:** Module tier system affects import paths
+- **ARCHITECTURE_STANDARD.md Section 1:** Folder structure defines import paths
+
+### 4.8 Rationale
+
+**Why This Import Order?**
+
+1. **Clarity:** Grouped imports show dependency categories
+2. **Standard compliance:** PEP 8 convention
+3. **Tool support:** isort and ruff automate organization
+4. **Readability:** Alphabetical sorting aids scanning
+
+**Why Absolute Imports?**
+
+1. **Clarity:** Import path shows exact location
+2. **Refactoring:** Moving files doesn't break imports
+3. **Tooling:** IDEs and linters work better
+4. **Standard:** PEP 8 recommends absolute imports
+
+**Why No Star Imports?**
+
+1. **Namespace pollution:** Unclear where names come from
+2. **IDE support:** Autocomplete can't suggest imported names
+3. **Conflicts:** May shadow existing names
+4. **Explicit is better:** Zen of Python
+
+---
