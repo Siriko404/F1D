@@ -43,6 +43,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -78,7 +79,7 @@ from f1d.shared.path_utils import (
 # ==============================================================================
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
     if config_path.exists():
@@ -88,7 +89,7 @@ def load_config():
     return {}
 
 
-def setup_paths(config, timestamp):
+def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
 
@@ -132,7 +133,7 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 
 
-def load_manifest(manifest_dir):
+def load_manifest(manifest_dir: Path) -> pd.DataFrame:
     """Load manifest data - the universe of firm-years in sample"""
     manifest_file = manifest_dir / "master_sample_manifest.parquet"
     if not manifest_file.exists():
@@ -150,7 +151,7 @@ def load_manifest(manifest_dir):
     return df
 
 
-def load_firm_controls(firm_controls_dir):
+def load_firm_controls(firm_controls_dir: Path) -> pd.DataFrame:
     """Load and combine all yearly firm controls files"""
     print(f"  Loading firm controls from: {firm_controls_dir}")
 
@@ -175,7 +176,7 @@ def load_firm_controls(firm_controls_dir):
     return combined
 
 
-def load_compustat(compustat_file):
+def load_compustat(compustat_file: Path) -> pd.DataFrame:
     """Load Compustat data with only required columns for H1 variables"""
     print("  Loading Compustat data...")
 
@@ -575,7 +576,7 @@ def winsorize_series(
 # ==============================================================================
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse command-line arguments for 3.1_H1Variables.py."""
     parser = argparse.ArgumentParser(
         description="""
@@ -610,7 +611,7 @@ and control variables for H1 cash holdings hypothesis testing.
     return parser.parse_args()
 
 
-def check_prerequisites(paths, args):
+def check_prerequisites(paths: Dict[str, Path], args: argparse.Namespace) -> bool:
     """Validate all required inputs and prerequisite steps exist."""
     print("\nChecking prerequisites...")
 
@@ -652,7 +653,7 @@ def check_prerequisites(paths, args):
 # ==============================================================================
 
 
-def main():
+def main() -> int:
     """Main execution"""
     args = parse_arguments()
 

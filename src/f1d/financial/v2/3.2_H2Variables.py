@@ -56,6 +56,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -99,7 +100,7 @@ warnings.filterwarnings("ignore")
 # ==============================================================================
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
     config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
     if config_path.exists():
@@ -109,7 +110,7 @@ def load_config():
     return {}
 
 
-def setup_paths(config, timestamp):
+def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     """Set up all required paths"""
     root = Path(__file__).parent.parent.parent
 
@@ -149,7 +150,7 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 
 
-def load_manifest(manifest_dir):
+def load_manifest(manifest_dir: Path) -> pd.DataFrame:
     """Load manifest data - the universe of firm-years in sample"""
     manifest_file = manifest_dir / "master_sample_manifest.parquet"
     if not manifest_file.exists():
@@ -167,7 +168,7 @@ def load_manifest(manifest_dir):
     return df
 
 
-def load_compustat_h2(compustat_file):
+def load_compustat_h2(compustat_file: Path) -> pd.DataFrame:
     """Load Compustat data with only required columns for H2 variables"""
     print("  Loading Compustat data...")
 
@@ -232,7 +233,7 @@ def load_compustat_h2(compustat_file):
     return df
 
 
-def load_ibes(ibes_file):
+def load_ibes(ibes_file: Path) -> pd.DataFrame:
     """Load IBES analyst forecast data"""
     print("  Loading IBES data...")
 
@@ -282,7 +283,7 @@ def load_ibes(ibes_file):
     return df
 
 
-def build_ff_mappings(siccodes48_file, siccodes12_file):
+def build_ff_mappings(siccodes48_file: Path, siccodes12_file: Path) -> Tuple[Dict[int, Tuple[int, str]], Dict[int, Tuple[int, str]]]:
     """Build Fama-French industry mappings from SIC codes"""
     print("\nBuilding Fama-French industry mappings...")
 
@@ -300,7 +301,11 @@ def build_ff_mappings(siccodes48_file, siccodes12_file):
 # ==============================================================================
 
 
-def assign_ff_industries(df, ff48_map, ff12_map):
+def assign_ff_industries(
+    df: pd.DataFrame,
+    ff48_map: Dict[int, Tuple[int, str]],
+    ff12_map: Dict[int, Tuple[int, str]]
+) -> pd.DataFrame:
     """Assign Fama-French industry classifications based on SIC code"""
     print("\nAssigning FF industries...")
 
@@ -329,7 +334,7 @@ def assign_ff_industries(df, ff48_map, ff12_map):
 # ==============================================================================
 
 
-def compute_capex_dp(df):
+def compute_capex_dp(df: pd.DataFrame) -> pd.DataFrame:
     """Compute Capex/Depreciation ratio"""
     print("\nComputing Capex/DP...")
 
@@ -348,7 +353,7 @@ def compute_capex_dp(df):
     return result
 
 
-def compute_sales_growth(df):
+def compute_sales_growth(df: pd.DataFrame) -> pd.DataFrame:
     """Compute sales growth = (sale_t - sale_{t-1}) / |sale_{t-1}|"""
     print("\nComputing Sales Growth...")
 
@@ -369,7 +374,7 @@ def compute_sales_growth(df):
     return result
 
 
-def compute_industry_year_median(df, value_col, min_firms=5):
+def compute_industry_year_median(df: pd.DataFrame, value_col: str, min_firms: int = 5) -> pd.DataFrame:
     """Compute industry-year median with fallback to FF12 if FF48 cell < min_firms"""
     print(f"\nComputing industry-year median for {value_col}...")
 
@@ -402,7 +407,7 @@ def compute_industry_year_median(df, value_col, min_firms=5):
     return result
 
 
-def compute_overinvest_dummy(df, ind_median_df):
+def compute_overinvest_dummy(df: pd.DataFrame, ind_median_df: pd.DataFrame) -> pd.DataFrame:
     """Compute Overinvestment Dummy: 1 if capex_dp > 1.5 AND sales_growth < ind_median"""
     print("\nComputing Overinvestment Dummy...")
 
@@ -434,7 +439,7 @@ def compute_overinvest_dummy(df, ind_median_df):
     return result
 
 
-def compute_underinvest_dummy(df, tobins_q_df):
+def compute_underinvest_dummy(df: pd.DataFrame, tobins_q_df: pd.DataFrame) -> pd.DataFrame:
     """Compute Underinvestment Dummy: 1 if capex_dp < 0.75 AND tobins_q > 1.5"""
     print("\nComputing Underinvestment Dummy...")
 
@@ -465,7 +470,7 @@ def compute_underinvest_dummy(df, tobins_q_df):
     return result
 
 
-def enforce_mutual_exclusivity(overinvest_df, underinvest_df):
+def enforce_mutual_exclusivity(overinvest_df: pd.DataFrame, underinvest_df: pd.DataFrame) -> pd.DataFrame:
     """Enforce mutual exclusivity: if both flags set, set both to 0"""
     print("\nEnforcing mutual exclusivity...")
 
@@ -495,7 +500,7 @@ def enforce_mutual_exclusivity(overinvest_df, underinvest_df):
 # ==============================================================================
 
 
-def compute_efficiency_score(df, min_years=3, window=5):
+def compute_efficiency_score(df: pd.DataFrame, min_years: int = 3, window: int = 5) -> pd.DataFrame:
     """Compute Efficiency Score = 1 - (# inefficient years / # years in window)
 
     Inefficient = overinvest_dummy | underinvest_dummy
@@ -952,7 +957,7 @@ def winsorize_series(
 # ==============================================================================
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse command-line arguments for 3.2_H2Variables.py."""
     parser = argparse.ArgumentParser(
         description="""
@@ -987,7 +992,7 @@ ROA Residual) and control variables for H2 investment efficiency hypothesis test
     return parser.parse_args()
 
 
-def check_prerequisites(paths, args):
+def check_prerequisites(paths: Dict[str, Path], args: argparse.Namespace) -> bool:
     """Validate all required inputs and prerequisite steps exist."""
     print("\nChecking prerequisites...")
 
@@ -1015,7 +1020,7 @@ def check_prerequisites(paths, args):
 # ==============================================================================
 
 
-def main():
+def main() -> int:
     """Main execution"""
     args = parse_arguments()
 
