@@ -1970,3 +1970,579 @@ TOTAL                                       131     10    92%
 
 ---
 
+## 8. Test Naming Convention (TEST-03)
+
+This section defines the standard naming convention for test functions.
+
+### Standard Pattern
+
+**Pattern:** `test_<module>_<function>_<scenario>`
+
+### Good Examples
+
+```python
+# tests/unit/test_panel_ols.py
+"""Tests for panel_ols module."""
+
+import pytest
+import pandas as pd
+import numpy as np
+
+from f1d.shared.panel_ols import run_panel_ols, CollinearityError
+
+
+class TestRunPanelOls:
+    """Tests for run_panel_ols function."""
+
+    def test_run_panel_ols_valid_input_returns_results(self, sample_panel_data):
+        """Test that valid input returns regression results."""
+        result = run_panel_ols(
+            sample_panel_data,
+            formula="dependent ~ independent",
+            entity_effects=True,
+        )
+
+        assert result is not None
+        assert hasattr(result, 'params')
+        assert hasattr(result, 'rsquared')
+
+    def test_run_panel_ols_missing_columns_raises_error(self, sample_panel_data):
+        """Test that missing required columns raises ValueError."""
+        # Remove required column
+        data = sample_panel_data.drop(columns=['dependent'])
+
+        with pytest.raises(ValueError, match="missing.*column"):
+            run_panel_ols(
+                data,
+                formula="dependent ~ independent",
+            )
+
+    def test_run_panel_ols_multicollinearity_raises_collinearity_error(self, collinear_data):
+        """Test that perfect multicollinearity raises CollinearityError."""
+        with pytest.raises(CollinearityError):
+            run_panel_ols(
+                collinear_data,
+                formula="y ~ x1 + x2",  # x1 and x2 are perfectly collinear
+            )
+
+    def test_run_panel_ols_thin_cells_logs_warning(self, thin_cell_data, caplog):
+        """Test that thin industry-year cells trigger warning."""
+        with caplog.at_level(logging.WARNING):
+            run_panel_ols(
+                thin_cell_data,
+                formula="y ~ x",
+            )
+
+        assert "thin cells" in caplog.text.lower()
+
+    def test_run_panel_ols_with_fixed_effects_returns_correct_dof(self, sample_panel_data):
+        """Test that fixed effects correctly adjust degrees of freedom."""
+        result = run_panel_ols(
+            sample_panel_data,
+            formula="dependent ~ independent",
+            entity_effects=True,
+            time_effects=True,
+        )
+
+        # Degrees of freedom should account for fixed effects
+        n_entities = sample_panel_data['gvkey'].nunique()
+        n_years = sample_panel_data['year'].nunique()
+        expected_dof = n_entities + n_years - 2  # -2 for entity + time FE
+
+        assert result.df_model == expected_dof
+
+    def test_run_panel_ols_clustered_standard_errors_valid(self, sample_panel_data):
+        """Test that clustered standard errors are computed correctly."""
+        result = run_panel_ols(
+            sample_panel_data,
+            formula="dependent ~ independent",
+            cluster_by='gvkey',
+        )
+
+        # Clustered SE should be larger than non-clustered
+        assert result.std_errors_clustered is not None
+```
+
+### Anti-Patterns to Avoid
+
+```python
+# BAD: Too vague
+def test_regression():
+    """What regression? What scenario?"""
+    pass
+
+# BAD: What error?
+def test_error():
+    """What kind of error? Under what conditions?"""
+    pass
+
+# BAD: Numeric, no meaning
+def test_1():
+    """What does test_1 test?"""
+    pass
+
+# BAD: Too generic
+def test_function():
+    """Which function? What scenario?"""
+    pass
+
+# BAD: Implementation detail
+def test_returns_pandas_dataframe():
+    """Tests implementation, not behavior."""
+    pass
+
+# BAD: Multiple scenarios
+def test_errors_and_warnings():
+    """Tests multiple things - split into separate tests."""
+    pass
+```
+
+### Naming Pattern Breakdown
+
+| Component | Description | Example |
+|-----------|-------------|---------|
+| `test_` | Prefix for pytest discovery | `test_` |
+| `<module>` | Module or class being tested | `panel_ols` |
+| `<function>` | Function or method being tested | `run_panel_ols` |
+| `<scenario>` | Specific test scenario | `valid_input_returns_results` |
+
+### Scenario Naming Guidelines
+
+| Scenario Type | Naming Pattern | Example |
+|---------------|----------------|---------|
+| Happy path | `valid_<input>_returns_<expected>` | `valid_input_returns_results` |
+| Validation error | `invalid_<input>_raises_<error>` | `missing_columns_raises_error` |
+| Edge case | `<edge_case>_<behavior>` | `empty_dataframe_returns_empty` |
+| Warning | `<condition>_logs_warning` | `thin_cells_logs_warning` |
+| Configuration | `with_<config>_<behavior>` | `with_fixed_effects_correct_dof` |
+
+### Class-Based Test Organization
+
+For related tests, organize into classes:
+
+```python
+class TestValidateOutputPath:
+    """Tests for validate_output_path function."""
+
+    def test_validate_output_path_existing_dir_returns_path(self):
+        """Test existing directory case."""
+        pass
+
+    def test_validate_output_path_nonexistent_raises_error(self):
+        """Test nonexistent directory case."""
+        pass
+
+    def test_validate_output_path_file_raises_error(self):
+        """Test file instead of directory case."""
+        pass
+
+
+class TestEnsureOutputDir:
+    """Tests for ensure_output_dir function."""
+
+    def test_ensure_output_dir_creates_missing(self):
+        """Test directory creation."""
+        pass
+
+    def test_ensure_output_dir_existing_returns_path(self):
+        """Test existing directory handling."""
+        pass
+```
+
+### Benefits of Descriptive Names
+
+1. **Self-documenting:** Name describes what's being tested
+2. **Failure messages:** Clear what failed from name alone
+3. **Searchable:** Easy to find tests for specific scenarios
+4. **Review-friendly:** Reviewers understand test purpose quickly
+
+---
+
+## 9. Fixture Organization (TEST-04)
+
+This section defines the hierarchical conftest.py pattern with factory fixtures.
+
+### Hierarchical conftest.py Pattern
+
+```
+tests/
+├── conftest.py               # Root-level fixtures (session scope)
+├── fixtures/                 # Test data files
+├── factories/                # Test data factories
+│
+├── unit/
+│   └── conftest.py           # Unit-test-specific fixtures
+│
+├── integration/
+│   └── conftest.py           # Integration-test-specific fixtures
+│
+├── regression/
+│   └── conftest.py           # Regression-test-specific fixtures
+│
+└── e2e/
+    └── conftest.py           # E2E-test-specific fixtures
+```
+
+### Root conftest.py
+
+```python
+# tests/conftest.py
+"""Root-level pytest configuration and shared fixtures.
+
+This module defines fixtures shared across all test types.
+Session-scoped fixtures for expensive setup are defined here.
+"""
+
+import pytest
+from pathlib import Path
+import pandas as pd
+import numpy as np
+
+
+@pytest.fixture(scope="session")
+def repo_root() -> Path:
+    """Path to repository root directory.
+
+    Returns:
+        Path to the repository root.
+    """
+    return Path(__file__).parent.parent
+
+
+@pytest.fixture(scope="session")
+def test_data_dir(repo_root: Path) -> Path:
+    """Path to test fixtures directory.
+
+    Args:
+        repo_root: Repository root path fixture.
+
+    Returns:
+        Path to tests/fixtures directory.
+    """
+    return repo_root / "tests" / "fixtures"
+
+
+@pytest.fixture(scope="session")
+def sample_dataframe_factory():
+    """Factory fixture for creating sample DataFrames.
+
+    Returns:
+        Factory function for DataFrame generation.
+
+    Example:
+        >>> df = sample_dataframe_factory(n_rows=100, seed=42)
+    """
+    def _create(
+        n_rows: int = 100,
+        columns: dict | None = None,
+        seed: int = 42
+    ) -> pd.DataFrame:
+        """Create a sample DataFrame.
+
+        Args:
+            n_rows: Number of rows to generate.
+            columns: Column definitions. If None, uses defaults.
+            seed: Random seed for reproducibility.
+
+        Returns:
+            Generated DataFrame.
+        """
+        np.random.seed(seed)
+        default_columns = {
+            "gvkey": [f"{i:06d}" for i in np.random.randint(1, 1000, n_rows)],
+            "year": np.random.randint(2000, 2020, n_rows),
+            "value": np.random.randn(n_rows),
+        }
+        return pd.DataFrame(columns or default_columns)
+    return _create
+
+
+@pytest.fixture
+def sample_panel_data(sample_dataframe_factory):
+    """Sample panel data for regression tests.
+
+    Args:
+        sample_dataframe_factory: Factory for creating DataFrames.
+
+    Returns:
+        DataFrame with panel structure (10 firms, 5 years).
+    """
+    return sample_dataframe_factory(
+        n_rows=50,
+        columns={
+            "gvkey": [f"{i//5:06d}" for i in range(50)],  # 10 firms
+            "year": [2000 + (i % 5) for i in range(50)],   # 5 years
+            "dependent": np.random.randn(50),
+            "independent": np.random.randn(50),
+        }
+    )
+
+
+@pytest.fixture
+def temp_output_dir(tmp_path: Path) -> Path:
+    """Temporary output directory for tests.
+
+    Args:
+        tmp_path: pytest's built-in temporary path fixture.
+
+    Returns:
+        Path to temporary output directory.
+    """
+    output_dir = tmp_path / "outputs"
+    output_dir.mkdir()
+    return output_dir
+```
+
+### Unit Test conftest.py
+
+```python
+# tests/unit/conftest.py
+"""Unit test fixtures.
+
+Provides fast, isolated fixtures for unit testing.
+All external dependencies should be mocked here.
+"""
+
+import pytest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+
+@pytest.fixture
+def mock_config(tmp_path: Path):
+    """Create temporary config file for unit tests.
+
+    Args:
+        tmp_path: pytest's temporary path fixture.
+
+    Returns:
+        Path to test config file.
+    """
+    config_path = tmp_path / "test_config.yaml"
+    config_path.write_text("""
+project:
+  name: TestProject
+  version: "1.0.0"
+data:
+  year_start: 2002
+  year_end: 2005
+logging:
+  level: DEBUG
+determinism:
+  random_seed: 42
+""")
+    return config_path
+
+
+@pytest.fixture
+def mock_panel_ols_result():
+    """Mock result from run_panel_ols.
+
+    Returns:
+        MagicMock configured as panel OLS result.
+    """
+    result = MagicMock()
+    result.params = pd.Series({"intercept": 0.5, "x": 1.2})
+    result.rsquared = 0.45
+    result.pvalues = pd.Series({"intercept": 0.1, "x": 0.01})
+    return result
+
+
+@pytest.fixture
+def mock_logger():
+    """Mock logger for testing logging calls.
+
+    Returns:
+        MagicMock configured as logger.
+    """
+    with patch("f1d.shared.logging.get_logger") as mock:
+        logger = MagicMock()
+        mock.return_value = logger
+        yield logger
+```
+
+### Integration Test conftest.py
+
+```python
+# tests/integration/conftest.py
+"""Integration test fixtures.
+
+Provides fixtures for testing module interactions.
+Uses real dependencies where practical.
+"""
+
+import pytest
+from pathlib import Path
+import pandas as pd
+import os
+
+
+@pytest.fixture(scope="module")
+def subprocess_env(repo_root: Path) -> dict:
+    """Environment for subprocess integration tests.
+
+    Args:
+        repo_root: Repository root path fixture.
+
+    Returns:
+        Environment dictionary for subprocess calls.
+    """
+    return {
+        "PYTHONPATH": str(repo_root / "src"),
+        **os.environ,
+    }
+
+
+@pytest.fixture(scope="module")
+def sample_compustat_data(test_data_dir: Path) -> pd.DataFrame:
+    """Load sample Compustat data for integration tests.
+
+    Args:
+        test_data_dir: Path to test fixtures directory.
+
+    Returns:
+        DataFrame with Compustat-like data.
+    """
+    return pd.read_parquet(test_data_dir / "sample_data" / "sample_compustat.parquet")
+
+
+@pytest.fixture(scope="module")
+def sample_transcripts_data(test_data_dir: Path) -> pd.DataFrame:
+    """Load sample transcripts data for integration tests.
+
+    Args:
+        test_data_dir: Path to test fixtures directory.
+
+    Returns:
+        DataFrame with transcript data.
+    """
+    return pd.read_parquet(test_data_dir / "sample_data" / "sample_transcripts.parquet")
+```
+
+### Factory Fixtures over Fixture Pyramids
+
+**Avoid fixture pyramids (deep nesting):**
+
+```python
+# BAD: Deep fixture nesting
+@pytest.fixture
+def fixture_a():
+    return "a"
+
+@pytest.fixture
+def fixture_b(fixture_a):
+    return f"{fixture_a}_b"
+
+@pytest.fixture
+def fixture_c(fixture_b):
+    return f"{fixture_b}_c"
+
+@pytest.fixture
+def fixture_d(fixture_c):
+    return f"{fixture_c}_d"  # Hard to understand dependencies
+```
+
+**Use factory fixtures instead:**
+
+```python
+# GOOD: Factory fixture pattern
+@pytest.fixture
+def data_factory():
+    """Factory for creating test data with customizable parameters."""
+    def _create(
+        n_firms: int = 10,
+        n_years: int = 5,
+        with_missing: bool = False,
+        seed: int = 42,
+    ) -> pd.DataFrame:
+        np.random.seed(seed)
+        rows = n_firms * n_years
+        data = {
+            "gvkey": [f"{i//n_years:06d}" for i in range(rows)],
+            "year": [2000 + (i % n_years) for i in range(rows)],
+            "value": np.random.randn(rows),
+        }
+        if with_missing:
+            data["value"][0:5] = np.nan
+        return pd.DataFrame(data)
+    return _create
+
+
+# Usage in tests
+def test_with_defaults(data_factory):
+    df = data_factory()
+    assert len(df) == 50  # 10 firms * 5 years
+
+def test_with_custom_params(data_factory):
+    df = data_factory(n_firms=20, n_years=10)
+    assert len(df) == 200
+
+def test_with_missing_data(data_factory):
+    df = data_factory(with_missing=True)
+    assert df["value"].isna().sum() == 5
+```
+
+### Fixture Scope Guidelines
+
+| Scope | When to Use | Example |
+|-------|-------------|---------|
+| `session` | Expensive setup, read-only data | Database connections, large files |
+| `module` | Per-module setup | Test data files |
+| `class` | Per-class setup | Shared test state |
+| `function` | Default, per-test isolation | Temporary directories |
+
+### fixtures/ Directory Organization
+
+```
+tests/fixtures/
+├── sample_data/
+│   ├── sample_panel.parquet        # Small panel dataset
+│   ├── sample_compustat.parquet    # Compustat-like data
+│   ├── sample_transcripts.parquet  # Transcript excerpts
+│   └── sample_crsp.parquet         # CRSP-like returns
+│
+├── expected_outputs/
+│   ├── financial_variables.parquet # Expected output for regression
+│   └── regression_results.json     # Expected regression results
+│
+└── baseline_checksums.json         # Checksums for regression tests
+```
+
+### factories/ Directory Organization
+
+```
+tests/factories/
+├── __init__.py
+├── dataframe_factory.py            # DataFrame generation utilities
+│
+│   def create_panel_data(...)
+│   def create_compustat_data(...)
+│   def create_transcript_data(...)
+│
+└── config_factory.py               # Configuration generation utilities
+    def create_test_config(...)
+    def create_env_config(...)
+```
+
+### Rationale
+
+#### Why Hierarchical conftest.py?
+
+1. **Scope control:** Fixtures available only where needed
+2. **Avoid pollution:** Test types don't share unrelated fixtures
+3. **Clear organization:** Know where to find fixtures
+4. **Performance:** Expensive fixtures only loaded when needed
+
+#### Why Factory Fixtures?
+
+1. **Flexibility:** Customize data per test
+2. **Reusability:** One factory, many variations
+3. **Readability:** Parameters show test intent
+4. **Maintainability:** Single source of truth for data creation
+
+**Source:** [pytest Fixtures Documentation](https://docs.pytest.org/en/stable/how-to/fixtures.html)
+
+---
+
+---
+
