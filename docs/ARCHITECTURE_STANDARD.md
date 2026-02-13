@@ -16,7 +16,7 @@ This document defines the canonical architecture standard for the F1D (Financial
 - **Maintainability:** Clear structure that supports long-term maintenance
 - **Quality:** Industry-standard practices for portfolio-ready code
 
-This is a **DEFINITION document**. The standards described here represent the target architecture that will be implemented in v6.0+. Current code follows legacy patterns documented in Appendix A.
+This is a **DEFINITION document**. The standards described here represent the target architecture that will be implemented in v6.0+. Current code follows flat-layout patterns documented in Appendix A.
 
 ---
 
@@ -27,8 +27,8 @@ This standard is organized into 5 main sections:
 1. **Folder Structure** (ARCH-01): Canonical directory layout with src-layout pattern
 2. **Module Organization** (ARCH-02): __init__.py hierarchy and package conventions
 3. **Data Directory Structure** (ARCH-03): Data lifecycle stages and mutability rules
-4. **Version Management** (ARCH-04): Single active version policy and deprecation strategy
-5. **Archive and Legacy Code** (ARCH-05): Archive structure and legacy code handling
+4. **Version Management** (ARCH-04): Active versions policy and deprecation strategy
+5. **Archive and Deprecated Code** (ARCH-05): Archive structure and deprecated code handling
 
 Additionally:
 - **Appendix A**: Migration Guide from current to target state
@@ -154,7 +154,7 @@ Changes to this document may require updates to dependent standards.
 - Package and module conventions
 - Data lifecycle management
 - Version control approach
-- Archive and legacy handling
+- Archive and deprecated code handling
 
 ### Out of Scope
 
@@ -226,13 +226,25 @@ F1D/                              # Project root
 │       │
 │       ├── financial/            # Stage 3: Financial features
 │       │   ├── __init__.py
-│       │   ├── variables.py      # Variable construction
-│       │   └── investment.py     # Investment metrics
+│       │   ├── v1/               # V1 methodology (active variant)
+│       │   │   ├── __init__.py
+│       │   │   ├── variables.py
+│       │   │   └── investment.py
+│       │   └── v2/               # V2 methodology (active variant)
+│       │           ├── __init__.py
+│       │           ├── variables.py
+│       │           └── investment.py
 │       │
 │       ├── econometric/          # Stage 4: Econometric analysis
 │       │   ├── __init__.py
-│       │   ├── regressions.py    # Regression models
-│       │   └── diagnostics.py    # Model diagnostics
+│       │   ├── v1/               # V1 methodology (active variant)
+│       │   │   ├── __init__.py
+│       │   │   ├── regressions.py
+│       │   │   └── diagnostics.py
+│       │   └── v2/               # V2 methodology (active variant)
+│       │       ├── __init__.py
+│       │       ├── regressions.py
+│       │       └── diagnostics.py
 │       │
 │       └── shared/               # Shared utilities
 │           ├── __init__.py
@@ -265,7 +277,7 @@ F1D/                              # Project root
 │   └── *.log
 │
 ├── .___archive/                  # Archived/deprecated code
-│   ├── legacy/                   # V1 scripts and deprecated code
+│   ├── deprecated/               # Deprecated code (truly replaced)
 │   ├── backups/                  # Backup files (*.bak, *_backup.py)
 │   ├── experiments/              # Abandoned experiments
 │   ├── docs/                     # Old documentation versions
@@ -1094,59 +1106,68 @@ Every data directory MUST have a README.md documenting:
 
 This section defines the version management approach, deprecation strategy, and package versioning conventions.
 
-### Single Active Version Policy
+### Active Versions Policy
 
-**Principle:** Only ONE version of the codebase is actively maintained at any time.
+**Principle:** Multiple version variants may coexist as active processing approaches in the pipeline.
 
-#### Current Situation (Legacy)
+#### Current Situation (Multiple Active Versions)
 
-The project currently has parallel V1 and V2 structures:
+The project currently has both V1 and V2 structures as ACTIVE processing variants:
 
 ```
 2_Scripts/
-├── 3_Financial/       # V1 - Legacy
-├── 3_Financial_V2/    # V2 - Current
-├── 4_Econometric/     # V1 - Legacy
-└── 4_Econometric_V2/  # V2 - Current
+├── 3_Financial/       # V1 - Active variant
+├── 3_Financial_V2/    # V2 - Active variant
+├── 4_Econometric/     # V1 - Active variant
+└── 4_Econometric_V2/  # V2 - Active variant
 ```
 
-**Problems with this approach:**
-- Confusion about which version to use
-- Bug fixes may be needed in multiple places
-- Tests may be inconsistent across versions
-- Import paths are unclear
+**Understanding version variants:**
+- V1 and V2 represent different processing approaches, NOT legacy vs. canonical
+- Both versions are actively maintained and used in the pipeline
+- Version suffixes distinguish methodology variants
+- Each variant may have specific use cases or research purposes
 
-#### Target State (Single Version)
+**Implications:**
+- Bug fixes may be needed in both variants
+- Tests should cover both versions where applicable
+- Import paths must clearly specify which variant is used
+- Documentation should explain when to use each variant
+
+#### Target State (Organized Variants)
 
 ```
 src/f1d/
-├── financial/         # THE active version
-│   ├── variables.py
-│   └── investment.py
-└── econometric/       # THE active version
-    ├── regressions.py
-    └── diagnostics.py
-
-.___archive/
-└── legacy/
-    ├── 3_Financial/       # V1 archived
-    └── 4_Econometric/     # V1 archived
+├── financial/
+│   ├── v1/                # V1 methodology variant
+│   │   ├── variables.py
+│   │   └── investment.py
+│   └── v2/                # V2 methodology variant
+│       ├── variables.py
+│       └── investment.py
+└── econometric/
+    ├── v1/                # V1 methodology variant
+    │   ├── regressions.py
+    │   └── diagnostics.py
+    └── v2/                # V2 methodology variant
+        ├── regressions.py
+        └── diagnostics.py
 ```
 
 **Benefits:**
-- Clear which code is canonical
-- No duplicate maintenance burden
-- Simpler import paths
-- Proper version control via git
+- Both active variants are preserved and organized
+- Clear namespace separation for each methodology
+- Simpler import paths with explicit versioning
+- Both versions maintained to architecture standard
 
 ### Version Hierarchy
 
 | Version | Status | Location | Maintenance |
 |---------|--------|----------|-------------|
-| Active (V2 equivalent) | Canonical | `src/f1d/` | Full support |
-| Legacy (V1) | Archived | `.___archive/legacy/` | Read-only reference |
+| V1 | Active variant | `src/f1d/*/v1/` or `2_Scripts/*_V1/` | Full support |
+| V2 | Active variant | `src/f1d/*/v2/` or `2_Scripts/*_V2/` | Full support |
 
-**Note:** Do NOT create V3, V4, etc. as parallel directories. Use semantic versioning on the package instead.
+**Note:** Version suffixes (V1, V2) distinguish methodology variants. For package-level versioning, use semantic versioning in `__init__.py`.
 
 ### Package Versioning
 
@@ -1227,8 +1248,8 @@ from f1d.shared.new_utility import new_function
 
 ```bash
 # After 30+ day deprecation period
-mkdir -p .___archive/legacy/deprecated_2024-01/
-mv src/f1d/shared/old_utility.py .___archive/legacy/deprecated_2024-01/
+mkdir -p .___archive/deprecated/2024-01/
+mv src/f1d/shared/old_utility.py .___archive/deprecated/2024-01/
 ```
 
 **Step 4: Update archive manifest**
@@ -1239,7 +1260,7 @@ mv src/f1d/shared/old_utility.py .___archive/legacy/deprecated_2024-01/
   "archived_items": [
     {
       "original_path": "src/f1d/shared/old_utility.py",
-      "archive_path": "legacy/deprecated_2024-01/old_utility.py",
+      "archive_path": "deprecated/2024-01/old_utility.py",
       "date_archived": "2024-02-15",
       "reason": "Superseded by new_utility.py",
       "deprecated_version": "5.1.0",
@@ -1260,22 +1281,26 @@ mv src/f1d/shared/old_utility.py .___archive/legacy/deprecated_2024-01/
 
 ### Migration Path
 
-#### V1 to V2 Migration (Current to Target)
+#### V1 and V2 to Package Structure Migration
+
+Both V1 and V2 are active variants and will BOTH migrate to the src/f1d/ package structure:
 
 ```
 Phase 1: Create src/f1d/ package structure
 ├── Create src/f1d/ directory
 ├── Create __init__.py with version
-└── Create subpackage directories
+└── Create subpackage directories with v1/ and v2/ variants
 
 Phase 2: Move shared/ utilities
 ├── Move 2_Scripts/shared/ -> src/f1d/shared/
 ├── Update imports throughout codebase
 └── Run tests to verify
 
-Phase 3: Move stage scripts
-├── Move 2_Scripts/3_Financial_V2/ -> src/f1d/financial/
-├── Move 2_Scripts/4_Econometric_V2/ -> src/f1d/econometric/
+Phase 3: Move stage scripts (BOTH variants)
+├── Move 2_Scripts/3_Financial/ -> src/f1d/financial/v1/
+├── Move 2_Scripts/3_Financial_V2/ -> src/f1d/financial/v2/
+├── Move 2_Scripts/4_Econometric/ -> src/f1d/econometric/v1/
+├── Move 2_Scripts/4_Econometric_V2/ -> src/f1d/econometric/v2/
 ├── Update imports
 └── Run tests
 
@@ -1284,16 +1309,11 @@ Phase 4: Reorganize data directories
 ├── Reorganize 4_Outputs/ -> data/interim/, data/processed/, results/
 └── Update path references
 
-Phase 5: Archive V1 code
-├── Move 2_Scripts/3_Financial/ -> .___archive/legacy/
-├── Move 2_Scripts/4_Econometric/ -> .___archive/legacy/
-└── Update archive manifest
-
-Phase 6: Clean up
+Phase 5: Clean up
 ├── Remove sys.path hacks
 ├── Update all imports to use f1d.* pattern
 ├── Update documentation
-└── Verify reproducibility
+└── Verify reproducibility for both variants
 ```
 
 ### Breaking Changes
@@ -1359,12 +1379,12 @@ if __name__ == "__main__":
 
 ### Rationale
 
-#### Why Single Active Version?
+#### Why Support Multiple Active Variants?
 
-1. **Reduced confusion:** Developers know which code to use
-2. **Lower maintenance:** No parallel bug fixes
-3. **Clean codebase:** No duplicate functionality
-4. **Git is version control:** Use git history, not directory versions
+1. **Research flexibility:** Different methodologies serve different research purposes
+2. **Comparison studies:** Researchers can compare results across methodology variants
+3. **Backward compatibility:** Existing pipelines using V1 continue to work
+4. **Gradual migration:** Teams can adopt V2 incrementally without forcing V1 retirement
 
 #### Why Semantic Versioning?
 
@@ -1382,24 +1402,21 @@ if __name__ == "__main__":
 
 ---
 
-## 5. Archive and Legacy Code (ARCH-05)
+## 5. Archive and Deprecated Code (ARCH-05)
 
-This section defines the archive structure, conventions, and legacy code handling policies.
+This section defines the archive structure, conventions, and deprecated code handling policies.
+
+**Important:** Archive is for truly deprecated/abandoned code ONLY. Version variants (V1, V2) that are active in the pipeline should NOT be archived - they remain in active development.
 
 ### Archive Directory Structure
 
 ```
 .___archive/
-├── legacy/                    # V1 scripts and deprecated code
-│   ├── 3_Financial/           # V1 financial scripts
-│   │   ├── script_31*.py
-│   │   └── ...
-│   ├── 4_Econometric/         # V1 econometric scripts
-│   │   ├── script_41*.py
-│   │   └── ...
-│   └── deprecated/            # Other deprecated code
-│       ├── 2024-01/
-│       └── 2024-02/
+├── deprecated/                # Deprecated code (replaced and no longer used)
+│   ├── 2024-01/
+│   │   └── old_utility.py
+│   └── 2024-02/
+│       └── replaced_module.py
 │
 ├── backups/                   # Backup files
 │   ├── *.bak
@@ -1421,36 +1438,37 @@ This section defines the archive structure, conventions, and legacy code handlin
 └── manifest.json              # Machine-readable archive index
 ```
 
+**Note:** There is no `legacy/` subdirectory for V1 scripts because V1 is an ACTIVE variant, not deprecated code.
+
 ### When to Archive
 
 Code should be moved to archive when:
 
 | Reason | Description | Destination |
 |--------|-------------|-------------|
-| **Replaced** | Newer implementation exists and is active | `legacy/` |
-| **Deprecated** | Functionality no longer recommended | `legacy/deprecated/` |
-| **Experimental** | Experiment didn't pan out | `experiments/` |
+| **Replaced and abandoned** | Newer implementation exists AND old code is no longer used | `deprecated/` |
+| **Deprecated** | Functionality no longer recommended and removed from active use | `deprecated/` |
+| **Experimental** | Experiment didn't pan out and was abandoned | `experiments/` |
 | **Backup** | Temporary backup files older than 30 days | `backups/` |
 | **Old docs** | Previous documentation versions | `docs/` |
+
+**DO NOT archive:**
+- Version variants (V1, V2) that are still active in the pipeline
+- Code that serves different research purposes or methodology approaches
+- Any code that is actively maintained or used
 
 ### Archive Conventions
 
 #### 1. Maintain Original Structure
 
-When archiving, preserve the original directory structure:
+When archiving deprecated code, preserve the original directory structure:
 
 ```
-# BEFORE (active code)
-2_Scripts/3_Financial/
-├── script_31_filter_data.py
-├── script_32_construct_variables.py
-└── script_33_merge_data.py
+# BEFORE (active code that is being deprecated)
+src/f1d/shared/old_utility.py
 
 # AFTER (archived)
-.___archive/legacy/3_Financial/
-├── script_31_filter_data.py
-├── script_32_construct_variables.py
-└── script_33_merge_data.py
+.___archive/deprecated/2024-02/old_utility.py
 ```
 
 #### 2. Add ARCHIVED.md
@@ -1458,53 +1476,43 @@ When archiving, preserve the original directory structure:
 Every archived item must have an ARCHIVED.md explaining:
 
 ```markdown
-# Archived: 3_Financial (V1)
+# Archived: old_utility.py
 
-**Archive Date:** 2024-02-15
-**Original Location:** 2_Scripts/3_Financial/
-**Archive Location:** .___archive/legacy/3_Financial/
+**Archive Date:** 2024-02-20
+**Original Location:** src/f1d/shared/old_utility.py
+**Archive Location:** .___archive/deprecated/2024-02/old_utility.py
 
 ## Reason for Archival
 
-Replaced by V2 implementation (src/f1d/financial/) which includes:
-- Improved variable construction
+Replaced by new_utility.py which includes:
+- Improved performance
 - Better error handling
 - Comprehensive test coverage
 - Cleaner API
 
 ## Active Replacement
 
-- **Location:** src/f1d/financial/
-- **Main module:** variables.py
-- **Import path:** from f1d.financial import construct_variables
+- **Location:** src/f1d/shared/new_utility.py
+- **Import path:** from f1d.shared.new_utility import new_function
 
 ## Historical Context
 
-V1 financial scripts were created during v1.0 development (2023-2024).
-They served their purpose but accumulated technical debt and lacked
-proper testing. V2 was created as a clean rewrite following the
-new architecture standard.
+old_utility.py was used for path resolution but had performance
+issues with large datasets. new_utility.py was created as a
+replacement with optimized algorithms.
 
 ## Reproducibility
 
-To reproduce results using V1 scripts:
-1. Check out git tag: v4.0.0
-2. Navigate to 2_Scripts/3_Financial/
-3. Run scripts in order: 31 -> 32 -> 33
+To reproduce results using archived code:
+1. Check out git tag: v5.0.0
+2. Use file from archive: .___archive/deprecated/2024-02/old_utility.py
 
-**Warning:** V1 scripts are not maintained. Use for reference only.
-
-## Key Files
-
-- `script_31_filter_data.py` - Initial data filtering
-- `script_32_construct_variables.py` - Variable construction
-- `script_33_merge_data.py` - Final merge
+**Warning:** Archived code is not maintained. Use for reference only.
 
 ## Known Issues
 
-- Missing null checks in script_32
-- Hardcoded paths in script_31
-- No unit tests
+- Performance degradation with large datasets
+- Missing null checks in edge cases
 ```
 
 #### 3. Update manifest.json
@@ -1512,23 +1520,12 @@ To reproduce results using V1 scripts:
 ```json
 {
   "manifest_version": "1.0",
-  "last_updated": "2024-02-15T10:30:00Z",
+  "last_updated": "2024-02-20T10:30:00Z",
   "archived_items": [
-    {
-      "id": "legacy-3-financial",
-      "original_path": "2_Scripts/3_Financial/",
-      "archive_path": "legacy/3_Financial/",
-      "date_archived": "2024-02-15",
-      "archived_by": "developer",
-      "reason": "Replaced by V2 implementation",
-      "replacement_path": "src/f1d/financial/",
-      "git_tag": "v4.0.0",
-      "notes": "V1 financial scripts - functional but superseded"
-    },
     {
       "id": "deprecated-old-utility",
       "original_path": "src/f1d/shared/old_utility.py",
-      "archive_path": "legacy/deprecated/2024-02/old_utility.py",
+      "archive_path": "deprecated/2024-02/old_utility.py",
       "date_archived": "2024-02-20",
       "archived_by": "developer",
       "reason": "Deprecated - use new_utility.py instead",
@@ -1549,9 +1546,8 @@ To reproduce results using V1 scripts:
     }
   ],
   "statistics": {
-    "total_items": 3,
+    "total_items": 2,
     "by_category": {
-      "legacy": 1,
       "deprecated": 1,
       "experiments": 1
     }
@@ -1559,7 +1555,7 @@ To reproduce results using V1 scripts:
 }
 ```
 
-### Legacy Code Policy
+### Deprecated Code Policy
 
 #### Access Rules
 
@@ -1573,33 +1569,47 @@ To reproduce results using V1 scripts:
 
 #### Reference Guidelines
 
-When referencing legacy code:
+When referencing archived code:
 
 1. **For reproducibility verification:**
    ```python
    # To verify old results match new implementation
-   # 1. Check out git tag v4.0.0
-   # 2. Run legacy script: 2_Scripts/3_Financial/script_32_construct_variables.py
-   # 3. Compare output with new: src/f1d/financial/variables.py
+   # 1. Check out git tag v5.0.0
+   # 2. Use archived file: .___archive/deprecated/2024-02/old_utility.py
+   # 3. Compare output with new: src/f1d/shared/new_utility.py
    ```
 
 2. **For understanding history:**
    ```markdown
    # In documentation
-   The variable construction approach evolved from V1 (see `.___archive/legacy/3_Financial/`)
-   to V2 (see `src/f1d/financial/`) with improved handling of missing values.
+   The path resolution utility evolved from old_utility.py (see `.___archive/deprecated/2024-02/`)
+   to new_utility.py (see `src/f1d/shared/`) with improved performance.
    ```
 
 3. **Never for new work:**
    ```python
    # BAD: Importing from archive
    import sys
-   sys.path.insert(0, '.___archive/legacy/3_Financial')
-   from script_32 import construct_variables  # NO!
+   sys.path.insert(0, '.___archive/deprecated/2024-02')
+   from old_utility import old_function  # NO!
 
    # GOOD: Use active implementation
-   from f1d.financial import construct_variables
+   from f1d.shared.new_utility import new_function
    ```
+
+#### Active Variants (V1, V2) - NOT Archived
+
+Version variants (V1, V2) that are active in the pipeline should be treated as normal active code:
+
+```python
+# Using V1 variant (active)
+from f1d.financial.v1.variables import construct_variables_v1
+
+# Using V2 variant (active)
+from f1d.financial.v2.variables import construct_variables_v2
+```
+
+Both variants are maintained and follow the same architecture standard.
 
 ### Archive Maintenance
 
@@ -1789,13 +1799,13 @@ F1D/
 │   │   ├── script_21_*.py
 │   │   ├── script_22_*.py
 │   │   └── ...
-│   ├── 3_Financial/             # Stage 3 (V1 - Legacy)
-│   ├── 3_Financial_V2/          # Stage 3 (V2 - Current)
+│   ├── 3_Financial/             # Stage 3 (V1 - Active)
+│   ├── 3_Financial_V2/          # Stage 3 (V2 - Active)
 │   │   ├── script_31_*.py
 │   │   ├── script_32_*.py
 │   │   └── ...
-│   ├── 4_Econometric/           # Stage 4 (V1 - Legacy)
-│   ├── 4_Econometric_V2/        # Stage 4 (V2 - Current)
+│   ├── 4_Econometric/           # Stage 4 (V1 - Active)
+│   ├── 4_Econometric_V2/        # Stage 4 (V2 - Active)
 │   │   ├── script_41_*.py
 │   │   ├── script_42_*.py
 │   │   └── ...
@@ -1816,7 +1826,7 @@ F1D/
 ├── config/                      # Configuration
 ├── docs/                        # Documentation
 ├── tests/                       # Test suite
-├── .___archive/                 # Archive
+├── .___archive/                 # Archive (for truly deprecated code only)
 ├── pyproject.toml               # Tool config only
 └── README.md
 ```
@@ -1824,14 +1834,14 @@ F1D/
 ### Key Characteristics of Current State
 
 1. **Flat layout:** Scripts directly in `2_Scripts/` subdirectories
-2. **Parallel versions:** V1 and V2 directories coexist
+2. **Active version variants:** V1 and V2 directories BOTH coexist as active variants
 3. **Mixed outputs:** `4_Outputs/` contains both intermediate and final data
 4. **sys.path hacks:** Many scripts use `sys.path.insert()` for imports
 5. **No package structure:** Code is not organized as a Python package
 
 ### Target State (v6.0+)
 
-The target state uses src-layout with proper package structure:
+The target state uses src-layout with proper package structure, supporting both V1 and V2 as active variants:
 
 ```
 F1D/
@@ -1840,7 +1850,19 @@ F1D/
 │   ├── sample/
 │   ├── text/
 │   ├── financial/
+│   │   ├── __init__.py
+│   │   ├── v1/                  # V1 methodology (active)
+│   │   │   ├── __init__.py
+│   │   │   ├── variables.py
+│   │   │   └── investment.py
+│   │   └── v2/                  # V2 methodology (active)
+│   │       ├── __init__.py
+│   │       ├── variables.py
+│   │       └── investment.py
 │   ├── econometric/
+│   │   ├── __init__.py
+│   │   ├── v1/                  # V1 methodology (active)
+│   │   └── v2/                  # V2 methodology (active)
 │   └── shared/
 │
 ├── data/                        # Data directory
@@ -1858,8 +1880,7 @@ F1D/
 ├── config/
 ├── docs/
 ├── tests/
-├── .___archive/
-│   └── legacy/                  # V1 scripts
+├── .___archive/                 # Only for truly deprecated code
 ├── pyproject.toml               # Full config
 └── README.md
 ```
@@ -1870,7 +1891,7 @@ F1D/
 |--------|---------|--------|
 | **Layout** | Flat | src-layout |
 | **Package** | None (scripts only) | f1d package with __init__.py |
-| **Versions** | V1 and V2 parallel | Single active version |
+| **Versions** | V1 and V2 as parallel directories | V1 and V2 as subpackages |
 | **Data** | Mixed in 4_Outputs/ | Separated by lifecycle |
 | **Imports** | sys.path hacks | Proper package imports |
 | **Results** | In 4_Outputs/ | Separate results/ directory |
@@ -1966,30 +1987,44 @@ python -c "from f1d.shared.path_utils import get_latest_output_dir"
 
 ---
 
-#### Phase 3: Move Stage Scripts
+#### Phase 3: Move Stage Scripts (BOTH V1 and V2)
 
-**Goal:** Move V2 stage scripts to package subpackages
+**Goal:** Move both V1 and V2 stage scripts to package subpackages
 
 **Steps (for each stage):**
 
-**Financial (Stage 3):**
+**Financial (Stage 3) - Both variants:**
 ```bash
+# Create variant directories
+mkdir -p src/f1d/financial/v1
+mkdir -p src/f1d/financial/v2
+
+# Move V1 financial scripts
+cp 2_Scripts/3_Financial/script_31_*.py src/f1d/financial/v1/
+cp 2_Scripts/3_Financial/script_32_*.py src/f1d/financial/v1/
+
 # Move V2 financial scripts
-cp 2_Scripts/3_Financial_V2/script_31_*.py src/f1d/financial/
-cp 2_Scripts/3_Financial_V2/script_32_*.py src/f1d/financial/
+cp 2_Scripts/3_Financial_V2/script_31_*.py src/f1d/financial/v2/
+cp 2_Scripts/3_Financial_V2/script_32_*.py src/f1d/financial/v2/
 
-# Rename scripts to modules
-mv src/f1d/financial/script_31_filter_data.py src/f1d/financial/filter_data.py
-mv src/f1d/financial/script_32_construct_variables.py src/f1d/financial/variables.py
+# Rename scripts to modules in each variant
+mv src/f1d/financial/v1/script_31_filter_data.py src/f1d/financial/v1/filter_data.py
+mv src/f1d/financial/v2/script_31_filter_data.py src/f1d/financial/v2/filter_data.py
+# ... etc
 
-# Update __init__.py
+# Create __init__.py for each variant
+touch src/f1d/financial/v1/__init__.py
+touch src/f1d/financial/v2/__init__.py
 ```
 
-**Econometric (Stage 4):**
+**Econometric (Stage 4) - Both variants:**
 ```bash
-# Similar process
-cp 2_Scripts/4_Econometric_V2/script_41_*.py src/f1d/econometric/
-cp 2_Scripts/4_Econometric_V2/script_42_*.py src/f1d/econometric/
+# Similar process for econometric
+mkdir -p src/f1d/econometric/v1
+mkdir -p src/f1d/econometric/v2
+
+cp 2_Scripts/4_Econometric/script_41_*.py src/f1d/econometric/v1/
+cp 2_Scripts/4_Econometric_V2/script_41_*.py src/f1d/econometric/v2/
 ```
 
 **Update imports:**
@@ -1998,20 +2033,22 @@ cp 2_Scripts/4_Econometric_V2/script_42_*.py src/f1d/econometric/
 sys.path.insert(0, '2_Scripts/3_Financial_V2')
 from script_32_construct_variables import construct_variables
 
-# NEW
-from f1d.financial.variables import construct_variables
+# NEW (specifying variant)
+from f1d.financial.v2.variables import construct_variables
+from f1d.financial.v1.variables import construct_variables as construct_variables_v1
 ```
 
 **Verification:**
 ```bash
-# Run stage scripts to verify
-python -m f1d.financial.variables
+# Run stage scripts to verify both variants
+python -m f1d.financial.v1.variables
+python -m f1d.financial.v2.variables
 
 # Run tests
 pytest tests/
 ```
 
-**Commit:** `refactor(65-01): move financial and econometric modules to package`
+**Commit:** `refactor(65-01): move financial and econometric modules (V1 and V2) to package`
 
 ---
 
@@ -2069,48 +2106,29 @@ python -m f1d.financial.variables
 
 ---
 
-#### Phase 5: Archive V1 Code
+#### Phase 5: Clean Up Old Directories (After Both Variants Migrated)
 
-**Goal:** Move V1 scripts to archive
+**Goal:** Remove old directory structure after verifying both V1 and V2 work in new location
 
 **Steps:**
 ```bash
-# Create archive structure
-mkdir -p .___archive/legacy
+# Verify both variants work in new location
+python -m f1d.financial.v1.variables
+python -m f1d.financial.v2.variables
+python -m f1d.econometric.v1.regressions
+python -m f1d.econometric.v2.regressions
 
-# Move V1 directories
-mv 2_Scripts/3_Financial .___archive/legacy/
-mv 2_Scripts/4_Econometric .___archive/legacy/
-
-# Create ARCHIVED.md
-cat > .___archive/legacy/ARCHIVED.md << 'EOF'
-# Archived V1 Scripts
-
-**Archive Date:** 2024-XX-XX
-**Reason:** Replaced by V2 implementation in src/f1d/
-
-## Contents
-- 3_Financial/ - V1 financial scripts
-- 4_Econometric/ - V1 econometric scripts
-
-## Active Replacement
-See src/f1d/financial/ and src/f1d/econometric/
-EOF
-
-# Update manifest.json
-python scripts/update_archive_manifest.py
+# Only after verification passes:
+# Remove old directories (both variants have been migrated)
+rm -rf 2_Scripts/3_Financial/
+rm -rf 2_Scripts/3_Financial_V2/
+rm -rf 2_Scripts/4_Econometric/
+rm -rf 2_Scripts/4_Econometric_V2/
 ```
 
-**Verification:**
-```bash
-# Verify archived
-ls -la .___archive/legacy/
+**Note:** V1 scripts are NOT archived - they are active variants and have been migrated alongside V2.
 
-# Verify still accessible (read-only)
-cat .___archive/legacy/3_Financial/script_31_filter_data.py
-```
-
-**Commit:** `chore(65-01): archive V1 scripts to .___archive/legacy/`
+**Commit:** `chore(65-01): remove old script directories after migration`
 
 ---
 
@@ -2120,8 +2138,8 @@ cat .___archive/legacy/3_Financial/script_31_filter_data.py
 
 **Steps:**
 ```bash
-# Remove old directories (after verification)
-rm -rf 2_Scripts/
+# Remove remaining old directories (after verification)
+rm -rf 2_Scripts/          # If empty after stage migrations
 rm -rf 4_Outputs/
 rm -rf 1_Inputs/
 rm -rf 3_Logs/
@@ -2164,11 +2182,16 @@ pytest tests/ -v
 pip install -e .
 python -c "from f1d import get_latest_output_dir; print('OK')"
 
-# Run complete pipeline
-python scripts/run_pipeline.py
+# Test both variants work
+python -c "from f1d.financial.v1.variables import construct_variables; print('V1 OK')"
+python -c "from f1d.financial.v2.variables import construct_variables; print('V2 OK')"
+
+# Run complete pipeline with both variants
+python scripts/run_pipeline_v1.py
+python scripts/run_pipeline_v2.py
 
 # Verify reproducibility
-# Compare outputs with v5.0 baseline
+# Compare outputs with v5.0 baseline for both variants
 ```
 
 **Commit:** `refactor(65-01): complete migration to src-layout architecture`
@@ -2184,8 +2207,12 @@ The migration introduces the following breaking changes:
 | Old | New |
 |-----|-----|
 | `from shared.path_utils import ...` | `from f1d.shared.path_utils import ...` |
-| `from script_32_construct_variables import ...` | `from f1d.financial.variables import ...` |
+| `from script_32_construct_variables import ...` | `from f1d.financial.v2.variables import ...` |
 | `sys.path.insert(0, '2_Scripts')` | (Removed - use package imports) |
+
+**Note:** Both V1 and V2 imports now require explicit version suffix:
+- V1: `from f1d.financial.v1.variables import ...`
+- V2: `from f1d.financial.v2.variables import ...`
 
 #### 2. Data Paths
 
@@ -2200,7 +2227,8 @@ The migration introduces the following breaking changes:
 
 | Old | New |
 |-----|-----|
-| `python 2_Scripts/3_Financial_V2/script_32.py` | `python -m f1d.financial.variables` |
+| `python 2_Scripts/3_Financial/script_32.py` | `python -m f1d.financial.v1.variables` |
+| `python 2_Scripts/3_Financial_V2/script_32.py` | `python -m f1d.financial.v2.variables` |
 
 ### Compatibility Notes
 
@@ -2212,24 +2240,32 @@ The migration introduces the following breaking changes:
    git push origin v5.0-final
    ```
 
-2. **Parallel testing:** Run both old and new versions
+2. **Parallel testing:** Run both old and new versions for each variant
    ```bash
-   # Old version
+   # Old version (V1)
+   git checkout v5.0-final
+   python 2_Scripts/3_Financial/script_32.py
+
+   # New version (V1)
+   git checkout master
+   python -m f1d.financial.v1.variables
+
+   # Old version (V2)
    git checkout v5.0-final
    python 2_Scripts/3_Financial_V2/script_32.py
 
-   # New version
+   # New version (V2)
    git checkout master
-   python -m f1d.financial.variables
+   python -m f1d.financial.v2.variables
 
-   # Compare outputs
+   # Compare outputs for both variants
    diff 4_Outputs/financial/ data/processed/financial/
    ```
 
-3. **Gradual migration:** Migrate one stage at a time
+3. **Gradual migration:** Migrate one stage at a time, testing both variants
    - Migrate shared utilities first
-   - Then migrate one stage (e.g., financial)
-   - Verify all outputs match
+   - Then migrate one stage (e.g., financial) - both V1 and V2
+   - Verify all outputs match for both variants
    - Continue with next stage
 
 #### Testing Strategy
@@ -2260,11 +2296,11 @@ git checkout v5.0-final -- 1_Inputs/ 4_Outputs/
 |-------|----------|--------------|
 | Phase 1: Create structure | 1 day | None |
 | Phase 2: Move shared | 2 days | Phase 1 |
-| Phase 3: Move stages | 1 week | Phase 2 |
+| Phase 3: Move stages (V1 + V2) | 1.5 weeks | Phase 2 |
 | Phase 4: Reorganize data | 2 days | Phase 3 |
-| Phase 5: Archive V1 | 1 day | Phase 3 |
-| Phase 6: Clean up | 2 days | Phases 4, 5 |
-| **Total** | **~2 weeks** | |
+| Phase 5: Clean up old dirs | 1 day | Phase 3 |
+| Phase 6: Finalize | 2 days | Phases 4, 5 |
+| **Total** | **~2.5 weeks** | |
 
 ### Post-Migration Tasks
 

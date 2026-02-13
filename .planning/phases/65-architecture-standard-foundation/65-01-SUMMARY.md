@@ -10,8 +10,8 @@ provides:
   - ARCHITECTURE_STANDARD.md with canonical folder structure (ARCH-01)
   - Module organization patterns with __init__.py hierarchy (ARCH-02)
   - Data directory structure with mutability rules (ARCH-03)
-  - Version management with single active version policy (ARCH-04)
-  - Archive and legacy code handling strategy (ARCH-05)
+  - Version management with active variants policy (ARCH-04)
+  - Archive and deprecated code handling strategy (ARCH-05)
   - Migration guide from current flat layout to src-layout
 affects:
   - 66-naming-standard (builds on folder structure)
@@ -26,6 +26,7 @@ tech-stack:
     - Cookiecutter Data Science conventions
     - Semantic versioning
     - Module tier system
+    - Version variants (V1/V2) as active subpackages
 
 key-files:
   created:
@@ -34,7 +35,8 @@ key-files:
 
 key-decisions:
   - "Adopt src-layout over flat layout (PyPA recommendation)"
-  - "Single active version policy - no V3/V4 directories"
+  - "BOTH V1 and V2 are active variants - no legacy/canonical distinction"
+  - "Version suffixes (V1, V2) become subpackages under stage packages"
   - "Data separated by lifecycle: raw/interim/processed/external"
   - "30-day deprecation period before archival"
   - "Module tier system with quality bars (Tier 1-3)"
@@ -42,6 +44,7 @@ key-decisions:
 
 patterns-established:
   - "Pattern: src/f1d/ package structure with stage subpackages"
+  - "Pattern: Version variants as v1/ and v2/ subpackages (both active)"
   - "Pattern: __init__.py with docstring, __all__, and re-exports"
   - "Pattern: Dated subdirectories for data versioning (YYYY-MM-DD)"
   - "Pattern: ARCHIVED.md for each archived item"
@@ -72,7 +75,7 @@ completed: 2026-02-13
 - Established module organization with __init__.py patterns and code examples
 - Defined data lifecycle stages with mutability rules (raw/interim/processed/external)
 - Created version management policy with deprecation strategy
-- Documented archive structure and legacy code handling
+- Documented archive structure and deprecated code handling
 - Added detailed migration guide from current flat layout to src-layout
 
 ## Task Commits
@@ -97,28 +100,67 @@ Each task was committed atomically:
   - Section 2: Module organization with __init__.py patterns
   - Section 3: Data directory structure with mutability rules
   - Section 4: Version management with deprecation strategy
-  - Section 5: Archive and legacy code handling
+  - Section 5: Archive and deprecated code handling
   - Appendix A: Migration guide (6 phases)
   - Appendix B: Related standards reference
 
 ## Decisions Made
 
 1. **src-layout over flat layout** - PyPA recommended pattern prevents import issues, better for packaging
-2. **Single active version** - No V3/V4 directories, use semantic versioning on package instead
-3. **Data lifecycle stages** - raw/interim/processed/external follows Cookiecutter Data Science conventions
-4. **30-day deprecation** - Standard practice for code deprecation before archival
-5. **Module tier system** - Quality bars scaled by importance (Tier 1: core shared, Tier 2: stage-specific, Tier 3: scripts)
-6. **Migration guide as appendix** - Keep all architecture documentation in single document
-7. **Dated subdirectories** - YYYY-MM-DD format for data versioning ensures proper sorting
-8. **manifest.json for archive** - Machine-readable tracking enables tooling support
+2. **Both V1 and V2 as active variants** - Version suffixes distinguish methodology variants, both remain active
+3. **Version variants as subpackages** - V1 becomes v1/ subpackage, V2 becomes v2/ subpackage
+4. **Data lifecycle stages** - raw/interim/processed/external follows Cookiecutter Data Science conventions
+5. **30-day deprecation** - Standard practice for code deprecation before archival
+6. **Module tier system** - Quality bars scaled by importance (Tier 1: core shared, Tier 2: stage-specific, Tier 3: scripts)
+7. **Migration guide as appendix** - Keep all architecture documentation in single document
+8. **Dated subdirectories** - YYYY-MM-DD format for data versioning ensures proper sorting
+9. **manifest.json for archive** - Machine-readable tracking enables tooling support
+
+## Post-Completion Correction (2026-02-13)
+
+After initial completion, the user clarified that:
+- **BOTH V1 and V2 scripts are active in the pipeline**
+- There is **NO V1 legacy / V2 canonical distinction**
+- Both versions represent different processing approaches, both actively maintained
+
+### Corrections Applied
+
+1. **Section 4: Version Management** - Rewrote from "Single Active Version Policy" to "Active Versions Policy"
+   - Both V1 and V2 described as active pipeline variants
+   - Version suffixes distinguish methodology variants, not legacy/canonical
+   - Target state shows v1/ and v2/ as subpackages under each stage
+
+2. **Section 5: Archive and Deprecated Code** - Updated archive references
+   - Removed `legacy/` subdirectory (not needed - V1 is active)
+   - Archive only for truly deprecated/abandoned code
+   - Added explicit note that V1 is NOT archived
+
+3. **Migration Guide (Appendix A)** - Updated migration path
+   - Both V1 and V2 migrate to src/f1d/*/v1/ and src/f1d/*/v2/
+   - No archival of V1 planned
+   - Phase 5 now cleans up old directories (not archives V1)
+
+4. **Document Structure (Section 1)** - Updated target structure
+   - Added v1/ and v2/ subpackages under financial/ and econometric/
+   - Changed `.___archive/legacy/` to `.___archive/deprecated/`
+
+### Key Changes to Terminology
+
+| Before | After |
+|--------|-------|
+| "Single Active Version Policy" | "Active Versions Policy" |
+| "V1 - Legacy" | "V1 - Active variant" |
+| "V2 - Canonical/Current" | "V2 - Active variant" |
+| "Archive V1 code" | "Clean up old directories (both variants migrated)" |
+| `.___archive/legacy/` | `.___archive/deprecated/` (only truly deprecated code) |
 
 ## Deviations from Plan
 
-None - plan executed exactly as written.
+Correction made post-completion based on user clarification that both V1 and V2 are active in the pipeline.
 
 ## Issues Encountered
 
-None - document creation proceeded smoothly following research findings from 65-RESEARCH.md.
+Initial document incorrectly described V1 as legacy and V2 as canonical. This was corrected after user clarification.
 
 ## User Setup Required
 
@@ -141,7 +183,11 @@ All 35 requirements for v5.0 milestone ARCH-01 through ARCH-05 are now defined.
 - [x] All 5 main sections present
 - [x] Migration guide appendix present
 - [x] Minimum 200 lines exceeded (2318 lines)
+- [x] No reference to V1 as "legacy" or "archived"
+- [x] No reference to V2 as "canonical" or "single active version"
+- [x] Both V1 and V2 described as active pipeline variants
 
 ---
 *Phase: 65-architecture-standard-foundation*
 *Completed: 2026-02-13*
+*Corrected: 2026-02-13*
