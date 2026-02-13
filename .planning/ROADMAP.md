@@ -99,12 +99,12 @@ Plans:
 3. mypy configuration in pyproject.toml enforces tier-based strictness
 4. Type checker passes without errors on full codebase
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 70-01: Add type hints to Tier 1 modules
-- [ ] 70-02: Add type hints to Tier 2 modules
-- [ ] 70-03: Configure mypy with tier-based strictness
+- [ ] 70-01-PLAN.md — Add type hints to Tier 1 modules (src/f1d/shared/) (Wave 1)
+- [ ] 70-02-PLAN.md — Add type hints to Tier 2 modules (sample/text/financial/econometric) (Wave 1)
+- [ ] 70-03-PLAN.md — Configure mypy with tier-based strictness in pyproject.toml (Wave 2)
 
 ---
 
@@ -211,7 +211,7 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 69. Architecture Migration | v6.0 | 3/3 | Ready to execute | - |
-| 70. Type Hints | v6.0 | 0/3 | Not started | - |
+| 70. Type Hints | v6.0 | 0/3 | Planned | - |
 | 71. Configuration System | v6.0 | 0/3 | Not started | - |
 | 72. Structured Logging | v6.0 | 0/3 | Not started | - |
 | 73. CI/CD Pipeline | v6.0 | 0/3 | Not started | - |
@@ -219,4 +219,4 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 
 ---
 
-*Roadmap updated: 2026-02-13 (Phase 69 planned)*
+*Roadmap updated: 2026-02-13 (Phase 70 planned)*
