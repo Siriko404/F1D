@@ -535,7 +535,7 @@ def main():
         processing_info["ccm_unique_cusips"] = len(ccm_cusips)
         processing_info["ibes_unique_cusips"] = len(ibes_cusips)
         processing_info["cusip_match_rate"] = (
-            round(len(overlap) / len(ibes_cusips) * 100, 2)
+            round(len(overlap) / len(ibes_cusips) * 100, 2)  # type: ignore[assignment]
             if len(ibes_cusips) > 0
             else 0
         )
@@ -613,7 +613,7 @@ def main():
     processing_info["analyst_dispersion_matched"] = int(
         h2_merged["analyst_dispersion"].notna().sum()
     )
-    processing_info["analyst_dispersion_coverage"] = round(
+    processing_info["analyst_dispersion_coverage"] = round(  # type: ignore[assignment]
         processing_info["analyst_dispersion_matched"] / len(h2_merged) * 100, 2
     )
 

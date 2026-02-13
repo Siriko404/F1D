@@ -1051,6 +1051,8 @@ def main() -> int:
     dual_writer.close()
     sys.stdout = dual_writer.terminal
 
+    return 0
+
 
 if __name__ == "__main__":
     main()

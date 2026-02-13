@@ -66,7 +66,7 @@ from f1d.shared.diagnostics import (
 from f1d.shared.observability_utils import (
     DualWriter,
     get_process_memory_mb,
-    save_stats,
+    save_stats as shared_save_stats,  # type: ignore[attr-defined]
 )
 from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.path_utils import (

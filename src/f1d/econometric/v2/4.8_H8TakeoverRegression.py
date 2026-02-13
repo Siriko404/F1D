@@ -46,6 +46,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -121,7 +122,7 @@ SPECS = {
 }
 
 # H8 Robustness configuration
-H8_ROBUSTNESS_CONFIG = {
+H8_ROBUSTNESS_CONFIG: Dict[str, Any] = {
     "alternative_dvs": {
         "takeover_announced": "Announced deals (all)",
         "takeover_hostile": "Hostile/unsolicited deals",

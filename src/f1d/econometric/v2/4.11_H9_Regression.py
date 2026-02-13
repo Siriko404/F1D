@@ -673,8 +673,8 @@ def run_sanity_checks(panel, output_dir=None):
             f"{col}: mean={stats['mean']:.4f}, sd={stats['sd']:.4f}, p1={stats['p1']:.4f}, p99={stats['p99']:.4f}"
         )
 
-    checks["dv_controls"] = {
-        col: {"mean": float(panel[col].mean()), "sd": float(panel[col].std())}
+    checks["dv_controls"] = {  # type: ignore[misc]
+        col: {"mean": float(panel[col].mean()), "sd": float(panel[col].std())}  # type: ignore[misc]
         for col in existing_dv
     }
     lines.append("")

@@ -488,7 +488,7 @@ Examples:
         cccl_df, cccl_variants, cccl_checksum = load_cccl_instrument(
             paths["cccl_file"], logger
         )
-        stats["input_files"]["cccl_instrument"] = {
+        stats["input_files"]["cccl_instrument"] = {  # type: ignore[index]
             "path": str(paths["cccl_file"]),
             "rows": len(cccl_df),
             "variants": cccl_variants,
@@ -503,7 +503,7 @@ Examples:
         speech_df, uncertainty_measures = load_speech_measures(
             paths["linguistics_dir"], logger, min_year=2005, max_year=2018
         )
-        stats["input_files"]["linguistic_variables"] = {
+        stats["input_files"]["linguistic_variables"] = {  # type: ignore[index]
             "path": str(paths["linguistics_dir"]),
             "rows": len(speech_df),
             "measures": uncertainty_measures,
@@ -527,7 +527,7 @@ Examples:
 
         # Step 3: Merge CCCL and speech
         merged_df = merge_cccl_speech(cccl_df, speech_df, logger)
-        stats["processing_steps"]["merge"] = {
+        stats["processing_steps"]["merge"] = {  # type: ignore[index]
             "rows_after_merge": len(merged_df),
         }
 

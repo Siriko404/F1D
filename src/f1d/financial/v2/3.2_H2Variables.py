@@ -285,7 +285,7 @@ def load_ibes(ibes_file: Path) -> pd.DataFrame:
 
 def build_ff_mappings(
     siccodes48_file: Path, siccodes12_file: Path
-) -> Tuple[Dict[int, Tuple[int, str]], Dict[int, Tuple[int, str]]]:
+) -> Tuple[Dict[int, Tuple[int, Optional[str]]], Dict[int, Tuple[int, Optional[str]]]]:
     """Build Fama-French industry mappings from SIC codes"""
     print("\nBuilding Fama-French industry mappings...")
 
@@ -305,8 +305,8 @@ def build_ff_mappings(
 
 def assign_ff_industries(
     df: pd.DataFrame,
-    ff48_map: Dict[int, Tuple[int, str]],
-    ff12_map: Dict[int, Tuple[int, str]],
+    ff48_map: Dict[int, Tuple[int, Optional[str]]],
+    ff12_map: Dict[int, Tuple[int, Optional[str]]],
 ) -> pd.DataFrame:
     """Assign Fama-French industry classifications based on SIC code"""
     print("\nAssigning FF industries...")
@@ -1675,6 +1675,8 @@ def main() -> int:
         sys.stdout = dual_writer.terminal
     else:
         log_file.close()
+
+    return 0
 
 
 # ==============================================================================
