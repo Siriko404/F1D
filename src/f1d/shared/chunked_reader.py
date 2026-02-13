@@ -35,13 +35,13 @@ Date: 2026-02-11
 import logging
 import time
 from pathlib import Path
-from typing import Iterator, List, Optional
+from typing import Any, Callable, Iterator, List, Optional, Union
 
 import pandas as pd
 import psutil
 import pyarrow as pa
 import pyarrow.parquet as pq
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -148,12 +148,12 @@ def read_dataset_lazy(
 
 def process_in_chunks(
     file_path: Path,
-    process_func: callable,
+    process_func: Callable[[pd.DataFrame], Any],
     columns: Optional[List[str]] = None,
     chunk_size: Optional[int] = None,
-    combine_func: Optional[callable] = None,
+    combine_func: Optional[Callable[[List[Any]], Any]] = None,
     enable_throttling: bool = True,
-):
+) -> Any:
     """
     Process file in chunks with optional memory-aware throttling.
 
@@ -306,16 +306,16 @@ class MemoryAwareThrottler:
     def get_available_memory_mb(self) -> float:
         """Get available system memory in MB."""
         mem = psutil.virtual_memory()
-        return mem.available / (1024 * 1024)
+        return float(mem.available / (1024 * 1024))
 
     def get_memory_usage_mb(self) -> float:
         """Get current process memory usage in MB."""
         mem_info = self.process.memory_info()
-        return mem_info.rss / (1024 * 1024)
+        return float(mem_info.rss / (1024 * 1024))
 
     def get_memory_percent(self) -> float:
         """Get memory usage as percentage of system memory."""
-        return self.process.memory_percent()
+        return float(self.process.memory_percent())
 
     def should_throttle(self) -> bool:
         """
@@ -327,7 +327,7 @@ class MemoryAwareThrottler:
         return self.get_memory_percent() > self.max_memory_percent
 
     def get_recommended_chunk_size(
-        self, base_size: int = 10000, file_path: Path = None
+        self, base_size: int = 10000, file_path: Optional[Path] = None
     ) -> int:
         """
         Adjust chunk size based on memory pressure.

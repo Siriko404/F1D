@@ -36,12 +36,12 @@ Date: 2026-02-11
 
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import pandas as pd
 
 # Schemas for key input files
-INPUT_SCHEMAS = {
+INPUT_SCHEMAS: Dict[str, Dict[str, Any]] = {
     "Unified-info.parquet": {
         "required_columns": [
             "event_type",

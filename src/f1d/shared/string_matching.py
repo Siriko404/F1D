@@ -23,14 +23,14 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 # Try rapidfuzz
 try:
     from rapidfuzz import fuzz, process, utils
 
     RAPIDFUZZ_AVAILABLE = True
-    RAPIDFUZZ_VERSION = "unknown"
+    RAPIDFUZZ_VERSION: Optional[str] = "unknown"
 except ImportError:
     RAPIDFUZZ_AVAILABLE = False
     RAPIDFUZZ_VERSION = None
@@ -74,15 +74,16 @@ def load_matching_config() -> Dict[str, Any]:
 
     try:
         with open(config_path) as f:
-            config = yaml.safe_load(f)
+            config: Dict[str, Any] = yaml.safe_load(f) or {}
     except yaml.YAMLError as e:
         warnings.warn(f"Error parsing config file: {e}. Using defaults.", stacklevel=2)
         return {}
 
-    return config.get("string_matching", {})
+    result: Dict[str, Any] = config.get("string_matching", {})
+    return result
 
 
-def get_scorer(name: str):
+def get_scorer(name: str) -> Any:
     """
     Get RapidFuzz scorer function by name.
 
@@ -98,7 +99,7 @@ def get_scorer(name: str):
     if not RAPIDFUZZ_AVAILABLE:
         raise ImportError("RapidFuzz not available. Install: pip install rapidfuzz")
 
-    scorers = {
+    scorers: Dict[str, Any] = {
         "ratio": fuzz.ratio,
         "partial_ratio": fuzz.partial_ratio,
         "token_sort_ratio": fuzz.token_sort_ratio,
@@ -160,9 +161,14 @@ def match_company_names(
         candidates_processed = candidates
 
     # Find best match
-    best_match, score, _ = process.extractOne(
+    result = process.extractOne(
         query_processed, candidates_processed, scorer=scorer
     )
+
+    if result is None:
+        return (query, 0.0)
+
+    best_match, score, _ = result
 
     # Return original candidate (not processed version)
     if score < threshold:
@@ -250,7 +256,7 @@ def _match_many_to_many_fallback(
     targets: List[str],
     targets_processed: List[str],
     threshold: float,
-    scorer,
+    scorer: Any,
     preprocess: bool,
 ) -> List[Tuple[str, str, float]]:
     """Fallback method for many-to-many matching (slower but more robust)."""
@@ -259,9 +265,14 @@ def _match_many_to_many_fallback(
     for query_idx, query in enumerate(queries):
         query_processed = queries_processed[query_idx] if preprocess else query
 
-        best_match, score, _ = process.extractOne(
+        result = process.extractOne(
             query_processed, targets_processed, scorer=scorer
         )
+
+        if result is None:
+            continue
+
+        best_match, score, _ = result
 
         if score >= threshold:
             # Find original target
