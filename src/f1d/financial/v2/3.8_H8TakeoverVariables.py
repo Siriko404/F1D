@@ -39,6 +39,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 
@@ -70,7 +71,7 @@ from f1d.shared.path_utils import (
 # ==============================================================================
 
 # H8 Takeover Variables Configuration
-CONFIG = {
+CONFIG: Dict[str, Any] = {
     "year_start": 2002,
     "year_end": 2018,
     "sdc_file": "1_Inputs/SDC/sdc-ma-merged.parquet",
@@ -763,7 +764,7 @@ def compute_h8_stats(df, config):
     print("Computing H8 Statistics")
     print("=" * 60)
 
-    stats = {
+    stats: Dict[str, Any] = {
         "n_obs": len(df),
         "n_firms": df["gvkey"].nunique(),
         "n_years": df["year"].nunique(),
@@ -925,7 +926,7 @@ def main():
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.8_H8TakeoverVariables",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0},

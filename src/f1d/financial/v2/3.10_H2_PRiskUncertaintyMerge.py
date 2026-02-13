@@ -55,6 +55,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 import yaml
@@ -119,7 +120,9 @@ def setup_paths(config, timestamp):
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge"
+    output_base = (
+        root / "4_Outputs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge"
+    )
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
@@ -234,7 +237,7 @@ def validate_prisk(df):
         print("  [ERROR] PRisk column not found")
         return {}
 
-    prisk_stats = {
+    prisk_stats: Dict[str, Any] = {
         "mean": float(df["PRisk"].mean()),
         "std": float(df["PRisk"].std()),
         "min": float(df["PRisk"].min()),
@@ -413,7 +416,7 @@ def validate_uncertainty(df):
         print(f"  [ERROR] {primary_col} column not found")
         return {}
 
-    uncertainty_stats = {
+    uncertainty_stats: Dict[str, Any] = {
         "mean": float(df[primary_col].mean()),
         "std": float(df[primary_col].std()),
         "min": float(df[primary_col].min()),
@@ -776,14 +779,15 @@ def validate_interaction(df):
     try:
         vif_df = compute_vif(df, key_vars, vif_threshold=10.0)
 
-        for _, row in vif_df.iterrows():
-            var = row["variable"]
-            vif = row["VIF"]
-            exceeded = row["threshold_exceeded"]
+        vif_records = vif_df.to_dict("records")
+        for row in vif_records:
+            var = str(row["variable"])  # type: ignore[call-overload]
+            vif = float(row["VIF"])  # type: ignore[call-overload]
+            exceeded = bool(row["threshold_exceeded"])  # type: ignore[call-overload]
             status = "*** EXCEEDS 10" if exceeded else "OK"
             print(f"    {var:<35} VIF={vif:.2f}  {status}")
 
-        vif_results = vif_df.to_dict("records")
+        vif_results = vif_records
 
     except Exception as e:
         print(f"    Could not compute VIF: {e}")
@@ -1034,7 +1038,7 @@ def main():
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.10_H2_PRiskUncertaintyMerge",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0},
