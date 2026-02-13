@@ -55,6 +55,7 @@ import argparse
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -122,7 +123,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # Configuration
 # ==============================================================================
 
-CONFIG = {
+CONFIG: Dict[str, Any] = {
     "year_start": 2002,
     "year_end": 2018,
     "dep_vars": ["Delta_Amihud", "Delta_Corwin_Schultz"],
@@ -171,7 +172,7 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
+    required_files: Dict[str, Path] = {}
 
     required_steps = {
         "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
@@ -208,7 +209,7 @@ def load_all_data(root):
     print(f"  Manifest: {len(manifest):,} calls")
 
     all_ling = []
-    for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
+    for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             lv_dir = get_latest_output_dir(
                 root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
@@ -234,7 +235,7 @@ def load_all_data(root):
     print(f"  Linguistic: {len(ling):,} calls")
 
     all_fc = []
-    for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
+    for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             fc_dir = get_latest_output_dir(
                 root / "4_Outputs" / "3_Financial_Features",
@@ -255,7 +256,7 @@ def load_all_data(root):
     print(f"  Firm controls: {len(firm):,} calls")
 
     all_mv = []
-    for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
+    for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             mv_dir = get_latest_output_dir(
                 root / "4_Outputs" / "3_Financial_Features",
@@ -349,7 +350,7 @@ def load_all_data(root):
 
 
 # Phase 1: First Stage (Instrument Validity)
-def run_first_stage(df, out_dir):
+def run_first_stage(df: pd.DataFrame, out_dir: Path) -> list[dict[str, Any]]:
     """Test instrument relevance for Q&A Uncertainty."""
     print("\n" + "=" * 60)
     print("PHASE 1: First Stage - Instrument Validity")
@@ -622,7 +623,7 @@ def main():
     log_dir = root / "3_Logs" / "4.2_LiquidityRegressions" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.2_LiquidityRegressions",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
@@ -656,8 +657,8 @@ def main():
     iv_regime_file = out_dir / "iv_regime.txt"
     iv_ceo_file = out_dir / "iv_ceo.txt"
 
-    for f in [ols_regime_file, ols_ceo_file, iv_regime_file, iv_ceo_file]:
-        with open(f, "w") as fh:
+    for filepath in [ols_regime_file, ols_ceo_file, iv_regime_file, iv_ceo_file]:
+        with open(filepath, "w") as fh:
             fh.write(f"Generated: {timestamp}\n")
 
     all_results = []

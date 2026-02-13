@@ -44,6 +44,7 @@ import argparse
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 
@@ -99,7 +100,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Configuration
-CONFIG = {
+CONFIG: Dict[str, Any] = {
     "year_start": 2002,
     "year_end": 2018,
     "clarity_var_regime": "ClarityRegime",
@@ -118,8 +119,8 @@ CONFIG = {
     "exclude_ff12": [8, 11],
 }
 
-# Global ROOT will be set in main()
-ROOT = None
+# Global ROOT - initialized to project root
+ROOT: Path = Path(__file__).resolve().parents[4]
 
 
 # ==============================================================================
@@ -181,7 +182,7 @@ def load_data():
 
     # Load linguistic variables
     all_ling = []
-    for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
+    for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             lv_dir = get_latest_output_dir(
                 ROOT / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
@@ -217,7 +218,7 @@ def load_data():
 
     # Load firm controls
     all_fc = []
-    for year in range(CONFIG["year_start"], CONFIG["year_end"] + 1):
+    for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             fc_dir = get_latest_output_dir(
                 ROOT / "4_Outputs" / "3_Financial_Features",
@@ -301,7 +302,7 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
+    required_files: Dict[str, Path] = {}
 
     required_steps = {
         "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
@@ -329,7 +330,7 @@ def main():
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Initialize stats
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.3_TakeoverHazards",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
@@ -398,7 +399,7 @@ def main():
     out_file.write_text(f"Generated: {timestamp}\n")
 
     # Regime Model
-    cph_all_regime = run_cox_ph(
+    cph_all_regime = run_cox_ph(  # type: ignore[call-arg]
         df_main,
         "Takeover",
         covariates_regime,
@@ -421,7 +422,7 @@ def main():
                 )
 
     # CEO Model
-    cph_all_ceo = run_cox_ph(
+    cph_all_ceo = run_cox_ph(  # type: ignore[call-arg]
         df_main, "Takeover", covariates_ceo, "All Takeovers (CEO Clarity)", out_file
     )
     if cph_all_ceo:
@@ -449,7 +450,7 @@ def main():
     out_file_uninv = out_dir / "fine_gray_uninvited.txt"
     out_file_uninv.write_text(f"Generated: {timestamp}\n")
 
-    fg_uninv_regime = run_fine_gray(
+    fg_uninv_regime = run_fine_gray(  # type: ignore[call-arg]
         df_main,
         "Uninvited",
         covariates_regime,
@@ -471,7 +472,7 @@ def main():
                     }
                 )
 
-    fg_uninv_ceo = run_fine_gray(
+    fg_uninv_ceo = run_fine_gray(  # type: ignore[call-arg]
         df_main, "Uninvited", covariates_ceo, "Uninvited (CEO Clarity)", out_file_uninv
     )
     if fg_uninv_ceo:
@@ -499,7 +500,7 @@ def main():
     out_file_friend = out_dir / "fine_gray_friendly.txt"
     out_file_friend.write_text(f"Generated: {timestamp}\n")
 
-    fg_friend_regime = run_fine_gray(
+    fg_friend_regime = run_fine_gray(  # type: ignore[call-arg]
         df_main,
         "Friendly",
         covariates_regime,
@@ -521,7 +522,7 @@ def main():
                     }
                 )
 
-    fg_friend_ceo = run_fine_gray(
+    fg_friend_ceo = run_fine_gray(  # type: ignore[call-arg]
         df_main, "Friendly", covariates_ceo, "Friendly (CEO Clarity)", out_file_friend
     )
     if fg_friend_ceo:
