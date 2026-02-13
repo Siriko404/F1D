@@ -7,7 +7,8 @@ SHARED MODULE: Path Utilities
 ID: shared/path_utils
 Description: Provides robust path validation and directory creation helpers
              using pathlib. Handles cross-platform path operations with
-             proper error handling and validation.
+             proper error handling and validation. Supports both new (ARCH-03)
+             and legacy directory structures with backward compatibility.
 
 Inputs:
     - Path objects for validation (pathlib.Path)
@@ -22,6 +23,7 @@ Deterministic: true
 Main Functions:
     - get_latest_output_dir(): Get latest output directory by timestamp
     - ensure_output_dir(): Create output directory if not exists
+    - resolve_data_path(): Resolve path with backward compatibility
 
 Dependencies:
     - Utility module for path utilities
@@ -29,11 +31,50 @@ Dependencies:
 
 Author: Thesis Author
 Date: 2026-02-11
+Updated: 2026-02-13 (added ARCH-03 data directory support)
 ================================================================================
 """
 
 from pathlib import Path
 from typing import Optional
+import warnings
+
+
+# ==============================================================================
+# NEW STRUCTURE PATHS (ARCH-03) - Preferred
+# ==============================================================================
+
+DATA_RAW = Path("data/raw")
+"""Path to raw immutable data (READ-ONLY)."""
+
+DATA_INTERIM = Path("data/interim")
+"""Path to intermediate processing data (CAN REGENERATE)."""
+
+DATA_PROCESSED = Path("data/processed")
+"""Path to final cleaned data (SOURCE FOR ANALYSIS)."""
+
+DATA_EXTERNAL = Path("data/external")
+"""Path to third-party reference data."""
+
+LOGS_DIR = Path("logs")
+"""Path to execution logs."""
+
+RESULTS_DIR = Path("results")
+"""Path to analysis outputs (figures, tables, reports)."""
+
+
+# ==============================================================================
+# LEGACY PATHS (deprecated, will be removed in v7.0)
+# ==============================================================================
+
+INPUTS_DIR = Path("1_Inputs")
+"""Legacy path to input data. Deprecated: use DATA_RAW instead."""
+
+OUTPUTS_DIR = Path("4_Outputs")
+"""Legacy path to outputs. Deprecated: use DATA_INTERIM or DATA_PROCESSED."""
+
+OLD_LOGS_DIR = Path("3_Logs")
+"""Legacy path to logs. Deprecated: use LOGS_DIR instead."""
 
 
 class PathValidationError(Exception):
@@ -192,3 +233,152 @@ def get_latest_output_dir(
         )
 
     return sorted_dirs[0]
+
+
+# ==============================================================================
+# BACKWARD COMPATIBILITY FUNCTIONS
+# ==============================================================================
+
+
+def resolve_data_path(path_name: str, prefer_new: bool = True) -> Path:
+    """
+    Resolve path to data, checking new structure first.
+
+    Provides backward compatibility during migration by checking both
+    old (1_Inputs, 4_Outputs) and new (data/raw, data/interim, etc.)
+    directory structures.
+
+    Args:
+        path_name: Name of data directory (e.g., "transcripts", "raw", "interim")
+        prefer_new: If True, check new structure first (default: True)
+
+    Returns:
+        Path to the data directory
+
+    Raises:
+        FileNotFoundError: If data not found in either location
+
+    Example:
+        >>> # Get raw data directory (backward compatible)
+        >>> raw_path = resolve_data_path("raw")
+        >>> # Get specific data subdirectory
+        >>> transcripts = resolve_data_path("transcripts")
+    """
+    # Map of canonical names to new paths
+    new_paths = {
+        "raw": DATA_RAW,
+        "interim": DATA_INTERIM,
+        "processed": DATA_PROCESSED,
+        "external": DATA_EXTERNAL,
+        "logs": LOGS_DIR,
+        "results": RESULTS_DIR,
+    }
+
+    # Map of old names to new names for backward compatibility
+    legacy_mapping = {
+        "1_Inputs": "raw",
+        "inputs": "raw",
+        "4_Outputs": "interim",
+        "outputs": "interim",
+        "3_Logs": "logs",
+    }
+
+    # Handle canonical names directly
+    if path_name in new_paths:
+        return new_paths[path_name]
+
+    # Handle legacy names with backward compatibility
+    if path_name in legacy_mapping:
+        canonical = legacy_mapping[path_name]
+        if prefer_new:
+            new_path = new_paths[canonical]
+            if new_path.exists():
+                return new_path
+        # Fallback to old path if new doesn't exist
+        return Path(path_name)
+
+    # Generic fallback: check both locations
+    new_path = DATA_RAW / path_name
+    old_path = INPUTS_DIR / path_name
+
+    if prefer_new:
+        if new_path.exists():
+            return new_path
+        elif old_path.exists():
+            return old_path
+    else:
+        if old_path.exists():
+            return old_path
+        elif new_path.exists():
+            return new_path
+
+    raise FileNotFoundError(
+        f"Data '{path_name}' not found in old ({old_path}) or new ({new_path}) locations"
+    )
+
+
+def get_output_dir(stage: str, date: Optional[str] = None, prefer_new: bool = True) -> Path:
+    """
+    Get output directory for a processing stage.
+
+    Provides backward compatibility by returning paths in either new
+    (data/interim/ or data/processed/) or legacy (4_Outputs/) structure.
+
+    Args:
+        stage: Processing stage name (e.g., "sample", "text", "financial")
+        date: Optional date string for versioned output (YYYY-MM-DD format)
+        prefer_new: If True, prefer new structure (default: True)
+
+    Returns:
+        Path to the output directory
+
+    Example:
+        >>> # Get interim output directory for sample stage
+        >>> output_dir = get_output_dir("sample")
+        >>> # Get dated output directory
+        >>> dated_output = get_output_dir("sample", date="2024-01-15")
+    """
+    if prefer_new:
+        # Use new structure: data/interim/{stage}/
+        base_dir = DATA_INTERIM / stage
+    else:
+        # Use legacy structure: 4_Outputs/{stage}/
+        base_dir = OUTPUTS_DIR / stage
+
+    if date:
+        return base_dir / date
+    return base_dir
+
+
+def get_results_subdir(subdir: str) -> Path:
+    """
+    Get path to results subdirectory (figures, tables, reports).
+
+    Args:
+        subdir: Subdirectory name ("figures", "tables", or "reports")
+
+    Returns:
+        Path to the results subdirectory
+
+    Example:
+        >>> figures_dir = get_results_subdir("figures")
+        >>> tables_dir = get_results_subdir("tables")
+    """
+    return RESULTS_DIR / subdir
+
+
+def deprecation_warning(old_name: str, new_name: str, version: str = "7.0") -> None:
+    """
+    Issue a deprecation warning for legacy path usage.
+
+    Args:
+        old_name: Name of deprecated path/function
+        new_name: Name of replacement path/function
+        version: Version when removal will occur (default: "7.0")
+    """
+    warnings.warn(
+        f"'{old_name}' is deprecated and will be removed in v{version}. "
+        f"Use '{new_name}' instead.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
