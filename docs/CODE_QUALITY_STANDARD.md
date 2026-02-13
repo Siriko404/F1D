@@ -3091,3 +3091,287 @@ When reviewing code, ensure:
 4. **Testing:** Test files mirror source structure
 
 ---
+
+## Appendix A: Quick Reference Card
+
+This quick reference provides a single-page summary of all naming conventions and code quality standards.
+
+### Naming Conventions Quick Reference
+
+| Entity | Convention | Example |
+|--------|------------|---------|
+| **Scripts** | `Stage.Step_Description.py` | `1.0_BuildSampleManifest.py` |
+| **Modules** | `snake_case` | `panel_ols.py` |
+| **Packages** | `snake_case` | `shared/`, `observability/` |
+| **Functions** | `snake_case` | `get_latest_output_dir()` |
+| **Classes** | `PascalCase` | `CollinearityError` |
+| **Constants** | `UPPER_SNAKE_CASE` | `MAX_RETRIES` |
+| **Private** | `_leading_underscore` | `_validate_inputs()` |
+| **DataFrames** | `descriptive_df` | `manifest_df`, `panel_df` |
+| **Booleans** | `is_/has_/should_` | `is_valid`, `has_missing` |
+
+### Docstring Template (Google-style)
+
+```python
+def function_name(param1: Type1, param2: Type2) -> ReturnType:
+    """One-line summary ending with period.
+
+    Extended description providing more detail about the function's
+    behavior, purpose, and any important notes.
+
+    Args:
+        param1: Description of first parameter.
+        param2: Description of second parameter.
+            Can span multiple lines.
+
+    Returns:
+        Description of return value.
+
+    Raises:
+        ExceptionType: When this exception is raised.
+
+    Examples:
+        >>> from module import function_name
+        >>> result = function_name(value1, value2)
+        >>> print(result)
+        expected_output
+    """
+    ...
+```
+
+### Import Order Template
+
+```python
+# 1. Standard library (alphabetical)
+import os
+from pathlib import Path
+from typing import Dict, List
+
+# 2. Third-party (alphabetical)
+import numpy as np
+import pandas as pd
+
+# 3. Local imports (absolute, alphabetical)
+from f1d.shared.exceptions import F1DError
+from f1d.shared.path_utils import get_latest_output_dir
+```
+
+### Type Hint Quick Reference
+
+```python
+# Basic types
+def func(name: str, count: int, ratio: float) -> bool: ...
+
+# Optional
+def func(value: Optional[str] = None) -> Optional[int]: ...
+
+# Collections
+def func(items: List[str], mapping: Dict[str, int]) -> Set[int]: ...
+
+# Pandas
+def func(df: pd.DataFrame, col: pd.Series) -> pd.DataFrame: ...
+
+# Callable
+def func(transform: Callable[[pd.DataFrame], pd.DataFrame]) -> None: ...
+
+# Union
+def func(value: Union[str, int, float]) -> float: ...
+```
+
+### Error Handling Template
+
+```python
+# Custom exception
+class MyError(F1DError):
+    """Description of when this error occurs."""
+    def __init__(self, message: str, context: Optional[str] = None):
+        self.context = context
+        super().__init__(message, context)
+
+# Try-except pattern
+try:
+    result = operation()
+except SpecificError as e:
+    logger.error(f"Operation failed: {e}")
+    raise CustomError(f"Context: {e}") from e
+```
+
+### Function Size Limits
+
+| Metric | Limit |
+|--------|-------|
+| Target length | 20-30 lines |
+| Maximum length | 50 lines |
+| Max parameters | 3-4 |
+| Nesting levels | 3 max |
+| Cognitive complexity | < 10 |
+
+### Module Organization
+
+```python
+"""Module docstring."""
+
+# 1. Imports
+# 2. Constants
+# 3. Exceptions
+# 4. Classes
+# 5. Public functions
+# 6. Private helpers (_name)
+```
+
+### Output File Naming
+
+| Component | Format | Example |
+|-----------|--------|---------|
+| Date | ISO 8601 | `2026-02-13` |
+| Timestamp | ISO 8601 compact | `20260213_143052` |
+| Checksum | SHA-256 (12 chars) | `a3f2b8c91d2f` |
+| Version | v + number | `v1`, `v2` |
+
+### Tool Commands
+
+```bash
+# Linting and formatting
+ruff check src/
+ruff format src/
+
+# Type checking
+mypy src/
+
+# Complexity analysis
+radon cc src/ -a
+radon mi src/
+
+# Run tests
+pytest tests/
+```
+
+---
+
+## Appendix B: Related Standards
+
+This code quality standard is part of a suite of standards for the F1D project.
+
+### Standards Hierarchy
+
+| Standard | Phase | Purpose | Status |
+|----------|-------|---------|--------|
+| **ARCHITECTURE_STANDARD.md** | 65 | Folder structure, module organization, data lifecycle | Complete |
+| **CODE_QUALITY_STANDARD.md** | 66 | Naming conventions, code quality standards | This document |
+| **SCRIPT_DOCSTANDARD.md** | 61 | Script header documentation format | Complete |
+| **CONFIG_STANDARD.md** | 67 | Configuration file patterns | Planned |
+| **DOC_STANDARD.md** | 68 | Documentation templates | Planned |
+
+### Standard Dependencies
+
+```
+ARCHITECTURE_STANDARD.md (Phase 65)
+    |
+    ├──> CODE_QUALITY_STANDARD.md (Phase 66)
+    |        References: Module tiers, import conventions
+    |
+    ├──> CONFIG_STANDARD.md (Phase 67)
+    |        References: config/ directory structure
+    |
+    └──> DOC_STANDARD.md (Phase 68)
+             References: docs/ directory structure
+```
+
+### Cross-References in This Document
+
+| Section | References |
+|---------|------------|
+| Section 1 (NAM-02) | ARCHITECTURE_STANDARD.md: Module structure |
+| Section 2 (CODE-01) | SCRIPT_DOCSTANDARD.md: Header format |
+| Section 3 (CODE-02) | ARCHITECTURE_STANDARD.md: Module tiers |
+| Section 4 (CODE-03) | ARCHITECTURE_STANDARD.md: Import conventions |
+
+### External References
+
+| Standard | URL |
+|----------|-----|
+| PEP 8 - Style Guide | https://peps.python.org/pep-0008/ |
+| PEP 257 - Docstrings | https://peps.python.org/pep-0257/ |
+| PEP 484 - Type Hints | https://peps.python.org/pep-0484/ |
+| PEP 760 - No Bare Excepts | https://peps.python.org/pep-0760/ |
+| Google Python Style Guide | https://google.github.io/styleguide/pyguide.html |
+| mypy Documentation | https://mypy.readthedocs.io/ |
+| ruff Documentation | https://docs.astral.sh/ruff/ |
+
+---
+
+## References
+
+### Primary Standards (HIGH confidence)
+
+1. **PEP 8** - Style Guide for Python Code
+   - https://peps.python.org/pep-0008/
+   - Naming conventions, code layout, imports
+
+2. **PEP 257** - Docstring Conventions
+   - https://peps.python.org/pep-0257/
+   - Docstring format and content
+
+3. **PEP 484** - Type Hints
+   - https://peps.python.org/pep-0484/
+   - Type annotation syntax and semantics
+
+4. **PEP 760** - No More Bare Excepts (2024)
+   - https://peps.python.org/pep-0760/
+   - Exception handling best practices
+
+5. **Google Python Style Guide**
+   - https://google.github.io/styleguide/pyguide.html
+   - Google-style docstrings, general best practices
+
+### Secondary References (MEDIUM confidence)
+
+1. **mypy Documentation**
+   - https://mypy.readthedocs.io/
+   - Type checking configuration
+
+2. **ruff Documentation**
+   - https://docs.astral.sh/ruff/
+   - Linting and formatting
+
+3. **Sphinx Napoleon Extension**
+   - https://sphinxcontrib-napoleon.readthedocs.io/
+   - Google-style docstring parsing
+
+4. **Real Python - Exception Handling**
+   - https://realpython.com/ref/best-practices/exception-handling/
+   - Error handling patterns
+
+### Project Documents
+
+1. **ARCHITECTURE_STANDARD.md**
+   - Folder structure, module organization
+   - Module tier system
+
+2. **SCRIPT_DOCSTANDARD.md**
+   - Script header format
+   - Documentation requirements
+
+3. **pyproject.toml**
+   - Tool configuration
+   - Project metadata
+
+---
+
+## Document Footer
+
+**Document:** CODE_QUALITY_STANDARD.md
+**Version:** 5.0
+**Last Updated:** 2026-02-13
+**Status:** DEFINITION - Implementation deferred to v6.0+
+**Milestone:** v5.0 Architecture Standard Definition
+
+**Change Log:**
+
+| Date | Version | Changes |
+|------|---------|---------|
+| 2026-02-13 | 5.0 | Initial definition document |
+
+---
+
+*This document is part of the v5.0 Architecture Standard Definition milestone. Implementation of these standards is planned for v6.0+.*
