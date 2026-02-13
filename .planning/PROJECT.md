@@ -8,24 +8,24 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: v4.0 Script Organization & Refactoring
+## Current Milestone: v5.0 Architecture Standard Definition
 
 **Started:** 2026-02-12
-**Goal:** Organize and refactor all scripts to follow consistent patterns for folder structure, I/O, logging, and naming conventions
+**Goal:** Define comprehensive architecture and coding standards for portfolio-ready repository overhaul
 
-**Target outcomes:**
-- Merge V3 folders into V2 (V3 was created by mistake)
-- Two active versions: V1 and V2, both in use
-- Config-driven I/O: All scripts read paths from config/project.yaml
-- Output pattern: `4_Outputs/[family]/[script]/[timestamp]`
-- Standardized logging across all scripts
-- Consistent naming conventions
-- Sequential refactoring with immediate verification after each script
+**Target deliverable:** ARCHITECTURE_STANDARD.md defining:
+- Canonical folder structure and module organization
+- Code quality standards (style, docstrings, type hints)
+- Testing infrastructure patterns
+- Documentation and portfolio presentation standards
+- CI/CD and tooling configuration
 
-### Previous: v3.0 Codebase Cleanup & Optimization (COMPLETE)
+**Implementation:** Standards definition only. Implementation deferred to v6.0+ milestones.
 
-**Completed:** 2026-02-11
-**Goal:** Fix critical bugs, improve code organization, add comprehensive documentation, and optimize performance
+### Previous: v4.0 Folder Structure Consolidation (COMPLETE)
+
+**Completed:** 2026-02-12
+**Goal:** Eliminate V3 folders by merging all scripts and outputs into V2 structure
 
 ## Requirements
 
@@ -69,14 +69,14 @@ Every script must produce verifiable, reproducible results with complete audit t
 
 ### Active
 
-<!-- Current scope. Building toward these. -->
+<!-- Current scope. Building toward these. v5.0 milestone. -->
 
-- [ ] Merge V3 folders into V2 (3_Financial_V3, 4_Econometric_V3, 5_Financial_V3)
-- [ ] Config-driven I/O for all scripts
-- [ ] Standardized output pattern: 4_Outputs/[family]/[script]/[timestamp]
-- [ ] Consistent logging pattern across all scripts
-- [ ] Naming convention standardization
-- [ ] Sequential verification after each refactoring step
+- [ ] ARCHITECTURE_STANDARD.md document created
+- [ ] Folder structure and module organization defined
+- [ ] Code quality standards defined (style, docstrings, type hints)
+- [ ] Testing infrastructure patterns defined
+- [ ] Documentation and portfolio standards defined
+- [ ] CI/CD and tooling configuration defined
 
 ### Not Pursued
 
@@ -96,7 +96,8 @@ Every script must produce verifiable, reproducible results with complete audit t
 - Video/audio analysis — text transcripts only
 - Interactive dashboards — batch processing for replication
 - Causality claims without instrumentation — 2SLS required for causal inference
-- Adding new features or hypotheses — this milestone is refactoring only
+- Adding new features or hypotheses — this milestone is standards definition only
+- **Implementation of standards** — deferred to v6.0+ milestones (definition only for v5.0)
 
 ## Context
 
@@ -141,4 +142,4 @@ The pipeline follows strict conventions from CLAUDE.md:
 | Sonnet-only model policy | Cost optimization and consistent performance; Opus/Haiku not needed | config.json: model_profile="budget" |
 
 ---
-*Last updated: 2026-02-12 (v4.0 milestone started)*
+*Last updated: 2026-02-12 (v5.0 milestone started)*
