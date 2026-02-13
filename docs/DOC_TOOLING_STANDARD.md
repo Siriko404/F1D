@@ -2064,3 +2064,253 @@ Ensure pre-commit hooks and CI use identical configuration:
 
 ---
 
+## Appendix A: Quick Reference Card
+
+### README Checklist
+
+- [ ] Title and description present
+- [ ] 4-6 badges (build, coverage, version, license)
+- [ ] Quick start section with working commands
+- [ ] Usage examples with code
+- [ ] Documentation link
+- [ ] Contributing link
+- [ ] License link
+
+### CHANGELOG Checklist
+
+- [ ] Keep a Changelog header with links
+- [ ] Unreleased section at top
+- [ ] Version sections with YYYY-MM-DD dates
+- [ ] Change categories: Added, Changed, Deprecated, Removed, Fixed, Security
+- [ ] Version comparison links
+
+### CONTRIBUTING Checklist
+
+- [ ] Development setup steps with exact commands
+- [ ] Coding standards reference
+- [ ] Testing requirements with coverage targets
+- [ ] Commit message format specification
+- [ ] Pull request process with checklist
+
+### pyproject.toml Checklist
+
+- [ ] [project] section with all required fields
+- [ ] [project.optional-dependencies] with dev/docs groups
+- [ ] [project.urls] for all project links
+- [ ] [build-system] with setuptools backend
+- [ ] [tool.setuptools.packages.find] for src-layout
+- [ ] [tool.pytest.ini_options] configuration
+- [ ] [tool.coverage.*] configuration
+- [ ] [tool.ruff] configuration
+- [ ] [tool.mypy] configuration
+
+### pre-commit Checklist
+
+- [ ] trailing-whitespace, end-of-file-fixer
+- [ ] check-yaml, check-toml, check-json
+- [ ] check-added-large-files
+- [ ] check-merge-conflict, check-case-conflict
+- [ ] detect-private-key, debug-statements
+- [ ] ruff (lint and format)
+- [ ] mypy with pydantic and types-PyYAML deps
+- [ ] bandit for security scanning
+- [ ] All versions pinned with rev:
+
+### GitHub Actions Checklist
+
+- [ ] Separate lint job from test job
+- [ ] Test matrix with Python 3.9-3.13
+- [ ] Coverage reporting with codecov
+- [ ] E2E tests on main branch only
+- [ ] pip caching enabled
+- [ ] Workflow triggers on push and PR
+
+### .gitignore Checklist
+
+- [ ] Python bytecode (__pycache__/, *.py[cod])
+- [ ] Distribution (build/, dist/, *.egg-info/)
+- [ ] Test/coverage (htmlcov/, .coverage, .pytest_cache/)
+- [ ] Environments (.env, .venv, venv/)
+- [ ] IDE (.vscode/, .idea/)
+- [ ] Data files (*.parquet, *.csv, *.xlsx)
+- [ ] Archives (___Archive/, *.zip, *.tar.gz)
+- [ ] OS-specific (.DS_Store, Thumbs.db)
+- [ ] Secrets (*.pem, *.key, credentials.json)
+
+### ruff/mypy Checklist
+
+- [ ] ruff select: E, W, F, I, B, C4, UP, ARG, SIM
+- [ ] ruff per-file-ignores for __init__.py and tests
+- [ ] ruff format: quote-style double, indent-style space
+- [ ] mypy python_version matches minimum supported
+- [ ] mypy tier-based overrides for module strictness
+- [ ] Pre-commit and CI use identical configuration
+
+---
+
+## Appendix B: Related Standards
+
+### Standard Documents
+
+| Standard | Scope | Key Sections |
+|----------|-------|--------------|
+| [ARCHITECTURE_STANDARD.md](ARCHITECTURE_STANDARD.md) | Folder structure, module tiers | Folder layout, Tier 1-3 definitions |
+| [CODE_QUALITY_STANDARD.md](CODE_QUALITY_STANDARD.md) | Naming, docstrings, type hints | NAM-01 to NAM-05, CODE-01 to CODE-05 |
+| [CONFIG_TESTING_STANDARD.md](CONFIG_TESTING_STANDARD.md) | Configuration, testing | CONF-01 to CONF-05, TEST-01 to TEST-05 |
+| **DOC_TOOLING_STANDARD.md** | Documentation, CI/CD | DOC-01 to DOC-05, TOOL-01 to TOOL-05 |
+
+### Cross-Reference Table
+
+| This Document | References | Dependency |
+|---------------|------------|------------|
+| DOC-01 (README) | TOOL-03 (GitHub Actions) | Badge URLs |
+| DOC-02 (CHANGELOG) | TOOL-01 (pyproject.toml) | Version numbers |
+| DOC-03 (CONTRIBUTING) | CODE_QUALITY_STANDARD.md | Coding standards |
+| DOC-03 (CONTRIBUTING) | CONFIG_TESTING_STANDARD.md | Testing requirements |
+| DOC-04 (API Docs) | CODE_QUALITY_STANDARD.md CODE-01 | Google-style docstrings |
+| DOC-05 (Comments) | CODE_QUALITY_STANDARD.md CODE-01 | Docstring vs comment |
+| TOOL-01 (pyproject.toml) | ARCHITECTURE_STANDARD.md | Module tiers |
+| TOOL-02 (pre-commit) | TOOL-01, TOOL-05 | Config location |
+| TOOL-03 (GitHub Actions) | TOOL-02, TOOL-05 | Same tools, same config |
+| TOOL-04 (.gitignore) | ARCHITECTURE_STANDARD.md | Data folder patterns |
+| TOOL-05 (Linting) | CODE_QUALITY_STANDARD.md CODE-02 | Type hint coverage |
+
+### Standard Stack Integration
+
+```
+ARCHITECTURE_STANDARD.md
+         │
+         ├──> CODE_QUALITY_STANDARD.md
+         │           │
+         │           ├──> CONFIG_TESTING_STANDARD.md
+         │           │
+         │           └──> DOC_TOOLING_STANDARD.md
+         │                       │
+         └───────────────────────┘
+```
+
+---
+
+## Appendix C: Anti-Patterns Summary
+
+### Documentation Anti-Patterns
+
+| Anti-Pattern | Problem | Correct Approach |
+|--------------|---------|------------------|
+| No badges in README | Missing project health indicators | Add build, coverage, version badges |
+| Badge overload | Clutters README | Limit to 4-6 essential badges |
+| Missing quickstart | Users can't get started | Include minimal working example |
+| Commit log as changelog | Not curated, too verbose | Use Keep a Changelog format |
+| No contributing guide | Contributors don't know process | Create comprehensive CONTRIBUTING.md |
+| Outdated documentation | Misleads users | Update docs with code changes |
+
+### API Documentation Anti-Patterns
+
+| Anti-Pattern | Problem | Correct Approach |
+|--------------|---------|------------------|
+| Sphinx with RST | Steep learning curve | Use MkDocs with Markdown |
+| Manual API documentation | Duplication, drift | Use mkdocstrings auto-generation |
+| Missing docstrings | Empty API docs | Require docstrings per CODE-01 |
+| Wrong docstring style | Parser errors | Use Google-style consistently |
+
+### Tooling Anti-Patterns
+
+| Anti-Pattern | Problem | Correct Approach |
+|--------------|---------|------------------|
+| Missing pyproject.toml [project] section | Not PEP 621 compliant | Include all required fields |
+| Separate config files | Configuration drift | Consolidate in pyproject.toml |
+| Pre-commit and CI mismatch | Passes locally, fails CI | Use identical configuration |
+| Manual CI without caching | Slow feedback | Enable pip caching |
+| Ignoring .env files | Security risk | Always add to .gitignore |
+| Badge overload | Obscures content | Limit to essential badges |
+
+### Code Comments Anti-Patterns
+
+| Anti-Pattern | Problem | Correct Approach |
+|--------------|---------|------------------|
+| Explaining "what" | Redundant with code | Document "why" instead |
+| Commented-out code | Clutters, confuses | Delete, use git history |
+| Outdated comments | Misleading | Update or delete with code |
+| Too many comments | Noise | Keep only valuable comments |
+
+---
+
+## Appendix D: Tool Version Matrix
+
+### Core Tools
+
+| Tool | Minimum Version | Purpose | Install Command |
+|------|-----------------|---------|-----------------|
+| MkDocs | 1.6 | Documentation generator | `pip install mkdocs>=1.6` |
+| mkdocs-material | 9.0 | Material theme | `pip install mkdocs-material>=9.0` |
+| mkdocstrings | 0.27 | API docs from docstrings | `pip install mkdocstrings>=0.27` |
+| mkdocstrings-python | 1.10 | Python handler | `pip install mkdocstrings-python>=1.10` |
+| pre-commit | 3.8 | Git hooks framework | `pip install pre-commit>=3.8` |
+| ruff | 0.9 | Linter + formatter | `pip install ruff>=0.9` |
+| mypy | 1.14 | Type checker | `pip install mypy>=1.14` |
+| bandit | 1.7 | Security linter | `pip install bandit>=1.7` |
+
+### Supporting Tools
+
+| Tool | Minimum Version | Purpose | Install Command |
+|------|-----------------|---------|-----------------|
+| pytest | 8.0 | Testing framework | `pip install pytest>=8.0` |
+| pytest-cov | 5.0 | Coverage reporting | `pip install pytest-cov>=5.0` |
+| pytest-mock | 3.12 | Mocking utilities | `pip install pytest-mock>=3.12` |
+
+### Pre-commit Hook Versions
+
+| Hook | Version | Repository |
+|------|---------|------------|
+| pre-commit-hooks | v4.6.0 | https://github.com/pre-commit/pre-commit-hooks |
+| ruff-pre-commit | v0.9.0 | https://github.com/astral-sh/ruff-pre-commit |
+| mirrors-mypy | v1.14.0 | https://github.com/pre-commit/mirrors-mypy |
+| bandit | 1.7.10 | https://github.com/PyCQA/bandit |
+
+### Version Selection Rationale
+
+- **MkDocs 1.6+:** Material theme 9.0+ compatibility
+- **ruff 0.9+:** Latest rules, performance improvements
+- **mypy 1.14+:** Improved error messages, pydantic support
+- **pytest 8.0+:** Latest features, performance improvements
+
+---
+
+## Document Metadata
+
+### Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 5.0 | 2026-02-13 | Initial definition for v5.0 Architecture Standard milestone |
+
+### Changelog
+
+#### [5.0.0] - 2026-02-13
+
+**Added:**
+- DOC-01: README Structure with badges, description, quickstart
+- DOC-02: CHANGELOG Format following Keep a Changelog
+- DOC-03: CONTRIBUTING Guide with setup and workflow
+- DOC-04: API Documentation Approach with MkDocs + mkdocstrings
+- DOC-05: Code Comments Standard for when/how to comment
+- TOOL-01: pyproject.toml Structure with PEP 621 compliance
+- TOOL-02: Pre-commit Hooks Configuration
+- TOOL-03: GitHub Actions Workflow structure
+- TOOL-04: .gitignore Patterns
+- TOOL-05: Linting/Formatting Configuration
+- Appendix A: Quick Reference Card
+- Appendix B: Related Standards
+- Appendix C: Anti-Patterns Summary
+- Appendix D: Tool Version Matrix
+
+### Document Status
+
+**Status:** DEFINITION
+
+This document defines target standards for v6.0+ implementation. Current code may not fully comply with all standards. Implementation of these standards is deferred to the v6.0 milestone.
+
+---
+
+*Part of the v5.0 Architecture Standard Definition milestone.*
+*See also: ARCHITECTURE_STANDARD.md, CODE_QUALITY_STANDARD.md, CONFIG_TESTING_STANDARD.md*
