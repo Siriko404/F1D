@@ -5,35 +5,35 @@
 See: .planning/PROJECT.md (updated 2026-02-12)
 
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
-**Current focus:** v5.0 Architecture Standard Definition
+**Current focus:** v5.0 Architecture Standard Definition - COMPLETE
 
 ## Current Position
 
-Milestone: v5.0 Architecture Standard Definition
-Phase: 67 of 68 (Configuration and Testing Standard)
+Milestone: v5.0 Architecture Standard Definition - COMPLETE
+Phase: 68 of 68 (Documentation and Tooling Standard) - COMPLETE
 Plan: 01 of 01 complete
-Status: Phase complete - ready for Phase 68
-Last activity: 2026-02-13 - CONFIG_TESTING_STANDARD.md created with 10 requirements
+Status: v5.0 Milestone complete - ready for v6.0 planning
+Last activity: 2026-02-13 - DOC_TOOLING_STANDARD.md created with 10 requirements
 
-Progress: [211 plans completed across all milestones]
+Progress: [212 plans completed across all milestones]
 
 ```
 Milestone Progress - v5.0 Architecture Standard Definition
-[============================================] 75% complete (Phase 67 of 68)
+[============================================] 100% complete (Phase 68 of 68)
 
-Phase: 67 - Configuration and Testing Standard
-Status: Complete (67-01-SUMMARY.md created)
+Phase: 68 - Documentation and Tooling Standard
+Status: Complete (68-01-SUMMARY.md created)
 ```
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed (all milestones): 211
+- Total plans completed (all milestones): 212
 - v1.0: 143 plans
 - v2.0: 17+ plans
 - v3.0: 21 plans
 - v4.0: 5 plans (64-01 through 64-05)
-- v5.0: 3 plans (65-01, 66-01, 67-01)
+- v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
 
 **Milestone Summary:**
 
@@ -43,7 +43,7 @@ Status: Complete (67-01-SUMMARY.md created)
 | v2.0 Hypothesis Testing | 28-58 | 17+ | Complete |
 | v3.0 Codebase Cleanup | 59-63 | 21 | Complete |
 | v4.0 Folder Consolidation | 64 | 5 | Complete |
-| v5.0 Architecture Standard | 65-68 | 3/4 | In Progress |
+| v5.0 Architecture Standard | 65-68 | 4 | Complete |
 
 ## Accumulated Context
 
@@ -54,7 +54,7 @@ Recent decisions affecting current work:
 - [v5.0 Roadmap] 4 phases created (65-68) covering 35 requirements
 - [v5.0 Scope] Definition-only milestone - implementation deferred to v6.0+
 - [v5.0 Goal] Portfolio-ready repository overhaul - industry-standard quality
-- [v5.0 Output] ARCHITECTURE_STANDARD.md + CODE_QUALITY_STANDARD.md + CONFIG_TESTING_STANDARD.md documents
+- [v5.0 Output] ARCHITECTURE_STANDARD.md + CODE_QUALITY_STANDARD.md + CONFIG_TESTING_STANDARD.md + DOC_TOOLING_STANDARD.md documents
 - [65-01] Adopt src-layout over flat layout (PyPA recommendation)
 - [65-01] Both V1 and V2 are active pipeline variants
 - [65-01] Data separated by lifecycle: raw/interim/processed/external
@@ -71,6 +71,11 @@ Recent decisions affecting current work:
 - [67-01] structlog for structured JSON logging with context binding
 - [67-01] Factory fixtures over fixture pyramids for test data
 - [67-01] Tier-based coverage targets (90% Tier 1, 80% Tier 2, 70% overall)
+- [68-01] MkDocs with mkdocstrings over Sphinx for API documentation
+- [68-01] ruff as unified linter/formatter replacing flake8 + black + isort
+- [68-01] Tier-based mypy strictness matching module tiers
+- [68-01] All tool configs consolidated in pyproject.toml
+- [68-01] Pre-commit hooks must match CI configuration exactly
 - [v4.0 Complete] Folder structure consolidated - only V1 and V2 versions exist
 
 ### Pending Todos
@@ -84,12 +89,12 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Phase 67 complete - CONFIG_TESTING_STANDARD.md created
+Stopped at: v5.0 Milestone complete - DOC_TOOLING_STANDARD.md created
 Resume file: None
 
 **Next Action:**
-Run `/gsd:plan-phase 68` to begin planning Documentation Standard phase.
+Run `/gsd:plan-milestone` to begin planning v6.0 implementation phase.
 
 ---
 
-*Last updated: 2026-02-13 (67-01 complete)*
+*Last updated: 2026-02-13 (68-01 complete - v5.0 milestone complete)*
