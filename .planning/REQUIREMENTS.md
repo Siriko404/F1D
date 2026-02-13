@@ -234,7 +234,7 @@ Requirements for Script Organization & Refactoring milestone. V4 focuses on cons
 
 - [ ] **LOG-03-01**: Standardize logging in 1_Sample/ scripts
 - [ ] **LOG-03-02**: Standardize logging in 2_Text/ scripts
-- [ ] **LOG-03-03**: Standardize logging in 3_Financial/ scripts
+- [ ] **LOG-03-03**: Standardize logging in 2_Text/ scripts
 - [ ] **LOG-03-04**: Standardize logging in 4_Econometric/ scripts
 - [ ] **LOG-03-05**: Verify V1 scripts produce consistent logs
 
@@ -371,50 +371,50 @@ Explicitly excluded from v4.0:
 
 ### v5.0 Requirements (Architecture Standard)
 
-Which phases cover which requirements. To be updated during roadmap creation.
+Which phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ARCH-01 | TBD | Pending |
-| ARCH-02 | TBD | Pending |
-| ARCH-03 | TBD | Pending |
-| ARCH-04 | TBD | Pending |
-| ARCH-05 | TBD | Pending |
-| NAM-01 | TBD | Pending |
-| NAM-02 | TBD | Pending |
-| NAM-03 | TBD | Pending |
-| NAM-04 | TBD | Pending |
-| NAM-05 | TBD | Pending |
-| CODE-01 | TBD | Pending |
-| CODE-02 | TBD | Pending |
-| CODE-03 | TBD | Pending |
-| CODE-04 | TBD | Pending |
-| CODE-05 | TBD | Pending |
-| CONF-01 | TBD | Pending |
-| CONF-02 | TBD | Pending |
-| CONF-03 | TBD | Pending |
-| CONF-04 | TBD | Pending |
-| CONF-05 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
-| TEST-03 | TBD | Pending |
-| TEST-04 | TBD | Pending |
-| TEST-05 | TBD | Pending |
-| DOC-01 | TBD | Pending |
-| DOC-02 | TBD | Pending |
-| DOC-03 | TBD | Pending |
-| DOC-04 | TBD | Pending |
-| DOC-05 | TBD | Pending |
-| TOOL-01 | TBD | Pending |
-| TOOL-02 | TBD | Pending |
-| TOOL-03 | TBD | Pending |
-| TOOL-04 | TBD | Pending |
-| TOOL-05 | TBD | Pending |
+| ARCH-01 | 65 | Pending |
+| ARCH-02 | 65 | Pending |
+| ARCH-03 | 65 | Pending |
+| ARCH-04 | 65 | Pending |
+| ARCH-05 | 65 | Pending |
+| NAM-01 | 66 | Pending |
+| NAM-02 | 66 | Pending |
+| NAM-03 | 66 | Pending |
+| NAM-04 | 66 | Pending |
+| NAM-05 | 66 | Pending |
+| CODE-01 | 66 | Pending |
+| CODE-02 | 66 | Pending |
+| CODE-03 | 66 | Pending |
+| CODE-04 | 66 | Pending |
+| CODE-05 | 66 | Pending |
+| CONF-01 | 67 | Pending |
+| CONF-02 | 67 | Pending |
+| CONF-03 | 67 | Pending |
+| CONF-04 | 67 | Pending |
+| CONF-05 | 67 | Pending |
+| TEST-01 | 67 | Pending |
+| TEST-02 | 67 | Pending |
+| TEST-03 | 67 | Pending |
+| TEST-04 | 67 | Pending |
+| TEST-05 | 67 | Pending |
+| DOC-01 | 68 | Pending |
+| DOC-02 | 68 | Pending |
+| DOC-03 | 68 | Pending |
+| DOC-04 | 68 | Pending |
+| DOC-05 | 68 | Pending |
+| TOOL-01 | 68 | Pending |
+| TOOL-02 | 68 | Pending |
+| TOOL-03 | 68 | Pending |
+| TOOL-04 | 68 | Pending |
+| TOOL-05 | 68 | Pending |
 
 **v5.0 Coverage:**
 - Requirements: 35 total
-- Mapped to phases: 0
-- Unmapped: 35 ⚠️
+- Mapped to phases: 35
+- Unmapped: 0
 
 ---
 
@@ -422,37 +422,38 @@ Which phases cover which requirements. To be updated during roadmap creation.
 
 | Requirement Category | Requirements | Phase | Sub-requirements | Status |
 |---------------------|--------------|-------|------------------|--------|
-| STR-01 | Merge 3_Financial_V3 into 3_Financial_V2 | 64 | 5 | Pending |
-| STR-02 | Merge 4_Econometric_V3 into 4_Econometric_V2 | 64 | 4 | Pending |
-| STR-03 | Merge 5_Financial_V3 into V2 folders | 64 | 7 | Pending |
-| STR-04 | Remove V3 folders | 64 | 4 | Pending |
-| STR-05 | Update Output folder structure | 64 | 5 | Pending |
-| IO-01 | Define Config-Driven Path Standard | 65 | 5 | Pending |
-| IO-02 | V1 Sample Scripts I/O | 65 | 5 | Pending |
-| IO-03 | V1 Text Scripts I/O | 65 | 5 | Pending |
-| IO-04 | V1 Financial Scripts I/O | 65 | 5 | Pending |
-| IO-05 | V1 Econometric Scripts I/O | 65 | 5 | Pending |
-| IO-06 | V2 Financial Scripts I/O | 65 | 13 | Pending |
-| IO-07 | V2 Econometric Scripts I/O | 65 | 12 | Pending |
-| IO-08 | Shared Utilities I/O Support | 65 | 4 | Pending |
-| LOG-01 | Audit Current Logging | 66 | 7 | Pending |
-| LOG-02 | Define Standard Logging Pattern | 66 | 5 | Pending |
-| LOG-03 | V1 Scripts Logging Standardization | 66 | 5 | Pending |
-| LOG-04 | V2 Scripts Logging Standardization | 66 | 3 | Pending |
-| NAM-01 | Define Naming Standard | 67 | 4 | Pending |
-| NAM-02 | Audit Current Names | 67 | 7 | Pending |
-| NAM-03 | Rename Non-Compliant Scripts | 67 | 5 | Pending |
-| VER-01 | V1 Sample Verification | 68 | 5 | Pending |
-| VER-02 | V1 Text Verification | 68 | 4 | Pending |
-| VER-03 | V1 Financial Verification | 68 | 5 | Pending |
-| VER-04 | V1 Econometric Verification | 68 | 4 | Pending |
-| VER-05 | V2 Financial Verification | 68 | 3 | Pending |
-| VER-06 | V2 Econometric Verification | 68 | 3 | Pending |
-| VER-07 | Test Suite Verification | 68 | 3 | Pending |
-| VER-08 | End-to-End Pipeline Verification | 68 | 4 | Pending |
+| STR-01 | Merge 3_Financial_V3 into 3_Financial_V2 | 64 | 5 | Complete |
+| STR-02 | Merge 4_Econometric_V3 into 4_Econometric_V2 | 64 | 4 | Complete |
+| STR-03 | Merge 5_Financial_V3 into V2 folders | 64 | 7 | Complete |
+| STR-04 | Remove V3 folders | 64 | 4 | Complete |
+| STR-05 | Update Output folder structure | 64 | 5 | Complete |
+| IO-01 | Define Config-Driven Path Standard | Deferred | 5 | Deferred to v6.0+ |
+| IO-02 | V1 Sample Scripts I/O | Deferred | 5 | Deferred to v6.0+ |
+| IO-03 | V1 Text Scripts I/O | Deferred | 5 | Deferred to v6.0+ |
+| IO-04 | V1 Financial Scripts I/O | Deferred | 5 | Deferred to v6.0+ |
+| IO-05 | V1 Econometric Scripts I/O | Deferred | 5 | Deferred to v6.0+ |
+| IO-06 | V2 Financial Scripts I/O | Deferred | 13 | Deferred to v6.0+ |
+| IO-07 | V2 Econometric Scripts I/O | Deferred | 12 | Deferred to v6.0+ |
+| IO-08 | Shared Utilities I/O Support | Deferred | 4 | Deferred to v6.0+ |
+| LOG-01 | Audit Current Logging | Deferred | 7 | Deferred to v6.0+ |
+| LOG-02 | Define Standard Logging Pattern | Deferred | 5 | Deferred to v6.0+ |
+| LOG-03 | V1 Scripts Logging Standardization | Deferred | 5 | Deferred to v6.0+ |
+| LOG-04 | V2 Scripts Logging Standardization | Deferred | 3 | Deferred to v6.0+ |
+| NAM-01 | Define Naming Standard | Deferred | 4 | Deferred to v6.0+ |
+| NAM-02 | Audit Current Names | Deferred | 7 | Deferred to v6.0+ |
+| NAM-03 | Rename Non-Compliant Scripts | Deferred | 5 | Deferred to v6.0+ |
+| VER-01 | V1 Sample Verification | Deferred | 5 | Deferred to v6.0+ |
+| VER-02 | V1 Text Verification | Deferred | 4 | Deferred to v6.0+ |
+| VER-03 | V1 Financial Verification | Deferred | 5 | Deferred to v6.0+ |
+| VER-04 | V1 Econometric Verification | Deferred | 4 | Deferred to v6.0+ |
+| VER-05 | V2 Financial Verification | Deferred | 3 | Deferred to v6.0+ |
+| VER-06 | V2 Econometric Verification | Deferred | 3 | Deferred to v6.0+ |
+| VER-07 | Test Suite Verification | Deferred | 3 | Deferred to v6.0+ |
+| VER-08 | End-to-End Pipeline Verification | Deferred | 4 | Deferred to v6.0+ |
 
-**Total Requirements:** 28 categories, 134 sub-requirements
-**Coverage:** 100% mapped to phases 64-68
+**Total v4.0 Requirements:** 28 categories, 134 sub-requirements
+**STR Coverage:** 25 sub-requirements Complete (Phase 64)
+**Deferred to v6.0+:** 109 sub-requirements (IO, LOG, NAM, VER)
 
 ---
 
@@ -463,4 +464,4 @@ All v3.0 requirements have been completed. See git history for details.
 ---
 
 *Requirements defined: 2026-02-12*
-*Last updated: 2026-02-12 (v5.0 requirements defined)*
+*Last updated: 2026-02-13 (v5.0 roadmap created, traceability updated)*
