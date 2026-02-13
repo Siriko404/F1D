@@ -117,6 +117,45 @@ The pipeline follows strict conventions from CLAUDE.md:
 - All scripts read from `config/project.yaml`
 - Outputs go to timestamped directories
 
+## Thesis Research Requirements
+
+**CRITICAL: This is a thesis research pipeline, NOT a general data processing project.**
+
+All econometric scripts and regression outputs MUST generate complete "paper bundles" suitable for academic publication. Agents implementing or modifying regression scripts MUST research and include:
+
+### Required Output Components
+
+1. **Sample Descriptive Statistics**
+   - Tailored to each input dataset
+   - Summary statistics (N, mean, std, min, max, quartiles)
+   - Variable definitions and sources
+   - Sample construction flow
+
+2. **Regression Tables in Academic Format**
+   - LaTeX vertical style (NOT horizontal)
+   - Traditional corporate finance table formatting
+   - Standard errors in parentheses below coefficients
+   - Significance stars (* p<0.10, ** p<0.05, *** p<0.01)
+   - Fixed effects indicators (Yes/No or checkmarks)
+   - Observation counts, R-squared values
+   - Variable names matching paper notation
+
+3. **Additional Academic Best Practices** (research before implementing)
+   - Correlation matrices with significance
+   - Variance Inflation Factors (VIF) for multicollinearity
+   - First-stage F-statistics for IV/2SLS
+   - Economic significance (standardized coefficients)
+   - Robustness check summaries
+   - Subsample analyses where appropriate
+
+### Agent Responsibilities
+
+When working on ANY regression or econometric code:
+1. **Research first**: Look up current best practices for academic table formatting in finance journals
+2. **Reference existing standards**: Check SCRIPT_DOCSTANDARD.md and any existing regression outputs
+3. **Generate complete bundles**: Never output just coefficients — include all supporting statistics
+4. **Format for publication**: Tables should be copy-paste ready for LaTeX manuscripts
+
 ## Constraints
 
 - **Reproducibility**: All outputs must be bitwise-identical for same inputs/config (seed 42, single thread)
