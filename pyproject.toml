@@ -125,52 +125,87 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
+# ==============================================================================
+# mypy Configuration (TYPE-03: Tier-based strictness)
+# ==============================================================================
+# See: docs/CODE_QUALITY_STANDARD.md Section 3.2
+
 [tool.mypy]
 python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
-ignore_missing_imports = false  # Now we have stubs for linearmodels
 check_untyped_defs = true
+disallow_incomplete_defs = true
 
-# Progressive rollout: exclude most scripts initially
-exclude = [
-    "2_Scripts/[^s]*",  # Exclude all non-shared scripts
-    "tests/",
-    ".___archive/",
-]
-
-# Add stubs to search path
-mypy_path = "$MYPY_CONFIG_FILE_DIR/2_Scripts/stubs"
+# Path configuration - use src-layout
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 
 # Follow imports for type checking
 follow_imports = "normal"
 
-# Disable incremental mode initially to get fresh results
-# no_incremental = true  # Uncomment for debugging
+# Show error codes for easier fixing
+show_error_codes = true
 
-# Warnings to ignore for progressive adoption
-disable_error_code = [
-    "no-untyped-def",      # Allow untyped functions in old code
-    "no-untyped-call",      # Allow calls to untyped functions
+# Pretty output for better readability
+pretty = true
+
+# Exclusions
+exclude = [
+    "tests/",
+    ".___archive/",
+    "2_Scripts/",  # Legacy scripts not in src-layout
 ]
 
-# Enable strict mode for new shared modules only
+# ==============================================================================
+# Tier 1: Core Shared Modules (100% coverage, strict mode)
+# ==============================================================================
 [[tool.mypy.overrides]]
-module = "f1d.shared.observability.*"
+module = ["f1d.shared.*"]
 strict = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
 
-# Gradually enable stricter checking for typed modules
+# ==============================================================================
+# Tier 2: Stage-Specific Modules (80%+ coverage, moderate mode)
+# ==============================================================================
 [[tool.mypy.overrides]]
-module = "f1d.shared.panel_ols"
-warn_return_any = false  # Too strict for gradual adoption
-disallow_untyped_defs = false  # Allow untyped defs initially
-
-[[tool.mypy.overrides]]
-module = "f1d.shared.iv_regression"
-warn_return_any = false
+module = [
+    "f1d.sample.*",
+    "f1d.text.*",
+    "f1d.financial.*",
+    "f1d.econometric.*",
+]
 disallow_untyped_defs = false
-
-[[tool.mypy.overrides]]
-module = "f1d.shared.financial_utils"
+disallow_any_generics = false
+disallow_untyped_calls = false
 warn_return_any = false
-disallow_untyped_defs = false
+allow_untyped_defs = true
+
+# Allow some flexibility for complex pandas operations
+allow_any_expr = true
+allow_any_unimported = true
+
+# ==============================================================================
+# Third-Party Libraries (ignore missing type stubs)
+# ==============================================================================
+[[tool.mypy.overrides]]
+module = [
+    "pandas.*",
+    "numpy.*",
+    "linearmodels.*",
+    "scipy.*",
+    "statsmodels.*",
+    "yaml.*",
+]
+ignore_missing_imports = true
