@@ -44,6 +44,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -57,7 +58,6 @@ sys.path.insert(0, str(script_dir))
 from f1d.shared.observability_utils import (
     DualWriter,
     get_process_memory_mb,
-    save_stats,
 )
 from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.path_utils import (
@@ -130,7 +130,7 @@ SPECS = {
 # Robustness Configuration
 # =============================================================================
 
-ROBUSTNESS_CONFIG = {
+ROBUSTNESS_CONFIG: Dict[str, Any] = {
     "alternative_dvs": {
         "roll_spread": "Roll (1984) implicit spread",
         "bidask_spread": "Bid-ask spread (if available)",
@@ -1067,7 +1067,7 @@ def generate_results_markdown(
             r for r in robustness_results if r.get("dv_type") != "Amihud (2002)"
         ]
         if alt_dv_results:
-            dv_groups = {}
+            dv_groups: Dict[str, Any] = {}
             for r in alt_dv_results:
                 dv_type = r.get("dv_type", "Unknown")
                 if dv_type not in dv_groups:
@@ -1092,7 +1092,7 @@ def generate_results_markdown(
 
         alt_iv_results = [r for r in robustness_results if r.get("iv_type") is not None]
         if alt_iv_results:
-            iv_groups = {}
+            iv_groups: Dict[str, Any] = {}
             for r in alt_iv_results:
                 iv_type = r.get("iv_type", "Unknown")
                 if iv_type not in iv_groups:
@@ -1117,7 +1117,7 @@ def generate_results_markdown(
 
         timing_results = [r for r in robustness_results if r.get("timing") is not None]
         if timing_results:
-            timing_groups = {}
+            timing_groups: Dict[str, Any] = {}
             for r in timing_results:
                 timing = r.get("timing", "Unknown")
                 if timing not in timing_groups:
@@ -1219,7 +1219,7 @@ def generate_results_markdown(
     return output_path
 
 
-def save_stats(stats, output_dir, dw=None):
+def save_stats(stats: Dict[str, Any], output_dir: Path, dw: Any = None) -> Path:
     """Save statistics dictionary to JSON file"""
     stats_path = output_dir / "stats.json"
     with open(stats_path, "w") as f:

@@ -25,6 +25,7 @@ Date: 2026-02-11
 import logging
 import sys
 from pathlib import Path
+from typing import Any, TextIO
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -40,7 +41,10 @@ class DualWriter:
     Attributes:
         terminal: Reference to sys.stdout
         log: File handle for log file
+        original_stdout: Stored original stdout for restoration
     """
+
+    original_stdout: Any  # TextIO | None
 
     def __init__(self, log_path: Path):
         """
@@ -49,6 +53,7 @@ class DualWriter:
         Args:
             log_path: Path to log file
         """
+        self.original_stdout = sys.stdout
         self.terminal = sys.stdout
         self.log = open(log_path, "w", encoding="utf-8")
 

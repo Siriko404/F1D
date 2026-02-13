@@ -42,6 +42,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 
@@ -111,7 +112,7 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
+    required_files: Dict[str, Any] = {}
 
     required_steps = {
         "2.2_ConstructVariables": "linguistic_variables.parquet",
@@ -157,7 +158,7 @@ MODEL_SPECS = {
     },
 }
 
-CONFIG = {
+CONFIG: Dict[str, Any] = {
     "firm_controls": ["StockRet", "MarketRet", "EPS_Growth", "SurpDec"],
     "min_calls_per_ceo": 5,
     "year_start": 2002,
@@ -662,10 +663,14 @@ def main(year_start=None, year_end=None):
     print(f"Years: {CONFIG['year_start']}-{CONFIG['year_end']}")
 
     # Initialize stats dict for observability
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.1.4_EstimateCeoTone",
         "timestamp": timestamp,
-        "timing": {"start_iso": start_time.isoformat(), "end_iso": "", "duration_seconds": 0},
+        "timing": {
+            "start_iso": start_time.isoformat(),
+            "end_iso": "",
+            "duration_seconds": 0,
+        },
         "missing_values": {},
         "regressions": {},
     }

@@ -43,6 +43,7 @@ import argparse
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 
@@ -115,7 +116,7 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
+    required_files: Dict[str, Any] = {}
 
     required_steps = {
         "2.2_ConstructVariables": "linguistic_variables.parquet",
@@ -145,7 +146,7 @@ EXTENDED_CONTROLS = [
 ]
 
 # Model configurations
-MODELS = {
+MODELS: Dict[str, Dict[str, Any]] = {
     "Manager_Baseline": {
         "dependent_var": "Manager_QA_Uncertainty_pct",
         "linguistic_controls": [
@@ -188,7 +189,7 @@ MODELS = {
     },
 }
 
-GLOBAL_CONFIG = {
+GLOBAL_CONFIG: Dict[str, Any] = {
     "min_calls_per_ceo": 5,
     "year_start": 2002,
     "year_end": 2018,
@@ -629,7 +630,7 @@ def main(year_start=None, year_end=None):
     start_iso = start_time.isoformat()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "4.1.2_EstimateCeoClarity_Extended",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
