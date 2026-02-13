@@ -2128,3 +2128,571 @@ This section aligns with:
 4. **Explicit is better:** Zen of Python
 
 ---
+
+## 5. Error Handling (CODE-04)
+
+This section defines the error handling patterns for the F1D project, including custom exceptions and the no-bare-except policy.
+
+**Source:** [PEP 760 - No More Bare Excepts](https://peps.python.org/pep-0760/) (2024)
+
+### 5.1 Custom Exceptions (CODE-04)
+
+Use a hierarchy of custom exceptions to provide clear error context and enable specific error handling.
+
+#### Exception Hierarchy
+
+```python
+# src/f1d/shared/exceptions.py
+"""Custom exceptions for F1D pipeline."""
+
+from typing import Optional, List
+
+
+class F1DError(Exception):
+    """Base exception for all F1D-specific errors.
+
+    All custom exceptions in the F1D project should inherit from
+    this base class to enable catching all F1D errors with a
+    single except clause.
+
+    Attributes:
+        message: Human-readable error description.
+        details: Optional additional context about the error.
+    """
+
+    def __init__(self, message: str, details: Optional[str] = None):
+        self.message = message
+        self.details = details
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        if self.details:
+            return f"{self.message} - {self.details}"
+        return self.message
+
+
+# =============================================================================
+# Data Validation Errors
+# =============================================================================
+
+class DataValidationError(F1DError):
+    """Raised when data validation fails.
+
+    Indicates that input data does not meet expected format,
+    constraints, or quality requirements.
+
+    Attributes:
+        column: Name of column that failed validation.
+        reason: Specific reason for validation failure.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        column: Optional[str] = None,
+        reason: Optional[str] = None,
+    ):
+        self.column = column
+        self.reason = reason
+        details = f"Column: {column}, Reason: {reason}" if column else None
+        super().__init__(message, details)
+
+
+class FinancialCalculationError(F1DError):
+    """Raised when financial metric calculation fails.
+
+    Indicates an error in computing financial variables such as
+    cash holdings, leverage, or investment measures.
+
+    Attributes:
+        metric: Name of the metric that failed to calculate.
+        gvkey: Firm identifier if available.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        metric: Optional[str] = None,
+        gvkey: Optional[str] = None,
+    ):
+        self.metric = metric
+        self.gvkey = gvkey
+        details = f"Metric: {metric}, GVKEY: {gvkey}" if metric else None
+        super().__init__(message, details)
+
+
+# =============================================================================
+# Regression Errors
+# =============================================================================
+
+class CollinearityError(F1DError):
+    """Raised when perfect collinearity is detected.
+
+    Indicates that the design matrix has perfect multicollinearity,
+    making regression estimation impossible.
+
+    Attributes:
+        variables: List of collinear variable names.
+    """
+
+    def __init__(self, message: str, variables: Optional[List[str]] = None):
+        self.variables = variables or []
+        details = f"Variables: {', '.join(variables)}" if variables else None
+        super().__init__(message, details)
+
+
+class MulticollinearityError(F1DError):
+    """Raised when VIF threshold is exceeded.
+
+    Indicates problematic (but not perfect) multicollinearity
+    detected through variance inflation factor analysis.
+
+    Attributes:
+        variable: Variable with high VIF.
+        vif_value: The calculated VIF value.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        variable: Optional[str] = None,
+        vif_value: Optional[float] = None,
+    ):
+        self.variable = variable
+        self.vif_value = vif_value
+        details = f"Variable: {variable}, VIF: {vif_value:.2f}" if variable else None
+        super().__init__(message, details)
+
+
+class RegressionValidationError(F1DError):
+    """Raised when regression inputs fail validation.
+
+    Indicates missing data, incorrect types, or invalid
+    regression specifications.
+
+    Attributes:
+        field: Field that failed validation.
+        expected: Expected format or type.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        field: Optional[str] = None,
+        expected: Optional[str] = None,
+    ):
+        self.field = field
+        self.expected = expected
+        details = f"Field: {field}, Expected: {expected}" if field else None
+        super().__init__(message, details)
+
+
+# =============================================================================
+# Path and IO Errors
+# =============================================================================
+
+class PathValidationError(F1DError):
+    """Raised when path validation fails.
+
+    Indicates that a path does not meet expected criteria
+    such as existence, accessibility, or format.
+
+    Attributes:
+        path: The path that failed validation.
+    """
+
+    def __init__(self, message: str, path: Optional[str] = None):
+        self.path = path
+        details = f"Path: {path}" if path else None
+        super().__init__(message, details)
+
+
+class OutputResolutionError(F1DError):
+    """Raised when output directory cannot be resolved.
+
+    Indicates failure to find or create an output directory,
+    typically when looking for the latest dated directory.
+
+    Attributes:
+        base_path: Base directory searched.
+    """
+
+    def __init__(self, message: str, base_path: Optional[str] = None):
+        self.base_path = base_path
+        details = f"Base path: {base_path}" if base_path else None
+        super().__init__(message, details)
+
+
+# =============================================================================
+# Configuration Errors
+# =============================================================================
+
+class EnvValidationError(F1DError):
+    """Raised when environment validation fails.
+
+    Indicates missing or invalid environment variables
+    required for pipeline execution.
+
+    Attributes:
+        env_var: Name of the environment variable.
+    """
+
+    def __init__(self, message: str, env_var: Optional[str] = None):
+        self.env_var = env_var
+        details = f"Environment variable: {env_var}" if env_var else None
+        super().__init__(message, details)
+
+
+# =============================================================================
+# Instrumental Variable Errors
+# =============================================================================
+
+class WeakInstrumentError(F1DError):
+    """Raised when instrumental variables are weak.
+
+    Indicates that the first-stage F-statistic is below
+    the threshold for strong instruments.
+
+    Attributes:
+        f_statistic: The calculated F-statistic value.
+        threshold: The threshold that was not met.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        f_statistic: Optional[float] = None,
+        threshold: float = 10.0,
+    ):
+        self.f_statistic = f_statistic
+        self.threshold = threshold
+        details = f"F-statistic: {f_statistic:.2f}, Threshold: {threshold}" if f_statistic else None
+        super().__init__(message, details)
+```
+
+### 5.2 Current Exceptions in Codebase
+
+The F1D codebase currently has **11 custom exceptions** across **6 files**:
+
+| Exception | Location | Purpose |
+|-----------|----------|---------|
+| `CollinearityError` | panel_ols.py, diagnostics.py | Perfect collinearity |
+| `MulticollinearityError` | panel_ols.py, diagnostics.py | High VIF values |
+| `PathValidationError` | path_utils.py | Path validation failure |
+| `OutputResolutionError` | path_utils.py | Output directory not found |
+| `DataValidationError` | data_validation.py | Data quality issues |
+| `FinancialCalculationError` | data_validation.py | Financial metric errors |
+| `EnvValidationError` | env_validation.py | Environment variable issues |
+| `WeakInstrumentError` | iv_regression.py | Weak IV detection |
+| `RegressionValidationError` | regression_validation.py | Regression input errors |
+
+**Recommendation:** Consolidate all custom exceptions into `src/f1d/shared/exceptions.py` for central management and consistent documentation.
+
+### 5.3 No Bare Except (Critical)
+
+**PEP 760 (2024)** introduces a mandate to eliminate bare `except:` clauses. Bare excepts catch ALL exceptions, including system exceptions that should not be caught.
+
+#### Anti-pattern (NEVER use)
+
+```python
+# DANGEROUS: Bare except catches everything
+try:
+    operation()
+except:  # WRONG - catches SystemExit, KeyboardInterrupt, GeneratorExit
+    pass
+
+# This can prevent:
+# - Clean shutdown (SystemExit)
+# - Keyboard interrupts (KeyboardInterrupt)
+# - Generator cleanup (GeneratorExit)
+# - Debugging (makes errors invisible)
+```
+
+#### Correct Patterns
+
+**1. Catch specific exceptions:**
+
+```python
+# GOOD: Catch specific exception
+try:
+    df = pd.read_parquet(path)
+except FileNotFoundError as e:
+    logger.error(f"File not found: {path}")
+    raise DataValidationError(f"Required file missing: {path}") from e
+```
+
+**2. Catch multiple specific exceptions:**
+
+```python
+# GOOD: Multiple specific exceptions
+try:
+    result = run_regression(df, spec)
+except (CollinearityError, MulticollinearityError) as e:
+    logger.error(f"Regression failed: {e}")
+    raise
+```
+
+**3. Catch Exception (not bare) if needed:**
+
+```python
+# ACCEPTABLE: Catch Exception (not base except)
+try:
+    risky_operation()
+except Exception as e:
+    logger.error(f"Unexpected error: {e}")
+    raise DataValidationError(f"Operation failed: {e}") from e
+
+# Note: This still allows SystemExit, KeyboardInterrupt to propagate
+```
+
+**4. Re-raise with context:**
+
+```python
+# GOOD: Re-raise with exception chaining
+try:
+    data = load_config(path)
+except FileNotFoundError as e:
+    raise EnvValidationError(
+        f"Configuration file not found: {path}"
+    ) from e
+
+# The 'from e' preserves the original traceback
+```
+
+**5. Handle and continue (when appropriate):**
+
+```python
+# GOOD: Handle specific error and continue
+for file in files:
+    try:
+        process_file(file)
+    except DataValidationError as e:
+        logger.warning(f"Skipping {file}: {e}")
+        continue  # Continue with next file
+```
+
+### 5.4 Exception Handling Rules
+
+1. **Never use bare `except:`** (PEP 760)
+2. **Always specify exception type(s)**
+3. **Either handle the exception or re-raise it**
+4. **Use `raise ... from e` for exception chaining**
+5. **Log exceptions before re-raising when appropriate**
+6. **Create specific custom exceptions for domain errors**
+
+### 5.5 Exception Handling Patterns
+
+#### Pattern 1: Validate and Raise
+
+```python
+def load_panel_data(path: Path) -> pd.DataFrame:
+    """Load panel data with validation.
+
+    Args:
+        path: Path to panel data file.
+
+    Returns:
+        Loaded DataFrame.
+
+    Raises:
+        PathValidationError: If path doesn't exist.
+        DataValidationError: If data doesn't meet requirements.
+    """
+    # Validate path
+    if not path.exists():
+        raise PathValidationError(
+            f"Panel data file not found: {path}",
+            path=str(path),
+        )
+
+    # Load data
+    try:
+        df = pd.read_parquet(path)
+    except Exception as e:
+        raise DataValidationError(
+            f"Failed to load panel data: {e}",
+            details=str(e),
+        ) from e
+
+    # Validate content
+    required_cols = ["gvkey", "year", "uncertainty"]
+    missing = [c for c in required_cols if c not in df.columns]
+    if missing:
+        raise DataValidationError(
+            f"Missing required columns: {missing}",
+            column=", ".join(missing),
+        )
+
+    return df
+```
+
+#### Pattern 2: Try-Except-Log-Reraise
+
+```python
+def run_regression_safely(
+    df: pd.DataFrame,
+    spec: RegressionSpec,
+) -> RegressionResults:
+    """Run regression with comprehensive error handling.
+
+    Args:
+        df: Panel data for regression.
+        spec: Regression specification.
+
+    Returns:
+        Regression results.
+
+    Raises:
+        CollinearityError: If perfect collinearity detected.
+        MulticollinearityError: If VIF threshold exceeded.
+        RegressionValidationError: If inputs invalid.
+    """
+    logger = get_logger(__name__)
+
+    try:
+        results = run_panel_ols(df, spec)
+    except CollinearityError as e:
+        logger.error(f"Collinearity detected: {e.variables}")
+        raise
+    except MulticollinearityError as e:
+        logger.warning(f"High VIF for {e.variable}: {e.vif_value:.2f}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected regression error: {e}")
+        raise RegressionValidationError(
+            f"Regression failed: {e}",
+            field="unknown",
+            expected="valid regression inputs",
+        ) from e
+
+    return results
+```
+
+#### Pattern 3: Cleanup in Finally
+
+```python
+def process_with_cleanup(input_path: Path, output_path: Path) -> None:
+    """Process data with guaranteed cleanup.
+
+    Args:
+        input_path: Path to input file.
+        output_path: Path for output file.
+    """
+    temp_file = None
+
+    try:
+        # Create temp file
+        temp_file = output_path.with_suffix(".tmp")
+        temp_file.touch()
+
+        # Process data
+        df = pd.read_parquet(input_path)
+        result = transform_data(df)
+        result.to_parquet(temp_file)
+
+        # Atomic rename
+        temp_file.rename(output_path)
+
+    except Exception as e:
+        logger.error(f"Processing failed: {e}")
+        # Clean up temp file on failure
+        if temp_file and temp_file.exists():
+            temp_file.unlink()
+        raise
+
+    finally:
+        # Always clean up temp file
+        if temp_file and temp_file.exists():
+            temp_file.unlink()
+```
+
+### 5.6 Error Handling Anti-Patterns
+
+#### Anti-pattern 1: Catching and Doing Nothing
+
+```python
+# BAD: Silent failure
+try:
+    process_data()
+except:  # Also bare except!
+    pass  # Error is silently ignored
+
+# GOOD: Log the error at minimum
+try:
+    process_data()
+except DataValidationError as e:
+    logger.error(f"Data processing failed: {e}")
+    raise
+```
+
+#### Anti-pattern 2: Catching Too Broadly
+
+```python
+# BAD: Catching Exception when specific type is known
+try:
+    df = pd.read_parquet(path)
+except Exception as e:
+    ...
+
+# GOOD: Catch specific exception
+try:
+    df = pd.read_parquet(path)
+except FileNotFoundError as e:
+    raise PathValidationError(f"File not found: {path}") from e
+```
+
+#### Anti-pattern 3: Losing Traceback
+
+```python
+# BAD: Losing original traceback
+try:
+    risky_operation()
+except ValueError as e:
+    raise CustomError(str(e))  # Original traceback lost
+
+# GOOD: Preserve traceback with exception chaining
+try:
+    risky_operation()
+except ValueError as e:
+    raise CustomError(str(e)) from e  # Original traceback preserved
+```
+
+### 5.7 Error Handling Checklist
+
+When handling errors, ensure:
+
+- [ ] No bare `except:` clauses
+- [ ] Specific exception types caught
+- [ ] Either handle or re-raise (not both ignored)
+- [ ] `raise ... from e` for exception chaining
+- [ ] Errors logged before re-raising
+- [ ] Custom exceptions inherit from F1DError
+- [ ] Custom exceptions have descriptive names ending in "Error"
+- [ ] Custom exceptions include relevant context attributes
+- [ ] Cleanup in `finally` block when needed
+
+### 5.8 Rationale
+
+**Why Custom Exceptions?**
+
+1. **Clear error context:** Specific exceptions indicate what went wrong
+2. **Selective handling:** Callers can catch specific error types
+3. **Documentation:** Exception types document failure modes
+4. **Debugging:** Stack traces point to exception source
+
+**Why No Bare Except (PEP 760)?**
+
+1. **System stability:** Catches SystemExit, KeyboardInterrupt incorrectly
+2. **Debugging:** Makes errors invisible and hard to trace
+3. **Best practice:** Explicit is better than implicit
+4. **Future standard:** PEP 760 makes this official Python policy
+
+**Why Exception Chaining?**
+
+1. **Full context:** Preserves original traceback
+2. **Debugging:** Can trace error to root cause
+3. **Documentation:** Shows error transformation chain
+4. **Python 3 feature:** Built-in language support
+
+---
+---
