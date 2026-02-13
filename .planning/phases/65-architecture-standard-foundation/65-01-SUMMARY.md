@@ -187,6 +187,14 @@ All 35 requirements for v5.0 milestone ARCH-01 through ARCH-05 are now defined.
 - [x] No reference to V2 as "canonical" or "single active version"
 - [x] Both V1 and V2 described as active pipeline variants
 
+## Post-Correction Self-Check: PASSED
+
+- [x] docs/ARCHITECTURE_STANDARD.md exists
+- [x] Commit adf8fb0 verified
+- [x] No references to V1 as "legacy" or "archived" found
+- [x] No references to V2 as "canonical version" found
+- [x] SUMMARY.md updated with correction details
+
 ---
 *Phase: 65-architecture-standard-foundation*
 *Completed: 2026-02-13*
