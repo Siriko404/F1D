@@ -31,6 +31,8 @@ Date: 2026-02-11
 ================================================================================
 """
 
+from typing import Any, Dict, Optional
+
 import pandas as pd
 
 try:
@@ -46,8 +48,8 @@ def run_fixed_effects_ols(
     formula: str,
     sample_name: str,
     cov_type: str = "HC1",
-    cluster_col: str = None,
-):
+    cluster_col: Optional[str] = None,
+) -> Any:
     """
     Run fixed effects OLS regression with statsmodels.
 
@@ -95,7 +97,7 @@ def extract_ceo_fixed_effects(model, ceo_col: str = "ceo_id") -> pd.Series:
     return fe_params
 
 
-def extract_regression_diagnostics(model) -> dict:
+def extract_regression_diagnostics(model: Any) -> Dict[str, Any]:
     """
     Extract common regression diagnostics from fitted model.
 

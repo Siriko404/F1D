@@ -39,16 +39,16 @@ from typing import Any, Dict, List, Optional, Union
 
 # Try importing linearmodels, provide helpful error if missing
 try:
-    from linearmodels.iv.model import IV2SLS  # type: ignore[import-untyped]
-    from linearmodels.iv.results import IVResults  # type: ignore[import-untyped]
+    from linearmodels.iv.model import IV2SLS
+    from linearmodels.iv.results import IVResults
 
     LINEARMODELS_AVAILABLE = True
 except ImportError:
     LINEARMODELS_AVAILABLE = False
-    IV2SLS = None  # type: ignore
-    IVResults = None  # type: ignore
+    IV2SLS = None  # type: ignore[misc,assignment]
+    IVResults = None  # type: ignore[misc,assignment]
 
-import pandas as pd  # type: ignore[import-untyped]
+import pandas as pd
 
 
 class WeakInstrumentError(Exception):
@@ -236,12 +236,12 @@ def run_iv2sls(
         instruments=df_reg[instruments],
     )
 
-    result = model.fit(**cov_kwargs)
+    result = model.fit(**cov_kwargs)  # type: ignore[arg-type]
 
     # Extract first-stage diagnostics
     # linearmodels IV2SLS results have first_stage attribute
     first_stage = result.first_stage  # type: ignore[attr-defined]
-    diagnostics_df = first_stage.diagnostics  # type: ignore[attr-defined]
+    diagnostics_df = first_stage.diagnostics
 
     # Get first-stage F-stat for endogenous variable
     if endog in diagnostics_df.index:
@@ -255,9 +255,9 @@ def run_iv2sls(
         )
     else:
         # If endog not directly in diagnostics, try alternative access
-        f_stat = float(first_stage.individual[endog].f_stat)  # type: ignore[attr-defined]
+        f_stat = float(first_stage.individual[endog].f_stat)
         f_pval = None
-        partial_rsq = float(first_stage.individual[endog].partial_rsquared)  # type: ignore[attr-defined]
+        partial_rsq = float(first_stage.individual[endog].partial_rsquared)
         shea_rsq = None
 
     # First-stage F validation
@@ -301,13 +301,14 @@ def run_iv2sls(
         overid_test["stat"] = float(sargan.stat)
         overid_test["pval"] = float(sargan.pval)
         overid_test["valid"] = True
-        overid_test["reject_null"] = sargan.pval < 0.05  # type: ignore[assignment]
+        reject_null = sargan.pval < 0.05
+        overid_test["reject_null"] = reject_null
 
         # Interpret results
         # H0: Instruments are valid (uncorrelated with error, exogenous)
         # Reject H0 (p < 0.05) -> instruments may be invalid
-        if overid_test["reject_null"]:  # type: ignore[comparison-overlap]
-            interpretation = (  # type: ignore[assignment]
+        if reject_null:
+            interpretation = (
                 "p < 0.05: instruments may be invalid (correlated with error)"
             )
             warnings_list.append(
@@ -404,9 +405,9 @@ def run_iv2sls(
         # first_stage is a FirstStageResults object
         # Access predictions via the fitted first-stage model
         if hasattr(first_stage, "individual"):
-            first_stage_model = first_stage.individual[endog]  # type: ignore[attr-defined]
+            first_stage_model = first_stage.individual[endog]
             if hasattr(first_stage_model, "fitted_values"):
-                first_stage_dict["predictions"] = first_stage_model.fitted_values  # type: ignore[attr-defined]
+                first_stage_dict["predictions"] = first_stage_model.fitted_values
             else:
                 # Try to get predictions differently
                 first_stage_dict["predictions"] = None

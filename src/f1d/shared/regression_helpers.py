@@ -29,7 +29,7 @@ Date: 2026-02-11
 """
 
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -38,7 +38,7 @@ from f1d.shared.regression_validation import validate_sample_size
 
 
 def load_reg_data(
-    input_file: Path, required_columns: List[str], filters: Optional[List[Dict]] = None
+    input_file: Path, required_columns: List[str], filters: Optional[List[Dict[str, Any]]] = None
 ) -> pd.DataFrame:
     """
     Load and filter regression data from input file.
@@ -206,7 +206,7 @@ def _assign_industry_codes(
 def build_regression_sample(
     df: pd.DataFrame,
     required_vars: Dict[str, List[str]],
-    filters: Optional[List[Dict]] = None,
+    filters: Optional[List[Dict[str, Any]]] = None,
     year_range: Optional[Tuple[int, int]] = None,
     min_sample_size: int = 100,
     max_sample_size: Optional[int] = None,
@@ -362,7 +362,7 @@ def build_regression_sample(
     return sample
 
 
-def specify_regression_models(model_configs: List[Dict[str, any]]) -> Dict[str, any]:
+def specify_regression_models(model_configs: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Specify regression model configurations.
 
@@ -394,7 +394,7 @@ def prepare_regression_data(
     dependent_var: str,
     linguistic_controls: List[str],
     firm_controls: List[str],
-    stats: Optional[Dict] = None,
+    stats: Optional[Dict[str, Any]] = None,
 ) -> pd.DataFrame:
     """
     Filter to complete cases and assign industry samples.

@@ -74,11 +74,11 @@ class MulticollinearityError(Exception):
 
 # Import linearmodels - handle gracefully if not available
 try:
-    from linearmodels.panel.model import PanelOLS  # type: ignore[import-untyped]
+    from linearmodels.panel.model import PanelOLS
 
     LINEARMODELS_AVAILABLE = True
 except ImportError:
-    PanelOLS = None  # type: ignore
+    PanelOLS = None  # type: ignore[misc,assignment]
     LINEARMODELS_AVAILABLE = False
 
 
@@ -462,19 +462,19 @@ def run_panel_ols(
     if check_collinearity:
         # Import VIF computation
         try:
-            from f1d.shared.diagnostics import compute_vif as compute_vif_imported  # type: ignore[import-untyped]
+            from f1d.shared.diagnostics import compute_vif as compute_vif_imported
             compute_vif = compute_vif_imported
         except ImportError:
             # If diagnostics module not yet created, compute here
             try:
-                from statsmodels.stats.outliers_influence import (  # type: ignore[import-untyped]
+                from statsmodels.stats.outliers_influence import (
                     variance_inflation_factor,
                 )
-                from statsmodels.tools.tools import add_constant  # type: ignore[import-untyped]
+                from statsmodels.tools.tools import add_constant
 
-                def compute_vif(  # type: ignore[no-redef]
+                def compute_vif(  # type: ignore[misc]
                     df_local: pd.DataFrame,
-                    cols: list[str],
+                    cols: List[str],
                     add_constant_col: bool = True,
                     vif_threshold_local: float = 5.0,
                 ) -> Any:
@@ -494,7 +494,7 @@ def run_panel_ols(
                             )
                     return pd.DataFrame(vif_data)
             except ImportError:
-                compute_vif = None  # type: ignore
+                compute_vif = None
 
         if compute_vif is not None:
             try:

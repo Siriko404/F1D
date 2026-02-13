@@ -28,9 +28,8 @@ Author: Thesis Author
 Date: 2026-02-11
 ================================================================================
 """
-Deterministic: True
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -43,7 +42,7 @@ class RegressionValidationError(Exception):
 
 
 def validate_columns(
-    df: pd.DataFrame, required_columns: List[str], optional_columns: List[str] = None
+    df: pd.DataFrame, required_columns: List[str], optional_columns: Optional[List[str]] = None
 ) -> None:
     """
     Validate that all required columns exist in DataFrame.
@@ -101,7 +100,7 @@ def validate_data_types(df: pd.DataFrame, type_requirements: Dict[str, str]) -> 
         col_type = df[col].dtype
         expected_types = type_map.get(expected_type, [])
 
-        if not any(np.issubdtype(col_type, t) for t in expected_types):
+        if not any(np.issubdtype(col_type, t) for t in expected_types):  # type: ignore[attr-defined]
             raise RegressionValidationError(
                 f"Column '{col}' has unexpected type: {col_type}. "
                 f"Expected: {expected_type}"
@@ -141,8 +140,8 @@ def validate_no_missing_independent(
 def validate_regression_data(
     df: pd.DataFrame,
     formula: str,
-    required_columns: List[str] = None,
-    type_requirements: Dict[str, str] = None,
+    required_columns: Optional[List[str]] = None,
+    type_requirements: Optional[Dict[str, str]] = None,
     allow_na_independent: float = 0.0,
 ) -> pd.DataFrame:
     """
