@@ -48,6 +48,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -978,7 +979,7 @@ def prepare_final_dataset(df, logger):
 # ==============================================================================
 
 
-def main():
+def main() -> int:
     """Main execution function"""
     parser = argparse.ArgumentParser(
         description="Construct H5 Analyst Dispersion Variables",
@@ -1033,7 +1034,7 @@ Examples:
         logger.write("=" * 80)
 
     # Stats collection
-    stats = {
+    stats: Dict[str, Any] = {
         "timestamp": timestamp,
         "script_id": "3.5_H5Variables",
         "start_time": datetime.now().isoformat(),

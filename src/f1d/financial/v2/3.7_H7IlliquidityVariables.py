@@ -48,6 +48,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, Tuple
 
 import numpy as np
 import pandas as pd
@@ -93,7 +94,7 @@ def load_config():
 
 
 # Default configuration
-DEFAULT_CONFIG = {
+DEFAULT_CONFIG: Dict[str, Any] = {
     "year_range": (2002, 2018),
     "min_trading_days": 50,
     "min_years_per_firm": 3,
@@ -648,7 +649,7 @@ def check_prerequisites(paths):
 # ==============================================================================
 
 
-def main():
+def main() -> None:
     """Main execution"""
     args = parse_arguments()
 
@@ -699,7 +700,7 @@ def main():
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.7_H7IlliquidityVariables",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0},
