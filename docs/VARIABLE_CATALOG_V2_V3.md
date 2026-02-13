@@ -28,7 +28,11 @@
 All V2/V3 variables are **deterministically constructed** from source data:
 
 - **Source Data:** Compustat fundamentals, CRSP daily stock data, IBES analyst forecasts, SDC M&A database, Hassan policy risk index
-- **Construction Scripts:** Version-controlled Python scripts in `2_Scripts/3_Financial_V2/` and `2_Scripts/5_Financial_V3/`
+- **Construction Scripts:** Version-controlled Python scripts in `2_Scripts/3_Financial_V2/` and `2_Scripts/4_Econometric_V2/`
+
+**Note:** V3 scripts were consolidated into V2 in Phase 64 (2026-02-12). H9 scripts are now located at:
+- `2_Scripts/3_Financial_V2/3.11_H9_StyleFrozen.py`, `3.12_H9_PRiskFY.py`, `3.13_H9_AbnormalInvestment.py`
+- `2_Scripts/4_Econometric_V2/4.11_H9_Regression.py`
 - **Reproducibility:** Timestamp-based output directories ensure full reproducibility
 - **Winsorization:** 1%/99% winsorization applied to all continuous variables
 
@@ -351,15 +355,15 @@ logit(P(Takeover_t+1)) = beta0 + beta1*Uncertainty_t + Controls_t + FE
 
 ---
 
-### V3 H9: CEO Style and Policy Risk Interaction (V3)
+### H9: CEO Style and Policy Risk Interaction (formerly V3, now in V2)
 
-**Source Scripts:**
-- `2_Scripts/5_Financial_V3/5.8_H9_StyleFrozen.py`
-- `2_Scripts/5_Financial_V3/5.8_H9_PRiskFY.py`
-- `2_Scripts/5_Financial_V3/5.8_H9_AbnormalInvestment.py`
-- `2_Scripts/5_Financial_V3/5.8_H9_FinalMerge.py`
+**Source Scripts (consolidated to V2 in Phase 64):**
+- `2_Scripts/3_Financial_V2/3.11_H9_StyleFrozen.py`
+- `2_Scripts/3_Financial_V2/3.12_H9_PRiskFY.py`
+- `2_Scripts/3_Financial_V2/3.13_H9_AbnormalInvestment.py`
+- `2_Scripts/4_Econometric_V2/4.11_H9_Regression.py`
 
-**Output File:** `4_Outputs/5_Financial_V3/5.8_H9_FinalMerge/{timestamp}/H9_StyleFrozen.parquet`
+**Output File:** `4_Outputs/5_Financial_V2/{timestamp}/H9_StyleFrozen.parquet` (via 4.11_H9_Regression)
 
 **Variables:**
 

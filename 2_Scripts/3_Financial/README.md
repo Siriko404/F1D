@@ -132,14 +132,14 @@ Event study timing variables:
 | Outputs | Controls for all analyses | DVs and IVs for specific hypotheses |
 | Status | STABLE | STABLE |
 
-### V3 Financial Variables (5_Financial_V3/)
+### H9 Financial Variables (now in 3_Financial_V2/)
 
-Advanced interaction variables for H9:
-- Political risk measures (PRisk)
-- CEO style frozen measures
-- Abnormal investment (Biddle residuals)
+Advanced interaction variables for H9 were consolidated into V2 (Phase 64, 2026-02-12):
+- `3.11_H9_StyleFrozen.py` - CEO style frozen measures
+- `3.12_H9_PRiskFY.py` - Political risk measures (PRisk)
+- `3.13_H9_AbnormalInvestment.py` - Abnormal investment (Biddle residuals)
 
-V3 builds upon V1 controls but adds external risk factors.
+H9 scripts now reside in 3_Financial_V2/ alongside other hypothesis-specific variables.
 
 ---
 

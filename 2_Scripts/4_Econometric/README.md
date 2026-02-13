@@ -218,9 +218,12 @@ Use predicted clarity from first stage.
 | Models | OLS, 2SLS, Hazards | PanelOLS, Logit, Cox PH |
 | Status | STABLE | STABLE |
 
-### V3 Econometric (4_Econometric_V3/)
+### H9 Econometric Scripts (now in 4_Econometric_V2/)
 
-Advanced regressions for H9:
+H9 regression scripts were consolidated into V2 (Phase 64, 2026-02-12):
+- `4.11_H9_Regression.py` - H9 regression analysis with interaction effects
+
+Key features:
 - Interaction effects (PRisk x Uncertainty)
 - Biddle residual specifications
 - Industry-year fixed effects
