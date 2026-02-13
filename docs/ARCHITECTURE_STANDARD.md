@@ -1765,6 +1765,550 @@ python scripts/update_archive_manifest.py
 
 ---
 
+## Appendix A: Migration Guide
+
+This appendix documents the migration path from the current flat layout to the target src-layout architecture.
+
+### Current State (v5.0)
+
+The project currently uses a flat directory structure with numbered prefixes:
+
+```
+F1D/
+├── 1_Inputs/                    # Raw data
+│   ├── transcripts/
+│   ├── compustat/
+│   └── crsp/
+│
+├── 2_Scripts/                   # All source code (flat layout)
+│   ├── 1_Sample/                # Stage 1
+│   │   ├── script_11_*.py
+│   │   ├── script_12_*.py
+│   │   └── ...
+│   ├── 2_Text/                  # Stage 2
+│   │   ├── script_21_*.py
+│   │   ├── script_22_*.py
+│   │   └── ...
+│   ├── 3_Financial/             # Stage 3 (V1 - Legacy)
+│   ├── 3_Financial_V2/          # Stage 3 (V2 - Current)
+│   │   ├── script_31_*.py
+│   │   ├── script_32_*.py
+│   │   └── ...
+│   ├── 4_Econometric/           # Stage 4 (V1 - Legacy)
+│   ├── 4_Econometric_V2/        # Stage 4 (V2 - Current)
+│   │   ├── script_41_*.py
+│   │   ├── script_42_*.py
+│   │   └── ...
+│   └── shared/                  # Shared utilities
+│       ├── path_utils.py
+│       ├── panel_ols.py
+│       └── ...
+│
+├── 3_Logs/                      # Execution logs
+│
+├── 4_Outputs/                   # All outputs (mixed)
+│   ├── sample/                  # Stage outputs
+│   ├── text/
+│   ├── financial/
+│   ├── econometric/
+│   └── ...
+│
+├── config/                      # Configuration
+├── docs/                        # Documentation
+├── tests/                       # Test suite
+├── .___archive/                 # Archive
+├── pyproject.toml               # Tool config only
+└── README.md
+```
+
+### Key Characteristics of Current State
+
+1. **Flat layout:** Scripts directly in `2_Scripts/` subdirectories
+2. **Parallel versions:** V1 and V2 directories coexist
+3. **Mixed outputs:** `4_Outputs/` contains both intermediate and final data
+4. **sys.path hacks:** Many scripts use `sys.path.insert()` for imports
+5. **No package structure:** Code is not organized as a Python package
+
+### Target State (v6.0+)
+
+The target state uses src-layout with proper package structure:
+
+```
+F1D/
+├── src/f1d/                     # Main package (src-layout)
+│   ├── __init__.py
+│   ├── sample/
+│   ├── text/
+│   ├── financial/
+│   ├── econometric/
+│   └── shared/
+│
+├── data/                        # Data directory
+│   ├── raw/                     # (from 1_Inputs/)
+│   ├── interim/                 # (from 4_Outputs/ intermediate)
+│   ├── processed/               # (from 4_Outputs/ final)
+│   └── external/
+│
+├── results/                     # Analysis outputs
+│   ├── figures/
+│   ├── tables/
+│   └── reports/
+│
+├── logs/                        # (from 3_Logs/)
+├── config/
+├── docs/
+├── tests/
+├── .___archive/
+│   └── legacy/                  # V1 scripts
+├── pyproject.toml               # Full config
+└── README.md
+```
+
+### Key Differences
+
+| Aspect | Current | Target |
+|--------|---------|--------|
+| **Layout** | Flat | src-layout |
+| **Package** | None (scripts only) | f1d package with __init__.py |
+| **Versions** | V1 and V2 parallel | Single active version |
+| **Data** | Mixed in 4_Outputs/ | Separated by lifecycle |
+| **Imports** | sys.path hacks | Proper package imports |
+| **Results** | In 4_Outputs/ | Separate results/ directory |
+
+### Migration Phases
+
+#### Phase 1: Create Package Structure
+
+**Goal:** Set up the basic src-layout package structure
+
+**Steps:**
+```bash
+# Create src directory structure
+mkdir -p src/f1d/sample
+mkdir -p src/f1d/text
+mkdir -p src/f1d/financial
+mkdir -p src/f1d/econometric
+mkdir -p src/f1d/shared/observability
+
+# Create __init__.py files
+touch src/f1d/__init__.py
+touch src/f1d/sample/__init__.py
+touch src/f1d/text/__init__.py
+touch src/f1d/financial/__init__.py
+touch src/f1d/econometric/__init__.py
+touch src/f1d/shared/__init__.py
+touch src/f1d/shared/observability/__init__.py
+```
+
+**Verification:**
+```bash
+# Verify package can be imported
+python -c "import f1d; print(f1d.__version__)"
+```
+
+**Commit:** `feat(65-01): create src/f1d package structure`
+
+---
+
+#### Phase 2: Move Shared Utilities
+
+**Goal:** Move shared utilities to the package
+
+**Steps:**
+```bash
+# Move shared utilities
+cp -r 2_Scripts/shared/*.py src/f1d/shared/
+
+# Update __init__.py files
+# Add docstrings, __all__, version
+```
+
+**Code changes:**
+```python
+# src/f1d/__init__.py
+"""F1D Data Processing Pipeline."""
+
+__version__ = "6.0.0"
+
+from f1d.shared.path_utils import get_latest_output_dir
+
+__all__ = ["get_latest_output_dir"]
+
+# src/f1d/shared/__init__.py
+"""Shared utilities for F1D pipeline."""
+
+from f1d.shared.path_utils import get_latest_output_dir
+
+__all__ = ["get_latest_output_dir"]
+```
+
+**Update imports in active code:**
+```python
+# OLD
+import sys
+sys.path.insert(0, '2_Scripts')
+from shared.path_utils import get_latest_output_dir
+
+# NEW
+from f1d.shared.path_utils import get_latest_output_dir
+```
+
+**Verification:**
+```bash
+# Run tests
+pytest tests/
+
+# Verify imports work
+python -c "from f1d.shared.path_utils import get_latest_output_dir"
+```
+
+**Commit:** `refactor(65-01): move shared utilities to src/f1d/shared/`
+
+---
+
+#### Phase 3: Move Stage Scripts
+
+**Goal:** Move V2 stage scripts to package subpackages
+
+**Steps (for each stage):**
+
+**Financial (Stage 3):**
+```bash
+# Move V2 financial scripts
+cp 2_Scripts/3_Financial_V2/script_31_*.py src/f1d/financial/
+cp 2_Scripts/3_Financial_V2/script_32_*.py src/f1d/financial/
+
+# Rename scripts to modules
+mv src/f1d/financial/script_31_filter_data.py src/f1d/financial/filter_data.py
+mv src/f1d/financial/script_32_construct_variables.py src/f1d/financial/variables.py
+
+# Update __init__.py
+```
+
+**Econometric (Stage 4):**
+```bash
+# Similar process
+cp 2_Scripts/4_Econometric_V2/script_41_*.py src/f1d/econometric/
+cp 2_Scripts/4_Econometric_V2/script_42_*.py src/f1d/econometric/
+```
+
+**Update imports:**
+```python
+# OLD
+sys.path.insert(0, '2_Scripts/3_Financial_V2')
+from script_32_construct_variables import construct_variables
+
+# NEW
+from f1d.financial.variables import construct_variables
+```
+
+**Verification:**
+```bash
+# Run stage scripts to verify
+python -m f1d.financial.variables
+
+# Run tests
+pytest tests/
+```
+
+**Commit:** `refactor(65-01): move financial and econometric modules to package`
+
+---
+
+#### Phase 4: Reorganize Data Directories
+
+**Goal:** Reorganize data according to lifecycle stages
+
+**Steps:**
+```bash
+# Create new structure
+mkdir -p data/raw
+mkdir -p data/interim
+mkdir -p data/processed
+mkdir -p data/external
+mkdir -p results/figures
+mkdir -p results/tables
+mkdir -p results/reports
+
+# Move raw data
+mv 1_Inputs/* data/raw/
+
+# Separate 4_Outputs into interim and processed
+# (Manual review required - categorize each subdirectory)
+
+# Move logs
+mv 3_Logs logs
+```
+
+**Update path references in code:**
+```python
+# OLD
+INPUT_DIR = Path("1_Inputs")
+OUTPUT_DIR = Path("4_Outputs")
+LOG_DIR = Path("3_Logs")
+
+# NEW
+DATA_RAW = Path("data/raw")
+DATA_INTERIM = Path("data/interim")
+DATA_PROCESSED = Path("data/processed")
+RESULTS = Path("results")
+LOG_DIR = Path("logs")
+```
+
+**Verification:**
+```bash
+# Verify data moved correctly
+ls -la data/raw/
+ls -la data/processed/
+
+# Run scripts with new paths
+python -m f1d.financial.variables
+```
+
+**Commit:** `refactor(65-01): reorganize data directories by lifecycle`
+
+---
+
+#### Phase 5: Archive V1 Code
+
+**Goal:** Move V1 scripts to archive
+
+**Steps:**
+```bash
+# Create archive structure
+mkdir -p .___archive/legacy
+
+# Move V1 directories
+mv 2_Scripts/3_Financial .___archive/legacy/
+mv 2_Scripts/4_Econometric .___archive/legacy/
+
+# Create ARCHIVED.md
+cat > .___archive/legacy/ARCHIVED.md << 'EOF'
+# Archived V1 Scripts
+
+**Archive Date:** 2024-XX-XX
+**Reason:** Replaced by V2 implementation in src/f1d/
+
+## Contents
+- 3_Financial/ - V1 financial scripts
+- 4_Econometric/ - V1 econometric scripts
+
+## Active Replacement
+See src/f1d/financial/ and src/f1d/econometric/
+EOF
+
+# Update manifest.json
+python scripts/update_archive_manifest.py
+```
+
+**Verification:**
+```bash
+# Verify archived
+ls -la .___archive/legacy/
+
+# Verify still accessible (read-only)
+cat .___archive/legacy/3_Financial/script_31_filter_data.py
+```
+
+**Commit:** `chore(65-01): archive V1 scripts to .___archive/legacy/`
+
+---
+
+#### Phase 6: Clean Up and Finalize
+
+**Goal:** Remove sys.path hacks and finalize structure
+
+**Steps:**
+```bash
+# Remove old directories (after verification)
+rm -rf 2_Scripts/
+rm -rf 4_Outputs/
+rm -rf 1_Inputs/
+rm -rf 3_Logs/
+
+# Update pyproject.toml
+# Add build system and package configuration
+```
+
+**Update pyproject.toml:**
+```toml
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "f1d"
+version = "6.0.0"
+description = "F1D Data Processing Pipeline for CEO Uncertainty Research"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+```
+
+**Clean up imports:**
+```bash
+# Remove all sys.path.insert statements
+grep -r "sys.path.insert" src/ --files-with-matches | xargs sed -i '/sys.path.insert/d'
+
+# Update all imports to use f1d.* pattern
+# (Use migration script from Section 4)
+```
+
+**Verification:**
+```bash
+# Run full test suite
+pytest tests/ -v
+
+# Verify package installation
+pip install -e .
+python -c "from f1d import get_latest_output_dir; print('OK')"
+
+# Run complete pipeline
+python scripts/run_pipeline.py
+
+# Verify reproducibility
+# Compare outputs with v5.0 baseline
+```
+
+**Commit:** `refactor(65-01): complete migration to src-layout architecture`
+
+---
+
+### Breaking Changes
+
+The migration introduces the following breaking changes:
+
+#### 1. Import Paths
+
+| Old | New |
+|-----|-----|
+| `from shared.path_utils import ...` | `from f1d.shared.path_utils import ...` |
+| `from script_32_construct_variables import ...` | `from f1d.financial.variables import ...` |
+| `sys.path.insert(0, '2_Scripts')` | (Removed - use package imports) |
+
+#### 2. Data Paths
+
+| Old | New |
+|-----|-----|
+| `1_Inputs/` | `data/raw/` |
+| `4_Outputs/sample/` | `data/interim/sample/` or `data/processed/sample/` |
+| `4_Outputs/figures/` | `results/figures/` |
+| `3_Logs/` | `logs/` |
+
+#### 3. Script Execution
+
+| Old | New |
+|-----|-----|
+| `python 2_Scripts/3_Financial_V2/script_32.py` | `python -m f1d.financial.variables` |
+
+### Compatibility Notes
+
+#### Maintaining Reproducibility During Transition
+
+1. **Git tags:** Create tag before migration starts
+   ```bash
+   git tag -a v5.0-final -m "Last version before migration"
+   git push origin v5.0-final
+   ```
+
+2. **Parallel testing:** Run both old and new versions
+   ```bash
+   # Old version
+   git checkout v5.0-final
+   python 2_Scripts/3_Financial_V2/script_32.py
+
+   # New version
+   git checkout master
+   python -m f1d.financial.variables
+
+   # Compare outputs
+   diff 4_Outputs/financial/ data/processed/financial/
+   ```
+
+3. **Gradual migration:** Migrate one stage at a time
+   - Migrate shared utilities first
+   - Then migrate one stage (e.g., financial)
+   - Verify all outputs match
+   - Continue with next stage
+
+#### Testing Strategy
+
+1. **Unit tests:** Update imports, verify all pass
+2. **Integration tests:** Verify end-to-end pipeline
+3. **Regression tests:** Compare outputs with baseline
+4. **Performance tests:** Verify no degradation
+
+### Rollback Plan
+
+If issues arise during migration:
+
+```bash
+# Rollback to pre-migration state
+git checkout v5.0-final
+
+# Or revert specific migration commit
+git revert <commit-hash>
+
+# Restore data directories (if needed)
+git checkout v5.0-final -- 1_Inputs/ 4_Outputs/
+```
+
+### Timeline Estimate
+
+| Phase | Duration | Dependencies |
+|-------|----------|--------------|
+| Phase 1: Create structure | 1 day | None |
+| Phase 2: Move shared | 2 days | Phase 1 |
+| Phase 3: Move stages | 1 week | Phase 2 |
+| Phase 4: Reorganize data | 2 days | Phase 3 |
+| Phase 5: Archive V1 | 1 day | Phase 3 |
+| Phase 6: Clean up | 2 days | Phases 4, 5 |
+| **Total** | **~2 weeks** | |
+
+### Post-Migration Tasks
+
+After migration is complete:
+
+1. **Update documentation:**
+   - README.md with new structure
+   - Script usage examples
+   - Import examples
+
+2. **Update CI/CD:**
+   - Add package installation step
+   - Update test commands
+
+3. **Team communication:**
+   - Announce new structure
+   - Provide migration guide for local clones
+   - Update onboarding docs
+
+4. **Monitor:**
+   - Watch for import errors
+   - Verify all pipelines still work
+   - Address any path issues
+
+---
+
+## Appendix B: Related Standards
+
+This architecture standard is part of a suite of standards:
+
+| Standard | Phase | Purpose | Status |
+|----------|-------|---------|--------|
+| ARCHITECTURE_STANDARD.md | 65 | Folder structure, module organization | This document |
+| NAMING_STANDARD.md | 66 | File, variable, function naming | Planned |
+| CONFIG_STANDARD.md | 67 | Configuration file patterns | Planned |
+| DOC_STANDARD.md | 68 | Documentation templates | Planned |
+
+**Dependencies:**
+- ARCHITECTURE_STANDARD.md is the foundation
+- Other standards build upon this structure
+- Changes here may affect dependent standards
+
+---
+
 ## References
 
 - [Python Packaging Authority - src-layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
