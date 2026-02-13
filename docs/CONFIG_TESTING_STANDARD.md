@@ -944,3 +944,515 @@ if __name__ == "__main__":
 
 ---
 
+## 4. Output Directory Pattern (CONF-04)
+
+This section defines the pattern for timestamped output directories with checksums for reproducibility.
+
+### OutputManager Pattern
+
+Use a centralized OutputManager for reproducible outputs:
+
+```python
+# src/f1d/shared/output.py
+"""Output directory management with timestamps and checksums.
+
+This module provides utilities for creating timestamped output directories
+and computing checksums for output files, ensuring reproducibility.
+
+Example:
+    >>> from f1d.shared.output import OutputManager
+    >>> manager = OutputManager(Path("results/financial"))
+    >>> output_dir = manager.create_output_dir()
+    >>> # Save outputs...
+    >>> manager.register_output(output_file, "Financial variables")
+    >>> manager.save_checksums()
+"""
+
+import hashlib
+import json
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, Optional, Any
+
+
+class OutputManager:
+    """Manages timestamped output directories with reproducibility guarantees.
+
+    Creates unique directories for each run with automatic timestamping
+    and checksum computation for all output files.
+
+    Attributes:
+        base_path: Base directory for outputs.
+        run_id: Unique identifier for this run.
+        timestamp: ISO format timestamp of run start.
+        output_dir: Full path to this run's output directory.
+
+    Example:
+        >>> manager = OutputManager(Path("results"))
+        >>> manager.create_output_dir()
+        >>> manager.output_dir.name  # e.g., "2024-01-15_143022"
+    """
+
+    def __init__(self, base_path: Path, run_id: Optional[str] = None):
+        """Initialize OutputManager.
+
+        Args:
+            base_path: Base directory for outputs.
+            run_id: Optional custom run ID. Defaults to timestamp.
+        """
+        self.base_path = base_path
+        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        self.run_id = run_id or self.timestamp
+        self.output_dir = base_path / self.run_id
+        self.checksums: Dict[str, Dict[str, Any]] = {}
+
+    def create_output_dir(self) -> Path:
+        """Create timestamped output directory.
+
+        Returns:
+            Path to the created output directory.
+        """
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        return self.output_dir
+
+    def compute_checksum(
+        self,
+        filepath: Path,
+        algorithm: str = "sha256"
+    ) -> str:
+        """Compute file checksum for integrity verification.
+
+        Args:
+            filepath: Path to file to hash.
+            algorithm: Hash algorithm (sha256, md5, etc.).
+
+        Returns:
+            Hexadecimal checksum string.
+        """
+        hasher = hashlib.new(algorithm)
+        with open(filepath, "rb") as f:
+            for chunk in iter(lambda: f.read(65536), b""):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+
+    def register_output(
+        self,
+        filepath: Path,
+        description: str = ""
+    ) -> Path:
+        """Register output file with checksum.
+
+        Args:
+            filepath: Path to output file.
+            description: Human-readable description of the file.
+
+        Returns:
+            The input filepath for chaining.
+        """
+        checksum = self.compute_checksum(filepath)
+        relative_path = str(
+            filepath.relative_to(self.output_dir)
+            if filepath.is_relative_to(self.output_dir)
+            else filepath.name
+        )
+        self.checksums[relative_path] = {
+            "checksum": checksum,
+            "algorithm": "sha256",
+            "description": description,
+            "size_bytes": filepath.stat().st_size,
+            "created": datetime.now().isoformat(),
+        }
+        return filepath
+
+    def save_checksums(self) -> Path:
+        """Save checksums manifest for reproducibility.
+
+        Returns:
+            Path to the checksums.json file.
+        """
+        manifest_path = self.output_dir / "checksums.json"
+        manifest = {
+            "run_id": self.run_id,
+            "created": datetime.now().isoformat(),
+            "files": self.checksums,
+        }
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f, indent=2)
+        return manifest_path
+
+    def create_latest_symlink(self) -> Optional[Path]:
+        """Create/update 'latest' symlink to current output.
+
+        Returns:
+            Path to the 'latest' symlink, or None on failure.
+
+        Note:
+            On Windows, may require Administrator privileges.
+        """
+        latest_path = self.base_path / "latest"
+        try:
+            if latest_path.is_symlink() or latest_path.exists():
+                latest_path.unlink()
+            latest_path.symlink_to(self.output_dir)
+            return latest_path
+        except (OSError, NotImplementedError) as e:
+            # Symlinks may not be supported or require elevated privileges
+            return None
+
+
+# Usage example
+if __name__ == "__main__":
+    manager = OutputManager(Path("results/financial"))
+    output_dir = manager.create_output_dir()
+
+    # Save some output
+    output_file = output_dir / "variables.parquet"
+    # df.to_parquet(output_file)  # Your actual save operation
+
+    # Register with checksum
+    manager.register_output(output_file, "Financial variables dataset")
+    manager.save_checksums()
+    manager.create_latest_symlink()
+```
+
+### Directory Structure
+
+```
+results/
+├── 2024-01-15_143022/              # Timestamped run directory
+│   ├── output.parquet               # Output file
+│   ├── summary.yaml                 # Run summary
+│   └── checksums.json               # Integrity manifest
+├── 2024-01-16_091530/              # Another run
+│   └── ...
+└── latest -> 2024-01-16_091530/    # Symlink to most recent
+```
+
+### Checksum Manifest Format
+
+```json
+// checksums.json
+{
+  "run_id": "2024-01-15_143022",
+  "created": "2024-01-15T14:30:22.123456",
+  "files": {
+    "output.parquet": {
+      "checksum": "a1b2c3d4e5f6...",
+      "algorithm": "sha256",
+      "description": "Financial variables dataset",
+      "size_bytes": 12345678,
+      "created": "2024-01-15T14:30:45.654321"
+    }
+  }
+}
+```
+
+### Integration with Configuration
+
+```python
+# Combine OutputManager with ProjectConfig
+from pathlib import Path
+from f1d.shared.config import ProjectConfig
+from f1d.shared.output import OutputManager
+
+# Load configuration
+config = ProjectConfig.from_yaml(Path("config/project.yaml"))
+
+# Create output manager
+base_output = Path(config.paths.outputs)
+manager = OutputManager(base_output / "financial")
+
+# Create output directory
+output_dir = manager.create_output_dir()
+
+# Save configuration snapshot
+config_snapshot = output_dir / "config.yaml"
+with open(config_snapshot, "w") as f:
+    yaml.dump(config.model_dump(), f)
+manager.register_output(config_snapshot, "Configuration snapshot")
+```
+
+### Rationale
+
+#### Why Timestamped Directories?
+
+1. **Version history:** Each run preserves its outputs
+2. **Auditability:** Know exactly when each output was created
+3. **Rollback:** Can reference previous outputs if needed
+4. **Parallel runs:** Multiple runs don't overwrite each other
+
+#### Why Checksums?
+
+1. **Integrity verification:** Detect file corruption
+2. **Reproducibility checks:** Compare outputs across runs
+3. **Cache invalidation:** Know when outputs change
+4. **Audit trails:** Prove outputs haven't been modified
+
+---
+
+## 5. Logging Pattern (CONF-05)
+
+This section defines structured logging using structlog for machine-parseable logs.
+
+### Structured Logging with structlog
+
+```python
+# src/f1d/shared/logging.py
+"""Structured logging configuration using structlog.
+
+This module provides structured logging with JSON output support,
+context binding, and multiple output formats.
+
+Example:
+    >>> from f1d.shared.logging import configure_logging, get_logger
+    >>> configure_logging(log_level="INFO", json_output=False)
+    >>> logger = get_logger(__name__)
+    >>> logger.info("processing_started", rows=1000, stage="financial")
+"""
+
+import logging
+import sys
+from pathlib import Path
+from typing import Any, Optional
+import structlog
+
+
+def configure_logging(
+    log_level: str = "INFO",
+    log_file: Optional[Path] = None,
+    json_output: bool = False
+) -> None:
+    """Configure structlog with optional file output.
+
+    Args:
+        log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+        log_file: Optional path for log file output.
+        json_output: If True, use JSON format; otherwise human-readable.
+    """
+    # Shared processors for all loggers
+    shared_processors: list[Any] = [
+        structlog.contextvars.merge_contextvars,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.add_logger_name,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+    ]
+
+    if json_output:
+        # JSON format for machine parsing
+        renderer = structlog.processors.JSONRenderer()
+    else:
+        # Human-readable console format with colors
+        renderer = structlog.dev.ConsoleRenderer(colors=True)
+
+    structlog.configure(
+        processors=shared_processors + [
+            structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+        ],
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,
+        cache_logger_on_first_use=True,
+    )
+
+    # Configure standard logging
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(
+        structlog.stdlib.ProcessorFormatter(
+            foreign_pre_chain=shared_processors,
+            processors=[renderer],
+        )
+    )
+
+    root_logger = logging.getLogger()
+    root_logger.handlers.clear()  # Remove existing handlers
+    root_logger.addHandler(handler)
+    root_logger.setLevel(getattr(logging, log_level.upper()))
+
+    # Optional file handler (always JSON for files)
+    if log_file:
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(
+            structlog.stdlib.ProcessorFormatter(
+                foreign_pre_chain=shared_processors,
+                processors=[structlog.processors.JSONRenderer()],
+            )
+        )
+        root_logger.addHandler(file_handler)
+
+
+def get_logger(name: Optional[str] = None) -> structlog.stdlib.BoundLogger:
+    """Get a structured logger instance.
+
+    Args:
+        name: Logger name, typically __name__.
+
+    Returns:
+        Bound logger instance.
+    """
+    return structlog.get_logger(name)
+
+
+# Usage with context binding
+logger = get_logger(__name__)
+
+def process_data(df: Any, stage: str) -> Any:
+    """Process data with context-aware logging.
+
+    Args:
+        df: DataFrame to process.
+        stage: Processing stage name.
+
+    Returns:
+        Processed DataFrame.
+    """
+    log = logger.bind(
+        stage=stage,
+        gvkey_count=len(df["gvkey"].unique()) if hasattr(df, 'gvkey') else 0,
+    )
+
+    log.info("processing_started", rows=len(df))
+
+    # ... processing logic ...
+
+    log.info("processing_completed", rows_output=len(df))
+    return df
+```
+
+### Log Levels
+
+| Level | When to Use | Example |
+|-------|-------------|---------|
+| DEBUG | Detailed diagnostic information | Variable values, loop iterations |
+| INFO | General operational messages | Stage start/end, row counts |
+| WARNING | Unexpected but handled situations | Missing data, fallback used |
+| ERROR | Serious problems, operation failed | API failure, data corruption |
+| CRITICAL | System-wide failures | Database connection lost |
+
+### Configuration via YAML
+
+```yaml
+# config/logging.yaml
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  json:
+    class: structlog.stdlib.ProcessorFormatter
+    processors:
+      - structlog.processors.JSONRenderer
+
+  console:
+    class: structlog.stdlib.ProcessorFormatter
+    processors:
+      - structlog.dev.ConsoleRenderer
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: console
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.FileHandler
+    formatter: json
+    filename: logs/pipeline.log
+
+root:
+  level: INFO
+  handlers: [console, file]
+```
+
+### Context Binding Pattern
+
+```python
+# Bind context for correlated logging
+from f1d.shared.logging import get_logger
+
+logger = get_logger(__name__)
+
+def run_pipeline(config):
+    """Run pipeline with correlation context."""
+    # Bind pipeline-wide context
+    log = logger.bind(
+        pipeline_id=config.run_id,
+        version=config.version,
+    )
+
+    log.info("pipeline_started")
+
+    # Each stage can add its own context
+    stage_log = log.bind(stage="financial")
+    stage_log.info("stage_started")
+
+    # ... processing ...
+
+    stage_log.info("stage_completed", duration_seconds=45.2)
+    log.info("pipeline_completed")
+```
+
+### Console vs File Output
+
+**Console (Human-readable):**
+```
+2024-01-15 14:30:22 [info     ] processing_started           rows=1000 stage=financial
+2024-01-15 14:30:45 [info     ] processing_completed         rows_output=995 stage=financial
+```
+
+**File (JSON for parsing):**
+```json
+{"event": "processing_started", "rows": 1000, "stage": "financial", "level": "info", "timestamp": "2024-01-15T14:30:22Z"}
+{"event": "processing_completed", "rows_output": 995, "stage": "financial", "level": "info", "timestamp": "2024-01-15T14:30:45Z"}
+```
+
+### Integration with Output Directories
+
+```python
+# Save logs to run-specific directory
+from f1d.shared.output import OutputManager
+from f1d.shared.logging import configure_logging
+
+manager = OutputManager(Path("results/financial"))
+output_dir = manager.create_output_dir()
+
+# Configure logging to output directory
+log_file = output_dir / "pipeline.log"
+configure_logging(
+    log_level="DEBUG",
+    log_file=log_file,
+    json_output=True,  # JSON for machine parsing
+)
+
+# Register log file with checksums
+manager.register_output(log_file, "Pipeline execution log")
+```
+
+### Never Log Sensitive Data
+
+```python
+# BAD: Logging secrets
+logger.info("connected", password=config.db_password)  # NO!
+
+# GOOD: SecretStr prevents this
+env = EnvConfig()
+logger.info("connected", username=env.wrds_username)  # OK
+# env.wrds_password is SecretStr - safe to pass but won't expose value
+
+# GOOD: Log non-sensitive indicators
+logger.info("configuration_loaded", has_password=bool(env.wrds_password))
+```
+
+### Rationale
+
+#### Why structlog?
+
+1. **Structured output:** JSON logs for machine parsing
+2. **Context binding:** Correlate related log messages
+3. **Multiple outputs:** Console (colored) + file (JSON)
+4. **Performance:** Efficient event-based logging
+5. **Standard library compatible:** Works with logging module
+
+**Source:** [structlog Documentation](https://www.structlog.org/en/stable/logging-best-practices.html)
+
+---
+
