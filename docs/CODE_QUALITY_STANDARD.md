@@ -2695,4 +2695,399 @@ When handling errors, ensure:
 4. **Python 3 feature:** Built-in language support
 
 ---
+
+## 6. Function Size and Module Organization (CODE-05)
+
+This section defines guidelines for function size and module organization to maintain code readability and maintainability.
+
+### 6.1 Function Size Guidelines (CODE-05)
+
+| Guideline | Recommendation | Rationale |
+|-----------|----------------|-----------|
+| Target length | 20-30 lines | Readability, testability |
+| Maximum length | 50 lines | Hard limit requiring justification |
+| Single Responsibility | One thing well | More important than line count |
+| Cognitive complexity | < 10 | Avoid nested conditionals |
+| Parameters | 3-4 max | Use dataclass/config for more |
+
+### 6.2 Warning Signs
+
+A function needs refactoring when:
+
+- **Requires scrolling to read:** Function exceeds one screen
+- **Multiple levels of indentation:** More than 3 levels of nesting
+- **Too many parameters:** More than 3-4 parameters
+- **"And" in function name:** `load_and_validate_and_transform()`
+- **Hard to name concisely:** Name is overly long or vague
+- **Requires extensive comments:** Code is not self-documenting
+- **Testing requires multiple mocks:** Too many dependencies
+
+### 6.3 Function Size Examples
+
+#### Good: Focused Function (15 lines)
+
+```python
+def get_latest_output_dir(base_path: Path) -> Path:
+    """Find the most recent output directory by timestamp.
+
+    Args:
+        base_path: Base directory containing dated subdirectories.
+
+    Returns:
+        Path to the most recent dated subdirectory.
+
+    Raises:
+        OutputResolutionError: If no valid directories found.
+    """
+    if not base_path.exists():
+        raise OutputResolutionError(
+            f"Base path does not exist: {base_path}",
+            base_path=str(base_path),
+        )
+
+    dated_dirs = [d for d in base_path.iterdir() if d.is_dir()]
+
+    if not dated_dirs:
+        raise OutputResolutionError(
+            f"No output directories found in {base_path}",
+            base_path=str(base_path),
+        )
+
+    dated_dirs.sort(reverse=True)
+    return dated_dirs[0]
+```
+
+#### Good: Delegating to Helpers (20 lines)
+
+```python
+def run_panel_ols(
+    df: pd.DataFrame,
+    spec: RegressionSpec,
+) -> RegressionResults:
+    """Execute panel regression with fixed effects.
+
+    Main entry point that coordinates the regression process.
+    Delegates to helper functions for specific tasks.
+
+    Args:
+        df: DataFrame with panel data.
+        spec: Regression specification.
+
+    Returns:
+        Regression results with coefficients and diagnostics.
+    """
+    # Validate inputs
+    _validate_regression_inputs(df, spec)
+
+    # Check for collinearity issues
+    _check_collinearity(df, spec.exog)
+
+    # Estimate model
+    model = _estimate_model(df, spec)
+
+    # Compute diagnostics
+    diagnostics = _compute_diagnostics(model, df, spec)
+
+    # Format results
+    return _format_results(model, diagnostics)
+```
+
+#### Bad: Monolithic Function (80+ lines)
+
+```python
+# BAD: This function does too many things
+def process_and_analyze_data(input_path, output_path, config):
+    # Load data (10 lines)
+    # Validate data (15 lines)
+    # Transform data (20 lines)
+    # Run analysis (15 lines)
+    # Generate report (10 lines)
+    # Save results (10 lines)
+    # ... 80+ lines total
+    pass
+
+# GOOD: Split into focused functions
+def process_and_analyze_data(input_path: Path, output_path: Path, config: Config) -> None:
+    """Process and analyze data (orchestrator)."""
+    df = load_and_validate_data(input_path)
+    df = transform_data(df, config)
+    results = run_analysis(df, config)
+    save_results(results, output_path)
+```
+
+### 6.4 When to Split a Function
+
+Split a function when it:
+
+| Condition | Solution |
+|-----------|----------|
+| Does more than one distinct thing | Extract each thing into its own function |
+| Is hard to name concisely | Split by responsibilities |
+| Requires extensive comments to understand | Refactor into self-documenting functions |
+| Has more than 3-4 parameters | Group related parameters into dataclass |
+| Testing requires mocking multiple dependencies | Split by dependency |
+| Has multiple levels of nesting | Extract nested logic into helper |
+
+### 6.5 Module Organization Rules
+
+#### Module Size
+
+| Guideline | Recommendation |
+|-----------|----------------|
+| Target size | 200-300 lines |
+| Maximum size | 500 lines (soft limit) |
+| Number of functions | ~10-15 public functions |
+| Relatedness | All functions share a purpose |
+
+#### Module Organization Pattern
+
+Organize modules in this order:
+
+```python
+#!/usr/bin/env python3
+"""Module docstring describing purpose and contents."""
+
+# =============================================================================
+# 1. Imports (organized per Section 4)
+# =============================================================================
+import os
+from pathlib import Path
+from typing import Dict, List
+
+import pandas as pd
+
+from f1d.shared.exceptions import F1DError
+
+# =============================================================================
+# 2. Module-level constants
+# =============================================================================
+MAX_RETRIES = 3
+DEFAULT_TIMEOUT = 30
+SUPPORTED_FORMATS = ["parquet", "csv"]
+
+# =============================================================================
+# 3. Custom exceptions (if module-specific)
+# =============================================================================
+class ModuleSpecificError(F1DError):
+    """Exception for this module."""
+    pass
+
+# =============================================================================
+# 4. Public classes
+# =============================================================================
+class DataProcessor:
+    """Process data according to module purpose."""
+
+    def __init__(self, config: Config) -> None:
+        ...
+
+    def process(self, df: pd.DataFrame) -> pd.DataFrame:
+        ...
+
+# =============================================================================
+# 5. Public functions
+# =============================================================================
+def load_data(path: Path) -> pd.DataFrame:
+    """Load data from file."""
+    ...
+
+def save_data(df: pd.DataFrame, path: Path) -> None:
+    """Save data to file."""
+    ...
+
+# =============================================================================
+# 6. Private helper functions (_leading_underscore)
+# =============================================================================
+def _validate_format(path: Path) -> None:
+    """Validate file format (internal)."""
+    ...
+
+def _compute_hash(data: bytes) -> str:
+    """Compute data hash (internal)."""
+    ...
+```
+
+### 6.6 Module Anti-Patterns
+
+#### Anti-pattern 1: God Module
+
+```python
+# BAD: Module with too many responsibilities
+# utils.py - 2000 lines with 50 functions
+
+# GOOD: Split into focused modules
+# path_utils.py - Path-related utilities
+# io_utils.py - Input/output utilities
+# data_utils.py - Data manipulation utilities
+```
+
+#### Anti-pattern 2: Circular Dependencies
+
+```python
+# BAD: Module A imports B, B imports A
+# module_a.py
+from .module_b import func_b
+
+# module_b.py
+from .module_a import func_a
+
+# GOOD: Extract shared logic to third module
+# shared.py - Contains shared logic
+
+# module_a.py
+from .shared import shared_func
+
+# module_b.py
+from .shared import shared_func
+```
+
+#### Anti-pattern 3: Empty __init__.py
+
+```python
+# BAD: Empty __init__.py with no docstring or exports
+
+# GOOD: __init__.py with documentation and public API
+"""Shared utilities for F1D pipeline.
+
+This package contains cross-cutting utilities.
+"""
+
+from .path_utils import get_latest_output_dir
+from .panel_ols import run_panel_ols
+
+__all__ = [
+    "get_latest_output_dir",
+    "run_panel_ols",
+]
+```
+
+### 6.7 Function Design Patterns
+
+#### Pattern 1: Single Level of Abstraction
+
+```python
+# GOOD: All statements at same abstraction level
+def process_data(input_path: Path, output_path: Path) -> None:
+    """Process data pipeline."""
+    df = load_data(input_path)
+    df = validate_data(df)
+    df = transform_data(df)
+    results = analyze_data(df)
+    save_results(results, output_path)
+
+# BAD: Mixed abstraction levels
+def process_data(input_path: Path, output_path: Path) -> None:
+    """Process data pipeline."""
+    df = pd.read_parquet(input_path)  # Low-level
+    df = validate_data(df)             # High-level
+    df["new_col"] = df["a"] + df["b"]  # Low-level
+    results = analyze_data(df)         # High-level
+    results.to_parquet(output_path)    # Low-level
+```
+
+#### Pattern 2: Guard Clauses Over Nesting
+
+```python
+# BAD: Nested conditionals
+def process(df: pd.DataFrame) -> pd.DataFrame:
+    if df is not None:
+        if len(df) > 0:
+            if "col" in df.columns:
+                return df[df["col"] > 0]
+    return pd.DataFrame()
+
+# GOOD: Guard clauses (early returns)
+def process(df: pd.DataFrame) -> pd.DataFrame:
+    if df is None or len(df) == 0:
+        return pd.DataFrame()
+
+    if "col" not in df.columns:
+        return pd.DataFrame()
+
+    return df[df["col"] > 0]
+```
+
+#### Pattern 3: Extract Method
+
+```python
+# BAD: Long function with inline logic
+def run_regression(df: pd.DataFrame, spec: RegressionSpec) -> Dict:
+    # 20 lines of validation
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError(...)
+    if df.isna().any().any():
+        ...
+    # ... more validation
+
+    # 30 lines of model estimation
+    ...
+
+    # 20 lines of result formatting
+    ...
+
+# GOOD: Extracted methods
+def run_regression(df: pd.DataFrame, spec: RegressionSpec) -> Dict:
+    _validate_inputs(df, spec)
+    model = _estimate_model(df, spec)
+    return _format_results(model)
+```
+
+### 6.8 Code Complexity Metrics
+
+| Metric | Target | Tool |
+|--------|--------|------|
+| Cyclomatic complexity | < 10 per function | radon |
+| Cognitive complexity | < 10 per function | radon |
+| Maintainability index | > 65 | radon |
+| Lines of code per function | < 30 | ruff |
+| Parameters per function | < 5 | ruff |
+
+Check complexity:
+
+```bash
+# Install radon
+pip install radon
+
+# Check cyclomatic complexity
+radon cc src/ -a
+
+# Check maintainability index
+radon mi src/
+
+# Check with ruff
+ruff check --select C90 src/
+```
+
+### 6.9 Function and Module Checklist
+
+When reviewing code, ensure:
+
+- [ ] Functions are 20-30 lines (50 max)
+- [ ] Functions do one thing well
+- [ ] Functions have 3-4 parameters or fewer
+- [ ] No deeply nested conditionals (>3 levels)
+- [ ] Guard clauses used over nesting
+- [ ] Single level of abstraction
+- [ ] Modules are focused (one concern)
+- [ ] Modules are under 500 lines
+- [ ] Private helpers at bottom of file
+- [ ] Public API at top or in __init__.py
+
+### 6.10 Rationale
+
+**Why Function Size Limits?**
+
+1. **Readability:** Functions fit on one screen
+2. **Testability:** Small functions are easier to test
+3. **Maintainability:** Clear separation of concerns
+4. **Code review:** Easier to review small, focused changes
+5. **Debugging:** Less code to search for bugs
+
+**Why Module Organization?**
+
+1. **Findability:** Related code is together
+2. **Import clarity:** Clear what module provides
+3. **Reusability:** Focused modules can be reused
+4. **Testing:** Test files mirror source structure
+
 ---
