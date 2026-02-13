@@ -1007,3 +1007,1060 @@ When modifying code:
 
 ---
 
+## TOOL-01: pyproject.toml Structure
+
+### Requirement
+
+All projects MUST use a PEP 621 compliant pyproject.toml file as the single source of configuration:
+
+1. **[project] section** - Project metadata (name, version, description, dependencies)
+2. **[project.optional-dependencies]** - Development and documentation dependencies
+3. **[project.urls]** - Homepage, documentation, repository links
+4. **[build-system]** - Build backend configuration
+5. **[tool.*] sections** - All tool configurations consolidated
+
+### Rationale
+
+Modern Python packaging with pyproject.toml:
+- Single file for all configuration (no setup.py, pytest.ini, .flake8)
+- PEP 621 standard for project metadata
+- Tool-agnostic format
+- Version controllable and reviewable
+- Eliminates configuration drift between files
+
+### Required [project] Fields
+
+```toml
+[project]
+name = "f1d"
+version = "6.0.0"
+description = "F1D Data Processing Pipeline for thesis research"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "Author Name", email = "author@example.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "structlog>=25.0",
+    "scipy>=1.10.0",
+    "statsmodels>=0.14.0",
+]
+```
+
+### Optional Dependencies
+
+```toml
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.12",
+    # Linting and formatting
+    "ruff>=0.9.0",
+    "mypy>=1.14",
+    # Pre-commit
+    "pre-commit>=3.8",
+    # Documentation
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.0",
+    "mkdocstrings>=0.27",
+    "mkdocstrings-python>=1.10",
+]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.0",
+    "mkdocstrings>=0.27",
+    "mkdocstrings-python>=1.10",
+]
+test = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.12",
+]
+```
+
+### Project URLs
+
+```toml
+[project.urls]
+Homepage = "https://github.com/user/f1d"
+Documentation = "https://f1d.readthedocs.io/"
+Repository = "https://github.com/user/f1d.git"
+Issues = "https://github.com/user/f1d/issues"
+Changelog = "https://github.com/user/f1d/blob/main/CHANGELOG.md"
+```
+
+### Build System
+
+```toml
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+```
+
+### Setuptools Configuration (src-layout)
+
+```toml
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+```
+
+### Complete pyproject.toml Example
+
+```toml
+# Build system configuration
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# Project metadata (PEP 621)
+[project]
+name = "f1d"
+version = "6.0.0"
+description = "F1D Data Processing Pipeline for thesis research"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "Author Name", email = "author@example.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "structlog>=25.0",
+    "scipy>=1.10.0",
+    "statsmodels>=0.14.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.12",
+    "ruff>=0.9.0",
+    "mypy>=1.14",
+    "pre-commit>=3.8",
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.0",
+    "mkdocstrings>=0.27",
+    "mkdocstrings-python>=1.10",
+]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.0",
+    "mkdocstrings>=0.27",
+    "mkdocstrings-python>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/user/f1d"
+Documentation = "https://f1d.readthedocs.io/"
+Repository = "https://github.com/user/f1d.git"
+Issues = "https://github.com/user/f1d/issues"
+Changelog = "https://github.com/user/f1d/blob/main/CHANGELOG.md"
+
+# Setuptools configuration for src-layout
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+# pytest configuration
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+    "--import-mode=importlib",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "regression: marks tests as regression tests",
+    "unit: marks tests as unit tests",
+    "e2e: marks tests as end-to-end pipeline tests",
+    "performance: marks tests as performance regression tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+# coverage configuration
+[tool.coverage.run]
+source = ["src/f1d"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+fail_under = 70
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+precision = 2
+show_missing = true
+
+# ruff configuration
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # do not perform function calls in argument defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"tests/**" = ["S101", "ARG"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["f1d"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+check_untyped_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+namespace_packages = true
+explicit_package_bases = true
+
+# Per-module strictness (tier-based)
+[[tool.mypy.overrides]]
+module = "f1d.shared.*"
+disallow_untyped_defs = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+```
+
+### Common Pitfalls
+
+| Pitfall | Problem | Solution |
+|---------|---------|----------|
+| Missing [project] section | Not PEP 621 compliant | Always include required fields |
+| Separate config files | Configuration drift | Consolidate all in pyproject.toml |
+| No version pinning | Dependency conflicts | Pin minimum versions |
+| Missing optional-dependencies | Dev dependencies scattered | Group in dev/docs/test groups |
+| Wrong package-dir | Imports fail with src-layout | Set package-dir for src layout |
+
+### Cross-References
+
+- Module organization follows ARCHITECTURE_STANDARD.md
+- Version references CHANGELOG.md versions (DOC-02)
+- Tool configs integrate with pre-commit (TOOL-02) and CI (TOOL-03)
+
+---
+
+## TOOL-02: Pre-commit Hooks Configuration
+
+### Requirement
+
+All projects MUST use pre-commit hooks with the following configuration:
+
+1. **File quality hooks** - trailing-whitespace, end-of-file-fixer
+2. **Config validation hooks** - check-yaml, check-toml, check-json
+3. **Security hooks** - detect-private-key, check-added-large-files
+4. **Linter hooks** - ruff (lint + format)
+5. **Type checker hooks** - mypy with pydantic support
+6. **Security scanner** - bandit
+
+### Rationale
+
+Pre-commit hooks:
+- Catch issues before they reach CI
+- Run automatically on every commit
+- Ensure consistent code quality
+- Save CI resources by catching issues early
+- Provide immediate feedback
+
+### .pre-commit-config.yaml
+
+```yaml
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # General file quality
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      # Whitespace and line endings
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+      # Config file validation
+      - id: check-yaml
+        args: [--unsafe]
+      - id: check-toml
+      - id: check-json
+
+      # File safety
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: check-case-conflict
+
+      # Security
+      - id: detect-private-key
+      - id: debug-statements
+
+  # Ruff - linter and formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.0
+    hooks:
+      # Linter
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      # Formatter
+      - id: ruff-format
+
+  # Type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pydantic>=2.0
+          - types-PyYAML
+        args: [--config-file=pyproject.toml]
+        pass_filenames: false
+        entry: mypy src/f1d
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: ["-c", "pyproject.toml"]
+        additional_dependencies: ["bandit[toml]"]
+
+# CI configuration
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
+```
+
+### Required Hooks
+
+| Hook | Purpose | Why Required |
+|------|---------|--------------|
+| trailing-whitespace | Remove trailing spaces | Clean diffs |
+| end-of-file-fixer | Ensure newline at EOF | POSIX compliance |
+| check-yaml | Validate YAML syntax | Catch config errors |
+| check-toml | Validate TOML syntax | Catch pyproject.toml errors |
+| check-added-large-files | Prevent large commits | Repository bloat prevention |
+| check-merge-conflict | Catch conflict markers | Prevent broken commits |
+| check-case-conflict | Case-sensitivity issues | Cross-platform compatibility |
+| detect-private-key | Prevent secret commits | Security |
+| debug-statements | Catch debug code | Code quality |
+| ruff | Lint and format | Code consistency |
+| mypy | Type checking | Type safety |
+| bandit | Security scanning | Security |
+
+### Hook Version Pinning
+
+Always pin hook versions with `rev:`:
+```yaml
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0  # Pinned version
+```
+
+This ensures:
+- Reproducible behavior across environments
+- No surprise breakages from updates
+- Controlled upgrade process
+
+### CI Integration
+
+Pre-commit hooks can run in CI using pre-commit.ci:
+- Automatic autofix PRs
+- Weekly autoupdate of hook versions
+- Status checks on PRs
+
+### Installation
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install hooks in repository
+pre-commit install
+
+# Run on all files (first time)
+pre-commit run --all-files
+
+# Run on staged files (normal usage)
+pre-commit run
+```
+
+### Common Pitfalls
+
+| Pitfall | Problem | Solution |
+|---------|---------|----------|
+| Not pinning versions | Breaks on updates | Always use rev: with version |
+| Missing mypy deps | Type errors for pydantic | Add additional_dependencies |
+| pre-commit and CI mismatch | Passes locally, fails CI | Match hook versions to CI |
+| Skipping hooks | Bypassing quality gates | Never use SKIP (except emergencies) |
+| Too slow | Developers skip hooks | Optimize or run selectively |
+
+### Cross-References
+
+- Hook configuration matches pyproject.toml tool configs (TOOL-01)
+- mypy configuration follows tier-based strictness (TOOL-05)
+- ruff rules match CI linting (TOOL-03)
+
+---
+
+## TOOL-03: GitHub Actions Workflow
+
+### Requirement
+
+All projects MUST have a GitHub Actions workflow with:
+
+1. **Lint job** - ruff check, ruff format --diff, mypy
+2. **Test job** - Python matrix (3.9, 3.10, 3.11, 3.12, 3.13)
+3. **Coverage reporting** - Codecov integration
+4. **E2E tests** - Run on main branch only
+5. **Caching** - pip cache for faster runs
+
+### Rationale
+
+GitHub Actions provides:
+- Automated quality gates on every push and PR
+- Multi-version testing
+- Coverage visibility
+- Fast feedback loop
+
+### .github/workflows/test.yml
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy
+
+      - name: Run Ruff (linting)
+        run: ruff check --output-format=github
+
+      - name: Run Ruff (formatting check)
+        run: ruff format --diff
+
+      - name: Run mypy
+        run: mypy src/f1d --config-file pyproject.toml
+
+  test:
+    name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests with coverage
+        run: |
+          pytest tests/ \
+            -m "not e2e" \
+            --cov=src/f1d \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=70 \
+            -v
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: |
+            coverage.xml
+            htmlcov/
+          retention-days: 30
+
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run E2E tests
+        run: pytest tests/ -m e2e -v --timeout=1200
+```
+
+### Job Structure
+
+| Job | Purpose | Runs On |
+|-----|---------|---------|
+| lint | Code quality checks | Every push/PR |
+| test | Unit/integration tests | Every push/PR |
+| e2e-test | End-to-end tests | Main branch only |
+
+### Test Matrix
+
+The test matrix runs on multiple Python versions:
+- Python 3.9, 3.10, 3.11, 3.12, 3.13
+- Ubuntu latest (add macos/windows if needed)
+
+### Caching Strategy
+
+```yaml
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: ${{ matrix.python-version }}
+    cache: 'pip'  # Enable pip caching
+```
+
+This caches:
+- pip downloads
+- Virtual environment packages
+- Significantly speeds up CI runs
+
+### Coverage Integration
+
+```yaml
+- name: Upload coverage to Codecov
+  uses: codecov/codecov-action@v4
+  with:
+    file: ./coverage.xml
+    fail_ci_if_error: false
+    token: ${{ secrets.CODECOV_TOKEN }}
+```
+
+Coverage reporting:
+- Uploads to Codecov for visualization
+- Shows coverage changes in PRs
+- Tracks coverage trends over time
+
+### Workflow Triggers
+
+```yaml
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+```
+
+Runs on:
+- Push to main/master branch
+- All pull requests targeting main/master
+
+### Common Pitfalls
+
+| Pitfall | Problem | Solution |
+|---------|---------|----------|
+| No caching | Slow CI runs | Enable pip cache |
+| Running E2E on every PR | Slow, resource-heavy | Run E2E on main only |
+| Missing fail-fast: false | One version fail stops all | Set fail-fast: false |
+| No coverage upload | No visibility | Add Codecov action |
+| Lint not separate from test | Slow feedback | Separate lint job |
+
+### Cross-References
+
+- Lint configuration matches pre-commit hooks (TOOL-02)
+- Coverage targets match CONFIG_TESTING_STANDARD.md
+- Python versions match pyproject.toml classifiers (TOOL-01)
+
+---
+
+## TOOL-04: .gitignore Patterns
+
+### Requirement
+
+All projects MUST have a .gitignore file with patterns for:
+
+1. **Python bytecode** - __pycache__/, *.py[cod]
+2. **Distribution** - build/, dist/, *.egg-info/
+3. **Test/coverage** - htmlcov/, .coverage, .pytest_cache/
+4. **Environments** - .env, .venv, venv/
+5. **IDE** - .vscode/, .idea/
+6. **Data files** - *.parquet, *.csv, *.xlsx (project-specific)
+7. **Archives** - ___Archive/, *.zip, *.tar.gz
+8. **OS-specific** - .DS_Store, Thumbs.db
+9. **Secrets** - *.pem, *.key, credentials.json
+
+### Rationale
+
+A comprehensive .gitignore:
+- Prevents committing sensitive data
+- Keeps repository size manageable
+- Avoids IDE-specific conflicts
+- Excludes generated files
+
+### Complete .gitignore
+
+```gitignore
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+junit/
+
+# Translations
+*.mo
+*.pot
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ruff
+.ruff_cache/
+
+# Data files (project-specific)
+# Note: Adjust based on project needs
+1_Inputs/
+4_Outputs/
+3_Logs/
+data/raw/
+data/processed/
+data/interim/
+data/external/
+*.parquet
+*.csv
+*.xlsx
+*.feather
+*.h5
+*.hdf5
+
+# Archives and backups
+___Archive/
+.___archive/
+BACKUP_*/
+*.rar
+*.zip
+*.tar.gz
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Secrets (never commit)
+*.pem
+*.key
+credentials.json
+secrets.yaml
+.secrets/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+```
+
+### Pattern Categories
+
+| Category | Purpose | Examples |
+|----------|---------|----------|
+| Python bytecode | Compiled files | `__pycache__/`, `*.pyc` |
+| Distribution | Build outputs | `dist/`, `*.egg-info/` |
+| Test/coverage | Test artifacts | `.coverage`, `htmlcov/` |
+| Environments | Virtual envs | `.venv/`, `.env` |
+| IDE | Editor configs | `.vscode/`, `.idea/` |
+| Data | Large data files | `*.parquet`, `*.csv` |
+| Archives | Backups | `___Archive/`, `*.zip` |
+| OS-specific | System files | `.DS_Store`, `Thumbs.db` |
+| Secrets | Credentials | `*.pem`, `credentials.json` |
+
+### Project-Specific Patterns
+
+Add patterns for project-specific files:
+```gitignore
+# Project-specific data directories
+1_Inputs/
+4_Outputs/
+3_Logs/
+
+# Research outputs
+*.pdf
+figures/generated/
+```
+
+### Common Pitfalls
+
+| Pitfall | Problem | Solution |
+|---------|---------|----------|
+| Missing .env | Secrets committed | Always ignore .env files |
+| Ignoring data files | Large files in repo | Add data file patterns |
+| No IDE patterns | Editor conflicts | Add .vscode/, .idea/ |
+| Missing secrets patterns | Credentials leaked | Add *.pem, *.key patterns |
+| Not ignoring __pycache__ | Compiled files in repo | Add __pycache__/ |
+
+### Cross-References
+
+- Data directories follow ARCHITECTURE_STANDARD.md folder structure
+- Secrets handling follows CONFIG_TESTING_STANDARD.md (CONF-02)
+- .env files for configuration per CONFIG_TESTING_STANDARD.md
+
+---
+
+## TOOL-05: Linting/Formatting Configuration
+
+### Requirement
+
+All projects MUST use consistent linting and formatting configuration:
+
+1. **ruff for linting** - Rules: E, W, F, I, B, C4, UP, ARG, SIM
+2. **ruff for formatting** - quote-style double, indent-style space
+3. **mypy for type checking** - python_version 3.9, tier-based strictness
+4. **Alignment** - Pre-commit hooks and CI use identical configuration
+
+### Rationale
+
+Unified linting/formatting:
+- Consistent code style across the project
+- Catches errors before runtime
+- Automated enforcement
+- Zero configuration drift
+
+### ruff Configuration
+
+```toml
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # do not perform function calls in argument defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"tests/**" = ["S101", "ARG"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["f1d"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+```
+
+### Rule Categories
+
+| Prefix | Source | Purpose |
+|--------|--------|---------|
+| E | pycodestyle | Style errors |
+| W | pycodestyle | Style warnings |
+| F | pyflakes | Logical errors |
+| I | isort | Import sorting |
+| B | flake8-bugbear | Common bugs |
+| C4 | flake8-comprehensions | Comprehension improvements |
+| UP | pyupgrade | Modernize syntax |
+| ARG | flake8-unused-arguments | Unused function arguments |
+| SIM | flake8-simplify | Simplification opportunities |
+
+### Per-File Ignores
+
+```toml
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]  # Allow late imports, unused imports
+"tests/**" = ["S101", "ARG"]      # Allow assert, unused fixtures
+```
+
+### mypy Configuration
+
+```toml
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+check_untyped_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+namespace_packages = true
+explicit_package_bases = true
+
+# Per-module strictness (tier-based)
+[[tool.mypy.overrides]]
+module = "f1d.shared.*"
+disallow_untyped_defs = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = "f1d.pipeline.*"
+disallow_untyped_defs = true
+strict = false
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+```
+
+### Tier-Based mypy Strictness
+
+| Module Tier | mypy Strictness | Rationale |
+|-------------|-----------------|-----------|
+| Tier 1 (Core) | strict = true | High reliability, public API |
+| Tier 2 (Processing) | strict = false, disallow_untyped_defs = true | Good coverage, some flexibility |
+| Tier 3 (Scripts) | Default | Minimal requirements |
+| tests/* | disallow_untyped_defs = false | Test flexibility |
+
+### Alignment Between Tools
+
+Ensure pre-commit hooks and CI use identical configuration:
+
+| Tool | Pre-commit | CI | Config Location |
+|------|------------|-----|-----------------|
+| ruff (lint) | ruff-pre-commit | ruff check | pyproject.toml |
+| ruff (format) | ruff-pre-commit | ruff format --diff | pyproject.toml |
+| mypy | mirrors-mypy | mypy CLI | pyproject.toml |
+
+### Common Pitfalls
+
+| Pitfall | Problem | Solution |
+|---------|---------|----------|
+| Too many rules initially | Overwhelming noise | Start conservative, add incrementally |
+| Pre-commit/CI mismatch | Passes locally, fails CI | Use identical configs |
+| Missing per-file-ignores | False positives in tests | Add test-specific ignores |
+| No tier-based strictness | Over/under strict | Match mypy to module tiers |
+| Ignoring E501 | Formatter handles it | Correct - formatter fixes line length |
+
+### Cross-References
+
+- Module tiers defined in ARCHITECTURE_STANDARD.md
+- Type hint coverage in CODE_QUALITY_STANDARD.md (CODE-02)
+- Pre-commit hooks match this configuration (TOOL-02)
+- CI linting uses these rules (TOOL-03)
+
+---
+
