@@ -1090,6 +1090,298 @@ Every data directory MUST have a README.md documenting:
 
 ---
 
+## 4. Version Management (ARCH-04)
+
+This section defines the version management approach, deprecation strategy, and package versioning conventions.
+
+### Single Active Version Policy
+
+**Principle:** Only ONE version of the codebase is actively maintained at any time.
+
+#### Current Situation (Legacy)
+
+The project currently has parallel V1 and V2 structures:
+
+```
+2_Scripts/
+├── 3_Financial/       # V1 - Legacy
+├── 3_Financial_V2/    # V2 - Current
+├── 4_Econometric/     # V1 - Legacy
+└── 4_Econometric_V2/  # V2 - Current
+```
+
+**Problems with this approach:**
+- Confusion about which version to use
+- Bug fixes may be needed in multiple places
+- Tests may be inconsistent across versions
+- Import paths are unclear
+
+#### Target State (Single Version)
+
+```
+src/f1d/
+├── financial/         # THE active version
+│   ├── variables.py
+│   └── investment.py
+└── econometric/       # THE active version
+    ├── regressions.py
+    └── diagnostics.py
+
+.___archive/
+└── legacy/
+    ├── 3_Financial/       # V1 archived
+    └── 4_Econometric/     # V1 archived
+```
+
+**Benefits:**
+- Clear which code is canonical
+- No duplicate maintenance burden
+- Simpler import paths
+- Proper version control via git
+
+### Version Hierarchy
+
+| Version | Status | Location | Maintenance |
+|---------|--------|----------|-------------|
+| Active (V2 equivalent) | Canonical | `src/f1d/` | Full support |
+| Legacy (V1) | Archived | `.___archive/legacy/` | Read-only reference |
+
+**Note:** Do NOT create V3, V4, etc. as parallel directories. Use semantic versioning on the package instead.
+
+### Package Versioning
+
+The F1D package uses semantic versioning (SemVer) with the format `MAJOR.MINOR.PATCH`.
+
+#### Version Location
+
+```python
+# src/f1d/__init__.py
+__version__ = "5.0.0"
+```
+
+#### Version Rules
+
+| Change Type | Version Bump | Example |
+|-------------|--------------|---------|
+| Breaking changes | MAJOR | 4.0.0 -> 5.0.0 |
+| New features (backward compatible) | MINOR | 5.0.0 -> 5.1.0 |
+| Bug fixes (backward compatible) | PATCH | 5.0.0 -> 5.0.1 |
+
+#### Git Tags for Releases
+
+```bash
+# Create a release tag
+git tag -a v5.0.0 -m "Release version 5.0.0"
+git push origin v5.0.0
+
+# List tags
+git tag -l
+
+# Show tag details
+git show v5.0.0
+```
+
+### Deprecation Strategy
+
+#### When to Deprecate
+
+Code should be deprecated when:
+
+1. **Superseded:** Newer implementation exists and is better
+2. **Problematic:** Known issues that are not worth fixing
+3. **Unused:** No active code depends on it
+4. **Inconsistent:** Doesn't match current patterns/standards
+
+#### How to Deprecate
+
+**Step 1: Add deprecation warning (in active code)**
+
+```python
+# src/f1d/shared/old_utility.py
+import warnings
+
+def old_function():
+    """Old implementation - deprecated.
+
+    .. deprecated:: 5.1.0
+        Use new_function() instead. Will be removed in 6.0.0.
+    """
+    warnings.warn(
+        "old_function() is deprecated. Use new_function() instead. "
+        "Will be removed in version 6.0.0.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    # ... existing implementation
+```
+
+**Step 2: Update imports and documentation**
+
+```python
+# Update any code using the deprecated function
+# from f1d.shared.old_utility import old_function
+from f1d.shared.new_utility import new_function
+```
+
+**Step 3: Move to archive after deprecation period**
+
+```bash
+# After 30+ day deprecation period
+mkdir -p .___archive/legacy/deprecated_2024-01/
+mv src/f1d/shared/old_utility.py .___archive/legacy/deprecated_2024-01/
+```
+
+**Step 4: Update archive manifest**
+
+```json
+// .___archive/manifest.json
+{
+  "archived_items": [
+    {
+      "original_path": "src/f1d/shared/old_utility.py",
+      "archive_path": "legacy/deprecated_2024-01/old_utility.py",
+      "date_archived": "2024-02-15",
+      "reason": "Superseded by new_utility.py",
+      "deprecated_version": "5.1.0",
+      "removed_version": "6.0.0"
+    }
+  ]
+}
+```
+
+#### Deprecation Timeline
+
+| Phase | Duration | Action |
+|-------|----------|--------|
+| 1. Announcement | Day 0 | Add deprecation warning |
+| 2. Warning Period | 30+ days | Code runs with warnings |
+| 3. Archive | After warning period | Move to `.___archive/` |
+| 4. Major Version | Next MAJOR release | Remove from codebase |
+
+### Migration Path
+
+#### V1 to V2 Migration (Current to Target)
+
+```
+Phase 1: Create src/f1d/ package structure
+├── Create src/f1d/ directory
+├── Create __init__.py with version
+└── Create subpackage directories
+
+Phase 2: Move shared/ utilities
+├── Move 2_Scripts/shared/ -> src/f1d/shared/
+├── Update imports throughout codebase
+└── Run tests to verify
+
+Phase 3: Move stage scripts
+├── Move 2_Scripts/3_Financial_V2/ -> src/f1d/financial/
+├── Move 2_Scripts/4_Econometric_V2/ -> src/f1d/econometric/
+├── Update imports
+└── Run tests
+
+Phase 4: Reorganize data directories
+├── Move 1_Inputs/ -> data/raw/
+├── Reorganize 4_Outputs/ -> data/interim/, data/processed/, results/
+└── Update path references
+
+Phase 5: Archive V1 code
+├── Move 2_Scripts/3_Financial/ -> .___archive/legacy/
+├── Move 2_Scripts/4_Econometric/ -> .___archive/legacy/
+└── Update archive manifest
+
+Phase 6: Clean up
+├── Remove sys.path hacks
+├── Update all imports to use f1d.* pattern
+├── Update documentation
+└── Verify reproducibility
+```
+
+### Breaking Changes
+
+When making breaking changes (MAJOR version bump):
+
+#### Document the Change
+
+```markdown
+## Breaking Changes in v6.0.0
+
+### Import Paths Changed
+- OLD: `from shared.path_utils import get_latest_output_dir`
+- NEW: `from f1d.shared.path_utils import get_latest_output_dir`
+
+### Function Signature Changed
+- `run_panel_ols(df, x_vars, y_var)` -> `run_panel_ols(df, formula)`
+  - OLD: `run_panel_ols(df, ['size', 'bm'], 'returns')`
+  - NEW: `run_panel_ols(df, 'returns ~ size + bm')`
+```
+
+#### Provide Migration Script
+
+```python
+# scripts/migrate_v5_to_v6.py
+"""Migration script for v5 -> v6 upgrade."""
+
+import re
+from pathlib import Path
+
+def migrate_imports(file_path):
+    """Update imports from v5 to v6 pattern."""
+    content = file_path.read_text()
+
+    # Replace old import patterns
+    replacements = [
+        ('from shared.', 'from f1d.shared.'),
+        ('from sample.', 'from f1d.sample.'),
+        ('from text.', 'from f1d.text.'),
+        ('from financial.', 'from f1d.financial.'),
+        ('from econometric.', 'from f1d.econometric.'),
+    ]
+
+    for old, new in replacements:
+        content = content.replace(old, new)
+
+    file_path.write_text(content)
+    print(f"Migrated: {file_path}")
+
+if __name__ == "__main__":
+    for py_file in Path("scripts").rglob("*.py"):
+        migrate_imports(py_file)
+```
+
+### Version Compatibility Matrix
+
+| Version | Python | Dependencies | Status |
+|---------|--------|--------------|--------|
+| v5.0.x | 3.9+ | pandas 2.0+, numpy 1.24+ | Active development |
+| v4.0.x | 3.9+ | pandas 1.5+, numpy 1.23+ | Maintenance only |
+| v3.0.x | 3.8+ | pandas 1.3+, numpy 1.20+ | Security fixes only |
+| v2.0.x | 3.7+ | pandas 1.0+ | End of life |
+
+### Rationale
+
+#### Why Single Active Version?
+
+1. **Reduced confusion:** Developers know which code to use
+2. **Lower maintenance:** No parallel bug fixes
+3. **Clean codebase:** No duplicate functionality
+4. **Git is version control:** Use git history, not directory versions
+
+#### Why Semantic Versioning?
+
+1. **Industry standard:** Widely understood convention
+2. **Clear expectations:** Version number indicates change impact
+3. **Dependency management:** Tools understand SemVer
+4. **Release planning:** Helps plan upgrade paths
+
+#### Why 30-Day Deprecation Period?
+
+1. **Sufficient notice:** Time to update dependent code
+2. **Not too long:** Prevents zombie code lingering
+3. **Standard practice:** Aligns with Python community norms
+4. **Flexibility:** Can extend for critical functionality
+
+---
+
 ## References
 
 - [Python Packaging Authority - src-layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
