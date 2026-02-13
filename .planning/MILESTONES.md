@@ -107,3 +107,13 @@ See `.planning/ROADMAP_V3.md` for full details.
 
 ---
 *Last updated: 2026-02-11 (v3.0 in progress)*
+
+## v5.0 Architecture Standard Definition (Shipped: 2026-02-13)
+
+**Phases completed:** 66 phases, 205 plans, 43 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+

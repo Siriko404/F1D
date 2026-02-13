@@ -8,30 +8,29 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: v5.0 Architecture Standard Definition
+## Current Milestone: Planning v6.0 Architecture Standard Implementation
 
-**Started:** 2026-02-12
-**Goal:** Define comprehensive architecture and coding standards for portfolio-ready repository overhaul
+**Previous:** v5.0 Architecture Standard Definition (COMPLETE 2026-02-13)
+**Goal:** Implement the standards defined in v5.0 across the codebase
 
-**Target deliverable:** ARCHITECTURE_STANDARD.md defining:
-- Canonical folder structure and module organization
-- Code quality standards (style, docstrings, type hints)
-- Testing infrastructure patterns
-- Documentation and portfolio presentation standards
-- CI/CD and tooling configuration
+**Standards defined (v5.0):**
+- `docs/ARCHITECTURE_STANDARD.md` — Folder structure, module tiers, version management
+- `docs/CODE_QUALITY_STANDARD.md` — Naming conventions, docstrings, type hints
+- `docs/CONFIG_TESTING_STANDARD.md` — Configuration, logging, testing patterns
+- `docs/DOC_TOOLING_STANDARD.md` — Documentation, CI/CD, linting configuration
 
-**Implementation:** Standards definition only. Implementation deferred to v6.0+ milestones.
-
-### Previous: v4.0 Folder Structure Consolidation (COMPLETE)
-
-**Completed:** 2026-02-12
-**Goal:** Eliminate V3 folders by merging all scripts and outputs into V2 structure
+**Implementation deferred to v6.0+:**
+- Migrate to src-layout structure
+- Add comprehensive type hints per tier
+- Implement pydantic-settings configuration
+- Add structured logging with structlog
+- Set up CI/CD pipeline
 
 ## Requirements
 
 ### Validated
 
-<!-- Shipped and confirmed valuable. v1.0, v2.0, and v3.0 milestones complete. -->
+<!-- Shipped and confirmed valuable. v1.0-v5.0 milestones complete. -->
 
 - ✓ Sample construction from speaker data with entity linking — v1.0
 - ✓ Text tokenization and word counting with dictionary lookups — v1.0
@@ -66,17 +65,22 @@ Every script must produce verifiable, reproducible results with complete audit t
 - ✓ V1/V2/V3 variable catalogs — v3.0
 - ✓ Performance optimizations — v3.0
 - ✓ Testing and validation infrastructure — v3.0
+- ✓ Folder structure consolidated (V3 eliminated) — v4.0
+- ✓ ARCHITECTURE_STANDARD.md created — v5.0
+- ✓ CODE_QUALITY_STANDARD.md created — v5.0
+- ✓ CONFIG_TESTING_STANDARD.md created — v5.0
+- ✓ DOC_TOOLING_STANDARD.md created — v5.0
 
 ### Active
 
-<!-- Current scope. Building toward these. v5.0 milestone. -->
+<!-- Current scope. Building toward these. v6.0+ milestone. -->
 
-- [ ] ARCHITECTURE_STANDARD.md document created
-- [ ] Folder structure and module organization defined
-- [ ] Code quality standards defined (style, docstrings, type hints)
-- [ ] Testing infrastructure patterns defined
-- [ ] Documentation and portfolio standards defined
-- [ ] CI/CD and tooling configuration defined
+- [ ] Migrate to src-layout structure per ARCHITECTURE_STANDARD.md
+- [ ] Implement type hints per tier requirements (100% Tier 1, 80% Tier 2)
+- [ ] Implement pydantic-settings configuration per CONFIG_TESTING_STANDARD.md
+- [ ] Add structured logging with structlog
+- [ ] Set up CI/CD pipeline per DOC_TOOLING_STANDARD.md
+- [ ] Add comprehensive test suite with tier-based coverage targets
 
 ### Not Pursued
 
@@ -96,8 +100,7 @@ Every script must produce verifiable, reproducible results with complete audit t
 - Video/audio analysis — text transcripts only
 - Interactive dashboards — batch processing for replication
 - Causality claims without instrumentation — 2SLS required for causal inference
-- Adding new features or hypotheses — this milestone is standards definition only
-- **Implementation of standards** — deferred to v6.0+ milestones (definition only for v5.0)
+- Adding new features or hypotheses — thesis research complete, now focused on code quality
 
 ## Context
 
@@ -116,6 +119,12 @@ The pipeline follows strict conventions from CLAUDE.md:
 - Naming: `<Stage>.<Step>_<PascalCaseName>.py`
 - All scripts read from `config/project.yaml`
 - Outputs go to timestamped directories
+
+**Standards Documents (v5.0):**
+- `docs/ARCHITECTURE_STANDARD.md` (1,696 lines) — Defines src-layout, module tiers, data lifecycle
+- `docs/CODE_QUALITY_STANDARD.md` (3,377 lines) — Defines naming, docstrings, type hints, error handling
+- `docs/CONFIG_TESTING_STANDARD.md` (3,084 lines) — Defines configuration, logging, testing patterns
+- `docs/DOC_TOOLING_STANDARD.md` (2,316 lines) — Defines documentation, CI/CD, linting
 
 ## Thesis Research Requirements
 
@@ -171,14 +180,22 @@ When working on ANY regression or econometric code:
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Stats inline per script | Self-contained for replication; reviewers can trace any number | Implemented v1.0 |
-| Stats to console + files | Human review during runs + machine-readable for analysis | Implemented v1.0 |
-| README for academic reviewers | Primary audience is thesis committee and journal reviewers | Implemented v1.0 |
-| Skip methodology in README | Methodology belongs in paper; README covers "how to run" | Implemented v1.0 |
+| Stats inline per script | Self-contained for replication; reviewers can trace any number | ✓ Implemented v1.0 |
+| Stats to console + files | Human review during runs + machine-readable for analysis | ✓ Implemented v1.0 |
+| README for academic reviewers | Primary audience is thesis committee and journal reviewers | ✓ Implemented v1.0 |
+| Skip methodology in README | Methodology belongs in paper; README covers "how to run" | ✓ Implemented v1.0 |
 | Cancel robustness phases on null results | Scientifically inappropriate to pursue robustness for unsupported hypotheses | Phases 36-38 cancelled |
 | Abandon hypothesis suite discovery | Single hypothesis (H6) tested directly; remaining H7-H10 not pursued | Phase 41 abandoned |
 | Document null results | Null findings are valid scientific results; documented in VERIFICATION.md | All phases documented |
 | Sonnet-only model policy | Cost optimization and consistent performance; Opus/Haiku not needed | config.json: model_profile="budget" |
+| src-layout over flat layout | PyPA recommendation for proper package imports | ✓ Decided v5.0 |
+| V1 and V2 as active variants | Both pipeline versions maintained, no V1 archival | ✓ Decided v5.0 |
+| Google-style docstrings | Enables mkdocstrings API documentation | ✓ Decided v5.0 |
+| Tier-based type hints | 100% Tier 1, 80% Tier 2, optional Tier 3 | ✓ Decided v5.0 |
+| ruff as unified linter/formatter | Replaces flake8 + black + isort | ✓ Decided v5.0 |
+| MkDocs + mkdocstrings | Simpler than Sphinx, Markdown-native | ✓ Decided v5.0 |
+| pydantic-settings | Type-safe configuration with env vars | ✓ Decided v5.0 |
+| structlog | Structured JSON logging with context binding | ✓ Decided v5.0 |
 
 ---
-*Last updated: 2026-02-12 (v5.0 milestone started)*
+*Last updated: 2026-02-13 (v5.0 shipped, ready for v6.0 planning)*
