@@ -11,22 +11,22 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 Milestone: v6.0 Architecture Standard Implementation
 Phase: 69 of 74 (Architecture Migration)
-Current Plan: 03 of 04
+Current Plan: 04 of 04
 Status: In Progress
-Last activity: 2026-02-13 — Completed 69-02B financial/econometric migration
+Last activity: 2026-02-13 — Completed 69-03 data directory structure
 
-Progress: [214 plans completed across all milestones]
+Progress: [215 plans completed across all milestones]
 
 ```
 Milestone Progress - v6.0 Architecture Standard Implementation
-[###                                         ] 11% complete (2/19 plans)
+[####                                        ] 16% complete (3/19 plans)
 
 Phase: 69 - Architecture Migration
-Status: In Progress (2/4 plans complete)
+Status: In Progress (3/4 plans complete)
 - 69-01: Package Skeleton - COMPLETE
 - 69-02A: Sample/Text Migration - COMPLETE (previous)
 - 69-02B: Financial/Econometric Migration - COMPLETE
-- 69-03: Import Pattern Migration - Pending
+- 69-03: Data Directory Structure - COMPLETE
 - 69-04: Old Structure Cleanup - Pending
 ```
 
@@ -39,7 +39,7 @@ Status: In Progress (2/4 plans complete)
 - v3.0: 21 plans
 - v4.0: 5 plans (64-01 through 64-05)
 - v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
-- v6.0: 2 plans (69-01, 69-02B)
+- v6.0: 3 plans (69-01, 69-02B, 69-03)
 
 **Milestone Summary:**
 
@@ -50,11 +50,12 @@ Status: In Progress (2/4 plans complete)
 | v3.0 Codebase Cleanup | 59-63 | 21 | Complete |
 | v4.0 Folder Consolidation | 64 | 5 | Complete |
 | v5.0 Architecture Standard | 65-68 | 4 | Complete |
-| v6.0 Implementation | 69-74 | 2/19 | In Progress |
+| v6.0 Implementation | 69-74 | 3/19 | In Progress |
 
 ## Performance Metrics
 
 **Recent Plan:**
+- 69-03 Data Directory Structure: 15 min, 12 files, 5 tasks
 - 69-02B Financial/Econometric Migration: 12 min, 44 files, 4 tasks
 - 69-01 Package Skeleton: 15 min, 35 files, 4 tasks
 
@@ -64,6 +65,9 @@ Status: In Progress (2/4 plans complete)
 
 Recent decisions affecting current work:
 
+- [69-03] Created data/ directory structure following Cookiecutter Data Science conventions per ARCH-03
+- [69-03] Added backward-compatible resolve_data_path() function that checks both old and new structures
+- [69-03] Retained old path constants (INPUTS_DIR, OUTPUTS_DIR) with deprecation warnings for migration
 - [69-02B] Both V1 and V2 variants documented as ACTIVE - neither deprecated per ARCH-04
 - [69-02B] Import pattern changed from 'from shared.*' to 'from f1d.shared.*' in all migrated modules
 - [69-02B] Tier manifest created to document all 43+ stage modules with tier classifications
@@ -92,12 +96,12 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 69-02B financial/econometric migration
+Stopped at: Completed 69-03 data directory structure
 Resume file: None
 
 **Next Action:**
-Run `/gsd:execute-phase 69` to continue with 69-03 import pattern migration.
+Run `/gsd:execute-phase 69` to continue with 69-04 old structure cleanup.
 
 ---
 
-*Last updated: 2026-02-13 (69-02B complete)*
+*Last updated: 2026-02-13 (69-03 complete)*
