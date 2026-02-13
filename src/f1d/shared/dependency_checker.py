@@ -31,11 +31,11 @@ Date: 2026-02-11
 
 import sys
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 def validate_prerequisites(
-    required_files: Dict[str, Path] = None, required_steps: Dict[str, str] = None
+    required_files: Optional[Dict[str, Path]] = None, required_steps: Optional[Dict[str, str]] = None
 ) -> None:
     """
     Validates all required inputs and prerequisite step outputs.

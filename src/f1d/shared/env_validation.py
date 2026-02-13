@@ -82,10 +82,11 @@ def validate_env_schema(schema: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
     Raises:
         EnvValidationError: If required vars missing or type validation fails
     """
-    validated = {}
+    validated: Dict[str, Any] = {}
 
     for var_name, var_spec in schema.items():
-        value = os.environ.get(var_name, var_spec.get("default"))
+        raw_value = os.environ.get(var_name, var_spec.get("default"))
+        value: Any = raw_value
 
         # Check required vars
         if var_spec.get("required", True) and value is None:
@@ -106,7 +107,7 @@ def validate_env_schema(schema: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
             elif expected_type == float:
                 value = float(value)
             elif expected_type == bool:
-                value = value.lower() in ("true", "1", "yes")
+                value = str(value).lower() in ("true", "1", "yes")
             elif expected_type == str:
                 value = str(value)
             else:

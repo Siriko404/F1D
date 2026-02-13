@@ -30,9 +30,12 @@ Date: 2026-02-11
 """
 
 import argparse
+from argparse import Namespace
+from pathlib import Path
+from typing import Dict
 
 
-def parse_arguments_4_1_step4_clarity():
+def parse_arguments_4_1_step4_clarity() -> Namespace:
     """Parse arguments for Step 4.1 CEO Clarity scripts."""
     parser = argparse.ArgumentParser(
         description="""
@@ -62,7 +65,7 @@ characteristics, extracting CEO-specific clarity coefficients.
     return parser.parse_args()
 
 
-def check_prerequisites_step4_clarity(root):
+def check_prerequisites_step4_clarity(root: Path) -> None:
     """Validate prerequisites for Step 4.1 CEO Clarity scripts.
 
     Required steps:
@@ -72,8 +75,8 @@ def check_prerequisites_step4_clarity(root):
     """
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
-    required_steps = {
+    required_files: Dict[str, Path] = {}
+    required_steps: Dict[str, str] = {
         "2.2_ConstructVariables": "linguistic_variables.parquet",
         "3.1_FirmControls": "firm_controls.parquet",
         "3.2_MarketVariables": "market_variables.parquet",
@@ -82,7 +85,7 @@ def check_prerequisites_step4_clarity(root):
     validate_prerequisites(required_files, required_steps)
 
 
-def parse_arguments_4_2_liquidity():
+def parse_arguments_4_2_liquidity() -> Namespace:
     """Parse arguments for Step 4.2 Liquidity Regressions."""
     parser = argparse.ArgumentParser(
         description="""
@@ -109,7 +112,7 @@ around earnings calls. Uses CCCL shift intensity as instrument.
     return parser.parse_args()
 
 
-def check_prerequisites_step4_liquidity(root):
+def check_prerequisites_step4_liquidity(root: Path) -> None:
     """Validate prerequisites for Step 4.2 Liquidity Regressions.
 
     Required steps:
@@ -118,8 +121,8 @@ def check_prerequisites_step4_liquidity(root):
     """
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
-    required_steps = {
+    required_files: Dict[str, Path] = {}
+    required_steps: Dict[str, str] = {
         "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
         "3.2_MarketVariables": "market_variables.parquet",
     }
@@ -127,7 +130,7 @@ def check_prerequisites_step4_liquidity(root):
     validate_prerequisites(required_files, required_steps)
 
 
-def parse_arguments_4_3_takeover():
+def parse_arguments_4_3_takeover() -> Namespace:
     """Parse arguments for Step 4.3 Takeover Hazards."""
     parser = argparse.ArgumentParser(
         description="""
@@ -148,7 +151,7 @@ probability using survival analysis.
     return parser.parse_args()
 
 
-def check_prerequisites_step4_takeover(root):
+def check_prerequisites_step4_takeover(root: Path) -> None:
     """Validate prerequisites for Step 4.3 Takeover Hazards.
 
     Required steps:
@@ -157,8 +160,8 @@ def check_prerequisites_step4_takeover(root):
     """
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
-    required_steps = {
+    required_files: Dict[str, Path] = {}
+    required_steps: Dict[str, str] = {
         "4.1_EstimateCeoClarity": "ceo_clarity_scores.parquet",
         "3.3_EventFlags": "event_flags.parquet",
     }

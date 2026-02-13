@@ -35,6 +35,7 @@ Date: 2026-02-11
 import subprocess
 import sys
 from pathlib import Path
+from typing import Union
 
 
 def validate_script_path(script_path: Path, allowed_dir: Path) -> Path:
@@ -84,7 +85,7 @@ def run_validated_subprocess(
     allowed_dir: Path,
     capture_output: bool = True,
     check: bool = False,
-) -> subprocess.CompletedProcess:
+) -> subprocess.CompletedProcess[str]:
     """
     Run a script with validated path.
 
