@@ -1,389 +1,496 @@
 # Testing Patterns
 
-**Analysis Date:** 2025-02-10
+**Analysis Date:** 2026-02-12
 
 ## Test Framework
 
 **Runner:**
-- pytest (version 8.0+ from `pyproject.toml`)
-- Config: `pyproject.toml` with `[tool.pytest.ini_options]`
+- pytest 8.0+
+- Config: `pyproject.toml` `[tool.pytest.ini_options]`
 
 **Assertion Library:**
-- pytest's built-in `assert` statement
+- Built-in pytest assertions with `pytest.approx()` for floating-point comparisons
 - `pytest.raises()` for exception testing
-- `pytest.approx()` for float comparison
 
 **Run Commands:**
 ```bash
-# Run all tests
-pytest
-
-# Verbose mode
-pytest -v
-
-# Run specific test file
-pytest tests/unit/test_data_validation.py
-
-# Run with markers
-pytest -m unit
-pytest -m integration
-pytest -m "not slow"
-
-# Coverage
-pytest --cov=2_Scripts
+pytest                              # Run all tests
+pytest tests/unit/                  # Run unit tests only
+pytest -m "not slow"                # Skip slow tests
+pytest --cov=2_Scripts              # Run with coverage
+pytest --cov=2_Scripts --cov-report=html  # Coverage with HTML report
+pytest -v tests/unit/test_panel_ols.py    # Run specific file with verbose
 ```
 
 ## Test File Organization
 
 **Location:**
-- Tests are in separate `tests/` directory (not co-located)
-- Structure mirrors `2_Scripts/` organization
-- `tests/unit/` for unit tests
-- `tests/integration/` for integration tests
-- `tests/fixtures/` for test data
-- `tests/conftest.py` for shared fixtures
+- Tests are in separate `tests/` directory at project root
+- Co-located with source: No (tests separate from `2_Scripts/`)
 
 **Naming:**
-- Unit tests: `test_<module>.py` (e.g., `test_data_validation.py`)
-- Edge case tests: `test_<module>_edge_cases.py` (e.g., `test_data_validation_edge_cases.py`)
-- Integration tests: `test_<feature>_integration.py`
+- Test files: `test_{module_name}.py`
+- Test classes: `Test{FeatureName}` (PascalCase)
+- Test functions: `test_{description}` (snake_case)
 
 **Structure:**
 ```
 tests/
-├── conftest.py                    # Shared fixtures
-├── fixtures/                      # Test data files
-│   └── sample_yaml/               # Sample configs
-├── unit/
-│   ├── test_data_validation.py
-│   ├── test_data_validation_edge_cases.py
-│   ├── test_env_validation.py
-│   ├── test_env_validation_edge_cases.py
-│   ├── test_fuzzy_matching.py
-│   ├── test_observability_helpers.py
-│   ├── test_regression_helpers.py
-│   ├── test_subprocess_validation.py
-│   └── test_subprocess_validation_edge_cases.py
-└── integration/
-    └── test_observability_integration.py
+├── conftest.py                 # Shared fixtures
+├── fixtures/                   # Test data files
+│   └── baseline_checksums.json
+├── unit/                       # Unit tests (isolated, fast)
+│   ├── test_panel_ols.py
+│   ├── test_financial_utils.py
+│   └── test_data_validation.py
+├── integration/                # Integration tests (multi-module)
+│   ├── test_error_propagation.py
+│   ├── test_pipeline_step1.py
+│   └── test_full_pipeline.py
+├── regression/                 # Output stability tests
+│   ├── test_output_stability.py
+│   └── generate_baseline_checksums.py
+└── performance/                # Performance benchmarks
+    ├── test_performance_h2_variables.py
+    └── test_performance_link_entities.py
+```
+
+## Test Markers
+
+**Available Markers (defined in pyproject.toml):**
+```python
+@pytest.mark.unit          # Fast, isolated unit tests
+@pytest.mark.integration   # Multi-module integration tests
+@pytest.mark.regression    # Output stability/comparison tests
+@pytest.mark.e2e           # End-to-end pipeline tests
+@pytest.mark.performance   # Performance regression tests
+@pytest.mark.slow          # Long-running tests
+@pytest.mark.mypy_testing  # Type checking tests
+```
+
+**Usage:**
+```bash
+pytest -m unit              # Run only unit tests
+pytest -m "not slow"        # Skip slow tests
+pytest -m performance       # Run only performance tests
 ```
 
 ## Test Structure
 
 **Suite Organization:**
-
 ```python
 """
-Unit tests for data_validation module.
+Unit tests for shared.panel_ols module.
 
-Tests schema validation, DataValidationError exceptions, and
-load_validated_parquet function.
+Tests verify panel regression wrapper functions:
+- Parameter validation
+- Mock data handling
+- Result formatting
+- VIF calculation for multicollinearity
+- Edge cases and error handling
 """
 
 import pytest
 import pandas as pd
+import numpy as np
 from pathlib import Path
 import sys
 
-# Add 2_Scripts to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
-from shared.data_validation import (
-    validate_dataframe_schema,
-    DataValidationError,
-    load_validated_parquet,
-    INPUT_SCHEMAS,
+from shared.panel_ols import (
+    run_panel_ols,
+    CollinearityError,
 )
 
 
-class TestValidateDataFrameSchema:
-    """Tests for validate_dataframe_schema function."""
+@pytest.fixture
+def sample_panel_data():
+    """Create sample panel data for testing."""
+    np.random.seed(42)
+    n_firms = 10
+    n_years = 5
+    data = []
+    for firm_id in range(n_firms):
+        for year in range(n_years):
+            data.append({
+                "gvkey": str(firm_id).zfill(6),
+                "year": 2000 + year,
+                "dependent": np.random.rand() * 100,
+                "independent1": np.random.rand() * 10,
+            })
+    return pd.DataFrame(data)
 
-    def test_validate_dataframe_schema_success_with_real_data(
-        self, sample_parquet_file_with_schema
-    ):
-        """Test schema validation passes for valid DataFrame matching Unified-info schema."""
-        df = pd.read_parquet(sample_parquet_file_with_schema)
-        # Should not raise for valid schema match
-        validate_dataframe_schema(
-            df, "Unified-info.parquet", sample_parquet_file_with_schema
+
+class TestRunPanelOls:
+    """Tests for run_panel_ols() function."""
+
+    @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
+    def test_validates_dependent_column_exists(self, sample_panel_data):
+        """Test that missing dependent column raises appropriate error."""
+        df_no_dep = sample_panel_data.drop(columns=["dependent"])
+        with pytest.raises(ValueError, match="Missing required columns"):
+            run_panel_ols(df_no_dep, "dependent", ["independent1"])
+
+    def test_returns_expected_result_structure(self, sample_panel_data):
+        """Test that function returns result with expected keys."""
+        result = run_panel_ols(
+            sample_panel_data,
+            "dependent",
+            ["independent1"],
+            check_collinearity=False,
         )
-
-    def test_validate_dataframe_schema_missing_columns_with_real_schema(
-        self, sample_parquet_file_with_schema
-    ):
-        """Test schema validation fails for missing required columns using actual schema."""
-        df = pd.DataFrame({"event_type": [1, 2]})  # Missing file_name, date, speakers
-        with pytest.raises(DataValidationError, match="Missing columns"):
-            validate_dataframe_schema(
-                df, "Unified-info.parquet", sample_parquet_file_with_schema
-            )
+        expected_keys = ["model", "coefficients", "summary", "diagnostics", "warnings"]
+        for key in expected_keys:
+            assert key in result
 ```
 
 **Patterns:**
-
-1. **Class-based organization:**
-   - One test class per function being tested: `class TestValidateDataFrameSchema`
-   - Descriptive class names: `Test<FunctionName>`
-
-2. **Test method naming:**
-   - `test_<function>_<scenario>()`
-   - Descriptive: `test_validate_dataframe_schema_missing_columns_with_real_schema`
-
-3. **Setup pattern:**
-   - Use fixtures from `conftest.py` for shared test data
-   - Path manipulation in each test file for imports
-   - `sys.path.insert(0, ...)` to add `2_Scripts` to Python path
-
-4. **Teardown pattern:**
-   - `tmp_path` fixture for temporary files (auto-cleanup)
-   - `monkeypatch` fixture for env var cleanup
-   - No explicit teardown needed - pytest handles it
-
-5. **Assertion pattern:**
-   - Use `pytest.raises(Exception, match="pattern")` for exceptions
-   - Direct `assert` for simple checks
-   - `pytest.approx()` for float comparisons
+- Group related tests in classes named `Test{FeatureName}`
+- Use descriptive test names that explain what is being tested
+- One assertion concept per test when possible
+- Use `pytest.raises()` context manager for exception testing
 
 ## Mocking
 
-**Framework:** pytest's built-in fixtures (`monkeypatch`, `capfd`, `capsys`)
+**Framework:** Built-in `unittest.mock` via pytest-mock or direct import
 
 **Patterns:**
-
 ```python
-# Environment variable mocking
-def test_validate_env_schema_success(self, monkeypatch):
-    """Test validation succeeds with valid environment variables."""
-    monkeypatch.setenv("WRDS_USERNAME", "test_user")
-    monkeypatch.setenv("API_TIMEOUT_SECONDS", "45")
-    # Test code...
+# Skip tests when dependencies unavailable
+pytestmark = []
+if not LINEARMODELS_AVAILABLE:
+    pytestmark.append(pytest.mark.skip(reason="linearmodels not available"))
 
-def test_validate_env_schema_missing_required(self, monkeypatch):
-    """Test validation fails when required env var is missing."""
-    monkeypatch.delenv("WRDS_USERNAME", raising=False)
-    # Test code...
+# Patch external dependencies
+from unittest.mock import patch, MagicMock
 
-# Capturing output
-def test_load_validated_parquet_strict_mode_false(self, tmp_path, capsys):
-    """Load Parquet file with validation errors in non-strict mode."""
-    # Test code...
-    captured = capsys.readouterr()
-    assert "WARNING:" in captured.err
-
-# Mocking module functions
-def test_load_and_validate_env_failure(self, monkeypatch, capsys):
-    """Test load_and_validate_env exits on validation failure."""
-    def mock_validate(schema):
-        raise EnvValidationError("Test error")
-
-    import shared.env_validation as env_mod
-    original_validate = env_mod.validate_env_schema
-    env_mod.validate_env_schema = mock_validate
-
-    with pytest.raises(SystemExit) as exc_info:
-        load_and_validate_env()
-
-    assert exc_info.value.code == 1
-    env_mod.validate_env_schema = original_validate  # Restore
+def test_external_api_call():
+    with patch('module.external_api') as mock_api:
+        mock_api.return_value = {"status": "ok"}
+        result = function_under_test()
+        assert result is not None
 ```
 
 **What to Mock:**
-- Environment variables: use `monkeypatch.setenv/delenv`
-- Module functions: replace temporarily, then restore
-- File I/O: use `tmp_path` fixture for real temporary files
+- External API calls and network requests
+- File system operations (for isolated unit tests)
+- Expensive computations (in unit tests)
+- Missing optional dependencies
 
 **What NOT to Mock:**
-- Don't mock pandas operations - use real DataFrames
-- Don't mock data validation logic - test the real implementation
-- Don't mock `DualWriter` - use `capsys` to capture output
+- Internal business logic (test the real implementation)
+- Data transformations (use real test data)
+- Integration points in integration tests
 
 ## Fixtures and Factories
 
 **Test Data:**
-
 ```python
-# In conftest.py
+# conftest.py - Shared fixtures
+@pytest.fixture(scope="session")
+def repo_root():
+    """Path to repository root directory."""
+    return Path(__file__).parent.parent
+
+
+@pytest.fixture(scope="session")
+def subprocess_env():
+    """Provide environment variables for subprocess calls."""
+    import os
+    return {
+        "PYTHONPATH": str(repo_root / "2_Scripts"),
+        **os.environ,
+    }
+
+
 @pytest.fixture
 def sample_dataframe():
     """Create a sample DataFrame for testing."""
-    return pd.DataFrame(
-        {
-            "file_name": ["test1.docx", "test2.docx", "test3.docx"],
-            "Total_Words": [100, 200, 150],
-            "MaQaUnc_pct": [0.5, 0.75, 0.6],
-        }
-    )
+    return pd.DataFrame({
+        "file_name": ["test1.docx", "test2.docx"],
+        "Total_Words": [100, 200],
+        "MaQaUnc_pct": [0.5, 0.75],
+    })
+
 
 @pytest.fixture
-def sample_parquet_file(tmp_path, sample_dataframe):
-    """Create a temporary Parquet file for testing."""
-    file_path = tmp_path / "test_data.parquet"
-    sample_dataframe.to_parquet(file_path)
-    return file_path
-
-@pytest.fixture
-def mock_project_config(tmp_path):
-    """Create a minimal project.yaml for testing."""
-    config_data = {
-        "project": {
-            "name": "F1D_Test",
-            "version": "1.0.0",
-        },
-        "data": {
-            "year_start": 2002,
-            "year_end": 2005,
-        },
-    }
-    config_path = tmp_path / "project.yaml"
-    with open(config_path, "w") as f:
-        yaml.dump(config_data, f)
-    return config_path
+def sample_compustat_df():
+    """Create a sample Compustat DataFrame for testing."""
+    return pd.DataFrame({
+        "gvkey": ["001234", "001234", "001235"],
+        "fyear": [2010, 2011, 2010],
+        "at": [1000.0, 1100.0, 500.0],
+        "dlc": [50.0, 55.0, 25.0],
+        # ... more columns
+    })
 ```
 
 **Location:**
-- `tests/conftest.py` for globally shared fixtures
-- Test files can have local fixtures too
-- `tests/fixtures/` directory for static test data files (YAML, etc.)
+- Shared fixtures in `tests/conftest.py`
+- Module-specific fixtures in test file
+- Test data files in `tests/fixtures/`
+
+**Fixture Scopes:**
+- `scope="session"`: Expensive fixtures (repo paths, config)
+- `scope="module"`: Shared test data
+- Default (function scope): Isolated test data
 
 ## Coverage
 
-**Requirements:** No explicit coverage target configured
+**Requirements:**
+- Overall minimum: 60%
+- Tier 1 (critical): 90%+ for `financial_utils`, `panel_ols`, `iv_regression`
+- Tier 2 (important): 80%+ for `data_validation`, `path_utils`, `chunked_reader`
 
-**View Coverage:**
-```bash
-pytest --cov=2_Scripts --cov-report=html
-```
-
-**Configuration in `pyproject.toml`:**
+**Coverage Configuration:**
 ```toml
+# pyproject.toml
 [tool.coverage.run]
 source = ["2_Scripts"]
-omit = [
-    "*/tests/*",
-    "*/__pycache__/*",
-    "*/ARCHIVE*/*",
-    "*/ARCHIVE_OLD*/*",
-]
+branch = true
+omit = ["*/tests/*", "*/__pycache__/*", "*/V1*"]
 
 [tool.coverage.report]
+fail_under = 60
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
-    "raise AssertionError",
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
 ```
 
+**View Coverage:**
+```bash
+pytest --cov=2_Scripts --cov-report=html
+# Open htmlcov/index.html in browser
+```
+
+**Coverage Files:**
+- `.coverage` - Binary coverage data
+- `coverage.json` - JSON format coverage
+- `htmlcov/` - HTML report directory
+
 ## Test Types
 
 **Unit Tests:**
-- Scope: Test individual functions in isolation
 - Location: `tests/unit/`
-- Focus: `shared/` module functions, validation logic
-- No external dependencies (no file system, network, subprocess)
+- Scope: Single function or class
+- Speed: Fast (< 1 second each)
+- No external dependencies (mocked if needed)
+- Example: `test_panel_ols.py` tests regression wrapper in isolation
+
+```python
+class TestCalculateFirmControls:
+    """Tests for calculate_firm_controls() function."""
+
+    def test_returns_size_as_log_assets(self, sample_compustat_row, sample_compustat_df):
+        """Test that size (log assets) is computed correctly."""
+        result = calculate_firm_controls(sample_compustat_row, sample_compustat_df, 2010)
+        assert "size" in result
+        assert result["size"] == pytest.approx(np.log(1000.0), rel=1e-5)
+```
 
 **Integration Tests:**
-- Scope: Test features work end-to-end across scripts
 - Location: `tests/integration/`
-- Focus: Observability features, subprocess execution
-- Use subprocess to run scripts and verify output
+- Scope: Multiple modules working together
+- Speed: Medium (1-60 seconds)
+- Real dependencies (databases, files)
+- Example: `test_error_propagation.py` verifies exceptions flow through call stack
+
+```python
+def test_error_propagates_from_calculate_firm_controls(sample_input_df, sample_compustat_df):
+    """Test that FinancialCalculationError propagates through compute_financial_features."""
+    with pytest.raises(FinancialCalculationError) as exc_info:
+        compute_financial_features(sample_input_df, sample_compustat_df)
+
+    error_msg = str(exc_info.value)
+    assert "no compustat data found" in error_msg.lower()
+```
 
 **E2E Tests:**
-- Framework: Not used (no playwright/selenium/etc.)
-- Full pipeline tests run via scripts manually
+- Location: `tests/integration/test_full_pipeline.py`
+- Marked with `@pytest.mark.e2e`
+- Full pipeline execution via subprocess
+- Verify outputs exist and have correct structure
+
+```python
+pytestmark = pytest.mark.e2e
+
+PIPELINE_SCRIPTS = [
+    "2_Scripts/1_Sample/1.1_CleanMetadata.py",
+    "2_Scripts/1_Sample/1.2_LinkEntities.py",
+    # ...
+]
+
+def test_full_pipeline_execution(subprocess_env, repo_root):
+    """Execute full pipeline and verify outputs."""
+    for script in PIPELINE_SCRIPTS:
+        result = subprocess.run(
+            ["python", str(repo_root / script)],
+            env=subprocess_env,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"Script failed: {script}"
+```
+
+## Regression Tests
+
+**Purpose:** Detect output changes from baseline using SHA-256 checksums
+
+**Location:** `tests/regression/test_output_stability.py`
+
+**Baseline File:** `tests/fixtures/baseline_checksums.json`
+
+```python
+pytestmark = pytest.mark.regression
+
+def compute_dataframe_checksum(df: pd.DataFrame) -> str:
+    """Compute SHA-256 checksum of a DataFrame."""
+    return hashlib.sha256(
+        pd.util.hash_pandas_object(df, index=False).values.tobytes()
+    ).hexdigest()
+
+def test_regression_step2_output_stability(baseline_checksums):
+    """Test that Step 2 output hasn't changed from baseline."""
+    output_file = resolve_output_dir(REPO_ROOT / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+
+    current_checksum = compute_file_checksum(output_file)
+    expected_checksum = baseline_checksums.get("step2_linguistic_counts_2002")
+
+    assert current_checksum == expected_checksum, (
+        f"Regression detected!\n"
+        f"Expected: {expected_checksum}\n"
+        f"Got: {current_checksum}\n"
+        f"Run with --update-baseline if this change is intentional"
+    )
+```
+
+**Update Baselines:**
+```bash
+python tests/regression/generate_baseline_checksums.py --update
+```
+
+## Performance Tests
+
+**Framework:** pytest-benchmark
+
+**Location:** `tests/performance/`
+
+**Pattern:**
+```python
+pytestmark = pytest.mark.performance
+
+def _rolling_std_naive(df: pd.DataFrame, ...) -> pd.Series:
+    """Naive implementation for baseline comparison."""
+    results = []
+    for _gvkey, group in df.groupby(group_col):
+        # ... slow loop-based implementation
+    return pd.concat(results)
+
+def _rolling_std_vectorized(df: pd.DataFrame, ...) -> pd.Series:
+    """Optimized implementation."""
+    return df.groupby(group_col)[value_col].transform(
+        lambda x: x.rolling(window=window).std()
+    )
+
+def test_rolling_window_naive_baseline(benchmark, sample_compustat_for_rolling):
+    """Establish baseline performance for naive implementation."""
+    result = benchmark(
+        _rolling_std_naive,
+        sample_compustat_for_rolling,
+        "gvkey",
+        "ocf_at",
+    )
+
+def test_rolling_window_vectorized_faster(benchmark, sample_compustat_for_rolling):
+    """Verify vectorized implementation is faster."""
+    result = benchmark(
+        _rolling_std_vectorized,
+        sample_compustat_for_rolling,
+        "gvkey",
+        "ocf_at",
+    )
+```
 
 ## Common Patterns
 
 **Async Testing:**
-- Not applicable (synchronous codebase)
+Not applicable - this codebase is synchronous Python.
 
 **Error Testing:**
-
 ```python
-# Test exceptions with pytest.raises
-def test_data_validation_error_is_exception(self):
-    """Test DataValidationError is an Exception subclass."""
-    assert issubclass(DataValidationError, Exception)
+def test_missing_gvkey_raises_error(sample_compustat_df):
+    """Test that missing gvkey raises FinancialCalculationError."""
+    row = pd.Series({"year": 2018})  # No gvkey
 
-def test_data_validation_error_message(self):
-    """Test DataValidationError stores error message."""
-    msg = "Test error message"
-    exc = DataValidationError(msg)
-    assert str(exc) == msg
-    assert exc.args[0] == msg
+    with pytest.raises(FinancialCalculationError) as exc_info:
+        calculate_firm_controls(row, sample_compustat_df, 2018)
 
-def test_validate_dataframe_schema_value_range_violation_with_real_schema(
-    self, sample_parquet_file_with_schema
-):
-    """Test schema validation fails for values outside range using actual schema."""
-    df = pd.DataFrame({"event_type": [1, 5, 15]})  # 15 is > 10
-    with pytest.raises(DataValidationError, match="above max"):
-        validate_dataframe_schema(
-            df, "Unified-info.parquet", sample_parquet_file_with_schema
-        )
+    assert "missing gvkey" in str(exc_info.value).lower()
 ```
 
 **Parametrized Tests:**
-
 ```python
-@pytest.mark.parametrize(
-    "value,expected",
-    [
-        ("true", True),
-        ("TRUE", True),
-        ("1", True),
-        ("yes", True),
-        ("false", False),
-        ("0", False),
-        ("no", False),
-    ],
-)
-def test_validate_env_type_validation_bool(self, value, expected, monkeypatch):
-    """Test type conversion from string to bool."""
-    monkeypatch.setenv("ENABLE_FEATURE", value)
-    test_schema = {
-        "ENABLE_FEATURE": {
-            "required": False,
-            "type": bool,
-            "default": False,
-            "description": "Test flag",
-        },
-    }
-    result = validate_env_schema(test_schema)
-    assert result["ENABLE_FEATURE"] == expected
+@pytest.mark.parametrize("entity_effects,time_effects", [
+    (True, True),
+    (True, False),
+    (False, True),
+    (False, False),
+])
+def test_different_fixed_effects_combinations(
+    self, sample_panel_data, entity_effects, time_effects
+):
+    """Test different fixed effect combinations."""
+    result = run_panel_ols(
+        sample_panel_data,
+        "dependent",
+        ["independent1"],
+        entity_effects=entity_effects,
+        time_effects=time_effects,
+    )
+    assert result["summary"]["entity_effects"] == entity_effects
+    assert result["summary"]["time_effects"] == time_effects
 ```
 
-**Missing Value Testing:**
-
+**Floating-Point Comparison:**
 ```python
-def test_missing_values_in_some_columns(self):
-    """Test with missing values in some columns."""
-    df = pd.DataFrame(
-        {
-            "y": [1, None, 3],
-            "x1": [4, 5, 6],
-            "c1": [7, 8, None],
-        }
+def test_calculates_leverage_correctly(sample_compustat_row, sample_compustat_df):
+    """Test that leverage is computed correctly."""
+    result = calculate_firm_controls(sample_compustat_row, sample_compustat_df, 2010)
+    expected = (50.0 + 150.0) / 1000.0
+    assert result["leverage"] == pytest.approx(expected, rel=1e-5)
+```
+
+**Skip Tests Conditionally:**
+```python
+@pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
+def test_requires_linearmodels():
+    """Test that requires linearmodels package."""
+    ...
+
+# Or at module level
+pytestmark = []
+if not OPTIONAL_DEP_AVAILABLE:
+    pytestmark.append(pytest.mark.skip(reason="optional dependency not available"))
+```
+
+**Subprocess Testing:**
+```python
+def test_script_execution(subprocess_env, repo_root):
+    """Test that script runs successfully via subprocess."""
+    result = subprocess.run(
+        ["python", str(repo_root / "2_Scripts/1_Sample/1.1_CleanMetadata.py")],
+        env=subprocess_env,
+        capture_output=True,
+        text=True,
     )
-
-    required_vars = {
-        "dependent": ["y"],
-        "independent": ["x1"],
-        "controls": ["c1"],
-    }
-
-    result = _check_missing_values(df, required_vars)
-
-    assert "y" in result
-    assert result["y"] == 1
-    assert "c1" in result
-    assert result["c1"] == 1
-    assert "x1" not in result
+    assert result.returncode == 0, f"Script failed: {result.stderr}"
 ```
 
 ---
 
-*Testing analysis: 2025-02-10*
+*Testing analysis: 2026-02-12*

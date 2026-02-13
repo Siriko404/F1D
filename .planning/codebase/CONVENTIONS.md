@@ -1,253 +1,353 @@
 # Coding Conventions
 
-**Analysis Date:** 2025-02-10
+**Analysis Date:** 2026-02-12
 
 ## Naming Patterns
 
 **Files:**
-- `snake_case.py` for all Python files
-- Test files: `test_<module>.py` in `tests/unit/` or `tests/integration/`
-- Edge case tests: `test_<module>_edge_cases.py`
-- Script naming: `<major>.<minor>_DescriptiveName.py` (e.g., `3.1_H1Variables.py`)
-- Shared utilities: `descriptive_name.py` in `2_Scripts/shared/`
+- Scripts use numbered prefixes for execution order: `{step}_{substep}_{Description}.py`
+  - Examples: `1.1_CleanMetadata.py`, `4.1_H1CashHoldingsRegression.py`
+- Shared modules use snake_case: `financial_utils.py`, `panel_ols.py`
+- Test files use `test_{module_name}.py` pattern: `test_panel_ols.py`
+- Module packages use underscore: `shared/observability/logging.py`
 
 **Functions:**
-- `snake_case` for all functions
-- Private/internal functions: `_leading_underscore` (e.g., `_check_missing_values`, `_assign_industry_codes`)
-- Class methods: `snake_case` (not camelCase)
-- Functions that compute: prefix with `compute_` (e.g., `compute_cash_holdings`, `compute_leverage`)
-- Functions that validate: prefix with `validate_` (e.g., `validate_dataframe_schema`, `validate_columns`)
+- Snake_case for all functions: `calculate_firm_controls()`, `run_panel_ols()`
+- Private helper functions prefixed with underscore: `_check_thin_cells()`, `_format_coefficient_table()`
+- Descriptive verb-noun pattern: `compute_financial_features()`, `validate_input_file()`
 
 **Variables:**
-- `snake_case` for all variables
-- Constants: `UPPER_SNAKE_CASE` (e.g., `INPUT_SCHEMAS`, `ENV_SCHEMA`, `STATSMODELS_AVAILABLE`)
-- DataFrames: `df` for generic, `result_<name>` for return values (e.g., `result = df.merge()`)
-- Temporary loop variables: single letters or short names (e.g., `for gvkey, group in df.groupby()`)
+- Snake_case for local variables: `sample_panel_data`, `expected_keys`
+- UPPER_CASE for module-level constants: `UNCERTAINTY_MEASURES`, `CONTROL_VARS`
+- Single underscore for temporarily unused variables in loops: `for _gvkey, group in df.groupby()`
 
-**Types/Classes:**
-- `PascalCase` for class names (rare - mostly exceptions in this codebase)
-- Exception suffix: `Error` for custom exceptions (e.g., `DataValidationError`, `RegressionValidationError`, `PathValidationError`)
+**Types:**
+- PascalCase for classes: `DualWriter`, `CollinearityError`
+- PascalCase for custom exceptions: `FinancialCalculationError`, `DataValidationError`
+- Type hints using standard library `typing`: `List[str]`, `Dict[str, Any]`, `Optional[Path]`
 
 ## Code Style
 
 **Formatting:**
-- Ruff is used for linting (`.ruff_cache/` present)
-- No explicit `.ruff.toml` or `.pylintrc` - using Ruff defaults
-- Line length appears to be standard (80-120 characters based on code)
-- Indentation: 4 spaces (Python standard)
+- Ruff formatter (line length 88, indent-width 4)
+- Double quotes for strings: `quote-style = "double"`
+- Space indentation (not tabs): `indent-style = "space"`
+- Target Python 3.9: `target-version = "py39"`
 
-**Import Organization:**
+**Linting:**
+- Ruff with rules: E4, E7, E9, F (Pyflakes), B (flake8-bugbear), W (pycodestyle warnings), I (isort)
+- E501 (line length) ignored - handled by formatter
+- E402 (import violations) ignored in `__init__.py`
+- S101 (assert) allowed in test files
 
-Standard order observed in `2_Scripts/3_Financial_V2/3.1_H1Variables.py`:
+## Import Organization
 
+**Order:**
+1. Standard library imports (argparse, json, sys, time, pathlib)
+2. Third-party imports (numpy, pandas, pytest)
+3. Local/shared module imports (from shared.xxx import yyy)
+
+**Path Setup:**
+All scripts add parent directory to sys.path for shared module imports:
 ```python
-#!/usr/bin/env python3
-
-# 1. Standard library imports (grouped)
-import sys
-import os
-import argparse
-from pathlib import Path
-from datetime import datetime
-import hashlib
-import json
-import time
-
-# 2. Third-party imports
-import pandas as pd
-import numpy as np
-import yaml
-import psutil
-
-# 3. Local/application imports (absolute from 2_Scripts)
-from shared.path_utils import (
-    validate_output_path,
-    ensure_output_dir,
-)
-from shared.observability_utils import (
-    DualWriter,
-    compute_file_checksum,
-)
+script_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(script_dir))
 ```
 
 **Path Aliases:**
 - No path aliases configured
-- Use `from shared.<module> import <name>` for shared utilities
-- Add to sys.path when needed: `sys.path.insert(0, str(Path(__file__).parent.parent))`
+- Use explicit imports: `from shared.panel_ols import run_panel_ols`
+- For subpackages: `from shared.observability import DualWriter`
 
 ## Error Handling
 
-**Patterns:**
-
-1. **Custom Exceptions:**
+**Custom Exceptions:**
+Define domain-specific exceptions in relevant modules:
 ```python
+# In shared/data_validation.py
 class DataValidationError(Exception):
     """Raised when input data validation fails."""
     pass
 
-class RegressionValidationError(Exception):
-    """Raised when regression input validation fails."""
+class FinancialCalculationError(Exception):
+    """Raised when financial metric calculation fails due to missing or invalid data."""
     pass
 
-class PathValidationError(Exception):
-    """Raised when path validation fails."""
+# In shared/panel_ols.py
+class CollinearityError(Exception):
+    """Raised when perfect collinearity is detected in the design matrix."""
+    pass
+
+class MulticollinearityError(Exception):
+    """Raised when VIF threshold is exceeded (high multicollinearity)."""
     pass
 ```
 
-2. **Exception Raising:**
-```python
-# Clear, descriptive messages with context
-raise RegressionValidationError(
-    f"Missing required columns: {sorted(missing)}. "
-    f"Available: {sorted(df.columns)}"
-)
+**Exception Usage Guidance:**
+- `FinancialCalculationError`: Use for financial calculation failures (missing gvkey, no data found)
+- `DataValidationError`: Use for input data validation failures (schema violations, invalid values)
+- `CollinearityError`: Use for regression design matrix issues
+- `PathValidationError`: Use for path/file validation failures
 
-# Include what went wrong AND what was expected
-raise DataValidationError(
-    f"Validation failed for {file_path.name}:\n"
-    f"  File: {file_path}\n"
-    f"  Errors:\n    - " + "\n    - ".join(errors)
+**Error Messages:**
+Include context in error messages:
+```python
+raise FinancialCalculationError(
+    f"Cannot calculate firm controls: missing gvkey in row. "
+    f"Row columns: {list(row.index)}. "
+    f"Year: {year}"
 )
 ```
 
-3. **Graceful Import Handling:**
+**Fail-Fast Pattern:**
+Do not silently catch and drop data. Let exceptions propagate:
 ```python
+# CORRECT: Let FinancialCalculationError propagate
+controls = calculate_firm_controls(row, compustat_df, year)
+if controls:
+    row_dict.update(controls)
+
+# INCORRECT: Silently swallowing errors
 try:
-    import statsmodels.formula.api as smf
-    STATSMODELS_AVAILABLE = True
-except ImportError:
-    STATSMODELS_AVAILABLE = False
-
-# Later check before use
-if not STATSMODELS_AVAILABLE:
-    raise ImportError("statsmodels required. Install: pip install statsmodels")
+    controls = calculate_firm_controls(row, compustat_df, year)
+except FinancialCalculationError:
+    pass  # Don't do this - errors should propagate
 ```
-
-4. **Validation Functions Return or Raise:**
-- Validation functions either return normally (success) or raise custom exception
-- Use `strict` parameter to control behavior: `strict=True` raises, `strict=False` warns
 
 ## Logging
 
-**Framework:** Custom `DualWriter` from `shared.observability_utils`
+**Framework:** Python `logging` module with custom `DualWriter` class
 
-**Patterns:**
-
+**DualWriter Pattern:**
+All scripts use DualWriter for simultaneous terminal and file output:
 ```python
-# Setup logging to both file and terminal
 from shared.observability_utils import DualWriter
-dual_writer = DualWriter(log_file_path)
+
+log_path = output_dir / f"{timestamp}_script.log"
+dual_writer = DualWriter(log_path)
 sys.stdout = dual_writer
 
-# Print output goes to both destinations
-print("=" * 60)
-print("STEP 3.1: H1 Cash Holdings Variables")
-print(f"Timestamp: {timestamp}")
-print("=" * 60)
+# ... script execution ...
 
-# Cleanup at end
 dual_writer.close()
-sys.stdout = dual_writer.terminal
 ```
 
 **When to Log:**
-- Section headers with `===` separators
-- Progress updates with row counts: `print(f"  Loaded manifest: {len(df):,} calls")`
-- Warnings to stderr: `print(f"WARNING: {message}", file=sys.stderr)`
-- Statistics via helper: `print_stat("Manifest rows", value=len(manifest))`
+- Script start/end with timestamp
+- Input file validation
+- Key processing milestones (rows processed, files written)
+- Warnings for data quality issues
+- Error conditions with full context
 
-**Helper Functions:**
-- `print_stat(label, before/after/value, indent=2)` - formatted statistics
-- `print_stats_summary(stats_dict)` - summary table from statistics dict
-- `save_stats(stats_dict, output_dir)` - write `stats.json`
+**Statistics Output:**
+Use `save_stats()` from observability utils to write `stats.json`:
+```python
+from shared.observability_utils import save_stats
+
+stats = {
+    "input_rows": len(df),
+    "output_rows": len(result_df),
+    "execution_time_seconds": elapsed,
+    "timestamp": datetime.now().isoformat(),
+}
+save_stats(stats, output_dir)
+```
 
 ## Comments
 
-**When to Comment:**
-- Module-level docstrings explaining purpose, security notes, determinism
-- Function docstrings with Args/Returns/Raises (Google style)
-- Inline comments for non-obvious logic (financial formulas, data transformations)
-- Section separators in scripts: `# ==============================================================================`
-
-**Docstring Pattern:**
-
-```python
-def compute_cash_holdings(compustat_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Compute Cash Holdings = CHE / AT
-
-    Args:
-        compustat_df: Compustat data with atq, cheq columns
-
-    Returns:
-        DataFrame with gvkey, fiscal_year, cash_holdings
-    """
-```
-
-**Module Docstring Pattern:**
-
+**Module Docstrings:**
+All modules use a standardized header format:
 ```python
 #!/usr/bin/env python3
 """
 ================================================================================
-SHARED MODULE: Regression Utilities
+SHARED MODULE: Financial Utilities
 ================================================================================
-ID: shared/regression_utils
-Description: Provides common fixed effects OLS regression patterns for
-             econometric analysis. Handles statsmodels import errors gracefully
-             and extracts CEO fixed effects and model diagnostics.
+ID: shared/financial_utils
+Description: Provides common financial metrics and control variable
+             calculations from Compustat data. Handles missing data gracefully
+             with NaN values.
 
 Inputs:
-    - pandas DataFrame with regression data
-    - statsmodels.formula.api (optional, raises ImportError if missing)
+    - pandas DataFrame with firm identifiers (gvkey, datadate)
+    - Compustat DataFrame with firm metrics
+    - Fiscal year for data selection
 
 Outputs:
-    - Fitted statsmodels OLS models
-    - CEO fixed effects as pandas Series
-    - Regression diagnostics as dictionary
+    - Dictionary with firm-level control variables
+    - DataFrame with computed financial features
 
 Deterministic: true
+Main Functions:
+    - calculate_firm_controls(): Compute firm-level controls
+    - compute_financial_features(): Batch processing wrapper
+
+Dependencies:
+    - Utility module for financial calculations
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
 ================================================================================
 """
 ```
 
+**Function Docstrings:**
+Use Google-style docstrings with Args, Returns, Raises, Example:
+```python
+def run_panel_ols(
+    df: pd.DataFrame,
+    dependent: str,
+    exog: List[str],
+    entity_col: str = "gvkey",
+    ...
+) -> Dict[str, Any]:
+    """
+    Run panel OLS regression with fixed effects and clustered standard errors.
+
+    Args:
+        df: DataFrame with panel data. Must contain entity_col, time_col, and
+            all variables in dependent + exog.
+        dependent: Name of the dependent variable column.
+        exog: List of independent/exogenous variable column names.
+        entity_col: Column name for entity identifier (default 'gvkey').
+
+    Returns:
+        Dictionary with:
+            - 'model': Fitted PanelOLS model object
+            - 'coefficients': DataFrame with beta, SE, t-stat, p-value
+            - 'summary': Dict with R2, adj_R2, N, F-stat
+            - 'warnings': List of warning messages
+
+    Raises:
+        ImportError: If linearmodels is not available
+        ValueError: If required columns are missing
+        CollinearityError: If perfect collinearity detected
+
+    Example:
+        >>> result = run_panel_ols(
+        ...     df=df,
+        ...     dependent='cash_ratio',
+        ...     exog=['vagueness', 'size'],
+        ... )
+    """
+```
+
+**When to Comment:**
+- All public functions require docstrings
+- Complex algorithms need inline explanation
+- Non-obvious data transformations require comments
+- Workarounds and technical debt need TODO/FIXME markers
+
 **JSDoc/TSDoc:**
-- Not applicable (Python codebase)
-- Use Google-style Python docstrings with Args/Returns/Raises sections
+Not applicable (Python codebase). Use Google-style Python docstrings.
 
 ## Function Design
 
 **Size:**
-- Functions should be < 50 lines
-- Split large computations into multiple helper functions
-- Each function does one thing well
+- Functions should be small enough to fit on one screen (approximately 30-50 lines)
+- Extract complex logic into helper functions with underscore prefix
 
 **Parameters:**
-- Use type hints for all parameters: `df: pd.DataFrame`, `strict: bool = True`
-- Optional parameters with sensible defaults
-- DataFrames passed as first argument (method chaining style)
+- Group related parameters into dictionaries/config objects when >5 params
+- Use keyword arguments for optional parameters with sensible defaults
+- Type hints required for all parameters
+
+```python
+def run_panel_ols(
+    df: pd.DataFrame,
+    dependent: str,
+    exog: List[str],
+    entity_col: str = "gvkey",
+    time_col: str = "year",
+    industry_col: str = "ff48_code",
+    entity_effects: bool = True,
+    time_effects: bool = True,
+) -> Dict[str, Any]:
+```
 
 **Return Values:**
-- Always return typed values: `-> pd.DataFrame`, `-> Dict[str, Any]`
-- Return None for validation functions (raise on error)
-- Return Series/DataFrame for data transformations
-- Return dict for statistics/results
+- Return dictionaries for complex results with multiple pieces of data
+- Return DataFrames for data transformations
+- Return tuples only for 2-3 closely related values
+- Always document return structure in docstring
 
 ## Module Design
 
 **Exports:**
-- `__init__.py` in `shared/` defines explicit `__all__` list
-- Re-export commonly used utilities at package level
+Define explicit `__all__` lists in all modules:
+```python
+__all__ = [
+    "run_panel_ols",
+    "CollinearityError",
+    "MulticollinearityError",
+]
+```
 
 **Barrel Files:**
-- `2_Scripts/shared/__init__.py` acts as barrel for shared utilities
-- Explicit exports: `DualWriter`, `parse_ff_industries`, `run_panel_ols`, etc.
+Use `__init__.py` for package-level re-exports:
+```python
+# shared/__init__.py
+from .centering import center_continuous, create_interaction
+from .panel_ols import run_panel_ols
 
-**Shared Utilities Location:**
-- `2_Scripts/shared/<module>.py` for reusable code
-- Organized by purpose: `regression_utils.py`, `data_validation.py`, `path_utils.py`
-- Import as: `from shared.<module> import <function>`
+__all__ = [
+    "run_panel_ols",
+    "center_continuous",
+    "create_interaction",
+]
+```
+
+**Deprecation Pattern:**
+When moving functionality to subpackages, leave backward-compatible re-exports:
+```python
+# shared/observability_utils.py (deprecated)
+"""
+[DEPRECATED] Provides backward compatibility for existing imports.
+Please update your imports to use the new package structure:
+    OLD: from shared.observability_utils import DualWriter
+    NEW: from shared.observability import DualWriter
+"""
+from shared.observability import DualWriter, save_stats, ...
+```
+
+## Type Annotations
+
+**Requirements:**
+- Use Python 3.9+ type hint syntax (no `typing.List` needed, use `list`)
+- Import from `typing` for complex types: `Optional`, `Union`, `Dict`, `Any`
+- Use `TYPE_CHECKING` block for forward references
+
+**Mypy Configuration:**
+- Python version 3.9
+- `warn_return_any = true`
+- `check_untyped_defs = true`
+- Strict mode enabled for new modules: `shared.observability.*`
+
+**Example:**
+```python
+from typing import Any, Dict, List, Optional, Tuple
+
+def calculate_firm_controls(
+    row: pd.Series,
+    compustat_df: pd.DataFrame,
+    year: int
+) -> Dict[str, Union[float, int, None]]:
+    ...
+```
+
+## Configuration
+
+**Environment:**
+- Config loaded from `config/project.yaml`
+- Git commit SHA captured for reproducibility
+- Timestamp format: `YYYY-MM-DD_HHMMSS`
+
+**Output Directories:**
+- Use `ensure_output_dir()` from `shared.path_utils`
+- Follow pattern: `4_Outputs/{step_name}/{timestamp}/`
+- Create `latest` symlink or copy for most recent output
 
 ---
 
-*Convention analysis: 2025-02-10*
+*Convention analysis: 2026-02-12*

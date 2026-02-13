@@ -1,95 +1,121 @@
 # Technology Stack
 
-**Analysis Date:** 2025-02-10
+**Analysis Date:** 2026-02-12
 
 ## Languages
 
 **Primary:**
-- Python 3.8-3.13 - All pipeline scripts, shared utilities, and tests
+- Python 3.8-3.13 - Main development language for all data processing and econometric analysis
 
 **Secondary:**
-- YAML - Configuration (`config/project.yaml`)
-- Markdown - Documentation and reports
-- Shell (Git Bash/MSYS) - CI/CD workflows
+- YAML - Configuration files (`config/project.yaml`)
+- Markdown - Documentation
 
 ## Runtime
 
 **Environment:**
-- Python >= 3.8 (tested on 3.8, 3.9, 3.10, 3.11, 3.12, 3.13)
-- Windows (MSYS_NT-10.0-26200), Linux (GitHub Actions ubuntu-latest)
+- Python 3.9+ (target version for mypy, tested on 3.8-3.13)
 
 **Package Manager:**
-- pip
-- Lockfile: present (pinned versions in `requirements.txt`)
+- pip - Package installer
+- requirements.txt - Dependency manifest (pinned versions)
 
 ## Frameworks
 
 **Core:**
-- pandas 2.2.3 - Data manipulation and analysis
+- pandas 2.2.3 - DataFrame operations, data manipulation
 - numpy 2.3.2 - Numerical computing
-- scipy 1.16.1 - Scientific computing
+- pyarrow 21.0.0 - Parquet file I/O, efficient columnar storage
 
 **Statistical Modeling:**
-- statsmodels 0.14.6 - Econometric regression, fixed effects, OLS
-- scikit-learn 1.7.2 - Feature extraction (CountVectorizer), ML utilities
-- lifelines 0.30.0 - Survival analysis (takeover hazard models)
+- statsmodels 0.14.6 - Regression analysis, statistical tests (pinned for reproducibility)
+- scipy 1.16.1 - Statistical functions, optimization
+- scikit-learn 1.7.2 - Machine learning utilities (CountVectorizer for text)
+- lifelines 0.30.0 - Survival analysis, Cox proportional hazards
+
+**Econometric:**
+- linearmodels (unstated in requirements, via type stubs) - Panel OLS with fixed effects, IV/2SLS regression
+  - Type stubs at `2_Scripts/stubs/linearmodels*.pyi`
 
 **Testing:**
-- pytest >= 8.0 - Test framework
-- pytest-cov - Coverage reporting
+- pytest 8.0+ - Test framework
+- pytest-cov 4.1+ - Coverage reporting
+- pytest-benchmark 4.0+ - Performance benchmarks
+- pytest-mypy 0.10+ - Type checking integration
 
 **Build/Dev:**
-- PyYAML 6.0.2 - Configuration parsing
-- openpyxl 3.1.5 - Excel file I/O
+- ruff - Linting and formatting (configured in pyproject.toml)
+- mypy - Static type checking (progressive rollout)
 
 ## Key Dependencies
 
 **Critical:**
-- pyarrow 21.0.0 - Parquet file format (pinned for Python 3.8-3.13 compatibility)
-  - Note: 23.0.0+ requires Python >= 3.10
-  - Performance notes documented in `DEPENDENCIES.md`
+- PyYAML 6.0.2 - Configuration file parsing
+- openpyxl 3.1.5 - Excel file handling
+- psutil 7.2.1 - System/process monitoring, memory tracking
+- python-dateutil 2.9.0 - Date parsing
 
-**Infrastructure:**
-- psutil 7.2.1 - System memory monitoring, throttling
-- python-dateutil 2.9.0.post0 - Date parsing
-- rapidfuzz >= 3.14.0 - Fuzzy string matching (optional, Tier 3 entity linking)
-  - Pipeline degrades gracefully without it
-  - Improves match rates for company names with spelling variations
+**Text Processing:**
+- rapidfuzz 3.14.0+ - Fuzzy string matching (optional, graceful degradation)
+  - Used for company/entity name matching in `2_Scripts/shared/string_matching.py`
+
+**Statistical:**
+- statsmodels 0.14.6 - Pinned version for reproducible regression analysis
+  - Note: 0.14.0 introduced breaking changes (deprecated GLM link names)
+
+**Data Formats:**
+- pyarrow 21.0.0 - Pinned for Python 3.8-3.13 compatibility
+  - Note: 23.0.0+ requires Python >= 3.10
 
 ## Configuration
 
 **Environment:**
-- YAML-based configuration (`config/project.yaml`)
-- No .env file required (no API keys or external services)
-- Environment validation via `2_Scripts/shared/env_validation.py`
+- YAML configuration at `config/project.yaml`
+- No .env files (no runtime secrets required)
+- PYTHONPATH must include `2_Scripts/` for imports
 
 **Build:**
-- No build system required (pure Python)
-- Pytest configuration in `pyproject.toml`
-- Ruff configuration (caching in `.ruff_cache/`)
+- pyproject.toml - Main configuration for pytest, coverage, ruff, mypy
+- .coveragerc - Coverage.py settings (branch coverage enabled)
+- type stubs in `2_Scripts/stubs/` for external packages without typing
 
-**Key configs:**
-- `config/project.yaml` - Pipeline configuration, thresholds, paths
-- `pyproject.toml` - Pytest settings, coverage configuration
-- `.github/workflows/test.yml` - CI/CD matrix testing across Python versions
+**Key Config Sections:**
+```yaml
+# config/project.yaml structure
+project:        # name, version, description
+data:           # year_start, year_end
+paths:          # inputs, scripts, logs, outputs
+determinism:    # random_seed, thread_count
+chunk_processing:  # memory management
+logging:        # level, format
+step_XX:        # Per-pipeline-step configuration
+string_matching:   # Fuzzy match thresholds
+```
 
 ## Platform Requirements
 
 **Development:**
-- 8GB RAM minimum (small datasets, partial pipeline)
-- 16GB RAM recommended (full pipeline, all steps)
-- 32GB RAM for 2x-10x dataset scaling
-- SSD/NVMe storage recommended for large dataset I/O
+- Python 3.8+ (3.9+ recommended)
+- 8GB+ RAM for large parquet file processing
+- g++ compiler for C++ tokenization utilities (optional)
 
 **Production:**
-- Local execution (no cloud deployment target)
-- Deterministic single-threaded processing (`thread_count=1`)
-- Optional parallel processing for scaling (`thread_count=4`)
+- GitHub Actions CI/CD (ubuntu-latest)
+- Multi-version testing (3.8, 3.9, 3.10, 3.11, 3.12, 3.13)
 
-**Python Version Matrix:**
-- Tested on: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
-- CI runs tests on all versions via GitHub Actions
+## Type Checking
+
+**Mypy Configuration:**
+- Target: Python 3.9
+- Strict mode enabled for `shared.observability.*`
+- Progressive rollout: most scripts excluded initially
+- Custom stubs for `linearmodels` package
+
+**Type Stubs Location:**
+- `2_Scripts/stubs/linearmodels.pyi`
+- `2_Scripts/stubs/linearmodels.panel.pyi`
+- `2_Scripts/stubs/linearmodels.iv.pyi`
 
 ---
 
-*Stack analysis: 2025-02-10*
+*Stack analysis: 2026-02-12*

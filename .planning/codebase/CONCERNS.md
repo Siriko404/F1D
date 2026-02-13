@@ -1,201 +1,198 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-02-10
+**Analysis Date:** 2026-02-12
 
 ## Tech Debt
 
-**H7-H8 Data Pipeline Issue:**
-- Issue: Volatility and StockRet control variables are 100% missing for years 2005-2018 in H7_Illiquidity.parquet, causing H8 to silently truncate to 2002-2004 data only
-- Files: `2_Scripts/3_Financial_V2/3.7_H7IlliquidityVariables.py`, `2_Scripts/3_Financial_V2/3.8_H8TakeoverVariables.py`
-- Impact: H7 and H8 V2 results cannot replicate V1 sample sizes (39,408 -> 12,408 rows), invalidating cross-version comparisons
-- Fix approach: Calculate Volatility directly from CRSP daily returns within H7 script instead of relying on incomplete external market_variables files
+### Large Monolithic stats.py Module
+- Issue: 5,170 lines in single file - difficult to navigate and maintain
+- Files: `2_Scripts/shared/observability/stats.py`
+- Impact: Slows development, increases merge conflict risk, harder to test
+- Fix approach: Split into logical submodules (temporal_stats.py, regression_stats.py, etc.)
 
-**Legacy Backup Files:**
-- Issue: Backup files left in source directories create confusion about what's current
-- Files: `2_Scripts/1_Sample/1.0_BuildSampleManifest-legacy.py`, `2_Scripts/3_Financial_V2/3.7_H7IlliquidityVariables.py.bak`
-- Impact: Risk of accidentally editing wrong file; unclear which version is authoritative
-- Fix approach: Move all `*-legacy.py`, `*.bak`, `*_old.py` files to `.___archive/` directory
-
-**Mixed V1/V2 Directory Convention:**
-- Issue: Three parallel financial directories (`3_Financial`, `3_Financial_V2`, `3_Financial_V3`) with unclear ownership
+### Version Directory Confusion (V1/V2/V3)
+- Issue: Three parallel versions of Financial and Econometric scripts create maintenance burden
 - Files: `2_Scripts/3_Financial/`, `2_Scripts/3_Financial_V2/`, `2_Scripts/3_Financial_V3/`
-- Impact: Developers uncertain which version to modify; risk of V3 being another parallel implementation instead of consolidation
-- Fix approach: Document V3 purpose (H9-specific only) and enforce V2 as primary; archive V1 scripts
+- Files: `2_Scripts/4_Econometric/`, `2_Scripts/4_Econometric_V2/`, `2_Scripts/4_Econometric_V3/`
+- Impact: Code duplication, unclear which version to use for new work
+- Fix approach: Document version purposes clearly, consider deprecating V1
 
-**Large Single-File Utilities:**
-- Issue: `observability_utils.py` is 4,652 lines - monolithic file mixing concerns (logging, stats, checksums, memory tracking)
-- Files: `2_Scripts/shared/observability_utils.py`
-- Impact: Difficult to navigate, test, and maintain; high merge conflict risk
-- Fix approach: Split into focused modules: `logging_utils.py`, `stats_utils.py`, `checksum_utils.py`, `memory_utils.py`
+### Type Error Baseline
+- Issue: 56 mypy type errors across 7 shared modules
+- Files: `2_Scripts/shared/observability/stats.py` (47 errors), `data_validation.py` (4 errors)
+- Impact: Reduces type safety benefits, may hide bugs
+- Fix approach: Follow type_errors_summary.md recommendations (add pandas/psutil stubs, fix dict types)
 
-**Inefficient DataFrame Operations:**
-- Issue: Multiple scripts use `df.loc[update_df.index, col] = update_df[col]` pattern for bulk updates
-- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py`, `2_Scripts/3_Financial_V2/3.2_H2Variables.py`
-- Impact: Slow on large datasets; pandas SettingWithCopyWarning risk
-- Fix approach: Use `pd.merge()` with `how='left'` or `df.update()` for bulk column updates
+### Import Path Inconsistency
+- Issue: Phase 62 optimized scripts use old import path `shared.observability_utils` instead of new `shared.observability`
+- Files: Scripts in `2_Scripts/4_Econometric_V2/`, `2_Scripts/5_Financial_V3/`
+- Impact: Inconsistent with Phase 60 standards (backward compatibility maintained via re-exports)
+- Fix approach: Update imports when modifying scripts
 
 ## Known Bugs
 
-**Silent Data Truncation in H8:**
-- Symptoms: H8 produces 12,408 observations across 2002-2004 instead of expected 39,408 across 2002-2018 with no explicit error
-- Files: `2_Scripts/3_Financial_V2/3.8_H8TakeoverVariables.py` (lines 550-556)
-- Trigger: Missing control variable filtering (`n_missing_controls <= max_missing`) drops all rows with >20% missing data
-- Workaround: The `.planning/debug/h7-h8-v2-sample-size-bug.md` documents fix approach (calculate Volatility inline in H7)
+### H7/H8 Data Truncation Bug (FIXED - Verification Pending)
+- Symptoms: H8 only used 2002-2004 data instead of full 2002-2018 period
+- Files: `2_Scripts/3_Financial_V2/3.7_H7IlliquidityVariables.py`
+- Trigger: Missing Volatility/StockRet controls for 2005-2018 due to dependency on incomplete market_variables
+- Workaround: Fixed in Phase 59 by calculating Volatility directly from CRSP data
+- Verification: Scripts need re-execution to confirm fix establishes correct baseline
 
-**Empty DataFrame Returns:**
-- Symptoms: 100+ functions return empty dicts/None/DataFrames on error paths instead of raising exceptions
-- Files: `2_Scripts/shared/financial_utils.py`, `2_Scripts/3_Financial_V2/*.py`, `2_Scripts/4_Econometric_V2/*.py`
-- Trigger: Data validation failures propagate as empty containers
-- Workaround: Downstream scripts check for empty returns but error messages are lost
-
-**Division by Zero Guards:**
-- Symptoms: Multiple functions return 0.0 for `duration_seconds <= 0` to avoid division by zero
-- Files: `2_Scripts/2_Text/2.1_TokenizeAndCount.py` (line 575), `2_Scripts/2_Text/2.2_ConstructVariables.py` (line 216)
-- Trigger: Invalid duration calculations from transcript timestamps
-- Workaround: Graceful degradation to 0.0 masks underlying data quality issues
+### Empty DataFrame Returns Without Warnings
+- Symptoms: Scripts silently return empty DataFrames when data filtering removes all rows
+- Files: Multiple scripts return `{}` or `pass` in error handlers
+- Trigger: Aggressive filtering, missing input data, schema mismatches
+- Fix approach: Add explicit checks for empty results with informative error messages
 
 ## Security Considerations
 
-**Subprocess Calls Without Input Validation:**
-- Risk: subprocess.run() calls don't validate file paths before execution
-- Files: `2_Scripts/shared/iv_regression.py`, `2_Scripts/shared/panel_ols.py`
-- Current mitigation: No shell=True usage reduces injection risk
-- Recommendations: Add path validation via `validate_input_file()` before subprocess calls
+### Environment Variable Handling
+- Risk: WRDS_PASSWORD referenced in code (schema only, not hardcoded values)
+- Files: `2_Scripts/shared/env_validation.py`
+- Current mitigation: Password marked as optional, warning comment about using keyring instead
+- Recommendations: Ensure no actual passwords in version control, use keyring/secrets manager
 
-**CSV File Parsing:**
-- Risk: `pd.read_csv()` calls without explicit encoding or size limits
-- Files: `2_Scripts/2_Text/2.1_TokenizeAndCount.py` (line 695), `2_Scripts/shared/regression_helpers.py` (line 58)
-- Current mitigation: All CSV reads are from trusted data directories
-- Recommendations: Add `encoding='utf-8'` and `max_rows` guards for external dictionary files
+### Input Data Directory Exposed
+- Risk: `1_Inputs/` contains sensitive financial data (CRSP, Compustat, SDC M&A)
+- Files: `.gitignore` excludes `1_Inputs/` from version control
+- Current mitigation: Properly excluded from git
+- Recommendations: Document data licensing requirements, ensure no sample data committed
+
+### Gitignore Coverage
+- Risk: `.gitignore` is minimal (16 lines)
+- Files: `.gitignore`
+- Current mitigation: Core data directories excluded
+- Recommendations: Add common Python patterns (`.venv/`, `*.egg-info/`, `.mypy_cache/`)
 
 ## Performance Bottlenecks
 
-**Chunked Processing Without Proper Consolidation:**
-- Problem: Scripts process data in chunks but don't always optimize consolidation frequency
-- Files: `2_Scripts/3_Financial_V2/3.2_H2Variables.py` (lines 510-570), `2_Scripts/shared/chunked_reader.py`
-- Cause: Fixed chunk_size=1000 may not be optimal for all dataset sizes
-- Improvement path: Make chunk_size configurable via project.yaml and benchmark optimal values per step
+### Fuzzy Matching O(n^2) Complexity
+- Problem: Entity linking (1.2) uses fuzzy string matching with O(n^2) complexity
+- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py`
+- Cause: Comparing each company name against all candidates
+- Improvement path: Add blocking/indexing, parallelization prototype available in git history
+- Expected speedup: 2-4x on 4-8 core systems
 
-**Excessive pd.concat() Calls:**
-- Problem: 60+ instances of `pd.concat(..., ignore_index=True)` create memory pressure
-- Files: All regression scripts, variable construction scripts
-- Cause: Incremental DataFrame building pattern
-- Improvement path: Pre-allocate DataFrame with known size when possible, or use list-of-dicts aggregation then single concat
+### Single-Threaded Processing
+- Problem: Pipeline runs single-threaded by default (`thread_count: 1` in config)
+- Files: `config/project.yaml`
+- Cause: Determinism requirements prioritized over performance
+- Improvement path: Enable deterministic parallel RNG (prototype removed in Phase 16-03, available in git history)
+- Expected speedup: 2-4x depending on operation
 
-**Duplicate Computations in Rolling Windows:**
-- Problem: `3_Financial_V2/3.2_H2Variables.py` computes rolling windows per-firm without vectorization
-- Files: `2_Scripts/3_Financial_V2/3.2_H2Variables.py` (lines 517-543)
-- Cause: Loop-based `groupby("gvkey")` with rolling operations
-- Improvement path: Use pandas `.groupby().rolling()` with `transform()` for vectorized computation
+### Large File Memory Usage
+- Problem: Tokenization (2.1) loads full transcript data into memory
+- Files: `2_Scripts/2_Text/2.1_TokenizeAndCount.py` (1,309 lines)
+- Cause: Pandas loads entire Parquet files at once
+- Improvement path: Use chunked_reader.py for memory-aware processing
+- Expected improvement: 30-50% memory reduction
 
 ## Fragile Areas
 
-**String Matching Thresholds:**
-- Files: `2_Scripts/shared/string_matching.py`, `2_Scripts/1_Sample/1.2_LinkEntities.py`
-- Why fragile: Entity matching success rate depends on hardcoded similarity thresholds (default: 92)
-- Safe modification: Threshold values are now config-driven via `config/project.yaml`, not hardcoded in code
-- Test coverage: Unit tests in `tests/unit/test_fuzzy_matching.py` cover threshold variations
+### Control Variable Dependencies
+- Files: `2_Scripts/3_Financial_V2/3.7_H7IlliquidityVariables.py`, related V2 scripts
+- Why fragile: Scripts depend on specific columns from upstream outputs; missing columns cause silent data truncation
+- Safe modification: Add validation for expected columns before processing
+- Test coverage: Regression tests in `tests/regression/test_h7_h8_data_coverage.py` detect year coverage issues
 
-**Regression Specification:**
-- Files: `2_Scripts/shared/panel_ols.py`, `2_Scripts/4_Econometric_V2/*.py`
-- Why fragile: Panel OLS requires exact column names and data types; multicollinearity can silently drop variables
-- Safe modification: Always run `check_multicollinearity()` before `run_panel_ols()`; review VIF warnings
-- Test coverage: Integration tests verify regression output structure but not coefficient stability
+### Exception Handling Patterns
+- Files: Multiple scripts use `except Exception:` or `except:` with `pass`
+- Why fragile: Broad exception handlers swallow errors, making debugging difficult
+- Safe modification: Replace with specific exception types and logging
+- Test coverage: Limited - error propagation tests added in Phase 63
 
-**Path Resolution:**
-- Files: `2_Scripts/shared/path_utils.py`, all scripts using `get_latest_output_dir()`
-- Why fragile: Timestamp-based path resolution fails if output directories have non-timestamp names
-- Safe modification: All scripts now use `get_latest_output_dir()` instead of hardcoded `/latest/` symlinks (Phase 27 complete)
-- Test coverage: `tests/unit/test_data_validation.py` covers path validation
+### NotImplementedError Stubs
+- Files: `2_Scripts/4_Econometric/4.3_TakeoverHazards.py` - `run_cox_ph()` and `run_fine_gray()`
+- Why fragile: V1 legacy functions raise NotImplementedError when called
+- Safe modification: Implement using lifelines library or remove unused code path
+- Test coverage: None - these code paths are not tested
 
-**Year Range Filtering:**
-- Files: All financial variable construction scripts
-- Why fragile: Year_range inconsistencies between steps cause sample size mismatches
-- Safe modification: Centralize year_range in `config/project.yaml` and validate at script startup
-- Test coverage: No automated tests; manual verification via Phase 54 implementation audits
+### Regression Scripts Return Empty Dicts
+- Files: Multiple V2 regression scripts have placeholder `return {}` in load_data_config()
+- Why fragile: If config loading fails, scripts may proceed with empty config
+- Safe modification: Add validation for required config keys
+- Test coverage: Limited
 
 ## Scaling Limits
 
-**Memory Usage:**
-- Current capacity: Scripts handle 40K-80K observation datasets comfortably on 16GB RAM
-- Limit: Large transcript files (all years) may exceed memory if loaded without chunking
-- Scaling path: All scripts use `chunked_reader.py` or Parquet column selection; document in README
+### Dataset Size
+- Current capacity: ~50K transcripts (2002-2018), ~25M total rows
+- Limit: ~100K transcripts feasible with current architecture (16GB RAM)
+- Scaling path: See `SCALING.md` for detailed guidance on 2x, 10x, 100x scaling
 
-**CRSP Daily Data Processing:**
-- Current capacity: H7/H8 process CRSP daily stock data in chunks (see `chunked_reader.py`)
-- Limit: Full CRSP history (1926-present) would require incremental processing redesign
-- Scaling path: Current year_range=2002-2018 is manageable; document constraint
+### Memory Constraints
+- Current capacity: 16GB RAM recommended, 8GB minimum
+- Limit: Peak memory ~4GB during entity linking (Step 1.2)
+- Scaling path: Memory-aware throttling in `shared/chunked_reader.py`
 
-**Null Result Reproducibility:**
-- Current capacity: Can replicate all 9 hypotheses with identical null results
-- Limit: No framework for detecting if null results are due to implementation bugs vs genuine effects
-- Scaling path: Phase 54-55 implementation audits validate specification correctness
+### Parallelization
+- Current state: Single-threaded (determinism priority)
+- Limit: Parallel prototype removed but available in git history
+- Scaling path: Enable `thread_count: 4` or higher after deterministic parallel RNG implementation
 
 ## Dependencies at Risk
 
-**statsmodels 0.14.6:**
-- Risk: 0.14.0 introduced breaking GLM link name changes; future versions may deprecate features
-- Impact: All regression scripts depend on statsmodels OLS/IV functions
-- Migration plan: Documented in `.___archive/docs/DEPENDENCIES.md` - requires API validation testing before upgrade
+### statsmodels Version Pinning
+- Package: `statsmodels==0.14.6`
+- Risk: Pinned due to breaking changes in 0.14.0 (deprecated GLM link names)
+- Impact: Upgrading requires regression re-validation
+- Migration plan: See DEPENDENCIES.md for upgrade strategy
 
-**PyArrow 21.0.0:**
-- Risk: 23.0.0+ requires Python >= 3.10 (incompatible with target 3.8-3.13 range)
-- Impact: All Parquet I/O operations; upgrade would require dropping Python 3.8 support
-- Migration plan: `DEPENDENCIES.md` notes performance testing required; 21.0.0 supports target Python range
+### pyarrow Version Pinning
+- Package: `pyarrow==21.0.0`
+- Risk: Pinned for Python 3.8-3.13 compatibility; 23.0.0+ requires Python >= 3.10
+- Impact: Python version upgrade required for newer pyarrow
+- Migration plan: See DEPENDENCIES.md for upgrade strategy
 
-**linearmodels (unpinned):**
-- Risk: No version specified in requirements.txt; PanelOLS API changes could break regressions
-- Impact: `shared/panel_ols.py`, all econometric scripts (H1-H9)
-- Migration plan: Pin to tested version (likely 5.x series) and add to requirements.txt
-
-**numpy 2.3.2:**
-- Risk: numpy 2.x API has breaking changes from 1.x; Python 3.8 requires numpy<2
-- Impact: All numerical computing
-- Migration plan: Conditional requirement: `numpy<2` for Python 3.8, `numpy>=2` for Python 3.9+
+### rapidfuzz Optional Dependency
+- Package: `rapidfuzz>=3.14.0`
+- Risk: Optional dependency with graceful degradation
+- Impact: Lower entity match rates if not installed
+- Migration plan: Document in requirements.txt as optional with installation note
 
 ## Missing Critical Features
 
-**Automated Regression Coefficient Validation:**
-- Problem: No automated checks that regression results are numerically stable across runs
-- Blocks: Confidence that code changes don't subtly alter results
-- Priority: Medium - manual verification via Phase 54-55 audits
+### No CI/CD Pipeline
+- Problem: `.github/workflows/test.yml` exists but CI status unknown
+- Blocks: Automated testing on pull requests, deployment automation
+- Priority: Medium
 
-**Data Freshness Monitoring:**
-- Problem: No automated detection of stale intermediate outputs (e.g., if inputs change but outputs don't rebuild)
-- Blocks: Reproducibility guarantees for incremental pipeline runs
-- Priority: Low - current timestamp-based output directories prevent overwrites
+### No Database Backend
+- Problem: All data stored as Parquet files
+- Blocks: Incremental updates, efficient querying of subsets
+- Priority: Low (current approach sufficient for research use case)
 
-**End-to-End Pipeline Test:**
-- Problem: No single script runs entire pipeline and validates all outputs
-- Blocks: Quick validation that all steps work together after changes
-- Priority: Medium - `tests/integration/test_full_pipeline.py` exists but may not be comprehensive
+### No Monitoring/Observability Dashboard
+- Problem: Stats logged to files but no centralized view
+- Blocks: Real-time pipeline monitoring, historical performance tracking
+- Priority: Low
 
 ## Test Coverage Gaps
 
-**Econometric Model Outputs:**
-- What's not tested: Numerical stability of regression coefficients, VIF calculations, FDR corrections
-- Files: `2_Scripts/4_Econometric_V2/*.py`, `2_Scripts/shared/panel_ols.py`
-- Risk: Implementation bugs could produce misleading results without detection
-- Priority: High - add golden file tests for regression outputs (documented in Phase 54)
+### V1 Scripts Untested
+- What's not tested: All scripts in `2_Scripts/4_Econometric/` (V1 legacy)
+- Files: `2_Scripts/4_Econometric/*.py`
+- Risk: Bugs in V1 code may go undetected
+- Priority: Low (V2/V3 are active versions)
 
-**Text Processing Pipeline:**
-- What's not tested: Tokenization correctness, variable construction from transcripts, edge cases (empty transcripts)
-- Files: `2_Scripts/2_Text/2.1_TokenizeAndCount.py`, `2_Scripts/2_Text/2.2_ConstructVariables.py`
-- Risk: Silent data quality issues propagate to regressions
-- Priority: Medium - existing tests cover paths/validators but not content correctness
+### Integration Tests Require Data
+- What's not tested: Integration tests skip when output files not present
+- Files: `tests/integration/*.py`
+- Risk: Tests may not run in CI without data fixtures
+- Priority: Medium
 
-**Entity Linking:**
-- What's not tested: Fuzzy match quality, CUSIP/ticker linking accuracy
-- Files: `2_Scripts/1_Sample/1.2_LinkEntities.py`
-- Risk: Low match rates reduce sample size
-- Priority: Low - `tests/unit/test_fuzzy_matching.py` tests threshold logic but not real data
+### Coverage Threshold
+- What's not tested: Only 60% overall coverage required
+- Files: `pyproject.toml` - `fail_under = 60`
+- Risk: Significant code paths untested
+- Priority: Medium (tiered targets: Tier 1 at 90%+, Tier 2 at 80%+)
 
-**Financial Variable Construction:**
-- What's not tested: Correctness of Compustat/CRSP calculations (ROA, leverage, market cap, illiquidity)
-- Files: `2_Scripts/3_Financial_V2/*.py`, `2_Scripts/3_Financial_V3/*.py`
-- Risk: Calculation errors could invalidate all regression results
-- Priority: High - manually validated via Phase 54-55 audits but no automated tests
+### Stub Functions Not Tested
+- What's not tested: `NotImplementedError` stubs in TakeoverHazards.py
+- Files: `2_Scripts/4_Econometric/4.3_TakeoverHazards.py`
+- Risk: Code path exists but will fail at runtime
+- Priority: Low (V1 legacy, likely unused)
 
 ---
 
-*Concerns audit: 2026-02-10*
+*Concerns audit: 2026-02-12*

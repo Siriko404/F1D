@@ -1,150 +1,134 @@
 # External Integrations
 
-**Analysis Date:** 2025-02-10
+**Analysis Date:** 2026-02-12
 
 ## APIs & External Services
 
-**None** - This is a local data processing pipeline with no external API calls.
+**None** - This is a local data processing pipeline with no external API integrations.
 
-**Notes:**
-- No HTTP/HTTPS requests to external services
-- No webhook integrations
-- No cloud API dependencies (AWS, Azure, GCP)
-- `2_Scripts/shared/env_validation.py` includes placeholders for future API integrations:
-  - `API_TIMEOUT_SECONDS`
-  - `API_MAX_RETRIES`
-  - Currently unused (prepared for future expansion)
+The codebase processes pre-downloaded datasets from academic/commercial data providers (CRSP, Compustat, IBES, etc.). All data is read from local Parquet files in `1_Inputs/`.
 
 ## Data Storage
 
 **Databases:**
-- None (file-based only)
+- None - No database connections (SQLite, PostgreSQL, etc.)
 
 **File Storage:**
-- Local filesystem only (Parquet, CSV, Excel)
-- Primary format: Apache Parquet (via pyarrow)
-  - Columnar storage for efficient reads
-  - Column pruning in 13 critical scripts (30-50% memory reduction)
-- Secondary formats: CSV, Excel (openpyxl), JSON (metadata)
-
-**Data Sources (Input Files):**
-All data comes from local files in `1_Inputs/`:
-
-**Earnings Call Transcripts:**
-- `1_Inputs/Earnings_Calls_Transcripts/`
-  - `speaker_data_2002.parquet` through `speaker_data_2018.parquet`
-  - ~50K transcripts, ~2.5GB total
-  - Source: External vendor (not accessed via API)
-
-**Financial Market Data:**
-- `1_Inputs/CRSP_DSF/` - CRSP Daily Stock Returns
-  - Quarterly parquet files: `CRSP_DSF_YYYY_Q*.parquet`
-  - 1999-2022 coverage
-  - Source: CRSP (via WRDS, downloaded as files)
-
-- `1_Inputs/CRSPCompustat_CCM/` - CRSP/Compustat Merged
-  - Linking table (GVKEY-PERMNO mapping)
-  - Source: WRDS (downloaded as files)
-
-- `1_Inputs/comp_na_daily_all/` - Compustat North America
-  - Daily fundamental data
-  - Source: Compustat via WRDS
-
-- `1_Inputs/tr_ibes/` - IBES Analyst Forecasts
-  - `tr_ibes.parquet`
-  - Source: IBES via WRDS
-
-**Executive Data:**
-- `1_Inputs/Execucomp/` - Executive compensation
-- Source: Execucomp via WRDS
-
-**Event Data:**
-- `1_Inputs/SDC/` - M&A deal data
-- `CEO Dismissal Data 2021.02.03.xlsx`
-- Source: SDC Platinum
-
-**Reference Data:**
-- `1_Inputs/LM_dictionary/` - Loughran-McDonald Master Dictionary
-  - `Loughran-McDonald_MasterDictionary_1993-2024.csv` (9MB)
-  - Source: https://www.nd.edu/~mcdonald/Word_Lists.html
-
-- `1_Inputs/CCCL_instrument/` - Instrumental variable for liquidity analysis
-  - `instrument_shift_intensity_2005_2022.parquet`
-
-- `1_Inputs/FF1248/` - Fama-French factors
-- `1_Inputs/Siccodes12.zip`, `Siccodes48.zip` - Industry classification
+- Local filesystem only
+- Primary format: Parquet (via pyarrow)
+- Secondary formats: CSV, Excel (.xlsx)
+- All data stored in `1_Inputs/` (source) and `4_Outputs/` (results)
 
 **Caching:**
-- None (no caching layer)
+- None - No Redis, memcached, or similar
+
+## Data Sources (Local Files)
+
+**Financial Data:**
+- CRSP_DSF - Daily stock returns, prices, volumes
+  - Location: `1_Inputs/CRSP_DSF/`
+- Compustat (comp_na_daily_all) - Annual/quarterly financials
+  - Location: `1_Inputs/comp_na_daily_all/`
+- CRSP-Compustat CCM Link Table
+  - Location: `1_Inputs/CRSPCompustat_CCM/`
+
+**Analyst Data:**
+- I/B/E/S (tr_ibes) - Analyst forecasts, dispersion
+  - Location: `1_Inputs/tr_ibes/`
+
+**Executive Data:**
+- Execucomp - Executive compensation, CEO identification
+  - Location: `1_Inputs/Execucomp/`
+
+**Text Data:**
+- Earnings Call Transcripts
+  - Location: `1_Inputs/Earnings_Calls_Transcripts/`
+  - Files: `Unified-info.parquet`, `speaker_data_{year}.parquet`
+
+**Reference Data:**
+- Loughran-McDonald Master Dictionary - Sentiment word lists
+  - Location: `1_Inputs/LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv`
+- Fama-French Industry Classifications (FF1248)
+  - Location: `1_Inputs/FF1248/`
+- Manager Roles - Executive title patterns
+  - Location: `1_Inputs/Manager_roles/`
+
+**M&A Data:**
+- SDC Platinum - Mergers and acquisitions
+  - Location: `1_Inputs/SDC/`
+
+**Instruments:**
+- CCCL Instrument - Exogenous variation instrument
+  - Location: `1_Inputs/CCCL_instrument/instrument_shift_intensity_2005_2022.parquet`
+
+**Risk Data:**
+- Firm-Level Risk Measures (PRisk)
+  - Location: `1_Inputs/FirmLevelRisk/`
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- None (no authentication required)
-
-**Implementation:**
-- All data accessed via local file paths
-- No WRDS API credentials in code (data pre-downloaded)
-- No OAuth, API keys, or tokens
+- None - No authentication required
+- All data is pre-authenticated (licensed academic datasets)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None (no Sentry, Bugsnag, or similar services)
-- Error handling via try/except blocks in scripts
-- Logging to console and file (`3_Logs/`)
+- None - No Sentry, Rollbar, etc.
 
-**Logs:**
-- File-based logging in `3_Logs/`
-- Dual logging pattern:
-  - Console output via `shared/observability_utils.py > DualWriter`
-  - File logs with timestamps
-- Log format: `%(asctime)s [%(levelname)s] %(message)s`
-- Memory tracking via `psutil` (start/end/peak/delta)
-- Processing duration tracking in `stats.json` outputs
+**Logging:**
+- Custom `DualWriter` class at `2_Scripts/shared/observability/logging.py`
+- Logs to both stdout and file simultaneously
+- Log files written to `3_Logs/`
+- Format: `%(asctime)s [%(levelname)s] %(message)s`
 
-**No:**
-- Centralized logging (ELK, Splunk)
-- APM (Datadog, New Relic)
-- Distributed tracing
+**Memory Monitoring:**
+- `get_process_memory_mb()` in `2_Scripts/shared/observability/memory.py`
+- Uses psutil for process memory tracking
+
+**Performance:**
+- Throughput calculation in `2_Scripts/shared/observability/throughput.py`
+- Benchmark tests in `tests/performance/`
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- None (local execution only)
-- No Docker, Kubernetes, or cloud deployment
+- GitHub (repository hosting)
+- GitHub Actions (CI/CD runner: ubuntu-latest)
 
 **CI Pipeline:**
-- GitHub Actions (`.github/workflows/test.yml`)
-  - Triggers: Push/PR to main/master branches
-  - Matrix testing: Python 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
-  - Jobs:
-    - `test` - Unit and integration tests (skip E2E)
-    - `e2e-test` - End-to-end pipeline tests (Python 3.10 only)
-  - Coverage upload to Codecov (optional, soft-fail)
-  - Artifact retention: 30 days
-  - Timeout: 30 minutes for E2E tests
+- GitHub Actions at `.github/workflows/test.yml`
+- Multi-version testing (Python 3.8-3.13)
+- Coverage reporting to Codecov
+- Artifacts uploaded for test results and coverage
 
-**Test commands:**
-```bash
-pytest tests/ -m "not e2e" --cov=2_Scripts --cov-report=xml
-pytest tests/ -m e2e -v --timeout=1200
-```
+**CI Stages:**
+1. Checkout code
+2. Set up Python (matrix: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13)
+3. Cache pip dependencies
+4. Install dependencies
+5. Type check with mypy (continue-on-error)
+6. Run unit/integration tests (coverage threshold: 60%)
+7. Generate coverage summary
+8. Upload to Codecov
+9. Upload artifacts
+
+**E2E Tests:**
+- Separate job, runs only on Python 3.10
+- 30-minute timeout
+- Depends on unit tests passing
 
 ## Environment Configuration
 
 **Required env vars:**
-- None (no environment variables required)
+- `PYTHONPATH` - Must include `2_Scripts/` directory for module imports
+  - Used in CI: `PYTHONPATH: ${{ github.workspace }}/2_Scripts`
+  - Required for subprocess integration tests (see `tests/conftest.py`)
 
-**Secrets location:**
-- No secrets used
-- `shared/env_validation.py` validates environment but all vars optional
-- Future-proofed for API keys (see `API_TIMEOUT_SECONDS` placeholder)
+**Secrets:**
+- `CODECOV_TOKEN` - Optional, for Codecov uploads (private repos)
 
-**WRDS Credentials:**
-- Not stored in codebase
-- Data pre-downloaded from WRDS and committed as Parquet files
-- No live WRDS API calls
+**No .env files** - No runtime secrets or configuration
 
 ## Webhooks & Callbacks
 
@@ -154,45 +138,38 @@ pytest tests/ -m e2e -v --timeout=1200
 **Outgoing:**
 - None
 
-## Data Pipeline Architecture
+## External Python Packages
 
-**ETL Pattern:**
-- Batch processing (not streaming)
-- Local file I/O (no database connections)
-- Deterministic processing (fixed random seed: 42)
+**Typed via Stubs:**
+- linearmodels - Panel OLS, IV regression (no official type stubs)
+  - Custom stubs at `2_Scripts/stubs/`
 
-**Key Integration Points:**
+**Graceful Degradation:**
+- rapidfuzz - Fuzzy string matching
+  - Warning if missing, pipeline continues with reduced match quality
+  - See `2_Scripts/shared/string_matching.py:RAPIDFUZZ_AVAILABLE`
 
-**Entity Linking (`2_Scripts/1_Sample/1.2_LinkEntities.py`):**
-- 4-tier strategy for matching calls to firms:
-  - Tier 1: PERMNO + exact date match (CRSP)
-  - Tier 2: CUSIP8 + date match
-  - Tier 3: Fuzzy match via RapidFuzz (optional, >=92% similarity)
-  - Tier 4: Company name matching (token_sort_ratio, WRatio)
-- Links to CCM database (`1_Inputs/CRSPCompustat_CCM/`)
+- linearmodels - Econometric models
+  - ImportError handled in `2_Scripts/shared/panel_ols.py` and `iv_regression.py`
+  - `LINEARMODELS_AVAILABLE` flag for conditional imports
 
-**Text Processing (`2_Scripts/2_Text/2.1_TokenizeAndCount.py`):**
-- Loughran-McDonald dictionary lookups
-- sklearn.feature_extraction.text.CountVectorizer
-- No external NLP APIs (all local)
+## Data Flow Architecture
 
-**Econometric Analysis:**
-- statsmodels for OLS, fixed effects, IV regression
-- No external statistical services
-- Results written to local files (TXT, CSV, Parquet)
+```
+1_Inputs/ (Parquet/CSV) --> 2_Scripts/ (Processing) --> 4_Outputs/ (Results)
+        |                         |                            |
+        v                         v                            v
+    CRSP/Compustat         shared/ utilities            Regression tables
+    Earnings calls         Step-specific scripts       Summary statistics
+    LM Dictionary          Econometric models          Diagnostics
+```
 
-## Scaling Considerations
-
-**Current limits:**
-- ~50K transcripts, ~25M rows
-- Single-machine processing (no distributed computing)
-
-**Future scaling paths:**
-- Path A (2x): Enable parallel processing (`thread_count=4`)
-- Path B (10x): Throttling, column pruning, PyArrow Dataset API
-- Path C (100x): Requires Dask/Ray or database migration
-- See `SCALING.md` for detailed scaling strategies
+**Key Processing Steps:**
+1. Sample Manifest (1.x scripts) - Entity linking, tenure mapping
+2. Text Processing (2.x scripts) - Tokenization, variable construction
+3. Financial Features (3.x scripts) - Control variables, event flags
+4. Econometric Analysis (4.x scripts) - Panel OLS, IV, survival analysis
 
 ---
 
-*Integration audit: 2025-02-10*
+*Integration audit: 2026-02-12*
