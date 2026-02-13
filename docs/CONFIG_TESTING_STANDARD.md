@@ -2544,5 +2544,541 @@ tests/factories/
 
 ---
 
+## 10. Mocking and Test Data Patterns (TEST-05)
+
+This section defines mocking patterns using pytest-mock and test data best practices.
+
+### pytest-mock Integration
+
+pytest-mock provides the `mocker` fixture for clean mock management:
+
+```python
+# tests/unit/test_financial_utils.py
+"""Tests for financial utilities with mocking examples."""
+
+import pytest
+import pandas as pd
+import numpy as np
+from unittest.mock import patch, MagicMock
+
+
+class TestConstructVariables:
+    """Tests for construct_variables function."""
+
+    @pytest.fixture
+    def mock_compustat_data(self, sample_dataframe_factory):
+        """Factory-generated Compustat-like data.
+
+        Args:
+            sample_dataframe_factory: Factory for creating DataFrames.
+
+        Returns:
+            DataFrame with Compustat-like structure.
+        """
+        return sample_dataframe_factory(
+            n_rows=100,
+            columns={
+                "gvkey": [f"{i:06d}" for i in range(100)],
+                "fyear": [2000] * 100,
+                "at": [1000.0 + i * 10 for i in range(100)],  # Assets
+                "che": [100.0 + i for i in range(100)],        # Cash
+                "revt": [500.0 + i * 5 for i in range(100)],   # Revenue
+            }
+        )
+
+    def test_construct_variables_computes_cash_ratio(self, mock_compustat_data):
+        """Test that cash-to-assets ratio is computed correctly."""
+        from f1d.financial.v1.variables import construct_variables
+
+        result = construct_variables(mock_compustat_data)
+
+        assert "cash_ratio" in result.columns
+        assert result["cash_ratio"].iloc[0] == pytest.approx(0.1, rel=0.01)
+
+    @patch("f1d.financial.variables.load_compustat")
+    def test_construct_variables_handles_missing_data(
+        self,
+        mock_load,
+        mock_compustat_data
+    ):
+        """Test handling of missing Compustat data."""
+        mock_load.return_value = mock_compustat_data
+
+        # Test with missing values
+        mock_compustat_data.loc[0:5, "at"] = pd.NA
+
+        from f1d.financial.v1.variables import construct_variables
+        result = construct_variables(mock_compustat_data)
+
+        assert result["cash_ratio"].isna().sum() == 5  # Missing for NA assets
+
+    def test_construct_variables_with_mocker(self, mocker, mock_compustat_data):
+        """Test using pytest-mock's mocker fixture."""
+        # mocker provides automatic cleanup
+        mock_logger = mocker.patch("f1d.financial.variables.logger")
+
+        from f1d.financial.v1.variables import construct_variables
+        construct_variables(mock_compustat_data)
+
+        # Verify logger was called
+        mock_logger.info.assert_called()
+```
+
+### Mock Object Patterns
+
+#### Use pytest-mock for Auto-Cleanup
+
+```python
+# GOOD: pytest-mock fixture (auto-cleanup)
+def test_with_mocker(mocker):
+    """mocker fixture automatically cleans up after test."""
+    mock = mocker.patch("some.module.function")
+    # Test code here
+    # Mock automatically restored after test
+
+
+# ACCEPTABLE: unittest.mock.patch context manager
+def test_with_context_manager():
+    """Context manager provides explicit scope."""
+    with patch("some.module.function") as mock:
+        # Test code here
+        pass
+    # Mock restored when exiting context
+
+
+# AVOID: unittest.mock.patch decorator (no auto-cleanup on failure)
+@patch("some.module.function")
+def test_with_decorator(mock_func):
+    """Decorator style - less flexible."""
+    pass
+```
+
+#### Mock External Dependencies
+
+```python
+# Mock external APIs
+def test_wrds_connection_with_mock(mocker):
+    """Test WRDS connection handling."""
+    mock_connect = mocker.patch("wrds.Connection")
+    mock_conn = MagicMock()
+    mock_connect.return_value = mock_conn
+
+    # Test code that uses WRDS
+    from f1d.data.wrds import get_compustat_data
+    result = get_compustat_data()
+
+    mock_connect.assert_called_once()
+    mock_conn.get_table.assert_called_once()
+
+
+# Mock file system
+def test_file_writing_with_mock(mocker, tmp_path):
+    """Test file writing without actual I/O."""
+    # Use tmp_path for actual file tests, or mock for unit tests
+    mock_open = mocker.patch("builtins.open", mocker.mock_open())
+
+    from f1d.shared.io_utils import save_results
+    save_results({"data": "value"}, "output.json")
+
+    mock_open.assert_called_once_with("output.json", "w")
+```
+
+#### Don't Mock What You Own
+
+```python
+# BAD: Mocking internal business logic
+def test_with_internal_mock(mocker):
+    """This mocks the code you're trying to test."""
+    mock_calculate = mocker.patch("f1d.financial.variables.calculate_ratio")
+    mock_calculate.return_value = 0.5
+
+    # This test doesn't actually test calculate_ratio!
+    from f1d.financial.v1.variables import construct_variables
+    result = construct_variables(data)
+
+
+# GOOD: Test real implementation, mock external dependencies
+def test_with_external_mock(mocker):
+    """Mock external dependencies, test real business logic."""
+    # Mock external API
+    mocker.patch("f1d.external.api.fetch_data", return_value=sample_data)
+
+    # Test actual business logic
+    from f1d.financial.v1.variables import construct_variables
+    result = construct_variables(data)
+
+    # Verify business logic works correctly
+    assert result["cash_ratio"].mean() > 0
+```
+
+### Test Data Patterns
+
+#### Factory Fixtures for Generated Data
+
+```python
+# tests/factories/dataframe_factory.py
+"""Factory functions for test data generation."""
+
+import pandas as pd
+import numpy as np
+from typing import Optional
+
+
+def create_panel_data(
+    n_firms: int = 10,
+    n_years: int = 5,
+    seed: int = 42,
+    with_uncertainty: bool = True,
+    with_financial: bool = True,
+) -> pd.DataFrame:
+    """Create balanced panel data for testing.
+
+    Args:
+        n_firms: Number of firms (GVKEYs).
+        n_years: Number of years per firm.
+        seed: Random seed for reproducibility.
+        with_uncertainty: Include uncertainty measures.
+        with_financial: Include financial variables.
+
+    Returns:
+        DataFrame with panel structure.
+    """
+    np.random.seed(seed)
+    rows = n_firms * n_years
+
+    data = {
+        "gvkey": [f"{i//n_years:06d}" for i in range(rows)],
+        "year": [2000 + (i % n_years) for i in range(rows)],
+        "fyear": [2000 + (i % n_years) for i in range(rows)],  # Fiscal year
+    }
+
+    if with_uncertainty:
+        data.update({
+            "uncertainty": np.random.uniform(0, 1, rows),
+            "uncertainty_lm": np.random.uniform(0, 1, rows),
+        })
+
+    if with_financial:
+        data.update({
+            "at": np.random.uniform(100, 10000, rows),  # Assets
+            "che": np.random.uniform(10, 1000, rows),   # Cash
+            "revt": np.random.uniform(50, 5000, rows),  # Revenue
+            "investment": np.random.uniform(0, 0.5, rows),
+        })
+
+    return pd.DataFrame(data)
+
+
+def create_compustat_data(
+    n_obs: int = 1000,
+    seed: int = 42,
+    with_missing: bool = False,
+) -> pd.DataFrame:
+    """Create Compustat-like data for testing.
+
+    Args:
+        n_obs: Number of observations.
+        seed: Random seed for reproducibility.
+        with_missing: Include missing values.
+
+    Returns:
+        DataFrame with Compustat structure.
+    """
+    np.random.seed(seed)
+
+    data = {
+        "gvkey": [f"{np.random.randint(1, 500):06d}" for _ in range(n_obs)],
+        "fyear": np.random.randint(2000, 2020, n_obs),
+        "at": np.random.uniform(100, 10000, n_obs),
+        "che": np.random.uniform(10, 1000, n_obs),
+        "revt": np.random.uniform(50, 5000, n_obs),
+        "ni": np.random.uniform(-100, 500, n_obs),
+        "dvt": np.random.uniform(0, 100, n_obs),
+    }
+
+    df = pd.DataFrame(data)
+
+    if with_missing:
+        # Add 5% missing values
+        for col in ["at", "che", "revt", "ni"]:
+            mask = np.random.random(n_obs) < 0.05
+            df.loc[mask, col] = np.nan
+
+    return df
+```
+
+#### fixtures/ Directory for Static Test Files
+
+```
+tests/fixtures/
+├── sample_data/
+│   ├── sample_panel_10firms_5years.parquet   # Small test dataset
+│   ├── sample_transcripts_100.parquet        # 100 sample transcripts
+│   └── sample_compustat_1000.parquet         # 1000 sample observations
+│
+├── expected_outputs/
+│   ├── financial_variables_expected.parquet  # Expected output for regression
+│   └── uncertainty_scores_expected.parquet
+│
+└── baseline_checksums.json                   # For regression test validation
+```
+
+#### Deterministic Data with Seed Control
+
+```python
+# Always use explicit seeds for reproducibility
+def test_reproducible_random_data():
+    """Test that random data is reproducible with seed."""
+    np.random.seed(42)
+    data1 = np.random.randn(100)
+
+    np.random.seed(42)
+    data2 = np.random.randn(100)
+
+    np.testing.assert_array_equal(data1, data2)
+```
+
+### Anti-Patterns to Avoid
+
+#### Shared Mutable State in Fixtures
+
+```python
+# BAD: Shared mutable state
+@pytest.fixture
+def shared_data():
+    return {"value": 0}  # Mutable!
+
+def test_1(shared_data):
+    shared_data["value"] = 1  # Modifies shared state
+
+def test_2(shared_data):
+    assert shared_data["value"] == 0  # Fails if test_1 ran first!
+```
+
+```python
+# GOOD: Immutable or fresh data per test
+@pytest.fixture
+def fresh_data():
+    return {"value": 0}  # New dict each time
+
+def test_1(fresh_data):
+    fresh_data["value"] = 1  # Only affects this test's copy
+
+def test_2(fresh_data):
+    assert fresh_data["value"] == 0  # Always passes
+```
+
+#### Magic Numbers in Tests
+
+```python
+# BAD: Magic numbers
+def test_regression():
+    result = calculate_ratio(100, 50)
+    assert result == 0.5  # What do these numbers mean?
+
+
+# GOOD: Named constants with meaning
+def test_regression():
+    TOTAL_ASSETS = 100.0
+    CASH_HOLDINGS = 50.0
+    EXPECTED_CASH_RATIO = 0.5
+
+    result = calculate_cash_ratio(TOTAL_ASSETS, CASH_HOLDINGS)
+    assert result == EXPECTED_CASH_RATIO
+```
+
+#### Unparametrized Similar Tests
+
+```python
+# BAD: Copy-paste tests with minor variations
+def test_with_valid_input():
+    result = process("valid")
+    assert result.success
+
+def test_with_invalid_input():
+    result = process("invalid")
+    assert not result.success
+
+def test_with_empty_input():
+    result = process("")
+    assert not result.success
+
+
+# GOOD: Parametrized test
+@pytest.mark.parametrize("input_value,expected_success", [
+    ("valid", True),
+    ("invalid", False),
+    ("", False),
+])
+def test_process_various_inputs(input_value, expected_success):
+    result = process(input_value)
+    assert result.success == expected_success
+```
+
 ---
+
+## Appendix A: Quick Reference Card
+
+### Configuration Loading
+
+```python
+from f1d.shared.config import ProjectConfig
+
+# Load configuration
+config = ProjectConfig.from_yaml(Path("config/project.yaml"))
+
+# Access values
+year_start = config.data.year_start
+log_level = config.logging.level
+
+# Override via environment
+# export F1D_DATA__YEAR_START=2005
+```
+
+### Environment Variables
+
+```python
+from f1d.shared.env import EnvConfig
+
+# Load environment config
+env = EnvConfig()
+
+# Access secrets safely
+if env.wrds_password:
+    password = env.get_wrds_password()  # Only when needed
+```
+
+### Output Management
+
+```python
+from f1d.shared.output import OutputManager
+
+# Create output directory
+manager = OutputManager(Path("results/financial"))
+output_dir = manager.create_output_dir()
+
+# Register outputs with checksums
+manager.register_output(output_file, "Financial variables")
+manager.save_checksums()
+```
+
+### Structured Logging
+
+```python
+from f1d.shared.logging import configure_logging, get_logger
+
+# Configure logging
+configure_logging(log_level="INFO", json_output=False)
+
+# Use with context
+logger = get_logger(__name__)
+log = logger.bind(stage="financial")
+log.info("processing_started", rows=1000)
+```
+
+### Test Coverage Targets
+
+| Tier | Location | Target |
+|------|----------|--------|
+| Tier 1 | `src/f1d/shared/` | 90% |
+| Tier 2 | `src/f1d/{stage}/` | 80% |
+| Overall | All | 70% |
+
+### Test Naming Pattern
+
+```
+test_<module>_<function>_<scenario>
+```
+
+Examples:
+- `test_run_panel_ols_valid_input_returns_results`
+- `test_validate_path_nonexistent_raises_error`
+
+---
+
+## Appendix B: Related Standards
+
+### ARCHITECTURE_STANDARD.md
+
+**Cross-references:**
+- Section 1 (ARCH-01): Folder structure for config/ and tests/
+- Section 2 (ARCH-02): Module tier system for coverage targets
+- Section 3 (ARCH-03): Data directory structure
+- Appendix A: Migration guide (sys.path.insert elimination)
+
+**Key alignment:**
+- config/ directory defined in ARCH-01
+- tests/ structure mirrors src/ (ARCH-01)
+- Module tiers (Tier 1, 2, 3) inform coverage targets
+
+### CODE_QUALITY_STANDARD.md
+
+**Cross-references:**
+- Section 1 (NAM-01 to NAM-05): Naming conventions for test functions
+- Section 2 (CODE-01): Docstring standards for configuration classes
+- Section 3 (CODE-02): Type hint requirements for configuration models
+- Section 5 (CODE-05): Error handling in configuration loading
+
+**Key alignment:**
+- Test naming follows `test_<module>_<function>_<scenario>` pattern
+- Configuration classes use Google-style docstrings
+- Type hints required for all configuration models
+
+### SCRIPT_DOCSTANDARD.md
+
+**Cross-references:**
+- Script header documentation for configuration usage
+- Output file documentation requirements
+
+---
+
+## Appendix C: Anti-Patterns Summary
+
+### Configuration Anti-Patterns
+
+| Anti-Pattern | Issue | Solution |
+|--------------|-------|----------|
+| `sys.path.insert` | Import fragility (20+ files) | src-layout with pip install -e |
+| Raw dict config | No validation, no type safety | pydantic-settings models |
+| Secrets in YAML | Exposed in logs and git | SecretStr + .env files |
+| Hardcoded paths | Not portable | Configuration + Path objects |
+| Configuration sprawl | Multiple overlapping configs | Single project.yaml |
+
+### Testing Anti-Patterns
+
+| Anti-Pattern | Issue | Solution |
+|--------------|-------|----------|
+| Fixture pyramids | Deep nesting, hard to debug | Factory fixtures |
+| Coverage theater | High %, no behavior testing | Focus on edge cases |
+| Shared mutable state | Test order dependency | Fresh data per test |
+| Magic numbers | Unexplained values | Named constants |
+| Unparametrized similar tests | Code duplication | @pytest.mark.parametrize |
+| Mocking what you own | Doesn't test real code | Mock external only |
+
+### Logging Anti-Patterns
+
+| Anti-Pattern | Issue | Solution |
+|--------------|-------|----------|
+| Logging secrets | Security exposure | SecretStr protection |
+| print() statements | No structure, hard to parse | structlog |
+| Unstructured messages | Hard to query | JSON format + context binding |
+| Missing context | Can't correlate logs | logger.bind() for context |
+
+---
+
+## References
+
+- [Pydantic Settings Documentation](https://docs.pydantic.dev/latest/concepts/pydantic_settings/)
+- [structlog Documentation](https://www.structlog.org/en/stable/logging-best-practices.html)
+- [pytest Documentation](https://docs.pytest.org/en/stable/how-to/fixtures.html)
+- [pytest-cov Documentation](https://pytest-cov.readthedocs.io/)
+- [pytest-mock Documentation](https://pytest-mock.readthedocs.io/)
+- [PyPA src-layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
+- [Five Advanced Pytest Fixture Patterns](https://www.inspiredpython.com/article/five-advanced-pytest-fixture-patterns)
+
+---
+
+*Last updated: 2026-02-13*
+*Version: 5.0*
+*Status: DEFINITION - Implementation deferred to v6.0+*
 
