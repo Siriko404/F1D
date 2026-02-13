@@ -4402,8 +4402,8 @@ def compute_step31_input_stats(
 
 def compute_step31_process_stats(
     merge_results: Dict[str, Dict[str, int]],
-    variable_coverage_df: pd.DataFrame = None,
-    winsorized_cols: List[str] = None,
+    variable_coverage_df: Optional[pd.DataFrame] = None,
+    winsorized_cols: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Analyze Step 3.1 (Firm Controls) construction process.
@@ -4475,7 +4475,7 @@ def compute_step31_process_stats(
 
 def compute_step31_output_stats(
     output_df: pd.DataFrame,
-    variables_list: List[str] = None,
+    variables_list: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Analyze Step 3.1 (Firm Controls) output.
@@ -4621,8 +4621,8 @@ def compute_step32_input_stats(
 
 def compute_step32_process_stats(
     per_year_stats: List[Dict[str, Any]],
-    return_windows: List[Dict[str, Any]] = None,
-    liquidity_windows: List[Dict[str, Any]] = None,
+    return_windows: Optional[List[Dict[str, Any]]] = None,
+    liquidity_windows: Optional[List[Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
     Analyze Step 3.2 (Market Variables) construction process.
@@ -4734,7 +4734,7 @@ def compute_step32_process_stats(
 
 def compute_step32_output_stats(
     output_df: pd.DataFrame,
-    variables_list: List[str] = None,
+    variables_list: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Analyze Step 3.2 (Market Variables) output.
