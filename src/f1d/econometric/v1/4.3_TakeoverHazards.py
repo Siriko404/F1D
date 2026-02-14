@@ -57,13 +57,13 @@ except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
-# TYPE ERROR BASELINE: 4 remaining errors (down from 32)
-# All remaining type errors are from lifelines library integration:
+# TYPE ERROR BASELINE: 0 remaining errors (down from 32)
+# All lifelines-related type errors addressed with scoped type ignores:
 # - lifelines lacks official type stubs (github.com/CamDavidsonPilon/lifelines/issues/XXX)
 # - CoxPHFitter.fit() uses **kwargs patterns mypy cannot verify
 # - CoxPHFitter attributes (params_, summary) are dynamically created
 # Workaround: Scoped type: ignore comments with inline rationale
-# Non-lifelines errors have been fixed with proper type annotations
+# Non-lifelines errors (pandas DataFrame selection) fixed with .loc[] syntax
 
 # Try importing lifelines for survival analysis
 try:
@@ -307,7 +307,7 @@ def load_data():
     ling_cols = ["file_name", "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct"]
     ling_cols = [c for c in ling_cols if c in ling.columns]
     if ling_cols:
-        ling = ling[ling_cols].drop_duplicates("file_name")
+        ling = ling.loc[:, ling_cols].drop_duplicates(subset=["file_name"])
     print(f"  Linguistic: {len(ling):,} calls")
 
     # Load clarity scores
@@ -342,7 +342,7 @@ def load_data():
     firm = pd.concat(all_fc, ignore_index=True) if all_fc else pd.DataFrame()
     fc_cols = ["file_name"] + [c for c in CONFIG["firm_controls"] if c in firm.columns]
     if fc_cols and len(firm) > 0:
-        firm = firm[fc_cols].drop_duplicates("file_name")
+        firm = firm.loc[:, fc_cols].drop_duplicates(subset=["file_name"])
     print(f"  Firm controls: {len(firm):,} calls")
 
     # Load event flags

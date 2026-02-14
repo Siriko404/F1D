@@ -1,0 +1,38 @@
+# Takeover Hazards Type Error Analysis (2026-02-14)
+
+## Summary
+- **Initial errors:** 32 (per plan 77-16)
+- **Errors before this run:** 2 (pandas DataFrame selection type inference)
+- **Errors after fixes:** 0
+- **Status:** PASSED
+
+## Errors Found and Fixed
+
+### Error 1: Line 310 - pandas drop_duplicates type inference
+```
+error: No overload variant of "drop_duplicates" of "Series" matches argument type "str"  [call-overload]
+```
+**Root cause:** `ling[ling_cols]` was being inferred as Series when ling_cols is dynamically filtered
+**Fix:** Changed to `ling.loc[:, ling_cols].drop_duplicates(subset=["file_name"])` to ensure DataFrame selection
+
+### Error 2: Line 345 - Same pandas drop_duplicates issue
+```
+error: No overload variant of "drop_duplicates" of "Series" matches argument type "str"  [call-overload]
+```
+**Root cause:** `firm[fc_cols]` was being inferred as Series
+**Fix:** Changed to `firm.loc[:, fc_cols].drop_duplicates(subset=["file_name"])` to ensure DataFrame selection
+
+## Existing Type Ignores (12 total - all lifelines-related)
+
+All lifelines library type errors are handled with scoped type ignores:
+- Line 70: `# type: ignore[import-untyped]` - lifelines import
+- Line 75: `# type: ignore[misc,assignment]` - Optional import fallback
+- Line 176, 177: `# type: ignore[call-arg]` - CoxPHFitter constructor and fit
+- Line 252, 253: `# type: ignore[call-arg]` - CoxPHFitter constructor and fit
+- Lines 512, 535, 563, 585, 613, 635: `# type: ignore[call-arg]` - run_cox_ph/run_fine_gray calls
+
+## Verification
+```bash
+$ mypy src/f1d/econometric/v1/4.3_TakeoverHazards.py --show-error-codes
+Success: no issues found in 1 source file
+```
