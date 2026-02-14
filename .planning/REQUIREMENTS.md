@@ -3,6 +3,26 @@
 **Defined:** 2026-02-13
 **Core Value:** Every script must produce verifiable, reproducible results with complete audit trails
 
+## v6.1 Requirements
+
+Gap closure requirements identified during v6.0 audit. These address integration gaps and tech debt.
+
+### Import Pattern Compliance (IMPT)
+
+- [ ] **IMPT-01**: Eliminate all `sys.path.insert()` calls from src/f1d/ codebase
+- [ ] **IMPT-02**: Migrate all legacy `from shared.*` imports to `from f1d.shared.*`
+- [ ] **IMPT-03**: Ensure all tests execute without PYTHONPATH manipulation
+
+### Configuration Integration (CONF-I)
+
+- [ ] **CONF-I-01**: Integrate LoggingSettings with configure_logging() function
+- [ ] **CONF-I-02**: Scripts can load logging config from unified ProjectConfig
+
+### Test Environment (TEST-E)
+
+- [ ] **TEST-E-01**: Resolve pandas/numpy version compatibility in test environment
+- [ ] **TEST-E-02**: All Tier 1 regression tests execute without xfails due to env issues
+
 ## v6.0 Requirements
 
 Requirements for Architecture Standard Implementation. Each maps to roadmap phases.
@@ -66,32 +86,46 @@ Explicitly excluded. Documented to prevent scope creep.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
+### v6.1 Requirements (Phase 75)
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ARCH-01 | Phase 69 | Pending |
-| ARCH-02 | Phase 69 | Pending |
-| ARCH-03 | Phase 69 | Pending |
+| IMPT-01 | Phase 75 | Pending |
+| IMPT-02 | Phase 75 | Pending |
+| IMPT-03 | Phase 75 | Pending |
+| CONF-I-01 | Phase 75 | Pending |
+| CONF-I-02 | Phase 75 | Pending |
+| TEST-E-01 | Phase 75 | Pending |
+| TEST-E-02 | Phase 75 | Pending |
+
+### v6.0 Requirements (Phases 69-74)
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| ARCH-01 | Phase 69 | Complete |
+| ARCH-02 | Phase 69 | Complete |
+| ARCH-03 | Phase 69 | Complete |
 | TYPE-01 | Phase 70 | Complete |
 | TYPE-02 | Phase 70 | Complete |
 | TYPE-03 | Phase 70 | Complete |
-| CONF-01 | Phase 71 | Pending |
-| CONF-02 | Phase 71 | Pending |
-| CONF-03 | Phase 71 | Pending |
-| LOGG-01 | Phase 72 | Pending |
-| LOGG-02 | Phase 72 | Pending |
-| LOGG-03 | Phase 72 | Pending |
-| CICD-01 | Phase 73 | Pending |
-| CICD-02 | Phase 73 | Pending |
-| CICD-03 | Phase 73 | Pending |
-| TEST-01 | Phase 74 | Pending |
-| TEST-02 | Phase 74 | Pending |
-| TEST-03 | Phase 74 | Pending |
-| TEST-04 | Phase 74 | Pending |
+| CONF-01 | Phase 71 | Complete |
+| CONF-02 | Phase 71 | Complete |
+| CONF-03 | Phase 71 | Complete |
+| LOGG-01 | Phase 72 | Complete |
+| LOGG-02 | Phase 72 | Complete |
+| LOGG-03 | Phase 72 | Complete |
+| CICD-01 | Phase 73 | Complete |
+| CICD-02 | Phase 73 | Complete |
+| CICD-03 | Phase 73 | Complete |
+| TEST-01 | Phase 74 | Complete |
+| TEST-02 | Phase 74 | Complete |
+| TEST-03 | Phase 74 | Complete |
+| TEST-04 | Phase 74 | Complete |
 
 **Coverage:**
+- v6.1 requirements: 7 total
 - v6.0 requirements: 18 total
-- Mapped to phases: 18
-- Unmapped: 0 ✓
+- All mapped to phases ✓
 
 ---
 *Requirements defined: 2026-02-13*

@@ -12,6 +12,7 @@ Data processing pipeline for F1D thesis research. Milestones track major project
 - Completed **v4.0** Folder Structure Consolidation (Phase 64) - shipped 2026-02-12
 - Completed **v5.0** Architecture Standard Definition (Phases 65-68) - shipped 2026-02-13
 - Completed **v6.0** Architecture Standard Implementation (Phases 69-74) - shipped 2026-02-14
+- **v6.1** Architecture Compliance Gap Closure (Phase 75) - in progress
 
 ## Phases
 
@@ -236,4 +237,76 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 
 ---
 
-*Roadmap updated: 2026-02-14 (v6.0 milestone complete)*
+## v6.1 Gap Closure - IN PROGRESS
+
+**Milestone Goal:** Close all integration gaps identified in v6.0 audit to achieve full architecture standard compliance.
+
+**Depends on:** v6.0 Architecture Standard Implementation (COMPLETE)
+
+### Phase 75: Architecture Compliance Gap Closure
+
+**Goal:** Eliminate all legacy import patterns and integration gaps to achieve 100% src-layout compliance per ARCHITECTURE_STANDARD.md.
+
+**Depends on:** Phase 74 (Testing Infrastructure)
+
+**Gap Closure:** Closes gaps from v6.0-MILESTONE-AUDIT.md
+
+**Success Criteria** (what must be TRUE):
+1. Zero `sys.path.insert()` calls in src/f1d/ codebase
+2. Zero `from shared.*` imports in tests/ (all use `from f1d.shared.*`)
+3. LoggingSettings integrated with configure_logging() for unified config
+4. All sample scripts import using proper `f1d.shared.*` namespace
+5. All tests execute without PYTHONPATH manipulation
+6. mypy passes on all migrated files
+
+**Plans:** 5 plans across 3 waves
+
+Plans:
+- [ ] 75-01-PLAN.md — Migrate sample scripts to proper f1d.shared.* imports (Wave 1)
+- [ ] 75-02-PLAN.md — Migrate legacy test files to src-layout imports (Wave 2)
+- [ ] 75-03-PLAN.md — Integrate LoggingSettings with configure_logging() (Wave 2)
+- [ ] 75-04-PLAN.md — Fix panel_ols/iv_regression test environment compatibility (Wave 3)
+- [ ] 75-05-PLAN.md — Final verification and cleanup (Wave 3)
+
+---
+
+### Gap Analysis from v6.0 Audit
+
+**Integration Gaps:**
+| Gap | Files Affected | Root Cause |
+|-----|----------------|------------|
+| sys.path.insert() workarounds | 5 sample scripts | Incomplete Phase 69 migration |
+| Legacy `from shared.*` imports | 21 test files | Incomplete Phase 74 migration |
+| LoggingSettings not consumed | logging/config.py | Missing Phase 71→72 integration |
+
+**Flow Gaps:**
+| Flow | Break Point | Resolution |
+|------|-------------|------------|
+| Sample scripts use src-layout | Import statements | Plan 75-01 |
+| Config-driven logging | configure_logging() | Plan 75-03 |
+
+**Environmental Gaps:**
+| Gap | Impact | Resolution |
+|-----|--------|------------|
+| pandas/numpy version in tests | panel_ols tests blocked | Plan 75-04 |
+
+---
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74 -> 75
+
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 69. Architecture Migration | v6.0 | 3/3 | Complete | 2026-02-13 |
+| 70. Type Hints | v6.0 | 12/12 | Complete | 2026-02-14 |
+| 71. Configuration System | v6.0 | 3/3 | Complete | 2026-02-13 |
+| 72. Structured Logging | v6.0 | 5/5 | Complete | 2026-02-13 |
+| 73. CI/CD Pipeline | v6.0 | 3/3 | Complete | 2026-02-14 |
+| 74. Testing Infrastructure | v6.0 | 4/4 | Complete | 2026-02-14 |
+| 75. Gap Closure | v6.1 | 0/5 | Pending | - |
+
+---
+
+*Roadmap updated: 2026-02-14 (v6.1 gap closure phase added)*
