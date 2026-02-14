@@ -12,7 +12,7 @@ Data processing pipeline for F1D thesis research. Milestones track major project
 - Completed **v4.0** Folder Structure Consolidation (Phase 64) - shipped 2026-02-12
 - Completed **v5.0** Architecture Standard Definition (Phases 65-68) - shipped 2026-02-13
 - Completed **v6.0** Architecture Standard Implementation (Phases 69-74) - shipped 2026-02-14
-- **v6.1** Architecture Compliance Gap Closure (Phase 75) - in progress
+- **v6.1** Architecture Compliance Gap Closure (Phases 75-76) - in progress
 
 ## Phases
 
@@ -262,40 +262,62 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 **Plans:** 5 plans across 3 waves
 
 Plans:
-- [ ] 75-01-PLAN.md — Migrate sample scripts to proper f1d.shared.* imports (Wave 1)
-- [ ] 75-02-PLAN.md — Migrate legacy test files to src-layout imports (Wave 2)
-- [ ] 75-03-PLAN.md — Integrate LoggingSettings with configure_logging() (Wave 2)
-- [ ] 75-04-PLAN.md — Fix panel_ols/iv_regression test environment compatibility (Wave 3)
-- [ ] 75-05-PLAN.md — Final verification and cleanup (Wave 3)
+- [x] 75-01-PLAN.md — Migrate sample scripts to proper f1d.shared.* imports (Wave 1)
+- [x] 75-02-PLAN.md — Migrate legacy test files to src-layout imports (Wave 2)
+- [x] 75-03-PLAN.md — Integrate LoggingSettings with configure_logging() (Wave 2)
+- [x] 75-04-PLAN.md — Fix panel_ols/iv_regression test environment compatibility (Wave 3)
+- [x] 75-05-PLAN.md — Final verification and cleanup (Wave 3)
+
+---
+
+### Phase 76: Stage Scripts Import Migration
+
+**Goal:** Migrate all remaining Tier 3 stage scripts to proper f1d.shared.* imports.
+
+**Depends on:** Phase 75 (Gap Closure - v6.0 scope)
+
+**Gap Closure:** Completes ROADMAP criterion #1 for full src/f1d/ compliance
+
+**Success Criteria** (what must be TRUE):
+1. Zero `sys.path.insert()` calls in src/f1d/financial/ modules
+2. Zero `sys.path.insert()` calls in src/f1d/econometric/ modules
+3. Zero `sys.path.insert()` calls in tests/performance/
+4. All stage scripts import using proper `f1d.shared.*` namespace
+5. mypy passes on migrated files (no new errors)
+
+**Plans:** 4 plans across 3 waves
+
+Plans:
+- [ ] 76-01-PLAN.md — Migrate financial v2 stage scripts to f1d.shared.* imports (Wave 1)
+- [ ] 76-02-PLAN.md — Migrate financial v1 stage scripts to f1d.shared.* imports (Wave 2)
+- [ ] 76-03-PLAN.md — Migrate econometric stage scripts to f1d.shared.* imports (Wave 2)
+- [ ] 76-04-PLAN.md — Migrate performance tests and final verification (Wave 3)
 
 ---
 
 ### Gap Analysis from v6.0 Audit
 
-**Integration Gaps:**
+**Integration Gaps (CLOSED in Phase 75):**
+| Gap | Files Affected | Status |
+|-----|----------------|--------|
+| sys.path.insert() in sample scripts | 5 sample scripts | ✓ CLOSED |
+| Legacy `from shared.*` imports in tests | 21 test files | ✓ CLOSED |
+| LoggingSettings not consumed | logging/config.py | ✓ CLOSED |
+| pandas/numpy version in tests | panel_ols tests | ✓ CLOSED |
+
+**Expanded Scope (Phase 76):**
 | Gap | Files Affected | Root Cause |
 |-----|----------------|------------|
-| sys.path.insert() workarounds | 5 sample scripts | Incomplete Phase 69 migration |
-| Legacy `from shared.*` imports | 21 test files | Incomplete Phase 74 migration |
-| LoggingSettings not consumed | logging/config.py | Missing Phase 71→72 integration |
-
-**Flow Gaps:**
-| Flow | Break Point | Resolution |
-|------|-------------|------------|
-| Sample scripts use src-layout | Import statements | Plan 75-01 |
-| Config-driven logging | configure_logging() | Plan 75-03 |
-
-**Environmental Gaps:**
-| Gap | Impact | Resolution |
-|-----|--------|------------|
-| pandas/numpy version in tests | panel_ols tests blocked | Plan 75-04 |
+| sys.path.insert() in financial/ | 15 stage scripts | Tier 3 - not migrated in Phase 69 |
+| sys.path.insert() in econometric/ | 11 stage scripts | Tier 3 - not migrated in Phase 69 |
+| sys.path.insert() in performance tests | 2 test files | Not in v6.0 audit scope |
 
 ---
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74 -> 75
+Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74 -> 75 -> 76
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -305,8 +327,9 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74 -> 75
 | 72. Structured Logging | v6.0 | 5/5 | Complete | 2026-02-13 |
 | 73. CI/CD Pipeline | v6.0 | 3/3 | Complete | 2026-02-14 |
 | 74. Testing Infrastructure | v6.0 | 4/4 | Complete | 2026-02-14 |
-| 75. Gap Closure | v6.1 | 0/5 | Pending | - |
+| 75. Gap Closure (v6.0 scope) | v6.1 | 5/5 | Complete | 2026-02-14 |
+| 76. Stage Scripts Migration | v6.1 | 0/4 | Pending | - |
 
 ---
 
-*Roadmap updated: 2026-02-14 (v6.1 gap closure phase added)*
+*Roadmap updated: 2026-02-14 (Phase 75 complete, Phase 76 added for expanded scope)*

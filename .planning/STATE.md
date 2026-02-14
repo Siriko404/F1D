@@ -5,23 +5,30 @@
 See: .planning/PROJECT.md (updated 2026-02-13)
 
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
-**Current focus:** v6.1 Architecture Compliance Gap Closure - COMPLETE
+**Current focus:** v6.1 Architecture Compliance Gap Closure - Phase 76 pending
 
 ## Current Position
 
-Milestone: v6.1 Architecture Compliance Gap Closure - COMPLETE
-Phase: 75 of 75 (Gap Closure) - COMPLETE
-Current Plan: 5 of 5
-Status: v6.1 Milestone Complete
-Last activity: 2026-02-14 — Plan 75-05: Final Verification complete
+Milestone: v6.1 Architecture Compliance Gap Closure - IN PROGRESS
+Phase: 76 of 76 (Stage Scripts Migration) - PENDING
+Current Plan: 0 of 4
+Status: Phase 75 complete (v6.0 audit scope), Phase 76 created for expanded scope
+Last activity: 2026-02-14 — Phase 76 created to complete ROADMAP criterion #1
 
-Progress: [247 plans completed across all milestones]
+Progress: [252 plans completed across all milestones]
 
 ```
 Milestone Progress - v6.1 Architecture Compliance Gap Closure
-[==============================================] 100% complete (5/5 plans)
+[==============================================] 56% complete (5/9 plans)
 
-Phase: 75 - Gap Closure
+Phase: 76 - Stage Scripts Migration
+Status: PENDING (0/4 plans)
+- 76-01: Financial V2 Scripts Migration - PENDING
+- 76-02: Financial V1 Scripts Migration - PENDING
+- 76-03: Econometric Scripts Migration - PENDING
+- 76-04: Performance Tests and Final Verification - PENDING
+
+Phase: 75 - Gap Closure (v6.0 Audit Scope)
 Status: COMPLETE (5/5 plans)
 - 75-01: Sample Scripts Import Migration - COMPLETE
 - 75-02: Legacy Test Imports Migration - COMPLETE
@@ -29,40 +36,16 @@ Status: COMPLETE (5/5 plans)
 - 75-04: Test Environment Compatibility - COMPLETE
 - 75-05: Final Verification and Cleanup - COMPLETE
 
-Phase: 74 - Testing Infrastructure
-Status: Complete (4/4 plans)
-- 74-01: Pytest Infrastructure Update - COMPLETE
-- 74-02: Unit Test Migration - COMPLETE
-- 74-03: Integration Test Migration - COMPLETE
-- 74-04: CI Coverage Enforcement - COMPLETE
-
-Phase: 73 - CI/CD Pipeline
-Status: Complete (3/3 plans)
-- 73-01: pyproject.toml Enhancement - COMPLETE
-- 73-02: GitHub Actions Workflow - COMPLETE
-- 73-03: Pre-commit Hooks - COMPLETE
-
-Phase: 72 - Structured Logging
-Status: Complete (5/5 plans)
-- 72-01: Structlog Integration - COMPLETE
-- 72-02: Context Binding - COMPLETE
-- 72-03: Dual Output Handlers - COMPLETE
-- 72-04: Financial V2 Scripts Migration - COMPLETE
-- 72-05: Remaining Scripts Migration - COMPLETE
-
-Phase: 71 - Configuration System
-Status: Complete (3/3 plans)
-- 71-01: Pydantic-Settings Base Configuration - COMPLETE
-- 71-02: Environment Variable Handling - COMPLETE
-- 71-03: Configuration Loader with Caching - COMPLETE
-
-Verification: v6.1 Milestone Audit PASSED
-- Zero sys.path.insert() calls in src/f1d/
+Verification: Phase 75 v6.0 Audit Scope PASSED
+- Zero sys.path.insert() calls in src/f1d/sample/
 - Zero from shared.* imports in tests/
 - LoggingSettings integrated with configure_logging()
 - Sample scripts use f1d.shared.* namespace (5 files)
 - Tests execute without PYTHONPATH manipulation (580 collected)
-- mypy passes on migrated files (no NEW errors)
+
+Remaining for Phase 76:
+- 36 Tier 3 stage scripts (financial/econometric)
+- 2 performance tests
 ```
 
 ## Performance Metrics
@@ -75,7 +58,7 @@ Verification: v6.1 Milestone Audit PASSED
 - v4.0: 5 plans (64-01 through 64-05)
 - v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
 - v6.0: 27 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03, 72-04, 72-05, 73-01, 73-02, 73-03, 74-01, 74-02, 74-03, 74-04)
-- v6.1: 5 plans (75-01, 75-02, 75-03, 75-04, 75-05)
+- v6.1: 5 plans (75-01 through 75-05), 4 pending (76-01 through 76-04)
 
 **Milestone Summary:**
 
