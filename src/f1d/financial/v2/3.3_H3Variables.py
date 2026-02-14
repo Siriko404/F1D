@@ -40,7 +40,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, cast
 
 import numpy as np
 import pandas as pd
@@ -206,7 +206,7 @@ def load_compustat_h3(compustat_file, sample_gvkeys=None):
     if sample_gvkeys is not None:
         sample_gvkeys = set(sample_gvkeys)
         before_rows = len(df)
-        df = df[df["gvkey"].astype(str).str.zfill(6).isin(sample_gvkeys)]
+        df = df.loc[df["gvkey"].astype(str).str.zfill(6).isin(sample_gvkeys), :]
         after_rows = len(df)
         print(f"  Filtered to sample: {after_rows:,} rows (from {before_rows:,})")
 
@@ -295,10 +295,10 @@ def annualize_quarterly_data(
     annual = (
         compustat_df.groupby(["gvkey", "fiscal_year"], as_index=False)[value_col]
         .sum()
-        .rename(columns={value_col: "annual_value"})
     )
+    annual = cast(pd.DataFrame, annual).rename(columns={value_col: "annual_value"})
 
-    return annual
+    return cast(pd.DataFrame, annual)
 
 
 def compute_div_stability(
@@ -541,10 +541,11 @@ def compute_fcf_growth(compustat_df: pd.DataFrame) -> pd.DataFrame:
     print("\nComputing FCF Growth...")
 
     # Filter to rows with valid data
-    df = compustat_df[
+    df = compustat_df.loc[
         (compustat_df["atq"] > 0)
         & (compustat_df["oancfy"].notna())
-        & (compustat_df["capxy"].notna())
+        & (compustat_df["capxy"].notna()),
+        :
     ].copy()
 
     # Compute FCF = (OANCF - CAPX) / AT
@@ -555,13 +556,13 @@ def compute_fcf_growth(compustat_df: pd.DataFrame) -> pd.DataFrame:
     # Aggregate to fiscal year level (take mean for each firm-year)
     fcf_annual = df.groupby(["gvkey", "fiscal_year"], as_index=False)["fcf"].mean()
 
-    # Sort by gvkey and fiscal_year
-    fcf_annual = fcf_annual.sort_values(["gvkey", "fiscal_year"])
+    # Sort by gvkey and fiscal_year - use .loc to ensure DataFrame type
+    fcf_annual = fcf_annual.loc[:, ["gvkey", "fiscal_year", "fcf"]].sort_values(["gvkey", "fiscal_year"])
 
     results = []
 
     for gvkey, group in fcf_annual.groupby("gvkey"):
-        group = group.sort_values("fiscal_year").reset_index(drop=True)
+        group = cast(pd.DataFrame, group).sort_values("fiscal_year").reset_index(drop=True)
 
         # Compute year-over-year growth
         group["fcf_prior"] = group["fcf"].shift(1)
@@ -614,8 +615,9 @@ def compute_firm_maturity(compustat_df: pd.DataFrame) -> pd.DataFrame:
     print("\nComputing Firm Maturity (RE/TE)...")
 
     # Filter to rows with valid equity > 0
-    df = compustat_df[
-        (compustat_df["seqq"].notna()) & (compustat_df["seqq"] > 0)
+    df = compustat_df.loc[
+        (compustat_df["seqq"].notna()) & (compustat_df["seqq"] > 0),
+        :
     ].copy()
 
     # Compute firm maturity = RE / TE
@@ -623,10 +625,10 @@ def compute_firm_maturity(compustat_df: pd.DataFrame) -> pd.DataFrame:
 
     # Aggregate to fiscal year level (take last/most recent value)
     # Sort by datadate to get end-of-year value
-    df = df.sort_values(["gvkey", "fiscal_year", "datadate"])
+    df = cast(pd.DataFrame, df).sort_values(["gvkey", "fiscal_year", "datadate"])
     maturity_annual = df.groupby(["gvkey", "fiscal_year"]).last().reset_index()
 
-    result = maturity_annual[["gvkey", "fiscal_year", "firm_maturity"]].copy()
+    result = maturity_annual.loc[:, ["gvkey", "fiscal_year", "firm_maturity"]].copy()
 
     if not result.empty:
         n_computed = result["firm_maturity"].notna().sum()
@@ -634,7 +636,7 @@ def compute_firm_maturity(compustat_df: pd.DataFrame) -> pd.DataFrame:
     else:
         print("  Warning: No firm maturity computed (insufficient data)")
 
-    return result
+    return cast(pd.DataFrame, result)
 
 
 def flag_dividend_payers(compustat_df: pd.DataFrame, window: int = 5) -> pd.DataFrame:

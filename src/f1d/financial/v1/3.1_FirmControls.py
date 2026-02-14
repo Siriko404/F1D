@@ -42,7 +42,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 import numpy as np
 import pandas as pd
@@ -199,11 +199,11 @@ def load_ibes(ibes_file: Path) -> pd.DataFrame:
     print(f"  Raw IBES: {len(df):,} rows")
 
     # Filter to EPS quarterly only
-    df = df[(df["MEASURE"] == "EPS") & (df["FISCALP"] == "QTR")].copy()
+    df = df.loc[(df["MEASURE"] == "EPS") & (df["FISCALP"] == "QTR"), :].copy()
     print(f"  After EPS/QTR filter: {len(df):,} rows")
 
     # Keep only needed columns
-    df = df[["TICKER", "CUSIP", "FPEDATS", "STATPERS", "MEANEST", "ACTUAL"]].copy()
+    df = df.loc[:, ["TICKER", "CUSIP", "FPEDATS", "STATPERS", "MEANEST", "ACTUAL"]].copy()
 
     # Normalize dates
     df["FPEDATS"] = pd.to_datetime(df["FPEDATS"], errors="coerce")
@@ -244,7 +244,7 @@ def load_cccl(cccl_file: Path) -> pd.DataFrame:
 
     # Filter to columns that exist
     available_cols = ["gvkey", "year"] + [c for c in intensity_cols if c in df.columns]
-    df = df[available_cols].copy()
+    df = df.loc[:, available_cols].copy()
     df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     print(
@@ -323,7 +323,8 @@ def compute_compustat_controls(
     # The calling function expects a dataframe with these columns that it can merge back to manifest on file_name
     # Since we have file_name in merged (from manifest), we can return the relevant columns.
 
-    results_df = merged[
+    results_df = merged.loc[
+        :,
         [
             "file_name",
             "Size",
@@ -336,7 +337,7 @@ def compute_compustat_controls(
         ]
     ].copy()
 
-    return results_df
+    return cast(pd.DataFrame, results_df)
 
 
 def compute_earnings_surprise(
@@ -729,10 +730,10 @@ def main() -> int:
     print("Combining Controls")
     print("=" * 60)
 
-    result = manifest[["file_name", "gvkey", "start_date", "year"]].copy()
-    result = result.merge(comp_controls, on="file_name", how="left")
-    result = result.merge(surp_controls, on="file_name", how="left")
-    result = result.merge(cccl_controls, on="file_name", how="left")
+    result = manifest.loc[:, ["file_name", "gvkey", "start_date", "year"]].copy()
+    result = cast(pd.DataFrame, result).merge(comp_controls, on="file_name", how="left")
+    result = cast(pd.DataFrame, result).merge(surp_controls, on="file_name", how="left")
+    result = cast(pd.DataFrame, result).merge(cccl_controls, on="file_name", how="left")
 
     print_stat("Final result rows", value=len(result))
 

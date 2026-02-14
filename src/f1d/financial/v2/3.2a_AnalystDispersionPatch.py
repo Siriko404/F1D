@@ -50,6 +50,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 import yaml
@@ -151,8 +152,8 @@ def load_ccm(ccm_file, linkprim_filter=None, linktype_filter=None):
 
     # Apply filters for valid links
     before_filter = len(ccm)
-    ccm = ccm[ccm["LINKPRIM"].isin(linkprim_filter)].copy()
-    ccm = ccm[ccm["LINKTYPE"].isin(linktype_filter)].copy()
+    ccm = ccm.loc[ccm["LINKPRIM"].isin(linkprim_filter), :].copy()
+    ccm = ccm.loc[ccm["LINKTYPE"].isin(linktype_filter), :].copy()
     after_filter = len(ccm)
 
     print(
@@ -164,7 +165,7 @@ def load_ccm(ccm_file, linkprim_filter=None, linktype_filter=None):
     ccm["gvkey_str"] = ccm["gvkey"].astype(str).str.zfill(6)
 
     # Keep only needed columns and deduplicate (keep first for ties)
-    ccm_map = ccm[["cusip", "gvkey_str"]].drop_duplicates(
+    ccm_map = cast(pd.DataFrame, ccm.loc[:, ["cusip", "gvkey_str"]]).drop_duplicates(
         subset=["cusip"], keep="first"
     )
 

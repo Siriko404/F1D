@@ -53,7 +53,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, cast
 
 import numpy as np
 import pandas as pd
@@ -1115,7 +1115,7 @@ def main():
     output_columns = [c for c in output_columns if c in final_output.columns]
 
     final_for_output = (
-        final_output[output_columns]
+        final_output.loc[:, output_columns]
         .sort_values(["gvkey", "fyear"])
         .reset_index(drop=True)
     )

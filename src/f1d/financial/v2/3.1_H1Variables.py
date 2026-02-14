@@ -43,7 +43,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 import numpy as np
 import pandas as pd
@@ -324,20 +324,21 @@ def compute_ocf_volatility(
     print("\nComputing OCF Volatility (5-year rolling StdDev of OANCF/AT)...")
 
     # Require positive AT and valid OCF
-    df = compustat_df[
-        (compustat_df["atq"] > 0) & (compustat_df["oancfy"].notna())
+    df = compustat_df.loc[
+        (compustat_df["atq"] > 0) & (compustat_df["oancfy"].notna()),
+        :
     ].copy()
 
     # Compute OCF/AT ratio
     df["ocf_at"] = df["oancfy"] / df["atq"]
 
     # Sort by gvkey and fiscal_year for rolling calculation
-    df = df.sort_values(["gvkey", "fiscal_year"])
+    df = cast(pd.DataFrame, df).sort_values(["gvkey", "fiscal_year"])
 
     results = []
 
     for gvkey, group in df.groupby("gvkey"):
-        group = group.sort_values("fiscal_year")
+        group = cast(pd.DataFrame, group).sort_values("fiscal_year")
 
         # Compute rolling standard deviation
         for _idx, row in group.iterrows():
@@ -798,10 +799,10 @@ def main() -> int:
 
     # Start with a base of unique firm-years from Compustat
     # Use the most recent datadate for each gvkey-fiscal_year combination
-    compustat_vars = compustat[["gvkey", "fiscal_year", "datadate"]].copy()
+    compustat_vars = compustat.loc[:, ["gvkey", "fiscal_year", "datadate"]].copy()
 
     # For each gvkey-fiscal_year, keep the most recent datadate
-    compustat_vars = compustat_vars.sort_values(
+    compustat_vars = cast(pd.DataFrame, compustat_vars).sort_values(
         ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
     ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
 

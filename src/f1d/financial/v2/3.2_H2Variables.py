@@ -56,7 +56,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
@@ -343,12 +343,12 @@ def compute_capex_dp(df: pd.DataFrame) -> pd.DataFrame:
     # Compute ratio
     df["capex_dp"] = df["capxy"] / df["dpq_safe"]
 
-    result = df[["gvkey", "fiscal_year", "datadate", "capex_dp"]].copy()
+    result = df.loc[:, ["gvkey", "fiscal_year", "datadate", "capex_dp"]].copy()
 
     n_computed = result["capex_dp"].notna().sum()
     print(f"  Computed capex_dp for {n_computed:,} observations")
 
-    return result
+    return cast(pd.DataFrame, result)
 
 
 def compute_sales_growth(df: pd.DataFrame) -> pd.DataFrame:
@@ -364,12 +364,12 @@ def compute_sales_growth(df: pd.DataFrame) -> pd.DataFrame:
     # Compute growth
     df["sales_growth"] = (df["saleq"] - df["sale_lag"]) / df["sale_lag"].abs()
 
-    result = df[["gvkey", "fiscal_year", "datadate", "sales_growth"]].copy()
+    result = df.loc[:, ["gvkey", "fiscal_year", "datadate", "sales_growth"]].copy()
 
     n_computed = result["sales_growth"].notna().sum()
     print(f"  Computed sales_growth for {n_computed:,} observations")
 
-    return result
+    return cast(pd.DataFrame, result)
 
 
 def compute_industry_year_median(
@@ -379,7 +379,7 @@ def compute_industry_year_median(
     print(f"\nComputing industry-year median for {value_col}...")
 
     # First compute FF48-year medians
-    ff48_medians = df.groupby(["ff48", "fiscal_year"])[value_col].transform(
+    ff48_medians: pd.Series[Any] = df.groupby(["ff48", "fiscal_year"])[value_col].transform(
         lambda x: x.median() if x.dropna().size >= min_firms else np.nan
     )
 
@@ -388,7 +388,7 @@ def compute_industry_year_median(
 
     # Compute FF12-year medians only for those that need it
     if needs_ff12.any():
-        ff12_medians = df.groupby(["ff12", "fiscal_year"])[value_col].transform(
+        ff12_medians: pd.Series[Any] = df.groupby(["ff12", "fiscal_year"])[value_col].transform(
             lambda x: x.median() if x.dropna().size >= min_firms else np.nan
         )
 
@@ -398,13 +398,13 @@ def compute_industry_year_median(
         result_medians = ff48_medians
 
     # Create result dataframe
-    result = df[["gvkey", "fiscal_year"]].copy()
+    result = df.loc[:, ["gvkey", "fiscal_year"]].copy()
     result[f"{value_col}_ind_median"] = result_medians.values
 
     n_valid = result[f"{value_col}_ind_median"].notna().sum()
     print(f"  Computed industry median for {n_valid:,} observations")
 
-    return result
+    return cast(pd.DataFrame, result)
 
 
 def compute_overinvest_dummy(
@@ -524,7 +524,7 @@ def compute_efficiency_score(
 
     # Select only needed columns to reduce memory
     needed_cols = ["gvkey", "fiscal_year", "overinvest_dummy", "underinvest_dummy"]
-    df_subset = df[needed_cols].copy()
+    df_subset = df.loc[:, needed_cols].copy()
 
     # Mark inefficient years
     df_subset["inefficient"] = (
@@ -550,8 +550,7 @@ def compute_efficiency_score(
     )
 
     # Filter to valid observations only (where rolling count >= min_years)
-    result = df_sorted[df_sorted["rolling_count"] >= min_years][
-        ["gvkey", "fiscal_year", "efficiency_score"]
+    result = df_sorted.loc[df_sorted["rolling_count"] >= min_years, ["gvkey", "fiscal_year", "efficiency_score"]
     ].reset_index(drop=True)
 
     # Clean up intermediate data
@@ -1217,7 +1216,7 @@ def main() -> int:
 
     # Get unique datadate per gvkey-fiscal_year for sorting
     # (overinvest_df already has unique gvkey-fiscal_year from drop_duplicates in compute_overinvest_dummy)
-    datadate_df = overinvest_df[["gvkey", "fiscal_year", "datadate"]].drop_duplicates(
+    datadate_df = overinvest_df.loc[:, ["gvkey", "fiscal_year", "datadate"]].drop_duplicates(
         subset=["gvkey", "fiscal_year"], keep="first"
     )
 
@@ -1323,16 +1322,16 @@ def main() -> int:
     # First, create a base of unique firm-years from Compustat
     # but filter to the sample manifest FIRST to reduce memory usage
     print("\n  Filtering to sample manifest...")
-    base = compustat[["gvkey", "fiscal_year", "datadate"]].copy()
-    base = base.sort_values(
+    base = compustat.loc[:, ["gvkey", "fiscal_year", "datadate"]].copy()
+    base = cast(pd.DataFrame, base).sort_values(
         ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
     ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
 
     print(f"  Base firm-years (all Compustat): {len(base):,}")
 
     # Prepare manifest for merge (convert year to fiscal_year)
-    manifest_for_merge = manifest[["gvkey", "year"]].drop_duplicates().copy()
-    manifest_for_merge.rename(columns={"year": "fiscal_year"}, inplace=True)
+    manifest_for_merge = manifest.loc[:, ["gvkey", "year"]].drop_duplicates().copy()
+    manifest_for_merge = manifest_for_merge.rename(columns={"year": "fiscal_year"})
 
     # Filter base to sample - this is the KEY step to reduce memory
     base = base.merge(manifest_for_merge, on=["gvkey", "fiscal_year"], how="inner")

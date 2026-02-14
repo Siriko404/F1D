@@ -39,7 +39,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, cast
 
 import pandas as pd
 
@@ -203,14 +203,14 @@ def load_sdc_data(sdc_path, year_start, year_end):
 
     # Check which columns exist
     available_cols = [c for c in required_cols if c in df.columns]
-    df = df[available_cols].copy()
+    df = df.loc[:, available_cols].copy()
 
     # Convert date and extract year
     df["Date Announced"] = pd.to_datetime(df["Date Announced"])
     df["year"] = df["Date Announced"].dt.year
 
     # Filter to sample period
-    df = df[df["year"].between(year_start, year_end)]
+    df = df.loc[df["year"].between(year_start, year_end), :]
     print(f"  Filtered to {year_start}-{year_end}: {len(df):,} deals")
 
     # Filter to public targets only (our sample is public firms)
@@ -314,24 +314,24 @@ def load_ccm_link(ccm_path):
     print(f"  Loaded CCM: {len(ccm):,} link records")
 
     # Standardize column names (handle case variations)
-    ccm.columns = [c.lower() for c in ccm.columns]
+    ccm.columns = pd.Index([c.lower() for c in ccm.columns])  # type: ignore[assignment]
 
     # Ensure cusip is 6-digit string
     if "cusip" in ccm.columns:
         ccm["cusip"] = ccm["cusip"].astype(str).str[:6].str.upper()
         # Filter out invalid CUSIPs
-        ccm = ccm[~ccm["cusip"].isin(["nan", "none", ""])]
+        ccm = ccm.loc[~ccm["cusip"].isin(["nan", "none", ""]), :]
     else:
         raise ValueError("CCM data missing 'cusip' column")
 
     # Filter to primary links (LINKPRIM='P' or 'C')
     if "linkprim" in ccm.columns:
-        ccm = ccm[ccm["linkprim"].isin(["P", "C", "p", "c"])]
+        ccm = ccm.loc[ccm["linkprim"].isin(["P", "C", "p", "c"]), :]
         print(f"  Filtered to primary links: {len(ccm):,}")
 
     # Get most recent GVKEY for each CUSIP (in case of multiple matches)
     ccm_map = ccm.groupby("cusip")["gvkey"].last().reset_index()
-    ccm_map.columns = ["cusip6", "gvkey"]
+    ccm_map.columns = pd.Index(["cusip6", "gvkey"])  # type: ignore[assignment]
     ccm_map["gvkey"] = ccm_map["gvkey"].astype(str).str.zfill(6)
 
     print(f"  Unique CUSIP-GVKEY mappings: {len(ccm_map):,}")
@@ -415,7 +415,7 @@ def load_firm_controls(firm_controls_dir, year_start, year_end):
     combined["gvkey"] = combined["gvkey"].astype(str).str.zfill(6)
 
     # Filter to sample period
-    combined = combined[combined["year"].between(year_start, year_end)]
+    combined = combined.loc[combined["year"].between(year_start, year_end), :]
 
     return combined
 

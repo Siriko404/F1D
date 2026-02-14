@@ -48,7 +48,7 @@ import time
 import warnings
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, cast
 
 import pandas as pd
 import yaml
@@ -241,7 +241,7 @@ def load_prisk_data(prisk_file):
         print(f"  Included optional columns: {available_optional}")
 
     output_cols = ["gvkey", "cal_yearq", "cal_q_end", "PRisk"] + available_optional
-    df = df[output_cols].copy()
+    df = df.loc[:, output_cols].copy()
 
     # Downcast numeric types for memory efficiency
     df["PRisk"] = df["PRisk"].astype("float32")
@@ -333,7 +333,7 @@ def load_compustat_dates(compustat_file, year_range=(2002, 2022)):
     df["fyear"] = df["fyear"].astype(int)
 
     # Filter to year range
-    df = df[df["fyear"].between(year_range[0], year_range[1])].copy()
+    df = df.loc[df["fyear"].between(year_range[0], year_range[1]), :].copy()
 
     # Create unique (gvkey, fyear, datadate) combinations
     # Some firms may have multiple datadates per fyear (rare), keep first

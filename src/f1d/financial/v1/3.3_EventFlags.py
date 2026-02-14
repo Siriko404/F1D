@@ -370,7 +370,7 @@ def compute_takeover_flags(manifest: pd.DataFrame, sdc: pd.DataFrame) -> pd.Data
 
         results.append(result)
 
-        if (idx + 1) % 10000 == 0:
+        if isinstance(idx, int) and (idx + 1) % 10000 == 0:
             print(f"  Processed {idx + 1:,} calls...")
 
     results_df = pd.DataFrame(results)

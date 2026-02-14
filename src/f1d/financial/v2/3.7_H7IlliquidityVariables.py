@@ -186,7 +186,7 @@ def load_ccm(ccm_file):
     ccm["gvkey_clean"] = ccm["gvkey"].astype(str).str.zfill(6)
 
     # Filter for primary links
-    ccm = ccm[ccm["LINKPRIM"].isin(["P", "C", "L"])]
+    ccm = ccm.loc[ccm["LINKPRIM"].isin(["P", "C", "L"]), :]
 
     print(f"  Loaded CCM: {len(ccm):,} links")
     return ccm

@@ -55,7 +55,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Hashable, List, cast
 
 import pandas as pd
 import yaml
@@ -185,7 +185,7 @@ def load_prisk(prisk_file, year_range=(2002, 2018)):
     df["quarter"] = [x[1] if x else None for x in parsed]
 
     # Filter to valid years
-    df = df[df["year"].between(year_range[0], year_range[1])]
+    df = df.loc[df["year"].between(year_range[0], year_range[1]), :]
     print(f"  Filtered to {year_range[0]}-{year_range[1]}: {len(df):,} observations")
 
     # Aggregate quarterly data to firm-year: mean(PRisk) across quarters
@@ -378,9 +378,9 @@ def load_uncertainty_measures(ling_vars_dir, year_range=(2002, 2018)):
     uncertainty_agg = df.groupby(["gvkey", "year"], as_index=False).agg(agg_dict)
 
     # Flatten column names (if using agg with dict, names get preserved)
-    uncertainty_agg.columns = [
+    uncertainty_agg.columns = pd.Index([
         col[0] if isinstance(col, tuple) else col for col in uncertainty_agg.columns
-    ]
+    ])  # type: ignore[assignment]
 
     n_firms = uncertainty_agg["gvkey"].nunique()
     n_obs = len(uncertainty_agg)
@@ -772,18 +772,22 @@ def validate_interaction(df):
 
     # VIF calculation
     print("\n  VIF Analysis:")
+    vif_results: List[Dict[str, Any]] = []
     try:
         vif_df = compute_vif(df, key_vars, vif_threshold=10.0)
 
-        vif_records = vif_df.to_dict("records")
-        for row in vif_records:
+        vif_records_raw: Any = vif_df.to_dict("records")
+        for row in vif_records_raw:
             var = str(row["variable"])  # type: ignore[call-overload]
             vif = float(row["VIF"])  # type: ignore[call-overload]
             exceeded = bool(row["threshold_exceeded"])  # type: ignore[call-overload]
             status = "*** EXCEEDS 10" if exceeded else "OK"
             print(f"    {var:<35} VIF={vif:.2f}  {status}")
-
-        vif_results = vif_records
+            vif_results.append({
+                "variable": var,
+                "VIF": vif,
+                "threshold_exceeded": exceeded,
+            })
 
     except Exception as e:
         print(f"    Could not compute VIF: {e}")

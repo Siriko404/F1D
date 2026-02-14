@@ -38,6 +38,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -198,7 +199,7 @@ def load_compustat_dates(base_path: Path) -> pd.DataFrame:
 
         # Filter by numeric fyear FIRST (cheaper operation)
         df = df.dropna(subset=["fyear"])
-        df = df[(df["fyear"] >= 2002) & (df["fyear"] <= 2018)]
+        df = df.loc[(df["fyear"] >= 2002) & (df["fyear"] <= 2018), :]
         print(f"[OK] Filtered to 2002-2018: {len(df):,} observations")
 
         # Drop rows with missing datadate
@@ -241,7 +242,7 @@ def build_fy_grid(compustat: pd.DataFrame) -> pd.DataFrame:
     print("=" * 80)
 
     # Create fy_end (fiscal year-end date)
-    fy_grid = compustat[["gvkey", "fyear", "datadate"]].copy()
+    fy_grid = compustat.loc[:, ["gvkey", "fyear", "datadate"]].copy()
     fy_grid = fy_grid.rename(columns={"datadate": "fy_end"})
     fy_grid = fy_grid.drop_duplicates()
 
@@ -254,7 +255,7 @@ def build_fy_grid(compustat: pd.DataFrame) -> pd.DataFrame:
     print(f"[OK] Built fiscal year grid: {len(fy_grid):,} firm-years")
     print(f"  - Unique firms: {fy_grid['gvkey'].nunique():,}")
 
-    return fy_grid
+    return cast(pd.DataFrame, fy_grid)
 
 
 def assign_ceo_to_fy(
