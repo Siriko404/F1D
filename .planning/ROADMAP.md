@@ -97,7 +97,52 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 | 74. Testing Infrastructure | v6.0 | 4/4 | Complete | 2026-02-14 |
 | 75. Gap Closure (v6.0 scope) | v6.1 | 5/5 | Complete | 2026-02-14 |
 | 76. Stage Scripts Migration | v6.1 | 4/4 | Complete | 2026-02-14 |
+| 77. Concerns Closure + Verification | v6.1 | 6/6 | Planned | - |
+| 78. Documentation Synchronization | v6.1 | 0/? | Not Planned | - |
+
+### Phase 77: Concerns Closure with Parallel Agents + Full Verification
+
+**Goal:** Close ALL concerns identified in `.planning/codebase/CONCERNS.md` using parallel gsd-executor agents
+
+**Depends on:** Phase 76 (Stage Scripts Migration)
+
+**Success Criteria** (what must be TRUE):
+1. Zero `sys.path.insert()` in entire codebase (already achieved in v6.1, double-check)
+2. Zero `from shared.*` legacy imports (already achieved, verify)
+3. Zero NotImplementedError in production code paths (survival analysis implemented)
+4. mypy passes with <10 type errors (down from 40+ type: ignore comments)
+5. ALL 41 scripts execute successfully on dry-run scale
+
+**Plans:** 6 plans created
+
+Plans:
+- [ ] 77-01-PLAN.md — Migrate Stage 2 text scripts to src/f1d/text/
+- [ ] 77-02-PLAN.md — Eliminate dynamic module imports (sample_utils.py)
+- [ ] 77-03-PLAN.md — Implement survival analysis with lifelines
+- [ ] 77-04-PLAN.md — Add tests for hypothesis scripts
+- [ ] 77-05-PLAN.md — Verify all scripts execute on dry-run
+- [ ] 77-06-PLAN.md — Update documentation for Phase 77 completion
 
 ---
 
-*Roadmap updated: 2026-02-14 (v6.1 milestone archived)*
+### Phase 78: Documentation Synchronization
+
+**Goal:** Update ALL documentation to reflect v6.1 migrated state
+
+**Depends on:** Phase 77 (Concerns Closure)
+
+**Success Criteria** (what must be TRUE):
+1. README.md reflects v5/6/6.1 standards and architecture
+2. All legacy READMEs have deprecation notices
+3. No broken internal links
+4. All code examples use current import patterns (`from f1d.shared.*`)
+5. New developer can clone, `pip install -e .`, and run any script without PYTHONPATH tricks
+
+**Plans:** Not yet planned
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 78 to break down)
+
+---
+
+*Roadmap updated: 2026-02-14 (Phases 77-78 added to v6.1)*
