@@ -44,10 +44,6 @@ from typing import Any, Dict
 import numpy as np
 import pandas as pd
 
-# Add script directory to Python path for shared imports
-_script_dir = Path(__file__).parent.parent
-_sys.path.insert(0, str(_script_dir))
-
 # Suppress warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 

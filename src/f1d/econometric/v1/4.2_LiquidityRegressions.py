@@ -60,10 +60,6 @@ from typing import Any, Dict
 import numpy as np
 import pandas as pd
 
-# Add parent directory to path for shared module imports
-script_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(script_dir))
-
 # Try importing statsmodels
 try:
     import statsmodels.formula.api as smf
@@ -74,26 +70,15 @@ except ImportError:
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
 
-try:
-    from f1d.shared.path_utils import (
-        OutputResolutionError,
-        ensure_output_dir,
-        get_latest_output_dir,
-        validate_input_file,
-        validate_output_path,
-    )
-except ImportError:
-    import sys as _sys
-
-    _script_dir = Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from f1d.shared.path_utils import (
-        OutputResolutionError,
-        get_latest_output_dir,
-    )
-
 import warnings
 
+from f1d.shared.path_utils import (
+    OutputResolutionError,
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+    validate_output_path,
+)
 from f1d.shared.regression_validation import (
     validate_columns,
     validate_sample_size,

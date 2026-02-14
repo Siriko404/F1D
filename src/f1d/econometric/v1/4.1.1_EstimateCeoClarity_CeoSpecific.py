@@ -46,11 +46,6 @@ from typing import Any, Dict
 
 import pandas as pd
 
-# Add 2_Scripts to Python path for shared module imports (MUST be before shared imports)
-# Script is in 2_Scripts/4_Econometric/, need to add 2_Scripts/ to path
-scripts_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(scripts_dir))
-
 # ==============================================================================
 # CLI Arguments & Prerequisites
 # ==============================================================================
@@ -126,21 +121,12 @@ from f1d.shared.reporting_utils import (
 )
 
 # Import shared path validation utilities
-try:
-    from f1d.shared.path_utils import (
-        ensure_output_dir,
-        get_latest_output_dir,
-        validate_input_file,
-        validate_output_path,
-    )
-except ImportError:
-    import sys as _sys
-
-    _script_dir = Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from f1d.shared.path_utils import (
-        get_latest_output_dir,
-    )
+from f1d.shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+    validate_output_path,
+)
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
