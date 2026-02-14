@@ -155,12 +155,14 @@ Plans:
 4. File output is JSON-formatted for machine parsing
 5. Existing log files continue to be written with enhanced structure
 
-**Plans:** 3 plans
+**Plans:** 5 plans (3 infrastructure + 2 gap closure)
 
 Plans:
-- [ ] 72-01-PLAN.md — Integrate structlog for structured JSON logging
-- [ ] 72-02-PLAN.md — Implement context binding for request/operation tracking
-- [ ] 72-03-PLAN.md — Configure dual output (console human-readable, file JSON)
+- [x] 72-01-PLAN.md — Integrate structlog for structured JSON logging
+- [x] 72-02-PLAN.md — Implement context binding for request/operation tracking
+- [x] 72-03-PLAN.md — Configure dual output (console human-readable, file JSON)
+- [ ] 72-04-PLAN.md — Gap closure: Migrate Financial V2 scripts to structured logging
+- [ ] 72-05-PLAN.md — Gap closure: Migrate shared observability and text scripts
 
 ---
 
@@ -222,10 +224,10 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 | 69. Architecture Migration | v6.0 | 3/3 | Complete | 2026-02-13 |
 | 70. Type Hints | v6.0 | 12/12 | Complete | 2026-02-14 |
 | 71. Configuration System | v6.0 | 3/3 | Complete | 2026-02-13 |
-| 72. Structured Logging | v6.0 | 0/3 | Not started | - |
+| 72. Structured Logging | v6.0 | 3/5 | Gap closure | - |
 | 73. CI/CD Pipeline | v6.0 | 0/3 | Not started | - |
 | 74. Testing Infrastructure | v6.0 | 0/4 | Not started | - |
 
 ---
 
-*Roadmap updated: 2026-02-13 (Phase 71 complete)*
+*Roadmap updated: 2026-02-14 (Phase 72 gap closure plans created)*
