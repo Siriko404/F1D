@@ -2,8 +2,28 @@
 
 ## Summary
 - **Total type ignores:** 43
-- **Target:** <20
-- **Status:** Pending - requires fixes and documentation
+- **Target:** <20 (all documented with rationale)
+- **Status:** In Progress - documentation added to in-scope files
+
+## Files in Scope (14 type ignores - all documented)
+
+### src/f1d/sample/ (6 type ignores)
+All 6 are `@track_memory_usage` decorator type variance issues.
+- Added TYPE ERROR BASELINE comments explaining rationale
+- Added inline comments: `# Decorator transforms return type`
+- Cannot be fixed with simple annotations - requires ParamSpec/overload pattern
+
+### src/f1d/shared/chunked_reader.py (1 type ignore)
+- Added TYPE ERROR BASELINE comment explaining decorator return type variance
+- Added inline comment: `# Decorator return type variance`
+
+### src/f1d/econometric/v1/4.3_TakeoverHazards.py (7 type ignores)
+- Added TYPE ERROR BASELINE comment explaining lifelines stub issues
+- Added inline comments: `# lifelines stubs unavailable` and `# Optional import fallback`
+- Cannot be fixed - requires lifelines library type stubs
+
+### src/f1d/financial/v1/ (0 type ignores)
+No type ignores in these files - 77-02 migration was successful
 
 ## Category Analysis
 

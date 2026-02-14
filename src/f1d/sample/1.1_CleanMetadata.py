@@ -163,9 +163,14 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
 # ==============================================================================
 # Memory-tracked operations
 # ==============================================================================
+# TYPE ERROR BASELINE: 3 type ignores in this module
+# - Lines 170, 180, 214: @track_memory_usage decorator transforms return type
+#   from original to Dict[str, Any] with result/memory_mb/timing_seconds keys.
+#   Rationale: Decorator uses callable TypeVar, mypy cannot infer transformed
+#   return type. Safe because all callers unpack result["result"] pattern.
 
 
-@track_memory_usage("load_metadata")  # type: ignore[misc]
+@track_memory_usage("load_metadata")  # type: ignore[misc]  # Decorator transforms return type
 def load_metadata_with_tracking(input_path: Path) -> Dict[str, Any]:
     """Load metadata with memory tracking"""
     validate_input_file(input_path, must_exist=True)
@@ -175,7 +180,7 @@ def load_metadata_with_tracking(input_path: Path) -> Dict[str, Any]:
     return df
 
 
-@track_memory_usage("clean_metadata")  # type: ignore[misc]
+@track_memory_usage("clean_metadata")  # type: ignore[misc]  # Decorator transforms return type
 def clean_metadata_with_tracking(df: pd.DataFrame) -> Dict[str, Any]:
     """Clean metadata (dedup + collision resolution) with memory tracking"""
     # Deduplication: Exact duplicates
@@ -209,7 +214,7 @@ def clean_metadata_with_tracking(df: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-@track_memory_usage("save_output")  # type: ignore[misc]
+@track_memory_usage("save_output")  # type: ignore[misc]  # Decorator transforms return type
 def save_output_with_tracking(df: pd.DataFrame, output_path: Path) -> Dict[str, str]:
     """Save output with memory tracking"""
     df.to_parquet(output_path, index=False)

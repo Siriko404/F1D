@@ -237,9 +237,14 @@ def normalize_company_name(name: Any) -> str:
 # ==============================================================================
 # Memory-tracked operations
 # ==============================================================================
+# TYPE ERROR BASELINE: 3 type ignores in this module
+# - Lines 246, 288, 308: @track_memory_usage decorator transforms return type
+#   from original to Dict[str, Any] with result/memory_mb/timing_seconds keys.
+#   Rationale: Decorator uses callable TypeVar, mypy cannot infer transformed
+#   return type. Safe because all callers unpack result["result"] pattern.
 
 
-@track_memory_usage("load_entities")  # type: ignore[misc]
+@track_memory_usage("load_entities")  # type: ignore[misc]  # Decorator transforms return type
 def load_entities_with_tracking(metadata_path: Path, ccm_path: Path) -> Dict[str, Any]:
     """Load metadata and CCM entities with memory tracking"""
     # Load metadata with column pruning
@@ -281,7 +286,7 @@ def load_entities_with_tracking(metadata_path: Path, ccm_path: Path) -> Dict[str
     return {"df": df, "ccm": ccm}
 
 
-@track_memory_usage("entity_linking")  # type: ignore[misc]
+@track_memory_usage("entity_linking")  # type: ignore[misc]  # Decorator transforms return type
 def entity_linking_with_tracking(
     df: pd.DataFrame, ccm: pd.DataFrame, paths: Dict[str, Path]
 ) -> Dict[str, str]:
@@ -301,7 +306,7 @@ def entity_linking_with_tracking(
     return {"result": "placeholder"}
 
 
-@track_memory_usage("save_output")  # type: ignore[misc]
+@track_memory_usage("save_output")  # type: ignore[misc]  # Decorator transforms return type
 def save_output_with_tracking(df: pd.DataFrame, output_path: Path) -> Dict[str, str]:
     """Save output with memory tracking"""
     df.to_parquet(output_path, index=False)

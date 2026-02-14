@@ -58,13 +58,18 @@ except ImportError:
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
 # Try importing lifelines for survival analysis
+# TYPE ERROR BASELINE: 7 type ignores in this module
+# - Line 73: Optional import fallback (CoxPHFitter = None when lifelines unavailable)
+# - Lines 510-633: Survival analysis stubs with complex signatures
+#   Rationale: lifelines library lacks type stubs; function signatures use **kwargs
+#   patterns that mypy cannot verify. These are V1 legacy stubs pending full impl.
 try:
     from lifelines import CoxPHFitter
 
     LIFELINES_AVAILABLE = True
 except ImportError:
     LIFELINES_AVAILABLE = False
-    CoxPHFitter = None  # type: ignore[misc,assignment]
+    CoxPHFitter = None  # type: ignore[misc,assignment]  # Optional import fallback
     print("WARNING: lifelines not available. Install with: pip install lifelines")
 
 # Import shared regression and reporting utilities
@@ -501,7 +506,7 @@ def main():
     out_file.write_text(f"Generated: {timestamp}\n")
 
     # Regime Model
-    cph_all_regime = run_cox_ph(  # type: ignore[call-arg]
+    cph_all_regime = run_cox_ph(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main,
         "Takeover",
         covariates_regime,
@@ -524,7 +529,7 @@ def main():
                 )
 
     # CEO Model
-    cph_all_ceo = run_cox_ph(  # type: ignore[call-arg]
+    cph_all_ceo = run_cox_ph(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main, "Takeover", covariates_ceo, "All Takeovers (CEO Clarity)", out_file
     )
     if cph_all_ceo:
@@ -552,7 +557,7 @@ def main():
     out_file_uninv = out_dir / "fine_gray_uninvited.txt"
     out_file_uninv.write_text(f"Generated: {timestamp}\n")
 
-    fg_uninv_regime = run_fine_gray(  # type: ignore[call-arg]
+    fg_uninv_regime = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main,
         "Uninvited",
         covariates_regime,
@@ -574,7 +579,7 @@ def main():
                     }
                 )
 
-    fg_uninv_ceo = run_fine_gray(  # type: ignore[call-arg]
+    fg_uninv_ceo = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main, "Uninvited", covariates_ceo, "Uninvited (CEO Clarity)", out_file_uninv
     )
     if fg_uninv_ceo:
@@ -602,7 +607,7 @@ def main():
     out_file_friend = out_dir / "fine_gray_friendly.txt"
     out_file_friend.write_text(f"Generated: {timestamp}\n")
 
-    fg_friend_regime = run_fine_gray(  # type: ignore[call-arg]
+    fg_friend_regime = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main,
         "Friendly",
         covariates_regime,
@@ -624,7 +629,7 @@ def main():
                     }
                 )
 
-    fg_friend_ceo = run_fine_gray(  # type: ignore[call-arg]
+    fg_friend_ceo = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main, "Friendly", covariates_ceo, "Friendly (CEO Clarity)", out_file_friend
     )
     if fg_friend_ceo:

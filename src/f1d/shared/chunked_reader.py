@@ -47,6 +47,12 @@ import yaml
 # Configure logger
 logger = logging.getLogger(__name__)
 
+# TYPE ERROR BASELINE: 1 type ignore in this module
+# - Line 294: @track_memory_usage decorator return type variance
+#   Rationale: Decorator transforms F -> Callable[..., Dict[str, Any]] but
+#   typing expects F -> F. Fixing requires ParamSpec and overload which adds
+#   complexity without practical benefit. Callers correctly handle wrapped return.
+
 
 def read_in_chunks(
     file_path: Path,
@@ -283,7 +289,7 @@ def track_memory_usage(operation_name: str) -> Callable[[F], F]:
                 "timing_seconds": end_time - start_time,
             }
 
-        return wrapper  # type: ignore[return-value]
+        return wrapper  # type: ignore[return-value]  # Decorator return type variance
 
     return decorator
 
