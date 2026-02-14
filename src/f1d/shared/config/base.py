@@ -11,13 +11,17 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import yaml
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from f1d.shared.config.datasets import DatasetsConfig
+from f1d.shared.config.hashing import HashingConfig
 from f1d.shared.config.paths import PathsSettings
+from f1d.shared.config.step_configs import StepsConfig
+from f1d.shared.config.string_matching import StringMatchingConfig
 
 
 class DataSettings(BaseSettings):
@@ -169,6 +173,11 @@ class ProjectConfig(BaseSettings):
         logging: Logging configuration.
         determinism: Determinism settings.
         chunk_processing: Chunk processing settings.
+        steps: Pipeline step configurations.
+        datasets: Dataset configurations.
+        hashing: File hashing configuration.
+        string_matching: Fuzzy string matching configuration.
+        analyst_detection: Analyst detection keywords.
 
     Environment Variables:
         F1D_DATA__YEAR_START: Override data.year_start
@@ -196,6 +205,11 @@ class ProjectConfig(BaseSettings):
     chunk_processing: ChunkProcessingSettings = Field(
         default_factory=ChunkProcessingSettings
     )
+    steps: Optional[StepsConfig] = None
+    datasets: Optional[DatasetsConfig] = None
+    hashing: HashingConfig = Field(default_factory=HashingConfig)
+    string_matching: Optional[StringMatchingConfig] = None
+    analyst_detection: Optional[Dict[str, str]] = None
 
     @classmethod
     def from_yaml(cls, path: Path) -> "ProjectConfig":
@@ -221,7 +235,38 @@ class ProjectConfig(BaseSettings):
         with open(path, "r", encoding="utf-8") as f:
             data: Dict[str, Any] = yaml.safe_load(f)
 
+        # Transform top-level step_XX keys into nested steps structure
+        data = cls._transform_step_configs(data)
+
         return cls.model_validate(data)
+
+    @classmethod
+    def _transform_step_configs(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform top-level step_XX keys into nested steps structure.
+
+        The YAML file has step_XX as top-level keys, but the model
+        expects them under a 'steps' key. This method groups them.
+
+        Args:
+            data: Raw YAML data dictionary.
+
+        Returns:
+            Transformed data with step configs grouped under 'steps'.
+        """
+        result = {}
+        steps_data: Dict[str, Any] = {}
+
+        for key, value in data.items():
+            if key.startswith("step_") and isinstance(value, dict):
+                # Move step_XX configs under steps:
+                steps_data[key] = value
+            else:
+                result[key] = value
+
+        if steps_data:
+            result["steps"] = steps_data
+
+        return result
 
     def validate_paths(self, base: Path) -> Dict[str, Path]:
         """Validate and resolve paths relative to a base directory.

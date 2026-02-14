@@ -228,8 +228,8 @@ class Step07Config(BaseStepConfig):
         },
         description="EPS growth settings",
     )
-    surprise_deciles: Dict[str, List[List[int]]] = Field(
-        default_factory=lambda: {"bins": [[-5], [-4], [-3], [-2], [-1], [0], [1], [2], [3], [4], [5]]},
+    surprise_deciles: Dict[str, List[int]] = Field(
+        default_factory=lambda: {"bins": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]},
         description="Surprise decile bins",
     )
     outputs: Dict[str, str] = Field(default_factory=dict, description="Output file names")
