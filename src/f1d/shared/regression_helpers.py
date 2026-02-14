@@ -29,7 +29,7 @@ Date: 2026-02-11
 """
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 import pandas as pd
 
@@ -359,7 +359,7 @@ def build_regression_sample(
             sample = sample.head(max_sample_size)
 
     # Step 8: Return sample with metadata
-    return sample
+    return cast(pd.DataFrame, sample)
 
 
 def specify_regression_models(model_configs: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -416,7 +416,7 @@ def prepare_regression_data(
     initial_n = len(df)
 
     # Filter to non-null ceo_id
-    df = df[df["ceo_id"].notna()].copy()
+    df = df.loc[df["ceo_id"].notna(), :].copy()
     print(f"  After ceo_id filter: {len(df):,} / {initial_n:,}")
     if stats:
         stats["processing"]["ceo_id_filter"] = initial_n - len(df)
@@ -434,7 +434,7 @@ def prepare_regression_data(
 
     # Filter to complete cases (vectorized)
     complete_mask = df[required].notna().all(axis=1)
-    df = df[complete_mask].copy()
+    df = df.loc[complete_mask, :].copy()
     print(f"  After complete cases filter: {len(df):,}")
 
     # Assign industry samples based on FF12

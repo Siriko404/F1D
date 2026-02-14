@@ -36,7 +36,7 @@ import logging
 import time
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Optional, TypeVar, Union, overload
+from typing import Any, Callable, Dict, Iterator, List, Optional, TypeVar, Union, cast, overload
 
 import pandas as pd
 import psutil
@@ -150,7 +150,7 @@ def read_dataset_lazy(
 
     dataset = ds.dataset(file_path, format="parquet")
     table = dataset.to_table(columns=columns)
-    return table.to_pandas()
+    return cast(pd.DataFrame, table.to_pandas())
 
 
 def process_in_chunks(

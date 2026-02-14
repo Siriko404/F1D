@@ -53,7 +53,7 @@ Date: 2026-02-11
 """
 
 import warnings
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Hashable, List, Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
@@ -84,7 +84,7 @@ except ImportError:
 
 def _check_thin_cells(
     df: pd.DataFrame, industry_col: str, time_col: str, min_firms: int = 5
-) -> Tuple[bool, Dict[str, int]]:
+) -> Tuple[bool, Dict[Any, int]]:
     """
     Check for thin industry-year cells.
 
@@ -100,12 +100,12 @@ def _check_thin_cells(
     if industry_col not in df.columns or time_col not in df.columns:
         return False, {}
 
-    cell_counts = df.groupby([industry_col, time_col]).size().to_dict()
+    cell_counts_raw = df.groupby([industry_col, time_col]).size().to_dict()
 
-    thin_cells = {k: v for k, v in cell_counts.items() if v < min_firms}
+    thin_cells = {k: v for k, v in cell_counts_raw.items() if v < min_firms}
     has_thin = len(thin_cells) > 0
 
-    return has_thin, cell_counts
+    return has_thin, cell_counts_raw
 
 
 def _format_coefficient_table(
@@ -501,7 +501,8 @@ def run_panel_ols(
         if compute_vif is not None:
             try:
                 # Get original df for VIF (before index set)
-                exog_for_vif = df[exog].dropna()
+                # Use .loc[:, exog] to ensure DataFrame type inference
+                exog_for_vif = df.loc[:, exog].dropna()
                 # Call with appropriate parameters based on function signature
                 if hasattr(compute_vif, "__code__") and "add_constant_col" in compute_vif.__code__.co_varnames:
                     vif_df = compute_vif(exog_for_vif, exog, add_constant_col=True, vif_threshold_local=vif_threshold)  # type: ignore[call-arg]

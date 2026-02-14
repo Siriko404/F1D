@@ -31,7 +31,7 @@ Date: 2026-02-11
 ================================================================================
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 
 import pandas as pd
 
@@ -94,7 +94,7 @@ def extract_ceo_fixed_effects(model: Any, ceo_col: str = "ceo_id") -> pd.Series:
     fe_params = model.params.filter(like=f"C({ceo_col})")
     # Extract CEO IDs from parameter names (format: C(ceo_id)[T.12345])
     fe_params.index = fe_params.index.str.extract(r"\[T\.(.*)\]")[0]
-    return fe_params
+    return cast(pd.Series[Any], fe_params)
 
 
 def extract_regression_diagnostics(model: Any) -> Dict[str, Any]:

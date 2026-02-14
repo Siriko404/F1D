@@ -30,7 +30,7 @@ Date: 2026-02-11
 ================================================================================
 """
 
-from typing import Dict, Union
+from typing import Dict, Mapping, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -163,7 +163,7 @@ def compute_financial_features(
         if controls:
             # Create a dict from the row and update with controls
             row_dict = row.to_dict()
-            row_dict.update(controls)
+            row_dict.update(controls)  # type: ignore[arg-type]
             features.append(row_dict)
 
     return pd.DataFrame(features)

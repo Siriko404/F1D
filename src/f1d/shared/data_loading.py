@@ -28,7 +28,7 @@ Date: 2026-02-11
 """
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 
 import pandas as pd
 
@@ -160,4 +160,4 @@ def load_all_data(
     print(f"  Unique CEOs: {combined['ceo_id'].nunique():,}")
     print(f"  Unique firms: {combined['gvkey'].nunique():,}")
 
-    return combined
+    return cast(pd.DataFrame, combined)

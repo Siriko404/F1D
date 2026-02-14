@@ -47,7 +47,7 @@ Date: 2026-02-11
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, cast
 
 import pandas as pd
 
@@ -222,7 +222,7 @@ def create_interaction(
     # Create interaction
     df_out[name] = df_out[var1_use] * df_out[var2_use]
 
-    return df_out
+    return cast(pd.DataFrame, df_out)
 
 
 def save_centered_intermediates(

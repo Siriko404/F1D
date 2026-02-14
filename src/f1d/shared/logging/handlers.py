@@ -17,9 +17,11 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union, cast
 
 import structlog
+from structlog.dev import ConsoleRenderer
+from structlog.processors import JSONRenderer
 
 
 # Default log directory
@@ -156,7 +158,7 @@ def configure_dual_output(
         file_handler.setLevel(getattr(logging, log_level.upper()))
 
         if file_json:
-            file_renderer = structlog.processors.JSONRenderer()
+            file_renderer: Union[JSONRenderer, ConsoleRenderer] = structlog.processors.JSONRenderer()
         else:
             file_renderer = structlog.dev.ConsoleRenderer(colors=False)
 

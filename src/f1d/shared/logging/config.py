@@ -20,9 +20,12 @@ from __future__ import annotations
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional, Union, cast, TYPE_CHECKING
 
 import structlog
+from structlog.dev import ConsoleRenderer
+from structlog.processors import JSONRenderer
+from structlog.stdlib import BoundLogger
 
 if TYPE_CHECKING:
     from f1d.shared.config.base import LoggingSettings
@@ -61,7 +64,7 @@ def configure_logging(
 
     if json_output:
         # JSON format for machine parsing
-        renderer = structlog.processors.JSONRenderer()
+        renderer: Union[JSONRenderer, ConsoleRenderer] = structlog.processors.JSONRenderer()
     else:
         # Human-readable console format with colors
         renderer = structlog.dev.ConsoleRenderer(colors=True)
@@ -103,7 +106,7 @@ def configure_logging(
         root_logger.addHandler(file_handler)
 
 
-def get_logger(name: Optional[str] = None) -> structlog.stdlib.BoundLogger:
+def get_logger(name: Optional[str] = None) -> BoundLogger:
     """Get a structured logger instance.
 
     Args:
@@ -112,7 +115,7 @@ def get_logger(name: Optional[str] = None) -> structlog.stdlib.BoundLogger:
     Returns:
         Bound logger instance.
     """
-    return structlog.get_logger(name)
+    return cast(BoundLogger, structlog.get_logger(name))
 
 
 __all__ = ["configure_logging", "get_logger"]

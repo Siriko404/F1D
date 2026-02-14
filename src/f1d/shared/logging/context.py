@@ -15,7 +15,7 @@ import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Generator, Optional
+from typing import Any, Generator, Optional, cast
 
 import structlog
 
@@ -61,8 +61,18 @@ def get_context() -> dict[str, Any]:
         Dictionary of current context bindings.
     """
     # structlog doesn't expose get directly, so we use a workaround
-    # by binding and checking what was there
-    return structlog.contextvars._context.get().copy() if structlog.contextvars._context.get() else {}
+    # by accessing the internal context var
+    # TYPE ERROR BASELINE: structlog.contextvars._context is internal API
+    # with no public equivalent. Using cast for type safety.
+    try:
+        context_var = getattr(structlog.contextvars, "_context", None)
+        if context_var is not None:
+            context_val = context_var.get()
+            if context_val is not None:
+                return cast(dict[str, Any], context_val.copy())
+    except (AttributeError, TypeError):
+        pass
+    return {}
 
 
 def clear_context() -> None:
