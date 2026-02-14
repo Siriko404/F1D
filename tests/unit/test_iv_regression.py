@@ -1,5 +1,5 @@
 """
-Unit tests for shared.iv_regression module.
+Unit tests for f1d.shared.iv_regression module.
 
 Tests verify IV regression wrapper functions:
 - Instrument validation
@@ -13,11 +13,8 @@ import pytest
 import pandas as pd
 import numpy as np
 from pathlib import Path
-import sys
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-
-from shared.iv_regression import (
+from f1d.shared.iv_regression import (
     run_iv2sls,
     run_iv2sls_panel,
     WeakInstrumentError,
