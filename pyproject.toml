@@ -108,10 +108,23 @@ omit = [
 ]
 
 [tool.coverage.report]
-# Minimum coverage required (fail_under in pyproject.toml uses overall threshold)
-# Tier 1 (critical): 90%+ for financial_utils, panel_ols, iv_regression
-# Tier 2 (important): 80%+ for data_validation, path_utils, chunked_reader
+# ==============================================================================
+# Coverage Thresholds by Tier (TEST-04: CI Coverage Enforcement)
+# ==============================================================================
+# Tier 1 (critical): 90%+ coverage required
+#   - financial_utils.py: Core financial calculations and transformations
+#   - panel_ols.py: Panel data regression models
+#   - iv_regression.py: Instrumental variable regression
+#   - data_validation.py: Input/output validation (elevated to Tier 1)
+#
+# Tier 2 (important): 80%+ coverage required
+#   - path_utils.py: Path resolution and file operations
+#   - chunked_reader.py: Memory-efficient large file processing
+#   - Integration tests cover multi-module interactions
+#
 # Overall minimum: 60% (baseline for entire codebase)
+# CI enforces tier-specific thresholds via --cov-fail-under flag
+# ==============================================================================
 fail_under = 60
 exclude_lines = [
     "pragma: no cover",
