@@ -105,8 +105,15 @@ Plans:
 - [x] 70-01-PLAN.md — Add type hints to Tier 1 modules (src/f1d/shared/) (Wave 1)
 - [x] 70-02-PLAN.md — Add type hints to Tier 2 modules (sample/text/financial/econometric) (Wave 1)
 - [x] 70-03-PLAN.md — Configure mypy with tier-based strictness in pyproject.toml (Wave 2)
-- [ ] 70-04-PLAN.md — Fix stats.py TypedDict refactoring (gap closure)
-- [ ] 70-05-PLAN.md — Fix Tier 2 module type errors (gap closure)
+- [x] 70-04-PLAN.md — Fix stats.py TypedDict refactoring (gap closure)
+- [x] 70-05-PLAN.md — Fix Tier 2 module type errors (gap closure)
+- [x] 70-06-PLAN.md — Fix financial v2 high-error modules (gap closure)
+- [x] 70-07-PLAN.md — Fix financial v2 medium-error modules (gap closure)
+- [x] 70-08-PLAN.md — Fix financial v1 modules (gap closure)
+- [x] 70-09-PLAN.md — Fix econometric v1 high-error modules (gap closure)
+- [x] 70-10-PLAN.md — Fix econometric return type mismatches (gap closure)
+- [x] 70-11-PLAN.md — Fix remaining econometric modules (gap closure)
+- [x] 70-12-PLAN.md — Clean up remaining Tier 2 files (gap closure)
 
 ---
 
@@ -213,7 +220,7 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 69. Architecture Migration | v6.0 | 3/3 | Complete | 2026-02-13 |
-| 70. Type Hints | v6.0 | 5/5 | Gaps found | - |
+| 70. Type Hints | v6.0 | 12/12 | Gaps found (technical debt) | 2026-02-13 |
 | 71. Configuration System | v6.0 | 0/3 | Not started | - |
 | 72. Structured Logging | v6.0 | 0/3 | Not started | - |
 | 73. CI/CD Pipeline | v6.0 | 0/3 | Not started | - |

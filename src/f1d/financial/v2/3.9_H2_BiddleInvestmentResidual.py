@@ -53,6 +53,7 @@ import time
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -834,7 +835,7 @@ def main():
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.9_H2_BiddleInvestmentResidual",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0},

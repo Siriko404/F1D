@@ -48,6 +48,7 @@ import time
 import warnings
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any, Dict
 
 import pandas as pd
 import yaml
@@ -582,7 +583,7 @@ def validate_prisk_fy(df):
     )
     print(f"    Average per year: {year_counts.mean():.0f}")
 
-    stats = {
+    stats: Dict[str, Any] = {
         "n_obs": int(len(df)),
         "n_firms": int(df["gvkey"].nunique()),
         "fyear_min": int(df["fyear"].min()),
@@ -908,7 +909,7 @@ def main():
     mem_start = get_process_memory_mb()
     memory_readings = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "3.12_H9_PRiskFY",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0},
