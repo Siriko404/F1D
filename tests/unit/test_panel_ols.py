@@ -195,14 +195,7 @@ class TestFormatCoefficientTable:
 
 
 class TestRunPanelOls:
-    """Tests for run_panel_ols() function.
-
-    Note: Many tests in this class are marked xfail due to a pandas/numpy
-    compatibility issue in the test environment where pandas' internal
-    _raise_if_missing uses .sum() on boolean arrays which fails with
-    numpy's _NoValue parameter. This is an environmental issue, not a
-    code issue.
-    """
+    """Tests for run_panel_ols() function."""
 
     @pytest.fixture
     def sample_panel_data(self, sample_panel_data_factory):
@@ -215,7 +208,6 @@ class TestRunPanelOls:
         assert isinstance(sample_panel_data, pd.DataFrame)
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_validates_dependent_column_exists(self, sample_panel_data):
         """Test that missing dependent column raises appropriate error."""
         df_no_dep = sample_panel_data.drop(columns=["dependent"])
@@ -223,7 +215,6 @@ class TestRunPanelOls:
             run_panel_ols(df_no_dep, "dependent", ["independent1"])
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_validates_exog_columns_exist(self, sample_panel_data):
         """Test that missing exog columns raise appropriate error."""
         with pytest.raises(ValueError, match="Missing required columns"):
@@ -234,7 +225,6 @@ class TestRunPanelOls:
             )
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_validates_industry_col_when_industry_effects(self, sample_panel_data):
         """Test that missing industry column raises error when industry_effects=True."""
         df_no_industry = sample_panel_data.drop(columns=["ff48_code"], errors="ignore")
@@ -249,7 +239,6 @@ class TestRunPanelOls:
             )
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_returns_expected_result_structure(self, sample_panel_data):
         """Test that function returns result with expected keys."""
         result = run_panel_ols(
@@ -263,7 +252,6 @@ class TestRunPanelOls:
             assert key in result
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_coefficients_dataframe_structure(self, sample_panel_data):
         """Test that coefficients DataFrame has expected structure."""
         result = run_panel_ols(
@@ -278,7 +266,6 @@ class TestRunPanelOls:
         assert "t-stat" in coef_df.columns
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_summary_contains_expected_fields(self, sample_panel_data):
         """Test that summary contains expected fields."""
         result = run_panel_ols(
@@ -301,7 +288,6 @@ class TestRunPanelOls:
         (False, True),
         (False, False),
     ])
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_different_fixed_effects_combinations(
         self, sample_panel_data, entity_effects, time_effects
     ):
@@ -323,7 +309,6 @@ class TestRunPanelOls:
         "robust",
         "kernel",
     ])
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_different_covariance_types(self, sample_panel_data, cov_type):
         """Test different covariance estimator types."""
         result = run_panel_ols(
@@ -337,10 +322,7 @@ class TestRunPanelOls:
 
 
 class TestMulticollinearity:
-    """Tests for VIF calculation and multicollinearity checking.
-
-    Note: Tests are marked xfail due to pandas/numpy compatibility issue.
-    """
+    """Tests for VIF calculation and multicollinearity checking."""
 
     @pytest.fixture
     def sample_panel_data(self, sample_panel_data_factory):
@@ -348,7 +330,6 @@ class TestMulticollinearity:
         return sample_panel_data_factory(n_firms=10, n_years=5, seed=42)
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_perfect_correlation_detected(self, sample_panel_data):
         """Test that perfectly correlated variables raise CollinearityError."""
         # Create perfectly correlated variables
@@ -367,7 +348,6 @@ class TestMulticollinearity:
             )
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_uncorrelated_vars_low_vif(self, sample_panel_data):
         """Test that uncorrelated variables have low VIF."""
         np.random.seed(42)
@@ -388,7 +368,6 @@ class TestMulticollinearity:
         assert result["diagnostics"]["vif"] is not None or len(result["warnings"]) >= 0
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_vif_warning_high_values(self, sample_panel_data):
         """Test that high VIF values generate warnings."""
         np.random.seed(42)
@@ -411,10 +390,7 @@ class TestMulticollinearity:
 
 
 class TestEdgeCases:
-    """Tests for edge cases in panel OLS functions.
-
-    Note: Tests are marked xfail due to pandas/numpy compatibility issue.
-    """
+    """Tests for edge cases in panel OLS functions."""
 
     @pytest.fixture
     def sample_panel_data(self, sample_panel_data_factory):
@@ -422,7 +398,6 @@ class TestEdgeCases:
         return sample_panel_data_factory(n_firms=10, n_years=5, seed=42)
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_handles_missing_values_in_regression_vars(self, sample_panel_data):
         """Test that missing values are handled correctly."""
         df = sample_panel_data.copy()
@@ -439,7 +414,6 @@ class TestEdgeCases:
         assert result["summary"]["nobs"] < len(df)
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_single_exog_variable(self, sample_panel_data):
         """Test regression with single exogenous variable."""
         result = run_panel_ols(
@@ -452,7 +426,6 @@ class TestEdgeCases:
         assert "independent1" in result["coefficients"].index
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_double_clustering(self, sample_panel_data):
         """Test double-clustered standard errors."""
         result = run_panel_ols(
@@ -467,7 +440,6 @@ class TestEdgeCases:
         assert "warnings" in result
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_single_cluster_entity(self, sample_panel_data):
         """Test clustering at entity level."""
         result = run_panel_ols(
@@ -481,7 +453,6 @@ class TestEdgeCases:
         assert result["summary"]["cov_type"] == "clustered"
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_kernel_covariance(self, sample_panel_data):
         """Test kernel/HAC covariance estimation."""
         result = run_panel_ols(
@@ -495,7 +466,6 @@ class TestEdgeCases:
         assert result["summary"]["cov_type"] == "kernel"
 
     @pytest.mark.skipif(not LINEARMODELS_AVAILABLE, reason="linearmodels not available")
-    @pytest.mark.xfail(reason="pandas/numpy compatibility issue with internal .sum()")
     def test_returns_warnings_list(self, sample_panel_data):
         """Test that function returns a warnings list."""
         result = run_panel_ols(
