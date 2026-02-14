@@ -8,24 +8,16 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: v6.0 Architecture Standard Implementation
+## Current Milestone: Planning Next Milestone
 
-**Previous:** v5.0 Architecture Standard Definition (COMPLETE 2026-02-13)
-**Goal:** Implement all standards defined in v5.0 across the codebase
-
-**Target features:**
-- Migrate to src-layout structure per ARCHITECTURE_STANDARD.md
-- Implement type hints per tier requirements (100% Tier 1, 80% Tier 2)
-- Implement pydantic-settings configuration per CONFIG_TESTING_STANDARD.md
-- Add structured logging with structlog
-- Set up CI/CD pipeline per DOC_TOOLING_STANDARD.md
-- Add comprehensive test suite with tier-based coverage targets
+**Previous:** v6.1 Architecture Compliance Gap Closure (COMPLETE 2026-02-14)
+**Goal:** Ready for next milestone planning
 
 ## Requirements
 
 ### Validated
 
-<!-- Shipped and confirmed valuable. v1.0-v5.0 milestones complete. -->
+<!-- Shipped and confirmed valuable. v1.0-v6.1 milestones complete. -->
 
 - ✓ Sample construction from speaker data with entity linking — v1.0
 - ✓ Text tokenization and word counting with dictionary lookups — v1.0
@@ -65,17 +57,21 @@ Every script must produce verifiable, reproducible results with complete audit t
 - ✓ CODE_QUALITY_STANDARD.md created — v5.0
 - ✓ CONFIG_TESTING_STANDARD.md created — v5.0
 - ✓ DOC_TOOLING_STANDARD.md created — v5.0
+- ✓ src-layout package structure — v6.0
+- ✓ Type hints with tier-based mypy enforcement — v6.0
+- ✓ pydantic-settings configuration — v6.0
+- ✓ Structured logging with structlog — v6.0
+- ✓ CI/CD pipeline with ruff, mypy, pytest — v6.0
+- ✓ Comprehensive test suite with factory fixtures — v6.0
+- ✓ Full src-layout compliance (zero sys.path.insert) — v6.1
+- ✓ All imports use f1d.shared.* namespace — v6.1
+- ✓ LoggingSettings integrated with configure_logging() — v6.1
 
 ### Active
 
-<!-- Current scope. Building toward these. v6.0+ milestone. -->
+<!-- Current scope. Building toward these. Next milestone. -->
 
-- [ ] Migrate to src-layout structure per ARCHITECTURE_STANDARD.md
-- [ ] Implement type hints per tier requirements (100% Tier 1, 80% Tier 2)
-- [ ] Implement pydantic-settings configuration per CONFIG_TESTING_STANDARD.md
-- [ ] Add structured logging with structlog
-- [ ] Set up CI/CD pipeline per DOC_TOOLING_STANDARD.md
-- [ ] Add comprehensive test suite with tier-based coverage targets
+(None — ready for next milestone planning)
 
 ### Not Pursued
 
@@ -109,11 +105,15 @@ V2 extensions added:
 - **Financial_V2** (3_Financial_V2): Hypothesis-specific variable construction (H1-H3, H5, H6)
 - **Econometric_V2** (4_Econometric_V2): Hypothesis testing regressions with FE and clustering
 
-The pipeline follows strict conventions from CLAUDE.md:
-- Root structure: `1_Inputs/`, `2_Scripts/`, `3_Logs/`, `4_Outputs/`, `config/`
-- Naming: `<Stage>.<Step>_<PascalCaseName>.py`
-- All scripts read from `config/project.yaml`
-- Outputs go to timestamped directories
+**Current State (v6.1):**
+- 57,382 lines of Python code in src/f1d/
+- src-layout package structure with proper f1d.shared.* imports
+- Type hints with tier-based mypy enforcement
+- Type-safe configuration via pydantic-settings
+- Structured logging with structlog and context binding
+- CI/CD pipeline with ruff, mypy, and pytest quality gates
+- Comprehensive test suite with factory fixtures
+- 580+ tests passing
 
 **Standards Documents (v5.0):**
 - `docs/ARCHITECTURE_STANDARD.md` (1,696 lines) — Defines src-layout, module tiers, data lifecycle
@@ -182,15 +182,17 @@ When working on ANY regression or econometric code:
 | Cancel robustness phases on null results | Scientifically inappropriate to pursue robustness for unsupported hypotheses | Phases 36-38 cancelled |
 | Abandon hypothesis suite discovery | Single hypothesis (H6) tested directly; remaining H7-H10 not pursued | Phase 41 abandoned |
 | Document null results | Null findings are valid scientific results; documented in VERIFICATION.md | All phases documented |
-| Sonnet-only model policy | Cost optimization and consistent performance; Opus/Haiku not needed | config.json: model_profile="budget" |
-| src-layout over flat layout | PyPA recommendation for proper package imports | ✓ Decided v5.0 |
-| V1 and V2 as active variants | Both pipeline versions maintained, no V1 archival | ✓ Decided v5.0 |
-| Google-style docstrings | Enables mkdocstrings API documentation | ✓ Decided v5.0 |
-| Tier-based type hints | 100% Tier 1, 80% Tier 2, optional Tier 3 | ✓ Decided v5.0 |
-| ruff as unified linter/formatter | Replaces flake8 + black + isort | ✓ Decided v5.0 |
+| Sonnet-only model policy | Cost optimization and consistent performance; Opus/Haiku not needed | config.json: model_profile="quality" |
+| src-layout over flat layout | PyPA recommendation for proper package imports | ✓ Implemented v6.0 |
+| V1 and V2 as active variants | Both pipeline versions maintained, no V1 archival | ✓ Implemented v6.0 |
+| Google-style docstrings | Enables mkdocstrings API documentation | ✓ Implemented v6.0 |
+| Tier-based type hints | 100% Tier 1, 80% Tier 2, optional Tier 3 | ✓ Implemented v6.0 |
+| ruff as unified linter/formatter | Replaces flake8 + black + isort | ✓ Implemented v6.0 |
 | MkDocs + mkdocstrings | Simpler than Sphinx, Markdown-native | ✓ Decided v5.0 |
-| pydantic-settings | Type-safe configuration with env vars | ✓ Decided v5.0 |
-| structlog | Structured JSON logging with context binding | ✓ Decided v5.0 |
+| pydantic-settings | Type-safe configuration with env vars | ✓ Implemented v6.0 |
+| structlog | Structured JSON logging with context binding | ✓ Implemented v6.0 |
+| Installed package imports | All scripts use f1d.shared.* namespace without sys.path manipulation | ✓ Implemented v6.1 |
+| TYPE_CHECKING imports | Avoid circular imports at runtime while maintaining type safety | ✓ Implemented v6.1 |
 
 ---
-*Last updated: 2026-02-13 (v6.0 milestone started)*
+*Last updated: 2026-02-14 (v6.1 milestone complete)*

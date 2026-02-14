@@ -117,3 +117,13 @@ See `.planning/ROADMAP_V3.md` for full details.
 
 ---
 
+
+## v6.1 Architecture Compliance Gap Closure (Shipped: 2026-02-14)
+
+**Phases completed:** 74 phases, 246 plans, 58 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+
