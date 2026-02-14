@@ -155,12 +155,12 @@ Plans:
 4. File output is JSON-formatted for machine parsing
 5. Existing log files continue to be written with enhanced structure
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 72-01: Integrate structlog for structured logging
-- [ ] 72-02: Implement context binding for tracking
-- [ ] 72-03: Configure dual output (console/file)
+- [ ] 72-01-PLAN.md — Integrate structlog for structured JSON logging
+- [ ] 72-02-PLAN.md — Implement context binding for request/operation tracking
+- [ ] 72-03-PLAN.md — Configure dual output (console human-readable, file JSON)
 
 ---
 
