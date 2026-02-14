@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 Milestone: v6.1 Architecture Compliance Gap Closure - Extended
 Phase: 77-concerns-closure-parallel-agents-verification
-Current Plan: 08
+Current Plan: 12
 Total Plans in Phase: 12
 Status: Executing Phase 77
-Last activity: 2026-02-14 — Completed 77-08: V1 Scripts Unit Tests
+Last activity: 2026-02-14 — Completed 77-11: Type Ignore Comments Documentation
 
 Progress: [265 plans completed across all milestones]
 
@@ -54,6 +54,7 @@ Ready for next milestone planning
 | Phase 77-concerns-closure-parallel-agents-verification P07 | 23min | 3 tasks | 2 files |
 | Phase 77-concerns-closure-parallel-agents-verification P08 | 45min | 3 tasks | 3 files |
 | Phase 77-concerns-closure-parallel-agents-verification P09 | 9min | 3 tasks | 2 files |
+| Phase 77-concerns-closure-parallel-agents-verification P11 | 13min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,7 @@ Key decisions from v6.1 milestone:
 - [75-02] All 21 test files use f1d.shared.* namespace imports
 - [75-01] Sample scripts use f1d.shared.* namespace imports
 - [Phase 77-01]: 4 Stage 2 text scripts migrated to src/f1d/text/ with f1d.shared.* namespace imports
+- [77-11] Documented type ignores with TYPE ERROR BASELINE pattern instead of fixing (decorator return type variance requires ParamSpec/overload)
 
 ### Pending Todos
 
@@ -102,11 +104,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Completed: 77-08 V1 Scripts Unit Tests
-Stopped at: 77-09
+Completed: 77-11 Type Ignore Comments Documentation
+Stopped at: 77-12
 
 **Next Action:**
-Continue Phase 77 with plan 77-08
+Continue Phase 77 with plan 77-12
 
 ---
-*Last updated: 2026-02-14 (77-07 completed)*
+*Last updated: 2026-02-14 (77-11 completed)*
