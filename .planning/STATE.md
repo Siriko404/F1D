@@ -54,6 +54,7 @@ Ready for next milestone planning
 | Phase 77-concerns-closure-parallel-agents-verification P07 | 23min | 3 tasks | 2 files |
 | Phase 77-concerns-closure-parallel-agents-verification P08 | 45min | 3 tasks | 3 files |
 | Phase 77-concerns-closure-parallel-agents-verification P09 | 9min | 3 tasks | 2 files |
+| Phase 77-concerns-closure-parallel-agents-verification P10 | 15min | 3 tasks | 2 files |
 | Phase 77-concerns-closure-parallel-agents-verification P11 | 13min | 3 tasks | 5 files |
 
 ## Accumulated Context
@@ -86,6 +87,9 @@ Key decisions from v6.1 milestone:
 - [75-02] All 21 test files use f1d.shared.* namespace imports
 - [75-01] Sample scripts use f1d.shared.* namespace imports
 - [Phase 77-01]: 4 Stage 2 text scripts migrated to src/f1d/text/ with f1d.shared.* namespace imports
+- [77-10] Used inline golden fixture dict for simple regression tests, external JSON file for comprehensive fixtures
+- [77-10] Memory tracking tests verify memory_mb field rather than explicit track_memory_usage function
+- [77-10] Used pandas linear interpolation method for quartile test expectations
 - [77-11] Documented type ignores with TYPE ERROR BASELINE pattern instead of fixing (decorator return type variance requires ParamSpec/overload)
 
 ### Pending Todos
