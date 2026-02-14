@@ -59,12 +59,39 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
-      - name: Run tests with coverage
+      - name: Run Tier 1 tests with coverage (90% threshold)
+        run: |
+          pytest tests/unit/test_financial_utils.py \
+                 tests/unit/test_panel_ols.py \
+                 tests/unit/test_iv_regression.py \
+                 tests/unit/test_data_validation.py \
+                 --cov=src/f1d/shared \
+                 --cov-report=term-missing \
+                 --cov-report=xml:coverage-tier1.xml \
+                 --cov-fail-under=90 \
+                 -v
+        continue-on-error: true
+
+      - name: Run Tier 2 tests with coverage (80% threshold)
+        run: |
+          pytest tests/integration/ \
+                 tests/unit/test_path_utils.py \
+                 tests/unit/test_chunked_reader.py \
+                 --cov=src/f1d/shared \
+                 --cov-report=term-missing \
+                 --cov-report=xml:coverage-tier2.xml \
+                 --cov-fail-under=80 \
+                 -v
+        continue-on-error: true
+
+      - name: Run full test suite with coverage (60% overall)
         run: |
           pytest tests/ \
             -m "not e2e" \
             --cov=src/f1d \
             --cov-report=xml \
+            --cov-report=html \
+            --cov-report=json \
             --cov-report=term-missing \
             --cov-fail-under=60 \
             -v
