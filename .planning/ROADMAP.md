@@ -204,13 +204,13 @@ Plans:
 4. Factory fixtures generate test data without fixture pyramids
 5. CI reports coverage numbers and fails below thresholds
 
-**Plans:** TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] 74-01: Establish pytest infrastructure
-- [ ] 74-02: Add Tier 1 unit tests
-- [ ] 74-03: Add Tier 2 integration tests
-- [ ] 74-04: Implement factory fixtures
+- [ ] 74-01-PLAN.md — Update pytest infrastructure with src-layout and factory fixtures (Wave 1)
+- [ ] 74-02-PLAN.md — Add Tier 1 unit tests achieving 90% coverage (Wave 2)
+- [ ] 74-03-PLAN.md — Add Tier 2 integration tests achieving 80% coverage (Wave 2)
+- [ ] 74-04-PLAN.md — Configure CI coverage enforcement with tier thresholds (Wave 3)
 
 ---
 
@@ -230,4 +230,4 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 
 ---
 
-*Roadmap updated: 2026-02-14 (Phase 73 complete)*
+*Roadmap updated: 2026-02-14 (Phase 74 planned)*
