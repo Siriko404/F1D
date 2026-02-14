@@ -50,7 +50,6 @@ Date: 2026-02-11
 """
 
 import argparse
-import logging
 import sys
 import time
 import warnings
@@ -61,8 +60,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# Configure logger for this module
-logger = logging.getLogger(__name__)
+# Structured logging will be configured in main()
+from f1d.shared.logging import get_logger, configure_script_logging
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
@@ -1019,6 +1018,13 @@ def main():
     """Main execution"""
     args = parse_arguments()
 
+    # Configure structured logging
+    script_id = Path(__file__).stem  # e.g., "3.2_H2Variables"
+    configure_script_logging(script_name=script_id, log_level="INFO")
+
+    # Initialize logger AFTER configure_script_logging
+    logger = get_logger(__name__)
+
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
@@ -1078,6 +1084,8 @@ def main():
 
     # Override print globally
     builtins.print = print_both
+
+    logger.info("script_started", script_name=script_id, timestamp=timestamp)
 
     print("=" * 60)
     print("STEP 3.2: H2 Investment Efficiency Variables")
@@ -1656,6 +1664,13 @@ def main():
     print(f"H2 Variables computed: {len(final_output):,} observations")
     print(f"\nOutputs saved to: {paths['output_dir']}")
     print(f"Log saved to: {paths['log_file']}")
+
+    logger.info(
+        "script_completed",
+        script_name=script_id,
+        observations=len(final_output),
+        duration_seconds=round(end_time - start_time, 2),
+    )
 
     if dual_writer:
         dual_writer.close()

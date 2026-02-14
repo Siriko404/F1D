@@ -660,18 +660,11 @@ def main():
     configure_script_logging(script_name=script_id, log_level="INFO")
 
     # Initialize logger AFTER configure_script_logging
-    global logger
     logger = get_logger(__name__)
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
-
-    # Wrap main operation with OperationContext for structured logging
-    with OperationContext(
-        operation_name="financial_variable_construction",
-        script_name=script_id,
-    ):
 
     # Handle output-dir override
     if args.output_dir:
@@ -710,6 +703,8 @@ def main():
     # Setup logging
     dual_writer = DualWriter(paths["log_file"])
     sys.stdout = dual_writer
+
+    logger.info("script_started", script_name=script_id, timestamp=timestamp)
 
     print("=" * 60)
     print("STEP 3.1: H1 Cash Holdings Variables")
@@ -1059,6 +1054,13 @@ def main():
     print(f"H1 Variables computed: {len(final_output):,} observations")
     print(f"\nOutputs saved to: {paths['output_dir']}")
     print(f"Log saved to: {paths['log_file']}")
+
+    logger.info(
+        "script_completed",
+        script_name=script_id,
+        observations=len(final_output),
+        duration_seconds=round(end_time - start_time, 2),
+    )
 
     dual_writer.close()
     sys.stdout = dual_writer.terminal
