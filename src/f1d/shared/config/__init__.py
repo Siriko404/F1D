@@ -4,12 +4,16 @@ This module provides type-safe configuration management using pydantic-settings.
 Configuration can be loaded from YAML files with environment variable overrides.
 
 Example:
-    from f1d.shared.config import load_config
+    from f1d.shared.config import load_config, get_config
     from pathlib import Path
 
-    config = load_config(Path("config/project.yaml"))
-    print(f"Data range: {config.data.year_start}-{config.data.year_end}")
-    print(f"Enabled datasets: {config.datasets.get_enabled_datasets()}")
+    # Simple loading with caching
+    config = get_config()  # Loads from config/project.yaml
+    print(config.data.year_start)
+
+    # Environment variable override
+    # F1D_DATA__YEAR_START=2005
+    # config.data.year_start == 2005
 """
 
 from pathlib import Path
@@ -26,6 +30,14 @@ from f1d.shared.config.base import (
 from f1d.shared.config.datasets import DatasetConfig, DatasetsConfig
 from f1d.shared.config.env import EnvConfig, env
 from f1d.shared.config.hashing import HashingConfig
+from f1d.shared.config.loader import (
+    ConfigError,
+    clear_config_cache,
+    get_config,
+    get_config_sources,
+    reload_config,
+    validate_env_override,
+)
 from f1d.shared.config.paths import PathsSettings
 from f1d.shared.config.step_configs import (
     BaseStepConfig,
@@ -51,9 +63,16 @@ from f1d.shared.config.string_matching import (
 )
 
 __all__ = [
-    # Main config
+    # Main config loaders
     "ProjectConfig",
     "load_config",
+    "get_config",
+    "reload_config",
+    "clear_config_cache",
+    "ConfigError",
+    # Config source helpers
+    "validate_env_override",
+    "get_config_sources",
     # Project settings
     "ProjectSettings",
     "DataSettings",
@@ -95,7 +114,8 @@ def load_config(path: Optional[Path] = None) -> ProjectConfig:
     """Load configuration from project.yaml with env var overrides.
 
     Convenience function that loads the F1D project configuration from
-    the default location or a specified path.
+    the default location or a specified path. This is an alias for
+    get_config() for backward compatibility.
 
     Args:
         path: Path to configuration file. Defaults to config/project.yaml.
@@ -113,6 +133,4 @@ def load_config(path: Optional[Path] = None) -> ProjectConfig:
         >>> config.project.name
         'F1D_Clarity'
     """
-    if path is None:
-        path = Path("config/project.yaml")
-    return ProjectConfig.from_yaml(path)
+    return get_config(path)
