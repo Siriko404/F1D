@@ -31,11 +31,14 @@ Date: 2026-02-11
 ==============================================================================
 """
 
-# TYPE ERROR BASELINE: 4 remaining errors (down from 19)
+# TYPE ERROR BASELINE: 2 remaining errors (down from 20)
 # Remaining type errors are library limitations:
 # - pandas DataFrame operations: mypy cannot infer types after groupby/merge
-# - re.compile pattern: mypy sees Pattern[str] but usage may vary
+# - Lines 481, 491: groupby().sum() returns DataFrame but mypy cannot verify column indexing
 # All type ignores below are scoped with specific error codes
+#
+# Fixed in 77-15: Added explicit Dict[str, Any] type annotation to stats variable
+# to resolve index assignment errors throughout main() function.
 
 import argparse
 import hashlib
@@ -880,7 +883,7 @@ def main():
     mem_start = get_process_memory_mb()
     all_memory_values = [mem_start["rss_mb"]]
 
-    stats = {
+    stats: Dict[str, Any] = {
         "step_id": "2.2_ConstructVariables",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
