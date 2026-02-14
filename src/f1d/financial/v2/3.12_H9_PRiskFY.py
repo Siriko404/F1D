@@ -53,10 +53,6 @@ from typing import Any, Dict
 import pandas as pd
 import yaml
 
-# Add parent directory to sys.path for shared module imports
-script_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(script_dir))
-
 # Import shared path validation utilities
 # Import observability utilities
 from f1d.shared.observability_utils import (

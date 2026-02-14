@@ -47,11 +47,9 @@ if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "shared"))
-
-from chunked_reader import read_selected_columns
-from path_utils import (
+# Import shared utilities
+from f1d.shared.chunked_reader import read_selected_columns
+from f1d.shared.path_utils import (
     OutputResolutionError,
     PathValidationError,
     ensure_output_dir,
