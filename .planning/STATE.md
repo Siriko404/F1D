@@ -12,8 +12,8 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 Milestone: v6.1 Architecture Compliance Gap Closure
 Phase: 75 of 75 (Gap Closure) - IN PROGRESS
 Current Plan: 4 of 5
-Status: Plan 75-03 complete, continuing with 75-04
-Last activity: 2026-02-14 — Plan 75-03: LoggingSettings Integration complete
+Status: Plan 75-02 complete (re-executed), continuing with 75-04
+Last activity: 2026-02-14 — Plan 75-02: Legacy Test Imports Migration complete
 
 Progress: [246 plans completed across all milestones]
 
@@ -99,6 +99,7 @@ Phase 73-03 (Complete):
 ## Performance Metrics
 
 **Recent Plan:**
+- 75-02 Legacy Test Imports Migration: ~15 min, 21 files, 3 tasks
 - 75-03 LoggingSettings Integration: ~7 min, 3 files, 3 tasks
 - 74-04 CI Coverage Enforcement: ~15 min, 2 files, 3 tasks
 - 74-03 Integration Test Migration: ~22 min, 5 files, 4 tasks, 117 tests
@@ -130,6 +131,9 @@ Phase 73-03 (Complete):
 
 Recent decisions affecting current work:
 
+- [75-02] All 21 test files use f1d.shared.* namespace imports (13 unit, 5 integration, 3 regression)
+- [75-02] No sys.path.insert() in test files - rely on installed package for imports
+- [75-02] Migrated 2 additional unit tests (test_fuzzy_matching.py, test_types.py) not in original plan
 - [75-03] Use TYPE_CHECKING import for LoggingSettings to avoid circular imports at runtime
 - [75-03] Only use settings.level when log_level parameter is at default value "INFO"
 - [75-03] Non-default explicit log_level parameter takes precedence over settings.level
@@ -238,10 +242,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 75-03-PLAN.md (LoggingSettings Integration)
+Stopped at: Completed 75-02-PLAN.md (Legacy Test Imports Migration)
 
 **Next Action:**
 Continue with 75-04-PLAN.md (Test Environment Compatibility). Run `/gsd:execute-phase 75-gap-closure` to continue.
 
 ---
-*Last updated: 2026-02-14 (75-03 complete - LoggingSettings integrated with configure_logging)*
+*Last updated: 2026-02-14 (75-02 complete - 21 test files migrated to f1d.shared.* imports)*
