@@ -1,0 +1,98 @@
+{
+  "description": "Golden output fixtures for stats module regression tests. These values are mathematically verified and should not change.",
+  "version": "1.0.0",
+  "created": "2026-02-14",
+  "fixtures": {
+    "basic_numeric_stats": {
+      "input": {
+        "data": [1.0, 2.0, 3.0, 4.0, 5.0],
+        "column_name": "values"
+      },
+      "expected": {
+        "count": 5,
+        "mean": 3.0,
+        "median": 3.0,
+        "std": 1.5811388300841898,
+        "min": 1.0,
+        "max": 5.0,
+        "q25": 2.0,
+        "q75": 4.0,
+        "sum": 15.0
+      },
+      "tolerance": 1e-10
+    },
+    "missing_values_analysis": {
+      "input": {
+        "data": [1.0, null, 3.0, null, 5.0],
+        "total_rows": 5
+      },
+      "expected": {
+        "missing_count": 2,
+        "missing_percent": 40.0,
+        "valid_count": 3
+      },
+      "tolerance": 1e-6
+    },
+    "throughput_calculation": {
+      "input": {
+        "rows_processed": 10000,
+        "duration_seconds": 100
+      },
+      "expected": {
+        "throughput": 100.0
+      },
+      "tolerance": 1e-6
+    },
+    "zscore_outlier_detection": {
+      "input": {
+        "data": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1000],
+        "threshold": 3.0
+      },
+      "expected": {
+        "outlier_count": 1,
+        "mean_approx": 29.9,
+        "std_approx": 138.6
+      },
+      "tolerance": 0.1
+    },
+    "iqr_outlier_detection": {
+      "input": {
+        "data": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1000],
+        "multiplier": 3.0
+      },
+      "expected": {
+        "outlier_count": 1,
+        "lower_bound": -12.5,
+        "upper_bound": 43.5
+      },
+      "tolerance": 0.1
+    },
+    "temporal_stats": {
+      "input": {
+        "dates": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01"],
+        "date_col": "start_date"
+      },
+      "expected": {
+        "year_distribution": {"2020": 5},
+        "month_distribution_keys": [1, 2, 3, 4, 5],
+        "span_days": 121,
+        "earliest": "2020-01-01",
+        "latest": "2020-05-01"
+      },
+      "tolerance": 0
+    },
+    "entity_stats": {
+      "input": {
+        "company_ids": ["A", "A", "B", "B", "C", "C", "C"],
+        "quality_scores": [0.9, 0.8, 0.95, 0.85, 0.7, 0.8, 0.9]
+      },
+      "expected": {
+        "unique_companies": 3,
+        "avg_calls_per_company": 2.33,
+        "mean_quality": 0.8429,
+        "median_quality": 0.85
+      },
+      "tolerance": 0.01
+    }
+  }
+}

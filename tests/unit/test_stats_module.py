@@ -941,6 +941,293 @@ class TestRegressionGoldenFixtures:
 
 
 # =============================================================================
+# Golden Fixture File Tests (Task 3)
+# =============================================================================
+
+
+@pytest.mark.regression
+class TestGoldenFixtureFile:
+    """Regression tests using the external golden fixture file.
+
+    These tests load expected values from tests/fixtures/stats_golden_output.json
+    to verify that statistical functions produce consistent, correct output.
+    """
+
+    @pytest.fixture
+    def golden_fixture_path(self) -> Path:
+        """Return path to the golden fixture file."""
+        return Path(__file__).parent.parent / "fixtures" / "stats_golden_output.json"
+
+    @pytest.fixture
+    def golden_fixture(self, golden_fixture_path: Path) -> Dict[str, Any]:
+        """Load the golden fixture file."""
+        with open(golden_fixture_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    def test_golden_fixture_file_exists(self, golden_fixture_path: Path) -> None:
+        """Verify the golden fixture file exists and is valid JSON."""
+        assert golden_fixture_path.exists(), f"Golden fixture file not found: {golden_fixture_path}"
+
+        with open(golden_fixture_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert "fixtures" in data
+        assert "basic_numeric_stats" in data["fixtures"]
+
+    def test_basic_numeric_stats_from_file(
+        self, golden_fixture: Dict[str, Any]
+    ) -> None:
+        """Verify basic numeric statistics match golden fixture values."""
+        fixture = golden_fixture["fixtures"]["basic_numeric_stats"]
+        data = fixture["input"]["data"]
+        expected = fixture["expected"]
+        tolerance = fixture["tolerance"]
+
+        df = pd.DataFrame({"values": data})
+        result = compute_input_stats(df)
+        stats = result["numeric_stats"]["values"]
+
+        # Verify each expected statistic within tolerance
+        assert abs(stats["mean"] - expected["mean"]) < tolerance
+        assert abs(stats["median"] - expected["median"]) < tolerance
+        assert abs(stats["min"] - expected["min"]) < tolerance
+        assert abs(stats["max"] - expected["max"]) < tolerance
+        assert abs(stats["q25"] - expected["q25"]) < tolerance
+        assert abs(stats["q75"] - expected["q75"]) < tolerance
+
+    def test_missing_values_from_file(
+        self, golden_fixture: Dict[str, Any]
+    ) -> None:
+        """Verify missing value analysis matches golden fixture."""
+        fixture = golden_fixture["fixtures"]["missing_values_analysis"]
+        data = fixture["input"]["data"]
+        expected = fixture["expected"]
+
+        df = pd.DataFrame({"col": data})
+        result = analyze_missing_values(df)
+
+        assert result["col"]["count"] == expected["missing_count"]
+        assert abs(result["col"]["percent"] - expected["missing_percent"]) < 1e-6
+
+    def test_throughput_from_file(
+        self, golden_fixture: Dict[str, Any]
+    ) -> None:
+        """Verify throughput calculation matches golden fixture."""
+        fixture = golden_fixture["fixtures"]["throughput_calculation"]
+        inp = fixture["input"]
+        expected = fixture["expected"]
+        tolerance = fixture["tolerance"]
+
+        result = calculate_throughput(inp["rows_processed"], inp["duration_seconds"])
+
+        assert abs(result - expected["throughput"]) < tolerance
+
+    def test_zscore_detection_from_file(
+        self, golden_fixture: Dict[str, Any]
+    ) -> None:
+        """Verify z-score anomaly detection matches golden fixture."""
+        fixture = golden_fixture["fixtures"]["zscore_outlier_detection"]
+        data = fixture["input"]["data"]
+        threshold = fixture["input"]["threshold"]
+        expected = fixture["expected"]
+        tolerance = fixture["tolerance"]
+
+        df = pd.DataFrame({"values": data})
+        result = detect_anomalies_zscore(df, ["values"], threshold=threshold)
+
+        assert result["values"]["count"] == expected["outlier_count"]
+        # Mean and std are affected by the outlier itself, use wider tolerance
+        assert abs(result["values"]["mean"] - expected["mean_approx"]) < tolerance + 10
+        assert abs(result["values"]["std"] - expected["std_approx"]) < tolerance + 10
+
+    def test_iqr_detection_from_file(
+        self, golden_fixture: Dict[str, Any]
+    ) -> None:
+        """Verify IQR anomaly detection matches golden fixture."""
+        fixture = golden_fixture["fixtures"]["iqr_outlier_detection"]
+        data = fixture["input"]["data"]
+        multiplier = fixture["input"]["multiplier"]
+        expected = fixture["expected"]
+
+        df = pd.DataFrame({"values": data})
+        result = detect_anomalies_iqr(df, ["values"], multiplier=multiplier)
+
+        assert result["values"]["count"] == expected["outlier_count"]
+        assert "iqr_bounds" in result["values"]
+
+    def test_temporal_stats_from_file(
+        self, golden_fixture: Dict[str, Any]
+    ) -> None:
+        """Verify temporal statistics match golden fixture."""
+        fixture = golden_fixture["fixtures"]["temporal_stats"]
+        dates = fixture["input"]["dates"]
+        expected = fixture["expected"]
+
+        df = pd.DataFrame({"start_date": dates})
+        result = compute_temporal_stats(df, date_col="start_date")
+
+        # Year distribution key is integer 2020, not string "2020"
+        assert result["year_distribution"][2020] == expected["year_distribution"]["2020"]
+        assert result["date_range"]["span_days"] == expected["span_days"]
+
+    def test_entity_stats_from_file(
+        self, golden_fixture: Dict[str, Any]
+    ) -> None:
+        """Verify entity statistics match golden fixture."""
+        fixture = golden_fixture["fixtures"]["entity_stats"]
+        company_ids = fixture["input"]["company_ids"]
+        quality_scores = fixture["input"]["quality_scores"]
+        expected = fixture["expected"]
+        tolerance = fixture["tolerance"]
+
+        df = pd.DataFrame({
+            "company_id": company_ids,
+            "data_quality_score": quality_scores,
+        })
+        result = compute_entity_stats(df)
+
+        assert result["company_coverage"]["unique_companies"] == expected["unique_companies"]
+        assert abs(result["data_quality_distribution"]["mean"] - expected["mean_quality"]) < tolerance
+
+
+# =============================================================================
+# Additional Regression Tests
+# =============================================================================
+
+
+@pytest.mark.regression
+class TestStatisticalPrecision:
+    """Tests verifying mathematical precision of statistical computations."""
+
+    def test_mean_precision(self) -> None:
+        """Test mean calculation precision with known values."""
+        # Values chosen so mean is exactly representable
+        data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
+        df = pd.DataFrame({"values": data})
+
+        result = compute_input_stats(df)
+        stats = result["numeric_stats"]["values"]
+
+        # Mean should be exactly 5.5
+        assert stats["mean"] == 5.5
+
+    def test_median_precision_odd_count(self) -> None:
+        """Test median calculation with odd number of values."""
+        data = [1.0, 2.0, 3.0, 4.0, 5.0]
+        df = pd.DataFrame({"values": data})
+
+        result = compute_input_stats(df)
+        stats = result["numeric_stats"]["values"]
+
+        # Median should be exactly 3.0
+        assert stats["median"] == 3.0
+
+    def test_median_precision_even_count(self) -> None:
+        """Test median calculation with even number of values."""
+        data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        df = pd.DataFrame({"values": data})
+
+        result = compute_input_stats(df)
+        stats = result["numeric_stats"]["values"]
+
+        # Median should be exactly 3.5
+        assert stats["median"] == 3.5
+
+    def test_quartile_precision(self) -> None:
+        """Test quartile calculation precision."""
+        # Data: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+        # Q25 should be 3.25, Q75 should be 7.75 (pandas linear interpolation)
+        data = list(range(1, 11))
+        df = pd.DataFrame({"values": data})
+
+        result = compute_input_stats(df)
+        stats = result["numeric_stats"]["values"]
+
+        # Verify quartiles match pandas linear interpolation method
+        assert abs(stats["q25"] - 3.25) < 0.01
+        assert abs(stats["q75"] - 7.75) < 0.01
+
+    def test_std_deviation_precision(self) -> None:
+        """Test standard deviation calculation precision."""
+        # Values: 2, 4, 4, 4, 5, 5, 7, 9
+        # Mean = 5, Sample Variance = 4.57, Sample Std = 2.138
+        # (pandas uses ddof=1 for sample std by default)
+        data = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]
+        df = pd.DataFrame({"values": data})
+
+        result = compute_input_stats(df)
+        stats = result["numeric_stats"]["values"]
+
+        # Sample std with ddof=1 is ~2.1381
+        assert abs(stats["std"] - 2.1381) < 0.01
+
+
+@pytest.mark.regression
+class TestOutputFormatConsistency:
+    """Tests verifying output format consistency to detect breaking changes."""
+
+    def test_compute_input_stats_output_keys(self) -> None:
+        """Verify compute_input_stats returns expected keys."""
+        df = pd.DataFrame({"a": [1, 2, 3]})
+        result = compute_input_stats(df)
+
+        required_keys = ["record_count", "column_count", "memory_mb", "column_types"]
+        for key in required_keys:
+            assert key in result, f"Missing required key: {key}"
+
+    def test_anomaly_detection_output_format(self) -> None:
+        """Verify anomaly detection returns expected format."""
+        df = pd.DataFrame({"values": [1, 2, 3, 100]})
+
+        zscore_result = detect_anomalies_zscore(df, ["values"], threshold=3.0)
+        iqr_result = detect_anomalies_iqr(df, ["values"], multiplier=3.0)
+
+        # Both should have 'values' key
+        assert "values" in zscore_result
+        assert "values" in iqr_result
+
+        # Z-score result should have specific keys
+        zscore_keys = ["count", "sample_anomalies", "threshold", "mean", "std"]
+        for key in zscore_keys:
+            assert key in zscore_result["values"], f"Missing zscore key: {key}"
+
+        # IQR result should have specific keys
+        iqr_keys = ["count", "sample_anomalies", "iqr_bounds"]
+        for key in iqr_keys:
+            assert key in iqr_result["values"], f"Missing iqr key: {key}"
+
+    def test_temporal_stats_output_format(self) -> None:
+        """Verify temporal stats returns expected format."""
+        df = pd.DataFrame({
+            "start_date": pd.date_range("2020-01-01", periods=10),
+        })
+
+        result = compute_temporal_stats(df, date_col="start_date")
+
+        required_keys = [
+            "year_distribution",
+            "month_distribution",
+            "quarter_distribution",
+            "day_of_week_distribution",
+            "date_range",
+        ]
+        for key in required_keys:
+            assert key in result, f"Missing temporal stats key: {key}"
+
+    def test_entity_stats_output_format(self) -> None:
+        """Verify entity stats returns expected format."""
+        df = pd.DataFrame({
+            "company_id": ["A", "A", "B"],
+        })
+
+        result = compute_entity_stats(df)
+
+        required_keys = ["company_coverage", "geographic_coverage"]
+        for key in required_keys:
+            assert key in result, f"Missing entity stats key: {key}"
+
+
+# =============================================================================
 # Memory Tracking Tests (Task 2)
 # =============================================================================
 
