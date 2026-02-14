@@ -180,12 +180,12 @@ Plans:
 3. Pre-commit hooks match CI configuration exactly
 4. CI fails on any quality gate violation (lint errors, type errors, test failures)
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 73-01: Create pyproject.toml with consolidated configs
-- [ ] 73-02: Set up GitHub Actions workflow
-- [ ] 73-03: Configure pre-commit hooks
+- [ ] 73-01-PLAN.md — Enhance pyproject.toml with complete PEP 621 metadata (Wave 1)
+- [ ] 73-02-PLAN.md — Update GitHub Actions workflows with lint job and src-layout (Wave 2)
+- [ ] 73-03-PLAN.md — Create pre-commit configuration matching CI (Wave 3)
 
 ---
 
