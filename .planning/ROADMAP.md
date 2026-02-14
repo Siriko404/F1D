@@ -79,9 +79,9 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 **Plans:** 3 plans
 
 Plans:
-- [ ] 69-01-PLAN.md — Migrate to src-layout structure (Wave 1)
-- [ ] 69-02-PLAN.md — Migrate stage scripts and establish tier classification (Wave 2)
-- [ ] 69-03-PLAN.md — Organize data directories by lifecycle (Wave 3)
+- [x] 69-01-PLAN.md — Migrate to src-layout structure (Wave 1)
+- [x] 69-02-PLAN.md — Migrate stage scripts and establish tier classification (Wave 2)
+- [x] 69-03-PLAN.md — Organize data directories by lifecycle (Wave 3)
 
 ---
 
@@ -99,7 +99,7 @@ Plans:
 3. mypy configuration in pyproject.toml enforces tier-based strictness
 4. Type checker passes without errors on full codebase
 
-**Plans:** 5 plans
+**Plans:** 12 plans
 
 Plans:
 - [x] 70-01-PLAN.md — Add type hints to Tier 1 modules (src/f1d/shared/) (Wave 1)
@@ -131,12 +131,12 @@ Plans:
 3. Environment variables override settings without code changes
 4. Invalid configuration values raise clear validation errors
 
-**Plans:** TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 71-01: Implement pydantic-settings base configuration
-- [ ] 71-02: Migrate YAML settings to typed classes
-- [ ] 71-03: Add environment variable integration
+- [ ] 71-01-PLAN.md — Implement pydantic-settings base configuration (Wave 1)
+- [ ] 71-02-PLAN.md — Create step-specific and environment variable configs (Wave 2)
+- [ ] 71-03-PLAN.md — Create configuration loader with tests (Wave 3)
 
 ---
 
@@ -228,4 +228,4 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74
 
 ---
 
-*Roadmap updated: 2026-02-14 (Phase 70 complete, verified)*
+*Roadmap updated: 2026-02-14 (Phase 71 plans created)*
