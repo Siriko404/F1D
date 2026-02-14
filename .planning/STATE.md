@@ -10,16 +10,23 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Milestone: v6.0 Architecture Standard Implementation
-Phase: 73 of 74 (CI/CD Pipeline) - COMPLETE
-Current Plan: 3 of 3
-Status: Phase 73-03 complete - Pre-commit hooks matching CI configuration
-Last activity: 2026-02-14 — Completed 73-03: Pre-commit Hooks
+Phase: 74 of 74 (Testing Infrastructure) - IN PROGRESS
+Current Plan: 1 of 4
+Status: Phase 74-01 complete - Pytest infrastructure with factory fixtures
+Last activity: 2026-02-14 — Completed 74-01: Pytest Infrastructure Update
 
-Progress: [236 plans completed across all milestones]
+Progress: [237 plans completed across all milestones]
 
 ```
 Milestone Progress - v6.0 Architecture Standard Implementation
-[##################                             ] 95% complete (20/20 plans)
+[###################                            ] 96% complete (21/24 plans)
+
+Phase: 74 - Testing Infrastructure
+Status: In Progress (1/4 plans)
+- 74-01: Pytest Infrastructure Update - COMPLETE
+- 74-02: Unit Test Migration - PENDING
+- 74-03: Integration Test Migration - PENDING
+- 74-04: E2E Test Migration - PENDING
 
 Phase: 73 - CI/CD Pipeline
 Status: Complete (3/3 plans)
@@ -41,7 +48,15 @@ Status: Complete (3/3 plans)
 - 71-02: Environment Variable Handling - COMPLETE
 - 71-03: Configuration Loader with Caching - COMPLETE
 
-Verification: Phase 73-03
+Verification: Phase 74-01
+- tests/conftest.py updated with src/f1d path for subprocess_env
+- tests/factories/__init__.py created with package documentation
+- tests/factories/financial.py with 3 factory fixtures (compustat, panel, row)
+- tests/factories/config.py with 4 factory fixtures (yaml, project, env, invalid)
+- 445 tests collected, all fixtures discoverable by pytest
+- No 2_Scripts references in conftest.py
+
+Phase 73-03 (Complete):
 - .pre-commit-config.yaml created with ruff, mypy, and file quality hooks
 - Hook versions match CI workflow (ruff v0.9.0, mypy v1.14.1)
 - mypy runs only on Tier 1 modules (src/f1d/shared) to match CI
@@ -58,7 +73,7 @@ Verification: Phase 73-03
 - v3.0: 21 plans
 - v4.0: 5 plans (64-01 through 64-05)
 - v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
-- v6.0: 23 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03, 72-04, 72-05, 73-01, 73-02, 73-03)
+- v6.0: 24 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03, 72-04, 72-05, 73-01, 73-02, 73-03, 74-01)
 
 **Milestone Summary:**
 
@@ -69,11 +84,12 @@ Verification: Phase 73-03
 | v3.0 Codebase Cleanup | 59-63 | 21 | Complete |
 | v4.0 Folder Consolidation | 64 | 5 | Complete |
 | v5.0 Architecture Standard | 65-68 | 4 | Complete |
-| v6.0 Implementation | 69-74 | 23/23 | In Progress |
+| v6.0 Implementation | 69-74 | 24/27 | In Progress |
 
 ## Performance Metrics
 
 **Recent Plan:**
+- 74-01 Pytest Infrastructure Update: ~8 min, 4 files, 4 tasks
 - 73-03 Pre-commit Hooks: ~2 min, 1 file, 3 tasks
 - 73-02 GitHub Actions Workflow: ~3 min, 2 files, 2 tasks
 - 73-01 pyproject.toml Enhancement: ~6 min, 1 file, 3 tasks
@@ -100,6 +116,9 @@ Verification: Phase 73-03
 
 Recent decisions affecting current work:
 
+- [74-01] Use callable fixture pattern - factory fixtures return functions that accept parameters
+- [74-01] Use numpy random generator with seed for reproducible test data
+- [74-01] Keep factories as pytest fixtures (not factory_boy) since no additional dependency needed
 - [73-03] Pre-commit hooks match CI workflow versions exactly (ruff v0.9.0, mypy v1.14.1)
 - [73-03] mypy hook runs only on Tier 1 modules (src/f1d/shared) matching CI behavior
 - [73-03] Large file threshold set to 1MB to prevent accidental data file commits
@@ -192,10 +211,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 73-03 - Pre-commit Hooks
+Stopped at: Completed 74-01 - Pytest Infrastructure Update
 
 **Next Action:**
-Continue with Phase 74 (Testing Infrastructure) to implement TEST-01 through TEST-04.
+Continue with Phase 74 Plan 02 (Unit Test Migration) to implement TEST-02.
 
 ---
-*Last updated: 2026-02-14 (Phase 73-03 complete)*
+*Last updated: 2026-02-14 (Phase 74-01 complete)*
