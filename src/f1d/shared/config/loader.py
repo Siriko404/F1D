@@ -213,7 +213,7 @@ def validate_env_override(env_var: str, config_path: Optional[str] = None) -> bo
     Args:
         env_var: Environment variable name (e.g., "F1D_DATA__YEAR_START").
         config_path: Dot-notation path in config (e.g., "data.year_start").
-                     If None, inferred from env_var.
+                     If None, only checks if env var is set and has F1D_ prefix.
 
     Returns:
         True if the environment variable is set and would override.
@@ -227,17 +227,15 @@ def validate_env_override(env_var: str, config_path: Optional[str] = None) -> bo
         True
         >>> validate_env_override("F1D_UNKNOWN_VAR")
         False
+        >>> validate_env_override("DATA__YEAR_START")  # No F1D_ prefix
+        False
     """
-    # Check if env var is set
-    if env_var not in os.environ:
+    # Always require F1D_ prefix
+    if not env_var.startswith("F1D_"):
         return False
 
-    # If no config_path provided, assume it would be used
-    if config_path is None:
-        return True
-
-    # Verify it matches F1D prefix pattern
-    if not env_var.startswith("F1D_"):
+    # Check if env var is set
+    if env_var not in os.environ:
         return False
 
     return True

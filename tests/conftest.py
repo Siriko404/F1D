@@ -29,11 +29,17 @@ Coverage.py configuration is managed via:
 Branch coverage is enabled to measure both line and branch coverage.
 """
 
-import pytest
-from pathlib import Path
-import pandas as pd
+from __future__ import annotations
+
+import os
 import sys
+from contextlib import contextmanager
 from io import StringIO
+from pathlib import Path
+from typing import Any, Dict, Generator
+
+import pandas as pd
+import pytest
 import yaml
 
 
@@ -173,3 +179,124 @@ def capture_output():
     # Cleanup: restore original streams
     sys.stdout = capture.old_stdout
     sys.stderr = capture.old_stderr
+
+
+# ==============================================================================
+# Configuration Testing Fixtures
+# ==============================================================================
+
+
+@pytest.fixture
+def sample_config_yaml(tmp_path: Path) -> Path:
+    """Create a temporary project.yaml with minimal valid config.
+
+    Returns:
+        Path to the temporary config file.
+
+    Example:
+        def test_config_loading(sample_config_yaml):
+            from f1d.shared.config import ProjectConfig
+            config = ProjectConfig.from_yaml(sample_config_yaml)
+            assert config.data.year_start == 2002
+    """
+    config_path = tmp_path / "project.yaml"
+    config_path.write_text("""
+project:
+  name: TestProject
+  version: "1.0.0"
+  description: Test configuration for unit tests
+
+data:
+  year_start: 2002
+  year_end: 2018
+
+logging:
+  level: INFO
+
+determinism:
+  random_seed: 42
+  thread_count: 1
+  sort_inputs: true
+""")
+    return config_path
+
+
+@pytest.fixture
+def sample_config(sample_config_yaml: Path):
+    """Create a valid ProjectConfig instance for testing.
+
+    Uses sample_config_yaml fixture to load the configuration.
+
+    Returns:
+        ProjectConfig instance populated from sample YAML.
+
+    Example:
+        def test_with_sample_config(sample_config):
+            assert sample_config.data.year_start == 2002
+    """
+    from f1d.shared.config.base import ProjectConfig
+
+    return ProjectConfig.from_yaml(sample_config_yaml)
+
+
+@pytest.fixture
+def invalid_config_yaml(tmp_path: Path) -> Path:
+    """Create YAML with invalid values (year_start > year_end).
+
+    Returns:
+        Path to the temporary config file with invalid data.
+
+    Example:
+        def test_invalid_config_raises(invalid_config_yaml):
+            from pydantic import ValidationError
+            from f1d.shared.config import ProjectConfig
+            with pytest.raises(ValidationError):
+                ProjectConfig.from_yaml(invalid_config_yaml)
+    """
+    config_path = tmp_path / "invalid_config.yaml"
+    config_path.write_text("""
+project:
+  name: InvalidProject
+  version: "1.0.0"
+
+data:
+  year_start: 2018
+  year_end: 2002  # Invalid: end before start
+
+logging:
+  level: INFO
+""")
+    return config_path
+
+
+@pytest.fixture
+@contextmanager
+def env_override() -> Generator[Dict[str, str], None, None]:
+    """Context manager to temporarily set environment variables.
+
+    Restores original values on exit.
+
+    Yields:
+        Dict that can be used to track what was set.
+
+    Example:
+        def test_env_override(env_override):
+            with env_override:
+                os.environ['F1D_DATA__YEAR_START'] = '2010'
+                # ... test code ...
+            # Environment is restored after context exits
+    """
+    # Save original values
+    env_vars_to_save = [k for k in os.environ if k.startswith("F1D_")]
+    original_values = {k: os.environ[k] for k in env_vars_to_save}
+
+    try:
+        yield {}
+    finally:
+        # Remove any F1D_ vars that were added
+        for k in list(os.environ.keys()):
+            if k.startswith("F1D_"):
+                del os.environ[k]
+        # Restore original values
+        for k, v in original_values.items():
+            os.environ[k] = v
