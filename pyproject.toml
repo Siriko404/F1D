@@ -173,6 +173,20 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 # ==============================================================================
+# Bandit Configuration (Security Scanning)
+# ==============================================================================
+
+[tool.bandit]
+exclude_dirs = [
+    "tests/",
+    ".___archive/",
+    "2_Scripts/",  # Legacy scripts
+]
+skips = [
+    "B101",  # Allow assert in non-test code (legacy scripts)
+]
+
+# ==============================================================================
 # mypy Configuration (TYPE-03: Tier-based strictness)
 # ==============================================================================
 # See: docs/CODE_QUALITY_STANDARD.md Section 3.2
