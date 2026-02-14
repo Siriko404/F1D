@@ -11,43 +11,45 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 Milestone: v6.0 Architecture Standard Implementation
 Phase: 71 of 74 (Configuration System)
-Current Plan: 1 of 3
-Status: In Progress - pydantic-settings base configuration implemented
-Last activity: 2026-02-14 — Completed 71-01: pydantic-settings base configuration
+Current Plan: 2 of 3
+Status: In Progress - step configs, datasets, hashing, string matching, env vars implemented
+Last activity: 2026-02-14 — Completed 71-02: environment variable handling with SecretStr
 
-Progress: [226 plans completed across all milestones]
+Progress: [227 plans completed across all milestones]
 
 ```
 Milestone Progress - v6.0 Architecture Standard Implementation
-[###############                                ] 68% complete (13/19 plans)
+[###############                                ] 74% complete (14/19 plans)
 
 Phase: 71 - Configuration System
-Status: In Progress (1/3 plans)
+Status: In Progress (2/3 plans)
 - 71-01: Pydantic-Settings Base Configuration - COMPLETE
-- 71-02: Environment Variable Handling - TODO
+- 71-02: Environment Variable Handling - COMPLETE
 - 71-03: Configuration Integration - TODO
 
 Phase: 70 - Type Hints Implementation
 Status: Complete (12/12 plans)
 - 70-01 through 70-12: All COMPLETE
 
-Verification: Phase 71-01
-- pydantic>=2.0 and pydantic-settings>=2.0 installed
-- src/f1d/shared/config/ module created
-- Configuration loads from config/project.yaml
-- All config module files pass mypy
+Verification: Phase 71-02
+- All step_XX sections have corresponding config classes
+- Dataset configuration validates correctly
+- Hashing and string_matching configs have threshold validation
+- EnvConfig handles secrets with SecretStr
+- load_config() function provides convenient access
+- All 8 config module files pass mypy
 ```
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed (all milestones): 226
+- Total plans completed (all milestones): 227
 - v1.0: 143 plans
 - v2.0: 17+ plans
 - v3.0: 21 plans
 - v4.0: 5 plans (64-01 through 64-05)
 - v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
-- v6.0: 13 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01)
+- v6.0: 14 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02)
 
 **Milestone Summary:**
 
@@ -58,11 +60,12 @@ Verification: Phase 71-01
 | v3.0 Codebase Cleanup | 59-63 | 21 | Complete |
 | v4.0 Folder Consolidation | 64 | 5 | Complete |
 | v5.0 Architecture Standard | 65-68 | 4 | Complete |
-| v6.0 Implementation | 69-74 | 13/19 | In Progress |
+| v6.0 Implementation | 69-74 | 14/19 | In Progress |
 
 ## Performance Metrics
 
 **Recent Plan:**
+- 71-02 Environment Variable Handling: ~15 min, 8 files, 5 tasks
 - 71-01 Pydantic-Settings Base Configuration: ~10 min, 4 files, 5 tasks
 - 70-10 Econometric Module Type Fixes: ~5 min, 4 files, 2 tasks
 - 70-04 stats.py TypedDict Refactoring: 45 min, 1 file, 3 tasks
@@ -79,6 +82,11 @@ Verification: Phase 71-01
 
 Recent decisions affecting current work:
 
+- [71-02] Use _transform_step_configs() to group top-level step_XX keys into nested steps structure
+- [71-02] Use Dict[str, Any] for heterogeneous nested configurations in step configs
+- [71-02] Use SecretStr from pydantic (not pydantic_settings) for secure password storage
+- [71-02] Add module-level singleton env = EnvConfig() for easy environment access
+- [71-02] Use extra="allow" in StepsConfig and DatasetsConfig for dynamic names
 - [71-01] Use Dict[str, Any] for heterogeneous dictionary returns from resolve() methods
 - [71-01] Use assert isinstance() for type narrowing in validate_paths()
 - [71-01] Pattern paths returned as strings for later .format() interpolation
@@ -132,10 +140,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 71-01 - pydantic-settings base configuration implemented
+Stopped at: Completed 71-02 - environment variable handling with SecretStr
 
 **Next Action:**
-Run plan 71-02 to add environment variable handling with SecretStr support.
+Run plan 71-03 to integrate configuration system into pipeline scripts.
 
 ---
-*Last updated: 2026-02-14 (Phase 71-01 complete)*
+*Last updated: 2026-02-14 (Phase 71-02 complete)*
