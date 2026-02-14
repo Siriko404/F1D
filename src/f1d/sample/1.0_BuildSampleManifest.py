@@ -45,44 +45,15 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-# Import shared observability utilities
-try:
-    from f1d.shared.observability_utils import DualWriter
-except ImportError:
-    # Fallback for direct script execution during migration
-    from shared.observability_utils import DualWriter  # type: ignore[no-redef]
-
-# Import shared validation modules
-try:
-    from f1d.shared.subprocess_validation import validate_script_path
-except ImportError:
-    # Fallback for direct script execution during migration
-    from shared.subprocess_validation import validate_script_path  # type: ignore[no-redef]
-
-# Import shared path validation utilities
-try:
-    from f1d.shared.path_utils import (
-        OutputResolutionError,
-        ensure_output_dir,
-        get_latest_output_dir,
-        validate_input_file,
-        validate_output_path,
-    )
-except ImportError:
-    # Fallback for direct script execution during migration
-    from shared.path_utils import (  # type: ignore[no-redef]
-        ensure_output_dir,
-        get_latest_output_dir,
-        validate_input_file,
-        validate_output_path,
-    )
-except ImportError:
-    # Fallback for direct script execution during migration
-    from shared.path_utils import (  # type: ignore[no-redef]
-        ensure_output_dir,
-        get_latest_output_dir,
-        validate_input_file,
-    )
+from f1d.shared.observability_utils import DualWriter
+from f1d.shared.path_utils import (
+    OutputResolutionError,
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+    validate_output_path,
+)
+from f1d.shared.subprocess_validation import validate_script_path
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -122,10 +93,7 @@ Substeps:
 
 def check_prerequisites(root: Path) -> None:
     """Validate all required inputs exist."""
-    try:
-        from f1d.shared.dependency_checker import validate_prerequisites
-    except ImportError:
-        from shared.dependency_checker import validate_prerequisites  # type: ignore[no-redef]
+    from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
         "config/project.yaml": root / "config/project.yaml",

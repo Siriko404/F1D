@@ -40,9 +40,6 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# Add parent directory to sys.path for shared module imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
 # Dynamic import for 1.5_Utils.py to comply with naming convention
 try:
     utils_path = Path(__file__).parent / "1.5_Utils.py"
@@ -57,7 +54,7 @@ except ImportError as e:
     print(f"Critical Error importing utils: {e}")
     sys.exit(1)
 
-from shared.observability_utils import (
+from f1d.shared.observability_utils import (
     DualWriter,
     analyze_missing_values,
     calculate_throughput,
@@ -72,7 +69,7 @@ from shared.observability_utils import (
     print_stats_summary,
     save_stats,
 )
-from shared.path_utils import (
+from f1d.shared.path_utils import (
     ensure_output_dir,
     get_latest_output_dir,
     validate_input_file,
@@ -151,7 +148,7 @@ identifiers to produce complete analysis universe.
 
 def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
-    from shared.dependency_checker import validate_prerequisites
+    from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files: Dict[str, Path] = {}
 
