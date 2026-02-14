@@ -29,7 +29,6 @@ Date: 2026-02-11
 """
 
 import argparse
-import importlib.util
 import sys
 import time
 from datetime import datetime
@@ -40,17 +39,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# Dynamic import for 1.5_Utils.py to comply with naming convention
-# (Python modules cannot start with numbers, so we use importlib)
-try:
-    utils_path = Path(__file__).parent / "1.5_Utils.py"
-    spec = importlib.util.spec_from_file_location("utils", utils_path)
-    utils = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
-    sys.modules["utils"] = utils
-    spec.loader.exec_module(utils)  # type: ignore[union-attr]
-    from utils import generate_variable_reference
-except ImportError:
-    pass  # 1.5_Utils.py may not exist
+from f1d.shared.sample_utils import generate_variable_reference
 
 from f1d.shared.chunked_reader import track_memory_usage
 from f1d.shared.observability_utils import (

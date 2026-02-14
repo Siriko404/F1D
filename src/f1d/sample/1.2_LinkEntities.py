@@ -42,7 +42,6 @@ Date: 2026-02-11
 """
 
 import argparse
-import importlib.util
 import re
 import sys
 import time
@@ -54,17 +53,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# Dynamic import for 1.5_Utils.py to comply with naming convention
-try:
-    utils_path = Path(__file__).parent / "1.5_Utils.py"
-    spec = importlib.util.spec_from_file_location("utils", utils_path)
-    utils = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
-    sys.modules["utils"] = utils
-    spec.loader.exec_module(utils)  # type: ignore[union-attr]
-    from utils import generate_variable_reference
-except ImportError as e:
-    print(f"Criticial Error importing utils: {e}")
-    sys.exit(1)
+from f1d.shared.sample_utils import generate_variable_reference
 
 from f1d.shared.chunked_reader import track_memory_usage
 from f1d.shared.industry_utils import parse_ff_industries
