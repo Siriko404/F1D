@@ -323,9 +323,12 @@ def compute_financial_controls_quarterly(
     # EPS Growth: (EPS - EPS_lag4) / |EPS_lag4|
     mask = compustat_df["epspxq_lag4"].notna() & (compustat_df["epspxq_lag4"] != 0)
     compustat_df["EPS_Growth"] = np.nan
-    compustat_df.loc[mask, "EPS_Growth"] = (
-        compustat_df.loc[mask, "epspxq"] - compustat_df.loc[mask, "epspxq_lag4"]
-    ) / compustat_df.loc[mask, "epspxq_lag4"].abs()
+    # Use np.where to avoid pandas indexing issues with boolean masks
+    compustat_df["EPS_Growth"] = np.where(
+        mask,
+        (compustat_df["epspxq"] - compustat_df["epspxq_lag4"]) / compustat_df["epspxq_lag4"].abs(),
+        np.nan
+    )
 
     # Winsorize extreme values if requested
     if winsorize:
@@ -338,7 +341,8 @@ def compute_financial_controls_quarterly(
             "CurrentRatio",
             "RD_Intensity",
         ]:
-            if compustat_df[col].notna().sum() > 0:
+            # Use any() instead of sum() for numpy compatibility
+            if compustat_df[col].notna().any():
                 p1, p99 = compustat_df[col].quantile([0.01, 0.99])
                 compustat_df[col] = compustat_df[col].clip(lower=p1, upper=p99)
 
