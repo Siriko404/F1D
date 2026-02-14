@@ -8,11 +8,8 @@ import hashlib
 import pandas as pd
 from pathlib import Path
 import json
-import sys
 
-# Add 2_Scripts to path for shared module imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-from shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
 
 
 # Get repository root from test file location

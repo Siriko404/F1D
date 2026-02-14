@@ -7,12 +7,9 @@ Tests detect the data truncation bug where Volatility/StockRet missing for 2005-
 import pytest
 import pandas as pd
 from pathlib import Path
-import sys
 
-# Add 2_Scripts to path for shared module imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-from shared.path_utils import get_latest_output_dir, OutputResolutionError
-from shared.observability_utils import compute_file_checksum
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.observability_utils import compute_file_checksum
 
 # Get repository root from test file location
 REPO_ROOT = Path(__file__).parent.parent.parent

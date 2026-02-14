@@ -13,11 +13,8 @@ import hashlib
 import json
 import pandas as pd
 from pathlib import Path
-import sys
 
-# Add 2_Scripts to path for shared module imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-from shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
 
 
 def resolve_output_dir(base_path: Path) -> Path:
