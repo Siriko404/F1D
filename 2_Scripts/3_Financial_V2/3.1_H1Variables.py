@@ -38,7 +38,6 @@ Date: 2026-02-11
 """
 
 import argparse
-import logging
 import sys
 import time
 from datetime import datetime
@@ -48,8 +47,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# Configure logger for this module
-logger = logging.getLogger(__name__)
+# Structured logging will be configured in main()
+from f1d.shared.logging import get_logger, configure_script_logging, OperationContext
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
@@ -656,9 +655,23 @@ def main():
     """Main execution"""
     args = parse_arguments()
 
+    # Configure structured logging
+    script_id = Path(__file__).stem  # e.g., "3.1_H1Variables"
+    configure_script_logging(script_name=script_id, log_level="INFO")
+
+    # Initialize logger AFTER configure_script_logging
+    global logger
+    logger = get_logger(__name__)
+
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
+
+    # Wrap main operation with OperationContext for structured logging
+    with OperationContext(
+        operation_name="financial_variable_construction",
+        script_name=script_id,
+    ):
 
     # Handle output-dir override
     if args.output_dir:
