@@ -53,6 +53,9 @@ import numpy as np
 import pandas as pd
 import yaml
 
+# Structured logging will be configured in main()
+from f1d.shared.logging import get_logger, configure_script_logging
+
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(script_dir))
@@ -1009,6 +1012,13 @@ Examples:
     )
     args = parser.parse_args()
 
+    # Configure structured logging
+    script_id = Path(__file__).stem  # e.g., "3.5_H5Variables"
+    configure_script_logging(script_name=script_id, log_level="INFO")
+
+    # Initialize logger AFTER configure_script_logging
+    slog = get_logger(__name__)
+
     # Generate timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
@@ -1018,8 +1028,11 @@ Examples:
     # Setup paths
     paths = setup_paths(config, timestamp)
 
-    # Initialize logger
+    # Initialize file logger
     logger = DualWriter(paths["log_file"])
+
+    slog.info("script_started", script_name=script_id, timestamp=timestamp)
+
     logger.write("=" * 80)
     logger.write("STEP 3.5: H5 Analyst Dispersion Variables")
     logger.write("=" * 80)
@@ -1280,6 +1293,12 @@ Examples:
         logger.write(f"Final sample: {len(final_df):,} observations")
         logger.write(f"Unique firms: {final_df['gvkey'].nunique():,}")
         logger.write(f"End time: {datetime.now().isoformat()}")
+
+        slog.info(
+            "script_completed",
+            script_name=script_id,
+            observations=len(final_df),
+        )
 
         stats["end_time"] = datetime.now().isoformat()
         stats["status"] = "complete"
