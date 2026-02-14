@@ -31,6 +31,12 @@ Date: 2026-02-11
 ==============================================================================
 """
 
+# TYPE ERROR BASELINE: 4 remaining errors (down from 19)
+# Remaining type errors are library limitations:
+# - pandas DataFrame operations: mypy cannot infer types after groupby/merge
+# - re.compile pattern: mypy sees Pattern[str] but usage may vary
+# All type ignores below are scoped with specific error codes
+
 import argparse
 import hashlib
 import json
@@ -39,6 +45,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Pattern, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -67,7 +74,9 @@ from f1d.shared.path_utils import (
 
 
 def setup_logging():
-    log_dir = Path(__file__).parent.parent.parent.parent / "3_Logs" / "2.2_ConstructVariables"
+    log_dir = (
+        Path(__file__).parent.parent.parent.parent / "3_Logs" / "2.2_ConstructVariables"
+    )
     ensure_output_dir(log_dir)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     log_path = log_dir / f"{timestamp}.log"
@@ -152,13 +161,13 @@ def print_stat(label, before=None, after=None, value=None, indent=2):
             print(f"{prefix}{label}: {v}")
 
 
-def analyze_missing_values(df):
-    missing = {}
+def analyze_missing_values(df: pd.DataFrame) -> Dict[str, Dict[str, Union[int, float]]]:
+    missing: Dict[str, Dict[str, Union[int, float]]] = {}
     for col in df.columns:
-        null_count = df[col].isna().sum()
+        null_count = int(df[col].isna().sum())
         if null_count > 0:
-            missing[col] = {
-                "count": int(null_count),
+            missing[str(col)] = {
+                "count": null_count,
                 "percent": round(null_count / len(df) * 100, 2),
             }
     return missing
@@ -199,7 +208,7 @@ def save_stats(stats, out_dir):
 # ==============================================================================
 
 
-def get_process_memory_mb():
+def get_process_memory_mb() -> Dict[str, float]:
     """
     Get current process memory usage in MB.
 
@@ -214,13 +223,13 @@ def get_process_memory_mb():
     mem_percent = process.memory_percent()
 
     return {
-        "rss_mb": mem_info.rss / (1024 * 1024),  # Resident Set Size
-        "vms_mb": mem_info.vms / (1024 * 1024),  # Virtual Memory Size
-        "percent": mem_percent,
+        "rss_mb": float(mem_info.rss) / (1024 * 1024),  # Resident Set Size
+        "vms_mb": float(mem_info.vms) / (1024 * 1024),  # Virtual Memory Size
+        "percent": float(mem_percent),
     }
 
 
-def calculate_throughput(rows_processed, duration_seconds):
+def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
     """
     Calculate throughput in rows per second.
 
@@ -348,7 +357,7 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
 # ==============================================================================
 
 
-def load_manager_keywords(root):
+def load_manager_keywords(root: Path) -> Pattern[str]:
     path = root / "1_Inputs" / "managerial_roles_extracted.txt"
     with open(path, "r") as f:
         keywords = [line.strip() for line in f if line.strip()]
@@ -455,7 +464,12 @@ def flag_speakers(df, manager_pattern, manifest_df):
 # ==============================================================================
 
 
-def aggregate_weighted(df, sample_mask, context_mask, count_cols):
+def aggregate_weighted(
+    df: pd.DataFrame,
+    sample_mask: pd.Series,
+    context_mask: pd.Series,
+    count_cols: List[str],
+) -> Optional[pd.DataFrame]:
     subset = df[sample_mask & context_mask].copy()
     if len(subset) == 0:
         return None
@@ -464,17 +478,17 @@ def aggregate_weighted(df, sample_mask, context_mask, count_cols):
     gb = subset.groupby("file_name")
 
     # Sum Counts and Totals
-    sums = gb[count_cols + ["total_tokens"]].sum()
+    sums = gb[count_cols + ["total_tokens"]].sum()  # type: ignore[index]  # mypy cannot verify groupby result indexing
 
     # Calculate Pct (x100)
-    results = {}
+    results: Dict[str, Any] = {}
     total_tokens = sums["total_tokens"].replace(0, np.nan)
 
     for col in count_cols:
         cat = col.replace("_count", "")
         # Variable naming: Sample_Context_Cat_pct
         # We handle sample/context prefix outside
-        pct = (sums[col] / total_tokens) * 100.0
+        pct = (sums[col] / total_tokens) * 100.0  # type: ignore[index]  # mypy cannot verify groupby result indexing
         results[f"{cat}_pct"] = pct
 
     result_df = pd.DataFrame(results)
@@ -1029,7 +1043,9 @@ def main():
             .get("category_names", [])
         )
 
-        from f1d.shared.observability_utils import compute_constructvariables_output_stats
+        from f1d.shared.observability_utils import (
+            compute_constructvariables_output_stats,
+        )
 
         stats["constructvariables_output"] = compute_constructvariables_output_stats(
             output_dfs, samples, contexts, categories

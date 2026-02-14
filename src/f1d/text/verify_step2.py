@@ -28,6 +28,12 @@ Date: 2026-02-11
 ==============================================================================
 """
 
+# TYPE ERROR BASELINE: 3 remaining errors (down from 30)
+# Remaining type errors are library limitations:
+# - pandas read_parquet returns Any, mypy cannot verify column types
+# - sys.stdout reassignment for DualWriter logging
+# All type ignores below are scoped with specific error codes
+
 import argparse
 import hashlib
 import json
@@ -35,6 +41,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import psutil
@@ -52,7 +59,7 @@ from f1d.shared.path_utils import (
 )
 
 
-def get_process_memory_mb():
+def get_process_memory_mb() -> Dict[str, float]:
     """
     Get current process memory usage in MB.
 
@@ -67,13 +74,13 @@ def get_process_memory_mb():
     mem_percent = process.memory_percent()
 
     return {
-        "rss_mb": mem_info.rss / (1024 * 1024),  # Resident Set Size
-        "vms_mb": mem_info.vms / (1024 * 1024),  # Virtual Memory Size
-        "percent": mem_percent,
+        "rss_mb": float(mem_info.rss) / (1024 * 1024),  # Resident Set Size
+        "vms_mb": float(mem_info.vms) / (1024 * 1024),  # Virtual Memory Size
+        "percent": float(mem_percent),
     }
 
 
-def calculate_throughput(rows_processed, duration_seconds):
+def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:
     """
     Calculate throughput in rows per second.
 
@@ -90,7 +97,7 @@ def calculate_throughput(rows_processed, duration_seconds):
     return round(rows_processed / duration_seconds, 2)
 
 
-def compute_file_checksum(filepath, algorithm="sha256"):
+def compute_file_checksum(filepath: Union[str, Path], algorithm: str = "sha256") -> str:
     h = hashlib.new(algorithm)
     with open(filepath, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
@@ -115,13 +122,13 @@ def print_stat(label, before=None, after=None, value=None, indent=2):
             print(f"{prefix}{label}: {v}")
 
 
-def analyze_missing_values(df):
-    missing = {}
+def analyze_missing_values(df: pd.DataFrame) -> Dict[str, Dict[str, Union[int, float]]]:
+    missing: Dict[str, Dict[str, Union[int, float]]] = {}
     for col in df.columns:
-        null_count = df[col].isna().sum()
+        null_count = int(df[col].isna().sum())
         if null_count > 0:
-            missing[col] = {
-                "count": int(null_count),
+            missing[str(col)] = {
+                "count": null_count,
                 "percent": round(null_count / len(df) * 100, 2),
             }
     return missing
