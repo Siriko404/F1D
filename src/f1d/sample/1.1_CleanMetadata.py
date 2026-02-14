@@ -29,13 +29,8 @@ Date: 2026-02-11
 """
 
 import argparse
-import sys
-from pathlib import Path
-from typing import Any, Dict
-
-# Add 2_Scripts to sys.path for shared module imports (works when running directly)
-sys.path.insert(0, str(Path(__file__).parent.parent))
 import importlib.util
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -57,8 +52,8 @@ try:
 except ImportError:
     pass  # 1.5_Utils.py may not exist
 
-from shared.chunked_reader import track_memory_usage
-from shared.observability_utils import (
+from f1d.shared.chunked_reader import track_memory_usage
+from f1d.shared.observability_utils import (
     DualWriter,
     analyze_missing_values,
     calculate_throughput,
@@ -72,36 +67,12 @@ from shared.observability_utils import (
     print_stats_summary,
     save_stats,
 )
-
-# Import shared validation module (for opt-in data validation)
-try:
-    from shared.data_validation import load_validated_parquet
-except ImportError:
-    # Fallback if shared/__init__.py hasn't run yet
-    import sys as _sys
-    from pathlib import Path as _Path
-
-    _script_dir = _Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from shared.data_validation import load_validated_parquet
-
-# Import shared path validation utilities
-try:
-    from shared.path_utils import (
-        ensure_output_dir,
-        validate_input_file,
-        validate_output_path,
-    )
-except ImportError:
-    import sys as _sys
-    from pathlib import Path as _Path
-
-    _script_dir = _Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        ensure_output_dir,
-        validate_input_file,
-    )
+from f1d.shared.data_validation import load_validated_parquet
+from f1d.shared.path_utils import (
+    ensure_output_dir,
+    validate_input_file,
+    validate_output_path,
+)
 
 
 def print_dual(msg: str) -> None:
@@ -146,7 +117,7 @@ target date range (2002-2018).
 
 def check_prerequisites(root: Path, args: argparse.Namespace) -> argparse.Namespace:
     """Validate all required inputs exist."""
-    from shared.dependency_checker import validate_prerequisites
+    from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
         "Unified-info.parquet": root / "1_Inputs" / "Unified-info.parquet",
