@@ -12,7 +12,7 @@ Data processing pipeline for F1D thesis research. Milestones track major project
 - Completed **v4.0** Folder Structure Consolidation (Phase 64) - shipped 2026-02-12
 - Completed **v5.0** Architecture Standard Definition (Phases 65-68) - shipped 2026-02-13
 - Completed **v6.0** Architecture Standard Implementation (Phases 69-74) - shipped 2026-02-14
-- **v6.1** Architecture Compliance Gap Closure (Phases 75-76) - in progress
+- Completed **v6.1** Architecture Compliance Gap Closure (Phases 75-76) - shipped 2026-02-14
 
 ## Phases
 
@@ -288,10 +288,10 @@ Plans:
 **Plans:** 4 plans across 3 waves
 
 Plans:
-- [ ] 76-01-PLAN.md — Migrate financial v2 stage scripts to f1d.shared.* imports (Wave 1)
-- [ ] 76-02-PLAN.md — Migrate financial v1 stage scripts to f1d.shared.* imports (Wave 2)
-- [ ] 76-03-PLAN.md — Migrate econometric stage scripts to f1d.shared.* imports (Wave 2)
-- [ ] 76-04-PLAN.md — Migrate performance tests and final verification (Wave 3)
+- [x] 76-01-PLAN.md — Migrate financial v2 stage scripts to f1d.shared.* imports (Wave 1)
+- [x] 76-02-PLAN.md — Migrate financial v1 stage scripts to f1d.shared.* imports (Wave 2)
+- [x] 76-03-PLAN.md — Migrate econometric stage scripts to f1d.shared.* imports (Wave 2)
+- [x] 76-04-PLAN.md — Migrate performance tests and final verification (Wave 3)
 
 ---
 
@@ -305,12 +305,12 @@ Plans:
 | LoggingSettings not consumed | logging/config.py | ✓ CLOSED |
 | pandas/numpy version in tests | panel_ols tests | ✓ CLOSED |
 
-**Expanded Scope (Phase 76):**
-| Gap | Files Affected | Root Cause |
-|-----|----------------|------------|
-| sys.path.insert() in financial/ | 15 stage scripts | Tier 3 - not migrated in Phase 69 |
-| sys.path.insert() in econometric/ | 11 stage scripts | Tier 3 - not migrated in Phase 69 |
-| sys.path.insert() in performance tests | 2 test files | Not in v6.0 audit scope |
+**Expanded Scope (Phase 76) - CLOSED:**
+| Gap | Files Affected | Status |
+|-----|----------------|--------|
+| sys.path.insert() in financial/ | 17 stage scripts | ✓ CLOSED |
+| sys.path.insert() in econometric/ | 19 stage scripts | ✓ CLOSED |
+| sys.path.insert() in performance tests | 2 test files | ✓ CLOSED |
 
 ---
 
@@ -328,8 +328,8 @@ Phases execute in numeric order: 69 -> 70 -> 71 -> 72 -> 73 -> 74 -> 75 -> 76
 | 73. CI/CD Pipeline | v6.0 | 3/3 | Complete | 2026-02-14 |
 | 74. Testing Infrastructure | v6.0 | 4/4 | Complete | 2026-02-14 |
 | 75. Gap Closure (v6.0 scope) | v6.1 | 5/5 | Complete | 2026-02-14 |
-| 76. Stage Scripts Migration | v6.1 | 0/4 | Pending | - |
+| 76. Stage Scripts Migration | v6.1 | 4/4 | Complete | 2026-02-14 |
 
 ---
 
-*Roadmap updated: 2026-02-14 (Phase 75 complete, Phase 76 added for expanded scope)*
+*Roadmap updated: 2026-02-14 (Phase 76 complete, v6.1 milestone shipped)*
