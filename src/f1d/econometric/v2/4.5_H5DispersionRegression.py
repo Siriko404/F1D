@@ -55,10 +55,6 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# Add parent directory to sys.path for shared module imports
-script_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(script_dir))
-
 # Import shared utilities
 from f1d.shared.diagnostics import (
     check_multicollinearity,
