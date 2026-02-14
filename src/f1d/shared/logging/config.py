@@ -8,6 +8,11 @@ Example:
     >>> configure_logging(log_level="INFO", json_output=False)
     >>> logger = get_logger(__name__)
     >>> logger.info("processing_started", rows=1000, stage="financial")
+
+With LoggingSettings:
+    >>> from f1d.shared.logging import configure_logging, LoggingSettings
+    >>> settings = LoggingSettings(level="DEBUG")
+    >>> configure_logging(settings=settings)
 """
 
 from __future__ import annotations
@@ -15,15 +20,19 @@ from __future__ import annotations
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 
 import structlog
+
+if TYPE_CHECKING:
+    from f1d.shared.config.base import LoggingSettings
 
 
 def configure_logging(
     log_level: str = "INFO",
     log_file: Optional[Path] = None,
     json_output: bool = False,
+    settings: Optional["LoggingSettings"] = None,
 ) -> None:
     """Configure structlog with optional file output.
 
@@ -31,7 +40,16 @@ def configure_logging(
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
         log_file: Optional path for log file output.
         json_output: If True, use JSON format for console; otherwise human-readable.
+        settings: Optional LoggingSettings instance. If provided and log_level is default
+                  ("INFO"), uses settings.level for the log level. Explicit log_level
+                  parameter takes precedence over settings.level.
     """
+    # If LoggingSettings provided, use its values (with parameter overrides still respected)
+    if settings is not None:
+        # Only use settings.level if log_level is still at default value
+        if log_level == "INFO":
+            log_level = settings.level
+
     # Shared processors for all loggers
     shared_processors: list[Any] = [
         structlog.contextvars.merge_contextvars,
