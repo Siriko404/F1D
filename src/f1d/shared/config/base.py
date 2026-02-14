@@ -11,11 +11,11 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple, Type
 
 import yaml
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 from f1d.shared.config.datasets import DatasetsConfig
 from f1d.shared.config.hashing import HashingConfig
@@ -212,14 +212,53 @@ class ProjectConfig(BaseSettings):
     analyst_detection: Optional[Dict[str, str]] = None
 
     @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: Type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> Tuple[PydanticBaseSettingsSource, ...]:
+        """Customize source priority: env vars > init (YAML) > secrets.
+
+        This ensures environment variables can override YAML configuration
+        values, which is essential for deployment flexibility.
+
+        Args:
+            settings_cls: The settings class being customized.
+            init_settings: Source for init kwargs (YAML data).
+            env_settings: Source for environment variables.
+            dotenv_settings: Source for .env file values.
+            file_secret_settings: Source for file-based secrets.
+
+        Returns:
+            Tuple of sources in priority order (first wins).
+        """
+        return (
+            env_settings,        # Highest priority: environment variables
+            dotenv_settings,     # Second: .env file
+            init_settings,       # Third: init kwargs (YAML data)
+            file_secret_settings,  # Lowest: file secrets
+        )
+
+    @classmethod
     def from_yaml(cls, path: Path) -> "ProjectConfig":
-        """Load configuration from a YAML file.
+        """Load configuration from a YAML file with env var overrides.
+
+        Configuration values from YAML are used as defaults, which can be
+        overridden by environment variables with the F1D_ prefix.
+
+        Environment Variable Examples:
+            F1D_DATA__YEAR_START=2010: Override data.year_start
+            F1D_LOGGING__LEVEL=DEBUG: Override logging.level
+            F1D_DETERMINISM__RANDOM_SEED=123: Override determinism.random_seed
 
         Args:
             path: Path to the YAML configuration file.
 
         Returns:
-            ProjectConfig instance populated from the YAML file.
+            ProjectConfig instance populated from YAML with env var overrides.
 
         Raises:
             FileNotFoundError: If the YAML file does not exist.
@@ -228,6 +267,8 @@ class ProjectConfig(BaseSettings):
         Example:
             >>> from pathlib import Path
             >>> config = ProjectConfig.from_yaml(Path("config/project.yaml"))
+            >>> # With F1D_DATA__YEAR_START=2010 in environment:
+            >>> config.data.year_start  # Returns 2010 instead of YAML value
         """
         if not path.exists():
             raise FileNotFoundError(f"Configuration file not found: {path}")
@@ -238,7 +279,10 @@ class ProjectConfig(BaseSettings):
         # Transform top-level step_XX keys into nested steps structure
         data = cls._transform_step_configs(data)
 
-        return cls.model_validate(data)
+        # Use constructor (**data) instead of model_validate to trigger
+        # BaseSettings env var loading mechanism. This allows env vars
+        # to override YAML values.
+        return cls(**data)
 
     @classmethod
     def _transform_step_configs(cls, data: Dict[str, Any]) -> Dict[str, Any]:
