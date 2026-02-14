@@ -7,13 +7,8 @@ EnvValidationError exceptions.
 
 import pytest
 import os
-import sys
-from pathlib import Path
 
-# Add 2_Scripts to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-
-from shared.env_validation import (
+from f1d.shared.env_validation import (
     validate_env_schema,
     EnvValidationError,
     load_and_validate_env,
@@ -269,7 +264,7 @@ class TestLoadAndValidateEnv:
         def mock_validate(schema):
             raise EnvValidationError("Test error")
 
-        import shared.env_validation as env_mod
+        import f1d.shared.env_validation as env_mod
 
         original_validate = env_mod.validate_env_schema
         env_mod.validate_env_schema = mock_validate

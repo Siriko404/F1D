@@ -9,11 +9,8 @@ deterministic: true
 import pytest
 import tempfile
 from pathlib import Path
-import sys
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-
-from shared.metadata_utils import load_variable_descriptions
+from f1d.shared.metadata_utils import load_variable_descriptions
 
 
 def test_load_variable_descriptions_basic():

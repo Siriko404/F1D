@@ -10,11 +10,8 @@ import pytest
 import tempfile
 import zipfile
 from pathlib import Path
-import sys
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-
-from shared.industry_utils import parse_ff_industries
+from f1d.shared.industry_utils import parse_ff_industries
 
 
 def test_parse_ff_industries_basic():

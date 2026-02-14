@@ -3,13 +3,9 @@
 import pytest
 import pandas as pd
 from pathlib import Path
-import sys
-
-# Add 2_Scripts to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
 try:
-    from shared.chunked_reader import read_in_chunks
+    from f1d.shared.chunked_reader import read_in_chunks
 
     CHUNKED_READER_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):

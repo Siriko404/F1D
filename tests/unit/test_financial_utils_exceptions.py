@@ -5,12 +5,9 @@ Tests verify that FinancialCalculationError is raised with informative messages.
 
 import pytest
 import pandas as pd
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-from shared.financial_utils import calculate_firm_controls, calculate_firm_controls_quarterly
-from shared.data_validation import FinancialCalculationError
+from f1d.shared.financial_utils import calculate_firm_controls, calculate_firm_controls_quarterly
+from f1d.shared.data_validation import FinancialCalculationError
 
 
 @pytest.fixture

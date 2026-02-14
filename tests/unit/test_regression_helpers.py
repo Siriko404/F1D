@@ -13,12 +13,8 @@ import pytest
 import pandas as pd
 import tempfile
 from pathlib import Path
-import sys
 
-# Add 2_Scripts to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-
-from shared.regression_helpers import (
+from f1d.shared.regression_helpers import (
     build_regression_sample,
     _check_missing_values,
     _assign_industry_codes,
@@ -384,7 +380,7 @@ class TestBuildRegressionSample:
 
         # Set min_sample_size higher than available
         # RegressionValidationError is a custom exception
-        from shared.regression_validation import RegressionValidationError
+        from f1d.shared.regression_validation import RegressionValidationError
 
         with pytest.raises(
             RegressionValidationError, match="Insufficient observations"

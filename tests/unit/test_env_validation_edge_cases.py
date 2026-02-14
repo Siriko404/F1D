@@ -1,14 +1,9 @@
 """Edge case tests for env_validation module."""
 
 import pytest
-import sys
-from pathlib import Path
-
-# Add 2_Scripts to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
 try:
-    from shared.env_validation import (
+    from f1d.shared.env_validation import (
         validate_env_schema,
         EnvValidationError,
     )

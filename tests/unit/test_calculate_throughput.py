@@ -4,11 +4,8 @@ Tests verify division-by-zero handling and edge cases.
 """
 
 import pytest
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-from shared.observability_utils import calculate_throughput
+from f1d.shared.observability_utils import calculate_throughput
 
 
 def test_valid_duration_returns_correct_throughput():

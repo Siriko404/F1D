@@ -11,10 +11,7 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-# Add 2_Scripts to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-
-from shared.subprocess_validation import (
+from f1d.shared.subprocess_validation import (
     validate_script_path,
     run_validated_subprocess,
 )

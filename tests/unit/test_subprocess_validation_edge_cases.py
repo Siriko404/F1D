@@ -2,13 +2,9 @@
 
 import pytest
 from pathlib import Path
-import sys
-
-# Add 2_Scripts to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
 try:
-    from shared.subprocess_validation import validate_script_path
+    from f1d.shared.subprocess_validation import validate_script_path
 
     SUBPROCESS_VALIDATION_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):

@@ -6,14 +6,10 @@ Tests verify error handling for invalid inputs (paths, schemas, values).
 import pytest
 import pandas as pd
 from pathlib import Path
-import sys
-
-# Add 2_Scripts to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
 # Try to import data_validation module, skip if not available
 try:
-    from shared.data_validation import (
+    from f1d.shared.data_validation import (
         validate_dataframe_schema,
         DataValidationError,
         load_validated_parquet,
