@@ -9,14 +9,11 @@ import json
 from pathlib import Path
 import pandas as pd
 import yaml
-import sys
 
 pytestmark = pytest.mark.integration  # Mark all tests in this file as integration
 
 
-# Add 2_Scripts to path for shared module imports (for direct imports)
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-from shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
 
 
 def resolve_output_dir(base_path: Path) -> Path:

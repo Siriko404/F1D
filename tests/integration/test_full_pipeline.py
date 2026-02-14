@@ -12,12 +12,8 @@ import subprocess
 import json
 from pathlib import Path
 import time
-import sys
 
-# Add 2_Scripts to path for shared module imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-
-from shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
 
 pytestmark = pytest.mark.e2e  # Mark all tests in this file as E2E
 
@@ -121,10 +117,10 @@ def get_output_dir(script_path: str, repo_root: Path) -> Path:
     to find the most recent output directory by timestamp.
 
     Mapping:
-    - 1_Sample/* → 4_Outputs/1.1_CleanMetadata/ -> TIMESTAMPED
-    - 2_Text/* → 4_Outputs/2_Textual_Analysis/2.1_Tokenized/ -> TIMESTAMPED
-    - 3_Financial/* → 4_Outputs/3_Financial/3.0_BuildFinancialFeatures/ -> TIMESTAMPED
-    - 4_Econometric/* → 4_Outputs/4_Econometric/4.1_EstimateCeoClarity/ -> TIMESTAMPED
+    - 1_Sample/* -> 4_Outputs/1.1_CleanMetadata/ -> TIMESTAMPED
+    - 2_Text/* -> 4_Outputs/2_Textual_Analysis/2.1_Tokenized/ -> TIMESTAMPED
+    - 3_Financial/* -> 4_Outputs/3_Financial/3.0_BuildFinancialFeatures/ -> TIMESTAMPED
+    - 4_Econometric/* -> 4_Outputs/4_Econometric/4.1_EstimateCeoClarity/ -> TIMESTAMPED
     """
     script_name = Path(script_path).stem
 
@@ -255,12 +251,12 @@ def test_full_pipeline_execution(repo_root, subprocess_env):
                 f"  - Files found: {[f.name for f in output_dir.iterdir() if f.is_file()]}"
             )
 
-        print(f"✓ Script completed successfully in {duration:.2f}s")
-        print(f"✓ Output directory: {output_dir}")
+        print(f"Script completed successfully in {duration:.2f}s")
+        print(f"Output directory: {output_dir}")
 
     # All scripts completed successfully
     print(f"\n{'=' * 70}")
-    print(f"✓ All {len(PIPELINE_SCRIPTS)} scripts executed successfully!")
+    print(f"All {len(PIPELINE_SCRIPTS)} scripts executed successfully!")
     print(f"{'=' * 70}")
 
     # Print execution summary

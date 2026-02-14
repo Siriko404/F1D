@@ -5,12 +5,9 @@ Tests verify that exceptions are not silently caught and lost.
 
 import pytest
 import pandas as pd
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
-from shared.financial_utils import compute_financial_features
-from shared.data_validation import FinancialCalculationError
+from f1d.shared.financial_utils import compute_financial_features
+from f1d.shared.data_validation import FinancialCalculationError
 
 
 @pytest.fixture
@@ -77,7 +74,7 @@ def test_calculate_firm_controls_raises_directly(sample_compustat_df):
     """Test that calling calculate_firm_controls directly raises exceptions.
     This verifies that the underlying function properly raises exceptions.
     """
-    from shared.financial_utils import calculate_firm_controls
+    from f1d.shared.financial_utils import calculate_firm_controls
 
     # Test with missing gvkey - should raise
     row = pd.Series({"year": 2018})  # No gvkey
