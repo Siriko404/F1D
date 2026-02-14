@@ -27,13 +27,95 @@ Date: 2026-02-11
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Collection
+from typing import Any, Dict, List, Optional, Set, TypedDict
 
 import numpy as np
 import pandas as pd
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
+
+
+# =============================================================================
+# TypedDict Definitions for Stats Module
+# =============================================================================
+
+
+class PercentilesDict(TypedDict, total=False):
+    """Percentiles dictionary for statistics."""
+
+    p1: float
+    p5: float
+    p10: float
+    p25: float
+    p50: float
+    p75: float
+    p90: float
+    p95: float
+    p99: float
+
+
+class CountPctDict(TypedDict):
+    """Count and percentage dictionary."""
+
+    count: int
+    pct: float
+
+
+class VarStatsDict(TypedDict, total=False):
+    """Variable statistics dictionary with optional nested dicts."""
+
+    count: int
+    mean: float
+    median: float
+    std: float
+    min: float
+    max: float
+    q25: float
+    q75: float
+    zeros_count: int
+    zeros_pct: float
+    percentiles: PercentilesDict
+    zeros: CountPctDict
+    nans: CountPctDict
+
+
+class CategoryStatsDict(TypedDict, total=False):
+    """Category statistics dictionary for tokenization output."""
+
+    mean: float
+    median: float
+    std: float
+    min: int
+    max: int
+    q25: float
+    q75: float
+    zeros_count: int
+    zeros_pct: float
+    percentiles: PercentilesDict
+
+
+class DateRangeDict(TypedDict):
+    """Date range dictionary."""
+
+    earliest: str
+    latest: str
+
+
+class YearStatsDict(TypedDict, total=False):
+    """Year-level statistics dictionary."""
+
+    observations: int
+    unique_stocks: int
+    date_range: DateRangeDict
+    data_columns_available: List[str]
+
+
+class OverlapStatsDict(TypedDict, total=False):
+    """Overlap statistics dictionary."""
+
+    words_in_multiple_categories: int
+    category_overlaps: Dict[str, int]
 
 
 def print_stat(
@@ -2363,7 +2445,7 @@ def collect_ceo_distribution_samples(
         - single_call_ceos: {count, percentage}
         - multi_firm_ceos: List of CEOs spanning multiple firms
     """
-    samples = {
+    samples: Dict[str, Any] = {
         "top_ceos": [],
         "bottom_ceos": [],
         "single_call_ceos": {"count": 0, "percentage": 0.0},
@@ -2402,7 +2484,7 @@ def collect_ceo_distribution_samples(
             round(row["call_count"] / total_calls * 100, 2) if total_calls > 0 else 0.0
         )
 
-        samples["top_ceos"].append(  # type: ignore[attr-defined]
+        samples["top_ceos"].append(
             {
                 "ceo_id": str(ceo_id),
                 "ceo_name": ceo_name,
@@ -2464,7 +2546,7 @@ def compute_tokenize_input_stats(
     manifest_df: pd.DataFrame,
     lm_dict_path: Path,
     vocab_list: List[str],
-    cat_sets: Dict[str, set],
+    cat_sets: Dict[str, Set[str]],
 ) -> Dict[str, Any]:
     """
     Analyze input data and LM dictionary for tokenization.
@@ -2567,13 +2649,13 @@ def compute_tokenize_input_stats(
         }
 
     # Overlap analysis
-    overlap_stats = {
+    overlap_stats: OverlapStatsDict = {
         "words_in_multiple_categories": 0,
         "category_overlaps": {},
     }
 
     # Count words appearing in multiple categories
-    all_words = {}
+    all_words: Dict[str, List[str]] = {}
     for cat_name, cat_words in cat_sets.items():
         for word in cat_words:
             if word not in all_words:
@@ -2598,7 +2680,7 @@ def compute_tokenize_input_stats(
 
 def compute_tokenize_process_stats(
     per_year_stats: List[Dict[str, Any]],
-    cat_sets: Dict[str, set],
+    cat_sets: Dict[str, Set[str]],
     vocab_list: List[str],
     duration_seconds: float,
 ) -> Dict[str, Any]:
@@ -2724,7 +2806,7 @@ def compute_tokenize_process_stats(
 
 def compute_tokenize_output_stats(
     output_dfs: List[pd.DataFrame],
-    cat_sets: Dict[str, set],
+    cat_sets: Dict[str, Set[str]],
 ) -> Dict[str, Any]:
     """
     Analyze linguistic counts output from tokenization.
@@ -2777,7 +2859,7 @@ def compute_tokenize_output_stats(
         cat_series = df_all[col_name]
 
         # Basic statistics
-        cat_stats = {
+        cat_stats: CategoryStatsDict = {
             "mean": round(float(cat_series.mean()), 4),
             "median": round(float(cat_series.median()), 4),
             "std": round(float(cat_series.std()), 4),
@@ -2833,7 +2915,7 @@ def compute_tokenize_output_stats(
 
     # Speaker-level analysis (if role column exists)
     if "role" in df_all.columns:
-        role_stats = {}
+        role_stats: Dict[str, Any] = {}
 
         # Documents per role
         role_counts = df_all["role"].value_counts().sort_index()
@@ -2898,7 +2980,7 @@ def compute_tokenize_output_stats(
 def compute_constructvariables_input_stats(
     tokenized_dir: Path,
     manifest_df: pd.DataFrame,
-    years_range: tuple = (2002, 2019),
+    years_range: tuple[int, int] = (2002, 2019),
 ) -> Dict[str, Any]:
     """
     Analyze input data for variable construction.
@@ -3165,7 +3247,7 @@ def compute_constructvariables_output_stats(
         var_series = df_all[var_col]
 
         # Basic statistics
-        var_stats = {
+        var_stats: VarStatsDict = {
             "mean": round(float(var_series.mean()), 4),
             "median": round(float(var_series.median()), 4),
             "std": round(float(var_series.std()), 4),
@@ -3565,7 +3647,7 @@ def compute_financial_output_stats(
         var_series = df_output[var_name]
 
         # Basic statistics
-        var_stats = {
+        var_stats: VarStatsDict = {
             "mean": round(float(var_series.mean()), 4),
             "median": round(float(var_series.median()), 4),
             "std": round(float(var_series.std()), 4),
@@ -3887,7 +3969,7 @@ def compute_market_output_stats(
         var_series = df_output[var_name]
 
         # Basic statistics
-        var_stats = {
+        var_stats: VarStatsDict = {
             "mean": round(float(var_series.mean()), 4),
             "median": round(float(var_series.median()), 4),
             "std": round(float(var_series.std()), 4),
@@ -4058,8 +4140,8 @@ def compute_event_flags_input_stats(
     if "cusip" in manifest_df.columns:
         with_cusip = int(manifest_df["cusip"].notna().sum())
         stats["manifest_stats"]["with_cusip_count"] = with_cusip
-        stats["manifest_stats"]["with_cusip_pct"] = round(
-            with_cusip / len(manifest_df) * 100, 2 if len(manifest_df) > 0 else 0.0
+        stats["manifest_stats"]["with_cusip_pct"] = (
+            round(with_cusip / len(manifest_df) * 100, 2) if len(manifest_df) > 0 else 0.0
         )
 
     if "start_date" in manifest_df.columns:
@@ -4583,7 +4665,7 @@ def compute_step32_input_stats(
     # CRSP statistics by year
     stats["crsp_stats_by_year"] = {}
     for year, crsp_df in sorted(crsp_df_by_year.items(), key=lambda x: str(x[0])):
-        year_stats = {
+        year_stats: YearStatsDict = {
             "observations": int(len(crsp_df)),
         }
         if "PERMNO" in crsp_df.columns:
@@ -4828,8 +4910,50 @@ def compute_step33_process_stats(
         - deal_type_classification: {takeover_type_distribution, classification_accuracy}
         - duration_analysis: {duration_distribution, censored_observations, censoring_rate}
     """
+    # Extract values from arguments
+    takeover_count = (
+        int(takeover_flags_df["Takeover"].sum())
+        if takeover_flags_df is not None and "Takeover" in takeover_flags_df.columns
+        else 0
+    )
+    total_calls = match_results.get(
+        "manifest_rows",
+        len(takeover_flags_df) if takeover_flags_df is not None else 0,
+    )
+
+    # Extract takeover types
+    takeover_by_type: Dict[str, int] = {}
+    if (
+        takeover_flags_df is not None
+        and "Takeover_Type" in takeover_flags_df.columns
+        and "Takeover" in takeover_flags_df.columns
+    ):
+        type_counts = takeover_flags_df[takeover_flags_df["Takeover"] == 1][
+            "Takeover_Type"
+        ].value_counts()
+        takeover_by_type = {str(k): int(v) for k, v in type_counts.items()}
+
+    # Compute duration stats
+    duration_stats: Dict[str, float] = {}
+    if (
+        takeover_flags_df is not None
+        and "Duration" in takeover_flags_df.columns
+        and "Takeover" in takeover_flags_df.columns
+    ):
+        durations = takeover_flags_df[takeover_flags_df["Takeover"] == 1]["Duration"]
+        if len(durations) > 0:
+            duration_stats = {
+                "mean": float(durations.mean()),
+                "median": float(durations.median()),
+                "min": float(durations.min()),
+                "max": float(durations.max()),
+            }
+
+    # Use a placeholder for duration_seconds (not tracked in match_results)
+    duration_seconds = 0.0
+
     return compute_event_flags_process_stats(
-        match_results, takeover_flags_df, window_days
+        takeover_count, takeover_by_type, duration_stats, total_calls, duration_seconds
     )
 
 
