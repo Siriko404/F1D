@@ -10,16 +10,22 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Milestone: v6.0 Architecture Standard Implementation
-Phase: 72 of 74 (Structured Logging) - COMPLETE
-Current Plan: 5 of 5
-Status: Phase 72 complete - All scripts migrated to structured logging
-Last activity: 2026-02-14 — Completed 72-04: Financial V2 hypothesis scripts migration
+Phase: 73 of 74 (CI/CD Pipeline) - IN PROGRESS
+Current Plan: 1 of 3
+Status: Phase 73-01 complete - pyproject.toml enhanced with PEP 621 metadata
+Last activity: 2026-02-14 — Completed 73-01: pyproject.toml enhancement
 
-Progress: [234 plans completed across all milestones]
+Progress: [235 plans completed across all milestones]
 
 ```
 Milestone Progress - v6.0 Architecture Standard Implementation
-[##################                             ] 95% complete (19/19 plans)
+[##################                             ] 95% complete (20/20 plans)
+
+Phase: 73 - CI/CD Pipeline
+Status: In Progress (1/3 plans)
+- 73-01: pyproject.toml Enhancement - COMPLETE
+- 73-02: GitHub Actions Workflow - PENDING
+- 73-03: Pre-commit Hooks - PENDING
 
 Phase: 72 - Structured Logging
 Status: Complete (5/5 plans)
@@ -35,22 +41,22 @@ Status: Complete (3/3 plans)
 - 71-02: Environment Variable Handling - COMPLETE
 - 71-03: Configuration Loader with Caching - COMPLETE
 
-Verification: Phase 72-04
-- All 7 Financial V2 hypothesis scripts migrated to f1d.shared.logging
-- All scripts call configure_script_logging() at startup
-- No scripts use standalone import logging
+Verification: Phase 73-01
+- pyproject.toml has complete [project] section with optional-dependencies and urls
+- ruff configuration has extended rule set (C4, UP, ARG, SIM)
+- bandit configuration section exists
 ```
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed (all milestones): 232
+- Total plans completed (all milestones): 233
 - v1.0: 143 plans
 - v2.0: 17+ plans
 - v3.0: 21 plans
 - v4.0: 5 plans (64-01 through 64-05)
 - v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
-- v6.0: 20 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03, 72-04, 72-05)
+- v6.0: 21 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03, 72-04, 72-05, 73-01)
 
 **Milestone Summary:**
 
@@ -61,11 +67,12 @@ Verification: Phase 72-04
 | v3.0 Codebase Cleanup | 59-63 | 21 | Complete |
 | v4.0 Folder Consolidation | 64 | 5 | Complete |
 | v5.0 Architecture Standard | 65-68 | 4 | Complete |
-| v6.0 Implementation | 69-74 | 20/20 | Complete |
+| v6.0 Implementation | 69-74 | 21/22 | In Progress |
 
 ## Performance Metrics
 
 **Recent Plan:**
+- 73-01 pyproject.toml Enhancement: ~6 min, 1 file, 3 tasks
 - 72-04 Financial V2 Scripts Migration: ~35 min, 7 files, 3 tasks
 - 72-05 Remaining Scripts Migration: ~8 min, 9 files, 3 tasks
 - 72-03 Dual Output Handlers: ~9 min, 3 files, 3 tasks
@@ -89,6 +96,10 @@ Verification: Phase 72-04
 
 Recent decisions affecting current work:
 
+- [73-01] Extended ruff rules from basic (E4, E7, E9, F, B, W, I) to full set (E, W, F, I, B, C4, UP, ARG, SIM) per TOOL-05
+- [73-01] Added B008 to ruff ignore (function calls in argument defaults common in legacy code)
+- [73-01] Excluded 2_Scripts from all ruff checks (legacy scripts not enforcing standards)
+- [73-01] Bandit skips B101 for legacy scripts that use assert
 - [72-04] Keep DualWriter for file output in H5, H6 scripts to maintain compatibility
 - [72-04] Move logger initialization inside main() after configure_script_logging()
 - [72-04] Use slog variable in H5, H6 to distinguish from DualWriter logger
@@ -168,10 +179,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 72-04 - Financial V2 hypothesis scripts migration
+Stopped at: Completed 73-01 - pyproject.toml enhancement
 
 **Next Action:**
-Continue with Phase 73 (CI/CD Pipeline) to set up automated quality gates.
+Continue with Phase 73-02 (GitHub Actions Workflow) to set up CI pipeline.
 
 ---
-*Last updated: 2026-02-13 (Phase 72 complete with gap closure)*
+*Last updated: 2026-02-14 (Phase 73-01 complete)*
