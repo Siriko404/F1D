@@ -31,8 +31,9 @@ Date: 2026-02-11
 ==============================================================================
 """
 
-# TYPE ERROR BASELINE: 7 remaining errors (down from 86)
-# Remaining type errors are library limitations that cannot be fixed:
+# TYPE ERROR BASELINE: 0 remaining errors (down from 90)
+# All type errors have been resolved using TypedDict for stats structure and cast() for DataFrame operations.
+# Remaining type: ignore comments are for library limitations:
 # - sklearn CountVectorizer: transform() returns sparse matrix that mypy cannot verify
 # - pandas melt operations: mypy cannot infer types for melted DataFrames
 # - Dict[str, set] dynamic category construction: mypy cannot verify dynamic key assignment
@@ -47,13 +48,13 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union, cast
 
 import numpy as np
 import pandas as pd
 import psutil
 import yaml
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer  # type: ignore[import-untyped]  # sklearn lacks py.typed marker
 
 # Note: MemoryAwareThrottler from f1d.shared.chunked_reader is available for future chunked processing.
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
@@ -73,6 +74,58 @@ from f1d.shared.path_utils import (
 # ==============================================================================
 # Setup & Config
 # ==============================================================================
+
+
+# TypedDict definitions for stats dictionary structure
+# These help mypy understand the nested dictionary types used throughout the script
+
+
+class InputStats(TypedDict, total=False):
+    files: List[str]
+    checksums: Dict[str, str]
+    total_rows: int
+    total_columns: int
+
+
+class ProcessingStats(TypedDict, total=False):
+    vocabulary_size: int
+    total_vocab_hits: int
+    total_tokens: int
+    years_processed: int
+    years_skipped: int
+    per_year: List[Dict[str, Any]]
+
+
+class OutputStats(TypedDict, total=False):
+    final_rows: int
+    final_columns: int
+    files: List[str]
+    checksums: Dict[str, str]
+
+
+class TimingStats(TypedDict, total=False):
+    start_iso: str
+    end_iso: str
+    duration_seconds: float
+
+
+class ScriptStats(TypedDict, total=False):
+    step_id: str
+    timestamp: str
+    git_sha: Optional[str]
+    input: InputStats
+    processing: ProcessingStats
+    output: OutputStats
+    missing_values: Dict[str, Any]
+    timing: TimingStats
+    memory_mb: Dict[str, Any]
+    tokenize_input: Dict[str, Any]
+    tokenize_process: Dict[str, Any]
+    tokenize_output: Dict[str, Any]
+    optimization: Dict[str, Any]
+    memory: Dict[str, Any]
+    throughput: Dict[str, Any]
+    quality_anomalies: Dict[str, Any]
 
 
 def setup_logging() -> Path:
@@ -818,7 +871,7 @@ def process_year_worker(
     year_stats["input_rows"] = initial_rows
 
     # Filter
-    df = df[df["file_name"].isin(valid_files)].copy()
+    df = cast(pd.DataFrame, df[df["file_name"].isin(valid_files)].copy())
     year_stats["filtered_rows"] = initial_rows - len(df)
     print(f"  Loaded {initial_rows:,} -> {len(df):,} (Manifest match)")
 
@@ -850,7 +903,7 @@ def process_year_worker(
         "employer",
     ]
     meta_cols = [c for c in meta_cols if c in df.columns]
-    result = df[meta_cols].copy()
+    result: pd.DataFrame = cast(pd.DataFrame, df[meta_cols].copy())
 
     for cat, wset in cat_sets.items():
         indices = [feat_map[w] for w in wset if w in feat_map]  # type: ignore[index]  # Dynamic key lookup
@@ -914,7 +967,7 @@ def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir)
     year_stats["input_rows"] = initial_rows
 
     # Filter
-    df = df[df["file_name"].isin(valid_files)].copy()
+    df = cast(pd.DataFrame, df[df["file_name"].isin(valid_files)].copy())
     year_stats["filtered_rows"] = initial_rows - len(df)
     print(f"  Loaded {initial_rows:,} -> {len(df):,} (Manifest match)")
 
@@ -1019,7 +1072,7 @@ def main(dictionary_path: Optional[str] = None) -> None:
     # Memory tracking at script start
     mem_start = get_process_memory_mb()
 
-    stats = {
+    stats: ScriptStats = {
         "step_id": "2.1_TokenizeAndCount",
         "timestamp": timestamp,
         "git_sha": None,
