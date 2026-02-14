@@ -7,15 +7,15 @@ PYTEST CONFIGURATION
 
 Subprocess Testing Pattern:
     Integration tests invoke pipeline scripts via subprocess.run().
-    These scripts import from 'shared' modules, requiring PYTHONPATH
-    to be set for subprocess to find 2_Scripts/shared/.
+    These scripts import from 'f1d.shared' modules (src-layout), requiring
+    PYTHONPATH to be set for subprocess to find src/f1d/.
 
     Always use the subprocess_env fixture for subprocess calls:
 
         def test_my_script(subprocess_env):
             result = subprocess.run(
                 ["python", "script.py"],
-                env=subprocess_env,  # Critical: enables shared imports
+                env=subprocess_env,  # Critical: enables f1d.shared imports
                 ...
             )
 
@@ -54,7 +54,7 @@ def subprocess_env():
     """
     Provide environment variables for subprocess calls in integration tests.
 
-    Sets PYTHONPATH to enable subprocess to import shared modules.
+    Sets PYTHONPATH to enable subprocess to import f1d.shared modules (src-layout).
     All integration tests that invoke scripts via subprocess should use this:
 
         result = subprocess.run(
@@ -71,7 +71,7 @@ def subprocess_env():
 
     repo_root = Path(__file__).parent.parent
     return {
-        "PYTHONPATH": str(repo_root / "2_Scripts"),
+        "PYTHONPATH": str(repo_root / "src" / "f1d"),
         **os.environ,  # Preserve existing environment variables
     }
 
