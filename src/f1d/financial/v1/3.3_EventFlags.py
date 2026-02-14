@@ -228,8 +228,8 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 def load_manifest(manifest_dir: Path) -> pd.DataFrame:
     """Load manifest data"""
     manifest_file = manifest_dir / "master_sample_manifest.parquet"
-    # Column pruning: Load only required columns
-    df = pd.read_parquet(manifest_file, columns=["file_name", "gvkey", "start_date"])
+    # Column pruning: Load only required columns (including cusip for SDC matching)
+    df = pd.read_parquet(manifest_file, columns=["file_name", "gvkey", "start_date", "cusip"])
 
     df["start_date"] = pd.to_datetime(df["start_date"])
     df["year"] = df["start_date"].dt.year
@@ -237,6 +237,8 @@ def load_manifest(manifest_dir: Path) -> pd.DataFrame:
     # Extract CUSIP6 for SDC matching
     if "cusip" in df.columns:
         df["cusip6"] = df["cusip"].astype(str).str[:6]
+    else:
+        df["cusip6"] = None
 
     print(f"  Loaded manifest: {len(df):,} calls")
     print(f"  Calls with CUSIP: {df['cusip6'].notna().sum():,}")
