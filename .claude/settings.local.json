@@ -4,7 +4,13 @@
       "Bash(npm view:*)",
       "Bash(curl:*)",
       "Bash(npx get-shit-done-cc:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(node:*)",
+      "Skill(gsd:settings)",
+      "Skill(gsd:settings:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
