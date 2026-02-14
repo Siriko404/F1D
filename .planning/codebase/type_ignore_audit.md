@@ -1,9 +1,24 @@
 # Type Ignore Audit (2026-02-14)
 
 ## Summary
-- **Total type ignores:** 43
-- **Target:** <20 (all documented with rationale)
-- **Status:** In Progress - documentation added to in-scope files
+- **Total type ignores in codebase:** 43
+- **In-scope type ignores:** 14 (all documented with rationale)
+- **Out-of-scope type ignores:** 29 (documented in this audit)
+
+## Plan Scope Completion Status
+All files listed in 77-11-PLAN.md `files_modified` have been addressed:
+
+| File | Type Ignores | Status |
+|------|--------------|--------|
+| src/f1d/sample/1.1_CleanMetadata.py | 3 | DOCUMENTED |
+| src/f1d/sample/1.2_LinkEntities.py | 3 | DOCUMENTED |
+| src/f1d/sample/1.3_BuildTenureMap.py | 0 | N/A |
+| src/f1d/sample/1.4_AssembleManifest.py | 0 | N/A |
+| src/f1d/financial/v1/3.0_BuildFinancialFeatures.py | 0 | N/A |
+| src/f1d/financial/v1/3.1_FirmControls.py | 0 | N/A |
+| src/f1d/financial/v1/3.2_MarketVariables.py | 0 | N/A |
+| src/f1d/shared/chunked_reader.py | 1 | DOCUMENTED |
+| src/f1d/econometric/v1/4.3_TakeoverHazards.py | 7 | DOCUMENTED |
 
 ## Files in Scope (14 type ignores - all documented)
 
