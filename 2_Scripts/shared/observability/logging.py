@@ -6,6 +6,12 @@ OBSERVABILITY PACKAGE - LOGGING MODULE
 ID: shared/observability.logging
 Description: Provides dual-writer class for logging to both stdout and file.
 
+DEPRECATED: For new code, use f1d.shared.logging instead:
+    from f1d.shared.logging import configure_script_logging, get_logger
+
+This module is maintained for backward compatibility with existing scripts.
+The DualWriter class is preserved for scripts that use it for stdout capture.
+
 This module extracts the DualWriter class from the original observability_utils.py.
 DualWriter writes messages to both terminal and log file verbatim.
 
@@ -26,8 +32,10 @@ import logging
 import sys
 from pathlib import Path
 
+from f1d.shared.logging import get_logger
+
 # Configure logger for this module
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class DualWriter:

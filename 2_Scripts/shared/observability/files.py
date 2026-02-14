@@ -25,11 +25,12 @@ Date: 2026-02-11
 """
 
 import hashlib
-import logging
 from pathlib import Path
 
+from f1d.shared.logging import get_logger
+
 # Configure logger for this module
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def compute_file_checksum(filepath: Path, algorithm: str = "sha256") -> str:
