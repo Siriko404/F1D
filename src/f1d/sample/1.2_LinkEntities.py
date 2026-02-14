@@ -43,6 +43,7 @@ Date: 2026-02-11
 
 import argparse
 import importlib.util
+import re
 import sys
 import time
 from datetime import datetime
@@ -52,9 +53,6 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 import yaml
-
-# Add parent directory to sys.path for shared module imports (works when running directly)
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Dynamic import for 1.5_Utils.py to comply with naming convention
 try:
@@ -67,16 +65,10 @@ try:
 except ImportError as e:
     print(f"Criticial Error importing utils: {e}")
     sys.exit(1)
-import re
 
-# Import string matching utilities from shared module
-# Add parent directory to sys.path for shared module imports
-script_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(script_dir))
-
-from shared.chunked_reader import track_memory_usage
-from shared.industry_utils import parse_ff_industries
-from shared.observability_utils import (
+from f1d.shared.chunked_reader import track_memory_usage
+from f1d.shared.industry_utils import parse_ff_industries
+from f1d.shared.observability_utils import (
     DualWriter,
     analyze_missing_values,
     calculate_throughput,
@@ -93,32 +85,17 @@ from shared.observability_utils import (
     print_stats_summary,
     save_stats,
 )
-from shared.string_matching import (
+from f1d.shared.path_utils import (
+    ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
+    validate_output_path,
+)
+from f1d.shared.string_matching import (
     RAPIDFUZZ_AVAILABLE,
     load_matching_config,
     match_company_names,
 )
-
-# Import shared path validation utilities
-try:
-    from shared.path_utils import (
-        ensure_output_dir,
-        get_latest_output_dir,
-        validate_input_file,
-        validate_output_path,
-    )
-except ImportError:
-    import sys as _sys
-
-    _script_dir = Path(__file__).parent.parent
-    _sys.path.insert(0, str(_script_dir))
-    from shared.path_utils import (
-        ensure_output_dir,
-        get_latest_output_dir,
-        validate_input_file,
-    )
-
-# Using shared.string_matching.match_company_names() instead of direct RapidFuzz imports
 
 
 # ==============================================================================
@@ -158,7 +135,7 @@ company names over time.
 
 def check_prerequisites(root: Path) -> None:
     """Validate all required inputs and prerequisite steps exist."""
-    from shared.dependency_checker import validate_prerequisites
+    from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
         "CRSPCompustat_CCM/": root / "1_Inputs" / "CRSPCompustat_CCM",
