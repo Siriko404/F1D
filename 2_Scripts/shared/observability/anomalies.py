@@ -26,13 +26,14 @@ Date: 2026-02-11
 ================================================================================
 """
 
-import logging
 from typing import Any, Dict, List
 
 import pandas as pd
 
+from f1d.shared.logging import get_logger
+
 # Configure logger for this module
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def detect_anomalies_zscore(

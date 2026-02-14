@@ -25,15 +25,16 @@ Date: 2026-02-11
 """
 
 import json
-import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 
+from f1d.shared.logging import get_logger
+
 # Configure logger for this module
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def print_stat(

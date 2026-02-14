@@ -24,10 +24,10 @@ Date: 2026-02-11
 ================================================================================
 """
 
-import logging
+from f1d.shared.logging import get_logger
 
 # Configure logger for this module
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def calculate_throughput(rows_processed: int, duration_seconds: float) -> float:

@@ -38,6 +38,8 @@ Date: 2026-02-11
 import sys
 import logging as stdlib_logging
 
+from f1d.shared.logging import get_logger
+
 # Import our local logging module (DualWriter)
 # Need to be careful not to shadow stdlib logging with our local module name
 from . import logging as observability_logging
@@ -101,7 +103,7 @@ from .throughput import calculate_throughput
 # Import DualWriter from our local logging module
 DualWriter = observability_logging.DualWriter
 
-logger = stdlib_logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 __all__ = [
     # Logging
