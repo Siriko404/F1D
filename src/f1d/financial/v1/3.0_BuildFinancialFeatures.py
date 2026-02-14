@@ -53,13 +53,7 @@ utils = importlib.util.module_from_spec(spec)
 sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
-# Add parent directory to sys.path for shared module imports
-import sys as _sys
-
 from utils import generate_variable_reference
-
-_script_dir = Path(__file__).parent.parent
-_sys.path.insert(0, str(_script_dir))
 
 # Import shared path validation utilities
 # Import DualWriter from f1d.shared.observability_utils
