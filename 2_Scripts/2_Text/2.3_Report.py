@@ -23,7 +23,6 @@ Date: 2026-02-11
 import argparse
 import datetime
 import glob
-import logging
 import os
 import sys
 from pathlib import Path
@@ -33,6 +32,8 @@ import plotly.express as px
 import plotly.io as pio
 import yaml
 from jinja2 import Template
+
+from f1d.shared.logging import configure_script_logging, get_logger
 
 # Add script directory to path to import shared modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -85,17 +86,15 @@ def setup_logging(output_dir):
     sys.stdout = DualWriter(log_file)
     sys.stderr = sys.stdout  # Redirect stderr to same dual writer
 
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[logging.StreamHandler(sys.stdout)],
-    )
+    # Configure structured logging
+    configure_script_logging(script_name="2.3_Report", log_level="INFO")
     return log_file
 
 
 def main():
+    # Configure logging first
+    logger = get_logger(__name__)
+
     # 1. Load Config
     config_path = "config/project.yaml"
     if not os.path.exists(config_path):
@@ -112,8 +111,7 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     setup_logging(output_dir)
-    logging.info(f"Starting {step_id} - Verification Report Generation")
-    logging.info(f"Output Directory: {output_dir}")
+    logger.info("starting_report_generation", step_id=step_id, output_dir=output_dir)
 
     # 3. Find Input Data (Step 2.2 Variables) using timestamp-based resolution
     variables_base = (
@@ -128,33 +126,33 @@ def main():
         input_base = str(input_dir)
         parquet_files = glob.glob(os.path.join(input_base, "*.parquet"))
     except FileNotFoundError as e:
-        logging.error(f"No valid output directory found: {e}")
+        logger.error("no_valid_output_directory", error=str(e))
         parquet_files = []
 
     if not parquet_files:
-        logging.error("Could not find any input parquet files. Aborting.")
+        logger.error("no_input_parquet_files")
         sys.exit(1)
 
-    logging.info(f"Found {len(parquet_files)} parquet files.")
+    logger.info("found_parquet_files", count=len(parquet_files))
 
     # 4. Load Data
     try:
         df_list = []
         for f in parquet_files:
-            logging.info(f"Reading {os.path.basename(f)}...")
+            logger.info("reading_parquet_file", file=os.path.basename(f))
             df_list.append(pd.read_parquet(f))
 
         df = pd.concat(df_list, ignore_index=True)
-        logging.info(f"Successfully loaded {len(df)} rows.")
+        logger.info("data_loaded_successfully", rows=len(df))
     except Exception as e:
-        logging.error(f"Failed to load data: {e}")
+        logger.error("failed_to_load_data", error=str(e))
         sys.exit(1)
 
     # 5. Analyze Data
     # Key metric: Manager_QA_Uncertainty_pct (as per F1D focus on clarity)
     target_col = "Manager_QA_Uncertainty_pct"
     if target_col not in df.columns:
-        logging.warning(f"'{target_col}' not found. Searching for alternative...")
+        logger.warning("target_column_not_found", column=target_col)
         numeric_cols = df.select_dtypes(include=["float", "int"]).columns
         # Try to find something similar
         alternatives = [c for c in numeric_cols if "Uncertainty" in c]
@@ -163,17 +161,17 @@ def main():
         elif len(numeric_cols) > 0:
             target_col = numeric_cols[0]
         else:
-            logging.error("No numeric columns found for analysis.")
+            logger.error("no_numeric_columns_found")
             sys.exit(1)
 
-    logging.info(f"Using target column for analysis: {target_col}")
+    logger.info("using_target_column", column=target_col)
 
     stats = df[target_col].describe().to_dict()
-    logging.info(f"Calculated statistics for {target_col}")
+    logger.info("calculated_statistics", column=target_col)
 
     # 6. Generate Plots
     try:
-        logging.info("Generating distribution plot...")
+        logger.info("generating_distribution_plot")
         # Use a simpler theme for compatibility
         fig = px.histogram(
             df,
@@ -186,7 +184,7 @@ def main():
         fig.update_layout(margin=dict(l=20, r=20, t=40, b=20))
         plot_html = pio.to_html(fig, full_html=False, include_plotlyjs="cdn")
     except Exception as e:
-        logging.error(f"Plot generation failed: {e}")
+        logger.error("plot_generation_failed", error=str(e))
         plot_html = f"<div class='alert alert-danger'>Plot generation failed: {e}</div>"
 
     # 7. Generate Tables
@@ -297,7 +295,7 @@ def main():
     """
 
     try:
-        logging.info("Rendering HTML template...")
+        logger.info("rendering_html_template")
         template = Template(template_str)
         html_content = template.render(
             timestamp=timestamp,
@@ -318,12 +316,12 @@ def main():
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(html_content)
 
-        logging.info(f"Report generated successfully at {output_file}")
+        logger.info("report_generated_successfully", output_file=output_file)
     except Exception as e:
-        logging.error(f"HTML generation failed: {e}")
+        logger.error("html_generation_failed", error=str(e))
         sys.exit(1)
 
-    logging.info("Execution complete.")
+    logger.info("execution_complete")
 
 
 if __name__ == "__main__":

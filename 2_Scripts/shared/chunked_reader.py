@@ -32,7 +32,6 @@ Date: 2026-02-11
 ================================================================================
 """
 
-import logging
 import time
 from pathlib import Path
 from typing import Iterator, List, Optional
@@ -43,8 +42,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import yaml
 
+from f1d.shared.logging import get_logger
+
 # Configure logger
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def read_in_chunks(
