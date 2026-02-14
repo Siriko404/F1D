@@ -11,11 +11,6 @@ Ref: .planning/phases/62-performance-optimization/62-01-PLAN.md
 import pytest
 import pandas as pd
 import numpy as np
-from pathlib import Path
-import sys
-
-# Add 2_Scripts to path for potential imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "2_Scripts"))
 
 pytestmark = pytest.mark.performance
 
