@@ -105,6 +105,7 @@ None.
 
 - Phase 77 added: Concerns Closure with Parallel Agents + Full Verification
 - Phase 78 added: Documentation Synchronization
+- v6.1-MILESTONE-AUDIT.md created: Comprehensive audit with 11 concerns resolved, 843 tests added
 
 ### Blockers/Concerns
 
