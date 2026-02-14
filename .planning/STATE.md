@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 Milestone: v6.1 Architecture Compliance Gap Closure - Extended
 Phase: 77-concerns-closure-parallel-agents-verification
-Current Plan: 04
+Current Plan: 09
 Total Plans in Phase: 12
 Status: Executing Phase 77
-Last activity: 2026-02-14 — Completed 77-03: Survival Analysis Implementation
+Last activity: 2026-02-14 — Completed 77-09: Full Type Stub Coverage
 
 Progress: [265 plans completed across all milestones]
 
@@ -50,6 +50,7 @@ Ready for next milestone planning
 | v6.1 Gap Closure | 75-76 | 9 | Archived |
 | Phase 77-concerns-closure-parallel-agents-verification P01 | 5min | 3 tasks | 5 files |
 | Phase 77-concerns-closure-parallel-agents-verification P03 | 15min | 4 tasks | 3 files |
+| Phase 77-concerns-closure-parallel-agents-verification P09 | 9min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -57,6 +58,8 @@ Ready for next milestone planning
 
 Key decisions from v6.1 milestone:
 
+- [77-09] Used pandas-stubs instead of types-pandas (modern official package maintained by pandas team)
+- [77-09] Removed pandas, psutil, yaml from ignore_missing_imports in pyproject.toml
 - [77-03] Used cause-specific Cox hazards instead of FineGrayAFTFitter (not available in lifelines 0.30.0)
 - [77-03] Added covariate validation to survival functions to prevent cryptic lifelines errors
 - [77-02] Consolidated 1.5_Utils.py to src/f1d/shared/sample_utils.py for standard imports
@@ -89,11 +92,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Completed: 77-03 Survival Analysis Implementation
-Stopped at: 77-04
+Completed: 77-09 Full Type Stub Coverage
+Stopped at: 77-10
 
 **Next Action:**
-Continue Phase 77 with plan 77-04
+Continue Phase 77 with plan 77-10
 
 ---
-*Last updated: 2026-02-14 (77-03 completed)*
+*Last updated: 2026-02-14 (77-09 completed)*
