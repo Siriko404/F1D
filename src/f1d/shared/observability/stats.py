@@ -27,7 +27,7 @@ Date: 2026-02-11
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, TypedDict
+from typing import Any, Dict, List, Optional, Set, TypedDict, cast
 
 import numpy as np
 import pandas as pd
@@ -521,7 +521,7 @@ def compute_temporal_stats(
             "target_year_coverage": {},
         }
 
-    df_temp = df[[date_col]].copy()
+    df_temp = cast(pd.DataFrame, df[[date_col]].copy())
     df_temp[date_col] = pd.to_datetime(df_temp[date_col])
     df_temp = df_temp.dropna(subset=[date_col])
 
@@ -545,19 +545,19 @@ def compute_temporal_stats(
 
     # Year distribution
     year_counts = df_temp["year"].value_counts().sort_index()
-    year_dist = {int(year): int(count) for year, count in year_counts.items()}
+    year_dist = {int(cast(int, year)): int(count) for year, count in year_counts.items()}
 
     # Month distribution
     month_counts = df_temp["month"].value_counts().sort_index()
-    month_dist = {int(month): int(count) for month, count in month_counts.items()}
+    month_dist = {int(cast(int, month)): int(count) for month, count in month_counts.items()}
 
     # Quarter distribution
     quarter_counts = df_temp["quarter"].value_counts().sort_index()
-    quarter_dist = {int(q): int(count) for q, count in quarter_counts.items()}
+    quarter_dist = {int(cast(int, q)): int(count) for q, count in quarter_counts.items()}
 
     # Day of week distribution
     dow_counts = df_temp["day_of_week"].value_counts().sort_index()
-    dow_dist = {int(dow): int(count) for dow, count in dow_counts.items()}
+    dow_dist = {int(cast(int, dow)): int(count) for dow, count in dow_counts.items()}
 
     # Date range
     earliest = df_temp[date_col].min()
@@ -676,7 +676,7 @@ def compute_entity_stats(df: pd.DataFrame) -> Dict[str, Any]:
                     )
                     bucket_counts = quality_scores.groupby(buckets[0]).count()
                     histogram = {
-                        f"{round(interval.left, 2)}-{round(interval.right, 2)}": int(
+                        f"{round(cast(pd.Interval, interval).left, 2)}-{round(cast(pd.Interval, interval).right, 2)}": int(
                             count
                         )
                         for interval, count in bucket_counts.items()
@@ -1036,7 +1036,7 @@ def compute_linking_output_stats(df_linked: pd.DataFrame) -> Dict[str, Any]:
         for sic, count in sic_counts.items():
             top_industries.append(
                 {
-                    "sic": int(sic) if pd.notna(sic) else None,
+                    "sic": int(cast(int, sic)) if pd.notna(sic) else None,
                     "count": int(count),
                     "percentage": round(count / total_calls * 100, 2)
                     if total_calls > 0
@@ -1291,9 +1291,11 @@ def collect_unmatched_samples(
         return samples
 
     # Get unmatched companies from original df
-    unmatched_df = df_original[
-        df_original["company_id"].isin(unmatched_company_ids)
-    ].drop_duplicates("company_id")
+    unmatched_companies = cast(
+        pd.DataFrame,
+        df_original[df_original["company_id"].isin(unmatched_company_ids)],
+    )
+    unmatched_df = unmatched_companies.drop_duplicates(subset=["company_id"])
 
     # Sample n_samples unmatched companies
     sample_size = min(n_samples, len(unmatched_df))
@@ -1859,9 +1861,10 @@ def collect_tenure_samples(
         episodes_df["tenure_months"] = pd.Series([0] * len(episodes_df))
 
     # Short tenure examples (<12 months)
-    short_tenures_df = episodes_df[episodes_df["tenure_months"] < 12].sort_values(
-        "tenure_months"
+    short_tenures_masked = cast(
+        pd.DataFrame, episodes_df[episodes_df["tenure_months"] < 12]
     )
+    short_tenures_df = short_tenures_masked.sort_values(by="tenure_months")
 
     for _, row in short_tenures_df.head(n_samples).iterrows():
         samples["short_tenures"].append(
@@ -1883,9 +1886,10 @@ def collect_tenure_samples(
         )
 
     # Long tenure examples (>120 months)
-    long_tenures_df = episodes_df[episodes_df["tenure_months"] > 120].sort_values(
-        "tenure_months", ascending=False
+    long_tenures_masked = cast(
+        pd.DataFrame, episodes_df[episodes_df["tenure_months"] > 120]
     )
+    long_tenures_df = long_tenures_masked.sort_values(by="tenure_months", ascending=False)
 
     for _, row in long_tenures_df.head(n_samples).iterrows():
         samples["long_tenures"].append(
@@ -1908,13 +1912,17 @@ def collect_tenure_samples(
 
     # CEO transition examples (predecessor -> successor)
     if "prev_exec_fullname" in episodes_df.columns:
-        transitions_df = episodes_df[
-            episodes_df["prev_exec_fullname"].notna()
-            & (episodes_df["prev_exec_fullname"] != "")
-        ].copy()
+        transitions_masked = cast(
+            pd.DataFrame,
+            episodes_df[
+                episodes_df["prev_exec_fullname"].notna()
+                & (episodes_df["prev_exec_fullname"] != "")
+            ],
+        )
+        transitions_df = transitions_masked.copy()
 
         # Calculate gap days between predecessor end and successor start
-        transitions_df = transitions_df.sort_values(["gvkey", "start_date"])
+        transitions_df = transitions_df.sort_values(by=["gvkey", "start_date"])
 
         for _, row in transitions_df.head(n_samples).iterrows():
             # Try to find the predecessor episode to calculate gap
@@ -2171,10 +2179,11 @@ def compute_manifest_process_stats(
         stats["match_rate_by_year"] = []
 
     # Unmatched analysis
-    unmatched_df = (
+    unmatched_df = cast(
+        pd.DataFrame,
         merged_df[merged_df["ceo_id"].isna()]
         if "ceo_id" in merged_df.columns
-        else pd.DataFrame()
+        else pd.DataFrame(),
     )
 
     if len(unmatched_df) > 0:
@@ -2188,7 +2197,7 @@ def compute_manifest_process_stats(
         temporal_dist = {}
         if "year" in unmatched_df.columns:
             year_counts = unmatched_df["year"].value_counts().sort_index()
-            temporal_dist = {str(int(y)): int(c) for y, c in year_counts.items()}
+            temporal_dist = {str(int(cast(int, y))): int(c) for y, c in year_counts.items()}
 
         stats["unmatched_analysis"] = {
             "unique_gvkey_unmatched": unique_gvkey_unmatched,
@@ -2600,7 +2609,7 @@ def compute_tokenize_input_stats(
     if "event_type" in manifest_df.columns:
         event_counts = manifest_df["event_type"].value_counts().sort_index()
         stats["manifest_stats"]["event_type_dist"] = {
-            str(int(et)): int(count) for et, count in event_counts.items()
+            str(int(cast(int, et))): int(count) for et, count in event_counts.items()
         }
 
     # LM dictionary analysis
@@ -3292,7 +3301,7 @@ def compute_constructvariables_output_stats(
         sample_cols = [c for c in var_cols if c.startswith(f"{sample}_")]
         if sample_cols:
             # Get all values for this sample's variables
-            sample_values = df_all[sample_cols].values.flatten()
+            sample_values = np.asarray(df_all[sample_cols].values).flatten()
             sample_values = sample_values[~pd.isna(sample_values)]
 
             if len(sample_values) > 0:
@@ -3312,7 +3321,7 @@ def compute_constructvariables_output_stats(
     for context in sorted(contexts):
         context_cols = [c for c in var_cols if f"_{context}_" in c]
         if context_cols:
-            context_values = df_all[context_cols].values.flatten()
+            context_values = np.asarray(df_all[context_cols].values).flatten()
             context_values = context_values[~pd.isna(context_values)]
 
             if len(context_values) > 0:
@@ -3373,7 +3382,7 @@ def compute_financial_input_stats(
     manifest_df: pd.DataFrame,
     compustat_df: pd.DataFrame,
     ibes_df: pd.DataFrame,
-    cccl_df: pd.DataFrame = None,
+    cccl_df: Optional[pd.DataFrame] = None,
 ) -> Dict[str, Any]:
     """
     Analyze input data for Step 3.1 Firm Controls.
@@ -3716,7 +3725,7 @@ def compute_financial_output_stats(
 def compute_market_input_stats(
     manifest_df: pd.DataFrame,
     crsp_file: Path,
-    ccm_df: pd.DataFrame = None,
+    ccm_df: Optional[pd.DataFrame] = None,
 ) -> Dict[str, Any]:
     """
     Analyze input data for Step 3.2 Market Variables.
@@ -4439,8 +4448,8 @@ def compute_step31_input_stats(
     manifest_df: pd.DataFrame,
     compustat_df: pd.DataFrame,
     ibes_df: pd.DataFrame,
-    cccl_df: pd.DataFrame = None,
-    ccm_df: pd.DataFrame = None,
+    cccl_df: Optional[pd.DataFrame] = None,
+    ccm_df: Optional[pd.DataFrame] = None,
 ) -> Dict[str, Any]:
     """
     Analyze input data for Step 3.1 (Firm Controls).
@@ -4605,7 +4614,7 @@ def compute_step31_output_stats(
 def compute_step32_input_stats(
     manifest_with_permno_df: pd.DataFrame,
     crsp_df_by_year: Dict[str, pd.DataFrame],
-    ccm_df: pd.DataFrame = None,
+    ccm_df: Optional[pd.DataFrame] = None,
 ) -> Dict[str, Any]:
     """
     Analyze input data for Step 3.2 (Market Variables).
@@ -4886,7 +4895,7 @@ def compute_step33_input_stats(
 
 def compute_step33_process_stats(
     match_results: Dict[str, Any],
-    takeover_flags_df: pd.DataFrame = None,
+    takeover_flags_df: Optional[pd.DataFrame] = None,
     window_days: int = 365,
 ) -> Dict[str, Any]:
     """
