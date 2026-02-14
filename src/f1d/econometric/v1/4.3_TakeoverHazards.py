@@ -179,17 +179,81 @@ def run_cox_ph(
     }
 
 
-def run_fine_gray(df, time_col, event_col, formula):
+def run_fine_gray(
+    df: pd.DataFrame, time_col: str, event_col: str, formula: str
+) -> Dict[str, Any]:
     """
-    Run Fine-Gray competing risks model.
+    Run competing risks analysis using cause-specific Cox hazards approach.
 
-    NOTE: This is a stub function for V1 legacy code.
-    The full implementation requires lifelines or statsmodels survival.
+    This implements a cause-specific hazards model for competing risks analysis.
+    Since lifelines doesn't include FineGrayAFTFitter, we use CoxPHFitter with
+    event-specific censoring as a valid competing risks approach.
+
+    Args:
+        df: DataFrame with survival data
+        time_col: Column name for survival time
+        event_col: Column name for event indicator
+            - 0 = censored
+            - 1 = event of interest
+            - 2+ = competing events
+        formula: R-style formula for covariates (e.g., "clarity + uncertainty + size")
+
+    Returns:
+        Dict with coefficients, confidence_intervals, summary, model
+
+    Raises:
+        ValueError: If required columns are missing from DataFrame
+        RuntimeError: If lifelines is not available
     """
-    raise NotImplementedError(
-        "run_fine_gray: Fine-Gray model not implemented. "
-        "Install lifelines (pip install lifelines) and implement using lifelines.FineGrayAFTFitter"
+    if not LIFELINES_AVAILABLE or CoxPHFitter is None:
+        raise RuntimeError(
+            "lifelines not available. Install with: pip install lifelines"
+        )
+
+    # Validate required columns
+    missing_cols = [col for col in [time_col, event_col] if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing columns: {missing_cols}")
+
+    # Parse covariates from formula (simple parsing, assumes "var1 + var2 + ..." format)
+    covariate_names = [c.strip() for c in formula.split("+")]
+
+    # Validate covariates exist
+    missing_covariates = [c for c in covariate_names if c not in df.columns]
+    if missing_covariates:
+        raise ValueError(f"Missing covariate columns: {missing_covariates}")
+
+    # Prepare data - select only needed columns and drop missing values
+    needed_cols = [time_col, event_col] + covariate_names
+    df_clean = df[needed_cols].copy()
+    df_clean = df_clean.dropna()
+
+    if len(df_clean) == 0:
+        raise ValueError("No valid rows after removing missing values")
+
+    # Create event indicator for cause-specific hazard
+    # Event of interest is 1, everything else (censored + competing) becomes 0
+    df_cs = df_clean.copy()
+    df_cs["_event_of_interest"] = (df_cs[event_col] == 1).astype(int)
+
+    # Fit cause-specific Cox PH model
+    cph = CoxPHFitter()
+    cph.fit(
+        df_cs,
+        duration_col=time_col,
+        event_col="_event_of_interest",
+        formula=formula
     )
+
+    # Return results as dictionary (compatible with Fine-Gray output format)
+    return {
+        "coefficients": cph.params_.to_dict(),
+        "confidence_intervals": cph.confidence_intervals_.to_dict(),
+        "summary": cph.summary.to_dict(),
+        "concordance_index": cph.concordance_index_,
+        "model": cph,
+        "method": "cause_specific_hazards",  # Note: not true Fine-Gray
+    }
 
 
 def load_data():
