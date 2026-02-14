@@ -1,0 +1,1327 @@
+src\f1d\text\verify_step2.py:156: error: Need type annotation for
+"required_files" (hint: "required_files: dict[<type>, <type>] = ...") 
+[var-annotated]
+        required_files = {}
+        ^~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:260: error: Value of type "Collection[str]" is not
+indexable  [index]
+            stats["processing"]["total_files_verified"] += 2
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:260: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+            stats["processing"]["total_files_verified"] += 2
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:271: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["output"]["final_rows"] += rows
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:271: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                stats["output"]["final_rows"] += rows
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:272: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["processing"]["years_processed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:272: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                stats["processing"]["years_processed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:275: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["input"]["checksums"][vars_path.name] = checksum
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:276: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["input"]["files"].append(str(vars_path))
+                ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:281: error: Value of type "Collection[str]" is not
+indexable  [index]
+                    stats["processing"]["files_failed"] += 1
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:281: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                    stats["processing"]["files_failed"] += 1
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:284: error: Value of type "Collection[str]" is not
+indexable  [index]
+                    stats["processing"]["missing_depvar_count"] += missing...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:284: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                    stats["processing"]["missing_depvar_count"] += missing...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:288: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                        stats["missing_values"][year] = missing_analysis
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:290: error: Value of type "Collection[str]" is not
+indexable  [index]
+                    stats["processing"]["files_passed"] += 1
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:290: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                    stats["processing"]["files_passed"] += 1
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:292: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["processing"]["files_failed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:292: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                stats["processing"]["files_failed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:296: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["input"]["checksums"][counts_path.name] = checksum
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:297: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["input"]["files"].append(str(counts_path))
+                ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:298: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["processing"]["files_passed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:298: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                stats["processing"]["files_passed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:300: error: Value of type "Collection[str]" is not
+indexable  [index]
+                stats["processing"]["files_failed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:300: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                stats["processing"]["files_failed"] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:313: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["timing"]["end_iso"] = datetime.now().isoformat()
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:314: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["timing"]["duration_seconds"] = round(end_time - start_time,...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:329: error: Value of type "Collection[str]" is not
+indexable  [index]
+        duration_seconds = stats["timing"]["duration_seconds"]
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:333: error: Value of type "Collection[str]" is not
+indexable  [index]
+            stats["processing"]["total_files_verified"], duration_seconds
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:337: error: Value of type "Collection[str]" is not
+indexable  [index]
+            "total_rows": stats["processing"]["total_files_verified"],
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\verify_step2.py:342: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["output"]["checksums"] = {}
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\regression_utils.py:97: error: Returning Any from function
+declared to return "Series[Any]"  [no-any-return]
+        return fe_params
+        ^~~~~~~~~~~~~~~~
+src\f1d\shared\data_loading.py:163: error: Returning Any from function declared
+to return "DataFrame"  [no-any-return]
+        return combined
+        ^~~~~~~~~~~~~~~
+src\f1d\shared\chunked_reader.py:147: error: Returning Any from function
+declared to return "DataFrame"  [no-any-return]
+        return table.to_pandas()
+        ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\centering.py:225: error: Returning Any from function declared to
+return "DataFrame"  [no-any-return]
+        return df_out
+        ^~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:526: error: No overload variant of
+"dropna" of "Series" matches argument type "list[str]"  [call-overload]
+        df_temp = df_temp.dropna(subset=[date_col])
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:526: note: Possible overload variants:
+src\f1d\shared\observability\stats.py:526: note:     def dropna(self, *, axis: Any = ..., inplace: Literal[True], how: Optional[Any] = ..., ignore_index: bool = ...) -> None
+src\f1d\shared\observability\stats.py:526: note:     def dropna(self, *, axis: Any = ..., inplace: Literal[False] = ..., how: Optional[Any] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\shared\observability\stats.py:679: error: "Hashable" has no attribute
+"left"  [attr-defined]
+                            f"{round(interval.left, 2)}-{round(interval.ri...
+                                     ^~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:679: error: "Hashable" has no attribute
+"right"  [attr-defined]
+    ...              f"{round(interval.left, 2)}-{round(interval.right, 2)}":...
+                                                        ^~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:1039: error: No overload variant of "int"
+matches argument type "Hashable"  [call-overload]
+                        "sic": int(sic) if pd.notna(sic) else None,
+                               ^~~~~~~~
+src\f1d\shared\observability\stats.py:1039: note: Possible overload variants:
+src\f1d\shared\observability\stats.py:1039: note:     def int(Union[str, Buffer, SupportsInt, SupportsIndex, SupportsTrunc] = ..., /) -> int
+src\f1d\shared\observability\stats.py:1039: note:     def int(Union[str, bytes, bytearray], /, base: SupportsIndex) -> int
+src\f1d\shared\observability\stats.py:1294: error: No overload variant of
+"drop_duplicates" of "Series" matches argument type "str"  [call-overload]
+        unmatched_df = df_original[
+                       ^
+src\f1d\shared\observability\stats.py:1294: note: Possible overload variants:
+src\f1d\shared\observability\stats.py:1294: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\shared\observability\stats.py:1294: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\shared\observability\stats.py:1862: error: No overload variant of
+"sort_values" of "Series" matches argument type "str"  [call-overload]
+        short_tenures_df = episodes_df[episodes_df["tenure_months"] < 12]....
+                           ^
+src\f1d\shared\observability\stats.py:1862: note: Possible overload variants:
+src\f1d\shared\observability\stats.py:1862: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\shared\observability\stats.py:1862: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\shared\observability\stats.py:1886: error: No overload variant of
+"sort_values" of "Series" matches argument types "str", "bool"  [call-overload]
+        long_tenures_df = episodes_df[episodes_df["tenure_months"] > 120]....
+                          ^
+src\f1d\shared\observability\stats.py:1886: note: Possible overload variants:
+src\f1d\shared\observability\stats.py:1886: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\shared\observability\stats.py:1886: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\shared\observability\stats.py:1917: error: No overload variant of
+"sort_values" of "Series" matches argument type "list[str]"  [call-overload]
+            transitions_df = transitions_df.sort_values(["gvkey", "start_d...
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\shared\observability\stats.py:1917: note: Possible overload variants:
+src\f1d\shared\observability\stats.py:1917: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\shared\observability\stats.py:1917: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\shared\observability\stats.py:2180: error: Argument 1 to "len" has
+incompatible type "OpsMixin"; expected "Sized"  [arg-type]
+        if len(unmatched_df) > 0:
+               ^~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:2182: error: Value of type "OpsMixin" is
+not indexable  [index]
+                int(unmatched_df["gvkey"].nunique())
+                    ^~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:2183: error: "OpsMixin" has no attribute
+"columns"  [attr-defined]
+                if "gvkey" in unmatched_df.columns
+                              ^~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:2189: error: "OpsMixin" has no attribute
+"columns"  [attr-defined]
+            if "year" in unmatched_df.columns:
+                         ^~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:2190: error: Value of type "OpsMixin" is
+not indexable  [index]
+                year_counts = unmatched_df["year"].value_counts().sort_ind...
+                              ^~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:2195: error: Argument 1 to "len" has
+incompatible type "OpsMixin"; expected "Sized"  [arg-type]
+                "calls_unmatched": int(len(unmatched_df)),
+                                           ^~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:2603: error: No overload variant of "int"
+matches argument type "Hashable"  [call-overload]
+                str(int(et)): int(count) for et, count in event_counts.ite...
+                    ^~~~~~~
+src\f1d\shared\observability\stats.py:2603: note: Possible overload variants:
+src\f1d\shared\observability\stats.py:2603: note:     def int(Union[str, Buffer, SupportsInt, SupportsIndex, SupportsTrunc] = ..., /) -> int
+src\f1d\shared\observability\stats.py:2603: note:     def int(Union[str, bytes, bytearray], /, base: SupportsIndex) -> int
+src\f1d\shared\observability\stats.py:3295: error: Item "ExtensionArray" of
+"Union[Any, ExtensionArray]" has no attribute "flatten"  [union-attr]
+                sample_values = df_all[sample_cols].values.flatten()
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:3315: error: Item "ExtensionArray" of
+"Union[Any, ExtensionArray]" has no attribute "flatten"  [union-attr]
+                context_values = df_all[context_cols].values.flatten()
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\observability\stats.py:3376: error: Incompatible default for
+argument "cccl_df" (default has type "None", argument has type "DataFrame") 
+[assignment]
+        cccl_df: pd.DataFrame = None,
+                                ^~~~
+src\f1d\shared\observability\stats.py:3376: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+src\f1d\shared\observability\stats.py:3376: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+src\f1d\shared\observability\stats.py:3719: error: Incompatible default for
+argument "ccm_df" (default has type "None", argument has type "DataFrame") 
+[assignment]
+        ccm_df: pd.DataFrame = None,
+                               ^~~~
+src\f1d\shared\observability\stats.py:3719: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+src\f1d\shared\observability\stats.py:3719: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+src\f1d\shared\observability\stats.py:4442: error: Incompatible default for
+argument "cccl_df" (default has type "None", argument has type "DataFrame") 
+[assignment]
+        cccl_df: pd.DataFrame = None,
+                                ^~~~
+src\f1d\shared\observability\stats.py:4442: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+src\f1d\shared\observability\stats.py:4442: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+src\f1d\shared\observability\stats.py:4443: error: Incompatible default for
+argument "ccm_df" (default has type "None", argument has type "DataFrame") 
+[assignment]
+        ccm_df: pd.DataFrame = None,
+                               ^~~~
+src\f1d\shared\observability\stats.py:4443: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+src\f1d\shared\observability\stats.py:4443: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+src\f1d\shared\observability\stats.py:4608: error: Incompatible default for
+argument "ccm_df" (default has type "None", argument has type "DataFrame") 
+[assignment]
+        ccm_df: pd.DataFrame = None,
+                               ^~~~
+src\f1d\shared\observability\stats.py:4608: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+src\f1d\shared\observability\stats.py:4608: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+src\f1d\shared\observability\stats.py:4889: error: Incompatible default for
+argument "takeover_flags_df" (default has type "None", argument has type
+"DataFrame")  [assignment]
+        takeover_flags_df: pd.DataFrame = None,
+                                          ^~~~
+src\f1d\shared\observability\stats.py:4889: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+src\f1d\shared\observability\stats.py:4889: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+src\f1d\shared\regression_helpers.py:362: error: Returning Any from function
+declared to return "DataFrame"  [no-any-return]
+        return sample
+        ^~~~~~~~~~~~~
+src\f1d\shared\regression_helpers.py:419: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+        df = df[df["ceo_id"].notna()].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\regression_helpers.py:437: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+        df = df[complete_mask].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\financial_utils.py:166: error: Argument 1 to "update" of
+"MutableMapping" has incompatible type "dict[str, Union[float, int, None]]";
+expected "SupportsKeysAndGetItem[Hashable, Any]"  [arg-type]
+                row_dict.update(controls)
+                                ^~~~~~~~
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:201: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+            df = df[(df["fyear"] >= 2002) & (df["fyear"] <= 2018)]
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:245: error: No overload variant of
+"rename" of "Series" matches argument type "dict[str, str]"  [call-overload]
+        fy_grid = fy_grid.rename(columns={"datadate": "fy_end"})
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:245: note: Possible overload variants:
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:245: note:     def rename(self, index: Callable[[Any], Any], *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> None
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:245: note:     def rename(self, index: Mapping[Any, Any], *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> None
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:245: note:     def rename(self, index: Union[Any, tuple[Hashable, ...], None] = ..., *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> Any
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:245: note:     def rename(self, index: Union[Any, tuple[Hashable, ...], None] = ..., *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[False] = ..., level: Optional[Any] = ..., errors: Any = ...) -> Any
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:250: error: No overload variant of
+"sort_values" of "Series" matches argument type "str"  [call-overload]
+        fy_grid = fy_grid.sort_values("fy_end").drop_duplicates(
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:250: note: Possible overload variants:
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:250: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:250: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.11_H9_StyleFrozen.py:257: error: Incompatible return
+value type (got "Series[Any]", expected "DataFrame")  [return-value]
+        return fy_grid
+               ^~~~~~~
+src\f1d\text\tokenize_and_count.py:49: error: Skipping analyzing
+"sklearn.feature_extraction.text": module is installed, but missing library
+stubs or py.typed marker  [import-untyped]
+    from sklearn.feature_extraction.text import CountVectorizer
+    ^
+src\f1d\text\tokenize_and_count.py:721: error: Need type annotation for
+"cat_sets"  [var-annotated]
+        cat_sets = {cat: set() for cat in categories}
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:808: error: Incompatible types in assignment
+(expression has type "Series[Any]", variable has type "DataFrame")  [assignment]
+        df = df[df["file_name"].isin(valid_files)].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:904: error: Incompatible types in assignment
+(expression has type "Series[Any]", variable has type "DataFrame")  [assignment]
+        df = df[df["file_name"].isin(valid_files)].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1046: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["memory_mb"]["load_documents"] = load_result["memory_mb"]
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1051: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        stats["input"]["files"].append(str(manifest_path))
+        ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1051: error: Item "object" of
+"Union[object, Any]" has no attribute "append"  [union-attr]
+        stats["input"]["files"].append(str(manifest_path))
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1051: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        stats["input"]["files"].append(str(manifest_path))
+                       ^~~~~~~
+src\f1d\text\tokenize_and_count.py:1052: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1052: error: Unsupported target for indexed
+assignment ("Union[object, Any]")  [index]
+        stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1052: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
+                       ^~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1056: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        stats["input"]["files"].append(str(lm_path))
+        ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1056: error: Item "object" of
+"Union[object, Any]" has no attribute "append"  [union-attr]
+        stats["input"]["files"].append(str(lm_path))
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1056: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        stats["input"]["files"].append(str(lm_path))
+                       ^~~~~~~
+src\f1d\text\tokenize_and_count.py:1057: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        stats["input"]["checksums"]["Loughran-McDonald_MasterDictionary.cs...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1057: error: Unsupported target for indexed
+assignment ("Union[object, Any]")  [index]
+        stats["input"]["checksums"]["Loughran-McDonald_MasterDictionary.cs...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1057: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        stats["input"]["checksums"]["Loughran-McDonald_MasterDictionary.cs...
+                       ^~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1060: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["processing"]["vocabulary_size"] = len(vocab_list)
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1112: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["processing"]["per_year"] = [
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1117: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            s.get("input_rows", 0) for s in stats["processing"]["per_year"...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1117: error: Item "object" of
+"Union[object, Any]" has no attribute "__iter__" (not iterable)  [union-attr]
+            s.get("input_rows", 0) for s in stats["processing"]["per_year"...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1117: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...       s.get("input_rows", 0) for s in stats["processing"]["per_year"]
+                                                                  ^~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1120: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            s.get("output_rows", 0) for s in stats["processing"]["per_year...
+                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1120: error: Item "object" of
+"Union[object, Any]" has no attribute "__iter__" (not iterable)  [union-attr]
+            s.get("output_rows", 0) for s in stats["processing"]["per_year...
+                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1120: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...      s.get("output_rows", 0) for s in stats["processing"]["per_year"]
+                                                                  ^~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1123: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            s.get("total_tokens", 0) for s in stats["processing"]["per_yea...
+                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1123: error: Item "object" of
+"Union[object, Any]" has no attribute "__iter__" (not iterable)  [union-attr]
+            s.get("total_tokens", 0) for s in stats["processing"]["per_yea...
+                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1123: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...     s.get("total_tokens", 0) for s in stats["processing"]["per_year"]
+                                                                  ^~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1126: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            s.get("vocab_hits", 0) for s in stats["processing"]["per_year"...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1126: error: Item "object" of
+"Union[object, Any]" has no attribute "__iter__" (not iterable)  [union-attr]
+            s.get("vocab_hits", 0) for s in stats["processing"]["per_year"...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1126: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...       s.get("vocab_hits", 0) for s in stats["processing"]["per_year"]
+                                                                  ^~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1129: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["input"]["total_rows"] = total_input_rows
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1130: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["output"]["final_rows"] = total_output_rows
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1131: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["processing"]["total_tokens"] = total_tokens
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1132: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["processing"]["total_vocab_hits"] = total_vocab_hits
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1133: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["processing"]["years_processed"] = len(stats["processing"]["...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1133: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        stats["processing"]["years_processed"] = len(stats["processing"]["...
+                                                     ^~~~~~~~~~~~~~~~~~~~~...
+src\f1d\text\tokenize_and_count.py:1133: error: Argument 1 to "len" has
+incompatible type "Union[object, Any]"; expected "Sized"  [arg-type]
+        stats["processing"]["years_processed"] = len(stats["processing"]["...
+                                                     ^~~~~~~~~~~~~~~~~~~~~...
+src\f1d\text\tokenize_and_count.py:1133: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...processing"]["years_processed"] = len(stats["processing"]["per_year"])
+                                                                 ^~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1134: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["processing"]["years_skipped"] = (
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1135: error: Unsupported operand types for -
+(likely involving Union)  [operator]
+            len(years) - stats["processing"]["years_processed"]
+            ^
+src\f1d\text\tokenize_and_count.py:1135: note: Right operand is of type "Union[object, Any]"
+src\f1d\text\tokenize_and_count.py:1135: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            len(years) - stats["processing"]["years_processed"]
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1135: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+            len(years) - stats["processing"]["years_processed"]
+                                             ^~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1142: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        duration_seconds = stats["timing"]["duration_seconds"]
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1142: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        duration_seconds = stats["timing"]["duration_seconds"]
+                                           ^~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1144: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            stats["processing"]["per_year"], cat_sets, vocab_list, duratio...
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1144: error: Argument 1 to
+"compute_tokenize_process_stats" has incompatible type "Union[object, Any]";
+expected "list[dict[str, Any]]"  [arg-type]
+            stats["processing"]["per_year"], cat_sets, vocab_list, duratio...
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1144: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+            stats["processing"]["per_year"], cat_sets, vocab_list, duratio...
+                                ^~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1144: error: Argument 4 to
+"compute_tokenize_process_stats" has incompatible type "Union[object, Any]";
+expected "float"  [arg-type]
+    ...tats["processing"]["per_year"], cat_sets, vocab_list, duration_seconds
+                                                             ^~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1165: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            total_tokens_all = stats["processing"]["total_tokens"]
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1165: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+            total_tokens_all = stats["processing"]["total_tokens"]
+                                                   ^~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1172: error: Unsupported operand types for /
+("int" and "object")  [operator]
+                        round(hit_count / total_tokens_all * 100, 2)
+                              ^
+src\f1d\text\tokenize_and_count.py:1172: note: Right operand is of type "Union[object, Any]"
+src\f1d\text\tokenize_and_count.py:1173: error: Unsupported operand types for <
+("int" and "object")  [operator]
+                        if total_tokens_all > 0
+                           ^
+src\f1d\text\tokenize_and_count.py:1173: note: Left operand is of type "Union[object, Any]"
+src\f1d\text\tokenize_and_count.py:1176: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+                    stats["tokenize_process"]["category_hit_rates"][cat_na...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1176: error: Unsupported target for indexed
+assignment ("Union[object, Any]")  [index]
+                    stats["tokenize_process"]["category_hit_rates"][cat_na...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1176: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+                    stats["tokenize_process"]["category_hit_rates"][cat_na...
+                                              ^~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1183: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["output"]["files"] = [f.name for f in output_files]
+        ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1184: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["output"]["final_columns"] = 14 if output_files else 0
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1187: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        print_stat("Years Processed", value=stats["processing"]["years_pro...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\text\tokenize_and_count.py:1187: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ..._stat("Years Processed", value=stats["processing"]["years_processed"])
+                                                          ^~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1188: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        print_stat("Years Skipped", value=stats["processing"]["years_skipp...
+                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\text\tokenize_and_count.py:1188: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...rint_stat("Years Skipped", value=stats["processing"]["years_skipped"])
+                                                            ^~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1189: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        print_stat("Total Input Rows", value=stats["input"]["total_rows"])
+                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1189: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        print_stat("Total Input Rows", value=stats["input"]["total_rows"])
+                                                            ^~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1190: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        print_stat("Total Output Rows", value=stats["output"]["final_rows"...
+                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1190: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...  print_stat("Total Output Rows", value=stats["output"]["final_rows"])
+                                                               ^~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1191: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        print_stat("Total Tokens", value=stats["processing"]["total_tokens...
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1191: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ... print_stat("Total Tokens", value=stats["processing"]["total_tokens"])
+                                                             ^~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1192: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        print_stat("Vocabulary Hits", value=stats["processing"]["total_voc...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\text\tokenize_and_count.py:1192: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...stat("Vocabulary Hits", value=stats["processing"]["total_vocab_hits"])
+                                                         ^~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1196: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["timing"]["end_iso"] = datetime.now().isoformat()
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1197: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["timing"]["duration_seconds"] = round(end_time - start_time,...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1214: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            "runtime_seconds": stats["timing"]["duration_seconds"],
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1214: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+            "runtime_seconds": stats["timing"]["duration_seconds"],
+                                               ^~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1231: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        duration_seconds = stats["timing"]["duration_seconds"]
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1231: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        duration_seconds = stats["timing"]["duration_seconds"]
+                                           ^~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1232: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        throughput = calculate_throughput(stats["output"]["final_rows"], d...
+                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1232: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+    ...hroughput = calculate_throughput(stats["output"]["final_rows"], durati...
+                                                        ^~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1235: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            "total_rows": stats["output"]["final_rows"],
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1235: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+            "total_rows": stats["output"]["final_rows"],
+                                          ^~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1236: error: Argument 1 to "round" has
+incompatible type "Union[object, Any]"; expected "_SupportsRound2[Any]" 
+[arg-type]
+            "duration_seconds": round(duration_seconds, 3),
+                                      ^~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1240: error: Unsupported target for indexed
+assignment ("Union[dict[str, object], str, None]")  [index]
+        stats["output"]["checksums"] = {}
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1244: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+            stats["output"]["checksums"][filepath.name] = checksum
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1244: error: Unsupported target for indexed
+assignment ("Union[object, Any]")  [index]
+            stats["output"]["checksums"][filepath.name] = checksum
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1244: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+            stats["output"]["checksums"][filepath.name] = checksum
+                            ^~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1249: error: Value of type
+"Union[dict[str, object], str, None]" is not indexable  [index]
+        anomaly_data = pd.DataFrame(stats["processing"]["per_year"])
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\tokenize_and_count.py:1249: error: Invalid index type "str" for
+"Union[dict[str, object], str, None]"; expected type
+"Union[SupportsIndex, slice]"  [index]
+        anomaly_data = pd.DataFrame(stats["processing"]["per_year"])
+                                                        ^~~~~~~~~~
+src\f1d\text\construct_variables.py:896: error: Value of type "Collection[str]"
+is not indexable  [index]
+        stats["input"]["files"].append(str(keywords_path))
+        ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:897: error: Value of type "Collection[str]"
+is not indexable  [index]
+        stats["input"]["checksums"]["managerial_roles_extracted.txt"] = (
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:900: error: Value of type "Collection[str]"
+is not indexable  [index]
+        stats["input"]["files"].append(str(manifest_path))
+        ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:901: error: Value of type "Collection[str]"
+is not indexable  [index]
+        stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:907: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["input"]["total_rows"] = len(manifest_df)
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:908: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["input"]["total_columns"] = len(manifest_df.columns)
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:918: error: Value of type "Collection[str]"
+is not indexable  [index]
+            f"  Input stats collected: {stats['constructvariables_input'][...
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\text\construct_variables.py:935: error: Value of type "Collection[str]"
+is not indexable  [index]
+                stats["output"]["files"].append(f"linguistic_variables_{ye...
+                ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:944: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["output"]["final_rows"] = output_rows
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:945: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["output"]["final_columns"] = output_cols
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:949: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["timing"]["end_iso"] = datetime.now().isoformat()
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:950: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["timing"]["duration_seconds"] = round(end_time - start_time,...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:959: error: Value of type "Collection[str]"
+is not indexable  [index]
+            stats["timing"]["duration_seconds"],
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:978: error: Value of type "Collection[str]"
+is not indexable  [index]
+        duration_seconds = stats["timing"]["duration_seconds"]
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:979: error: Value of type "Collection[str]"
+is not indexable  [index]
+        throughput = calculate_throughput(stats["output"]["final_rows"], d...
+                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:982: error: Value of type "Collection[str]"
+is not indexable  [index]
+            "total_rows": stats["output"]["final_rows"],
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:987: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+        stats["output"]["checksums"] = {}
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:991: error: Value of type "Collection[str]"
+is not indexable  [index]
+            stats["output"]["checksums"][filepath.name] = checksum
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\construct_variables.py:1027: error: "Collection[str]" has no
+attribute "get"  [attr-defined]
+                stats.get("constructvariables_input", {})
+                ^
+src\f1d\shared\panel_ols.py:108: error: Incompatible return value type (got
+"tuple[bool, dict[Hashable, int]]", expected "tuple[bool, dict[str, int]]") 
+[return-value]
+        return has_thin, cell_counts
+               ^~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\panel_ols.py:507: error: Argument 1 has incompatible type
+"Series[Any]"; expected "DataFrame"  [arg-type]
+                        vif_df = compute_vif(exog_for_vif, exog, add_const...
+                                             ^~~~~~~~~~~~
+src\f1d\shared\panel_ols.py:507: note: Error code "arg-type" not covered by "type: ignore" comment
+src\f1d\shared\panel_ols.py:509: error: Argument 1 has incompatible type
+"Series[Any]"; expected "DataFrame"  [arg-type]
+                        vif_df = compute_vif(exog_for_vif, exog, add_const...
+                                             ^~~~~~~~~~~~
+src\f1d\shared\panel_ols.py:509: note: Error code "arg-type" not covered by "type: ignore" comment
+src\f1d\sample\1.3_BuildTenureMap.py:551: error: Argument 2 to
+"compute_tenure_input_stats" has incompatible type "Series[Any]"; expected
+"DataFrame"  [arg-type]
+    ...   stats["tenure_input"] = compute_tenure_input_stats(df, ceo_records)
+                                                                 ^~~~~~~~~~~
+src\f1d\sample\1.3_BuildTenureMap.py:613: error: Incompatible types in
+assignment (expression has type "DataFrame", variable has type "Series[Any]") 
+[assignment]
+        for gvkey, group in episodes_df.groupby("gvkey"):
+        ^
+src\f1d\sample\1.1_CleanMetadata.py:175: error: Incompatible return value type
+(got "DataFrame", expected "dict[str, Any]")  [return-value]
+        return df
+               ^~
+src\f1d\financial\v2\3.9_H2_BiddleInvestmentResidual.py:1118: error: No
+overload variant of "sort_values" of "Series" matches argument type "list[str]" 
+[call-overload]
+            final_output[output_columns]
+            ^
+src\f1d\financial\v2\3.9_H2_BiddleInvestmentResidual.py:1118: note: Possible overload variants:
+src\f1d\financial\v2\3.9_H2_BiddleInvestmentResidual.py:1118: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.9_H2_BiddleInvestmentResidual.py:1118: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.8_H8TakeoverVariables.py:206: error: Incompatible types
+in assignment (expression has type "Series[Any]", variable has type "DataFrame")
+ [assignment]
+        df = df[available_cols].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.8_H8TakeoverVariables.py:213: error: Incompatible types
+in assignment (expression has type "Series[Any]", variable has type "DataFrame")
+ [assignment]
+        df = df[df["year"].between(year_start, year_end)]
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.8_H8TakeoverVariables.py:317: error: Incompatible types
+in assignment (expression has type "list[str]", variable has type "Index[str]") 
+[assignment]
+        ccm.columns = [c.lower() for c in ccm.columns]
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.8_H8TakeoverVariables.py:323: error: Incompatible types
+in assignment (expression has type "Series[Any]", variable has type "DataFrame")
+ [assignment]
+            ccm = ccm[~ccm["cusip"].isin(["nan", "none", ""])]
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.8_H8TakeoverVariables.py:329: error: Incompatible types
+in assignment (expression has type "Series[Any]", variable has type "DataFrame")
+ [assignment]
+            ccm = ccm[ccm["linkprim"].isin(["P", "C", "p", "c"])]
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.8_H8TakeoverVariables.py:334: error: Incompatible types
+in assignment (expression has type "list[str]", variable has type "Index[str]") 
+[assignment]
+        ccm_map.columns = ["cusip6", "gvkey"]
+                          ^~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.8_H8TakeoverVariables.py:418: error: Incompatible types
+in assignment (expression has type "Series[Any]", variable has type "DataFrame")
+ [assignment]
+        combined = combined[combined["year"].between(year_start, year_end)...
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.7_H7IlliquidityVariables.py:189: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        ccm = ccm[ccm["LINKPRIM"].isin(["P", "C", "L"])]
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.3_H3Variables.py:209: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+            df = df[df["gvkey"].astype(str).str.zfill(6).isin(sample_gvkey...
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.3_H3Variables.py:296: error: No overload variant of
+"rename" of "Series" matches argument type "dict[str, str]"  [call-overload]
+            compustat_df.groupby(["gvkey", "fiscal_year"], as_index=False)...
+            ^
+src\f1d\financial\v2\3.3_H3Variables.py:296: note: Possible overload variants:
+src\f1d\financial\v2\3.3_H3Variables.py:296: note:     def rename(self, index: Callable[[Any], Any], *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> None
+src\f1d\financial\v2\3.3_H3Variables.py:296: note:     def rename(self, index: Mapping[Any, Any], *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> None
+src\f1d\financial\v2\3.3_H3Variables.py:296: note:     def rename(self, index: Union[Any, tuple[Hashable, ...], None] = ..., *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> Any
+src\f1d\financial\v2\3.3_H3Variables.py:296: note:     def rename(self, index: Union[Any, tuple[Hashable, ...], None] = ..., *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[False] = ..., level: Optional[Any] = ..., errors: Any = ...) -> Any
+src\f1d\financial\v2\3.3_H3Variables.py:559: error: No overload variant of
+"sort_values" of "Series" matches argument type "list[str]"  [call-overload]
+        fcf_annual = fcf_annual.sort_values(["gvkey", "fiscal_year"])
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.3_H3Variables.py:559: note: Possible overload variants:
+src\f1d\financial\v2\3.3_H3Variables.py:559: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.3_H3Variables.py:559: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.3_H3Variables.py:564: error: No overload variant of
+"sort_values" of "Series" matches argument type "str"  [call-overload]
+            group = group.sort_values("fiscal_year").reset_index(drop=True...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.3_H3Variables.py:564: note: Possible overload variants:
+src\f1d\financial\v2\3.3_H3Variables.py:564: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.3_H3Variables.py:564: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.3_H3Variables.py:626: error: No overload variant of
+"sort_values" of "Series" matches argument type "list[str]"  [call-overload]
+        df = df.sort_values(["gvkey", "fiscal_year", "datadate"])
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.3_H3Variables.py:626: note: Possible overload variants:
+src\f1d\financial\v2\3.3_H3Variables.py:626: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.3_H3Variables.py:626: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.3_H3Variables.py:637: error: Incompatible return value
+type (got "Series[Any]", expected "DataFrame")  [return-value]
+        return result
+               ^~~~~~
+src\f1d\financial\v2\3.2a_AnalystDispersionPatch.py:154: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        ccm = ccm[ccm["LINKPRIM"].isin(linkprim_filter)].copy()
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.2a_AnalystDispersionPatch.py:155: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        ccm = ccm[ccm["LINKTYPE"].isin(linktype_filter)].copy()
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.2a_AnalystDispersionPatch.py:167: error: No overload
+variant of "drop_duplicates" of "Series" matches argument types "list[str]",
+"str"  [call-overload]
+        ccm_map = ccm[["cusip", "gvkey_str"]].drop_duplicates(
+                  ^
+src\f1d\financial\v2\3.2a_AnalystDispersionPatch.py:167: note: Possible overload variants:
+src\f1d\financial\v2\3.2a_AnalystDispersionPatch.py:167: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\financial\v2\3.2a_AnalystDispersionPatch.py:167: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\financial\v2\3.2_H2Variables.py:351: error: Incompatible return value
+type (got "Series[Any]", expected "DataFrame")  [return-value]
+        return result
+               ^~~~~~
+src\f1d\financial\v2\3.2_H2Variables.py:372: error: Incompatible return value
+type (got "Series[Any]", expected "DataFrame")  [return-value]
+        return result
+               ^~~~~~
+src\f1d\financial\v2\3.2_H2Variables.py:382: error: Need type annotation for
+"ff48_medians"  [var-annotated]
+        ff48_medians = df.groupby(["ff48", "fiscal_year"])[value_col].tran...
+                       ^
+src\f1d\financial\v2\3.2_H2Variables.py:391: error: Need type annotation for
+"ff12_medians"  [var-annotated]
+            ff12_medians = df.groupby(["ff12", "fiscal_year"])[value_col]....
+                           ^
+src\f1d\financial\v2\3.2_H2Variables.py:407: error: Incompatible return value
+type (got "Series[Any]", expected "DataFrame")  [return-value]
+        return result
+               ^~~~~~
+src\f1d\financial\v2\3.2_H2Variables.py:536: error: No overload variant of
+"sort_values" of "Series" matches argument type "list[str]"  [call-overload]
+        df_sorted = df_subset.sort_values(["gvkey", "fiscal_year"]).copy()
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.2_H2Variables.py:536: note: Possible overload variants:
+src\f1d\financial\v2\3.2_H2Variables.py:536: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.2_H2Variables.py:536: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.2_H2Variables.py:1220: error: No overload variant of
+"drop_duplicates" of "Series" matches argument types "list[str]", "str" 
+[call-overload]
+        datadate_df = overinvest_df[["gvkey", "fiscal_year", "datadate"]]....
+                      ^
+src\f1d\financial\v2\3.2_H2Variables.py:1220: note: Possible overload variants:
+src\f1d\financial\v2\3.2_H2Variables.py:1220: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\financial\v2\3.2_H2Variables.py:1220: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\financial\v2\3.2_H2Variables.py:1327: error: No overload variant of
+"sort_values" of "Series" matches argument types "list[str]", "list[bool]" 
+[call-overload]
+        base = base.sort_values(
+               ^
+src\f1d\financial\v2\3.2_H2Variables.py:1327: note: Possible overload variants:
+src\f1d\financial\v2\3.2_H2Variables.py:1327: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.2_H2Variables.py:1327: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.2_H2Variables.py:1335: error: No overload variant of
+"rename" of "Series" matches argument types "dict[str, str]", "bool" 
+[call-overload]
+        manifest_for_merge.rename(columns={"year": "fiscal_year"}, inplace...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\financial\v2\3.2_H2Variables.py:1335: note: Possible overload variants:
+src\f1d\financial\v2\3.2_H2Variables.py:1335: note:     def rename(self, index: Callable[[Any], Any], *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> None
+src\f1d\financial\v2\3.2_H2Variables.py:1335: note:     def rename(self, index: Mapping[Any, Any], *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> None
+src\f1d\financial\v2\3.2_H2Variables.py:1335: note:     def rename(self, index: Union[Any, tuple[Hashable, ...], None] = ..., *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[True], level: Optional[Any] = ..., errors: Any = ...) -> Any
+src\f1d\financial\v2\3.2_H2Variables.py:1335: note:     def rename(self, index: Union[Any, tuple[Hashable, ...], None] = ..., *, axis: Optional[Any] = ..., copy: bool = ..., inplace: Literal[False] = ..., level: Optional[Any] = ..., errors: Any = ...) -> Any
+src\f1d\financial\v2\3.1_H1Variables.py:335: error: No overload variant of
+"sort_values" of "Series" matches argument type "list[str]"  [call-overload]
+        df = df.sort_values(["gvkey", "fiscal_year"])
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.1_H1Variables.py:335: note: Possible overload variants:
+src\f1d\financial\v2\3.1_H1Variables.py:335: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.1_H1Variables.py:335: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.1_H1Variables.py:340: error: No overload variant of
+"sort_values" of "Series" matches argument type "str"  [call-overload]
+            group = group.sort_values("fiscal_year")
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.1_H1Variables.py:340: note: Possible overload variants:
+src\f1d\financial\v2\3.1_H1Variables.py:340: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.1_H1Variables.py:340: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.1_H1Variables.py:804: error: No overload variant of
+"sort_values" of "Series" matches argument types "list[str]", "list[bool]" 
+[call-overload]
+        compustat_vars = compustat_vars.sort_values(
+                         ^
+src\f1d\financial\v2\3.1_H1Variables.py:804: note: Possible overload variants:
+src\f1d\financial\v2\3.1_H1Variables.py:804: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[True], key: Any = ...) -> None
+src\f1d\financial\v2\3.1_H1Variables.py:804: note:     def sort_values(self, *, axis: Any = ..., ascending: Union[bool, Sequence[bool]] = ..., kind: Any = ..., na_position: Any = ..., ignore_index: bool = ..., inplace: Literal[False] = ..., key: Any = ...) -> Series[Any]
+src\f1d\financial\v2\3.12_H9_PRiskFY.py:244: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+        df = df[output_cols].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.12_H9_PRiskFY.py:336: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+        df = df[df["fyear"].between(year_range[0], year_range[1])].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.10_H2_PRiskUncertaintyMerge.py:188: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        df = df[df["year"].between(year_range[0], year_range[1])]
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v2\3.10_H2_PRiskUncertaintyMerge.py:381: error: Incompatible
+types in assignment (expression has type "list[str]", variable has type
+"Index[str]")  [assignment]
+        uncertainty_agg.columns = [
+                                  ^
+src\f1d\financial\v2\3.10_H2_PRiskUncertaintyMerge.py:779: error: Incompatible
+types in assignment (expression has type "dict[Hashable, Any]", variable has
+type "list[str]")  [assignment]
+            for row in vif_records:
+            ^
+src\f1d\financial\v1\3.3_EventFlags.py:371: error: Unsupported operand types
+for + ("Hashable" and "int")  [operator]
+            if (idx + 1) % 10000 == 0:
+                ^
+src\f1d\financial\v1\3.3_EventFlags.py:372: error: Unsupported operand types
+for + ("Hashable" and "int")  [operator]
+                print(f"  Processed {idx + 1:,} calls...")
+                                    ^
+src\f1d\financial\v1\3.1_FirmControls.py:202: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+        df = df[(df["MEASURE"] == "EPS") & (df["FISCALP"] == "QTR")].copy(...
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v1\3.1_FirmControls.py:206: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+        df = df[["TICKER", "CUSIP", "FPEDATS", "STATPERS", "MEANEST", "ACT...
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\financial\v1\3.1_FirmControls.py:247: error: Incompatible types in
+assignment (expression has type "Series[Any]", variable has type "DataFrame") 
+[assignment]
+        df = df[available_cols].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\financial\v1\3.1_FirmControls.py:339: error: Incompatible return value
+type (got "Series[Any]", expected "DataFrame")  [return-value]
+        return results_df
+               ^~~~~~~~~~
+src\f1d\financial\v1\3.1_FirmControls.py:763: error: Argument
+"variable_coverage_df" to "compute_step31_process_stats" has incompatible type
+"Series[Any]"; expected "Optional[DataFrame]"  [arg-type]
+            variable_coverage_df=result,
+                                 ^~~~~~
+src\f1d\financial\v1\3.1_FirmControls.py:781: error: Argument 1 to
+"generate_variable_reference" has incompatible type "Series[Any]"; expected
+"DataFrame"  [arg-type]
+        generate_variable_reference(result, paths["output_dir"] / "variabl...
+                                    ^~~~~~
+src\f1d\financial\v1\3.1_FirmControls.py:788: error: Argument 1 to
+"analyze_missing_values" has incompatible type "Series[Any]"; expected
+"DataFrame"  [arg-type]
+        stats["missing_values"] = analyze_missing_values(result)
+                                                         ^~~~~~
+src\f1d\financial\v1\3.1_FirmControls.py:806: error: Argument "output_df" to
+"compute_step31_output_stats" has incompatible type "Series[Any]"; expected
+"DataFrame"  [arg-type]
+            output_df=result,
+                      ^~~~~~
+src\f1d\financial\v1\3.1_FirmControls.py:869: error: Argument 1 to
+"detect_anomalies_zscore" has incompatible type "Series[Any]"; expected
+"DataFrame"  [arg-type]
+                result, cols_to_check, threshold=3.0
+                ^~~~~~
+src\f1d\financial\v1\3.0_BuildFinancialFeatures.py:300: error: Name "importlib"
+is not defined  [name-defined]
+        spec = importlib.util.spec_from_file_location(name, path)
+               ^
+src\f1d\financial\v1\3.0_BuildFinancialFeatures.py:303: error: Name "importlib"
+is not defined  [name-defined]
+        mod = importlib.util.module_from_spec(spec)
+              ^
+src\f1d\econometric\v2\4.8_H8TakeoverRegression.py:833: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        df_results = df_results[col_order]
+                     ^~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:545: error: No overload
+variant of "int" matches argument type "Hashable"  [call-overload]
+                        f"    {int(year):>6} {row['gvkey']:>8} {row['ceo_i...
+                              ^~~~~~~~~~
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:545: note: Possible overload variants:
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:545: note:     def int(Union[str, Buffer, SupportsInt, SupportsIndex, SupportsTrunc] = ..., /) -> int
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:545: note:     def int(Union[str, bytes, bytearray], /, base: SupportsIndex) -> int
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:591: error: No overload
+variant of "int" matches argument type "Hashable"  [call-overload]
+                    writer.writerow([int(year), row["gvkey"], row["ceo_id"...
+                                     ^~~~~~~~~
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:591: note: Possible overload variants:
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:591: note:     def int(Union[str, Buffer, SupportsInt, SupportsIndex, SupportsTrunc] = ..., /) -> int
+src\f1d\econometric\v1\4.4_GenerateSummaryStats.py:591: note:     def int(Union[str, bytes, bytearray], /, base: SupportsIndex) -> int
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:62: error: Skipping analyzing
+"lifelines": module is installed, but missing library stubs or py.typed marker 
+[import-untyped]
+        from lifelines import CoxPHFitter
+    ^
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:62: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:302: error: No overload variant
+of "drop_duplicates" of "Series" matches argument type "str"  [call-overload]
+            ling = ling[ling_cols].drop_duplicates("file_name")
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:302: note: Possible overload variants:
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:302: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:302: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:337: error: No overload variant
+of "drop_duplicates" of "Series" matches argument type "str"  [call-overload]
+            firm = firm[fc_cols].drop_duplicates("file_name")
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:337: note: Possible overload variants:
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:337: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:337: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:513: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                if var in cph_all_regime.summary.index:
+                          ^~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:519: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "HR": cph_all_regime.summary.loc[var, "exp(coe...
+                                  ^~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:520: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Coef": cph_all_regime.summary.loc[var, "coef"...
+                                    ^~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:521: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Pval": cph_all_regime.summary.loc[var, "p"],
+                                    ^~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:522: error: "dict[str, Any]" has
+no attribute "event_observed"  [attr-defined]
+                            "N": int(cph_all_regime.event_observed.sum()),
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:532: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                if var in cph_all_ceo.summary.index:
+                          ^~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:538: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "HR": cph_all_ceo.summary.loc[var, "exp(coef)"...
+                                  ^~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:539: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Coef": cph_all_ceo.summary.loc[var, "coef"],
+                                    ^~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:540: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Pval": cph_all_ceo.summary.loc[var, "p"],
+                                    ^~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:541: error: "dict[str, Any]" has
+no attribute "event_observed"  [attr-defined]
+                            "N": int(cph_all_ceo.event_observed.sum()),
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:564: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                if var in fg_uninv_regime.summary.index:
+                          ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:570: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "SHR": fg_uninv_regime.summary.loc[var, "exp(c...
+                                   ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:571: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Coef": fg_uninv_regime.summary.loc[var, "coef...
+                                    ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:572: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Pval": fg_uninv_regime.summary.loc[var, "p"],
+                                    ^~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:573: error: "dict[str, Any]" has
+no attribute "event_observed"  [attr-defined]
+                            "N": int(fg_uninv_regime.event_observed.sum())...
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:582: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                if var in fg_uninv_ceo.summary.index:
+                          ^~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:588: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "SHR": fg_uninv_ceo.summary.loc[var, "exp(coef...
+                                   ^~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:589: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Coef": fg_uninv_ceo.summary.loc[var, "coef"],
+                                    ^~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:590: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Pval": fg_uninv_ceo.summary.loc[var, "p"],
+                                    ^~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:591: error: "dict[str, Any]" has
+no attribute "event_observed"  [attr-defined]
+                            "N": int(fg_uninv_ceo.event_observed.sum()),
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:614: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                if var in fg_friend_regime.summary.index:
+                          ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:620: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "SHR": fg_friend_regime.summary.loc[var, "exp(...
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:621: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Coef": fg_friend_regime.summary.loc[var, "coe...
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:622: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Pval": fg_friend_regime.summary.loc[var, "p"]...
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:623: error: "dict[str, Any]" has
+no attribute "event_observed"  [attr-defined]
+                            "N": int(fg_friend_regime.event_observed.sum()...
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:632: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                if var in fg_friend_ceo.summary.index:
+                          ^~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:638: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "SHR": fg_friend_ceo.summary.loc[var, "exp(coe...
+                                   ^~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:639: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Coef": fg_friend_ceo.summary.loc[var, "coef"]...
+                                    ^~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:640: error: "dict[str, Any]" has
+no attribute "summary"  [attr-defined]
+                            "Pval": fg_friend_ceo.summary.loc[var, "p"],
+                                    ^~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.3_TakeoverHazards.py:641: error: "dict[str, Any]" has
+no attribute "event_observed"  [attr-defined]
+                            "N": int(fg_friend_ceo.event_observed.sum()),
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:219: error: No overload
+variant of "drop_duplicates" of "Series" matches argument type "str" 
+[call-overload]
+        ling = ling[ling_cols].drop_duplicates("file_name")
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:219: note: Possible overload variants:
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:219: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:219: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:240: error: No overload
+variant of "drop_duplicates" of "Series" matches argument type "str" 
+[call-overload]
+        firm = firm[fc_cols].drop_duplicates("file_name")
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:240: note: Possible overload variants:
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:240: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:240: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:267: error: No overload
+variant of "drop_duplicates" of "Series" matches argument type "str" 
+[call-overload]
+        market = market[mv_cols].drop_duplicates("file_name")
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:267: note: Possible overload variants:
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:267: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[True], ignore_index: bool = ...) -> None
+src\f1d\econometric\v1\4.2_LiquidityRegressions.py:267: note:     def drop_duplicates(self, *, keep: Any = ..., inplace: Literal[False] = ..., ignore_index: bool = ...) -> Series[Any]
+src\f1d\econometric\v2\4.4_H4_LeverageDiscipline.py:283: error: Argument "df"
+to "run_panel_ols" has incompatible type "Series[Any]"; expected "DataFrame" 
+[arg-type]
+                    df=reg_df,
+                       ^~~~~~
+src\f1d\econometric\v2\4.4_H4_LeverageDiscipline.py:807: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        df = df[["gvkey", "fiscal_year", "firm_maturity", "earnings_volati...
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\econometric\v2\4.3_H3PayoutPolicyRegression.py:253: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        df = df[["gvkey", "fiscal_year", "leverage"]].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v2\4.2_H2InvestmentEfficiencyRegression.py:252: error:
+Incompatible types in assignment (expression has type "Series[Any]", variable
+has type "DataFrame")  [assignment]
+        df = df[["gvkey", "fiscal_year", "leverage"]].copy()
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\econometric\v2\4.1_H1CashHoldingsRegression.py:257: error: Incompatible
+types in assignment (expression has type "Series[Any]", variable has type
+"DataFrame")  [assignment]
+        combined = combined[available_cols].copy()
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\logging\handlers.py:161: error: Incompatible types in assignment
+(expression has type "ConsoleRenderer", variable has type "JSONRenderer") 
+[assignment]
+                file_renderer = structlog.dev.ConsoleRenderer(colors=False...
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\logging\context.py:65: error: Returning Any from function
+declared to return "dict[str, Any]"  [no-any-return]
+        return structlog.contextvars._context.get().copy() if structlog.co...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+src\f1d\shared\logging\context.py:65: error: Module has no attribute "_context"
+ [attr-defined]
+        return structlog.contextvars._context.get().copy() if structlog.co...
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\logging\config.py:67: error: Incompatible types in assignment
+(expression has type "ConsoleRenderer", variable has type "JSONRenderer") 
+[assignment]
+            renderer = structlog.dev.ConsoleRenderer(colors=True)
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\shared\logging\config.py:115: error: Returning Any from function
+declared to return "BoundLogger"  [no-any-return]
+        return structlog.get_logger(name)
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\f1d\text\report_step2.py:33: error: Skipping analyzing "plotly.express":
+module is installed, but missing library stubs or py.typed marker 
+[import-untyped]
+    import plotly.express as px
+    ^
+src\f1d\text\report_step2.py:33: error: Skipping analyzing "plotly": module is
+installed, but missing library stubs or py.typed marker  [import-untyped]
+    import plotly.express as px
+    ^
+src\f1d\text\report_step2.py:34: error: Skipping analyzing "plotly.io": module
+is installed, but missing library stubs or py.typed marker  [import-untyped]
+    import plotly.io as pio
+    ^
+src\f1d\text\report_step2.py:68: error: Need type annotation for
+"required_files" (hint: "required_files: dict[<type>, <type>] = ...") 
+[var-annotated]
+        required_files = {}
+        ^~~~~~~~~~~~~~
+src\f1d\text\report_step2.py:85: error: Argument 1 to "DualWriter" has
+incompatible type "str"; expected "Path"  [arg-type]
+        sys.stdout = DualWriter(log_file)
+                                ^~~~~~~~
+src\f1d\text\report_step2.py:140: error: Incompatible types in assignment
+(expression has type "str", variable has type "TextIOWrapper")  [assignment]
+            for f in parquet_files:
+            ^
+src\f1d\text\report_step2.py:141: error: No overload variant of "basename"
+matches argument type "TextIOWrapper"  [call-overload]
+    ...         logger.info("reading_parquet_file", file=os.path.basename(f))
+                                                         ^~~~~~~~~~~~~~~~~~~
+src\f1d\text\report_step2.py:141: note: Possible overload variants:
+src\f1d\text\report_step2.py:141: note:     def [AnyStr: (str, bytes)] basename(p: PathLike[AnyStr]) -> AnyStr
+src\f1d\text\report_step2.py:141: note:     def [AnyOrLiteralStr: (str, bytes, str)] basename(p: AnyOrLiteralStr) -> AnyOrLiteralStr
+Found 281 errors in 38 files (checked 101 source files)

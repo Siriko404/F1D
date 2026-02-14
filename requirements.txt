@@ -30,7 +30,7 @@ python-dateutil==2.9.0.post0
 rapidfuzz>=3.14.0
 
 # Type stubs for mypy strict checking
-types-pandas>=2.2.0  # Type stubs for pandas
+pandas-stubs>=2.2.0  # Type stubs for pandas (modern replacement for types-pandas)
 types-psutil>=6.0.0  # Type stubs for psutil
 types-requests>=2.31.0  # Type stubs for requests (if used)
 types-PyYAML>=6.0.0  # Type stubs for PyYAML
