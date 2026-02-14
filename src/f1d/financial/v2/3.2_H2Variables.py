@@ -65,10 +65,6 @@ import yaml
 # Configure logger for this module
 logger = logging.getLogger(__name__)
 
-# Add parent directory to sys.path for shared module imports
-script_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(script_dir))
-
 # Import shared path validation utilities
 # Import statsmodels for OLS regressions
 import statsmodels.api as sm
