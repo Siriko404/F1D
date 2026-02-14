@@ -10,22 +10,24 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Milestone: v6.0 Architecture Standard Implementation
-Phase: 72 of 74 (Structured Logging) - COMPLETE
-Current Plan: 3 of 3
-Status: Phase 72 complete - Structured logging with structlog, context binding, and dual output
-Last activity: 2026-02-14 — Completed 72-03: dual output logging handlers
+Phase: 72 of 74 (Structured Logging) - IN PROGRESS
+Current Plan: 4 of 5
+Status: 72-05 complete - Migrated remaining scripts to structured logging
+Last activity: 2026-02-14 — Completed 72-05: remaining scripts migration
 
-Progress: [230 plans completed across all milestones]
+Progress: [231 plans completed across all milestones]
 
 ```
 Milestone Progress - v6.0 Architecture Standard Implementation
-[##################                             ] 89% complete (17/19 plans)
+[##################                             ] 89% complete (18/19 plans)
 
 Phase: 72 - Structured Logging
-Status: Complete (3/3 plans)
+Status: In Progress (4/5 plans)
 - 72-01: Structlog Integration - COMPLETE
 - 72-02: Context Binding - COMPLETE
 - 72-03: Dual Output Handlers - COMPLETE
+- 72-04: Financial V2 Scripts Migration - PENDING
+- 72-05: Remaining Scripts Migration - COMPLETE
 
 Phase: 71 - Configuration System
 Status: Complete (3/3 plans)
@@ -33,11 +35,10 @@ Status: Complete (3/3 plans)
 - 71-02: Environment Variable Handling - COMPLETE
 - 71-03: Configuration Loader with Caching - COMPLETE
 
-Verification: Phase 72-03
-- handlers.py module with configure_dual_output, configure_script_logging
-- Console output with colors via ConsoleRenderer
-- File output as JSON via JSONRenderer
-- Unit tests (14 tests) and integration tests (8 tests)
+Verification: Phase 72-05
+- All 9 shared modules/scripts migrated to f1d.shared.logging
+- observability/logging.py deprecated with notice
+- 2.3_Report.py uses structlog keyword argument pattern
 ```
 
 ## Performance Metrics
@@ -49,7 +50,7 @@ Verification: Phase 72-03
 - v3.0: 21 plans
 - v4.0: 5 plans (64-01 through 64-05)
 - v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
-- v6.0: 18 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03)
+- v6.0: 19 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03, 72-05)
 
 **Milestone Summary:**
 
@@ -60,11 +61,12 @@ Verification: Phase 72-03
 | v3.0 Codebase Cleanup | 59-63 | 21 | Complete |
 | v4.0 Folder Consolidation | 64 | 5 | Complete |
 | v5.0 Architecture Standard | 65-68 | 4 | Complete |
-| v6.0 Implementation | 69-74 | 18/19 | In Progress |
+| v6.0 Implementation | 69-74 | 19/20 | In Progress |
 
 ## Performance Metrics
 
 **Recent Plan:**
+- 72-05 Remaining Scripts Migration: ~8 min, 9 files, 3 tasks
 - 72-03 Dual Output Handlers: ~9 min, 3 files, 3 tasks
 - 72-02 Context Binding: ~5 min, 3 files, 3 tasks
 - 72-01 Structlog Integration: ~3 min, 3 files, 3 tasks
@@ -86,6 +88,9 @@ Verification: Phase 72-03
 
 Recent decisions affecting current work:
 
+- [72-05] observability/logging.py deprecated with notice pointing to f1d.shared.logging
+- [72-05] DualWriter class preserved for backward compatibility with existing scripts
+- [72-05] 2.3_Report.py uses structlog keyword argument pattern for structured output
 - [72-03] Console uses ConsoleRenderer(colors=True) for human-readable colored output
 - [72-03] File uses JSONRenderer for machine-parseable JSON output
 - [72-03] DEFAULT_LOG_DIR set to Path("3_Logs") following project conventions
@@ -159,10 +164,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 72-03 - dual output logging handlers
+Stopped at: Completed 72-05 - remaining scripts migration
 
 **Next Action:**
-Continue with Phase 73 (CI/CD Pipeline) or Phase 74 (Testing Infrastructure).
+Continue with 72-04 (Financial V2 Scripts Migration) or Phase 73 (CI/CD Pipeline).
 
 ---
-*Last updated: 2026-02-14 (Phase 72 complete)*
+*Last updated: 2026-02-14 (Phase 72-05 complete)*
