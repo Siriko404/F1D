@@ -211,6 +211,12 @@ skips = [
 # mypy Configuration (TYPE-03: Tier-based strictness)
 # ==============================================================================
 # See: docs/CODE_QUALITY_STANDARD.md Section 3.2
+#
+# Type stub packages installed (see requirements.txt):
+# - types-pandas: Type stubs for pandas
+# - types-psutil: Type stubs for psutil
+# - types-requests: Type stubs for requests
+# - types-PyYAML: Type stubs for PyYAML
 
 [tool.mypy]
 python_version = "3.9"
@@ -275,15 +281,14 @@ ignore_missing_imports = true
 # ==============================================================================
 # Third-Party Libraries (ignore missing type stubs)
 # ==============================================================================
+# Note: pandas, psutil, yaml (PyYAML) now have type stubs via types-* packages
+# Only ignore imports for libraries without type stubs available
 [[tool.mypy.overrides]]
 module = [
-    "pandas.*",
     "numpy.*",
     "linearmodels.*",
     "scipy.*",
     "statsmodels.*",
-    "yaml.*",
-    "psutil.*",
     "pyarrow.*",
 ]
 ignore_missing_imports = true
