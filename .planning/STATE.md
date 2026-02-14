@@ -11,20 +11,20 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 Milestone: v6.1 Architecture Compliance Gap Closure - IN PROGRESS
 Phase: 76 of 76 (Stage Scripts Migration) - IN PROGRESS
-Current Plan: 1 of 4
-Status: 76-01 complete (13 financial v2 scripts migrated)
-Last activity: 2026-02-14 — 76-01 complete: Financial V2 Scripts Migration
+Current Plan: 2 of 4
+Status: 76-02 complete (4 financial v1 scripts migrated)
+Last activity: 2026-02-14 — 76-02 complete: Financial V1 Scripts Migration
 
 Progress: [252 plans completed across all milestones]
 
 ```
 Milestone Progress - v6.1 Architecture Compliance Gap Closure
-[==============================================] 67% complete (6/9 plans)
+[==============================================] 78% complete (7/9 plans)
 
 Phase: 76 - Stage Scripts Migration
-Status: IN PROGRESS (1/4 plans)
+Status: IN PROGRESS (2/4 plans)
 - 76-01: Financial V2 Scripts Migration - COMPLETE
-- 76-02: Financial V1 Scripts Migration - PENDING
+- 76-02: Financial V1 Scripts Migration - COMPLETE
 - 76-03: Econometric Scripts Migration - PENDING
 - 76-04: Performance Tests and Final Verification - PENDING
 
@@ -58,7 +58,7 @@ Remaining for Phase 76:
 - v4.0: 5 plans (64-01 through 64-05)
 - v5.0: 4 plans (65-01, 66-01, 67-01, 68-01)
 - v6.0: 27 plans (69-01, 69-02B, 69-03, 70-01 through 70-12, 71-01, 71-02, 71-03, 72-01, 72-02, 72-03, 72-04, 72-05, 73-01, 73-02, 73-03, 74-01, 74-02, 74-03, 74-04)
-- v6.1: 6 plans (75-01 through 75-05, 76-01), 3 pending (76-02 through 76-04)
+- v6.1: 7 plans (75-01 through 75-05, 76-01, 76-02), 2 pending (76-03, 76-04)
 
 **Milestone Summary:**
 
@@ -70,11 +70,12 @@ Remaining for Phase 76:
 | v4.0 Folder Consolidation | 64 | 5 | Complete |
 | v5.0 Architecture Standard | 65-68 | 4 | Complete |
 | v6.0 Implementation | 69-74 | 24 | Complete |
-| v6.1 Gap Closure | 75-76 | 6 | In Progress |
+| v6.1 Gap Closure | 75-76 | 7 | In Progress |
 
 ## Performance Metrics
 
 **Recent Plan:**
+- 76-02 Financial V1 Scripts Migration: ~2 min, 4 files, 1 task (sys.path.insert removed)
 - 76-01 Financial V2 Scripts Migration: ~3 min, 13 files, 3 tasks (sys.path.insert removed)
 - 75-05 Final Verification: ~5 min, 2 files, 1 task (milestone audit created)
 - 75-04 Test Environment Compatibility: ~5 min, 1 file, 3 tasks (22 xfails removed)
@@ -110,6 +111,7 @@ Remaining for Phase 76:
 
 Recent decisions affecting current work:
 
+- [76-02] 4 financial v1 stage scripts migrated to f1d.shared.* namespace - zero sys.path.insert() calls
 - [76-01] 13 financial v2 stage scripts migrated to f1d.shared.* namespace - zero sys.path.insert() calls
 - [76-01] 3.11_H9_StyleFrozen.py updated from direct shared imports to f1d.shared.* namespace for consistency
 - [75-05] v6.1 Milestone Audit created with PASSED status - all 6 success criteria verified
@@ -216,6 +218,7 @@ Recent decisions affecting current work:
 - Phase 72: Structured Logging (LOGG-01, LOGG-02, LOGG-03)
 - Phase 73: CI/CD Pipeline (CICD-01, CICD-02, CICD-03)
 - Phase 74: Testing Infrastructure (TEST-01, TEST-02, TEST-03, TEST-04)
+- [Phase 76-02]: 4 financial v1 stage scripts migrated to f1d.shared.* namespace - zero sys.path.insert() calls
 
 ### Pending Todos
 
@@ -228,10 +231,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Stopped at: Completed 76-01-PLAN.md (Financial V2 Scripts Migration)
+Stopped at: Completed 76-02-PLAN.md (Financial V1 Scripts Migration)
 
 **Next Action:**
-Continue Phase 76: Run `/gsd:execute-phase 76-stage-scripts-migration` to execute remaining plans (76-02, 76-03, 76-04).
+Continue Phase 76: Run `/gsd:execute-phase 76-stage-scripts-migration` to execute remaining plans (76-03, 76-04).
 
 ---
-*Last updated: 2026-02-14 (76-01 complete - 13 financial v2 scripts migrated)*
+*Last updated: 2026-02-14 (76-02 complete - 4 financial v1 scripts migrated)*
