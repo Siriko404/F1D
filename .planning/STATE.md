@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 Milestone: v6.1 Architecture Compliance Gap Closure - Extended
 Phase: 77-concerns-closure-parallel-agents-verification
-Current Plan: 12
+Current Plan: 06
 Total Plans in Phase: 12
 Status: Executing Phase 77
-Last activity: 2026-02-14 — Completed 77-11: Type Ignore Comments Documentation
+Last activity: 2026-02-14 — Completed 77-05: All Scripts Dry-Run Verification
 
 Progress: [265 plans completed across all milestones]
 
@@ -54,6 +54,7 @@ Ready for next milestone planning
 | Phase 77-concerns-closure-parallel-agents-verification P07 | 23min | 3 tasks | 2 files |
 | Phase 77-concerns-closure-parallel-agents-verification P08 | 45min | 3 tasks | 3 files |
 | Phase 77-concerns-closure-parallel-agents-verification P09 | 9min | 3 tasks | 2 files |
+| Phase 77-concerns-closure-parallel-agents-verification P05 | 8min | 5 tasks | 6 files |
 | Phase 77-concerns-closure-parallel-agents-verification P10 | 15min | 3 tasks | 2 files |
 | Phase 77-concerns-closure-parallel-agents-verification P11 | 13min | 3 tasks | 5 files |
 
@@ -63,6 +64,9 @@ Ready for next milestone planning
 
 Key decisions from v6.1 milestone:
 
+- [77-05] Used subprocess.run() for script isolation in tests to avoid import pollution
+- [77-05] Tested for unexpected errors rather than exit code (scripts may fail on missing inputs)
+- [77-05] Added Unicode error skip for 4.9_CEOFixedEffects.py help text (Windows console limitation)
 - [77-04] Created separate test file per hypothesis for maintainability (H1-H4, H5-H9)
 - [77-04] Created regression_test_harness.py with reusable mock and data generators
 - [77-04] Skipped 2 H9 integration tests due to Windows subprocess I/O cleanup issues
@@ -108,11 +112,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Completed: 77-11 Type Ignore Comments Documentation
-Stopped at: 77-12
+Completed: 77-05 All Scripts Dry-Run Verification
+Stopped at: 77-06
 
 **Next Action:**
-Continue Phase 77 with plan 77-12
+Continue Phase 77 with plan 77-06
 
 ---
-*Last updated: 2026-02-14 (77-11 completed)*
+*Last updated: 2026-02-14 (77-05 completed)*
