@@ -17,6 +17,8 @@ import yaml
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from f1d.shared.config.paths import PathsSettings
+
 
 class DataSettings(BaseSettings):
     """Configuration for data range settings.
@@ -163,6 +165,7 @@ class ProjectConfig(BaseSettings):
     Attributes:
         project: Project metadata settings.
         data: Data range settings.
+        paths: File system path settings.
         logging: Logging configuration.
         determinism: Determinism settings.
         chunk_processing: Chunk processing settings.
@@ -187,6 +190,7 @@ class ProjectConfig(BaseSettings):
 
     project: ProjectSettings
     data: DataSettings
+    paths: PathsSettings = Field(default_factory=PathsSettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
     determinism: DeterminismSettings = Field(default_factory=DeterminismSettings)
     chunk_processing: ChunkProcessingSettings = Field(
