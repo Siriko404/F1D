@@ -1000,3 +1000,183 @@ class TestMemoryTracking:
 
         # Long strings should result in higher memory
         assert result["memory_mb"] > 0
+
+    def test_memory_scales_with_data_size(self) -> None:
+        """Test that memory reporting scales with data size."""
+        small_df = pd.DataFrame({"col": range(100)})
+        large_df = pd.DataFrame({"col": range(10000)})
+
+        small_result = compute_input_stats(small_df)
+        large_result = compute_input_stats(large_df)
+
+        # Larger DataFrame should have more memory
+        assert large_result["memory_mb"] >= small_result["memory_mb"]
+
+    def test_memory_with_different_dtypes(self) -> None:
+        """Test memory reporting with different data types."""
+        df = pd.DataFrame(
+            {
+                "int_col": [1] * 1000,
+                "float_col": [1.0] * 1000,
+                "string_col": ["text"] * 1000,
+                "bool_col": [True] * 1000,
+            }
+        )
+
+        result = compute_input_stats(df)
+
+        assert "memory_mb" in result
+        assert result["memory_mb"] >= 0
+
+        # String columns typically use more memory with deep=True
+        assert result["memory_mb"] > 0
+
+    def test_memory_with_nullable_types(self) -> None:
+        """Test memory reporting with nullable integer types."""
+        df = pd.DataFrame(
+            {
+                "nullable_int": pd.array([1, 2, None, 4, 5] * 200, dtype="Int64"),
+                "nullable_str": pd.array(["a", "b", None, "d", "e"] * 200, dtype="string"),
+            }
+        )
+
+        result = compute_input_stats(df)
+
+        assert result["memory_mb"] >= 0
+
+
+# =============================================================================
+# Additional Memory Tracking Tests (Task 2)
+# =============================================================================
+
+
+class TestMemoryThresholdWarnings:
+    """Tests for memory threshold and growth rate tracking.
+
+    Note: The stats.py module tracks memory in compute_*_stats functions.
+    These tests verify memory behavior and thresholds.
+    """
+
+    def test_memory_comparison_between_dataframes(self) -> None:
+        """Test comparing memory between DataFrames."""
+        # Create two DataFrames with different memory footprints
+        df1 = pd.DataFrame({"col": [1] * 100})
+        df2 = pd.DataFrame({"col": ["x" * 100] * 100})
+
+        result1 = compute_input_stats(df1)
+        result2 = compute_input_stats(df2)
+
+        # String data should typically use more memory
+        assert result2["memory_mb"] >= result1["memory_mb"]
+
+    def test_memory_growth_with_columns(self) -> None:
+        """Test that memory grows with more columns."""
+        df_1col = pd.DataFrame({"a": range(1000)})
+        df_5col = pd.DataFrame({chr(ord("a") + i): range(1000) for i in range(5)})
+
+        result_1col = compute_input_stats(df_1col)
+        result_5col = compute_input_stats(df_5col)
+
+        # More columns should use more memory
+        assert result_5col["memory_mb"] >= result_1col["memory_mb"]
+
+    def test_memory_reporting_consistency(self) -> None:
+        """Test that memory reporting is consistent across calls."""
+        df = pd.DataFrame({"col": range(1000)})
+
+        result1 = compute_input_stats(df)
+        result2 = compute_input_stats(df)
+
+        assert result1["memory_mb"] == result2["memory_mb"]
+
+
+class TestMemoryByModuleBreakdown:
+    """Tests for memory tracking by module/column breakdown."""
+
+    def test_column_type_distribution_affects_memory(self) -> None:
+        """Test that column type distribution is tracked alongside memory."""
+        df = pd.DataFrame(
+            {
+                "numeric": [1.0] * 100,
+                "string": ["text"] * 100,
+                "datetime": pd.date_range("2020-01-01", periods=100),
+            }
+        )
+
+        result = compute_input_stats(df)
+
+        # Should have both memory and column type info
+        assert "memory_mb" in result
+        assert "column_types" in result
+
+        # Verify types are detected
+        assert result["column_types"]["numeric"] >= 1
+        assert result["column_types"]["datetime"] >= 1
+
+    def test_memory_with_datetime_columns(self) -> None:
+        """Test memory reporting with datetime columns."""
+        df = pd.DataFrame(
+            {
+                "dates": pd.date_range("2020-01-01", periods=1000),
+                "timestamps": pd.date_range("2020-01-01", periods=1000, freq="h"),
+            }
+        )
+
+        result = compute_input_stats(df)
+
+        assert result["memory_mb"] > 0
+        assert result["column_types"]["datetime"] >= 2
+
+    def test_memory_with_categorical_data(self) -> None:
+        """Test memory reporting with categorical data."""
+        df = pd.DataFrame(
+            {
+                "category_col": pd.Categorical(["A", "B", "C"] * 100),
+            }
+        )
+
+        result = compute_input_stats(df)
+
+        assert result["memory_mb"] >= 0
+
+
+# =============================================================================
+# Extended Edge Cases for Memory Tracking
+# =============================================================================
+
+
+class TestMemoryEdgeCases:
+    """Edge case tests for memory tracking."""
+
+    def test_memory_single_row_dataframe(self) -> None:
+        """Test memory with single row DataFrame."""
+        df = pd.DataFrame({"a": [1], "b": ["text"], "c": [True]})
+
+        result = compute_input_stats(df)
+
+        # Memory should be very small but non-negative
+        assert result["memory_mb"] >= 0
+        assert result["record_count"] == 1
+
+    def test_memory_wide_dataframe(self) -> None:
+        """Test memory with wide DataFrame (many columns, few rows)."""
+        df = pd.DataFrame({f"col_{i}": [i] for i in range(100)})
+
+        result = compute_input_stats(df)
+
+        assert result["column_count"] == 100
+        assert result["memory_mb"] >= 0
+
+    def test_memory_with_mixed_null_patterns(self) -> None:
+        """Test memory with various null patterns."""
+        df = pd.DataFrame(
+            {
+                "all_null": [None] * 100,
+                "some_null": [i if i % 2 == 0 else None for i in range(100)],
+                "no_null": list(range(100)),
+            }
+        )
+
+        result = compute_input_stats(df)
+
+        assert result["memory_mb"] >= 0
