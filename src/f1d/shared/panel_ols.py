@@ -333,15 +333,17 @@ def run_panel_ols(
     df_work = df_work.set_index([entity_col, time_col])
 
     # Prepare exog variables (handle missing values)
-    exog_data = df_work[exog].copy()
-    dependent_data = df_work[dependent]
+    # Use .loc to avoid pandas internal sum() issue with column selection
+    exog_data = df_work.loc[:, exog].copy()
+    dependent_data = df_work.loc[:, dependent]
 
     # Check for missing values in regression data
-    missing_exog = exog_data.isna().sum()
+    # Use any() instead of sum() for numpy compatibility
+    missing_exog = exog_data.isna().any()
     # Initialize complete_idx before conditional (fixes UnboundLocalError when industry_effects=True)
     complete_idx = exog_data.notna().all(axis=1) & dependent_data.notna()
 
-    if missing_exog.sum() > 0:
+    if missing_exog.any():
         warnings_collected.append(
             f"Missing values in exog variables: {missing_exog[missing_exog > 0].to_dict()}. "
             "Dropping observations with missing values."

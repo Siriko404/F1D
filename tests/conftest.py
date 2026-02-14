@@ -620,10 +620,14 @@ def sample_panel_data_factory() -> Callable[..., pd.DataFrame]:
                 # Generate dependent variable with firm effect
                 dependent = firm_effect + sum(independents.values()) + rng.normal(0, 0.5)
 
+                # Generate industry code (ff48) - assign each firm to an industry
+                ff48_code = (firm_id % 48) + 1  # Industries 1-48
+
                 row = {
                     "gvkey": gvkey,
                     "year": year,
                     "dependent": round(dependent, 4),
+                    "ff48_code": ff48_code,
                     **{k: round(v, 4) for k, v in independents.items()},
                 }
                 data.append(row)
