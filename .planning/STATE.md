@@ -11,12 +11,12 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 Milestone: v6.1 Architecture Compliance Gap Closure - Extended
 Phase: 77-concerns-closure-parallel-agents-verification
-Current Plan: 03
+Current Plan: 04
 Total Plans in Phase: 12
 Status: Executing Phase 77
-Last activity: 2026-02-14 — Completed 77-02: Dynamic Module Imports Elimination
+Last activity: 2026-02-14 — Completed 77-03: Survival Analysis Implementation
 
-Progress: [263 plans completed across all milestones]
+Progress: [265 plans completed across all milestones]
 
 ```
 All Milestones Complete
@@ -48,6 +48,8 @@ Ready for next milestone planning
 | v5.0 Architecture Standard | 65-68 | 4 | Archived |
 | v6.0 Implementation | 69-74 | 27 | Archived |
 | v6.1 Gap Closure | 75-76 | 9 | Archived |
+| Phase 77-concerns-closure-parallel-agents-verification P01 | 5min | 3 tasks | 5 files |
+| Phase 77-concerns-closure-parallel-agents-verification P03 | 15min | 4 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -55,6 +57,8 @@ Ready for next milestone planning
 
 Key decisions from v6.1 milestone:
 
+- [77-03] Used cause-specific Cox hazards instead of FineGrayAFTFitter (not available in lifelines 0.30.0)
+- [77-03] Added covariate validation to survival functions to prevent cryptic lifelines errors
 - [77-02] Consolidated 1.5_Utils.py to src/f1d/shared/sample_utils.py for standard imports
 - [77-02] Eliminated importlib.util dynamic imports from sample scripts (1.1-1.4) and financial v1 (3.0-3.2)
 - [76-04] Full ROADMAP compliance achieved - zero sys.path.insert() calls in entire codebase
@@ -67,6 +71,7 @@ Key decisions from v6.1 milestone:
 - [75-03] LoggingSettings integrated with configure_logging()
 - [75-02] All 21 test files use f1d.shared.* namespace imports
 - [75-01] Sample scripts use f1d.shared.* namespace imports
+- [Phase 77-01]: 4 Stage 2 text scripts migrated to src/f1d/text/ with f1d.shared.* namespace imports
 
 ### Pending Todos
 
@@ -84,11 +89,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Completed: 77-02 Dynamic Module Imports Elimination
-Stopped at: 77-03
+Completed: 77-03 Survival Analysis Implementation
+Stopped at: 77-04
 
 **Next Action:**
-Continue Phase 77 with plan 77-03
+Continue Phase 77 with plan 77-04
 
 ---
-*Last updated: 2026-02-14 (77-02 completed)*
+*Last updated: 2026-02-14 (77-03 completed)*
