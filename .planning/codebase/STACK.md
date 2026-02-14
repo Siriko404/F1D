@@ -1,11 +1,12 @@
 # Technology Stack
 
-**Analysis Date:** 2026-02-12
+**Analysis Date:** 2026-02-14
 
 ## Languages
 
 **Primary:**
-- Python 3.8-3.13 - Main development language for all data processing and econometric analysis
+- Python 3.9+ - All data processing, econometric analysis, and pipeline scripts
+- Python 3.11 recommended for development (CI default)
 
 **Secondary:**
 - YAML - Configuration files (`config/project.yaml`)
@@ -14,108 +15,85 @@
 ## Runtime
 
 **Environment:**
-- Python 3.9+ (target version for mypy, tested on 3.8-3.13)
+- Python 3.9 - 3.13 supported
+- CPython reference implementation
 
 **Package Manager:**
-- pip - Package installer
-- requirements.txt - Dependency manifest (pinned versions)
+- pip with requirements.txt
+- Build backend: setuptools >= 61.0
+- Lockfile: Not present (requirements.txt pins versions)
 
 ## Frameworks
 
 **Core:**
-- pandas 2.2.3 - DataFrame operations, data manipulation
+- pandas 2.2.3 - DataFrame manipulation and data processing
 - numpy 2.3.2 - Numerical computing
-- pyarrow 21.0.0 - Parquet file I/O, efficient columnar storage
-
-**Statistical Modeling:**
-- statsmodels 0.14.6 - Regression analysis, statistical tests (pinned for reproducibility)
 - scipy 1.16.1 - Statistical functions, optimization
-- scikit-learn 1.7.2 - Machine learning utilities (CountVectorizer for text)
-- lifelines 0.30.0 - Survival analysis, Cox proportional hazards
 
-**Econometric:**
-- linearmodels (unstated in requirements, via type stubs) - Panel OLS with fixed effects, IV/2SLS regression
-  - Type stubs at `2_Scripts/stubs/linearmodels*.pyi`
+**Econometric/Statistical:**
+- statsmodels 0.14.6 - Regression analysis, statistical tests (pinned for reproducibility)
+- linearmodels (optional) - Panel OLS with fixed effects, IV/2SLS regression
+- lifelines 0.30.0 - Survival analysis for takeover hazard models
+- scikit-learn 1.7.2 - Machine learning utilities
 
 **Testing:**
-- pytest 8.0+ - Test framework
-- pytest-cov 4.1+ - Coverage reporting
-- pytest-benchmark 4.0+ - Performance benchmarks
-- pytest-mypy 0.10+ - Type checking integration
+- pytest >= 8.0 - Test runner
+- pytest-cov >= 4.1.0 - Coverage reporting
+- pytest-benchmark >= 4.0 - Performance benchmarks
+- pytest-mock >= 3.12 - Mocking utilities
 
 **Build/Dev:**
-- ruff - Linting and formatting (configured in pyproject.toml)
-- mypy - Static type checking (progressive rollout)
+- ruff 0.9.0 - Linting and formatting (replaces flake8/black)
+- mypy 1.14+ - Static type checking
+- pre-commit 3.8+ - Git hooks for quality gates
 
 ## Key Dependencies
 
 **Critical:**
+- pyarrow 21.0.0 - Parquet file I/O, chunked reading (pinned for Python 3.8-3.13 compatibility)
 - PyYAML 6.0.2 - Configuration file parsing
-- openpyxl 3.1.5 - Excel file handling
-- psutil 7.2.1 - System/process monitoring, memory tracking
-- python-dateutil 2.9.0 - Date parsing
+- structlog 25.0+ - Structured logging with JSON support
+- pydantic 2.0+ / pydantic-settings 2.0+ - Data validation, settings management
 
-**Text Processing:**
-- rapidfuzz 3.14.0+ - Fuzzy string matching (optional, graceful degradation)
-  - Used for company/entity name matching in `2_Scripts/shared/string_matching.py`
+**Infrastructure:**
+- psutil 7.2.1 - Memory monitoring, system utilities
+- rapidfuzz 3.14.0+ - Fuzzy string matching for entity linking (optional, graceful degradation)
+- openpyxl 3.1.5 - Excel file support
+- python-dateutil 2.9.0.post0 - Date parsing
 
-**Statistical:**
-- statsmodels 0.14.6 - Pinned version for reproducible regression analysis
-  - Note: 0.14.0 introduced breaking changes (deprecated GLM link names)
-
-**Data Formats:**
-- pyarrow 21.0.0 - Pinned for Python 3.8-3.13 compatibility
-  - Note: 23.0.0+ requires Python >= 3.10
+**Type Stubs:**
+- types-PyYAML - mypy type hints for YAML
 
 ## Configuration
 
 **Environment:**
-- YAML configuration at `config/project.yaml`
-- No .env files (no runtime secrets required)
-- PYTHONPATH must include `2_Scripts/` for imports
+- pydantic-settings with `.env` file support
+- Environment variable prefix: `F1D_`
+- Key configs: `config/project.yaml` (main pipeline configuration)
 
 **Build:**
-- pyproject.toml - Main configuration for pytest, coverage, ruff, mypy
-- .coveragerc - Coverage.py settings (branch coverage enabled)
-- type stubs in `2_Scripts/stubs/` for external packages without typing
+- `pyproject.toml` - Project metadata, tool configuration (pytest, ruff, mypy, coverage, bandit)
+- `requirements.txt` - Production dependencies with pinned versions
+- `.pre-commit-config.yaml` - Git hooks configuration
 
-**Key Config Sections:**
-```yaml
-# config/project.yaml structure
-project:        # name, version, description
-data:           # year_start, year_end
-paths:          # inputs, scripts, logs, outputs
-determinism:    # random_seed, thread_count
-chunk_processing:  # memory management
-logging:        # level, format
-step_XX:        # Per-pipeline-step configuration
-string_matching:   # Fuzzy match thresholds
-```
+**Tool Configuration (pyproject.toml):**
+- pytest: importlib mode, strict markers, tier markers (unit, integration, e2e, slow, regression)
+- ruff: 88 char line length, extended ruleset (E, W, F, I, B, C4, UP, ARG, SIM)
+- mypy: Tier-based strictness (Tier 1 shared modules strict, Tier 2 stage modules moderate)
+- coverage: 25% overall threshold, branch coverage enabled
 
 ## Platform Requirements
 
 **Development:**
-- Python 3.8+ (3.9+ recommended)
-- 8GB+ RAM for large parquet file processing
-- g++ compiler for C++ tokenization utilities (optional)
+- Python 3.9+ with pip
+- Git with pre-commit hooks
+- Recommended: Python 3.11 for CI consistency
 
 **Production:**
-- GitHub Actions CI/CD (ubuntu-latest)
-- Multi-version testing (3.8, 3.9, 3.10, 3.11, 3.12, 3.13)
-
-## Type Checking
-
-**Mypy Configuration:**
-- Target: Python 3.9
-- Strict mode enabled for `shared.observability.*`
-- Progressive rollout: most scripts excluded initially
-- Custom stubs for `linearmodels` package
-
-**Type Stubs Location:**
-- `2_Scripts/stubs/linearmodels.pyi`
-- `2_Scripts/stubs/linearmodels.panel.pyi`
-- `2_Scripts/stubs/linearmodels.iv.pyi`
+- Local execution (no deployment target)
+- Memory-aware processing with configurable chunk sizes
+- Deterministic execution with fixed random seed (42) and single-threaded processing
 
 ---
 
-*Stack analysis: 2026-02-12*
+*Stack analysis: 2026-02-14*
