@@ -36,7 +36,7 @@ import sys
 from contextlib import contextmanager
 from io import StringIO
 from pathlib import Path
-from typing import Any, Dict, Generator
+from typing import Any, Callable, Dict, Generator
 
 import pandas as pd
 import pytest
@@ -300,3 +300,381 @@ def env_override() -> Generator[Dict[str, str], None, None]:
         # Restore original values
         for k, v in original_values.items():
             os.environ[k] = v
+
+
+# ==============================================================================
+# Factory Fixtures
+# ==============================================================================
+# These fixtures are factory functions that return callables for generating
+# test data. They follow the callable fixture pattern from 74-01.
+
+
+@pytest.fixture
+def sample_config_yaml_factory(tmp_path: Path) -> Callable[..., Path]:
+    """Factory fixture to generate temporary YAML config files.
+
+    Returns a callable that creates a temporary project.yaml file
+    with customizable configuration values.
+
+    Args (via factory call):
+        year_start: Start year for data range (default 2002)
+        year_end: End year for data range (default 2018)
+        **kwargs: Additional fields to merge into config
+
+    Returns:
+        Path to the generated YAML config file
+
+    Example:
+        def test_config_loading(sample_config_yaml_factory):
+            config_path = sample_config_yaml_factory(year_start=2010)
+            assert config_path.exists()
+    """
+
+    def _factory(
+        year_start: int = 2002,
+        year_end: int = 2018,
+        **kwargs: Any,
+    ) -> Path:
+        config_data = {
+            "project": {
+                "name": "TestProject",
+                "version": "1.0.0",
+                "description": "Test configuration for unit tests",
+            },
+            "data": {
+                "year_start": year_start,
+                "year_end": year_end,
+            },
+            "logging": {
+                "level": "INFO",
+            },
+            "determinism": {
+                "random_seed": 42,
+                "thread_count": 1,
+                "sort_inputs": True,
+            },
+        }
+
+        # Merge any additional kwargs
+        for key, value in kwargs.items():
+            if key in config_data and isinstance(config_data[key], dict) and isinstance(value, dict):
+                config_data[key].update(value)
+            else:
+                config_data[key] = value
+
+        config_path = tmp_path / "project.yaml"
+        with open(config_path, "w") as f:
+            yaml.dump(config_data, f)
+
+        return config_path
+
+    return _factory
+
+
+@pytest.fixture
+def sample_project_config_factory(sample_config_yaml_factory: Callable[..., Path]) -> Callable[..., Any]:
+    """Factory fixture to generate ProjectConfig instances.
+
+    Returns a callable that creates a ProjectConfig instance loaded
+    from a generated YAML file.
+
+    Example:
+        def test_with_config(sample_project_config_factory):
+            config = sample_project_config_factory(year_start=2010, year_end=2015)
+            assert config.data.year_start == 2010
+    """
+
+    def _factory(
+        year_start: int = 2002,
+        year_end: int = 2018,
+        **kwargs: Any,
+    ) -> Any:
+        from f1d.shared.config.base import ProjectConfig
+
+        config_path = sample_config_yaml_factory(
+            year_start=year_start,
+            year_end=year_end,
+            **kwargs,
+        )
+        return ProjectConfig.from_yaml(config_path)
+
+    return _factory
+
+
+@pytest.fixture
+def sample_env_vars_factory() -> Callable[..., Dict[str, str]]:
+    """Factory fixture to generate F1D_* environment variable dicts.
+
+    Returns a callable that generates a dictionary of F1D-prefixed
+    environment variables suitable for os.environ.update().
+
+    Example:
+        def test_env_override(sample_env_vars_factory):
+            env_vars = sample_env_vars_factory(data__year_start="2010")
+            with patch.dict(os.environ, env_vars):
+                config = EnvConfig()
+                assert config.data.year_start == 2010
+    """
+
+    def _factory(
+        data__year_start: str | None = None,
+        data__year_end: str | None = None,
+        logging__level: str | None = None,
+        **kwargs: str | None,
+    ) -> Dict[str, str]:
+        env_vars: Dict[str, str] = {}
+
+        if data__year_start is not None:
+            env_vars["F1D_DATA__YEAR_START"] = data__year_start
+        if data__year_end is not None:
+            env_vars["F1D_DATA__YEAR_END"] = data__year_end
+        if logging__level is not None:
+            env_vars["F1D_LOGGING__LEVEL"] = logging__level
+
+        for key, value in kwargs.items():
+            if value is not None:
+                env_vars[f"F1D_{key.upper()}"] = value
+
+        return env_vars
+
+    return _factory
+
+
+@pytest.fixture
+def invalid_config_yaml_factory(tmp_path: Path) -> Callable[..., Path]:
+    """Factory fixture to generate intentionally invalid config files.
+
+    Returns a callable that creates YAML config files with specific
+    validation errors, useful for testing error handling.
+
+    Args (via factory call):
+        error_type: Type of error to generate (default 'year_order')
+            - 'year_order': year_start > year_end
+            - 'missing_required': Missing required field
+            - 'invalid_type': Wrong type for a field
+
+    Example:
+        def test_invalid_config_raises(invalid_config_yaml_factory):
+            from pydantic import ValidationError
+            from f1d.shared.config.base import ProjectConfig
+
+            config_path = invalid_config_yaml_factory(error_type="year_order")
+            with pytest.raises(ValidationError):
+                ProjectConfig.from_yaml(config_path)
+    """
+
+    def _factory(error_type: str = "year_order") -> Path:
+        if error_type == "year_order":
+            config_data = {
+                "project": {
+                    "name": "InvalidYearOrder",
+                    "version": "1.0.0",
+                },
+                "data": {
+                    "year_start": 2018,
+                    "year_end": 2002,  # Invalid: end before start
+                },
+                "logging": {
+                    "level": "INFO",
+                },
+            }
+        elif error_type == "missing_required":
+            config_data = {
+                "project": {
+                    "name": "MissingRequired",
+                    # Missing version
+                },
+                "data": {
+                    "year_start": 2002,
+                    "year_end": 2018,
+                },
+            }
+        elif error_type == "invalid_type":
+            config_data = {
+                "project": {
+                    "name": "InvalidType",
+                    "version": "1.0.0",
+                },
+                "data": {
+                    "year_start": "not_a_number",  # Invalid: should be int
+                    "year_end": 2018,
+                },
+                "logging": {
+                    "level": "INFO",
+                },
+            }
+        else:
+            raise ValueError(f"Unknown error_type: {error_type}")
+
+        config_path = tmp_path / f"invalid_config_{error_type}.yaml"
+        with open(config_path, "w") as f:
+            yaml.dump(config_data, f)
+
+        return config_path
+
+    return _factory
+
+
+# ==============================================================================
+# Financial Data Factory Fixtures
+# ==============================================================================
+# These fixtures generate Compustat-style financial data for testing.
+
+
+@pytest.fixture
+def sample_compustat_factory() -> Callable[..., pd.DataFrame]:
+    """Factory fixture to generate Compustat-style panel data.
+
+    Returns a callable that generates a DataFrame with standard Compustat
+    columns for testing financial data processing functions.
+
+    Args (via factory call):
+        n_firms: Number of unique firms (default 10)
+        n_years: Number of years per firm (default 5)
+        seed: Random seed for reproducibility (default 42)
+
+    Returns:
+        pd.DataFrame with columns: gvkey, fyear, at, dlc, dltt, oancf, sale, ib
+    """
+
+    def _factory(
+        n_firms: int = 10,
+        n_years: int = 5,
+        seed: int = 42,
+    ) -> pd.DataFrame:
+        import numpy as np
+
+        rng = np.random.default_rng(seed)
+        data = []
+
+        for firm_id in range(n_firms):
+            gvkey = str(firm_id).zfill(6)
+            base_assets = rng.uniform(100, 10000)
+
+            for year_offset in range(n_years):
+                fyear = 2000 + year_offset
+                # Generate realistic financial values
+                at = base_assets * rng.uniform(0.9, 1.1)  # Total assets
+                sale = at * rng.uniform(0.5, 2.0)  # Sales
+                dlc = at * rng.uniform(0.01, 0.1)  # Debt in current liabilities
+                dltt = at * rng.uniform(0.05, 0.3)  # Long-term debt
+                oancf = sale * rng.uniform(-0.1, 0.2)  # Operating cash flow
+                ib = sale * rng.uniform(-0.1, 0.15)  # Income before extraordinary items
+
+                data.append({
+                    "gvkey": gvkey,
+                    "fyear": fyear,
+                    "at": round(at, 2),
+                    "dlc": round(dlc, 2),
+                    "dltt": round(dltt, 2),
+                    "oancf": round(oancf, 2),
+                    "sale": round(sale, 2),
+                    "ib": round(ib, 2),
+                })
+
+        return pd.DataFrame(data)
+
+    return _factory
+
+
+@pytest.fixture
+def sample_panel_data_factory() -> Callable[..., pd.DataFrame]:
+    """Factory fixture to generate panel regression test data.
+
+    Returns a callable that generates a DataFrame suitable for testing
+    panel regression functions with dependent and independent variables.
+
+    Args (via factory call):
+        n_firms: Number of unique firms (default 10)
+        n_years: Number of years per firm (default 5)
+        n_independent: Number of independent variables (default 2)
+        seed: Random seed for reproducibility (default 42)
+
+    Returns:
+        pd.DataFrame with columns: gvkey, year, dependent, independent1, ...
+    """
+
+    def _factory(
+        n_firms: int = 10,
+        n_years: int = 5,
+        n_independent: int = 2,
+        seed: int = 42,
+    ) -> pd.DataFrame:
+        import numpy as np
+
+        rng = np.random.default_rng(seed)
+        data = []
+
+        for firm_id in range(n_firms):
+            gvkey = str(firm_id).zfill(6)
+            firm_effect = rng.normal(0, 1)  # Random firm fixed effect
+
+            for year_offset in range(n_years):
+                year = 2000 + year_offset
+
+                # Generate independent variables
+                independents = {}
+                for i in range(n_independent):
+                    independents[f"independent{i + 1}"] = rng.normal(0, 1)
+
+                # Generate dependent variable with firm effect
+                dependent = firm_effect + sum(independents.values()) + rng.normal(0, 0.5)
+
+                row = {
+                    "gvkey": gvkey,
+                    "year": year,
+                    "dependent": round(dependent, 4),
+                    **{k: round(v, 4) for k, v in independents.items()},
+                }
+                data.append(row)
+
+        return pd.DataFrame(data)
+
+    return _factory
+
+
+@pytest.fixture
+def sample_financial_row_factory() -> Callable[..., pd.Series]:
+    """Factory fixture to generate a single Compustat row (Series).
+
+    Returns a callable that generates a pd.Series representing a single
+    Compustat observation. Useful for testing functions that operate on
+    individual rows like calculate_firm_controls.
+
+    Args (via factory call):
+        gvkey: Firm identifier (default "000001")
+        fyear: Fiscal year (default 2010)
+        seed: Random seed for reproducibility (default 42)
+
+    Returns:
+        pd.Series with Compustat columns: gvkey, fyear, at, dlc, dltt, oancf, sale, ib
+    """
+
+    def _factory(
+        gvkey: str = "000001",
+        fyear: int = 2010,
+        seed: int = 42,
+    ) -> pd.Series:
+        import numpy as np
+
+        rng = np.random.default_rng(seed)
+
+        at = rng.uniform(100, 10000)
+        sale = at * rng.uniform(0.5, 2.0)
+        dlc = at * rng.uniform(0.01, 0.1)
+        dltt = at * rng.uniform(0.05, 0.3)
+        oancf = sale * rng.uniform(-0.1, 0.2)
+        ib = sale * rng.uniform(-0.1, 0.15)
+
+        return pd.Series({
+            "gvkey": gvkey,
+            "fyear": fyear,
+            "at": round(at, 2),
+            "dlc": round(dlc, 2),
+            "dltt": round(dltt, 2),
+            "oancf": round(oancf, 2),
+            "sale": round(sale, 2),
+            "ib": round(ib, 2),
+        })
+
+    return _factory
