@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 Milestone: v6.1 Architecture Compliance Gap Closure - Extended
 Phase: 77-concerns-closure-parallel-agents-verification
-Current Plan: 15
+Current Plan: 16
 Total Plans in Phase: 16
-Status: IN PROGRESS - Gap Closure Plans
-Last activity: 2026-02-14 — Completed 77-15: Reduce type errors in construct_variables.py
+Status: COMPLETE - Phase 77 Finished
+Last activity: 2026-02-14 — Completed 77-16: Reduce type errors in 4.3_TakeoverHazards.py
 
 Progress: [265 plans completed across all milestones]
 
@@ -59,6 +59,8 @@ Ready for next milestone planning
 | Phase 77-concerns-closure-parallel-agents-verification P11 | 13min | 3 tasks | 5 files |
 | Phase 77-concerns-closure-parallel-agents-verification P06 | 12min | 4 tasks | 4 files |
 | Phase 77-concerns-closure-parallel-agents-verification P15 | 5min | 3 tasks | 2 files |
+| Phase 77-concerns-closure-parallel-agents-verification P16 | 6min | 3 tasks | 2 files |
+| Phase 77 P14 | 6 | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -100,6 +102,9 @@ Key decisions from v6.1 milestone:
 - [77-06] Phase 77 documentation updated - CONCERNS.md, STATE.md, ROADMAP.md, v6.1-MILESTONE-AUDIT.md complete
 - [Phase 77]: Phase 77 documentation synchronized - 4 files updated, v6.1 milestone certified COMPLIANT
 - [77-15] Added explicit Dict[str, Any] type annotation to stats variable in construct_variables.py - reduced mypy errors from 20 to 0
+- [77-16] Used .loc[:, cols] instead of df[cols] for DataFrame selection when column list is dynamic to ensure type safety in mypy
+- [Phase 77-14]: Used Dict[str, Any] for stats variable instead of strict TypedDict due to dynamic memory/throughput additions
+- [Phase 77-14]: Added TypedDict classes for documentation of stats dictionary structure
 
 ### Pending Todos
 
