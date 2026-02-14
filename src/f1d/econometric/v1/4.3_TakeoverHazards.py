@@ -57,6 +57,16 @@ except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
+# Try importing lifelines for survival analysis
+try:
+    from lifelines import CoxPHFitter
+
+    LIFELINES_AVAILABLE = True
+except ImportError:
+    LIFELINES_AVAILABLE = False
+    CoxPHFitter = None  # type: ignore[misc,assignment]
+    print("WARNING: lifelines not available. Install with: pip install lifelines")
+
 # Import shared regression and reporting utilities
 import warnings
 
@@ -101,21 +111,72 @@ ROOT: Path = Path(__file__).resolve().parents[4]
 
 
 # ==============================================================================
-# Survival Analysis Functions (Stubs - V1 legacy code)
+# Survival Analysis Functions
 # ==============================================================================
 
 
-def run_cox_ph(df, time_col, event_col, formula):
+def run_cox_ph(
+    df: pd.DataFrame, time_col: str, event_col: str, formula: str
+) -> Dict[str, Any]:
     """
-    Run Cox Proportional Hazards model.
+    Run Cox Proportional Hazards model using lifelines.
 
-    NOTE: This is a stub function for V1 legacy code.
-    The full implementation requires lifelines or statsmodels survival.
+    Args:
+        df: DataFrame with survival data
+        time_col: Column name for survival time
+        event_col: Column name for event indicator (1=event, 0=censored)
+        formula: R-style formula for covariates (e.g., "clarity + uncertainty + size")
+
+    Returns:
+        Dict with coefficients, confidence_intervals, summary, concordance_index, model
+
+    Raises:
+        ValueError: If required columns are missing from DataFrame
+        RuntimeError: If lifelines is not available
     """
-    raise NotImplementedError(
-        "run_cox_ph: Cox PH model not implemented. "
-        "Install lifelines (pip install lifelines) and implement using lifelines.CoxPHFitter"
+    if not LIFELINES_AVAILABLE or CoxPHFitter is None:
+        raise RuntimeError(
+            "lifelines not available. Install with: pip install lifelines"
+        )
+
+    # Validate required columns
+    missing_cols = [col for col in [time_col, event_col] if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing columns: {missing_cols}")
+
+    # Parse covariates from formula (simple parsing, assumes "var1 + var2 + ..." format)
+    covariate_names = [c.strip() for c in formula.split("+")]
+
+    # Validate covariates exist
+    missing_covariates = [c for c in covariate_names if c not in df.columns]
+    if missing_covariates:
+        raise ValueError(f"Missing covariate columns: {missing_covariates}")
+
+    # Prepare data - select only needed columns and drop missing values
+    needed_cols = [time_col, event_col] + covariate_names
+    df_clean = df[needed_cols].copy()
+    df_clean = df_clean.dropna()
+
+    if len(df_clean) == 0:
+        raise ValueError("No valid rows after removing missing values")
+
+    # Fit Cox PH model
+    cph = CoxPHFitter()
+    cph.fit(
+        df_clean,
+        duration_col=time_col,
+        event_col=event_col,
+        formula=formula
     )
+
+    # Return results as dictionary
+    return {
+        "coefficients": cph.params_.to_dict(),
+        "confidence_intervals": cph.confidence_intervals_.to_dict(),
+        "summary": cph.summary.to_dict(),
+        "concordance_index": cph.concordance_index_,
+        "model": cph,
+    }
 
 
 def run_fine_gray(df, time_col, event_col, formula):

@@ -75,30 +75,36 @@ def sample_competing_risks_data():
 class TestRunCoxPH:
     """Tests for run_cox_ph function."""
 
-    def test_run_cox_ph_with_valid_input_raises_not_implemented(self, sample_survival_data):
-        """Test that run_cox_ph raises NotImplementedError (RED state).
+    def test_run_cox_ph_with_valid_input_returns_result(self, sample_survival_data):
+        """Test that run_cox_ph returns a valid result dictionary.
 
-        This test PASSES in RED phase because NotImplementedError is raised.
-        It will FAIL in GREEN phase when we implement the function.
+        GREEN phase: Function is implemented and returns expected output.
         """
-        with pytest.raises(NotImplementedError) as exc_info:
-            run_cox_ph(
-                df=sample_survival_data,
-                time_col="time",
-                event_col="event",
-                formula="clarity + uncertainty + size"
-            )
+        result = run_cox_ph(
+            df=sample_survival_data,
+            time_col="time",
+            event_col="event",
+            formula="clarity + uncertainty + size"
+        )
 
-        assert "run_cox_ph" in str(exc_info.value)
-        assert "not implemented" in str(exc_info.value).lower()
+        # Verify output structure
+        assert isinstance(result, dict)
+        assert "coefficients" in result
+        assert "confidence_intervals" in result
+        assert "summary" in result
+        assert "concordance_index" in result
+        assert "model" in result
 
-    @pytest.mark.xfail(reason="RED phase: NotImplementedError raised before validation")
+        # Verify coefficients contain expected covariates
+        assert "clarity" in result["coefficients"]
+        assert "uncertainty" in result["coefficients"]
+        assert "size" in result["coefficients"]
+
+        # Verify concordance index is valid (0.5 to 1.0)
+        assert 0.0 <= result["concordance_index"] <= 1.0
+
     def test_run_cox_ph_missing_time_col_raises_value_error(self, sample_survival_data):
-        """Test that missing time_col raises ValueError.
-
-        This test is EXPECTED TO FAIL in RED phase.
-        It will PASS in GREEN phase when we implement input validation.
-        """
+        """Test that missing time_col raises ValueError."""
         with pytest.raises(ValueError) as exc_info:
             run_cox_ph(
                 df=sample_survival_data,
@@ -109,13 +115,8 @@ class TestRunCoxPH:
 
         assert "Missing columns" in str(exc_info.value)
 
-    @pytest.mark.xfail(reason="RED phase: NotImplementedError raised before validation")
     def test_run_cox_ph_missing_event_col_raises_value_error(self, sample_survival_data):
-        """Test that missing event_col raises ValueError.
-
-        This test is EXPECTED TO FAIL in RED phase.
-        It will PASS in GREEN phase when we implement input validation.
-        """
+        """Test that missing event_col raises ValueError."""
         with pytest.raises(ValueError) as exc_info:
             run_cox_ph(
                 df=sample_survival_data,
@@ -125,6 +126,18 @@ class TestRunCoxPH:
             )
 
         assert "Missing columns" in str(exc_info.value)
+
+    def test_run_cox_ph_missing_covariate_raises_value_error(self, sample_survival_data):
+        """Test that missing covariate in formula raises ValueError."""
+        with pytest.raises(ValueError) as exc_info:
+            run_cox_ph(
+                df=sample_survival_data,
+                time_col="time",
+                event_col="event",
+                formula="nonexistent_covariate"
+            )
+
+        assert "Missing covariate columns" in str(exc_info.value)
 
 
 # ==============================================================================
