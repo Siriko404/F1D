@@ -43,7 +43,6 @@ Date: 2026-02-11
 
 import argparse
 import gc
-import logging
 import sys
 import time
 from datetime import datetime
@@ -53,8 +52,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# Configure logger for this module
-logger = logging.getLogger(__name__)
+# Structured logging will be configured in main()
+from f1d.shared.logging import get_logger, configure_script_logging
 
 # Add parent directory to sys.path for shared module imports
 script_dir = Path(__file__).parent.parent
@@ -652,6 +651,13 @@ def main():
     """Main execution"""
     args = parse_arguments()
 
+    # Configure structured logging
+    script_id = Path(__file__).stem  # e.g., "3.7_H7IlliquidityVariables"
+    configure_script_logging(script_name=script_id, log_level="INFO")
+
+    # Initialize logger AFTER configure_script_logging
+    logger = get_logger(__name__)
+
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     config = load_config()
     paths = setup_paths(config, timestamp)
@@ -687,6 +693,8 @@ def main():
     # Setup logging
     dual_writer = DualWriter(paths["log_file"])
     sys.stdout = dual_writer
+
+    logger.info("script_started", script_name=script_id, timestamp=timestamp)
 
     print("=" * 60)
     print("STEP 3.7: H7 Illiquidity Variables")
@@ -1107,6 +1115,13 @@ def main():
     print("  IVs: 4 speech uncertainty measures")
     print(f"\nOutputs saved to: {paths['output_dir']}")
     print(f"Log saved to: {paths['log_file']}")
+
+    logger.info(
+        "script_completed",
+        script_name=script_id,
+        observations=len(final_output),
+        duration_seconds=round(end_time - start_time, 2),
+    )
 
     dual_writer.close()
     sys.stdout = dual_writer.terminal
