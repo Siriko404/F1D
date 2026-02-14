@@ -97,7 +97,7 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 | 74. Testing Infrastructure | v6.0 | 4/4 | Complete | 2026-02-14 |
 | 75. Gap Closure (v6.0 scope) | v6.1 | 5/5 | Complete | 2026-02-14 |
 | 76. Stage Scripts Migration | v6.1 | 4/4 | Complete | 2026-02-14 |
-| 77. Concerns Closure + Verification | v6.1 | 6/6 | Planned | - |
+| 77. Concerns Closure + Verification | v6.1 | 12/12 | Complete | 2026-02-14 |
 | 78. Documentation Synchronization | v6.1 | 0/? | Not Planned | - |
 
 ### Phase 77: Concerns Closure with Parallel Agents + Full Verification
@@ -113,15 +113,27 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 4. mypy passes with <10 type errors (down from 40+ type: ignore comments)
 5. ALL 41 scripts execute successfully on dry-run scale
 
-**Plans:** 6 plans created
+**Plans:** 12 plans created
+
+**Wave Structure:**
+- Wave 1: 77-01, 77-02, 77-03 (Stage 2 migration, dynamic imports, survival analysis)
+- Wave 2: 77-04, 77-07, 77-08, 77-09, 77-11 (Hypothesis tests, stats errors, V1 tests, type stubs, type ignores)
+- Wave 3: 77-05, 77-10, 77-12 (Dry-run verification, stats testing, large file research)
+- Wave 4: 77-06 (Documentation update)
 
 Plans:
-- [ ] 77-01-PLAN.md — Migrate Stage 2 text scripts to src/f1d/text/
-- [ ] 77-02-PLAN.md — Eliminate dynamic module imports (sample_utils.py)
-- [ ] 77-03-PLAN.md — Implement survival analysis with lifelines
-- [ ] 77-04-PLAN.md — Add tests for hypothesis scripts
-- [ ] 77-05-PLAN.md — Verify all scripts execute on dry-run
-- [ ] 77-06-PLAN.md — Update documentation for Phase 77 completion
+- [x] 77-01-PLAN.md — Migrate Stage 2 text scripts to src/f1d/text/
+- [x] 77-02-PLAN.md — Eliminate dynamic module imports (sample_utils.py)
+- [x] 77-03-PLAN.md — Implement survival analysis with lifelines (Wave 1)
+- [x] 77-04-PLAN.md — Add tests for hypothesis scripts (Wave 2)
+- [x] 77-05-PLAN.md — Verify all scripts execute on dry-run (Wave 3)
+- [x] 77-06-PLAN.md — Update documentation for Phase 77 completion (Wave 4)
+- [x] 77-07-PLAN.md — Reduce stats.py type errors from 56 to <10 (Wave 2)
+- [x] 77-08-PLAN.md — Add test coverage for V1 legacy code (Wave 2)
+- [x] 77-09-PLAN.md — Add full type stub coverage (types-pandas, types-psutil) (Wave 2)
+- [x] 77-10-PLAN.md — Add tests for stats module (Wave 3)
+- [x] 77-11-PLAN.md — Reduce and document type ignore comments (Wave 2)
+- [x] 77-12-PLAN.md — Research: Analyze large files for Phase 78 splitting (Wave 3)
 
 ---
 
