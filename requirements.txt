@@ -20,6 +20,8 @@ openpyxl==3.1.5
 
 # Utilities
 psutil==7.2.1
+pydantic>=2.0,<3.0
+pydantic-settings>=2.0,<3.0
 python-dateutil==2.9.0.post0
 # Optional: RapidFuzz for fuzzy string matching (Tier 3 entity linking)
 # Install for improved entity match rates: pip install rapidfuzz>=3.14.0
