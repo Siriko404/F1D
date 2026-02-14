@@ -20,6 +20,7 @@ Dual output (console + file):
     >>> logger.info("processing_started", rows=1000)  # Console colored, file JSON
 """
 
+from f1d.shared.config.base import LoggingSettings
 from f1d.shared.logging.config import configure_logging, get_logger
 from f1d.shared.logging.context import (
     bind_context,
@@ -43,6 +44,7 @@ __all__ = [
     # Configuration
     "configure_logging",
     "get_logger",
+    "LoggingSettings",
     # Context binding
     "bind_context",
     "unbind_context",
