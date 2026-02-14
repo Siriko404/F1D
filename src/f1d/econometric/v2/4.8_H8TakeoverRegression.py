@@ -530,7 +530,7 @@ def run_h8_cox_ph(df, uncertainty_var, dv_col="time_to_takeover", controls=None)
         dict with hazard ratios and statistics, or None if lifelines unavailable
     """
     try:
-        from lifelines import CoxPHFitter
+        from lifelines import CoxPHFitter  # type: ignore[import-untyped]
     except ImportError:
         print("    Note: lifelines not available, skipping Cox PH")
         return None

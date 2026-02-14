@@ -71,7 +71,7 @@ sys.modules["utils"] = utils
 spec.loader.exec_module(utils)
 
 
-from utils import generate_variable_reference
+from utils import generate_variable_reference  # type: ignore[import]
 
 # Import shared path validation utilities
 # Import DualWriter from f1d.shared.observability_utils
