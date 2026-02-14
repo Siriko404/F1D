@@ -177,7 +177,7 @@ def load_metadata_with_tracking(input_path: Path) -> Dict[str, Any]:
     df = load_validated_parquet(
         input_path, schema_name="Unified-info.parquet", strict=True
     )
-    return df
+    return df  # type: ignore[return-value]
 
 
 @track_memory_usage("clean_metadata")  # type: ignore[misc]  # Decorator transforms return type

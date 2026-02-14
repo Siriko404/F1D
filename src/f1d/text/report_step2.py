@@ -28,10 +28,11 @@ import glob
 import os
 import sys
 from pathlib import Path
+from typing import Any, Dict, List
 
 import pandas as pd
-import plotly.express as px
-import plotly.io as pio
+import plotly.express as px  # type: ignore[import-untyped]
+import plotly.io as pio  # type: ignore[import-untyped]
 import yaml
 from jinja2 import Template
 
@@ -65,7 +66,7 @@ def check_prerequisites(root):
     """Validate all required inputs and prerequisite steps exist."""
     from f1d.shared.dependency_checker import validate_prerequisites
 
-    required_files = {}
+    required_files: Dict[str, Any] = {}
 
     # Validate Step 2.2 output exists (uses timestamp-based resolution internally)
     required_steps = {
@@ -82,7 +83,7 @@ def setup_logging(output_dir):
     log_file = os.path.join(log_dir, f"{timestamp}.log")
 
     # redirect stdout/stderr to dual writer
-    sys.stdout = DualWriter(log_file)
+    sys.stdout = DualWriter(Path(log_file))  # type: ignore[arg-type]
     sys.stderr = sys.stdout  # Redirect stderr to same dual writer
 
     # Configure structured logging
@@ -123,7 +124,7 @@ def main():
             required_file="linguistic_variables_2002.parquet",
         )
         input_base = str(input_dir)
-        parquet_files = glob.glob(os.path.join(input_base, "*.parquet"))
+        parquet_files: List[str] = glob.glob(os.path.join(input_base, "*.parquet"))
     except FileNotFoundError as e:
         logger.error("no_valid_output_directory", error=str(e))
         parquet_files = []
@@ -137,9 +138,9 @@ def main():
     # 4. Load Data
     try:
         df_list = []
-        for f in parquet_files:
-            logger.info("reading_parquet_file", file=os.path.basename(f))
-            df_list.append(pd.read_parquet(f))
+        for parquet_file in parquet_files:
+            logger.info("reading_parquet_file", file=os.path.basename(parquet_file))
+            df_list.append(pd.read_parquet(parquet_file))
 
         df = pd.concat(df_list, ignore_index=True)
         logger.info("data_loaded_successfully", rows=len(df))

@@ -538,7 +538,7 @@ def main() -> int:
 
     # Filter for CEO records (ceoann == 'CEO' or becameceo is not null)
     print_dual("Identifying CEO records...")
-    ceo_records = df[(df["ceoann"] == "CEO") | (df["becameceo"].notna())].copy()
+    ceo_records: pd.DataFrame = df[(df["ceoann"] == "CEO") | (df["becameceo"].notna())].copy()  # type: ignore[assignment]
     print_dual(f"  Found {len(ceo_records):,} CEO-related records")
     print_dual(f"  Unique firms (gvkey): {ceo_records['gvkey'].nunique():,}")
     print_dual(f"  Unique executives (execid): {ceo_records['execid'].nunique():,}\n")
@@ -610,7 +610,7 @@ def main() -> int:
     episodes_df["prev_execid"] = None
     episodes_df["prev_exec_fullname"] = None
 
-    for gvkey, group in episodes_df.groupby("gvkey"):
+    for gvkey, group in episodes_df.groupby("gvkey"):  # type: ignore[assignment]
         indices = group.index.tolist()
         for i in range(1, len(indices)):
             current_idx = indices[i]

@@ -249,7 +249,7 @@ def load_h1_leverage(h1_dir, dw=None):
     df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Select only gvkey, fiscal_year, leverage
-    df = df[["gvkey", "fiscal_year", "leverage"]].copy()
+    df = df[["gvkey", "fiscal_year", "leverage"]].copy()  # type: ignore[assignment]
 
     return df
 

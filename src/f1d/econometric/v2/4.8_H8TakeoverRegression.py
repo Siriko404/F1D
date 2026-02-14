@@ -830,7 +830,7 @@ def save_regression_results(results_list, output_dir):
 
     # Only include columns that exist
     col_order = [c for c in col_order if c in df_results.columns]
-    df_results = df_results[col_order]
+    df_results = df_results[col_order]  # type: ignore[assignment]
 
     df_results.to_parquet(output_file, index=False)
     print(f"\nSaved regression results to: {output_file}")

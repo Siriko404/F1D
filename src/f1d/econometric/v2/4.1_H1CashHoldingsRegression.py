@@ -254,7 +254,7 @@ def load_speech_uncertainty(
     if missing_cols:
         raise ValueError(f"Missing columns in speech data: {missing_cols}")
 
-    combined = combined[available_cols].copy()
+    combined = combined[available_cols].copy()  # type: ignore[assignment]
 
     # Ensure gvkey is string and zero-padded
     combined["gvkey"] = combined["gvkey"].astype(str).str.zfill(6)

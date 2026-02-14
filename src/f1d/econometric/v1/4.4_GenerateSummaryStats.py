@@ -542,7 +542,7 @@ def compute_panel_balance(df, output_path, stats=None):
             print("  ------ -------- -------- --------")
             for year, row in year_stats.iterrows():
                 print(
-                    f"    {int(year):>6} {row['gvkey']:>8} {row['ceo_id']:>8} {row['N Calls']:>8,}"
+                    f"    {int(year):>6} {row['gvkey']:>8} {row['ceo_id']:>8} {row['N Calls']:>8,}"  # type: ignore[call-overload]
                 )
     else:
         firm_year_summary = {}
@@ -588,7 +588,7 @@ def compute_panel_balance(df, output_path, stats=None):
         if not year_stats.empty:
             for year, row in year_stats.iterrows():
                 calls_str = format(int(row["N Calls"]), ",")
-                writer.writerow([int(year), row["gvkey"], row["ceo_id"], calls_str, ""])
+                writer.writerow([int(year), row["gvkey"], row["ceo_id"], calls_str, ""])  # type: ignore[call-overload]
 
     print("\n  Saved: panel_balance.csv")
 

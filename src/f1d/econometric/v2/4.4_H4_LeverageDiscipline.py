@@ -265,7 +265,7 @@ def run_all_h4_regressions(df: pd.DataFrame, dw: Any = None) -> Dict[str, Any]:
                 dw.write(f"  Including presentation control: {pres_control}\n")
 
         # Prepare data (drop missing for this specification)
-        reg_df = df[[dv] + exog_vars + ["gvkey", "fiscal_year"]].dropna().copy()
+        reg_df: pd.DataFrame = df[[dv] + exog_vars + ["gvkey", "fiscal_year"]].dropna().copy()  # type: ignore[assignment]
 
         if len(reg_df) == 0:
             if dw:
@@ -804,7 +804,7 @@ def load_h3_variables(h3_dir, dw=None):
     df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
 
     # Select only gvkey, fiscal_year, and the two H3-specific controls
-    df = df[["gvkey", "fiscal_year", "firm_maturity", "earnings_volatility"]].copy()
+    df = df[["gvkey", "fiscal_year", "firm_maturity", "earnings_volatility"]].copy()  # type: ignore[assignment]
 
     return df
 

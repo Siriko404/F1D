@@ -216,7 +216,7 @@ def load_all_data(root):
         "Entire_All_Negative_pct",
     ]
     ling_cols = [c for c in ling_cols if c in ling.columns]
-    ling = ling[ling_cols].drop_duplicates("file_name")
+    ling = ling[ling_cols].drop_duplicates("file_name")  # type: ignore[call-overload]
     print(f"  Linguistic: {len(ling):,} calls")
 
     all_fc = []
@@ -237,7 +237,7 @@ def load_all_data(root):
         "shift_intensity_sale_ff48"
     ) if "shift_intensity_sale_ff48" in firm.columns else None
     fc_cols = [c for c in fc_cols if c is not None and c in firm.columns]
-    firm = firm[fc_cols].drop_duplicates("file_name")
+    firm = firm[fc_cols].drop_duplicates("file_name")  # type: ignore[call-overload]
     print(f"  Firm controls: {len(firm):,} calls")
 
     all_mv = []
@@ -264,7 +264,7 @@ def load_all_data(root):
         "Corwin_Schultz",
     ]
     mv_cols = [c for c in mv_cols if c in market.columns]
-    market = market[mv_cols].drop_duplicates("file_name")
+    market = market[mv_cols].drop_duplicates("file_name")  # type: ignore[call-overload]
     print(f"  Market variables: {len(market):,} calls")
 
     try:
