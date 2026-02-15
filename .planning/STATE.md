@@ -80,6 +80,9 @@ Key decisions from v6.1 milestone:
 - [78-01] Added Architecture section documenting v6.1 compliance (zero sys.path.insert, zero legacy imports, mypy 0 errors)
 - [78-02] Added deprecation notices to all 6 legacy script folder READMEs with src/f1d/* migration paths
 - [78-02] Standardized notice format with blockquote, migration path, and namespace guidance
+- [78-03] Updated ARCHITECTURE_STANDARD.md from v5.0 DEFINITION to v6.1 IMPLEMENTED status
+- [78-03] Added v6.1 compliance status block with quantitative metrics (101 files, 0 sys.path.insert, mypy 0 errors, 1000+ tests)
+- [78-03] Documented canonical f1d.shared.* import pattern with legacy strikethrough examples
 - [78-04] Removed references to archived DEPENDENCIES.md and UPGRADE_GUIDE.md from README.md
 - [78-04] Fixed SCALING.md path from 2_Scripts/SCALING.md to root-level SCALING.md
 - [78-04] Fixed ROADMAP.md path from root to .planning/ROADMAP.md
