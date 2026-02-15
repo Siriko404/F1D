@@ -1190,6 +1190,17 @@ Examples:
         # Step 10: Prepare final dataset
         final_df = prepare_final_dataset(merged, logger)
 
+        # Step 11: Filter to manifest sample firms
+        logger.write("\n" + "=" * 80)
+        logger.write("Filtering to Manifest Sample")
+        logger.write("=" * 80)
+        manifest_gvkeys = manifest["gvkey"].drop_duplicates()
+        n_before = len(final_df)
+        final_df = final_df[final_df["gvkey"].isin(manifest_gvkeys)]
+        logger.write(f"  Before filter: {n_before:,} observations")
+        logger.write(f"  After filter: {len(final_df):,} observations")
+        logger.write(f"  Filtered out: {n_before - len(final_df):,} non-sample firms")
+
         # Save output
         output_file = paths["output_dir"] / "H5_AnalystDispersion.parquet"
         logger.write(f"\nSaving output to: {output_file}")

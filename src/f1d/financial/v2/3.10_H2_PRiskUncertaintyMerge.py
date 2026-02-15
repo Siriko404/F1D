@@ -100,6 +100,12 @@ def setup_paths(config, timestamp):
     # Go up from src/f1d/financial/v2/ to project root (5 levels)
     root = Path(__file__).parent.parent.parent.parent.parent
 
+    # Resolve manifest directory using timestamp-based resolution
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.4_AssembleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+
     # Resolve InvestmentResidual directory using timestamp-based resolution
     residual_dir = get_latest_output_dir(
         root / "4_Outputs" / "3_Financial_V2" / "3.9_H2_BiddleInvestmentResidual",
@@ -111,6 +117,7 @@ def setup_paths(config, timestamp):
 
     paths = {
         "root": root,
+        "manifest_dir": manifest_dir,
         "residual_dir": residual_dir,
         "prisk_file": root / "1_Inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
         "ling_vars_dir": ling_dir,
@@ -134,6 +141,27 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 # Data Loading - PRisk
 # ==============================================================================
+
+
+def load_manifest(manifest_dir):
+    """Load manifest data - the universe of firm-years in sample"""
+    manifest_file = manifest_dir / "master_sample_manifest.parquet"
+    if not manifest_file.exists():
+        raise FileNotFoundError(f"Manifest not found: {manifest_file}")
+
+    validate_input_file(manifest_file, must_exist=True)
+    df = pd.read_parquet(manifest_file)
+    print(f"  Loaded manifest: {len(df):,} records")
+
+    # Ensure gvkey is string and zero-padded
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
+
+    # Extract year from start_date if available
+    if "start_date" in df.columns:
+        df["start_date"] = pd.to_datetime(df["start_date"])
+        df["year"] = df["start_date"].dt.year
+
+    return df
 
 
 def load_prisk(prisk_file, year_range=(2002, 2018)):
@@ -1090,6 +1118,25 @@ def main():
 
     investment_df = load_investment_residuals(paths["residual_dir"])
     print(f"\n  Base sample: {len(investment_df):,} observations")
+
+    # Load manifest and filter to sample
+    print("\nManifest:")
+    manifest = load_manifest(paths["manifest_dir"])
+    manifest_gvkeys = manifest[["gvkey"]].drop_duplicates()
+    print(f"  Manifest gvkeys: {len(manifest_gvkeys):,}")
+
+    # Filter all datasets to sample firms
+    n_prisk_before = len(prisk_df)
+    prisk_df = prisk_df.merge(manifest_gvkeys, on="gvkey", how="inner")
+    print(f"  PRisk filtered: {n_prisk_before:,} -> {len(prisk_df):,}")
+
+    n_unc_before = len(uncertainty_df)
+    uncertainty_df = uncertainty_df.merge(manifest_gvkeys, on="gvkey", how="inner")
+    print(f"  Uncertainty filtered: {n_unc_before:,} -> {len(uncertainty_df):,}")
+
+    n_inv_before = len(investment_df)
+    investment_df = investment_df.merge(manifest_gvkeys, on="gvkey", how="inner")
+    print(f"  Investment filtered: {n_inv_before:,} -> {len(investment_df):,}")
 
     # ========================================================================
     # Merge and Filter

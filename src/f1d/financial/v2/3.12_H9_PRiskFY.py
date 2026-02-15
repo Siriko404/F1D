@@ -66,6 +66,7 @@ from f1d.shared.observability_utils import (
 )
 from f1d.shared.path_utils import (
     ensure_output_dir,
+    get_latest_output_dir,
     validate_input_file,
 )
 
@@ -92,8 +93,15 @@ def setup_paths(config, timestamp):
     # Go up from src/f1d/financial/v2/ to project root (5 levels)
     root = Path(__file__).parent.parent.parent.parent.parent
 
+    # Resolve manifest directory using timestamp-based resolution
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.4_AssembleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+
     paths = {
         "root": root,
+        "manifest_dir": manifest_dir,
         "prisk_file": root / "1_Inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
         "compustat_file": root
         / "1_Inputs"
@@ -117,6 +125,27 @@ def setup_paths(config, timestamp):
 # ==============================================================================
 # PRisk Data Loading
 # ==============================================================================
+
+
+def load_manifest(manifest_dir):
+    """Load manifest data - the universe of firm-years in sample"""
+    manifest_file = manifest_dir / "master_sample_manifest.parquet"
+    if not manifest_file.exists():
+        raise FileNotFoundError(f"Manifest not found: {manifest_file}")
+
+    validate_input_file(manifest_file, must_exist=True)
+    df = pd.read_parquet(manifest_file)
+    print(f"  Loaded manifest: {len(df):,} records")
+
+    # Ensure gvkey is string and zero-padded
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
+
+    # Extract year from start_date if available
+    if "start_date" in df.columns:
+        df["start_date"] = pd.to_datetime(df["start_date"])
+        df["year"] = df["start_date"].dt.year
+
+    return df
 
 
 def construct_cal_q_end(date_str):
@@ -966,6 +995,21 @@ def main():
         "n_firm_years": len(compustat_df),
         "n_firms": int(compustat_df["gvkey"].nunique()),
     }
+
+    # Load manifest and filter to sample
+    print("\nManifest:")
+    manifest = load_manifest(paths["manifest_dir"])
+    manifest_gvkeys = manifest[["gvkey"]].drop_duplicates()
+    print(f"  Manifest gvkeys: {len(manifest_gvkeys):,}")
+
+    # Filter PRisk and Compustat to sample firms
+    n_prisk_before = len(prisk_df)
+    prisk_df = prisk_df.merge(manifest_gvkeys, on="gvkey", how="inner")
+    print(f"  PRisk filtered: {n_prisk_before:,} -> {len(prisk_df):,}")
+
+    n_comp_before = len(compustat_df)
+    compustat_df = compustat_df.merge(manifest_gvkeys, on="gvkey", how="inner")
+    print(f"  Compustat filtered: {n_comp_before:,} -> {len(compustat_df):,}")
 
     # ========================================================================
     # Compute PRiskFY

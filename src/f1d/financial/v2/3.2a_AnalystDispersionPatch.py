@@ -89,6 +89,12 @@ def setup_paths(config):
     # Go up from src/f1d/financial/v2/ to project root (5 levels)
     root = Path(__file__).parent.parent.parent.parent.parent
 
+    # Resolve manifest directory using timestamp-based resolution
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.4_AssembleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+
     # Find latest H2 output
     h2_output_dir = get_latest_output_dir(
         root / "4_Outputs" / "3_Financial_V2",
@@ -97,6 +103,7 @@ def setup_paths(config):
 
     paths = {
         "root": root,
+        "manifest_dir": manifest_dir,
         "ccm_file": root
         / "1_Inputs"
         / "CRSPCompustat_CCM"
@@ -121,6 +128,27 @@ def setup_paths(config):
 # ==============================================================================
 # Data Loading
 # ==============================================================================
+
+
+def load_manifest(manifest_dir):
+    """Load manifest data - the universe of firm-years in sample"""
+    manifest_file = manifest_dir / "master_sample_manifest.parquet"
+    if not manifest_file.exists():
+        raise FileNotFoundError(f"Manifest not found: {manifest_file}")
+
+    validate_input_file(manifest_file, must_exist=True)
+    df = pd.read_parquet(manifest_file)
+    print(f"  Loaded manifest: {len(df):,} records")
+
+    # Ensure gvkey is string and zero-padded
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
+
+    # Extract year from start_date if available
+    if "start_date" in df.columns:
+        df["start_date"] = pd.to_datetime(df["start_date"])
+        df["year"] = df["start_date"].dt.year
+
+    return df
 
 
 def load_ccm(ccm_file, linkprim_filter=None, linktype_filter=None):
@@ -583,6 +611,17 @@ def main():
     # Load IBES
     dispersion, ibes_checksum = load_ibes(paths["ibes_file"])
     processing_info["ibes_rows_after_filters"] = len(dispersion)
+
+    # Load manifest for sample filtering
+    print("\nManifest:")
+    manifest = load_manifest(paths["manifest_dir"])
+    manifest_gvkeys = set(manifest["gvkey"].drop_duplicates())
+    print(f"  Manifest gvkeys: {len(manifest_gvkeys):,}")
+
+    # Filter CCM to sample firms only
+    n_ccm_before = len(ccm_map)
+    ccm_map = ccm_map[ccm_map["gvkey_str"].isin(manifest_gvkeys)]
+    print(f"  CCM filtered to sample: {n_ccm_before:,} -> {len(ccm_map):,}")
 
     # ========================================================================
     # Map IBES to GVKEY

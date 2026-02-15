@@ -948,13 +948,25 @@ def main() -> None:
 
     # Merge market variables (for additional controls)
     # Note: This is now a fallback since Volatility/StockRet are calculated directly from CRSP
+    # Only fill missing values - avoid duplicate columns
     if market is not None:
+        # Rename columns to avoid collision with calculated values
+        market_subset = market[["gvkey", "year", "StockRet", "Volatility"]].copy()
+        market_subset = market_subset.rename(columns={
+            "StockRet": "StockRet_market",
+            "Volatility": "Volatility_market"
+        })
         df = df.merge(
-            market[["gvkey", "year", "StockRet", "Volatility"]],
+            market_subset,
             on=["gvkey", "year"],
             how="left",
         )
-        print(f"  After merging market variables: {len(df):,} observations")
+        # Fill missing calculated values with market values (fallback)
+        df["StockRet"] = df["StockRet"].fillna(df["StockRet_market"])
+        df["Volatility"] = df["Volatility"].fillna(df["Volatility_market"])
+        # Drop the temporary market columns
+        df = df.drop(columns=["StockRet_market", "Volatility_market"])
+        print(f"  After merging market variables (fallback): {len(df):,} observations")
 
     # ========================================================================
     # Create Forward-Looking Dependent Variable

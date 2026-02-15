@@ -2,21 +2,38 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-14)
+See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Every script must produce verifiable, reproducible results with complete audit trails
-**Current focus:** Ready for next milestone planning
+**Current focus:** V2 Pipeline Audit Complete - All runnable scripts verified
 
 ## Current Position
 
-Milestone: Phase 81 - Test Stage 3 Financial Scripts at Full Scale
-Phase: 81-test-stage-3-financial-scripts
-Current Plan: 04
-Total Plans in Phase: 04
-Status: COMPLETE - V1 pipeline validated, V2 scripts fixed and ready
-Last activity: 2026-02-15 — Completed Phase 81: V1 full-scale execution + V2 script fixes
+Milestone: v6.2 Full-Scale Pipeline Testing - COMPLETE
+Phase: V2 Pipeline Audit & Bug Fixes
+Status: COMPLETE - 9/12 V2 scripts running and verified, 3 blocked by dependencies
+Last activity: 2026-02-15 — V2 pipeline audit complete, 7 bugs fixed
 
-Progress: [282 plans completed across all milestones, Phase 81 4/4 complete]
+Progress: [All runnable V2 scripts passing manifest filtering audit]
+
+## V2 Pipeline Status
+
+| Script | Rows | GVkeys | Status |
+|--------|------|--------|--------|
+| H1_CashHoldings | 447,318 | 2,428 | PASS |
+| H2_InvestmentEfficiency | 28,887 | 2,428 | PASS |
+| H3_PayoutPolicy | 16,616 | 1,557 | PASS |
+| H5_AnalystDispersion | 452,355 | 2,151 | PASS |
+| H6_CCCL_Speech | 22,273 | 2,357 | PASS |
+| H7_Illiquidity | 59,003 | 2,309 | PASS |
+| H8_Takeover | 57,998 | 2,298 | PASS |
+| H9_PRiskFY | 30,927 | 2,391 | PASS |
+| H9_AbnormalInvestment | 22,131 | 1,862 | PASS |
+
+**Blocked by missing dependencies:**
+- 3.9_H2_BiddleInvestmentResidual - Missing SIC codes files
+- 3.10_H2_PRiskUncertaintyMerge - Depends on 3.9
+- 3.11_H9_StyleFrozen - Missing CEO clarity output
 
 ```
 Phase 80 COMPLETE
@@ -191,25 +208,24 @@ None.
 
 ### Blockers/Concerns
 
-None - Phase 81 complete. V2 hypothesis scripts require system with more memory for full-scale execution.
+None - V2 pipeline audit complete. 3 scripts blocked by missing input data files (SIC codes, CEO clarity output).
 
 ## Session Continuity
 
 Last session: 2026-02-15
-Completed: Phase 81 - Stage 3 financial scripts validated
-Stopped at: Phase 81 COMPLETE - V1 pipeline production-ready, V2 scripts fixed
+Completed: V2 Pipeline Audit & Bug Fixes
 
-**Phase 81 Summary:**
-- 81-01: COMPLETE - Standards audit (18 scripts V6.1 compliant) + dry-run validation
-- 81-02: COMPLETE - V1 full-scale execution (51 files), V2 script fixes (13 scripts)
-- 81-03: COMPLETE - Schema and data quality validation (all passed)
-- 81-04: COMPLETE - Comprehensive audit reports generated
+**Bugs Fixed (7 total):**
 
-**Phase 81 Key Accomplishments:**
-- V6.1 compliance verified for 18 Stage 3 financial scripts (5 V1 + 13 V2)
-- V1 pipeline executed successfully: 51 output files, 112,968 rows
-- Fixed 4 issues: cusip handling, duplicate columns, V2 path calculation, memory workaround
-- All 51 V1 outputs pass schema validation with excellent data quality
+1. **3.13_H9_AbnormalInvestment** - Added manifest filtering (11,256 → 1,862 gvkeys)
+2. **3.12_H9_PRiskFY** - Added manifest filtering
+3. **3.10_H2_PRiskUncertaintyMerge** - Added manifest filtering (code)
+4. **3.2a_AnalystDispersionPatch** - Fixed gvkey_str column reference + manifest filtering
+5. **3.3_H3Variables** - Fixed NA/NaN in boolean mask (fillna(False))
+6. **3.5_H5Variables** - Added manifest filtering (8,693 → 2,151 gvkeys)
+7. **3.7_H7IlliquidityVariables** - Fixed merge column collision (Volatility_x/y)
+
+**All 9 runnable V2 scripts now pass audit: gvkeys ≤ manifest (2,429)**
 
 ---
-*Last updated: 2026-02-15 (Phase 81 COMPLETE - Stage 3 V1 pipeline production-ready)*
+*Last updated: 2026-02-15 (V2 Pipeline Audit Complete)*

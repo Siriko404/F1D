@@ -993,7 +993,7 @@ def main() -> None:
     print("=" * 60)
 
     before_count = len(h3_data)
-    h3_data_filtered = h3_data[h3_data["is_div_payer"]].copy()
+    h3_data_filtered = h3_data[h3_data["is_div_payer"].fillna(False)].copy()
     after_count = len(h3_data_filtered)
 
     print(f"  Before filter: {before_count:,} observations")

@@ -64,6 +64,8 @@ from f1d.shared.observability_utils import (
 )
 from f1d.shared.path_utils import (
     ensure_output_dir,
+    get_latest_output_dir,
+    validate_input_file,
 )
 
 # Suppress warnings for cleaner output
@@ -79,8 +81,15 @@ def setup_paths(timestamp):
     # Go up from src/f1d/financial/v2/ to project root (5 levels)
     root = Path(__file__).parent.parent.parent.parent.parent
 
+    # Resolve manifest directory using timestamp-based resolution
+    manifest_dir = get_latest_output_dir(
+        root / "4_Outputs" / "1.4_AssembleManifest",
+        required_file="master_sample_manifest.parquet",
+    )
+
     paths = {
         "root": root,
+        "manifest_dir": manifest_dir,
         "compustat_file": root
         / "1_Inputs"
         / "comp_na_daily_all"
@@ -103,6 +112,27 @@ def setup_paths(timestamp):
 # ==============================================================================
 # Data Loading
 # ==============================================================================
+
+
+def load_manifest(manifest_dir):
+    """Load manifest data - the universe of firm-years in sample"""
+    manifest_file = manifest_dir / "master_sample_manifest.parquet"
+    if not manifest_file.exists():
+        raise FileNotFoundError(f"Manifest not found: {manifest_file}")
+
+    validate_input_file(manifest_file, must_exist=True)
+    df = pd.read_parquet(manifest_file)
+    print(f"  Loaded manifest: {len(df):,} records")
+
+    # Ensure gvkey is string and zero-padded
+    df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
+
+    # Extract year from start_date if available
+    if "start_date" in df.columns:
+        df["start_date"] = pd.to_datetime(df["start_date"])
+        df["year"] = df["start_date"].dt.year
+
+    return df
 
 
 def load_compustat(compustat_file, fyear_min=2002, fyear_max=2018):
@@ -1100,6 +1130,18 @@ def main() -> None:
     )
     print_stat("Compustat rows", value=len(compustat))
     stats["input"]["total_rows"] = len(compustat)
+
+    # Load manifest and filter to sample
+    print("\nManifest:")
+    manifest = load_manifest(paths["manifest_dir"])
+    print(f"  Manifest gvkeys: {manifest['gvkey'].nunique():,}")
+
+    # Filter Compustat to sample firms only (inner join on gvkey)
+    manifest_gvkeys = manifest[["gvkey"]].drop_duplicates()
+    n_before = len(compustat)
+    compustat = compustat.merge(manifest_gvkeys, on="gvkey", how="inner")
+    print_stat("Sample filter", before=n_before, after=len(compustat))
+    stats["processing"]["after_manifest_filter"] = len(compustat)
 
     # ========================================================================
     # Industry Classification
