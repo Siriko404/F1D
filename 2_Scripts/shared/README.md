@@ -2,6 +2,12 @@
 
 This directory contains reusable utility modules for the F1D data pipeline.
 
+> **Prerequisite:** Before using these modules, install the package in editable mode:
+> ```bash
+> pip install -e .
+> ```
+> This enables `from f1d.shared.*` imports throughout the pipeline.
+
 ## Scaling Documentation
 
 For comprehensive information on pipeline scaling limits and improvement paths, see: **[SCALING.md](../SCALING.md)**
@@ -51,7 +57,7 @@ Read Parquet file in chunks using PyArrow row groups.
 
 ```python
 from pathlib import Path
-from shared.chunked_reader import read_in_chunks
+from f1d.shared.chunked_reader import read_in_chunks
 
 for chunk in read_in_chunks(Path("large_file.parquet"), chunk_size=10000):
     process(chunk)
@@ -69,7 +75,7 @@ for chunk in read_in_chunks(Path("large_file.parquet"), chunk_size=10000):
 Read only selected columns to reduce memory.
 
 ```python
-from shared.chunked_reader import read_selected_columns
+from f1d.shared.chunked_reader import read_selected_columns
 
 df = read_selected_columns(
     Path("large_file.parquet"),
@@ -139,7 +145,7 @@ Schema-based validation for input files to catch corrupted or malicious data ear
 Validate DataFrame against expected schema.
 
 ```python
-from shared.data_validation import validate_dataframe_schema
+from f1d.shared.data_validation import validate_dataframe_schema
 
 validate_dataframe_schema(
     df,
@@ -162,7 +168,7 @@ validate_dataframe_schema(
 Load Parquet file with schema validation.
 
 ```python
-from shared.data_validation import load_validated_parquet
+from f1d.shared.data_validation import load_validated_parquet
 
 df = load_validated_parquet(
     Path("data/Unified-info.parquet"),
@@ -211,7 +217,7 @@ Fixed effects OLS regression patterns for econometric analysis.
 Run fixed effects OLS regression with statsmodels.
 
 ```python
-from shared.regression_utils import run_fixed_effects_ols
+from f1d.shared.regression_utils import run_fixed_effects_ols
 
 model = run_fixed_effects_ols(
     df,
@@ -236,7 +242,7 @@ model = run_fixed_effects_ols(
 Extract CEO fixed effects from fitted model.
 
 ```python
-from shared.regression_utils import extract_ceo_fixed_effects
+from f1d.shared.regression_utils import extract_ceo_fixed_effects
 
 ceo_effects = extract_ceo_fixed_effects(model, ceo_col="ceo_id")
 # Returns Series indexed by CEO ID
@@ -249,7 +255,7 @@ ceo_effects = extract_ceo_fixed_effects(model, ceo_col="ceo_id")
 Extract common regression diagnostics from fitted model.
 
 ```python
-from shared.regression_utils import extract_regression_diagnostics
+from f1d.shared.regression_utils import extract_regression_diagnostics
 
 diagnostics = extract_regression_diagnostics(model)
 # Returns: {n_obs, rsquared, rsquared_adj, f_statistic, aic, bic, condno}
@@ -291,7 +297,7 @@ Regression input validation to catch data issues before model estimation.
 Validate that all required columns exist in DataFrame.
 
 ```python
-from shared.regression_validation import validate_columns
+from f1d.shared.regression_validation import validate_columns
 
 validate_columns(
     df,
@@ -312,7 +318,7 @@ validate_columns(
 Validate DataFrame columns have expected data types.
 
 ```python
-from shared.regression_validation import validate_data_types
+from f1d.shared.regression_validation import validate_data_types
 
 validate_data_types(
     df,
@@ -335,7 +341,7 @@ validate_data_types(
 Validate independent variables have no missing values (or within threshold).
 
 ```python
-from shared.regression_validation import validate_no_missing_independent
+from f1d.shared.regression_validation import validate_no_missing_independent
 
 validate_no_missing_independent(
     df,
@@ -356,7 +362,7 @@ validate_no_missing_independent(
 Comprehensive validation of regression data before model estimation.
 
 ```python
-from shared.regression_validation import validate_regression_data
+from f1d.shared.regression_validation import validate_regression_data
 
 validate_regression_data(
     df,
@@ -384,7 +390,7 @@ validate_regression_data(
 Validate DataFrame has minimum number of observations for regression.
 
 ```python
-from shared.regression_validation import validate_sample_size
+from f1d.shared.regression_validation import validate_sample_size
 
 validate_sample_size(df, min_observations=50)
 ```
@@ -400,7 +406,7 @@ validate_sample_size(df, min_observations=50)
 Check for multicollinearity using VIF (Variance Inflation Factor).
 
 ```python
-from shared.regression_validation import check_multicollinearity
+from f1d.shared.regression_validation import check_multicollinearity
 
 vif_dict = check_multicollinearity(
     df,
@@ -461,7 +467,7 @@ Financial metrics and control variable calculations from Compustat data.
 Calculate firm-level control variables from Compustat data.
 
 ```python
-from shared.financial_utils import calculate_firm_controls
+from f1d.shared.financial_utils import calculate_firm_controls
 
 controls = calculate_firm_controls(
     row,  # DataFrame row with gvkey, datadate
@@ -478,7 +484,7 @@ controls = calculate_firm_controls(
 Compute financial features for all firms in dataset.
 
 ```python
-from shared.financial_utils import compute_financial_features
+from f1d.shared.financial_utils import compute_financial_features
 
 df_with_features = compute_financial_features(df, compustat_df)
 ```
@@ -512,7 +518,7 @@ Markdown report generation and diagnostic saving for regression results.
 Generate markdown report for regression results.
 
 ```python
-from shared.reporting_utils import generate_regression_report
+from f1d.shared.reporting_utils import generate_regression_report
 from pathlib import Path
 
 report_path = generate_regression_report(
@@ -535,7 +541,7 @@ report_path = generate_regression_report(
 Save regression diagnostics to CSV.
 
 ```python
-from shared.reporting_utils import save_model_diagnostics
+from f1d.shared.reporting_utils import save_model_diagnostics
 
 diag_path = save_model_diagnostics(
     model,
@@ -555,7 +561,7 @@ diag_path = save_model_diagnostics(
 Save variable reference table (name, dtype, non_null_count).
 
 ```python
-from shared.reporting_utils import save_variable_reference
+from f1d.shared.reporting_utils import save_variable_reference
 
 ref_path = save_variable_reference(
     df,
@@ -596,7 +602,7 @@ Path validation and directory creation helpers using pathlib.
 Validate output path exists and is accessible.
 
 ```python
-from shared.path_utils import validate_output_path
+from f1d.shared.path_utils import validate_output_path
 from pathlib import Path
 
 validated_path = validate_output_path(
@@ -620,7 +626,7 @@ validated_path = validate_output_path(
 Ensure output directory exists, creating if necessary.
 
 ```python
-from shared.path_utils import ensure_output_dir
+from f1d.shared.path_utils import ensure_output_dir
 
 resolved_path = ensure_output_dir(
     Path("4_Outputs/step1/timestamp")
@@ -634,7 +640,7 @@ resolved_path = ensure_output_dir(
 Validate input file exists and is readable.
 
 ```python
-from shared.path_utils import validate_input_file
+from f1d.shared.path_utils import validate_input_file
 
 validated_file = validate_input_file(
     Path("inputs/data.parquet"),
@@ -649,7 +655,7 @@ validated_file = validate_input_file(
 Get available disk space in GB for a given path.
 
 ```python
-from shared.path_utils import get_available_disk_space
+from f1d.shared.path_utils import get_available_disk_space
 
 free_gb = get_available_disk_space(Path("4_Outputs"))
 print(f"Available: {free_gb:.2f} GB")
@@ -691,7 +697,7 @@ Validates prerequisites (input files, previous step outputs) for pipeline script
 Main entry point - validates all inputs and prerequisite steps, prints error messages and exits if validation fails.
 
 ```python
-from shared.dependency_checker import validate_prerequisites
+from f1d.shared.dependency_checker import validate_prerequisites
 from pathlib import Path
 
 root = Path(__file__).parent.parent.parent
@@ -776,7 +782,7 @@ Prints error for missing prerequisite output.
 ### Usage Example
 
 ```python
-from shared.dependency_checker import validate_prerequisites
+from f1d.shared.dependency_checker import validate_prerequisites
 from pathlib import Path
 
 root = Path(__file__).parent.parent.parent
@@ -848,7 +854,7 @@ Cross-platform symlink and junction creation for 'latest' output links.
 Update 'latest' link using symlink or junction.
 
 ```python
-from shared.symlink_utils import update_latest_link
+from f1d.shared.symlink_utils import update_latest_link
 from pathlib import Path
 
 update_latest_link(
@@ -876,7 +882,7 @@ update_latest_link(
 Create a Windows junction (directory link).
 
 ```python
-from shared.symlink_utils import create_junction
+from f1d.shared.symlink_utils import create_junction
 
 create_junction(
     target=Path("4_Outputs/step1/2026-01-23_120000"),
@@ -893,7 +899,7 @@ create_junction(
 Check if path is a Windows junction.
 
 ```python
-from shared.symlink_utils import is_junction
+from f1d.shared.symlink_utils import is_junction
 
 if is_junction(Path("4_Outputs/step1/latest")):
     print("Path is a Windows junction")
@@ -953,7 +959,7 @@ Config-driven fuzzy name matching using RapidFuzz library.
 Load string matching configuration from config/project.yaml.
 
 ```python
-from shared.string_matching import load_matching_config
+from f1d.shared.string_matching import load_matching_config
 
 config = load_matching_config()
 # Returns: {'company_name': {'default_threshold': 92.0, ...}, ...}
@@ -970,7 +976,7 @@ config = load_matching_config()
 Get RapidFuzz scorer function by name.
 
 ```python
-from shared.string_matching import get_scorer
+from f1d.shared.string_matching import get_scorer
 
 scorer = get_scorer('token_sort_ratio')
 # Returns: fuzz.token_sort_ratio function
@@ -990,7 +996,7 @@ scorer = get_scorer('token_sort_ratio')
 Find best matching company name using RapidFuzz.
 
 ```python
-from shared.string_matching import match_company_names
+from f1d.shared.string_matching import match_company_names
 
 best_match, score = match_company_names(
     query="Apple Inc.",
@@ -1019,7 +1025,7 @@ Match multiple queries against targets using RapidFuzz.
 This is significantly faster than nested loops for large datasets.
 
 ```python
-from shared.string_matching import match_many_to_many
+from f1d.shared.string_matching import match_many_to_many
 
 results = match_many_to_many(
     queries=["Apple Inc.", "Microsoft Corp."],
@@ -1119,7 +1125,7 @@ The following utility functions are available across shared modules for logging,
 Class for dual-write logging (outputs to both stdout and log file).
 
 ```python
-from shared.observability_utils import DualWriter
+from f1d.shared.observability_utils import DualWriter
 
 # Initialize with log file path
 dw = DualWriter("path/to/log.txt")
@@ -1143,7 +1149,7 @@ with DualWriter("path/to/log.txt") as dw:
 Compute file checksum for reproducibility verification.
 
 ```python
-from shared.observability_utils import compute_file_checksum
+from f1d.shared.observability_utils import compute_file_checksum
 
 checksum = compute_file_checksum("output.parquet")
 # Returns: "a3f5c9..." (SHA-256 hex digest)
@@ -1160,7 +1166,7 @@ checksum = compute_file_checksum("output.parquet")
 Print formatted statistics with optional before/after values.
 
 ```python
-from shared.observability_utils import print_stat
+from f1d.shared.observability_utils import print_stat
 
 print_stat("Rows processed", value=1000)
 # Output: "Rows processed: 1,000"
@@ -1186,7 +1192,7 @@ print_stat("Memory usage", before=100, after=250)
 Print formatted summary table from statistics dictionary.
 
 ```python
-from shared.observability_utils import print_stats_summary
+from f1d.shared.observability_utils import print_stats_summary
 
 stats = {
     "input_rows": 10000,
@@ -1205,7 +1211,7 @@ print_stats_summary(stats)
 Save statistics dictionary to JSON file.
 
 ```python
-from shared.observability_utils import save_stats
+from f1d.shared.observability_utils import save_stats
 from pathlib import Path
 
 stats = {"n": 1000, "mean": 42.5}
@@ -1227,7 +1233,7 @@ save_stats(stats, Path("4_Outputs/step1/2026-01-23_120000"))
 Analyze missing values per column in DataFrame.
 
 ```python
-from shared.observability_utils import analyze_missing_values
+from f1d.shared.observability_utils import analyze_missing_values
 
 missing = analyze_missing_values(df)
 # Returns: {"col1": {"count": 10, "percent": 0.01}, ...}
@@ -1250,7 +1256,7 @@ missing = analyze_missing_values(df)
 Get current process memory usage in megabytes.
 
 ```python
-from shared.observability_utils import get_process_memory_mb
+from f1d.shared.observability_utils import get_process_memory_mb
 
 memory = get_process_memory_mb()
 # Returns: {"rss_mb": 125.3, "vms_mb": 450.2, "percent": 6.2}
@@ -1266,7 +1272,7 @@ memory = get_process_memory_mb()
 Calculate rows/second throughput.
 
 ```python
-from shared.observability_utils import calculate_throughput
+from f1d.shared.observability_utils import calculate_throughput
 
 throughput = calculate_throughput(10000, 5.0)
 # Returns: 2000.0 (rows per second)
@@ -1283,7 +1289,7 @@ throughput = calculate_throughput(10000, 5.0)
 Detect outliers using z-score method.
 
 ```python
-from shared.observability_utils import detect_anomalies_zscore
+from f1d.shared.observability_utils import detect_anomalies_zscore
 
 anomalies = detect_anomalies_zscore(df, columns=['returns', 'volume'])
 # Returns: {"returns": [index_list], "volume": [index_list]}
@@ -1303,7 +1309,7 @@ anomalies = detect_anomalies_zscore(df, columns=['returns', 'volume'])
 Detect outliers using IQR (Interquartile Range) method.
 
 ```python
-from shared.observability_utils import detect_anomalies_iqr
+from f1d.shared.observability_utils import detect_anomalies_iqr
 
 anomalies = detect_anomalies_iqr(df, columns=['returns', 'volume'])
 # Returns: {"returns": [index_list], "volume": [index_list]}
@@ -1326,7 +1332,7 @@ anomalies = detect_anomalies_iqr(df, columns=['returns', 'volume'])
 Update 'latest' symlink/junction to point to most recent output directory.
 
 ```python
-from shared.symlink_utils import update_latest_link
+from f1d.shared.symlink_utils import update_latest_link
 from pathlib import Path
 
 update_latest_link(
@@ -1355,14 +1361,14 @@ update_latest_link(
 #!/usr/bin/env python3
 """Example script using utility functions."""
 from pathlib import Path
-from shared.observability_utils import (
+from f1d.shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
     print_stat,
     analyze_missing_values,
     get_process_memory_mb,
 )
-from shared.symlink_utils import update_latest_link
+from f1d.shared.symlink_utils import update_latest_link
 
 # Set up dual-write logging
 output_dir = Path("4_Outputs/my_step/2026-01-23_120000")
@@ -1389,10 +1395,10 @@ with DualWriter(output_dir / "process.log") as dw:
 
 | Module | Purpose | Key Functions |
 |--------|---------|---------------|
-| `shared.observability_utils` | Core statistics and logging utilities | `DualWriter`, `compute_file_checksum`, `print_stat`, `analyze_missing_values`, `get_process_memory_mb` |
-| `shared.symlink_utils` | Cross-platform symlink/junction management | `update_latest_link`, `create_junction`, `is_junction` |
-| `shared.path_utils` | Path validation and directory creation | `validate_output_path`, `ensure_output_dir`, `validate_input_file` |
-| `shared.data_validation` | Input data validation layers | `validate_dataframe_schema`, `load_validated_parquet` |
+| `f1d.shared.observability_utils` | Core statistics and logging utilities | `DualWriter`, `compute_file_checksum`, `print_stat`, `analyze_missing_values`, `get_process_memory_mb` |
+| `f1d.shared.symlink_utils` | Cross-platform symlink/junction management | `update_latest_link`, `create_junction`, `is_junction` |
+| `f1d.shared.path_utils` | Path validation and directory creation | `validate_output_path`, `ensure_output_dir`, `validate_input_file` |
+| `f1d.shared.data_validation` | Input data validation layers | `validate_dataframe_schema`, `load_validated_parquet` |
 
 ---
 
@@ -1402,42 +1408,42 @@ with DualWriter(output_dir / "process.log") as dw:
 #!/usr/bin/env python3
 """
 Example script using shared utilities.
+
+Prerequisite: pip install -e . (enables f1d.shared.* imports)
 """
 
-import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent))
 
 # Path validation
-from shared.path_utils import ensure_output_dir, validate_input_file
+from f1d.shared.path_utils import ensure_output_dir, validate_input_file
 
 output_dir = ensure_output_dir(Path("4_Outputs/my_step/latest"))
 input_file = validate_input_file(Path("inputs/data.parquet"))
 
 # Chunked reading
-from shared.chunked_reader import read_in_chunks
+from f1d.shared.chunked_reader import read_in_chunks
 
 for chunk in read_in_chunks(input_file, chunk_size=10000):
     process(chunk)
 
 # Data validation
-from shared.data_validation import validate_dataframe_schema
+from f1d.shared.data_validation import validate_dataframe_schema
 
 df = pd.read_parquet(input_file)
 validate_dataframe_schema(df, "schema_name", input_file)
 
 # Regression analysis
-from shared.regression_utils import run_fixed_effects_ols
+from f1d.shared.regression_utils import run_fixed_effects_ols
 
 model = run_fixed_effects_ols(df, "y ~ x1 + x2", "Sample A")
 
 # Reporting
-from shared.reporting_utils import generate_regression_report
+from f1d.shared.reporting_utils import generate_regression_report
 
 report = generate_regression_report(model, "Sample A", output_dir)
 
 # Update latest link
-from shared.symlink_utils import update_latest_link
+from f1d.shared.symlink_utils import update_latest_link
 
 update_latest_link(
     output_dir.parent / "2026-01-23_120000",
