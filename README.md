@@ -1453,6 +1453,33 @@ The pipeline uses a src-layout package structure (PyPA recommended):
 
 All imports use the `f1d.shared.*` namespace (e.g., `from f1d.shared.config import get_settings`). No `sys.path.insert()` or PYTHONPATH manipulation is required when the package is installed in editable mode.
 
+## Architecture
+
+The F1D pipeline uses a src-layout package structure following PyPA recommendations:
+
+- **Package:** `f1d` - Installable via `pip install -e .`
+- **Shared modules:** `f1d.shared.*` - Reusable utilities (config, logging, data validation, etc.)
+- **Stage scripts:** `f1d.sample.*`, `f1d.text.*`, `f1d.financial.*`, `f1d.econometric.*`
+
+All scripts use proper namespace imports:
+
+```python
+from f1d.shared.config import get_settings
+from f1d.shared.logging import configure_logging
+from f1d.shared.path_utils import ensure_output_dir
+```
+
+No `sys.path.insert()` or PYTHONPATH manipulation is required when the package is installed in editable mode.
+
+### v6.1 Milestone
+
+The v6.1 milestone (Phases 75-77) completed full architecture compliance:
+
+- **Zero** `sys.path.insert()` calls in entire codebase
+- **Zero** legacy `from shared.*` imports
+- **mypy passes** with 0 errors on 101 source files
+- **1000+ tests** with namespace imports
+
 See ROADMAP.md for detailed phase-by-phase documentation.
 
 ## Documentation
