@@ -1,10 +1,12 @@
 # Text Processing (Step 2)
 
+> **Note:** This folder contains legacy scripts kept for reference. The active versions have been migrated to `src/f1d/text/` as part of the v6.1 architecture standard. New development should use the `f1d.text.*` namespace imports.
+
 ## Purpose and Scope
 
 This folder contains scripts for tokenizing earnings call transcripts and constructing linguistic measures (uncertainty, weak modals, tone) using the Loughran-McDonald financial sentiment dictionary. Text processing is the **second step** in the F1D pipeline, transforming raw transcript text into quantitative variables for all subsequent analyses.
 
-**Status:** STABLE - Text measures feed all regression analyses
+**Status:** LEGACY - Migrated to src/f1d/text/
 **Prerequisites:** Step 1 (Sample Construction) outputs
 **Outputs:** `4_Outputs/2_Text/`
 
@@ -312,6 +314,6 @@ For replication questions:
 
 ---
 
-*Last updated: 2026-02-11*
-*Phase: 60-code-organization*
+*Last updated: 2026-02-14*
+*Phase: 78-documentation-synchronization*
 *Version: v1.0 Text Processing*
