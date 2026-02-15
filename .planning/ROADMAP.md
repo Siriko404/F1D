@@ -161,10 +161,17 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 4. All code examples use current import patterns (`from f1d.shared.*`)
 5. New developer can clone, `pip install -e .`, and run any script without PYTHONPATH tricks
 
-**Plans:** Not yet planned
+**Plans:** 4 plans in 2 waves
+
+**Wave Structure:**
+- Wave 1: 78-01, 78-02 (README updates, legacy deprecation notices)
+- Wave 2: 78-03, 78-04 (Architecture standard update, link verification)
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 78 to break down)
+- [ ] 78-01-PLAN.md — Update main README.md and shared/README.md import patterns (Wave 1)
+- [ ] 78-02-PLAN.md — Add deprecation notices to legacy script folder READMEs (Wave 1)
+- [ ] 78-03-PLAN.md — Update ARCHITECTURE_STANDARD.md with v6.1 compliance (Wave 2)
+- [ ] 78-04-PLAN.md — Verify and fix internal documentation links (Wave 2)
 
 ---
 
