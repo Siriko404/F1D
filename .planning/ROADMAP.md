@@ -64,22 +64,26 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 - Tier 1 test coverage: financial_utils 96%, data_validation 94%
 - Tier 2 test coverage: config 88%, logging 82%, path_utils 86%, chunked_reader 88%
 
-### v6.1 Architecture Compliance Gap Closure (Phases 75-76) - SHIPPED 2026-02-14
+### v6.1 Architecture Compliance Gap Closure (Phases 75-77) - SHIPPED 2026-02-14
 
 **Milestone Goal:** Close all integration gaps identified in v6.0 audit to achieve full architecture standard compliance.
 
-**Delivered:** 9 plans across 2 phases (75-76):
+**Delivered:** 26 plans across 3 phases (75-77):
 - Migrated 5 sample scripts to proper f1d.shared.* imports
 - Migrated 21 test files to namespace imports
 - Integrated LoggingSettings with configure_logging()
 - Removed 22 obsolete xfail markers from econometric tests
 - Migrated 36 stage scripts (17 financial + 19 econometric) to f1d.shared.* namespace
+- Migrated 4 Stage 2 text scripts to src/f1d/text/
+- Implemented survival analysis with lifelines (cause-specific Cox hazards)
+- Added 843 new tests across hypothesis, stats, V1, dry-run verification
 - Achieved full ROADMAP compliance - zero sys.path.insert() in entire codebase
 
 **Key Metrics:**
 - Zero sys.path.insert() calls in entire codebase
 - Zero legacy `from shared.*` imports
-- mypy passes with 0 errors on 41 migrated files
+- mypy passes with **0 errors** on 101 source files (reduced from 253)
+- 843 new tests added (total: 1000+ tests)
 
 </details>
 
@@ -107,11 +111,11 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 **Depends on:** Phase 76 (Stage Scripts Migration)
 
 **Success Criteria** (what must be TRUE):
-1. Zero `sys.path.insert()` in entire codebase (already achieved in v6.1, double-check)
-2. Zero `from shared.*` legacy imports (already achieved, verify)
-3. Zero NotImplementedError in production code paths (survival analysis implemented)
-4. mypy passes with <10 type errors (down from 253 errors in verification)
-5. ALL 41 scripts execute successfully on dry-run scale
+1. Zero `sys.path.insert()` in entire codebase ✓
+2. Zero `from shared.*` legacy imports ✓
+3. Zero NotImplementedError in production code paths ✓
+4. mypy passes with <10 type errors ✓ (achieved **0 errors** - exceeded target)
+5. ALL 41 scripts execute successfully on dry-run ✓
 
 **Plans:** 17 plans created
 
@@ -122,11 +126,11 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 - Wave 4: 77-06, 77-17 (Documentation update, final mypy baseline)
 
 **Gap Closure Plans (77-13 to 77-17):**
-- [ ] 77-13-PLAN.md — Reduce tokenize_and_count.py type errors from 86 to <10 (Wave 1)
-- [ ] 77-14-PLAN.md — Reduce verify_step2.py type errors from 30 to <5 (Wave 1)
-- [ ] 77-15-PLAN.md — Reduce construct_variables.py type errors from 19 to <5 (Wave 1)
-- [ ] 77-16-PLAN.md — Document lifelines type errors with scoped ignores (Wave 1)
-- [ ] 77-17-PLAN.md — Fix remaining financial and shared module errors (Wave 2)
+- [x] 77-13-PLAN.md — Reduce tokenize_and_count.py type errors from 90 to 0 (Wave 1)
+- [x] 77-14-PLAN.md — Reduce verify_step2.py type errors from 37 to 0 (Wave 1)
+- [x] 77-15-PLAN.md — Reduce construct_variables.py type errors from 20 to 0 (Wave 1)
+- [x] 77-16-PLAN.md — Fix TakeoverHazards.py pandas type inference (Wave 1)
+- [x] 77-17-PLAN.md — Fix ALL remaining modules to achieve 0 total mypy errors (Wave 2)
 
 **Original Plans:**
 - [x] 77-01-PLAN.md — Migrate Stage 2 text scripts to src/f1d/text/
