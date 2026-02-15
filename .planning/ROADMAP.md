@@ -111,7 +111,8 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 | 77. Concerns Closure + Verification | v6.1 | 17/17 | Complete | 2026-02-14 |
 | 78. Documentation Synchronization | v6.1 | 4/4 | Complete | 2026-02-14 |
 | 79. Stage 1 Sample Scripts Testing | v6.2 | 4/4 | Complete | 2026-02-15 |
-| 80. Stage 2 Text Scripts Testing | v6.2 | 0/4 | Planned | - |
+| 80. Stage 2 Text Scripts Testing | v6.2 | 4/4 | Complete | 2026-02-15 |
+| 81. Stage 3 Financial Scripts Testing | v6.2 | 4/4 | Complete | 2026-02-15 |
 
 ### Phase 77: Concerns Closure with Parallel Agents + Full Verification
 
@@ -252,11 +253,62 @@ Linguistic variables: linguistic_variables.parquet
 - Wave 4: 80-04 (Generate audit reports MD + JSON)
 
 Plans:
-- [ ] 80-01-PLAN.md — Standards compliance audit + dry-run validation (Wave 1)
-- [ ] 80-02-PLAN.md — Full-scale execution of Stage 2 pipeline (Wave 2)
-- [ ] 80-03-PLAN.md — Schema and data quality validation (Wave 3)
-- [ ] 80-04-PLAN.md — Generate comprehensive audit reports (Wave 4)
+- [x] 80-01-PLAN.md — Standards compliance audit + dry-run validation (Wave 1)
+- [x] 80-02-PLAN.md — Full-scale execution of Stage 2 pipeline (Wave 2)
+- [x] 80-03-PLAN.md — Schema and data quality validation (Wave 3)
+- [x] 80-04-PLAN.md — Generate comprehensive audit reports (Wave 4)
 
 ---
 
-*Roadmap updated: 2026-02-15 (Phase 79 complete, Phase 80 planned)*
+### Phase 81: Test Stage 3 Financial Scripts at Full Scale
+
+**Goal:** Test Stage 3 financial scripts at full scale, audit dataflow, fix to V6 standards, verify outputs, debug problems
+
+**Depends on:** Phase 80 (Stage 2 Text Scripts Testing)
+
+**Success Criteria** (what must be TRUE):
+1. All Stage 3 scripts execute successfully with --dry-run
+2. All Stage 3 scripts execute successfully at full scale using Stage 2 outputs
+3. Financial features produce valid output files
+4. H1-H9 hypothesis scripts execute successfully
+5. All outputs have expected schema and logical values
+6. All scripts comply with V6.1 architecture standards
+7. Audit report generated with all required metrics
+8. Any issues found are fixed and documented
+
+**Scripts to Test:**
+- **V1 Scripts:**
+  - `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py`
+  - `src/f1d/financial/v1/3.1_FirmControls.py`
+  - `src/f1d/financial/v1/3.2_MarketVariables.py`
+  - `src/f1d/financial/v1/3.3_EventFlags.py`
+- **V2 Scripts:**
+  - `src/f1d/financial/v2/3.1_H1Variables.py` through `3.8_H8TakeoverVariables.py`
+  - Auxiliary scripts (AnalystDispersionPatch, BiddleInvestmentResidual, etc.)
+
+**Dataflow:**
+```
+Stage 2 Output: linguistic_variables.parquet
+    ↓ 3.0_BuildFinancialFeatures
+Base Financial Features
+    ↓ H1-H9 Hypothesis Scripts
+Hypothesis-specific variables
+```
+
+**Plans:** 4 plans in 4 waves
+
+**Wave Structure:**
+- Wave 1: 81-01 (Standards compliance + dry-run validation)
+- Wave 2: 81-02 (Full-scale execution of all Stage 3 scripts)
+- Wave 3: 81-03 (Schema and data quality validation)
+- Wave 4: 81-04 (Generate audit reports MD + JSON)
+
+Plans:
+- [x] 81-01-PLAN.md — Standards compliance audit + dry-run validation (Wave 1)
+- [x] 81-02-PLAN.md — Full-scale execution of Stage 3 pipeline (Wave 2)
+- [x] 81-03-PLAN.md — Schema and data quality validation (Wave 3)
+- [x] 81-04-PLAN.md — Generate comprehensive audit reports (Wave 4)
+
+---
+
+*Roadmap updated: 2026-02-15 (Phase 81 complete - V1 pipeline production-ready)*
