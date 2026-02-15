@@ -1,0 +1,155 @@
+{
+  "audit_timestamp": "2026-02-15T03:30:00Z",
+  "phase": "80-test-stage-2-text-scripts-at-full-scale-audit-dataflow-fix-to-v6-standards-verify-outputs-debug-problems",
+  "plan": "80-01",
+  "standard_version": "V6.1",
+  "scripts_audited": [
+    {
+      "script": "src/f1d/text/tokenize_and_count.py",
+      "namespace_imports": {
+        "status": "PASS",
+        "pattern_found": "from f1d.shared.*",
+        "matches": [
+          "from f1d.shared.chunked_reader import track_memory_usage",
+          "from f1d.shared.observability_utils import DualWriter",
+          "from f1d.shared.path_utils import (ensure_output_dir, get_latest_output_dir, validate_input_file, validate_output_path)",
+          "from f1d.shared.dependency_checker import validate_prerequisites",
+          "from f1d.shared.observability_utils import compute_tokenize_input_stats",
+          "from f1d.shared.observability_utils import compute_tokenize_process_stats",
+          "from f1d.shared.observability_utils import compute_tokenize_output_stats"
+        ]
+      },
+      "legacy_imports": {
+        "status": "PASS",
+        "pattern_checked": "from shared.*",
+        "matches_found": 0
+      },
+      "sys_path_insert": {
+        "status": "PASS",
+        "pattern_checked": "sys.path.insert",
+        "matches_found": 0
+      },
+      "mypy_errors": {
+        "status": "PASS",
+        "error_count": 0,
+        "errors": []
+      },
+      "overall_compliance": "PASS"
+    },
+    {
+      "script": "src/f1d/text/construct_variables.py",
+      "namespace_imports": {
+        "status": "PASS",
+        "pattern_found": "from f1d.shared.*",
+        "matches": [
+          "from f1d.shared.observability_utils import (DualWriter, compute_constructvariables_input_stats, compute_constructvariables_output_stats, compute_constructvariables_process_stats)",
+          "from f1d.shared.path_utils import (ensure_output_dir, get_latest_output_dir, validate_input_file, validate_output_path)",
+          "from f1d.shared.dependency_checker import validate_prerequisites",
+          "from f1d.shared.path_utils import get_latest_output_dir"
+        ]
+      },
+      "legacy_imports": {
+        "status": "PASS",
+        "pattern_checked": "from shared.*",
+        "matches_found": 0
+      },
+      "sys_path_insert": {
+        "status": "PASS",
+        "pattern_checked": "sys.path.insert",
+        "matches_found": 0
+      },
+      "mypy_errors": {
+        "status": "PASS",
+        "error_count": 0,
+        "errors": []
+      },
+      "overall_compliance": "PASS"
+    },
+    {
+      "script": "src/f1d/text/report_step2.py",
+      "namespace_imports": {
+        "status": "PASS",
+        "pattern_found": "from f1d.shared.*",
+        "matches": [
+          "from f1d.shared.logging import configure_script_logging, get_logger",
+          "from f1d.shared.observability_utils import DualWriter",
+          "from f1d.shared.path_utils import get_latest_output_dir",
+          "from f1d.shared.dependency_checker import validate_prerequisites"
+        ]
+      },
+      "legacy_imports": {
+        "status": "PASS",
+        "pattern_checked": "from shared.*",
+        "matches_found": 0
+      },
+      "sys_path_insert": {
+        "status": "PASS",
+        "pattern_checked": "sys.path.insert",
+        "matches_found": 0
+      },
+      "mypy_errors": {
+        "status": "PASS",
+        "error_count": 0,
+        "errors": []
+      },
+      "overall_compliance": "PASS"
+    },
+    {
+      "script": "src/f1d/text/verify_step2.py",
+      "namespace_imports": {
+        "status": "PASS",
+        "pattern_found": "from f1d.shared.*",
+        "matches": [
+          "from f1d.shared.path_utils import (ensure_output_dir, get_latest_output_dir, validate_input_file, validate_output_path)",
+          "from f1d.shared.dependency_checker import validate_prerequisites"
+        ]
+      },
+      "legacy_imports": {
+        "status": "PASS",
+        "pattern_checked": "from shared.*",
+        "matches_found": 0
+      },
+      "sys_path_insert": {
+        "status": "PASS",
+        "pattern_checked": "sys.path.insert",
+        "matches_found": 0
+      },
+      "mypy_errors": {
+        "status": "PASS",
+        "error_count": 0,
+        "errors": []
+      },
+      "overall_compliance": "PASS"
+    }
+  ],
+  "summary": {
+    "total_scripts": 4,
+    "passed_scripts": 4,
+    "failed_scripts": 0,
+    "namespace_import_compliance": {
+      "passed": 4,
+      "failed": 0
+    },
+    "legacy_import_clean": {
+      "passed": 4,
+      "failed": 0
+    },
+    "sys_path_insert_clean": {
+      "passed": 4,
+      "failed": 0
+    },
+    "mypy_compliance": {
+      "passed": 4,
+      "failed": 0,
+      "total_errors": 0
+    },
+    "overall_status": "PASS",
+    "issues_found": [],
+    "notes": [
+      "All 4 Stage 2 text scripts use f1d.shared.* namespace imports",
+      "Zero legacy 'from shared.*' imports found",
+      "Zero sys.path.insert() calls found",
+      "mypy passes with 0 errors on all Stage 2 scripts"
+    ]
+  }
+}
