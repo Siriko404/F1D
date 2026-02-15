@@ -162,7 +162,7 @@ def load_prisk(prisk_file, year_range=(2002, 2018)):
 
     # Read TAB-separated file
     print(f"  Reading: {prisk_file.name}")
-    df = pd.read_csv(prisk_file, sep="\t")
+    df = pd.read_csv(prisk_file, sep="\t", on_bad_lines="skip")
 
     print(f"  Loaded: {len(df):,} observations")
 
@@ -379,9 +379,9 @@ def load_uncertainty_measures(ling_vars_dir, year_range=(2002, 2018)):
     uncertainty_agg = df.groupby(["gvkey", "year"], as_index=False).agg(agg_dict)
 
     # Flatten column names (if using agg with dict, names get preserved)
-    uncertainty_agg.columns = pd.Index([
-        col[0] if isinstance(col, tuple) else col for col in uncertainty_agg.columns
-    ])  # type: ignore[assignment]
+    uncertainty_agg.columns = pd.Index(
+        [col[0] if isinstance(col, tuple) else col for col in uncertainty_agg.columns]
+    )  # type: ignore[assignment]
 
     n_firms = uncertainty_agg["gvkey"].nunique()
     n_obs = len(uncertainty_agg)
@@ -784,11 +784,13 @@ def validate_interaction(df):
             exceeded = bool(row["threshold_exceeded"])  # type: ignore[call-overload]
             status = "*** EXCEEDS 10" if exceeded else "OK"
             print(f"    {var:<35} VIF={vif:.2f}  {status}")
-            vif_results.append({
-                "variable": var,
-                "VIF": vif,
-                "threshold_exceeded": exceeded,
-            })
+            vif_results.append(
+                {
+                    "variable": var,
+                    "VIF": vif,
+                    "threshold_exceeded": exceeded,
+                }
+            )
 
     except Exception as e:
         print(f"    Could not compute VIF: {e}")

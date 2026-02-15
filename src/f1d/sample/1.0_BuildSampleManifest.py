@@ -26,7 +26,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: 1_Inputs/Unified-info.parquet
+    - Requires: 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
     - Uses: pandas, yaml
 
 Author: Thesis Author
@@ -97,7 +97,10 @@ def check_prerequisites(root: Path) -> None:
 
     required_files = {
         "config/project.yaml": root / "config/project.yaml",
-        "1_Inputs/Unified-info.parquet": root / "1_Inputs/Unified-info.parquet",
+        "1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet": root
+        / "1_Inputs"
+        / "Earnings_Calls_Transcripts"
+        / "Unified-info.parquet",
     }
 
     required_steps: Dict[str, str] = {}

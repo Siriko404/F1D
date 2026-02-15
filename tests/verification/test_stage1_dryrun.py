@@ -16,7 +16,7 @@ Stage 1 Scripts:
 
 Dependencies:
     - Scripts depend on config/project.yaml
-    - Scripts depend on 1_Inputs/Unified-info.parquet
+    - Scripts depend on 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
 """
 
 import os
@@ -78,8 +78,12 @@ class TestStage1ScriptImports:
             cwd=str(REPO_ROOT),
         )
         # Script may fail on missing inputs, but should not have import errors
-        assert "ImportError" not in result.stderr, f"Import error in {script}: {result.stderr}"
-        assert "ModuleNotFoundError" not in result.stderr, f"Module not found in {script}: {result.stderr}"
+        assert "ImportError" not in result.stderr, (
+            f"Import error in {script}: {result.stderr}"
+        )
+        assert "ModuleNotFoundError" not in result.stderr, (
+            f"Module not found in {script}: {result.stderr}"
+        )
 
 
 class TestStage1DryRunFlags:
@@ -120,8 +124,12 @@ class TestStage1DryRunFlags:
         ]
 
         for error in unexpected_errors:
-            assert error not in stderr_lower, f"Unexpected {error} in {script}: {result.stderr}"
-            assert error not in stdout_lower, f"Unexpected {error} in {script}: {result.stdout}"
+            assert error not in stderr_lower, (
+                f"Unexpected {error} in {script}: {result.stderr}"
+            )
+            assert error not in stdout_lower, (
+                f"Unexpected {error} in {script}: {result.stdout}"
+            )
 
 
 class TestStage1ModuleStructure:
@@ -134,8 +142,9 @@ class TestStage1ModuleStructure:
         content = script_path.read_text(encoding="utf-8")
 
         # Check for correct import pattern
-        assert "from f1d.shared" in content or "import f1d.shared" in content, \
+        assert "from f1d.shared" in content or "import f1d.shared" in content, (
             f"Script {script} should use f1d.shared.* imports"
+        )
 
     @pytest.mark.parametrize("script", STAGE1_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_no_sys_path_manipulation(self, script: str):
@@ -150,8 +159,9 @@ class TestStage1ModuleStructure:
         ]
 
         for pattern in forbidden_patterns:
-            assert pattern not in content, \
+            assert pattern not in content, (
                 f"Script {script} should not use {pattern} (use f1d.shared.* imports)"
+            )
 
 
 class TestStage1ArgumentParsing:
@@ -174,8 +184,9 @@ class TestStage1ArgumentParsing:
 
         # --help should exit with 0 and show usage
         assert result.returncode == 0, f"--help failed for {script}: {result.stderr}"
-        assert "usage:" in result.stdout.lower() or "usage:" in result.stderr.lower(), \
+        assert "usage:" in result.stdout.lower() or "usage:" in result.stderr.lower(), (
             f"--help should show usage for {script}"
+        )
 
 
 class TestStage1SequentialDependencies:
@@ -193,16 +204,21 @@ class TestStage1SequentialDependencies:
         ]
 
         actual_order = [Path(s).stem for s in STAGE1_SCRIPTS]
-        assert actual_order == expected_order, \
+        assert actual_order == expected_order, (
             f"Scripts should be in dependency order: expected {expected_order}, got {actual_order}"
+        )
 
     def test_orchestrator_references_substeps(self):
         """Verify 1.0 orchestrator references all substeps."""
         orchestrator_path = REPO_ROOT / "src/f1d/sample/1.0_BuildSampleManifest.py"
         content = orchestrator_path.read_text(encoding="utf-8")
 
-        substeps = ["1.1_CleanMetadata", "1.2_LinkEntities", "1.3_BuildTenureMap", "1.4_AssembleManifest"]
+        substeps = [
+            "1.1_CleanMetadata",
+            "1.2_LinkEntities",
+            "1.3_BuildTenureMap",
+            "1.4_AssembleManifest",
+        ]
 
         for substep in substeps:
-            assert substep in content, \
-                f"Orchestrator should reference {substep}"
+            assert substep in content, f"Orchestrator should reference {substep}"

@@ -380,18 +380,18 @@ def compute_industry_year_median(
     print(f"\nComputing industry-year median for {value_col}...")
 
     # First compute FF48-year medians
-    ff48_medians: pd.Series[Any] = df.groupby(["ff48", "fiscal_year"])[value_col].transform(
-        lambda x: x.median() if x.dropna().size >= min_firms else np.nan
-    )
+    ff48_medians: pd.Series[Any] = df.groupby(["ff48", "fiscal_year"])[
+        value_col
+    ].transform(lambda x: x.median() if x.dropna().size >= min_firms else np.nan)
 
     # Identify cells that need FF12 fallback
     needs_ff12 = ff48_medians.isna()
 
     # Compute FF12-year medians only for those that need it
     if needs_ff12.any():
-        ff12_medians: pd.Series[Any] = df.groupby(["ff12", "fiscal_year"])[value_col].transform(
-            lambda x: x.median() if x.dropna().size >= min_firms else np.nan
-        )
+        ff12_medians: pd.Series[Any] = df.groupby(["ff12", "fiscal_year"])[
+            value_col
+        ].transform(lambda x: x.median() if x.dropna().size >= min_firms else np.nan)
 
         # Use FF12 where FF48 failed
         result_medians = ff48_medians.fillna(ff12_medians)
@@ -551,7 +551,9 @@ def compute_efficiency_score(
     )
 
     # Filter to valid observations only (where rolling count >= min_years)
-    result = df_sorted.loc[df_sorted["rolling_count"] >= min_years, ["gvkey", "fiscal_year", "efficiency_score"]
+    result = df_sorted.loc[
+        df_sorted["rolling_count"] >= min_years,
+        ["gvkey", "fiscal_year", "efficiency_score"],
     ].reset_index(drop=True)
 
     # Clean up intermediate data
@@ -657,22 +659,14 @@ def compute_roa_residuals(df, ff_industry="ff48", min_obs=20):
 
     result_df = pd.DataFrame(residuals_list)
 
-    # Build result from index values - get gvkey and fiscal_year from original df
-    # Use the index to look up the original values
-    result_list = []
-    for idx, row in result_df.iterrows():
-        orig_idx = row["index"]
-        if orig_idx in df.index:
-            result_list.append(
-                {
-                    "gvkey": df.loc[orig_idx, "gvkey"],
-                    "fiscal_year": df.loc[orig_idx, "fiscal_year"],
-                    "roa_residual": row["roa_residual"],
-                    "predicted_delta_roa": row["predicted_delta_roa"],
-                }
-            )
-
-    result = pd.DataFrame(result_list)
+    # Build result from index values - vectorized merge with original df
+    result_df = result_df.set_index("index")
+    # Keep only rows with valid indices in df
+    valid_mask = result_df.index.isin(df.index)
+    result_df = result_df[valid_mask]
+    # Join with original df to get gvkey and fiscal_year
+    result = result_df.join(df[["gvkey", "fiscal_year"]])
+    result = result.reset_index(drop=True)
 
     n_computed = result["roa_residual"].notna().sum()
     print(f"  Computed roa_residual for {n_computed:,} observations")
@@ -1217,9 +1211,9 @@ def main() -> int:
 
     # Get unique datadate per gvkey-fiscal_year for sorting
     # (overinvest_df already has unique gvkey-fiscal_year from drop_duplicates in compute_overinvest_dummy)
-    datadate_df = overinvest_df.loc[:, ["gvkey", "fiscal_year", "datadate"]].drop_duplicates(
-        subset=["gvkey", "fiscal_year"], keep="first"
-    )
+    datadate_df = overinvest_df.loc[
+        :, ["gvkey", "fiscal_year", "datadate"]
+    ].drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
 
     # Merge dummies with datadate for sorting
     invest_dummies_full = invest_dummies.merge(
@@ -1324,9 +1318,13 @@ def main() -> int:
     # but filter to the sample manifest FIRST to reduce memory usage
     print("\n  Filtering to sample manifest...")
     base = compustat.loc[:, ["gvkey", "fiscal_year", "datadate"]].copy()
-    base = cast(pd.DataFrame, base).sort_values(
-        ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
-    ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
+    base = (
+        cast(pd.DataFrame, base)
+        .sort_values(
+            ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
+        )
+        .drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
+    )
 
     print(f"  Base firm-years (all Compustat): {len(base):,}")
 

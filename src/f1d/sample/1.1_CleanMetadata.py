@@ -9,7 +9,7 @@ Description: Loads Unified-info, deduplicates exact rows, resolves file_name
              the target date range (2002-2018).
 
 Inputs:
-    - 1_Inputs/Unified-info.parquet
+    - 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
     - config/project.yaml
 
 Outputs:
@@ -109,7 +109,10 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> argparse.Namesp
     from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
-        "Unified-info.parquet": root / "1_Inputs" / "Unified-info.parquet",
+        "Unified-info.parquet": root
+        / "1_Inputs"
+        / "Earnings_Calls_Transcripts"
+        / "Unified-info.parquet",
     }
 
     # 1.1 has no prerequisite steps (first in pipeline)
@@ -141,7 +144,10 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
 
     paths = {
         "root": root,
-        "unified_info": root / "1_Inputs" / "Unified-info.parquet",
+        "unified_info": root
+        / "1_Inputs"
+        / "Earnings_Calls_Transcripts"
+        / "Unified-info.parquet",
     }
 
     # Create timestamped output directory

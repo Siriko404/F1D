@@ -133,6 +133,7 @@ def check_prerequisites(root):
     required_files = {
         "managerial_roles_extracted.txt": root
         / "1_Inputs"
+        / "Manager_roles"
         / "managerial_roles_extracted.txt",
     }
 
@@ -361,7 +362,7 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
 
 
 def load_manager_keywords(root: Path) -> Pattern[str]:
-    path = root / "1_Inputs" / "managerial_roles_extracted.txt"
+    path = root / "1_Inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
     with open(path, "r") as f:
         keywords = [line.strip() for line in f if line.strip()]
     pattern = re.compile("|".join(keywords), re.IGNORECASE)
@@ -895,7 +896,9 @@ def main():
     }
 
     # Load References and checksum inputs
-    keywords_path = root / "1_Inputs" / "managerial_roles_extracted.txt"
+    keywords_path = (
+        root / "1_Inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
+    )
 
     # Resolve manifest path using timestamp-based directory resolution
     manifest_dir = get_latest_output_dir(

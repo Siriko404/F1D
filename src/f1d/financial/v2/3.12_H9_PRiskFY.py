@@ -43,13 +43,16 @@ Date: 2026-02-11
 
 import argparse
 import gc
+import json
+import logging
 import sys
 import time
 import warnings
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -187,7 +190,7 @@ def load_prisk_data(prisk_file):
     print(f"  Reading: {prisk_file.name}")
     # Read only needed columns to save memory
     usecols = ["gvkey", "date", "PRisk", "NPRisk", "PSentiment"]
-    df = pd.read_csv(prisk_file, sep="\t", usecols=usecols)
+    df = pd.read_csv(prisk_file, sep="\t", usecols=usecols, on_bad_lines="skip")
     print(f"  Loaded: {len(df):,} raw quarterly observations")
 
     # Normalize gvkey - zero-pad to 6 characters
@@ -419,32 +422,39 @@ def compute_prisk_fy(
     n_firms_filtered = len(compustat_subset) - len(compustat_df)
     print(f"  Filtered out {n_firms_filtered:,} firm-years without PRisk data")
 
-    # Process firm by firm
-    for gvkey, compustat_group in compustat_subset.groupby("gvkey"):
+    # Process firm by firm - vectorized inner loop
+    for gvkey, compustat_group in compustat_subset.groupby("gvkey", sort=False):
         # Get PRisk data for this firm
-        firm_prisk = prisk_subset[prisk_subset["gvkey"] == gvkey].copy()
+        firm_prisk = prisk_subset[prisk_subset["gvkey"] == gvkey]
 
         if len(firm_prisk) == 0:
             continue
 
-        # For each firm-year, find quarters in window
-        for _, row in compustat_group.iterrows():
-            fy_end = row["datadate"]
-            fyear = row["fyear"]
-            lower_bound = fy_end - timedelta(days=window_days)
+        # Prepare arrays for vectorized processing
+        prisk_dates = firm_prisk["cal_q_end"].values
+        prisk_vals = firm_prisk["PRisk"].values
+        prisk_sorted_idx = np.argsort(prisk_dates)
+        prisk_dates_sorted = prisk_dates[prisk_sorted_idx]
+        prisk_vals_sorted = prisk_vals[prisk_sorted_idx]
 
-            # Select quarters in window: lower_bound < cal_q_end <= fy_end
-            quarters_in_window = firm_prisk[
-                (firm_prisk["cal_q_end"] > lower_bound)
-                & (firm_prisk["cal_q_end"] <= fy_end)
-            ]
+        # Process all firm-years for this firm at once
+        fy_ends = compustat_group["datadate"].values
+        fyears = compustat_group["fyear"].values
 
-            n_quarters = len(quarters_in_window)
+        for i in range(len(fy_ends)):
+            fy_end = fy_ends[i]
+            fyear = fyears[i]
+            lower_bound = fy_end - np.timedelta64(window_days, "D")
 
-            # Apply minimum quarters rule
+            # Find quarters in window using binary search
+            left_idx = np.searchsorted(prisk_dates_sorted, lower_bound, side="right")
+            right_idx = np.searchsorted(prisk_dates_sorted, fy_end, side="right")
+
+            window_vals = prisk_vals_sorted[left_idx:right_idx]
+            n_quarters = len(window_vals)
+
             if n_quarters >= min_quarters:
-                priskfy = float(quarters_in_window["PRisk"].mean())
-
+                priskfy = float(np.mean(window_vals))
                 batch_results.append(
                     {
                         "gvkey": gvkey,
@@ -463,7 +473,6 @@ def compute_prisk_fy(
                 print(
                     f"    Processed: {n_processed:,}/{n_total:,} ({n_processed / n_total * 100:.1f}%)"
                 )
-                # Force garbage collection periodically
                 gc.collect()
 
             # Write batch to disk and clear memory

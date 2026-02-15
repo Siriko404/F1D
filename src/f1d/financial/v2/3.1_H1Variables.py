@@ -327,7 +327,7 @@ def compute_ocf_volatility(
     # Require positive AT and valid OCF
     df = compustat_df.loc[
         (compustat_df["atq"] > 0) & (compustat_df["oancfy"].notna()),
-        :
+        :,
     ].copy()
 
     # Compute OCF/AT ratio
@@ -336,29 +336,29 @@ def compute_ocf_volatility(
     # Sort by gvkey and fiscal_year for rolling calculation
     df = cast(pd.DataFrame, df).sort_values(["gvkey", "fiscal_year"])
 
+    # Vectorized two-pointer approach: for each (gvkey, fiscal_year),
+    # find rows with fiscal_year in (fy - window, fy] and compute std
     results = []
+    for gvkey, group in df.groupby("gvkey", sort=False):
+        group = group.sort_values("fiscal_year").reset_index(drop=True)
+        years = group["fiscal_year"].values
+        ocf_vals = group["ocf_at"].values
+        n = len(years)
+        left = 0
 
-    for gvkey, group in df.groupby("gvkey"):
-        group = cast(pd.DataFrame, group).sort_values("fiscal_year")
-
-        # Compute rolling standard deviation
-        for _idx, row in group.iterrows():
-            fy = row["fiscal_year"]
-
-            # Get trailing window (inclusive of current year)
-            window_data = group[
-                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
-            ]["ocf_at"]
-
-            # Require minimum observations
-            if window_data.notna().sum() >= min_years:
-                ocf_vol = window_data.std()
+        for right in range(n):
+            fy = years[right]
+            # Move left pointer to first year > fy - window - 1
+            lower_bound = fy - window - 1
+            while left < n and years[left] <= lower_bound:
+                left += 1
+            # Window is [left, right] inclusive
+            window_data = ocf_vals[left : right + 1]
+            valid_mask = ~np.isnan(window_data)
+            if valid_mask.sum() >= min_years:
+                ocf_vol = np.nanstd(window_data)
                 results.append(
-                    {
-                        "gvkey": gvkey,
-                        "fiscal_year": fy,
-                        "ocf_volatility": ocf_vol,
-                    }
+                    {"gvkey": gvkey, "fiscal_year": fy, "ocf_volatility": ocf_vol}
                 )
 
     result = pd.DataFrame(results)
@@ -803,9 +803,13 @@ def main() -> int:
     compustat_vars = compustat.loc[:, ["gvkey", "fiscal_year", "datadate"]].copy()
 
     # For each gvkey-fiscal_year, keep the most recent datadate
-    compustat_vars = cast(pd.DataFrame, compustat_vars).sort_values(
-        ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
-    ).drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
+    compustat_vars = (
+        cast(pd.DataFrame, compustat_vars)
+        .sort_values(
+            ["gvkey", "fiscal_year", "datadate"], ascending=[True, True, False]
+        )
+        .drop_duplicates(subset=["gvkey", "fiscal_year"], keep="first")
+    )
 
     print(f"  Base firm-years: {len(compustat_vars):,}")
 

@@ -293,10 +293,9 @@ def annualize_quarterly_data(
         DataFrame with gvkey, fiscal_year, annual_value
     """
     # Group by gvkey and fiscal year, sum the quarterly values
-    annual = (
-        compustat_df.groupby(["gvkey", "fiscal_year"], as_index=False)[value_col]
-        .sum()
-    )
+    annual = compustat_df.groupby(["gvkey", "fiscal_year"], as_index=False)[
+        value_col
+    ].sum()
     annual = cast(pd.DataFrame, annual).rename(columns={value_col: "annual_value"})
 
     return cast(pd.DataFrame, annual)
@@ -333,32 +332,30 @@ def compute_div_stability(
     annual_dps = annual_dps.sort_values(["gvkey", "fiscal_year"])
 
     results = []
+    for gvkey, group in annual_dps.groupby("gvkey", sort=False):
+        group = group.sort_values("fiscal_year").reset_index(drop=True)
+        years = group["fiscal_year"].values
+        dps_vals = group["dps"].values
+        n = len(years)
+        left = 0
 
-    for gvkey, group in annual_dps.groupby("gvkey"):
-        group = group.sort_values("fiscal_year")
+        for right in range(n):
+            fy = years[right]
+            lower_bound = fy - window - 1
+            while left < n and years[left] <= lower_bound:
+                left += 1
 
-        # Compute rolling stability for each year
-        for _idx, row in group.iterrows():
-            fy = row["fiscal_year"]
+            window_data = dps_vals[left : right + 1]
+            valid_mask = ~np.isnan(window_data)
 
-            # Get trailing window (inclusive of current year)
-            window_data = group[
-                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
-            ]["dps"]
-
-            # Require minimum observations
-            if window_data.notna().sum() >= min_years:
-                mean_dps = window_data.mean()
-
-                # Guard against division by zero
+            if valid_mask.sum() >= min_years:
+                mean_dps = np.nanmean(window_data)
                 if abs(mean_dps) > 0.001:
-                    # Compute delta DPS (year-over-year changes)
-                    delta_dps = window_data.diff().dropna()
-
-                    if len(delta_dps) >= 1:
-                        std_dev_delta = delta_dps.std()
-                        # Stability = -StdDev(Delta DPS) / |Mean(DPS)|
-                        div_stability = -std_dev_delta / abs(mean_dps)
+                    # Compute deltas within window
+                    deltas = np.diff(window_data)
+                    if len(deltas) >= 1:
+                        std_delta = np.nanstd(deltas)
+                        div_stability = -std_delta / abs(mean_dps)
                         results.append(
                             {
                                 "gvkey": gvkey,
@@ -409,40 +406,36 @@ def compute_payout_flexibility(
     annual_dps = annual_dps.sort_values(["gvkey", "fiscal_year"])
 
     results = []
-
-    for gvkey, group in annual_dps.groupby("gvkey"):
+    for gvkey, group in annual_dps.groupby("gvkey", sort=False):
         group = group.sort_values("fiscal_year").reset_index(drop=True)
+        years = group["fiscal_year"].values
+        dps_vals = group["dps"].values
+        n = len(years)
 
         # Compute year-over-year changes
-        group["dps_prior"] = group["dps"].shift(1)
-        group["abs_delta_dps"] = (group["dps"] - group["dps_prior"]).abs()
-
-        # Compute relative change (guard against division by zero)
-        group["relative_change"] = np.where(
-            group["dps_prior"].abs() > 0.001,
-            group["abs_delta_dps"] / group["dps_prior"].abs(),
+        dps_prior = np.full(n, np.nan)
+        dps_prior[1:] = dps_vals[:-1]
+        abs_delta = np.abs(dps_vals - dps_prior)
+        rel_change = np.where(
+            np.abs(dps_prior) > 0.001,
+            abs_delta / np.abs(dps_prior),
             np.nan,
         )
+        is_sig = rel_change > threshold
 
-        # Flag significant changes
-        group["is_significant_change"] = group["relative_change"] > threshold
+        left = 0
+        for right in range(n):
+            fy = years[right]
+            lower_bound = fy - window - 1
+            while left < n and years[left] <= lower_bound:
+                left += 1
 
-        # Compute rolling flexibility
-        for _idx, row in group.iterrows():
-            fy = row["fiscal_year"]
+            window_sig = is_sig[left : right + 1]
+            valid_mask = ~np.isnan(window_sig)
+            valid_obs = valid_mask.sum()
 
-            # Get trailing window (inclusive of current year)
-            window_data = group[
-                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
-            ]
-
-            # Count valid observations and significant changes
-            valid_obs = window_data["is_significant_change"].notna().sum()
-            n_changes = window_data["is_significant_change"].sum()
-
-            # Require minimum observations
             if valid_obs >= min_years:
-                payout_flex = n_changes / valid_obs
+                payout_flex = window_sig.sum() / valid_obs
                 results.append(
                     {
                         "gvkey": gvkey,
@@ -489,28 +482,25 @@ def compute_earnings_volatility(
     annual_eps = annual_eps.sort_values(["gvkey", "fiscal_year"])
 
     results = []
+    for gvkey, group in annual_eps.groupby("gvkey", sort=False):
+        group = group.sort_values("fiscal_year").reset_index(drop=True)
+        years = group["fiscal_year"].values
+        eps_vals = group["eps"].values
+        n = len(years)
+        left = 0
 
-    for gvkey, group in annual_eps.groupby("gvkey"):
-        group = group.sort_values("fiscal_year")
+        for right in range(n):
+            fy = years[right]
+            lower_bound = fy - window - 1
+            while left < n and years[left] <= lower_bound:
+                left += 1
 
-        # Compute rolling StdDev for each year
-        for _idx, row in group.iterrows():
-            fy = row["fiscal_year"]
-
-            # Get trailing window (inclusive of current year)
-            window_data = group[
-                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
-            ]["eps"]
-
-            # Require minimum observations
-            if window_data.notna().sum() >= min_years:
-                eps_vol = window_data.std()
+            window_data = eps_vals[left : right + 1]
+            valid_mask = ~np.isnan(window_data)
+            if valid_mask.sum() >= min_years:
+                eps_vol = np.nanstd(window_data)
                 results.append(
-                    {
-                        "gvkey": gvkey,
-                        "fiscal_year": fy,
-                        "earnings_volatility": eps_vol,
-                    }
+                    {"gvkey": gvkey, "fiscal_year": fy, "earnings_volatility": eps_vol}
                 )
 
     result = pd.DataFrame(results)
@@ -546,7 +536,7 @@ def compute_fcf_growth(compustat_df: pd.DataFrame) -> pd.DataFrame:
         (compustat_df["atq"] > 0)
         & (compustat_df["oancfy"].notna())
         & (compustat_df["capxy"].notna()),
-        :
+        :,
     ].copy()
 
     # Compute FCF = (OANCF - CAPX) / AT
@@ -558,12 +548,16 @@ def compute_fcf_growth(compustat_df: pd.DataFrame) -> pd.DataFrame:
     fcf_annual = df.groupby(["gvkey", "fiscal_year"], as_index=False)["fcf"].mean()
 
     # Sort by gvkey and fiscal_year - use .loc to ensure DataFrame type
-    fcf_annual = fcf_annual.loc[:, ["gvkey", "fiscal_year", "fcf"]].sort_values(["gvkey", "fiscal_year"])
+    fcf_annual = fcf_annual.loc[:, ["gvkey", "fiscal_year", "fcf"]].sort_values(
+        ["gvkey", "fiscal_year"]
+    )
 
     results = []
 
-    for gvkey, group in fcf_annual.groupby("gvkey"):
-        group = cast(pd.DataFrame, group).sort_values("fiscal_year").reset_index(drop=True)
+    for gvkey, group in fcf_annual.groupby("gvkey", sort=False):
+        group = (
+            cast(pd.DataFrame, group).sort_values("fiscal_year").reset_index(drop=True)
+        )
 
         # Compute year-over-year growth
         group["fcf_prior"] = group["fcf"].shift(1)
@@ -575,18 +569,18 @@ def compute_fcf_growth(compustat_df: pd.DataFrame) -> pd.DataFrame:
             np.nan,
         )
 
-        # Collect results
-        for _, row in group.iterrows():
-            if pd.notna(row["fcf_growth"]):
-                results.append(
-                    {
-                        "gvkey": gvkey,
-                        "fiscal_year": row["fiscal_year"],
-                        "fcf_growth": row["fcf_growth"],
-                    }
-                )
+        # Collect results - vectorized filter
+        valid_mask = group["fcf_growth"].notna()
+        if valid_mask.any():
+            results.append(
+                group.loc[valid_mask, ["gvkey", "fiscal_year", "fcf_growth"]]
+            )
 
-    result = pd.DataFrame(results)
+    result = (
+        pd.concat(results, ignore_index=True)
+        if results
+        else pd.DataFrame(columns=["gvkey", "fiscal_year", "fcf_growth"])
+    )
 
     if not result.empty:
         n_computed = result["fcf_growth"].notna().sum()
@@ -617,8 +611,7 @@ def compute_firm_maturity(compustat_df: pd.DataFrame) -> pd.DataFrame:
 
     # Filter to rows with valid equity > 0
     df = compustat_df.loc[
-        (compustat_df["seqq"].notna()) & (compustat_df["seqq"] > 0),
-        :
+        (compustat_df["seqq"].notna()) & (compustat_df["seqq"] > 0), :
     ].copy()
 
     # Compute firm maturity = RE / TE
@@ -661,26 +654,23 @@ def flag_dividend_payers(compustat_df: pd.DataFrame, window: int = 5) -> pd.Data
     annual_dps = annual_dps.sort_values(["gvkey", "fiscal_year"])
 
     results = []
+    for gvkey, group in annual_dps.groupby("gvkey", sort=False):
+        group = group.sort_values("fiscal_year").reset_index(drop=True)
+        years = group["fiscal_year"].values
+        dps_vals = group["dps"].values
+        n = len(years)
+        left = 0
 
-    for gvkey, group in annual_dps.groupby("gvkey"):
-        group = group.sort_values("fiscal_year")
+        for right in range(n):
+            fy = years[right]
+            lower_bound = fy - window - 1
+            while left < n and years[left] <= lower_bound:
+                left += 1
 
-        # Flag if DPS > 0 in the window
-        for _, row in group.iterrows():
-            fy = row["fiscal_year"]
-
-            # Check if any DPS > 0 in trailing window
-            window_data = group[
-                (group["fiscal_year"] > fy - window - 1) & (group["fiscal_year"] <= fy)
-            ]["dps"]
-
+            window_data = dps_vals[left : right + 1]
             is_payer = (window_data > 0).any()
             results.append(
-                {
-                    "gvkey": gvkey,
-                    "fiscal_year": fy,
-                    "is_div_payer": is_payer,
-                }
+                {"gvkey": gvkey, "fiscal_year": fy, "is_div_payer": is_payer}
             )
 
     result = pd.DataFrame(results)

@@ -745,14 +745,105 @@ def main() -> None:
         permno_list = manifest["permno"].dropna().unique().tolist()
         print(f"  Sample PERMNOs: {len(permno_list):,}")
 
-    # Load CRSP data
-    print("\nCRSP Daily Stock Data:")
-    crsp = load_crsp_for_years(
-        paths["crsp_dir"], list(range(year_range[0] - 1, year_range[1] + 2))
-    )
-    if crsp is None:
-        print("[ERROR] Failed to load CRSP data")
+    # Process CRSP data year by year to save memory
+    print("\nCRSP Daily Stock Data (Processed Annually):")
+    amihud_list = []
+    roll_list = []
+    volatility_list = []
+
+    # Process years: include t-1 and t+1 for coverage
+    process_years = list(range(year_range[0] - 1, year_range[1] + 2))
+
+    for year in process_years:
+        print(f"\nProcessing CRSP for year {year}...")
+
+        # Load ONE year of CRSP data
+        current_year_data = []
+        for q in range(1, 5):
+            fp = paths["crsp_dir"] / f"CRSP_DSF_{year}_Q{q}.parquet"
+            if fp.exists():
+                try:
+                    df_q = pd.read_parquet(
+                        fp,
+                        columns=[
+                            "PERMNO",
+                            "date",
+                            "RET",
+                            "VOL",
+                            "PRC",
+                            "ASKHI",
+                            "BIDLO",
+                        ],
+                    )
+                    current_year_data.append(df_q)
+                except Exception as e:
+                    print(f"    Warning reading {fp.name}: {e}")
+
+        if not current_year_data:
+            print(f"  No data found for {year}")
+            continue
+
+        crsp_year = pd.concat(current_year_data, ignore_index=True)
+        del current_year_data
+
+        # Normalize types
+        crsp_year["date"] = pd.to_datetime(crsp_year["date"])
+        for col in ["RET", "VOL", "PRC", "ASKHI", "BIDLO"]:
+            if col in crsp_year.columns:
+                crsp_year[col] = pd.to_numeric(crsp_year[col], errors="coerce")
+        if "PRC" in crsp_year.columns:
+            crsp_year["PRC"] = crsp_year["PRC"].abs()
+
+        # Calculate measures for this year
+        # Amihud
+        amihud_year = calculate_amihud_illiquidity(
+            crsp_year, permno_list, cfg["min_trading_days"]
+        )
+        if not amihud_year.empty:
+            amihud_list.append(amihud_year)
+
+        # Roll spread
+        roll_year = calculate_roll_spread(
+            crsp_year, permno_list, cfg["min_trading_days"]
+        )
+        if not roll_year.empty:
+            roll_list.append(roll_year)
+
+        # Volatility & Returns
+        vol_year = calculate_stock_volatility_and_returns(
+            crsp_year, permno_list, cfg["min_trading_days"]
+        )
+        if not vol_year.empty:
+            volatility_list.append(vol_year)
+
+        # Cleanup
+        del crsp_year
+        gc.collect()
+
+    # Concatenate results
+    if amihud_list:
+        amihud_df = pd.concat(amihud_list, ignore_index=True)
+    else:
+        print("[ERROR] No Amihud illiquidity computed")
         sys.exit(1)
+
+    if roll_list:
+        roll_df = pd.concat(roll_list, ignore_index=True)
+    else:
+        roll_df = pd.DataFrame(
+            columns=["PERMNO", "year", "roll_spread", "autocov", "n_obs"]
+        )
+
+    if volatility_list:
+        volatility_df = pd.concat(volatility_list, ignore_index=True)
+    else:
+        volatility_df = pd.DataFrame(
+            columns=["PERMNO", "year", "Volatility", "StockRet"]
+        )
+
+    stats["processing"]["variables_computed"].extend(
+        ["amihud_illiquidity", "roll_spread", "stock_volatility_returns"]
+    )
 
     # Load linguistic variables
     print("\nLinguistic Variables:")
@@ -763,29 +854,10 @@ def main() -> None:
     market = load_market_variables(paths["market_dir"], years)
 
     # ========================================================================
-    # Calculate Illiquidity Measures
+    # Calculate Illiquidity Measures - ALREADY DONE ABOVE
     # ========================================================================
 
-    print("\n" + "=" * 60)
-    print("Calculating Illiquidity Measures")
-    print("=" * 60)
-
-    # Calculate Amihud illiquidity
-    amihud_df = calculate_amihud_illiquidity(crsp, permno_list, cfg["min_trading_days"])
-    stats["processing"]["variables_computed"].append("amihud_illiquidity")
-
-    # Calculate Roll spread
-    roll_df = calculate_roll_spread(crsp, permno_list, cfg["min_trading_days"])
-    stats["processing"]["variables_computed"].append("roll_spread")
-
-    # Calculate stock volatility and returns from CRSP daily data
-    volatility_df = calculate_stock_volatility_and_returns(
-        crsp, permno_list, cfg["min_trading_days"]
-    )
-    stats["processing"]["variables_computed"].append("stock_volatility_returns")
-
-    # Free CRSP memory
-    del crsp
+    # Free memory
     gc.collect()
 
     # ========================================================================

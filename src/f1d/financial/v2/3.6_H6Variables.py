@@ -98,7 +98,7 @@ def setup_paths(config, timestamp):
         "linguistics_dir": linguistics_dir,
         "cccl_file": root
         / "1_Inputs"
-        / "CCCL instrument"
+        / "CCCL_instrument"
         / "instrument_shift_intensity_2005_2022.parquet",
     }
 

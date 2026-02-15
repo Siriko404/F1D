@@ -835,7 +835,9 @@ def process_year_worker(
     Returns:
         Tuple of (year, year_stats_dict)
     """
-    input_path = root / f"1_Inputs/speaker_data_{year}.parquet"
+    input_path = (
+        root / f"1_Inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
+    )
     if not input_path.exists():
         print(f"  Skipping {year}: Input not found")
         return year, {"year": year, "skipped": True}
@@ -931,7 +933,9 @@ def process_year_worker(
 
 
 def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir):
-    input_path = root / f"1_Inputs/speaker_data_{year}.parquet"
+    input_path = (
+        root / f"1_Inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
+    )
     if not input_path.exists():
         print(f"  Skipping {year}: Input not found")
         return None, None
