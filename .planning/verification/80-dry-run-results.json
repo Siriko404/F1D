@@ -1,0 +1,139 @@
+{
+  "audit_timestamp": "2026-02-15T03:35:00Z",
+  "phase": "80-test-stage-2-text-scripts-at-full-scale-audit-dataflow-fix-to-v6-standards-verify-outputs-debug-problems",
+  "plan": "80-01",
+  "dry_run_results": [
+    {
+      "script": "src/f1d/text/tokenize_and_count.py",
+      "command": "python -m f1d.text.tokenize_and_count --dry-run",
+      "exit_code": 1,
+      "status": "PREREQUISITES_MISSING",
+      "stdout": "Dry-run mode: validating inputs...",
+      "stderr": "",
+      "missing_prerequisites": [
+        {
+          "type": "input_file",
+          "description": "LM dictionary",
+          "path": "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
+        }
+      ],
+      "notes": [
+        "Requires LM dictionary file in 1_Inputs/",
+        "Requires master_sample_manifest.parquet from Stage 1 (Step 1.4)",
+        "Pipeline order: Stage 1 -> tokenize_and_count"
+      ],
+      "dry_run_support": true
+    },
+    {
+      "script": "src/f1d/text/construct_variables.py",
+      "command": "python -m f1d.text.construct_variables --dry-run",
+      "exit_code": 1,
+      "status": "PREREQUISITES_MISSING",
+      "stdout": "Dry-run mode: validating inputs...",
+      "stderr": "OutputResolutionError: Output base directory not found: 4_Outputs/2_Textual_Analysis/2.1_Tokenized",
+      "missing_prerequisites": [
+        {
+          "type": "prerequisite_step",
+          "description": "Tokenized output from Step 2.1",
+          "path": "4_Outputs/2_Textual_Analysis/2.1_Tokenized"
+        },
+        {
+          "type": "input_file",
+          "description": "Managerial roles file",
+          "path": "1_Inputs/managerial_roles_extracted.txt"
+        },
+        {
+          "type": "prerequisite_step",
+          "description": "Master manifest from Step 1.4",
+          "path": "4_Outputs/1.4_AssembleManifest"
+        }
+      ],
+      "notes": [
+        "Requires tokenize_and_count (Step 2.1) to be executed first",
+        "Requires master_sample_manifest.parquet from Stage 1 (Step 1.4)",
+        "Pipeline order: Stage 1 -> tokenize_and_count -> construct_variables"
+      ],
+      "dry_run_support": true
+    },
+    {
+      "script": "src/f1d/text/report_step2.py",
+      "command": "python src/f1d/text/report_step2.py --dry-run",
+      "exit_code": 1,
+      "status": "PREREQUISITES_MISSING",
+      "stdout": "Dry-run mode: validating inputs...",
+      "stderr": "",
+      "missing_prerequisites": [
+        {
+          "type": "prerequisite_step",
+          "description": "Linguistic variables from Step 2.2",
+          "file": "linguistic_variables.parquet"
+        }
+      ],
+      "notes": [
+        "Requires construct_variables (Step 2.2) to be executed first",
+        "Pipeline order: Stage 1 -> tokenize_and_count -> construct_variables -> report_step2"
+      ],
+      "dry_run_support": true
+    },
+    {
+      "script": "src/f1d/text/verify_step2.py",
+      "command": "python src/f1d/text/verify_step2.py --dry-run",
+      "exit_code": 1,
+      "status": "PREREQUISITES_MISSING",
+      "stdout": "Dry-run mode: validating inputs...",
+      "stderr": "",
+      "missing_prerequisites": [
+        {
+          "type": "prerequisite_step",
+          "description": "Linguistic variables from Step 2.2",
+          "file": "linguistic_variables.parquet"
+        }
+      ],
+      "notes": [
+        "Requires construct_variables (Step 2.2) to be executed first",
+        "Pipeline order: Stage 1 -> tokenize_and_count -> construct_variables -> verify_step2"
+      ],
+      "dry_run_support": true
+    }
+  ],
+  "summary": {
+    "total_scripts": 4,
+    "scripts_with_dry_run_support": 4,
+    "scripts_passing_dry_run": 0,
+    "scripts_with_missing_prerequisites": 4,
+    "overall_status": "PREREQUISITES_REQUIRED",
+    "pipeline_order": [
+      {
+        "step": 1,
+        "script": "Stage 1 sample scripts",
+        "output": "master_sample_manifest.parquet"
+      },
+      {
+        "step": 2.1,
+        "script": "tokenize_and_count.py",
+        "input": "master_sample_manifest.parquet + LM dictionary",
+        "output": "linguistic_counts_{year}.parquet"
+      },
+      {
+        "step": 2.2,
+        "script": "construct_variables.py",
+        "input": "linguistic_counts_{year}.parquet + master_sample_manifest.parquet",
+        "output": "linguistic_variables_{year}.parquet"
+      },
+      {
+        "step": 2.3,
+        "script": "report_step2.py / verify_step2.py",
+        "input": "linguistic_variables_{year}.parquet",
+        "output": "reports/validation"
+      }
+    ],
+    "notes": [
+      "All 4 scripts support --dry-run flag",
+      "All scripts correctly report missing prerequisites",
+      "Pipeline requires Stage 1 to be complete before Stage 2",
+      "Stage 1 produces master_sample_manifest.parquet (verified in Phase 79)",
+      "Stage 2.1 requires LM dictionary (Loughran-McDonald_MasterDictionary_1993-2024.csv)",
+      "Stage 2.2 requires 2.1 output + managerial_roles_extracted.txt"
+    ]
+  }
+}
