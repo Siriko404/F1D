@@ -1,0 +1,183 @@
+# Phase 80 Audit Report: Stage 2 Text Scripts Validation
+
+**Audit Date:** 2026-02-15
+**Phase:** 80 - Test Stage 2 Text Scripts at Full Scale
+**Status:** PASSED
+
+---
+
+## Executive Summary
+
+Stage 2 text processing pipeline validated and production-ready. All 4 scripts executed successfully, processing 112,968 earnings calls into 110 linguistic variables across 2,429 firms.
+
+| Metric | Value |
+|--------|-------|
+| Scripts Tested | 4 |
+| Scripts Passed | 4 |
+| Total Duration | 11.3 minutes |
+| Calls Processed | 112,968 |
+| Total Tokens | 835.7M |
+| Output Variables | 110 |
+
+---
+
+## 1. Standards Compliance (V6.1)
+
+All Stage 2 scripts verified V6.1 compliant:
+
+| Check | Status | Details |
+|-------|--------|---------|
+| Namespace Imports | PASS | 22 `f1d.shared.*` imports |
+| Legacy Imports | PASS | 0 `from shared.*` found |
+| sys.path.insert | PASS | 0 occurrences |
+| mypy Errors | PASS | 0 errors |
+
+**Conclusion:** No V6.1 compliance fixes required.
+
+---
+
+## 2. Execution Results
+
+### 2.1 TokenizeAndCount
+
+| Metric | Value |
+|--------|-------|
+| Status | PASS |
+| Duration | 598s (~10 min) |
+| Input Rows | 27.8M |
+| Output Rows | 9.8M |
+| Total Tokens | 835.7M |
+| Vocabulary Hits | 34.0M |
+| Years Processed | 17/17 |
+
+### 2.2 ConstructVariables
+
+| Metric | Value |
+|--------|-------|
+| Status | PASS |
+| Duration | 73s (~1 min) |
+| Input Rows | 112,968 |
+| Output Rows | 112,968 |
+| Variables/Row | 105+ |
+
+### 2.3 Report & Verify
+
+| Script | Status | Duration | Output |
+|--------|--------|----------|--------|
+| report_step2 | PASS | 3s | HTML report |
+| verify_step2 | PASS | 0.6s | 34/34 files verified |
+
+---
+
+## 3. Schema Validation
+
+### Linguistic Counts (14 columns)
+- Core columns: file_name, speaker_number, context, role, total_tokens
+- LM categories: Negative, Positive, Uncertainty, Litigious, Strong_Modal, Weak_Modal, Constraining
+- Extra columns: speaker_name, employer (metadata enrichment)
+
+### Linguistic Variables (110 columns)
+- Key columns: file_name, start_date, gvkey, conm, sic
+- Speaker breakdowns: Manager, Analyst, CEO, NonCEO_Manager, Entire
+- Context breakdowns: QA, Pres, All
+- LM categories: 7 per speaker/context combination
+
+**Schema Evolution:** Expanded from 105 to 110 columns with finer speaker type granularity.
+
+---
+
+## 4. Data Quality
+
+| Check | Status | Details |
+|-------|--------|---------|
+| file_name Uniqueness | PASS | 112,968 unique |
+| Row Count Match | PASS | Matches Stage 1 manifest |
+| No Negative Values | PASS | All percentages >= 0 |
+| No Infinite Values | PASS | All values finite |
+| Value Ranges | PASS | 0-25% for all measures |
+
+### Null Rates
+- Key columns (file_name, gvkey, etc.): 0.00%
+- Manager QA measures: 6.63%
+- Manager Pres measures: 4.90%
+
+**Note:** Null rates in linguistic measures are expected for calls without specific speaker/context combinations.
+
+### Value Distributions
+| Measure | Min | Max | Mean | Std |
+|---------|-----|-----|------|-----|
+| Manager_QA_Uncertainty | 0.0 | 25.0 | 0.85 | 0.35 |
+| Manager_QA_Negative | 0.0 | 9.8 | 0.74 | 0.36 |
+| Manager_Pres_Uncertainty | 0.0 | 7.6 | 0.89 | 0.38 |
+
+---
+
+## 5. Issues and Resolutions
+
+| # | Issue | Resolution | Status |
+|---|-------|------------|--------|
+| 1 | speaker_data files in subfolder | Copied to 1_Inputs/ | FIXED |
+| 2 | managerial_roles in subfolder | Copied to 1_Inputs/ | FIXED |
+| 3 | Prerequisite path mismatch in scripts | Fixed required_steps | FIXED |
+| 4 | Missing log directory | Created directory | FIXED |
+
+**Code Fix Recommended:** Add `os.makedirs()` in verify_step2.py save_stats() function.
+
+---
+
+## 6. Performance Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Wall-Clock Time | 11.3 minutes |
+| Throughput (calls/sec) | 167.2 |
+| Throughput (tokens/sec) | 1.4M |
+| Memory Usage | Within limits |
+
+---
+
+## 7. Output Files
+
+| Output | Location |
+|--------|----------|
+| Tokenized Counts | `4_Outputs/2_Textual_Analysis/2.1_Tokenized/2026-02-14_224712/` |
+| Linguistic Variables | `4_Outputs/2_Textual_Analysis/2.2_Variables/2026-02-14_225840/` |
+| HTML Report | `4_Outputs/2.3_Report/2026-02-14_230228/report.html` |
+| Verification Stats | `3_Logs/2.3_VerifyStep2/stats.json` |
+
+---
+
+## 8. Sample Composition
+
+| Metric | Value |
+|--------|-------|
+| Total Earnings Calls | 112,968 |
+| Unique Firms | 2,429 |
+| Date Range | 2002-01-16 to 2018-12-22 |
+| Years Covered | 17 |
+
+---
+
+## 9. Recommendations
+
+| Priority | Recommendation |
+|----------|----------------|
+| Medium | Add `--input-dir` flag to tokenize_and_count for speaker_data path |
+| Low | Add `os.makedirs()` in verify_step2 save_stats() |
+| Info | Document schema evolution (105 → 110 columns) |
+
+---
+
+## 10. Sign-Off
+
+**Status:** PASSED
+
+Stage 2 text processing pipeline is production-ready. All scripts executed successfully with valid outputs.
+
+- **Auditor:** Phase 80 Validation
+- **Date:** 2026-02-15
+- **Next Step:** Ready for Stage 3 (Financial Features)
+
+---
+
+*Generated by Phase 80 Audit*

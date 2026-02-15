@@ -1,0 +1,53 @@
+{
+  "audit_timestamp": "2026-02-15T04:15:00Z",
+  "phase": "80-03",
+  "task": "Data Quality Validation",
+  "data_profile": {
+    "linguistic_variables": {
+      "total_rows": 112968,
+      "total_columns": 110,
+      "unique_file_names": 112968,
+      "date_range": {
+        "min": "2002-01-16",
+        "max": "2018-12-22"
+      },
+      "unique_firms": 2429,
+      "null_rates": {
+        "file_name": 0.0,
+        "start_date": 0.0,
+        "gvkey": 0.0,
+        "conm": 0.0,
+        "sic": 0.0,
+        "Manager_QA_measures": 6.63,
+        "Manager_Pres_measures": 4.90
+      },
+      "value_ranges": {
+        "Manager_QA_Uncertainty_pct": {"min": 0.0, "max": 25.0, "mean": 0.85, "std": 0.35},
+        "Manager_QA_Negative_pct": {"min": 0.0, "max": 9.76, "mean": 0.74, "std": 0.36},
+        "Manager_Pres_Uncertainty_pct": {"min": 0.0, "max": 7.56, "mean": 0.89, "std": 0.38}
+      }
+    },
+    "linguistic_counts": {
+      "total_rows": 9823323,
+      "total_columns": 14,
+      "years_covered": 17,
+      "total_tokens": 835727616,
+      "vocabulary_hits": 33973687
+    }
+  },
+  "quality_checks": {
+    "file_name_uniqueness": {"status": "PASS", "value": true},
+    "row_count_match_manifest": {"status": "PASS", "value": true, "expected": 112968, "actual": 112968},
+    "no_negative_percentages": {"status": "PASS", "value": true},
+    "no_infinite_values": {"status": "PASS", "value": true},
+    "value_ranges_logical": {"status": "PASS", "notes": "All percentages between 0-25%"}
+  },
+  "summary": {
+    "overall_status": "PASS",
+    "critical_issues": 0,
+    "warnings": 1,
+    "warning_details": ["~6.63% null rate in Manager_QA measures (expected - some calls lack Q&A sections)"],
+    "data_quality_score": "HIGH",
+    "notes": "All quality checks passed. Null rates in linguistic measures are expected for calls without specific speaker/context combinations."
+  }
+}

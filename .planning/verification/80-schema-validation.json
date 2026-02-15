@@ -1,0 +1,77 @@
+{
+  "audit_timestamp": "2026-02-15T04:12:00Z",
+  "phase": "80-03",
+  "task": "Schema Validation",
+  "outputs_validated": {
+    "linguistic_counts": {
+      "path": "4_Outputs/2_Textual_Analysis/2.1_Tokenized/2026-02-14_224712",
+      "files": "linguistic_counts_{year}.parquet (17 files)",
+      "status": "PASS",
+      "schema": {
+        "columns_found": 14,
+        "expected_core_columns": [
+          "file_name", "speaker_number", "context", "role", "total_tokens",
+          "Negative_count", "Positive_count", "Uncertainty_count",
+          "Litigious_count", "Strong_Modal_count", "Weak_Modal_count", "Constraining_count"
+        ],
+        "all_expected_present": true,
+        "extra_columns": ["speaker_name", "employer"],
+        "notes": "Extra columns provide speaker metadata for downstream analysis"
+      },
+      "data_types": {
+        "file_name": "string",
+        "speaker_number": "int16",
+        "context": "string",
+        "role": "string",
+        "count_columns": "int64",
+        "total_tokens": "int64"
+      },
+      "sample_row_count": 342822
+    },
+    "linguistic_variables": {
+      "path": "4_Outputs/2_Textual_Analysis/2.2_Variables/2026-02-14_225840",
+      "files": "linguistic_variables_{year}.parquet (17 files)",
+      "status": "PASS",
+      "schema": {
+        "columns_found": 110,
+        "total_rows": 112968,
+        "key_columns_present": [
+          "file_name", "start_date", "gvkey", "conm", "sic"
+        ],
+        "linguistic_measures_by_speaker": [
+          "Manager_QA_*", "Manager_Pres_*", "Manager_All_*",
+          "Analyst_QA_*", "Analyst_Pres_*", "Analyst_All_*",
+          "CEO_QA_*", "CEO_Pres_*", "CEO_All_*",
+          "NonCEO_Manager_QA_*", "NonCEO_Manager_Pres_*", "NonCEO_Manager_All_*",
+          "Entire_QA_*", "Entire_Pres_*", "Entire_All_*"
+        ],
+        "linguistic_categories": [
+          "Uncertainty_pct", "Negative_pct", "Positive_pct",
+          "Litigious_pct", "Strong_Modal_pct", "Weak_Modal_pct", "Constraining_pct"
+        ],
+        "notes": "Schema expanded with granular speaker type breakdowns (Manager, Analyst, CEO, NonCEO_Manager, Entire)"
+      },
+      "data_types": {
+        "file_name": "string",
+        "start_date": "datetime64[ns]",
+        "gvkey": "string",
+        "conm": "string",
+        "sic": "float64",
+        "linguistic_measures": "float64"
+      },
+      "sample_row_count": 3355
+    }
+  },
+  "schema_evolution_notes": {
+    "Entire_Call_prefix": "Renamed to 'Entire_All' for consistency with speaker type naming",
+    "speaker_breakdown": "Added CEO, NonCEO_Manager breakdowns for finer granularity",
+    "context_breakdown": "Each speaker type has QA, Pres, and All context variants"
+  },
+  "summary": {
+    "overall_status": "PASS",
+    "outputs_validated": 2,
+    "outputs_passed": 2,
+    "critical_issues": 0,
+    "schema_enhancements": "110 columns vs expected 105 - expanded speaker type granularity"
+  }
+}

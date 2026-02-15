@@ -1,0 +1,136 @@
+{
+  "audit_timestamp": "2026-02-15T04:05:00Z",
+  "phase": "80-test-stage-2-text-scripts",
+  "plan": "80-02",
+  "execution_results": {
+    "tokenize_and_count": {
+      "script": "python -m f1d.text.tokenize_and_count",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 598.44,
+      "inputs": {
+        "manifest": "4_Outputs/1.4_AssembleManifest/2026-02-14_215218/master_sample_manifest.parquet",
+        "dictionary": "1_Inputs/LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv",
+        "speaker_data": "1_Inputs/speaker_data_{year}.parquet (17 files)"
+      },
+      "outputs": {
+        "directory": "4_Outputs/2_Textual_Analysis/2.1_Tokenized/2026-02-14_224712",
+        "files": ["linguistic_counts_{year}.parquet (17 files)"],
+        "total_rows": 9823323,
+        "total_tokens": 835727616,
+        "vocabulary_hits": 33973687
+      },
+      "metrics": {
+        "input_rows": 27831805,
+        "output_rows": 9823323,
+        "rows_removed": 18008482,
+        "removal_rate_pct": 64.7,
+        "years_processed": 17,
+        "years_skipped": 0,
+        "vocabulary_size": 3859
+      }
+    },
+    "construct_variables": {
+      "script": "python -m f1d.text.construct_variables",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 73.32,
+      "inputs": {
+        "tokenized": "4_Outputs/2_Textual_Analysis/2.1_Tokenized/2026-02-14_224712",
+        "manifest": "4_Outputs/1.4_AssembleManifest/2026-02-14_215218/master_sample_manifest.parquet",
+        "manager_roles": "1_Inputs/managerial_roles_extracted.txt"
+      },
+      "outputs": {
+        "directory": "4_Outputs/2_Textual_Analysis/2.2_Variables/2026-02-14_225840",
+        "files": ["linguistic_variables_{year}.parquet (17 files)"],
+        "total_rows": 112968,
+        "variables_per_row": 105
+      },
+      "metrics": {
+        "input_rows": 112968,
+        "output_rows": 112968,
+        "rows_removed": 0,
+        "removal_rate_pct": 0.0,
+        "years_processed": 17,
+        "variables_created": 1785,
+        "speakers_flagged": 9982346
+      }
+    },
+    "report_step2": {
+      "script": "python src/f1d/text/report_step2.py",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 3.0,
+      "inputs": {
+        "variables": "4_Outputs/2_Textual_Analysis/2.2_Variables/2026-02-14_225840"
+      },
+      "outputs": {
+        "directory": "4_Outputs/2.3_Report/2026-02-14_230228",
+        "files": ["report.html"],
+        "rows_analyzed": 112968
+      }
+    },
+    "verify_step2": {
+      "script": "python src/f1d/text/verify_step2.py",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 0.65,
+      "inputs": {
+        "counts": "4_Outputs/2_Textual_Analysis/2.1_Tokenized/2026-02-14_224712",
+        "variables": "4_Outputs/2_Textual_Analysis/2.2_Variables/2026-02-14_225840"
+      },
+      "outputs": {
+        "stats_file": "3_Logs/2.3_VerifyStep2/stats.json"
+      },
+      "metrics": {
+        "years_processed": 17,
+        "files_verified": 34,
+        "files_passed": 34,
+        "files_failed": 0,
+        "total_rows": 112968,
+        "missing_depvar": 7486
+      }
+    }
+  },
+  "issues_found": [
+    {
+      "type": "path_configuration",
+      "description": "speaker_data files in subfolder 1_Inputs/Earnings_Calls_Transcripts/ instead of 1_Inputs/",
+      "resolution": "Copied files to expected location",
+      "fixed": true
+    },
+    {
+      "type": "path_configuration",
+      "description": "managerial_roles_extracted.txt in subfolder 1_Inputs/Manager_roles/ instead of 1_Inputs/",
+      "resolution": "Copied file to expected location",
+      "fixed": true
+    },
+    {
+      "type": "prerequisite_path_mismatch",
+      "description": "report_step2.py and verify_step2.py had incorrect prerequisite step paths (2.2_ConstructVariables vs 2_Textual_Analysis/2.2_Variables)",
+      "resolution": "Fixed required_steps in both scripts",
+      "fixed": true
+    },
+    {
+      "type": "missing_directory",
+      "description": "verify_step2.py failed to save stats because 3_Logs/2.3_VerifyStep2/ directory didn't exist",
+      "resolution": "Created missing directory",
+      "fixed": true,
+      "should_fix_in_code": true
+    }
+  ],
+  "summary": {
+    "total_scripts": 4,
+    "scripts_passed": 4,
+    "scripts_failed": 0,
+    "total_duration_seconds": 675.41,
+    "total_rows_processed": 112968,
+    "dataflow": {
+      "stage_1_manifest": "112,968 earnings calls",
+      "stage_2_1_tokenized": "9,823,323 speaker rows → 835M tokens",
+      "stage_2_2_variables": "112,968 call-level rows with 105 variables",
+      "stage_2_3_verify": "34 files verified, all passed"
+    }
+  },
+  "overall_status": "PASS"
+}
