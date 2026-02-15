@@ -86,7 +86,8 @@ def load_config():
 
 def setup_paths(config):
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    # Go up from src/f1d/financial/v2/ to project root (5 levels)
+    root = Path(__file__).parent.parent.parent.parent.parent
 
     # Find latest H2 output
     h2_output_dir = get_latest_output_dir(

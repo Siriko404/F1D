@@ -106,7 +106,8 @@ MNA_CONTROL_VARS = [
 
 def setup_paths(timestamp):
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    # Go up from src/f1d/financial/v2/ to project root (5 levels)
+    root = Path(__file__).parent.parent.parent.parent.parent
 
     # Resolve manifest directory using timestamp-based resolution
     try:

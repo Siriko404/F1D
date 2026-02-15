@@ -104,7 +104,8 @@ DEFAULT_CONFIG: Dict[str, Any] = {
 
 def setup_paths(config, timestamp):
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    # Go up from src/f1d/financial/v2/ to project root (5 levels)
+    root = Path(__file__).parent.parent.parent.parent.parent
 
     # Resolve manifest directory
     manifest_dir = get_latest_output_dir(

@@ -164,10 +164,15 @@ def analyze_missing_values(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
         - percent: Percentage of missing values
     """
     missing = {}
-    for col in df.columns:
-        null_count = df[col].isna().sum()
+    # Use iloc to handle duplicate column names correctly
+    for i, col in enumerate(df.columns):
+        col_data = df.iloc[:, i]
+        null_count = col_data.isna().sum()
+        # Handle scalar or Series result
+        if isinstance(null_count, pd.Series):
+            null_count = null_count.iloc[0] if len(null_count) > 0 else 0
         if null_count > 0:
-            missing[col] = {
+            missing[str(col)] = {
                 "count": int(null_count),
                 "percent": round(null_count / len(df) * 100, 2),
             }
