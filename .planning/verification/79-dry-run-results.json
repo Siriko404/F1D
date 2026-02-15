@@ -1,0 +1,150 @@
+{
+  "audit_timestamp": "2026-02-14T00:00:00Z",
+  "phase": "79",
+  "plan": "01",
+  "audit_type": "dry-run execution validation",
+  "scripts_tested": 5,
+  "overall_status": "documented",
+  "summary": {
+    "passed": 1,
+    "failed_expected": 3,
+    "failed_unexpected": 1,
+    "total": 5
+  },
+  "scripts": {
+    "1.0_BuildSampleManifest.py": {
+      "path": "src/f1d/sample/1.0_BuildSampleManifest.py",
+      "command": "python src/f1d/sample/1.0_BuildSampleManifest.py --dry-run",
+      "exit_code": 1,
+      "status": "FAILED_UNEXPECTED",
+      "stdout": "Dry-run mode: validating inputs...\n[OK] All prerequisites validated",
+      "stderr": "UnicodeEncodeError: 'charmap' codec can't encode character '\\u2713' in position 0: character maps to <undefined>",
+      "issues": [
+        {
+          "type": "unicode_error",
+          "description": "Windows console encoding error with checkmark character (\\u2713)",
+          "line": 297,
+          "impact": "Script prerequisites pass but fails to print success message on Windows",
+          "workaround": "Use [OK] instead of ✓, or set PYTHONIOENCODING=utf-8"
+        }
+      ],
+      "prerequisites_validated": true,
+      "notes": "Prerequisites check passed, but Unicode error on print statement prevents clean exit"
+    },
+    "1.1_CleanMetadata.py": {
+      "path": "src/f1d/sample/1.1_CleanMetadata.py",
+      "command": "python src/f1d/sample/1.1_CleanMetadata.py --dry-run",
+      "exit_code": 0,
+      "status": "PASSED",
+      "stdout": "Dry-run mode: validating inputs...\n[OK] All prerequisites validated\n[OK] All prerequisites validated",
+      "stderr": "",
+      "issues": [],
+      "prerequisites_validated": true,
+      "notes": "First script in pipeline - no step dependencies, passes dry-run unconditionally"
+    },
+    "1.2_LinkEntities.py": {
+      "path": "src/f1d/sample/1.2_LinkEntities.py",
+      "command": "python src/f1d/sample/1.2_LinkEntities.py --dry-run",
+      "exit_code": 1,
+      "status": "FAILED_EXPECTED",
+      "stdout": "Dry-run mode: validating inputs...\n\n======================================================================\nERROR: Prerequisites not met\n======================================================================\n\nThe following issues were found:\n\n  1. Missing prerequisite output from 1.1_CleanMetadata: metadata_cleaned.parquet",
+      "stderr": "",
+      "issues": [
+        {
+          "type": "missing_prerequisite",
+          "description": "Step 1.1 output not found",
+          "required_file": "4_Outputs/1.1_CleanMetadata/*/metadata_cleaned.parquet",
+          "resolution": "Run 1.1_CleanMetadata first to generate required input"
+        }
+      ],
+      "prerequisites_validated": false,
+      "notes": "Expected failure on fresh run - requires 1.1 output. Dependency validation works correctly."
+    },
+    "1.3_BuildTenureMap.py": {
+      "path": "src/f1d/sample/1.3_BuildTenureMap.py",
+      "command": "python src/f1d/sample/1.3_BuildTenureMap.py --dry-run",
+      "exit_code": 1,
+      "status": "FAILED_EXPECTED",
+      "stdout": "Dry-run mode: validating inputs...\n\n======================================================================\nERROR: Prerequisites not met\n======================================================================\n\nThe following issues were found:\n\n  1. Missing prerequisite output from 1.2_LinkEntities: metadata_linked.parquet",
+      "stderr": "",
+      "issues": [
+        {
+          "type": "missing_prerequisite",
+          "description": "Step 1.2 output not found",
+          "required_file": "4_Outputs/1.2_LinkEntities/*/metadata_linked.parquet",
+          "resolution": "Run 1.2_LinkEntities first to generate required input"
+        }
+      ],
+      "prerequisites_validated": false,
+      "notes": "Expected failure on fresh run - requires 1.2 output (which requires 1.1). Dependency chain validated correctly."
+    },
+    "1.4_AssembleManifest.py": {
+      "path": "src/f1d/sample/1.4_AssembleManifest.py",
+      "command": "python src/f1d/sample/1.4_AssembleManifest.py --dry-run",
+      "exit_code": 1,
+      "status": "FAILED_EXPECTED",
+      "stdout": "Dry-run mode: validating inputs...\n\n======================================================================\nERROR: Prerequisites not met\n======================================================================\n\nThe following issues were found:\n\n  1. Missing prerequisite output from 1.2_LinkEntities: metadata_linked.parquet\n  2. Missing prerequisite output from 1.3_BuildTenureMap: tenure_monthly.parquet",
+      "stderr": "",
+      "issues": [
+        {
+          "type": "missing_prerequisite",
+          "description": "Step 1.2 output not found",
+          "required_file": "4_Outputs/1.2_LinkEntities/*/metadata_linked.parquet",
+          "resolution": "Run 1.2_LinkEntities first"
+        },
+        {
+          "type": "missing_prerequisite",
+          "description": "Step 1.3 output not found",
+          "required_file": "4_Outputs/1.3_BuildTenureMap/*/tenure_monthly.parquet",
+          "resolution": "Run 1.3_BuildTenureMap first"
+        }
+      ],
+      "prerequisites_validated": false,
+      "notes": "Expected failure on fresh run - requires both 1.2 and 1.3 outputs. Final assembly step correctly validates all dependencies."
+    }
+  },
+  "dependency_chain": {
+    "order": ["1.1_CleanMetadata", "1.2_LinkEntities", "1.3_BuildTenureMap", "1.4_AssembleManifest"],
+    "1.1_CleanMetadata": {
+      "inputs": ["1_Inputs/Unified-info.parquet"],
+      "outputs": ["4_Outputs/1.1_CleanMetadata/*/metadata_cleaned.parquet"],
+      "step_dependencies": []
+    },
+    "1.2_LinkEntities": {
+      "inputs": ["1_Inputs/CRSPCompustat_CCM/"],
+      "outputs": ["4_Outputs/1.2_LinkEntities/*/metadata_linked.parquet"],
+      "step_dependencies": ["1.1_CleanMetadata"]
+    },
+    "1.3_BuildTenureMap": {
+      "inputs": ["1_Inputs/Execucomp/comp_execucomp.parquet"],
+      "outputs": ["4_Outputs/1.3_BuildTenureMap/*/tenure_monthly.parquet"],
+      "step_dependencies": ["1.2_LinkEntities"]
+    },
+    "1.4_AssembleManifest": {
+      "inputs": [],
+      "outputs": ["4_Outputs/1.4_AssembleManifest/*/master_sample_manifest.parquet"],
+      "step_dependencies": ["1.2_LinkEntities", "1.3_BuildTenureMap"]
+    }
+  },
+  "findings": {
+    "passed_unconditionally": ["1.1_CleanMetadata"],
+    "passed_with_issues": [],
+    "failed_expected_prerequisites": ["1.2_LinkEntities", "1.3_BuildTenureMap", "1.4_AssembleManifest"],
+    "failed_unexpected": ["1.0_BuildSampleManifest"]
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "script": "1.0_BuildSampleManifest.py",
+      "issue": "UnicodeEncodeError on Windows with checkmark character",
+      "fix": "Replace print('\\u2713 All prerequisites validated') with print('[OK] All prerequisites validated') or use sys.stdout.reconfigure(encoding='utf-8')"
+    },
+    {
+      "priority": "low",
+      "script": "1.1_CleanMetadata.py",
+      "issue": "Duplicate [OK] message printed",
+      "fix": "Review dry-run print logic - appears to print success message twice"
+    }
+  ],
+  "conclusion": "Dry-run validation completed. 1.1 passes unconditionally. 1.2, 1.3, 1.4 correctly fail on missing prerequisites (expected on fresh run). 1.0 has Unicode issue on Windows that should be fixed. All dependency validation logic works correctly."
+}
