@@ -9,20 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Current Position
 
-Milestone: v6.1 Architecture Compliance Gap Closure - Extended
-Phase: 77-concerns-closure-parallel-agents-verification
-Current Plan: 17
-Total Plans in Phase: 17
-Status: COMPLETE - Phase 77 Finished
-Last activity: 2026-02-14 — Completed 77-17: Remaining module type error reduction
+Milestone: Phase 78 - Documentation Synchronization
+Phase: 78-documentation-synchronization
+Current Plan: 02
+Total Plans in Phase: 02 (estimated)
+Status: IN PROGRESS - Plan 78-02 Complete
+Last activity: 2026-02-14 — Completed 78-02: Legacy script deprecation notices
 
-Progress: [265 plans completed across all milestones]
+Progress: [266 plans completed across all milestones]
 
 ```
-All Milestones Complete
-v1.0-v6.1 shipped and archived
-
-Ready for next milestone planning
+Phase 78 in progress
+78-01: Create Phase 78 documentation synchronization plans (COMPLETE)
+78-02: Legacy script deprecation notices (COMPLETE)
 ```
 
 ## Performance Metrics
@@ -63,12 +62,16 @@ Ready for next milestone planning
 | Phase 77 P14 | 6 | 3 tasks | 2 files |
 | Phase 77 P13 | 8min | 3 tasks | 2 files |
 | Phase 77 P17 | 15min | 2 tasks | 13 files |
+| Phase 78 P02 | 5min | 5 tasks | 6 files |
 
 ## Accumulated Context
 
 ### Decisions
 
 Key decisions from v6.1 milestone:
+
+- [78-02] Added deprecation notices to all 6 legacy script folder READMEs with src/f1d/* migration paths
+- [78-02] Standardized notice format with blockquote, migration path, and namespace guidance
 
 - [77-05] Used subprocess.run() for script isolation in tests to avoid import pollution
 - [77-05] Tested for unexpected errors rather than exit code (scripts may fail on missing inputs)
@@ -128,11 +131,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-14
-Completed: 77-17 Remaining module type error reduction (0 mypy errors achieved)
-Stopped at: Phase 77 Complete (Plan 17/17)
+Completed: 78-02 Legacy script deprecation notices
+Stopped at: Phase 78 Plan 02 Complete
 
 **Next Action:**
-Begin Phase 78 - Documentation Synchronization
+Continue Phase 78 - Documentation Synchronization (next plan)
 
 ---
-*Last updated: 2026-02-14 (77-17 completed - Phase 77 Complete)*
+*Last updated: 2026-02-14 (78-02 completed - Phase 78 in progress)*
