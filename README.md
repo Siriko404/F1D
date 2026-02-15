@@ -9,6 +9,16 @@ Research data processing pipeline that constructs panel datasets for empirical f
 - Python >= 3.8 (tested on Python 3.8-3.13)
 - Git (for cloning the repository)
 
+### Install Package (Required)
+
+Install the F1D package in editable mode to enable proper namespace imports:
+
+```bash
+pip install -e .
+```
+
+This is required for all scripts to use `from f1d.shared.*` imports. Without this step, you will encounter `ModuleNotFoundError: No module named 'f1d'`.
+
 ### Core Dependencies
 
 Install all required dependencies:
@@ -654,9 +664,10 @@ If you encounter errors:
 
 1. Check that all required input files exist in `1_Inputs/`
 2. Verify Python version is 3.13+
-3. Ensure all dependencies are installed: `pip install -r requirements.txt`
-4. Review the log file in `3_Logs/<step_name>/` for detailed error messages
-5. Verify `config/project.yaml` paths are correct
+3. **If you see "ModuleNotFoundError: No module named 'f1d'"**, run `pip install -e .`
+4. Ensure all dependencies are installed: `pip install -r requirements.txt`
+5. Review the log file in `3_Logs/<step_name>/` for detailed error messages
+6. Verify `config/project.yaml` paths are correct
 
 ### Reproducibility
 
@@ -1400,19 +1411,26 @@ The F1D pipeline is designed for academic replication with current dataset sizes
    cd F1D
    ```
 
-2. **Install dependencies:**
+2. **Install the package (required for f1d.shared.* imports):**
+   ```bash
+   pip install -e .
+   ```
+
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    pip install rapidfuzz>=3.14.0  # Optional but recommended
    ```
 
-3. **Configure the pipeline:**
+4. **Configure the pipeline:**
    Edit `config/project.yaml` to set paths, seeds, and processing parameters.
 
-4. **Run a sample script:**
+5. **Run a sample script:**
    ```bash
    python 2_Scripts/1_Sample/1.1_CleanMetadata.py
    ```
+
+> **Note:** The package must be installed in editable mode (`pip install -e .`) for scripts to use `from f1d.shared.*` imports. Without this step, you will see `ModuleNotFoundError: No module named 'f1d'`.
 
 Output files are created in timestamped directories under `4_Outputs/`, with `latest/` symlinks pointing to the most recent run.
 
@@ -1424,6 +1442,16 @@ The pipeline follows a 4-stage structure:
 2. **Text** (2_Text): Tokenize transcripts, construct text variables, verify outputs
 3. **Financial** (3_Financial): Build financial features, firm controls, market variables, event flags
 4. **Econometric** (4_Econometric): Run regressions for CEO clarity, tone, liquidity effects
+
+### Package Architecture
+
+The pipeline uses a src-layout package structure (PyPA recommended):
+
+- **Package root:** `src/f1d/` - Installable via `pip install -e .`
+- **Shared utilities:** `src/f1d/shared/` - Reusable modules (config, logging, validation, etc.)
+- **Stage modules:** `src/f1d/sample/`, `src/f1d/text/`, `src/f1d/financial/`, `src/f1d/econometric/`
+
+All imports use the `f1d.shared.*` namespace (e.g., `from f1d.shared.config import get_settings`). No `sys.path.insert()` or PYTHONPATH manipulation is required when the package is installed in editable mode.
 
 See ROADMAP.md for detailed phase-by-phase documentation.
 
