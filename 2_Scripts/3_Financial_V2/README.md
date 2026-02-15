@@ -1,10 +1,14 @@
 # Financial V2: Hypothesis Variable Construction
 
+> **Note:** This folder contains legacy V2 scripts kept for reference. The active versions have been migrated to `src/f1d/financial/v2/` as part of the v6.1 architecture standard. New development should use the `f1d.financial.*` namespace imports.
+
 ## Purpose and Scope
 
 This folder contains variable construction scripts for the three main hypotheses (H1, H2, H3) in the F1D v2.0 hypothesis testing pipeline. These scripts extend the v1.0 financial controls pipeline (Step 3) by creating dependent variables, moderators, and additional controls specifically needed for empirical testing of the relationship between speech uncertainty and corporate financial decisions.
 
-The scripts in this folder are **Step 3.1, 3.2, and 3.3** in the execution order, following Step 2 (Text Processing) and Step 3 (Financial Controls). They consume outputs from both prior steps—speech uncertainty measures from `4_Outputs/2_Text_Processing/` and standard firm controls from `4_Outputs/3_Financial/`—to construct the specialized variables required for panel regression analysis.
+The scripts in this folder are **Step 3.1, 3.2, and 3.3** in the execution order, following Step 2 (Text Processing) and Step 3 (Financial Controls). They consume outputs from both prior steps - speech uncertainty measures from `4_Outputs/2_Text_Processing/` and standard firm controls from `4_Outputs/3_Financial/` - to construct the specialized variables required for panel regression analysis.
+
+**Status:** LEGACY - Migrated to src/f1d/financial/v2/
 
 ---
 
@@ -305,6 +309,6 @@ For replication questions, refer to:
 
 ---
 
-*Last updated: 2026-02-04*
-*Phase: 28-v2-structure-setup*
+*Last updated: 2026-02-14*
+*Phase: 78-documentation-synchronization*
 *Version: v2.0 Hypothesis Testing Suite*

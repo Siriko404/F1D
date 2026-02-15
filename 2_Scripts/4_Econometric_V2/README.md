@@ -1,8 +1,12 @@
 # Econometric V2
 
+> **Note:** This folder contains legacy V2 scripts kept for reference. The active versions have been migrated to `src/f1d/econometric/v2/` as part of the v6.1 architecture standard. New development should use the `f1d.econometric.*` namespace imports.
+
 ## Purpose and Scope
 
 This folder contains econometric analysis scripts for testing hypotheses H1, H2, and H3 on the relationship between managerial communication vagueness (uncertainty) and corporate financial policies.
+
+**Status:** LEGACY - Migrated to src/f1d/econometric/v2/
 
 **Primary Inputs:**
 - Financial variables from `4_Outputs/3_Financial_V2/latest/` (H1/H2/H3 dependent and control variables)
@@ -386,3 +390,9 @@ By default, cluster standard errors at the firm level. This accounts for correla
 
 ### Multiple Testing
 When testing hypotheses across multiple subsamples, the false discovery rate increases. Prefer interaction terms with dummy variables over separate subsample regressions.
+
+---
+
+*Last updated: 2026-02-14*
+*Phase: 78-documentation-synchronization*
+*Version: v2.0 Econometric Analyses*
