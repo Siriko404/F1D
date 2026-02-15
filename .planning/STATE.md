@@ -9,33 +9,33 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Current Position
 
-Milestone: Phase 80 - Test Stage 2 Text Scripts at Full Scale
-Phase: 80-test-stage-2-text-scripts
-Current Plan: 00
+Milestone: Phase 81 - Test Stage 3 Financial Scripts at Full Scale
+Phase: 81-test-stage-3-financial-scripts
+Current Plan: 01
 Total Plans in Phase: 04
-Status: PLANNED - Phase 80 planned with 4 plans, ready for execution
-Last activity: 2026-02-15 — Created Phase 80 for Stage 2 text script validation
+Status: IN_PROGRESS - 81-01 complete, continuing with 81-02
+Last activity: 2026-02-15 — Completed 81-01: Standards audit + dry-run validation
 
-Progress: [273 plans completed across all milestones, Phase 80 planned]
+Progress: [278 plans completed across all milestones, Phase 81 1/4 complete]
 
 ```
-Phase 79 COMPLETE
-79-01: Standards compliance audit + dry-run validation (COMPLETE)
-79-02: Full-scale execution of Stage 1 pipeline (COMPLETE)
-79-03: Schema and data quality validation (COMPLETE)
-79-04: Generate comprehensive audit reports (COMPLETE)
+Phase 80 COMPLETE
+80-01: Standards compliance audit + dry-run validation (COMPLETE)
+80-02: Full-scale execution of Stage 2 pipeline (COMPLETE)
+80-03: Schema and data quality validation (COMPLETE)
+80-04: Generate comprehensive audit reports (COMPLETE)
 
-Phase 80 PLANNED
-80-01: Standards compliance audit + dry-run validation (PENDING)
-80-02: Full-scale execution of Stage 2 pipeline (PENDING)
-80-03: Schema and data quality validation (PENDING)
-80-04: Generate comprehensive audit reports (PENDING)
+Phase 81 IN PROGRESS
+81-01: Standards compliance audit + dry-run validation (COMPLETE)
+81-02: Full-scale execution of Stage 3 pipeline (PENDING)
+81-03: Schema and data quality validation (PENDING)
+81-04: Generate comprehensive audit reports (PENDING)
 ```
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed (all milestones): 269
+- Total plans completed (all milestones): 270
 - v1.0: 143 plans
 - v2.0: 17+ plans
 - v3.0: 21 plans
@@ -43,8 +43,9 @@ Phase 80 PLANNED
 - v5.0: 4 plans
 - v6.0: 27 plans
 - v6.1: 21 plans - ARCHIVED (Phases 77-78)
-- Phase 79: 4/4 plans - COMPLETE ✅
-- Phase 80: 0/4 plans - PLANNED
+- Phase 79: 4/4 plans - COMPLETE
+- Phase 80: 4/4 plans - COMPLETE
+- Phase 81: 1/4 plans - IN PROGRESS
 
 **Milestone Summary:**
 
@@ -86,6 +87,12 @@ Phase 80 PLANNED
 
 Key decisions from v6.1 milestone:
 
+- [81-01] All 18 Stage 3 financial scripts verified V6.1 compliant (f1d.shared.* imports, 0 sys.path.insert, mypy 0 errors)
+- [81-01] Fixed path calculation in v1 scripts from parent^3 to parent^5 for correct project root resolution
+- [81-01] Fixed prerequisite directory names in check_prerequisites (comp_na_daily_all, tr_ibes, CRSP_DSF, SDC)
+- [81-01] Added '/' suffix to directory names in required_files for proper directory validation
+- [80-01] All 4 Stage 2 text scripts verified V6.1 compliant (f1d.shared.* imports, 0 sys.path.insert, mypy 0 errors)
+- [80-01] Dry-run validation confirmed prerequisite chain: Stage 1 -> 2.1 -> 2.2 -> 2.3
 - [78-01] Updated all documentation to use f1d.shared.* namespace imports
 - [78-01] Added pip install -e . as required prerequisite in README.md
 - [78-01] Added Architecture section documenting v6.1 compliance (zero sys.path.insert, zero legacy imports, mypy 0 errors)
@@ -153,6 +160,8 @@ Key decisions from v6.1 milestone:
 - [79-04] Generated comprehensive JSON audit report aggregating all verification data
 - [79-04] Generated human-readable markdown audit report with all findings
 - [79-04] Phase 79 complete: Stage 1 pipeline validated and production-ready
+- [80-01] All 4 Stage 2 text scripts verified V6.1 compliant (f1d.shared.* imports, 0 sys.path.insert, mypy 0 errors)
+- [80-01] Dry-run validation confirmed prerequisite chain: Stage 1 -> 2.1 -> 2.2 -> 2.3
 
 ### Pending Todos
 
@@ -166,34 +175,35 @@ None.
 - Phase 79 planned: 4 plans created (79-01 to 79-04)
 - v6.1-MILESTONE-AUDIT.md created: Comprehensive audit with 11 concerns resolved, 843 tests added
 - Phase 79 complete: All 4 plans finished, Stage 1 pipeline production-ready
-- Phase 80 added: Test Stage 2 text scripts at full scale, audit dataflow, fix to V6 standards, verify outputs
-- Phase 80 planned: 4 plans created (80-01 to 80-04) for Stage 2 validation
+- Phase 80 complete: All 4 plans finished, Stage 2 text pipeline production-ready
+- Phase 80 issues fixed: speaker_data path, managerial_roles path, prerequisite path mismatch, missing log directory
+- Phase 81 added: Test Stage 3 financial scripts at full scale
+- Phase 81 planned: 4 plans created (81-01 to 81-04) for Stage 3 validation
 
 ### Blockers/Concerns
 
-None - all issues from 79-01 and 79-02 have been resolved.
+None - all issues from Phase 80 have been resolved.
 
 ## Session Continuity
 
 Last session: 2026-02-15
-Completed: Phase 80 planning (4 plans created for Stage 2 text script validation)
-Stopped at: Phase 80 PLANNED - Ready for execution
+Completed: Phase 81 Plan 01 - Standards audit + dry-run validation for Stage 3 financial scripts
+Stopped at: Phase 81 IN PROGRESS - 81-01 complete, continuing with 81-02
 
 **Next Action:**
-Execute Phase 80: `/gsd-execute-phase 80` to begin testing Stage 2 text scripts
+Continue Phase 81: Execute plan 81-02 for full-scale Stage 3 pipeline execution
 
-**Phase 80 Summary:**
-- 4 plans created for Stage 2 text script validation
-- Scripts to test: tokenize_and_count, construct_variables, report_step2, verify_step2
-- Input: 112,968 earnings calls from Stage 1 manifest
-- Output: Word counts and linguistic variables for downstream analysis
+**Phase 81 Progress:**
+- 81-01: COMPLETE - Standards audit (18 scripts V6.1 compliant) + dry-run validation (4 V1 scripts pass)
+- 81-02: PENDING - Full-scale execution of Stage 3 pipeline
+- 81-03: PENDING - Schema and data quality validation
+- 81-04: PENDING - Generate comprehensive audit reports
 
-**Phase 79 Completed:**
-- ✅ Standards compliance verified (V6.1, 0 mypy errors)
-- ✅ Full-scale execution completed (465K → 113K rows, 24.3% retention)
-- ✅ Schema and data quality validated (all checks passed)
-- ✅ Comprehensive audit reports generated (JSON + Markdown)
-- ✅ Production-ready: 112,968 calls from 4,466 CEOs across 2,429 firms
+**Phase 81-01 Completed:**
+- V6.1 compliance verified for 18 Stage 3 financial scripts (5 V1 + 13 V2)
+- Dry-run validation passed for all 4 V1 scripts
+- Fixed path calculation bug in V1 scripts (parent^3 -> parent^5)
+- Fixed prerequisite directory names in check_prerequisites functions
 
 ---
-*Last updated: 2026-02-15 (Phase 80 PLANNED - ready for execution)*
+*Last updated: 2026-02-15 (Phase 81 IN PROGRESS - 81-01 complete)*
