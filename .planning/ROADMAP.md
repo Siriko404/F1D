@@ -110,6 +110,7 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 | 76. Stage Scripts Migration | v6.1 | 4/4 | Complete | 2026-02-14 |
 | 77. Concerns Closure + Verification | v6.1 | 17/17 | Complete | 2026-02-14 |
 | 78. Documentation Synchronization | v6.1 | 4/4 | Complete | 2026-02-14 |
+| 79. Stage 1 Sample Scripts Testing | v6.2 | 0/4 | Planned | - |
 
 ### Phase 77: Concerns Closure with Parallel Agents + Full Verification
 
@@ -180,6 +181,34 @@ Plans:
 - [x] 78-03-PLAN.md — Update ARCHITECTURE_STANDARD.md with v6.1 compliance (Wave 2)
 - [x] 78-04-PLAN.md — Verify and fix internal documentation links (Wave 2)
 
+### Phase 79: Test Stage 1 Sample Scripts at Full Scale
+
+**Goal:** Test Stage 1 sample scripts at full scale, audit dataflow, fix to V5/V6 standards, verify outputs, debug problems
+
+**Depends on:** Phase 78 (Documentation Synchronization)
+
+**Success Criteria** (what must be TRUE):
+1. All 5 scripts execute successfully with --dry-run
+2. All 5 scripts execute successfully at full scale (2002-2018)
+3. All outputs have expected schema and logical values
+4. All scripts comply with V6.1 architecture standards
+5. Audit report generated with all required metrics
+6. Any issues found are fixed and documented
+
+**Plans:** 4 plans in 4 waves
+
+**Wave Structure:**
+- Wave 1: 79-01 (Standards compliance + dry-run validation)
+- Wave 2: 79-02 (Full-scale execution of all 5 scripts)
+- Wave 3: 79-03 (Schema and data quality validation)
+- Wave 4: 79-04 (Generate audit reports MD + JSON)
+
+Plans:
+- [ ] 79-01-PLAN.md — Standards compliance audit + dry-run validation (Wave 1)
+- [ ] 79-02-PLAN.md — Full-scale execution of Stage 1 pipeline (Wave 2)
+- [ ] 79-03-PLAN.md — Schema and data quality validation (Wave 3)
+- [ ] 79-04-PLAN.md — Generate comprehensive audit reports (Wave 4)
+
 ---
 
-*Roadmap updated: 2026-02-14 (Phases 77-78 added to v6.1)*
+*Roadmap updated: 2026-02-14 (Phase 79 planned)*
