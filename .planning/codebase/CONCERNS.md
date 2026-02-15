@@ -1,243 +1,240 @@
 # Codebase Concerns
 
 **Analysis Date:** 2026-02-14
-**Last Updated:** 2026-02-14 (Phase 77 resolutions)
-
----
-
-## Phase 77 Resolutions (2026-02-14)
-
-The following concerns were addressed in Phase 77 (Concerns Closure with Parallel Agents + Full Verification).
-
-### Fully Resolved
-
-| Concern | Resolution | Plan | Key Change |
-|---------|------------|------|------------|
-| **Dynamic Module Imports** (High Priority) | RESOLVED | 77-02 | Moved `1.5_Utils.py` to `src/f1d/shared/sample_utils.py` with standard imports |
-| **NotImplemented Survival Analysis** (Known Bug) | RESOLVED | 77-03 | Implemented `run_cox_ph()` and `run_fine_gray()` with lifelines |
-| **Stage 2 Text Scripts NOT Migrated** (Critical Gap) | RESOLVED | 77-01 | Migrated 4 text scripts to `src/f1d/text/` with f1d.shared.* imports |
-| **Test Coverage Gaps - Hypothesis Scripts** (Medium Priority) | RESOLVED | 77-04 | Added 153 tests for H1-H9 regression scripts |
-| **All Scripts Dry-Run Verification** (ROADMAP criterion) | RESOLVED | 77-05 | 526 dry-run verification tests for all 45 pipeline scripts |
-| **Stats Module Type Errors** (Medium Priority) | RESOLVED | 77-07 | Reduced from 23 to 0 mypy errors with proper type annotations |
-| **V1 Legacy Code Test Gaps** (Medium Priority) | RESOLVED | 77-08 | Added 59 tests for V1 financial and econometric scripts |
-| **Missing Type Stub Coverage** (Medium Priority) | RESOLVED | 77-09 | Added pandas-stubs, types-psutil, types-requests, types-PyYAML |
-| **Stats Module Test Gaps** (Medium Priority) | RESOLVED | 77-10 | Added 105 tests with golden fixtures for regression testing |
-| **Type Ignore Comments Documentation** (Medium Priority) | RESOLVED | 77-11 | Documented 43 type ignores with TYPE ERROR BASELINE pattern |
-
-### Partially Resolved
-
-| Concern | Status | Plan | Notes |
-|---------|--------|------|-------|
-| **Type Ignore Comments** | PARTIAL | 77-11 | Reduced from 78 to ~40 (dynamic import comments removed in 77-02, remaining documented with rationale) |
-
-### Deferred (Not in Phase 77 Scope)
-
-| Concern | Status | Reason |
-|---------|--------|--------|
-| **Large Files with Mixed Responsibilities** | DEFERRED | Requires separate planning phase - not addressed in Phase 77 |
-| **Bare `pass` Exception Handlers** | DEFERRED | Not found in actual codebase (CONCERNS.md outdated) |
-
----
-
-## Original Concerns (Historical Reference)
-
-The following sections preserve the original concern documentation for historical reference.
-
----
 
 ## Tech Debt
 
-### Dynamic Module Imports (High Priority) - RESOLVED (77-02)
-- **Status:** RESOLVED in Phase 77, Plan 02
-- **Resolution:** Moved `1.5_Utils.py` to `src/f1d/shared/sample_utils.py` with standard Python imports
-- ~~Issue: Files use `importlib.util` to dynamically load `1.5_Utils.py` at runtime instead of standard Python imports~~
-- ~~Files: `src/f1d/sample/1.1_CleanMetadata.py`, `src/f1d/sample/1.2_LinkEntities.py`, `src/f1d/sample/1.3_BuildTenureMap.py`, `src/f1d/sample/1.4_AssembleManifest.py`, `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py`, `src/f1d/financial/v1/3.1_FirmControls.py`, `src/f1d/financial/v1/3.2_MarketVariables.py`~~
-- ~~Impact: Breaks IDE autocomplete, type checking, and makes refactoring error-prone. Requires `# type: ignore` comments to suppress mypy errors~~
-- ~~Fix approach: Rename `1.5_Utils.py` to `sample_utils.py`, move to `src/f1d/shared/`, use standard imports~~
+**Code Duplication:**
+- Issue: Inline utility functions duplicated across ~90 scripts (DualWriter, checksum, print_stat, etc.)
+- Files: `src/f1d/financial/v1/*`, `src/f1d/econometric/v1/*`, `src/f1d/sample/*`, `src/f1d/text/*`
+- Impact: Inconsistent behavior, difficult maintenance, 60,800+ lines of redundant code
+- Fix approach: Extract all utilities to `f1d.shared.*` modules and update imports
 
-### Large Files with Mixed Responsibilities (Medium Priority) - DEFERRED
-- **Status:** DEFERRED - Not in Phase 77 scope, requires separate planning phase
-- Issue: Single files exceed 1000+ lines with multiple responsibilities
-- Files: `2_Scripts/shared/observability/stats.py` (5171 lines), `2_Scripts/4_Econometric_V2/4.4_H4_LeverageDiscipline.py` (1767 lines), `2_Scripts/3_Financial_V2/3.2_H2Variables.py` (1700 lines)
-- Impact: Difficult to navigate, test, and maintain. High cognitive load for understanding
-- Fix approach: Split into focused modules with single responsibilities
+**Large Files:**
+- Issue: Multiple files exceed 1,000 lines, reducing maintainability
+- Files:
+  - `src/f1d/shared/observability/stats.py` (5,304 lines)
+  - `src/f1d/econometric/v2/4.4_H4_LeverageDiscipline.py` (1,770 lines)
+  - `src/f1d/financial/v2/3.2_H2Variables.py` (1,695 lines)
+  - `src/f1d/econometric/v2/4.6_H6CCCLRegression.py` (1,478 lines)
+  - `src/f1d/financial/v2/3.13_H9_AbnormalInvestment.py` (1,359 lines)
+  - `src/f1d/text/tokenize_and_count.py` (1,350 lines)
+- Impact: Difficult to understand, test, and modify
+- Fix approach: Break into smaller focused modules (under 500 lines each)
 
-### Type Ignore Comments (Medium Priority) - PARTIALLY RESOLVED (77-02, 77-11)
-- **Status:** PARTIALLY RESOLVED - Reduced from 78 to ~40 (dynamic import comments removed, remaining documented)
-- **Changes:**
-  - 77-02: Eliminated dynamic import type ignores by using standard imports
-  - 77-11: Documented remaining 43 type ignores with TYPE ERROR BASELINE pattern and rationale
-- Issue: ~40 `# type: ignore` comments remain (documented in `.planning/codebase/type_ignore_audit.md`)
-- Files: `src/f1d/sample/*.py` (6), `src/f1d/econometric/v1/4.3_TakeoverHazards.py` (7), `src/f1d/shared/chunked_reader.py` (1), v2 directories (29)
-- Impact: Remaining ignores are decorator-related (requires ParamSpec/overload) or library stub issues
-- Fix approach: See `.planning/codebase/type_ignore_audit.md` for categorization
+**Unused Code:**
+- Issue: Dead code detected by vulture linter
+- Files: `src/f1d/sample/1.0_BuildSampleManifest.py`, `src/f1d/sample/1.1_CleanMetadata.py`, `src/f1d/sample/1.2_LinkEntities.py`, `src/f1d/econometric/v1/4.3_TakeoverHazards.py`, `src/f1d/shared/centering.py`, `src/f1d/shared/industry_utils.py`, `src/f1d/shared/iv_regression.py`, `src/f1d/shared/observability/stats.py`, `src/f1d/shared/sample_utils.py`
+- Impact: Codebase bloat, confusion about what is actually used
+- Fix approach: Remove unused imports and variables
 
-### Bare `pass` Exception Handlers (Low Priority) - DEFERRED (Not Found)
-- **Status:** DEFERRED - Not found in actual codebase (CONCERNS.md was outdated)
-- ~~Issue: Empty exception blocks that silently swallow errors~~
-- ~~Files: `src/f1d/econometric/v2/4.9_CEOFixedEffects.py:237`, `src/f1d/econometric/v2/4.*.py` (multiple), `src/f1d/financial/v2/3.6_H6Variables.py:689`, `src/f1d/financial/v2/3.5_H5Variables.py:1305`~~
-- ~~Impact: Errors go undetected, making debugging difficult~~
-- ~~Fix approach: Add logging or specific exception handling with context~~
-- **Note:** Codebase audit during Phase 77 did not find these patterns at the specified locations
+**Type Safety:**
+- Issue: 50+ mypy errors remaining across codebase
+- Files: `src/f1d/shared/*`, `src/f1d/regression_utils.py`, `src/f1d/env_validation.py`, `src/f1d/data_validation.py`
+- Impact: Runtime type errors, reduced IDE support
+- Fix approach: Fix type annotations, add proper TypedDict definitions, install missing type stubs
 
 ## Known Bugs
 
-### NotImplemented Survival Analysis Functions - RESOLVED (77-03)
-- **Status:** RESOLVED in Phase 77, Plan 03
-- **Resolution:** Implemented `run_cox_ph()` with lifelines.CoxPHFitter and `run_fine_gray()` with cause-specific hazards approach
-- ~~Symptoms: `run_cox_ph()` and `run_fine_gray()` raise `NotImplementedError` when called~~
-- ~~Files: `src/f1d/econometric/v1/4.3_TakeoverHazards.py:115-130`~~
-- ~~Trigger: Running Step 4.3 takeover hazard analysis~~
-- ~~Workaround: None - features are stubs requiring lifelines integration~~
+**Silent Symlink Failures:**
+- Symptoms: `update_latest_symlink()` fails silently on Windows with only warning printed
+- Files: `src/f1d/financial/v2/3.8_H8TakeoverVariables.py:854-867`
+- Trigger: Creating symlinks on Windows systems
+- Workaround: None - function fails without raising exception
+- Impact: "latest" directory may not be updated, causing downstream scripts to read stale data
+- Fix approach: Add proper error handling with sys.exit(1) or raise exception, implement Windows directory fallback
 
-### Stats Module Type Errors (56 errors) - RESOLVED (77-07)
-- **Status:** RESOLVED in Phase 77, Plan 07
-- **Resolution:** Added proper type annotations with typing.cast, Optional types, and np.asarray patterns - reduced from 23 to 0 errors
-- ~~Symptoms: mypy reports 56 type errors in shared modules, primarily in `observability/stats.py`~~
-- ~~Files: `src/f1d/shared/observability/stats.py` (47 errors), `2_Scripts/shared/observability/stats.py` (47 errors)~~
-- ~~Trigger: Running `mypy` type checking~~
-- ~~Workaround: Documented in `type_errors_baseline.txt` and `type_errors_summary.md`~~
+**RapidFuzz Optional Dependency:**
+- Symptoms: Fuzzy matching silently disabled if rapidfuzz not installed, reducing match rates
+- Files: `src/f1d/shared/string_matching.py:28-36`, `src/f1d/sample/1.2_LinkEntities.py:574-575`
+- Trigger: Missing `rapidfuzz>=3.14.0` in requirements
+- Workaround: Install manually: `pip install rapidfuzz>=3.14.0`
+- Impact: Tier 3 entity matching skipped, ~5-10% lower entity match rates
+- Fix approach: Either make rapidfuzz required or document clear warning with performance impact
 
 ## Security Considerations
 
-### WRDS Credentials Handling
-- Risk: Credentials stored in environment variables without encryption
-- Files: `.env.example` shows `F1D_WRDS_USERNAME` and `F1D_WRDS_PASSWORD` patterns
-- Current mitigation: `.env` is in `.gitignore`, template provided without values
-- Recommendations: Validate that no actual `.env` file with credentials is committed
+**Subprocess Path Validation:**
+- Risk: Subprocess execution may allow path traversal if paths are not validated
+- Files: `src/f1d/sample/1.0_BuildSampleManifest.py:235-240`, `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py:122-128`, `src/f1d/econometric/v2/*` (12+ files)
+- Current mitigation: `src/f1d/shared/subprocess_validation.py` provides validation but not used consistently
+- Recommendations:
+  - Use `validate_script_path()` from `subprocess_validation.py` in all subprocess calls
+  - Ensure all script paths are validated against allowed directories before execution
+  - Add input validation for user-provided paths
 
-### Dynamic Code Loading - RESOLVED (77-02)
-- **Status:** RESOLVED in Phase 77, Plan 02
-- **Resolution:** Eliminated importlib.util dynamic imports, now using standard Python imports from `f1d.shared.sample_utils`
-- ~~Risk: `importlib.util.spec_from_file_location()` and `exec_module()` could load arbitrary code if paths are manipulated~~
-- ~~Files: `src/f1d/sample/1.1_CleanMetadata.py:47-53`, `src/f1d/sample/1.2_LinkEntities.py:59-64`, `src/f1d/sample/1.3_BuildTenureMap.py:47-51`, `src/f1d/sample/1.4_AssembleManifest.py:47-51`~~
-- ~~Current mitigation: Paths are hardcoded relative to `__file__`~~
-- ~~Recommendations: Consider using standard imports to eliminate this pattern entirely~~
+**Environment Variable Handling:**
+- Risk: Environment variables read without validation for sensitive operations
+- Files: `src/f1d/shared/env_validation.py`, `.env.example`
+- Current mitigation: Schema defined in `ENV_SCHEMA` but not enforced for all operations
+- Recommendations:
+  - Enforce env var validation before use in production code
+  - Document required vs optional variables clearly
+  - Add secrets management for WRDS credentials (currently in comments)
+
+**Data Input Validation:**
+- Risk: Malformed or malicious input data could cause unexpected behavior
+- Files: `src/f1d/shared/data_validation.py`
+- Current mitigation: Schema validation defined for only 2 files (Unified-info.parquet, LM dictionary)
+- Recommendations:
+  - Add schema validation for all input files (Compustat, CRSP, CCM, SDC, IBES)
+  - Enable strict mode by default in production
 
 ## Performance Bottlenecks
 
-### Entity Linking (Step 1.2)
-- Problem: Fuzzy matching is O(n^2) complexity - the slowest step in pipeline
-- Files: `src/f1d/sample/1.2_LinkEntities.py` (1291 lines)
-- Cause: ~11k unique companies require fuzzy name matching against CCM database
-- Improvement path: Parallel workers (Phase 15-01 planned but removed in Phase 16-03, available in git history)
+**Row Iteration:**
+- Problem: 40+ instances of `.iterrows()` used instead of vectorized operations
+- Files: `src/f1d/sample/1.2_LinkEntities.py:605,617`, `src/f1d/sample/1.3_BuildTenureMap.py:646`, `src/f1d/financial/v1/3.4_Utils.py:50`, `src/f1d/shared/diagnostics.py:345`, `src/f1d/financial/v1/3.3_EventFlags.py:315,332`, `src/f1d/econometric/v1/4.1.1_EstimateCeoClarity_CeoSpecific.py:605,617,748,755`, `src/f1d/shared/financial_utils.py:157`, `src/f1d/shared/iv_regression.py:535`, `src/f1d/shared/panel_ols.py:187`, `src/f1d/econometric/v1/4.4_GenerateSummaryStats.py:543,589,629,656,678`, `src/f1d/shared/reporting_utils.py:76`, `src/f1d/shared/observability/stats.py:1131,1153,1211,1238,1304,1869,1894,1927,1980,2490,2510,2539`, `src/f1d/financial/v2/3.1_H1Variables.py:344`, `src/f1d/financial/v2/3.3_H3Variables.py:340,430,496,578,668`, `src/f1d/financial/v2/3.12_H9_PRiskFY.py:430`, `src/f1d/financial/v2/3.2_H2Variables.py:662`
+- Cause: Iterative row-by-row processing instead of vectorized pandas operations
+- Improvement path: Replace `.iterrows()` with vectorized operations, `.apply()`, or `.loc[]` filtering
 
-### Large Parquet File Reads
-- Problem: Reading entire files when only subset of columns needed
-- Files: Multiple scripts in `src/f1d/financial/v2/`, `src/f1d/econometric/`
-- Cause: Legacy code before Phase 15 column pruning optimization
-- Improvement path: Already partially addressed; ensure all scripts use `columns=` parameter in `pd.read_parquet()`
+**Sequential Year Processing:**
+- Problem: Year loops processed sequentially despite `config['thread_count'] = 1` setting
+- Files: `src/f1d/financial/v1/3.1_FirmControls.py:775-780`, `src/f1d/text/tokenize_and_count.py`, `src/f1d/econometric/v2/*`
+- Cause: No parallelization despite config setting
+- Improvement path: Implement `concurrent.futures` for year-level parallelization with deterministic ordering
 
-### Memory Requirements
-- Problem: Peak memory ~4GB during entity linking may exceed smaller systems
-- Files: `src/f1d/sample/1.2_LinkEntities.py`
-- Cause: Loading entire CCM database and transcript metadata into memory
-- Improvement path: Use chunked reading (already implemented in `chunked_reader.py`), memory-aware throttling
+**Memory-Intensive Operations:**
+- Problem: Large DataFrames loaded entirely into memory without chunking
+- Files: `src/f1d/text/tokenize_and_count.py`, `src/f1d/sample/1.2_LinkEntities.py`
+- Cause: `pd.read_parquet()` loads entire file, no chunking for large datasets
+- Improvement path: Use `MemoryAwareThrottler` from `chunked_reader.py` for incremental processing
+
+**Lambda Functions in Group Operations:**
+- Problem: `.apply(lambda)` used in groupby operations
+- Files: `src/f1d/financial/v1/3.1_FirmControls.py:444`, `src/f1d/text/tokenize_and_count.py:918,1014`
+- Cause: Lambda functions slower than vectorized methods
+- Improvement path: Replace with `.transform()` or pre-defined functions
 
 ## Fragile Areas
 
-### V1/V2 Variant Coexistence
-- Files: `src/f1d/econometric/v1/`, `src/f1d/econometric/v2/`, `src/f1d/financial/v1/`, `src/f1d/financial/v2/`
-- Why fragile: Two parallel implementations of same pipeline steps must be kept in sync; changes may need to be applied to both
-- Safe modification: Changes to shared utilities (`src/f1d/shared/`) are safe; changes to step scripts should check both versions
-- Test coverage: V1 scripts excluded from coverage calculation (`pyproject.toml` omit pattern `*/V1*`)
+**Entity Linking Pipeline:**
+- Files: `src/f1d/sample/1.2_LinkEntities.py` (1,285 lines)
+- Why fragile: Complex 3-tier matching strategy, fuzzy matching sensitive to threshold, dedup-index pattern assumes specific data structure
+- Safe modification: Add comprehensive logging at each tier, validate match quality statistics, add unit tests for each tier
+- Test coverage: Limited - only integration tests, no unit tests for fuzzy matching logic
 
-### Dynamic Utils Import Pattern - RESOLVED (77-02)
-- **Status:** RESOLVED in Phase 77, Plan 02
-- **Resolution:** Standard imports from `f1d.shared.sample_utils` now used
-- ~~Files: All files in `src/f1d/sample/` and some in `src/f1d/financial/v1/`~~
-- ~~Why fragile: Relies on filesystem path at runtime; breaks if file structure changes~~
-- ~~Safe modification: Do not rename or move `1.5_Utils.py` without updating all import sites~~
-- ~~Test coverage: Limited - dynamic imports difficult to mock~~
+**Tenure Map Construction:**
+- Files: `src/f1d/sample/1.3_BuildTenureMap.py`
+- Why fragile: Date handling complexity, episode construction assumptions about Execucomp data structure, multiple `.iloc[]` operations
+- Safe modification: Add date range validation, verify episode continuity, add tests for edge cases (overlapping tenures, missing dates)
+- Test coverage: Partial - basic tests exist
 
-### Stats Module Dictionary Typing
-- Files: `src/f1d/shared/observability/stats.py` (5171 lines in 2_Scripts version)
-- Why fragile: Complex nested dictionary structures with inconsistent typing; 47/56 of all type errors originate here
-- Safe modification: Add explicit type annotations before modifying
-- Test coverage: Limited - complex return types make testing difficult
+**Financial Variable Computation:**
+- Files: `src/f1d/financial/v2/3.1_H1Variables.py`, `src/f1d/financial/v2/3.2_H2Variables.py`, `src/f1d/financial/v2/3.3_H3Variables.py`
+- Why fragile: Complex variable calculations dependent on merge results, missing value handling not consistent across variables
+- Safe modification: Standardize missing value handling, add validation for output ranges, add regression tests
+- Test coverage: V2 scripts have unit tests but coverage unknown
+
+**Regression Models:**
+- Files: `src/f1d/econometric/v2/4.*_H*Regression.py` (9 files, 1,000+ lines each)
+- Why fragile: Model specifications hardcoded, fixed effects handling varies by script, results parsing depends on statsmodels output format
+- Safe modification: Use shared regression utilities, add model specification validation, add unit tests for coefficient extraction
+- Test coverage: Unit tests exist for each H script but may not cover edge cases
+
+**TODO Tracking:**
+- Issue: Winsorized column tracking not implemented (commented as TODO)
+- Files: `src/f1d/financial/v1/3.1_FirmControls.py:770`
+- Impact: Cannot verify which columns were winsorized, affects reproducibility
+- Fix approach: Track actual winsorized columns and log to stats.json
 
 ## Scaling Limits
 
-### Current Capacity
-- Transcripts: ~50K (2002-2018)
-- Total rows: ~25M across pipeline
-- Memory: 8GB minimum, 16GB recommended
-- Processing time: 2-4 hours full pipeline
+**Year Range Hardcoded:**
+- Current capacity: Fixed range 2002-2018
+- Limit: Cannot process data outside this range without modifying multiple scripts
+- Scaling path: Make year range fully configurable via `config/project.yaml`, remove hardcoded year loops
 
-### Breaking Points
-- Entity linking (1.2): Single-threaded fuzzy matching becomes bottleneck at 100K+ companies
-- Memory: Systems with <8GB RAM will fail on Step 1.2
-- Storage: Parquet files 100MB - 1GB per year; 5GB total CRSP/Compustat data
+**Memory Constraints:**
+- Current capacity: 80% max memory percent configured but no actual throttling
+- Files: `src/f1d/shared/chunked_reader.py`, `config/project.yaml`
+- Limit: Large datasets may cause OOM on systems with <16GB RAM
+- Scaling path: Implement actual `MemoryAwareThrottler` usage in all scripts, add memory monitoring alerts
 
-### Scaling Path
-- Parallel processing: `parallel_utils.py` available in git history (commit 02288a0)
-- Column pruning: Implemented in Phase 15-02, 30-50% memory reduction
-- Memory-aware throttling: Phase 15-03 monitors and pauses if memory > 80%
+**Thread Count Configured but Unused:**
+- Current capacity: `config['thread_count'] = 1` but parallelization not implemented
+- Limit: Cannot leverage multi-core systems
+- Scaling path: Implement concurrent year processing with deterministic results (seeded random, ordered results)
+
+**Subprocess Dependency Chain:**
+- Current capacity: Linear script execution via subprocess calls
+- Limit: Cannot parallelize independent script steps
+- Scaling path: Implement directed acyclic graph (DAG) execution engine with dependency tracking
 
 ## Dependencies at Risk
 
-### statsmodels Version Pinning
-- Risk: Pinned to 0.14.6 due to breaking changes in 0.14.0 (deprecated GLM link names)
-- Impact: Upgrading breaks regression analysis
-- Migration plan: See `DEPENDENCIES.md` for upgrade strategy
+**statsmodels Pinning:**
+- Risk: Pinned to 0.14.6 due to breaking changes in 0.14.0
+- Files: `requirements.txt:10-11`
+- Impact: Cannot upgrade to newer versions with potential bug fixes
+- Migration plan: Document regression results with 0.14.6, test 0.15.0+ migration, update GLM link names
 
-### pyarrow Version Constraint
-- Risk: Pinned to 21.0.0 for Python 3.8-3.13 compatibility; 23.0.0+ requires Python >= 3.10
-- Impact: Cannot upgrade without dropping Python 3.8/3.9 support
-- Migration plan: Documented in `DEPENDENCIES.md`
+**PyArrow Version Pinning:**
+- Risk: Pinned to 21.0.0 for Python 3.8-3.13 compatibility
+- Files: `requirements.txt:17-18`
+- Impact: Missing performance improvements and features in 23.0.0+
+- Migration plan: Test Python 3.10+ with PyArrow 23.0.0+, document version compatibility matrix
 
-### rapidfuzz Optional Dependency
-- Risk: Graceful degradation if not installed, but lower entity match rates
-- Impact: Tier 3 entity linking falls back to slower algorithm
-- Migration plan: Optional in `requirements.txt`, recommended for improved matching
+**sklearn Type Stubs Missing:**
+- Risk: sklearn lacks `py.typed` marker, mypy cannot verify sklearn imports
+- Files: `src/f1d/text/tokenize_and_count.py:57`, 40+ type: ignore comments
+- Impact: Type errors go undetected in sklearn usage
+- Migration plan: Wait for sklearn to add type stubs, or install `types-scikit-learn` community stubs
+
+**lifelines Type Stubs Missing:**
+- Risk: lifelines lacks official type stubs
+- Files: `src/f1d/econometric/v1/4.3_TakeoverHazards.py:62`, multiple type: ignore comments
+- Impact: Type errors go undetected in survival analysis code
+- Migration plan: Contribute type stubs to lifelines repo or create local stubs in `src/f1d/stubs/`
 
 ## Missing Critical Features
 
-### Survival Analysis Implementation - RESOLVED (77-03)
-- **Status:** RESOLVED in Phase 77, Plan 03
-- **Resolution:** Implemented using lifelines.CoxPHFitter with cause-specific hazards approach for competing risks
-- ~~Problem: `run_cox_ph()` and `run_fine_gray()` are stubs - full implementation missing~~
-- ~~Blocks: Step 4.3 takeover hazard analysis cannot run~~
-- ~~Required: lifelines library integration~~
+**Incremental Output Updates:**
+- Problem: Cannot resume failed pipeline from intermediate step
+- Blocks: Long-running pipelines must restart from beginning if any step fails
+- Priority: Medium
 
-### Full Type Stub Coverage - RESOLVED (77-09)
-- **Status:** RESOLVED in Phase 77, Plan 09
-- **Resolution:** Added pandas-stubs, types-psutil, types-requests, types-PyYAML to requirements.txt
-- ~~Problem: Missing type stubs for pandas, psutil cause `import-untyped` errors~~
-- ~~Blocks: Stricter mypy configuration~~
-- ~~Required: `pip install types-pandas types-psutil`~~
+**Data Versioning:**
+- Problem: No data version tracking beyond timestamps
+- Blocks: Cannot reproduce exact outputs from specific pipeline versions
+- Priority: Low
+
+**Comprehensive Schema Validation:**
+- Problem: Only 2 input files have schema validation defined
+- Blocks: Cannot detect malformed input data early in pipeline
+- Priority: High (security concern)
 
 ## Test Coverage Gaps
 
-### Stage Modules (Hypothesis Tests) - RESOLVED (77-04)
-- **Status:** RESOLVED in Phase 77, Plan 04
-- **Resolution:** Added 153 tests for H1-H9 regression scripts with regression test harness utilities
-- ~~What's not tested: All `src/f1d/econometric/v2/4.*.py` hypothesis regression scripts~~
-- ~~Files: `4.1_H1CashHoldingsRegression.py` through `4.11_H9_Regression.py`~~
-- ~~Risk: Regressions may produce incorrect coefficients without detection~~
-- ~~Priority: High - these produce final research outputs~~
+**Entity Linking Logic:**
+- What's not tested: Tier 3 fuzzy matching edge cases, threshold sensitivity, company name normalization
+- Files: `src/f1d/sample/1.2_LinkEntities.py`
+- Risk: Entity matching failures go undetected, data quality issues propagate downstream
+- Priority: High
 
-### V1 Legacy Code - RESOLVED (77-08)
-- **Status:** RESOLVED in Phase 77, Plan 08
-- **Resolution:** Added 59 tests for V1 financial (3.0-3.3) and econometric (4.1, 4.4) scripts
-- ~~What's not tested: All `src/f1d/econometric/v1/` and `src/f1d/financial/v1/` scripts~~
-- ~~Files: Entire v1 directories excluded from coverage~~
-- ~~Risk: V1 still used; bugs may go undetected~~
-- ~~Priority: Medium - V1 is maintained alongside V2~~
+**Financial Calculations:**
+- What's not tested: Winsorization logic, EPS growth calculation with edge cases, missing value handling in merges
+- Files: `src/f1d/financial/v1/3.1_FirmControls.py`, `src/f1d/financial/v1/3.2_MarketVariables.py`
+- Risk: Incorrect financial metrics affect all downstream analysis
+- Priority: High
 
-### Large Stats Module - RESOLVED (77-07, 77-10)
-- **Status:** RESOLVED in Phase 77, Plans 07 and 10
-- **Resolution:** Type errors fixed (77-07), added 105 tests with golden fixtures (77-10)
-- ~~What's not tested: `src/f1d/shared/observability/stats.py` complex nested structures~~
-- ~~Files: 47 type errors indicate likely runtime issues~~
-- ~~Risk: Silent data corruption in statistics output~~
-- ~~Priority: Medium - observability functions affect all steps~~
+**Regression Output Parsing:**
+- What's not tested: Coefficient extraction from statsmodels, standard error calculation, p-value formatting
+- Files: `src/f1d/econometric/v2/4.*_H*Regression.py`
+- Risk: Incorrect coefficients invalidate research findings
+- Priority: High
 
-### Coverage Threshold Gap
-- What's not tested: Current 25% overall threshold is below target 60%
-- Files: `pyproject.toml` documents gap between current (25%) and target (60%)
-- Risk: Technical debt accumulation without enforcement
-- Priority: Low - gradual improvement path documented
+**Survival Analysis Models:**
+- What's not tested: CoxPHFitter convergence edge cases, Fine-Gray competing risks calculation
+- Files: `src/f1d/econometric/v1/4.3_TakeoverHazards.py`
+- Risk: Incorrect hazard ratios affect takeover analysis
+- Priority: Medium
+
+**Data Pipeline End-to-End:**
+- What's not tested: Full pipeline from raw inputs to final outputs, error propagation across steps
+- Files: Integration tests exist but limited scope
+- Risk: Pipeline failures may not be caught until production
+- Priority: Medium
 
 ---
 

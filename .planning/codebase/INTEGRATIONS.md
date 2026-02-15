@@ -4,114 +4,107 @@
 
 ## APIs & External Services
 
-**WRDS (Wharton Research Data Services):**
-- Purpose: Download financial data (CRSP, Compustat, IBES)
-- SDK/Client: Direct API access via `EnvConfig.wrds_username` / `EnvConfig.wrds_password`
-- Auth: Environment variables `F1D_WRDS_USERNAME`, `F1D_WRDS_PASSWORD`
-- Implementation: `src/f1d/shared/config/env.py` (SecretStr for password protection)
-- Status: Optional - pipeline can run with pre-downloaded data
+**Wharton Research Data Services (WRDS):**
+- Optional data download service for financial databases
+- Auth: `F1D_WRDS_USERNAME`, `F1D_WRDS_PASSWORD` (environment variables)
+- Implementation: `src/f1d/shared/config/env.py`
+- Status: Configured but not actively used in current pipeline (local data sources)
 
-**SEC EDGAR:**
-- Purpose: Source of earnings call transcripts and SEC letters
-- Data format: Pre-downloaded Parquet files in `1_Inputs/` directories
-- No runtime API calls - data is locally stored
+**No external API calls:**
+- Pipeline operates entirely on local data files
+- No cloud service dependencies
+- No real-time data fetching
 
 ## Data Storage
 
 **Databases:**
-- None - File-based data pipeline
-- All data stored as Parquet files for efficiency
+- Parquet files via pyarrow - Primary data format
+  - Location: `1_Inputs/` (input data), `4_Outputs/` (processed data)
+  - Client: pandas.read_parquet(), pandas.to_parquet()
+  - Schema: Defined in each step's output files
+
+**External Data Sources (Local Files):**
+- `1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet` - Earnings call metadata (55 MB)
+- `1_Inputs/LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv` - Text analysis dictionary (9 MB)
+- `1_Inputs/CRSPCompustat_CCM/` - Linking table (GVKEY-PERMNO)
+- `1_Inputs/CRSP_DSF/` - Daily stock returns
+- `1_Inputs/comp_na_daily_all/` - Compustat North America daily
+- `1_Inputs/tr_ibes/` - IBES analyst forecasts
+- `1_Inputs/Execucomp/` - Executive compensation data
+- `1_Inputs/SDC/` - M&A deal data
+- `1_Inputs/CCCL_instrument/instrument_shift_intensity_2005_2022.parquet` - Instrumental variable data (15 MB)
+- `1_Inputs/FirmLevelRisk/` - Firm-level risk measures
+- `1_Inputs/FF1248/` - Fama-French factors
+- `1_Inputs/SEC_Edgar_Letters/` - SEC correspondence data
 
 **File Storage:**
-- Local filesystem only
-- Parquet format (via pyarrow) for large datasets
-- CSV for reference data (Loughran-McDonald dictionary)
-- Directory structure:
-  - `1_Inputs/` - Source data files
-  - `4_Outputs/` - Pipeline outputs
-  - `3_Logs/` - Execution logs
+- Local filesystem only (no cloud storage)
+- Output files: Timestamped directories in `4_Outputs/`
+- Log files: `3_Logs/` directory
 
 **Caching:**
-- None - Deterministic processing without caching
-
-## Data Sources (Input Files)
-
-**Financial Data:**
-- `1_Inputs/CRSP_DSF/` - Daily stock returns (CRSP)
-- `1_Inputs/comp_na_daily_all/` - Compustat daily fundamentals
-- `1_Inputs/CRSPCompustat_CCM/` - CRSP-Compustat Merged (CCM) linking table
-- `1_Inputs/Execucomp/` - Executive compensation data
-- `1_Inputs/tr_ibes/` - I/B/E/S analyst forecasts
-
-**Textual Data:**
-- `1_Inputs/Earnings_Calls_Transcripts/` - Earnings call transcripts (speaker_data_{year}.parquet)
-- `1_Inputs/SEC_Edgar_Letters/` - SEC comment letters
-- `1_Inputs/LM_dictionary/` - Loughran-McDonald Master Dictionary (sentiment word lists)
-
-**Reference Data:**
-- `1_Inputs/FF1248/` - Fama-French 12/48 industry classifications
-- `1_Inputs/Manager_roles/` - Managerial role definitions
-- `1_Inputs/SDC/` - SDC M&A transaction data
-- `1_Inputs/FirmLevelRisk/` - Firm-level risk measures
-- `1_Inputs/CCCL_instrument/` - CCCL instrument for IV regression
+- None (data processed fresh on each run)
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- None - Local application
-- WRDS credentials optional for data download
+- None required for core pipeline
+- WRDS credentials (optional) via environment variables only
 
 **Implementation:**
-- `src/f1d/shared/config/env.py` - Environment-based configuration
-- `pydantic-settings` with SecretStr for sensitive values
-- `.env` file for local development (git-ignored)
+- `src/f1d/shared/config/env.py` - Pydantic Settings for environment configuration
+- `src/f1d/shared/env_validation.py` - Environment validation utilities
+- Secret handling via pydantic.SecretStr for secure password storage
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None - Local console logging
+- None (local execution only)
 
 **Logs:**
-- structlog-based structured logging
-- JSON format optional for machine parsing
-- Context binding for stage/step tracking
-- Implementation: `src/f1d/shared/logging/config.py`
-- Memory tracking: `src/f1d/shared/observability/memory.py`
-- Throughput tracking: `src/f1d/shared/observability/throughput.py`
-- Anomaly detection: `src/f1d/shared/observability/anomalies.py`
+- Framework: structlog (structured logging)
+- Implementation: `src/f1d/shared/logging/`
+  - `src/f1d/shared/logging/config.py` - Logging configuration
+  - `src/f1d/shared/logging/handlers.py` - Log handlers (console, file, JSON)
+  - `src/f1d/shared/logging/context.py` - Context management for structured logging
+- Output: `3_Logs/` directory
+- Format: Structured JSON logs with context variables
+- Levels: INFO (default), configurable
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- None - Local data processing pipeline
+- GitHub Actions (CI/CD only)
+  - `.github/workflows/ci.yml` - Primary CI workflow (lint + test)
+  - `.github/workflows/test.yml` - Extended test workflow
 
 **CI Pipeline:**
-- GitHub Actions (`.github/workflows/ci.yml`)
-  - Lint job: ruff linting, ruff format check, mypy type checking
-  - Test job: Matrix testing on Python 3.9-3.13
-  - E2E job: End-to-end tests on main branch pushes
-- Codecov integration for coverage reporting
-- Pre-commit hooks for local quality gates
+- GitHub Actions
+- Test matrix: Python 3.9, 3.10, 3.11, 3.12, 3.13
+- Linting: Ruff (format check, lint), mypy (type checking)
+- Testing: pytest with coverage
+- Coverage reporting: Codecov integration
+- Artifact retention: 30 days for coverage reports and test results
 
-**Coverage Thresholds:**
-- Tier 1 tests: 10% (measures all shared modules, tested modules have 70%+)
-- Tier 2 tests: 10%
-- Overall: 25%
+**Deployment:**
+- None (local execution only)
 
 ## Environment Configuration
 
 **Required env vars:**
-- None required (pipeline runs with defaults)
+- None (all optional)
 
 **Optional env vars:**
-- `F1D_WRDS_USERNAME` - WRDS username
-- `F1D_WRDS_PASSWORD` - WRDS password (stored as SecretStr)
+- `F1D_WRDS_USERNAME` - WRDS username for data downloads
+- `F1D_WRDS_PASSWORD` - WRDS password (stored securely as SecretStr)
 - `F1D_API_TIMEOUT_SECONDS` - API timeout (default: 30)
-- `F1D_MAX_RETRIES` - Max API retries (default: 3)
+- `F1D_MAX_RETRIES` - Max retry attempts (default: 3)
 
 **Secrets location:**
-- `.env` file (git-ignored, template in `.env.example`)
-- GitHub Secrets for CI (`CODECOV_TOKEN`)
+- Environment variables (recommended: local `.env` file)
+- Template: `.env.example`
+- Pydantic SecretStr for secure password handling
+- Keyring support (mentioned in docs, not currently implemented)
 
 ## Webhooks & Callbacks
 
@@ -120,21 +113,6 @@
 
 **Outgoing:**
 - None
-
-## External Libraries (Optional)
-
-**linearmodels:**
-- Purpose: Panel OLS with fixed effects, IV/2SLS regression
-- Import pattern: Try/except with graceful degradation
-- Implementation: `src/f1d/shared/panel_ols.py`, `src/f1d/shared/iv_regression.py`
-- Install: `pip install linearmodels`
-
-**rapidfuzz:**
-- Purpose: Fuzzy string matching for entity name linking
-- Import pattern: Try/except with warning on missing
-- Implementation: `src/f1d/shared/string_matching.py`
-- Install: `pip install rapidfuzz>=3.14.0`
-- Fallback: Pipeline runs without it (lower match rate)
 
 ---
 
