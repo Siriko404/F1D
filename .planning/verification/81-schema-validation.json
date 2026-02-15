@@ -1,0 +1,93 @@
+{
+  "phase": "81",
+  "validation_date": "2026-02-15",
+  "status": "passed",
+  "summary": {
+    "total_files": 51,
+    "files_validated": 51,
+    "schema_issues": 0,
+    "critical_issues": 0
+  },
+  "schemas": {
+    "firm_controls": {
+      "expected_columns": ["file_name", "gvkey", "start_date", "year", "Size", "BM", "Lev", "ROA", "EPS_Growth", "CurrentRatio", "RD_Intensity"],
+      "actual_columns": ["file_name", "gvkey", "start_date", "year", "Size", "BM", "Lev", "ROA", "EPS_Growth", "CurrentRatio", "RD_Intensity", "ActualEPS", "ForecastEPS", "surprise_raw", "SurpDec", "shift_intensity_sale_ff12", "shift_intensity_mkvalt_ff12", "shift_intensity_sale_ff48", "shift_intensity_mkvalt_ff48", "shift_intensity_sale_sic2", "shift_intensity_mkvalt_sic2"],
+      "status": "passed",
+      "files_validated": 17,
+      "row_count_total": 112968
+    },
+    "market_variables": {
+      "expected_columns": ["file_name", "gvkey", "start_date", "year", "StockRet", "MarketRet", "Amihud", "Corwin_Schultz"],
+      "actual_columns": ["file_name", "gvkey", "start_date", "year", "StockRet", "MarketRet", "Amihud", "Corwin_Schultz", "Delta_Amihud", "Delta_Corwin_Schultz"],
+      "status": "passed",
+      "files_validated": 17,
+      "row_count_total": 112968
+    },
+    "event_flags": {
+      "expected_columns": ["file_name", "gvkey", "start_date", "year", "Takeover"],
+      "actual_columns": ["file_name", "gvkey", "start_date", "year", "Takeover", "Takeover_Type", "Duration"],
+      "status": "passed",
+      "files_validated": 17,
+      "row_count_total": 112968
+    }
+  },
+  "per_year_validation": {
+    "firm_controls": [
+      {"year": 2002, "rows": 3355, "status": "passed"},
+      {"year": 2003, "rows": 5900, "status": "passed"},
+      {"year": 2004, "rows": 6637, "status": "passed"},
+      {"year": 2005, "rows": 6853, "status": "passed"},
+      {"year": 2006, "rows": 6943, "status": "passed"},
+      {"year": 2007, "rows": 7109, "status": "passed"},
+      {"year": 2008, "rows": 7289, "status": "passed"},
+      {"year": 2009, "rows": 7269, "status": "passed"},
+      {"year": 2010, "rows": 7280, "status": "passed"},
+      {"year": 2011, "rows": 7223, "status": "passed"},
+      {"year": 2012, "rows": 7097, "status": "passed"},
+      {"year": 2013, "rows": 6887, "status": "passed"},
+      {"year": 2014, "rows": 6876, "status": "passed"},
+      {"year": 2015, "rows": 6806, "status": "passed"},
+      {"year": 2016, "rows": 6654, "status": "passed"},
+      {"year": 2017, "rows": 6689, "status": "passed"},
+      {"year": 2018, "rows": 6101, "status": "passed"}
+    ],
+    "market_variables": [
+      {"year": 2002, "rows": 3355, "status": "passed"},
+      {"year": 2003, "rows": 5900, "status": "passed"},
+      {"year": 2004, "rows": 6637, "status": "passed"},
+      {"year": 2005, "rows": 6853, "status": "passed"},
+      {"year": 2006, "rows": 6943, "status": "passed"},
+      {"year": 2007, "rows": 7109, "status": "passed"},
+      {"year": 2008, "rows": 7289, "status": "passed"},
+      {"year": 2009, "rows": 7269, "status": "passed"},
+      {"year": 2010, "rows": 7280, "status": "passed"},
+      {"year": 2011, "rows": 7223, "status": "passed"},
+      {"year": 2012, "rows": 7097, "status": "passed"},
+      {"year": 2013, "rows": 6887, "status": "passed"},
+      {"year": 2014, "rows": 6876, "status": "passed"},
+      {"year": 2015, "rows": 6806, "status": "passed"},
+      {"year": 2016, "rows": 6654, "status": "passed"},
+      {"year": 2017, "rows": 6689, "status": "passed"},
+      {"year": 2018, "rows": 6101, "status": "passed"}
+    ],
+    "event_flags": [
+      {"year": 2002, "rows": 3355, "status": "passed"},
+      {"year": 2003, "rows": 5900, "status": "passed"},
+      {"year": 2004, "rows": 6637, "status": "passed"},
+      {"year": 2005, "rows": 6853, "status": "passed"},
+      {"year": 2006, "rows": 6943, "status": "passed"},
+      {"year": 2007, "rows": 7109, "status": "passed"},
+      {"year": 2008, "rows": 7289, "status": "passed"},
+      {"year": 2009, "rows": 7269, "status": "passed"},
+      {"year": 2010, "rows": 7280, "status": "passed"},
+      {"year": 2011, "rows": 7223, "status": "passed"},
+      {"year": 2012, "rows": 7097, "status": "passed"},
+      {"year": 2013, "rows": 6887, "status": "passed"},
+      {"year": 2014, "rows": 6876, "status": "passed"},
+      {"year": 2015, "rows": 6806, "status": "passed"},
+      {"year": 2016, "rows": 6654, "status": "passed"},
+      {"year": 2017, "rows": 6689, "status": "passed"},
+      {"year": 2018, "rows": 6101, "status": "passed"}
+    ]
+  }
+}

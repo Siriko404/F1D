@@ -1,0 +1,94 @@
+{
+  "phase": "81",
+  "profile_date": "2026-02-15",
+  "output_dir": "4_Outputs/3_Financial_Features/2026-02-15_000346",
+  "total_rows": 112968,
+  "total_files": 51,
+  "quality_summary": {
+    "status": "passed",
+    "critical_issues": 0,
+    "warnings": 1
+  },
+  "firm_controls": {
+    "files": 17,
+    "columns": 21,
+    "sample_year": 2010,
+    "sample_rows": 7280,
+    "null_rates": {
+      "file_name": 0.0,
+      "gvkey": 0.0,
+      "Size": 0.0023,
+      "Lev": 0.0023,
+      "ROA": 0.0025
+    },
+    "unique_firms": 1829,
+    "duplicate_file_names": 0,
+    "value_ranges": {
+      "Size": "log scale (positive values)",
+      "Lev": "0-1 range (debt ratio)",
+      "ROA": "-1 to 1 range typical"
+    },
+    "coverage": {
+      "compustat_match": "99.8%",
+      "ibes_match": "77.0%",
+      "cccl_match": "85.6%"
+    }
+  },
+  "market_variables": {
+    "files": 17,
+    "columns": 11,
+    "sample_year": 2010,
+    "sample_rows": 7280,
+    "null_rates": {
+      "file_name": 0.0,
+      "gvkey": 0.0,
+      "StockRet": 0.0703,
+      "Amihud": 0.0383
+    },
+    "unique_firms": 1829,
+    "value_ranges": {
+      "StockRet": "-1 to 10 range typical (decimal returns)",
+      "Amihud": "positive values (illiquidity measure)",
+      "Volatility": "positive values"
+    },
+    "coverage": {
+      "stock_return": "93.0% average",
+      "amihud": "96.2% average"
+    }
+  },
+  "event_flags": {
+    "files": 17,
+    "columns": 7,
+    "sample_year": 2010,
+    "sample_rows": 7280,
+    "null_rates": {
+      "file_name": 0.0,
+      "gvkey": 0.0,
+      "Takeover": 0.0
+    },
+    "takeover_events": 0,
+    "notes": "Zero takeover events due to missing CUSIP column in manifest for SDC matching. CUSIP data not available in Stage 1 sample construction."
+  },
+  "warnings": [
+    {
+      "id": 1,
+      "type": "data_coverage",
+      "component": "event_flags",
+      "message": "Zero takeover events detected due to missing CUSIP column in manifest. SDC matching requires CUSIP identifiers which were not included in Stage 1 sample construction.",
+      "impact": "H8 takeover hypothesis analysis will have no takeover events",
+      "recommendation": "Add CUSIP extraction to Stage 1 sample construction if takeover analysis is required"
+    }
+  ],
+  "dataflow_validation": {
+    "stage_1_to_v1": {
+      "input_rows": 112968,
+      "output_rows": 112968,
+      "retention": "100%"
+    },
+    "column_lineage": {
+      "file_name": "Stage 1 manifest -> V1 outputs",
+      "gvkey": "Stage 1 manifest -> V1 outputs",
+      "start_date": "Stage 1 manifest -> V1 outputs"
+    }
+  }
+}
