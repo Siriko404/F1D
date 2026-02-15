@@ -4,12 +4,6 @@
 
 ## APIs & External Services
 
-**Wharton Research Data Services (WRDS):**
-- Optional data download service for financial databases
-- Auth: `F1D_WRDS_USERNAME`, `F1D_WRDS_PASSWORD` (environment variables)
-- Implementation: `src/f1d/shared/config/env.py`
-- Status: Configured but not actively used in current pipeline (local data sources)
-
 **No external API calls:**
 - Pipeline operates entirely on local data files
 - No cloud service dependencies
@@ -48,13 +42,11 @@
 ## Authentication & Identity
 
 **Auth Provider:**
-- None required for core pipeline
-- WRDS credentials (optional) via environment variables only
+- None required (local data processing only)
 
 **Implementation:**
 - `src/f1d/shared/config/env.py` - Pydantic Settings for environment configuration
 - `src/f1d/shared/env_validation.py` - Environment validation utilities
-- Secret handling via pydantic.SecretStr for secure password storage
 
 ## Monitoring & Observability
 
@@ -95,16 +87,8 @@
 - None (all optional)
 
 **Optional env vars:**
-- `F1D_WRDS_USERNAME` - WRDS username for data downloads
-- `F1D_WRDS_PASSWORD` - WRDS password (stored securely as SecretStr)
 - `F1D_API_TIMEOUT_SECONDS` - API timeout (default: 30)
 - `F1D_MAX_RETRIES` - Max retry attempts (default: 3)
-
-**Secrets location:**
-- Environment variables (recommended: local `.env` file)
-- Template: `.env.example`
-- Pydantic SecretStr for secure password handling
-- Keyring support (mentioned in docs, not currently implemented)
 
 ## Webhooks & Callbacks
 

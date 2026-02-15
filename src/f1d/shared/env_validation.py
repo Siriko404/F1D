@@ -6,8 +6,7 @@ SHARED MODULE: Environment Variable Validation
 ID: shared/env_validation
 Description: Schema-based validation for environment variables.
 
-Purpose: Validates environment variables against defined schema for future
-         use when adding external services (WRDS credentials, API keys).
+Purpose: Validates environment variables against defined schema.
 
 Security:
     - Validates environment variables against defined schema
@@ -36,18 +35,8 @@ import os
 import sys
 from typing import Any, Dict
 
-# Define environment variable schema for future use
+# Define environment variable schema
 ENV_SCHEMA = {
-    "WRDS_USERNAME": {
-        "required": False,  # Optional for now - using WRDS via different method
-        "type": str,
-        "description": "WRDS username for data access",
-    },
-    "WRDS_PASSWORD": {
-        "required": False,
-        "type": str,
-        "description": "WRDS password (WARNING: Should not be in .env - use keyring instead)",
-    },
     "API_TIMEOUT_SECONDS": {
         "required": False,
         "type": int,

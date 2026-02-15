@@ -63,15 +63,6 @@
   - Ensure all script paths are validated against allowed directories before execution
   - Add input validation for user-provided paths
 
-**Environment Variable Handling:**
-- Risk: Environment variables read without validation for sensitive operations
-- Files: `src/f1d/shared/env_validation.py`, `.env.example`
-- Current mitigation: Schema defined in `ENV_SCHEMA` but not enforced for all operations
-- Recommendations:
-  - Enforce env var validation before use in production code
-  - Document required vs optional variables clearly
-  - Add secrets management for WRDS credentials (currently in comments)
-
 **Data Input Validation:**
 - Risk: Malformed or malicious input data could cause unexpected behavior
 - Files: `src/f1d/shared/data_validation.py`
