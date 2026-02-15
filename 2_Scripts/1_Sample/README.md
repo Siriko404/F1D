@@ -1,10 +1,12 @@
 # Sample Construction (Step 1)
 
+> **Note:** This folder contains legacy scripts kept for reference. The active versions have been migrated to `src/f1d/sample/` as part of the v6.1 architecture standard. New development should use the `f1d.sample.*` namespace imports.
+
 ## Purpose and Scope
 
 This folder contains scripts for constructing the master sample, linking entities (CEOs to firms), and building tenure maps. Sample construction is the **first step** in the F1D pipeline, creating the foundation for all subsequent text processing, financial variable construction, and econometric analyses.
 
-**Status:** STABLE - Foundation for all analyses
+**Status:** LEGACY - Migrated to src/f1d/sample/
 **Prerequisites:** Raw input data (metadata, transcripts)
 **Outputs:** `4_Outputs/1_Sample/`
 
@@ -297,6 +299,6 @@ For replication questions:
 
 ---
 
-*Last updated: 2026-02-11*
-*Phase: 60-code-organization*
+*Last updated: 2026-02-14*
+*Phase: 78-documentation-synchronization*
 *Version: v1.0 Sample Construction*
