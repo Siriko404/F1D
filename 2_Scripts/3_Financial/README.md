@@ -1,11 +1,13 @@
 # Financial V1: Original Financial Variable Construction
 
+> **Note:** This folder contains legacy V1 scripts kept for reference. The active versions have been migrated to `src/f1d/financial/v1/` as part of the v6.1 architecture standard. New development should use the `f1d.financial.*` namespace imports.
+
 ## Purpose and Scope
 
 This folder contains the original financial variable construction scripts for v1.0 analyses. These scripts create firm-level control variables and market measures used in the first set of econometric analyses examining CEO communication clarity and financial outcomes.
 
 **Version:** V1 (Stable - no longer modified)
-**Status:** COMPLETE - V1 analyses concluded, results published in thesis
+**Status:** LEGACY - Migrated to src/f1d/financial/v1/
 **Prerequisites:** Step 2 (Text Processing) outputs
 **Outputs:** `4_Outputs/3_Financial/`
 
@@ -185,6 +187,6 @@ For replication questions:
 
 ---
 
-*Last updated: 2026-02-11*
-*Phase: 60-code-organization*
+*Last updated: 2026-02-14*
+*Phase: 78-documentation-synchronization*
 *Version: v1.0 Financial Variables*
