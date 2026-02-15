@@ -1,11 +1,13 @@
 # Econometric V1: Original Regression Analyses
 
+> **Note:** This folder contains legacy V1 scripts kept for reference. The active versions have been migrated to `src/f1d/econometric/v1/` as part of the v6.1 architecture standard. New development should use the `f1d.econometric.*` namespace imports.
+
 ## Purpose and Scope
 
 This folder contains the original econometric regression scripts for v1.0 analyses. These scripts test hypotheses about CEO communication clarity (linguistic uncertainty) and financial outcomes using firm fixed effects models with various robustness checks.
 
 **Version:** V1 (Stable - no longer modified)
-**Status:** COMPLETE - V1 analyses concluded, results published in thesis
+**Status:** LEGACY - Migrated to src/f1d/econometric/v1/
 **Prerequisites:** V1 financial variables, V2 text variables
 **Outputs:** `4_Outputs/4_Econometric/`
 
@@ -271,6 +273,6 @@ For replication questions:
 
 ---
 
-*Last updated: 2026-02-11*
-*Phase: 60-code-organization*
+*Last updated: 2026-02-14*
+*Phase: 78-documentation-synchronization*
 *Version: v1.0 Econometric Analyses*
