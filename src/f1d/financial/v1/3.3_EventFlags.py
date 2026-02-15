@@ -185,7 +185,7 @@ def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
 
 def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    config_path = Path(__file__).parent.parent.parent.parent.parent / "config" / "project.yaml"
     validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
@@ -193,7 +193,7 @@ def load_config() -> Dict[str, Any]:
 
 def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent.parent
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
@@ -416,7 +416,7 @@ def check_prerequisites(root: Path) -> None:
     from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
-        "SDC": root / "1_Inputs" / "SDC",
+        "SDC/": root / "1_Inputs" / "SDC",
     }
 
     required_steps = {
@@ -645,7 +645,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     args = parse_arguments()
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent.parent
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")

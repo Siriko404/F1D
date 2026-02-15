@@ -36,7 +36,7 @@ import pandas as pd
 
 def load_master_variable_definitions() -> Dict[str, Dict[str, str]]:
     """Load the master variable definitions CSV"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent.parent
     master_path = root / "1_Inputs" / "master_variable_definitions.csv"
 
     if master_path.exists():

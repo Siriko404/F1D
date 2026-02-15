@@ -247,13 +247,13 @@ def detect_anomalies_iqr(
 
 
 def load_config() -> Dict[str, Any]:
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    config_path = Path(__file__).parent.parent.parent.parent.parent / "config" / "project.yaml"
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
 
 def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent.parent
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
@@ -318,10 +318,10 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> None:
     from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
-        "Compustat": root / "1_Inputs" / "Compustat",
-        "IBES": root / "1_Inputs" / "IBES",
-        "CRSP": root / "1_Inputs" / "CRSP",
-        "SDC": root / "1_Inputs" / "SDC",
+        "Compustat/": root / "1_Inputs" / "comp_na_daily_all",
+        "IBES/": root / "1_Inputs" / "tr_ibes",
+        "CRSP/": root / "1_Inputs" / "CRSP_DSF",
+        "SDC/": root / "1_Inputs" / "SDC",
     }
 
     required_steps = {
@@ -346,7 +346,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent.parent
 
     # Handle dry-run mode
     if args.dry_run:

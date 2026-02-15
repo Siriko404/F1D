@@ -1,0 +1,94 @@
+{
+  "test_date": "2026-02-15T04:25:01Z",
+  "phase": "81-test-stage-3-financial-scripts",
+  "plan": "81-01",
+  "test_type": "Dry-run validation for V1 scripts",
+  "scripts_tested": {
+    "v1_scripts": [
+      {
+        "script": "src/f1d/financial/v1/3.0_BuildFinancialFeatures.py",
+        "dry_run_command": "python src/f1d/financial/v1/3.0_BuildFinancialFeatures.py --dry-run",
+        "exit_code": 0,
+        "status": "PASSED",
+        "prerequisites_validated": [
+          "Compustat directory (1_Inputs/comp_na_daily_all)",
+          "IBES directory (1_Inputs/tr_ibes)",
+          "CRSP directory (1_Inputs/CRSP_DSF)",
+          "SDC directory (1_Inputs/SDC)",
+          "master_sample_manifest.parquet from Step 1.4"
+        ],
+        "notes": "Orchestrator script that coordinates 3.1, 3.2, 3.3"
+      },
+      {
+        "script": "src/f1d/financial/v1/3.1_FirmControls.py",
+        "dry_run_command": "python src/f1d/financial/v1/3.1_FirmControls.py --dry-run",
+        "exit_code": 0,
+        "status": "PASSED",
+        "prerequisites_validated": [
+          "Compustat file (1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet)",
+          "master_sample_manifest.parquet from Step 1.4"
+        ],
+        "notes": "Firm-level control variables from Compustat"
+      },
+      {
+        "script": "src/f1d/financial/v1/3.2_MarketVariables.py",
+        "dry_run_command": "python src/f1d/financial/v1/3.2_MarketVariables.py --dry-run",
+        "exit_code": 0,
+        "status": "PASSED",
+        "prerequisites_validated": [
+          "CRSP directory (1_Inputs/CRSP_DSF)",
+          "CCM file (1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet)",
+          "master_sample_manifest.parquet from Step 1.4"
+        ],
+        "notes": "Market-based variables from CRSP"
+      },
+      {
+        "script": "src/f1d/financial/v1/3.3_EventFlags.py",
+        "dry_run_command": "python src/f1d/financial/v1/3.3_EventFlags.py --dry-run",
+        "exit_code": 0,
+        "status": "PASSED",
+        "prerequisites_validated": [
+          "SDC directory (1_Inputs/SDC)",
+          "master_sample_manifest.parquet from Step 1.4"
+        ],
+        "notes": "Event flag construction from SDC M&A data"
+      }
+    ]
+  },
+  "deviation_fixes_applied": {
+    "path_calculation_fix": {
+      "issue": "Root path calculation used parent.parent.parent (3 levels) instead of parent.parent.parent.parent.parent (5 levels) for v1 scripts in src/f1d/financial/v1/",
+      "affected_files": [
+        "src/f1d/financial/v1/3.0_BuildFinancialFeatures.py",
+        "src/f1d/financial/v1/3.1_FirmControls.py",
+        "src/f1d/financial/v1/3.2_MarketVariables.py",
+        "src/f1d/financial/v1/3.3_EventFlags.py",
+        "src/f1d/financial/v1/3.4_Utils.py"
+      ],
+      "fix": "Changed path from parent.parent.parent to parent.parent.parent.parent.parent for all v1 scripts"
+    },
+    "prerequisite_directory_names_fix": {
+      "issue": "3.0_BuildFinancialFeatures check_prerequisites used incorrect directory names (Compustat, IBES, CRSP) instead of actual names (comp_na_daily_all, tr_ibes, CRSP_DSF)",
+      "affected_files": [
+        "src/f1d/financial/v1/3.0_BuildFinancialFeatures.py",
+        "src/f1d/financial/v1/3.3_EventFlags.py"
+      ],
+      "fix": "Updated directory names to match actual filesystem and added '/' suffix to indicate directory validation"
+    },
+    "success_message_added": {
+      "issue": "3.2_MarketVariables.py check_prerequisites did not print success message on validation pass",
+      "affected_files": [
+        "src/f1d/financial/v1/3.2_MarketVariables.py"
+      ],
+      "fix": "Added print('[OK] All prerequisites validated') to check_prerequisites function"
+    }
+  },
+  "summary": {
+    "total_scripts_tested": 4,
+    "passed": 4,
+    "failed": 0,
+    "deviation_fixes": 3
+  },
+  "overall_status": "PASSED",
+  "conclusion": "All Stage 3 V1 scripts pass dry-run validation. Path calculation and prerequisite validation issues were identified and fixed as deviations (Rule 3 - blocking issues)."
+}
