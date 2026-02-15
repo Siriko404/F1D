@@ -159,14 +159,14 @@ def check_prerequisites(root: Path) -> None:
 
 
 def load_config() -> Dict[str, Any]:
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    config_path = Path(__file__).parent.parent.parent.parent / "config" / "project.yaml"
     validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
 
 def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     # Resolve input from prior step using timestamp-based resolution
     metadata_dir = get_latest_output_dir(
@@ -1269,7 +1269,7 @@ if __name__ == "__main__":
     # Parse arguments and check prerequisites
     args = parse_arguments()
     # Use resolve() to get absolute path before going up directories
-    root = Path(__file__).resolve().parent.parent.parent
+    root = Path(__file__).resolve().parent.parent.parent.parent
 
     # Handle dry-run mode
     if args.dry_run:

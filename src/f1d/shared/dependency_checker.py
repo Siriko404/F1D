@@ -35,7 +35,8 @@ from typing import Dict, List, Optional
 
 
 def validate_prerequisites(
-    required_files: Optional[Dict[str, Path]] = None, required_steps: Optional[Dict[str, str]] = None
+    required_files: Optional[Dict[str, Path]] = None,
+    required_steps: Optional[Dict[str, str]] = None,
 ) -> None:
     """
     Validates all required inputs and prerequisite step outputs.
@@ -72,7 +73,7 @@ def validate_prerequisites(
 
     # Check prerequisite steps
     if required_steps:
-        root = Path(__file__).parent.parent.parent
+        root = Path(__file__).parent.parent.parent.parent
 
         for step_name, expected_output in required_steps.items():
             if not validate_prerequisite_step(step_name, expected_output, root):
@@ -138,15 +139,11 @@ def print_prerequisite_errors(errors: List[str]) -> None:
     print()
     print("To fix these issues:")
     print("  1. Ensure all input files are in 1_Inputs/")
-    print("  2. Run the pipeline in correct order:")
-    print("     Step 1: python 2_Scripts/1_Sample/1.1_CleanMetadata.py")
-    print("     Step 2: python 2_Scripts/1_Sample/1.2_LinkEntities.py")
-    print("     Step 3: python 2_Scripts/1_Sample/1.3_BuildTenureMap.py")
-    print("     Step 4: python 2_Scripts/1_Sample/1.4_AssembleManifest.py")
-    print("     Step 2: python 2_Scripts/2_Text/2.1_TokenizeAndCount.py")
-    print("     Step 2: python 2_Scripts/2_Text/2.2_ConstructVariables.py")
-    print("     Step 3: python 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py")
-    print("     Step 4: python 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py")
+    print("  2. Run the pipeline in correct order (via orchestrators):")
+    print("     Step 1: python -m f1d.sample.1_0_BuildSampleManifest")
+    print("     Step 2: python -m f1d.text.tokenize_and_count")
+    print("     Step 3: python -m f1d.financial.v1.build_financial_features")
+    print("     Step 4: python -m f1d.econometric.v1.estimate_ceo_clarity")
     print()
     print("For help, run with --help flag")
     print()
@@ -175,13 +172,9 @@ def handle_missing_output(
     print(f"  Expected file: {output_file}")
     print(f"  Location: 4_Outputs/{step_name}/<timestamp>/")
     print()
-    print("Please run the pipeline in order:")
-    print(
-        f"  1. {step_name}: python 2_Scripts/{step_name.split('_')[0]}/{step_name}.py"
-    )
-    print(
-        f"  2. {calling_script}: python 2_Scripts/{calling_script.split('_')[0]}/{calling_script}.py"
-    )
+    print("Please run the pipeline in order (using python -m):")
+    print(f"  1. {step_name}: python -m f1d.<stage>.{step_name.lower()}")
+    print(f"  2. {calling_script}: python -m f1d.<stage>.{calling_script.lower()}")
     print()
     print("For more information, see: README.md")
     sys.exit(1)

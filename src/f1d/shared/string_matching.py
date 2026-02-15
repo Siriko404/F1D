@@ -59,11 +59,11 @@ def load_matching_config() -> Dict[str, Any]:
         yaml.YAMLError: If config file is invalid YAML
     """
     # Resolve config path relative to this module's location
-    # Module is at: 2_Scripts/shared/string_matching.py
+    # Module is at: src/f1d/shared/string_matching.py
     # Config is at: config/project.yaml
-    # Need to go up two levels from shared/, then into config/
-    module_dir = Path(__file__).parent  # 2_Scripts/shared/
-    config_path = module_dir / "../../config/project.yaml"  # ../../config/project.yaml
+    # Need to go up from shared/ to f1d/ to src/ to root, then into config/
+    module_dir = Path(__file__).parent  # src/f1d/shared/
+    config_path = module_dir / "../../../config/project.yaml"  # ../../../config/project.yaml
 
     if not config_path.exists():
         warnings.warn(

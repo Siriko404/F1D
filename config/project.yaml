@@ -7,11 +7,11 @@ data:
   year_end: 2018
 paths:
   inputs: 1_Inputs
-  scripts: 2_Scripts
+  scripts: src/f1d
   logs: 3_Logs
   outputs: 4_Outputs
   lm_dictionary: 1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv
-  unified_info: 1_Inputs/Unified-info.parquet
+  unified_info: 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
   speaker_data_pattern: 1_Inputs/speaker_data_{year}.parquet
 determinism:
   random_seed: 42

@@ -8,7 +8,7 @@ Description: Shared utilities for sample and financial scripts.
 
 Purpose: Provides common functions for variable reference generation
          and master variable definitions loading. Consolidated from
-         2_Scripts/1_Sample/1.5_Utils.py to enable standard Python imports.
+         legacy 1_Sample/1.5_Utils.py to enable standard Python imports.
 
 Inputs:
     - Variable definition files

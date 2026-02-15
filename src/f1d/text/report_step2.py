@@ -15,7 +15,7 @@ Dependencies:
     - Requires: Step 2.2
     - Uses: pandas, markdown
 
-Location: src/f1d/text/report_step2.py (migrated from 2_Scripts/2_Text/)
+Location: src/f1d/text/report_step2.py (migrated from legacy 2_Text/)
 
 Author: Thesis Author
 Date: 2026-02-11

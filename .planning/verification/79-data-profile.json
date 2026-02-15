@@ -1,0 +1,112 @@
+{
+  "1.1_CleanMetadata": {
+    "row_count": 297547,
+    "null_rates": {
+      "file_name": "0.00%",
+      "company_name": "0.00%",
+      "start_date": "0.00%",
+      "event_type": "0.00%",
+      "event_type_name": "0.00%",
+      "call_desc": "0.00%",
+      "event_title": "0.00%",
+      "city": "0.00%",
+      "processing_lag_hours": "0.00%",
+      "business_quarter": "0.00%",
+      "processing_quarter": "0.00%",
+      "late_arrival_flag": "0.00%",
+      "quarter_assigned": "0.00%",
+      "panel_created_at": "0.00%",
+      "source_file_year": "0.00%",
+      "data_lineage_id": "0.00%",
+      "original_last_update": "0.00%",
+      "last_update": "3.34%",
+      "company_id": "3.34%",
+      "cusip": "3.34%",
+      "sedol": "3.34%",
+      "isin": "3.34%",
+      "company_ticker": "3.34%",
+      "permno": "37.07%",
+      "match_type": "37.07%",
+      "match_type_desc": "37.07%",
+      "data_quality_score": "0.00%",
+      "validation_timestamp": "0.00%",
+      "has_speaker_data": "0.00%",
+      "speaker_record_count": "0.00%"
+    },
+    "duplicate_file_names": 0,
+    "year_range": {
+      "min": 2002,
+      "max": 2018
+    },
+    "event_type_unique": [
+      "1"
+    ],
+    "quality_score": "PASS"
+  },
+  "1.2_LinkEntities": {
+    "row_count": 212389,
+    "null_rates": {
+      "permno": "21.31%",
+      "ff12_code": "13.57%",
+      "ff12_name": "13.57%",
+      "ff48_code": "1.22%",
+      "ff48_name": "1.22%"
+    },
+    "gvkey_null_rate": "0.00%",
+    "match_rate": "100.0%",
+    "link_quality_values": [
+      80,
+      90,
+      100
+    ],
+    "link_method_values": [
+      "cusip8_date",
+      "name_fuzzy",
+      "permno_date"
+    ],
+    "quality_score": "PASS"
+  },
+  "1.3_BuildTenureMap": {
+    "row_count": 997699,
+    "null_rates": {
+      "prev_ceo_id": "58.62%",
+      "prev_ceo_name": "58.62%"
+    },
+    "ceo_id_null_rate": "0.00%",
+    "year_range": {
+      "min": 1945,
+      "max": 2025
+    },
+    "month_range": {
+      "min": 1,
+      "max": 12
+    },
+    "duplicate_gvkey_year_month": 0,
+    "unique_ceos": 10262,
+    "unique_firms": 4052,
+    "quality_score": "PASS"
+  },
+  "1.4_AssembleManifest": {
+    "row_count": 112968,
+    "null_rates": {
+      "ff12_code": "11.74%",
+      "ff12_name": "11.74%",
+      "ff48_code": "0.58%",
+      "ff48_name": "0.58%",
+      "prev_ceo_id": "38.68%",
+      "prev_ceo_name": "38.68%"
+    },
+    "duplicate_file_names": 0,
+    "gvkey_null_rate": "0.00%",
+    "ceo_id_null_rate": "0.00%",
+    "unique_ceos": 4466,
+    "unique_firms": 2429,
+    "calls_per_ceo_stats": {
+      "mean": 25.3,
+      "median": 21.0,
+      "min": 5,
+      "max": 193
+    },
+    "quality_score": "PASS"
+  }
+}

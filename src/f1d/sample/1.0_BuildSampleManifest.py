@@ -115,12 +115,12 @@ def print_dual(msg: str) -> None:
 # ==============================================================================
 
 # Allowed script directory for subprocess validation (prevents path traversal)
-ALLOWED_SCRIPT_DIR = Path(__file__).parent  # 2_Scripts/
+ALLOWED_SCRIPT_DIR = Path(__file__).parent  # src/f1d/sample/
 
 
 def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    config_path = Path(__file__).parent.parent.parent.parent / "config" / "project.yaml"
     validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
@@ -128,7 +128,7 @@ def load_config() -> Dict[str, Any]:
 
 def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     paths = {
         "root": root,
@@ -221,9 +221,9 @@ def main() -> int:
             break
 
         # Execute subscript with validated absolute path
-        # Set PYTHONPATH to include 2_Scripts directory for shared module imports
+        # Set PYTHONPATH to include project root for f1d.shared.* imports
         env = os.environ.copy()
-        scripts_root = str(Path(__file__).parent.parent.parent)
+        scripts_root = str(Path(__file__).parent.parent.parent.parent)
         # Use os.pathsep for cross-platform compatibility (':' on Unix, ';' on Windows)
         existing_path = env.get("PYTHONPATH", "")
         env["PYTHONPATH"] = (
@@ -289,15 +289,13 @@ def main() -> int:
 
 if __name__ == "__main__":
     args = parse_arguments()
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
         check_prerequisites(root)
-        print("✓ All prerequisites validated")
-        print(
-            "✓ Ready to execute: python 2_Scripts/1_Sample/1.0_BuildSampleManifest.py"
-        )
+        print("[OK] All prerequisites validated")
+        print("[OK] Ready to execute: python -m f1d.sample.1_0_BuildSampleManifest")
         sys.exit(0)
 
     check_prerequisites(root)

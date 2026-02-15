@@ -37,7 +37,7 @@ class PathsSettings(BaseSettings):
     """
 
     inputs: str = Field(default="1_Inputs", description="Input data directory")
-    scripts: str = Field(default="2_Scripts", description="Scripts directory")
+    scripts: str = Field(default="src/f1d", description="Scripts directory (src-layout)")
     logs: str = Field(default="3_Logs", description="Logs directory")
     outputs: str = Field(default="4_Outputs", description="Outputs directory")
     lm_dictionary: Optional[str] = Field(

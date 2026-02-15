@@ -1,4 +1,0 @@
-Coverage Investigation Results
-============================
-Common GVKEYs: 2,585
-Calls potentially matchable: 123,496

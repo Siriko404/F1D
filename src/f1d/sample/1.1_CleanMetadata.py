@@ -129,7 +129,7 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> argparse.Namesp
 
 def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
-    config_path = Path(__file__).parent.parent.parent / "config" / "project.yaml"
+    config_path = Path(__file__).parent.parent.parent.parent / "config" / "project.yaml"
     validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
@@ -137,7 +137,7 @@ def load_config() -> Dict[str, Any]:
 
 def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     paths = {
         "root": root,
@@ -707,7 +707,7 @@ def main() -> int:
 if __name__ == "__main__":
     # Parse arguments and check prerequisites
     args = parse_arguments()
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     # Handle dry-run mode
     if args.dry_run:

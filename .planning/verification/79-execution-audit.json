@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-02-14T21:48:20Z",
+  "phase": "79-test-stage-1-sample-scripts",
+  "plan": "02",
+  "execution_summary": {
+    "status": "SUCCESS",
+    "total_scripts": 5,
+    "passed": 5,
+    "failed": 0,
+    "total_duration_seconds": 230.18
+  },
+  "scripts": {
+    "1.1_CleanMetadata": {
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 12.56,
+      "input_rows": 465434,
+      "output_rows": 297547,
+      "rows_removed": 167887,
+      "removal_rate_percent": 36.1,
+      "output_path": "4_Outputs/1.1_CleanMetadata/2026-02-14_214822/metadata_cleaned.parquet",
+      "report_path": "4_Outputs/1.1_CleanMetadata/2026-02-14_214822/report_step_1_1.md"
+    },
+    "1.2_LinkEntities": {
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 190.13,
+      "input_rows": 297547,
+      "output_rows": 212389,
+      "rows_removed": 85158,
+      "removal_rate_percent": 28.6,
+      "match_rate_percent": 71.4,
+      "ff12_match_percent": 86.4,
+      "ff48_match_percent": 98.8,
+      "output_path": "4_Outputs/1.2_LinkEntities/2026-02-14_214838/metadata_linked.parquet",
+      "report_path": "4_Outputs/1.2_LinkEntities/2026-02-14_214838/report_step_1_2.md"
+    },
+    "1.3_BuildTenureMap": {
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 25.12,
+      "input_rows": 370545,
+      "output_rows": 997699,
+      "tenure_episodes": 11309,
+      "predecessors_linked": 7253,
+      "monthly_records_before_overlap": 1020168,
+      "overlap_duplicates_removed": 22469,
+      "output_path": "4_Outputs/1.3_BuildTenureMap/2026-02-14_215151/tenure_monthly.parquet",
+      "report_path": "4_Outputs/1.3_BuildTenureMap/2026-02-14_215151/report_step_1_3.md"
+    },
+    "1.4_AssembleManifest": {
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 2.37,
+      "input_rows": 212389,
+      "output_rows": 112968,
+      "rows_removed": 99421,
+      "removal_rate_percent": 46.8,
+      "join_match_rate_percent": 54.2,
+      "ceos_before_threshold": 5316,
+      "ceos_after_threshold": 4466,
+      "ceos_dropped": 850,
+      "calls_dropped_below_threshold": 2046,
+      "output_path": "4_Outputs/1.4_AssembleManifest/2026-02-14_215218/master_sample_manifest.parquet",
+      "report_path": "4_Outputs/1.4_AssembleManifest/2026-02-14_215218/report_step_1_4.md"
+    },
+    "1.0_BuildSampleManifest": {
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_seconds": 230.18,
+      "description": "Orchestrator - runs all substeps sequentially",
+      "output_path": "4_Outputs/1.0_BuildSampleManifest/2026-02-14_214820/master_sample_manifest.parquet",
+      "log_path": "3_Logs/1.0_BuildSampleManifest/2026-02-14_214820.log"
+    }
+  },
+  "data_flow": {
+    "initial_input_rows": 465434,
+    "final_manifest_rows": 112968,
+    "overall_retention_rate_percent": 24.3,
+    "stages": [
+      {"stage": "1.1_CleanMetadata", "retention_percent": 63.9},
+      {"stage": "1.2_LinkEntities", "retention_percent": 71.4},
+      {"stage": "1.4_AssembleManifest", "retention_percent": 53.2}
+    ]
+  },
+  "issues_found": [
+    {
+      "severity": "LOW",
+      "type": "BUG",
+      "location": "src/f1d/shared/dependency_checker.py:75",
+      "description": "Root path calculation used 3 parent levels instead of 4",
+      "impact": "Prerequisite validation failed when running individual scripts",
+      "fix": "Changed Path(__file__).parent.parent.parent to .parent.parent.parent.parent",
+      "status": "FIXED"
+    },
+    {
+      "severity": "LOW", 
+      "type": "COMPATIBILITY",
+      "location": "src/f1d/sample/1.0_BuildSampleManifest.py:297-300",
+      "description": "Unicode checkmark character (U+2713) fails on Windows cp1252 console",
+      "impact": "Dry-run mode exits with UnicodeEncodeError after successful validation",
+      "fix": "Replaced unicode checkmarks with ASCII [OK] markers",
+      "status": "FIXED"
+    }
+  ]
+}

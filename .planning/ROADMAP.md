@@ -110,7 +110,8 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 | 76. Stage Scripts Migration | v6.1 | 4/4 | Complete | 2026-02-14 |
 | 77. Concerns Closure + Verification | v6.1 | 17/17 | Complete | 2026-02-14 |
 | 78. Documentation Synchronization | v6.1 | 4/4 | Complete | 2026-02-14 |
-| 79. Stage 1 Sample Scripts Testing | v6.2 | 0/4 | Planned | - |
+| 79. Stage 1 Sample Scripts Testing | v6.2 | 4/4 | Complete | 2026-02-15 |
+| 80. Stage 2 Text Scripts Testing | v6.2 | 0/4 | Planned | - |
 
 ### Phase 77: Concerns Closure with Parallel Agents + Full Verification
 
@@ -204,11 +205,58 @@ Plans:
 - Wave 4: 79-04 (Generate audit reports MD + JSON)
 
 Plans:
-- [ ] 79-01-PLAN.md — Standards compliance audit + dry-run validation (Wave 1)
-- [ ] 79-02-PLAN.md — Full-scale execution of Stage 1 pipeline (Wave 2)
-- [ ] 79-03-PLAN.md — Schema and data quality validation (Wave 3)
-- [ ] 79-04-PLAN.md — Generate comprehensive audit reports (Wave 4)
+- [x] 79-01-PLAN.md — Standards compliance audit + dry-run validation (Wave 1)
+- [x] 79-02-PLAN.md — Full-scale execution of Stage 1 pipeline (Wave 2)
+- [x] 79-03-PLAN.md — Schema and data quality validation (Wave 3)
+- [x] 79-04-PLAN.md — Generate comprehensive audit reports (Wave 4)
 
 ---
 
-*Roadmap updated: 2026-02-14 (Phase 79 planned)*
+### Phase 80: Test Stage 2 Text Scripts at Full Scale
+
+**Goal:** Test Stage 2 text processing scripts at full scale, audit dataflow, fix to V6 standards, verify outputs, debug problems
+
+**Depends on:** Phase 79 (Stage 1 Sample Scripts Testing)
+
+**Success Criteria** (what must be TRUE):
+1. All Stage 2 scripts execute successfully with --dry-run
+2. All Stage 2 scripts execute successfully at full scale using Stage 1 outputs
+3. Text tokenization produces valid word count files
+4. Variable construction produces valid linguistic measures
+5. All outputs have expected schema and logical values
+6. All scripts comply with V6.1 architecture standards
+7. Audit report generated with all required metrics
+8. Any issues found are fixed and documented
+
+**Scripts to Test:**
+- **2.1_TokenizeAndCount** (`src/f1d/text/tokenize_and_count.py`): Tokenizes earnings call transcripts and counts word occurrences
+- **2.2_ConstructVariables** (`src/f1d/text/construct_variables.py`): Constructs linguistic variables from word frequency data
+- **report_step2.py**: Generates Stage 2 processing reports
+- **verify_step2.py**: Verifies Stage 2 outputs
+
+**Dataflow:**
+```
+Stage 1 Output: master_sample_manifest.parquet
+    ↓ 2.1_TokenizeAndCount
+Word counts: word_counts.parquet
+    ↓ 2.2_ConstructVariables
+Linguistic variables: linguistic_variables.parquet
+```
+
+**Plans:** 4 plans in 4 waves
+
+**Wave Structure:**
+- Wave 1: 80-01 (Standards compliance + dry-run validation)
+- Wave 2: 80-02 (Full-scale execution of all Stage 2 scripts)
+- Wave 3: 80-03 (Schema and data quality validation)
+- Wave 4: 80-04 (Generate audit reports MD + JSON)
+
+Plans:
+- [ ] 80-01-PLAN.md — Standards compliance audit + dry-run validation (Wave 1)
+- [ ] 80-02-PLAN.md — Full-scale execution of Stage 2 pipeline (Wave 2)
+- [ ] 80-03-PLAN.md — Schema and data quality validation (Wave 3)
+- [ ] 80-04-PLAN.md — Generate comprehensive audit reports (Wave 4)
+
+---
+
+*Roadmap updated: 2026-02-15 (Phase 79 complete, Phase 80 planned)*

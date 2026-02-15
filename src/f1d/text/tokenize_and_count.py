@@ -24,7 +24,7 @@ Dependencies:
 
 Deterministic: true
 
-Location: src/f1d/text/tokenize_and_count.py (migrated from 2_Scripts/2_Text/)
+Location: src/f1d/text/tokenize_and_count.py (migrated from legacy 2_Text/)
 
 Author: Thesis Author
 Date: 2026-02-11
