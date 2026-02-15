@@ -1,0 +1,125 @@
+{
+  "audit_timestamp": "2026-02-14T00:00:00Z",
+  "phase": "79",
+  "plan": "01",
+  "audit_type": "V6.1 namespace import compliance",
+  "scripts_audited": 5,
+  "overall_compliance": true,
+  "summary": {
+    "f1d_shared_imports": 25,
+    "legacy_shared_imports": 0,
+    "sys_path_insert_calls": 0,
+    "mypy_errors": 0,
+    "mypy_exit_code": 0
+  },
+  "scripts": {
+    "1.0_BuildSampleManifest.py": {
+      "path": "src/f1d/sample/1.0_BuildSampleManifest.py",
+      "compliance": {
+        "f1d_shared_imports": true,
+        "legacy_imports": false,
+        "sys_path_insert": false
+      },
+      "imports": {
+        "f1d.shared.observability_utils": ["DualWriter"],
+        "f1d.shared.path_utils": ["OutputResolutionError", "ensure_output_dir", "get_latest_output_dir", "validate_input_file", "validate_output_path"],
+        "f1d.shared.subprocess_validation": ["validate_script_path"]
+      },
+      "mypy_status": "passed",
+      "issues": []
+    },
+    "1.1_CleanMetadata.py": {
+      "path": "src/f1d/sample/1.1_CleanMetadata.py",
+      "compliance": {
+        "f1d_shared_imports": true,
+        "legacy_imports": false,
+        "sys_path_insert": false
+      },
+      "imports": {
+        "f1d.shared.sample_utils": ["generate_variable_reference"],
+        "f1d.shared.chunked_reader": ["track_memory_usage"],
+        "f1d.shared.observability_utils": ["DualWriter", "analyze_missing_values", "calculate_throughput", "compute_entity_stats", "compute_file_checksum", "compute_input_stats", "compute_temporal_stats", "detect_anomalies_zscore", "get_process_memory_mb", "print_stat", "print_stats_summary", "save_stats"],
+        "f1d.shared.data_validation": ["load_validated_parquet"],
+        "f1d.shared.path_utils": ["ensure_output_dir", "validate_input_file", "validate_output_path"]
+      },
+      "mypy_status": "passed",
+      "issues": []
+    },
+    "1.2_LinkEntities.py": {
+      "path": "src/f1d/sample/1.2_LinkEntities.py",
+      "compliance": {
+        "f1d_shared_imports": true,
+        "legacy_imports": false,
+        "sys_path_insert": false
+      },
+      "imports": {
+        "f1d.shared.sample_utils": ["generate_variable_reference"],
+        "f1d.shared.chunked_reader": ["track_memory_usage"],
+        "f1d.shared.industry_utils": ["parse_ff_industries"],
+        "f1d.shared.observability_utils": ["DualWriter", "analyze_missing_values", "calculate_throughput", "collect_before_after_samples", "collect_fuzzy_match_samples", "collect_tier_match_samples", "collect_unmatched_samples", "compute_file_checksum", "compute_linking_input_stats", "compute_linking_output_stats", "compute_linking_process_stats", "detect_anomalies_zscore", "get_process_memory_mb", "print_stats_summary", "save_stats"],
+        "f1d.shared.path_utils": ["ensure_output_dir", "get_latest_output_dir", "validate_input_file", "validate_output_path"],
+        "f1d.shared.string_matching": ["RAPIDFUZZ_AVAILABLE", "load_matching_config", "match_company_names"]
+      },
+      "mypy_status": "passed",
+      "issues": []
+    },
+    "1.3_BuildTenureMap.py": {
+      "path": "src/f1d/sample/1.3_BuildTenureMap.py",
+      "compliance": {
+        "f1d_shared_imports": true,
+        "legacy_imports": false,
+        "sys_path_insert": false
+      },
+      "imports": {
+        "f1d.shared.sample_utils": ["generate_variable_reference"],
+        "f1d.shared.observability_utils": ["DualWriter", "analyze_missing_values", "calculate_throughput", "collect_tenure_samples", "compute_file_checksum", "compute_tenure_input_stats", "compute_tenure_output_stats", "compute_tenure_process_stats", "detect_anomalies_zscore", "get_process_memory_mb", "print_stat", "print_stats_summary", "save_stats"],
+        "f1d.shared.path_utils": ["ensure_output_dir", "validate_input_file"]
+      },
+      "mypy_status": "passed",
+      "issues": []
+    },
+    "1.4_AssembleManifest.py": {
+      "path": "src/f1d/sample/1.4_AssembleManifest.py",
+      "compliance": {
+        "f1d_shared_imports": true,
+        "legacy_imports": false,
+        "sys_path_insert": false
+      },
+      "imports": {
+        "f1d.shared.sample_utils": ["generate_variable_reference"],
+        "f1d.shared.observability_utils": ["DualWriter", "analyze_missing_values", "calculate_throughput", "collect_ceo_distribution_samples", "compute_file_checksum", "compute_manifest_input_stats", "compute_manifest_output_stats", "compute_manifest_process_stats", "detect_anomalies_zscore", "get_process_memory_mb", "print_stat", "print_stats_summary", "save_stats"],
+        "f1d.shared.path_utils": ["ensure_output_dir", "get_latest_output_dir", "validate_input_file"]
+      },
+      "mypy_status": "passed",
+      "issues": []
+    }
+  },
+  "mypy_results": {
+    "command": "python -m mypy src/f1d/sample/ --no-error-summary",
+    "exit_code": 0,
+    "files_checked": 7,
+    "errors_found": 0,
+    "status": "PASSED"
+  },
+  "v6_1_standards_check": {
+    "f1d_shared_namespace": {
+      "required": true,
+      "verified": true,
+      "total_imports": 25,
+      "details": "All 5 scripts use 'from f1d.shared.*' namespace imports"
+    },
+    "no_sys_path_insert": {
+      "required": true,
+      "verified": true,
+      "found_calls": 0,
+      "details": "Zero sys.path.insert() calls found in any sample script"
+    },
+    "mypy_zero_errors": {
+      "required": true,
+      "verified": true,
+      "errors": 0,
+      "details": "mypy passes with 0 errors on all sample scripts"
+    }
+  },
+  "conclusion": "All 5 Stage 1 sample scripts are V6.1 compliant. All imports use f1d.shared.* namespace, zero sys.path.insert() calls, mypy 0 errors. Ready for full-scale testing."
+}
