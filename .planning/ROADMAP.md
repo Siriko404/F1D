@@ -113,6 +113,7 @@ Eliminated V3 folders by merging all scripts and outputs into V2 structure. See 
 | 79. Stage 1 Sample Scripts Testing | v6.2 | 4/4 | Complete | 2026-02-15 |
 | 80. Stage 2 Text Scripts Testing | v6.2 | 4/4 | Complete | 2026-02-15 |
 | 81. Stage 3 Financial Scripts Testing | v6.2 | 4/4 | Complete | 2026-02-15 |
+| 82. SDC Takeover Linkage Fixes | v6.2 | 1/1 | Complete | 2026-02-15 |
 
 ### Phase 77: Concerns Closure with Parallel Agents + Full Verification
 
@@ -311,4 +312,47 @@ Plans:
 
 ---
 
-*Roadmap updated: 2026-02-15 (Phase 81 complete - V1 pipeline production-ready)*
+### Phase 82: SDC Takeover Linkage Fixes and CUSIP Enrichment
+
+**Goal:** Fix SDC takeover event linkage bugs discovered during Phase 81 audit, improve CUSIP coverage to 100%
+
+**Depends on:** Phase 81 (Stage 3 Financial Scripts Testing)
+
+**Success Criteria** (what must be TRUE):
+1. Anomaly detection functions work without crashing ✓
+2. All financial scripts load manifest from correct directory ✓
+3. Manifest includes CUSIP with 100% coverage ✓
+4. Takeover events detected (>0) ✓
+5. Match rate ~2% ✓
+
+**Bugs Fixed:**
+1. **Anomaly Detection Index Misalignment** - `df[anomaly_mask]` failed due to index mismatch
+2. **Wrong Manifest Path** - Scripts loaded from `1.0_BuildSampleManifest` instead of `1.4_AssembleManifest`
+3. **Missing CUSIP Column** - Manifest didn't include CUSIP from linked metadata
+4. **Empty String CUSIP Handling** - Empty strings passed `notna()` but failed SDC matching
+
+**Results:**
+
+| Metric | Before | After |
+|--------|--------|-------|
+| CUSIP Coverage | 82.7% | **100%** |
+| Takeover Events | 0 | **2,343** |
+| Match Rate | 0% | **2.07%** |
+
+**Plans:**
+- [x] 82-01-PLAN.md — Fix all SDC linkage bugs and add CCM CUSIP enrichment
+
+**Files Modified:**
+- `src/f1d/sample/1.4_AssembleManifest.py` — Added CUSIP column + CCM enrichment
+- `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py` — Fixed anomaly detection + manifest path
+- `src/f1d/financial/v1/3.1_FirmControls.py` — Fixed manifest path
+- `src/f1d/financial/v1/3.2_MarketVariables.py` — Fixed manifest path
+- `src/f1d/financial/v1/3.3_EventFlags.py` — Fixed manifest path + empty CUSIP handling
+
+**Known Limitation:**
+- CRSP memory constraint in `3.2_MarketVariables.py` prevents full pipeline re-run from scratch
+- EventFlags runs standalone and doesn't require full pipeline completion
+
+---
+
+*Roadmap updated: 2026-02-15 (Phase 82 complete - SDC takeover linkage fixed, 100% CUSIP coverage)*

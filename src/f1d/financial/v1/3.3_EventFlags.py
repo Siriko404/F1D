@@ -197,7 +197,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -243,6 +243,8 @@ def load_manifest(manifest_dir: Path) -> pd.DataFrame:
     # Extract CUSIP6 for SDC matching (if cusip column exists)
     if "cusip" in df.columns:
         df["cusip6"] = df["cusip"].astype(str).str[:6]
+        # Replace empty strings with None for proper matching
+        df.loc[df["cusip6"] == "", "cusip6"] = None
     else:
         df["cusip6"] = None
 

@@ -81,7 +81,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 

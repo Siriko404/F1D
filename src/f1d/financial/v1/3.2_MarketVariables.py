@@ -246,7 +246,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -286,17 +286,19 @@ def load_manifest_with_permno(manifest_dir: Path, ccm_file: Path) -> pd.DataFram
     """Load manifest with 100% PERMNO coverage via gvkey->CCM fallback."""
 
     # Column pruning: only reading needed columns
+    # Note: permno is not in manifest, will be populated via CCM fallback
 
     df = pd.read_parquet(
         manifest_dir / "master_sample_manifest.parquet",
-        columns=["file_name", "gvkey", "start_date", "permno", "year"],
+        columns=["file_name", "gvkey", "start_date"],
     )
 
     df["start_date"] = pd.to_datetime(df["start_date"])
 
     df["year"] = df["start_date"].dt.year
 
-    df["permno"] = pd.to_numeric(df["permno"], errors="coerce")
+    # Initialize permno column - will be populated via CCM fallback
+    df["permno"] = pd.NA
 
     direct = df["permno"].notna().sum()
 

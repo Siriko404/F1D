@@ -215,7 +215,7 @@ def check_prerequisites(root):
     required_files: Dict[str, Path] = {}
 
     required_steps = {
-        "2.2_ConstructVariables": "linguistic_variables.parquet",
+        "2_Textual_Analysis/2.2_Variables": "linguistic_variables_2002.parquet",
     }
 
     validate_prerequisites(required_files, required_steps)

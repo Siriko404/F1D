@@ -93,6 +93,7 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
         "root": root,
         "metadata": metadata_dir / "metadata_linked.parquet",
         "tenure": tenure_dir / "tenure_monthly.parquet",
+        "ccm_file": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
     }
 
     # Create timestamped output directory
@@ -194,6 +195,7 @@ def main() -> int:
             "start_date",
             "conm",
             "sic",
+            "cusip",
             "ff12_code",
             "ff12_name",
             "ff48_code",
@@ -209,6 +211,34 @@ def main() -> int:
 
     print_stat("Metadata file checksum", value=metadata_checksum[:16] + "...")
     print_dual(f"  Loaded {len(metadata):,} calls\n")
+
+    # Enrich missing CUSIPs from CCM
+    print_dual("Enriching missing CUSIPs from CCM...")
+    missing_cusip_before = (metadata["cusip"].isna() | (metadata["cusip"] == "")).sum()
+    print_dual(f"  Calls without CUSIP: {missing_cusip_before:,}")
+
+    if paths["ccm_file"].exists() and missing_cusip_before > 0:
+        ccm = pd.read_parquet(paths["ccm_file"], columns=["gvkey", "cusip"])
+        ccm["gvkey_str"] = ccm["gvkey"].astype(str).str.zfill(6)
+        # Build lookup: gvkey -> cusip (take first non-null)
+        gvkey_to_cusip = ccm[ccm["cusip"].notna() & (ccm["cusip"] != "")].groupby("gvkey_str")["cusip"].first().to_dict()
+
+        # Convert metadata gvkey for lookup (will be done properly below, but we need it now)
+        metadata["gvkey_str"] = metadata["gvkey"].apply(lambda x: str(int(x)).zfill(6) if pd.notna(x) else None)
+
+        # Fill missing CUSIPs from CCM
+        missing_mask = metadata["cusip"].isna() | (metadata["cusip"] == "")
+        metadata.loc[missing_mask, "cusip"] = metadata.loc[missing_mask, "gvkey_str"].map(gvkey_to_cusip)
+
+        missing_cusip_after = (metadata["cusip"].isna() | (metadata["cusip"] == "")).sum()
+        filled = missing_cusip_before - missing_cusip_after
+        print_dual(f"  CUSIPs filled from CCM: {filled:,}")
+        print_dual(f"  Remaining without CUSIP: {missing_cusip_after:,}\n")
+
+        # Drop temporary column
+        metadata = metadata.drop(columns=["gvkey_str"])
+    else:
+        print_dual("  No CCM enrichment needed or available\n")
 
     print_dual("Loading CEO tenure panel...")
     # Column pruning: only reading needed columns

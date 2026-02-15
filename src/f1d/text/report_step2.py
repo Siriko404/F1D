@@ -70,7 +70,7 @@ def check_prerequisites(root):
 
     # Validate Step 2.2 output exists (uses timestamp-based resolution internally)
     required_steps = {
-        "2.2_ConstructVariables": "linguistic_variables.parquet",
+        "2_Textual_Analysis/2.2_Variables": "linguistic_variables_2002.parquet",
     }
 
     validate_prerequisites(required_files, required_steps)

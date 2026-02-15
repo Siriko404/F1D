@@ -174,7 +174,7 @@ def detect_anomalies_zscore(
 
         z_scores = abs((series - mean) / std)
         anomaly_mask = z_scores > threshold
-        anomaly_indices = df[anomaly_mask].index.tolist()
+        anomaly_indices = series[anomaly_mask].index.tolist()
 
         anomalies[col] = {
             "count": int(anomaly_mask.sum()),
@@ -230,7 +230,7 @@ def detect_anomalies_iqr(
         upper_bound = q3 + multiplier * iqr
 
         anomaly_mask = (series < lower_bound) | (series > upper_bound)
-        anomaly_indices = df[anomaly_mask].index.tolist()
+        anomaly_indices = series[anomaly_mask].index.tolist()
 
         anomalies[col] = {
             "count": int(anomaly_mask.sum()),
@@ -257,7 +257,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -272,7 +272,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
         "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
         "cccl_file": root
         / "1_Inputs"
-        / "CCCL instrument"
+        / "CCCL_instrument"
         / "instrument_shift_intensity_2005_2022.parquet",
         "ccm_file": root
         / "1_Inputs"

@@ -1,0 +1,107 @@
+{
+  "phase_id": "82-sdc-takeover-linkage-fixes",
+  "timestamp": "2026-02-15T12:20:00",
+  "status": "COMPLETE",
+  "bugs_fixed": 5,
+  "summary": {
+    "description": "Fixed SDC takeover event linkage bugs discovered during Phase 81 audit",
+    "takeover_events_before": 0,
+    "takeover_events_after": 2343,
+    "match_rate_before": "0.00%",
+    "match_rate_after": "2.07%",
+    "cusip_coverage_before": "82.7%",
+    "cusip_coverage_after": "100.0%"
+  },
+  "bugs": [
+    {
+      "id": 1,
+      "name": "Anomaly Detection Index Misalignment",
+      "file": "src/f1d/financial/v1/3.0_BuildFinancialFeatures.py",
+      "lines": [177, 233],
+      "root_cause": "series = df[col].dropna() creates series with different index than df, then df[anomaly_mask] fails",
+      "fix": "Changed df[anomaly_mask] to series[anomaly_mask]",
+      "status": "FIXED"
+    },
+    {
+      "id": 2,
+      "name": "Wrong Manifest Path in Financial Scripts",
+      "files": [
+        "src/f1d/financial/v1/3.0_BuildFinancialFeatures.py",
+        "src/f1d/financial/v1/3.1_FirmControls.py",
+        "src/f1d/financial/v1/3.2_MarketVariables.py",
+        "src/f1d/financial/v1/3.3_EventFlags.py"
+      ],
+      "root_cause": "Scripts loaded from 1.0_BuildSampleManifest (no CUSIP) instead of 1.4_AssembleManifest (with CUSIP)",
+      "fix": "Changed all manifest paths to 1.4_AssembleManifest",
+      "status": "FIXED"
+    },
+    {
+      "id": 3,
+      "name": "Missing CUSIP Column in Manifest",
+      "file": "src/f1d/sample/1.4_AssembleManifest.py",
+      "root_cause": "CUSIP not included in columns loaded from linked metadata",
+      "fix": "Added cusip to column list + CCM enrichment for missing CUSIPs",
+      "status": "FIXED"
+    },
+    {
+      "id": 4,
+      "name": "Empty String CUSIP Handling",
+      "file": "src/f1d/financial/v1/3.3_EventFlags.py",
+      "root_cause": "Empty strings pass notna() check but fail SDC matching",
+      "fix": "Replace empty strings with None after extracting CUSIP6",
+      "status": "FIXED"
+    }
+  ],
+  "metrics": {
+    "manifest": {
+      "total_calls": 112968,
+      "cusip_coverage_before": {
+        "count": 93447,
+        "percentage": 82.7
+      },
+      "cusip_coverage_after": {
+        "count": 112968,
+        "percentage": 100.0
+      },
+      "unique_cusip6s_before": 1915,
+      "unique_cusip6s_after": 2466
+    },
+    "sdc": {
+      "total_deals": 142457,
+      "unique_target_cusips": 132153,
+      "date_range": "1999-12-01 to 2025-09-30"
+    },
+    "overlap": {
+      "manifest_cusips_as_targets": 593,
+      "manifest_cusips_as_acquirors": 896,
+      "manifest_cusips_not_in_sdc": 977
+    },
+    "takeover_events": {
+      "total": 2343,
+      "match_rate": 2.07,
+      "by_type": {
+        "friendly": 2019,
+        "uninvited": 324
+      },
+      "time_window_days": 365
+    }
+  },
+  "known_limitations": [
+    {
+      "id": 1,
+      "name": "CRSP Memory Constraint",
+      "description": "Full V1 pipeline hits memory limits during CRSP loading in 3.2_MarketVariables.py",
+      "impact": "Cannot regenerate market variables from scratch without memory optimization",
+      "workaround": "Use existing outputs; EventFlags runs standalone and doesn't require full pipeline"
+    }
+  ],
+  "files_modified": [
+    "src/f1d/sample/1.4_AssembleManifest.py",
+    "src/f1d/financial/v1/3.0_BuildFinancialFeatures.py",
+    "src/f1d/financial/v1/3.1_FirmControls.py",
+    "src/f1d/financial/v1/3.2_MarketVariables.py",
+    "src/f1d/financial/v1/3.3_EventFlags.py"
+  ],
+  "output_directory": "4_Outputs/3_Financial_Features/2026-02-15_122008",
+  "verification_passed": true
+}

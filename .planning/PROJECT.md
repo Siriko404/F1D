@@ -8,10 +8,26 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: Planning Next Milestone
+## Current Milestone: v6.2 Full-Scale Pipeline Testing
 
 **Previous:** v6.1 Architecture Compliance Gap Closure (COMPLETE 2026-02-14)
-**Goal:** Ready for next milestone planning
+**Current:** v6.2 Full-Scale Pipeline Testing (COMPLETE 2026-02-15)
+**Phases:** 79-82
+
+### v6.2 Deliverables
+
+- **Phase 79:** Stage 1 Sample Scripts tested at full scale
+- **Phase 80:** Stage 2 Text Scripts tested at full scale
+- **Phase 81:** Stage 3 Financial Scripts tested at full scale
+- **Phase 82:** SDC Takeover Linkage Fixes and CUSIP Enrichment
+
+### Key Fixes in Phase 82
+
+- Fixed anomaly detection index misalignment bug
+- Fixed manifest path in all financial scripts
+- Added CCM CUSIP enrichment for 100% coverage
+- Fixed empty string CUSIP handling
+- **Result:** Takeover events increased from 0 to 2,343 (2.07% match rate)
 
 ## Requirements
 
@@ -66,6 +82,7 @@ Every script must produce verifiable, reproducible results with complete audit t
 - ✓ Full src-layout compliance (zero sys.path.insert) — v6.1
 - ✓ All imports use f1d.shared.* namespace — v6.1
 - ✓ LoggingSettings integrated with configure_logging() — v6.1
+- ✓ SDC takeover event linkage (100% CUSIP, 2% match rate) — v6.2
 
 ### Active
 
