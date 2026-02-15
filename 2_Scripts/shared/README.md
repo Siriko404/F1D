@@ -10,7 +10,7 @@ This directory contains reusable utility modules for the F1D data pipeline.
 
 ## Scaling Documentation
 
-For comprehensive information on pipeline scaling limits and improvement paths, see: **[SCALING.md](../SCALING.md)**
+For comprehensive information on pipeline scaling limits and improvement paths, see: **[SCALING.md](../../SCALING.md)**
 
 **Topics covered:**
 - Current dataset size limits and memory requirements

@@ -38,8 +38,6 @@ pip install rapidfuzz>=3.14.0
 
 RapidFuzz enables Tier 3 fuzzy name matching in entity linking, which significantly improves match rates for company names with spelling variations or abbreviations. The pipeline runs without RapidFuzz (graceful degradation), but match rates will be lower.
 
-See DEPENDENCIES.md for details on optional dependencies and their impact.
-
 ## Pipeline Flow Diagram
 
 This diagram shows the complete data flow from raw inputs through 4 processing phases to final econometric outputs.
@@ -1393,7 +1391,7 @@ Execucomp. Standard & Poor's, [access year].
 
 ## Scaling and Performance
 
-The F1D pipeline is designed for academic replication with current dataset sizes (~50K transcripts). For larger datasets or performance optimization, see [2_Scripts/SCALING.md](2_Scripts/SCALING.md).
+The F1D pipeline is designed for academic replication with current dataset sizes (~50K transcripts). For larger datasets or performance optimization, see [SCALING.md](SCALING.md).
 
 **Quick Tips:**
 - **Memory**: Minimum 8GB RAM, recommended 16GB RAM
@@ -1401,7 +1399,7 @@ The F1D pipeline is designed for academic replication with current dataset sizes
 - **Chunked Processing**: Enable throttling via `config/project.yaml > chunk_processing`
 - **Monitoring**: Check `stats.json > memory_mb` for operation-level memory usage
 
-**For 2x-10x datasets**: See [SCALING.md](2_Scripts/SCALING.md) for configuration recommendations.
+**For 2x-10x datasets**: See [SCALING.md](SCALING.md) for configuration recommendations.
 
 ## Quick Start
 
@@ -1480,14 +1478,13 @@ The v6.1 milestone (Phases 75-77) completed full architecture compliance:
 - **mypy passes** with 0 errors on 101 source files
 - **1000+ tests** with namespace imports
 
-See ROADMAP.md for detailed phase-by-phase documentation.
+See [.planning/ROADMAP.md](.planning/ROADMAP.md) for detailed phase-by-phase documentation.
 
 ## Documentation
 
-- **DEPENDENCIES.md**: Complete dependency documentation, version pinning rationale, and upgrade procedures
-- **UPGRADE_GUIDE.md**: Instructions for upgrading dependencies with compatibility validation
-- **ROADMAP.md**: Project phases, plans, and progress tracking
-- **.planning/STATE.md**: Current project position and accumulated decisions
+- **[.planning/ROADMAP.md](.planning/ROADMAP.md)**: Project phases, plans, and progress tracking
+- **[.planning/STATE.md](.planning/STATE.md)**: Current project position and accumulated decisions
+- **[SCALING.md](SCALING.md)**: Pipeline scaling limits and performance optimization
 
 ## Output Reproducibility
 
