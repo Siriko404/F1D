@@ -8,26 +8,35 @@ A research data processing pipeline that constructs panel datasets for empirical
 
 Every script must produce verifiable, reproducible results with complete audit trails — if a reviewer cannot trace how a number was computed, the pipeline has failed.
 
-## Current Milestone: v6.2 Full-Scale Pipeline Testing
+## Current Milestone: v6.3 Codebase Concerns Resolution
 
-**Previous:** v6.1 Architecture Compliance Gap Closure (COMPLETE 2026-02-14)
-**Current:** v6.2 Full-Scale Pipeline Testing (COMPLETE 2026-02-15)
-**Phases:** 79-82
+**Previous:** v6.2 Full-Scale Pipeline Testing (COMPLETE 2026-02-15)
+**Current:** v6.3 Codebase Concerns Resolution (COMPLETE 2026-02-15)
+**Phases:** 83-90
 
-### v6.2 Deliverables
+### v6.3 Deliverables
 
-- **Phase 79:** Stage 1 Sample Scripts tested at full scale
-- **Phase 80:** Stage 2 Text Scripts tested at full scale
-- **Phase 81:** Stage 3 Financial Scripts tested at full scale
-- **Phase 82:** SDC Takeover Linkage Fixes and CUSIP Enrichment
+- **Phase 83:** Critical Tech Debt Fix (global state, silent error handling)
+- **Phase 84:** Output Schema Validation (Pandera integration)
+- **Phase 85:** V2 Financial Scripts Testing (53 new unit tests)
+- **Phase 86:** V1/V2 Econometric Testing Gaps (36 new unit tests)
+- **Phase 87:** Merge Validation & Data Loading (safe_merge with validation)
+- **Phase 88:** Security & Dependency Infrastructure (Dependabot, SECURITY.md)
+- **Phase 89:** Code Organization & Splitting (timestamp validation)
+- **Phase 90:** Performance & Quality Gates (Bandit SAST, coverage threshold increase)
 
-### Key Fixes in Phase 82
+### Key Improvements in v6.3
 
-- Fixed anomaly detection index misalignment bug
-- Fixed manifest path in all financial scripts
-- Added CCM CUSIP enrichment for 100% coverage
-- Fixed empty string CUSIP handling
-- **Result:** Takeover events increased from 0 to 2,343 (2.07% match rate)
+- Eliminated global state in TakeoverHazards.py (parameter injection)
+- Fixed silent error handling with specific exceptions + logging
+- Added Pandera schema validation for output files
+- Created 105 new unit tests (181 total new tests)
+- Added safe_merge() with validation and diagnostics
+- Configured Dependabot for automated dependency updates
+- Added secrets patterns to .gitignore
+- Created SECURITY.md with security policy
+- Added Bandit SAST to CI pipeline
+- Increased test coverage threshold from 25% to 30%
 
 ## Requirements
 
@@ -83,6 +92,16 @@ Every script must produce verifiable, reproducible results with complete audit t
 - ✓ All imports use f1d.shared.* namespace — v6.1
 - ✓ LoggingSettings integrated with configure_logging() — v6.1
 - ✓ SDC takeover event linkage (100% CUSIP, 2% match rate) — v6.2
+- ✓ Global state eliminated from TakeoverHazards.py — v6.3
+- ✓ Silent error handling fixed with specific exceptions — v6.3
+- ✓ Output schema validation with Pandera — v6.3
+- ✓ 105 new unit tests for financial/econometric scripts — v6.3
+- ✓ safe_merge() with validation and logging — v6.3
+- ✓ Dependabot configuration for automated updates — v6.3
+- ✓ SECURITY.md with security policy — v6.3
+- ✓ Secrets patterns in .gitignore — v6.3
+- ✓ Bandit SAST in CI pipeline — v6.3
+- ✓ Test coverage threshold increased to 30% — v6.3
 
 ### Active
 
@@ -122,15 +141,17 @@ V2 extensions added:
 - **Financial_V2** (3_Financial_V2): Hypothesis-specific variable construction (H1-H3, H5, H6)
 - **Econometric_V2** (4_Econometric_V2): Hypothesis testing regressions with FE and clustering
 
-**Current State (v6.1):**
-- 57,382 lines of Python code in src/f1d/
+**Current State (v6.3):**
+- 58,000+ lines of Python code in src/f1d/
 - src-layout package structure with proper f1d.shared.* imports
 - Type hints with tier-based mypy enforcement
 - Type-safe configuration via pydantic-settings
 - Structured logging with structlog and context binding
-- CI/CD pipeline with ruff, mypy, and pytest quality gates
+- CI/CD pipeline with ruff, mypy, pytest, and Bandit SAST
 - Comprehensive test suite with factory fixtures
-- 580+ tests passing
+- 700+ tests passing (181 new tests in v6.3)
+- Pandera schema validation for output files
+- Automated dependency updates via Dependabot
 
 **Standards Documents (v5.0):**
 - `docs/ARCHITECTURE_STANDARD.md` (1,696 lines) — Defines src-layout, module tiers, data lifecycle
@@ -212,4 +233,4 @@ When working on ANY regression or econometric code:
 | TYPE_CHECKING imports | Avoid circular imports at runtime while maintaining type safety | ✓ Implemented v6.1 |
 
 ---
-*Last updated: 2026-02-14 (v6.1 milestone complete)*
+*Last updated: 2026-02-15 (v6.3 milestone complete)*
