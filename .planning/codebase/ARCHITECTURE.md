@@ -4,197 +4,241 @@
 
 ## Pattern Overview
 
-**Overall:** 4-Stage Sequential Pipeline with Cross-Cutting Shared Utilities
+**Overall:** 4-Stage Data Processing Pipeline with src-layout Package Structure
 
 **Key Characteristics:**
-- Sequential data processing: Sample -> Text -> Financial -> Econometric
-- Stage modularity: Each stage independent with versioned variants (V1/V2)
-- Shared utilities: Cross-cutting concerns centralized in `src/f1d/shared/`
-- Deterministic outputs: Timestamped directories with latest symlinks
-- Observable: Structured logging, memory tracking, and metrics collection
+- Linear pipeline stages (Sample → Text → Financial → Econometric)
+- Versioned methodology variants (v1 and v2 are both active)
+- Shared utilities layer for cross-cutting concerns
+- Immutable inputs, reproducible outputs, timestamped execution
+- PyPA-compliant src-layout package with proper namespace imports
 
 ## Layers
 
-**Tier 0: Configuration & Coordination**
-- Purpose: Centralized configuration and project-level settings
-- Location: `config/`, `.planning/`
-- Contains: `config/project.yaml` (pipeline config), `.planning/` (phases, roadmap, milestones)
-- Depends on: None (root layer)
-- Used by: All stages (via `f1d.shared.config`)
-
-**Tier 1: Shared Utilities (Cross-Cutting Concerns)**
-- Purpose: Reusable utilities for all pipeline stages
+**Shared Utilities Layer (Tier 1):**
+- Purpose: Cross-cutting utilities used across all pipeline stages
 - Location: `src/f1d/shared/`
-- Contains: Configuration loading, path utilities, logging, data validation, regression helpers, observability
-- Depends on: Tier 0
-- Used by: All Tier 2 stage modules
+- Contains: Configuration, logging, data loading, validation, path utilities, regression helpers, observability
+- Depends on: Third-party libraries (pandas, numpy, pydantic, structlog, linearmodels)
+- Used by: All stage modules (sample, text, financial, econometric)
 
-**Tier 2: Stage-Specific Modules**
-- Purpose: Domain-specific processing for each pipeline stage
-- Location: `src/f1d/sample/`, `src/f1d/text/`, `src/f1d/financial/`, `src/f1d/econometric/`
-- Contains: Processing scripts organized by stage and version (V1/V2)
-- Depends on: Tier 1 (shared utilities) + Tier 0 (config)
-- Used by: Users (direct execution) and orchestrator scripts
+**Stage 1 - Sample Construction (Tier 2):**
+- Purpose: Build master sample manifest from earnings call metadata
+- Location: `src/f1d/sample/`
+- Contains: Metadata cleaning, entity linking, tenure mapping, manifest assembly
+- Depends on: `f1d.shared.*`, pandas, input data files
+- Used by: Stage 2 (text), Stage 3 (financial), Stage 4 (econometric)
 
-**Tier 3: Data Storage**
-- Purpose: Immutable inputs, processing outputs, execution logs
-- Location: `1_Inputs/`, `4_Outputs/`, `3_Logs/`
-- Contains: Raw data files, timestamped output directories, execution logs
-- Depends on: Tier 2 (producers)
-- Used by: Tier 2 (consumers) and Tier 4 (analysis)
+**Stage 2 - Text Processing (Tier 2):**
+- Purpose: Tokenize transcripts and construct linguistic variables
+- Location: `src/f1d/text/`
+- Contains: Tokenization, word counting, variable construction, verification
+- Depends on: `f1d.shared.*`, Stage 1 outputs (master_sample_manifest), LM dictionary
+- Used by: Stage 4 (econometric)
 
-**Tier 4: Documentation & Planning**
-- Purpose: Project planning, roadmap tracking, technical documentation
-- Location: `.planning/`, `docs/`
-- Contains: Phase plans, milestones, architecture standards, codebase docs
-- Depends on: All tiers (documentation source)
-- Used by: Developers, orchestrator
+**Stage 3 - Financial Features (Tier 2):**
+- Purpose: Construct firm controls, market variables, and event flags
+- Location: `src/f1d/financial/`
+- Contains: V1 methodology (3.0-3.4) and V2 methodology (3.1-3.13)
+- Depends on: `f1d.shared.*`, Stage 1 outputs, Compustat/CRSP/IBES/SDC data
+- Used by: Stage 4 (econometric)
+
+**Stage 4 - Econometric Analysis (Tier 2):**
+- Purpose: Estimate CEO clarity, test hypotheses, generate summary statistics
+- Location: `src/f1d/econometric/`
+- Contains: V1 methodology (4.1-4.4) and V2 hypothesis testing (4.1-4.11)
+- Depends on: `f1d.shared.*`, Stage 1 outputs, Stage 2 outputs (linguistic_variables), Stage 3 outputs
+- Used by: Final research outputs (tables, reports)
 
 ## Data Flow
 
-**Stage 1: Sample Construction**
-1. Load `1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet` (raw call metadata)
-2. Clean metadata (`src/f1d/sample/1.1_CleanMetadata.py`) - deduplicate events, validate
-3. Link entities (`src/f1d/sample/1.2_LinkEntities.py`) - 4-tier CCM linking for GVKEY
-4. Build tenure map (`src/f1d/sample/1.3_BuildTenureMap.py`) - CEO tenure from Execucomp
-5. Assemble manifest (`src/f1d/sample/1.4_AssembleManifest.py`) - merge, filter, final sample
-6. Output: `4_Outputs/1.4_AssembleManifest/master_sample_manifest.parquet`
+**Step 1: Sample Construction**
 
-**Stage 2: Text Processing**
-1. Load master sample manifest
-2. Tokenize transcripts (`src/f1d/text/tokenize_and_count.py`) - LM dictionary word counts
-3. Construct variables (`src/f1d/text/construct_variables.py`) - compute linguistic measures
-4. Verify outputs (`src/f1d/text/verify_step2.py`)
-5. Output: `4_Outputs/2_Textual_Analysis/*/linguistic_variables_*.parquet`
+1. Load `Unified-info.parquet` from `1_Inputs/Earnings_Calls_Transcripts/`
+2. Clean metadata (deduplicate, resolve collisions, filter earnings calls 2002-2018)
+3. Link entities via 4-tier strategy (PERMNO+date, CUSIP8+date, fuzzy name, ticker)
+4. Build CEO tenure map from Execucomp data
+5. Assemble master_sample_manifest.parquet with CEO/firm identifiers and FF12/FF48 industries
+6. Output: `master_sample_manifest.parquet` in `4_Outputs/1.4_AssembleManifest/`
 
-**Stage 3: Financial Features**
-1. V1 Methodology (`src/f1d/financial/v1/`): Legacy approach
-   - `3.0_BuildFinancialFeatures.py` - Orchestrator
-   - `3.1_FirmControls.py` - Firm-level financial controls
-   - `3.2_MarketVariables.py` - Market returns, volatility, liquidity
-   - `3.3_EventFlags.py` - Takeover events, CEO turnover
-2. V2 Methodology (`src/f1d/financial/v2/`): Active hypothesis testing
-   - `3.1_H1Variables.py` - Cash holdings, leverage controls
-   - `3.2_H2Variables.py` - Investment efficiency variables
-   - `3.3_H3Variables.py` - Payout policy variables
-   - `3.4_H4_LeverageDiscipline.py` - Leverage discipline variables
-   - `3.5_H5DispersionRegression.py` - Analyst dispersion
-   - `3.6_H6CCCLRegression.py` - CCCL instrument data
-   - `3.7_H7IlliquidityVariables.py` - Illiquidity measures
-   - `3.8_H8TakeoverVariables.py` - Takeover hazard variables
-   - Additional scripts: H9 regression variants
-3. Output: `4_Outputs/3_Financial_V2/*/*.parquet`
+**State Management:** Parquet files preserve intermediate state between steps
 
-**Stage 4: Econometric Analysis**
-1. V1 Methodology (`src/f1d/econometric/v1/`): CEO clarity estimation
-   - `4.1.1_EstimateCeoClarity.py` - CEO fixed effects estimation
-   - `4.1.2_EstimateCeoClarity_Extended.py` - Extended model
-   - `4.1.3_EstimateCeoClarity_Regime.py` - Firm-level regime
-   - `4.1.4_EstimateCeoTone.py` - Tone estimation
-   - `4.2_LiquidityRegressions.py` - IV liquidity analysis
-   - `4.3_TakeoverHazards.py` - Survival analysis
-   - `4.4_GenerateSummaryStats.py` - Summary statistics
-2. V2 Methodology (`src/f1d/econometric/v2/`): Hypothesis testing regressions
-   - `4.1_H1CashHoldingsRegression.py` - H1: Cash holdings test
-   - `4.2_H2InvestmentEfficiencyRegression.py` - H2: Investment efficiency
-   - `4.3_H3PayoutPolicyRegression.py` - H3: Payout policy
-   - `4.4_H4_LeverageDiscipline.py` - H4: Leverage discipline
-   - `4.5_H5DispersionRegression.py` - H5: Analyst dispersion
-   - `4.6_H6CCCLRegression.py` - H6: CCCL instrument
-   - `4.7_H7IlliquidityRegression.py` - H7: Illiquidity
-   - `4.8_H8TakeoverRegression.py` - H8: Takeover hazards
-   - `4.9_CEOFixedEffects.py` - CEO fixed effects estimation
-   - `4.10_H2_PRiskUncertainty_Investment.py` - H2 extensions
-   - `4.11_H9_Regression.py` - H9 additional tests
-3. Output: `4_Outputs/4_Econometric_V2/*/*.parquet` + regression tables
+**Step 2: Text Processing**
 
-**State Management:**
-- All scripts use timestamped output directories: `4_Outputs/{script_name}/{YYYY-MM-DD_HHMMSS}/`
-- Latest outputs accessible via `latest/` symlinks
-- `get_latest_output_dir()` from `f1d.shared.path_utils` resolves latest
-- State propagated through manifest linking (master_sample_manifest.parquet references downstream outputs)
+1. Load `master_sample_manifest.parquet` and `speaker_data_*.parquet` files
+2. Tokenize Q&A text for each call using Loughran-McDonald dictionary
+3. Count word categories (Negative, Positive, Uncertainty, Litigious, Modal, Constraining)
+4. Aggregate to call level and construct linguistic variables (e.g., Manager_QA_Uncertainty_pct)
+5. Apply quality filters (minimum tokens, percentage ranges)
+6. Output: `linguistic_variables_*.parquet` (per year) in `4_Outputs/2_Textual_Analysis/`
+
+**State Management:** Yearly parquet files enable incremental processing
+
+**Step 3: Financial Features (V1)**
+
+1. Load `master_sample_manifest.parquet`
+2. **Firm Controls:** Compute Size, BM, Lev, ROA, EPS_Growth, CurrentRatio, RD_Intensity from Compustat
+3. **Market Variables:** Compute StockRet, MarketRet, Volatility, Amihud, Corwin-Schultz from CRSP
+4. **Event Flags:** Identify takeover events from SDC and CEO dismissals
+5. Winsorize at 1%/99%, apply minimum window length filters
+6. Output: `firm_controls_*.parquet`, `market_variables_*.parquet`, `event_flags_*.parquet` (per year) in `4_Outputs/3_Financial_Features/`
+
+**State Management:** Yearly parquet files enable incremental processing
+
+**Step 3: Financial Features (V2)**
+
+1. Load `master_sample_manifest.parquet`
+2. Construct hypothesis-specific variables (H1-H9) with additional control sets
+3. Apply enhanced transformations (e.g., Biddle investment residuals, policy risk variables)
+4. Output: Hypothesis-specific parquet files in `4_Outputs/3_Financial_V2/`
+
+**State Management:** Per-hypothesis variable files support modular analysis
+
+**Step 4: Econometric Analysis (V1)**
+
+1. **CEO Clarity:** Estimate Manager_QA_Uncertainty_pct ~ C(ceo_id) + controls + FE
+2. **Liquidity Regressions:** 2SLS with CCCL shift_intensity instrument
+3. **Takeover Hazards:** Cox proportional hazards model on takeover events
+4. **Summary Stats:** Generate descriptive statistics and correlation matrix
+5. Output: `ceo_clarity_scores.parquet`, regression results, LaTeX tables in `4_Outputs/4.*_*/`
+
+**State Management:** CEO-level clarity scores persist across all regression specifications
+
+**Step 4: Econometric Analysis (V2)**
+
+1. **Hypothesis Testing:** Run 9 hypothesis-specific regressions (H1-H9)
+2. Each hypothesis tests CEO clarity impact on different outcomes (cash holdings, investment, payout, etc.)
+3. Output: Hypothesis-specific results in `4_Outputs/4_Econometric_V2/`
+
+**State Management:** Per-hypothesis results support flexible analysis
 
 ## Key Abstractions
 
+**Package Namespace (f1d):**
+- Purpose: Installable Python package following PyPA src-layout
+- Examples: `src/f1d/__init__.py`, `src/f1d/shared/__init__.py`
+- Pattern: All imports use `f1d.shared.*` namespace (no sys.path manipulation)
+
+**Shared Utilities Abstraction:**
+- Purpose: Reusable cross-cutting functionality
+- Examples: `src/f1d/shared/config/`, `src/f1d/shared/logging/`, `src/f1d/shared/path_utils.py`
+- Pattern: Tier 1 modules imported by all stage modules
+
+**Stage Module Abstraction:**
+- Purpose: Encapsulate pipeline stage logic
+- Examples: `src/f1d/sample/1.1_CleanMetadata.py`, `src/f1d/text/tokenize_and_count.py`
+- Pattern: Each script is a standalone module executable via `python -m f1d.<module_path>`
+
 **Configuration Abstraction:**
-- Purpose: Centralized settings management
-- Examples: `src/f1d/shared/config/loader.py`, `src/f1d/shared/config/paths.py`
-- Pattern: Pydantic settings classes + YAML loading + environment variable support
+- Purpose: Type-safe configuration management with pydantic-settings
+- Examples: `src/f1d/shared/config/base.py`, `config/project.yaml`
+- Pattern: Load via `from f1d.shared.config import get_config`, override with environment variables
 
-**Path Resolution:**
-- Purpose: Deterministic output location resolution across scripts
-- Examples: `src/f1d/shared/path_utils.py`
-- Pattern: Timestamp-based directories with `get_latest_output_dir()` for latest
-- Key functions: `get_latest_output_dir()`, `ensure_output_dir()`, `validate_input_file()`
+**Output Schema Abstraction:**
+- Purpose: Validate outputs with Pandera schemas
+- Examples: `src/f1d/shared/output_schemas.py`
+- Pattern: Call `validate_*` functions before writing outputs
 
-**Logging Abstraction:**
-- Purpose: Structured logging with dual terminal/file output
-- Examples: `src/f1d/shared/observability_utils.py`, `src/f1d/shared/logging/`
-- Pattern: `DualWriter` wraps `sys.stdout`, structlog with context binding
-- Key functions: `configure_logging()`, `get_logger()`, `setup_script_logging()`
-
-**Data Validation:**
-- Purpose: Input/output validation with file existence checks
-- Examples: `src/f1d/shared/data_validation.py`
-- Pattern: Decorator-based validation + checksums
-
-**Panel OLS Wrapper:**
-- Purpose: Unified interface for panel regressions with fixed effects
-- Examples: `src/f1d/shared/panel_ols.py`, `src/f1d/shared/regression_utils.py`
-- Pattern: `run_panel_ols()` wraps `linearmodels.PanelOLS`
-- Features: Entity/time effects, clustered SE, VIF checking, diagnostic extraction
+**Merge Validation Abstraction:**
+- Purpose: Safe pandas merge with logging and validation
+- Examples: `src/f1d/shared/data_loading.py` - `safe_merge()` function
+- Pattern: Use `safe_merge()` instead of `pd.merge()` for all dataframe joins
 
 ## Entry Points
 
-**Orchestrator Scripts:**
-- Location: `src/f1d/sample/1.0_BuildSampleManifest.py` (Stage 1 orchestrator)
-- Location: `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py` (Stage 3 V1 orchestrator)
-- Triggers: Direct script execution by user or pipeline runner
-- Responsibilities: Orchestrate substeps sequentially, validate prerequisites, copy final outputs
+**Pipeline Scripts (Module Execution):**
+- Location: `src/f1d/sample/`, `src/f1d/text/`, `src/f1d/financial/`, `src/f1d/econometric/`
+- Triggers: Manual execution via `python -m f1d.<module_path>`
+- Responsibilities: Each script performs one pipeline step, reads config, logs progress, writes outputs
 
-**Stage Scripts (Direct Execution):**
-- All numbered scripts: `src/f1d/sample/1.*.py`, `src/f1d/text/2.*.py`, `src/f1d/financial/v1/3.*.py`, `src/f1d/financial/v2/3.*.py`, `src/f1d/econometric/v1/4.*.py`, `src/f1d/econometric/v2/4.*.py`
-- Triggers: Direct CLI execution, orchestrator subprocess calls
-- Responsibilities: Load inputs, process data, write timestamped outputs, generate stats/logs
+**Sample Construction Entry Points:**
+- `python -m f1d.sample.1.1_CleanMetadata` - Clean Unified-info metadata
+- `python -m f1d.sample.1.2_LinkEntities` - Link calls to firms via 4-tier strategy
+- `python -m f1d.sample.1.3_BuildTenureMap` - Build CEO tenure panel from Execucomp
+- `python -m f1d.sample.1.4_AssembleManifest` - Assemble final sample manifest
 
-**Package Entry Point:**
-- Location: `src/f1d/__init__.py`
-- Triggers: Package imports (`from f1d import ...`)
-- Responsibilities: Package version, public API re-exports (`get_latest_output_dir`, `run_panel_ols`)
+**Text Processing Entry Points:**
+- `python -m f1d.text.tokenize_and_count` - Tokenize and count LM dictionary words
+- `python -m f1d.text.construct_variables` - Construct linguistic variables
+- `python -m f1d.text.verify_step2` - Validate Step 2 outputs
+
+**Financial Features Entry Points (V1):**
+- `python -m f1d.financial.v1.3.0_BuildFinancialFeatures` - Orchestrator for all V1 features
+- `python -m f1d.financial.v1.3.1_FirmControls` - Compute firm controls
+- `python -m f1d.financial.v1.3.2_MarketVariables` - Compute market variables
+- `python -m f1d.financial.v1.3.3_EventFlags` - Create takeover/dismissal flags
+
+**Financial Features Entry Points (V2):**
+- `python -m f1d.financial.v2.3.1_H1Variables` - H1 cash holdings variables
+- `python -m f1d.financial.v2.3.2_H2Variables` - H2 investment efficiency variables
+- `python -m f1d.financial.v2.3.3_H3Variables` - H3 payout policy variables
+- `python -m f1d.financial.v2.3.5_H5Variables` - H5 dispersion variables
+- `python -m f1d.financial.v2.3.6_H6Variables` - H6 CCCL regression variables
+- `python -m f1d.financial.v2.3.7_H7IlliquidityVariables` - H7 illiquidity variables
+- `python -m f1d.financial.v2.3.8_H8TakeoverVariables` - H8 takeover variables
+
+**Econometric Analysis Entry Points (V1):**
+- `python -m f1d.econometric.v1.4.1_EstimateManagerClarity` - Estimate CEO fixed effects
+- `python -m f1d.econometric.v1.4.1.1_EstimateCeoClarity` - CEO-specific clarity
+- `python -m f1d.econometric.v1.4.1.2_EstimateCeoClarity_Extended` - Extended controls
+- `python -m f1d.econometric.v1.4.1.3_EstimateCeoClarity_Regime` - Firm-level regime
+- `python -m f1d.econometric.v1.4.1.4_EstimateCeoTone` - CEO tone estimation
+- `python -m f1d.econometric.v1.4.2_LiquidityRegressions` - IV liquidity analysis
+- `python -m f1d.econometric.v1.4.3_TakeoverHazards` - Cox proportional hazards
+- `python -m f1d.econometric.v1.4.4_GenerateSummaryStats` - Descriptive statistics
+
+**Econometric Analysis Entry Points (V2):**
+- `python -m f1d.econometric.v2.4.1_H1CashHoldingsRegression` - Test H1 cash holdings
+- `python -m f1d.econometric.v2.4.2_H2InvestmentEfficiencyRegression` - Test H2 investment
+- `python -m f1d.econometric.v2.4.3_H3PayoutPolicyRegression` - Test H3 payout policy
+- `python -m f1d.econometric.v2.4.4_H4_LeverageDiscipline` - Test H4 leverage
+- `python -m f1d.econometric.v2.4.5_H5DispersionRegression` - Test H5 dispersion
+- `python -m f1d.econometric.v2.4.6_H6CCCLRegression` - Test H6 CCCL instrument
+- `python -m f1d.econometric.v2.4.7_H7IlliquidityRegression` - Test H7 illiquidity
+- `python -m f1d.econometric.v2.4.8_H8TakeoverRegression` - Test H8 takeover
+- `python -m f1d.econometric.v2.4.9_CEOFixedEffects` - CEO fixed effects estimation
+- `python -m f1d.econometric.v2.4.10_H2_PRiskUncertainty_Investment` - H2 policy risk interaction
+- `python -m f1d.econometric.v2.4.11_H9_Regression` - H9 comprehensive regression
+
+**Test Entry Points:**
+- Location: `tests/unit/`, `tests/integration/`, `tests/regression/`, `tests/performance/`, `tests/verification/`
+- Triggers: `pytest` command
+- Responsibilities: Unit tests, integration tests, regression tests, performance tests, verification tests
 
 ## Error Handling
 
-**Strategy:** Validation-first approach with dual-terminal/file logging
+**Strategy:** Specific exception types with logging using structlog
 
 **Patterns:**
-- **Prerequisite validation:** Scripts check inputs exist before processing (`check_prerequisites()`)
-- **Path validation:** All file paths validated before use (`validate_input_file()`, `ensure_output_dir()`)
-- **Output validation:** File existence required (`get_latest_output_dir()` checks for specific files)
-- **Structured errors:** Custom exceptions (`PathValidationError`, `OutputResolutionError`)
-- **Graceful degradation:** Missing data handled with NaN, not hard failures
-- **Dual logging:** All output written to both terminal and log file simultaneously
+- `safe_merge()` wrapper validates merge keys and logs statistics
+- Custom exceptions in `panel_ols.py`: `CollinearityError`, `MulticollinearityError`
+- Pandera schema validation raises `SchemaError` with detailed messages
+- `load_validated_parquet()` validates file existence and schema
+- `OutputResolutionError` raised when output directory cannot be resolved
 
 ## Cross-Cutting Concerns
 
-**Logging:** Structured logging with structlog + context binding
-- Configuration: `src/f1d/shared/logging/config.py`, `src/f1d/shared/logging/`
-- Pattern: `get_logger()` with context, log levels from config/project.yaml
-- Dual output: Terminal + file via `DualWriter` wrapper
+**Logging:** structlog with `DualWriter` for simultaneous console and file output
+- Configuration in `src/f1d/shared/logging/`
+- Logs written to `3_Logs/<script_name>/<timestamp>.log`
+- Structured logs with context (script, phase, step)
 
-**Validation:** Multi-level validation (files, data, dependencies)
-- File validation: `src/f1d/shared/data_validation.py`
-- Dependency checking: `src/f1d/shared/dependency_checker.py`
-- CLI validation: `src/f1d/shared/cli_validation.py`, `src/f1d/shared/subprocess_validation.py`
+**Validation:** Pandera schemas for output validation, data validation utilities
+- `src/f1d/shared/data_validation.py` - load and validation functions
+- `src/f1d/shared/output_schemas.py` - Pandera schemas for all outputs
+- `safe_merge()` validates merge operations
+
+**Authentication:** Not applicable (local data processing, no external services)
 
 **Observability:** Memory tracking, throughput measurement, anomaly detection
-- Implementation: `src/f1d/shared/observability/`
-- Memory: `get_process_memory_mb()`, `@track_memory_usage` decorator
-- Throughput: `calculate_throughput()`, `stats["throughput"]` in all scripts
-- Anomalies: `detect_anomalies_zscore()`, `detect_anomalies_iqr()`
+- `src/f1d/shared/observability/` - tracking utilities
+- `src/f1d/shared/chunked_reader.py` - memory-aware chunked processing
+- Stats JSON files with memory_mb, throughput_mb_s, anomaly detection
 
-**Data Determinism:** Random seed, thread count, input sorting configured
-- Configuration: `config/project.yaml` sets `determinism.random_seed: 42`, `determinism.thread_count: 1`
-- Enforcement: All sorting operations use explicit sort, parallel results sorted before aggregation
+**Configuration:** Centralized YAML config with pydantic-settings and environment variable overrides
+- `config/project.yaml` - main configuration file
+- `src/f1d/shared/config/` - configuration classes and loaders
+- Environment variable support: `F1D_DATA__YEAR_START` format
 
 ---
 
