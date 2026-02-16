@@ -71,6 +71,7 @@ from f1d.shared.observability_utils import (
     get_process_memory_mb,
     save_stats as shared_save_stats,  # type: ignore[attr-defined]
 )
+from f1d.shared.latex_tables import make_regression_table
 from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.path_utils import (
     ensure_output_dir,
@@ -154,7 +155,7 @@ SPECS = {
 
 def setup_paths(config, timestamp):
     """Set up all required paths using get_latest_output_dir"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Resolve H3 variables directory
     h3_dir = get_latest_output_dir(
@@ -967,6 +968,135 @@ def generate_results_markdown(results, output_dir, dw=None):
     return output_path
 
 
+def generate_latex_table(
+    results, output_dir, dw=None
+):
+    """
+    Generate publication-ready LaTeX regression table for H3 results.
+
+    Creates a booktabs-formatted table with multiple model columns,
+    standard errors in parentheses, and significance stars.
+
+    Args:
+        results: List of regression result dictionaries
+        output_dir: Output directory path
+        dw: DualWriter for logging
+
+    Returns:
+        Path to saved LaTeX file
+    """
+    from typing import List, Dict, Any, Optional
+
+    # Variable labels for display
+    var_labels = {
+        "Manager_QA_Uncertainty_pct_c": "QA Unc. (Mgr)",
+        "CEO_QA_Uncertainty_pct_c": "QA Unc. (CEO)",
+        "Manager_QA_Weak_Modal_pct_c": "Weak Modal (Mgr)",
+        "CEO_QA_Weak_Modal_pct_c": "Weak Modal (CEO)",
+        "Manager_Pres_Uncertainty_pct_c": "Pres. Unc. (Mgr)",
+        "CEO_Pres_Uncertainty_pct_c": "Pres. Unc. (CEO)",
+        "leverage_c": "Leverage",
+        "firm_size_c": "Firm Size",
+        "tobins_q_c": "Tobin's Q",
+        "roa_c": "ROA",
+        "cash_holdings_c": "Cash Holdings",
+        "dividend_payer": "Dividend Payer",
+    }
+
+    # Add interaction term labels
+    for uv in ["Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
+               "Manager_QA_Weak_Modal_pct", "CEO_QA_Weak_Modal_pct",
+               "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct"]:
+        var_labels[f"{uv}_c_x_leverage_c"] = f"{var_labels.get(f'{uv}_c', uv)} $\\times$ Lev."
+
+    # Variable order for table
+    var_order = [
+        "Manager_QA_Uncertainty_pct_c", "CEO_QA_Uncertainty_pct_c",
+        "Manager_QA_Weak_Modal_pct_c", "CEO_QA_Weak_Modal_pct_c",
+        "Manager_Pres_Uncertainty_pct_c", "CEO_Pres_Uncertainty_pct_c",
+        "leverage_c",
+        "Manager_QA_Uncertainty_pct_c_x_leverage_c",
+        "CEO_QA_Uncertainty_pct_c_x_leverage_c",
+        "Manager_QA_Weak_Modal_pct_c_x_leverage_c",
+        "CEO_QA_Weak_Modal_pct_c_x_leverage_c",
+        "Manager_Pres_Uncertainty_pct_c_x_leverage_c",
+        "CEO_Pres_Uncertainty_pct_c_x_leverage_c",
+        "firm_size_c", "tobins_q_c", "roa_c", "cash_holdings_c", "dividend_payer",
+    ]
+
+    # Generate separate tables for each DV
+    latex_paths = []
+
+    for dv in ["div_stability", "payout_flexibility"]:
+        # Filter to primary specification for this DV
+        primary_results = [
+            r for r in results if r["spec"] == "primary" and r["dv_var"] == dv
+        ]
+
+        if not primary_results:
+            continue
+
+        # Convert results to format expected by make_regression_table
+        latex_results = []
+        model_names = []
+
+        for r in primary_results:
+            # Create coefficients DataFrame in expected format
+            coef_rows = []
+            for var_name, coeff_dict in r["coefficients"].items():
+                coef_rows.append({
+                    "variable": var_name,
+                    "coefficient": coeff_dict["Coefficient"],
+                    "std_error": coeff_dict["Std. Error"],
+                    "p_value": r["pvalues"].get(var_name, np.nan),
+                })
+
+            coef_df = pd.DataFrame(coef_rows)
+
+            latex_result = {
+                "coefficients": coef_df,
+                "summary": {
+                    "n_obs": r["n_obs"],
+                    "rsquared": r["r_squared"],
+                    "rsquared_within": r["r_squared_within"],
+                    "f_statistic": r["f_stat"],
+                    "entity_effects": True,
+                    "time_effects": True,
+                }
+            }
+
+            latex_results.append(latex_result)
+
+            # Use short name for model column
+            uv = r["uncertainty_var"]
+            short_name = var_labels.get(f"{uv}_c", uv)
+            model_names.append(short_name)
+
+        # Generate LaTeX table
+        dv_label = "Dividend Stability" if dv == "div_stability" else "Payout Flexibility"
+        latex_path = output_dir / f"H3_Regression_Table_{dv}.tex"
+
+        make_regression_table(
+            results=latex_results,
+            model_names=model_names,
+            variable_order=[v for v in var_order if any(v in r["coefficients"] for r in primary_results)],
+            variable_labels=var_labels,
+            include_stats=["N", "R2", "FE_entity", "FE_time"],
+            caption=f"H3 Results: Speech Uncertainty and {dv_label}",
+            label=f"tab:h3_{dv}",
+            output_path=latex_path,
+            decimals=4,
+            dep_var_name=f"{dv_label}$_{{t+1}}$",
+        )
+
+        if dw:
+            dw.write(f"Saved LaTeX table: {latex_path.name}\n")
+
+        latex_paths.append(latex_path)
+
+    return latex_paths[0] if latex_paths else None
+
+
 def save_stats(stats, output_dir, dw=None):
     """Save statistics dictionary to JSON file"""
     stats_path = output_dir / "stats.json"
@@ -1134,6 +1264,7 @@ def main():
         dw.write("\n[7] Saving outputs...\n")
         results_df = save_regression_results(results, paths["output_dir"], dw)
         generate_results_markdown(results, paths["output_dir"], dw)
+        generate_latex_table(results, paths["output_dir"], dw)
 
         # Create hypothesis test summary for stats.json
         h3a_counts = {}

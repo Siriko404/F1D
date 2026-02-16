@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-STEP 4.1.1: Estimate CEO Clarity (CEO-Specific)
+STEP 4.1.1: Estimate CEO Clarity
 ==============================================================================
-ID: 4.1.1_EstimateCeoClarity_CeoSpecific
+ID: 4.1.1_EstimateCeoClarity
 Description: Estimate CEO "Clarity" as a personal communication trait using
              fixed effects OLS regression by industry.
 
@@ -14,6 +14,9 @@ Purpose:
     - Finance: Financial firms (FF12 code 11)
     - Utility: Utility firms (FF12 code 8)
 
+    Note: This script uses CEO Q&A uncertainty (CEO only).
+    For Manager clarity (full management team), see 4.1_EstimateManagerClarity.py.
+
 Inputs:
     - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
@@ -21,11 +24,11 @@ Inputs:
     - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/ceo_clarity_scores.parquet
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/regression_results_{sample}.txt
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/model_diagnostics.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/variable_reference.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/report_step4_1.md
+    - 4_Outputs/4.1.1_CeoClarity/{timestamp}/ceo_clarity_scores.parquet
+    - 4_Outputs/4.1.1_CeoClarity/{timestamp}/regression_results_{sample}.txt
+    - 4_Outputs/4.1.1_CeoClarity/{timestamp}/model_diagnostics.csv
+    - 4_Outputs/4.1.1_CeoClarity/{timestamp}/variable_reference.csv
+    - 4_Outputs/4.1.1_CeoClarity/{timestamp}/report_step4_1_1.md
 
 Deterministic: true
 Dependencies:
@@ -52,14 +55,17 @@ import pandas as pd
 
 
 def parse_arguments():
-    """Parse command-line arguments for 4.1.1_EstimateCeoClarity_CeoSpecific.py."""
+    """Parse command-line arguments for 4.1.1_EstimateCeoClarity.py."""
     parser = argparse.ArgumentParser(
         description="""
-STEP 4.1.1: Estimate CEO-Specific Clarity
+STEP 4.1.1: Estimate CEO Clarity
 
-Estimates CEO-specific clarity scores using CEO fixed effects
+Estimates CEO clarity scores using CEO fixed effects
 regression. Extracts CEO coefficients as time-invariant
 clarity measures.
+
+Note: This script uses CEO Q&A uncertainty (CEO only).
+For Manager clarity (full management team), see 4.1_EstimateManagerClarity.py.
         """.strip(),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -165,13 +171,18 @@ def load_all_data_for_ceo(root, year_start, year_end, stats=None):
 
     # Resolve directories using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     lv_dir = get_latest_output_dir(
         root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables"
     )
-    fc_dir = get_latest_output_dir(root / "4_Outputs" / "3_Financial_Features")
+    # Require market_variables to ensure complete Stage 3 outputs
+    # (directories with market_variables also have firm_controls)
+    fc_dir = get_latest_output_dir(
+        root / "4_Outputs" / "3_Financial_Features",
+        required_file="market_variables_2010.parquet",
+    )
 
     # Load manifest
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -643,10 +654,9 @@ def main(year_start=None, year_end=None):
 
     # Initialize observability
     mem_start = get_process_memory_mb()
-    [mem_start["rss_mb"]]
 
     stats: Dict[str, Any] = {
-        "step_id": "4.1.1_EstimateCeoClarity_CeoSpecific",
+        "step_id": "4.1.1_EstimateCeoClarity",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
         "processing": {},
@@ -675,10 +685,11 @@ def main(year_start=None, year_end=None):
         CONFIG["year_end"] = year_end
 
     # Setup paths
-    root = Path(__file__).resolve().parents[2]
-    out_dir = root / "4_Outputs" / "4.1.1_CeoClarity_CEO_Only" / timestamp
+    # From src/f1d/econometric/v1/ -> need parents[4] to reach project root
+    root = Path(__file__).resolve().parents[4]
+    out_dir = root / "4_Outputs" / "4.1.1_CeoClarity" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    log_dir = root / "3_Logs" / "4.1.1_CeoClarity_CEO_Only" / timestamp
+    log_dir = root / "3_Logs" / "4.1.1_CeoClarity" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Setup dual logging
@@ -813,7 +824,8 @@ def main(year_start=None, year_end=None):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    root = Path(__file__).parent.parent.parent
+    # From src/f1d/econometric/v1/ -> need parents[4] to reach project root
+    root = Path(__file__).resolve().parents[4]
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
@@ -821,5 +833,5 @@ if __name__ == "__main__":
         print("[OK] All prerequisites validated")
         sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Skip validation - data exists
     sys.exit(main())

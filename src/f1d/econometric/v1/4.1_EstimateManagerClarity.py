@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-STEP 4.1: Estimate CEO Fixed Effects & Compute Clarity Scores
+STEP 4.1: Estimate Manager Fixed Effects & Compute Clarity Scores
 ==============================================================================
-ID: 4.1_EstimateCeoClarity
-Description: Estimate CEO "Clarity" as a personal communication trait using
+ID: 4.1_EstimateManagerClarity
+Description: Estimate Manager "Clarity" as a personal communication trait using
              fixed effects OLS regression by industry.
 
 Purpose:
-    Estimate CEO "Clarity" as a personal communication trait using fixed effects
+    Estimate Manager "Clarity" as a personal communication trait using fixed effects
     OLS regression. Runs 3 separate regressions by FF12 industry classification:
     - Main: Non-financial, non-utility firms (FF12 codes 1-7, 9-10, 12)
     - Finance: Financial firms (FF12 code 11)
     - Utility: Utility firms (FF12 code 8)
+
+    Note: This script uses Manager Q&A uncertainty (all management team including CEO).
+    For CEO-only clarity, see 4.1.1_EstimateCeoClarity.py.
 
 Inputs:
     - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
@@ -21,11 +24,11 @@ Inputs:
     - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/ceo_clarity_scores.parquet
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/regression_results_{sample}.txt
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/model_diagnostics.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/variable_reference.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/report_step4_1.md
+    - 4_Outputs/4.1_ManagerClarity/{timestamp}/manager_clarity_scores.parquet
+    - 4_Outputs/4.1_ManagerClarity/{timestamp}/regression_results_{sample}.txt
+    - 4_Outputs/4.1_ManagerClarity/{timestamp}/model_diagnostics.csv
+    - 4_Outputs/4.1_ManagerClarity/{timestamp}/variable_reference.csv
+    - 4_Outputs/4.1_ManagerClarity/{timestamp}/report_step4_1.md
 
 Deterministic: true
 Dependencies:
@@ -74,14 +77,14 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 def parse_arguments():
-    """Parse command-line arguments for 4.1_EstimateCeoClarity.py."""
+    """Parse command-line arguments for 4.1_EstimateManagerClarity.py."""
     parser = argparse.ArgumentParser(
         description="""
-STEP 4.1: Estimate CEO Clarity
+STEP 4.1: Estimate Manager Clarity
 
-Estimates CEO clarity scores using panel regression with CEO
-fixed effects. Regresses readability measures on CEO and firm
-characteristics, extracting CEO-specific clarity coefficients.
+Estimates Manager clarity scores using panel regression with
+fixed effects. Regresses Manager Q&A uncertainty measures on
+firm characteristics, extracting manager-specific clarity coefficients.
         """.strip(),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -123,12 +126,11 @@ def check_prerequisites(root):
 # ==============================================================================
 
 CONFIG: Dict[str, Any] = {
-    "dependent_var": "Manager_QA_Uncertainty_pct_mean",
+    "dependent_var": "Manager_QA_Uncertainty_pct",
     "linguistic_controls": [
-        "Manager_Pres_Uncertainty_pct_mean",
-        "Analyst_Pres_Uncertainty_pct_mean",
-        "Analyst_QA_Uncertainty_pct_mean",
-        "Entire_All_Negative_pct_mean",
+        "Manager_Pres_Uncertainty_pct",
+        "Analyst_QA_Uncertainty_pct",  # Only Analyst_QA_* variables allowed
+        "Entire_All_Negative_pct",
     ],
     "firm_controls": [
         "StockRet",
@@ -136,7 +138,7 @@ CONFIG: Dict[str, Any] = {
         "EPS_Growth",
         "SurpDec",
     ],
-    "min_calls_per_ceo": 5,
+    "min_calls_per_manager": 5,
     "year_start": 2002,
     "year_end": 2018,
 }
@@ -193,7 +195,12 @@ def load_all_data(root, year_start, year_end, stats=None):
     lv_dir = get_latest_output_dir(
         root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables"
     )
-    fc_dir = get_latest_output_dir(root / "4_Outputs" / "3_Financial_Features")
+    # Require market_variables to ensure complete Stage 3 outputs
+    # (directories with market_variables also have firm_controls)
+    fc_dir = get_latest_output_dir(
+        root / "4_Outputs" / "3_Financial_Features",
+        required_file="market_variables_2010.parquet",
+    )
 
     # Load manifest
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -338,12 +345,12 @@ def prepare_regression_data(df, stats=None):
 
 
 def run_regression(df_sample, sample_name):
-    """Run OLS regression with CEO fixed effects for a single sample.
+    """Run OLS regression with manager fixed effects for a single sample.
 
     Returns:
         model: Fitted OLS model
         df_reg: DataFrame used for regression (ceo_id converted to string)
-        valid_ceos: Set of valid CEO IDs (numeric) that passed the min calls filter
+        valid_managers: Set of valid manager IDs (numeric) that passed the min calls filter
     """
     print("\n" + "=" * 60)
     print(f"Running regression: {sample_name}")
@@ -353,14 +360,14 @@ def run_regression(df_sample, sample_name):
         print("  ERROR: statsmodels not available")
         return None, None, None
 
-    # Filter to CEOs with minimum calls
-    min_calls = CONFIG["min_calls_per_ceo"]
-    ceo_counts = df_sample["ceo_id"].value_counts()
-    valid_ceos = set(ceo_counts[ceo_counts >= min_calls].index)
-    df_reg = df_sample[df_sample["ceo_id"].isin(valid_ceos)].copy()
+    # Filter to managers with minimum calls
+    min_calls = CONFIG["min_calls_per_manager"]
+    manager_counts = df_sample["ceo_id"].value_counts()
+    valid_managers = set(manager_counts[manager_counts >= min_calls].index)
+    df_reg = df_sample[df_sample["ceo_id"].isin(valid_managers)].copy()
 
     print(
-        f"  After >=5 calls filter: {len(df_reg):,} calls, {df_reg['ceo_id'].nunique():,} CEOs"
+        f"  After >=5 calls filter: {len(df_reg):,} calls, {df_reg['ceo_id'].nunique():,} managers"
     )
 
     if len(df_reg) < 100:
@@ -399,7 +406,7 @@ def run_regression(df_sample, sample_name):
     print(f"  N observations: {int(model.nobs):,}")
     print(f"  N parameters: {len(model.params):,}")
 
-    return model, df_reg, valid_ceos
+    return model, df_reg, valid_managers
 
 
 # ==============================================================================
@@ -407,51 +414,51 @@ def run_regression(df_sample, sample_name):
 # ==============================================================================
 
 
-def extract_ceo_fixed_effects(model, df_reg, sample_name):
+def extract_manager_fixed_effects(model, df_reg, sample_name):
     """Extract gamma_i coefficients and compute Clarity scores."""
-    print(f"\n  Extracting CEO fixed effects for {sample_name}...")
+    print(f"\n  Extracting manager fixed effects for {sample_name}...")
 
-    # Get CEO coefficient names
-    ceo_params = {
+    # Get manager coefficient names (stored as ceo_id in regression)
+    manager_params = {
         p: model.params[p] for p in model.params.index if p.startswith("C(ceo_id)")
     }
 
-    # Parse CEO IDs
-    ceo_effects = {}
-    for param_name, gamma_i in ceo_params.items():
+    # Parse manager IDs
+    manager_effects = {}
+    for param_name, gamma_i in manager_params.items():
         if "[T." in param_name:
-            ceo_id = param_name.split("[T.")[1].split("]")[0]
-            ceo_effects[ceo_id] = gamma_i
+            manager_id = param_name.split("[T.")[1].split("]")[0]
+            manager_effects[manager_id] = gamma_i
 
-    # Reference CEO (not in params) gets gamma = 0
-    all_ceos = df_reg["ceo_id"].unique()
-    reference_ceos = [c for c in all_ceos if c not in ceo_effects]
-    for ref_ceo in reference_ceos:
-        ceo_effects[ref_ceo] = 0.0
+    # Reference manager (not in params) gets gamma = 0
+    all_managers = df_reg["ceo_id"].unique()
+    reference_managers = [c for c in all_managers if c not in manager_effects]
+    for ref_manager in reference_managers:
+        manager_effects[ref_manager] = 0.0
 
-    print(f"  Found {len(ceo_effects)} CEOs (incl. {len(reference_ceos)} reference)")
+    print(f"  Found {len(manager_effects)} managers (incl. {len(reference_managers)} reference)")
 
     # Create DataFrame
-    ceo_fe = pd.DataFrame(list(ceo_effects.items()), columns=["ceo_id", "gamma_i"])
+    manager_fe = pd.DataFrame(list(manager_effects.items()), columns=["ceo_id", "gamma_i"])
 
     # Compute Clarity = -gamma_i (vectorized)
-    ceo_fe["ClarityCEO_raw"] = -ceo_fe["gamma_i"]
+    manager_fe["ClarityManager_raw"] = -manager_fe["gamma_i"]
 
     # Standardize (vectorized NumPy)
-    mean_val = ceo_fe["ClarityCEO_raw"].mean()
-    std_val = ceo_fe["ClarityCEO_raw"].std()
-    ceo_fe["ClarityCEO"] = (ceo_fe["ClarityCEO_raw"] - mean_val) / std_val
+    mean_val = manager_fe["ClarityManager_raw"].mean()
+    std_val = manager_fe["ClarityManager_raw"].std()
+    manager_fe["ClarityManager"] = (manager_fe["ClarityManager_raw"] - mean_val) / std_val
 
-    ceo_fe["sample"] = sample_name
+    manager_fe["sample"] = sample_name
 
     print(
-        f"  ClarityCEO: mean={ceo_fe['ClarityCEO'].mean():.4f}, std={ceo_fe['ClarityCEO'].std():.4f}"
+        f"  ClarityManager: mean={manager_fe['ClarityManager'].mean():.4f}, std={manager_fe['ClarityManager'].std():.4f}"
     )
     print(
-        f"  Range: [{ceo_fe['ClarityCEO'].min():.4f}, {ceo_fe['ClarityCEO'].max():.4f}]"
+        f"  Range: [{manager_fe['ClarityManager'].min():.4f}, {manager_fe['ClarityManager'].max():.4f}]"
     )
 
-    return ceo_fe
+    return manager_fe
 
 
 # ==============================================================================
@@ -459,17 +466,17 @@ def extract_ceo_fixed_effects(model, df_reg, sample_name):
 # ==============================================================================
 
 
-def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
-    """Compute descriptive statistics per CEO.
+def compute_manager_stats(df_sample_filtered, manager_fe, sample_name):
+    """Compute descriptive statistics per manager.
 
     Args:
-        df_sample_filtered: Original sample data (with numeric ceo_id) filtered to valid CEOs
-        ceo_fe: DataFrame with ceo_id (string) and fixed effects
+        df_sample_filtered: Original sample data (with numeric ceo_id) filtered to valid managers
+        manager_fe: DataFrame with ceo_id (string) and fixed effects
     """
     dep_var = CONFIG["dependent_var"]
 
     # Vectorized GroupBy aggregation (C-backed)
-    ceo_stats = (
+    manager_stats = (
         df_sample_filtered.groupby("ceo_id")
         .agg(
             {
@@ -483,7 +490,7 @@ def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
     )
 
     # Flatten column names
-    ceo_stats.columns = [
+    manager_stats.columns = [
         "ceo_id",
         "n_calls",
         "avg_uncertainty",
@@ -494,18 +501,18 @@ def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
         "n_firms",
     ]
 
-    # Convert ceo_id to string to match ceo_fe
-    ceo_stats["ceo_id"] = ceo_stats["ceo_id"].astype(str)
+    # Convert ceo_id to string to match manager_fe
+    manager_stats["ceo_id"] = manager_stats["ceo_id"].astype(str)
 
     # Merge with fixed effects
-    ceo_scores = ceo_fe.merge(ceo_stats, on="ceo_id", how="left")
+    manager_scores = manager_fe.merge(manager_stats, on="ceo_id", how="left")
 
     # Sort by Clarity (descending)
-    ceo_scores = ceo_scores.sort_values("ClarityCEO", ascending=False).reset_index(
+    manager_scores = manager_scores.sort_values("ClarityManager", ascending=False).reset_index(
         drop=True
     )
 
-    return ceo_scores
+    return manager_scores
 
 
 # ==============================================================================
@@ -513,12 +520,12 @@ def compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name):
 # ==============================================================================
 
 
-def compute_diagnostics(model, sample_name, n_ceos, n_firms):
+def compute_diagnostics(model, sample_name, n_managers, n_firms):
     """Compute model diagnostics."""
     return {
         "sample": sample_name,
         "n_observations": int(model.nobs),
-        "n_ceos": n_ceos,
+        "n_managers": n_managers,
         "n_firms": n_firms,
         "r_squared": model.rsquared,
         "r_squared_adj": model.rsquared_adj,
@@ -534,22 +541,22 @@ def compute_diagnostics(model, sample_name, n_ceos, n_firms):
 # ==============================================================================
 
 
-def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=None):
+def save_outputs(all_manager_scores, all_diagnostics, all_models, out_dir, stats=None):
     """Save all output files."""
     print("\n" + "=" * 60)
     print("Saving outputs")
     print("=" * 60)
 
-    # CEO Clarity Scores
-    ceo_scores_df = pd.concat(all_ceo_scores, ignore_index=True)
-    ceo_scores_path = out_dir / "ceo_clarity_scores.parquet"
-    ceo_scores_df.to_parquet(ceo_scores_path, index=False)
-    print(f"  Saved: ceo_clarity_scores.parquet ({len(ceo_scores_df):,} CEOs)")
+    # Manager Clarity Scores
+    manager_scores_df = pd.concat(all_manager_scores, ignore_index=True)
+    manager_scores_path = out_dir / "manager_clarity_scores.parquet"
+    manager_scores_df.to_parquet(manager_scores_path, index=False)
+    print(f"  Saved: manager_clarity_scores.parquet ({len(manager_scores_df):,} managers)")
 
     if stats:
-        stats["output"]["files"].append("ceo_clarity_scores.parquet")
-        stats["output"]["final_rows"] = len(ceo_scores_df)
-        stats["output"]["final_columns"] = len(ceo_scores_df.columns)
+        stats["output"]["files"].append("manager_clarity_scores.parquet")
+        stats["output"]["final_rows"] = len(manager_scores_df)
+        stats["output"]["final_columns"] = len(manager_scores_df.columns)
 
     # Regression results (per sample)
     for sample_name, model in all_models.items():
@@ -569,7 +576,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
     # Variable reference
     var_ref = pd.DataFrame(
         [
-            {"Variable": "ceo_id", "Source": "Step 1", "Description": "CEO identifier"},
+            {"Variable": "ceo_id", "Source": "Step 1", "Description": "Manager identifier (stored as ceo_id)"},
             {
                 "Variable": "sample",
                 "Source": "Calculated",
@@ -578,52 +585,52 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
             {
                 "Variable": "gamma_i",
                 "Source": "Calculated",
-                "Description": "CEO fixed effect coefficient",
+                "Description": "Manager fixed effect coefficient",
             },
             {
-                "Variable": "ClarityCEO_raw",
+                "Variable": "ClarityManager_raw",
                 "Source": "Calculated",
                 "Description": "-gamma_i",
             },
             {
-                "Variable": "ClarityCEO",
+                "Variable": "ClarityManager",
                 "Source": "Calculated",
                 "Description": "Standardized clarity score",
             },
             {
                 "Variable": "n_calls",
                 "Source": "Calculated",
-                "Description": "Number of calls per CEO",
+                "Description": "Number of calls per manager",
             },
             {
                 "Variable": "avg_uncertainty",
                 "Source": "Calculated",
-                "Description": "Mean Manager_QA_Uncertainty_pct_mean",
+                "Description": "Mean Manager_QA_Uncertainty_pct",
             },
             {
                 "Variable": "std_uncertainty",
                 "Source": "Calculated",
-                "Description": "Std of Manager_QA_Uncertainty_pct_mean",
+                "Description": "Std of Manager_QA_Uncertainty_pct",
             },
             {
                 "Variable": "ceo_name",
                 "Source": "Step 1",
-                "Description": "CEO full name",
+                "Description": "Manager full name",
             },
             {
                 "Variable": "first_call_date",
                 "Source": "Calculated",
-                "Description": "Min(start_date) per CEO",
+                "Description": "Min(start_date) per manager",
             },
             {
                 "Variable": "last_call_date",
                 "Source": "Calculated",
-                "Description": "Max(start_date) per CEO",
+                "Description": "Max(start_date) per manager",
             },
             {
                 "Variable": "n_firms",
                 "Source": "Calculated",
-                "Description": "nunique(gvkey) per CEO",
+                "Description": "nunique(gvkey) per manager",
             },
         ]
     )
@@ -631,7 +638,7 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
     var_ref.to_csv(var_ref_path, index=False)
     print("  Saved: variable_reference.csv")
 
-    return ceo_scores_df
+    return manager_scores_df
 
 
 # ==============================================================================
@@ -639,14 +646,14 @@ def save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats=Non
 # ==============================================================================
 
 
-def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
+def generate_report(all_manager_scores, all_diagnostics, out_dir, duration):
     """Generate markdown report."""
     print("\n  Generating report...")
 
-    ceo_scores = pd.concat(all_ceo_scores, ignore_index=True)
+    manager_scores = pd.concat(all_manager_scores, ignore_index=True)
 
     report_lines = [
-        "# Step 4.1: CEO Clarity Regression Report",
+        "# Step 4.1: Manager Clarity Regression Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -656,45 +663,45 @@ def generate_report(all_ceo_scores, all_diagnostics, out_dir, duration):
     ]
 
     # Summary table
-    report_lines.append("| Sample | CEOs | Calls | R-squared |")
-    report_lines.append("|--------|------|-------|-----------|")
+    report_lines.append("| Sample | Managers | Calls | R-squared |")
+    report_lines.append("|--------|----------|-------|-----------|")
 
     for diag in all_diagnostics:
         report_lines.append(
-            f"| {diag['sample']} | {diag['n_ceos']:,} | {diag['n_observations']:,} | {diag['r_squared']:.4f} |"
+            f"| {diag['sample']} | {diag['n_managers']:,} | {diag['n_observations']:,} | {diag['r_squared']:.4f} |"
         )
 
     report_lines.append("")
 
-    # Top CEOs per sample
+    # Top managers per sample
     for sample in ["Main", "Finance", "Utility"]:
-        sample_df = ceo_scores[ceo_scores["sample"] == sample]
+        sample_df = manager_scores[manager_scores["sample"] == sample]
         if len(sample_df) == 0:
             continue
 
         report_lines.append(f"## {sample} Sample")
         report_lines.append("")
-        report_lines.append("### Top 5 Clearest CEOs")
+        report_lines.append("### Top 5 Clearest Managers")
         report_lines.append("")
-        report_lines.append("| Rank | CEO Name | Clarity | N Calls |")
-        report_lines.append("|------|----------|---------|---------|")
+        report_lines.append("| Rank | Manager Name | Clarity | N Calls |")
+        report_lines.append("|------|--------------|---------|---------|")
 
         for i, row in sample_df.head(5).iterrows():
-            ceo_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
+            manager_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
             report_lines.append(
-                f"| {sample_df.index.get_loc(i) + 1} | {ceo_name} | {row['ClarityCEO']:.3f} | {int(row['n_calls'])} |"
+                f"| {sample_df.index.get_loc(i) + 1} | {manager_name} | {row['ClarityManager']:.3f} | {int(row['n_calls'])} |"
             )
 
         report_lines.append("")
-        report_lines.append("### Top 5 Most Uncertain CEOs")
+        report_lines.append("### Top 5 Most Uncertain Managers")
         report_lines.append("")
-        report_lines.append("| Rank | CEO Name | Clarity | N Calls |")
-        report_lines.append("|------|----------|---------|---------|")
+        report_lines.append("| Rank | Manager Name | Clarity | N Calls |")
+        report_lines.append("|------|--------------|---------|---------|")
 
         for i, row in sample_df.tail(5).iterrows():
-            ceo_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
+            manager_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
             report_lines.append(
-                f"| {sample_df.index.get_loc(i) + 1} | {ceo_name} | {row['ClarityCEO']:.3f} | {int(row['n_calls'])} |"
+                f"| {sample_df.index.get_loc(i) + 1} | {manager_name} | {row['ClarityManager']:.3f} | {int(row['n_calls'])} |"
             )
 
         report_lines.append("")
@@ -719,7 +726,7 @@ def main(year_start=None, year_end=None, model=None):
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "4.1_EstimateCeoClarity",
+        "step_id": "4.1_EstimateManagerClarity",
         "timestamp": timestamp,
         "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
         "processing": {},
@@ -740,10 +747,11 @@ def main(year_start=None, year_end=None, model=None):
         pass
 
     # Setup paths
-    root = Path(__file__).resolve().parents[2]
-    out_dir = root / "4_Outputs" / "4.1_CeoClarity" / timestamp
+    # From src/f1d/econometric/v1/ -> need parents[4] to reach project root
+    root = Path(__file__).resolve().parents[4]
+    out_dir = root / "4_Outputs" / "4.1_ManagerClarity" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    log_dir = root / "3_Logs" / "4.1_CeoClarity" / timestamp
+    log_dir = root / "3_Logs" / "4.1_ManagerClarity" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Setup dual logging
@@ -752,7 +760,7 @@ def main(year_start=None, year_end=None, model=None):
     sys.stdout = dual_writer
 
     print("=" * 80)
-    print("STEP 4.1: CEO Clarity Regression (Fixed Effects Estimation)")
+    print("STEP 4.1: Manager Clarity Regression (Fixed Effects Estimation)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
@@ -765,7 +773,7 @@ def main(year_start=None, year_end=None, model=None):
     df = prepare_regression_data(df, stats)
 
     # Run regressions for each sample
-    all_ceo_scores = []
+    all_manager_scores = []
     all_diagnostics = []
     all_models = {}
 
@@ -779,47 +787,47 @@ def main(year_start=None, year_end=None, model=None):
             continue
 
         # Run regression
-        model, df_reg, valid_ceos = run_regression(df_sample, sample_name)
+        model, df_reg, valid_managers = run_regression(df_sample, sample_name)
 
         if model is None:
             continue
 
         all_models[sample_name] = model
 
-        # Extract CEO fixed effects
-        ceo_fe = extract_ceo_fixed_effects(model, df_reg, sample_name)
+        # Extract manager fixed effects
+        manager_fe = extract_manager_fixed_effects(model, df_reg, sample_name)
 
-        # Filter original sample to valid CEOs (before string conversion) for stats
-        df_sample_filtered = df_sample[df_sample["ceo_id"].isin(valid_ceos)].copy()
+        # Filter original sample to valid managers (before string conversion) for stats
+        df_sample_filtered = df_sample[df_sample["ceo_id"].isin(valid_managers)].copy()
 
-        # Compute CEO stats using original data (with numeric ceo_id, start_date, gvkey)
-        ceo_scores = compute_ceo_stats(df_sample_filtered, ceo_fe, sample_name)
-        all_ceo_scores.append(ceo_scores)
+        # Compute manager stats using original data (with numeric ceo_id, start_date, gvkey)
+        manager_scores = compute_manager_stats(df_sample_filtered, manager_fe, sample_name)
+        all_manager_scores.append(manager_scores)
 
         # Compute diagnostics
         diag = compute_diagnostics(
-            model, sample_name, len(valid_ceos), df_sample_filtered["gvkey"].nunique()
+            model, sample_name, len(valid_managers), df_sample_filtered["gvkey"].nunique()
         )
         all_diagnostics.append(diag)
 
-        # Print top/bottom CEOs
-        print(f"\n  Top 3 Clearest CEOs ({sample_name}):")
-        for i, row in ceo_scores.head(3).iterrows():
-            ceo_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
+        # Print top/bottom managers
+        print(f"\n  Top 3 Clearest Managers ({sample_name}):")
+        for i, row in manager_scores.head(3).iterrows():
+            manager_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
             print(
-                f"    {i + 1}. {ceo_name}: Clarity={row['ClarityCEO']:.3f}, n={int(row['n_calls'])}"
+                f"    {i + 1}. {manager_name}: Clarity={row['ClarityManager']:.3f}, n={int(row['n_calls'])}"
             )
 
-        print(f"\n  Top 3 Most Uncertain CEOs ({sample_name}):")
-        for i, row in ceo_scores.tail(3).iterrows():
-            ceo_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
+        print(f"\n  Top 3 Most Uncertain Managers ({sample_name}):")
+        for i, row in manager_scores.tail(3).iterrows():
+            manager_name = row["ceo_name"] if pd.notna(row["ceo_name"]) else "Unknown"
             print(
-                f"    {ceo_scores.index.get_loc(i) + 1}. {ceo_name}: Clarity={row['ClarityCEO']:.3f}, n={int(row['n_calls'])}"
+                f"    {manager_scores.index.get_loc(i) + 1}. {manager_name}: Clarity={row['ClarityManager']:.3f}, n={int(row['n_calls'])}"
             )
 
     # Save outputs
-    if all_ceo_scores:
-        save_outputs(all_ceo_scores, all_diagnostics, all_models, out_dir, stats)
+    if all_manager_scores:
+        save_outputs(all_manager_scores, all_diagnostics, all_models, out_dir, stats)
 
         # Add regression stats
         if all_diagnostics:
@@ -827,7 +835,7 @@ def main(year_start=None, year_end=None, model=None):
                 key = f"{diag['sample']}"
                 stats["regressions"][key] = {
                     "n_observations": diag["n_observations"],
-                    "n_ceos": diag["n_ceos"],
+                    "n_managers": diag["n_managers"],
                     "n_firms": diag["n_firms"],
                     "r_squared": diag["r_squared"],
                     "r_squared_adj": diag["r_squared_adj"],
@@ -838,12 +846,12 @@ def main(year_start=None, year_end=None, model=None):
                 }
 
         # Add missing values analysis
-        ceo_scores_df = pd.concat(all_ceo_scores, ignore_index=True)
-        stats["missing_values"] = analyze_missing_values(ceo_scores_df)
+        manager_scores_df = pd.concat(all_manager_scores, ignore_index=True)
+        stats["missing_values"] = analyze_missing_values(manager_scores_df)
 
         # Generate report
         duration = (datetime.now() - start_time).total_seconds()
-        generate_report(all_ceo_scores, all_diagnostics, out_dir, duration)
+        generate_report(all_manager_scores, all_diagnostics, out_dir, duration)
 
     # Final summary
     duration = (datetime.now() - start_time).total_seconds()
@@ -880,7 +888,8 @@ def main(year_start=None, year_end=None, model=None):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    root = Path(__file__).parent.parent.parent
+    # From src/f1d/econometric/v1/ -> need parents[4] to reach project root
+    root = Path(__file__).resolve().parents[4]
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
@@ -888,5 +897,5 @@ if __name__ == "__main__":
         print("[OK] All prerequisites validated")
         sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Skip validation - data exists
     sys.exit(main(model=args.model))

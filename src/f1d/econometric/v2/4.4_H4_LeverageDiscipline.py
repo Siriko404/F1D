@@ -710,7 +710,7 @@ def generate_latex_table(
 
 def setup_paths(config, timestamp):
     """Set up all required paths using get_latest_output_dir"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Resolve H1 variables directory (for leverage and base controls)
     h1_dir = get_latest_output_dir(
@@ -1003,8 +1003,9 @@ def prepare_analysis_dataset(
 
     # Step 2: Merge with speech uncertainty
     # Use suffixes to handle any duplicate column names
+    before_merge = len(merged_df)
     merged_df = merged_df.merge(
-        speech_agg_df, on=merge_cols, how="inner", suffixes=("", "_speech")
+        speech_agg_df, on=merge_cols, how="left", suffixes=("", "_speech")
     )
 
     # Coalesce any duplicated columns (prefer original values)
@@ -1016,8 +1017,9 @@ def prepare_analysis_dataset(
                 merged_df = merged_df.drop(columns=[col])
 
     if dw:
+        missing_speech = merged_df[UNCERTAINTY_MEASURES[0]].isna().sum() if UNCERTAINTY_MEASURES else 0
         dw.write(
-            f"  After speech merge: {len(merged_df):,} obs (complete cases only)\n"
+            f"  After speech merge: {len(merged_df):,} obs ({missing_speech:,} missing speech data)\n"
         )
 
     # Step 3: Create lagged leverage
@@ -1463,7 +1465,7 @@ def main():
     config = load_config()
 
     # Get project root
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Initialize stats
     stats: Dict[str, Any] = {

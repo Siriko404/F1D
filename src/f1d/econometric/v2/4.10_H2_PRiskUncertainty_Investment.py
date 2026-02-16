@@ -54,6 +54,7 @@ import yaml
 
 # Import shared utilities
 from f1d.shared.dual_writer import DualWriter
+from f1d.shared.latex_tables import make_regression_table
 from f1d.shared.observability_utils import (
     get_process_memory_mb,
 )
@@ -166,7 +167,7 @@ ROBUSTNESS_SPECS = {
 
 def setup_paths(config, timestamp):
     """Set up all required paths using get_latest_output_dir"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Resolve Plan 53-02 output directory
     analysis_dir = get_latest_output_dir(
@@ -893,6 +894,102 @@ def generate_results_markdown(
     return output_path
 
 
+def generate_latex_table(
+    primary_result, output_dir, dw=None
+):
+    """
+    Generate publication-ready LaTeX regression table for H2 results.
+
+    Creates a booktabs-formatted table with coefficients, standard errors,
+    and significance stars.
+
+    Args:
+        primary_result: Primary regression result dictionary
+        output_dir: Output directory path
+        dw: DualWriter for logging
+
+    Returns:
+        Path to saved LaTeX file
+    """
+    # Variable labels for display
+    var_labels = {
+        "PRisk_x_Uncertainty": "PRisk $\\times$ Uncertainty",
+        "PRisk_std": "PRisk (std)",
+        "Manager_QA_Uncertainty_pct_std": "QA Unc. (std)",
+        "CashFlow": "Cash Flow",
+        "Size": "Firm Size",
+        "Leverage": "Leverage",
+        "TobinQ": "Tobin's Q",
+        "SalesGrowth": "Sales Growth",
+    }
+
+    # Variable order for table
+    var_order = [
+        "PRisk_x_Uncertainty", "PRisk_std", "Manager_QA_Uncertainty_pct_std",
+        "CashFlow", "Size", "Leverage", "TobinQ", "SalesGrowth",
+    ]
+
+    if not primary_result or "coefficients" not in primary_result:
+        if dw:
+            dw.write("No primary results for LaTeX table\n")
+        return None
+
+    # Create coefficients DataFrame from result
+    # Note: primary_result["coefficients"] is a DataFrame with index=variable names
+    coef_rows = []
+    coeffs_df = primary_result.get("coefficients")
+    pvalues = primary_result.get("pvalues", {})
+
+    if coeffs_df is None or not hasattr(coeffs_df, 'index'):
+        if dw:
+            dw.write("No coefficient DataFrame in primary results\n")
+        return None
+
+    for var_name in var_order:
+        if var_name in coeffs_df.index:
+            coef_rows.append({
+                "variable": var_name,
+                "coefficient": coeffs_df.loc[var_name, "Coefficient"],
+                "std_error": coeffs_df.loc[var_name, "Std. Error"],
+                "p_value": pvalues.get(var_name, np.nan),
+            })
+
+    coef_df = pd.DataFrame(coef_rows)
+
+    latex_result = {
+        "coefficients": coef_df,
+        "summary": {
+            "n_obs": primary_result.get("n_obs", 0),
+            "rsquared": primary_result.get("r_squared", 0),
+            "rsquared_within": primary_result.get("r_squared_within", 0),
+            "f_statistic": primary_result.get("f_stat"),
+            "entity_effects": True,
+            "time_effects": True,
+        }
+    }
+
+    # Generate LaTeX table
+    latex_path = output_dir / "H2_Regression_Table.tex"
+
+    make_regression_table(
+        results=[latex_result],
+        model_names=["Primary"],
+        variable_order=var_order,
+        variable_labels=var_labels,
+        include_stats=["N", "R2", "FE_entity", "FE_time"],
+        caption="H2 Results: PRisk x Uncertainty and Investment Efficiency",
+        label="tab:h2_prisk_uncertainty",
+        output_path=latex_path,
+        decimals=4,
+        dep_var_name="Investment Residual$_{t+1}$",
+    )
+
+    if dw:
+        dw.write(f"  Saved LaTeX table: {latex_path.name}\n")
+
+    return latex_path
+
+
 # ==============================================================================
 # CLI and Main
 # ==============================================================================
@@ -1021,6 +1118,7 @@ def main():
             paths["output_dir"],
             dw,
         )
+        generate_latex_table(primary_result, paths["output_dir"], dw)
 
         # Summary
         end_mem = get_process_memory_mb()

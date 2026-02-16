@@ -76,7 +76,7 @@ def load_ceo_clarity(base_path: Path) -> pd.DataFrame:
 
     try:
         ceo_dir = get_latest_output_dir(
-            base_path / "4_Outputs" / "4.1.1_CeoClarity_CEO_Only",
+            base_path / "4_Outputs" / "4.1.1_CeoClarity",
             required_file="ceo_clarity_scores.parquet",
         )
         print(f"[OK] Found CEO Clarity directory: {ceo_dir}")
@@ -446,6 +446,15 @@ def create_style_frozen(
     print(
         f"  - style_frozen range: [{style_frozen['style_frozen'].min():.3f}, {style_frozen['style_frozen'].max():.3f}]"
     )
+
+    # Deduplicate: ensure one row per (gvkey, fyear)
+    # Sort by n_calls_fy descending to keep CEO with most calls
+    n_before = len(style_frozen)
+    style_frozen = style_frozen.sort_values("n_calls_fy", ascending=False)
+    style_frozen = style_frozen.drop_duplicates(subset=["gvkey", "fyear"], keep="first")
+    n_after = len(style_frozen)
+    if n_before != n_after:
+        print(f"[OK] Deduplicated: {n_before:,} -> {n_after:,} rows (removed {n_before - n_after} duplicates)")
 
     return style_frozen
 

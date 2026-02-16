@@ -551,7 +551,13 @@ def extract_ceo_fixed_effects(model, df_reg, sample_period):
     # THEN standardize to mean=0, SD=1
     mean_val = ceo_fe["ClarityCEO_raw"].mean()
     std_val = ceo_fe["ClarityCEO_raw"].std()
-    ceo_fe["ClarityCEO"] = (ceo_fe["ClarityCEO_raw"] - mean_val) / std_val
+
+    # Handle zero standard deviation (all CEOs have same clarity)
+    if std_val == 0:
+        print("    WARNING: Zero standard deviation in ClarityCEO_raw - setting all to 0")
+        ceo_fe["ClarityCEO"] = 0.0
+    else:
+        ceo_fe["ClarityCEO"] = (ceo_fe["ClarityCEO_raw"] - mean_val) / std_val
 
     # Add CEO names and call counts
     df_reg_numeric = df_reg.copy()
@@ -989,7 +995,7 @@ def main():
     args = parse_arguments()
 
     # Set up paths
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     output_dir = ensure_output_dir(
         root / "4_Outputs" / "4.9_CEOFixedEffects" / timestamp

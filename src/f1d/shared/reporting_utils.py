@@ -70,13 +70,17 @@ def generate_regression_report(
         f.write("\n```\n\n")
 
         f.write("## Coefficient Table\n\n")
-        f.write("| Variable | Coef | Std Err | t | P>|t| | [0.025 | 0.975] |\n")
-        f.write("|----------|------|---------|---|--------|----------|\n")
+        f.write("| Variable | Coef | Std Err | t/z | P>|t| | [0.025 | 0.975] |\n")
+        f.write("|----------|------|---------|-----|--------|----------|\n")
 
         for idx, row in model.summary2().tables[1].iterrows():
+            # Handle both 't' (OLS) and 'z' (robust HC1) column names
+            t_or_z = row.get('t', row.get('z', 0))
+            p_val = row.get('P>|t|', row.get('P>|z|', 0))
+
             f.write(f"| {idx} | {row['Coef.']:.4f} | {row['Std.Err.']:.4f} | ")
-            f.write(f"{row['t']:.4f} | {row['P>|z|']:.4f} | ")
-            f.write(f"{row['[0.025']:.4f} | {row['0.975']:.4f} |\n")
+            f.write(f"{t_or_z:.4f} | {p_val:.4f} | ")
+            f.write(f"{row['[0.025']:.4f} | {row['0.975]']:.4f} |\n")
 
     return report_path
 

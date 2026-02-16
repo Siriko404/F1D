@@ -64,6 +64,7 @@ from f1d.shared.observability_utils import (
     get_process_memory_mb,
     save_stats as shared_save_stats,  # type: ignore[attr-defined]
 )
+from f1d.shared.latex_tables import make_regression_table
 from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.path_utils import (
     ensure_output_dir,
@@ -164,7 +165,7 @@ ROBUSTNESS_SPECS = {
 
 def setup_paths(config, timestamp):
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Resolve H5 variables directory
     h5_dir = get_latest_output_dir(
@@ -878,6 +879,119 @@ def generate_results_markdown(results, output_dir, dw=None):
     return output_path
 
 
+def generate_latex_table(
+    results, output_dir, dw=None
+):
+    """
+    Generate publication-ready LaTeX regression table for H5 results.
+
+    Creates a booktabs-formatted table with multiple model columns,
+    standard errors in parentheses, and significance stars.
+
+    Args:
+        results: List of regression result dictionaries
+        output_dir: Output directory path
+        dw: DualWriter for logging
+
+    Returns:
+        Path to saved LaTeX file
+    """
+    from typing import List, Dict, Any, Optional
+
+    # Variable labels for display
+    var_labels = {
+        "Manager_QA_Weak_Modal_pct_c": "Weak Modal (Mgr)",
+        "CEO_QA_Weak_Modal_pct_c": "Weak Modal (CEO)",
+        "Manager_QA_Uncertainty_pct_c": "QA Unc. (Mgr)",
+        "CEO_QA_Uncertainty_pct_c": "QA Unc. (CEO)",
+        "uncertainty_gap_c": "Uncertainty Gap",
+        "Manager_Pres_Uncertainty_pct_c": "Pres. Unc. (Mgr)",
+        "CEO_Pres_Uncertainty_pct_c": "Pres. Unc. (CEO)",
+        "prior_dispersion_c": "Prior Dispersion",
+        "earnings_surprise_c": "Earnings Surprise",
+        "loss_dummy": "Loss Dummy",
+        "analyst_coverage_c": "Analyst Coverage",
+        "firm_size_c": "Firm Size",
+        "tobins_q_c": "Tobin's Q",
+        "roa_c": "ROA",
+    }
+
+    # Variable order for table
+    var_order = [
+        "Manager_QA_Weak_Modal_pct_c", "CEO_QA_Weak_Modal_pct_c",
+        "Manager_QA_Uncertainty_pct_c", "CEO_QA_Uncertainty_pct_c",
+        "uncertainty_gap_c",
+        "Manager_Pres_Uncertainty_pct_c", "CEO_Pres_Uncertainty_pct_c",
+        "prior_dispersion_c", "earnings_surprise_c", "loss_dummy",
+        "analyst_coverage_c", "firm_size_c", "tobins_q_c", "roa_c",
+    ]
+
+    # Filter to primary specification only for LaTeX table
+    primary_results = [r for r in results if r["spec"] == "primary"]
+
+    if not primary_results:
+        if dw:
+            dw.write("No primary specification results for LaTeX table\n")
+        return None
+
+    # Convert results to format expected by make_regression_table
+    latex_results = []
+    model_names = []
+
+    for r in primary_results:
+        # Create coefficients DataFrame in expected format
+        coef_rows = []
+        for var_name, coeff_dict in r["coefficients"].items():
+            coef_rows.append({
+                "variable": var_name,
+                "coefficient": coeff_dict["Coefficient"],
+                "std_error": coeff_dict["Std. Error"],
+                "p_value": r["pvalues"].get(var_name, np.nan),
+            })
+
+        coef_df = pd.DataFrame(coef_rows)
+
+        latex_result = {
+            "coefficients": coef_df,
+            "summary": {
+                "n_obs": r["n_obs"],
+                "rsquared": r["r_squared"],
+                "rsquared_within": r.get("r_squared_within", r["r_squared"]),
+                "f_statistic": r.get("f_stat"),
+                "entity_effects": True,
+                "time_effects": True,
+            }
+        }
+
+        latex_results.append(latex_result)
+
+        # Use short name for model column
+        main_var = r.get("main_iv", r.get("uncertainty_var", ""))
+        short_name = var_labels.get(f"{main_var}_c", main_var)
+        model_names.append(short_name)
+
+    # Generate LaTeX table
+    latex_path = output_dir / "H5_Regression_Table.tex"
+
+    make_regression_table(
+        results=latex_results,
+        model_names=model_names,
+        variable_order=[v for v in var_order if any(v in r["coefficients"] for r in primary_results)],
+        variable_labels=var_labels,
+        include_stats=["N", "R2", "FE_entity", "FE_time"],
+        caption="H5 Results: Speech Uncertainty and Analyst Dispersion",
+        label="tab:h5_dispersion",
+        output_path=latex_path,
+        decimals=4,
+        dep_var_name="Analyst Dispersion$_{t+1}$",
+    )
+
+    if dw:
+        dw.write(f"Saved LaTeX table: {latex_path.name}\n")
+
+    return latex_path
+
+
 def save_stats(stats, output_dir, dw=None):
     """Save statistics dictionary to JSON file with numpy encoder"""
     stats_path = output_dir / "stats.json"
@@ -1028,6 +1142,7 @@ def main():
         dw.write("\n[4] Saving outputs...\n")
         results_df = save_regression_results(results, paths["output_dir"], dw)
         generate_results_markdown(results, paths["output_dir"], dw)
+        generate_latex_table(results, paths["output_dir"], dw)
 
         # Compute hypothesis summary
         weak_modal_sig = any(

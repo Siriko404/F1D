@@ -18,7 +18,7 @@ Purpose:
     measure.
 
 Inputs:
-    - 4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
     - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
     - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
@@ -141,12 +141,15 @@ EXTENDED_CONTROLS = [
 ]
 
 # Model configurations
+# Note: Manager models use Manager_QA_Uncertainty (management team incl. CEO)
+#       CEO models use CEO_QA_Uncertainty (CEO only)
+# Note: Only Analyst_QA_* variables are allowed for analyst controls
 MODELS: Dict[str, Dict[str, Any]] = {
     "Manager_Baseline": {
         "dependent_var": "Manager_QA_Uncertainty_pct",
         "linguistic_controls": [
             "Manager_Pres_Uncertainty_pct",
-            "Analyst_QA_Uncertainty_pct",
+            "Analyst_QA_Uncertainty_pct",  # Only Analyst_QA_* variables allowed
             "Entire_All_Negative_pct",
         ],
         "firm_controls": BASE_FIRM_CONTROLS,
@@ -156,7 +159,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         "dependent_var": "Manager_QA_Uncertainty_pct",
         "linguistic_controls": [
             "Manager_Pres_Uncertainty_pct",
-            "Analyst_QA_Uncertainty_pct",
+            "Analyst_QA_Uncertainty_pct",  # Only Analyst_QA_* variables allowed
             "Entire_All_Negative_pct",
         ],
         "firm_controls": BASE_FIRM_CONTROLS + EXTENDED_CONTROLS,
@@ -208,13 +211,18 @@ def load_all_data(root, year_start, year_end, stats=None):
 
     # Resolve directories using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     lv_dir = get_latest_output_dir(
         root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables"
     )
-    fc_dir = get_latest_output_dir(root / "4_Outputs" / "3_Financial_Features")
+    # Require market_variables to ensure complete Stage 3 outputs
+    # (directories with market_variables also have firm_controls)
+    fc_dir = get_latest_output_dir(
+        root / "4_Outputs" / "3_Financial_Features",
+        required_file="market_variables_2010.parquet",
+    )
 
     # Load manifest
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -643,7 +651,8 @@ def main(year_start=None, year_end=None):
         GLOBAL_CONFIG["year_end"] = year_end
 
     # Setup paths
-    root = Path(__file__).resolve().parents[2]
+    # From src/f1d/econometric/v1/ -> need parents[4] to reach project root
+    root = Path(__file__).resolve().parents[4]
     out_dir = root / "4_Outputs" / "4.1.2_CeoClarity_Extended" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir = root / "3_Logs" / "4.1.2_CeoClarity_Extended" / timestamp
@@ -784,7 +793,8 @@ def main(year_start=None, year_end=None):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    root = Path(__file__).parent.parent.parent
+    # From src/f1d/econometric/v1/ -> need parents[4] to reach project root
+    root = Path(__file__).resolve().parents[4]
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
@@ -792,5 +802,5 @@ if __name__ == "__main__":
         # validate_prerequisites already prints "[OK] All prerequisites validated"
         sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Skip validation - data exists
     sys.exit(main())

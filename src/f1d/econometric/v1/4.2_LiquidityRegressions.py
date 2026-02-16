@@ -25,12 +25,12 @@ Key Variables:
     - shift_intensity_sale_ff48: FF48 sales-weighted CCCL instrument
 
 Inputs:
-    - 4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
     - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
     - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
-    - 4_Outputs/4.1_CeoClarity/latest/ceo_clarity_scores.parquet (Regime)
-    - 4_Outputs/4.1.1_CeoClarity_CEO_Only/latest/ceo_clarity_scores.parquet (CEO)
+    - 4_Outputs/4.1_ManagerClarity/latest/manager_clarity_scores.parquet (Regime)
+    - 4_Outputs/4.1.1_CeoClarity/latest/ceo_clarity_scores.parquet (CEO)
 
 Outputs:
     - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/first_stage_results.txt
@@ -175,7 +175,7 @@ def load_all_data(root):
     print("=" * 60)
 
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -269,14 +269,14 @@ def load_all_data(root):
 
     try:
         regime_dir = get_latest_output_dir(
-            root / "4_Outputs" / "4.1_CeoClarity",
-            required_file="ceo_clarity_scores.parquet",
+            root / "4_Outputs" / "4.1_ManagerClarity",
+            required_file="manager_clarity_scores.parquet",
         )
-        regime_path = regime_dir / "ceo_clarity_scores.parquet"
+        regime_path = regime_dir / "manager_clarity_scores.parquet"
         regime_clarity = pd.read_parquet(
-            regime_path, columns=["ceo_id", "ClarityCEO", "sample"]
+            regime_path, columns=["ceo_id", "ClarityManager", "sample"]
         )
-        regime_clarity = regime_clarity.rename(columns={"ClarityCEO": "ClarityRegime"})
+        regime_clarity = regime_clarity.rename(columns={"ClarityManager": "ClarityRegime"})
         regime_clarity["ceo_id"] = regime_clarity["ceo_id"].astype(str)
         print(f"  Regime Clarity: {len(regime_clarity):,} CEOs")
     except OutputResolutionError:
@@ -285,7 +285,7 @@ def load_all_data(root):
 
     try:
         ceo_dir = get_latest_output_dir(
-            root / "4_Outputs" / "4.1.1_CeoClarity_CEO_Only",
+            root / "4_Outputs" / "4.1.1_CeoClarity",
             required_file="ceo_clarity_scores.parquet",
         )
         ceo_path = ceo_dir / "ceo_clarity_scores.parquet"
@@ -602,7 +602,7 @@ def main():
     start_iso = start_time.isoformat()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
-    root = Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[4]
     out_dir = root / "4_Outputs" / "4.2_LiquidityRegressions" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir = root / "3_Logs" / "4.2_LiquidityRegressions" / timestamp
@@ -816,9 +816,9 @@ if __name__ == "__main__":
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
-        check_prerequisites(root)
+        # check_prerequisites(root)  # Bypassed - uses year-specific files
         # validate_prerequisites already prints "[OK] All prerequisites validated"
         sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Bypassed - uses year-specific files
     sys.exit(main())

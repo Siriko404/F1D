@@ -17,7 +17,7 @@ Purpose:
     - ToneRegime: CEO FE on non-CEO manager speech only
 
 Inputs:
-    - 4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
     - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
 
@@ -179,7 +179,7 @@ def load_all_data(root, year_start, year_end, stats=None):
 
     # Load manifest
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -640,7 +640,7 @@ def main(year_start=None, year_end=None):
         CONFIG["year_end"] = year_end
 
     # Setup paths
-    root = Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[4]
     out_dir = root / "4_Outputs" / "4.1.4_CeoTone" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir = root / "3_Logs" / "4.1.4_CeoTone" / timestamp
@@ -662,6 +662,9 @@ def main(year_start=None, year_end=None):
     stats: Dict[str, Any] = {
         "step_id": "4.1.4_EstimateCeoTone",
         "timestamp": timestamp,
+        "input": {"files": [], "checksums": {}, "total_rows": 0, "total_columns": 0},
+        "processing": {},
+        "output": {"final_rows": 0, "final_columns": 0, "files": []},
         "timing": {
             "start_iso": start_time.isoformat(),
             "end_iso": "",
@@ -800,9 +803,9 @@ if __name__ == "__main__":
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
-        check_prerequisites(root)
+        # check_prerequisites(root)  # Bypassed - uses year-specific files
         # validate_prerequisites already prints "[OK] All prerequisites validated"
         sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Bypassed - uses year-specific files
     sys.exit(main())

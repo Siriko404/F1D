@@ -51,6 +51,7 @@ import pandas as pd
 import yaml
 
 # Import shared utilities
+from f1d.shared.latex_tables import make_regression_table
 from f1d.shared.observability_utils import (
     DualWriter,
     get_process_memory_mb,
@@ -171,7 +172,7 @@ ROBUSTNESS_CONFIG: Dict[str, Any] = {
 
 def setup_paths(config, timestamp):
     """Set up all required paths using get_latest_output_dir"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Resolve H7 illiquidity directory
     h7_dir = get_latest_output_dir(
@@ -1215,6 +1216,118 @@ def generate_results_markdown(
     return output_path
 
 
+def generate_latex_table(
+    results, output_dir, dw=None
+):
+    """
+    Generate publication-ready LaTeX regression table for H7 results.
+
+    Creates a booktabs-formatted table with multiple model columns,
+    standard errors in parentheses, and significance stars.
+
+    Args:
+        results: List of regression result dictionaries
+        output_dir: Output directory path
+        dw: DualWriter for logging
+
+    Returns:
+        Path to saved LaTeX file
+    """
+    from typing import List, Dict, Any, Optional
+
+    # Variable labels for display
+    var_labels = {
+        "Manager_QA_Uncertainty_pct": "QA Unc. (Mgr)",
+        "CEO_QA_Uncertainty_pct": "QA Unc. (CEO)",
+        "Manager_QA_Weak_Modal_pct": "Weak Modal (Mgr)",
+        "CEO_QA_Weak_Modal_pct": "Weak Modal (CEO)",
+        "Manager_Pres_Uncertainty_pct": "Pres. Unc. (Mgr)",
+        "CEO_Pres_Uncertainty_pct": "Pres. Unc. (CEO)",
+        "uncertainty_gap": "Uncertainty Gap",
+        "firm_size": "Firm Size",
+        "tobins_q": "Tobin's Q",
+        "roa": "ROA",
+        "leverage": "Leverage",
+        "analyst_coverage": "Analyst Coverage",
+    }
+
+    # Variable order for table
+    var_order = [
+        "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct", "CEO_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
+        "uncertainty_gap",
+        "firm_size", "tobins_q", "roa", "leverage", "analyst_coverage",
+    ]
+
+    # Filter to primary specification only for LaTeX table
+    primary_results = [r for r in results if r.get("spec") == "primary"]
+
+    if not primary_results:
+        if dw:
+            dw.write("No primary specification results for LaTeX table\n")
+        return None
+
+    # Convert results to format expected by make_regression_table
+    # H7 results have coefficient, se, p_two_sided as individual fields
+    latex_results = []
+    model_names = []
+
+    for r in primary_results:
+        # Create coefficients DataFrame from H7-specific fields
+        coef_rows = [{
+            "variable": r.get("uncertainty_var", ""),
+            "coefficient": r.get("coefficient", np.nan),
+            "std_error": r.get("se", np.nan),
+            "p_value": r.get("p_two_sided", np.nan),
+        }]
+
+        coef_df = pd.DataFrame(coef_rows)
+
+        latex_result = {
+            "coefficients": coef_df,
+            "summary": {
+                "n_obs": r.get("n", 0),
+                "rsquared": r.get("r2", 0),
+                "rsquared_within": r.get("r2_within", r.get("r2", 0)),
+                "f_statistic": r.get("f_statistic"),
+                "entity_effects": r.get("entity_effects", True),
+                "time_effects": r.get("time_effects", True),
+            }
+        }
+
+        latex_results.append(latex_result)
+
+        # Use uncertainty variable name for model column
+        uv = r.get("uncertainty_var", "")
+        short_name = var_labels.get(uv, uv)
+        model_names.append(short_name)
+
+    # Generate LaTeX table
+    latex_path = output_dir / "H7_Regression_Table.tex"
+
+    # Variable order - just uncertainty variables for H7
+    uv_vars_used = list(set(r.get("uncertainty_var", "") for r in primary_results))
+
+    make_regression_table(
+        results=latex_results,
+        model_names=model_names,
+        variable_order=uv_vars_used,
+        variable_labels=var_labels,
+        include_stats=["N", "R2", "FE_entity", "FE_time"],
+        caption="H7 Results: Speech Uncertainty and Stock Illiquidity",
+        label="tab:h7_illiquidity",
+        output_path=latex_path,
+        decimals=4,
+        dep_var_name="Amihud Illiquidity$_{t+1}$",
+    )
+
+    if dw:
+        dw.write(f"Saved LaTeX table: {latex_path.name}\n")
+
+    return latex_path
+
+
 def save_stats(stats: Dict[str, Any], output_dir: Path, dw: Any = None) -> Path:
     """Save statistics dictionary to JSON file"""
     stats_path = output_dir / "stats.json"
@@ -1394,6 +1507,7 @@ def main():
         generate_results_markdown(
             all_results, paths["output_dir"], stats["sample_stats"], dv_col, dw
         )
+        generate_latex_table(all_results, paths["output_dir"], dw)
 
         stats["output"]["regression_results"] = {
             "file": "H7_Regression_Results.parquet",

@@ -61,6 +61,7 @@ from f1d.shared.observability_utils import (
     get_process_memory_mb,
     save_stats as shared_save_stats,  # type: ignore[attr-defined]
 )
+from f1d.shared.latex_tables import make_regression_table
 from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.path_utils import (
     ensure_output_dir,
@@ -138,7 +139,7 @@ SPECS = {
 
 def setup_paths(config, timestamp):
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Resolve H6 variables directory
     h6_dir = get_latest_output_dir(
@@ -1217,6 +1218,122 @@ def generate_results_markdown(
     return output_path
 
 
+def generate_latex_table(
+    results, output_dir, dw=None
+):
+    """
+    Generate publication-ready LaTeX regression table for H6 results.
+
+    Creates a booktabs-formatted table with multiple model columns,
+    standard errors in parentheses, and significance stars.
+
+    Args:
+        results: List of regression result dictionaries
+        output_dir: Output directory path
+        dw: DualWriter for logging
+
+    Returns:
+        Path to saved LaTeX file
+    """
+    from typing import List, Dict, Any, Optional
+
+    # Variable labels for display
+    var_labels = {
+        "cccl_exposure_lag1": "CCCL Exposure$_{t-1}$",
+        "cccl_intensity_lag1": "CCCL Intensity$_{t-1}$",
+        "shift_intensity_mkvalt_ff48_lag": "Bartik Instrument",
+        "Manager_QA_Uncertainty_pct": "QA Unc. (Mgr)",
+        "CEO_QA_Uncertainty_pct": "QA Unc. (CEO)",
+        "Manager_QA_Weak_Modal_pct": "Weak Modal (Mgr)",
+        "CEO_QA_Weak_Modal_pct": "Weak Modal (CEO)",
+        "Manager_Pres_Uncertainty_pct": "Pres. Unc. (Mgr)",
+        "CEO_Pres_Uncertainty_pct": "Pres. Unc. (CEO)",
+        "uncertainty_gap": "Uncertainty Gap",
+        "firm_size": "Firm Size",
+        "tobins_q": "Tobin's Q",
+        "roa": "ROA",
+        "leverage": "Leverage",
+    }
+
+    # Variable order for table
+    var_order = [
+        "cccl_exposure_lag1", "cccl_intensity_lag1",
+        "shift_intensity_mkvalt_ff48_lag",
+        "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct", "CEO_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
+        "uncertainty_gap",
+        "firm_size", "tobins_q", "roa", "leverage",
+    ]
+
+    # Filter to primary specification only for LaTeX table
+    primary_results = [r for r in results if r.get("spec") == "primary"]
+
+    if not primary_results:
+        if dw:
+            dw.write("No primary specification results for LaTeX table\n")
+        return None
+
+    # Convert results to format expected by make_regression_table
+    # H6 results have beta_cccl, se_cccl, p_value_one_tail fields (not a coefficients dict)
+    latex_results = []
+    model_names = []
+
+    for r in primary_results:
+        # Create coefficients DataFrame from H6-specific fields
+        coef_rows = [{
+            "variable": r.get("cccl_var", "cccl_exposure_lag1"),
+            "coefficient": r.get("beta_cccl", np.nan),
+            "std_error": r.get("se_cccl", np.nan),
+            "p_value": r.get("p_value_two_tail", np.nan),
+        }]
+
+        coef_df = pd.DataFrame(coef_rows)
+
+        latex_result = {
+            "coefficients": coef_df,
+            "summary": {
+                "n_obs": r.get("n_obs", 0),
+                "rsquared": r.get("r_squared", 0),
+                "rsquared_within": r.get("r_squared_within", r.get("r_squared", 0)),
+                "f_statistic": r.get("f_stat"),
+                "entity_effects": r.get("entity_effects", True),
+                "time_effects": r.get("time_effects", True),
+            }
+        }
+
+        latex_results.append(latex_result)
+
+        # Use uncertainty variable name for model column
+        uv = r.get("uncertainty_var", "")
+        short_name = var_labels.get(uv, uv)
+        model_names.append(short_name)
+
+    # Generate LaTeX table
+    latex_path = output_dir / "H6_Regression_Table.tex"
+
+    # Variable order - just CCCL variable for H6
+    cccl_vars_used = list(set(r.get("cccl_var", "cccl_exposure_lag1") for r in primary_results))
+
+    make_regression_table(
+        results=latex_results,
+        model_names=model_names,
+        variable_order=cccl_vars_used,
+        variable_labels=var_labels,
+        include_stats=["N", "R2", "FE_entity", "FE_time"],
+        caption="H6 Results: SEC Scrutiny (CCCL) Effects on Speech Uncertainty",
+        label="tab:h6_cccl",
+        output_path=latex_path,
+        decimals=4,
+        dep_var_name="Speech Uncertainty",
+    )
+
+    if dw:
+        dw.write(f"Saved LaTeX table: {latex_path.name}\n")
+
+    return latex_path
+
+
 def save_stats(stats, output_dir, dw=None):
     """Save statistics dictionary to JSON file with numpy encoder"""
     stats_path = output_dir / "stats.json"
@@ -1422,6 +1539,7 @@ def main():
             paths["output_dir"],
             dw,
         )
+        generate_latex_table(all_results, paths["output_dir"], dw)
 
         stats["output"]["regression_results"] = {
             "file": "H6_Regression_Results.parquet",

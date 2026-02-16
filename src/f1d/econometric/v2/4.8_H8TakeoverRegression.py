@@ -53,6 +53,7 @@ import pandas as pd
 import yaml
 
 # Import shared utilities
+from f1d.shared.latex_tables import make_regression_table
 from f1d.shared.observability_utils import (
     DualWriter,
     compute_file_checksum,
@@ -151,7 +152,7 @@ H8_ROBUSTNESS_CONFIG: Dict[str, Any] = {
 
 def setup_paths(timestamp):
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     # Resolve H8 output directory
     h8_dir = get_latest_output_dir(
@@ -1090,6 +1091,136 @@ def save_results_report(report, output_dir):
     return output_file
 
 
+def generate_latex_table(results, output_dir):
+    """
+    Generate publication-ready LaTeX regression table for H8 logistic results.
+
+    Shows odds ratios (exp(beta)) with 95% CI and significance stars.
+    Designed for logit regression results.
+
+    Args:
+        results: List of regression result dicts from run_h8_logit
+        output_dir: Output directory path
+
+    Returns:
+        Path to saved LaTeX file
+    """
+    # Variable labels for display
+    var_labels = {
+        "Manager_QA_Uncertainty_pct": "QA Unc. (Mgr)",
+        "CEO_QA_Uncertainty_pct": "QA Unc. (CEO)",
+        "Manager_QA_Weak_Modal_pct": "Weak Modal (Mgr)",
+        "CEO_QA_Weak_Modal_pct": "Weak Modal (CEO)",
+        "Manager_Pres_Uncertainty_pct": "Pres. Unc. (Mgr)",
+        "CEO_Pres_Uncertainty_pct": "Pres. Unc. (CEO)",
+        "uncertainty_gap": "Uncertainty Gap",
+    }
+
+    # Filter to primary specification and converged results
+    primary_results = [
+        r for r in results
+        if r.get("spec") == "primary" and r.get("converged", False)
+    ]
+
+    if not primary_results:
+        print("No converged primary results for LaTeX table")
+        return None
+
+    lines = []
+
+    # Table header
+    lines.append(r"\begin{table}[htbp]")
+    lines.append(r"\centering")
+    lines.append(r"\caption{H8 Results: Speech Uncertainty and Takeover Probability}")
+    lines.append(r"\label{tab:h8_takeover}")
+    lines.append(r"\begin{tabular}{lcccccc}")
+
+    # Header
+    lines.append(r"\toprule")
+    dvs = [r["uncertainty_var"] for r in primary_results]
+    n_models = len(dvs)
+
+    lines.append(" & " + " & ".join([f"({i + 1})" for i in range(n_models)]) + r" \\")
+    lines.append(" & " + " & ".join([var_labels.get(dv, dv) for dv in dvs]) + r" \\")
+    lines.append(r"\midrule")
+
+    # Odds ratio row (H8 uses logit, so show ORs)
+    or_row = ["Odds Ratio"]
+    ci_row = [r"[95\% CI]"]
+
+    for r in primary_results:
+        or_val = r.get("odds_ratio", np.nan)
+        ci_lo = r.get("or_ci_lower", np.nan)
+        ci_hi = r.get("or_ci_upper", np.nan)
+        p_one = r.get("p_one_sided", np.nan)
+
+        if np.isnan(or_val):
+            or_row.append("")
+            ci_row.append("")
+            continue
+
+        # Add stars based on one-sided p-value (H8a: beta > 0)
+        if p_one < 0.01:
+            stars = "***"
+        elif p_one < 0.05:
+            stars = "**"
+        elif p_one < 0.10:
+            stars = "*"
+        else:
+            stars = ""
+
+        or_row.append(f"{or_val:.3f}{stars}")
+        ci_row.append(f"[{ci_lo:.3f}, {ci_hi:.3f}]")
+
+    lines.append(" & ".join(or_row) + r" \\")
+    lines.append(" & ".join(ci_row) + r" \\")
+
+    # Statistics rows
+    lines.append(r"\midrule")
+
+    # N row
+    n_row = ["N"]
+    for r in primary_results:
+        n_row.append(f"{r.get('n', 0):,}")
+    lines.append(" & ".join(n_row) + r" \\")
+
+    # Pseudo R2 row
+    r2_row = ["Pseudo R$^2$"]
+    for r in primary_results:
+        r2_row.append(f"{r.get('pseudo_r2', 0):.3f}")
+    lines.append(" & ".join(r2_row) + r" \\")
+
+    # Takeovers row
+    tk_row = ["Takeovers"]
+    for r in primary_results:
+        tk_row.append(f"{r.get('n_takeovers', 0):,}")
+    lines.append(" & ".join(tk_row) + r" \\")
+
+    # Fixed effects row
+    lines.append(r"\midrule")
+    lines.append("Firm FE & " + " & ".join(["Yes"] * n_models) + r" \\")
+    lines.append("Year FE & " + " & ".join(["Yes"] * n_models) + r" \\")
+
+    # Footer
+    lines.append(r"\bottomrule")
+    lines.append(r"\end{tabular}")
+    lines.append(r"\begin{tablenotes}[flushleft]")
+    lines.append(r"\small")
+    lines.append(r"\item Odds ratios from logit regression. 95\% confidence intervals in brackets.")
+    lines.append(r"\item *** p<0.01, ** p<0.05, * p<0.10 (one-tailed for H8a: OR > 1).")
+    lines.append(r"\end{tablenotes}")
+    lines.append(r"\end{table}")
+
+    latex_str = "\n".join(lines)
+
+    latex_path = output_dir / "H8_Regression_Table.tex"
+    with open(latex_path, "w", encoding="utf-8") as f:
+        f.write(latex_str)
+
+    print(f"Saved LaTeX table: {latex_path}")
+    return latex_path
+
+
 # ==============================================================================
 # Main Execution
 # ==============================================================================
@@ -1314,6 +1445,12 @@ def main():
     report_file = save_results_report(report, paths["output_dir"])
     stats["output"]["files"].append(report_file.name)
     stats["output"]["checksums"][report_file.name] = compute_file_checksum(report_file)
+
+    # Generate LaTeX table
+    latex_file = generate_latex_table(results, paths["output_dir"])
+    if latex_file:
+        stats["output"]["files"].append(latex_file.name)
+        stats["output"]["checksums"][latex_file.name] = compute_file_checksum(latex_file)
 
     # Print report to console
     print("\n" + report)

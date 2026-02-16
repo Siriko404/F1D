@@ -72,6 +72,7 @@ if sys.platform == "win32":
 # Suppress warnings for cleaner output
 import warnings
 
+from f1d.shared.latex_tables import make_regression_table
 from f1d.shared.observability_utils import (
     get_process_memory_mb,
     save_stats,
@@ -93,7 +94,7 @@ warnings.filterwarnings("ignore")
 
 def setup_paths(timestamp):
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent
+    root = Path(__file__).resolve().parents[4]
 
     paths = {
         "root": root,
@@ -1011,6 +1012,98 @@ PRisk -> abnormal investment relationship.
     return report_file
 
 
+def generate_latex_table(result, output_dir):
+    """
+    Generate publication-ready LaTeX regression table for H9 results.
+
+    Creates a booktabs-formatted table with coefficients, standard errors,
+    and significance stars.
+
+    Args:
+        result: Regression result dictionary
+        output_dir: Output directory path
+
+    Returns:
+        Path to saved LaTeX file
+    """
+    # Variable labels for display
+    var_labels = {
+        "PRiskFY": "Policy Risk",
+        "style_frozen": "Style Frozen (CEO Vagueness)",
+        "interact": "PRisk $\\times$ Style Frozen",
+        "ln_at_t": "Firm Size",
+        "lev_t": "Leverage",
+        "cash_t": "Cash",
+        "roa_t": "ROA",
+        "mb_t": "Market-to-Book",
+        "SalesGrowth": "Sales Growth",
+    }
+
+    # Variable order for table
+    var_order = [
+        "PRiskFY", "style_frozen", "interact",
+        "ln_at_t", "lev_t", "cash_t", "roa_t", "mb_t", "SalesGrowth",
+    ]
+
+    if not result:
+        print("No results for LaTeX table")
+        return None
+
+    # Create coefficients DataFrame from result
+    # Note: result["coefficients"] is a DataFrame with index=variable names
+    import numpy as np
+    import pandas as pd
+    coef_rows = []
+    coeffs_df = result.get("coefficients")
+    pvalues = result.get("pvalues", {})
+
+    if coeffs_df is None or not hasattr(coeffs_df, 'index'):
+        print("No coefficient DataFrame in results")
+        return None
+
+    for var_name in var_order:
+        if var_name in coeffs_df.index:
+            coef_rows.append({
+                "variable": var_name,
+                "coefficient": coeffs_df.loc[var_name, "Coefficient"],
+                "std_error": coeffs_df.loc[var_name, "Std. Error"],
+                "p_value": pvalues.get(var_name, np.nan),
+            })
+
+    coef_df = pd.DataFrame(coef_rows)
+
+    latex_result = {
+        "coefficients": coef_df,
+        "summary": {
+            "n_obs": result.get("n_obs", 0),
+            "rsquared": result.get("r_squared", 0),
+            "rsquared_within": result.get("r_squared_within", 0),
+            "f_statistic": result.get("f_stat"),
+            "entity_effects": True,
+            "time_effects": True,
+        }
+    }
+
+    # Generate LaTeX table
+    latex_path = output_dir / "H9_Regression_Table.tex"
+
+    make_regression_table(
+        results=[latex_result],
+        model_names=["Primary"],
+        variable_order=var_order,
+        variable_labels=var_labels,
+        include_stats=["N", "R2", "FE_entity", "FE_time"],
+        caption="H9 Results: CEO Style, Policy Risk, and Abnormal Investment",
+        label="tab:h9_style_prisk",
+        output_path=latex_path,
+        decimals=4,
+        dep_var_name="Abnormal Investment$_{t+1}$",
+    )
+
+    print(f"[OK] LaTeX table saved to: {latex_path}")
+    return latex_path
+
+
 # ==============================================================================
 # Main Execution
 # ==============================================================================
@@ -1148,6 +1241,7 @@ Examples:
             reg_result = run_h9_regression(panel, model_type=args.model_type)
             format_regression_results(reg_result, paths["output_dir"])
             generate_report(panel, reg_result, sanity_checks, paths["output_dir"])
+            generate_latex_table(reg_result, paths["output_dir"])
 
         # ---------------------------------------------------------------------
         # Timing and Statistics

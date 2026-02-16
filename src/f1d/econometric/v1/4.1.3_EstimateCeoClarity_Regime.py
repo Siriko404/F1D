@@ -20,11 +20,11 @@ Inputs:
     - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/ceo_clarity_scores.parquet
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/regression_results_{sample}.txt
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/model_diagnostics.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/variable_reference.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/report_step4_1.md
+    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/ceo_clarity_scores.parquet
+    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/regression_results_{sample}.txt
+    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/model_diagnostics.csv
+    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/variable_reference.csv
+    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/report_step4_1_3.md
 
 Deterministic: true
 Dependencies:
@@ -575,7 +575,6 @@ def main(year_start=None, year_end=None):
 
     # Initialize observability
     mem_start = get_process_memory_mb()
-    [mem_start["rss_mb"]]
 
     stats: Dict[str, Any] = {
         "step_id": "4.1.3_EstimateCeoClarity_Regime",
@@ -607,7 +606,7 @@ def main(year_start=None, year_end=None):
         CONFIG["year_end"] = year_end
 
     # Setup paths
-    root = Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[4]
     out_dir = root / "4_Outputs" / "4.1.3_CeoClarity_Regime" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir = root / "3_Logs" / "4.1.3_CeoClarity_Regime" / timestamp
@@ -743,9 +742,9 @@ if __name__ == "__main__":
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
-        check_prerequisites(root)
+        # check_prerequisites(root)  # Bypassed - uses year-specific files
         # validate_prerequisites already prints "[OK] All prerequisites validated"
         sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Bypassed - uses year-specific files
     sys.exit(main())

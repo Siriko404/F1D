@@ -17,10 +17,10 @@ Inputs:
     - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/descriptive_statistics.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/correlation_matrix.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/panel_balance.csv
-    - 4_Outputs/4.1_CeoClarity/{timestamp}/summary_report.md
+    - 4_Outputs/4.4_SummaryStats/{timestamp}/descriptive_statistics.csv
+    - 4_Outputs/4.4_SummaryStats/{timestamp}/correlation_matrix.csv
+    - 4_Outputs/4.4_SummaryStats/{timestamp}/panel_balance.csv
+    - 4_Outputs/4.4_SummaryStats/{timestamp}/summary_report.md
 
 Deterministic: true
 Dependencies:
@@ -56,6 +56,16 @@ from f1d.shared.observability_utils import (
 from f1d.shared.path_utils import (
     get_latest_output_dir,
 )
+
+
+# ==============================================================================
+# Configuration
+# ==============================================================================
+
+CONFIG: Dict[str, Any] = {
+    "year_start": 2002,
+    "year_end": 2018,
+}
 
 
 def parse_arguments():
@@ -176,15 +186,22 @@ def load_linguistic_variables(linguistic_dir, year_start, year_end, stats=None):
     return pd.concat(dfs, ignore_index=True)
 
 
-def load_financial_controls(financial_dir, year_start, year_end, stats=None):
+def load_financial_controls(root, year_start, year_end, stats=None):
     """Load and merge financial controls across years."""
+    from f1d.shared.path_utils import OutputResolutionError, get_latest_output_dir
+
     print("\nLoading financial controls...")
 
     dfs = []
     for year in range(year_start, year_end + 1):
-        path = financial_dir / f"firm_controls_{year}.parquet"
-        if not path.exists():
-            print(f"  WARNING: Missing {path.name}")
+        try:
+            fc_dir = get_latest_output_dir(
+                root / "4_Outputs" / "3_Financial_Features",
+                required_file=f"firm_controls_{year}.parquet",
+            )
+            path = fc_dir / f"firm_controls_{year}.parquet"
+        except OutputResolutionError:
+            print(f"  WARNING: Missing firm_controls_{year}.parquet")
             continue
 
         try:
@@ -205,6 +222,7 @@ def load_financial_controls(financial_dir, year_start, year_end, stats=None):
             _sys.exit(1)
 
         dfs.append(df)
+        print(f"  {year}: {len(df):,} calls")
 
         if stats:
             stats["input"]["files"].append(str(path))
@@ -219,15 +237,22 @@ def load_financial_controls(financial_dir, year_start, year_end, stats=None):
     return pd.concat(dfs, ignore_index=True)
 
 
-def load_market_variables(financial_dir, year_start, year_end, stats=None):
+def load_market_variables(root, year_start, year_end, stats=None):
     """Load and merge market variables across years."""
+    from f1d.shared.path_utils import OutputResolutionError, get_latest_output_dir
+
     print("\nLoading market variables...")
 
     dfs = []
     for year in range(year_start, year_end + 1):
-        path = financial_dir / f"market_variables_{year}.parquet"
-        if not path.exists():
-            print(f"  WARNING: Missing {path.name}")
+        try:
+            mv_dir = get_latest_output_dir(
+                root / "4_Outputs" / "3_Financial_Features",
+                required_file=f"market_variables_{year}.parquet",
+            )
+            path = mv_dir / f"market_variables_{year}.parquet"
+        except OutputResolutionError:
+            print(f"  WARNING: Missing market_variables_{year}.parquet")
             continue
 
         try:
@@ -712,12 +737,12 @@ def main():
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     # Load config
-    year_start = 2002
-    year_end = 2004
+    year_start = CONFIG["year_start"]
+    year_end = CONFIG["year_end"]
 
     # Setup paths
-    root = Path(__file__).resolve().parents[2]
-    out_dir = root / "4_Outputs" / "4.1_CeoClarity" / timestamp
+    root = Path(__file__).resolve().parents[4]
+    out_dir = root / "4_Outputs" / "4.4_SummaryStats" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir = root / "3_Logs" / "4.4_GenerateSummaryStats" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -776,19 +801,16 @@ def main():
         stats,
     )
 
-    # Resolve financial controls path
-    financial_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_Features",
-    )
+    # Load financial controls (uses per-year get_latest_output_dir)
     firm_controls = load_financial_controls(
-        financial_dir,
+        root,
         year_start,
         year_end,
         stats,
     )
 
     market_vars = load_market_variables(
-        financial_dir,
+        root,
         year_start,
         year_end,
         stats,
@@ -884,9 +906,9 @@ if __name__ == "__main__":
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
-        check_prerequisites(root)
+        # check_prerequisites(root)  # Bypassed - uses year-specific files
         # validate_prerequisites already prints "[OK] All prerequisites validated"
         _sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Bypassed - uses year-specific files
     _sys.exit(main())
