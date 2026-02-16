@@ -1,221 +1,224 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-02-14
+**Analysis Date:** 2026-02-15
 
 ## Naming Patterns
 
 **Files:**
-- `snake_case.py` - All Python source files use snake_case
-- Pattern for scripts: `{Major}.{Minor}_{DescriptiveName}.py` (e.g., `1.0_BuildSampleManifest.py`, `3.1_H1Variables.py`)
-- Shared modules: `{category}_{name}.py` in `src/f1d/shared/` (e.g., `path_utils.py`, `financial_utils.py`)
-- Test files: `test_{module}.py` in `tests/unit/`, `tests/integration/`, `tests/regression/`, `tests/performance/`, `tests/verification/`
-- Config files: `project.yaml`, `.coveragerc`, `.pre-commit-config.yaml`
+- Use `snake_case` for all Python source files: `financial_utils.py`, `data_validation.py`, `path_utils.py`
+- Test files use `test_` prefix: `test_financial_utils.py`, `test_data_validation.py`
+- Stage scripts use numbered naming: `1.0_BuildSampleManifest.py`, `3.1_H1Variables.py`, `4.1_H1CashHoldingsRegression.py`
+- Versioned modules use `v1/`, `v2/` subdirectories: `src/f1d/financial/v1/`, `src/f1d/econometric/v2/`
+- Private functions use `_prefix`: `_check_thin_cells()`, `_format_star()`, `_add_constant_to_dataframe()`
 
 **Functions:**
-- `snake_case` for all function and method names (e.g., `calculate_firm_controls`, `load_config`, `validate_output_path`)
-- Private/internal functions: `_leading_underscore` (e.g., `_format_number`, `_add_constant_to_dataframe`)
-- Factory fixtures: `{name}_factory` pattern in tests
+- Use `snake_case` for function names: `calculate_firm_controls()`, `compute_financial_features()`, `validate_dataframe_schema()`
+- Private/implementation functions use `_prefix`: `_check_thin_cells()`, `_format_number()`
 
 **Variables:**
-- `snake_case` for all variables (e.g., `firm_data`, `compustat_df`, `missing_values`)
-- Constants: `UPPER_SNAKE_CASE` (e.g., `DATA_RAW`, `INPUT_SCHEMAS`, `ALLOWED_SCRIPT_DIR`)
-- DataFrame variables: `{entity}_df` or descriptive names (e.g., `compustat_df`, `result_df`)
+- Use `snake_case` for variables: `gvkey`, `fyear`, `compustat_df`
+- Constants use `UPPER_SNAKE_CASE`: `INPUT_SCHEMAS`, `LINEARMODELS_AVAILABLE`, `DATA_RAW`
 
-**Types/Classes:**
-- `PascalCase` for class names (e.g., `PathValidationError`, `OutputResolutionError`, `DataValidationError`, `FinancialCalculationError`, `WeakInstrumentError`)
-- Exception classes follow `{ErrorName}Error` pattern
-- Abstract base classes: None observed
-
-**Constants:**
-- Module-level constants: `UPPER_SNAKE_CASE` (e.g., `DATA_RAW`, `DATA_INTERIM`, `LOGS_DIR`, `RESULTS_DIR`)
-- Config keys: `snake_case` in YAML (e.g., `year_start`, `random_seed`)
+**Types:**
+- Use `PascalCase` for class names: `DataValidationError`, `FinancialCalculationError`, `PathValidationError`
+- Exception classes end with `Error`: `MulticollinearityError`, `WeakInstrumentError`, `OutputResolutionError`
 
 ## Code Style
 
 **Formatting:**
-- Tool: Ruff (acts as both linter and formatter)
+- Tool: Ruff (configured in `pyproject.toml`)
 - Line length: 88 characters
-- Indent width: 4 spaces
+- Indentation: 4 spaces (no tabs)
 - Quote style: Double quotes for strings
-- Config file: `pyproject.toml` sections `[tool.ruff]` and `[tool.ruff.format]`
 
 **Linting:**
-- Tool: Ruff (pre-commit hook)
-- Enabled rules: E (pycodestyle errors), W (pycodestyle warnings), F (pyflakes), I (isort), B (flake8-bugbear), C4 (flake8-comprehensions), UP (pyupgrade), ARG (flake8-unused-arguments), SIM (flake8-simplify)
-- Ignored rules: E501 (line too long - handled by formatter), B008 (function calls in argument defaults)
-- Per-file ignores: `__init__.py` allows E402, F401; archived code ignored entirely
-- Strict mode markers: `# type: ignore[attr-defined]` for type checker issues
+- Tool: Ruff (configured in `pyproject.toml`)
+- Enabled rules: E, W, F, I, B, C4, UP, ARG, SIM (pycodestyle, pyflakes, isort, flake8-bugbear, flake8-comprehensions, pyupgrade, flake8-unused-arguments, flake8-simplify)
+- Ignored rules: E501 (line too long, handled by formatter), B008 (function calls in argument defaults)
+- Per-file ignores: `__init__.py` allows import violations/unused imports
 
-**Import Organization:**
+**Type Checking:**
+- Tool: mypy (configured in `pyproject.toml`)
+- Tier 1 (shared modules): Strict mode (`strict = true`)
+- Tier 2 (stage modules): Moderate mode (allow untyped definitions)
+- Third-party libraries: Ignore missing imports (pandas, numpy, statsmodels, linearmodels, scipy, pyarrow)
+
+## Import Organization
 
 **Order:**
-1. Standard library imports (e.g., `import os`, `from pathlib import Path`)
-2. Third-party imports (e.g., `import pandas as pd`, `import numpy as np`, `import pytest`)
-3. Local imports (e.g., `from f1d.shared.config import ProjectConfig`)
+1. Standard library imports
+2. Third-party library imports
+3. Local/F1D imports (from `f1d.shared`, `f1d.sample`, etc.)
 
 **Path Aliases:**
-- `from pathlib import Path` - Use Path objects throughout
-- Absolute paths via module resolution: `Path(__file__).parent.parent.parent.parent / "config"`
+- Use `pathlib.Path` for all file operations
+- Resolve paths using `.resolve()` for absolute paths
+- Use `from f1d.shared import` for shared utilities
 
-**Type Annotations:**
-- Return type hints: `-> ReturnType` pattern
-- Parameter types: `param_name: Type` pattern
-- Union types: `Union[str, int, None]` or `str | int | None` (Python 3.10+)
-- Optional: `Optional[Type]` used for nullable parameters
+**Example:**
+```python
+import argparse
+import json
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+import pandas as pd
+
+from f1d.shared.observability_utils import DualWriter
+from f1d.shared.path_utils import ensure_output_dir, get_latest_output_dir
+```
 
 ## Error Handling
 
+**Patterns:**
+- Custom exceptions for domain-specific errors: `FinancialCalculationError`, `DataValidationError`, `PathValidationError`, `WeakInstrumentError`
+- Exceptions include descriptive messages with context: `f"Cannot calculate firm controls: missing gvkey in row. Row columns: {list(row.index)}. Year: {year}"`
+- Handle missing data gracefully with `np.nan` return values
+- Use optional imports with availability flags: `LINEARMODELS_AVAILABLE`, `STATSMODELS_AVAILABLE`
+
 **Custom Exceptions:**
-- `PathValidationError`: Raised when path validation fails
-- `OutputResolutionError`: Raised when output directory resolution fails
-- `DataValidationError`: Raised when input data schema validation fails
-- `FinancialCalculationError`: Raised when financial calculations fail due to missing data
-- `RegressionValidationError`: Raised when regression input validation fails
-- `ConfigError`: Raised when configuration loading/validation fails
-- `WeakInstrumentError`: Raised when IV regression instruments are weak
-
-**Error Handling Patterns:**
-
-**Validate-then-process:**
-```python
-# Check input validity first
-if must_exist and not path.exists():
-    raise PathValidationError(f"Path does not exist: {path}")
-
-# Process only if valid
-result = process_path(path)
-```
-
-**Specific error messages:**
-```python
-# Include context in error messages
-raise DataValidationError(
-    f"Cannot calculate firm controls: missing gvkey in row. "
-    f"Row columns: {list(row.index)}. "
-    f"Year: {year}"
-)
-```
-
-**Graceful handling:**
-- Return `np.nan` for invalid calculations (e.g., dividing by zero, log of negative)
-- Use `pd.notna()` and `.fillna()` for missing data handling
-- Check for optional dependencies with try/except ImportError
-
-**Logging errors:**
-- Structlog configured via `f1d.shared.logging`
-- Error messages logged with context
-- Warnings for non-critical issues
+- `DataValidationError`: Schema validation failures
+- `FinancialCalculationError`: Financial calculation failures (missing gvkey, no data found)
+- `PathValidationError`: Path validation failures
+- `OutputResolutionError`: Output directory resolution failures
+- `CollinearityError`: Perfect collinearity in design matrix
+- `MulticollinearityError`: High VIF values detected
+- `WeakInstrumentError`: First-stage F-stat below threshold
 
 ## Logging
 
-**Framework:** structlog
-- Configured in `src/f1d/shared/logging/` module
-- Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
-- Structured logging with context keys
+**Framework:** structlog (configured in `pyproject.toml`)
 
 **Patterns:**
+- Use `logger = logging.getLogger(__name__)` at module level
+- Use `DualWriter` class for dual stdout/file logging in scripts
+- Import `from f1d.shared.observability_utils import DualWriter` for dual-writer functionality
+
+**DualWriter Pattern:**
 ```python
-# Log processing steps
-print(f"Processing {step_name}")
-print(f"  After filter: {len(df):,} / {initial_n:,}")
+from f1d.shared.observability_utils import DualWriter
+from pathlib import Path
 
-# Log errors with context
-import warnings
-warnings.warn(f"Missing columns: {missing}", stacklevel=2)
+# Initialize dual-writer
+writer = DualWriter(log_path=Path("3_Logs/script.log"))
+# Redirect stdout
+sys.stdout = writer
+# All output goes to both terminal and file
+print("Processing...")
+# Restore original stdout
+writer.close()
 ```
-
-**Dual logging:**
-- `DualWriter` class writes to both stdout and log file simultaneously
-- Used in orchestrator scripts (e.g., `1.0_BuildSampleManifest.py`)
 
 ## Comments
 
 **When to Comment:**
-- Module docstrings with purpose, inputs, outputs, dependencies
-- Function docstrings following Google/NumPy style
-- Inline comments for complex calculations or business logic
-- Section separators: `# =============================================================================`
+- Explain financial formulas and Compustat variable mappings
+- Document data structure transformations
+- Clarify complex pandas operations
+- Note edge cases and workarounds
 
 **JSDoc/TSDoc:**
-- **NOT used** - Python docstrings only
-- Google style docstrings observed in shared modules
-- NumPy style for mathematical functions
+- Use Google-style docstrings for functions
+- Include `Args:`, `Returns:`, `Raises:` sections
+- Include `Example:` for complex functions
 
 **Docstring Pattern:**
 ```python
-"""
-================================================================================
-MODULE: Brief Description
-================================================================================
-ID: {module}/{name}
-Description: {detailed description}
+def calculate_firm_controls(
+    row: pd.Series, compustat_df: pd.DataFrame, year: int
+) -> Dict[str, Union[float, int, None]]:
+    """
+    Calculate firm-level control variables from Compustat data.
 
-Inputs:
-    - {input descriptions}
+    Args:
+        row: DataFrame row with firm identifiers (gvkey, datadate)
+        compustat_df: Compustat data with firm metrics
+        year: Fiscal year for data selection
 
-Outputs:
-    - {output descriptions}
+    Returns:
+        Dictionary with: size (log assets), leverage, profitability,
+        market_to_book, capex_intensity, r_intensity, dividend_payer
 
-Deterministic: {true/false}
-Main Functions:
-    - {key functions}
-
-Dependencies:
-    - {dependencies description}
-
-Author: {Author}
-Date: {YYYY-MM-DD}
-================================================================================
-"""
+    Raises:
+        FinancialCalculationError: If gvkey is missing or Compustat data not found for year
+    """
 ```
 
 ## Function Design
 
-**Size:**
-- Functions typically 20-100 lines
-- Long functions (100+ lines) for orchestration (e.g., `main()` in scripts)
-- Helper functions kept concise (<50 lines)
+**Size:** Functions typically 20-100 lines. Complex functions (e.g., `run_panel_ols()`) may be longer but follow single responsibility.
 
 **Parameters:**
-- Type hints on all parameters
-- Optional parameters with default values
-- Configuration via keyword arguments
+- Use type hints for all parameters and return values
+- Use `Optional[T]` for nullable parameters
+- Use default values for optional parameters: `cov_type: str = "HC1"`, `cluster_col: Optional[str] = None`
 
 **Return Values:**
-- Type hints on all return values
-- Single return value (not multiple)
-- Return dictionaries for complex results
-- Return `None` for operations with side effects
-
-**Validation in functions:**
-```python
-# Check parameters at function start
-if input_file.suffix not in [".parquet", ".csv"]:
-    raise ValueError(f"Unsupported file type: {input_file.suffix}")
-```
+- Functions return single typed values: `Dict[str, Union[float, int, None]]`, `pd.DataFrame`, `pd.Series`
+- Error cases raise exceptions rather than returning error codes
+- Missing data returns `np.nan` for numerical values
 
 ## Module Design
 
 **Exports:**
-- `__init__.py` files mark packages
-- Explicit imports in __init__ (e.g., `from f1d.shared.financial_utils import calculate_firm_controls`)
-- Some __init__.py files are empty
+- Use `__all__` in `__init__.py` to define public API
+- `__all__` lists exported functions/classes: `["DualWriter", "parse_ff_industries", "run_panel_ols"]`
 
 **Barrel Files:**
-- None observed - imports are explicit
+- `src/f1d/shared/__init__.py`: Exports core shared utilities
+- `src/f1d/__init__.py`: Package-level exports
 
-**Module structure:**
-- `src/f1d/{category}/` - Category-level modules
-- `src/f1d/shared/` - Cross-cutting utilities
-- `src/f1d/shared/config/` - Configuration sub-module
-- `src/f1d/shared/logging/` - Logging sub-module
-- `src/f1d/shared/observability/` - Observability sub-module
+**Module Documentation:**
+- Include header block with module ID, description, inputs, outputs, determinism, main functions, dependencies, author, date
+- Header uses 80-character border lines
 
-**Module docstring headers:**
-- Standardized header with module ID, description, inputs, outputs, deterministic flag
-- Dependencies listed explicitly
-- Author and date included
+**Module Header Pattern:**
+```python
+#!/usr/bin/env python3
+"""
+================================================================================
+SHARED MODULE: Financial Utilities
+================================================================================
+ID: shared/financial_utils
+Description: Provides common financial metrics and control variable
+             calculations from Compustat data.
+
+Inputs:
+    - pandas DataFrame with firm identifiers (gvkey, datadate)
+    - Compustat DataFrame with firm financial metrics
+
+Outputs:
+    - Dictionary with firm-level control variables
+    - DataFrame with computed financial features
+
+Deterministic: true
+Main Functions:
+    -  Various financial calculation utilities
+
+Dependencies:
+    - Utility module for financial calculations
+    - Uses: pandas, numpy
+
+Author: Thesis Author
+Date: 2026-02-11
+================================================================================
+"""
+```
+
+## Configuration Patterns
+
+**YAML Configuration:**
+- Use `project.yaml` for project-wide configuration
+- Load with `yaml.safe_load()`
+- Use pydantic settings for typed configuration with validation
+
+**Environment Variables:**
+- Use `F1D_*` prefix for environment variable overrides
+- Use `pydantic-settings` for environment variable loading
 
 ---
 
-*Convention analysis: 2026-02-14*
+*Convention analysis: 2026-02-15*

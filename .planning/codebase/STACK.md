@@ -1,105 +1,92 @@
 # Technology Stack
 
-**Analysis Date:** 2026-02-14
+**Analysis Date:** 2026-02-15
 
 ## Languages
 
 **Primary:**
-- Python 3.9+ - Core language for data processing, analysis, and econometric modeling
+- Python 3.9-3.13 - Data processing pipeline, econometric analysis, text analysis
 
 **Secondary:**
-- C++17 - Native compilation for text tokenization performance (`src/f1d/text/tokenize_and_count.py`)
-- YAML - Configuration files
-- Markdown - Documentation
+- Not applicable - Python-only codebase
 
 ## Runtime
 
 **Environment:**
-- Python 3.9, 3.10, 3.11, 3.12, 3.13 (tested versions)
+- Python 3.14.2 (development), supports 3.9-3.13 per project configuration
 
 **Package Manager:**
-- pip (via setuptools)
-- Lockfile: Not present (version pins in `requirements.txt`)
+- pip - Standard Python package manager
+- Lockfile: Not present (uses pinned versions in requirements.txt)
 
 ## Frameworks
 
 **Core:**
-- pandas==2.2.3 - DataFrame operations and data manipulation
-- numpy==2.3.2 - Numerical computing and array operations
-- scipy==1.16.1 - Scientific computing and statistical functions
-
-**Testing:**
-- pytest>=8.0.0 - Test runner and framework
-- pytest-cov>=4.1.0 - Coverage reporting
-- pytest-mock>=3.12 - Mocking utilities
-- pytest-benchmark>=4.0.0 - Performance benchmarking
-
-**Build/Dev:**
-- setuptools>=61.0 - Package building and installation
-- ruff>=0.9.0 - Linting and formatting
-- mypy>=1.14 - Static type checking
-- pre-commit>=3.8 - Pre-commit hooks
+- pandas 2.2.3 - Data manipulation and analysis
+- numpy 2.3.2 - Numerical computing
+- pyarrow 21.0.0 - Columnar data format (Parquet I/O)
 
 **Statistical Modeling:**
-- statsmodels==0.14.6 - Econometric regression models
-- scikit-learn==1.7.2 - Machine learning utilities (tokenization)
-- lifelines==0.30.0 - Survival analysis (takeover hazards)
+- statsmodels 0.14.6 - Statistical models and regressions
+- scikit-learn 1.7.2 - Machine learning utilities
+- lifelines 0.30.0 - Survival analysis (Cox PH, competing risks)
+- linearmodels - Panel OLS with fixed effects (optional dependency)
+
+**Testing:**
+- pytest 8.0+ - Test runner
+- pytest-cov 4.1.0+ - Coverage reporting
+- pytest-mock 3.12+ - Mocking utilities
+- pytest-benchmark 4.0.0+ - Performance benchmarks
+
+**Build/Dev:**
+- ruff 0.9.0+ - Linting and formatting
+- mypy 1.14+ - Static type checking
+- pre-commit 3.8+ - Git pre-commit hooks
+- pydantic 2.0+ - Data validation and settings
+- pydantic-settings 2.0+ - Environment-based configuration
 
 ## Key Dependencies
 
 **Critical:**
-- pyarrow==21.0.0 - Parquet file I/O (pinned for Python 3.8-3.13 compatibility)
-- PyYAML==6.0.2 - Configuration file parsing
-- structlog>=25.0 - Structured logging with context variables
+- pandas - Core data structure and operations throughout pipeline
+- pyarrow - Parquet file I/O for all input/output data
+- statsmodels - GLM, OLS regression, survival analysis
+- linearmodels - Panel OLS with fixed effects for econometric models
 
 **Infrastructure:**
-- pydantic>=2.0,<3.0 - Data validation and settings management
-- pydantic-settings>=2.0,<3.0 - Environment variable configuration
-- psutil==7.2.1 - System resource monitoring
-- python-dateutil==2.9.0.post0 - Date/time utilities
+- yaml - Configuration file loading (PyYAML 6.0.2)
+- structlog 25.0+ - Structured logging with JSON output
+- psutil 7.2.1 - System monitoring and memory tracking
+- python-dateutil 2.9.0 - Date/time parsing
 
 **Optional:**
-- rapidfuzz>=3.14.0 - Fuzzy string matching for entity linking (graceful degradation)
-
-**Type Stubs (for mypy):**
-- pandas-stubs>=2.2.0
-- types-psutil>=6.0.0
-- types-requests>=2.31.0
-- types-PyYAML>=6.0.0
+- rapidfuzz 3.14.0+ - Fuzzy string matching for entity linking (Tier 3 feature)
 
 ## Configuration
 
 **Environment:**
-- Pydantic Settings for type-safe environment variables
-- `src/f1d/shared/config/env.py` - Environment configuration
-- `src/f1d/shared/config/loader.py` - YAML config loader
-- `src/f1d/shared/config/step_configs.py` - Step-specific configs
+- YAML-based configuration: `config/project.yaml`
+- Environment variables via `.env` (template in `.env.example`)
+- Pydantic settings classes for type-safe configuration
 
 **Build:**
-- `pyproject.toml` - Project metadata, tooling config, dependency management
+- `pyproject.toml` - Project metadata, pytest config, ruff config, mypy config
 - `requirements.txt` - Pinned dependency versions
 - `.coveragerc` - Coverage.py configuration
-- `.pre-commit-config.yaml` - Pre-commit hook configuration
-
-**Paths:**
-- `config/project.yaml` - Main pipeline configuration
-- `1_Inputs/` - Raw data inputs
-- `3_Logs/` - Execution logs
-- `4_Outputs/` - Pipeline outputs
+- `.pre-commit-config.yaml` - Pre-commit hook definitions
 
 ## Platform Requirements
 
 **Development:**
-- Python 3.9+
-- Git for version control
-- g++ compiler (for C++ tokenization module, requires C++17 standard)
-- Unix-like environment recommended (Windows MSYS/Git Bash supported)
+- Python 3.9 or higher
+- 16GB RAM recommended (8GB minimum for partial pipeline)
+- Modern CPU with SSD for optimal performance
 
 **Production:**
-- Local execution (no cloud deployment)
-- Data stored locally in Parquet format
-- Outputs to timestamped directories in `4_Outputs/`
+- Desktop/laptop execution (academic research context)
+- No server deployment required
+- Local filesystem storage (no cloud dependencies)
 
 ---
 
-*Stack analysis: 2026-02-14*
+*Stack analysis: 2026-02-15*

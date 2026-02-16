@@ -1,175 +1,201 @@
 # Architecture
 
-**Analysis Date:** 2026-02-14
+**Analysis Date:** 2026-02-15
 
 ## Pattern Overview
 
-**Overall:** 4-Stage Sequential Data Processing Pipeline with Tiered Shared Utilities
+**Overall:** 4-Stage Sequential Pipeline with Cross-Cutting Shared Utilities
 
 **Key Characteristics:**
-- Sequential processing: Step 1 -> Step 2 -> Step 3 -> Step 4 (with explicit dependencies)
-- Orchestrator pattern: Each major step has an orchestrator that coordinates substeps
-- Timestamped outputs: All outputs go to timestamped directories for reproducibility
-- Configuration-driven: Central YAML config (`config/project.yaml`) drives pipeline behavior
-- Shared utilities: Common functions abstracted to `src/f1d/shared/` for reuse
-- Deterministic processing: Fixed seed, sorted inputs, reproducible outputs
+- Sequential data processing: Sample -> Text -> Financial -> Econometric
+- Stage modularity: Each stage independent with versioned variants (V1/V2)
+- Shared utilities: Cross-cutting concerns centralized in `src/f1d/shared/`
+- Deterministic outputs: Timestamped directories with latest symlinks
+- Observable: Structured logging, memory tracking, and metrics collection
 
 ## Layers
 
-**Configuration Layer:**
-- Purpose: Centralized configuration for pipeline behavior, paths, and parameters
-- Location: `config/project.yaml`, `src/f1d/shared/config/`
-- Contains: Path definitions, step-specific settings, dataset configurations, string matching rules
-- Depends on: Pydantic settings for type-safe configuration
-- Used by: All orchestrator scripts and shared utilities
+**Tier 0: Configuration & Coordination**
+- Purpose: Centralized configuration and project-level settings
+- Location: `config/`, `.planning/`
+- Contains: `config/project.yaml` (pipeline config), `.planning/` (phases, roadmap, milestones)
+- Depends on: None (root layer)
+- Used by: All stages (via `f1d.shared.config`)
 
-**Input/Data Layer:**
-- Purpose: Raw data storage for pipeline consumption
-- Location: `1_Inputs/`
-- Contains: Earnings call transcripts, financial data (CRSP, Compustat, IBES), executive data (Execucomp), M&A data (SDC), reference dictionaries
-- Depends on: External data sources (Wharton Research Data Services, Thomson Reuters, etc.)
-- Used by: Step 1 (Sample) reads Unified-info; Step 3 (Financial) reads financial datasets
-
-**Processing Layer:**
-- Purpose: Core data transformation logic organized by processing stage
-- Location: `src/f1d/{sample,text,financial,econometric}/`
-- Contains: Orchestrator scripts (`1.0_*.py`, `2.0_*.py`, `3.0_*.py`, `4.0_*.py`) and implementation scripts
-- Depends on: Shared utilities, Input layer, Previous step outputs
-- Used by: CLI execution or direct Python invocation
-
-**Shared Utilities Layer:**
-- Purpose: Common functionality shared across all processing steps
+**Tier 1: Shared Utilities (Cross-Cutting Concerns)**
+- Purpose: Reusable utilities for all pipeline stages
 - Location: `src/f1d/shared/`
-- Contains: Path resolution, data loading, regression utilities, logging, validation, observability
-- Depends on: pandas, numpy, linearmodels, statsmodels, structlog
-- Used by: All processing layer scripts
+- Contains: Configuration loading, path utilities, logging, data validation, regression helpers, observability
+- Depends on: Tier 0
+- Used by: All Tier 2 stage modules
 
-**Output Layer:**
-- Purpose: Intermediate and final results storage with timestamped directories
-- Location: `4_Outputs/` (timestamped subdirectories per step)
-- Contains: Processed parquet files, reports, logs, statistics JSON
-- Depends on: Processing layer produces outputs
-- Used by: Next pipeline step (inputs), Final analysis
+**Tier 2: Stage-Specific Modules**
+- Purpose: Domain-specific processing for each pipeline stage
+- Location: `src/f1d/sample/`, `src/f1d/text/`, `src/f1d/financial/`, `src/f1d/econometric/`
+- Contains: Processing scripts organized by stage and version (V1/V2)
+- Depends on: Tier 1 (shared utilities) + Tier 0 (config)
+- Used by: Users (direct execution) and orchestrator scripts
+
+**Tier 3: Data Storage**
+- Purpose: Immutable inputs, processing outputs, execution logs
+- Location: `1_Inputs/`, `4_Outputs/`, `3_Logs/`
+- Contains: Raw data files, timestamped output directories, execution logs
+- Depends on: Tier 2 (producers)
+- Used by: Tier 2 (consumers) and Tier 4 (analysis)
+
+**Tier 4: Documentation & Planning**
+- Purpose: Project planning, roadmap tracking, technical documentation
+- Location: `.planning/`, `docs/`
+- Contains: Phase plans, milestones, architecture standards, codebase docs
+- Depends on: All tiers (documentation source)
+- Used by: Developers, orchestrator
 
 ## Data Flow
 
-**Sample Construction Flow (Step 1):**
+**Stage 1: Sample Construction**
+1. Load `1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet` (raw call metadata)
+2. Clean metadata (`src/f1d/sample/1.1_CleanMetadata.py`) - deduplicate events, validate
+3. Link entities (`src/f1d/sample/1.2_LinkEntities.py`) - 4-tier CCM linking for GVKEY
+4. Build tenure map (`src/f1d/sample/1.3_BuildTenureMap.py`) - CEO tenure from Execucomp
+5. Assemble manifest (`src/f1d/sample/1.4_AssembleManifest.py`) - merge, filter, final sample
+6. Output: `4_Outputs/1.4_AssembleManifest/master_sample_manifest.parquet`
 
-1. `1.1_CleanMetadata.py` - Reads `Unified-info.parquet`, cleans and deduplicates
-2. `1.2_LinkEntities.py` - 4-tier linking (PERMNO, CUSIP, fuzzy, ticker) to assign GVKEY
-3. `1.3_BuildTenureMap.py` - Builds monthly CEO tenure panel from Execucomp
-4. `1.4_AssembleManifest.py` - Joins all datasets, assigns industry codes, applies CEO filter
-5. Output: `master_sample_manifest.parquet` with ~286K calls, 1.2K CEOs, 1K firms
+**Stage 2: Text Processing**
+1. Load master sample manifest
+2. Tokenize transcripts (`src/f1d/text/tokenize_and_count.py`) - LM dictionary word counts
+3. Construct variables (`src/f1d/text/construct_variables.py`) - compute linguistic measures
+4. Verify outputs (`src/f1d/text/verify_step2.py`)
+5. Output: `4_Outputs/2_Textual_Analysis/*/linguistic_variables_*.parquet`
 
-**Text Processing Flow (Step 2):**
+**Stage 3: Financial Features**
+1. V1 Methodology (`src/f1d/financial/v1/`): Legacy approach
+   - `3.0_BuildFinancialFeatures.py` - Orchestrator
+   - `3.1_FirmControls.py` - Firm-level financial controls
+   - `3.2_MarketVariables.py` - Market returns, volatility, liquidity
+   - `3.3_EventFlags.py` - Takeover events, CEO turnover
+2. V2 Methodology (`src/f1d/financial/v2/`): Active hypothesis testing
+   - `3.1_H1Variables.py` - Cash holdings, leverage controls
+   - `3.2_H2Variables.py` - Investment efficiency variables
+   - `3.3_H3Variables.py` - Payout policy variables
+   - `3.4_H4_LeverageDiscipline.py` - Leverage discipline variables
+   - `3.5_H5DispersionRegression.py` - Analyst dispersion
+   - `3.6_H6CCCLRegression.py` - CCCL instrument data
+   - `3.7_H7IlliquidityVariables.py` - Illiquidity measures
+   - `3.8_H8TakeoverVariables.py` - Takeover hazard variables
+   - Additional scripts: H9 regression variants
+3. Output: `4_Outputs/3_Financial_V2/*/*.parquet`
 
-1. `2.1_TokenizeAndCount.py` - Tokenizes Q&A text, counts LM dictionary categories
-2. `2.2_ConstructVariables.py` - Aggregates to call-level linguistic variables (Manager_QA_Uncertainty_pct, etc.)
-3. `verify_step2.py` - Validates text processing outputs
-4. `report_step2.py` - Generates verification report
-5. Output: `linguistic_variables_YYYY.parquet` per year (2002-2018)
-
-**Financial Features Flow (Step 3):**
-
-1. `3.1_FirmControls.py` - Computes Size, BM, Lev, ROA, CurrentRatio, RD_Intensity from Compustat
-2. `3.2_MarketVariables.py` - Computes StockRet, MarketRet, Volatility, Amihud from CRSP
-3. `3.3_EventFlags.py` - Flags takeover events from SDC data
-4. Output: `firm_controls_YYYY.parquet`, `market_variables_YYYY.parquet`, `event_flags_YYYY.parquet`
-
-**Econometric Analysis Flow (Step 4):**
-
-1. `4.1_EstimateCeoClarity.py` - CEO fixed effects regression (gamma_i extraction) -> ClarityCEO scores
-2. `4.2_LiquidityRegressions.py` - Liquidity models with CCCL instrument
-3. `4.3_TakeoverHazards.py` - Hazard models for takeover events
-4. `4.4_GenerateSummaryStats.py` - Descriptive statistics
-5. Output: CEO clarity scores, regression results, hazard model outputs
+**Stage 4: Econometric Analysis**
+1. V1 Methodology (`src/f1d/econometric/v1/`): CEO clarity estimation
+   - `4.1.1_EstimateCeoClarity.py` - CEO fixed effects estimation
+   - `4.1.2_EstimateCeoClarity_Extended.py` - Extended model
+   - `4.1.3_EstimateCeoClarity_Regime.py` - Firm-level regime
+   - `4.1.4_EstimateCeoTone.py` - Tone estimation
+   - `4.2_LiquidityRegressions.py` - IV liquidity analysis
+   - `4.3_TakeoverHazards.py` - Survival analysis
+   - `4.4_GenerateSummaryStats.py` - Summary statistics
+2. V2 Methodology (`src/f1d/econometric/v2/`): Hypothesis testing regressions
+   - `4.1_H1CashHoldingsRegression.py` - H1: Cash holdings test
+   - `4.2_H2InvestmentEfficiencyRegression.py` - H2: Investment efficiency
+   - `4.3_H3PayoutPolicyRegression.py` - H3: Payout policy
+   - `4.4_H4_LeverageDiscipline.py` - H4: Leverage discipline
+   - `4.5_H5DispersionRegression.py` - H5: Analyst dispersion
+   - `4.6_H6CCCLRegression.py` - H6: CCCL instrument
+   - `4.7_H7IlliquidityRegression.py` - H7: Illiquidity
+   - `4.8_H8TakeoverRegression.py` - H8: Takeover hazards
+   - `4.9_CEOFixedEffects.py` - CEO fixed effects estimation
+   - `4.10_H2_PRiskUncertainty_Investment.py` - H2 extensions
+   - `4.11_H9_Regression.py` - H9 additional tests
+3. Output: `4_Outputs/4_Econometric_V2/*/*.parquet` + regression tables
 
 **State Management:**
-- Parquet files used for intermediate state persistence (fast columnar I/O)
-- Timestamped directories prevent overwrites and enable reproducibility
-- No in-memory state carried between steps (each step is idempotent)
+- All scripts use timestamped output directories: `4_Outputs/{script_name}/{YYYY-MM-DD_HHMMSS}/`
+- Latest outputs accessible via `latest/` symlinks
+- `get_latest_output_dir()` from `f1d.shared.path_utils` resolves latest
+- State propagated through manifest linking (master_sample_manifest.parquet references downstream outputs)
 
 ## Key Abstractions
 
-**Path Resolution Abstraction:**
-- Purpose: Resolve output paths with timestamp-based directory lookup
-- Examples: `src/f1d/shared/path_utils.py:get_latest_output_dir()`
-- Pattern: `get_latest_output_dir(base_path, required_file="*.parquet")` returns most recent timestamped directory
+**Configuration Abstraction:**
+- Purpose: Centralized settings management
+- Examples: `src/f1d/shared/config/loader.py`, `src/f1d/shared/config/paths.py`
+- Pattern: Pydantic settings classes + YAML loading + environment variable support
 
-**Orchestrator Abstraction:**
-- Purpose: Coordinate multiple substeps into unified processing
-- Examples: `src/f1d/sample/1.0_BuildSampleManifest.py`, `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py`
-- Pattern: Main script loads config, iterates substeps via subprocess or direct import, aggregates outputs
+**Path Resolution:**
+- Purpose: Deterministic output location resolution across scripts
+- Examples: `src/f1d/shared/path_utils.py`
+- Pattern: Timestamp-based directories with `get_latest_output_dir()` for latest
+- Key functions: `get_latest_output_dir()`, `ensure_output_dir()`, `validate_input_file()`
 
-**Panel Regression Abstraction:**
-- Purpose: Standardized interface for fixed effects panel regressions
-- Examples: `src/f1d/shared/panel_ols.py:run_panel_ols()`
-- Pattern: `run_panel_ols(df, dependent, exog, entity_col, time_col, cov_type)` returns model, coefficients, diagnostics
+**Logging Abstraction:**
+- Purpose: Structured logging with dual terminal/file output
+- Examples: `src/f1d/shared/observability_utils.py`, `src/f1d/shared/logging/`
+- Pattern: `DualWriter` wraps `sys.stdout`, structlog with context binding
+- Key functions: `configure_logging()`, `get_logger()`, `setup_script_logging()`
 
-**Observability Abstraction:**
-- Purpose: Track memory, timing, throughput, anomalies for pipeline monitoring
-- Examples: `src/f1d/shared/observability/`, `src/f1d/shared/observability_utils.py`
-- Pattern: Stats dictionary with input/processing/output/memory/timing/throughput/quality_anomalies keys, saved as JSON
+**Data Validation:**
+- Purpose: Input/output validation with file existence checks
+- Examples: `src/f1d/shared/data_validation.py`
+- Pattern: Decorator-based validation + checksums
 
-**Dual Writer Abstraction:**
-- Purpose: Simultaneous stdout and file logging
-- Examples: `src/f1d/shared/dual_writer.py`
-- Pattern: `DualWriter(log_file).write(msg)` writes to both console and log file, replaces sys.stdout
-
-**Entity Matching Abstraction:**
-- Purpose: Multi-tier fuzzy name matching for company/speaker linking
-- Examples: `src/f1d/shared/string_matching.py`
-- Pattern: 4-tier strategy (exact, CUSIP, fuzzy >=92%, ticker) with configurable thresholds
+**Panel OLS Wrapper:**
+- Purpose: Unified interface for panel regressions with fixed effects
+- Examples: `src/f1d/shared/panel_ols.py`, `src/f1d/shared/regression_utils.py`
+- Pattern: `run_panel_ols()` wraps `linearmodels.PanelOLS`
+- Features: Entity/time effects, clustered SE, VIF checking, diagnostic extraction
 
 ## Entry Points
 
-**Orchestrator Entry Points:**
-- Location: `src/f1d/{sample,text,financial,econometric}/*_0_*.py`
-- Triggers: CLI execution (`python -m f1d.sample.1_0_BuildSampleManifest`)
-- Responsibilities: Coordinate substeps, validate prerequisites, generate summary reports
+**Orchestrator Scripts:**
+- Location: `src/f1d/sample/1.0_BuildSampleManifest.py` (Stage 1 orchestrator)
+- Location: `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py` (Stage 3 V1 orchestrator)
+- Triggers: Direct script execution by user or pipeline runner
+- Responsibilities: Orchestrate substeps sequentially, validate prerequisites, copy final outputs
 
-**Direct Script Entry Points:**
-- Location: `src/f1d/{sample,text,financial,econometric}/{step_number}.{substep}.py`
-- Triggers: Called by orchestrators or direct execution
-- Responsibilities: Perform specific transformation (e.g., load parquet, compute variable, save parquet)
+**Stage Scripts (Direct Execution):**
+- All numbered scripts: `src/f1d/sample/1.*.py`, `src/f1d/text/2.*.py`, `src/f1d/financial/v1/3.*.py`, `src/f1d/financial/v2/3.*.py`, `src/f1d/econometric/v1/4.*.py`, `src/f1d/econometric/v2/4.*.py`
+- Triggers: Direct CLI execution, orchestrator subprocess calls
+- Responsibilities: Load inputs, process data, write timestamped outputs, generate stats/logs
 
-**Shared Utility Entry Points:**
-- Location: `src/f1d/shared/*.py`
-- Triggers: Imported by processing scripts
-- Responsibilities: Provide reusable functions (path resolution, validation, regression, logging)
-
-**Module Entry Points:**
+**Package Entry Point:**
 - Location: `src/f1d/__init__.py`
-- Triggers: `from f1d import get_latest_output_dir, run_panel_ols`
-- Responsibilities: Public API re-exports for external usage
+- Triggers: Package imports (`from f1d import ...`)
+- Responsibilities: Package version, public API re-exports (`get_latest_output_dir`, `run_panel_ols`)
 
 ## Error Handling
 
-**Strategy:** Graceful degradation with informative messages
+**Strategy:** Validation-first approach with dual-terminal/file logging
 
 **Patterns:**
-- **Prerequisite validation:** `validate_prerequisites()` checks for missing inputs/outputs before execution
-- **Graceful import handling:** `try: import linearmodels except ImportError: LINEARMODELS_AVAILABLE = False`
-- **Custom exceptions:** `CollinearityError`, `MulticollinearityError`, `DataValidationError`, `EnvValidationError`, `OutputResolutionError`
-- **Validation functions:** `validate_dataframe_schema()`, `load_validated_parquet()` for schema enforcement
-- **Checkpoints:** Substep-level success/failure detection in orchestrators
-- **Detailed error reporting:** Error messages include context (file paths, column names, row counts)
+- **Prerequisite validation:** Scripts check inputs exist before processing (`check_prerequisites()`)
+- **Path validation:** All file paths validated before use (`validate_input_file()`, `ensure_output_dir()`)
+- **Output validation:** File existence required (`get_latest_output_dir()` checks for specific files)
+- **Structured errors:** Custom exceptions (`PathValidationError`, `OutputResolutionError`)
+- **Graceful degradation:** Missing data handled with NaN, not hard failures
+- **Dual logging:** All output written to both terminal and log file simultaneously
 
 ## Cross-Cutting Concerns
 
-**Logging:** Structured logging using structlog with JSON file output and colored console
-- Configuration: `src/f1d/shared/logging/config.py:configure_logging()`
-- Pattern: `get_logger(__name__)` with context binding (event, rows, stage)
-- Outputs: Console (human-readable) + file (JSON) in `3_Logs/` timestamped directories
+**Logging:** Structured logging with structlog + context binding
+- Configuration: `src/f1d/shared/logging/config.py`, `src/f1d/shared/logging/`
+- Pattern: `get_logger()` with context, log levels from config/project.yaml
+- Dual output: Terminal + file via `DualWriter` wrapper
 
-**Validation:** Multi-layer validation (env, data, prerequisites, regression)
-- Environment: `env_validation.py` validates schema
-- Data: `data_validation.py` validates schema and calculations
-- Prerequisites: `dependency_checker.py` validates file/step dependencies
-- Regression: `regression_validation.py` validates VIF, collinearity
+**Validation:** Multi-level validation (files, data, dependencies)
+- File validation: `src/f1d/shared/data_validation.py`
+- Dependency checking: `src/f1d/shared/dependency_checker.py`
+- CLI validation: `src/f1d/shared/cli_validation.py`, `src/f1d/shared/subprocess_validation.py`
 
-**Authentication:** Not applicable (local data processing, no external API auth)
+**Observability:** Memory tracking, throughput measurement, anomaly detection
+- Implementation: `src/f1d/shared/observability/`
+- Memory: `get_process_memory_mb()`, `@track_memory_usage` decorator
+- Throughput: `calculate_throughput()`, `stats["throughput"]` in all scripts
+- Anomalies: `detect_anomalies_zscore()`, `detect_anomalies_iqr()`
+
+**Data Determinism:** Random seed, thread count, input sorting configured
+- Configuration: `config/project.yaml` sets `determinism.random_seed: 42`, `determinism.thread_count: 1`
+- Enforcement: All sorting operations use explicit sort, parallel results sorted before aggregation
 
 ---
 
-*Architecture analysis: 2026-02-14*
+*Architecture analysis: 2026-02-15*

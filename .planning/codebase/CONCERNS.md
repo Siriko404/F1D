@@ -1,232 +1,182 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-02-14
+**Analysis Date:** 2026-02-15
 
 ## Tech Debt
 
-**Code Duplication:**
-- Issue: Inline utility functions duplicated across ~90 scripts (DualWriter, checksum, print_stat, etc.)
-- Files: `src/f1d/financial/v1/*`, `src/f1d/econometric/v1/*`, `src/f1d/sample/*`, `src/f1d/text/*`
-- Impact: Inconsistent behavior, difficult maintenance, 60,800+ lines of redundant code
-- Fix approach: Extract all utilities to `f1d.shared.*` modules and update imports
+**Data Coverage Truncation (H7-H8):**
+- Issue: H8TakeoverVariables.py expects Volatility/StockRet from H7 output but H7 only calculates these for years with CRSP DSF data. Full sample period is 2002-2018 but only 2002-2004 data may be present in CRSP_DSF directory. This causes silent data truncation.
+- Files: `src/f1d/financial/v2/3.7_H7IlliquidityVariables.py`, `src/f1d/financial/v2/3.8_H8TakeoverVariables.py`
+- Impact: H8 dataset truncated to partial year range (verified via ROADMAP_V3.md BUG-01-01). Regression analysis on incomplete data invalidates results.
+- Fix approach: Calculate Volatility/StockRet directly from CRSP DSF data within H7 script (as already implemented in `calculate_stock_volatility_and_returns` function). Verify CRSP DSF data availability for full 2002-2018 period. Create regression test to ensure full coverage after fix.
 
-**Large Files:**
-- Issue: Multiple files exceed 1,000 lines, reducing maintainability
-- Files:
-  - `src/f1d/shared/observability/stats.py` (5,304 lines)
-  - `src/f1d/econometric/v2/4.4_H4_LeverageDiscipline.py` (1,770 lines)
-  - `src/f1d/financial/v2/3.2_H2Variables.py` (1,695 lines)
-  - `src/f1d/econometric/v2/4.6_H6CCCLRegression.py` (1,478 lines)
-  - `src/f1d/financial/v2/3.13_H9_AbnormalInvestment.py` (1,359 lines)
-  - `src/f1d/text/tokenize_and_count.py` (1,350 lines)
-- Impact: Difficult to understand, test, and modify
-- Fix approach: Break into smaller focused modules (under 500 lines each)
+**ProcessPool Crash Bug:**
+- Issue: Category hit rates show 0.00% for all categories in stats.json because `compute_tokenize_process_stats` initializes with zeros but workaround runs too late. Post-load workaround at lines 1093-1104 executes after function returns zeros.
+- Files: `.planning/debug/category-hit-rates-bug.md`, `src/f1d/text/tokenize_and_count.py`
+- Impact: Incorrect statistics reporting, ProcessPool crashes on re-run with "terminated abruptly" error
+- Fix approach: Move workaround before `compute_tokenize_process_stats` call (before line 1073), or modify function to accept output_dfs parameter for in-place calculation.
 
-**Unused Code:**
-- Issue: Dead code detected by vulture linter
-- Files: `src/f1d/sample/1.0_BuildSampleManifest.py`, `src/f1d/sample/1.1_CleanMetadata.py`, `src/f1d/sample/1.2_LinkEntities.py`, `src/f1d/econometric/v1/4.3_TakeoverHazards.py`, `src/f1d/shared/centering.py`, `src/f1d/shared/industry_utils.py`, `src/f1d/shared/iv_regression.py`, `src/f1d/shared/observability/stats.py`, `src/f1d/shared/sample_utils.py`
-- Impact: Codebase bloat, confusion about what is actually used
-- Fix approach: Remove unused imports and variables
+**Global State Usage:**
+- Issue: `src/f1d/econometric/v1/4.3_TakeoverHazards.py` uses `global ROOT` variable in main() function (line 441).
+- Files: `src/f1d/econometric/v1/4.3_TakeoverHazards.py`
+- Impact: Makes module testing difficult, introduces side effects, violates encapsulation principles
+- Fix approach: Pass root path as parameter to main() or use dependency injection pattern
 
-**Type Safety:**
-- Issue: 50+ mypy errors remaining across codebase
-- Files: `src/f1d/shared/*`, `src/f1d/regression_utils.py`, `src/f1d/env_validation.py`, `src/f1d/data_validation.py`
-- Impact: Runtime type errors, reduced IDE support
-- Fix approach: Fix type annotations, add proper TypedDict definitions, install missing type stubs
+**Silent Error Handling:**
+- Issue: Multiple scripts use broad `except Exception:` without logging or re-raising, suppressing errors that should halt execution
+- Files: `src/f1d/text/construct_variables.py:1038`, `src/f1d/shared/chunked_reader.py:195,369`, `src/f1d/financial/v2/3.10_H2_PRiskUncertaintyMerge.py:208,823,1264`
+- Impact: Errors continue silently, producing incorrect outputs without user awareness
+- Fix approach: Replace silent except blocks with specific exception types, log errors appropriately, and re-raise when appropriate
+
+**Legacy Code in Active Directory:**
+- Issue: Multiple legacy scripts remain in `_archive/legacy_archive/legacy/` directory with outdated patterns
+- Files: `_archive/legacy_archive/legacy/ARCHIVE_BROKEN_STEP2/`, `_archive/legacy_archive/legacy/ARCHIVE_OLD/`
+- Impact: Directory clutter, potential confusion about which code is current
+- Fix approach: Archive organization per ROADMAP_V3.md Phase 60-01
 
 ## Known Bugs
 
-**Silent Symlink Failures:**
-- Symptoms: `update_latest_symlink()` fails silently on Windows with only warning printed
-- Files: `src/f1d/financial/v2/3.8_H8TakeoverVariables.py:854-867`
-- Trigger: Creating symlinks on Windows systems
-- Workaround: None - function fails without raising exception
-- Impact: "latest" directory may not be updated, causing downstream scripts to read stale data
-- Fix approach: Add proper error handling with sys.exit(1) or raise exception, implement Windows directory fallback
+**Category Hit Rates Zero:**
+- Symptoms: category_hit_rates in stats.json shows 0.00% for all categories
+- Files: `.planning/debug/category-hit-rates-bug.md`, `src/f1d/text/tokenize_and_count.py`
+- Trigger: Running 2.1_TokenizeAndCount.py
+- Workaround: Not currently working (workaround executes after function returns zeros)
+- Fix: Move workaround before compute_tokenize_process_stats call
 
-**RapidFuzz Optional Dependency:**
-- Symptoms: Fuzzy matching silently disabled if rapidfuzz not installed, reducing match rates
-- Files: `src/f1d/shared/string_matching.py:28-36`, `src/f1d/sample/1.2_LinkEntities.py:574-575`
-- Trigger: Missing `rapidfuzz>=3.14.0` in requirements
-- Workaround: Install manually: `pip install rapidfuzz>=3.14.0`
-- Impact: Tier 3 entity matching skipped, ~5-10% lower entity match rates
-- Fix approach: Either make rapidfuzz required or document clear warning with performance impact
+**ProcessPool Crash on Re-run:**
+- Symptoms: "A process in the process pool was terminated abruptly while the future was running or pending"
+- Files: `.planning/debug/category-hit-rates-bug.md`
+- Trigger: Re-running 2.1_TokenizeAndCount.py after initial run
+- Workaround: None documented
+- Fix: Related to category hit rates bug - requires same fix
 
 ## Security Considerations
 
-**Subprocess Path Validation:**
-- Risk: Subprocess execution may allow path traversal if paths are not validated
-- Files: `src/f1d/sample/1.0_BuildSampleManifest.py:235-240`, `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py:122-128`, `src/f1d/econometric/v2/*` (12+ files)
-- Current mitigation: `src/f1d/shared/subprocess_validation.py` provides validation but not used consistently
-- Recommendations:
-  - Use `validate_script_path()` from `subprocess_validation.py` in all subprocess calls
-  - Ensure all script paths are validated against allowed directories before execution
-  - Add input validation for user-provided paths
+**Secret Files Exclusion:**
+- Risk: Environment variables and credentials files present in repository but excluded from git via .gitignore
+- Files: `.env`, `.env.*`, `credentials.*`, `secrets.*` (not in repo but should remain excluded)
+- Current mitigation: .gitignore contains patterns for secrets (verified by <forbidden_files> documentation)
+- Recommendations: Ensure .gitignore is comprehensive and audited regularly
 
-**Data Input Validation:**
-- Risk: Malformed or malicious input data could cause unexpected behavior
-- Files: `src/f1d/shared/data_validation.py`
-- Current mitigation: Schema validation defined for only 2 files (Unified-info.parquet, LM dictionary)
-- Recommendations:
-  - Add schema validation for all input files (Compustat, CRSP, CCM, SDC, IBES)
-  - Enable strict mode by default in production
+**Dependency Security:**
+- Risk: Outdated or vulnerable dependencies
+- Files: `requirements.txt`, `pyproject.toml`
+- Current mitigation: Bandit configured in pyproject.toml but scans may not be run
+- Recommendations: Enable Dependabot or Renovate for automated dependency updates, run security scanning regularly
 
 ## Performance Bottlenecks
 
-**Row Iteration:**
-- Problem: 40+ instances of `.iterrows()` used instead of vectorized operations
-- Files: `src/f1d/sample/1.2_LinkEntities.py:605,617`, `src/f1d/sample/1.3_BuildTenureMap.py:646`, `src/f1d/financial/v1/3.4_Utils.py:50`, `src/f1d/shared/diagnostics.py:345`, `src/f1d/financial/v1/3.3_EventFlags.py:315,332`, `src/f1d/econometric/v1/4.1.1_EstimateCeoClarity_CeoSpecific.py:605,617,748,755`, `src/f1d/shared/financial_utils.py:157`, `src/f1d/shared/iv_regression.py:535`, `src/f1d/shared/panel_ols.py:187`, `src/f1d/econometric/v1/4.4_GenerateSummaryStats.py:543,589,629,656,678`, `src/f1d/shared/reporting_utils.py:76`, `src/f1d/shared/observability/stats.py:1131,1153,1211,1238,1304,1869,1894,1927,1980,2490,2510,2539`, `src/f1d/financial/v2/3.1_H1Variables.py:344`, `src/f1d/financial/v2/3.3_H3Variables.py:340,430,496,578,668`, `src/f1d/financial/v2/3.12_H9_PRiskFY.py:430`, `src/f1d/financial/v2/3.2_H2Variables.py:662`
-- Cause: Iterative row-by-row processing instead of vectorized pandas operations
-- Improvement path: Replace `.iterrows()` with vectorized operations, `.apply()`, or `.loc[]` filtering
+**Large Monolithic Files:**
+- Problem: `src/f1d/shared/observability/stats.py` is 5,309 lines - difficult to navigate and maintain
+- Files: `src/f1d/shared/observability/stats.py`
+- Cause: Accumulation of statistics functions without modularization
+- Improvement path: Already addressed in ROADMAP_V3.md Phase 60-03 (Split Monolithic Utilities). Module split into observability submodules already partially complete.
 
-**Sequential Year Processing:**
-- Problem: Year loops processed sequentially despite `config['thread_count'] = 1` setting
-- Files: `src/f1d/financial/v1/3.1_FirmControls.py:775-780`, `src/f1d/text/tokenize_and_count.py`, `src/f1d/econometric/v2/*`
-- Cause: No parallelization despite config setting
-- Improvement path: Implement `concurrent.futures` for year-level parallelization with deterministic ordering
+**Pandas Anti-Patterns:**
+- Problem: `.apply(lambda)` and `.iterrows()` usage in performance-critical code paths
+- Files: `src/f1d/text/tokenize_and_count.py:920,1018`, `src/f1d/sample/1.4_AssembleManifest.py:227`, `src/f1d/sample/1.2_LinkEntities.py:605,617`
+- Cause: Python-level loops over DataFrame rows instead of vectorized operations
+- Improvement path: Replace with vectorized pandas operations per ROADMAP_V3.md Phase 62-01 and 62-02. Comments in code indicate awareness (line 790: "OPTIMIZATION: Vectorized melt replaces .iterrows()")
 
-**Memory-Intensive Operations:**
-- Problem: Large DataFrames loaded entirely into memory without chunking
-- Files: `src/f1d/text/tokenize_and_count.py`, `src/f1d/sample/1.2_LinkEntities.py`
-- Cause: `pd.read_parquet()` loads entire file, no chunking for large datasets
-- Improvement path: Use `MemoryAwareThrottler` from `chunked_reader.py` for incremental processing
-
-**Lambda Functions in Group Operations:**
-- Problem: `.apply(lambda)` used in groupby operations
-- Files: `src/f1d/financial/v1/3.1_FirmControls.py:444`, `src/f1d/text/tokenize_and_count.py:918,1014`
-- Cause: Lambda functions slower than vectorized methods
-- Improvement path: Replace with `.transform()` or pre-defined functions
+**Memory Usage in Large File Processing:**
+- Problem: Chunked reading exists but not consistently applied across all data loading operations
+- Files: `src/f1d/shared/chunked_reader.py`, various loading functions
+- Cause: Inconsistent application of chunking pattern
+- Improvement path: Standardize chunked reading usage across all large Parquet file loads
 
 ## Fragile Areas
 
-**Entity Linking Pipeline:**
+**Path Resolution for Latest Output:**
+- Files: `src/f1d/financial/v2/3.8_H8TakeoverVariables.py:113-136`, `src/f1d/shared/path_utils.py`
+- Why fragile: `get_latest_output_dir` searches for directories by modification time, which can fail if multiple directories exist with similar timestamps or if symlink logic breaks
+- Safe modification: Use explicit timestamp-based directory naming throughout pipeline
+- Test coverage: Test coverage exists in `tests/unit/test_path_utils.py` but may not cover edge cases
+
+**Merge Operations Without Schema Validation:**
+- Files: `src/f1d/shared/data_loading.py`, multiple merge operations in financial scripts
+- Why fragile: Merges assume matching schemas but validate only via existence checks
+- Safe modification: Add Pandera schema validation to critical merge operations per ROADMAP_V3.md Phase 63-02
+- Test coverage: Gaps in merge validation coverage
+
+**Entity Linking (Sample Stage 1.2):**
 - Files: `src/f1d/sample/1.2_LinkEntities.py` (1,285 lines)
-- Why fragile: Complex 3-tier matching strategy, fuzzy matching sensitive to threshold, dedup-index pattern assumes specific data structure
-- Safe modification: Add comprehensive logging at each tier, validate match quality statistics, add unit tests for each tier
-- Test coverage: Limited - only integration tests, no unit tests for fuzzy matching logic
-
-**Tenure Map Construction:**
-- Files: `src/f1d/sample/1.3_BuildTenureMap.py`
-- Why fragile: Date handling complexity, episode construction assumptions about Execucomp data structure, multiple `.iloc[]` operations
-- Safe modification: Add date range validation, verify episode continuity, add tests for edge cases (overlapping tenures, missing dates)
-- Test coverage: Partial - basic tests exist
-
-**Financial Variable Computation:**
-- Files: `src/f1d/financial/v2/3.1_H1Variables.py`, `src/f1d/financial/v2/3.2_H2Variables.py`, `src/f1d/financial/v2/3.3_H3Variables.py`
-- Why fragile: Complex variable calculations dependent on merge results, missing value handling not consistent across variables
-- Safe modification: Standardize missing value handling, add validation for output ranges, add regression tests
-- Test coverage: V2 scripts have unit tests but coverage unknown
-
-**Regression Models:**
-- Files: `src/f1d/econometric/v2/4.*_H*Regression.py` (9 files, 1,000+ lines each)
-- Why fragile: Model specifications hardcoded, fixed effects handling varies by script, results parsing depends on statsmodels output format
-- Safe modification: Use shared regression utilities, add model specification validation, add unit tests for coefficient extraction
-- Test coverage: Unit tests exist for each H script but may not cover edge cases
-
-**TODO Tracking:**
-- Issue: Winsorized column tracking not implemented (commented as TODO)
-- Files: `src/f1d/financial/v1/3.1_FirmControls.py:770`
-- Impact: Cannot verify which columns were winsorized, affects reproducibility
-- Fix approach: Track actual winsorized columns and log to stats.json
+- Why fragile: Complex fuzzy matching and CCM linking logic with multiple fallback paths
+- Safe modification: Extract into smaller testable functions, add unit tests for each matching tier
+- Test coverage: Partial coverage exists in integration tests
 
 ## Scaling Limits
 
-**Year Range Hardcoded:**
-- Current capacity: Fixed range 2002-2018
-- Limit: Cannot process data outside this range without modifying multiple scripts
-- Scaling path: Make year range fully configurable via `config/project.yaml`, remove hardcoded year loops
+**CRSP DSF Data Coverage:**
+- Current capacity: CRSP DSF data available from 1999 through at least 2003 (confirmed by directory listing)
+- Limit: Unknown whether data exists for full 2002-2018 period required by H7-H8
+- Scaling path: Verify CRSP DSF data completeness for required year range, add data validation step that checks for missing years before processing
 
-**Memory Constraints:**
-- Current capacity: 80% max memory percent configured but no actual throttling
-- Files: `src/f1d/shared/chunked_reader.py`, `config/project.yaml`
-- Limit: Large datasets may cause OOM on systems with <16GB RAM
-- Scaling path: Implement actual `MemoryAwareThrottler` usage in all scripts, add memory monitoring alerts
-
-**Thread Count Configured but Unused:**
-- Current capacity: `config['thread_count'] = 1` but parallelization not implemented
-- Limit: Cannot leverage multi-core systems
-- Scaling path: Implement concurrent year processing with deterministic results (seeded random, ordered results)
-
-**Subprocess Dependency Chain:**
-- Current capacity: Linear script execution via subprocess calls
-- Limit: Cannot parallelize independent script steps
-- Scaling path: Implement directed acyclic graph (DAG) execution engine with dependency tracking
+**Test Coverage Thresholds:**
+- Current capacity: CI requires only 10% Tier 1, 10% Tier 2, 25% overall coverage (pyproject.toml lines 73, 86, 99)
+- Limit: Low thresholds mask quality issues in untested modules
+- Scaling path: Gradually increase thresholds as more tests are added per ROADMAP_V3.md Phase 63-03
 
 ## Dependencies at Risk
 
 **statsmodels Pinning:**
-- Risk: Pinned to 0.14.6 due to breaking changes in 0.14.0
-- Files: `requirements.txt:10-11`
-- Impact: Cannot upgrade to newer versions with potential bug fixes
-- Migration plan: Document regression results with 0.14.6, test 0.15.0+ migration, update GLM link names
+- Risk: Pinned to 0.14.6 for reproducibility but outdated (requirements.txt line 11)
+- Impact: May miss bug fixes or performance improvements in newer versions
+- Migration plan: Documented in ROADMAP_V3.md requires careful upgrade due to breaking changes in 0.14.0
 
-**PyArrow Version Pinning:**
-- Risk: Pinned to 21.0.0 for Python 3.8-3.13 compatibility
-- Files: `requirements.txt:17-18`
-- Impact: Missing performance improvements and features in 23.0.0+
-- Migration plan: Test Python 3.10+ with PyArrow 23.0.0+, document version compatibility matrix
-
-**sklearn Type Stubs Missing:**
-- Risk: sklearn lacks `py.typed` marker, mypy cannot verify sklearn imports
-- Files: `src/f1d/text/tokenize_and_count.py:57`, 40+ type: ignore comments
-- Impact: Type errors go undetected in sklearn usage
-- Migration plan: Wait for sklearn to add type stubs, or install `types-scikit-learn` community stubs
-
-**lifelines Type Stubs Missing:**
-- Risk: lifelines lacks official type stubs
-- Files: `src/f1d/econometric/v1/4.3_TakeoverHazards.py:62`, multiple type: ignore comments
-- Impact: Type errors go undetected in survival analysis code
-- Migration plan: Contribute type stubs to lifelines repo or create local stubs in `src/f1d/stubs/`
+**pyarrow Pinning:**
+- Risk: Pinned to 21.0.0 for Python 3.8 compatibility (requirements.txt line 18)
+- Impact: Misses performance improvements in 23.0.0+ and 24.0.0
+- Migration plan: Upgrade requires Python >= 3.10, documented in DEPENDENCIES.md
 
 ## Missing Critical Features
 
-**Incremental Output Updates:**
-- Problem: Cannot resume failed pipeline from intermediate step
-- Blocks: Long-running pipelines must restart from beginning if any step fails
-- Priority: Medium
+**Schema Validation on Outputs:**
+- Problem: No automated validation of Parquet output schemas
+- Blocks: Data quality issues not caught until downstream processing fails
+- Risk: High - could produce incorrect research results
 
-**Data Versioning:**
-- Problem: No data version tracking beyond timestamps
-- Blocks: Cannot reproduce exact outputs from specific pipeline versions
-- Priority: Low
+**End-to-End Pipeline Test:**
+- Problem: No full pipeline test that verifies all 4 stages work together
+- Blocks: Confidence in pipeline reproducibility
+- Risk: Medium - integration gaps may exist
 
-**Comprehensive Schema Validation:**
-- Problem: Only 2 input files have schema validation defined
-- Blocks: Cannot detect malformed input data early in pipeline
-- Priority: High (security concern)
+**Variable Catalog:**
+- Problem: No comprehensive catalog of all constructed variables
+- Blocks: Easy reference for researchers and auditors
+- Risk: Low - documentation gap but not functional blocker
 
 ## Test Coverage Gaps
 
-**Entity Linking Logic:**
-- What's not tested: Tier 3 fuzzy matching edge cases, threshold sensitivity, company name normalization
-- Files: `src/f1d/sample/1.2_LinkEntities.py`
-- Risk: Entity matching failures go undetected, data quality issues propagate downstream
+**Untested V1 Scripts:**
+- What's not tested: Most V1 econometric scripts (4.1_*.py, 4.2_*.py, 4.3_*.py, 4.4_*.py)
+- Files: `src/f1d/econometric/v1/` (all scripts)
+- Risk: High - V1 scripts produce research outputs but lack verification
 - Priority: High
 
-**Financial Calculations:**
-- What's not tested: Winsorization logic, EPS growth calculation with edge cases, missing value handling in merges
-- Files: `src/f1d/financial/v1/3.1_FirmControls.py`, `src/f1d/financial/v1/3.2_MarketVariables.py`
-- Risk: Incorrect financial metrics affect all downstream analysis
+**Untested Financial V2 Scripts:**
+- What's not tested: Variable construction scripts (3.1_H1Variables.py through 3.8_H8TakeoverVariables.py)
+- Files: `src/f1d/financial/v2/` (all scripts)
+- Risk: High - These scripts construct all variables used in hypothesis testing
 - Priority: High
 
-**Regression Output Parsing:**
-- What's not tested: Coefficient extraction from statsmodels, standard error calculation, p-value formatting
-- Files: `src/f1d/econometric/v2/4.*_H*Regression.py`
-- Risk: Incorrect coefficients invalidate research findings
-- Priority: High
-
-**Survival Analysis Models:**
-- What's not tested: CoxPHFitter convergence edge cases, Fine-Gray competing risks calculation
-- Files: `src/f1d/econometric/v1/4.3_TakeoverHazards.py`
-- Risk: Incorrect hazard ratios affect takeover analysis
+**Untested Text Processing Scripts:**
+- What's not tested: Tokenization and variable construction (2.1_*.py, 2.2_*.py)
+- Files: `src/f1d/text/` (all scripts except verification)
+- Risk: Medium - Test coverage exists in integration tests but not at unit level
 - Priority: Medium
 
-**Data Pipeline End-to-End:**
-- What's not tested: Full pipeline from raw inputs to final outputs, error propagation across steps
-- Files: Integration tests exist but limited scope
-- Risk: Pipeline failures may not be caught until production
-- Priority: Medium
+**Untested Observability Functions:**
+- What's not tested: Many stats functions in observability/stats.py
+- Files: `src/f1d/shared/observability/stats.py`
+- Risk: Low - Support functions, not critical path
+- Priority: Low
+
+**Untested Regression Analysis Scripts:**
+- What's not tested: V2 regression scripts (4.1_*.py through 4.11_*.py)
+- Files: `src/f1d/econometric/v2/` (all regression scripts)
+- Risk: High - These scripts produce all research findings
+- Priority: High
 
 ---
 
-*Concerns audit: 2026-02-14*
+*Concerns audit: 2026-02-15*

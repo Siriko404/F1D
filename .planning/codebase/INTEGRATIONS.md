@@ -1,103 +1,111 @@
 # External Integrations
 
-**Analysis Date:** 2026-02-14
+**Analysis Date:** 2026-02-15
 
 ## APIs & External Services
 
-**No external API calls:**
-- Pipeline operates entirely on local data files
-- No cloud service dependencies
-- No real-time data fetching
+**Code Analysis Services:**
+- GitHub Actions - CI/CD pipeline for testing and linting
+  - Location: `.github/workflows/ci.yml`, `.github/workflows/test.yml`
+  - Features: Multi-version Python testing, coverage reporting, type checking
+  - Token: `CODECOV_TOKEN` (for Codecov integration)
+
+- Codecov - Coverage reporting
+  - Uploads coverage reports from CI runs
+  - Token: `CODECOV_TOKEN` stored in GitHub secrets
 
 ## Data Storage
 
-**Databases:**
-- Parquet files via pyarrow - Primary data format
-  - Location: `1_Inputs/` (input data), `4_Outputs/` (processed data)
-  - Client: pandas.read_parquet(), pandas.to_parquet()
-  - Schema: Defined in each step's output files
+**Local Filesystem (Primary):**
+- Parquet files - Columnar data format for all pipeline I/O
+  - Location: `1_Inputs/` (input data), `4_Outputs/` (output data)
+  - Client: `pyarrow.parquet` via pandas read_parquet/to_parquet
 
-**External Data Sources (Local Files):**
-- `1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet` - Earnings call metadata (55 MB)
-- `1_Inputs/LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv` - Text analysis dictionary (9 MB)
-- `1_Inputs/CRSPCompustat_CCM/` - Linking table (GVKEY-PERMNO)
-- `1_Inputs/CRSP_DSF/` - Daily stock returns
-- `1_Inputs/comp_na_daily_all/` - Compustat North America daily
-- `1_Inputs/tr_ibes/` - IBES analyst forecasts
-- `1_Inputs/Execucomp/` - Executive compensation data
-- `1_Inputs/SDC/` - M&A deal data
-- `1_Inputs/CCCL_instrument/instrument_shift_intensity_2005_2022.parquet` - Instrumental variable data (15 MB)
-- `1_Inputs/FirmLevelRisk/` - Firm-level risk measures
-- `1_Inputs/FF1248/` - Fama-French factors
-- `1_Inputs/SEC_Edgar_Letters/` - SEC correspondence data
+**Input Data Sources:**
+- Earnings call transcripts: `1_Inputs/Earnings_Calls_Transcripts/`
+  - Files: `Unified-info.parquet`, `speaker_data_{year}.parquet`
+- Loughran-McDonald dictionary: `1_Inputs/LM_dictionary/`
+  - File: `Loughran-McDonald_MasterDictionary_1993-2024.csv`
+- CRSP data: `1_Inputs/CRSP_DSF/`
+  - Files: `CRSP_DSF_{year}_Q{Q}.parquet` (daily stock returns)
+- Compustat/CCM: `1_Inputs/CRSPCompustat_CCM/`
+  - Linking table for CRSP-Compustat merger
+- SDC M&A data: `1_Inputs/SDC/`
+  - File: `sdc-ma-merged.parquet`
+- Execucomp: `1_Inputs/Execucomp/`
+  - Executive compensation data
+- SEC Edgar Letters: `1_Inputs/SEC_Edgar_Letters/`
+  - Files: `letters_{year}_Q{Q}.parquet`
+- I/B/E/S: `1_Inputs/tr_ibes/`
+  - Analyst forecast data
 
 **File Storage:**
-- Local filesystem only (no cloud storage)
-- Output files: Timestamped directories in `4_Outputs/`
-- Log files: `3_Logs/` directory
+- Local filesystem only - No cloud storage (S3, GCS, Azure)
+- Configuration-based path management via `config/project.yaml`
 
 **Caching:**
-- None (data processed fresh on each run)
+- None - No external caching services (Redis, Memcached)
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- None required (local data processing only)
+- None - No authentication required (local pipeline execution)
 
 **Implementation:**
-- `src/f1d/shared/config/env.py` - Pydantic Settings for environment configuration
-- `src/f1d/shared/env_validation.py` - Environment validation utilities
+- Scripts run with local file system permissions
+- No user authentication or authorization layers
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None (local execution only)
+- None - No external error tracking (Sentry, Rollbar)
 
 **Logs:**
-- Framework: structlog (structured logging)
-- Implementation: `src/f1d/shared/logging/`
-  - `src/f1d/shared/logging/config.py` - Logging configuration
-  - `src/f1d/shared/logging/handlers.py` - Log handlers (console, file, JSON)
-  - `src/f1d/shared/logging/context.py` - Context management for structured logging
-- Output: `3_Logs/` directory
-- Format: Structured JSON logs with context variables
-- Levels: INFO (default), configurable
+- Structured logging via structlog
+- Dual output: Human-readable console + JSON file
+- Location: `3_Logs/` directory
+- Configuration: `src/f1d/shared/logging/handlers.py`
+- Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- GitHub Actions (CI/CD only)
-  - `.github/workflows/ci.yml` - Primary CI workflow (lint + test)
-  - `.github/workflows/test.yml` - Extended test workflow
+- None - Desktop/laptop execution only
+- No cloud deployment targets (AWS, GCP, Azure)
 
 **CI Pipeline:**
-- GitHub Actions
-- Test matrix: Python 3.9, 3.10, 3.11, 3.12, 3.13
-- Linting: Ruff (format check, lint), mypy (type checking)
-- Testing: pytest with coverage
-- Coverage reporting: Codecov integration
-- Artifact retention: 30 days for coverage reports and test results
+- GitHub Actions (`.github/workflows/ci.yml`)
+  - Lint job: Ruff (linting + formatting), mypy (type checking)
+  - Test job: Multi-version Python (3.9-3.13), tiered coverage testing
+  - E2E job: End-to-end pipeline tests
+  - Coverage upload: Codecov integration
 
-**Deployment:**
-- None (local execution only)
+**Pre-commit Hooks:**
+- `.pre-commit-config.yaml` defines local hooks
+- Ruff (linting + formatting)
+- mypy (type checking on shared modules)
+- File quality checks (whitespace, YAML/TOML validation, large file detection)
 
 ## Environment Configuration
 
 **Required env vars:**
-- None (all optional)
-
-**Optional env vars:**
 - `F1D_API_TIMEOUT_SECONDS` - API timeout (default: 30)
-- `F1D_MAX_RETRIES` - Max retry attempts (default: 3)
+- `F1D_MAX_RETRIES` - Maximum retry attempts (default: 3)
+- `CODECOV_TOKEN` - Codecov authentication (GitHub secret, CI only)
+
+**Secrets location:**
+- No secrets required for pipeline execution
+- `.env.example` provides template for optional API settings
+- No credential files or secret storage services
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None
+- None - No webhook endpoints
 
 **Outgoing:**
-- None
+- None - No external API calls or webhooks
 
 ---
 
-*Integration audit: 2026-02-14*
+*Integration audit: 2026-02-15*
