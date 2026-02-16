@@ -52,20 +52,20 @@ python -c "import statsmodels; print(statsmodels.__version__)"
 **4. Run Full Pipeline with New Version**
 ```bash
 # Run entire pipeline with test data
-python 2_Scripts/1_Sample/1.1_CleanMetadata.py
-python 2_Scripts/1_Sample/1.2_LinkEntities.py
-python 2_Scripts/1_Sample/1.3_BuildTenureMap.py
-python 2_Scripts/1_Sample/1.4_AssembleManifest.py
-python 2_Scripts/2_Text/2.1_TokenizeAndCount.py
-python 2_Scripts/2_Text/2.2_ConstructVariables.py
-python 2_Scripts/2_Text/2.3_VerifyStep2.py
-python 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py
-python 2_Scripts/3_Financial/3.1_FirmControls.py
-python 2_Scripts/3_Financial/3.2_MarketVariables.py
-python 2_Scripts/3_Financial/3.3_EventFlags.py
-python 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py
-python 2_Scripts/4_Econometric/4.2_LiquidityRegressions.py
-python 2_Scripts/4_Econometric/4.3_TakeoverHazards.py
+python -m f1d.sample.1.1_CleanMetadata
+python -m f1d.sample.1.2_LinkEntities
+python -m f1d.sample.1.3_BuildTenureMap
+python -m f1d.sample.1.4_AssembleManifest
+python -m f1d.text.tokenize_and_count
+python -m f1d.text.construct_variables
+python -m f1d.text.verify_step2
+python -m f1d.financial.v1.3.0_BuildFinancialFeatures
+python -m f1d.financial.v1.3.1_FirmControls
+python -m f1d.financial.v1.3.2_MarketVariables
+python -m f1d.financial.v1.3.3_EventFlags
+python -m f1d.econometric.v1.4.1_EstimateManagerClarity
+python -m f1d.econometric.v1.4.2_LiquidityRegressions
+python -m f1d.econometric.v1.4.3_TakeoverHazards
 ```
 
 **5. Compare Regression Outputs with Baseline**
@@ -159,7 +159,7 @@ git branch -D upgrade-statsmodels-0.15.0
 pip install statsmodels==0.14.6
 
 # Verify baseline still works
-python 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py
+python -m f1d.econometric.v1.4.1_EstimateManagerClarity
 ```
 
 **If upgrade causes numerical differences:**
@@ -240,20 +240,20 @@ Before upgrading to a new Python version, validate compatibility:
 **4. Full Pipeline Validation**:
    ```bash
    # Run full pipeline on new Python version
-   python 2_Scripts/1_Sample/1.1_CleanMetadata.py
-   python 2_Scripts/1_Sample/1.2_LinkEntities.py
-   python 2_Scripts/1_Sample/1.3_BuildTenureMap.py
-   python 2_Scripts/1_Sample/1.4_AssembleManifest.py
-   python 2_Scripts/2_Text/2.1_TokenizeAndCount.py
-   python 2_Scripts/2_Text/2.2_ConstructVariables.py
-   python 2_Scripts/2_Text/2.3_VerifyStep2.py
-   python 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py
-   python 2_Scripts/3_Financial/3.1_FirmControls.py
-   python 2_Scripts/3_Financial/3.2_MarketVariables.py
-   python 2_Scripts/3_Financial/3.3_EventFlags.py
-   python 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py
-   python 2_Scripts/4_Econometric/4.2_LiquidityRegressions.py
-   python 2_Scripts/4_Econometric/4.3_TakeoverHazards.py
+   python -m f1d.sample.1.1_CleanMetadata
+   python -m f1d.sample.1.2_LinkEntities
+   python -m f1d.sample.1.3_BuildTenureMap
+   python -m f1d.sample.1.4_AssembleManifest
+   python -m f1d.text.tokenize_and_count
+   python -m f1d.text.construct_variables
+   python -m f1d.text.verify_step2
+   python -m f1d.financial.v1.3.0_BuildFinancialFeatures
+   python -m f1d.financial.v1.3.1_FirmControls
+   python -m f1d.financial.v1.3.2_MarketVariables
+   python -m f1d.financial.v1.3.3_EventFlags
+   python -m f1d.econometric.v1.4.1_EstimateManagerClarity
+   python -m f1d.econometric.v1.4.2_LiquidityRegressions
+   python -m f1d.econometric.v1.4.3_TakeoverHazards
 
    # Compare outputs with baseline (from Python 3.10 or 3.11)
    # Use checksum comparison for binary files

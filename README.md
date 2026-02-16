@@ -354,47 +354,47 @@ Final Outputs ◄─────────────────────
 
 ## Program-to-Output Mapping
 
-Comprehensive mapping of each processing script to its output files and purpose in the research workflow.
+Comprehensive mapping of each processing script to its output files and purpose in the research workflow. All scripts are run as Python modules using `python -m f1d.<module_path>`.
 
-### Step 1: Sample Construction (1_Sample)
+### Step 1: Sample Construction (f1d.sample)
 
-| Script | Stage | Output Files | Purpose / Paper Output |
+| Module | Stage | Output Files | Purpose / Paper Output |
 |--------|--------|--------------|----------------------|
-| **1.0_BuildSampleManifest.py** | Step 1 (Orchestrator) | `master_sample_manifest.parquet` | Orchestrates 1.1-1.4; produces final sample manifest defining analysis universe |
-| **1.1_CleanMetadata.py** | Step 1.1 | `metadata_cleaned.parquet`, `variable_reference.csv` | Deduplicates Unified-info, filters for earnings calls 2002-2018, resolves file_name collisions |
-| **1.2_LinkEntities.py** | Step 1.2 | `metadata_linked.parquet`, `variable_reference.csv` | 4-tier entity resolution: PERMNO+date, CUSIP8+date, fuzzy name match; adds GVKEY, FF12/FF48 industries via CCM |
-| **1.3_BuildTenureMap.py** | Step 1.3 | `tenure_monthly.parquet`, `variable_reference.csv` | Builds monthly CEO tenure panel from Execucomp; links predecessor CEOs via becameceo/leftofc dates |
-| **1.4_AssembleManifest.py** | Step 1.4 | `master_sample_manifest.parquet`, `variable_reference.csv` | Joins metadata with CEO tenure panel, applies minimum 5-call threshold per CEO; final universe definition |
+| **f1d.sample.1.0_BuildSampleManifest** | Step 1 (Orchestrator) | `master_sample_manifest.parquet` | Orchestrates 1.1-1.4; produces final sample manifest defining analysis universe |
+| **f1d.sample.1.1_CleanMetadata** | Step 1.1 | `metadata_cleaned.parquet`, `variable_reference.csv` | Deduplicates Unified-info, filters for earnings calls 2002-2018, resolves file_name collisions |
+| **f1d.sample.1.2_LinkEntities** | Step 1.2 | `metadata_linked.parquet`, `variable_reference.csv` | 4-tier entity resolution: PERMNO+date, CUSIP8+date, fuzzy name match; adds GVKEY, FF12/FF48 industries via CCM |
+| **f1d.sample.1.3_BuildTenureMap** | Step 1.3 | `tenure_monthly.parquet`, `variable_reference.csv` | Builds monthly CEO tenure panel from Execucomp; links predecessor CEOs via becameceo/leftofc dates |
+| **f1d.sample.1.4_AssembleManifest** | Step 1.4 | `master_sample_manifest.parquet`, `variable_reference.csv` | Joins metadata with CEO tenure panel, applies minimum 5-call threshold per CEO; final universe definition |
 
-### Step 2: Text Processing (2_Text)
+### Step 2: Text Processing (f1d.text)
 
-| Script | Stage | Output Files | Purpose / Paper Output |
+| Module | Stage | Output Files | Purpose / Paper Output |
 |--------|--------|--------------|----------------------|
-| **2.1_TokenizeAndCount.py** | Step 2.1 | `linguistic_counts_{year}.parquet` (per year 2002-2018) | Tokenizes speaker text using Loughran-McDonald dictionary; counts 7 categories (Negative, Positive, Uncertainty, Litigious, Strong/Weak Modal, Constraining) per speaker; totals tokens |
-| **2.2_ConstructVariables.py** | Step 2.2 | `linguistic_variables_{year}.parquet` (per year) | Flags speakers (Analyst, Manager, CEO) using role/employer/name matching; aggregates counts to weighted ratios by sample (Manager/CEO/NonCEO_Manager) and context (QA/Presentation/All); creates Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, etc. |
-| **2.3_VerifyStep2.py** | Step 2.3 | Verification report (no data output) | Validates Step 2 outputs: checks file presence, variable completeness (Manager_QA_Uncertainty_pct), and missing value counts |
+| **f1d.text.tokenize_and_count** | Step 2.1 | `linguistic_counts_{year}.parquet` (per year 2002-2018) | Tokenizes speaker text using Loughran-McDonald dictionary; counts 7 categories (Negative, Positive, Uncertainty, Litigious, Strong/Weak Modal, Constraining) per speaker; totals tokens |
+| **f1d.text.construct_variables** | Step 2.2 | `linguistic_variables_{year}.parquet` (per year) | Flags speakers (Analyst, Manager, CEO) using role/employer/name matching; aggregates counts to weighted ratios by sample (Manager/CEO/NonCEO_Manager) and context (QA/Presentation/All); creates Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, etc. |
+| **f1d.text.verify_step2** | Step 2.3 | Verification report (no data output) | Validates Step 2 outputs: checks file presence, variable completeness (Manager_QA_Uncertainty_pct), and missing value counts |
 
-### Step 3: Financial Features (3_Financial)
+### Step 3: Financial Features (f1d.financial.v1)
 
-| Script | Stage | Output Files | Purpose / Paper Output |
+| Module | Stage | Output Files | Purpose / Paper Output |
 |--------|--------|--------------|----------------------|
-| **3.0_BuildFinancialFeatures.py** | Step 3 (Orchestrator) | `firm_controls_{year}.parquet`, `market_variables_{year}.parquet`, `event_flags_{year}.parquet` | Orchestrates 3.1, 3.2, 3.3; produces all financial features in single timestamped output |
-| **3.1_FirmControls.py** | Step 3.1 | `firm_controls_{year}.parquet` | Computes firm controls from Compustat: Size (ln assets), BM, Lev, ROA, EPS_Growth, CurrentRatio, RD_Intensity; computes earnings surprise decile (-5 to +5) from IBES; merges CCCL shift_intensity variants as competition instrument |
-| **3.2_MarketVariables.py** | Step 3.2 | `market_variables_{year}.parquet` | Computes stock return (compound: prev_call+5d to call-5d), market return (VWRETD), volatility; computes liquidity measures: Amihud (|ret|/volume), Corwin-Schultz bid-ask spread, and event-minus-baseline deltas |
-| **3.3_EventFlags.py** | Step 3.3 | `event_flags_{year}.parquet` | Computes takeover event flags from SDC M&A data: Takeover (1 if acquisition within 365 days), Takeover_Type (Uninvited/Friendly), Duration (quarters to event) |
+| **f1d.financial.v1.3.0_BuildFinancialFeatures** | Step 3 (Orchestrator) | `firm_controls_{year}.parquet`, `market_variables_{year}.parquet`, `event_flags_{year}.parquet` | Orchestrates 3.1, 3.2, 3.3; produces all financial features in single timestamped output |
+| **f1d.financial.v1.3.1_FirmControls** | Step 3.1 | `firm_controls_{year}.parquet` | Computes firm controls from Compustat: Size (ln assets), BM, Lev, ROA, EPS_Growth, CurrentRatio, RD_Intensity; computes earnings surprise decile (-5 to +5) from IBES; merges CCCL shift_intensity variants as competition instrument |
+| **f1d.financial.v1.3.2_MarketVariables** | Step 3.2 | `market_variables_{year}.parquet` | Computes stock return (compound: prev_call+5d to call-5d), market return (VWRETD), volatility; computes liquidity measures: Amihud (|ret|/volume), Corwin-Schultz bid-ask spread, and event-minus-baseline deltas |
+| **f1d.financial.v1.3.3_EventFlags** | Step 3.3 | `event_flags_{year}.parquet` | Computes takeover event flags from SDC M&A data: Takeover (1 if acquisition within 365 days), Takeover_Type (Uninvited/Friendly), Duration (quarters to event) |
 
-### Step 4: Econometric Analysis (4_Econometric)
+### Step 4: Econometric Analysis (f1d.econometric.v1)
 
-| Script | Stage | Output Files | Purpose / Paper Output |
+| Module | Stage | Output Files | Purpose / Paper Output |
 |--------|--------|--------------|----------------------|
-| **4.1_EstimateCeoClarity.py** | Step 4.1 | `ceo_clarity_scores.parquet`, `regression_results_{sample}.txt`, `model_diagnostics.csv` | Estimates CEO fixed effects via OLS: Manager_QA_Uncertainty_pct ~ C(ceo_id) + controls (linguistic + firm) + C(year); runs 3 industry samples (Main, Finance, Utility); extracts gamma_i, standardizes to ClarityCEO = -gamma_i; produces paper's CEO clarity trait measure |
-| **4.1.1_EstimateCeoClarity_CeoSpecific.py** | Step 4.1.1 | `ceo_clarity_scores.parquet`, `regression_results_{sample}.txt` | CEO-specific version: CEO_QA_Uncertainty_pct ~ C(ceo_id) + controls; ClarityCEO trait measure for CEO-only analysis |
-| **4.1.2_EstimateCeoClarity_Extended.py** | Step 4.1.2 | Extended clarity estimates with additional controls | Extended model specification with additional control variables |
-| **4.1.3_EstimateCeoClarity_Regime.py** | Step 4.1.3 | Regime-based clarity estimates | Clarity measure specific to managerial regimes (excludes CEO) |
-| **4.1.4_EstimateCeoTone.py** | Step 4.1.4 | CEO tone estimates | Estimates CEO tone as alternative communication trait measure |
-| **4.2_LiquidityRegressions.py** | Step 4.2 | `first_stage_results.txt`, `ols_regime.txt`, `ols_ceo.txt`, `iv_regime.txt`, `iv_ceo.txt`, `model_diagnostics.csv` | Tests liquidity impact: Phase 1 (first-stage instrument validity: Q&A Uncertainty ~ CCCL shift_intensity_sale_ff48); Phase 2 (OLS): Delta_Amihud/Corwin-Schultz ~ Clarity + Q&A Uncertainty + controls; Phase 3 (2SLS): instruments Q&A Uncertainty; supports paper's liquidity regression tables (e.g., Table 3) |
-| **4.3_TakeoverHazards.py** | Step 4.3 | `cox_ph_all.txt`, `fine_gray_uninvited.txt`, `fine_gray_friendly.txt`, `hazard_ratios.csv`, `takeover_event_summary.csv` | Survival analysis: Model 1 (Cox PH: all takeovers), Model 2 (Fine-Gray: Uninvited/hostile+unsolicited), Model 3 (Fine-Gray: Friendly/neutral); ClarityCEO and Q&A Uncertainty predict hazard; supports paper's takeover hazard tables |
-| **4.4_GenerateSummaryStats.py** | Step 4.4 | `descriptive_statistics.csv`, `correlation_matrix.csv`, `panel_balance.csv`, `summary_report.md` | SUMM-01: Descriptive stats (N, Mean, SD, Min, P25, Median, P75, Max) for all variables; SUMM-02: Correlation matrix for key regression variables; SUMM-03: Panel balance diagnostics (firm-year coverage, time series); supports paper's Table 1 (sample characteristics) |
+| **f1d.econometric.v1.4.1_EstimateManagerClarity** | Step 4.1 | `ceo_clarity_scores.parquet`, `regression_results_{sample}.txt`, `model_diagnostics.csv` | Estimates CEO fixed effects via OLS: Manager_QA_Uncertainty_pct ~ C(ceo_id) + controls (linguistic + firm) + C(year); runs 3 industry samples (Main, Finance, Utility); extracts gamma_i, standardizes to ClarityCEO = -gamma_i; produces paper's CEO clarity trait measure |
+| **f1d.econometric.v1.4.1.1_EstimateCeoClarity** | Step 4.1.1 | `ceo_clarity_scores.parquet`, `regression_results_{sample}.txt` | CEO-specific version: CEO_QA_Uncertainty_pct ~ C(ceo_id) + controls; ClarityCEO trait measure for CEO-only analysis |
+| **f1d.econometric.v1.4.1.2_EstimateCeoClarity_Extended** | Step 4.1.2 | Extended clarity estimates with additional controls | Extended model specification with additional control variables |
+| **f1d.econometric.v1.4.1.3_EstimateCeoClarity_Regime** | Step 4.1.3 | Regime-based clarity estimates | Clarity measure specific to managerial regimes (excludes CEO) |
+| **f1d.econometric.v1.4.1.4_EstimateCeoTone** | Step 4.1.4 | CEO tone estimates | Estimates CEO tone as alternative communication trait measure |
+| **f1d.econometric.v1.4.2_LiquidityRegressions** | Step 4.2 | `first_stage_results.txt`, `ols_regime.txt`, `ols_ceo.txt`, `iv_regime.txt`, `iv_ceo.txt`, `model_diagnostics.csv` | Tests liquidity impact: Phase 1 (first-stage instrument validity: Q&A Uncertainty ~ CCCL shift_intensity_sale_ff48); Phase 2 (OLS): Delta_Amihud/Corwin-Schultz ~ Clarity + Q&A Uncertainty + controls; Phase 3 (2SLS): instruments Q&A Uncertainty; supports paper's liquidity regression tables (e.g., Table 3) |
+| **f1d.econometric.v1.4.3_TakeoverHazards** | Step 4.3 | `cox_ph_all.txt`, `fine_gray_uninvited.txt`, `fine_gray_friendly.txt`, `hazard_ratios.csv`, `takeover_event_summary.csv` | Survival analysis: Model 1 (Cox PH: all takeovers), Model 2 (Fine-Gray: Uninvited/hostile+unsolicited), Model 3 (Fine-Gray: Friendly/neutral); ClarityCEO and Q&A Uncertainty predict hazard; supports paper's takeover hazard tables |
+| **f1d.econometric.v1.4.4_GenerateSummaryStats** | Step 4.4 | `descriptive_statistics.csv`, `correlation_matrix.csv`, `panel_balance.csv`, `summary_report.md` | SUMM-01: Descriptive stats (N, Mean, SD, Min, P25, Median, P75, Max) for all variables; SUMM-02: Correlation matrix for key regression variables; SUMM-03: Panel balance diagnostics (firm-year coverage, time series); supports paper's Table 1 (sample characteristics) |
 
 ### Data Flow Summary
 
@@ -406,6 +406,36 @@ Step 2:  Speaker text → Linguistic variables (Uncertainty measures)
 Step 3:  Compustat/IBES/CRSP/SDC/CCM → Financial controls
    ↓
 Step 4:  Clarity estimation → Liquidity/Takeover regressions → Summary stats
+```
+
+### Running Scripts
+
+All scripts are executed as Python modules using the `-m` flag:
+
+```bash
+# Sample construction
+python -m f1d.sample.1.1_CleanMetadata
+python -m f1d.sample.1.2_LinkEntities
+python -m f1d.sample.1.3_BuildTenureMap
+python -m f1d.sample.1.4_AssembleManifest
+
+# Text processing
+python -m f1d.text.tokenize_and_count
+python -m f1d.text.construct_variables
+
+# Financial features (V1)
+python -m f1d.financial.v1.3.1_FirmControls
+python -m f1d.financial.v1.3.2_MarketVariables
+python -m f1d.financial.v1.3.3_EventFlags
+
+# Econometric analysis (V1)
+python -m f1d.econometric.v1.4.1_EstimateManagerClarity
+python -m f1d.econometric.v1.4.2_LiquidityRegressions
+python -m f1d.econometric.v1.4.3_TakeoverHazards
+
+# V2 hypothesis testing
+python -m f1d.financial.v2.3.1_H1Variables
+python -m f1d.econometric.v2.4.1_H1CashHoldingsRegression
 ```
 
 ## Execution Instructions
@@ -461,28 +491,28 @@ Run each script in order. All scripts read configuration from `config/project.ya
 
 **1.1 Clean Metadata & Event Filtering**
 ```bash
-python 2_Scripts/1_Sample/1.1_CleanMetadata.py
+python -m f1d.sample.1.1_CleanMetadata
 ```
 - Approximate runtime: 5-10 seconds
 - Outputs: `4_Outputs/1.1_CleanMetadata/` → `metadata_cleaned.parquet`
 
 **1.2 Link Entities**
 ```bash
-python 2_Scripts/1_Sample/1.2_LinkEntities.py
+python -m f1d.sample.1.2_LinkEntities
 ```
 - Approximate runtime: 30-60 seconds
 - Outputs: `4_Outputs/1.2_LinkEntities/` → `metadata_linked.parquet`
 
 **1.3 Build Tenure Map**
 ```bash
-python 2_Scripts/1_Sample/1.3_BuildTenureMap.py
+python -m f1d.sample.1.3_BuildTenureMap
 ```
 - Approximate runtime: 20-40 seconds
 - Outputs: `4_Outputs/1.3_BuildTenureMap/` → `tenure_monthly.parquet`
 
 **1.4 Assemble Manifest**
 ```bash
-python 2_Scripts/1_Sample/1.4_AssembleManifest.py
+python -m f1d.sample.1.4_AssembleManifest
 ```
 - Approximate runtime: 10-20 seconds
 - Outputs: `4_Outputs/1.4_AssembleManifest/` → `master_sample_manifest.parquet`
@@ -491,21 +521,21 @@ python 2_Scripts/1_Sample/1.4_AssembleManifest.py
 
 **2.1 Tokenize and Count**
 ```bash
-python 2_Scripts/2_Text/2.1_TokenizeAndCount.py
+python -m f1d.text.tokenize_and_count
 ```
 - Approximate runtime: 2-3 minutes
 - Outputs: `4_Outputs/2_Textual_Analysis/2.1_Tokenized/` → `linguistic_counts_YYYY.parquet` (one file per year, 2002-2018)
 
 **2.2 Construct Variables**
 ```bash
-python 2_Scripts/2_Text/2.2_ConstructVariables.py
+python -m f1d.text.construct_variables
 ```
 - Approximate runtime: 2-3 minutes
 - Outputs: `4_Outputs/2_Textual_Analysis/2.2_Variables/` → `linguistic_variables_YYYY.parquet` (one file per year, 2002-2018)
 
 **2.3 Verify Step 2**
 ```bash
-python 2_Scripts/2_Text/2.3_VerifyStep2.py
+python -m f1d.text.verify_step2
 ```
 - Approximate runtime: 30-60 seconds
 - Outputs: Logs only (verifies data integrity; no new output files)
@@ -514,7 +544,7 @@ python 2_Scripts/2_Text/2.3_VerifyStep2.py
 
 **3.0 Build Financial Features**
 ```bash
-python 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py
+python -m f1d.financial.v1.3.0_BuildFinancialFeatures
 ```
 - Approximate runtime: 5-10 minutes
 - Note: This script orchestrates steps 3.1, 3.2, and 3.3
@@ -522,21 +552,21 @@ python 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py
 
 **3.1 Firm Controls**
 ```bash
-python 2_Scripts/3_Financial/3.1_FirmControls.py
+python -m f1d.financial.v1.3.1_FirmControls
 ```
 - Approximate runtime: 3-5 minutes
 - Outputs: `4_Outputs/3_Financial_Features/` → `firm_controls_YYYY.parquet`
 
 **3.2 Market Variables**
 ```bash
-python 2_Scripts/3_Financial/3.2_MarketVariables.py
+python -m f1d.financial.v1.3.2_MarketVariables
 ```
 - Approximate runtime: 2-3 minutes
 - Outputs: `4_Outputs/3_Financial_Features/` → `market_variables_YYYY.parquet`
 
 **3.3 Event Flags**
 ```bash
-python 2_Scripts/3_Financial/3.3_EventFlags.py
+python -m f1d.financial.v1.3.3_EventFlags
 ```
 - Approximate runtime: 1-2 minutes
 - Outputs: `4_Outputs/3_Financial_Features/` → `event_flags_YYYY.parquet`
@@ -545,21 +575,21 @@ python 2_Scripts/3_Financial/3.3_EventFlags.py
 
 **4.1 Estimate CEO Clarity**
 ```bash
-python 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py
+python -m f1d.econometric.v1.4.1_EstimateManagerClarity
 ```
 - Approximate runtime: 2-3 minutes
 - Outputs: `4_Outputs/4.1_CeoClarity/` → `ceo_clarity_scores.parquet`, regression results
 
 **4.2 Liquidity Regressions**
 ```bash
-python 2_Scripts/4_Econometric/4.2_LiquidityRegressions.py
+python -m f1d.econometric.v1.4.2_LiquidityRegressions
 ```
 - Approximate runtime: 1-2 minutes
 - Outputs: `4_Outputs/4.2_LiquidityRegressions/` → regression results, diagnostics
 
 **4.3 Takeover Hazards**
 ```bash
-python 2_Scripts/4_Econometric/4.3_TakeoverHazards.py
+python -m f1d.econometric.v1.4.3_TakeoverHazards
 ```
 - Approximate runtime: 30-60 seconds
 - Outputs: `4_Outputs/4.3_TakeoverHazards/` → hazard models, event summaries
@@ -1425,7 +1455,7 @@ The F1D pipeline is designed for academic replication with current dataset sizes
 
 5. **Run a sample script:**
    ```bash
-   python 2_Scripts/1_Sample/1.1_CleanMetadata.py
+   python -m f1d.sample.1.1_CleanMetadata
    ```
 
 > **Note:** The package must be installed in editable mode (`pip install -e .`) for scripts to use `from f1d.shared.*` imports. Without this step, you will see `ModuleNotFoundError: No module named 'f1d'`.
@@ -1434,20 +1464,26 @@ Output files are created in timestamped directories under `4_Outputs/`, with `la
 
 ## Pipeline Structure
 
-The pipeline follows a 4-stage structure:
+The pipeline follows a 4-stage structure implemented as an installable Python package:
 
-1. **Sample** (1_Sample): Build sample manifest, clean metadata, link entities, build tenure map
-2. **Text** (2_Text): Tokenize transcripts, construct text variables, verify outputs
-3. **Financial** (3_Financial): Build financial features, firm controls, market variables, event flags
-4. **Econometric** (4_Econometric): Run regressions for CEO clarity, tone, liquidity effects
+1. **Sample** (`f1d.sample`): Build sample manifest, clean metadata, link entities, build tenure map
+2. **Text** (`f1d.text`): Tokenize transcripts, construct text variables, verify outputs
+3. **Financial** (`f1d.financial.v1` and `f1d.financial.v2`): Build financial features, firm controls, market variables, event flags
+4. **Econometric** (`f1d.econometric.v1` and `f1d.econometric.v2`): Run regressions for CEO clarity, tone, liquidity effects
 
 ### Package Architecture
 
 The pipeline uses a src-layout package structure (PyPA recommended):
 
 - **Package root:** `src/f1d/` - Installable via `pip install -e .`
-- **Shared utilities:** `src/f1d/shared/` - Reusable modules (config, logging, validation, etc.)
-- **Stage modules:** `src/f1d/sample/`, `src/f1d/text/`, `src/f1d/financial/`, `src/f1d/econometric/`
+- **Shared utilities:** `src/f1d/shared/` - Reusable modules (config, logging, validation, data_loading, etc.)
+- **Stage modules:**
+  - `src/f1d/sample/` - Sample construction scripts
+  - `src/f1d/text/` - Text processing scripts
+  - `src/f1d/financial/v1/` - V1 financial feature scripts
+  - `src/f1d/financial/v2/` - V2 hypothesis-specific variables
+  - `src/f1d/econometric/v1/` - V1 econometric analysis
+  - `src/f1d/econometric/v2/` - V2 hypothesis testing regressions
 
 All imports use the `f1d.shared.*` namespace (e.g., `from f1d.shared.config import get_settings`). No `sys.path.insert()` or PYTHONPATH manipulation is required when the package is installed in editable mode.
 
@@ -1456,8 +1492,14 @@ All imports use the `f1d.shared.*` namespace (e.g., `from f1d.shared.config impo
 The F1D pipeline uses a src-layout package structure following PyPA recommendations:
 
 - **Package:** `f1d` - Installable via `pip install -e .`
-- **Shared modules:** `f1d.shared.*` - Reusable utilities (config, logging, data validation, etc.)
-- **Stage scripts:** `f1d.sample.*`, `f1d.text.*`, `f1d.financial.*`, `f1d.econometric.*`
+- **Shared modules:** `f1d.shared.*` - Reusable utilities (config, logging, data validation, data_loading, output_schemas, etc.)
+- **Stage scripts:**
+  - `f1d.sample.*` - Sample construction (1.1-1.4)
+  - `f1d.text.*` - Text processing (tokenize_and_count, construct_variables, verify_step2)
+  - `f1d.financial.v1.*` - V1 financial features (3.1-3.3)
+  - `f1d.financial.v2.*` - V2 hypothesis variables (3.1-3.13)
+  - `f1d.econometric.v1.*` - V1 econometric analysis (4.1-4.4)
+  - `f1d.econometric.v2.*` - V2 hypothesis testing (4.1-4.11)
 
 All scripts use proper namespace imports:
 
@@ -1465,18 +1507,25 @@ All scripts use proper namespace imports:
 from f1d.shared.config import get_settings
 from f1d.shared.logging import configure_logging
 from f1d.shared.path_utils import ensure_output_dir
+from f1d.shared.data_loading import safe_merge
+from f1d.shared.output_schemas import validate_linguistic_variables
 ```
 
 No `sys.path.insert()` or PYTHONPATH manipulation is required when the package is installed in editable mode.
 
-### v6.1 Milestone
+### v6.3 Milestone
 
-The v6.1 milestone (Phases 75-77) completed full architecture compliance:
+The v6.3 milestone (Phases 83-90) completed codebase concerns resolution:
 
-- **Zero** `sys.path.insert()` calls in entire codebase
-- **Zero** legacy `from shared.*` imports
-- **mypy passes** with 0 errors on 101 source files
-- **1000+ tests** with namespace imports
+- **Global state eliminated** from TakeoverHazards.py via parameter injection
+- **Silent error handling fixed** with specific exceptions + logging
+- **Output schema validation** with Pandera for all script outputs
+- **181 new unit tests** for financial/econometric scripts (700+ total tests)
+- **safe_merge()** with validation and logging for all merge operations
+- **Dependabot configuration** for automated dependency updates
+- **SECURITY.md** with security policy
+- **Bandit SAST** in CI pipeline
+- **Test coverage threshold** increased to 30%
 
 See [.planning/ROADMAP.md](.planning/ROADMAP.md) for detailed phase-by-phase documentation.
 
