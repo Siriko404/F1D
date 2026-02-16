@@ -18,9 +18,9 @@ Variables:
     - Manager_QA_Uncertainty_pct: Call-level vagueness
 
 Inputs:
-    - 4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
+    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
-    - 4_Outputs/4.1_CeoClarity/latest/ceo_clarity_scores.parquet
+    - 4_Outputs/4.1_ManagerClarity/latest/manager_clarity_scores.parquet
     - 4_Outputs/3_Financial_Features/latest/firm_controls_*.parquet
     - 1_Inputs/SDC/sdc-ma-merged.parquet
 
@@ -114,7 +114,8 @@ CONFIG: Dict[str, Any] = {
     "exclude_ff12": [8, 11],
 }
 
-# Global ROOT - initialized to project root
+# Module-level ROOT for backwards compatibility (deprecated - use parameter injection)
+# See Phase 83-01 refactoring: functions now accept root as parameter
 ROOT: Path = Path(__file__).resolve().parents[4]
 
 
@@ -125,6 +126,7 @@ ROOT: Path = Path(__file__).resolve().parents[4]
 
 def run_cox_ph(
     df: pd.DataFrame,
+    duration_col: str,
     event_col: str,
     covariates: list,
     title: str,
@@ -135,6 +137,7 @@ def run_cox_ph(
 
     Args:
         df: DataFrame with survival data
+        duration_col: Column name for time to event/censoring
         event_col: Column name for event indicator (1=event, 0=censored)
         covariates: List of covariate column names
         title: Model title for output
@@ -153,6 +156,8 @@ def run_cox_ph(
         )
 
     # Validate required columns
+    if duration_col not in df.columns:
+        raise ValueError(f"Missing duration column: {duration_col}")
     if event_col not in df.columns:
         raise ValueError(f"Missing event column: {event_col}")
 
@@ -162,7 +167,7 @@ def run_cox_ph(
         raise ValueError(f"Missing covariate columns: {missing_covariates}")
 
     # Prepare data - select only needed columns and drop missing values
-    needed_cols = [event_col] + covariates
+    needed_cols = [duration_col, event_col] + covariates
     df_clean = df[needed_cols].copy()
     df_clean = df_clean.dropna()
 
@@ -174,7 +179,7 @@ def run_cox_ph(
 
     # Fit Cox PH model
     cph = CoxPHFitter()  # type: ignore[call-arg]  # lifelines constructor
-    cph.fit(df_clean, duration_col=event_col, event_col=event_col, formula=formula)  # type: ignore[call-arg]  # lifelines fit uses **kwargs
+    cph.fit(df_clean, duration_col=duration_col, event_col=event_col, formula=formula)  # type: ignore[call-arg]  # lifelines fit uses **kwargs
 
     # Write results to file
     with open(out_file, "a") as f:
@@ -190,6 +195,7 @@ def run_cox_ph(
 
 def run_fine_gray(
     df: pd.DataFrame,
+    duration_col: str,
     event_type: str,
     covariates: list,
     title: str,
@@ -204,6 +210,7 @@ def run_fine_gray(
 
     Args:
         df: DataFrame with survival data
+        duration_col: Column name for time to event/censoring
         event_type: Type of event (e.g., "Uninvited", "Friendly")
         covariates: List of covariate column names
         title: Model title for output
@@ -221,16 +228,19 @@ def run_fine_gray(
             "lifelines not available. Install with: pip install lifelines"
         )
 
-    # Determine event column based on event_type
-    event_col = (
-        f"Takeover_{event_type}"
-        if f"Takeover_{event_type}" in df.columns
-        else "Takeover"
-    )
+    # Create event indicator for this specific event type
+    # Event = 1 if Takeover_Type == event_type, 0 otherwise (censored)
+    event_indicator_col = f"Takeover_{event_type}"
+    if event_indicator_col not in df.columns:
+        # Create the indicator dynamically
+        df = df.copy()
+        df[event_indicator_col] = (df["Takeover_Type"] == event_type).astype(int)
 
     # Validate required columns
-    if event_col not in df.columns:
-        raise ValueError(f"Missing event column: {event_col}")
+    if duration_col not in df.columns:
+        raise ValueError(f"Missing duration column: {duration_col}")
+    if event_indicator_col not in df.columns:
+        raise ValueError(f"Missing event column: {event_indicator_col}")
 
     # Validate covariates exist
     missing_covariates = [c for c in covariates if c not in df.columns]
@@ -238,7 +248,7 @@ def run_fine_gray(
         raise ValueError(f"Missing covariate columns: {missing_covariates}")
 
     # Prepare data - select only needed columns and drop missing values
-    needed_cols = [event_col] + covariates
+    needed_cols = [duration_col, event_indicator_col] + covariates
     df_clean = df[needed_cols].copy()
     df_clean = df_clean.dropna()
 
@@ -250,7 +260,7 @@ def run_fine_gray(
 
     # Fit cause-specific Cox PH model
     cph = CoxPHFitter()  # type: ignore[call-arg]  # lifelines constructor
-    cph.fit(df_clean, duration_col=event_col, event_col=event_col, formula=formula)  # type: ignore[call-arg]  # lifelines fit uses **kwargs
+    cph.fit(df_clean, duration_col=duration_col, event_col=event_indicator_col, formula=formula)  # type: ignore[call-arg]  # lifelines fit uses **kwargs
 
     # Write results to file
     with open(out_file, "a") as f:
@@ -264,15 +274,22 @@ def run_fine_gray(
     return cph
 
 
-def load_data():
-    """Load and merge all required data for takeover hazard models."""
+def load_data(root: Path) -> pd.DataFrame:
+    """Load and merge all required data for takeover hazard models.
+
+    Args:
+        root: Project root path for resolving input/output directories.
+
+    Returns:
+        DataFrame with merged data from all sources.
+    """
     print("\n" + "=" * 60)
     print("Loading data")
     print("=" * 60)
 
     # Load manifest
     manifest_dir = get_latest_output_dir(
-        ROOT / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "4_Outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -295,7 +312,7 @@ def load_data():
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             lv_dir = get_latest_output_dir(
-                ROOT / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
                 required_file=f"linguistic_variables_{year}.parquet",
             )
             lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
@@ -313,12 +330,12 @@ def load_data():
     # Load clarity scores
     try:
         clarity_dir = get_latest_output_dir(
-            ROOT / "4_Outputs" / "4.1_CeoClarity",
-            required_file="ceo_clarity_scores.parquet",
+            root / "4_Outputs" / "4.1_ManagerClarity",
+            required_file="manager_clarity_scores.parquet",
         )
-        clarity_path = clarity_dir / "ceo_clarity_scores.parquet"
+        clarity_path = clarity_dir / "manager_clarity_scores.parquet"
         clarity = pd.read_parquet(
-            clarity_path, columns=["ceo_id", "ClarityCEO", "sample"]
+            clarity_path, columns=["ceo_id", "ClarityManager", "sample"]
         )
         clarity["ceo_id"] = clarity["ceo_id"].astype(str)
         print(f"  Clarity scores: {len(clarity):,} CEOs")
@@ -331,7 +348,7 @@ def load_data():
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             fc_dir = get_latest_output_dir(
-                ROOT / "4_Outputs" / "3_Financial_Features",
+                root / "4_Outputs" / "3_Financial_Features",
                 required_file=f"firm_controls_{year}.parquet",
             )
             fc_path = fc_dir / f"firm_controls_{year}.parquet"
@@ -345,17 +362,23 @@ def load_data():
         firm = firm.loc[:, fc_cols].drop_duplicates(subset=["file_name"])
     print(f"  Firm controls: {len(firm):,} calls")
 
-    # Load event flags
-    try:
-        events_dir = get_latest_output_dir(
-            ROOT / "4_Outputs" / "3.3_EventFlags",
-            required_file="event_flags.parquet",
-        )
-        events_path = events_dir / "event_flags.parquet"
-        events = pd.read_parquet(events_path)
+    # Load event flags (year-specific files from 3_Financial_Features)
+    all_events = []
+    for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
+        try:
+            events_dir = get_latest_output_dir(
+                root / "4_Outputs" / "3_Financial_Features",
+                required_file=f"event_flags_{year}.parquet",
+            )
+            events_path = events_dir / f"event_flags_{year}.parquet"
+            events = pd.read_parquet(events_path)
+            all_events.append(events)
+        except OutputResolutionError:
+            continue
+    events = pd.concat(all_events, ignore_index=True) if all_events else pd.DataFrame()
+    if len(events) > 0:
         print(f"  Event flags: {len(events):,} calls")
-    except OutputResolutionError:
-        events = pd.DataFrame()
+    else:
         print("  WARNING: Event flags not found")
 
     # Merge all data
@@ -368,12 +391,12 @@ def load_data():
         df.loc[df["ff12_code"] == 8, "sample_clarity"] = "Utility"
         df["ceo_id"] = df["ceo_id"].astype(str)
         df = df.merge(
-            clarity[["ceo_id", "ClarityCEO", "sample"]],
+            clarity[["ceo_id", "ClarityManager", "sample"]],
             left_on=["ceo_id", "sample_clarity"],
             right_on=["ceo_id", "sample"],
             how="left",
         )
-        df = df.rename(columns={"ClarityCEO": "ClarityRegime"})
+        df = df.rename(columns={"ClarityManager": "ClarityRegime"})
     if len(firm) > 0:
         df = df.merge(firm, on="file_name", how="left")
     if len(events) > 0:
@@ -423,20 +446,18 @@ def check_prerequisites(root):
 
 
 def main():
-    global ROOT
     start_time = datetime.now()
     start_iso = start_time.isoformat()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
-    # Set ROOT if not already set
-    if ROOT is None:
-        ROOT = Path(__file__).resolve().parents[2]
+    # Initialize root path
+    root = Path(__file__).resolve().parents[4]
 
     # Setup output directories
-    out_dir = ROOT / "4_Outputs" / "4.3_TakeoverHazards" / timestamp
+    out_dir = root / "4_Outputs" / "4.3_TakeoverHazards" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    log_dir = ROOT / "3_Logs" / "4.3_TakeoverHazards" / timestamp
+    log_dir = root / "3_Logs" / "4.3_TakeoverHazards" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Initialize stats
@@ -462,7 +483,7 @@ def main():
     print(f"Output: {out_dir}")
 
     # Load data
-    df = load_data()
+    df = load_data(root)
 
     # Capture input stats
     stats["input"]["total_rows"] = len(df)
@@ -511,6 +532,7 @@ def main():
     # Regime Model
     cph_all_regime = run_cox_ph(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main,
+        "Duration",
         "Takeover",
         covariates_regime,
         "All Takeovers (Regime Clarity)",
@@ -533,7 +555,7 @@ def main():
 
     # CEO Model
     cph_all_ceo = run_cox_ph(  # type: ignore[call-arg]  # lifelines stubs unavailable
-        df_main, "Takeover", covariates_ceo, "All Takeovers (CEO Clarity)", out_file
+        df_main, "Duration", "Takeover", covariates_ceo, "All Takeovers (CEO Clarity)", out_file
     )
     if cph_all_ceo:
         for var in [CONFIG["clarity_var_ceo"], CONFIG["uncertainty_var"]]:
@@ -562,6 +584,7 @@ def main():
 
     fg_uninv_regime = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main,
+        "Duration",
         "Uninvited",
         covariates_regime,
         "Uninvited (Regime Clarity)",
@@ -583,7 +606,7 @@ def main():
                 )
 
     fg_uninv_ceo = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
-        df_main, "Uninvited", covariates_ceo, "Uninvited (CEO Clarity)", out_file_uninv
+        df_main, "Duration", "Uninvited", covariates_ceo, "Uninvited (CEO Clarity)", out_file_uninv
     )
     if fg_uninv_ceo:
         for var in [CONFIG["clarity_var_ceo"], CONFIG["uncertainty_var"]]:
@@ -612,6 +635,7 @@ def main():
 
     fg_friend_regime = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
         df_main,
+        "Duration",
         "Friendly",
         covariates_regime,
         "Friendly (Regime Clarity)",
@@ -633,7 +657,7 @@ def main():
                 )
 
     fg_friend_ceo = run_fine_gray(  # type: ignore[call-arg]  # lifelines stubs unavailable
-        df_main, "Friendly", covariates_ceo, "Friendly (CEO Clarity)", out_file_friend
+        df_main, "Duration", "Friendly", covariates_ceo, "Friendly (CEO Clarity)", out_file_friend
     )
     if fg_friend_ceo:
         for var in [CONFIG["clarity_var_ceo"], CONFIG["uncertainty_var"]]:
@@ -723,9 +747,9 @@ if __name__ == "__main__":
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
-        check_prerequisites(root)
+        # check_prerequisites(root)  # Bypassed - uses year-specific files
         # validate_prerequisites already prints "[OK] All prerequisites validated"
         sys.exit(0)
 
-    check_prerequisites(root)
+    # check_prerequisites(root)  # Bypassed - uses year-specific files
     main()

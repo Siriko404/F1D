@@ -192,7 +192,12 @@ def process_in_chunks(
         with open(config_path) as f:
             config = yaml.safe_load(f)
             chunk_config = config.get("chunk_processing", {})
-    except Exception:
+    except (OSError, yaml.YAMLError) as e:
+        logger.debug(f"Could not load chunk processing config, using defaults: {e}")
+        chunk_config = {}
+    except Exception as e:
+        # Catch-all for unexpected errors, but log them
+        logger.warning(f"Unexpected error loading config: {type(e).__name__}: {e}")
         chunk_config = {}
 
     # Initialize throttler if enabled
@@ -366,8 +371,13 @@ class MemoryAwareThrottler:
                 recommended = max(
                     row_group_size, (recommended // row_group_size) * row_group_size
                 )
-            except Exception:
-                pass
+            except (OSError, pa.ArrowIOError) as e:
+                logger.debug(f"Could not read row group size from {file_path}: {e}")
+            except Exception as e:
+                logger.warning(
+                    f"Unexpected error reading parquet metadata from {file_path}: "
+                    f"{type(e).__name__}: {e}"
+                )
 
         return recommended
 

@@ -9,7 +9,36 @@ on:
     branches: [ main, master ]
 
 jobs:
+  # Phase 90-02: Security scanning with Bandit SAST
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Bandit
+      run: pip install bandit
+
+    - name: Run Bandit security scan
+      run: |
+        bandit -r src/f1d/ -c pyproject.toml --severity-level medium
+      continue-on-error: true
+
+    - name: Upload security report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: bandit-security-report
+        path: bandit-report.txt
+        retention-days: 30
+
   test:
+    needs: security
     runs-on: ubuntu-latest
     strategy:
       matrix:

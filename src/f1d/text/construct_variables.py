@@ -58,6 +58,7 @@ import psutil
 # Current implementation uses column pruning for memory optimization, avoiding complex refactoring required for process_in_chunks().
 
 # Import shared path validation utilities
+from f1d.shared.output_schemas import validate_linguistic_variables
 from f1d.shared.observability_utils import (
     DualWriter,
     compute_constructvariables_input_stats,
@@ -587,6 +588,9 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     # Legacy behavior: likely keep NaN or impute.
     # We will keep NaN to distinctions between "No Uncertainty" (0) and "No Text" (NaN).
 
+    # Validate output schema before writing
+    meta = validate_linguistic_variables(meta, warn_only=True)
+
     out_path = out_dir / f"linguistic_variables_{year}.parquet"
     meta.to_parquet(out_path, index=False)
     print(f"  Saved {out_path.name}: {len(meta):,} rows, {variables_created} variables")
@@ -1035,8 +1039,13 @@ def main():
             try:
                 df_year = pd.read_parquet(year_file)
                 output_dfs.append(df_year)
-            except Exception as e:
+            except (OSError, ValueError) as e:
+                # OSError: file access issues, corruption
+                # ValueError: invalid parquet format, schema issues
                 print(f"  Warning: Could not load {year_file}: {e}")
+            except Exception as e:
+                # Catch-all for unexpected errors with full context
+                print(f"  Warning: Unexpected error loading {year_file}: {type(e).__name__}: {e}")
 
     if output_dfs:
         # Define samples, contexts, and categories for analysis

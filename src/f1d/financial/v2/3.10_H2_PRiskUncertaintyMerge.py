@@ -64,6 +64,9 @@ import yaml
 # Import diagnostics for VIF calculation
 from f1d.shared.diagnostics import compute_vif
 
+# Import output schema validation
+from f1d.shared.output_schemas import validate_prisk_uncertainty
+
 # Import observability utilities
 from f1d.shared.observability_utils import (
     calculate_throughput,
@@ -820,8 +823,14 @@ def validate_interaction(df):
                 }
             )
 
+    except (ValueError, KeyError) as e:
+        # ValueError: insufficient data, constant columns
+        # KeyError: missing columns
+        print(f"    Could not compute VIF due to data issue: {e}")
+        vif_results = []
     except Exception as e:
-        print(f"    Could not compute VIF: {e}")
+        # Catch-all for unexpected errors (e.g., numpy linalg errors)
+        print(f"    Could not compute VIF: {type(e).__name__}: {e}")
         vif_results = []
 
     # Note on mean-centering vs standardization
@@ -1220,6 +1229,9 @@ def main():
     print("\n" + "=" * 60)
     print("WRITING OUTPUTS")
     print("=" * 60)
+
+    # Validate output schema before writing
+    final_df = validate_prisk_uncertainty(final_df, warn_only=True)
 
     # Write parquet
     output_file = paths["output_dir"] / "H2_PRiskUncertainty_Analysis.parquet"

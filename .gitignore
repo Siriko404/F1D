@@ -62,6 +62,42 @@ ENV/
 env.bak/
 venv.bak/
 
+# ==============================================================================
+# SECRETS AND CREDENTIALS (Phase 88-01)
+# ==============================================================================
+
+# API keys and tokens
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*_key
+*_token
+
+# Credentials files
+credentials.*
+secrets.*
+*.secret
+*.credentials
+.env.*
+!.env.example
+
+# Cloud provider credentials
+.aws/
+.azure/
+.gcloud/
+*.jsoncreds
+
+# SSH keys
+id_rsa*
+id_ed25519*
+*.ppk
+
+# Database passwords
+*.dbpass
+db_password.*
+
 # IDE
 .idea/
 .vscode/

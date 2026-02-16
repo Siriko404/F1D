@@ -36,8 +36,71 @@ Updated: 2026-02-13 (added ARCH-03 data directory support)
 """
 
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
+import re
 import warnings
+
+
+# ==============================================================================
+# TIMESTAMP VALIDATION (Phase 89-03)
+# ==============================================================================
+
+# Regex pattern for valid timestamp format: YYYY-MM-DD_HHMMSS
+TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}_\d{6}$")
+
+
+def is_valid_timestamp(dirname: str) -> bool:
+    """
+    Validate that a directory name follows the timestamp format.
+
+    Valid format: YYYY-MM-DD_HHMMSS (e.g., 2026-02-15_143022)
+
+    Args:
+        dirname: Directory name to validate
+
+    Returns:
+        True if dirname matches timestamp format, False otherwise
+    """
+    if not dirname:
+        return False
+
+    # Check basic pattern
+    if not TIMESTAMP_PATTERN.match(dirname):
+        return False
+
+    # Additional validation: extract parts and verify they're reasonable
+    try:
+        year = int(dirname[0:4])
+        month = int(dirname[5:7])
+        day = int(dirname[8:10])
+        # hour = int(dirname[11:13])
+        # minute = int(dirname[13:15])
+        # second = int(dirname[15:17])
+
+        # Basic range checks
+        if not (2000 <= year <= 2100):
+            return False
+        if not (1 <= month <= 12):
+            return False
+        if not (1 <= day <= 31):
+            return False
+
+        return True
+    except (ValueError, IndexError):
+        return False
+
+
+def filter_valid_timestamp_dirs(dirs: List[Path]) -> List[Path]:
+    """
+    Filter directories to only those with valid timestamp names.
+
+    Args:
+        dirs: List of directory paths to filter
+
+    Returns:
+        List of directories with valid timestamp names
+    """
+    return [d for d in dirs if is_valid_timestamp(d.name)]
 
 
 # ==============================================================================
@@ -189,7 +252,7 @@ def get_available_disk_space(path: Path) -> float:
 
 
 def get_latest_output_dir(
-    output_base: Path, required_file: Optional[str] = None
+    output_base: Path, required_file: Optional[str] = None, validate_timestamp: bool = True
 ) -> Path:
     """
     Find the most recent timestamped output directory.
@@ -200,6 +263,7 @@ def get_latest_output_dir(
     Args:
         output_base: Base directory containing timestamped subdirectories
         required_file: If provided, only consider directories containing this file
+        validate_timestamp: If True, validate timestamp format (Phase 89-03)
 
     Returns:
         Path to the most recent valid timestamped directory
@@ -219,6 +283,19 @@ def get_latest_output_dir(
         raise OutputResolutionError(
             f"No timestamped directories found in: {output_base}"
         )
+
+    # Validate timestamp format if requested (Phase 89-03)
+    if validate_timestamp:
+        valid_dirs = filter_valid_timestamp_dirs(timestamped_dirs)
+        if not valid_dirs:
+            # Fall back to all digit-prefixed dirs if none match pattern
+            warnings.warn(
+                f"No directories match YYYY-MM-DD_HHMMSS format in {output_base}, "
+                "using fallback matching",
+                UserWarning,
+            )
+            valid_dirs = timestamped_dirs
+        timestamped_dirs = valid_dirs
 
     # Sort by name descending (newest first)
     sorted_dirs = sorted(timestamped_dirs, key=lambda d: d.name, reverse=True)
