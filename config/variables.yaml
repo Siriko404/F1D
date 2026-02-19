@@ -72,6 +72,20 @@ variables:
     column: "Entire_All_Negative_pct"
     description: "Entire call negative sentiment percentage"
 
+  ceo_qa_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_QA_Uncertainty_pct"
+    description: "CEO-only Q&A uncertainty percentage (not full management team)"
+
+  ceo_pres_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_Pres_Uncertainty_pct"
+    description: "CEO-only presentation uncertainty percentage"
+
   # ===========================================================================
   # STAGE 3: Financial Variables
   # ===========================================================================
@@ -145,3 +159,38 @@ hypothesis_tests:
     outputs:
       panel: "outputs/variables/manager_clarity"
       results: "outputs/econometric/manager_clarity"
+
+  ceo_clarity:
+    test_id: "4.1.1_CeoClarity"
+    description: "CEO Clarity Fixed Effects Test (CEO-only variables)"
+
+    dependent: "ceo_qa_uncertainty"
+
+    linguistic_controls:
+      - ceo_pres_uncertainty
+      - analyst_qa_uncertainty
+      - negative_sentiment
+
+    firm_controls:
+      - stock_return
+      - market_return
+      - eps_growth
+      - earnings_surprise
+
+    identifiers:
+      - manifest  # ceo_id, gvkey, ff12_code, start_date
+
+    regression:
+      min_calls_per_ceo: 5
+      fixed_effects:
+        - ceo_id
+        - year
+      samples:
+        main: [1, 2, 3, 4, 5, 6, 7, 9, 10, 12]  # FF12 codes (non-financial, non-utility)
+        finance: [11]
+        utility: [8]
+
+    outputs:
+      panel: "outputs/variables/ceo_clarity"
+      results: "outputs/econometric/ceo_clarity"
+

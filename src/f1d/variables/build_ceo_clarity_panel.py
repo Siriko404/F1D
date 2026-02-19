@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build Manager Clarity Panel
+STAGE 3: Build CEO Clarity Panel
 ================================================================================
-ID: variables/build_manager_clarity_panel
-Description: Build complete panel for Manager Clarity hypothesis test by loading
+ID: variables/build_ceo_clarity_panel
+Description: Build complete panel for CEO Clarity hypothesis test by loading
              all required variables using shared modules and merging into a
              single panel.
 
@@ -15,15 +15,16 @@ Inputs:
     - outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - outputs/variables/manager_clarity/{timestamp}/manager_clarity_panel.parquet
-    - outputs/variables/manager_clarity/{timestamp}/summary_stats.csv
+    - outputs/variables/ceo_clarity/{timestamp}/ceo_clarity_panel.parquet
+    - outputs/variables/ceo_clarity/{timestamp}/summary_stats.csv
+    - outputs/variables/ceo_clarity/{timestamp}/report_step3_ceo_clarity.md
 
 Deterministic: true
 Dependencies:
     - Uses: f1d.shared.variables, f1d.shared.config
 
 Author: Thesis Author
-Date: 2026-02-18
+Date: 2026-02-19
 ================================================================================
 """
 
@@ -40,8 +41,8 @@ import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.variables import (
-    ManagerQAUncertaintyBuilder,
-    ManagerPresUncertaintyBuilder,
+    CEOQAUncertaintyBuilder,
+    CEOPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
     StockReturnBuilder,
@@ -56,7 +57,7 @@ from f1d.shared.variables import (
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build Manager Clarity Panel",
+        description="Stage 3: Build CEO Clarity Panel",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -102,6 +103,10 @@ def build_panel(
 ) -> pd.DataFrame:
     """Build complete panel by loading and merging all variables.
 
+    CEO Clarity uses CEO_QA_Uncertainty_pct (dependent) and
+    CEO_Pres_Uncertainty_pct (control), unlike Manager Clarity which uses
+    the full management team equivalents.
+
     Args:
         root_path: Project root path
         years: Range of years to process
@@ -117,14 +122,14 @@ def build_panel(
 
     all_results: Dict[str, Any] = {}
 
-    # Initialize builders
+    # Initialize builders - CEO Clarity uses CEO-specific variables
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
-            var_config.get("manager_qa_uncertainty", {})
+        "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
+            var_config.get("ceo_qa_uncertainty", {})
         ),
-        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
-            var_config.get("manager_pres_uncertainty", {})
+        "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
+            var_config.get("ceo_pres_uncertainty", {})
         ),
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
@@ -158,10 +163,8 @@ def build_panel(
         if name == "manifest":
             continue
 
-        # Get the main variable column (not file_name)
         data = result.data.copy()
         if "file_name" in data.columns and len(data.columns) > 1:
-            # Merge on file_name
             before_len = len(panel)
             panel = panel.merge(data, on="file_name", how="left")
             after_len = len(panel)
@@ -210,10 +213,10 @@ def save_outputs(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Save panel
-    panel_path = out_dir / "manager_clarity_panel.parquet"
+    panel_path = out_dir / "ceo_clarity_panel.parquet"
     panel.to_parquet(panel_path, index=False)
     print(
-        f"  Saved: manager_clarity_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
+        f"  Saved: ceo_clarity_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
     )
 
     # Save summary stats
@@ -238,7 +241,7 @@ def generate_report(
         duration: Duration in seconds
     """
     report_lines = [
-        "# Stage 3: Manager Clarity Panel Build Report",
+        "# Stage 3: CEO Clarity Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -292,11 +295,11 @@ def generate_report(
     report_lines.append("")
 
     # Write report
-    report_path = out_dir / "report_step3_manager_clarity.md"
+    report_path = out_dir / "report_step3_ceo_clarity.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: report_step3_manager_clarity.md")
+    print(f"  Saved: report_step3_ceo_clarity.md")
 
 
 def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> int:
@@ -305,7 +308,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_manager_clarity_panel",
+        "step_id": "build_ceo_clarity_panel",
         "timestamp": timestamp,
         "variable_stats": [],
         "timing": {},
@@ -314,7 +317,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Setup paths
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "manager_clarity" / timestamp
+    out_dir = root / "outputs" / "variables" / "ceo_clarity" / timestamp
 
     # Load configs
     config = get_config()
@@ -328,7 +331,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build Manager Clarity Panel")
+    print("STAGE 3: Build CEO Clarity Panel")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")

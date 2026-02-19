@@ -1,19 +1,24 @@
 # Stage 3/4 Refactoring Progress Report
 
 **Date:** 2026-02-19
-**Status:** Phase 1 Complete (Manager Clarity Pilot)
+**Status:** Phase 2 Complete (CEO Clarity 4.1.1)
 **Author:** Claude Code Session
 
 ---
 
 ## Executive Summary
 
-This document records the complete refactoring of Stage 3 (variables) and Stage 4 (econometric) architecture for the F1D project. The pilot implementation for the Manager Clarity hypothesis (4.1) has been successfully completed, verified, and serves as the template for extending to other hypotheses.
+This document records the complete refactoring of Stage 3 (variables) and Stage 4 (econometric) architecture for the F1D project. The pilot implementation for the Manager Clarity hypothesis (4.1) has been successfully completed and extended to CEO Clarity (4.1.1), both verified end-to-end.
 
-### Key Results
+### Manager Clarity (4.1) Results
 - **Main sample:** 56,060 observations, 2,539 managers, R² = 0.41
 - **Finance sample:** 12,852 observations, 548 managers, R² = 0.31
 - **Utility sample:** 2,950 observations, 134 managers, R² = 0.22
+
+### CEO Clarity (4.1.1) Results
+- **Main sample:** 41,240 observations, 1,975 CEOs, R² = 0.35
+- **Finance sample:** 7,978 observations, 367 CEOs, R² = 0.29
+- **Utility sample:** 1,711 observations, 88 CEOs, R² = 0.16
 
 ---
 
@@ -29,6 +34,7 @@ This document records the complete refactoring of Stage 3 (variables) and Stage 
 8. [Bugs Fixed](#bugs-fixed)
 9. [Next Steps](#next-steps)
 10. [Verification Checklist](#verification-checklist)
+11. [CEO Clarity (4.1.1) Extension](#ceo-clarity-411-extension)
 
 ---
 
@@ -68,6 +74,8 @@ src/f1d/
 │   │   ├── manager_pres_uncertainty.py
 │   │   ├── analyst_qa_uncertainty.py
 │   │   ├── negative_sentiment.py
+│   │   ├── ceo_qa_uncertainty.py    # NEW (4.1.1)
+│   │   ├── ceo_pres_uncertainty.py  # NEW (4.1.1)
 │   │   ├── stock_return.py
 │   │   ├── market_return.py
 │   │   ├── eps_growth.py
@@ -77,7 +85,8 @@ src/f1d/
 │
 ├── variables/                        # NEW: Stage 3 scripts
 │   ├── __init__.py
-│   └── build_manager_clarity_panel.py
+│   ├── build_manager_clarity_panel.py
+│   └── build_ceo_clarity_panel.py    # NEW (4.1.1)
 │
 ├── sample/                           # RENAMED (was 1.0_, 1.1_, etc.)
 │   ├── build_sample_manifest.py
@@ -99,7 +108,8 @@ src/f1d/
 │   └── utils.py
 │
 └── econometric/
-    └── test_manager_clarity.py       # NEW: Modern hypothesis test
+    ├── test_manager_clarity.py       # NEW: Manager Clarity (4.1)
+    └── test_ceo_clarity.py           # NEW: CEO Clarity (4.1.1)
 
 config/
 └── variables.yaml                    # NEW: Central variable configuration
@@ -223,7 +233,7 @@ def assign_sample(ff12_code: int) -> str:
 
 ## Files Created
 
-### Variable Modules (11 files)
+### Variable Modules (13 files)
 
 | File | Purpose |
 |------|---------|
@@ -233,19 +243,23 @@ def assign_sample(ff12_code: int) -> str:
 | `src/f1d/shared/variables/manager_pres_uncertainty.py` | Manager presentation uncertainty |
 | `src/f1d/shared/variables/analyst_qa_uncertainty.py` | Analyst Q&A uncertainty |
 | `src/f1d/shared/variables/negative_sentiment.py` | Entire_All_Negative_pct |
+| `src/f1d/shared/variables/ceo_qa_uncertainty.py` | CEO-only Q&A uncertainty **(NEW 4.1.1)** |
+| `src/f1d/shared/variables/ceo_pres_uncertainty.py` | CEO-only presentation uncertainty **(NEW 4.1.1)** |
 | `src/f1d/shared/variables/stock_return.py` | StockRet |
 | `src/f1d/shared/variables/market_return.py` | MarketRet |
 | `src/f1d/shared/variables/eps_growth.py` | EPS_Growth |
 | `src/f1d/shared/variables/earnings_surprise.py` | SurpDec |
 | `src/f1d/shared/variables/manifest_fields.py` | ceo_id, gvkey, ff12_code, start_date |
 
-### Stage 3/4 Scripts (4 files)
+### Stage 3/4 Scripts (6 files)
 
 | File | Purpose |
 |------|---------|
 | `src/f1d/variables/__init__.py` | Package init |
-| `src/f1d/variables/build_manager_clarity_panel.py` | Stage 3: Build panel |
-| `src/f1d/econometric/test_manager_clarity.py` | Stage 4: Run hypothesis test |
+| `src/f1d/variables/build_manager_clarity_panel.py` | Stage 3: Build Manager Clarity panel |
+| `src/f1d/variables/build_ceo_clarity_panel.py` | Stage 3: Build CEO Clarity panel **(NEW 4.1.1)** |
+| `src/f1d/econometric/test_manager_clarity.py` | Stage 4: Manager Clarity hypothesis test |
+| `src/f1d/econometric/test_ceo_clarity.py` | Stage 4: CEO Clarity hypothesis test **(NEW 4.1.1)** |
 | `src/f1d/shared/latex_tables_accounting.py` | Accounting Review LaTeX generator |
 
 ### Configuration (1 file)
@@ -446,15 +460,16 @@ root_path = Path(__file__).parent.parent.parent.parent
 
 ## Next Steps
 
-### Immediate (Before Extending to Other Hypotheses)
+### Completed Scripts (v1 Architecture → New Architecture)
 
-1. **Verify all Stage 1-3 scripts work** with renamed paths
-2. **Run full pipeline** from scratch to verify reproducibility
-3. **Update any remaining hardcoded paths** in v2 scripts
+| Script | Status |
+|--------|--------|
+| 4.1 Manager Clarity | ✅ Complete |
+| 4.1.1 CEO Clarity | ✅ Complete |
 
-### Short Term (Extend Architecture)
+### Short Term (Next v1 Scripts to Refactor)
 
-Create variable modules and test scripts for remaining hypotheses:
+Extend the architecture to remaining v1 econometric scripts:
 
 | Hypothesis | Test Script | Variables Needed |
 |------------|-------------|------------------|
@@ -480,7 +495,7 @@ Create variable modules and test scripts for remaining hypotheses:
 
 ## Verification Checklist
 
-### Stage 3 Verification
+### Manager Clarity (4.1) — Stage 3
 
 - [x] All 9 variables load successfully
 - [x] Panel has 112,968 rows (matches manifest)
@@ -492,7 +507,7 @@ Create variable modules and test scripts for remaining hypotheses:
 - [x] Summary stats CSV generated
 - [x] Report markdown generated
 
-### Stage 4 Verification
+### Manager Clarity (4.1) — Stage 4
 
 - [x] Panel loads from Stage 3
 - [x] Complete cases filter works (72,608 rows)
@@ -502,13 +517,85 @@ Create variable modules and test scripts for remaining hypotheses:
 - [x] LaTeX table generated
 - [x] Report markdown generated
 
-### Results Match Expected
-
 | Sample | N Obs | N Managers | R² | Status |
 |--------|-------|------------|-----|--------|
 | Main | 56,060 | 2,539 | 0.4105 | ✅ |
 | Finance | 12,852 | 548 | 0.3052 | ✅ |
 | Utility | 2,950 | 134 | 0.2172 | ✅ |
+
+### CEO Clarity (4.1.1) — Stage 3
+
+- [x] All 9 variables load successfully (uses CEO_QA/CEO_Pres instead of Manager_QA/Manager_Pres)
+- [x] Panel has 112,968 rows (matches manifest)
+- [x] Panel has 17 columns (all expected variables)
+- [x] Sample distribution is correct:
+  - Main: 88,205 calls
+  - Finance: 20,482 calls
+  - Utility: 4,281 calls
+- [x] Summary stats CSV generated
+- [x] Report markdown generated
+
+### CEO Clarity (4.1.1) — Stage 4
+
+- [x] Panel loads from Stage 3
+- [x] Complete cases filter works (51,730 rows)
+- [x] Regressions run for all 3 samples
+- [x] CEO fixed effects extracted
+- [x] ClarityCEO scores standardized (mean=0, std=1)
+- [x] LaTeX table generated (`ceo_clarity_table.tex`)
+- [x] Clarity scores saved (`clarity_scores.parquet`, 2,430 CEOs)
+- [x] Regression summaries saved for all 3 samples
+- [x] Report markdown generated
+
+| Sample | N Obs | N CEOs | R² | Status |
+|--------|-------|--------|-----|--------|
+| Main | 41,240 | 1,975 | 0.3460 | ✅ |
+| Finance | 7,978 | 367 | 0.2948 | ✅ |
+| Utility | 1,711 | 88 | 0.1596 | ✅ |
+
+---
+
+## CEO Clarity (4.1.1) Extension
+
+### Overview
+
+CEO Clarity (4.1.1) follows the identical architecture as Manager Clarity (4.1) with two key differences:
+
+| Aspect | Manager Clarity (4.1) | CEO Clarity (4.1.1) |
+|--------|----------------------|---------------------|
+| Dependent variable | `Manager_QA_Uncertainty_pct` | `CEO_QA_Uncertainty_pct` |
+| Speech control | `Manager_Pres_Uncertainty_pct` | `CEO_Pres_Uncertainty_pct` |
+| Score column | `ClarityManager` | `ClarityCEO` |
+| Output directory | `outputs/variables/manager_clarity/` | `outputs/variables/ceo_clarity/` |
+| Results directory | `outputs/econometric/manager_clarity/` | `outputs/econometric/ceo_clarity/` |
+
+### Files Added
+
+| File | Purpose |
+|------|---------|
+| `src/f1d/shared/variables/ceo_qa_uncertainty.py` | CEO-only Q&A uncertainty variable builder |
+| `src/f1d/shared/variables/ceo_pres_uncertainty.py` | CEO-only presentation uncertainty builder |
+| `src/f1d/variables/build_ceo_clarity_panel.py` | Stage 3: Build CEO Clarity panel |
+| `src/f1d/econometric/test_ceo_clarity.py` | Stage 4: CEO Clarity fixed effects regression |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/f1d/shared/variables/__init__.py` | Registered `CEOQAUncertaintyBuilder`, `CEOPresUncertaintyBuilder` |
+| `config/variables.yaml` | Added `ceo_qa_uncertainty`, `ceo_pres_uncertainty` variable configs and `ceo_clarity` hypothesis test config |
+
+### Type Errors Fixed
+
+During implementation, pre-existing type errors across the Manager Clarity files were discovered and fixed in both Manager and CEO scripts:
+
+| Error | Files | Fix |
+|-------|-------|-----|
+| `main(year_start: int = None)` — `None` not assignable to `int` | `build_manager_clarity_panel.py`, `build_ceo_clarity_panel.py` | Changed to `Optional[int]` |
+| `run_regression` return type excluded `None` from `df_reg` | `test_manager_clarity.py`, `test_ceo_clarity.py` | Changed to `tuple[Any, Optional[pd.DataFrame], Set[Any]]` |
+| `smf` possibly unbound (conditional import) | `test_manager_clarity.py`, `test_ceo_clarity.py` | Pre-assigned `smf: Any = None` before try block |
+| `index.get_loc(i) + 1` — get_loc returns `int \| slice \| ndarray` | `test_manager_clarity.py` | Replaced with `enumerate(..., start=1)` |
+| `if model is None: continue` — doesn't narrow `df_reg` from `Optional` | `test_manager_clarity.py`, `test_ceo_clarity.py` | Changed to `if model is None or df_reg is None: continue` |
 
 ---
 
@@ -594,11 +681,13 @@ python -m f1d.text.build_linguistic_variables
 python -m f1d.financial.build_firm_controls
 python -m f1d.financial.build_market_variables
 
-# NEW Stage 3: Panel building
-python -m f1d.variables.build_manager_clarity_panel
+# Stage 3: Panel building
+python -m f1d.variables.build_manager_clarity_panel   # 4.1 Manager Clarity
+python -m f1d.variables.build_ceo_clarity_panel       # 4.1.1 CEO Clarity
 
-# NEW Stage 4: Hypothesis test
-python -m f1d.econometric.test_manager_clarity
+# Stage 4: Hypothesis tests
+python -m f1d.econometric.test_manager_clarity        # 4.1 Manager Clarity
+python -m f1d.econometric.test_ceo_clarity            # 4.1.1 CEO Clarity
 ```
 
 ---
