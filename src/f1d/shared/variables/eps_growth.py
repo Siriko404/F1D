@@ -1,59 +1,38 @@
 """Builder for EPS Growth variable.
 
-Loads EPS_Growth from Stage 3 firm controls output.
+Delegates to CompustatControlsBuilder and returns only the EPS_Growth column.
+Raw computation is in compustat_controls.py.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import pandas as pd
 
 from .base import VariableBuilder, VariableResult, VariableStats
+from .compustat_controls import CompustatControlsBuilder
 
 
 class EPSGrowthBuilder(VariableBuilder):
-    """Build EPS Growth variable from Stage 3 outputs.
+    """Build EPS Growth variable from raw Compustat quarterly data.
 
-    Source: outputs/3_Financial_Features/latest/
-    File: firm_controls_{year}.parquet
-    Column: EPS_Growth
+    Delegates to CompustatControlsBuilder, returns only file_name + EPS_Growth.
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "EPS_Growth")
+        self._delegate = CompustatControlsBuilder(config)
 
     def build(self, years: range, root_path: Path) -> VariableResult:
-        source_dir = self.resolve_source_dir(root_path)
-        all_data: List[pd.DataFrame] = []
-
-        for year in years:
-            df = self.load_year_file(source_dir, year)
-            if df is not None:
-                cols = ["file_name"]
-                if self.column in df.columns:
-                    cols.append(self.column)
-                all_data.append(df[cols])
-
-        if not all_data:
-            return VariableResult(
-                data=pd.DataFrame(columns=["file_name", self.column]),
-                stats=VariableStats(
-                    name=self.column, n=0, mean=0.0, std=0.0, min=0.0,
-                    p25=0.0, median=0.0, p75=0.0, max=0.0, n_missing=0, pct_missing=100.0
-                ),
-                metadata={"source": str(source_dir), "column": self.column}
-            )
-
-        combined = pd.concat(all_data, ignore_index=True)
-        stats = self.get_stats(combined[self.column], self.column)
-
+        result = self._delegate.build(years, root_path)
+        data = result.data[["file_name", "EPS_Growth"]].copy()
+        stats = self.get_stats(data["EPS_Growth"], "EPS_Growth")
         return VariableResult(
-            data=combined[["file_name", self.column]],
+            data=data,
             stats=stats,
-            metadata={"source": str(source_dir), "column": self.column}
+            metadata={**result.metadata, "column": "EPS_Growth"},
         )
 
 

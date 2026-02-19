@@ -8,11 +8,13 @@ Description: Build complete panel for Manager Clarity hypothesis test by loading
              all required variables using shared modules and merging into a
              single panel.
 
-Inputs:
+Inputs (all raw):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
-    - outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
-    - outputs/3_Financial_Features/latest/market_variables_{year}.parquet
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet  (Compustat)
+    - inputs/CRSP_DSF/CRSP_DSF_{year}_Q{q}.parquet        (CRSP daily)
+    - inputs/tr_ibes/tr_ibes.parquet                       (IBES)
+    - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet   (CCM linktable)
 
 Outputs:
     - outputs/variables/manager_clarity/{timestamp}/manager_clarity_panel.parquet
@@ -23,7 +25,7 @@ Dependencies:
     - Uses: f1d.shared.variables, f1d.shared.config
 
 Author: Thesis Author
-Date: 2026-02-18
+Date: 2026-02-19
 ================================================================================
 """
 
@@ -44,9 +46,8 @@ from f1d.shared.variables import (
     ManagerPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
-    StockReturnBuilder,
-    MarketReturnBuilder,
-    EPSGrowthBuilder,
+    CompustatControlsBuilder,
+    CRSPReturnsBuilder,
     EarningsSurpriseBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -117,7 +118,12 @@ def build_panel(
 
     all_results: Dict[str, Any] = {}
 
-    # Initialize builders
+    # Initialize builders.
+    # Financial variables use compute engines that read raw inputs directly:
+    #   CompustatControlsBuilder → raw Compustat (Size, BM, Lev, ROA, EPS_Growth)
+    #   CRSPReturnsBuilder       → raw CRSP (StockRet, MarketRet)
+    #   EarningsSurpriseBuilder  → raw IBES + CCM (SurpDec)
+    # Each engine loads its source ONCE and returns all columns together.
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
@@ -132,9 +138,8 @@ def build_panel(
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        "stock_return": StockReturnBuilder(var_config.get("stock_return", {})),
-        "market_return": MarketReturnBuilder(var_config.get("market_return", {})),
-        "eps_growth": EPSGrowthBuilder(var_config.get("eps_growth", {})),
+        "compustat_controls": CompustatControlsBuilder({}),
+        "crsp_returns": CRSPReturnsBuilder({}),
         "earnings_surprise": EarningsSurpriseBuilder(
             var_config.get("earnings_surprise", {})
         ),

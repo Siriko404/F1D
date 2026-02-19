@@ -1,59 +1,38 @@
 """Builder for Stock Return variable.
 
-Loads StockRet from Stage 3 market variables output.
+Delegates to CRSPReturnsBuilder and returns only the StockRet column.
+Raw computation is in crsp_returns.py.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import pandas as pd
 
 from .base import VariableBuilder, VariableResult, VariableStats
+from .crsp_returns import CRSPReturnsBuilder
 
 
 class StockReturnBuilder(VariableBuilder):
-    """Build Stock Return variable from Stage 3 outputs.
+    """Build Stock Return variable from raw CRSP daily stock files.
 
-    Source: outputs/3_Financial_Features/latest/
-    File: market_variables_{year}.parquet
-    Column: StockRet
+    Delegates to CRSPReturnsBuilder, returns only file_name + StockRet.
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "StockRet")
+        self._delegate = CRSPReturnsBuilder(config)
 
     def build(self, years: range, root_path: Path) -> VariableResult:
-        source_dir = self.resolve_source_dir(root_path)
-        all_data: List[pd.DataFrame] = []
-
-        for year in years:
-            df = self.load_year_file(source_dir, year)
-            if df is not None:
-                cols = ["file_name"]
-                if self.column in df.columns:
-                    cols.append(self.column)
-                all_data.append(df[cols])
-
-        if not all_data:
-            return VariableResult(
-                data=pd.DataFrame(columns=["file_name", self.column]),
-                stats=VariableStats(
-                    name=self.column, n=0, mean=0.0, std=0.0, min=0.0,
-                    p25=0.0, median=0.0, p75=0.0, max=0.0, n_missing=0, pct_missing=100.0
-                ),
-                metadata={"source": str(source_dir), "column": self.column}
-            )
-
-        combined = pd.concat(all_data, ignore_index=True)
-        stats = self.get_stats(combined[self.column], self.column)
-
+        result = self._delegate.build(years, root_path)
+        data = result.data[["file_name", "StockRet"]].copy()
+        stats = self.get_stats(data["StockRet"], "StockRet")
         return VariableResult(
-            data=combined[["file_name", self.column]],
+            data=data,
             stats=stats,
-            metadata={"source": str(source_dir), "column": self.column}
+            metadata={**result.metadata, "column": "StockRet"},
         )
 
 

@@ -254,10 +254,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
         "root": root,
         "crsp_dir": root / "inputs" / "CRSP_DSF",
         "manifest_dir": manifest_dir,
-        "ccm_file": root
-        / "inputs"
-        / "CRSPCompustat_CCM"
-        / "CRSPCompustat_CCM.parquet",
+        "ccm_file": root / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
     }
 
     output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
@@ -884,6 +881,7 @@ def main() -> int:
             "year",
             "StockRet",
             "MarketRet",
+            "Volatility",
             "Amihud",
             "Corwin_Schultz",
             "Delta_Amihud",
