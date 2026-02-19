@@ -121,76 +121,10 @@ variables:
     description: "Earnings surprise decile (-5 to +5)"
 
 # =============================================================================
-# HYPOTHESIS TEST CONFIGURATIONS
+# NOTE: Hypothesis test parameters (min_calls, sample FF12 codes, output paths)
+# are currently hardcoded in each test script's CONFIG dict. The section below
+# is intentionally omitted to avoid dead config that diverges from the code.
+# If a config-driven runner is added in future, document parameters here.
 # =============================================================================
-# Pre-defined variable sets and regression settings for each hypothesis test
 
-hypothesis_tests:
-  manager_clarity:
-    test_id: "4.1_ManagerClarity"
-    description: "Manager Clarity Fixed Effects Test"
-
-    dependent: "manager_qa_uncertainty"
-
-    linguistic_controls:
-      - manager_pres_uncertainty
-      - analyst_qa_uncertainty
-      - negative_sentiment
-
-    firm_controls:
-      - stock_return
-      - market_return
-      - eps_growth
-      - earnings_surprise
-
-    identifiers:
-      - manifest  # ceo_id, gvkey, ff12_code, start_date
-
-    regression:
-      min_calls_per_manager: 5
-      fixed_effects:
-        - ceo_id
-        - year
-      samples:
-        main: [1, 2, 3, 4, 5, 6, 7, 9, 10, 12]  # FF12 codes (non-financial, non-utility)
-        finance: [11]
-        utility: [8]
-
-    outputs:
-      panel: "outputs/variables/manager_clarity"
-      results: "outputs/econometric/manager_clarity"
-
-  ceo_clarity:
-    test_id: "4.1.1_CeoClarity"
-    description: "CEO Clarity Fixed Effects Test (CEO-only variables)"
-
-    dependent: "ceo_qa_uncertainty"
-
-    linguistic_controls:
-      - ceo_pres_uncertainty
-      - analyst_qa_uncertainty
-      - negative_sentiment
-
-    firm_controls:
-      - stock_return
-      - market_return
-      - eps_growth
-      - earnings_surprise
-
-    identifiers:
-      - manifest  # ceo_id, gvkey, ff12_code, start_date
-
-    regression:
-      min_calls_per_ceo: 5
-      fixed_effects:
-        - ceo_id
-        - year
-      samples:
-        main: [1, 2, 3, 4, 5, 6, 7, 9, 10, 12]  # FF12 codes (non-financial, non-utility)
-        finance: [11]
-        utility: [8]
-
-    outputs:
-      panel: "outputs/variables/ceo_clarity"
-      results: "outputs/econometric/ceo_clarity"
 

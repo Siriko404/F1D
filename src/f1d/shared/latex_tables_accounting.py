@@ -90,6 +90,7 @@ def make_accounting_table(
     control_variables: Optional[List[str]] = None,
     output_path: Optional[Path] = None,
     decimals: int = 3,
+    entity_label: str = "N Managers",
 ) -> str:
     """Generate Accounting Review style LaTeX table.
 
@@ -185,7 +186,9 @@ def make_accounting_table(
     lines.append(r"\midrule")
 
     # Panel A: Model Diagnostics
-    lines.append(r"\multicolumn{" + str(n_cols) + r"}{l}{\textit{Panel A: Model Diagnostics}} \\")
+    lines.append(
+        r"\multicolumn{" + str(n_cols) + r"}{l}{\textit{Panel A: Model Diagnostics}} \\"
+    )
     lines.append(r"\midrule")
 
     # N Observations row
@@ -206,8 +209,8 @@ def make_accounting_table(
         r2_parts.append("")  # Empty t-value cell
     lines.append(" & ".join(r2_parts) + r" \\")
 
-    # N Managers (or N Entities) row
-    n_mgr_parts = ["N Managers"]
+    # N entities row — label is caller-supplied (e.g., "N CEOs" vs "N Managers")
+    n_mgr_parts = [entity_label]
     for sample in sample_names:
         diag = results[sample].get("diagnostics", {})
         n_mgr = diag.get("n_managers") or diag.get("n_entities") or diag.get("n_ceos")
@@ -219,7 +222,9 @@ def make_accounting_table(
     lines.append(r"\midrule")
 
     # Panel B: Control Variables
-    lines.append(r"\multicolumn{" + str(n_cols) + r"}{l}{\textit{Panel B: Control Variables}} \\")
+    lines.append(
+        r"\multicolumn{" + str(n_cols) + r"}{l}{\textit{Panel B: Control Variables}} \\"
+    )
     lines.append(r"\midrule")
 
     # Get models to extract coefficients
@@ -233,7 +238,11 @@ def make_accounting_table(
             model = results[sample].get("model")
             if model is not None and hasattr(model, "params") and var in model.params:
                 coef = model.params[var]
-                tval = model.tvalues[var] if hasattr(model, "tvalues") and var in model.tvalues else np.nan
+                tval = (
+                    model.tvalues[var]
+                    if hasattr(model, "tvalues") and var in model.tvalues
+                    else np.nan
+                )
 
                 row_parts.append(format_estimate(coef, decimals))
                 row_parts.append("")  # Empty cell for t-value column
@@ -304,7 +313,10 @@ def make_diagnostics_table(
     # Rows
     rows = [
         ("N Observations", "n_obs"),
-        ("N Managers", "n_managers"),
+        (
+            "N Entities",
+            "n_managers",
+        ),  # generic label; callers may override via results dict
         ("R-squared", "rsquared"),
         ("Adj. R-squared", "rsquared_adj"),
         ("F-statistic", "f_statistic"),

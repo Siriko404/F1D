@@ -151,6 +151,14 @@ def build_panel(
     manifest_result = all_results["manifest"]
     panel = manifest_result.data.copy()
 
+    # FIX-5: Assert manifest file_name uniqueness — fan-out here corrupts everything
+    if panel["file_name"].duplicated().any():
+        n_dups = panel["file_name"].duplicated().sum()
+        raise ValueError(
+            f"Manifest has {n_dups} duplicate file_name rows. "
+            "Panel build aborted to prevent row multiplication."
+        )
+
     print(f"\n  Base manifest: {len(panel):,} rows")
 
     # Merge all other variables on file_name
@@ -158,16 +166,38 @@ def build_panel(
         if name == "manifest":
             continue
 
-        # Get the main variable column (not file_name)
         data = result.data.copy()
-        if "file_name" in data.columns and len(data.columns) > 1:
-            # Merge on file_name
-            before_len = len(panel)
-            panel = panel.merge(data, on="file_name", how="left")
-            after_len = len(panel)
-            print(
-                f"  After {name} merge: {after_len:,} rows (delta: {after_len - before_len:+,})"
+        if "file_name" not in data.columns or len(data.columns) <= 1:
+            print(f"  WARNING: {name} returned no usable columns — skipping merge")
+            continue
+
+        # FIX-5: Assert builder output is unique on file_name — prevent silent row fan-out
+        if data["file_name"].duplicated().any():
+            n_dups = data["file_name"].duplicated().sum()
+            raise ValueError(
+                f"Builder '{name}' returned {n_dups} duplicate file_name rows. "
+                "Merge aborted to prevent fan-out."
             )
+
+        # FIX-1: Drop columns already in panel (except file_name) to prevent _x/_y conflicts
+        conflicting = [
+            c for c in data.columns if c in panel.columns and c != "file_name"
+        ]
+        if conflicting:
+            print(
+                f"  WARNING: {name} has overlapping columns {conflicting} — dropping from builder data"
+            )
+            data = data.drop(columns=conflicting)
+
+        before_len = len(panel)
+        panel = panel.merge(data, on="file_name", how="left")
+        after_len = len(panel)
+        if after_len != before_len:
+            raise ValueError(
+                f"Merge of '{name}' changed row count {before_len} → {after_len}. "
+                "Duplicate file_name detected in builder output post-merge."
+            )
+        print(f"  After {name} merge: {after_len:,} rows (delta: +0)")
 
     # Add derived fields
     if "ff12_code" in panel.columns:
@@ -316,9 +346,9 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "variables" / "manager_clarity" / timestamp
 
-    # Load configs
-    config = get_config()
-    var_config = load_variable_config()
+    # Load configs — pass explicit paths so CWD doesn't matter
+    config = get_config(root / "config" / "project.yaml")
+    var_config = load_variable_config(root / "config" / "variables.yaml")
 
     # Get year range
     if year_start is None:
