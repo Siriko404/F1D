@@ -1,7 +1,7 @@
 # Stage 3/4 Refactoring Progress Report
 
 **Date:** 2026-02-19
-**Status:** Phase 2 Complete (CEO Clarity 4.1.1)
+**Status:** Phase 3 Complete (Post-Audit Fixes Applied)
 **Author:** Claude Code Session
 
 ---
@@ -10,15 +10,19 @@
 
 This document records the complete refactoring of Stage 3 (variables) and Stage 4 (econometric) architecture for the F1D project. The pilot implementation for the Manager Clarity hypothesis (4.1) has been successfully completed and extended to CEO Clarity (4.1.1), both verified end-to-end.
 
-### Manager Clarity (4.1) Results
-- **Main sample:** 56,060 observations, 2,539 managers, R² = 0.41
-- **Finance sample:** 12,852 observations, 548 managers, R² = 0.31
-- **Utility sample:** 2,950 observations, 134 managers, R² = 0.22
+### Manager Clarity (4.1) Results (post-audit)
+- **Main sample:** 47,890 observations, 2,197 managers, R² = 0.42
+- **Finance sample:** 12,852 observations, 547 managers, R² = 0.31
+- **Utility sample:** 2,950 observations, 133 managers, R² = 0.22
+- **Total estimated managers:** 2,877 (reference entities excluded)
+- **Global standardization:** mean=0.221, std=0.238 before z-scoring
 
-### CEO Clarity (4.1.1) Results
-- **Main sample:** 41,240 observations, 1,975 CEOs, R² = 0.35
-- **Finance sample:** 7,978 observations, 367 CEOs, R² = 0.29
-- **Utility sample:** 1,711 observations, 88 CEOs, R² = 0.16
+### CEO Clarity (4.1.1) Results (post-audit)
+- **Main sample:** 35,472 observations, 1,727 CEOs, R² = 0.35
+- **Finance sample:** 7,978 observations, 366 CEOs, R² = 0.29
+- **Utility sample:** 1,711 observations, 87 CEOs, R² = 0.16
+- **Total estimated CEOs:** 2,180 (reference entities excluded)
+- **Global standardization:** mean=0.019, std=0.238 before z-scoring
 
 ---
 
@@ -32,9 +36,10 @@ This document records the complete refactoring of Stage 3 (variables) and Stage 
 6. [Files Deleted](#files-deleted)
 7. [Key Learnings](#key-learnings)
 8. [Bugs Fixed](#bugs-fixed)
-9. [Next Steps](#next-steps)
-10. [Verification Checklist](#verification-checklist)
-11. [CEO Clarity (4.1.1) Extension](#ceo-clarity-411-extension)
+9. [Red Team Audit Findings and Fixes](#red-team-audit-findings-and-fixes)
+10. [Next Steps](#next-steps)
+11. [Verification Checklist](#verification-checklist)
+12. [CEO Clarity (4.1.1) Extension](#ceo-clarity-411-extension)
 
 ---
 
@@ -458,6 +463,164 @@ root_path = Path(__file__).parent.parent.parent.parent
 
 ---
 
+## Red Team Audit Findings and Fixes
+
+After the initial implementation was verified end-to-end, a systematic red team audit was conducted. Ten bugs were identified and fixed across both Manager and CEO Clarity scripts.
+
+### FIX-1: Column Conflict on Merge
+
+**Severity:** High — silent data corruption  
+**Files:** `build_manager_clarity_panel.py`, `build_ceo_clarity_panel.py`
+
+**Problem:** Linguistic variable files contain columns (`gvkey`, `year`, `start_date`) that also appear in the manifest. Merging on `file_name` without dropping these produced silent `_x`/`_y` pandas suffix columns, creating duplicate data with no warning.
+
+**Fix:** Explicitly drop all manifest-column overlaps from each variable DataFrame before merging:
+
+```python
+manifest_cols = set(df.columns)
+cols_to_drop = [c for c in var_df.columns if c in manifest_cols and c != "file_name"]
+var_df = var_df.drop(columns=cols_to_drop)
+```
+
+### FIX-2: Config Path CWD-Relative Fragility
+
+**Severity:** Medium — runtime error if not run from project root  
+**Files:** `build_manager_clarity_panel.py`, `build_ceo_clarity_panel.py`
+
+**Problem:** `get_config()` and `load_variable_config()` defaulted to `Path("config/project.yaml")` — a CWD-relative path. Both scripts correctly computed `root` from `__file__`, but passed it to variable builders while calling config loaders with no path argument.
+
+**Fix:** Pass the explicit path derived from script location:
+
+```python
+config = get_config(root / "config" / "project.yaml")
+variable_configs = load_variable_config(root / "config" / "variables.yaml")
+```
+
+### FIX-3: Per-Sample Standardization (Catastrophic)
+
+**Severity:** Critical — econometric invalidity  
+**Files:** `test_manager_clarity.py`, `test_ceo_clarity.py`
+
+**Problem:** `ClarityManager`/`ClarityCEO` scores were standardized independently per sample (Main, Finance, Utility) before concatenation. A manager with γ=0.3 in the Main sample and another with γ=0.3 in the Finance sample would get identical z-scores even if the Finance sample had a completely different distribution. This makes cross-sample comparisons meaningless.
+
+**Fix:** Collect all raw gamma values first, then standardize globally across all 2,877/2,180 estimated entities in a single pass:
+
+```python
+# Collect raw scores from all samples
+all_rows = []
+for sample, fe_dict in all_fixed_effects.items():
+    for entity_id, gamma in fe_dict.items():
+        all_rows.append({"ceo_id": entity_id, "sample": sample, "gamma": gamma})
+
+# Standardize globally
+df = pd.DataFrame(all_rows)
+mean_gamma = df["gamma"].mean()
+std_gamma = df["gamma"].std()
+df["ClarityScore"] = -(df["gamma"] - mean_gamma) / std_gamma  # Note: negated
+```
+
+### FIX-4: LaTeX Entity Label Hardcoded
+
+**Severity:** Low — incorrect table output  
+**Files:** `src/f1d/shared/latex_tables_accounting.py`, both test scripts
+
+**Problem:** `make_accounting_table()` always wrote "N Managers" in the diagnostics panel row — wrong for CEO Clarity tables.
+
+**Fix:** Added `entity_label: str = "N Entities"` parameter to `make_accounting_table()` and `make_diagnostics_table()`. Test scripts pass `entity_label="N CEOs"` / `entity_label="N Managers"` accordingly.
+
+### FIX-5: No Duplicate Detection on Merge
+
+**Severity:** High — silent row fan-out  
+**Files:** `build_manager_clarity_panel.py`, `build_ceo_clarity_panel.py`
+
+**Problem:** If any variable builder returned duplicate `file_name` rows, the left merge would silently multiply rows, inflating the panel with no warning.
+
+**Fix:** Assert uniqueness before every merge, raising `ValueError` immediately on fan-out:
+
+```python
+dupes = var_df["file_name"].duplicated().sum()
+if dupes > 0:
+    raise ValueError(f"{name}: {dupes} duplicate file_name rows — merge would fan-out")
+```
+
+### FIX-6: Reference Entity Artifact in Output
+
+**Severity:** Medium — spurious data point in clarity_scores.parquet  
+**Files:** `test_manager_clarity.py`, `test_ceo_clarity.py`
+
+**Problem:** The statsmodels reference category (alphabetically first CEO/manager) gets `gamma_i = 0` by normalization convention, not estimation. Including this artificial zero in `clarity_scores.parquet` creates a ghost data point with false precision.
+
+**Fix:** After extracting fixed effects, identify the reference entity (absent from model params), exclude it from the output parquet, and log the count:
+
+```python
+estimated_ids = set(fe_dict.keys())  # from model params
+all_ids = set(df_sample["ceo_id"].unique())
+reference_ids = all_ids - estimated_ids  # convention zeros
+# Only write estimated entities to clarity_scores.parquet
+```
+
+### FIX-7: Dead YAML Configuration Section
+
+**Severity:** Low — misleading false documentation  
+**Files:** `config/variables.yaml`
+
+**Problem:** The `hypothesis_tests:` section in `variables.yaml` was never read by any script — `load_variable_config()` only returns the `variables:` section. Developers reading the YAML might incorrectly believe these settings were active.
+
+**Fix:** Removed the dead `hypothesis_tests:` section entirely.
+
+### FIX-8: Formula Log Truncation
+
+**Severity:** Low — debugging/reproducibility  
+**Files:** `test_manager_clarity.py`, `test_ceo_clarity.py`
+
+**Problem:** `formula[:80]` in the log statement silently truncated the formula, hiding the `C(year)` year fixed effect from printed output.
+
+**Fix:** Removed the `[:80]` slice — full formula is now printed.
+
+### FIX-9: NaN ff12_code Assigned to Main Sample
+
+**Severity:** High — sample contamination  
+**Files:** `test_manager_clarity.py`, `test_ceo_clarity.py`
+
+**Problem:** Rows with unknown industry (`NaN` in `ff12_code`) fell through the sample assignment logic and were silently included in regressions via the Main sample. Unknown-industry firms should be excluded.
+
+**Fix:** Explicitly filter out `NaN ff12_code` rows after complete-cases filtering:
+
+```python
+df_reg = df_reg[df_reg["ff12_code"].notna()]
+```
+This dropped 8,276 Manager rows and 5,887 CEO rows — a material difference.
+
+### FIX-10: Missing CEO/Manager Metadata in clarity_scores.parquet
+
+**Severity:** Low — downstream usability  
+**Files:** `test_manager_clarity.py`, `test_ceo_clarity.py`
+
+**Problem:** `clarity_scores.parquet` only contained `ceo_id` and `ClarityScore`. Downstream analysis would need to re-join just to get the entity name or call count.
+
+**Fix:** Join `ceo_name` (or `manager_name`) and `n_calls` from the panel before saving:
+
+```python
+meta = panel.groupby("ceo_id").agg(
+    ceo_name=("ceo_name", "first"),
+    n_calls=("file_name", "count")
+).reset_index()
+clarity_df = clarity_df.merge(meta, on="ceo_id", how="left")
+```
+
+### Post-Audit Verification
+
+Pipeline re-run after all 10 fixes confirmed clean execution:
+
+| Script | Rows | Entities | Outcome |
+|--------|------|----------|---------|
+| `build_manager_clarity_panel.py` | 112,968 | — | 0 row delta on every merge |
+| `build_ceo_clarity_panel.py` | 112,968 | — | 0 row delta on every merge |
+| `test_manager_clarity.py` | 47,890 / 12,852 / 2,950 | 2,877 managers | R²=0.42/0.31/0.22 |
+| `test_ceo_clarity.py` | 35,472 / 7,978 / 1,711 | 2,180 CEOs | R²=0.35/0.29/0.16 |
+
+---
+
 ## Next Steps
 
 ### Completed Scripts (v1 Architecture → New Architecture)
@@ -511,17 +674,21 @@ Extend the architecture to remaining v1 econometric scripts:
 
 - [x] Panel loads from Stage 3
 - [x] Complete cases filter works (72,608 rows)
+- [x] NaN ff12_code rows excluded (8,276 dropped) — FIX-9
 - [x] Regressions run for all 3 samples
+- [x] Reference entity excluded from clarity_scores.parquet — FIX-6
 - [x] Manager fixed effects extracted
-- [x] ClarityManager scores standardized (mean=0, std=1)
-- [x] LaTeX table generated
+- [x] ClarityManager scores standardized globally (mean=0, std=1) — FIX-3
+- [x] ceo_name and n_calls joined into clarity_scores.parquet — FIX-10
+- [x] LaTeX table generated with "N Managers" label — FIX-4
+- [x] Full formula logged (no truncation) — FIX-8
 - [x] Report markdown generated
 
 | Sample | N Obs | N Managers | R² | Status |
 |--------|-------|------------|-----|--------|
-| Main | 56,060 | 2,539 | 0.4105 | ✅ |
-| Finance | 12,852 | 548 | 0.3052 | ✅ |
-| Utility | 2,950 | 134 | 0.2172 | ✅ |
+| Main | 47,890 | 2,197 | 0.4166 | ✅ |
+| Finance | 12,852 | 547 | 0.3052 | ✅ |
+| Utility | 2,950 | 133 | 0.2172 | ✅ |
 
 ### CEO Clarity (4.1.1) — Stage 3
 
@@ -539,19 +706,23 @@ Extend the architecture to remaining v1 econometric scripts:
 
 - [x] Panel loads from Stage 3
 - [x] Complete cases filter works (51,730 rows)
+- [x] NaN ff12_code rows excluded (5,887 dropped) — FIX-9
 - [x] Regressions run for all 3 samples
+- [x] Reference entity excluded from clarity_scores.parquet — FIX-6
 - [x] CEO fixed effects extracted
-- [x] ClarityCEO scores standardized (mean=0, std=1)
-- [x] LaTeX table generated (`ceo_clarity_table.tex`)
-- [x] Clarity scores saved (`clarity_scores.parquet`, 2,430 CEOs)
+- [x] ClarityCEO scores standardized globally (mean=0, std=1) — FIX-3
+- [x] ceo_name and n_calls joined into clarity_scores.parquet — FIX-10
+- [x] LaTeX table generated with "N CEOs" label — FIX-4
+- [x] Full formula logged (no truncation) — FIX-8
+- [x] Clarity scores saved (`clarity_scores.parquet`, 2,180 CEOs)
 - [x] Regression summaries saved for all 3 samples
 - [x] Report markdown generated
 
 | Sample | N Obs | N CEOs | R² | Status |
 |--------|-------|--------|-----|--------|
-| Main | 41,240 | 1,975 | 0.3460 | ✅ |
-| Finance | 7,978 | 367 | 0.2948 | ✅ |
-| Utility | 1,711 | 88 | 0.1596 | ✅ |
+| Main | 35,472 | 1,727 | 0.3539 | ✅ |
+| Finance | 7,978 | 366 | 0.2948 | ✅ |
+| Utility | 1,711 | 87 | 0.1596 | ✅ |
 
 ---
 
