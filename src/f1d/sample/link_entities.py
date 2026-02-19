@@ -19,17 +19,17 @@ Description: Links cleaned metadata to CCM database using 4-tier strategy:
              ~11k unique companies instead of 297k individual calls.
 
 Inputs:
-    - 4_Outputs/1.1_CleanMetadata/latest/metadata_cleaned.parquet
-    - 1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet
-    - 1_Inputs/FF1248/Siccodes12.zip
-    - 1_Inputs/FF1248/Siccodes48.zip
+    - outputs/1.1_CleanMetadata/latest/metadata_cleaned.parquet
+    - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet
+    - inputs/FF1248/Siccodes12.zip
+    - inputs/FF1248/Siccodes48.zip
     - config/project.yaml
 
 Outputs:
-    - 4_Outputs/1.2_LinkEntities/{timestamp}/metadata_linked.parquet
-    - 4_Outputs/1.2_LinkEntities/{timestamp}/variable_reference.csv
-    - 4_Outputs/1.2_LinkEntities/{timestamp}/report_step_1_2.md
-    - 3_Logs/1.2_LinkEntities/{timestamp}.log
+    - outputs/1.2_LinkEntities/{timestamp}/metadata_linked.parquet
+    - outputs/1.2_LinkEntities/{timestamp}/variable_reference.csv
+    - outputs/1.2_LinkEntities/{timestamp}/report_step_1_2.md
+    - logs/1.2_LinkEntities/{timestamp}.log
 
 Deterministic: true
 Dependencies:
@@ -127,7 +127,7 @@ def check_prerequisites(root: Path) -> None:
     from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
-        "CRSPCompustat_CCM/": root / "1_Inputs" / "CRSPCompustat_CCM",
+        "CRSPCompustat_CCM/": root / "inputs" / "CRSPCompustat_CCM",
     }
 
     required_steps = {
@@ -170,20 +170,20 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
 
     # Resolve input from prior step using timestamp-based resolution
     metadata_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.1_CleanMetadata",
+        root / "outputs" / "1.1_CleanMetadata",
         required_file="metadata_cleaned.parquet",
     )
 
     paths = {
         "root": root,
         "metadata": metadata_dir / "metadata_cleaned.parquet",
-        "ccm": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
+        "ccm": root / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
         "ccm_varref": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSP_CCM_Variable_Reference.txt",
-        "ff12": root / "1_Inputs" / "FF1248" / "Siccodes12.zip",
-        "ff48": root / "1_Inputs" / "FF1248" / "Siccodes48.zip",
+        "ff12": root / "inputs" / "FF1248" / "Siccodes12.zip",
+        "ff48": root / "inputs" / "FF1248" / "Siccodes48.zip",
     }
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")

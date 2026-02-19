@@ -16,11 +16,11 @@ Variables Computed:
     - Delta_Amihud, Delta_Corwin_Schultz: Event - Baseline
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/CRSP/*.parquet
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - inputs/CRSP/*.parquet
 
 Outputs:
-    - 4_Outputs/3_Financial_Features/{timestamp}/market_variables_{year}.parquet
+    - outputs/3_Financial_Features/{timestamp}/market_variables_{year}.parquet
     - stats.json
     - {timestamp}.log
 
@@ -233,7 +233,7 @@ def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
 
 
 def load_config() -> Dict[str, Any]:
-    config_path = Path(__file__).parent.parent.parent.parent.parent / "config" / "project.yaml"
+    config_path = Path(__file__).parent.parent.parent.parent / "config" / "project.yaml"
 
     validate_input_file(config_path, must_exist=True)
 
@@ -242,20 +242,20 @@ def load_config() -> Dict[str, Any]:
 
 
 def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
-    root = Path(__file__).parent.parent.parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     paths = {
         "root": root,
-        "crsp_dir": root / "1_Inputs" / "CRSP_DSF",
+        "crsp_dir": root / "inputs" / "CRSP_DSF",
         "manifest_dir": manifest_dir,
         "ccm_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSPCompustat_CCM.parquet",
     }
@@ -672,12 +672,12 @@ def check_prerequisites(root: Path) -> None:
     """Validate all required inputs and prerequisite steps exist."""
 
     # Check CRSP directory exists
-    crsp_dir = root / "1_Inputs" / "CRSP_DSF"
+    crsp_dir = root / "inputs" / "CRSP_DSF"
     if not crsp_dir.exists():
         raise FileNotFoundError(f"CRSP directory not found: {crsp_dir}")
 
     # Check CCM file exists
-    ccm_file = root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
+    ccm_file = root / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
     if not ccm_file.exists():
         raise FileNotFoundError(f"CCM file not found: {ccm_file}")
 
@@ -685,7 +685,7 @@ def check_prerequisites(root: Path) -> None:
     from f1d.shared.path_utils import get_latest_output_dir
 
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     if not manifest_dir.exists():
@@ -1063,7 +1063,7 @@ def main() -> int:
 if __name__ == "__main__":
     args = parse_arguments()
 
-    root = Path(__file__).parent.parent.parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     if args.dry_run:
         print("Dry-run mode: validating inputs...")

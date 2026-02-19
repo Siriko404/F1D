@@ -16,13 +16,13 @@ Variables Computed:
     - shift_intensity: Competition instrument (merged from CCCL)
 
 Inputs:
-    - 4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet
-    - 1_Inputs/tr_ibes/tr_ibes.parquet
-    - 1_Inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
+    - outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet
+    - inputs/tr_ibes/tr_ibes.parquet
+    - inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
 
 Outputs:
-    - 4_Outputs/3_Financial_Features/{timestamp}/firm_controls_{year}.parquet
+    - outputs/3_Financial_Features/{timestamp}/firm_controls_{year}.parquet
 
 Deterministic: true
 
@@ -69,7 +69,7 @@ from f1d.shared.path_utils import (
 
 def load_config() -> Dict[str, Any]:
     """Load configuration from project.yaml"""
-    config_path = Path(__file__).parent.parent.parent.parent.parent / "config" / "project.yaml"
+    config_path = Path(__file__).parent.parent.parent.parent / "config" / "project.yaml"
     validate_input_file(config_path, must_exist=True)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
@@ -77,11 +77,11 @@ def load_config() -> Dict[str, Any]:
 
 def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
     """Set up all required paths"""
-    root = Path(__file__).parent.parent.parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -89,16 +89,16 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
         "root": root,
         "manifest_dir": manifest_dir,
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
-        "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
+        "ibes_file": root / "inputs" / "tr_ibes" / "tr_ibes.parquet",
         "cccl_file": root
-        / "1_Inputs"
-        / "CCCL instrument"
+        / "inputs"
+        / "CCCL_instrument"
         / "instrument_shift_intensity_2005_2022.parquet",
         "ccm_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSPCompustat_CCM.parquet",
     }
@@ -530,7 +530,7 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> None:
 
     # Compustat path (hardcoded - no flags needed)
     compustat_path = (
-        root / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
+        root / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
     )
 
     required_files = {
@@ -551,7 +551,7 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> None:
 def main() -> int:
     """Main execution"""
     args = parse_arguments()
-    root = Path(__file__).parent.parent.parent.parent.parent
+    root = Path(__file__).parent.parent.parent.parent
 
     # Handle dry-run mode
     if args.dry_run:

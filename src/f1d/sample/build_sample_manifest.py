@@ -20,13 +20,13 @@ Inputs:
     - config/project.yaml
 
 Outputs:
-    - 4_Outputs/1.0_BuildSampleManifest/{timestamp}/master_sample_manifest.parquet
-    - 4_Outputs/1.0_BuildSampleManifest/{timestamp}/report_step_1_0.md
-    - 3_Logs/1.0_BuildSampleManifest/{timestamp}.log
+    - outputs/1.0_BuildSampleManifest/{timestamp}/master_sample_manifest.parquet
+    - outputs/1.0_BuildSampleManifest/{timestamp}/report_step_1_0.md
+    - logs/1.0_BuildSampleManifest/{timestamp}.log
 
 Deterministic: true
 Dependencies:
-    - Requires: 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
+    - Requires: inputs/Earnings_Calls_Transcripts/Unified-info.parquet
     - Uses: pandas, yaml
 
 Author: Thesis Author
@@ -97,8 +97,8 @@ def check_prerequisites(root: Path) -> None:
 
     required_files = {
         "config/project.yaml": root / "config/project.yaml",
-        "1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet": root
-        / "1_Inputs"
+        "inputs/Earnings_Calls_Transcripts/Unified-info.parquet": root
+        / "inputs"
         / "Earnings_Calls_Transcripts"
         / "Unified-info.parquet",
     }
@@ -268,7 +268,7 @@ def main() -> int:
 
         # Copy final manifest to orchestrator output
         manifest_dir = get_latest_output_dir(
-            paths["root"] / "4_Outputs" / "1.4_AssembleManifest",
+            paths["root"] / "outputs" / "1.4_AssembleManifest",
             required_file="master_sample_manifest.parquet",
         )
         manifest_source = manifest_dir / "master_sample_manifest.parquet"

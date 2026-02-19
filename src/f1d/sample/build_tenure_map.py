@@ -9,14 +9,14 @@ Description: Constructs monthly CEO tenure panel from Execucomp data.
              and expands to monthly panel with current + previous CEO info.
 
 Inputs:
-    - 1_Inputs/Execucomp/comp_execucomp.parquet
+    - inputs/Execucomp/comp_execucomp.parquet
     - config/project.yaml
 
 Outputs:
-    - 4_Outputs/1.3_BuildTenureMap/{timestamp}/tenure_monthly.parquet
-    - 4_Outputs/1.3_BuildTenureMap/{timestamp}/variable_reference.csv
-    - 4_Outputs/1.3_BuildTenureMap/{timestamp}/report_step_1_3.md
-    - 3_Logs/1.3_BuildTenureMap/{timestamp}.log
+    - outputs/1.3_BuildTenureMap/{timestamp}/tenure_monthly.parquet
+    - outputs/1.3_BuildTenureMap/{timestamp}/variable_reference.csv
+    - outputs/1.3_BuildTenureMap/{timestamp}/report_step_1_3.md
+    - logs/1.3_BuildTenureMap/{timestamp}.log
 
 Deterministic: true
 Dependencies:
@@ -105,7 +105,7 @@ def check_prerequisites(root: Path) -> None:
 
     required_files = {
         "comp_execucomp.parquet": root
-        / "1_Inputs"
+        / "inputs"
         / "Execucomp"
         / "comp_execucomp.parquet",
     }
@@ -123,7 +123,7 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
 
     paths = {
         "root": root,
-        "execucomp": root / "1_Inputs" / "Execucomp" / "comp_execucomp.parquet",
+        "execucomp": root / "inputs" / "Execucomp" / "comp_execucomp.parquet",
     }
 
     # Create timestamped output directory

@@ -20,9 +20,15 @@ from __future__ import annotations
 import os
 import time
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
+
+import yaml
 
 from f1d.shared.config.base import ProjectConfig
+
+
+# Variable config cache
+_variable_config: Optional[Dict[str, Any]] = None
 
 
 class ConfigError(Exception):
@@ -279,3 +285,57 @@ def get_config_sources() -> Dict[str, str]:
             sources[config_key] = "yaml"
 
     return sources
+
+
+def load_variable_config(path: Optional[Path] = None, reload: bool = False) -> Dict[str, Any]:
+    """Load variable source configuration from variables.yaml.
+
+    This function loads the variable configuration that specifies where
+    each variable should be loaded from (Stage 1/2/3 outputs).
+
+    Args:
+        path: Path to variables.yaml. Defaults to config/variables.yaml.
+        reload: Force reload from file even if cached.
+
+    Returns:
+        Dictionary with variable configurations.
+
+    Raises:
+        FileNotFoundError: If variables.yaml doesn't exist.
+
+    Example:
+        >>> from f1d.shared.config.loader import load_variable_config
+        >>> var_config = load_variable_config()
+        >>> var_config["manager_qa_uncertainty"]["column"]
+        'Manager_QA_Uncertainty_pct'
+    """
+    global _variable_config
+
+    if path is None:
+        path = Path("config/variables.yaml")
+
+    # Return cached if available and not forcing reload
+    if not reload and _variable_config is not None:
+        return _variable_config
+
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Variable configuration file not found: {path}\n"
+            f"Please ensure config/variables.yaml exists."
+        )
+
+    with open(path, "r", encoding="utf-8") as f:
+        data: Dict[str, Any] = yaml.safe_load(f)
+
+    # Extract variables section
+    variables = data.get("variables", {})
+
+    # Cache and return
+    _variable_config = variables
+    return variables
+
+
+def clear_variable_config_cache() -> None:
+    """Clear the cached variable configuration."""
+    global _variable_config
+    _variable_config = None

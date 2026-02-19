@@ -10,11 +10,11 @@ Purpose: Aggregates word-level statistics into call-level linguistic
          measures for regression analysis.
 
 Inputs:
-    - 4_Outputs/2.1_TokenizeAndCount/latest/word_counts.parquet
+    - outputs/2.1_TokenizeAndCount/latest/word_counts.parquet
     - Linguistic dictionary files
 
 Outputs:
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/{timestamp}/linguistic_variables.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/{timestamp}/linguistic_variables.parquet
     - stats.json
     - {timestamp}.log
 
@@ -79,7 +79,7 @@ from f1d.shared.path_utils import (
 
 def setup_logging():
     log_dir = (
-        Path(__file__).parent.parent.parent.parent / "3_Logs" / "2.2_ConstructVariables"
+        Path(__file__).parent.parent.parent.parent / "logs" / "2.2_ConstructVariables"
     )
     ensure_output_dir(log_dir)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
@@ -120,20 +120,20 @@ def check_prerequisites(root):
 
     # Check tokenized files from step 2.1
     get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.1_Tokenized",
+        root / "outputs" / "2_Textual_Analysis" / "2.1_Tokenized",
         required_file="linguistic_counts_2002.parquet",
     )
 
     # Check manifest from step 1.4
     get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     # Validate required files exist
     required_files = {
         "managerial_roles_extracted.txt": root
-        / "1_Inputs"
+        / "inputs"
         / "Manager_roles"
         / "managerial_roles_extracted.txt",
     }
@@ -363,7 +363,7 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
 
 
 def load_manager_keywords(root: Path) -> Pattern[str]:
-    path = root / "1_Inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
+    path = root / "inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
     with open(path, "r") as f:
         keywords = [line.strip() for line in f if line.strip()]
     pattern = re.compile("|".join(keywords), re.IGNORECASE)
@@ -373,7 +373,7 @@ def load_manager_keywords(root: Path) -> Pattern[str]:
 
 def load_ceo_map(root):
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -880,7 +880,7 @@ def main():
     root = Path(__file__).parent.parent.parent.parent
     setup_logging()
 
-    out_base = root / "4_Outputs" / "2_Textual_Analysis"
+    out_base = root / "outputs" / "2_Textual_Analysis"
     out_dir = out_base / "2.2_Variables" / timestamp
     ensure_output_dir(out_dir)
 
@@ -901,19 +901,19 @@ def main():
 
     # Load References and checksum inputs
     keywords_path = (
-        root / "1_Inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
+        root / "inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
     )
 
     # Resolve manifest path using timestamp-based directory resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.0_BuildSampleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
 
     # Resolve tokenized input directory using timestamp-based resolution
     tokenized_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.1_Tokenized",
+        root / "outputs" / "2_Textual_Analysis" / "2.1_Tokenized",
         required_file="linguistic_counts_2002.parquet",
     )
 

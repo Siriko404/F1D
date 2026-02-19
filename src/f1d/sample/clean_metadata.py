@@ -9,14 +9,14 @@ Description: Loads Unified-info, deduplicates exact rows, resolves file_name
              the target date range (2002-2018).
 
 Inputs:
-    - 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
+    - inputs/Earnings_Calls_Transcripts/Unified-info.parquet
     - config/project.yaml
 
 Outputs:
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/metadata_cleaned.parquet
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/variable_reference.csv
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/report_step_1_1.md
-    - 3_Logs/1.1_CleanMetadata/{timestamp}.log
+    - outputs/1.1_CleanMetadata/{timestamp}/metadata_cleaned.parquet
+    - outputs/1.1_CleanMetadata/{timestamp}/variable_reference.csv
+    - outputs/1.1_CleanMetadata/{timestamp}/report_step_1_1.md
+    - logs/1.1_CleanMetadata/{timestamp}.log
 
 Deterministic: true
 Dependencies:
@@ -110,7 +110,7 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> argparse.Namesp
 
     required_files = {
         "Unified-info.parquet": root
-        / "1_Inputs"
+        / "inputs"
         / "Earnings_Calls_Transcripts"
         / "Unified-info.parquet",
     }
@@ -145,7 +145,7 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
     paths = {
         "root": root,
         "unified_info": root
-        / "1_Inputs"
+        / "inputs"
         / "Earnings_Calls_Transcripts"
         / "Unified-info.parquet",
     }

@@ -8,15 +8,15 @@ Description: Joins linked metadata with CEO tenure panel, filters for
              CEOs with minimum call threshold, and produces final manifest.
 
 Inputs:
-    - 4_Outputs/1.2_LinkEntities/latest/metadata_linked.parquet
-    - 4_Outputs/1.3_BuildTenureMap/latest/tenure_monthly.parquet
+    - outputs/1.2_LinkEntities/latest/metadata_linked.parquet
+    - outputs/1.3_BuildTenureMap/latest/tenure_monthly.parquet
     - config/project.yaml
 
 Outputs:
-    - 4_Outputs/1.4_AssembleManifest/{timestamp}/master_sample_manifest.parquet
-    - 4_Outputs/1.4_AssembleManifest/{timestamp}/variable_reference.csv
-    - 4_Outputs/1.4_AssembleManifest/{timestamp}/report_step_1_4.md
-    - 3_Logs/1.4_AssembleManifest/{timestamp}.log
+    - outputs/1.4_AssembleManifest/{timestamp}/master_sample_manifest.parquet
+    - outputs/1.4_AssembleManifest/{timestamp}/variable_reference.csv
+    - outputs/1.4_AssembleManifest/{timestamp}/report_step_1_4.md
+    - logs/1.4_AssembleManifest/{timestamp}.log
 
 Deterministic: true
 Dependencies:
@@ -82,10 +82,10 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
 
     # Resolve inputs from prior steps using timestamp-based resolution
     metadata_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.2_LinkEntities", required_file="metadata_linked.parquet"
+        root / "outputs" / "1.2_LinkEntities", required_file="metadata_linked.parquet"
     )
     tenure_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.3_BuildTenureMap",
+        root / "outputs" / "1.3_BuildTenureMap",
         required_file="tenure_monthly.parquet",
     )
 
@@ -93,7 +93,7 @@ def setup_paths(config: Dict[str, Any]) -> tuple[Dict[str, Path], str]:
         "root": root,
         "metadata": metadata_dir / "metadata_linked.parquet",
         "tenure": tenure_dir / "tenure_monthly.parquet",
-        "ccm_file": root / "1_Inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
+        "ccm_file": root / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet",
     }
 
     # Create timestamped output directory

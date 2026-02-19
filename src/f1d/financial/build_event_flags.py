@@ -12,11 +12,11 @@ Variables Computed:
     - Duration: Quarters until takeover event (for survival analysis)
 
 Inputs:
-    - 4_Outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/SDC/sdc-ma-merged.parquet
+    - outputs/1.0_BuildSampleManifest/latest/master_sample_manifest.parquet
+    - inputs/SDC/sdc-ma-merged.parquet
 
 Outputs:
-    - 4_Outputs/3_Financial_Features/{timestamp}/event_flags_{year}.parquet
+    - outputs/3_Financial_Features/{timestamp}/event_flags_{year}.parquet
 
 Deterministic: true
 
@@ -197,14 +197,14 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     paths = {
         "root": root,
         "manifest_dir": manifest_dir,
-        "sdc_file": root / "1_Inputs" / "SDC" / "sdc-ma-merged.parquet",
+        "sdc_file": root / "inputs" / "SDC" / "sdc-ma-merged.parquet",
     }
 
     # Output directory
@@ -424,7 +424,7 @@ def check_prerequisites(root: Path) -> None:
     from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
-        "SDC/": root / "1_Inputs" / "SDC",
+        "SDC/": root / "inputs" / "SDC",
     }
 
     required_steps = {

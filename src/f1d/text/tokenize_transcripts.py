@@ -10,11 +10,11 @@ Purpose: Processes raw transcript files to generate word frequency statistics
          for linguistic analysis.
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/transcript/*.txt files
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - inputs/transcript/*.txt files
 
 Outputs:
-    - 4_Outputs/2_Textual_Analysis/2.1_TokenizeAndCount/{timestamp}/word_counts.parquet
+    - outputs/2_Textual_Analysis/2.1_TokenizeAndCount/{timestamp}/word_counts.parquet
     - stats.json
     - {timestamp}.log
 
@@ -130,7 +130,7 @@ class ScriptStats(TypedDict, total=False):
 
 def setup_logging() -> Path:
     log_dir = (
-        Path(__file__).parent.parent.parent.parent / "3_Logs" / "2.1_TokenizeAndCount"
+        Path(__file__).parent.parent.parent.parent / "logs" / "2.1_TokenizeAndCount"
     )
     ensure_output_dir(log_dir)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
@@ -170,7 +170,7 @@ linguistic measures (positive, negative, uncertainty words).
     parser.add_argument(
         "--dictionary",
         type=str,
-        help="Path to LM dictionary file (default: 1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv)",
+        help="Path to LM dictionary file (default: inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv)",
     )
 
     return parser.parse_args()
@@ -184,7 +184,7 @@ def check_prerequisites(root, args):
     dict_path = (
         args.dictionary
         if args.dictionary
-        else root / "1_Inputs" / "Loughran-McDonald_MasterDictionary_1993-2024.csv"
+        else root / "inputs" / "Loughran-McDonald_MasterDictionary_1993-2024.csv"
     )
 
     required_files = {
@@ -836,7 +836,7 @@ def process_year_worker(
         Tuple of (year, year_stats_dict)
     """
     input_path = (
-        root / f"1_Inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
+        root / f"inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
     )
     if not input_path.exists():
         print(f"  Skipping {year}: Input not found")
@@ -934,7 +934,7 @@ def process_year_worker(
 
 def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir):
     input_path = (
-        root / f"1_Inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
+        root / f"inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
     )
     if not input_path.exists():
         print(f"  Skipping {year}: Input not found")
@@ -1065,7 +1065,7 @@ def main(dictionary_path: Optional[str] = None) -> None:
 
     # Output Setup
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-    out_base = root / "4_Outputs" / "2_Textual_Analysis"
+    out_base = root / "outputs" / "2_Textual_Analysis"
     out_dir = out_base / "2.1_Tokenized" / timestamp
     ensure_output_dir(out_dir)
 
@@ -1097,14 +1097,14 @@ def main(dictionary_path: Optional[str] = None) -> None:
 
     # Load documents with memory tracking
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
     lm_path = (
         Path(dictionary_path)
         if dictionary_path
-        else root / "1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
+        else root / "inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv"
     )
 
     print("Loading manifest and dictionary...")

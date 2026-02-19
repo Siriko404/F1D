@@ -11,12 +11,12 @@ Purpose: Orchestrates the execution of Step 3.1, 3.2, and 3.3 scripts
          to build financial features with unified output directory.
 
 Inputs:
-    - 4_Outputs/2.2_Variables/latest/*.parquet
-    - 1_Inputs/compustat/*.parquet
-    - 1_Inputs/tr_ibes/*.parquet
+    - outputs/2.2_Variables/latest/*.parquet
+    - inputs/compustat/*.parquet
+    - inputs/tr_ibes/*.parquet
 
 Outputs:
-    - 4_Outputs/3_Financial_Features/{timestamp}/*.parquet
+    - outputs/3_Financial_Features/{timestamp}/*.parquet
     - stats.json
     - {timestamp}.log
 
@@ -257,7 +257,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -266,20 +266,20 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
         "script_dir": Path(__file__).parent,
         "manifest_dir": manifest_dir,
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
-        "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
+        "ibes_file": root / "inputs" / "tr_ibes" / "tr_ibes.parquet",
         "cccl_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CCCL_instrument"
         / "instrument_shift_intensity_2005_2022.parquet",
         "ccm_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSPCompustat_CCM.parquet",
-        "crsp_dir": root / "1_Inputs" / "CRSP_DSF",
-        "sdc_file": root / "1_Inputs" / "SDC" / "sdc-ma-merged.parquet",
+        "crsp_dir": root / "inputs" / "CRSP_DSF",
+        "sdc_file": root / "inputs" / "SDC" / "sdc-ma-merged.parquet",
     }
 
     output_base = root / config["paths"]["outputs"] / "3_Financial_Features"
@@ -318,10 +318,10 @@ def check_prerequisites(root: Path, args: argparse.Namespace) -> None:
     from f1d.shared.dependency_checker import validate_prerequisites
 
     required_files = {
-        "Compustat/": root / "1_Inputs" / "comp_na_daily_all",
-        "IBES/": root / "1_Inputs" / "tr_ibes",
-        "CRSP/": root / "1_Inputs" / "CRSP_DSF",
-        "SDC/": root / "1_Inputs" / "SDC",
+        "Compustat/": root / "inputs" / "comp_na_daily_all",
+        "IBES/": root / "inputs" / "tr_ibes",
+        "CRSP/": root / "inputs" / "CRSP_DSF",
+        "SDC/": root / "inputs" / "SDC",
     }
 
     required_steps = {

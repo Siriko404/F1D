@@ -33,13 +33,13 @@ class PathsSettings(BaseSettings):
         >>> paths = PathsSettings()
         >>> resolved = paths.resolve(Path("/project"))
         >>> resolved["inputs"]
-        PosixPath('/project/1_Inputs')
+        PosixPath('/project/inputs')
     """
 
-    inputs: str = Field(default="1_Inputs", description="Input data directory")
+    inputs: str = Field(default="inputs", description="Input data directory")
     scripts: str = Field(default="src/f1d", description="Scripts directory (src-layout)")
-    logs: str = Field(default="3_Logs", description="Logs directory")
-    outputs: str = Field(default="4_Outputs", description="Outputs directory")
+    logs: str = Field(default="logs", description="Logs directory")
+    outputs: str = Field(default="outputs", description="Outputs directory")
     lm_dictionary: Optional[str] = Field(
         default=None, description="Path to Loughran-McDonald dictionary"
     )
@@ -67,7 +67,7 @@ class PathsSettings(BaseSettings):
             >>> paths = PathsSettings()
             >>> resolved = paths.resolve(Path("/project"))
             >>> resolved["inputs"]
-            PosixPath('/project/1_Inputs')
+            PosixPath('/project/inputs')
         """
         resolved: Dict[str, Any] = {}
 

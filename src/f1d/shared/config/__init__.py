@@ -33,8 +33,10 @@ from f1d.shared.config.hashing import HashingConfig
 from f1d.shared.config.loader import (
     ConfigError,
     clear_config_cache,
+    clear_variable_config_cache,
     get_config,
     get_config_sources,
+    load_variable_config,
     reload_config,
     validate_env_override,
 )
@@ -70,6 +72,9 @@ __all__ = [
     "reload_config",
     "clear_config_cache",
     "ConfigError",
+    # Variable config
+    "load_variable_config",
+    "clear_variable_config_cache",
     # Config source helpers
     "validate_env_override",
     "get_config_sources",

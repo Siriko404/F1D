@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-STEP 1.5: Utilities for Step 1
+STEP 3.4: Utilities for Step 3
 ==============================================================================
-ID: 1.5_Utils
-Description: Shared utilities for Step 1 scripts.
+ID: 3.4_Utils
+Description: Shared utilities for Step 3 scripts.
 
 Purpose: Provides common functions for variable reference generation
-         and other Step 1 operations.
+         and other Step 3 operations.
 
 Inputs:
     - Variable definition files
@@ -18,7 +18,7 @@ Outputs:
     - Variable lookup dictionaries
 
 Dependencies:
-    - Utility module for Step 1
+    - Utility module for Step 3
     - Uses: pandas, numpy
 
 Deterministic: true
@@ -36,8 +36,8 @@ import pandas as pd
 
 def load_master_variable_definitions() -> Dict[str, Dict[str, str]]:
     """Load the master variable definitions CSV"""
-    root = Path(__file__).parent.parent.parent
-    master_path = root / "1_Inputs" / "master_variable_definitions.csv"
+    root = Path(__file__).parent.parent.parent.parent.parent
+    master_path = root / "inputs" / "master_variable_definitions.csv"
 
     if master_path.exists():
         df = pd.read_csv(master_path)
@@ -65,6 +65,10 @@ def generate_variable_reference(
     # Load master definitions
     var_defs = load_master_variable_definitions()
 
+    # Deduplicate columns if any
+    if not df.columns.is_unique:
+        df = df.loc[:, ~df.columns.duplicated()]
+
     ref_data = []
 
     for col in df.columns:
@@ -78,14 +82,18 @@ def generate_variable_reference(
             source = "Unknown"
             description = f"Column: {col}"
 
+        # Handle potential edge case where column access might still be weird
+        series = df[col]
+        dtype_str = str(series.dtype)
+
         ref_data.append(
             {
                 "column_name": col,
-                "dtype": str(df[col].dtype),
-                "null_count": int(df[col].isna().sum()),
-                "null_pct": f"{df[col].isna().sum() / len(df) * 100:.2f}%",
-                "unique_count": int(df[col].nunique()),
-                "sample_values": str(df[col].dropna().head(3).tolist()[:3]),
+                "dtype": dtype_str,
+                "null_count": int(series.isna().sum()),
+                "null_pct": f"{series.isna().sum() / len(df) * 100:.2f}%",
+                "unique_count": int(series.nunique()),
+                "sample_values": str(series.dropna().head(3).tolist()[:3]),
                 "source": source,
                 "description": description,
             }

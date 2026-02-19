@@ -1,0 +1,147 @@
+# =============================================================================
+# F1D Variable Source Configuration
+# =============================================================================
+# This file defines all variable sources for the F1D econometric analysis.
+# Each variable specifies its source location and column mapping.
+#
+# Path Resolution:
+#   - Sources point to parent directories containing timestamped subdirectories
+#   - Variable builders automatically find the timestamp subdirectory with the
+#     most matching files
+#   - File patterns use {year} placeholder for year-partitioned data
+#
+# Architecture:
+#   Stage 1 (Sample):     outputs/1.4_AssembleManifest/{timestamp}/
+#   Stage 2 (Text):       outputs/2_Textual_Analysis/2.2_Variables/{timestamp}/
+#   Stage 3 (Financial):  outputs/3_Financial_Features/{timestamp}/
+#   Stage 4 (Econometric): outputs/econometric/{test_name}/{timestamp}/
+# =============================================================================
+
+variables:
+  # ===========================================================================
+  # STAGE 1: Sample Manifest
+  # ===========================================================================
+  # Source: src/f1d/sample/assemble_manifest.py
+  # Output: Master sample manifest with CEO, firm, and industry identifiers
+
+  manifest:
+    stage: 1
+    source: "outputs/1.4_AssembleManifest"
+    file_name: "master_sample_manifest.parquet"
+    columns:
+      - file_name
+      - ceo_id
+      - ceo_name
+      - gvkey
+      - ff12_code
+      - ff12_name
+      - start_date
+    description: "Master sample manifest with CEO, firm, and industry identifiers"
+
+  # ===========================================================================
+  # STAGE 2: Text/Linguistic Variables
+  # ===========================================================================
+  # Source: src/f1d/text/build_linguistic_variables.py
+  # Output: Linguistic variables (uncertainty, sentiment, etc.) per call
+
+  manager_qa_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_QA_Uncertainty_pct"
+    description: "Manager Q&A uncertainty percentage (all managers including CEO)"
+
+  manager_pres_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_Pres_Uncertainty_pct"
+    description: "Manager presentation uncertainty percentage"
+
+  analyst_qa_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Analyst_QA_Uncertainty_pct"
+    description: "Analyst Q&A uncertainty percentage"
+
+  negative_sentiment:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Entire_All_Negative_pct"
+    description: "Entire call negative sentiment percentage"
+
+  # ===========================================================================
+  # STAGE 3: Financial Variables
+  # ===========================================================================
+  # Source: src/f1d/financial/v1/3.1_FirmControls.py, 3.2_MarketVariables.py
+  # Output: Firm-level controls and market variables per call
+
+  stock_return:
+    stage: 3
+    source: "outputs/3_Financial_Features"
+    file_pattern: "market_variables_{year}.parquet"
+    column: "StockRet"
+    description: "Annual stock return"
+
+  market_return:
+    stage: 3
+    source: "outputs/3_Financial_Features"
+    file_pattern: "market_variables_{year}.parquet"
+    column: "MarketRet"
+    description: "Annual market return"
+
+  eps_growth:
+    stage: 3
+    source: "outputs/3_Financial_Features"
+    file_pattern: "firm_controls_{year}.parquet"
+    column: "EPS_Growth"
+    description: "EPS growth rate (year-over-year)"
+
+  earnings_surprise:
+    stage: 3
+    source: "outputs/3_Financial_Features"
+    file_pattern: "firm_controls_{year}.parquet"
+    column: "SurpDec"
+    description: "Earnings surprise decile (-5 to +5)"
+
+# =============================================================================
+# HYPOTHESIS TEST CONFIGURATIONS
+# =============================================================================
+# Pre-defined variable sets and regression settings for each hypothesis test
+
+hypothesis_tests:
+  manager_clarity:
+    test_id: "4.1_ManagerClarity"
+    description: "Manager Clarity Fixed Effects Test"
+
+    dependent: "manager_qa_uncertainty"
+
+    linguistic_controls:
+      - manager_pres_uncertainty
+      - analyst_qa_uncertainty
+      - negative_sentiment
+
+    firm_controls:
+      - stock_return
+      - market_return
+      - eps_growth
+      - earnings_surprise
+
+    identifiers:
+      - manifest  # ceo_id, gvkey, ff12_code, start_date
+
+    regression:
+      min_calls_per_manager: 5
+      fixed_effects:
+        - ceo_id
+        - year
+      samples:
+        main: [1, 2, 3, 4, 5, 6, 7, 9, 10, 12]  # FF12 codes (non-financial, non-utility)
+        finance: [11]
+        utility: [8]
+
+    outputs:
+      panel: "outputs/variables/manager_clarity"
+      results: "outputs/econometric/manager_clarity"
