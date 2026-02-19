@@ -27,6 +27,8 @@ from .manager_qa_uncertainty import ManagerQAUncertaintyBuilder
 from .manager_pres_uncertainty import ManagerPresUncertaintyBuilder
 from .analyst_qa_uncertainty import AnalystQAUncertaintyBuilder
 from .negative_sentiment import NegativeSentimentBuilder
+from .ceo_qa_uncertainty import CEOQAUncertaintyBuilder
+from .ceo_pres_uncertainty import CEOPresUncertaintyBuilder
 from .stock_return import StockReturnBuilder
 from .market_return import MarketReturnBuilder
 from .eps_growth import EPSGrowthBuilder
@@ -45,6 +47,8 @@ __all__ = [
     "ManagerPresUncertaintyBuilder",
     "AnalystQAUncertaintyBuilder",
     "NegativeSentimentBuilder",
+    "CEOQAUncertaintyBuilder",
+    "CEOPresUncertaintyBuilder",
     # Financial variables (Stage 3)
     "StockReturnBuilder",
     "MarketReturnBuilder",
