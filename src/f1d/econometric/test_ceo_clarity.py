@@ -213,18 +213,12 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     df = df[complete_mask].copy()
     print(f"  After complete cases filter: {len(df):,}")
 
-    # Assign sample — must have a known ff12_code to be classified
+    # Assign sample based on FF12 industry code.
+    # FF12 codes: 8=Utility, 11=Finance, all others=Main.
+    # Note: ff12_code is guaranteed non-null in the manifest (ff12=12 "Other"
+    # is the catch-all for SIC codes not in FF12 categories 1-11). Any residual
+    # NaN rows are placed in Main (matching v1 behaviour) so no rows are dropped.
     if "ff12_code" in df.columns:
-        # FIX-9: Rows with NaN ff12_code cannot be assigned to a meaningful
-        # industry sample. Exclude them rather than silently placing in Main.
-        before_ff12 = len(df)
-        df = df[df["ff12_code"].notna()].copy()
-        n_dropped_ff12 = before_ff12 - len(df)
-        if n_dropped_ff12 > 0:
-            print(
-                f"  After ff12_code notna filter: {len(df):,} (dropped {n_dropped_ff12:,} unknown industry)"
-            )
-
         if "sample" not in df.columns:
             df["sample"] = "Main"
             df.loc[df["ff12_code"] == 11, "sample"] = "Finance"

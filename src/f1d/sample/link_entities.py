@@ -771,17 +771,24 @@ def main() -> int:
         "Int64"
     )
 
+    # Retrieve catch-all entries (e.g., FF12 code 12 "Other" for unclassified SICs).
+    # The Fama-French FF12 file lists codes 1-11 with explicit SIC ranges; code 12
+    # ("Other") is intentionally a catch-all for everything else.  parse_ff_industries()
+    # stores this as industry_map["_catchall"] so we can fall back to it here.
+    ff12_catchall = ff12_map.get("_catchall") or (None, None)
+    ff48_catchall = ff48_map.get("_catchall") or (None, None)
+
     df_linked["ff12_code"] = df_linked["sic_int"].map(
-        lambda x: ff12_map.get(x, (None, None))[0] if pd.notna(x) else None
+        lambda x: (ff12_map.get(x) or ff12_catchall)[0] if pd.notna(x) else None
     )
     df_linked["ff12_name"] = df_linked["sic_int"].map(
-        lambda x: ff12_map.get(x, (None, None))[1] if pd.notna(x) else None
+        lambda x: (ff12_map.get(x) or ff12_catchall)[1] if pd.notna(x) else None
     )
     df_linked["ff48_code"] = df_linked["sic_int"].map(
-        lambda x: ff48_map.get(x, (None, None))[0] if pd.notna(x) else None
+        lambda x: (ff48_map.get(x) or ff48_catchall)[0] if pd.notna(x) else None
     )
     df_linked["ff48_name"] = df_linked["sic_int"].map(
-        lambda x: ff48_map.get(x, (None, None))[1] if pd.notna(x) else None
+        lambda x: (ff48_map.get(x) or ff48_catchall)[1] if pd.notna(x) else None
     )
 
     ff12_matched = df_linked["ff12_code"].notna().sum()

@@ -31,17 +31,23 @@ Date: 2026-02-11
 
 import zipfile
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 
-def parse_ff_industries(
-    zip_path: Path, num_industries: int
-) -> Dict[int, Tuple[int, Optional[str]]]:
+def parse_ff_industries(zip_path: Path, num_industries: int) -> Dict[Any, Any]:
     """
     Parse Fama-French industry classification from SIC code ranges.
 
     Extracts industry classification mapping from Fama-French text files packaged
     in zip archives. Maps SIC codes to (industry_code, industry_name) tuples.
+
+    The Fama-French classification files define explicit SIC ranges only for
+    categories 1 through N-1. The last category (e.g., FF12 code 12 "Other") is
+    intentionally a catch-all: any SIC code not covered by an explicit range
+    belongs to it. This function detects such catch-all categories (those that
+    appear in the file header but have no associated SIC ranges) and stores them
+    as a ``_catchall`` sentinel key so callers can apply the fallback via
+    ``industry_map.get(sic) or industry_map.get("_catchall")``.
 
     Args:
         zip_path: Path to zip file containing Fama-French industry definitions
@@ -50,8 +56,10 @@ def parse_ff_industries(
                         Used for validation/context, not strict enforcement
 
     Returns:
-        Dictionary mapping SIC codes (int) to tuples of (industry_code, industry_name)
-        where industry_code is the FF industry number and industry_name is the label
+        Dictionary mapping SIC codes (int) to tuples of (industry_code, industry_name).
+        Also contains the special key ``"_catchall"`` mapped to the catch-all
+        industry tuple (e.g., ``(12, "Other")`` for FF12), or ``None`` if no
+        catch-all category was detected.
 
     Raises:
         FileNotFoundError: If zip_path does not exist
@@ -70,18 +78,22 @@ def parse_ff_industries(
         >>> from pathlib import Path
         >>> from f1d.shared.industry_utils import parse_ff_industries
         >>> ff12 = parse_ff_industries(Path("Siccodes12.zip"), 12)
-        >>> ff12[2834]  # Returns: (12, 'Chemicals')
+        >>> ff12[2834]  # Returns: (3, 'Manuf')
+        >>> ff12.get(4011) or ff12.get("_catchall")  # Returns: (12, 'Other')
     """
     with zipfile.ZipFile(zip_path, "r") as z:
         txt_file = z.namelist()[0]
         with z.open(txt_file) as f:
             content = f.read().decode("utf-8")
 
-    industry_map = {}
+    industry_map: Dict = {}
     lines = content.strip().split("\n")
 
     current_industry_code = None
     current_industry_name = None
+    # Track which industry codes appear in headers vs which have SIC ranges
+    all_industry_headers: Dict[int, str] = {}
+    industries_with_ranges: set = set()
 
     for line in lines:
         stripped = line.strip()
@@ -92,6 +104,7 @@ def parse_ff_industries(
         if len(parts) >= 2 and parts[0].isdigit():
             current_industry_code = int(parts[0])
             current_industry_name = parts[1]
+            all_industry_headers[current_industry_code] = current_industry_name
         elif stripped and current_industry_code is not None:
             sic_range = stripped.split()[0] if stripped.split() else ""
             if "-" in sic_range:
@@ -102,7 +115,24 @@ def parse_ff_industries(
                             current_industry_code,
                             current_industry_name,
                         )
+                    industries_with_ranges.add(current_industry_code)
                 except ValueError:
                     continue
+
+    # Detect catch-all industries: defined in headers but with no SIC ranges.
+    # In FF12, code 12 "Other" is the canonical catch-all.
+    catchall_industries = {
+        code: name
+        for code, name in all_industry_headers.items()
+        if code not in industries_with_ranges
+    }
+
+    if catchall_industries:
+        # Use the highest-numbered catch-all (FF12: code 12 "Other")
+        catchall_code = max(catchall_industries.keys())
+        catchall_name = catchall_industries[catchall_code]
+        industry_map["_catchall"] = (catchall_code, catchall_name)
+    else:
+        industry_map["_catchall"] = None
 
     return industry_map
