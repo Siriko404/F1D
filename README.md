@@ -71,6 +71,7 @@ python -m f1d.variables.build_manager_clarity_panel
 python -m f1d.variables.build_ceo_clarity_panel
 python -m f1d.variables.build_ceo_clarity_extended_panel
 python -m f1d.variables.build_ceo_tone_panel
+python -m f1d.variables.build_h1_cash_holdings_panel    # ~1.5 min
 python -m f1d.variables.build_liquidity_panel
 python -m f1d.variables.build_takeover_panel
 
@@ -80,6 +81,7 @@ python -m f1d.econometric.test_ceo_clarity              # ~30 s
 python -m f1d.econometric.test_ceo_clarity_extended     # ~3 min
 python -m f1d.econometric.test_ceo_clarity_regime       # ~20 s
 python -m f1d.econometric.test_ceo_tone                 # ~3 min
+python -m f1d.econometric.test_h1_cash_holdings         # ~7 min (18 regressions, clustered SEs)
 python -m f1d.econometric.test_liquidity                # ~2 min
 python -m f1d.econometric.test_takeover_hazards         # ~1 min
 python -m f1d.econometric.generate_summary_stats        # ~1 s (no Stage 3 needed)
@@ -92,7 +94,7 @@ All outputs are written to timestamped subdirectories under `outputs/`.
 
 ## Verified Results
 
-Last full pipeline run: **2026-02-19**. All scripts passed end-to-end with zero errors,
+Last full pipeline run: **2026-02-20**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
 ### Manager Clarity (4.1) — `test_manager_clarity`
@@ -167,6 +169,45 @@ Three models: ToneAll (all-manager FE), ToneCEO (CEO FE), ToneRegime (CEO × reg
 | ToneRegime | Finance | 13,242 | 576 | 0.345 |
 | ToneRegime | Utility | 2,939 | 136 | 0.125 |
 
+### H1 Cash Holdings (v2) — `test_h1_cash_holdings`
+
+Tests whether vague managers hoard more cash (H1a: β₁ > 0) and whether leverage
+attenuates that relationship (H1b: β₃ < 0). Unit of observation: individual earnings
+call (call-level, consistent with all other tests).
+
+Model: `CashHoldings_{t+1} ~ Uncertainty + Lev + Uncertainty×Lev + Size + TobinsQ +
+ROA + CapexAt + DividendPayer + OCF_Volatility + CurrentRatio + C(gvkey) + C(year)`
+
+Standard errors: firm-clustered (Moulton correction — `CashHoldings_lead` is constant
+within firm-year, so HC1 over-counts independent observations).
+
+**Stage 3** (`build_h1_cash_holdings_panel`): 112,968 rows, zero row-delta on all 19
+merges. `CashHoldings_lead` = CashHoldings from the last call (latest `start_date`)
+per firm-year t+1 — end-of-year proxy. Year-gap leads set to NaN.
+
+| Sample | Total calls | Calls with valid lead |
+|--------|------------:|---------------------:|
+| Main (FF12 non-fin, non-util) | 88,205 | 80,722 |
+| Finance (FF12 = 11) | 20,482 | 18,635 |
+| Utility (FF12 = 8) | 4,281 | 3,948 |
+
+**Stage 4** (`test_h1_cash_holdings`): 18 regressions (6 uncertainty measures × 3
+samples). H1a 4/18 significant, H1b 4/18 significant (one-tailed p < 0.05).
+
+| Sample | N calls (Mgr QA Unc) | N firms | R² | H1a | H1b |
+|--------|---------------------:|--------:|---:|-----|-----|
+| Main | 72,353 | 1,744 | 0.82 | 0/6 | 1/6 |
+| Finance | 3,455 | 85 | 0.78 | 2/6 | 1/6 |
+| Utility | 3,486 | 81 | 0.68 | 2/6 | 3/6 |
+
+Selected significant results:
+- Finance / Manager_QA_Uncertainty: β₁ = 0.043 (SE=0.022, p=0.023); β₃ = −0.056 (SE=0.032, p=0.037)
+- Utility / Manager_QA_Weak_Modal: β₁ = 0.051 (SE=0.017, p=0.001); β₃ = −0.069 (SE=0.024, p=0.002)
+- Utility / CEO_QA_Uncertainty: β₁ = 0.023 (SE=0.010, p=0.013); β₃ = −0.031 (SE=0.014, p=0.014)
+
+Main sample shows null results — consistent with high R² (~0.82) from firm FE absorbing
+most of the cross-sectional cash variation.
+
 ### Liquidity Regressions (4.2) — `test_liquidity`
 
 Dependent variables: `Delta_Amihud` and `Delta_Corwin_Schultz` (changes in illiquidity).
@@ -232,8 +273,14 @@ outputs/
 │   │   ├── ceo_clarity_extended_panel.parquet  # 112,968 rows, 26 cols
 │   │   └── ...
 │   ├── ceo_tone/{timestamp}/
-│   │   ├── ceo_tone_panel.parquet              # 112,968 rows
-│   │   └── ...
+│   │   ├── model_diagnostics.csv               # 9 model×sample rows
+│   │   ├── ceo_tone_table.tex
+│   │   └── regression_results_{model}_{sample}.txt
+│   ├── h1_cash_holdings/{timestamp}/
+│   │   ├── model_diagnostics.csv               # 18 regressions (6 measures × 3 samples)
+│   │   ├── h1_cash_holdings_table.tex          # key coefs: Uncertainty, Lev, Unc×Lev
+│   │   ├── report_step4_H1.md
+│   │   └── regression_results_{sample}_{measure}.txt  # 18 files
 │   ├── liquidity/{timestamp}/
 │   │   ├── liquidity_panel.parquet             # 112,968 rows, 32 cols
 │   │   └── ...
@@ -298,7 +345,7 @@ All live in `src/f1d/shared/variables/`. Each returns one column, merged by `fil
 
 | Module | Raw input | Columns computed |
 |--------|-----------|-----------------|
-| `_compustat_engine.py` | `inputs/comp_na_daily_all/comp_na_daily_all.parquet` | `Size`, `BM`, `Lev`, `ROA`, `CurrentRatio`, `RD_Intensity`, `EPS_Growth` |
+| `_compustat_engine.py` | `inputs/comp_na_daily_all/comp_na_daily_all.parquet` | `Size`, `BM`, `Lev`, `ROA`, `CurrentRatio`, `RD_Intensity`, `EPS_Growth`, `CashHoldings`, `TobinsQ`, `CapexAt`, `DividendPayer`, `OCF_Volatility` |
 | `_crsp_engine.py` | `inputs/CRSP_DSF/CRSP_DSF_{year}_Q{1-4}.parquet` + CCM | `StockRet`, `MarketRet`, `Volatility` |
 
 ### Individual builders (one column each)
@@ -322,8 +369,23 @@ All live in `src/f1d/shared/variables/`. Each returns one column, merged by `fil
 | `ceo_pres_uncertainty.py` | `CEO_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
 | `analyst_qa_uncertainty.py` | `Analyst_QA_Uncertainty_pct` | Stage 2 linguistic vars |
 | `negative_sentiment.py` | `Entire_All_Negative_pct` | Stage 2 linguistic vars |
+| `cash_holdings.py` | `CashHoldings` | Compustat (`cheq/atq`) |
+| `tobins_q.py` | `TobinsQ` | Compustat (`(atq+cshoq*prccq-ceqq)/atq`) |
+| `capex_intensity.py` | `CapexAt` | Compustat (Q4-only `capxy/atq`; annual total, not YTD) |
+| `dividend_payer.py` | `DividendPayer` | Compustat (Q4-only `dvy>0`; binary) |
+| `ocf_volatility.py` | `OCF_Volatility` | Compustat (5-yr rolling std of `oancfy/atq`, min 3 obs) |
+| `manager_qa_weak_modal.py` | `Manager_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
+| `ceo_qa_weak_modal.py` | `CEO_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
+| `manager_pres_weak_modal.py` | `Manager_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
+| `ceo_pres_weak_modal.py` | `CEO_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
 | `cccl_instrument.py` | `shift_intensity_sale_ff48` | `inputs/CCCL_instrument/` (firm-year level; merge key `gvkey+year`) |
 | `takeover_indicator.py` | `Takeover`, `Takeover_Uninvited`, `Takeover_Friendly` | `inputs/SDC/sdc-ma-merged.parquet` (firm-level; merge key `gvkey`) |
+
+**Q4-only variables note.** `CapexAt` and `DividendPayer` use Q4-only Compustat rows
+(`fqtr=4`) because `capxy` and `dvy` are YTD cumulative within the fiscal year —
+the Q4 row is the only one that holds the full-year total. The engine joins Q4 values
+back to all quarters by `gvkey+fyearq` so every call in a fiscal year gets the correct
+annual figure.
 
 **CUSIP join note.** IBES uses 8-char alphanumeric CUSIPs (e.g. `'87482X10'`); CCM
 uses 9-char numeric CUSIPs (e.g. `'000032102'`). The join is `ibes[:8] == ccm[:8]`.
