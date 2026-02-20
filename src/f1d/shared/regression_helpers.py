@@ -127,7 +127,7 @@ def _assign_industry_codes(
         DataFrame with added 'industry_code' column
 
     Note:
-        Loads SIC code lookup tables from 1_Inputs/ directory.
+        Loads SIC code lookup tables from inputs/ directory.
         FF12: 12 industry classifications
         FF48: 48 industry classifications
     """
@@ -140,7 +140,7 @@ def _assign_industry_codes(
         return df
 
     # Determine SIC lookup file based on classification
-    input_dir = Path(__file__).parent.parent.parent / "1_Inputs"
+    input_dir = Path(__file__).parent.parent.parent / "inputs"
 
     if classification == "FF12":
         sic_file = input_dir / "Siccodes12.zip"

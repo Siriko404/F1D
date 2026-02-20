@@ -162,9 +162,12 @@ results/*
 # LEGACY PATHS (will be removed in v7.0)
 # ==============================================================================
 
-1_Inputs/
-4_Outputs/
-3_Logs/
+# inputs/ - removed, data tracked in data/raw/
+# outputs/ - removed, data tracked in data/interim/
+# logs/ - replaced by logs/ directory
+inputs/
+outputs/
+logs/
 
 # ==============================================================================
 # ARCHIVES AND BACKUPS

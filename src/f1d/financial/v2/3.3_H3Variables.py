@@ -16,13 +16,13 @@ Variables Computed:
     - Standard controls: firm_size, roa, tobins_q, cash_holdings
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet
-    - 4_Outputs/3_Financial_V2/latest/H1_CashHoldings.parquet (for standard controls)
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet
+    - outputs/3_Financial_V2/latest/H1_CashHoldings.parquet (for standard controls)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/{timestamp}/H3_PayoutPolicy.parquet
-    - 4_Outputs/3_Financial_V2/{timestamp}/stats.json
+    - outputs/3_Financial_V2/{timestamp}/H3_PayoutPolicy.parquet
+    - outputs/3_Financial_V2/{timestamp}/stats.json
 
 Deterministic: true
 Dependencies:
@@ -89,13 +89,13 @@ def setup_paths(config, timestamp):
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     # Resolve H1 output directory for standard controls
     h1_output_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H1_CashHoldings.parquet",
     )
 
@@ -104,18 +104,18 @@ def setup_paths(config, timestamp):
         "manifest_dir": manifest_dir,
         "h1_output_dir": h1_output_dir,
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2"
+    output_base = root / "outputs" / "3_Financial_V2"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2"
+    log_base = root / "logs" / "3_Financial_V2"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H3.log"
 

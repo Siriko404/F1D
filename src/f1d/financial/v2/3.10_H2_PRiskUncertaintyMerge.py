@@ -15,14 +15,14 @@ Purpose: Construct the complete regression dataset for testing H2: whether
          all required variables for regression.
 
 Inputs:
-    - 1_Inputs/FirmLevelRisk/firmquarter_2022q1.csv (PRisk data)
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/ (Uncertainty measures)
-    - 4_Outputs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/latest/H2_InvestmentResiduals.parquet
+    - inputs/FirmLevelRisk/firmquarter_2022q1.csv (PRisk data)
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/ (Uncertainty measures)
+    - outputs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/latest/H2_InvestmentResiduals.parquet
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/{timestamp}/H2_PRiskUncertainty_Analysis.parquet
-    - 4_Outputs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/{timestamp}/stats.json
-    - 3_Logs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/{timestamp}_Merge.log
+    - outputs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/{timestamp}/H2_PRiskUncertainty_Analysis.parquet
+    - outputs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/{timestamp}/stats.json
+    - logs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/{timestamp}_Merge.log
 
 Declared Outputs:
     - PRisk_std: Standardized political risk measure
@@ -105,36 +105,36 @@ def setup_paths(config, timestamp):
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     # Resolve InvestmentResidual directory using timestamp-based resolution
     residual_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2" / "3.9_H2_BiddleInvestmentResidual",
+        root / "outputs" / "3_Financial_V2" / "3.9_H2_BiddleInvestmentResidual",
         required_file="H2_InvestmentResiduals.parquet",
     )
 
     # Resolve linguistic variables directory
-    ling_dir = root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables"
+    ling_dir = root / "outputs" / "2_Textual_Analysis" / "2.2_Variables"
 
     paths = {
         "root": root,
         "manifest_dir": manifest_dir,
         "residual_dir": residual_dir,
-        "prisk_file": root / "1_Inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
+        "prisk_file": root / "inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
         "ling_vars_dir": ling_dir,
     }
 
     # Output directory
     output_base = (
-        root / "4_Outputs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge"
+        root / "outputs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge"
     )
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge"
+    log_base = root / "logs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_Merge.log"
 

@@ -54,12 +54,12 @@
 
 **Step 1: Sample Construction**
 
-1. Load `Unified-info.parquet` from `1_Inputs/Earnings_Calls_Transcripts/`
+1. Load `Unified-info.parquet` from `inputs/Earnings_Calls_Transcripts/`
 2. Clean metadata (deduplicate, resolve collisions, filter earnings calls 2002-2018)
 3. Link entities via 4-tier strategy (PERMNO+date, CUSIP8+date, fuzzy name, ticker)
 4. Build CEO tenure map from Execucomp data
 5. Assemble master_sample_manifest.parquet with CEO/firm identifiers and FF12/FF48 industries
-6. Output: `master_sample_manifest.parquet` in `4_Outputs/1.4_AssembleManifest/`
+6. Output: `master_sample_manifest.parquet` in `outputs/1.4_AssembleManifest/`
 
 **State Management:** Parquet files preserve intermediate state between steps
 
@@ -70,7 +70,7 @@
 3. Count word categories (Negative, Positive, Uncertainty, Litigious, Modal, Constraining)
 4. Aggregate to call level and construct linguistic variables (e.g., Manager_QA_Uncertainty_pct)
 5. Apply quality filters (minimum tokens, percentage ranges)
-6. Output: `linguistic_variables_*.parquet` (per year) in `4_Outputs/2_Textual_Analysis/`
+6. Output: `linguistic_variables_*.parquet` (per year) in `outputs/2_Textual_Analysis/`
 
 **State Management:** Yearly parquet files enable incremental processing
 
@@ -81,7 +81,7 @@
 3. **Market Variables:** Compute StockRet, MarketRet, Volatility, Amihud, Corwin-Schultz from CRSP
 4. **Event Flags:** Identify takeover events from SDC and CEO dismissals
 5. Winsorize at 1%/99%, apply minimum window length filters
-6. Output: `firm_controls_*.parquet`, `market_variables_*.parquet`, `event_flags_*.parquet` (per year) in `4_Outputs/3_Financial_Features/`
+6. Output: `firm_controls_*.parquet`, `market_variables_*.parquet`, `event_flags_*.parquet` (per year) in `outputs/3_Financial_Features/`
 
 **State Management:** Yearly parquet files enable incremental processing
 
@@ -90,7 +90,7 @@
 1. Load `master_sample_manifest.parquet`
 2. Construct hypothesis-specific variables (H1-H9) with additional control sets
 3. Apply enhanced transformations (e.g., Biddle investment residuals, policy risk variables)
-4. Output: Hypothesis-specific parquet files in `4_Outputs/3_Financial_V2/`
+4. Output: Hypothesis-specific parquet files in `outputs/3_Financial_V2/`
 
 **State Management:** Per-hypothesis variable files support modular analysis
 
@@ -100,7 +100,7 @@
 2. **Liquidity Regressions:** 2SLS with CCCL shift_intensity instrument
 3. **Takeover Hazards:** Cox proportional hazards model on takeover events
 4. **Summary Stats:** Generate descriptive statistics and correlation matrix
-5. Output: `ceo_clarity_scores.parquet`, regression results, LaTeX tables in `4_Outputs/4.*_*/`
+5. Output: `ceo_clarity_scores.parquet`, regression results, LaTeX tables in `outputs/4.*_*/`
 
 **State Management:** CEO-level clarity scores persist across all regression specifications
 
@@ -108,7 +108,7 @@
 
 1. **Hypothesis Testing:** Run 9 hypothesis-specific regressions (H1-H9)
 2. Each hypothesis tests CEO clarity impact on different outcomes (cash holdings, investment, payout, etc.)
-3. Output: Hypothesis-specific results in `4_Outputs/4_Econometric_V2/`
+3. Output: Hypothesis-specific results in `outputs/4_Econometric_V2/`
 
 **State Management:** Per-hypothesis results support flexible analysis
 
@@ -220,7 +220,7 @@
 
 **Logging:** structlog with `DualWriter` for simultaneous console and file output
 - Configuration in `src/f1d/shared/logging/`
-- Logs written to `3_Logs/<script_name>/<timestamp>.log`
+- Logs written to `logs/<script_name>/<timestamp>.log`
 - Structured logs with context (script, phase, step)
 
 **Validation:** Pandera schemas for output validation, data validation utilities

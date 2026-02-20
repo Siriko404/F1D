@@ -108,7 +108,7 @@
 - Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
 - Use structured logging with context variables
 - Subprocess execution: Use `DualWriter` to capture stdout/stderr
-- Execution logs saved to: `3_Logs/` with timestamp naming
+- Execution logs saved to: `logs/` with timestamp naming
 
 **When to log:**
 - INFO: Normal operation milestones, configuration loading, start/end of steps

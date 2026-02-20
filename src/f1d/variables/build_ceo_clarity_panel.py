@@ -47,8 +47,9 @@ from f1d.shared.variables import (
     CEOPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
-    CompustatControlsBuilder,
-    CRSPReturnsBuilder,
+    EPSGrowthBuilder,
+    StockReturnBuilder,
+    MarketReturnBuilder,
     EarningsSurpriseBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -123,12 +124,10 @@ def build_panel(
 
     all_results: Dict[str, Any] = {}
 
-    # Initialize builders - CEO Clarity uses CEO-specific variables.
-    # Financial variables use compute engines that read raw inputs directly:
-    #   CompustatControlsBuilder → raw Compustat (Size, BM, Lev, ROA, EPS_Growth)
-    #   CRSPReturnsBuilder       → raw CRSP (StockRet, MarketRet)
-    #   EarningsSurpriseBuilder  → raw IBES + CCM (SurpDec)
-    # Each engine loads its source ONCE and returns all columns together.
+    # Initialize builders — one variable per builder.
+    # The CompustatEngine and CRSPEngine are module-level singletons that cache
+    # the raw data load, so calling EPSGrowthBuilder + StockReturnBuilder etc.
+    # does NOT re-load Compustat or CRSP for each variable.
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
@@ -143,8 +142,9 @@ def build_panel(
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        "compustat_controls": CompustatControlsBuilder({}),
-        "crsp_returns": CRSPReturnsBuilder({}),
+        "eps_growth": EPSGrowthBuilder({}),
+        "stock_return": StockReturnBuilder({}),
+        "market_return": MarketReturnBuilder({}),
         "earnings_surprise": EarningsSurpriseBuilder(
             var_config.get("earnings_surprise", {})
         ),

@@ -6,13 +6,13 @@ data:
   year_start: 2002
   year_end: 2018
 paths:
-  inputs: 1_Inputs
+  inputs: inputs
   scripts: src/f1d
-  logs: 3_Logs
-  outputs: 4_Outputs
-  lm_dictionary: 1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv
-  unified_info: 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
-  speaker_data_pattern: 1_Inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet
+  logs: logs
+  outputs: outputs
+  lm_dictionary: inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv
+  unified_info: inputs/Earnings_Calls_Transcripts/Unified-info.parquet
+  speaker_data_pattern: inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet
 determinism:
   random_seed: 42
   thread_count: 1
@@ -139,7 +139,7 @@ step_09:
     - 1
     - 99
   inputs:
-    cccl_instrument: 1_Inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
+    cccl_instrument: inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
   outputs:
     liquidity_data: calls_with_liquidity_{year}.parquet
     regression_results: regression_results_liquidity.txt

@@ -16,13 +16,13 @@ Specification:
     AbsAbInv_{t+1} = |e| (absolute residual from first-stage)
 
 Inputs:
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat annual data)
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat annual data)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/abnormal_investment.parquet
-    - 4_Outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/report_step313_03.md
-    - 4_Outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/stats.json
-    - 4_Outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/first_stage_diagnostics.csv
+    - outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/abnormal_investment.parquet
+    - outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/report_step313_03.md
+    - outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/stats.json
+    - outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/{timestamp}/first_stage_diagnostics.csv
 
 Declared Outputs:
     - AbsAbInv: Absolute abnormal investment (dependent variable for H9)
@@ -83,7 +83,7 @@ def setup_paths(timestamp):
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -91,18 +91,18 @@ def setup_paths(timestamp):
         "root": root,
         "manifest_dir": manifest_dir,
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2" / "3.13_H9_AbnormalInvestment"
+    output_base = root / "outputs" / "3_Financial_V2" / "3.13_H9_AbnormalInvestment"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2" / "3.13_H9_AbnormalInvestment"
+    log_base = root / "logs" / "3_Financial_V2" / "3.13_H9_AbnormalInvestment"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H9AbInv.log"
 

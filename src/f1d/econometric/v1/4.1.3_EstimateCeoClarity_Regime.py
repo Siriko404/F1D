@@ -14,17 +14,17 @@ Purpose:
     - Utility: Utility firms (FF12 code 8)
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
+    - outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
+    - outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/ceo_clarity_scores.parquet
-    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/regression_results_{sample}.txt
-    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/model_diagnostics.csv
-    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/variable_reference.csv
-    - 4_Outputs/4.1.3_CeoClarity_Regime/{timestamp}/report_step4_1_3.md
+    - outputs/4.1.3_CeoClarity_Regime/{timestamp}/ceo_clarity_scores.parquet
+    - outputs/4.1.3_CeoClarity_Regime/{timestamp}/regression_results_{sample}.txt
+    - outputs/4.1.3_CeoClarity_Regime/{timestamp}/model_diagnostics.csv
+    - outputs/4.1.3_CeoClarity_Regime/{timestamp}/variable_reference.csv
+    - outputs/4.1.3_CeoClarity_Regime/{timestamp}/report_step4_1_3.md
 
 Deterministic: true
 Dependencies:
@@ -607,9 +607,9 @@ def main(year_start=None, year_end=None):
 
     # Setup paths
     root = Path(__file__).resolve().parents[4]
-    out_dir = root / "4_Outputs" / "4.1.3_CeoClarity_Regime" / timestamp
+    out_dir = root / "outputs" / "4.1.3_CeoClarity_Regime" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    log_dir = root / "3_Logs" / "4.1.3_CeoClarity_Regime" / timestamp
+    log_dir = root / "logs" / "4.1.3_CeoClarity_Regime" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Setup dual logging

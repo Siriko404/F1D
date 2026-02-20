@@ -19,15 +19,15 @@ from expected investment given growth opportunities.
 Investment = (CapEx + R&D + Acquisitions - AssetSales) / lagged(Assets)
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat raw data)
-    - 1_Inputs/Siccodes48.zip (Fama-French 48 industry classifications)
-    - 1_Inputs/Siccodes12.zip (Fama-French 12 industry classifications - fallback)
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat raw data)
+    - inputs/Siccodes48.zip (Fama-French 48 industry classifications)
+    - inputs/Siccodes12.zip (Fama-French 12 industry classifications - fallback)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/{timestamp}/H2_InvestmentResiduals.parquet
-    - 4_Outputs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/{timestamp}/stats.json
-    - 3_Logs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/{timestamp}_Biddle.log
+    - outputs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/{timestamp}/H2_InvestmentResiduals.parquet
+    - outputs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/{timestamp}/stats.json
+    - logs/3_Financial_V2/3.9_H2_BiddleInvestmentResidual/{timestamp}_Biddle.log
 
 Declared Outputs:
     - InvestmentResidual: Dependent variable for H2 regression (residual from first-stage)
@@ -105,7 +105,7 @@ def setup_paths(config, timestamp):
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -113,22 +113,22 @@ def setup_paths(config, timestamp):
         "root": root,
         "manifest_dir": manifest_dir,
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
-        "siccodes48_file": root / "1_Inputs" / "Siccodes48.zip",
-        "siccodes12_file": root / "1_Inputs" / "Siccodes12.zip",
+        "siccodes48_file": root / "inputs" / "Siccodes48.zip",
+        "siccodes12_file": root / "inputs" / "Siccodes12.zip",
     }
 
     # Output directory
     output_base = (
-        root / "4_Outputs" / "3_Financial_V2" / "3.9_H2_BiddleInvestmentResidual"
+        root / "outputs" / "3_Financial_V2" / "3.9_H2_BiddleInvestmentResidual"
     )
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2" / "3.9_H2_BiddleInvestmentResidual"
+    log_base = root / "logs" / "3_Financial_V2" / "3.9_H2_BiddleInvestmentResidual"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_Biddle.log"
 

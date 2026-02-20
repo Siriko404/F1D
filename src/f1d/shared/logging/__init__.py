@@ -16,7 +16,7 @@ Context binding for correlated logging:
 
 Dual output (console + file):
     >>> from f1d.shared.logging import configure_dual_output
-    >>> configure_dual_output(log_file=Path("3_Logs/pipeline.log"))
+    >>> configure_dual_output(log_file=Path("logs/pipeline.log"))
     >>> logger.info("processing_started", rows=1000)  # Console colored, file JSON
 """
 

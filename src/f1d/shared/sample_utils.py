@@ -44,7 +44,7 @@ def load_master_variable_definitions() -> Dict[str, Dict[str, str]]:
     # Path from src/f1d/shared/sample_utils.py to project root
     # src/f1d/shared/ -> ../../../ = project root (4 levels up)
     root = Path(__file__).parent.parent.parent.parent
-    master_path = root / "1_Inputs" / "master_variable_definitions.csv"
+    master_path = root / "inputs" / "master_variable_definitions.csv"
 
     if master_path.exists():
         df = pd.read_csv(master_path)

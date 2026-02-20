@@ -26,16 +26,16 @@ Key Coefficient: beta3 (interaction term)
     - beta3 ≈ 0: CEO style does NOT moderate (meaningful null possible)
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/3.11_H9_StyleFrozen/latest/style_frozen.parquet (CEO style)
-    - 4_Outputs/3_Financial_V2/3.12_H9_PRiskFY/latest/priskfy.parquet (fiscal-year PRisk)
-    - 4_Outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/latest/abnormal_investment.parquet (DV + controls)
+    - outputs/3_Financial_V2/3.11_H9_StyleFrozen/latest/style_frozen.parquet (CEO style)
+    - outputs/3_Financial_V2/3.12_H9_PRiskFY/latest/priskfy.parquet (fiscal-year PRisk)
+    - outputs/3_Financial_V2/3.13_H9_AbnormalInvestment/latest/abnormal_investment.parquet (DV + controls)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/final_panel.parquet
-    - 4_Outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/h9_regression_results.csv
-    - 4_Outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/h9_regression_output.txt
-    - 4_Outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/report_step411_04.md
-    - 4_Outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/sanity_checks.txt
+    - outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/final_panel.parquet
+    - outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/h9_regression_results.csv
+    - outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/h9_regression_output.txt
+    - outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/report_step411_04.md
+    - outputs/4_Econometric_V2/4.11_H9_Regression/{timestamp}/sanity_checks.txt
 
 Declared Outputs:
     - final_panel: Merged dataset with all variables
@@ -99,23 +99,23 @@ def setup_paths(timestamp):
     paths = {
         "root": root,
         "style_frozen_base": root
-        / "4_Outputs"
+        / "outputs"
         / "3_Financial_V2"
         / "3.11_H9_StyleFrozen",
-        "priskfy_base": root / "4_Outputs" / "3_Financial_V2" / "3.12_H9_PRiskFY",
+        "priskfy_base": root / "outputs" / "3_Financial_V2" / "3.12_H9_PRiskFY",
         "abnormal_inv_base": root
-        / "4_Outputs"
+        / "outputs"
         / "3_Financial_V2"
         / "3.13_H9_AbnormalInvestment",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "4_Econometric_V2" / "4.11_H9_Regression"
+    output_base = root / "outputs" / "4_Econometric_V2" / "4.11_H9_Regression"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "4_Econometric_V2" / "4.11_H9_Regression"
+    log_base = root / "logs" / "4_Econometric_V2" / "4.11_H9_Regression"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_finalmerge.log"
 

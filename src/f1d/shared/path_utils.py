@@ -130,13 +130,13 @@ RESULTS_DIR = Path("results")
 # LEGACY PATHS (deprecated, will be removed in v7.0)
 # ==============================================================================
 
-INPUTS_DIR = Path("1_Inputs")
+INPUTS_DIR = Path("inputs")
 """Legacy path to input data. Deprecated: use DATA_RAW instead."""
 
-OUTPUTS_DIR = Path("4_Outputs")
+OUTPUTS_DIR = Path("outputs")
 """Legacy path to outputs. Deprecated: use DATA_INTERIM or DATA_PROCESSED."""
 
-OLD_LOGS_DIR = Path("3_Logs")
+OLD_LOGS_DIR = Path("logs")
 """Legacy path to logs. Deprecated: use LOGS_DIR instead."""
 
 
@@ -322,7 +322,7 @@ def resolve_data_path(path_name: str, prefer_new: bool = True) -> Path:
     Resolve path to data, checking new structure first.
 
     Provides backward compatibility during migration by checking both
-    old (1_Inputs, 4_Outputs) and new (data/raw, data/interim, etc.)
+    old (inputs, outputs) and new (data/raw, data/interim, etc.)
     directory structures.
 
     Args:
@@ -353,11 +353,9 @@ def resolve_data_path(path_name: str, prefer_new: bool = True) -> Path:
 
     # Map of old names to new names for backward compatibility
     legacy_mapping = {
-        "1_Inputs": "raw",
-        "inputs": "raw",
-        "4_Outputs": "interim",
-        "outputs": "interim",
-        "3_Logs": "logs",
+        "inputs": "raw",  # old numbered/short name
+        "outputs": "interim",  # old numbered/short name
+        "logs": "logs",  # old numbered/short name
     }
 
     # Handle canonical names directly
@@ -399,7 +397,7 @@ def get_output_dir(stage: str, date: Optional[str] = None, prefer_new: bool = Tr
     Get output directory for a processing stage.
 
     Provides backward compatibility by returning paths in either new
-    (data/interim/ or data/processed/) or legacy (4_Outputs/) structure.
+    (data/interim/ or data/processed/) or legacy (outputs/) structure.
 
     Args:
         stage: Processing stage name (e.g., "sample", "text", "financial")
@@ -419,7 +417,7 @@ def get_output_dir(stage: str, date: Optional[str] = None, prefer_new: bool = Tr
         # Use new structure: data/interim/{stage}/
         base_dir = DATA_INTERIM / stage
     else:
-        # Use legacy structure: 4_Outputs/{stage}/
+        # Use legacy structure: outputs/{stage}/
         base_dir = OUTPUTS_DIR / stage
 
     if date:

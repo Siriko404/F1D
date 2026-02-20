@@ -30,18 +30,18 @@ Key Features:
 - Figure 3 distribution histogram
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
+    - outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
+    - outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.9_CEOFixedEffects/{timestamp}/ceo_clarity_scores.parquet
-    - 4_Outputs/4.9_CEOFixedEffects/{timestamp}/table3_replication.csv
-    - 4_Outputs/4.9_CEOFixedEffects/{timestamp}/table_ia1_correlation_matrix.csv
-    - 4_Outputs/4.9_CEOFixedEffects/{timestamp}/clarity_distribution_histogram_*.png
-    - 4_Outputs/4.9_CEOFixedEffects/{timestamp}/regression_results_*.txt
-    - 4_Outputs/4.9_CEOFixedEffects/{timestamp}/report_step56.md
+    - outputs/4.9_CEOFixedEffects/{timestamp}/ceo_clarity_scores.parquet
+    - outputs/4.9_CEOFixedEffects/{timestamp}/table3_replication.csv
+    - outputs/4.9_CEOFixedEffects/{timestamp}/table_ia1_correlation_matrix.csv
+    - outputs/4.9_CEOFixedEffects/{timestamp}/clarity_distribution_histogram_*.png
+    - outputs/4.9_CEOFixedEffects/{timestamp}/regression_results_*.txt
+    - outputs/4.9_CEOFixedEffects/{timestamp}/report_step56.md
 
 Deterministic: true
 Dependencies:
@@ -251,20 +251,20 @@ def load_data(root, args):
 
     # Resolve directories using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     lv_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+        root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
         required_file="linguistic_variables_2002.parquet",
     )
     fc_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_Features",
+        root / "outputs" / "3_Financial_Features",
         required_file="firm_controls_2002.parquet",
     )
     # Market variables in separate directory
     mv_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_Features",
+        root / "outputs" / "3_Financial_Features",
         required_file="market_variables_2002.parquet",
     )
 
@@ -998,9 +998,9 @@ def main():
     root = Path(__file__).resolve().parents[4]
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     output_dir = ensure_output_dir(
-        root / "4_Outputs" / "4.9_CEOFixedEffects" / timestamp
+        root / "outputs" / "4.9_CEOFixedEffects" / timestamp
     )
-    log_dir = ensure_output_dir(root / "3_Logs" / "4.9_CEOFixedEffects")
+    log_dir = ensure_output_dir(root / "logs" / "4.9_CEOFixedEffects")
 
     # Set up dual-writer for logging
     log_file = log_dir / f"{timestamp}_4.9.log"
@@ -1029,19 +1029,19 @@ def main():
             # Check prerequisites
             try:
                 manifest_dir = get_latest_output_dir(
-                    root / "4_Outputs" / "1.4_AssembleManifest",
+                    root / "outputs" / "1.4_AssembleManifest",
                     required_file="master_sample_manifest.parquet",
                 )
                 lv_dir = get_latest_output_dir(
-                    root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                    root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
                     required_file="linguistic_variables_2002.parquet",
                 )
                 fc_dir = get_latest_output_dir(
-                    root / "4_Outputs" / "3_Financial_Features",
+                    root / "outputs" / "3_Financial_Features",
                     required_file="firm_controls_2002.parquet",
                 )
                 mv_dir = get_latest_output_dir(
-                    root / "4_Outputs" / "3_Financial_Features",
+                    root / "outputs" / "3_Financial_Features",
                     required_file="market_variables_2002.parquet",
                 )
 
@@ -1201,11 +1201,11 @@ def main():
 
         # Generate report
         outputs = {
-            "ceo_clarity_scores.parquet": "4_Outputs/4.9_CEOFixedEffects/{timestamp}/ceo_clarity_scores.parquet",
-            "table3_replication.csv": "4_Outputs/4.9_CEOFixedEffects/{timestamp}/table3_replication.csv",
-            "clarity_distribution_histogram_*.png": "4_Outputs/4.9_CEOFixedEffects/{timestamp}/clarity_distribution_histogram_*.png",
-            "table_ia1_correlation_matrix_*.csv": "4_Outputs/4.9_CEOFixedEffects/{timestamp}/table_ia1_correlation_matrix_*.csv",
-            "regression_results_*.txt": "4_Outputs/4.9_CEOFixedEffects/{timestamp}/regression_results_*.txt",
+            "ceo_clarity_scores.parquet": "outputs/4.9_CEOFixedEffects/{timestamp}/ceo_clarity_scores.parquet",
+            "table3_replication.csv": "outputs/4.9_CEOFixedEffects/{timestamp}/table3_replication.csv",
+            "clarity_distribution_histogram_*.png": "outputs/4.9_CEOFixedEffects/{timestamp}/clarity_distribution_histogram_*.png",
+            "table_ia1_correlation_matrix_*.csv": "outputs/4.9_CEOFixedEffects/{timestamp}/table_ia1_correlation_matrix_*.csv",
+            "regression_results_*.txt": "outputs/4.9_CEOFixedEffects/{timestamp}/regression_results_*.txt",
         }
 
         report_path = output_dir / "report_step56.md"

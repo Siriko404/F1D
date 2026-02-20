@@ -11,12 +11,12 @@ Purpose: Assign time-invariant CEO Clarity scores to firm-years using
          frozen constraint (no future information).
 
 Inputs:
-    - 4_Outputs/4.1.1_CeoClarity_CEO_Only/latest/ceo_clarity_scores.parquet
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet
+    - outputs/4.1.1_CeoClarity_CEO_Only/latest/ceo_clarity_scores.parquet
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/3.11_H9_StyleFrozen/{timestamp}/style_frozen.parquet
+    - outputs/3_Financial_V2/3.11_H9_StyleFrozen/{timestamp}/style_frozen.parquet
     - stats.json
     - report_step311_01.md
 
@@ -64,7 +64,7 @@ def load_ceo_clarity(base_path: Path) -> pd.DataFrame:
     Load CEO Clarity scores from Phase 56 output.
 
     Args:
-        base_path: Base path to 4_Outputs directory
+        base_path: Base path to outputs directory
 
     Returns:
         DataFrame with columns: ceo_id, gamma_i, ClarityCEO_raw, ClarityCEO,
@@ -76,7 +76,7 @@ def load_ceo_clarity(base_path: Path) -> pd.DataFrame:
 
     try:
         ceo_dir = get_latest_output_dir(
-            base_path / "4_Outputs" / "4.1.1_CeoClarity",
+            base_path / "outputs" / "4.1.1_CeoClarity",
             required_file="ceo_clarity_scores.parquet",
         )
         print(f"[OK] Found CEO Clarity directory: {ceo_dir}")
@@ -129,7 +129,7 @@ def load_manifest_calls(base_path: Path) -> pd.DataFrame:
 
     try:
         manifest_dir = get_latest_output_dir(
-            base_path / "4_Outputs" / "1.4_AssembleManifest",
+            base_path / "outputs" / "1.4_AssembleManifest",
             required_file="master_sample_manifest.parquet",
         )
         print(f"[OK] Found manifest directory: {manifest_dir}")
@@ -179,7 +179,7 @@ def load_compustat_dates(base_path: Path) -> pd.DataFrame:
     print("=" * 80)
 
     file_path = (
-        base_path / "1_Inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
+        base_path / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
     )
 
     try:
@@ -712,7 +712,7 @@ def main():
     # Create output directory
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     output_dir = ensure_output_dir(
-        base_path / "4_Outputs" / "3_Financial_V2" / "3.11_H9_StyleFrozen" / timestamp
+        base_path / "outputs" / "3_Financial_V2" / "3.11_H9_StyleFrozen" / timestamp
     )
     print(f"\n[OK] Output directory: {output_dir}")
 

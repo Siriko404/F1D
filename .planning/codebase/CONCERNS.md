@@ -47,7 +47,7 @@
 - Recommendations: Add Pandera schema validation or explicit column existence checks before processing CSV data
 
 **Hardcoded File Paths in Some Scripts:**
-- Risk: `load_master_variable_definitions()` uses hardcoded path to `1_Inputs/master_variable_definitions.csv`
+- Risk: `load_master_variable_definitions()` uses hardcoded path to `inputs/master_variable_definitions.csv`
 - Files: `src/f1d/sample/1.5_Utils.py:40`
 - Current mitigation: None - assumes fixed directory structure
 - Recommendations: Use path resolution from `shared.path_utils` or configuration file for input paths

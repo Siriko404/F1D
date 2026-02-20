@@ -46,11 +46,11 @@ def generate_baseline_checksums():
     # Define key output directories and filenames
     key_outputs = {
         "step1_cleaned_metadata": (
-            repo_root / "4_Outputs/1.1_CleanMetadata",
+            repo_root / "outputs/1.1_CleanMetadata",
             "cleaned_metadata.parquet",
         ),
         "step3_financial_features": (
-            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures",
+            repo_root / "outputs/3_Financial_Features/3.0_BuildFinancialFeatures",
             "financial_features.parquet",
         ),
     }
@@ -58,18 +58,18 @@ def generate_baseline_checksums():
     # H7/H8 checksums: Detect data truncation bug where Volatility/StockRet missing for 2005-2018
     # If H7 output changes unexpectedly, check year coverage first
     key_outputs["h7_illiquidity"] = (
-        repo_root / "4_Outputs/3_Financial_V2",
+        repo_root / "outputs/3_Financial_V2",
         "H7_Illiquidity.parquet",
     )
     key_outputs["h8_takeover"] = (
-        repo_root / "4_Outputs/3_Financial_V2",
+        repo_root / "outputs/3_Financial_V2",
         "H8_Takeover.parquet",
     )
 
     # Add Step 2 yearly outputs
     for year in range(2002, 2019):
         key_outputs[f"step2_linguistic_counts_{year}"] = (
-            repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized",
+            repo_root / "outputs/2_Textual_Analysis/2.1_Tokenized",
             f"linguistic_counts_{year}.parquet",
         )
 

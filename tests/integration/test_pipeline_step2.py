@@ -50,7 +50,7 @@ def test_step2_full_pipeline(repo_root, subprocess_env):
 
     # Verify output files exist
     output_dir = resolve_output_dir(
-        repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized"
+        repo_root / "outputs/2_Textual_Analysis/2.1_Tokenized"
     )
     assert output_dir.exists(), "Output directory not created"
 
@@ -67,7 +67,7 @@ def test_output_file_format_step2(repo_root):
     """Test that output files have correct schema."""
     # Arrange
     output_file = (
-        resolve_output_dir(repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        resolve_output_dir(repo_root / "outputs/2_Textual_Analysis/2.1_Tokenized")
         / "linguistic_counts_2002.parquet"
     )
 
@@ -96,7 +96,7 @@ def test_word_count_validation_step2(repo_root):
     """Test that word counts are reasonable."""
     # Arrange
     output_file = (
-        resolve_output_dir(repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        resolve_output_dir(repo_root / "outputs/2_Textual_Analysis/2.1_Tokenized")
         / "linguistic_counts_2002.parquet"
     )
 
@@ -121,7 +121,7 @@ def test_step2_multiple_years(year, repo_root):
     """Test Step 2 output for specific years."""
     # Arrange
     output_file = (
-        resolve_output_dir(repo_root / "4_Outputs/2_Textual_Analysis/2.1_Tokenized")
+        resolve_output_dir(repo_root / "outputs/2_Textual_Analysis/2.1_Tokenized")
         / f"linguistic_counts_{year}.parquet"
     )
 

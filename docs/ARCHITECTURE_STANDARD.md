@@ -1027,13 +1027,13 @@ The following table shows how current directories map to the target structure:
 
 | Current Location | Target Location | Content | Action Required |
 |------------------|-----------------|---------|-----------------|
-| `1_Inputs/` | `data/raw/` | Original data files | Move and document |
-| `4_Outputs/` (intermediate) | `data/interim/` | Processing intermediates | Move and organize |
-| `4_Outputs/` (final datasets) | `data/processed/` | Final cleaned data | Move and version |
-| `4_Outputs/` (figures) | `results/figures/` | Generated plots | Move |
-| `4_Outputs/` (tables) | `results/tables/` | Generated tables | Move |
-| `4_Outputs/` (reports) | `results/reports/` | Generated reports | Move |
-| `3_Logs/` | `logs/` | Execution logs | Move |
+| `inputs/` | `data/raw/` | Original data files | Move and document |
+| `outputs/` (intermediate) | `data/interim/` | Processing intermediates | Move and organize |
+| `outputs/` (final datasets) | `data/processed/` | Final cleaned data | Move and version |
+| `outputs/` (figures) | `results/figures/` | Generated plots | Move |
+| `outputs/` (tables) | `results/tables/` | Generated tables | Move |
+| `outputs/` (reports) | `results/reports/` | Generated reports | Move |
+| `logs/` | `logs/` | Execution logs | Move |
 
 ### Data Documentation Requirements
 
@@ -1333,8 +1333,8 @@ Phase 3: Move stage scripts (BOTH variants)
 └── Run tests
 
 Phase 4: Reorganize data directories
-├── Move 1_Inputs/ -> data/raw/
-├── Reorganize 4_Outputs/ -> data/interim/, data/processed/, results/
+├── Move inputs/ -> data/raw/
+├── Reorganize outputs/ -> data/interim/, data/processed/, results/
 └── Update path references
 
 Phase 5: Clean up
@@ -1814,7 +1814,7 @@ The project currently uses a flat directory structure with numbered prefixes:
 
 ```
 F1D/
-├── 1_Inputs/                    # Raw data
+├── inputs/                    # Raw data
 │   ├── transcripts/
 │   ├── compustat/
 │   └── crsp/
@@ -1843,9 +1843,9 @@ F1D/
 │       ├── panel_ols.py
 │       └── ...
 │
-├── 3_Logs/                      # Execution logs
+├── logs/                      # Execution logs
 │
-├── 4_Outputs/                   # All outputs (mixed)
+├── outputs/                   # All outputs (mixed)
 │   ├── sample/                  # Stage outputs
 │   ├── text/
 │   ├── financial/
@@ -1864,7 +1864,7 @@ F1D/
 
 1. **Flat layout:** Scripts directly in `2_Scripts/` subdirectories
 2. **Active version variants:** V1 and V2 directories BOTH coexist as active variants
-3. **Mixed outputs:** `4_Outputs/` contains both intermediate and final data
+3. **Mixed outputs:** `outputs/` contains both intermediate and final data
 4. **sys.path hacks:** Many scripts use `sys.path.insert()` for imports
 5. **No package structure:** Code is not organized as a Python package
 
@@ -1895,9 +1895,9 @@ F1D/
 │   └── shared/
 │
 ├── data/                        # Data directory
-│   ├── raw/                     # (from 1_Inputs/)
-│   ├── interim/                 # (from 4_Outputs/ intermediate)
-│   ├── processed/               # (from 4_Outputs/ final)
+│   ├── raw/                     # (from inputs/)
+│   ├── interim/                 # (from outputs/ intermediate)
+│   ├── processed/               # (from outputs/ final)
 │   └── external/
 │
 ├── results/                     # Analysis outputs
@@ -1905,7 +1905,7 @@ F1D/
 │   ├── tables/
 │   └── reports/
 │
-├── logs/                        # (from 3_Logs/)
+├── logs/                        # (from logs/)
 ├── config/
 ├── docs/
 ├── tests/
@@ -1921,9 +1921,9 @@ F1D/
 | **Layout** | Flat | src-layout |
 | **Package** | None (scripts only) | f1d package with __init__.py |
 | **Versions** | V1 and V2 as parallel directories | V1 and V2 as subpackages |
-| **Data** | Mixed in 4_Outputs/ | Separated by lifecycle |
+| **Data** | Mixed in outputs/ | Separated by lifecycle |
 | **Imports** | sys.path hacks | Proper package imports |
-| **Results** | In 4_Outputs/ | Separate results/ directory |
+| **Results** | In outputs/ | Separate results/ directory |
 
 ### Migration Phases
 
@@ -2097,21 +2097,21 @@ mkdir -p results/tables
 mkdir -p results/reports
 
 # Move raw data
-mv 1_Inputs/* data/raw/
+mv inputs/* data/raw/
 
-# Separate 4_Outputs into interim and processed
+# Separate outputs into interim and processed
 # (Manual review required - categorize each subdirectory)
 
 # Move logs
-mv 3_Logs logs
+mv logs logs
 ```
 
 **Update path references in code:**
 ```python
 # OLD
-INPUT_DIR = Path("1_Inputs")
-OUTPUT_DIR = Path("4_Outputs")
-LOG_DIR = Path("3_Logs")
+INPUT_DIR = Path("inputs")
+OUTPUT_DIR = Path("outputs")
+LOG_DIR = Path("logs")
 
 # NEW
 DATA_RAW = Path("data/raw")
@@ -2169,9 +2169,9 @@ rm -rf 2_Scripts/4_Econometric_V2/
 ```bash
 # Remove remaining old directories (after verification)
 rm -rf 2_Scripts/          # If empty after stage migrations
-rm -rf 4_Outputs/
-rm -rf 1_Inputs/
-rm -rf 3_Logs/
+rm -rf outputs/
+rm -rf inputs/
+rm -rf logs/
 
 # Update pyproject.toml
 # Add build system and package configuration
@@ -2252,10 +2252,10 @@ pip install -e .
 
 | Old | New |
 |-----|-----|
-| `1_Inputs/` | `data/raw/` |
-| `4_Outputs/sample/` | `data/interim/sample/` or `data/processed/sample/` |
-| `4_Outputs/figures/` | `results/figures/` |
-| `3_Logs/` | `logs/` |
+| `inputs/` | `data/raw/` |
+| `outputs/sample/` | `data/interim/sample/` or `data/processed/sample/` |
+| `outputs/figures/` | `results/figures/` |
+| `logs/` | `logs/` |
 
 #### 3. Script Execution
 
@@ -2293,7 +2293,7 @@ pip install -e .
    python -m f1d.financial.v2.variables
 
    # Compare outputs for both variants
-   diff 4_Outputs/financial/ data/processed/financial/
+   diff outputs/financial/ data/processed/financial/
    ```
 
 3. **Gradual migration:** Migrate one stage at a time, testing both variants
@@ -2321,7 +2321,7 @@ git checkout v5.0-final
 git revert <commit-hash>
 
 # Restore data directories (if needed)
-git checkout v5.0-final -- 1_Inputs/ 4_Outputs/
+git checkout v5.0-final -- inputs/ outputs/
 ```
 
 ### Timeline Estimate

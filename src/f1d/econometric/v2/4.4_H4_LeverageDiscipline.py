@@ -20,21 +20,21 @@ Note: This script prepares the analysis dataset. Regressions will be run
       in a separate execution step.
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/latest/H1_CashHoldings.parquet
+    - outputs/3_Financial_V2/latest/H1_CashHoldings.parquet
       (leverage, firm_size, tobins_q, roa, cash_holdings, dividend_payer)
-    - 4_Outputs/3_Financial_V2/latest/H3_PayoutPolicy.parquet
+    - outputs/3_Financial_V2/latest/H3_PayoutPolicy.parquet
       (firm_maturity, earnings_volatility)
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
       (6 uncertainty DVs, analyst uncertainty, presentation uncertainty)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}/H4_Analysis_Dataset.parquet
+    - outputs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}/H4_Analysis_Dataset.parquet
       (complete analysis dataset with all variables for 6 regressions)
-    - 4_Outputs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}/stats.json
+    - outputs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}/stats.json
       (merge stats, VIF diagnostics, variable availability, execution metadata)
-    - 4_Outputs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}/H4_DATA_SUMMARY.md
+    - outputs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}/H4_DATA_SUMMARY.md
       (human-readable summary of data preparation)
-    - 3_Logs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}_H4.log
+    - logs/4_Econometric_V2/4.4_H4_LeverageDiscipline/{timestamp}_H4.log
       (execution log with dual-writer output)
 
 Deterministic: true
@@ -714,19 +714,19 @@ def setup_paths(config, timestamp):
 
     # Resolve H1 variables directory (for leverage and base controls)
     h1_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H1_CashHoldings.parquet",
     )
 
     # Resolve H3 variables directory (for firm_maturity, earnings_volatility)
     h3_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H3_PayoutPolicy.parquet",
     )
 
     # Resolve speech uncertainty directory
     speech_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+        root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
         required_file="linguistic_variables_2002.parquet",  # At least one year must exist
     )
 
@@ -738,12 +738,12 @@ def setup_paths(config, timestamp):
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
+    output_base = root / "outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
+    log_base = root / "logs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H4.log"
 
@@ -1373,7 +1373,7 @@ def load_existing_analysis_dataset(root, dw=None):
     from f1d.shared.path_utils import get_latest_output_dir
 
     h4_dir = get_latest_output_dir(
-        root / "4_Outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline",
+        root / "outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline",
         required_file="H4_Analysis_Dataset.parquet",
     )
 
@@ -1490,19 +1490,19 @@ def main():
         from f1d.shared.path_utils import get_latest_output_dir
 
         existing_dir = get_latest_output_dir(
-            root / "4_Outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline",
+            root / "outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline",
             required_file="H4_Analysis_Dataset.parquet",
         )
 
         # Use timestamp for new outputs
         output_base = (
-            root / "4_Outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
+            root / "outputs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
         )
         output_dir = output_base / timestamp
         ensure_output_dir(output_dir)
 
         # Log directory
-        log_base = root / "3_Logs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
+        log_base = root / "logs" / "4_Econometric_V2" / "4.4_H4_LeverageDiscipline"
         ensure_output_dir(log_base)
         log_file = log_base / f"{timestamp}_H4.log"
 

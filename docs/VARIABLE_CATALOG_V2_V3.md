@@ -61,7 +61,7 @@ All V2/V3 variables are **deterministically constructed** from source data:
 
 **Source Script:** `2_Scripts/3_Financial_V2/3.1_H1Variables.py`
 
-**Output File:** `4_Outputs/3_Financial_V2/{timestamp}/H1_CashHoldings.parquet`
+**Output File:** `outputs/3_Financial_V2/{timestamp}/H1_CashHoldings.parquet`
 
 **Variables:**
 
@@ -95,7 +95,7 @@ CashHoldings = beta0 + beta1*ClarityCEO + beta2*Size + beta3*BM + beta4*Lev + be
 
 **Source Script:** `2_Scripts/3_Financial_V2/3.2_H2Variables.py`
 
-**Output File:** `4_Outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet`
+**Output File:** `outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet`
 
 **Variables:**
 
@@ -135,7 +135,7 @@ Investment = beta0 + beta1*Size_lag + beta2*BM_lag + beta3*Lev_lag + beta4*Cash_
 
 **Source Script:** `2_Scripts/3_Financial_V2/3.3_H3Variables.py`
 
-**Output File:** `4_Outputs/3_Financial_V2/{timestamp}/H3_PayoutPolicy.parquet`
+**Output File:** `outputs/3_Financial_V2/{timestamp}/H3_PayoutPolicy.parquet`
 
 **Variables:**
 
@@ -174,7 +174,7 @@ Dividend_Payout = beta0 + beta1*ClarityCEO + Controls + FE
 
 **Source Script:** `2_Scripts/3_Financial_V2/3.5_H5Variables.py`
 
-**Output File:** `4_Outputs/3_Financial_V2/{timestamp}/H5_Dispersion.parquet`
+**Output File:** `outputs/3_Financial_V2/{timestamp}/H5_Dispersion.parquet`
 
 **Variables:**
 
@@ -219,7 +219,7 @@ Dispersion = beta0 + beta1*(QA_Uncertainty - Pres_Uncertainty) + Controls + FE
 
 **Source Script:** `2_Scripts/3_Financial_V2/3.6_H6Variables.py`
 
-**Output File:** `4_Outputs/3_Financial_V2/{timestamp}/H6_CCCL.parquet`
+**Output File:** `outputs/3_Financial_V2/{timestamp}/H6_CCCL.parquet`
 
 **Variables:**
 
@@ -263,7 +263,7 @@ Uncertainty = beta0 + beta1*CCCL_t + beta2*CCCL_t+1 + beta3*CCCL_t+2 + Controls 
 
 **Source Script:** `2_Scripts/3_Financial_V2/3.7_H7IlliquidityVariables.py`
 
-**Output File:** `4_Outputs/3_Financial_V2/{timestamp}/H7_Illiquidity.parquet`
+**Output File:** `outputs/3_Financial_V2/{timestamp}/H7_Illiquidity.parquet`
 
 **Variables:**
 
@@ -313,7 +313,7 @@ Illiquidity_t+1 = beta0 + beta1*Uncertainty_t + Controls_t + FE
 
 **Source Script:** `2_Scripts/3_Financial_V2/3.8_H8TakeoverVariables.py`
 
-**Output File:** `4_Outputs/3_Financial_V2/{timestamp}/H8_Takeover.parquet`
+**Output File:** `outputs/3_Financial_V2/{timestamp}/H8_Takeover.parquet`
 
 **Variables:**
 
@@ -363,7 +363,7 @@ logit(P(Takeover_t+1)) = beta0 + beta1*Uncertainty_t + Controls_t + FE
 - `2_Scripts/3_Financial_V2/3.13_H9_AbnormalInvestment.py`
 - `2_Scripts/4_Econometric_V2/4.11_H9_Regression.py`
 
-**Output File:** `4_Outputs/5_Financial_V2/{timestamp}/H9_StyleFrozen.parquet` (via 4.11_H9_Regression)
+**Output File:** `outputs/5_Financial_V2/{timestamp}/H9_StyleFrozen.parquet` (via 4.11_H9_Regression)
 
 **Variables:**
 
@@ -449,7 +449,7 @@ cd 2_Scripts/3_Financial_V2
 python 3.1_H1Variables.py
 ```
 
-Output will be written to `4_Outputs/3_Financial_V2/{timestamp}/H1_CashHoldings.parquet`
+Output will be written to `outputs/3_Financial_V2/{timestamp}/H1_CashHoldings.parquet`
 
 ---
 
@@ -470,7 +470,7 @@ Output will be written to `4_Outputs/3_Financial_V2/{timestamp}/H1_CashHoldings.
 ## Related Documentation
 
 - **V1 Variables:** `README.md` (base firm controls and linguistic variables)
-- **Hypothesis Results:** `4_Outputs/4_Econometric_V2/H*_Hypothesis_Documentation.md`
+- **Hypothesis Results:** `outputs/4_Econometric_V2/H*_Hypothesis_Documentation.md`
 - **Script Documentation:** `docs/SCRIPT_DOCSTANDARD.md`
 - **Sample Construction:** `.planning/phases/28-v2-structure-setup/`
 

@@ -641,9 +641,9 @@ if not is_not_valid:  # Very confusing
 
 ```python
 # GOOD: _path or _dir suffix
-output_path = Path("4_Outputs") / "results.parquet"
-input_dir = Path("1_Inputs")
-log_path = Path("3_Logs") / "execution.log"
+output_path = Path("outputs") / "results.parquet"
+input_dir = Path("inputs")
+log_path = Path("logs") / "execution.log"
 
 # GOOD: Clear variable purpose
 manifest_path = get_latest_output_dir("manifest")
@@ -693,8 +693,8 @@ Output files should follow consistent naming patterns that convey context, timin
 
 ```python
 # GOOD: ISO 8601 date format for directories
-4_Outputs/1.0_BuildSampleManifest/2026-02-13-143052/
-4_Outputs/3.1_H1Variables/2026-02-13/
+outputs/1.0_BuildSampleManifest/2026-02-13-143052/
+outputs/3.1_H1Variables/2026-02-13/
 data/processed/manifest/2026-02-13/
 
 # Pattern: {script_name}/{YYYY-MM-DD}[-{HHMMSS}]
@@ -732,7 +732,7 @@ regression_results_v2.parquet
 
 ```python
 # Standard output directory structure
-4_Outputs/
+outputs/
 ├── 1.0_BuildSampleManifest/
 │   └── 2026-02-13-143052/
 │       ├── master_manifest.parquet
@@ -759,7 +759,7 @@ regression_results_v2.parquet
    - Enables natural chronological sorting
 
 2. **Include script identifier:**
-   - Directory name includes script: `4_Outputs/1.0_BuildSampleManifest/`
+   - Directory name includes script: `outputs/1.0_BuildSampleManifest/`
    - Traces output back to source
 
 3. **Checksums for data integrity:**
@@ -799,7 +799,7 @@ from pathlib import Path
 import hashlib
 
 
-def get_output_dir(script_name: str, base_dir: Path = Path("4_Outputs")) -> Path:
+def get_output_dir(script_name: str, base_dir: Path = Path("outputs")) -> Path:
     """Create timestamped output directory.
 
     Args:

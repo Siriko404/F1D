@@ -96,7 +96,7 @@ env["PYTHONPATH"] = f"{existing_path}{os.pathsep}{scripts_root}" if existing_pat
 **Error:**
 ```
 shared.data_validation.DataValidationError: Validation failed for Unified-info.parquet:
-File: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\1_Inputs\Unified-info.parquet
+File: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\inputs\Unified-info.parquet
 Errors:
   - Missing columns: ['date', 'speakers']
   - Column 'event_type': expected int, got object
@@ -104,7 +104,7 @@ Errors:
 ```
 
 **Root Cause:**
-Input file `1_Inputs/Unified-info.parquet` does not match expected schema:
+Input file `inputs/Unified-info.parquet` does not match expected schema:
 1. Column `date` is missing
 2. Column `speakers` is missing (note: error shows 'speakers' without 'r' - possible typo)
 3. Column `event_type` has wrong type (object instead of int)
@@ -126,7 +126,7 @@ Input file `1_Inputs/Unified-info.parquet` does not match expected schema:
 ### Immediate Actions Required
 
 1. **Fix Input Data Schema** (HIGH PRIORITY)
-   - Verify `1_Inputs/Unified-info.parquet` columns match expected schema
+   - Verify `inputs/Unified-info.parquet` columns match expected schema
    - Ensure required columns exist: `date`, `speakers`, `event_type`
    - Verify `event_type` column is integer type
 
@@ -199,7 +199,7 @@ The pipeline cannot execute end-to-end due to input data schema mismatch:
 4. Verify all 17 scripts execute successfully in sequence
 
 **Recommendation:** Before re-running E2E test, create a follow-up task to:
-- Audit input data files in `1_Inputs/`
+- Audit input data files in `inputs/`
 - Compare actual vs expected schemas
 - Fix data or schema alignment
 - Consider adding test data fixtures for future E2E runs

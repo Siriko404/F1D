@@ -23,14 +23,14 @@ Variables Computed:
       (measures spontaneous vs. prepared speech uncertainty)
 
 Inputs:
-    - 1_Inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
+    - inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
       (145K firm-years, 6 shift-intensity variants)
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
       (2002-2018 earnings call transcripts with linguistic measures)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/3.6_H6Variables/{timestamp}/H6_CCCL_Speech.parquet
-    - 4_Outputs/3_Financial_V2/3.6_H6Variables/{timestamp}/stats.json
+    - outputs/3_Financial_V2/3.6_H6Variables/{timestamp}/H6_CCCL_Speech.parquet
+    - outputs/3_Financial_V2/3.6_H6Variables/{timestamp}/stats.json
 
 Deterministic: true
 Dependencies:
@@ -90,25 +90,25 @@ def setup_paths(config, timestamp):
 
     # Resolve linguistic variables directory
     linguistics_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+        root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
     )
 
     paths = {
         "root": root,
         "linguistics_dir": linguistics_dir,
         "cccl_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CCCL_instrument"
         / "instrument_shift_intensity_2005_2022.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2" / "3.6_H6Variables"
+    output_base = root / "outputs" / "3_Financial_V2" / "3.6_H6Variables"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2"
+    log_base = root / "logs" / "3_Financial_V2"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H6.log"
 

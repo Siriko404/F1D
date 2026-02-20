@@ -54,9 +54,9 @@ class TestPathConstants:
 
     def test_legacy_constants(self):
         """Test legacy path constants are defined."""
-        assert INPUTS_DIR == Path("1_Inputs")
-        assert OUTPUTS_DIR == Path("4_Outputs")
-        assert OLD_LOGS_DIR == Path("3_Logs")
+        assert INPUTS_DIR == Path("inputs")
+        assert OUTPUTS_DIR == Path("outputs")
+        assert OLD_LOGS_DIR == Path("logs")
 
 
 class TestValidateOutputPath:

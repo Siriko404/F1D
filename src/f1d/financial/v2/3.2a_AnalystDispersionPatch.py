@@ -20,17 +20,17 @@ Variables Computed:
       Aggregated by gvkey-year using MEDIAN (robust to outliers)
 
 Inputs:
-    - 1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet
+    - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet
         CCM data with gvkey, cusip, LINKPRIM, LINKTYPE for CUSIP-GVKEY mapping
-    - 1_Inputs/tr_ibes/tr_ibes.parquet
+    - inputs/tr_ibes/tr_ibes.parquet
         IBES analyst forecasts with CUSIP, STATPERS, NUMEST, MEANEST, STDEV
-    - 4_Outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet
+    - outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet
         Existing H2 output to patch (will add analyst_dispersion column)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet
+    - outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet
         Updated with analyst_dispersion column (14 columns total)
-    - 4_Outputs/3_Financial_V2/{timestamp}/stats.json
+    - outputs/3_Financial_V2/{timestamp}/stats.json
         Updated with analyst_dispersion statistics
 
 Deterministic: true
@@ -91,13 +91,13 @@ def setup_paths(config):
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     # Find latest H2 output
     h2_output_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H2_InvestmentEfficiency.parquet",
     )
 
@@ -105,17 +105,17 @@ def setup_paths(config):
         "root": root,
         "manifest_dir": manifest_dir,
         "ccm_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSPCompustat_CCM.parquet",
-        "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
+        "ibes_file": root / "inputs" / "tr_ibes" / "tr_ibes.parquet",
         "h2_output_dir": h2_output_dir,
         "h2_parquet": h2_output_dir / "H2_InvestmentEfficiency.parquet",
         "h2_stats": h2_output_dir / "stats.json",
     }
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2"
+    log_base = root / "logs" / "3_Financial_V2"
     ensure_output_dir(log_base)
 
     # Use the timestamp from the existing H2 output for consistent logging

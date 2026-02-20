@@ -52,8 +52,16 @@ from f1d.shared.variables import (
     CEOPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
-    CompustatControlsBuilder,
-    CRSPReturnsBuilder,
+    SizeBuilder,
+    BMBuilder,
+    LevBuilder,
+    ROABuilder,
+    CurrentRatioBuilder,
+    RDIntensityBuilder,
+    EPSGrowthBuilder,
+    StockReturnBuilder,
+    MarketReturnBuilder,
+    VolatilityBuilder,
     EarningsSurpriseBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -121,7 +129,8 @@ def build_panel(
 
     all_results: Dict[str, Any] = {}
 
-    # Financial compute engines — load raw inputs once each
+    # One variable per builder. CompustatEngine and CRSPEngine are module-level
+    # singletons — raw data is loaded once and cached across all individual builders.
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
         # Textual — Stage 2 outputs
@@ -143,9 +152,19 @@ def build_panel(
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        # Financial compute engines — raw inputs
-        "compustat_controls": CompustatControlsBuilder({}),
-        "crsp_returns": CRSPReturnsBuilder({}),
+        # Compustat individual variables (one per builder)
+        "size": SizeBuilder({}),
+        "bm": BMBuilder({}),
+        "lev": LevBuilder({}),
+        "roa": ROABuilder({}),
+        "current_ratio": CurrentRatioBuilder({}),
+        "rd_intensity": RDIntensityBuilder({}),
+        "eps_growth": EPSGrowthBuilder({}),
+        # CRSP individual variables (one per builder)
+        "stock_return": StockReturnBuilder({}),
+        "market_return": MarketReturnBuilder({}),
+        "volatility": VolatilityBuilder({}),
+        # IBES
         "earnings_surprise": EarningsSurpriseBuilder(
             var_config.get("earnings_surprise", {})
         ),

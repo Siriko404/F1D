@@ -117,42 +117,42 @@ def get_output_dir(script_path: str, repo_root: Path) -> Path:
     to find the most recent output directory by timestamp.
 
     Mapping:
-    - 1_Sample/* -> 4_Outputs/1.1_CleanMetadata/ -> TIMESTAMPED
-    - 2_Text/* -> 4_Outputs/2_Textual_Analysis/2.1_Tokenized/ -> TIMESTAMPED
-    - 3_Financial/* -> 4_Outputs/3_Financial/3.0_BuildFinancialFeatures/ -> TIMESTAMPED
-    - 4_Econometric/* -> 4_Outputs/4_Econometric/4.1_EstimateCeoClarity/ -> TIMESTAMPED
+    - 1_Sample/* -> outputs/1.1_CleanMetadata/ -> TIMESTAMPED
+    - 2_Text/* -> outputs/2_Textual_Analysis/2.1_Tokenized/ -> TIMESTAMPED
+    - 3_Financial/* -> outputs/3_Financial/3.0_BuildFinancialFeatures/ -> TIMESTAMPED
+    - 4_Econometric/* -> outputs/4_Econometric/4.1_EstimateCeoClarity/ -> TIMESTAMPED
     """
     script_name = Path(script_path).stem
 
     try:
         if "/1_Sample/" in script_path:
-            return get_latest_output_dir(repo_root / "4_Outputs" / script_name)
+            return get_latest_output_dir(repo_root / "outputs" / script_name)
         elif "/2_Text/" in script_path:
             return get_latest_output_dir(
-                repo_root / "4_Outputs" / "2_Textual_Analysis" / script_name
+                repo_root / "outputs" / "2_Textual_Analysis" / script_name
             )
         elif "/3_Financial/" in script_path:
             return get_latest_output_dir(
-                repo_root / "4_Outputs" / "3_Financial" / script_name
+                repo_root / "outputs" / "3_Financial" / script_name
             )
         elif "/4_Econometric/" in script_path:
             return get_latest_output_dir(
-                repo_root / "4_Outputs" / "4_Econometric" / script_name
+                repo_root / "outputs" / "4_Econometric" / script_name
             )
         else:
             raise ValueError(f"Unknown script path format: {script_path}")
     except OutputResolutionError:
         # Fallback to /latest/ path for tests that run before outputs exist
         if "/1_Sample/" in script_path:
-            return repo_root / "4_Outputs" / script_name / "latest"
+            return repo_root / "outputs" / script_name / "latest"
         elif "/2_Text/" in script_path:
             return (
-                repo_root / "4_Outputs" / "2_Textual_Analysis" / script_name / "latest"
+                repo_root / "outputs" / "2_Textual_Analysis" / script_name / "latest"
             )
         elif "/3_Financial/" in script_path:
-            return repo_root / "4_Outputs" / "3_Financial" / script_name / "latest"
+            return repo_root / "outputs" / "3_Financial" / script_name / "latest"
         elif "/4_Econometric/" in script_path:
-            return repo_root / "4_Outputs" / "4_Econometric" / script_name / "latest"
+            return repo_root / "outputs" / "4_Econometric" / script_name / "latest"
         else:
             raise ValueError(f"Unknown script path format: {script_path}")
 
@@ -271,11 +271,11 @@ def test_full_pipeline_execution(repo_root, subprocess_env):
     # Verify final critical outputs exist (Step 4 results)
     try:
         final_outputs_dir = get_latest_output_dir(
-            repo_root / "4_Outputs/4_Econometric/4.3_TakeoverHazards"
+            repo_root / "outputs/4_Econometric/4.3_TakeoverHazards"
         )
     except OutputResolutionError:
         final_outputs_dir = (
-            repo_root / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
+            repo_root / "outputs/4_Econometric/4.3_TakeoverHazards/latest"
         )
     assert final_outputs_dir.exists(), "Final Step 4 output directory not created"
 
@@ -303,12 +303,12 @@ def test_pipeline_data_flow(repo_root):
     but verifies the pipeline's data structure is intact.
     """
     # Check Step 1 final output exists
-    step1_output = repo_root / "4_Outputs/1.4_AssembleManifest/latest"
+    step1_output = repo_root / "outputs/1.4_AssembleManifest/latest"
     assert step1_output.exists(), f"Step 1 output directory missing: {step1_output}"
 
     # Check Step 2 final output exists (critical for Step 4)
     step2_output = (
-        repo_root / "4_Outputs/2_Textual_Analysis/2.2_ConstructVariables/latest"
+        repo_root / "outputs/2_Textual_Analysis/2.2_ConstructVariables/latest"
     )
     assert step2_output.exists(), f"Step 2 output directory missing: {step2_output}"
 
@@ -320,11 +320,11 @@ def test_pipeline_data_flow(repo_root):
     )
 
     # Check Step 3 outputs exist
-    step3_output = repo_root / "4_Outputs/3_Financial/3.3_EventFlags/latest"
+    step3_output = repo_root / "outputs/3_Financial/3.3_EventFlags/latest"
     assert step3_output.exists(), f"Step 3 output directory missing: {step3_output}"
 
     # Check Step 4 outputs exist
-    step4_output = repo_root / "4_Outputs/4_Econometric/4.3_TakeoverHazards/latest"
+    step4_output = repo_root / "outputs/4_Econometric/4.3_TakeoverHazards/latest"
     assert step4_output.exists(), f"Step 4 output directory missing: {step4_output}"
 
     # Verify at least one output file in Step 4

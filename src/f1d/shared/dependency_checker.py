@@ -107,7 +107,7 @@ def validate_prerequisite_step(
     """
     from f1d.shared.path_utils import OutputResolutionError, get_latest_output_dir
 
-    output_base = root / "4_Outputs" / step_name
+    output_base = root / "outputs" / step_name
 
     try:
         latest_dir = get_latest_output_dir(
@@ -138,7 +138,7 @@ def print_prerequisite_errors(errors: List[str]) -> None:
 
     print()
     print("To fix these issues:")
-    print("  1. Ensure all input files are in 1_Inputs/")
+    print("  1. Ensure all input files are in inputs/")
     print("  2. Run the pipeline in correct order (via orchestrators):")
     print("     Step 1: python -m f1d.sample.1_0_BuildSampleManifest")
     print("     Step 2: python -m f1d.text.tokenize_and_count")
@@ -170,7 +170,7 @@ def handle_missing_output(
     print()
     print(f"Required output from {step_name} not found:")
     print(f"  Expected file: {output_file}")
-    print(f"  Location: 4_Outputs/{step_name}/<timestamp>/")
+    print(f"  Location: outputs/{step_name}/<timestamp>/")
     print()
     print("Please run the pipeline in order (using python -m):")
     print(f"  1. {step_name}: python -m f1d.<stage>.{step_name.lower()}")

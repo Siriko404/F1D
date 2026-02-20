@@ -23,14 +23,14 @@ Identification:
     - Primary Instrument: shift_intensity_mkvalt_ff48_lag
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/3.6_H6Variables/latest/H6_CCCL_Speech.parquet
+    - outputs/3_Financial_V2/3.6_H6Variables/latest/H6_CCCL_Speech.parquet
       (CCCL instrument variants, lagged exposure, speech uncertainty measures)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}/H6_Regression_Results.parquet
-    - 4_Outputs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}/H6_RESULTS.md
-    - 4_Outputs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}/stats.json
-    - 3_Logs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}_H6.log
+    - outputs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}/H6_Regression_Results.parquet
+    - outputs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}/H6_RESULTS.md
+    - outputs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}/stats.json
+    - logs/4_Econometric_V2/4.6_H6CCCLRegression/{timestamp}_H6.log
 
 Deterministic: true
 Dependencies:
@@ -143,7 +143,7 @@ def setup_paths(config, timestamp):
 
     # Resolve H6 variables directory
     h6_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2" / "3.6_H6Variables",
+        root / "outputs" / "3_Financial_V2" / "3.6_H6Variables",
         required_file="H6_CCCL_Speech.parquet",
     )
 
@@ -153,12 +153,12 @@ def setup_paths(config, timestamp):
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "4_Econometric_V2" / "4.6_H6CCCLRegression"
+    output_base = root / "outputs" / "4_Econometric_V2" / "4.6_H6CCCLRegression"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "4_Econometric_V2" / "4.6_H6CCCLRegression"
+    log_base = root / "logs" / "4_Econometric_V2" / "4.6_H6CCCLRegression"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H6.log"
 

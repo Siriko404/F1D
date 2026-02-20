@@ -19,14 +19,14 @@ Key Specification:
     NO forward-filling or interpolation of missing values
 
 Inputs:
-    - 1_Inputs/FirmLevelRisk/firmquarter_2022q1.csv (Hassan PRisk quarterly data)
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet (fiscal year-end dates)
+    - inputs/FirmLevelRisk/firmquarter_2022q1.csv (Hassan PRisk quarterly data)
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet (fiscal year-end dates)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}/priskfy.parquet
-    - 4_Outputs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}/report_step312_02.md
-    - 4_Outputs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}/stats.json
-    - 3_Logs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}_priskfy.log
+    - outputs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}/priskfy.parquet
+    - outputs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}/report_step312_02.md
+    - outputs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}/stats.json
+    - logs/3_Financial_V2/3.12_H9_PRiskFY/{timestamp}_priskfy.log
 
 Declared Outputs:
     - priskfy.parquet: gvkey, fyear, PRiskFY, n_quarters_used
@@ -95,27 +95,27 @@ def setup_paths(config, timestamp):
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     paths = {
         "root": root,
         "manifest_dir": manifest_dir,
-        "prisk_file": root / "1_Inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
+        "prisk_file": root / "inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2" / "3.12_H9_PRiskFY"
+    output_base = root / "outputs" / "3_Financial_V2" / "3.12_H9_PRiskFY"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2" / "3.12_H9_PRiskFY"
+    log_base = root / "logs" / "3_Financial_V2" / "3.12_H9_PRiskFY"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_priskfy.log"
 
@@ -669,12 +669,12 @@ Construct PRiskFY (fiscal-year policy risk exposure) at firm-year level for H9 r
 ### Data Sources
 
 1. **Hassan PRisk Quarterly Data**
-   - File: `1_Inputs/FirmLevelRisk/firmquarter_2022q1.csv`
+   - File: `inputs/FirmLevelRisk/firmquarter_2022q1.csv`
    - Format: Tab-separated CSV
    - Columns: gvkey, date (e.g., "2002q1"), PRisk
 
 2. **Compustat Fiscal Year Grid**
-   - File: `1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet`
+   - File: `inputs/comp_na_daily_all/comp_na_daily_all.parquet`
    - Columns: gvkey, datadate (fiscal year-end), fyear
 
 ### Construction Steps

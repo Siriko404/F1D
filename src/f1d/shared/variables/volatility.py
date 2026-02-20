@@ -1,11 +1,12 @@
-"""Builder for Stock Return variable.
+"""Builder for Stock Volatility variable.
 
 Reads raw CRSP daily stock files via the shared CRSPEngine.
-Returns one column: file_name, StockRet.
+Returns one column: file_name, Volatility.
 
-StockRet = compound daily return (%) over the window
+Volatility = annualized standard deviation of daily returns (%) over the window
     [prev_call_date + 5 days, call start_date - 5 days],
     requiring >= 10 trading days.
+    Formula: std(daily_ret) * sqrt(252) * 100
 """
 
 from __future__ import annotations
@@ -20,8 +21,8 @@ from ._crsp_engine import get_engine
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-class StockReturnBuilder(VariableBuilder):
-    """Build StockRet from raw CRSP daily stock files via CRSPEngine."""
+class VolatilityBuilder(VariableBuilder):
+    """Build Volatility from raw CRSP daily stock files via CRSPEngine."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -36,7 +37,6 @@ class StockReturnBuilder(VariableBuilder):
         engine = get_engine()
         result_df = engine.get_data(root_path, manifest_path)
 
-        # Filter to requested years
         manifest_years = pd.read_parquet(
             manifest_path, columns=["file_name", "start_date"]
         )
@@ -47,15 +47,15 @@ class StockReturnBuilder(VariableBuilder):
         ]
 
         data = result_df[result_df["file_name"].isin(valid_files)][
-            ["file_name", "StockRet"]
+            ["file_name", "Volatility"]
         ].copy()
 
-        stats = self.get_stats(data["StockRet"], "StockRet")
+        stats = self.get_stats(data["Volatility"], "Volatility")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "StockRet", "source": "CRSP/RET"},
+            metadata={"column": "Volatility", "source": "CRSP/RET"},
         )
 
 
-__all__ = ["StockReturnBuilder"]
+__all__ = ["VolatilityBuilder"]

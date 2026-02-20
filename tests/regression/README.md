@@ -62,15 +62,15 @@ This ensures bitwise-identical detection of data changes.
 The following output files are tracked for regression testing:
 
 ### Step 1: Sample Construction
-- `4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet`
+- `outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet`
 
 ### Step 2: Text Processing
-- `4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet`
-- `4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2003.parquet`
+- `outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2002.parquet`
+- `outputs/2_Textual_Analysis/2.1_Tokenized/latest/linguistic_counts_2003.parquet`
 - ... (one per year, 2002-2018)
 
 ### Step 3: Financial Features
-- `4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/financial_features.parquet`
+- `outputs/3_Financial_Features/3.0_BuildFinancialFeatures/latest/financial_features.parquet`
 
 ## Baseline Metadata
 

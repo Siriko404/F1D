@@ -17,17 +17,17 @@ Hypothesis Test:
     One-tailed test: p_one_tailed = p_two_tailed / 2 if coefficient < 0
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/latest/H2_PRiskUncertainty_Analysis.parquet
+    - outputs/3_Financial_V2/3.10_H2_PRiskUncertaintyMerge/latest/H2_PRiskUncertainty_Analysis.parquet
       (complete regression dataset from Plan 53-02)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}/H2_Regression_Results.parquet
+    - outputs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}/H2_Regression_Results.parquet
       (all regression coefficients, SEs, p-values, diagnostics)
-    - 4_Outputs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}/stats.json
+    - outputs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}/stats.json
       (regression summaries, hypothesis tests, execution metadata)
-    - 4_Outputs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}/H2_RESULTS.md
+    - outputs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}/H2_RESULTS.md
       (human-readable summary of key findings)
-    - 3_Logs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}_H2.log
+    - logs/4_Econometric_V2/4.10_H2_PRiskUncertainty_Investment/{timestamp}_H2.log
       (execution log with dual-writer output)
 
 Deterministic: true
@@ -171,7 +171,7 @@ def setup_paths(config, timestamp):
 
     # Resolve Plan 53-02 output directory
     analysis_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge",
+        root / "outputs" / "3_Financial_V2" / "3.10_H2_PRiskUncertaintyMerge",
         required_file="H2_PRiskUncertainty_Analysis.parquet",
     )
 
@@ -182,14 +182,14 @@ def setup_paths(config, timestamp):
 
     # Output directory
     output_base = (
-        root / "4_Outputs" / "4_Econometric_V2" / "4.10_H2_PRiskUncertainty_Investment"
+        root / "outputs" / "4_Econometric_V2" / "4.10_H2_PRiskUncertainty_Investment"
     )
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
     log_base = (
-        root / "3_Logs" / "4_Econometric_V2" / "4.10_H2_PRiskUncertainty_Investment"
+        root / "logs" / "4_Econometric_V2" / "4.10_H2_PRiskUncertainty_Investment"
     )
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H2.log"

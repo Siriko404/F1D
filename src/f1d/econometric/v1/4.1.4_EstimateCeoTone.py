@@ -17,15 +17,15 @@ Purpose:
     - ToneRegime: CEO FE on non-CEO manager speech only
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
+    - outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.1.4_CeoTone/{timestamp}/ceo_tone_scores.parquet
-    - 4_Outputs/4.1.4_CeoTone/{timestamp}/regression_results_{model}_{sample}.txt
-    - 4_Outputs/4.1.4_CeoTone/{timestamp}/model_diagnostics.csv
-    - 4_Outputs/4.1.4_CeoTone/{timestamp}/report_step4_1_4.md
+    - outputs/4.1.4_CeoTone/{timestamp}/ceo_tone_scores.parquet
+    - outputs/4.1.4_CeoTone/{timestamp}/regression_results_{model}_{sample}.txt
+    - outputs/4.1.4_CeoTone/{timestamp}/model_diagnostics.csv
+    - outputs/4.1.4_CeoTone/{timestamp}/report_step4_1_4.md
 
 Deterministic: true
 Dependencies:
@@ -179,7 +179,7 @@ def load_all_data(root, year_start, year_end, stats=None):
 
     # Load manifest
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -207,7 +207,7 @@ def load_all_data(root, year_start, year_end, stats=None):
         # Linguistic variables
         try:
             lv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
                 required_file=f"linguistic_variables_{year}.parquet",
             )
             lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
@@ -225,7 +225,7 @@ def load_all_data(root, year_start, year_end, stats=None):
         # Firm controls
         try:
             fc_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"firm_controls_{year}.parquet",
             )
             fc_path = fc_dir / f"firm_controls_{year}.parquet"
@@ -236,7 +236,7 @@ def load_all_data(root, year_start, year_end, stats=None):
         # Market variables
         try:
             mv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"market_variables_{year}.parquet",
             )
             mv_path = mv_dir / f"market_variables_{year}.parquet"
@@ -641,9 +641,9 @@ def main(year_start=None, year_end=None):
 
     # Setup paths
     root = Path(__file__).resolve().parents[4]
-    out_dir = root / "4_Outputs" / "4.1.4_CeoTone" / timestamp
+    out_dir = root / "outputs" / "4.1.4_CeoTone" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    log_dir = root / "3_Logs" / "4.1.4_CeoTone" / timestamp
+    log_dir = root / "logs" / "4.1.4_CeoTone" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Setup dual logging

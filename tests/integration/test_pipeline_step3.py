@@ -50,7 +50,7 @@ def test_step3_full_pipeline(repo_root, subprocess_env):
 
     # Verify output files exist
     output_dir = resolve_output_dir(
-        repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+        repo_root / "outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
     )
     assert output_dir.exists(), "Output directory not created"
 
@@ -71,7 +71,7 @@ def test_merge_diagnostics_step3(repo_root):
     # Arrange
     stats_path = (
         resolve_output_dir(
-            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+            repo_root / "outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
         )
         / "stats.json"
     )
@@ -105,7 +105,7 @@ def test_financial_variables_validation(repo_root):
     # Arrange
     output_file = (
         resolve_output_dir(
-            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+            repo_root / "outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
         )
         / "financial_features.parquet"
     )
@@ -149,7 +149,7 @@ def test_step3_data_source_integration(data_source, repo_root):
     # Arrange
     stats_path = (
         resolve_output_dir(
-            repo_root / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+            repo_root / "outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
         )
         / "stats.json"
     )

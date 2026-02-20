@@ -5,7 +5,7 @@ human-readable console output and JSON-formatted file output.
 
 Example:
     >>> from f1d.shared.logging import configure_dual_output
-    >>> configure_dual_output(log_file=Path("3_Logs/pipeline.log"))
+    >>> configure_dual_output(log_file=Path("logs/pipeline.log"))
     >>> logger.info("processing_started", rows=1000)
     # Console: colored, human-readable
     # File: JSON with all fields
@@ -25,7 +25,7 @@ from structlog.processors import JSONRenderer
 
 
 # Default log directory
-DEFAULT_LOG_DIR = Path("3_Logs")
+DEFAULT_LOG_DIR = Path("logs")
 
 
 def get_log_file_path(
@@ -37,7 +37,7 @@ def get_log_file_path(
 
     Args:
         script_name: Name of the script (e.g., "script_32_construct_variables").
-        log_dir: Directory for log files. Defaults to 3_Logs/.
+        log_dir: Directory for log files. Defaults to logs/.
         extension: File extension (default: "log").
 
     Returns:
@@ -45,7 +45,7 @@ def get_log_file_path(
 
     Example:
         >>> get_log_file_path("script_32_construct_variables")
-        PosixPath('3_Logs/script_32_construct_variables.log')
+        PosixPath('logs/script_32_construct_variables.log')
     """
     base_dir = log_dir or DEFAULT_LOG_DIR
     return base_dir / f"{script_name}.{extension}"
@@ -60,7 +60,7 @@ def get_timestamped_log_path(
 
     Args:
         script_name: Name of the script.
-        log_dir: Directory for log files. Defaults to 3_Logs/.
+        log_dir: Directory for log files. Defaults to logs/.
         extension: File extension (default: "log").
 
     Returns:
@@ -68,7 +68,7 @@ def get_timestamped_log_path(
 
     Example:
         >>> get_timestamped_log_path("script_32")
-        PosixPath('3_Logs/script_32_20240115_143022.log')
+        PosixPath('logs/script_32_20240115_143022.log')
     """
     base_dir = log_dir or DEFAULT_LOG_DIR
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -100,7 +100,7 @@ def configure_dual_output(
 
     Example:
         >>> logger = configure_dual_output(
-        ...     log_file=Path("3_Logs/pipeline.log"),
+        ...     log_file=Path("logs/pipeline.log"),
         ...     log_level="DEBUG"
         ... )
         >>> logger.info("started", rows=1000)
@@ -187,7 +187,7 @@ def configure_script_logging(
     Args:
         script_name: Name of the script (for log file naming).
         log_level: Logging level.
-        log_dir: Directory for log files. Defaults to 3_Logs/.
+        log_dir: Directory for log files. Defaults to logs/.
         timestamped: If True, include timestamp in log filename.
 
     Returns:
@@ -226,7 +226,7 @@ class LogFileRotator:
         rotation_interval: Seconds between rotations.
 
     Example:
-        >>> rotator = LogFileRotator(Path("3_Logs/pipeline"))
+        >>> rotator = LogFileRotator(Path("logs/pipeline"))
         >>> log_file = rotator.get_current_file()
     """
 

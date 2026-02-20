@@ -23,13 +23,13 @@ Variables Computed:
 
 Inputs:
     - CRSP Daily Stock File (DSF): RET, VOL, PRC for illiquidity calculation
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/: Speech uncertainty measures
-    - 4_Outputs/3_Financial_Features/latest/: Firm controls (market_variables)
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet: Sample base
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/: Speech uncertainty measures
+    - outputs/3_Financial_Features/latest/: Firm controls (market_variables)
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet: Sample base
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/{timestamp}/H7_Illiquidity.parquet
-    - 4_Outputs/3_Financial_V2/{timestamp}/stats.json
+    - outputs/3_Financial_V2/{timestamp}/H7_Illiquidity.parquet
+    - outputs/3_Financial_V2/{timestamp}/stats.json
 
 Deterministic: true
 Dependencies:
@@ -109,19 +109,19 @@ def setup_paths(config, timestamp):
 
     # Resolve manifest directory
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     # Resolve linguistic variables directory
     linguistic_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+        root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
         required_file="linguistic_variables_2002.parquet",
     )
 
     # Resolve market variables directory (for additional controls)
     market_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_Features",
+        root / "outputs" / "3_Financial_Features",
         required_file="market_variables_2002.parquet",
     )
 
@@ -130,20 +130,20 @@ def setup_paths(config, timestamp):
         "manifest_dir": manifest_dir,
         "linguistic_dir": linguistic_dir,
         "market_dir": market_dir,
-        "crsp_dir": root / "1_Inputs" / "CRSP_DSF",
+        "crsp_dir": root / "inputs" / "CRSP_DSF",
         "ccm_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSPCompustat_CCM.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2"
+    output_base = root / "outputs" / "3_Financial_V2"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2"
+    log_base = root / "logs" / "3_Financial_V2"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H7.log"
 

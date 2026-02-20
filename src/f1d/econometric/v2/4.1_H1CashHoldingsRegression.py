@@ -18,19 +18,19 @@ Hypothesis Tests:
     H1b: beta3 < 0 (Leverage attenuates the uncertainty-cash relationship)
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/latest/H1_CashHoldings.parquet
+    - outputs/3_Financial_V2/latest/H1_CashHoldings.parquet
       (cash_holdings, leverage, controls at firm-year level)
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
       (speech uncertainty measures at call level)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_Regression_Results.parquet
+    - outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_Regression_Results.parquet
       (all regression coefficients, SEs, p-values, diagnostics)
-    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/stats.json
+    - outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/stats.json
       (regression summaries, hypothesis tests, execution metadata)
-    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_RESULTS.md
+    - outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_RESULTS.md
       (human-readable summary of key findings)
-    - 3_Logs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}_H1.log
+    - logs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}_H1.log
       (execution log with dual-writer output)
 
 Deterministic: true
@@ -149,13 +149,13 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve H1 variables directory
     h1_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H1_CashHoldings.parquet",
     )
 
     # Resolve speech uncertainty directory
     speech_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+        root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
         required_file="linguistic_variables_2002.parquet",  # At least one year must exist
     )
 
@@ -167,13 +167,13 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Output directory - organize by script name
     output_base = (
-        root / "4_Outputs" / "4_Econometric_V2" / "4.1_H1CashHoldingsRegression"
+        root / "outputs" / "4_Econometric_V2" / "4.1_H1CashHoldingsRegression"
     )
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory - organize by script name
-    log_base = root / "3_Logs" / "4_Econometric_V2" / "4.1_H1CashHoldingsRegression"
+    log_base = root / "logs" / "4_Econometric_V2" / "4.1_H1CashHoldingsRegression"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H1.log"
 

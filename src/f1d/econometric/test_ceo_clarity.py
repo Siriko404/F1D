@@ -202,11 +202,13 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
         + ["ceo_id", "year"]
     )
 
-    # Check which variables exist
+    # Check which variables exist — MAJOR-5: hard-fail if any required variable missing
     missing_vars = [v for v in required if v not in df.columns]
     if missing_vars:
-        print(f"  WARNING: Missing variables: {missing_vars}")
-        required = [v for v in required if v in df.columns]
+        raise ValueError(
+            f"Required variables missing from panel: {missing_vars}. "
+            "Panel build may be incomplete. Aborting to prevent misspecified regression."
+        )
 
     # Filter to complete cases
     complete_mask = df[required].notna().all(axis=1)
@@ -546,11 +548,11 @@ def generate_report(
         n_obs = diag.get("n_obs", "N/A")
         n_ceo = diag.get("n_ceos", "N/A")
         r2 = diag.get("rsquared", "N/A")
-        report_lines.append(
-            f"| {sample_name} | {n_obs:,} | {n_ceo:,} | {r2:.4f} |"
-            if isinstance(r2, float)
-            else f"| {sample_name} | {n_obs} | {n_ceo} | {r2} |"
-        )
+        # MAJOR-4: format spec :, only applies to ints — guard against "N/A" string
+        n_obs_str = f"{n_obs:,}" if isinstance(n_obs, int) else str(n_obs)
+        n_ceo_str = f"{n_ceo:,}" if isinstance(n_ceo, int) else str(n_ceo)
+        r2_str = f"{r2:.4f}" if isinstance(r2, float) else str(r2)
+        report_lines.append(f"| {sample_name} | {n_obs_str} | {n_ceo_str} | {r2_str} |")
 
     report_lines.append("")
     if not clarity_df.empty:

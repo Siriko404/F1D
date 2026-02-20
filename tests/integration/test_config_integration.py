@@ -503,15 +503,15 @@ class TestPathsSettings:
         from f1d.shared.config.paths import PathsSettings
 
         # Create input directory so validation passes
-        inputs_dir = tmp_path / "1_Inputs"
+        inputs_dir = tmp_path / "inputs"
         inputs_dir.mkdir()
 
         paths = PathsSettings()
         resolved = paths.validate_paths(tmp_path)
 
         # Output and logs directories should be created
-        assert (tmp_path / "4_Outputs").exists()
-        assert (tmp_path / "3_Logs").exists()
+        assert (tmp_path / "outputs").exists()
+        assert (tmp_path / "logs").exists()
 
     def test_paths_validate_paths_raises_for_missing_inputs(self, tmp_path: Path) -> None:
         """Test validate_paths raises FileNotFoundError for missing inputs."""
@@ -529,7 +529,7 @@ class TestPathsSettings:
         from f1d.shared.config.paths import PathsSettings
 
         # Create inputs directory
-        inputs_dir = tmp_path / "1_Inputs"
+        inputs_dir = tmp_path / "inputs"
         inputs_dir.mkdir()
 
         # Specify optional file that doesn't exist

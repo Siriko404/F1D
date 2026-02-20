@@ -15,7 +15,7 @@ Stage 2 Scripts (migrated from 2_Scripts/2_Text/):
 
 Dependencies:
     - Scripts depend on Step 1.4 outputs (master_sample_manifest.parquet)
-    - Scripts depend on 1_Inputs/transcripts/*.txt files
+    - Scripts depend on inputs/transcripts/*.txt files
 """
 
 import os

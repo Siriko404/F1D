@@ -259,7 +259,7 @@ def load_all_data(
 
     # Load manifest
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -287,7 +287,7 @@ def load_all_data(
         # Linguistic variables
         try:
             lv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
                 required_file=f"linguistic_variables_{year}.parquet",
             )
             lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
@@ -305,7 +305,7 @@ def load_all_data(
         # Firm controls
         try:
             fc_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"firm_controls_{year}.parquet",
             )
             fc_path = fc_dir / f"firm_controls_{year}.parquet"
@@ -316,7 +316,7 @@ def load_all_data(
         # Market variables
         try:
             mv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"market_variables_{year}.parquet",
             )
             mv_path = mv_dir / f"market_variables_{year}.parquet"

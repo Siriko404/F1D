@@ -23,15 +23,15 @@ Variables Computed:
     - Earnings Volatility: StdDev(ROA) over 5 years
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat raw data)
-    - 1_Inputs/FF1248/Siccodes48.zip (Fama-French 48 industry classifications)
-    - 1_Inputs/FF1248/Siccodes12.zip (Fama-French 12 industry classifications)
-    - 1_Inputs/tr_ibes/tr_ibes.parquet (IBES analyst forecasts)
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat raw data)
+    - inputs/FF1248/Siccodes48.zip (Fama-French 48 industry classifications)
+    - inputs/FF1248/Siccodes12.zip (Fama-French 12 industry classifications)
+    - inputs/tr_ibes/tr_ibes.parquet (IBES analyst forecasts)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet
-    - 4_Outputs/3_Financial_V2/{timestamp}/stats.json
+    - outputs/3_Financial_V2/{timestamp}/H2_InvestmentEfficiency.parquet
+    - outputs/3_Financial_V2/{timestamp}/stats.json
 
 Deterministic: true
 Dependencies:
@@ -113,7 +113,7 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
@@ -121,21 +121,21 @@ def setup_paths(config: Dict[str, Any], timestamp: str) -> Dict[str, Path]:
         "root": root,
         "manifest_dir": manifest_dir,
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
-        "siccodes48_file": root / "1_Inputs" / "FF1248" / "Siccodes48.zip",
-        "siccodes12_file": root / "1_Inputs" / "FF1248" / "Siccodes12.zip",
-        "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
+        "siccodes48_file": root / "inputs" / "FF1248" / "Siccodes48.zip",
+        "siccodes12_file": root / "inputs" / "FF1248" / "Siccodes12.zip",
+        "ibes_file": root / "inputs" / "tr_ibes" / "tr_ibes.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2"
+    output_base = root / "outputs" / "3_Financial_V2"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2"
+    log_base = root / "logs" / "3_Financial_V2"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H2.log"
 

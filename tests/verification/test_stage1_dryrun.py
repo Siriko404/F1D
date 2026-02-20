@@ -16,7 +16,7 @@ Stage 1 Scripts:
 
 Dependencies:
     - Scripts depend on config/project.yaml
-    - Scripts depend on 1_Inputs/Earnings_Calls_Transcripts/Unified-info.parquet
+    - Scripts depend on inputs/Earnings_Calls_Transcripts/Unified-info.parquet
 """
 
 import os

@@ -19,19 +19,19 @@
 - YAML files (`.yaml`) - Configuration files
 
 **Data Sources (Local Files):**
-- `1_Inputs/Earnings_Calls_Transcripts/` - Earnings call transcript data
-- `1_Inputs/LM_dictionary/` - Loughran-McDonald dictionary for text analysis
-- `1_Inputs/CRSPCompustat_CCM/` - CRSP-Compustat linking table
-- `1_Inputs/CRSP_DSF/` - Daily stock returns
-- `1_Inputs/comp_na_daily_all/` - Compustat North America daily data
-- `1_Inputs/tr_ibes/` - IBES analyst forecasts
-- `1_Inputs/Execucomp/` - Executive compensation data
-- `1_Inputs/SDC/` - M&A deal data
-- `1_Inputs/CCCL_instrument/` - Instrumental variable data
-- `1_Inputs/FirmLevelRisk/` - Firm-level risk measures
-- `1_Inputs/FF1248/` - Fama-French factors
-- `1_Inputs/Siccodes12.zip`, `Siccodes48.zip` - Industry classification codes
-- `1_Inputs/SEC_Edgar_Letters/` - SEC EDGAR correspondence
+- `inputs/Earnings_Calls_Transcripts/` - Earnings call transcript data
+- `inputs/LM_dictionary/` - Loughran-McDonald dictionary for text analysis
+- `inputs/CRSPCompustat_CCM/` - CRSP-Compustat linking table
+- `inputs/CRSP_DSF/` - Daily stock returns
+- `inputs/comp_na_daily_all/` - Compustat North America daily data
+- `inputs/tr_ibes/` - IBES analyst forecasts
+- `inputs/Execucomp/` - Executive compensation data
+- `inputs/SDC/` - M&A deal data
+- `inputs/CCCL_instrument/` - Instrumental variable data
+- `inputs/FirmLevelRisk/` - Firm-level risk measures
+- `inputs/FF1248/` - Fama-French factors
+- `inputs/Siccodes12.zip`, `Siccodes48.zip` - Industry classification codes
+- `inputs/SEC_Edgar_Letters/` - SEC EDGAR correspondence
 
 **Caching:**
 - None (no caching layer implemented)
@@ -49,7 +49,7 @@
 
 **Logs:**
 - structlog for structured logging
-- Log files written to `3_Logs/` directory
+- Log files written to `logs/` directory
 - Console output with JSON format option
 - Log level configurable via `config/project.yaml` or pydantic-settings
 

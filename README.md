@@ -56,7 +56,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        STEP 0: RAW INPUTS (1_Inputs/)                        │
+│                        STEP 0: RAW INPUTS (inputs/)                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 │
 ├─ Earnings Call Data
@@ -92,7 +92,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 1.1_CleanMetadata.py
 │  Input:  Unified-info.parquet
-│  Output: 4_Outputs/1.1_CleanMetadata/metadata_cleaned.parquet
+│  Output: outputs/1.1_CleanMetadata/metadata_cleaned.parquet
 │  Process:
 │    • Clean call metadata (dates, strings, formats)
 │    • Validate fields and remove invalid records
@@ -100,7 +100,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 1.2_LinkEntities.py
 │  Input:  metadata_cleaned.parquet + CRSPCompustat_CCM/
-│  Output: 4_Outputs/1.2_LinkEntities/metadata_linked.parquet
+│  Output: outputs/1.2_LinkEntities/metadata_linked.parquet
 │  Process:
 │    • Link calls to firms (GVKEY) via 4-tier strategy:
 │      - Tier 1: PERMNO + exact date match
@@ -111,7 +111,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 1.3_BuildTenureMap.py
 │  Input:  metadata_linked.parquet + speaker_data_*.parquet
-│  Output: 4_Outputs/1.3_BuildTenureMap/tenure_monthly.parquet
+│  Output: outputs/1.3_BuildTenureMap/tenure_monthly.parquet
 │  Process:
 │    • Track CEO tenure by company-month
 │    • Resolve overlapping tenures
@@ -120,7 +120,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 └─ 1.4_AssembleManifest.py
    Input:  metadata_linked.parquet + tenure_monthly.parquet + speaker_data
-   Output: 4_Outputs/1.4_AssembleManifest/master_sample_manifest.parquet
+   Output: outputs/1.4_AssembleManifest/master_sample_manifest.parquet
    Process:
      • Merge all datasets on unique call ID
      • Assign CEO and firm identifiers
@@ -137,7 +137,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 ├─ 2.1_TokenizeAndCount.py
 │  Input:  master_sample_manifest.parquet + speaker_data_*.parquet
 │          + Loughran-McDonald_MasterDictionary_1993-2024.csv
-│  Output: 4_Outputs/2.1_TokenizeAndCount/raw_counts.parquet
+│  Output: outputs/2.1_TokenizeAndCount/raw_counts.parquet
 │  Process:
 │    • Tokenize Q&A text for each call
 │    • Count LM dictionary word categories:
@@ -148,7 +148,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 └─ 2.2_ConstructVariables.py
    Input:  raw_counts.parquet
-   Output: 4_Outputs/2.2_ConstructVariables/linguistic_variables.parquet
+   Output: outputs/2.2_ConstructVariables/linguistic_variables.parquet
    Process:
      • Construct key linguistic variables:
        - Manager_QA_Uncertainty_pct = Uncertainty / word_tokens
@@ -166,7 +166,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 3.1_FirmControls.py
 │  Input:  master_sample_manifest.parquet + Compustat (comp_na_daily_all/)
-│  Output: 4_Outputs/3.1_FirmControls/firm_controls.parquet
+│  Output: outputs/3.1_FirmControls/firm_controls.parquet
 │  Process:
 │    • Compute firm-level controls (lagged 1 fiscal year):
 │      - Size = log(MarketCap)
@@ -181,7 +181,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 3.2_MarketVariables.py
 │  Input:  master_sample_manifest.parquet + CRSP_DSF/ + tr_ibes/
-│  Output: 4_Outputs/3.2_MarketVariables/market_variables.parquet
+│  Output: outputs/3.2_MarketVariables/market_variables.parquet
 │  Process:
 │    • Compute market variables around call dates:
 │      - StockRet = [t-2, t+2] cumulative return
@@ -193,7 +193,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 └─ 3.3_EventFlags.py
    Input:  master_sample_manifest.parquet + SDC/ + CEO Dismissal Data
-   Output: 4_Outputs/3.3_EventFlags/event_flags.parquet
+   Output: outputs/3.3_EventFlags/event_flags.parquet
    Process:
      • Identify takeover events (3-tier matching)
      • Flag CEO dismissal events
@@ -211,7 +211,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 ├─ 4.1_EstimateCeoClarity.py (Baseline Model)
 │  Input:  master_sample_manifest.parquet + linguistic_variables.parquet
 │          + firm_controls.parquet + market_variables.parquet
-│  Output: 4_Outputs/4.1_EstimateCeoClarity/
+│  Output: outputs/4.1_EstimateCeoClarity/
 │          └─ ceo_clarity_scores.parquet (CEO fixed effects)
 │          └─ regression_results.csv
 │          └─ table_ceo_clarity.tex (LaTeX table)
@@ -224,7 +224,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 4.1.1_EstimateCeoClarity_CeoSpecific.py
 │  Input:  Same as 4.1 + CEO-specific controls (tenure, age)
-│  Output: 4_Outputs/4.1.1_EstimateCeoClarity_CeoSpecific/
+│  Output: outputs/4.1.1_EstimateCeoClarity_CeoSpecific/
 │          └─ ceo_clarity_ceo_specific.parquet
 │          └─ table_ceo_clarity_ceo_specific.tex
 │  Process:
@@ -234,7 +234,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 4.1.2_EstimateCeoClarity_Extended.py
 │  Input:  Same as 4.1 + extended controls (board, governance)
-│  Output: 4_Outputs/4.1.2_EstimateCeoClarity_Extended/
+│  Output: outputs/4.1.2_EstimateCeoClarity_Extended/
 │          └─ ceo_clarity_extended.parquet
 │          └─ table_ceo_clarity_extended.tex
 │  Process:
@@ -244,7 +244,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 4.1.3_EstimateCeoClarity_Regime.py
 │  Input:  Same as 4.1
-│  Output: 4_Outputs/4.1.3_EstimateCeoClarity_Regime/
+│  Output: outputs/4.1.3_EstimateCeoClarity_Regime/
 │          └─ regime_clarity_scores.parquet
 │          └─ table_regime_clarity.tex
 │  Process:
@@ -254,7 +254,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 │
 ├─ 4.1.4_EstimateCeoTone.py
 │  Input:  Same as 4.1
-│  Output: 4_Outputs/4.1.4_EstimateCeoTone/
+│  Output: outputs/4.1.4_EstimateCeoTone/
 │          └─ ceo_tone_scores.parquet
 │          └─ table_ceo_tone.tex
 │  Process:
@@ -265,7 +265,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 ├─ 4.2_LiquidityRegressions.py (IV Analysis)
 │  Input:  ceo_clarity_scores.parquet + market_variables.parquet
 │          + CCCL instrument/ (industry-level regulation changes)
-│  Output: 4_Outputs/4.2_LiquidityRegressions/
+│  Output: outputs/4.2_LiquidityRegressions/
 │          └─ liquidity_iv_results.csv
 │          └─ table_liquidity_iv.tex
 │  Process:
@@ -279,7 +279,7 @@ The F1D pipeline processes earnings call transcripts through a 4-stage workflow:
 └─ 4.3_TakeoverHazards.py
    Input:  ceo_clarity_scores.parquet + event_flags.parquet
           + firm_controls.parquet
-   Output: 4_Outputs/4.3_TakeoverHazards/
+   Output: outputs/4.3_TakeoverHazards/
            └─ takeover_hazard_results.csv
            └─ table_takeover_hazards.tex
    Process:
@@ -446,7 +446,7 @@ This section provides step-by-step instructions for running the F1D Clarity Meas
 
 #### Required Inputs
 
-Ensure the following files are present in `1_Inputs/`:
+Ensure the following files are present in `inputs/`:
 
 - `Unified-info.parquet` - Main earnings call metadata
 - `speaker_data_2002.parquet` through `speaker_data_2018.parquet` - Transcript data by year
@@ -485,7 +485,7 @@ pip install -r requirements.txt
 
 ### Step-by-Step Execution
 
-Run each script in order. All scripts read configuration from `config/project.yaml` and output to timestamped directories in `4_Outputs/`.
+Run each script in order. All scripts read configuration from `config/project.yaml` and output to timestamped directories in `outputs/`.
 
 #### Step 1: Sample Preparation
 
@@ -494,28 +494,28 @@ Run each script in order. All scripts read configuration from `config/project.ya
 python -m f1d.sample.1.1_CleanMetadata
 ```
 - Approximate runtime: 5-10 seconds
-- Outputs: `4_Outputs/1.1_CleanMetadata/` → `metadata_cleaned.parquet`
+- Outputs: `outputs/1.1_CleanMetadata/` → `metadata_cleaned.parquet`
 
 **1.2 Link Entities**
 ```bash
 python -m f1d.sample.1.2_LinkEntities
 ```
 - Approximate runtime: 30-60 seconds
-- Outputs: `4_Outputs/1.2_LinkEntities/` → `metadata_linked.parquet`
+- Outputs: `outputs/1.2_LinkEntities/` → `metadata_linked.parquet`
 
 **1.3 Build Tenure Map**
 ```bash
 python -m f1d.sample.1.3_BuildTenureMap
 ```
 - Approximate runtime: 20-40 seconds
-- Outputs: `4_Outputs/1.3_BuildTenureMap/` → `tenure_monthly.parquet`
+- Outputs: `outputs/1.3_BuildTenureMap/` → `tenure_monthly.parquet`
 
 **1.4 Assemble Manifest**
 ```bash
 python -m f1d.sample.1.4_AssembleManifest
 ```
 - Approximate runtime: 10-20 seconds
-- Outputs: `4_Outputs/1.4_AssembleManifest/` → `master_sample_manifest.parquet`
+- Outputs: `outputs/1.4_AssembleManifest/` → `master_sample_manifest.parquet`
 
 #### Step 2: Text Processing
 
@@ -524,14 +524,14 @@ python -m f1d.sample.1.4_AssembleManifest
 python -m f1d.text.tokenize_and_count
 ```
 - Approximate runtime: 2-3 minutes
-- Outputs: `4_Outputs/2_Textual_Analysis/2.1_Tokenized/` → `linguistic_counts_YYYY.parquet` (one file per year, 2002-2018)
+- Outputs: `outputs/2_Textual_Analysis/2.1_Tokenized/` → `linguistic_counts_YYYY.parquet` (one file per year, 2002-2018)
 
 **2.2 Construct Variables**
 ```bash
 python -m f1d.text.construct_variables
 ```
 - Approximate runtime: 2-3 minutes
-- Outputs: `4_Outputs/2_Textual_Analysis/2.2_Variables/` → `linguistic_variables_YYYY.parquet` (one file per year, 2002-2018)
+- Outputs: `outputs/2_Textual_Analysis/2.2_Variables/` → `linguistic_variables_YYYY.parquet` (one file per year, 2002-2018)
 
 **2.3 Verify Step 2**
 ```bash
@@ -548,28 +548,28 @@ python -m f1d.financial.v1.3.0_BuildFinancialFeatures
 ```
 - Approximate runtime: 5-10 minutes
 - Note: This script orchestrates steps 3.1, 3.2, and 3.3
-- Outputs: `4_Outputs/3_Financial_Features/` → multiple parquet files
+- Outputs: `outputs/3_Financial_Features/` → multiple parquet files
 
 **3.1 Firm Controls**
 ```bash
 python -m f1d.financial.v1.3.1_FirmControls
 ```
 - Approximate runtime: 3-5 minutes
-- Outputs: `4_Outputs/3_Financial_Features/` → `firm_controls_YYYY.parquet`
+- Outputs: `outputs/3_Financial_Features/` → `firm_controls_YYYY.parquet`
 
 **3.2 Market Variables**
 ```bash
 python -m f1d.financial.v1.3.2_MarketVariables
 ```
 - Approximate runtime: 2-3 minutes
-- Outputs: `4_Outputs/3_Financial_Features/` → `market_variables_YYYY.parquet`
+- Outputs: `outputs/3_Financial_Features/` → `market_variables_YYYY.parquet`
 
 **3.3 Event Flags**
 ```bash
 python -m f1d.financial.v1.3.3_EventFlags
 ```
 - Approximate runtime: 1-2 minutes
-- Outputs: `4_Outputs/3_Financial_Features/` → `event_flags_YYYY.parquet`
+- Outputs: `outputs/3_Financial_Features/` → `event_flags_YYYY.parquet`
 
 #### Step 4: Econometric Analysis
 
@@ -578,30 +578,30 @@ python -m f1d.financial.v1.3.3_EventFlags
 python -m f1d.econometric.v1.4.1_EstimateManagerClarity
 ```
 - Approximate runtime: 2-3 minutes
-- Outputs: `4_Outputs/4.1_CeoClarity/` → `ceo_clarity_scores.parquet`, regression results
+- Outputs: `outputs/4.1_CeoClarity/` → `ceo_clarity_scores.parquet`, regression results
 
 **4.2 Liquidity Regressions**
 ```bash
 python -m f1d.econometric.v1.4.2_LiquidityRegressions
 ```
 - Approximate runtime: 1-2 minutes
-- Outputs: `4_Outputs/4.2_LiquidityRegressions/` → regression results, diagnostics
+- Outputs: `outputs/4.2_LiquidityRegressions/` → regression results, diagnostics
 
 **4.3 Takeover Hazards**
 ```bash
 python -m f1d.econometric.v1.4.3_TakeoverHazards
 ```
 - Approximate runtime: 30-60 seconds
-- Outputs: `4_Outputs/4.3_TakeoverHazards/` → hazard models, event summaries
+- Outputs: `outputs/4.3_TakeoverHazards/` → hazard models, event summaries
 
 ### Expected Outputs
 
 #### Output Structure
 
-All outputs are saved in `4_Outputs/` with timestamped subdirectories:
+All outputs are saved in `outputs/` with timestamped subdirectories:
 
 ```
-4_Outputs/
+outputs/
 ├── 1.1_CleanMetadata/
 │   └── latest/              → symlink to most recent run
 ├── 1.2_LinkEntities/
@@ -654,10 +654,10 @@ All outputs are saved in `4_Outputs/` with timestamped subdirectories:
 
 #### Log Files
 
-All scripts write progress logs to `3_Logs/`:
+All scripts write progress logs to `logs/`:
 
 ```
-3_Logs/
+logs/
 ├── 1.1_CleanMetadata/
 ├── 1.2_LinkEntities/
 ├── 1.3_BuildTenureMap/
@@ -690,11 +690,11 @@ Each log file includes:
 
 If you encounter errors:
 
-1. Check that all required input files exist in `1_Inputs/`
+1. Check that all required input files exist in `inputs/`
 2. Verify Python version is 3.13+
 3. **If you see "ModuleNotFoundError: No module named 'f1d'"**, run `pip install -e .`
 4. Ensure all dependencies are installed: `pip install -r requirements.txt`
-5. Review the log file in `3_Logs/<step_name>/` for detailed error messages
+5. Review the log file in `logs/<step_name>/` for detailed error messages
 6. Verify `config/project.yaml` paths are correct
 
 ### Reproducibility
@@ -1074,8 +1074,8 @@ Comprehensive information about all data sources used in the F1D (Financial Clar
 
 #### File Information
 - **File Format:** Parquet (processed)
-  - Metadata: `1_Inputs/Unified-info.parquet` (55 MB)
-  - Transcripts: `1_Inputs/speaker_data_YYYY.parquet` (yearly files, 2002-2018)
+  - Metadata: `inputs/Unified-info.parquet` (55 MB)
+  - Transcripts: `inputs/speaker_data_YYYY.parquet` (yearly files, 2002-2018)
 - **Original Format:** Text files (.txt) or PDF documents
 - **Years Covered:** 2002-2018
 
@@ -1112,8 +1112,8 @@ Thomson Reuters, [access year].
 
 #### File Information
 - **File Format:** Parquet
-  - CCM Linkage: `1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet` (2.4 MB)
-  - Daily Stock Returns: `1_Inputs/CRSP_DSF/` (directory)
+  - CCM Linkage: `inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet` (2.4 MB)
+  - Daily Stock Returns: `inputs/CRSP_DSF/` (directory)
   - Compustat Quarterly: Available via WRDS
 - **Years Covered:** Varies by dataset (typically 1950s-present)
 
@@ -1162,8 +1162,8 @@ University of Pennsylvania. [access year].
 
 #### File Information
 - **File Format:** Parquet
-  - Dataset: `1_Inputs/tr_ibes/tr_ibes.parquet` (340 MB)
-  - Variable Reference: `1_Inputs/tr_ibes/IBES_Variable_reference.csv`
+  - Dataset: `inputs/tr_ibes/tr_ibes.parquet` (340 MB)
+  - Variable Reference: `inputs/tr_ibes/IBES_Variable_reference.csv`
 - **Years Covered:** 1976-present (depending on subscription level)
 
 #### Dataset Statistics
@@ -1195,8 +1195,8 @@ Thomson Reuters, [access year].
 
 #### File Information
 - **File Format:** Parquet
-  - Dataset: `1_Inputs/SDC/sdc-ma-merged.parquet` (25 MB)
-  - Profile: `1_Inputs/SDC/sdc-ma-merged-profile.md`
+  - Dataset: `inputs/SDC/sdc-ma-merged.parquet` (25 MB)
+  - Profile: `inputs/SDC/sdc-ma-merged-profile.md`
 - **Years Covered:** 1980s-present (varies by transaction type)
 
 #### Dataset Statistics
@@ -1229,8 +1229,8 @@ Thomson Reuters, [access year].
 
 #### File Information
 - **File Format:** Parquet
-  - Dataset: `1_Inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet` (15 MB)
-  - Variable Reference: `1_Inputs/CCCL instrument/instrument_variable_reference.csv`
+  - Dataset: `inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet` (15 MB)
+  - Variable Reference: `inputs/CCCL instrument/instrument_variable_reference.csv`
 - **Years Covered:** 2005-2022 (constructed instrument)
 - **Underlying Data:** SEC comment letters via EDGAR
 
@@ -1283,8 +1283,8 @@ For the CCCL instrument construction (if referencing methodology):
 
 #### File Information
 - **File Format:** CSV
-  - Dictionary: `1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv` (9 MB)
-  - Profile: `1_Inputs/Loughran-McDonald_MasterDictionary_1993-2024-profile.md`
+  - Dictionary: `inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv` (9 MB)
+  - Profile: `inputs/Loughran-McDonald_MasterDictionary_1993-2024-profile.md`
 - **Version:** 2024 (covers 1993-2024)
 - **Total Words:** 86,553 words
 
@@ -1326,7 +1326,7 @@ accounting: A survey." Journal of Accounting Literature 41 (2016): 19-53.
 
 #### File Information
 - **File Format:** Plain text (one keyword per line)
-  - File: `1_Inputs/managerial_roles_extracted.txt`
+  - File: `inputs/managerial_roles_extracted.txt`
   - Total keywords: 45 roles
 - **Last Updated:** 2026-01-14
 
@@ -1375,7 +1375,7 @@ accounting: A survey." Journal of Accounting Literature 41 (2016): 19-53.
 
 #### File Information
 - **File Format:** Various (Parquet, CSV in pipeline)
-- **Directory:** `1_Inputs/Execucomp/`
+- **Directory:** `inputs/Execucomp/`
 - **Years Covered:** 1992-present (depends on subscription)
 
 #### Dataset Statistics
@@ -1460,7 +1460,7 @@ The F1D pipeline is designed for academic replication with current dataset sizes
 
 > **Note:** The package must be installed in editable mode (`pip install -e .`) for scripts to use `from f1d.shared.*` imports. Without this step, you will see `ModuleNotFoundError: No module named 'f1d'`.
 
-Output files are created in timestamped directories under `4_Outputs/`, with `latest/` symlinks pointing to the most recent run.
+Output files are created in timestamped directories under `outputs/`, with `latest/` symlinks pointing to the most recent run.
 
 ## Pipeline Structure
 

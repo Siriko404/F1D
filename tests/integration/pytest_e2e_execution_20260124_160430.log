@@ -24,8 +24,8 @@ E   ============================================================================
 E   STEP 1.0: Build Sample Manifest - Orchestrator
 E   ================================================================================
 E   Timestamp: 2026-01-24_160445
-E   Output Directory: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\1.0_BuildSampleManifest\2026-01-24_160445
-E   Log File: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\3_Logs\1.0_BuildSampleManifest\2026-01-24_160445.log
+E   Output Directory: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\1.0_BuildSampleManifest\2026-01-24_160445
+E   Log File: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\logs\1.0_BuildSampleManifest\2026-01-24_160445.log
 E   
 E   
 E   ================================================================================
@@ -51,7 +51,7 @@ E   ============================================================================
 E   Status: FAILED
 E   One or more substeps failed. Please check the logs above.
 E   
-E   Log file: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\3_Logs\1.0_BuildSampleManifest\2026-01-24_160445.log
+E   Log file: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\logs\1.0_BuildSampleManifest\2026-01-24_160445.log
 E   ================================================================================
 E   
 E   
@@ -64,29 +64,29 @@ E   STDERR:
 ___________________________ test_pipeline_data_flow ___________________________
 tests\integration\test_full_pipeline.py:285: in test_pipeline_data_flow
     assert step2_output.exists(), f"Step 2 output directory missing: {step2_output}"
-E   AssertionError: Step 2 output directory missing: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\2_Textual_Analysis\2.2_ConstructVariables\latest
+E   AssertionError: Step 2 output directory missing: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\2_Textual_Analysis\2.2_ConstructVariables\latest
 E   assert False
 E    +  where False = exists()
-E    +    where exists = WindowsPath('C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D/4_Outputs/2_Textual_Analysis/2.2_ConstructVariables/latest').exists
+E    +    where exists = WindowsPath('C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D/outputs/2_Textual_Analysis/2.2_ConstructVariables/latest').exists
 _____________________ test_pipeline_stats_json_structure ______________________
 tests\integration\test_full_pipeline.py:351: in test_pipeline_stats_json_structure
     pytest.fail(
 E   Failed: Missing stats.json files:
-E     - 2_Scripts/1_Sample/1.0_BuildSampleManifest.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\1.0_BuildSampleManifest\latest\stats.json
-E     - 2_Scripts/2_Text/2.1_TokenizeAndCount.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\2_Textual_Analysis\2.1_TokenizeAndCount\latest\stats.json
-E     - 2_Scripts/2_Text/2.2_ConstructVariables.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\2_Textual_Analysis\2.2_ConstructVariables\latest\stats.json
-E     - 2_Scripts/2_Text/2.3_VerifyStep2.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\2_Textual_Analysis\2.3_VerifyStep2\latest\stats.json
-E     - 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\3_Financial\3.0_BuildFinancialFeatures\latest\stats.json
-E     - 2_Scripts/3_Financial/3.1_FirmControls.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\3_Financial\3.1_FirmControls\latest\stats.json
-E     - 2_Scripts/3_Financial/3.2_MarketVariables.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\3_Financial\3.2_MarketVariables\latest\stats.json
-E     - 2_Scripts/3_Financial/3.3_EventFlags.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\3_Financial\3.3_EventFlags\latest\stats.json
-E     - 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\4_Econometric\4.1_EstimateCeoClarity\latest\stats.json
-E     - 2_Scripts/4_Econometric/4.1.1_EstimateCeoClarity_CeoSpecific.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\4_Econometric\4.1.1_EstimateCeoClarity_CeoSpecific\latest\stats.json
-E     - 2_Scripts/4_Econometric/4.1.2_EstimateCeoClarity_Extended.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\4_Econometric\4.1.2_EstimateCeoClarity_Extended\latest\stats.json
-E     - 2_Scripts/4_Econometric/4.1.3_EstimateCeoClarity_Regime.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\4_Econometric\4.1.3_EstimateCeoClarity_Regime\latest\stats.json
-E     - 2_Scripts/4_Econometric/4.1.4_EstimateCeoTone.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\4_Econometric\4.1.4_EstimateCeoTone\latest\stats.json
-E     - 2_Scripts/4_Econometric/4.2_LiquidityRegressions.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\4_Econometric\4.2_LiquidityRegressions\latest\stats.json
-E     - 2_Scripts/4_Econometric/4.3_TakeoverHazards.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\4_Outputs\4_Econometric\4.3_TakeoverHazards\latest\stats.json
+E     - 2_Scripts/1_Sample/1.0_BuildSampleManifest.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\1.0_BuildSampleManifest\latest\stats.json
+E     - 2_Scripts/2_Text/2.1_TokenizeAndCount.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\2_Textual_Analysis\2.1_TokenizeAndCount\latest\stats.json
+E     - 2_Scripts/2_Text/2.2_ConstructVariables.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\2_Textual_Analysis\2.2_ConstructVariables\latest\stats.json
+E     - 2_Scripts/2_Text/2.3_VerifyStep2.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\2_Textual_Analysis\2.3_VerifyStep2\latest\stats.json
+E     - 2_Scripts/3_Financial/3.0_BuildFinancialFeatures.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\3_Financial\3.0_BuildFinancialFeatures\latest\stats.json
+E     - 2_Scripts/3_Financial/3.1_FirmControls.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\3_Financial\3.1_FirmControls\latest\stats.json
+E     - 2_Scripts/3_Financial/3.2_MarketVariables.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\3_Financial\3.2_MarketVariables\latest\stats.json
+E     - 2_Scripts/3_Financial/3.3_EventFlags.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\3_Financial\3.3_EventFlags\latest\stats.json
+E     - 2_Scripts/4_Econometric/4.1_EstimateCeoClarity.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\4_Econometric\4.1_EstimateCeoClarity\latest\stats.json
+E     - 2_Scripts/4_Econometric/4.1.1_EstimateCeoClarity_CeoSpecific.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\4_Econometric\4.1.1_EstimateCeoClarity_CeoSpecific\latest\stats.json
+E     - 2_Scripts/4_Econometric/4.1.2_EstimateCeoClarity_Extended.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\4_Econometric\4.1.2_EstimateCeoClarity_Extended\latest\stats.json
+E     - 2_Scripts/4_Econometric/4.1.3_EstimateCeoClarity_Regime.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\4_Econometric\4.1.3_EstimateCeoClarity_Regime\latest\stats.json
+E     - 2_Scripts/4_Econometric/4.1.4_EstimateCeoTone.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\4_Econometric\4.1.4_EstimateCeoTone\latest\stats.json
+E     - 2_Scripts/4_Econometric/4.2_LiquidityRegressions.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\4_Econometric\4.2_LiquidityRegressions\latest\stats.json
+E     - 2_Scripts/4_Econometric/4.3_TakeoverHazards.py: C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\outputs\4_Econometric\4.3_TakeoverHazards\latest\stats.json
 ============================ slowest 20 durations =============================
 1.91s call     tests/integration/test_full_pipeline.py::test_full_pipeline_execution
 0.07s setup    tests/integration/test_full_pipeline.py::test_full_pipeline_execution

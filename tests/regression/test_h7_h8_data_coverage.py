@@ -27,7 +27,7 @@ def resolve_output_dir(base_path: Path, required_file: str = None) -> Path:
 def test_h7_volatility_coverage():
     """Verify H7 Volatility covers full 2002-2018 period."""
     h7_dir = resolve_output_dir(
-        REPO_ROOT / "4_Outputs/3_Financial_V2",
+        REPO_ROOT / "outputs/3_Financial_V2",
         required_file="H7_Illiquidity.parquet"
     )
     h7_file = h7_dir / "H7_Illiquidity.parquet"
@@ -60,7 +60,7 @@ def test_h7_volatility_coverage():
 def test_h8_sample_size():
     """Verify H8 sample includes full 2002-2018 period (~39,408 obs)."""
     h8_dir = resolve_output_dir(
-        REPO_ROOT / "4_Outputs/3_Financial_V2",
+        REPO_ROOT / "outputs/3_Financial_V2",
         required_file="H8_Takeover.parquet"
     )
     h8_file = h8_dir / "H8_Takeover.parquet"
@@ -90,7 +90,7 @@ def test_h8_sample_size():
 def test_h7_h8_volatility_stockret_not_null():
     """Verify Volatility and StockRet are NOT 100% missing for 2005-2018."""
     h7_dir = resolve_output_dir(
-        REPO_ROOT / "4_Outputs/3_Financial_V2",
+        REPO_ROOT / "outputs/3_Financial_V2",
         required_file="H7_Illiquidity.parquet"
     )
     h7_file = h7_dir / "H7_Illiquidity.parquet"
@@ -123,7 +123,7 @@ def test_h7_h8_volatility_stockret_not_null():
 def test_h7_output_checksum_stable():
     """Verify H7 output checksum is stable (detects unintended changes)."""
     h7_dir = resolve_output_dir(
-        REPO_ROOT / "4_Outputs/3_Financial_V2",
+        REPO_ROOT / "outputs/3_Financial_V2",
         required_file="H7_Illiquidity.parquet"
     )
     h7_file = h7_dir / "H7_Illiquidity.parquet"
@@ -158,7 +158,7 @@ def test_h7_output_checksum_stable():
 def test_h8_output_checksum_stable():
     """Verify H8 output checksum is stable (detects unintended changes)."""
     h8_dir = resolve_output_dir(
-        REPO_ROOT / "4_Outputs/3_Financial_V2",
+        REPO_ROOT / "outputs/3_Financial_V2",
         required_file="H8_Takeover.parquet"
     )
     h8_file = h8_dir / "H8_Takeover.parquet"

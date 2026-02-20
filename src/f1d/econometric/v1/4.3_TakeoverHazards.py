@@ -18,14 +18,14 @@ Variables:
     - Manager_QA_Uncertainty_pct: Call-level vagueness
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
-    - 4_Outputs/4.1_ManagerClarity/latest/manager_clarity_scores.parquet
-    - 4_Outputs/3_Financial_Features/latest/firm_controls_*.parquet
-    - 1_Inputs/SDC/sdc-ma-merged.parquet
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
+    - outputs/4.1_ManagerClarity/latest/manager_clarity_scores.parquet
+    - outputs/3_Financial_Features/latest/firm_controls_*.parquet
+    - inputs/SDC/sdc-ma-merged.parquet
 
 Outputs:
-    - 4_Outputs/4.3_TakeoverHazards/{timestamp}/
+    - outputs/4.3_TakeoverHazards/{timestamp}/
     - stats.json
     - {timestamp}.log
 
@@ -289,7 +289,7 @@ def load_data(root: Path) -> pd.DataFrame:
 
     # Load manifest
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -312,7 +312,7 @@ def load_data(root: Path) -> pd.DataFrame:
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             lv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
                 required_file=f"linguistic_variables_{year}.parquet",
             )
             lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
@@ -330,7 +330,7 @@ def load_data(root: Path) -> pd.DataFrame:
     # Load clarity scores
     try:
         clarity_dir = get_latest_output_dir(
-            root / "4_Outputs" / "4.1_ManagerClarity",
+            root / "outputs" / "4.1_ManagerClarity",
             required_file="manager_clarity_scores.parquet",
         )
         clarity_path = clarity_dir / "manager_clarity_scores.parquet"
@@ -348,7 +348,7 @@ def load_data(root: Path) -> pd.DataFrame:
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             fc_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"firm_controls_{year}.parquet",
             )
             fc_path = fc_dir / f"firm_controls_{year}.parquet"
@@ -367,7 +367,7 @@ def load_data(root: Path) -> pd.DataFrame:
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             events_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"event_flags_{year}.parquet",
             )
             events_path = events_dir / f"event_flags_{year}.parquet"
@@ -454,10 +454,10 @@ def main():
     root = Path(__file__).resolve().parents[4]
 
     # Setup output directories
-    out_dir = root / "4_Outputs" / "4.3_TakeoverHazards" / timestamp
+    out_dir = root / "outputs" / "4.3_TakeoverHazards" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    log_dir = root / "3_Logs" / "4.3_TakeoverHazards" / timestamp
+    log_dir = root / "logs" / "4.3_TakeoverHazards" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Initialize stats

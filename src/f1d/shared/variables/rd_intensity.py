@@ -1,11 +1,7 @@
-"""Builder for EPS Growth variable.
+"""Builder for R&D Intensity variable.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, EPS_Growth.
-
-EPS_Growth = (epspxq - lag_epspxq) / |lag_epspxq|
-where lag is identified by datadate arithmetic (±45 days of one year ago),
-not by row-count shift(4), making it robust to missing/irregular quarters.
+Returns one column: file_name, RD_Intensity.
 """
 
 from __future__ import annotations
@@ -20,8 +16,11 @@ from ._compustat_engine import get_engine
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-class EPSGrowthBuilder(VariableBuilder):
-    """Build EPS Growth from raw Compustat quarterly data via CompustatEngine."""
+class RDIntensityBuilder(VariableBuilder):
+    """Build RD_Intensity = xrdq / atq from raw Compustat quarterly data.
+
+    Missing R&D (xrdq = NaN) is treated as zero per standard convention.
+    """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -44,13 +43,13 @@ class EPSGrowthBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "EPS_Growth"]].copy()
-        stats = self.get_stats(data["EPS_Growth"], "EPS_Growth")
+        data = merged[["file_name", "RD_Intensity"]].copy()
+        stats = self.get_stats(data["RD_Intensity"], "RD_Intensity")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "EPS_Growth", "source": "Compustat/epspxq"},
+            metadata={"column": "RD_Intensity", "source": "Compustat/xrdq,atq"},
         )
 
 
-__all__ = ["EPSGrowthBuilder"]
+__all__ = ["RDIntensityBuilder"]

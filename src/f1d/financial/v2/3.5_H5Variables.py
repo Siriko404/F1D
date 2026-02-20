@@ -20,17 +20,17 @@ Variables Computed:
     - All 6 speech uncertainty measures from Step 2 linguistic_variables
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 1_Inputs/tr_ibes/tr_ibes.parquet (IBES analyst forecasts)
-    - 1_Inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet (CUSIP-GVKEY linking)
-    - 1_Inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat - for loss dummy)
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet (speech measures)
-    - 4_Outputs/3_Financial_V2/latest/H1_CashHoldings.parquet (control variables)
-    - 4_Outputs/3_Financial_V2/latest/H2_InvestmentEfficiency.parquet (control variables)
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - inputs/tr_ibes/tr_ibes.parquet (IBES analyst forecasts)
+    - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet (CUSIP-GVKEY linking)
+    - inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat - for loss dummy)
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet (speech measures)
+    - outputs/3_Financial_V2/latest/H1_CashHoldings.parquet (control variables)
+    - outputs/3_Financial_V2/latest/H2_InvestmentEfficiency.parquet (control variables)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/3.5_H5Variables/{timestamp}/H5_AnalystDispersion.parquet
-    - 4_Outputs/3_Financial_V2/3.5_H5Variables/{timestamp}/stats.json
+    - outputs/3_Financial_V2/3.5_H5Variables/{timestamp}/H5_AnalystDispersion.parquet
+    - outputs/3_Financial_V2/3.5_H5Variables/{timestamp}/stats.json
 
 Deterministic: true
 Dependencies:
@@ -91,24 +91,24 @@ def setup_paths(config, timestamp):
 
     # Resolve manifest directory using timestamp-based resolution
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
 
     # Resolve H1 and H2 outputs for control variables
     h1_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H1_CashHoldings.parquet",
     )
 
     h2_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H2_InvestmentEfficiency.parquet",
     )
 
     # Resolve linguistic variables directory
     linguistics_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+        root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
     )
 
     paths = {
@@ -117,24 +117,24 @@ def setup_paths(config, timestamp):
         "h1_dir": h1_dir,
         "h2_dir": h2_dir,
         "linguistics_dir": linguistics_dir,
-        "ibes_file": root / "1_Inputs" / "tr_ibes" / "tr_ibes.parquet",
+        "ibes_file": root / "inputs" / "tr_ibes" / "tr_ibes.parquet",
         "ccm_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSPCompustat_CCM.parquet",
         "compustat_file": root
-        / "1_Inputs"
+        / "inputs"
         / "comp_na_daily_all"
         / "comp_na_daily_all.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2" / "3.5_H5Variables"
+    output_base = root / "outputs" / "3_Financial_V2" / "3.5_H5Variables"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2"
+    log_base = root / "logs" / "3_Financial_V2"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H5.log"
 

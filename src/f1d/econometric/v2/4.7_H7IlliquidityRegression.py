@@ -20,12 +20,12 @@ Econometric Standards:
     - DV: Forward-looking (t+1) for causal interpretation
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/latest/H7_Illiquidity.parquet
+    - outputs/3_Financial_V2/latest/H7_Illiquidity.parquet
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/{timestamp}/H7_Regression_Results.parquet
-    - 4_Outputs/4_Econometric_V2/{timestamp}/H7_RESULTS.md
-    - 4_Outputs/4_Econometric_V2/{timestamp}/stats.json
+    - outputs/4_Econometric_V2/{timestamp}/H7_Regression_Results.parquet
+    - outputs/4_Econometric_V2/{timestamp}/H7_RESULTS.md
+    - outputs/4_Econometric_V2/{timestamp}/stats.json
 
 Deterministic: true
 Dependencies:
@@ -176,7 +176,7 @@ def setup_paths(config, timestamp):
 
     # Resolve H7 illiquidity directory
     h7_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2",
+        root / "outputs" / "3_Financial_V2",
         required_file="H7_Illiquidity.parquet",
     )
 
@@ -187,13 +187,13 @@ def setup_paths(config, timestamp):
 
     # Output directory - organize by script name
     output_base = (
-        root / "4_Outputs" / "4_Econometric_V2" / "4.7_H7IlliquidityRegression"
+        root / "outputs" / "4_Econometric_V2" / "4.7_H7IlliquidityRegression"
     )
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory - organize by script name
-    log_base = root / "3_Logs" / "4_Econometric_V2" / "4.7_H7IlliquidityRegression"
+    log_base = root / "logs" / "4_Econometric_V2" / "4.7_H7IlliquidityRegression"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H7.log"
 

@@ -101,28 +101,24 @@ MODELS: Dict[str, Dict[str, Any]] = {
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_MANAGER,
         "firm_controls": BASE_FIRM_CONTROLS,
         "description": "Manager Q&A Uncertainty — baseline controls",
-        "entity_label": "N Managers",
     },
     "Manager_Extended": {
         "dependent_var": "Manager_QA_Uncertainty_pct",
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_MANAGER,
         "firm_controls": BASE_FIRM_CONTROLS + EXTENDED_CONTROLS,
         "description": "Manager Q&A Uncertainty — extended controls",
-        "entity_label": "N Managers",
     },
     "CEO_Baseline": {
         "dependent_var": "CEO_QA_Uncertainty_pct",
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_CEO,
         "firm_controls": BASE_FIRM_CONTROLS,
         "description": "CEO Q&A Uncertainty — baseline controls",
-        "entity_label": "N CEOs",
     },
     "CEO_Extended": {
         "dependent_var": "CEO_QA_Uncertainty_pct",
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_CEO,
         "firm_controls": BASE_FIRM_CONTROLS + EXTENDED_CONTROLS,
         "description": "CEO Q&A Uncertainty — extended controls",
-        "entity_label": "N CEOs",
     },
 }
 
@@ -224,10 +220,13 @@ def prepare_regression_data(
         + ["ceo_id", "year"]
     )
 
+    # MAJOR-5: hard-fail if any required variable missing
     missing_vars = [v for v in required if v not in df.columns]
     if missing_vars:
-        print(f"    WARNING: Missing variables: {missing_vars}")
-        required = [v for v in required if v in df.columns]
+        raise ValueError(
+            f"Required variables missing from panel for model '{model_name}': {missing_vars}. "
+            "Panel build may be incomplete. Aborting to prevent misspecified regression."
+        )
 
     complete_mask = df[required].notna().all(axis=1)
     df = df[complete_mask].copy()

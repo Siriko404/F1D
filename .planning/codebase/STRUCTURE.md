@@ -6,7 +6,7 @@
 
 ```
 [project-root]/
-├── 1_Inputs/                 # Raw input data (immutable)
+├── inputs/                 # Raw input data (immutable)
 │   ├── Earnings_Calls_Transcripts/
 │   │   ├── Unified-info.parquet
 │   │   └── speaker_data_2002.parquet through speaker_data_2018.parquet
@@ -23,7 +23,7 @@
 │   ├── FirmLevelRisk/
 │   ├── Manager_roles/
 │   └── SEC_Edgar_Letters/
-├── 3_Logs/                   # Execution logs (timestamped)
+├── logs/                   # Execution logs (timestamped)
 │   ├── 1.1_CleanMetadata/
 │   ├── 1.2_LinkEntities/
 │   ├── 1.3_BuildTenureMap/
@@ -38,7 +38,7 @@
 │   ├── 4.3_TakeoverHazards/
 │   ├── 4.4_GenerateSummaryStats/
 │   └── 4_Econometric_V2/
-├── 4_Outputs/                # Pipeline outputs (timestamped)
+├── outputs/                # Pipeline outputs (timestamped)
 │   ├── 1.0_BuildSampleManifest/
 │   ├── 1.1_CleanMetadata/
 │   ├── 1.2_LinkEntities/
@@ -193,7 +193,7 @@
 │           ├── sample_utils.py
 │           ├── string_matching.py
 │           ├── subprocess_validation.py
-│           └── 3_Logs/            # Logs generated within src (data staging)
+│           └── logs/            # Logs generated within src (data staging)
 ├── tests/                   # Test suite
 │   ├── conftest.py          # Pytest configuration and fixtures
 │   ├── factories/           # Test data factories
@@ -221,20 +221,20 @@
 
 ## Directory Purposes
 
-**1_Inputs:**
+**inputs:**
 - Purpose: Raw input data storage (immutable reference data)
 - Contains: Earnings call transcripts, financial datasets, dictionaries, reference files
 - Key files: `Unified-info.parquet`, `speaker_data_*.parquet`, `Loughran-McDonald_MasterDictionary_1993-2024.csv`
 
-**3_Logs:**
+**logs:**
 - Purpose: Execution logs with timestamped directories
 - Contains: Script execution logs, progress tracking, error logs
-- Structure: `3_Logs/<script_name>/<timestamp>.log`
+- Structure: `logs/<script_name>/<timestamp>.log`
 
-**4_Outputs:**
+**outputs:**
 - Purpose: Pipeline outputs with timestamped directories
 - Contains: Processed datasets, regression results, tables, stats.json files
-- Structure: `4_Outputs/<script_name>/<timestamp>/` with `latest/` symlinks
+- Structure: `outputs/<script_name>/<timestamp>/` with `latest/` symlinks
 
 **src/f1d:**
 - Purpose: Source code package (src-layout)
@@ -331,7 +331,7 @@
 - Tests: `test_{module}.py` (e.g., `test_path_utils.py`)
 
 **Directories:**
-- Input data: `{number}_{description}/` (e.g., `1_Inputs`, `3_Logs`, `4_Outputs`)
+- Input data: `{number}_{description}/` (e.g., `inputs`, `logs`, `outputs`)
 - Output scripts: `{description}/` (e.g., `sample`, `text`, `financial`, `econometric`)
 - Version variants: `v1/` and `v2/` (both active, neither deprecated)
 - Shared utilities: `shared/` and subdirectories by function (e.g., `config/`, `logging/`)
@@ -368,17 +368,17 @@
 
 ## Special Directories
 
-**1_Inputs:**
+**inputs:**
 - Purpose: Raw input data (immutable, read-only during processing)
 - Generated: No (external data sources)
 - Committed: Yes (reference data is versioned)
 
-**3_Logs:**
+**logs:**
 - Purpose: Script execution logs (timestamped directories)
 - Generated: Yes (by each script execution)
 - Committed: Yes (for reproducibility and debugging)
 
-**4_Outputs:**
+**outputs:**
 - Purpose: Pipeline outputs (timestamped directories with `latest/` symlinks)
 - Generated: Yes (by each script execution)
 - Committed: Yes (for reproducibility)

@@ -23,15 +23,15 @@ Hypothesis Tests:
     H5-B: beta1 > 0 (Gap predicts dispersion - spontaneous reveals hidden uncertainty)
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/3.5_H5Variables/latest/H5_AnalystDispersion.parquet
+    - outputs/3_Financial_V2/3.5_H5Variables/latest/H5_AnalystDispersion.parquet
       (dispersion_lead, prior_dispersion, earnings_surprise, loss_dummy,
        analyst_coverage, firm controls, speech measures, uncertainty_gap)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}/H5_Regression_Results.parquet
-    - 4_Outputs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}/H5_RESULTS.md
-    - 4_Outputs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}/stats.json
-    - 3_Logs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}_H5.log
+    - outputs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}/H5_Regression_Results.parquet
+    - outputs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}/H5_RESULTS.md
+    - outputs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}/stats.json
+    - logs/4_Econometric_V2/4.5_H5DispersionRegression/{timestamp}_H5.log
 
 Deterministic: true
 Dependencies:
@@ -169,7 +169,7 @@ def setup_paths(config, timestamp):
 
     # Resolve H5 variables directory
     h5_dir = get_latest_output_dir(
-        root / "4_Outputs" / "3_Financial_V2" / "3.5_H5Variables",
+        root / "outputs" / "3_Financial_V2" / "3.5_H5Variables",
         required_file="H5_AnalystDispersion.parquet",
     )
 
@@ -179,12 +179,12 @@ def setup_paths(config, timestamp):
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "4_Econometric_V2" / "4.5_H5DispersionRegression"
+    output_base = root / "outputs" / "4_Econometric_V2" / "4.5_H5DispersionRegression"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "4_Econometric_V2" / "4.5_H5DispersionRegression"
+    log_base = root / "logs" / "4_Econometric_V2" / "4.5_H5DispersionRegression"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H5.log"
 

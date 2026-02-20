@@ -11,16 +11,16 @@ Purpose:
     descriptive statistics, correlation matrix, and panel balance diagnostics.
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
+    - outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
+    - outputs/3_Financial_Features/latest/market_variables_{year}.parquet
 
 Outputs:
-    - 4_Outputs/4.4_SummaryStats/{timestamp}/descriptive_statistics.csv
-    - 4_Outputs/4.4_SummaryStats/{timestamp}/correlation_matrix.csv
-    - 4_Outputs/4.4_SummaryStats/{timestamp}/panel_balance.csv
-    - 4_Outputs/4.4_SummaryStats/{timestamp}/summary_report.md
+    - outputs/4.4_SummaryStats/{timestamp}/descriptive_statistics.csv
+    - outputs/4.4_SummaryStats/{timestamp}/correlation_matrix.csv
+    - outputs/4.4_SummaryStats/{timestamp}/panel_balance.csv
+    - outputs/4.4_SummaryStats/{timestamp}/summary_report.md
 
 Deterministic: true
 Dependencies:
@@ -196,7 +196,7 @@ def load_financial_controls(root, year_start, year_end, stats=None):
     for year in range(year_start, year_end + 1):
         try:
             fc_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"firm_controls_{year}.parquet",
             )
             path = fc_dir / f"firm_controls_{year}.parquet"
@@ -247,7 +247,7 @@ def load_market_variables(root, year_start, year_end, stats=None):
     for year in range(year_start, year_end + 1):
         try:
             mv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"market_variables_{year}.parquet",
             )
             path = mv_dir / f"market_variables_{year}.parquet"
@@ -742,9 +742,9 @@ def main():
 
     # Setup paths
     root = Path(__file__).resolve().parents[4]
-    out_dir = root / "4_Outputs" / "4.4_SummaryStats" / timestamp
+    out_dir = root / "outputs" / "4.4_SummaryStats" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    log_dir = root / "3_Logs" / "4.4_GenerateSummaryStats" / timestamp
+    log_dir = root / "logs" / "4.4_GenerateSummaryStats" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Setup dual logging
@@ -782,7 +782,7 @@ def main():
 
     # Resolve manifest path using get_latest_output_dir
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest = load_manifest(
@@ -792,7 +792,7 @@ def main():
 
     # Resolve linguistic variables path
     linguistic_dir = get_latest_output_dir(
-        root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+        root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
     )
     linguistic = load_linguistic_variables(
         linguistic_dir,

@@ -1824,9 +1824,9 @@ dmypy.json
 
 # Data files (project-specific)
 # Note: Adjust based on project needs
-1_Inputs/
-4_Outputs/
-3_Logs/
+inputs/
+outputs/
+logs/
 data/raw/
 data/processed/
 data/interim/
@@ -1888,9 +1888,9 @@ secrets.yaml
 Add patterns for project-specific files:
 ```gitignore
 # Project-specific data directories
-1_Inputs/
-4_Outputs/
-3_Logs/
+inputs/
+outputs/
+logs/
 
 # Research outputs
 *.pdf

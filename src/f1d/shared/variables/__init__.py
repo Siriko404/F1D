@@ -1,35 +1,46 @@
 """Shared variable builders for F1D project.
 
-This package provides standardized variable builders that load data from
-various pipeline stages (Stage 1 manifest, Stage 2 text, raw financial inputs)
-and return consistent VariableResult objects.
+Each shared module builds exactly ONE variable and returns a VariableResult
+with file_name + that variable's column. Stage 3 panel builders import
+the individual builders they need and merge the results.
 
-Financial variable builders compute directly from raw inputs:
-  - CompustatControlsBuilder  → raw Compustat (Size, BM, Lev, ROA, CurrentRatio,
-                                  RD_Intensity, EPS_Growth)
-  - CRSPReturnsBuilder        → raw CRSP daily (StockRet, MarketRet, Volatility)
-  - EarningsSurpriseBuilder   → raw IBES + CCM (SurpDec)
+Architecture:
+    Private compute engines (not VariableBuilders):
+        _compustat_engine.CompustatEngine  — loads Compustat once, caches result
+        _crsp_engine.CRSPEngine            — loads CRSP yearly, caches result
 
-Single-column wrappers delegate to the above for callers that need one variable:
-  - EPSGrowthBuilder          → delegates to CompustatControlsBuilder
-  - StockReturnBuilder        → delegates to CRSPReturnsBuilder
-  - MarketReturnBuilder       → delegates to CRSPReturnsBuilder
+    Individual Compustat variable builders (one column each):
+        SizeBuilder           → Size = ln(atq)
+        BMBuilder             → BM = ceqq / (cshoq * prccq)
+        LevBuilder            → Lev = ltq / atq
+        ROABuilder            → ROA = niq / atq
+        CurrentRatioBuilder   → CurrentRatio = actq / lctq
+        RDIntensityBuilder    → RD_Intensity = xrdq / atq
+        EPSGrowthBuilder      → EPS_Growth (date-based YoY, robust to gaps)
 
-Textual variable builders read from Stage 2 outputs (linguistic_variables_{year}.parquet):
-  - ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder,
-    AnalystQAUncertaintyBuilder, NegativeSentimentBuilder,
-    CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder
+    Individual CRSP variable builders (one column each):
+        StockReturnBuilder    → StockRet (compound return over call window)
+        MarketReturnBuilder   → MarketRet (compound VWRETD over call window)
+        VolatilityBuilder     → Volatility (annualized std over call window)
+
+    IBES variable builder:
+        EarningsSurpriseBuilder → SurpDec (earnings surprise decile -5..+5)
+
+    Textual variable builders (read Stage 2 outputs):
+        ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder,
+        AnalystQAUncertaintyBuilder, NegativeSentimentBuilder,
+        CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder
 
 Usage:
     from f1d.shared.variables import (
-        CompustatControlsBuilder,
-        CRSPReturnsBuilder,
+        EPSGrowthBuilder,
+        StockReturnBuilder,
+        MarketReturnBuilder,
+        VolatilityBuilder,
         EarningsSurpriseBuilder,
         ManagerQAUncertaintyBuilder,
         ManifestFieldsBuilder,
     )
-    builder = CompustatControlsBuilder({})
-    result = builder.build(range(2002, 2019), root_path)
 """
 
 from .base import (
@@ -48,15 +59,22 @@ from .negative_sentiment import NegativeSentimentBuilder
 from .ceo_qa_uncertainty import CEOQAUncertaintyBuilder
 from .ceo_pres_uncertainty import CEOPresUncertaintyBuilder
 
-# Financial variables — compute from raw inputs
-from .compustat_controls import CompustatControlsBuilder, COMPUSTAT_COLS
-from .crsp_returns import CRSPReturnsBuilder, CRSP_RETURN_COLS
-from .earnings_surprise import EarningsSurpriseBuilder
-
-# Single-column wrappers (delegate to above)
+# Compustat individual variable builders
+from .size import SizeBuilder
+from .bm import BMBuilder
+from .lev import LevBuilder
+from .roa import ROABuilder
+from .current_ratio import CurrentRatioBuilder
+from .rd_intensity import RDIntensityBuilder
 from .eps_growth import EPSGrowthBuilder
+
+# CRSP individual variable builders
 from .stock_return import StockReturnBuilder
 from .market_return import MarketReturnBuilder
+from .volatility import VolatilityBuilder
+
+# IBES variable builder
+from .earnings_surprise import EarningsSurpriseBuilder
 
 # Manifest fields (Stage 1)
 from .manifest_fields import ManifestFieldsBuilder
@@ -75,16 +93,20 @@ __all__ = [
     "NegativeSentimentBuilder",
     "CEOQAUncertaintyBuilder",
     "CEOPresUncertaintyBuilder",
-    # Financial variables — raw compute engines
-    "CompustatControlsBuilder",
-    "COMPUSTAT_COLS",
-    "CRSPReturnsBuilder",
-    "CRSP_RETURN_COLS",
-    "EarningsSurpriseBuilder",
-    # Single-column wrappers
+    # Compustat variable builders (one column each)
+    "SizeBuilder",
+    "BMBuilder",
+    "LevBuilder",
+    "ROABuilder",
+    "CurrentRatioBuilder",
+    "RDIntensityBuilder",
     "EPSGrowthBuilder",
+    # CRSP variable builders (one column each)
     "StockReturnBuilder",
     "MarketReturnBuilder",
+    "VolatilityBuilder",
+    # IBES variable builder
+    "EarningsSurpriseBuilder",
     # Manifest fields (Stage 1)
     "ManifestFieldsBuilder",
 ]

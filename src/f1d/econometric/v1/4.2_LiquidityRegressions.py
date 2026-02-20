@@ -25,21 +25,21 @@ Key Variables:
     - shift_intensity_sale_ff48: FF48 sales-weighted CCCL instrument
 
 Inputs:
-    - 4_Outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
-    - 4_Outputs/3_Financial_Features/latest/market_variables_{year}.parquet
-    - 4_Outputs/4.1_ManagerClarity/latest/manager_clarity_scores.parquet (Regime)
-    - 4_Outputs/4.1.1_CeoClarity/latest/ceo_clarity_scores.parquet (CEO)
+    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
+    - outputs/3_Financial_Features/latest/firm_controls_{year}.parquet
+    - outputs/3_Financial_Features/latest/market_variables_{year}.parquet
+    - outputs/4.1_ManagerClarity/latest/manager_clarity_scores.parquet (Regime)
+    - outputs/4.1.1_CeoClarity/latest/ceo_clarity_scores.parquet (CEO)
 
 Outputs:
-    - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/first_stage_results.txt
-    - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/ols_regime.txt
-    - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/ols_ceo.txt
-    - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/iv_regime.txt
-    - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/iv_ceo.txt
-    - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/model_diagnostics.csv
-    - 4_Outputs/4.2_LiquidityRegressions/{timestamp}/report_step4_2.md
+    - outputs/4.2_LiquidityRegressions/{timestamp}/first_stage_results.txt
+    - outputs/4.2_LiquidityRegressions/{timestamp}/ols_regime.txt
+    - outputs/4.2_LiquidityRegressions/{timestamp}/ols_ceo.txt
+    - outputs/4.2_LiquidityRegressions/{timestamp}/iv_regime.txt
+    - outputs/4.2_LiquidityRegressions/{timestamp}/iv_ceo.txt
+    - outputs/4.2_LiquidityRegressions/{timestamp}/model_diagnostics.csv
+    - outputs/4.2_LiquidityRegressions/{timestamp}/report_step4_2.md
 
 Deterministic: true
 Dependencies:
@@ -175,7 +175,7 @@ def load_all_data(root):
     print("=" * 60)
 
     manifest_dir = get_latest_output_dir(
-        root / "4_Outputs" / "1.4_AssembleManifest",
+        root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
     )
     manifest_path = manifest_dir / "master_sample_manifest.parquet"
@@ -197,7 +197,7 @@ def load_all_data(root):
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             lv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "2_Textual_Analysis" / "2.2_Variables",
+                root / "outputs" / "2_Textual_Analysis" / "2.2_Variables",
                 required_file=f"linguistic_variables_{year}.parquet",
             )
             lv_path = lv_dir / f"linguistic_variables_{year}.parquet"
@@ -223,7 +223,7 @@ def load_all_data(root):
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             fc_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"firm_controls_{year}.parquet",
             )
             fc_path = fc_dir / f"firm_controls_{year}.parquet"
@@ -244,7 +244,7 @@ def load_all_data(root):
     for year in range(int(CONFIG["year_start"]), int(CONFIG["year_end"]) + 1):
         try:
             mv_dir = get_latest_output_dir(
-                root / "4_Outputs" / "3_Financial_Features",
+                root / "outputs" / "3_Financial_Features",
                 required_file=f"market_variables_{year}.parquet",
             )
             mv_path = mv_dir / f"market_variables_{year}.parquet"
@@ -269,7 +269,7 @@ def load_all_data(root):
 
     try:
         regime_dir = get_latest_output_dir(
-            root / "4_Outputs" / "4.1_ManagerClarity",
+            root / "outputs" / "4.1_ManagerClarity",
             required_file="manager_clarity_scores.parquet",
         )
         regime_path = regime_dir / "manager_clarity_scores.parquet"
@@ -285,7 +285,7 @@ def load_all_data(root):
 
     try:
         ceo_dir = get_latest_output_dir(
-            root / "4_Outputs" / "4.1.1_CeoClarity",
+            root / "outputs" / "4.1.1_CeoClarity",
             required_file="ceo_clarity_scores.parquet",
         )
         ceo_path = ceo_dir / "ceo_clarity_scores.parquet"
@@ -603,9 +603,9 @@ def main():
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[4]
-    out_dir = root / "4_Outputs" / "4.2_LiquidityRegressions" / timestamp
+    out_dir = root / "outputs" / "4.2_LiquidityRegressions" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    log_dir = root / "3_Logs" / "4.2_LiquidityRegressions" / timestamp
+    log_dir = root / "logs" / "4.2_LiquidityRegressions" / timestamp
     log_dir.mkdir(parents=True, exist_ok=True)
 
     stats: Dict[str, Any] = {

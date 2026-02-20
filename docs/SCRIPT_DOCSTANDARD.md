@@ -25,12 +25,12 @@ Description: {One-line description of what the script does}
 Purpose: {Detailed purpose (what the script does and why it matters)}
 
 Inputs:
-    - 4_Outputs/{PreviousStep}/latest/{file.parquet}
-    - 1_Inputs/{data_file}
+    - outputs/{PreviousStep}/latest/{file.parquet}
+    - inputs/{data_file}
     - (List all input files with paths)
 
 Outputs:
-    - 4_Outputs/{CurrentStep}/{timestamp}/{output.parquet}
+    - outputs/{CurrentStep}/{timestamp}/{output.parquet}
     - stats.json
     - {timestamp}.log
     - (List all output files with paths)
@@ -167,8 +167,8 @@ Purpose: {Detailed purpose}
 
 ```
 Inputs:
-    - 4_Outputs/{path}/{file.parquet}
-    - 1_Inputs/{data_file}
+    - outputs/{path}/{file.parquet}
+    - inputs/{data_file}
 ```
 
 - **Required**: Yes for pipeline scripts, optional for utility modules
@@ -180,7 +180,7 @@ Inputs:
 
 ```
 Outputs:
-    - 4_Outputs/{path}/{file.parquet}
+    - outputs/{path}/{file.parquet}
     - stats.json
     - {timestamp}.log
 ```
@@ -253,14 +253,14 @@ Description: Loads Unified-info, deduplicates exact rows, resolves file_name
              the target date range (2002-2018).
 
 Inputs:
-    - 1_Inputs/Unified-info.parquet
+    - inputs/Unified-info.parquet
     - config/project.yaml
 
 Outputs:
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/metadata_cleaned.parquet
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/variable_reference.csv
-    - 4_Outputs/1.1_CleanMetadata/{timestamp}/report_step_1_1.md
-    - 3_Logs/1.1_CleanMetadata/{timestamp}.log
+    - outputs/1.1_CleanMetadata/{timestamp}/metadata_cleaned.parquet
+    - outputs/1.1_CleanMetadata/{timestamp}/variable_reference.csv
+    - outputs/1.1_CleanMetadata/{timestamp}/report_step_1_1.md
+    - logs/1.1_CleanMetadata/{timestamp}.log
 
 Deterministic: true
 Dependencies:
@@ -338,19 +338,19 @@ Hypothesis Tests:
     H1b: beta3 < 0 (Leverage attenuates the uncertainty-cash relationship)
 
 Inputs:
-    - 4_Outputs/3_Financial_V2/latest/H1_CashHoldings.parquet
+    - outputs/3_Financial_V2/latest/H1_CashHoldings.parquet
       (cash_holdings, leverage, controls at firm-year level)
-    - 4_Outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
+    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_*.parquet
       (speech uncertainty measures at call level)
 
 Outputs:
-    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_Regression_Results.parquet
+    - outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_Regression_Results.parquet
       (all regression coefficients, SEs, p-values, diagnostics)
-    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/stats.json
+    - outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/stats.json
       (regression summaries, hypothesis tests, execution metadata)
-    - 4_Outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_RESULTS.md
+    - outputs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}/H1_RESULTS.md
       (human-readable summary of key findings)
-    - 3_Logs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}_H1.log
+    - logs/4_Econometric_V2/4.1_H1CashHoldingsRegression/{timestamp}_H1.log
       (execution log with dual-writer output)
 
 Deterministic: true

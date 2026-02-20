@@ -55,7 +55,7 @@ def test_regression_step1_output_stability(baseline_checksums):
     """Test that Step 1 (1.1_CleanMetadata) output hasn't changed from baseline."""
     # Arrange
     output_file = (
-        resolve_output_dir(REPO_ROOT / "4_Outputs/1.1_CleanMetadata")
+        resolve_output_dir(REPO_ROOT / "outputs/1.1_CleanMetadata")
         / "cleaned_metadata.parquet"
     )
 
@@ -84,7 +84,7 @@ def test_regression_step1_output_stability(baseline_checksums):
 def test_regression_step2_output_stability(baseline_checksums):
     """Test that Step 2 (2.1_TokenizeAndCount) output hasn't changed from baseline."""
     # Arrange
-    output_dir = Path("4_Outputs/2_Textual_Analysis/2.1_Tokenized/latest")
+    output_dir = Path("outputs/2_Textual_Analysis/2.1_Tokenized/latest")
 
     if not output_dir.exists():
         pytest.skip("Output directory not found (run 2.1_TokenizeAndCount.py first)")
@@ -120,7 +120,7 @@ def test_regression_step3_output_stability(baseline_checksums):
     # Arrange
     output_file = (
         resolve_output_dir(
-            REPO_ROOT / "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
+            REPO_ROOT / "outputs/3_Financial_Features/3.0_BuildFinancialFeatures"
         )
         / "financial_features.parquet"
     )
@@ -151,22 +151,22 @@ def test_regression_step3_output_stability(baseline_checksums):
     "output_dir,filename,baseline_key",
     [
         (
-            "4_Outputs/1.1_CleanMetadata",
+            "outputs/1.1_CleanMetadata",
             "cleaned_metadata.parquet",
             "step1_cleaned_metadata",
         ),
         (
-            "4_Outputs/2_Textual_Analysis/2.1_Tokenized",
+            "outputs/2_Textual_Analysis/2.1_Tokenized",
             "linguistic_counts_2002.parquet",
             "step2_linguistic_counts_2002",
         ),
         (
-            "4_Outputs/2_Textual_Analysis/2.1_Tokenized",
+            "outputs/2_Textual_Analysis/2.1_Tokenized",
             "linguistic_counts_2018.parquet",
             "step2_linguistic_counts_2018",
         ),
         (
-            "4_Outputs/3_Financial_Features/3.0_BuildFinancialFeatures",
+            "outputs/3_Financial_Features/3.0_BuildFinancialFeatures",
             "financial_features.parquet",
             "step3_financial_features",
         ),

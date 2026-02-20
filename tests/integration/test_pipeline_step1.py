@@ -71,7 +71,7 @@ def test_step1_full_pipeline(sample_input_data, config, repo_root, subprocess_en
     assert result.returncode == 0, f"Script failed: {result.stderr}"
 
     # Verify output files exist
-    output_dir = resolve_output_dir(repo_root / "4_Outputs/1.1_CleanMetadata")
+    output_dir = resolve_output_dir(repo_root / "outputs/1.1_CleanMetadata")
     assert output_dir.exists(), "Output directory not created"
 
     # Check for expected output files
@@ -88,7 +88,7 @@ def test_step1_full_pipeline(sample_input_data, config, repo_root, subprocess_en
 def test_stats_json_generation_step1(config, repo_root):
     """Test that stats.json is generated with required fields."""
     # Arrange
-    stats_path = repo_root / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
+    stats_path = repo_root / "outputs/1.1_CleanMetadata/latest/stats.json"
 
     if not stats_path.exists():
         pytest.skip(f"stats.json not found (run 1.1_CleanMetadata.py first)")
@@ -119,9 +119,9 @@ def test_stats_json_generation_step1(config, repo_root):
 def test_row_count_validation_step1(repo_root):
     """Test that output row count is validated in stats.json."""
     # Arrange
-    stats_path = repo_root / "4_Outputs/1.1_CleanMetadata/latest/stats.json"
+    stats_path = repo_root / "outputs/1.1_CleanMetadata/latest/stats.json"
     output_path = (
-        repo_root / "4_Outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet"
+        repo_root / "outputs/1.1_CleanMetadata/latest/cleaned_metadata.parquet"
     )
 
     if not stats_path.exists() or not output_path.exists():

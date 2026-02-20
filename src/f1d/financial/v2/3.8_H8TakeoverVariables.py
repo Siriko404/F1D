@@ -14,14 +14,14 @@ Hypothesis:
     H8a: beta1 > 0 (Higher uncertainty -> Higher takeover probability)
 
 Inputs:
-    - SDC Platinum M&A data (1_Inputs/SDC/sdc-ma-merged.parquet)
-    - V2 speech uncertainty measures (from 4_Outputs/2_Textual_Analysis/)
-    - V2 firm controls (from 4_Outputs/3_Financial_Features/)
-    - Sample manifest (from 4_Outputs/1.4_AssembleManifest/)
+    - SDC Platinum M&A data (inputs/SDC/sdc-ma-merged.parquet)
+    - V2 speech uncertainty measures (from outputs/2_Textual_Analysis/)
+    - V2 firm controls (from outputs/3_Financial_Features/)
+    - Sample manifest (from outputs/1.4_AssembleManifest/)
 
 Outputs:
-    - 4_Outputs/3_Financial_V2/{timestamp}/H8_Takeover.parquet
-    - 4_Outputs/3_Financial_V2/{timestamp}/stats.json
+    - outputs/3_Financial_V2/{timestamp}/H8_Takeover.parquet
+    - outputs/3_Financial_V2/{timestamp}/stats.json
 
 Deterministic: true
 Dependencies:
@@ -70,7 +70,7 @@ from f1d.shared.path_utils import (
 CONFIG: Dict[str, Any] = {
     "year_start": 2002,
     "year_end": 2018,
-    "sdc_file": "1_Inputs/SDC/sdc-ma-merged.parquet",
+    "sdc_file": "inputs/SDC/sdc-ma-merged.parquet",
     "min_firm_years": 3,
     "winsor_lower": 0.01,
     "winsor_upper": 0.99,
@@ -112,19 +112,19 @@ def setup_paths(timestamp):
     # Resolve manifest directory using timestamp-based resolution
     try:
         manifest_dir = get_latest_output_dir(
-            root / "4_Outputs" / "1.4_AssembleManifest",
+            root / "outputs" / "1.4_AssembleManifest",
             required_file="master_sample_manifest.parquet",
         )
     except Exception:
         # Fallback to 1.0_BuildSampleManifest
         manifest_dir = get_latest_output_dir(
-            root / "4_Outputs" / "1.0_BuildSampleManifest",
+            root / "outputs" / "1.0_BuildSampleManifest",
             required_file="master_sample_manifest.parquet",
         )
 
     # Resolve H7 illiquidity output (for base dataset with uncertainty measures)
     # Find directory containing H7_Illiquidity.parquet
-    v2_base = root / "4_Outputs" / "3_Financial_V2"
+    v2_base = root / "outputs" / "3_Financial_V2"
     h7_dir = None
     if v2_base.exists():
         for d in sorted(v2_base.iterdir(), reverse=True):
@@ -141,18 +141,18 @@ def setup_paths(timestamp):
         "h7_dir": h7_dir,
         "sdc_file": root / CONFIG["sdc_file"],
         "ccm_file": root
-        / "1_Inputs"
+        / "inputs"
         / "CRSPCompustat_CCM"
         / "CRSPCompustat_CCM.parquet",
     }
 
     # Output directory
-    output_base = root / "4_Outputs" / "3_Financial_V2"
+    output_base = root / "outputs" / "3_Financial_V2"
     paths["output_dir"] = output_base / timestamp
     ensure_output_dir(paths["output_dir"])
 
     # Log directory
-    log_base = root / "3_Logs" / "3_Financial_V2"
+    log_base = root / "logs" / "3_Financial_V2"
     ensure_output_dir(log_base)
     paths["log_file"] = log_base / f"{timestamp}_H8.log"
 
@@ -990,7 +990,7 @@ def main():
     print("\nFirm Controls:")
     try:
         controls_df = load_firm_controls(
-            paths["root"] / "4_Outputs" / "3_Financial_Features",
+            paths["root"] / "outputs" / "3_Financial_Features",
             CONFIG["year_start"],
             CONFIG["year_end"],
         )
