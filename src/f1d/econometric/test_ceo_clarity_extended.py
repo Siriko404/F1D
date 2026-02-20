@@ -291,7 +291,14 @@ def run_regression(
     print("  Estimating... (this may take a minute)")
     start_time = datetime.now()
     try:
-        model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
+        model = smf.ols(formula, data=df_reg).fit(
+            # M-2 fix: cluster SEs at CEO level (not HC1) to account for
+            # within-CEO correlation across calls in the same regression.
+            # HC1 treats all observations as independent, understating SEs
+            # when the same CEO appears in many rows (Liang-Zeger problem).
+            cov_type="cluster",
+            cov_kwds={"groups": df_reg["ceo_id"]},
+        )
     except ValueError as e:
         print(f"ERROR: Regression failed: {e}", file=sys.stderr)
         return None, None, set()
@@ -346,7 +353,7 @@ def save_outputs(
             "Extended controls add Size, Book-to-Market, Leverage, ROA, "
             "Current Ratio, R\\&D Intensity, and Stock Volatility. "
             "All samples are the Main industry sample (non-financial, non-utility). "
-            "Robust standard errors (HC1)."
+            "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=all_controls,

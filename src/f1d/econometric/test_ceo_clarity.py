@@ -61,7 +61,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # Try importing statsmodels — assign None so the name is always bound
 smf: Any = None
 try:
-    import statsmodels.formula.api as smf  # type: ignore[no-redef]
+    from linearmodels.panel import PanelOLS  # type: ignore[no-redef]
 
     STATSMODELS_AVAILABLE = True
 except ImportError:
@@ -291,7 +291,15 @@ def run_regression(
     start_time = datetime.now()
 
     try:
-        model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
+        model_obj = PanelOLS.from_formula(formula.replace("C(gvkey) + C(year)", "EntityEffects + TimeEffects"), data=df_reg.set_index(["gvkey", "year"]), drop_absorbed=True)
+        model = model_obj.fit(
+            # M-2 fix: cluster SEs at CEO level (not HC1) to account for
+            # within-CEO correlation across calls in the same regression.
+            # HC1 treats all observations as independent, understating SEs
+            # when the same CEO appears in many rows (Liang-Zeger problem).
+            cov_type="clustered",
+            cov_kwds={"groups": df_reg["ceo_id"]},
+        )
     except ValueError as e:
         print(f"ERROR: Regression failed: {e}", file=sys.stderr)
         return None, None, set()
@@ -299,8 +307,8 @@ def run_regression(
     duration = (datetime.now() - start_time).total_seconds()
 
     print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared: {model.rsquared:.4f}")
-    print(f"  Adj. R-squared: {model.rsquared_adj:.4f}")
+    print(f"  R-squared: {float(model.rsquared_within):.4f}")
+    print(f"  Adj. R-squared: {float(model.rsquared_inclusive):.4f}")
     print(f"  N observations: {int(model.nobs):,}")
 
     return model, df_reg, valid_ceos
@@ -429,7 +437,7 @@ def save_outputs(
             "uncertainty on firm characteristics and year fixed effects. "
             "ClarityCEO is computed as the negative of the CEO fixed effect, "
             "standardized globally across all industry samples. "
-            "Robust standard errors (HC1) are used."
+            "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=control_vars,
@@ -448,21 +456,33 @@ def save_outputs(
         n_reference = raw_df["is_reference"].sum()
         print(f"  Excluded {n_reference} reference CEO(s) from clarity scores")
 
-        # FIX-3: Standardize ClarityCEO_raw GLOBALLY across all samples
-        # so that a score of 1.0 means the same thing regardless of sample
-        global_mean = estimated_df["ClarityCEO_raw"].mean()
-        global_std = estimated_df["ClarityCEO_raw"].std()
-        estimated_df["ClarityCEO"] = (
-            estimated_df["ClarityCEO_raw"] - global_mean
-        ) / global_std
+        # S4 fix: Standardize ClarityCEO_raw PER SAMPLE (not globally).
+        # Regressions for Main, Finance, and Utility each use a different
+        # reference CEO (statsmodels' alphabetically-first CEO per sample),
+        # so raw gamma values are anchored to different baselines across samples
+        # and cannot be compared directly.  Per-sample z-score absorbs the
+        # reference-level offset while preserving the within-sample relative rank.
+        # (Identical pattern to test_ceo_clarity_regime.py's per-regime logic.)
+        estimated_df["ClarityCEO"] = np.nan
+        for _sample_key in estimated_df["sample"].unique():
+            _idx = estimated_df.index[estimated_df["sample"] == _sample_key]
+            _raw_vals: np.ndarray = estimated_df.loc[
+                _idx, "ClarityCEO_raw"
+            ].values.astype(float)  # type: ignore[union-attr]
+            _s_mean = float(_raw_vals.mean())
+            _s_std = float(_raw_vals.std())
+            if _s_std > 0:
+                estimated_df.loc[_idx, "ClarityCEO"] = (_raw_vals - _s_mean) / _s_std
+            else:
+                estimated_df.loc[_idx, "ClarityCEO"] = 0.0
+            print(
+                f"  {_sample_key} standardization: mean={_s_mean:.4f}, std={_s_std:.4f} "
+                f"(N={len(_idx):,} estimated CEOs)"
+            )
 
         print(
-            f"  Global standardization: mean={global_mean:.4f}, std={global_std:.4f} "
-            f"(across {len(estimated_df):,} estimated CEOs)"
-        )
-        print(
-            f"  ClarityCEO post-standardization: "
-            f"mean={estimated_df['ClarityCEO'].mean():.4f}, "
+            f"  ClarityCEO post-standardization (per-sample): "
+            f"overall mean={estimated_df['ClarityCEO'].mean():.4f}, "
             f"std={estimated_df['ClarityCEO'].std():.4f}"
         )
 
@@ -671,8 +691,8 @@ def main(panel_path: Optional[str] = None) -> int:
             "diagnostics": {
                 "n_obs": int(model.nobs),
                 "n_ceos": len(valid_ceos),
-                "rsquared": model.rsquared,
-                "rsquared_adj": model.rsquared_adj,
+                "rsquared": float(model.rsquared_within),
+                "rsquared_adj": float(model.rsquared_inclusive),
             },
         }
 
@@ -680,7 +700,7 @@ def main(panel_path: Optional[str] = None) -> int:
         stats["regressions"][sample_name] = {
             "n_obs": int(model.nobs),
             "n_ceos": len(valid_ceos),
-            "rsquared": model.rsquared,
+            "rsquared": float(model.rsquared_within),
         }
 
     # Save outputs

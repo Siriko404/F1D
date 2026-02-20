@@ -60,10 +60,10 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 
-# lifelines — always-bound pattern
-CoxPHFitter: Any = None
+# lifelines — always-bound pattern (B7 fix: CoxTimeVaryingFitter for counting-process)
+CoxTimeVaryingFitter: Any = None
 try:
-    from lifelines import CoxPHFitter  # type: ignore[no-redef,import-untyped]
+    from lifelines import CoxTimeVaryingFitter  # type: ignore[no-redef,import-untyped]
 
     LIFELINES_AVAILABLE = True
 except ImportError:
@@ -109,8 +109,9 @@ MODEL_VARIANTS: Dict[str, Dict[str, str]] = {
     },
 }
 
-# Survival columns
-DURATION_COL = "Duration"
+# Counting-process columns (B7 fix: start/stop format)
+START_COL = "start"
+STOP_COL = "stop"
 EVENT_ALL_COL = "Takeover"
 EVENT_UNINVITED_COL = "Takeover_Uninvited"
 EVENT_FRIENDLY_COL = "Takeover_Friendly"
@@ -142,7 +143,7 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
-    """Load firm-level takeover panel from Stage 3."""
+    """Load counting-process takeover panel from Stage 3 (B7 fix)."""
     print("\n" + "=" * 60)
     print("Loading panel")
     print("=" * 60)
@@ -161,15 +162,23 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
 
     panel = pd.read_parquet(panel_file)
     print(f"  Loaded: {panel_file}")
-    print(f"  Rows (firms): {len(panel):,}")
+    print(f"  Rows (firm-year intervals): {len(panel):,}")
+    print(f"  Unique firms: {panel['gvkey'].nunique():,}")
     print(f"  Columns: {len(panel.columns)}")
-    print(
-        f"  Takeover events: {int(panel[EVENT_ALL_COL].sum()):,} ({100.0 * panel[EVENT_ALL_COL].mean():.1f}%)"
-    )
 
-    # Hard assertion: ff12_code must be present for sample filtering
+    # Hard assertions
     if "ff12_code" not in panel.columns:
         raise ValueError("'ff12_code' not found in takeover panel. Re-run Stage 3.")
+    for col in [START_COL, STOP_COL]:
+        if col not in panel.columns:
+            raise ValueError(
+                f"'{col}' not found in takeover panel. "
+                "Panel must be in counting-process format. Re-run Stage 3."
+            )
+
+    n_event_firms = panel.groupby("gvkey")[EVENT_ALL_COL].max().sum()
+    n_firms = panel["gvkey"].nunique()
+    print(f"  Takeover event firms: {int(n_event_firms):,} / {n_firms:,}")
 
     return panel
 
@@ -177,15 +186,37 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
 def prepare_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
     """Filter to Main sample and create cause-specific event indicators."""
     df = panel[~panel["ff12_code"].isin(MAIN_SAMPLE_EXCLUDE_FF12)].copy()
-    print(f"\n  Main sample: {len(df):,} firms")
-    print(f"  Takeover events (Main): {int(df[EVENT_ALL_COL].sum()):,}")
+    n_firms = df["gvkey"].nunique()
+    n_event_firms = df.groupby("gvkey")[EVENT_ALL_COL].max().sum()
+    print(f"\n  Main sample: {len(df):,} firm-year rows, {n_firms:,} firms")
+    print(f"  Takeover event firms (Main): {int(n_event_firms):,}")
 
     # Create cause-specific event indicators
     df[EVENT_UNINVITED_COL] = (df["Takeover_Type"] == "Uninvited").astype(int)
     df[EVENT_FRIENDLY_COL] = (df["Takeover_Type"] == "Friendly").astype(int)
 
-    print(f"  Uninvited events: {df[EVENT_UNINVITED_COL].sum():,}")
-    print(f"  Friendly events: {df[EVENT_FRIENDLY_COL].sum():,}")
+    n_uninvited = int(df[EVENT_UNINVITED_COL].sum())
+    n_friendly = int(df[EVENT_FRIENDLY_COL].sum())
+    n_all = int(df[EVENT_ALL_COL].sum())
+    n_other = n_all - n_uninvited - n_friendly
+    print(f"  Uninvited events: {n_uninvited:,}")
+    print(f"  Friendly events:  {n_friendly:,}")
+    # M-10 fix: firms with Takeover=1 but unknown/other Takeover_Type will have
+    # EVENT_UNINVITED=0 AND EVENT_FRIENDLY=0, making them censored in both
+    # cause-specific models. This is correct competing-risks practice (they are
+    # competing events of unknown cause), but must be explicitly logged.
+    if n_other > 0:
+        other_types = df.loc[
+            (df[EVENT_ALL_COL] == 1)
+            & (df[EVENT_UNINVITED_COL] == 0)
+            & (df[EVENT_FRIENDLY_COL] == 0),
+            "Takeover_Type",
+        ].value_counts(dropna=False)
+        print(
+            f"  WARNING: {n_other} takeover event(s) have neither Uninvited nor "
+            f"Friendly type -- treated as censored in cause-specific models "
+            f"(correct for competing risks). Type breakdown:\n{other_types.to_string()}"
+        )
 
     return df
 
@@ -195,40 +226,51 @@ def prepare_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
 # ==============================================================================
 
 
-def run_cox(
+def run_cox_tv(
     df: pd.DataFrame,
     event_col: str,
     covariates: List[str],
     title: str,
     out_file: Path,
 ) -> Optional[Any]:
-    """Fit a Cox PH model (all takeovers or cause-specific).
+    """Fit a Cox time-varying fitter (counting-process format).
+
+    B7 fix: uses CoxTimeVaryingFitter with start/stop columns instead of
+    CoxPHFitter with a single Duration column. Time-varying covariates are
+    now used at their actual per-year values rather than time-averaged.
 
     Args:
-        df: Firm-level DataFrame
+        df: Counting-process DataFrame (one row per firm-year at risk)
         event_col: Event indicator column (Takeover, Takeover_Uninvited, Takeover_Friendly)
         covariates: List of covariate column names
         title: Model title for output file
         out_file: Path to append results to
 
     Returns:
-        Fitted CoxPHFitter or None on failure.
+        Fitted CoxTimeVaryingFitter or None on failure.
     """
-    if not LIFELINES_AVAILABLE or CoxPHFitter is None:
+    if not LIFELINES_AVAILABLE or CoxTimeVaryingFitter is None:
         print("  ERROR: lifelines not available")
         sys.exit(1)
 
-    print(f"\n  Cox PH: {title}")
+    print(f"\n  Cox TV: {title}")
 
-    # Validate required columns
-    required = [DURATION_COL, event_col] + covariates
+    # Validate required columns (B7 fix: start/stop instead of duration)
+    required = [START_COL, STOP_COL, "id", event_col] + covariates
+    # 'id' = gvkey for entity identification
+    actual_required = [START_COL, STOP_COL, event_col] + covariates
     try:
-        validate_columns(df, required)
+        validate_columns(df, actual_required)
     except RegressionValidationError as e:
         raise ValueError(f"Column validation failed: {e}") from e
 
-    needed_cols = [DURATION_COL, event_col] + covariates
-    df_clean = df[needed_cols].dropna().copy()
+    needed_cols = [START_COL, STOP_COL, "gvkey", event_col] + covariates
+    needed_cols = [c for c in needed_cols if c in df.columns]
+    df_clean = (
+        df[needed_cols]
+        .dropna(subset=[START_COL, STOP_COL, event_col] + covariates)
+        .copy()
+    )
 
     try:
         validate_sample_size(df_clean, min_observations=MIN_OBS)
@@ -236,37 +278,48 @@ def run_cox(
         print(f"  Skipping: {e}")
         return None
 
-    n_events = int(df_clean[event_col].sum())
-    print(f"  N = {len(df_clean):,}, Events = {n_events:,}")
+    # Count event firms (not rows)
+    n_event_firms = (
+        int(df_clean.groupby("gvkey")[event_col].max().sum())
+        if "gvkey" in df_clean.columns
+        else int(df_clean[event_col].sum())
+    )
+    print(f"  N intervals = {len(df_clean):,}, Event firms = {n_event_firms:,}")
 
-    if n_events < 5:
-        print(f"  Skipping: too few events ({n_events} < 5)")
+    if n_event_firms < 5:
+        print(f"  Skipping: too few event firms ({n_event_firms} < 5)")
         return None
-
-    formula = " + ".join(covariates)
 
     try:
-        cph = CoxPHFitter()  # type: ignore[call-arg]
-        cph.fit(  # type: ignore[call-arg]
+        ctv = CoxTimeVaryingFitter()  # type: ignore[call-arg]
+        ctv.fit(  # type: ignore[call-arg]
             df_clean,
-            duration_col=DURATION_COL,
+            id_col="gvkey",
+            start_col=START_COL,
+            stop_col=STOP_COL,
             event_col=event_col,
-            formula=formula,
+            formula=" + ".join(covariates),
         )
     except Exception as e:
-        print(f"  ERROR: Cox PH failed: {e}", file=sys.stderr)
+        print(f"  ERROR: Cox TV failed: {e}", file=sys.stderr)
         return None
 
-    print(f"  Concordance: {cph.concordance_index_:.4f}")  # type: ignore[union-attr]
+    # CoxTimeVaryingFitter does not expose concordance_index_ (unlike CoxPHFitter)
+    concordance = getattr(ctv, "concordance_index_", None)
+    if concordance is not None:
+        print(f"  Concordance: {concordance:.4f}")
 
     # Append to output file
     with open(out_file, "a") as fh:
         fh.write(f"\n{'=' * 70}\n{title}\n{'=' * 70}\n")
-        fh.write(str(cph.summary))  # type: ignore[union-attr]
-        fh.write(f"\nN = {len(df_clean):,}, Events = {n_events:,}\n")
-        fh.write(f"Concordance index: {cph.concordance_index_:.4f}\n")  # type: ignore[union-attr]
+        fh.write(str(ctv.summary))  # type: ignore[union-attr]
+        fh.write(
+            f"\nN intervals = {len(df_clean):,}, Event firms = {n_event_firms:,}\n"
+        )
+        if concordance is not None:
+            fh.write(f"Concordance index: {concordance:.4f}\n")
 
-    return cph
+    return ctv
 
 
 def extract_results(
@@ -299,7 +352,9 @@ def extract_results(
                     "p": summary.loc[var, "p"],
                     "n_firms": df_clean_len,
                     "n_events": n_events,
-                    "concordance": float(cph.concordance_index_),  # type: ignore[union-attr]
+                    "concordance": float(cph.concordance_index_)
+                    if hasattr(cph, "concordance_index_")
+                    else float("nan"),  # type: ignore[union-attr]
                 }
             )
     return rows
@@ -356,7 +411,7 @@ def generate_report(
         conc_str = f"{conc:.4f}" if isinstance(conc, float) else str(conc)
         report_lines.append(
             f"| {d.get('model')} | {d.get('variant')} | {d.get('event_type')} "
-            f"| {d.get('n_firms', 'N/A'):,} | {d.get('n_events', 'N/A'):,} | {conc_str} |"
+            f"| {d.get('n_firms', 'N/A')} | {d.get('n_events', 'N/A')} | {conc_str} |"
         )
     report_lines.append("")
 
@@ -455,20 +510,31 @@ def main(panel_path: Optional[str] = None) -> int:
 
             title = f"{model_label} — {variant_spec['description']}"
 
-            cph = run_cox(df, event_col, covariates, title, out_file)
+            ctv = run_cox_tv(df, event_col, covariates, title, out_file)
 
-            if cph is not None:
-                # Count observations used
-                needed = [DURATION_COL, event_col] + covariates
-                df_used = df[needed].dropna()
-                n_firms = len(df_used)
-                n_events = int(df_used[event_col].sum())
-                concordance = float(cph.concordance_index_)  # type: ignore[union-attr]
+            if ctv is not None:
+                # Count observations used (counting-process format)
+                needed = [START_COL, STOP_COL, "gvkey", event_col] + covariates
+                needed = [c for c in needed if c in df.columns]
+                df_used = df[needed].dropna(
+                    subset=[START_COL, STOP_COL, event_col] + covariates
+                )
+                n_intervals = len(df_used)
+                n_event_firms = (
+                    int(df_used.groupby("gvkey")[event_col].max().sum())
+                    if "gvkey" in df_used.columns
+                    else int(df_used[event_col].sum())
+                )
+                concordance = (
+                    float(ctv.concordance_index_)
+                    if hasattr(ctv, "concordance_index_")
+                    else float("nan")
+                )  # type: ignore[union-attr]
 
                 hr_rows = extract_results(
-                    cph,
-                    n_firms,
-                    n_events,
+                    ctv,
+                    n_intervals,
+                    n_event_firms,
                     model_label,
                     variant_key,
                     event_type,
@@ -482,8 +548,8 @@ def main(panel_path: Optional[str] = None) -> int:
                         "variant": variant_key,
                         "event_type": event_type,
                         "event_col": event_col,
-                        "n_firms": n_firms,
-                        "n_events": n_events,
+                        "n_intervals": n_intervals,
+                        "n_event_firms": n_event_firms,
                         "concordance": concordance,
                     }
                 )

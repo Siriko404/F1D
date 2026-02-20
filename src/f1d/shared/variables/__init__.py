@@ -18,10 +18,10 @@ Architecture:
         RDIntensityBuilder    → RD_Intensity = xrdq / atq
         EPSGrowthBuilder      → EPS_Growth (date-based YoY, robust to gaps)
         CashHoldingsBuilder   → CashHoldings = cheq / atq
-        TobinsQBuilder        → TobinsQ = (mkvaltq + ltq) / atq
-        CapexIntensityBuilder → CapexAt = capxq / atq
-        DividendPayerBuilder  → DividendPayer = (dvpq > 0).astype(float)
-        OCFVolatilityBuilder  → OCF_Volatility = rolling 4yr std of oancfy/atq
+        TobinsQBuilder        → TobinsQ = (atq + cshoq*prccq - ceqq) / atq
+        CapexIntensityBuilder → CapexAt = capxy_Q4 / atq
+        DividendPayerBuilder  → DividendPayer = (dvy_Q4 > 0).astype(float)
+        OCFVolatilityBuilder  → OCF_Volatility = rolling 5yr std (min 3) of oancfy/atq
 
     Individual CRSP variable builders (one column each):
         StockReturnBuilder    → StockRet (compound return over call window)
@@ -126,6 +126,11 @@ from .capex_intensity import CapexIntensityBuilder
 from .dividend_payer import DividendPayerBuilder
 from .ocf_volatility import OCFVolatilityBuilder
 
+# H2 Compustat variable builders (Biddle 2009 investment efficiency)
+from .investment_residual import InvestmentResidualBuilder
+from .cash_flow import CashFlowBuilder
+from .sales_growth import SalesGrowthBuilder
+
 # CRSP individual variable builders
 from .stock_return import StockReturnBuilder
 from .market_return import MarketReturnBuilder
@@ -185,6 +190,10 @@ __all__ = [
     "CapexIntensityBuilder",
     "DividendPayerBuilder",
     "OCFVolatilityBuilder",
+    # H2 Compustat variable builders (Biddle 2009 investment efficiency)
+    "InvestmentResidualBuilder",
+    "CashFlowBuilder",
+    "SalesGrowthBuilder",
     # Weak modal builders (H1 — Stage 2 linguistic)
     "ManagerQAWeakModalBuilder",
     "CEOQAWeakModalBuilder",
@@ -202,4 +211,42 @@ __all__ = [
     "CCCLInstrumentBuilder",
     # Takeover indicator builder (B.5 Takeover Hazards) — firm-level
     "TakeoverIndicatorBuilder",
+    # H3
+    "DivStabilityBuilder",
+    "PayoutFlexibilityBuilder",
+    "EarningsVolatilityBuilder",
+    "FCFGrowthBuilder",
+    "FirmMaturityBuilder",
+    "IsDivPayer5yrBuilder",
+    # H5
+    "DispersionLeadBuilder",
+    "PriorDispersionBuilder",
+    "EarningsSurpriseRatioBuilder",
+    "LossDummyBuilder",
+    # H7
+    "AmihudIlliqBuilder",
+    # H8
+    "CEOClarityStyleBuilder",
+    "PRiskFYBuilder",
 ]
+
+# H3 Payout Policy
+from .div_stability import DivStabilityBuilder
+from .payout_flexibility import PayoutFlexibilityBuilder
+from .earnings_volatility import EarningsVolatilityBuilder
+from .fcf_growth import FCFGrowthBuilder
+from .firm_maturity import FirmMaturityBuilder
+from .is_div_payer_5yr import IsDivPayer5yrBuilder
+
+# H5 Analyst Dispersion
+from .dispersion_lead import DispersionLeadBuilder
+from .prior_dispersion import PriorDispersionBuilder
+from .earnings_surprise_ratio import EarningsSurpriseRatioBuilder
+from .loss_dummy import LossDummyBuilder
+
+# H7 Illiquidity
+from .amihud_illiq import AmihudIlliqBuilder
+
+# H8 Policy Risk
+from .ceo_clarity_style import CEOClarityStyleBuilder
+from .prisk_fy import PRiskFYBuilder

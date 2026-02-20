@@ -1,7 +1,14 @@
-"""Builder for Return on Assets (ROA) variable.
+"""Builder for SalesGrowth variable (year-over-year revenue growth).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, ROA.
+Returns one column: file_name, SalesGrowth.
+
+Formula: SalesGrowth = (saley_t - saley_{t-1}) / |saley_{t-1}|
+    saley: annual total revenue YTD (Q4 value = full fiscal year revenue).
+    Falls back to saleq (quarterly revenue) when saley is missing.
+    Computed on Q4-only annual panel (fiscal year), then joined back to all
+    quarterly rows by gvkey+fyearq. Winsorized once at 1%/99% within fiscal year.
+    Year gaps (missing fiscal year t-1) are set to NaN.
 """
 
 from __future__ import annotations
@@ -16,13 +23,8 @@ from ._compustat_engine import get_engine
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-class ROABuilder(VariableBuilder):
-    """Build annualized ROA = (niq * 4) / atq from raw Compustat quarterly data.
-
-    niq is quarterly net income; multiplied by 4 to annualize before dividing
-    by total assets (atq), making the ratio comparable to papers that use annual
-    net income directly (e.g., Opler et al. 1999, Biddle et al. 2009).
-    """
+class SalesGrowthBuilder(VariableBuilder):
+    """Build SalesGrowth from raw Compustat quarterly data (annual Q4 panel)."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -45,13 +47,17 @@ class ROABuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "ROA"]].copy()
-        stats = self.get_stats(data["ROA"], "ROA")
+        data = merged[["file_name", "SalesGrowth"]].copy()
+        stats = self.get_stats(data["SalesGrowth"], "SalesGrowth")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "ROA", "source": "Compustat/niq,atq"},
+            metadata={
+                "column": "SalesGrowth",
+                "source": "Compustat/saley_Q4_YoY",
+                "formula": "(saley_t - saley_{t-1}) / |saley_{t-1}|  (Q4-only annual; saley with saleq fallback)",
+            },
         )
 
 
-__all__ = ["ROABuilder"]
+__all__ = ["SalesGrowthBuilder"]

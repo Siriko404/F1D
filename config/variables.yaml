@@ -304,6 +304,34 @@ variables:
     description: "Operating cash flow volatility: rolling 5yr std of OCF/assets (Compustat; matches v2 design)"
 
   # ===========================================================================
+  # H2 — Investment Efficiency Regression: Compustat-engine variables
+  # ===========================================================================
+  # All 3 are computed by the shared CompustatEngine via _compute_biddle_residual()
+  # (no separate source path — derived from inputs/comp_na_daily_all/comp_na_daily_all.parquet).
+  # Biddle et al. (2009, JAE) specification: annual Q4-only panel, FF48 cells, min 20 obs.
+
+  investment_residual:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "InvestmentResidual"
+    formula: "Biddle (2009): (capxy+xrdy+aqcy-sppey)/at_lag; residual from FF48-year OLS: Investment ~ TobinQ_lag + SalesGrowth_lag; min 20 obs per cell"
+    description: "Abnormal investment deviation; > 0 = overinvestment, < 0 = underinvestment"
+
+  cash_flow:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "CashFlow"
+    formula: "oancfy / atq  (Q4-only annual, joined back to all quarters by gvkey+fyearq)"
+    description: "Operating cash flow as fraction of total assets (Compustat)"
+
+  sales_growth:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "SalesGrowth"
+    formula: "(saleq_Q4 - saleq_Q4_lag) / |saleq_Q4_lag|  (Q4-only annual)"
+    description: "Year-over-year revenue growth from annual Q4 panel (Compustat)"
+
+  # ===========================================================================
   # Takeover Indicator (B.5 Takeover Hazards)
   # ===========================================================================
   # Source: inputs/SDC/sdc-ma-merged.parquet
@@ -329,3 +357,121 @@ variables:
 # =============================================================================
 
 
+
+  # ===========================================================================
+  # H3 — Payout Policy Regression: Compustat-engine variables
+  # ===========================================================================
+
+  div_stability:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "div_stability"
+    formula: "-StdDev(Delta DPS) / |Mean(DPS)| over trailing 5 years"
+    description: "Dividend policy stability (H3 DV1)"
+
+  payout_flexibility:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "payout_flexibility"
+    formula: "% of years with |Delta DPS| > 5% of prior DPS (trailing 5 years)"
+    description: "Payout flexibility (H3 DV2)"
+
+  earnings_volatility:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "earnings_volatility"
+    formula: "StdDev(annual EPS) over trailing 5 years"
+    description: "Earnings volatility (H3 control)"
+
+  fcf_growth:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "fcf_growth"
+    formula: "(FCF_t - FCF_t-1) / |FCF_t-1| where FCF = (oancfy - capxy) / atq"
+    description: "Free cash flow growth (H3 control)"
+
+  firm_maturity:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "firm_maturity"
+    formula: "req / seqq"
+    description: "Firm maturity (H3 control)"
+
+  is_div_payer_5yr:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "is_div_payer_5yr"
+    formula: "max(dps > 0) over trailing 5 years"
+    description: "Flag indicating dividend payment in past 5 years (H3 filter)"
+
+  # ===========================================================================
+  # H5 — Analyst Forecast Dispersion Regression: IBES variables
+  # ===========================================================================
+
+  dispersion_lead:
+    stage: input
+    source: "inputs/tr_ibes"
+    column: "dispersion_lead"
+    formula: "STDEV / |MEANEST| at t+1 (from IBES _ibes_engine)"
+    description: "Analyst forecast dispersion for the following quarter (H5 DV)"
+
+  prior_dispersion:
+    stage: input
+    source: "inputs/tr_ibes"
+    column: "prior_dispersion"
+    formula: "STDEV / |MEANEST| at t (from IBES _ibes_engine)"
+    description: "Analyst forecast dispersion for the current quarter (H5 Control)"
+
+  earnings_surprise_ratio:
+    stage: input
+    source: "inputs/tr_ibes"
+    column: "earnings_surprise_ratio"
+    formula: "|ACTUAL - MEANEST| / |MEANEST| (from IBES _ibes_engine)"
+    description: "Absolute earnings surprise magnitude (H5 Control)"
+
+  loss_dummy:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "loss_dummy"
+    formula: "1 if niq < 0 else 0"
+    description: "Loss indicator variable (H5 Control)"
+
+  # ===========================================================================
+  # H6 — CCCL SEC Scrutiny: Shift-Share Instrument
+  # ===========================================================================
+
+  cccl_instrument_mkvalt:
+    stage: input
+    source: "inputs/CCCL_instrument"
+    column: "shift_intensity_mkvalt_ff48"
+    formula: "Market-value weighted shift-share instrument (CCCL t-1 proxy)"
+    description: "CCCL SEC Scrutiny exposure (H6 main IV)"
+
+  # ===========================================================================
+  # H7 — Illiquidity Regression: CRSP variables
+  # ===========================================================================
+
+  amihud_illiq:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "amihud_illiq"
+    formula: "mean(|RET| / (VOL * |PRC|)) * 1e6 across inter-call window"
+    description: "Amihud (2002) illiquidity ratio (H7 dependent variable)"
+
+  # ===========================================================================
+  # H8 — Policy Risk: Moderation of Vagueness on Abnormal Investment
+  # ===========================================================================
+
+  style_frozen:
+    stage: constructed
+    source: "outputs/4.1.1_CeoClarity"
+    column: "style_frozen"
+    formula: "ClarityCEO assigned via frozen constraint (calls <= fy_end)"
+    description: "Time-invariant CEO clarity score assigned to firm-year (H8 moderator)"
+
+  prisk_fy:
+    stage: input
+    source: "inputs/FirmLevelRisk"
+    column: "PRiskFY"
+    formula: "mean(PRisk quarters) where cal_q_end in (fy_end - 366d, fy_end]"
+    description: "Hassan et al. (2019) fiscal-year policy risk exposure (H8 IV)"

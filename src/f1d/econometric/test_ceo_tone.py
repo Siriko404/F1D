@@ -375,7 +375,14 @@ def run_regression(
     est_start = datetime.now()
 
     try:
-        model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
+        model = smf.ols(formula, data=df_reg).fit(
+            # M-2 fix: cluster SEs at CEO level (not HC1) to account for
+            # within-CEO correlation across calls in the same regression.
+            # HC1 treats all observations as independent, understating SEs
+            # when the same CEO appears in many rows (Liang-Zeger problem).
+            cov_type="cluster",
+            cov_kwds={"groups": df_reg["ceo_id"]},
+        )
     except ValueError as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
         sys.exit(1)
@@ -646,7 +653,7 @@ def save_outputs(
             "(Positive_pct - Negative_pct) on firm characteristics and year "
             "fixed effects. ToneCEO = +gamma_i, standardized globally per "
             "model across all industry samples. "
-            "Robust standard errors (HC1) are used."
+            "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=all_controls,

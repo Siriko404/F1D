@@ -28,7 +28,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
-CRSP_RETURN_COLS = ["StockRet", "MarketRet", "Volatility"]
+CRSP_RETURN_COLS = ["StockRet", "MarketRet", "Volatility", "amihud_illiq"]
 
 MIN_TRADING_DAYS = 10
 DAYS_AFTER_PREV_CALL = 5
@@ -38,22 +38,43 @@ DAYS_BEFORE_CURRENT_CALL = 5
 def _load_crsp_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]:
     """Load CRSP quarterly parquet files for the given calendar years."""
     all_data: List[pd.DataFrame] = []
+
     for year in years:
         for q in range(1, 5):
             fp = crsp_dir / f"CRSP_DSF_{year}_Q{q}.parquet"
             if fp.exists():
-                all_data.append(pd.read_parquet(fp))
+                try:
+                    df = pd.read_parquet(fp)
+                    # Create empty columns if they don't exist
+                    for col in ["VOL", "vol", "PRC", "prc", "vwretd", "VWRETD"]:
+                        if (
+                            col not in df.columns
+                            and col.upper() not in df.columns
+                            and col.lower() not in df.columns
+                        ):
+                            df[col.upper()] = np.nan
+
+                    # Rename all to uppercase except 'date'
+                    col_map = {c: c.upper() for c in df.columns if c.lower() != "date"}
+                    df = df.rename(columns=col_map)
+                    if "DATE" in df.columns:
+                        df = df.rename(columns={"DATE": "date"})
+
+                    # Ensure columns exist before subsetting
+                    keep_cols = ["PERMNO", "date", "RET", "VWRETD", "VOL", "PRC"]
+                    for c in keep_cols:
+                        if c not in df.columns:
+                            df[c] = np.nan
+
+                    df = df[keep_cols]
+                    all_data.append(df)
+                except Exception as e:
+                    print(f"Error loading {fp}: {e}")
 
     if not all_data:
         return None
 
     crsp = pd.concat(all_data, ignore_index=True)
-
-    # Normalize column names to upper-case except 'date'
-    col_map = {c: c.upper() for c in crsp.columns if c.lower() != "date"}
-    crsp = crsp.rename(columns=col_map)
-    if "DATE" in crsp.columns:
-        crsp = crsp.rename(columns={"DATE": "date"})
 
     crsp["date"] = pd.to_datetime(crsp["date"])
     for col in ["RET", "VOL", "VWRETD", "ASKHI", "BIDLO", "PRC"]:
@@ -158,8 +179,13 @@ def _compute_returns_for_manifest(
 
     valid["permno_int"] = valid["permno_int"].astype(int)
 
+    # Include VOL and PRC so Amihud illiquidity can be computed
+    crsp_cols = ["PERMNO", "date", "RET", "VWRETD"]
+    for _c in ["VOL", "PRC"]:
+        if _c in crsp.columns:
+            crsp_cols.append(_c)
     merged = valid[["file_name", "permno_int", "window_start", "window_end"]].merge(
-        crsp[["PERMNO", "date", "RET", "VWRETD"]],
+        crsp[crsp_cols],
         left_on="permno_int",
         right_on="PERMNO",
         how="inner",
@@ -168,6 +194,23 @@ def _compute_returns_for_manifest(
         (merged["date"] >= merged["window_start"])
         & (merged["date"] <= merged["window_end"])
     ]
+
+    # Calculate daily amihud components (vectorized safely)
+    # Deduplicate columns if any (Parquet reading sometimes merges index and data columns)
+    merged = merged.loc[:, ~merged.columns.duplicated()].copy()
+
+    for c in ["VOL", "PRC", "RET"]:
+        if c not in merged.columns:
+            merged[c] = np.nan
+
+    merged["VOL"] = pd.to_numeric(merged["VOL"], errors="coerce")
+    merged["PRC"] = pd.to_numeric(merged["PRC"], errors="coerce")
+    merged["RET"] = pd.to_numeric(merged["RET"], errors="coerce")
+
+    merged["dollar_volume"] = merged["VOL"] * merged["PRC"].abs()
+    # Mask out zeros to avoid Inf
+    dollar_vol_masked = merged["dollar_volume"].replace(0, np.nan)
+    merged["daily_illiq"] = merged["RET"].abs() / dollar_vol_masked
 
     def compound(x: pd.Series) -> float:
         v = x.dropna()
@@ -183,13 +226,19 @@ def _compute_returns_for_manifest(
             else np.nan
         )
 
+    def amihud(x: pd.Series) -> float:
+        v = x.replace([np.inf, -np.inf], np.nan).dropna()
+        return float(v.mean() * 1e6) if len(v) >= MIN_TRADING_DAYS else np.nan
+
     stock_rets = merged.groupby("file_name")["RET"].apply(compound)
     market_rets = merged.groupby("file_name")["VWRETD"].apply(compound)
     stock_vol = merged.groupby("file_name")["RET"].apply(volatility)
+    illiq = merged.groupby("file_name")["daily_illiq"].apply(amihud)
 
     manifest["StockRet"] = manifest["file_name"].map(stock_rets)
     manifest["MarketRet"] = manifest["file_name"].map(market_rets)
     manifest["Volatility"] = manifest["file_name"].map(stock_vol)
+    manifest["amihud_illiq"] = manifest["file_name"].map(illiq)
 
     return manifest
 
@@ -212,7 +261,11 @@ class CRSPEngine:
 
     def get_data(self, root_path: Path, manifest_path: Path) -> pd.DataFrame:
         """Return fully-computed CRSP returns DataFrame (cached)."""
-        if self._cache is not None and self._cache_root == root_path:
+        if (
+            self._cache is not None
+            and self._cache_root == root_path
+            and "amihud_illiq" in self._cache.columns
+        ):
             return self._cache
 
         crsp_dir = root_path / "inputs" / "CRSP_DSF"
@@ -279,17 +332,31 @@ class CRSPEngine:
                 year_manifest["StockRet"] = np.nan
                 year_manifest["MarketRet"] = np.nan
                 year_manifest["Volatility"] = np.nan
+                year_manifest["amihud_illiq"] = np.nan
                 all_results.append(
-                    year_manifest[["file_name", "StockRet", "MarketRet", "Volatility"]]
+                    year_manifest[
+                        [
+                            "file_name",
+                            "StockRet",
+                            "MarketRet",
+                            "Volatility",
+                            "amihud_illiq",
+                        ]
+                    ]
                 )
                 continue
 
             year_manifest = _compute_returns_for_manifest(year_manifest, crsp)
             n_ret = year_manifest["StockRet"].notna().sum()
-            print(f"    CRSPEngine: {year} — StockRet {n_ret:,}/{len(year_manifest):,}")
+            n_illiq = year_manifest["amihud_illiq"].notna().sum()
+            print(
+                f"    CRSPEngine: {year} — StockRet {n_ret:,}/{len(year_manifest):,}, Amihud {n_illiq:,}/{len(year_manifest):,}"
+            )
 
             all_results.append(
-                year_manifest[["file_name", "StockRet", "MarketRet", "Volatility"]]
+                year_manifest[
+                    ["file_name", "StockRet", "MarketRet", "Volatility", "amihud_illiq"]
+                ]
             )
             del crsp
             gc.collect()
@@ -298,6 +365,9 @@ class CRSPEngine:
             result = pd.DataFrame(columns=["file_name"] + CRSP_RETURN_COLS)
         else:
             result = pd.concat(all_results, ignore_index=True)
+            for c in CRSP_RETURN_COLS:
+                if c not in result.columns:
+                    result[c] = float("nan")
 
         self._cache = result
         self._cache_root = root_path

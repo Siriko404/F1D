@@ -1,7 +1,17 @@
-"""Builder for Return on Assets (ROA) variable.
+"""Builder for InvestmentResidual variable (Biddle 2009 abnormal investment).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, ROA.
+Returns one column: file_name, InvestmentResidual.
+
+The residual is computed via the Biddle et al. (2009, JAE) specification:
+    Investment = (CapEx + R&D + Acquisitions - AssetSales) / lagged(AT)
+    First-stage OLS within each FF48-year cell (min 20 obs per cell):
+        Investment ~ TobinQ_lag + SalesGrowth_lag
+    InvestmentResidual = actual - predicted
+    > 0 = overinvestment; < 0 = underinvestment
+
+New Compustat columns required: xrdy, aqcy, sppey, saleq, sic.
+FF48 codes derived from SIC via inputs/FF1248/Siccodes48.zip.
 """
 
 from __future__ import annotations
@@ -16,13 +26,8 @@ from ._compustat_engine import get_engine
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-class ROABuilder(VariableBuilder):
-    """Build annualized ROA = (niq * 4) / atq from raw Compustat quarterly data.
-
-    niq is quarterly net income; multiplied by 4 to annualize before dividing
-    by total assets (atq), making the ratio comparable to papers that use annual
-    net income directly (e.g., Opler et al. 1999, Biddle et al. 2009).
-    """
+class InvestmentResidualBuilder(VariableBuilder):
+    """Build InvestmentResidual from raw Compustat via Biddle (2009) first-stage OLS."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -45,13 +50,17 @@ class ROABuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "ROA"]].copy()
-        stats = self.get_stats(data["ROA"], "ROA")
+        data = merged[["file_name", "InvestmentResidual"]].copy()
+        stats = self.get_stats(data["InvestmentResidual"], "InvestmentResidual")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "ROA", "source": "Compustat/niq,atq"},
+            metadata={
+                "column": "InvestmentResidual",
+                "source": "Biddle (2009): (capxy+xrdy+aqcy-sppey)/at_lag; "
+                "residual from FF48-year OLS: Investment ~ TobinQ_lag + SalesGrowth_lag",
+            },
         )
 
 
-__all__ = ["ROABuilder"]
+__all__ = ["InvestmentResidualBuilder"]

@@ -1,40 +1,57 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build H1 Cash Holdings Panel
+STAGE 3: Build H2 Investment Efficiency Panel
 ================================================================================
-ID: variables/build_h1_cash_holdings_panel
-Description: Build CALL-LEVEL panel for H1 Cash Holdings hypothesis test.
+ID: variables/build_h2_investment_panel
+Description: Build CALL-LEVEL panel for H2 Investment Efficiency hypothesis test.
 
-    This panel is structurally identical to build_manager_clarity_panel.py:
-    one row per earnings call (file_name). It is comparable with all other
-    Stage 3 panels (manager_clarity, ceo_clarity, ceo_tone).
+    Structurally identical to build_h1_cash_holdings_panel.py: one row per
+    earnings call (file_name). Comparable with all other Stage 3 panels.
 
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
-    Step 3: Add call year from start_date.
-    Step 4: Compute CashHoldings_lead per call:
-            - Average CashHoldings within (gvkey, call_year) -> firm-year mean
-            - Shift firm-year mean by -1 year within gvkey -> next-year cash
-            - Merge back onto all calls by (gvkey, call_year)
-            - Calls belonging to a firm's last year get NaN lead (dropped later)
+    Step 3: Add call year from start_date AND attach fyearq from Compustat.
+    Step 4: Compute InvestmentResidual_lead per call:
+            - Take InvestmentResidual from the LAST call per (gvkey, fyearq)
+              (end-of-fiscal-year proxy; audit fix C-5/M-9: use fiscal year,
+              not calendar year, to identify the last call per firm-year).
+            - Shift firm-fyearq end-of-year value by -1 within gvkey -> next
+              fiscal year residual.
+            - CRITICAL: validate that next row is exactly fyearq+1 (not +2).
+              Gap in fiscal years -> NaN.
+            - Merge lead values back onto all calls by (gvkey, fyearq).
+            - Calls in the last fiscal year per firm, or fiscal year gaps, get
+              NaN lead.
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
 
+Hypothesis:
+    H2a: higher speech uncertainty -> lower investment efficiency (beta1 < 0)
+    H2b: leverage attenuates the uncertainty-investment link (beta3 > 0)
+
+DV: InvestmentResidual_lead  (Biddle 2009 abnormal investment, fiscal year t+1)
+    > 0 = overinvestment, < 0 = underinvestment
+
+Audit fixes applied:
+    C-5/M-9: Lead variable now uses fyearq (fiscal year) for grouping and
+             consecutive-year validation, not calendar year from start_date.
+             This correctly handles ~30% of firms with non-December fiscal
+             year-ends. fyearq is brought into the panel via an explicit
+             Compustat join using the same merge_asof that matched all other
+             Compustat variables to calls.
+
 Inputs (all raw -- no reuse of prior panels):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
     - inputs/comp_na_daily_all/comp_na_daily_all.parquet  (Compustat)
-    - inputs/CRSP_DSF/CRSP_DSF_{year}_Q{q}.parquet        (CRSP daily)
-    - inputs/tr_ibes/tr_ibes.parquet                       (IBES)
-    - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet   (CCM linktable)
 
 Outputs:
-    - outputs/variables/h1_cash_holdings/{timestamp}/h1_cash_holdings_panel.parquet
-    - outputs/variables/h1_cash_holdings/{timestamp}/summary_stats.csv
-    - outputs/variables/h1_cash_holdings/{timestamp}/report_step3_h1.md
+    - outputs/variables/h2_investment/{timestamp}/h2_investment_panel.parquet
+    - outputs/variables/h2_investment/{timestamp}/summary_stats.csv
+    - outputs/variables/h2_investment/{timestamp}/report_step3_h2.md
 
 Author: Thesis Author
 Date: 2026-02-20
@@ -54,7 +71,6 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
-from f1d.shared.variables._compustat_engine import get_engine  # B6 fix: fyearq attach
 from f1d.shared.variables import (
     # Linguistic uncertainty
     ManagerQAUncertaintyBuilder,
@@ -63,30 +79,29 @@ from f1d.shared.variables import (
     CEOPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
-    # Weak modal (H1 primary regressors)
+    # Weak modal (H2 extended uncertainty measures)
     ManagerQAWeakModalBuilder,
     CEOQAWeakModalBuilder,
     ManagerPresWeakModalBuilder,
     CEOPresWeakModalBuilder,
     # Financial controls (Compustat engine)
-    CashHoldingsBuilder,
+    InvestmentResidualBuilder,
     LevBuilder,
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
-    CapexIntensityBuilder,
-    DividendPayerBuilder,
-    OCFVolatilityBuilder,
-    CurrentRatioBuilder,
+    CashFlowBuilder,
+    SalesGrowthBuilder,
     # Manifest
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
 )
+from f1d.shared.variables._compustat_engine import get_engine
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H1 Cash Holdings Panel (call-level)",
+        description="Stage 3: Build H2 Investment Efficiency Panel (call-level)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -106,6 +121,61 @@ def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
         index=ff12_code.index,
         dtype=object,
     )
+
+
+def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
+    """Attach fyearq (fiscal year) to the call-level panel via merge_asof.
+
+    C-5/M-9 fix: The lead variable must be constructed on fiscal years (fyearq),
+    not calendar years, to correctly handle ~30% of Compustat firms with
+    non-December fiscal year-ends. We use the same merge_asof backward match
+    that all other Compustat variables use (call start_date -> Compustat datadate).
+
+    fyearq is the Compustat fiscal year identifier already present in the engine
+    cache. We extract it from the cached comp DataFrame directly rather than
+    loading Compustat again.
+
+    Returns panel with 'fyearq' column added (NaN for unmatched calls).
+    """
+    if "fyearq" in panel.columns:
+        return panel  # already present
+
+    engine = get_engine()
+    comp = engine.get_data(root_path)
+
+    # Build a minimal fyearq lookup: gvkey, datadate, fyearq
+    fyearq_df = (
+        comp[["gvkey", "datadate", "fyearq"]]
+        .dropna(subset=["fyearq"])
+        .sort_values("datadate")
+        .copy()
+    )
+    # fyearq is float64 in comp (from pd.to_numeric); keep as-is for the merge
+
+    manifest_sorted = panel.sort_values("start_date").copy()
+
+    merged = pd.merge_asof(
+        manifest_sorted,
+        fyearq_df,
+        left_on="start_date",
+        right_on="datadate",
+        by="gvkey",
+        direction="backward",
+        suffixes=("", "_comp"),
+    )
+
+    # Drop the extra datadate column if it was created
+    if "datadate_comp" in merged.columns:
+        merged = merged.drop(columns=["datadate_comp"])
+    if "datadate" in merged.columns and "datadate" not in panel.columns:
+        merged = merged.drop(columns=["datadate"])
+
+    n_matched = merged["fyearq"].notna().sum()
+    print(
+        f"  fyearq attached: {n_matched:,}/{len(merged):,} calls matched "
+        f"({100 * n_matched / len(merged):.1f}%)"
+    )
+    return merged
 
 
 def build_call_level_panel(
@@ -160,16 +230,14 @@ def build_call_level_panel(
         "ceo_pres_weak_modal": CEOPresWeakModalBuilder(
             var_config.get("ceo_pres_weak_modal", {})
         ),
-        # Financial controls -- CompustatEngine is a singleton; all 9 share one load
-        "cash_holdings": CashHoldingsBuilder({}),
+        # H2 financial controls -- CompustatEngine is a singleton; all share one load
+        "investment_residual": InvestmentResidualBuilder({}),
         "lev": LevBuilder({}),
         "size": SizeBuilder({}),
         "tobins_q": TobinsQBuilder({}),
         "roa": ROABuilder({}),
-        "capex_intensity": CapexIntensityBuilder({}),
-        "dividend_payer": DividendPayerBuilder({}),
-        "ocf_volatility": OCFVolatilityBuilder({}),
-        "current_ratio": CurrentRatioBuilder({}),
+        "cash_flow": CashFlowBuilder({}),
+        "sales_growth": SalesGrowthBuilder({}),
     }
 
     # Build all variables
@@ -217,7 +285,8 @@ def build_call_level_panel(
         ]
         if conflicting:
             print(
-                f"  WARNING: {name} has overlapping columns {conflicting} -- dropping from builder data"
+                f"  WARNING: {name} has overlapping columns {conflicting} "
+                "-- dropping from builder data"
             )
             data = data.drop(columns=conflicting)
 
@@ -238,7 +307,7 @@ def build_call_level_panel(
             "Cannot assign industry sample. Check ManifestFieldsBuilder output."
         )
 
-    # Add call year from start_date (same as manager_clarity convention)
+    # Add call calendar year from start_date (used for reporting, not for lead)
     if "year" not in panel.columns and "start_date" in panel.columns:
         panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 
@@ -251,155 +320,106 @@ def build_call_level_panel(
     return panel
 
 
-def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """Attach fyearq (Compustat fiscal year) to the call-level panel via merge_asof.
+def create_lead_variable(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
+    """Create InvestmentResidual_lead at call level.
 
-    B6 fix: The lead variable must be constructed on fiscal years (fyearq),
-    not calendar years, to correctly handle ~30% of Compustat firms with
-    non-December fiscal year-ends. Identical pattern to build_h2_investment_panel.
+    C-5/M-9 fix: Uses fyearq (fiscal year from Compustat) rather than calendar
+    year (start_date.dt.year) for grouping calls into firm-years and for the
+    consecutive-year gap check. This correctly handles firms with non-December
+    fiscal year-ends (~30% of Compustat firms).
 
-    Returns panel with 'fyearq' column added (NaN for unmatched calls).
-    """
-    if "fyearq" in panel.columns:
-        return panel  # already present
-
-    engine = get_engine()
-    comp = engine.get_data(root_path)
-
-    # Build a minimal fyearq lookup: gvkey, datadate, fyearq
-    fyearq_df = (
-        comp[["gvkey", "datadate", "fyearq"]]
-        .dropna(subset=["fyearq"])
-        .sort_values("datadate")
-        .copy()
-    )
-
-    manifest_sorted = panel.sort_values("start_date").copy()
-
-    merged = pd.merge_asof(
-        manifest_sorted,
-        fyearq_df,
-        left_on="start_date",
-        right_on="datadate",
-        by="gvkey",
-        direction="backward",
-        suffixes=("", "_comp"),
-    )
-
-    # Drop the extra datadate column if it was created
-    if "datadate_comp" in merged.columns:
-        merged = merged.drop(columns=["datadate_comp"])
-    if "datadate" in merged.columns and "datadate" not in panel.columns:
-        merged = merged.drop(columns=["datadate"])
-
-    n_matched = merged["fyearq"].notna().sum()
-    print(
-        f"  fyearq attached: {n_matched:,}/{len(merged):,} calls matched "
-        f"({100 * n_matched / len(merged):.1f}%)"
-    )
-    return merged
-
-
-def create_lead_variable(
-    panel: pd.DataFrame, root_path: Optional[Path] = None
-) -> pd.DataFrame:
-    """Create CashHoldings_lead at call level.
-
-    B6 fix: Uses fyearq (Compustat fiscal year) instead of calendar year to
-    correctly handle ~30% of firms with non-December fiscal year-ends.
-    Previously used start_date.dt.year (calendar year), which mismatches
-    Compustat controls for non-December fiscal year firms.
-
-    The lead is the firm's END-OF-FISCAL-YEAR cash holdings in fiscal year t+1.
-    'End of fiscal year' = the CashHoldings value from the most recent prior
-    Compustat filing matched to the LAST call of a given firm-fiscal-year.
+    The lead is the firm's END-OF-FISCAL-YEAR investment residual in fiscal
+    year t+1. 'End of fiscal year' = the InvestmentResidual matched to the
+    call with the LATEST start_date within each (gvkey, fyearq) group.
 
     Construction:
-    1. Attach fyearq via merge_asof (call start_date → Compustat datadate).
-    2. For each (gvkey, fyearq_int), take CashHoldings from the call with the
-       LATEST start_date within that fiscal year (proxy for Q4/year-end filing).
-    3. Sort by gvkey, fyearq_int; shift -1 within gvkey -> next-fiscal-year cash.
-    4. CRITICAL: validate that next row is exactly fyearq+1 (not +2 due to gaps);
-       set lead to NaN if fiscal years are not consecutive.
-    5. Merge lead values back onto all calls by (gvkey, fyearq_int).
-    6. Calls in the last fiscal year per firm, or fiscal year gaps, get NaN lead.
+    1. Attach fyearq to panel via merge_asof (same backward match as all
+       other Compustat variables).
+    2. For each (gvkey, fyearq), take InvestmentResidual from the call with
+       the LATEST start_date (proxy for the Q4/year-end filing).
+    3. Sort by gvkey, fyearq; shift -1 within gvkey -> next-fyearq residual.
+    4. CRITICAL: validate that next row is exactly fyearq+1 (not fyearq+2 due
+       to gaps). Gap in fiscal years -> NaN lead.
+    5. Merge lead back onto all calls by (gvkey, fyearq).
+    6. Calls in the last fiscal year per firm, or years with gaps, get NaN lead.
 
     All call-level rows are preserved -- Stage 4 drops NaN lead rows itself.
     """
     print("\n" + "=" * 60)
-    print("Creating CashHoldings_lead (call-level, fiscal-year proxy, B6 fix)")
+    print("Creating InvestmentResidual_lead (call-level, fiscal-year proxy)")
     print("=" * 60)
 
-    if "CashHoldings" not in panel.columns:
+    if "InvestmentResidual" not in panel.columns:
         raise ValueError(
-            "'CashHoldings' column missing -- cannot create lead variable."
+            "'InvestmentResidual' column missing -- cannot create lead variable."
         )
     if "start_date" not in panel.columns:
         raise ValueError(
-            "'start_date' column missing -- cannot determine latest call per fiscal year."
+            "'start_date' column missing -- cannot determine latest call per year."
         )
 
-    # Step 1: Attach fyearq to panel (B6 fix)
-    if root_path is not None:
-        panel = attach_fyearq(panel, root_path)
-    elif "fyearq" not in panel.columns:
-        raise ValueError(
-            "'fyearq' missing and root_path not provided. Cannot attach fiscal year."
-        )
+    # Step 1: Attach fyearq to panel (C-5/M-9 fix)
+    panel = attach_fyearq(panel, root_path)
 
-    if panel["fyearq"].isna().all():
+    if "fyearq" not in panel.columns or panel["fyearq"].isna().all():
         raise ValueError(
             "'fyearq' could not be attached to panel. "
             "Check CompustatEngine.get_data() returned fyearq."
         )
 
-    # Convert fyearq to integer for clean arithmetic
+    # Convert fyearq to integer where possible for clean arithmetic
     panel["fyearq_int"] = pd.to_numeric(panel["fyearq"], errors="coerce")
     n_missing_fyearq = panel["fyearq_int"].isna().sum()
     if n_missing_fyearq > 0:
         print(
             f"  WARNING: {n_missing_fyearq:,} calls have missing fyearq "
-            f"-- these calls will get NaN lead"
+            f"-- these calls cannot be assigned to a fiscal year group "
+            f"and will get NaN lead"
         )
 
     # Step 2: For each (gvkey, fyearq_int), find call with latest start_date
     panel_dt = panel.copy()
     panel_dt["start_date_dt"] = pd.to_datetime(panel_dt["start_date"], errors="coerce")
 
-    # Drop calls with missing fyearq for the groupby
+    # Drop calls with missing fyearq for the groupby (they can't be grouped)
     valid_mask = panel_dt["fyearq_int"].notna()
     panel_valid = panel_dt[valid_mask].copy()
 
     latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()
     firm_year_eoy = panel_valid.loc[
-        latest_idx, ["gvkey", "fyearq_int", "CashHoldings"]
+        latest_idx, ["gvkey", "fyearq_int", "InvestmentResidual"]
     ].copy()
     firm_year_eoy = firm_year_eoy.rename(
-        columns={"fyearq_int": "fyearq_grp", "CashHoldings": "CashHoldings_eoy"}
+        columns={
+            "fyearq_int": "fyearq_grp",
+            "InvestmentResidual": "InvestmentResidual_eoy",
+        }
     )
 
     print(f"  Unique firm-fiscal-years: {len(firm_year_eoy):,}")
 
-    # Step 3: sort and shift to get next-fiscal-year end-of-year cash
+    # Step 3: sort and shift to get next-fiscal-year end-of-year residual
     firm_year_eoy = firm_year_eoy.sort_values(["gvkey", "fyearq_grp"]).reset_index(
         drop=True
     )
     firm_year_eoy["fyearq_lead"] = firm_year_eoy.groupby("gvkey")["fyearq_grp"].shift(
         -1
     )
-    firm_year_eoy["CashHoldings_lead_raw"] = firm_year_eoy.groupby("gvkey")[
-        "CashHoldings_eoy"
+    firm_year_eoy["InvestmentResidual_lead_raw"] = firm_year_eoy.groupby("gvkey")[
+        "InvestmentResidual_eoy"
     ].shift(-1)
 
     # Step 4: validate fiscal year continuity -- only keep lead if fyearq+1
     consecutive = firm_year_eoy["fyearq_lead"] == (firm_year_eoy["fyearq_grp"] + 1)
-    firm_year_eoy["CashHoldings_lead"] = np.where(
-        consecutive, firm_year_eoy["CashHoldings_lead_raw"], np.nan
+    firm_year_eoy["InvestmentResidual_lead"] = np.where(
+        consecutive, firm_year_eoy["InvestmentResidual_lead_raw"], np.nan
     )
 
-    n_last_year = firm_year_eoy["CashHoldings_lead_raw"].isna().sum()
-    n_gap_year = ((~consecutive) & firm_year_eoy["CashHoldings_lead_raw"].notna()).sum()
-    n_valid_lead = firm_year_eoy["CashHoldings_lead"].notna().sum()
+    n_last_year = firm_year_eoy["InvestmentResidual_lead_raw"].isna().sum()
+    n_gap_year = (
+        (~consecutive) & firm_year_eoy["InvestmentResidual_lead_raw"].notna()
+    ).sum()
+    n_valid_lead = firm_year_eoy["InvestmentResidual_lead"].notna().sum()
     print(
         f"  Firm-fiscal-years with no next year (last fiscal year per firm): "
         f"{n_last_year:,}"
@@ -407,18 +427,21 @@ def create_lead_variable(
     print(f"  Firm-fiscal-years with fiscal year gap (lead nulled): {n_gap_year:,}")
     print(f"  Firm-fiscal-years with valid consecutive lead: {n_valid_lead:,}")
 
-    # Sanity check: CashHoldings_lead must be in [0, 1.5] (cash/assets ratio)
-    lead_vals = firm_year_eoy["CashHoldings_lead"].dropna()
+    # Sanity check: residuals should be centered near 0
+    lead_vals = firm_year_eoy["InvestmentResidual_lead"].dropna()
     if len(lead_vals) > 0:
-        if (lead_vals < 0).any() or (lead_vals > 1.5).any():
-            n_bad = ((lead_vals < 0) | (lead_vals > 1.5)).sum()
+        n_extreme = (lead_vals.abs() > 1).sum()
+        if n_extreme > 0:
+            pct_extreme = 100 * n_extreme / len(lead_vals)
             print(
-                f"  WARNING: {n_bad} CashHoldings_lead values outside [0, 1.5] "
-                f"-- check winsorization"
+                f"  INFO: {n_extreme} InvestmentResidual_lead values with |residual|>1 "
+                f"({pct_extreme:.1f}%) -- large values expected in overinvestment tail"
             )
 
     # Step 5: merge lead back to call level on (gvkey, fyearq_int)
-    lead_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "CashHoldings_lead"]].copy()
+    lead_lookup = firm_year_eoy[
+        ["gvkey", "fyearq_grp", "InvestmentResidual_lead"]
+    ].copy()
     lead_lookup = lead_lookup.rename(columns={"fyearq_grp": "fyearq_int"})
 
     before_len = len(panel)
@@ -430,12 +453,14 @@ def create_lead_variable(
             "Duplicate (gvkey, fyearq_int) in firm-year lead lookup."
         )
 
-    n_calls_no_lead = panel["CashHoldings_lead"].isna().sum()
+    n_calls_no_lead = panel["InvestmentResidual_lead"].isna().sum()
     print(f"  Call-level rows: {len(panel):,}")
     print(
-        f"  Calls without lead (last-fiscal-year + gaps + missing fyearq): {n_calls_no_lead:,}"
+        f"  Calls without lead (last-year + gaps + missing fyearq): {n_calls_no_lead:,}"
     )
-    print(f"  Calls with valid lead: {panel['CashHoldings_lead'].notna().sum():,}")
+    print(
+        f"  Calls with valid lead: {panel['InvestmentResidual_lead'].notna().sum():,}"
+    )
 
     return panel
 
@@ -446,7 +471,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_h1_cash_holdings_panel",
+        "step_id": "build_h2_investment_panel",
         "timestamp": timestamp,
         "variable_stats": [],
         "timing": {},
@@ -455,7 +480,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Setup paths
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "h1_cash_holdings" / timestamp
+    out_dir = root / "outputs" / "variables" / "h2_investment" / timestamp
 
     # Load configs
     config = get_config(root / "config" / "project.yaml")
@@ -469,7 +494,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H1 Cash Holdings Panel (call-level)")
+    print("STAGE 3: Build H2 Investment Efficiency Panel (call-level)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -479,8 +504,8 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Step 1-2: Build call-level panel
     panel = build_call_level_panel(root, years, var_config, stats)
 
-    # Step 3: Create CashHoldings_lead at call level (B6 fix: use fyearq)
-    panel = create_lead_variable(panel, root_path=root)
+    # Step 3: Create InvestmentResidual_lead using fiscal year (C-5/M-9 fix)
+    panel = create_lead_variable(panel, root)
 
     # Step 4: Assign sample
     if "ff12_code" not in panel.columns:
@@ -490,7 +515,11 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print("\n  Sample distribution (all calls, including last-year):")
     for sample in ["Main", "Finance", "Utility"]:
         n = (panel["sample"] == sample).sum()
-        n_lead = panel.loc[panel["sample"] == sample, "CashHoldings_lead"].notna().sum()
+        n_lead = (
+            panel.loc[panel["sample"] == sample, "InvestmentResidual_lead"]
+            .notna()
+            .sum()
+        )
         print(f"    {sample}: {n:,} calls total, {n_lead:,} with valid lead")
 
     # Step 5: Save outputs
@@ -500,10 +529,10 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    panel_path = out_dir / "h1_cash_holdings_panel.parquet"
+    panel_path = out_dir / "h2_investment_panel.parquet"
     panel.to_parquet(panel_path, index=False)
     print(
-        f"  Saved: h1_cash_holdings_panel.parquet "
+        f"  Saved: h2_investment_panel.parquet "
         f"({len(panel):,} rows, {len(panel.columns)} columns)"
     )
 
@@ -516,19 +545,26 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Report
     duration = (datetime.now() - start_time).total_seconds()
     report_lines = [
-        "# Stage 3: H1 Cash Holdings Panel Build Report",
+        "# Stage 3: H2 Investment Efficiency Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
         f"**Unit of observation:** earnings call (file_name)",
         "",
+        "## Audit Fixes Applied",
+        "",
+        "- **C-5/M-9**: Lead variable uses fyearq (fiscal year) for grouping and",
+        "  consecutive-year validation, not calendar year. Correct for ~30% of",
+        "  firms with non-December fiscal year-ends.",
+        "",
         "## Panel Summary (call-level)",
         "",
         f"- **Total call observations:** {len(panel):,}",
         f"- **Unique firms:** {panel['gvkey'].nunique():,}",
-        f"- **Year range:** {int(panel['year'].min())}-{int(panel['year'].max())}",
+        f"- **Year range (calendar):** {int(panel['year'].min())}-{int(panel['year'].max())}",
         f"- **Total columns:** {len(panel.columns)}",
-        f"- **Calls with valid CashHoldings_lead:** {panel['CashHoldings_lead'].notna().sum():,}",
+        f"- **Calls with valid InvestmentResidual_lead:** "
+        f"{panel['InvestmentResidual_lead'].notna().sum():,}",
         "",
         "### Sample Distribution",
         "",
@@ -537,7 +573,11 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     ]
     for sample in ["Main", "Finance", "Utility"]:
         n = (panel["sample"] == sample).sum()
-        n_lead = panel.loc[panel["sample"] == sample, "CashHoldings_lead"].notna().sum()
+        n_lead = (
+            panel.loc[panel["sample"] == sample, "InvestmentResidual_lead"]
+            .notna()
+            .sum()
+        )
         pct = 100.0 * n_lead / n if n > 0 else 0
         report_lines.append(f"| {sample} | {n:,} | {n_lead:,} | {pct:.1f}% |")
 
@@ -549,16 +589,14 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         "|----------|--------------|------|-----|",
     ]
     for col in [
-        "CashHoldings",
-        "CashHoldings_lead",
+        "InvestmentResidual",
+        "InvestmentResidual_lead",
         "Lev",
         "Size",
         "TobinsQ",
         "ROA",
-        "CapexAt",
-        "DividendPayer",
-        "OCF_Volatility",
-        "CurrentRatio",
+        "CashFlow",
+        "SalesGrowth",
         "Manager_QA_Uncertainty_pct",
         "CEO_QA_Uncertainty_pct",
         "Manager_QA_Weak_Modal_pct",
@@ -571,16 +609,16 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
             report_lines.append(f"| {col} | {n_valid:,} | {mean:.4f} | {std:.4f} |")
 
     report_lines.append("")
-    report_path = out_dir / "report_step3_h1.md"
+    report_path = out_dir / "report_step3_h2.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
-    print(f"  Saved: report_step3_h1.md")
+    print(f"  Saved: report_step3_h2.md")
 
     # Final summary
     stats["timing"]["duration_seconds"] = round(duration, 2)
     stats["panel"]["n_rows"] = len(panel)
     stats["panel"]["n_columns"] = len(panel.columns)
-    stats["panel"]["n_with_lead"] = int(panel["CashHoldings_lead"].notna().sum())
+    stats["panel"]["n_with_lead"] = int(panel["InvestmentResidual_lead"].notna().sum())
 
     print("\n" + "=" * 80)
     print("COMPLETE")

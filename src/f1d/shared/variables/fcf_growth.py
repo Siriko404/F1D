@@ -1,9 +1,3 @@
-"""Builder for Return on Assets (ROA) variable.
-
-Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, ROA.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -15,15 +9,7 @@ from .base import VariableBuilder, VariableResult
 from ._compustat_engine import get_engine
 from f1d.shared.path_utils import get_latest_output_dir
 
-
-class ROABuilder(VariableBuilder):
-    """Build annualized ROA = (niq * 4) / atq from raw Compustat quarterly data.
-
-    niq is quarterly net income; multiplied by 4 to annualize before dividing
-    by total assets (atq), making the ratio comparable to papers that use annual
-    net income directly (e.g., Opler et al. 1999, Biddle et al. 2009).
-    """
-
+class FCFGrowthBuilder(VariableBuilder):
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
 
@@ -45,13 +31,12 @@ class ROABuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "ROA"]].copy()
-        stats = self.get_stats(data["ROA"], "ROA")
+        data = merged[["file_name", "fcf_growth"]].copy()
+        stats = self.get_stats(data["fcf_growth"], "fcf_growth")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "ROA", "source": "Compustat/niq,atq"},
+            metadata={"column": "fcf_growth", "source": "Compustat"},
         )
 
-
-__all__ = ["ROABuilder"]
+__all__ = ["FCFGrowthBuilder"]

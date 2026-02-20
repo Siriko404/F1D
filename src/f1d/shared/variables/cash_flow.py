@@ -1,7 +1,11 @@
-"""Builder for Return on Assets (ROA) variable.
+"""Builder for CashFlow variable (operating cash flow / total assets).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, ROA.
+Returns one column: file_name, CashFlow.
+
+Formula: CashFlow = oancfy / avg_assets
+    oancfy: operating cash flows (net cash from operating activities; annual, Q4-only via Biddle engine)
+    avg_assets: average total assets = (atq_t + atq_{t-1}) / 2; falls back to atq_t when prior year missing
 """
 
 from __future__ import annotations
@@ -16,13 +20,8 @@ from ._compustat_engine import get_engine
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-class ROABuilder(VariableBuilder):
-    """Build annualized ROA = (niq * 4) / atq from raw Compustat quarterly data.
-
-    niq is quarterly net income; multiplied by 4 to annualize before dividing
-    by total assets (atq), making the ratio comparable to papers that use annual
-    net income directly (e.g., Opler et al. 1999, Biddle et al. 2009).
-    """
+class CashFlowBuilder(VariableBuilder):
+    """Build CashFlow = oancfy / atq from raw Compustat quarterly data."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -45,13 +44,13 @@ class ROABuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "ROA"]].copy()
-        stats = self.get_stats(data["ROA"], "ROA")
+        data = merged[["file_name", "CashFlow"]].copy()
+        stats = self.get_stats(data["CashFlow"], "CashFlow")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "ROA", "source": "Compustat/niq,atq"},
+            metadata={"column": "CashFlow", "source": "Compustat/oancfy/atq"},
         )
 
 
-__all__ = ["ROABuilder"]
+__all__ = ["CashFlowBuilder"]

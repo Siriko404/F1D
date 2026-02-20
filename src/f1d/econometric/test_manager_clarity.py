@@ -61,7 +61,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # Try importing statsmodels — assign None so the name is always bound
 smf: Any = None
 try:
-    import statsmodels.formula.api as smf  # type: ignore[no-redef]
+    from linearmodels.panel import PanelOLS  # type: ignore[no-redef]
 
     STATSMODELS_AVAILABLE = True
 except ImportError:
@@ -291,7 +291,15 @@ def run_regression(
     start_time = datetime.now()
 
     try:
-        model = smf.ols(formula, data=df_reg).fit(cov_type="HC1")
+        model_obj = PanelOLS.from_formula(formula.replace("C(gvkey) + C(year)", "EntityEffects + TimeEffects"), data=df_reg.set_index(["gvkey", "year"]), drop_absorbed=True)
+        model = model_obj.fit(
+            # M-2 fix: cluster SEs at CEO level (not HC1) to account for
+            # within-CEO correlation across calls in the same regression.
+            # HC1 treats all observations as independent, understating SEs
+            # when the same CEO appears in many rows (Liang-Zeger problem).
+            cov_type="clustered",
+            cov_kwds={"groups": df_reg["ceo_id"]},
+        )
     except ValueError as e:
         print(f"ERROR: Regression failed: {e}", file=sys.stderr)
         return None, None, set()
@@ -299,8 +307,8 @@ def run_regression(
     duration = (datetime.now() - start_time).total_seconds()
 
     print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared: {model.rsquared:.4f}")
-    print(f"  Adj. R-squared: {model.rsquared_adj:.4f}")
+    print(f"  R-squared: {float(model.rsquared_within):.4f}")
+    print(f"  Adj. R-squared: {float(model.rsquared_inclusive):.4f}")
     print(f"  N observations: {int(model.nobs):,}")
 
     return model, df_reg, valid_managers
@@ -421,7 +429,7 @@ def save_outputs(
             "uncertainty on firm characteristics and year fixed effects. "
             "ClarityManager is computed as the negative of the manager fixed effect, "
             "standardized globally across all industry samples. "
-            "Robust standard errors (HC1) are used."
+            "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=control_vars,
@@ -658,8 +666,8 @@ def main(panel_path: Optional[str] = None) -> int:
             "diagnostics": {
                 "n_obs": int(model.nobs),
                 "n_managers": len(valid_managers),
-                "rsquared": model.rsquared,
-                "rsquared_adj": model.rsquared_adj,
+                "rsquared": float(model.rsquared_within),
+                "rsquared_adj": float(model.rsquared_inclusive),
             },
         }
 
@@ -667,7 +675,7 @@ def main(panel_path: Optional[str] = None) -> int:
         stats["regressions"][sample_name] = {
             "n_obs": int(model.nobs),
             "n_managers": len(valid_managers),
-            "rsquared": model.rsquared,
+            "rsquared": float(model.rsquared_within),
         }
 
     # Save outputs
