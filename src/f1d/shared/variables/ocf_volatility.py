@@ -1,4 +1,7 @@
-"""Builder for OCF_Volatility variable (rolling 4-year std of operating cash flow / assets).
+"""Builder for OCF_Volatility variable (rolling 5-year std of operating cash flow / assets).
+
+Uses 5-year rolling window with minimum 3 years required (matches v2 design).
+Previously used 4-year window with min 2 years.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
 Returns one column: file_name, OCF_Volatility.
@@ -17,7 +20,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class OCFVolatilityBuilder(VariableBuilder):
-    """Build OCF_Volatility = rolling 4-year std of (oancfy/atq) per gvkey."""
+    """Build OCF_Volatility = rolling 5-year std (min 3 yrs) of (oancfy/atq) per gvkey."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)

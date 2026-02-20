@@ -1,4 +1,8 @@
-"""Builder for TobinsQ variable ((market cap + total liabilities) / total assets).
+"""Builder for TobinsQ variable = (AT + MarketEquity - CEQ) / AT.
+
+MarketEquity = cshoq * prccq (shares outstanding * price per share).
+Formula matches v2 design and uses cshoq*prccq (9.5% missing) instead of
+mkvaltq (41% missing), significantly improving coverage.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
 Returns one column: file_name, TobinsQ.
@@ -17,7 +21,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class TobinsQBuilder(VariableBuilder):
-    """Build TobinsQ = (mkvaltq + ltq) / atq from raw Compustat quarterly data."""
+    """Build TobinsQ = (AT + cshoq*prccq - CEQ) / AT from raw Compustat quarterly data."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -45,7 +49,10 @@ class TobinsQBuilder(VariableBuilder):
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "TobinsQ", "source": "Compustat/(mkvaltq+ltq)/atq"},
+            metadata={
+                "column": "TobinsQ",
+                "source": "Compustat/(atq+cshoq*prccq-ceqq)/atq",
+            },
         )
 
 

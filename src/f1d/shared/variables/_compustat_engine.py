@@ -13,16 +13,24 @@ Bug fixes applied here (from red-team audit):
     MAJOR-3:    EPS lag uses datadate arithmetic (target = datadate - 365 days,
                 merge_asof backward within gvkey, accept only if within ±45 days)
                 instead of shift(4) which counts rows not calendar quarters.
-    MAJOR-6:    Size = ln(atq) only for atq > 0; zero/negative → NaN (no clamp).
+    MAJOR-6:    Size = ln(atq) only for atq > 0; zero/negative -> NaN (no clamp).
     MINOR-9:    Replace inf values with NaN after ratio computations before
                 winsorization (winsorization skips NaN but passes inf unchanged).
 
 H1 extension (2026-02-19):
     Added CashHoldings, TobinsQ, CapexAt, DividendPayer, OCF_Volatility.
-    Requires additional Compustat columns: cheq, capxq, dvpq, oancfy, mkvaltq.
-    OCF_Volatility = rolling 4-year std of (oancfy/atq) per gvkey, computed
-    after deduplication using annual data (oancfy is a flow variable — use the
-    most recent annual observation per gvkey-fyearq).
+
+H1 audit fixes (2026-02-19):
+    TobinsQ: was (mkvaltq+ltq)/atq -- mkvaltq has 41% missing rate.
+             Fixed to (atq + cshoq*prccq - ceqq)/atq which matches v2 design
+             and cshoq*prccq has only 9.5% missing rate.
+             Requires: cshoq, prccq, ceqq (already in REQUIRED_COMPUSTAT_COLS).
+             Remove: mkvaltq (no longer needed).
+    DividendPayer: was dvpq>0 (preferred dividends quarterly -- only 9.7% payers).
+                   Fixed to dvy>0 (annual common dividends -- ~32% payers).
+                   Requires: dvy instead of dvpq.
+    OCF_Volatility: was 4-year rolling min 2 periods.
+                    Fixed to 5-year rolling min 3 periods (matches v2 design).
 """
 
 from __future__ import annotations
@@ -65,10 +73,9 @@ REQUIRED_COMPUSTAT_COLS = [
     "xrdq",
     # H1 extension
     "cheq",
-    "capxy",  # annual CapEx — no quarterly capxq in this dataset
-    "dvpq",
+    "capxy",  # annual CapEx -- no quarterly capxq in this dataset
+    "dvy",  # annual common dividends (replaces dvpq which was preferred-only)
     "oancfy",
-    "mkvaltq",
     "fyearq",
 ]
 
@@ -131,11 +138,11 @@ def _compute_eps_growth_date_based(comp: pd.DataFrame) -> pd.Series:
 
 
 def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
-    """Compute OCF_Volatility = rolling 4-year std of (oancfy / atq) per gvkey.
+    """Compute OCF_Volatility = rolling 5-year std of (oancfy / atq) per gvkey.
 
-    oancfy is an annual flow variable — use the last observation per gvkey-fyearq
-    to get one data point per fiscal year. Then compute rolling std over 4 years
-    and align back to the full quarterly panel via gvkey + fyearq.
+    oancfy is an annual flow variable -- use the last observation per gvkey-fyearq
+    to get one data point per fiscal year. Then compute rolling std over 5 years
+    (min 3 years required) and align back to full quarterly panel via gvkey+fyearq.
 
     Returns a Series aligned to comp's index.
     """
@@ -157,10 +164,10 @@ def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
     )
     annual["ocf_ratio"] = annual["ocf_ratio"].replace([np.inf, -np.inf], np.nan)
 
-    # Rolling 4-year std per gvkey (min 2 years required)
+    # Rolling 5-year std per gvkey (min 3 years required, matches v2 design)
     annual = annual.sort_values(["gvkey", "fyearq"])
     annual["OCF_Volatility_annual"] = annual.groupby("gvkey")["ocf_ratio"].transform(
-        lambda x: x.rolling(4, min_periods=2).std()
+        lambda x: x.rolling(5, min_periods=3).std()
     )
 
     # Build lookup: gvkey + fyearq -> OCF_Volatility
@@ -195,9 +202,13 @@ def _compute_and_winsorize(comp: pd.DataFrame) -> pd.DataFrame:
 
     # --- H1 extension: 5 new variables ---
     comp["CashHoldings"] = comp["cheq"] / comp["atq"]
-    comp["TobinsQ"] = (comp["mkvaltq"] + comp["ltq"]) / comp["atq"]
+    # TobinsQ = (AT + MarketEquity - CEQ) / AT  (matches v2 formula; cshoq*prccq
+    # has 9.5% missing vs 41% for mkvaltq, so far better coverage)
+    mktcap = comp["cshoq"] * comp["prccq"]
+    comp["TobinsQ"] = (comp["atq"] + mktcap - comp["ceqq"]) / comp["atq"]
     comp["CapexAt"] = comp["capxy"] / comp["atq"]
-    comp["DividendPayer"] = (comp["dvpq"].fillna(0) > 0).astype(float)
+    # DividendPayer = dvy > 0 (annual COMMON dividends; dvpq was preferred-only)
+    comp["DividendPayer"] = (comp["dvy"].fillna(0) > 0).astype(float)
     comp["OCF_Volatility"] = _compute_ocf_volatility(comp)
 
     # --- MINOR-9: Replace inf with NaN after ratio computations ---

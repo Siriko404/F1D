@@ -1,4 +1,8 @@
-"""Builder for DividendPayer variable (1 if firm paid preferred dividends, else 0).
+"""Builder for DividendPayer variable (1 if firm paid common dividends, else 0).
+
+Uses dvy (annual common dividends) > 0, which covers ~32% of firm-quarters.
+Previously used dvpq (preferred dividends quarterly) which only covered 9.7%
+and was incorrect for measuring dividend policy.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
 Returns one column: file_name, DividendPayer.
@@ -17,7 +21,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class DividendPayerBuilder(VariableBuilder):
-    """Build DividendPayer = (dvpq > 0).astype(float) from raw Compustat quarterly data."""
+    """Build DividendPayer = (dvy > 0).astype(float) from raw Compustat quarterly data."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -45,7 +49,7 @@ class DividendPayerBuilder(VariableBuilder):
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "DividendPayer", "source": "Compustat/dvpq>0"},
+            metadata={"column": "DividendPayer", "source": "Compustat/dvy>0"},
         )
 
 
