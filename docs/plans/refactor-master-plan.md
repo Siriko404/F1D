@@ -1,7 +1,7 @@
 # F1D Econometric Pipeline — Master Refactor Plan
 
 **Last updated:** 2026-02-19  
-**Status:** Phase A complete. B.1 complete. B.2–B.6 planned.
+**Status:** Phase A complete. B.1 complete. H1 Cash Holdings complete. B.2–B.6 planned.
 
 ---
 
@@ -422,6 +422,81 @@ Before marking any script pair done, verify all of the following:
 | SDC M&A data | `inputs/SDC/sdc-ma-merged.parquet` |
 | FF12 classification | `inputs/FF1248/Siccodes12.zip` |
 | FF48 classification | `inputs/FF1248/Siccodes48.zip` |
+
+---
+
+---
+
+## H1 — Cash Holdings Regression (v2 hypothesis)
+
+**Status:** COMPLETE (2026-02-19)
+
+**Hypothesis:**
+- H1a: beta1 > 0 — Higher speech uncertainty -> more cash hoarding (precautionary motive)
+- H1b: beta3 < 0 — Leverage attenuates uncertainty-cash relationship (debt discipline)
+
+**Model:** `CashHoldings_{t+1} = b0 + b1*Unc_c + b2*Lev_c + b3*(Unc_c x Lev_c) + g*Controls + Firm FE + Year FE + e`
+
+### Files created
+
+| File | Purpose |
+|------|---------|
+| `src/f1d/shared/variables/cash_holdings.py` | `CashHoldingsBuilder` -> `CashHoldings` (cheq/atq from Compustat) |
+| `src/f1d/shared/variables/tobins_q.py` | `TobinsQBuilder` -> `TobinsQ` (mkvaltq/atq) |
+| `src/f1d/shared/variables/capex_intensity.py` | `CapexIntensityBuilder` -> `CapexAt` (capxy/atq) |
+| `src/f1d/shared/variables/dividend_payer.py` | `DividendPayerBuilder` -> `DividendPayer` (binary, dvpq>0) |
+| `src/f1d/shared/variables/ocf_volatility.py` | `OCFVolatilityBuilder` -> `OCF_Volatility` (rolling 4yr std oancfy/atq) |
+| `src/f1d/shared/variables/manager_qa_weak_modal.py` | 6th uncertainty measure |
+| `src/f1d/shared/variables/ceo_qa_weak_modal.py` | 6th uncertainty measure |
+| `src/f1d/shared/variables/manager_pres_weak_modal.py` | 6th uncertainty measure |
+| `src/f1d/shared/variables/ceo_pres_weak_modal.py` | 6th uncertainty measure |
+| `src/f1d/variables/build_h1_cash_holdings_panel.py` | Stage 3: call-level -> firm-year, creates CashHoldings_lead |
+| `src/f1d/econometric/test_h1_cash_holdings.py` | Stage 4: 72 regressions (6 measures x 4 specs x 3 samples), LaTeX |
+
+### Engine extensions (purely additive to `_compustat_engine.py`)
+
+Added Compustat columns: `cheq`, `capxy`, `dvpq`, `oancfy`, `mkvaltq`, `fyearq`
+
+Added computed variables: `CashHoldings`, `TobinsQ`, `CapexAt`, `DividendPayer`, `OCF_Volatility`
+
+Bugs fixed in engine during this work:
+- `capxq` does NOT exist in `comp_na_daily_all.parquet` -> use `capxy` (annual CapEx)
+- `_compute_ocf_volatility()` forgot to include `datadate` in slice before sorting by it
+
+### Verified output
+
+**Stage 3** (26,496 firm-year obs after lead creation):
+
+| Sample | Firm-years |
+|--------|-----------|
+| Main | 20,669 |
+| Finance | 4,791 |
+| Utility | 1,036 |
+
+All 19 variable merges: zero row delta. Mean calls per firm-year: 3.90.
+
+**Stage 4** (72 regressions — 6 measures x 4 specs x 3 samples):
+
+| Sample | H1a (primary) | H1b (primary) |
+|--------|--------------|--------------|
+| Main | 1/6 significant | 0/6 significant |
+| Finance | 2/6 significant | 0/6 significant |
+| Utility | 2/6 significant | 2/6 significant |
+
+Notable results: Manager_QA_Uncertainty (Main primary): b1=0.0088, p1=0.030 (H1a YES).
+Utility sample shows partial H1b support for Manager_QA and Manager_QA_Weak_Modal (firm+year FE spec).
+
+### Design decisions
+
+- **Firm-year aggregation**: call-level linguistic variables averaged within gvkey-year before regression
+- **6 uncertainty measures**: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_QA_Weak_Modal_pct,
+  CEO_QA_Weak_Modal_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+  (Analyst_QA excluded as control only; negative_sentiment excluded as it is not an uncertainty measure)
+- **4 specs**: primary (Firm FE + Year FE, firm-clustered SE), pooled (no FE), year_only (Year FE only), double_cluster
+- **One-tailed tests**: H1a p1 = p2/2 if b1 > 0; H1b p1 = p2/2 if b3 < 0; else p1 = 1 - p2/2
+- **CashHoldings_lead**: shift(-1) within gvkey; last observation per firm dropped (2,479 obs)
+- **DividendPayer**: binary, excluded from winsorization in engine
+- **OCF_Volatility**: rolling 4-year std computed on annual panel (last obs per gvkey-fyearq), then joined back
 
 ---
 

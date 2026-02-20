@@ -17,6 +17,11 @@ Architecture:
         CurrentRatioBuilder   → CurrentRatio = actq / lctq
         RDIntensityBuilder    → RD_Intensity = xrdq / atq
         EPSGrowthBuilder      → EPS_Growth (date-based YoY, robust to gaps)
+        CashHoldingsBuilder   → CashHoldings = cheq / atq
+        TobinsQBuilder        → TobinsQ = (mkvaltq + ltq) / atq
+        CapexIntensityBuilder → CapexAt = capxq / atq
+        DividendPayerBuilder  → DividendPayer = (dvpq > 0).astype(float)
+        OCFVolatilityBuilder  → OCF_Volatility = rolling 4yr std of oancfy/atq
 
     Individual CRSP variable builders (one column each):
         StockReturnBuilder    → StockRet (compound return over call window)
@@ -38,7 +43,9 @@ Architecture:
         CEOQAPositiveBuilder, CEOQANegativeBuilder,
         CEOPresPositiveBuilder, CEOPresNegativeBuilder,
         NonCEOManagerQAPositiveBuilder, NonCEOManagerQANegativeBuilder,
-        AnalystQAPositiveBuilder, AnalystQANegativeBuilder
+        AnalystQAPositiveBuilder, AnalystQANegativeBuilder,
+        ManagerQAWeakModalBuilder, CEOQAWeakModalBuilder,
+        ManagerPresWeakModalBuilder, CEOPresWeakModalBuilder
 
 Usage:
     # Clarity pipeline
@@ -97,6 +104,12 @@ from .nonceo_manager_qa_negative import NonCEOManagerQANegativeBuilder
 from .analyst_qa_positive import AnalystQAPositiveBuilder
 from .analyst_qa_negative import AnalystQANegativeBuilder
 
+# Weak modal builders (H1 extension — Stage 2 outputs)
+from .manager_qa_weak_modal import ManagerQAWeakModalBuilder
+from .ceo_qa_weak_modal import CEOQAWeakModalBuilder
+from .manager_pres_weak_modal import ManagerPresWeakModalBuilder
+from .ceo_pres_weak_modal import CEOPresWeakModalBuilder
+
 # Compustat individual variable builders
 from .size import SizeBuilder
 from .bm import BMBuilder
@@ -105,6 +118,13 @@ from .roa import ROABuilder
 from .current_ratio import CurrentRatioBuilder
 from .rd_intensity import RDIntensityBuilder
 from .eps_growth import EPSGrowthBuilder
+
+# H1 Compustat variable builders (one column each)
+from .cash_holdings import CashHoldingsBuilder
+from .tobins_q import TobinsQBuilder
+from .capex_intensity import CapexIntensityBuilder
+from .dividend_payer import DividendPayerBuilder
+from .ocf_volatility import OCFVolatilityBuilder
 
 # CRSP individual variable builders
 from .stock_return import StockReturnBuilder
@@ -159,6 +179,17 @@ __all__ = [
     "CurrentRatioBuilder",
     "RDIntensityBuilder",
     "EPSGrowthBuilder",
+    # H1 Compustat variable builders (cash holdings regression)
+    "CashHoldingsBuilder",
+    "TobinsQBuilder",
+    "CapexIntensityBuilder",
+    "DividendPayerBuilder",
+    "OCFVolatilityBuilder",
+    # Weak modal builders (H1 — Stage 2 linguistic)
+    "ManagerQAWeakModalBuilder",
+    "CEOQAWeakModalBuilder",
+    "ManagerPresWeakModalBuilder",
+    "CEOPresWeakModalBuilder",
     # CRSP variable builders (one column each)
     "StockReturnBuilder",
     "MarketReturnBuilder",

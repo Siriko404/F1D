@@ -231,6 +231,79 @@ variables:
     description: "CCCL sales-weighted shift-intensity instrument (FF48 classification)"
 
   # ===========================================================================
+  # H1 — Cash Holdings Regression: Weak Modal linguistic variables (Stage 2)
+  # ===========================================================================
+
+  manager_qa_weak_modal:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_QA_Weak_Modal_pct"
+    description: "Manager Q&A weak modal verbs as % of total words"
+
+  ceo_qa_weak_modal:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_QA_Weak_Modal_pct"
+    description: "CEO Q&A weak modal verbs as % of total words"
+
+  manager_pres_weak_modal:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_Pres_Weak_Modal_pct"
+    description: "Manager Presentation weak modal verbs as % of total words"
+
+  ceo_pres_weak_modal:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_Pres_Weak_Modal_pct"
+    description: "CEO Presentation weak modal verbs as % of total words"
+
+  # ===========================================================================
+  # H1 — Cash Holdings Regression: Compustat-engine variables
+  # ===========================================================================
+  # All 5 are computed by the shared CompustatEngine (no separate source path —
+  # derived from inputs/comp_na_daily_all/comp_na_daily_all.parquet).
+
+  cash_holdings:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "CashHoldings"
+    formula: "cheq / atq"
+    description: "Cash and short-term investments as fraction of total assets (Compustat)"
+
+  tobins_q:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "TobinsQ"
+    formula: "(mkvaltq + ltq) / atq"
+    description: "Tobin's Q: (market cap + total liabilities) / total assets (Compustat)"
+
+  capex_intensity:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "CapexAt"
+    formula: "capxy / atq"
+    description: "Annual capital expenditures as fraction of total assets (Compustat; capxy — no quarterly capxq available)"
+
+  dividend_payer:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "DividendPayer"
+    formula: "(dvpq > 0).astype(float)"
+    description: "Binary: 1 if firm paid preferred dividends this quarter (Compustat)"
+
+  ocf_volatility:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "OCF_Volatility"
+    formula: "rolling 4-year std of (oancfy / atq) per gvkey"
+    description: "Operating cash flow volatility: rolling 4yr std of OCF/assets (Compustat)"
+
+  # ===========================================================================
   # Takeover Indicator (B.5 Takeover Hazards)
   # ===========================================================================
   # Source: inputs/SDC/sdc-ma-merged.parquet
