@@ -442,10 +442,10 @@ Before marking any script pair done, verify all of the following:
 | File | Purpose |
 |------|---------|
 | `src/f1d/shared/variables/cash_holdings.py` | `CashHoldingsBuilder` -> `CashHoldings` (cheq/atq from Compustat) |
-| `src/f1d/shared/variables/tobins_q.py` | `TobinsQBuilder` -> `TobinsQ` (mkvaltq/atq) |
+| `src/f1d/shared/variables/tobins_q.py` | `TobinsQBuilder` -> `TobinsQ` ((atq+cshoq*prccq-ceqq)/atq) |
 | `src/f1d/shared/variables/capex_intensity.py` | `CapexIntensityBuilder` -> `CapexAt` (capxy/atq) |
-| `src/f1d/shared/variables/dividend_payer.py` | `DividendPayerBuilder` -> `DividendPayer` (binary, dvpq>0) |
-| `src/f1d/shared/variables/ocf_volatility.py` | `OCFVolatilityBuilder` -> `OCF_Volatility` (rolling 4yr std oancfy/atq) |
+| `src/f1d/shared/variables/dividend_payer.py` | `DividendPayerBuilder` -> `DividendPayer` (binary, dvy>0) |
+| `src/f1d/shared/variables/ocf_volatility.py` | `OCFVolatilityBuilder` -> `OCF_Volatility` (rolling 5yr std, min 3, oancfy/atq) |
 | `src/f1d/shared/variables/manager_qa_weak_modal.py` | 6th uncertainty measure |
 | `src/f1d/shared/variables/ceo_qa_weak_modal.py` | 6th uncertainty measure |
 | `src/f1d/shared/variables/manager_pres_weak_modal.py` | 6th uncertainty measure |
@@ -455,13 +455,18 @@ Before marking any script pair done, verify all of the following:
 
 ### Engine extensions (purely additive to `_compustat_engine.py`)
 
-Added Compustat columns: `cheq`, `capxy`, `dvpq`, `oancfy`, `mkvaltq`, `fyearq`
+Added Compustat columns: `cheq`, `capxy`, `dvy`, `oancfy`, `cshoq`, `prccq`, `ceqq`, `fyearq`
 
 Added computed variables: `CashHoldings`, `TobinsQ`, `CapexAt`, `DividendPayer`, `OCF_Volatility`
 
-Bugs fixed in engine during this work:
+Bugs fixed during implementation and variable-formula audit:
 - `capxq` does NOT exist in `comp_na_daily_all.parquet` -> use `capxy` (annual CapEx)
 - `_compute_ocf_volatility()` forgot to include `datadate` in slice before sorting by it
+- **TobinsQ formula**: was `(mkvaltq+ltq)/atq` (`mkvaltq` has 41% missing rate);
+  fixed to `(atq+cshoq*prccq-ceqq)/atq` (only 0.9% missing, r=0.9999 correlation). Recovered +4,223 obs.
+- **DividendPayer**: was `dvpq>0` (preferred dividends, quarterly — wrong variable, only 9.7% payers);
+  fixed to `dvy>0` (annual common dividends, ~45% payers). `dvpq` removed from engine.
+- **OCF_Volatility window**: was 4-year rolling, min 2 obs; fixed to 5-year rolling, min 3 obs (matches v2 design)
 
 ### Verified output
 
@@ -496,7 +501,33 @@ Utility sample shows partial H1b support for Manager_QA and Manager_QA_Weak_Moda
 - **One-tailed tests**: H1a p1 = p2/2 if b1 > 0; H1b p1 = p2/2 if b3 < 0; else p1 = 1 - p2/2
 - **CashHoldings_lead**: shift(-1) within gvkey; last observation per firm dropped (2,479 obs)
 - **DividendPayer**: binary, excluded from winsorization in engine
-- **OCF_Volatility**: rolling 4-year std computed on annual panel (last obs per gvkey-fyearq), then joined back
+- **OCF_Volatility**: rolling 5-year std (min 3 obs) computed on annual panel (last obs per gvkey-fyearq), then joined back
+
+### Audit: N-count discrepancy investigation (CLOSED 2026-02-20)
+
+**Question:** Why does H1 have N≈19,583 (Main) while manager_clarity has N≈57,796?
+
+**Answer:** Different units of observation. The other refactored tests (manager_clarity, ceo_clarity, ceo_tone)
+operate at **call level** — one row per earnings call. H1 operates at **firm-year level** — one row per gvkey-fiscal_year.
+The N counts are not comparable; a gap of ~3x is expected given the mean of ~3.9 calls per firm-year.
+
+**Secondary question:** 9 gvkeys appear in the manifest but not the H1 panel. Why?
+
+- 5 of 9 are Finance or Utility firms (ff12=11 or ff12=8); they appear in the Finance/Utility sub-panels, not Main.
+  Actually: Finance/Utility firms ARE in the H1 panel (4,791 + 1,036 rows) but 5 gvkeys (013580, 023827, 024381,
+  030865, 033809) are completely absent — these firms had calls but no Compustat match, so CashHoldings is
+  always NaN -> the lead is always NaN -> all rows dropped by `dropna(CashHoldings_lead)`.
+- 4 Main-sector gvkeys (013712 ALERIS, 020967 PARAGON OFFSHORE, 061335 TALK AMERICA, 186106 MOTOROLA MOBILITY)
+  each appear in **only one call year** in the manifest. When `CashHoldings_lead = shift(-1)` is computed, a
+  firm with only one fiscal year gets NaN lead -> that single row is dropped -> the firm disappears entirely.
+  This is **correct behavior**, not a bug. You cannot construct a lead for the only year a firm appears.
+
+**Conclusion:** No bug. All discrepancies are explained by:
+1. Different unit of observation (call-level vs firm-year)
+2. No-Compustat-match firms: CashHoldings always NaN -> lead always NaN -> dropped
+3. Single-appearance firms: one fiscal year -> no lead possible -> dropped
+
+The N=19,583 (Main primary regression) is correct and defensible.
 
 ---
 
