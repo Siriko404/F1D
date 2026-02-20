@@ -72,6 +72,13 @@ variables:
     column: "Entire_All_Negative_pct"
     description: "Entire call negative sentiment percentage"
 
+  entire_all_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Entire_All_Uncertainty_pct"
+    description: "Entire call uncertainty percentage (all speakers)"
+
   ceo_qa_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
@@ -85,6 +92,95 @@ variables:
     file_pattern: "linguistic_variables_{year}.parquet"
     column: "CEO_Pres_Uncertainty_pct"
     description: "CEO-only presentation uncertainty percentage"
+
+  # ---------------------------------------------------------------------------
+  # Tone / Sentiment (Positive & Negative pct per speaker/context)
+  # Used by build_ceo_tone_panel.py to derive NetTone = Positive - Negative
+  # ---------------------------------------------------------------------------
+
+  manager_qa_positive:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_QA_Positive_pct"
+    description: "Manager Q&A positive sentiment percentage"
+
+  manager_qa_negative:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_QA_Negative_pct"
+    description: "Manager Q&A negative sentiment percentage"
+
+  manager_pres_positive:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_Pres_Positive_pct"
+    description: "Manager presentation positive sentiment percentage"
+
+  manager_pres_negative:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Manager_Pres_Negative_pct"
+    description: "Manager presentation negative sentiment percentage"
+
+  ceo_qa_positive:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_QA_Positive_pct"
+    description: "CEO-only Q&A positive sentiment percentage"
+
+  ceo_qa_negative:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_QA_Negative_pct"
+    description: "CEO-only Q&A negative sentiment percentage"
+
+  ceo_pres_positive:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_Pres_Positive_pct"
+    description: "CEO-only presentation positive sentiment percentage"
+
+  ceo_pres_negative:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "CEO_Pres_Negative_pct"
+    description: "CEO-only presentation negative sentiment percentage"
+
+  nonceo_manager_qa_positive:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "NonCEO_Manager_QA_Positive_pct"
+    description: "Non-CEO manager Q&A positive sentiment percentage"
+
+  nonceo_manager_qa_negative:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "NonCEO_Manager_QA_Negative_pct"
+    description: "Non-CEO manager Q&A negative sentiment percentage"
+
+  analyst_qa_positive:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Analyst_QA_Positive_pct"
+    description: "Analyst Q&A positive sentiment percentage"
+
+  analyst_qa_negative:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "Analyst_QA_Negative_pct"
+    description: "Analyst Q&A negative sentiment percentage"
 
   # ===========================================================================
   # STAGE 3: Financial Variables
@@ -119,6 +215,38 @@ variables:
     file_pattern: "firm_controls_{year}.parquet"
     column: "SurpDec"
     description: "Earnings surprise decile (-5 to +5)"
+
+  # ===========================================================================
+  # CCCL Instrument (B.4 Liquidity)
+  # ===========================================================================
+  # Source: inputs/CCCL_instrument/instrument_shift_intensity_2005_2022.parquet
+  # Firm-year level instrument for IV regression; merges on gvkey + year.
+
+  cccl_instrument:
+    stage: input
+    source: "inputs/CCCL_instrument"
+    file_name: "instrument_shift_intensity_2005_2022.parquet"
+    column: "shift_intensity_sale_ff48"
+    merge_key: "gvkey + year"
+    description: "CCCL sales-weighted shift-intensity instrument (FF48 classification)"
+
+  # ===========================================================================
+  # Takeover Indicator (B.5 Takeover Hazards)
+  # ===========================================================================
+  # Source: inputs/SDC/sdc-ma-merged.parquet
+  # Firm-level (gvkey key, not file_name). Linked via CUSIP6.
+
+  takeover_indicator:
+    stage: input
+    source: "inputs/SDC"
+    file_name: "sdc-ma-merged.parquet"
+    columns:
+      - Takeover
+      - Takeover_Type
+      - Takeover_Date
+      - Takeover_Attitude
+    merge_key: "gvkey via cusip6"
+    description: "Takeover event indicators from SDC M&A data (firm-level)"
 
 # =============================================================================
 # NOTE: Hypothesis test parameters (min_calls, sample FF12 codes, output paths)

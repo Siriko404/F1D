@@ -26,20 +26,43 @@ Architecture:
     IBES variable builder:
         EarningsSurpriseBuilder → SurpDec (earnings surprise decile -5..+5)
 
+    CCCL instrument builder (reads inputs/CCCL_instrument/):
+        CCCLInstrumentBuilder → shift_intensity_sale_ff48
+
     Textual variable builders (read Stage 2 outputs):
         ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder,
         AnalystQAUncertaintyBuilder, NegativeSentimentBuilder,
-        CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder
+        EntireAllUncertaintyBuilder, CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder,
+        ManagerQAPositiveBuilder, ManagerQANegativeBuilder,
+        ManagerPresPositiveBuilder, ManagerPresNegativeBuilder,
+        CEOQAPositiveBuilder, CEOQANegativeBuilder,
+        CEOPresPositiveBuilder, CEOPresNegativeBuilder,
+        NonCEOManagerQAPositiveBuilder, NonCEOManagerQANegativeBuilder,
+        AnalystQAPositiveBuilder, AnalystQANegativeBuilder
 
 Usage:
+    # Clarity pipeline
     from f1d.shared.variables import (
+        CEOQAUncertaintyBuilder,
+        CEOPresUncertaintyBuilder,
+        AnalystQAUncertaintyBuilder,
+        NegativeSentimentBuilder,
         EPSGrowthBuilder,
         StockReturnBuilder,
         MarketReturnBuilder,
-        VolatilityBuilder,
         EarningsSurpriseBuilder,
-        ManagerQAUncertaintyBuilder,
         ManifestFieldsBuilder,
+    )
+
+    # Tone pipeline (B.3)
+    from f1d.shared.variables import (
+        EntireAllUncertaintyBuilder,
+        ManagerQAPositiveBuilder, ManagerQANegativeBuilder,
+        ManagerPresPositiveBuilder, ManagerPresNegativeBuilder,
+        CEOQAPositiveBuilder, CEOQANegativeBuilder,
+        CEOPresPositiveBuilder, CEOPresNegativeBuilder,
+        NonCEOManagerQAPositiveBuilder, NonCEOManagerQANegativeBuilder,
+        AnalystQAPositiveBuilder, AnalystQANegativeBuilder,
     )
 """
 
@@ -56,8 +79,23 @@ from .manager_qa_uncertainty import ManagerQAUncertaintyBuilder
 from .manager_pres_uncertainty import ManagerPresUncertaintyBuilder
 from .analyst_qa_uncertainty import AnalystQAUncertaintyBuilder
 from .negative_sentiment import NegativeSentimentBuilder
+from .entire_all_uncertainty import EntireAllUncertaintyBuilder
 from .ceo_qa_uncertainty import CEOQAUncertaintyBuilder
 from .ceo_pres_uncertainty import CEOPresUncertaintyBuilder
+
+# Tone/sentiment builders (Positive/Negative pct per speaker/context — Stage 2)
+from .manager_qa_positive import ManagerQAPositiveBuilder
+from .manager_qa_negative import ManagerQANegativeBuilder
+from .manager_pres_positive import ManagerPresPositiveBuilder
+from .manager_pres_negative import ManagerPresNegativeBuilder
+from .ceo_qa_positive import CEOQAPositiveBuilder
+from .ceo_qa_negative import CEOQANegativeBuilder
+from .ceo_pres_positive import CEOPresPositiveBuilder
+from .ceo_pres_negative import CEOPresNegativeBuilder
+from .nonceo_manager_qa_positive import NonCEOManagerQAPositiveBuilder
+from .nonceo_manager_qa_negative import NonCEOManagerQANegativeBuilder
+from .analyst_qa_positive import AnalystQAPositiveBuilder
+from .analyst_qa_negative import AnalystQANegativeBuilder
 
 # Compustat individual variable builders
 from .size import SizeBuilder
@@ -79,6 +117,12 @@ from .earnings_surprise import EarningsSurpriseBuilder
 # Manifest fields (Stage 1)
 from .manifest_fields import ManifestFieldsBuilder
 
+# CCCL instrument builder (inputs/CCCL_instrument/)
+from .cccl_instrument import CCCLInstrumentBuilder
+
+# Takeover indicator builder (inputs/SDC/) — firm-level, not call-level
+from .takeover_indicator import TakeoverIndicatorBuilder
+
 __all__ = [
     # Base classes
     "VariableBuilder",
@@ -91,8 +135,22 @@ __all__ = [
     "ManagerPresUncertaintyBuilder",
     "AnalystQAUncertaintyBuilder",
     "NegativeSentimentBuilder",
+    "EntireAllUncertaintyBuilder",
     "CEOQAUncertaintyBuilder",
     "CEOPresUncertaintyBuilder",
+    # Tone/sentiment builders (Positive/Negative pct per speaker/context)
+    "ManagerQAPositiveBuilder",
+    "ManagerQANegativeBuilder",
+    "ManagerPresPositiveBuilder",
+    "ManagerPresNegativeBuilder",
+    "CEOQAPositiveBuilder",
+    "CEOQANegativeBuilder",
+    "CEOPresPositiveBuilder",
+    "CEOPresNegativeBuilder",
+    "NonCEOManagerQAPositiveBuilder",
+    "NonCEOManagerQANegativeBuilder",
+    "AnalystQAPositiveBuilder",
+    "AnalystQANegativeBuilder",
     # Compustat variable builders (one column each)
     "SizeBuilder",
     "BMBuilder",
@@ -109,4 +167,8 @@ __all__ = [
     "EarningsSurpriseBuilder",
     # Manifest fields (Stage 1)
     "ManifestFieldsBuilder",
+    # CCCL instrument builder (B.4 Liquidity)
+    "CCCLInstrumentBuilder",
+    # Takeover indicator builder (B.5 Takeover Hazards) — firm-level
+    "TakeoverIndicatorBuilder",
 ]

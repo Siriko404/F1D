@@ -95,11 +95,19 @@ def parse_arguments():
 
 
 def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    """Assign industry sample based on FF12 code."""
-    sample = pd.Series("Main", index=ff12_code.index)
-    sample[ff12_code == 11] = "Finance"
-    sample[ff12_code == 8] = "Utility"
-    return sample
+    """Assign industry sample based on FF12 code.
+
+    Uses np.select to avoid deprecated boolean-indexed Series assignment.
+    """
+    import numpy as np
+
+    conditions = [ff12_code == 11, ff12_code == 8]
+    choices = ["Finance", "Utility"]
+    return pd.Series(
+        np.select(conditions, choices, default="Main"),
+        index=ff12_code.index,
+        dtype=object,
+    )
 
 
 def build_panel(

@@ -70,12 +70,19 @@ counterpart.
 python -m f1d.variables.build_manager_clarity_panel
 python -m f1d.variables.build_ceo_clarity_panel
 python -m f1d.variables.build_ceo_clarity_extended_panel
+python -m f1d.variables.build_ceo_tone_panel
+python -m f1d.variables.build_liquidity_panel
+python -m f1d.variables.build_takeover_panel
 
 # Stage 4 — run hypothesis tests
 python -m f1d.econometric.test_manager_clarity          # ~1 min
 python -m f1d.econometric.test_ceo_clarity              # ~30 s
 python -m f1d.econometric.test_ceo_clarity_extended     # ~3 min
 python -m f1d.econometric.test_ceo_clarity_regime       # ~20 s
+python -m f1d.econometric.test_ceo_tone                 # ~3 min
+python -m f1d.econometric.test_liquidity                # ~2 min
+python -m f1d.econometric.test_takeover_hazards         # ~1 min
+python -m f1d.econometric.generate_summary_stats        # ~1 s (no Stage 3 needed)
 ```
 
 All outputs are written to timestamped subdirectories under `outputs/`.
@@ -85,8 +92,8 @@ All outputs are written to timestamped subdirectories under `outputs/`.
 
 ## Verified Results
 
-Last full pipeline run: **2026-02-19**. All 7 scripts passed end-to-end with zero errors,
-zero row-delta on every panel merge, and all 17 post-run checks passing.
+Last full pipeline run: **2026-02-19**. All scripts passed end-to-end with zero errors,
+zero row-delta on every panel merge, and all post-run checks passing.
 
 ### Manager Clarity (4.1) — `test_manager_clarity`
 
@@ -143,6 +150,70 @@ values across regimes conflates reference-level artifacts with real regime diffe
 Spearman rank correlations for CEOs appearing in multiple regimes: Pre/Crisis ρ = 0.664,
 Crisis/Post ρ = 0.735, Pre/Post ρ = 0.706 — confirming clarity is a stable trait.
 
+### CEO Tone (4.1.4) — `test_ceo_tone`
+
+Dependent variable: `Entire_All_Negative_pct` (net negative sentiment, all speakers).
+Three models: ToneAll (all-manager FE), ToneCEO (CEO FE), ToneRegime (CEO × regime FE).
+
+| Model | Sample | N Obs | N CEOs | R² |
+|-------|--------|------:|-------:|----:|
+| ToneAll | Main | 57,796 | 2,605 | 0.452 |
+| ToneAll | Finance | 13,409 | 577 | 0.511 |
+| ToneAll | Utility | 2,974 | 136 | 0.350 |
+| ToneCEO | Main | 42,488 | 2,031 | 0.277 |
+| ToneCEO | Finance | 8,309 | 384 | 0.354 |
+| ToneCEO | Utility | 1,732 | 90 | 0.109 |
+| ToneRegime | Main | 56,709 | 2,592 | 0.167 |
+| ToneRegime | Finance | 13,242 | 576 | 0.345 |
+| ToneRegime | Utility | 2,939 | 136 | 0.125 |
+
+### Liquidity Regressions (4.2) — `test_liquidity`
+
+Dependent variables: `Delta_Amihud` and `Delta_Corwin_Schultz` (changes in illiquidity).
+OLS and 2SLS (instrument: CCCL `shift_intensity_sale_ff48`). Sample: 2005–2011.
+First-stage KP F-statistics: 696–1,230 (strong instrument).
+
+| Phase | Model | DV | N Obs | R² | Clarity coef | p |
+|-------|-------|----|------:|---:|-------------:|--:|
+| OLS | Regime | Delta_Amihud | 54,978 | 0.001 | 0.012 | 0.156 |
+| OLS | Regime | Delta_Corwin_Schultz | 55,060 | 0.075 | 0.001 | 0.011 |
+| OLS | CEO | Delta_Amihud | 40,240 | 0.001 | 0.003 | 0.851 |
+| OLS | CEO | Delta_Corwin_Schultz | 40,286 | 0.073 | 0.001 | 0.006 |
+| 2SLS | Regime | Delta_Amihud | 50,422 | — | −0.862 | 0.525 |
+| 2SLS | Regime | Delta_Corwin_Schultz | 50,498 | — | −0.019 | 0.235 |
+| 2SLS | CEO | Delta_Amihud | 37,150 | — | 139.917 | 0.987 |
+| 2SLS | CEO | Delta_Corwin_Schultz | 37,189 | — | −0.127 | 0.963 |
+
+2SLS results are imprecise for Amihud (low annual frequency coverage); Corwin-Schultz
+coefficients are more stable. CCCL instrument coverage: 85.6% of OLS sample.
+
+### Takeover Hazards (4.3) — `test_takeover_hazards`
+
+Survival panel: firm-level (not call-level). Duration = years from first call to
+takeover announcement / end of sample (2002–2018). Six Cox PH models.
+
+| Model | Variant | Event type | N Firms | N Events | Concordance |
+|-------|---------|-----------|--------:|---------:|------------:|
+| Cox PH All | Regime | All bids | 1,575 | 500 | 0.601 |
+| Cox PH All | CEO | All bids | 1,354 | 439 | 0.611 |
+| Cox CS Uninvited | Regime | Hostile/unsolicited | 1,575 | 65 | 0.651 |
+| Cox CS Uninvited | CEO | Hostile/unsolicited | 1,354 | 59 | 0.644 |
+| Cox CS Friendly | Regime | Friendly | 1,575 | 409 | 0.631 |
+| Cox CS Friendly | CEO | Friendly | 1,354 | 358 | 0.635 |
+
+SDC linkage: manifest CUSIP (9-char) → SDC target CUSIP via first 6 chars.
+Cause-specific Cox PH used in place of Fine-Gray (not available in lifelines).
+
+### Summary Statistics (4.4) — `generate_summary_stats`
+
+Main sample: 88,205 call observations, 1,884 firms, 3,533 CEOs, 2002–2018.
+No Stage 3 panel builder — reads `ceo_clarity_extended_panel.parquet` directly.
+
+| Panel | Variables | N range |
+|-------|-----------|---------|
+| A — Linguistic | 6 (uncertainty + sentiment pct) | 60,435–84,567 |
+| B — Financial controls | 11 (Size, BM, Lev, ROA, …) | 67,965–87,994 |
+
 ---
 
 ## Output Layout
@@ -157,8 +228,17 @@ outputs/
 │   ├── ceo_clarity/{timestamp}/
 │   │   ├── ceo_clarity_panel.parquet           # 112,968 rows, 17 cols
 │   │   └── ...
-│   └── ceo_clarity_extended/{timestamp}/
-│       ├── ceo_clarity_extended_panel.parquet  # 112,968 rows, 26 cols
+│   ├── ceo_clarity_extended/{timestamp}/
+│   │   ├── ceo_clarity_extended_panel.parquet  # 112,968 rows, 26 cols
+│   │   └── ...
+│   ├── ceo_tone/{timestamp}/
+│   │   ├── ceo_tone_panel.parquet              # 112,968 rows
+│   │   └── ...
+│   ├── liquidity/{timestamp}/
+│   │   ├── liquidity_panel.parquet             # 112,968 rows, 32 cols
+│   │   └── ...
+│   └── takeover/{timestamp}/
+│       ├── takeover_panel.parquet              # 2,429 rows (firm-level), 29 cols
 │       └── ...
 └── econometric/
     ├── manager_clarity/{timestamp}/
@@ -172,10 +252,29 @@ outputs/
     ├── ceo_clarity_extended/{timestamp}/
     │   ├── ceo_clarity_extended_table.tex      # 4-column table
     │   └── regression_results_{model}.txt      # 4 files
-    └── ceo_clarity_regime/{timestamp}/
-        ├── clarity_scores.parquet              # 3,064 CEO-regime rows
-        ├── ceo_clarity_regime_table.tex        # 3-column table
-        └── regression_results_{regime}.txt     # 3 files
+    ├── ceo_clarity_regime/{timestamp}/
+    │   ├── clarity_scores.parquet              # 3,064 CEO-regime rows
+    │   ├── ceo_clarity_regime_table.tex        # 3-column table
+    │   └── regression_results_{regime}.txt     # 3 files
+    ├── ceo_tone/{timestamp}/
+    │   ├── model_diagnostics.csv               # 9 model×sample rows
+    │   ├── ceo_tone_table.tex
+    │   └── regression_results_{model}_{sample}.txt
+    ├── liquidity/{timestamp}/
+    │   ├── model_diagnostics.csv               # 10 phase×model×DV rows
+    │   ├── liquidity_table.tex
+    │   └── regression_results_{phase}_{model}_{dv}.txt
+    ├── takeover/{timestamp}/
+    │   ├── model_diagnostics.csv               # 6 model rows
+    │   ├── takeover_table.tex
+    │   └── regression_results_{model}_{variant}.txt
+    └── summary_stats/{timestamp}/
+        ├── descriptive_statistics.csv          # 17 variables
+        ├── correlation_matrix.csv              # 11×11
+        ├── panel_balance.csv                   # 17 years
+        ├── firm_year_summary.csv
+        ├── summary_table.tex
+        └── report_step4_4.md
 ```
 
 `clarity_scores.parquet` columns by output:
@@ -223,6 +322,8 @@ All live in `src/f1d/shared/variables/`. Each returns one column, merged by `fil
 | `ceo_pres_uncertainty.py` | `CEO_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
 | `analyst_qa_uncertainty.py` | `Analyst_QA_Uncertainty_pct` | Stage 2 linguistic vars |
 | `negative_sentiment.py` | `Entire_All_Negative_pct` | Stage 2 linguistic vars |
+| `cccl_instrument.py` | `shift_intensity_sale_ff48` | `inputs/CCCL_instrument/` (firm-year level; merge key `gvkey+year`) |
+| `takeover_indicator.py` | `Takeover`, `Takeover_Uninvited`, `Takeover_Friendly` | `inputs/SDC/sdc-ma-merged.parquet` (firm-level; merge key `gvkey`) |
 
 **CUSIP join note.** IBES uses 8-char alphanumeric CUSIPs (e.g. `'87482X10'`); CCM
 uses 9-char numeric CUSIPs (e.g. `'000032102'`). The join is `ibes[:8] == ccm[:8]`.
@@ -254,16 +355,18 @@ Full architecture documentation and bug history: `docs/plans/refactor-master-pla
 
 ---
 
-## Remaining Work (Phase B)
+## Phase B — Completion Status
+
+All six items are complete. The full pipeline (B.1–B.6) is verified end-to-end.
 
 | Item | Description | Status |
 |------|-------------|--------|
 | B.1 Extended Controls (4.1.2) | 4-model robustness table | **Done** |
 | B.2 Regime Analysis (4.1.3) | 3-regime split of CEO Clarity | **Done** |
-| B.3 CEO Tone (4.1.4) | New DV: net sentiment. Needs 3 new builders + new Stage 3 panel. | Planned |
-| B.4 Liquidity Regressions (4.2) | OLS + 2SLS with CCCL instrument. Requires `linearmodels`. | Planned |
-| B.5 Takeover Hazards (4.3) | Cox PH + Fine-Gray. Requires `lifelines`. SDC M&A data. | Planned |
-| B.6 Summary Statistics (4.4) | Publication-quality summary stats table. Runs last. | Planned |
+| B.3 CEO Tone (4.1.4) | New DV: net sentiment. 3 new builders + new Stage 3 panel. | **Done** |
+| B.4 Liquidity Regressions (4.2) | OLS + 2SLS with CCCL instrument. `linearmodels`. | **Done** |
+| B.5 Takeover Hazards (4.3) | Cox PH (cause-specific). `lifelines`. SDC M&A data. | **Done** |
+| B.6 Summary Statistics (4.4) | Publication-quality summary stats table + LaTeX. | **Done** |
 
 ---
 

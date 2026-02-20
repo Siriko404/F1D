@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build CEO Clarity Panel
+STAGE 3: Build CEO Tone Panel
 ================================================================================
-ID: variables/build_ceo_clarity_panel
-Description: Build complete panel for CEO Clarity hypothesis test by loading
-             all required variables using shared modules and merging into a
-             single panel.
+ID: variables/build_ceo_tone_panel
+Description: Build complete panel for CEO Tone hypothesis test (4.1.4) by
+             loading all required Positive/Negative pct variables using shared
+             modules, deriving NetTone columns, and merging into a single panel.
+
+NetTone derivation (after merge, not per-builder):
+    Manager_QA_NetTone        = Manager_QA_Positive_pct - Manager_QA_Negative_pct
+    Manager_Pres_NetTone      = Manager_Pres_Positive_pct - Manager_Pres_Negative_pct
+    CEO_QA_NetTone            = CEO_QA_Positive_pct - CEO_QA_Negative_pct
+    CEO_Pres_NetTone          = CEO_Pres_Positive_pct - CEO_Pres_Negative_pct
+    NonCEO_Manager_QA_NetTone = NonCEO_Manager_QA_Positive_pct - NonCEO_Manager_QA_Negative_pct
+    Analyst_QA_NetTone        = Analyst_QA_Positive_pct - Analyst_QA_Negative_pct
 
 Inputs (all raw):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
@@ -17,9 +25,9 @@ Inputs (all raw):
     - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet   (CCM linktable)
 
 Outputs:
-    - outputs/variables/ceo_clarity/{timestamp}/ceo_clarity_panel.parquet
-    - outputs/variables/ceo_clarity/{timestamp}/summary_stats.csv
-    - outputs/variables/ceo_clarity/{timestamp}/report_step3_ceo_clarity.md
+    - outputs/variables/ceo_tone/{timestamp}/ceo_tone_panel.parquet
+    - outputs/variables/ceo_tone/{timestamp}/summary_stats.csv
+    - outputs/variables/ceo_tone/{timestamp}/report_step3_ceo_tone.md
 
 Deterministic: true
 Dependencies:
@@ -37,16 +45,27 @@ import sys
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.variables import (
-    CEOQAUncertaintyBuilder,
-    CEOPresUncertaintyBuilder,
-    AnalystQAUncertaintyBuilder,
-    NegativeSentimentBuilder,
+    # 12 Positive/Negative pct builders (one column each)
+    ManagerQAPositiveBuilder,
+    ManagerQANegativeBuilder,
+    ManagerPresPositiveBuilder,
+    ManagerPresNegativeBuilder,
+    CEOQAPositiveBuilder,
+    CEOQANegativeBuilder,
+    CEOPresPositiveBuilder,
+    CEOPresNegativeBuilder,
+    NonCEOManagerQAPositiveBuilder,
+    NonCEOManagerQANegativeBuilder,
+    AnalystQAPositiveBuilder,
+    AnalystQANegativeBuilder,
+    # Financial/control variables (reused + new uncertainty control)
+    EntireAllUncertaintyBuilder,
     EPSGrowthBuilder,
     StockReturnBuilder,
     MarketReturnBuilder,
@@ -55,11 +74,45 @@ from f1d.shared.variables import (
     stats_list_to_dataframe,
 )
 
+# NetTone pairs: (result_column, positive_col, negative_col)
+NET_TONE_PAIRS = [
+    (
+        "Manager_QA_NetTone",
+        "Manager_QA_Positive_pct",
+        "Manager_QA_Negative_pct",
+    ),
+    (
+        "Manager_Pres_NetTone",
+        "Manager_Pres_Positive_pct",
+        "Manager_Pres_Negative_pct",
+    ),
+    (
+        "CEO_QA_NetTone",
+        "CEO_QA_Positive_pct",
+        "CEO_QA_Negative_pct",
+    ),
+    (
+        "CEO_Pres_NetTone",
+        "CEO_Pres_Positive_pct",
+        "CEO_Pres_Negative_pct",
+    ),
+    (
+        "NonCEO_Manager_QA_NetTone",
+        "NonCEO_Manager_QA_Positive_pct",
+        "NonCEO_Manager_QA_Negative_pct",
+    ),
+    (
+        "Analyst_QA_NetTone",
+        "Analyst_QA_Positive_pct",
+        "Analyst_QA_Negative_pct",
+    ),
+]
+
 
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build CEO Clarity Panel",
+        description="Stage 3: Build CEO Tone Panel",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -112,9 +165,8 @@ def build_panel(
 ) -> pd.DataFrame:
     """Build complete panel by loading and merging all variables.
 
-    CEO Clarity uses CEO_QA_Uncertainty_pct (dependent) and
-    CEO_Pres_Uncertainty_pct (control), unlike Manager Clarity which uses
-    the full management team equivalents.
+    Loads 12 Positive/Negative pct builders + financial controls, merges on
+    file_name, then derives 6 NetTone columns (Positive - Negative).
 
     Args:
         root_path: Project root path
@@ -123,7 +175,7 @@ def build_panel(
         stats: Stats dict to collect summary statistics
 
     Returns:
-        Merged DataFrame with all variables
+        Merged DataFrame with all variables including derived NetTone columns
     """
     print("\n" + "=" * 60)
     print("Loading variables")
@@ -132,22 +184,47 @@ def build_panel(
     all_results: Dict[str, Any] = {}
 
     # Initialize builders — one variable per builder.
-    # The CompustatEngine and CRSPEngine are module-level singletons that cache
-    # the raw data load, so calling EPSGrowthBuilder + StockReturnBuilder etc.
-    # does NOT re-load Compustat or CRSP for each variable.
+    # CompustatEngine and CRSPEngine are module-level singletons that cache
+    # the raw data load, so calling multiple CRSP/Compustat builders does NOT
+    # re-load the underlying data.
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
-            var_config.get("ceo_qa_uncertainty", {})
+        # --- 12 Positive/Negative pct builders ---
+        "manager_qa_positive": ManagerQAPositiveBuilder(
+            var_config.get("manager_qa_positive", {})
         ),
-        "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
-            var_config.get("ceo_pres_uncertainty", {})
+        "manager_qa_negative": ManagerQANegativeBuilder(
+            var_config.get("manager_qa_negative", {})
         ),
-        "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
-            var_config.get("analyst_qa_uncertainty", {})
+        "manager_pres_positive": ManagerPresPositiveBuilder(
+            var_config.get("manager_pres_positive", {})
         ),
-        "negative_sentiment": NegativeSentimentBuilder(
-            var_config.get("negative_sentiment", {})
+        "manager_pres_negative": ManagerPresNegativeBuilder(
+            var_config.get("manager_pres_negative", {})
+        ),
+        "ceo_qa_positive": CEOQAPositiveBuilder(var_config.get("ceo_qa_positive", {})),
+        "ceo_qa_negative": CEOQANegativeBuilder(var_config.get("ceo_qa_negative", {})),
+        "ceo_pres_positive": CEOPresPositiveBuilder(
+            var_config.get("ceo_pres_positive", {})
+        ),
+        "ceo_pres_negative": CEOPresNegativeBuilder(
+            var_config.get("ceo_pres_negative", {})
+        ),
+        "nonceo_manager_qa_positive": NonCEOManagerQAPositiveBuilder(
+            var_config.get("nonceo_manager_qa_positive", {})
+        ),
+        "nonceo_manager_qa_negative": NonCEOManagerQANegativeBuilder(
+            var_config.get("nonceo_manager_qa_negative", {})
+        ),
+        "analyst_qa_positive": AnalystQAPositiveBuilder(
+            var_config.get("analyst_qa_positive", {})
+        ),
+        "analyst_qa_negative": AnalystQANegativeBuilder(
+            var_config.get("analyst_qa_negative", {})
+        ),
+        # --- Uncertainty control (Entire_All_Uncertainty_pct) ---
+        "entire_all_uncertainty": EntireAllUncertaintyBuilder(
+            var_config.get("entire_all_uncertainty", {})
         ),
         "eps_growth": EPSGrowthBuilder({}),
         "stock_return": StockReturnBuilder({}),
@@ -168,7 +245,7 @@ def build_panel(
     manifest_result = all_results["manifest"]
     panel = manifest_result.data.copy()
 
-    # FIX-5: Assert manifest file_name uniqueness — fan-out here corrupts everything
+    # Assert manifest file_name uniqueness — fan-out here corrupts everything
     if panel["file_name"].duplicated().any():
         n_dups = panel["file_name"].duplicated().sum()
         raise ValueError(
@@ -188,7 +265,7 @@ def build_panel(
             print(f"  WARNING: {name} returned no usable columns — skipping merge")
             continue
 
-        # FIX-5: Assert builder output is unique on file_name — prevent silent row fan-out
+        # Assert builder output is unique on file_name — prevent silent row fan-out
         if data["file_name"].duplicated().any():
             n_dups = data["file_name"].duplicated().sum()
             raise ValueError(
@@ -196,7 +273,7 @@ def build_panel(
                 "Merge aborted to prevent fan-out."
             )
 
-        # FIX-1: Drop columns already in panel (except file_name) to prevent _x/_y conflicts
+        # Drop columns already in panel (except file_name) to prevent _x/_y conflicts
         conflicting = [
             c for c in data.columns if c in panel.columns and c != "file_name"
         ]
@@ -209,20 +286,37 @@ def build_panel(
         before_len = len(panel)
         panel = panel.merge(data, on="file_name", how="left")
         after_len = len(panel)
-        if after_len != before_len:
+        delta = after_len - before_len
+        if delta != 0:
             raise ValueError(
-                f"Merge of '{name}' changed row count {before_len} → {after_len}. "
+                f"Merge of '{name}' changed row count {before_len} → {after_len} "
+                f"(delta: {delta:+d}). "
                 "Duplicate file_name detected in builder output post-merge."
             )
-        print(f"  After {name} merge: {after_len:,} rows (delta: +0)")
+        print(f"  After {name} merge: {after_len:,} rows (delta: {delta:+d})")
 
-    # Add derived fields
-    if "ff12_code" in panel.columns:
-        panel["sample"] = assign_industry_sample(panel["ff12_code"])
-        print(f"\n  Sample distribution:")
-        for sample in ["Main", "Finance", "Utility"]:
-            n = (panel["sample"] == sample).sum()
-            print(f"    {sample}: {n:,} calls")
+    # Derive NetTone columns: Positive_pct - Negative_pct
+    print("\n  Deriving NetTone columns...")
+    for net_col, pos_col, neg_col in NET_TONE_PAIRS:
+        if pos_col in panel.columns and neg_col in panel.columns:
+            panel[net_col] = panel[pos_col] - panel[neg_col]
+            n_valid = panel[net_col].notna().sum()
+            print(f"    {net_col}: {n_valid:,} non-null values")
+        else:
+            missing = [c for c in [pos_col, neg_col] if c not in panel.columns]
+            print(f"  WARNING: Cannot derive {net_col} — missing columns: {missing}")
+
+    # Add industry sample label — ff12_code is required, hard-fail if missing
+    if "ff12_code" not in panel.columns:
+        raise ValueError(
+            "'ff12_code' column missing from panel after manifest merge. "
+            "Cannot assign industry samples. Check Stage 1 manifest output."
+        )
+    panel["sample"] = assign_industry_sample(panel["ff12_code"])
+    print(f"\n  Sample distribution:")
+    for sample in ["Main", "Finance", "Utility"]:
+        n = (panel["sample"] == sample).sum()
+        print(f"    {sample}: {n:,} calls")
 
     # Add year column if not present
     if "year" not in panel.columns and "start_date" in panel.columns:
@@ -257,10 +351,10 @@ def save_outputs(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Save panel
-    panel_path = out_dir / "ceo_clarity_panel.parquet"
+    panel_path = out_dir / "ceo_tone_panel.parquet"
     panel.to_parquet(panel_path, index=False)
     print(
-        f"  Saved: ceo_clarity_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
+        f"  Saved: ceo_tone_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
     )
 
     # Save summary stats
@@ -285,7 +379,7 @@ def generate_report(
         duration: Duration in seconds
     """
     report_lines = [
-        "# Stage 3: CEO Clarity Panel Build Report",
+        "# Stage 3: CEO Tone Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -308,6 +402,21 @@ def generate_report(
             pct = 100.0 * n / len(panel) if len(panel) > 0 else 0
             report_lines.append(f"| {sample} | {n:,} | {pct:.1f}% |")
         report_lines.append("")
+
+    # NetTone coverage — always show all expected columns; missing ones show 0%
+    report_lines.append("### NetTone Column Coverage")
+    report_lines.append("")
+    report_lines.append("| Column | N Non-null | % | Status |")
+    report_lines.append("|--------|-----------|---|--------|")
+    for net_col, _, _ in NET_TONE_PAIRS:
+        if net_col in panel.columns:
+            n = panel[net_col].notna().sum()
+            pct = 100.0 * n / len(panel) if len(panel) > 0 else 0
+            status = "OK"
+            report_lines.append(f"| {net_col} | {n:,} | {pct:.1f}% | {status} |")
+        else:
+            report_lines.append(f"| {net_col} | 0 | 0.0% | MISSING |")
+    report_lines.append("")
 
     # Unique entities
     report_lines.append("### Unique Entities")
@@ -339,11 +448,11 @@ def generate_report(
     report_lines.append("")
 
     # Write report
-    report_path = out_dir / "report_step3_ceo_clarity.md"
+    report_path = out_dir / "report_step3_ceo_tone.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: report_step3_ceo_clarity.md")
+    print(f"  Saved: report_step3_ceo_tone.md")
 
 
 def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> int:
@@ -352,7 +461,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_ceo_clarity_panel",
+        "step_id": "build_ceo_tone_panel",
         "timestamp": timestamp,
         "variable_stats": [],
         "timing": {},
@@ -361,7 +470,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Setup paths
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "ceo_clarity" / timestamp
+    out_dir = root / "outputs" / "variables" / "ceo_tone" / timestamp
 
     # Load configs — pass explicit paths so CWD doesn't matter
     config = get_config(root / "config" / "project.yaml")
@@ -375,7 +484,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build CEO Clarity Panel")
+    print("STAGE 3: Build CEO Tone Panel")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
