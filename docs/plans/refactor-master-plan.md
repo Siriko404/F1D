@@ -1,7 +1,7 @@
 # F1D Econometric Pipeline — Master Refactor Plan
 
 **Last updated:** 2026-02-19  
-**Status:** Phase A complete. B.1 complete. H1 Cash Holdings complete. B.2–B.6 planned.
+**Status:** Phase A complete. B.1 complete. H1 Cash Holdings complete (call-level, consistent with all other tests). B.2–B.6 planned.
 
 ---
 
@@ -468,40 +468,46 @@ Bugs fixed during implementation and variable-formula audit:
   fixed to `dvy>0` (annual common dividends, ~45% payers). `dvpq` removed from engine.
 - **OCF_Volatility window**: was 4-year rolling, min 2 obs; fixed to 5-year rolling, min 3 obs (matches v2 design)
 
-### Verified output
+### Verified output (UPDATED 2026-02-20: call-level redesign)
 
-**Stage 3** (26,496 firm-year obs after lead creation):
+**Stage 3** (112,968 call-level rows — identical to manager_clarity, ceo_clarity, ceo_tone):
 
-| Sample | Firm-years |
-|--------|-----------|
-| Main | 20,669 |
-| Finance | 4,791 |
-| Utility | 1,036 |
+| Sample | Total calls | Calls with valid lead |
+|--------|------------|----------------------|
+| Main | 88,205 | 81,376 |
+| Finance | 20,482 | 18,755 |
+| Utility | 4,281 | 3,963 |
 
-All 19 variable merges: zero row delta. Mean calls per firm-year: 3.90.
+All 19 variable merges: zero row delta. CashHoldings_lead computed at call level via
+firm-year intermediary and merged back to calls.
 
-**Stage 4** (72 regressions — 6 measures x 4 specs x 3 samples):
+**Stage 4** (18 regressions — 6 measures x 3 samples):
 
-| Sample | H1a (primary) | H1b (primary) |
-|--------|--------------|--------------|
-| Main | 1/6 significant | 0/6 significant |
-| Finance | 2/6 significant | 0/6 significant |
-| Utility | 2/6 significant | 2/6 significant |
+| Sample | N calls (Manager QA) | N calls (CEO QA) | H1a | H1b |
+|--------|----------------------|------------------|-----|-----|
+| Main | 72,952 | 53,357 | 0/6 | 0/6 |
+| Finance | 3,484 | 2,332 | 3/6 | 1/6 |
+| Utility | 3,500 | 2,151 | 2/6 | 0/6 |
 
-Notable results: Manager_QA_Uncertainty (Main primary): b1=0.0088, p1=0.030 (H1a YES).
-Utility sample shows partial H1b support for Manager_QA and Manager_QA_Weak_Modal (firm+year FE spec).
+Notable results: Finance sample shows strong H1a support for Manager_QA_Uncertainty
+(b1=0.0129, p=0.0022) and Manager_QA_Weak_Modal (b1=0.0160, p=0.0176).
+Finance H1b: Manager_QA_Uncertainty interaction b3=-0.034, p=0.022 (YES).
+R-squared is high (0.89+ Main) due to firm FE absorbing most firm-level variation.
 
-### Design decisions
+### Design decisions (UPDATED 2026-02-20: call-level redesign)
 
-- **Firm-year aggregation**: call-level linguistic variables averaged within gvkey-year before regression
+- **Unit of observation**: individual earnings call (file_name) -- identical to manager_clarity, ceo_clarity, ceo_tone
+- **CashHoldings_lead at call level**: for each call in year t, lead = firm's mean CashHoldings across
+  all calls in year t+1. Computed via firm-year intermediary; merged back to calls. Last-year calls get NaN lead.
+- **Regression engine**: `statsmodels OLS + HC1` -- identical to all other Stage 4 tests
+- **Fixed effects**: `C(gvkey) + C(year)` firm and year dummies -- consistent with other tests
 - **6 uncertainty measures**: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_QA_Weak_Modal_pct,
   CEO_QA_Weak_Modal_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
-  (Analyst_QA excluded as control only; negative_sentiment excluded as it is not an uncertainty measure)
-- **4 specs**: primary (Firm FE + Year FE, firm-clustered SE), pooled (no FE), year_only (Year FE only), double_cluster
+- **Interaction term**: Uncertainty_c x Lev_c (mean-centered for interpretation); 18 total regressions (6 x 3 samples)
 - **One-tailed tests**: H1a p1 = p2/2 if b1 > 0; H1b p1 = p2/2 if b3 < 0; else p1 = 1 - p2/2
-- **CashHoldings_lead**: shift(-1) within gvkey; last observation per firm dropped (2,479 obs)
 - **DividendPayer**: binary, excluded from winsorization in engine
 - **OCF_Volatility**: rolling 5-year std (min 3 obs) computed on annual panel (last obs per gvkey-fyearq), then joined back
+- **Min calls filter**: >= 5 calls per firm (mirrors >= 5 calls per manager in other tests)
 
 ### Audit: N-count discrepancy investigation (CLOSED 2026-02-20)
 

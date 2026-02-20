@@ -4,18 +4,26 @@
 STAGE 3: Build H1 Cash Holdings Panel
 ================================================================================
 ID: variables/build_h1_cash_holdings_panel
-Description: Build firm-year panel for H1 Cash Holdings hypothesis test.
+Description: Build CALL-LEVEL panel for H1 Cash Holdings hypothesis test.
+
+    This panel is structurally identical to build_manager_clarity_panel.py:
+    one row per earnings call (file_name). It is comparable with all other
+    Stage 3 panels (manager_clarity, ceo_clarity, ceo_tone).
 
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
-    Step 3: Aggregate call-level panel to firm-year level (mean of all variables
-            within gvkey × fiscal_year; retain n_calls count).
-    Step 4: Create CashHoldings_lead = next-year CashHoldings per firm (shift -1).
-    Step 5: Drop firms' last year (no lead available).
-    Step 6: Assign industry sample (Main / Finance / Utility).
-    Step 7: Save firm-year panel.
+    Step 3: Add call year from start_date.
+    Step 4: Compute CashHoldings_lead per call:
+            - Average CashHoldings within (gvkey, call_year) -> firm-year mean
+            - Shift firm-year mean by -1 year within gvkey -> next-year cash
+            - Merge back onto all calls by (gvkey, call_year)
+            - Calls belonging to a firm's last year get NaN lead (dropped later)
+    Step 5: Assign industry sample (Main / Finance / Utility).
+    Step 6: Save call-level panel.
 
-Inputs (all raw — no reuse of prior panels):
+Unit of observation: the individual earnings call (file_name).
+
+Inputs (all raw -- no reuse of prior panels):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
     - inputs/comp_na_daily_all/comp_na_daily_all.parquet  (Compustat)
@@ -28,10 +36,8 @@ Outputs:
     - outputs/variables/h1_cash_holdings/{timestamp}/summary_stats.csv
     - outputs/variables/h1_cash_holdings/{timestamp}/report_step3_h1.md
 
-Panel is firm-year level (gvkey × fiscal_year), NOT call-level.
-
 Author: Thesis Author
-Date: 2026-02-19
+Date: 2026-02-20
 ================================================================================
 """
 
@@ -79,7 +85,7 @@ from f1d.shared.variables import (
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H1 Cash Holdings Panel",
+        description="Stage 3: Build H1 Cash Holdings Panel (call-level)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -91,7 +97,7 @@ def parse_arguments():
 
 
 def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    """Assign industry sample based on FF12 code using np.select (not deprecated boolean indexing)."""
+    """Assign industry sample based on FF12 code using np.select."""
     conditions = [ff12_code == 11, ff12_code == 8]
     choices = ["Finance", "Utility"]
     return pd.Series(
@@ -153,7 +159,7 @@ def build_call_level_panel(
         "ceo_pres_weak_modal": CEOPresWeakModalBuilder(
             var_config.get("ceo_pres_weak_modal", {})
         ),
-        # Financial controls — CompustatEngine is a singleton; all 9 share one load
+        # Financial controls -- CompustatEngine is a singleton; all 9 share one load
         "cash_holdings": CashHoldingsBuilder({}),
         "lev": LevBuilder({}),
         "size": SizeBuilder({}),
@@ -193,7 +199,7 @@ def build_call_level_panel(
 
         data = result.data.copy()
         if "file_name" not in data.columns or len(data.columns) <= 1:
-            print(f"  WARNING: {name} returned no usable columns — skipping merge")
+            print(f"  WARNING: {name} returned no usable columns -- skipping merge")
             continue
 
         # Assert builder output unique on file_name
@@ -210,7 +216,7 @@ def build_call_level_panel(
         ]
         if conflicting:
             print(
-                f"  WARNING: {name} has overlapping columns {conflicting} — dropping from builder data"
+                f"  WARNING: {name} has overlapping columns {conflicting} -- dropping from builder data"
             )
             data = data.drop(columns=conflicting)
 
@@ -219,7 +225,7 @@ def build_call_level_panel(
         after_len = len(panel)
         if after_len != before_len:
             raise ValueError(
-                f"Merge of '{name}' changed row count {before_len} → {after_len}. "
+                f"Merge of '{name}' changed row count {before_len} -> {after_len}. "
                 "Duplicate file_name detected in builder output post-merge."
             )
         print(f"  After {name} merge: {after_len:,} rows (delta: +0)")
@@ -231,7 +237,7 @@ def build_call_level_panel(
             "Cannot assign industry sample. Check ManifestFieldsBuilder output."
         )
 
-    # Add year column from start_date
+    # Add call year from start_date (same as manager_clarity convention)
     if "year" not in panel.columns and "start_date" in panel.columns:
         panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 
@@ -244,95 +250,70 @@ def build_call_level_panel(
     return panel
 
 
-def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate call-level panel to firm-year level.
+def create_lead_variable(panel: pd.DataFrame) -> pd.DataFrame:
+    """Create CashHoldings_lead at call level.
 
-    Groups by (gvkey, year) and takes the mean of all numeric variables.
-    Counts n_calls per firm-year.
-    Retains ff12_code via mode (should be constant within firm).
+    For each call in fiscal year t (approximated by start_date.dt.year),
+    CashHoldings_lead = the firm's mean CashHoldings across all calls in year t+1.
 
-    Returns:
-        Firm-year DataFrame with gvkey, fiscal_year, n_calls, ff12_code,
-        and all variable columns averaged.
+    Steps:
+    1. Compute mean CashHoldings per (gvkey, year) -> firm-year intermediary
+    2. Sort by gvkey, year; shift -1 within gvkey -> next-year firm CashHoldings
+    3. Merge lead values back onto all calls by (gvkey, year)
+    4. Calls in the last year per firm get NaN lead (will be dropped in Stage 4)
+
+    This preserves all call-level rows -- Stage 4 drops NaN lead rows itself,
+    so the full panel (including last-year calls) is saved to disk.
     """
     print("\n" + "=" * 60)
-    print("Aggregating call-level -> firm-year")
+    print("Creating CashHoldings_lead (call-level)")
     print("=" * 60)
 
     if "year" not in panel.columns:
-        raise ValueError("'year' column missing — cannot aggregate to firm-year.")
+        raise ValueError("'year' column missing -- cannot create lead variable.")
 
-    # Rename year → fiscal_year for clarity
-    panel = panel.rename(columns={"year": "fiscal_year"})
+    if "CashHoldings" not in panel.columns:
+        raise ValueError(
+            "'CashHoldings' column missing -- cannot create lead variable."
+        )
 
-    # Columns to aggregate as mean
-    linguistic_cols = [
-        "Manager_QA_Uncertainty_pct",
-        "Manager_Pres_Uncertainty_pct",
-        "CEO_QA_Uncertainty_pct",
-        "CEO_Pres_Uncertainty_pct",
-        "Analyst_QA_Uncertainty_pct",
-        "Entire_All_Negative_pct",
-        "Manager_QA_Weak_Modal_pct",
-        "CEO_QA_Weak_Modal_pct",
-        "Manager_Pres_Weak_Modal_pct",
-        "CEO_Pres_Weak_Modal_pct",
-    ]
-    financial_cols = [
-        "CashHoldings",
-        "Lev",
-        "Size",
-        "TobinsQ",
-        "ROA",
-        "CapexAt",
-        "DividendPayer",
-        "OCF_Volatility",
-        "CurrentRatio",
-    ]
-
-    # Only aggregate columns that exist
-    all_agg_cols = [c for c in linguistic_cols + financial_cols if c in panel.columns]
-
-    agg_dict = {col: "mean" for col in all_agg_cols}
-    # ff12_code: take first (constant within firm)
-    if "ff12_code" in panel.columns:
-        agg_dict["ff12_code"] = "first"
-
-    firm_year = panel.groupby(["gvkey", "fiscal_year"], as_index=False).agg(
-        {**agg_dict, "file_name": "count"}
-    )
-    firm_year = firm_year.rename(columns={"file_name": "n_calls"})
-
-    print(f"  Call-level: {len(panel):,} rows")
-    print(f"  Firm-year:  {len(firm_year):,} rows")
-    print(f"  Unique firms: {firm_year['gvkey'].nunique():,}")
-    print(
-        f"  Year range: {int(firm_year['fiscal_year'].min())}–{int(firm_year['fiscal_year'].max())}"
-    )
-    print(f"  Mean calls per firm-year: {firm_year['n_calls'].mean():.2f}")
-
-    return firm_year
-
-
-def create_lead_variable(firm_year: pd.DataFrame) -> pd.DataFrame:
-    """Create CashHoldings_lead = next-year CashHoldings per firm.
-
-    Sorts by gvkey, fiscal_year. Shifts CashHoldings within gvkey by -1.
-    Drops the last year per firm (no lead available).
-    """
-    print("\n  Creating CashHoldings_lead (shift -1 within gvkey)...")
-    firm_year = firm_year.sort_values(["gvkey", "fiscal_year"]).copy()
-    firm_year["CashHoldings_lead"] = firm_year.groupby("gvkey")["CashHoldings"].shift(
-        -1
+    # Step 1: firm-year mean of CashHoldings
+    firm_year_mean = (
+        panel.groupby(["gvkey", "year"], as_index=False)["CashHoldings"]
+        .mean()
+        .rename(columns={"CashHoldings": "CashHoldings_fy_mean"})
     )
 
-    before = len(firm_year)
-    firm_year = firm_year.dropna(subset=["CashHoldings_lead"])
-    after = len(firm_year)
-    print(f"  Dropped {before - after:,} obs (last year per firm, no lead)")
-    print(f"  Final firm-year obs: {after:,}")
+    # Step 2: shift -1 within gvkey to get next-year mean
+    firm_year_mean = firm_year_mean.sort_values(["gvkey", "year"])
+    firm_year_mean["CashHoldings_lead"] = firm_year_mean.groupby("gvkey")[
+        "CashHoldings_fy_mean"
+    ].shift(-1)
 
-    return firm_year
+    n_last_year_fy = firm_year_mean["CashHoldings_lead"].isna().sum()
+    print(f"  Firm-year rows: {len(firm_year_mean):,}")
+    print(f"  Last-year firm-years (no lead): {n_last_year_fy:,}")
+
+    # Step 3: merge lead back to call level
+    before_len = len(panel)
+    panel = panel.merge(
+        firm_year_mean[["gvkey", "year", "CashHoldings_lead"]],
+        on=["gvkey", "year"],
+        how="left",
+    )
+    after_len = len(panel)
+    if after_len != before_len:
+        raise ValueError(
+            f"Lead merge changed row count {before_len} -> {after_len}. "
+            "Duplicate (gvkey, year) in firm-year intermediary."
+        )
+
+    n_calls_no_lead = panel["CashHoldings_lead"].isna().sum()
+    print(f"  Call-level rows: {len(panel):,}")
+    print(f"  Calls without lead (last-year calls + no-Compustat): {n_calls_no_lead:,}")
+    print(f"  Calls with valid lead: {panel['CashHoldings_lead'].notna().sum():,}")
+
+    return panel
 
 
 def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> int:
@@ -364,34 +345,31 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H1 Cash Holdings Panel")
+    print("STAGE 3: Build H1 Cash Holdings Panel (call-level)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Years:     {year_start}–{year_end}")
+    print(f"Years:     {year_start}-{year_end}")
+    print(f"Unit of observation: earnings call (file_name)")
 
     # Step 1-2: Build call-level panel
-    call_panel = build_call_level_panel(root, years, var_config, stats)
+    panel = build_call_level_panel(root, years, var_config, stats)
 
-    # Step 3: Aggregate to firm-year
-    firm_year = aggregate_to_firm_year(call_panel)
+    # Step 3: Create CashHoldings_lead at call level
+    panel = create_lead_variable(panel)
 
-    # Step 4-5: Create lead variable + drop last year
-    firm_year = create_lead_variable(firm_year)
+    # Step 4: Assign sample
+    if "ff12_code" not in panel.columns:
+        raise ValueError("ff12_code missing from panel. Cannot assign sample.")
+    panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
-    # Step 6: Assign sample
-    if "ff12_code" not in firm_year.columns:
-        raise ValueError(
-            "ff12_code missing from firm-year panel. Cannot assign sample."
-        )
-    firm_year["sample"] = assign_industry_sample(firm_year["ff12_code"])
-
-    print("\n  Sample distribution:")
+    print("\n  Sample distribution (all calls, including last-year):")
     for sample in ["Main", "Finance", "Utility"]:
-        n = (firm_year["sample"] == sample).sum()
-        print(f"    {sample}: {n:,} firm-years")
+        n = (panel["sample"] == sample).sum()
+        n_lead = panel.loc[panel["sample"] == sample, "CashHoldings_lead"].notna().sum()
+        print(f"    {sample}: {n:,} calls total, {n_lead:,} with valid lead")
 
-    # Step 7: Save outputs
+    # Step 5: Save outputs
     print("\n" + "=" * 60)
     print("Saving outputs")
     print("=" * 60)
@@ -399,10 +377,10 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     out_dir.mkdir(parents=True, exist_ok=True)
 
     panel_path = out_dir / "h1_cash_holdings_panel.parquet"
-    firm_year.to_parquet(panel_path, index=False)
+    panel.to_parquet(panel_path, index=False)
     print(
         f"  Saved: h1_cash_holdings_panel.parquet "
-        f"({len(firm_year):,} rows, {len(firm_year.columns)} columns)"
+        f"({len(panel):,} rows, {len(panel.columns)} columns)"
     )
 
     # Summary stats CSV
@@ -418,27 +396,30 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
+        f"**Unit of observation:** earnings call (file_name)",
         "",
-        "## Panel Summary (firm-year level)",
+        "## Panel Summary (call-level)",
         "",
-        f"- **Total firm-year observations:** {len(firm_year):,}",
-        f"- **Unique firms:** {firm_year['gvkey'].nunique():,}",
-        f"- **Year range:** {int(firm_year['fiscal_year'].min())}–{int(firm_year['fiscal_year'].max())}",
-        f"- **Total columns:** {len(firm_year.columns)}",
+        f"- **Total call observations:** {len(panel):,}",
+        f"- **Unique firms:** {panel['gvkey'].nunique():,}",
+        f"- **Year range:** {int(panel['year'].min())}-{int(panel['year'].max())}",
+        f"- **Total columns:** {len(panel.columns)}",
+        f"- **Calls with valid CashHoldings_lead:** {panel['CashHoldings_lead'].notna().sum():,}",
         "",
         "### Sample Distribution",
         "",
-        "| Sample | N Firm-Years | % |",
-        "|--------|-------------|---|",
+        "| Sample | N Calls | N With Lead | % With Lead |",
+        "|--------|---------|-------------|-------------|",
     ]
     for sample in ["Main", "Finance", "Utility"]:
-        n = (firm_year["sample"] == sample).sum()
-        pct = 100.0 * n / len(firm_year) if len(firm_year) > 0 else 0
-        report_lines.append(f"| {sample} | {n:,} | {pct:.1f}% |")
+        n = (panel["sample"] == sample).sum()
+        n_lead = panel.loc[panel["sample"] == sample, "CashHoldings_lead"].notna().sum()
+        pct = 100.0 * n_lead / n if n > 0 else 0
+        report_lines.append(f"| {sample} | {n:,} | {n_lead:,} | {pct:.1f}% |")
 
     report_lines += [
         "",
-        "### Key Variable Coverage",
+        "### Key Variable Coverage (all calls)",
         "",
         "| Variable | N non-missing | Mean | Std |",
         "|----------|--------------|------|-----|",
@@ -459,10 +440,10 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         "Manager_QA_Weak_Modal_pct",
         "CEO_QA_Weak_Modal_pct",
     ]:
-        if col in firm_year.columns:
-            n_valid = firm_year[col].notna().sum()
-            mean = firm_year[col].mean()
-            std = firm_year[col].std()
+        if col in panel.columns:
+            n_valid = panel[col].notna().sum()
+            mean = panel[col].mean()
+            std = panel[col].std()
             report_lines.append(f"| {col} | {n_valid:,} | {mean:.4f} | {std:.4f} |")
 
     report_lines.append("")
@@ -473,8 +454,9 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Final summary
     stats["timing"]["duration_seconds"] = round(duration, 2)
-    stats["panel"]["n_rows"] = len(firm_year)
-    stats["panel"]["n_columns"] = len(firm_year.columns)
+    stats["panel"]["n_rows"] = len(panel)
+    stats["panel"]["n_columns"] = len(panel.columns)
+    stats["panel"]["n_with_lead"] = int(panel["CashHoldings_lead"].notna().sum())
 
     print("\n" + "=" * 80)
     print("COMPLETE")
