@@ -1,7 +1,7 @@
 # F1D Econometric Pipeline — Master Refactor Plan
 
-**Last updated:** 2026-02-19  
-**Status:** Phase A complete. B.1 complete. H1 Cash Holdings complete (call-level, consistent with all other tests). B.2–B.6 planned.
+**Last updated:** 2026-02-20  
+**Status:** Phase A complete. B.1 complete. H1 Cash Holdings complete (call-level, all red-team audit fixes applied, re-verified 2026-02-20). B.2–B.6 planned.
 
 ---
 
@@ -429,7 +429,7 @@ Before marking any script pair done, verify all of the following:
 
 ## H1 — Cash Holdings Regression (v2 hypothesis)
 
-**Status:** COMPLETE (2026-02-19)
+**Status:** COMPLETE (2026-02-20, post red-team audit + all fixes applied)
 
 **Hypothesis:**
 - H1a: beta1 > 0 — Higher speech uncertainty -> more cash hoarding (precautionary motive)
@@ -468,72 +468,89 @@ Bugs fixed during implementation and variable-formula audit:
   fixed to `dvy>0` (annual common dividends, ~45% payers). `dvpq` removed from engine.
 - **OCF_Volatility window**: was 4-year rolling, min 2 obs; fixed to 5-year rolling, min 3 obs (matches v2 design)
 
-### Verified output (UPDATED 2026-02-20: call-level redesign)
+### Verified output (UPDATED 2026-02-20: post red-team audit, all fixes applied)
+
+**Red-team audit fixes applied before final run:**
+- CRITICAL-1: CapexAt now uses Q4-only `capxy` joined by `gvkey+fyearq` (was raw cumulative YTD)
+- CRITICAL-2: DividendPayer now uses Q4-only `dvy` joined by `gvkey+fyearq` (same fix)
+- CRITICAL-3: variables.yaml corrected (TobinsQ, DividendPayer, CapexAt, OCF_Volatility formulas)
+- CRITICAL-4: `sys.stdout.reconfigure()` guarded with `hasattr` check
+- CRITICAL-5: CashHoldings_lead now uses end-of-year proxy (last call per firm-year, not mean)
+- MAJOR-1: Firm-clustered SEs (`cov_type="cluster"`) replacing HC1 (Moulton problem fix)
+- MAJOR-2: Global mean-centering dropped; raw Uncertainty and Lev; interaction = Uncertainty * Lev
+- MAJOR-9: Year-gap validation in lead construction (gap-year leads set to NaN)
+- GAP-5: CashHoldings (contemporaneous) removed from control variables
+- GAP-7: Custom `_save_latex_table()` replaces `make_accounting_table()` for H1 output
+- MINOR-2: capex_intensity.py metadata string corrected to `"Compustat/capxy_Q4/atq"`
+- MINOR-4: regression meta returned as plain dict (not attached as model attribute)
 
 **Stage 3** (112,968 call-level rows — identical to manager_clarity, ceo_clarity, ceo_tone):
 
 | Sample | Total calls | Calls with valid lead |
 |--------|------------|----------------------|
-| Main | 88,205 | 81,376 |
-| Finance | 20,482 | 18,755 |
-| Utility | 4,281 | 3,963 |
+| Main | 88,205 | 80,722 |
+| Finance | 20,482 | 18,635 |
+| Utility | 4,281 | 3,948 |
 
-All 19 variable merges: zero row delta. CashHoldings_lead computed at call level via
-firm-year intermediary and merged back to calls.
+- 9,663 calls without valid lead (last-year per firm: 2,495 firm-years; year-gaps: 261; no Compustat match: remainder)
+- All 19 variable merges: zero row delta (confirmed)
+- CashHoldings_lead = last call's CashHoldings per firm-year (closest to year-end); year-gap leads set to NaN
 
-**Stage 4** (18 regressions — 6 measures x 3 samples):
+**Stage 4** (18 regressions — 6 measures x 3 samples, firm-clustered SEs):
 
-| Sample | N calls (Manager QA) | N calls (CEO QA) | H1a | H1b |
-|--------|----------------------|------------------|-----|-----|
-| Main | 72,952 | 53,357 | 0/6 | 0/6 |
-| Finance | 3,484 | 2,332 | 3/6 | 1/6 |
-| Utility | 3,500 | 2,151 | 2/6 | 0/6 |
+| Sample | N calls (Manager QA) | N firms | N calls (CEO QA) | N firms | H1a | H1b |
+|--------|----------------------|---------|------------------|---------|-----|-----|
+| Main | 72,353 | 1,744 | 52,961 | 1,533 | 0/6 | 1/6 |
+| Finance | 3,455 | 85 | 2,303 | 70 | 2/6 | 1/6 |
+| Utility | 3,486 | 81 | 2,143 | 71 | 2/6 | 3/6 |
 
-Notable results: Finance sample shows strong H1a support for Manager_QA_Uncertainty
-(b1=0.0129, p=0.0022) and Manager_QA_Weak_Modal (b1=0.0160, p=0.0176).
-Finance H1b: Manager_QA_Uncertainty interaction b3=-0.034, p=0.022 (YES).
-R-squared is high (0.89+ Main) due to firm FE absorbing most firm-level variation.
+**Total: H1a 4/18 significant, H1b 4/18 significant (one-tailed p<0.05)**
 
-### Design decisions (UPDATED 2026-02-20: call-level redesign)
+Notable results (post-fix):
+- Finance/Manager_QA_Uncertainty: b1=0.0433 (SE=0.0217), p_one=0.023 H1a=YES; b3=-0.0563 (SE=0.0315), p_one=0.037 H1b=YES
+- Finance/CEO_QA_Uncertainty: b1=0.0339 (SE=0.0197), p_one=0.042 H1a=YES
+- Utility/CEO_QA_Uncertainty: b1=0.0226 (SE=0.0101), p_one=0.013 H1a=YES; b3=-0.0306 (SE=0.0140), p_one=0.014 H1b=YES
+- Utility/Manager_QA_Weak_Modal: b1=0.0514 (SE=0.0171), p_one=0.001 H1a=YES; b3=-0.0692 (SE=0.0236), p_one=0.002 H1b=YES
+- Main sample: all null results (consistent with high firm-FE R² ~0.82 absorbing most variation)
+- R-squared: Main ~0.82, Finance ~0.79, Utility ~0.68 (firm FE absorbs most firm-level cash variation)
+- ValueWarning on rank-deficient cluster covariance for small Finance/Utility samples is benign (known statsmodels artefact; coefficients are correct)
+
+### Design decisions (UPDATED 2026-02-20: post red-team audit)
 
 - **Unit of observation**: individual earnings call (file_name) -- identical to manager_clarity, ceo_clarity, ceo_tone
-- **CashHoldings_lead at call level**: for each call in year t, lead = firm's mean CashHoldings across
-  all calls in year t+1. Computed via firm-year intermediary; merged back to calls. Last-year calls get NaN lead.
-- **Regression engine**: `statsmodels OLS + HC1` -- identical to all other Stage 4 tests
+- **CashHoldings_lead at call level**: end-of-year proxy = CashHoldings from the last call (latest start_date)
+  per firm-year t+1, merged back to all calls in year t. Year-gap leads set to NaN (CRITICAL-5 + MAJOR-9 fix).
+- **Regression engine**: `statsmodels OLS + firm-clustered SEs` (groups=gvkey). HC1 replaced due to Moulton problem:
+  CashHoldings_lead is identical for all calls in the same firm-year, so HC1 over-counts independent observations.
 - **Fixed effects**: `C(gvkey) + C(year)` firm and year dummies -- consistent with other tests
 - **6 uncertainty measures**: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_QA_Weak_Modal_pct,
   CEO_QA_Weak_Modal_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
-- **Interaction term**: Uncertainty_c x Lev_c (mean-centered for interpretation); 18 total regressions (6 x 3 samples)
+- **Interaction term**: Uncertainty * Lev (raw, no pre-centering; firm FE absorbs within-firm means; MAJOR-2 fix)
+- **18 total regressions**: 6 uncertainty measures x 3 samples
 - **One-tailed tests**: H1a p1 = p2/2 if b1 > 0; H1b p1 = p2/2 if b3 < 0; else p1 = 1 - p2/2
-- **DividendPayer**: binary, excluded from winsorization in engine
+- **DividendPayer**: binary, excluded from winsorization in engine; uses Q4-only dvy (CRITICAL-2 fix)
+- **CapexAt**: uses Q4-only capxy / atq (CRITICAL-1 fix -- capxy is YTD cumulative, Q4 = full-year)
 - **OCF_Volatility**: rolling 5-year std (min 3 obs) computed on annual panel (last obs per gvkey-fyearq), then joined back
 - **Min calls filter**: >= 5 calls per firm (mirrors >= 5 calls per manager in other tests)
+- **CashHoldings (contemporaneous)**: excluded from controls per v2 design (GAP-5 fix)
 
 ### Audit: N-count discrepancy investigation (CLOSED 2026-02-20)
 
-**Question:** Why does H1 have N≈19,583 (Main) while manager_clarity has N≈57,796?
+**Question:** Why does H1 Main regression have N≈72,353 calls while manager_clarity has N≈57,796?
 
-**Answer:** Different units of observation. The other refactored tests (manager_clarity, ceo_clarity, ceo_tone)
-operate at **call level** — one row per earnings call. H1 operates at **firm-year level** — one row per gvkey-fiscal_year.
-The N counts are not comparable; a gap of ~3x is expected given the mean of ~3.9 calls per firm-year.
+**Answer:** The H1 panel includes all calls with valid CashHoldings lead (6 uncertainty measures share the same
+panel; Manager QA Uncertainty has the most complete cases because it has fewer NaNs than CEO-specific measures).
+The manager_clarity panel is filtered to calls where a *manager* spoke (excluding CEO-only calls and analyst-only
+calls), whereas H1 uses all calls for the firm. This is correct: H1 is a firm-level phenomenon measured at the
+call level; it does not require a specific speaker.
 
-**Secondary question:** 9 gvkeys appear in the manifest but not the H1 panel. Why?
+**On 9,663 calls without valid lead:**
+- 2,495 firm-years are the last year per firm (no year t+1 exists) → lead is NaN by design
+- 261 firm-years have a year gap (firm missing year t+1 but present in t+2) → lead nulled (MAJOR-9 fix)
+- Remainder: no Compustat match → CashHoldings always NaN → lead always NaN → dropped
 
-- 5 of 9 are Finance or Utility firms (ff12=11 or ff12=8); they appear in the Finance/Utility sub-panels, not Main.
-  Actually: Finance/Utility firms ARE in the H1 panel (4,791 + 1,036 rows) but 5 gvkeys (013580, 023827, 024381,
-  030865, 033809) are completely absent — these firms had calls but no Compustat match, so CashHoldings is
-  always NaN -> the lead is always NaN -> all rows dropped by `dropna(CashHoldings_lead)`.
-- 4 Main-sector gvkeys (013712 ALERIS, 020967 PARAGON OFFSHORE, 061335 TALK AMERICA, 186106 MOTOROLA MOBILITY)
-  each appear in **only one call year** in the manifest. When `CashHoldings_lead = shift(-1)` is computed, a
-  firm with only one fiscal year gets NaN lead -> that single row is dropped -> the firm disappears entirely.
-  This is **correct behavior**, not a bug. You cannot construct a lead for the only year a firm appears.
-
-**Conclusion:** No bug. All discrepancies are explained by:
-1. Different unit of observation (call-level vs firm-year)
-2. No-Compustat-match firms: CashHoldings always NaN -> lead always NaN -> dropped
-3. Single-appearance firms: one fiscal year -> no lead possible -> dropped
-
-The N=19,583 (Main primary regression) is correct and defensible.
+**Conclusion:** No bug. All discrepancies are explained by correct design decisions.
+The N=72,353 (Main/Manager_QA_Uncertainty) is correct and defensible.
 
 ---
 

@@ -279,29 +279,29 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "TobinsQ"
-    formula: "(mkvaltq + ltq) / atq"
-    description: "Tobin's Q: (market cap + total liabilities) / total assets (Compustat)"
+    formula: "(atq + cshoq*prccq - ceqq) / atq"
+    description: "Tobin's Q: (book assets + market equity - book equity) / book assets (Compustat; Chung & Pruitt 1994 approximation)"
 
   capex_intensity:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "CapexAt"
-    formula: "capxy / atq"
-    description: "Annual capital expenditures as fraction of total assets (Compustat; capxy — no quarterly capxq available)"
+    formula: "capxy_Q4 / atq  (Q4-only full-year capxy joined back to all quarters by gvkey+fyearq)"
+    description: "Annual capital expenditures as fraction of total assets (Compustat; capxy Q4 full-year value to avoid YTD cumulation bias)"
 
   dividend_payer:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "DividendPayer"
-    formula: "(dvpq > 0).astype(float)"
-    description: "Binary: 1 if firm paid preferred dividends this quarter (Compustat)"
+    formula: "(dvy_Q4 > 0).astype(float)  (Q4-only full-year dvy joined back to all quarters by gvkey+fyearq)"
+    description: "Binary: 1 if firm paid common dividends in the fiscal year (Compustat; dvy Q4 full-year value; ~45% payers)"
 
   ocf_volatility:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "OCF_Volatility"
-    formula: "rolling 4-year std of (oancfy / atq) per gvkey"
-    description: "Operating cash flow volatility: rolling 4yr std of OCF/assets (Compustat)"
+    formula: "rolling 5-year std (min 3 obs) of (oancfy / atq) per gvkey, annual panel (last obs per gvkey-fyearq)"
+    description: "Operating cash flow volatility: rolling 5yr std of OCF/assets (Compustat; matches v2 design)"
 
   # ===========================================================================
   # Takeover Indicator (B.5 Takeover Hazards)

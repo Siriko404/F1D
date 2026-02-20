@@ -31,6 +31,16 @@ H1 audit fixes (2026-02-19):
                    Requires: dvy instead of dvpq.
     OCF_Volatility: was 4-year rolling min 2 periods.
                     Fixed to 5-year rolling min 3 periods (matches v2 design).
+
+Red-team audit fixes (2026-02-20):
+    CRITICAL-1 CapexAt: capxy is YTD cumulative within fiscal year -- Q1 row has
+                only Q1 capex, Q4 row has full-year capex. Fixed to use Q4-only
+                capxy (full fiscal year) joined back to all quarters via
+                gvkey+fyearq, same pattern as OCF_Volatility. Requires: fqtr.
+    CRITICAL-2 DividendPayer: dvy is annual cumulative YTD -- same issue as capxy.
+                Fixed to use Q4-only dvy (full fiscal year) joined back to all
+                quarters via gvkey+fyearq. This correctly classifies dividend
+                payers using full-year dividends regardless of when the call falls.
 """
 
 from __future__ import annotations
@@ -73,10 +83,11 @@ REQUIRED_COMPUSTAT_COLS = [
     "xrdq",
     # H1 extension
     "cheq",
-    "capxy",  # annual CapEx -- no quarterly capxq in this dataset
-    "dvy",  # annual common dividends (replaces dvpq which was preferred-only)
+    "capxy",  # YTD cumulative CapEx -- used Q4-only (full fiscal year)
+    "dvy",  # YTD cumulative common dividends -- used Q4-only (full fiscal year)
     "oancfy",
     "fyearq",
+    "fqtr",  # fiscal quarter (1-4) -- used to identify Q4 rows for capxy/dvy
 ]
 
 
@@ -135,6 +146,51 @@ def _compute_eps_growth_date_based(comp: pd.DataFrame) -> pd.Series:
     # Re-align to original comp row order via _row_id
     merged_sorted = merged.sort_values("_row_id")
     return merged_sorted["EPS_Growth_tmp"].values
+
+
+def _compute_annual_q4_variable(
+    comp: pd.DataFrame, raw_col: str, out_col: str
+) -> pd.Series:
+    """Compute a full-fiscal-year variable from a YTD-cumulative Compustat field.
+
+    capxy and dvy are YTD-cumulative within a fiscal year: Q1 holds only Q1
+    values, Q4 holds the full-year total. Using Q4 rows (fqtr==4) gives the
+    correct annual figure. We then join it back to ALL quarterly rows by
+    gvkey+fyearq so every call in the same fiscal year gets the same value.
+
+    Args:
+        comp: Full Compustat DataFrame (must have fqtr, fyearq, gvkey, raw_col).
+        raw_col: The cumulative Compustat column (e.g. 'capxy', 'dvy').
+        out_col: The output column name (e.g. 'CapexAt_annual', 'DividendPayer').
+
+    Returns:
+        Series aligned to comp's index.
+    """
+    # Q4 rows only -- full-year cumulative value
+    q4 = (
+        comp[comp["fqtr"] == 4][["gvkey", "fyearq", raw_col]]
+        .dropna(subset=["fyearq"])
+        .copy()
+    )
+    q4["fyearq"] = q4["fyearq"].astype(int)
+    # Keep last Q4 per gvkey-fyearq (most recent restatement)
+    q4 = q4.sort_values(["gvkey", "fyearq"]).drop_duplicates(
+        subset=["gvkey", "fyearq"], keep="last"
+    )
+    q4 = q4.rename(columns={raw_col: out_col})
+
+    # Align back to full quarterly panel
+    comp_aligned = comp[["gvkey", "fyearq"]].copy()
+    comp_aligned["fyearq"] = pd.to_numeric(comp_aligned["fyearq"], errors="coerce")
+    comp_aligned["_idx"] = np.arange(len(comp_aligned))
+
+    merged = comp_aligned.merge(
+        q4.assign(fyearq=lambda d: d["fyearq"].astype(float)),
+        on=["gvkey", "fyearq"],
+        how="left",
+    )
+    merged = merged.sort_values("_idx")
+    return merged[out_col].values  # type: ignore[return-value]
 
 
 def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
@@ -206,9 +262,20 @@ def _compute_and_winsorize(comp: pd.DataFrame) -> pd.DataFrame:
     # has 9.5% missing vs 41% for mkvaltq, so far better coverage)
     mktcap = comp["cshoq"] * comp["prccq"]
     comp["TobinsQ"] = (comp["atq"] + mktcap - comp["ceqq"]) / comp["atq"]
-    comp["CapexAt"] = comp["capxy"] / comp["atq"]
-    # DividendPayer = dvy > 0 (annual COMMON dividends; dvpq was preferred-only)
-    comp["DividendPayer"] = (comp["dvy"].fillna(0) > 0).astype(float)
+
+    # CRITICAL-1 fix: capxy is YTD cumulative -- use Q4 annual value joined to
+    # all quarters, divided by that quarter's atq for the ratio.
+    # First get the full-year capxy per gvkey-fyearq from Q4 rows.
+    capxy_annual = _compute_annual_q4_variable(comp, "capxy", "_capxy_annual")
+    comp["CapexAt"] = capxy_annual / comp["atq"]
+
+    # CRITICAL-2 fix: dvy is YTD cumulative -- use Q4 annual value joined to
+    # all quarters to classify dividend payers using the full fiscal year.
+    dvy_annual = _compute_annual_q4_variable(comp, "dvy", "_dvy_annual")
+    comp["DividendPayer"] = (
+        pd.Series(dvy_annual, index=comp.index).fillna(0) > 0
+    ).astype(float)
+
     comp["OCF_Volatility"] = _compute_ocf_volatility(comp)
 
     # --- MINOR-9: Replace inf with NaN after ratio computations ---
@@ -274,12 +341,13 @@ class CompustatEngine:
         numeric_cols = [
             c
             for c in REQUIRED_COMPUSTAT_COLS
-            if c not in ("gvkey", "datadate", "fyearq")
+            if c not in ("gvkey", "datadate", "fyearq", "fqtr")
         ]
         for col in numeric_cols:
             comp[col] = pd.to_numeric(comp[col], errors="coerce").astype("float64")
-        # fyearq as nullable int (may be missing)
+        # fyearq and fqtr as numeric integers (may be missing in some rows)
         comp["fyearq"] = pd.to_numeric(comp["fyearq"], errors="coerce")
+        comp["fqtr"] = pd.to_numeric(comp["fqtr"], errors="coerce")
 
         # --- CRITICAL-2: Deduplicate (gvkey, datadate) — keep last (most recent restatement) ---
         before = len(comp)

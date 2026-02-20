@@ -45,7 +45,7 @@ class CapexIntensityBuilder(VariableBuilder):
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "CapexAt", "source": "Compustat/capxq/atq"},
+            metadata={"column": "CapexAt", "source": "Compustat/capxy_Q4/atq"},
         )
 
 

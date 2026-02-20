@@ -253,64 +253,97 @@ def build_call_level_panel(
 def create_lead_variable(panel: pd.DataFrame) -> pd.DataFrame:
     """Create CashHoldings_lead at call level.
 
-    For each call in fiscal year t (approximated by start_date.dt.year),
-    CashHoldings_lead = the firm's mean CashHoldings across all calls in year t+1.
+    The lead is the firm's END-OF-FISCAL-YEAR cash holdings in year t+1.
+    'End of fiscal year' = the CashHoldings value from the most recent prior
+    Compustat filing matched to the LAST call of a given firm-year (i.e., the
+    Q4-matched value). This avoids averaging intra-year quarterly snapshots and
+    produces a clean annual end-of-year cash outcome as the dependent variable.
 
-    Steps:
-    1. Compute mean CashHoldings per (gvkey, year) -> firm-year intermediary
-    2. Sort by gvkey, year; shift -1 within gvkey -> next-year firm CashHoldings
-    3. Merge lead values back onto all calls by (gvkey, year)
-    4. Calls in the last year per firm get NaN lead (will be dropped in Stage 4)
+    Construction:
+    1. For each (gvkey, year), take the CashHoldings from the call with the
+       LATEST start_date within that year (proxy for the Q4/year-end filing).
+    2. Sort by gvkey, year; shift -1 within gvkey -> next-year end-of-year cash.
+    3. CRITICAL: validate that next row is exactly year+1 (not year+2 due to gaps);
+       set lead to NaN if the year is not consecutive.
+    4. Merge lead values back onto all calls by (gvkey, year).
+    5. Calls in the last year per firm, or years with gaps, get NaN lead.
 
-    This preserves all call-level rows -- Stage 4 drops NaN lead rows itself,
-    so the full panel (including last-year calls) is saved to disk.
+    All call-level rows are preserved -- Stage 4 drops NaN lead rows itself.
     """
     print("\n" + "=" * 60)
-    print("Creating CashHoldings_lead (call-level)")
+    print("Creating CashHoldings_lead (call-level, end-of-year proxy)")
     print("=" * 60)
 
     if "year" not in panel.columns:
         raise ValueError("'year' column missing -- cannot create lead variable.")
-
     if "CashHoldings" not in panel.columns:
         raise ValueError(
             "'CashHoldings' column missing -- cannot create lead variable."
         )
+    if "start_date" not in panel.columns:
+        raise ValueError(
+            "'start_date' column missing -- cannot determine latest call per year."
+        )
 
-    # Step 1: firm-year mean of CashHoldings
-    firm_year_mean = (
-        panel.groupby(["gvkey", "year"], as_index=False)["CashHoldings"]
-        .mean()
-        .rename(columns={"CashHoldings": "CashHoldings_fy_mean"})
-    )
+    # Step 1: end-of-year CashHoldings proxy = CashHoldings from the latest call
+    # per firm-year (the call closest to year-end has the most recent Q filing).
+    panel_dt = panel.copy()
+    panel_dt["start_date_dt"] = pd.to_datetime(panel_dt["start_date"], errors="coerce")
 
-    # Step 2: shift -1 within gvkey to get next-year mean
-    firm_year_mean = firm_year_mean.sort_values(["gvkey", "year"])
-    firm_year_mean["CashHoldings_lead"] = firm_year_mean.groupby("gvkey")[
-        "CashHoldings_fy_mean"
+    # For each (gvkey, year), find the row with the maximum start_date
+    latest_idx = panel_dt.groupby(["gvkey", "year"])["start_date_dt"].idxmax()
+    firm_year_eoy = panel_dt.loc[latest_idx, ["gvkey", "year", "CashHoldings"]].copy()
+    firm_year_eoy = firm_year_eoy.rename(columns={"CashHoldings": "CashHoldings_eoy"})
+
+    print(f"  Unique firm-years: {len(firm_year_eoy):,}")
+
+    # Step 2: sort and shift to get next-year end-of-year cash
+    firm_year_eoy = firm_year_eoy.sort_values(["gvkey", "year"]).reset_index(drop=True)
+    firm_year_eoy["year_lead"] = firm_year_eoy.groupby("gvkey")["year"].shift(-1)
+    firm_year_eoy["CashHoldings_lead_raw"] = firm_year_eoy.groupby("gvkey")[
+        "CashHoldings_eoy"
     ].shift(-1)
 
-    n_last_year_fy = firm_year_mean["CashHoldings_lead"].isna().sum()
-    print(f"  Firm-year rows: {len(firm_year_mean):,}")
-    print(f"  Last-year firm-years (no lead): {n_last_year_fy:,}")
-
-    # Step 3: merge lead back to call level
-    before_len = len(panel)
-    panel = panel.merge(
-        firm_year_mean[["gvkey", "year", "CashHoldings_lead"]],
-        on=["gvkey", "year"],
-        how="left",
+    # Step 3 (MAJOR-9 fix): validate year continuity -- only keep lead if next
+    # row is exactly year+1. A gap (e.g., 2006->2008) means the lead is wrong.
+    consecutive = firm_year_eoy["year_lead"] == (firm_year_eoy["year"] + 1)
+    firm_year_eoy["CashHoldings_lead"] = np.where(
+        consecutive, firm_year_eoy["CashHoldings_lead_raw"], np.nan
     )
+
+    n_last_year = firm_year_eoy["CashHoldings_lead_raw"].isna().sum()
+    n_gap_year = ((~consecutive) & firm_year_eoy["CashHoldings_lead_raw"].notna()).sum()
+    n_valid_lead = firm_year_eoy["CashHoldings_lead"].notna().sum()
+    print(f"  Firm-years with no next year (last year per firm): {n_last_year:,}")
+    print(f"  Firm-years with year gap (lead nulled): {n_gap_year:,}")
+    print(f"  Firm-years with valid consecutive lead: {n_valid_lead:,}")
+
+    # Sanity check: CashHoldings_lead must be in [0, 1] (cash/assets ratio)
+    lead_vals = firm_year_eoy["CashHoldings_lead"].dropna()
+    if len(lead_vals) > 0:
+        if (lead_vals < 0).any() or (lead_vals > 1.5).any():
+            n_bad = ((lead_vals < 0) | (lead_vals > 1.5)).sum()
+            print(
+                f"  WARNING: {n_bad} CashHoldings_lead values outside [0, 1.5] -- check winsorization"
+            )
+
+    # Step 4: merge lead back to call level on (gvkey, year)
+    lead_lookup = firm_year_eoy[["gvkey", "year", "CashHoldings_lead"]].copy()
+
+    before_len = len(panel)
+    panel = panel.merge(lead_lookup, on=["gvkey", "year"], how="left")
     after_len = len(panel)
     if after_len != before_len:
         raise ValueError(
             f"Lead merge changed row count {before_len} -> {after_len}. "
-            "Duplicate (gvkey, year) in firm-year intermediary."
+            "Duplicate (gvkey, year) in firm-year lead lookup."
         )
 
     n_calls_no_lead = panel["CashHoldings_lead"].isna().sum()
     print(f"  Call-level rows: {len(panel):,}")
-    print(f"  Calls without lead (last-year calls + no-Compustat): {n_calls_no_lead:,}")
+    print(
+        f"  Calls without lead (last-year + gaps + no-Compustat): {n_calls_no_lead:,}"
+    )
     print(f"  Calls with valid lead: {panel['CashHoldings_lead'].notna().sum():,}")
 
     return panel
