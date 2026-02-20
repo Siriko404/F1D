@@ -347,8 +347,14 @@ def extract_clarity_scores(
 
     ClarityCEO_raw = -gamma_i (negative of CEO fixed effect).
     Standardization is deferred to save_outputs() so it is applied
-    globally across all regimes — ensuring scores are on a single
-    comparable scale rather than independently normalized per regime.
+    per-regime — each regime's scores are z-scored independently.
+
+    Per-regime standardization is correct here because gamma_i values from
+    three separate regressions are on incompatible scales: each regression
+    has a different reference CEO (statsmodels' alphabetically-first CEO),
+    so the raw gamma_i means differ across regimes due to reference-level
+    contamination, not real regime differences. Standardizing within each
+    regime absorbs this artifact and leaves only the relative rank signal.
 
     FIX-6: Reference CEOs (gamma = 0 by statsmodels convention, not estimated)
     are tagged with is_reference=True and excluded from clarity_scores.parquet,
@@ -361,7 +367,7 @@ def extract_clarity_scores(
 
     Returns:
         DataFrame with ceo_id, gamma_i, ClarityCEO_raw, regime, is_reference
-        (NOT yet standardized — caller must standardize globally)
+        (NOT yet standardized — caller must standardize per regime)
     """
     print(f"\n  Extracting CEO fixed effects for {regime_name}...")
 
@@ -403,7 +409,7 @@ def extract_clarity_scores(
     ceo_fe["regime"] = regime_name
 
     # NOTE: ClarityCEO (standardized) is NOT computed here.
-    # It is computed globally in save_outputs() after all regimes are collected.
+    # It is computed per-regime in save_outputs() after all regimes are collected.
 
     return ceo_fe
 
@@ -422,9 +428,14 @@ def save_outputs(
 ) -> pd.DataFrame:
     """Save all outputs.
 
-    FIX-3: Standardization of ClarityCEO is done here, globally across ALL
-    regimes combined, so that scores from different regimes are on the same
-    scale and are directly comparable.
+    Standardization: ClarityCEO is z-scored PER REGIME (not globally).
+    Each regime's regression produces gamma_i values relative to a different
+    reference CEO (statsmodels' alphabetically-first CEO in that regime's
+    valid-CEO set). Pooling raw gammas across regimes would conflate
+    reference-level artifacts with real regime differences. Standardizing
+    within each regime absorbs the reference offset and preserves only the
+    within-regime relative rank signal — which is what the robustness check
+    is designed to test.
 
     FIX-6: Reference CEOs (gamma=0 normalization artifact) are excluded from
     the saved clarity_scores.parquet.
@@ -437,7 +448,7 @@ def save_outputs(
         stats: Stats dict
 
     Returns:
-        Final clarity_df with globally standardized ClarityCEO scores
+        Final clarity_df with per-regime standardized ClarityCEO scores
     """
     print("\n" + "=" * 60)
     print("Saving outputs")
@@ -463,7 +474,10 @@ def save_outputs(
             "Pre-Crisis: 2002--2007; Crisis: 2008--2009; Post-Crisis: 2010--2018. "
             "Main sample only (FF12 non-financial, non-utility firms). "
             "ClarityCEO is computed as the negative of the CEO fixed effect, "
-            "standardized globally across all regimes. "
+            "standardized within each regime separately (mean 0, std 1 per regime). "
+            "Per-regime standardization is used because gamma estimates from separate "
+            "regressions are anchored to different reference CEOs and cannot be "
+            "directly compared across regimes. "
             "CEOs must have $\\geq 5$ calls within the regime window to be included. "
             "Robust standard errors (HC1) are used."
         ),
@@ -484,37 +498,70 @@ def save_outputs(
         n_reference = raw_df["is_reference"].sum()
         print(f"  Excluded {n_reference} reference CEO(s) from clarity scores")
 
-        # FIX-3: Standardize ClarityCEO_raw GLOBALLY across all regimes
-        # so that a score of 1.0 means the same thing regardless of regime
-        global_mean = estimated_df["ClarityCEO_raw"].mean()
-        global_std = estimated_df["ClarityCEO_raw"].std()
-        estimated_df["ClarityCEO"] = (
-            estimated_df["ClarityCEO_raw"] - global_mean
-        ) / global_std
+        # Standardize ClarityCEO_raw PER REGIME.
+        # gamma_i values from separate regressions are anchored to different
+        # reference CEOs (statsmodels' alphabetically-first CEO per regime),
+        # so raw values are on incompatible scales across regimes.
+        # Standardizing within each regime absorbs the reference-level offset
+        # while preserving the within-regime relative rank — the true signal.
+        # Per-regime z-score: compute via numpy to avoid pandas-stubs loc overload
+        # ambiguity; write result back via the same boolean mask.
+        estimated_df["ClarityCEO"] = np.nan
+        for _regime_key in estimated_df["regime"].unique():
+            _idx = estimated_df.index[estimated_df["regime"] == _regime_key]
+            _raw_vals: np.ndarray = estimated_df.loc[
+                _idx, "ClarityCEO_raw"
+            ].values.astype(float)  # type: ignore[union-attr]
+            _r_mean = float(_raw_vals.mean())
+            _r_std = float(_raw_vals.std())
+            estimated_df.loc[_idx, "ClarityCEO"] = (_raw_vals - _r_mean) / _r_std
+            print(
+                f"  {_regime_key} standardization: mean={_r_mean:.4f}, std={_r_std:.4f} "
+                f"(N={len(_idx):,} estimated CEOs)"
+            )
 
         print(
-            f"  Global standardization: mean={global_mean:.4f}, std={global_std:.4f} "
-            f"(across {len(estimated_df):,} estimated CEOs across all regimes)"
-        )
-        print(
-            f"  ClarityCEO post-standardization: "
-            f"mean={estimated_df['ClarityCEO'].mean():.4f}, "
+            f"  ClarityCEO post-standardization (per-regime): "
+            f"overall mean={estimated_df['ClarityCEO'].mean():.4f}, "
             f"std={estimated_df['ClarityCEO'].std():.4f}"
         )
 
-        # Join CEO metadata from panel (ceo_name, n_calls per CEO across all regimes)
-        ceo_meta = (
+        # Join CEO metadata from panel.
+        # n_calls_regime: call count within the regime window (what matters for
+        # interpreting the regression).
+        # Computed by merging panel with the regime year bounds, then grouping.
+        regime_bounds = CONFIG["regimes"]  # {name: (y0, y1)}
+        regime_call_counts: List[pd.DataFrame] = []
+        for rname, (y0, y1) in regime_bounds.items():
+            rdf = (
+                panel[
+                    panel["ceo_id"].notna()
+                    & (panel["year"] >= y0)
+                    & (panel["year"] <= y1)
+                ]
+                .assign(ceo_id_str=lambda df: df["ceo_id"].astype(str))
+                .groupby("ceo_id_str")
+                .agg(n_calls_regime=("file_name", "count"))
+                .reset_index()
+                .rename(columns={"ceo_id_str": "ceo_id"})
+                .assign(regime=rname)
+            )
+            regime_call_counts.append(rdf)
+        regime_meta = pd.concat(regime_call_counts, ignore_index=True)
+
+        # CEO name (panel-wide, first occurrence)
+        ceo_names = (
             panel[panel["ceo_id"].notna()]
             .assign(ceo_id_str=lambda df: df["ceo_id"].astype(str))
             .groupby("ceo_id_str")
-            .agg(
-                ceo_name=("ceo_name", "first"),
-                n_calls_total=("file_name", "count"),
-            )
+            .agg(ceo_name=("ceo_name", "first"))
             .reset_index()
             .rename(columns={"ceo_id_str": "ceo_id"})
         )
-        estimated_df = estimated_df.merge(ceo_meta, on="ceo_id", how="left")
+
+        estimated_df = estimated_df.merge(ceo_names, on="ceo_id", how="left").merge(
+            regime_meta, on=["ceo_id", "regime"], how="left"
+        )
 
         # Final column order
         output_cols = [
@@ -524,7 +571,7 @@ def save_outputs(
             "gamma_i",
             "ClarityCEO_raw",
             "ClarityCEO",
-            "n_calls_total",
+            "n_calls_regime",
         ]
         output_cols = [c for c in output_cols if c in estimated_df.columns]
         clarity_df = estimated_df[output_cols]
@@ -559,7 +606,7 @@ def generate_report(
 
     Args:
         results: Regression results dict
-        clarity_df: Final clarity scores DataFrame (globally standardized, refs excluded)
+        clarity_df: Final clarity scores DataFrame (per-regime standardized, refs excluded)
         out_dir: Output directory
         duration: Duration in seconds
     """
@@ -609,13 +656,15 @@ def generate_report(
     report_lines.append("")
     if not clarity_df.empty:
         report_lines.append(
-            f"**Note:** ClarityCEO scores are standardized globally across all "
-            f"{len(clarity_df):,} estimated CEO-regime observations (mean=0, std=1). "
+            f"**Note:** ClarityCEO scores are standardized within each regime separately "
+            f"(mean=0, std=1 per regime; {len(clarity_df):,} total CEO-regime rows). "
+            f"Per-regime standardization is used because gamma estimates from separate "
+            f"regressions are anchored to different reference CEOs. "
             f"Reference CEOs (statsmodels baseline) are excluded."
         )
         report_lines.append("")
 
-    # Top CEOs by regime — use globally standardized scores
+    # Top CEOs by regime — use per-regime standardized scores
     if not clarity_df.empty and "ClarityCEO" in clarity_df.columns:
         for regime_name in CONFIG["regimes"]:
             regime_df = clarity_df[clarity_df["regime"] == regime_name].copy()
