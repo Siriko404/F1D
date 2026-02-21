@@ -1,124 +1,104 @@
 # External Integrations
 
-**Analysis Date:** 2026-02-15
+**Analysis Date:** 2026-02-20
 
 ## APIs & External Services
 
-**None detected** - This is a local data processing pipeline with no external API calls or cloud service integrations.
+**None detected at runtime.**
+The pipeline is fully offline. All data is pre-downloaded into the `inputs/` directory as Parquet files before execution begins. No HTTP client libraries (requests, httpx, aiohttp) are used in the `src/` tree. The `types-requests` stub is installed for type checking only.
 
 ## Data Storage
 
 **Databases:**
-- None (file-based data storage)
+- None — no database server (PostgreSQL, SQLite, etc.) is used.
+- All persistence is via local Parquet files using PyArrow/pandas `read_parquet` / `to_parquet`.
+
+**Primary data format:** Apache Parquet (`.parquet`) throughout all stages.
+
+**Secondary data format:** CSV for audit/reporting outputs; `.xlsx` written via openpyxl for select reports.
+
+**Input data files (pre-supplied, not fetched at runtime):**
+
+| Dataset | Local path | Engine class |
+|---------|-----------|--------------|
+| Compustat NA Daily All | `inputs/comp_na_daily_all/comp_na_daily_all.parquet` | `src/f1d/shared/variables/_compustat_engine.py` → `CompustatEngine` |
+| CRSP Daily Stock File | `inputs/CRSP_DSF/CRSP_DSF_{year}_Q{q}.parquet` | `src/f1d/shared/variables/_crsp_engine.py` → `CRSPEngine` |
+| IBES Consensus Estimates | `inputs/tr_ibes/tr_ibes.parquet` (~25M rows) | `src/f1d/shared/variables/_ibes_engine.py` → `IBESEngine` |
+| SDC M&A | `inputs/SDC/sdc-ma-merged.parquet` | `src/f1d/shared/variables/takeover_indicator.py` |
+| Loughran-McDonald Dictionary | `inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv` | `config/project.yaml` → `paths.lm_dictionary` |
+| Earnings Call Transcripts (Unified Info) | `inputs/Earnings_Calls_Transcripts/Unified-info.parquet` | `config/project.yaml` → `paths.unified_info` |
+| Earnings Call Transcripts (Speaker Data) | `inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet` | `config/project.yaml` → `paths.speaker_data_pattern` |
+| CCCL Shift-Share Instrument | `inputs/CCCL_instrument/instrument_shift_intensity_2005_2022.parquet` | `src/f1d/shared/variables/cccl_instrument.py` |
+| Hassan et al. (2019) Policy Risk | `inputs/FirmLevelRisk/` | `src/f1d/shared/variables/_hassan_engine.py` |
+
+All engines use a lazy-load + cache singleton pattern (`get_engine()` returning a module-level instance).
 
 **File Storage:**
-- Local filesystem only
-- Parquet files (`.parquet`) - Primary data format via PyArrow
-- CSV files (`.csv`) - Reference data and outputs
-- Excel files (`.xlsx`) - Limited use (openpyxl installed but not actively used)
-- YAML files (`.yaml`) - Configuration files
-
-**Data Sources (Local Files):**
-- `inputs/Earnings_Calls_Transcripts/` - Earnings call transcript data
-- `inputs/LM_dictionary/` - Loughran-McDonald dictionary for text analysis
-- `inputs/CRSPCompustat_CCM/` - CRSP-Compustat linking table
-- `inputs/CRSP_DSF/` - Daily stock returns
-- `inputs/comp_na_daily_all/` - Compustat North America daily data
-- `inputs/tr_ibes/` - IBES analyst forecasts
-- `inputs/Execucomp/` - Executive compensation data
-- `inputs/SDC/` - M&A deal data
-- `inputs/CCCL_instrument/` - Instrumental variable data
-- `inputs/FirmLevelRisk/` - Firm-level risk measures
-- `inputs/FF1248/` - Fama-French factors
-- `inputs/Siccodes12.zip`, `Siccodes48.zip` - Industry classification codes
-- `inputs/SEC_Edgar_Letters/` - SEC EDGAR correspondence
+- Local filesystem only.
+- Outputs written to timestamped subdirectories under `outputs/`.
+- Logs written to `logs/`.
 
 **Caching:**
-- None (no caching layer implemented)
+- In-process singleton caches in Python engine objects (Compustat, CRSP, IBES, Hassan).
+- No Redis, Memcached, or file-based caching layer.
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Custom (none required)
-- No authentication or identity services needed (local processing only)
+- None — no authentication systems, user management, or identity providers.
+- The only secrets are CI tokens (Codecov) stored as GitHub Actions secrets (`CODECOV_TOKEN`).
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None (no external error tracking service)
+- No external service (Sentry, Datadog, etc.).
+- Errors are captured to log files via the internal `DualWriter` class (`src/f1d/shared/observability/logging.py`) and structlog (`src/f1d/shared/logging/`).
 
 **Logs:**
-- structlog for structured logging
-- Log files written to `logs/` directory
-- Console output with JSON format option
-- Log level configurable via `config/project.yaml` or pydantic-settings
+- Dual output: structured JSON to `logs/` files + human-readable console output via structlog's `ConsoleRenderer`.
+- Log level configurable via `config/project.yaml` (`logging.level`) or `F1D_LOGGING__LEVEL` env var.
+- Script-specific logs written to `outputs/<step_subdir>/` alongside output data.
 
-**Observability Utilities:**
-- `src/f1d/shared/observability_utils.py` - Memory tracking, CPU monitoring
-- `src/f1d/shared/diagnostics.py` - Diagnostics utilities
-- `src/f1d/shared/logging/` - Structured logging configuration
+**Metrics / Observability:**
+- In-process throughput, memory, anomaly detection utilities in `src/f1d/shared/observability/` (throughput.py, memory.py, stats.py, anomalies.py).
+- psutil used for real-time memory-percent monitoring during chunked reads (`chunked_reader.py`; threshold: 80% per `config/project.yaml → chunk_processing.max_memory_percent`).
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- None (local execution pipeline)
-- GitHub Actions for CI/CD testing only (not for hosting)
+- Local research workstation only. No cloud deployment.
 
 **CI Pipeline:**
-- GitHub Actions
-  - Primary workflow: `.github/workflows/ci.yml` - Linting and testing
-  - Extended workflow: `.github/workflows/test.yml` - Extended testing, security scanning, E2E tests
-  - Security scanning: Bandit SAST (medium severity)
-  - Linting: Ruff (linting and formatting)
-  - Type checking: mypy (Tier 1 modules only)
-  - Testing: pytest with coverage (pytest-cov)
-  - Coverage reporting: Codecov integration
-  - Matrix testing: Python 3.9, 3.10, 3.11, 3.12, 3.13
-  - E2E tests: Run on main branch pushes only
+- GitHub Actions — two workflows:
+  - `.github/workflows/ci.yml`: lint (ruff + mypy) → test matrix (3.9–3.13) → E2E tests (main branch only). Uploads coverage to Codecov.
+  - `.github/workflows/test.yml`: extended workflow — bandit SAST → test matrix → E2E tests.
+- Dependabot configured via `.github/dependabot.yml` for automated dependency updates.
+- Pre-commit hooks: ruff lint + format + mypy (Tier 1 only) + file safety checks.
 
-**Dependency Management:**
-- Dependabot for automated dependency updates (`.github/dependabot.yml`)
-  - Weekly Python dependency checks
-  - Monthly GitHub Actions updates
-  - Grouped updates for dev and production dependencies
-
-**Pre-commit Hooks:**
-- Pre-commit CI configured (`.pre-commit-config.yaml`)
-  - Ruff (linting and formatting)
-  - mypy (type checking on `src/f1d/shared`)
-  - General file quality checks (trailing whitespace, YAML validation, etc.)
-  - Security checks (detect-private-key, debug-statements)
-
-## Environment Configuration
-
-**Required env vars:**
-- `F1D_API_TIMEOUT_SECONDS` - API timeout setting (default: 30)
-- `F1D_MAX_RETRIES` - Maximum retries (default: 3)
-
-**Secrets location:**
-- None (no secrets required for pipeline operation)
-- `.env.example` provided as template (no sensitive values)
+**Coverage Reporting:**
+- Codecov integration via `codecov/codecov-action@v4` — token: `secrets.CODECOV_TOKEN`.
+- Coverage artifacts (XML, HTML, JSON) uploaded as GitHub Actions artifacts (30-day retention).
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None
+- None.
 
 **Outgoing:**
-- None
+- None (excluding Codecov upload in CI).
 
-## Statistical Libraries
+## Environment Configuration
 
-**Econometric Analysis:**
-- statsmodels 0.14.6 - Used in `src/f1d/shared/panel_ols.py`, `src/f1d/shared/iv_regression.py`, and all econometric scripts
-- linearmodels - Used in panel regression scripts (`src/f1d/econometric/v1/`, `src/f1d/econometric/v2/`)
-- lifelines 0.30.0 - Used for survival analysis in `src/f1d/econometric/v1/4.3_TakeoverHazards.py`
+**Required env vars (from `.env.example`):**
+- `F1D_API_TIMEOUT_SECONDS` — currently unused at runtime (no live API); reserved for future use
+- `F1D_MAX_RETRIES` — currently unused at runtime; reserved for future use
 
-**Text Processing:**
-- rapidfuzz >=3.14.0 (optional) - Fuzzy string matching in `src/f1d/shared/string_matching.py` and `src/f1d/sample/1.2_LinkEntities.py`
-  - Graceful degradation: Pipeline runs without it (falls back to exact matching)
-  - Improves entity match rates when installed
+**Other `F1D_`-prefixed vars** are read by pydantic-settings models in `src/f1d/shared/config/` (e.g., `F1D_LOGGING__LEVEL`, `F1D_LOGGING__FORMAT` per `src/f1d/shared/config/loader.py`).
+
+**Secrets location:**
+- `.env` (not committed; `.env.example` committed as template).
+- GitHub Actions `secrets.CODECOV_TOKEN` for CI coverage uploads.
 
 ---
 
-*Integration audit: 2026-02-15*
+*Integration audit: 2026-02-20*

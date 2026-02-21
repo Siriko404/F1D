@@ -1,408 +1,249 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-02-15
+**Analysis Date:** 2026-02-20
 
 ## Directory Layout
 
 ```
-[project-root]/
-├── inputs/                 # Raw input data (immutable)
-│   ├── Earnings_Calls_Transcripts/
-│   │   ├── Unified-info.parquet
-│   │   └── speaker_data_2002.parquet through speaker_data_2018.parquet
-│   ├── LM_dictionary/
-│   │   └── Loughran-McDonald_MasterDictionary_1993-2024.csv
-│   ├── CRSP_DSF/
-│   ├── CRSPCompustat_CCM/
-│   ├── comp_na_daily_all/
-│   ├── tr_ibes/
-│   ├── Execucomp/
-│   ├── SDC/
-│   ├── CCCL_instrument/
-│   ├── FF1248/
-│   ├── FirmLevelRisk/
-│   ├── Manager_roles/
-│   └── SEC_Edgar_Letters/
-├── logs/                   # Execution logs (timestamped)
-│   ├── 1.1_CleanMetadata/
-│   ├── 1.2_LinkEntities/
-│   ├── 1.3_BuildTenureMap/
-│   ├── 1.4_AssembleManifest/
-│   ├── 2.1_TokenizeAndCount/
-│   ├── 2.2_ConstructVariables/
-│   ├── 2.3_VerifyStep2/
-│   ├── 3_Financial_Features/
-│   ├── 3_Financial_V2/
-│   ├── 4.1_EstimateManagerClarity/
-│   ├── 4.2_LiquidityRegressions/
-│   ├── 4.3_TakeoverHazards/
-│   ├── 4.4_GenerateSummaryStats/
-│   └── 4_Econometric_V2/
-├── outputs/                # Pipeline outputs (timestamped)
-│   ├── 1.0_BuildSampleManifest/
+F1D/                              # Project root
+├── src/
+│   └── f1d/                      # Main Python package (installed as f1d)
+│       ├── __init__.py            # Package entry point; exports version + public API
+│       ├── sample/                # Stage 1: Sample construction scripts
+│       ├── text/                  # Stage 2: Text processing scripts
+│       ├── variables/             # Stage 3: Panel builder scripts (per hypothesis)
+│       ├── econometric/           # Stage 4: Econometric test scripts (per hypothesis)
+│       ├── financial/             # Legacy financial module (V1/V2 variants)
+│       └── shared/                # Tier 1 shared utilities (imported by all stages)
+│           ├── config/            # Pydantic-settings config system
+│           ├── variables/         # Variable builder classes (one per variable)
+│           ├── logging/           # Structured logging (structlog)
+│           └── observability/     # Stats, anomaly detection, memory, throughput
+├── config/
+│   ├── project.yaml               # Main project config (data range, paths, step params)
+│   └── variables.yaml             # Variable-level config for Stage 3 builders
+├── inputs/                        # Raw data inputs (NOT committed – large Parquet files)
+│   ├── Earnings_Calls_Transcripts/ # Earnings call transcripts (Unified-info.parquet, speaker_data_{year}.parquet)
+│   ├── comp_na_daily_all/         # Compustat quarterly data
+│   ├── CRSP_DSF/                  # CRSP daily stock data
+│   ├── CRSPCompustat_CCM/         # CCM link table (gvkey ↔ permno)
+│   ├── Execucomp/                 # ExecuComp CEO data
+│   ├── tr_ibes/                   # IBES analyst estimates
+│   ├── FirmLevelRisk/             # Hassan et al. political risk scores
+│   ├── CCCL_instrument/           # CCCL IV instrument data
+│   ├── SDC/                       # M&A deal data (takeover hazards)
+│   ├── LM_dictionary/             # Loughran-McDonald dictionary
+│   ├── Manager_roles/             # Manager role classifications
+│   ├── FF1248/                    # Fama-French 12/48 industry codes
+│   └── SEC_Edgar_Letters/         # SEC comment letters
+├── outputs/                       # Pipeline outputs (timestamped subdirectories)
 │   ├── 1.1_CleanMetadata/
 │   ├── 1.2_LinkEntities/
 │   ├── 1.3_BuildTenureMap/
 │   ├── 1.4_AssembleManifest/
 │   ├── 2_Textual_Analysis/
-│   ├── 3_Financial_Features/
-│   ├── 3_Financial_V2/
-│   ├── 4.1_ManagerClarity/
-│   ├── 4.2_LiquidityRegressions/
-│   ├── 4.3_TakeoverHazards/
-│   └── 4_Econometric_V2/
-├── .benchmarks/              # Performance benchmark results
-├── .claude/                 # Claude AI assistant configuration
-├── .github/                 # GitHub Actions workflows
-│   └── workflows/
-├── .git/                   # Git repository (excluded)
-├── .planning/               # GSD planning documents
-│   ├── codebase/            # Codebase analysis docs (ARCHITECTURE.md, STRUCTURE.md)
-│   ├── phases/              # Phase plans and summaries
-│   ├── milestones/          # Milestone tracking
-│   ├── research/            # Research notes
-│   └── verification/        # Verification scripts
-├── _archive/                # Deprecated/archived code
-│   └── legacy_archive/
-├── config/                  # Project configuration
-│   └── project.yaml         # Main configuration file
-├── docs/                    # Documentation standards
-│   ├── ARCHITECTURE_STANDARD.md
-│   ├── CODE_QUALITY_STANDARD.md
-│   ├── CONFIG_TESTING_STANDARD.md
-│   ├── DOC_TOOLING_STANDARD.md
-│   ├── DOCSTRING_COMPLIANCE.md
-│   ├── SCRIPT_DOCSTANDARD.md
-│   ├── TIER_MANIFEST.md
-│   ├── UPGRADE_GUIDE.md
-│   ├── VARIABLE_CATALOG_V1.md
-│   └── VARIABLE_CATALOG_V2_V3.md
-├── src/                     # Source code (src-layout package)
-│   └── f1d/
-│       ├── __init__.py
-│       ├── sample/             # Stage 1: Sample construction
-│       │   ├── __init__.py
-│       │   ├── 1.0_BuildSampleManifest.py
-│       │   ├── 1.1_CleanMetadata.py
-│       │   ├── 1.2_LinkEntities.py
-│       │   ├── 1.3_BuildTenureMap.py
-│       │   ├── 1.4_AssembleManifest.py
-│       │   └── 1.5_Utils.py
-│       ├── text/               # Stage 2: Text processing
-│       │   ├── __init__.py
-│       │   ├── tokenize_and_count.py
-│       │   ├── construct_variables.py
-│       │   ├── report_step2.py
-│       │   └── verify_step2.py
-│       ├── financial/           # Stage 3: Financial features
-│       │   ├── __init__.py
-│       │   ├── v1/            # V1 methodology
-│       │   │   ├── __init__.py
-│       │   │   ├── 3.0_BuildFinancialFeatures.py
-│       │   │   ├── 3.1_FirmControls.py
-│       │   │   ├── 3.2_MarketVariables.py
-│       │   │   ├── 3.3_EventFlags.py
-│       │   │   └── 3.4_Utils.py
-│       │   └── v2/            # V2 methodology (active, not deprecated)
-│       │       ├── __init__.py
-│       │       ├── 3.1_H1Variables.py
-│       │       ├── 3.2_H2Variables.py
-│       │       ├── 3.2a_AnalystDispersionPatch.py
-│       │       ├── 3.3_H3Variables.py
-│       │       ├── 3.5_H5Variables.py
-│       │       ├── 3.6_H6Variables.py
-│       │       ├── 3.7_H7IlliquidityVariables.py
-│       │       ├── 3.8_H8TakeoverVariables.py
-│       │       ├── 3.9_H2_BiddleInvestmentResidual.py
-│       │       ├── 3.10_H2_PRiskUncertaintyMerge.py
-│       │       ├── 3.11_H9_StyleFrozen.py
-│       │       ├── 3.12_H9_PRiskFY.py
-│       │       └── 3.13_H9_AbnormalInvestment.py
-│       ├── econometric/         # Stage 4: Econometric analysis
-│       │   ├── __init__.py
-│       │   ├── v1/            # V1 methodology
-│       │   │   ├── __init__.py
-│       │   │   ├── 4.1_EstimateManagerClarity.py
-│       │   │   ├── 4.1.1_EstimateCeoClarity.py
-│       │   │   ├── 4.1.2_EstimateCeoClarity_Extended.py
-│       │   │   ├── 4.1.3_EstimateCeoClarity_Regime.py
-│       │   │   ├── 4.1.4_EstimateCeoTone.py
-│       │   │   ├── 4.2_LiquidityRegressions.py
-│       │   │   ├── 4.3_TakeoverHazards.py
-│       │   │   └── 4.4_GenerateSummaryStats.py
-│       │   └── v2/            # V2 methodology (active, not deprecated)
-│       │       ├── __init__.py
-│       │       ├── 4.1_H1CashHoldingsRegression.py
-│       │       ├── 4.2_H2InvestmentEfficiencyRegression.py
-│       │       ├── 4.3_H3PayoutPolicyRegression.py
-│       │       ├── 4.4_H4_LeverageDiscipline.py
-│       │       ├── 4.5_H5DispersionRegression.py
-│       │       ├── 4.6_H6CCCLRegression.py
-│       │       ├── 4.7_H7IlliquidityRegression.py
-│       │       ├── 4.8_H8TakeoverRegression.py
-│       │       ├── 4.9_CEOFixedEffects.py
-│       │       ├── 4.10_H2_PRiskUncertainty_Investment.py
-│       │       └── 4.11_H9_Regression.py
-│       └── shared/             # Tier 1: Shared utilities
-│           ├── __init__.py
-│           ├── centering.py
-│           ├── chunked_reader.py
-│           ├── cli_validation.py
-│           ├── config/
-│           │   ├── __init__.py
-│           │   ├── base.py
-│           │   ├── datasets.py
-│           │   ├── env.py
-│           │   ├── hashing.py
-│           │   ├── loader.py
-│           │   ├── paths.py
-│           │   ├── step_configs.py
-│           │   └── string_matching.py
-│           ├── data_loading.py
-│           ├── data_validation.py
-│           ├── dependency_checker.py
-│           ├── diagnostics.py
-│           ├── dual_writer.py
-│           ├── env_validation.py
-│           ├── financial_utils.py
-│           ├── industry_utils.py
-│           ├── iv_regression.py
-│           ├── latex_tables.py
-│           ├── logging/
-│           │   ├── __init__.py
-│           │   ├── config.py
-│           │   ├── context.py
-│           │   └── handlers.py
-│           ├── metadata_utils.py
-│           ├── observability/
-│           │   ├── __init__.py
-│           │   ├── anomalies.py
-│           │   ├── files.py
-│           │   ├── logging.py
-│           │   ├── memory.py
-│           │   ├── stats.py
-│           │   └── throughput.py
-│           ├── observability_utils.py
-│           ├── output_schemas.py
-│           ├── panel_ols.py
-│           ├── path_utils.py
-│           ├── regression_helpers.py
-│           ├── regression_utils.py
-│           ├── regression_validation.py
-│           ├── reporting_utils.py
-│           ├── sample_utils.py
-│           ├── string_matching.py
-│           ├── subprocess_validation.py
-│           └── logs/            # Logs generated within src (data staging)
-├── tests/                   # Test suite
-│   ├── conftest.py          # Pytest configuration and fixtures
-│   ├── factories/           # Test data factories
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   └── financial.py
-│   ├── fixtures/           # Test fixture files
-│   ├── integration/        # Integration tests
-│   ├── performance/        # Performance tests
-│   ├── regression/         # Regression tests
-│   ├── unit/              # Unit tests
-│   ├── utils/             # Test utilities
-│   └── verification/       # Verification tests
-├── .coveragerc             # Coverage configuration
-├── .coverage               # Coverage results
-├── .env.example            # Environment variable template
-├── .gitignore              # Git ignore rules
-├── .pre-commit-config.yaml  # Pre-commit hooks
-├── pyproject.toml          # Package configuration (PEP 621)
-├── README.md               # Project documentation
-├── requirements.txt         # Python dependencies
-├── SECURITY.md             # Security policy
-└── SCALING.md             # Scaling and performance guide
+│   ├── 3_Financial_Features/      # Legacy Stage 3 outputs
+│   ├── variables/                 # Stage 3 panel outputs (per hypothesis)
+│   └── econometric/               # Stage 4 regression outputs (per hypothesis)
+├── logs/                          # Per-step run logs (timestamped .log files)
+├── tests/
+│   ├── unit/                      # Unit tests (pytest)
+│   ├── integration/               # Integration tests (full pipeline or multi-step)
+│   ├── regression/                # Regression / stability tests (baseline checksums)
+│   ├── performance/               # Performance benchmarks
+│   ├── verification/              # Dry-run verification tests (all 4 stages)
+│   ├── factories/                 # Test data factories
+│   ├── fixtures/                  # Static test fixtures (JSON, checksums)
+│   ├── utils/                     # Test harness utilities
+│   └── conftest.py                # Shared pytest fixtures
+├── docs/                          # Technical standards and planning documents
+├── .github/workflows/             # CI/CD workflows
+├── pyproject.toml                 # Build config, dependencies, tool settings (ruff, mypy, pytest)
+├── requirements.txt               # Pinned dependency list
+├── .coveragerc                    # Coverage configuration
+├── .pre-commit-config.yaml        # Pre-commit hooks (ruff, mypy, black)
+└── README.md                      # Project overview and pipeline instructions
 ```
 
 ## Directory Purposes
 
-**inputs:**
-- Purpose: Raw input data storage (immutable reference data)
-- Contains: Earnings call transcripts, financial datasets, dictionaries, reference files
-- Key files: `Unified-info.parquet`, `speaker_data_*.parquet`, `Loughran-McDonald_MasterDictionary_1993-2024.csv`
+**`src/f1d/sample/`:**
+- Purpose: Stage 1 — sample construction (filter transcripts, link firms, build tenure, assemble manifest)
+- Contains: `build_sample_manifest.py` (orchestrator), `clean_metadata.py`, `link_entities.py`, `build_tenure_map.py`, `assemble_manifest.py`, `utils.py`
+- Key files: `src/f1d/sample/build_sample_manifest.py` (Stage 1 entry point), `src/f1d/sample/assemble_manifest.py`
 
-**logs:**
-- Purpose: Execution logs with timestamped directories
-- Contains: Script execution logs, progress tracking, error logs
-- Structure: `logs/<script_name>/<timestamp>.log`
+**`src/f1d/text/`:**
+- Purpose: Stage 2 — tokenize call transcripts, compute LM dictionary word counts, build linguistic variable Parquet files
+- Contains: `tokenize_transcripts.py`, `build_linguistic_variables.py`
+- Key files: `src/f1d/text/build_linguistic_variables.py` (produces `linguistic_variables_{year}.parquet`)
 
-**outputs:**
-- Purpose: Pipeline outputs with timestamped directories
-- Contains: Processed datasets, regression results, tables, stats.json files
-- Structure: `outputs/<script_name>/<timestamp>/` with `latest/` symlinks
+**`src/f1d/variables/`:**
+- Purpose: Stage 3 — merge manifest + linguistic + financial variables into one call-level panel per hypothesis
+- Contains: `build_{hypothesis}_panel.py` scripts (14 scripts)
+- Key files: `src/f1d/variables/build_ceo_clarity_extended_panel.py` (canonical full-feature panel used by summary stats), `src/f1d/variables/build_h1_cash_holdings_panel.py` through `build_h8_policy_risk_panel.py`
 
-**src/f1d:**
-- Purpose: Source code package (src-layout)
-- Contains: All Python modules organized by pipeline stage
-- Key files: `__init__.py` (package init), shared utilities
+**`src/f1d/econometric/`:**
+- Purpose: Stage 4 — run panel OLS regressions, output LaTeX tables, diagnostics, Markdown reports
+- Contains: `test_{hypothesis}.py` scripts (13 scripts) + `generate_summary_stats.py`
+- Key files: `src/f1d/econometric/test_ceo_clarity.py`, `src/f1d/econometric/generate_summary_stats.py`
 
-**src/f1d/sample:**
-- Purpose: Stage 1 - Sample construction scripts
-- Contains: Metadata cleaning, entity linking, tenure mapping, manifest assembly
-- Key files: `1.1_CleanMetadata.py`, `1.2_LinkEntities.py`, `1.3_BuildTenureMap.py`, `1.4_AssembleManifest.py`
+**`src/f1d/shared/`:**
+- Purpose: Shared utilities — imported by every stage; no business logic
+- Key files:
+  - `src/f1d/shared/path_utils.py` — `get_latest_output_dir()`, `ensure_output_dir()`, `validate_input_file()`
+  - `src/f1d/shared/data_loading.py` — `load_parquet()`, `safe_merge()`
+  - `src/f1d/shared/panel_ols.py` — `run_panel_ols()`, `CollinearityError`
+  - `src/f1d/shared/financial_utils.py` — winsorization, financial ratio helpers
+  - `src/f1d/shared/regression_utils.py` — regression helpers
+  - `src/f1d/shared/latex_tables.py`, `src/f1d/shared/latex_tables_accounting.py` — LaTeX table generation
+  - `src/f1d/shared/string_matching.py` — fuzzy string matching (rapidfuzz)
+  - `src/f1d/shared/chunked_reader.py` — memory-aware chunked Parquet reading
 
-**src/f1d/text:**
-- Purpose: Stage 2 - Text processing scripts
-- Contains: Tokenization, variable construction, verification
-- Key files: `tokenize_and_count.py`, `construct_variables.py`, `verify_step2.py`
+**`src/f1d/shared/config/`:**
+- Purpose: All configuration loading and validation
+- Key files:
+  - `src/f1d/shared/config/base.py` — `ProjectConfig` (root pydantic-settings class)
+  - `src/f1d/shared/config/loader.py` — `get_config()` (cached singleton), `load_variable_config()`
+  - `src/f1d/shared/config/paths.py` — `PathsSettings`
+  - `src/f1d/shared/config/step_configs.py` — per-step config classes (Step00Config..Step09Config)
 
-**src/f1d/financial:**
-- Purpose: Stage 3 - Financial feature construction
-- Contains: V1 methodology (base financial features) and V2 methodology (hypothesis-specific variables)
-- Key files: `v1/3.1_FirmControls.py`, `v1/3.2_MarketVariables.py`, `v2/3.1_H1Variables.py`
+**`src/f1d/shared/variables/`:**
+- Purpose: One module per variable; Builder pattern; private compute engines loaded once
+- Key files:
+  - `src/f1d/shared/variables/base.py` — `VariableBuilder`, `VariableResult`, `VariableStats`
+  - `src/f1d/shared/variables/__init__.py` — re-exports all ~60 builders
+  - `src/f1d/shared/variables/_compustat_engine.py` — `CompustatEngine` (loads Compustat once, caches)
+  - `src/f1d/shared/variables/_crsp_engine.py` — `CRSPEngine` (loads CRSP yearly)
+  - `src/f1d/shared/variables/_ibes_engine.py` — `IBESEngine`
+  - `src/f1d/shared/variables/_hassan_engine.py` — Hassan political risk engine
 
-**src/f1d/econometric:**
-- Purpose: Stage 4 - Econometric analysis scripts
-- Contains: V1 methodology (CEO clarity, liquidity, takeover) and V2 methodology (hypothesis testing)
-- Key files: `v1/4.1_EstimateManagerClarity.py`, `v2/4.1_H1CashHoldingsRegression.py`
+**`src/f1d/shared/observability/`:**
+- Purpose: Observability utilities (stats, anomalies, memory, throughput, dual-writer logging)
+- Key files:
+  - `src/f1d/shared/observability/logging.py` — `DualWriter` class
+  - `src/f1d/shared/observability/stats.py` — per-step stats functions
+  - `src/f1d/shared/observability/anomalies.py` — `detect_anomalies_zscore()`, `detect_anomalies_iqr()`
 
-**src/f1d/shared:**
-- Purpose: Tier 1 - Cross-cutting utilities
-- Contains: Configuration, logging, data loading, validation, path utilities, regression helpers
-- Key files: `config/`, `logging/`, `path_utils.py`, `data_loading.py`, `panel_ols.py`
+**`config/`:**
+- Purpose: YAML configuration files (NOT secrets)
+- Key files: `config/project.yaml`, `config/variables.yaml`
 
-**config:**
-- Purpose: Project configuration
-- Contains: YAML configuration files
-- Key files: `project.yaml`
+**`outputs/`:**
+- Purpose: All pipeline outputs. Each sub-step creates a `{YYYY-MM-DD_HHMMSS}/` subdirectory
+- Generated: Yes (at runtime). NOT committed to git (in `.gitignore`)
 
-**docs:**
-- Purpose: Documentation standards and guides
-- Contains: Architecture standard, code quality standard, testing standards
-- Key files: `ARCHITECTURE_STANDARD.md`, `CODE_QUALITY_STANDARD.md`, `CONFIG_TESTING_STANDARD.md`
+**`logs/`:**
+- Purpose: Per-run log files for each pipeline step
+- Generated: Yes (at runtime). NOT committed to git
 
-**tests:**
-- Purpose: Test suite
-- Contains: Unit tests, integration tests, regression tests, performance tests, verification tests
-- Key files: `conftest.py`, `factories/`, `unit/`, `integration/`
+**`inputs/`:**
+- Purpose: Raw research data (Compustat, CRSP, IBES, earnings call transcripts, etc.)
+- Generated: No (must be provided externally). NOT committed to git
 
-**_archive:**
-- Purpose: Deprecated/archived code
-- Contains: Legacy scripts and implementations no longer in active use
-- Generated: No (manually maintained)
-- Committed: Yes (for historical reference)
+**`tests/`:**
+- Purpose: Full test suite across unit, integration, regression, performance, and verification tiers
+- Key files: `tests/conftest.py`, `tests/unit/`, `tests/integration/`, `tests/verification/`
 
-**.planning:**
-- Purpose: GSD planning and documentation
-- Contains: Phase plans, milestones, research notes, codebase analysis
-- Generated: Yes (by GSD workflow)
-- Committed: Yes
+**`docs/`:**
+- Purpose: Architecture standards, variable catalogs, refactor plans — reference documentation
+- Contains: `ARCHITECTURE_STANDARD.md`, `CODE_QUALITY_STANDARD.md`, `VARIABLE_CATALOG_V1.md`, `VARIABLE_CATALOG_V2_V3.md`, `TIER_MANIFEST.md`, etc.
+
+## Naming Conventions
+
+**Files (pipeline scripts):**
+- Stage scripts: `{stage_number}_{descriptive_name}.py` — e.g. `clean_metadata.py` (Step 1.1), `build_linguistic_variables.py` (Step 2.2)
+- Variable builders: `{variable_snake_case}.py` — e.g. `cash_holdings.py`, `ceo_qa_uncertainty.py`
+- Panel builders: `build_{hypothesis}_panel.py` — e.g. `build_h1_cash_holdings_panel.py`
+- Econometric tests: `test_{hypothesis}.py` — e.g. `test_h1_cash_holdings.py`, `test_ceo_clarity.py`
+- Shared utilities: `{domain}_utils.py` or `{domain}.py` — e.g. `path_utils.py`, `financial_utils.py`, `panel_ols.py`
+- Private compute engines: `_{source}_engine.py` — e.g. `_compustat_engine.py`, `_crsp_engine.py`
+
+**Directories:**
+- Stage output dirs match the step ID label: `1.1_CleanMetadata`, `2_Textual_Analysis`, `variables`, `econometric`
+- Timestamped run dirs: `YYYY-MM-DD_HHMMSS` (e.g. `2026-02-19_150340`)
+
+**Python classes:**
+- Variable builders: `{VariableName}Builder` — e.g. `CashHoldingsBuilder`, `CEOQAUncertaintyBuilder`
+- Config classes: `{Scope}Settings` or `{Scope}Config` — e.g. `DataSettings`, `ProjectConfig`, `StepsConfig`
+- Exceptions: `{Issue}Error` — e.g. `OutputResolutionError`, `CollinearityError`
+
+**Log IDs (step identifiers):**
+- Format: `{major}.{minor}_{DescriptiveName}` — e.g. `1.1_CleanMetadata`, `4.1.1_CeoClarity`
 
 ## Key File Locations
 
 **Entry Points:**
-- `src/f1d/sample/1.1_CleanMetadata.py`: Sample construction entry point
-- `src/f1d/text/tokenize_and_count.py`: Text processing entry point
-- `src/f1d/financial/v1/3.0_BuildFinancialFeatures.py`: Financial features orchestrator
-- `src/f1d/econometric/v1/4.1_EstimateManagerClarity.py`: Econometric analysis entry point
+- Stage 1: `src/f1d/sample/build_sample_manifest.py`
+- Stage 2: `src/f1d/text/tokenize_transcripts.py`, `src/f1d/text/build_linguistic_variables.py`
+- Stage 3: `src/f1d/variables/build_{hypothesis}_panel.py`
+- Stage 4: `src/f1d/econometric/test_{hypothesis}.py`
 
 **Configuration:**
-- `config/project.yaml`: Main project configuration
-- `pyproject.toml`: Package configuration and dependencies
-- `.coveragerc`: Coverage configuration
-- `requirements.txt`: Python dependencies list
+- `config/project.yaml` — all runtime config (year range, paths, step parameters)
+- `config/variables.yaml` — per-variable config for Stage 3 builders
+- `src/f1d/shared/config/base.py` — `ProjectConfig` class definition
+- `src/f1d/shared/config/loader.py` — `get_config()`, `load_variable_config()`
+- `pyproject.toml` — build, lint, type-check, test settings
 
 **Core Logic:**
-- `src/f1d/shared/config/`: Configuration loading and validation
-- `src/f1d/shared/logging/`: Logging infrastructure
-- `src/f1d/shared/data_loading.py`: Data loading and merge utilities
-- `src/f1d/shared/panel_ols.py`: Panel OLS regression with fixed effects
-- `src/f1d/shared/path_utils.py`: Path resolution and validation
+- `src/f1d/shared/path_utils.py` — inter-stage output resolution
+- `src/f1d/shared/panel_ols.py` — panel regression engine
+- `src/f1d/shared/variables/base.py` — VariableBuilder base class
+- `src/f1d/shared/variables/_compustat_engine.py` — Compustat data loading
+- `src/f1d/shared/data_loading.py` — `safe_merge()`, `load_parquet()`
 
 **Testing:**
-- `tests/conftest.py`: Pytest configuration and fixtures
-- `tests/unit/`: Unit tests for shared utilities
-- `tests/integration/`: Integration tests for pipeline steps
-- `tests/regression/`: Regression tests for output stability
-- `tests/performance/`: Performance tests
-
-## Naming Conventions
-
-**Files:**
-- Stage scripts: `{step_number}.{sub_step}_{description}.py` (e.g., `1.1_CleanMetadata.py`)
-- V1 scripts: `3.{substep}_{description}.py` (e.g., `3.1_FirmControls.py`)
-- V2 scripts: `3.{hyp}_{description}.py` (e.g., `3.1_H1Variables.py`)
-- Shared utilities: `{purpose}.py` (e.g., `path_utils.py`, `data_loading.py`)
-- Tests: `test_{module}.py` (e.g., `test_path_utils.py`)
-
-**Directories:**
-- Input data: `{number}_{description}/` (e.g., `inputs`, `logs`, `outputs`)
-- Output scripts: `{description}/` (e.g., `sample`, `text`, `financial`, `econometric`)
-- Version variants: `v1/` and `v2/` (both active, neither deprecated)
-- Shared utilities: `shared/` and subdirectories by function (e.g., `config/`, `logging/`)
+- `tests/conftest.py` — shared pytest fixtures
+- `tests/factories/` — test data factories for config and financial data
+- `tests/fixtures/baseline_checksums.json` — regression baseline checksums
 
 ## Where to Add New Code
 
-**New Stage/Step:**
-- Primary code: `src/f1d/{stage}/{step_number}_{description}.py`
-- Tests: `tests/unit/test_{description}.py` and `tests/integration/test_{step}.py`
+**New hypothesis panel (Stage 3):**
+- Primary script: `src/f1d/variables/build_{hypothesis}_panel.py`
+- Individual variable builders: `src/f1d/shared/variables/{variable_name}.py` (one per new variable)
+- Register in: `src/f1d/shared/variables/__init__.py`
+- Tests: `tests/unit/test_{hypothesis}_variables.py`
 
-**New Shared Utility:**
-- Implementation: `src/f1d/shared/{utility_name}.py`
-- Tests: `tests/unit/test_{utility_name}.py`
-- Re-export: Add to `src/f1d/shared/__init__.py` if public API
+**New econometric test (Stage 4):**
+- Script: `src/f1d/econometric/test_{hypothesis}.py`
+- Tests: `tests/unit/test_{hypothesis}_regression.py`
 
-**New Hypothesis (V2 Financial):**
-- Variables: `src/f1d/financial/v2/3.{hyp}_{description}Variables.py`
-- Regression: `src/f1d/econometric/v2/4.{hyp}_{description}Regression.py`
-- Tests: `tests/unit/test_{hyp}_variables.py` and `tests/integration/test_{hyp}_regression.py`
+**New shared variable builder:**
+- Implementation: `src/f1d/shared/variables/{variable_name}.py` (subclass `VariableBuilder`)
+- Register: add import and `__all__` entry in `src/f1d/shared/variables/__init__.py`
 
-**New Config Section:**
-- Schema: `src/f1d/shared/config/base.py` (add Pydantic model)
-- Values: `config/project.yaml` (add YAML section)
-- Loader: `src/f1d/shared/config/loader.py` (if needed)
+**New shared utility:**
+- Location: `src/f1d/shared/{domain}_utils.py` or `src/f1d/shared/{domain}.py`
+- Test: `tests/unit/test_{domain}.py`
 
-**New Output Schema:**
-- Schema: `src/f1d/shared/output_schemas.py` (add Pandera model)
-- Validation: Call validation function in script before writing output
-
-**Utilities:**
-- Shared helpers: `src/f1d/shared/{category}_utils.py`
-- Test helpers: `tests/utils/`
-- Fixtures: `tests/factories/`
+**New config setting:**
+- For project-wide settings: add field to appropriate class in `src/f1d/shared/config/base.py`
+- For per-step settings: add to `src/f1d/shared/config/step_configs.py`
+- Add YAML entry to `config/project.yaml`
 
 ## Special Directories
 
-**inputs:**
-- Purpose: Raw input data (immutable, read-only during processing)
-- Generated: No (external data sources)
-- Committed: Yes (reference data is versioned)
+**`.planning/`:**
+- Purpose: GSD planning documents, milestones, phases, roadmap
+- Generated: Yes (by planning tools)
+- Committed: Yes
 
-**logs:**
-- Purpose: Script execution logs (timestamped directories)
-- Generated: Yes (by each script execution)
-- Committed: Yes (for reproducibility and debugging)
-
-**outputs:**
-- Purpose: Pipeline outputs (timestamped directories with `latest/` symlinks)
-- Generated: Yes (by each script execution)
-- Committed: Yes (for reproducibility)
-
-**_archive:**
-- Purpose: Deprecated/archived code (legacy implementations)
-- Generated: No (manually maintained)
-- Committed: Yes (for historical reference)
-
-**.planning:**
-- Purpose: GSD planning and documentation
-- Generated: Yes (by GSD workflow commands)
-- Committed: Yes (for project tracking)
-
-**.benchmarks:**
+**`.benchmarks/`:**
 - Purpose: Performance benchmark results
-- Generated: Yes (by performance tests)
-- Committed: Yes (for performance tracking)
+- Generated: Yes (at test runtime)
+- Committed: Partially
 
-**tests/fixtures:**
-- Purpose: Test fixture data (sample inputs for testing)
-- Generated: No (hand-crafted test data)
-- Committed: Yes (for test reproducibility)
+**`src/f1d.egg-info/`:**
+- Purpose: Python package metadata (generated by `pip install -e .`)
+- Generated: Yes
+- Committed: No (in `.gitignore`)
+
+**`.mypy_cache/`:**
+- Purpose: mypy type-check cache
+- Generated: Yes
+- Committed: No
 
 ---
 
-*Structure analysis: 2026-02-15*
+*Structure analysis: 2026-02-20*
