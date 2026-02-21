@@ -1,94 +1,270 @@
 # F1D — CEO Communication Clarity Pipeline
 
-Econometric pipeline for the thesis *"CEO Communication Clarity as a Persistent Trait"*.
-Processes 112,968 earnings call observations (2002–2018) to estimate CEO-level fixed
-effects in linguistic uncertainty, then runs robustness analyses by industry sample,
-extended controls, and economic regime.
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://docs.astral.sh/ruff/)
+[![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](https://mypy-lang.org/)
+
+**Econometric pipeline for thesis: "CEO Communication Clarity as a Persistent Trait"**
+
+This pipeline processes 112,968 earnings call observations (2002–2018) to estimate CEO-level fixed effects in linguistic uncertainty, then runs robustness analyses across industry samples, extended controls, and economic regimes.
 
 ---
 
-## Install
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Pipeline Architecture](#pipeline-architecture)
+- [Running the Pipeline](#running-the-pipeline)
+- [Output Structure](#output-structure)
+- [Verified Results](#verified-results)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/user/f1d.git
+cd f1d
+
+# Create virtual environment (Python 3.9+)
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# or: .venv\Scripts\activate  # Windows
+
+# Install package and dependencies
 pip install -e .
 pip install -r requirements.txt
+
+# Run a single hypothesis test (requires input data)
+python -m f1d.econometric.run_manager_clarity
 ```
 
-The editable install is required for all `from f1d.*` imports to resolve. Without it,
-every script raises `ModuleNotFoundError: No module named 'f1d'`.
-
----
-
-## Architecture
-
-The pipeline enforces two strict structural rules:
-
-**One module = one variable.** Each shared variable builder in
-`src/f1d/shared/variables/` returns exactly one column merged onto the manifest by
-`file_name`. No builder returns multiple columns.
-
-**Two-stage execution.** Every hypothesis test is split across exactly two scripts:
-
-```
-Stage 3 — Panel builder   (src/f1d/variables/build_<name>_panel.py)
-    Loads manifest + shared variable builders → merges into one .parquet panel
-
-Stage 4 — Hypothesis test (src/f1d/econometric/run_<name>.py)
-    Loads the panel → filters → OLS with fixed effects → LaTeX table + scores .parquet
-```
-
-**Private engines for expensive loads.** `_compustat_engine.py` and `_crsp_engine.py`
-are module-level singletons. Panel builders call `get_engine()` once; all individual
-builders share the cached result so Compustat and CRSP are each read only once per
-panel build.
+> **Note:** The editable install (`pip install -e .`) is required. All scripts use `from f1d.*` imports that fail without it.
 
 ---
 
 ## Prerequisites
 
-The following upstream outputs must exist before running Stage 3/4. These are assumed
-complete and are not re-documented here.
+### Required Input Data
 
-| Required path | Produced by |
-|---------------|-------------|
-| `outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet` | Step 1.4 — `f1d.sample.assemble_manifest` |
-| `outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet` | Step 2.2 — `f1d.text.build_linguistic_variables` |
-| `inputs/comp_na_daily_all/comp_na_daily_all.parquet` | Compustat raw (provided) |
-| `inputs/CRSP_DSF/CRSP_DSF_{year}_Q{1-4}.parquet` | CRSP daily stock files (provided) |
-| `inputs/tr_ibes/tr_ibes.parquet` | IBES EPS forecasts (provided) |
-| `inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet` | CCM linktable (provided) |
+The following datasets must be present in `inputs/` before running the pipeline. These are externally provided and not included in this repository.
+
+| Path | Description | Source |
+|------|-------------|--------|
+| `inputs/Earnings_Calls_Transcripts/` | Earnings call transcripts with speaker data | Earnings call provider |
+| `inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv` | LM sentiment dictionary | [McDonald Word Lists](https://sraf.nd.edu/textual-analysis/resources/) |
+| `inputs/comp_na_daily_all/` | Compustat quarterly fundamentals | WRDS Compustat |
+| `inputs/CRSP_DSF/` | CRSP daily stock files | WRDS CRSP |
+| `inputs/tr_ibes/` | IBES EPS forecasts | WRDS IBES |
+| `inputs/CRSPCompustat_CCM/` | CCM linktable | WRDS CCM |
+| `inputs/SDC/` | SDC M&A data | Refinitiv SDC |
+| `inputs/CCCL_instrument/` | CEO turnover instrument | Constructed from executive data |
+
+### System Requirements
+
+- **Python:** 3.9, 3.10, 3.11, 3.12, or 3.13
+- **Memory:** 16GB RAM minimum (32GB recommended for full pipeline)
+- **Disk:** ~50GB for input data, ~10GB for outputs
+- **OS:** Windows, macOS, or Linux
+
+---
+
+## Installation
+
+### Step-by-Step Setup
+
+```bash
+# 1. Clone and enter project directory
+git clone https://github.com/user/f1d.git
+cd f1d
+
+# 2. Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate     # Windows
+
+# 3. Upgrade pip
+pip install --upgrade pip
+
+# 4. Install package in editable mode (REQUIRED)
+pip install -e .
+
+# 5. Install all dependencies
+pip install -r requirements.txt
+
+# 6. Install development tools (optional, for contributors)
+pip install -e ".[dev]"
+```
+
+### Dependency Overview
+
+| Category | Packages | Purpose |
+|----------|----------|---------|
+| **Data Processing** | pandas, numpy, pyarrow | DataFrame operations, Parquet I/O |
+| **Statistics** | statsmodels, scipy, linearmodels | OLS, IV regression, survival analysis |
+| **Machine Learning** | scikit-learn, lifelines | Survival models, utilities |
+| **Configuration** | pyyaml, pydantic | YAML parsing, settings validation |
+| **Utilities** | psutil, rapidfuzz | System monitoring, fuzzy matching |
+
+See [DEPENDENCIES.md](docs/DEPENDENCIES.md) for version pinning rationale and [UPGRADE_GUIDE.md](docs/UPGRADE_GUIDE.md) for upgrade procedures.
+
+### Verify Installation
+
+```bash
+# Check package is installed correctly
+python -c "import f1d; print(f'F1D version: {f1d.__version__}')"
+
+# Run test suite
+pytest tests/ -m "not e2e" -v
+```
+
+---
+
+## Pipeline Architecture
+
+### Four-Stage Design
+
+The pipeline enforces a strict four-stage architecture with clear data contracts:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Stage 1: Sample Construction (src/f1d/sample/)                             │
+│   CleanMetadata → LinkEntities → BuildTenureMap → AssembleManifest          │
+│   Output: master_sample_manifest.parquet (112,968 calls)                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Stage 2: Text Processing (src/f1d/text/)                                   │
+│   TokenizeTranscripts → BuildLinguisticVariables                            │
+│   Output: linguistic_variables_{year}.parquet (uncertainty, sentiment)     │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Stage 3: Panel Builders (src/f1d/variables/)                               │
+│   build_{hypothesis}_panel.py → merge manifest + shared variables          │
+│   Output: {hypothesis}_panel.parquet (ready for regression)                │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Stage 4: Hypothesis Tests (src/f1d/econometric/)                           │
+│   run_{hypothesis}.py → OLS/IV/Cox → LaTeX tables + scores                 │
+│   Output: clarity_scores.parquet, regression_results.txt, *.tex            │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Core Design Principles
+
+| Principle | Enforcement |
+|-----------|-------------|
+| **One module = one variable** | Each builder in `src/f1d/shared/variables/` returns exactly one column |
+| **Zero row delta on merges** | `ValueError` raised if panel length changes after any merge |
+| **Hard-fail on missing variables** | Stage 4 scripts reject panels with missing required columns |
+| **Timestamped outputs** | All outputs written to `outputs/{stage}/{YYYY-MM-DD_HHMMSS}/` |
+| **Reference entity exclusion** | Statsmodels reference level rows filtered from final outputs |
+
+### Private Data Engines
+
+Expensive data sources (Compustat, CRSP, IBES) are loaded once via module-level singletons:
+
+```python
+# src/f1d/shared/variables/_compustat_engine.py
+_engine = None
+
+def get_engine():
+    global _engine
+    if _engine is None:
+        _engine = CompustatEngine()  # Load once, cache in memory
+    return _engine
+```
+
+All variable builders call `get_engine()`, ensuring Compustat is read exactly once per panel build.
 
 ---
 
 ## Running the Pipeline
 
-Run in this exact order. Each Stage 4 script reads the panel written by its Stage 3
-counterpart.
+### Execution Order
+
+Run stages sequentially. Each stage depends on outputs from previous stages.
+
+#### Stage 1: Sample Construction
 
 ```bash
-# Stage 3 — build panels (each ~5–6 minutes)
+# Build the master sample manifest (~5 minutes total)
+python -m f1d.sample.clean_metadata        # Clean transcript metadata
+python -m f1d.sample.link_entities         # Link transcripts to firms (GVKEY)
+python -m f1d.sample.build_tenure_map      # Build CEO tenure panel
+python -m f1d.sample.assemble_manifest     # Assemble final manifest
+```
+
+#### Stage 2: Text Processing
+
+```bash
+# Extract linguistic variables (~10 minutes total)
+python -m f1d.text.tokenize_transcripts         # Tokenize and count LM words
+python -m f1d.text.build_linguistic_variables   # Compute uncertainty/sentiment
+```
+
+#### Stage 3: Panel Building
+
+```bash
+# Build regression panels (each 1-6 minutes)
 python -m f1d.variables.build_manager_clarity_panel
 python -m f1d.variables.build_ceo_clarity_panel
 python -m f1d.variables.build_ceo_clarity_extended_panel
+python -m f1d.variables.build_ceo_clarity_regime_panel
 python -m f1d.variables.build_ceo_tone_panel
-python -m f1d.variables.build_h1_cash_holdings_panel    # ~1.5 min
-python -m f1d.variables.build_liquidity_panel
+python -m f1d.variables.build_h1_cash_holdings_panel
+python -m f1d.variables.build_h2_investment_panel
+python -m f1d.variables.build_h3_payout_policy_panel
+python -m f1d.variables.build_h4_leverage_panel
+python -m f1d.variables.build_h5_dispersion_panel
+python -m f1d.variables.build_h6_cccl_panel
+python -m f1d.variables.build_h7_illiquidity_panel
 python -m f1d.variables.build_takeover_panel
-
-# Stage 4 — run hypothesis tests
-python -m f1d.econometric.run_manager_clarity          # ~1 min
-python -m f1d.econometric.run_ceo_clarity              # ~30 s
-python -m f1d.econometric.run_ceo_clarity_extended     # ~3 min
-python -m f1d.econometric.run_ceo_clarity_regime       # ~20 s
-python -m f1d.econometric.run_ceo_tone                 # ~3 min
-python -m f1d.econometric.run_h1_cash_holdings         # ~7 min (18 regressions, clustered SEs)
-python -m f1d.econometric.run_h7_illiquidity                # ~2 min
-python -m f1d.econometric.run_takeover_hazards         # ~1 min
-python -m f1d.econometric.generate_summary_stats        # ~1 s (no Stage 3 needed)
 ```
 
-All outputs are written to timestamped subdirectories under `outputs/`.
-`get_latest_output_dir()` always resolves to the most recent run — no symlinks needed.
+#### Stage 4: Hypothesis Tests
+
+```bash
+# Run econometric analyses (each 20 seconds - 7 minutes)
+python -m f1d.econometric.run_manager_clarity       # ~1 min
+python -m f1d.econometric.run_ceo_clarity           # ~30 sec
+python -m f1d.econometric.run_ceo_clarity_extended  # ~3 min
+python -m f1d.econometric.run_ceo_clarity_regime    # ~20 sec
+python -m f1d.econometric.run_ceo_tone              # ~3 min
+python -m f1d.econometric.run_h1_cash_holdings      # ~7 min
+python -m f1d.econometric.run_h2_investment         # ~2 min
+python -m f1d.econometric.run_h3_payout_policy      # ~1 min
+python -m f1d.econometric.run_h4_leverage           # ~1 min
+python -m f1d.econometric.run_h5_dispersion         # ~2 min
+python -m f1d.econometric.run_h6_cccl               # ~1 min
+python -m f1d.econometric.run_h7_illiquidity        # ~2 min
+python -m f1d.econometric.run_takeover_hazards      # ~1 min
+python -m f1d.econometric.generate_summary_stats    # ~1 sec
+```
+
+### Output Resolution
+
+All scripts write to timestamped directories. Use `get_latest_output_dir()` to find the most recent:
+
+```python
+from f1d.shared.path_utils import get_latest_output_dir
+
+# Returns: outputs/variables/manager_clarity/2026-02-20_143022/
+latest = get_latest_output_dir("outputs/variables/manager_clarity")
+```
+
+No symlinks needed — the latest directory is always found by timestamp.
 
 ---
 
@@ -257,101 +433,92 @@ No Stage 3 panel builder — reads `ceo_clarity_extended_panel.parquet` directly
 
 ---
 
-## Output Layout
+## Output Structure
+
+All outputs are organized by stage and timestamp:
 
 ```
 outputs/
-├── variables/
+├── sample/                          # Stage 1 outputs
+│   ├── 1.1_CleanMetadata/{timestamp}/
+│   ├── 1.2_LinkEntities/{timestamp}/
+│   ├── 1.3_BuildTenureMap/{timestamp}/
+│   └── 1.4_AssembleManifest/{timestamp}/
+│       └── master_sample_manifest.parquet
+│
+├── text/                            # Stage 2 outputs
+│   └── 2.2_Variables/{timestamp}/
+│       └── linguistic_variables_{year}.parquet
+│
+├── variables/                       # Stage 3 outputs (panels)
 │   ├── manager_clarity/{timestamp}/
-│   │   ├── manager_clarity_panel.parquet       # 112,968 rows, 17 cols
+│   │   ├── manager_clarity_panel.parquet
 │   │   ├── summary_stats.csv
-│   │   └── report_step3_manager_clarity.md
+│   │   └── report.md
 │   ├── ceo_clarity/{timestamp}/
-│   │   ├── ceo_clarity_panel.parquet           # 112,968 rows, 17 cols
-│   │   └── ...
-│   ├── ceo_clarity_extended/{timestamp}/
-│   │   ├── ceo_clarity_extended_panel.parquet  # 112,968 rows, 26 cols
-│   │   └── ...
-│   ├── ceo_tone/{timestamp}/
-│   │   ├── model_diagnostics.csv               # 9 model×sample rows
-│   │   ├── ceo_tone_table.tex
-│   │   └── regression_results_{model}_{sample}.txt
 │   ├── h1_cash_holdings/{timestamp}/
-│   │   ├── model_diagnostics.csv               # 18 regressions (6 measures × 3 samples)
-│   │   ├── h1_cash_holdings_table.tex          # key coefs: Uncertainty, Lev, Unc×Lev
-│   │   ├── report_step4_H1.md
-│   │   └── regression_results_{sample}_{measure}.txt  # 18 files
-│   ├── liquidity/{timestamp}/
-│   │   ├── liquidity_panel.parquet             # 112,968 rows, 32 cols
-│   │   └── ...
 │   └── takeover/{timestamp}/
-│       ├── takeover_panel.parquet              # 2,429 rows (firm-level), 29 cols
-│       └── ...
-└── econometric/
+│
+└── econometric/                     # Stage 4 outputs (regressions)
     ├── manager_clarity/{timestamp}/
-    │   ├── clarity_scores.parquet              # 3,315 estimated managers
-    │   ├── manager_clarity_table.tex
-    │   └── regression_results_{main,finance,utility}.txt
+    │   ├── clarity_scores.parquet      # Estimated fixed effects
+    │   ├── manager_clarity_table.tex   # LaTeX output
+    │   └── regression_results_*.txt
     ├── ceo_clarity/{timestamp}/
-    │   ├── clarity_scores.parquet              # 2,502 estimated CEOs
-    │   ├── ceo_clarity_table.tex
-    │   └── regression_results_{main,finance,utility}.txt
     ├── ceo_clarity_extended/{timestamp}/
-    │   ├── ceo_clarity_extended_table.tex      # 4-column table
-    │   └── regression_results_{model}.txt      # 4 files
     ├── ceo_clarity_regime/{timestamp}/
-    │   ├── clarity_scores.parquet              # 3,064 CEO-regime rows
-    │   ├── ceo_clarity_regime_table.tex        # 3-column table
-    │   └── regression_results_{regime}.txt     # 3 files
     ├── ceo_tone/{timestamp}/
-    │   ├── model_diagnostics.csv               # 9 model×sample rows
-    │   ├── ceo_tone_table.tex
-    │   └── regression_results_{model}_{sample}.txt
-    ├── liquidity/{timestamp}/
-    │   ├── model_diagnostics.csv               # 10 phase×model×DV rows
-    │   ├── liquidity_table.tex
-    │   └── regression_results_{phase}_{model}_{dv}.txt
+    ├── h1_cash_holdings/{timestamp}/
+    ├── h7_illiquidity/{timestamp}/
     ├── takeover/{timestamp}/
-    │   ├── model_diagnostics.csv               # 6 model rows
-    │   ├── takeover_table.tex
-    │   └── regression_results_{model}_{variant}.txt
     └── summary_stats/{timestamp}/
-        ├── descriptive_statistics.csv          # 17 variables
-        ├── correlation_matrix.csv              # 11×11
-        ├── panel_balance.csv                   # 17 years
-        ├── firm_year_summary.csv
-        ├── summary_table.tex
-        └── report_step4_4.md
+        ├── descriptive_statistics.csv
+        ├── correlation_matrix.csv
+        └── summary_table.tex
 ```
 
-`clarity_scores.parquet` columns by output:
+### Key Output Files
 
-| Output | Key columns |
-|--------|-------------|
-| `manager_clarity` | `ceo_id`, `ceo_name`, `sample`, `gamma_i`, `ClarityManager_raw`, `ClarityManager`, `n_calls` |
-| `ceo_clarity` | `ceo_id`, `ceo_name`, `sample`, `gamma_i`, `ClarityCEO_raw`, `ClarityCEO`, `n_calls` |
-| `ceo_clarity_regime` | `ceo_id`, `ceo_name`, `regime`, `gamma_i`, `ClarityCEO_raw`, `ClarityCEO`, `n_calls_regime` |
-
-Reference entities (one per regression, statsmodels normalization artifact) are always
-excluded from output parquets.
+| File | Description |
+|------|-------------|
+| `clarity_scores.parquet` | CEO/Manager fixed effects with standardization |
+| `*_table.tex` | Publication-ready LaTeX regression tables |
+| `regression_results_*.txt` | Full regression output with coefficients, SEs, p-values |
+| `model_diagnostics.csv` | R², N obs, N entities per model |
+| `summary_stats.csv` | Panel summary statistics |
 
 ---
 
 ## Shared Variable Builders
 
-All live in `src/f1d/shared/variables/`. Each returns one column, merged by `file_name`.
+All variable builders are in `src/f1d/shared/variables/`. Each module exports a single builder class that returns exactly one column.
 
-### Private engines (module-level singletons, not builders)
+### Data Engines (Private Singletons)
 
-| Module | Raw input | Columns computed |
-|--------|-----------|-----------------|
-| `_compustat_engine.py` | `inputs/comp_na_daily_all/comp_na_daily_all.parquet` | `Size`, `BM`, `Lev`, `ROA`, `CurrentRatio`, `RD_Intensity`, `EPS_Growth`, `CashHoldings`, `TobinsQ`, `CapexAt`, `DividendPayer`, `OCF_Volatility` |
-| `_crsp_engine.py` | `inputs/CRSP_DSF/CRSP_DSF_{year}_Q{1-4}.parquet` + CCM | `StockRet`, `MarketRet`, `Volatility` |
+| Module | Input Source | Variables Computed |
+|--------|--------------|-------------------|
+| `_compustat_engine.py` | Compustat quarterly | Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, EPS_Growth, CashHoldings, TobinsQ, CapexAt, DividendPayer, OCF_Volatility |
+| `_crsp_engine.py` | CRSP daily + CCM | StockRet, MarketRet, Volatility |
+| `_ibes_engine.py` | IBES forecasts | SurpDec, Dispersion |
+| `_hassan_engine.py` | Policy risk data | PRiskFY |
 
-### Individual builders (one column each)
+### Linguistic Variable Builders
 
-| Builder module | Column | Engine |
-|----------------|--------|--------|
+| Builder | Column | Source |
+|---------|--------|--------|
+| `manager_qa_uncertainty.py` | `Manager_QA_Uncertainty_pct` | Stage 2 linguistic vars |
+| `manager_pres_uncertainty.py` | `Manager_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
+| `ceo_qa_uncertainty.py` | `CEO_QA_Uncertainty_pct` | Stage 2 linguistic vars |
+| `ceo_pres_uncertainty.py` | `CEO_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
+| `analyst_qa_uncertainty.py` | `Analyst_QA_Uncertainty_pct` | Stage 2 linguistic vars |
+| `negative_sentiment.py` | `Entire_All_Negative_pct` | Stage 2 linguistic vars |
+| `manager_qa_weak_modal.py` | `Manager_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
+| `ceo_qa_weak_modal.py` | `CEO_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
+
+### Financial Variable Builders
+
+| Builder | Column | Engine |
+|---------|--------|--------|
 | `size.py` | `Size` | Compustat |
 | `bm.py` | `BM` | Compustat |
 | `lev.py` | `Lev` | Compustat |
@@ -359,107 +526,288 @@ All live in `src/f1d/shared/variables/`. Each returns one column, merged by `fil
 | `current_ratio.py` | `CurrentRatio` | Compustat |
 | `rd_intensity.py` | `RD_Intensity` | Compustat |
 | `eps_growth.py` | `EPS_Growth` | Compustat |
+| `cash_holdings.py` | `CashHoldings` | Compustat |
+| `tobins_q.py` | `TobinsQ` | Compustat |
+| `capex_intensity.py` | `CapexAt` | Compustat (Q4-only) |
+| `dividend_payer.py` | `DividendPayer` | Compustat (Q4-only) |
+| `ocf_volatility.py` | `OCF_Volatility` | Compustat (5-yr rolling) |
 | `stock_return.py` | `StockRet` | CRSP |
 | `market_return.py` | `MarketRet` | CRSP |
 | `volatility.py` | `Volatility` | CRSP |
-| `earnings_surprise.py` | `SurpDec` | IBES + CCM direct |
-| `manager_qa_uncertainty.py` | `Manager_QA_Uncertainty_pct` | Stage 2 linguistic vars |
-| `manager_pres_uncertainty.py` | `Manager_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
-| `ceo_qa_uncertainty.py` | `CEO_QA_Uncertainty_pct` | Stage 2 linguistic vars |
-| `ceo_pres_uncertainty.py` | `CEO_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
-| `analyst_qa_uncertainty.py` | `Analyst_QA_Uncertainty_pct` | Stage 2 linguistic vars |
-| `negative_sentiment.py` | `Entire_All_Negative_pct` | Stage 2 linguistic vars |
-| `cash_holdings.py` | `CashHoldings` | Compustat (`cheq/atq`) |
-| `tobins_q.py` | `TobinsQ` | Compustat (`(atq+cshoq*prccq-ceqq)/atq`) |
-| `capex_intensity.py` | `CapexAt` | Compustat (Q4-only `capxy/atq`; annual total, not YTD) |
-| `dividend_payer.py` | `DividendPayer` | Compustat (Q4-only `dvy>0`; binary) |
-| `ocf_volatility.py` | `OCF_Volatility` | Compustat (5-yr rolling std of `oancfy/atq`, min 3 obs) |
-| `manager_qa_weak_modal.py` | `Manager_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
-| `ceo_qa_weak_modal.py` | `CEO_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
-| `manager_pres_weak_modal.py` | `Manager_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
-| `ceo_pres_weak_modal.py` | `CEO_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
-| `cccl_instrument.py` | `shift_intensity_sale_ff48` | `inputs/CCCL_instrument/` (firm-year level; merge key `gvkey+year`) |
-| `takeover_indicator.py` | `Takeover`, `Takeover_Uninvited`, `Takeover_Friendly` | `inputs/SDC/sdc-ma-merged.parquet` (firm-level; merge key `gvkey`) |
+| `earnings_surprise.py` | `SurpDec` | IBES + CCM |
+| `cccl_instrument.py` | `shift_intensity_sale_ff48` | CCCL instrument file |
+| `takeover_indicator.py` | `Takeover`, `Takeover_Uninvited`, `Takeover_Friendly` | SDC M&A |
 
-**Q4-only variables note.** `CapexAt` and `DividendPayer` use Q4-only Compustat rows
-(`fqtr=4`) because `capxy` and `dvy` are YTD cumulative within the fiscal year —
-the Q4 row is the only one that holds the full-year total. The engine joins Q4 values
-back to all quarters by `gvkey+fyearq` so every call in a fiscal year gets the correct
-annual figure.
+### Important Implementation Notes
 
-**CUSIP join note.** IBES uses 8-char alphanumeric CUSIPs (e.g. `'87482X10'`); CCM
-uses 9-char numeric CUSIPs (e.g. `'000032102'`). The join is `ibes[:8] == ccm[:8]`.
-Do NOT zero-fill the IBES side — it corrupts alphanumeric CUSIPs.
+**Q4-only variables:** `CapexAt` and `DividendPayer` use only Q4 Compustat rows because `capxy` and `dvy` are year-to-date cumulative. The Q4 row contains the full-year total.
+
+**CUSIP joins:** IBES uses 8-char alphanumeric CUSIPs; CCM uses 9-char numeric. Join on `ibes[:8] == ccm[:8]`. Never zero-fill the IBES side — it corrupts alphanumeric CUSIPs.
 
 ---
 
 ## Architecture Rules
 
-These constraints are enforced on every new script pair before it is committed.
+### Project Configuration
 
-| Rule | How enforced |
-|------|-------------|
-| One module = one column | Code review; builders may not return > 1 column |
-| Zero row delta on every merge | `ValueError` raised if `len(df)` changes after any merge in a panel builder |
-| Hard-fail on missing required variables | Stage 4 scripts `raise ValueError` listing missing variables — no silent fallback |
-| Reference entity excluded from output parquet | `is_reference=True` rows filtered out before writing `clarity_scores.parquet` |
-| Global standardization for industry-split models | `ClarityManager` / `ClarityCEO` z-scored across all samples combined |
-| Per-regime standardization for regime-split models | `ClarityCEO` z-scored within each regime (different reference CEOs, incompatible raw scales) |
-| Full formula logged | No `[:80]` truncation on formula string in any Stage 4 script |
-| LaTeX entity label correct per model | `"N Managers"` for manager models, `"N CEOs"` for CEO models |
+Main configuration file: `config/project.yaml`
 
-Canonical reference implementation:
-`src/f1d/variables/build_manager_clarity_panel.py` +
-`src/f1d/econometric/run_manager_clarity.py`.
-All new script pairs must match their structure exactly.
+```yaml
+project:
+  name: F1D_Clarity
+  version: F1D.1.0
 
-Full architecture documentation and bug history: `docs/plans/refactor-master-plan.md`.
+data:
+  year_start: 2002
+  year_end: 2018
 
----
+paths:
+  inputs: inputs
+  outputs: outputs
+  logs: logs
 
-## Phase B — Completion Status
+determinism:
+  random_seed: 42
+  thread_count: 1
+  sort_inputs: true
+```
 
-All six items are complete. The full pipeline (B.1–B.6) is verified end-to-end.
+### Variable Definitions
 
-| Item | Description | Status |
-|------|-------------|--------|
-| B.1 Extended Controls (4.1.2) | 4-model robustness table | **Done** |
-| B.2 Regime Analysis (4.1.3) | 3-regime split of CEO Clarity | **Done** |
-| B.3 CEO Tone (4.1.4) | New DV: net sentiment. 3 new builders + new Stage 3 panel. | **Done** |
-| B.4 Liquidity Regressions (4.2) | OLS + 2SLS with CCCL instrument. `linearmodels`. | **Done** |
-| B.5 Takeover Hazards (4.3) | Cox PH (cause-specific). `lifelines`. SDC M&A data. | **Done** |
-| B.6 Summary Statistics (4.4) | Publication-quality summary stats table + LaTeX. | **Done** |
+Variable metadata: `config/variables.yaml`
 
----
+```yaml
+Size:
+  description: "Log total assets (inflation-adjusted)"
+  source: compustat
+  formula: "log(atq * cpi_adjustment)"
+  merge_key: ["gvkey", "fyearq", "fqtr"]
 
-## Legacy Code
+Lev:
+  description: "Total debt / Total assets"
+  source: compustat
+  formula: "(dlttq + dlcq) / atq"
+```
 
-The following subdirectories are **superseded** and kept for reference only.
-Do not run them in a production context.
+### Runtime Configuration
 
-| Path | Contents | Status |
-|------|----------|--------|
-| `src/f1d/econometric/v1/` | 8 original v1 econometric scripts | Superseded — reference for B.3–B.6 spec |
-| `src/f1d/econometric/v2/` | 11 earlier-refactor hypothesis scripts | Superseded |
-| `src/f1d/financial/v2/` | v2 financial feature scripts | Superseded |
-| `_archive/` | Full v5.1 legacy archive | Historical record |
+Override settings via environment variables:
 
-`v1/` and `v2/` scripts use `load_all_data()` from the old shared infrastructure,
-write to different output directories, and do not enforce the one-module-one-variable
-constraint.
+```bash
+# Set logging level
+export F1D_LOG_LEVEL=DEBUG
+
+# Set output directory
+export F1D_OUTPUT_DIR=/path/to/outputs
+
+# Run with specific config
+python -m f1d.econometric.run_ceo_clarity --config custom_config.yaml
+```
 
 ---
 
 ## Testing
 
-The project is fully covered by unit, regression, and end-to-end integration tests.
+### Run Tests
 
 ```bash
-# Run unit and regression tests
-pytest tests/ -m "not e2e"
+# Run unit and regression tests (fast)
+pytest tests/ -m "not e2e" -v
 
-# Run end-to-end pipeline over synthetic data (verifies I/O and flow)
-pytest tests/integration/test_pipeline_e2e.py -m e2e
+# Run with coverage
+pytest tests/ -m "not e2e" --cov=src/f1d --cov-report=html
+
+# Run end-to-end tests (requires synthetic data)
+pytest tests/ -m e2e -v --timeout=1200
+
+# Run specific test file
+pytest tests/unit/test_panel_ols.py -v
 ```
 
-The E2E test creates an isolated, temporary workspace and uses `tests/fixtures/synthetic_generator.py` to create tiny data shards matching the real schema (Compustat, CRSP, IBES) to verify that all orchestrator scripts and data contracts execute without crashing.
+### Test Structure
+
+```
+tests/
+├── unit/           # Unit tests (fast, isolated, mocked)
+├── integration/    # Integration tests (subprocess execution)
+├── regression/     # Regression tests (baseline comparisons)
+├── verification/   # Dry-run verification tests
+├── fixtures/       # Test data fixtures
+└── factories/      # Test data factories
+```
+
+### Continuous Integration
+
+CI runs on every push/PR via GitHub Actions:
+
+- **Security scan:** Bandit SAST
+- **Type checking:** mypy strict mode
+- **Unit tests:** Python 3.9–3.13 matrix
+- **Coverage:** Minimum 60% enforced
+
+---
+
+## Documentation
+
+### Key Documents
+
+| Document | Description |
+|----------|-------------|
+| [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) | Dependency versions, pinning rationale, upgrade constraints |
+| [docs/UPGRADE_GUIDE.md](docs/UPGRADE_GUIDE.md) | Step-by-step upgrade procedures for dependencies |
+| [docs/ARCHITECTURE_STANDARD.md](docs/ARCHITECTURE_STANDARD.md) | Codebase architecture standards (v6.1 compliant) |
+| [docs/CODE_QUALITY_STANDARD.md](docs/CODE_QUALITY_STANDARD.md) | Code style, linting, type checking standards |
+| [docs/TIER_MANIFEST.md](docs/TIER_MANIFEST.md) | Module tier classification and coverage targets |
+| [docs/VARIABLE_CATALOG_V2_V3.md](docs/VARIABLE_CATALOG_V2_V3.md) | Variable definitions and construction formulas |
+
+### Inline Documentation
+
+All modules follow Google-style docstrings:
+
+```python
+def run_panel_ols(
+    df: pd.DataFrame,
+    dependent_var: str,
+    fixed_effects: list[str],
+) -> dict[str, Any]:
+    """
+    Run panel OLS with entity and time fixed effects.
+    
+    Args:
+        df: Panel DataFrame with one row per entity-time observation.
+        dependent_var: Column name of dependent variable.
+        fixed_effects: List of column names for fixed effect dummies.
+    
+    Returns:
+        Dictionary with keys: 'coefficients', 'r2_within', 'r2_overall',
+        'n_obs', 'n_entities', 'formula'.
+    
+    Raises:
+        ValueError: If dependent_var not in df.columns.
+    """
+```
+
+---
+
+## Project Structure
+
+```
+F1D/
+├── src/f1d/                    # Main package (src-layout)
+│   ├── shared/                 # Tier 1: Cross-cutting utilities
+│   │   ├── config/             # Pydantic configuration models
+│   │   ├── logging/            # Structured logging infrastructure
+│   │   ├── variables/          # Variable builders (50+ files)
+│   │   └── *.py                # Core utilities (path_utils, panel_ols, etc.)
+│   ├── sample/                 # Stage 1: Sample construction
+│   ├── text/                   # Stage 2: Text processing
+│   ├── variables/              # Stage 3: Panel builders
+│   └── econometric/            # Stage 4: Hypothesis tests
+├── tests/                      # Test suite
+├── config/                     # Configuration files
+├── inputs/                     # Raw input data (not in repo)
+├── outputs/                    # Pipeline outputs (not in repo)
+├── docs/                       # Documentation
+├── .github/workflows/          # CI/CD workflows
+├── pyproject.toml              # Package configuration
+├── requirements.txt            # Production dependencies
+└── README.md                   # This file
+```
+
+---
+
+## Legacy Code
+
+The following directories contain superseded code kept for reference only:
+
+| Path | Status |
+|------|--------|
+| `src/f1d/econometric/v1/` | Superseded — reference for H4.3–H4.6 spec |
+| `src/f1d/econometric/v2/` | Superseded — earlier refactor |
+| `src/f1d/financial/v2/` | Superseded — v2 financial features |
+| `_archive/` | Full v5.1 legacy archive |
+
+Do not run legacy scripts in production. Use the current implementations in `src/f1d/`.
+
+---
+
+## Contributing
+
+### Development Setup
+
+```bash
+# Clone and install with dev dependencies
+git clone https://github.com/user/f1d.git
+cd f1d
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pip install -r requirements.txt
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Code Standards
+
+- **Formatting:** ruff (line length 88)
+- **Linting:** ruff with extended rule set (E, W, F, I, B, C4, UP, ARG, SIM)
+- **Type checking:** mypy strict mode for `src/f1d/shared/`
+- **Docstrings:** Google-style for all public functions
+- **Tests:** pytest with coverage threshold 60%
+
+### Before Submitting
+
+```bash
+# Run linter
+ruff check src/f1d/
+
+# Run formatter
+ruff format src/f1d/
+
+# Run type checker
+mypy src/f1d/shared/ --config-file pyproject.toml
+
+# Run tests
+pytest tests/ -m "not e2e" --cov=src/f1d --cov-fail-under=60
+```
+
+### Adding New Variables
+
+1. Create `src/f1d/shared/variables/{variable_name}.py`
+2. Inherit from `VariableBuilder` base class
+3. Implement `build()` method returning single column
+4. Export from `src/f1d/shared/variables/__init__.py`
+5. Add unit test in `tests/unit/test_{variable_name}.py`
+6. Update this README's variable table
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Citation
+
+If you use this pipeline in your research, please cite:
+
+```bibtex
+@software{f1d2026,
+  author = {Thesis Author},
+  title = {F1D: CEO Communication Clarity Pipeline},
+  year = {2026},
+  url = {https://github.com/user/f1d}
+}
+```
+
+---
+
+## Contact
+
+For questions or issues, please open a GitHub issue or contact the thesis author.
+
+---
+
+*Last updated: 2026-02-20*

@@ -419,4 +419,11 @@ python -c "import [dependency]; print([dependency].__version__)"
 
 **4. Validate Baseline Works**
 ```bash
-# Run
+# Run full pipeline to verify rollback succeeded
+pytest tests/ -m "not e2e" -v
+```
+
+---
+
+*Last updated: 2026-02-20*
+*See also: DEPENDENCIES.md, requirements.txt*

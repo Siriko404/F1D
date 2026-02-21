@@ -270,5 +270,5 @@ When security patches are released:
 
 ---
 
-*Last updated: 2026-02-15*
+*Last updated: 2026-02-20*
 *See also: requirements.txt, UPGRADE_GUIDE.md*

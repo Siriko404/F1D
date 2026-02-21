@@ -59,8 +59,9 @@ test = [
 
 [project.urls]
 Homepage = "https://github.com/user/f1d"
-Repository = "https://github.com/user/f1d.git"
+Repository = "https://github.com/user/f1d"
 Issues = "https://github.com/user/f1d/issues"
+Documentation = "https://github.com/user/f1d/blob/main/README.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]
