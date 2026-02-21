@@ -5,73 +5,75 @@
 ## Test Framework
 
 **Runner:**
-- pytest >= 8.0
+- pytest (v8.0+)
 - Config: `pyproject.toml` `[tool.pytest.ini_options]`
-- Import mode: `importlib` (recommended for src-layout)
 
 **Assertion Library:**
-- pytest built-in (`assert`) + `pytest.approx()` for floating-point comparisons
-- `pd.isna()` / `pd.util.hash_pandas_object()` for DataFrame assertions
-
-**Coverage:**
-- `pytest-cov` >= 5.0 with branch coverage enabled
-- Coverage source: `src/f1d`
+- Built-in `assert` statements
+- `pytest.approx()` for floating-point comparisons
+- `pytest.raises()` for exception testing
 
 **Run Commands:**
 ```bash
-pytest tests/                                              # Run all (excludes e2e)
-pytest tests/ -m "not e2e"                                # Exclude E2E tests
-pytest tests/unit/                                        # Unit tests only
-pytest tests/integration/                                 # Integration tests
-pytest tests/ -m "not e2e" --cov=src/f1d --cov-report=term-missing  # With coverage
-pytest tests/ -m slow                                     # Slow tests
-pytest tests/ -m "not slow"                               # Fast tests only
-pytest tests/performance/ -m performance                  # Performance benchmarks
-pytest tests/regression/ -m regression                    # Regression tests
+pytest tests/                                    # Run all tests
+pytest tests/unit/                               # Run unit tests only
+pytest -m "not slow"                             # Skip slow tests
+pytest -m e2e                                    # Run E2E tests only
+pytest tests/unit/test_financial_utils.py -v    # Verbose single file
+pytest --cov=src/f1d/shared --cov-report=term   # With coverage
 ```
+
+**Test Markers:**
+- `slow`: Long-running tests (skip with `-m "not slow"`)
+- `integration`: Integration tests
+- `regression`: Regression tests
+- `unit`: Unit tests
+- `e2e`: End-to-end pipeline tests
+- `performance`: Performance regression tests
+- `mypy_testing`: Tests for mypy type checking
 
 ## Test File Organization
 
-**Location:** Separate `tests/` directory (not co-located with source)
-
-**Directory structure:**
-```
-tests/
-├── conftest.py            # Shared fixtures (session/function scope)
-├── factories/             # Reusable factory fixtures
-│   ├── config.py          # Config factory fixtures
-│   └── financial.py       # Financial data factory fixtures
-├── fixtures/              # Static test data files
-│   ├── baseline_checksums.json
-│   └── stats_golden_output.json
-├── unit/                  # Tier 1/2 unit tests
-│   ├── __init__.py
-│   ├── test_financial_utils.py
-│   ├── test_data_validation.py
-│   ├── test_panel_ols.py
-│   ├── test_path_utils.py
-│   ├── test_config.py
-│   └── ... (44 files total)
-├── integration/           # Integration + E2E tests
-│   ├── test_config_integration.py
-│   ├── test_full_pipeline.py
-│   └── ... (13 files total)
-├── performance/           # Performance regression benchmarks
-│   ├── conftest.py
-│   └── test_performance_*.py
-├── regression/            # Output stability/regression tests
-│   ├── test_output_stability.py
-│   └── test_h7_h8_data_coverage.py
-├── verification/          # Dry-run smoke tests
-│   └── test_stage*_dryrun.py
-└── utils/                 # Test utilities/harnesses
-    └── regression_test_harness.py
-```
+**Location:**
+- Co-located in `tests/` directory (separate from source)
+- Mirror source structure under `tests/`
 
 **Naming:**
-- Test files: `test_<module_name>.py`
-- Test classes: `Test<FunctionOrFeatureName>` (PascalCase)
-- Test functions: `test_<what_it_tests>` (snake_case, descriptive)
+- Pattern: `test_{module_name}.py`
+- Example: `test_financial_utils.py` tests `financial_utils.py`
+
+**Structure:**
+```
+tests/
+├── __init__.py
+├── conftest.py                    # Shared fixtures (session-scoped)
+├── factories/                     # Factory fixtures for test data
+│   ├── __init__.py
+│   ├── config.py                  # Configuration factories
+│   └── financial.py               # Financial data factories
+├── fixtures/                      # Static test data files
+│   ├── baseline_checksums.json
+│   └── synthetic_generator.py
+├── integration/                   # Integration tests
+│   ├── test_pipeline_e2e.py
+│   ├── test_logging_integration.py
+│   └── test_config_integration.py
+├── performance/                   # Performance tests
+│   ├── test_performance_h2_variables.py
+│   └── conftest.py
+├── regression/                    # Regression tests
+│   ├── test_output_stability.py
+│   └── test_survival_analysis_integration.py
+├── unit/                          # Unit tests
+│   ├── test_financial_utils.py
+│   ├── test_data_validation.py
+│   └── test_panel_ols.py
+├── utils/                         # Test utilities
+│   └── regression_test_harness.py
+└── verification/                  # Verification/dry-run tests
+    ├── test_stage1_dryrun.py
+    └── test_all_scripts_dryrun.py
+```
 
 ## Test Structure
 
@@ -82,274 +84,268 @@ class TestCalculateFirmControls:
 
     def test_returns_size_as_log_assets(self, sample_compustat_factory):
         """Test that size (log assets) is computed correctly."""
-        # Arrange
         compustat_df = sample_compustat_factory(n_firms=1, n_years=1, seed=42)
-        compustat_df["ceq"] = compustat_df["at"] * 0.3
+        # Add required columns...
         row = pd.Series({"gvkey": "000000", "datadate": "2000-12-31"})
-
-        # Act
         result = calculate_firm_controls(row, compustat_df, 2000)
-
-        # Assert
         assert "size" in result
         assert result["size"] == pytest.approx(np.log(compustat_df.iloc[0]["at"]), rel=1e-5)
+
+    def test_raises_error_on_missing_gvkey(self, sample_compustat_factory):
+        """Test that missing gvkey raises FinancialCalculationError."""
+        compustat_df = sample_compustat_factory(n_firms=1, n_years=1, seed=42)
+        row = pd.Series({"datadate": "2000-12-31"})  # Missing gvkey
+        with pytest.raises(FinancialCalculationError, match="missing gvkey"):
+            calculate_firm_controls(row, compustat_df, 2000)
 ```
 
 **Patterns:**
-- One class per function/feature being tested
-- Class docstring states what function is under test
-- Each test method has a single-sentence docstring explaining what it tests
-- Arrange/Act/Assert structure (no explicit comment labels, but implicit structure)
-- `tmp_path` pytest built-in fixture for temporary files/directories
-- `capsys` for capturing stdout/stderr
-- `monkeypatch` for environment variable manipulation
+- Group tests by function/method in class named `Test{FunctionName}`
+- Use descriptive test names: `test_{scenario}_{expected_outcome}`
+- Docstring explains what is being tested
+- One assertion concept per test (but multiple asserts allowed)
 
 ## Mocking
 
-**Frameworks:**
-- `pytest` `monkeypatch` fixture for env vars
-- `unittest.mock.patch` / `MagicMock` for integration tests
-- `patch.dict(os.environ, env_vars)` for env var context managers
+**Framework:** pytest-mock (v3.12+)
 
 **Patterns:**
 ```python
-# Environment variable mocking with monkeypatch (unit tests)
-def test_validate_env_schema_success(self, monkeypatch):
-    monkeypatch.setenv("WRDS_USERNAME", "test_user")
-    monkeypatch.setenv("API_TIMEOUT_SECONDS", "45")
-    result = validate_env_schema(schema)
-    assert result["WRDS_USERNAME"] == "test_user"
+# Using pytest-mock's mocker fixture
+def test_file_not_found(mocker):
+    mock_read = mocker.patch('pandas.read_parquet', side_effect=FileNotFoundError)
+    with pytest.raises(DataValidationError):
+        load_validated_parquet(Path("missing.parquet"))
+    mock_read.assert_called_once()
 
-# Environment variable mocking with patch.dict (factory pattern)
-with patch.dict(os.environ, env_vars):
-    config = EnvConfig()
-    assert config.data.year_start == 2010
-
-# MagicMock for complex objects (integration tests)
-from unittest.mock import patch, MagicMock
-mock_model = MagicMock()
-mock_model.params = {"x1": 0.5}
+# Environment variable mocking
+def test_env_override(env_override):
+    with env_override:
+        os.environ['F1D_DATA__YEAR_START'] = '2010'
+        # Test code...
+    # Environment restored after context exits
 ```
 
 **What to Mock:**
-- Environment variables (use `monkeypatch.setenv`/`monkeypatch.delenv`)
-- External services/APIs (no real network calls in tests)
-- Complex fitted model objects when testing output formatting
+- File I/O operations for unit tests
+- External API calls (none in this codebase)
+- Environment variables for configuration tests
+- Time-dependent behavior
 
 **What NOT to Mock:**
-- pandas/numpy operations (use real DataFrames)
-- File I/O (use `tmp_path` with real file writes)
-- Pydantic validation (test against actual models)
+- Pure calculations (test actual logic)
+- DataFrame operations (test actual behavior)
+- Internal function calls within same module
 
 ## Fixtures and Factories
 
-**Factory Pattern:**
-The dominant pattern is "factory fixtures" — fixtures that return callables, allowing per-test customization:
-
+**Test Data:**
 ```python
-# Definition in tests/factories/financial.py or tests/conftest.py
+# conftest.py - Shared fixtures
+@pytest.fixture
+def sample_dataframe():
+    """Create a sample DataFrame for testing."""
+    return pd.DataFrame({
+        "file_name": ["test1.docx", "test2.docx", "test3.docx"],
+        "Total_Words": [100, 200, 150],
+    })
+
+# Factory fixture pattern (callable fixtures)
 @pytest.fixture
 def sample_compustat_factory() -> Callable[..., pd.DataFrame]:
     """Factory fixture to generate Compustat-style panel data."""
-
-    def _factory(
-        n_firms: int = 10,
-        n_years: int = 5,
-        seed: int = 42,
-    ) -> pd.DataFrame:
+    def _factory(n_firms: int = 10, n_years: int = 5, seed: int = 42) -> pd.DataFrame:
         rng = np.random.default_rng(seed)
-        # ... generate data ...
+        data = []
+        for firm_id in range(n_firms):
+            gvkey = str(firm_id).zfill(6)
+            for year_offset in range(n_years):
+                # Generate data...
         return pd.DataFrame(data)
-
     return _factory
 
-# Usage in test
-def test_something(sample_compustat_factory):
-    df = sample_compustat_factory(n_firms=1, n_years=1, seed=42)
+# Usage
+def test_asset_calculation(sample_compustat_factory):
+    df = sample_compustat_factory(n_firms=10, n_years=5)
+    assert len(df) == 50
 ```
-
-**Available factory fixtures (in `tests/conftest.py` and `tests/factories/`):**
-- `sample_compustat_factory` — Compustat panel data (gvkey, fyear, at, dlc, dltt, oancf, sale, ib)
-- `sample_panel_data_factory` — panel regression data (gvkey, year, dependent, independent1..N, ff48_code)
-- `sample_financial_row_factory` — single Compustat row as `pd.Series`
-- `sample_config_yaml_factory` — generates temporary `project.yaml` with configurable fields
-- `sample_project_config_factory` — generates `ProjectConfig` instances from factory YAML
-- `sample_env_vars_factory` — generates `F1D_*` env var dicts
-- `invalid_config_yaml_factory` — generates intentionally invalid configs by error type
-
-**Static fixtures (in `tests/conftest.py`):**
-- `repo_root` — session-scoped `Path` to repository root
-- `subprocess_env` — session-scoped env dict with `PYTHONPATH` set for subprocess calls
-- `test_data_dir` — session-scoped `Path` to `tests/fixtures/`
-- `sample_dataframe` — simple 3-row DataFrame
-- `sample_parquet_file` — `tmp_path`-based parquet file from `sample_dataframe`
-- `sample_parquet_file_with_schema` — parquet with Unified-info schema columns
-- `mock_project_config` — minimal `project.yaml` in `tmp_path`
-- `sample_config_yaml` / `sample_config` — valid config fixtures
-- `invalid_config_yaml` — invalid year-order config
 
 **Location:**
-- Shared/cross-test fixtures: `tests/conftest.py`
-- Domain-specific factories: `tests/factories/financial.py`, `tests/factories/config.py`
-- Performance-specific fixtures: `tests/performance/conftest.py`
-- Static test data: `tests/fixtures/` (JSON files for checksums/golden output)
+- `tests/conftest.py`: Shared fixtures (session/function scoped)
+- `tests/factories/`: Factory fixtures for complex test data
+- `tests/fixtures/`: Static test data files (JSON, Parquet)
 
-**Random seed pattern:** Always pass explicit `seed=42` (or configurable `seed` parameter) to factory fixtures for deterministic test data:
-```python
-rng = np.random.default_rng(seed)  # NOT np.random.seed() — use Generator API
-```
+**Common Fixtures:**
+- `tmp_path`: Built-in pytest fixture for temporary directories
+- `sample_compustat_factory`: Generate Compustat-style panel data
+- `sample_panel_data_factory`: Generate panel regression test data
+- `sample_config_yaml`: Create temporary project.yaml
+- `subprocess_env`: Environment for subprocess calls (PYTHONPATH set)
 
 ## Coverage
 
 **Requirements:**
-- Overall: 30% minimum (configured in `pyproject.toml` `fail_under = 30`)
-- Tier 1 CI (unit tests): 10% threshold (measured across all shared modules)
-- Tier 2 CI (integration tests): 10% threshold
-- Full CI suite (not e2e): 25% threshold
-- Individual module targets (not enforced): `financial_utils.py` ~97%, `data_validation.py` ~92%, `iv_regression.py` ~88%, `chunked_reader.py` ~88%, `path_utils.py` ~86%, `panel_ols.py` ~72%
-
-**Excluded from coverage:**
-```
-pragma: no cover
-def __repr__
-raise AssertionError
-raise NotImplementedError
-if __name__ == "__main__":
-if TYPE_CHECKING:
-@abstractmethod
-```
+- Tier 1 (shared modules): 10% threshold in CI (individual tested modules: 70%+)
+- Tier 2 (integration tests): 10% threshold
+- Overall: 40% threshold for full test suite
 
 **View Coverage:**
 ```bash
-pytest tests/ -m "not e2e" --cov=src/f1d --cov-report=html
-# Open htmlcov/index.html
-
-pytest tests/ -m "not e2e" --cov=src/f1d --cov-report=term-missing
-# Show missing lines in terminal
+pytest tests/ --cov=src/f1d --cov-report=html
+open htmlcov/index.html
 ```
+
+**Coverage Config:**
+```toml
+# pyproject.toml
+[tool.coverage.run]
+source = ["src/f1d"]
+branch = true
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+fail_under = 30
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+```
+
+**Coverage Exclusions:**
+- `pragma: no cover` comments
+- `__repr__` methods
+- `raise NotImplementedError`
+- `if TYPE_CHECKING:` blocks
+- `@abstractmethod` decorators
 
 ## Test Types
 
-**Unit Tests (`tests/unit/`, marker `unit`):**
-- Test individual functions in isolation
-- Use factory fixtures for controlled data
-- Cover happy path, edge cases, and error conditions
-- Each public function typically has its own test class
-- Focus on `src/f1d/shared/` modules (Tier 1: strict typing, high coverage targets)
+**Unit Tests:**
+- Location: `tests/unit/`
+- Focus: Individual functions in isolation
+- Pattern: One test class per function, multiple test methods
+- Example: `test_financial_utils.py` - tests each calculation function
 
-**Integration Tests (`tests/integration/`, marker `integration`):**
-- Test interaction between modules (config loading, pipeline steps)
-- Use `autouse` fixtures for environment cleanup:
-  ```python
-  @pytest.fixture(autouse=True)
-  def clean_environment() -> Generator[None, None, None]:
-      clear_config_cache()
-      # ... cleanup env vars ...
-      yield
-      # ... restore ...
-  ```
-- `pytestmark = pytest.mark.integration` at module level
-- May use `pytest.skip()` for tests requiring real data files:
-  ```python
-  if not config_path.exists():
-      pytest.skip(f"Config file not found: {config_path}")
-  ```
+**Integration Tests:**
+- Location: `tests/integration/`
+- Focus: Module interactions, config loading, logging setup
+- Pattern: Test script execution, subprocess calls
+- Example: `test_config_integration.py` - tests config loading from YAML
 
-**E2E Tests (`tests/integration/test_full_pipeline.py`, marker `e2e`):**
-- `pytestmark = pytest.mark.e2e`
-- Run only on `main` branch push in CI
-- `--timeout=1200` (20 minutes) in CI
+**E2E Tests:**
+- Location: `tests/integration/` with `@pytest.mark.e2e`
+- Focus: Full pipeline execution on synthetic data
+- Pattern: Generate synthetic inputs, run scripts, verify outputs
+- Example: `test_pipeline_e2e.py`
 
-**Performance Tests (`tests/performance/`, marker `performance`):**
-- Compare naive vs. vectorized implementations
-- Use `@pytest.mark.benchmark` for timing
-- Seed fixed at 42 for reproducible benchmarks
-- Demonstrate speedup ratio:
-  ```python
-  pytestmark = pytest.mark.performance
-  # Tests measure both correctness AND performance ratio
-  ```
+**Regression Tests:**
+- Location: `tests/regression/`
+- Focus: Output stability across changes
+- Pattern: Compare outputs to baseline checksums
+- Example: `test_output_stability.py`
 
-**Regression Tests (`tests/regression/`, marker `regression`):**
-- SHA-256 checksum comparison against `tests/fixtures/baseline_checksums.json`
-- Pattern: load output parquet → compute checksum → compare to baseline
-- Use `pytest.skip()` when baseline not set or output file missing
-
-**Verification/Dry-run Tests (`tests/verification/`):**
-- Smoke tests for pipeline scripts via subprocess
-- Use `subprocess_env` fixture for correct `PYTHONPATH`
+**Performance Tests:**
+- Location: `tests/performance/`
+- Focus: Execution time, memory usage
+- Pattern: Measure and assert thresholds
+- Example: `test_performance_h2_variables.py`
 
 ## Common Patterns
 
-**Floating-point comparison:**
+**Async Testing:**
+Not used in this codebase (synchronous processing only).
+
+**Error Testing:**
 ```python
-assert result["size"] == pytest.approx(np.log(expected_at), rel=1e-5)
-assert result["leverage"] == pytest.approx(expected, rel=1e-5)
+def test_raises_error_on_missing_gvkey(sample_compustat_factory):
+    """Test that missing gvkey raises FinancialCalculationError."""
+    compustat_df = sample_compustat_factory(n_firms=1, n_years=1, seed=42)
+    row = pd.Series({"datadate": "2000-12-31"})  # Missing gvkey
+    with pytest.raises(FinancialCalculationError, match="missing gvkey"):
+        calculate_firm_controls(row, compustat_df, 2000)
+
+def test_validation_strict_mode():
+    """Test that strict mode raises on validation failure."""
+    df = pd.DataFrame({"col": [1, 2]})  # Invalid schema
+    with pytest.raises(DataValidationError):
+        validate_dataframe_schema(df, "Unified-info.parquet", Path("test.parquet"), strict=True)
 ```
 
-**NaN assertion:**
-```python
-assert pd.isna(result["size"])
-assert pd.isna(result["market_to_book"])
-```
-
-**Exception testing with match string:**
-```python
-with pytest.raises(FinancialCalculationError, match="missing gvkey"):
-    calculate_firm_controls(row, compustat_df, 2000)
-
-with pytest.raises(DataValidationError, match="Missing columns"):
-    validate_dataframe_schema(df, "Unified-info.parquet", Path("test.parquet"), strict=True)
-```
-
-**Parametrized tests:**
+**Parametrized Tests:**
 ```python
 @pytest.mark.parametrize("strict_mode,should_raise", [
     (True, True),
     (False, False),
 ])
 def test_strict_mode_controls_error_raising(self, strict_mode, should_raise):
-    ...
+    """Test that strict mode controls whether errors are raised."""
+    df = pd.DataFrame({"event_type": [1, 2]})  # Invalid
+    if should_raise:
+        with pytest.raises(DataValidationError):
+            validate_dataframe_schema(df, "Unified-info.parquet", Path("test.parquet"), strict=strict_mode)
+    else:
+        # Should not raise in non-strict mode
+        validate_dataframe_schema(df, "Unified-info.parquet", Path("test.parquet"), strict=strict_mode)
+
+@pytest.mark.parametrize("value,expected_valid", [
+    (0, True),      # At minimum
+    (-1, False),    # Below minimum
+    (1000000, True) # Above minimum
+])
+def test_speaker_record_count_range(value, expected_valid):
+    """Test speaker_record_count range validation."""
+    df = pd.DataFrame({
+        "event_type": ["1"],
+        "file_name": ["test"],
+        "start_date": pd.to_datetime(["2020-01-01"]),
+        "speaker_record_count": [value],
+    })
+    if expected_valid:
+        validate_dataframe_schema(df, "Unified-info.parquet", Path("test.parquet"))
+    else:
+        with pytest.raises(DataValidationError):
+            validate_dataframe_schema(df, "Unified-info.parquet", Path("test.parquet"))
 ```
 
-**Conditional skip for optional dependencies:**
+**Fixture Scope:**
 ```python
-pytestmark = []
-if not LINEARMODELS_AVAILABLE:
-    pytestmark.append(pytest.mark.skip(reason="linearmodels not available"))
+@pytest.fixture(scope="session")
+def repo_root():
+    """Path to repository root directory (created once per session)."""
+    return Path(__file__).parent.parent
+
+@pytest.fixture
+def sample_dataframe():
+    """Create fresh DataFrame for each test."""
+    return pd.DataFrame({"col": [1, 2, 3]})
 ```
 
-**Expected failure for known compatibility issues:**
+**Subprocess Testing:**
 ```python
-@pytest.mark.xfail(reason="pandas/numpy compatibility issue with .clip() internal sum()")
-def test_winsorize_parameter_affects_output(self, sample_quarterly_df):
-    ...
-```
-
-**Async Testing:** Not used — all code is synchronous.
-
-**Subprocess testing (integration):**
-```python
-def test_pipeline_step(subprocess_env):
+def test_script_execution(subprocess_env):
+    """Test that script runs successfully via subprocess."""
     result = subprocess.run(
-        ["python", str(script_path)],
-        env=subprocess_env,   # Critical: sets PYTHONPATH for src-layout
+        [sys.executable, str(script_path)],
+        env=subprocess_env,  # Critical: enables f1d.shared imports
         capture_output=True,
         text=True,
+        cwd=str(workspace),
     )
-    assert result.returncode == 0
+    assert result.returncode == 0, f"Script failed: {result.stderr}"
 ```
 
-**Inline fixture definition inside test class:**
+**Temporary Files:**
 ```python
-class TestCalculateFirmControlsQuarterly:
-    @pytest.fixture
-    def sample_quarterly_compustat(self):
-        """Create sample quarterly Compustat data for testing."""
-        return pd.DataFrame({...})
-
-    def test_returns_size_as_log_atq(self, sample_quarterly_compustat):
-        ...
+def test_load_validated_parquet(self, tmp_path):
+    """Test loading with schema validation."""
+    df = pd.DataFrame({"col": [1, 2, 3]})
+    test_file = tmp_path / "test.parquet"
+    df.to_parquet(test_file)
+    
+    result = load_validated_parquet(test_file, schema_name=None)
+    assert len(result) == 3
 ```
 
 ---
