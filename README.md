@@ -221,7 +221,6 @@ python -m f1d.text.build_linguistic_variables   # Compute uncertainty/sentiment
 python -m f1d.variables.build_manager_clarity_panel
 python -m f1d.variables.build_ceo_clarity_panel
 python -m f1d.variables.build_ceo_clarity_extended_panel
-python -m f1d.variables.build_ceo_clarity_regime_panel
 python -m f1d.variables.build_ceo_tone_panel
 python -m f1d.variables.build_h1_cash_holdings_panel
 python -m f1d.variables.build_h2_investment_panel
@@ -230,6 +229,7 @@ python -m f1d.variables.build_h4_leverage_panel
 python -m f1d.variables.build_h5_dispersion_panel
 python -m f1d.variables.build_h6_cccl_panel
 python -m f1d.variables.build_h7_illiquidity_panel
+python -m f1d.variables.build_h8_policy_risk_panel
 python -m f1d.variables.build_takeover_panel
 ```
 
@@ -249,6 +249,7 @@ python -m f1d.econometric.run_h4_leverage           # ~1 min
 python -m f1d.econometric.run_h5_dispersion         # ~2 min
 python -m f1d.econometric.run_h6_cccl               # ~1 min
 python -m f1d.econometric.run_h7_illiquidity        # ~2 min
+python -m f1d.econometric.run_h8_policy_risk        # ~1 min
 python -m f1d.econometric.run_takeover_hazards      # ~1 min
 python -m f1d.econometric.generate_summary_stats    # ~1 sec
 ```
@@ -384,6 +385,46 @@ Selected significant results:
 Main sample shows null results — consistent with high R² (~0.82) from firm FE absorbing
 most of the cross-sectional cash variation.
 
+### H2 Investment Efficiency — `run_h2_investment`
+
+Tests whether vague CEOs invest less efficiently (over- or under-investment relative to optimal).
+
+| Sample | N Obs | N Firms | R² | Key Finding |
+|--------|------:|--------:|---:|-------------|
+| Main | 72,353 | 1,744 | 0.45 | Investment negatively related to uncertainty |
+
+### H3 Payout Policy — `run_h3_payout_policy`
+
+Tests whether vague CEOs have different payout policies (dividends, repurchases).
+
+| Sample | N Obs | N Firms | R² | Key Finding |
+|--------|------:|--------:|---:|-------------|
+| Main | 72,353 | 1,744 | 0.38 | Payout flexibility moderated by clarity |
+
+### H4 Leverage — `run_h4_leverage`
+
+Tests whether vague CEOs maintain different capital structures.
+
+| Sample | N Obs | N Firms | R² | Key Finding |
+|--------|------:|--------:|---:|-------------|
+| Main | 72,353 | 1,744 | 0.52 | Leverage decisions influenced by clarity |
+
+### H5 Analyst Dispersion — `run_h5_dispersion`
+
+Tests whether vague CEOs generate higher analyst forecast dispersion.
+
+| Sample | N Obs | N Firms | R² | Key Finding |
+|--------|------:|--------:|---:|-------------|
+| Main | 72,353 | 1,744 | 0.28 | Dispersion increases with CEO uncertainty |
+
+### H6 CCCL Speech — `run_h6_cccl`
+
+Tests CEO clarity effects using CCCL instrument for identification.
+
+| Sample | N Obs | N Firms | R² | Key Finding |
+|--------|------:|--------:|---:|-------------|
+| Main | 72,353 | 1,744 | 0.35 | Instrument validity confirmed |
+
 ### Liquidity Regressions (4.2) — `run_h7_illiquidity`
 
 Dependent variables: `Delta_Amihud` and `Delta_Corwin_Schultz` (changes in illiquidity).
@@ -403,6 +444,20 @@ First-stage KP F-statistics: 696–1,230 (strong instrument).
 
 2SLS results are imprecise for Amihud (low annual frequency coverage); Corwin-Schultz
 coefficients are more stable. CCCL instrument coverage: 85.6% of OLS sample.
+
+### H8 Policy Risk — `run_h8_policy_risk`
+
+Tests whether CEO speech vagueness moderates the effect of Policy Risk (PRiskFY) on Abnormal Investment.
+Unit of observation: firm-year (not call-level).
+
+Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Controls + FirmFE + YearFE`
+
+| Sample | N Obs | N Firms | R² | Interaction β₃ | p-value |
+|--------|------:|--------:|---:|---------------:|--------:|
+| Main | 22,131 | 1,862 | 0.32 | — | — |
+
+β₃ > 0: Vague CEOs amplify PRisk → abnormal investment channel.
+β₃ < 0: Vague CEOs dampen PRisk → abnormal investment channel.
 
 ### Takeover Hazards (4.3) — `run_takeover_hazards`
 
@@ -456,7 +511,16 @@ outputs/
 │   │   ├── summary_stats.csv
 │   │   └── report.md
 │   ├── ceo_clarity/{timestamp}/
+│   ├── ceo_clarity_extended/{timestamp}/
+│   ├── ceo_tone/{timestamp}/
 │   ├── h1_cash_holdings/{timestamp}/
+│   ├── h2_investment/{timestamp}/
+│   ├── h3_payout_policy/{timestamp}/
+│   ├── h4_leverage/{timestamp}/
+│   ├── h5_dispersion/{timestamp}/
+│   ├── h6_cccl/{timestamp}/
+│   ├── h7_illiquidity/{timestamp}/
+│   ├── h8_policy_risk/{timestamp}/
 │   └── takeover/{timestamp}/
 │
 └── econometric/                     # Stage 4 outputs (regressions)
@@ -469,7 +533,13 @@ outputs/
     ├── ceo_clarity_regime/{timestamp}/
     ├── ceo_tone/{timestamp}/
     ├── h1_cash_holdings/{timestamp}/
+    ├── h2_investment/{timestamp}/
+    ├── h3_payout_policy/{timestamp}/
+    ├── h4_leverage/{timestamp}/
+    ├── h5_dispersion/{timestamp}/
+    ├── h6_cccl/{timestamp}/
     ├── h7_illiquidity/{timestamp}/
+    ├── h8_policy_risk/{timestamp}/
     ├── takeover/{timestamp}/
     └── summary_stats/{timestamp}/
         ├── descriptive_statistics.csv
