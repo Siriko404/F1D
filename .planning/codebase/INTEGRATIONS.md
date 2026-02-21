@@ -4,159 +4,163 @@
 
 ## APIs & External Services
 
-**No external APIs.** The project processes local data files only.
+**Financial Data Providers:**
+- WRDS (Wharton Research Data Services) - Source of Compustat, CRSP, IBES, and CCM data
+  - Input data location: `inputs/comp_na_daily_all/`, `inputs/CRSP_DSF/`, `inputs/tr_ibes/`, `inputs/CRSPCompustat_CCM/`
+  - No SDK/API client - data provided as static parquet files
+  - Data processing engines: `src/f1d/shared/variables/_compustat_engine.py`, `src/f1d/shared/variables/_crsp_engine.py`, `src/f1d/shared/variables/_ibes_engine.py`
 
-**API Configuration:**
-- `F1D_API_TIMEOUT_SECONDS` - Timeout setting (default 30s)
-- `F1D_MAX_RETRIES` - Retry count (default 3)
-- These appear to be infrastructure settings for potential future API use
+- Refinitiv SDC - M&A data source
+  - Input data location: `inputs/SDC/`
+  - Used for takeover hazard analysis in `src/f1d/econometric/run_h9_takeover_hazards.py`
+
+**Academic Data Sources:**
+- Loughran-McDonald Master Dictionary (1993-2024) - Sentiment word lists
+  - Input: `inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv`
+  - Source: [McDonald Word Lists](https://sraf.nd.edu/textual-analysis/resources/)
+  - Used for linguistic variable construction in `src/f1d/text/build_linguistic_variables.py`
+
+- Hassan et al. (2019) Political Risk Data - Firm-level political risk measures
+  - Input: `inputs/FirmLevelRisk/firmquarter_2022q1.csv` (TAB-separated)
+  - Processing: `src/f1d/shared/variables/_hassan_engine.py`
+
+**No real-time APIs:**
+- This project uses static datasets downloaded from external providers
+- No API keys or authentication required for data access
+- No cloud service SDKs
 
 ## Data Storage
 
 **Databases:**
-- None - All data stored as flat files
+- None - All data stored as flat files (parquet, CSV)
 
 **File Storage:**
 - Local filesystem only
-- Input data in `inputs/` directory
-- Output data in `outputs/` directory (timestamped subdirectories)
-- Primary format: Parquet files (`.parquet`)
-- Secondary formats: CSV, Excel (`.xlsx`)
+- Parquet format for large datasets (via PyArrow 21.0.0)
+- Excel files for metadata and summaries (via openpyxl)
+- Input data location: `inputs/`
+- Output data location: `outputs/`
+- Logs location: `logs/`
 
 **Caching:**
-- None implemented
-
-## Data Sources (inputs/ directory)
-
-**Financial Data:**
-- `inputs/comp_na_daily_all/` - Compustat quarterly data (firm financials)
-- `inputs/CRSP_DSF/` - CRSP daily stock file (prices, returns, volume)
-- `inputs/CRSPCompustat_CCM/` - CRSP-Compustat Merged (linking table)
-- `inputs/tr_ibes/` - Thomson Reuters IBES (analyst forecasts)
-
-**Textual Data:**
-- `inputs/Earnings_Calls_Transcripts/` - Earnings call transcripts
-  - `Unified-info.parquet` - Call metadata
-  - `speaker_data_{year}.parquet` - Speaker-level text
-- `inputs/LM_dictionary/` - Loughran-McDonald sentiment dictionary
-
-**M&A Data:**
-- `inputs/SDC/` - SDC Platinum M&A data (`sdc-ma-merged.parquet`)
-  - Takeover events, dates, attitudes
-
-**Executive Data:**
-- `inputs/Execucomp/` - Executive compensation data
-- `inputs/Manager_roles/` - Manager role classifications
-
-**Industry/Risk Data:**
-- `inputs/FF1248/` - Fama-French 12/48 industry classifications
-- `inputs/FirmLevelRisk/` - Policy risk measures (Hassan et al. 2019)
-- `inputs/SEC_Edgar_Letters/` - SEC comment letters
-
-**Instrument Data:**
-- `inputs/CCCL_instrument/` - Shift-share instrument for IV regression
-  - `instrument_shift_intensity_2005_2022.parquet`
+- In-memory singleton pattern for data engines
+  - `CompustatEngine`: `src/f1d/shared/variables/_compustat_engine.py`
+  - `CrspEngine`: `src/f1d/shared/variables/_crsp_engine.py`
+  - `IbesEngine`: `src/f1d/shared/variables/_ibes_engine.py`
+  - `HassanEngine`: `src/f1d/shared/variables/_hassan_engine.py`
+- No distributed cache (Redis, Memcached not used)
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- None - All data is local
+- None - No external authentication required
+- All data is publicly available academic datasets
 
-**Access Control:**
-- File system permissions only
-- No user authentication
+**Implementation:**
+- No OAuth, JWT, or API key management
+- Environment variables only for timeout/retry configuration (not secrets)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None (local development only)
+- None - No external error tracking service (Sentry, Rollbar not used)
+- Structured logging via structlog (25.0) with console and file output
+  - Log configuration: `src/f1d/shared/logging/config.py`
 
 **Logs:**
-- Structured logging via `structlog`
-- Dual-writer pattern: logs to both stdout and file
-- Log directory: `logs/`
-- Log module: `src/f1d/shared/observability/logging.py`
-- `DualWriter` class captures all output
+- Structured logging with structlog
+- Dual output to console and log files
+- Memory tracking via psutil in `src/f1d/shared/observability/memory.py`
+- Throughput tracking in `src/f1d/shared/observability/throughput.py`
 
 **Coverage Reporting:**
-- Codecov integration via GitHub Actions
-- Coverage reports uploaded as artifacts
-- Token: `secrets.CODECOV_TOKEN`
+- Coverage.py with thresholds
+- CI uploads coverage to Codecov via `codecov/codecov-action@v4`
+- Token: `secrets.CODECOV_TOKEN` (optional, fail_ci_if_error=false)
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- None - Local execution only
+- GitHub for source control
+  - Repository: `https://github.com/user/f1d`
+  - CI runs on GitHub Actions (ubuntu-latest)
 
 **CI Pipeline:**
 - GitHub Actions
-  - `.github/workflows/ci.yml` - Main CI (lint, test, coverage)
-  - `.github/workflows/test.yml` - Extended tests (security scan)
-- Python versions tested: 3.9, 3.10, 3.11, 3.12, 3.13
-- Coverage thresholds:
-  - Tier 1 tests: 10%
-  - Tier 2 tests: 10%
-  - Full suite: 40%
+  - Lint job: Ruff (check and format), mypy strict mode
+  - Test job: Multi-matrix Python 3.9-3.13, pytest with coverage thresholds
+  - E2E test job: Runs on main branch only
+  - Config: `.github/workflows/ci.yml`, `.github/workflows/test.yml`
 
-**Security Scanning:**
-- Bandit SAST scanner (runs in CI)
-- Configuration: `pyproject.toml` [tool.bandit]
-
-**Dependency Management:**
-- Dependabot (weekly for pip, monthly for GitHub Actions)
-- Configuration: `.github/dependabot.yml`
-- Groups: dev-dependencies, production-dependencies
+**Deployment:**
+- Not applicable - Research pipeline, not deployed service
 
 ## Environment Configuration
 
 **Required env vars:**
-- None required (all have defaults)
-
-**Optional env vars:**
-- `F1D_API_TIMEOUT_SECONDS` - API timeout (default: 30)
-- `F1D_MAX_RETRIES` - Retry attempts (default: 3)
+- `F1D_API_TIMEOUT_SECONDS` - API timeout setting (default 30)
+- `F1D_MAX_RETRIES` - Maximum retry attempts (default 3)
+- `CODECOV_TOKEN` - Optional Codecov token for coverage uploads
 
 **Secrets location:**
-- GitHub Actions secrets: `CODECOV_TOKEN`
-- No other secrets required
+- No secrets required for core functionality
+- GitHub secrets for CI/CD (CODECOV_TOKEN)
+- `.env` file for local development (template in `.env.example`)
 
 **Configuration files:**
-- `config/project.yaml` - Pipeline configuration
-- `config/variables.yaml` - Variable source definitions
-- `.env` - Local environment (optional, from `.env.example`)
+- `.env.example` - Template for environment variables
+- `config/project.yaml` - Pipeline configuration (paths, thresholds, step settings)
+- `config/variables.yaml` - Variable definitions
+- `pyproject.toml` - Tool configuration (pytest, ruff, mypy, coverage)
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None
+- None - No webhooks or API endpoints
 
 **Outgoing:**
-- None
+- None - No external webhooks or callbacks
+- All processing is batch-oriented with local file I/O
 
-## Key Data Flow
+## NLP and Text Processing
 
-```
-inputs/                    # External data sources (manual import)
-    ├── comp_na_daily_all/ # Compustat
-    ├── CRSP_DSF/          # CRSP daily
-    ├── tr_ibes/           # IBES analyst forecasts
-    ├── SDC/               # M&A events
-    └── ...
-        │
-        ▼
-src/f1d/                   # Processing pipeline
-    ├── sample/            # Stage 1: Build manifest
-    ├── text/              # Stage 2: Tokenize & analyze
-    ├── variables/         # Stage 3: Build panels
-    └── econometric/       # Stage 4: Run regressions
-        │
-        ▼
-outputs/                   # Processed outputs
-    ├── 1.4_AssembleManifest/
-    ├── 2_Textual_Analysis/
-    ├── 3_Financial_Features/
-    └── econometric/
-```
+**Libraries:**
+- RapidFuzz 3.14.0+ - Fuzzy string matching for entity linking
+  - Used in: `src/f1d/shared/string_matching.py`
+  - Graceful degradation if not installed (pipeline runs without it)
+  - Config-driven thresholds via `config/project.yaml` (string_matching section)
+
+- Custom C++ tokenizer - Compiled for fast text tokenization
+  - Build settings: C++17, -O2 optimization
+  - Used in: `src/f1d/text/tokenize_transcripts.py`
+
+- No LLM or transformer-based models
+- No cloud NLP services (OpenAI, HuggingFace not used)
+
+## Statistical Libraries
+
+**Panel Regression:**
+- linearmodels - PanelOLS for fixed effects models
+  - Entity and time fixed effects for CEO-level analysis
+  - AbsorbingLS for high-dimensional fixed effects
+  - IV2SLS for instrumental variable regression
+  - Used in: `src/f1d/shared/panel_ols.py`, `src/f1d/shared/iv_regression.py`
+
+- statsmodels - Classical econometrics
+  - GLM regression for Biddle (2009) investment residuals
+  - VIF (variance inflation factor) for multicollinearity detection
+  - Formula API for model specification
+  - Used in: `src/f1d/shared/diagnostics.py`, `src/f1d/econometric/*.py`
+
+**Survival Analysis:**
+- lifelines - Cox proportional hazards model
+  - CoxTimeVaryingFitter for takeover hazard analysis
+  - Used in: `src/f1d/econometric/run_h9_takeover_hazards.py`
+
+**Data Validation:**
+- pandera - DataFrame schema validation
+  - Output schemas for regression results
+  - Used in: `src/f1d/shared/output_schemas.py`
 
 ---
 
