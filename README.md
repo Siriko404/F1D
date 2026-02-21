@@ -273,7 +273,7 @@ No symlinks needed — the latest directory is always found by timestamp.
 
 ## Verified Results
 
-Last full pipeline run: **2026-02-20**. All scripts passed end-to-end with zero errors,
+Last full pipeline run: **2026-02-21**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
 ### Manager Clarity (H0.1) — `run_h0_1_manager_clarity`
@@ -461,19 +461,6 @@ Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Controls
 β₃ > 0: Vague CEOs amplify PRisk → abnormal investment channel.
 β₃ < 0: Vague CEOs dampen PRisk → abnormal investment channel.
 
-### H8 Policy Risk — `run_h8_policy_risk`
-
-Tests whether CEO speech vagueness moderates the effect of Policy Risk (PRiskFY) on Abnormal Investment.
-Unit of observation: firm-year (not call-level).
-
-Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Controls + FirmFE + YearFE`
-
-| Sample | N Obs | N Firms | R² | Interaction β₃ | p-value |
-|--------|------:|--------:|---:|---------------:|--------:|
-| Main | 22,131 | 1,862 | 0.32 | — | — |
-
-β₃ > 0: Vague CEOs amplify PRisk → abnormal investment channel.
-β₃ < 0: Vague CEOs dampen PRisk → abnormal investment channel.
 
 ### Tone at the Top (H10) — `run_h10_tone_at_top`
 

@@ -1,0 +1,88 @@
+C:\Users\sinas\AppData\Roaming\Python\Python313\site-packages\pandas\core\arraylike.py:399: RuntimeWarning: divide by zero encountered in log
+  result = getattr(ufunc, method)(*inputs, **kwargs)
+C:\Users\sinas\AppData\Roaming\Python\Python313\site-packages\pandas\core\arraylike.py:399: RuntimeWarning: invalid value encountered in log
+  result = getattr(ufunc, method)(*inputs, **kwargs)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\src\f1d\variables\build_tone_at_top_panel.py", line 306, in <module>
+  File "C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\src\f1d\variables\build_tone_at_top_panel.py", line 285, in main
+    var_config = load_variable_config()
+                  ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\src\f1d\variables\build_tone_at_top_panel.py", line 247, in build_turns_panel
+    turns_panel = mgr_turns.merge(
+               ^^^^^^^^^^^^^^^^^^^
+    ...<9 lines>...
+            "sample",
+    
+  File "C:\Users\sinas\AppData\Roaming\Python\Python313\site-packages\pandas\core\frame.py", line 4108, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\sinas\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 6200, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sinas\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 6252, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['quarter'] not in index"
+
+============================================================
+Loading Call-Level Variables
+============================================================
+  Loading manifest...
+    Loaded 112,968 rows
+  Loading nonceo_manager_qa_uncertainty...
+    Loaded 112,968 rows
+  Loading nonceo_manager_pres_uncertainty...
+    Loaded 112,968 rows
+  Loading cfo_qa_uncertainty...
+    Loaded 98,420 rows
+  Loading ceo_qa_uncertainty...
+    Loaded 112,968 rows
+  Loading ceo_pres_uncertainty...
+    Loaded 112,968 rows
+  Loading analyst_qa_uncertainty...
+    Loaded 112,968 rows
+  Loading ceo_style_realtime...
+    Loaded 74,900 rows
+  Loading style_frozen...
+    Loaded 112,968 rows
+  Loading size...
+    Loaded 112,968 rows
+  Loading bm...
+    Loaded 112,968 rows
+  Loading lev...
+    Loaded 112,968 rows
+  Loading roa...
+    Loaded 112,968 rows
+  Loading stock_return...
+    Loaded 112,968 rows
+  Loading market_return...
+    Loaded 112,968 rows
+  Loading eps_growth...
+    Loaded 112,968 rows
+  Loading earnings_surprise...
+    EarningsSurpriseBuilder: loading manifest...
+    EarningsSurpriseBuilder: loading IBES...
+    EarningsSurpriseBuilder: linking IBES to gvkey via CCM...
+    EarningsSurpriseBuilder: matched 87,282/112,968 (77.3%)
+    Loaded 112,968 rows
+  After nonceo_manager_qa_uncertainty merge: 112,968 rows
+  After nonceo_manager_pres_uncertainty merge: 112,968 rows
+  After cfo_qa_uncertainty merge: 112,968 rows
+  After ceo_qa_uncertainty merge: 112,968 rows
+  After ceo_pres_uncertainty merge: 112,968 rows
+  After analyst_qa_uncertainty merge: 112,968 rows
+  After ceo_style_realtime merge: 112,968 rows
+  After style_frozen merge: 112,968 rows
+  After size merge: 112,968 rows
+  After bm merge: 112,968 rows
+  After lev merge: 112,968 rows
+  After roa merge: 112,968 rows
+  After stock_return merge: 112,968 rows
+  After market_return merge: 112,968 rows
+  After eps_growth merge: 112,968 rows
+  After earnings_surprise merge: 112,968 rows
+
+============================================================
+Building Speaker-Turn Panel (Model 2)
+============================================================

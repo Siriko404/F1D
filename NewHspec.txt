@@ -1,0 +1,127 @@
+## One-page proposal (correct DWZ-style: CEO **fixed effects**, no averages)
+
+### Title
+
+**Tone-at-the-Top in Uncertainty:** Does a CEO’s persistent uncertainty style explain (and transmit to) non-CEO managers’ uncertainty in earnings calls?
+
+### One-sentence contribution
+
+Using the **Dzieliński–Wagner–Zeckhauser (DWZ)** approach, I estimate each CEO’s **persistent uncertainty style as a CEO fixed effect** from CEO Q&A language (controlling for presentation- and question-level uncertainty), then test how much that **CEO fixed-effect style** explains the uncertainty language of **non-CEO executives**—with a **no-lookahead (“real time”)** style estimate and a within-Q&A mechanism test.
+
+---
+
+## Research question
+
+1. **Explained-variance question:** How much of non-CEO management’s uncertainty speech is explained by the CEO’s **persistent uncertainty style** (CEO FE), net of firm conditions and question wording?
+2. **Mechanism question:** Is the association consistent with **within-call accommodation/transmission** (non-CEO language shifts toward CEO style within the same analyst question), rather than common firm shocks?
+
+---
+
+## Data & unit of observation
+
+* Earnings call transcripts with **speaker labels** and separation into **Presentation vs Q&A** and ideally **analyst question blocks**.
+* Primary unit(s):
+
+  * Stage 1: **CEO × call-quarter** (CEO Q&A answers)
+  * Stage 2: **non-CEO exec × call-quarter** (or exec × question)
+
+---
+
+## Key variables (DWZ definitions, then adapted)
+
+### CEO uncertainty in answers (style-bearing object)
+
+* (UncAns^{CEO}_{i,t}): fraction of uncertainty words in **CEO answers** (Q&A) in quarter (t). ([NBER][1])
+
+### Controls capturing “firm/time uncertainty” and question wording
+
+* (UncPre^{CEO}_{i,t}): fraction of uncertainty words in the **CEO presentation** (prepared remarks). 
+* (UncQue_{i,t}): fraction of uncertainty words in **analyst questions** on that call. 
+* Optional firm characteristics (FirmChars_{i,t}) and time FE (DWZ include these classes of controls). 
+
+### Non-CEO outcome
+
+* (UncAns^{nonCEO}_{f,t}): fraction of uncertainty words in **non-CEO answers** (aggregate or by role: CFO/COO/IR) in firm (f), quarter (t).
+
+---
+
+## Estimation plan
+
+### Stage 1 — Estimate CEO persistent uncertainty style as a **CEO fixed effect** (DWZ core)
+
+Replicate the DWZ style estimation (their Eq. 4 structure) where the CEO’s persistent component is the coefficient on the CEO indicator (CEO FE): 
+
+[
+UncAns^{CEO}*{i,t}
+= \alpha + \gamma_i \cdot CEO*{i,t} + \beta_s \cdot Speech_{i,t} + \beta_k \cdot FirmChars_{i,t} + Year_t + \varepsilon_{i,t}
+]
+
+* **CEO persistent uncertainty style** = (\gamma_i) (DWZ define “clarity” as (-\gamma_i); you can keep uncertainty-style as (\gamma_i)). 
+* In practice, (Speech_{i,t}) includes at minimum (UncPre^{CEO}) and (UncQue), which DWZ motivate as controls for firm conditions and question wording. 
+
+### No-lookahead implementation (critical)
+
+To avoid using future calls to estimate (\gamma_i), construct a **real-time** style estimate:
+
+* For each quarter (t), estimate the Stage-1 regression using only calls dated (\le t-1).
+* Extract (\widehat{\gamma}_{i,t-1}).
+* Require a minimum history (e.g., ≥ 5 prior calls, matching DWZ’s emphasis on sufficient calls for stable estimation). 
+
+This produces (Style^{CEO}*{i}(t-1)=\widehat{\gamma}*{i,t-1}), a time-indexed estimate of a time-invariant trait.
+
+---
+
+### Stage 2 — “How much explained”: does CEO style load into non-CEO uncertainty?
+
+Baseline quarterly test:
+
+[
+UncAns^{nonCEO}*{f,t}
+= a + b \cdot Style^{CEO}*{CEO(f,t)}(t-1) + \delta_f + \tau_t + X_{f,t}'c + u_{f,t}
+]
+
+Deliverables:
+
+* **Incremental / partial (R^2)** from adding CEO style (answering your “how much explained” question).
+* Role splits (CFO vs other execs) to show where transmission is strongest.
+
+---
+
+## Mechanism test (stronger, within-call): accommodation inside the same analyst question
+
+If you can parse question blocks in Q&A:
+
+**Unit:** executive (e) × question (k) within a call.
+
+[
+Unc_{e,k} = a + \phi\big(Style^{CEO}(t-1)\times CEOFirst_k\big) + \lambda_k + \eta_e + \varepsilon_{e,k}
+]
+
+* (\lambda_k): **question fixed effects** (holds topic/content constant)
+* (CEOFirst_k): CEO speaks earlier in the answer sequence on that question
+* **Key prediction:** (\phi>0) — non-CEO uncertainty increases toward CEO style when the CEO “sets the tone” first.
+
+---
+
+## Hypotheses
+
+* **H1 (explained variance):** Higher real-time CEO uncertainty style (\widehat{\gamma}_{i,t-1}) predicts higher non-CEO uncertainty in the same firm-quarter.
+* **H2 (mechanism):** The effect concentrates within Q&A and within-question sequences where CEO speaks earlier.
+* **H3 (moderators):** Stronger effects when CEO power is higher (duality, pay slice, founder), and weaker when the CFO is entrenched/high-status.
+
+---
+
+## Falsification / robustness
+
+* **Pre-trends:** no movement in non-CEO uncertainty toward CEO style prior to CEO start date (if turnover design used).
+* **Placebos:** run the same pipeline on stylistic features unlikely to transmit (e.g., function-word rates) to test specificity.
+* **Control saturation:** verify CEO-style effect survives controlling for (UncPre), (UncQue), firm characteristics, and time FE.
+
+---
+
+## What makes this “novel enough” (vs “just DWZ again”)
+
+DWZ primarily establishes that **managers have persistent styles** and markets react to vagueness; your contribution is the **intra-firm spillover/transmission map**: CEO FE–style → non-CEO speech, quantified as explained variance and pinned down with a within-question accommodation test.
+
+
+[1]: https://www.nber.org/system/files/working_papers/w23425/w23425.pdf "Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls"

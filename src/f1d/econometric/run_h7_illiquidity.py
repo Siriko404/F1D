@@ -40,6 +40,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import assign_industry_sample
 
 warnings.filterwarnings(
     "ignore", message="covariance of constraints does not have full rank"
@@ -329,6 +330,7 @@ def main(panel_path: Optional[str] = None) -> int:
             "file_name",
             "gvkey",
             "year",
+            "ff12_code",
             "start_date",
             "amihud_illiq_lead",
             # All uncertainty specs (primary + baseline per SPECS list)
@@ -349,6 +351,9 @@ def main(panel_path: Optional[str] = None) -> int:
     )
     print(f"  Rows:    {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+
+    if "sample" not in panel.columns:
+        panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
     # Sanity: DV coverage
     n_dv = panel["amihud_illiq_lead"].notna().sum()

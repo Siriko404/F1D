@@ -71,6 +71,7 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
     # Linguistic uncertainty
     ManagerQAUncertaintyBuilder,
@@ -96,7 +97,6 @@ from f1d.shared.variables import (
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
 )
-from f1d.shared.variables._compustat_engine import get_engine
 
 
 def parse_arguments():
@@ -110,72 +110,6 @@ def parse_arguments():
     parser.add_argument("--year-start", type=int, default=None)
     parser.add_argument("--year-end", type=int, default=None)
     return parser.parse_args()
-
-
-def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    """Assign industry sample based on FF12 code using np.select."""
-    conditions = [ff12_code == 11, ff12_code == 8]
-    choices = ["Finance", "Utility"]
-    return pd.Series(
-        np.select(conditions, choices, default="Main"),
-        index=ff12_code.index,
-        dtype=object,
-    )
-
-
-def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """Attach fyearq (fiscal year) to the call-level panel via merge_asof.
-
-    C-5/M-9 fix: The lead variable must be constructed on fiscal years (fyearq),
-    not calendar years, to correctly handle ~30% of Compustat firms with
-    non-December fiscal year-ends. We use the same merge_asof backward match
-    that all other Compustat variables use (call start_date -> Compustat datadate).
-
-    fyearq is the Compustat fiscal year identifier already present in the engine
-    cache. We extract it from the cached comp DataFrame directly rather than
-    loading Compustat again.
-
-    Returns panel with 'fyearq' column added (NaN for unmatched calls).
-    """
-    if "fyearq" in panel.columns:
-        return panel  # already present
-
-    engine = get_engine()
-    comp = engine.get_data(root_path)
-
-    # Build a minimal fyearq lookup: gvkey, datadate, fyearq
-    fyearq_df = (
-        comp[["gvkey", "datadate", "fyearq"]]
-        .dropna(subset=["fyearq"])
-        .sort_values("datadate")
-        .copy()
-    )
-    # fyearq is float64 in comp (from pd.to_numeric); keep as-is for the merge
-
-    manifest_sorted = panel.sort_values("start_date").copy()
-
-    merged = pd.merge_asof(
-        manifest_sorted,
-        fyearq_df,
-        left_on="start_date",
-        right_on="datadate",
-        by="gvkey",
-        direction="backward",
-        suffixes=("", "_comp"),
-    )
-
-    # Drop the extra datadate column if it was created
-    if "datadate_comp" in merged.columns:
-        merged = merged.drop(columns=["datadate_comp"])
-    if "datadate" in merged.columns and "datadate" not in panel.columns:
-        merged = merged.drop(columns=["datadate"])
-
-    n_matched = merged["fyearq"].notna().sum()
-    print(
-        f"  fyearq attached: {n_matched:,}/{len(merged):,} calls matched "
-        f"({100 * n_matched / len(merged):.1f}%)"
-    )
-    return merged
 
 
 def build_call_level_panel(

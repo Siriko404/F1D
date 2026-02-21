@@ -65,6 +65,7 @@ except ImportError:
 
 from f1d.shared.latex_tables_accounting import make_accounting_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import assign_industry_sample
 
 
 # ==============================================================================
@@ -235,9 +236,12 @@ def prepare_regression_data(
     # Assign industry sample
     if "ff12_code" in df.columns:
         if "sample" not in df.columns:
-            df["sample"] = "Main"
-            df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
-            df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
+            df["sample"] = assign_industry_sample(df["ff12_code"])
+    elif "sample" not in df.columns:
+        raise ValueError(
+            "load_and_prepare_panel: neither 'ff12_code' nor 'sample' column found. "
+            "Cannot assign industry sample. Check Stage 3 panel output."
+        )
 
     print(f"    Main sample: {(df['sample'] == 'Main').sum():,} calls")
 

@@ -45,6 +45,7 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
@@ -92,22 +93,6 @@ def parse_arguments():
         help="End year (default: from config)",
     )
     return parser.parse_args()
-
-
-def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    """Assign industry sample based on FF12 code.
-
-    Uses np.select to avoid deprecated boolean-indexed Series assignment.
-    """
-    import numpy as np
-
-    conditions = [ff12_code == 11, ff12_code == 8]
-    choices = ["Finance", "Utility"]
-    return pd.Series(
-        np.select(conditions, choices, default="Main"),
-        index=ff12_code.index,
-        dtype=object,
-    )
 
 
 def build_panel(

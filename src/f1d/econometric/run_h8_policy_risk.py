@@ -417,21 +417,6 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"  File:    {panel_file}")
     df = pd.read_parquet(
         panel_file,
-        columns=[
-            "gvkey",
-            "fyearq",
-            "ceo_id",
-            "ff12_code",
-            "AbsAbInv_lead",
-            "PRiskFY",
-            "style_frozen",
-            "interact",
-            # Base controls
-            "Size",
-            "Lev",
-            "ROA",
-            "TobinsQ",
-        ],
     )
     print(f"  Rows:    {len(df):,}")
     print(f"  Columns: {len(df.columns)}")

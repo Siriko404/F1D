@@ -58,18 +58,17 @@ import pandas as pd
 # Suppress warnings for cleaner output
 warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
 
-# Try importing statsmodels — assign None so the name is always bound
-smf: Any = None
 try:
     from linearmodels.panel import PanelOLS  # type: ignore[no-redef]
 
     STATSMODELS_AVAILABLE = True
 except ImportError:
     STATSMODELS_AVAILABLE = False
-    print("WARNING: statsmodels not available. Install with: pip install statsmodels")
+    print("WARNING: linearmodels not available. Install with: pip install linearmodels")
 
 from f1d.shared.latex_tables_accounting import make_accounting_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import assign_industry_sample
 
 
 # ==============================================================================
@@ -222,9 +221,7 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     # NaN rows are placed in Main (matching v1 behaviour) so no rows are dropped.
     if "ff12_code" in df.columns:
         if "sample" not in df.columns:
-            df["sample"] = "Main"
-            df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
-            df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
+            df["sample"] = assign_industry_sample(df["ff12_code"])
 
     print("\n  Sample distribution:")
     for sample in ["Main", "Finance", "Utility"]:
@@ -291,8 +288,13 @@ def run_regression(
     start_time = datetime.now()
 
     try:
+        # Model: C(ceo_id) categorical dummies act as CEO fixed effects within
+        # the PanelOLS entity (gvkey) × time (year) index. C(year) adds year dummies.
+        # EntityEffects/TimeEffects are NOT used — the CEO-FE design intentionally
+        # uses C(ceo_id) dummies so that individual CEO coefficients can be extracted
+        # post-estimation (clarity scores = gamma_i per CEO).
         model_obj = PanelOLS.from_formula(
-            formula.replace("C(gvkey) + C(year)", "EntityEffects + TimeEffects"),
+            formula,
             data=df_reg.set_index(["gvkey", "year"]),
             drop_absorbed=True,
         )
@@ -403,9 +405,12 @@ def save_outputs(
 ) -> pd.DataFrame:
     """Save all outputs.
 
-    FIX-3: Standardization of ClarityCEO is done here, globally across ALL
-    samples combined, so that scores from different samples are on the same
-    scale and are directly comparable.
+    S4 fix: Standardization of ClarityCEO is done here, PER SAMPLE (not globally).
+    Regressions for Main, Finance, and Utility each use a different reference CEO
+    (statsmodels' alphabetically-first CEO per sample), so raw gamma values are
+    anchored to different baselines across samples and cannot be compared directly.
+    Per-sample z-score absorbs the reference-level offset while preserving the
+    within-sample relative rank.
 
     FIX-6: Reference CEOs (gamma=0 normalization artifact) are excluded from
     the saved clarity_scores.parquet.
@@ -420,7 +425,7 @@ def save_outputs(
         stats: Stats dict
 
     Returns:
-        Final clarity_df with globally standardized ClarityCEO scores
+        Final clarity_df with per-sample standardized ClarityCEO scores
     """
     print("\n" + "=" * 60)
     print("Saving outputs")
@@ -543,7 +548,7 @@ def generate_report(
 
     Args:
         results: Regression results dict
-        clarity_df: Final clarity scores DataFrame (globally standardized, references excluded)
+        clarity_df: Final clarity scores DataFrame (per-sample standardized, references excluded)
         out_dir: Output directory
         duration: Duration in seconds
     """
@@ -581,8 +586,10 @@ def generate_report(
     report_lines.append("")
     if not clarity_df.empty:
         report_lines.append(
-            f"**Note:** ClarityCEO scores are standardized globally across all "
-            f"{len(clarity_df):,} estimated CEOs (mean=0, std=1). "
+            f"**Note:** ClarityCEO scores are standardized per-sample (within Main, "
+            f"Finance, and Utility separately) across all "
+            f"{len(clarity_df):,} estimated CEOs (mean=0, std=1 within each sample). "
+            f"Per-sample standardization absorbs the reference-CEO baseline offset. "
             f"Reference CEOs (statsmodels baseline) are excluded."
         )
         report_lines.append("")

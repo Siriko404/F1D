@@ -236,6 +236,9 @@ __all__ = [
     "PRiskFYBuilder",
     # H_TT
     "CEOStyleRealtimeBuilder",
+    # Panel-building utilities
+    "assign_industry_sample",
+    "attach_fyearq",
 ]
 
 # H3 Payout Policy
@@ -261,3 +264,6 @@ from .prisk_fy import PRiskFYBuilder
 
 # H_TT Tone at the Top
 from .ceo_style_realtime import CEOStyleRealtimeBuilder
+
+# Panel-building utilities (canonical shared helpers — all panel builders must import from here)
+from .panel_utils import assign_industry_sample, attach_fyearq

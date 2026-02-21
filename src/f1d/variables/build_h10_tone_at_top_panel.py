@@ -36,7 +36,8 @@ from typing import Any, Dict, List
 import pandas as pd
 import numpy as np
 
-from f1d.shared.config import load_variable_config
+from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManifestFieldsBuilder,
     NonCEOManagerQAUncertaintyBuilder,
@@ -67,14 +68,6 @@ def parse_arguments():
     parser.add_argument("--year-start", type=int, default=None)
     parser.add_argument("--year-end", type=int, default=None)
     return parser.parse_args()
-
-
-def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    conditions = [ff12_code == 11, ff12_code == 8]
-    choices = ["Finance", "Utility"]
-    return pd.Series(
-        np.select(conditions, choices, default="Main"), index=ff12_code.index
-    )
 
 
 def build_call_panel(
@@ -141,16 +134,25 @@ def build_call_panel(
         if conflicting:
             data = data.drop(columns=conflicting)
 
+        before_len = len(panel)
         panel = panel.merge(data, on="file_name", how="left")
-        print(f"  After {name} merge: {len(panel):,} rows")
+        after_len = len(panel)
+        if after_len != before_len:
+            raise ValueError(
+                f"Merge '{name}' changed row count: {before_len} → {after_len}. "
+                "Builder returned duplicate file_name rows."
+            )
+        print(f"  After {name} merge: {after_len:,} rows")
 
     if "ff12_code" in panel.columns:
         panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
     if "year" not in panel.columns and "start_date" in panel.columns:
-        panel["year"] = pd.to_datetime(panel["start_date"]).dt.year
+        panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
     if "quarter" not in panel.columns and "start_date" in panel.columns:
-        panel["quarter"] = pd.to_datetime(panel["start_date"]).dt.quarter
+        panel["quarter"] = pd.to_datetime(
+            panel["start_date"], errors="coerce"
+        ).dt.quarter
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
     return panel
@@ -229,8 +231,8 @@ def build_turns_panel(
     mgr_turns = qa_tokens[qa_tokens["is_nonceo_mgr"]].copy()
 
     # For pd.merge_asof, both dataframes MUST be sorted primarily by the "on" key
-    ceo_turns = ceo_turns.sort_values("speaker_number")
-    mgr_turns = mgr_turns.sort_values("speaker_number")
+    ceo_turns = ceo_turns.sort_values(["file_name", "speaker_number"])
+    mgr_turns = mgr_turns.sort_values(["file_name", "speaker_number"])
 
     print("  [Turns Panel] Joining back and merging controls...")
     # 3. Merge_asof to get the LATEST CEO mean strictly prior to this turn
@@ -269,15 +271,23 @@ def main():
         print("Dry run OK")
         return
 
-    year_start = args.year_start or 2002
-    year_end = args.year_end or 2018
+    year_start = args.year_start
+    year_end = args.year_end
+    if year_start is None or year_end is None:
+        # Load year range from project.yaml — same pattern as all other panel builders
+        config = get_config(root / "config" / "project.yaml")
+        if year_start is None:
+            year_start = config.data.year_start
+        if year_end is None:
+            year_end = config.data.year_end
     years = range(year_start, year_end + 1)
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out_dir = root / "outputs" / "variables" / "tone_at_top" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    var_config = load_variable_config()
+    # Pass explicit path so CWD doesn't matter — same pattern as all other panel builders
+    var_config = load_variable_config(root / "config" / "variables.yaml")
     stats = {}
 
     t0 = datetime.now()

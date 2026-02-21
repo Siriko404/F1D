@@ -28,6 +28,7 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
@@ -58,16 +59,6 @@ def parse_arguments():
     parser.add_argument("--year-start", type=int, default=None)
     parser.add_argument("--year-end", type=int, default=None)
     return parser.parse_args()
-
-
-def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    conditions = [ff12_code == 11, ff12_code == 8]
-    choices = ["Finance", "Utility"]
-    return pd.Series(
-        np.select(conditions, choices, default="Main"),
-        index=ff12_code.index,
-        dtype=object,
-    )
 
 
 def build_panel(
@@ -147,6 +138,11 @@ def build_panel(
             raise ValueError(f"Merge '{name}' changed rows {before_len} -> {after_len}")
         print(f"  After {name} merge: {after_len:,} rows (delta: {delta:+d})")
 
+    if "ff12_code" not in panel.columns:
+        raise ValueError(
+            "build_panel: 'ff12_code' not in panel after merges. "
+            "ManifestFieldsBuilder must include ff12_code."
+        )
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
     panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 

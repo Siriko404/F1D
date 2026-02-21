@@ -864,3 +864,24 @@ python -m f1d.econometric.test_ceo_clarity            # 4.1.1 CEO Clarity
 ---
 
 *End of Report*
+
+---
+
+## Phase 4 Complete (Full-Scale Pipeline Validation)
+**Date:** 2026-02-21
+
+The final phase involved extending the canonical architecture to all 15 hypothesis suites across Stage 3 and Stage 4. 
+
+### Key Accomplishments:
+1. **Canonical `panel_utils` Extraction**: Removed 13 duplicated copies of `assign_industry_sample` and 7 duplicated copies of `attach_fyearq`. Both functions now reside in `src/f1d/shared/variables/panel_utils.py` and are imported uniformly by all 14 Stage 3 panel builders and 15 Stage 4 econometric scripts.
+2. **Adversarial Audit Resolutions**: 
+    - Fixed H8 `start_date` unconditional coercion.
+    - Added idempotency `.copy()` return to `attach_fyearq`.
+    - Removed `sys.exit(1)` from H0.5, returning `None` instead.
+    - Updated H0.2 documentation to correctly state standardizations are "per-sample" instead of "globally".
+    - Fixed `load_variable_config()` empty argument calls in H10.
+3. **Econometric Pipeline Unbricking (H3-H7)**:
+    - Addressed `KeyError: 'sample'` crashes in `run_h3` through `run_h7` by appending `"ff12_code"` to the column inclusions inside `read_parquet()` and implementing dynamic `assign_industry_sample()` checks immediately after data loading.
+    - Fixed H8 PyArrow read schema errors by loosening strict `columns=[]` restrictions when loading datasets without `ceo_id` and `ff12_code`.
+4. **Full-Scale Execution**: All 15 Stage 4 scripts (`run_h0_1` to `run_h10`) successfully processed at full scale and generated complete outputs with zero silent failures or NaN propagations.
+

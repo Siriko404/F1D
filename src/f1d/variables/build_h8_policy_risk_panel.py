@@ -43,7 +43,7 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
-from f1d.shared.variables._compustat_engine import get_engine as get_compustat_engine
+from f1d.shared.variables.panel_utils import attach_fyearq
 from f1d.shared.variables import (
     ManifestFieldsBuilder,
     SizeBuilder,
@@ -117,8 +117,12 @@ def create_lead_absabinv(firm_year: pd.DataFrame) -> pd.DataFrame:
     df["next_fyearq"] = df.groupby("gvkey")["fyearq"].shift(-1)
     df["AbsAbInv_next"] = df.groupby("gvkey")["AbsAbInv"].shift(-1)
 
-    # Null out non-consecutive years (gap > 1)
-    is_consecutive = (df["next_fyearq"] - df["fyearq"]) == 1
+    # Null out non-consecutive years (gap > 1).
+    # Cast to Int64 before arithmetic to avoid IEEE 754 float precision risk
+    # (e.g. 2011.0 - 2010.0 occasionally yields 0.9999... not 1.0 for some years).
+    fyearq_int = df["fyearq"].astype("Int64")
+    next_fyearq_int = df["next_fyearq"].astype("Int64")
+    is_consecutive = (next_fyearq_int - fyearq_int) == 1
     df.loc[~is_consecutive, "AbsAbInv_next"] = np.nan
 
     df = df.rename(columns={"AbsAbInv_next": "AbsAbInv_lead"})
@@ -188,28 +192,20 @@ def build_panel(
             raise ValueError(f"Merge '{name}' changed rows: {before_len} → {after_len}")
         print(f"  After {name} merge: {after_len:,} rows (delta: {delta:+d})")
 
-    # Attach fyearq from Compustat via merge_asof
-    if "fyearq" not in panel.columns:
-        comp_engine = get_compustat_engine()
-        comp_df = comp_engine.get_data(root_path)
-        fyearq_df = (
-            comp_df[["gvkey", "fyearq", "datadate"]]
-            .dropna(subset=["fyearq", "datadate"])
-            .sort_values("datadate")
-        )
-        fyearq_df["datadate"] = pd.to_datetime(fyearq_df["datadate"], errors="coerce")
-        panel["start_date"] = pd.to_datetime(panel["start_date"], errors="coerce")
-        panel_sorted = panel.sort_values("start_date").copy()
-        merged = pd.merge_asof(
-            panel_sorted,
-            fyearq_df,
-            left_on="start_date",
-            right_on="datadate",
-            by="gvkey",
-            direction="backward",
-        )
-        fyearq_map = merged.set_index("file_name")["fyearq"]
-        panel["fyearq"] = panel["file_name"].map(fyearq_map)
+    # Coerce start_date to datetime64 UNCONDITIONALLY before fyearq attachment
+    # and firm-year aggregation. aggregate_to_firm_year() sorts by start_date to
+    # select the last call per (gvkey, fyearq); it must be datetime-comparable,
+    # not a string — regardless of whether fyearq is already present.
+    # This coercion is H8-specific because H8 is the only panel builder that
+    # performs a downstream sort on start_date after attach_fyearq.
+    # attach_fyearq() creates its own internal temp column and does NOT mutate
+    # panel["start_date"] — so the coercion must be explicit here.
+    # NOTE: Must be outside the fyearq guard — if attach_fyearq hits its
+    # idempotency path (fyearq already present), start_date would otherwise
+    # remain as object dtype and the downstream sort silently uses lexicographic
+    # ordering (wrong for non-ISO or inconsistently formatted dates).
+    panel["start_date"] = pd.to_datetime(panel["start_date"], errors="coerce")
+    panel = attach_fyearq(panel, root_path)
 
     # Aggregate to firm-year
     print("\n  Aggregating to firm-year level...")

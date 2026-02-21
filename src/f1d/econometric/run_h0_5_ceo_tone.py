@@ -85,6 +85,7 @@ except ImportError:
 from f1d.shared.latex_tables_accounting import make_accounting_table
 from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.regression_validation import (
     RegressionValidationError,
     validate_columns,
@@ -286,9 +287,7 @@ def prepare_regression_data(
             f"[{model_key}] 'ff12_code' column missing from panel. "
             "Cannot assign industry samples. Check Stage 3 manifest output."
         )
-    df["sample"] = "Main"
-    df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
-    df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
+    df["sample"] = assign_industry_sample(df["ff12_code"])
     n_nan_ff12 = df["ff12_code"].isna().sum()
     if n_nan_ff12 > 0:
         print(f"  NOTE: {n_nan_ff12} rows with NaN ff12_code assigned to Main sample.")
@@ -327,7 +326,7 @@ def run_regression(
 
     if not STATSMODELS_AVAILABLE:
         print("  ERROR: statsmodels not available")
-        sys.exit(1)
+        return None, None, set()
 
     spec = MODEL_SPECS[model_key]
     dep_var = spec["dependent_var"]
@@ -347,12 +346,12 @@ def run_regression(
         f"{df_reg['ceo_id'].nunique():,} CEOs"
     )
 
-    # Validate sample size using shared utility — hard exit on failure
+    # Validate sample size using shared utility — return None on failure
     try:
         validate_sample_size(df_reg, min_observations=100)
     except RegressionValidationError as e:
         print(f"  ERROR: {e}")
-        sys.exit(1)
+        return None, None, set()
 
     # Validate required columns using shared utility
     required_for_reg = [dep_var] + controls + ["ceo_id", "year"]
@@ -360,7 +359,7 @@ def run_regression(
         validate_columns(df_reg, required_for_reg)
     except RegressionValidationError as e:
         print(f"  ERROR: {e}")
-        sys.exit(1)
+        return None, None, set()
 
     # Convert to string for categorical treatment
     df_reg["ceo_id"] = df_reg["ceo_id"].astype(str)
@@ -385,7 +384,7 @@ def run_regression(
         )
     except ValueError as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
-        sys.exit(1)
+        return None, None, set()
 
     duration = (datetime.now() - est_start).total_seconds()
 

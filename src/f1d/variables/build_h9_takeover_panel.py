@@ -64,6 +64,7 @@ import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
@@ -93,17 +94,6 @@ def parse_arguments():
     parser.add_argument("--year-start", type=int, default=None)
     parser.add_argument("--year-end", type=int, default=None)
     return parser.parse_args()
-
-
-def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    """Assign industry sample using np.select (no deprecated boolean assignment)."""
-    conditions = [ff12_code == 11, ff12_code == 8]
-    choices = ["Finance", "Utility"]
-    return pd.Series(
-        np.select(conditions, choices, default="Main"),
-        index=ff12_code.index,
-        dtype=object,
-    )
 
 
 def load_clarity_scores(root_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:

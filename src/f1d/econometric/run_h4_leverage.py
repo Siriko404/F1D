@@ -48,6 +48,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import assign_industry_sample
 
 # Silence statsmodels covariance warnings
 warnings.filterwarnings(
@@ -369,6 +370,7 @@ def main(panel_path: str | None = None) -> int:
             "file_name",
             "gvkey",
             "year",
+            "ff12_code",
             # Dependent variables (uncertainty measures)
             "Manager_QA_Uncertainty_pct",
             "CEO_QA_Uncertainty_pct",
@@ -391,6 +393,9 @@ def main(panel_path: str | None = None) -> int:
     )
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+
+    if "sample" not in panel.columns:
+        panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
     out_dir.mkdir(parents=True, exist_ok=True)
     all_results = []

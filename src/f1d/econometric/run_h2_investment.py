@@ -72,6 +72,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import assign_industry_sample
 
 
 # ==============================================================================
@@ -166,6 +167,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         columns=[
             "gvkey",
             "year",
+            "ff12_code",
             "InvestmentResidual",
             "InvestmentResidual_lead",
             "Lev",
@@ -719,11 +721,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Assign sample if not already present
     if "sample" not in panel.columns:
-        panel["sample"] = np.select(
-            [panel["ff12_code"] == 11, panel["ff12_code"] == 8],
-            ["Finance", "Utility"],
-            default="Main",
-        )
+        panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
     print("\n  Full panel sample distribution:")
     for sample in ["Main", "Finance", "Utility"]:

@@ -33,7 +33,7 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
-from f1d.shared.variables._compustat_engine import get_engine
+from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
@@ -62,55 +62,6 @@ def parse_arguments():
     parser.add_argument("--year-start", type=int, default=None)
     parser.add_argument("--year-end", type=int, default=None)
     return parser.parse_args()
-
-
-def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
-    conditions = [ff12_code == 11, ff12_code == 8]
-    choices = ["Finance", "Utility"]
-    return pd.Series(
-        np.select(conditions, choices, default="Main"),
-        index=ff12_code.index,
-        dtype=object,
-    )
-
-
-def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    if "fyearq" in panel.columns:
-        return panel
-
-    engine = get_engine()
-    comp = engine.get_data(root_path)
-
-    fyearq_df = (
-        comp[["gvkey", "datadate", "fyearq"]]
-        .dropna(subset=["fyearq"])
-        .sort_values("datadate")
-        .copy()
-    )
-
-    panel_sorted = panel.sort_values("start_date").copy()
-    panel_sorted["start_date_dt"] = pd.to_datetime(
-        panel_sorted["start_date"], errors="coerce"
-    )
-    panel_sorted = panel_sorted.dropna(subset=["start_date_dt"])
-
-    merged = pd.merge_asof(
-        panel_sorted,
-        fyearq_df,
-        left_on="start_date_dt",
-        right_on="datadate",
-        by="gvkey",
-        direction="backward",
-    )
-
-    fyearq_map = merged.set_index("file_name")["fyearq"]
-    panel["fyearq"] = panel["file_name"].map(fyearq_map)
-
-    n_missing = panel["fyearq"].isna().sum()
-    if n_missing > 0:
-        print(f"  WARNING: {n_missing:,} calls could not be matched to a prior fyearq")
-
-    return panel
 
 
 def create_lead_variables(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
