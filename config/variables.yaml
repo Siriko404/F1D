@@ -93,6 +93,34 @@ variables:
     column: "CEO_Pres_Uncertainty_pct"
     description: "CEO-only presentation uncertainty percentage"
 
+  nonceo_manager_qa_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "NonCEO_Manager_QA_Uncertainty_pct"
+    description: "Non-CEO manager Q&A uncertainty percentage"
+
+  nonceo_manager_pres_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "NonCEO_Manager_Pres_Uncertainty_pct"
+    description: "Non-CEO manager presentation uncertainty percentage"
+
+  cfo_qa_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.1_Tokenized"
+    file_pattern: "linguistic_counts_{year}.parquet"
+    column: "CFO_QA_Uncertainty_pct"
+    description: "CFO-only Q&A uncertainty percentage (computed from token counts)"
+
+  ceo_style_realtime:
+    stage: constructed
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "ClarityStyle_Realtime"
+    description: "Rolling EB-shrunk CEO FE, 4-call rolling window, min N=4"
+
   # ---------------------------------------------------------------------------
   # Tone / Sentiment (Positive & Negative pct per speaker/context)
   # Used by build_ceo_tone_panel.py to derive NetTone = Positive - Negative

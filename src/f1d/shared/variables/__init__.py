@@ -89,6 +89,9 @@ from .negative_sentiment import NegativeSentimentBuilder
 from .entire_all_uncertainty import EntireAllUncertaintyBuilder
 from .ceo_qa_uncertainty import CEOQAUncertaintyBuilder
 from .ceo_pres_uncertainty import CEOPresUncertaintyBuilder
+from .nonceo_manager_qa_uncertainty import NonCEOManagerQAUncertaintyBuilder
+from .nonceo_manager_pres_uncertainty import NonCEOManagerPresUncertaintyBuilder
+from .cfo_qa_uncertainty import CFOQAUncertaintyBuilder
 
 # Tone/sentiment builders (Positive/Negative pct per speaker/context — Stage 2)
 from .manager_qa_positive import ManagerQAPositiveBuilder
@@ -163,6 +166,9 @@ __all__ = [
     "EntireAllUncertaintyBuilder",
     "CEOQAUncertaintyBuilder",
     "CEOPresUncertaintyBuilder",
+    "NonCEOManagerQAUncertaintyBuilder",
+    "NonCEOManagerPresUncertaintyBuilder",
+    "CFOQAUncertaintyBuilder",
     # Tone/sentiment builders (Positive/Negative pct per speaker/context)
     "ManagerQAPositiveBuilder",
     "ManagerQANegativeBuilder",
@@ -228,6 +234,8 @@ __all__ = [
     # H8
     "CEOClarityStyleBuilder",
     "PRiskFYBuilder",
+    # H_TT
+    "CEOStyleRealtimeBuilder",
 ]
 
 # H3 Payout Policy
@@ -250,3 +258,6 @@ from .amihud_illiq import AmihudIlliqBuilder
 # H8 Policy Risk
 from .ceo_clarity_style import CEOClarityStyleBuilder
 from .prisk_fy import PRiskFYBuilder
+
+# H_TT Tone at the Top
+from .ceo_style_realtime import CEOStyleRealtimeBuilder

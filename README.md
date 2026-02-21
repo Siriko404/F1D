@@ -231,6 +231,7 @@ python -m f1d.variables.build_h6_cccl_panel
 python -m f1d.variables.build_h7_illiquidity_panel
 python -m f1d.variables.build_h8_policy_risk_panel
 python -m f1d.variables.build_takeover_panel
+python -m f1d.variables.build_tone_at_top_panel
 ```
 
 #### Stage 4: Hypothesis Tests
@@ -251,6 +252,7 @@ python -m f1d.econometric.run_h6_cccl               # ~1 min
 python -m f1d.econometric.run_h7_illiquidity        # ~2 min
 python -m f1d.econometric.run_h8_policy_risk        # ~1 min
 python -m f1d.econometric.run_takeover_hazards      # ~1 min
+python -m f1d.econometric.run_tone_at_top           # ~2 min
 python -m f1d.econometric.generate_summary_stats    # ~1 sec
 ```
 
@@ -459,6 +461,42 @@ Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Controls
 β₃ > 0: Vague CEOs amplify PRisk → abnormal investment channel.
 β₃ < 0: Vague CEOs dampen PRisk → abnormal investment channel.
 
+### H8 Policy Risk — `run_h8_policy_risk`
+
+Tests whether CEO speech vagueness moderates the effect of Policy Risk (PRiskFY) on Abnormal Investment.
+Unit of observation: firm-year (not call-level).
+
+Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Controls + FirmFE + YearFE`
+
+| Sample | N Obs | N Firms | R² | Interaction β₃ | p-value |
+|--------|------:|--------:|---:|---------------:|--------:|
+| Main | 22,131 | 1,862 | 0.32 | — | — |
+
+β₃ > 0: Vague CEOs amplify PRisk → abnormal investment channel.
+β₃ < 0: Vague CEOs dampen PRisk → abnormal investment channel.
+
+### H_TT Tone at the Top — `run_tone_at_top`
+
+Tests whether a CEO's persistent uncertainty communication style transmits to non-CEO manager uncertainty in the same earnings call.
+
+Model 1 (Call-level): `IHS(CFO_QA_Unc) ~ ClarityStyle_Realtime + Controls + FirmFE + QuarterFE`
+Model 2 (Turn-level): `IHS(NonCEO_Turn_Unc) ~ IHS(CEO_Prior_QA_Unc_j) + CallFE + SpeakerFE`
+
+`ClarityStyle_Realtime` = 4-call rolling window, min 4 prior calls, EB-shrunk.
+
+Clustering: two-way (Firm × CEO).
+
+| Model | Level | Sample | N | Coef | t-stat | p-value | Adj R² |
+|-------|-------|--------|--:|-----:|-------:|--------:|-------:|
+| M1 (H_TT1 Realtime) | Call | Main | 42,643 | 0.0139*** | 3.70 | <0.001 | 0.005 |
+| M1 (H_TT1 Realtime) | Call | Finance | 6,755 | 0.0028 | 0.35 | 0.727 | 0.003 |
+| M1 (H_TT1 Realtime) | Call | Utility | 1,403 | −0.0142 | −1.15 | 0.251 | 0.004 |
+| M2 (H_TT2 Turns) | Turn | Main | 1,699,288 | 0.0426*** | 19.31 | <0.001 | 0.002 |
+| M2 (H_TT2 Turns) | Turn | Finance | 326,324 | 0.0309*** | 6.23 | <0.001 | 0.001 |
+| M2 (H_TT2 Turns) | Turn | Utility | 62,485 | 0.0243*** | 3.48 | 0.001 | 0.001 |
+
+H_TT1 confirmed in the Main sample (β=0.014, t=3.70, p<0.001). Finance and Utility insignificant at call level — regulated industries suppress durable style transmission. H_TT2 strongly confirmed across all three samples — the within-call Granger design is the primary identification result.
+
 ### Takeover Hazards (4.3) — `run_takeover_hazards`
 
 Survival panel: firm-level (not call-level). Duration = years from first call to
@@ -521,7 +559,8 @@ outputs/
 │   ├── h6_cccl/{timestamp}/
 │   ├── h7_illiquidity/{timestamp}/
 │   ├── h8_policy_risk/{timestamp}/
-│   └── takeover/{timestamp}/
+│   ├── takeover/{timestamp}/
+│   └── tone_at_top/{timestamp}/
 │
 └── econometric/                     # Stage 4 outputs (regressions)
     ├── manager_clarity/{timestamp}/
@@ -541,6 +580,7 @@ outputs/
     ├── h7_illiquidity/{timestamp}/
     ├── h8_policy_risk/{timestamp}/
     ├── takeover/{timestamp}/
+    ├── tone_at_top/{timestamp}/
     └── summary_stats/{timestamp}/
         ├── descriptive_statistics.csv
         ├── correlation_matrix.csv
@@ -580,7 +620,11 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | `manager_pres_uncertainty.py` | `Manager_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
 | `ceo_qa_uncertainty.py` | `CEO_QA_Uncertainty_pct` | Stage 2 linguistic vars |
 | `ceo_pres_uncertainty.py` | `CEO_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
+| `nonceo_manager_qa_uncertainty.py` | `NonCEO_Manager_QA_Uncertainty_pct` | Stage 2 linguistic vars |
+| `nonceo_manager_pres_uncertainty.py` | `NonCEO_Manager_Pres_Uncertainty_pct` | Stage 2 linguistic vars |
+| `cfo_qa_uncertainty.py` | `CFO_QA_Uncertainty_pct` | Stage 2 tokenize counts |
 | `analyst_qa_uncertainty.py` | `Analyst_QA_Uncertainty_pct` | Stage 2 linguistic vars |
+| `ceo_style_realtime.py` | `ClarityStyle_Realtime` | Stage 2 + rolling JS estimator |
 | `negative_sentiment.py` | `Entire_All_Negative_pct` | Stage 2 linguistic vars |
 | `manager_qa_weak_modal.py` | `Manager_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
 | `ceo_qa_weak_modal.py` | `CEO_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
