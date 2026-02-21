@@ -1,167 +1,180 @@
 # Architecture
 
-**Analysis Date:** 2026-02-20
+**Analysis Date:** 2026-02-21
 
 ## Pattern Overview
 
-**Overall:** Multi-stage data processing pipeline with modular variable builders
+**Overall:** Four-Stage Pipeline with Data Engine Singletons
 
 **Key Characteristics:**
-- **Two-tier module structure**: Tier 1 (shared utilities) and Tier 2 (stage-specific modules)
-- **One module = one variable**: Each variable builder returns exactly one column
-- **Two-stage execution per hypothesis**: Stage 3 builds panels, Stage 4 runs regressions
-- **Private compute engines**: Singleton pattern for expensive data loads (Compustat, CRSP)
-- **Timestamp-based output versioning**: All outputs go to `YYYY-MM-DD_HHMMSS/` subdirectories
+- Sequential stage execution with timestamped outputs
+- One module = one variable (each builder returns exactly one column)
+- Zero row delta on merges (ValueError raised if panel length changes)
+- Private data engine singletons for expensive data sources (Compustat, CRSP, IBES)
+- Hard-fail on missing required variables
 
 ## Layers
 
-**Tier 1: Shared Utilities (`src/f1d/shared/`):**
-- Purpose: Cross-cutting utilities used across all pipeline stages
-- Location: `src/f1d/shared/`
-- Contains: Path utilities, panel OLS, logging, config, observability, variable builders
-- Depends on: pandas, numpy, linearmodels, pydantic, yaml
-- Used by: All Stage 2, 3, 4 modules
+**Stage 1: Sample Construction (`src/f1d/sample/`)**
+- Purpose: Build analyst-CEO manifest linking transcripts to firms and executives
+- Location: `src/f1d/sample/`
+- Contains: `clean_metadata.py`, `link_entities.py`, `build_tenure_map.py`, `assemble_manifest.py`
+- Depends on: Raw inputs (transcripts, CCM linktable, Execucomp)
+- Used by: All subsequent stages
 
-**Tier 2: Stage-Specific Modules:**
-- Purpose: Implement individual pipeline stages
-- Location: `src/f1d/{sample,text,variables,econometric}/`
-- Contains: Executable scripts for each processing step
-- Depends on: Tier 1 shared utilities, external data sources
-- Used by: CLI invocation via `python -m f1d.<module>`
-
-**Variable Builders Layer (`src/f1d/shared/variables/`):**
-- Purpose: Build individual variables from various data sources
-- Location: `src/f1d/shared/variables/`
-- Contains: Base classes and 50+ individual variable builders
-- Pattern: Each builder inherits from `VariableBuilder`, implements `build()` returning `VariableResult`
-- Depends on: Compustat engine, CRSP engine, IBES engine, Stage 2 outputs
+**Stage 2: Text Processing (`src/f1d/text/`)**
+- Purpose: Tokenize transcripts and compute linguistic variables
+- Location: `src/f1d/text/`
+- Contains: `tokenize_transcripts.py`, `build_linguistic_variables.py`
+- Depends on: Stage 1 manifest, LM dictionary
 - Used by: Stage 3 panel builders
+
+**Stage 3: Panel Builders (`src/f1d/variables/`)**
+- Purpose: Merge manifest with all required variables for each hypothesis test
+- Location: `src/f1d/variables/`
+- Contains: `build_h{0-10}_*_panel.py` (15 panel builder scripts)
+- Depends on: Stage 1 manifest, Stage 2 linguistic vars, shared variable builders
+- Used by: Stage 4 econometric scripts
+
+**Stage 4: Econometric Analysis (`src/f1d/econometric/`)**
+- Purpose: Run hypothesis tests, extract fixed effects, generate LaTeX tables
+- Location: `src/f1d/econometric/`
+- Contains: `run_h{0-10}_*.py` (16 econometric scripts)
+- Depends on: Stage 3 panels
+- Used by: Final outputs (tables, scores)
+
+**Shared Utilities (`src/f1d/shared/`)**
+- Purpose: Cross-cutting utilities used across all stages
+- Location: `src/f1d/shared/`
+- Contains: `config/`, `logging/`, `observability/`, `variables/`, and utility modules
+- Depends on: Configuration files, external libraries
+- Used by: All stages
 
 ## Data Flow
 
-**4-Stage Pipeline Flow:**
+**Sample Construction Flow:**
 
-1. **Stage 1 - Sample Construction**: Build analyst-CEO manifest
-   - Input: Raw earnings call transcripts, CEO tenure data
-   - Process: Link entities, filter by call threshold, assemble manifest
-   - Output: `outputs/1.4_AssembleManifest/{timestamp}/master_sample_manifest.parquet`
+1. `clean_metadata.py` - Clean transcript metadata, filter by year range
+2. `link_entities.py` - Link transcripts to firms via GVKEY using fuzzy matching
+3. `build_tenure_map.py` - Build CEO tenure panel from Execucomp
+4. `assemble_manifest.py` - Merge all to create `master_sample_manifest.parquet`
 
-2. **Stage 2 - Text Processing**: Tokenize and analyze conference calls
-   - Input: Manifest + raw transcripts
-   - Process: Extract filtered docs, tokenize, count words, build linguistic variables
-   - Output: `outputs/2_Textual_Analysis/2.2_Variables/{timestamp}/linguistic_variables_{year}.parquet`
+**Text Processing Flow:**
 
-3. **Stage 3 - Financial Features**: Build analysis panels
-   - Input: Manifest + Stage 2 outputs + Compustat + CRSP + IBES
-   - Process: Load variable builders, merge by `file_name`, produce complete panel
-   - Output: `outputs/3_Variables/{hypothesis}_panel/{timestamp}/{hypothesis}_panel.parquet`
+1. `tokenize_transcripts.py` - Tokenize speech, count LM dictionary words
+2. `build_linguistic_variables.py` - Compute uncertainty/sentiment percentages
 
-4. **Stage 4 - Econometric Analysis**: Run panel regressions
-   - Input: Stage 3 panel
-   - Process: Filter sample, run OLS with fixed effects, generate LaTeX tables
-   - Output: `outputs/4_Econometric/{hypothesis}/{timestamp}/`
+**Panel Building Flow:**
 
-**Variable Build Flow:**
+1. Load manifest from Stage 1 output (via `get_latest_output_dir()`)
+2. Initialize variable builders (each returns `file_name` + one column)
+3. Merge all variables sequentially with zero row delta validation
+4. Output panel parquet ready for regression
 
-```python
-# Each Stage 3 panel builder follows this pattern:
-manifest = load_manifest()
-variables = [
-    ManifestFieldsBuilder(config),
-    CEOQAUncertaintyBuilder(config),
-    SizeBuilder(config),
-    # ... 10-30 more builders
-]
-for builder in variables:
-    result = builder.build(years, root_path)
-    manifest = manifest.merge(result.data, on="file_name")
-```
+**Econometric Analysis Flow:**
+
+1. Load panel from Stage 3 output
+2. Run OLS/IV/Cox regression with fixed effects
+3. Extract fixed effects (gamma_i) and standardize
+4. Generate LaTeX tables via `latex_tables_accounting.py`
 
 **State Management:**
-- No in-memory state between stages
-- Each stage reads prior outputs from disk
-- Private engines cache loaded data within a single stage execution
+- No global state except private data engine singletons
+- Each stage reads from timestamped output directories
+- `get_latest_output_dir()` resolves most recent output by timestamp
 
 ## Key Abstractions
 
-**VariableBuilder (`src/f1d/shared/variables/base.py`):**
-- Purpose: Base class for all variable builders
-- Examples: `src/f1d/shared/variables/size.py`, `src/f1d/shared/variables/ceo_qa_uncertainty.py`
-- Pattern: Abstract base class with `build(years, root_path) -> VariableResult`
-- Returns: `VariableResult(data=DataFrame, stats=VariableStats, metadata=dict)`
+**VariableBuilder (Base Class)**
+- Purpose: Define interface for building a single variable
+- Examples: `src/f1d/shared/variables/base.py`, all `*_builder.py` files
+- Pattern: `build(years: range, root_path: Path) -> VariableResult(data, stats, metadata)`
 
-**Private Compute Engines:**
-- Purpose: Load expensive datasets once and cache for all builders
+**Data Engines (Private Singletons)**
+- Purpose: Load expensive data sources once and cache in memory
 - Examples:
-  - `src/f1d/shared/variables/_compustat_engine.py` - Compustat quarterly data
-  - `src/f1d/shared/variables/_crsp_engine.py` - CRSP daily stock files
-  - `src/f1d/shared/variables/_ibes_engine.py` - IBES analyst forecasts
-  - `src/f1d/shared/variables/_hassan_engine.py` - Hassan policy risk data
-- Pattern: Module-level singleton with `get_engine()` function
+  - `src/f1d/shared/variables/_compustat_engine.py` - CompustatEngine
+  - `src/f1d/shared/variables/_crsp_engine.py` - CRSPEngine
+  - `src/f1d/shared/variables/_ibes_engine.py` - IBESEngine
+  - `src/f1d/shared/variables/_hassan_engine.py` - HassanEngine (policy risk)
+- Pattern: Module-level `_engine = None` with `get_engine()` factory
 
-**PanelOLS Wrapper (`src/f1d/shared/panel_ols.py`):**
-- Purpose: Standardized panel regression with fixed effects
-- Features: Entity/time/industry FE, clustered SEs, HAC, VIF diagnostics
-- Returns: Dict with `model`, `coefficients`, `summary`, `diagnostics`, `warnings`
+**safe_merge() Wrapper**
+- Purpose: Merge DataFrames with validation and logging
+- Examples: `src/f1d/shared/data_loading.py`
+- Pattern: Pre-merge key validation, post-merge statistics, optional cardinality check
 
-**Config System (`src/f1d/shared/config/`):**
-- Purpose: Pydantic-based configuration with validation
-- Pattern: `ProjectConfig.from_yaml(path)` loads and validates `config/project.yaml`
-- Supports: Environment variable overrides via `F1D_*` prefix
+**Timestamp-Based Output Resolution**
+- Purpose: Find most recent output without symlinks
+- Examples: `src/f1d/shared/path_utils.py` - `get_latest_output_dir()`
+- Pattern: Directories named `YYYY-MM-DD_HHMMSS`, sorted lexicographically
 
 ## Entry Points
 
-**CLI Entry Points:**
-- Location: `src/f1d/{sample,text,variables,econometric}/*.py`
-- Triggers: `python -m f1d.<module>.<script>` (e.g., `python -m f1d.variables.build_h1_cash_holdings_panel`)
-- Responsibilities: Load config, setup paths, run processing, save outputs
+**Stage 1 Scripts:**
+- Location: `src/f1d/sample/*.py`
+- Triggers: `python -m f1d.sample.clean_metadata`, etc.
+- Responsibilities: Read raw inputs, write timestamped outputs
 
-**Module Entry Points (`__init__.py`):**
-- `src/f1d/__init__.py`: Re-exports `get_latest_output_dir`, `run_panel_ols`
-- `src/f1d/shared/__init__.py`: Re-exports core utilities
-- `src/f1d/shared/variables/__init__.py`: Re-exports all 50+ variable builders
+**Stage 2 Scripts:**
+- Location: `src/f1d/text/*.py`
+- Triggers: `python -m f1d.text.tokenize_transcripts`, etc.
+- Responsibilities: Read Stage 1 outputs, write linguistic variables
 
-**Dry-Run Mode:**
-- All scripts support `--dry-run` flag for prerequisite validation
-- Tests can use `tests/verification/test_*_dryrun.py` for CI validation
+**Stage 3 Scripts:**
+- Location: `src/f1d/variables/build_h{N}_*_panel.py`
+- Triggers: `python -m f1d.variables.build_h0_1_manager_clarity_panel`, etc.
+- Responsibilities: Load manifest, build variables, merge to panel
+
+**Stage 4 Scripts:**
+- Location: `src/f1d/econometric/run_h{N}_*.py`
+- Triggers: `python -m f1d.econometric.run_h0_1_manager_clarity`, etc.
+- Responsibilities: Load panel, run regression, output tables and scores
+
+**Reporting:**
+- Location: `src/f1d/reporting/generate_summary_stats.py`
+- Triggers: `python -m f1d.reporting.generate_summary_stats`
+- Responsibilities: Generate descriptive statistics from panels
 
 ## Error Handling
 
-**Strategy:** Fail-fast with detailed error context
+**Strategy:** Hard-fail with descriptive exceptions
 
 **Patterns:**
-- Custom exceptions: `PathValidationError`, `OutputResolutionError`, `CollinearityError`, `MulticollinearityError`
-- Validation before processing: `validate_input_file()`, `validate_prerequisites()`
-- Comprehensive stats collection: Every script collects `stats` dict with timing, memory, checksums
-- Dual logging: `DualWriter` class writes to both stdout and log file
+- `PathValidationError` - Missing or inaccessible paths
+- `OutputResolutionError` - No valid output directory found
+- `ValueError` - Missing required columns, merge row delta
+- `CollinearityError` / `MulticollinearityError` - Regression design matrix issues
+- Pre-merge validation in `safe_merge()` catches missing keys early
 
-**Error Classes:**
-- `src/f1d/shared/path_utils.py`: `PathValidationError`, `OutputResolutionError`
-- `src/f1d/shared/panel_ols.py`: `CollinearityError`, `MulticollinearityError`
+**Validation Layers:**
+- Input file validation: `validate_input_file()` in `path_utils.py`
+- Merge key validation: `validate_merge_keys()` in `data_loading.py`
+- Panel column validation: Stage 4 scripts check required columns before regression
+- Determinism checks: Config `determinism.sort_inputs: true` ensures reproducibility
 
 ## Cross-Cutting Concerns
 
-**Logging:** 
-- `src/f1d/shared/observability/` - `DualWriter`, throughput tracking, memory monitoring
-- Config: `config/project.yaml` logging section
-- Output: `logs/{step_id}/{timestamp}.log`
+**Logging:**
+- Framework: `structlog` with custom handlers
+- Location: `src/f1d/shared/logging/` (handlers.py, context.py, config.py)
+- Pattern: `DualWriter` for console + file output
 
 **Validation:**
-- Pydantic models for config validation
-- `validate_input_file()` for file existence checks
-- `check_prerequisites()` for dependency validation
-- VIF checks in panel regressions
+- Framework: `pydantic` and `pydantic-settings`
+- Location: `src/f1d/shared/config/` (base.py, step_configs.py, loader.py)
+- Pattern: Type-safe config with environment variable overrides
 
-**Authentication:**
-- Not applicable - no external API authentication
-- All data is local filesystem-based
+**Observability:**
+- Framework: Custom stats collection
+- Location: `src/f1d/shared/observability/` (stats.py, memory.py, throughput.py)
+- Pattern: Collect and output statistics per-stage execution
 
-**Output Management:**
-- Timestamped directories: `outputs/{step_id}/{timestamp}/`
-- Resolution: `get_latest_output_dir()` finds most recent valid output
-- Stats files: `stats.json` alongside outputs for reproducibility tracking
-- Checksums: SHA-256 hashes for all input/output files
+**Configuration:**
+- Location: `config/project.yaml`, `config/variables.yaml`
+- Access: `get_config()`, `load_variable_config()` from `shared/config/`
+- Pattern: Pydantic models with YAML source and env var overrides
 
 ---
 
-*Architecture analysis: 2026-02-20*
+*Architecture analysis: 2026-02-21*
