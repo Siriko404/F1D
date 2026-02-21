@@ -63,7 +63,7 @@ from sklearn.feature_extraction.text import CountVectorizer  # type: ignore[impo
 from f1d.shared.chunked_reader import track_memory_usage
 
 # Import shared path validation utilities
-from f1d.shared.observability_utils import DualWriter
+from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import (
     ensure_output_dir,
     get_latest_output_dir,
@@ -1131,7 +1131,7 @@ def main(dictionary_path: Optional[str] = None) -> None:
 
     # Compute INPUT statistics (manifest + LM dictionary)
     print("\nComputing input statistics...")
-    from f1d.shared.observability_utils import compute_tokenize_input_stats
+    from f1d.shared.observability import compute_tokenize_input_stats
 
     stats["tokenize_input"] = compute_tokenize_input_stats(
         manifest, lm_path, vocab_list, cat_sets
@@ -1207,7 +1207,7 @@ def main(dictionary_path: Optional[str] = None) -> None:
 
     # Compute PROCESS statistics
     print("\nComputing process statistics...")
-    from f1d.shared.observability_utils import compute_tokenize_process_stats
+    from f1d.shared.observability import compute_tokenize_process_stats
 
     duration_seconds = stats["timing"]["duration_seconds"]
     stats["tokenize_process"] = compute_tokenize_process_stats(
@@ -1227,7 +1227,7 @@ def main(dictionary_path: Optional[str] = None) -> None:
     # Compute OUTPUT statistics
     if output_dfs:
         print("Computing output statistics...")
-        from f1d.shared.observability_utils import compute_tokenize_output_stats
+        from f1d.shared.observability import compute_tokenize_output_stats
 
         stats["tokenize_output"] = compute_tokenize_output_stats(output_dfs, cat_sets)
 

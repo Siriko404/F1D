@@ -66,6 +66,7 @@ Issues = "https://github.com/user/f1d/issues"
 where = ["src"]
 
 [tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
 minversion = "8.0"
 addopts = [
     "-ra",  # Show extra test summary info

@@ -70,7 +70,7 @@ except ImportError:
     LIFELINES_AVAILABLE = False
     print("WARNING: lifelines not available. Install with: pip install lifelines")
 
-from f1d.shared.observability_utils import DualWriter
+from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.regression_validation import (
     RegressionValidationError,

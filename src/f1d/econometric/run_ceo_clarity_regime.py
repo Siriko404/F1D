@@ -70,7 +70,7 @@ import numpy as np
 import pandas as pd
 
 # Suppress warnings for cleaner output
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
 
 # Try importing statsmodels — assign None so the name is always bound
 smf: Any = None

@@ -57,7 +57,7 @@ from f1d.shared.sample_utils import generate_variable_reference
 
 from f1d.shared.chunked_reader import track_memory_usage
 from f1d.shared.industry_utils import parse_ff_industries
-from f1d.shared.observability_utils import (
+from f1d.shared.observability import (
     DualWriter,
     analyze_missing_values,
     calculate_throughput,

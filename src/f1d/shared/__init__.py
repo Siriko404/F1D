@@ -17,7 +17,7 @@ from f1d.shared.centering import center_continuous, create_interaction
 from f1d.shared.diagnostics import check_multicollinearity, compute_vif
 from f1d.shared.industry_utils import parse_ff_industries
 from f1d.shared.metadata_utils import load_variable_descriptions
-from f1d.shared.observability_utils import DualWriter
+from f1d.shared.observability import DualWriter
 from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.path_utils import OutputResolutionError, get_latest_output_dir
 

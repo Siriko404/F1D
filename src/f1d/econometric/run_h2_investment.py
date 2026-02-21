@@ -161,7 +161,27 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
-    panel = pd.read_parquet(panel_file)
+    panel = pd.read_parquet(
+        panel_file,
+        columns=[
+            "gvkey",
+            "year",
+            "InvestmentResidual",
+            "InvestmentResidual_lead",
+            "Lev",
+            "Manager_QA_Uncertainty_pct",
+            "CEO_QA_Uncertainty_pct",
+            "Manager_QA_Weak_Modal_pct",
+            "CEO_QA_Weak_Modal_pct",
+            "Manager_Pres_Uncertainty_pct",
+            "CEO_Pres_Uncertainty_pct",
+            "Size",
+            "TobinsQ",
+            "ROA",
+            "CashFlow",
+            "SalesGrowth",
+        ],
+    )
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")

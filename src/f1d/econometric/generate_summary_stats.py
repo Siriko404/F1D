@@ -48,9 +48,9 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
 
-from f1d.shared.observability_utils import DualWriter
+from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.config import get_config
 

@@ -89,6 +89,8 @@ H2 red-team audit fixes (2026-02-20):
 
 from __future__ import annotations
 
+import logging
+import threading
 import traceback
 import zipfile
 from pathlib import Path
@@ -96,6 +98,8 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 # All columns produced by this engine (excludes file_name — matched in builders)
 COMPUSTAT_COLS = [
@@ -375,7 +379,7 @@ def _load_ff48_map(root_path: Path) -> Dict[int, int]:
             sic_to_ff48[sic] = CATCHALL_FF48
 
     n_mapped = len(sic_to_ff48)
-    print(
+    logger.info(
         f"    FF48 map: {len(all_codes)} industries, {n_mapped} SIC codes mapped "
         f"(residual -> code {CATCHALL_FF48})"
     )
@@ -492,7 +496,7 @@ def _compute_biddle_residual(
     annual = annual.drop_duplicates(subset=["gvkey", "fyearq"], keep="last")
     annual = annual.sort_values(["gvkey", "fyearq"]).reset_index(drop=True)
 
-    print(f"    Biddle: annual Q4 panel: {len(annual):,} firm-years")
+    logger.info(f"    Biddle: annual Q4 panel: {len(annual):,} firm-years")
 
     # ------------------------------------------------------------------
     # Step 2: Assign FF48 codes via SIC
@@ -509,7 +513,7 @@ def _compute_biddle_residual(
 
     n_missing_sic = annual["ff48_code"].isna().sum()
     if n_missing_sic > 0:
-        print(
+        logger.info(
             f"    Biddle WARNING: {n_missing_sic:,} firm-years have missing SIC "
             f"-> ff48_code=None -> excluded from all OLS cells"
         )
@@ -534,7 +538,7 @@ def _compute_biddle_residual(
     n_total = len(annual)
     if n_missing_aqcy > 0:
         frac = n_missing_aqcy / n_total
-        print(
+        logger.info(
             f"    Biddle: aqcy missing for {n_missing_aqcy:,}/{n_total:,} "
             f"firm-years ({100 * frac:.1f}%) -- treated as 0 per Biddle replication convention"
         )
@@ -660,14 +664,14 @@ def _compute_biddle_residual(
             cells_run += 1
         except Exception as exc:  # m-3: log identity + type, not silent skip
             exc_type = type(exc).__name__
-            print(
+            logger.info(
                 f"    Biddle OLS error in cell (ff48={ff48}, fyear={fyear}): "
                 f"{exc_type}: {exc}"
             )
             cells_skipped_error += 1
 
     n_valid = annual["InvestmentResidual"].notna().sum()
-    print(
+    logger.info(
         f"    Biddle: FF48-year cells run={cells_run}, "
         f"skipped_small={cells_skipped_size}, "
         f"skipped_none_sic={cells_skipped_none}, "
@@ -994,43 +998,57 @@ class CompustatEngine:
     def __init__(self) -> None:
         self._cache: Optional[pd.DataFrame] = None
         self._cache_root: Optional[Path] = None
+        self._lock = threading.Lock()
 
     def get_data(self, root_path: Path) -> pd.DataFrame:
-        """Return fully-computed Compustat controls DataFrame (cached)."""
+        """Return fully-computed Compustat controls DataFrame (cached).
+
+        Uses double-checked locking so that concurrent callers in a
+        multi-threaded pipeline do not trigger redundant loads.
+        """
+        # Fast path — no lock needed for reads because Python assignment is atomic.
         if self._cache is not None and self._cache_root == root_path:
             return self._cache
 
-        compustat_path = (
-            root_path / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
-        )
-        print(f"    CompustatEngine: loading {compustat_path.name}...")
-        comp = pd.read_parquet(compustat_path, columns=REQUIRED_COMPUSTAT_COLS)
-        comp["gvkey"] = comp["gvkey"].astype(str).str.zfill(6)
-        comp["datadate"] = pd.to_datetime(comp["datadate"])
-        non_numeric = {"gvkey", "datadate", "fyearq", "fqtr", "sic"}
-        numeric_cols = [c for c in REQUIRED_COMPUSTAT_COLS if c not in non_numeric]
-        for col in numeric_cols:
-            comp[col] = pd.to_numeric(comp[col], errors="coerce").astype("float64")
-        comp["fyearq"] = pd.to_numeric(comp["fyearq"], errors="coerce")
-        comp["fqtr"] = pd.to_numeric(comp["fqtr"], errors="coerce")
-        comp["sic"] = pd.to_numeric(comp["sic"], errors="coerce")
+        with self._lock:
+            # Re-check inside the lock — another thread may have populated it
+            # while we were waiting.
+            if self._cache is not None and self._cache_root == root_path:
+                return self._cache
 
-        # --- CRITICAL-2: Deduplicate (gvkey, datadate) — keep last ---
-        before = len(comp)
-        comp = comp.drop_duplicates(subset=["gvkey", "datadate"], keep="last")
-        after = len(comp)
-        if before != after:
-            print(
-                f"    CompustatEngine: dropped {before - after:,} duplicate "
-                f"(gvkey, datadate) rows"
+            compustat_path = (
+                root_path / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
             )
+            logger.info(f"    CompustatEngine: loading {compustat_path.name}...")
+            comp = pd.read_parquet(compustat_path, columns=REQUIRED_COMPUSTAT_COLS)
+            comp["gvkey"] = comp["gvkey"].astype(str).str.zfill(6)
+            comp["datadate"] = pd.to_datetime(comp["datadate"])
+            non_numeric = {"gvkey", "datadate", "fyearq", "fqtr", "sic"}
+            numeric_cols = [c for c in REQUIRED_COMPUSTAT_COLS if c not in non_numeric]
+            for col in numeric_cols:
+                comp[col] = pd.to_numeric(comp[col], errors="coerce").astype("float64")
+            comp["fyearq"] = pd.to_numeric(comp["fyearq"], errors="coerce")
+            comp["fqtr"] = pd.to_numeric(comp["fqtr"], errors="coerce")
+            comp["sic"] = pd.to_numeric(comp["sic"], errors="coerce")
 
-        print(f"    CompustatEngine: computing controls on {len(comp):,} rows...")
-        comp = _compute_and_winsorize(comp, root_path=root_path)
+            # --- CRITICAL-2: Deduplicate (gvkey, datadate) — keep last ---
+            before = len(comp)
+            comp = comp.drop_duplicates(subset=["gvkey", "datadate"], keep="last")
+            after = len(comp)
+            if before != after:
+                logger.info(
+                    f"    CompustatEngine: dropped {before - after:,} duplicate "
+                    f"(gvkey, datadate) rows"
+                )
 
-        self._cache = comp
-        self._cache_root = root_path
-        return comp
+            logger.info(
+                f"    CompustatEngine: computing controls on {len(comp):,} rows..."
+            )
+            comp = _compute_and_winsorize(comp, root_path=root_path)
+
+            self._cache = comp
+            self._cache_root = root_path
+            return comp
 
     def match_to_manifest(
         self,
@@ -1062,7 +1080,7 @@ class CompustatEngine:
 
         matched = merged["Size"].notna().sum()
         total = len(merged)
-        print(
+        logger.info(
             f"    CompustatEngine: matched {matched:,}/{total:,} "
             f"({matched / total * 100:.1f}%)"
         )

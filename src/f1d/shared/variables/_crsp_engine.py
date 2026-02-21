@@ -22,11 +22,15 @@ Bug fixes applied here (from red-team audit):
 from __future__ import annotations
 
 import gc
+import logging
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 CRSP_RETURN_COLS = ["StockRet", "MarketRet", "Volatility", "amihud_illiq"]
 
@@ -69,7 +73,7 @@ def _load_crsp_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]
                     df = df[keep_cols]
                     all_data.append(df)
                 except Exception as e:
-                    print(f"Error loading {fp}: {e}")
+                    logger.info(f"Error loading {fp}: {e}")
 
     if not all_data:
         return None
@@ -258,81 +262,116 @@ class CRSPEngine:
     def __init__(self) -> None:
         self._cache: Optional[pd.DataFrame] = None
         self._cache_root: Optional[Path] = None
+        self._lock = threading.Lock()
 
-    def get_data(self, root_path: Path, manifest_path: Path) -> pd.DataFrame:
-        """Return fully-computed CRSP returns DataFrame (cached)."""
-        if (
+    def _is_cached(self, root_path: Path) -> bool:
+        return (
             self._cache is not None
             and self._cache_root == root_path
             and "amihud_illiq" in self._cache.columns
-        ):
-            return self._cache
-
-        crsp_dir = root_path / "inputs" / "CRSP_DSF"
-        ccm_path = (
-            root_path / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
         )
 
-        # Load full manifest (all years) for prev_call_date computation — MAJOR-2 fix
-        print(f"    CRSPEngine: loading manifest (full) for prev_call_date...")
-        full_manifest = pd.read_parquet(
-            manifest_path, columns=["file_name", "gvkey", "start_date"]
-        )
-        full_manifest["gvkey"] = full_manifest["gvkey"].astype(str).str.zfill(6)
-        full_manifest["start_date"] = pd.to_datetime(full_manifest["start_date"])
+    def get_data(self, root_path: Path, manifest_path: Path) -> pd.DataFrame:
+        """Return fully-computed CRSP returns DataFrame (cached).
 
-        # --- MAJOR-2: Compute prev_call_date on FULL manifest before any year filter ---
-        full_manifest = full_manifest.sort_values(["gvkey", "start_date"])
-        full_manifest["prev_call_date"] = full_manifest.groupby("gvkey")[
-            "start_date"
-        ].shift(1)
-        full_manifest["year"] = full_manifest["start_date"].dt.year
+        Uses double-checked locking so that concurrent callers in a
+        multi-threaded pipeline do not trigger redundant loads.
+        """
+        # Fast path — no lock needed.
+        if self._is_cached(root_path):
+            return self._cache  # type: ignore[return-value]
 
-        # --- CRITICAL-3: Date-bounded PERMNO linkage via CCM ---
-        print(
-            f"    CRSPEngine: loading CCM linktable for date-bounded PERMNO lookup..."
-        )
-        ccm_cols = ["gvkey", "LPERMNO"]
-        # Try to load link date columns; fall back gracefully if absent.
-        # CCM uses uppercase column names (LINKDT, LINKENDDT).
-        all_ccm_cols = pd.read_parquet(ccm_path, columns=None).columns.tolist()
-        all_ccm_cols_lower = {c.lower(): c for c in all_ccm_cols}
-        for date_col_lower in ["linkdt", "linkenddt"]:
-            actual_col = all_ccm_cols_lower.get(date_col_lower)
-            if actual_col:
-                ccm_cols.append(actual_col)
-        ccm = pd.read_parquet(ccm_path, columns=ccm_cols)
-        # Normalize to lowercase for _build_date_bounded_permno_map
-        ccm = ccm.rename(
-            columns={
-                c: c.lower() for c in ccm.columns if c != "LPERMNO" and c != "gvkey"
-            }
-        )
+        with self._lock:
+            # Re-check inside the lock — another thread may have populated it.
+            if self._is_cached(root_path):
+                return self._cache  # type: ignore[return-value]
 
-        permno_map = _build_date_bounded_permno_map(ccm, full_manifest)
-        full_manifest = full_manifest.merge(permno_map, on="file_name", how="left")
-
-        # Process year by year (load current + prior year's CRSP)
-        all_results: List[pd.DataFrame] = []
-        year_list = sorted(full_manifest["year"].unique())
-
-        for year in year_list:
-            year_manifest = full_manifest[full_manifest["year"] == year].copy()
-
-            year_manifest["window_start"] = year_manifest[
-                "prev_call_date"
-            ] + pd.Timedelta(days=DAYS_AFTER_PREV_CALL)
-            year_manifest["window_end"] = year_manifest["start_date"] - pd.Timedelta(
-                days=DAYS_BEFORE_CURRENT_CALL
+            crsp_dir = root_path / "inputs" / "CRSP_DSF"
+            ccm_path = (
+                root_path / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
             )
 
-            crsp = _load_crsp_years(crsp_dir, [year - 1, year])
-            if crsp is None:
-                print(f"    CRSPEngine: no CRSP data for {year}, skipping")
-                year_manifest["StockRet"] = np.nan
-                year_manifest["MarketRet"] = np.nan
-                year_manifest["Volatility"] = np.nan
-                year_manifest["amihud_illiq"] = np.nan
+            # Load full manifest (all years) for prev_call_date — MAJOR-2 fix
+            logger.info("    CRSPEngine: loading manifest (full) for prev_call_date...")
+            full_manifest = pd.read_parquet(
+                manifest_path, columns=["file_name", "gvkey", "start_date"]
+            )
+            full_manifest["gvkey"] = full_manifest["gvkey"].astype(str).str.zfill(6)
+            full_manifest["start_date"] = pd.to_datetime(full_manifest["start_date"])
+
+            # --- MAJOR-2: Compute prev_call_date on FULL manifest ---
+            full_manifest = full_manifest.sort_values(["gvkey", "start_date"])
+            full_manifest["prev_call_date"] = full_manifest.groupby("gvkey")[
+                "start_date"
+            ].shift(1)
+            full_manifest["year"] = full_manifest["start_date"].dt.year
+
+            # --- CRITICAL-3: Date-bounded PERMNO linkage via CCM ---
+            logger.info(
+                "    CRSPEngine: loading CCM linktable for date-bounded PERMNO lookup..."
+            )
+            ccm_cols = ["gvkey", "LPERMNO"]
+            # Try to load link date columns; fall back gracefully if absent.
+            all_ccm_cols = pd.read_parquet(ccm_path, columns=None).columns.tolist()
+            all_ccm_cols_lower = {c.lower(): c for c in all_ccm_cols}
+            for date_col_lower in ["linkdt", "linkenddt"]:
+                actual_col = all_ccm_cols_lower.get(date_col_lower)
+                if actual_col:
+                    ccm_cols.append(actual_col)
+            ccm = pd.read_parquet(ccm_path, columns=ccm_cols)
+            # Normalize to lowercase for _build_date_bounded_permno_map
+            ccm = ccm.rename(
+                columns={
+                    c: c.lower() for c in ccm.columns if c != "LPERMNO" and c != "gvkey"
+                }
+            )
+
+            permno_map = _build_date_bounded_permno_map(ccm, full_manifest)
+            full_manifest = full_manifest.merge(permno_map, on="file_name", how="left")
+
+            # Process year by year (load current + prior year's CRSP)
+            all_results: List[pd.DataFrame] = []
+            year_list = sorted(full_manifest["year"].unique())
+
+            for year in year_list:
+                year_manifest = full_manifest[full_manifest["year"] == year].copy()
+
+                year_manifest["window_start"] = year_manifest[
+                    "prev_call_date"
+                ] + pd.Timedelta(days=DAYS_AFTER_PREV_CALL)
+                year_manifest["window_end"] = year_manifest[
+                    "start_date"
+                ] - pd.Timedelta(days=DAYS_BEFORE_CURRENT_CALL)
+
+                crsp = _load_crsp_years(crsp_dir, [year - 1, year])
+                if crsp is None:
+                    logger.info(f"    CRSPEngine: no CRSP data for {year}, skipping")
+                    year_manifest["StockRet"] = np.nan
+                    year_manifest["MarketRet"] = np.nan
+                    year_manifest["Volatility"] = np.nan
+                    year_manifest["amihud_illiq"] = np.nan
+                    all_results.append(
+                        year_manifest[
+                            [
+                                "file_name",
+                                "StockRet",
+                                "MarketRet",
+                                "Volatility",
+                                "amihud_illiq",
+                            ]
+                        ]
+                    )
+                    continue
+
+                year_manifest = _compute_returns_for_manifest(year_manifest, crsp)
+                n_ret = year_manifest["StockRet"].notna().sum()
+                n_illiq = year_manifest["amihud_illiq"].notna().sum()
+                logger.info(
+                    f"    CRSPEngine: {year} — "
+                    f"StockRet {n_ret:,}/{len(year_manifest):,}, "
+                    f"Amihud {n_illiq:,}/{len(year_manifest):,}"
+                )
+
                 all_results.append(
                     year_manifest[
                         [
@@ -344,34 +383,20 @@ class CRSPEngine:
                         ]
                     ]
                 )
-                continue
+                del crsp
+                gc.collect()
 
-            year_manifest = _compute_returns_for_manifest(year_manifest, crsp)
-            n_ret = year_manifest["StockRet"].notna().sum()
-            n_illiq = year_manifest["amihud_illiq"].notna().sum()
-            print(
-                f"    CRSPEngine: {year} — StockRet {n_ret:,}/{len(year_manifest):,}, Amihud {n_illiq:,}/{len(year_manifest):,}"
-            )
+            if not all_results:
+                result = pd.DataFrame(columns=["file_name"] + CRSP_RETURN_COLS)
+            else:
+                result = pd.concat(all_results, ignore_index=True)
+                for c in CRSP_RETURN_COLS:
+                    if c not in result.columns:
+                        result[c] = float("nan")
 
-            all_results.append(
-                year_manifest[
-                    ["file_name", "StockRet", "MarketRet", "Volatility", "amihud_illiq"]
-                ]
-            )
-            del crsp
-            gc.collect()
-
-        if not all_results:
-            result = pd.DataFrame(columns=["file_name"] + CRSP_RETURN_COLS)
-        else:
-            result = pd.concat(all_results, ignore_index=True)
-            for c in CRSP_RETURN_COLS:
-                if c not in result.columns:
-                    result[c] = float("nan")
-
-        self._cache = result
-        self._cache_root = root_path
-        return result
+            self._cache = result
+            self._cache_root = root_path
+            return result
 
 
 # Module-level singleton — shared across all individual builders in one process

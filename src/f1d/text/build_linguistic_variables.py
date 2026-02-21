@@ -59,7 +59,7 @@ import psutil
 
 # Import shared path validation utilities
 from f1d.shared.output_schemas import validate_linguistic_variables
-from f1d.shared.observability_utils import (
+from f1d.shared.observability import (
     DualWriter,
     compute_constructvariables_input_stats,
     compute_constructvariables_output_stats,
@@ -589,7 +589,7 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     # We will keep NaN to distinctions between "No Uncertainty" (0) and "No Text" (NaN).
 
     # Validate output schema before writing
-    meta = validate_linguistic_variables(meta, warn_only=True)
+    meta = validate_linguistic_variables(meta, warn_only=False)
 
     out_path = out_dir / f"linguistic_variables_{year}.parquet"
     meta.to_parquet(out_path, index=False)
@@ -900,9 +900,7 @@ def main():
     }
 
     # Load References and checksum inputs
-    keywords_path = (
-        root / "inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
-    )
+    keywords_path = root / "inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
 
     # Resolve manifest path using timestamp-based directory resolution
     manifest_dir = get_latest_output_dir(
@@ -933,7 +931,7 @@ def main():
     print_stat("Manifest rows", value=len(manifest_df))
 
     # Collect input statistics for variable construction
-    from f1d.shared.observability_utils import compute_constructvariables_input_stats
+    from f1d.shared.observability import compute_constructvariables_input_stats
 
     stats["constructvariables_input"] = compute_constructvariables_input_stats(
         tokenized_dir, manifest_df, years_range=(2002, 2019)
@@ -974,7 +972,7 @@ def main():
     stats["timing"]["duration_seconds"] = round(end_time - start_time, 2)
 
     # Collect process statistics for variable construction
-    from f1d.shared.observability_utils import compute_constructvariables_process_stats
+    from f1d.shared.observability import compute_constructvariables_process_stats
 
     stats["constructvariables_process"] = compute_constructvariables_process_stats(
         per_year_stats,
@@ -1045,7 +1043,9 @@ def main():
                 print(f"  Warning: Could not load {year_file}: {e}")
             except Exception as e:
                 # Catch-all for unexpected errors with full context
-                print(f"  Warning: Unexpected error loading {year_file}: {type(e).__name__}: {e}")
+                print(
+                    f"  Warning: Unexpected error loading {year_file}: {type(e).__name__}: {e}"
+                )
 
     if output_dfs:
         # Define samples, contexts, and categories for analysis
@@ -1058,7 +1058,7 @@ def main():
             .get("category_names", [])
         )
 
-        from f1d.shared.observability_utils import (
+        from f1d.shared.observability import (
             compute_constructvariables_output_stats,
         )
 

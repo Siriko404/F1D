@@ -44,7 +44,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 warnings.filterwarnings(
     "ignore", message="covariance of constraints does not have full rank"
 )
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -323,7 +323,30 @@ def main(panel_path: Optional[str] = None) -> int:
     print("Loading panel")
     print("=" * 60)
     print(f"  File:    {panel_file}")
-    panel = pd.read_parquet(panel_file)
+    panel = pd.read_parquet(
+        panel_file,
+        columns=[
+            "file_name",
+            "gvkey",
+            "year",
+            "start_date",
+            "amihud_illiq_lead",
+            # All uncertainty specs (primary + baseline per SPECS list)
+            "Manager_QA_Uncertainty_pct",
+            "CEO_QA_Uncertainty_pct",
+            "Manager_QA_Weak_Modal_pct",
+            "CEO_QA_Weak_Modal_pct",
+            "Manager_Pres_Uncertainty_pct",
+            "CEO_Pres_Uncertainty_pct",
+            # Base controls
+            "Size",
+            "Lev",
+            "ROA",
+            "TobinsQ",
+            "Volatility",
+            "StockRet",
+        ],
+    )
     print(f"  Rows:    {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
 

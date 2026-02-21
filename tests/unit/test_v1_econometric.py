@@ -23,7 +23,7 @@ import pytest
 
 V1_ECONOMETRIC_DIR = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v1"
+    / "src" / "f1d" / "econometric"
 )
 
 

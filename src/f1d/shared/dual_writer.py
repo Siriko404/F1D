@@ -30,7 +30,7 @@ Date: 2026-02-11
 from typing import List
 
 # Re-export from observability_utils to avoid code duplication
-from f1d.shared.observability_utils import DualWriter
+from f1d.shared.observability import DualWriter
 
 # Export symbols for direct import from this module
 __all__: List[str] = ["DualWriter"]

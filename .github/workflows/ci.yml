@@ -63,8 +63,7 @@ jobs:
         # Note: Threshold is low because coverage measures ALL shared modules,
         # not just the tested ones. Individual tested modules have 70%+ coverage.
         run: |
-          pytest tests/unit/test_financial_utils.py \
-                 tests/unit/test_panel_ols.py \
+          pytest tests/unit/test_panel_ols.py \
                  tests/unit/test_iv_regression.py \
                  tests/unit/test_data_validation.py \
                  --cov=src/f1d/shared \
@@ -72,7 +71,7 @@ jobs:
                  --cov-report=xml:coverage-tier1.xml \
                  --cov-fail-under=10 \
                  -v
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Run Tier 2 tests with coverage (10% threshold)
         # Note: Threshold is low because coverage measures ALL shared modules
@@ -85,9 +84,9 @@ jobs:
                  --cov-report=xml:coverage-tier2.xml \
                  --cov-fail-under=10 \
                  -v
-        continue-on-error: true
+        continue-on-error: false
 
-      - name: Run full test suite with coverage (25% overall)
+      - name: Run full test suite with coverage (40% overall)
         run: |
           pytest tests/ \
             -m "not e2e" \
@@ -96,7 +95,7 @@ jobs:
             --cov-report=html \
             --cov-report=json \
             --cov-report=term-missing \
-            --cov-fail-under=25 \
+            --cov-fail-under=40 \
             -v
 
       - name: Upload coverage to Codecov

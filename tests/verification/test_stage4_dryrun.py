@@ -46,34 +46,27 @@ import pytest
 REPO_ROOT = Path(__file__).parent.parent.parent
 
 # Stage 4 V1 econometric scripts to test (excluding __init__.py)
-STAGE4_V1_SCRIPTS = [
-    "src/f1d/econometric/v1/4.1_EstimateCeoClarity.py",
-    "src/f1d/econometric/v1/4.1.1_EstimateCeoClarity_CeoSpecific.py",
-    "src/f1d/econometric/v1/4.1.2_EstimateCeoClarity_Extended.py",
-    "src/f1d/econometric/v1/4.1.3_EstimateCeoClarity_Regime.py",
-    "src/f1d/econometric/v1/4.1.4_EstimateCeoTone.py",
-    "src/f1d/econometric/v1/4.2_LiquidityRegressions.py",
-    "src/f1d/econometric/v1/4.3_TakeoverHazards.py",
-    "src/f1d/econometric/v1/4.4_GenerateSummaryStats.py",
-]
 
 # Stage 4 V2 econometric scripts to test (excluding __init__.py)
-STAGE4_V2_SCRIPTS = [
-    "src/f1d/econometric/v2/4.1_H1CashHoldingsRegression.py",
-    "src/f1d/econometric/v2/4.2_H2InvestmentEfficiencyRegression.py",
-    "src/f1d/econometric/v2/4.3_H3PayoutPolicyRegression.py",
-    "src/f1d/econometric/v2/4.4_H4_LeverageDiscipline.py",
-    "src/f1d/econometric/v2/4.5_H5DispersionRegression.py",
-    "src/f1d/econometric/v2/4.6_H6CCCLRegression.py",
-    "src/f1d/econometric/v2/4.7_H7IlliquidityRegression.py",
-    "src/f1d/econometric/v2/4.8_H8TakeoverRegression.py",
-    "src/f1d/econometric/v2/4.9_CEOFixedEffects.py",
-    "src/f1d/econometric/v2/4.10_H2_PRiskUncertainty_Investment.py",
-    "src/f1d/econometric/v2/4.11_H9_Regression.py",
-]
 
 # All Stage 4 scripts combined
-STAGE4_ALL_SCRIPTS = STAGE4_V1_SCRIPTS + STAGE4_V2_SCRIPTS
+STAGE4_ALL_SCRIPTS = [
+    "src/f1d/econometric/run_ceo_clarity.py",
+    "src/f1d/econometric/run_ceo_clarity_extended.py",
+    "src/f1d/econometric/run_ceo_clarity_regime.py",
+    "src/f1d/econometric/run_ceo_tone.py",
+    "src/f1d/econometric/run_h1_cash_holdings.py",
+    "src/f1d/econometric/run_h2_investment.py",
+    "src/f1d/econometric/run_h3_payout_policy.py",
+    "src/f1d/econometric/run_h4_leverage.py",
+    "src/f1d/econometric/run_h5_dispersion.py",
+    "src/f1d/econometric/run_h6_cccl.py",
+    "src/f1d/econometric/run_h7_illiquidity.py",
+    "src/f1d/econometric/run_h8_policy_risk.py",
+    "src/f1d/econometric/run_manager_clarity.py",
+    "src/f1d/econometric/run_takeover_hazards.py",
+    "src/f1d/econometric/generate_summary_stats.py",
+]
 
 
 @pytest.fixture(scope="module")
@@ -89,16 +82,16 @@ def subprocess_env():
     }
 
 
-class TestStage4V1ScriptImports:
+class TestStage4ScriptImports:
     """Test that Stage 4 V1 scripts can be imported."""
 
-    @pytest.mark.parametrize("script", STAGE4_V1_SCRIPTS, ids=lambda s: Path(s).stem)
+    @pytest.mark.parametrize("script", STAGE4_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_script_exists(self, script: str):
         """Verify each V1 script file exists."""
         script_path = REPO_ROOT / script
         assert script_path.exists(), f"Script not found: {script_path}"
 
-    @pytest.mark.parametrize("script", STAGE4_V1_SCRIPTS, ids=lambda s: Path(s).stem)
+    @pytest.mark.parametrize("script", STAGE4_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_script_importable(self, script: str, subprocess_env: dict):
         """Test that V1 script can be imported without errors."""
         import sys
@@ -117,32 +110,6 @@ class TestStage4V1ScriptImports:
         assert "ModuleNotFoundError" not in result.stderr, f"Module not found in {script}: {result.stderr}"
 
 
-class TestStage4V2ScriptImports:
-    """Test that Stage 4 V2 scripts can be imported."""
-
-    @pytest.mark.parametrize("script", STAGE4_V2_SCRIPTS, ids=lambda s: Path(s).stem)
-    def test_script_exists(self, script: str):
-        """Verify each V2 script file exists."""
-        script_path = REPO_ROOT / script
-        assert script_path.exists(), f"Script not found: {script_path}"
-
-    @pytest.mark.parametrize("script", STAGE4_V2_SCRIPTS, ids=lambda s: Path(s).stem)
-    def test_script_importable(self, script: str, subprocess_env: dict):
-        """Test that V2 script can be imported without errors."""
-        import sys
-
-        script_path = REPO_ROOT / script
-        result = subprocess.run(
-            [sys.executable, "-c", f"import runpy; runpy.run_path('{script_path}')"],
-            capture_output=True,
-            text=True,
-            env=subprocess_env,
-            timeout=30,
-            cwd=str(REPO_ROOT),
-        )
-        # Script may fail on missing inputs, but should not have import errors
-        assert "ImportError" not in result.stderr, f"Import error in {script}: {result.stderr}"
-        assert "ModuleNotFoundError" not in result.stderr, f"Module not found in {script}: {result.stderr}"
 
 
 class TestStage4DryRunFlags:
@@ -249,48 +216,44 @@ class TestStage4HypothesisMapping:
 
     def test_h1_regression_exists(self):
         """Verify H1 (Cash Holdings) regression script exists."""
-        h1_path = REPO_ROOT / "src/f1d/econometric/v2/4.1_H1CashHoldingsRegression.py"
+        h1_path = REPO_ROOT / "src/f1d/econometric/test_h1_cash_holdings.py"
         assert h1_path.exists(), "H1 Cash Holdings regression script should exist"
 
     def test_h2_regression_exists(self):
         """Verify H2 (Investment Efficiency) regression script exists."""
-        h2_path = REPO_ROOT / "src/f1d/econometric/v2/4.2_H2InvestmentEfficiencyRegression.py"
+        h2_path = REPO_ROOT / "src/f1d/econometric/test_h2_investment.py"
         assert h2_path.exists(), "H2 Investment Efficiency regression script should exist"
 
     def test_h3_regression_exists(self):
         """Verify H3 (Payout Policy) regression script exists."""
-        h3_path = REPO_ROOT / "src/f1d/econometric/v2/4.3_H3PayoutPolicyRegression.py"
+        h3_path = REPO_ROOT / "src/f1d/econometric/test_h3_payout_policy.py"
         assert h3_path.exists(), "H3 Payout Policy regression script should exist"
 
     def test_h4_regression_exists(self):
         """Verify H4 (Leverage Discipline) regression script exists."""
-        h4_path = REPO_ROOT / "src/f1d/econometric/v2/4.4_H4_LeverageDiscipline.py"
+        h4_path = REPO_ROOT / "src/f1d/econometric/test_h4_leverage.py"
         assert h4_path.exists(), "H4 Leverage Discipline regression script should exist"
 
     def test_h5_regression_exists(self):
         """Verify H5 (Dispersion) regression script exists."""
-        h5_path = REPO_ROOT / "src/f1d/econometric/v2/4.5_H5DispersionRegression.py"
+        h5_path = REPO_ROOT / "src/f1d/econometric/test_h5_dispersion.py"
         assert h5_path.exists(), "H5 Dispersion regression script should exist"
 
     def test_h6_regression_exists(self):
         """Verify H6 (CCC&L) regression script exists."""
-        h6_path = REPO_ROOT / "src/f1d/econometric/v2/4.6_H6CCCLRegression.py"
+        h6_path = REPO_ROOT / "src/f1d/econometric/test_h6_cccl.py"
         assert h6_path.exists(), "H6 CCC&L regression script should exist"
 
     def test_h7_regression_exists(self):
         """Verify H7 (Illiquidity) regression script exists."""
-        h7_path = REPO_ROOT / "src/f1d/econometric/v2/4.7_H7IlliquidityRegression.py"
+        h7_path = REPO_ROOT / "src/f1d/econometric/test_h7_illiquidity.py"
         assert h7_path.exists(), "H7 Illiquidity regression script should exist"
 
     def test_h8_regression_exists(self):
         """Verify H8 (Takeover) regression script exists."""
-        h8_path = REPO_ROOT / "src/f1d/econometric/v2/4.8_H8TakeoverRegression.py"
+        h8_path = REPO_ROOT / "src/f1d/econometric/test_h8_policy_risk.py"
         assert h8_path.exists(), "H8 Takeover regression script should exist"
 
-    def test_h9_regression_exists(self):
-        """Verify H9 regression script exists."""
-        h9_path = REPO_ROOT / "src/f1d/econometric/v2/4.11_H9_Regression.py"
-        assert h9_path.exists(), "H9 regression script should exist"
 
 
 class TestStage4SurvivalAnalysis:
@@ -298,12 +261,12 @@ class TestStage4SurvivalAnalysis:
 
     def test_takeover_hazards_script_exists(self):
         """Verify 4.3_TakeoverHazards.py script exists."""
-        haz_path = REPO_ROOT / "src/f1d/econometric/v1/4.3_TakeoverHazards.py"
+        haz_path = REPO_ROOT / "src/f1d/econometric/run_takeover_hazards.py"
         assert haz_path.exists(), "Takeover Hazards script should exist"
 
     def test_takeover_hazards_uses_lifelines(self):
         """Verify 4.3_TakeoverHazards.py uses lifelines for Cox PH."""
-        haz_path = REPO_ROOT / "src/f1d/econometric/v1/4.3_TakeoverHazards.py"
+        haz_path = REPO_ROOT / "src/f1d/econometric/run_takeover_hazards.py"
         content = haz_path.read_text(encoding="utf-8")
 
         # Check for lifelines import
@@ -316,7 +279,7 @@ class TestStage4SurvivalAnalysis:
         As per 77-03 decision: Using cause-specific Cox hazards instead of
         FineGrayAFTFitter (not available in lifelines 0.30.0).
         """
-        haz_path = REPO_ROOT / "src/f1d/econometric/v1/4.3_TakeoverHazards.py"
+        haz_path = REPO_ROOT / "src/f1d/econometric/run_takeover_hazards.py"
         content = haz_path.read_text(encoding="utf-8")
 
         # Verify it uses CoxPHFitter
@@ -332,12 +295,12 @@ class TestStage4CeoFixedEffects:
 
     def test_ceo_fixed_effects_script_exists(self):
         """Verify 4.9_CEOFixedEffects.py script exists."""
-        cfe_path = REPO_ROOT / "src/f1d/econometric/v2/4.9_CEOFixedEffects.py"
+        cfe_path = REPO_ROOT / "src/f1d/econometric/test_ceo_clarity_regime.py"
         assert cfe_path.exists(), "CEO Fixed Effects script should exist"
 
     def test_ceo_fixed_effects_uses_statsmodels(self):
         """Verify 4.9_CEOFixedEffects.py uses statsmodels for regression."""
-        cfe_path = REPO_ROOT / "src/f1d/econometric/v2/4.9_CEOFixedEffects.py"
+        cfe_path = REPO_ROOT / "src/f1d/econometric/test_ceo_clarity_regime.py"
         content = cfe_path.read_text(encoding="utf-8")
 
         # Check for statsmodels import

@@ -71,9 +71,11 @@ class IbesEngine:
             subset=["cusip8"], keep="first"
         ).set_index("cusip8")["gvkey"]
 
-        # 2. Process IBES in chunks
-        print(f"    IbesEngine: Processing IBES in chunks...")
-        parquet_file = pq.ParquetFile(ibes_path)
+        # 2. Process IBES in chunks with predicate pushdown
+        print(f"    IbesEngine: Processing IBES in chunks with predicate pushdown...")
+        import pyarrow.dataset as ds
+        import pyarrow.compute as pc
+
         cols = [
             "CUSIP",
             "STATPERS",
@@ -87,19 +89,23 @@ class IbesEngine:
         ]
 
         all_chunks = []
-        num_row_groups = parquet_file.num_row_groups
 
-        for i in range(num_row_groups):
-            table = parquet_file.read_row_group(i, columns=cols)
-            chunk = table.to_pandas()
+        # Use pyarrow.dataset for predicate pushdown
+        dataset = ds.dataset(ibes_path, format="parquet")
 
-            # Apply base filters
-            chunk = chunk[
-                (chunk["MEASURE"] == "EPS")
-                & (chunk["FISCALP"] == "QTR")
-                & (chunk["NUMEST"] >= self.numest_min)
-                & (chunk["MEANEST"].abs() >= self.meanest_min)
-            ].copy()
+        # Filter at I/O level
+        # MEASURE == "EPS" and FISCALP == "QTR" and NUMEST >= 3
+        filter_expr = (
+            (pc.field("MEASURE") == "EPS")
+            & (pc.field("FISCALP") == "QTR")
+            & (pc.field("NUMEST") >= self.numest_min)
+        )
+
+        for batch in dataset.to_batches(columns=cols, filter=filter_expr):
+            chunk = batch.to_pandas()
+
+            # Apply remaining filters
+            chunk = chunk[(chunk["MEANEST"].abs() >= self.meanest_min)].copy()
 
             chunk = chunk.dropna(
                 subset=["STDEV", "MEANEST", "FPEDATS", "CUSIP", "ACTUAL"]

@@ -20,7 +20,7 @@ Modules:
 
 Backward Compatibility:
     All symbols are re-exported from this package, so existing imports continue to work:
-    - from f1d.shared.observability_utils import DualWriter  # Still works
+    - from f1d.shared.observability import DualWriter  # Still works
     - from f1d.shared.observability import DualWriter  # New preferred way
 
 Deterministic: true

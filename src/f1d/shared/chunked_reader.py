@@ -36,7 +36,18 @@ import logging
 import time
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Optional, TypeVar, Union, cast, overload
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 
 import pandas as pd
 import psutil
@@ -75,6 +86,7 @@ def read_in_chunks(
         ...     process_chunk(chunk)
     """
     parquet_file = pq.ParquetFile(file_path)
+    row_group_size: Optional[int] = None
 
     # If chunk_size specified, convert to approximate row groups
     if chunk_size is not None:
@@ -86,7 +98,7 @@ def read_in_chunks(
 
     for i in range(num_row_groups):
         # Read specific row group(s) for this chunk
-        if chunk_size is not None:
+        if chunk_size is not None and row_group_size is not None:
             # Calculate row group range for this chunk
             start_rg = (i * chunk_size) // row_group_size
             end_rg = ((i + 1) * chunk_size) // row_group_size
@@ -211,11 +223,15 @@ def process_in_chunks(
 
     # Determine chunk size
     if chunk_size is None:
-        chunk_size = chunk_config.get("base_chunk_size", 10000)
+        chunk_size = int(chunk_config.get("base_chunk_size", 10000))
+
+    assert isinstance(chunk_size, int)
 
     # Adjust chunk size based on memory
     if throttler:
-        chunk_size = throttler.get_recommended_chunk_size(chunk_size, file_path)
+        chunk_size = throttler.get_recommended_chunk_size(
+            cast(int, chunk_size), file_path
+        )
 
     results = []
     chunk_num = 0

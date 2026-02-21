@@ -34,62 +34,41 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 
 # All scripts organized by stage
 ALL_SCRIPTS: List[str] = [
-    # Stage 1: Sample Construction (5 scripts)
-    "src/f1d/sample/1.0_BuildSampleManifest.py",
-    "src/f1d/sample/1.1_CleanMetadata.py",
-    "src/f1d/sample/1.2_LinkEntities.py",
-    "src/f1d/sample/1.3_BuildTenureMap.py",
-    "src/f1d/sample/1.4_AssembleManifest.py",
-
-    # Stage 2: Text Processing (4 scripts)
-    "src/f1d/text/tokenize_and_count.py",
-    "src/f1d/text/construct_variables.py",
-    "src/f1d/text/report_step2.py",
-    "src/f1d/text/verify_step2.py",
-
-    # Stage 3 V1: Financial Features (4 scripts)
-    "src/f1d/financial/v1/3.0_BuildFinancialFeatures.py",
-    "src/f1d/financial/v1/3.1_FirmControls.py",
-    "src/f1d/financial/v1/3.2_MarketVariables.py",
-    "src/f1d/financial/v1/3.3_EventFlags.py",
-
-    # Stage 3 V2: Hypothesis Variables (13 scripts)
-    "src/f1d/financial/v2/3.1_H1Variables.py",
-    "src/f1d/financial/v2/3.2_H2Variables.py",
-    "src/f1d/financial/v2/3.2a_AnalystDispersionPatch.py",
-    "src/f1d/financial/v2/3.3_H3Variables.py",
-    "src/f1d/financial/v2/3.5_H5Variables.py",
-    "src/f1d/financial/v2/3.6_H6Variables.py",
-    "src/f1d/financial/v2/3.7_H7IlliquidityVariables.py",
-    "src/f1d/financial/v2/3.8_H8TakeoverVariables.py",
-    "src/f1d/financial/v2/3.9_H2_BiddleInvestmentResidual.py",
-    "src/f1d/financial/v2/3.10_H2_PRiskUncertaintyMerge.py",
-    "src/f1d/financial/v2/3.11_H9_StyleFrozen.py",
-    "src/f1d/financial/v2/3.12_H9_PRiskFY.py",
-    "src/f1d/financial/v2/3.13_H9_AbnormalInvestment.py",
-
-    # Stage 4 V1: Econometric Analysis (8 scripts)
-    "src/f1d/econometric/v1/4.1_EstimateCeoClarity.py",
-    "src/f1d/econometric/v1/4.1.1_EstimateCeoClarity_CeoSpecific.py",
-    "src/f1d/econometric/v1/4.1.2_EstimateCeoClarity_Extended.py",
-    "src/f1d/econometric/v1/4.1.3_EstimateCeoClarity_Regime.py",
-    "src/f1d/econometric/v1/4.1.4_EstimateCeoTone.py",
-    "src/f1d/econometric/v1/4.2_LiquidityRegressions.py",
-    "src/f1d/econometric/v1/4.3_TakeoverHazards.py",
-    "src/f1d/econometric/v1/4.4_GenerateSummaryStats.py",
-
-    # Stage 4 V2: Hypothesis Regressions (11 scripts)
-    "src/f1d/econometric/v2/4.1_H1CashHoldingsRegression.py",
-    "src/f1d/econometric/v2/4.2_H2InvestmentEfficiencyRegression.py",
-    "src/f1d/econometric/v2/4.3_H3PayoutPolicyRegression.py",
-    "src/f1d/econometric/v2/4.4_H4_LeverageDiscipline.py",
-    "src/f1d/econometric/v2/4.5_H5DispersionRegression.py",
-    "src/f1d/econometric/v2/4.6_H6CCCLRegression.py",
-    "src/f1d/econometric/v2/4.7_H7IlliquidityRegression.py",
-    "src/f1d/econometric/v2/4.8_H8TakeoverRegression.py",
-    "src/f1d/econometric/v2/4.9_CEOFixedEffects.py",
-    "src/f1d/econometric/v2/4.10_H2_PRiskUncertainty_Investment.py",
-    "src/f1d/econometric/v2/4.11_H9_Regression.py",
+    "src/f1d/econometric/generate_summary_stats.py",
+    "src/f1d/econometric/run_ceo_clarity.py",
+    "src/f1d/econometric/run_ceo_clarity_extended.py",
+    "src/f1d/econometric/run_ceo_clarity_regime.py",
+    "src/f1d/econometric/run_ceo_tone.py",
+    "src/f1d/econometric/run_h1_cash_holdings.py",
+    "src/f1d/econometric/run_h2_investment.py",
+    "src/f1d/econometric/run_h3_payout_policy.py",
+    "src/f1d/econometric/run_h4_leverage.py",
+    "src/f1d/econometric/run_h5_dispersion.py",
+    "src/f1d/econometric/run_h6_cccl.py",
+    "src/f1d/econometric/run_h7_illiquidity.py",
+    "src/f1d/econometric/run_h8_policy_risk.py",
+    "src/f1d/econometric/run_manager_clarity.py",
+    "src/f1d/econometric/run_takeover_hazards.py",
+    "src/f1d/sample/assemble_manifest.py",
+    "src/f1d/sample/build_sample_manifest.py",
+    "src/f1d/sample/build_tenure_map.py",
+    "src/f1d/sample/clean_metadata.py",
+    "src/f1d/sample/link_entities.py",
+    "src/f1d/text/build_linguistic_variables.py",
+    "src/f1d/text/tokenize_transcripts.py",
+    "src/f1d/variables/build_ceo_clarity_extended_panel.py",
+    "src/f1d/variables/build_ceo_clarity_panel.py",
+    "src/f1d/variables/build_ceo_tone_panel.py",
+    "src/f1d/variables/build_h1_cash_holdings_panel.py",
+    "src/f1d/variables/build_h2_investment_panel.py",
+    "src/f1d/variables/build_h3_payout_policy_panel.py",
+    "src/f1d/variables/build_h4_leverage_panel.py",
+    "src/f1d/variables/build_h5_dispersion_panel.py",
+    "src/f1d/variables/build_h6_cccl_panel.py",
+    "src/f1d/variables/build_h7_illiquidity_panel.py",
+    "src/f1d/variables/build_h8_policy_risk_panel.py",
+    "src/f1d/variables/build_manager_clarity_panel.py",
+    "src/f1d/variables/build_takeover_panel.py"
 ]
 
 # Count by stage

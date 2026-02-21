@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test CEO Clarity Hypothesis
+STAGE 4: Test Manager Clarity Hypothesis
 ================================================================================
-ID: econometric/test_ceo_clarity
-Description: Run CEO Clarity hypothesis test by loading panel from Stage 3,
+ID: econometric/test_manager_clarity
+Description: Run Manager Clarity hypothesis test by loading panel from Stage 3,
              running fixed effects regression by industry sample, extracting
-             CEO fixed effects, and outputting Accounting Review style
+             manager fixed effects, and outputting Accounting Review style
              LaTeX tables.
 
 Model Specification:
-    CEO_QA_Uncertainty_pct ~ C(ceo_id) + C(year) +
-        CEO_Pres_Uncertainty_pct +
+    Manager_QA_Uncertainty_pct ~ C(ceo_id) + C(year) +
+        Manager_Pres_Uncertainty_pct +
         Analyst_QA_Uncertainty_pct +
         Entire_All_Negative_pct +
         StockRet + MarketRet + EPS_Growth + SurpDec
@@ -22,24 +22,24 @@ Industry Samples:
     - Utility: FF12 code 8
 
 Minimum Calls Filter:
-    CEOs must have >= 5 calls to be included in regression.
+    Managers must have >= 5 calls to be included in regression.
 
 Inputs:
-    - outputs/variables/ceo_clarity/latest/ceo_clarity_panel.parquet
+    - outputs/variables/manager_clarity/latest/manager_clarity_panel.parquet
 
 Outputs:
-    - outputs/econometric/ceo_clarity/{timestamp}/ceo_clarity_table.tex
-    - outputs/econometric/ceo_clarity/{timestamp}/clarity_scores.parquet
-    - outputs/econometric/ceo_clarity/{timestamp}/regression_results_{sample}.txt
-    - outputs/econometric/ceo_clarity/{timestamp}/report_step4_ceo_clarity.md
+    - outputs/econometric/manager_clarity/{timestamp}/manager_clarity_table.tex
+    - outputs/econometric/manager_clarity/{timestamp}/clarity_scores.parquet
+    - outputs/econometric/manager_clarity/{timestamp}/regression_results.txt
+    - outputs/econometric/manager_clarity/{timestamp}/report_step4_manager_clarity.md
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_ceo_clarity_panel)
+    - Requires: Stage 3 (build_manager_clarity_panel)
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-02-19
+Date: 2026-02-18
 ================================================================================
 """
 
@@ -56,7 +56,7 @@ import numpy as np
 import pandas as pd
 
 # Suppress warnings for cleaner output
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
 
 # Try importing statsmodels — assign None so the name is always bound
 smf: Any = None
@@ -77,9 +77,9 @@ from f1d.shared.path_utils import get_latest_output_dir
 # ==============================================================================
 
 CONFIG: Dict[str, Any] = {
-    "dependent_var": "CEO_QA_Uncertainty_pct",
+    "dependent_var": "Manager_QA_Uncertainty_pct",
     "linguistic_controls": [
-        "CEO_Pres_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct",
         "Analyst_QA_Uncertainty_pct",
         "Entire_All_Negative_pct",
     ],
@@ -89,7 +89,7 @@ CONFIG: Dict[str, Any] = {
         "EPS_Growth",
         "SurpDec",
     ],
-    "min_calls_per_ceo": 5,
+    "min_calls_per_manager": 5,
 }
 
 
@@ -98,7 +98,7 @@ CONFIG: Dict[str, Any] = {
 # ==============================================================================
 
 VARIABLE_LABELS = {
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
+    "Manager_Pres_Uncertainty_pct": "Manager Pres Uncertainty",
     "Analyst_QA_Uncertainty_pct": "Analyst QA Uncertainty",
     "Entire_All_Negative_pct": "Negative Sentiment",
     "StockRet": "Stock Return",
@@ -116,7 +116,7 @@ VARIABLE_LABELS = {
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Stage 4: Test CEO Clarity Hypothesis",
+        description="Stage 4: Test Manager Clarity Hypothesis",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -157,10 +157,10 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     else:
         # Find latest panel
         panel_dir = get_latest_output_dir(
-            root_path / "outputs" / "variables" / "ceo_clarity",
-            required_file="ceo_clarity_panel.parquet",
+            root_path / "outputs" / "variables" / "manager_clarity",
+            required_file="manager_clarity_panel.parquet",
         )
-        panel_file = panel_dir / "ceo_clarity_panel.parquet"
+        panel_file = panel_dir / "manager_clarity_panel.parquet"
 
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
@@ -243,14 +243,14 @@ def run_regression(
     df_sample: pd.DataFrame,
     sample_name: str,
 ) -> tuple[Any, Optional[pd.DataFrame], Set[Any]]:
-    """Run OLS regression with CEO fixed effects.
+    """Run OLS regression with manager fixed effects.
 
     Args:
         df_sample: Sample DataFrame
         sample_name: Name of sample for logging
 
     Returns:
-        Tuple of (model, df_reg, valid_ceos)
+        Tuple of (model, df_reg, valid_managers)
     """
     print("\n" + "=" * 60)
     print(f"Running regression: {sample_name}")
@@ -260,14 +260,14 @@ def run_regression(
         print("  ERROR: statsmodels not available")
         return None, None, set()
 
-    # Filter to CEOs with minimum calls
-    min_calls = CONFIG["min_calls_per_ceo"]
-    ceo_counts = df_sample["ceo_id"].value_counts()
-    valid_ceos: Set[Any] = set(ceo_counts[ceo_counts >= min_calls].index)
-    df_reg = df_sample[df_sample["ceo_id"].isin(valid_ceos)].copy()
+    # Filter to managers with minimum calls
+    min_calls = CONFIG["min_calls_per_manager"]
+    manager_counts = df_sample["ceo_id"].value_counts()
+    valid_managers = set(manager_counts[manager_counts >= min_calls].index)
+    df_reg = df_sample[df_sample["ceo_id"].isin(valid_managers)].copy()
 
     print(
-        f"  After >={min_calls} calls filter: {len(df_reg):,} calls, {df_reg['ceo_id'].nunique():,} CEOs"
+        f"  After >={min_calls} calls filter: {len(df_reg):,} calls, {df_reg['ceo_id'].nunique():,} managers"
     )
 
     if len(df_reg) < 100:
@@ -278,7 +278,7 @@ def run_regression(
     df_reg["ceo_id"] = df_reg["ceo_id"].astype(str)
     df_reg["year"] = df_reg["year"].astype(str)
 
-    # Build formula - only include controls that exist in dataframe
+    # Build formula
     dep_var = CONFIG["dependent_var"]
     controls = CONFIG["linguistic_controls"] + CONFIG["firm_controls"]
     controls = [c for c in controls if c in df_reg.columns]
@@ -311,7 +311,7 @@ def run_regression(
     print(f"  Adj. R-squared: {float(model.rsquared_inclusive):.4f}")
     print(f"  N observations: {int(model.nobs):,}")
 
-    return model, df_reg, valid_ceos
+    return model, df_reg, valid_managers
 
 
 def extract_clarity_scores(
@@ -319,16 +319,15 @@ def extract_clarity_scores(
     df_reg: pd.DataFrame,
     sample_name: str,
 ) -> pd.DataFrame:
-    """Extract CEO fixed effects as raw (unstandardized) ClarityCEO_raw scores.
+    """Extract manager fixed effects as raw (unstandardized) ClarityManager_raw scores.
 
-    ClarityCEO_raw = -gamma_i (negative of CEO fixed effect).
+    ClarityManager_raw = -gamma_i (negative of manager fixed effect).
     Standardization is deferred to save_outputs() so it is applied
     globally across all samples — ensuring scores are on a single
     comparable scale rather than independently normalized per sample.
 
-    FIX-6: Reference CEOs (gamma = 0 by statsmodels convention, not estimated)
-    are tagged with is_reference=True and excluded from clarity_scores.parquet,
-    since their score is a normalization artifact rather than an estimate.
+    FIX-6: Reference managers (gamma=0 by statsmodels convention, not estimated)
+    are tagged with is_reference=True and excluded from clarity_scores.parquet.
 
     Args:
         model: Fitted OLS model
@@ -336,53 +335,50 @@ def extract_clarity_scores(
         sample_name: Sample name for metadata
 
     Returns:
-        DataFrame with ceo_id, gamma_i, ClarityCEO_raw, sample, is_reference
+        DataFrame with ceo_id, gamma_i, ClarityManager_raw, sample, is_reference
         (NOT yet standardized — caller must standardize globally)
     """
-    print(f"\n  Extracting CEO fixed effects for {sample_name}...")
+    print(f"\n  Extracting manager fixed effects for {sample_name}...")
 
-    # Get CEO coefficient names
-    ceo_params = {
+    # Get manager coefficient names
+    manager_params = {
         p: model.params[p] for p in model.params.index if p.startswith("C(ceo_id)")
     }
 
-    # Parse CEO IDs from parameter names like "C(ceo_id)[T.ABC123]"
-    ceo_effects: Dict[str, float] = {}
-    for param_name, gamma_i in ceo_params.items():
+    # Parse manager IDs from parameter names like "C(ceo_id)[T.ABC123]"
+    manager_effects: Dict[str, float] = {}
+    for param_name, gamma_i in manager_params.items():
         if "[T." in param_name:
-            ceo_id = param_name.split("[T.")[1].split("]")[0]
-            ceo_effects[ceo_id] = gamma_i
+            manager_id = param_name.split("[T.")[1].split("]")[0]
+            manager_effects[manager_id] = gamma_i
 
-    # FIX-6: Identify reference CEOs (alphabetically first — statsmodels default).
-    # Their gamma = 0 is a normalization artifact, not an estimate.
-    # We record them but will exclude from final output.
-    all_ceos = df_reg["ceo_id"].unique()
-    reference_ceos = set(c for c in all_ceos if c not in ceo_effects)
+    # FIX-6: Identify reference managers — their gamma=0 is a normalization artifact
+    all_managers = df_reg["ceo_id"].unique()
+    reference_managers = set(c for c in all_managers if c not in manager_effects)
 
     print(
-        f"  Found {len(ceo_effects)} estimated CEOs + {len(reference_ceos)} reference "
+        f"  Found {len(manager_effects)} estimated managers + {len(reference_managers)} reference "
         f"(reference excluded from output)"
     )
 
-    # Build DataFrame — estimated CEOs only
+    # Build DataFrame — estimated managers only (reference tagged separately)
     rows = [
-        {"ceo_id": ceo_id, "gamma_i": gamma_i, "is_reference": False}
-        for ceo_id, gamma_i in ceo_effects.items()
+        {"ceo_id": mgr_id, "gamma_i": gamma_i, "is_reference": False}
+        for mgr_id, gamma_i in manager_effects.items()
     ]
-    # Include reference CEOs tagged so caller can inspect if needed
-    for ref_ceo in reference_ceos:
-        rows.append({"ceo_id": ref_ceo, "gamma_i": 0.0, "is_reference": True})
+    for ref_mgr in reference_managers:
+        rows.append({"ceo_id": ref_mgr, "gamma_i": 0.0, "is_reference": True})
 
-    ceo_fe = pd.DataFrame(rows)
+    manager_fe = pd.DataFrame(rows)
 
-    # ClarityCEO_raw = -gamma_i (higher = lower uncertainty tendency = clearer)
-    ceo_fe["ClarityCEO_raw"] = -ceo_fe["gamma_i"]
-    ceo_fe["sample"] = sample_name
+    # ClarityManager_raw = -gamma_i (higher = lower uncertainty tendency = clearer)
+    manager_fe["ClarityManager_raw"] = -manager_fe["gamma_i"]
+    manager_fe["sample"] = sample_name
 
-    # NOTE: ClarityCEO (standardized) is NOT computed here.
+    # NOTE: ClarityManager (standardized) is NOT computed here.
     # It is computed globally in save_outputs() after all samples are collected.
 
-    return ceo_fe
+    return manager_fe
 
 
 # ==============================================================================
@@ -399,24 +395,20 @@ def save_outputs(
 ) -> pd.DataFrame:
     """Save all outputs.
 
-    FIX-3: Standardization of ClarityCEO is done here, globally across ALL
-    samples combined, so that scores from different samples are on the same
-    scale and are directly comparable.
-
-    FIX-6: Reference CEOs (gamma=0 normalization artifact) are excluded from
-    the saved clarity_scores.parquet.
-
-    FIX-10: CEO metadata (ceo_name, n_calls) is joined from the panel.
+    FIX-3: Standardization of ClarityManager is done globally across ALL
+    samples so that scores are on a single comparable scale.
+    FIX-6: Reference managers (gamma=0 artifact) excluded from output.
+    FIX-10: CEO metadata (ceo_name, n_calls) joined from panel.
 
     Args:
         results: Dict mapping sample names to regression results
         all_clarity_scores: List of raw (unstandardized) clarity score DataFrames
-        panel: Full panel DataFrame (for CEO metadata join)
+        panel: Full panel DataFrame (for manager metadata join)
         out_dir: Output directory
         stats: Stats dict
 
     Returns:
-        Final clarity_df with globally standardized ClarityCEO scores
+        Final clarity_df with globally standardized ClarityManager scores
     """
     print("\n" + "=" * 60)
     print("Saving outputs")
@@ -430,64 +422,46 @@ def save_outputs(
     # Generate LaTeX table
     make_accounting_table(
         results=results,
-        caption="Table 1: CEO Clarity Fixed Effects",
-        label="tab:ceo_clarity",
+        caption="Table 1: Manager Clarity Fixed Effects",
+        label="tab:manager_clarity",
         note=(
-            "This table reports CEO fixed effects from regressing CEO Q&A "
+            "This table reports manager fixed effects from regressing Manager Q&A "
             "uncertainty on firm characteristics and year fixed effects. "
-            "ClarityCEO is computed as the negative of the CEO fixed effect, "
+            "ClarityManager is computed as the negative of the manager fixed effect, "
             "standardized globally across all industry samples. "
             "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=control_vars,
-        entity_label="N CEOs",
-        output_path=out_dir / "ceo_clarity_table.tex",
+        entity_label="N Managers",
+        output_path=out_dir / "manager_clarity_table.tex",
     )
-    print("  Saved: ceo_clarity_table.tex")
+    print("  Saved: manager_clarity_table.tex")
 
     # Build and save clarity scores
     clarity_df = pd.DataFrame()
     if all_clarity_scores:
         raw_df = pd.concat(all_clarity_scores, ignore_index=True)
 
-        # FIX-6: Exclude reference CEOs — their gamma=0 is a normalization artifact
+        # FIX-6: Exclude reference managers
         estimated_df = raw_df[~raw_df["is_reference"]].copy()
         n_reference = raw_df["is_reference"].sum()
-        print(f"  Excluded {n_reference} reference CEO(s) from clarity scores")
+        print(f"  Excluded {n_reference} reference manager(s) from clarity scores")
 
-        # S4 fix: Standardize ClarityCEO_raw PER SAMPLE (not globally).
-        # Regressions for Main, Finance, and Utility each use a different
-        # reference CEO (statsmodels' alphabetically-first CEO per sample),
-        # so raw gamma values are anchored to different baselines across samples
-        # and cannot be compared directly.  Per-sample z-score absorbs the
-        # reference-level offset while preserving the within-sample relative rank.
-        # (Identical pattern to test_ceo_clarity_regime.py's per-regime logic.)
-        estimated_df["ClarityCEO"] = np.nan
-        for _sample_key in estimated_df["sample"].unique():
-            _idx = estimated_df.index[estimated_df["sample"] == _sample_key]
-            _raw_vals: np.ndarray = estimated_df.loc[
-                _idx, "ClarityCEO_raw"
-            ].values.astype(float)  # type: ignore[union-attr]
-            _s_mean = float(_raw_vals.mean())
-            _s_std = float(_raw_vals.std())
-            if _s_std > 0:
-                estimated_df.loc[_idx, "ClarityCEO"] = (_raw_vals - _s_mean) / _s_std
-            else:
-                estimated_df.loc[_idx, "ClarityCEO"] = 0.0
-            print(
-                f"  {_sample_key} standardization: mean={_s_mean:.4f}, std={_s_std:.4f} "
-                f"(N={len(_idx):,} estimated CEOs)"
-            )
+        # FIX-3: Standardize globally across all samples
+        global_mean = estimated_df["ClarityManager_raw"].mean()
+        global_std = estimated_df["ClarityManager_raw"].std()
+        estimated_df["ClarityManager"] = (
+            estimated_df["ClarityManager_raw"] - global_mean
+        ) / global_std
 
         print(
-            f"  ClarityCEO post-standardization (per-sample): "
-            f"overall mean={estimated_df['ClarityCEO'].mean():.4f}, "
-            f"std={estimated_df['ClarityCEO'].std():.4f}"
+            f"  Global standardization: mean={global_mean:.4f}, std={global_std:.4f} "
+            f"(across {len(estimated_df):,} estimated managers)"
         )
 
-        # FIX-10: Join CEO metadata from panel (ceo_name, n_calls per CEO)
-        ceo_meta = (
+        # FIX-10: Join manager metadata from panel
+        mgr_meta = (
             panel[panel["ceo_id"].notna()]
             .assign(ceo_id_str=lambda df: df["ceo_id"].astype(str))
             .groupby("ceo_id_str")
@@ -498,16 +472,15 @@ def save_outputs(
             .reset_index()
             .rename(columns={"ceo_id_str": "ceo_id"})
         )
-        estimated_df = estimated_df.merge(ceo_meta, on="ceo_id", how="left")
+        estimated_df = estimated_df.merge(mgr_meta, on="ceo_id", how="left")
 
-        # Final column order
         output_cols = [
             "ceo_id",
             "ceo_name",
             "sample",
             "gamma_i",
-            "ClarityCEO_raw",
-            "ClarityCEO",
+            "ClarityManager_raw",
+            "ClarityManager",
             "n_calls",
         ]
         output_cols = [c for c in output_cols if c in estimated_df.columns]
@@ -515,7 +488,9 @@ def save_outputs(
 
         clarity_path = out_dir / "clarity_scores.parquet"
         clarity_df.to_parquet(clarity_path, index=False)
-        print(f"  Saved: clarity_scores.parquet ({len(clarity_df):,} estimated CEOs)")
+        print(
+            f"  Saved: clarity_scores.parquet ({len(clarity_df):,} estimated managers)"
+        )
 
     # Save regression results text
     for sample_name, result in results.items():
@@ -544,7 +519,7 @@ def generate_report(
         duration: Duration in seconds
     """
     report_lines = [
-        "# Stage 4: CEO Clarity Hypothesis Test Report",
+        "# Stage 4: Manager Clarity Hypothesis Test Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -559,32 +534,32 @@ def generate_report(
         "",
         "## Summary Statistics",
         "",
-        "| Sample | N Obs | N CEOs (estimated) | R-squared |",
-        "|--------|---------|--------------------|-----------|",
+        "| Sample | N Obs | N Managers (estimated) | R-squared |",
+        "|--------|---------|-----------------------|-----------|",
     ]
 
     for sample_name, result in results.items():
         diag = result.get("diagnostics", {})
         n_obs = diag.get("n_obs", "N/A")
-        n_ceo = diag.get("n_ceos", "N/A")
+        n_mgr = diag.get("n_managers", "N/A")
         r2 = diag.get("rsquared", "N/A")
         # MAJOR-4: format spec :, only applies to ints — guard against "N/A" string
         n_obs_str = f"{n_obs:,}" if isinstance(n_obs, int) else str(n_obs)
-        n_ceo_str = f"{n_ceo:,}" if isinstance(n_ceo, int) else str(n_ceo)
+        n_mgr_str = f"{n_mgr:,}" if isinstance(n_mgr, int) else str(n_mgr)
         r2_str = f"{r2:.4f}" if isinstance(r2, float) else str(r2)
-        report_lines.append(f"| {sample_name} | {n_obs_str} | {n_ceo_str} | {r2_str} |")
+        report_lines.append(f"| {sample_name} | {n_obs_str} | {n_mgr_str} | {r2_str} |")
 
     report_lines.append("")
     if not clarity_df.empty:
         report_lines.append(
-            f"**Note:** ClarityCEO scores are standardized globally across all "
-            f"{len(clarity_df):,} estimated CEOs (mean=0, std=1). "
-            f"Reference CEOs (statsmodels baseline) are excluded."
+            f"**Note:** ClarityManager scores are standardized globally across all "
+            f"{len(clarity_df):,} estimated managers (mean=0, std=1). "
+            f"Reference managers (statsmodels baseline) are excluded."
         )
         report_lines.append("")
 
-    # Top CEOs by sample — use globally standardized scores
-    if not clarity_df.empty and "ClarityCEO" in clarity_df.columns:
+    # Top managers by sample — use globally standardized scores
+    if not clarity_df.empty and "ClarityManager" in clarity_df.columns:
         for sample in ["Main", "Finance", "Utility"]:
             sample_df = clarity_df[clarity_df["sample"] == sample].copy()
             if len(sample_df) == 0:
@@ -594,39 +569,39 @@ def generate_report(
 
             report_lines.append(f"## {sample} Sample")
             report_lines.append("")
-            report_lines.append("### Top 5 Clearest CEOs")
+            report_lines.append("### Top 5 Clearest Managers")
             report_lines.append("")
-            report_lines.append("| Rank | CEO | ClarityCEO |")
-            report_lines.append("|------|-----|------------|")
+            report_lines.append("| Rank | Manager | ClarityManager |")
+            report_lines.append("|------|---------|----------------|")
 
             for rank, (_, row) in enumerate(
-                sample_df.nlargest(5, "ClarityCEO").iterrows(), start=1
+                sample_df.nlargest(5, "ClarityManager").iterrows(), start=1
             ):
                 report_lines.append(
-                    f"| {rank} | {row[name_col]} | {row['ClarityCEO']:.3f} |"
+                    f"| {rank} | {row[name_col]} | {row['ClarityManager']:.3f} |"
                 )
 
             report_lines.append("")
-            report_lines.append("### Top 5 Most Uncertain CEOs")
+            report_lines.append("### Top 5 Most Uncertain Managers")
             report_lines.append("")
-            report_lines.append("| Rank | CEO | ClarityCEO |")
-            report_lines.append("|------|-----|------------|")
+            report_lines.append("| Rank | Manager | ClarityManager |")
+            report_lines.append("|------|---------|----------------|")
 
             for rank, (_, row) in enumerate(
-                sample_df.nsmallest(5, "ClarityCEO").iterrows(), start=1
+                sample_df.nsmallest(5, "ClarityManager").iterrows(), start=1
             ):
                 report_lines.append(
-                    f"| {rank} | {row[name_col]} | {row['ClarityCEO']:.3f} |"
+                    f"| {rank} | {row[name_col]} | {row['ClarityManager']:.3f} |"
                 )
 
             report_lines.append("")
 
     # Write report
-    report_path = out_dir / "report_step4_ceo_clarity.md"
+    report_path = out_dir / "report_step4_manager_clarity.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print("  Saved: report_step4_ceo_clarity.md")
+    print("  Saved: report_step4_manager_clarity.md")
 
 
 # ==============================================================================
@@ -640,7 +615,7 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "test_ceo_clarity",
+        "step_id": "test_manager_clarity",
         "timestamp": timestamp,
         "regressions": {},
         "timing": {},
@@ -648,10 +623,10 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Setup paths
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "ceo_clarity" / timestamp
+    out_dir = root / "outputs" / "econometric" / "manager_clarity" / timestamp
 
     print("=" * 80)
-    print("STAGE 4: Test CEO Clarity Hypothesis")
+    print("STAGE 4: Test Manager Clarity Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
@@ -676,7 +651,7 @@ def main(panel_path: Optional[str] = None) -> int:
             continue
 
         # Run regression
-        model, df_reg, valid_ceos = run_regression(df_sample, sample_name)
+        model, df_reg, valid_managers = run_regression(df_sample, sample_name)
 
         if model is None or df_reg is None:
             continue
@@ -690,7 +665,7 @@ def main(panel_path: Optional[str] = None) -> int:
             "model": model,
             "diagnostics": {
                 "n_obs": int(model.nobs),
-                "n_ceos": len(valid_ceos),
+                "n_managers": len(valid_managers),
                 "rsquared": float(model.rsquared_within),
                 "rsquared_adj": float(model.rsquared_inclusive),
             },
@@ -699,7 +674,7 @@ def main(panel_path: Optional[str] = None) -> int:
         # Stats
         stats["regressions"][sample_name] = {
             "n_obs": int(model.nobs),
-            "n_ceos": len(valid_ceos),
+            "n_managers": len(valid_managers),
             "rsquared": float(model.rsquared_within),
         }
 

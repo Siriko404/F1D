@@ -45,7 +45,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from f1d.shared.observability_utils import DualWriter
+from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import (
     OutputResolutionError,
     ensure_output_dir,

@@ -41,7 +41,7 @@ import yaml
 
 from f1d.shared.sample_utils import generate_variable_reference
 
-from f1d.shared.observability_utils import (
+from f1d.shared.observability import (
     DualWriter,
     analyze_missing_values,
     calculate_throughput,

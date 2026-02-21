@@ -27,7 +27,7 @@ jobs:
     - name: Run Bandit security scan
       run: |
         bandit -r src/f1d/ -c pyproject.toml --severity-level medium
-      continue-on-error: true
+      continue-on-error: false
 
     - name: Upload security report
       uses: actions/upload-artifact@v4
@@ -106,7 +106,6 @@ jobs:
 
         # Critical shared modules
         critical_files = [
-            "financial_utils.py",
             "panel_ols.py",
             "iv_regression.py",
         ]

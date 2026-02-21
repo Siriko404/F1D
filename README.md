@@ -33,7 +33,7 @@ The pipeline enforces two strict structural rules:
 Stage 3 — Panel builder   (src/f1d/variables/build_<name>_panel.py)
     Loads manifest + shared variable builders → merges into one .parquet panel
 
-Stage 4 — Hypothesis test (src/f1d/econometric/test_<name>.py)
+Stage 4 — Hypothesis test (src/f1d/econometric/run_<name>.py)
     Loads the panel → filters → OLS with fixed effects → LaTeX table + scores .parquet
 ```
 
@@ -76,14 +76,14 @@ python -m f1d.variables.build_liquidity_panel
 python -m f1d.variables.build_takeover_panel
 
 # Stage 4 — run hypothesis tests
-python -m f1d.econometric.test_manager_clarity          # ~1 min
-python -m f1d.econometric.test_ceo_clarity              # ~30 s
-python -m f1d.econometric.test_ceo_clarity_extended     # ~3 min
-python -m f1d.econometric.test_ceo_clarity_regime       # ~20 s
-python -m f1d.econometric.test_ceo_tone                 # ~3 min
-python -m f1d.econometric.test_h1_cash_holdings         # ~7 min (18 regressions, clustered SEs)
-python -m f1d.econometric.test_liquidity                # ~2 min
-python -m f1d.econometric.test_takeover_hazards         # ~1 min
+python -m f1d.econometric.run_manager_clarity          # ~1 min
+python -m f1d.econometric.run_ceo_clarity              # ~30 s
+python -m f1d.econometric.run_ceo_clarity_extended     # ~3 min
+python -m f1d.econometric.run_ceo_clarity_regime       # ~20 s
+python -m f1d.econometric.run_ceo_tone                 # ~3 min
+python -m f1d.econometric.run_h1_cash_holdings         # ~7 min (18 regressions, clustered SEs)
+python -m f1d.econometric.run_h7_illiquidity                # ~2 min
+python -m f1d.econometric.run_takeover_hazards         # ~1 min
 python -m f1d.econometric.generate_summary_stats        # ~1 s (no Stage 3 needed)
 ```
 
@@ -97,7 +97,7 @@ All outputs are written to timestamped subdirectories under `outputs/`.
 Last full pipeline run: **2026-02-20**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
-### Manager Clarity (4.1) — `test_manager_clarity`
+### Manager Clarity (4.1) — `run_manager_clarity`
 
 Dependent variable: `Manager_QA_Uncertainty_pct`
 
@@ -109,7 +109,7 @@ Dependent variable: `Manager_QA_Uncertainty_pct`
 
 `ClarityManager = −gamma_i`, standardized globally across all three samples.
 
-### CEO Clarity (4.1.1) — `test_ceo_clarity`
+### CEO Clarity (4.1.1) — `run_ceo_clarity`
 
 Dependent variable: `CEO_QA_Uncertainty_pct`
 
@@ -121,7 +121,7 @@ Dependent variable: `CEO_QA_Uncertainty_pct`
 
 `ClarityCEO = −gamma_i`, standardized globally across all three samples.
 
-### Extended Controls Robustness (4.1.2) — `test_ceo_clarity_extended`
+### Extended Controls Robustness (4.1.2) — `run_ceo_clarity_extended`
 
 Main sample only. Extended controls: `CurrentRatio`, `RD_Intensity`, `Volatility`.
 
@@ -136,7 +136,7 @@ Extended models have fewer observations due to additional missingness in
 `CurrentRatio` (83.3% coverage) and `Volatility` (93.3% coverage).
 R² increases by ≤ 0.002 — CEO fixed effects are robust to extended controls.
 
-### Regime Analysis (4.1.3) — `test_ceo_clarity_regime`
+### Regime Analysis (4.1.3) — `run_ceo_clarity_regime`
 
 Main sample only. Same model specification as CEO Clarity (4.1.1).
 
@@ -152,7 +152,7 @@ values across regimes conflates reference-level artifacts with real regime diffe
 Spearman rank correlations for CEOs appearing in multiple regimes: Pre/Crisis ρ = 0.664,
 Crisis/Post ρ = 0.735, Pre/Post ρ = 0.706 — confirming clarity is a stable trait.
 
-### CEO Tone (4.1.4) — `test_ceo_tone`
+### CEO Tone (4.1.4) — `run_ceo_tone`
 
 Dependent variable: `Entire_All_Negative_pct` (net negative sentiment, all speakers).
 Three models: ToneAll (all-manager FE), ToneCEO (CEO FE), ToneRegime (CEO × regime FE).
@@ -169,7 +169,7 @@ Three models: ToneAll (all-manager FE), ToneCEO (CEO FE), ToneRegime (CEO × reg
 | ToneRegime | Finance | 13,242 | 576 | 0.345 |
 | ToneRegime | Utility | 2,939 | 136 | 0.125 |
 
-### H1 Cash Holdings (v2) — `test_h1_cash_holdings`
+### H1 Cash Holdings (v2) — `run_h1_cash_holdings`
 
 Tests whether vague managers hoard more cash (H1a: β₁ > 0) and whether leverage
 attenuates that relationship (H1b: β₃ < 0). Unit of observation: individual earnings
@@ -191,7 +191,7 @@ per firm-year t+1 — end-of-year proxy. Year-gap leads set to NaN.
 | Finance (FF12 = 11) | 20,482 | 18,635 |
 | Utility (FF12 = 8) | 4,281 | 3,948 |
 
-**Stage 4** (`test_h1_cash_holdings`): 18 regressions (6 uncertainty measures × 3
+**Stage 4** (`run_h1_cash_holdings`): 18 regressions (6 uncertainty measures × 3
 samples). H1a 4/18 significant, H1b 4/18 significant (one-tailed p < 0.05).
 
 | Sample | N calls (Mgr QA Unc) | N firms | R² | H1a | H1b |
@@ -208,7 +208,7 @@ Selected significant results:
 Main sample shows null results — consistent with high R² (~0.82) from firm FE absorbing
 most of the cross-sectional cash variation.
 
-### Liquidity Regressions (4.2) — `test_liquidity`
+### Liquidity Regressions (4.2) — `run_h7_illiquidity`
 
 Dependent variables: `Delta_Amihud` and `Delta_Corwin_Schultz` (changes in illiquidity).
 OLS and 2SLS (instrument: CCCL `shift_intensity_sale_ff48`). Sample: 2005–2011.
@@ -228,7 +228,7 @@ First-stage KP F-statistics: 696–1,230 (strong instrument).
 2SLS results are imprecise for Amihud (low annual frequency coverage); Corwin-Schultz
 coefficients are more stable. CCCL instrument coverage: 85.6% of OLS sample.
 
-### Takeover Hazards (4.3) — `test_takeover_hazards`
+### Takeover Hazards (4.3) — `run_takeover_hazards`
 
 Survival panel: firm-level (not call-level). Duration = years from first call to
 takeover announcement / end of sample (2002–2018). Six Cox PH models.
@@ -410,7 +410,7 @@ These constraints are enforced on every new script pair before it is committed.
 
 Canonical reference implementation:
 `src/f1d/variables/build_manager_clarity_panel.py` +
-`src/f1d/econometric/test_manager_clarity.py`.
+`src/f1d/econometric/run_manager_clarity.py`.
 All new script pairs must match their structure exactly.
 
 Full architecture documentation and bug history: `docs/plans/refactor-master-plan.md`.
@@ -447,3 +447,19 @@ Do not run them in a production context.
 `v1/` and `v2/` scripts use `load_all_data()` from the old shared infrastructure,
 write to different output directories, and do not enforce the one-module-one-variable
 constraint.
+
+---
+
+## Testing
+
+The project is fully covered by unit, regression, and end-to-end integration tests.
+
+```bash
+# Run unit and regression tests
+pytest tests/ -m "not e2e"
+
+# Run end-to-end pipeline over synthetic data (verifies I/O and flow)
+pytest tests/integration/test_pipeline_e2e.py -m e2e
+```
+
+The E2E test creates an isolated, temporary workspace and uses `tests/fixtures/synthetic_generator.py` to create tiny data shards matching the real schema (Compustat, CRSP, IBES) to verify that all orchestrator scripts and data contracts execute without crashing.

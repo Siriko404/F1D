@@ -5,7 +5,7 @@ Tests verify division-by-zero handling and edge cases.
 
 import pytest
 
-from f1d.shared.observability_utils import calculate_throughput
+from f1d.shared.observability.throughput import calculate_throughput
 
 
 def test_valid_duration_returns_correct_throughput():

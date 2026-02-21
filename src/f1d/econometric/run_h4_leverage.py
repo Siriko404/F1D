@@ -363,7 +363,32 @@ def main(panel_path: str | None = None) -> int:
     print("Loading panel")
     print("=" * 60)
     print(f"  Loaded: {panel_file}")
-    panel = pd.read_parquet(panel_file)
+    panel = pd.read_parquet(
+        panel_file,
+        columns=[
+            "file_name",
+            "gvkey",
+            "year",
+            # Dependent variables (uncertainty measures)
+            "Manager_QA_Uncertainty_pct",
+            "CEO_QA_Uncertainty_pct",
+            "Manager_QA_Weak_Modal_pct",
+            "CEO_QA_Weak_Modal_pct",
+            "Manager_Pres_Uncertainty_pct",
+            "CEO_Pres_Uncertainty_pct",
+            # Primary predictor
+            "Lev_lag",
+            # Base controls
+            "Analyst_QA_Uncertainty_pct",
+            "Size",
+            "TobinsQ",
+            "ROA",
+            "CashHoldings",
+            "DividendPayer",
+            "firm_maturity",
+            "earnings_volatility",
+        ],
+    )
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
 

@@ -9,6 +9,7 @@ scipy==1.16.1
 # Statistical Modeling
 # Pinned to 0.14.6 for reproducible regression analysis. 0.14.0 introduced breaking changes (deprecated GLM link names). See DEPENDENCIES.md for upgrade strategy.
 statsmodels==0.14.6
+linearmodels>=0.6.0
 scikit-learn==1.7.2
 lifelines==0.30.0
 

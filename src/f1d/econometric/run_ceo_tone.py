@@ -70,7 +70,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 import pandas as pd
 
 # Suppress warnings for cleaner output
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
 
 # Try importing statsmodels — assign None so the name is always bound
 smf: Any = None
@@ -83,7 +83,7 @@ except ImportError:
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
 from f1d.shared.latex_tables_accounting import make_accounting_table
-from f1d.shared.observability_utils import DualWriter
+from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.regression_validation import (
     RegressionValidationError,

@@ -37,7 +37,9 @@ class PathsSettings(BaseSettings):
     """
 
     inputs: str = Field(default="inputs", description="Input data directory")
-    scripts: str = Field(default="src/f1d", description="Scripts directory (src-layout)")
+    scripts: str = Field(
+        default="src/f1d", description="Scripts directory (src-layout)"
+    )
     logs: str = Field(default="logs", description="Logs directory")
     outputs: str = Field(default="outputs", description="Outputs directory")
     lm_dictionary: Optional[str] = Field(
@@ -116,30 +118,35 @@ class PathsSettings(BaseSettings):
 
         # Check input directory exists
         inputs_path = resolved["inputs"]
-        assert isinstance(inputs_path, Path)
+        if not isinstance(inputs_path, Path):
+            raise TypeError(f"Expected Path, got {type(inputs_path)}")
         if not inputs_path.exists():
             raise FileNotFoundError(f"Input directory not found: {inputs_path}")
 
         # Check optional input files if specified
         if "lm_dictionary" in resolved:
             lm_path = resolved["lm_dictionary"]
-            assert isinstance(lm_path, Path)
+            if not isinstance(lm_path, Path):
+                raise TypeError(f"Expected Path, got {type(lm_path)}")
             if not lm_path.exists():
                 raise FileNotFoundError(f"LM dictionary not found: {lm_path}")
 
         if "unified_info" in resolved:
             unified_path = resolved["unified_info"]
-            assert isinstance(unified_path, Path)
+            if not isinstance(unified_path, Path):
+                raise TypeError(f"Expected Path, got {type(unified_path)}")
             if not unified_path.exists():
                 raise FileNotFoundError(f"Unified info file not found: {unified_path}")
 
         # Create output and log directories if they don't exist
         outputs_path = resolved["outputs"]
-        assert isinstance(outputs_path, Path)
+        if not isinstance(outputs_path, Path):
+            raise TypeError(f"Expected Path, got {type(outputs_path)}")
         outputs_path.mkdir(parents=True, exist_ok=True)
 
         logs_path = resolved["logs"]
-        assert isinstance(logs_path, Path)
+        if not isinstance(logs_path, Path):
+            raise TypeError(f"Expected Path, got {type(logs_path)}")
         logs_path.mkdir(parents=True, exist_ok=True)
 
         return resolved

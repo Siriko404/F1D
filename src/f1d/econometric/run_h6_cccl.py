@@ -140,11 +140,11 @@ def run_regression(
     df_reg["gvkey_cat"] = df_reg["gvkey"].astype("category")
     df_reg["year_cat"] = df_reg["year"].astype("category")
     df_panel = df_reg.set_index(["gvkey", "year"])
-    
+
     # We drop C(gvkey) and C(year) from the formula and use PanelOLS entity_effects
     form_clean = formula.replace(" + C(gvkey) + C(year)", "")
-    form_clean = form_clean.replace("~", "~ 1 +") # ensure intercept is explicit
-    
+    form_clean = form_clean.replace("~", "~ 1 +")  # ensure intercept is explicit
+
     try:
         form_clean = form_clean + " + EntityEffects + TimeEffects"
         model_obj = PanelOLS.from_formula(form_clean, data=df_panel, drop_absorbed=True)
@@ -360,7 +360,30 @@ def main(panel_path: str | None = None) -> int:
     print("Loading panel")
     print("=" * 60)
     print(f"  Loaded: {panel_file}")
-    panel = pd.read_parquet(panel_file)
+    panel = pd.read_parquet(
+        panel_file,
+        columns=[
+            "gvkey",
+            "year",
+            # Dependent variables (uncertainty measures)
+            "Manager_QA_Uncertainty_pct",
+            "CEO_QA_Uncertainty_pct",
+            "Manager_QA_Weak_Modal_pct",
+            "CEO_QA_Weak_Modal_pct",
+            "Manager_Pres_Uncertainty_pct",
+            "CEO_Pres_Uncertainty_pct",
+            # Primary predictor (CCCL institutional shift intensity)
+            "shift_intensity_mkvalt_ff48_lag",
+            "shift_intensity_mkvalt_ff48_lead1",
+            "shift_intensity_mkvalt_ff48_lead2",
+            # Base controls
+            "Size",
+            "Lev",
+            "ROA",
+            "TobinsQ",
+            "CashHoldings",
+        ],
+    )
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
 

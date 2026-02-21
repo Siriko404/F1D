@@ -458,7 +458,31 @@ def main(panel_path: str | None = None) -> int:
     print("Loading panel")
     print("=" * 60)
     print(f"  Loaded: {panel_file}")
-    panel = pd.read_parquet(panel_file)
+    panel = pd.read_parquet(
+        panel_file,
+        columns=[
+            "file_name",
+            "gvkey",
+            "year",
+            "div_stability_lead",
+            "payout_flexibility_lead",
+            "Lev",
+            "is_div_payer_5yr",
+            "Manager_QA_Uncertainty_pct",
+            "CEO_QA_Uncertainty_pct",
+            "Manager_QA_Weak_Modal_pct",
+            "CEO_QA_Weak_Modal_pct",
+            "Manager_Pres_Uncertainty_pct",
+            "CEO_Pres_Uncertainty_pct",
+            "earnings_volatility",
+            "fcf_growth",
+            "firm_maturity",
+            "Size",
+            "ROA",
+            "TobinsQ",
+            "CashHoldings",
+        ],
+    )
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
 
