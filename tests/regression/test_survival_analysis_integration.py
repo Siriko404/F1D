@@ -18,7 +18,7 @@ _MODULE_PATH = (
     / "src"
     / "f1d"
     / "econometric"
-    / "run_takeover_hazards.py"
+    / "run_h9_takeover_hazards.py"
 )
 _MODULE_GLOBALS = runpy.run_path(str(_MODULE_PATH))
 run_cox_ph = _MODULE_GLOBALS.get("run_cox_ph")

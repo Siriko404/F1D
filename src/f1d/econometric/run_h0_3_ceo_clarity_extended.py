@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Test CEO Clarity Extended Controls Robustness (4.1.2)
 ================================================================================
-ID: econometric/test_ceo_clarity_extended
+ID: econometric/run_h0_3_ceo_clarity_extended
 Description: Run 4 regressions against one shared panel to test whether adding
              extended financial controls changes CEO fixed effect estimates.
 
@@ -32,7 +32,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_ceo_clarity_extended_panel)
+    - Requires: Stage 3 (build_h0_3_ceo_clarity_extended_panel)
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author

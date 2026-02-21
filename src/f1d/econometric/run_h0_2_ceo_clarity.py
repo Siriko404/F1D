@@ -1,55 +1,41 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test CEO Clarity — Regime Analysis (4.1.3)
+STAGE 4: Test CEO Clarity Hypothesis
 ================================================================================
-ID: econometric/test_ceo_clarity_regime
-Description: Split-sample regime analysis of CEO Clarity. Runs the same CEO
-             Clarity fixed-effects regression (from 4.1.1) separately for three
-             time regimes using the Main sample only (non-financial, non-utility):
+ID: econometric/run_h0_2_ceo_clarity
+Description: Run CEO Clarity hypothesis test by loading panel from Stage 3,
+             running fixed effects regression by industry sample, extracting
+             CEO fixed effects, and outputting Accounting Review style
+             LaTeX tables.
 
-               - Pre-Crisis:  2002–2007
-               - Crisis:      2008–2009
-               - Post-Crisis: 2010–2018
-
-             Tests whether the Clarity trait is stable across economic regimes
-             or shifts with market stress.
-
-Model Specification (identical to 4.1.1):
+Model Specification:
     CEO_QA_Uncertainty_pct ~ C(ceo_id) + C(year) +
         CEO_Pres_Uncertainty_pct +
         Analyst_QA_Uncertainty_pct +
         Entire_All_Negative_pct +
         StockRet + MarketRet + EPS_Growth + SurpDec
 
-Sample:
-    Main only (FF12 codes 1-7, 9-10, 12 — non-financial, non-utility).
-    Finance (FF12=11) and Utility (FF12=8) are excluded from all regime splits.
-
-Regime Definitions:
-    - Pre-Crisis:  year in [2002, 2007]
-    - Crisis:      year in [2008, 2009]
-    - Post-Crisis: year in [2010, 2018]
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
 
 Minimum Calls Filter:
-    CEOs must have >= 5 calls *within the regime window* to be included.
-
-Standardization:
-    ClarityCEO scores are standardized GLOBALLY across all three regimes
-    combined, so regime scores are on a single comparable scale.
+    CEOs must have >= 5 calls to be included in regression.
 
 Inputs:
     - outputs/variables/ceo_clarity/latest/ceo_clarity_panel.parquet
 
 Outputs:
-    - outputs/econometric/ceo_clarity_regime/{timestamp}/ceo_clarity_regime_table.tex
-    - outputs/econometric/ceo_clarity_regime/{timestamp}/clarity_scores.parquet
-    - outputs/econometric/ceo_clarity_regime/{timestamp}/regression_results_{regime}.txt
-    - outputs/econometric/ceo_clarity_regime/{timestamp}/report_step4_ceo_clarity_regime.md
+    - outputs/econometric/ceo_clarity/{timestamp}/ceo_clarity_table.tex
+    - outputs/econometric/ceo_clarity/{timestamp}/clarity_scores.parquet
+    - outputs/econometric/ceo_clarity/{timestamp}/regression_results_{sample}.txt
+    - outputs/econometric/ceo_clarity/{timestamp}/report_step4_ceo_clarity.md
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_ceo_clarity_panel)
+    - Requires: Stage 3 (build_h0_2_ceo_clarity_panel)
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
@@ -75,7 +61,7 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*
 # Try importing statsmodels — assign None so the name is always bound
 smf: Any = None
 try:
-    import statsmodels.formula.api as smf  # type: ignore[no-redef]
+    from linearmodels.panel import PanelOLS  # type: ignore[no-redef]
 
     STATSMODELS_AVAILABLE = True
 except ImportError:
@@ -104,14 +90,6 @@ CONFIG: Dict[str, Any] = {
         "SurpDec",
     ],
     "min_calls_per_ceo": 5,
-    # Regime definitions: inclusive year bounds
-    "regimes": {
-        "Pre-Crisis": (2002, 2007),
-        "Crisis": (2008, 2009),
-        "Post-Crisis": (2010, 2018),
-    },
-    # Main sample excludes Finance (FF12=11) and Utility (FF12=8)
-    "exclude_ff12": [8, 11],
 }
 
 
@@ -135,10 +113,10 @@ VARIABLE_LABELS = {
 # ==============================================================================
 
 
-def parse_arguments() -> argparse.Namespace:
+def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Stage 4: Test CEO Clarity — Regime Analysis",
+        description="Stage 4: Test CEO Clarity Hypothesis",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -161,7 +139,7 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
-    """Load CEO Clarity panel from Stage 3 output.
+    """Load panel from Stage 3 output.
 
     Args:
         root_path: Project root path
@@ -177,7 +155,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     if panel_path:
         panel_file = Path(panel_path)
     else:
-        # Find latest CEO Clarity panel (same panel as 4.1.1)
+        # Find latest panel
         panel_dir = get_latest_output_dir(
             root_path / "outputs" / "variables" / "ceo_clarity",
             required_file="ceo_clarity_panel.parquet",
@@ -195,22 +173,16 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     return panel
 
 
-# ==============================================================================
-# Data Preparation
-# ==============================================================================
-
-
 def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
-    """Prepare panel data for regime regression.
+    """Prepare panel data for regression.
 
-    Filters to Main sample (non-financial, non-utility) complete cases.
-    Does NOT apply year filter here — that is done per-regime in the loop.
+    Filters to complete cases and ensures proper data types.
 
     Args:
         panel: Raw panel DataFrame
 
     Returns:
-        Prepared Main-sample DataFrame (all years)
+        Prepared DataFrame
     """
     print("\n" + "=" * 60)
     print("Preparing regression data")
@@ -222,7 +194,7 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     df = panel[panel["ceo_id"].notna()].copy()
     print(f"  After ceo_id filter: {len(df):,} / {initial_n:,}")
 
-    # Define required variables — hard-fail if any missing (MAJOR-5)
+    # Define required variables
     required = (
         [CONFIG["dependent_var"]]
         + CONFIG["linguistic_controls"]
@@ -230,6 +202,7 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
         + ["ceo_id", "year"]
     )
 
+    # Check which variables exist — MAJOR-5: hard-fail if any required variable missing
     missing_vars = [v for v in required if v not in df.columns]
     if missing_vars:
         raise ValueError(
@@ -242,20 +215,21 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     df = df[complete_mask].copy()
     print(f"  After complete cases filter: {len(df):,}")
 
-    # Restrict to Main sample: exclude Finance (FF12=11) and Utility (FF12=8)
+    # Assign sample based on FF12 industry code.
+    # FF12 codes: 8=Utility, 11=Finance, all others=Main.
+    # Note: ff12_code is guaranteed non-null in the manifest (ff12=12 "Other"
+    # is the catch-all for SIC codes not in FF12 categories 1-11). Any residual
+    # NaN rows are placed in Main (matching v1 behaviour) so no rows are dropped.
     if "ff12_code" in df.columns:
-        exclude = CONFIG["exclude_ff12"]
-        df = df[~df["ff12_code"].isin(exclude)].copy()
-        print(f"  After Main sample filter (excl FF12 {exclude}): {len(df):,}")
-    else:
-        print("  WARNING: ff12_code column not found — no industry filter applied")
+        if "sample" not in df.columns:
+            df["sample"] = "Main"
+            df.loc[df["ff12_code"] == 11, "sample"] = "Finance"
+            df.loc[df["ff12_code"] == 8, "sample"] = "Utility"
 
-    # Log year coverage
-    print(
-        f"  Year range in data: {int(df['year'].min())}–{int(df['year'].max())}"
-        if len(df) > 0
-        else "  WARNING: no rows after filters"
-    )
+    print("\n  Sample distribution:")
+    for sample in ["Main", "Finance", "Utility"]:
+        n = (df["sample"] == sample).sum()
+        print(f"    {sample}: {n:,} calls")
 
     return df
 
@@ -266,35 +240,34 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
 
 
 def run_regression(
-    df_regime: pd.DataFrame,
-    regime_name: str,
+    df_sample: pd.DataFrame,
+    sample_name: str,
 ) -> tuple[Any, Optional[pd.DataFrame], Set[Any]]:
-    """Run OLS regression with CEO and year fixed effects for a single regime.
+    """Run OLS regression with CEO fixed effects.
 
     Args:
-        df_regime: Regime-filtered DataFrame (already Main sample)
-        regime_name: Label for this regime (e.g. "Pre-Crisis")
+        df_sample: Sample DataFrame
+        sample_name: Name of sample for logging
 
     Returns:
         Tuple of (model, df_reg, valid_ceos)
     """
     print("\n" + "=" * 60)
-    print(f"Running regression: {regime_name}")
+    print(f"Running regression: {sample_name}")
     print("=" * 60)
 
     if not STATSMODELS_AVAILABLE:
         print("  ERROR: statsmodels not available")
         return None, None, set()
 
-    # Filter to CEOs with minimum calls within this regime window
+    # Filter to CEOs with minimum calls
     min_calls = CONFIG["min_calls_per_ceo"]
-    ceo_counts = df_regime["ceo_id"].value_counts()
+    ceo_counts = df_sample["ceo_id"].value_counts()
     valid_ceos: Set[Any] = set(ceo_counts[ceo_counts >= min_calls].index)
-    df_reg = df_regime[df_regime["ceo_id"].isin(valid_ceos)].copy()
+    df_reg = df_sample[df_sample["ceo_id"].isin(valid_ceos)].copy()
 
     print(
-        f"  After >={min_calls} calls filter: {len(df_reg):,} calls, "
-        f"{df_reg['ceo_id'].nunique():,} CEOs"
+        f"  After >={min_calls} calls filter: {len(df_reg):,} calls, {df_reg['ceo_id'].nunique():,} CEOs"
     )
 
     if len(df_reg) < 100:
@@ -305,7 +278,7 @@ def run_regression(
     df_reg["ceo_id"] = df_reg["ceo_id"].astype(str)
     df_reg["year"] = df_reg["year"].astype(str)
 
-    # Build formula — only include controls that exist in dataframe
+    # Build formula - only include controls that exist in dataframe
     dep_var = CONFIG["dependent_var"]
     controls = CONFIG["linguistic_controls"] + CONFIG["firm_controls"]
     controls = [c for c in controls if c in df_reg.columns]
@@ -318,12 +291,17 @@ def run_regression(
     start_time = datetime.now()
 
     try:
-        model = smf.ols(formula, data=df_reg).fit(
+        model_obj = PanelOLS.from_formula(
+            formula.replace("C(gvkey) + C(year)", "EntityEffects + TimeEffects"),
+            data=df_reg.set_index(["gvkey", "year"]),
+            drop_absorbed=True,
+        )
+        model = model_obj.fit(
             # M-2 fix: cluster SEs at CEO level (not HC1) to account for
             # within-CEO correlation across calls in the same regression.
             # HC1 treats all observations as independent, understating SEs
             # when the same CEO appears in many rows (Liang-Zeger problem).
-            cov_type="cluster",
+            cov_type="clustered",
             cov_kwds={"groups": df_reg["ceo_id"]},
         )
     except ValueError as e:
@@ -333,35 +311,24 @@ def run_regression(
     duration = (datetime.now() - start_time).total_seconds()
 
     print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared: {model.rsquared:.4f}")
-    print(f"  Adj. R-squared: {model.rsquared_adj:.4f}")
+    print(f"  R-squared: {float(model.rsquared_within):.4f}")
+    print(f"  Adj. R-squared: {float(model.rsquared_inclusive):.4f}")
     print(f"  N observations: {int(model.nobs):,}")
 
     return model, df_reg, valid_ceos
 
 
-# ==============================================================================
-# Extract Clarity Scores
-# ==============================================================================
-
-
 def extract_clarity_scores(
     model: Any,
     df_reg: pd.DataFrame,
-    regime_name: str,
+    sample_name: str,
 ) -> pd.DataFrame:
     """Extract CEO fixed effects as raw (unstandardized) ClarityCEO_raw scores.
 
     ClarityCEO_raw = -gamma_i (negative of CEO fixed effect).
     Standardization is deferred to save_outputs() so it is applied
-    per-regime — each regime's scores are z-scored independently.
-
-    Per-regime standardization is correct here because gamma_i values from
-    three separate regressions are on incompatible scales: each regression
-    has a different reference CEO (statsmodels' alphabetically-first CEO),
-    so the raw gamma_i means differ across regimes due to reference-level
-    contamination, not real regime differences. Standardizing within each
-    regime absorbs this artifact and leaves only the relative rank signal.
+    globally across all samples — ensuring scores are on a single
+    comparable scale rather than independently normalized per sample.
 
     FIX-6: Reference CEOs (gamma = 0 by statsmodels convention, not estimated)
     are tagged with is_reference=True and excluded from clarity_scores.parquet,
@@ -370,13 +337,13 @@ def extract_clarity_scores(
     Args:
         model: Fitted OLS model
         df_reg: Regression DataFrame (ceo_id already cast to str)
-        regime_name: Regime name for metadata
+        sample_name: Sample name for metadata
 
     Returns:
-        DataFrame with ceo_id, gamma_i, ClarityCEO_raw, regime, is_reference
-        (NOT yet standardized — caller must standardize per regime)
+        DataFrame with ceo_id, gamma_i, ClarityCEO_raw, sample, is_reference
+        (NOT yet standardized — caller must standardize globally)
     """
-    print(f"\n  Extracting CEO fixed effects for {regime_name}...")
+    print(f"\n  Extracting CEO fixed effects for {sample_name}...")
 
     # Get CEO coefficient names
     ceo_params = {
@@ -392,6 +359,7 @@ def extract_clarity_scores(
 
     # FIX-6: Identify reference CEOs (alphabetically first — statsmodels default).
     # Their gamma = 0 is a normalization artifact, not an estimate.
+    # We record them but will exclude from final output.
     all_ceos = df_reg["ceo_id"].unique()
     reference_ceos = set(c for c in all_ceos if c not in ceo_effects)
 
@@ -400,8 +368,8 @@ def extract_clarity_scores(
         f"(reference excluded from output)"
     )
 
-    # Build DataFrame — estimated CEOs
-    rows: List[Dict[str, Any]] = [
+    # Build DataFrame — estimated CEOs only
+    rows = [
         {"ceo_id": ceo_id, "gamma_i": gamma_i, "is_reference": False}
         for ceo_id, gamma_i in ceo_effects.items()
     ]
@@ -413,10 +381,10 @@ def extract_clarity_scores(
 
     # ClarityCEO_raw = -gamma_i (higher = lower uncertainty tendency = clearer)
     ceo_fe["ClarityCEO_raw"] = -ceo_fe["gamma_i"]
-    ceo_fe["regime"] = regime_name
+    ceo_fe["sample"] = sample_name
 
     # NOTE: ClarityCEO (standardized) is NOT computed here.
-    # It is computed per-regime in save_outputs() after all regimes are collected.
+    # It is computed globally in save_outputs() after all samples are collected.
 
     return ceo_fe
 
@@ -435,27 +403,24 @@ def save_outputs(
 ) -> pd.DataFrame:
     """Save all outputs.
 
-    Standardization: ClarityCEO is z-scored PER REGIME (not globally).
-    Each regime's regression produces gamma_i values relative to a different
-    reference CEO (statsmodels' alphabetically-first CEO in that regime's
-    valid-CEO set). Pooling raw gammas across regimes would conflate
-    reference-level artifacts with real regime differences. Standardizing
-    within each regime absorbs the reference offset and preserves only the
-    within-regime relative rank signal — which is what the robustness check
-    is designed to test.
+    FIX-3: Standardization of ClarityCEO is done here, globally across ALL
+    samples combined, so that scores from different samples are on the same
+    scale and are directly comparable.
 
     FIX-6: Reference CEOs (gamma=0 normalization artifact) are excluded from
     the saved clarity_scores.parquet.
 
+    FIX-10: CEO metadata (ceo_name, n_calls) is joined from the panel.
+
     Args:
-        results: Dict mapping regime names to regression results
+        results: Dict mapping sample names to regression results
         all_clarity_scores: List of raw (unstandardized) clarity score DataFrames
         panel: Full panel DataFrame (for CEO metadata join)
         out_dir: Output directory
         stats: Stats dict
 
     Returns:
-        Final clarity_df with per-regime standardized ClarityCEO scores
+        Final clarity_df with globally standardized ClarityCEO scores
     """
     print("\n" + "=" * 60)
     print("Saving outputs")
@@ -466,37 +431,27 @@ def save_outputs(
     # Control variables for LaTeX table
     control_vars = CONFIG["linguistic_controls"] + CONFIG["firm_controls"]
 
-    # Generate LaTeX table — 3 columns: Pre-Crisis, Crisis, Post-Crisis
+    # Generate LaTeX table
     make_accounting_table(
         results=results,
-        caption=(
-            "Table 2: CEO Clarity Fixed Effects by Economic Regime "
-            "(Main Sample: Non-Financial, Non-Utility Firms)"
-        ),
-        label="tab:ceo_clarity_regime",
+        caption="Table 1: CEO Clarity Fixed Effects",
+        label="tab:ceo_clarity",
         note=(
             "This table reports CEO fixed effects from regressing CEO Q&A "
-            "uncertainty on firm characteristics and year fixed effects, "
-            "estimated separately for three economic regimes. "
-            "Pre-Crisis: 2002--2007; Crisis: 2008--2009; Post-Crisis: 2010--2018. "
-            "Main sample only (FF12 non-financial, non-utility firms). "
+            "uncertainty on firm characteristics and year fixed effects. "
             "ClarityCEO is computed as the negative of the CEO fixed effect, "
-            "standardized within each regime separately (mean 0, std 1 per regime). "
-            "Per-regime standardization is used because gamma estimates from separate "
-            "regressions are anchored to different reference CEOs and cannot be "
-            "directly compared across regimes. "
-            "CEOs must have $\\geq 5$ calls within the regime window to be included. "
+            "standardized globally across all industry samples. "
             "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=control_vars,
         entity_label="N CEOs",
-        output_path=out_dir / "ceo_clarity_regime_table.tex",
+        output_path=out_dir / "ceo_clarity_table.tex",
     )
-    print("  Saved: ceo_clarity_regime_table.tex")
+    print("  Saved: ceo_clarity_table.tex")
 
     # Build and save clarity scores
-    clarity_df: pd.DataFrame = pd.DataFrame()
+    clarity_df = pd.DataFrame()
     if all_clarity_scores:
         raw_df = pd.concat(all_clarity_scores, ignore_index=True)
 
@@ -505,100 +460,75 @@ def save_outputs(
         n_reference = raw_df["is_reference"].sum()
         print(f"  Excluded {n_reference} reference CEO(s) from clarity scores")
 
-        # Standardize ClarityCEO_raw PER REGIME.
-        # gamma_i values from separate regressions are anchored to different
-        # reference CEOs (statsmodels' alphabetically-first CEO per regime),
-        # so raw values are on incompatible scales across regimes.
-        # Standardizing within each regime absorbs the reference-level offset
-        # while preserving the within-regime relative rank — the true signal.
-        # Per-regime z-score: compute via numpy to avoid pandas-stubs loc overload
-        # ambiguity; write result back via the same boolean mask.
+        # S4 fix: Standardize ClarityCEO_raw PER SAMPLE (not globally).
+        # Regressions for Main, Finance, and Utility each use a different
+        # reference CEO (statsmodels' alphabetically-first CEO per sample),
+        # so raw gamma values are anchored to different baselines across samples
+        # and cannot be compared directly.  Per-sample z-score absorbs the
+        # reference-level offset while preserving the within-sample relative rank.
+        # (Identical pattern to test_ceo_clarity_regime.py's per-regime logic.)
         estimated_df["ClarityCEO"] = np.nan
-        for _regime_key in estimated_df["regime"].unique():
-            _idx = estimated_df.index[estimated_df["regime"] == _regime_key]
+        for _sample_key in estimated_df["sample"].unique():
+            _idx = estimated_df.index[estimated_df["sample"] == _sample_key]
             _raw_vals: np.ndarray = estimated_df.loc[
                 _idx, "ClarityCEO_raw"
             ].values.astype(float)  # type: ignore[union-attr]
-            _r_mean = float(_raw_vals.mean())
-            _r_std = float(_raw_vals.std())
-            estimated_df.loc[_idx, "ClarityCEO"] = (_raw_vals - _r_mean) / _r_std
+            _s_mean = float(_raw_vals.mean())
+            _s_std = float(_raw_vals.std())
+            if _s_std > 0:
+                estimated_df.loc[_idx, "ClarityCEO"] = (_raw_vals - _s_mean) / _s_std
+            else:
+                estimated_df.loc[_idx, "ClarityCEO"] = 0.0
             print(
-                f"  {_regime_key} standardization: mean={_r_mean:.4f}, std={_r_std:.4f} "
+                f"  {_sample_key} standardization: mean={_s_mean:.4f}, std={_s_std:.4f} "
                 f"(N={len(_idx):,} estimated CEOs)"
             )
 
         print(
-            f"  ClarityCEO post-standardization (per-regime): "
+            f"  ClarityCEO post-standardization (per-sample): "
             f"overall mean={estimated_df['ClarityCEO'].mean():.4f}, "
             f"std={estimated_df['ClarityCEO'].std():.4f}"
         )
 
-        # Join CEO metadata from panel.
-        # n_calls_regime: call count within the regime window (what matters for
-        # interpreting the regression).
-        # Computed by merging panel with the regime year bounds, then grouping.
-        regime_bounds = CONFIG["regimes"]  # {name: (y0, y1)}
-        regime_call_counts: List[pd.DataFrame] = []
-        for rname, (y0, y1) in regime_bounds.items():
-            rdf = (
-                panel[
-                    panel["ceo_id"].notna()
-                    & (panel["year"] >= y0)
-                    & (panel["year"] <= y1)
-                ]
-                .assign(ceo_id_str=lambda df: df["ceo_id"].astype(str))
-                .groupby("ceo_id_str")
-                .agg(n_calls_regime=("file_name", "count"))
-                .reset_index()
-                .rename(columns={"ceo_id_str": "ceo_id"})
-                .assign(regime=rname)
-            )
-            regime_call_counts.append(rdf)
-        regime_meta = pd.concat(regime_call_counts, ignore_index=True)
-
-        # CEO name (panel-wide, first occurrence)
-        ceo_names = (
+        # FIX-10: Join CEO metadata from panel (ceo_name, n_calls per CEO)
+        ceo_meta = (
             panel[panel["ceo_id"].notna()]
             .assign(ceo_id_str=lambda df: df["ceo_id"].astype(str))
             .groupby("ceo_id_str")
-            .agg(ceo_name=("ceo_name", "first"))
+            .agg(
+                ceo_name=("ceo_name", "first"),
+                n_calls=("file_name", "count"),
+            )
             .reset_index()
             .rename(columns={"ceo_id_str": "ceo_id"})
         )
-
-        estimated_df = estimated_df.merge(ceo_names, on="ceo_id", how="left").merge(
-            regime_meta, on=["ceo_id", "regime"], how="left"
-        )
+        estimated_df = estimated_df.merge(ceo_meta, on="ceo_id", how="left")
 
         # Final column order
         output_cols = [
             "ceo_id",
             "ceo_name",
-            "regime",
+            "sample",
             "gamma_i",
             "ClarityCEO_raw",
             "ClarityCEO",
-            "n_calls_regime",
+            "n_calls",
         ]
         output_cols = [c for c in output_cols if c in estimated_df.columns]
         clarity_df = estimated_df[output_cols]
 
         clarity_path = out_dir / "clarity_scores.parquet"
         clarity_df.to_parquet(clarity_path, index=False)
-        print(
-            f"  Saved: clarity_scores.parquet ({len(clarity_df):,} estimated CEOs "
-            f"across {clarity_df['regime'].nunique()} regimes)"
-        )
+        print(f"  Saved: clarity_scores.parquet ({len(clarity_df):,} estimated CEOs)")
 
     # Save regression results text
-    for regime_name, result in results.items():
+    for sample_name, result in results.items():
         model = result.get("model")
         if model is not None:
-            safe_name = regime_name.lower().replace("-", "_").replace(" ", "_")
-            results_path = out_dir / f"regression_results_{safe_name}.txt"
+            results_path = out_dir / f"regression_results_{sample_name.lower()}.txt"
             with open(results_path, "w") as f:
                 f.write(model.summary().as_text())
-            print(f"  Saved: regression_results_{safe_name}.txt")
+            print(f"  Saved: regression_results_{sample_name.lower()}.txt")
 
     return clarity_df
 
@@ -613,12 +543,12 @@ def generate_report(
 
     Args:
         results: Regression results dict
-        clarity_df: Final clarity scores DataFrame (per-regime standardized, refs excluded)
+        clarity_df: Final clarity scores DataFrame (globally standardized, references excluded)
         out_dir: Output directory
         duration: Duration in seconds
     """
     report_lines = [
-        "# Stage 4: CEO Clarity Regime Analysis Report",
+        "# Stage 4: CEO Clarity Hypothesis Test Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -631,56 +561,42 @@ def generate_report(
         "    " + " + ".join(CONFIG["firm_controls"]),
         "```",
         "",
-        "**Sample:** Main only (FF12 non-financial, non-utility)",
-        "",
-        "## Regime Definitions",
-        "",
-        "| Regime | Years |",
-        "|--------|-------|",
-    ]
-
-    for regime_name, (yr_start, yr_end) in CONFIG["regimes"].items():
-        report_lines.append(f"| {regime_name} | {yr_start}–{yr_end} |")
-
-    report_lines += [
-        "",
         "## Summary Statistics",
         "",
-        "| Regime | N Obs | N CEOs (estimated) | R-squared |",
-        "|--------|-------|--------------------|-----------|",
+        "| Sample | N Obs | N CEOs (estimated) | R-squared |",
+        "|--------|---------|--------------------|-----------|",
     ]
 
-    for regime_name, result in results.items():
+    for sample_name, result in results.items():
         diag = result.get("diagnostics", {})
         n_obs = diag.get("n_obs", "N/A")
         n_ceo = diag.get("n_ceos", "N/A")
         r2 = diag.get("rsquared", "N/A")
+        # MAJOR-4: format spec :, only applies to ints — guard against "N/A" string
         n_obs_str = f"{n_obs:,}" if isinstance(n_obs, int) else str(n_obs)
         n_ceo_str = f"{n_ceo:,}" if isinstance(n_ceo, int) else str(n_ceo)
         r2_str = f"{r2:.4f}" if isinstance(r2, float) else str(r2)
-        report_lines.append(f"| {regime_name} | {n_obs_str} | {n_ceo_str} | {r2_str} |")
+        report_lines.append(f"| {sample_name} | {n_obs_str} | {n_ceo_str} | {r2_str} |")
 
     report_lines.append("")
     if not clarity_df.empty:
         report_lines.append(
-            f"**Note:** ClarityCEO scores are standardized within each regime separately "
-            f"(mean=0, std=1 per regime; {len(clarity_df):,} total CEO-regime rows). "
-            f"Per-regime standardization is used because gamma estimates from separate "
-            f"regressions are anchored to different reference CEOs. "
+            f"**Note:** ClarityCEO scores are standardized globally across all "
+            f"{len(clarity_df):,} estimated CEOs (mean=0, std=1). "
             f"Reference CEOs (statsmodels baseline) are excluded."
         )
         report_lines.append("")
 
-    # Top CEOs by regime — use per-regime standardized scores
+    # Top CEOs by sample — use globally standardized scores
     if not clarity_df.empty and "ClarityCEO" in clarity_df.columns:
-        for regime_name in CONFIG["regimes"]:
-            regime_df = clarity_df[clarity_df["regime"] == regime_name].copy()
-            if len(regime_df) == 0:
+        for sample in ["Main", "Finance", "Utility"]:
+            sample_df = clarity_df[clarity_df["sample"] == sample].copy()
+            if len(sample_df) == 0:
                 continue
 
-            name_col = "ceo_name" if "ceo_name" in regime_df.columns else "ceo_id"
+            name_col = "ceo_name" if "ceo_name" in sample_df.columns else "ceo_id"
 
-            report_lines.append(f"## {regime_name} Regime")
+            report_lines.append(f"## {sample} Sample")
             report_lines.append("")
             report_lines.append("### Top 5 Clearest CEOs")
             report_lines.append("")
@@ -688,7 +604,7 @@ def generate_report(
             report_lines.append("|------|-----|------------|")
 
             for rank, (_, row) in enumerate(
-                regime_df.nlargest(5, "ClarityCEO").iterrows(), start=1
+                sample_df.nlargest(5, "ClarityCEO").iterrows(), start=1
             ):
                 report_lines.append(
                     f"| {rank} | {row[name_col]} | {row['ClarityCEO']:.3f} |"
@@ -701,7 +617,7 @@ def generate_report(
             report_lines.append("|------|-----|------------|")
 
             for rank, (_, row) in enumerate(
-                regime_df.nsmallest(5, "ClarityCEO").iterrows(), start=1
+                sample_df.nsmallest(5, "ClarityCEO").iterrows(), start=1
             ):
                 report_lines.append(
                     f"| {rank} | {row[name_col]} | {row['ClarityCEO']:.3f} |"
@@ -710,11 +626,11 @@ def generate_report(
             report_lines.append("")
 
     # Write report
-    report_path = out_dir / "report_step4_ceo_clarity_regime.md"
+    report_path = out_dir / "report_step4_ceo_clarity.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print("  Saved: report_step4_ceo_clarity_regime.md")
+    print("  Saved: report_step4_ceo_clarity.md")
 
 
 # ==============================================================================
@@ -728,7 +644,7 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "test_ceo_clarity_regime",
+        "step_id": "test_ceo_clarity",
         "timestamp": timestamp,
         "regressions": {},
         "timing": {},
@@ -736,68 +652,59 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Setup paths
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "ceo_clarity_regime" / timestamp
+    out_dir = root / "outputs" / "econometric" / "ceo_clarity" / timestamp
 
     print("=" * 80)
-    print("STAGE 4: Test CEO Clarity — Regime Analysis")
+    print("STAGE 4: Test CEO Clarity Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
-    print(f"Regimes: {list(CONFIG['regimes'].keys())}")
 
-    # Load panel (same CEO Clarity panel from 4.1.1)
+    # Load panel
     panel = load_panel(root, panel_path)
 
-    # Prepare Main-sample data (all years; year filter applied per regime below)
-    df_main = prepare_regression_data(panel)
+    # Prepare data
+    df = prepare_regression_data(panel)
 
-    # Run regressions by regime
+    # Run regressions by sample
     results: Dict[str, Dict[str, Any]] = {}
     all_clarity_scores: List[pd.DataFrame] = []
 
-    for regime_name, (yr_start, yr_end) in CONFIG["regimes"].items():
-        # Apply year filter for this regime
-        df_regime = df_main[
-            (df_main["year"] >= yr_start) & (df_main["year"] <= yr_end)
-        ].copy()
+    for sample_name in ["Main", "Finance", "Utility"]:
+        df_sample = df[df["sample"] == sample_name].copy()
 
-        print(
-            f"\n  {regime_name} ({yr_start}–{yr_end}): {len(df_regime):,} calls, "
-            f"{df_regime['ceo_id'].nunique():,} CEOs (before min-calls filter)"
-        )
-
-        if len(df_regime) < 100:
+        if len(df_sample) < 100:
             print(
-                f"\n  Skipping {regime_name}: too few observations ({len(df_regime)})"
+                f"\n  Skipping {sample_name}: too few observations ({len(df_sample)})"
             )
             continue
 
         # Run regression
-        model, df_reg, valid_ceos = run_regression(df_regime, regime_name)
+        model, df_reg, valid_ceos = run_regression(df_sample, sample_name)
 
         if model is None or df_reg is None:
             continue
 
-        # Extract clarity scores (unstandardized)
-        clarity_scores = extract_clarity_scores(model, df_reg, regime_name)
+        # Extract clarity scores
+        clarity_scores = extract_clarity_scores(model, df_reg, sample_name)
         all_clarity_scores.append(clarity_scores)
 
         # Store results
-        results[regime_name] = {
+        results[sample_name] = {
             "model": model,
             "diagnostics": {
                 "n_obs": int(model.nobs),
                 "n_ceos": len(valid_ceos),
-                "rsquared": model.rsquared,
-                "rsquared_adj": model.rsquared_adj,
+                "rsquared": float(model.rsquared_within),
+                "rsquared_adj": float(model.rsquared_inclusive),
             },
         }
 
         # Stats
-        stats["regressions"][regime_name] = {
+        stats["regressions"][sample_name] = {
             "n_obs": int(model.nobs),
             "n_ceos": len(valid_ceos),
-            "rsquared": model.rsquared,
+            "rsquared": float(model.rsquared_within),
         }
 
     # Save outputs
@@ -818,15 +725,6 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Duration: {duration:.1f} seconds")
     print(f"Output: {out_dir}")
-
-    if results:
-        print("\nRegime Results:")
-        for regime_name, result in results.items():
-            diag = result["diagnostics"]
-            print(
-                f"  {regime_name}: N={diag['n_obs']:,}, "
-                f"CEOs={diag['n_ceos']:,}, R²={diag['rsquared']:.4f}"
-            )
 
     return 0
 

@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Tone-at-the-Top Econometrics (H_TT)
 ================================================================================
-ID: econometric/run_tone_at_top
+ID: econometric/run_h10_tone_at_top
 Description: Executes regressions for the Tone-at-the-Top transmission hypothesis.
              H_TT1: Call-level, real-time CEO style predicts CFO uncertainty.
              H_TT2: Speaker-turn level, prior CEO QA turns predict NonCEO manager uncertainty.

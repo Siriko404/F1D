@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build CEO Clarity Extended Panel (4.1.2 Robustness)
+STAGE 3: Build CEO Clarity Panel
 ================================================================================
-ID: variables/build_ceo_clarity_extended_panel
-Description: Build panel for the CEO Clarity Extended Controls robustness test
-             (4.1.2). Loads all variables needed for 4 regressions:
-               1. Manager Baseline (Manager_QA_Uncertainty + base controls)
-               2. Manager Extended (+ Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, Volatility)
-               3. CEO Baseline    (CEO_QA_Uncertainty + base controls)
-               4. CEO Extended    (+ Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, Volatility)
+ID: variables/build_h0_2_ceo_clarity_panel
+Description: Build complete panel for CEO Clarity hypothesis test by loading
+             all required variables using shared modules and merging into a
+             single panel.
 
 Inputs (all raw):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
@@ -20,9 +17,9 @@ Inputs (all raw):
     - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet   (CCM linktable)
 
 Outputs:
-    - outputs/variables/ceo_clarity_extended/{timestamp}/ceo_clarity_extended_panel.parquet
-    - outputs/variables/ceo_clarity_extended/{timestamp}/summary_stats.csv
-    - outputs/variables/ceo_clarity_extended/{timestamp}/report_step3_ceo_clarity_extended.md
+    - outputs/variables/ceo_clarity/{timestamp}/ceo_clarity_panel.parquet
+    - outputs/variables/ceo_clarity/{timestamp}/summary_stats.csv
+    - outputs/variables/ceo_clarity/{timestamp}/report_step3_ceo_clarity.md
 
 Deterministic: true
 Dependencies:
@@ -46,22 +43,13 @@ import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.variables import (
-    ManagerQAUncertaintyBuilder,
-    ManagerPresUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
-    SizeBuilder,
-    BMBuilder,
-    LevBuilder,
-    ROABuilder,
-    CurrentRatioBuilder,
-    RDIntensityBuilder,
     EPSGrowthBuilder,
     StockReturnBuilder,
     MarketReturnBuilder,
-    VolatilityBuilder,
     EarningsSurpriseBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -71,7 +59,7 @@ from f1d.shared.variables import (
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build CEO Clarity Extended Panel",
+        description="Stage 3: Build CEO Clarity Panel",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -98,6 +86,12 @@ def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
     """Assign industry sample based on FF12 code.
 
     Uses np.select to avoid deprecated boolean-indexed Series assignment.
+
+    Args:
+        ff12_code: Series with FF12 industry codes
+
+    Returns:
+        Series with sample names: Main, Finance, or Utility
     """
     import numpy as np
 
@@ -116,20 +110,20 @@ def build_panel(
     var_config: Dict[str, Any],
     stats: Dict[str, Any],
 ) -> pd.DataFrame:
-    """Build complete panel with all 12 variables for Extended Controls analysis.
+    """Build complete panel by loading and merging all variables.
 
-    Builds one panel that serves all 4 regressions (Manager/CEO × Baseline/Extended).
-    Variables loaded:
-      Textual (Stage 2):
-        Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-        CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-        Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct
-      Financial (raw Compustat):
-        Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, EPS_Growth
-      Financial (raw CRSP):
-        StockRet, MarketRet, Volatility
-      Financial (raw IBES):
-        SurpDec
+    CEO Clarity uses CEO_QA_Uncertainty_pct (dependent) and
+    CEO_Pres_Uncertainty_pct (control), unlike Manager Clarity which uses
+    the full management team equivalents.
+
+    Args:
+        root_path: Project root path
+        years: Range of years to process
+        var_config: Variable configuration dict
+        stats: Stats dict to collect summary statistics
+
+    Returns:
+        Merged DataFrame with all variables
     """
     print("\n" + "=" * 60)
     print("Loading variables")
@@ -137,17 +131,12 @@ def build_panel(
 
     all_results: Dict[str, Any] = {}
 
-    # One variable per builder. CompustatEngine and CRSPEngine are module-level
-    # singletons — raw data is loaded once and cached across all individual builders.
+    # Initialize builders — one variable per builder.
+    # The CompustatEngine and CRSPEngine are module-level singletons that cache
+    # the raw data load, so calling EPSGrowthBuilder + StockReturnBuilder etc.
+    # does NOT re-load Compustat or CRSP for each variable.
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # Textual — Stage 2 outputs
-        "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
-            var_config.get("manager_qa_uncertainty", {})
-        ),
-        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
-            var_config.get("manager_pres_uncertainty", {})
-        ),
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
@@ -160,19 +149,9 @@ def build_panel(
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        # Compustat individual variables (one per builder)
-        "size": SizeBuilder({}),
-        "bm": BMBuilder({}),
-        "lev": LevBuilder({}),
-        "roa": ROABuilder({}),
-        "current_ratio": CurrentRatioBuilder({}),
-        "rd_intensity": RDIntensityBuilder({}),
         "eps_growth": EPSGrowthBuilder({}),
-        # CRSP individual variables (one per builder)
         "stock_return": StockReturnBuilder({}),
         "market_return": MarketReturnBuilder({}),
-        "volatility": VolatilityBuilder({}),
-        # IBES
         "earnings_surprise": EarningsSurpriseBuilder(
             var_config.get("earnings_surprise", {})
         ),
@@ -249,23 +228,6 @@ def build_panel(
     if "year" not in panel.columns and "start_date" in panel.columns:
         panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 
-    # Report variable coverage for extended controls
-    extended_cols = [
-        "Size",
-        "BM",
-        "Lev",
-        "ROA",
-        "CurrentRatio",
-        "RD_Intensity",
-        "Volatility",
-    ]
-    print(f"\n  Extended control coverage:")
-    for col in extended_cols:
-        if col in panel.columns:
-            n = panel[col].notna().sum()
-            pct = 100.0 * n / len(panel) if len(panel) > 0 else 0
-            print(f"    {col}: {n:,} ({pct:.1f}%)")
-
     # Collect all summary stats
     stats_list = []
     for name, result in all_results.items():
@@ -281,19 +243,27 @@ def save_outputs(
     stats: Dict[str, Any],
     out_dir: Path,
 ) -> None:
-    """Save panel and summary statistics."""
+    """Save panel and summary statistics.
+
+    Args:
+        panel: Complete merged panel
+        stats: Stats dict with variable statistics
+        out_dir: Output directory
+    """
     print("\n" + "=" * 60)
     print("Saving outputs")
     print("=" * 60)
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    panel_path = out_dir / "ceo_clarity_extended_panel.parquet"
+    # Save panel
+    panel_path = out_dir / "ceo_clarity_panel.parquet"
     panel.to_parquet(panel_path, index=False)
     print(
-        f"  Saved: ceo_clarity_extended_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
+        f"  Saved: ceo_clarity_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
     )
 
+    # Save summary stats
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
     stats_path = out_dir / "summary_stats.csv"
     stats_df.to_csv(stats_path, index=False)
@@ -306,17 +276,19 @@ def generate_report(
     out_dir: Path,
     duration: float,
 ) -> None:
-    """Generate markdown report."""
+    """Generate markdown report.
+
+    Args:
+        panel: Complete merged panel
+        stats: Stats dict
+        out_dir: Output directory
+        duration: Duration in seconds
+    """
     report_lines = [
-        "# Stage 3: CEO Clarity Extended Panel Build Report",
+        "# Stage 3: CEO Clarity Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        "",
-        "## Purpose",
-        "",
-        "Robustness check panel for 4.1.2. Contains all variables for 4 regressions:",
-        "Manager Baseline, Manager Extended, CEO Baseline, CEO Extended.",
         "",
         "## Panel Summary",
         "",
@@ -325,6 +297,7 @@ def generate_report(
         "",
     ]
 
+    # Sample distribution
     if "sample" in panel.columns:
         report_lines.append("### Sample Distribution")
         report_lines.append("")
@@ -336,25 +309,7 @@ def generate_report(
             report_lines.append(f"| {sample} | {n:,} | {pct:.1f}% |")
         report_lines.append("")
 
-    report_lines.append("### Extended Control Coverage")
-    report_lines.append("")
-    report_lines.append("| Variable | N Non-Missing | % Coverage |")
-    report_lines.append("|----------|--------------|------------|")
-    for col in [
-        "Size",
-        "BM",
-        "Lev",
-        "ROA",
-        "CurrentRatio",
-        "RD_Intensity",
-        "Volatility",
-    ]:
-        if col in panel.columns:
-            n = panel[col].notna().sum()
-            pct = 100.0 * n / len(panel) if len(panel) > 0 else 0
-            report_lines.append(f"| {col} | {n:,} | {pct:.1f}% |")
-    report_lines.append("")
-
+    # Unique entities
     report_lines.append("### Unique Entities")
     report_lines.append("")
     if "ceo_id" in panel.columns:
@@ -363,11 +318,32 @@ def generate_report(
         report_lines.append(f"- **Unique firms:** {panel['gvkey'].nunique():,}")
     report_lines.append("")
 
-    report_path = out_dir / "report_step3_ceo_clarity_extended.md"
+    # Variable summary
+    report_lines.append("## Variable Summary")
+    report_lines.append("")
+    report_lines.append("| Variable | N | Mean | Std | Min | Max | Missing % |")
+    report_lines.append("|----------|---|------|-----|-----|-----|-----------|")
+
+    for var_stat in stats.get("variable_stats", []):
+        name = var_stat.get("name", "unknown")
+        n = var_stat.get("n", 0)
+        mean = var_stat.get("mean", 0)
+        std = var_stat.get("std", 0)
+        min_val = var_stat.get("min", 0)
+        max_val = var_stat.get("max", 0)
+        pct_missing = var_stat.get("pct_missing", 0)
+        report_lines.append(
+            f"| {name} | {n:,} | {mean:.3f} | {std:.3f} | {min_val:.3f} | {max_val:.3f} | {pct_missing:.1f}% |"
+        )
+
+    report_lines.append("")
+
+    # Write report
+    report_path = out_dir / "report_step3_ceo_clarity.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    print(f"  Saved: report_step3_ceo_clarity_extended.md")
+    print(f"  Saved: report_step3_ceo_clarity.md")
 
 
 def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> int:
@@ -376,7 +352,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_ceo_clarity_extended_panel",
+        "step_id": "build_ceo_clarity_panel",
         "timestamp": timestamp,
         "variable_stats": [],
         "timing": {},
@@ -385,7 +361,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Setup paths
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "ceo_clarity_extended" / timestamp
+    out_dir = root / "outputs" / "variables" / "ceo_clarity" / timestamp
 
     # Load configs — pass explicit paths so CWD doesn't matter
     config = get_config(root / "config" / "project.yaml")
@@ -399,7 +375,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build CEO Clarity Extended Panel (4.1.2)")
+    print("STAGE 3: Build CEO Clarity Panel")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")

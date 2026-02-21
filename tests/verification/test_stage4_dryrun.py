@@ -51,10 +51,11 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 
 # All Stage 4 scripts combined
 STAGE4_ALL_SCRIPTS = [
-    "src/f1d/econometric/run_ceo_clarity.py",
-    "src/f1d/econometric/run_ceo_clarity_extended.py",
-    "src/f1d/econometric/run_ceo_clarity_regime.py",
-    "src/f1d/econometric/run_ceo_tone.py",
+    "src/f1d/econometric/run_h0_1_manager_clarity.py",
+    "src/f1d/econometric/run_h0_2_ceo_clarity.py",
+    "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
+    "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py",
+    "src/f1d/econometric/run_h0_5_ceo_tone.py",
     "src/f1d/econometric/run_h1_cash_holdings.py",
     "src/f1d/econometric/run_h2_investment.py",
     "src/f1d/econometric/run_h3_payout_policy.py",
@@ -63,9 +64,8 @@ STAGE4_ALL_SCRIPTS = [
     "src/f1d/econometric/run_h6_cccl.py",
     "src/f1d/econometric/run_h7_illiquidity.py",
     "src/f1d/econometric/run_h8_policy_risk.py",
-    "src/f1d/econometric/run_manager_clarity.py",
-    "src/f1d/econometric/run_takeover_hazards.py",
-    "src/f1d/econometric/generate_summary_stats.py",
+    "src/f1d/econometric/run_h9_takeover_hazards.py",
+    "src/f1d/econometric/run_h10_tone_at_top.py",
 ]
 
 
@@ -106,10 +106,12 @@ class TestStage4ScriptImports:
             cwd=str(REPO_ROOT),
         )
         # Script may fail on missing inputs, but should not have import errors
-        assert "ImportError" not in result.stderr, f"Import error in {script}: {result.stderr}"
-        assert "ModuleNotFoundError" not in result.stderr, f"Module not found in {script}: {result.stderr}"
-
-
+        assert "ImportError" not in result.stderr, (
+            f"Import error in {script}: {result.stderr}"
+        )
+        assert "ModuleNotFoundError" not in result.stderr, (
+            f"Module not found in {script}: {result.stderr}"
+        )
 
 
 class TestStage4DryRunFlags:
@@ -146,8 +148,12 @@ class TestStage4DryRunFlags:
         ]
 
         for error in unexpected_errors:
-            assert error not in stderr_lower, f"Unexpected {error} in {script}: {result.stderr}"
-            assert error not in stdout_lower, f"Unexpected {error} in {script}: {result.stdout}"
+            assert error not in stderr_lower, (
+                f"Unexpected {error} in {script}: {result.stderr}"
+            )
+            assert error not in stdout_lower, (
+                f"Unexpected {error} in {script}: {result.stdout}"
+            )
 
 
 class TestStage4ModuleStructure:
@@ -160,8 +166,9 @@ class TestStage4ModuleStructure:
         content = script_path.read_text(encoding="utf-8")
 
         # Check for correct import pattern
-        assert "from f1d.shared" in content or "import f1d.shared" in content, \
+        assert "from f1d.shared" in content or "import f1d.shared" in content, (
             f"Script {script} should use f1d.shared.* imports"
+        )
 
     @pytest.mark.parametrize("script", STAGE4_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_no_sys_path_manipulation(self, script: str):
@@ -176,8 +183,9 @@ class TestStage4ModuleStructure:
         ]
 
         for pattern in forbidden_patterns:
-            assert pattern not in content, \
+            assert pattern not in content, (
                 f"Script {script} should not use {pattern} (use f1d.shared.* imports)"
+            )
 
 
 class TestStage4ArgumentParsing:
@@ -204,11 +212,16 @@ class TestStage4ArgumentParsing:
         if result.returncode != 0:
             # Check if it's a Unicode encoding error (Windows console limitation)
             if "UnicodeEncodeError" in result.stderr:
-                pytest.skip(f"Unicode encoding error in {script} help text (Windows console limitation)")
-            assert result.returncode == 0, f"--help failed for {script}: {result.stderr}"
+                pytest.skip(
+                    f"Unicode encoding error in {script} help text (Windows console limitation)"
+                )
+            assert result.returncode == 0, (
+                f"--help failed for {script}: {result.stderr}"
+            )
 
-        assert "usage:" in result.stdout.lower() or "usage:" in result.stderr.lower(), \
+        assert "usage:" in result.stdout.lower() or "usage:" in result.stderr.lower(), (
             f"--help should show usage for {script}"
+        )
 
 
 class TestStage4HypothesisMapping:
@@ -216,44 +229,45 @@ class TestStage4HypothesisMapping:
 
     def test_h1_regression_exists(self):
         """Verify H1 (Cash Holdings) regression script exists."""
-        h1_path = REPO_ROOT / "src/f1d/econometric/test_h1_cash_holdings.py"
+        h1_path = REPO_ROOT / "src/f1d/econometric/run_h1_cash_holdings.py"
         assert h1_path.exists(), "H1 Cash Holdings regression script should exist"
 
     def test_h2_regression_exists(self):
         """Verify H2 (Investment Efficiency) regression script exists."""
-        h2_path = REPO_ROOT / "src/f1d/econometric/test_h2_investment.py"
-        assert h2_path.exists(), "H2 Investment Efficiency regression script should exist"
+        h2_path = REPO_ROOT / "src/f1d/econometric/run_h2_investment.py"
+        assert h2_path.exists(), (
+            "H2 Investment Efficiency regression script should exist"
+        )
 
     def test_h3_regression_exists(self):
         """Verify H3 (Payout Policy) regression script exists."""
-        h3_path = REPO_ROOT / "src/f1d/econometric/test_h3_payout_policy.py"
+        h3_path = REPO_ROOT / "src/f1d/econometric/run_h3_payout_policy.py"
         assert h3_path.exists(), "H3 Payout Policy regression script should exist"
 
     def test_h4_regression_exists(self):
         """Verify H4 (Leverage Discipline) regression script exists."""
-        h4_path = REPO_ROOT / "src/f1d/econometric/test_h4_leverage.py"
+        h4_path = REPO_ROOT / "src/f1d/econometric/run_h4_leverage.py"
         assert h4_path.exists(), "H4 Leverage Discipline regression script should exist"
 
     def test_h5_regression_exists(self):
         """Verify H5 (Dispersion) regression script exists."""
-        h5_path = REPO_ROOT / "src/f1d/econometric/test_h5_dispersion.py"
+        h5_path = REPO_ROOT / "src/f1d/econometric/run_h5_dispersion.py"
         assert h5_path.exists(), "H5 Dispersion regression script should exist"
 
     def test_h6_regression_exists(self):
         """Verify H6 (CCC&L) regression script exists."""
-        h6_path = REPO_ROOT / "src/f1d/econometric/test_h6_cccl.py"
+        h6_path = REPO_ROOT / "src/f1d/econometric/run_h6_cccl.py"
         assert h6_path.exists(), "H6 CCC&L regression script should exist"
 
     def test_h7_regression_exists(self):
         """Verify H7 (Illiquidity) regression script exists."""
-        h7_path = REPO_ROOT / "src/f1d/econometric/test_h7_illiquidity.py"
+        h7_path = REPO_ROOT / "src/f1d/econometric/run_h7_illiquidity.py"
         assert h7_path.exists(), "H7 Illiquidity regression script should exist"
 
     def test_h8_regression_exists(self):
-        """Verify H8 (Takeover) regression script exists."""
-        h8_path = REPO_ROOT / "src/f1d/econometric/test_h8_policy_risk.py"
+        """Verify H8 (Policy Risk) regression script exists."""
+        h8_path = REPO_ROOT / "src/f1d/econometric/run_h8_policy_risk.py"
         assert h8_path.exists(), "H8 Takeover regression script should exist"
-
 
 
 class TestStage4SurvivalAnalysis:
@@ -261,12 +275,12 @@ class TestStage4SurvivalAnalysis:
 
     def test_takeover_hazards_script_exists(self):
         """Verify 4.3_TakeoverHazards.py script exists."""
-        haz_path = REPO_ROOT / "src/f1d/econometric/run_takeover_hazards.py"
+        haz_path = REPO_ROOT / "src/f1d/econometric/run_h9_takeover_hazards.py"
         assert haz_path.exists(), "Takeover Hazards script should exist"
 
     def test_takeover_hazards_uses_lifelines(self):
         """Verify 4.3_TakeoverHazards.py uses lifelines for Cox PH."""
-        haz_path = REPO_ROOT / "src/f1d/econometric/run_takeover_hazards.py"
+        haz_path = REPO_ROOT / "src/f1d/econometric/run_h9_takeover_hazards.py"
         content = haz_path.read_text(encoding="utf-8")
 
         # Check for lifelines import
@@ -279,28 +293,29 @@ class TestStage4SurvivalAnalysis:
         As per 77-03 decision: Using cause-specific Cox hazards instead of
         FineGrayAFTFitter (not available in lifelines 0.30.0).
         """
-        haz_path = REPO_ROOT / "src/f1d/econometric/run_takeover_hazards.py"
+        haz_path = REPO_ROOT / "src/f1d/econometric/run_h9_takeover_hazards.py"
         content = haz_path.read_text(encoding="utf-8")
 
         # Verify it uses CoxPHFitter
         assert "CoxPHFitter" in content, "Should use CoxPHFitter for survival analysis"
 
         # Verify it mentions cause-specific hazards approach
-        assert "cause-specific" in content.lower() or "cause_specific" in content.lower(), \
-            "Should mention cause-specific hazards approach"
+        assert (
+            "cause-specific" in content.lower() or "cause_specific" in content.lower()
+        ), "Should mention cause-specific hazards approach"
 
 
 class TestStage4CeoFixedEffects:
-    """Test CEO Fixed Effects script (4.9_CEOFixedEffects.py)."""
+    """Test CEO Fixed Effects script (H0.4 CEO Clarity Regime)."""
 
     def test_ceo_fixed_effects_script_exists(self):
-        """Verify 4.9_CEOFixedEffects.py script exists."""
-        cfe_path = REPO_ROOT / "src/f1d/econometric/test_ceo_clarity_regime.py"
+        """Verify H0.4 CEO Clarity Regime script exists."""
+        cfe_path = REPO_ROOT / "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py"
         assert cfe_path.exists(), "CEO Fixed Effects script should exist"
 
     def test_ceo_fixed_effects_uses_statsmodels(self):
-        """Verify 4.9_CEOFixedEffects.py uses statsmodels for regression."""
-        cfe_path = REPO_ROOT / "src/f1d/econometric/test_ceo_clarity_regime.py"
+        """Verify H0.4 CEO Clarity Regime uses statsmodels for regression."""
+        cfe_path = REPO_ROOT / "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py"
         content = cfe_path.read_text(encoding="utf-8")
 
         # Check for statsmodels import

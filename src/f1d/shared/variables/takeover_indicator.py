@@ -6,7 +6,7 @@ not per file_name — this builder operates at firm granularity.
 
 Architecture note: Unlike call-level builders (which return file_name + column),
 this builder returns gvkey + takeover columns. The takeover panel builder
-(build_takeover_panel.py) aggregates calls to firm-year and then joins these
+(build_h9_takeover_panel.py) aggregates calls to firm-year and then joins these
 columns on gvkey.
 
 Takeover classification:

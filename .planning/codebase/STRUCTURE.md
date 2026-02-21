@@ -58,12 +58,12 @@ F1D/
 **`src/f1d/variables/`:**
 - Purpose: Stage 3 - Panel builders for each hypothesis
 - Contains: Scripts that load variables and merge into panels
-- Key files: `build_h1_cash_holdings_panel.py`, `build_manager_clarity_panel.py`
+- Key files: `build_h1_cash_holdings_panel.py`, `build_h0_1_manager_clarity_panel.py`
 
 **`src/f1d/econometric/`:**
 - Purpose: Stage 4 - Hypothesis test scripts
 - Contains: OLS regressions, LaTeX output generation
-- Key files: `run_h1_cash_holdings.py`, `run_manager_clarity.py`
+- Key files: `run_h1_cash_holdings.py`, `run_h0_1_manager_clarity.py`
 
 **`tests/`:**
 - Purpose: Comprehensive test coverage

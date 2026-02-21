@@ -12,7 +12,7 @@
 
 **Performance Anti-Pattern - iterrows():**
 - Issue: 25+ uses of `df.iterrows()` which is notoriously slow in pandas (100-1000x slower than vectorized operations)
-- Files: `src/f1d/econometric/generate_summary_stats.py`, `src/f1d/shared/financial_utils.py`, `src/f1d/sample/link_entities.py`, `src/f1d/shared/observability/stats.py`, `src/f1d/shared/panel_ols.py`
+- Files: `src/f1d/reporting/generate_summary_stats.py`, `src/f1d/shared/financial_utils.py`, `src/f1d/sample/link_entities.py`, `src/f1d/shared/observability/stats.py`, `src/f1d/shared/panel_ols.py`
 - Impact: Performance degradation on large datasets, especially in entity linking (~11k companies)
 - Fix approach: Replace with `itertuples()`, vectorized operations, or `.apply()` where appropriate
 

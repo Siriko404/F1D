@@ -23,8 +23,8 @@ When code changes intentionally alter outputs (e.g. fixing a bug or adding a con
 
 1. Run the pipeline scripts to generate new outputs:
    ```bash
-   python -m f1d.variables.build_manager_clarity_panel
-   python -m f1d.variables.build_ceo_clarity_panel
+   python -m f1d.variables.build_h0_1_manager_clarity_panel
+   python -m f1d.variables.build_h0_2_ceo_clarity_panel
    # ... run all scripts that should change ...
    ```
 2. Generate new baseline checksums:

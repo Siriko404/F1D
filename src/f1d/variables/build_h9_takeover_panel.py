@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 3: Build Takeover Panel (4.3 Takeover Hazards)
 ================================================================================
-ID: variables/build_takeover_panel
+ID: variables/build_h9_takeover_panel
 Description: Build firm-year panel for Takeover Hazard survival analysis (4.3).
 
 The panel is aggregated to firm-year level (not call-level), because Cox PH and

@@ -218,10 +218,10 @@ python -m f1d.text.build_linguistic_variables   # Compute uncertainty/sentiment
 
 ```bash
 # Build regression panels (each 1-6 minutes)
-python -m f1d.variables.build_manager_clarity_panel
-python -m f1d.variables.build_ceo_clarity_panel
-python -m f1d.variables.build_ceo_clarity_extended_panel
-python -m f1d.variables.build_ceo_tone_panel
+python -m f1d.variables.build_h0_1_manager_clarity_panel
+python -m f1d.variables.build_h0_2_ceo_clarity_panel
+python -m f1d.variables.build_h0_3_ceo_clarity_extended_panel
+python -m f1d.variables.build_h0_5_ceo_tone_panel
 python -m f1d.variables.build_h1_cash_holdings_panel
 python -m f1d.variables.build_h2_investment_panel
 python -m f1d.variables.build_h3_payout_policy_panel
@@ -230,30 +230,30 @@ python -m f1d.variables.build_h5_dispersion_panel
 python -m f1d.variables.build_h6_cccl_panel
 python -m f1d.variables.build_h7_illiquidity_panel
 python -m f1d.variables.build_h8_policy_risk_panel
-python -m f1d.variables.build_takeover_panel
-python -m f1d.variables.build_tone_at_top_panel
+python -m f1d.variables.build_h9_takeover_panel
+python -m f1d.variables.build_h10_tone_at_top_panel
 ```
 
 #### Stage 4: Hypothesis Tests
 
 ```bash
 # Run econometric analyses (each 20 seconds - 7 minutes)
-python -m f1d.econometric.run_manager_clarity       # ~1 min
-python -m f1d.econometric.run_ceo_clarity           # ~30 sec
-python -m f1d.econometric.run_ceo_clarity_extended  # ~3 min
-python -m f1d.econometric.run_ceo_clarity_regime    # ~20 sec
-python -m f1d.econometric.run_ceo_tone              # ~3 min
-python -m f1d.econometric.run_h1_cash_holdings      # ~7 min
-python -m f1d.econometric.run_h2_investment         # ~2 min
-python -m f1d.econometric.run_h3_payout_policy      # ~1 min
-python -m f1d.econometric.run_h4_leverage           # ~1 min
-python -m f1d.econometric.run_h5_dispersion         # ~2 min
-python -m f1d.econometric.run_h6_cccl               # ~1 min
-python -m f1d.econometric.run_h7_illiquidity        # ~2 min
-python -m f1d.econometric.run_h8_policy_risk        # ~1 min
-python -m f1d.econometric.run_takeover_hazards      # ~1 min
-python -m f1d.econometric.run_tone_at_top           # ~2 min
-python -m f1d.econometric.generate_summary_stats    # ~1 sec
+python -m f1d.econometric.run_h0_1_manager_clarity       # ~1 min
+python -m f1d.econometric.run_h0_2_ceo_clarity           # ~30 sec
+python -m f1d.econometric.run_h0_3_ceo_clarity_extended  # ~3 min
+python -m f1d.econometric.run_h0_4_ceo_clarity_regime    # ~20 sec
+python -m f1d.econometric.run_h0_5_ceo_tone              # ~3 min
+python -m f1d.econometric.run_h1_cash_holdings           # ~7 min
+python -m f1d.econometric.run_h2_investment              # ~2 min
+python -m f1d.econometric.run_h3_payout_policy           # ~1 min
+python -m f1d.econometric.run_h4_leverage                # ~1 min
+python -m f1d.econometric.run_h5_dispersion              # ~2 min
+python -m f1d.econometric.run_h6_cccl                    # ~1 min
+python -m f1d.econometric.run_h7_illiquidity             # ~2 min
+python -m f1d.econometric.run_h8_policy_risk             # ~1 min
+python -m f1d.econometric.run_h9_takeover_hazards        # ~1 min
+python -m f1d.econometric.run_h10_tone_at_top            # ~2 min
+python -m f1d.reporting.generate_summary_stats           # ~1 sec
 ```
 
 ### Output Resolution
@@ -276,7 +276,7 @@ No symlinks needed — the latest directory is always found by timestamp.
 Last full pipeline run: **2026-02-20**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
-### Manager Clarity (4.1) — `run_manager_clarity`
+### Manager Clarity (H0.1) — `run_h0_1_manager_clarity`
 
 Dependent variable: `Manager_QA_Uncertainty_pct`
 
@@ -288,7 +288,7 @@ Dependent variable: `Manager_QA_Uncertainty_pct`
 
 `ClarityManager = −gamma_i`, standardized globally across all three samples.
 
-### CEO Clarity (4.1.1) — `run_ceo_clarity`
+### CEO Clarity (H0.2) — `run_h0_2_ceo_clarity`
 
 Dependent variable: `CEO_QA_Uncertainty_pct`
 
@@ -300,7 +300,7 @@ Dependent variable: `CEO_QA_Uncertainty_pct`
 
 `ClarityCEO = −gamma_i`, standardized globally across all three samples.
 
-### Extended Controls Robustness (4.1.2) — `run_ceo_clarity_extended`
+### Extended Controls Robustness (H0.3) — `run_h0_3_ceo_clarity_extended`
 
 Main sample only. Extended controls: `CurrentRatio`, `RD_Intensity`, `Volatility`.
 
@@ -315,7 +315,7 @@ Extended models have fewer observations due to additional missingness in
 `CurrentRatio` (83.3% coverage) and `Volatility` (93.3% coverage).
 R² increases by ≤ 0.002 — CEO fixed effects are robust to extended controls.
 
-### Regime Analysis (4.1.3) — `run_ceo_clarity_regime`
+### Regime Analysis (H0.4) — `run_h0_4_ceo_clarity_regime`
 
 Main sample only. Same model specification as CEO Clarity (4.1.1).
 
@@ -331,7 +331,7 @@ values across regimes conflates reference-level artifacts with real regime diffe
 Spearman rank correlations for CEOs appearing in multiple regimes: Pre/Crisis ρ = 0.664,
 Crisis/Post ρ = 0.735, Pre/Post ρ = 0.706 — confirming clarity is a stable trait.
 
-### CEO Tone (4.1.4) — `run_ceo_tone`
+### CEO Tone (H0.5) — `run_h0_5_ceo_tone`
 
 Dependent variable: `Entire_All_Negative_pct` (net negative sentiment, all speakers).
 Three models: ToneAll (all-manager FE), ToneCEO (CEO FE), ToneRegime (CEO × regime FE).
@@ -475,7 +475,7 @@ Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Controls
 β₃ > 0: Vague CEOs amplify PRisk → abnormal investment channel.
 β₃ < 0: Vague CEOs dampen PRisk → abnormal investment channel.
 
-### H_TT Tone at the Top — `run_tone_at_top`
+### Tone at the Top (H10) — `run_h10_tone_at_top`
 
 Tests whether a CEO's persistent uncertainty communication style transmits to non-CEO manager uncertainty in the same earnings call.
 
@@ -497,7 +497,7 @@ Clustering: two-way (Firm × CEO).
 
 H_TT1 confirmed in the Main sample (β=0.014, t=3.70, p<0.001). Finance and Utility insignificant at call level — regulated industries suppress durable style transmission. H_TT2 strongly confirmed across all three samples — the within-call Granger design is the primary identification result.
 
-### Takeover Hazards (4.3) — `run_takeover_hazards`
+### Takeover Hazards (H9) — `run_h9_takeover_hazards`
 
 Survival panel: firm-level (not call-level). Duration = years from first call to
 takeover announcement / end of sample (2002–2018). Six Cox PH models.
@@ -514,7 +514,7 @@ takeover announcement / end of sample (2002–2018). Six Cox PH models.
 SDC linkage: manifest CUSIP (9-char) → SDC target CUSIP via first 6 chars.
 Cause-specific Cox PH used in place of Fine-Gray (not available in lifelines).
 
-### Summary Statistics (4.4) — `generate_summary_stats`
+### Summary Statistics (H11) — `generate_summary_stats`
 
 Main sample: 88,205 call observations, 1,884 firms, 3,533 CEOs, 2002–2018.
 No Stage 3 panel builder — reads `ceo_clarity_extended_panel.parquet` directly.

@@ -143,7 +143,7 @@ def print_prerequisite_errors(errors: List[str]) -> None:
     print("     Step 1: python -m f1d.sample.build_sample_manifest")
     print("     Step 2: python -m f1d.text.tokenize_and_count")
     print("     Step 3: python -m f1d.variables.build_h1_cash_holdings_panel")
-    print("     Step 4: python -m f1d.econometric.run_ceo_clarity")
+    print("     Step 4: python -m f1d.econometric.run_h0_2_ceo_clarity")
     print()
     print("For help, run with --help flag")
     print()

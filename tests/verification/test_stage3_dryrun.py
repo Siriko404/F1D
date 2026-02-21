@@ -49,9 +49,10 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 
 # All Stage 3 scripts combined
 STAGE3_ALL_SCRIPTS = [
-    "src/f1d/variables/build_ceo_clarity_extended_panel.py",
-    "src/f1d/variables/build_ceo_clarity_panel.py",
-    "src/f1d/variables/build_ceo_tone_panel.py",
+    "src/f1d/variables/build_h0_1_manager_clarity_panel.py",
+    "src/f1d/variables/build_h0_2_ceo_clarity_panel.py",
+    "src/f1d/variables/build_h0_3_ceo_clarity_extended_panel.py",
+    "src/f1d/variables/build_h0_5_ceo_tone_panel.py",
     "src/f1d/variables/build_h1_cash_holdings_panel.py",
     "src/f1d/variables/build_h2_investment_panel.py",
     "src/f1d/variables/build_h3_payout_policy_panel.py",
@@ -60,8 +61,8 @@ STAGE3_ALL_SCRIPTS = [
     "src/f1d/variables/build_h6_cccl_panel.py",
     "src/f1d/variables/build_h7_illiquidity_panel.py",
     "src/f1d/variables/build_h8_policy_risk_panel.py",
-    "src/f1d/variables/build_manager_clarity_panel.py",
-    "src/f1d/variables/build_takeover_panel.py",
+    "src/f1d/variables/build_h9_takeover_panel.py",
+    "src/f1d/variables/build_h10_tone_at_top_panel.py",
 ]
 
 
@@ -102,10 +103,12 @@ class TestStage3ScriptImports:
             cwd=str(REPO_ROOT),
         )
         # Script may fail on missing inputs, but should not have import errors
-        assert "ImportError" not in result.stderr, f"Import error in {script}: {result.stderr}"
-        assert "ModuleNotFoundError" not in result.stderr, f"Module not found in {script}: {result.stderr}"
-
-
+        assert "ImportError" not in result.stderr, (
+            f"Import error in {script}: {result.stderr}"
+        )
+        assert "ModuleNotFoundError" not in result.stderr, (
+            f"Module not found in {script}: {result.stderr}"
+        )
 
 
 class TestStage3DryRunFlags:
@@ -142,8 +145,12 @@ class TestStage3DryRunFlags:
         ]
 
         for error in unexpected_errors:
-            assert error not in stderr_lower, f"Unexpected {error} in {script}: {result.stderr}"
-            assert error not in stdout_lower, f"Unexpected {error} in {script}: {result.stdout}"
+            assert error not in stderr_lower, (
+                f"Unexpected {error} in {script}: {result.stderr}"
+            )
+            assert error not in stdout_lower, (
+                f"Unexpected {error} in {script}: {result.stdout}"
+            )
 
 
 class TestStage3ModuleStructure:
@@ -156,8 +163,9 @@ class TestStage3ModuleStructure:
         content = script_path.read_text(encoding="utf-8")
 
         # Check for correct import pattern
-        assert "from f1d.shared" in content or "import f1d.shared" in content, \
+        assert "from f1d.shared" in content or "import f1d.shared" in content, (
             f"Script {script} should use f1d.shared.* imports"
+        )
 
     @pytest.mark.parametrize("script", STAGE3_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_no_sys_path_manipulation(self, script: str):
@@ -172,8 +180,9 @@ class TestStage3ModuleStructure:
         ]
 
         for pattern in forbidden_patterns:
-            assert pattern not in content, \
+            assert pattern not in content, (
                 f"Script {script} should not use {pattern} (use f1d.shared.* imports)"
+            )
 
 
 class TestStage3ArgumentParsing:
@@ -196,8 +205,9 @@ class TestStage3ArgumentParsing:
 
         # --help should exit with 0 and show usage
         assert result.returncode == 0, f"--help failed for {script}: {result.stderr}"
-        assert "usage:" in result.stdout.lower() or "usage:" in result.stderr.lower(), \
+        assert "usage:" in result.stdout.lower() or "usage:" in result.stderr.lower(), (
             f"--help should show usage for {script}"
+        )
 
 
 class TestStage3HypothesisMapping:
@@ -250,5 +260,9 @@ class TestStage3HypothesisMapping:
 
     def test_v1_orchestrator_exists(self):
         """Verify V1 orchestrator script exists."""
-        orchestrator_path = REPO_ROOT / "src/f1d/variables/3.0_BuildFinancialFeatures.py"
-        assert orchestrator_path.exists(), "V1 Financial orchestrator script should exist"
+        orchestrator_path = (
+            REPO_ROOT / "src/f1d/variables/3.0_BuildFinancialFeatures.py"
+        )
+        assert orchestrator_path.exists(), (
+            "V1 Financial orchestrator script should exist"
+        )

@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 3: Build Manager Clarity Panel
 ================================================================================
-ID: variables/build_manager_clarity_panel
+ID: variables/build_h0_1_manager_clarity_panel
 Description: Build complete panel for Manager Clarity hypothesis test by loading
              all required variables using shared modules and merging into a
              single panel.

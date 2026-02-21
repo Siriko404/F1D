@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Generate Summary Statistics (4.4)
 ================================================================================
-ID: econometric/generate_summary_stats
+ID: reporting/generate_summary_stats
 Description: Generate publication-quality summary statistics for all variables
              used in the thesis. Produces:
                - Panel A: Linguistic variables (from CEO clarity extended panel)
@@ -29,7 +29,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_ceo_clarity_extended_panel)
+    - Requires: Stage 3 (build_h0_3_ceo_clarity_extended_panel)
 
 Author: Thesis Author
 Date: 2026-02-19

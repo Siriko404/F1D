@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Test CEO Tone Hypothesis
 ================================================================================
-ID: econometric/test_ceo_tone
+ID: econometric/run_h0_5_ceo_tone
 Description: Run CEO Tone hypothesis test (4.1.4) by loading panel from Stage 3,
              running fixed effects regressions for 3 model specs × 3 industry
              samples = 9 regressions, extracting CEO fixed effects, and outputting
@@ -50,7 +50,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_ceo_tone_panel)
+    - Requires: Stage 3 (build_h0_5_ceo_tone_panel)
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author

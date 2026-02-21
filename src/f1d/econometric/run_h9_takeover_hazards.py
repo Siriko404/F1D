@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Test Takeover Hazard Hypothesis (4.3)
 ================================================================================
-ID: econometric/test_takeover_hazards
+ID: econometric/run_h9_takeover_hazards
 Description: Run Takeover Hazard models (4.3) using the firm-level survival
              panel from Stage 3.
 
@@ -39,7 +39,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_takeover_panel)
+    - Requires: Stage 3 (build_h9_takeover_panel)
     - Uses: lifelines, f1d.shared
 
 Author: Thesis Author
