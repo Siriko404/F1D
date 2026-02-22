@@ -52,22 +52,6 @@ python -m f1d.econometric.run_h0_1_manager_clarity
 
 ---
 
-## Audit Status
-
-**Data Pipeline: IRONCLAD ✅**
-
-All 14 panel builders have been audited (2026-02-21). No logical errors found.
-
-| Check | Status |
-|-------|--------|
-| Zero row-delta on merges | ✅ Verified |
-| Fiscal year alignment | ✅ Verified |
-| Consecutive year validation | ✅ Verified |
-| Temporal ordering (leads/lags) | ✅ Verified |
-| Data leakage prevention | ✅ Verified |
-
----
-
 ## Prerequisites
 
 ### Required Input Data
