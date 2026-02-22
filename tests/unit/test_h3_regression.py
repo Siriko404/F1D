@@ -1,5 +1,5 @@
 """
-Unit tests for H3 Payout Policy Regression (4.3_H3PayoutPolicyRegression.py).
+Unit tests for H3 Payout Policy Regression (run_h3_payout_policy.py).
 
 Tests verify:
 - Data loading for payout policy variables (div_stability, payout_flexibility)
@@ -19,7 +19,7 @@ from unittest.mock import patch, MagicMock
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.3_H3PayoutPolicyRegression.py"
+    / "src" / "f1d" / "econometric" / "run_h3_payout_policy.py"
 )
 
 

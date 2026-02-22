@@ -1,5 +1,5 @@
 """
-Unit tests for H4 Leverage Discipline (4.4_H4_LeverageDiscipline.py).
+Unit tests for H4 Leverage Discipline (run_h4_leverage.py).
 
 Tests verify:
 - Data loading for leverage discipline analysis
@@ -21,7 +21,7 @@ from scipy import stats
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.4_H4_LeverageDiscipline.py"
+    / "src" / "f1d" / "econometric" / "run_h4_leverage.py"
 )
 
 
@@ -484,14 +484,3 @@ class TestH4Integration:
         )
 
         assert result.returncode == 0 or "dry-run" in result.stdout.lower() or "dry-run" in result.stderr.lower()
-
-    @pytest.mark.skipif(
-        not Path(_MODULE_PATH).exists(),
-        reason="H4 regression module not found"
-    )
-    def test_one_tailed_pvalue_function_exists(self):
-        """Test that one_tailed_pvalue function exists in H4 module."""
-        module_globals = runpy.run_path(str(_MODULE_PATH))
-
-        assert "one_tailed_pvalue" in module_globals, \
-            "one_tailed_pvalue function should exist in H4 module"

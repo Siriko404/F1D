@@ -7,33 +7,26 @@ Tests that all Stage 4 econometric analysis scripts:
 3. Execute dry-run validation without exceptions
 4. Follow the expected module structure (f1d.shared.* imports)
 
-Stage 4 V1 Scripts (econometric/v1/):
-    - 4.1_EstimateCeoClarity.py
-    - 4.1.1_EstimateCeoClarity_CeoSpecific.py
-    - 4.1.2_EstimateCeoClarity_Extended.py
-    - 4.1.3_EstimateCeoClarity_Regime.py
-    - 4.1.4_EstimateCeoTone.py
-    - 4.2_LiquidityRegressions.py
-    - 4.3_TakeoverHazards.py (survival analysis)
-    - 4.4_GenerateSummaryStats.py
-
-Stage 4 V2 Scripts (econometric/v2/ - Hypothesis H1-H9 regressions):
-    - 4.1_H1CashHoldingsRegression.py
-    - 4.2_H2InvestmentEfficiencyRegression.py
-    - 4.3_H3PayoutPolicyRegression.py
-    - 4.4_H4_LeverageDiscipline.py
-    - 4.5_H5DispersionRegression.py
-    - 4.6_H6CCCLRegression.py
-    - 4.7_H7IlliquidityRegression.py
-    - 4.8_H8TakeoverRegression.py
-    - 4.9_CEOFixedEffects.py
-    - 4.10_H2_PRiskUncertainty_Investment.py
-    - 4.11_H9_Regression.py
+Stage 4 Scripts (econometric/):
+    - run_h0_1_manager_clarity.py
+    - run_h0_2_ceo_clarity.py
+    - run_h0_3_ceo_clarity_extended.py
+    - run_h0_4_ceo_clarity_regime.py
+    - run_h0_5_ceo_tone.py
+    - run_h1_cash_holdings.py
+    - run_h2_investment.py
+    - run_h3_payout_policy.py
+    - run_h4_leverage.py
+    - run_h5_dispersion.py
+    - run_h6_cccl.py
+    - run_h7_illiquidity.py
+    - run_h8_policy_risk.py
+    - run_h9_takeover_hazards.py (survival analysis)
+    - run_h10_tone_at_top.py
 
 Dependencies:
-    - V1 scripts depend on Step 3.x outputs
-    - V2 scripts depend on Step 3.x and Step 2.2 outputs
-    - 4.3_TakeoverHazards.py uses lifelines for survival analysis
+    - Scripts depend on Step 3.x and Step 2.2 outputs
+    - run_h9_takeover_hazards.py uses lifelines for survival analysis
 """
 
 import os

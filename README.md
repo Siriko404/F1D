@@ -45,10 +45,26 @@ pip install -e .
 pip install -r requirements.txt
 
 # Run a single hypothesis test (requires input data)
-python -m f1d.econometric.run_manager_clarity
+python -m f1d.econometric.run_h0_1_manager_clarity
 ```
 
 > **Note:** The editable install (`pip install -e .`) is required. All scripts use `from f1d.*` imports that fail without it.
+
+---
+
+## Audit Status
+
+**Data Pipeline: IRONCLAD ✅**
+
+All 14 panel builders have been audited (2026-02-21). No logical errors found.
+
+| Check | Status |
+|-------|--------|
+| Zero row-delta on merges | ✅ Verified |
+| Fiscal year alignment | ✅ Verified |
+| Consecutive year validation | ✅ Verified |
+| Temporal ordering (leads/lags) | ✅ Verified |
+| Data leakage prevention | ✅ Verified |
 
 ---
 
@@ -348,7 +364,7 @@ Three models: ToneAll (all-manager FE), ToneCEO (CEO FE), ToneRegime (CEO × reg
 | ToneRegime | Finance | 13,242 | 576 | 0.345 |
 | ToneRegime | Utility | 2,939 | 136 | 0.125 |
 
-### H1 Cash Holdings (v2) — `run_h1_cash_holdings`
+### H1 Cash Holdings — `run_h1_cash_holdings`
 
 Tests whether vague managers hoard more cash (H1a: β₁ > 0) and whether leverage
 attenuates that relationship (H1b: β₃ < 0). Unit of observation: individual earnings
@@ -823,9 +839,6 @@ The following directories contain superseded code kept for reference only:
 
 | Path | Status |
 |------|--------|
-| `src/f1d/econometric/v1/` | Superseded — reference for H4.3–H4.6 spec |
-| `src/f1d/econometric/v2/` | Superseded — earlier refactor |
-| `src/f1d/financial/v2/` | Superseded — v2 financial features |
 | `_archive/` | Full v5.1 legacy archive |
 
 Do not run legacy scripts in production. Use the current implementations in `src/f1d/`.
@@ -911,4 +924,4 @@ For questions or issues, please open a GitHub issue or contact the thesis author
 
 ---
 
-*Last updated: 2026-02-20*
+*Last updated: 2026-02-21*

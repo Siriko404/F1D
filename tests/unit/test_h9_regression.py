@@ -1,5 +1,5 @@
 """
-Unit tests for H9 Regression (4.11_H9_Regression.py).
+Unit tests for H9 Takeover Hazards (run_h9_takeover_hazards.py).
 
 Tests verify:
 - Data loading for H9-specific variables (earnings guidance precision)
@@ -18,7 +18,7 @@ from unittest.mock import patch, MagicMock
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.11_H9_Regression.py"
+    / "src" / "f1d" / "econometric" / "run_h9_takeover_hazards.py"
 )
 
 

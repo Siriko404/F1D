@@ -1,5 +1,5 @@
 """
-Unit tests for H2 Investment Efficiency Regression (4.2_H2InvestmentEfficiencyRegression.py).
+Unit tests for H2 Investment Efficiency Regression (run_h2_investment.py).
 
 Tests verify:
 - Data loading and preparation for investment efficiency variables
@@ -18,7 +18,7 @@ from unittest.mock import patch, MagicMock
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.2_H2InvestmentEfficiencyRegression.py"
+    / "src" / "f1d" / "econometric" / "run_h2_investment.py"
 )
 
 

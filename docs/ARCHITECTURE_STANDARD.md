@@ -1324,11 +1324,9 @@ Phase 2: Move shared/ utilities
 ├── Update imports throughout codebase
 └── Run tests to verify
 
-Phase 3: Move stage scripts (BOTH variants)
-├── Move 2_Scripts/3_Financial/ -> src/f1d/financial/v1/
-├── Move 2_Scripts/3_Financial_V2/ -> src/f1d/financial/v2/
-├── Move 2_Scripts/4_Econometric/ -> src/f1d/econometric/v1/
-├── Move 2_Scripts/4_Econometric_V2/ -> src/f1d/econometric/v2/
+Phase 3: Move stage scripts
+├── Move 2_Scripts/3_Financial/ -> src/f1d/financial/
+├── Move 2_Scripts/4_Econometric/ -> src/f1d/econometric/
 ├── Update imports
 └── Run tests
 
@@ -2046,14 +2044,13 @@ touch src/f1d/financial/v1/__init__.py
 touch src/f1d/financial/v2/__init__.py
 ```
 
-**Econometric (Stage 4) - Both variants:**
+**Econometric (Stage 4):**
 ```bash
-# Similar process for econometric
-mkdir -p src/f1d/econometric/v1
-mkdir -p src/f1d/econometric/v2
+# Scripts are directly in econometric/ with run_h* naming
+mkdir -p src/f1d/econometric
 
-cp 2_Scripts/4_Econometric/script_41_*.py src/f1d/econometric/v1/
-cp 2_Scripts/4_Econometric_V2/script_41_*.py src/f1d/econometric/v2/
+# Scripts follow pattern: run_h{number}_{name}.py
+# Examples: run_h1_cash_holdings.py, run_h2_investment.py, etc.
 ```
 
 **Update imports:**

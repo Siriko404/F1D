@@ -1,5 +1,5 @@
 """
-Unit tests for H5 Analyst Dispersion Regression (4.5_H5DispersionRegression.py).
+Unit tests for H5 Analyst Dispersion Regression (run_h5_dispersion.py).
 
 Tests verify:
 - Data loading for analyst dispersion variables
@@ -19,7 +19,7 @@ from unittest.mock import patch, MagicMock
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.5_H5DispersionRegression.py"
+    / "src" / "f1d" / "econometric" / "run_h5_dispersion.py"
 )
 
 

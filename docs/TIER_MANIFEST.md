@@ -202,38 +202,23 @@ The tier system establishes quality requirements and maintenance expectations fo
 
 **Location:** `src/f1d/econometric/`
 
-#### V1 Methodology (Active Variant)
-
-**Location:** `src/f1d/econometric/v1/`
-
 | Module | Purpose | Classification |
 |--------|---------|----------------|
-| `4.1_EstimateCeoClarity.py` | CEO clarity estimation | Tier 2: Stage 4 V1 |
-| `4.1.1_EstimateCeoClarity_CeoSpecific.py` | CEO-specific clarity | Tier 2: Stage 4 V1 |
-| `4.1.2_EstimateCeoClarity_Extended.py` | Extended clarity model | Tier 2: Stage 4 V1 |
-| `4.1.3_EstimateCeoClarity_Regime.py` | Regime-based clarity | Tier 2: Stage 4 V1 |
-| `4.1.4_EstimateCeoTone.py` | CEO tone estimation | Tier 2: Stage 4 V1 |
-| `4.2_LiquidityRegressions.py` | Liquidity regressions | Tier 2: Stage 4 V1 |
-| `4.3_TakeoverHazards.py` | Takeover hazard models | Tier 2: Stage 4 V1 |
-| `4.4_GenerateSummaryStats.py` | Summary statistics | Tier 2: Stage 4 V1 |
-
-#### V2 Methodology (Active Variant)
-
-**Location:** `src/f1d/econometric/v2/`
-
-| Module | Purpose | Classification |
-|--------|---------|----------------|
-| `4.1_H1CashHoldingsRegression.py` | H1 cash holdings regressions | Tier 2: Stage 4 V2 |
-| `4.2_H2InvestmentEfficiencyRegression.py` | H2 investment efficiency regressions | Tier 2: Stage 4 V2 |
-| `4.3_H3PayoutPolicyRegression.py` | H3 payout policy regressions | Tier 2: Stage 4 V2 |
-| `4.4_H4_LeverageDiscipline.py` | H4 leverage discipline regressions | Tier 2: Stage 4 V2 |
-| `4.5_H5DispersionRegression.py` | H5 analyst dispersion regressions | Tier 2: Stage 4 V2 |
-| `4.6_H6CCCLRegression.py` | H6 CCC regressions | Tier 2: Stage 4 V2 |
-| `4.7_H7IlliquidityRegression.py` | H7 illiquidity regressions | Tier 2: Stage 4 V2 |
-| `4.8_H8TakeoverRegression.py` | H8 takeover regressions | Tier 2: Stage 4 V2 |
-| `4.9_CEOFixedEffects.py` | CEO fixed effects estimation | Tier 2: Stage 4 V2 |
-| `4.10_H2_PRiskUncertainty_Investment.py` | PRisk investment regressions | Tier 2: Stage 4 V2 |
-| `4.11_H9_Regression.py` | H9 abnormal investment regressions | Tier 2: Stage 4 V2 |
+| `run_h0_1_manager_clarity.py` | Manager clarity estimation | Tier 2: Stage 4 |
+| `run_h0_2_ceo_clarity.py` | CEO clarity estimation | Tier 2: Stage 4 |
+| `run_h0_3_ceo_clarity_extended.py` | Extended CEO clarity model | Tier 2: Stage 4 |
+| `run_h0_4_ceo_clarity_regime.py` | Regime-based CEO clarity | Tier 2: Stage 4 |
+| `run_h0_5_ceo_tone.py` | CEO tone estimation | Tier 2: Stage 4 |
+| `run_h1_cash_holdings.py` | H1 cash holdings regressions | Tier 2: Stage 4 |
+| `run_h2_investment.py` | H2 investment efficiency regressions | Tier 2: Stage 4 |
+| `run_h3_payout_policy.py` | H3 payout policy regressions | Tier 2: Stage 4 |
+| `run_h4_leverage.py` | H4 leverage discipline regressions | Tier 2: Stage 4 |
+| `run_h5_dispersion.py` | H5 analyst dispersion regressions | Tier 2: Stage 4 |
+| `run_h6_cccl.py` | H6 CCC&L regressions | Tier 2: Stage 4 |
+| `run_h7_illiquidity.py` | H7 illiquidity regressions | Tier 2: Stage 4 |
+| `run_h8_policy_risk.py` | H8 policy risk regressions | Tier 2: Stage 4 |
+| `run_h9_takeover_hazards.py` | H9 takeover hazard models | Tier 2: Stage 4 |
+| `run_h10_tone_at_top.py` | H10 tone-at-the-top regressions | Tier 2: Stage 4 |
 
 ---
 
@@ -260,9 +245,8 @@ from f1d.shared.panel_ols import run_panel_ols
 from f1d.shared.diagnostics import check_multicollinearity
 
 # Tier 2 imports (stage-specific)
-from f1d.financial.v1 import build_financial_features
-from f1d.financial.v2 import construct_h1_variables
-from f1d.econometric.v2 import run_h1_regression
+from f1d.variables import build_h1_panel
+from f1d.econometric import run_h1_cash_holdings
 ```
 
 ### Import Order (PEP 8)

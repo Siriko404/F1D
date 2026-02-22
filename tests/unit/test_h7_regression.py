@@ -1,5 +1,5 @@
 """
-Unit tests for H7 Illiquidity Regression (4.7_H7IlliquidityRegression.py).
+Unit tests for H7 Illiquidity Regression (run_h7_illiquidity.py).
 
 Tests verify:
 - Data loading for illiquidity variables (Amihud ratio)
@@ -19,7 +19,7 @@ from unittest.mock import patch, MagicMock
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.7_H7IlliquidityRegression.py"
+    / "src" / "f1d" / "econometric" / "run_h7_illiquidity.py"
 )
 
 

@@ -1,5 +1,5 @@
 """
-Unit tests for H6 CCCL Regression (4.6_H6CCCLRegression.py).
+Unit tests for H6 CCCL Regression (run_h6_cccl.py).
 
 Tests verify:
 - Data loading for CCCL (Concurrent Cash Conservation Leverage) variables
@@ -19,7 +19,7 @@ from unittest.mock import patch, MagicMock
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.6_H6CCCLRegression.py"
+    / "src" / "f1d" / "econometric" / "run_h6_cccl.py"
 )
 
 

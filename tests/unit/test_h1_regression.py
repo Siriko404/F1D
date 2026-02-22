@@ -1,5 +1,5 @@
 """
-Unit tests for H1 Cash Holdings Regression (4.1_H1CashHoldingsRegression.py).
+Unit tests for H1 Cash Holdings Regression (run_h1_cash_holdings.py).
 
 Tests verify:
 - Data loading and preparation functions
@@ -18,7 +18,7 @@ from unittest.mock import patch, MagicMock
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
-    / "src" / "f1d" / "econometric" / "v2" / "4.1_H1CashHoldingsRegression.py"
+    / "src" / "f1d" / "econometric" / "run_h1_cash_holdings.py"
 )
 
 
