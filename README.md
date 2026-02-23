@@ -782,18 +782,6 @@ F1D/
 
 ---
 
-## Legacy Code
-
-The following directories contain superseded code kept for reference only:
-
-| Path | Status |
-|------|--------|
-| `_archive/` | Full v5.1 legacy archive |
-
-Do not run legacy scripts in production. Use the current implementations in `src/f1d/`.
-
----
-
 ## Contributing
 
 ### Development Setup
