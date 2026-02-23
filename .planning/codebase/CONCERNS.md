@@ -33,8 +33,10 @@
 **Subprocess Path Validation:**
 - Risk: `subprocess.run()` used in `build_sample_manifest.py` without path validation
 - Files: `src/f1d/sample/build_sample_manifest.py`
-- Current mitigation: None present
-- Recommendations: Add path validation to ensure subprocess executes only within allowed directories, validate absolute paths, check file extension is `.py`
+- Status: RESOLVED
+- Mitigation: `validate_script_path()` in `src/f1d/shared/subprocess_validation.py`
+- Used in: `build_sample_manifest.py`
+- Verified: 2026-02-23
 
 **Environment Variable Validation:**
 - Risk: `.env.example` exists but no schema validation for environment variables used in tests
@@ -45,8 +47,10 @@
 **Input Data Validation:**
 - Risk: Scripts read Parquet/CSV files from `inputs/` without validating schemas, column types, or value ranges
 - Files: All scripts that read from `inputs/` directories
-- Current mitigation: Pandas error handling provides some validation but not comprehensive
-- Recommendations: Add schema validation with column name, type, and value range checks for critical input files
+- Status: PARTIALLY IMPLEMENTED
+- Mitigation: `INPUT_SCHEMAS` in `src/f1d/shared/data_validation.py` (2 schemas defined)
+- Infrastructure exists for expansion
+- Verified: 2026-02-23
 
 ## Performance Bottlenecks
 
@@ -119,8 +123,10 @@
 
 **linearmodels:**
 - Risk: Optional dependency with graceful failure but critical for panel OLS and IV regression
-- Impact: Scripts fail with ImportError if not available
-- Migration plan: No alternative identified; linearmodels is de facto standard for panel econometrics
+- Status: GRACEFUL FAILURE IMPLEMENTED
+- Mitigation: Try/except with `LINEARMODELS_AVAILABLE` flag in `panel_ols.py`, `iv_regression.py`
+- Error message: Helpful installation instructions provided
+- Verified: 2026-02-23
 
 ## Missing Critical Features
 
@@ -140,6 +146,11 @@
 - Priority: Medium (currently exists in `tests/verification/test_*_dryrun.py`)
 
 ## Test Coverage Gaps
+
+**Test Coverage for link_entities:**
+- Status: COMPREHENSIVE
+- Tests: `tests/performance/test_performance_link_entities.py` (424 lines, 11 tests)
+- Verified: 2026-02-23
 
 **Untested Areas:**
 - What's not tested: Monolithic scripts like `tokenize_transcripts.py` (1,354 lines), `link_entities.py` (1,292 lines), `generate_summary_stats.py` have limited unit test coverage
