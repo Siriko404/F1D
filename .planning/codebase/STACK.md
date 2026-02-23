@@ -8,7 +8,6 @@
 - Python 3.9+ - All source code in `src/`
 
 **Secondary:**
-- C++17 - Tokenizer compiler (used in text processing)
 - YAML - Configuration files in `config/`
 - LaTeX - Report generation templates
 
@@ -35,7 +34,7 @@
 **Statistical Modeling:**
 - statsmodels 0.14.6 - Econometric modeling (pinned for GLM backward compatibility)
 - linearmodels 0.6.0+ - Panel data regression (PanelOLS, AbsorbingLS, IV2SLS)
-- scikit-learn 1.7.2 - Machine learning utilities
+- scikit-learn 1.7.2 - CountVectorizer for text tokenization (src/f1d/text/tokenize_transcripts.py)
 - lifelines 0.30.0 - Survival analysis (CoxTimeVaryingFitter for takeover hazards)
 
 **Text Processing:**
@@ -92,7 +91,6 @@
 - `pyproject.toml` - Main project configuration (build system, pytest, ruff, mypy, coverage)
 - `config/project.yaml` - Pipeline configuration (paths, steps, thresholds)
 - `config/variables.yaml` - Variable definitions and metadata
-- `.coveragerc` - Legacy coverage configuration (parallel to pyproject.toml settings)
 
 **Pre-commit:**
 - `.pre-commit-config.yaml` - Ruff lint/format, mypy strict mode for shared modules
@@ -103,7 +101,6 @@
 - Python 3.9+ (tested on 3.9-3.13)
 - 16GB RAM minimum, 32GB recommended for full pipeline
 - ~50GB disk for input data, ~10GB for outputs
-- C++17 compiler (g++) for text tokenizer
 
 **Production:**
 - Ubuntu/Linux recommended (CI runs on ubuntu-latest via GitHub Actions)

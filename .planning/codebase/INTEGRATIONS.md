@@ -130,8 +130,7 @@
   - Graceful degradation if not installed (pipeline runs without it)
   - Config-driven thresholds via `config/project.yaml` (string_matching section)
 
-- Custom C++ tokenizer - Compiled for fast text tokenization
-  - Build settings: C++17, -O2 optimization
+- Tokenization: Python sklearn.CountVectorizer with custom regex patterns
   - Used in: `src/f1d/text/tokenize_transcripts.py`
 
 - No LLM or transformer-based models

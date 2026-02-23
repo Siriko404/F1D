@@ -25,6 +25,10 @@ pytest -v               # Verbose mode
 pytest -q               # Quiet mode (default in config)
 ```
 
+> **Note:** `@pytest.mark.unit` is defined in `pyproject.toml` but not explicitly applied to individual tests.
+> Tests are organized by directory structure (`tests/unit/`, `tests/integration/`, etc.).
+> Run with `pytest tests/unit/` for directory-based selection rather than marker-based.
+
 ## Test File Organization
 
 **Location:**

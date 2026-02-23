@@ -867,7 +867,7 @@ ruff format src/f1d/
 mypy src/f1d/shared/ --config-file pyproject.toml
 
 # Run tests
-pytest tests/ -m "not e2e" --cov=src/f1d --cov-fail-under=60
+pytest tests/ -m "not e2e" --cov=src/f1d --cov-fail-under=30
 ```
 
 ### Adding New Variables
