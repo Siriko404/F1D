@@ -273,6 +273,46 @@ __all__ = [
 - Econometric: `panel_ols.py`, `iv_regression.py`, `regression_helpers.py`
 - Utilities: `path_utils.py`, `centering.py`, `diagnostics.py`
 
+## DataFrame Iteration Guidelines
+
+### Performance Reality
+
+| Pattern | DataFrame Size | Impact | Recommendation |
+|---------|---------------|--------|----------------|
+| .iterrows() | <10 rows | Negligible | Acceptable for display |
+| .iterrows() | 100-1K rows | Noticeable | Use .itertuples() |
+| .iterrows() | >1K rows | Significant | Vectorize with merge/groupby |
+
+### Preferred Patterns
+
+1. **merge()** - Join data instead of row-by-row lookup
+2. **groupby().transform()** - Group operations without iteration
+3. **explode()** - Expand lists to rows without loops
+4. **.itertuples()** - 5-10x faster when iteration is truly needed
+
+### Anti-Patterns to Avoid
+
+```python
+# BAD: Row-by-row lookup
+for _, row in df.iterrows():
+    data = lookup_table[row["key"]]
+
+# GOOD: Vectorized merge
+df.merge(lookup_table, on="key", how="left")
+```
+
+```python
+# BAD: Loop to expand dates
+records = []
+for _, row in df.iterrows():
+    for date in date_range:
+        records.append({...})
+
+# GOOD: explode()
+df["dates"] = df.apply(lambda r: date_range_func(r), axis=1)
+df.explode("dates")
+```
+
 ---
 
 *Convention analysis: 2026-02-21*

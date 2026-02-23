@@ -636,44 +636,39 @@ def main() -> int:
     print_dual("Computing tenure process statistics...")
     stats["tenure_process"] = compute_tenure_process_stats(episodes_df)
 
-    # Expand to monthly panel
+    # Expand to monthly panel (vectorized with explode)
     print_dual("Expanding to monthly panel...")
 
-    monthly_records = []
     total_episodes = len(episodes_df)
-    progress_interval = max(500, total_episodes // 20)
 
-    for i, (_idx, row) in enumerate(episodes_df.iterrows(), 1):
-        # Generate monthly dates
-        months = pd.date_range(
-            start=row["start_date"].to_period("M").to_timestamp(),
-            end=row["end_date"].to_period("M").to_timestamp(),
+    # Generate month ranges for each episode using apply
+    episodes_df["months"] = episodes_df.apply(
+        lambda r: pd.date_range(
+            start=r["start_date"].to_period("M").to_timestamp(),
+            end=r["end_date"].to_period("M").to_timestamp(),
             freq="MS",
-        )
+        ),
+        axis=1,
+    )
 
-        for month_start in months:
-            monthly_records.append(
-                {
-                    "gvkey": row["gvkey"],
-                    "year": month_start.year,
-                    "month": month_start.month,
-                    "date": month_start,
-                    "ceo_id": row["execid"],
-                    "ceo_name": row["exec_fullname"],
-                    "prev_ceo_id": row["prev_execid"],
-                    "prev_ceo_name": row["prev_exec_fullname"],
-                }
-            )
+    # Explode to one row per month
+    monthly_df = episodes_df.explode("months").rename(columns={"months": "date"})
 
-        # Progress indicator
-        if i % progress_interval == 0 or i == total_episodes:
-            pct = (i / total_episodes) * 100
-            print_dual(
-                f"    Progress: {i:,}/{total_episodes:,} episodes ({pct:.1f}%) - {len(monthly_records):,} monthly records"
-            )
+    # Extract year and month from date
+    monthly_df["year"] = monthly_df["date"].dt.year
+    monthly_df["month"] = monthly_df["date"].dt.month
 
-    monthly_df = pd.DataFrame(monthly_records)
-    print_dual(f"  Generated {len(monthly_df):,} monthly records")
+    # Select and rename final columns
+    monthly_df = monthly_df[
+        ["gvkey", "year", "month", "date", "execid", "exec_fullname", "prev_execid", "prev_exec_fullname"]
+    ].rename(columns={
+        "execid": "ceo_id",
+        "exec_fullname": "ceo_name",
+        "prev_execid": "prev_ceo_id",
+        "prev_exec_fullname": "prev_ceo_name",
+    })
+
+    print_dual(f"  Generated {len(monthly_df):,} monthly records from {total_episodes:,} episodes")
 
     stats["processing"]["monthly_records_before_overlap"] = len(monthly_df)
     print_stat(

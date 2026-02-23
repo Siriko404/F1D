@@ -31,10 +31,12 @@ Example:
 
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+import pandas as pd
 
 
 def format_estimate(value: float, decimals: int = 3) -> str:
@@ -349,9 +351,257 @@ def make_diagnostics_table(
     return latex_str
 
 
+def make_summary_stats_table(
+    df: pd.DataFrame,
+    variables: List[Dict[str, str]],
+    sample_names: Optional[List[str]] = None,
+    sample_col: str = "sample",
+    output_csv: Optional[Path] = None,
+    output_tex: Optional[Path] = None,
+    caption: str = "Summary Statistics",
+    label: str = "tab:summary_stats",
+    decimals: int = 4,
+) -> pd.DataFrame:
+    """Generate summary statistics table for regression variables.
+
+    Computes N, Mean, SD, Min, P25, Median, P75, Max for each variable.
+    Generates both CSV (machine-readable) and LaTeX (publication-ready) outputs.
+
+    Args:
+        df: DataFrame with regression data (must be the COMPLETE-CASE filtered data
+            used in the actual regression, NOT raw panel data)
+        variables: List of dicts with 'col' (column name) and 'label' (display name) keys.
+                   Columns not in df are skipped with a warning.
+        sample_names: If provided, compute per-sample breakdown (e.g., ["Main", "Finance", "Utility"]).
+                      If None, compute single aggregate table.
+        sample_col: Column name for sample filtering (default: "sample"). Ignored if sample_names is None.
+        output_csv: Path to save CSV output. If None, no CSV is saved.
+        output_tex: Path to save LaTeX output. If None, no LaTeX is saved.
+        caption: LaTeX table caption.
+        label: LaTeX label for cross-referencing.
+        decimals: Number of decimal places for statistics (default: 4).
+
+    Returns:
+        DataFrame with columns: Sample, Variable, Col, N, Mean, SD, Min, P25, Median, P75, Max
+
+    Edge Cases:
+        - Variable not in df: skip with warning, continue with others
+        - Variable all-NaN: report N=0, stats as NaN
+        - Zero SD (constant variable): report SD=0.0000, continue normally
+        - Empty df: return empty DataFrame with correct columns
+    """
+    # Define result columns
+    result_columns = ["Sample", "Variable", "Col", "N", "Mean", "SD", "Min", "P25", "Median", "P75", "Max"]
+    rows = []
+
+    # Handle empty DataFrame
+    if df.empty:
+        result_df = pd.DataFrame(columns=result_columns)
+    else:
+        # Filter to valid variables (those that exist in df)
+        valid_vars = []
+        for var_spec in variables:
+            col_name = var_spec.get("col")
+            if col_name not in df.columns:
+                warnings.warn(
+                    f"Variable '{col_name}' not found in DataFrame. Skipping.",
+                    UserWarning,
+                )
+            else:
+                valid_vars.append(var_spec)
+
+        # Determine samples to process
+        if sample_names is None:
+            # Single aggregate table
+            samples_to_process = [(None, df)]
+        else:
+            # Per-sample breakdown
+            samples_to_process = []
+            for sample_name in sample_names:
+                if sample_col in df.columns:
+                    sample_df = df[df[sample_col] == sample_name]
+                    if not sample_df.empty:
+                        samples_to_process.append((sample_name, sample_df))
+                    else:
+                        # Still include empty sample with empty df for consistency
+                        samples_to_process.append((sample_name, pd.DataFrame(columns=df.columns)))
+                else:
+                    warnings.warn(
+                        f"Sample column '{sample_col}' not found in DataFrame. "
+                        "Computing aggregate statistics instead.",
+                        UserWarning,
+                    )
+                    samples_to_process = [(None, df)]
+                    break
+
+        # Compute statistics for each sample × variable
+        for sample_name, sample_df in samples_to_process:
+            for var_spec in valid_vars:
+                col_name = var_spec["col"]
+                display_label = var_spec.get("label", col_name)
+
+                if sample_df.empty or col_name not in sample_df.columns:
+                    # Empty sample or missing column - report N=0, stats as NaN
+                    rows.append({
+                        "Sample": sample_name if sample_name else "All",
+                        "Variable": display_label,
+                        "Col": col_name,
+                        "N": 0,
+                        "Mean": np.nan,
+                        "SD": np.nan,
+                        "Min": np.nan,
+                        "P25": np.nan,
+                        "Median": np.nan,
+                        "P75": np.nan,
+                        "Max": np.nan,
+                    })
+                else:
+                    # Get non-null values
+                    values = sample_df[col_name].dropna()
+                    n = len(values)
+
+                    if n == 0:
+                        # All NaN values
+                        rows.append({
+                            "Sample": sample_name if sample_name else "All",
+                            "Variable": display_label,
+                            "Col": col_name,
+                            "N": 0,
+                            "Mean": np.nan,
+                            "SD": np.nan,
+                            "Min": np.nan,
+                            "P25": np.nan,
+                            "Median": np.nan,
+                            "P75": np.nan,
+                            "Max": np.nan,
+                        })
+                    else:
+                        rows.append({
+                            "Sample": sample_name if sample_name else "All",
+                            "Variable": display_label,
+                            "Col": col_name,
+                            "N": n,
+                            "Mean": values.mean(),
+                            "SD": values.std(ddof=1),
+                            "Min": values.min(),
+                            "P25": values.quantile(0.25),
+                            "Median": values.median(),
+                            "P75": values.quantile(0.75),
+                            "Max": values.max(),
+                        })
+
+        result_df = pd.DataFrame(rows)
+
+    # Save CSV if requested
+    if output_csv is not None:
+        output_csv = Path(output_csv)
+        output_csv.parent.mkdir(parents=True, exist_ok=True)
+        # Format N with comma separators, stats with decimals
+        csv_df = result_df.copy()
+        csv_df["N"] = csv_df["N"].apply(lambda x: f"{int(x):,}" if pd.notna(x) and x > 0 else str(int(x)) if pd.notna(x) else "")
+        for col in ["Mean", "SD", "Min", "P25", "Median", "P75", "Max"]:
+            csv_df[col] = csv_df[col].apply(lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "")
+        csv_df.to_csv(output_csv, index=False)
+
+    # Save LaTeX if requested
+    if output_tex is not None:
+        output_tex = Path(output_tex)
+        output_tex.parent.mkdir(parents=True, exist_ok=True)
+        latex_content = _generate_summary_stats_latex(
+            result_df, caption, label, decimals, sample_names
+        )
+        with open(output_tex, "w", encoding="utf-8") as f:
+            f.write(latex_content)
+
+    return result_df
+
+
+def _generate_summary_stats_latex(
+    df: pd.DataFrame,
+    caption: str,
+    label: str,
+    decimals: int,
+    sample_names: Optional[List[str]],
+) -> str:
+    """Generate LaTeX table for summary statistics.
+
+    Args:
+        df: DataFrame with summary statistics
+        caption: Table caption
+        label: LaTeX label
+        decimals: Number of decimal places
+        sample_names: List of sample names for panel structure, or None for single table
+
+    Returns:
+        LaTeX string
+    """
+    lines = []
+    lines.append(r"\begin{table}[htbp]")
+    lines.append(r"\centering")
+    lines.append(f"\\caption{{{caption}}}")
+    lines.append(f"\\label{{{label}}}")
+
+    # Column spec: Variable + 8 statistics columns
+    col_spec = "lrrrrrrrr"
+    lines.append(f"\\begin{{tabular}}{{{col_spec}}}")
+    lines.append(r"\toprule")
+
+    # Header row
+    header = "Variable & N & Mean & SD & Min & P25 & Median & P75 & Max"
+    lines.append(header + r" \\")
+    lines.append(r"\midrule")
+
+    def format_row(row: pd.Series) -> str:
+        """Format a single data row."""
+        var = row["Variable"]
+        n = f"{int(row['N']):,}" if pd.notna(row['N']) and row['N'] > 0 else "0"
+        stats = []
+        for col in ["Mean", "SD", "Min", "P25", "Median", "P75", "Max"]:
+            val = row[col]
+            if pd.isna(val):
+                stats.append("---")
+            else:
+                stats.append(f"{val:.{decimals}f}")
+        return f"{var} & {n} & " + " & ".join(stats) + r" \\"
+
+    if sample_names is None or len(sample_names) == 0:
+        # Single panel (no sample breakdown)
+        for _, row in df.iterrows():
+            lines.append(format_row(row))
+    else:
+        # Multi-panel by sample
+        for i, sample_name in enumerate(sample_names):
+            sample_df = df[df["Sample"] == sample_name]
+            if sample_df.empty:
+                continue
+
+            # Panel header (skip before first panel)
+            if i > 0:
+                lines.append(r"\midrule")
+            lines.append(r"\multicolumn{9}{l}{\textit{Panel " + chr(65 + i) + f": {sample_name} Sample" + r"}} \\")
+            lines.append(r"\midrule")
+
+            for _, row in sample_df.iterrows():
+                lines.append(format_row(row))
+
+    lines.append(r"\bottomrule")
+    lines.append(r"\end{tabular}")
+
+    # Table notes
+    lines.append(r"\begin{tablenotes}")
+    lines.append(r"\small")
+    lines.append(r"\item This table reports summary statistics for variables used in the regression.")
+    lines.append(r"All variables are measured at the call level.")
+    lines.append(r"\end{tablenotes}")
+    lines.append(r"\end{table}")
+
+    return "\n".join(lines)
+
+
 __all__ = [
     "make_accounting_table",
     "make_diagnostics_table",
+    "make_summary_stats_table",
     "format_estimate",
     "format_tvalue",
 ]

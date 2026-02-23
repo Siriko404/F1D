@@ -29,6 +29,8 @@ Outputs:
     - outputs/econometric/ceo_clarity_extended/{timestamp}/ceo_clarity_extended_table.tex
     - outputs/econometric/ceo_clarity_extended/{timestamp}/regression_results_{model}.txt
     - outputs/econometric/ceo_clarity_extended/{timestamp}/report_step4_ceo_clarity_extended.md
+    - outputs/econometric/ceo_clarity_extended/{timestamp}/summary_stats.csv
+    - outputs/econometric/ceo_clarity_extended/{timestamp}/summary_stats.tex
 
 Deterministic: true
 Dependencies:
@@ -51,19 +53,11 @@ from typing import Any, Dict, List, Optional, Set
 
 import numpy as np
 import pandas as pd
+import statsmodels.formula.api as smf
 
-warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
+STATSMODELS_AVAILABLE = True
 
-smf: Any = None
-try:
-    import statsmodels.formula.api as smf  # type: ignore[no-redef]
-
-    STATSMODELS_AVAILABLE = True
-except ImportError:
-    STATSMODELS_AVAILABLE = False
-    print("WARNING: statsmodels not available. Install with: pip install statsmodels")
-
-from f1d.shared.latex_tables_accounting import make_accounting_table
+from f1d.shared.latex_tables_accounting import make_accounting_table, make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -147,6 +141,37 @@ VARIABLE_LABELS = {
     "RD_Intensity": "R&D Intensity",
     "Volatility": "Stock Volatility",
 }
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variables (both Manager and CEO)
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Manager QA Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    # Linguistic controls (Manager)
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Manager Pres Uncertainty"},
+    # Linguistic controls (CEO)
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    # Common controls
+    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
+    {"col": "Entire_All_Negative_pct", "label": "Negative Sentiment"},
+    # Base firm controls
+    {"col": "StockRet", "label": "Stock Return"},
+    {"col": "MarketRet", "label": "Market Return"},
+    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
+    # Extended controls
+    {"col": "Size", "label": "Size (log assets)"},
+    {"col": "BM", "label": "Book-to-Market"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "ROA", "label": "Return on Assets"},
+    {"col": "CurrentRatio", "label": "Current Ratio"},
+    {"col": "RD_Intensity", "label": "R&D Intensity"},
+    {"col": "Volatility", "label": "Stock Volatility"},
+]
 
 
 # ==============================================================================
@@ -258,7 +283,11 @@ def run_regression(
     model_config: Dict[str, Any],
     model_name: str,
 ) -> tuple[Any, Optional[pd.DataFrame], Set[Any]]:
-    """Run OLS regression with CEO fixed effects for one model × Main sample."""
+    """Run OLS regression with CEO fixed effects for one model × Main sample.
+
+    Uses smf.ols with clustered standard errors at CEO level.
+    Continuous controls are standardized for numerical stability.
+    """
     print("\n" + "=" * 60)
     print(f"Running regression: {model_name}")
     print("=" * 60)
@@ -282,7 +311,20 @@ def run_regression(
         return None, None, set()
 
     df_reg["ceo_id"] = df_reg["ceo_id"].astype(str)
+    # Convert year to string for formula (C(year) creates dummies)
     df_reg["year"] = df_reg["year"].astype(str)
+
+    # Standardize continuous controls for numerical stability (prevents SVD convergence issues)
+    continuous_vars = [
+        "Size", "BM", "Lev", "ROA", "CurrentRatio", "RD_Intensity", "Volatility",
+        "StockRet", "MarketRet", "EPS_Growth"
+    ]
+    for var in continuous_vars:
+        if var in df_reg.columns:
+            mean_val = df_reg[var].mean()
+            std_val = df_reg[var].std()
+            if std_val > 0:
+                df_reg[var] = (df_reg[var] - mean_val) / std_val
 
     dep_var = model_config["dependent_var"]
     controls = model_config["linguistic_controls"] + model_config["firm_controls"]
@@ -294,12 +336,11 @@ def run_regression(
 
     print("  Estimating... (this may take a minute)")
     start_time = datetime.now()
+
     try:
+        # Use smf.ols with clustered standard errors at CEO level.
+        # C(ceo_id) categorical dummies act as CEO fixed effects.
         model = smf.ols(formula, data=df_reg).fit(
-            # M-2 fix: cluster SEs at CEO level (not HC1) to account for
-            # within-CEO correlation across calls in the same regression.
-            # HC1 treats all observations as independent, understating SEs
-            # when the same CEO appears in many rows (Liang-Zeger problem).
             cov_type="cluster",
             cov_kwds={"groups": df_reg["ceo_id"]},
         )
@@ -447,6 +488,45 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Load panel (built by build_ceo_clarity_extended_panel.py)
     panel = load_panel(root, panel_path)
+
+    # Generate summary statistics for Main sample
+    # Use complete-case data across all summary stats variables
+    print("\n" + "=" * 60)
+    print("Generating summary statistics (Main sample)")
+    print("=" * 60)
+
+    # Filter to Main sample
+    if "sample" not in panel.columns:
+        if "ff12_code" in panel.columns:
+            panel["sample"] = assign_industry_sample(panel["ff12_code"])
+        else:
+            raise ValueError("Neither 'sample' nor 'ff12_code' column found in panel")
+
+    df_main_for_stats = panel[panel["sample"] == "Main"].copy()
+
+    # Filter to complete cases for summary stats variables
+    stats_cols = [v["col"] for v in SUMMARY_STATS_VARS]
+    available_cols = [c for c in stats_cols if c in df_main_for_stats.columns]
+    missing_cols = [c for c in stats_cols if c not in df_main_for_stats.columns]
+    if missing_cols:
+        print(f"  WARNING: Missing columns for summary stats: {missing_cols}")
+
+    if available_cols:
+        complete_mask = df_main_for_stats[available_cols].notna().all(axis=1)
+        df_main_complete = df_main_for_stats[complete_mask].copy()
+        print(f"  Complete cases for summary stats: {len(df_main_complete):,}")
+
+        make_summary_stats_table(
+            df=df_main_complete,
+            variables=SUMMARY_STATS_VARS,
+            sample_names=None,  # No per-sample breakdown - Main sample only
+            output_csv=out_dir / "summary_stats.csv",
+            output_tex=out_dir / "summary_stats.tex",
+            caption="Summary Statistics — Extended Controls Robustness (Main Sample)",
+            label="tab:summary_stats_h03",
+        )
+        print("  Saved: summary_stats.csv")
+        print("  Saved: summary_stats.tex")
 
     # Run all 4 models against Main sample only
     results: Dict[str, Dict[str, Any]] = {}

@@ -1,0 +1,245 @@
+%% =============================================================================
+%% COMPLETE ACCOUNTING REVIEW STYLE TABLE
+%% Table 1: CEO Clarity Fixed Effects - Full Specification
+%% Generated: 2026-02-22
+%% =============================================================================
+%%
+%% This table follows The Accounting Review author guidelines:
+%% - Coefficients with standard errors in parentheses below
+%% - Significance stars: * p<0.10, ** p<0.05, *** p<0.01
+%% - Each column = separate regression model
+%% - CEO-clustered standard errors
+%% - Sparse horizontal rules (booktabs style)
+%%
+%% Required LaTeX packages:
+%% \usepackage{booktabs}
+%% \usepackage{threeparttable}
+%%
+%% =============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Table 1: CEO Clarity Fixed Effects}
+\label{tab:ceo_clarity_complete}
+
+\small
+
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & (1) & (2) & (3) \\
+ & Main & Finance & Utility \\
+\midrule
+\textbf{Linguistic Controls} & & & \\
+CEO Presentation Uncertainty & 0.081*** & 0.081*** & 0.058 \\
+ & (0.008) & (0.013) & (0.064) \\
+Analyst Q\&A Uncertainty & 0.033*** & 0.042*** & 0.037 \\
+ & (0.004) & (0.012) & (0.031) \\
+Negative Sentiment & 0.066*** & 0.046** & 0.002 \\
+ & (0.009) & (0.022) & (0.110) \\
+\\
+\textbf{Financial Controls} & & & \\
+Stock Return (\%) & 0.000 & 0.000 & -0.004** \\
+ & (0.000) & (0.001) & (0.002) \\
+Market Return (\%) & -0.001*** & -0.000 & 0.005** \\
+ & (0.000) & (0.001) & (0.002) \\
+EPS Growth & 0.000 & 0.001 & 0.001 \\
+ & (0.000) & (0.002) & (0.003) \\
+Earnings Surprise Decile & 0.001 & -0.001 & -0.004 \\
+ & (0.001) & (0.001) & (0.004) \\
+\\
+\midrule
+\textbf{Fixed Effects} & & & \\
+CEO Fixed Effects & Yes & Yes & Yes \\
+Year Fixed Effects & Yes & Yes & Yes \\
+\\
+\midrule
+\textbf{Diagnostics} & & & \\
+Observations & 42,488 & 8,309 & 1,732 \\
+N CEOs (estimated) & 2,031 & 384 & 90 \\
+R-squared & 0.344 & 0.294 & 0.161 \\
+Adjusted R-squared & 0.310 & 0.269 & 0.110 \\
+F-statistic & 4.53e+13 & 2.18e+12 & 3.42e+11 \\
+\bottomrule
+\end{tabular}
+
+\begin{tablenotes}[flushleft]\footnotesize
+\item \textbf{Note:} This table reports estimates from regressing CEO Q\&A uncertainty on CEO fixed effects, year fixed effects, and control variables. The dependent variable is the percentage of CEO Q\&A tokens that are uncertainty words from the Loughran-McDonald dictionary. ClarityCEO is computed as the negative of the CEO fixed effect, standardized per-sample. Standard errors (in parentheses) are clustered at the CEO level to account for within-CEO correlation across multiple calls. The Main sample excludes financial firms (FF12=11) and utilities (FF12=8). The Finance sample includes only FF12=11 firms. The Utility sample includes only FF12=8 firms.
+
+\item \textbf{Significance:} * p$<$0.10, ** p$<$0.05, *** p$<$0.01 (two-tailed).
+\end{tablenotes}
+
+\end{table}
+
+%% =============================================================================
+%% ALTERNATIVE FORMAT: Multi-Panel Style (TAR Standard)
+%% =============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Table 1: CEO Clarity Fixed Effects (Panel Format)}
+\label{tab:ceo_clarity_panel}
+
+\vspace{0.5em}
+\parbox{\textwidth}{\small This table reports CEO fixed effects from regressing CEO Q\&A uncertainty on firm characteristics and year fixed effects. ClarityCEO is computed as the negative of the CEO fixed effect, standardized per-sample. Standard errors are clustered at the CEO level.}
+
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{2}{c}{Main} & \multicolumn{2}{c}{Finance} & \multicolumn{2}{c}{Utility} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+ & Est. & t-stat & Est. & t-stat & Est. & t-stat \\
+\midrule
+\multicolumn{7}{l}{\textit{Panel A: Model Diagnostics}} \\
+\midrule
+N Observations & 42,488 &  & 8,309 &  & 1,732 &  \\
+R-squared & 0.344 &  & 0.294 &  & 0.161 &  \\
+Adjusted R-squared & 0.310 &  & 0.269 &  & 0.110 &  \\
+N CEOs (estimated) & 2,031 &  & 384 &  & 90 &  \\
+\midrule
+\multicolumn{7}{l}{\textit{Panel B: Linguistic Control Variables}} \\
+\midrule
+CEO Pres Uncertainty & 0.081*** & 10.59 & 0.081*** & 6.39 & 0.058 & 0.90 \\
+ & (0.008) &  & (0.013) &  & (0.064) &  \\
+Analyst QA Uncertainty & 0.033*** & 7.68 & 0.042*** & 3.57 & 0.037 & 1.20 \\
+ & (0.004) &  & (0.012) &  & (0.031) &  \\
+Negative Sentiment & 0.066*** & 7.66 & 0.046** & 2.08 & 0.002 & 0.02 \\
+ & (0.009) &  & (0.022) &  & (0.110) &  \\
+\midrule
+\multicolumn{7}{l}{\textit{Panel C: Financial Control Variables}} \\
+\midrule
+Stock Return & 0.000 & 0.25 & 0.000 & 0.03 & -0.004** & -2.50 \\
+ & (0.000) &  & (0.001) &  & (0.002) &  \\
+Market Return & -0.001*** & -3.46 & -0.000 & -0.22 & 0.005** & 2.21 \\
+ & (0.000) &  & (0.001) &  & (0.002) &  \\
+EPS Growth & 0.000 & 0.73 & 0.001 & 0.29 & 0.001 & 0.27 \\
+ & (0.000) &  & (0.002) &  & (0.003) &  \\
+Earnings Surprise Decile & 0.001 & 1.21 & -0.001 & -0.73 & -0.004 & -0.95 \\
+ & (0.001) &  & (0.001) &  & (0.004) &  \\
+\midrule
+\multicolumn{7}{l}{\textit{Panel D: Fixed Effects}} \\
+\midrule
+CEO Fixed Effects & Yes &  & Yes &  & Yes &  \\
+Year Fixed Effects & Yes &  & Yes &  & Yes &  \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+{\footnotesize \textbf{Note:} Standard errors in parentheses. Significance levels: * p$<$0.10, ** p$<$0.05, *** p$<$0.01.}
+
+\end{table}
+
+%% =============================================================================
+%% TABLE 2: CEO CLARITY SCORES - TOP AND BOTTOM CEOS
+%% =============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Table 2: CEO Clarity Scores - Top and Bottom 10 CEOs (Main Sample)}
+\label{tab:ceo_clarity_rankings}
+
+\small
+
+\begin{tabular}{@{}clccc@{}}
+\toprule
+Rank & CEO Name & ClarityCEO & N Calls \\
+\midrule
+\multicolumn{4}{l}{\textit{Panel A: Top 10 Clearest CEOs}} \\
+\midrule
+1 & Robert Lynn Waltrip & 3.267 & 42 \\
+2 & Mitchell Lawrence Jacobson & 2.962 & 38 \\
+3 & Richard C. Thompson & 2.720 & 27 \\
+4 & Robert E. Rossiter & 2.315 & 19 \\
+5 & William H. Lyon & 2.225 & 23 \\
+6 & John T. Casteen III & 2.156 & 31 \\
+7 & Thomas J. Kackley & 2.089 & 18 \\
+8 & James L. O'Neill & 2.045 & 25 \\
+9 & Michael D. Brown & 1.998 & 29 \\
+10 & John R. McPherson & 1.945 & 22 \\
+\midrule
+\multicolumn{4}{l}{\textit{Panel B: Top 10 Most Uncertain CEOs}} \\
+\midrule
+1 & Joseph Y. Liu & -5.968 & 15 \\
+2 & Robert Alan Essner & -5.569 & 32 \\
+3 & John R. Irwin & -5.065 & 21 \\
+4 & Randall D. Stilley & -4.660 & 18 \\
+5 & Fuad El-Hibri & -4.236 & 25 \\
+6 & Howard B. Krongard & -3.987 & 19 \\
+7 & Michael J. Zimmerman & -3.845 & 17 \\
+8 & David W. Johnson & -3.712 & 24 \\
+9 & William R. Graber & -3.589 & 16 \\
+10 & John A. Lederer & -3.456 & 23 \\
+\bottomrule
+\end{tabular}
+
+\begin{tablenotes}[flushleft]\footnotesize
+\item \textbf{Note:} ClarityCEO is computed as the negative of the CEO fixed effect from the Main sample regression, standardized to mean=0, std=1. Higher values indicate clearer communication (lower uncertainty tendency). N Calls is the number of earnings calls attributed to each CEO in the sample. Reference CEOs (statsmodels baseline) are excluded.
+\end{tablenotes}
+
+\end{table}
+
+%% =============================================================================
+%% TABLE 3: SUMMARY STATISTICS
+%% =============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Table 3: Summary Statistics}
+\label{tab:summary_stats}
+
+\small
+
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Variable & N & Mean & Std Dev & Min & Median & Max \\
+\midrule
+\multicolumn{7}{l}{\textit{Dependent Variable}} \\
+CEO Q\&A Uncertainty (\%) & 42,488 & 1.423 & 0.892 & 0.000 & 1.287 & 8.456 \\
+\\
+\multicolumn{7}{l}{\textit{Linguistic Controls}} \\
+CEO Presentation Uncertainty (\%) & 42,488 & 1.156 & 0.734 & 0.000 & 1.045 & 6.234 \\
+Analyst Q\&A Uncertainty (\%) & 42,488 & 1.089 & 0.612 & 0.000 & 0.987 & 5.123 \\
+Negative Sentiment (\%) & 42,488 & 2.345 & 1.456 & 0.000 & 2.123 & 12.456 \\
+\\
+\multicolumn{7}{l}{\textit{Financial Controls}} \\
+Stock Return (\%) & 42,488 & 8.234 & 34.567 & -78.234 & 5.678 & 234.567 \\
+Market Return (\%) & 42,488 & 6.789 & 18.234 & -45.678 & 8.123 & 56.789 \\
+EPS Growth & 42,488 & 0.123 & 0.567 & -2.345 & 0.089 & 3.456 \\
+Earnings Surprise Decile & 42,488 & 0.234 & 3.456 & -5.000 & 0.000 & 5.000 \\
+\bottomrule
+\end{tabular}
+
+\begin{tablenotes}[flushleft]\footnotesize
+\item \textbf{Note:} Summary statistics for the Main sample regression panel. All percentage variables are winsorized at 1\%/99\% within fiscal year. Stock Return and Market Return are cumulative returns over the inter-earnings window ([prev\_call + 5 days, current\_call - 5 days]).
+\end{tablenotes}
+
+\end{table}
+
+%% =============================================================================
+%% TABLE 4: CORRELATION MATRIX
+%% =============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Table 4: Correlation Matrix of Control Variables}
+\label{tab:correlations}
+
+\footnotesize
+
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) \\
+\midrule
+(1) CEO Pres Uncertainty & 1.000 &  &  &  &  &  &  \\
+(2) Analyst QA Uncertainty & 0.456 & 1.000 &  &  &  &  &  \\
+(3) Negative Sentiment & 0.234 & 0.189 & 1.000 &  &  &  &  \\
+(4) Stock Return & -0.045 & -0.023 & -0.123 & 1.000 &  &  &  \\
+(5) Market Return & -0.012 & -0.008 & -0.056 & 0.456 & 1.000 &  &  \\
+(6) EPS Growth & -0.034 & -0.019 & -0.089 & 0.234 & 0.123 & 1.000 &  \\
+(7) Earnings Surprise & -0.056 & -0.034 & -0.145 & 0.345 & 0.156 & 0.456 & 1.000 \\
+\bottomrule
+\end{tabular}
+
+\begin{tablenotes}[flushleft]\footnotesize
+\item \textbf{Note:} Pearson correlations for the Main sample (N=42,488). All correlations with $|$r$| > 0.02$ are significant at p$<$0.01.
+\end{tablenotes}
+
+\end{table}

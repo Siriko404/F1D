@@ -139,34 +139,100 @@ def compute_financial_features(
     """
     Compute financial features for all firms in dataset.
 
+    Uses vectorized merge-based approach for performance. Matches Compustat
+    data on gvkey and fiscal year (fyear), then computes derived control variables.
+
     Args:
-        df: DataFrame with firm identifiers
-        compustat_df: Compustat data with firm metrics
+        df: DataFrame with firm identifiers (gvkey, year)
+        compustat_df: Compustat data with firm metrics (gvkey, fyear, at, dlc, dltt, etc.)
 
     Returns:
-        DataFrame with added financial control variables
+        DataFrame with added financial control variables (size, leverage,
+        profitability, market_to_book, capex_intensity, r_intensity, dividend_payer)
 
     Note:
-        calculate_firm_controls() may raise FinancialCalculationError if
-        gvkey is missing or Compustat data not found. The "if controls:"
-        check in this function provides defensive programming, but callers
-        should be aware that exceptions may be raised from the underlying function.
+        Rows without valid year are filtered out. Rows without matching Compustat
+        data will have NaN for financial controls (no exception raised).
     """
-    features = []
+    # Filter out rows without year
+    df_valid = df[df["year"].notna()].copy()
 
-    for _, row in df.iterrows():
-        year = row.get("year")
-        if year is None:
-            continue
+    if df_valid.empty:
+        return pd.DataFrame()
 
-        controls = calculate_firm_controls(row, compustat_df, year)
-        if controls:
-            # Create a dict from the row and update with controls
-            row_dict = row.to_dict()
-            row_dict.update(controls)  # type: ignore[arg-type]
-            features.append(row_dict)
+    # Pre-compute derived metrics on Compustat data (vectorized)
+    compustat_work = compustat_df.copy()
 
-    return pd.DataFrame(features)
+    # Size: log total assets
+    compustat_work["_size"] = np.where(
+        compustat_work["at"].notna() & (compustat_work["at"] > 0),
+        np.log(compustat_work["at"]),
+        np.nan,
+    )
+
+    # Leverage: total debt / total assets
+    compustat_work["_leverage"] = np.where(
+        compustat_work["at"].notna() & (compustat_work["at"] > 0),
+        (compustat_work["dlc"].fillna(0) + compustat_work["dltt"].fillna(0)) / compustat_work["at"],
+        np.nan,
+    )
+
+    # Profitability: operating income / total assets
+    compustat_work["_profitability"] = np.where(
+        compustat_work["at"].notna() & (compustat_work["at"] > 0),
+        compustat_work["oibdp"] / compustat_work["at"],
+        np.nan,
+    )
+
+    # Market-to-book: market cap / book equity
+    compustat_work["_market_to_book"] = np.where(
+        compustat_work["ceq"].notna() & (compustat_work["ceq"] > 0) &
+        compustat_work["prcc_f"].notna() & compustat_work["csho"].notna(),
+        (compustat_work["prcc_f"] * compustat_work["csho"]) / compustat_work["ceq"],
+        np.nan,
+    )
+
+    # Capex intensity: capex / total assets
+    compustat_work["_capex_intensity"] = np.where(
+        compustat_work["at"].notna() & (compustat_work["at"] > 0),
+        compustat_work["capx"] / compustat_work["at"],
+        np.nan,
+    )
+
+    # R&D intensity: R&D / total assets
+    compustat_work["_r_intensity"] = np.where(
+        compustat_work["at"].notna() & (compustat_work["at"] > 0),
+        compustat_work["xrd"] / compustat_work["at"],
+        np.nan,
+    )
+
+    # Dividend payer: indicator
+    compustat_work["_dividend_payer"] = np.where(
+        compustat_work["dvc"].notna() & (compustat_work["dvc"] > 0),
+        1,
+        0,
+    )
+
+    # Select columns needed for merge (use fyear as fiscal year column)
+    merge_cols = ["gvkey", "fyear", "_size", "_leverage", "_profitability",
+                  "_market_to_book", "_capex_intensity", "_r_intensity", "_dividend_payer"]
+    compustat_merge = compustat_work[merge_cols].rename(columns={"fyear": "year"})
+
+    # Merge on gvkey and year
+    merged = df_valid.merge(compustat_merge, on=["gvkey", "year"], how="left")
+
+    # Rename computed columns to final names
+    merged = merged.rename(columns={
+        "_size": "size",
+        "_leverage": "leverage",
+        "_profitability": "profitability",
+        "_market_to_book": "market_to_book",
+        "_capex_intensity": "capex_intensity",
+        "_r_intensity": "r_intensity",
+        "_dividend_payer": "dividend_payer",
+    })
+
+    return merged
 
 
 def calculate_firm_controls_quarterly(

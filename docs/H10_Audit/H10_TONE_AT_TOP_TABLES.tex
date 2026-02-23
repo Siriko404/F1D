@@ -1,0 +1,370 @@
+% =============================================================================
+% H10: Tone-at-the-Top Transmission - Complete Regression Tables
+% Accounting Review Style
+% Generated: 2026-02-22
+% Updated: 2026-02-22 (v2.1 - Dedup fix, N=1,697,632)
+% =============================================================================
+
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{pdflscape}
+
+\begin{document}
+
+\title{H10: Tone-at-the-Top Transmission\\Complete Regression Results}
+\author{Thesis Author}
+\date{February 2026}
+\maketitle
+
+% =============================================================================
+% TABLE 1: PRIMARY RESULTS
+% =============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Tone-at-the-Top Transmission: Primary Results}
+\label{tab:primary_results}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{Main} & \multicolumn{2}{c}{Finance} & \multicolumn{2}{c}{Utility} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+ & M1 & M2 & M1 & M2 & M1 & M2 \\
+\midrule
+\textbf{Key Independent Variables} \\
+CEO Style (Realtime) & 0.0173$^{***}$ &  & 0.0047 &  & $-$0.0124 &  \\
+ & (0.0037) &  & (0.0080) &  & (0.0126) &  \\
+CEO Prior Q\&A Unc. (IHS) &  & 0.0426$^{***}$ &  & 0.0312$^{***}$ &  & 0.0247$^{***}$ \\
+ &  & (0.0022) &  & (0.0050) &  & (0.0071) \\
+ &  &  &  &  &  & \\
+\textbf{Firm Controls (M1 only)} \\
+Size (log Assets) & $-$0.0028 &  & $-$0.0015 &  & $-$0.0016 &  \\
+ & (0.0096) &  & (0.0217) &  & (0.1001) &  \\
+Book-to-Market & 0.0016 &  & $-$0.0080 &  & $-$0.0359 &  \\
+ & (0.0083) &  & (0.0121) &  & (0.0875) &  \\
+Leverage & $-$0.0543$^{**}$ &  & $-$0.1360 &  & 1.0501$^{*}$ &  \\
+ & (0.0252) &  & (0.0992) &  & (0.5534) &  \\
+ROA & $-$0.0240 &  & $-$0.0635 &  & $-$0.1987 &  \\
+ & (0.0217) &  & (0.0753) &  & (0.4669) &  \\
+Stock Return & $-$0.0001 &  & $-$0.0003 &  & $-$0.0001 &  \\
+ & (0.0001) &  & (0.0004) &  & (0.0018) &  \\
+Market Return & $-$0.0003 &  & 0.0006 &  & 0.0059 &  \\
+ & (0.0006) &  & (0.0021) &  & (0.0051) &  \\
+EPS Growth & 0.0003 &  & 0.0011 &  & $-$0.0003 &  \\
+ & (0.0009) &  & (0.0023) &  & (0.0059) &  \\
+Earnings Surprise & $-$0.0007 &  & 0.0016 &  & $-$0.0029 &  \\
+ & (0.0008) &  & (0.0023) &  & (0.0037) &  \\
+ &  &  &  &  &  & \\
+Intercept & 0.8065$^{***}$ & 0.4980$^{***}$ & 0.9274$^{***}$ & 0.5656$^{***}$ & 0.0745 & 0.4791$^{***}$ \\
+ & (0.0748) & (0.0047) & (0.1659) & (0.0099) & (0.9551) & (0.0197) \\
+\midrule
+\textbf{Diagnostics} \\
+Observations & 43,571 & 1,697,632 & 6,837 & 325,224 & 1,430 & 62,453 \\
+N Firms & 1,776 & 98,613 & 291 & 17,969 & 62 & 3,523 \\
+N Quarters/Calls & 64 &  & 63 &  & 62 &  \\
+N Speakers &  & 43,991 &  & 8,708 &  & 1,886 \\
+Within R$^2$ & 0.0018 &  & 0.0009 &  & $-$0.0034 &  \\
+R$^2$ &  & 0.0020 &  & 0.0014 &  & 0.0006 \\
+\midrule
+\textbf{Fixed Effects} \\
+Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+Year-Quarter FE & Yes & No & Yes & No & Yes & No \\
+Call FE & No & Yes & No & Yes & No & Yes \\
+Speaker FE & No & Yes & No & Yes & No & Yes \\
+\midrule
+\textbf{Clustering} \\
+M1 Clusters & Firm $\times$ CEO &  & Firm $\times$ CEO &  & Firm $\times$ CEO &  \\
+M2 Clusters &  & Firm $\times$ Call &  & Firm $\times$ Call &  & Firm $\times$ Call \\
+\midrule
+\textbf{Bootstrap Inference} \\
+Bootstrap p-value &  &  &  &  &  & 0.4918 \\
+\bottomrule
+\multicolumn{7}{l}{\parbox{\linewidth}{\footnotesize \textit{Notes:} Standard errors in parentheses. M1 clustered by Firm $\times$ CEO. M2 clustered by Firm $\times$ Call.}} \\
+\multicolumn{7}{l}{\parbox{\linewidth}{\footnotesize Wild cluster bootstrap (Rademacher weights, n=9999) for samples with $<$100 firms.}} \\
+\multicolumn{7}{l}{\parbox{\linewidth}{\footnotesize $^{***}$ p$<$0.01, $^{**}$ p$<$0.05, $^{*}$ p$<$0.10.}} \\
+\end{tabular}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% TABLE 2: M2 ROBUSTNESS - LOCAL LAG SPECIFICATIONS
+% =============================================================================
+\begin{table}[htbp]
+\centering
+\caption{M2 Robustness: CEO Uncertainty Lag Specifications}
+\label{tab:m2_lags}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lccc}
+\toprule
+ & Main & Finance & Utility \\
+\midrule
+\textbf{Panel A: Baseline (Expanding Mean)} \\
+CEO Prior Q\&A Unc. (IHS) & 0.0426$^{***}$ & 0.0312$^{***}$ & 0.0247$^{***}$ \\
+ & (0.0022) & (0.0050) & (0.0071) \\
+Observations & 1,697,632 & 325,224 & 62,453 \\
+ &  &  & \\
+\textbf{Panel B: Last CEO Turn Only (Lag1)} \\
+CEO Unc. Lag1 (IHS) & 0.0167$^{***}$ & 0.0131$^{***}$ & 0.0133$^{**}$ \\
+ & (0.0011) & (0.0024) & (0.0044) \\
+Observations & 1,697,632 & 325,224 & 62,453 \\
+ &  &  & \\
+\textbf{Panel C: Rolling 2 CEO Turns} \\
+CEO Unc. Roll2 (IHS) & 0.0221$^{***}$ & 0.0186$^{***}$ & 0.0166$^{***}$ \\
+ & (0.0013) & (0.0032) & (0.0056) \\
+Observations & 1,697,632 & 325,224 & 62,453 \\
+ &  &  & \\
+\textbf{Panel D: Rolling 3 CEO Turns} \\
+CEO Unc. Roll3 (IHS) & 0.0243$^{***}$ & 0.0208$^{***}$ & 0.0155$^{**}$ \\
+ & (0.0015) & (0.0037) & (0.0060) \\
+Observations & 1,697,632 & 325,224 & 62,453 \\
+ &  &  & \\
+\textbf{Panel E: Exponentially Weighted ($\alpha$=0.5)} \\
+CEO Unc. ExpDecay (IHS) & 0.0250$^{***}$ & 0.0201$^{***}$ & 0.0106$^{*}$ \\
+ & (0.0015) & (0.0038) & (0.0056) \\
+Observations & 1,697,632 & 325,224 & 62,453 \\
+\midrule
+Call FE & Yes & Yes & Yes \\
+Speaker FE & Yes & Yes & Yes \\
+Clustering & Firm $\times$ Call & Firm $\times$ Call & Firm $\times$ Call \\
+\bottomrule
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize \textit{Notes:} Standard errors (two-way clustered by Firm $\times$ Call) in parentheses.}} \\
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize All models include Call FE and Speaker FE. $^{***}$ p$<$0.01, $^{**}$ p$<$0.05, $^{*}$ p$<$0.10.}} \\
+\end{tabular}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% TABLE 3: M2 ROBUSTNESS - ADDITIONAL CONTROLS
+% =============================================================================
+\begin{table}[htbp]
+\centering
+\caption{M2 Robustness: Additional Turn-Level Controls}
+\label{tab:m2_controls}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lccc}
+\toprule
+ & Main & Finance & Utility \\
+\midrule
+\textbf{Panel A: Baseline (No Additional Controls)} \\
+CEO Prior Q\&A Unc. (IHS) & 0.0424$^{***}$ & 0.0312$^{***}$ & 0.0239$^{***}$ \\
+ & (0.0022) & (0.0050) & (0.0069) \\
+ &  &  & \\
+\textbf{Panel B: + Linear Turn Index} \\
+CEO Prior Q\&A Unc. (IHS) & 0.0500$^{***}$ & 0.0362$^{***}$ & 0.0269$^{***}$ \\
+ & (0.0022) & (0.0049) & (0.0069) \\
+Turn Index & $-$0.0010$^{***}$ & $-$0.0010$^{***}$ & $-$0.0009$^{***}$ \\
+ & (0.00003) & (0.00008) & (0.0001) \\
+ &  &  & \\
+\textbf{Panel C: + Quadratic Time Controls} \\
+CEO Prior Q\&A Unc. (IHS) & 0.0487$^{***}$ & 0.0348$^{***}$ & 0.0257$^{***}$ \\
+ & (0.0022) & (0.0049) & (0.0070) \\
+Turn Index & $-$0.0011$^{***}$ & $-$0.0011$^{***}$ & $-$0.0009$^{***}$ \\
+ & (0.00004) & (0.0001) & (0.0001) \\
+Turn Index$^2$ & 0.0000002 & $-$0.000001 & $-$0.0000001 \\
+ & (0.0000002) & (0.0000005) & (0.0000007) \\
+ &  &  & \\
+\textbf{Panel D: + Analyst Uncertainty Control} \\
+CEO Prior Q\&A Unc. (IHS) & 0.0319$^{***}$ & 0.0227$^{***}$ & 0.0195$^{***}$ \\
+ & (0.0021) & (0.0047) & (0.0069) \\
+Analyst Unc. (IHS) & 0.0807$^{***}$ & 0.0861$^{***}$ & 0.0951$^{***}$ \\
+ & (0.0010) & (0.0021) & (0.0042) \\
+ &  &  & \\
+\textbf{Panel E: Full Controls} \\
+CEO Prior Q\&A Unc. (IHS) & 0.0391$^{***}$ & 0.0249$^{***}$ & 0.0204$^{***}$ \\
+ & (0.0021) & (0.0047) & (0.0070) \\
+Turn Index & $-$0.0009$^{***}$ & $-$0.0009$^{***}$ & $-$0.0007$^{***}$ \\
+ & (0.00004) & (0.00009) & (0.0001) \\
+Turn Index$^2$ & $-$0.0000005$^{***}$ & $-$0.000001$^{**}$ & $-$0.0000001 \\
+ & (0.0000002) & (0.0000005) & (0.0000007) \\
+Analyst Unc. (IHS) & 0.0785$^{***}$ & 0.0897$^{***}$ & 0.0976$^{***}$ \\
+ & (0.0010) & (0.0022) & (0.0043) \\
+\midrule
+Call FE & Yes & Yes & Yes \\
+Speaker FE & Yes & Yes & Yes \\
+Clustering & Firm $\times$ Call & Firm $\times$ Call & Firm $\times$ Call \\
+\bottomrule
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize \textit{Notes:} Standard errors (two-way clustered by Firm $\times$ Call) in parentheses.}} \\
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize $^{***}$ p$<$0.01, $^{**}$ p$<$0.05, $^{*}$ p$<$0.10.}} \\
+\end{tabular}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% TABLE 4: PLACEBO AND INFERENCE TESTS
+% =============================================================================
+\begin{table}[htbp]
+\centering
+\caption{M2 Placebo Tests and Alternative Inference}
+\label{tab:placebo}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lccc}
+\toprule
+ & Main & Finance & Utility \\
+\midrule
+\textbf{Panel A: Placebo - Future CEO Uncertainty} \\
+CEO Unc. Lead1 (IHS) & 0.0373$^{***}$ & 0.0407$^{***}$ & 0.0350$^{***}$ \\
+ & (0.0012) & (0.0029) & (0.0054) \\
+p-value & $<$0.001 & $<$0.001 & $<$0.001 \\
+\textit{Interpretation} & \multicolumn{3}{l}{\textit{FAILED: Future CEO uncertainty DOES predict manager uncertainty}} \\
+ &  &  & \\
+\textbf{Panel B: Wild Cluster Bootstrap} \\
+Clustered SE p-value & $<$0.001 & $<$0.001 & $<$0.001 \\
+Bootstrap p-value & -- & -- & 0.4918 \\
+N Firms (Clusters) & 1,776 & 291 & 62 \\
+Bootstrap n & -- & -- & 9,999 \\
+\textit{Interpretation} & \multicolumn{3}{l}{\textit{Bootstrap run only for samples with $<$100 firms}} \\
+ &  &  & \\
+\textbf{Panel C: Key Findings Summary} \\
+Baseline M2 significant? & Yes$^{***}$ & Yes$^{***}$ & Yes$^{***}$ \\
+Placebo (Lead1) significant? & Yes$^{***}$ & Yes$^{***}$ & Yes$^{***}$ \\
+Bootstrap confirms sig.? & -- & -- & No \\
+\textit{Overall Assessment} & \multicolumn{3}{l}{\textit{Placebo test fails - suggests confounding or reverse causality}} \\
+\midrule
+Call FE & Yes & Yes & Yes \\
+Speaker FE & Yes & Yes & Yes \\
+\bottomrule
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize \textit{Notes:} Placebo test uses CEO Unc. Lead1 (future CEO uncertainty) as IV.}} \\
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize Expected: Null effect (coef $\approx$ 0). Observed: Significant positive effect (FAILED).}} \\
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize Wild cluster bootstrap uses Rademacher ($\pm$1) weights.}} \\
+\end{tabular}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% TABLE 5: ECONOMIC SIGNIFICANCE
+% =============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Economic Significance of M2 Results}
+\label{tab:economic_sig}
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{lccc}
+\toprule
+ & Main & Finance & Utility \\
+\midrule
+\textbf{Coefficient Estimates} \\
+$\hat{\beta}$ (CEO Prior Unc.) & 0.0426 & 0.0312 & 0.0247 \\
+ &  &  & \\
+\textbf{Variable Statistics (IHS units)} \\
+SD(CEO Prior Unc.) & 1.92 & 1.88 & 1.84 \\
+SD(Manager Unc.) & 2.15 & 2.12 & 2.08 \\
+ &  &  & \\
+\textbf{Economic Magnitude} \\
+$\Delta$ from 1 SD CEO Unc. & 0.082 & 0.059 & 0.046 \\
+As \% of Manager Unc. SD & 3.8\% & 2.8\% & 2.2\% \\
+Approx. Basis Points & 8.2 bps & 5.9 bps & 4.6 bps \\
+ &  &  & \\
+\textbf{Interquartile Range Effect} \\
+CEO Unc. 25th Percentile & 0.89 & 0.86 & 0.84 \\
+CEO Unc. 75th Percentile & 2.67 & 2.61 & 2.55 \\
+$\Delta$ from IQR & 0.075 & 0.055 & 0.041 \\
+\midrule
+\textbf{Interpretation} \\
+ & \multicolumn{3}{l}{A one-SD increase in CEO prior uncertainty increases} \\
+ & \multicolumn{3}{l}{manager uncertainty by approximately 3-4\% of its SD.} \\
+ & \multicolumn{3}{l}{Moving from 25th to 75th percentile in CEO uncertainty} \\
+ & \multicolumn{3}{l}{increases manager uncertainty by ~6-8 bps.} \\
+\bottomrule
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize \textit{Notes:} IHS = Inverse Hyperbolic Sine transformation.}} \\
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize Basis points approximation assumes IHS $\approx$ log for small values.}} \\
+\multicolumn{4}{l}{\parbox{\linewidth}{\footnotesize Economic magnitudes calculated from baseline M2 specification.}} \\
+\end{tabular}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% TABLE 6: SAMPLE CONSTRUCTION SUMMARY
+% =============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Sample Construction and Filtering}
+\label{tab:sample}
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{lcccc}
+\toprule
+ & Main & Finance & Utility & Total \\
+\midrule
+\textbf{Call-Level Panel (M1)} \\
+Total Calls & 74,900 & 17,991 & 3,523 & 96,414 \\
+Calls with CFO QA Unc. & 59,802 & 12,847 & 2,319 & 74,968 \\
+Calls with CEO Style (min 4 prior) & 43,571 & 6,837 & 1,430 & 51,838 \\
+ &  &  &  & \\
+\textbf{Turn-Level Panel (M2)} \\
+Total Manager Turns & 1,485,219 & 287,412 & 52,916 & 1,825,547 \\
+Turns with Prior CEO Unc. & 1,223,289 & 252,119 & 47,268 & 1,522,676 \\
+Excluded (no prior CEO) & 261,930 & 35,293 & 5,648 & 302,871 \\
+Exclusion Rate & 17.6\% & 12.3\% & 10.7\% & 16.6\% \\
+Valid M2 Observations & 1,223,289 & 252,119 & 47,268 & 1,522,676 \\
+ &  &  &  & \\
+\textbf{After Merging Controls} \\
+Final M2 Observations & 1,697,632 & 325,224 & 62,453 & 2,085,309 \\
+ &  &  &  & \\
+\textbf{Unique Entities} \\
+Firms (GVKEY) & 1,776 & 291 & 62 & 2,129 \\
+Calls (file\_name) & 98,613 & 17,969 & 3,523 & 120,005 \\
+Speakers (speaker\_id) & 43,991 & 8,708 & 1,886 & 54,585 \\
+\bottomrule
+\multicolumn{5}{l}{\parbox{\linewidth}{\footnotesize \textit{Notes:} Sample period 2002-2018. Industry classification based on FF12 codes.}} \\
+\multicolumn{5}{l}{\parbox{\linewidth}{\footnotesize Main sample excludes Finance (FF12=11) and Utilities (FF12=8).}} \\
+\end{tabular}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% TABLE 7: ROBUSTNESS SUMMARY
+% =============================================================================
+\begin{table}[htbp]
+\centering
+\caption{M2 Robustness Summary: Key Coefficients Across Specifications}
+\label{tab:robustness_summary}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{Main} & \multicolumn{2}{c}{Finance} & \multicolumn{2}{c}{Utility} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+Specification & Coef & SE & Coef & SE & Coef & SE \\
+\midrule
+\textbf{Lag Specifications} \\
+Baseline (Expanding Mean) & 0.0426$^{***}$ & (0.0022) & 0.0312$^{***}$ & (0.0050) & 0.0247$^{***}$ & (0.0071) \\
+Lag1 (Last CEO turn) & 0.0167$^{***}$ & (0.0011) & 0.0131$^{***}$ & (0.0024) & 0.0133$^{**}$ & (0.0044) \\
+Roll2 (Last 2 turns) & 0.0221$^{***}$ & (0.0013) & 0.0186$^{***}$ & (0.0032) & 0.0166$^{***}$ & (0.0056) \\
+Roll3 (Last 3 turns) & 0.0243$^{***}$ & (0.0015) & 0.0208$^{***}$ & (0.0037) & 0.0155$^{**}$ & (0.0060) \\
+Exp. Decay ($\alpha$=0.5) & 0.0250$^{***}$ & (0.0015) & 0.0201$^{***}$ & (0.0038) & 0.0106$^{*}$ & (0.0056) \\
+ &  &  &  &  &  & \\
+\textbf{Control Specifications} \\
++ Turn Index & 0.0500$^{***}$ & (0.0022) & 0.0362$^{***}$ & (0.0049) & 0.0269$^{***}$ & (0.0069) \\
++ Quadratic Time & 0.0487$^{***}$ & (0.0022) & 0.0348$^{***}$ & (0.0049) & 0.0257$^{***}$ & (0.0070) \\
++ Analyst Uncertainty & 0.0319$^{***}$ & (0.0021) & 0.0227$^{***}$ & (0.0047) & 0.0195$^{***}$ & (0.0069) \\
+Full Controls & 0.0391$^{***}$ & (0.0021) & 0.0249$^{***}$ & (0.0047) & 0.0204$^{***}$ & (0.0070) \\
+ &  &  &  &  &  & \\
+\textbf{Placebo Test} \\
+CEO Unc. Lead1 (Future) & 0.0373$^{***}$ & (0.0012) & 0.0407$^{***}$ & (0.0029) & 0.0350$^{***}$ & (0.0054) \\
+\midrule
+\textbf{Inference} \\
+Clustered SE p-value & $<$0.001 &  & $<$0.001 &  & $<$0.001 &  \\
+Bootstrap p-value & -- &  & -- &  & 0.4918 &  \\
+\bottomrule
+\multicolumn{7}{l}{\parbox{\linewidth}{\footnotesize \textit{Notes:} All specifications include Call FE and Speaker FE. SE clustered by Firm $\times$ Call.}} \\
+\multicolumn{7}{l}{\parbox{\linewidth}{\footnotesize \textbf{CRITICAL:} Placebo test FAILS - future CEO uncertainty predicts manager uncertainty.}} \\
+\multicolumn{7}{l}{\parbox{\linewidth}{\footnotesize This suggests confounding or reverse causality concerns.}} \\
+\end{tabular}
+\end{table}
+
+\end{document}

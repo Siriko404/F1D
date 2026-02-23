@@ -32,6 +32,8 @@ Outputs:
     - outputs/econometric/ceo_clarity/{timestamp}/clarity_scores.parquet
     - outputs/econometric/ceo_clarity/{timestamp}/regression_results_{sample}.txt
     - outputs/econometric/ceo_clarity/{timestamp}/report_step4_ceo_clarity.md
+    - outputs/econometric/ceo_clarity/{timestamp}/summary_stats.csv
+    - outputs/econometric/ceo_clarity/{timestamp}/summary_stats.tex
 
 Deterministic: true
 Dependencies:
@@ -54,19 +56,11 @@ from typing import Any, Dict, List, Optional, Set
 
 import numpy as np
 import pandas as pd
+import statsmodels.formula.api as smf
 
-# Suppress warnings for cleaner output
-warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
+STATSMODELS_AVAILABLE = True
 
-try:
-    from linearmodels.panel import PanelOLS  # type: ignore[no-redef]
-
-    STATSMODELS_AVAILABLE = True
-except ImportError:
-    STATSMODELS_AVAILABLE = False
-    print("WARNING: linearmodels not available. Install with: pip install linearmodels")
-
-from f1d.shared.latex_tables_accounting import make_accounting_table
+from f1d.shared.latex_tables_accounting import make_accounting_table, make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -105,6 +99,22 @@ VARIABLE_LABELS = {
     "EPS_Growth": "EPS Growth",
     "SurpDec": "Earnings Surprise Decile",
 }
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
+    {"col": "Entire_All_Negative_pct", "label": "Negative Sentiment"},
+    {"col": "StockRet", "label": "Stock Return"},
+    {"col": "MarketRet", "label": "Market Return"},
+    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
+]
 
 
 # ==============================================================================
@@ -288,22 +298,10 @@ def run_regression(
     start_time = datetime.now()
 
     try:
-        # Model: C(ceo_id) categorical dummies act as CEO fixed effects within
-        # the PanelOLS entity (gvkey) × time (year) index. C(year) adds year dummies.
-        # EntityEffects/TimeEffects are NOT used — the CEO-FE design intentionally
-        # uses C(ceo_id) dummies so that individual CEO coefficients can be extracted
-        # post-estimation (clarity scores = gamma_i per CEO).
-        model_obj = PanelOLS.from_formula(
-            formula,
-            data=df_reg.set_index(["gvkey", "year"]),
-            drop_absorbed=True,
-        )
-        model = model_obj.fit(
-            # M-2 fix: cluster SEs at CEO level (not HC1) to account for
-            # within-CEO correlation across calls in the same regression.
-            # HC1 treats all observations as independent, understating SEs
-            # when the same CEO appears in many rows (Liang-Zeger problem).
-            cov_type="clustered",
+        # Model: C(ceo_id) categorical dummies act as CEO fixed effects.
+        # C(year) adds year dummies. smf.ols handles the formula directly.
+        model = smf.ols(formula, data=df_reg).fit(
+            cov_type="cluster",
             cov_kwds={"groups": df_reg["ceo_id"]},
         )
     except ValueError as e:
@@ -313,8 +311,8 @@ def run_regression(
     duration = (datetime.now() - start_time).total_seconds()
 
     print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared: {float(model.rsquared_within):.4f}")
-    print(f"  Adj. R-squared: {float(model.rsquared_inclusive):.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}")
+    print(f"  Adj. R-squared: {model.rsquared_adj:.4f}")
     print(f"  N observations: {int(model.nobs):,}")
 
     return model, df_reg, valid_ceos
@@ -445,7 +443,9 @@ def save_outputs(
             "This table reports CEO fixed effects from regressing CEO Q&A "
             "uncertainty on firm characteristics and year fixed effects. "
             "ClarityCEO is computed as the negative of the CEO fixed effect, "
-            "standardized globally across all industry samples. "
+            "standardized separately within each industry sample (Main, Finance, Utility). "
+            "Reference CEOs (statsmodels baseline category, gamma=0 by construction) "
+            "are excluded from clarity scores. "
             "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
         ),
         variable_labels=VARIABLE_LABELS,
@@ -673,6 +673,23 @@ def main(panel_path: Optional[str] = None) -> int:
     # Prepare data
     df = prepare_regression_data(panel)
 
+    # Generate summary stats for COMPLETE-CASE data (before min-calls filter)
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    make_summary_stats_table(
+        df=df,
+        variables=SUMMARY_STATS_VARS,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — CEO Clarity",
+        label="tab:summary_stats_h02",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
+
     # Run regressions by sample
     results: Dict[str, Dict[str, Any]] = {}
     all_clarity_scores: List[pd.DataFrame] = []
@@ -702,8 +719,8 @@ def main(panel_path: Optional[str] = None) -> int:
             "diagnostics": {
                 "n_obs": int(model.nobs),
                 "n_ceos": len(valid_ceos),
-                "rsquared": float(model.rsquared_within),
-                "rsquared_adj": float(model.rsquared_inclusive),
+                "rsquared": model.rsquared,
+                "rsquared_adj": model.rsquared_adj,
             },
         }
 
@@ -711,7 +728,7 @@ def main(panel_path: Optional[str] = None) -> int:
         stats["regressions"][sample_name] = {
             "n_obs": int(model.nobs),
             "n_ceos": len(valid_ceos),
-            "rsquared": float(model.rsquared_within),
+            "rsquared": model.rsquared,
         }
 
     # Save outputs
