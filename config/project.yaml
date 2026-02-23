@@ -1,6 +1,6 @@
 project:
   name: F1D_Clarity
-  version: F1D.1.0
+  version: 6.0.0
   description: Dictionary-based Clarity measure using LM Uncertainty & Weak_Modal
 data:
   year_start: 2002
@@ -10,7 +10,7 @@ paths:
   scripts: src/f1d
   logs: logs
   outputs: outputs
-  lm_dictionary: inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv
+  lm_dictionary: inputs/LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv
   unified_info: inputs/Earnings_Calls_Transcripts/Unified-info.parquet
   speaker_data_pattern: inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet
 determinism:
@@ -139,7 +139,7 @@ step_09:
     - 1
     - 99
   inputs:
-    cccl_instrument: inputs/CCCL instrument/instrument_shift_intensity_2005_2022.parquet
+    cccl_instrument: inputs/CCCL_instrument/instrument_shift_intensity_2005_2022.parquet
   outputs:
     liquidity_data: calls_with_liquidity_{year}.parquet
     regression_results: regression_results_liquidity.txt
