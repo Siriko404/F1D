@@ -16,7 +16,7 @@
 
 **Academic Data Sources:**
 - Loughran-McDonald Master Dictionary (1993-2024) - Sentiment word lists
-  - Input: `inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv`
+  - Input: `inputs/LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv`
   - Source: [McDonald Word Lists](https://sraf.nd.edu/textual-analysis/resources/)
   - Used for linguistic variable construction in `src/f1d/text/build_linguistic_variables.py`
 

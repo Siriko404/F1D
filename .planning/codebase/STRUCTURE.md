@@ -21,7 +21,7 @@ F1D/
 ├── docs/                   # Documentation (ARCHITECTURE_STANDARD.md, etc.)
 ├── inputs/                 # External input data (not in repo)
 │   ├── Earnings_Calls_Transcripts/
-│   ├── Loughran-McDonald_MasterDictionary_1993-2024.csv
+│   ├── LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv
 │   ├── comp_na_daily_all/
 │   ├── CRSP_DSF/
 │   ├── tr_ibes/
@@ -50,7 +50,6 @@ F1D/
 ├── tests/                  # Test suite
 ├── pyproject.toml          # Package configuration
 ├── requirements.txt         # Production dependencies
-├── .coveragerc             # Coverage configuration
 ├── .pre-commit-config.yaml  # Git hooks
 ├── README.md               # Package documentation
 └── .gitignore              # Git exclusions

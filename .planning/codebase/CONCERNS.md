@@ -11,7 +11,7 @@
 - Fix approach: Extract specialized modules (stats_aggregator.py, report_formatter.py, percentiles.py) with focused responsibilities
 
 **Inefficient DataFrame Iteration:**
-- Issue: 25+ instances of `.iterrows()` usage across codebase, which is extremely slow (creates Series for each row)
+- Issue: 43 instances of `.iterrows()` usage across 19 files, which is extremely slow (creates Series for each row)
 - Files: `src/f1d/sample/utils.py`, `src/f1d/reporting/generate_summary_stats.py`, `src/f1d/sample/link_entities.py`, `src/f1d/text/tokenize_transcripts.py`, `src/f1d/econometric/run_h0_*.py`, `src/f1d/econometric/run_h10_tone_at_top.py`, `src/f1d/shared/diagnostics.py`, `src/f1d/shared/financial_utils.py`, `src/f1d/shared/sample_utils.py`, `src/f1d/shared/iv_regression.py`, `src/f1d/shared/panel_ols.py`, `src/f1d/shared/reporting_utils.py`, `src/f1d/variables/build_h9_takeover_panel.py`
 - Impact: Performance degradation (10-100x slower than vectorized operations), especially on large datasets
 - Fix approach: Replace `.iterrows()` with vectorized pandas operations (melt, groupby, column-wise operations) or `.itertuples()` where row-by-row is truly necessary
@@ -51,7 +51,7 @@
 ## Performance Bottlenecks
 
 **DataFrame Iteration with .iterrows():**
-- Problem: 25+ instances of `.iterrows()` create Series objects for each row, extremely slow
+- Problem: 43 instances of `.iterrows()` across 19 files create Series objects for each row, extremely slow
 - Files: Listed in Tech Debt section above
 - Cause: Using iteration instead of vectorized pandas operations
 - Improvement path: Replace with vectorized operations (melt, groupby, apply, column-wise) or `.itertuples()` where necessary

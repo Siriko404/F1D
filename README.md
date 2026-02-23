@@ -61,7 +61,7 @@ The following datasets must be present in `inputs/` before running the pipeline.
 | Path | Description | Source |
 |------|-------------|--------|
 | `inputs/Earnings_Calls_Transcripts/` | Earnings call transcripts with speaker data | Earnings call provider |
-| `inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv` | LM sentiment dictionary | [McDonald Word Lists](https://sraf.nd.edu/textual-analysis/resources/) |
+| `inputs/LM_dictionary/Loughran-McDonald_MasterDictionary_1993-2024.csv` | LM sentiment dictionary | [McDonald Word Lists](https://sraf.nd.edu/textual-analysis/resources/) |
 | `inputs/comp_na_daily_all/` | Compustat quarterly fundamentals | WRDS Compustat |
 | `inputs/CRSP_DSF/` | CRSP daily stock files | WRDS CRSP |
 | `inputs/tr_ibes/` | IBES EPS forecasts | WRDS IBES |
@@ -519,59 +519,20 @@ All outputs are organized by stage and timestamp:
 
 ```
 outputs/
-├── sample/                          # Stage 1 outputs
-│   ├── 1.1_CleanMetadata/{timestamp}/
-│   ├── 1.2_LinkEntities/{timestamp}/
-│   ├── 1.3_BuildTenureMap/{timestamp}/
-│   └── 1.4_AssembleManifest/{timestamp}/
-│       └── master_sample_manifest.parquet
-│
-├── text/                            # Stage 2 outputs
+├── 1.1_CleanMetadata/{timestamp}/
+├── 1.2_LinkEntities/{timestamp}/
+├── 1.3_BuildTenureMap/{timestamp}/
+├── 1.4_AssembleManifest/{timestamp}/
+├── 2_Textual_Analysis/
+│   ├── 2.1_TokenizeAndCount/{timestamp}/
 │   └── 2.2_Variables/{timestamp}/
-│       └── linguistic_variables_{year}.parquet
-│
-├── variables/                       # Stage 3 outputs (panels)
+├── variables/
 │   ├── manager_clarity/{timestamp}/
-│   │   ├── manager_clarity_panel.parquet
-│   │   ├── summary_stats.csv
-│   │   └── report.md
 │   ├── ceo_clarity/{timestamp}/
-│   ├── ceo_clarity_extended/{timestamp}/
-│   ├── ceo_tone/{timestamp}/
-│   ├── h1_cash_holdings/{timestamp}/
-│   ├── h2_investment/{timestamp}/
-│   ├── h3_payout_policy/{timestamp}/
-│   ├── h4_leverage/{timestamp}/
-│   ├── h5_dispersion/{timestamp}/
-│   ├── h6_cccl/{timestamp}/
-│   ├── h7_illiquidity/{timestamp}/
-│   ├── h8_policy_risk/{timestamp}/
-│   ├── takeover/{timestamp}/
-│   └── tone_at_top/{timestamp}/
-│
-└── econometric/                     # Stage 4 outputs (regressions)
+│   └── ... (other hypothesis panels)
+└── econometric/
     ├── manager_clarity/{timestamp}/
-    │   ├── clarity_scores.parquet      # Estimated fixed effects
-    │   ├── manager_clarity_table.tex   # LaTeX output
-    │   └── regression_results_*.txt
-    ├── ceo_clarity/{timestamp}/
-    ├── ceo_clarity_extended/{timestamp}/
-    ├── ceo_clarity_regime/{timestamp}/
-    ├── ceo_tone/{timestamp}/
-    ├── h1_cash_holdings/{timestamp}/
-    ├── h2_investment/{timestamp}/
-    ├── h3_payout_policy/{timestamp}/
-    ├── h4_leverage/{timestamp}/
-    ├── h5_dispersion/{timestamp}/
-    ├── h6_cccl/{timestamp}/
-    ├── h7_illiquidity/{timestamp}/
-    ├── h8_policy_risk/{timestamp}/
-    ├── takeover/{timestamp}/
-    ├── tone_at_top/{timestamp}/
-    └── summary_stats/{timestamp}/
-        ├── descriptive_statistics.csv
-        ├── correlation_matrix.csv
-        └── summary_table.tex
+    └── ... (other hypothesis results)
 ```
 
 ### Key Output Files
