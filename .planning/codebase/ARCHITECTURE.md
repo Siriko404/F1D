@@ -96,7 +96,7 @@
 
 **Private Data Engines (Singleton Pattern):**
 - Purpose: Load expensive data sources once and cache
-- Examples: `CompustatEngine`, `CRSPEngine`, `IBESEngine` (in private modules under `variables/`)
+- Examples: `CompustatEngine`, `CRSPEngine`, `IbesEngine` (in private modules under `variables/`)
 - Pattern:
   - Module-level `_engine = None`
   - `get_engine()` function initializes if None, returns cached instance
@@ -123,10 +123,10 @@
 
 **Structured Logging:**
 - Purpose: Dual-output (console + file) with context propagation
-- Location: `src/f1d/shared/logging/`
+- Location: `src/f1d/shared/observability/logging.py` (DualWriter)
 - Pattern:
   - `DualWriter(log_path)` wraps sys.stdout
-  - Context propagation via `LoggingContext` for request/operation metadata
+  - Context propagation via `OperationContext` for request/operation metadata
   - Configured via `config/project.yaml` (level, format, timestamp_format)
 
 ## Entry Points
@@ -199,7 +199,7 @@
 
 ## Cross-Cutting Concerns
 
-**Logging:** Structured logging with `DualWriter` (console + file) and `LoggingContext` (metadata propagation). Configured via `config/project.yaml` (level, format).
+**Logging:** Structured logging with `DualWriter` (console + file) and `OperationContext` (metadata propagation). Configured via `config/project.yaml` (level, format).
 
 **Validation:** Multi-layer validation:
   - Input file existence via `validate_input_file()`

@@ -101,7 +101,7 @@ except ImportError:
 
 **Custom Exceptions (from `src/f1d/shared/`):**
 - `DataValidationError`: Input data validation failures (`src/f1d/shared/data_validation.py`)
-- `FinancialCalculationError`: Financial calculation failures (missing gvkey, no data)
+- `FinancialCalculationError`: Financial calculation failures (`src/f1d/shared/data_validation.py`)
 - `CollinearityError`: Perfect multicollinearity in regression (`src/f1d/shared/panel_ols.py`, `src/f1d/shared/diagnostics.py`)
 - `MulticollinearityError`: High VIF threshold exceeded
 - `EnvValidationError`: Environment variable validation errors (`src/f1d/shared/env_validation.py`)
