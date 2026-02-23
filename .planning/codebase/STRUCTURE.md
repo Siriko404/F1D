@@ -73,12 +73,12 @@ F1D/
   - `logging/`: Structured logging (`config.py`, `context.py`, `handlers.py`)
   - `observability/`: Memory tracking, throughput, checksums (`memory.py`, `throughput.py`, `files.py`, `stats.py`, `anomalies.py`)
   - `variables/`: 50+ variable builders (`base.py`, `cash_holdings.py`, `size.py`, `lev.py`, `manager_qa_uncertainty.py`, etc.)
-  - Core utilities: `panel_ols.py`, `iv_regression.py`, `data_validation.py`, `path_utils.py`, `chunked_reader.py`, `string_matching.py`, `financial_utils.py`, `industry_utils.py`, `centering.py`
+  - Core utilities: `panel_ols.py`, `iv_regression.py`, `data_validation.py`, `path_utils.py`, `chunked_reader.py`, `string_matching.py`, `financial_utils.py`, `industry_utils.py`, `centering.py`, `subprocess_validation.py`, `dependency_checker.py`, `diagnostics.py`, `regression_validation.py`, `output_schemas.py`, `dual_writer.py`
 
 **src/f1d/sample/:**
 - Purpose: Stage 1 sample construction scripts
-- Contains: `clean_metadata.py`, `link_entities.py`, `build_tenure_map.py`, `assemble_manifest.py`
-- Key files: `link_entities.py` (4-tier fuzzy matching), `assemble_manifest.py` (final manifest assembly)
+- Contains: `clean_metadata.py`, `link_entities.py`, `build_tenure_map.py`, `assemble_manifest.py`, `build_sample_manifest.py`, `utils.py`
+- Key files: `link_entities.py` (4-tier fuzzy matching), `assemble_manifest.py` (final manifest assembly), `build_sample_manifest.py` (orchestrator)
 
 **src/f1d/text/:**
 - Purpose: Stage 2 text processing scripts
@@ -92,8 +92,8 @@ F1D/
 
 **src/f1d/econometric/:**
 - Purpose: Stage 4 econometric regression scripts
-- Contains: `run_h0_*.py`, `run_h1_cash_holdings.py`, `run_h2_investment.py`, `run_h3_payout_policy.py`, `run_h4_leverage.py`, `run_h5_dispersion.py`, `run_h6_cccl.py`, `run_h7_illiquidity.py`, `run_h8_policy_risk.py`, `run_h9_takeover_hazards.py`, `run_h10_tone_at_top.py`
-- Key files: `run_h1_cash_holdings.py` (firm-clustered SEs, one-tailed hypothesis tests, LaTeX table generation)
+- Contains: `run_h0_*.py`, `run_h1_cash_holdings.py`, `run_h2_investment.py`, `run_h3_payout_policy.py`, `run_h4_leverage.py`, `run_h5_dispersion.py`, `run_h6_cccl.py`, `run_h7_illiquidity.py`, `run_h8_policy_risk.py`, `run_h9_takeover_hazards.py`, `run_h10_tone_at_top.py`, `generate_h03_complete_table.py`
+- Key files: `run_h1_cash_holdings.py` (firm-clustered SEs, one-tailed hypothesis tests, LaTeX table generation), `generate_h03_complete_table.py` (LaTeX table generator for H03)
 
 **src/f1d/reporting/:**
 - Purpose: Summary statistics and descriptive tables

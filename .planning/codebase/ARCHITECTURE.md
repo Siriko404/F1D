@@ -44,7 +44,7 @@
 **Layer 4: Panel Builders (Stage 3)**
 - Purpose: Assemble regression-ready panels by merging manifest + variables
 - Location: `src/f1d/variables/`
-- Contains: `build_h0_*.py`, `build_h1_cash_holdings_panel.py`, `build_h2_investment_panel.py`, `build_h3_payout_policy_panel.py`, `build_h4_leverage_panel.py`, `build_h5_dispersion_panel.py`, `build_h6_cccl_panel.py`, `build_h7_illiquidity_panel.py`, `build_h8_policy_risk_panel.py`, `build_h9_takeover_panel.py`, `build_h10_tone_at_top_panel.py`
+- Contains: `build_h0_1_manager_clarity_panel.py`, `build_h0_2_ceo_clarity_panel.py`, `build_h0_3_ceo_clarity_extended_panel.py`, `build_h0_5_ceo_tone_panel.py`, `build_h1_cash_holdings_panel.py`, `build_h2_investment_panel.py`, `build_h3_payout_policy_panel.py`, `build_h4_leverage_panel.py`, `build_h5_dispersion_panel.py`, `build_h6_cccl_panel.py`, `build_h7_illiquidity_panel.py`, `build_h8_policy_risk_panel.py`, `build_h9_takeover_panel.py`, `build_h10_tone_at_top_panel.py`
 - Depends on: `f1d.shared.variables` (all variable builders), `f1d.sample` (manifest output)
 - Used by: Stage 4 econometric scripts
 
@@ -96,7 +96,7 @@
 
 **Private Data Engines (Singleton Pattern):**
 - Purpose: Load expensive data sources once and cache
-- Examples: `CompustatEngine`, `CRSPEngine`, `IbesEngine` (in private modules under `variables/`)
+- Examples: `CompustatEngine`, `CRSPEngine`, `IbesEngine`, `HassanEngine` (in private modules under `variables/`)
 - Pattern:
   - Module-level `_engine = None`
   - `get_engine()` function initializes if None, returns cached instance

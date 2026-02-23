@@ -59,7 +59,8 @@ tests/
 ├── performance/                   # Performance regression tests
 ├── regression/                   # Output stability tests
 ├── unit/                         # Unit tests
-└── verification/                  # Script dry-run verification
+├── utils/                        # Test utilities (regression_test_harness.py)
+└── verification/                  # Dry-run verification tests (5 scripts)
 ```
 
 ## Test Structure

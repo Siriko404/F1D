@@ -68,6 +68,10 @@ The following datasets must be present in `inputs/` before running the pipeline.
 | `inputs/CRSPCompustat_CCM/` | CCM linktable | WRDS CCM |
 | `inputs/SDC/` | SDC M&A data | Refinitiv SDC |
 | `inputs/CCCL_instrument/` | CEO turnover instrument | Constructed from executive data |
+| `inputs/Execucomp/` | Executive compensation data | Execucomp |
+| `inputs/FirmLevelRisk/` | Hassan policy risk data | Hassan et al. |
+| `inputs/Manager_roles/` | Manager role classification | Constructed |
+| `inputs/SEC_Edgar_Letters/` | SEC correspondence data | SEC EDGAR |
 
 ### System Requirements
 
