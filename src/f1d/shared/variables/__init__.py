@@ -239,6 +239,9 @@ __all__ = [
     # Panel-building utilities
     "assign_industry_sample",
     "attach_fyearq",
+    # Winsorization utilities
+    "winsorize_by_year",
+    "winsorize_pooled",
 ]
 
 # H3 Payout Policy
@@ -267,3 +270,6 @@ from .ceo_style_realtime import CEOStyleRealtimeBuilder
 
 # Panel-building utilities (canonical shared helpers — all panel builders must import from here)
 from .panel_utils import assign_industry_sample, attach_fyearq
+
+# Winsorization utilities
+from .winsorization import winsorize_by_year, winsorize_pooled

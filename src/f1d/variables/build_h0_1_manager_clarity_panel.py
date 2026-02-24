@@ -202,6 +202,9 @@ def build_panel(
     if "year" not in panel.columns and "start_date" in panel.columns:
         panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 
+    # NOTE: Winsorization now applied at engine level (CRSPEngine, LinguisticEngine)
+    # for consistency across all hypothesis suites. No panel-level winsorization needed.
+
     # Collect all summary stats
     stats_list = []
     for name, result in all_results.items():

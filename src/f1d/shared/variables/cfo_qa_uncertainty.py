@@ -95,6 +95,7 @@ class CFOQAUncertaintyBuilder(VariableBuilder):
             )
 
         combined = pd.concat(all_data, ignore_index=True)
+        combined = self._finalize_data(combined)  # Pooled 1%/99% winsorization
         stats = self.get_stats(combined[self.column], self.column)
 
         return VariableResult(

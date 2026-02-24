@@ -1,23 +1,24 @@
 """Builder for Manager Q&A Uncertainty variable.
 
-Loads Manager_QA_Uncertainty_pct from Stage 2 linguistic variables output.
+Queries the shared LinguisticEngine for Manager_QA_Uncertainty_pct.
+Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import pandas as pd
 
 from .base import VariableBuilder, VariableResult, VariableStats
+from ._linguistic_engine import get_engine
 
 
 class ManagerQAUncertaintyBuilder(VariableBuilder):
-    """Build Manager Q&A Uncertainty variable from Stage 2 outputs.
+    """Build Manager Q&A Uncertainty variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    File: linguistic_variables_{year}.parquet
     Column: Manager_QA_Uncertainty_pct
 
     Example:
@@ -27,16 +28,15 @@ class ManagerQAUncertaintyBuilder(VariableBuilder):
     """
 
     def __init__(self, config: Dict[str, Any]):
-        """Initialize with variable config.
-
-        Args:
-            config: Must contain 'source', 'file_pattern', 'column'
-        """
+        """Initialize with variable config."""
         super().__init__(config)
         self.column = config.get("column", "Manager_QA_Uncertainty_pct")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         """Build Manager Q&A Uncertainty variable.
+
+        Queries the LinguisticEngine singleton which loads all linguistic
+        variables once, applies pooled winsorization, and caches the result.
 
         Args:
             years: Range of years to process
@@ -45,20 +45,10 @@ class ManagerQAUncertaintyBuilder(VariableBuilder):
         Returns:
             VariableResult with file_name and Manager_QA_Uncertainty_pct columns
         """
-        source_dir = self.resolve_source_dir(root_path)
-        all_data: List[pd.DataFrame] = []
+        engine = get_engine()
+        all_data = engine.get_data(root_path, years)
 
-        for year in years:
-            df = self.load_year_file(source_dir, year)
-            if df is not None:
-                # Select only needed columns
-                cols = ["file_name"]
-                if self.column in df.columns:
-                    cols.append(self.column)
-                all_data.append(df[cols])
-
-        if not all_data:
-            # Return empty result with proper schema
+        if self.column not in all_data.columns:
             return VariableResult(
                 data=pd.DataFrame(columns=["file_name", self.column]),
                 stats=VariableStats(
@@ -74,16 +64,16 @@ class ManagerQAUncertaintyBuilder(VariableBuilder):
                     n_missing=0,
                     pct_missing=100.0
                 ),
-                metadata={"source": str(source_dir), "column": self.column}
+                metadata={"source": "LinguisticEngine", "column": self.column}
             )
 
-        combined = pd.concat(all_data, ignore_index=True)
-        stats = self.get_stats(combined[self.column], self.column)
+        data = all_data[["file_name", self.column]].copy()
+        stats = self.get_stats(data[self.column], self.column)
 
         return VariableResult(
-            data=combined[["file_name", self.column]],
+            data=data,
             stats=stats,
-            metadata={"source": str(source_dir), "column": self.column}
+            metadata={"source": "LinguisticEngine", "column": self.column}
         )
 
 

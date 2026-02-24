@@ -1,6 +1,7 @@
 """Builder for Manager Presentation Uncertainty variable.
 
-Loads Manager_Pres_Uncertainty_pct from Stage 2 linguistic variables output.
+Queries the shared LinguisticEngine for Manager_Pres_Uncertainty_pct.
+Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
 from __future__ import annotations
@@ -8,14 +9,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict
 
+import pandas as pd
+
 from .base import VariableBuilder, VariableResult, VariableStats
+from ._linguistic_engine import get_engine
 
 
 class ManagerPresUncertaintyBuilder(VariableBuilder):
-    """Build Manager Presentation Uncertainty variable from Stage 2 outputs.
+    """Build Manager Presentation Uncertainty variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    File: linguistic_variables_{year}.parquet
     Column: Manager_Pres_Uncertainty_pct
     """
 
@@ -24,38 +27,26 @@ class ManagerPresUncertaintyBuilder(VariableBuilder):
         self.column = config.get("column", "Manager_Pres_Uncertainty_pct")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
-        from .manager_qa_uncertainty import ManagerQAUncertaintyBuilder
+        engine = get_engine()
+        all_data = engine.get_data(root_path, years)
 
-        source_dir = self.resolve_source_dir(root_path)
-        all_data = []
-
-        for year in years:
-            df = self.load_year_file(source_dir, year)
-            if df is not None:
-                cols = ["file_name"]
-                if self.column in df.columns:
-                    cols.append(self.column)
-                all_data.append(df[cols])
-
-        if not all_data:
-            import pandas as pd
+        if self.column not in all_data.columns:
             return VariableResult(
                 data=pd.DataFrame(columns=["file_name", self.column]),
                 stats=VariableStats(
                     name=self.column, n=0, mean=0.0, std=0.0, min=0.0,
                     p25=0.0, median=0.0, p75=0.0, max=0.0, n_missing=0, pct_missing=100.0
                 ),
-                metadata={"source": str(source_dir), "column": self.column}
+                metadata={"source": "LinguisticEngine", "column": self.column}
             )
 
-        import pandas as pd
-        combined = pd.concat(all_data, ignore_index=True)
-        stats = self.get_stats(combined[self.column], self.column)
+        data = all_data[["file_name", self.column]].copy()
+        stats = self.get_stats(data[self.column], self.column)
 
         return VariableResult(
-            data=combined[["file_name", self.column]],
+            data=data,
             stats=stats,
-            metadata={"source": str(source_dir), "column": self.column}
+            metadata={"source": "LinguisticEngine", "column": self.column}
         )
 
 

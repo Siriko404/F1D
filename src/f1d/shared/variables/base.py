@@ -152,6 +152,28 @@ class VariableBuilder:
             pct_missing=100.0 * n_missing / total if total > 0 else 0.0
         )
 
+    def _finalize_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Apply standard post-processing (winsorization) after data loading.
+
+        Subclasses should call this after combining all years' data:
+            combined = pd.concat(all_data, ignore_index=True)
+            combined = self._finalize_data(combined)  # <-- Add this line
+
+        Only applies winsorization if self.column is set and exists in df.
+        Skips if self._skip_winsorization is True.
+        """
+        # Skip if explicitly disabled or column not set
+        if getattr(self, '_skip_winsorization', False):
+            return df
+        if not hasattr(self, 'column') or not self.column:
+            return df
+        if self.column not in df.columns:
+            return df
+
+        from .winsorization import winsorize_pooled
+        df = winsorize_pooled(df, [self.column])
+        return df
+
     def resolve_source_dir(self, root_path: Path) -> Path:
         """Resolve source directory to the timestamp subdirectory with most files.
 

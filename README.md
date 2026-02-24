@@ -177,20 +177,36 @@ The pipeline enforces a strict four-stage architecture with clear data contracts
 
 ### Private Data Engines
 
-Expensive data sources (Compustat, CRSP, IBES) are loaded once via module-level singletons:
+Expensive data sources (Compustat, CRSP, IBES, Linguistic) are loaded once via module-level singletons:
 
 ```python
-# src/f1d/shared/variables/_compustat_engine.py
+# src/f1d/shared/variables/_linguistic_engine.py
 _engine = None
 
 def get_engine():
     global _engine
     if _engine is None:
-        _engine = CompustatEngine()  # Load once, cache in memory
+        _engine = LinguisticEngine()  # Load once, cache in memory
     return _engine
 ```
 
-All variable builders call `get_engine()`, ensuring Compustat is read exactly once per panel build.
+All variable builders call `get_engine()`, ensuring data is read exactly once per panel build.
+
+#### Engine-Level Winsorization
+
+All engines apply **1%/99% winsorization** at load time to ensure consistent outlier treatment across ALL hypothesis suites:
+
+| Engine | Method | Variables Winsorized |
+|--------|--------|---------------------|
+| **CompustatEngine** | Per-year 1%/99% | Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, etc. |
+| **CRSPEngine** | Per-year 1%/99% | StockRet, MarketRet, Volatility, amihud_illiq |
+| **LinguisticEngine** | Pooled 1%/99% | All 25 linguistic percentage columns (_pct) |
+
+**Why different methods?**
+- **CRSP variables**: Returns vary by year (bull/bear markets), so per-year preserves cross-sectional info
+- **Linguistic percentages**: Distributions stable across years (inter-year 99th pct variance < 2pp), so pooled avoids over-clipping thin years
+
+Panel builders (H0.1-H10) receive **already-winsorized** data and do NOT apply additional winsorization.
 
 ---
 
@@ -557,12 +573,13 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 
 ### Data Engines (Private Singletons)
 
-| Module | Input Source | Variables Computed |
-|--------|--------------|-------------------|
-| `_compustat_engine.py` | Compustat quarterly | Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, EPS_Growth, CashHoldings, TobinsQ, CapexAt, DividendPayer, OCF_Volatility |
-| `_crsp_engine.py` | CRSP daily + CCM | StockRet, MarketRet, Volatility |
-| `_ibes_engine.py` | IBES forecasts | SurpDec, Dispersion |
-| `_hassan_engine.py` | Policy risk data | PRiskFY |
+| Module | Input Source | Variables Computed | Winsorization |
+|--------|--------------|-------------------|---------------|
+| `_compustat_engine.py` | Compustat quarterly | Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, EPS_Growth, CashHoldings, TobinsQ, CapexAt, DividendPayer, OCF_Volatility | Per-year 1%/99% |
+| `_crsp_engine.py` | CRSP daily + CCM | StockRet, MarketRet, Volatility, amihud_illiq | Per-year 1%/99% |
+| `_linguistic_engine.py` | Stage 2 linguistic vars | All 25 _pct columns (uncertainty, sentiment, modal) | Pooled 1%/99% |
+| `_ibes_engine.py` | IBES forecasts | SurpDec, Dispersion | None (bounded) |
+| `_hassan_engine.py` | Policy risk data | PRiskFY | None |
 
 ### Linguistic Variable Builders
 
@@ -861,4 +878,4 @@ For questions or issues, please open a GitHub issue or contact the thesis author
 
 ---
 
-*Last updated: 2026-02-21*
+*Last updated: 2026-02-23*

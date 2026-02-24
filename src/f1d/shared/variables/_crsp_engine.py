@@ -394,6 +394,42 @@ class CRSPEngine:
                     if c not in result.columns:
                         result[c] = float("nan")
 
+            # === WINSORIZATION: Per-year 1%/99% for CRSP variables ===
+            # This ensures consistent outlier treatment across ALL hypothesis suites
+            from .winsorization import winsorize_by_year
+
+            # Build year lookup from full_manifest
+            year_lookup = full_manifest[["file_name", "year"]].drop_duplicates()
+            assert year_lookup["file_name"].is_unique, (
+                f"Duplicate file_name in full_manifest year lookup: "
+                f"{year_lookup['file_name'].duplicated().sum()} duplicates"
+            )
+
+            # Merge year back onto result for per-year winsorization
+            result_with_year = result.merge(year_lookup, on="file_name", how="left")
+            assert "year" in result_with_year.columns, (
+                "year column missing after merge - check full_manifest schema"
+            )
+
+            # Warn about orphaned records (no year match after merge)
+            orphaned = result_with_year["year"].isna().sum()
+            if orphaned > 0:
+                logger.warning(
+                    f"CRSPEngine: {orphaned:,} records have NaN year after merge - "
+                    f"these will not be winsorized (may be calls outside manifest date range)"
+                )
+
+            # Apply per-year winsorization to CRSP variables
+            result_with_year = winsorize_by_year(
+                result_with_year,
+                CRSP_RETURN_COLS,
+                year_col="year"
+            )
+
+            # Drop year column (engine output should only have file_name + variable cols)
+            result = result_with_year[["file_name"] + CRSP_RETURN_COLS]
+            # === END WINSORIZATION ===
+
             self._cache = result
             self._cache_root = root_path
             return result
