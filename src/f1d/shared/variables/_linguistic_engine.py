@@ -1,7 +1,7 @@
 """Private Linguistic compute engine.
 
 Loads Stage 2 linguistic variables (uncertainty, sentiment, modal percentages)
-from year-partitioned parquet files, applies pooled winsorization to all
+from year-partitioned parquet files, applies per-year winsorization to all
 percentage columns, and caches the result.
 
 All linguistic variable builders (ManagerQAUncertaintyBuilder, CEOQAPositiveBuilder,
@@ -21,7 +21,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-# All percentage columns from Stage 2 that need pooled winsorization
+# All percentage columns from Stage 2 that need per-year winsorization
 # These are the columns that end with _pct in linguistic_variables_{year}.parquet
 #
 # NOTE: This list must be kept in sync with Stage 2 output schema.
@@ -88,7 +88,7 @@ class LinguisticEngine:
     ) -> pd.DataFrame:
         """Return fully-loaded linguistic variables DataFrame (cached).
 
-        Loads all linguistic variables from Stage 2 outputs, applies pooled
+        Loads all linguistic variables from Stage 2 outputs, applies per-year
         1%/99% winsorization to all percentage columns, and caches the result.
 
         Args:
@@ -97,7 +97,7 @@ class LinguisticEngine:
 
         Returns:
             DataFrame with file_name + all linguistic percentage columns,
-            winsorized at 1%/99% pooled.
+            winsorized at 1%/99% per-year.
         """
         # Fast path — no lock needed
         if self._is_cached(root_path):
@@ -148,10 +148,16 @@ class LinguisticEngine:
             combined = pd.concat(all_data, ignore_index=True)
             logger.info(f"  Combined: {len(combined):,} rows, {len(combined.columns)} columns")
 
-            # === WINSORIZATION: Pooled 1%/99% for all percentage columns ===
-            # Linguistic percentages are stable across years (inter-year 99th pct variance < 2pp)
-            # so pooled winsorization avoids over-clipping thin years without look-ahead bias
-            from .winsorization import winsorize_pooled
+            # === WINSORIZATION: Per-year 1%/99% for all percentage columns ===
+            # Per-year winsorization ensures "high for that year" semantics and handles
+            # any potential language evolution or regime-dependent communication patterns
+            from .winsorization import winsorize_by_year
+
+            # Extract year from file_name if not already present
+            # file_name format: "transcript_2010_12345.txt" or similar
+            if "year" not in combined.columns:
+                combined["year"] = combined["file_name"].str.extract(r"_(\d{4})_")[0].astype(int)
+                logger.info(f"  Extracted year from file_name for per-year winsorization")
 
             # Find which percentage columns actually exist in the data
             existing_pct_cols = [c for c in LINGUISTIC_PCT_COLUMNS if c in combined.columns]
@@ -168,8 +174,8 @@ class LinguisticEngine:
                 existing_pct_cols.extend(dynamic_pct_cols)
 
             if existing_pct_cols:
-                combined = winsorize_pooled(combined, existing_pct_cols)
-                logger.info(f"  Winsorized {len(existing_pct_cols)} percentage columns (pooled 1%/99%)")
+                combined = winsorize_by_year(combined, existing_pct_cols, year_col="year")
+                logger.info(f"  Winsorized {len(existing_pct_cols)} percentage columns (per-year 1%/99%)")
             # === END WINSORIZATION ===
 
             self._cache = combined

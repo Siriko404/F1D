@@ -194,17 +194,18 @@ All variable builders call `get_engine()`, ensuring data is read exactly once pe
 
 #### Engine-Level Winsorization
 
-All engines apply **1%/99% winsorization** at load time to ensure consistent outlier treatment across ALL hypothesis suites:
+All engines apply **per-year 1%/99% winsorization** at load time to ensure consistent outlier treatment across ALL hypothesis suites:
 
 | Engine | Method | Variables Winsorized |
 |--------|--------|---------------------|
 | **CompustatEngine** | Per-year 1%/99% | Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, etc. |
 | **CRSPEngine** | Per-year 1%/99% | StockRet, MarketRet, Volatility, amihud_illiq |
-| **LinguisticEngine** | Pooled 1%/99% | All 25 linguistic percentage columns (_pct) |
+| **LinguisticEngine** | Per-year 1%/99% | All 25 linguistic percentage columns (_pct) |
 
-**Why different methods?**
-- **CRSP variables**: Returns vary by year (bull/bear markets), so per-year preserves cross-sectional info
-- **Linguistic percentages**: Distributions stable across years (inter-year 99th pct variance < 2pp), so pooled avoids over-clipping thin years
+**Why per-year for all variables?**
+- Preserves "high for that year" semantics - what's extreme in 2008 (crisis) differs from 2017 (bull market)
+- Handles potential language evolution and regime-dependent communication patterns over 17 years
+- Standard approach in panel data econometrics
 
 Panel builders (H0.1-H10) receive **already-winsorized** data and do NOT apply additional winsorization.
 
@@ -577,7 +578,7 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 |--------|--------------|-------------------|---------------|
 | `_compustat_engine.py` | Compustat quarterly | Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, EPS_Growth, CashHoldings, TobinsQ, CapexAt, DividendPayer, OCF_Volatility | Per-year 1%/99% |
 | `_crsp_engine.py` | CRSP daily + CCM | StockRet, MarketRet, Volatility, amihud_illiq | Per-year 1%/99% |
-| `_linguistic_engine.py` | Stage 2 linguistic vars | All 25 _pct columns (uncertainty, sentiment, modal) | Pooled 1%/99% |
+| `_linguistic_engine.py` | Stage 2 linguistic vars | All 25 _pct columns (uncertainty, sentiment, modal) | Per-year 1%/99% |
 | `_ibes_engine.py` | IBES forecasts | SurpDec, Dispersion | None (bounded) |
 | `_hassan_engine.py` | Policy risk data | PRiskFY | None |
 
