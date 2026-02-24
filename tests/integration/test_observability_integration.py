@@ -23,43 +23,44 @@ def repo_root():
 
 
 def check_script_observability(script_path):
-    """Verify observability features via regex pattern matching."""
+    """Verify observability features via regex pattern matching.
+
+    Supports both the legacy inline style (functions defined in-script) and
+    the modern import style (functions imported from f1d.shared.observability).
+    """
     with open(script_path) as f:
         content = f.read()
 
-    # Check required imports
-    assert re.search(r"^import psutil\b", content, re.MULTILINE), (
-        "Missing psutil import"
-    )
-    assert (
-        re.search(r"^from shared\.path_utils import", content, re.MULTILINE),
-        "Missing path_utils import",
-    )
+    # Check that memory tracking is present (import or inline definition)
+    assert re.search(
+        r"get_process_memory_mb",
+        content,
+    ), "Missing memory tracking (get_process_memory_mb)"
 
-    # Check required functions
-    assert (
-        re.search(r"^def get_process_memory_mb\(", content, re.MULTILINE),
-        "Missing memory tracking",
-    )
-    assert (
-        re.search(r"^def calculate_throughput\(", content, re.MULTILINE),
-        "Missing throughput calculation",
-    )
-    assert (
-        re.search(r"^def detect_anomalies_zscore\(", content, re.MULTILINE),
-        "Missing z-score anomaly detection",
-    )
-    assert (
-        re.search(r"^def detect_anomalies_iqr\(", content, re.MULTILINE),
-        "Missing IQR anomaly detection",
-    )
+    # Check that throughput calculation is present
+    assert re.search(
+        r"calculate_throughput",
+        content,
+    ), "Missing throughput calculation"
+
+    # Check that z-score anomaly detection is present
+    assert re.search(
+        r"detect_anomalies_zscore",
+        content,
+    ), "Missing z-score anomaly detection"
+
+    # Check that path utilities are imported
+    assert re.search(
+        r"path_utils import",
+        content,
+    ), "Missing path_utils import"
 
 
 class TestObservabilityIntegration:
     """Integration tests for observability features across Steps 1 and 2 scripts."""
 
     def test_1_1_observability(self, repo_root):
-        """Test that 1.1_CleanMetadata.py has observability features."""
-        script_path = repo_root / "2_Scripts/1_Sample/1.1_CleanMetadata.py"
+        """Test that clean_metadata.py has observability features."""
+        script_path = repo_root / "src/f1d/sample/clean_metadata.py"
         check_script_observability(script_path)
-        print("✓ 1.1_CleanMetadata.py has observability features")
+        print("✓ clean_metadata.py has observability features")

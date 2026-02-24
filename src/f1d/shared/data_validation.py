@@ -93,25 +93,33 @@ class FinancialCalculationError(Exception):
 
 
 def validate_dataframe_schema(
-    df: pd.DataFrame, schema_name: str, file_path: Path, strict: bool = True
+    df: pd.DataFrame,
+    schema_name: "str | Dict[str, Any]",
+    file_path: Path,
+    strict: bool = True,
 ) -> None:
     """
     Validate DataFrame against expected schema.
 
     Args:
         df: DataFrame to validate
-        schema_name: Name of schema to use (key in INPUT_SCHEMAS)
+        schema_name: Either a string key into INPUT_SCHEMAS, or an inline schema
+                     dict with keys ``required_columns``, ``column_types``,
+                     ``value_ranges`` (any subset).
         file_path: Path to source file (for error messages)
         strict: If True, raise on validation failure; if False, warn and continue
 
     Raises:
         DataValidationError: If validation fails and strict=True
     """
-    if schema_name not in INPUT_SCHEMAS:
+    if isinstance(schema_name, dict):
+        # Caller passed an inline schema dict directly
+        schema = schema_name
+    elif schema_name not in INPUT_SCHEMAS:
         print(f"WARNING: No schema defined for {schema_name}, skipping validation")
         return
-
-    schema = INPUT_SCHEMAS[schema_name]
+    else:
+        schema = INPUT_SCHEMAS[schema_name]
     errors = []
 
     # Check required columns

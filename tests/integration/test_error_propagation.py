@@ -13,53 +13,81 @@ from f1d.shared.data_validation import FinancialCalculationError
 @pytest.fixture
 def sample_input_df():
     """Create sample input DataFrame for integration test."""
-    return pd.DataFrame({
-        "gvkey": ["001234", "001235", "bad_key"],  # One will fail
-        "year": [2018, 2018, 2018],
-    })
+    return pd.DataFrame(
+        {
+            "gvkey": ["001234", "001235", "bad_key"],  # One will fail
+            "year": [2018, 2018, 2018],
+        }
+    )
 
 
 @pytest.fixture
 def sample_compustat_df():
     """Create sample Compustat data."""
-    return pd.DataFrame({
-        "gvkey": ["001234", "001235"],
-        "fyear": [2018, 2018],
-        "at": [1000, 500],
-        "dlc": [200, 100],
-        "dltt": [300, 150],
-        "oibdp": [100, 50],
-        "prcc_f": [10, 5],
-        "csho": [100, 50],
-        "ceq": [400, 200],
-        "capx": [50, 25],
-        "xrd": [20, 10],
-        "dvc": [10, 5],
-    })
+    return pd.DataFrame(
+        {
+            "gvkey": ["001234", "001235"],
+            "fyear": [2018, 2018],
+            "at": [1000, 500],
+            "dlc": [200, 100],
+            "dltt": [300, 150],
+            "oibdp": [100, 50],
+            "prcc_f": [10, 5],
+            "csho": [100, 50],
+            "ceq": [400, 200],
+            "capx": [50, 25],
+            "xrd": [20, 10],
+            "dvc": [10, 5],
+        }
+    )
 
 
-def test_error_propagates_from_calculate_firm_controls(sample_input_df, sample_compustat_df):
-    """Test that FinancialCalculationError propagates through compute_financial_features.
+def test_error_propagates_from_calculate_firm_controls(
+    sample_input_df, sample_compustat_df
+):
+    """Test that compute_financial_features handles unmatched gvkeys gracefully.
 
-    This test verifies the NEW behavior where exceptions are NOT silently caught.
-    Previously, the 'if controls:' check would drop rows with missing data silently.
-    Now, calculate_firm_controls() raises FinancialCalculationError which propagates.
+    compute_financial_features uses a vectorized LEFT JOIN: rows whose gvkey has
+    no match in Compustat receive NaN for all financial control columns rather
+    than raising an exception.  FinancialCalculationError is raised only by the
+    lower-level calculate_firm_controls() helper (see
+    test_calculate_firm_controls_raises_directly).
     """
-    # After the fix: FinancialCalculationError is raised and propagates
-    with pytest.raises(FinancialCalculationError) as exc_info:
-        compute_financial_features(sample_input_df, sample_compustat_df)
+    result = compute_financial_features(sample_input_df, sample_compustat_df)
 
-    error_msg = str(exc_info.value)
-    assert "no compustat data found" in error_msg.lower()
-    assert "bad_key" in error_msg
+    # All three input rows are preserved (LEFT JOIN keeps unmatched rows)
+    assert len(result) == 3
+
+    # bad_key row has NaN for every financial control
+    bad_row = result[result["gvkey"] == "bad_key"]
+    assert len(bad_row) == 1
+    for col in (
+        "size",
+        "leverage",
+        "profitability",
+        "market_to_book",
+        "capex_intensity",
+        "r_intensity",
+    ):
+        assert pd.isna(bad_row.iloc[0][col]), f"Expected NaN for {col} on bad_key row"
+
+    # Valid rows have non-NaN financial controls
+    for gvkey in ("001234", "001235"):
+        valid_row = result[result["gvkey"] == gvkey]
+        assert len(valid_row) == 1
+        assert not pd.isna(valid_row.iloc[0]["size"]), (
+            f"size should not be NaN for {gvkey}"
+        )
 
 
 def test_compute_financial_features_handles_all_valid_data(sample_compustat_df):
     """Test that compute_financial_features works correctly when all data is valid."""
-    valid_df = pd.DataFrame({
-        "gvkey": ["001234", "001235"],
-        "year": [2018, 2018],
-    })
+    valid_df = pd.DataFrame(
+        {
+            "gvkey": ["001234", "001235"],
+            "year": [2018, 2018],
+        }
+    )
 
     result = compute_financial_features(valid_df, sample_compustat_df)
 

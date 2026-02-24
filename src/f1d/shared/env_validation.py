@@ -37,6 +37,16 @@ from typing import Any, Dict
 
 # Define environment variable schema
 ENV_SCHEMA = {
+    "WRDS_USERNAME": {
+        "required": False,
+        "type": str,
+        "description": "WRDS (Wharton Research Data Services) username",
+    },
+    "WRDS_PASSWORD": {
+        "required": False,
+        "type": str,
+        "description": "WRDS (Wharton Research Data Services) password",
+    },
     "API_TIMEOUT_SECONDS": {
         "required": False,
         "type": int,

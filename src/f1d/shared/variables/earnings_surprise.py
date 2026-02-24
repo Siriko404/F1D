@@ -33,7 +33,7 @@ Bug fixes applied here (from red-team audit):
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -155,35 +155,65 @@ class EarningsSurpriseBuilder(VariableBuilder):
         ccm_cusip = ccm[["cusip8", "gvkey"]].drop_duplicates().dropna()
 
         ibes_linked = ibes.merge(ccm_cusip, on="cusip8", how="inner")
-        ibes_grouped = {gvkey: grp for gvkey, grp in ibes_linked.groupby("gvkey")}
 
-        # Match each call to nearest IBES forecast
-        results: List[Dict[str, Any]] = []
-        matched = 0
+        # --- Vectorized match (replaces iterrows loop) ---
+        # Strategy (reverting to legacy logic order, but fully vectorized):
+        #   1. Inner merge manifest and IBES on gvkey (creates all possible call-forecast pairs per firm).
+        #   2. Filter pairs where FPEDATS is within ±45 days of the call start_date FIRST.
+        #   3. Filter pairs where STATPERS <= start_date (pre-call consensus).
+        #   4. For each call (file_name), pick the forecast with the max STATPERS (most recent).
 
-        for _, row in manifest.iterrows():
-            gvkey = row["gvkey"]
-            call_date = row["start_date"]
-            result: Dict[str, Any] = {
-                "file_name": row["file_name"],
-                "surprise_raw": np.nan,
-            }
+        ibes_cols = ibes_linked[
+            ["gvkey", "STATPERS", "FPEDATS", "surprise_raw"]
+        ].dropna(subset=["STATPERS", "FPEDATS", "surprise_raw"])
+        window = pd.Timedelta(days=45)
 
-            if gvkey in ibes_grouped:
-                firm_ibes = ibes_grouped[gvkey]
-                mask = (
-                    (firm_ibes["FPEDATS"] >= call_date - pd.Timedelta(days=45))
-                    & (firm_ibes["FPEDATS"] <= call_date + pd.Timedelta(days=45))
-                    & (firm_ibes["STATPERS"] <= call_date)
-                )
-                if mask.any():
-                    # --- CRITICAL-5: Sort by STATPERS, take most recent pre-call row ---
-                    best_row = firm_ibes.loc[mask].sort_values("STATPERS").iloc[-1]
-                    result["surprise_raw"] = float(best_row["surprise_raw"])
-                    matched += 1
+        # 1. Cross-join per gvkey (chunked to avoid memory explosion)
+        # An unchunked cross-join creates an 84-million row dataframe.
+        # We group by gvkey and process each firm, applying filters immediately.
 
-            results.append(result)
+        ibes_by_gvkey = dict(tuple(ibes_cols.groupby("gvkey")))
+        pieces = []
 
+        for gvkey, m_grp in manifest[["file_name", "gvkey", "start_date"]].groupby(
+            "gvkey"
+        ):
+            i_grp = ibes_by_gvkey.get(gvkey)
+            if i_grp is None or i_grp.empty:
+                continue
+
+            # Cross-join for this single firm
+            merged_grp = pd.merge(m_grp, i_grp, on="gvkey", how="inner")
+
+            # 2. Apply ±45-day FPEDATS window filter FIRST
+            fpedats_valid = (
+                merged_grp["FPEDATS"] >= merged_grp["start_date"] - window
+            ) & (merged_grp["FPEDATS"] <= merged_grp["start_date"] + window)
+            merged_grp = merged_grp[fpedats_valid]
+
+            # 3. Filter to pre-call forecasts (STATPERS <= call start_date)
+            statpers_valid = merged_grp["STATPERS"] <= merged_grp["start_date"]
+            merged_grp = merged_grp[statpers_valid]
+
+            if not merged_grp.empty:
+                pieces.append(merged_grp)
+
+        if not pieces:
+            merged_all = pd.DataFrame(columns=["file_name", "STATPERS", "surprise_raw"])
+        else:
+            merged_all = pd.concat(pieces, ignore_index=True)
+
+        # 4. For each call, keep the most recent consensus (max STATPERS)
+        # Sort by file_name and STATPERS ascending, so the last row per file_name has max STATPERS.
+        merged_all = merged_all.sort_values(["file_name", "STATPERS"])
+        merged_all = merged_all.drop_duplicates(subset=["file_name"], keep="last")
+
+        # Restore original manifest row order
+        results_df = manifest[["file_name"]].merge(
+            merged_all[["file_name", "surprise_raw"]], on="file_name", how="left"
+        )
+
+        matched = int(results_df["surprise_raw"].notna().sum())
         if len(manifest) > 0:
             print(
                 f"    EarningsSurpriseBuilder: matched {matched:,}/{len(manifest):,} "
@@ -191,8 +221,6 @@ class EarningsSurpriseBuilder(VariableBuilder):
             )
         else:
             print(f"    EarningsSurpriseBuilder: empty manifest")
-
-        results_df = pd.DataFrame(results)
 
         # Compute SurpDec within quarter
         manifest_surp = manifest.merge(results_df, on="file_name", how="left")

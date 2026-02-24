@@ -30,7 +30,7 @@ def test_validate_dataframe_schema_empty_dataframe():
     }
 
     # Should not raise for empty DataFrame with no requirements
-    validate_dataframe_schema(df, "test_schema", Path("test.parquet"), strict=False)
+    validate_dataframe_schema(df, schema, Path("test.parquet"), strict=False)
 
 
 def test_validate_dataframe_schema_all_null_columns():
@@ -47,7 +47,7 @@ def test_validate_dataframe_schema_all_null_columns():
     }
 
     # Should not raise for all-null columns (null is valid float)
-    validate_dataframe_schema(df, "test_schema", Path("test.parquet"), strict=False)
+    validate_dataframe_schema(df, schema, Path("test.parquet"), strict=False)
 
 
 def test_validate_dataframe_schema_duplicate_columns():
@@ -59,7 +59,7 @@ def test_validate_dataframe_schema_duplicate_columns():
     }
 
     # Pandas handles duplicate columns, validation should work
-    validate_dataframe_schema(df, "test_schema", Path("test.parquet"), strict=False)
+    validate_dataframe_schema(df, schema, Path("test.parquet"), strict=False)
 
 
 @pytest.mark.skipif(
@@ -80,7 +80,7 @@ def test_validate_dataframe_schema_value_out_of_range():
 
     # Should raise for value outside range
     with pytest.raises(DataValidationError, match="event_type.*above max"):
-        validate_dataframe_schema(df, "test_schema", Path("test.parquet"))
+        validate_dataframe_schema(df, schema, Path("test.parquet"))
 
 
 @pytest.mark.skipif(
@@ -107,13 +107,13 @@ def test_validate_dataframe_schema_various_invalid_values(
 
     if isinstance(invalid_value, str):
         with pytest.raises(DataValidationError, match="type"):
-            validate_dataframe_schema(df, "test_schema", Path("test.parquet"))
+            validate_dataframe_schema(df, schema, Path("test.parquet"))
     elif invalid_value < 0:
         with pytest.raises(DataValidationError, match="below min"):
-            validate_dataframe_schema(df, "test_schema", Path("test.parquet"))
+            validate_dataframe_schema(df, schema, Path("test.parquet"))
     else:
         with pytest.raises(DataValidationError, match="above max"):
-            validate_dataframe_schema(df, "test_schema", Path("test.parquet"))
+            validate_dataframe_schema(df, schema, Path("test.parquet"))
 
 
 @pytest.mark.skipif(
@@ -127,7 +127,7 @@ def test_data_validation_error_messages_are_clear():
     }
 
     try:
-        validate_dataframe_schema(df, "test_schema", Path("test.parquet"))
+        validate_dataframe_schema(df, schema, Path("test.parquet"))
         pytest.fail("Expected DataValidationError")
     except DataValidationError as e:
         error_msg = str(e)

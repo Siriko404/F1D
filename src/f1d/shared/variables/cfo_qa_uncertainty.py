@@ -6,7 +6,6 @@ by applying a strict regex filter for CFO roles.
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -24,13 +23,12 @@ class CFOQAUncertaintyBuilder(VariableBuilder):
     Aggregates by file_name using ratio-of-sums.
     """
 
-    # Narrow CFO role pattern (Option A)
-    CFO_ROLE_PATTERN = re.compile(
-        r"\bCFO\b"
+    # Narrow CFO role pattern (Option A) — used with str.contains() (vectorized)
+    CFO_ROLE_PATTERN = (
+        r"(?i)\bCFO\b"
         r"|Chief\s+Financial"
         r"|Financial\s+Officer"
-        r"|Principal\s+Financial",
-        re.IGNORECASE,
+        r"|Principal\s+Financial"
     )
 
     def __init__(self, config: Dict[str, Any]):
@@ -48,9 +46,10 @@ class CFOQAUncertaintyBuilder(VariableBuilder):
                 df = df[df["context"].str.lower() == "qa"].copy()
                 df = df[df["role"].notna()].copy()
 
-                # Apply CFO pattern
-                is_cfo = df["role"].apply(
-                    lambda x: bool(self.CFO_ROLE_PATTERN.search(str(x)))
+                # Apply CFO pattern — vectorized str.contains() replaces
+                # per-row .apply(lambda: regex.search()), 5-20x faster
+                is_cfo = df["role"].str.contains(
+                    self.CFO_ROLE_PATTERN, regex=True, na=False
                 )
                 df_cfo = df[is_cfo].copy()
 

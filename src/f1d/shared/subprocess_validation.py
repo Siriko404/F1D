@@ -56,8 +56,14 @@ def validate_script_path(script_path: Path, allowed_dir: Path) -> Path:
         Path: Absolute, validated script path
     """
     # Convert to absolute path (resolves symlinks, .., .)
-    script_path = Path(script_path).resolve()
+    # Relative paths are resolved against allowed_dir so that callers can pass
+    # short names like Path("subdir/script.py") without depending on CWD.
     allowed_dir = allowed_dir.resolve()
+    script_path = Path(script_path)
+    if not script_path.is_absolute():
+        script_path = (allowed_dir / script_path).resolve()
+    else:
+        script_path = script_path.resolve()
 
     # Check if script exists
     if not script_path.exists():

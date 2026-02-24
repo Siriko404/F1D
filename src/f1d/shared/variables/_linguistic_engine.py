@@ -29,35 +29,116 @@ logger = logging.getLogger(__name__)
 # A fallback dynamic detection is used in get_data() to catch any _pct columns
 # not in this list.
 LINGUISTIC_PCT_COLUMNS = [
-    # Uncertainty
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Analyst_QA_Uncertainty_pct",
-    "NonCEO_Manager_QA_Uncertainty_pct",
-    "NonCEO_Manager_Pres_Uncertainty_pct",
-    "Entire_All_Uncertainty_pct",
-    # Positive sentiment
-    "Manager_QA_Positive_pct",
-    "Manager_Pres_Positive_pct",
-    "CEO_QA_Positive_pct",
-    "CEO_Pres_Positive_pct",
-    "NonCEO_Manager_QA_Positive_pct",
-    "Analyst_QA_Positive_pct",
-    # Negative sentiment
-    "Manager_QA_Negative_pct",
-    "Manager_Pres_Negative_pct",
-    "CEO_QA_Negative_pct",
-    "CEO_Pres_Negative_pct",
-    "NonCEO_Manager_QA_Negative_pct",
+    # Analyst
+    "Analyst_All_Constraining_pct",
+    "Analyst_All_Litigious_pct",
+    "Analyst_All_Negative_pct",
+    "Analyst_All_Positive_pct",
+    "Analyst_All_Strong_Modal_pct",
+    "Analyst_All_Uncertainty_pct",
+    "Analyst_All_Weak_Modal_pct",
+    "Analyst_Pres_Constraining_pct",
+    "Analyst_Pres_Litigious_pct",
+    "Analyst_Pres_Negative_pct",
+    "Analyst_Pres_Positive_pct",
+    "Analyst_Pres_Strong_Modal_pct",
+    "Analyst_Pres_Uncertainty_pct",
+    "Analyst_Pres_Weak_Modal_pct",
+    "Analyst_QA_Constraining_pct",
+    "Analyst_QA_Litigious_pct",
     "Analyst_QA_Negative_pct",
-    "Entire_All_Negative_pct",
-    # Weak modal
-    "Manager_QA_Weak_Modal_pct",
-    "Manager_Pres_Weak_Modal_pct",
-    "CEO_QA_Weak_Modal_pct",
+    "Analyst_QA_Positive_pct",
+    "Analyst_QA_Strong_Modal_pct",
+    "Analyst_QA_Uncertainty_pct",
+    "Analyst_QA_Weak_Modal_pct",
+    # CEO
+    "CEO_All_Constraining_pct",
+    "CEO_All_Litigious_pct",
+    "CEO_All_Negative_pct",
+    "CEO_All_Positive_pct",
+    "CEO_All_Strong_Modal_pct",
+    "CEO_All_Uncertainty_pct",
+    "CEO_All_Weak_Modal_pct",
+    "CEO_Pres_Constraining_pct",
+    "CEO_Pres_Litigious_pct",
+    "CEO_Pres_Negative_pct",
+    "CEO_Pres_Positive_pct",
+    "CEO_Pres_Strong_Modal_pct",
+    "CEO_Pres_Uncertainty_pct",
     "CEO_Pres_Weak_Modal_pct",
+    "CEO_QA_Constraining_pct",
+    "CEO_QA_Litigious_pct",
+    "CEO_QA_Negative_pct",
+    "CEO_QA_Positive_pct",
+    "CEO_QA_Strong_Modal_pct",
+    "CEO_QA_Uncertainty_pct",
+    "CEO_QA_Weak_Modal_pct",
+    # Entire
+    "Entire_All_Constraining_pct",
+    "Entire_All_Litigious_pct",
+    "Entire_All_Negative_pct",
+    "Entire_All_Positive_pct",
+    "Entire_All_Strong_Modal_pct",
+    "Entire_All_Uncertainty_pct",
+    "Entire_All_Weak_Modal_pct",
+    "Entire_Pres_Constraining_pct",
+    "Entire_Pres_Litigious_pct",
+    "Entire_Pres_Negative_pct",
+    "Entire_Pres_Positive_pct",
+    "Entire_Pres_Strong_Modal_pct",
+    "Entire_Pres_Uncertainty_pct",
+    "Entire_Pres_Weak_Modal_pct",
+    "Entire_QA_Constraining_pct",
+    "Entire_QA_Litigious_pct",
+    "Entire_QA_Negative_pct",
+    "Entire_QA_Positive_pct",
+    "Entire_QA_Strong_Modal_pct",
+    "Entire_QA_Uncertainty_pct",
+    "Entire_QA_Weak_Modal_pct",
+    # Manager
+    "Manager_All_Constraining_pct",
+    "Manager_All_Litigious_pct",
+    "Manager_All_Negative_pct",
+    "Manager_All_Positive_pct",
+    "Manager_All_Strong_Modal_pct",
+    "Manager_All_Uncertainty_pct",
+    "Manager_All_Weak_Modal_pct",
+    "Manager_Pres_Constraining_pct",
+    "Manager_Pres_Litigious_pct",
+    "Manager_Pres_Negative_pct",
+    "Manager_Pres_Positive_pct",
+    "Manager_Pres_Strong_Modal_pct",
+    "Manager_Pres_Uncertainty_pct",
+    "Manager_Pres_Weak_Modal_pct",
+    "Manager_QA_Constraining_pct",
+    "Manager_QA_Litigious_pct",
+    "Manager_QA_Negative_pct",
+    "Manager_QA_Positive_pct",
+    "Manager_QA_Strong_Modal_pct",
+    "Manager_QA_Uncertainty_pct",
+    "Manager_QA_Weak_Modal_pct",
+    # NonCEO_Manager
+    "NonCEO_Manager_All_Constraining_pct",
+    "NonCEO_Manager_All_Litigious_pct",
+    "NonCEO_Manager_All_Negative_pct",
+    "NonCEO_Manager_All_Positive_pct",
+    "NonCEO_Manager_All_Strong_Modal_pct",
+    "NonCEO_Manager_All_Uncertainty_pct",
+    "NonCEO_Manager_All_Weak_Modal_pct",
+    "NonCEO_Manager_Pres_Constraining_pct",
+    "NonCEO_Manager_Pres_Litigious_pct",
+    "NonCEO_Manager_Pres_Negative_pct",
+    "NonCEO_Manager_Pres_Positive_pct",
+    "NonCEO_Manager_Pres_Strong_Modal_pct",
+    "NonCEO_Manager_Pres_Uncertainty_pct",
+    "NonCEO_Manager_Pres_Weak_Modal_pct",
+    "NonCEO_Manager_QA_Constraining_pct",
+    "NonCEO_Manager_QA_Litigious_pct",
+    "NonCEO_Manager_QA_Negative_pct",
+    "NonCEO_Manager_QA_Positive_pct",
+    "NonCEO_Manager_QA_Strong_Modal_pct",
+    "NonCEO_Manager_QA_Uncertainty_pct",
+    "NonCEO_Manager_QA_Weak_Modal_pct",
 ]
 
 
@@ -123,13 +204,16 @@ class LinguisticEngine:
 
             logger.info(f"LinguisticEngine: Loading from {source_dir}")
 
-            # Load all year files
+            # Load all year files - add year column from filename (not from file_name column)
             all_data: List[pd.DataFrame] = []
             for year in years:
                 fp = source_dir / f"linguistic_variables_{year}.parquet"
                 if fp.exists():
                     try:
                         df = pd.read_parquet(fp)
+                        # Year comes from the parquet filename, not from extracting file_name pattern
+                        if "year" not in df.columns:
+                            df["year"] = year
                         all_data.append(df)
                         logger.info(f"  Loaded {year}: {len(df):,} rows")
                     except Exception as e:
@@ -153,12 +237,6 @@ class LinguisticEngine:
             # any potential language evolution or regime-dependent communication patterns
             from .winsorization import winsorize_by_year
 
-            # Extract year from file_name if not already present
-            # file_name format: "transcript_2010_12345.txt" or similar
-            if "year" not in combined.columns:
-                combined["year"] = combined["file_name"].str.extract(r"_(\d{4})_")[0].astype(int)
-                logger.info(f"  Extracted year from file_name for per-year winsorization")
-
             # Find which percentage columns actually exist in the data
             existing_pct_cols = [c for c in LINGUISTIC_PCT_COLUMNS if c in combined.columns]
 
@@ -174,7 +252,10 @@ class LinguisticEngine:
                 existing_pct_cols.extend(dynamic_pct_cols)
 
             if existing_pct_cols:
-                combined = winsorize_by_year(combined, existing_pct_cols, year_col="year")
+                combined = winsorize_by_year(
+                    combined, existing_pct_cols, year_col="year",
+                    lower=0.0, upper=0.99, min_obs=1  # Only upper bound (99th pct), no lower bound
+                )
                 logger.info(f"  Winsorized {len(existing_pct_cols)} percentage columns (per-year 1%/99%)")
             # === END WINSORIZATION ===
 

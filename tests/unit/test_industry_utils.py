@@ -54,10 +54,13 @@ def test_parse_ff_industries_basic():
         assert result[400] == (2, "Durables")
         assert result[499] == (2, "Durables")
 
-        # Verify total count
+        # Verify total count: 400 SIC codes + 1 "_catchall" sentinel key.
+        # Both industries have explicit SIC ranges so _catchall is None, but
+        # the key is always present.
         assert (
-            len(result) == 400
-        )  # 100-199 (100) + 200-299 (100) + 300-399 (100) + 400-499 (100)
+            len(result) == 401
+        )  # 100-199 (100) + 200-299 (100) + 300-399 (100) + 400-499 (100) + _catchall key
+        assert "_catchall" in result
 
 
 def test_parse_ff_industries_ff48():
@@ -173,6 +176,8 @@ Another invalid line
         with zipfile.ZipFile(zip_path, "w") as z:
             z.writestr("siccodes12.txt", ff_content)
 
-        # Parse and verify (should return empty dict)
+        # Parse and verify: no valid SIC ranges, so only the "_catchall" sentinel
+        # key is present (always added by parse_ff_industries).
         result = parse_ff_industries(zip_path, 12)
-        assert len(result) == 0
+        assert len(result) == 1
+        assert "_catchall" in result

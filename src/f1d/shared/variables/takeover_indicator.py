@@ -158,15 +158,11 @@ class TakeoverIndicatorBuilder(VariableBuilder):
             )
             sdc_first["Takeover"] = 1
 
-            def classify_type(attitude: str) -> str:
-                if attitude in self.UNINVITED_ATTITUDES:
-                    return "Uninvited"
-                elif attitude in self.FRIENDLY_ATTITUDES:
-                    return "Friendly"
-                return "Unknown"
-
-            sdc_first["Takeover_Type"] = sdc_first["Takeover_Attitude"].apply(
-                classify_type
+            # Vectorized map replaces per-row .apply(classify_type)
+            attitude_map = {a: "Uninvited" for a in self.UNINVITED_ATTITUDES}
+            attitude_map.update({a: "Friendly" for a in self.FRIENDLY_ATTITUDES})
+            sdc_first["Takeover_Type"] = (
+                sdc_first["Takeover_Attitude"].map(attitude_map).fillna("Unknown")
             )
             n_targeted = len(sdc_first)
             print(f"    Unique firms targeted: {n_targeted:,}")

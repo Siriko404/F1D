@@ -215,29 +215,41 @@ def _compute_returns_for_manifest(
     # Mask out zeros to avoid Inf
     dollar_vol_masked = merged["dollar_volume"].replace(0, np.nan)
     merged["daily_illiq"] = merged["RET"].abs() / dollar_vol_masked
+    # Clamp Inf from illiq before aggregation
+    merged["daily_illiq"] = merged["daily_illiq"].replace([np.inf, -np.inf], np.nan)
 
-    def compound(x: pd.Series) -> float:
-        v = x.dropna()
-        return (
-            float(((1 + v).prod() - 1) * 100) if len(v) >= MIN_TRADING_DAYS else np.nan
-        )
+    # --- Vectorized aggregation (replaces four groupby.apply(UDF) calls) ---
+    # Each UDF was a Python callback executed once per file_name group (~8-10k
+    # groups per year). Replaced with pure numpy/pandas agg operations:
+    #   compound  → log-sum trick: sum(log1p(RET)) then expm1, scaled to %
+    #   volatility → std * sqrt(252) * 100
+    #   amihud    → mean(daily_illiq) * 1e6
+    # min_periods guard (MIN_TRADING_DAYS) applied post-agg with .where().
 
-    def volatility(x: pd.Series) -> float:
-        v = x.dropna()
-        return (
-            float(v.std() * np.sqrt(252) * 100)
-            if len(v) >= MIN_TRADING_DAYS
-            else np.nan
-        )
+    # Count valid (non-NaN) trading days per call for the min_periods guard
+    merged["_ret_valid"] = merged["RET"].notna().astype(int)
+    merged["_log1p_ret"] = np.log1p(merged["RET"].fillna(0)).where(
+        merged["RET"].notna(), np.nan
+    )
+    merged["_log1p_vwretd"] = np.log1p(merged["VWRETD"].fillna(0)).where(
+        merged["VWRETD"].notna(), np.nan
+    )
 
-    def amihud(x: pd.Series) -> float:
-        v = x.replace([np.inf, -np.inf], np.nan).dropna()
-        return float(v.mean() * 1e6) if len(v) >= MIN_TRADING_DAYS else np.nan
+    grp = merged.groupby("file_name")
 
-    stock_rets = merged.groupby("file_name")["RET"].apply(compound)
-    market_rets = merged.groupby("file_name")["VWRETD"].apply(compound)
-    stock_vol = merged.groupby("file_name")["RET"].apply(volatility)
-    illiq = merged.groupby("file_name")["daily_illiq"].apply(amihud)
+    n_valid = grp["_ret_valid"].sum()
+    sum_log_ret = grp["_log1p_ret"].sum(min_count=1)
+    sum_log_vwretd = grp["_log1p_vwretd"].sum(min_count=1)
+    std_ret = grp["RET"].std()
+    mean_illiq = grp["daily_illiq"].mean()
+
+    # Apply MIN_TRADING_DAYS guard — results with fewer valid days → NaN
+    sufficient = n_valid >= MIN_TRADING_DAYS
+
+    stock_rets = ((np.expm1(sum_log_ret)) * 100).where(sufficient)
+    market_rets = ((np.expm1(sum_log_vwretd)) * 100).where(sufficient)
+    stock_vol = (std_ret * np.sqrt(252) * 100).where(sufficient)
+    illiq = (mean_illiq * 1e6).where(sufficient)
 
     manifest["StockRet"] = manifest["file_name"].map(stock_rets)
     manifest["MarketRet"] = manifest["file_name"].map(market_rets)
@@ -421,9 +433,7 @@ class CRSPEngine:
 
             # Apply per-year winsorization to CRSP variables
             result_with_year = winsorize_by_year(
-                result_with_year,
-                CRSP_RETURN_COLS,
-                year_col="year"
+                result_with_year, CRSP_RETURN_COLS, year_col="year"
             )
 
             # Drop year column (engine output should only have file_name + variable cols)

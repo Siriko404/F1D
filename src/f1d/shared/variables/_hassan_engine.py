@@ -25,7 +25,7 @@ Architecture notes:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -105,21 +105,24 @@ def _compute_priskfy(
     firms_with_prisk = set(prisk_df["gvkey"].unique())
     fy = fy[fy["gvkey"].isin(firms_with_prisk)].copy()
 
-    # Sort PRisk for binary-search window matching
-    prisk_sorted = prisk_df.sort_values(["gvkey", "cal_q_end"]).copy()
+    # Pre-group PRisk by gvkey into a dict of sorted numpy arrays.
+    # This eliminates the O(N_firms × N_prisk_rows) linear scan that was
+    # previously performed inside the outer loop with:
+    #   firm_prisk = prisk_sorted[prisk_sorted["gvkey"] == gvkey]
+    # Now each gvkey lookup is O(1) dict access instead of O(N_prisk).
+    prisk_arrays: Dict[str, tuple] = {}
+    for gvkey_p, grp_p in prisk_df.groupby("gvkey", sort=False):
+        dates = grp_p["cal_q_end"].to_numpy(dtype="datetime64[ns]")
+        vals = grp_p["PRisk"].to_numpy(dtype="float64")
+        sort_idx = np.argsort(dates)
+        prisk_arrays[gvkey_p] = (dates[sort_idx], vals[sort_idx])
 
     records = []
     for gvkey, group in fy.groupby("gvkey", sort=False):
-        firm_prisk = prisk_sorted[prisk_sorted["gvkey"] == gvkey]
-        if len(firm_prisk) == 0:
+        if gvkey not in prisk_arrays:
             continue
 
-        # Use plain numpy arrays for binary search (avoids ExtensionArray issues)
-        dates_arr = firm_prisk["cal_q_end"].to_numpy(dtype="datetime64[ns]")
-        vals_arr = firm_prisk["PRisk"].to_numpy(dtype="float64")
-        sort_idx = np.argsort(dates_arr)
-        dates_arr = dates_arr[sort_idx]
-        vals_arr = vals_arr[sort_idx]
+        dates_arr, vals_arr = prisk_arrays[gvkey]
 
         for _, row in group.iterrows():
             fy_end = np.datetime64(row["datadate"], "ns")

@@ -504,12 +504,10 @@ def _compute_biddle_residual(
     # ------------------------------------------------------------------
     ff48_map = _load_ff48_map(root_path)
 
-    def _map_sic(sic_val: float) -> Optional[int]:
-        if pd.isna(sic_val):
-            return None  # Missing SIC -> None -> excluded from all OLS cells
-        return ff48_map.get(int(sic_val))  # Always returns a value (0-9999 covered)
-
-    annual["ff48_code"] = annual["sic"].apply(_map_sic)
+    # Vectorized SIC → FF48 mapping replaces per-row .apply(_map_sic).
+    # pd.to_numeric + .map(dict) runs in C, ~10x faster than a Python callback.
+    sic_int = pd.to_numeric(annual["sic"], errors="coerce").astype("Int64")
+    annual["ff48_code"] = sic_int.map(ff48_map).where(sic_int.notna(), other=None)
 
     n_missing_sic = annual["ff48_code"].isna().sum()
     if n_missing_sic > 0:

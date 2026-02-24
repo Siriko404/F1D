@@ -294,8 +294,8 @@ No symlinks needed — the latest directory is always found by timestamp.
 
 ## Verified Results
 
-Last full pipeline run: **2026-02-21**. All scripts passed end-to-end with zero errors,
-zero row-delta on every panel merge, and all post-run checks passing.
+Last full pipeline run: **2026-02-23**. All scripts passed end-to-end with zero errors,
+zero row-delta on every panel merge, and all post-run checks passing. Codebase has been fully vectorized for performance.
 
 ### Manager Clarity (H0.1) — `run_h0_1_manager_clarity`
 
@@ -303,9 +303,9 @@ Dependent variable: `Manager_QA_Uncertainty_pct`
 
 | Sample | N Obs | N Managers | R² |
 |--------|------:|----------:|----:|
-| Main (FF12 non-fin, non-util) | 57,796 | 2,605 | 0.407 |
-| Finance (FF12 = 11) | 13,409 | 577 | 0.305 |
-| Utility (FF12 = 8) | 2,974 | 136 | 0.216 |
+| Main (FF12 non-fin, non-util) | 57,796 | 2,605 | 0.411 |
+| Finance (FF12 = 11) | 13,409 | 577 | 0.315 |
+| Utility (FF12 = 8) | 2,974 | 136 | 0.227 |
 
 `ClarityManager = −gamma_i`, standardized globally across all three samples.
 
@@ -315,9 +315,9 @@ Dependent variable: `CEO_QA_Uncertainty_pct`
 
 | Sample | N Obs | N CEOs | R² |
 |--------|------:|-------:|----:|
-| Main | 42,488 | 2,031 | 0.344 |
-| Finance | 8,309 | 384 | 0.294 |
-| Utility | 1,732 | 90 | 0.161 |
+| Main | 42,488 | 2,031 | 0.362 |
+| Finance | 8,309 | 384 | 0.305 |
+| Utility | 1,732 | 90 | 0.192 |
 
 `ClarityCEO = −gamma_i`, standardized globally across all three samples.
 
@@ -327,10 +327,10 @@ Main sample only. Extended controls: `CurrentRatio`, `RD_Intensity`, `Volatility
 
 | Model | N Obs | N Entities | R² |
 |-------|------:|-----------:|----:|
-| Manager Baseline | 57,796 | 2,605 | 0.407 |
-| Manager Extended | 56,404 | 2,554 | 0.409 |
-| CEO Baseline | 42,488 | 2,031 | 0.344 |
-| CEO Extended | 41,386 | 1,991 | 0.344 |
+| Manager Baseline | 57,796 | 2,605 | 0.411 |
+| Manager Extended | 56,404 | 2,554 | 0.413 |
+| CEO Baseline | 42,488 | 2,031 | 0.362 |
+| CEO Extended | 41,386 | 1,991 | 0.362 |
 
 Extended models have fewer observations due to additional missingness in
 `CurrentRatio` (83.3% coverage) and `Volatility` (93.3% coverage).
