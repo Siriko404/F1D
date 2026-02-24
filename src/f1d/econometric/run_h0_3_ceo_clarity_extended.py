@@ -57,7 +57,10 @@ import statsmodels.formula.api as smf
 
 STATSMODELS_AVAILABLE = True
 
-from f1d.shared.latex_tables_accounting import make_accounting_table, make_summary_stats_table
+from f1d.shared.latex_tables_accounting import (
+    make_accounting_table,
+    make_summary_stats_table,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -138,7 +141,7 @@ VARIABLE_LABELS = {
     "Lev": "Leverage",
     "ROA": "Return on Assets",
     "CurrentRatio": "Current Ratio",
-    "RD_Intensity": "R&D Intensity",
+    "RD_Intensity": r"R\&D Intensity",
     "Volatility": "Stock Volatility",
 }
 
@@ -316,8 +319,16 @@ def run_regression(
 
     # Standardize continuous controls for numerical stability (prevents SVD convergence issues)
     continuous_vars = [
-        "Size", "BM", "Lev", "ROA", "CurrentRatio", "RD_Intensity", "Volatility",
-        "StockRet", "MarketRet", "EPS_Growth"
+        "Size",
+        "BM",
+        "Lev",
+        "ROA",
+        "CurrentRatio",
+        "RD_Intensity",
+        "Volatility",
+        "StockRet",
+        "MarketRet",
+        "EPS_Growth",
     ]
     for var in continuous_vars:
         if var in df_reg.columns:
@@ -489,40 +500,43 @@ def main(panel_path: Optional[str] = None) -> int:
     # Load panel (built by build_ceo_clarity_extended_panel.py)
     panel = load_panel(root, panel_path)
 
-    # Generate summary statistics for Main sample
-    # Use complete-case data across all summary stats variables
+    # Generate summary statistics for all three samples (Main, Finance, Utility)
+    # Each sample gets its own panel (Panel A / Panel B / Panel C) — same structure
+    # as H0.1 and H0.2.
     print("\n" + "=" * 60)
-    print("Generating summary statistics (Main sample)")
+    print("Generating summary statistics (all samples)")
     print("=" * 60)
 
-    # Filter to Main sample
+    # Ensure sample column exists on the full panel
     if "sample" not in panel.columns:
         if "ff12_code" in panel.columns:
             panel["sample"] = assign_industry_sample(panel["ff12_code"])
         else:
             raise ValueError("Neither 'sample' nor 'ff12_code' column found in panel")
 
-    df_main_for_stats = panel[panel["sample"] == "Main"].copy()
-
-    # Filter to complete cases for summary stats variables
+    # Filter to complete cases across all summary stats variables (on full panel)
     stats_cols = [v["col"] for v in SUMMARY_STATS_VARS]
-    available_cols = [c for c in stats_cols if c in df_main_for_stats.columns]
-    missing_cols = [c for c in stats_cols if c not in df_main_for_stats.columns]
+    available_cols = [c for c in stats_cols if c in panel.columns]
+    missing_cols = [c for c in stats_cols if c not in panel.columns]
     if missing_cols:
         print(f"  WARNING: Missing columns for summary stats: {missing_cols}")
 
     if available_cols:
-        complete_mask = df_main_for_stats[available_cols].notna().all(axis=1)
-        df_main_complete = df_main_for_stats[complete_mask].copy()
-        print(f"  Complete cases for summary stats: {len(df_main_complete):,}")
+        complete_mask = panel[available_cols].notna().all(axis=1)
+        df_complete = panel[complete_mask].copy()
+        print(f"  Complete cases for summary stats: {len(df_complete):,}")
+        for samp in ["Main", "Finance", "Utility"]:
+            n = (df_complete["sample"] == samp).sum()
+            print(f"    {samp}: {n:,}")
 
         make_summary_stats_table(
-            df=df_main_complete,
+            df=df_complete,
             variables=SUMMARY_STATS_VARS,
-            sample_names=None,  # No per-sample breakdown - Main sample only
+            sample_names=["Main", "Finance", "Utility"],
+            sample_col="sample",
             output_csv=out_dir / "summary_stats.csv",
             output_tex=out_dir / "summary_stats.tex",
-            caption="Summary Statistics — Extended Controls Robustness (Main Sample)",
+            caption="Summary Statistics — Extended Controls Robustness",
             label="tab:summary_stats_h03",
         )
         print("  Saved: summary_stats.csv")

@@ -31,6 +31,7 @@ Example:
 
 from __future__ import annotations
 
+import re
 import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -147,17 +148,20 @@ def make_accounting_table(
     if label:
         lines.append(f"\\label{{{label}}}")
 
-    # Note paragraph
+    # Note paragraph — escape bare & that would break LaTeX column parsing.
+    # Only replace & not already preceded by \ (i.e., not already escaped).
     if note:
+        safe_note = re.sub(r"(?<!\\)&", r"\\&", note)
         lines.append("")
         lines.append(r"\vspace{0.5em}")
-        lines.append(f"\\parbox{{\\textwidth}}{{\\small {note}}}")
+        lines.append(f"\\parbox{{\\textwidth}}{{\\small {safe_note}}}")
         lines.append("")
 
     # Begin tabular
-    # Column spec: left-aligned for variable, then c pairs for each sample
-    col_spec = "l" + "cc" * n_samples
-    lines.append(f"\\begin{{tabular}}{{@{{}}{{{col_spec}}}@{{}}}}")
+    # Column spec: left-aligned for variable, then right-aligned pairs for each sample
+    # TAR style: numeric columns are right-aligned (r), not centered (c)
+    col_spec = "l" + "rr" * n_samples
+    lines.append(f"\\begin{{tabular}}{{@{{}}{col_spec}@{{}}}}")
 
     # Top rule
     lines.append(r"\toprule")
@@ -165,9 +169,11 @@ def make_accounting_table(
     # Sample headers
     if n_samples > 1:
         # First row: sample names spanning 2 columns each
-        header_parts = [""]  # Empty first cell
+        # Replace underscores with spaces for valid LaTeX (underscores cause subscript errors)
+        header_parts = [""]  # Empty first cell for variable name column
         for sample in sample_names:
-            header_parts.append(f"\\multicolumn{{2}}{{c}}{{{sample}}}")
+            display_sample = sample.replace("_", " ")
+            header_parts.append(f"\\multicolumn{{2}}{{c}}{{{display_sample}}}")
         lines.append(" & ".join(header_parts) + r" \\")
 
         # cmidrule under each sample
@@ -229,12 +235,13 @@ def make_accounting_table(
     )
     lines.append(r"\midrule")
 
-    # Get models to extract coefficients
+    # Control variable rows: TAR style = one row per variable with Est. and t-value
+    # side-by-side in their respective columns (NOT stacked across two rows).
     for var in control_variables:
         display_name = variable_labels.get(var, var)
 
+        # Single row: varname & coef & tval & coef & tval & ...
         row_parts = [display_name]
-        tval_parts = [""]  # t-value row starts with empty cell
 
         for sample in sample_names:
             model = results[sample].get("model")
@@ -245,20 +252,17 @@ def make_accounting_table(
                     if hasattr(model, "tvalues") and var in model.tvalues
                     else np.nan
                 )
-
                 row_parts.append(format_estimate(coef, decimals))
-                row_parts.append("")  # Empty cell for t-value column
-                tval_parts.append(format_tvalue(tval))
-                tval_parts.append("")  # Empty cell for spacing
+                row_parts.append(format_tvalue(tval))
             else:
+                # Variable not in this model — both cells blank
                 row_parts.append("")
                 row_parts.append("")
-                tval_parts.append("")
-                tval_parts.append("")
 
-        # Do NOT remove trailing empty cells - need consistent column count
         lines.append(" & ".join(row_parts) + r" \\")
-        lines.append(" & ".join(tval_parts) + r" \\")
+
+    # Midrule before bottomrule to close the last panel (TAR style)
+    lines.append(r"\midrule")
 
     # Bottom rule
     lines.append(r"\bottomrule")
@@ -391,7 +395,19 @@ def make_summary_stats_table(
         - Empty df: return empty DataFrame with correct columns
     """
     # Define result columns
-    result_columns = ["Sample", "Variable", "Col", "N", "Mean", "SD", "Min", "P25", "Median", "P75", "Max"]
+    result_columns = [
+        "Sample",
+        "Variable",
+        "Col",
+        "N",
+        "Mean",
+        "SD",
+        "Min",
+        "P25",
+        "Median",
+        "P75",
+        "Max",
+    ]
     rows = []
 
     # Handle empty DataFrame
@@ -424,7 +440,9 @@ def make_summary_stats_table(
                         samples_to_process.append((sample_name, sample_df))
                     else:
                         # Still include empty sample with empty df for consistency
-                        samples_to_process.append((sample_name, pd.DataFrame(columns=df.columns)))
+                        samples_to_process.append(
+                            (sample_name, pd.DataFrame(columns=df.columns))
+                        )
                 else:
                     warnings.warn(
                         f"Sample column '{sample_col}' not found in DataFrame. "
@@ -442,27 +460,8 @@ def make_summary_stats_table(
 
                 if sample_df.empty or col_name not in sample_df.columns:
                     # Empty sample or missing column - report N=0, stats as NaN
-                    rows.append({
-                        "Sample": sample_name if sample_name else "All",
-                        "Variable": display_label,
-                        "Col": col_name,
-                        "N": 0,
-                        "Mean": np.nan,
-                        "SD": np.nan,
-                        "Min": np.nan,
-                        "P25": np.nan,
-                        "Median": np.nan,
-                        "P75": np.nan,
-                        "Max": np.nan,
-                    })
-                else:
-                    # Get non-null values
-                    values = sample_df[col_name].dropna()
-                    n = len(values)
-
-                    if n == 0:
-                        # All NaN values
-                        rows.append({
+                    rows.append(
+                        {
                             "Sample": sample_name if sample_name else "All",
                             "Variable": display_label,
                             "Col": col_name,
@@ -474,21 +473,46 @@ def make_summary_stats_table(
                             "Median": np.nan,
                             "P75": np.nan,
                             "Max": np.nan,
-                        })
+                        }
+                    )
+                else:
+                    # Get non-null values
+                    values = sample_df[col_name].dropna()
+                    n = len(values)
+
+                    if n == 0:
+                        # All NaN values
+                        rows.append(
+                            {
+                                "Sample": sample_name if sample_name else "All",
+                                "Variable": display_label,
+                                "Col": col_name,
+                                "N": 0,
+                                "Mean": np.nan,
+                                "SD": np.nan,
+                                "Min": np.nan,
+                                "P25": np.nan,
+                                "Median": np.nan,
+                                "P75": np.nan,
+                                "Max": np.nan,
+                            }
+                        )
                     else:
-                        rows.append({
-                            "Sample": sample_name if sample_name else "All",
-                            "Variable": display_label,
-                            "Col": col_name,
-                            "N": n,
-                            "Mean": values.mean(),
-                            "SD": values.std(ddof=1),
-                            "Min": values.min(),
-                            "P25": values.quantile(0.25),
-                            "Median": values.median(),
-                            "P75": values.quantile(0.75),
-                            "Max": values.max(),
-                        })
+                        rows.append(
+                            {
+                                "Sample": sample_name if sample_name else "All",
+                                "Variable": display_label,
+                                "Col": col_name,
+                                "N": n,
+                                "Mean": values.mean(),
+                                "SD": values.std(ddof=1),
+                                "Min": values.min(),
+                                "P25": values.quantile(0.25),
+                                "Median": values.median(),
+                                "P75": values.quantile(0.75),
+                                "Max": values.max(),
+                            }
+                        )
 
         result_df = pd.DataFrame(rows)
 
@@ -498,9 +522,17 @@ def make_summary_stats_table(
         output_csv.parent.mkdir(parents=True, exist_ok=True)
         # Format N with comma separators, stats with decimals
         csv_df = result_df.copy()
-        csv_df["N"] = csv_df["N"].apply(lambda x: f"{int(x):,}" if pd.notna(x) and x > 0 else str(int(x)) if pd.notna(x) else "")
+        csv_df["N"] = csv_df["N"].apply(
+            lambda x: f"{int(x):,}"
+            if pd.notna(x) and x > 0
+            else str(int(x))
+            if pd.notna(x)
+            else ""
+        )
         for col in ["Mean", "SD", "Min", "P25", "Median", "P75", "Max"]:
-            csv_df[col] = csv_df[col].apply(lambda x: f"{x:.{decimals}f}" if pd.notna(x) else "")
+            csv_df[col] = csv_df[col].apply(
+                lambda x: f"{x:.{decimals}f}" if pd.notna(x) else ""
+            )
         csv_df.to_csv(output_csv, index=False)
 
     # Save LaTeX if requested
@@ -553,8 +585,9 @@ def _generate_summary_stats_latex(
 
     def format_row(row: pd.Series) -> str:
         """Format a single data row."""
-        var = row["Variable"]
-        n = f"{int(row['N']):,}" if pd.notna(row['N']) and row['N'] > 0 else "0"
+        # Escape bare & in variable labels (e.g. "R&D Intensity" → "R\&D Intensity")
+        var = re.sub(r"(?<!\\)&", r"\\&", str(row["Variable"]))
+        n = f"{int(row['N']):,}" if pd.notna(row["N"]) and row["N"] > 0 else "0"
         stats = []
         for col in ["Mean", "SD", "Min", "P25", "Median", "P75", "Max"]:
             val = row[col]
@@ -578,7 +611,12 @@ def _generate_summary_stats_latex(
             # Panel header (skip before first panel)
             if i > 0:
                 lines.append(r"\midrule")
-            lines.append(r"\multicolumn{9}{l}{\textit{Panel " + chr(65 + i) + f": {sample_name} Sample" + r"}} \\")
+            lines.append(
+                r"\multicolumn{9}{l}{\textit{Panel "
+                + chr(65 + i)
+                + f": {sample_name} Sample"
+                + r"}} \\"
+            )
             lines.append(r"\midrule")
 
             for _, row in sample_df.iterrows():
@@ -590,7 +628,9 @@ def _generate_summary_stats_latex(
     # Table notes
     lines.append(r"\begin{tablenotes}")
     lines.append(r"\small")
-    lines.append(r"\item This table reports summary statistics for variables used in the regression.")
+    lines.append(
+        r"\item This table reports summary statistics for variables used in the regression."
+    )
     lines.append(r"All variables are measured at the call level.")
     lines.append(r"\end{tablenotes}")
     lines.append(r"\end{table}")

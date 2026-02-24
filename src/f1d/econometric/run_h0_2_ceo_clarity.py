@@ -60,7 +60,10 @@ import statsmodels.formula.api as smf
 
 STATSMODELS_AVAILABLE = True
 
-from f1d.shared.latex_tables_accounting import make_accounting_table, make_summary_stats_table
+from f1d.shared.latex_tables_accounting import (
+    make_accounting_table,
+    make_summary_stats_table,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -440,13 +443,13 @@ def save_outputs(
         caption="Table 1: CEO Clarity Fixed Effects",
         label="tab:ceo_clarity",
         note=(
-            "This table reports CEO fixed effects from regressing CEO Q&A "
+            r"This table reports CEO fixed effects from regressing CEO Q\&A "
             "uncertainty on firm characteristics and year fixed effects. "
             "ClarityCEO is computed as the negative of the CEO fixed effect, "
             "standardized separately within each industry sample (Main, Finance, Utility). "
             "Reference CEOs (statsmodels baseline category, gamma=0 by construction) "
             "are excluded from clarity scores. "
-            "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
+            r"Standard errors are clustered at the CEO level (cov\_type=cluster, groups=ceo\_id)."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=control_vars,
