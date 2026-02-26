@@ -44,14 +44,14 @@
 **Layer 4: Panel Builders (Stage 3)**
 - Purpose: Assemble regression-ready panels by merging manifest + variables
 - Location: `src/f1d/variables/`
-- Contains: `build_h0_1_manager_clarity_panel.py`, `build_h0_2_ceo_clarity_panel.py`, `build_h0_3_ceo_clarity_extended_panel.py`, `build_h0_5_ceo_tone_panel.py`, `build_h1_cash_holdings_panel.py`, `build_h2_investment_panel.py`, `build_h3_payout_policy_panel.py`, `build_h4_leverage_panel.py`, `build_h5_dispersion_panel.py`, `build_h6_cccl_panel.py`, `build_h7_illiquidity_panel.py`, `build_h8_policy_risk_panel.py`, `build_h9_takeover_panel.py`, `build_h10_tone_at_top_panel.py`
+- Contains: `build_h0_1_manager_clarity_panel.py`, `build_h0_2_ceo_clarity_panel.py`, `build_h0_3_ceo_clarity_extended_panel.py`, `build_h0_5_ceo_tone_panel.py`, `build_h1_cash_holdings_panel.py`, `build_h2_investment_panel.py`, `build_h3_payout_policy_panel.py`, `build_h4_leverage_panel.py`, `build_h5_dispersion_panel.py`, `build_h6_cccl_panel.py`, `build_h7_illiquidity_panel.py`, `build_h8_political_risk_panel.py`, `build_h9_takeover_panel.py`, `build_h10_tone_at_top_panel.py`
 - Depends on: `f1d.shared.variables` (all variable builders), `f1d.sample` (manifest output)
 - Used by: Stage 4 econometric scripts
 
 **Layer 5: Hypothesis Tests (Stage 4)**
 - Purpose: Run econometric regressions and generate LaTeX tables
 - Location: `src/f1d/econometric/`
-- Contains: `run_h0_*.py`, `run_h1_cash_holdings.py`, `run_h2_investment.py`, `run_h3_payout_policy.py`, `run_h4_leverage.py`, `run_h5_dispersion.py`, `run_h6_cccl.py`, `run_h7_illiquidity.py`, `run_h8_policy_risk.py`, `run_h9_takeover_hazards.py`, `run_h10_tone_at_top.py`
+- Contains: `run_h0_*.py`, `run_h1_cash_holdings.py`, `run_h2_investment.py`, `run_h3_payout_policy.py`, `run_h4_leverage.py`, `run_h5_dispersion.py`, `run_h6_cccl.py`, `run_h7_illiquidity.py`, `run_h8_political_risk.py`, `run_h9_takeover_hazards.py`, `run_h10_tone_at_top.py`
 - Depends on: `f1d.shared` (panel_ols, iv_regression, path_utils, latex_tables), `f1d.variables` (panel outputs)
 - Used by: Reports, thesis analysis
 
@@ -151,7 +151,7 @@
 - `python -m f1d.variables.build_h5_dispersion_panel` - Analyst dispersion panel
 - `python -m f1d.variables.build_h6_cccl_panel` - CCCL instrument panel
 - `python -m f1d.variables.build_h7_illiquidity_panel` - Illiquidity panel
-- `python -m f1d.variables.build_h8_policy_risk_panel` - Policy risk panel
+- `python -m f1d.variables.build_h8_political_risk_panel` - Political risk panel
 - `python -m f1d.variables.build_h9_takeover_panel` - Takeover hazard panel
 - `python -m f1d.variables.build_h10_tone_at_top_panel` - Tone-at-top panel
 
@@ -168,7 +168,7 @@
 - `python -m f1d.econometric.run_h5_dispersion` - Analyst dispersion test
 - `python -m f1d.econometric.run_h6_cccl` - CCCL instrument IV regression
 - `python -m f1d.econometric.run_h7_illiquidity` - Illiquidity regressions
-- `python -m f1d.econometric.run_h8_policy_risk` - Policy risk interaction test
+- `python -m f1d.econometric.run_h8_political_risk` - Political risk interaction test
 - `python -m f1d.econometric.run_h9_takeover_hazards` - Cox PH survival analysis
 - `python -m f1d.econometric.run_h10_tone_at_top` - Tone-at-top Granger causality test
 - `python -m f1d.reporting.generate_summary_stats` - Descriptive statistics

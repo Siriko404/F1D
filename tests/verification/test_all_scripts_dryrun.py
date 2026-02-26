@@ -46,7 +46,7 @@ ALL_SCRIPTS: List[str] = [
     "src/f1d/econometric/run_h5_dispersion.py",
     "src/f1d/econometric/run_h6_cccl.py",
     "src/f1d/econometric/run_h7_illiquidity.py",
-    "src/f1d/econometric/run_h8_policy_risk.py",
+    "src/f1d/econometric/run_h8_political_risk.py",
     "src/f1d/econometric/run_h9_takeover_hazards.py",
     "src/f1d/econometric/run_h10_tone_at_top.py",
     "src/f1d/reporting/generate_summary_stats.py",
@@ -68,7 +68,7 @@ ALL_SCRIPTS: List[str] = [
     "src/f1d/variables/build_h5_dispersion_panel.py",
     "src/f1d/variables/build_h6_cccl_panel.py",
     "src/f1d/variables/build_h7_illiquidity_panel.py",
-    "src/f1d/variables/build_h8_policy_risk_panel.py",
+    "src/f1d/variables/build_h8_political_risk_panel.py",
     "src/f1d/variables/build_h9_takeover_panel.py",
     "src/f1d/variables/build_h10_tone_at_top_panel.py",
 ]

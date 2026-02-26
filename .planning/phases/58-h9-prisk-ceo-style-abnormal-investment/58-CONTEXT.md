@@ -7,7 +7,7 @@
 
 ## Phase Boundary
 
-Test whether Hassan PRisk (policy risk) has a STRONGER effect on Biddle-style abnormal investment when the CEO has a persistently vague communication style. This is a moderation hypothesis where CEO communication style (a persistent personal trait from Phase 56) interacts with policy risk exposure to predict abnormal investment.
+Test whether Hassan PRisk (political risk) has a STRONGER effect on Biddle-style abnormal investment when the CEO has a persistently vague communication style. This is a moderation hypothesis where CEO communication style (a persistent personal trait from Phase 56) interacts with political risk exposure to predict abnormal investment.
 
 ---
 
@@ -32,8 +32,8 @@ AbsAbInv_{i,t+1} = β0 + β1*PRiskFY_{i,t} + β2*StyleFrozen_{i,t}
 
 ## Theoretical Foundation
 
-### Hassan et al. (2019) - Aggregate News and Policy Risk
-- PRisk captures firm-level exposure to policy-related economic uncertainty
+### Hassan et al. (2019) - Aggregate News and Political Risk
+- PRisk captures firm-level exposure to political-related economic uncertainty
 - Measured from firm-specific 10-K filings using text analysis
 - Higher PRisk associated with reduced investment, hiring, and R&D
 
@@ -48,8 +48,8 @@ AbsAbInv_{i,t+1} = β0 + β1*PRiskFY_{i,t} + β2*StyleFrozen_{i,t}
 - Large |AbInv| indicates inefficient investment (over- or under-investment)
 
 ### H9 Contribution
-Tests whether CEO communication style interacts with policy risk to produce abnormal investment patterns. Vague CEOs may:
-- Overreact to policy risk (under-invest more when PRisk high)
+Tests whether CEO communication style interacts with political risk to produce abnormal investment patterns. Vague CEOs may:
+- Overreact to political risk (under-invest more when PRisk high)
 - Under-react (if vagueness masks true risk exposure)
 - Show no difference (if investment decisions driven by fundamentals, not style)
 
@@ -191,17 +191,17 @@ AbsAbInv_{i,t+1} = β0 + β1*PRiskFY_t + β2*StyleFrozen_t
 
 1. **β3 > 0 (significant):**
    - Vague CEOs show STRONGER PRisk -> abnormal investment relationship
-   - Interpretation: Vague communication amplifies policy risk effects on investment
+   - Interpretation: Vague communication amplifies political risk effects on investment
    - Possible mechanism: Vague CEOs overreact to uncertainty or signal more risk
 
 2. **β3 < 0 (significant):**
    - Vague CEOs show WEAKER PRisk -> abnormal investment relationship
-   - Interpretation: Vague communication dampens policy risk effects
+   - Interpretation: Vague communication dampens political risk effects
    - Possible mechanism: Vagueness masks true risk, markets discount vague speech
 
 3. **β3 ≈ 0 (null):**
    - CEO style does NOT moderate PRisk -> abnormal investment
-   - Interpretation: Policy risk effects operate through channels other than CEO communication
+   - Interpretation: political risk effects operate through channels other than CEO communication
    - Could be meaningful: Investment decisions driven by fundamentals, not CEO style
 
 ### Power Considerations

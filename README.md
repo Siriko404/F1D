@@ -69,7 +69,7 @@ The following datasets must be present in `inputs/` before running the pipeline.
 | `inputs/SDC/` | SDC M&A data | Refinitiv SDC |
 | `inputs/CCCL_instrument/` | CEO turnover instrument | Constructed from executive data |
 | `inputs/Execucomp/` | Executive compensation data | Execucomp |
-| `inputs/FirmLevelRisk/` | Hassan policy risk data | Hassan et al. |
+| `inputs/FirmLevelRisk/` | Hassan political risk data | Hassan et al. |
 | `inputs/Manager_roles/` | Manager role classification | Constructed |
 | `inputs/SEC_Edgar_Letters/` | SEC correspondence data | SEC EDGAR |
 
@@ -250,7 +250,7 @@ python -m f1d.variables.build_h4_leverage_panel
 python -m f1d.variables.build_h5_dispersion_panel
 python -m f1d.variables.build_h6_cccl_panel
 python -m f1d.variables.build_h7_illiquidity_panel
-python -m f1d.variables.build_h8_policy_risk_panel
+python -m f1d.variables.build_h8_political_risk_panel
 python -m f1d.variables.build_h9_takeover_panel
 python -m f1d.variables.build_h10_tone_at_top_panel
 ```
@@ -271,7 +271,7 @@ python -m f1d.econometric.run_h4_leverage                # ~1 min
 python -m f1d.econometric.run_h5_dispersion              # ~2 min
 python -m f1d.econometric.run_h6_cccl                    # ~1 min
 python -m f1d.econometric.run_h7_illiquidity             # ~2 min
-python -m f1d.econometric.run_h8_policy_risk             # ~1 min
+python -m f1d.econometric.run_h8_political_risk             # ~1 min
 python -m f1d.econometric.run_h9_takeover_hazards        # ~1 min
 python -m f1d.econometric.run_h10_tone_at_top            # ~2 min
 python -m f1d.reporting.generate_summary_stats           # ~1 sec
@@ -294,8 +294,13 @@ No symlinks needed — the latest directory is always found by timestamp.
 
 ## Verified Results
 
-Last full pipeline run: **2026-02-23**. All scripts passed end-to-end with zero errors,
-zero row-delta on every panel merge, and all post-run checks passing. Codebase has been fully vectorized for performance.
+Last full pipeline run: **2026-02-26**. All scripts passed end-to-end with zero errors,
+zero row-delta on every panel merge, and all post-run checks passing.
+
+- **H8 Political Risk**: H8 NOT SUPPORTED (β₃ = 0.0000, p = 0.792)
+- **H9 Takeover Hazards**: H9 SUPPORTED — clarity increases takeover risk for both event type (p < 0.05). both).- H1-H6 (IV) had with Stage 3 for H8/H9 (Stage 3 + Stage 4)
+- H8 Political Risk: `run_h8_political_risk`
+- H9 Takeover Hazards: `run_h9_takeover_hazards` Codebase has been fully vectorized for performance.
 
 ### Manager Clarity (H0.1) — `run_h0_1_manager_clarity`
 
@@ -468,19 +473,25 @@ First-stage KP F-statistics: 696–1,230 (strong instrument).
 2SLS results are imprecise for Amihud (low annual frequency coverage); Corwin-Schultz
 coefficients are more stable. CCCL instrument coverage: 85.6% of OLS sample.
 
-### H8 Policy Risk — `run_h8_policy_risk`
+### H8 Political Risk — `run_h8_political_risk`
 
-Tests whether CEO speech vagueness moderates the effect of Policy Risk (PRiskFY) on Abnormal Investment.
-Unit of observation: firm-year (not call-level).
+Tests whether CEO speech vagueness moderates the effect of Political Risk (PRiskFY) on Abnormal Investment.
+Unit of observation: firm-year (not call-level). Uses Hassan et al. (2019) PRisk index.
 
 Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Controls + FirmFE + YearFE`
 
-| Sample | N Obs | N Firms | R² | Interaction β₃ | p-value |
-|--------|------:|--------:|---:|---------------:|--------:|
-| Main | 22,131 | 1,862 | 0.32 | — | — |
+Key variables:
+- **PRiskFY**: Mean quarterly political risk over (fy_end - 366d, fy_end], min 2 quarters required
+- **StyleFrozen**: CEO clarity score (frozen constraint: calls ≤ fy_end), standardized (mean≈0, SD≈1)
+- **AbsAbInv_lead**: |Biddle InvestmentResidual| shifted one fiscal year forward
 
-β₃ > 0: Vague CEOs amplify PRisk → abnormal investment channel.
-β₃ < 0: Vague CEOs dampen PRisk → abnormal investment channel.
+| Sample | N Obs | N Firms | Within-R² | β₁ (PRiskFY) | β₂ (StyleFrozen) | β₃ (Interact) | p₃ |
+|--------|------:|--------:|----------:|-------------:|----------------:|--------------:|---:|
+| Primary (All Industries) | 15,750 | 1,672 | 0.025 | -0.00001 (p=0.234) | -0.0072 (p=0.070) | 0.0000 (p=0.792) | NS |
+
+**H8 NOT SUPPORTED** — CEO vagueness does NOT significantly moderate the political risk → abnormal investment relationship (β₃ = 0.0000, p = 0.792).
+
+Data notes: style_frozen has 36.9% missing due to CEO clarity dependency; PRiskFY has 6.3% missing due to Hassan data coverage.
 
 
 ### Tone at the Top (H10) — `run_h10_tone_at_top`
@@ -505,22 +516,32 @@ Clustering: two-way (Firm × CEO).
 
 H_TT1 confirmed in the Main sample (β=0.014, t=3.70, p<0.001). Finance and Utility insignificant at call level — regulated industries suppress durable style transmission. H_TT2 strongly confirmed across all three samples — the within-call Granger design is the primary identification result.
 
-### Takeover Hazards (H9) — `run_h9_takeover_hazards`
+### H9 Takeover Hazards — `run_h9_takeover_hazards`
 
-Survival panel: firm-level (not call-level). Duration = years from first call to
-takeover announcement / end of sample (2002–2018). Six Cox PH models.
+Tests whether higher CEO/Manager clarity is associated with increased takeover risk.
+Unit of observation: counting-process format (firm-year intervals). Uses CoxTimeVaryingFitter
+from lifelines with time-varying covariates at actual per-year values (B7 fix applied).
 
-| Model | Variant | Event type | N Firms | N Events | Concordance |
-|-------|---------|-----------|--------:|---------:|------------:|
-| Cox PH All | Regime | All bids | 1,575 | 500 | 0.601 |
-| Cox PH All | CEO | All bids | 1,354 | 439 | 0.611 |
-| Cox CS Uninvited | Regime | Hostile/unsolicited | 1,575 | 65 | 0.651 |
-| Cox CS Uninvited | CEO | Hostile/unsolicited | 1,354 | 59 | 0.644 |
-| Cox CS Friendly | Regime | Friendly | 1,575 | 409 | 0.631 |
-| Cox CS Friendly | CEO | Friendly | 1,354 | 358 | 0.635 |
+Survival construction:
+- Entry: year of first observed call for that firm
+- Exit: year of takeover announcement OR last observed call year (censored)
+- Event types: All takeovers, Uninvited (hostile + unsolicited), Friendly
 
-SDC linkage: manifest CUSIP (9-char) → SDC target CUSIP via first 6 chars.
-Cause-specific Cox PH used in place of Fine-Gray (not available in lifelines).
+| Model | Variant | Event Type | N Intervals | Event Firms | Concordance | Clarity HR | Clarity p |
+|-------|---------|------------|------------:|------------:|------------:|-----------:|---------:|
+| Cox PH All | Regime | All | 15,708 | 434 | 0.511 | 0.89 | 0.243 |
+| Cox PH All | CEO | All | 12,079 | 348 | 0.489 | 1.04 | 0.619 |
+| Cox CS Uninvited | Regime | Uninvited | 15,708 | 55 | 0.494 | **1.21** | **0.050** ✅ |
+| Cox CS Uninvited | CEO | Uninvited | 12,079 | 47 | 0.452 | **1.32** | **0.002** ✅ |
+| Cox CS Friendly | Regime | Friendly | 15,708 | 395 | 0.509 | **1.11** | **0.002** ✅ |
+| Cox CS Friendly | CEO | Friendly | 12,079 | 344 | 0.491 | **1.08** | **0.006** ✅ |
+
+**H9 SUPPORTED** — Higher clarity is associated with increased takeover risk:
+- **Uninvited takeovers**: ClarityCEO HR = 1.32 (p = 0.002), ClarityManager HR = 1.21 (p = 0.050)
+- **Friendly takeovers**: ClarityManager HR = 1.11 (p = 0.002), ClarityCEO HR = 1.08 (p = 0.006)
+- Interpretation: Clearer CEOs/managers make firms more visible/transparent, attracting both friendly and uninvited bids
+
+SDC linkage: manifest CUSIP (9-char) → SDC target CUSIP via first 6 chars. Sample excludes Finance (ff12=11) and Utility (ff12=8).
 
 ### Summary Statistics (H11) — `generate_summary_stats`
 
@@ -580,7 +601,7 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | `_crsp_engine.py` | CRSP daily + CCM | StockRet, MarketRet, Volatility, amihud_illiq | Per-year 1%/99% |
 | `_linguistic_engine.py` | Stage 2 linguistic vars | All 25 _pct columns (uncertainty, sentiment, modal) | Per-year 1%/99% |
 | `_ibes_engine.py` | IBES forecasts | SurpDec, Dispersion | None (bounded) |
-| `_hassan_engine.py` | Policy risk data | PRiskFY | None |
+| `_hassan_engine.py` | Political risk data | PRiskFY | None |
 
 ### Linguistic Variable Builders
 

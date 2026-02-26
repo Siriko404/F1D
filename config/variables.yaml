@@ -487,7 +487,7 @@ variables:
     description: "Amihud (2002) illiquidity ratio (H7 dependent variable)"
 
   # ===========================================================================
-  # H8 — Policy Risk: Moderation of Vagueness on Abnormal Investment
+  # H8 — Political Risk: Moderation of Vagueness on Abnormal Investment
   # ===========================================================================
 
   style_frozen:
@@ -502,4 +502,4 @@ variables:
     source: "inputs/FirmLevelRisk"
     column: "PRiskFY"
     formula: "mean(PRisk quarters) where cal_q_end in (fy_end - 366d, fy_end]"
-    description: "Hassan et al. (2019) fiscal-year policy risk exposure (H8 IV)"
+    description: "Hassan et al. (2019) fiscal-year political risk exposure (H8 IV)"

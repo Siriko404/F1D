@@ -87,12 +87,12 @@ F1D/
 
 **src/f1d/variables/:**
 - Purpose: Stage 3 panel builder scripts
-- Contains: `build_h0_*.py`, `build_h1_cash_holdings_panel.py`, `build_h2_investment_panel.py`, `build_h3_payout_policy_panel.py`, `build_h4_leverage_panel.py`, `build_h5_dispersion_panel.py`, `build_h6_cccl_panel.py`, `build_h7_illiquidity_panel.py`, `build_h8_policy_risk_panel.py`, `build_h9_takeover_panel.py`, `build_h10_tone_at_top_panel.py`
+- Contains: `build_h0_*.py`, `build_h1_cash_holdings_panel.py`, `build_h2_investment_panel.py`, `build_h3_payout_policy_panel.py`, `build_h4_leverage_panel.py`, `build_h5_dispersion_panel.py`, `build_h6_cccl_panel.py`, `build_h7_illiquidity_panel.py`, `build_h8_political_risk_panel.py`, `build_h9_takeover_panel.py`, `build_h10_tone_at_top_panel.py`
 - Key files: `build_h1_cash_holdings_panel.py` (call-level panel with `CashHoldings_lead` via fiscal year aggregation)
 
 **src/f1d/econometric/:**
 - Purpose: Stage 4 econometric regression scripts
-- Contains: `run_h0_*.py`, `run_h1_cash_holdings.py`, `run_h2_investment.py`, `run_h3_payout_policy.py`, `run_h4_leverage.py`, `run_h5_dispersion.py`, `run_h6_cccl.py`, `run_h7_illiquidity.py`, `run_h8_policy_risk.py`, `run_h9_takeover_hazards.py`, `run_h10_tone_at_top.py`, `generate_h03_complete_table.py`
+- Contains: `run_h0_*.py`, `run_h1_cash_holdings.py`, `run_h2_investment.py`, `run_h3_payout_policy.py`, `run_h4_leverage.py`, `run_h5_dispersion.py`, `run_h6_cccl.py`, `run_h7_illiquidity.py`, `run_h8_political_risk.py`, `run_h9_takeover_hazards.py`, `run_h10_tone_at_top.py`, `generate_h03_complete_table.py`
 - Key files: `run_h1_cash_holdings.py` (firm-clustered SEs, one-tailed hypothesis tests, LaTeX table generation), `generate_h03_complete_table.py` (LaTeX table generator for H03)
 
 **src/f1d/reporting/:**

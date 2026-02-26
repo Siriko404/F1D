@@ -2,7 +2,7 @@
 phase: 58-h9-prisk-ceo-style-abnormal-investment
 plan: 02
 subsystem: financial-variables
-tags: [priskfy, fiscal-year-aggregation, policy-risk, hassan-prisk, rolling-window]
+tags: [priskfy, fiscal-year-aggregation, political-risk, hassan-risk, rolling-window]
 
 # Dependency graph
 requires:
@@ -11,7 +11,7 @@ requires:
   - phase: v2-foundation
     provides: Compustat fiscal year-end dates (comp_na_daily_all.parquet)
 provides:
-  - PRiskFY dataset: Fiscal-year policy risk at firm-year level (65,664 observations)
+  - PRiskFY dataset: Fiscal-year political risk at firm-year level (65,664 observations)
   - 366-day rolling window aggregation with minimum 2 quarters requirement
 affects: [58-04] # H9 regression merge
 
@@ -47,7 +47,7 @@ completed: 2026-02-10
 
 # Phase 58: H9 PRisk x CEO Style - Plan 02 Summary
 
-**Fiscal-year policy risk from Hassan quarterly PRisk using 366-day rolling window, producing 65,664 firm-year observations (7,869 firms, 2002-2021)**
+**Fiscal-year political risk from Hassan quarterly PRisk using 366-day rolling window, producing 65,664 firm-year observations (7,869 firms, 2002-2021)**
 
 ## Performance
 
@@ -59,7 +59,7 @@ completed: 2026-02-10
 
 ## Accomplishments
 
-- Constructed PRiskFY (fiscal-year policy risk) from Hassan quarterly PRisk data
+- Constructed PRiskFY (fiscal-year political risk) from Hassan quarterly PRisk data
 - Implemented 366-day rolling window: (fy_end - 366, fy_end] for quarter selection
 - Enforced minimum 2 quarters rule strictly (no imputation)
 - Generated priskfy.parquet with 65,664 firm-year observations

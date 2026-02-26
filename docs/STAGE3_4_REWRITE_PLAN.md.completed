@@ -523,11 +523,11 @@ hypothesis_tests:
 - `src/f1d/financial/v2/3.2_H2Variables.py`
 
 **Model Specification:**
-Tests whether policy risk moderates the uncertainty-investment relationship.
+Tests whether political risk moderates the uncertainty-investment relationship.
 
 **Variables Required:**
 - Investment (CAPX/AT or similar)
-- Policy Risk Uncertainty (PRisk)
+- Political Risk Uncertainty (PRisk)
 - Manager Uncertainty
 - Tobin's Q
 - Cash Flow
@@ -536,7 +536,7 @@ Tests whether policy risk moderates the uncertainty-investment relationship.
 
 **Special Considerations:**
 - Read `3.9_H2_BiddleInvestmentResidual.py` for investment efficiency measure
-- Read `3.10_H2_PRiskUncertaintyMerge.py` for policy risk data
+- Read `3.10_H2_PRiskUncertaintyMerge.py` for political risk data
 
 ---
 
@@ -638,7 +638,7 @@ Logistic regression testing whether uncertainty predicts takeover probability.
 
 ---
 
-## H9: CEO Style x Policy Risk
+## H9: CEO Style x Political Risk
 
 **Source Scripts:**
 - `src/f1d/econometric/v2/4.11_H9_Regression.py`
@@ -647,11 +647,11 @@ Logistic regression testing whether uncertainty predicts takeover probability.
 - `src/f1d/financial/v2/3.13_H9_AbnormalInvestment.py`
 
 **Model Specification:**
-Tests whether CEO style moderates policy risk effect.
+Tests whether CEO style moderates political risk effect.
 
 **Variables Required:**
 - CEO Style factors (frozen from manager fixed effects)
-- Policy Risk measures
+- Political Risk measures
 - Investment outcomes
 - Control variables
 

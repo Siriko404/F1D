@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build H8 Policy Risk Panel
+STAGE 3: Build H8 Political Risk Panel
 ================================================================================
-ID: variables/build_h8_policy_risk_panel
+ID: variables/build_h8_political_risk_panel
 Description: Build FIRM-YEAR panel for H8: CEO Speech Vagueness moderates the
-             effect of Policy Risk (PRiskFY) on Abnormal Investment.
+             effect of Political Risk (PRiskFY) on Abnormal Investment.
 
     H8 Hypothesis:
         AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_t + β2·StyleFrozen_t
@@ -59,7 +59,7 @@ from f1d.shared.variables.ceo_clarity_style import CEOClarityStyleBuilder
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H8 Policy Risk × CEO Clarity Panel",
+        description="Stage 3: Build H8 Political Risk × CEO Clarity Panel",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--dry-run", action="store_true")
@@ -149,7 +149,7 @@ def build_panel(
     stats: Dict[str, Any],
 ) -> pd.DataFrame:
     print("\n" + "=" * 60)
-    print("Building H8 Policy Risk Panel")
+    print("Building H8 Political Risk Panel")
     print("=" * 60)
 
     builders = {
@@ -227,10 +227,10 @@ def build_panel(
 
 def save_outputs(firm_year: pd.DataFrame, stats: Dict[str, Any], out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    panel_path = out_dir / "h8_policy_risk_panel.parquet"
+    panel_path = out_dir / "h8_political_risk_panel.parquet"
     firm_year.to_parquet(panel_path, index=False)
     print(
-        f"\n  Saved: h8_policy_risk_panel.parquet "
+        f"\n  Saved: h8_political_risk_panel.parquet "
         f"({len(firm_year):,} rows, {len(firm_year.columns)} columns)"
     )
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
@@ -249,7 +249,7 @@ def generate_report(
         firm_year["interact"].notna().sum() if "interact" in firm_year.columns else 0
     )
     report_lines = [
-        "# Stage 3: H8 Policy Risk Panel Build Report",
+        "# Stage 3: H8 Political Risk Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -270,13 +270,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_h8_policy_risk_panel",
+        "step_id": "build_h8_political_risk_panel",
         "timestamp": timestamp,
         "variable_stats": [],
     }
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "h8_policy_risk" / timestamp
+    out_dir = root / "outputs" / "variables" / "h8_political_risk" / timestamp
 
     config = get_config(root / "config" / "project.yaml")
     var_config = load_variable_config(root / "config" / "variables.yaml")
@@ -288,7 +288,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H8 Policy Risk × CEO Clarity Panel")
+    print("STAGE 3: Build H8 Political Risk × CEO Clarity Panel")
     print("=" * 80)
 
     firm_year = build_panel(root, years, var_config, stats)

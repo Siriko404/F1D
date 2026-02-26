@@ -27,7 +27,7 @@
 
 All V2/V3 variables are **deterministically constructed** from source data:
 
-- **Source Data:** Compustat fundamentals, CRSP daily stock data, IBES analyst forecasts, SDC M&A database, Hassan policy risk index
+- **Source Data:** Compustat fundamentals, CRSP daily stock data, IBES analyst forecasts, SDC M&A database, Hassan political risk index
 - **Construction Scripts:** Version-controlled Python scripts in `2_Scripts/3_Financial_V2/` and `2_Scripts/4_Econometric_V2/`
 
 **Note:** V3 scripts were consolidated into V2 in Phase 64 (2026-02-12). H9 scripts are now located at:
@@ -108,7 +108,7 @@ CashHoldings = beta0 + beta1*ClarityCEO + beta2*Size + beta3*BM + beta4*Lev + be
 | Overinvestment | Dummy | Biddle_residual > top quintile | Constructed | Overinvestment indicator |
 | Underinvestment | Dummy | Biddle_residual < bottom quintile | Constructed | Underinvestment indicator |
 | Efficiency_Score | Continuous | -|Biddle_residual| | Investment efficiency score |
-| PRisk | Continuous | Hassan (2019) index | V2 policy risk | Policy risk (IV) |
+| PRisk | Continuous | Hassan (2019) index | V2 political risk | Political risk (IV) |
 | PRisk_x_Uncertainty | Interaction | PRisk * Uncertainty | Constructed | Interaction term |
 
 **Biddle (2013) Investment Model:**
@@ -122,7 +122,7 @@ Investment = beta0 + beta1*Size_lag + beta2*BM_lag + beta3*Lev_lag + beta4*Cash_
 - Observations: ~26,000 firm-years
 - Exclusions: Financial firms, utilities
 
-**Hypothesis Context:** H2 tests whether policy risk moderates the relationship between CEO uncertainty and investment efficiency.
+**Hypothesis Context:** H2 tests whether political risk moderates the relationship between CEO uncertainty and investment efficiency.
 
 **Regression Specification:**
 ```
@@ -355,7 +355,7 @@ logit(P(Takeover_t+1)) = beta0 + beta1*Uncertainty_t + Controls_t + FE
 
 ---
 
-### H9: CEO Style and Policy Risk Interaction (formerly V3, now in V2)
+### H9: CEO Style and Political Risk Interaction (formerly V3, now in V2)
 
 **Source Scripts (consolidated to V2 in Phase 64):**
 - `2_Scripts/3_Financial_V2/3.11_H9_StyleFrozen.py`
@@ -370,9 +370,9 @@ logit(P(Takeover_t+1)) = beta0 + beta1*Uncertainty_t + Controls_t + FE
 | Variable | Type | Formula | Data Source | Description |
 |----------|------|---------|-------------|-------------|
 | StyleFrozen | Continuous | ClarityCEO (persistent trait) | Phase 56 | CEO vagueness style at firm-year |
-| PRiskFY | Continuous | mean(PRisk quarters in 366-day window) | Hassan index | Fiscal-year policy risk |
+| PRiskFY | Continuous | mean(PRisk quarters in 366-day window) | Hassan index | Fiscal-year political risk |
 | AbsAbInv | Continuous | |Biddle_residual| | Constructed | Absolute abnormal investment (DV) |
-| PRiskFY_x_StyleFrozen | Interaction | PRiskFY * StyleFrozen | Constructed | Policy risk * CEO style |
+| PRiskFY_x_StyleFrozen | Interaction | PRiskFY * StyleFrozen | Constructed | Political risk * CEO style |
 | gvkey | Categorical | Compustat identifier | Compustat | Firm identifier |
 | fyear | Integer | Fiscal year | Compustat | Fiscal year |
 | Size | Continuous | log(AT) | Compustat | Firm size control |
@@ -395,9 +395,9 @@ For each firm-year (gvkey, fyear):
 ```
 PRiskFY = mean(PRisk_q for q in quarters where call_date in [fy_end - 366, fy_end])
 ```
-- Fiscal-year policy risk index
+- Fiscal-year political risk index
 - Uses all quarters within 366-day window ending on fiscal year-end
-- Hassan policy risk index at state-month level
+- Hassan political risk index at state-month level
 
 **AbsAbInv Construction:**
 ```
@@ -414,7 +414,7 @@ PRiskFY = mean(PRisk_q for q in quarters where call_date in [fy_end - 366, fy_en
 - Observations: 5,295 firm-years
 - Coverage: ~6% of Compustat universe (requires StyleFrozen + PRiskFY + AbsAbInv)
 
-**Hypothesis Context:** H9 tests whether CEO communication style moderates the relationship between policy risk and abnormal investment. Uses persistent CEO trait (StyleFrozen) rather than time-varying clarity.
+**Hypothesis Context:** H9 tests whether CEO communication style moderates the relationship between political risk and abnormal investment. Uses persistent CEO trait (StyleFrozen) rather than time-varying clarity.
 
 **Regression Specification:**
 ```
@@ -461,7 +461,7 @@ Output will be written to `outputs/3_Financial_V2/{timestamp}/H1_CashHoldings.pa
 | **CRSP** | RET, VOL, PRC, ASKHI, BIDLO | Wharton WRDS | Daily stock data |
 | **IBES** | STDEV, MEANEST, NUMEST, ACTUALS | Wharton WRDS | Analyst forecasts |
 | **SDC Platinum** | Deal status, deal value, deal attitude | Wharton WRDS | M&A transactions |
-| **Hassan (2019)** | PRisk index by state-month | Author data | Policy risk |
+| **Hassan (2019)** | PRisk index by state-month | Author data | Political risk |
 | **Phase 4 (V2)** | ClarityCEO, Uncertainty_pct, Weak_Modal_pct | Local output | Linguistic variables |
 | **Phase 56 (V3)** | ClarityCEO (CEO trait) | Local output | CEO clarity scores |
 

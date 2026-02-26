@@ -216,7 +216,7 @@ The tier system establishes quality requirements and maintenance expectations fo
 | `run_h5_dispersion.py` | H5 analyst dispersion regressions | Tier 2: Stage 4 |
 | `run_h6_cccl.py` | H6 CCC&L regressions | Tier 2: Stage 4 |
 | `run_h7_illiquidity.py` | H7 illiquidity regressions | Tier 2: Stage 4 |
-| `run_h8_policy_risk.py` | H8 policy risk regressions | Tier 2: Stage 4 |
+| `run_h8_political_risk.py` | H8 political risk regressions | Tier 2: Stage 4 |
 | `run_h9_takeover_hazards.py` | H9 takeover hazard models | Tier 2: Stage 4 |
 | `run_h10_tone_at_top.py` | H10 tone-at-the-top regressions | Tier 2: Stage 4 |
 

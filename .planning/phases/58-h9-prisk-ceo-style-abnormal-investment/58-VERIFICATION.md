@@ -71,7 +71,7 @@ All artifacts verified as existing and substantive:
 
 - beta3 (interaction term): -0.0000 (p = 0.7574) - NOT statistically significant
 - H9 conclusion: NOT SUPPORTED
-- Economic meaning: CEO communication style does NOT moderate the effect of policy risk on abnormal investment
+- Economic meaning: CEO communication style does NOT moderate the effect of political risk on abnormal investment
 
 ### Model Statistics
 
@@ -91,8 +91,8 @@ All artifacts verified as existing and substantive:
 **Why human:** Economic interpretation requires domain knowledge to assess whether the null finding is meaningful vs underpowered
 
 **Current interpretation:**
-CEO communication style does NOT moderate the relationship between policy risk and abnormal investment. This is a meaningful null finding that suggests:
-1. Policy risk affects abnormal investment through channels other than CEO communication style
+CEO communication style does NOT moderate the relationship between political risk and abnormal investment. This is a meaningful null finding that suggests:
+1. political risk affects abnormal investment through channels other than CEO communication style
 2. Investment decisions may be driven by fundamentals rather than CEO rhetoric
 3. The interaction effect may be too small to detect with the current sample size
 
@@ -142,7 +142,7 @@ Phase 58 successfully constructed all variables for H9 hypothesis testing and ex
 7. Interaction term correctly constructed as product of PRiskFY and StyleFrozen
 8. beta3 (-0.0000, p = 0.76) correctly interpreted as NOT SUPPORTED
 
-**Hypothesis Result:** H9 is NOT SUPPORTED. CEO communication style does not significantly moderate the relationship between policy risk and abnormal investment. This is a meaningful null finding.
+**Hypothesis Result:** H9 is NOT SUPPORTED. CEO communication style does not significantly moderate the relationship between political risk and abnormal investment. This is a meaningful null finding.
 
 ---
 

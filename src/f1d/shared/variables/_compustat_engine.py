@@ -144,6 +144,8 @@ REQUIRED_COMPUSTAT_COLS = [
     "xrdq",
     # H1 extension
     "cheq",
+    "dlcq",  # Short-term debt (interest-bearing) -- for Leverage
+    "dlttq",  # Long-term debt (interest-bearing) -- for Leverage
     "capxy",  # YTD cumulative CapEx -- used Q4-only (full fiscal year)
     "dvy",  # YTD cumulative common dividends -- used Q4-only (full fiscal year)
     "oancfy",

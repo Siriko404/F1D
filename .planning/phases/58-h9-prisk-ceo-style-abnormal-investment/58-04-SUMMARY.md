@@ -9,7 +9,7 @@ requires:
   - phase: 58-01
     provides: StyleFrozen dataset (CEO vagueness at firm-year level)
   - phase: 58-02
-    provides: PRiskFY dataset (fiscal-year policy risk)
+    provides: PRiskFY dataset (fiscal-year political risk)
   - phase: 58-03
     provides: AbsAbInv dataset (Biddle abnormal investment + controls)
 provides:
@@ -44,7 +44,7 @@ completed: 2026-02-10
 
 # Phase 58: H9 Final Merge and Regression Summary
 
-**H9 hypothesis test completed: CEO communication style does NOT moderate the effect of policy risk on abnormal investment (interaction term p=0.76, meaningful null)**
+**H9 hypothesis test completed: CEO communication style does NOT moderate the effect of political risk on abnormal investment (interaction term p=0.76, meaningful null)**
 
 ## Performance
 
@@ -99,7 +99,7 @@ Each task was committed atomically:
 The interaction term beta3 = -0.0000 (p=0.76) is NOT statistically significant. This is a **meaningful null finding** indicating:
 
 1. CEO communication style does NOT moderate the PRisk -> abnormal investment relationship
-2. Policy risk affects abnormal investment through channels other than CEO rhetoric
+2. political risk affects abnormal investment through channels other than CEO rhetoric
 3. Investment decisions appear driven by fundamentals rather than CEO communication style
 
 ## Sample Statistics

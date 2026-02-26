@@ -261,7 +261,7 @@ from .loss_dummy import LossDummyBuilder
 # H7 Illiquidity
 from .amihud_illiq import AmihudIlliqBuilder
 
-# H8 Policy Risk
+# H8 Political Risk
 from .ceo_clarity_style import CEOClarityStyleBuilder
 from .prisk_fy import PRiskFYBuilder
 

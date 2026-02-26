@@ -127,7 +127,7 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 - `run_h0_4_ceo_clarity_regime.py`: uses config-driven `isin` filter instead of
   `assign_industry_sample`. Intentional (regime-based sample, not FF12 split).
 
-- `run_h8_policy_risk.py`: uses `~isin([8, 11])` filter (excludes Finance and
+- `run_h8_political_risk.py`: uses `~isin([8, 11])` filter (excludes Finance and
   Utility from Main). Intentional structural difference.
 
 - H9 (`build_h9_takeover_panel.py`): reads from

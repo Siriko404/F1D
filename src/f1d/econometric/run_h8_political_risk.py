@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H8 Policy Risk × CEO Speech Vagueness -> Abnormal Investment
+STAGE 4: Test H8 Political Risk × CEO Speech Vagueness -> Abnormal Investment
 ================================================================================
-ID: econometric/test_h8_policy_risk
+ID: econometric/test_h8_political_risk
 Description: Run H8 moderation hypothesis test by loading the firm-year panel
              from Stage 3, running fixed effects OLS regressions, and outputting
              results.
@@ -68,7 +68,7 @@ SUMMARY_STATS_VARS = [
     # Dependent variable
     {"col": "AbsAbInv_lead", "label": "|Abnormal Investment|$_{t+1}$"},
     # Main independent variables
-    {"col": "PRiskFY", "label": "Policy Risk"},
+    {"col": "PRiskFY", "label": "Political Risk"},
     {"col": "style_frozen", "label": "Style Frozen (Clarity)"},
     {"col": "interact", "label": "PRiskFY $\\times$ Style Frozen"},
     # Controls
@@ -87,7 +87,7 @@ CONFIG = {
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Test H8 Policy Risk × CEO Clarity → Abnormal Investment (Stage 4)"
+        description="Test H8 Political Risk × CEO Clarity → Abnormal Investment (Stage 4)"
     )
     parser.add_argument(
         "--panel-path", type=str, help="Explicit path to H8 firm-year panel parquet"
@@ -104,7 +104,7 @@ def run_sanity_checks(df: pd.DataFrame, out_dir: Path) -> None:
     """Print and save mandatory sanity checks."""
     lines = [
         "=" * 70,
-        "H8 POLICY RISK PANEL — SANITY CHECKS",
+        "H8 POLITICAL RISK PANEL — SANITY CHECKS",
         "=" * 70,
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
@@ -301,7 +301,7 @@ def run_regression(
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    tex_path = out_dir / "h8_policy_risk_table.tex"
+    tex_path = out_dir / "h8_political_risk_table.tex"
 
     def fmt_coef(val: float, pval: float) -> str:
         if pd.isna(val):
@@ -327,8 +327,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{H8: CEO Speech Vagueness Moderates Policy Risk and Abnormal Investment}",
-        r"\label{tab:h8_policy_risk}",
+        r"\caption{H8: CEO Speech Vagueness Moderates Political Risk and Abnormal Investment}",
+        r"\label{tab:h8_political_risk}",
         r"\small",
         r"\begin{tabular}{" + col_spec + "}",
         r"\toprule",
@@ -337,7 +337,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     ]
 
     for var_key, label in [
-        ("beta1_PRiskFY", "Policy Risk"),
+        ("beta1_PRiskFY", "Political Risk"),
         ("beta2_StyleFrozen", "Style Frozen"),
         ("beta3_Interact", "PRisk $\\times$ Style Frozen"),
     ]:
@@ -408,10 +408,10 @@ def main(panel_path: Optional[str] = None) -> int:
     t0 = datetime.now()
     timestamp = t0.strftime("%Y-%m-%d_%H%M%S")
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h8_policy_risk" / timestamp
+    out_dir = root / "outputs" / "econometric" / "h8_political_risk" / timestamp
 
     print("=" * 80)
-    print("STAGE 4: Test H8 Policy Risk x CEO Clarity -> Abnormal Investment")
+    print("STAGE 4: Test H8 Political Risk x CEO Clarity -> Abnormal Investment")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -422,10 +422,10 @@ def main(panel_path: Optional[str] = None) -> int:
     if not panel_path:
         try:
             panel_dir = get_latest_output_dir(
-                root / "outputs" / "variables" / "h8_policy_risk",
-                required_file="h8_policy_risk_panel.parquet",
+                root / "outputs" / "variables" / "h8_political_risk",
+                required_file="h8_political_risk_panel.parquet",
             )
-            panel_file = panel_dir / "h8_policy_risk_panel.parquet"
+            panel_file = panel_dir / "h8_political_risk_panel.parquet"
         except Exception as e:
             print(f"ERROR: Could not find Stage 3 panel: {e}")
             return 1
@@ -461,7 +461,7 @@ def main(panel_path: Optional[str] = None) -> int:
         sample_names=None,  # Aggregate only (firm-year level, Main sample)
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics — H8 Policy Risk",
+        caption="Summary Statistics — H8 Political Risk",
         label="tab:summary_stats_h8",
     )
     print("  Saved: summary_stats.csv")
