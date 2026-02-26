@@ -6,7 +6,7 @@ Returns one column: file_name, InvestmentResidual.
 The residual is computed via the Biddle et al. (2009, JAE) specification:
     Investment = (CapEx + R&D + Acquisitions - AssetSales) / lagged(AT)
     First-stage OLS within each FF48-year cell (min 20 obs per cell):
-        Investment ~ TobinQ_lag + SalesGrowth_lag
+        Investment ~ SalesGrowth_lag
     InvestmentResidual = actual - predicted
     > 0 = overinvestment; < 0 = underinvestment
 
@@ -58,7 +58,7 @@ class InvestmentResidualBuilder(VariableBuilder):
             metadata={
                 "column": "InvestmentResidual",
                 "source": "Biddle (2009): (capxy+xrdy+aqcy-sppey)/at_lag; "
-                "residual from FF48-year OLS: Investment ~ TobinQ_lag + SalesGrowth_lag",
+                "residual from FF48-year OLS: Investment ~ SalesGrowth_lag",
             },
         )
 

@@ -17,7 +17,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class CapexIntensityBuilder(VariableBuilder):
-    """Build CapexAt = capxq / atq from raw Compustat quarterly data."""
+    """Build CapexAt = capxy_annual / atq_lag from raw Compustat quarterly data."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)

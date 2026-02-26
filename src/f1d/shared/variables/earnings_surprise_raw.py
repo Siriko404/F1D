@@ -42,49 +42,7 @@ from .base import VariableBuilder, VariableResult
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-def _rank_surprises(group: pd.DataFrame) -> pd.Series:
-    """Rank surprises within a quarter to -5..+5 scale.
-
-    CRITICAL-1 fix: with n=1 firm in a sign bucket the percentile is always
-    1.0 (or close to it depending on method), making the formula degenerate.
-    The correct behaviour: a single negative-surprise firm should get -1
-    (smallest possible negative decile = least bad) not -5 (worst possible).
-    We handle this by using method='first' ranking so ties are broken by
-    position, and by computing deciles as np.ceil(pct * 5).clip(1, 5) which
-    maps the [0, 1] percentile correctly to [1, 5].
-    """
-    surprises = group["surprise_raw"]
-    ranks = pd.Series(np.nan, index=group.index, dtype=float)
-
-    valid_mask = surprises.notna()
-    if valid_mask.sum() < 5:
-        return ranks
-
-    pos_mask = surprises > 0
-    zero_mask = surprises == 0
-    neg_mask = surprises < 0
-
-    if pos_mask.sum() > 0:
-        # Rank descending (rank 1 = largest positive surprise = decile +5)
-        pos_pct = surprises[pos_mask].rank(ascending=False, method="average", pct=True)
-        # pct ∈ (0, 1]: ceil(pct * 5) → 1..5; flip so rank 1 → decile +5
-        pos_decile = np.ceil(pos_pct * 5).clip(1, 5)
-        ranks.loc[pos_mask] = 6 - pos_decile  # largest surprise → +5
-
-    ranks.loc[zero_mask] = 0.0
-
-    if neg_mask.sum() > 0:
-        # Rank ascending by absolute miss (rank 1 = smallest miss = decile -1)
-        neg_pct = (
-            surprises[neg_mask].abs().rank(ascending=True, method="average", pct=True)
-        )
-        neg_decile = np.ceil(neg_pct * 5).clip(1, 5)
-        ranks.loc[neg_mask] = -neg_decile  # largest miss → -5
-
-    return ranks
-
-
-class EarningsSurpriseBuilder(VariableBuilder):
+class EarningsSurpriseRawBuilder(VariableBuilder):
     """Build Earnings Surprise Decile (SurpDec) from raw IBES data.
 
     Computes from raw inputs:
@@ -227,26 +185,21 @@ class EarningsSurpriseBuilder(VariableBuilder):
         else:
             print(f"    EarningsSurpriseBuilder: empty manifest")
 
-        # Compute SurpDec within quarter
-        manifest_surp = manifest.merge(results_df, on="file_name", how="left")
-        manifest_surp["call_quarter"] = manifest_surp["start_date"].dt.to_period("Q")
-        manifest_surp["SurpDec"] = manifest_surp.groupby(
-            "call_quarter", group_keys=False
-        ).apply(_rank_surprises)
+        results_df = results_df.rename(columns={"surprise_raw": "EarningsSurprise_Raw"})
 
-        data = manifest_surp[["file_name", "SurpDec"]].copy()
-        stats = self.get_stats(data["SurpDec"], "SurpDec")
+        data = results_df[["file_name", "EarningsSurprise_Raw"]].copy()
+        stats = self.get_stats(data["EarningsSurprise_Raw"], "EarningsSurprise_Raw")
 
         return VariableResult(
             data=data,
             stats=stats,
             metadata={
                 "source": str(ibes_path),
-                "column": "SurpDec",
+                "column": "EarningsSurprise_Raw",
                 "matched": matched,
                 "total": len(manifest),
             },
         )
 
 
-__all__ = ["EarningsSurpriseBuilder"]
+__all__ = ["EarningsSurpriseRawBuilder"]

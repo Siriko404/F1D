@@ -48,7 +48,7 @@ H2 extension (2026-02-20):
         Investment = (capxy + xrdy + aqcy - sppey) / at_lag  (annual Q4-only)
         First-stage OLS by FF48-year cell (min 20 obs, dropna=False so unmapped
             SIC firms are flagged, not silently swallowed):
-            Investment ~ TobinQ_lag + SalesGrowth_lag
+            Investment ~ SalesGrowth_lag
         InvestmentResidual = actual - predicted investment
     New Compustat columns: xrdy, aqcy, sppey, saley, sic.
     FF48 codes derived from sic via inputs/FF1248/Siccodes48.zip.
@@ -160,6 +160,8 @@ REQUIRED_COMPUSTAT_COLS = [
     "dvpspq",  # Dividends per share by ex-date (quarterly)
     "req",  # Retained earnings (quarterly)
     "seqq",  # Shareholders' equity (quarterly)
+    "ibq",  # Income Before Extraordinary Items (quarterly)
+    "iby",  # Income Before Extraordinary Items (annual)
 ]
 
 
@@ -250,19 +252,51 @@ def _compute_annual_q4_variable(
         q4.assign(fyearq=lambda d: d["fyearq"].astype(float)),
         on=["gvkey", "fyearq"],
         how="left",
+        validate="m:1",
+    )
+    merged = merged.sort_values("_idx")
+    return merged[out_col].values  # type: ignore[return-value]
+
+
+def _compute_annual_q4_variable_lag(
+    comp: pd.DataFrame, raw_col: str, out_col: str
+) -> pd.Series:
+    """Compute a lagged full-fiscal-year variable (t-1) from Q4 rows."""
+    q4 = (
+        comp[comp["fqtr"] == 4][["gvkey", "fyearq", raw_col]]
+        .dropna(subset=["fyearq"])
+        .copy()
+    )
+    q4["fyearq"] = q4["fyearq"].astype(int)
+    q4 = q4.sort_values(["gvkey", "fyearq"]).drop_duplicates(
+        subset=["gvkey", "fyearq"], keep="last"
+    )
+    q4 = q4.rename(columns={raw_col: out_col})
+    q4["fyearq"] += 1  # Shift forward 1 year so it joins to t
+
+    comp_aligned = comp[["gvkey", "fyearq"]].copy()
+    comp_aligned["fyearq"] = pd.to_numeric(comp_aligned["fyearq"], errors="coerce")
+    comp_aligned["_idx"] = np.arange(len(comp_aligned))
+
+    merged = comp_aligned.merge(
+        q4.assign(fyearq=lambda d: d["fyearq"].astype(float)),
+        on=["gvkey", "fyearq"],
+        how="left",
+        validate="m:1",
     )
     merged = merged.sort_values("_idx")
     return merged[out_col].values  # type: ignore[return-value]
 
 
 def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
-    """Compute OCF_Volatility = rolling 5-year std of (oancfy / atq) per gvkey.
+    """Compute OCF_Volatility = rolling 5-year std of (oancfy / atq_{t-1}) per gvkey.
 
     oancfy is an annual flow variable -- use the last observation per gvkey-fyearq
     to get one data point per fiscal year. Then compute rolling std over 5 years
     (min 3 years required) and align back to full quarterly panel via gvkey+fyearq.
 
-    Returns a Series aligned to comp's index.
+    FIX: Spec explicitly uses lagged assets (atq_{t-1}) in denominator to avoid
+    correlated measurement error from contemporaneous asset changes.
     """
     annual = (
         comp[comp["fqtr"] == 4][["gvkey", "datadate", "fyearq", "oancfy", "atq"]]
@@ -273,9 +307,12 @@ def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
     annual = annual.sort_values(["gvkey", "fyearq", "datadate"])
     annual = annual.drop_duplicates(subset=["gvkey", "fyearq"], keep="last")
 
+    # FIX: Use lagged assets per spec (Assets_{τ-1})
+    annual["atq_lag"] = annual.groupby("gvkey")["atq"].shift(1)
+
     annual["ocf_ratio"] = np.where(
-        annual["atq"] > 0,
-        annual["oancfy"] / annual["atq"],
+        annual["atq_lag"] > 0,
+        annual["oancfy"] / annual["atq_lag"],
         np.nan,
     )
     annual["ocf_ratio"] = annual["ocf_ratio"].replace([np.inf, -np.inf], np.nan)
@@ -297,6 +334,7 @@ def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
         lookup.rename(columns={"OCF_Volatility_annual": "OCF_Volatility"}),
         on=["gvkey", "fyearq"],
         how="left",
+        validate="m:1",
     )
     merged = merged.sort_values("_idx")
     return pd.Series(merged["OCF_Volatility"].to_numpy(), name="OCF_Volatility")  # type: ignore[return-value]
@@ -421,7 +459,7 @@ def _compute_biddle_residual(
     Biddle et al. (2009, JAE) investment efficiency measure:
         Investment = (CapEx + R&D + Acquisitions - AssetSales) / lagged(AT)
         First-stage OLS by (FF48, fiscal_year) cell (min 20 obs per cell):
-            Investment ~ TobinQ_lag + SalesGrowth_lag
+            Investment ~ SalesGrowth_lag
         InvestmentResidual = actual - predicted  (>0 = overinvest, <0 = underinvest)
 
     Also computes:
@@ -487,6 +525,8 @@ def _compute_biddle_residual(
         "cshoq",
         "prccq",
         "ceqq",
+        "dlcq",
+        "dlttq",
     ]
     available = [c for c in needed if c in comp.columns]
     annual = comp[comp["fqtr"] == 4][available].dropna(subset=["fyearq"]).copy()
@@ -568,18 +608,22 @@ def _compute_biddle_residual(
     # Step 4: First-stage predictors
     # ------------------------------------------------------------------
     # C-4 fix: TobinQ Biddle predictor — require all components non-null.
-    # No fillna(0): missing mktcap or ceqq -> NaN TobinQ -> that observation
-    # excluded from the first-stage OLS (correct; biased predictor is worse).
     mktcap = annual["cshoq"] * annual["prccq"]
+    debt_c = annual["dlcq"].clip(lower=0).fillna(0)
+    debt_t = annual["dlttq"].clip(lower=0).fillna(0)
+    debt_book = np.where(
+        annual["dlcq"].isna() & annual["dlttq"].isna(), np.nan, debt_c + debt_t
+    )
+
     all_present = (
         annual["atq"].notna()
         & (annual["atq"] > 0)
         & mktcap.notna()
-        & annual["ceqq"].notna()
+        & pd.Series(debt_book).notna()
     )
     annual["TobinQ"] = np.where(
         all_present,
-        (annual["atq"] + mktcap - annual["ceqq"]) / annual["atq"],
+        (mktcap + debt_book) / annual["atq"],
         np.nan,
     )
     annual["TobinQ"] = annual["TobinQ"].replace([np.inf, -np.inf], np.nan)
@@ -642,7 +686,7 @@ def _compute_biddle_residual(
     cells_skipped_none = 0
     cells_skipped_error = 0
 
-    reg_cols = ["Investment", "TobinQ_lag", "SalesGrowth_lag"]
+    reg_cols = ["Investment", "SalesGrowth_lag"]
     for (ff48, fyear), grp in annual.groupby(["ff48_code", "fyearq"], dropna=False):
         # M-6: skip None-keyed cell (firms with missing SIC)
         if ff48 is None or pd.isna(ff48):  # type: ignore[arg-type]
@@ -655,7 +699,7 @@ def _compute_biddle_residual(
             continue
 
         Y = annual.loc[valid_idx, "Investment"]
-        X = sm.add_constant(annual.loc[valid_idx, ["TobinQ_lag", "SalesGrowth_lag"]])
+        X = sm.add_constant(annual.loc[valid_idx, ["SalesGrowth_lag"]])
         try:
             model = sm.OLS(Y, X).fit()
             annual.loc[valid_idx, "InvestmentResidual"] = Y - model.predict(X)
@@ -697,7 +741,9 @@ def _compute_biddle_residual(
     comp_aligned["fyearq"] = pd.to_numeric(comp_aligned["fyearq"], errors="coerce")
     comp_aligned["_idx"] = np.arange(len(comp_aligned))
 
-    merged = comp_aligned.merge(lookup, on=["gvkey", "fyearq"], how="left")
+    merged = comp_aligned.merge(
+        lookup, on=["gvkey", "fyearq"], how="left", validate="m:1"
+    )
     merged = merged.sort_values("_idx")
 
     ir = pd.Series(merged["InvestmentResidual"].values, index=comp.index)
@@ -733,6 +779,8 @@ def _compute_h3_payout_policy(
         "oancfy",
         "capxy",
         "atq",
+        "dvy",
+        "iby",
     ]
     available = [c for c in needed if c in comp.columns]
     base = comp[available].dropna(subset=["fyearq"]).copy()
@@ -755,7 +803,7 @@ def _compute_h3_payout_policy(
 
     # Merge flows and PIT
     df = flow_annual.join(
-        pit_annual[["req", "seqq", "oancfy", "capxy", "atq", "datadate"]]
+        pit_annual[["req", "seqq", "oancfy", "capxy", "atq", "datadate", "dvy", "iby"]]
     )
     df = df.reset_index().sort_values(["gvkey", "fyearq"])
 
@@ -779,7 +827,7 @@ def _compute_h3_payout_policy(
 
     # Firm Maturity
     df["firm_maturity"] = np.where(
-        (df["seqq"].notna()) & (df["seqq"] > 0), df["req"] / df["seqq"], np.nan
+        (df["atq"].notna()) & (df["atq"] > 0), df["req"] / df["atq"], np.nan
     )
 
     # Rolling window computations
@@ -787,21 +835,32 @@ def _compute_h3_payout_policy(
     df.loc[gap_mask, "dps_lag"] = np.nan
     df["delta_dps"] = df["dps"] - df["dps_lag"]
 
+    # div_stability
+    df["payout_ratio"] = np.where(
+        (df["iby"].notna()) & (df["iby"] > 0), df["dvy"] / df["iby"], np.nan
+    )
+    df["payout_ratio_lag"] = df.groupby("gvkey")["payout_ratio"].shift(1)
+    df.loc[gap_mask, "payout_ratio_lag"] = np.nan
+
+    # earnings_volatility
+    df["roa_annual"] = np.where(
+        (df["atq"].notna()) & (df["atq"] > 0), df["iby"] / df["atq"], np.nan
+    )
+
     # Use a clean artificial date built from fyearq so rolling("1826D")
     # perfectly measures 5 fiscal years, robust to gaps and missing datadates.
     df["dummy_date"] = pd.to_datetime(df["fyearq"].astype(str) + "-12-31")
     df_ts = df.set_index("dummy_date").sort_index()
 
-    # div_stability
-    std_delta = (
-        df_ts.groupby("gvkey")["delta_dps"].rolling("1826D", min_periods=2).std()
+    # div_stability using 5-year rolling SD of lagged payout ratio
+    std_payout = (
+        df_ts.groupby("gvkey")["payout_ratio_lag"].rolling("1826D", min_periods=3).std()
     )
-    mean_dps = df_ts.groupby("gvkey")["dps"].rolling("1826D", min_periods=2).mean()
 
     # We now have Series indexed by [gvkey, dummy_date]
     # df can be mapped back safely by setting its index too
     df = df.set_index(["gvkey", "dummy_date"])
-    df["div_stability"] = np.where(mean_dps != 0, -std_delta / mean_dps.abs(), np.nan)
+    df["div_stability"] = -std_payout
 
     # payout_flexibility
     sig_change = (df["delta_dps"].abs() > 0.05 * df["dps_lag"].abs()).astype(float)
@@ -817,7 +876,9 @@ def _compute_h3_payout_policy(
     df["payout_flexibility"] = payout_flex
 
     # earnings_volatility
-    earn_vol = df_ts.groupby("gvkey")["eps"].rolling("1826D", min_periods=2).std()
+    earn_vol = (
+        df_ts.groupby("gvkey")["roa_annual"].rolling("1826D", min_periods=3).std()
+    )
     df["earnings_volatility"] = earn_vol
 
     # is_div_payer_5yr
@@ -852,7 +913,9 @@ def _compute_h3_payout_policy(
     comp_aligned["fyearq"] = pd.to_numeric(comp_aligned["fyearq"], errors="coerce")
     comp_aligned["_idx"] = np.arange(len(comp_aligned))
 
-    merged = comp_aligned.merge(lookup, on=["gvkey", "fyearq"], how="left")
+    merged = comp_aligned.merge(
+        lookup, on=["gvkey", "fyearq"], how="left", validate="m:1"
+    )
     merged = merged.sort_values("_idx")
 
     return (
@@ -875,37 +938,45 @@ def _compute_and_winsorize(
     comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)
 
     comp["BM"] = comp["ceqq"] / (comp["cshoq"] * comp["prccq"])
-    comp["Lev"] = comp["ltq"] / comp["atq"]
-    # C-3 fix: annualize quarterly net income (niq is one quarter's income;
-    # multiply by 4 to get annualized ROA comparable to the literature).
-    # Without ×4 the coefficient would be 4× larger than papers using annual ROA,
-    # invalidating cross-paper comparison of the control coefficient magnitude.
-    comp["ROA"] = (comp["niq"] * 4) / comp["atq"]
+    # FIX: Spec defines leverage as (dlcq + dlttq) / atq (interest-bearing debt only)
+    # ltq includes all liabilities (accounts payable, accrued expenses, etc.)
+    comp["Lev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]
+    # ROA: use annualized Q4 iby and average assets
+    atq_annual = _compute_annual_q4_variable(comp, "atq", "_atq_annual")
+    atq_annual_lag1 = _compute_annual_q4_variable_lag(comp, "atq", "_atq_annual_lag1")
+    avg_assets = (
+        pd.Series(atq_annual, index=comp.index)
+        + pd.Series(atq_annual_lag1, index=comp.index)
+    ) / 2
+    iby_annual = _compute_annual_q4_variable(comp, "iby", "_iby_annual")
+    comp["ROA"] = np.where(
+        avg_assets > 0, pd.Series(iby_annual, index=comp.index) / avg_assets, np.nan
+    )
+
     comp["CurrentRatio"] = comp["actq"] / comp["lctq"].replace(0, np.nan)
     comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]
 
     # --- H1 extension: 5 new variables ---
     comp["CashHoldings"] = comp["cheq"] / comp["atq"]
-    # TobinsQ (quarterly control): no fillna(0) — missing components -> NaN.
-    # Note: this is NOT the Biddle first-stage TobinQ (which is on the annual
-    # panel). Both use the same formula and the same no-fillna approach.
     mktcap = comp["cshoq"] * comp["prccq"]
+    debt_c = comp["dlcq"].clip(lower=0).fillna(0)
+    debt_t = comp["dlttq"].clip(lower=0).fillna(0)
+    debt_book = np.where(
+        comp["dlcq"].isna() & comp["dlttq"].isna(), np.nan, debt_c + debt_t
+    )
     comp["TobinsQ"] = np.where(
-        comp["atq"].notna() & (comp["atq"] > 0) & mktcap.notna() & comp["ceqq"].notna(),
-        (comp["atq"] + mktcap - comp["ceqq"]) / comp["atq"],
+        comp["atq"].notna() & (comp["atq"] > 0) & mktcap.notna(),
+        (mktcap + debt_book) / comp["atq"],
         np.nan,
     )
 
-    # B2 fix: CapexAt = annual capex / year-end assets.
-    # capxy is YTD cumulative -- use Q4 annual value (full fiscal year).
-    # Denominator must also be year-end atq, not the contemporaneous quarterly
-    # atq (which differs across Q1-Q4 rows of the same fiscal year).
-    # We obtain year-end atq via the same Q4-join-back pattern used for capxy.
     capxy_annual = _compute_annual_q4_variable(comp, "capxy", "_capxy_annual")
-    atq_annual = _compute_annual_q4_variable(comp, "atq", "_atq_annual")
-    comp["CapexAt"] = pd.Series(capxy_annual, index=comp.index) / pd.Series(
-        atq_annual, index=comp.index
-    ).replace(0, np.nan)
+    comp["CapexAt"] = np.where(
+        pd.Series(atq_annual_lag1, index=comp.index) > 0,
+        pd.Series(capxy_annual, index=comp.index)
+        / pd.Series(atq_annual_lag1, index=comp.index),
+        np.nan,
+    )
 
     # CRITICAL-2 fix: dvy is YTD cumulative -- use Q4 annual value joined to
     # all quarters to classify dividend payers using the full fiscal year.

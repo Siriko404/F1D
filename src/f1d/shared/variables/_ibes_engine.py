@@ -33,7 +33,7 @@ class IbesEngine:
         self._cache_root: Optional[Path] = None
 
         # Configuration thresholds based on standard literature (e.g. Diether et al 2002)
-        self.numest_min = 3
+        self.numest_min = 2
         self.meanest_min = 0.05
 
     def get_data(self, root_path: Path) -> pd.DataFrame:

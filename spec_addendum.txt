@@ -1,0 +1,7 @@
+### F1D Global Variable & Alignment Specifications
+
+1.  **Earnings Standardization:** All variables referencing "Earnings" (Volatility, Payout Stability, Loss Dummy, ROA) must use *Income Before Extraordinary Items*. Use `ibq` for quarterly measures and `iby` for annual cumulative measures. Do not use Net Income (`niq`) or Earnings Per Share (`eps`) to avoid dimensional errors and restatement inconsistencies. If `iby`/`ibq` is entirely missing, fallback to `niy`/`niq`.
+2.  **Annual Variable Extraction:** All annual flow variables (CAPEX, Dividends, Annual Sales, Annual Earnings) must be extracted exclusively from the Q4 fiscal row (e.g., `capxy`, `dvy`, `saley`, `iby`) to capture the official year-to-date total.
+3.  **Look-Ahead Clarification (Contemporaneous Alignment):** This pipeline constructs a forensic panel to explain fiscal outcomes based on communication during the year. Q4 annual totals are intentionally joined back to Q1/Q2/Q3 calls of the *same fiscal year*. This is not a predictive trading backtest.
+4.  **Forward Time Merges:** Any `Lead` or `t+1` forecast merge (e.g., IBES Dispersion Lead) must use a strictly forward merge (`statpers > call_date`) bounded by a 180-day tolerance to prevent matching against stale or distant-future forecasts when coverage drops.
+

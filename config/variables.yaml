@@ -307,14 +307,14 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "TobinsQ"
-    formula: "(atq + cshoq*prccq - ceqq) / atq"
+    formula: "(mktcap + dlcq + dlttq) / atq"
     description: "Tobin's Q: (book assets + market equity - book equity) / book assets (Compustat; Chung & Pruitt 1994 approximation)"
 
   capex_intensity:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "CapexAt"
-    formula: "capxy_Q4 / atq  (Q4-only full-year capxy joined back to all quarters by gvkey+fyearq)"
+    formula: "capxy_Q4 / atq_lag1  (Q4-only full-year capxy joined back to all quarters)"
     description: "Annual capital expenditures as fraction of total assets (Compustat; capxy Q4 full-year value to avoid YTD cumulation bias)"
 
   dividend_payer:
@@ -328,8 +328,8 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "OCF_Volatility"
-    formula: "rolling 5-year std (min 3 obs) of (oancfy / atq) per gvkey, annual panel (last obs per gvkey-fyearq)"
-    description: "Operating cash flow volatility: rolling 5yr std of OCF/assets (Compustat; matches v2 design)"
+    formula: "rolling 5-year std (min 3 obs) of (oancfy / atq_lag) per gvkey; denominator is lagged assets per spec"
+    description: "Operating cash flow volatility: rolling 5yr std of OCF/lagged_assets (Compustat; matches spec design)"
 
   # ===========================================================================
   # H2 — Investment Efficiency Regression: Compustat-engine variables
@@ -342,21 +342,21 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "InvestmentResidual"
-    formula: "Biddle (2009): (capxy+xrdy+aqcy-sppey)/at_lag; residual from FF48-year OLS: Investment ~ TobinQ_lag + SalesGrowth_lag; min 20 obs per cell"
+    formula: "Biddle (2009): (capxy+xrdy+aqcy-sppey)/at_lag; residual from FF48-year OLS: Investment ~ SalesGrowth_lag"
     description: "Abnormal investment deviation; > 0 = overinvestment, < 0 = underinvestment"
 
   cash_flow:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "CashFlow"
-    formula: "oancfy / atq  (Q4-only annual, joined back to all quarters by gvkey+fyearq)"
+    formula: "oancfy / avg_assets where avg_assets = (atq_t + atq_{t-1})/2; fallback to atq_t when prior missing"
     description: "Operating cash flow as fraction of total assets (Compustat)"
 
   sales_growth:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "SalesGrowth"
-    formula: "(saleq_Q4 - saleq_Q4_lag) / |saleq_Q4_lag|  (Q4-only annual)"
+    formula: "(saley - saley_lag) / |saley_lag|; fallback to saleq when saley missing (Q4-only annual)"
     description: "Year-over-year revenue growth from annual Q4 panel (Compustat)"
 
   # ===========================================================================
@@ -394,7 +394,7 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "div_stability"
-    formula: "-StdDev(Delta DPS) / |Mean(DPS)| over trailing 5 years"
+    formula: "-StdDev(PayoutRatio) over 5 years where PayoutRatio = dvy / iby"
     description: "Dividend policy stability (H3 DV1)"
 
   payout_flexibility:
@@ -408,7 +408,7 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "earnings_volatility"
-    formula: "StdDev(annual EPS) over trailing 5 years"
+    formula: "SD(annual iby/atq) over trailing 5 years (min 3 obs); computes profitability ratio first, then SD"
     description: "Earnings volatility (H3 control)"
 
   fcf_growth:
@@ -422,7 +422,7 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "firm_maturity"
-    formula: "req / seqq"
+    formula: "req / atq"
     description: "Firm maturity (H3 control)"
 
   is_div_payer_5yr:
@@ -461,7 +461,7 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "loss_dummy"
-    formula: "1 if niq < 0 else 0"
+    formula: "1 if ibq < 0 else 0"
     description: "Loss indicator variable (H5 Control)"
 
   # ===========================================================================

@@ -39,41 +39,36 @@ class DispersionLeadBuilder(VariableBuilder):
         # Step 1: Match call to exactly the prior consensus (t=0)
         i_engine = get_ibes_engine()
         ibes = i_engine.get_data(root_path)
-        
-        ibes_sorted = ibes[["gvkey", "statpers", "dispersion"]].dropna().sort_values("statpers")
-        
-        manifest_sorted = manifest.sort_values("start_date").dropna(subset=["start_date"])
-        manifest_sorted["_row_idx"] = np.arange(len(manifest_sorted))
-        
-        # Backward merge gets the consensus immediately preceding the call
-        t0_df = pd.merge_asof(
-            manifest_sorted,
-            ibes_sorted,
-            left_on="start_date",
-            right_on="statpers",
-            by="gvkey",
-            direction="backward",
+
+        ibes_sorted = (
+            ibes[["gvkey", "statpers", "dispersion"]].dropna().sort_values("statpers")
         )
-        
-        # Step 2: To get t+1, we shift the matched consensus forward by 90 days.
-        # We then do another backward merge to find the consensus active 90 days from now.
-        t0_df["target_lead_date"] = t0_df["start_date"] + pd.Timedelta(days=90)
-        
-        # Drop the t=0 merge artifacts so we can merge cleanly again
-        t0_df = t0_df.drop(columns=["statpers", "dispersion"]).sort_values("target_lead_date")
-        
+
+        manifest_sorted = manifest.sort_values("start_date").dropna(
+            subset=["start_date"]
+        )
+        manifest_sorted["_row_idx"] = np.arange(len(manifest_sorted))
+
+        # To get t+1, we find the first consensus strictly AFTER the call date.
+        target_df = manifest_sorted.copy()
+        target_df["target_date"] = target_df["start_date"] + pd.Timedelta(days=1)
+        target_df = target_df.sort_values("target_date")
+
         df = pd.merge_asof(
-            t0_df,
+            target_df,
             ibes_sorted.rename(columns={"dispersion": "dispersion_lead"}),
-            left_on="target_lead_date",
+            left_on="target_date",
             right_on="statpers",
             by="gvkey",
-            direction="backward",
+            direction="forward",
+            tolerance=pd.Timedelta(days=180),
         )
         df = df.sort_values("_row_idx")
-        
+
         # Map back to original manifest to ensure complete rows
-        final_merged = manifest[["file_name"]].merge(df[["file_name", "dispersion_lead"]], on="file_name", how="left")
+        final_merged = manifest[["file_name"]].merge(
+            df[["file_name", "dispersion_lead"]], on="file_name", how="left"
+        )
 
         data = final_merged[["file_name", "dispersion_lead"]].copy()
         stats = self.get_stats(data["dispersion_lead"], "dispersion_lead")

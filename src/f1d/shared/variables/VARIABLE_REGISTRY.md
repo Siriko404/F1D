@@ -24,7 +24,7 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 |---|---|---|---|
 | `Size` | `SizeBuilder` | `ln(atq)` | |
 | `BM` | `BMBuilder` | `ceqq / (cshoq * prccq)` | |
-| `Lev` | `LevBuilder` | `ltq / atq` | |
+| `Lev` | `LevBuilder` | `(dlcq + dlttq) / atq` | FIX: Uses interest-bearing debt only (not total liabilities) |
 | `ROA` | `ROABuilder` | `niq / atq` | |
 | `CurrentRatio` | `CurrentRatioBuilder` | `actq / lctq` | Removed from H1 controls (~80% missing for FF12=11) |
 | `RD_Intensity` | `RDIntensityBuilder` | `xrdq / atq` | |
@@ -33,10 +33,10 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 | `TobinsQ` | `TobinsQBuilder` | `(atq + cshoq*prccq - ceqq) / atq` | |
 | `CapexAt` | `CapexIntensityBuilder` | `capxy_Q4 / atq` | |
 | `DividendPayer` | `DividendPayerBuilder` | `(dvy_Q4 > 0).astype(float)` | |
-| `OCF_Volatility` | `OCFVolatilityBuilder` | rolling 5yr std (min 3) of `oancfy/atq` | |
+| `OCF_Volatility` | `OCFVolatilityBuilder` | rolling 5yr std (min 3) of `oancfy/atq_{t-1}` | FIX: Uses lagged assets per spec to avoid correlated measurement error |
 | `CashFlow` | `CashFlowBuilder` | | |
 | `SalesGrowth` | `SalesGrowthBuilder` | | |
-| `InvestmentResidual` | `InvestmentResidualBuilder` | Biddle et al. 2009 | >0=overinvestment, <0=underinvestment |
+| `InvestmentResidual` | `InvestmentResidualBuilder` | `INV_t ~ SG_{t-1}` | FF48-year OLS residual; >0=overinvestment |
 | `DivStability` | `DivStabilityBuilder` | | |
 | `IsDivPayer5yr` | `IsDivPayer5yrBuilder` | | |
 | `PayoutFlexibility` | `PayoutFlexibilityBuilder` | | |
@@ -115,6 +115,10 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 ---
 
 ## Known Edge Cases / Registry Notes
+
+- **Variable Audit Fixes (2026-02-25):**
+  - `Lev`: Changed from `ltq/atq` (total liabilities) to `(dlcq+dlttq)/atq` (interest-bearing debt only) per spec. Prior implementation overstated leverage 2-3x for low-debt firms.
+  - `OCF_Volatility`: Changed from `oancfy/atq` to `oancfy/atq_{t-1}` (lagged assets) per spec. Prior implementation introduced correlated measurement error.
 
 - `Turn_Uncertainty_pct` in `build_h10_tone_at_top_panel.py`: uses `0.0`
   fallback (vs. `NaN` in all other uncertainty measures). Computed inline per

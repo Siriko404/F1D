@@ -40,7 +40,7 @@ class LossDummyBuilder(VariableBuilder):
 
         # We compute loss_dummy on the fly and merge it via standard backward ASOF
         comp["loss_dummy"] = np.where(
-            comp["niq"].notna(), (comp["niq"] < 0).astype(float), np.nan
+            comp["ibq"].isna(), np.nan, (comp["ibq"] < 0).astype(float)
         )
 
         fyearq_df = (
@@ -71,7 +71,7 @@ class LossDummyBuilder(VariableBuilder):
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "loss_dummy", "source": "Compustat niq < 0"},
+            metadata={"column": "loss_dummy", "source": "Compustat ibq < 0"},
         )
 
 
