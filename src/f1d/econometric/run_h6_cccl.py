@@ -44,6 +44,7 @@ import pandas as pd
 import statsmodels.formula.api as smf  # type: ignore[import]
 from linearmodels.panel import PanelOLS
 
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -72,6 +73,30 @@ BASE_CONTROLS = [
     "ROA",
     "TobinsQ",
     "CashHoldings",
+]
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variables (uncertainty / gap measures)
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
+    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "Uncertainty_Gap", "label": "QA-Pres Uncertainty Gap"},
+    # Main independent variable (CCCL shift intensity)
+    {"col": "shift_intensity_mkvalt_ff48_lag", "label": "CCCL$_{t-1}$"},
+    # Controls
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
+    {"col": "CashHoldings", "label": "Cash Holdings"},
 ]
 
 
@@ -394,6 +419,31 @@ def main(panel_path: str | None = None) -> int:
 
     df_prep = prepare_regression_data(panel)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # ------------------------------------------------------------------
+    # Summary Statistics (call-level, by sample)
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    summary_vars = [
+        {"col": v["col"], "label": v["label"]}
+        for v in SUMMARY_STATS_VARS
+        if v["col"] in df_prep.columns
+    ]
+    make_summary_stats_table(
+        df=df_prep,
+        variables=summary_vars,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — H6 SEC Scrutiny (CCCL)",
+        label="tab:summary_stats_h6",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
+
     all_results = []
 
     for dv in CONFIG["dependent_variables"]:

@@ -82,7 +82,10 @@ except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
-from f1d.shared.latex_tables_accounting import make_accounting_table
+from f1d.shared.latex_tables_accounting import (
+    make_accounting_table,
+    make_summary_stats_table,
+)
 from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
@@ -135,6 +138,28 @@ MODEL_SPECS: Dict[str, Dict[str, Any]] = {
 }
 
 MIN_CALLS_PER_CEO = 5
+
+
+# ==============================================================================
+# Summary Statistics Variables (Combined across all 3 models)
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variables (3 models)
+    {"col": "Manager_QA_NetTone", "label": "Manager QA NetTone"},
+    {"col": "CEO_QA_NetTone", "label": "CEO QA NetTone"},
+    {"col": "NonCEO_Manager_QA_NetTone", "label": "NonCEO Manager QA NetTone"},
+    # Linguistic controls (all models)
+    {"col": "Manager_Pres_NetTone", "label": "Manager Pres NetTone"},
+    {"col": "CEO_Pres_NetTone", "label": "CEO Pres NetTone"},
+    {"col": "Analyst_QA_NetTone", "label": "Analyst QA NetTone"},
+    {"col": UNCERTAINTY_CONTROL, "label": "Uncertainty"},
+    # Financial controls (all models)
+    {"col": "StockRet", "label": "Stock Return"},
+    {"col": "MarketRet", "label": "Market Return"},
+    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
+]
 
 
 # ==============================================================================
@@ -858,6 +883,28 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Load panel
     panel = load_panel(root, panel_path)
+
+    # Derive sample column from ff12_code for summary stats
+    # (prepare_regression_data does this per-model, but we need it once for summary stats)
+    if "sample" not in panel.columns and "ff12_code" in panel.columns:
+        panel["sample"] = assign_industry_sample(panel["ff12_code"])
+
+    # Generate summary stats for panel data (all model variables, by sample)
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    make_summary_stats_table(
+        df=panel,
+        variables=SUMMARY_STATS_VARS,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — CEO Tone",
+        label="tab:summary_stats_h05",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
 
     # Run 3 models × 3 samples = 9 regressions
     # Nested dict: results[model_key][sample_name] = {model, diagnostics}

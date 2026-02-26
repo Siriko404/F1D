@@ -33,6 +33,7 @@ import statsmodels.api as sm
 from linearmodels.panel import PanelOLS
 from linearmodels.iv.absorbing import AbsorbingLS
 
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir, ensure_output_dir
 
 
@@ -42,6 +43,29 @@ def parse_arguments():
         "--dry-run", action="store_true", help="Validate without executing"
     )
     return parser.parse_args()
+
+
+# ==============================================================================
+# Summary Statistics Variables (Call-level panel)
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Transformed dependent variables
+    {"col": "IHS_CFO_QA_Unc", "label": "CFO Q\\&A Uncertainty (IHS)"},
+    {"col": "IHS_CEO_QA_Unc", "label": "CEO Q\\&A Uncertainty (IHS)"},
+    {"col": "IHS_CEO_Pres_Unc", "label": "CEO Pres. Uncertainty (IHS)"},
+    # Main independent variable
+    {"col": "ClarityStyle_Realtime", "label": "CEO Style (Realtime Clarity)"},
+    # Financial controls
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "BM", "label": "Book-to-Market"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "StockRet", "label": "Stock Return"},
+    {"col": "MarketRet", "label": "Market Return"},
+    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
+]
 
 
 def asinh(series: pd.Series) -> pd.Series:
@@ -950,6 +974,30 @@ def main():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out_dir = root / "outputs" / "econometric" / "tone_at_top" / timestamp
     ensure_output_dir(out_dir)
+
+    # ------------------------------------------------------------------
+    # Summary Statistics (call-level, Main/Finance/Utility)
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("Generating summary statistics (call-level panel)")
+    print("=" * 60)
+    summary_vars = [
+        {"col": v["col"], "label": v["label"]}
+        for v in SUMMARY_STATS_VARS
+        if v["col"] in call_panel.columns
+    ]
+    make_summary_stats_table(
+        df=call_panel,
+        variables=summary_vars,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — Tone-at-the-Top",
+        label="tab:summary_stats_h10",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
 
     # Store all results
     all_results = {}

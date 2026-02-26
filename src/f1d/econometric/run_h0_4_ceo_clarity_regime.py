@@ -46,6 +46,8 @@ Outputs:
     - outputs/econometric/ceo_clarity_regime/{timestamp}/clarity_scores.parquet
     - outputs/econometric/ceo_clarity_regime/{timestamp}/regression_results_{regime}.txt
     - outputs/econometric/ceo_clarity_regime/{timestamp}/report_step4_ceo_clarity_regime.md
+    - outputs/econometric/ceo_clarity_regime/{timestamp}/summary_stats.csv
+    - outputs/econometric/ceo_clarity_regime/{timestamp}/summary_stats.tex
 
 Deterministic: true
 Dependencies:
@@ -82,7 +84,10 @@ except ImportError:
     STATSMODELS_AVAILABLE = False
     print("WARNING: statsmodels not available. Install with: pip install statsmodels")
 
-from f1d.shared.latex_tables_accounting import make_accounting_table
+from f1d.shared.latex_tables_accounting import (
+    make_accounting_table,
+    make_summary_stats_table,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 
 
@@ -128,6 +133,22 @@ VARIABLE_LABELS = {
     "EPS_Growth": "EPS Growth",
     "SurpDec": "Earnings Surprise Decile",
 }
+
+
+# ==============================================================================
+# Summary Statistics Variables (Same as H0.2, Main sample only)
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
+    {"col": "Entire_All_Negative_pct", "label": "Negative Sentiment"},
+    {"col": "StockRet", "label": "Stock Return"},
+    {"col": "MarketRet", "label": "Market Return"},
+    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
+]
 
 
 # ==============================================================================
@@ -750,6 +771,22 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Prepare Main-sample data (all years; year filter applied per regime below)
     df_main = prepare_regression_data(panel)
+
+    # Generate summary stats for Main-sample complete-case data (aggregate only)
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    make_summary_stats_table(
+        df=df_main,
+        variables=SUMMARY_STATS_VARS,
+        sample_names=None,  # Aggregate only (Main sample)
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — CEO Clarity Regime Analysis (Main Sample)",
+        label="tab:summary_stats_h04",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
 
     # Run regressions by regime
     results: Dict[str, Dict[str, Any]] = {}

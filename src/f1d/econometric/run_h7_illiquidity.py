@@ -39,6 +39,7 @@ import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
 
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -70,6 +71,30 @@ SPECS = [
     ("QA_Uncertainty", "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct"),
     ("QA_Weak_Modal", "Manager_QA_Weak_Modal_pct", "CEO_QA_Weak_Modal_pct"),
     ("Pres_Uncertainty", "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct"),
+]
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variable
+    {"col": "amihud_illiq_lead", "label": "Amihud Illiquidity$_{t+1}$"},
+    # Primary uncertainty measures
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
+    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    # Controls
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
+    {"col": "Volatility", "label": "Return Volatility"},
+    {"col": "StockRet", "label": "Stock Return"},
 ]
 
 
@@ -354,6 +379,30 @@ def main(panel_path: Optional[str] = None) -> int:
 
     if "sample" not in panel.columns:
         panel["sample"] = assign_industry_sample(panel["ff12_code"])
+
+    # ------------------------------------------------------------------
+    # Summary Statistics (call-level, by sample)
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    summary_vars = [
+        {"col": v["col"], "label": v["label"]}
+        for v in SUMMARY_STATS_VARS
+        if v["col"] in panel.columns
+    ]
+    make_summary_stats_table(
+        df=panel,
+        variables=summary_vars,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — H7 Speech Vagueness and Stock Illiquidity",
+        label="tab:summary_stats_h7",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
 
     # Sanity: DV coverage
     n_dv = panel["amihud_illiq_lead"].notna().sum()

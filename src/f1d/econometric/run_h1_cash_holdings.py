@@ -53,6 +53,8 @@ Outputs:
     - outputs/econometric/h1_cash_holdings/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h1_cash_holdings/{timestamp}/h1_cash_holdings_table.tex
     - outputs/econometric/h1_cash_holdings/{timestamp}/report_step4_H1.md
+    - outputs/econometric/h1_cash_holdings/{timestamp}/summary_stats.csv
+    - outputs/econometric/h1_cash_holdings/{timestamp}/summary_stats.tex
 
 Author: Thesis Author
 Date: 2026-02-20
@@ -73,6 +75,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_accounting_table
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -123,6 +126,32 @@ VARIABLE_LABELS = {
     "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
 }
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variable (lead)
+    {"col": "CashHoldings_lead", "label": "Cash Holdings$_{t+1}$"},
+    # Main independent variables
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
+    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    # Leverage (main effect + interaction)
+    {"col": "Lev", "label": "Leverage"},
+    # Control variables
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "CapexAt", "label": "CapEx / Assets"},
+    {"col": "DividendPayer", "label": "Dividend Payer"},
+    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+]
 
 
 # ==============================================================================
@@ -754,6 +783,23 @@ def main(panel_path: Optional[str] = None) -> int:
         n = (panel["sample"] == sample).sum()
         n_lead = panel.loc[panel["sample"] == sample, "CashHoldings_lead"].notna().sum()
         print(f"    {sample}: {n:,} calls, {n_lead:,} with valid lead")
+
+    # Generate summary stats for panel data (by sample)
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    make_summary_stats_table(
+        df=panel,
+        variables=SUMMARY_STATS_VARS,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — H1 Cash Holdings",
+        label="tab:summary_stats_h1",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
 
     # Run regressions: 6 uncertainty measures x 3 samples = 18 regressions
     all_results: List[Dict[str, Any]] = []

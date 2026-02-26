@@ -47,6 +47,7 @@ import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
 
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -87,6 +88,32 @@ PRES_CONTROL_MAP = {
     "Manager_Pres_Uncertainty_pct": None,
     "CEO_Pres_Uncertainty_pct": None,
 }
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variables (uncertainty measures)
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
+    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    # Main independent variable
+    {"col": "Lev_lag", "label": "Leverage$_{t-1}$"},
+    # Controls
+    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "CashHoldings", "label": "Cash Holdings"},
+    {"col": "DividendPayer", "label": "Dividend Payer"},
+    {"col": "firm_maturity", "label": "Firm Maturity"},
+    {"col": "earnings_volatility", "label": "Earnings Volatility"},
+]
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -398,6 +425,31 @@ def main(panel_path: str | None = None) -> int:
         panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # ------------------------------------------------------------------
+    # Summary Statistics (call-level, by sample)
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    summary_vars = [
+        {"col": v["col"], "label": v["label"]}
+        for v in SUMMARY_STATS_VARS
+        if v["col"] in panel.columns
+    ]
+    make_summary_stats_table(
+        df=panel,
+        variables=summary_vars,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — H4 Leverage Discipline",
+        label="tab:summary_stats_h4",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
+
     all_results = []
 
     for dv in CONFIG["dependent_variables"]:

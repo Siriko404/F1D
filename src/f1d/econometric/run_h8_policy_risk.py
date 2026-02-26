@@ -45,6 +45,7 @@ import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
 
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 
 warnings.filterwarnings(
@@ -57,6 +58,26 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*
 # ---------------------------------------------------------------------------
 
 BASE_CONTROLS = ["Size", "Lev", "ROA", "TobinsQ"]
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variable
+    {"col": "AbsAbInv_lead", "label": "|Abnormal Investment|$_{t+1}$"},
+    # Main independent variables
+    {"col": "PRiskFY", "label": "Policy Risk"},
+    {"col": "style_frozen", "label": "Style Frozen (Clarity)"},
+    {"col": "interact", "label": "PRiskFY $\\times$ Style Frozen"},
+    # Controls
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
+]
+
 
 CONFIG = {
     "min_firms": 50,  # Minimum unique firms for a valid regression
@@ -422,6 +443,29 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"  Columns: {len(df.columns)}")
 
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # ------------------------------------------------------------------
+    # Summary Statistics (firm-year level, aggregate only)
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    summary_vars = [
+        {"col": v["col"], "label": v["label"]}
+        for v in SUMMARY_STATS_VARS
+        if v["col"] in df.columns
+    ]
+    make_summary_stats_table(
+        df=df,
+        variables=summary_vars,
+        sample_names=None,  # Aggregate only (firm-year level, Main sample)
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — H8 Policy Risk",
+        label="tab:summary_stats_h8",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
 
     # ------------------------------------------------------------------
     # Sanity checks

@@ -62,14 +62,17 @@ warnings.filterwarnings("ignore")
 
 # lifelines — always-bound pattern (B7 fix: CoxTimeVaryingFitter for counting-process)
 CoxTimeVaryingFitter: Any = None
+concordance_index: Any = None
 try:
     from lifelines import CoxTimeVaryingFitter  # type: ignore[no-redef,import-untyped]
+    from lifelines.utils import concordance_index  # type: ignore[import-untyped]
 
     LIFELINES_AVAILABLE = True
 except ImportError:
     LIFELINES_AVAILABLE = False
     print("WARNING: lifelines not available. Install with: pip install lifelines")
 
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.regression_validation import (
@@ -93,6 +96,34 @@ FINANCIAL_CONTROLS = [
     "StockRet",
     "MarketRet",
     "SurpDec",
+]
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Clarity measures (two variants)
+    {"col": "ClarityManager", "label": "Clarity (Manager)"},
+    {"col": "ClarityCEO", "label": "Clarity (CEO)"},
+    # Uncertainty measures (two variants)
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    # Survival variables
+    {"col": "duration", "label": "Duration (years)"},
+    {"col": "Takeover", "label": "Takeover Event"},
+    {"col": "Takeover_Uninvited", "label": "Uninvited Takeover"},
+    {"col": "Takeover_Friendly", "label": "Friendly Takeover"},
+    # Financial controls
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "BM", "label": "Book-to-Market"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "StockRet", "label": "Stock Return"},
+    {"col": "MarketRet", "label": "Market Return"},
+    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
 ]
 
 # Two model variants
@@ -226,6 +257,79 @@ def prepare_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
 # ==============================================================================
 
 
+def compute_concordance_time_varying(
+    ctv: Any,
+    df: pd.DataFrame,
+    event_col: str,
+    id_col: str = "gvkey",
+) -> Optional[float]:
+    """Compute concordance index for CoxTimeVaryingFitter.
+
+    CoxTimeVaryingFitter does not expose concordance_index_ directly (unlike
+    CoxPHFitter). We compute it by:
+    1. Computing the mean partial hazard across all observations for each subject
+    2. Using this as the predicted risk score
+    3. Computing Harrell's C-index using lifelines.utils.concordance_index
+
+    For time-varying covariates, using the mean hazard across the follow-up
+    period provides a more stable estimate of overall risk than using just
+    the last observation.
+
+    Args:
+        ctv: Fitted CoxTimeVaryingFitter model
+        df: DataFrame used to fit the model (counting-process format)
+        event_col: Name of the event indicator column
+        id_col: Name of the subject identifier column
+
+    Returns:
+        Concordance index (float) or None if computation fails.
+    """
+    if concordance_index is None:
+        return None
+
+    try:
+        # Predict partial hazard for all observations
+        # Higher hazard = higher risk = shorter survival
+        df_with_hazard = df.copy()
+        df_with_hazard["_partial_hazard"] = ctv.predict_partial_hazard(df)  # type: ignore[union-attr]
+
+        # Compute mean partial hazard for each subject
+        # This gives a stable risk estimate across the follow-up period
+        subject_hazards = df_with_hazard.groupby(id_col)["_partial_hazard"].mean()
+
+        # Get the last observation for each subject (for event time and indicator)
+        idx_last = df.groupby(id_col)[STOP_COL].idxmax()
+        df_last = df.loc[idx_last].copy()
+
+        # Align the hazards with the last observations
+        subject_hazards = subject_hazards.loc[df_last[id_col].values]
+
+        # Build clean dataframe for concordance computation (drop any NaNs)
+        conc_df = pd.DataFrame({
+            "event_time": df_last[STOP_COL].values,
+            "predicted_score": subject_hazards.values.flatten(),
+            "event_observed": df_last[event_col].values,
+        })
+        conc_df = conc_df.dropna()
+
+        if len(conc_df) < 10:
+            return None
+
+        # For concordance_index:
+        # - event_times: the stop time (time of event or censoring)
+        # - predicted_scores: mean partial hazard (higher = worse prognosis)
+        # - event_observed: whether the event occurred
+        c_index = concordance_index(
+            event_times=conc_df["event_time"].values,
+            predicted_scores=conc_df["predicted_score"].values,
+            event_observed=conc_df["event_observed"].values,
+        )
+        return float(c_index)
+    except Exception:
+        # Concordance computation may fail for edge cases
+        return None
+
+
 def run_cox_tv(
     df: pd.DataFrame,
     event_col: str,
@@ -304,8 +408,8 @@ def run_cox_tv(
         print(f"  ERROR: Cox TV failed: {e}", file=sys.stderr)
         return None
 
-    # CoxTimeVaryingFitter does not expose concordance_index_ (unlike CoxPHFitter)
-    concordance = getattr(ctv, "concordance_index_", None)
+    # Compute concordance index for time-varying model
+    concordance = compute_concordance_time_varying(ctv, df_clean, event_col)
     if concordance is not None:
         print(f"  Concordance: {concordance:.4f}")
 
@@ -330,6 +434,7 @@ def extract_results(
     variant: str,
     event_type: str,
     covariates: List[str],
+    concordance: Optional[float] = None,
 ) -> List[Dict[str, Any]]:
     """Extract key coefficient rows from fitted CoxPHFitter."""
     rows = []
@@ -352,9 +457,7 @@ def extract_results(
                     "p": summary.loc[var, "p"],
                     "n_firms": df_clean_len,
                     "n_events": n_events,
-                    "concordance": float(cph.concordance_index_)
-                    if hasattr(cph, "concordance_index_")
-                    else float("nan"),  # type: ignore[union-attr]
+                    "concordance": concordance if concordance is not None else float("nan"),
                 }
             )
     return rows
@@ -403,15 +506,15 @@ def generate_report(
         "",
         "## Model Diagnostics",
         "",
-        "| Model | Variant | Event Type | N Firms | N Events | Concordance |",
-        "|-------|---------|------------|---------|----------|-------------|",
+        "| Model | Variant | Event Type | N Intervals | N Event Firms | Concordance |",
+        "|-------|---------|------------|-------------|---------------|-------------|",
     ]
     for d in diag_rows:
         conc = d.get("concordance", "N/A")
         conc_str = f"{conc:.4f}" if isinstance(conc, float) else str(conc)
         report_lines.append(
             f"| {d.get('model')} | {d.get('variant')} | {d.get('event_type')} "
-            f"| {d.get('n_firms', 'N/A')} | {d.get('n_events', 'N/A')} | {conc_str} |"
+            f"| {d.get('n_intervals', 'N/A'):,} | {d.get('n_event_firms', 'N/A'):,} | {conc_str} |"
         )
     report_lines.append("")
 
@@ -480,6 +583,29 @@ def main(panel_path: Optional[str] = None) -> int:
     # Main sample + event indicators
     df = prepare_main_sample(panel)
 
+    # ------------------------------------------------------------------
+    # Summary Statistics (firm-level survival panel, Main only)
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    summary_vars = [
+        {"col": v["col"], "label": v["label"]}
+        for v in SUMMARY_STATS_VARS
+        if v["col"] in df.columns
+    ]
+    make_summary_stats_table(
+        df=df,
+        variables=summary_vars,
+        sample_names=None,  # Aggregate only (survival panel, Main sample)
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — H9 Takeover Hazards",
+        label="tab:summary_stats_h9",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
+
     all_hr_rows: List[Dict[str, Any]] = []
     diag_rows: List[Dict[str, Any]] = []
 
@@ -525,11 +651,8 @@ def main(panel_path: Optional[str] = None) -> int:
                     if "gvkey" in df_used.columns
                     else int(df_used[event_col].sum())
                 )
-                concordance = (
-                    float(ctv.concordance_index_)
-                    if hasattr(ctv, "concordance_index_")
-                    else float("nan")
-                )  # type: ignore[union-attr]
+                # Compute concordance for time-varying model
+                concordance = compute_concordance_time_varying(ctv, df_used, event_col)
 
                 hr_rows = extract_results(
                     ctv,
@@ -539,6 +662,7 @@ def main(panel_path: Optional[str] = None) -> int:
                     variant_key,
                     event_type,
                     covariates,
+                    concordance=concordance,
                 )
                 all_hr_rows.extend(hr_rows)
 

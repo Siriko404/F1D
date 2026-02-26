@@ -52,6 +52,8 @@ Outputs:
     - outputs/econometric/h2_investment/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h2_investment/{timestamp}/h2_investment_table.tex
     - outputs/econometric/h2_investment/{timestamp}/report_step4_H2.md
+    - outputs/econometric/h2_investment/{timestamp}/summary_stats.csv
+    - outputs/econometric/h2_investment/{timestamp}/summary_stats.tex
 
 Author: Thesis Author
 Date: 2026-02-20
@@ -71,6 +73,7 @@ import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
 
+from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -115,6 +118,31 @@ VARIABLE_LABELS = {
     "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
 }
+
+
+# ==============================================================================
+# Summary Statistics Variables
+# ==============================================================================
+
+SUMMARY_STATS_VARS = [
+    # Dependent variable
+    {"col": "InvestmentResidual", "label": "Investment Residual"},
+    # Main independent variables
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
+    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    # Leverage (main effect + interaction)
+    {"col": "Lev", "label": "Leverage"},
+    # Control variables
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "CashFlow", "label": "Cash Flow / Assets"},
+    {"col": "SalesGrowth", "label": "Sales Growth"},
+]
 
 
 # ==============================================================================
@@ -732,6 +760,23 @@ def main(panel_path: Optional[str] = None) -> int:
             .sum()
         )
         print(f"    {sample}: {n:,} calls, {n_lead:,} with valid lead")
+
+    # Generate summary statistics (all variables, by sample)
+    print("\n" + "=" * 60)
+    print("Generating summary statistics")
+    print("=" * 60)
+    make_summary_stats_table(
+        df=panel,
+        variables=SUMMARY_STATS_VARS,
+        sample_names=["Main", "Finance", "Utility"],
+        sample_col="sample",
+        output_csv=out_dir / "summary_stats.csv",
+        output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics — H2 Investment Efficiency",
+        label="tab:summary_stats_h2",
+    )
+    print("  Saved: summary_stats.csv")
+    print("  Saved: summary_stats.tex")
 
     # Run regressions: 6 uncertainty measures x 3 samples = 18 regressions
     all_results: List[Dict[str, Any]] = []
