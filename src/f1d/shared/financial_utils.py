@@ -295,10 +295,14 @@ def calculate_firm_controls_quarterly(
         else np.nan
     )
 
-    # Leverage: total liabilities / total assets (quarterly)
-    # Lev: ltq / atq
+    # Leverage: interest-bearing debt / total assets (quarterly)
+    # Lev: (dlcq + dlttq) / atq
+    dlcq_val = data.get("dlcq") or 0
+    dlttq_val = data.get("dlttq") or 0
     leverage = (
-        data["ltq"] / data["atq"] if data.get("atq") and data["atq"] > 0 else np.nan
+        (dlcq_val + dlttq_val) / data["atq"]
+        if data.get("atq") and data["atq"] > 0
+        else np.nan
     )
 
     # Return on Assets: net income / total assets (quarterly)
@@ -349,7 +353,7 @@ def compute_financial_controls_quarterly(
         EPS_Growth, CurrentRatio, RD_Intensity)
 
     Note:
-        Requires columns: gvkey, datadate, atq, ceqq, cshoq, prccq, ltq, niq,
+        Requires columns: gvkey, datadate, atq, ceqq, cshoq, prccq, dlcq, dlttq, niq,
                          epspxq, actq, lctq, xrdq
     """
     # Ensure datadate is datetime
@@ -372,11 +376,22 @@ def compute_financial_controls_quarterly(
         compustat_df["cshoq"] * compustat_df["prccq"]
     )
 
-    # Leverage: ltq / atq
-    compustat_df["Lev"] = compustat_df["ltq"] / compustat_df["atq"]
+    # Leverage: interest-bearing debt / total assets
+    compustat_df["Lev"] = (
+        compustat_df["dlcq"].fillna(0).clip(lower=0) +
+        compustat_df["dlttq"].fillna(0).clip(lower=0)
+    ) / compustat_df["atq"]
 
-    # ROA: niq / atq
-    compustat_df["ROA"] = compustat_df["niq"] / compustat_df["atq"]
+    # ROA: niq / avg_assets (spec-compliant: avg_assets = (atq + atq_lag) / 2)
+    atq_lag = compustat_df.groupby("gvkey")["atq"].shift(1)
+    avg_assets = (compustat_df["atq"] + atq_lag) / 2
+    avg_assets = avg_assets.where(avg_assets.notna() & (avg_assets > 0), compustat_df["atq"])
+    compustat_df["ROA"] = np.where(
+        (avg_assets.notna()) & (avg_assets > 0),
+        compustat_df["niq"] / avg_assets,
+        np.nan,
+    )
+    compustat_df["ROA"] = compustat_df["ROA"].replace([np.inf, -np.inf], np.nan)
 
     # Current Ratio: actq / lctq
     compustat_df["CurrentRatio"] = compustat_df["actq"] / compustat_df["lctq"].replace(

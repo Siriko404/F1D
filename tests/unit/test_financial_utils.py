@@ -409,7 +409,9 @@ class TestCalculateFirmControlsQuarterly:
             "ceqq": [400, 420, 440, 200, 210, 220],
             "cshoq": [100, 100, 100, 50, 50, 50],
             "prccq": [20, 22, 24, 10, 11, 12],
-            "ltq": [600, 630, 660, 300, 315, 330],
+            "ltq": [600, 630, 660, 300, 315, 330],  # Total liabilities (kept for reference)
+            "dlcq": [75, 80, 85, 40, 42, 45],      # Short-term interest-bearing debt
+            "dlttq": [200, 210, 220, 100, 105, 110],  # Long-term debt
             "niq": [50, 55, 60, 25, 27, 30],
             "actq": [500, 525, 550, 250, 262, 275],
             "lctq": [200, 210, 220, 100, 105, 110],
@@ -437,13 +439,14 @@ class TestCalculateFirmControlsQuarterly:
         assert result["BM"] == pytest.approx(expected, rel=1e-5)
 
     def test_calculates_leverage_quarterly(self, sample_quarterly_compustat):
-        """Test that Lev is calculated correctly."""
+        """Test that Lev is calculated correctly as (dlcq + dlttq) / atq."""
         row = pd.Series({"gvkey": "000001", "datadate": pd.Timestamp("2020-06-30")})
         result = calculate_firm_controls_quarterly(
             row, sample_quarterly_compustat, pd.Timestamp("2020-06-30")
         )
         assert "Lev" in result
-        expected = 630 / 1050
+        # Lev = (dlcq + dlttq) / atq = (80 + 210) / 1050
+        expected = (80 + 210) / 1050
         assert result["Lev"] == pytest.approx(expected, rel=1e-5)
 
     def test_calculates_roa(self, sample_quarterly_compustat):
@@ -656,7 +659,9 @@ class TestComputeFinancialControlsQuarterly:
                     "ceqq": 400 + firm_id * 200 + quarter * 20,
                     "cshoq": 100,
                     "prccq": 20 + quarter,
-                    "ltq": 600 + firm_id * 300 + quarter * 30,
+                    "ltq": 600 + firm_id * 300 + quarter * 30,  # Total liabilities (kept for reference)
+                    "dlcq": 75 + firm_id * 37 + quarter * 4,    # Short-term interest-bearing debt
+                    "dlttq": 200 + firm_id * 100 + quarter * 10,  # Long-term debt
                     "niq": 50 + firm_id * 25 + quarter * 5,
                     "actq": 500 + firm_id * 250 + quarter * 25,
                     "lctq": 200 + firm_id * 100 + quarter * 10,
@@ -748,11 +753,14 @@ class TestComputeFinancialControlsQuarterly:
         assert result.loc[0, "BM"] == pytest.approx(expected_bm, rel=1e-5)
 
     def test_lev_calculation(self, sample_quarterly_df):
-        """Test that Lev is calculated correctly."""
+        """Test that Lev is calculated correctly as (dlcq + dlttq) / atq."""
         result = compute_financial_controls_quarterly(
             sample_quarterly_df.copy(), winsorize=False
         )
-        expected_lev = sample_quarterly_df.loc[0, "ltq"] / sample_quarterly_df.loc[0, "atq"]
+        # Lev = (dlcq + dlttq) / atq
+        expected_lev = (
+            sample_quarterly_df.loc[0, "dlcq"] + sample_quarterly_df.loc[0, "dlttq"]
+        ) / sample_quarterly_df.loc[0, "atq"]
         assert result.loc[0, "Lev"] == pytest.approx(expected_lev, rel=1e-5)
 
     def test_roa_calculation(self, sample_quarterly_df):
