@@ -1,9 +1,20 @@
 """Configuration loader with caching and error handling.
 
-This module provides utilities for loading and caching configuration
-with clear error messages and environment variable override support.
+Purpose:
+    Provides utilities for loading and caching configuration with clear
+    error messages and environment variable override support.
 
-Example:
+Key Functions:
+    - get_config: Load and cache configuration from YAML file
+    - reload_config: Force reload of configuration from the same path
+    - clear_config_cache: Clear the cached configuration
+    - load_variable_config: Load variable source configuration
+    - validate_env_override: Check if env var would override config
+
+Key Classes:
+    - ConfigError: Custom exception for configuration-related errors
+
+Usage:
     from f1d.shared.config.loader import get_config
 
     # Load from default location (config/project.yaml)

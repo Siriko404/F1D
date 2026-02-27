@@ -1,7 +1,19 @@
 """Path resolution utilities for F1D project.
 
-This module provides the PathsSettings class for resolving and validating
-file system paths used throughout the F1D pipeline.
+Purpose:
+    Provides the PathsSettings class for resolving and validating
+    file system paths used throughout the F1D pipeline. Supports
+    pattern strings with placeholders like {year} for dynamic paths.
+
+Key Classes:
+    - PathsSettings: Configuration for file system paths
+
+Usage:
+    from f1d.shared.config.paths import PathsSettings
+    from pathlib import Path
+
+    paths = PathsSettings()
+    resolved = paths.resolve(Path("/project"))
 """
 
 from __future__ import annotations

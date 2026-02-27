@@ -1,9 +1,20 @@
 """Dataset configuration classes for F1D pipeline.
 
-This module provides type-safe configuration classes for dataset definitions.
-Dataset configurations support context and role filtering settings.
+Purpose:
+    Provides type-safe configuration classes for dataset definitions.
+    Dataset configurations support context and role filtering settings.
+    Classes are designed to load from config/project.yaml datasets section.
 
-Classes are designed to load from config/project.yaml datasets section.
+Key Classes:
+    - DatasetConfig: Configuration for a single dataset
+    - DatasetsConfig: Container class for all dataset configurations
+
+Usage:
+    from f1d.shared.config.datasets import DatasetConfig, DatasetsConfig
+
+    config = DatasetsConfig(
+        manager_qa=DatasetConfig(description="Manager QA", enabled=True)
+    )
 """
 
 from __future__ import annotations

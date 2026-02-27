@@ -1,7 +1,17 @@
-"""Configuration module for F1D project.
+"""Configuration package for F1D pipeline.
 
-This module provides type-safe configuration management using pydantic-settings.
-Configuration can be loaded from YAML files with environment variable overrides.
+This package provides Pydantic-based configuration models with
+environment variable support and YAML file loading.
+
+Modules:
+    - base: Base configuration models (ProjectConfig, DataSettings, etc.)
+    - loader: Configuration loading and caching utilities
+    - datasets: Dataset path configuration
+    - env: Environment variable settings
+    - paths: Path utilities and resolution
+    - step_configs: Pipeline step configurations
+    - hashing: File hashing configuration
+    - string_matching: Fuzzy string matching configuration
 
 Example:
     from f1d.shared.config import load_config, get_config
