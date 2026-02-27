@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Test H7 Speech Vagueness and Stock Illiquidity Hypothesis
 ================================================================================
-ID: econometric/test_h7_illiquidity
+ID: econometric/run_h7_illiquidity
 Description: Run H7 Illiquidity hypothesis test by loading the call-level panel
              from Stage 3, running fixed effects OLS regressions by industry
              sample, and outputting results.
@@ -21,9 +21,33 @@ Hypothesis Tests (one-tailed):
     H7-B: beta(Manager_Pres_Uncertainty) > 0 (presentation vagueness too)
     H7-C: beta(QA) > beta(Pres) (spontaneous speech has larger effect)
 
-Filters:
-    - >= 5 calls per firm in the regression sample
-    - amihud_illiq_lead must be non-missing (DV)
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls in the regression sample.
+    amihud_illiq_lead must be non-missing (DV).
+
+Inputs:
+    - outputs/variables/h7_illiquidity/latest/h7_illiquidity_panel.parquet
+
+Outputs:
+    - outputs/econometric/h7_illiquidity/{timestamp}/regression_{sample}_{spec}.txt
+    - outputs/econometric/h7_illiquidity/{timestamp}/h7_illiquidity_table.tex
+    - outputs/econometric/h7_illiquidity/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h7_illiquidity/{timestamp}/summary_stats.csv
+    - outputs/econometric/h7_illiquidity/{timestamp}/summary_stats.tex
+
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h7_illiquidity_panel)
+    - Uses: linearmodels, f1d.shared.latex_tables_accounting
+
+Author: Thesis Author
+Date: 2026-02-26
+================================================================================
 """
 
 from __future__ import annotations

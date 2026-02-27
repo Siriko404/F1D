@@ -9,13 +9,47 @@ Description: Executes regressions for the Tone-at-the-Top transmission hypothesi
              H_TT2: Speaker-turn level, prior CEO QA turns predict NonCEO manager uncertainty.
              Model 3: Robustness using full-sample ClarityCEO instead of real-time style.
 
+Model Specifications:
+    M1 (Call-level): IHS(CFO_QA_Unc) ~ ClarityStyle_Realtime + Controls + FirmFE + QuarterFE
+    M2 (Turn-level): IHS(NonCEO_Turn_Unc) ~ IHS(CEO_Prior_QA_Unc_j) + CallFE + SpeakerFE
+
+    ClarityStyle_Realtime = 4-call rolling window, min 4 prior calls, EB-shrunk.
+
+Hypothesis Tests:
+    H_TT1: beta(ClarityStyle_Realtime) > 0 (CEO style transmits to CFO uncertainty)
+    H_TT2: beta(CEO_Prior_QA_Unc) > 0 (prior CEO turns predict NonCEO manager uncertainty)
+
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
+
+Minimum Calls Filter:
+    CEOs must have >= 4 prior calls for real-time style estimation.
+    Turn-level analysis requires speaker identification.
+
+Clustering: Two-way (Firm × CEO) for call-level models.
+
+Inputs:
+    - outputs/variables/tone_at_top/latest/tone_at_top_panel.parquet
+    - outputs/variables/tone_at_top/latest/tone_at_top_turns_panel.parquet
+
 Outputs:
-    - outputs/econometric/tone_at_top/{timestamp}/results_*.csv
+    - outputs/econometric/tone_at_top/{timestamp}/coefficients_{sample}_{model}.csv
     - outputs/econometric/tone_at_top/{timestamp}/tone_at_top_full.tex (Accounting Review style)
     - outputs/econometric/tone_at_top/{timestamp}/tone_at_top_summary.tex (summary table)
+    - outputs/econometric/tone_at_top/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/tone_at_top/{timestamp}/summary_stats.csv
+    - outputs/econometric/tone_at_top/{timestamp}/summary_stats.tex
     - outputs/econometric/tone_at_top/{timestamp}/report.md
 
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h10_tone_at_top_panel)
+    - Uses: linearmodels, f1d.shared.latex_tables_accounting
+
 Author: Thesis Author
+Date: 2026-02-26
 ================================================================================
 """
 
@@ -1161,6 +1195,34 @@ def main():
 
     # Generate markdown report
     generate_report_md(all_results, model_order, out_dir / "report.md")
+
+    # Save model diagnostics CSV (linearmodels-specific)
+    diag_rows = []
+    for model_key in model_order:
+        if model_key not in all_results:
+            continue
+        model_res = all_results[model_key]
+        diag = model_res.get("diagnostics", {})
+        coef_df = model_res.get("coefficients", pd.DataFrame())
+        if not coef_df.empty:
+            # M1 has n_entities, M2 has n_calls/n_speakers
+            n_entities = diag.get("n_entities") or diag.get("n_calls") or diag.get("n_speakers")
+            r2 = diag.get("r2_within") or diag.get("r2")
+            diag_rows.append({
+                "model": model_key,
+                "n_obs": diag.get("N"),
+                "n_entities": n_entities,
+                "rsquared": r2,
+                "rsquared_adj": None,  # linearmodels does not provide
+                "fvalue": None,
+                "f_pvalue": None,
+                "aic": None,
+                "bic": None,
+            })
+    if diag_rows:
+        diag_df = pd.DataFrame(diag_rows)
+        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+        print(f"  Saved: model_diagnostics.csv ({len(diag_df)} rows)")
 
     # Save individual CSV files (backward compatible format)
     for sample in ["Main", "Finance", "Utility"]:
