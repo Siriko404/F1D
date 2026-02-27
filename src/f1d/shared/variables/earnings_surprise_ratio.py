@@ -1,6 +1,10 @@
 """Builder for earnings_surprise_ratio (H5 Control Variable).
 
 Fetches the unranked ratio |ACTUAL - MEANEST| / |MEANEST| from the IBES engine.
+Queries the shared IBES engine for analyst forecast data and matches
+to calls via merge_asof on gvkey and statpers.
+
+Returns one column: file_name, earnings_surprise_ratio.
 """
 
 from __future__ import annotations

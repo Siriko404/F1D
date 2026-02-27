@@ -1,3 +1,18 @@
+"""Builder for Free Cash Flow Growth (fcf_growth) variable.
+
+Reads raw Compustat quarterly data via the shared CompustatEngine.
+Returns one column: file_name, fcf_growth.
+
+Free Cash Flow Growth = year-over-year growth rate in free cash flow,
+computed from operating cash flow minus capital expenditures.
+"""
+
+"""Builder for Free Cash Flow Growth (fcf_growth) variable.
+
+Reads raw Compustat quarterly data via the shared CompustatEngine.
+Returns one column: file_name, fcf_growth.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

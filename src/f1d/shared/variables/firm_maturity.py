@@ -1,3 +1,18 @@
+"""Builder for Firm Maturity (firm_maturity) variable.
+
+Reads raw Compustat quarterly data via the shared CompustatEngine.
+Returns one column: file_name, firm_maturity.
+
+Firm Maturity measures the lifecycle stage of a firm based on
+characteristics such as age, sales growth, and capital structure.
+"""
+
+"""Builder for Firm Maturity (firm_maturity) variable.
+
+Reads raw Compustat quarterly data via the shared CompustatEngine.
+Returns one column: file_name, firm_maturity.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
