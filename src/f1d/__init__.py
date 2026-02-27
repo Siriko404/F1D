@@ -6,6 +6,11 @@ This package implements a 4-stage data processing pipeline:
 3. Financial Features - Construct financial variables
 4. Econometric Analysis - Run panel regressions
 
+Modules:
+    - shared: Common utilities (path_utils, panel_ols, observability)
+    - sample: Sample construction scripts (assemble_manifest)
+    - shared.variables: Variable builders for financial and text metrics
+
 Example:
     >>> from f1d import get_latest_output_dir
     >>> output = get_latest_output_dir("data/processed/manifest")
