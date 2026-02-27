@@ -27,9 +27,33 @@ Hypothesis Tests (one-tailed):
         H3a: beta(Uncertainty) > 0 (vagueness increases flexibility)
         H3b: beta(Uncertainty x Lev) > 0 (leverage amplifies positive effect)
 
-Filters:
-    - is_div_payer_5yr == 1 (firm must have paid dividends in trailing 5 years)
-    - >= 5 calls per firm
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls to be included in regression.
+    Additional filter: is_div_payer_5yr == 1 (firm must have paid dividends in trailing 5 years).
+
+Inputs:
+    - outputs/variables/h3_payout_policy/latest/h3_payout_policy_panel.parquet
+
+Outputs:
+    - outputs/econometric/h3_payout_policy/{timestamp}/regression_results_{sample}_{dv}_{measure}.txt
+    - outputs/econometric/h3_payout_policy/{timestamp}/h3_payout_policy_table.tex
+    - outputs/econometric/h3_payout_policy/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h3_payout_policy/{timestamp}/summary_stats.csv
+    - outputs/econometric/h3_payout_policy/{timestamp}/summary_stats.tex
+
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h3_payout_policy_panel)
+    - Uses: statsmodels, linearmodels, f1d.shared.latex_tables_accounting
+
+Author: Thesis Author
+Date: 2026-02-26
+================================================================================
 """
 
 from __future__ import annotations

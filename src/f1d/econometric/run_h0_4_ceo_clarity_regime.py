@@ -22,9 +22,13 @@ Model Specification (identical to 4.1.1):
         Entire_All_Negative_pct +
         StockRet + MarketRet + EPS_Growth + SurpDec
 
-Sample:
-    Main only (FF12 codes 1-7, 9-10, 12 — non-financial, non-utility).
-    Finance (FF12=11) and Utility (FF12=8) are excluded from all regime splits.
+Hypothesis Tests:
+    This is a robustness check (not a hypothesis test).
+    Tests whether CEO fixed effect estimates are stable across economic regimes.
+
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    (Finance FF12=11 and Utility FF12=8 are excluded from all regime splits)
 
 Regime Definitions:
     - Pre-Crisis:  year in [2002, 2007]
@@ -35,8 +39,7 @@ Minimum Calls Filter:
     CEOs must have >= 5 calls *within the regime window* to be included.
 
 Standardization:
-    ClarityCEO scores are standardized GLOBALLY across all three regimes
-    combined, so regime scores are on a single comparable scale.
+    ClarityCEO scores are standardized PER REGIME so scores are on comparable scales.
 
 Inputs:
     - outputs/variables/ceo_clarity/latest/ceo_clarity_panel.parquet
@@ -48,6 +51,7 @@ Outputs:
     - outputs/econometric/ceo_clarity_regime/{timestamp}/report_step4_ceo_clarity_regime.md
     - outputs/econometric/ceo_clarity_regime/{timestamp}/summary_stats.csv
     - outputs/econometric/ceo_clarity_regime/{timestamp}/summary_stats.tex
+    - outputs/econometric/ceo_clarity_regime/{timestamp}/model_diagnostics.csv
 
 Deterministic: true
 Dependencies:
@@ -55,7 +59,7 @@ Dependencies:
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-02-19
+Date: 2026-02-26
 ================================================================================
 """
 
@@ -610,6 +614,28 @@ def save_outputs(
             f"  Saved: clarity_scores.parquet ({len(clarity_df):,} estimated CEOs "
             f"across {clarity_df['regime'].nunique()} regimes)"
         )
+
+    # Save model diagnostics CSV
+    diag_rows = []
+    for regime_name, result in results.items():
+        model = result.get("model")
+        diag = result.get("diagnostics", {})
+        if model is not None:
+            diag_rows.append({
+                "regime": regime_name,
+                "n_obs": diag.get("n_obs"),
+                "n_entities": diag.get("n_ceos"),  # H0.4 uses n_ceos
+                "rsquared": diag.get("rsquared"),
+                "rsquared_adj": diag.get("rsquared_adj"),
+                "fvalue": getattr(model, "fvalue", None),
+                "f_pvalue": getattr(model, "f_pvalue", None),
+                "aic": getattr(model, "aic", None),
+                "bic": getattr(model, "bic", None),
+            })
+    if diag_rows:
+        diag_df = pd.DataFrame(diag_rows)
+        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+        print(f"  Saved: model_diagnostics.csv ({len(diag_df)} rows)")
 
     # Save regression results text
     for regime_name, result in results.items():

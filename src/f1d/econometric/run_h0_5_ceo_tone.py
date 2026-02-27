@@ -22,6 +22,11 @@ Model Specifications:
     All models use:
         C(ceo_id) + C(year) fixed effects
 
+Hypothesis Tests:
+    This is a tone estimation script (not a hypothesis test).
+    Estimates CEO fixed effects (gamma_i) from net tone regressions.
+    ToneCEO = +gamma_i (standardized globally per model across all samples).
+
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
     - Finance: FF12 code 11
@@ -38,7 +43,7 @@ Standardization:
     Per-model globally across all samples (same as clarity pipeline).
 
 Inputs:
-    - outputs/variables/ceo_tone/{latest_timestamp}/ceo_tone_panel.parquet
+    - outputs/variables/ceo_tone/latest/ceo_tone_panel.parquet
 
 Outputs:
     - outputs/econometric/ceo_tone/{timestamp}/tone_scores.parquet
@@ -47,6 +52,8 @@ Outputs:
     - outputs/econometric/ceo_tone/{timestamp}/regression_results_{model}_{sample}.txt
     - outputs/econometric/ceo_tone/{timestamp}/report_step4_ceo_tone.md
     - outputs/econometric/ceo_tone/{timestamp}/run_log.txt
+    - outputs/econometric/ceo_tone/{timestamp}/summary_stats.csv
+    - outputs/econometric/ceo_tone/{timestamp}/summary_stats.tex
 
 Deterministic: true
 Dependencies:
@@ -54,7 +61,7 @@ Dependencies:
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-02-19
+Date: 2026-02-26
 ================================================================================
 """
 

@@ -16,6 +16,11 @@ Model Specification:
         Entire_All_Negative_pct +
         StockRet + MarketRet + EPS_Growth + SurpDec
 
+Hypothesis Tests:
+    This is a clarity estimation script (not a hypothesis test).
+    Estimates CEO fixed effects (gamma_i) from QA uncertainty regressions.
+    ClarityCEO = -gamma_i (standardized per sample).
+
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
     - Finance: FF12 code 11
@@ -34,6 +39,7 @@ Outputs:
     - outputs/econometric/ceo_clarity/{timestamp}/report_step4_ceo_clarity.md
     - outputs/econometric/ceo_clarity/{timestamp}/summary_stats.csv
     - outputs/econometric/ceo_clarity/{timestamp}/summary_stats.tex
+    - outputs/econometric/ceo_clarity/{timestamp}/model_diagnostics.csv
 
 Deterministic: true
 Dependencies:
@@ -41,7 +47,7 @@ Dependencies:
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-02-19
+Date: 2026-02-26
 ================================================================================
 """
 
@@ -528,6 +534,28 @@ def save_outputs(
         clarity_path = out_dir / "clarity_scores.parquet"
         clarity_df.to_parquet(clarity_path, index=False)
         print(f"  Saved: clarity_scores.parquet ({len(clarity_df):,} estimated CEOs)")
+
+    # Save model diagnostics CSV
+    diag_rows = []
+    for sample_name, result in results.items():
+        model = result.get("model")
+        diag = result.get("diagnostics", {})
+        if model is not None:
+            diag_rows.append({
+                "sample": sample_name,
+                "n_obs": diag.get("n_obs"),
+                "n_entities": diag.get("n_ceos"),  # H0.2 uses n_ceos
+                "rsquared": diag.get("rsquared"),
+                "rsquared_adj": diag.get("rsquared_adj"),
+                "fvalue": getattr(model, "fvalue", None),
+                "f_pvalue": getattr(model, "f_pvalue", None),
+                "aic": getattr(model, "aic", None),
+                "bic": getattr(model, "bic", None),
+            })
+    if diag_rows:
+        diag_df = pd.DataFrame(diag_rows)
+        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+        print(f"  Saved: model_diagnostics.csv ({len(diag_df)} rows)")
 
     # Save regression results text
     for sample_name, result in results.items():

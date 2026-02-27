@@ -25,6 +25,10 @@ Hypothesis Tests:
 
 Industry Samples:
     - Primary: All industries (firm-year level, Main sample)
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls to be included in regression.
 
 Controls: Size, Lev, ROA, TobinsQ (firm-year level from Compustat)
 

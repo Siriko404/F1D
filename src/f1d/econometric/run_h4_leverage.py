@@ -27,11 +27,35 @@ Dynamic Covariates:
       (e.g., Manager_QA regressions control for Manager_Pres_Uncertainty_pct)
     - Analyst_QA_Uncertainty_pct is always included as a control.
 
-Hypothesis Test (one-tailed):
+Hypothesis Tests (one-tailed):
     H4: beta(Lev_lag) < 0  -- higher prior leverage reduces current vagueness
 
-Filters:
-    - >= 5 calls per firm
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls to be included in regression.
+
+Inputs:
+    - outputs/variables/h4_leverage/latest/h4_leverage_panel.parquet
+
+Outputs:
+    - outputs/econometric/h4_leverage/{timestamp}/regression_results_{sample}_{dv}.txt
+    - outputs/econometric/h4_leverage/{timestamp}/h4_leverage_table.tex
+    - outputs/econometric/h4_leverage/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h4_leverage/{timestamp}/summary_stats.csv
+    - outputs/econometric/h4_leverage/{timestamp}/summary_stats.tex
+
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h4_leverage_panel)
+    - Uses: statsmodels, linearmodels, f1d.shared.latex_tables_accounting
+
+Author: Thesis Author
+Date: 2026-02-26
+================================================================================
 """
 
 from __future__ import annotations
