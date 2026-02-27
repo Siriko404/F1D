@@ -1,6 +1,8 @@
 """Builder for dispersion_lead (H5 Dependent Variable).
 
 Fetches the t+1 quarter analyst forecast dispersion from the IBES engine.
+Reads raw IBES data via the shared IBESEngine.
+Returns one column: file_name, dispersion_lead.
 """
 
 from __future__ import annotations
@@ -18,6 +20,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class DispersionLeadBuilder(VariableBuilder):
+    """Build dispersion_lead = t+1 analyst forecast dispersion via IBES engine."""
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
 

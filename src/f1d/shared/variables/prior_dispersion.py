@@ -1,6 +1,12 @@
 """Builder for prior_dispersion (H5 Control Variable).
 
 Fetches the current quarter (t) analyst forecast dispersion from the IBES engine.
+Queries the shared IBES engine for analyst forecast data and matches
+to calls via merge_asof on gvkey and statpers.
+
+Returns one column: file_name, prior_dispersion.
+Formula: STDEV / |MEANEST| (standard deviation of forecasts divided by
+absolute mean estimate).
 """
 
 from __future__ import annotations
