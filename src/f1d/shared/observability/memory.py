@@ -42,6 +42,10 @@ def get_process_memory_mb() -> Dict[str, float]:
         - rss_mb: Resident Set Size (actual physical memory in use)
         - vms_mb: Virtual Memory Size (total memory allocated)
         - percent: Memory usage as percentage of system memory
+
+    Raises:
+        psutil.NoSuchProcess: If the process no longer exists
+        psutil.AccessDenied: If access to process information is denied
     """
     process = psutil.Process()
     mem_info = process.memory_info()

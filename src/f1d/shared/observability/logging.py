@@ -52,6 +52,9 @@ class DualWriter:
 
         Args:
             log_path: Path to log file
+
+        Raises:
+            OSError: If the log file cannot be opened for writing
         """
         self.original_stdout = sys.stdout
         self.terminal = sys.stdout
@@ -63,17 +66,36 @@ class DualWriter:
 
         Args:
             message: Message to write
+
+        Returns:
+            None
         """
         self.terminal.write(message)
         self.log.write(message)
 
     def flush(self) -> None:
-        """Flush both terminal and log file."""
+        """
+        Flush both terminal and log file.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         self.terminal.flush()
         self.log.flush()
 
     def close(self) -> None:
-        """Close log file handle."""
+        """
+        Close log file handle.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         self.log.close()
 
 
