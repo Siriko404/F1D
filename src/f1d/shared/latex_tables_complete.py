@@ -1,35 +1,39 @@
 #!/usr/bin/env python3
-"""Complete Accounting Review Style LaTeX Table Generator.
+"""latex_tables_complete - Publication-ready LaTeX tables with significance stars.
 
-This module generates COMPLETE publication-ready LaTeX tables in Accounting Review style:
-- Coefficient with standard error in parentheses below
-- Significance stars (* p<0.10, ** p<0.05, *** p<0.01)
-- Each column = separate model specification
-- Full diagnostics (N, R², Adj R², F-stat, etc.)
-- Fixed effects indicators
-- Complete audit trail
+Purpose:
+    Generates COMPLETE publication-ready LaTeX tables in Accounting Review style
+    with coefficient rows, standard errors in parentheses, significance stars,
+    and comprehensive diagnostics.
 
-Reference: The Accounting Review, Journal of Finance, Review of Accounting Studies
+Key Classes/Functions:
+    - make_complete_table: Generate complete Accounting Review style table
+    - make_panel_table: Generate multi-panel table with separate sections
+    - add_stars: Add significance stars based on p-value
+    - format_coef_with_stars: Format coefficient with significance stars
+    - format_se: Format standard error in parentheses
 
-Example:
+Usage:
     from f1d.shared.latex_tables_complete import make_complete_table
 
-    results = {
-        "Main": {
-            "model": model1,
-            "diagnostics": {"n_obs": 45000, "rsquared": 0.45, "n_ceos": 2500}
-        },
-        "Finance": {...},
-        "Utility": {...}
-    }
-
     latex = make_complete_table(
-        results=results,
+        results={
+            "Main": {"model": model1, "diagnostics": {...}},
+            "Finance": {"model": model2, "diagnostics": {...}},
+        },
         caption="Table 1: CEO Clarity Fixed Effects",
-        variable_labels=var_labels,
-        control_variables=control_vars,
-        output_path=Path("outputs/table.tex")
+        variable_labels={"vagueness": "Speech Uncertainty"},
+        control_variables=["vagueness", "leverage", "size"]
     )
+
+Table Format:
+    - Coefficient with standard error in parentheses below
+    - Significance stars (* p<0.10, ** p<0.05, *** p<0.01)
+    - Each column = separate model specification
+    - Full diagnostics (N, R2, Adj R2, F-stat, etc.)
+    - Fixed effects indicators
+
+Reference: The Accounting Review, Journal of Finance, Review of Accounting Studies
 """
 
 from __future__ import annotations

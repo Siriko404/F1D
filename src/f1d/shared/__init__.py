@@ -1,16 +1,27 @@
 """Shared utilities for F1D pipeline.
 
-Tier 1: Core shared utilities - cross-cutting concerns.
+This package provides cross-cutting utilities used across all
+pipeline stages.
 
-This package contains cross-cutting utilities used across
-all stages of the data processing pipeline.
+Key Modules:
+    - panel_ols: Panel OLS regression with fixed effects
+    - iv_regression: Instrumental variable regression (2SLS)
+    - data_validation: DataFrame validation against schemas
+    - path_utils: Path resolution and timestamped output utilities
+    - variables: Variable builder framework
+    - observability: Logging and monitoring utilities
 
-Modules:
-    path_utils: Path resolution and output directory utilities
-    panel_ols: Panel OLS regression utilities
-    financial_utils: Financial data loading utilities
-    data_validation: Data validation utilities
-    observability: Logging and monitoring
+Public API:
+    - run_panel_ols: Execute panel regression with fixed effects
+    - get_latest_output_dir: Resolve timestamped output directories
+    - DualWriter: Console + file logging
+    - compute_vif: Calculate variance inflation factors
+    - check_multicollinearity: Detect multicollinearity issues
+    - center_continuous: Mean-center variables for interaction terms
+    - create_interaction: Create interaction terms from centered variables
+
+Example:
+    from f1d.shared import run_panel_ols, get_latest_output_dir, DualWriter
 """
 
 from f1d.shared.centering import center_continuous, create_interaction

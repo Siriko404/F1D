@@ -1,32 +1,37 @@
 #!/usr/bin/env python3
-"""Accounting Review Style LaTeX Table Generator.
+"""latex_tables_accounting - Accounting Review style tables (Est + t-value format).
 
-This module generates publication-ready LaTeX tables in Accounting Review style:
-- No vertical lines
-- Sparse horizontal rules (toprule, midrule, cmidrule, bottomrule)
-- Two columns per model: Estimate and t-value (NOT coefficient with SE in parentheses)
-- NO significance stars
-- Multi-panel tables with panel headers
+Purpose:
+    Generates publication-ready LaTeX tables in strict Accounting Review style
+    with two columns per model (Estimate and t-value), no significance stars,
+    and sparse booktabs formatting.
 
-Reference: The Accounting Review Author Guidelines
+Key Classes/Functions:
+    - make_accounting_table: Generate Accounting Review style table
+    - make_diagnostics_table: Generate simple diagnostics table
+    - make_summary_stats_table: Generate summary statistics table
+    - make_cox_hazard_table: Generate Cox hazard model table
 
-Example:
+Usage:
     from f1d.shared.latex_tables_accounting import make_accounting_table
 
-    results = {
-        "Main": {
-            "model": model1,
-            "diagnostics": {"n_obs": 45000, "rsquared": 0.45, "n_managers": 2500}
-        },
-        "Finance": {...},
-        "Utility": {...}
-    }
-
     latex = make_accounting_table(
-        results=results,
+        results={
+            "Main": {"model": model1, "diagnostics": {...}},
+            "Finance": {"model": model2, "diagnostics": {...}},
+        },
         caption="Table 1: Manager Clarity Fixed Effects",
         note="This table reports manager fixed effects..."
     )
+
+Table Format (TAR Style):
+    - No vertical lines
+    - Sparse horizontal rules (toprule, midrule, cmidrule, bottomrule)
+    - Two columns per model: Estimate and t-value (NOT SE in parentheses)
+    - NO significance stars
+    - Multi-panel tables with panel headers
+
+Reference: The Accounting Review Author Guidelines
 """
 
 from __future__ import annotations
@@ -638,10 +643,165 @@ def _generate_summary_stats_latex(
     return "\n".join(lines)
 
 
+def make_cox_hazard_table(
+    results: List[Dict[str, Any]],
+    variable_labels: Dict[str, str],
+    caption: str = "",
+    label: str = "",
+    note: str = "",
+    output_path: Optional[Path] = None,
+) -> str:
+    """Generate Accounting Review style LaTeX table for Cox hazard models.
+
+    Creates a table with:
+    - Panel A: Model Diagnostics (N Events, Concordance)
+    - Panel B: Hazard Ratios (HR, SE in parentheses below)
+
+    Args:
+        results: List of dicts from extract_results() where each dict is ONE
+                 coefficient row with model-level diagnostics included.
+        variable_labels: Dict mapping variable names to display names.
+        caption, label, note: Standard LaTeX table elements.
+        output_path: If provided, write to file.
+
+    Returns:
+        LaTeX string
+    """
+    if not results:
+        return ""
+
+    # Column structure: 3 models x 2 variants = 6 data columns
+    model_order = ["Cox PH All", "Cox CS Uninvited", "Cox CS Friendly"]
+    variant_order = ["Regime", "CEO"]
+
+    col_keys = []
+    for model in model_order:
+        for variant in variant_order:
+            col_keys.append((model, variant))
+
+    n_cols = 1 + len(col_keys)
+
+    # Get unique variables
+    all_vars = []
+    seen = set()
+    for row in results:
+        var = row.get("variable")
+        if var and var not in seen:
+            all_vars.append(var)
+            seen.add(var)
+
+    lines = []
+    lines.append(r"\begin{table}[htbp]")
+    lines.append(r"\centering")
+    if caption:
+        lines.append(f"\\caption{{{caption}}}")
+    if label:
+        lines.append(f"\\label{{{label}}}")
+    if note:
+        safe_note = re.sub(r"(?<!\\)&", r"\\&", note)
+        lines.append(f"\\parbox{{\\textwidth}}{{\\small {safe_note}}}")
+
+    col_spec = "l" + "c" * len(col_keys)
+    lines.append(f"\\begin{{tabular}}{{@{{}}{col_spec}@{{}}}}")
+    lines.append(r"\toprule")
+
+    # Header row 1: Model names
+    header1 = [""]
+    for model in model_order:
+        header1.append(f"\\multicolumn{{2}}{{c}}{{{model}}}")
+    lines.append(" & ".join(header1) + r" \\")
+
+    # cmidrule
+    cmidrules = []
+    for i in range(len(model_order)):
+        start = 2 + i * 2
+        end = start + 1
+        cmidrules.append(f"\\cmidrule(lr){{{start}-{end}}}")
+    lines.append(" ".join(cmidrules))
+
+    # Header row 2: Variants
+    header2 = [""]
+    for _ in model_order:
+        header2.extend(["Regime", "CEO"])
+    lines.append(" & ".join(header2) + r" \\")
+    lines.append(r"\midrule")
+
+    # Panel A: Model Diagnostics
+    lines.append(f"\\multicolumn{{{n_cols}}}{{l}}{{\\textit{{Panel A: Model Diagnostics}}}} \\\\")
+    lines.append(r"\midrule")
+
+    # N Events row
+    n_events_parts = ["N Events"]
+    for model, variant in col_keys:
+        match_row = next((r for r in results if r.get("model") == model and r.get("variant") == variant), None)
+        if match_row and match_row.get("n_events") is not None:
+            n_events_parts.append(str(int(match_row["n_events"])))
+        else:
+            n_events_parts.append("")
+    lines.append(" & ".join(n_events_parts) + r" \\")
+
+    # Concordance row
+    conc_parts = ["Concordance"]
+    for model, variant in col_keys:
+        match_row = next((r for r in results if r.get("model") == model and r.get("variant") == variant), None)
+        if match_row and match_row.get("concordance") is not None and not pd.isna(match_row["concordance"]):
+            conc_parts.append(f"{match_row['concordance']:.4f}")
+        else:
+            conc_parts.append("")
+    lines.append(" & ".join(conc_parts) + r" \\")
+
+    lines.append(r"\midrule")
+
+    # Panel B: Hazard Ratios
+    lines.append(f"\\multicolumn{{{n_cols}}}{{l}}{{\\textit{{Panel B: Hazard Ratios}}}} \\\\")
+    lines.append(r"\midrule")
+
+    # Variable rows
+    for var in all_vars:
+        display_name = variable_labels.get(var, var)
+        display_name = re.sub(r"(?<!\\)&", r"\\&", display_name)
+        row_parts = [display_name]
+
+        for model, variant in col_keys:
+            match_row = next((r for r in results if r.get("model") == model and r.get("variant") == variant and r.get("variable") == var), None)
+            if match_row and match_row.get("exp_coef") is not None:
+                row_parts.append(f"{match_row['exp_coef']:.4f}")
+            else:
+                row_parts.append("")
+        lines.append(" & ".join(row_parts) + r" \\")
+
+    # SE rows
+    for var in all_vars:
+        se_parts = [""]
+        for model, variant in col_keys:
+            match_row = next((r for r in results if r.get("model") == model and r.get("variant") == variant and r.get("variable") == var), None)
+            if match_row and match_row.get("se_coef") is not None:
+                se_parts.append(f"({match_row['se_coef']:.4f})")
+            else:
+                se_parts.append("")
+        lines.append(" & ".join(se_parts) + r" \\")
+
+    lines.append(r"\midrule")
+    lines.append(r"\bottomrule")
+    lines.append(r"\end{tabular}")
+    lines.append(r"\end{table}")
+
+    latex_str = "\n".join(lines)
+
+    if output_path:
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(latex_str)
+
+    return latex_str
+
+
 __all__ = [
     "make_accounting_table",
     "make_diagnostics_table",
     "make_summary_stats_table",
+    "make_cox_hazard_table",
     "format_estimate",
     "format_tvalue",
 ]

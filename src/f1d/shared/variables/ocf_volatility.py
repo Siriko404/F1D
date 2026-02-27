@@ -20,7 +20,11 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class OCFVolatilityBuilder(VariableBuilder):
-    """Build OCF_Volatility = rolling 5-year std (min 3 yrs) of (oancfy/atq) per gvkey."""
+    """Build OCF_Volatility = rolling 5-year std (min 3 yrs) of (oancfy/atq_{t-1}) per gvkey.
+
+    Uses lagged assets to avoid correlated measurement error from contemporaneous
+    asset changes.
+    """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -50,7 +54,7 @@ class OCFVolatilityBuilder(VariableBuilder):
             stats=stats,
             metadata={
                 "column": "OCF_Volatility",
-                "source": "Compustat/oancfy/atq rolling std",
+                "source": "Compustat/oancfy/atq_{t-1} rolling std",
             },
         )
 
