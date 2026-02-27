@@ -1,18 +1,24 @@
-"""Structured logging configuration using structlog.
+"""config - Structured logging configuration using structlog.
 
-This module provides structured logging with JSON output support,
-context binding, and multiple output formats.
+Purpose:
+    Provides structured logging configuration with JSON output support,
+    context binding, and multiple output formats.
 
-Example:
-    >>> from f1d.shared.logging import configure_logging, get_logger
-    >>> configure_logging(log_level="INFO", json_output=False)
-    >>> logger = get_logger(__name__)
-    >>> logger.info("processing_started", rows=1000, stage="financial")
+Key Functions:
+    - configure_logging: Configure structlog with optional file output.
+    - get_logger: Get a structured logger instance.
+
+Usage:
+    from f1d.shared.logging.config import configure_logging, get_logger
+
+    configure_logging(log_level="INFO", json_output=False)
+    logger = get_logger(__name__)
+    logger.info("processing_started", rows=1000, stage="financial")
 
 With LoggingSettings:
-    >>> from f1d.shared.logging import configure_logging, LoggingSettings
-    >>> settings = LoggingSettings(level="DEBUG")
-    >>> configure_logging(settings=settings)
+    from f1d.shared.config.base import LoggingSettings
+    settings = LoggingSettings(level="DEBUG")
+    configure_logging(settings=settings)
 """
 
 from __future__ import annotations
