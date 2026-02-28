@@ -17,11 +17,13 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class ROABuilder(VariableBuilder):
-    """Build annualized ROA = (niq * 4) / atq from raw Compustat quarterly data.
+    """Build ROA = iby_annual / avg_assets from Compustat quarterly data.
 
-    niq is quarterly net income; multiplied by 4 to annualize before dividing
-    by total assets (atq), making the ratio comparable to papers that use annual
-    net income directly (e.g., Opler et al. 1999, Biddle et al. 2009).
+    ROA is computed using annual income before extraordinary items (iby) from
+    Q4 filing, divided by average total assets (atq_t + atq_{t-1}) / 2.
+
+    Uses iby rather than niq per variable definitions spec for consistency
+    with investment efficiency literature (Biddle et al. 2009).
     """
 
     def __init__(self, config: Dict[str, Any]):
@@ -50,7 +52,7 @@ class ROABuilder(VariableBuilder):
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "ROA", "source": "Compustat/niq,atq"},
+            metadata={"column": "ROA", "source": "Compustat/iby,atq"},
         )
 
 

@@ -56,8 +56,13 @@ Outputs:
     - outputs/econometric/h1_cash_holdings/{timestamp}/summary_stats.csv
     - outputs/econometric/h1_cash_holdings/{timestamp}/summary_stats.tex
 
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h1_cash_holdings_panel)
+    - Uses: statsmodels, linearmodels, f1d.shared.latex_tables_accounting
+
 Author: Thesis Author
-Date: 2026-02-20
+Date: 2026-02-26
 ================================================================================
 """
 

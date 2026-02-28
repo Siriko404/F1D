@@ -1,22 +1,31 @@
 #!/usr/bin/env python3
-"""
-Shared string matching utilities using RapidFuzz.
-Provides config-driven fuzzy matching for company/entity names.
+"""string_matching - Config-driven fuzzy string matching using RapidFuzz.
 
-id: shared.string_matching
-description: String matching utilities with config-driven thresholds using RapidFuzz
-inputs: config/project.yaml (string_matching section)
-outputs: Fuzzy match results with scores
-Main Functions:
-    - fuzzy_match(): Fuzzy string matching using Levenshtein distance
+Purpose:
+    Provides fuzzy string matching utilities for company/entity name matching
+    with configurable thresholds loaded from project configuration.
+
+Key Classes/Functions:
+    - match_company_names: Find best matching company name from candidates
+    - match_many_to_many: Batch matching of multiple queries against targets
+    - load_matching_config: Load string matching configuration from YAML
+
+Usage:
+    from f1d.shared.string_matching import match_company_names
+
+    best_match, score = match_company_names(
+        query="Apple Inc",
+        candidates=["Apple Corporation", "Microsoft Corp", "Google LLC"],
+        threshold=92.0
+    )
+
+Configuration:
+    Thresholds are loaded from config/project.yaml under the string_matching section.
+    Default threshold for company names is 92.0 (out of 100).
 
 Dependencies:
-    - Utility module for string matching
-    - Uses: pandas, numpy, fuzzywuzzy
-
-Author: Thesis Author
-Date: 2026-02-11
-deterministic: true
+    - rapidfuzz: Fast string matching library (optional, falls back gracefully)
+    - yaml: Configuration file parsing
 """
 
 import warnings

@@ -1,12 +1,23 @@
-"""Context binding utilities for structured logging.
+"""context - Context binding utilities for structured logging.
 
-This module provides context management for correlating log messages
-across operations, stages, and functions using structlog contextvars.
+Purpose:
+    Provides context management for correlating log messages across
+    operations, stages, and functions using structlog contextvars.
 
-Example:
-    >>> from f1d.shared.logging import bind_context, OperationContext
-    >>> with OperationContext("financial_processing", script_name="script_32"):
-    ...     logger.info("processing_started")  # Includes operation_id, script_name
+Key Classes/Functions:
+    - OperationContext: Context manager for operation-scoped logging.
+    - stage_context: Context manager for stage-scoped logging.
+    - bind_context: Bind key-value pairs to logging context.
+    - unbind_context: Remove keys from logging context.
+    - get_context: Get current logging context.
+    - clear_context: Clear all context bindings.
+    - generate_operation_id: Generate unique operation ID.
+
+Usage:
+    from f1d.shared.logging.context import OperationContext, bind_context
+
+    with OperationContext("financial_processing", script_name="script_32"):
+        logger.info("processing_started")  # Includes operation_id, script_name
 """
 
 from __future__ import annotations

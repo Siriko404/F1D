@@ -1,3 +1,13 @@
+"""Builder for Amihud Illiquidity (amihud_illiq) variable.
+
+Reads raw CRSP daily stock files via the shared CRSPEngine.
+Returns one column: file_name, amihud_illiq.
+
+Amihud Illiquidity = mean(|daily_ret| / dollar_volume) * 1e6,
+computed over the call window [prev_call + 5d, call - 5d],
+requiring >= 10 trading days.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

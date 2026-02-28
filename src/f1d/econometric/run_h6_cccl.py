@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Test H6 SEC Scrutiny (CCCL) Hypothesis
 ================================================================================
-ID: econometric/test_h6_cccl
+ID: econometric/run_h6_cccl
 Description: Run H6 SEC Scrutiny hypothesis test by loading the call-level
              panel from Stage 3, running fixed effects OLS regressions by
              industry sample, and outputting results.
@@ -21,13 +21,37 @@ Dependent Variables:
     6. CEO_Pres_Uncertainty_pct
     7. Uncertainty_Gap (QA - Pres)
 
-Hypothesis Tests:
-    H6-A: beta(CCCL_lag) < 0 (Scrutiny reduces uncertainty) - one-tailed
+Hypothesis Tests (one-tailed):
+    H6-A: beta(CCCL_lag) < 0 (Scrutiny reduces uncertainty)
     H6-B: |beta(QA)| > |beta(Pres)| (Stronger effect in spontaneous speech)
     H6-C: beta(CCCL_lag) < 0 for Uncertainty_Gap
 
-Filters:
-    - >= 5 calls per firm
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls to be included in regression.
+
+Inputs:
+    - outputs/variables/h6_cccl/latest/h6_cccl_panel.parquet
+
+Outputs:
+    - outputs/econometric/h6_cccl/{timestamp}/regression_results_{sample}_{dv}.txt
+    - outputs/econometric/h6_cccl/{timestamp}/h6_cccl_table.tex
+    - outputs/econometric/h6_cccl/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h6_cccl/{timestamp}/summary_stats.csv
+    - outputs/econometric/h6_cccl/{timestamp}/summary_stats.tex
+
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h6_cccl_panel)
+    - Uses: statsmodels, linearmodels, f1d.shared.latex_tables_accounting
+
+Author: Thesis Author
+Date: 2026-02-26
+================================================================================
 """
 
 from __future__ import annotations

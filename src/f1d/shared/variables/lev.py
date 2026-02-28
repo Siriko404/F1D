@@ -17,7 +17,11 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class LevBuilder(VariableBuilder):
-    """Build Lev = ltq / atq from raw Compustat quarterly data."""
+    """Build Lev = (dlcq + dlttq) / atq (interest-bearing debt only).
+
+    Uses debt in current liabilities (dlcq) + long-term debt (dlttq),
+    excluding operating liabilities. Missing debt treated as zero per spec.
+    """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -45,7 +49,7 @@ class LevBuilder(VariableBuilder):
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "Lev", "source": "Compustat/ltq,atq"},
+            metadata={"column": "Lev", "source": "Compustat/dlcq,dlttq,atq"},
         )
 
 

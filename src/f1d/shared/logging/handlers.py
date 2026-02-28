@@ -1,12 +1,22 @@
-"""Logging handlers for dual output configuration.
+"""handlers - Logging handlers for dual output configuration.
 
-This module provides handler configuration for dual output logging:
-human-readable console output and JSON-formatted file output.
+Purpose:
+    Provides handler configuration for dual output logging with
+    human-readable console output and JSON-formatted file output.
 
-Example:
-    >>> from f1d.shared.logging import configure_dual_output
-    >>> configure_dual_output(log_file=Path("logs/pipeline.log"))
-    >>> logger.info("processing_started", rows=1000)
+Key Classes/Functions:
+    - configure_dual_output: Set up console + file logging.
+    - configure_script_logging: Convenience function for script logging.
+    - LogFileRotator: Manages log file rotation by timestamp.
+    - get_log_file_path: Generate log file path following conventions.
+    - get_timestamped_log_path: Generate timestamped log file path.
+
+Usage:
+    from f1d.shared.logging.handlers import configure_dual_output
+    from pathlib import Path
+
+    configure_dual_output(log_file=Path("logs/pipeline.log"))
+    logger.info("processing_started", rows=1000)
     # Console: colored, human-readable
     # File: JSON with all fields
 """

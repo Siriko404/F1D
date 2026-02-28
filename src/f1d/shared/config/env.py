@@ -1,6 +1,21 @@
 """Environment variable configuration for F1D pipeline.
 
-Configuration follows CONFIG_TESTING_STANDARD.md CONF-02 patterns.
+Purpose:
+    Provides environment variable configuration following
+    CONFIG_TESTING_STANDARD.md CONF-02 patterns. Loads configuration
+    from environment variables and .env file with F1D_ prefix.
+
+Key Classes:
+    - EnvConfig: Environment variable configuration class
+
+Usage:
+    from f1d.shared.config.env import env, EnvConfig
+
+    # Access singleton instance
+    timeout = env.api_timeout_seconds
+
+    # Or create new instance
+    custom_env = EnvConfig()
 """
 
 from __future__ import annotations

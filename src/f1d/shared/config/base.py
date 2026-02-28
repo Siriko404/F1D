@@ -1,10 +1,23 @@
 """Base configuration classes using pydantic-settings.
 
-This module provides type-safe configuration classes that validate all settings
-at load time and support environment variable overrides.
+Purpose:
+    Provides type-safe configuration classes that validate all settings
+    at load time and support environment variable overrides. Classes are
+    designed to load from config/project.yaml following the
+    CONFIG_TESTING_STANDARD.md patterns.
 
-Classes are designed to load from config/project.yaml following the
-CONFIG_TESTING_STANDARD.md patterns.
+Key Classes:
+    - ProjectConfig: Root configuration aggregating all settings
+    - DataSettings: Data range configuration (year_start, year_end)
+    - LoggingSettings: Logging level and format configuration
+    - DeterminismSettings: Reproducibility settings (random seed, threads)
+    - ChunkProcessingSettings: Memory-efficient processing settings
+
+Usage:
+    from f1d.shared.config.base import ProjectConfig
+    from pathlib import Path
+
+    config = ProjectConfig.from_yaml(Path("config/project.yaml"))
 """
 
 from __future__ import annotations

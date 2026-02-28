@@ -42,6 +42,10 @@ def compute_file_checksum(filepath: Path, algorithm: str = "sha256") -> str:
 
     Returns:
         Hexadecimal checksum string
+
+    Raises:
+        FileNotFoundError: If the file does not exist
+        ValueError: If the algorithm is not supported
     """
     h = hashlib.new(algorithm)
     with open(filepath, "rb") as f:

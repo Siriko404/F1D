@@ -1,31 +1,33 @@
 #!/usr/bin/env python3
-"""
-==============================================================================
-Sample Utilities Module
-==============================================================================
-ID: sample_utils
-Description: Shared utilities for sample and financial scripts.
+"""sample_utils - Utilities for sample construction and variable references.
 
-Purpose: Provides common functions for variable reference generation
-         and master variable definitions loading. Consolidated from
-         legacy 1_Sample/1.5_Utils.py to enable standard Python imports.
+Purpose:
+    Provides common functions for variable reference generation
+    and master variable definitions loading. Consolidated from
+    legacy 1_Sample/1.5_Utils.py to enable standard Python imports.
+
+Key Classes/Functions:
+    - load_master_variable_definitions: Load master variable definitions CSV
+    - generate_variable_reference: Generate enhanced variable reference CSV
+
+Usage:
+    from f1d.shared.sample_utils import generate_variable_reference
+
+    generate_variable_reference(
+        df=my_dataframe,
+        output_path=Path("outputs/variable_reference.csv")
+    )
 
 Inputs:
-    - Variable definition files
+    - Variable definition files (master_variable_definitions.csv)
     - DataFrames requiring variable references
 
 Outputs:
-    - Variable reference files
-    - Variable lookup dictionaries
+    - Variable reference CSV files with source and description columns
+    - Variable lookup dictionaries for programmatic access
 
 Dependencies:
-    - Uses: pandas
-
-Deterministic: true
-
-Author: Thesis Author
-Date: 2026-02-14
-==============================================================================
+    - pandas: DataFrame operations
 """
 
 from pathlib import Path

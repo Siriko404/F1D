@@ -25,7 +25,7 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 | `Size` | `SizeBuilder` | `ln(atq)` | |
 | `BM` | `BMBuilder` | `ceqq / (cshoq * prccq)` | |
 | `Lev` | `LevBuilder` | `(dlcq + dlttq) / atq` | FIX: Uses interest-bearing debt only (not total liabilities) |
-| `ROA` | `ROABuilder` | `niq / atq` | |
+| `ROA` | `ROABuilder` | `iby_annual / avg_assets` | Uses Q4 iby and average assets per spec |
 | `CurrentRatio` | `CurrentRatioBuilder` | `actq / lctq` | Removed from H1 controls (~80% missing for FF12=11) |
 | `RD_Intensity` | `RDIntensityBuilder` | `xrdq / atq` | |
 | `EPS_Growth` | `EPSGrowthBuilder` | date-based YoY, robust to gaps | |

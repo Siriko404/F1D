@@ -1,7 +1,12 @@
-"""Structured logging module using structlog.
+"""Logging package for F1D pipeline.
 
-This module provides structured logging with JSON output support,
-context binding, and multiple output formats.
+This package provides structured logging with context propagation
+and dual output (console + file) using structlog.
+
+Modules:
+    - config: Logging configuration and logger factory.
+    - context: Operation context management for correlated logging.
+    - handlers: Dual output handlers for console and file logging.
 
 Example:
     >>> from f1d.shared.logging import configure_logging, get_logger

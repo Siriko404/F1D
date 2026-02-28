@@ -9,15 +9,41 @@ Description: Provides statistics and analysis functions for observability.
 This module extracts statistics functions from the original observability_utils.py.
 Includes general statistics functions and step-specific stats functions.
 
+Key Functions:
+    General Statistics:
+        - print_stat: Print statistic with consistent formatting
+        - analyze_missing_values: Analyze missing value patterns
+        - print_stats_summary: Print summary of statistics
+        - save_stats: Save statistics to JSON file
+
+    Step-Specific Statistics (input/process/output per stage):
+        - compute_input_stats: General input statistics
+        - compute_temporal_stats: Temporal distribution statistics
+        - compute_entity_stats: Entity-level statistics
+        - compute_linking_*_stats: CEO-firm linking statistics
+        - compute_tenure_*_stats: CEO tenure statistics
+        - compute_manifest_*_stats: CEO manifest statistics
+        - compute_tokenize_*_stats: Tokenization statistics
+        - compute_constructvariables_*_stats: Variable construction statistics
+        - compute_financial_*_stats: Financial data statistics
+        - compute_market_*_stats: Market data statistics
+        - compute_event_flags_*_stats: Event flag statistics
+        - compute_step31/32/33_*_stats: Step 3.x statistics
+
+    Sample Collection (for manual review):
+        - collect_fuzzy_match_samples: Sample fuzzy matches
+        - collect_tier_match_samples: Sample tier matches
+        - collect_unmatched_samples: Sample unmatched records
+        - collect_before_after_samples: Sample before/after comparisons
+        - collect_tenure_samples: Sample tenure calculations
+        - collect_ceo_distribution_samples: Sample CEO distributions
+
 Deterministic: true
-Main Functions:
-    - print_stat(): Print statistic with consistent formatting
-    - analyze_missing_values(): Analyze missing value patterns
-    - print_stats_summary(): Print summary of statistics
 
 Dependencies:
-    - Utility module for statistics
-    - Uses: pandas, numpy
+    - pandas: DataFrame operations
+    - numpy: Numerical computations
+    - typing: Type hints
 
 Author: Thesis Author
 Date: 2026-02-11
@@ -134,6 +160,9 @@ def print_stat(
         after: Value after operation (for delta calculation)
         value: Direct value to print
         indent: Number of spaces to indent
+
+    Returns:
+        None
     """
     prefix = " " * indent
     if before is not None and after is not None:
@@ -185,6 +214,9 @@ def print_stats_summary(stats: Dict[str, Any]) -> None:
 
     Args:
         stats: Statistics dictionary with 'input', 'output', 'timing', 'processing' keys
+
+    Returns:
+        None
     """
     print("\n" + "=" * 60)
     print("STATISTICS SUMMARY")
@@ -222,6 +254,12 @@ def save_stats(stats: Dict[str, Any], out_dir: Path) -> None:
     Args:
         stats: Statistics dictionary to save
         out_dir: Output directory path
+
+    Returns:
+        None
+
+    Raises:
+        OSError: If the file cannot be written
     """
 
     stats_path = out_dir / "stats.json"
@@ -5015,6 +5053,9 @@ def generate_financial_report_markdown(
         output_stats: Output statistics dictionary
         step_name: Name of the step (e.g., "3.1_FirmControls")
         output_path: Path to save the markdown report
+
+    Returns:
+        None
     """
     lines = []
     lines.append(f"# Step {step_name}: Financial Features Report")

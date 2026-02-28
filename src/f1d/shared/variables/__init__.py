@@ -12,8 +12,8 @@ Architecture:
     Individual Compustat variable builders (one column each):
         SizeBuilder           → Size = ln(atq)
         BMBuilder             → BM = ceqq / (cshoq * prccq)
-        LevBuilder            → Lev = ltq / atq
-        ROABuilder            → ROA = niq / atq
+        LevBuilder            → Lev = (dlcq + dlttq) / atq
+        ROABuilder            → ROA = iby_annual / avg_assets
         CurrentRatioBuilder   → CurrentRatio = actq / lctq
         RDIntensityBuilder    → RD_Intensity = xrdq / atq
         EPSGrowthBuilder      → EPS_Growth (date-based YoY, robust to gaps)
@@ -21,7 +21,7 @@ Architecture:
         TobinsQBuilder        → TobinsQ = (atq + cshoq*prccq - ceqq) / atq
         CapexIntensityBuilder → CapexAt = capxy_Q4 / atq
         DividendPayerBuilder  → DividendPayer = (dvy_Q4 > 0).astype(float)
-        OCFVolatilityBuilder  → OCF_Volatility = rolling 5yr std (min 3) of oancfy/atq
+        OCFVolatilityBuilder  → OCF_Volatility = rolling 5yr std (min 3) of oancfy/atq_{t-1}
 
     Individual CRSP variable builders (one column each):
         StockReturnBuilder    → StockRet (compound return over call window)

@@ -1,3 +1,12 @@
+"""Builder for Earnings Volatility (earnings_volatility) variable.
+
+Reads raw Compustat quarterly data via the shared CompustatEngine.
+Returns one column: file_name, earnings_volatility.
+
+Earnings Volatility = rolling standard deviation of quarterly earnings
+scaled by total assets, measuring earnings predictability.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

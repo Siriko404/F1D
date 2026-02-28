@@ -16,8 +16,19 @@ Each model is run twice:
     Regime variant: ClarityManager + Manager_QA_Uncertainty_pct + controls
     CEO variant:    ClarityCEO    + CEO_QA_Uncertainty_pct    + controls
 
+Hypothesis Tests (one-tailed):
+    H9-A: beta(Clarity) < 0 (clearer managers have lower takeover hazard)
+    H9-B: beta(Clarity, uninvited) < beta(Clarity, friendly)
+          (clarity reduces hostile takeover hazard more than friendly)
+
 Financial controls: Size, BM, Lev, ROA, EPS_Growth, StockRet, MarketRet, SurpDec
-Main sample only (exclude Finance ff12=11, Utility ff12=8).
+
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    (Finance ff12=11 and Utility ff12=8 excluded from all models)
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls to be included in regression.
 
 Survival construction (from Stage 3):
     Duration = years from first call to takeover announcement or end of sample
@@ -26,7 +37,7 @@ Survival construction (from Stage 3):
     Takeover_Friendly  = 1 if Takeover_Type == 'Friendly',  0 otherwise
 
 Inputs:
-    - outputs/variables/takeover/{latest_timestamp}/takeover_panel.parquet
+    - outputs/variables/takeover/latest/takeover_panel.parquet
 
 Outputs:
     - outputs/econometric/takeover/{timestamp}/cox_ph_all.txt
@@ -36,6 +47,9 @@ Outputs:
     - outputs/econometric/takeover/{timestamp}/model_diagnostics.csv
     - outputs/econometric/takeover/{timestamp}/report_step4_takeover.md
     - outputs/econometric/takeover/{timestamp}/run_log.txt
+    - outputs/econometric/takeover/{timestamp}/summary_stats.csv
+    - outputs/econometric/takeover/{timestamp}/summary_stats.tex
+    - outputs/econometric/takeover/{timestamp}/takeover_hazard_table.tex
 
 Deterministic: true
 Dependencies:
@@ -43,7 +57,7 @@ Dependencies:
     - Uses: lifelines, f1d.shared
 
 Author: Thesis Author
-Date: 2026-02-19
+Date: 2026-02-26
 ================================================================================
 """
 
@@ -72,7 +86,7 @@ except ImportError:
     LIFELINES_AVAILABLE = False
     print("WARNING: lifelines not available. Install with: pip install lifelines")
 
-from f1d.shared.latex_tables_accounting import make_summary_stats_table
+from f1d.shared.latex_tables_accounting import make_summary_stats_table, make_cox_hazard_table
 from f1d.shared.observability import DualWriter
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.regression_validation import (
@@ -687,6 +701,41 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 60)
 
     save_outputs(all_hr_rows, diag_rows, out_dir)
+
+    # Generate Accounting Review LaTeX table for Cox hazard models
+    if all_hr_rows:
+        # Variable labels for the table
+        var_labels = {
+            "ClarityManager": "Clarity (Manager)",
+            "ClarityCEO": "Clarity (CEO)",
+            "Manager_QA_Uncertainty_pct": "Manager QA Uncertainty",
+            "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
+            "Size": "Firm Size (log AT)",
+            "BM": "Book-to-Market",
+            "Lev": "Leverage",
+            "ROA": "ROA",
+            "EPS_Growth": "EPS Growth",
+            "StockRet": "Stock Return",
+            "MarketRet": "Market Return",
+            "SurpDec": "Earnings Surprise Decile",
+        }
+        make_cox_hazard_table(
+            results=all_hr_rows,
+            variable_labels=var_labels,
+            caption="Hazard Ratios from Cox Proportional Hazards Models",
+            label="tab:h9_takeover_hazard",
+            note=(
+                "This table reports hazard ratios from Cox proportional hazards models "
+                r"estimating the effect of CEO clarity on takeover probability. "
+                "Panel A reports model diagnostics; Panel B reports hazard ratios (HR) "
+                "with standard errors in parentheses. "
+                r"HR $<$ 1 indicates lower hazard (longer survival); "
+                r"HR $>$ 1 indicates higher hazard. "
+                "Models estimated on the Main sample (non-financial, non-utility firms)."
+            ),
+            output_path=out_dir / "takeover_table.tex",
+        )
+        print("  Saved: takeover_table.tex")
 
     duration = (datetime.now() - start_time).total_seconds()
     generate_report(all_hr_rows, diag_rows, out_dir, duration)

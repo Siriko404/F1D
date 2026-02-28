@@ -1,3 +1,12 @@
+"""Builder for Dividend Stability (div_stability) variable.
+
+Reads raw Compustat quarterly data via the shared CompustatEngine.
+Returns one column: file_name, div_stability.
+
+Dividend Stability measures the consistency of dividend payments
+over a rolling window, computed from quarterly dividend data.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,3 +1,12 @@
+"""Builder for 5-Year Dividend Payer Indicator (is_div_payer_5yr) variable.
+
+Reads raw Compustat quarterly data via the shared CompustatEngine.
+Returns one column: file_name, is_div_payer_5yr.
+
+is_div_payer_5yr = 1 if the firm paid dividends in each of the
+previous 5 years, 0 otherwise. Measures dividend policy consistency.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

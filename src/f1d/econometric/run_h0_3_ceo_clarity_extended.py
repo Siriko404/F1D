@@ -20,6 +20,18 @@ Models (Main sample only — robustness table):
 Base controls:    StockRet, MarketRet, EPS_Growth, SurpDec
 Extended controls: Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, Volatility
 
+Hypothesis Tests:
+    This is a robustness check (not a hypothesis test).
+    Tests whether CEO fixed effect estimates are stable when adding extended controls.
+
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
+
+Minimum Calls Filter:
+    CEOs must have >= 5 calls to be included in regression.
+
 LaTeX output: single 4-column table (one column per model, Main sample only).
 
 Inputs:
@@ -31,6 +43,7 @@ Outputs:
     - outputs/econometric/ceo_clarity_extended/{timestamp}/report_step4_ceo_clarity_extended.md
     - outputs/econometric/ceo_clarity_extended/{timestamp}/summary_stats.csv
     - outputs/econometric/ceo_clarity_extended/{timestamp}/summary_stats.tex
+    - outputs/econometric/ceo_clarity_extended/{timestamp}/model_diagnostics.csv
 
 Deterministic: true
 Dependencies:
@@ -38,7 +51,7 @@ Dependencies:
     - Uses: statsmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-02-19
+Date: 2026-02-26
 ================================================================================
 """
 
@@ -417,6 +430,28 @@ def save_outputs(
         output_path=out_dir / "ceo_clarity_extended_table.tex",
     )
     print("  Saved: ceo_clarity_extended_table.tex")
+
+    # Save model diagnostics CSV
+    diag_rows = []
+    for model_name, result in results.items():
+        model = result.get("model")
+        diag = result.get("diagnostics", {})
+        if model is not None:
+            diag_rows.append({
+                "model": model_name,
+                "n_obs": diag.get("n_obs"),
+                "n_entities": diag.get("n_entities"),  # H0.3 uses n_entities
+                "rsquared": diag.get("rsquared"),
+                "rsquared_adj": diag.get("rsquared_adj"),
+                "fvalue": getattr(model, "fvalue", None),
+                "f_pvalue": getattr(model, "f_pvalue", None),
+                "aic": getattr(model, "aic", None),
+                "bic": getattr(model, "bic", None),
+            })
+    if diag_rows:
+        diag_df = pd.DataFrame(diag_rows)
+        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+        print(f"  Saved: model_diagnostics.csv ({len(diag_df)} rows)")
 
     # Save regression summaries
     for model_name, result in results.items():

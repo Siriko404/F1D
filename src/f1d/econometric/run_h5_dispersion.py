@@ -26,8 +26,32 @@ Hypothesis Tests (one-tailed):
     H5-A: beta(Weak_Modal) > 0 (hedging increases future dispersion)
     H5-B: beta(Uncertainty_Gap) > 0 (gap reveals hidden uncertainty, increasing dispersion)
 
-Filters:
-    - >= 5 calls per firm
+Industry Samples:
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+    - Finance: FF12 code 11
+    - Utility: FF12 code 8
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls to be included in regression.
+
+Inputs:
+    - outputs/variables/h5_dispersion/latest/h5_dispersion_panel.parquet
+
+Outputs:
+    - outputs/econometric/h5_dispersion/{timestamp}/regression_results_{sample}_{spec}.txt
+    - outputs/econometric/h5_dispersion/{timestamp}/h5_dispersion_table.tex
+    - outputs/econometric/h5_dispersion/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h5_dispersion/{timestamp}/summary_stats.csv
+    - outputs/econometric/h5_dispersion/{timestamp}/summary_stats.tex
+
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h5_dispersion_panel)
+    - Uses: statsmodels, linearmodels, f1d.shared.latex_tables_accounting
+
+Author: Thesis Author
+Date: 2026-02-26
+================================================================================
 """
 
 from __future__ import annotations

@@ -3,7 +3,7 @@
 ================================================================================
 STAGE 4: Test H8 Political Risk × CEO Speech Vagueness -> Abnormal Investment
 ================================================================================
-ID: econometric/test_h8_political_risk
+ID: econometric/run_h8_political_risk
 Description: Run H8 moderation hypothesis test by loading the firm-year panel
              from Stage 3, running fixed effects OLS regressions, and outputting
              results.
@@ -17,11 +17,18 @@ Model Specification:
     Unit of obs: firm-fiscal-year (gvkey, fyearq)
     DV: AbsAbInv_lead = |Biddle InvestmentResidual|_{t+1}
 
-Key Coefficients:
-    β3 (interact = PRiskFY × style_frozen):
+Hypothesis Tests:
+    H8: β3 ≠ 0 (CEO clarity moderates the PRisk → abnormal investment channel)
         β3 > 0 (sig): Vague CEOs AMPLIFY the PRisk → abnormal investment channel
         β3 < 0 (sig): Vague CEOs DAMPEN the PRisk → abnormal investment channel
-        β3 ≈ 0:       CEO clarity does NOT moderate (meaningful null)
+        β3 ≈ 0: CEO clarity does NOT moderate (meaningful null)
+
+Industry Samples:
+    - Primary: All industries (firm-year level, Main sample)
+    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
+
+Minimum Calls Filter:
+    Firms must have >= 5 calls to be included in regression.
 
 Controls: Size, Lev, ROA, TobinsQ (firm-year level from Compustat)
 
@@ -30,6 +37,26 @@ Sanity checks run before regression:
     - StyleFrozen distribution (mean≈0, SD≈1)
     - DV coverage (AbsAbInv_lead non-missing fraction)
     - Within-CEO variance of style_frozen (should be 0 — time-invariant)
+
+Inputs:
+    - outputs/variables/h8_political_risk/latest/h8_political_risk_panel.parquet
+
+Outputs:
+    - outputs/econometric/h8_political_risk/{timestamp}/regression_primary.txt
+    - outputs/econometric/h8_political_risk/{timestamp}/sanity_checks.txt
+    - outputs/econometric/h8_political_risk/{timestamp}/h8_political_risk_table.tex
+    - outputs/econometric/h8_political_risk/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h8_political_risk/{timestamp}/summary_stats.csv
+    - outputs/econometric/h8_political_risk/{timestamp}/summary_stats.tex
+
+Deterministic: true
+Dependencies:
+    - Requires: Stage 3 (build_h8_political_risk_panel)
+    - Uses: linearmodels, f1d.shared.latex_tables_accounting
+
+Author: Thesis Author
+Date: 2026-02-26
+================================================================================
 """
 
 from __future__ import annotations
