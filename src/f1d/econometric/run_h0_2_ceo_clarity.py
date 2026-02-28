@@ -294,6 +294,15 @@ def run_regression(
     df_reg["ceo_id"] = df_reg["ceo_id"].astype(str)
     df_reg["year"] = df_reg["year"].astype(str)
 
+    # Standardize continuous controls for numerical stability (prevents SVD convergence issues)
+    continuous_vars = ["StockRet", "MarketRet", "EPS_Growth"]
+    for var in continuous_vars:
+        if var in df_reg.columns:
+            mean_val = df_reg[var].mean()
+            std_val = df_reg[var].std()
+            if std_val > 0:
+                df_reg[var] = (df_reg[var] - mean_val) / std_val
+
     # Build formula - only include controls that exist in dataframe
     dep_var = CONFIG["dependent_var"]
     controls = CONFIG["linguistic_controls"] + CONFIG["firm_controls"]

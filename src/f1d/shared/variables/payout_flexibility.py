@@ -7,12 +7,6 @@ Payout Flexibility measures the firm's ability to adjust dividend
 payments based on earnings and cash flow conditions.
 """
 
-"""Builder for Payout Flexibility (payout_flexibility) variable.
-
-Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, payout_flexibility.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path

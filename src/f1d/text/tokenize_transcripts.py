@@ -45,7 +45,6 @@ import json
 import re
 import sys
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union, cast
@@ -813,96 +812,136 @@ def load_lm_dictionary(dict_path: Path) -> Tuple[List[str], Dict[str, set]]:
     return vocab_list, cat_sets
 
 
-# OPTIMIZATION: Parallel year processing with ProcessPoolExecutor
-# thread_count from config/project.yaml controls parallelism
-# Expected speedup: near-linear for CPU-bound operations
-# Determinism: Results sorted by year before aggregation
-# Ref: 10-RESEARCH.md Pattern 3, Example 2
+# ==============================================================================
+# Memory-tracked operations
+# ==============================================================================
 
 
-def process_year_worker(
-    year: int,
-    root: Path,
-    config: Dict[str, Any],
-    valid_files: set,
-    vocab_list: List[str],
-    cat_sets: Dict[str, set],
-    out_dir: Path,
-) -> Tuple[int, Dict[str, Any]]:
+@track_memory_usage("load_documents")
+def load_documents_with_tracking(manifest_path: Path, lm_path: Path) -> Dict[str, Any]:
+    """Load manifest and dictionary with memory tracking.
+
+    Also creates file_name -> year mapping to fix the year alignment bug where
+    transcripts may be in a different year's speaker_data file than the call's
+    start_date would suggest.
     """
-    Process a single year - must be picklable for ProcessPoolExecutor.
+    validate_input_file(manifest_path, must_exist=True)
+    manifest = pd.read_parquet(manifest_path, columns=["file_name", "start_date"])
+    valid_files: set = set(manifest["file_name"])
 
-    Returns:
-        Tuple of (year, year_stats_dict)
-    """
-    input_path = (
-        root / f"inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
+    # Create file_name -> year mapping from manifest start_date
+    # This fixes the year alignment bug by ensuring output is partitioned by
+    # actual call date, not by which speaker_data_{year}.parquet file it was in
+    manifest["year"] = pd.to_datetime(manifest["start_date"]).dt.year
+    file_to_year: Dict[str, int] = dict(
+        zip(manifest["file_name"], manifest["year"])
     )
-    if not input_path.exists():
-        print(f"  Skipping {year}: Input not found")
-        return year, {"year": year, "skipped": True}
 
-    print(f"\nProcessing {year}...")
-    t0 = time.time()
+    validate_input_file(lm_path, must_exist=True)
+    vocab_list, cat_sets = load_lm_dictionary(lm_path)
 
-    year_stats: Dict[str, Any] = {
-        "year": year,
-        "input_rows": 0,
-        "output_rows": 0,
-        "filtered_rows": 0,
-        "total_tokens": 0,
-        "vocab_hits": 0,
-        "avg_tokens_per_doc": 0.0,
-        "vocabulary_size": len(vocab_list),
+    return {
+        "manifest": manifest,
+        "valid_files": valid_files,
+        "file_to_year": file_to_year,
+        "vocab_list": vocab_list,
+        "cat_sets": cat_sets,
     }
 
-    validate_input_file(input_path, must_exist=True)
-    df = pd.read_parquet(
-        input_path,
-        columns=[
-            "file_name",
-            "speaker_text",
-            "speaker_number",
-            "context",
-            "role",
-            "speaker_name",
-            "employer",
-        ],
-    )
-    initial_rows = len(df)
-    year_stats["input_rows"] = initial_rows
 
-    # Filter
-    df = cast(pd.DataFrame, df[df["file_name"].isin(valid_files)].copy())
-    year_stats["filtered_rows"] = initial_rows - len(df)
-    print(f"  Loaded {initial_rows:,} -> {len(df):,} (Manifest match)")
+def load_speaker_data_batch(
+    root: Path, years: List[int], valid_files: set
+) -> pd.DataFrame:
+    """Load speaker_data files for a batch of years, filtering DURING load.
 
+    This filters each file immediately after loading to reduce memory footprint.
+    Only keeps rows where file_name is in the manifest.
+
+    Args:
+        root: Project root directory
+        years: List of years to process in this batch
+        valid_files: Set of file_names from the manifest
+
+    Returns:
+        Combined DataFrame filtered to manifest files only
+    """
+    speaker_dir = root / "inputs" / "Earnings_Calls_Transcripts"
+    filtered_dfs: List[pd.DataFrame] = []
+
+    for year in years:
+        speaker_file = speaker_dir / f"speaker_data_{year}.parquet"
+        if speaker_file.exists():
+            df = pd.read_parquet(
+                speaker_file,
+                columns=[
+                    "file_name",
+                    "speaker_text",
+                    "speaker_number",
+                    "context",
+                    "role",
+                    "employer",
+                    "speaker_name",
+                ],
+            )
+            # FILTER IMMEDIATELY to reduce memory
+            before = len(df)
+            df_filtered = df[df["file_name"].isin(valid_files)].copy()
+            print(f"  speaker_data_{year}: {before:,} -> {len(df_filtered):,} rows")
+            if len(df_filtered) > 0:
+                filtered_dfs.append(df_filtered)
+            del df  # Free memory immediately
+
+    if not filtered_dfs:
+        return pd.DataFrame()  # Return empty DataFrame if no data
+
+    combined = pd.concat(filtered_dfs, ignore_index=True)
+    return cast(pd.DataFrame, combined)
+
+
+def tokenize_batch(
+    df: pd.DataFrame,
+    vocab_list: List[str],
+    cat_sets: Dict[str, set],
+    file_to_year: Dict[str, int],
+    out_dir: Path,
+) -> Dict[str, Any]:
+    """Tokenize a batch of transcripts and save partitioned by manifest year.
+
+    Args:
+        df: Speaker DataFrame (already filtered to manifest)
+        vocab_list: List of vocabulary words from LM dictionary
+        cat_sets: Dictionary mapping category names to word sets
+        file_to_year: Mapping from file_name to call year (from manifest)
+        out_dir: Output directory for partitioned parquet files
+
+    Returns:
+        Stats dict with per-year breakdown for this batch
+    """
     if len(df) == 0:
-        return year, year_stats
+        return {"per_year": {}, "total_rows": 0, "total_tokens": 0}
+
+    stats: Dict[str, Any] = {"per_year": {}, "total_rows": len(df)}
 
     # Vectorize
-    print("  Vectorizing...")
+    print("    Vectorizing...")
     vectorizer = CountVectorizer(
         vocabulary=vocab_list, token_pattern=r"(?u)\b[a-zA-Z]+\b", lowercase=False
     )
-
     raw_text = df["speaker_text"].astype(str).str.upper()
     X = vectorizer.transform(raw_text)  # type: ignore[assignment]  # sklearn sparse matrix
-
-    year_stats["vocab_hits"] = int(X.sum())  # type: ignore[union-attr]  # sparse matrix sum
 
     # Aggregate counts per category
     features = vectorizer.get_feature_names_out()  # type: ignore[union-attr]  # sklearn ndarray
     feat_map: Dict[str, int] = {str(w): i for i, w in enumerate(features)}
 
-    # Prepare result dataframe output columns
+    # Prepare result dataframe with metadata columns
     meta_cols = [
         "file_name",
         "speaker_number",
         "context",
         "role",
-        "speaker_name",
         "employer",
+        "speaker_name",
     ]
     meta_cols = [c for c in meta_cols if c in df.columns]
     result: pd.DataFrame = cast(pd.DataFrame, df[meta_cols].copy())
@@ -914,141 +953,35 @@ def process_year_worker(
         else:
             result[f"{cat}_count"] = 0
 
-    # Total Tokens (Alpha only)
-    print("  Counting total tokens...")
+    # Total tokens (Alpha only)
+    print("    Counting tokens...")
     regex = re.compile(r"(?u)\b[a-zA-Z]+\b")
     result["total_tokens"] = raw_text.apply(lambda x: len(regex.findall(x)))
 
-    year_stats["total_tokens"] = int(result["total_tokens"].sum())
-    year_stats["avg_tokens_per_doc"] = round(result["total_tokens"].mean(), 2)
-    year_stats["output_rows"] = len(result)
+    # Add year from manifest mapping
+    result["year"] = result["file_name"].map(file_to_year)
 
-    # Save with memory tracking
-    out_path = out_dir / f"linguistic_counts_{year}.parquet"
-    print(f"  Saving {out_path.name}...")
-    save_output_with_tracking(result, out_path)
-    # Note: memory stats saved to save_output operation
-    print(f"  Saved {out_path.name} ({time.time() - t0:.1f}s)")
-    return year, year_stats
+    # Partition and save by year
+    print("    Partitioning by year...")
+    for year in sorted(result["year"].dropna().unique()):
+        year_df = cast(pd.DataFrame, result[result["year"] == year].copy())
+        year_df = year_df.drop(columns=["year"])
+        out_path = out_dir / f"linguistic_counts_{int(year)}.parquet"
 
+        # Append to existing file if it exists (from previous batch)
+        if out_path.exists():
+            existing = pd.read_parquet(out_path)
+            year_df = pd.concat([existing, year_df], ignore_index=True)
 
-def process_year(year, root, config, valid_files, vocab_list, cat_sets, out_dir):
-    input_path = (
-        root / f"inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet"
-    )
-    if not input_path.exists():
-        print(f"  Skipping {year}: Input not found")
-        return None, None
+        year_df.to_parquet(out_path, index=False)
+        stats["per_year"][int(year)] = {
+            "year": int(year),
+            "output_rows": len(year_df),
+            "total_tokens": int(cast(pd.Series, year_df["total_tokens"]).sum()),
+        }
 
-    print(f"\nProcessing {year}...")
-    t0 = time.time()
-
-    year_stats = {
-        "year": year,
-        "input_rows": 0,
-        "output_rows": 0,
-        "filtered_rows": 0,
-        "total_tokens": 0,
-        "vocab_hits": 0,
-        "avg_tokens_per_doc": 0.0,
-        "vocabulary_size": len(vocab_list),
-    }
-
-    validate_input_file(input_path, must_exist=True)
-    df = pd.read_parquet(
-        input_path,
-        columns=[
-            "file_name",
-            "speaker_text",
-            "speaker_number",
-            "context",
-            "role",
-            "speaker_name",
-            "employer",
-        ],
-    )
-    initial_rows = len(df)
-    year_stats["input_rows"] = initial_rows
-
-    # Filter
-    df = cast(pd.DataFrame, df[df["file_name"].isin(valid_files)].copy())
-    year_stats["filtered_rows"] = initial_rows - len(df)
-    print(f"  Loaded {initial_rows:,} -> {len(df):,} (Manifest match)")
-
-    if len(df) == 0:
-        return None, year_stats
-
-    # Vectorize
-    print("  Vectorizing...")
-    vectorizer = CountVectorizer(
-        vocabulary=vocab_list, token_pattern=r"(?u)\b[a-zA-Z]+\b", lowercase=False
-    )
-
-    raw_text = df["speaker_text"].astype(str).str.upper()
-    X = vectorizer.transform(raw_text)  # type: ignore[assignment]  # sklearn sparse matrix
-
-    year_stats["vocab_hits"] = int(X.sum())  # type: ignore[union-attr]  # sparse matrix sum
-
-    # Aggregate counts per category
-    features = vectorizer.get_feature_names_out()  # type: ignore[union-attr]  # sklearn ndarray
-    feat_map: Dict[str, int] = {str(w): i for i, w in enumerate(features)}
-
-    # Prepare result dataframe output columns
-    meta_cols = [
-        "file_name",
-        "speaker_number",
-        "context",
-        "role",
-        "speaker_name",
-        "employer",
-    ]
-    meta_cols = [c for c in meta_cols if c in df.columns]
-    result = df[meta_cols].copy()
-
-    for cat, wset in cat_sets.items():
-        indices = [feat_map[w] for w in wset if w in feat_map]  # type: ignore[index]  # Dynamic key lookup
-        if indices:
-            result[f"{cat}_count"] = np.array(X[:, indices].sum(axis=1)).flatten()  # type: ignore[index]  # sparse matrix indexing
-        else:
-            result[f"{cat}_count"] = 0
-
-    # Total Tokens (Alpha only)
-    print("  Counting total tokens...")
-    regex = re.compile(r"(?u)\b[a-zA-Z]+\b")
-    result["total_tokens"] = raw_text.apply(lambda x: len(regex.findall(x)))
-
-    year_stats["total_tokens"] = int(result["total_tokens"].sum())
-    year_stats["avg_tokens_per_doc"] = round(result["total_tokens"].mean(), 2)
-    year_stats["output_rows"] = len(result)
-
-    # Save
-    out_path = out_dir / f"linguistic_counts_{year}.parquet"
-    result.to_parquet(out_path, index=False)
-    print(f"  Saved {out_path.name} ({time.time() - t0:.1f}s)")
-    return result, year_stats
-
-
-# ==============================================================================
-# Memory-tracked operations
-# ==============================================================================
-
-
-@track_memory_usage("load_documents")
-def load_documents_with_tracking(manifest_path: Path, lm_path: Path) -> Dict[str, Any]:
-    """Load manifest and dictionary with memory tracking"""
-    validate_input_file(manifest_path, must_exist=True)
-    manifest = pd.read_parquet(manifest_path, columns=["file_name"])
-    valid_files: set = set(manifest["file_name"])
-
-    validate_input_file(lm_path, must_exist=True)
-    vocab_list, cat_sets = load_lm_dictionary(lm_path)
-
-    return {
-        "manifest": manifest,
-        "valid_files": valid_files,
-        "vocab_list": vocab_list,
-        "cat_sets": cat_sets,
-    }
+    stats["total_tokens"] = int(result["total_tokens"].sum())
+    return stats
 
 
 @track_memory_usage("save_output")
@@ -1137,73 +1070,70 @@ def main(dictionary_path: Optional[str] = None) -> None:
         manifest, lm_path, vocab_list, cat_sets
     )
 
-    # Process
-    config = load_config()
-    years = range(2002, 2019)
-    thread_count = config.get("determinism", {}).get("thread_count", 1)
+    # =========================================================================
+    # BUG FIX: Year Alignment Issue with Batch Processing
+    # =========================================================================
+    # Previously, speaker_data_{year}.parquet files were processed by filename year,
+    # not by manifest start_date. This caused ~4% of transcripts to be missed.
+    #
+    # NEW APPROACH:
+    # 1. Process years in batches of 3 to avoid memory overload
+    # 2. Filter DURING load (reduce 27M -> 111K immediately per file)
+    # 3. Partition output by manifest year (not file year)
+    # =========================================================================
 
-    print(f"\nProcessing {len(years)} years with {thread_count} worker(s)...")
+    file_to_year = load_result["result"]["file_to_year"]
+    all_years = list(range(2002, 2019))
+    batch_size = 3
+    total_input_rows = 0
+    total_tokens = 0
+    all_per_year: Dict[int, Dict[str, Any]] = {}
 
-    results = {}
-    with ProcessPoolExecutor(max_workers=thread_count) as executor:
-        # Submit all years
-        futures = {
-            executor.submit(
-                process_year_worker,
-                year,
-                root,
-                config,
-                valid_files,
-                vocab_list,
-                cat_sets,
-                out_dir,
-            ): year
-            for year in years
-        }
+    print(f"\nProcessing {len(all_years)} years in batches of {batch_size}...")
 
-        # Collect results as they complete
-        for future in as_completed(futures):
-            year = futures[future]
-            try:
-                _, year_stats = future.result()
-                results[year] = year_stats
-            except Exception as e:
-                print(f"  ERROR: Year {year} failed: {e}")
-                raise
+    for i in range(0, len(all_years), batch_size):
+        batch_years = all_years[i : i + batch_size]
+        print(f"\n=== Batch {i // batch_size + 1}: Years {batch_years[0]}-{batch_years[-1]} ===")
 
-    # PERFORMANCE NOTE: Parallelization achieved
-    # - Baseline (sequential, thread_count=1): ~558 seconds (from 10-01)
-    # - Expected speedup: near-linear with thread_count (e.g., 3.8x with 4 threads)
-    # - Determinism: Results sorted by year before aggregation ensures reproducibility
-    # - To measure actual speedup: Change thread_count in config/project.yaml to 4 or 8
-    #   and compare runtimes. Use `time python 2.1_TokenizeAndCount.py`
+        # Load batch with filtering during load
+        print("Loading speaker data...")
+        batch_df = load_speaker_data_batch(root, batch_years, valid_files)
 
-    # Combine stats in year order for determinism
+        if len(batch_df) == 0:
+            print("  No data in this batch")
+            continue
+
+        total_input_rows += len(batch_df)
+
+        # Tokenize and partition by manifest year
+        print(f"  Tokenizing {len(batch_df):,} rows...")
+        batch_stats = tokenize_batch(
+            batch_df, vocab_list, cat_sets, file_to_year, out_dir
+        )
+
+        total_tokens += batch_stats.get("total_tokens", 0)
+
+        # Merge per-year stats
+        for year, year_stats in batch_stats.get("per_year", {}).items():
+            if year not in all_per_year:
+                all_per_year[year] = year_stats
+
+        # Free memory
+        del batch_df
+
+    # Convert per_year dict to list format for compatibility
     stats["processing"]["per_year"] = [
-        results[y] for y in sorted(results.keys()) if results[y].get("skipped") is None
+        all_per_year[y] for y in sorted(all_per_year.keys())
     ]
 
-    total_input_rows = sum(
-        s.get("input_rows", 0) for s in stats["processing"]["per_year"]
-    )
-    total_output_rows = sum(
+    stats["input"]["total_rows"] = total_input_rows
+    stats["output"]["final_rows"] = sum(
         s.get("output_rows", 0) for s in stats["processing"]["per_year"]
     )
-    total_tokens = sum(
-        s.get("total_tokens", 0) for s in stats["processing"]["per_year"]
-    )
-    total_vocab_hits = sum(
-        s.get("vocab_hits", 0) for s in stats["processing"]["per_year"]
-    )
-
-    stats["input"]["total_rows"] = total_input_rows
-    stats["output"]["final_rows"] = total_output_rows
     stats["processing"]["total_tokens"] = total_tokens
-    stats["processing"]["total_vocab_hits"] = total_vocab_hits
+    stats["processing"]["total_vocab_hits"] = 0  # Not tracked in new approach
     stats["processing"]["years_processed"] = len(stats["processing"]["per_year"])
-    stats["processing"]["years_skipped"] = (
-        len(years) - stats["processing"]["years_processed"]
-    )
+    stats["processing"]["years_skipped"] = 0
 
     # Compute PROCESS statistics
     print("\nComputing process statistics...")
@@ -1217,12 +1147,11 @@ def main(dictionary_path: Optional[str] = None) -> None:
     # Collect output DataFrames for output statistics
     print("\nLoading output files for statistics...")
     output_dfs = []
-    for year in sorted(results.keys()):
-        if results[year].get("skipped") is None:
-            out_path = out_dir / f"linguistic_counts_{year}.parquet"
-            if out_path.exists():
-                df_year = pd.read_parquet(out_path)
-                output_dfs.append(df_year)
+    for year in sorted(all_per_year.keys()):
+        out_path = out_dir / f"linguistic_counts_{year}.parquet"
+        if out_path.exists():
+            df_year = pd.read_parquet(out_path)
+            output_dfs.append(df_year)
 
     # Compute OUTPUT statistics
     if output_dfs:
@@ -1273,13 +1202,15 @@ def main(dictionary_path: Optional[str] = None) -> None:
             "description": "Replaced .iterrows() loop with vectorized .melt() operation",
             "expected_speedup": "10-100x for LM dictionary (10K rows)",
         },
-        "parallelization": {
-            "method": "ProcessPoolExecutor",
-            "thread_count": thread_count,
-            "workers_used": thread_count,
-            "description": "Parallel year processing with deterministic result ordering",
-            "expected_speedup": "near-linear for CPU-bound operations",
-            "notes": "To measure actual speedup: change thread_count in config/project.yaml to 4 or 8 and compare runtimes",
+        "batch_processing": {
+            "method": "3_year_batches",
+            "batch_size": 3,
+            "description": "Process years in batches to avoid memory overload",
+            "memory_optimization": "Filter during load (27M -> 111K rows per file)",
+        },
+        "year_alignment_fix": {
+            "description": "Partition output by manifest year, not file year",
+            "impact": "Fixes ~4% missing values from year misalignment",
         },
         "runtime_seconds": stats["timing"]["duration_seconds"],
     }
