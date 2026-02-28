@@ -1,0 +1,276 @@
+Claude Code Prompt: Regression-Agnostic Provenance + Reproducibility Documentation (Per Suite)
+
+You are an expert finance/accounting research engineer + reproducibility auditor. Your task is to produce ONE paper-grade provenance documentation file for ONE estimation suite (any regression family: OLS/panel, GLM/logit/probit, IV/2SLS, DiD/event study, RD, time-series, hazards/survival incl. Cox PH + competing risks, count models, quantile, mixed models, etc.) in this repo.
+
+You must work manually: read code, trace dependencies, and run targeted ad-hoc commands to verify counts and logic. Do NOT create a bulk “documentation generator” script. Quality over speed.
+
+========================================================
+Inputs (placeholders)
+========================================================
+Suite ID: {{SUITE_ID}}                   (e.g., H0.5, H2.1)
+Suite entrypoint (test runner): {{SUITE_TEST_SCRIPT_PATH}}
+Panel artifact OR builder used: {{PANEL_ARTIFACT_PATH_OR_BUILDER_SCRIPT}}
+Output doc path: docs/provenance/{{SUITE_ID}}.md
+
+If you discover additional entrypoints (e.g., separate table builder, survival risk-set builder, first-stage builder), record them in section C with paths.
+
+========================================================
+0) Non-negotiable rules
+========================================================
+(1) Manual tracing only:
+    - You may use ripgrep/grep, open/read files, IDE search.
+    - You may run existing scripts with flags.
+    - You may run python one-liners to load artifacts and print counts/uniqueness/missingness/descriptives.
+
+(2) Hard verification:
+    - Every factual claim must be supported by:
+        (a) a precise code reference (file path + function + relevant lines), OR
+        (b) a reproducible command you ran and logged (with key outputs summarized).
+    - If something cannot be verified, label it clearly as UNVERIFIED and state exactly what blocks verification.
+
+(3) Suite scope discipline:
+    - Document only what is required to reproduce {{SUITE_ID}} end-to-end,
+      but you MUST trace upstream dependencies until raw fields.
+
+(4) Deterministic output:
+    - Final output is ONE Markdown file at docs/provenance/{{SUITE_ID}}.md.
+    - Use stable headings + tables. Avoid prose dumping.
+
+========================================================
+1) Deliverable: docs/provenance/{{SUITE_ID}}.md structure (use these exact sections)
+========================================================
+
+A. Suite Overview (Model-Agnostic + Model-Specific Fields)
+Create a compact table + bullets covering:
+
+A1) Identity
+- Hypothesis suite name/ID
+- Research question (1–2 sentences, inferred from naming/comments)
+- Estimation unit (e.g., firm-quarter, call-level, manager-turn, subject-time interval)
+- Primary keys used as “unit id” (e.g., firm_id+qtr, manager_id+call_id, subject_id)
+
+A2) Model family and estimator (infer from code; be explicit)
+- Model family: OLS / panel FE / GLM (logit/probit/Poisson/NegBin/etc.) / IV-2SLS / DiD / RD / time-series / survival-hazard / competing risks / quantile / mixed effects / etc.
+- Estimator details (as implemented): objective/link/dist, within transformation, partialling out, optimizer, solver, tie method, etc.
+- Weighting: any weights/offset/exposure terms (what they are, where applied)
+
+A3) Outcome(s) / target definition (general)
+- Dependent variable(s) (or event indicator for survival)
+- Exact outcome coding rules (including missingness → drop? recode?)
+- Timing convention (t, t+1, forward-looking windows, lagging)
+
+A4) Main RHS and controls
+- Key independent variable(s)
+- Interaction terms (if any)
+- Control blocks (named sets) + where defined
+- Sample filters/flags (named + definition)
+
+A5) “Fixed effects” equivalent + variance estimator
+- FE/absorbed effects OR stratification/frailty/random effects (whatever applies)
+- Standard errors / variance estimator:
+  robust/HC, cluster (level[s]), multiway cluster, HAC/Newey-West, bootstrap, sandwich, etc.
+- Any small-sample corrections or df adjustments (if in code)
+
+A6) REQUIRED model-family addendum (fill only what applies; otherwise write N/A)
+Survival / Hazards:
+- Time origin (t0), time scale + units, duration construction
+- Event definition; censoring definition; admin censor date (if any)
+- Risk set construction: 1 row per subject vs start–stop intervals; late entry/left truncation
+- Ties method (Efron/Breslow/exact) if Cox
+- Competing risks approach: cause-specific Cox vs Fine–Gray; cause/event-type coding
+IV / 2SLS:
+- Endogenous regressor(s), instrument(s), first-stage spec, second-stage spec
+DiD / Event study:
+- Treatment definition, cohort/time assignment, event-time construction, reference period
+RD:
+- Running variable, cutoff, bandwidth selection, polynomial/order, kernel (as implemented)
+Time series:
+- Time index/frequency, lag rules, rolling windows, stationarity transforms, HAC bandwidth rules
+GLM / count:
+- Family/link; offset/exposure; overdispersion handling; convergence/warnings handling
+
+B. Reproducibility Snapshot
+- Exact commands to reproduce suite from scratch (panel build → estimation → table output)
+- Expected outputs (all files created + paths)
+- Environment assumptions (python version; key packages if discoverable)
+- Random seed behavior (if any)
+
+C. Dependency Chain (End-to-End)
+Provide a numbered chain from raw inputs to final outputs:
+- Raw data sources → ingestion scripts
+- Cleaning/filters
+- Merge keys + join steps
+- Feature/variable engines used
+- Any reshaping needed for the model family (e.g., person-period expansion, start–stop splitting, instrument construction, event-time construction)
+- Final analysis dataset/panel artifact creation
+- Estimation runner(s)
+- Table/figure generator(s)
+
+For each step include:
+- file path(s)
+- function(s)
+- key parameters/flags
+- verified row counts pre/post (and subject counts where relevant)
+
+D. Data Provenance (Verified)
+For every raw/primary dataset used by this suite (directly or indirectly), include a table:
+
+Dataset | Raw location | Ingest script | Unique keys (as enforced) | Raw rows | Post-clean rows | Notes
+
+Rules:
+- Raw rows and post-clean rows must come from commands you ran.
+- “Unique keys” must be backed by code (or explicit uniqueness checks you ran).
+- Notes must mention duplicate handling + missingness rules.
+
+E. Merge & Sample Construction Audit (Verified)
+Describe every merge AND any sample construction step that changes the analysis population.
+
+For each merge:
+- Left dataset + right dataset
+- Join type (left/inner/etc.)
+- Join keys
+- Match-rate diagnostics (matched/unmatched counts)
+- Duplicate-key handling on both sides
+- Resulting row count
+- Explicit callout of many-to-many risk
+
+For non-merge sample construction (must include if present):
+Survival:
+- Risk-set build and interval splitting: row counts before/after, #subjects, #intervals, #events, #censored
+DiD/event studies:
+- Cohort assignment and event-time expansion: counts before/after, treated/control counts by time
+IV:
+- Instrument merge/creation and sample intersection: counts first-stage vs second-stage
+
+Include at least one diagnostics table per merge/construction step.
+
+F. Variable Dictionary (Paper-grade)
+Create a variable dictionary covering EVERYTHING appearing in any estimation spec:
+- Dependent/outcome variables (or survival event + duration vars)
+- Main explanatory variables
+- Interaction terms
+- Control variables
+- FE/strata/frailty identifiers / grouping vars
+- Sample filters/flags
+- Any winsorized/transformed versions
+- Any instruments / running variables / event-time variables / offsets/exposures
+
+Provide a table:
+
+Variable name (code) | Paper label | Type | Exact formula / construction | Timing | Transform | Winsor? | Source fields | Where defined
+
+Strict requirements:
+- “Formula / construction” must be explicit (not “computed in X”).
+- “Where defined” must include file path + function (+ line refs if easy).
+- “Source fields” must name upstream columns used.
+- If variable is reused across suites, still document it here, but note “shared engine: …”.
+
+G. Outliers, Missing Data, Scaling, and Model-Specific Data Rules
+Document, with code references:
+- winsorization (thresholds, pooled vs by-year, when applied)
+- trimming / dropping rules
+- missing data policy (listwise deletion? per-variable? time-varying drop rules?)
+- scaling/logging/standardization
+- denominator protections (divide-by-zero handling)
+- model-family rules (only if applicable):
+  * Survival: censoring policy, invalid durations (0/negative), late entry rules, max follow-up caps
+  * Time series: lag creation rules, sample burn-in, rolling window inclusion/exclusion
+  * GLM: separation handling, convergence failure behavior
+  * RD: bandwidth restrictions, donut holes, heaping rules
+  * DiD: never-treated handling, staggered adoption filters
+
+H. Estimation Spec Register (Suite-local; maps to produced tables)
+Create a mini spec registry for this suite (each produced column/model must map to a Spec ID):
+
+Spec ID | Model type | Outcome (DV or event/cause) | Key RHS | Controls set | FE/Strata/Frailty/RE | SE/Cluster | Weights/Offset | Sample | Notes
+
+Rules:
+- Spec ID must map to actual produced table columns/outputs.
+- “Model type” must state the exact estimator as implemented (e.g., OLS w/ firm+year FE; Cox PH Efron ties; Fine–Gray; 2SLS; Poisson with offset).
+
+I. Verification Log (Commands You Ran) + Executed Diagnostics
+List every command you executed (in order) with:
+- command
+- what it verified
+- key outputs (counts, file paths, summary stats, warnings)
+
+You MUST include:
+- row counts at each major stage
+- key uniqueness before merges
+- merge match rates
+- missingness rates for outcome + key RHS
+- distribution sanity checks (min/max, p1/p99) for outcome + key RHS
+
+Additionally include model-family diagnostics (ONLY if the suite implements them; if not implemented, state “NOT IMPLEMENTED”):
+Survival:
+- event/censor counts (overall + by cause), duration sanity, PH tests if present, convergence messages
+IV:
+- first-stage relevance metrics if computed (e.g., F-stat), over-id tests if computed
+DiD/event study:
+- pre-trend checks if computed, cohort balance counts, warnings about collinearity if present
+Time series:
+- HAC bandwidth used, stationarity transforms used, residual diagnostics if computed
+GLM:
+- convergence status, iteration caps, separation warnings if present
+
+J. Known Issues / Ambiguities (Actionable)
+Anything inconsistent, unclear naming, silent drops, suspicious merges, or model-spec ambiguity.
+- Describe the issue, its impact on reproducibility/validity, and a brief recommended fix.
+- If something is UNVERIFIED, restate what blocks verification and the smallest next step to verify it.
+
+========================================================
+2) Required working method (do this in order)
+========================================================
+Step 1 — Identify the suite boundary
+- Open {{SUITE_TEST_SCRIPT_PATH}}
+- Determine:
+  * what analysis dataset/panel/risk-set it loads (file path or builder)
+  * which variables it expects
+  * which specs/models it runs
+  * which outputs it writes
+- Record these in sections A, B, C, and H.
+
+Step 2 — Trace upstream dependencies
+- For every variable referenced in any spec:
+  * find where it is created
+  * trace upstream until reaching raw fields
+- Build section C as you go; populate section F continuously.
+
+Step 3 — Execute targeted verification (avoid expensive full re-runs unless necessary)
+- Prefer reading existing artifacts when available, but verify they correspond to current code.
+- Run ad-hoc checks to validate counts, keys, merges, missingness, and variable sanity.
+- For survival/DiD/IV/time-series, also verify the model-family construction steps (risk sets, event-time, first stage, lags).
+
+Step 4 — Write the doc as you verify
+- Populate sections D–I incrementally. Do not leave doc writing to the end.
+
+========================================================
+3) Allowed tools / commands
+========================================================
+Allowed:
+- rg/grep searches
+- opening/reading files
+- running existing scripts with flags
+- python one-liners: load parquet/csv and print counts, nunique, describe(), missingness, key checks
+Not allowed:
+- writing a new script that crawls everything and emits docs
+- unverifiable claims without labeling UNVERIFIED
+
+========================================================
+4) Quality bar (what “done” means)
+========================================================
+The doc is complete only if:
+- Every variable in the suite’s estimation specs appears in the dictionary with explicit formula + provenance.
+- Every merge/construction step has counts + match-rate diagnostics.
+- Reproduction commands are runnable (to best ability) and outputs are enumerated.
+- Any UNVERIFIED part is explicitly bounded and explained.
+
+========================================================
+5) Start now
+========================================================
+Begin by:
+- Opening {{SUITE_TEST_SCRIPT_PATH}}
+- Listing all specs/models and required variables
+- Identifying the analysis dataset/panel artifact/builder (including any model-family reshaping)
+- Creating the skeleton file at docs/provenance/{{SUITE_ID}}.md and filling sections A–C + H first
+- Then proceed until all sections are complete.

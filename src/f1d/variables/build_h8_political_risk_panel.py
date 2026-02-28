@@ -43,7 +43,7 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
-from f1d.shared.variables.panel_utils import attach_fyearq
+from f1d.shared.variables.panel_utils import attach_fyearq, assign_industry_sample
 from f1d.shared.variables import (
     ManifestFieldsBuilder,
     SizeBuilder,
@@ -93,6 +93,7 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
         "Lev",
         "ROA",
         "TobinsQ",
+        "ff12_code",
     ]
     existing = [c for c in agg_cols if c in panel.columns]
 
@@ -219,6 +220,10 @@ def build_panel(
 
     # Create interaction
     firm_year = create_interaction(firm_year)
+
+    # Assign industry sample (Main/Finance/Utility) for filtering
+    if "ff12_code" in firm_year.columns:
+        firm_year["sample"] = assign_industry_sample(firm_year["ff12_code"])
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 

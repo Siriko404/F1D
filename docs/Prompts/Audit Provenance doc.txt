@@ -1,0 +1,310 @@
+Claude Code Prompt: Ultra-Hardnosed Audit of a Regression Suite Provenance Doc (All Model Families)
+
+Role
+You are an empirical finance/accounting referee + research software auditor. Your job is to perform an adversarial, evidence-based audit of ONE suite provenance doc:
+
+Target doc: docs/provenance/{{SUITE_ID}}.md
+
+The provenance doc is expected to follow the A–J structure (suite overview → reproducibility → dependency chain → data provenance → merges/sample construction → variable dictionary → data rules → estimation spec register → verification log → known issues). Your audit must verify that this doc is:
+(1) faithful to the actual code implementation,
+(2) fully reproducible end-to-end,
+(3) academically submission-grade,
+(4) complete for the model family used (OLS, GLM, IV, DiD, RD, time-series, survival/hazards, competing risks, etc.).
+
+Your stance: strict, fair, and skeptical. Assume subtle errors and omissions exist until disproven.
+
+========================================================
+Inputs (fill these)
+========================================================
+Suite ID: {{SUITE_ID}}
+Doc path: docs/provenance/{{SUITE_ID}}.md
+
+Suite estimation entrypoint(s): {{SUITE_TEST_SCRIPT_PATH}}
+Analysis dataset artifact OR builder (if any): {{ANALYSIS_DATASET_ARTIFACT_OR_BUILDER}}
+Repo root: {{REPO_ROOT}}
+
+If the suite has multiple entrypoints (e.g., dataset builder, risk-set builder, first-stage builder, table builder), discover them and list them in the audit output.
+
+========================================================
+Non-negotiable audit rules (zero exceptions)
+========================================================
+1) VERIFY, DO NOT TRUST.
+   Treat every doc claim as potentially wrong until verified by:
+   - direct code evidence (file path + function + relevant line ranges), OR
+   - a command you ran with recorded key outputs (counts, hashes, diagnostics).
+
+2) Quality over speed to the maximum:
+   - If anything is ambiguous, run more checks, expand trace depth, and mark UNVERIFIED only when you truly cannot verify.
+   - Prefer redundancy: verify key facts via at least TWO independent angles where feasible (e.g., code reference + data check).
+
+3) Ad-hoc checks only:
+   Allowed: reading code, ripgrep/grep, running existing scripts, python one-liners / minimal notebooks for inspection.
+   Not allowed: writing a new “bulk auditor” that crawls everything and auto-produces audit output.
+
+4) Determinism & staleness paranoia:
+   - Assume artifacts/tables may be stale.
+   - You must check whether outputs are regenerated or merely loaded.
+   - You must test that “from scratch” instructions actually reproduce outputs in the documented paths.
+
+5) If you cannot verify: label UNVERIFIED.
+   State precisely what blocks verification and the smallest next step to verify (file missing, data unavailable, ambiguous config, etc.).
+
+========================================================
+Deliverable
+========================================================
+Create ONE file:
+docs/provenance/{{SUITE_ID}}_AUDIT.md
+
+It must contain:
+
+(1) Executive verdict
+- PASS / PASS WITH MINOR REVISIONS / FAIL
+- 8–15 bullets of highest-impact issues affecting replication, correctness, or academic defensibility.
+- A short “what I trust” vs “what I do not trust yet” list.
+
+(2) Issue log (prioritized, evidence-backed)
+A table:
+
+| Severity | Doc Section (A–J) | Claim (quote) | Expected truth | Observed truth | Evidence | Fix (minimal) |
+|---------|--------------------|---------------|----------------|----------------|----------|---------------|
+
+Severity rules:
+- BLOCKER: incorrect variable/sample/model; breaks reproduction; misleading documentation; many-to-many merge risk hidden; wrong timing; wrong event coding; wrong instrument/treatment/cutoff; stale outputs presented as current.
+- MAJOR: incomplete/ambiguous enough to undermine academic-grade replication (missing units, missing time origin, missing join keys, unspecified SEs, etc.).
+- MINOR: clarity/cosmetic/wording.
+
+(3) Replication transcript (black-box)
+- Exact commands run (copy/paste runnable)
+- Files produced (paths)
+- Any errors/warnings and how you interpreted them
+- Repo state: commit hash if available
+- Compare produced outputs vs doc’s “Expected outputs” list
+
+(4) White-box trace record (end-to-end)
+- The actual dependency chain you reconstructed from code (not the doc’s chain)
+- Explicit diff vs doc’s Section C chain (missing steps, extra steps, misordered steps)
+
+(5) Appendix: verification outputs (summaries only)
+- Row/subject counts at key stages, key uniqueness checks, merge match-rates
+- Missingness summary for DV and key RHS
+- Distribution sanity checks for DV and key RHS (min/max, p1/p99, mean/sd)
+- Model-family diagnostics (only what the code actually implements; otherwise say NOT IMPLEMENTED)
+
+========================================================
+Audit workflow (must follow this exact order)
+========================================================
+
+PHASE 0 — Identify model family + “minimal completeness contract”
+Goal: determine what model-specific fields MUST be present and verified.
+
+0.1 Read suite entrypoint(s). Identify model family and estimator as implemented:
+- OLS/panel FE, GLM/logit/probit, Poisson/NegBin, IV/2SLS, DiD/event study, RD, time series, survival/hazards, competing risks, mixed effects, quantile, etc.
+
+0.2 Create a “Model-Family Completeness Checklist” in the audit doc:
+- Base checklist: A1–A5, B, C, D, E, F, G, H, I, J must exist and be non-hand-wavy.
+- Model addendum checklist (only whichever applies):
+  Survival/Hazards: time origin, time scale/units, duration construction, event coding, censoring definition, late entry/left truncation, risk-set structure, ties method (if Cox), competing risks approach + cause coding.
+  IV/2SLS: endogenous regressor(s), instruments, first-stage and second-stage specs, sample intersection, any weak-IV stats if computed.
+  DiD/Event study: treatment and cohort assignment, event-time construction, reference period, never-treated handling, staggered adoption details, pre-trend checks if implemented.
+  RD: running variable, cutoff, bandwidth selection rule as implemented, polynomial/order, kernel, donut holes/filters.
+  Time series: time index/frequency, lag rules, rolling windows, burn-in rules, HAC settings if used.
+  GLM/Count: link/family, offsets/exposure, convergence handling, separation handling.
+  Mixed effects: grouping structure, random intercept/slope, optimizer, variance estimator assumptions.
+
+If the doc omits required addendum items for the discovered model family: mark at least MAJOR (often BLOCKER if it changes interpretation/reproducibility).
+
+PHASE 1 — Doc claim extraction into a claims ledger (doc-first)
+Goal: convert prose into auditable atomic claims.
+
+1.1 Open docs/provenance/{{SUITE_ID}}.md. Extract ALL concrete claims into a numbered ledger:
+- Inputs/raw data sources + locations
+- Ingest/cleaning scripts
+- Filters and sample definition
+- Every merge: join type, keys, match-rate, duplicate handling, row counts
+- Variable formulas: DV, key RHS, interactions, controls, identifiers, weights/offsets/exposure, FE/strata/etc.
+- Outlier/missing/scaling policies
+- Spec register: every produced column/spec mapping
+- Verification log claims (commands and numbers)
+- Reproduction commands and expected outputs
+- Any “known issues” the doc admits
+
+1.2 For each claim, assign a “verification target”:
+- Code reference location(s) OR
+- Data inspection command(s) to run
+
+PHASE 2 — Black-box reproduction attempt (doc commands only)
+Goal: test whether the doc can reproduce outputs without insider knowledge.
+
+2.1 Run the doc’s “from scratch” commands exactly as written.
+2.2 Confirm:
+- It runs without manual edits
+- It produces all expected outputs at documented paths
+- Outputs correspond to the suite (not another suite)
+2.3 If reproduction fails:
+- Log the exact failure (error text, step)
+- Determine whether doc is wrong, code is broken, or environment/data missing
+- Provide minimal fix steps (doc patch vs code patch), but do NOT implement major refactors.
+
+PHASE 3 — White-box reconstruction of the actual pipeline (code-first)
+Goal: build the true dependency chain and compare to Section C.
+
+3.1 Starting from {{SUITE_TEST_SCRIPT_PATH}}, identify:
+- What analysis dataset is loaded or built (path, builder)
+- The exact regression/model calls and their parameterization
+- The exact variable names used (DV, RHS, controls, FE/strata/cluster IDs, weights/offsets)
+- Output writers (tables/figures/serialized results)
+
+3.2 Trace upstream:
+- dataset builder(s), variable engines, cleaning/filtering, merges, raw reads
+- Confirm every step in doc’s Section C exists in code
+- Identify any material code steps missing from doc
+
+3.3 Staleness check:
+- Determine whether outputs/tables are generated from current regression objects or loaded from cached/stored results.
+- If cached: verify cache invalidation rules or mark risk clearly.
+
+PHASE 4 — Data provenance verification (Section D)
+Goal: verify “raw → post-clean” counts and key uniqueness.
+
+For each dataset claimed in doc Section D:
+4.1 Verify raw location exists and is the one actually read in code.
+4.2 Verify ingest script is the one used by the suite dependency chain.
+4.3 Compute via ad-hoc checks:
+- raw rows
+- post-clean rows
+- unique key counts (as claimed)
+- duplicates on keys and how handled
+4.4 Compare exact numbers to doc. Any mismatch:
+- If material: MAJOR/BLOCKER depending on impact on sample and estimates.
+
+PHASE 5 — Merge & sample construction audit (Section E)
+Goal: catch silent row explosions, miskeys, and hidden sample restrictions.
+
+For each merge found in doc AND any merge found in code:
+5.1 Verify join type and join keys in code (not doc).
+5.2 Pre-merge uniqueness checks on keys for both left and right tables.
+5.3 Compute match-rate diagnostics:
+- matched/unmatched counts
+- row count before/after
+- row explosion ratio (after/before)
+5.4 Verify doc reports the above accurately AND flags many-to-many risks explicitly.
+
+Additionally, audit non-merge sample construction steps that change the estimand:
+- Survival: risk-set building, interval splitting, late entry, censor rules
+- DiD/event study: event-time expansion, cohort assignment, trimming windows
+- RD: bandwidth filters, donut holes, heaping filters
+- Time series: lag creation and burn-in trimming
+- IV: first-stage/second-stage sample intersection
+
+Any hidden sample restriction or unexplained row drop: at least MAJOR.
+
+PHASE 6 — Variable dictionary forensic verification (Section F)
+Goal: verify every formula, timing, transform, and provenance.
+
+For EVERY variable used anywhere in estimation (DV/outcome/event, duration, key RHS, interactions, controls, identifiers, weights/offsets/exposure, instruments, treatment/event-time vars, running vars, FE/strata IDs):
+6.1 Confirm variable exists in final estimation dataframe.
+6.2 Verify construction:
+- locate code that constructs it (function + inputs)
+- independently recompute from upstream columns where feasible (spot-check on random rows or a slice)
+6.3 Verify timing:
+- lags/leads, windowing, “t vs t+1”, event-time alignment, survival start/stop alignment
+6.4 Verify transforms:
+- log(x) vs log(1+x), scaling units, standardization method, winsor thresholds, pooled vs by-time application, where in pipeline applied
+6.5 Verify missingness policy:
+- listwise deletion vs variable-wise; baseline vs time-varying missingness effects
+
+Minimum numeric checks (ad-hoc, logged):
+- min/max, p1/p99, mean/sd
+- missingness %
+- boundedness sanity (percent in [0,100], probabilities in [0,1], durations > 0, etc.)
+- spot correlations with components (where meaningful)
+
+BLOCKER examples:
+- wrong numerator/denominator for a core variable
+- doc says lagged, code uses contemporaneous
+- winsorization applied at different stage than doc claims
+- survival event coding differs from doc (event type swapped; censor treated as event)
+
+PHASE 7 — Data rules & estimand integrity (Section G)
+Goal: verify that the doc fully specifies data handling that affects identification.
+
+7.1 Outliers/winsor/trimming: verify thresholds, grouping (pooled/by-time), and when applied.
+7.2 Missing data rules: verify drop logic and its impact on N and composition.
+7.3 Denominator protections: verify divide-by-zero handling.
+7.4 Identification-threatening risks (must check explicitly):
+- look-ahead bias / leakage (future info used in current period)
+- overlapping windows that mechanically induce predictability
+- post-treatment controls in DiD/event studies
+- immortal time bias in survival settings (time origin and entry)
+- misaligned clustering level (cluster id changes post-merge)
+If any present or suspected: document as MAJOR/BLOCKER with evidence.
+
+PHASE 8 — Estimation spec register + output parity (Section H + produced tables)
+Goal: ensure each reported model/spec is exactly what runs and what appears in tables.
+
+For each Spec ID in Section H (and each output column/table):
+8.1 Verify the exact estimator call in code matches:
+- model type + options
+- DV/outcome/event/cause
+- RHS variables included
+- control set
+- FE/strata/frailty/RE structure
+- SE/cluster/robust method
+- weights/offsets/exposure
+8.2 Re-run at least ONE core spec end-to-end and compare key coefficients to produced table output within tolerance.
+8.3 Verify N in regression output matches post-filter N described in doc and in your reconstructed pipeline.
+8.4 Stale output test: confirm tables are generated from the run you executed (not previously saved results).
+
+PHASE 9 — Verification log audit (Section I)
+Goal: treat the doc’s verification log as claims to be re-verified.
+
+9.1 Re-run a representative subset of logged commands (especially those producing headline counts).
+9.2 Verify that logged numbers match what you observe now.
+9.3 If the verification log is missing required diagnostics (counts, uniqueness, match-rates, missingness, sanity stats): MAJOR.
+
+PHASE 10 — Known issues completeness + “referee-grade” assessment (Section J)
+Goal: assess academic readiness and whether doc admits relevant caveats.
+
+10.1 Evaluate if Section J covers the real risks you discovered.
+10.2 Provide a short referee-style critique:
+- What is clear and replicable
+- What is ambiguous
+- What would a committee/referee reject immediately
+10.3 Provide minimal, actionable fixes prioritized by severity.
+
+========================================================
+Required commands (you must run equivalents and log them)
+========================================================
+You must run and record commands that accomplish at least:
+
+(1) Doc-based full reproduction attempt (from scratch, as written)
+(2) Load the final estimation dataset and print:
+    - n_rows
+    - key entity counts (subjects/firms/etc.)
+    - time span
+    - column list or at least required vars list
+(3) Key uniqueness checks prior to every merge (duplicates on join keys)
+(4) Merge match-rate diagnostics for each merge (matched/unmatched + row changes + explosion ratio)
+(5) Variable sanity checks (DV + key RHS + key IDs):
+    - describe stats, p1/p99, missingness %
+    - winsor threshold confirmation when applicable
+(6) Model parity:
+    - rerun at least one core spec and compare coefficients to the produced table/output
+(7) Model-family diagnostics (only if implemented; otherwise explicitly say NOT IMPLEMENTED):
+    Survival: event/censor counts overall and by cause; duration sanity; PH tests if present; convergence notes
+    IV: first-stage stats if computed; sample intersection
+    DiD: treated/control counts over time; pre-trend checks if computed
+    RD: bandwidth used; counts within bandwidth
+    Time series: HAC settings; burn-in; lag structure verification
+    GLM: convergence status; separation warnings
+
+Keep checks ad-hoc. Do not write a new auditing framework.
+
+========================================================
+Start now
+========================================================
+1) Open docs/provenance/{{SUITE_ID}}.md and create the claims ledger in the audit doc.
+2) Attempt black-box reproduction (Phase 2).
+3) Reconstruct the true pipeline from code (Phase 3).
+4) Proceed through Phases 4–10.
+5) End with a clear verdict and the top fixes required to reach PASS.
