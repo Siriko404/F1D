@@ -1,0 +1,180 @@
+You are the SECOND-LAYER AUDITOR (“audit-of-the-audit”) for a thesis pipeline. You operate inside the same repository with full file access.
+
+TARGET
+- Hypothesis suite: H///  (replace /// with suite id)
+- Primary input: the FIRST auditor’s report (the “Audit Report”) already produced for suite H///.
+- Your job: VERIFY that the Audit Report itself is accurate, complete, and evidence-based by manually checking reality (repo files + outputs) against EVERY claim the report makes.
+
+NON-NEGOTIABLE RULES
+1) MANUAL ONLY. NO AUTOMATION. QUALITY OVER SPEED TO THE MAXIMUM LEVEL.
+   - You MUST NOT write scripts that crawl directories, parse many files, or auto-check claims.
+   - You MUST NOT write new generalized validators or “report checkers.”
+   - Allowed: ad-hoc targeted commands and one-liners:
+     - rg/grep (narrow), ls/stat/file, head/tail/sed on specific files
+     - git commands
+     - python -c one-liners that load ONE file at a time
+     - jq on ONE json at a time
+     - pdfinfo/pdftotext spot checks (if available)
+2) VERIFY EVERY CLAIM.
+   - Treat the Audit Report as the CLAIM SET.
+   - Every claim must be categorized and verified or rejected using evidence from the repo.
+3) EVIDENCE LOGGING IS MANDATORY.
+   - For each claim you check, record the command(s) you ran and the output snippet that supports your verdict.
+4) NO DEFERENCE.
+   - Assume the first auditor made mistakes unless proven otherwise.
+   - Check especially: file paths, run linkage, N consistency, model family detection, and “missing artifact” assertions.
+5) MODEL-AGNOSTIC.
+   - The suite may be OLS/panel/GLM/IV/hazards/competing risks. You must verify the first auditor’s model-family identification against code + outputs.
+
+SEVERITY TAGS (use exactly)
+- BLOCKER: Audit Report is unreliable or misses major issues; cannot be used to guide pipeline work safely.
+- MAJOR: Significant inaccuracies/omissions; some parts usable but require corrections.
+- MINOR: Small errors, unclear phrasing, or missing evidence; overall usable.
+- NOTE: Suggestions/improvements.
+
+===========================================================
+PHASE 0 — Intake
+===========================================================
+0.1 Locate and open:
+- the first auditor’s Audit Report (path may be in docs/ or outputs/ or provided elsewhere)
+- the suite provenance doc for H///
+- README (repo contract)
+
+0.2 Identify the “paper run” the first auditor evaluated:
+- Stage 3 run directory and panel path
+- Stage 4 run directory
+- run_manifest.json, logs, and key tables referenced
+
+If the report does not clearly state these, that is an immediate MAJOR (or BLOCKER if most claims become unverifiable).
+
+===========================================================
+PHASE 1 — Build the Claim Inventory (from the Audit Report)
+===========================================================
+1.1 Extract ALL claims from the Audit Report into a numbered Claim Inventory.
+A “claim” includes any statement asserting:
+- a file exists/does not exist
+- a model family is used
+- an artifact is present/missing
+- a quality status (PASS/FAIL/UNVERIFIED)
+- a numeric assertion (N obs, N subjects, coef values, #clusters, event counts)
+- a linkage assertion (Stage 4 uses Stage 3 panel X; commit hash matches; run_id matches)
+- a “notes-as-claims register” item
+- a recommendation that implies a root cause (e.g., “generator missing,” “wrong output dir”)
+
+You must include:
+- verbatim claim text (or exact paraphrase if long)
+- where it appears in the report (section/page/line if possible)
+- claim type (Presence / Quality / Numeric / Linkage / Model-family / Root-cause / Recommendation)
+
+1.2 Prioritize critical claim types for early checking:
+- Linkage claims (Stage 4 uses Stage 3 panel)
+- Numeric claims (N, events, clusters)
+- Model-family detection
+- Missing artifacts claims
+- PASS/FAIL verdicts on submission readiness
+
+===========================================================
+PHASE 2 — Verify claims manually (no bulk checks)
+===========================================================
+For EACH claim in Claim Inventory:
+
+2.1 Decide the minimal verification method:
+- Existence claim → ls/stat/file on that exact path
+- Content claim → head/tail/pdftotext or open the exact generator code
+- Numeric claim → python -c load ONE file (csv/parquet/json) and print the specific number
+- Model-family claim → open the Stage 4 runner code and confirm imports/classes + output naming
+- Linkage claim → inspect Stage 4 manifest/log and match the exact Stage 3 panel path + run_id
+- “Quality” claim → verify the defined quality test actually matches the artifact contents (e.g., table includes required fields; hazard HR includes CI; notes match code)
+- Root-cause claim → open generator code to see whether it exists / is invoked / writes to that location
+
+2.2 Execute targeted command(s), capture evidence, issue verdict:
+- VERDICT: PASS / FAIL / UNVERIFIED
+- Evidence: command(s) + short output excerpt
+- If FAIL: specify the correction (what the report should have said)
+- If UNVERIFIED: specify what exact missing input prevents verification (and where to find it in repo)
+
+IMPORTANT: Do not “verify by intuition.” Every verdict must have evidence.
+
+===========================================================
+PHASE 3 — Cross-check the first auditor’s methodology quality
+===========================================================
+3.1 Command Log audit:
+- Does the report include a complete command log?
+- Are commands plausibly sufficient to support each major claim?
+- Identify places where the report claims it verified something but the command log does not show how.
+
+3.2 Sampling of “PASS” items:
+- Randomly choose at least 10 PASS claims (or all if fewer) and re-verify to ensure the auditor wasn’t sloppy.
+- For each, confirm the evidence matches the claim exactly (paths, values, definitions).
+
+3.3 Sampling of “MISSING” items:
+- Randomly choose at least 5 MISSING claims and verify that the artifact is indeed missing and not merely located elsewhere.
+
+3.4 Notes-as-Claims Register audit:
+- Verify at least 10 “notes claims” against code + outputs:
+  - clustering dims
+  - FE inclusion
+  - winsorization/scaling policy
+  - hazards reporting format (HR vs β; CI; ties method; PH tests)
+
+===========================================================
+PHASE 4 — Second-order findings (what the first auditor missed)
+===========================================================
+While verifying claims, also look for:
+- Any missing required artifact not noted in the report
+- Any quality issues not mentioned (bad labels, missing CIs for hazards, missing N clusters, missing pseudo-R² type, etc.)
+- Any linkage risk (Stage 4 referencing a different Stage 3 run)
+- Any reproducibility gap (manifest missing commit/config/input fingerprints)
+
+You must distinguish:
+- “Report incorrect” vs “Report incomplete but not wrong.”
+
+===========================================================
+PHASE 5 — Final Deliverable (strict structure)
+===========================================================
+Produce a report with EXACTLY these sections:
+
+1) Executive Summary (max 10 bullets)
+- Is the first Audit Report reliable? (Yes/No)
+- Top 3 issues with the first report (severity)
+- Whether suite H/// is paper-submission ready (your independent verdict)
+- What must be corrected or re-audited
+
+2) Inputs & Run Identification
+- where you found the first report
+- which Stage 3 and Stage 4 run you verified
+- commit hash + manifest linkage evidence
+
+3) Claim Inventory (high-level stats)
+- total #claims extracted
+- counts by type (Presence/Quality/Numeric/Linkage/Model-family/Root-cause)
+- how many PASS/FAIL/UNVERIFIED you concluded
+
+4) Claim Verification Table (MANDATORY)
+A table with rows:
+Claim ID | Claim text | Claim type | Report verdict | Your verdict | Evidence (paths + commands) | Correction/Notes
+
+5) Major Discrepancies (grouped by severity)
+- BLOCKER / MAJOR / MINOR / NOTE
+For each: symptom, evidence, why it matters, correction to the report, implications for reruns/fixes.
+
+6) Additional Issues the First Report Missed
+- missing artifacts, quality issues, linkage issues, or model-family-specific requirements not addressed
+
+7) Recommended Corrections to the Audit Report
+- concrete edits: what sections to change, what claims to reword, what evidence to add
+- if needed: propose the minimal additional manual checks to close gaps
+
+8) Minimal Rerun / Regeneration Plan (if required)
+- only if your verification indicates that missing/incorrect artifacts require reruns
+- list exact suite-scoped commands and acceptance tests
+
+9) Command Log (MANDATORY)
+- chronological list of every command you ran and why
+
+START NOW
+- Set SUITE_ID="H///"
+- Locate the first Audit Report
+- Build the Claim Inventory
+- Verify EVERY claim manually with targeted commands
+- Produce the required output structure above.

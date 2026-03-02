@@ -64,6 +64,8 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -232,6 +234,8 @@ def run_regression(
         "second_iv": second_iv,
         "n_obs": int(model.nobs),
         "n_firms": df_reg["gvkey"].nunique(),
+        "n_clusters": df_reg["gvkey"].nunique(),
+        "cluster_var": "gvkey",
         "within_r2": float(model.rsquared_within),
         "beta1": beta1,
         "beta1_se": beta1_se,
@@ -333,7 +337,22 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(row_n.rstrip(" &") + r" \\")
     lines.append(row_r2.rstrip(" &") + r" \\")
 
-    lines += [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
+    lines += [
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\\[-0.5em]",
+        r"\parbox{\textwidth}{\scriptsize ",
+        r"\textit{Notes:} "
+        r"Dependent variable is Amihud illiquidity$_{t+1}$ (Amihud 2002). "
+        r"All models use the Main industry sample (non-financial, non-utility firms). "
+        r"Firms with fewer than 5 calls are excluded. "
+        r"Standard errors (in parentheses) are clustered at the firm level. "
+        r"All continuous controls are standardized within each model's estimation sample. "
+        r"Variables are winsorized at 1\%/99\% by year at the engine level. "
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H7).",
+        r"}",
+        r"\end{table}",
+    ]
 
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
@@ -347,11 +366,19 @@ def main(panel_path: Optional[str] = None) -> int:
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h7_illiquidity" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H7_Illiquidity",
+        timestamp=timestamp,
+    )
+
     print("=" * 80)
     print("STAGE 4: Test H7 Speech Vagueness and Stock Illiquidity")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     # ------------------------------------------------------------------
     # Load Stage 3 panel
@@ -503,6 +530,33 @@ def main(panel_path: Optional[str] = None) -> int:
     # Output
     # ------------------------------------------------------------------
     _save_latex_table(all_results, out_dir)
+
+    # Generate sample attrition table
+    if all_results:
+        main_result = next(
+            (r for r in all_results if r.get("sample") == "Main"), all_results[0]
+        )
+        attrition_stages = [
+            ("Master manifest", len(panel)),
+            ("Main sample filter", (panel["sample"] == "Main").sum()),
+            ("After complete-case + min-calls filter", main_result.get("n_obs", 0)),
+        ]
+        generate_attrition_table(attrition_stages, out_dir, "H7 Illiquidity")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+    # Generate run manifest
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage4",
+        timestamp=timestamp,
+        input_paths={"panel": panel_file},
+        output_files={
+            "diagnostics": out_dir / "model_diagnostics.csv",
+            "table": out_dir / "h7_illiquidity_table.tex",
+        },
+        panel_path=panel_file,
+    )
+    print("  Saved: run_manifest.json")
 
     results_df = pd.DataFrame(all_results)
     results_df.to_csv(out_dir / "model_diagnostics.csv", index=False)

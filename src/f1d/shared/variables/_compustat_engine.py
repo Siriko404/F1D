@@ -760,11 +760,12 @@ def _compute_h3_payout_policy(
     """Compute H3 Payout Policy variables on an annual basis and align back.
 
     Computes:
-      - div_stability: -StdDev(Delta DPS) / |Mean(DPS)| over trailing 5 years
-      - payout_flexibility: % of years with |Delta DPS| > 5% of prior DPS
-      - earnings_volatility: StdDev(annual EPS) over trailing 5 years
-      - fcf_growth: (FCF_t - FCF_{t-1}) / |FCF_{t-1}|
-      - firm_maturity: RE / TE
+      - div_stability: -StdDev(payout_ratio_lag) over trailing 5 years (1826D, min 3 obs)
+        where payout_ratio = dvy / iby (total dividends / income before extraordinary items)
+      - payout_flexibility: % of years with |Delta DPS| > 5% of prior DPS over trailing 5 years
+      - earnings_volatility: StdDev(annual ROA) over trailing 5 years
+      - fcf_growth: (FCF_t - FCF_{t-1}) / |FCF_{t-1}| where FCF = (oancfy - capxy) / atq
+      - firm_maturity: RE / TE (retained earnings / total equity)
       - is_div_payer_5yr: Max(dps > 0) over trailing 5 years
 
     Returns six Series aligned to comp's index.

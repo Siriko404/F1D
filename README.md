@@ -300,10 +300,10 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H0.3 Extended Controls | ✓ Robust | R² stable across baseline/extended specs |
 | H1 Cash Holdings | **Partial** | H1a: 7/18 sig, H1b: 2/18 sig (CEO measures strongest) |
 | H2 Investment | **Null** | H2a: 0/18 sig, H2b: 1/18 sig |
-| H3 Payout Policy | **Partial** | H3b: 2/12 significant interactions |
+| H3 Payout Policy | **Partial** | H3a: 1/36 sig, H3b: 3/36 sig |
 | H4 Leverage | **Partial** | 2/18 sig (Pres uncertainty measures) |
 | H5 Analyst Dispersion | **Null** | 0/12 significant |
-| H6 CCCL Speech | **Null** | 0/6 significant treatment effects |
+| H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 0/9 significant (all β negative or zero) |
 | H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.776 |
 | H9 Takeover Hazards | **Partial** | CEO models run; Manager clarity missing |
@@ -381,8 +381,8 @@ in Main sample. Finance shows H1a support but no moderation effect. Utility null
 
 ### H2 Investment Efficiency — `run_h2_investment`
 
-Tests whether vague managers invest less efficiently (H2a: β₁ < 0 for |InvestmentResidual|)
-and whether leverage attenuates this (H2b: β₃ > 0). DV: `|InvestmentResidual|_{t+1}` (Biddle et al. 2009).
+Tests whether vague managers exhibit more underinvestment (H2a: β₁ < 0 for InvestmentResidual)
+and whether leverage attenuates this (H2b: β₃ > 0). DV: `InvestmentResidual_{t+1}` (Biddle et al. 2009; >0=overinvestment, <0=underinvestment).
 
 Model: `InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty×Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + EntityEffects + TimeEffects`
 
@@ -412,10 +412,11 @@ Model: `PayoutMeasure_lead ~ Uncertainty + Lev + Uncertainty×Lev + Controls + E
 |--------|----|--------------------:|
 | Main | div_stability_lead | H3b: **2/6** interactions |
 | Main | payout_flexibility_lead | — |
-| Finance | — | — |
-| Utility | — | — |
+| Finance | payout_flexibility_lead | H3a: **1/6** |
+| Utility | payout_flexibility_lead | H3b: **1/6** |
+| **Total** | | **H3a: 1/36, H3b: 3/36** |
 
-**Result:** Limited support for H3b (leverage moderation) in dividend stability regressions.
+**Result:** Limited support for H3. H3a: 1/36 significant (Finance payout_flexibility). H3b: 3/36 significant (Main div_stability ×2, Utility payout_flexibility ×1).
 
 ### H4 Leverage Discipline — `run_h4_leverage`
 
@@ -472,10 +473,9 @@ Model: `Uncertainty ~ CCCL_lag + Size + Lev + ROA + TobinsQ + CashHoldings + Ent
 | Finance | 12,376 | 392 | — | — | No |
 | Utility | 2,553 | 73 | — | — | No |
 
-**Pre-trends test:** CCCL_lag vs CCCL_lead1/lead2 — no significant pre-trends detected.
+**Pre-trends test:** CCCL_lag vs CCCL_lead1/lead2 — significant leads found in Main and Finance samples. See provenance H6.md for details.
 
-**Result:** H6 NOT SUPPORTED. No significant treatment effects of CCCL on CEO/Manager clarity.
-The instrument does not predict changes in uncertainty language.
+**Result:** H6 PARTIALLY SUPPORTED in Finance sample (4/21 significant at p<0.05). Main and Utility samples show null results. Pre-trends violations in Main and Finance samples raise causal interpretation concerns. See AUDIT_H6.md Finding #1.
 
 ### H7 Speech Vagueness and Stock Illiquidity — `run_h7_illiquidity`
 

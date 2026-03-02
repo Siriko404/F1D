@@ -71,6 +71,8 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
     # Linguistic uncertainty
@@ -416,6 +418,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "variables" / "h2_investment" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H2_Investment",
+        timestamp=timestamp,
+    )
+
     # Load configs
     config = get_config(root / "config" / "project.yaml")
     var_config = load_variable_config(root / "config" / "variables.yaml")
@@ -432,6 +441,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
     print(f"Years:     {year_start}-{year_end}")
     print(f"Unit of observation: earnings call (file_name)")
 
@@ -475,6 +485,20 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     stats_path = out_dir / "summary_stats.csv"
     stats_df.to_csv(stats_path, index=False)
     print(f"  Saved: summary_stats.csv ({len(stats_df)} variables)")
+
+    # Generate run manifest for reproducibility
+    manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage3",
+        timestamp=timestamp,
+        input_paths={"master_manifest": manifest_input},
+        output_files={
+            "panel": panel_path,
+            "summary_stats": stats_path,
+        },
+    )
+    print("  Saved: run_manifest.json")
 
     # Report
     duration = (datetime.now() - start_time).total_seconds()

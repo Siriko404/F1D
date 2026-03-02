@@ -73,6 +73,8 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 
 warnings.filterwarnings(
@@ -303,6 +305,8 @@ def run_regression(
         "spec_name": spec_name,
         "n_obs": int(model.nobs),
         "n_firms": df_reg["gvkey"].nunique(),
+        "n_clusters": df_reg["gvkey"].nunique(),
+        "cluster_var": "gvkey",
         "within_r2": float(model.rsquared_within),
         "beta1_PRiskFY": beta1,
         "se1": se1,
@@ -417,6 +421,17 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         + r" \\",
         r"\bottomrule",
         r"\end{tabular}",
+        r"\\[-0.5em]",
+        r"\parbox{\textwidth}{\scriptsize ",
+        r"\textit{Notes:} "
+        r"Dependent variable is $|$Abnormal Investment$|_{t+1}$ (Biddle et al.\ 2009). "
+        r"Unit of observation: firm--fiscal-year. "
+        r"Firms with fewer than 5 calls are excluded. "
+        r"Standard errors (in parentheses) are clustered at the firm level. "
+        r"All continuous controls are standardized within each model's estimation sample. "
+        r"Variables are winsorized at 1\%/99\% by year at the engine level. "
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed for H8).",
+        r"}",
         r"\end{table}",
     ]
 
@@ -437,11 +452,19 @@ def main(panel_path: Optional[str] = None) -> int:
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h8_political_risk" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H8_PoliticalRisk",
+        timestamp=timestamp,
+    )
+
     print("=" * 80)
     print("STAGE 4: Test H8 Political Risk x CEO Clarity -> Abnormal Investment")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     # ------------------------------------------------------------------
     # Load Stage 3 panel
@@ -552,6 +575,30 @@ def main(panel_path: Optional[str] = None) -> int:
         _save_latex_table(all_results, out_dir)
         pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)
         print(f"\n  Diagnostics saved: {out_dir / 'model_diagnostics.csv'}")
+
+    # Generate sample attrition table
+    if all_results:
+        first_result = all_results[0]
+        attrition_stages = [
+            ("Full firm-year panel", len(df)),
+            ("After complete-case + min-obs filter", first_result.get("n_obs", 0)),
+        ]
+        generate_attrition_table(attrition_stages, out_dir, "H8 Political Risk")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+    # Generate run manifest
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage4",
+        timestamp=timestamp,
+        input_paths={"panel": panel_file},
+        output_files={
+            "diagnostics": out_dir / "model_diagnostics.csv",
+            "table": out_dir / "h8_political_risk_table.tex",
+        },
+        panel_path=panel_file,
+    )
+    print("  Saved: run_manifest.json")
 
     duration = (datetime.now() - t0).total_seconds()
     print("\n" + "=" * 80)

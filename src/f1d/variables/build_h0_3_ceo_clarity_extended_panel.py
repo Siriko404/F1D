@@ -45,6 +45,8 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
@@ -268,8 +270,10 @@ def save_outputs(
     panel: pd.DataFrame,
     stats: Dict[str, Any],
     out_dir: Path,
+    root: Path,
+    timestamp: str,
 ) -> None:
-    """Save panel and summary statistics."""
+    """Save panel, summary statistics, and run manifest."""
     print("\n" + "=" * 60)
     print("Saving outputs")
     print("=" * 60)
@@ -286,6 +290,20 @@ def save_outputs(
     stats_path = out_dir / "summary_stats.csv"
     stats_df.to_csv(stats_path, index=False)
     print(f"  Saved: summary_stats.csv ({len(stats_df)} variables)")
+
+    # Generate run manifest for reproducibility
+    manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage3",
+        timestamp=timestamp,
+        input_paths={"master_manifest": manifest_input},
+        output_files={
+            "panel": panel_path,
+            "summary_stats": stats_path,
+        },
+    )
+    print("  Saved: run_manifest.json")
 
 
 def generate_report(
@@ -375,6 +393,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "variables" / "ceo_clarity_extended" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H0.3_CeoClarity_Extended",
+        timestamp=timestamp,
+    )
+
     # Load configs — pass explicit paths so CWD doesn't matter
     config = get_config(root / "config" / "project.yaml")
     var_config = load_variable_config(root / "config" / "variables.yaml")
@@ -391,13 +416,14 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
+    print(f"Log dir: {log_dir}")
     print(f"Years: {year_start}-{year_end}")
 
     # Build panel
     panel = build_panel(root, years, var_config, stats)
 
     # Save outputs
-    save_outputs(panel, stats, out_dir)
+    save_outputs(panel, stats, out_dir, root, timestamp)
 
     # Generate report
     duration = (datetime.now() - start_time).total_seconds()

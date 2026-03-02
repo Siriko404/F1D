@@ -1,6 +1,6 @@
 """Builder for loss_dummy (H5 Control Variable).
 
-1 if niq < 0, else 0. Fetched from Compustat engine.
+1 if ibq < 0, else 0. Fetched from Compustat engine.
 """
 
 from __future__ import annotations

@@ -92,7 +92,7 @@ def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
           (safe for downstream lead/lag operations that use idxmax).
         - file_name uniqueness is asserted before set_index to prevent silent
           duplicate-key corruption.
-        - Raises ValueError if match rate < 50% (loud failure, not silent NaN).
+        - Raises ValueError if match rate < 80% (loud failure, not silent NaN).
 
     Args:
         panel:      Call-level DataFrame. Must contain:
@@ -107,7 +107,7 @@ def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     Raises:
         ValueError: if panel["file_name"] contains duplicates.
-        ValueError: if fewer than 50% of panel rows match a Compustat fyearq.
+        ValueError: if fewer than 80% of panel rows match a Compustat fyearq.
     """
     if "fyearq" in panel.columns:
         return (

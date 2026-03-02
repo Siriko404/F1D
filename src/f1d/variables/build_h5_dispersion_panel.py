@@ -28,6 +28,8 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
@@ -119,6 +121,9 @@ def build_panel(
 
     panel = all_results["manifest"].data.copy()
 
+    # Assert file_name uniqueness before merges
+    assert panel["file_name"].is_unique, f"Manifest file_name not unique: {panel['file_name'].duplicated().sum()} duplicates"
+
     for name, result in all_results.items():
         if name == "manifest":
             continue
@@ -151,7 +156,7 @@ def build_panel(
     return panel
 
 
-def save_outputs(panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path) -> None:
+def save_outputs(panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, root: Path, timestamp: str) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     panel_path = out_dir / "h5_dispersion_panel.parquet"
     panel.to_parquet(panel_path, index=False)
@@ -160,7 +165,23 @@ def save_outputs(panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path) -> N
     )
 
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
-    stats_df.to_csv(out_dir / "summary_stats.csv", index=False)
+    stats_path = out_dir / "summary_stats.csv"
+    stats_df.to_csv(stats_path, index=False)
+    print(f"  Saved: summary_stats.csv ({len(stats_df)} variables)")
+
+    # Generate run manifest for reproducibility
+    manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage3",
+        timestamp=timestamp,
+        input_paths={"master_manifest": manifest_input},
+        output_files={
+            "panel": panel_path,
+            "summary_stats": stats_path,
+        },
+    )
+    print("  Saved: run_manifest.json")
 
 
 def generate_report(
@@ -198,6 +219,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "variables" / "h5_dispersion" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H5_Dispersion",
+        timestamp=timestamp,
+    )
+
     config = get_config(root / "config" / "project.yaml")
     var_config = load_variable_config(root / "config" / "variables.yaml")
 
@@ -210,9 +238,12 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print("=" * 80)
     print("STAGE 3: Build H5 Analyst Dispersion Panel")
     print("=" * 80)
+    print(f"Timestamp: {timestamp}")
+    print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     panel = build_panel(root, years, var_config, stats)
-    save_outputs(panel, stats, out_dir)
+    save_outputs(panel, stats, out_dir, root, timestamp)
 
     duration = (datetime.now() - start_time).total_seconds()
     generate_report(panel, stats, out_dir, duration)

@@ -70,6 +70,8 @@ from f1d.shared.latex_tables_accounting import (
     make_accounting_table,
     make_summary_stats_table,
 )
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -464,7 +466,11 @@ def save_outputs(
             "standardized separately within each industry sample (Main, Finance, Utility). "
             "Reference CEOs (statsmodels baseline category, gamma=0 by construction) "
             "are excluded from clarity scores. "
-            r"Standard errors are clustered at the CEO level (cov\_type=cluster, groups=ceo\_id)."
+            r"All models use the Main industry sample (non-financial, non-utility firms). "
+            r"CEOs with fewer than 5 calls are excluded. "
+            r"Standard errors are clustered at the CEO level. "
+            r"All continuous controls are standardized within each model's estimation sample. "
+            r"Variables are winsorized at 1\%/99\% by year at the engine level."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=control_vars,
@@ -554,6 +560,8 @@ def save_outputs(
                 "sample": sample_name,
                 "n_obs": diag.get("n_obs"),
                 "n_entities": diag.get("n_ceos"),  # H0.2 uses n_ceos
+                "n_clusters": diag.get("n_clusters"),  # Number of CEO clusters
+                "cluster_var": diag.get("cluster_var", "ceo_id"),  # Cluster variable
                 "rsquared": diag.get("rsquared"),
                 "rsquared_adj": diag.get("rsquared_adj"),
                 "fvalue": getattr(model, "fvalue", None),
@@ -701,14 +709,28 @@ def main(panel_path: Optional[str] = None) -> int:
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "ceo_clarity" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H0.2_CeoClarity",
+        timestamp=timestamp,
+    )
+
     print("=" * 80)
     print("STAGE 4: Test CEO Clarity Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
-    print(f"Output: {out_dir}")
+    print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     # Load panel
     panel = load_panel(root, panel_path)
+
+    # Track panel path for manifest
+    panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
+        root / "outputs" / "variables" / "ceo_clarity",
+        required_file="ceo_clarity_panel.parquet",
+    ) / "ceo_clarity_panel.parquet"
 
     # Prepare data
     df = prepare_regression_data(panel)
@@ -759,6 +781,8 @@ def main(panel_path: Optional[str] = None) -> int:
             "diagnostics": {
                 "n_obs": int(model.nobs),
                 "n_ceos": len(valid_ceos),
+                "n_clusters": df_reg["ceo_id"].nunique(),  # Number of CEO clusters
+                "cluster_var": "ceo_id",  # Cluster variable
                 "rsquared": model.rsquared,
                 "rsquared_adj": model.rsquared_adj,
             },
@@ -775,6 +799,34 @@ def main(panel_path: Optional[str] = None) -> int:
     clarity_df: pd.DataFrame = pd.DataFrame()
     if results:
         clarity_df = save_outputs(results, all_clarity_scores, panel, out_dir, stats)
+
+        # Generate sample attrition table
+        first_result = list(results.values())[0] if results else None
+        if first_result:
+            diag = first_result.get("diagnostics", {})
+            attrition_stages = [
+                ("Master manifest", len(panel)),
+                ("After ceo_id not null", panel["ceo_id"].notna().sum()),
+                ("After complete-case filter", len(df)),
+                ("After min-calls filter", diag.get("n_obs", 0)),
+            ]
+            generate_attrition_table(attrition_stages, out_dir, "H0.2 CEO Clarity")
+            print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+        # Generate run manifest
+        generate_manifest(
+            output_dir=out_dir,
+            stage="stage4",
+            timestamp=timestamp,
+            input_paths={"panel": panel_file},
+            output_files={
+                "diagnostics": out_dir / "model_diagnostics.csv",
+                "table": out_dir / "ceo_clarity_table.tex",
+                "clarity_scores": out_dir / "clarity_scores.parquet",
+            },
+            panel_path=panel_file,
+        )
+        print("  Saved: run_manifest.json")
 
         # Generate report
         duration = (datetime.now() - start_time).total_seconds()
