@@ -634,7 +634,8 @@ def _generate_summary_stats_latex(
     lines.append(r"\begin{tablenotes}")
     lines.append(r"\small")
     lines.append(
-        r"\item This table reports summary statistics for variables used in the regression."
+        r"\item This table reports summary statistics for all three industry samples. "
+        r"Regressions use Main sample only."
     )
     lines.append(r"All variables are measured at the call level.")
     lines.append(r"\end{tablenotes}")

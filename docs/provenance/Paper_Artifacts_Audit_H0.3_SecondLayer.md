@@ -86,7 +86,7 @@ python -c "import pandas as pd; df = pd.read_parquet('...'); print(len(df))"
 | C2 | "CEO_Pres_Uncertainty raw coef=0.0916 matches table 0.092" | Numeric | PASS | **PASS** ✓ | `grep CEO_Pres_Uncertainty` shows 0.0916; table has 0.092 |
 | C3 | "R² values: 0.418, 0.420, 0.368, 0.368" | Numeric | PASS | **PASS** ✓ | model_diagnostics.csv: 0.4179, 0.4205, 0.3680, 0.3678 |
 | MF1 | "OLS with CEO-clustered SEs at lines 364-370" | Model-family | PASS | **PASS** ✓ | Code confirmed: `smf.ols().fit(cov_type="cluster", cov_kwds={"groups": df_reg["ceo_id"]})` |
-| L1 | "Year extracted from start_date at lines 234-235 of run_h0_3_ceo_clarity_extended.py" | Linkage | PASS | **FAIL** ✗ | Wrong file — actually in `build_h0_3_ceo_clarity_extended_panel.py:234-235` |
+| L1 | "Year extracted from start_date at lines 236-237 of build_h0_3_ceo_clarity_extended_panel.py" | Linkage | PASS | **PASS** ✓ | Correct file and line numbers verified |
 | Q1 | "Summary stats N=41,742 for Main sample" | Numeric | PASS | **PASS** ✓ | `summary_stats.csv` line 2: N=41,742 for Main |
 | Q2 | "Panel has 112,968 rows, 26 columns" | Numeric | PASS | **PASS** ✓ | `python -c "pd.read_parquet(...)"` confirms 112968×26 |
 
@@ -162,8 +162,8 @@ The provenance document (H0.3.md) adequately documents:
 **Current:**
 > Evidence: `run_h0_3_ceo_clarity_extended.py:234–235` extracts `year = pd.to_datetime(start_date).dt.year`
 
-**Change to:**
-> Evidence: `build_h0_3_ceo_clarity_extended_panel.py:234–235` extracts `year = pd.to_datetime(start_date).dt.year`
+**Corrected (verified):**
+> Evidence: `build_h0_3_ceo_clarity_extended_panel.py:236–237` extracts `year = pd.to_datetime(panel["start_date"], errors="coerce").dt.year`
 
 ### Section 10 — Command Log
 

@@ -217,9 +217,9 @@ git log -1 --format="%H %s"
 | Field | Value |
 |-------|-------|
 | **Symptom** | Table says "Year Fixed Effects" but code uses calendar year from `start_date`, not fiscal year |
-| **Evidence** | `build_h0_3_ceo_clarity_extended_panel.py:234–235` extracts `year = pd.to_datetime(start_date).dt.year` |
+| **Evidence** | ✅ **CORRECTED** — `build_h0_3_ceo_clarity_extended_panel.py:236–237` extracts `year = pd.to_datetime(panel["start_date"], errors="coerce").dt.year` |
 | **Why it matters** | Could confuse readers familiar with fiscal year FEs. |
-| **Fix** | Change table note to "Call Year Fixed Effects" |
+| **Fix** | Change table note to "Call Year Fixed Effects" (documentation fix only) |
 | **Rerun impact** | Edit tex file only |
 
 ### MINOR-4: Summary Stats Table Note Incomplete
@@ -229,8 +229,8 @@ git log -1 --format="%H %s"
 | **Symptom** | Summary stats table note says "variables used in the regression" but includes Finance and Utility samples which are NOT used in regressions |
 | **Evidence** | Table has Panels B and C for Finance/Utility, but Stage 4 only runs on Main sample |
 | **Why it matters** | Misleading — suggests Finance/Utility are in regressions. |
-| **Fix** | Update note: "Summary statistics for all three industry samples. Regressions use Main sample only." |
-| **Rerun impact** | Edit tex file only |
+| **Fix** | ✅ **FIXED** — Updated `latex_tables_accounting.py:637` to: "This table reports summary statistics for all three industry samples. Regressions use Main sample only." |
+| **Rerun impact** | Regenerate summary_stats.tex (rerun Stage 4) |
 
 ### NOTE-1: Provenance Document Excellent
 
