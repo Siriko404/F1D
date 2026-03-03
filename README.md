@@ -289,10 +289,10 @@ No symlinks needed — the latest directory is always found by timestamp.
 
 ## Verified Results
 
-Last full pipeline run: **2026-02-27**. All scripts passed end-to-end with zero errors,
+Last full pipeline run: **2026-03-02**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
-**Summary of hypothesis test results (2026-02-27 run):**
+**Summary of hypothesis test results (2026-03-02 run):**
 
 | Hypothesis | Status | Key Finding |
 |------------|--------|-------------|
@@ -305,9 +305,8 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H5 Analyst Dispersion | **Null** | 0/12 significant |
 | H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 0/9 significant (all β negative or zero) |
-| H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.776 |
+| H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.986 |
 | H9 Takeover Hazards | **Partial** | CEO models run; Manager clarity missing |
-| H10 Tone at Top | **SUPPORTED** | H_TT2 confirmed across all samples (1.7M turns) |
 
 ### CEO Clarity (H0.2) — `run_h0_2_ceo_clarity`
 
@@ -486,15 +485,15 @@ Model: `amihud_illiq_lead ~ Mgr_Uncertainty + CEO_Uncertainty + Size + Lev + ROA
 
 | Sample | Measure | β₁ (Manager) | p-value | H7 Supported |
 |--------|---------|-------------:|--------:|:------------:|
-| Main | QA_Uncertainty | −0.0037 | 0.852 | No |
-| Main | QA_Weak_Modal | −0.0085 | 0.964 | No |
-| Main | Pres_Uncertainty | −0.0016 | 0.701 | No |
-| Finance | QA_Uncertainty | −0.0018 | 0.786 | No |
-| Finance | QA_Weak_Modal | −0.0038 | 0.864 | No |
-| Finance | Pres_Uncertainty | −0.0031 | 0.809 | No |
-| Utility | QA_Uncertainty | −0.0000 | 0.781 | No |
-| Utility | QA_Weak_Modal | 0.0001 | 0.220 | No |
-| Utility | Pres_Uncertainty | −0.0001 | 0.834 | No |
+| Main | QA_Uncertainty | −0.0037 | 0.300 | No |
+| Main | QA_Weak_Modal | −0.0085 | 0.071 | No |
+| Main | Pres_Uncertainty | −0.0016 | 0.603 | No |
+| Finance | QA_Uncertainty | −0.0018 | 0.426 | No |
+| Finance | QA_Weak_Modal | −0.0038 | 0.278 | No |
+| Finance | Pres_Uncertainty | −0.0031 | 0.382 | No |
+| Utility | QA_Uncertainty | −0.00005 | 0.443 | No |
+| Utility | QA_Weak_Modal | 0.00007 | 0.437 | No |
+| Utility | Pres_Uncertainty | −0.00009 | 0.347 | No |
 
 **H7-C (Spontaneity Gap):** β(QA) = −0.0037 vs β(Pres) = −0.0016 — NOT SUPPORTED (QA not > Pres).
 
@@ -524,33 +523,6 @@ ClarityStyle_Realtime: 18,842 valid (64.2% coverage).
 **H8 NOT SUPPORTED** — CEO vagueness does NOT significantly moderate the political risk → abnormal investment relationship (β₃ ≈ 0, p = 0.986 in primary spec).
 
 Data notes: ClarityStyle_Realtime has 35.8% missing (requires min 4 prior calls); PRiskFY has 6.3% missing due to Hassan data coverage.
-
-
-### Tone at the Top (H10) — `run_h10_tone_at_top`
-
-Tests whether a CEO's persistent uncertainty communication style transmits to non-CEO manager uncertainty in the same earnings call.
-
-Model 1 (Call-level): `IHS(CFO_QA_Unc) ~ ClarityStyle_Realtime + Controls + FirmFE + QuarterFE`
-Model 2 (Turn-level): `IHS(NonCEO_Turn_Unc) ~ IHS(CEO_Prior_QA_Unc_j) + CallFE + SpeakerFE`
-
-`ClarityStyle_Realtime` = 4-call rolling window, min 4 prior calls, EB-shrunk.
-Clustering: two-way (Firm × CEO).
-
-**Stage 3**: Call-level panel: 112,968 rows. Turns panel: 1,697,632 Non-CEO manager Q&A turns.
-
-| Model | Level | Sample | N | R² | Key Finding |
-|-------|-------|--------|--:|---:|-------------|
-| M1 (H_TT1 Realtime) | Call | Main | 43,570 | 0.002 | Significant positive transmission |
-| M1 (H_TT1 Realtime) | Call | Finance | 6,793 | 0.001 | Weaker effect |
-| M1 (H_TT1 Realtime) | Call | Utility | 1,378 | −0.006 | No significant effect |
-| M2 (H_TT2 Turns) | Turn | Main | 1,697,632 | 0.002 | **Strongly confirmed** |
-| M2 (H_TT2 Turns) | Turn | Finance | 325,224 | 0.001 | Confirmed |
-| M2 (H_TT2 Turns) | Turn | Utility | 62,453 | 0.001 | Confirmed |
-
-**H_TT2 strongly confirmed across all three samples** — the within-call Granger design
-is the primary identification result. Finance and Utility show weaker call-level effects
-but robust turn-level transmission — regulated industries suppress durable style
-transmission at the call level but not at the speaker-turn level.
 
 ### H9 Takeover Hazards — `run_h9_takeover_hazards`
 
@@ -930,4 +902,4 @@ For questions or issues, please open a GitHub issue or contact the thesis author
 
 ---
 
-*Last updated: 2026-02-23*
+*Last updated: 2026-03-03*
