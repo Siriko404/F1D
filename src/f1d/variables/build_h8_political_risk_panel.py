@@ -8,8 +8,8 @@ Description: Build FIRM-YEAR panel for H8: CEO Speech Vagueness moderates the
              effect of Political Risk (PRiskFY) on Abnormal Investment.
 
     H8 Hypothesis:
-        AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_t + β2·StyleFrozen_t
-                          + β3·(PRiskFY_t × StyleFrozen_t)
+        AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_t + β2·ClarityStyle_Realtime_t
+                          + β3·(PRiskFY_t × ClarityStyle_Realtime_t)
                           + γ'·Controls_t + FirmFE_i + YearFE_t + ε
 
     Key coefficient: β3 (interaction term)
@@ -20,13 +20,13 @@ Unit of observation: firm-fiscal-year (gvkey, fyearq).
 DV: |InvestmentResidual| shifted one fiscal year forward (t+1).
 
 Step 1: Load manifest + all linguistic uncertainty measures.
-Step 2: Load PRiskFY (Hassan engine), StyleFrozen (CEO Clarity builder),
+Step 2: Load PRiskFY (Hassan engine), ClarityStyle_Realtime (CEO Style Realtime builder),
         InvestmentResidual (Compustat engine), and financial controls.
 Step 3: Aggregate call-level vagueness to firm-year level:
-            StyleFrozen  = frozen CEO ClarityCEO (time-invariant per CEO-FY)
+            ClarityStyle_Realtime = rolling 4-call CEO clarity (time-varying)
             PRiskFY      = already at firm-year level
             AbsAbInv     = |InvestmentResidual|, shifted t+1 within firm
-Step 4: Create interaction term: interact = PRiskFY × style_frozen
+Step 4: Create interaction term: interact = PRiskFY × ClarityStyle_Realtime
 Step 5: Save firm-year panel.
 """
 
@@ -43,6 +43,8 @@ import numpy as np
 import pandas as pd
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import attach_fyearq, assign_industry_sample
 from f1d.shared.variables import (
     ManifestFieldsBuilder,
@@ -54,7 +56,7 @@ from f1d.shared.variables import (
     stats_list_to_dataframe,
 )
 from f1d.shared.variables.prisk_fy import PRiskFYBuilder
-from f1d.shared.variables.ceo_clarity_style import CEOClarityStyleBuilder
+from f1d.shared.variables.ceo_style_realtime import CEOStyleRealtimeBuilder
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -77,7 +79,7 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
     """Collapse call-level panel to firm-year (gvkey, fyearq).
 
     For variables that are already firm-year level (PRiskFY, InvestmentResidual,
-    style_frozen, financial controls), take the last non-missing value per
+    ClarityStyle_Realtime, financial controls), take the last non-missing value per
     (gvkey, fyearq) — they should be constant within (gvkey, fyearq).
 
     Returns a DataFrame indexed on (gvkey, fyearq).
@@ -87,7 +89,7 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
 
     agg_cols = [
         "PRiskFY",
-        "style_frozen",
+        "ClarityStyle_Realtime",
         "InvestmentResidual",
         "Size",
         "Lev",
@@ -132,9 +134,9 @@ def create_lead_absabinv(firm_year: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_interaction(firm_year: pd.DataFrame) -> pd.DataFrame:
-    """Create the moderation interaction: interact = PRiskFY × style_frozen."""
+    """Create the moderation interaction: interact = PRiskFY × ClarityStyle_Realtime."""
     df = firm_year.copy()
-    df["interact"] = df["PRiskFY"] * df["style_frozen"]
+    df["interact"] = df["PRiskFY"] * df["ClarityStyle_Realtime"]
     return df
 
 
@@ -163,7 +165,7 @@ def build_panel(
             var_config.get("investment_residual", {})
         ),
         "prisk_fy": PRiskFYBuilder(var_config.get("prisk_fy", {})),
-        "style_frozen": CEOClarityStyleBuilder(var_config.get("style_frozen", {})),
+        "ClarityStyle_Realtime": CEOStyleRealtimeBuilder(var_config.get("ClarityStyle_Realtime", {})),
     }
 
     all_results = {}
@@ -230,7 +232,7 @@ def build_panel(
     return firm_year
 
 
-def save_outputs(firm_year: pd.DataFrame, stats: Dict[str, Any], out_dir: Path) -> None:
+def save_outputs(firm_year: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, root: Path, timestamp: str) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     panel_path = out_dir / "h8_political_risk_panel.parquet"
     firm_year.to_parquet(panel_path, index=False)
@@ -239,7 +241,23 @@ def save_outputs(firm_year: pd.DataFrame, stats: Dict[str, Any], out_dir: Path) 
         f"({len(firm_year):,} rows, {len(firm_year.columns)} columns)"
     )
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
-    stats_df.to_csv(out_dir / "summary_stats.csv", index=False)
+    stats_path = out_dir / "summary_stats.csv"
+    stats_df.to_csv(stats_path, index=False)
+    print(f"  Saved: summary_stats.csv ({len(stats_df)} variables)")
+
+    # Generate run manifest for reproducibility
+    manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage3",
+        timestamp=timestamp,
+        input_paths={"master_manifest": manifest_input},
+        output_files={
+            "panel": panel_path,
+            "summary_stats": stats_path,
+        },
+    )
+    print("  Saved: run_manifest.json")
 
 
 def generate_report(
@@ -283,6 +301,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "variables" / "h8_political_risk" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H8_PoliticalRisk",
+        timestamp=timestamp,
+    )
+
     config = get_config(root / "config" / "project.yaml")
     var_config = load_variable_config(root / "config" / "variables.yaml")
 
@@ -295,9 +320,12 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print("=" * 80)
     print("STAGE 3: Build H8 Political Risk × CEO Clarity Panel")
     print("=" * 80)
+    print(f"Timestamp: {timestamp}")
+    print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     firm_year = build_panel(root, years, var_config, stats)
-    save_outputs(firm_year, stats, out_dir)
+    save_outputs(firm_year, stats, out_dir, root, timestamp)
 
     duration = (datetime.now() - start_time).total_seconds()
     generate_report(firm_year, stats, out_dir, duration)

@@ -9,8 +9,8 @@ Description: Run H8 moderation hypothesis test by loading the firm-year panel
              results.
 
 Model Specification:
-    AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_t + β2·StyleFrozen_t
-                      + β3·(PRiskFY_t × StyleFrozen_t)
+    AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_t + β2·ClarityStyle_Realtime_t
+                      + β3·(PRiskFY_t × ClarityStyle_Realtime_t)
                       + γ'·Controls_t
                       + FirmFE_i + YearFE_t + ε
 
@@ -34,9 +34,9 @@ Controls: Size, Lev, ROA, TobinsQ (firm-year level from Compustat)
 
 Sanity checks run before regression:
     - PRiskFY distribution (mean, SD, p1, p99)
-    - StyleFrozen distribution (mean≈0, SD≈1)
+    - ClarityStyle_Realtime distribution (mean≈0, SD≈1)
     - DV coverage (AbsAbInv_lead non-missing fraction)
-    - Within-CEO variance of style_frozen (should be 0 — time-invariant)
+    - Within-CEO variance of ClarityStyle_Realtime (time-varying, varies call-to-call)
 
 Inputs:
     - outputs/variables/h8_political_risk/latest/h8_political_risk_panel.parquet
@@ -73,6 +73,8 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 
 warnings.filterwarnings(
@@ -96,8 +98,8 @@ SUMMARY_STATS_VARS = [
     {"col": "AbsAbInv_lead", "label": "|Abnormal Investment|$_{t+1}$"},
     # Main independent variables
     {"col": "PRiskFY", "label": "Political Risk"},
-    {"col": "style_frozen", "label": "Style Frozen (Clarity)"},
-    {"col": "interact", "label": "PRiskFY $\\times$ Style Frozen"},
+    {"col": "ClarityStyle_Realtime", "label": "Clarity Style (Realtime)"},
+    {"col": "interact", "label": "PRiskFY $\\times$ Clarity Style"},
     # Controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "Lev", "label": "Leverage"},
@@ -151,21 +153,21 @@ def run_sanity_checks(df: pd.DataFrame, out_dir: Path) -> None:
             "",
         ]
 
-    # StyleFrozen
-    if "style_frozen" in df.columns:
+    # ClarityStyle_Realtime
+    if "ClarityStyle_Realtime" in df.columns:
         lines += [
-            "StyleFrozen:",
-            f"  mean={df['style_frozen'].mean():.4f}  SD={df['style_frozen'].std():.4f}",
+            "ClarityStyle_Realtime:",
+            f"  mean={df['ClarityStyle_Realtime'].mean():.4f}  SD={df['ClarityStyle_Realtime'].std():.4f}",
             "  (expected: mean~=0, SD~=1)",
-            f"  missing={df['style_frozen'].isna().sum():,}",
+            f"  missing={df['ClarityStyle_Realtime'].isna().sum():,}",
         ]
-        # Within-CEO variance check
+        # Within-CEO variance check (time-varying variable)
         if "ceo_id" in df.columns:
-            ceo_var = df.groupby("ceo_id")["style_frozen"].var()
+            ceo_var = df.groupby("ceo_id")["ClarityStyle_Realtime"].var()
             n_ceos_with_var = (ceo_var > 1e-10).sum()
             lines.append(
                 f"  Within-CEO variance > 0: {n_ceos_with_var} CEOs "
-                f"(should be 0 — style_frozen is time-invariant per CEO)"
+                f"(ClarityStyle_Realtime is time-varying)"
             )
         lines.append("")
 
@@ -181,7 +183,7 @@ def run_sanity_checks(df: pd.DataFrame, out_dir: Path) -> None:
     # Interaction
     if "interact" in df.columns:
         lines += [
-            "Interact (PRiskFY × StyleFrozen):",
+            "Interact (PRiskFY × ClarityStyle_Realtime):",
             f"  valid={df['interact'].notna().sum():,}",
             f"  mean={df['interact'].mean():.4f}  SD={df['interact'].std():.4f}",
             "",
@@ -212,13 +214,13 @@ def run_regression(
     Returns (model_result, meta_dict).
     """
     required = (
-        ["AbsAbInv_lead", "PRiskFY", "style_frozen", "interact"]
+        ["AbsAbInv_lead", "PRiskFY", "ClarityStyle_Realtime", "interact"]
         + BASE_CONTROLS
         + ["gvkey", "fyearq"]
     )
     existing_controls = [c for c in BASE_CONTROLS if c in df.columns]
     required_avail = (
-        ["AbsAbInv_lead", "PRiskFY", "style_frozen", "interact"]
+        ["AbsAbInv_lead", "PRiskFY", "ClarityStyle_Realtime", "interact"]
         + existing_controls
         + ["gvkey", "fyearq"]
     )
@@ -236,7 +238,7 @@ def run_regression(
         return None, {}
 
     formula = (
-        "AbsAbInv_lead ~ PRiskFY + style_frozen + interact + "
+        "AbsAbInv_lead ~ PRiskFY + ClarityStyle_Realtime + interact + "
         + " + ".join(existing_controls)
         + " + EntityEffects + TimeEffects"
     )
@@ -247,7 +249,7 @@ def run_regression(
         f"  |  N years: {df_reg['fyearq'].nunique():,}"
     )
     print(
-        f"  Formula: AbsAbInv_lead ~ PRiskFY + style_frozen + interact + {' + '.join(existing_controls)}"
+        f"  Formula: AbsAbInv_lead ~ PRiskFY + ClarityStyle_Realtime + interact + {' + '.join(existing_controls)}"
     )
     print("  Estimating with firm-clustered SEs...")
 
@@ -269,25 +271,25 @@ def run_regression(
 
     # Key coefficients
     beta1 = float(model.params.get("PRiskFY", np.nan))
-    beta2 = float(model.params.get("style_frozen", np.nan))
+    beta2 = float(model.params.get("ClarityStyle_Realtime", np.nan))
     beta3 = float(model.params.get("interact", np.nan))
 
     se1 = float(model.std_errors.get("PRiskFY", np.nan))
-    se2 = float(model.std_errors.get("style_frozen", np.nan))
+    se2 = float(model.std_errors.get("ClarityStyle_Realtime", np.nan))
     se3 = float(model.std_errors.get("interact", np.nan))
 
     t1 = float(model.tstats.get("PRiskFY", np.nan))
-    t2 = float(model.tstats.get("style_frozen", np.nan))
+    t2 = float(model.tstats.get("ClarityStyle_Realtime", np.nan))
     t3 = float(model.tstats.get("interact", np.nan))
 
     p1 = float(model.pvalues.get("PRiskFY", np.nan))
-    p2 = float(model.pvalues.get("style_frozen", np.nan))
+    p2 = float(model.pvalues.get("ClarityStyle_Realtime", np.nan))
     p3 = float(model.pvalues.get("interact", np.nan))
 
     h8_sig = not np.isnan(p3) and p3 < 0.05
 
     print(f"  beta1(PRiskFY):      {beta1:.4f}  SE={se1:.4f}  t={t1:.2f}  p={p1:.4f}")
-    print(f"  beta2(StyleFrozen):  {beta2:.4f}  SE={se2:.4f}  t={t2:.2f}  p={p2:.4f}")
+    print(f"  beta2(ClarityStyle_Realtime):  {beta2:.4f}  SE={se2:.4f}  t={t2:.2f}  p={p2:.4f}")
     print(
         f"  beta3(Interact):     {beta3:.4f}  SE={se3:.4f}  t={t3:.2f}  p={p3:.4f}  H8={'SUPPORTED' if h8_sig else 'not supported'}"
     )
@@ -303,12 +305,14 @@ def run_regression(
         "spec_name": spec_name,
         "n_obs": int(model.nobs),
         "n_firms": df_reg["gvkey"].nunique(),
+        "n_clusters": df_reg["gvkey"].nunique(),
+        "cluster_var": "gvkey",
         "within_r2": float(model.rsquared_within),
         "beta1_PRiskFY": beta1,
         "se1": se1,
         "t1": t1,
         "p1": p1,
-        "beta2_StyleFrozen": beta2,
+        "beta2_ClarityStyle_Realtime": beta2,
         "se2": se2,
         "t2": t2,
         "p2": p2,
@@ -342,6 +346,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             if pval < 0.10
             else ""
         )
+        # Use scientific notation for very small coefficients
+        if abs(val) < 0.0001:
+            return f"{val:.2e}{stars}"
         return f"{val:.4f}{stars}"
 
     def fmt_se(val: float) -> str:
@@ -365,15 +372,15 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     for var_key, label in [
         ("beta1_PRiskFY", "Political Risk"),
-        ("beta2_StyleFrozen", "Style Frozen"),
-        ("beta3_Interact", "PRisk $\\times$ Style Frozen"),
+        ("beta2_ClarityStyle_Realtime", "Clarity Style (Realtime)"),
+        ("beta3_Interact", "PRisk $\\times$ Clarity Style"),
     ]:
         pkey = (
             var_key.replace("beta1_", "p").replace("beta2_", "p").replace("beta3_", "p")
         )
         pmap = {
             "beta1_PRiskFY": "p1",
-            "beta2_StyleFrozen": "p2",
+            "beta2_ClarityStyle_Realtime": "p2",
             "beta3_Interact": "p3",
         }
         pk = pmap[var_key]
@@ -417,6 +424,17 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         + r" \\",
         r"\bottomrule",
         r"\end{tabular}",
+        r"\\[-0.5em]",
+        r"\parbox{\textwidth}{\scriptsize ",
+        r"\textit{Notes:} "
+        r"Dependent variable is $|$Abnormal Investment$|_{t+1}$ (Biddle et al.\ 2009). "
+        r"Unit of observation: firm--fiscal-year. "
+        r"Firms with fewer than 5 calls are excluded. "
+        r"Standard errors (in parentheses) are clustered at the firm level. "
+        r"All continuous controls are standardized within each model's estimation sample. "
+        r"Variables are winsorized at 1\%/99\% by year at the engine level. "
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed for H8).",
+        r"}",
         r"\end{table}",
     ]
 
@@ -437,11 +455,19 @@ def main(panel_path: Optional[str] = None) -> int:
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h8_political_risk" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H8_PoliticalRisk",
+        timestamp=timestamp,
+    )
+
     print("=" * 80)
     print("STAGE 4: Test H8 Political Risk x CEO Clarity -> Abnormal Investment")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     # ------------------------------------------------------------------
     # Load Stage 3 panel
@@ -504,10 +530,10 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Ensure interaction exists
     if "interact" not in df.columns:
-        if "PRiskFY" in df.columns and "style_frozen" in df.columns:
-            df["interact"] = df["PRiskFY"] * df["style_frozen"]
+        if "PRiskFY" in df.columns and "ClarityStyle_Realtime" in df.columns:
+            df["interact"] = df["PRiskFY"] * df["ClarityStyle_Realtime"]
         else:
-            print("ERROR: Cannot create interaction — PRiskFY or style_frozen missing.")
+            print("ERROR: Cannot create interaction — PRiskFY or ClarityStyle_Realtime missing.")
             return 1
 
     # ------------------------------------------------------------------
@@ -552,6 +578,30 @@ def main(panel_path: Optional[str] = None) -> int:
         _save_latex_table(all_results, out_dir)
         pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)
         print(f"\n  Diagnostics saved: {out_dir / 'model_diagnostics.csv'}")
+
+    # Generate sample attrition table
+    if all_results:
+        first_result = all_results[0]
+        attrition_stages = [
+            ("Full firm-year panel", len(df)),
+            ("After complete-case + min-obs filter", first_result.get("n_obs", 0)),
+        ]
+        generate_attrition_table(attrition_stages, out_dir, "H8 Political Risk")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+    # Generate run manifest
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage4",
+        timestamp=timestamp,
+        input_paths={"panel": panel_file},
+        output_files={
+            "diagnostics": out_dir / "model_diagnostics.csv",
+            "table": out_dir / "h8_political_risk_table.tex",
+        },
+        panel_path=panel_file,
+    )
+    print("  Saved: run_manifest.json")
 
     duration = (datetime.now() - t0).total_seconds()
     print("\n" + "=" * 80)

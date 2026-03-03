@@ -289,10 +289,10 @@ No symlinks needed — the latest directory is always found by timestamp.
 
 ## Verified Results
 
-Last full pipeline run: **2026-02-27**. All scripts passed end-to-end with zero errors,
+Last full pipeline run: **2026-03-02**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
-**Summary of hypothesis test results (2026-02-27 run):**
+**Summary of hypothesis test results (2026-03-02 run):**
 
 | Hypothesis | Status | Key Finding |
 |------------|--------|-------------|
@@ -300,14 +300,13 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H0.3 Extended Controls | ✓ Robust | R² stable across baseline/extended specs |
 | H1 Cash Holdings | **Partial** | H1a: 7/18 sig, H1b: 2/18 sig (CEO measures strongest) |
 | H2 Investment | **Null** | H2a: 0/18 sig, H2b: 1/18 sig |
-| H3 Payout Policy | **Partial** | H3b: 2/12 significant interactions |
+| H3 Payout Policy | **Partial** | H3a: 1/36 sig, H3b: 3/36 sig |
 | H4 Leverage | **Partial** | 2/18 sig (Pres uncertainty measures) |
 | H5 Analyst Dispersion | **Null** | 0/12 significant |
-| H6 CCCL Speech | **Null** | 0/6 significant treatment effects |
+| H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 0/9 significant (all β negative or zero) |
-| H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.776 |
+| H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.986 |
 | H9 Takeover Hazards | **Partial** | CEO models run; Manager clarity missing |
-| H10 Tone at Top | **SUPPORTED** | H_TT2 confirmed across all samples (1.7M turns) |
 
 ### CEO Clarity (H0.2) — `run_h0_2_ceo_clarity`
 
@@ -381,8 +380,8 @@ in Main sample. Finance shows H1a support but no moderation effect. Utility null
 
 ### H2 Investment Efficiency — `run_h2_investment`
 
-Tests whether vague managers invest less efficiently (H2a: β₁ < 0 for |InvestmentResidual|)
-and whether leverage attenuates this (H2b: β₃ > 0). DV: `|InvestmentResidual|_{t+1}` (Biddle et al. 2009).
+Tests whether vague managers exhibit more underinvestment (H2a: β₁ < 0 for InvestmentResidual)
+and whether leverage attenuates this (H2b: β₃ > 0). DV: `InvestmentResidual_{t+1}` (Biddle et al. 2009; >0=overinvestment, <0=underinvestment).
 
 Model: `InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty×Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + EntityEffects + TimeEffects`
 
@@ -412,10 +411,11 @@ Model: `PayoutMeasure_lead ~ Uncertainty + Lev + Uncertainty×Lev + Controls + E
 |--------|----|--------------------:|
 | Main | div_stability_lead | H3b: **2/6** interactions |
 | Main | payout_flexibility_lead | — |
-| Finance | — | — |
-| Utility | — | — |
+| Finance | payout_flexibility_lead | H3a: **1/6** |
+| Utility | payout_flexibility_lead | H3b: **1/6** |
+| **Total** | | **H3a: 1/36, H3b: 3/36** |
 
-**Result:** Limited support for H3b (leverage moderation) in dividend stability regressions.
+**Result:** Limited support for H3. H3a: 1/36 significant (Finance payout_flexibility). H3b: 3/36 significant (Main div_stability ×2, Utility payout_flexibility ×1).
 
 ### H4 Leverage Discipline — `run_h4_leverage`
 
@@ -467,15 +467,14 @@ Model: `Uncertainty ~ CCCL_lag + Size + Lev + ROA + TobinsQ + CashHoldings + Ent
 
 | Sample | N Obs | N Firms | CCCL_lag β | p-value | Significant |
 |--------|------:|--------:|-----------:|--------:|:-----------:|
-| Main (Mgr QA Unc) | 63,902 | 1,751 | −0.0007 | 0.414 | No |
-| Main (CEO QA Unc) | 63,902 | 1,751 | −0.0005 | 0.510 | No |
-| Finance | 12,376 | 392 | — | — | No |
-| Utility | 2,553 | 73 | — | — | No |
+| Main (Mgr QA Unc) | 63,902 | 1,751 | −0.0865 | 0.089 | No |
+| Main (CEO QA Unc) | 48,091 | 1,561 | 0.0227 | 0.599 | No |
+| Finance (Mgr QA Unc) | 15,662 | 436 | −1.3066 | 0.014 | Yes* |
+| Utility (Mgr QA Unc) | 3,154 | 81 | 1.3637 | 0.987 | No |
 
-**Pre-trends test:** CCCL_lag vs CCCL_lead1/lead2 — no significant pre-trends detected.
+**Pre-trends test:** CCCL_lag vs CCCL_lead1/lead2 — significant leads found in Main and Finance samples. See provenance H6.md for details.
 
-**Result:** H6 NOT SUPPORTED. No significant treatment effects of CCCL on CEO/Manager clarity.
-The instrument does not predict changes in uncertainty language.
+**Result:** H6 PARTIALLY SUPPORTED in Finance sample (4/21 significant at p<0.05). Main and Utility samples show null results. Pre-trends violations in Main and Finance samples raise causal interpretation concerns. See AUDIT_H6.md Finding #1.
 
 ### H7 Speech Vagueness and Stock Illiquidity — `run_h7_illiquidity`
 
@@ -486,15 +485,15 @@ Model: `amihud_illiq_lead ~ Mgr_Uncertainty + CEO_Uncertainty + Size + Lev + ROA
 
 | Sample | Measure | β₁ (Manager) | p-value | H7 Supported |
 |--------|---------|-------------:|--------:|:------------:|
-| Main | QA_Uncertainty | −0.0037 | 0.852 | No |
-| Main | QA_Weak_Modal | −0.0085 | 0.964 | No |
-| Main | Pres_Uncertainty | −0.0016 | 0.701 | No |
-| Finance | QA_Uncertainty | −0.0018 | 0.786 | No |
-| Finance | QA_Weak_Modal | −0.0038 | 0.864 | No |
-| Finance | Pres_Uncertainty | −0.0031 | 0.809 | No |
-| Utility | QA_Uncertainty | −0.0000 | 0.781 | No |
-| Utility | QA_Weak_Modal | 0.0001 | 0.220 | No |
-| Utility | Pres_Uncertainty | −0.0001 | 0.834 | No |
+| Main | QA_Uncertainty | −0.0037 | 0.300 | No |
+| Main | QA_Weak_Modal | −0.0085 | 0.071 | No |
+| Main | Pres_Uncertainty | −0.0016 | 0.603 | No |
+| Finance | QA_Uncertainty | −0.0018 | 0.426 | No |
+| Finance | QA_Weak_Modal | −0.0038 | 0.278 | No |
+| Finance | Pres_Uncertainty | −0.0031 | 0.382 | No |
+| Utility | QA_Uncertainty | −0.00005 | 0.443 | No |
+| Utility | QA_Weak_Modal | 0.00007 | 0.437 | No |
+| Utility | Pres_Uncertainty | −0.00009 | 0.347 | No |
 
 **H7-C (Spontaneity Gap):** β(QA) = −0.0037 vs β(Pres) = −0.0016 — NOT SUPPORTED (QA not > Pres).
 
@@ -506,50 +505,24 @@ All coefficients are negative (opposite direction) or near-zero.
 Tests whether CEO speech vagueness moderates the effect of Political Risk (PRiskFY) on Abnormal Investment.
 Unit of observation: firm-year (not call-level). Uses Hassan et al. (2019) PRisk index.
 
-Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Size + Lev + ROA + TobinsQ + EntityEffects + TimeEffects`
+Model: `AbsAbInv_{t+1} ~ PRiskFY + ClarityStyle_Realtime + PRiskFY×ClarityStyle_Realtime + Size + Lev + ROA + TobinsQ + EntityEffects + TimeEffects`
 
 Key variables:
 - **PRiskFY**: Mean quarterly political risk over (fy_end - 366d, fy_end], min 2 quarters required
-- **StyleFrozen**: CEO clarity score (frozen constraint: calls ≤ fy_end), standardized (mean≈0, SD≈1)
+- **ClarityStyle_Realtime**: CEO clarity score (4-call rolling window, min 4 prior calls), time-varying, standardized (mean≈0, SD≈1)
 - **AbsAbInv_lead**: |Biddle InvestmentResidual| shifted one fiscal year forward
 
 **Stage 3**: 29,343 firm-years. Valid AbsAbInv_lead: 25,759. PRiskFY matched: 27,501.
-StyleFrozen (frozen CEO clarity): 18,439 valid (62.8% coverage).
+ClarityStyle_Realtime: 18,842 valid (64.2% coverage).
 
-| Sample | N Obs | N Firms | Within-R² | β₁ (PRiskFY) | β₂ (StyleFrozen) | β₃ (Interact) | p₃ |
-|--------|------:|--------:|----------:|-------------:|----------------:|--------------:|---:|
-| Primary (All Industries) | 15,721 | 1,665 | 0.025 | −0.0000 (p=0.212) | −0.0077 (p=0.050) | 0.0000 (p=0.776) | NS |
+| Sample | N Obs | N Firms | Within-R² | β₁ (PRiskFY) | β₂ (ClarityStyle) | β₃ (Interact) | p₃ |
+|--------|------:|--------:|----------:|-------------:|-----------------:|--------------:|---:|
+| Primary (All Industries) | 15,998 | 1,943 | 0.025 | −0.0000 (p=0.198) | −0.0003 (p=0.803) | 0.0000 (p=0.986) | NS |
+| Main (ex-Finance/Utility) | 12,901 | 1,539 | 0.024 | −0.0000 (p=0.102) | 0.0005 (p=0.789) | 0.0000 (p=0.378) | NS |
 
-**H8 NOT SUPPORTED** — CEO vagueness does NOT significantly moderate the political risk → abnormal investment relationship (β₃ = 0.0000, p = 0.776).
+**H8 NOT SUPPORTED** — CEO vagueness does NOT significantly moderate the political risk → abnormal investment relationship (β₃ ≈ 0, p = 0.986 in primary spec).
 
-Data notes: style_frozen has 37.2% missing due to CEO clarity dependency; PRiskFY has 6.3% missing due to Hassan data coverage.
-
-
-### Tone at the Top (H10) — `run_h10_tone_at_top`
-
-Tests whether a CEO's persistent uncertainty communication style transmits to non-CEO manager uncertainty in the same earnings call.
-
-Model 1 (Call-level): `IHS(CFO_QA_Unc) ~ ClarityStyle_Realtime + Controls + FirmFE + QuarterFE`
-Model 2 (Turn-level): `IHS(NonCEO_Turn_Unc) ~ IHS(CEO_Prior_QA_Unc_j) + CallFE + SpeakerFE`
-
-`ClarityStyle_Realtime` = 4-call rolling window, min 4 prior calls, EB-shrunk.
-Clustering: two-way (Firm × CEO).
-
-**Stage 3**: Call-level panel: 112,968 rows. Turns panel: 1,697,632 Non-CEO manager Q&A turns.
-
-| Model | Level | Sample | N | R² | Key Finding |
-|-------|-------|--------|--:|---:|-------------|
-| M1 (H_TT1 Realtime) | Call | Main | 43,570 | 0.002 | Significant positive transmission |
-| M1 (H_TT1 Realtime) | Call | Finance | 6,793 | 0.001 | Weaker effect |
-| M1 (H_TT1 Realtime) | Call | Utility | 1,378 | −0.006 | No significant effect |
-| M2 (H_TT2 Turns) | Turn | Main | 1,697,632 | 0.002 | **Strongly confirmed** |
-| M2 (H_TT2 Turns) | Turn | Finance | 325,224 | 0.001 | Confirmed |
-| M2 (H_TT2 Turns) | Turn | Utility | 62,453 | 0.001 | Confirmed |
-
-**H_TT2 strongly confirmed across all three samples** — the within-call Granger design
-is the primary identification result. Finance and Utility show weaker call-level effects
-but robust turn-level transmission — regulated industries suppress durable style
-transmission at the call level but not at the speaker-turn level.
+Data notes: ClarityStyle_Realtime has 35.8% missing (requires min 4 prior calls); PRiskFY has 6.3% missing due to Hassan data coverage.
 
 ### H9 Takeover Hazards — `run_h9_takeover_hazards`
 
@@ -929,4 +902,4 @@ For questions or issues, please open a GitHub issue or contact the thesis author
 
 ---
 
-*Last updated: 2026-02-23*
+*Last updated: 2026-03-03*

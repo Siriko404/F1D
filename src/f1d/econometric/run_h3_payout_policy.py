@@ -70,6 +70,8 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -214,39 +216,8 @@ def run_regression(
     print(f"  Adj R-squared:      {model.rsquared_inclusive:.4f}")
     print(f"  N obs:              {int(model.nobs):,}")
 
-    try:
-        y_full = df_panel[dv_var]
-        y_hat_full = model.fitted_values
-        common_idx = y_full.index.intersection(y_hat_full.index)
-        y = y_full.loc[common_idx].to_numpy(dtype=float)
-        y_hat = y_hat_full.loc[common_idx].to_numpy(dtype=float).flatten()
-        df_used = df_panel.loc[common_idx].reset_index()
-        df_used["_yhat"] = y_hat
-
-        y_dm = (
-            y
-            - df_used.groupby("gvkey")[dv_var].transform("mean").to_numpy(dtype=float)
-            - df_used.groupby("year")[dv_var].transform("mean").to_numpy(dtype=float)
-            + float(np.mean(y))
-        )
-        y_hat_dm = (
-            y_hat
-            - df_used.groupby("gvkey")["_yhat"].transform("mean").to_numpy(dtype=float)
-            - df_used.groupby("year")["_yhat"].transform("mean").to_numpy(dtype=float)
-            + float(np.mean(y_hat))
-        )
-        ss_res = float(((y_dm - y_hat_dm) ** 2).sum())
-        ss_tot = float(((y_dm - float(np.mean(y))) ** 2).sum())
-        within_r2 = 1.0 - ss_res / ss_tot if ss_tot > 0 else np.nan
-    except Exception as _e:
-        within_r2 = np.nan
-        print(f"  WARNING: within-R² computation failed: {_e}")
-
-    print(
-        f"  Within-R²:        {within_r2:.4f}"
-        if not np.isnan(within_r2)
-        else "  Within-R²:        N/A"
-    )
+    within_r2 = float(model.rsquared_within)
+    print(f"  Within-R²: {within_r2:.4f}")
 
     beta1 = model.params.get("Uncertainty", np.nan)
     beta3 = model.params.get("Uncertainty_x_Lev", np.nan)
@@ -309,8 +280,10 @@ def run_regression(
         "uncertainty_measure": uncertainty_var,
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
+        "n_clusters": df_sample["gvkey"].nunique(),
+        "cluster_var": "gvkey",
         "rsquared": float(model.rsquared_within),
-        "rsquared_adj": float(model.rsquared_inclusive),
+        "rsquared_inclusive": float(model.rsquared_inclusive),
         "within_r2": within_r2,
         "beta1": float(beta1),
         "beta1_se": float(beta1_se),
@@ -470,6 +443,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rn += f"{res_pf_c['n_obs']:,} \\\\" if res_pf_c else " \\\\"
     lines.append(rn)
 
+    # Add Firms row (m1 fix)
+    rf = "Firms & "
+    rf += f"{res_ds_m['n_firms']:,} & " if res_ds_m else " & "
+    rf += f"{res_ds_c['n_firms']:,} & " if res_ds_c else " & "
+    rf += f"{res_pf_m['n_firms']:,} & " if res_pf_m else " & "
+    rf += f"{res_pf_c['n_firms']:,} \\\\" if res_pf_c else " \\\\"
+    lines.append(rf)
+
     rr = "Within-$R^2$ & "
     rr += f"{fmt_r2(res_ds_m['within_r2'])} & " if res_ds_m else " & "
     rr += f"{fmt_r2(res_ds_c['within_r2'])} & " if res_ds_c else " & "
@@ -477,7 +458,25 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rr += f"{fmt_r2(res_pf_c['within_r2'])} \\\\" if res_pf_c else " \\\\"
     lines.append(rr)
 
-    lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}"])
+    lines.extend(["\\bottomrule", "\\end{tabular}"])
+    # Add table notes
+    lines.extend([
+        "\\\\[-0.5em]",
+        "\\parbox{\\textwidth}{\\scriptsize ",
+        "\\textit{Notes:} "
+        "This table reports the effect of managerial uncertainty on payout policy. "
+        "Columns (1)--(2) use dividend stability as the dependent variable; "
+        "columns (3)--(4) use payout flexibility. "
+        "All models use the Main industry sample (non-financial, non-utility firms). "
+        "Sample restricted to firms with dividend payments in trailing 5 years (is\\_div\\_payer\\_5yr==1). "
+        "Firms with fewer than 5 calls are excluded. "
+        "Standard errors are clustered at the firm level. "
+        "All continuous controls are standardized. "
+        "Variables are winsorized at 1\\%/99\\% by year. "
+        "* $p<0.10$, ** $p<0.05$, *** $p<0.01$ (one-tailed tests).",
+        "}",
+        "\\end{table}",
+    ])
 
     with open(tex_path, "w") as f:
         f.write("\n".join(lines))
@@ -489,11 +488,19 @@ def main(panel_path: str | None = None) -> int:
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h3_payout_policy" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H3_PayoutPolicy",
+        timestamp=timestamp,
+    )
+
     print("=" * 80)
     print("STAGE 4: Test H3 Payout Policy Hypothesis (call-level)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     if not panel_path:
         try:
@@ -616,6 +623,38 @@ def main(panel_path: str | None = None) -> int:
 
     _save_latex_table(all_results, out_dir)
     pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)
+
+    # Generate sample attrition table
+    if all_results:
+        main_result = next((r for r in all_results if r.get("sample") == "Main"), all_results[0])
+        attrition_stages = [
+            ("Master manifest", len(panel)),
+            ("Main sample filter", (panel["sample"] == "Main").sum()),
+            ("After complete-case + min-calls filter", main_result.get("n_obs", 0)),
+        ]
+        generate_attrition_table(attrition_stages, out_dir, "H3 Payout Policy")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+    # Generate run manifest
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage4",
+        timestamp=timestamp,
+        input_paths={"panel": panel_file},
+        output_files={
+            "diagnostics": out_dir / "model_diagnostics.csv",
+            "table": out_dir / "h3_payout_policy_table.tex",
+        },
+        panel_path=panel_file,
+    )
+    print("  Saved: run_manifest.json")
+
+    # Copy run.log from logs directory to output directory for discoverability
+    log_file = log_dir / "run.log"
+    if log_file.exists():
+        import shutil
+        shutil.copy(log_file, out_dir / "run.log")
+        print(f"  Saved: run.log (copied from {log_dir})")
 
     print("\n" + "=" * 80)
     print("COMPLETE")

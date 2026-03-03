@@ -170,7 +170,7 @@ class LinguisticEngine:
         """Return fully-loaded linguistic variables DataFrame (cached).
 
         Loads all linguistic variables from Stage 2 outputs, applies per-year
-        1%/99% winsorization to all percentage columns, and caches the result.
+        0%/99% winsorization (upper-only) to all percentage columns, and caches the result.
 
         Args:
             root_path: Project root path
@@ -178,7 +178,7 @@ class LinguisticEngine:
 
         Returns:
             DataFrame with file_name + all linguistic percentage columns,
-            winsorized at 1%/99% per-year.
+            winsorized at 0%/99% (upper-only) per-year.
         """
         # Fast path — no lock needed
         if self._is_cached(root_path):
@@ -232,7 +232,7 @@ class LinguisticEngine:
             combined = pd.concat(all_data, ignore_index=True)
             logger.info(f"  Combined: {len(combined):,} rows, {len(combined.columns)} columns")
 
-            # === WINSORIZATION: Per-year 1%/99% for all percentage columns ===
+            # === WINSORIZATION: Per-year 0%/99% (upper-only) for all percentage columns ===
             # Per-year winsorization ensures "high for that year" semantics and handles
             # any potential language evolution or regime-dependent communication patterns
             from .winsorization import winsorize_by_year
@@ -254,9 +254,9 @@ class LinguisticEngine:
             if existing_pct_cols:
                 combined = winsorize_by_year(
                     combined, existing_pct_cols, year_col="year",
-                    lower=0.0, upper=0.99, min_obs=1  # Only upper bound (99th pct), no lower bound
+                    lower=0.0, upper=0.99, min_obs=10  # Harmonized with Compustat/CRSP engines
                 )
-                logger.info(f"  Winsorized {len(existing_pct_cols)} percentage columns (per-year 1%/99%)")
+                logger.info(f"  Winsorized {len(existing_pct_cols)} percentage columns (per-year 0%/99% upper-only)")
             # === END WINSORIZATION ===
 
             self._cache = combined

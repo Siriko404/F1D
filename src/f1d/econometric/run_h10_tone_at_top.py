@@ -68,6 +68,8 @@ from linearmodels.panel import PanelOLS
 from linearmodels.iv.absorbing import AbsorbingLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir, ensure_output_dir
 
 
@@ -129,6 +131,12 @@ def run_call_level_model_full(
 
     reg_df["const"] = 1
 
+    # Deduplicate firm-quarters by keeping the last call per quarter
+    # This resolves 347 firm-quarters with >1 earnings call (694 duplicate rows)
+    reg_df = reg_df.sort_values("start_date").drop_duplicates(
+        subset=["gvkey", "yq_id"], keep="last"
+    )
+
     # Set multi-index for panel
     reg_df = reg_df.set_index(["gvkey", "yq_id"])
 
@@ -158,13 +166,15 @@ def run_call_level_model_full(
         tstats = res.tstats.copy()
         pvalues = res.pvalues.copy()
 
-        coef_df = pd.DataFrame({
-            "variable": params.index,
-            "coef": params.values,
-            "se": std_errs.values,
-            "tstat": tstats.values,
-            "pval": pvalues.values,
-        })
+        coef_df = pd.DataFrame(
+            {
+                "variable": params.index,
+                "coef": params.values,
+                "se": std_errs.values,
+                "tstat": tstats.values,
+                "pval": pvalues.values,
+            }
+        )
         coef_df = coef_df.reset_index(drop=True)
 
         # Rename const to Intercept
@@ -174,9 +184,15 @@ def run_call_level_model_full(
             "N": int(res.nobs),
             "n_entities": int(res.entity_info["total"]),
             "n_time": int(res.time_info["total"]),
-            "r2_within": round(res.rsquared_within, 4) if res.rsquared_within is not None else np.nan,
-            "r2_between": round(res.rsquared_between, 4) if res.rsquared_between is not None else np.nan,
-            "r2_overall": round(res.rsquared, 4) if res.rsquared is not None else np.nan,
+            "r2_within": round(res.rsquared_within, 4)
+            if res.rsquared_within is not None
+            else np.nan,
+            "r2_between": round(res.rsquared_between, 4)
+            if res.rsquared_between is not None
+            else np.nan,
+            "r2_overall": round(res.rsquared, 4)
+            if res.rsquared is not None
+            else np.nan,
         }
 
         return coef_df, diagnostics
@@ -186,8 +202,11 @@ def run_call_level_model_full(
 
 
 def run_turn_level_model_full(
-    df: pd.DataFrame, dv: str, iv: str, controls: Optional[List[str]] = None,
-    cluster_by_call: bool = True
+    df: pd.DataFrame,
+    dv: str,
+    iv: str,
+    controls: Optional[List[str]] = None,
+    cluster_by_call: bool = True,
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """
     Run Model 2 (Speaker-turn level) with Call FE + Speaker FE absorbed.
@@ -234,9 +253,7 @@ def run_turn_level_model_full(
     try:
         # Use speaker_id (composite key) for Speaker FE - per Addendum A
         absorb_df = reg_df[[speaker_col, "file_name"]].copy()
-        absorb_df[speaker_col] = (
-            absorb_df[speaker_col].astype("category").cat.codes
-        )
+        absorb_df[speaker_col] = absorb_df[speaker_col].astype("category").cat.codes
         absorb_df["file_name"] = absorb_df["file_name"].astype("category").cat.codes
 
         mod = AbsorbingLS(
@@ -264,13 +281,15 @@ def run_turn_level_model_full(
         tstats = res.tstats.copy()
         pvalues = res.pvalues.copy()
 
-        coef_df = pd.DataFrame({
-            "variable": params.index,
-            "coef": params.values,
-            "se": std_errs.values,
-            "tstat": tstats.values,
-            "pval": pvalues.values,
-        })
+        coef_df = pd.DataFrame(
+            {
+                "variable": params.index,
+                "coef": params.values,
+                "se": std_errs.values,
+                "tstat": tstats.values,
+                "pval": pvalues.values,
+            }
+        )
         coef_df = coef_df.reset_index(drop=True)
 
         # Rename const to Intercept
@@ -346,7 +365,9 @@ def generate_accounting_review_latex(
         sample = parts[0]
         model = parts[1] if len(parts) > 1 else model_key
         # Clean up model name
-        model_clean = model.replace(" (H_TT1 Realtime)", "").replace(" (H_TT2 Turns)", "")
+        model_clean = model.replace(" (H_TT1 Realtime)", "").replace(
+            " (H_TT2 Turns)", ""
+        )
         model_labels.append(model_clean)
         sample_labels.append(sample)
 
@@ -446,7 +467,15 @@ def generate_accounting_review_latex(
         "r2": "R$^2$",
     }
 
-    diag_keys = ["N", "n_entities", "n_time", "n_calls", "n_speakers", "r2_within", "r2"]
+    diag_keys = [
+        "N",
+        "n_entities",
+        "n_time",
+        "n_calls",
+        "n_speakers",
+        "r2_within",
+        "r2",
+    ]
 
     for diag_key in diag_keys:
         diag_label = diag_labels.get(diag_key, diag_key)
@@ -520,9 +549,19 @@ def generate_accounting_review_latex(
 
     # Notes
     lines.append("\\bottomrule")
-    lines.append(f"\\multicolumn{{{n_models + 1}}}{{l}}{{\\parbox{{\\linewidth}}{{\\footnotesize \\textit{{Notes:}} Standard errors (two-way clustered by Firm $\\times$ CEO) in parentheses.}}}} \\\\")
-    lines.append(f"\\multicolumn{{{n_models + 1}}}{{l}}{{\\parbox{{\\linewidth}}{{\\footnotesize $^{{***}}$ p$<$0.01, $^{{**}}$ p$<$0.05, $^{{*}}$ p$<$0.10.}}}} \\\\")
     lines.append("\\end{tabular}")
+    lines.append("\\\\[-0.5em]")
+    lines.append(f"\\parbox{{\\textwidth}}{{\\scriptsize ")
+    lines.append(
+        "\\textit{Notes:} "
+        "M1 (call-level): Standard errors two-way clustered by Firm $\\times$ CEO. "
+        "M2 (turn-level): Standard errors two-way clustered by Firm $\\times$ Call. "
+        "CEOs with fewer than 5 calls are excluded. "
+        "All continuous controls are standardized within each model's estimation sample. "
+        "Variables are winsorized at 1\\%/99\\% by year at the engine level. "
+        "$^{***}$ p$<$0.01, $^{**}$ p$<$0.05, $^{*}$ p$<$0.10."
+    )
+    lines.append("}")
     lines.append("\\end{table}")
 
     with open(out_path, "w", encoding="utf-8") as f:
@@ -605,8 +644,15 @@ def generate_summary_latex(
     latex.extend(
         [
             "\\bottomrule",
-            "\\multicolumn{7}{l}{\\footnotesize \\textit{Notes:} $^{***}$ p$<$0.01, $^{**}$ p$<$0.05, $^{*}$ p$<$0.10.} \\\\",
             "\\end{tabular}",
+            "\\\\[-0.5em]",
+            "\\parbox{\\textwidth}{\\scriptsize ",
+            "\\textit{Notes:} "
+            "CEOs with fewer than 5 calls are excluded. "
+            "All continuous controls are standardized within each model's estimation sample. "
+            "Variables are winsorized at 1\\%/99\\% by year at the engine level. "
+            "$^{***}$ p$<$0.01, $^{**}$ p$<$0.05, $^{*}$ p$<$0.10.",
+            "}",
             "\\end{table}",
         ]
     )
@@ -672,6 +718,7 @@ def generate_report_md(
 # NEW FUNCTIONS FOR ROBUSTNESS TESTS (per revision plan)
 # =============================================================================
 
+
 def wild_cluster_bootstrap(
     df: pd.DataFrame,
     dv: str,
@@ -712,7 +759,12 @@ def wild_cluster_bootstrap(
         resid = y - X @ beta
         baseline_coef = beta[1]  # Index 1 is the IV coefficient
     except Exception:
-        return {"p_value": np.nan, "ci_lower": np.nan, "ci_upper": np.nan, "error": "Baseline regression failed"}
+        return {
+            "p_value": np.nan,
+            "ci_lower": np.nan,
+            "ci_upper": np.nan,
+            "error": "Baseline regression failed",
+        }
 
     # Bootstrap
     boot_coefs = []
@@ -722,7 +774,9 @@ def wild_cluster_bootstrap(
         weight_map = dict(zip(clusters, weights))
 
         # Create wild residuals
-        wild_resid = np.array([weight_map[c] * r for c, r in zip(df[cluster_col], resid)])
+        wild_resid = np.array(
+            [weight_map[c] * r for c, r in zip(df[cluster_col], resid)]
+        )
 
         # Create bootstrap outcome
         y_boot = X @ beta + wild_resid
@@ -735,7 +789,12 @@ def wild_cluster_bootstrap(
             continue
 
     if len(boot_coefs) < n_bootstrap * 0.9:
-        return {"p_value": np.nan, "ci_lower": np.nan, "ci_upper": np.nan, "error": "Too many bootstrap failures"}
+        return {
+            "p_value": np.nan,
+            "ci_lower": np.nan,
+            "ci_upper": np.nan,
+            "error": "Too many bootstrap failures",
+        }
 
     boot_coefs = np.array(boot_coefs)
 
@@ -799,7 +858,9 @@ def permutation_test_optimized(
             iv_shuffled[idx] = np.random.permutation(iv_shuffled[idx])
 
         # Re-estimate
-        X_perm = np.column_stack([np.ones(len(df)), iv_shuffled] + [df[c].values for c in controls])
+        X_perm = np.column_stack(
+            [np.ones(len(df)), iv_shuffled] + [df[c].values for c in controls]
+        )
         try:
             coef = np.linalg.lstsq(X_perm, y, rcond=None)[0][1]
             perm_coefs.append(coef)
@@ -985,7 +1046,13 @@ def main():
     turns_panel["IHS_CEO_Pres_Unc"] = asinh(turns_panel["CEO_Pres_Uncertainty_pct"])
 
     # NEW: IHS transforms for CEO lag variables (robustness tests)
-    for col in ["CEO_Unc_Lag1", "CEO_Unc_Roll2", "CEO_Unc_Roll3", "CEO_Unc_ExpDecay", "CEO_Unc_Lead1"]:
+    for col in [
+        "CEO_Unc_Lag1",
+        "CEO_Unc_Roll2",
+        "CEO_Unc_Roll3",
+        "CEO_Unc_ExpDecay",
+        "CEO_Unc_Lead1",
+    ]:
         if col in turns_panel.columns:
             turns_panel[f"IHS_{col}"] = asinh(turns_panel[col])
 
@@ -996,18 +1063,41 @@ def main():
     # Control specifications per Addendum D
     # Primary controls (NO CEO same-call uncertainty - for causal interpretation)
     call_controls_primary = [
-        "Size", "BM", "Lev", "ROA", "StockRet", "MarketRet", "EPS_Growth", "SurpDec",
+        "Size",
+        "BM",
+        "Lev",
+        "ROA",
+        "StockRet",
+        "MarketRet",
+        "EPS_Growth",
+        "SurpDec",
     ]
 
     # Full controls (WITH CEO same-call - for "holding constant" interpretation)
     call_controls_full = [
-        "Size", "BM", "Lev", "ROA", "StockRet", "MarketRet", "EPS_Growth", "SurpDec",
-        "IHS_CEO_QA_Unc", "IHS_CEO_Pres_Unc",  # CEO same-call controls (bad controls?)
+        "Size",
+        "BM",
+        "Lev",
+        "ROA",
+        "StockRet",
+        "MarketRet",
+        "EPS_Growth",
+        "SurpDec",
+        "IHS_CEO_QA_Unc",
+        "IHS_CEO_Pres_Unc",  # CEO same-call controls (bad controls?)
     ]
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out_dir = root / "outputs" / "econometric" / "tone_at_top" / timestamp
     ensure_output_dir(out_dir)
+
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H10_ToneAtTop",
+        timestamp=timestamp,
+    )
+    print(f"Log dir: {log_dir}")
 
     # ------------------------------------------------------------------
     # Summary Statistics (call-level, Main/Finance/Utility)
@@ -1081,16 +1171,8 @@ def main():
     for sample in ["Main", "Finance", "Utility"]:
         print(f"\nProcessing {sample} Sample...")
 
-        call_sub = (
-            call_panel
-            if sample == "Main"
-            else call_panel[call_panel["sample"] == sample]
-        )
-        turns_sub = (
-            turns_panel
-            if sample == "Main"
-            else turns_panel[turns_panel["sample"] == sample]
-        )
+        call_sub = call_panel[call_panel["sample"] == sample].copy()
+        turns_sub = turns_panel[turns_panel["sample"] == sample].copy()
 
         # M1: H_TT1 (Real-time style, 4-call rolling window, min=4)
         # PRIMARY SPECIFICATION: Without CEO same-call controls (per Addendum D)
@@ -1106,7 +1188,9 @@ def main():
         }
 
         if not m1_coef.empty:
-            print(f"    N={m1_diag.get('N', 0):,}, R²={m1_diag.get('r2_within', 'N/A')}")
+            print(
+                f"    N={m1_diag.get('N', 0):,}, R²={m1_diag.get('r2_within', 'N/A')}"
+            )
 
         # M2: H_TT2 (Speaker turns) - with corrected clustering (Firm+Call)
         print(f"  Running M2 (H_TT2 Turns)...")
@@ -1123,7 +1207,9 @@ def main():
         if not m2_coef.empty:
             print(f"    N={m2_diag.get('N', 0):,}, R²={m2_diag.get('r2', 'N/A')}")
             # Economic significance
-            iv_coef = m2_coef[m2_coef["variable"] == "IHS_CEO_Prior_QA_Unc"]["coef"].values
+            iv_coef = m2_coef[m2_coef["variable"] == "IHS_CEO_Prior_QA_Unc"][
+                "coef"
+            ].values
             if len(iv_coef) > 0:
                 econ_sig = compute_economic_significance(
                     turns_sub, iv_coef[0], "IHS_CEO_Prior_QA_Unc", "IHS_NonCEO_Turn_Unc"
@@ -1154,7 +1240,6 @@ def main():
                     "description": "Wild cluster bootstrap (Rademacher)",
                 }
                 print(f"    Bootstrap p-value: {boot_result.get('p_value', 'N/A'):.4f}")
-
 
     # Generate outputs
     print("\nGenerating outputs...")
@@ -1206,19 +1291,32 @@ def main():
         coef_df = model_res.get("coefficients", pd.DataFrame())
         if not coef_df.empty:
             # M1 has n_entities, M2 has n_calls/n_speakers
-            n_entities = diag.get("n_entities") or diag.get("n_calls") or diag.get("n_speakers")
+            n_entities = (
+                diag.get("n_entities") or diag.get("n_calls") or diag.get("n_speakers")
+            )
             r2 = diag.get("r2_within") or diag.get("r2")
-            diag_rows.append({
-                "model": model_key,
-                "n_obs": diag.get("N"),
-                "n_entities": n_entities,
-                "rsquared": r2,
-                "rsquared_adj": None,  # linearmodels does not provide
-                "fvalue": None,
-                "f_pvalue": None,
-                "aic": None,
-                "bic": None,
-            })
+            # Determine cluster info based on model type
+            if "M1" in model_key:
+                n_clust = diag.get("n_entities", 0)
+                clust_var = "gvkey x ceo_id"
+            else:
+                n_clust = diag.get("n_calls", 0)
+                clust_var = "gvkey x file_name"
+            diag_rows.append(
+                {
+                    "model": model_key,
+                    "n_obs": diag.get("N"),
+                    "n_entities": n_entities,
+                    "n_clusters": n_clust,
+                    "cluster_var": clust_var,
+                    "rsquared": r2,
+                    "rsquared_adj": None,  # linearmodels does not provide
+                    "fvalue": None,
+                    "f_pvalue": None,
+                    "aic": None,
+                    "bic": None,
+                }
+            )
     if diag_rows:
         diag_df = pd.DataFrame(diag_rows)
         diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
@@ -1241,7 +1339,9 @@ def main():
                 continue
 
             # Get main IV coefficient
-            iv = "ClarityStyle_Realtime" if "M1" in model_key else "IHS_CEO_Prior_QA_Unc"
+            iv = (
+                "ClarityStyle_Realtime" if "M1" in model_key else "IHS_CEO_Prior_QA_Unc"
+            )
             match = coef_df[coef_df["variable"] == iv]
 
             if len(match) == 0:
@@ -1273,6 +1373,41 @@ def main():
         if not coef_df.empty:
             safe_key = model_key.replace(" ", "_").replace("(", "").replace(")", "")
             coef_df.to_csv(out_dir / f"coefficients_{safe_key}.csv", index=False)
+
+    # Generate sample attrition table
+    main_m1_key = "Main_M1 (H_TT1 Realtime)"
+    if main_m1_key in all_results:
+        main_diag = all_results[main_m1_key].get("diagnostics", {})
+        attrition_stages = [
+            ("Full call-level panel", len(call_panel)),
+            (
+                "Main sample",
+                len(call_panel[call_panel["sample"] == "Main"])
+                if "sample" in call_panel.columns
+                else len(call_panel),
+            ),
+            ("After complete-case filter (M1)", main_diag.get("N", 0)),
+        ]
+        generate_attrition_table(attrition_stages, out_dir, "H10 Tone at the Top")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+    # Generate run manifest
+    panel_file = panel_dir / "tone_at_top_panel.parquet"
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage4",
+        timestamp=timestamp,
+        input_paths={
+            "call_panel": panel_file,
+            "turns_panel": panel_dir / "tone_at_top_turns_panel.parquet",
+        },
+        output_files={
+            "diagnostics": out_dir / "model_diagnostics.csv",
+            "table": out_dir / "tone_at_top_full.tex",
+        },
+        panel_path=panel_file,
+    )
+    print("  Saved: run_manifest.json")
 
     print(f"\nOutputs saved to {out_dir}")
 

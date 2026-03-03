@@ -54,6 +54,7 @@ class EarningsSurpriseRatioBuilder(VariableBuilder):
             right_on="statpers",
             by="gvkey",
             direction="backward",
+            tolerance=pd.Timedelta(days=365),
         )
         df = df.sort_values("_row_idx")
         

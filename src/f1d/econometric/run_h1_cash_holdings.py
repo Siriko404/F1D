@@ -10,7 +10,7 @@ Description: Run H1 Cash Holdings hypothesis test by loading the call-level
 
 This script follows the same call-level architecture as test_manager_clarity.py,
 test_ceo_clarity.py and test_ceo_tone.py. It is structurally consistent with
-those tests: same statsmodels OLS engine, same HC1 standard errors, same
+those tests: same statsmodels OLS engine, same firm-clustered standard errors, same
 industry sample splits, same minimum-calls filter (>= 5 calls per firm),
 and same output conventions.
 
@@ -81,6 +81,8 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_accounting_table
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -386,43 +388,8 @@ def run_regression(
     print(f"  Adj R-squared:      {model.rsquared_inclusive:.4f}")
     print(f"  N obs:              {int(model.nobs):,}")
 
-    try:
-        y_full = df_panel["CashHoldings_lead"]
-        y_hat_full = model.fitted_values
-        common_idx = y_full.index.intersection(y_hat_full.index)
-        y = y_full.loc[common_idx].to_numpy(dtype=float)
-        y_hat = y_hat_full.loc[common_idx].to_numpy(dtype=float).flatten()
-        df_used = df_panel.loc[common_idx].reset_index()
-
-        y_dm = (
-            y
-            - df_used.groupby("gvkey")["CashHoldings_lead"]
-            .transform("mean")
-            .to_numpy(dtype=float)
-            - df_used.groupby("year")["CashHoldings_lead"]
-            .transform("mean")
-            .to_numpy(dtype=float)
-            + float(np.mean(y))
-        )
-        df_used["_yhat"] = y_hat
-        y_hat_dm = (
-            y_hat
-            - df_used.groupby("gvkey")["_yhat"].transform("mean").to_numpy(dtype=float)
-            - df_used.groupby("year")["_yhat"].transform("mean").to_numpy(dtype=float)
-            + float(np.mean(y_hat))
-        )
-        ss_res = float(((y_dm - y_hat_dm) ** 2).sum())
-        ss_tot = float(((y_dm - float(np.mean(y))) ** 2).sum())
-        within_r2 = 1.0 - ss_res / ss_tot if ss_tot > 0 else np.nan
-    except Exception as _e:
-        within_r2 = np.nan
-        print(f"  WARNING: within-R² computation failed: {_e}")
-
-    print(
-        f"  Within-R² (manual): {within_r2:.4f}"
-        if not np.isnan(within_r2)
-        else "  Within-R² (manual): N/A"
-    )
+    within_r2 = float(model.rsquared_within)
+    print(f"  Within-R²: {within_r2:.4f}")
 
     # One-tailed hypothesis tests
     beta1 = model.params.get("Uncertainty", np.nan)
@@ -474,6 +441,8 @@ def run_regression(
         "beta3_signif": h1b,
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
+        "n_clusters": df_sample["gvkey"].nunique(),  # Firm-clustered SEs
+        "cluster_var": "gvkey",  # Cluster variable
         "rsquared": float(model.rsquared_within),
         "rsquared_adj": float(model.rsquared_inclusive),
         "within_r2": within_r2,  # B8 fix: within-R² for LaTeX table
@@ -652,8 +621,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\begin{minipage}{\linewidth}",
         r"\vspace{2pt}\footnotesize",
         r"\textit{Note:} Dependent variable is CashHoldings$_{t+1}$ (end-of-year proxy).",
+        r"All models use the Main industry sample (non-financial, non-utility firms).",
+        r"Firms with fewer than 5 calls are excluded.",
         r"Model includes firm FE (C(gvkey)) and year FE (C(year)).",
         r"Standard errors (in parentheses) are clustered at the firm level.",
+        r"All continuous controls are standardized within each model's estimation sample.",
+        r"Variables are winsorized at 1\%/99\% by year at the engine level.",
         r"Unit of observation: the individual earnings call.",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed, direction per hypothesis).",
         r"H1a: Uncertainty $> 0$; H1b: Uncertainty $\times$ Lev $< 0$.",
@@ -770,14 +743,28 @@ def main(panel_path: Optional[str] = None) -> int:
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h1_cash_holdings" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H1_CashHoldings",
+        timestamp=timestamp,
+    )
+
     print("=" * 80)
     print("STAGE 4: Test H1 Cash Holdings Hypothesis (call-level)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
 
     # Load panel
     panel = load_panel(root, panel_path)
+
+    # Track panel path for manifest
+    panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
+        root / "outputs" / "variables" / "h1_cash_holdings",
+        required_file="h1_cash_holdings_panel.parquet",
+    ) / "h1_cash_holdings_panel.parquet"
 
     # Assign sample if not already present
     if "sample" not in panel.columns:
@@ -837,6 +824,35 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
+
+    # Generate sample attrition table
+    if all_results:
+        # Get the first Main sample result for attrition counts
+        main_results = [r for r in all_results if r.get("meta", {}).get("sample") == "Main"]
+        if main_results:
+            first_meta = main_results[0].get("meta", {})
+            attrition_stages = [
+                ("Master manifest", len(panel)),
+                ("Main sample filter", (panel["sample"] == "Main").sum()),
+                ("After lead filter", panel.loc[panel["sample"] == "Main", "CashHoldings_lead"].notna().sum()),
+                ("After complete-case + min-calls filter", first_meta.get("n_obs", 0)),
+            ]
+            generate_attrition_table(attrition_stages, out_dir, "H1 Cash Holdings")
+            print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+    # Generate run manifest
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage4",
+        timestamp=timestamp,
+        input_paths={"panel": panel_file},
+        output_files={
+            "diagnostics": out_dir / "model_diagnostics.csv",
+            "table": out_dir / "h1_cash_holdings_table.tex",
+        },
+        panel_path=panel_file,
+    )
+    print("  Saved: run_manifest.json")
 
     # Report
     duration = (datetime.now() - start_time).total_seconds()

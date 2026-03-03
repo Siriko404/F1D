@@ -74,6 +74,8 @@ from f1d.shared.latex_tables_accounting import (
     make_accounting_table,
     make_summary_stats_table,
 )
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -421,8 +423,11 @@ def save_outputs(
             "columns (3)--(4) use CEO-only Q&A uncertainty. "
             "Extended controls add Size, Book-to-Market, Leverage, ROA, "
             "Current Ratio, R\\&D Intensity, and Stock Volatility. "
-            "All samples are the Main industry sample (non-financial, non-utility). "
-            "Standard errors are clustered at the CEO level (cov_type=cluster, groups=ceo_id)."
+            "All models use the Main industry sample (non-financial, non-utility firms). "
+            "CEOs with fewer than 5 calls are excluded. "
+            "Standard errors are clustered at the CEO level. "
+            "All continuous controls are standardized within each model's estimation sample. "
+            "Variables are winsorized at 1\\%/99\\% by year at the engine level."
         ),
         variable_labels=VARIABLE_LABELS,
         control_variables=all_controls,
@@ -441,6 +446,8 @@ def save_outputs(
                 "model": model_name,
                 "n_obs": diag.get("n_obs"),
                 "n_entities": diag.get("n_entities"),  # H0.3 uses n_entities
+                "n_clusters": diag.get("n_clusters"),  # Number of CEO clusters
+                "cluster_var": diag.get("cluster_var", "ceo_id"),  # Cluster variable name
                 "rsquared": diag.get("rsquared"),
                 "rsquared_adj": diag.get("rsquared_adj"),
                 "fvalue": getattr(model, "fvalue", None),
@@ -526,14 +533,28 @@ def main(panel_path: Optional[str] = None) -> int:
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "ceo_clarity_extended" / timestamp
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H0.3_CeoClarity_Extended",
+        timestamp=timestamp,
+    )
+
     print("=" * 80)
     print("STAGE 4: Test CEO Clarity Extended Controls Robustness (4.1.2)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
+    print(f"Log dir: {log_dir}")
 
     # Load panel (built by build_ceo_clarity_extended_panel.py)
     panel = load_panel(root, panel_path)
+
+    # Track panel path for manifest
+    panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
+        root / "outputs" / "variables" / "ceo_clarity_extended",
+        required_file="ceo_clarity_extended_panel.parquet",
+    ) / "ceo_clarity_extended_panel.parquet"
 
     # Generate summary statistics for all three samples (Main, Finance, Utility)
     # Each sample gets its own panel (Panel A / Panel B / Panel C) — same structure
@@ -603,6 +624,8 @@ def main(panel_path: Optional[str] = None) -> int:
             "diagnostics": {
                 "n_obs": int(model.nobs),
                 "n_entities": len(valid_entities),
+                "n_clusters": df_reg["ceo_id"].nunique(),
+                "cluster_var": "ceo_id",
                 "rsquared": model.rsquared,
                 "rsquared_adj": model.rsquared_adj,
             },
@@ -612,6 +635,35 @@ def main(panel_path: Optional[str] = None) -> int:
         save_outputs(results, out_dir)
         duration = (datetime.now() - start_time).total_seconds()
         generate_report(results, out_dir, duration)
+
+        # Generate sample attrition table
+        attrition_stages = [
+            ("Master manifest", len(panel)),
+            ("Main sample filter", (panel["sample"] == "Main").sum()),
+        ]
+        # Add first model's sample size if available
+        first_result = list(results.values())[0] if results else None
+        if first_result:
+            diag = first_result.get("diagnostics", {})
+            n_obs = diag.get("n_obs", 0)
+            if n_obs:
+                attrition_stages.append(("After complete-case + min-calls filter", n_obs))
+        generate_attrition_table(attrition_stages, out_dir, "H0.3 Extended Controls")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+        # Generate run manifest
+        generate_manifest(
+            output_dir=out_dir,
+            stage="stage4",
+            timestamp=timestamp,
+            input_paths={"panel": panel_file},
+            output_files={
+                "diagnostics": out_dir / "model_diagnostics.csv",
+                "table": out_dir / "ceo_clarity_extended_table.tex",
+            },
+            panel_path=panel_file,
+        )
+        print("  Saved: run_manifest.json")
 
     duration = (datetime.now() - start_time).total_seconds()
     print("\n" + "=" * 80)

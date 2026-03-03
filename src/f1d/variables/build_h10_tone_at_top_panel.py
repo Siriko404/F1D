@@ -38,6 +38,8 @@ import pandas as pd
 import numpy as np
 
 from f1d.shared.config import load_variable_config, get_config
+from f1d.shared.logging.config import setup_run_logging
+from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManifestFieldsBuilder,
@@ -564,11 +566,26 @@ def main():
     out_dir = root / "outputs" / "variables" / "tone_at_top" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H10_ToneAtTop",
+        timestamp=timestamp,
+    )
+
     # Pass explicit path so CWD doesn't matter — same pattern as all other panel builders
     var_config = load_variable_config(root / "config" / "variables.yaml")
     stats = {}
 
     t0 = datetime.now()
+
+    print("=" * 80)
+    print("STAGE 3: Build Tone-at-the-Top Panel")
+    print("=" * 80)
+    print(f"Timestamp: {timestamp}")
+    print(f"Output:    {out_dir}")
+    print(f"Log dir:   {log_dir}")
+
     call_panel = build_call_panel(root, years, var_config, stats)
     turns_panel, stage_counts = build_turns_panel(root, years, call_panel)
 
@@ -585,7 +602,24 @@ def main():
 
     # Save stats
     stats_df = stats_list_to_dataframe(stats.get("variable_stats", []))
-    stats_df.to_csv(out_dir / "summary_stats.csv", index=False)
+    stats_path = out_dir / "summary_stats.csv"
+    stats_df.to_csv(stats_path, index=False)
+    print(f"  Saved summary_stats.csv ({len(stats_df)} variables)")
+
+    # Generate run manifest for reproducibility
+    manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage3",
+        timestamp=timestamp,
+        input_paths={"master_manifest": manifest_input},
+        output_files={
+            "call_panel": p1,
+            "turns_panel": p2,
+            "summary_stats": stats_path,
+        },
+    )
+    print("  Saved: run_manifest.json")
 
     # Generate reconciliation table
     if stage_counts:

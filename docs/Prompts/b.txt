@@ -1,0 +1,5 @@
+❯ read the readme, then CUserssinasOneDriveDesktopProjectsThesis_BmadDataDataDatasetsDatasetsData_Pro
+  cessingF1DdocsprovenanceH1.md and then CUserssinasOneDriveDesktopProjectsThesis_BmadDataDataDatas
+  etsDatasetsData_ProcessingF1DdocsprovenanceAUDIT_H1.md ; your task is to verify the issues claimed in
+  audit h1, and discuss them with ONLY IF NEEDED, and proceeding to plan thoroughly for a systematic fix that
+  addresses all the verified concerns, and to run a clean final run.

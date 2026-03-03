@@ -86,8 +86,13 @@ except ImportError:
     LIFELINES_AVAILABLE = False
     print("WARNING: lifelines not available. Install with: pip install lifelines")
 
-from f1d.shared.latex_tables_accounting import make_summary_stats_table, make_cox_hazard_table
+from f1d.shared.latex_tables_accounting import (
+    make_summary_stats_table,
+    make_cox_hazard_table,
+)
+from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.observability import DualWriter
+from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.regression_validation import (
     RegressionValidationError,
@@ -319,11 +324,13 @@ def compute_concordance_time_varying(
         subject_hazards = subject_hazards.loc[df_last[id_col].values]
 
         # Build clean dataframe for concordance computation (drop any NaNs)
-        conc_df = pd.DataFrame({
-            "event_time": df_last[STOP_COL].values,
-            "predicted_score": subject_hazards.values.flatten(),
-            "event_observed": df_last[event_col].values,
-        })
+        conc_df = pd.DataFrame(
+            {
+                "event_time": df_last[STOP_COL].values,
+                "predicted_score": subject_hazards.values.flatten(),
+                "event_observed": df_last[event_col].values,
+            }
+        )
         conc_df = conc_df.dropna()
 
         if len(conc_df) < 10:
@@ -471,7 +478,9 @@ def extract_results(
                     "p": summary.loc[var, "p"],
                     "n_firms": df_clean_len,
                     "n_events": n_events,
-                    "concordance": concordance if concordance is not None else float("nan"),
+                    "concordance": concordance
+                    if concordance is not None
+                    else float("nan"),
                 }
             )
     return rows
@@ -575,6 +584,13 @@ def main(panel_path: Optional[str] = None) -> int:
     out_dir = root / "outputs" / "econometric" / "takeover" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Setup logging to timestamped directory
+    log_dir = setup_run_logging(
+        log_base_dir=root / "logs",
+        suite_name="H9_Takeover",
+        timestamp=timestamp,
+    )
+
     log_path = out_dir / "run_log.txt"
     dual = DualWriter(log_path)
     sys.stdout = dual
@@ -584,6 +600,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
+    print(f"Log dir: {log_dir}")
 
     if not LIFELINES_AVAILABLE:
         print(
@@ -593,6 +610,16 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Load panel
     panel = load_panel(root, panel_path)
+
+    # Track panel file path for manifest
+    if panel_path:
+        panel_file = Path(panel_path)
+    else:
+        panel_dir = get_latest_output_dir(
+            root / "outputs" / "variables" / "takeover",
+            required_file="takeover_panel.parquet",
+        )
+        panel_file = panel_dir / "takeover_panel.parquet"
 
     # Main sample + event indicators
     df = prepare_main_sample(panel)
@@ -688,6 +715,10 @@ def main(panel_path: Optional[str] = None) -> int:
                         "event_col": event_col,
                         "n_intervals": n_intervals,
                         "n_event_firms": n_event_firms,
+                        "n_clusters": df_used["gvkey"].nunique()
+                        if "gvkey" in df_used.columns
+                        else n_intervals,
+                        "cluster_var": "gvkey",
                         "concordance": concordance,
                     }
                 )
@@ -731,7 +762,10 @@ def main(panel_path: Optional[str] = None) -> int:
                 "with standard errors in parentheses. "
                 r"HR $<$ 1 indicates lower hazard (longer survival); "
                 r"HR $>$ 1 indicates higher hazard. "
-                "Models estimated on the Main sample (non-financial, non-utility firms)."
+                "Models estimated on the Main sample (non-financial, non-utility firms). "
+                "Firms with fewer than 5 calls are excluded. "
+                "All continuous controls are standardized within each model's estimation sample. "
+                r"Variables are winsorized at 1\%/99\% by year at the engine level."
             ),
             output_path=out_dir / "takeover_table.tex",
         )
@@ -739,6 +773,31 @@ def main(panel_path: Optional[str] = None) -> int:
 
     duration = (datetime.now() - start_time).total_seconds()
     generate_report(all_hr_rows, diag_rows, out_dir, duration)
+
+    # Generate sample attrition table
+    if diag_rows:
+        first_diag = diag_rows[0]
+        attrition_stages = [
+            ("Full survival panel", len(panel)),
+            ("Main sample (ex-Finance/Utility)", len(df)),
+            ("After complete-case filter", first_diag.get("n_intervals", 0)),
+        ]
+        generate_attrition_table(attrition_stages, out_dir, "H9 Takeover Hazards")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+
+    # Generate run manifest
+    generate_manifest(
+        output_dir=out_dir,
+        stage="stage4",
+        timestamp=timestamp,
+        input_paths={"panel": panel_file},
+        output_files={
+            "diagnostics": out_dir / "model_diagnostics.csv",
+            "table": out_dir / "takeover_table.tex",
+        },
+        panel_path=panel_file,
+    )
+    print("  Saved: run_manifest.json")
 
     print(f"\n  Models completed: {len(diag_rows)}")
     print(f"  Hazard ratio rows: {len(all_hr_rows)}")
