@@ -333,6 +333,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     duration = (datetime.now() - start_time).total_seconds()
     generate_report(panel, stats, out_dir, duration)
 
+    # Copy run.log from logs directory to output directory for discoverability
+    log_file = log_dir / "run.log"
+    if log_file.exists():
+        import shutil
+        shutil.copy(log_file, out_dir / "run.log")
+        print(f"  Saved: run.log (copied from {log_dir})")
+
     print(f"\nCOMPLETE in {duration:.1f}s")
     return 0
 

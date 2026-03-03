@@ -161,6 +161,7 @@ def run_regression(
     iv_var: str,
     second_iv: str,
     sample_name: str,
+    min_calls: int = 5,
 ) -> Tuple[Optional[Any], Dict[str, Any]]:
     """Run a single PanelOLS regression for the given spec.
 
@@ -170,9 +171,14 @@ def run_regression(
     FE  : firm (gvkey) + year, clustered by entity (gvkey)
     """
     required = (
-        ["amihud_illiq_lead", iv_var, second_iv] + BASE_CONTROLS + ["gvkey", "year"]
+        ["amihud_illiq_lead", iv_var, second_iv] + BASE_CONTROLS + ["gvkey", "year", "file_name"]
     )
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
+
+    # Apply min_calls filter AFTER listwise deletion to avoid singletons
+    if min_calls > 1:
+        call_counts = df_reg.groupby("gvkey")["file_name"].transform("count")
+        df_reg = df_reg[call_counts >= min_calls].copy()
 
     if len(df_reg) < 100:
         return None, {}
@@ -218,6 +224,8 @@ def run_regression(
     p2_two = float(model.pvalues.get("_iv2", np.nan))
 
     # H7: one-tailed p-value for beta1 > 0
+    # Also compute one-tailed p-value for beta2 for consistent star notation
+    p2_one = p2_two / 2 if beta2 > 0 else 1 - p2_two / 2
     p1_one = p1_two / 2 if beta1 > 0 else 1 - p1_two / 2
     h7_sig = p1_one < 0.05 and beta1 > 0
 
@@ -246,6 +254,7 @@ def run_regression(
         "beta2_se": beta2_se,
         "beta2_t": beta2_t,
         "beta2_p_two": p2_two,
+        "beta2_p_one": p2_one,
         "h7_sig": h7_sig,
     }
 
@@ -309,7 +318,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     row_se2 = " & "
     for r in results_main:
         if r:
-            row_b2 += f"{fmt_coef(r['beta2'], r['beta2_p_two'])} & "
+            row_b2 += f"{fmt_coef(r['beta2'], r['beta2_p_one'])} & "
             row_se2 += f"{fmt_se(r['beta2_se'])} & "
         else:
             row_b2 += " & "
@@ -472,19 +481,16 @@ def main(panel_path: Optional[str] = None) -> int:
     for sample in CONFIG["samples"]:
         df_sample = df_prep[df_prep["sample"] == sample].copy()
 
-        # Min-calls filter (per firm within the regression sample)
-        call_counts = df_sample.groupby("gvkey")["file_name"].transform("count")
-        df_filtered = df_sample[call_counts >= CONFIG["min_calls"]].copy()
-
         for spec_name, iv_var, second_iv in SPECS:
             print(f"\n--- {sample} / {spec_name} ---")
 
-            if len(df_filtered) < 100:
+            if len(df_sample) < 100:
                 print("  Skipping: insufficient data")
                 continue
 
             model, meta = run_regression(
-                df_filtered, spec_name, iv_var, second_iv, sample
+                df_sample, spec_name, iv_var, second_iv, sample,
+                min_calls=CONFIG["min_calls"]
             )
 
             if model is not None:

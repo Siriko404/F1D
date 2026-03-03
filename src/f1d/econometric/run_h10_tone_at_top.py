@@ -131,6 +131,12 @@ def run_call_level_model_full(
 
     reg_df["const"] = 1
 
+    # Deduplicate firm-quarters by keeping the last call per quarter
+    # This resolves 347 firm-quarters with >1 earnings call (694 duplicate rows)
+    reg_df = reg_df.sort_values("start_date").drop_duplicates(
+        subset=["gvkey", "yq_id"], keep="last"
+    )
+
     # Set multi-index for panel
     reg_df = reg_df.set_index(["gvkey", "yq_id"])
 
@@ -1165,16 +1171,8 @@ def main():
     for sample in ["Main", "Finance", "Utility"]:
         print(f"\nProcessing {sample} Sample...")
 
-        call_sub = (
-            call_panel
-            if sample == "Main"
-            else call_panel[call_panel["sample"] == sample]
-        )
-        turns_sub = (
-            turns_panel
-            if sample == "Main"
-            else turns_panel[turns_panel["sample"] == sample]
-        )
+        call_sub = call_panel[call_panel["sample"] == sample].copy()
+        turns_sub = turns_panel[turns_panel["sample"] == sample].copy()
 
         # M1: H_TT1 (Real-time style, 4-call rolling window, min=4)
         # PRIMARY SPECIFICATION: Without CEO same-call controls (per Addendum D)

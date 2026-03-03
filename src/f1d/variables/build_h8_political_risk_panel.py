@@ -8,8 +8,8 @@ Description: Build FIRM-YEAR panel for H8: CEO Speech Vagueness moderates the
              effect of Political Risk (PRiskFY) on Abnormal Investment.
 
     H8 Hypothesis:
-        AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_t + β2·StyleFrozen_t
-                          + β3·(PRiskFY_t × StyleFrozen_t)
+        AbsAbInv_{i,t+1} = β0 + β1·PRiskFY_t + β2·ClarityStyle_Realtime_t
+                          + β3·(PRiskFY_t × ClarityStyle_Realtime_t)
                           + γ'·Controls_t + FirmFE_i + YearFE_t + ε
 
     Key coefficient: β3 (interaction term)
@@ -20,13 +20,13 @@ Unit of observation: firm-fiscal-year (gvkey, fyearq).
 DV: |InvestmentResidual| shifted one fiscal year forward (t+1).
 
 Step 1: Load manifest + all linguistic uncertainty measures.
-Step 2: Load PRiskFY (Hassan engine), StyleFrozen (CEO Clarity builder),
+Step 2: Load PRiskFY (Hassan engine), ClarityStyle_Realtime (CEO Style Realtime builder),
         InvestmentResidual (Compustat engine), and financial controls.
 Step 3: Aggregate call-level vagueness to firm-year level:
-            StyleFrozen  = frozen CEO ClarityCEO (time-invariant per CEO-FY)
+            ClarityStyle_Realtime = rolling 4-call CEO clarity (time-varying)
             PRiskFY      = already at firm-year level
             AbsAbInv     = |InvestmentResidual|, shifted t+1 within firm
-Step 4: Create interaction term: interact = PRiskFY × style_frozen
+Step 4: Create interaction term: interact = PRiskFY × ClarityStyle_Realtime
 Step 5: Save firm-year panel.
 """
 
@@ -56,7 +56,7 @@ from f1d.shared.variables import (
     stats_list_to_dataframe,
 )
 from f1d.shared.variables.prisk_fy import PRiskFYBuilder
-from f1d.shared.variables.ceo_clarity_style import CEOClarityStyleBuilder
+from f1d.shared.variables.ceo_style_realtime import CEOStyleRealtimeBuilder
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -79,7 +79,7 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
     """Collapse call-level panel to firm-year (gvkey, fyearq).
 
     For variables that are already firm-year level (PRiskFY, InvestmentResidual,
-    style_frozen, financial controls), take the last non-missing value per
+    ClarityStyle_Realtime, financial controls), take the last non-missing value per
     (gvkey, fyearq) — they should be constant within (gvkey, fyearq).
 
     Returns a DataFrame indexed on (gvkey, fyearq).
@@ -89,7 +89,7 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
 
     agg_cols = [
         "PRiskFY",
-        "style_frozen",
+        "ClarityStyle_Realtime",
         "InvestmentResidual",
         "Size",
         "Lev",
@@ -134,9 +134,9 @@ def create_lead_absabinv(firm_year: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_interaction(firm_year: pd.DataFrame) -> pd.DataFrame:
-    """Create the moderation interaction: interact = PRiskFY × style_frozen."""
+    """Create the moderation interaction: interact = PRiskFY × ClarityStyle_Realtime."""
     df = firm_year.copy()
-    df["interact"] = df["PRiskFY"] * df["style_frozen"]
+    df["interact"] = df["PRiskFY"] * df["ClarityStyle_Realtime"]
     return df
 
 
@@ -165,7 +165,7 @@ def build_panel(
             var_config.get("investment_residual", {})
         ),
         "prisk_fy": PRiskFYBuilder(var_config.get("prisk_fy", {})),
-        "style_frozen": CEOClarityStyleBuilder(var_config.get("style_frozen", {})),
+        "ClarityStyle_Realtime": CEOStyleRealtimeBuilder(var_config.get("ClarityStyle_Realtime", {})),
     }
 
     all_results = {}

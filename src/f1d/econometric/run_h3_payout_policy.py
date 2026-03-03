@@ -283,7 +283,7 @@ def run_regression(
         "n_clusters": df_sample["gvkey"].nunique(),
         "cluster_var": "gvkey",
         "rsquared": float(model.rsquared_within),
-        "rsquared_adj": float(model.rsquared_inclusive),
+        "rsquared_inclusive": float(model.rsquared_inclusive),
         "within_r2": within_r2,
         "beta1": float(beta1),
         "beta1_se": float(beta1_se),
@@ -443,6 +443,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rn += f"{res_pf_c['n_obs']:,} \\\\" if res_pf_c else " \\\\"
     lines.append(rn)
 
+    # Add Firms row (m1 fix)
+    rf = "Firms & "
+    rf += f"{res_ds_m['n_firms']:,} & " if res_ds_m else " & "
+    rf += f"{res_ds_c['n_firms']:,} & " if res_ds_c else " & "
+    rf += f"{res_pf_m['n_firms']:,} & " if res_pf_m else " & "
+    rf += f"{res_pf_c['n_firms']:,} \\\\" if res_pf_c else " \\\\"
+    lines.append(rf)
+
     rr = "Within-$R^2$ & "
     rr += f"{fmt_r2(res_ds_m['within_r2'])} & " if res_ds_m else " & "
     rr += f"{fmt_r2(res_ds_c['within_r2'])} & " if res_ds_c else " & "
@@ -460,10 +468,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "Columns (1)--(2) use dividend stability as the dependent variable; "
         "columns (3)--(4) use payout flexibility. "
         "All models use the Main industry sample (non-financial, non-utility firms). "
+        "Sample restricted to firms with dividend payments in trailing 5 years (is\\_div\\_payer\\_5yr==1). "
         "Firms with fewer than 5 calls are excluded. "
         "Standard errors are clustered at the firm level. "
         "All continuous controls are standardized. "
-        "Variables are winsorized at 1\\%/99\\% by year.",
+        "Variables are winsorized at 1\\%/99\\% by year. "
+        "* $p<0.10$, ** $p<0.05$, *** $p<0.01$ (one-tailed tests).",
         "}",
         "\\end{table}",
     ])
@@ -638,6 +648,13 @@ def main(panel_path: str | None = None) -> int:
         panel_path=panel_file,
     )
     print("  Saved: run_manifest.json")
+
+    # Copy run.log from logs directory to output directory for discoverability
+    log_file = log_dir / "run.log"
+    if log_file.exists():
+        import shutil
+        shutil.copy(log_file, out_dir / "run.log")
+        print(f"  Saved: run.log (copied from {log_dir})")
 
     print("\n" + "=" * 80)
     print("COMPLETE")

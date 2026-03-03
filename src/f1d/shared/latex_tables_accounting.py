@@ -635,9 +635,12 @@ def _generate_summary_stats_latex(
     lines.append(r"\small")
     lines.append(
         r"\item This table reports summary statistics for all three industry samples. "
-        r"Regressions use Main sample only."
+        r"Regressions use Main sample only. "
+        r"Sample period: 2002--2018. "
+        r"All continuous variables winsorized at 1st/99th percentile per year. "
+        r"N varies across variables due to missing data."
     )
-    lines.append(r"All variables are measured at the call level.")
+    lines.append(r"All variables are measured at the firm-year level.")
     lines.append(r"\end{tablenotes}")
     lines.append(r"\end{table}")
 

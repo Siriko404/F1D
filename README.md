@@ -468,10 +468,10 @@ Model: `Uncertainty ~ CCCL_lag + Size + Lev + ROA + TobinsQ + CashHoldings + Ent
 
 | Sample | N Obs | N Firms | CCCL_lag β | p-value | Significant |
 |--------|------:|--------:|-----------:|--------:|:-----------:|
-| Main (Mgr QA Unc) | 63,902 | 1,751 | −0.0007 | 0.414 | No |
-| Main (CEO QA Unc) | 63,902 | 1,751 | −0.0005 | 0.510 | No |
-| Finance | 12,376 | 392 | — | — | No |
-| Utility | 2,553 | 73 | — | — | No |
+| Main (Mgr QA Unc) | 63,902 | 1,751 | −0.0865 | 0.089 | No |
+| Main (CEO QA Unc) | 48,091 | 1,561 | 0.0227 | 0.599 | No |
+| Finance (Mgr QA Unc) | 15,662 | 436 | −1.3066 | 0.014 | Yes* |
+| Utility (Mgr QA Unc) | 3,154 | 81 | 1.3637 | 0.987 | No |
 
 **Pre-trends test:** CCCL_lag vs CCCL_lead1/lead2 — significant leads found in Main and Finance samples. See provenance H6.md for details.
 
@@ -506,23 +506,24 @@ All coefficients are negative (opposite direction) or near-zero.
 Tests whether CEO speech vagueness moderates the effect of Political Risk (PRiskFY) on Abnormal Investment.
 Unit of observation: firm-year (not call-level). Uses Hassan et al. (2019) PRisk index.
 
-Model: `AbsAbInv_{t+1} ~ PRiskFY + StyleFrozen + PRiskFY×StyleFrozen + Size + Lev + ROA + TobinsQ + EntityEffects + TimeEffects`
+Model: `AbsAbInv_{t+1} ~ PRiskFY + ClarityStyle_Realtime + PRiskFY×ClarityStyle_Realtime + Size + Lev + ROA + TobinsQ + EntityEffects + TimeEffects`
 
 Key variables:
 - **PRiskFY**: Mean quarterly political risk over (fy_end - 366d, fy_end], min 2 quarters required
-- **StyleFrozen**: CEO clarity score (frozen constraint: calls ≤ fy_end), standardized (mean≈0, SD≈1)
+- **ClarityStyle_Realtime**: CEO clarity score (4-call rolling window, min 4 prior calls), time-varying, standardized (mean≈0, SD≈1)
 - **AbsAbInv_lead**: |Biddle InvestmentResidual| shifted one fiscal year forward
 
 **Stage 3**: 29,343 firm-years. Valid AbsAbInv_lead: 25,759. PRiskFY matched: 27,501.
-StyleFrozen (frozen CEO clarity): 18,439 valid (62.8% coverage).
+ClarityStyle_Realtime: 18,842 valid (64.2% coverage).
 
-| Sample | N Obs | N Firms | Within-R² | β₁ (PRiskFY) | β₂ (StyleFrozen) | β₃ (Interact) | p₃ |
-|--------|------:|--------:|----------:|-------------:|----------------:|--------------:|---:|
-| Primary (All Industries) | 15,721 | 1,665 | 0.025 | −0.0000 (p=0.212) | −0.0077 (p=0.050) | 0.0000 (p=0.776) | NS |
+| Sample | N Obs | N Firms | Within-R² | β₁ (PRiskFY) | β₂ (ClarityStyle) | β₃ (Interact) | p₃ |
+|--------|------:|--------:|----------:|-------------:|-----------------:|--------------:|---:|
+| Primary (All Industries) | 15,998 | 1,943 | 0.025 | −0.0000 (p=0.198) | −0.0003 (p=0.803) | 0.0000 (p=0.986) | NS |
+| Main (ex-Finance/Utility) | 12,901 | 1,539 | 0.024 | −0.0000 (p=0.102) | 0.0005 (p=0.789) | 0.0000 (p=0.378) | NS |
 
-**H8 NOT SUPPORTED** — CEO vagueness does NOT significantly moderate the political risk → abnormal investment relationship (β₃ = 0.0000, p = 0.776).
+**H8 NOT SUPPORTED** — CEO vagueness does NOT significantly moderate the political risk → abnormal investment relationship (β₃ ≈ 0, p = 0.986 in primary spec).
 
-Data notes: style_frozen has 37.2% missing due to CEO clarity dependency; PRiskFY has 6.3% missing due to Hassan data coverage.
+Data notes: ClarityStyle_Realtime has 35.8% missing (requires min 4 prior calls); PRiskFY has 6.3% missing due to Hassan data coverage.
 
 
 ### Tone at the Top (H10) — `run_h10_tone_at_top`
