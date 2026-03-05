@@ -251,6 +251,9 @@ python -m f1d.variables.build_h7_illiquidity_panel
 python -m f1d.variables.build_h8_political_risk_panel
 python -m f1d.variables.build_h9_takeover_panel
 python -m f1d.variables.build_h10_tone_at_top_panel
+python -m f1d.variables.build_h11_prisk_uncertainty_panel
+python -m f1d.variables.build_h11_prisk_uncertainty_lag_panel
+python -m f1d.variables.build_h12_div_intensity_panel
 ```
 
 #### Stage 4: Hypothesis Tests
@@ -269,6 +272,9 @@ python -m f1d.econometric.run_h7_illiquidity             # ~2 min
 python -m f1d.econometric.run_h8_political_risk             # ~1 min
 python -m f1d.econometric.run_h9_takeover_hazards        # ~1 min
 python -m f1d.econometric.run_h10_tone_at_top            # ~2 min
+python -m f1d.econometric.run_h11_prisk_uncertainty      # ~2 min
+python -m f1d.econometric.run_h11_prisk_uncertainty_lag  # ~2 min
+python -m f1d.econometric.run_h12_div_intensity          # ~1 min
 python -m f1d.reporting.generate_summary_stats           # ~1 sec
 ```
 
@@ -289,10 +295,10 @@ No symlinks needed — the latest directory is always found by timestamp.
 
 ## Verified Results
 
-Last full pipeline run: **2026-03-02**. All scripts passed end-to-end with zero errors,
+Last full pipeline run: **2026-03-05**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
-**Summary of hypothesis test results (2026-03-02 run):**
+**Summary of hypothesis test results (2026-03-05 run):**
 
 | Hypothesis | Status | Key Finding |
 |------------|--------|-------------|
@@ -306,6 +312,9 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 0/9 significant (all β negative or zero) |
 | H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.986 |
+| H11 Political Risk Uncertainty | **STRONG SUPPORT** | 16/18 significant (all p<0.05) |
+| H11-Lag Political Risk | **PARTIAL** | 12/18 significant with lagged PRiskQ |
+| H12 Dividend Intensity | **NOT SUPPORTED** | 0/12 significant (Main sample) |
 | H9 Takeover Hazards | **Partial** | CEO models run; Manager clarity missing |
 
 ### CEO Clarity (H0.2) — `run_h0_2_ceo_clarity`
@@ -546,6 +555,64 @@ H0.1 archived). Only CEO Clarity models estimated.
 Current run: Manager Clarity models had insufficient data (ClarityManager missing).
 See prior run results for significant HR estimates.
 
+### H11 Political Risk and Language Uncertainty — `run_h11_prisk_uncertainty`
+
+Tests whether higher political risk causes more uncertain language in earnings calls.
+DV: 6 uncertainty measures (Manager/CEO QA/Pres Uncertainty, Weak Modal).
+IV: PRiskQ (contemporaneous quarterly political risk from Hassan et al.).
+
+Model: `Uncertainty_t ~ PRiskQ_t + Analyst_Uncertainty + Pres_Uncertainty + Negative_Sentiment + Controls + FirmFE + YearFE`
+
+**Stage 3** (`build_h11_prisk_uncertainty_panel`): 112,968 calls, call-level panel.
+PRiskQ matched via (gvkey, calendar_quarter).
+
+| Sample | N Obs Range | PRiskQ β | Significant |
+|--------|------------:|---------:|:-----------:|
+| Main (Unc measures) | 56,020–77,040 | positive (p<0.001) | 6/6 |
+| Finance (Unc measures) | 11,220–18,231 | positive (p<0.001) | 6/6 |
+| Utility (Unc measures) | 2,238–3,734 | positive (p<0.001) | 4/6 |
+
+**Result:** H11 **STRONGLY SUPPORTED** — 16/18 significant (p<0.05 one-tailed).
+Higher political risk increases speech uncertainty across most measures and samples.
+Presentation uncertainty measures show strongest effects.
+
+### H11-Lag Political Risk (Lagged) — `run_h11_prisk_uncertainty_lag`
+
+Tests whether lagged political risk affects current speech uncertainty.
+IV: PRiskQ_lag (1-quarter lag) and PRiskQ_lag2 (2-quarter lag).
+
+| Sample | N Obs Range | H11-Lag Significant | H11-Lag2 Significant |
+|--------|------------:|--------------------:|---------------------:|
+| Main | 54,003–74,324 | 4/6 | 3/6 |
+| Finance | 10,952–17,811 | 4/6 | — |
+| Utility | 2,165–3,606 | 2/6 | — |
+
+**Result:** H11-Lag **PARTIALLY SUPPORTED** — 12/18 significant with 1-quarter lag.
+Presentation uncertainty shows persistent effects; Q&A effects are contemporaneous only.
+Supports causal interpretation: political risk precedes language uncertainty.
+
+### H12 Dividend Intensity — `run_h12_div_intensity`
+
+Tests whether language uncertainty predicts future dividend intensity.
+DV: DivIntensity_lead = (dvy_Q4 / atq)_{t+1} (firm-year level, forward).
+IV: Avg_Uncertainty = mean call-level uncertainty within firm-year.
+
+Model: `DivIntensity_{t+1} ~ Avg_Uncertainty_t + Size + Lev + ROA + TobinsQ + CashHoldings + CapexAt + RD_Intensity + FirmFE + YearFE`
+
+**Stage 3** (`build_h12_div_intensity_panel`): Firm-year panel (one row per gvkey-fyearq).
+Uncertainty measures averaged across calls within each firm-year.
+DivIntensity_lead = DivIntensity shifted one fiscal year forward.
+
+| Sample | N Obs (firm-years) | H12 Significant (β₁<0) |
+|--------|-------------------:|-----------------------:|
+| Main | 15,175–21,653 | 0/12 |
+| Finance | 2,752–4,928 | 0/12 |
+| **Total** | | **0/24** |
+
+**Result:** H12 **NOT SUPPORTED** — 0/24 significant in predicted direction.
+Language uncertainty does not predict future dividend intensity.
+All β₁ coefficients positive or near-zero (opposite of hypothesis).
+
 ### Summary Statistics (H11) — `generate_summary_stats`
 
 Main sample: 88,205 call observations, 1,884 firms, 3,533 CEOs, 2002–2018.
@@ -621,6 +688,22 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | `negative_sentiment.py` | `Entire_All_Negative_pct` | Stage 2 linguistic vars |
 | `manager_qa_weak_modal.py` | `Manager_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
 | `ceo_qa_weak_modal.py` | `CEO_QA_Weak_Modal_pct` | Stage 2 linguistic vars |
+| `entire_all_uncertainty.py` | `Entire_All_Uncertainty_pct` | Stage 2 linguistic vars |
+| `manager_qa_positive.py` | `Manager_QA_Positive_pct` | Stage 2 linguistic vars |
+| `manager_qa_negative.py` | `Manager_QA_Negative_pct` | Stage 2 linguistic vars |
+| `manager_pres_positive.py` | `Manager_Pres_Positive_pct` | Stage 2 linguistic vars |
+| `manager_pres_negative.py` | `Manager_Pres_Negative_pct` | Stage 2 linguistic vars |
+| `ceo_qa_positive.py` | `CEO_QA_Positive_pct` | Stage 2 linguistic vars |
+| `ceo_qa_negative.py` | `CEO_QA_Negative_pct` | Stage 2 linguistic vars |
+| `ceo_pres_positive.py` | `CEO_Pres_Positive_pct` | Stage 2 linguistic vars |
+| `ceo_pres_negative.py` | `CEO_Pres_Negative_pct` | Stage 2 linguistic vars |
+| `nonceo_manager_qa_positive.py` | `NonCEO_Manager_QA_Positive_pct` | Stage 2 linguistic vars |
+| `nonceo_manager_qa_negative.py` | `NonCEO_Manager_QA_Negative_pct` | Stage 2 linguistic vars |
+| `analyst_qa_positive.py` | `Analyst_QA_Positive_pct` | Stage 2 linguistic vars |
+| `analyst_qa_negative.py` | `Analyst_QA_Negative_pct` | Stage 2 linguistic vars |
+| `manager_pres_weak_modal.py` | `Manager_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
+| `ceo_pres_weak_modal.py` | `CEO_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
+| `ceo_clarity_style.py` | `ClarityStyle_Realtime` | Stage 2 + frozen CEO assignment |
 
 ### Financial Variable Builders
 
@@ -644,6 +727,25 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | `earnings_surprise.py` | `SurpDec` | IBES + CCM |
 | `cccl_instrument.py` | `shift_intensity_sale_ff48` | CCCL instrument file |
 | `takeover_indicator.py` | `Takeover`, `Takeover_Uninvited`, `Takeover_Friendly` | SDC M&A |
+| `cash_flow.py` | `CashFlow` | Compustat (oancfy/avg_assets) |
+| `sales_growth.py` | `SalesGrowth` | Compustat (YoY sales growth) |
+| `investment_residual.py` | `InvestmentResidual` | Compustat (Biddle 2009) |
+| `amihud_illiq.py` | `amihud_illiq` | CRSP (Amihud illiquidity) |
+| `div_stability.py` | `div_stability` | Compustat |
+| `payout_flexibility.py` | `payout_flexibility` | Compustat |
+| `earnings_surprise_raw.py` | `EarningsSurprise_Raw` | IBES (ACTUAL - MEANEST) |
+| `earnings_surprise_ratio.py` | `EarningsSurpriseRatio` | IBES (|ACTUAL - MEANEST|/|MEANEST|) |
+| `prior_dispersion.py` | `prior_dispersion` | IBES (STDEV/|MEANEST|) |
+| `dispersion_lead.py` | `dispersion_lead` | IBES (t+1 dispersion) |
+| `earnings_volatility.py` | `earnings_volatility` | Compustat (rolling std) |
+| `fcf_growth.py` | `fcf_growth` | Compustat (FCF growth) |
+| `firm_maturity.py` | `firm_maturity` | Compustat (lifecycle proxy) |
+| `is_div_payer_5yr.py` | `is_div_payer_5yr` | Compustat (5yr consistency) |
+| `loss_dummy.py` | `loss_dummy` | Compustat (ibq < 0) |
+| `prisk_q.py` | `PRiskQ` | Hassan (quarterly PRisk) |
+| `prisk_q_lag.py` | `PRiskQ_lag` | Hassan (1-quarter lag) |
+| `prisk_q_lag2.py` | `PRiskQ_lag2` | Hassan (2-quarter lag) |
+| `div_intensity.py` | `DivIntensity` | Compustat (dvy_Q4 / atq) |
 
 ### Important Implementation Notes
 
@@ -902,4 +1004,4 @@ For questions or issues, please open a GitHub issue or contact the thesis author
 
 ---
 
-*Last updated: 2026-03-03*
+*Last updated: 2026-03-05*
