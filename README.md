@@ -547,9 +547,9 @@ H0.1 archived). Only CEO Clarity models estimated.
 
 | Model | Event Type | N Intervals | Event Firms | Concordance | ClarityCEO HR | p |
 |-------|------------|------------:|------------:|------------:|--------------:|--:|
-| Cox PH All | All | 12,139 | 349 | 0.537 | — | — |
-| Cox CS Uninvited | Uninvited | 12,139 | 45 | 0.567 | — | — |
-| Cox CS Friendly | Friendly | 12,139 | 346 | 0.523 | — | — |
+| Cox PH All | All | 12,139 | 349 | 0.537 | 1.050 | 0.566 |
+| Cox CS Uninvited | Uninvited | 12,139 | 45 | 0.567 | 1.337 | 0.002 |
+| Cox CS Friendly | Friendly | 12,139 | 346 | 0.523 | 1.098 | 0.001 |
 
 **H9 Partially Supported** — CEO clarity associated with takeover risk in prior runs.
 Current run: Manager Clarity models had insufficient data (ClarityManager missing).
@@ -583,11 +583,11 @@ IV: PRiskQ_lag (1-quarter lag) and PRiskQ_lag2 (2-quarter lag).
 
 | Sample | N Obs Range | H11-Lag Significant | H11-Lag2 Significant |
 |--------|------------:|--------------------:|---------------------:|
-| Main | 54,003–74,324 | 4/6 | 3/6 |
-| Finance | 10,952–17,811 | 4/6 | — |
-| Utility | 2,165–3,606 | 2/6 | — |
+| Main | 54,003–74,324 | 4/6 | 6/6 |
+| Finance | 10,952–17,811 | 3/6 | 2/6 |
+| Utility | 2,165–3,606 | 2/6 | 1/6 |
 
-**Result:** H11-Lag **PARTIALLY SUPPORTED** — 12/18 significant with 1-quarter lag.
+**Result:** H11-Lag **PARTIALLY SUPPORTED** — 9/18 significant with 1-quarter lag; 9/18 significant with 2-quarter lag.
 Presentation uncertainty shows persistent effects; Q&A effects are contemporaneous only.
 Supports causal interpretation: political risk precedes language uncertainty.
 
