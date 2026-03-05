@@ -116,6 +116,8 @@ COMPUSTAT_COLS = [
     "CapexAt",
     "DividendPayer",
     "OCF_Volatility",
+    # H12 extension (Dividend Intensity)
+    "DivIntensity",
     # H2 extension (Biddle 2009 investment residual)
     "InvestmentResidual",
     "CashFlow",
@@ -988,6 +990,15 @@ def _compute_and_winsorize(
         pd.Series(dvy_annual, index=comp.index).fillna(0) > 0
     ).astype(float)
 
+    # --- H12 extension: DivIntensity = dvy_annual (Q4 full-year) / atq ---
+    # Uses contemporaneous total assets, consistent with CashHoldings = cheq / atq.
+    # dvy_annual is already computed above from _compute_annual_q4_variable.
+    comp["DivIntensity"] = np.where(
+        comp["atq"] > 0,
+        pd.Series(dvy_annual, index=comp.index).fillna(0) / comp["atq"],
+        np.nan,
+    )
+
     comp["OCF_Volatility"] = _compute_ocf_volatility(comp)
 
     # --- H2 extension: Biddle (2009) investment residual + CashFlow + SalesGrowth ---
@@ -1022,6 +1033,7 @@ def _compute_and_winsorize(
         "CashHoldings",
         "TobinsQ",
         "CapexAt",
+        "DivIntensity",
         "OCF_Volatility",
         "InvestmentResidual",
         "CashFlow",

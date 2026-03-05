@@ -332,6 +332,17 @@ variables:
     description: "Operating cash flow volatility: rolling 5yr std of OCF/lagged_assets (Compustat; matches spec design)"
 
   # ===========================================================================
+  # H12 — Dividend Intensity: Compustat-engine variable
+  # ===========================================================================
+
+  div_intensity:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "DivIntensity"
+    formula: "dvy_Q4 / atq  (Q4-only full-year cash dividends / contemporaneous total assets)"
+    description: "Dividend intensity: annual cash dividends as fraction of total assets (H12 DV)"
+
+  # ===========================================================================
   # H2 — Investment Efficiency Regression: Compustat-engine variables
   # ===========================================================================
   # All 3 are computed by the shared CompustatEngine via _compute_biddle_residual()

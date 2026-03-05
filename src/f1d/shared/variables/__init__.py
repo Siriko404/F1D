@@ -129,6 +129,9 @@ from .capex_intensity import CapexIntensityBuilder
 from .dividend_payer import DividendPayerBuilder
 from .ocf_volatility import OCFVolatilityBuilder
 
+# H12 Compustat variable builder (Dividend Intensity)
+from .div_intensity import DivIntensityBuilder
+
 # H2 Compustat variable builders (Biddle 2009 investment efficiency)
 from .investment_residual import InvestmentResidualBuilder
 from .cash_flow import CashFlowBuilder
@@ -196,6 +199,8 @@ __all__ = [
     "CapexIntensityBuilder",
     "DividendPayerBuilder",
     "OCFVolatilityBuilder",
+    # H12 Compustat variable builder (Dividend Intensity)
+    "DivIntensityBuilder",
     # H2 Compustat variable builders (Biddle 2009 investment efficiency)
     "InvestmentResidualBuilder",
     "CashFlowBuilder",
@@ -234,6 +239,12 @@ __all__ = [
     # H8
     "CEOClarityStyleBuilder",
     "PRiskFYBuilder",
+    # H11
+    "PRiskQBuilder",
+    # H11-Lag
+    "PRiskQLagBuilder",
+    # H11-Lag2
+    "PRiskQLag2Builder",
     # H_TT
     "CEOStyleRealtimeBuilder",
     # Panel-building utilities
@@ -264,6 +275,15 @@ from .amihud_illiq import AmihudIlliqBuilder
 # H8 Political Risk
 from .ceo_clarity_style import CEOClarityStyleBuilder
 from .prisk_fy import PRiskFYBuilder
+
+# H11 Political Risk (Quarterly)
+from .prisk_q import PRiskQBuilder
+
+# H11-Lag Political Risk (Quarterly, Lagged)
+from .prisk_q_lag import PRiskQLagBuilder
+
+# H11-Lag2 Political Risk (Quarterly, 2-quarter Lagged)
+from .prisk_q_lag2 import PRiskQLag2Builder
 
 # H_TT Tone at the Top
 from .ceo_style_realtime import CEOStyleRealtimeBuilder
