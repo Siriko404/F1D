@@ -311,8 +311,9 @@ def run_regression(
         return None, {}
 
     # Use original variable name in formula (no renaming)
+    # Include explicit intercept (1 +) for consistent reporting with H11 scripts
     formula = (
-        f"{dv} ~ {uncertainty_var} + "
+        f"{dv} ~ 1 + {uncertainty_var} + "
         + " + ".join(existing_controls)
         + " + EntityEffects + TimeEffects"
     )

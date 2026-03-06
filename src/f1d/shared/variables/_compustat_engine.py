@@ -990,12 +990,12 @@ def _compute_and_winsorize(
         pd.Series(dvy_annual, index=comp.index).fillna(0) > 0
     ).astype(float)
 
-    # --- H12 extension: DivIntensity = dvy_annual (Q4 full-year) / atq ---
-    # Uses contemporaneous total assets, consistent with CashHoldings = cheq / atq.
-    # dvy_annual is already computed above from _compute_annual_q4_variable.
+    # --- H12 extension: DivIntensity = dvy_annual (Q4 full-year) / atq_lag1 ---
+    # Uses lagged total assets (t-1) to avoid endogeneity with dividend decisions.
+    # atq_annual_lag1 is computed above (line ~951).
     comp["DivIntensity"] = np.where(
-        comp["atq"] > 0,
-        pd.Series(dvy_annual, index=comp.index).fillna(0) / comp["atq"],
+        pd.Series(atq_annual_lag1, index=comp.index) > 0,
+        pd.Series(dvy_annual, index=comp.index).fillna(0) / pd.Series(atq_annual_lag1, index=comp.index),
         np.nan,
     )
 
