@@ -1,11 +1,11 @@
-# F1D — CEO Communication Clarity Pipeline
+# F1D — Uncertainty in Language and Corporate Outcomes Pipeline
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://docs.astral.sh/ruff/)
 [![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](https://mypy-lang.org/)
 
-**Econometric pipeline for thesis: "CEO Communication Clarity as a Persistent Trait"**
+**Econometric pipeline for thesis: "Uncertainty in Language and Corporate Outcomes"**
 
 This pipeline processes 112,968 earnings call observations (2002–2018) to estimate CEO-level fixed effects in linguistic uncertainty, then runs robustness analyses across industry samples, extended controls, and economic regimes.
 
@@ -990,7 +990,7 @@ If you use this pipeline in your research, please cite:
 ```bibtex
 @software{f1d2026,
   author = {Thesis Author},
-  title = {F1D: CEO Communication Clarity Pipeline},
+  title = {F1D: Uncertainty in Language and Corporate Outcomes Pipeline},
   year = {2026},
   url = {https://github.com/user/f1d}
 }

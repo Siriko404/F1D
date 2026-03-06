@@ -1,7 +1,7 @@
 project:
-  name: F1D_Clarity
+  name: F1D_Uncertainty
   version: 6.0.0
-  description: Dictionary-based Clarity measure using LM Uncertainty & Weak_Modal
+  description: Pipeline for testing uncertainty in managerial language effects on corporate outcomes
 data:
   year_start: 2002
   year_end: 2018
