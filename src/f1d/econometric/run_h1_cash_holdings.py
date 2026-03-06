@@ -15,7 +15,7 @@ industry sample splits, same minimum-calls filter (>= 5 calls per firm),
 and same output conventions.
 
 Model Specification:
-    CashHoldings_lead ~ Uncertainty + Lev + Uncertainty_x_Lev +
+    CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
                         Size + TobinsQ + ROA + CapexAt +
                         DividendPayer + OCF_Volatility +
                         C(gvkey) + C(year)
@@ -28,9 +28,9 @@ Current ratio is not a standard control in the Opler et al. (1999) / Bates et al
 with all other pipeline tests (~13-17k).
 
 Hypothesis Tests (one-tailed):
-    H1a: beta(Uncertainty) > 0  -- higher speech uncertainty -> more cash hoarding
-    H1b: beta(Uncertainty x Lev) < 0  -- leverage attenuates uncertainty-cash link
-         (interaction term: Uncertainty_c * Lev_c, mean-centered for interpretation)
+    H1a: beta({uncertainty_var}) > 0  -- higher speech uncertainty -> more cash hoarding
+    H1b: beta({uncertainty_var} x Lev) < 0  -- leverage attenuates uncertainty-cash link
+         (interaction term: {uncertainty_var}_x_Lev)
 
 Industry Samples:
     - Main:    FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -244,8 +244,7 @@ def prepare_regression_data(
     - Drops rows where CashHoldings_lead is NaN (last-year/gap-year calls)
     - Drops rows missing required variables (complete cases)
     - Applies minimum-calls-per-firm filter
-    - Renames uncertainty variable to 'Uncertainty' for formula clarity
-    - Creates interaction term Uncertainty_x_Lev (raw, not mean-centered;
+    - Creates interaction term {uncertainty_var}_x_Lev (raw, not mean-centered;
       mean-centering is redundant when firm FE absorb within-group means
       and would bias the interaction term interpretation -- MAJOR-2 fix)
 
@@ -254,7 +253,7 @@ def prepare_regression_data(
         uncertainty_var: Name of the uncertainty measure column
 
     Returns:
-        Prepared DataFrame ready for OLS with Uncertainty, Uncertainty_x_Lev
+        Prepared DataFrame ready for OLS with uncertainty_var and interaction term
     """
     required = (
         [
@@ -296,14 +295,11 @@ def prepare_regression_data(
         f"{len(df):,} calls, {df['gvkey'].nunique():,} firms"
     )
 
-    # Rename uncertainty measure to generic 'Uncertainty' for formula
-    df = df.rename(columns={uncertainty_var: "Uncertainty"})
-
     # MAJOR-2 fix: do NOT globally mean-center Uncertainty or Lev.
     # Firm FE (C(gvkey)) already demean within firms; global centering
     # is redundant and creates a biased interaction when combined with FE.
     # The interaction is constructed from raw (within-firm demeaned by FE) values.
-    df["Uncertainty_x_Lev"] = df["Uncertainty"] * df["Lev"]
+    df[f"{uncertainty_var}_x_Lev"] = df[uncertainty_var] * df["Lev"]
 
     return df
 
@@ -321,7 +317,7 @@ def run_regression(
     """Run OLS regression with firm FE + year FE (call-level), firm-clustered SEs.
 
     Model:
-        CashHoldings_lead ~ Uncertainty + Lev + Uncertainty_x_Lev +
+        CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
                             Size + TobinsQ + ROA + CapexAt +
                             DividendPayer + OCF_Volatility +
                             C(gvkey) + C(year)
@@ -333,7 +329,7 @@ def run_regression(
     Firm-clustered SEs correct for within-firm correlation in residuals.
 
     GAP-5: CashHoldings (contemporaneous) excluded from controls per v2 design.
-    MAJOR-2: No pre-centering of Uncertainty or Lev; firm FE absorb within-group
+    MAJOR-2: No pre-centering of {uncertainty_var} or Lev; firm FE absorb within-group
              means. Interaction constructed from raw values.
 
     Args:
@@ -358,12 +354,12 @@ def run_regression(
     # Build formula using PanelOLS syntax
     formula = (
         "CashHoldings_lead ~ 1 + "
-        "Uncertainty + Lev + Uncertainty_x_Lev + "
+        f"{uncertainty_var} + Lev + {uncertainty_var}_x_Lev + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
     print(
-        f"  Formula: CashHoldings_lead ~ Uncertainty + Lev + Uncertainty_x_Lev "
+        f"  Formula: CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev "
         f"+ {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
@@ -392,14 +388,14 @@ def run_regression(
     print(f"  Within-R²: {within_r2:.4f}")
 
     # One-tailed hypothesis tests
-    beta1 = model.params.get("Uncertainty", np.nan)
-    beta3 = model.params.get("Uncertainty_x_Lev", np.nan)
-    p1_two = model.pvalues.get("Uncertainty", np.nan)
-    p3_two = model.pvalues.get("Uncertainty_x_Lev", np.nan)
-    beta1_se = model.std_errors.get("Uncertainty", np.nan)
-    beta3_se = model.std_errors.get("Uncertainty_x_Lev", np.nan)
-    beta1_t = model.tstats.get("Uncertainty", np.nan)
-    beta3_t = model.tstats.get("Uncertainty_x_Lev", np.nan)
+    beta1 = model.params.get(uncertainty_var, np.nan)
+    beta3 = model.params.get(f"{uncertainty_var}_x_Lev", np.nan)
+    p1_two = model.pvalues.get(uncertainty_var, np.nan)
+    p3_two = model.pvalues.get(f"{uncertainty_var}_x_Lev", np.nan)
+    beta1_se = model.std_errors.get(uncertainty_var, np.nan)
+    beta3_se = model.std_errors.get(f"{uncertainty_var}_x_Lev", np.nan)
+    beta1_t = model.tstats.get(uncertainty_var, np.nan)
+    beta3_t = model.tstats.get(f"{uncertainty_var}_x_Lev", np.nan)
 
     # H1a: beta1 > 0
     if not np.isnan(p1_two) and not np.isnan(beta1):
@@ -417,10 +413,10 @@ def run_regression(
     h1b = (not np.isnan(p3_one)) and (p3_one < 0.05) and (beta3 < 0)
 
     print(
-        f"  beta1 (Uncertainty):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H1a={'YES' if h1a else 'no'}"
+        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H1a={'YES' if h1a else 'no'}"
     )
     print(
-        f"  beta3 (Unc x Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H1b={'YES' if h1b else 'no'}"
+        f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H1b={'YES' if h1b else 'no'}"
     )
 
     # Store metadata as a plain dict (not attached to model object -- MINOR-4 fix)
@@ -501,7 +497,7 @@ def save_outputs(
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
 
     # GAP-7 fix: custom LaTeX table that correctly shows the hypothesis test
-    # coefficients (Uncertainty, Lev, Uncertainty_x_Lev) which make_accounting_table
+    # coefficients ({uncertainty_var}, Lev, {uncertainty_var}_x_Lev) which make_accounting_table
     # cannot render (it only shows control variables).
     _save_latex_table(all_results, out_dir)
 
@@ -568,9 +564,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         )
 
         for var_key, label in [
-            ("beta1", "Uncertainty"),
+            ("beta1", "$\\beta_1$"),
             ("beta1_se", ""),
-            ("beta3", "Uncertainty $\\times$ Lev"),
+            ("beta3", "$\\beta_3$ (Measure $\\times$ Lev)"),
             ("beta3_se", ""),
         ]:
             row_cells = []
@@ -657,7 +653,7 @@ def generate_report(
         "## Model Specification",
         "",
         "```",
-        "CashHoldings_lead ~ Uncertainty + Lev + Uncertainty_x_Lev +",
+        "CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +",
         "    Size + TobinsQ + ROA + CapexAt +",
         "    DividendPayer + OCF_Volatility +",
         "    C(gvkey) + C(year)",

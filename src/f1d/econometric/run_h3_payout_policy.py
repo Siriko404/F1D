@@ -171,8 +171,7 @@ def prepare_regression_data(
     # Filter to only firms that paid dividends in the trailing 5-year window
     df = df[df["is_div_payer_5yr"] == 1].copy()
 
-    df["Uncertainty"] = df[uncertainty_var]
-    df["Uncertainty_x_Lev"] = df["Uncertainty"] * df["Lev"]
+    df[f"{uncertainty_var}_x_Lev"] = df[uncertainty_var] * df["Lev"]
 
     return df
 
@@ -186,13 +185,13 @@ def run_regression(
     controls = [c for c in CONTROL_VARS if c in df_sample.columns]
 
     formula = (
-        f"{dv_var} ~ 1 + Uncertainty + Lev + Uncertainty_x_Lev + "
+        f"{dv_var} ~ 1 + {uncertainty_var} + Lev + {uncertainty_var}_x_Lev + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
 
     print(
-        f"  Formula: {dv_var} ~ Uncertainty + Lev + Uncertainty_x_Lev + {' + '.join(controls)} + EntityEffects + TimeEffects"
+        f"  Formula: {dv_var} ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev + {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
@@ -219,14 +218,14 @@ def run_regression(
     within_r2 = float(model.rsquared_within)
     print(f"  Within-R²: {within_r2:.4f}")
 
-    beta1 = model.params.get("Uncertainty", np.nan)
-    beta3 = model.params.get("Uncertainty_x_Lev", np.nan)
-    p1_two = model.pvalues.get("Uncertainty", np.nan)
-    p3_two = model.pvalues.get("Uncertainty_x_Lev", np.nan)
-    beta1_se = model.std_errors.get("Uncertainty", np.nan)
-    beta3_se = model.std_errors.get("Uncertainty_x_Lev", np.nan)
-    beta1_t = model.tstats.get("Uncertainty", np.nan)
-    beta3_t = model.tstats.get("Uncertainty_x_Lev", np.nan)
+    beta1 = model.params.get(uncertainty_var, np.nan)
+    beta3 = model.params.get(f"{uncertainty_var}_x_Lev", np.nan)
+    p1_two = model.pvalues.get(uncertainty_var, np.nan)
+    p3_two = model.pvalues.get(f"{uncertainty_var}_x_Lev", np.nan)
+    beta1_se = model.std_errors.get(uncertainty_var, np.nan)
+    beta3_se = model.std_errors.get(f"{uncertainty_var}_x_Lev", np.nan)
+    beta1_t = model.tstats.get(uncertainty_var, np.nan)
+    beta3_t = model.tstats.get(f"{uncertainty_var}_x_Lev", np.nan)
 
     # Direction tests depend on DV
     if dv_var == "div_stability_lead":
@@ -245,10 +244,10 @@ def run_regression(
         h3a_text = "YES" if h3a_sig else "no"
         h3b_text = "YES" if h3b_sig else "no"
         print(
-            f"  beta1 (Uncertainty):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3a={h3a_text}"
+            f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3a={h3a_text}"
         )
         print(
-            f"  beta3 (Unc x Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H3b={h3b_text}"
+            f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H3b={h3b_text}"
         )
 
     else:
@@ -268,10 +267,10 @@ def run_regression(
         h3a_text = "YES" if h3a_sig else "no"
         h3b_text = "YES" if h3b_sig else "no"
         print(
-            f"  beta1 (Uncertainty):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3a={h3a_text}"
+            f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3a={h3a_text}"
         )
         print(
-            f"  beta3 (Unc x Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H3b={h3b_text}"
+            f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H3b={h3b_text}"
         )
 
     meta = {

@@ -247,6 +247,8 @@ __all__ = [
     "PRiskQLag2Builder",
     # H_TT
     "CEOStyleRealtimeBuilder",
+    # H13 Employment Growth
+    "EmploymentGrowthLeadBuilder",
     # Panel-building utilities
     "assign_industry_sample",
     "attach_fyearq",
@@ -287,6 +289,9 @@ from .prisk_q_lag2 import PRiskQLag2Builder
 
 # H_TT Tone at the Top
 from .ceo_style_realtime import CEOStyleRealtimeBuilder
+
+# H13 Employment Growth Lead
+from .employment_growth_lead import EmploymentGrowthLeadBuilder
 
 # Panel-building utilities (canonical shared helpers — all panel builders must import from here)
 from .panel_utils import assign_industry_sample, attach_fyearq

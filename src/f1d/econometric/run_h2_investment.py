@@ -15,14 +15,14 @@ firm-clustered standard errors, same industry sample splits, same minimum-calls
 filter (>= 5 calls per firm), and same output conventions.
 
 Model Specification:
-    InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty_x_Lev +
+    InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
                               Size + TobinsQ + ROA + CashFlow + SalesGrowth +
                               C(gvkey) + C(year)
 
 Hypothesis Tests (one-tailed):
-    H2a: beta(Uncertainty) < 0  -- higher speech uncertainty -> lower investment efficiency
+    H2a: beta({uncertainty_var}) < 0  -- higher speech uncertainty -> lower investment efficiency
          p_one = p_two/2 if beta1 < 0 else 1 - p_two/2
-    H2b: beta(Uncertainty x Lev) > 0  -- leverage attenuates uncertainty-investment link
+    H2b: beta({uncertainty_var} x Lev) > 0  -- leverage attenuates uncertainty-investment link
          p_one = p_two/2 if beta3 > 0 else 1 - p_two/2
          (opposite sign convention from H1: H1b beta3 < 0, H2b beta3 > 0)
 
@@ -234,8 +234,7 @@ def prepare_regression_data(
     - Drops rows where InvestmentResidual_lead is NaN (last-year/gap-year calls)
     - Drops rows missing required variables (complete cases)
     - Applies minimum-calls-per-firm filter
-    - Renames uncertainty variable to 'Uncertainty' for formula clarity
-    - Creates interaction term Uncertainty_x_Lev (raw, not mean-centered;
+    - Creates interaction term {uncertainty_var}_x_Lev (raw, not mean-centered;
       firm FE absorb within-group means -- no global pre-centering)
 
     Args:
@@ -243,7 +242,7 @@ def prepare_regression_data(
         uncertainty_var: Name of the uncertainty measure column
 
     Returns:
-        Prepared DataFrame ready for OLS with Uncertainty, Uncertainty_x_Lev
+        Prepared DataFrame ready for OLS with uncertainty_var and interaction term
     """
     required = (
         [
@@ -284,12 +283,9 @@ def prepare_regression_data(
         f"{len(df):,} calls, {df['gvkey'].nunique():,} firms"
     )
 
-    # Rename uncertainty measure to generic 'Uncertainty' for formula
-    df = df.rename(columns={uncertainty_var: "Uncertainty"})
-
     # No global mean-centering: firm FE (C(gvkey)) demean within firms.
-    # Raw Uncertainty * Lev interaction -- same as H1 post-audit design.
-    df["Uncertainty_x_Lev"] = df["Uncertainty"] * df["Lev"]
+    # Interaction term with actual variable name
+    df[f"{uncertainty_var}_x_Lev"] = df[uncertainty_var] * df["Lev"]
 
     return df
 
@@ -307,7 +303,7 @@ def run_regression(
     """Run OLS regression with firm FE + year FE (call-level), firm-clustered SEs.
 
     Model:
-        InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty_x_Lev +
+        InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
                                   Size + TobinsQ + ROA + CashFlow + SalesGrowth +
                                   C(gvkey) + C(year)
 
@@ -341,12 +337,12 @@ def run_regression(
     # Build formula
     formula = (
         "InvestmentResidual_lead ~ 1 + "
-        "Uncertainty + Lev + Uncertainty_x_Lev + "
+        f"{uncertainty_var} + Lev + {uncertainty_var}_x_Lev + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
     print(
-        f"  Formula: InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty_x_Lev "
+        f"  Formula: InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev "
         f"+ {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
@@ -374,14 +370,14 @@ def run_regression(
     print(f"  Within-R²: {within_r2:.4f}")
 
     # One-tailed hypothesis tests
-    beta1 = model.params.get("Uncertainty", np.nan)
-    beta3 = model.params.get("Uncertainty_x_Lev", np.nan)
-    p1_two = model.pvalues.get("Uncertainty", np.nan)
-    p3_two = model.pvalues.get("Uncertainty_x_Lev", np.nan)
-    beta1_se = model.std_errors.get("Uncertainty", np.nan)
-    beta3_se = model.std_errors.get("Uncertainty_x_Lev", np.nan)
-    beta1_t = model.tstats.get("Uncertainty", np.nan)
-    beta3_t = model.tstats.get("Uncertainty_x_Lev", np.nan)
+    beta1 = model.params.get(uncertainty_var, np.nan)
+    beta3 = model.params.get(f"{uncertainty_var}_x_Lev", np.nan)
+    p1_two = model.pvalues.get(uncertainty_var, np.nan)
+    p3_two = model.pvalues.get(f"{uncertainty_var}_x_Lev", np.nan)
+    beta1_se = model.std_errors.get(uncertainty_var, np.nan)
+    beta3_se = model.std_errors.get(f"{uncertainty_var}_x_Lev", np.nan)
+    beta1_t = model.tstats.get(uncertainty_var, np.nan)
+    beta3_t = model.tstats.get(f"{uncertainty_var}_x_Lev", np.nan)
 
     # H2a: beta1 < 0  (opposite of H1a: H1a beta1 > 0)
     if not np.isnan(p1_two) and not np.isnan(beta1):
@@ -399,10 +395,10 @@ def run_regression(
     h2b = (not np.isnan(p3_one)) and (p3_one < 0.05) and (beta3 > 0)
 
     print(
-        f"  beta1 (Uncertainty):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H2a={'YES' if h2a else 'no'}"
+        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H2a={'YES' if h2a else 'no'}"
     )
     print(
-        f"  beta3 (Unc x Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H2b={'YES' if h2b else 'no'}"
+        f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H2b={'YES' if h2b else 'no'}"
     )
 
     # Store metadata as a plain dict
@@ -541,9 +537,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         )
 
         for var_key, label in [
-            ("beta1", "Uncertainty"),
+            ("beta1", "$\\beta_1$"),
             ("beta1_se", ""),
-            ("beta3", "Uncertainty $\\times$ Lev"),
+            ("beta3", "$\\beta_3$ (Measure $\\times$ Lev)"),
             ("beta3_se", ""),
         ]:
             row_cells = []
@@ -631,7 +627,7 @@ def generate_report(
         "## Model Specification",
         "",
         "```",
-        "InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty_x_Lev +",
+        "InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +",
         "    Size + TobinsQ + ROA + CashFlow + SalesGrowth +",
         "    C(gvkey) + C(year)",
         "```",
