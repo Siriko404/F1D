@@ -34,6 +34,9 @@ logger = logging.getLogger(__name__)
 
 CRSP_RETURN_COLS = ["StockRet", "MarketRet", "Volatility", "amihud_illiq"]
 
+# Additional columns needed for bid-ask spread calculations (H14)
+CRSP_BIDASK_COLS = ["BIDLO", "ASKHI", "SHROUT"]
+
 MIN_TRADING_DAYS = 10
 DAYS_AFTER_PREV_CALL = 5
 DAYS_BEFORE_CURRENT_CALL = 5
@@ -65,7 +68,8 @@ def _load_crsp_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]
                         df = df.rename(columns={"DATE": "date"})
 
                     # Ensure columns exist before subsetting
-                    keep_cols = ["PERMNO", "date", "RET", "VWRETD", "VOL", "PRC"]
+                    # Include BIDLO, ASKHI, SHROUT for bid-ask spread calculations (H14)
+                    keep_cols = ["PERMNO", "date", "RET", "VWRETD", "VOL", "PRC", "BIDLO", "ASKHI", "SHROUT"]
                     for c in keep_cols:
                         if c not in df.columns:
                             df[c] = np.nan
@@ -81,7 +85,7 @@ def _load_crsp_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]
     crsp = pd.concat(all_data, ignore_index=True)
 
     crsp["date"] = pd.to_datetime(crsp["date"])
-    for col in ["RET", "VOL", "VWRETD", "ASKHI", "BIDLO", "PRC"]:
+    for col in ["RET", "VOL", "VWRETD", "ASKHI", "BIDLO", "PRC", "SHROUT"]:
         if col in crsp.columns:
             crsp[col] = pd.to_numeric(crsp[col], errors="coerce")
     if "PRC" in crsp.columns:
@@ -275,6 +279,9 @@ class CRSPEngine:
         self._cache: Optional[pd.DataFrame] = None
         self._cache_root: Optional[Path] = None
         self._lock = threading.Lock()
+        # Separate cache for raw daily data (H14 event-window calculations)
+        self._raw_cache: Optional[pd.DataFrame] = None
+        self._raw_cache_root: Optional[Path] = None
 
     def _is_cached(self, root_path: Path) -> bool:
         return (
@@ -444,6 +451,57 @@ class CRSPEngine:
             self._cache_root = root_path
             return result
 
+    def get_raw_daily_data(self, root_path: Path, years: Optional[List[int]] = None) -> pd.DataFrame:
+        """Return raw CRSP daily data with BIDLO, ASKHI, SHROUT columns (cached).
+
+        Used for event-window calculations (H14) that need daily bid/ask data
+        around specific call dates.
+
+        Args:
+            root_path: Project root path
+            years: Optional list of years to load. If None, loads all available years.
+
+        Returns:
+            DataFrame with columns: PERMNO, date, RET, VWRETD, VOL, PRC, BIDLO, ASKHI, SHROUT
+        """
+        # Check cache
+        if self._raw_cache is not None and self._raw_cache_root == root_path:
+            if years is None:
+                return self._raw_cache
+            # Filter to requested years
+            cached_years = self._raw_cache["date"].dt.year.unique()
+            if all(y in cached_years for y in years):
+                return self._raw_cache[self._raw_cache["date"].dt.year.isin(years)]
+
+        crsp_dir = root_path / "inputs" / "CRSP_DSF"
+
+        # Determine years to load
+        if years is None:
+            # Load all available years
+            years = []
+            for fp in crsp_dir.glob("CRSP_DSF_*_Q1.parquet"):
+                year_str = fp.stem.split("_")[2]
+                try:
+                    years.append(int(year_str))
+                except ValueError:
+                    continue
+            years = sorted(years)
+
+        logger.info(f"    CRSPEngine: loading raw daily data for {len(years)} years...")
+        crsp = _load_crsp_years(crsp_dir, years)
+
+        if crsp is None:
+            logger.warning("    CRSPEngine: No raw daily data loaded!")
+            return pd.DataFrame(columns=["PERMNO", "date"] + CRSP_BIDASK_COLS)
+
+        logger.info(f"    CRSPEngine: Loaded {len(crsp):,} raw daily records")
+
+        # Cache for future use
+        self._raw_cache = crsp
+        self._raw_cache_root = root_path
+
+        return crsp
+
 
 # Module-level singleton — shared across all individual builders in one process
 _engine = CRSPEngine()
@@ -454,4 +512,4 @@ def get_engine() -> CRSPEngine:
     return _engine
 
 
-__all__ = ["CRSPEngine", "CRSP_RETURN_COLS", "get_engine"]
+__all__ = ["CRSPEngine", "CRSP_RETURN_COLS", "CRSP_BIDASK_COLS", "get_engine"]

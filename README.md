@@ -295,8 +295,13 @@ No symlinks needed — the latest directory is always found by timestamp.
 
 ## Verified Results
 
-Last full pipeline run: **2026-03-05**. All scripts passed end-to-end with zero errors,
+Last full pipeline run: **2026-03-06**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
+
+**Recent updates (2026-03-06):**
+- Added H14 Bid-Ask Spread hypothesis test (event-window spread change around earnings calls)
+- Added H13.1 Capex Intensity and H13.2 Employment Growth hypothesis tests
+- Fixed variable naming in regression TXT reports (H7, H14 now show actual variable names instead of `_iv1`, `_iv2`)
 
 **Summary of hypothesis test results (2026-03-06 run):**
 
@@ -315,6 +320,9 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H11 Political Risk Uncertainty | **STRONG SUPPORT** | 16/18 significant (all p<0.05) |
 | H11-Lag Political Risk | **PARTIAL** | 12/18 significant with lagged PRiskQ |
 | H12 Dividend Intensity | **NOT SUPPORTED** | 0/12 significant (Main sample) |
+| H13.1 Capex Intensity | **Partial** | 2/18 significant (Manager measures only) |
+| H13.2 Employment Growth | **NOT SUPPORTED** | 0/18 significant |
+| H14 Bid-Ask Spread | **NOT SUPPORTED** | 0/12 significant (β negative or zero) |
 | H9 Takeover Hazards | **Partial** | CEO models run; Manager clarity missing |
 
 ### CEO Clarity (H0.2) — `run_h0_2_ceo_clarity`
@@ -632,6 +640,68 @@ DivIntensity_lead = DivIntensity shifted one fiscal year forward.
 Language uncertainty does not predict future dividend intensity.
 All β₁ coefficients positive or near-zero (opposite of hypothesis).
 
+### H13.1 Capex Intensity — `run_h13_1_capex`
+
+Tests whether language uncertainty predicts future capital expenditure intensity.
+DV: CapexIntensity_lead = (capx / at)_{t+1} (firm-year level, forward).
+IV: Avg_Uncertainty = mean call-level uncertainty within firm-year.
+
+Model: `CapexIntensity_{t+1} ~ Avg_Uncertainty_t + Size + Lev + ROA + TobinsQ + CashHoldings + SalesGrowth + FirmFE + YearFE`
+
+| Sample | N Obs (firm-years) | H13.1 Significant (β₁<0) |
+|--------|-------------------:|-------------------------:|
+| Main | 15,175–21,653 | 0/12 |
+| Finance | 2,752–4,928 | 0/12 |
+| **Total** | | **0/24** |
+
+**Result:** H13.1 **NOT SUPPORTED** — 0/24 significant in predicted direction.
+
+### H13.2 Employment Growth — `run_h13_2_employment`
+
+Tests whether language uncertainty predicts future employment growth.
+DV: EmploymentGrowth_lead = (emp_{t+1} - emp_t) / emp_t (firm-year level, forward).
+IV: Avg_Uncertainty = mean call-level uncertainty within firm-year.
+
+Model: `EmploymentGrowth_{t+1} ~ Avg_Uncertainty_t + Size + Lev + ROA + TobinsQ + CashHoldings + SalesGrowth + FirmFE + YearFE`
+
+| Sample | N Obs (firm-years) | H13.2 Significant (β₁<0) |
+|--------|-------------------:|-------------------------:|
+| Main | 15,175–21,653 | 0/12 |
+| Finance | 2,752–4,928 | 0/12 |
+| **Total** | | **0/24** |
+
+**Result:** H13.2 **NOT SUPPORTED** — 0/24 significant in predicted direction.
+
+### H14 Bid-Ask Spread Change — `run_h14_bidask_spread`
+
+Tests whether language uncertainty is associated with reduced market liquidity around earnings calls.
+DV: ΔSpread = Spread[+1,+3] - Spread[-3,-1] (change in relative bid-ask spread around call).
+IV: Call-level uncertainty measures (Manager_QA, CEO_QA, Manager_Pres, CEO_Pres).
+
+Spread formula: `2 * (ASKHI - BIDLO) / (ASKHI + BIDLO)` using CRSP daily bid/ask data.
+
+Model: `ΔSpread ~ Uncertainty + Size + StockPrice + Turnover + Volatility + PreCallSpread + AbsSurprise + EntityEffects + TimeEffects`
+
+**Stage 3** (`build_h14_bidask_spread_panel`): Call-level panel with event-window spread change.
+- Pre-call window: trading days -3, -2, -1 relative to call date
+- Post-call window: trading days +1, +2, +3 relative to call date
+- Minimum 2 valid trading days required in each window
+
+| Sample | N Calls | ΔSpread Mean | ΔSpread SD |
+|--------|--------:|-------------:|-----------:|
+| Main | 87,157 | -0.0043 | 0.0222 |
+| Finance | 20,315 | -0.0036 | 0.0181 |
+| Utility | 4,246 | -0.0020 | 0.0113 |
+
+| Spec | N Obs | Manager QA β | p(one) | Manager Pres β | p(one) | Within-R² |
+|------|------:|-------------:|-------:|---------------:|-------:|----------:|
+| (1) QA Uncertainty | 45,807 | -0.0007 | 0.96 | — | — | 0.398 |
+| (2) Pres Uncertainty | 45,555 | — | — | 0.0002 | 0.28 | 0.397 |
+| (3) Joint | 44,686 | -0.0007 | 0.95 | 0.0002 | 0.28 | 0.397 |
+
+**Result:** H14 **NOT SUPPORTED** — 0/12 significant in predicted direction (β > 0).
+Mean ΔSpread is negative (spreads narrow after calls as uncertainty resolves), but language uncertainty does not significantly affect this narrowing.
+
 ### Summary Statistics (H11) — `generate_summary_stats`
 
 Main sample: 88,205 call observations, 1,884 firms, 3,533 CEOs, 2002–2018.
@@ -686,7 +756,7 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | Module | Input Source | Variables Computed | Winsorization |
 |--------|--------------|-------------------|---------------|
 | `_compustat_engine.py` | Compustat quarterly | Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, EPS_Growth, CashHoldings, TobinsQ, CapexAt, DividendPayer, OCF_Volatility | Per-year 1%/99% |
-| `_crsp_engine.py` | CRSP daily + CCM | StockRet, MarketRet, Volatility, amihud_illiq | Per-year 1%/99% |
+| `_crsp_engine.py` | CRSP daily + CCM | StockRet, MarketRet, Volatility, amihud_illiq, BIDLO, ASKHI, SHROUT | Per-year 1%/99% |
 | `_linguistic_engine.py` | Stage 2 linguistic vars | All 25 _pct columns (uncertainty, sentiment, modal) | Per-year 1%/99% |
 | `_ibes_engine.py` | IBES forecasts | SurpDec, Dispersion | None (bounded) |
 | `_hassan_engine.py` | Political risk data | PRiskFY | None |
@@ -765,6 +835,10 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | `prisk_q_lag.py` | `PRiskQ_lag` | Hassan (1-quarter lag) |
 | `prisk_q_lag2.py` | `PRiskQ_lag2` | Hassan (2-quarter lag) |
 | `div_intensity.py` | `DivIntensity` | Compustat (dvy_Q4 / atq) |
+| `bidask_spread_change.py` | `delta_spread`, `pre_call_spread` | CRSP (bid-ask spread change around call) |
+| `stock_price.py` | `StockPrice` | CRSP (price at call date) |
+| `turnover.py` | `Turnover` | CRSP (VOL/SHROUT at call date) |
+| `employment_growth_lead.py` | `EmploymentGrowth_lead` | Compustat (t+1 employee growth) |
 
 ### Important Implementation Notes
 
