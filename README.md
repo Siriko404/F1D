@@ -391,17 +391,16 @@ language are not significant. Utility sample null.
 
 ### H2 Investment Efficiency — `run_h2_investment`
 
-Tests whether vague managers exhibit more underinvestment (H2a: β₁ < 0 for InvestmentResidual)
-and whether leverage attenuates this relationship (H2b: β₃ > 0 for Uncertainty×Lev).
+Tests whether vague managers exhibit more underinvestment (H2: β₁ < 0 for InvestmentResidual).
 DV: `InvestmentResidual_{t+1}` (Biddle et al. 2009; >0=overinvestment, <0=underinvestment).
 
-Model: `InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty×Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + EntityEffects + TimeEffects`
+Model: `InvestmentResidual_lead ~ Uncertainty + Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + DivIntensity + CashHoldings + firm_maturity + StockRet + EntityEffects + TimeEffects`
 
 Standard errors: firm-clustered (cov_type='clustered', cluster_entity=True).
 
 **Stage 3**: 112,968 calls, 101,923 with valid lead (90.2%).
 
-| Sample | H2a significant (β₁<0) | Notable measure |
+| Sample | H2 significant (β₁<0) | Notable measure |
 |--------|----------------------:|-----------------|
 | Main | **1/6** | CEO_Pres_Uncertainty (β=-0.0058, p=0.011) |
 | Finance | 0/6 | — |

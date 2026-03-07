@@ -15,16 +15,13 @@ firm-clustered standard errors, same industry sample splits, same minimum-calls
 filter (>= 5 calls per firm), and same output conventions.
 
 Model Specification:
-    InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
+    InvestmentResidual_lead ~ {uncertainty_var} + Lev +
                               Size + TobinsQ + ROA + CashFlow + SalesGrowth +
                               C(gvkey) + C(year)
 
-Hypothesis Tests (one-tailed):
-    H2a: beta({uncertainty_var}) < 0  -- higher speech uncertainty -> lower investment efficiency
-         p_one = p_two/2 if beta1 < 0 else 1 - p_two/2
-    H2b: beta({uncertainty_var} x Lev) > 0  -- leverage attenuates uncertainty-investment link
-         p_one = p_two/2 if beta3 > 0 else 1 - p_two/2
-         (opposite sign convention from H1: H1b beta3 < 0, H2b beta3 > 0)
+Hypothesis Test (one-tailed):
+    H2: beta({uncertainty_var}) < 0  -- higher speech uncertainty -> lower investment efficiency
+        p_one = p_two/2 if beta1 < 0 else 1 - p_two/2
 
 Industry Samples:
     - Main:    FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -42,7 +39,7 @@ Uncertainty Measures (6):
 Standard Errors:
     Firm-clustered (cov_type="cluster", groups=df["gvkey"]) -- same as H1.
 
-Expected results: null (0/6 significant for H2a, 0/6 for H2b), faithfully reported.
+Expected results: null (0/6 significant for H2), faithfully reported.
 
 Inputs:
     - outputs/variables/h2_investment/latest/h2_investment_panel.parquet
@@ -141,7 +138,7 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    # Leverage (main effect + interaction)
+    # Leverage
     {"col": "Lev", "label": "Leverage"},
     # Control variables
     {"col": "Size", "label": "Firm Size (log AT)"},
@@ -234,15 +231,13 @@ def prepare_regression_data(
     - Drops rows where InvestmentResidual_lead is NaN (last-year/gap-year calls)
     - Drops rows missing required variables (complete cases)
     - Applies minimum-calls-per-firm filter
-    - Creates interaction term {uncertainty_var}_x_Lev (raw, not mean-centered;
-      firm FE absorb within-group means -- no global pre-centering)
 
     Args:
         panel: Full call-level panel from Stage 3
         uncertainty_var: Name of the uncertainty measure column
 
     Returns:
-        Prepared DataFrame ready for OLS with uncertainty_var and interaction term
+        Prepared DataFrame ready for OLS with uncertainty_var
     """
     required = (
         [
@@ -283,10 +278,6 @@ def prepare_regression_data(
         f"{len(df):,} calls, {df['gvkey'].nunique():,} firms"
     )
 
-    # No global mean-centering: firm FE (C(gvkey)) demean within firms.
-    # Interaction term with actual variable name
-    df[f"{uncertainty_var}_x_Lev"] = df[uncertainty_var] * df["Lev"]
-
     return df
 
 
@@ -303,17 +294,14 @@ def run_regression(
     """Run OLS regression with firm FE + year FE (call-level), firm-clustered SEs.
 
     Model:
-        InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
+        InvestmentResidual_lead ~ {uncertainty_var} + Lev +
                                   Size + TobinsQ + ROA + CashFlow + SalesGrowth +
                                   C(gvkey) + C(year)
 
     Standard errors: firm-clustered (groups=gvkey) -- same as H1.
 
-    H2a: beta1 < 0  (higher uncertainty -> lower investment efficiency)
-         p_one = p_two/2 if beta1 < 0 else 1 - p_two/2
-    H2b: beta3 > 0  (leverage attenuates uncertainty-investment link)
-         p_one = p_two/2 if beta3 > 0 else 1 - p_two/2
-         NOTE: opposite sign from H1b (H1b: beta3 < 0; H2b: beta3 > 0)
+    H2: beta1 < 0  (higher uncertainty -> lower investment efficiency)
+        p_one = p_two/2 if beta1 < 0 else 1 - p_two/2
 
     Args:
         df_sample: Sample-filtered and prepared DataFrame
@@ -337,12 +325,12 @@ def run_regression(
     # Build formula
     formula = (
         "InvestmentResidual_lead ~ 1 + "
-        f"{uncertainty_var} + Lev + {uncertainty_var}_x_Lev + "
+        f"{uncertainty_var} + Lev + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
     print(
-        f"  Formula: InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev "
+        f"  Formula: InvestmentResidual_lead ~ {uncertainty_var} + Lev "
         f"+ {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
@@ -369,36 +357,22 @@ def run_regression(
     within_r2 = float(model.rsquared_within)
     print(f"  Within-R²: {within_r2:.4f}")
 
-    # One-tailed hypothesis tests
+    # One-tailed hypothesis test
     beta1 = model.params.get(uncertainty_var, np.nan)
-    beta3 = model.params.get(f"{uncertainty_var}_x_Lev", np.nan)
     p1_two = model.pvalues.get(uncertainty_var, np.nan)
-    p3_two = model.pvalues.get(f"{uncertainty_var}_x_Lev", np.nan)
     beta1_se = model.std_errors.get(uncertainty_var, np.nan)
-    beta3_se = model.std_errors.get(f"{uncertainty_var}_x_Lev", np.nan)
     beta1_t = model.tstats.get(uncertainty_var, np.nan)
-    beta3_t = model.tstats.get(f"{uncertainty_var}_x_Lev", np.nan)
 
-    # H2a: beta1 < 0  (opposite of H1a: H1a beta1 > 0)
+    # H2: beta1 < 0
     if not np.isnan(p1_two) and not np.isnan(beta1):
         p1_one = p1_two / 2 if beta1 < 0 else 1 - p1_two / 2
     else:
         p1_one = np.nan
 
-    # H2b: beta3 > 0  (opposite of H1b: H1b beta3 < 0)
-    if not np.isnan(p3_two) and not np.isnan(beta3):
-        p3_one = p3_two / 2 if beta3 > 0 else 1 - p3_two / 2
-    else:
-        p3_one = np.nan
-
-    h2a = (not np.isnan(p1_one)) and (p1_one < 0.05) and (beta1 < 0)
-    h2b = (not np.isnan(p3_one)) and (p3_one < 0.05) and (beta3 > 0)
+    h2_signif = (not np.isnan(p1_one)) and (p1_one < 0.05) and (beta1 < 0)
 
     print(
-        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H2a={'YES' if h2a else 'no'}"
-    )
-    print(
-        f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H2b={'YES' if h2b else 'no'}"
+        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H2={'YES' if h2_signif else 'no'}"
     )
 
     # Store metadata as a plain dict
@@ -410,13 +384,7 @@ def run_regression(
         "beta1_t": beta1_t,
         "beta1_p_two": p1_two,
         "beta1_p_one": p1_one,
-        "beta1_signif": h2a,
-        "beta3": beta3,
-        "beta3_se": beta3_se,
-        "beta3_t": beta3_t,
-        "beta3_p_two": p3_two,
-        "beta3_p_one": p3_one,
-        "beta3_signif": h2b,
+        "beta1_signif": h2_signif,
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),
@@ -539,8 +507,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         for var_key, label in [
             ("beta1", "$\\beta_1$"),
             ("beta1_se", ""),
-            ("beta3", "$\\beta_3$ (Measure $\\times$ Lev)"),
-            ("beta3_se", ""),
         ]:
             row_cells = []
             for m in UNCERTAINTY_MEASURES:
@@ -555,13 +521,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
                     row_cells.append(f"{v:.4f}{sig(p)}" if not np.isnan(v) else "")
                 elif var_key == "beta1_se":
                     v = meta.get("beta1_se", float("nan"))
-                    row_cells.append(f"({v:.4f})" if not np.isnan(v) else "")
-                elif var_key == "beta3":
-                    v = meta.get("beta3", float("nan"))
-                    p = meta.get("beta3_p_one", float("nan"))
-                    row_cells.append(f"{v:.4f}{sig(p)}" if not np.isnan(v) else "")
-                elif var_key == "beta3_se":
-                    v = meta.get("beta3_se", float("nan"))
                     row_cells.append(f"({v:.4f})" if not np.isnan(v) else "")
 
             row_label = label if label else ""
@@ -599,7 +558,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Variables are winsorized at 1\%/99\% by year at the engine level.",
         r"Unit of observation: the individual earnings call.",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed, direction per hypothesis).",
-        r"H2a: Uncertainty $< 0$; H2b: Uncertainty $\times$ Lev $> 0$.",
+        r"H2: Uncertainty $< 0$.",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -627,18 +586,18 @@ def generate_report(
         "## Model Specification",
         "",
         "```",
-        "InvestmentResidual_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +",
+        "InvestmentResidual_lead ~ {uncertainty_var} + Lev +",
         "    Size + TobinsQ + ROA + CashFlow + SalesGrowth +",
         "    C(gvkey) + C(year)",
         "```",
         "",
         "Standard errors: firm-clustered (cov_type='cluster', groups=gvkey)",
-        "One-tailed tests: H2a beta1 < 0; H2b beta3 > 0",
+        "One-tailed test: H2 beta1 < 0",
         "",
         "## Primary Results (all uncertainty measures)",
         "",
-        "| Sample | Measure | N | R2 | beta1 | p1 | H2a | beta3 | p3 | H2b |",
-        "|--------|---------|---|----|----|----|----|----|----|-----|",
+        "| Sample | Measure | N | R2 | beta1 | p1 | H2 |",
+        "|--------|---------|---|----|----|----|----|",
     ]
 
     for r in all_results:
@@ -652,14 +611,10 @@ def generate_report(
         r2 = meta.get("rsquared", float("nan"))
         b1 = meta.get("beta1", float("nan"))
         p1 = meta.get("beta1_p_one", float("nan"))
-        b3 = meta.get("beta3", float("nan"))
-        p3 = meta.get("beta3_p_one", float("nan"))
-        h2a = "YES" if meta.get("beta1_signif") else "no"
-        h2b = "YES" if meta.get("beta3_signif") else "no"
+        h2 = "YES" if meta.get("beta1_signif") else "no"
         lines.append(
             f"| {sample} | {short} | {n:,} | {r2:.4f} | "
-            f"{b1:.4f} | {p1:.4f} | {h2a} | "
-            f"{b3:.4f} | {p3:.4f} | {h2b} |"
+            f"{b1:.4f} | {p1:.4f} | {h2} |"
         )
 
     lines += [
@@ -674,11 +629,10 @@ def generate_report(
         ]
         if not sample_results:
             continue
-        h2a_n = sum(1 for r in sample_results if r.get("meta", {}).get("beta1_signif"))
-        h2b_n = sum(1 for r in sample_results if r.get("meta", {}).get("beta3_signif"))
+        h2_n = sum(1 for r in sample_results if r.get("meta", {}).get("beta1_signif"))
         n_total = len(sample_results)
         lines.append(
-            f"**{sample}:** H2a {h2a_n}/{n_total} significant | H2b {h2b_n}/{n_total} significant"
+            f"**{sample}:** H2 {h2_n}/{n_total} significant"
         )
 
     lines.append("")
@@ -840,11 +794,9 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Output:   {out_dir}")
     print(f"Total regressions completed: {len(all_results)}")
 
-    # H2a / H2b summary
-    h2a_total = sum(1 for r in all_results if r["meta"].get("beta1_signif"))
-    h2b_total = sum(1 for r in all_results if r["meta"].get("beta3_signif"))
-    print(f"H2a significant (beta1<0, p<0.05 one-tail): {h2a_total}/{len(all_results)}")
-    print(f"H2b significant (beta3>0, p<0.05 one-tail): {h2b_total}/{len(all_results)}")
+    # H2 summary
+    h2_total = sum(1 for r in all_results if r["meta"].get("beta1_signif"))
+    print(f"H2 significant (beta1<0, p<0.05 one-tail): {h2_total}/{len(all_results)}")
 
     return 0
 
