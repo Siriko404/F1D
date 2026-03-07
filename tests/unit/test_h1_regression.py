@@ -332,14 +332,15 @@ class TestH1HypothesisTests:
     """Tests for H1 hypothesis test calculations."""
 
     def test_one_tailed_pvalue_calculation(self):
-        """Test one-tailed p-value calculation for H1 (beta < 0)."""
-        # H1: beta < 0 (vagueness reduces cash holdings)
-        # If coef < 0, one-tailed p = two-tailed p / 2
+        """Test one-tailed p-value calculation for H1 (beta > 0)."""
+        # H1: beta > 0 (higher speech uncertainty -> more cash hoarding)
+        # If coef > 0, one-tailed p = two-tailed p / 2
+        # else: 1 - p_two_tailed / 2
 
-        coef = -0.05  # Negative as expected for H1
+        coef = 0.05  # Positive as expected for H1
         p_two_tailed = 0.04
 
-        if coef < 0:
+        if coef > 0:
             p_one_tailed = p_two_tailed / 2
         else:
             p_one_tailed = 1 - p_two_tailed / 2
@@ -347,30 +348,30 @@ class TestH1HypothesisTests:
         assert p_one_tailed == 0.02
         assert p_one_tailed < 0.05  # Significant at 5% level
 
-    def test_h1_supported_when_coef_negative_and_significant(self):
-        """Test that H1 is supported when coefficient is negative and significant."""
-        coef = -0.05
+    def test_h1_supported_when_coef_positive_and_significant(self):
+        """Test that H1 is supported when coefficient is positive and significant."""
+        coef = 0.05  # Positive
         p_one_tailed = 0.02
 
-        h1_supported = (p_one_tailed < 0.05) and (coef < 0)
+        h1_supported = (p_one_tailed < 0.05) and (coef > 0)
 
         assert h1_supported is True
 
-    def test_h1_not_supported_when_coef_positive(self):
-        """Test that H1 is not supported when coefficient is positive."""
-        coef = 0.03  # Wrong sign
+    def test_h1_not_supported_when_coef_negative(self):
+        """Test that H1 is not supported when coefficient is negative (wrong sign). """
+        coef = -0.03  # Wrong sign
         p_one_tailed = 0.02
 
-        h1_supported = (p_one_tailed < 0.05) and (coef < 0)
+        h1_supported = (p_one_tailed < 0.05) and (coef > 0)
 
         assert h1_supported is False
 
     def test_h1_not_supported_when_not_significant(self):
         """Test that H1 is not supported when not significant."""
-        coef = -0.05  # Correct sign
+        coef = 0.05  # Correct sign
         p_one_tailed = 0.10  # Not significant
 
-        h1_supported = (p_one_tailed < 0.05) and (coef < 0)
+        h1_supported = (p_one_tailed < 0.05) and (coef > 0)
 
         assert h1_supported is False
 

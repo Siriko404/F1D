@@ -15,22 +15,20 @@ industry sample splits, same minimum-calls filter (>= 5 calls per firm),
 and same output conventions.
 
 Model Specification:
-    CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
+    CashHoldings_lead ~ {uncertainty_var} + Lev +
                         Size + TobinsQ + ROA + CapexAt +
                         DividendPayer + OCF_Volatility +
                         C(gvkey) + C(year)
 
-Note: CurrentRatio (actq/lctq) was removed from controls because lctq is
+Note: CurrentRatio (actq/lctq) is removed from controls because lctq is
 structural-missing (~80%) for financial firms (FF12=11), silently eliminating
 ~12,800 Finance-sample observations and collapsing Finance N from ~17k to ~3.5k.
 Current ratio is not a standard control in the Opler et al. (1999) / Bates et al.
 (2009) cash holdings specification and its removal aligns the Finance sample N
 with all other pipeline tests (~13-17k).
 
-Hypothesis Tests (one-tailed):
-    H1a: beta({uncertainty_var}) > 0  -- higher speech uncertainty -> more cash hoarding
-    H1b: beta({uncertainty_var} x Lev) < 0  -- leverage attenuates uncertainty-cash link
-         (interaction term: {uncertainty_var}_x_Lev)
+Hypothesis Test (one-tailed):
+    H1: beta({uncertainty_var}) > 0  -- higher speech uncertainty -> more cash hoarding
 
 Industry Samples:
     - Main:    FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -102,7 +100,7 @@ UNCERTAINTY_MEASURES = [
 
 CONTROL_VARS = [
     # GAP-5: CashHoldings (contemporaneous) excluded -- v2 did not include it.
-    # Lev enters separately as main effect + interaction; not listed here.
+    # Lev enters as a control variable (not interaction term).
     # CurrentRatio removed: lctq is structurally missing (~80%) for financial
     # firms (FF12=11), silently dropping ~12,800 Finance observations and
     # reducing Finance N from ~17k to ~3.5k. Not in standard Opler/Bates spec.
@@ -149,7 +147,7 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    # Leverage (main effect + interaction)
+    # Leverage (control variable)
     {"col": "Lev", "label": "Leverage"},
     # Control variables
     {"col": "Size", "label": "Firm Size (log AT)"},
@@ -244,16 +242,13 @@ def prepare_regression_data(
     - Drops rows where CashHoldings_lead is NaN (last-year/gap-year calls)
     - Drops rows missing required variables (complete cases)
     - Applies minimum-calls-per-firm filter
-    - Creates interaction term {uncertainty_var}_x_Lev (raw, not mean-centered;
-      mean-centering is redundant when firm FE absorb within-group means
-      and would bias the interaction term interpretation -- MAJOR-2 fix)
 
     Args:
         panel: Full call-level panel from Stage 3
         uncertainty_var: Name of the uncertainty measure column
 
     Returns:
-        Prepared DataFrame ready for OLS with uncertainty_var and interaction term
+        Prepared DataFrame ready for OLS with uncertainty_var
     """
     required = (
         [
@@ -295,12 +290,6 @@ def prepare_regression_data(
         f"{len(df):,} calls, {df['gvkey'].nunique():,} firms"
     )
 
-    # MAJOR-2 fix: do NOT globally mean-center Uncertainty or Lev.
-    # Firm FE (C(gvkey)) already demean within firms; global centering
-    # is redundant and creates a biased interaction when combined with FE.
-    # The interaction is constructed from raw (within-firm demeaned by FE) values.
-    df[f"{uncertainty_var}_x_Lev"] = df[uncertainty_var] * df["Lev"]
-
     return df
 
 
@@ -317,7 +306,7 @@ def run_regression(
     """Run OLS regression with firm FE + year FE (call-level), firm-clustered SEs.
 
     Model:
-        CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +
+        CashHoldings_lead ~ {uncertainty_var} + Lev +
                             Size + TobinsQ + ROA + CapexAt +
                             DividendPayer + OCF_Volatility +
                             C(gvkey) + C(year)
@@ -329,8 +318,6 @@ def run_regression(
     Firm-clustered SEs correct for within-firm correlation in residuals.
 
     GAP-5: CashHoldings (contemporaneous) excluded from controls per v2 design.
-    MAJOR-2: No pre-centering of {uncertainty_var} or Lev; firm FE absorb within-group
-             means. Interaction constructed from raw values.
 
     Args:
         df_sample: Sample-filtered and prepared DataFrame (from prepare_regression_data)
@@ -348,18 +335,18 @@ def run_regression(
         print(f"  WARNING: Too few observations ({len(df_sample)}), skipping")
         return None, {}
 
-    # Controls present (Lev enters separately as main effect in formula)
+    # Controls present (Lev enters as main effect in formula)
     controls = [c for c in CONTROL_VARS if c in df_sample.columns]
 
     # Build formula using PanelOLS syntax
     formula = (
         "CashHoldings_lead ~ 1 + "
-        f"{uncertainty_var} + Lev + {uncertainty_var}_x_Lev + "
+        f"{uncertainty_var} + Lev + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
     print(
-        f"  Formula: CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev "
+        f"  Formula: CashHoldings_lead ~ {uncertainty_var} + Lev "
         f"+ {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
@@ -387,36 +374,22 @@ def run_regression(
     within_r2 = float(model.rsquared_within)
     print(f"  Within-R²: {within_r2:.4f}")
 
-    # One-tailed hypothesis tests
+    # One-tailed hypothesis test
     beta1 = model.params.get(uncertainty_var, np.nan)
-    beta3 = model.params.get(f"{uncertainty_var}_x_Lev", np.nan)
     p1_two = model.pvalues.get(uncertainty_var, np.nan)
-    p3_two = model.pvalues.get(f"{uncertainty_var}_x_Lev", np.nan)
     beta1_se = model.std_errors.get(uncertainty_var, np.nan)
-    beta3_se = model.std_errors.get(f"{uncertainty_var}_x_Lev", np.nan)
     beta1_t = model.tstats.get(uncertainty_var, np.nan)
-    beta3_t = model.tstats.get(f"{uncertainty_var}_x_Lev", np.nan)
 
-    # H1a: beta1 > 0
+    # H1: beta1 > 0
     if not np.isnan(p1_two) and not np.isnan(beta1):
         p1_one = p1_two / 2 if beta1 > 0 else 1 - p1_two / 2
     else:
         p1_one = np.nan
 
-    # H1b: beta3 < 0
-    if not np.isnan(p3_two) and not np.isnan(beta3):
-        p3_one = p3_two / 2 if beta3 < 0 else 1 - p3_two / 2
-    else:
-        p3_one = np.nan
-
-    h1a = (not np.isnan(p1_one)) and (p1_one < 0.05) and (beta1 > 0)
-    h1b = (not np.isnan(p3_one)) and (p3_one < 0.05) and (beta3 < 0)
+    h1_signif = (not np.isnan(p1_one)) and (p1_one < 0.05) and (beta1 > 0)
 
     print(
-        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H1a={'YES' if h1a else 'no'}"
-    )
-    print(
-        f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H1b={'YES' if h1b else 'no'}"
+        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H1={'YES' if h1_signif else 'no'}"
     )
 
     # Store metadata as a plain dict (not attached to model object -- MINOR-4 fix)
@@ -428,13 +401,7 @@ def run_regression(
         "beta1_t": beta1_t,
         "beta1_p_two": p1_two,
         "beta1_p_one": p1_one,
-        "beta1_signif": h1a,
-        "beta3": beta3,
-        "beta3_se": beta3_se,
-        "beta3_t": beta3_t,
-        "beta3_p_two": p3_two,
-        "beta3_p_one": p3_one,
-        "beta3_signif": h1b,
+        "beta1_signif": h1_signif,
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),  # Firm-clustered SEs
@@ -507,8 +474,8 @@ def save_outputs(
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Write a publication-ready LaTeX table for the H1 results.
 
-    Shows the three key variables (Uncertainty, Lev, Uncertainty x Lev) with
-    coefficients, clustered SEs in parentheses, significance stars, N, and R2.
+    Shows the key variable (Uncertainty coefficient) with
+    clustered SEs in parentheses, significance stars, N, and R2.
     Columns = uncertainty measures; panels = industry samples.
     """
     sig = (
@@ -564,10 +531,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         )
 
         for var_key, label in [
-            ("beta1", "$\\beta_1$"),
+            ("beta1", "$\\beta_1$ (Uncertainty)"),
             ("beta1_se", ""),
-            ("beta3", "$\\beta_3$ (Measure $\\times$ Lev)"),
-            ("beta3_se", ""),
         ]:
             row_cells = []
             for m in UNCERTAINTY_MEASURES:
@@ -582,13 +547,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
                     row_cells.append(f"{v:.4f}{sig(p)}" if not np.isnan(v) else "")
                 elif var_key == "beta1_se":
                     v = meta.get("beta1_se", float("nan"))
-                    row_cells.append(f"({v:.4f})" if not np.isnan(v) else "")
-                elif var_key == "beta3":
-                    v = meta.get("beta3", float("nan"))
-                    p = meta.get("beta3_p_one", float("nan"))
-                    row_cells.append(f"{v:.4f}{sig(p)}" if not np.isnan(v) else "")
-                elif var_key == "beta3_se":
-                    v = meta.get("beta3_se", float("nan"))
                     row_cells.append(f"({v:.4f})" if not np.isnan(v) else "")
 
             row_label = label if label else ""
@@ -625,7 +583,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Variables are winsorized at 1\%/99\% by year at the engine level.",
         r"Unit of observation: the individual earnings call.",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed, direction per hypothesis).",
-        r"H1a: Uncertainty $> 0$; H1b: Uncertainty $\times$ Lev $< 0$.",
+        r"H1: Uncertainty $> 0$.",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -653,19 +611,19 @@ def generate_report(
         "## Model Specification",
         "",
         "```",
-        "CashHoldings_lead ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev +",
+        "CashHoldings_lead ~ {uncertainty_var} + Lev +",
         "    Size + TobinsQ + ROA + CapexAt +",
         "    DividendPayer + OCF_Volatility +",
         "    C(gvkey) + C(year)",
         "```",
         "",
         "Standard errors: firm-clustered (cov_type='cluster', groups=gvkey)",
-        "One-tailed tests: H1a beta1 > 0; H1b beta3 < 0",
+        "One-tailed test: H1 beta1 > 0",
         "",
         "## Primary Results (all uncertainty measures)",
         "",
-        "| Sample | Measure | N | R2 | beta1 | p1 | H1a | beta3 | p3 | H1b |",
-        "|--------|---------|---|----|----|----|----|----|----|-----|",
+        "| Sample | Measure | N | R2 | beta1 | p1 | H1 |",
+        "|--------|---------|---|----|----|----|----|",
     ]
 
     for r in all_results:
@@ -679,14 +637,10 @@ def generate_report(
         r2 = meta.get("rsquared", float("nan"))
         b1 = meta.get("beta1", float("nan"))
         p1 = meta.get("beta1_p_one", float("nan"))
-        b3 = meta.get("beta3", float("nan"))
-        p3 = meta.get("beta3_p_one", float("nan"))
-        h1a = "YES" if meta.get("beta1_signif") else "no"
-        h1b = "YES" if meta.get("beta3_signif") else "no"
+        h1 = "YES" if meta.get("beta1_signif") else "no"
         lines.append(
             f"| {sample} | {short} | {n:,} | {r2:.4f} | "
-            f"{b1:.4f} | {p1:.4f} | {h1a} | "
-            f"{b3:.4f} | {p3:.4f} | {h1b} |"
+            f"{b1:.4f} | {p1:.4f} | {h1} |"
         )
 
     lines += [
@@ -701,11 +655,10 @@ def generate_report(
         ]
         if not sample_results:
             continue
-        h1a_n = sum(1 for r in sample_results if r.get("meta", {}).get("beta1_signif"))
-        h1b_n = sum(1 for r in sample_results if r.get("meta", {}).get("beta3_signif"))
+        h1_n = sum(1 for r in sample_results if r.get("meta", {}).get("beta1_signif"))
         n_total = len(sample_results)
         lines.append(
-            f"**{sample}:** H1a {h1a_n}/{n_total} significant | H1b {h1b_n}/{n_total} significant"
+            f"**{sample}:** H1 {h1_n}/{n_total} significant"
         )
 
     lines.append("")
@@ -864,11 +817,9 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Output:   {out_dir}")
     print(f"Total regressions completed: {len(all_results)}")
 
-    # H1a / H1b summary
-    h1a_total = sum(1 for r in all_results if r["meta"].get("beta1_signif"))
-    h1b_total = sum(1 for r in all_results if r["meta"].get("beta3_signif"))
-    print(f"H1a significant (beta1>0, p<0.05 one-tail): {h1a_total}/{len(all_results)}")
-    print(f"H1b significant (beta3<0, p<0.05 one-tail): {h1b_total}/{len(all_results)}")
+    # H1 summary
+    h1_total = sum(1 for r in all_results if r["meta"].get("beta1_signif"))
+    print(f"H1 significant (beta1>0, p<0.05 one-tail): {h1_total}/{len(all_results)}")
 
     return 0
 

@@ -298,14 +298,14 @@ No symlinks needed — the latest directory is always found by timestamp.
 Last full pipeline run: **2026-03-05**. All scripts passed end-to-end with zero errors,
 zero row-delta on every panel merge, and all post-run checks passing.
 
-**Summary of hypothesis test results (2026-03-05 run):**
+**Summary of hypothesis test results (2026-03-06 run):**
 
 | Hypothesis | Status | Key Finding |
 |------------|--------|-------------|
 | H0.2 CEO Clarity | ✓ Complete | 2,486 CEO fixed effects (SVD fix applied) |
 | H0.3 Extended Controls | ✓ Robust | R² stable across baseline/extended specs |
-| H1 Cash Holdings | **Partial** | H1a: 7/18 sig, H1b: 2/18 sig (CEO measures strongest) |
-| H2 Investment | **Null** | H2a: 0/18 sig, H2b: 1/18 sig |
+| H1 Cash Holdings | **Partial** | 6/18 significant (Finance strongest, QA measures only) |
+| H2 Investment | **Partial** | 1/18 significant (CEO_Pres_Uncertainty in Main) |
 | H3 Payout Policy | **Partial** | H3a: 1/36 sig, H3b: 3/36 sig |
 | H4 Leverage | **Partial** | 2/18 sig (Pres uncertainty measures) |
 | H5 Analyst Dispersion | **Null** | 0/12 significant |
@@ -349,11 +349,10 @@ R² increases by ≤ 0.003 — CEO fixed effects are robust to extended controls
 
 ### H1 Cash Holdings — `run_h1_cash_holdings`
 
-Tests whether vague managers hoard more cash (H1a: β₁ > 0) and whether leverage
-attenuates that relationship (H1b: β₃ < 0). Unit of observation: individual earnings
-call (call-level, consistent with all other tests).
+Tests whether vague managers hoard more cash (H1: β₁ > 0). Unit of observation:
+individual earnings call (call-level, consistent with all other tests).
 
-Model: `CashHoldings_{t+1} ~ Uncertainty + Lev + Uncertainty×Lev + Size + TobinsQ +
+Model: `CashHoldings_{t+1} ~ Uncertainty + Lev + Size + TobinsQ +
 ROA + CapexAt + DividendPayer + OCF_Volatility + EntityEffects + TimeEffects`
 
 Standard errors: firm-clustered (Moulton correction — `CashHoldings_lead` is constant
@@ -370,42 +369,51 @@ within firm-year, so HC1 over-counts independent observations).
 
 **Stage 4** (`run_h1_cash_holdings`): 18 regressions (6 uncertainty measures × 3 samples).
 
-| Sample | H1a significant (β₁>0) | H1b significant (β₃<0) |
-|--------|----------------------:|----------------------:|
-| Main | **4/6** | **2/6** |
-| Finance | **3/6** | 0/6 |
-| Utility | 0/6 | 0/6 |
-| **Total** | **7/18** | **2/18** |
+| Sample | H1 significant (β₁>0) |
+|--------|----------------------:|
+| Main | **2/6** |
+| Finance | **4/6** |
+| Utility | 0/6 |
+| **Total** | **6/18** |
 
-Selected significant results (Main sample):
-- CEO_QA_Uncertainty: β₁ = 0.0065 (SE=0.0021, p=0.0009); β₃ = −0.0151 (SE=0.0060, p=0.0063)
-- CEO_QA_Weak_Modal: β₁ = 0.0089 (SE=0.0033, p=0.0037); β₃ = −0.0273 (SE=0.0087, p=0.0008)
-- Manager_QA_Uncertainty: β₁ = 0.0062 (SE=0.0034, p=0.0352)
-- Manager_QA_Weak_Modal: β₁ = 0.0090 (SE=0.0053, p=0.0433)
+Selected significant results:
+- Main / Manager_QA_Uncertainty: β₁ = 0.0044 (SE=0.0017, p=0.0050)
+- Main / CEO_QA_Uncertainty: β₁ = 0.0032 (SE=0.0013, p=0.0086)
+- Finance / Manager_QA_Uncertainty: β₁ = 0.0066 (SE=0.0024, p=0.0034)
+- Finance / CEO_QA_Uncertainty: β₁ = 0.0040 (SE=0.0021, p=0.0249)
+- Finance / Manager_QA_Weak_Modal: β₁ = 0.0087 (SE=0.0035, p=0.0063)
+- Finance / CEO_QA_Weak_Modal: β₁ = 0.0054 (SE=0.0031, p=0.0419)
 
-**Interpretation:** Strong support for H1a (uncertainty → cash hoarding) in Main sample,
-particularly for CEO measures. H1b (leverage attenuation) supported only for CEO measures
-in Main sample. Finance shows H1a support but no moderation effect. Utility null.
+**Interpretation:** Moderate support for H1 (uncertainty → cash hoarding). Finance sample shows
+strongest results (4/6 significant), driven by Q&A uncertainty measures. Main sample shows
+significance only for QA Uncertainty measures (2/6). Presentation uncertainty and weak modal
+language are not significant. Utility sample null.
 
 ### H2 Investment Efficiency — `run_h2_investment`
 
-Tests whether vague managers exhibit more underinvestment (H2a: β₁ < 0 for InvestmentResidual)
-and whether leverage attenuates this (H2b: β₃ > 0). DV: `InvestmentResidual_{t+1}` (Biddle et al. 2009; >0=overinvestment, <0=underinvestment).
+Tests whether vague managers exhibit more underinvestment (H2a: β₁ < 0 for InvestmentResidual).
+DV: `InvestmentResidual_{t+1}` (Biddle et al. 2009; >0=overinvestment, <0=underinvestment).
 
-Model: `InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty×Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + EntityEffects + TimeEffects`
+Model: `InvestmentResidual_lead ~ Uncertainty + Size + TobinsQ + Lev + ROA + CashFlow + SalesGrowth + DivIntensity + CashHoldings + firm_maturity + StockRet + EntityEffects + TimeEffects`
 
-**Stage 3**: 112,968 calls, 101,923 with valid lead.
+**Stage 3**: 112,968 calls, 101,923 with valid lead (90.2%).
 
-| Sample | H2a significant (β₁<0) | H2b significant (β₃>0) |
-|--------|----------------------:|----------------------:|
-| Main | 0/6 | 0/6 |
-| Finance | 0/6 | **1/6** |
-| Utility | 0/6 | 0/6 |
-| **Total** | **0/18** | **1/18** |
+| Sample | H2a significant (β₁<0) | Notable measure |
+|--------|----------------------:|-----------------|
+| Main | **1/6** | CEO_Pres_Uncertainty (β=-0.0058, p=0.011) |
+| Finance | 0/6 | — |
+| Utility | 0/6 | — |
+| **Total** | **1/18** | — |
 
-**Result:** H2 NOT SUPPORTED. Investment efficiency is not significantly related to
-managerial speech uncertainty in the predicted direction. Only 1/18 interaction
-significant (Finance / CEO_QA_Weak_Modal, p=0.037).
+**Result:** H2 PARTIALLY SUPPORTED. Only CEO presentation uncertainty in Main sample shows
+significant negative association with investment efficiency (p=0.011 one-tailed). No support
+from Q&A uncertainty measures, weak modal language, or other industry samples.
+
+**Interpretation:** Limited evidence that managerial speech uncertainty relates to investment
+efficiency. The single significant result (CEO presentation uncertainty) suggests that when
+CEOs use more uncertain language in prepared remarks, subsequent investment tends to be
+closer to optimal levels (less over/under-investment). However, the lack of robustness
+across measures and samples limits the strength of this conclusion.
 
 ### H3 Payout Policy — `run_h3_payout_policy`
 
@@ -428,10 +436,15 @@ Model: `PayoutMeasure_lead ~ Uncertainty + Lev + Uncertainty×Lev + Controls + E
 
 ### H4 Leverage Discipline — `run_h4_leverage`
 
-Tests whether lagged leverage predicts manager uncertainty (H4: β₁ < 0).
-DV: Manager uncertainty measures. Key IV: `Lev_lag` (one-year lagged leverage).
+Tests whether lagged leverage predicts speech uncertainty (H4: β₁ < 0).
+DV: 6 uncertainty measures (Manager/CEO × QA/Pres × Uncertainty/WeakModal).
+Key IV: `Lev_lag` (one-year lagged leverage).
 
-Model: `Uncertainty ~ Lev_lag + Analyst_QA_Uncertainty + Controls + EntityEffects + TimeEffects`
+Model: `Uncertainty ~ Lev_lag + Analyst_QA_Uncertainty_pct + [Pres_Uncertainty_pct] + Size + TobinsQ + ROA + CashHoldings + DividendPayer + firm_maturity + earnings_volatility + FirmFE + YearFE`
+
+**Dynamic covariate structure:** QA models include corresponding Presentation uncertainty as a control (e.g., Manager_QA models control for Manager_Pres_Uncertainty_pct).
+
+**Minimum calls filter:** Firms with < 5 calls are excluded from regressions.
 
 **Stage 3**: 112,968 calls. Valid Lev_lag: 105,380.
 
