@@ -391,10 +391,13 @@ language are not significant. Utility sample null.
 
 ### H2 Investment Efficiency — `run_h2_investment`
 
-Tests whether vague managers exhibit more underinvestment (H2a: β₁ < 0 for InvestmentResidual).
+Tests whether vague managers exhibit more underinvestment (H2a: β₁ < 0 for InvestmentResidual)
+and whether leverage attenuates this relationship (H2b: β₃ > 0 for Uncertainty×Lev).
 DV: `InvestmentResidual_{t+1}` (Biddle et al. 2009; >0=overinvestment, <0=underinvestment).
 
-Model: `InvestmentResidual_lead ~ Uncertainty + Size + TobinsQ + Lev + ROA + CashFlow + SalesGrowth + DivIntensity + CashHoldings + firm_maturity + StockRet + EntityEffects + TimeEffects`
+Model: `InvestmentResidual_lead ~ Uncertainty + Lev + Uncertainty×Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + EntityEffects + TimeEffects`
+
+Standard errors: firm-clustered (cov_type='clustered', cluster_entity=True).
 
 **Stage 3**: 112,968 calls, 101,923 with valid lead (90.2%).
 
@@ -421,6 +424,10 @@ Tests whether vague managers have different payout policies (dividends, repurcha
 DV: `div_stability_lead` (H3a) and `payout_flexibility_lead` (H3b).
 
 Model: `PayoutMeasure_lead ~ Uncertainty + Lev + Uncertainty×Lev + Controls + EntityEffects + TimeEffects`
+
+Controls: `earnings_volatility`, `fcf_growth`, `firm_maturity`, `Size`, `ROA`, `TobinsQ`, `CashHoldings`
+Additional filter: `is_div_payer_5yr == 1` (firms with dividend payments in trailing 5 years).
+Standard errors: firm-clustered.
 
 **Stage 3**: 112,968 calls. Valid div_stability_lead: 86,459. Valid payout_flexibility_lead: 105,301.
 
