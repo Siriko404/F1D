@@ -232,6 +232,8 @@ __all__ = [
     # H5
     "DispersionLeadBuilder",
     "PriorDispersionBuilder",
+    "DispersionBuilder",
+    "LaggedDispersionBuilder",
     "EarningsSurpriseRatioBuilder",
     "LossDummyBuilder",
     # H7
@@ -249,6 +251,10 @@ __all__ = [
     "PRiskQLagBuilder",
     # H11-Lag2
     "PRiskQLag2Builder",
+    # H11-Lead
+    "PRiskQLeadBuilder",
+    # H11-Lead2
+    "PRiskQLead2Builder",
     # H_TT
     "CEOStyleRealtimeBuilder",
     # H13 Employment Growth
@@ -272,6 +278,8 @@ from .is_div_payer_5yr import IsDivPayer5yrBuilder
 # H5 Analyst Dispersion
 from .dispersion_lead import DispersionLeadBuilder
 from .prior_dispersion import PriorDispersionBuilder
+from .dispersion import DispersionBuilder
+from .lagged_dispersion import LaggedDispersionBuilder
 from .earnings_surprise_ratio import EarningsSurpriseRatioBuilder
 from .loss_dummy import LossDummyBuilder
 
@@ -295,6 +303,12 @@ from .prisk_q_lag import PRiskQLagBuilder
 
 # H11-Lag2 Political Risk (Quarterly, 2-quarter Lagged)
 from .prisk_q_lag2 import PRiskQLag2Builder
+
+# H11-Lead Political Risk (Quarterly, Lead)
+from .prisk_q_lead import PRiskQLeadBuilder
+
+# H11-Lead2 Political Risk (Quarterly, 2-quarter Lead)
+from .prisk_q_lead2 import PRiskQLead2Builder
 
 # H_TT Tone at the Top
 from .ceo_style_realtime import CEOStyleRealtimeBuilder

@@ -1,21 +1,29 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build H7 Illiquidity Panel
+STAGE 3: Build H11-Lead Political Risk (Lead) - Language Uncertainty Panel
 ================================================================================
-ID: variables/build_h7_illiquidity_panel
-Description: Build CALL-LEVEL panel for H7 Speech Vagueness -> Stock Illiquidity.
+ID: variables/build_h11_prisk_uncertainty_lead_panel
+Description: Build CALL-LEVEL panel for H11-Lead Political Risk hypothesis test.
 
-    Step 1: Load manifest + all call-level uncertainty measures.
-    Step 2: Load base financial controls (Size, Lev, ROA, TobinsQ, Volatility, StockRet).
-    Step 3: Load the Amihud (2002) Illiquidity measure (contemporaneous).
-    Step 4: Load linguistic controls (Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct).
-    Step 5: Merge everything onto manifest by file_name (zero row-delta enforced).
-    Step 6: Assign industry sample (Main / Finance / Utility).
-    Step 7: Save call-level panel.
+    Step 1: Load manifest + all call-level variables (linguistic + financial).
+    Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
+    Step 3: Add call year from start_date and calendar quarter.
+    Step 4: Add PRiskQ_lead (1-quarter lead) and PRiskQ_lead2 (2-quarter lead).
+    Step 5: Assign industry sample (Main / Finance / Utility).
+    Step 6: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
-DV: amihud_illiq (contemporaneous Amihud illiquidity measure).
+
+Temporal Structure:
+    PRiskQ_lead: Calendar quarter Q+1 (1-quarter lead)
+    PRiskQ_lead2: Calendar quarter Q+2 (2-quarter lead)
+    Earnings call happens within calendar quarter Q
+
+Purpose:
+    Lead variables serve as placebo tests for reverse causality.
+    If future political risk affects current speech, it suggests reverse causation.
+    Expected result: Lead coefficients should be insignificant.
 """
 
 from __future__ import annotations
@@ -37,27 +45,30 @@ from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
+    AnalystQAUncertaintyBuilder,
     ManagerQAWeakModalBuilder,
     CEOQAWeakModalBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    NegativeSentimentBuilder,
-    AnalystQAUncertaintyBuilder,
     SizeBuilder,
     LevBuilder,
     ROABuilder,
     TobinsQBuilder,
-    VolatilityBuilder,
-    StockReturnBuilder,
-    AmihudIlliqBuilder,
+    CashHoldingsBuilder,
+    DividendPayerBuilder,
+    FirmMaturityBuilder,
+    EarningsVolatilityBuilder,
     ManifestFieldsBuilder,
+    NegativeSentimentBuilder,
+    PRiskQLeadBuilder,
+    PRiskQLead2Builder,
     stats_list_to_dataframe,
 )
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H7 Illiquidity Panel",
+        description="Stage 3: Build H11-Lead Political Risk Uncertainty Panel",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--dry-run", action="store_true")
@@ -73,11 +84,13 @@ def build_panel(
     stats: Dict[str, Any],
 ) -> pd.DataFrame:
     print("\n" + "=" * 60)
-    print("Building H7 Illiquidity Panel")
+    print("Building H11-Lead Panel")
     print("=" * 60)
 
     builders = {
+        # Manifest
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
+        # Dependent Variables (6 uncertainty measures)
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
         ),
@@ -96,15 +109,27 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "negative_sentiment": NegativeSentimentBuilder(var_config.get("negative_sentiment", {})),
-        "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(var_config.get("analyst_qa_uncertainty", {})),
+        # Main Independent Variables (LEAD)
+        "prisk_q_lead": PRiskQLeadBuilder(var_config.get("prisk_q_lead", {})),
+        "prisk_q_lead2": PRiskQLead2Builder(var_config.get("prisk_q_lead2", {})),
+        # Linguistic Controls
+        "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
+            var_config.get("analyst_qa_uncertainty", {})
+        ),
+        "negative_sentiment": NegativeSentimentBuilder(
+            var_config.get("negative_sentiment", {})
+        ),
+        # Finance Controls
         "size": SizeBuilder(var_config.get("size", {})),
         "lev": LevBuilder(var_config.get("lev", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
-        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
-        "stock_ret": StockReturnBuilder(var_config.get("stock_ret", {})),
-        "amihud_illiq": AmihudIlliqBuilder(var_config.get("amihud_illiq", {})),
+        "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
+        "dividend_payer": DividendPayerBuilder(var_config.get("dividend_payer", {})),
+        "firm_maturity": FirmMaturityBuilder(var_config.get("firm_maturity", {})),
+        "earnings_volatility": EarningsVolatilityBuilder(
+            var_config.get("earnings_volatility", {})
+        ),
     }
 
     all_results = {}
@@ -138,17 +163,42 @@ def build_panel(
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
     panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 
+    # Add calendar quarter for reference
+    panel["cal_q"] = (
+        pd.to_datetime(panel["start_date"], errors="coerce").dt.year.astype(str)
+        + "q"
+        + pd.to_datetime(panel["start_date"], errors="coerce").dt.quarter.astype(str)
+    )
+
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
+
+    # Log PRiskQ_lead match statistics
+    priskq_result = all_results.get("prisk_q_lead")
+    if priskq_result and priskq_result.metadata:
+        meta = priskq_result.metadata
+        print(
+            f"\n  PRiskQ_lead Match Stats: {meta.get('n_matched', 0):,} / "
+            f"{meta.get('n_total', 0):,} calls ({meta.get('pct_matched', 0):.1f}%)"
+        )
+
+    # Log PRiskQ_lead2 match statistics
+    priskq_lead2_result = all_results.get("prisk_q_lead2")
+    if priskq_lead2_result and priskq_lead2_result.metadata:
+        meta = priskq_lead2_result.metadata
+        print(
+            f"  PRiskQ_lead2 Match Stats: {meta.get('n_matched', 0):,} / "
+            f"{meta.get('n_total', 0):,} calls ({meta.get('pct_matched', 0):.1f}%)"
+        )
 
     return panel
 
 
 def save_outputs(panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, root: Path, timestamp: str) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    panel_path = out_dir / "h7_illiquidity_panel.parquet"
+    panel_path = out_dir / "h11_prisk_uncertainty_lead_panel.parquet"
     panel.to_parquet(panel_path, index=False)
     print(
-        f"\n  Saved: h7_illiquidity_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
+        f"\n  Saved: h11_prisk_uncertainty_lead_panel.parquet ({len(panel):,} rows, {len(panel.columns)} columns)"
     )
 
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
@@ -175,7 +225,7 @@ def generate_report(
     panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, duration: float
 ) -> None:
     report_lines = [
-        "# Stage 3: H7 Illiquidity Panel Build Report",
+        "# Stage 3: H11-Lead Political Risk - Language Uncertainty Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -183,10 +233,19 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **Amihud Illiquidity (valid):** {panel['amihud_illiq'].notna().sum():,} calls",
+        f"- **PRiskQ_lead (valid):** {panel['PRiskQ_lead'].notna().sum():,} calls",
+        f"- **PRiskQ_lead2 (valid):** {panel['PRiskQ_lead2'].notna().sum():,} calls",
+        "",
+        "## Model Specification",
+        "`Uncertainty_it ~ PRiskQ_lead_it + Controls_it + EntityEffects + TimeEffects`",
+        "",
+        "## Temporal Structure",
+        "- PRiskQ_lead: Calendar quarter Q+1 (lead by one quarter)",
+        "- Earnings call: Within calendar quarter Q",
+        "- Purpose: Placebo test for reverse causality (future PRisk should not affect current speech)",
         "",
     ]
-    report_path = out_dir / "report_step3_h7.md"
+    report_path = out_dir / "report_step3_h11_lead.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
@@ -196,7 +255,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_h7_illiquidity_panel",
+        "step_id": "build_h11_prisk_uncertainty_lead_panel",
         "timestamp": timestamp,
         "variable_stats": [],
         "timing": {},
@@ -204,12 +263,12 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     }
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "h7_illiquidity" / timestamp
+    out_dir = root / "outputs" / "variables" / "h11_prisk_uncertainty_lead" / timestamp
 
     # Setup logging to timestamped directory
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H7_Illiquidity",
+        suite_name="H11_PRisk_Uncertainty_Lead",
         timestamp=timestamp,
     )
 
@@ -223,7 +282,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H7 Illiquidity Panel")
+    print("STAGE 3: Build H11-Lead Political Risk - Language Uncertainty Panel")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")

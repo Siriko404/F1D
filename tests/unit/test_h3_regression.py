@@ -3,9 +3,8 @@ Unit tests for H3 Payout Policy Regression (run_h3_payout_policy.py).
 
 Tests verify:
 - Data loading for payout policy variables (div_stability, payout_flexibility)
-- Regression execution with leverage interaction term
-- Hypothesis test logic for H3a and H3b (different directions per DV)
-- Interaction term creation and centering
+- Regression execution
+- Hypothesis test logic (different directions per DV)
 - Output format and error handling
 """
 
@@ -52,7 +51,7 @@ def sample_h3_data():
                 "CEO_QA_Weak_Modal_pct": np.random.uniform(1, 5),
                 "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
                 "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                # Leverage (for interaction)
+                # Leverage (control variable)
                 "leverage": np.random.uniform(0.1, 0.6),
                 # Controls
                 "earnings_volatility": np.random.uniform(0, 0.2),
@@ -162,52 +161,6 @@ class TestH3DataLoading:
 
 
 # ==============================================================================
-# Interaction Term Tests
-# ==============================================================================
-
-class TestH3InteractionTerm:
-    """Tests for H3 interaction term creation."""
-
-    def test_interaction_term_creation(self, sample_h3_data):
-        """Test that interaction term is created correctly (uncentered raw product)."""
-        df = sample_h3_data.copy()
-
-        # Match actual implementation: uncentered raw product
-        uncertainty_col = "Manager_QA_Uncertainty_pct"
-        leverage_col = "leverage"
-
-        # Create interaction (uncentered, matching run_h3_payout_policy.py:172-173)
-        interaction_col = f"{uncertainty_col}_x_{leverage_col}"
-        df[interaction_col] = df[uncertainty_col] * df[leverage_col]
-
-        assert interaction_col in df.columns
-        # Allow NaN if either input is NaN
-        assert df[interaction_col].notna().sum() > 0
-
-    def test_centering_reduces_multicollinearity(self, sample_h3_data):
-        """Test that centering reduces multicollinearity with interaction."""
-        df = sample_h3_data.copy()
-
-        # Uncentered correlation
-        df["interaction_uncentered"] = df["Manager_QA_Uncertainty_pct"] * df["leverage"]
-        corr_uncentered = df["Manager_QA_Uncertainty_pct"].corr(df["interaction_uncentered"])
-
-        # Centered correlation (should be lower in absolute value typically)
-        df["Manager_QA_Uncertainty_pct_c"] = (
-            df["Manager_QA_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"].mean()
-        )
-        df["leverage_c"] = df["leverage"] - df["leverage"].mean()
-        df["interaction_centered"] = (
-            df["Manager_QA_Uncertainty_pct_c"] * df["leverage_c"]
-        )
-        corr_centered = df["Manager_QA_Uncertainty_pct_c"].corr(df["interaction_centered"])
-
-        # Centering should generally reduce correlation between main effect and interaction
-        # (though not always - depends on data distribution)
-        assert df["interaction_centered"].notna().all()
-
-
-# ==============================================================================
 # Regression Execution Tests
 # ==============================================================================
 
@@ -228,14 +181,10 @@ class TestH3RegressionExecution:
             df["Manager_QA_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"].mean()
         )
         df["leverage_c"] = df["leverage"] - df["leverage"].mean()
-        df["Manager_QA_Uncertainty_pct_x_leverage"] = (
-            df["Manager_QA_Uncertainty_pct_c"] * df["leverage_c"]
-        )
 
         exog = [
             "Manager_QA_Uncertainty_pct_c",
             "leverage_c",
-            "Manager_QA_Uncertainty_pct_x_leverage",
             "firm_size",
         ]
 
@@ -253,47 +202,6 @@ class TestH3RegressionExecution:
         mock_run_panel_ols.assert_called_once()
         assert result is not None
 
-    @patch("f1d.shared.panel_ols.run_panel_ols")
-    def test_regression_includes_interaction(
-        self, mock_run_panel_ols, sample_h3_data, mock_panel_ols_result
-    ):
-        """Test that H3 regressions include interaction term."""
-        mock_run_panel_ols.return_value = mock_panel_ols_result
-
-        from f1d.shared.panel_ols import run_panel_ols
-
-        df = sample_h3_data.copy()
-        df["Manager_QA_Uncertainty_pct_c"] = (
-            df["Manager_QA_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"].mean()
-        )
-        df["leverage_c"] = df["leverage"] - df["leverage"].mean()
-        df["Manager_QA_Uncertainty_pct_x_leverage"] = (
-            df["Manager_QA_Uncertainty_pct_c"] * df["leverage_c"]
-        )
-
-        exog = [
-            "Manager_QA_Uncertainty_pct_c",
-            "leverage_c",
-            "Manager_QA_Uncertainty_pct_x_leverage",
-        ]
-
-        run_panel_ols(
-            df=df,
-            dependent="div_stability",
-            exog=exog,
-            entity_col="gvkey",
-            time_col="fiscal_year",
-            entity_effects=True,
-            time_effects=True,
-            check_collinearity=False,
-        )
-
-        call_args = mock_run_panel_ols.call_args
-        # Check that interaction term is in exog
-        exog_vars = call_args[1]["exog"]
-        interaction_present = any("_x_leverage" in var for var in exog_vars)
-        assert interaction_present, "Interaction term should be in regression"
-
 
 # ==============================================================================
 # Hypothesis Test Tests - CRITICAL: Different directions for each DV
@@ -304,13 +212,12 @@ class TestH3HypothesisTests:
 
     # -------------------------------------------------------------------------
     # div_stability: Higher is more stable
-    # H3a_stability: beta1 < 0 (vagueness REDUCES stability)
-    # H3b_stability: beta3 < 0 (leverage AMPLIFIES negative effect)
+    # H3_stability: beta1 < 0 (vagueness REDUCES stability)
     # -------------------------------------------------------------------------
 
-    def test_h3a_stability_direction(self):
-        """Test H3a hypothesis direction for div_stability (beta < 0)."""
-        # For div_stability, H3a expects beta1 < 0
+    def test_h3_stability_direction(self):
+        """Test H3 hypothesis direction for div_stability (beta < 0)."""
+        # For div_stability, H3 expects beta1 < 0
         coef_beta1 = -0.04  # Negative as expected
         p_two_tailed = 0.03
 
@@ -322,42 +229,24 @@ class TestH3HypothesisTests:
         assert p_one_tailed == 0.015  # Significant
         assert p_one_tailed < 0.05
 
-    def test_h3b_stability_direction(self):
-        """Test H3b hypothesis direction for div_stability (beta3 < 0)."""
-        # For div_stability, H3b expects beta3 < 0 (amplification)
-        coef_beta3 = -0.025  # Negative as expected
-        p_two_tailed = 0.05
-
-        if coef_beta3 < 0:
-            p_one_tailed = p_two_tailed / 2
-        else:
-            p_one_tailed = 1 - p_two_tailed / 2
-
-        assert p_one_tailed == 0.025  # Significant
-
     def test_div_stability_supported(self):
         """Test that div_stability hypothesis is supported correctly."""
-        # Both beta1 and beta3 should be negative and significant
+        # beta1 should be negative and significant
         beta1 = -0.04
         beta1_p_one = 0.015
-        beta3 = -0.025
-        beta3_p_one = 0.025
 
-        h3a_supported = (beta1_p_one < 0.05) and (beta1 < 0)
-        h3b_supported = (beta3_p_one < 0.05) and (beta3 < 0)
+        h3_supported = (beta1_p_one < 0.05) and (beta1 < 0)
 
-        assert h3a_supported is True
-        assert h3b_supported is True
+        assert h3_supported is True
 
     # -------------------------------------------------------------------------
     # payout_flexibility: Higher is more flexible/volatile
-    # H3a_flexibility: beta1 > 0 (vagueness INCREASES flexibility)
-    # H3b_flexibility: beta3 > 0 (leverage AMPLIFIES positive effect)
+    # H3_flexibility: beta1 > 0 (vagueness INCREASES flexibility)
     # -------------------------------------------------------------------------
 
-    def test_h3a_flexibility_direction(self):
-        """Test H3a hypothesis direction for payout_flexibility (beta > 0)."""
-        # For payout_flexibility, H3a expects beta1 > 0
+    def test_h3_flexibility_direction(self):
+        """Test H3 hypothesis direction for payout_flexibility (beta > 0)."""
+        # For payout_flexibility, H3 expects beta1 > 0
         coef_beta1 = 0.05  # Positive as expected
         p_two_tailed = 0.03
 
@@ -368,32 +257,15 @@ class TestH3HypothesisTests:
 
         assert p_one_tailed == 0.015  # Significant
 
-    def test_h3b_flexibility_direction(self):
-        """Test H3b hypothesis direction for payout_flexibility (beta3 > 0)."""
-        # For payout_flexibility, H3b expects beta3 > 0 (amplification)
-        coef_beta3 = 0.03  # Positive as expected
-        p_two_tailed = 0.04
-
-        if coef_beta3 > 0:
-            p_one_tailed = p_two_tailed / 2
-        else:
-            p_one_tailed = 1 - p_two_tailed / 2
-
-        assert p_one_tailed == 0.02  # Significant
-
     def test_payout_flexibility_supported(self):
         """Test that payout_flexibility hypothesis is supported correctly."""
-        # Both beta1 and beta3 should be positive and significant
+        # beta1 should be positive and significant
         beta1 = 0.05
         beta1_p_one = 0.015
-        beta3 = 0.03
-        beta3_p_one = 0.02
 
-        h3a_supported = (beta1_p_one < 0.05) and (beta1 > 0)  # Note: > 0 for flexibility
-        h3b_supported = (beta3_p_one < 0.05) and (beta3 > 0)  # Note: > 0 for flexibility
+        h3_supported = (beta1_p_one < 0.05) and (beta1 > 0)  # Note: > 0 for flexibility
 
-        assert h3a_supported is True
-        assert h3b_supported is True
+        assert h3_supported is True
 
     def test_hypothesis_direction_differs_by_dv(self):
         """Test that hypothesis direction is different for each DV."""
@@ -404,13 +276,13 @@ class TestH3HypothesisTests:
         beta = 0.05  # Positive
 
         # For div_stability (beta < 0 expected), positive coef is wrong sign
-        h3a_stability_supported = (0.02 < 0.05) and (beta < 0)  # False because beta > 0
+        h3_stability_supported = (0.02 < 0.05) and (beta < 0)  # False because beta > 0
 
         # For payout_flexibility (beta > 0 expected), positive coef is correct sign
-        h3a_flexibility_supported = (0.02 < 0.05) and (beta > 0)  # True
+        h3_flexibility_supported = (0.02 < 0.05) and (beta > 0)  # True
 
-        assert h3a_stability_supported is False
-        assert h3a_flexibility_supported is True
+        assert h3_stability_supported is False
+        assert h3_flexibility_supported is True
 
 
 # ==============================================================================

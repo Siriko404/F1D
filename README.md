@@ -311,9 +311,9 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H0.3 Extended Controls | ✓ Robust | R² stable across baseline/extended specs |
 | H1 Cash Holdings | **Partial** | 6/18 significant (Finance strongest, QA measures only) |
 | H2 Investment | **Partial** | 1/18 significant (CEO_Pres_Uncertainty in Main) |
-| H3 Payout Policy | **Partial** | H3a: 1/36 sig, H3b: 3/36 sig |
+| H3 Payout Policy | **Partial** | 1/36 significant (Finance payout_flexibility) |
 | H4 Leverage | **Partial** | 2/18 sig (Pres uncertainty measures) |
-| H5 Analyst Dispersion | **Null** | 0/12 significant |
+| H5 Analyst Dispersion | **Null** | 0/24 significant (8 specs × 3 samples) |
 | H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 0/9 significant (all β negative or zero) |
 | H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.986 |
@@ -428,9 +428,9 @@ across measures and samples limits the strength of this conclusion.
 ### H3 Payout Policy — `run_h3_payout_policy`
 
 Tests whether vague managers have different payout policies (dividends, repurchases).
-DV: `div_stability_lead` (H3a) and `payout_flexibility_lead` (H3b).
+DV: `div_stability_lead` and `payout_flexibility_lead`.
 
-Model: `PayoutMeasure_lead ~ Uncertainty + Lev + Uncertainty×Lev + Controls + EntityEffects + TimeEffects`
+Model: `PayoutMeasure_lead ~ Uncertainty + Lev + Controls + EntityEffects + TimeEffects`
 
 Controls: `earnings_volatility`, `fcf_growth`, `firm_maturity`, `Size`, `ROA`, `TobinsQ`, `CashHoldings`
 Additional filter: `is_div_payer_5yr == 1` (firms with dividend payments in trailing 5 years).
@@ -438,15 +438,15 @@ Standard errors: firm-clustered.
 
 **Stage 3**: 112,968 calls. Valid div_stability_lead: 86,459. Valid payout_flexibility_lead: 105,301.
 
-| Sample | DV | H3a/H3b significant |
-|--------|----|--------------------:|
-| Main | div_stability_lead | H3b: **2/6** interactions |
+| Sample | DV | H3 significant |
+|--------|----|---------------:|
+| Main | div_stability_lead | — |
 | Main | payout_flexibility_lead | — |
-| Finance | payout_flexibility_lead | H3a: **1/6** |
-| Utility | payout_flexibility_lead | H3b: **1/6** |
-| **Total** | | **H3a: 1/36, H3b: 3/36** |
+| Finance | payout_flexibility_lead | **1/6** |
+| Utility | payout_flexibility_lead | — |
+| **Total** | | **1/36** |
 
-**Result:** Limited support for H3. H3a: 1/36 significant (Finance payout_flexibility). H3b: 3/36 significant (Main div_stability ×2, Utility payout_flexibility ×1).
+**Result:** Limited support for H3. 1/36 significant (Finance payout_flexibility).
 
 ### H4 Leverage Discipline — `run_h4_leverage`
 
@@ -475,24 +475,40 @@ discipline hypothesis for prepared remarks.
 
 ### H5 Analyst Dispersion — `run_h5_dispersion`
 
-Tests whether manager uncertainty language causes higher analyst forecast dispersion
-(H5: β₁ > 0). DV: `dispersion_lead` (analyst EPS forecast dispersion at next earnings).
+Tests whether manager uncertainty language predicts contemporaneous analyst forecast dispersion
+(H5: β₁ > 0). DV: `dispersion` (analyst EPS forecast dispersion at current period t).
 
-Model A: `dispersion_lead ~ Manager_QA_Weak_Modal + Manager_QA_Uncertainty + Controls + prior_dispersion + FirmFE + YearFE`
-Model B: `dispersion_lead ~ Uncertainty_Gap + Manager_Pres_Uncertainty + Controls + prior_dispersion + FirmFE + YearFE`
+**Model A (Uncertainty Measures) — 4 specs per sample:**
+- A1: `dispersion ~ CEO_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE`
+- A2: `dispersion ~ CEO_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE`
+- A3: `dispersion ~ Manager_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE`
+- A4: `dispersion ~ Manager_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE`
+
+**Model B (Gap Measures) — 4 specs per sample:**
+- B1: `dispersion ~ CEO_Pres_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
+- B2: `dispersion ~ Mgr_Pres_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
+- B3: `dispersion ~ CEO_Mgr_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
+- B4: `dispersion ~ CEO_Mgr_Pres_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
+
+**Gap Definitions (Pres - QA, positive = more uncertain in prepared remarks):**
+- `CEO_Pres_QA_Gap = CEO_Pres_Uncertainty_pct - CEO_QA_Uncertainty_pct`
+- `Mgr_Pres_QA_Gap = Manager_Pres_Uncertainty_pct - Manager_QA_Uncertainty_pct`
+- `CEO_Mgr_QA_Gap = CEO_QA_Uncertainty_pct - Manager_QA_Uncertainty_pct` (regime gap)
+- `CEO_Mgr_Pres_Gap = CEO_Pres_Uncertainty_pct - Manager_Pres_Uncertainty_pct` (regime gap)
+
+**Controls:** `Analyst_QA_Uncertainty_pct`, `Entire_All_Negative_pct`, `Size`, `Lev`, `TobinsQ`,
+`earnings_volatility`, `earnings_surprise_ratio`, `loss_dummy`, `lagged_dispersion`
 
 | Sample | Model A (β₁>0) | Model B (β₁>0) |
 |--------|---------------:|---------------:|
-| Main (w/ lag) | 0/1 | 0/1 |
-| Main (no lag) | 0/1 | 0/1 |
-| Finance (w/ lag) | 0/1 | 0/1 |
-| Finance (no lag) | 0/1 | 0/1 |
-| Utility (w/ lag) | 0/1 | 0/1 |
-| Utility (no lag) | 0/1 | 0/1 |
-| **Total** | **0/6** | **0/6** |
+| Main | 0/4 | 0/4 |
+| Finance | 0/4 | 0/4 |
+| Utility | 0/4 | 0/4 |
+| **Total** | **0/12** | **0/12** |
 
 **Result:** H5 NOT SUPPORTED. Analyst forecast dispersion is not significantly related
-to manager uncertainty language (β₁ coefficients negative or near-zero).
+to manager uncertainty language (β₁ coefficients negative or near-zero). Total: 24 regressions
+(8 specs × 3 samples).
 
 ### H6 CCCL Speech — `run_h6_cccl`
 

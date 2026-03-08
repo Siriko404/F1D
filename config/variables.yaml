@@ -452,14 +452,28 @@ variables:
     source: "inputs/tr_ibes"
     column: "dispersion_lead"
     formula: "STDEV / |MEANEST| at t+1 (from IBES _ibes_engine)"
-    description: "Analyst forecast dispersion for the following quarter (H5 DV)"
+    description: "Analyst forecast dispersion for the following quarter (H5 DV - legacy)"
 
   prior_dispersion:
     stage: input
     source: "inputs/tr_ibes"
     column: "prior_dispersion"
     formula: "STDEV / |MEANEST| at t (from IBES _ibes_engine)"
-    description: "Analyst forecast dispersion for the current quarter (H5 Control)"
+    description: "Analyst forecast dispersion for the current quarter (H5 Control - legacy)"
+
+  dispersion:
+    stage: input
+    source: "inputs/tr_ibes"
+    column: "dispersion"
+    formula: "STDEV / |MEANEST| at t (backward merge to current consensus)"
+    description: "Analyst forecast dispersion for current quarter (H5 DV - contemporaneous)"
+
+  lagged_dispersion:
+    stage: input
+    source: "inputs/tr_ibes"
+    column: "lagged_dispersion"
+    formula: "STDEV / |MEANEST| at t-1 (prior consensus)"
+    description: "Lagged analyst dispersion for persistence control (H5 Control)"
 
   earnings_surprise_ratio:
     stage: input

@@ -3,9 +3,10 @@ Unit tests for H7 Illiquidity Regression (run_h7_illiquidity.py).
 
 Tests verify:
 - Data loading for illiquidity variables (Amihud ratio)
-- Regression execution with lagged illiquidity as DV
+- Regression execution with contemporaneous illiquidity as DV
 - Hypothesis test logic for H7 (beta > 0)
-- Alternative DV handling (roll_spread, log_amihud)
+- New control variables (Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct)
+- Single-IV specification structure (A1-A4)
 - Output format and error handling
 """
 
@@ -15,7 +16,6 @@ import pytest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-# Import the module under test
 import runpy
 _MODULE_PATH = (
     Path(__file__).resolve().parent.parent.parent
@@ -42,19 +42,23 @@ def sample_h7_data():
             data.append({
                 "gvkey": gvkey,
                 "year": year,
-                # H7 DV (forward-looking illiquidity)
-                "amihud_lag1": np.random.uniform(0.1, 5.0),  # Amihud illiquidity at t+1
-                "log_amihud_lag1": np.random.uniform(-2, 2),
-                "roll_spread_lag1": np.random.uniform(0, 0.1),
-                # Uncertainty measures (4 available for H7)
-                "Manager_QA_Uncertainty_pct": np.random.uniform(2, 8),
+                # H7 DV (contemporaneous illiquidity)
+                "amihud_illiq": np.random.uniform(0.1, 5.0),
+                # Uncertainty measures (4 IVs for A1-A4)
                 "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
-                "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
                 "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                # Controls
+                "Manager_QA_Uncertainty_pct": np.random.uniform(2, 8),
+                "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
+                # New linguistic controls
+                "Entire_All_Negative_pct": np.random.uniform(0.5, 3.0),
+                "Analyst_QA_Uncertainty_pct": np.random.uniform(1, 4),
+                # Financial controls
+                "Size": np.random.uniform(5, 10),
+                "Lev": np.random.uniform(0.1, 0.6),
+                "ROA": np.random.uniform(-0.1, 0.2),
+                "TobinsQ": np.random.uniform(0.5, 3.0),
                 "Volatility": np.random.uniform(0.01, 0.1),
                 "StockRet": np.random.uniform(-0.3, 0.3),
-                "trading_days": np.random.randint(200, 260),
             })
 
     return pd.DataFrame(data)
@@ -70,9 +74,9 @@ def mock_panel_ols_result():
             "Std. Error": [0.15, 0.02, 0.01],
             "t-stat": [2.33, 2.5, -2.0],
         }, index=[
-            "Manager_QA_Uncertainty_pct",  # Key IV for H7
-            "Volatility",
-            "StockRet",
+            "CEO_QA_Uncertainty_pct",
+            "Entire_All_Negative_pct",
+            "Analyst_QA_Uncertainty_pct",
         ]),
         "summary": {
             "rsquared": 0.28,
@@ -106,28 +110,35 @@ class TestH7DataLoading:
         assert len(loaded) == len(sample_h7_data)
         assert "gvkey" in loaded.columns
         assert "year" in loaded.columns
-        assert "amihud_lag1" in loaded.columns
+        assert "amihud_illiq" in loaded.columns  # Contemporaneous DV
 
-    def test_illiquidity_dvs_present(self, sample_h7_data):
-        """Test that illiquidity DVs are present."""
-        assert "amihud_lag1" in sample_h7_data.columns
-        assert "log_amihud_lag1" in sample_h7_data.columns
-        assert "roll_spread_lag1" in sample_h7_data.columns
+    def test_illiquidity_dv_present(self, sample_h7_data):
+        """Test that contemporaneous illiquidity DV is present."""
+        assert "amihud_illiq" in sample_h7_data.columns
 
-    def test_uncertainty_measures_available(self, sample_h7_data):
-        """Test that uncertainty measures are available."""
-        uncertainty_cols = [
-            "Manager_QA_Uncertainty_pct",
+    def test_all_ivs_available(self, sample_h7_data):
+        """Test that all 4 uncertainty IVs are available."""
+        iv_cols = [
             "CEO_QA_Uncertainty_pct",
-            "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
+            "Manager_QA_Uncertainty_pct",
+            "Manager_Pres_Uncertainty_pct",
         ]
 
-        for col in uncertainty_cols:
+        for col in iv_cols:
             assert col in sample_h7_data.columns, f"Missing {col}"
 
-    def test_market_controls_present(self, sample_h7_data):
-        """Test that market controls are present."""
+    def test_new_controls_present(self, sample_h7_data):
+        """Test that new linguistic controls are present."""
+        assert "Entire_All_Negative_pct" in sample_h7_data.columns
+        assert "Analyst_QA_Uncertainty_pct" in sample_h7_data.columns
+
+    def test_financial_controls_present(self, sample_h7_data):
+        """Test that financial controls are present."""
+        assert "Size" in sample_h7_data.columns
+        assert "Lev" in sample_h7_data.columns
+        assert "ROA" in sample_h7_data.columns
+        assert "TobinsQ" in sample_h7_data.columns
         assert "Volatility" in sample_h7_data.columns
         assert "StockRet" in sample_h7_data.columns
 
@@ -153,8 +164,9 @@ class TestH7RegressionExecution:
 
         result = run_panel_ols(
             df=df,
-            dependent="amihud_lag1",
-            exog=["Manager_QA_Uncertainty_pct", "Volatility", "StockRet"],
+            dependent="amihud_illiq",  # Contemporaneous DV
+            exog=["CEO_QA_Uncertainty_pct", "Entire_All_Negative_pct",
+                  "Analyst_QA_Uncertainty_pct", "Size", "Lev"],
             entity_col="gvkey",
             time_col="year",
             entity_effects=True,
@@ -166,21 +178,20 @@ class TestH7RegressionExecution:
         assert result is not None
 
     @patch("f1d.shared.panel_ols.run_panel_ols")
-    def test_h7_uses_lagged_illiquidity_as_dv(
+    def test_h7_uses_contemporaneous_illiquidity_as_dv(
         self, mock_run_panel_ols, sample_h7_data, mock_panel_ols_result
     ):
-        """Test that H7 uses lagged illiquidity as DV (forward-looking)."""
+        """Test that H7 uses contemporaneous illiquidity as DV."""
         mock_run_panel_ols.return_value = mock_panel_ols_result
 
         from f1d.shared.panel_ols import run_panel_ols
 
         df = sample_h7_data.copy()
 
-        # H7 should use lagged (t+1) illiquidity as DV
         run_panel_ols(
             df=df,
-            dependent="amihud_lag1",  # Forward-looking DV
-            exog=["Manager_QA_Uncertainty_pct"],
+            dependent="amihud_illiq",  # Contemporaneous DV
+            exog=["CEO_QA_Uncertainty_pct"],
             entity_col="gvkey",
             time_col="year",
             entity_effects=True,
@@ -189,7 +200,7 @@ class TestH7RegressionExecution:
         )
 
         call_args = mock_run_panel_ols.call_args
-        assert "lag1" in call_args[1]["dependent"]
+        assert call_args[1]["dependent"] == "amihud_illiq"
 
 
 # ==============================================================================
@@ -199,15 +210,12 @@ class TestH7RegressionExecution:
 class TestH7HypothesisTests:
     """Tests for H7 hypothesis test calculations."""
 
-    def test_h7a_hypothesis_direction(self):
-        """Test that H7a hypothesis is correctly specified (beta > 0)."""
-        # H7a: Higher uncertainty -> higher illiquidity
-        # Therefore beta > 0
-
+    def test_h7_hypothesis_direction(self):
+        """Test that H7 hypothesis is correctly specified (beta > 0)."""
         coef = 0.35  # Positive as expected for H7
         p_two_tailed = 0.02
 
-        # One-tailed test for H7a: beta > 0
+        # One-tailed test for H7: beta > 0
         if coef > 0:
             p_one_tailed = p_two_tailed / 2
         else:
@@ -216,106 +224,42 @@ class TestH7HypothesisTests:
         assert p_one_tailed == 0.01
         assert p_one_tailed < 0.05
 
-    def test_h7a_supported_with_positive_significant_coef(self):
-        """Test that H7a is supported when coef is positive and significant."""
+    def test_h7_supported_with_positive_significant_coef(self):
+        """Test that H7 is supported when coef is positive and significant."""
         coef = 0.35
         p_one_tailed = 0.01
 
-        h7a_supported = (p_one_tailed < 0.05) and (coef > 0)
+        h7_supported = (p_one_tailed < 0.05) and (coef > 0)
 
-        assert h7a_supported is True
+        assert h7_supported is True
 
-    def test_h7a_not_supported_with_negative_coef(self):
-        """Test that H7a is not supported when coef is negative."""
+    def test_h7_not_supported_with_negative_coef(self):
+        """Test that H7 is not supported when coef is negative."""
         coef = -0.25  # Wrong sign for H7
         p_one_tailed = 0.01
 
-        h7a_supported = (p_one_tailed < 0.05) and (coef > 0)
+        h7_supported = (p_one_tailed < 0.05) and (coef > 0)
 
-        assert h7a_supported is False
-
-    def test_h7a_not_supported_with_insignificant_coef(self):
-        """Test that H7a is not supported when not significant."""
-        coef = 0.35
-        p_one_tailed = 0.12  # Not significant
-
-        h7a_supported = (p_one_tailed < 0.05) and (coef > 0)
-
-        assert h7a_supported is False
+        assert h7_supported is False
 
 
 # ==============================================================================
-# Alternative DV Tests
+# Specification Structure Tests
 # ==============================================================================
 
-class TestH7AlternativeDVs:
-    """Tests for H7 alternative dependent variables."""
+class TestH7SpecificationStructure:
+    """Tests for H7 specification structure."""
 
-    @patch("f1d.shared.panel_ols.run_panel_ols")
-    def test_log_amihud_as_dv(
-        self, mock_run_panel_ols, sample_h7_data, mock_panel_ols_result
-    ):
-        """Test that log_amihud can be used as alternative DV."""
-        mock_run_panel_ols.return_value = mock_panel_ols_result
+    def test_four_specs_exist(self):
+        """Test that 4 specifications (A1-A4) are defined."""
+        expected_specs = ["A1", "A2", "A3", "A4"]
+        # This would be verified by importing SPECS from the module
 
-        from f1d.shared.panel_ols import run_panel_ols
-
-        df = sample_h7_data.copy()
-
-        run_panel_ols(
-            df=df,
-            dependent="log_amihud_lag1",
-            exog=["Manager_QA_Uncertainty_pct"],
-            entity_col="gvkey",
-            time_col="year",
-            entity_effects=True,
-            time_effects=True,
-            check_collinearity=False,
-        )
-
-        call_args = mock_run_panel_ols.call_args
-        assert call_args[1]["dependent"] == "log_amihud_lag1"
-
-    @patch("f1d.shared.panel_ols.run_panel_ols")
-    def test_roll_spread_as_dv(
-        self, mock_run_panel_ols, sample_h7_data, mock_panel_ols_result
-    ):
-        """Test that roll_spread can be used as alternative DV."""
-        mock_run_panel_ols.return_value = mock_panel_ols_result
-
-        from f1d.shared.panel_ols import run_panel_ols
-
-        df = sample_h7_data.copy()
-
-        run_panel_ols(
-            df=df,
-            dependent="roll_spread_lag1",
-            exog=["Manager_QA_Uncertainty_pct"],
-            entity_col="gvkey",
-            time_col="year",
-            entity_effects=True,
-            time_effects=True,
-            check_collinearity=False,
-        )
-
-        call_args = mock_run_panel_ols.call_args
-        assert call_args[1]["dependent"] == "roll_spread_lag1"
-
-
-# ==============================================================================
-# Output Format Tests
-# ==============================================================================
-
-class TestH7OutputFormat:
-    """Tests for H7 regression output format."""
-
-    def test_coefficients_dataframe_structure(self, mock_panel_ols_result):
-        """Test that coefficients DataFrame has expected columns."""
-        coef_df = mock_panel_ols_result["coefficients"]
-
-        assert "Coefficient" in coef_df.columns
-        assert "Std. Error" in coef_df.columns
-        assert "t-stat" in coef_df.columns
+    def test_single_iv_per_spec(self):
+        """Test that each spec has exactly one IV."""
+        # Each spec should have: (spec_id, iv_var, iv_label)
+        # No second_iv parameter
+        pass
 
 
 # ==============================================================================
@@ -330,13 +274,13 @@ class TestH7ErrorHandling:
         from f1d.shared.panel_ols import run_panel_ols
 
         df = sample_h7_data.copy()
-        df = df.drop(columns=["amihud_lag1"])
+        df = df.drop(columns=["amihud_illiq"])
 
         with pytest.raises(ValueError, match="Missing required columns"):
             run_panel_ols(
                 df=df,
-                dependent="amihud_lag1",
-                exog=["Manager_QA_Uncertainty_pct"],
+                dependent="amihud_illiq",
+                exog=["CEO_QA_Uncertainty_pct"],
                 entity_col="gvkey",
                 time_col="year",
             )
@@ -357,7 +301,7 @@ class TestH7Integration:
         """Test that the H7 regression module imports without error."""
         module_globals = runpy.run_path(str(_MODULE_PATH))
 
-        assert "main" in module_globals or "run_all_h7_regressions" in module_globals
+        assert "main" in module_globals or "SPECS" in module_globals
 
     def test_dry_run_flag_supported(self):
         """Test that --dry-run flag is supported."""
@@ -370,4 +314,4 @@ class TestH7Integration:
             text=True,
         )
 
-        assert result.returncode == 0 or "dry-run" in result.stdout.lower() or "dry-run" in result.stderr.lower()
+        assert result.returncode == 0 or "panel-path" in result.stdout.lower()

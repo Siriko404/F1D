@@ -9,7 +9,7 @@ Description: Run H3 Payout Policy hypothesis test by loading the call-level
              industry sample and uncertainty measure, and outputting results.
 
 Model Specification:
-    DV_lead ~ Uncertainty + Lev + Uncertainty_x_Lev +
+    DV_lead ~ Uncertainty + Lev +
               earnings_volatility + fcf_growth + firm_maturity +
               Size + ROA + TobinsQ + CashHoldings +
               C(gvkey) + C(year)
@@ -18,14 +18,12 @@ Dependent Variables:
     1. div_stability_lead (higher = more stable)
     2. payout_flexibility_lead (higher = more flexible)
 
-Hypothesis Tests (one-tailed):
+Hypothesis Test (one-tailed):
     For div_stability:
-        H3a: beta(Uncertainty) < 0 (vagueness reduces stability)
-        H3b: beta(Uncertainty x Lev) < 0 (leverage amplifies negative effect)
+        H3: beta(Uncertainty) < 0 (vagueness reduces stability)
 
     For payout_flexibility:
-        H3a: beta(Uncertainty) > 0 (vagueness increases flexibility)
-        H3b: beta(Uncertainty x Lev) > 0 (leverage amplifies positive effect)
+        H3: beta(Uncertainty) > 0 (vagueness increases flexibility)
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -123,7 +121,7 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    # Leverage (interaction term)
+    # Leverage (control variable)
     {"col": "Lev", "label": "Leverage"},
     # Controls
     {"col": "earnings_volatility", "label": "Earnings Volatility"},
@@ -171,8 +169,6 @@ def prepare_regression_data(
     # Filter to only firms that paid dividends in the trailing 5-year window
     df = df[df["is_div_payer_5yr"] == 1].copy()
 
-    df[f"{uncertainty_var}_x_Lev"] = df[uncertainty_var] * df["Lev"]
-
     return df
 
 
@@ -185,13 +181,13 @@ def run_regression(
     controls = [c for c in CONTROL_VARS if c in df_sample.columns]
 
     formula = (
-        f"{dv_var} ~ 1 + {uncertainty_var} + Lev + {uncertainty_var}_x_Lev + "
+        f"{dv_var} ~ 1 + {uncertainty_var} + Lev + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
 
     print(
-        f"  Formula: {dv_var} ~ {uncertainty_var} + Lev + {uncertainty_var}_x_Lev + {' + '.join(controls)} + EntityEffects + TimeEffects"
+        f"  Formula: {dv_var} ~ {uncertainty_var} + Lev + {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
@@ -219,58 +215,34 @@ def run_regression(
     print(f"  Within-R²: {within_r2:.4f}")
 
     beta1 = model.params.get(uncertainty_var, np.nan)
-    beta3 = model.params.get(f"{uncertainty_var}_x_Lev", np.nan)
     p1_two = model.pvalues.get(uncertainty_var, np.nan)
-    p3_two = model.pvalues.get(f"{uncertainty_var}_x_Lev", np.nan)
     beta1_se = model.std_errors.get(uncertainty_var, np.nan)
-    beta3_se = model.std_errors.get(f"{uncertainty_var}_x_Lev", np.nan)
     beta1_t = model.tstats.get(uncertainty_var, np.nan)
-    beta3_t = model.tstats.get(f"{uncertainty_var}_x_Lev", np.nan)
 
     # Direction tests depend on DV
     if dv_var == "div_stability_lead":
-        # H3a: beta1 < 0
+        # H3: beta1 < 0 (vagueness reduces stability)
         if not np.isnan(p1_two) and not np.isnan(beta1):
             p1_one = p1_two / 2 if beta1 < 0 else 1 - p1_two / 2
         else:
             p1_one = np.nan
-        # H3b: beta3 < 0
-        if not np.isnan(p3_two) and not np.isnan(beta3):
-            p3_one = p3_two / 2 if beta3 < 0 else 1 - p3_two / 2
-        else:
-            p3_one = np.nan
-        h3a_sig = not np.isnan(p1_one) and p1_one < 0.05 and beta1 < 0
-        h3b_sig = not np.isnan(p3_one) and p3_one < 0.05 and beta3 < 0
-        h3a_text = "YES" if h3a_sig else "no"
-        h3b_text = "YES" if h3b_sig else "no"
+        h3_sig = not np.isnan(p1_one) and p1_one < 0.05 and beta1 < 0
+        h3_text = "YES" if h3_sig else "no"
         print(
-            f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3a={h3a_text}"
-        )
-        print(
-            f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H3b={h3b_text}"
+            f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3={h3_text}"
         )
 
     else:
         # payout_flexibility_lead
-        # H3a: beta1 > 0
+        # H3: beta1 > 0 (vagueness increases flexibility)
         if not np.isnan(p1_two) and not np.isnan(beta1):
             p1_one = p1_two / 2 if beta1 > 0 else 1 - p1_two / 2
         else:
             p1_one = np.nan
-        # H3b: beta3 > 0
-        if not np.isnan(p3_two) and not np.isnan(beta3):
-            p3_one = p3_two / 2 if beta3 > 0 else 1 - p3_two / 2
-        else:
-            p3_one = np.nan
-        h3a_sig = not np.isnan(p1_one) and p1_one < 0.05 and beta1 > 0
-        h3b_sig = not np.isnan(p3_one) and p3_one < 0.05 and beta3 > 0
-        h3a_text = "YES" if h3a_sig else "no"
-        h3b_text = "YES" if h3b_sig else "no"
+        h3_sig = not np.isnan(p1_one) and p1_one < 0.05 and beta1 > 0
+        h3_text = "YES" if h3_sig else "no"
         print(
-            f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3a={h3a_text}"
-        )
-        print(
-            f"  beta3 ({uncertainty_var}_x_Lev):    {beta3:.4f}  SE={beta3_se:.4f}  p(one-tail)={p3_one:.4f}  H3b={h3b_text}"
+            f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H3={h3_text}"
         )
 
     meta = {
@@ -289,13 +261,7 @@ def run_regression(
         "beta1_t": float(beta1_t),
         "beta1_p_two": float(p1_two),
         "beta1_p_one": float(p1_one),
-        "beta3": float(beta3),
-        "beta3_se": float(beta3_se),
-        "beta3_t": float(beta3_t),
-        "beta3_p_two": float(p3_two),
-        "beta3_p_one": float(p3_one),
-        "h3a_sig": h3a_sig,
-        "h3b_sig": h3b_sig,
+        "h3_sig": h3_sig,
     }
 
     return model, meta
@@ -350,7 +316,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{H3: Uncertainty, Leverage, and Payout Policy}",
+        "\\caption{H3: Uncertainty and Payout Policy}",
         "\\label{tab:h3_payout_policy}",
         "\\begin{tabular}{lcccc}",
         "\\toprule",
@@ -392,38 +358,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r2 += f"{fmt_se(res_pf_m['beta1_se'])} & " if res_pf_m else " & "
     r2 += f"{fmt_se(res_pf_c['beta1_se'])} \\\\" if res_pf_c else " \\\\"
     lines.append(r2)
-
-    # Row 3: Unc x Lev
-    r3 = "Uncertainty $\\times$ Lev & "
-    r3 += (
-        f"{fmt_coef(res_ds_m['beta3'], res_ds_m['beta3_p_one'])} & "
-        if res_ds_m
-        else " & "
-    )
-    r3 += (
-        f"{fmt_coef(res_ds_c['beta3'], res_ds_c['beta3_p_one'])} & "
-        if res_ds_c
-        else " & "
-    )
-    r3 += (
-        f"{fmt_coef(res_pf_m['beta3'], res_pf_m['beta3_p_one'])} & "
-        if res_pf_m
-        else " & "
-    )
-    r3 += (
-        f"{fmt_coef(res_pf_c['beta3'], res_pf_c['beta3_p_one'])} \\\\"
-        if res_pf_c
-        else " \\\\"
-    )
-    lines.append(r3)
-
-    # Row 4: SE Unc x Lev
-    r4 = " & "
-    r4 += f"{fmt_se(res_ds_m['beta3_se'])} & " if res_ds_m else " & "
-    r4 += f"{fmt_se(res_ds_c['beta3_se'])} & " if res_ds_c else " & "
-    r4 += f"{fmt_se(res_pf_m['beta3_se'])} & " if res_pf_m else " & "
-    r4 += f"{fmt_se(res_pf_c['beta3_se'])} \\\\" if res_pf_c else " \\\\"
-    lines.append(r4)
 
     lines.extend(
         [

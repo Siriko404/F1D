@@ -8,17 +8,22 @@ Description: Run H7 Illiquidity hypothesis test by loading the call-level panel
              from Stage 3, running fixed effects OLS regressions by industry
              sample, and outputting results.
 
-Model Specification (primary — forward-looking DV):
-    Amihud_Illiq_{t+1} ~ Uncertainty_t + Weak_Modal_t +
-                          Size + Lev + ROA + TobinsQ + Volatility + StockRet +
-                          EntityEffects + TimeEffects
+Model Specification (contemporaneous DV):
+    Amihud_Illiq_{t} ~ Uncertainty_IV_t + Entire_All_Negative_pct + Analyst_QA_Uncertainty_pct +
+                       Size + Lev + ROA + TobinsQ + Volatility + StockRet +
+                       EntityEffects + TimeEffects
 
 Unit of observation: individual earnings call (file_name).
-DV: amihud_illiq_lead (the next fiscal year's Amihud illiquidity measure).
+DV: amihud_illiq (contemporaneous Amihud illiquidity measure).
+
+Specifications (4 single-IV regressions):
+    A1: CEO_QA_Uncertainty_pct
+    A2: CEO_Pres_Uncertainty_pct
+    A3: Manager_QA_Uncertainty_pct
+    A4: Manager_Pres_Uncertainty_pct
 
 Hypothesis Tests (one-tailed):
-    H7-A: beta(Manager_QA_Uncertainty) > 0 (vagueness increases illiquidity)
-    H7-B: beta(Manager_Pres_Uncertainty) > 0 (presentation vagueness too)
+    H7: beta(Uncertainty_IV) > 0 (vagueness increases illiquidity)
     H7-C: beta(QA) > beta(Pres) (spontaneous speech has larger effect)
 
 Industry Samples:
@@ -28,7 +33,7 @@ Industry Samples:
 
 Minimum Calls Filter:
     Firms must have >= 5 calls in the regression sample.
-    amihud_illiq_lead must be non-missing (DV).
+    amihud_illiq must be non-missing (DV).
 
 Inputs:
     - outputs/variables/h7_illiquidity/latest/h7_illiquidity_panel.parquet
@@ -46,7 +51,7 @@ Dependencies:
     - Uses: linearmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-02-26
+Date: 2026-03-08
 ================================================================================
 """
 
@@ -84,6 +89,8 @@ CONFIG = {
 }
 
 BASE_CONTROLS = [
+    "Entire_All_Negative_pct",
+    "Analyst_QA_Uncertainty_pct",
     "Size",
     "Lev",
     "ROA",
@@ -92,11 +99,11 @@ BASE_CONTROLS = [
     "StockRet",
 ]
 
-# Each tuple: (spec_label, uncertainty_var, base_uncertainty_var)
 SPECS = [
-    ("QA_Uncertainty", "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct"),
-    ("QA_Weak_Modal", "Manager_QA_Weak_Modal_pct", "CEO_QA_Weak_Modal_pct"),
-    ("Pres_Uncertainty", "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct"),
+    ("A1", "CEO_QA_Uncertainty_pct", "CEO QA Uncertainty"),
+    ("A2", "CEO_Pres_Uncertainty_pct", "CEO Pres Uncertainty"),
+    ("A3", "Manager_QA_Uncertainty_pct", "Manager QA Uncertainty"),
+    ("A4", "Manager_Pres_Uncertainty_pct", "Manager Pres Uncertainty"),
 ]
 
 
@@ -106,15 +113,16 @@ SPECS = [
 
 SUMMARY_STATS_VARS = [
     # Dependent variable
-    {"col": "amihud_illiq_lead", "label": "Amihud Illiquidity$_{t+1}$"},
-    # Primary uncertainty measures
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "amihud_illiq", "label": "Amihud Illiquidity$_{t}$"},
+    # Uncertainty measures (IVs)
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
-    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    # Controls
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    # Linguistic controls (NEW)
+    {"col": "Entire_All_Negative_pct", "label": "Entire Call Negative"},
+    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
+    # Financial controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "Lev", "label": "Leverage"},
     {"col": "ROA", "label": "ROA"},
@@ -157,21 +165,19 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
 
 def run_regression(
     df_sample: pd.DataFrame,
-    spec_name: str,
+    spec_id: str,
     iv_var: str,
-    second_iv: str,
     sample_name: str,
     min_calls: int = 5,
 ) -> Tuple[Optional[Any], Dict[str, Any]]:
     """Run a single PanelOLS regression for the given spec.
 
-    DV  : amihud_illiq_lead (t+1 illiquidity — forward looking, no leakage)
-    IV1 : iv_var  (primary uncertainty/vagueness measure)
-    IV2 : second_iv (comparison measure — e.g. CEO vs Manager)
+    DV  : amihud_illiq (contemporaneous illiquidity)
+    IV  : iv_var (single uncertainty measure)
     FE  : firm (gvkey) + year, clustered by entity (gvkey)
     """
     required = (
-        ["amihud_illiq_lead", iv_var, second_iv] + BASE_CONTROLS + ["gvkey", "year", "file_name"]
+        ["amihud_illiq", iv_var] + BASE_CONTROLS + ["gvkey", "year", "file_name"]
     )
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
 
@@ -184,12 +190,12 @@ def run_regression(
         return None, {}
 
     formula = (
-        f"amihud_illiq_lead ~ {iv_var} + {second_iv} + "
+        f"amihud_illiq ~ {iv_var} + "
         + " + ".join(BASE_CONTROLS)
         + " + EntityEffects + TimeEffects"
     )
 
-    print(f"  Formula: amihud_illiq_lead ~ {iv_var} + {second_iv} + controls")
+    print(f"  Formula: amihud_illiq ~ {iv_var} + controls")
     print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
     print("  Estimating with firm-clustered SEs...")
 
@@ -214,28 +220,19 @@ def run_regression(
     beta1_t = float(model.tstats.get(iv_var, np.nan))
     p1_two = float(model.pvalues.get(iv_var, np.nan))
 
-    beta2 = float(model.params.get(second_iv, np.nan))
-    beta2_se = float(model.std_errors.get(second_iv, np.nan))
-    beta2_t = float(model.tstats.get(second_iv, np.nan))
-    p2_two = float(model.pvalues.get(second_iv, np.nan))
-
     # H7: one-tailed p-value for beta1 > 0
-    # Also compute one-tailed p-value for beta2 for consistent star notation
-    p2_one = p2_two / 2 if beta2 > 0 else 1 - p2_two / 2
     p1_one = p1_two / 2 if beta1 > 0 else 1 - p1_two / 2
     h7_sig = p1_one < 0.05 and beta1 > 0
 
     print(
-        f"  beta1 ({iv_var}):  {beta1:.4f}  SE={beta1_se:.4f}"
+        f"  beta ({iv_var}):  {beta1:.4f}  SE={beta1_se:.4f}"
         f"  p(one)={p1_one:.4f}  H7={'YES' if h7_sig else 'no'}"
     )
-    print(f"  beta2 ({second_iv}): {beta2:.4f}  SE={beta2_se:.4f}")
 
     meta: Dict[str, Any] = {
-        "spec_name": spec_name,
+        "spec_id": spec_id,
         "sample": sample_name,
         "iv_var": iv_var,
-        "second_iv": second_iv,
         "n_obs": int(model.nobs),
         "n_firms": df_reg["gvkey"].nunique(),
         "n_clusters": df_reg["gvkey"].nunique(),
@@ -246,11 +243,6 @@ def run_regression(
         "beta1_t": beta1_t,
         "beta1_p_two": p1_two,
         "beta1_p_one": p1_one,
-        "beta2": beta2,
-        "beta2_se": beta2_se,
-        "beta2_t": beta2_t,
-        "beta2_p_two": p2_two,
-        "beta2_p_one": p2_one,
         "h7_sig": h7_sig,
     }
 
@@ -261,9 +253,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Emit a LaTeX table of the primary (Main sample) results."""
     tex_path = out_dir / "h7_illiquidity_table.tex"
 
-    def get_res(spec: str, sample: str = "Main") -> Optional[Dict[str, Any]]:
+    def get_res(spec_id: str, sample: str = "Main") -> Optional[Dict[str, Any]]:
         for r in all_results:
-            if r["sample"] == sample and r["spec_name"] == spec:
+            if r["sample"] == sample and r["spec_id"] == spec_id:
                 return r
         return None
 
@@ -284,7 +276,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_se(val: float) -> str:
         return "" if (val is None or pd.isna(val)) else f"({val:.4f})"
 
-    specs_order = ["QA_Uncertainty", "QA_Weak_Modal", "Pres_Uncertainty"]
+    specs_order = ["A1", "A2", "A3", "A4"]
     results_main = [get_res(s) for s in specs_order]
 
     lines = [
@@ -292,13 +284,15 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\centering",
         r"\caption{H7: Speech Vagueness and Stock Illiquidity (Amihud 2002)}",
         r"\label{tab:h7_illiquidity}",
-        r"\begin{tabular}{lccc}",
+        r"\begin{tabular}{lcccc}",
         r"\toprule",
-        r" & (1) QA Uncertainty & (2) QA Weak Modal & (3) Pres Uncertainty \\",
+        r" & (A1) & (A2) & (A3) & (A4) \\",
+        r" & CEO QA & CEO Pres & Mgr QA & Mgr Pres \\",
         r"\midrule",
     ]
 
-    row_b = "Manager IV & "
+    # Single row for uncertainty coefficient
+    row_b = "Uncertainty Measure & "
     row_se = " & "
     for r in results_main:
         if r:
@@ -310,23 +304,13 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(row_b.rstrip(" &") + r" \\")
     lines.append(row_se.rstrip(" &") + r" \\")
 
-    row_b2 = "CEO IV & "
-    row_se2 = " & "
-    for r in results_main:
-        if r:
-            row_b2 += f"{fmt_coef(r['beta2'], r['beta2_p_one'])} & "
-            row_se2 += f"{fmt_se(r['beta2_se'])} & "
-        else:
-            row_b2 += " & "
-            row_se2 += " & "
-    lines.append(row_b2.rstrip(" &") + r" \\")
-    lines.append(row_se2.rstrip(" &") + r" \\")
-
     lines += [
         r"\midrule",
-        r"Controls & Yes & Yes & Yes \\",
-        r"Firm FE  & Yes & Yes & Yes \\",
-        r"Year FE  & Yes & Yes & Yes \\",
+        r"Negative Sentiment & Yes & Yes & Yes & Yes \\",
+        r"Analyst Uncertainty & Yes & Yes & Yes & Yes \\",
+        r"Controls & Yes & Yes & Yes & Yes \\",
+        r"Firm FE  & Yes & Yes & Yes & Yes \\",
+        r"Year FE  & Yes & Yes & Yes & Yes \\",
         r"\midrule",
     ]
 
@@ -348,7 +332,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\\[-0.5em]",
         r"\parbox{\textwidth}{\scriptsize ",
         r"\textit{Notes:} "
-        r"Dependent variable is Amihud illiquidity$_{t+1}$ (Amihud 2002). "
+        r"Dependent variable is Amihud illiquidity$_{t}$ (Amihud 2002). "
         r"All models use the Main industry sample (non-financial, non-utility firms). "
         r"Firms with fewer than 5 calls are excluded. "
         r"Standard errors (in parentheses) are clustered at the firm level. "
@@ -413,15 +397,17 @@ def main(panel_path: Optional[str] = None) -> int:
             "year",
             "ff12_code",
             "start_date",
-            "amihud_illiq_lead",
-            # All uncertainty specs (primary + baseline per SPECS list)
-            "Manager_QA_Uncertainty_pct",
+            # DV (contemporaneous)
+            "amihud_illiq",
+            # Uncertainty measures (IVs for all 4 specs)
             "CEO_QA_Uncertainty_pct",
-            "Manager_QA_Weak_Modal_pct",
-            "CEO_QA_Weak_Modal_pct",
-            "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
-            # Base controls
+            "Manager_QA_Uncertainty_pct",
+            "Manager_Pres_Uncertainty_pct",
+            # Linguistic controls (NEW)
+            "Entire_All_Negative_pct",
+            "Analyst_QA_Uncertainty_pct",
+            # Financial controls
             "Size",
             "Lev",
             "ROA",
@@ -461,10 +447,10 @@ def main(panel_path: Optional[str] = None) -> int:
     print("  Saved: summary_stats.tex")
 
     # Sanity: DV coverage
-    n_dv = panel["amihud_illiq_lead"].notna().sum()
-    print(f"  DV (amihud_illiq_lead) non-missing: {n_dv:,} / {len(panel):,}")
+    n_dv = panel["amihud_illiq"].notna().sum()
+    print(f"  DV (amihud_illiq) non-missing: {n_dv:,} / {len(panel):,}")
     if n_dv == 0:
-        print("  FATAL: DV is entirely NaN — Stage 3 must be re-run after CRSP fix.")
+        print("  FATAL: DV is entirely NaN — check panel builder.")
         return 1
 
     df_prep = prepare_regression_data(panel)
@@ -477,22 +463,22 @@ def main(panel_path: Optional[str] = None) -> int:
     for sample in CONFIG["samples"]:
         df_sample = df_prep[df_prep["sample"] == sample].copy()
 
-        for spec_name, iv_var, second_iv in SPECS:
-            print(f"\n--- {sample} / {spec_name} ---")
+        for spec_id, iv_var, iv_label in SPECS:
+            print(f"\n--- {sample} / {spec_id}: {iv_label} ---")
 
             if len(df_sample) < 100:
                 print("  Skipping: insufficient data")
                 continue
 
             model, meta = run_regression(
-                df_sample, spec_name, iv_var, second_iv, sample,
+                df_sample, spec_id, iv_var, sample,
                 min_calls=CONFIG["min_calls"]
             )
 
             if model is not None:
                 all_results.append(meta)
                 txt_file = (
-                    out_dir / f"regression_{sample}_{spec_name.replace(' ', '_')}.txt"
+                    out_dir / f"regression_{sample}_{spec_id}.txt"
                 )
                 with open(txt_file, "w", encoding="utf-8") as f:
                     f.write(str(model.summary))
@@ -501,27 +487,43 @@ def main(panel_path: Optional[str] = None) -> int:
     # Spontaneity gap test (H7-C): QA beta > Pres beta for Main sample
     # ------------------------------------------------------------------
     print("\n--- H7-C: Spontaneity Gap ---")
-    qa_main = next(
+    qa_ceo = next(
         (
             r
             for r in all_results
-            if r["sample"] == "Main" and r["spec_name"] == "QA_Uncertainty"
+            if r["sample"] == "Main" and r["spec_id"] == "A1"  # CEO QA
         ),
         None,
     )
-    pres_main = next(
+    qa_mgr = next(
         (
             r
             for r in all_results
-            if r["sample"] == "Main" and r["spec_name"] == "Pres_Uncertainty"
+            if r["sample"] == "Main" and r["spec_id"] == "A3"  # Manager QA
+        ),
+        None,
+    )
+    pres_ceo = next(
+        (
+            r
+            for r in all_results
+            if r["sample"] == "Main" and r["spec_id"] == "A2"  # CEO Pres
+        ),
+        None,
+    )
+    pres_mgr = next(
+        (
+            r
+            for r in all_results
+            if r["sample"] == "Main" and r["spec_id"] == "A4"  # Manager Pres
         ),
         None,
     )
 
-    if qa_main and pres_main:
-        beta_qa = qa_main["beta1"]
-        beta_pres = pres_main["beta1"]
-        gap_sig = beta_qa > beta_pres and qa_main["h7_sig"]
+    if qa_mgr and pres_mgr:
+        beta_qa = qa_mgr["beta1"]
+        beta_pres = pres_mgr["beta1"]
+        gap_sig = beta_qa > beta_pres and qa_mgr["h7_sig"]
         print(f"  beta(Manager_QA_Uncertainty)   = {beta_qa:.4f}")
         print(f"  beta(Manager_Pres_Uncertainty) = {beta_pres:.4f}")
         print(f"  H7-C (QA > Pres): {'SUPPORTED' if gap_sig else 'not supported'}")

@@ -45,6 +45,9 @@ from f1d.shared.variables import (
     EarningsVolatilityBuilder,
     DispersionLeadBuilder,
     PriorDispersionBuilder,
+    DispersionBuilder,
+    LaggedDispersionBuilder,
+    NegativeSentimentBuilder,
     EarningsSurpriseRatioBuilder,
     LossDummyBuilder,
     ManifestFieldsBuilder,
@@ -96,6 +99,9 @@ def build_panel(
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
         ),
+        "negative_sentiment": NegativeSentimentBuilder(
+            var_config.get("negative_sentiment", {})
+        ),
         "size": SizeBuilder(var_config.get("size", {})),
         "lev": LevBuilder(var_config.get("lev", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
@@ -105,6 +111,10 @@ def build_panel(
         "dispersion_lead": DispersionLeadBuilder(var_config.get("dispersion_lead", {})),
         "prior_dispersion": PriorDispersionBuilder(
             var_config.get("prior_dispersion", {})
+        ),
+        "dispersion": DispersionBuilder(var_config.get("dispersion", {})),
+        "lagged_dispersion": LaggedDispersionBuilder(
+            var_config.get("lagged_dispersion", {})
         ),
         "earnings_surprise_ratio": EarningsSurpriseRatioBuilder(
             var_config.get("earnings_surprise_ratio", {})
