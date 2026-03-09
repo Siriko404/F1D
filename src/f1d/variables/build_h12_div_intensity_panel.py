@@ -26,8 +26,6 @@ Step 3: Aggregate call-level uncertainty to firm-year level:
             DivIntensity, controls = last non-missing per (gvkey, fyearq)
 Step 4: Create DivIntensity_lead = DivIntensity_{t+1} (forward one fiscal year).
 Step 5: Assign industry sample, save firm-year panel.
-
-Cloned from: build_h8_political_risk_panel.py (firm-year architecture).
 """
 
 from __future__ import annotations

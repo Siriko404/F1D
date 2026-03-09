@@ -1,0 +1,27 @@
+======================================================================
+H8 POLITICAL RISK PANEL — SANITY CHECKS
+======================================================================
+Generated: 2026-03-02 22:12:40
+
+N firm-years (raw):  29,343
+N firms (unique):    2,429
+
+PRiskFY:
+  mean=119.8488  SD=143.6371
+  p1=2.0748  p99=655.0130
+  missing=1,842
+
+ClarityStyle_Realtime:
+  mean=-0.0096  SD=1.0026
+  (expected: mean~=0, SD~=1)
+  missing=10,501
+
+AbsAbInv_lead (DV):
+  valid=25,759 / 29,343
+  mean=0.0861  SD=0.1158
+
+Interact (PRiskFY × ClarityStyle_Realtime):
+  valid=18,340
+  mean=21.7305  SD=220.2616
+
+======================================================================

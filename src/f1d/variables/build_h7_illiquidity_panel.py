@@ -51,6 +51,8 @@ from f1d.shared.variables import (
     StockReturnBuilder,
     AmihudIlliqBuilder,
     ManifestFieldsBuilder,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
     stats_list_to_dataframe,
 )
 
@@ -105,6 +107,12 @@ def build_panel(
         "volatility": VolatilityBuilder(var_config.get("volatility", {})),
         "stock_ret": StockReturnBuilder(var_config.get("stock_ret", {})),
         "amihud_illiq": AmihudIlliqBuilder(var_config.get("amihud_illiq", {})),
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
+        ),
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
+        ),
     }
 
     all_results = {}

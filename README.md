@@ -207,7 +207,7 @@ All engines apply **per-year 1%/99% winsorization** at load time to ensure consi
 - Handles potential language evolution and regime-dependent communication patterns over 17 years
 - Standard approach in panel data econometrics
 
-Panel builders (H0.2-H10) receive **already-winsorized** data and do NOT apply additional winsorization.
+Panel builders (H0.2-H9, H11-H14) receive **already-winsorized** data and do NOT apply additional winsorization.
 
 ---
 
@@ -248,9 +248,7 @@ python -m f1d.variables.build_h4_leverage_panel
 python -m f1d.variables.build_h5_dispersion_panel
 python -m f1d.variables.build_h6_cccl_panel
 python -m f1d.variables.build_h7_illiquidity_panel
-python -m f1d.variables.build_h8_political_risk_panel
 python -m f1d.variables.build_h9_takeover_panel
-python -m f1d.variables.build_h10_tone_at_top_panel
 python -m f1d.variables.build_h11_prisk_uncertainty_panel
 python -m f1d.variables.build_h11_prisk_uncertainty_lag_panel
 python -m f1d.variables.build_h12_div_intensity_panel
@@ -269,9 +267,7 @@ python -m f1d.econometric.run_h4_leverage                # ~1 min
 python -m f1d.econometric.run_h5_dispersion              # ~2 min
 python -m f1d.econometric.run_h6_cccl                    # ~1 min
 python -m f1d.econometric.run_h7_illiquidity             # ~2 min
-python -m f1d.econometric.run_h8_political_risk             # ~1 min
 python -m f1d.econometric.run_h9_takeover_hazards        # ~1 min
-python -m f1d.econometric.run_h10_tone_at_top            # ~2 min
 python -m f1d.econometric.run_h11_prisk_uncertainty      # ~2 min
 python -m f1d.econometric.run_h11_prisk_uncertainty_lag  # ~2 min
 python -m f1d.econometric.run_h12_div_intensity          # ~1 min
@@ -316,7 +312,6 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H5 Analyst Dispersion | **Null** | 0/24 significant (8 specs × 3 samples) |
 | H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 0/9 significant (all β negative or zero) |
-| H8 Political Risk | **NOT SUPPORTED** | β₃ = 0.0000, p = 0.986 |
 | H11 Political Risk Uncertainty | **STRONG SUPPORT** | 16/18 significant (all p<0.05) |
 | H11-Lag Political Risk | **PARTIAL** | 12/18 significant with lagged PRiskQ |
 | H12 Dividend Intensity | **NOT SUPPORTED** | 0/12 significant (Main sample) |
@@ -551,30 +546,6 @@ Model: `amihud_illiq_lead ~ Mgr_Uncertainty + CEO_Uncertainty + Size + Lev + ROA
 
 **Result:** H7 NOT SUPPORTED. Manager uncertainty does not predict increased illiquidity.
 All coefficients are negative (opposite direction) or near-zero.
-
-### H8 Political Risk — `run_h8_political_risk`
-
-Tests whether CEO speech vagueness moderates the effect of Political Risk (PRiskFY) on Abnormal Investment.
-Unit of observation: firm-year (not call-level). Uses Hassan et al. (2019) PRisk index.
-
-Model: `AbsAbInv_{t+1} ~ PRiskFY + ClarityStyle_Realtime + PRiskFY×ClarityStyle_Realtime + Size + Lev + ROA + TobinsQ + EntityEffects + TimeEffects`
-
-Key variables:
-- **PRiskFY**: Mean quarterly political risk over (fy_end - 366d, fy_end], min 2 quarters required
-- **ClarityStyle_Realtime**: CEO clarity score (4-call rolling window, min 4 prior calls), time-varying, standardized (mean≈0, SD≈1)
-- **AbsAbInv_lead**: |Biddle InvestmentResidual| shifted one fiscal year forward
-
-**Stage 3**: 29,343 firm-years. Valid AbsAbInv_lead: 25,759. PRiskFY matched: 27,501.
-ClarityStyle_Realtime: 18,842 valid (64.2% coverage).
-
-| Sample | N Obs | N Firms | Within-R² | β₁ (PRiskFY) | β₂ (ClarityStyle) | β₃ (Interact) | p₃ |
-|--------|------:|--------:|----------:|-------------:|-----------------:|--------------:|---:|
-| Primary (All Industries) | 15,998 | 1,943 | 0.025 | −0.0000 (p=0.198) | −0.0003 (p=0.803) | 0.0000 (p=0.986) | NS |
-| Main (ex-Finance/Utility) | 12,901 | 1,539 | 0.024 | −0.0000 (p=0.102) | 0.0005 (p=0.789) | 0.0000 (p=0.378) | NS |
-
-**H8 NOT SUPPORTED** — CEO vagueness does NOT significantly moderate the political risk → abnormal investment relationship (β₃ ≈ 0, p = 0.986 in primary spec).
-
-Data notes: ClarityStyle_Realtime has 35.8% missing (requires min 4 prior calls); PRiskFY has 6.3% missing due to Hassan data coverage.
 
 ### H9 Takeover Hazards — `run_h9_takeover_hazards`
 

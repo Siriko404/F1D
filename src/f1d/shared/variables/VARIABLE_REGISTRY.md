@@ -88,6 +88,15 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 | `Analyst_QA_Uncertainty_pct` | `AnalystQAUncertaintyBuilder` | |
 | `NegativeSentiment` | `NegativeSentimentBuilder` | |
 | `EntireAll_Uncertainty_pct` | `EntireAllUncertaintyBuilder` | |
+
+---
+
+## Clarity Residual Variables (`_clarity_residual_engine.py` → `ClarityResidualEngine`)
+
+| Variable | Builder | Notes |
+|---|---|---|
+| `CEO_Clarity_Residual` | `CEOClarityResidualBuilder` | CEO Q&A uncertainty residual after firm/linguistic controls (from H0.3) |
+| `Manager_Clarity_Residual` | `ManagerClarityResidualBuilder` | Manager Q&A uncertainty residual after firm/linguistic controls (from H0.3) |
 | `Manager_QA_Positive_pct` | `ManagerQAPositiveBuilder` | |
 | `Manager_QA_Negative_pct` | `ManagerQANegativeBuilder` | |
 | `Manager_Pres_Positive_pct` | `ManagerPresPositiveBuilder` | |
@@ -109,7 +118,6 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 |---|---|---|
 | `shift_intensity_sale_ff48` | `CCCLInstrumentBuilder` | CCCL IV (Hassan et al.) |
 | `CEOClarityStyle` | `CEOClarityStyleBuilder` | CEO communication style |
-| `CEOStyleRealtime` | `CEOStyleRealtimeBuilder` | Real-time style (H10) |
 | `TakeoverIndicator` | `TakeoverIndicatorBuilder` | H9 takeover |
 
 ---
@@ -119,10 +127,6 @@ Refactor status: canonical consolidation complete (see `panel_utils.py`).
 - **Variable Audit Fixes (2026-02-25):**
   - `Lev`: Changed from `ltq/atq` (total liabilities) to `(dlcq+dlttq)/atq` (interest-bearing debt only) per spec. Prior implementation overstated leverage 2-3x for low-debt firms.
   - `OCF_Volatility`: Changed from `oancfy/atq` to `oancfy/atq_{t-1}` (lagged assets) per spec. Prior implementation introduced correlated measurement error.
-
-- `Turn_Uncertainty_pct` in `build_h10_tone_at_top_panel.py`: uses `0.0`
-  fallback (vs. `NaN` in all other uncertainty measures). Computed inline per
-  speaker turn; not a `VariableBuilder`. Intentional design for Model 2.
 
 - `run_h0_4_ceo_clarity_regime.py`: uses config-driven `isin` filter instead of
   `assign_industry_sample`. Intentional (regime-based sample, not FF12 split).

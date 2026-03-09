@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H13.1 Future Capital Expenditure Hypothesis
+STAGE 4: Test H13.1 Capital Expenditure Hypothesis
 ================================================================================
 ID: econometric/run_h13_1_capex
-Description: Run H13.1 Future Capital Expenditure hypothesis test by loading the
-             call-level panel from Stage 3, running fixed effects OLS regressions
-             by industry sample, and outputting results.
+Description: Run H13.1 Capital Expenditure hypothesis test with multi-IV, multi-DV
+             specification following the H1 pattern.
 
-This script follows the H1 architecture but with NO interaction terms.
-Call-level panel with firm + year fixed effects, firm-clustered standard errors.
+Model Specifications (8 specs × 3 samples = 24 regressions):
+    Dependent Variables: CapexAt_lead (t+1), CapexAt (t)
+    Uncertainty Measures: CEO/Manager × Presentation/QA (4)
+    Controls: Size, TobinsQ, ROA, Lev, CashHoldings, DividendPayer, OCF_Volatility
+              [+ CapexAt for CapexAt_lead models]
 
-Model Specification (H13.1):
-    CapexAt_lead ~ CEO_Pres_Uncertainty_pct +
-                   Size + TobinsQ + ROA + Lev + CashHoldings +
-                   DividendPayer + OCF_Volatility + CapexAt +
-                   C(gvkey) + C(year)
+    CRITICAL: When DV = CapexAt, exclude CapexAt from controls (would be DV on both sides)
 
 Hypothesis Test (one-tailed):
-    H13.1: beta(CEO_Pres_Uncertainty_pct) < 0
-           Higher speech uncertainty -> lower future CapEx
+    H13.1: beta(Uncertainty) < 0
+           Higher speech uncertainty -> lower capital expenditure
 
 Industry Samples:
     - Main:    FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -33,13 +31,12 @@ Inputs:
     - outputs/variables/h13_1_capex/latest/h13_1_capex_panel.parquet
 
 Outputs:
-    - outputs/econometric/h13_1_capex/{timestamp}/regression_results_{sample}.txt
+    - outputs/econometric/h13_1_capex/{timestamp}/regression_results_{sample}_{dv}_{measure}.txt
     - outputs/econometric/h13_1_capex/{timestamp}/model_diagnostics.csv
-    - outputs/econometric/h13_1_capex/{timestamp}/h13_1_capex_table.tex
     - outputs/econometric/h13_1_capex/{timestamp}/report_step4_H13_1.md
 
 Author: Thesis Author
-Date: 2026-03-06
+Date: 2026-03-08
 ================================================================================
 """
 
@@ -68,10 +65,22 @@ from f1d.shared.variables.panel_utils import assign_industry_sample
 # Configuration
 # ==============================================================================
 
-# Single IV (CEO Presentation Uncertainty)
-PRIMARY_IV = "CEO_Pres_Uncertainty_pct"
+# Dependent variables (2)
+DEPENDENT_VARS = [
+    "CapexAt_lead",  # Future CapEx (t+1)
+    "CapexAt",       # Contemporaneous CapEx (t)
+]
 
-CONTROL_VARS = [
+# Uncertainty measures (4)
+UNCERTAINTY_MEASURES = [
+    "CEO_Pres_Uncertainty_pct",
+    "CEO_QA_Uncertainty_pct",
+    "Manager_Pres_Uncertainty_pct",
+    "Manager_QA_Uncertainty_pct",
+]
+
+# Base control variables (common to all specs)
+BASE_CONTROL_VARS = [
     "Size",
     "TobinsQ",
     "ROA",
@@ -79,16 +88,26 @@ CONTROL_VARS = [
     "CashHoldings",
     "DividendPayer",
     "OCF_Volatility",
-    "CapexAt",  # Contemporaneous CapexAt as control
 ]
 
-# Minimum calls per firm to be included in regression
+# CapexAt control - only included when DV is CapexAt_lead
+CAPEXAT_CONTROL = "CapexAt"
+
+# Minimum calls per firm
 MIN_CALLS_PER_FIRM = 5
 
+SAMPLES = ["Main", "Finance", "Utility"]
+
 VARIABLE_LABELS = {
+    # Dependent variables
     "CapexAt_lead": "CapEx$_{t+1}$ / Assets",
     "CapexAt": "CapEx$_t$ / Assets",
+    # Uncertainty measures
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
+    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
+    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
+    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
+    # Controls
     "Lev": "Leverage",
     "Size": "Firm Size (log AT)",
     "TobinsQ": "Tobin's Q",
@@ -98,20 +117,21 @@ VARIABLE_LABELS = {
     "OCF_Volatility": "OCF Volatility",
 }
 
-SAMPLES = ["Main", "Finance", "Utility"]
-
 
 # ==============================================================================
 # Summary Statistics Variables
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # Dependent variable (lead)
+    # Dependent variables
     {"col": "CapexAt_lead", "label": "CapEx$_{t+1}$ / Assets"},
-    # Main independent variable
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    # Controls
     {"col": "CapexAt", "label": "CapEx$_t$ / Assets"},
+    # Uncertainty measures (all 4)
+    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    # Controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
@@ -158,9 +178,15 @@ def load_panel(root_path: Path, panel_file: Optional[Path] = None) -> pd.DataFra
             "year",
             "ff12_code",
             "sample",
+            # Dependent variables
             "CapexAt_lead",
             "CapexAt",
+            # All 4 uncertainty measures
             "CEO_Pres_Uncertainty_pct",
+            "CEO_QA_Uncertainty_pct",
+            "Manager_Pres_Uncertainty_pct",
+            "Manager_QA_Uncertainty_pct",
+            # Controls
             "Size",
             "TobinsQ",
             "ROA",
@@ -176,22 +202,34 @@ def load_panel(root_path: Path, panel_file: Optional[Path] = None) -> pd.DataFra
     return panel
 
 
-def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
-    """Prepare panel for regression.
+def prepare_regression_data(
+    panel: pd.DataFrame,
+    uncertainty_var: str,
+    dependent_var: str,
+) -> pd.DataFrame:
+    """Prepare panel for regression with DV-specific control handling.
 
-    - Drops rows where CapexAt_lead is NaN (last-year/gap-year calls)
-    - Drops rows missing required variables (complete cases)
-    - Applies minimum-calls-per-firm filter
+    CRITICAL: When dependent_var == "CapexAt", excludes CapexAt from controls.
 
     Args:
         panel: Full call-level panel from Stage 3
+        uncertainty_var: Which uncertainty measure to use
+        dependent_var: Which dependent variable ("CapexAt_lead" or "CapexAt")
 
     Returns:
         Prepared DataFrame ready for OLS
     """
+    # Build controls list based on DV
+    if dependent_var == "CapexAt":
+        # Exclude CapexAt from controls when it's the DV
+        controls = BASE_CONTROL_VARS.copy()
+    else:
+        # Include CapexAt as control for CapexAt_lead models
+        controls = BASE_CONTROL_VARS + [CAPEXAT_CONTROL]
+
     required = (
-        ["CapexAt_lead", PRIMARY_IV]
-        + CONTROL_VARS
+        [dependent_var, uncertainty_var]
+        + controls
         + ["gvkey", "year"]
     )
 
@@ -204,10 +242,10 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
 
     df = panel.copy()
 
-    # Drop last-year and gap-year calls (no valid lead)
+    # Drop rows where DV is NaN
     before = len(df)
-    df = df[df["CapexAt_lead"].notna()].copy()
-    print(f"  After lead filter: {len(df):,} / {before:,}")
+    df = df[df[dependent_var].notna()].copy()
+    print(f"  After {dependent_var} filter: {len(df):,} / {before:,}")
 
     # Complete cases on required variables
     df = df.replace([np.inf, -np.inf], np.nan)
@@ -235,47 +273,39 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
 def run_regression(
     df_sample: pd.DataFrame,
     sample_name: str,
+    uncertainty_var: str,
+    dependent_var: str,
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run OLS regression with firm FE + year FE (call-level), firm-clustered SEs.
+    """Run OLS regression with firm FE + year FE, firm-clustered SEs.
 
-    Model (NO interactions):
-        CapexAt_lead ~ CEO_Pres_Uncertainty_pct +
-                       Size + TobinsQ + ROA + Lev + CashHoldings +
-                       DividendPayer + OCF_Volatility + CapexAt +
-                       EntityEffects + TimeEffects
-
-    Standard errors: firm-clustered (groups=gvkey).
-
-    Args:
-        df_sample: Sample-filtered and prepared DataFrame
-        sample_name: Sample name for logging
-
-    Returns:
-        Tuple of (fitted model, metadata dict) or (None, {}) on failure
+    CRITICAL: Automatically excludes CapexAt from controls when DV is CapexAt.
     """
     print("\n" + "=" * 60)
-    print(f"Running regression: {sample_name}")
+    print(f"Running regression: {sample_name} | DV: {dependent_var} | IV: {uncertainty_var}")
     print("=" * 60)
 
     if len(df_sample) < 100:
         print(f"  WARNING: Too few observations ({len(df_sample)}), skipping")
         return None, {}
 
-    # Controls present
-    controls = [c for c in CONTROL_VARS if c in df_sample.columns]
+    # Build controls list based on DV
+    if dependent_var == "CapexAt":
+        controls = BASE_CONTROL_VARS.copy()
+    else:
+        controls = BASE_CONTROL_VARS + [CAPEXAT_CONTROL]
 
-    # Build formula using PanelOLS syntax (NO interaction terms)
+    # Filter to available controls
+    controls = [c for c in controls if c in df_sample.columns]
+
+    # Build formula
     formula = (
-        "CapexAt_lead ~ 1 + "
-        + PRIMARY_IV
+        f"{dependent_var} ~ 1 + "
+        + uncertainty_var
         + " + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
-    print(
-        f"  Formula: CapexAt_lead ~ {PRIMARY_IV} + {' + '.join(controls)} "
-        f"+ EntityEffects + TimeEffects"
-    )
+    print(f"  Formula: {dependent_var} ~ {uncertainty_var} + {' + '.join(controls)} + FE")
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
     )
@@ -301,11 +331,11 @@ def run_regression(
     within_r2 = float(model.rsquared_within)
     print(f"  Within-R²: {within_r2:.4f}")
 
-    # One-tailed hypothesis test: H13.1 beta(CEO_Pres_Uncertainty_pct) < 0
-    beta = model.params.get(PRIMARY_IV, np.nan)
-    p_two = model.pvalues.get(PRIMARY_IV, np.nan)
-    beta_se = model.std_errors.get(PRIMARY_IV, np.nan)
-    beta_t = model.tstats.get(PRIMARY_IV, np.nan)
+    # One-tailed hypothesis test: H13.1 beta(uncertainty_var) < 0
+    beta = model.params.get(uncertainty_var, np.nan)
+    p_two = model.pvalues.get(uncertainty_var, np.nan)
+    beta_se = model.std_errors.get(uncertainty_var, np.nan)
+    beta_t = model.tstats.get(uncertainty_var, np.nan)
 
     # H13.1: beta < 0 (one-tailed)
     if not np.isnan(p_two) and not np.isnan(beta):
@@ -316,14 +346,15 @@ def run_regression(
     h13_1_sig = (not np.isnan(p_one)) and (p_one < 0.05) and (beta < 0)
 
     print(
-        f"  beta({PRIMARY_IV}): {beta:.6f}  SE={beta_se:.6f}  "
+        f"  beta({uncertainty_var}): {beta:.6f}  SE={beta_se:.6f}  "
         f"p(one-tail)={p_one:.4f}  H13.1={'YES' if h13_1_sig else 'no'}"
     )
 
-    # Store metadata
+    # Store metadata - INCLUDE BOTH DV AND UNCERTAINTY VAR
     meta = {
         "sample": sample_name,
-        "primary_iv": PRIMARY_IV,
+        "dependent_var": dependent_var,
+        "uncertainty_var": uncertainty_var,
         "beta": beta,
         "beta_se": beta_se,
         "beta_t": beta_t,
@@ -366,14 +397,18 @@ def save_outputs(
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save regression result text files (one per sample)
+    # Save regression result text files (one per regression)
     for r in all_results:
         model = r.get("model")
         meta = r.get("meta", {})
         if model is None or not meta:
             continue
         sample = meta.get("sample", "unknown")
-        fname = f"regression_results_{sample}.txt"
+        dv = meta.get("dependent_var", "unknown")
+        measure = meta.get("uncertainty_var", "unknown")
+
+        # FILE NAMING: regression_results_{sample}_{dv}_{measure}.txt
+        fname = f"regression_results_{sample}_{dv}_{measure}.txt"
         fpath = out_dir / fname
         with open(fpath, "w", encoding="utf-8") as f:
             f.write(str(model.summary))
@@ -397,7 +432,7 @@ def generate_report(
 ) -> None:
     """Generate markdown report summarizing results."""
     report_lines = [
-        "# Stage 4: H13.1 Future Capital Expenditure Test Report",
+        "# Stage 4: H13.1 Capital Expenditure Test Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -405,24 +440,28 @@ def generate_report(
         "## Model Specification",
         "",
         "```",
-        f"CapexAt_lead ~ {PRIMARY_IV} + Controls + EntityEffects + TimeEffects",
+        "{DV} ~ {Uncertainty} + Controls + EntityEffects + TimeEffects",
         "```",
         "",
-        "**Controls:** " + ", ".join(CONTROL_VARS),
+        "**Dependent Variables:** CapexAt_lead (t+1), CapexAt (t)",
+        "**Uncertainty Measures:** CEO/Manager × Pres/QA (4)",
+        "**Controls:** Size, TobinsQ, ROA, Lev, CashHoldings, DividendPayer, OCF_Volatility, [+CapexAt for CapexAt_lead models]",
         "",
         "## Hypothesis Test (one-tailed)",
         "",
-        "- **H13.1:** β(CEO_Pres_Uncertainty_pct) < 0",
-        "  - Higher CEO presentation uncertainty → lower future capital expenditure",
+        "- **H13.1:** β(Uncertainty) < 0",
+        "  - Higher speech uncertainty → lower capital expenditure",
         "",
         "## Results Summary",
         "",
-        "| Sample | N Obs | N Firms | β (Uncertainty) | SE | p (one-tail) | H13.1 Supported |",
-        "|--------|------:|--------:|----------------:|---:|-------------:|:---------------:|",
+        "| DV | Sample | Uncertainty Measure | N Obs | N Firms | β (Unc) | SE | p (one-tail) | H13.1 |",
+        "|----|--------|--------------------|------:|--------:|--------:|---:|-------------:|:-----:|",
     ]
 
     for _, row in diag_df.iterrows():
+        dv = row.get("dependent_var", "?")
         sample = row.get("sample", "?")
+        measure = row.get("uncertainty_var", "?")
         n_obs = row.get("n_obs", 0)
         n_firms = row.get("n_firms", 0)
         beta = row.get("beta", np.nan)
@@ -435,8 +474,13 @@ def generate_report(
         p_str = f"{p_one:.4f}" if not np.isnan(p_one) else "—"
         sig_str = "✓" if sig else "—"
 
+        # Shorten DV name for display
+        dv_short = "CapEx_t+1" if dv == "CapexAt_lead" else "CapEx_t"
+        # Shorten measure name
+        measure_short = measure.replace("_Uncertainty_pct", "").replace("_", " ")
+
         report_lines.append(
-            f"| {sample} | {n_obs:,} | {n_firms:,} | {beta_str} | {se_str} | {p_str} | {sig_str} |"
+            f"| {dv_short} | {sample} | {measure_short} | {n_obs:,} | {n_firms:,} | {beta_str} | {se_str} | {p_str} | {sig_str} |"
         )
 
     # Summary statistics
@@ -490,47 +534,63 @@ def main(panel_file: Optional[str] = None) -> int:
     )
 
     print("=" * 80)
-    print("STAGE 4: Test H13.1 Future Capital Expenditure Hypothesis")
+    print("STAGE 4: Test H13.1 Capital Expenditure Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
     print(f"Log dir:   {log_dir}")
-    print(f"Primary IV: {PRIMARY_IV}")
+    print(f"DVs: {DEPENDENT_VARS}")
+    print(f"Uncertainty measures: {UNCERTAINTY_MEASURES}")
     print(f"Unit of observation: earnings call (file_name)")
 
     # Load panel
     panel_path = Path(panel_file) if panel_file else None
     panel = load_panel(root, panel_path)
 
-    # Prepare data
-    print("\n" + "=" * 60)
-    print("Preparing data")
-    print("=" * 60)
-    df_prepared = prepare_regression_data(panel)
+    # Assign sample if not present
+    if "sample" not in panel.columns:
+        panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
-    # Run regressions by sample
     all_results: List[Dict[str, Any]] = []
 
-    for sample in SAMPLES:
-        print(f"\n{'='*60}")
-        print(f"Sample: {sample}")
-        print("=" * 60)
+    # 3-LEVEL NESTED LOOP: DV × Sample × Measure
+    for dependent_var in DEPENDENT_VARS:
+        print(f"\n{'='*80}")
+        print(f"DEPENDENT VARIABLE: {dependent_var}")
+        print("=" * 80)
 
-        # Filter to sample
-        if "sample" not in df_prepared.columns:
-            # Recompute sample if not present
-            df_prepared["sample"] = assign_industry_sample(df_prepared["ff12_code"])
+        for sample in SAMPLES:
+            print(f"\n{'='*60}")
+            print(f"Sample: {sample}")
+            print("=" * 60)
 
-        df_sample = df_prepared[df_prepared["sample"] == sample].copy()
-        print(f"  Observations: {len(df_sample):,}")
+            # Filter to sample first
+            df_sample_base = panel[panel["sample"] == sample].copy()
+            print(f"  Base observations: {len(df_sample_base):,}")
 
-        if len(df_sample) < 100:
-            print(f"  Skipping {sample}: too few observations")
-            continue
+            if len(df_sample_base) < 100:
+                print(f"  Skipping {sample}: too few observations")
+                continue
 
-        model, meta = run_regression(df_sample, sample)
-        if model is not None:
-            all_results.append({"model": model, "meta": meta})
+            for uncertainty_var in UNCERTAINTY_MEASURES:
+                print(f"\n  {'--'*25}")
+                print(f"  IV: {uncertainty_var}")
+                print(f"  {'--'*25}")
+
+                # Per-measure data prep (handles different missing patterns)
+                df_prepared = prepare_regression_data(
+                    df_sample_base, uncertainty_var, dependent_var
+                )
+
+                if len(df_prepared) < 100:
+                    print(f"    Skipping: too few complete cases ({len(df_prepared)})")
+                    continue
+
+                model, meta = run_regression(
+                    df_prepared, sample, uncertainty_var, dependent_var
+                )
+                if model is not None:
+                    all_results.append({"model": model, "meta": meta})
 
     # Save outputs
     out_dir.mkdir(parents=True, exist_ok=True)

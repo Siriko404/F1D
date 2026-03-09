@@ -1,0 +1,18 @@
+{
+  "manifest_version": "1.0",
+  "stage": "stage4",
+  "timestamp": "2026-03-02_001047",
+  "generated_at": "2026-03-02T00:10:48.029816",
+  "git_commit": "c9b00bef1f4ee1b94582cf684c1f23fa9c16cb50",
+  "command": "C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\Thesis_Bmad\\Data\\Data\\Datasets\\Datasets\\Data_Processing\\F1D\\src\\f1d\\econometric\\run_h8_political_risk.py",
+  "input_hashes": {
+    "panel": "ac8c8f745b4f07028d83bbd3a1d57c21b5ca8cc9f19b64b72d84ab7ce1fc7187"
+  },
+  "output_files": {
+    "diagnostics": "C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\Thesis_Bmad\\Data\\Data\\Datasets\\Datasets\\Data_Processing\\F1D\\outputs\\econometric\\h8_political_risk\\2026-03-02_001047\\model_diagnostics.csv",
+    "table": "C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\Thesis_Bmad\\Data\\Data\\Datasets\\Datasets\\Data_Processing\\F1D\\outputs\\econometric\\h8_political_risk\\2026-03-02_001047\\h8_political_risk_table.tex"
+  },
+  "config": {},
+  "panel_path": "C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\Thesis_Bmad\\Data\\Data\\Datasets\\Datasets\\Data_Processing\\F1D\\outputs\\variables\\h8_political_risk\\2026-03-02_000925\\h8_political_risk_panel.parquet",
+  "panel_hash": "ac8c8f745b4f07028d83bbd3a1d57c21b5ca8cc9f19b64b72d84ab7ce1fc7187"
+}

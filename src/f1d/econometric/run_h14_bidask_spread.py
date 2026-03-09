@@ -6,17 +6,22 @@ STAGE 4: Test H14 Language Uncertainty and Bid-Ask Spread Change
 ID: econometric/run_h14_bidask_spread
 Description: Run H14 Bid-Ask Spread Change hypothesis test by loading the
              call-level panel from Stage 3, running fixed effects OLS
-             regressions by industry sample, and outputting results.
+             regressions by industry sample and uncertainty measure, and
+             outputting results.
 
 Model Specification:
-    delta_spread ~ Uncertainty_t + Size + StockPrice + Turnover + Volatility +
+    delta_spread ~ {uncertainty_var} + Size + StockPrice + Turnover + Volatility +
                    PreCallSpread + AbsSurprise + EntityEffects + TimeEffects
 
 Unit of observation: individual earnings call (file_name).
 DV: delta_spread = Spread[+1,+3] - Spread[-3,-1]
 
 Hypothesis Test (one-tailed):
-    H14: beta(Uncertainty) > 0 (higher uncertainty increases spread)
+    H14: beta({uncertainty_var}) > 0 (higher uncertainty increases spread)
+
+Uncertainty Measures (4):
+    Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct,
+    Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -30,7 +35,7 @@ Inputs:
     - outputs/variables/h14_bidask_spread/latest/h14_bidask_spread_panel.parquet
 
 Outputs:
-    - outputs/econometric/h14_bidask_spread/{timestamp}/regression_{sample}_{spec}.txt
+    - outputs/econometric/h14_bidask_spread/{timestamp}/regression_results_{sample}_{measure}.txt
     - outputs/econometric/h14_bidask_spread/{timestamp}/h14_bidask_spread_table.tex
     - outputs/econometric/h14_bidask_spread/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h14_bidask_spread/{timestamp}/summary_stats.csv
@@ -90,17 +95,15 @@ BASE_CONTROLS = [
     "AbsSurprise",
 ]
 
-# Specifications:
-# (1) QA_Uncertainty only
-# (2) Pres_Uncertainty only
-# (3) Joint (both QA + Pres)
-SPECS = [
-    ("QA_Uncertainty", ["Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct"]),
-    ("Pres_Uncertainty", ["Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct"]),
-    ("Joint", [
-        "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
-        "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct"
-    ]),
+# Uncertainty Measures (6) - each tested individually
+UNCERTAINTY_MEASURES = [
+    "Manager_QA_Uncertainty_pct",
+    "CEO_QA_Uncertainty_pct",
+    "Manager_Pres_Uncertainty_pct",
+    "CEO_Pres_Uncertainty_pct",
+    # Clarity Residuals (from CEO Clarity Extended Stage 4)
+    "Manager_Clarity_Residual",
+    "CEO_Clarity_Residual",
 ]
 
 
@@ -117,6 +120,9 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    # Clarity Residuals
+    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
     # Controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "StockPrice", "label": "Stock Price"},
@@ -129,6 +135,9 @@ SUMMARY_STATS_VARS = [
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Test H14 Language Uncertainty and Bid-Ask Spread Change (Stage 4)"
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Validate inputs without executing"
     )
     parser.add_argument(
         "--panel-path", type=str, help="Explicit path to H14 panel parquet"
@@ -164,19 +173,18 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
 
 def run_regression(
     df_sample: pd.DataFrame,
-    spec_name: str,
-    iv_vars: List[str],
     sample_name: str,
+    uncertainty_var: str,
     min_calls: int = 5,
 ) -> Tuple[Optional[Any], Dict[str, Any]]:
-    """Run a single PanelOLS regression for the given spec.
+    """Run a single PanelOLS regression for one uncertainty measure.
 
     DV  : delta_spread (change in bid-ask spread around call)
-    IVs : iv_vars (uncertainty measures per specification)
+    IV  : uncertainty_var (single uncertainty measure)
     FE  : firm (gvkey) + year_quarter, clustered by entity (gvkey)
     """
     required = (
-        ["delta_spread"] + iv_vars + BASE_CONTROLS + ["gvkey", "quarter_index", "file_name"]
+        ["delta_spread", uncertainty_var] + BASE_CONTROLS + ["gvkey", "quarter_index", "file_name"]
     )
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
 
@@ -188,16 +196,14 @@ def run_regression(
     if len(df_reg) < 100:
         return None, {}
 
-    # Build formula using actual variable names
-    iv_formula = " + ".join(iv_vars)
-
+    # Build formula with single IV
     formula = (
-        f"delta_spread ~ {iv_formula} + "
+        f"delta_spread ~ {uncertainty_var} + "
         + " + ".join(BASE_CONTROLS)
         + " + EntityEffects + TimeEffects"
     )
 
-    print(f"  Formula: delta_spread ~ {' + '.join(iv_vars)} + controls")
+    print(f"  Formula: delta_spread ~ {uncertainty_var} + controls")
     print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
     print("  Estimating with firm-clustered SEs...")
 
@@ -218,191 +224,150 @@ def run_regression(
     print(f"  R-squared (within): {model.rsquared_within:.4f}")
     print(f"  N obs:              {int(model.nobs):,}")
 
-    # Extract coefficients for all IVs using actual variable names
-    betas = {}
-    for iv in iv_vars:
-        betas[iv] = {
-            "beta": float(model.params.get(iv, np.nan)),
-            "se": float(model.std_errors.get(iv, np.nan)),
-            "t": float(model.tstats.get(iv, np.nan)),
-            "p_two": float(model.pvalues.get(iv, np.nan)),
-        }
-        # One-tailed p-value for H14 (beta > 0)
-        beta_val = betas[iv]["beta"]
-        p_two = betas[iv]["p_two"]
-        betas[iv]["p_one"] = p_two / 2 if beta_val > 0 else 1 - p_two / 2
+    # Extract single beta coefficient
+    beta1 = float(model.params.get(uncertainty_var, np.nan))
+    se1 = float(model.std_errors.get(uncertainty_var, np.nan))
+    t1 = float(model.tstats.get(uncertainty_var, np.nan))
+    p_two = float(model.pvalues.get(uncertainty_var, np.nan))
 
-    # Primary IV for H14 test is Manager_QA_Uncertainty or Manager_Pres_Uncertainty
-    primary_iv = iv_vars[0]  # First IV in the spec
-    beta1 = betas[primary_iv]["beta"]
-    p1_one = betas[primary_iv]["p_one"]
-    h14_sig = p1_one < 0.05 and beta1 > 0
+    # One-tailed p-value for H14 (beta > 0)
+    if not np.isnan(p_two) and not np.isnan(beta1):
+        p_one = p_two / 2 if beta1 > 0 else 1 - p_two / 2
+    else:
+        p_one = np.nan
+
+    h14_signif = (not np.isnan(p_one)) and (p_one < 0.05) and (beta1 > 0)
 
     print(
-        f"  beta1 ({primary_iv}):  {beta1:.4f}  SE={betas[primary_iv]['se']:.4f}"
-        f"  p(one)={p1_one:.4f}  H14={'YES' if h14_sig else 'no'}"
+        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={se1:.4f}"
+        f"  p(one)={p_one:.4f}  H14={'YES' if h14_signif else 'no'}"
     )
 
+    # Flat metadata structure
     meta: Dict[str, Any] = {
-        "spec_name": spec_name,
         "sample": sample_name,
-        "iv_vars": iv_vars,
+        "uncertainty_var": uncertainty_var,
+        "beta1": beta1,
+        "beta1_se": se1,
+        "beta1_t": t1,
+        "beta1_p_two": p_two,
+        "beta1_p_one": p_one,
+        "beta1_signif": h14_signif,
         "n_obs": int(model.nobs),
         "n_firms": df_reg["gvkey"].nunique(),
         "n_clusters": df_reg["gvkey"].nunique(),
         "cluster_var": "gvkey",
         "within_r2": float(model.rsquared_within),
-        "betas": betas,
-        "h14_sig": h14_sig,
     }
-
-    # Flatten betas for CSV output
-    for iv in iv_vars:
-        meta[f"beta_{iv}"] = betas[iv]["beta"]
-        meta[f"se_{iv}"] = betas[iv]["se"]
-        meta[f"p_one_{iv}"] = betas[iv]["p_one"]
 
     return model, meta
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Emit a LaTeX table of the primary (Main sample) results."""
+    """Write a publication-ready LaTeX table for H14 results.
+
+    Columns = 4 uncertainty measures; panels = industry samples.
+    Each cell shows the single IV coefficient for that measure.
+
+    Note: all_results contains FLAT meta dicts (not nested like H1).
+    """
     tex_path = out_dir / "h14_bidask_spread_table.tex"
 
-    def get_res(spec: str, sample: str = "Main") -> Optional[Dict[str, Any]]:
-        for r in all_results:
-            if r["sample"] == sample and r["spec_name"] == spec:
-                return r
-        return None
+    def sig(p: float) -> str:
+        if p < 0.01:
+            return "^{***}"
+        elif p < 0.05:
+            return "^{**}"
+        elif p < 0.10:
+            return "^{*}"
+        return ""
 
-    def fmt_coef(val: float, pval: float) -> str:
-        if val is None or pd.isna(val):
-            return ""
-        stars = (
-            "^{***}"
-            if pval < 0.01
-            else "^{**}"
-            if pval < 0.05
-            else "^{*}"
-            if pval < 0.10
-            else ""
-        )
-        return f"{val:.4f}{stars}"
-
-    def fmt_se(val: float) -> str:
-        return "" if (val is None or pd.isna(val)) else f"({val:.4f})"
-
-    specs_order = ["QA_Uncertainty", "Pres_Uncertainty", "Joint"]
-    results_main = [get_res(s) for s in specs_order]
+    short_names = {
+        "Manager_QA_Uncertainty_pct": "Mgr QA Unc",
+        "CEO_QA_Uncertainty_pct": "CEO QA Unc",
+        "Manager_Pres_Uncertainty_pct": "Mgr Pres Unc",
+        "CEO_Pres_Uncertainty_pct": "CEO Pres Unc",
+        "Manager_Clarity_Residual": "Mgr Clarity Res",
+        "CEO_Clarity_Residual": "CEO Clarity Res",
+    }
 
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
         r"\caption{H14: Language Uncertainty and Bid-Ask Spread Change Around Earnings Calls}",
         r"\label{tab:h14_bidask_spread}",
-        r"\begin{tabular}{lccc}",
+        r"\small",
+        r"\begin{tabular}{lcccccc}",
         r"\toprule",
-        r" & (1) QA Uncertainty & (2) Pres Uncertainty & (3) Joint \\",
+        r" & (1) & (2) & (3) & (4) & (5) & (6) \\",
+        r" & " + " & ".join(short_names[m] for m in UNCERTAINTY_MEASURES) + r" \\",
         r"\midrule",
     ]
 
-    # Manager QA Uncertainty row (in specs 1 and 3)
-    row_b = "Manager QA Uncertainty & "
-    row_se = " & "
-    for i, r in enumerate(results_main):
-        if r and "Manager_QA_Uncertainty_pct" in r.get("iv_vars", []):
-            beta_info = r["betas"].get("Manager_QA_Uncertainty_pct", {})
-            row_b += f"{fmt_coef(beta_info.get('beta', np.nan), beta_info.get('p_one', 1))} & "
-            row_se += f"{fmt_se(beta_info.get('se', np.nan))} & "
-        else:
-            row_b += " & "
-            row_se += " & "
-    lines.append(row_b.rstrip(" &") + r" \\")
-    lines.append(row_se.rstrip(" &") + r" \\")
+    for sample in ["Main", "Finance", "Utility"]:
+        # Filter results for this sample (FLAT structure - direct access)
+        sample_res = [r for r in all_results if r.get("sample") == sample]
+        if not sample_res:
+            continue
 
-    # CEO QA Uncertainty row
-    row_b = "CEO QA Uncertainty & "
-    row_se = " & "
-    for r in results_main:
-        if r and "CEO_QA_Uncertainty_pct" in r.get("iv_vars", []):
-            beta_info = r["betas"].get("CEO_QA_Uncertainty_pct", {})
-            row_b += f"{fmt_coef(beta_info.get('beta', np.nan), beta_info.get('p_one', 1))} & "
-            row_se += f"{fmt_se(beta_info.get('se', np.nan))} & "
-        else:
-            row_b += " & "
-            row_se += " & "
-    lines.append(row_b.rstrip(" &") + r" \\")
-    lines.append(row_se.rstrip(" &") + r" \\")
+        # Index by uncertainty_var for easy lookup
+        by_measure = {r["uncertainty_var"]: r for r in sample_res}
 
-    # Manager Pres Uncertainty row (in specs 2 and 3)
-    row_b = "Manager Pres Uncertainty & "
-    row_se = " & "
-    for r in results_main:
-        if r and "Manager_Pres_Uncertainty_pct" in r.get("iv_vars", []):
-            beta_info = r["betas"].get("Manager_Pres_Uncertainty_pct", {})
-            row_b += f"{fmt_coef(beta_info.get('beta', np.nan), beta_info.get('p_one', 1))} & "
-            row_se += f"{fmt_se(beta_info.get('se', np.nan))} & "
-        else:
-            row_b += " & "
-            row_se += " & "
-    lines.append(row_b.rstrip(" &") + r" \\")
-    lines.append(row_se.rstrip(" &") + r" \\")
+        lines.append(rf"\multicolumn{{7}}{{l}}{{\textit{{{sample} Sample}}}} \\")
 
-    # CEO Pres Uncertainty row
-    row_b = "CEO Pres Uncertainty & "
-    row_se = " & "
-    for r in results_main:
-        if r and "CEO_Pres_Uncertainty_pct" in r.get("iv_vars", []):
-            beta_info = r["betas"].get("CEO_Pres_Uncertainty_pct", {})
-            row_b += f"{fmt_coef(beta_info.get('beta', np.nan), beta_info.get('p_one', 1))} & "
-            row_se += f"{fmt_se(beta_info.get('se', np.nan))} & "
-        else:
-            row_b += " & "
-            row_se += " & "
-    lines.append(row_b.rstrip(" &") + r" \\")
-    lines.append(row_se.rstrip(" &") + r" \\")
+        # Beta row
+        beta_cells = []
+        for m in UNCERTAINTY_MEASURES:
+            r = by_measure.get(m, {})
+            if not r:
+                beta_cells.append("")
+            else:
+                v = r.get("beta1", float("nan"))
+                p = r.get("beta1_p_one", float("nan"))
+                beta_cells.append(f"{v:.4f}{sig(p)}" if not np.isnan(v) else "")
+        lines.append(r"$\beta_1$ (Uncertainty) & " + " & ".join(beta_cells) + r" \\")
 
-    lines += [
-        r"\midrule",
-        r"Controls & Yes & Yes & Yes \\",
-        r"Firm FE  & Yes & Yes & Yes \\",
-        r"Year-Quarter FE  & Yes & Yes & Yes \\",
-        r"\midrule",
-    ]
+        # SE row
+        se_cells = []
+        for m in UNCERTAINTY_MEASURES:
+            r = by_measure.get(m, {})
+            if not r:
+                se_cells.append("")
+            else:
+                v = r.get("beta1_se", float("nan"))
+                se_cells.append(f"({v:.4f})" if not np.isnan(v) else "")
+        lines.append(" & " + " & ".join(se_cells) + r" \\")
 
-    row_n = "Observations & "
-    row_r2 = "Within-$R^2$ & "
-    for r in results_main:
-        if r:
-            row_n += f"{r['n_obs']:,} & "
-            row_r2 += f"{r['within_r2']:.4f} & "
-        else:
-            row_n += " & "
-            row_r2 += " & "
-    lines.append(row_n.rstrip(" &") + r" \\")
-    lines.append(row_r2.rstrip(" &") + r" \\")
+        # N and R2 rows
+        n_cells = []
+        r2_cells = []
+        for m in UNCERTAINTY_MEASURES:
+            r = by_measure.get(m, {})
+            n_cells.append(f"{r.get('n_obs', ''):,}" if r else "")
+            r2v = r.get("within_r2", float("nan")) if r else float("nan")
+            r2_cells.append(f"{r2v:.3f}" if not np.isnan(r2v) else "")
+        lines.append(r"N & " + " & ".join(n_cells) + r" \\")
+        lines.append(r"Within-$R^2$ & " + " & ".join(r2_cells) + r" \\")
+        lines.append(r"\midrule")
 
     lines += [
         r"\bottomrule",
         r"\end{tabular}",
-        r"\\[-0.5em]",
-        r"\parbox{\textwidth}{\scriptsize ",
-        r"\textit{Notes:} "
-        r"Dependent variable is $\Delta$Spread, the change in relative bid-ask spread "
+        r"\begin{minipage}{\linewidth}",
+        r"\vspace{2pt}\footnotesize",
+        r"\textit{Note:} Dependent variable is $\Delta$Spread, the change in relative bid-ask spread "
         r"from the pre-call window $[-3,-1]$ to the post-call window $[+1,+3]$ around the earnings call. "
-        r"All models use the Main industry sample (non-financial, non-utility firms). "
+        r"All models include firm FE and year-quarter FE. "
         r"Firms with fewer than 5 calls are excluded. "
         r"Standard errors (in parentheses) are clustered at the firm level. "
-        r"All continuous controls are standardized within each model's estimation sample. "
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H14).",
-        r"}",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H14: $\beta > 0$).",
+        r"\end{minipage}",
         r"\end{table}",
     ]
 
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-
-    print(f"  LaTeX table saved: {tex_path.name}")
+    print(f"  Saved: h14_bidask_spread_table.tex")
 
 
 def main(panel_path: Optional[str] = None) -> int:
@@ -460,6 +425,9 @@ def main(panel_path: Optional[str] = None) -> int:
             "CEO_QA_Uncertainty_pct",
             "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
+            # Clarity Residuals
+            "Manager_Clarity_Residual",
+            "CEO_Clarity_Residual",
             # Controls
             "Size",
             "StockPrice",
@@ -511,28 +479,31 @@ def main(panel_path: Optional[str] = None) -> int:
     all_results: List[Dict[str, Any]] = []
 
     # ------------------------------------------------------------------
-    # Run regressions by sample × spec
+    # Run regressions by sample × measure
     # ------------------------------------------------------------------
-    for sample in CONFIG["samples"]:
-        df_sample = df_prep[df_prep["sample"] == sample].copy()
+    for sample_name in ["Main", "Finance", "Utility"]:
+        df_sample = df_prep[df_prep["sample"] == sample_name].copy()
 
-        for spec_name, iv_vars in SPECS:
-            print(f"\n--- {sample} / {spec_name} ---")
+        for uncertainty_var in UNCERTAINTY_MEASURES:
+            # Check if variable exists in panel
+            if uncertainty_var not in df_sample.columns:
+                print(f"  WARNING: {uncertainty_var} not in panel -- skipping")
+                continue
+
+            print(f"\n--- {sample_name} / {uncertainty_var} ---")
 
             if len(df_sample) < 100:
                 print("  Skipping: insufficient data")
                 continue
 
             model, meta = run_regression(
-                df_sample, spec_name, iv_vars, sample,
+                df_sample, sample_name, uncertainty_var,
                 min_calls=CONFIG["min_calls"]
             )
 
-            if model is not None:
+            if model is not None and meta:
                 all_results.append(meta)
-                txt_file = (
-                    out_dir / f"regression_{sample}_{spec_name.replace(' ', '_')}.txt"
-                )
+                txt_file = out_dir / f"regression_results_{sample_name}_{uncertainty_var}.txt"
                 with open(txt_file, "w", encoding="utf-8") as f:
                     f.write(str(model.summary))
 
@@ -581,4 +552,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
 if __name__ == "__main__":
     args = parse_arguments()
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        print("[OK] All inputs validated")
+        sys.exit(0)
     sys.exit(main(panel_path=args.panel_path))

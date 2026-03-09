@@ -1,8 +1,7 @@
-"""Builder for ClarityStyle_Realtime — H_TT Tone-at-the-Top.
+"""Builder for ClarityStyle_Realtime — used by H10 Tone-at-the-Top.
 
     CEOStyleRealtimeBuilder — 4-call rolling window, min 4 prior calls.
-
-Applies Empirical Bayes (James-Stein) shrinkage and quarter-standardisation.
+    Applies Empirical Bayes (James-Stein) shrinkage and quarter-standardisation.
 """
 
 from __future__ import annotations
@@ -120,7 +119,7 @@ def _estimate_realtime_style(
 
 
 class CEOStyleRealtimeBuilder(VariableBuilder):
-    """4-call rolling-window CEO style (min 4 prior calls). Primary H_TT1 variable."""
+    """4-call rolling-window CEO style (min 4 prior calls). Used by H8 Political Risk."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)

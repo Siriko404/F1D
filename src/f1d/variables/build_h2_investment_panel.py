@@ -87,6 +87,9 @@ from f1d.shared.variables import (
     CEOQAWeakModalBuilder,
     ManagerPresWeakModalBuilder,
     CEOPresWeakModalBuilder,
+    # Clarity residuals (from H0.3 CEO Clarity Extended)
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
     # Financial controls (Compustat engine)
     InvestmentResidualBuilder,
     LevBuilder,
@@ -166,6 +169,9 @@ def build_call_level_panel(
         "ceo_pres_weak_modal": CEOPresWeakModalBuilder(
             var_config.get("ceo_pres_weak_modal", {})
         ),
+        # Clarity residuals (from CEO Clarity Extended Stage 4)
+        "ceo_clarity_residual": CEOClarityResidualBuilder({}),
+        "manager_clarity_residual": ManagerClarityResidualBuilder({}),
         # H2 financial controls -- CompustatEngine is a singleton; all share one load
         "investment_residual": InvestmentResidualBuilder({}),
         "lev": LevBuilder({}),

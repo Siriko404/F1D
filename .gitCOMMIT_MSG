@@ -1,0 +1,10 @@
+refactor(h1): remove Uncertainty x Lev interaction term
+
+Simplify model to single hypothesis H1: beta1 > 0
+Lev becomes a control variable ( not an interaction partner.
+
+Update README with new results (6/18 significant)
+Update docs/provenance/H1.md
+Update unit tests
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>

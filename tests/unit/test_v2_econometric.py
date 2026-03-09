@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-Unit tests for V2 Econometric Scripts (4.8, 4.9, 4.10)
+Unit tests for V2 Econometric Scripts
 
 Tests core computation functions for:
-- H8 Takeover Regression (4.8)
-- CEO Fixed Effects (4.9)
-- H2 PRisk x Uncertainty Investment (4.10)
+- CEO Fixed Effects
+- H2 PRisk x Uncertainty Investment
+- Regression Diagnostics
+- Panel Data Structure
 """
 
 import numpy as np
@@ -59,55 +60,6 @@ def sample_panel_df() -> pd.DataFrame:
             )
 
     return pd.DataFrame(data)
-
-
-# ==============================================================================
-# Test H8 Takeover Regression
-# ==============================================================================
-
-
-class TestH8TakeoverRegression:
-    """Tests for H8 takeover regression functions."""
-
-    def test_sample_split_by_takeover(self, sample_regression_df: pd.DataFrame) -> None:
-        """Test splitting sample by takeover status."""
-        df = sample_regression_df.copy()
-
-        takeover_firms = df[df["takeover"] == 1]
-        non_takeover_firms = df[df["takeover"] == 0]
-
-        assert len(takeover_firms) + len(non_takeover_firms) == len(df)
-
-    def test_logit_coefficient_sign(self) -> None:
-        """Test that logit coefficients have expected signs."""
-        # Higher uncertainty should increase takeover probability
-        # (positive coefficient on uncertainty)
-        uncertainty_coef = 0.15
-        assert uncertainty_coef > 0
-
-        # Higher clarity should decrease takeover probability
-        # (negative coefficient on clarity)
-        clarity_coef = -0.20
-        assert clarity_coef < 0
-
-    def test_control_variable_selection(self, sample_regression_df: pd.DataFrame) -> None:
-        """Test that control variables are correctly selected."""
-        df = sample_regression_df.copy()
-
-        control_vars = ["size", "leverage", "tobins_q", "roa"]
-
-        # All control variables should exist in the DataFrame
-        for var in control_vars:
-            assert var in df.columns
-
-    def test_missing_values_handled(self, sample_regression_df: pd.DataFrame) -> None:
-        """Test that missing values are handled in regression."""
-        df = sample_regression_df.copy()
-        df.loc[0, "size"] = np.nan
-
-        # Regression should either impute or drop missing values
-        valid_rows = df.dropna(subset=["size"])
-        assert len(valid_rows) == len(df) - 1
 
 
 # ==============================================================================

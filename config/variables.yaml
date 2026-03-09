@@ -512,19 +512,21 @@ variables:
     description: "Amihud (2002) illiquidity ratio (H7 dependent variable)"
 
   # ===========================================================================
-  # H8 — Political Risk: Moderation of Vagueness on Abnormal Investment
+  # H14 — Clarity Residuals (from CEO Clarity Extended Stage 4)
   # ===========================================================================
+  # Source: outputs/econometric/ceo_clarity_extended/{latest}/
+  # These residuals represent uncertainty after controlling for firm/linguistic factors.
 
-  style_frozen:
-    stage: constructed
-    source: "outputs/4.1.1_CeoClarity"
-    column: "style_frozen"
-    formula: "ClarityCEO assigned via frozen constraint (calls <= fy_end)"
-    description: "Time-invariant CEO clarity score assigned to firm-year (H8 moderator)"
+  ceo_clarity_residual:
+    stage: 4
+    source: "outputs/econometric/ceo_clarity_extended"
+    file_name: "ceo_clarity_residual.parquet"
+    column: "CEO_Clarity_Residual"
+    description: "CEO Q&A uncertainty residual after controlling for firm/linguistic factors"
 
-  prisk_fy:
-    stage: input
-    source: "inputs/FirmLevelRisk"
-    column: "PRiskFY"
-    formula: "mean(PRisk quarters) where cal_q_end in (fy_end - 366d, fy_end]"
-    description: "Hassan et al. (2019) fiscal-year political risk exposure (H8 IV)"
+  manager_clarity_residual:
+    stage: 4
+    source: "outputs/econometric/ceo_clarity_extended"
+    file_name: "manager_clarity_residual.parquet"
+    column: "Manager_Clarity_Residual"
+    description: "Manager Q&A uncertainty residual after controlling for firm/linguistic factors"

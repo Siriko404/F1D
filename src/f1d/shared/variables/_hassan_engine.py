@@ -2,12 +2,14 @@
 
 Loads the Hassan et al. (2019) firm-quarter PRisk CSV ONCE per process,
 aggregates quarterly data into fiscal-year averages (PRiskFY) using a
-366-day rolling window, and caches the result so that all H8 builders
+366-day rolling window, and caches the result so that all builders
 share a single load pass.
+
+Used by: H9 Takeover Hazards (PRiskFY as control variable), H11 Political Risk.
 
 NOT a VariableBuilder — this is an internal helper.
 
-Methodology (replicates legacy 3.12_H9_PRiskFY.py, now v1 architecture):
+Methodology:
     PRiskFY_i,t = mean(PRisk quarters) where cal_q_end ∈ (fy_end - 366d, fy_end]
     Requires >= 2 quarters; otherwise NaN (NO forward-filling, NO interpolation).
 

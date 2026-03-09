@@ -1,0 +1,3 @@
+Filter Stage,N,N Lost,% Retained
+Full firm-year panel,29343,0,100.0
+After complete-case + min-obs filter,15998,-13345,54.5

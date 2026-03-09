@@ -13,13 +13,12 @@ Active Modules:
     - build_h5_dispersion_panel: Build panel for Dispersion test (H5)
     - build_h6_cccl_panel: Build panel for CCCL test (H6)
     - build_h7_illiquidity_panel: Build panel for Illiquidity test (H7)
-    - build_h8_political_risk_panel: Build panel for Political Risk test (H8)
     - build_h9_takeover_panel: Build panel for Takeover test (H9)
-    - build_h10_tone_at_top_panel: Build panel for Tone at the Top test (H10)
 
 Archived Modules (in _archived/):
     - build_h0_1_manager_clarity_panel: Superseded by H0.2
-    - build_h0_5_ceo_tone_panel: Consolidated into H10
+    - build_h0_5_ceo_tone_panel: Archived
+    - build_h10_tone_at_top_panel: Archived
 """
 
 from pathlib import Path

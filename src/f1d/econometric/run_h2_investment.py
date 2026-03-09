@@ -6,21 +6,22 @@ STAGE 4: Test H2 Investment Efficiency Hypothesis
 ID: econometric/test_h2_investment
 Description: Run H2 Investment Efficiency hypothesis test by loading the call-level
              panel from Stage 3, running fixed effects OLS regressions by
-             industry sample and uncertainty measure, and outputting results.
+             industry sample, dependent variable, and independent variable,
+             and outputting results.
 
-This script follows the same call-level architecture as test_h1_cash_holdings.py,
-test_manager_clarity.py, test_ceo_clarity.py, and test_ceo_tone.py. It is
-structurally consistent with those tests: same statsmodels OLS engine, same
-firm-clustered standard errors, same industry sample splits, same minimum-calls
-filter (>= 5 calls per firm), and same output conventions.
+This script follows the same call-level architecture as test_h1_cash_holdings.py
+and run_h12_div_intensity.py (multi-DV pattern).
 
 Model Specification:
-    InvestmentResidual_lead ~ {uncertainty_var} + Lev +
-                              Size + TobinsQ + ROA + CashFlow + SalesGrowth +
-                              C(gvkey) + C(year)
+    {dv} ~ {iv} + Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth +
+          EntityEffects + TimeEffects
+
+    where:
+        dv = InvestmentResidual (t) or InvestmentResidual_lead (t+1)
+        iv = uncertainty measure OR clarity residual
 
 Hypothesis Test (one-tailed):
-    H2: beta({uncertainty_var}) < 0  -- higher speech uncertainty -> lower investment efficiency
+    H2: beta({iv}) < 0  -- higher uncertainty/clarity_residual -> lower investment efficiency
         p_one = p_two/2 if beta1 < 0 else 1 - p_two/2
 
 Industry Samples:
@@ -28,24 +29,27 @@ Industry Samples:
     - Finance: FF12 code 11
     - Utility: FF12 code 8
 
-Minimum Calls Filter:
-    Firms must have >= 5 calls in the sample to be included in regression.
+Dependent Variables (2):
+    - InvestmentResidual (contemporaneous, t)
+    - InvestmentResidual_lead (one-year ahead, t+1)
 
-Uncertainty Measures (6):
-    Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct,
-    Manager_QA_Weak_Modal_pct, CEO_QA_Weak_Modal_pct,
-    Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+Main Independent Variables (6):
+    Uncertainty measures (4):
+        Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct,
+        Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+    Clarity residuals (2):
+        CEO_Clarity_Residual, Manager_Clarity_Residual
+
+Total regressions: 3 samples × 2 DVs × 6 IVs = 36 regressions
 
 Standard Errors:
     Firm-clustered (cov_type="cluster", groups=df["gvkey"]) -- same as H1.
-
-Expected results: null (0/6 significant for H2), faithfully reported.
 
 Inputs:
     - outputs/variables/h2_investment/latest/h2_investment_panel.parquet
 
 Outputs:
-    - outputs/econometric/h2_investment/{timestamp}/regression_results_{sample}_{measure}.txt
+    - outputs/econometric/h2_investment/{timestamp}/regression_results_{sample}_{dv}_{iv}.txt
     - outputs/econometric/h2_investment/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h2_investment/{timestamp}/h2_investment_table.tex
     - outputs/econometric/h2_investment/{timestamp}/report_step4_H2.md
@@ -58,7 +62,7 @@ Dependencies:
     - Uses: statsmodels, linearmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-02-26
+Date: 2026-03-09 (updated for multi-DV + clarity residuals)
 ================================================================================
 """
 
@@ -86,14 +90,25 @@ from f1d.shared.variables.panel_utils import assign_industry_sample
 # Configuration
 # ==============================================================================
 
+# Dependent variables: contemporaneous (t) and lead (t+1)
+DEPENDENT_VARIABLES = ["InvestmentResidual", "InvestmentResidual_lead"]
+
+# Uncertainty measures (4 measures - weak modals removed)
 UNCERTAINTY_MEASURES = [
     "Manager_QA_Uncertainty_pct",
     "CEO_QA_Uncertainty_pct",
-    "Manager_QA_Weak_Modal_pct",
-    "CEO_QA_Weak_Modal_pct",
     "Manager_Pres_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
 ]
+
+# Clarity residual variables (from H0.3 CEO Clarity Extended)
+CLARITY_RESIDUAL_VARS = [
+    "CEO_Clarity_Residual",
+    "Manager_Clarity_Residual",
+]
+
+# Combined list of all main independent variables
+MAIN_IVS = UNCERTAINTY_MEASURES + CLARITY_RESIDUAL_VARS
 
 CONTROL_VARS = [
     # Lev enters separately as main effect in formula; not listed here
@@ -108,7 +123,8 @@ CONTROL_VARS = [
 MIN_CALLS_PER_FIRM = 5
 
 VARIABLE_LABELS = {
-    "InvestmentResidual": "Investment Residual$_t$",
+    "InvestmentResidual": "Investment Residual$_{t}$",
+    "InvestmentResidual_lead": "Investment Residual$_{t+1}$",
     "Lev": "Leverage",
     "Size": "Firm Size (log AT)",
     "TobinsQ": "Tobin's Q",
@@ -117,10 +133,10 @@ VARIABLE_LABELS = {
     "SalesGrowth": "Sales Growth",
     "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
     "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-    "Manager_QA_Weak_Modal_pct": "Mgr QA Weak Modal",
-    "CEO_QA_Weak_Modal_pct": "CEO QA Weak Modal",
     "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
+    "CEO_Clarity_Residual": "CEO Clarity Residual",
+    "Manager_Clarity_Residual": "Manager Clarity Residual",
 }
 
 
@@ -129,15 +145,17 @@ VARIABLE_LABELS = {
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # Dependent variable
-    {"col": "InvestmentResidual", "label": "Investment Residual"},
-    # Main independent variables
+    # Dependent variables
+    {"col": "InvestmentResidual", "label": "Investment Residual$_{t}$"},
+    {"col": "InvestmentResidual_lead", "label": "Investment Residual$_{t+1}$"},
+    # Uncertainty measures (4)
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
-    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    # Clarity residuals
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
+    {"col": "Manager_Clarity_Residual", "label": "Manager Clarity Residual"},
     # Leverage
     {"col": "Lev", "label": "Leverage"},
     # Control variables
@@ -205,10 +223,10 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
             "Lev",
             "Manager_QA_Uncertainty_pct",
             "CEO_QA_Uncertainty_pct",
-            "Manager_QA_Weak_Modal_pct",
-            "CEO_QA_Weak_Modal_pct",
             "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
+            "CEO_Clarity_Residual",
+            "Manager_Clarity_Residual",
             "Size",
             "TobinsQ",
             "ROA",
@@ -224,25 +242,27 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
 
 def prepare_regression_data(
     panel: pd.DataFrame,
-    uncertainty_var: str,
+    dv: str,
+    iv: str,
 ) -> pd.DataFrame:
-    """Prepare panel for a single uncertainty measure regression.
+    """Prepare panel for a single DV and IV regression.
 
-    - Drops rows where InvestmentResidual_lead is NaN (last-year/gap-year calls)
+    - Drops rows where DV is NaN
     - Drops rows missing required variables (complete cases)
     - Applies minimum-calls-per-firm filter
 
     Args:
         panel: Full call-level panel from Stage 3
-        uncertainty_var: Name of the uncertainty measure column
+        dv: Dependent variable column name ("InvestmentResidual" or "InvestmentResidual_lead")
+        iv: Independent variable column name (uncertainty measure or clarity residual)
 
     Returns:
-        Prepared DataFrame ready for OLS with uncertainty_var
+        Prepared DataFrame ready for OLS
     """
     required = (
         [
-            "InvestmentResidual_lead",
-            uncertainty_var,
+            dv,
+            iv,
             "Lev",
         ]
         + CONTROL_VARS
@@ -258,10 +278,10 @@ def prepare_regression_data(
 
     df = panel.copy()
 
-    # Drop last-year and gap-year calls (no valid lead)
+    # Drop rows where DV is NaN
     before = len(df)
-    df = df[df["InvestmentResidual_lead"].notna()].copy()
-    print(f"  After lead filter: {len(df):,} / {before:,}")
+    df = df[df[dv].notna()].copy()
+    print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
 
     # Complete cases on required variables
     df = df.replace([np.inf, -np.inf], np.nan)
@@ -289,30 +309,31 @@ def prepare_regression_data(
 def run_regression(
     df_sample: pd.DataFrame,
     sample_name: str,
-    uncertainty_var: str,
+    dv: str,
+    iv: str,
 ) -> Tuple[Any, Dict[str, Any]]:
     """Run OLS regression with firm FE + year FE (call-level), firm-clustered SEs.
 
     Model:
-        InvestmentResidual_lead ~ {uncertainty_var} + Lev +
-                                  Size + TobinsQ + ROA + CashFlow + SalesGrowth +
-                                  C(gvkey) + C(year)
+        {dv} ~ {iv} + Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth +
+              EntityEffects + TimeEffects
 
     Standard errors: firm-clustered (groups=gvkey) -- same as H1.
 
-    H2: beta1 < 0  (higher uncertainty -> lower investment efficiency)
+    H2: beta1 < 0  (higher uncertainty/clarity_residual -> lower investment efficiency)
         p_one = p_two/2 if beta1 < 0 else 1 - p_two/2
 
     Args:
         df_sample: Sample-filtered and prepared DataFrame
         sample_name: Sample name for logging
-        uncertainty_var: Original uncertainty measure name (for metadata)
+        dv: Dependent variable column name
+        iv: Independent variable column name (uncertainty measure or clarity residual)
 
     Returns:
         Tuple of (fitted model, metadata dict) or (None, {}) on failure
     """
     print("\n" + "=" * 60)
-    print(f"Running regression: {sample_name} / {uncertainty_var}")
+    print(f"Running regression: {sample_name} / {dv} / {iv}")
     print("=" * 60)
 
     if len(df_sample) < 100:
@@ -324,13 +345,13 @@ def run_regression(
 
     # Build formula
     formula = (
-        "InvestmentResidual_lead ~ 1 + "
-        f"{uncertainty_var} + Lev + "
+        f"{dv} ~ 1 + "
+        f"{iv} + Lev + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
     print(
-        f"  Formula: InvestmentResidual_lead ~ {uncertainty_var} + Lev "
+        f"  Formula: {dv} ~ {iv} + Lev "
         f"+ {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
@@ -358,12 +379,12 @@ def run_regression(
     print(f"  Within-R²: {within_r2:.4f}")
 
     # One-tailed hypothesis test
-    beta1 = model.params.get(uncertainty_var, np.nan)
-    p1_two = model.pvalues.get(uncertainty_var, np.nan)
-    beta1_se = model.std_errors.get(uncertainty_var, np.nan)
-    beta1_t = model.tstats.get(uncertainty_var, np.nan)
+    beta1 = model.params.get(iv, np.nan)
+    p1_two = model.pvalues.get(iv, np.nan)
+    beta1_se = model.std_errors.get(iv, np.nan)
+    beta1_t = model.tstats.get(iv, np.nan)
 
-    # H2: beta1 < 0
+    # H2: beta1 < 0 (for ALL main IVs - uncertainty measures AND clarity residuals)
     if not np.isnan(p1_two) and not np.isnan(beta1):
         p1_one = p1_two / 2 if beta1 < 0 else 1 - p1_two / 2
     else:
@@ -371,14 +392,19 @@ def run_regression(
 
     h2_signif = (not np.isnan(p1_one)) and (p1_one < 0.05) and (beta1 < 0)
 
+    # Track IV type for reporting
+    iv_type = "uncertainty" if iv in UNCERTAINTY_MEASURES else "clarity_residual"
+
     print(
-        f"  beta1 ({uncertainty_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H2={'YES' if h2_signif else 'no'}"
+        f"  beta1 ({iv}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H2={'YES' if h2_signif else 'no'}"
     )
 
     # Store metadata as a plain dict
     meta = {
         "sample": sample_name,
-        "uncertainty_var": uncertainty_var,
+        "dv": dv,
+        "iv": iv,
+        "iv_type": iv_type,
         "beta1": beta1,
         "beta1_se": beta1_se,
         "beta1_t": beta1_t,
@@ -407,7 +433,7 @@ def save_outputs(
     out_dir: Path,
 ) -> pd.DataFrame:
     """Save regression outputs:
-    - One regression_results_{sample}_{measure}.txt per regression
+    - One regression_results_{sample}_{dv}_{iv}.txt per regression
     - model_diagnostics.csv (summary table of all regressions)
     - h2_investment_table.tex (custom LaTeX table with key coefficients)
     - report_step4_H2.md (markdown report)
@@ -425,8 +451,9 @@ def save_outputs(
         if model is None or not meta:
             continue
         sample = meta.get("sample", "unknown")
-        measure = meta.get("uncertainty_var", "unknown")
-        fname = f"regression_results_{sample}_{measure}.txt"
+        dv = meta.get("dv", "unknown")
+        iv = meta.get("iv", "unknown")
+        fname = f"regression_results_{sample}_{dv}_{iv}.txt"
         fpath = out_dir / fname
         with open(fpath, "w", encoding="utf-8") as f:
             f.write(str(model.summary))
@@ -448,24 +475,41 @@ def save_outputs(
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Write a publication-ready LaTeX table for the H2 results.
 
-    Shows the three key variables (Uncertainty, Lev, Uncertainty x Lev) with
-    coefficients, clustered SEs in parentheses, significance stars, N, and R2.
-    Columns = uncertainty measures; panels = industry samples.
+    Two panels per industry sample (InvestmentResidual_t and InvestmentResidual_t+1).
+    6 columns per panel (4 uncertainty + 2 clarity residuals).
+    Shows β1 with SE, significance stars, N, and R2.
     """
-    sig = (
-        lambda p: "***"
-        if p < 0.01
-        else ("**" if p < 0.05 else ("*" if p < 0.10 else ""))
-    )
 
-    short_names = {
+    def sig(p: float) -> str:
+        if p < 0.01:
+            return "^{***}"
+        elif p < 0.05:
+            return "^{**}"
+        elif p < 0.10:
+            return "^{*}"
+        return ""
+
+    def fmt_coef(val: float, pval: float) -> str:
+        if pd.isna(val):
+            return ""
+        return f"{val:.4f}{sig(pval)}"
+
+    def fmt_se(val: float) -> str:
+        return "" if pd.isna(val) else f"({val:.4f})"
+
+    # Short labels for column headers
+    short_labels = {
+        # Uncertainty measures
         "Manager_QA_Uncertainty_pct": "Mgr QA Unc",
         "CEO_QA_Uncertainty_pct": "CEO QA Unc",
-        "Manager_QA_Weak_Modal_pct": "Mgr Weak Modal",
-        "CEO_QA_Weak_Modal_pct": "CEO Weak Modal",
         "Manager_Pres_Uncertainty_pct": "Mgr Pres Unc",
         "CEO_Pres_Uncertainty_pct": "CEO Pres Unc",
+        # Clarity residuals
+        "CEO_Clarity_Residual": "CEO Clarity Res",
+        "Manager_Clarity_Residual": "Mgr Clarity Res",
     }
+
+    samples = ["Main", "Finance", "Utility"]
 
     lines = [
         r"\begin{table}[htbp]",
@@ -473,93 +517,102 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\caption{H2: Speech Uncertainty and Investment Efficiency}",
         r"\label{tab:h2_investment}",
         r"\small",
-        r"\begin{tabular}{l" + "c" * len(UNCERTAINTY_MEASURES) + "}",
-        r"\toprule",
-        r" & "
-        + " & ".join(f"({i + 1})" for i in range(len(UNCERTAINTY_MEASURES)))
-        + r" \\",
-        r" & "
-        + " & ".join(
-            r"\shortstack{" + short_names.get(m, m) + "}" for m in UNCERTAINTY_MEASURES
-        )
-        + r" \\",
-        r"\midrule",
     ]
 
-    for sample in ["Main", "Finance", "Utility"]:
-        sample_res = [
-            r for r in all_results if r.get("meta", {}).get("sample") == sample
-        ]
-        if not sample_res:
-            continue
-
-        # Index by uncertainty_var for easy lookup
-        by_measure = {r["meta"]["uncertainty_var"]: r for r in sample_res}
-
-        lines.append(
-            r"\multicolumn{"
-            + str(len(UNCERTAINTY_MEASURES) + 1)
-            + r"}{l}{\textit{"
-            + sample
-            + r" Sample}} \\"
+    for dv in DEPENDENT_VARIABLES:
+        dv_label = (
+            "InvestResid$_{t}$" if dv == "InvestmentResidual" else "InvestResid$_{t+1}$"
         )
 
-        for var_key, label in [
-            ("beta1", "$\\beta_1$"),
-            ("beta1_se", ""),
-        ]:
-            row_cells = []
-            for m in UNCERTAINTY_MEASURES:
-                r = by_measure.get(m, {})
-                meta = r.get("meta", {})
-                if not meta:
-                    row_cells.append("")
-                    continue
-                if var_key == "beta1":
-                    v = meta.get("beta1", float("nan"))
-                    p = meta.get("beta1_p_one", float("nan"))
-                    row_cells.append(f"{v:.4f}{sig(p)}" if not np.isnan(v) else "")
-                elif var_key == "beta1_se":
-                    v = meta.get("beta1_se", float("nan"))
-                    row_cells.append(f"({v:.4f})" if not np.isnan(v) else "")
+        for sample in samples:
+            sample_results = [
+                r
+                for r in all_results
+                if r.get("meta", {}).get("sample") == sample and r.get("meta", {}).get("dv") == dv
+            ]
+            if not sample_results:
+                continue
 
-            row_label = label if label else ""
-            lines.append(f"{row_label} & " + " & ".join(row_cells) + r" \\")
+            # Order by MAIN_IVS
+            ordered = []
+            for iv in MAIN_IVS:
+                match = [
+                    r for r in sample_results if r.get("meta", {}).get("iv") == iv
+                ]
+                if match:
+                    ordered.append(match[0])
+                else:
+                    ordered.append({})
 
-        # N and R2
-        n_cells = []
-        r2_cells = []
-        for m in UNCERTAINTY_MEASURES:
-            r = by_measure.get(m, {})
-            meta = r.get("meta", {})
-            n_cells.append(f"{meta.get('n_obs', ''):,}" if meta else "")
-            # B8 fix: report within-R² (net of FE) instead of LSDV R²
-            r2v = meta.get("within_r2", float("nan")) if meta else float("nan")
-            if np.isnan(r2v):
-                r2v = meta.get("rsquared", float("nan")) if meta else float("nan")
-            r2_cells.append(f"{r2v:.3f}" if not np.isnan(r2v) else "")
+            n_cols = len(ordered)
+            col_spec = "l" + "c" * n_cols
 
-        lines.append(r"N & " + " & ".join(n_cells) + r" \\")
-        lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
-        lines.append(r"\midrule")
+            lines += [
+                "",
+                r"\vspace{0.5em}",
+                rf"\textbf{{Panel: {sample} Sample — {dv_label}}}",
+                r"\vspace{0.3em}",
+                "",
+                r"\begin{tabular}{" + col_spec + "}",
+                r"\toprule",
+            ]
+
+            # Column headers
+            headers = " & ".join(
+                short_labels.get(MAIN_IVS[i], f"({i + 1})")
+                for i in range(n_cols)
+            )
+            lines.append(r" & " + headers + r" \\")
+            lines.append(r"\midrule")
+
+            # β1 row
+            coef_vals = " & ".join(
+                fmt_coef(
+                    r.get("meta", {}).get("beta1", np.nan),
+                    r.get("meta", {}).get("beta1_p_one", np.nan)
+                )
+                for r in ordered
+            )
+            lines.append(r"$\beta_1$ (Uncertainty) & " + coef_vals + r" \\")
+
+            # SE row
+            se_vals = " & ".join(
+                fmt_se(r.get("meta", {}).get("beta1_se", np.nan)) for r in ordered
+            )
+            lines.append(r" & " + se_vals + r" \\")
+
+            lines += [
+                r"\midrule",
+                r"Firm FE  & " + " & ".join("Yes" for _ in ordered) + r" \\",
+                r"Year FE  & " + " & ".join("Yes" for _ in ordered) + r" \\",
+                r"\midrule",
+                "Observations & "
+                + " & ".join(f"{r.get('meta', {}).get('n_obs', 0):,}" for r in ordered)
+                + r" \\",
+                "Firms & "
+                + " & ".join(f"{r.get('meta', {}).get('n_firms', 0):,}" for r in ordered)
+                + r" \\",
+                r"Within-$R^2$ & "
+                + " & ".join(f"{r.get('meta', {}).get('within_r2', np.nan):.4f}" for r in ordered)
+                + r" \\",
+                r"\bottomrule",
+                r"\end{tabular}",
+            ]
 
     lines += [
-        r"\bottomrule",
-        r"\end{tabular}",
-        r"\begin{minipage}{\linewidth}",
-        r"\vspace{2pt}\footnotesize",
-        r"\textit{Note:} Dependent variable is InvestmentResidual$_{t+1}$ "
-        r"(Biddle et al. 2009; end-of-year proxy; $>0$=overinvestment, $<0$=underinvestment).",
-        r"All models use the Main industry sample (non-financial, non-utility firms).",
-        r"Firms with fewer than 5 calls are excluded.",
-        r"Model includes firm FE (C(gvkey)) and year FE (C(year)).",
-        r"Standard errors (in parentheses) are clustered at the firm level.",
-        r"All continuous controls are standardized within each model's estimation sample.",
-        r"Variables are winsorized at 1\%/99\% by year at the engine level.",
-        r"Unit of observation: the individual earnings call.",
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed, direction per hypothesis).",
-        r"H2: Uncertainty $< 0$.",
-        r"\end{minipage}",
+        r"\\[-0.5em]",
+        r"\parbox{\textwidth}{\scriptsizeskip0pt\selectfont\scriptsize ",
+        r"\textit{Notes:} Dependent variables are Investment Residual$_{t}$ (contemporaneous) "
+        r"and Investment Residual$_{t+1}$ (one-year ahead; Biddle et al. 2009). "
+        r"$>0$=overinvestment, $<0$=underinvestment. "
+        r"Unit of observation: individual earnings call. "
+        r"Clarity residuals are CEO/Manager uncertainty residuals after controlling for firm factors. "
+        r"Firms with fewer than 5 calls are excluded. "
+        r"Model includes firm FE and year FE. "
+        r"Standard errors (in parentheses) are clustered at the firm level. "
+        r"Variables are winsorized at 1\%/99\% by year at the engine level. "
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H2: $\beta_1 < 0$).",
+        r"}",
         r"\end{table}",
     ]
 
@@ -586,18 +639,21 @@ def generate_report(
         "## Model Specification",
         "",
         "```",
-        "InvestmentResidual_lead ~ {uncertainty_var} + Lev +",
+        "{dv} ~ {iv} + Lev +",
         "    Size + TobinsQ + ROA + CashFlow + SalesGrowth +",
-        "    C(gvkey) + C(year)",
+        "    EntityEffects + TimeEffects",
         "```",
+        "",
+        f"**Dependent Variables:** {', '.join(DEPENDENT_VARIABLES)}",
+        f"**Independent Variables:** 4 uncertainty measures + 2 clarity residuals = 6 total",
         "",
         "Standard errors: firm-clustered (cov_type='cluster', groups=gvkey)",
         "One-tailed test: H2 beta1 < 0",
         "",
-        "## Primary Results (all uncertainty measures)",
+        "## Primary Results (all IVs)",
         "",
-        "| Sample | Measure | N | R2 | beta1 | p1 | H2 |",
-        "|--------|---------|---|----|----|----|----|",
+        "| Sample | DV | IV | N | R2 | beta1 | p1 | H2 |",
+        "|--------|----|----|---|----|-------|-----|-----|",
     ]
 
     for r in all_results:
@@ -605,15 +661,16 @@ def generate_report(
         if not meta:
             continue
         sample = meta.get("sample", "")
-        measure = meta.get("uncertainty_var", "")
-        short = measure.replace("_pct", "").replace("_", " ")
+        dv = meta.get("dv", "")
+        iv = meta.get("iv", "")
+        short_iv = iv.replace("_pct", "").replace("_", " ")
         n = meta.get("n_obs", 0)
         r2 = meta.get("rsquared", float("nan"))
         b1 = meta.get("beta1", float("nan"))
         p1 = meta.get("beta1_p_one", float("nan"))
         h2 = "YES" if meta.get("beta1_signif") else "no"
         lines.append(
-            f"| {sample} | {short} | {n:,} | {r2:.4f} | "
+            f"| {sample} | {dv} | {short_iv} | {n:,} | {r2:.4f} | "
             f"{b1:.4f} | {p1:.4f} | {h2} |"
         )
 
@@ -623,6 +680,15 @@ def generate_report(
         "",
     ]
 
+    # Summary by DV
+    for dv in DEPENDENT_VARIABLES:
+        dv_results = [r for r in all_results if r.get("meta", {}).get("dv") == dv]
+        dv_sig = sum(1 for r in dv_results if r.get("meta", {}).get("beta1_signif"))
+        lines.append(f"**{dv}:** H2 {dv_sig}/{len(dv_results)} significant")
+
+    lines.append("")
+
+    # Summary by sample
     for sample in ["Main", "Finance", "Utility"]:
         sample_results = [
             r for r in all_results if r.get("meta", {}).get("sample") == sample
@@ -634,6 +700,14 @@ def generate_report(
         lines.append(
             f"**{sample}:** H2 {h2_n}/{n_total} significant"
         )
+
+    lines.append("")
+
+    # Summary by IV type
+    for iv_type in ["uncertainty", "clarity_residual"]:
+        type_results = [r for r in all_results if r.get("meta", {}).get("iv_type") == iv_type]
+        type_sig = sum(1 for r in type_results if r.get("meta", {}).get("beta1_signif"))
+        lines.append(f"**{iv_type} IVs:** H2 {type_sig}/{len(type_results)} significant")
 
     lines.append("")
 
@@ -696,12 +770,17 @@ def main(panel_path: Optional[str] = None) -> int:
     print("\n  Full panel sample distribution:")
     for sample in ["Main", "Finance", "Utility"]:
         n = (panel["sample"] == sample).sum()
+        n_t = (
+            panel.loc[panel["sample"] == sample, "InvestmentResidual"]
+            .notna()
+            .sum()
+        )
         n_lead = (
             panel.loc[panel["sample"] == sample, "InvestmentResidual_lead"]
             .notna()
             .sum()
         )
-        print(f"    {sample}: {n:,} calls, {n_lead:,} with valid lead")
+        print(f"    {sample}: {n:,} calls, {n_t:,} with DV_t, {n_lead:,} with DV_t+1")
 
     # Generate summary statistics (all variables, by sample)
     print("\n" + "=" * 60)
@@ -720,34 +799,35 @@ def main(panel_path: Optional[str] = None) -> int:
     print("  Saved: summary_stats.csv")
     print("  Saved: summary_stats.tex")
 
-    # Run regressions: 6 uncertainty measures x 3 samples = 18 regressions
+    # Run regressions: 3 samples × 2 DVs × 6 IVs = 36 regressions
     all_results: List[Dict[str, Any]] = []
 
     for sample_name in ["Main", "Finance", "Utility"]:
         df_sample_full = panel[panel["sample"] == sample_name].copy()
 
-        for uncertainty_var in UNCERTAINTY_MEASURES:
-            if uncertainty_var not in panel.columns:
-                print(f"  WARNING: {uncertainty_var} not in panel -- skipping")
-                continue
+        for dv in DEPENDENT_VARIABLES:
+            for iv in MAIN_IVS:
+                if iv not in panel.columns:
+                    print(f"  WARNING: {iv} not in panel -- skipping")
+                    continue
 
-            print(f"\n--- {sample_name} / {uncertainty_var} ---")
+                print(f"\n--- {sample_name} / {dv} / {iv} ---")
 
-            try:
-                df_prepared = prepare_regression_data(df_sample_full, uncertainty_var)
-            except ValueError as e:
-                print(f"  ERROR preparing data: {e}", file=sys.stderr)
-                continue
+                try:
+                    df_prepared = prepare_regression_data(df_sample_full, dv, iv)
+                except ValueError as e:
+                    print(f"  ERROR preparing data: {e}", file=sys.stderr)
+                    continue
 
-            if len(df_prepared) < 100:
-                print(f"  Skipping: too few obs ({len(df_prepared)})")
-                continue
+                if len(df_prepared) < 100:
+                    print(f"  Skipping: too few obs ({len(df_prepared)})")
+                    continue
 
-            model, meta = run_regression(df_prepared, sample_name, uncertainty_var)
+                model, meta = run_regression(df_prepared, sample_name, dv, iv)
 
-            if model is not None and meta:
-                all_results.append({"model": model, "meta": meta})
-                stats["regressions"][f"{sample_name}_{uncertainty_var}"] = meta
+                if model is not None and meta:
+                    all_results.append({"model": model, "meta": meta})
+                    stats["regressions"][f"{sample_name}_{dv}_{iv}"] = meta
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
@@ -797,6 +877,12 @@ def main(panel_path: Optional[str] = None) -> int:
     # H2 summary
     h2_total = sum(1 for r in all_results if r["meta"].get("beta1_signif"))
     print(f"H2 significant (beta1<0, p<0.05 one-tail): {h2_total}/{len(all_results)}")
+
+    # DV breakdown
+    for dv in DEPENDENT_VARIABLES:
+        dv_results = [r for r in all_results if r.get("meta", {}).get("dv") == dv]
+        dv_sig = sum(1 for r in dv_results if r.get("meta", {}).get("beta1_signif"))
+        print(f"  {dv}: {dv_sig}/{len(dv_results)} significant")
 
     return 0
 

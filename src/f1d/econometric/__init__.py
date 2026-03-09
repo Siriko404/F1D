@@ -14,14 +14,13 @@ Active Modules:
     - run_h5_dispersion: Run Dispersion hypothesis test
     - run_h6_cccl: Run CCCL hypothesis test
     - run_h7_illiquidity: Run Illiquidity hypothesis test
-    - run_h8_political_risk: Run Political Risk hypothesis test
     - run_h9_takeover_hazards: Run Takeover Hazards hypothesis test
-    - run_h10_tone_at_top: Run Tone at the Top hypothesis test
 
 Archived Modules (in _archived/):
     - run_h0_1_manager_clarity: Superseded by H0.2
     - run_h0_4_ceo_clarity_regime: Consolidated into H0.2
-    - run_h0_5_ceo_tone: Consolidated into H10
+    - run_h0_5_ceo_tone: Archived
+    - run_h10_tone_at_top: Archived
     - generate_h03_complete_table: Temporary workaround, now obsolete
 """
 

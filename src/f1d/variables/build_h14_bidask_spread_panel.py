@@ -56,6 +56,8 @@ from f1d.shared.variables import (
     StockPriceBuilder,
     TurnoverBuilder,
     EarningsSurpriseRatioBuilder,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
     stats_list_to_dataframe,
 )
 
@@ -95,6 +97,13 @@ def build_panel(
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        # Clarity Residuals (from CEO Clarity Extended Stage 4)
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
+        ),
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
         ),
         # Controls
         "size": SizeBuilder(var_config.get("size", {})),
@@ -225,6 +234,8 @@ def generate_report(
         "- `CEO_QA_Uncertainty_pct`: CEO Q&A language uncertainty",
         "- `Manager_Pres_Uncertainty_pct`: Manager presentation language uncertainty",
         "- `CEO_Pres_Uncertainty_pct`: CEO presentation language uncertainty",
+        "- `Manager_Clarity_Residual`: Manager Q&A uncertainty residual (after firm/linguistic controls)",
+        "- `CEO_Clarity_Residual`: CEO Q&A uncertainty residual (after firm/linguistic controls)",
         "",
         "### Controls",
         "- `Size`: Firm size (ln(atq))",

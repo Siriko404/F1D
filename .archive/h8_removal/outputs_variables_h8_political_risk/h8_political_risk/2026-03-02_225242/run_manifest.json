@@ -1,0 +1,16 @@
+{
+  "manifest_version": "1.0",
+  "stage": "stage3",
+  "timestamp": "2026-03-02_225242",
+  "generated_at": "2026-03-02T22:54:04.215469",
+  "git_commit": "00ee5ad4e883e31a77ab86d4229526289992bd92",
+  "command": "C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\Thesis_Bmad\\Data\\Data\\Datasets\\Datasets\\Data_Processing\\F1D\\src\\f1d\\variables\\build_h8_political_risk_panel.py",
+  "input_hashes": {
+    "master_manifest": null
+  },
+  "output_files": {
+    "panel": "C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\Thesis_Bmad\\Data\\Data\\Datasets\\Datasets\\Data_Processing\\F1D\\outputs\\variables\\h8_political_risk\\2026-03-02_225242\\h8_political_risk_panel.parquet",
+    "summary_stats": "C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\Thesis_Bmad\\Data\\Data\\Datasets\\Datasets\\Data_Processing\\F1D\\outputs\\variables\\h8_political_risk\\2026-03-02_225242\\summary_stats.csv"
+  },
+  "config": {}
+}

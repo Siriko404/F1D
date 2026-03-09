@@ -242,9 +242,9 @@ __all__ = [
     "BidAskSpreadChangeBuilder",
     "StockPriceBuilder",
     "TurnoverBuilder",
-    # H8
-    "CEOClarityStyleBuilder",
-    "PRiskFYBuilder",
+    # Clarity Residuals (from CEO Clarity Extended Stage 4)
+    "CEOClarityResidualBuilder",
+    "ManagerClarityResidualBuilder",
     # H11
     "PRiskQBuilder",
     # H11-Lag
@@ -255,8 +255,6 @@ __all__ = [
     "PRiskQLeadBuilder",
     # H11-Lead2
     "PRiskQLead2Builder",
-    # H_TT
-    "CEOStyleRealtimeBuilder",
     # H13 Employment Growth
     "EmploymentGrowthLeadBuilder",
     # Panel-building utilities
@@ -291,9 +289,9 @@ from .bidask_spread_change import BidAskSpreadChangeBuilder
 from .stock_price import StockPriceBuilder
 from .turnover import TurnoverBuilder
 
-# H8 Political Risk
-from .ceo_clarity_style import CEOClarityStyleBuilder
-from .prisk_fy import PRiskFYBuilder
+# Clarity Residuals (from CEO Clarity Extended Stage 4)
+from .ceo_clarity_residual import CEOClarityResidualBuilder
+from .manager_clarity_residual import ManagerClarityResidualBuilder
 
 # H11 Political Risk (Quarterly)
 from .prisk_q import PRiskQBuilder
@@ -309,9 +307,6 @@ from .prisk_q_lead import PRiskQLeadBuilder
 
 # H11-Lead2 Political Risk (Quarterly, 2-quarter Lead)
 from .prisk_q_lead2 import PRiskQLead2Builder
-
-# H_TT Tone at the Top
-from .ceo_style_realtime import CEOStyleRealtimeBuilder
 
 # H13 Employment Growth Lead
 from .employment_growth_lead import EmploymentGrowthLeadBuilder

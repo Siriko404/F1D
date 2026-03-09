@@ -11,7 +11,7 @@ WHY THIS FILE EXISTS:
     subtle divergences (missing dtype=object, two distinct attach_fyearq
     variants, latent dtype crashes). Centralising them here guarantees:
       - assign_industry_sample: consistent Finance/Utility/Main classification
-        with enforced dtype=object (h10 was missing this).
+        with enforced dtype=object (historical bug fix).
       - attach_fyearq: single merge strategy with explicit datetime coercion
         (fixes latent crash in h1/h2 when start_date is object dtype), unique
         file_name guard (prevents silent corruption), and a loud failure on
@@ -69,7 +69,7 @@ def assign_industry_sample(ff12_code: pd.Series) -> pd.Series:
     return pd.Series(
         np.select(conditions, choices, default="Main"),
         index=ff12_code.index,
-        dtype=object,  # enforced: prevents dtype divergence (h10 was missing this)
+        dtype=object,  # enforced: prevents dtype divergence (historical bug fix)
     )
 
 
@@ -83,7 +83,7 @@ def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     This is the CANONICAL implementation used by all Stage 3 panel builders.
     It replaces the 6–7 copy-pasted local variants that previously existed in
-    h1, h2, h3, h4, h6, h7, and h8.
+    h1, h2, h3, h4, h6, and h7.
 
     Design decisions (see refactor plan for full rationale):
         - Explicit datetime coercion (fixes latent crash in former h1/h2 variant

@@ -20,9 +20,7 @@ Stage 4 Scripts (econometric/):
     - run_h5_dispersion.py
     - run_h6_cccl.py
     - run_h7_illiquidity.py
-    - run_h8_political_risk.py
     - run_h9_takeover_hazards.py (survival analysis)
-    - run_h10_tone_at_top.py
 
 Dependencies:
     - Scripts depend on Step 3.x and Step 2.2 outputs
@@ -56,9 +54,7 @@ STAGE4_ALL_SCRIPTS = [
     "src/f1d/econometric/run_h5_dispersion.py",
     "src/f1d/econometric/run_h6_cccl.py",
     "src/f1d/econometric/run_h7_illiquidity.py",
-    "src/f1d/econometric/run_h8_political_risk.py",
     "src/f1d/econometric/run_h9_takeover_hazards.py",
-    "src/f1d/econometric/run_h10_tone_at_top.py",
 ]
 
 
@@ -256,11 +252,6 @@ class TestStage4HypothesisMapping:
         """Verify H7 (Illiquidity) regression script exists."""
         h7_path = REPO_ROOT / "src/f1d/econometric/run_h7_illiquidity.py"
         assert h7_path.exists(), "H7 Illiquidity regression script should exist"
-
-    def test_h8_regression_exists(self):
-        """Verify H8 (Political Risk) regression script exists."""
-        h8_path = REPO_ROOT / "src/f1d/econometric/run_h8_political_risk.py"
-        assert h8_path.exists(), "H8 Political Risk regression script should exist"
 
 
 class TestStage4SurvivalAnalysis:

@@ -1,0 +1,37 @@
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:          AbsAbInv_lead   R-squared:                        0.0221
+Estimator:                   PanelOLS   R-squared (Between):             -7.1077
+No. Observations:               15998   R-squared (Within):               0.0250
+Date:                Mon, Mar 02 2026   R-squared (Overall):             -4.7353
+Time:                        23:09:52   Log-likelihood                 1.551e+04
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                      45.319
+Entities:                        1943   P-value                           0.0000
+Avg Obs:                       8.2337   Distribution:                 F(7,14032)
+Min Obs:                       1.0000                                           
+Max Obs:                       16.000   F-statistic (robust):             13.568
+                                        P-value                           0.0000
+Time periods:                      17   Distribution:                 F(7,14032)
+Avg Obs:                       941.06                                           
+Min Obs:                       25.000                                           
+Max Obs:                       1191.0                                           
+                                                                                
+                                   Parameter Estimates                                   
+=========================================================================================
+                       Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+-----------------------------------------------------------------------------------------
+PRiskFY               -9.304e-06   7.22e-06    -1.2887     0.1975  -2.346e-05   4.848e-06
+ClarityStyle_Realtime    -0.0003     0.0013    -0.2496     0.8029     -0.0029      0.0023
+interact               -7.67e-08  4.496e-06    -0.0171     0.9864  -8.889e-06   8.736e-06
+Size                     -0.0306     0.0041    -7.4082     0.0000     -0.0388     -0.0225
+Lev                      -0.0446     0.0131    -3.4104     0.0007     -0.0703     -0.0190
+ROA                       0.0358     0.0161     2.2238     0.0262      0.0042      0.0673
+TobinsQ                   0.0069     0.0017     4.0505     0.0001      0.0035      0.0102
+=========================================================================================
+
+F-test for Poolability: 3.3844
+P-value: 0.0000
+Distribution: F(1958,14032)
+
+Included effects: Entity, Time

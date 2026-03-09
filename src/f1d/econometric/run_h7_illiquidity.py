@@ -100,11 +100,18 @@ BASE_CONTROLS = [
 ]
 
 SPECS = [
+    # A specs: raw uncertainty measures (all samples)
     ("A1", "CEO_QA_Uncertainty_pct", "CEO QA Uncertainty"),
     ("A2", "CEO_Pres_Uncertainty_pct", "CEO Pres Uncertainty"),
     ("A3", "Manager_QA_Uncertainty_pct", "Manager QA Uncertainty"),
     ("A4", "Manager_Pres_Uncertainty_pct", "Manager Pres Uncertainty"),
+    # B specs: clarity residuals (Main sample ONLY)
+    ("B1", "CEO_Clarity_Residual", "CEO Clarity Residual"),
+    ("B2", "Manager_Clarity_Residual", "Mgr Clarity Residual"),
 ]
+
+# B specs only run for Main sample (residuals computed from Main-only H0.3)
+MAIN_ONLY_SPECS = {"B1", "B2"}
 
 
 # ==============================================================================
@@ -129,6 +136,9 @@ SUMMARY_STATS_VARS = [
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "Volatility", "label": "Return Volatility"},
     {"col": "StockRet", "label": "Stock Return"},
+    # Clarity residuals (B specs)
+    {"col": "CEO_Clarity_Residual", "label": "CEO ClarityResidual"},
+    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
 ]
 
 
@@ -276,7 +286,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_se(val: float) -> str:
         return "" if (val is None or pd.isna(val)) else f"({val:.4f})"
 
-    specs_order = ["A1", "A2", "A3", "A4"]
+    # 6 columns: A1-A4 (raw uncertainty) + B1-B2 (clarity residuals)
+    specs_order = ["A1", "A2", "A3", "A4", "B1", "B2"]
     results_main = [get_res(s) for s in specs_order]
 
     lines = [
@@ -284,10 +295,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\centering",
         r"\caption{H7: Speech Vagueness and Stock Illiquidity (Amihud 2002)}",
         r"\label{tab:h7_illiquidity}",
-        r"\begin{tabular}{lcccc}",
+        r"\begin{tabular}{lcccccc}",
         r"\toprule",
-        r" & (A1) & (A2) & (A3) & (A4) \\",
-        r" & CEO QA & CEO Pres & Mgr QA & Mgr Pres \\",
+        r" & (A1) & (A2) & (A3) & (A4) & (B1) & (B2) \\",
+        r" & CEO QA & CEO Pres & Mgr QA & Mgr Pres & CEO Resid & Mgr Resid \\",
         r"\midrule",
     ]
 
@@ -306,11 +317,11 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     lines += [
         r"\midrule",
-        r"Negative Sentiment & Yes & Yes & Yes & Yes \\",
-        r"Analyst Uncertainty & Yes & Yes & Yes & Yes \\",
-        r"Controls & Yes & Yes & Yes & Yes \\",
-        r"Firm FE  & Yes & Yes & Yes & Yes \\",
-        r"Year FE  & Yes & Yes & Yes & Yes \\",
+        r"Negative Sentiment & Yes & Yes & Yes & Yes & Yes & Yes \\",
+        r"Analyst Uncertainty & Yes & Yes & Yes & Yes & Yes & Yes \\",
+        r"Controls & Yes & Yes & Yes & Yes & Yes & Yes \\",
+        r"Firm FE  & Yes & Yes & Yes & Yes & Yes & Yes \\",
+        r"Year FE  & Yes & Yes & Yes & Yes & Yes & Yes \\",
         r"\midrule",
     ]
 
@@ -334,10 +345,11 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\textit{Notes:} "
         r"Dependent variable is Amihud illiquidity$_{t}$ (Amihud 2002). "
         r"All models use the Main industry sample (non-financial, non-utility firms). "
+        r"Columns (A1)--(A4) use raw uncertainty measures; "
+        r"columns (B1)--(B2) use clarity residuals (idiosyncratic uncertainty after firm/linguistic controls). "
         r"Firms with fewer than 5 calls are excluded. "
         r"Standard errors (in parentheses) are clustered at the firm level. "
         r"All continuous controls are standardized within each model's estimation sample. "
-        r"Variables are winsorized at 1\%/99\% by year at the engine level. "
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H7).",
         r"}",
         r"\end{table}",
@@ -404,7 +416,7 @@ def main(panel_path: Optional[str] = None) -> int:
             "CEO_Pres_Uncertainty_pct",
             "Manager_QA_Uncertainty_pct",
             "Manager_Pres_Uncertainty_pct",
-            # Linguistic controls (NEW)
+            # Linguistic controls
             "Entire_All_Negative_pct",
             "Analyst_QA_Uncertainty_pct",
             # Financial controls
@@ -414,6 +426,9 @@ def main(panel_path: Optional[str] = None) -> int:
             "TobinsQ",
             "Volatility",
             "StockRet",
+            # Clarity residuals (B specs)
+            "CEO_Clarity_Residual",
+            "Manager_Clarity_Residual",
         ],
     )
     print(f"  Rows:    {len(panel):,}")
@@ -466,10 +481,10 @@ def main(panel_path: Optional[str] = None) -> int:
         for spec_id, iv_var, iv_label in SPECS:
             print(f"\n--- {sample} / {spec_id}: {iv_label} ---")
 
-            if len(df_sample) < 100:
-                print("  Skipping: insufficient data")
+            # B specs only run for Main sample (residuals computed from Main-only H0.3)
+            if spec_id in MAIN_ONLY_SPECS and sample != "Main":
+                print(f"\n--- {sample} / {spec_id}: SKIPPED (Main-only spec) ---")
                 continue
-
             model, meta = run_regression(
                 df_sample, spec_id, iv_var, sample,
                 min_calls=CONFIG["min_calls"]

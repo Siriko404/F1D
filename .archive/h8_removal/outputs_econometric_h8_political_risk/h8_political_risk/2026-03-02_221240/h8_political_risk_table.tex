@@ -1,0 +1,29 @@
+\begin{table}[htbp]
+\centering
+\caption{H8: CEO Speech Vagueness Moderates Political Risk and Abnormal Investment}
+\label{tab:h8_political_risk}
+\small
+\begin{tabular}{lcc}
+\toprule
+ & (1) & (2) \\
+\midrule
+Political Risk & -9.30e-06 & -1.67e-05 \\
+ & (0.0000) & (0.0000) \\
+Clarity Style (Realtime) & -0.0003 & 0.0005 \\
+ &  &  \\
+PRisk $\times$ Clarity Style & -7.67e-08 & -7.27e-06 \\
+ & (0.0000) & (0.0000) \\
+\midrule
+Controls & Yes & Yes \\
+Firm FE  & Yes & Yes \\
+Year FE  & Yes & Yes \\
+\midrule
+Observations & 15,998 & 12,901 \\
+Within-$R^2$ & 0.0250 & 0.0235 \\
+\bottomrule
+\end{tabular}
+\\[-0.5em]
+\parbox{\textwidth}{\scriptsize 
+\textit{Notes:} Dependent variable is $|$Abnormal Investment$|_{t+1}$ (Biddle et al.\ 2009). Unit of observation: firm--fiscal-year. Firms with fewer than 5 calls are excluded. Standard errors (in parentheses) are clustered at the firm level. All continuous controls are standardized within each model's estimation sample. Variables are winsorized at 1\%/99\% by year at the engine level. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed for H8).
+}
+\end{table}

@@ -55,8 +55,7 @@ Dependencies:
 Author: Thesis Author
 Date: 2026-03-05
 
-Cloned from: run_h8_political_risk.py (firm-year architecture) + run_h1_cash_holdings.py
-             (6×3 regression loop pattern).
+Architecture: Firm-year panel + 6×3 regression loop pattern (adapted from run_h1_cash_holdings.py).
 ================================================================================
 """
 

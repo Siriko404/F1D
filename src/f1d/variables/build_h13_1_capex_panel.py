@@ -54,8 +54,11 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # Primary IV (CEO Presentation Uncertainty)
+    # All 4 uncertainty measures (H13.1 multi-IV)
     CEOPresUncertaintyBuilder,
+    CEOQAUncertaintyBuilder,
+    ManagerPresUncertaintyBuilder,
+    ManagerQAUncertaintyBuilder,
     # Financial controls (Compustat engine)
     CashHoldingsBuilder,
     LevBuilder,
@@ -104,9 +107,18 @@ def build_call_level_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # Primary IV (CEO Presentation Uncertainty - call-level)
+        # All 4 uncertainty measures (H13.1 multi-IV)
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
+            var_config.get("ceo_qa_uncertainty", {})
+        ),
+        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
+            var_config.get("manager_pres_uncertainty", {})
+        ),
+        "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
+            var_config.get("manager_qa_uncertainty", {})
         ),
         # Financial controls -- CompustatEngine is a singleton; all share one load
         "cash_holdings": CashHoldingsBuilder({}),

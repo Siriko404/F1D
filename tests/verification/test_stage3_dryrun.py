@@ -22,7 +22,6 @@ Stage 3 V2 Scripts (financial/v2/ - Hypothesis H1-H9):
     - 3.5_H5Variables.py (Dispersion)
     - 3.6_H6Variables.py (CCC&L)
     - 3.7_H7IlliquidityVariables.py
-    - 3.8_H8TakeoverVariables.py
     - 3.9_H2_BiddleInvestmentResidual.py
     - 3.10_H2_PRiskUncertaintyMerge.py
     - 3.11_H9_StyleFrozen.py
@@ -60,9 +59,7 @@ STAGE3_ALL_SCRIPTS = [
     "src/f1d/variables/build_h5_dispersion_panel.py",
     "src/f1d/variables/build_h6_cccl_panel.py",
     "src/f1d/variables/build_h7_illiquidity_panel.py",
-    "src/f1d/variables/build_h8_political_risk_panel.py",
     "src/f1d/variables/build_h9_takeover_panel.py",
-    "src/f1d/variables/build_h10_tone_at_top_panel.py",
 ]
 
 
@@ -242,11 +239,6 @@ class TestStage3HypothesisMapping:
         """Verify H7 (Illiquidity) script exists."""
         h7_path = REPO_ROOT / "src/f1d/financial/build_h7_illiquidity_panel.py"
         assert h7_path.exists(), "H7 Illiquidity script should exist"
-
-    def test_h8_script_exists(self):
-        """Verify H8 (Political Risk) script exists."""
-        h8_path = REPO_ROOT / "src/f1d/variables/build_h8_political_risk_panel.py"
-        assert h8_path.exists(), "H8 Political Risk script should exist"
 
     def test_h9_scripts_exist(self):
         """Verify H9-related scripts exist."""
