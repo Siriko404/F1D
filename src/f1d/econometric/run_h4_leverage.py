@@ -85,14 +85,19 @@ warnings.filterwarnings(
 CONFIG = {
     "min_calls": 5,
     "dependent_variables": [
+        # Original 6 uncertainty measures (112,968 calls, ~76K-108K valid per DV)
         "Manager_QA_Uncertainty_pct",
         "CEO_QA_Uncertainty_pct",
         "Manager_QA_Weak_Modal_pct",
         "CEO_QA_Weak_Modal_pct",
         "Manager_Pres_Uncertainty_pct",
         "CEO_Pres_Uncertainty_pct",
+        # Clarity residuals (REDUCED SAMPLE: 42K-58K valid)
+        "CEO_Clarity_Residual",
+        "Manager_Clarity_Residual",
     ],
     "samples": ["Main", "Finance", "Utility"],
+    "leverage_variables": ["Lev_lag", "Lev_t", "Lev_lead"],
 }
 
 BASE_CONTROLS = [
@@ -107,12 +112,18 @@ BASE_CONTROLS = [
 ]
 
 PRES_CONTROL_MAP = {
+    # Original DVs (require presentation control)
     "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
     "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
     "Manager_QA_Weak_Modal_pct": "Manager_Pres_Uncertainty_pct",
     "CEO_QA_Weak_Modal_pct": "CEO_Pres_Uncertainty_pct",
     "Manager_Pres_Uncertainty_pct": None,
     "CEO_Pres_Uncertainty_pct": None,
+    # Clarity residuals: NO additional controls needed
+    # Source H0.3 regression already residualized: Pres_Uncertainty, Analyst_Uncertainty,
+    # Negative_Sentiment, StockRet, MarketRet, EPS_Growth, SurpDec
+    "CEO_Clarity_Residual": None,
+    "Manager_Clarity_Residual": None,
 }
 
 
@@ -121,15 +132,20 @@ PRES_CONTROL_MAP = {
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # Dependent variables (uncertainty measures)
+    # Dependent variables (original uncertainty measures)
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
     {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    # Main independent variable
+    # NEW: Clarity residuals
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
+    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
+    # Main independent variables (3 temporal specs)
     {"col": "Lev_lag", "label": "Leverage$_{t-1}$"},
+    {"col": "Lev_t", "label": "Leverage$_{t}$"},
+    {"col": "Lev_lead", "label": "Leverage$_{t+1}$"},
     # Controls
     {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
     {"col": "Size", "label": "Firm Size (log AT)"},
@@ -155,13 +171,14 @@ def parse_arguments() -> argparse.Namespace:
 def prepare_regression_data(
     panel: pd.DataFrame,
     dv_var: str,
+    lev_var: str = "Lev_lag",
 ) -> Tuple[pd.DataFrame, List[str]]:
     pres_control = PRES_CONTROL_MAP.get(dv_var)
     controls = list(BASE_CONTROLS)
     if pres_control:
         controls.append(pres_control)
 
-    required = [dv_var, "Lev_lag"] + controls + ["gvkey", "year"]
+    required = [dv_var, lev_var] + controls + ["gvkey", "year"]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -177,15 +194,16 @@ def run_regression(
     dv_var: str,
     sample_name: str,
     controls: List[str],
+    lev_var: str = "Lev_lag",  # "Lev_lag", "Lev_t", or "Lev_lead"
 ) -> Tuple[Any, Dict[str, Any]]:
     formula = (
-        f"{dv_var} ~ 1 + Lev_lag + "
+        f"{dv_var} ~ 1 + {lev_var} + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
 
     print(
-        f"  Formula: {dv_var} ~ Lev_lag + {' + '.join(controls)} + EntityEffects + TimeEffects"
+        f"  Formula: {dv_var} ~ {lev_var} + {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
@@ -212,10 +230,10 @@ def run_regression(
     within_r2 = float(model.rsquared_within)
     print(f"  Within-R²: {within_r2:.4f}")
 
-    beta1 = model.params.get("Lev_lag", np.nan)
-    p1_two = model.pvalues.get("Lev_lag", np.nan)
-    beta1_se = model.std_errors.get("Lev_lag", np.nan)
-    beta1_t = model.tstats.get("Lev_lag", np.nan)
+    beta1 = model.params.get(lev_var, np.nan)
+    p1_two = model.pvalues.get(lev_var, np.nan)
+    beta1_se = model.std_errors.get(lev_var, np.nan)
+    beta1_t = model.tstats.get(lev_var, np.nan)
 
     # H4: beta1 < 0 (Higher leverage reduces speech uncertainty)
     if not np.isnan(p1_two) and not np.isnan(beta1):
@@ -227,12 +245,13 @@ def run_regression(
     h4_text = "YES" if h4_sig else "no"
 
     print(
-        f"  beta1 (Lev_lag):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H4={h4_text}"
+        f"  beta1 ({lev_var}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H4={h4_text}"
     )
 
     meta = {
         "dv": dv_var,
         "sample": sample_name,
+        "lev_var": lev_var,  # track which leverage variable used
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),
@@ -418,15 +437,20 @@ def main(panel_path: str | None = None) -> int:
             "gvkey",
             "year",
             "ff12_code",
-            # Dependent variables (uncertainty measures)
+            # Dependent variables (original 6)
             "Manager_QA_Uncertainty_pct",
             "CEO_QA_Uncertainty_pct",
             "Manager_QA_Weak_Modal_pct",
             "CEO_QA_Weak_Modal_pct",
             "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
-            # Primary predictor
+            # Dependent variables (clarity residuals)
+            "CEO_Clarity_Residual",
+            "Manager_Clarity_Residual",
+            # Leverage variables (3 temporal specs)
             "Lev_lag",
+            "Lev_t",
+            "Lev_lead",
             # Base controls
             "Analyst_QA_Uncertainty_pct",
             "Size",
@@ -472,44 +496,47 @@ def main(panel_path: str | None = None) -> int:
 
     all_results = []
 
-    for dv in CONFIG["dependent_variables"]:
-        for sample in CONFIG["samples"]:
-            print(f"\n--- {sample} / {dv} ---")
+    LEV_VARS = CONFIG["leverage_variables"]  # ["Lev_lag", "Lev_t", "Lev_lead"]
 
-            df_prep, controls = prepare_regression_data(panel, dv)
+    for lev_var in LEV_VARS:
+        for dv in CONFIG["dependent_variables"]:
+            for sample in CONFIG["samples"]:
+                print(f"\n--- {lev_var} / {sample} / {dv} ---")
 
-            if sample == "Main":
-                df_sample = df_prep[df_prep["sample"] == "Main"].copy()
-            elif sample == "Finance":
-                df_sample = df_prep[df_prep["sample"] == "Finance"].copy()
-            else:
-                df_sample = df_prep[df_prep["sample"] == "Utility"].copy()
+                df_prep, controls = prepare_regression_data(panel, dv, lev_var)
 
-            df_sample["gvkey_count"] = df_sample.groupby("gvkey")[
-                "file_name"
-            ].transform("count")
-            df_filtered = df_sample[
-                df_sample["gvkey_count"] >= CONFIG["min_calls"]
-            ].copy()
+                if sample == "Main":
+                    df_sample = df_prep[df_prep["sample"] == "Main"].copy()
+                elif sample == "Finance":
+                    df_sample = df_prep[df_prep["sample"] == "Finance"].copy()
+                else:
+                    df_sample = df_prep[df_prep["sample"] == "Utility"].copy()
 
-            print(
-                f"  After filters: {len(df_filtered):,} calls, {df_filtered['gvkey'].nunique():,} firms"
-            )
+                df_sample["gvkey_count"] = df_sample.groupby("gvkey")[
+                    "file_name"
+                ].transform("count")
+                df_filtered = df_sample[
+                    df_sample["gvkey_count"] >= CONFIG["min_calls"]
+                ].copy()
 
-            if len(df_filtered) < 100:
-                print("  Skipping: insufficient data")
-                continue
+                print(
+                    f"  After filters: {len(df_filtered):,} calls, {df_filtered['gvkey'].nunique():,} firms"
+                )
 
-            print(f"\n============================================================")
-            print(f"Running regression: {sample} / {dv}")
-            print(f"============================================================")
+                if len(df_filtered) < 100:
+                    print("  Skipping: insufficient data")
+                    continue
 
-            model, meta = run_regression(df_filtered, dv, sample, controls)
+                print(f"\n============================================================")
+                print(f"Running regression: {lev_var} / {sample} / {dv}")
+                print(f"============================================================")
 
-            if model is not None:
-                all_results.append(meta)
-                with open(out_dir / f"regression_results_{sample}_{dv}.txt", "w") as f:
-                    f.write(str(model.summary))
+                model, meta = run_regression(df_filtered, dv, sample, controls, lev_var)
+
+                if model is not None:
+                    all_results.append(meta)
+                    with open(out_dir / f"regression_results_{lev_var}_{sample}_{dv}.txt", "w") as f:
+                        f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
     pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)

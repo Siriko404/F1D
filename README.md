@@ -594,8 +594,10 @@ See prior run results for significant HR estimates.
 ### H11 Political Risk and Language Uncertainty — `run_h11_prisk_uncertainty`
 
 Tests whether higher political risk causes more uncertain language in earnings calls.
-DV: 6 uncertainty measures (Manager/CEO QA/Pres Uncertainty, Weak Modal).
+DV: 6 uncertainty measures (Manager/CEO QA/Pres Uncertainty, Clarity Residual).
 IV: PRiskQ (contemporaneous quarterly political risk from Hassan et al.).
+
+**Clarity Residuals** represent the component of language uncertainty that cannot be explained by firm and linguistic factors (i.e., the idiosyncratic CEO-specific uncertainty component).
 
 Model: `Uncertainty_t ~ PRiskQ_t + Analyst_Uncertainty + Pres_Uncertainty + Negative_Sentiment + Controls + FirmFE + YearFE`
 

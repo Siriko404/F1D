@@ -9,10 +9,11 @@ Description: Build CALL-LEVEL panel for H4 Leverage Discipline hypothesis test.
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
-    Step 4: Compute Lev_lag (t-1 leverage) per call:
-            - Take last value per (gvkey, fyearq)
-            - Shift by +1 year within gvkey -> previous-fiscal-year value
-            - Merge back onto all calls by (gvkey, fyearq)
+    Step 4: Compute temporal leverage variables per call:
+            - Lev_lag: t-1 leverage (prior fiscal year)
+            - Lev_t: current leverage (same fiscal year)
+            - Lev_lead: t+1 leverage (next fiscal year)
+            All require consecutive fiscal years within gvkey.
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 
@@ -52,6 +53,8 @@ from f1d.shared.variables import (
     FirmMaturityBuilder,
     EarningsVolatilityBuilder,
     ManifestFieldsBuilder,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
     stats_list_to_dataframe,
 )
 
@@ -67,9 +70,17 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def create_lag_variables(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
+def create_leverage_temporal_vars(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
+    """
+    Create Lev_lag (t-1), Lev_t (current), and Lev_lead (t+1) for H4.
+
+    Coverage expectations:
+    - Lev_t:    ~99.8% (same as Lev)
+    - Lev_lag:  ~93.3% (requires prior consecutive year)
+    - Lev_lead: ~85% (requires next consecutive year; 2018 calls lose it)
+    """
     print("\n" + "=" * 60)
-    print("Creating lagged leverage for H4 (call-level)")
+    print("Creating temporal leverage variables for H4 (call-level)")
     print("=" * 60)
 
     panel = attach_fyearq(panel, root_path)
@@ -83,8 +94,10 @@ def create_lag_variables(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
     df_valid = df[valid_mask].copy()
 
     if len(df_valid) == 0:
-        print("  WARNING: No valid rows for lag creation.")
+        print("  WARNING: No valid rows for temporal variable creation.")
         df["Lev_lag"] = np.nan
+        df["Lev_t"] = np.nan
+        df["Lev_lead"] = np.nan
         return df
 
     df_valid["fyearq_int"] = df_valid["fyearq"].astype(int)
@@ -96,19 +109,30 @@ def create_lag_variables(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
         ["gvkey", "fyearq_int", "Lev"]
     ]
 
-    # 2. Shift backward 1 fiscal year within firm (lag)
+    # 2. Sort by firm and fiscal year
     firm_year = firm_year.sort_values(["gvkey", "fyearq_int"]).reset_index(drop=True)
+
+    # 3. Create previous and next fiscal year columns for validation
     firm_year["prev_fyearq"] = firm_year.groupby("gvkey")["fyearq_int"].shift(1)
+    firm_year["next_fyearq"] = firm_year.groupby("gvkey")["fyearq_int"].shift(-1)
 
+    # 4. Lev_lag: previous year's leverage (shift(1) on ascending years = t-1)
     firm_year["Lev_lag"] = firm_year.groupby("gvkey")["Lev"].shift(1)
+    is_consecutive_prev = (firm_year["fyearq_int"] - firm_year["prev_fyearq"]) == 1
+    firm_year.loc[~is_consecutive_prev, "Lev_lag"] = np.nan
 
-    # 3. Validate consecutive years
-    is_consecutive = (firm_year["fyearq_int"] - firm_year["prev_fyearq"]) == 1
-    firm_year.loc[~is_consecutive, "Lev_lag"] = np.nan
+    # 5. Lev_t: current year's leverage (direct copy)
+    firm_year["Lev_t"] = firm_year["Lev"]
 
-    lookup = firm_year[["gvkey", "fyearq_int", "Lev_lag"]].copy()
+    # 6. Lev_lead: next year's leverage (shift(-1) on ascending years = t+1)
+    firm_year["Lev_lead"] = firm_year.groupby("gvkey")["Lev"].shift(-1)
+    is_consecutive_next = (firm_year["next_fyearq"] - firm_year["fyearq_int"]) == 1
+    firm_year.loc[~is_consecutive_next, "Lev_lead"] = np.nan
 
-    # 4. Merge lag back onto all calls via (gvkey, fyearq_int)
+    # 7. Create lookup table for merging
+    lookup = firm_year[["gvkey", "fyearq_int", "Lev_lag", "Lev_t", "Lev_lead"]].copy()
+
+    # 8. Merge temporal vars back onto all calls via (gvkey, fyearq_int)
     df["_row_id"] = np.arange(len(df))
     df["fyearq_int"] = np.floor(pd.to_numeric(df["fyearq"], errors="coerce")).astype(
         "Int64"
@@ -119,8 +143,12 @@ def create_lag_variables(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
         columns=["_row_id", "fyearq_int", "start_date_dt"]
     )
 
-    n_lev = merged["Lev_lag"].notna().sum()
-    print(f"  Valid Lev_lag:     {n_lev:,} / {len(merged):,}")
+    # 9. Log coverage for all three variables
+    print("\n  Temporal Leverage Variables Coverage:")
+    for col in ["Lev_t", "Lev_lag", "Lev_lead"]:
+        n_valid = merged[col].notna().sum()
+        pct = 100 * n_valid / len(merged)
+        print(f"    {col:12s}: {n_valid:,} / {len(merged):,} ({pct:.1f}%)")
 
     return merged
 
@@ -168,6 +196,12 @@ def build_panel(
         "earnings_volatility": EarningsVolatilityBuilder(
             var_config.get("earnings_volatility", {})
         ),
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
+        ),
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
+        ),
     }
 
     all_results = {}
@@ -201,7 +235,7 @@ def build_panel(
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
     panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 
-    panel = create_lag_variables(panel, root_path)
+    panel = create_leverage_temporal_vars(panel, root_path)
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
@@ -248,7 +282,11 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **Lagged Leverage (valid):** {panel['Lev_lag'].notna().sum():,} calls",
+        "",
+        "## Temporal Leverage Variables",
+        f"- **Lev_lag (t-1):** {panel['Lev_lag'].notna().sum():,} calls",
+        f"- **Lev_t (current):** {panel['Lev_t'].notna().sum():,} calls",
+        f"- **Lev_lead (t+1):** {panel['Lev_lead'].notna().sum():,} calls",
         "",
     ]
     report_path = out_dir / "report_step3_h4.md"

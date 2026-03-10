@@ -87,8 +87,8 @@ CONFIG = {
     "dependent_variables": [
         "Manager_QA_Uncertainty_pct",
         "CEO_QA_Uncertainty_pct",
-        "Manager_QA_Weak_Modal_pct",
-        "CEO_QA_Weak_Modal_pct",
+        "Manager_Clarity_Residual",
+        "CEO_Clarity_Residual",
         "Manager_Pres_Uncertainty_pct",
         "CEO_Pres_Uncertainty_pct",
     ],
@@ -110,8 +110,8 @@ BASE_CONTROLS = [
 PRES_CONTROL_MAP = {
     "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
     "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Weak_Modal_pct": "Manager_Pres_Uncertainty_pct",
-    "CEO_QA_Weak_Modal_pct": "CEO_Pres_Uncertainty_pct",
+    "Manager_Clarity_Residual": "Manager_Pres_Uncertainty_pct",
+    "CEO_Clarity_Residual": "CEO_Pres_Uncertainty_pct",
     "Manager_Pres_Uncertainty_pct": None,
     "CEO_Pres_Uncertainty_pct": None,
 }
@@ -125,8 +125,8 @@ SUMMARY_STATS_VARS = [
     # Dependent variables (uncertainty measures)
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
-    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
+    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     # Main independent variable
@@ -265,8 +265,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     r_mq = get_res("Manager_QA_Uncertainty_pct")
     r_cq = get_res("CEO_QA_Uncertainty_pct")
-    r_mw = get_res("Manager_QA_Weak_Modal_pct")
-    r_cw = get_res("CEO_QA_Weak_Modal_pct")
+    r_mw = get_res("Manager_Clarity_Residual")
+    r_cw = get_res("CEO_Clarity_Residual")
     r_mp = get_res("Manager_Pres_Uncertainty_pct")
     r_cp = get_res("CEO_Pres_Uncertainty_pct")
 
@@ -301,7 +301,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\toprule",
         " & \\multicolumn{4}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} \\\\",
         "\\cmidrule(lr){2-5} \\cmidrule(lr){6-7}",
-        " & Mgr Unc & CEO Unc & Mgr Weak & CEO Weak & Mgr Unc & CEO Unc \\\\",
+        " & Mgr Unc & CEO Unc & Mgr Resid & CEO Resid & Mgr Unc & CEO Unc \\\\",
         " & (1) & (2) & (3) & (4) & (5) & (6) \\\\",
         "\\midrule",
     ]
@@ -425,8 +425,8 @@ def main(panel_path: str | None = None) -> int:
             # Dependent variables (uncertainty measures)
             "Manager_QA_Uncertainty_pct",
             "CEO_QA_Uncertainty_pct",
-            "Manager_QA_Weak_Modal_pct",
-            "CEO_QA_Weak_Modal_pct",
+            "Manager_Clarity_Residual",
+            "CEO_Clarity_Residual",
             "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
             # Primary predictor

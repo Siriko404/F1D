@@ -41,8 +41,8 @@ from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
+    ManagerClarityResidualBuilder,
+    CEOClarityResidualBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     SizeBuilder,
@@ -92,11 +92,11 @@ def build_panel(
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
         ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
         ),
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
