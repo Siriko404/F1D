@@ -738,16 +738,6 @@ Model: `ΔSpread ~ Uncertainty + Size + StockPrice + Turnover + Volatility + Pre
 **Result:** H14 **NOT SUPPORTED** — 0/18 significant in predicted direction (β > 0).
 Mean ΔSpread is negative (spreads narrow after calls as uncertainty resolves), but language uncertainty does not significantly affect this narrowing.
 
-### Summary Statistics (H11) — `generate_summary_stats`
-
-Main sample: 88,205 call observations, 1,884 firms, 3,533 CEOs, 2002–2018.
-No Stage 3 panel builder — reads `ceo_clarity_extended_panel.parquet` directly.
-
-| Panel | Variables | N range |
-|-------|-----------|---------|
-| A — Linguistic | 6 (uncertainty + sentiment pct) | 60,435–84,567 |
-| B — Financial controls | 11 (Size, BM, Lev, ROA, …) | 67,965–87,994 |
-
 ---
 
 ## Archived Hypotheses
