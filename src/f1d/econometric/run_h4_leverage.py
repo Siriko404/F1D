@@ -270,22 +270,31 @@ def run_regression(
     return model, meta
 
 
-def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    tex_path = out_dir / "h4_leverage_table.tex"
+def _save_latex_tables(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
+    """
+    Generate THREE LaTeX tables:
+    1. Original 6 uncertainty measures (h4_leverage_table_uncertainty.tex)
+    2. Clarity residuals (h4_leverage_table_residuals.tex)
+    3. Full comparison with all leverage specs (h4_leverage_table_full.tex)
+    """
 
-    # We will pick: Main sample, all 6 DVs
-    def get_res(dv):
+    # Separate results by DV type
+    original_dvs = [
+        "Manager_QA_Uncertainty_pct",
+        "CEO_QA_Uncertainty_pct",
+        "Manager_QA_Weak_Modal_pct",
+        "CEO_QA_Weak_Modal_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
+    ]
+    residual_dvs = ["CEO_Clarity_Residual", "Manager_Clarity_Residual"]
+
+    # Helper functions
+    def get_res(dv, sample="Main", lev_var="Lev_lag"):
         for r in all_results:
-            if r["sample"] == "Main" and r["dv"] == dv:
+            if r["sample"] == sample and r["dv"] == dv and r["lev_var"] == lev_var:
                 return r
         return None
-
-    r_mq = get_res("Manager_QA_Uncertainty_pct")
-    r_cq = get_res("CEO_QA_Uncertainty_pct")
-    r_mw = get_res("Manager_QA_Weak_Modal_pct")
-    r_cw = get_res("CEO_QA_Weak_Modal_pct")
-    r_mp = get_res("Manager_Pres_Uncertainty_pct")
-    r_cp = get_res("CEO_Pres_Uncertainty_pct")
 
     def fmt_coef(val, pval):
         if val is None or pd.isna(val):
@@ -309,6 +318,20 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             return ""
         return f"{val:.4f}"
 
+    # =========================================================================
+    # Table 1: Original 6 Uncertainty Measures (Main sample, Lev_lag only)
+    # =========================================================================
+    dv_labels = [
+        ("Manager_QA_Uncertainty_pct", "Mgr QA Unc"),
+        ("CEO_QA_Uncertainty_pct", "CEO QA Unc"),
+        ("Manager_QA_Weak_Modal_pct", "Mgr QA Weak"),
+        ("CEO_QA_Weak_Modal_pct", "CEO QA Weak"),
+        ("Manager_Pres_Uncertainty_pct", "Mgr Pres Unc"),
+        ("CEO_Pres_Uncertainty_pct", "CEO Pres Unc"),
+    ]
+
+    results = [get_res(dv, "Main", "Lev_lag") for dv, _ in dv_labels]
+
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
@@ -318,63 +341,40 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\toprule",
         " & \\multicolumn{4}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} \\\\",
         "\\cmidrule(lr){2-5} \\cmidrule(lr){6-7}",
-        " & Mgr Unc & CEO Unc & Mgr Weak & CEO Weak & Mgr Unc & CEO Unc \\\\",
         " & (1) & (2) & (3) & (4) & (5) & (6) \\\\",
         "\\midrule",
     ]
 
-    # Row 1: Lev_lag
-    r1 = "Leverage$_{t-1}$ & "
-    r1 += f"{fmt_coef(r_mq['beta1'], r_mq['beta1_p_one'])} & " if r_mq else " & "
-    r1 += f"{fmt_coef(r_cq['beta1'], r_cq['beta1_p_one'])} & " if r_cq else " & "
-    r1 += f"{fmt_coef(r_mw['beta1'], r_mw['beta1_p_one'])} & " if r_mw else " & "
-    r1 += f"{fmt_coef(r_cw['beta1'], r_cw['beta1_p_one'])} & " if r_cw else " & "
-    r1 += f"{fmt_coef(r_mp['beta1'], r_mp['beta1_p_one'])} & " if r_mp else " & "
-    r1 += f"{fmt_coef(r_cp['beta1'], r_cp['beta1_p_one'])} \\\\" if r_cp else " \\\\"
-    lines.append(r1)
+    # Row: Lev_lag coefficient
+    row = "Leverage$_{t-1}$ & "
+    row += " & ".join([fmt_coef(r["beta1"], r["beta1_p_one"]) if r else "" for r in results])
+    row += " \\\\"
+    lines.append(row)
 
-    # Row 2: SE
-    r2 = " & "
-    r2 += f"{fmt_se(r_mq['beta1_se'])} & " if r_mq else " & "
-    r2 += f"{fmt_se(r_cq['beta1_se'])} & " if r_cq else " & "
-    r2 += f"{fmt_se(r_mw['beta1_se'])} & " if r_mw else " & "
-    r2 += f"{fmt_se(r_cw['beta1_se'])} & " if r_cw else " & "
-    r2 += f"{fmt_se(r_mp['beta1_se'])} & " if r_mp else " & "
-    r2 += f"{fmt_se(r_cp['beta1_se'])} \\\\" if r_cp else " \\\\"
-    lines.append(r2)
+    # Row: SE
+    row = " & " + " & ".join([fmt_se(r["beta1_se"]) if r else "" for r in results]) + " \\\\"
+    lines.append(row)
 
-    lines.extend(
-        [
-            "\\midrule",
-            "Pres. Uncertainty & Yes & Yes & Yes & Yes & No & No \\\\",
-            "Controls & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "\\midrule",
-        ]
-    )
-
-    rn = "Observations & "
-    rn += f"{r_mq['n_obs']:,} & " if r_mq else " & "
-    rn += f"{r_cq['n_obs']:,} & " if r_cq else " & "
-    rn += f"{r_mw['n_obs']:,} & " if r_mw else " & "
-    rn += f"{r_cw['n_obs']:,} & " if r_cw else " & "
-    rn += f"{r_mp['n_obs']:,} & " if r_mp else " & "
-    rn += f"{r_cp['n_obs']:,} \\\\" if r_cp else " \\\\"
-    lines.append(rn)
-
-    rr = "Within-$R^2$ & "
-    rr += f"{fmt_r2(r_mq['within_r2'])} & " if r_mq else " & "
-    rr += f"{fmt_r2(r_cq['within_r2'])} & " if r_cq else " & "
-    rr += f"{fmt_r2(r_mw['within_r2'])} & " if r_mw else " & "
-    rr += f"{fmt_r2(r_cw['within_r2'])} & " if r_cw else " & "
-    rr += f"{fmt_r2(r_mp['within_r2'])} & " if r_mp else " & "
-    rr += f"{fmt_r2(r_cp['within_r2'])} \\\\" if r_cp else " \\\\"
-    lines.append(rr)
-
-    lines.extend(["\\bottomrule", "\\end{tabular}"])
-    # Add table notes
     lines.extend([
+        "\\midrule",
+        "Pres. Uncertainty & Yes & Yes & Yes & Yes & No & No \\\\",
+        "Controls & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+        "Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+        "Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+        "\\midrule",
+    ])
+
+    # Observations row
+    row = "Observations & " + " & ".join([f"{r['n_obs']:,}" if r else "" for r in results]) + " \\\\"
+    lines.append(row)
+
+    # Within-R² row
+    row = "Within-$R^2$ & " + " & ".join([fmt_r2(r["within_r2"]) if r else "" for r in results]) + " \\\\"
+    lines.append(row)
+
+    lines.extend([
+        "\\bottomrule",
+        "\\end{tabular}",
         "\\\\[-0.5em]",
         "\\parbox{\\textwidth}{\\scriptsize ",
         "\\textit{Notes:} "
@@ -383,14 +383,162 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "All models use the Main industry sample (non-financial, non-utility firms). "
         "Firms with fewer than 5 calls are excluded. "
         "Standard errors are clustered at the firm level. "
-        "All continuous controls are standardized. "
         "Variables are winsorized at 1\\%/99\\% by year.",
         "}",
         "\\end{table}",
     ])
 
-    with open(tex_path, "w") as f:
+    with open(out_dir / "h4_leverage_table_uncertainty.tex", "w") as f:
         f.write("\n".join(lines))
+    print("  Saved: h4_leverage_table_uncertainty.tex")
+
+    # =========================================================================
+    # Table 2: Clarity Residuals (with explicit N documentation)
+    # =========================================================================
+    residual_labels = [
+        ("CEO_Clarity_Residual", "CEO Clarity"),
+        ("Manager_Clarity_Residual", "Mgr Clarity"),
+    ]
+
+    residual_results = {dv: get_res(dv, "Main", "Lev_lag") for dv, _ in residual_labels}
+
+    lines = [
+        "\\begin{table}[htbp]",
+        "\\centering",
+        "\\caption{H4: Leverage Discipline and CEO Clarity Residuals}",
+        "\\label{tab:h4_leverage_residuals}",
+        "\\begin{tabular}{lcc}",
+        "\\toprule",
+        " & (1) & (2) \\\\",
+        " & CEO Clarity & Mgr Clarity \\\\",
+        "\\midrule",
+    ]
+
+    # Row: Lev_lag coefficient
+    row = "Leverage$_{t-1}$ & "
+    r1 = residual_results.get("CEO_Clarity_Residual")
+    r2 = residual_results.get("Manager_Clarity_Residual")
+    row += f"{fmt_coef(r1['beta1'], r1['beta1_p_one']) if r1 else ''} & "
+    row += f"{fmt_coef(r2['beta1'], r2['beta1_p_one']) if r2 else ''} \\\\"
+    lines.append(row)
+
+    # Row: SE
+    row = " & "
+    row += f"{fmt_se(r1['beta1_se']) if r1 else ''} & "
+    row += f"{fmt_se(r2['beta1_se']) if r2 else ''} \\\\"
+    lines.append(row)
+
+    lines.extend([
+        "\\midrule",
+        "Firm FE & Yes & Yes \\\\",
+        "Year FE & Yes & Yes \\\\",
+        "\\midrule",
+    ])
+
+    # Observations row with explicit N
+    row = f"Observations & {r1['n_obs']:,} & {r2['n_obs']:,} \\\\" if r1 and r2 else "Observations &  &  \\\\"
+    lines.append(row)
+
+    # Within-R² row
+    row = "Within-$R^2$ & "
+    row += f"{fmt_r2(r1['within_r2']) if r1 else ''} & "
+    row += f"{fmt_r2(r2['within_r2']) if r2 else ''} \\\\"
+    lines.append(row)
+
+    lines.extend([
+        "\\bottomrule",
+        "\\end{tabular}",
+        "\\\\[-0.5em]",
+        "\\parbox{\\textwidth}{\\scriptsize ",
+        "\\textit{Notes:} "
+        "This table reports the effect of prior leverage on CEO and Manager clarity residuals. "
+        "Clarity residuals are pre-computed from H0.3 regressions that residualized "
+        "presentation uncertainty, analyst uncertainty, negative sentiment, stock returns, "
+        "market returns, EPS growth, and earnings surprise. "
+        "\\textbf{Note:} The sample is significantly smaller than the main table "
+        "(CEO: N~42K; Manager: N~58K vs. full panel N=112,968) due to clarity residual availability. "
+        "Firms with fewer than 5 calls are excluded. "
+        "Standard errors are clustered at the firm level.",
+        "}",
+        "\\end{table}",
+    ])
+
+    with open(out_dir / "h4_leverage_table_residuals.tex", "w") as f:
+        f.write("\n".join(lines))
+    print("  Saved: h4_leverage_table_residuals.tex")
+
+    # =========================================================================
+    # Table 3: Full Comparison (all 8 DVs × 3 lev_vars) as appendix
+    # =========================================================================
+    all_dvs = original_dvs + residual_dvs
+    lev_labels = [
+        ("Lev_lag", "Leverage$_{t-1}$"),
+        ("Lev_t", "Leverage$_{t}$"),
+        ("Lev_lead", "Leverage$_{t+1}$"),
+    ]
+
+    # Create a wide table with 8 columns (one per DV)
+    lines = [
+        "\\begin{table}[htbp]",
+        "\\centering",
+        "\\caption{H4: Leverage Discipline — Full Temporal Comparison (Appendix)}",
+        "\\label{tab:h4_leverage_full}",
+        "\\resizebox{\\textwidth}{!}{%",
+        "\\begin{tabular}{l" + "c" * len(all_dvs) + "}",
+        "\\toprule",
+    ]
+
+    # Header row with DV names (abbreviated)
+    dv_short = [
+        "Mgr QA", "CEO QA", "Mgr WM", "CEO WM", "Mgr Pres", "CEO Pres",
+        "CEO Clr", "Mgr Clr"
+    ]
+    lines.append(" & " + " & ".join(dv_short) + " \\\\")
+    lines.append("\\midrule")
+
+    # For each leverage variable, add coefficient and SE rows
+    for lev_var, lev_label in lev_labels:
+        results_row = [get_res(dv, "Main", lev_var) for dv in all_dvs]
+
+        # Coefficient row
+        row = f"{lev_label} & "
+        row += " & ".join([fmt_coef(r["beta1"], r["beta1_p_one"]) if r else "" for r in results_row])
+        row += " \\\\"
+        lines.append(row)
+
+        # SE row
+        row = " & " + " & ".join([fmt_se(r["beta1_se"]) if r else "" for r in results_row]) + " \\\\"
+        lines.append(row)
+
+    lines.extend([
+        "\\midrule",
+        "Controls & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+        "Firm FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+        "Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+        "\\bottomrule",
+        "\\end{tabular}",
+        "}",
+        "\\\\[-0.5em]",
+        "\\parbox{\\textwidth}{\\scriptsize ",
+        "\\textit{Notes:} "
+        "This appendix table compares the effect of lagged (t-1), contemporaneous (t), "
+        "and forward (t+1) leverage on all uncertainty measures and clarity residuals. "
+        "All models use the Main industry sample. "
+        "Clarity residual columns have significantly smaller N (42K-58K vs 76K-108K). "
+        "Firms with fewer than 5 calls are excluded. "
+        "Standard errors are clustered at the firm level.",
+        "}",
+        "\\end{table}",
+    ])
+
+    with open(out_dir / "h4_leverage_table_full.tex", "w") as f:
+        f.write("\n".join(lines))
+    print("  Saved: h4_leverage_table_full.tex")
+
+
+def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
+    """Legacy wrapper - calls _save_latex_tables for backwards compatibility."""
+    _save_latex_tables(all_results, out_dir)
 
 
 def main(panel_path: str | None = None) -> int:

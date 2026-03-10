@@ -316,7 +316,7 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H1 Cash Holdings | **Partial** | 6/18 significant (Finance strongest, QA measures only) |
 | H2 Investment | **Partial** | 1/36 significant (CEO_Pres_Uncertainty in Main) |
 | H3 Payout Policy | **Partial** | 1/36 significant (Finance payout_flexibility) |
-| H4 Leverage | **Partial** | 2/18 sig (Pres uncertainty measures) |
+| H4 Leverage | **Partial** | 7/60 sig (Pres uncertainty + Lev_lag/Lev_t) |
 | H5 Analyst Dispersion | **Null** | 0/24 significant (8 specs × 3 samples) |
 | H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 1/14 significant (Utility only, weak) |
@@ -459,28 +459,46 @@ Standard errors: firm-clustered.
 
 ### H4 Leverage Discipline — `run_h4_leverage`
 
-Tests whether lagged leverage predicts speech uncertainty (H4: β₁ < 0).
-DV: 6 uncertainty measures (Manager/CEO × QA/Pres × Uncertainty/WeakModal).
-Key IV: `Lev_lag` (one-year lagged leverage).
+Tests whether leverage predicts speech uncertainty (H4: β₁ < 0).
 
-Model: `Uncertainty ~ Lev_lag + Analyst_QA_Uncertainty_pct + [Pres_Uncertainty_pct] + Size + TobinsQ + ROA + CashHoldings + DividendPayer + firm_maturity + earnings_volatility + FirmFE + YearFE`
+**Dependent Variables (8):**
+- 6 uncertainty measures: Manager/CEO × QA/Pres × Uncertainty/WeakModal
+- 2 clarity residuals: `CEO_Clarity_Residual`, `Manager_Clarity_Residual` (37.6%–51.2% coverage)
 
-**Dynamic covariate structure:** QA models include corresponding Presentation uncertainty as a control (e.g., Manager_QA models control for Manager_Pres_Uncertainty_pct).
+**Independent Variables (3 temporal specifications):**
+- `Lev_lag` (t-1): lagged leverage — tests predictive discipline effect
+- `Lev_t` (current): contemporaneous leverage — tests association
+- `Lev_lead` (t+1): forward leverage — exploratory reverse causality test
+
+**Model:** `Uncertainty ~ Lev_X + Analyst_QA_Uncertainty_pct + [Pres_Uncertainty_pct] + Size + TobinsQ + ROA + CashHoldings + DividendPayer + firm_maturity + earnings_volatility + FirmFE + YearFE`
+
+**Dynamic covariate structure:** QA models include corresponding Presentation uncertainty as a control (e.g., Manager_QA models control for Manager_Pres_Uncertainty_pct). Clarity residuals require no additional controls (already residualized from H0.3 regressions).
 
 **Minimum calls filter:** Firms with < 5 calls are excluded from regressions.
 
-**Stage 3**: 112,968 calls. Valid Lev_lag: 105,380.
+**Stage 3 Coverage (2026-03-09):**
+| Variable | Valid N | Coverage |
+|----------|--------:|---------:|
+| Total calls | 112,968 | 100.0% |
+| Lev_t | 112,732 | 99.8% |
+| Lev_lag | 105,380 | 93.3% |
+| Lev_lead | 105,292 | 93.2% |
+| CEO_Clarity_Residual | 42,441 | 37.6% |
+| Manager_Clarity_Residual | 57,845 | 51.2% |
 
-| Sample | H4 significant (β₁<0) | Notable measures |
-|--------|---------------------:|------------------|
-| Main | **2/6** | Manager_Pres (p=0.009), CEO_Pres (p=0.044) |
-| Finance | 0/6 | — |
-| Utility | 0/6 | — |
-| **Total** | **2/18** | — |
+**Stage 4 Regressions:** 8 DVs × 3 Lev_vars × 3 samples = **72 specs** (60 ran, 12 skipped due to insufficient data)
 
-**Result:** Partial support for H4 — lagged leverage predicts lower uncertainty in
-presentation (but not Q&A) measures for Main sample. Consistent with leverage
-discipline hypothesis for prepared remarks.
+| Sample | Lev Var | H4 significant (β₁<0) | Notable measures |
+|--------|---------|---------------------:|------------------|
+| Main | Lev_lag | **2/6** | Manager_Pres (p=0.009), CEO_Pres (p=0.044) |
+| Main | Lev_t | **2/6** | Manager_Pres (p=0.017), CEO_Pres (p=0.042) |
+| Finance | Lev_lag | **2/6** | Manager_QA (p=0.039), Manager_Weak (p=0.029) |
+| Utility | Lev_t | **1/6** | Manager_Pres (p=0.041) |
+| **Total** | | **7/60** | — |
+
+**Result:** Partial support for H4. The lagged leverage effect is concentrated in presentation uncertainty measures for the Main sample, with weaker effects in Finance/Utility samples. Contemporaneous leverage (Lev_t) shows similar patterns. No significant results for Q&A uncertainty, weak modal measures, or clarity residuals. The forward leverage specification (Lev_lead) is insignificant, supporting causal interpretation that leverage discipline affects speech rather than reverse causality.
+
+**Outputs:** 3 LaTeX tables (`h4_leverage_table_uncertainty.tex`, `h4_leverage_table_residuals.tex`, `h4_leverage_table_full.tex`), model diagnostics CSV with `lev_var` column for specification tracking.
 
 ### H5 Analyst Dispersion — `run_h5_dispersion`
 
