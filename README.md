@@ -251,7 +251,11 @@ python -m f1d.variables.build_h7_illiquidity_panel
 python -m f1d.variables.build_h9_takeover_panel
 python -m f1d.variables.build_h11_prisk_uncertainty_panel
 python -m f1d.variables.build_h11_prisk_uncertainty_lag_panel
+python -m f1d.variables.build_h11_prisk_uncertainty_lead_panel
 python -m f1d.variables.build_h12_div_intensity_panel
+python -m f1d.variables.build_h13_1_capex_panel
+python -m f1d.variables.build_h13_2_employment_panel
+python -m f1d.variables.build_h14_bidask_spread_panel
 ```
 
 #### Stage 4: Hypothesis Tests
@@ -270,7 +274,11 @@ python -m f1d.econometric.run_h7_illiquidity             # ~2 min
 python -m f1d.econometric.run_h9_takeover_hazards        # ~1 min
 python -m f1d.econometric.run_h11_prisk_uncertainty      # ~2 min
 python -m f1d.econometric.run_h11_prisk_uncertainty_lag  # ~2 min
+python -m f1d.econometric.run_h11_prisk_uncertainty_lead # ~2 min (placebo test)
 python -m f1d.econometric.run_h12_div_intensity          # ~1 min
+python -m f1d.econometric.run_h13_1_capex                # ~2 min
+python -m f1d.econometric.run_h13_2_employment           # ~2 min
+python -m f1d.econometric.run_h14_bidask_spread          # ~1 min
 python -m f1d.reporting.generate_summary_stats           # ~1 sec
 ```
 
@@ -306,18 +314,19 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H0.2 CEO Clarity | ✓ Complete | 2,486 CEO fixed effects (SVD fix applied) |
 | H0.3 Extended Controls | ✓ Robust | R² stable across baseline/extended specs |
 | H1 Cash Holdings | **Partial** | 6/18 significant (Finance strongest, QA measures only) |
-| H2 Investment | **Partial** | 1/18 significant (CEO_Pres_Uncertainty in Main) |
+| H2 Investment | **Partial** | 1/36 significant (CEO_Pres_Uncertainty in Main) |
 | H3 Payout Policy | **Partial** | 1/36 significant (Finance payout_flexibility) |
 | H4 Leverage | **Partial** | 2/18 sig (Pres uncertainty measures) |
 | H5 Analyst Dispersion | **Null** | 0/24 significant (8 specs × 3 samples) |
 | H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
-| H7 Illiquidity | **Null** | 0/9 significant (all β negative or zero) |
+| H7 Illiquidity | **Null** | 1/14 significant (Utility only, weak) |
 | H11 Political Risk Uncertainty | **STRONG SUPPORT** | 16/18 significant (all p<0.05) |
 | H11-Lag Political Risk | **PARTIAL** | 12/18 significant with lagged PRiskQ |
-| H12 Dividend Intensity | **NOT SUPPORTED** | 0/12 significant (Main sample) |
-| H13.1 Capex Intensity | **Partial** | 2/18 significant (Manager measures only) |
-| H13.2 Employment Growth | **NOT SUPPORTED** | 0/18 significant |
-| H14 Bid-Ask Spread | **NOT SUPPORTED** | 0/12 significant (β negative or zero) |
+| H11-Lead Political Risk | **Null (Placebo)** | Insignificant as expected (reverse causality test) |
+| H12 Dividend Intensity | **NOT SUPPORTED** | 0/36 significant (all samples) |
+| H13.1 Capex Intensity | **NOT SUPPORTED** | 0/24 significant (all measures) |
+| H13.2 Employment Growth | **NOT SUPPORTED** | 0/3 significant (single IV model) |
+| H14 Bid-Ask Spread | **NOT SUPPORTED** | 0/18 significant (β negative or zero) |
 | H9 Takeover Hazards | **Partial** | CEO models run; Manager clarity missing |
 
 ### CEO Clarity (H0.2) — `run_h0_2_ceo_clarity`
@@ -395,24 +404,29 @@ language are not significant. Utility sample null.
 ### H2 Investment Efficiency — `run_h2_investment`
 
 Tests whether vague managers exhibit more underinvestment (H2: β₁ < 0 for InvestmentResidual).
-DV: `InvestmentResidual_{t+1}` (Biddle et al. 2009; >0=overinvestment, <0=underinvestment).
+DVs: `InvestmentResidual` (contemporaneous) and `InvestmentResidual_lead` (t+1).
+IVs: 4 uncertainty measures + 2 clarity residuals = 6 independent variables.
 
-Model: `InvestmentResidual_lead ~ Uncertainty + Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + DivIntensity + CashHoldings + firm_maturity + StockRet + EntityEffects + TimeEffects`
+Model: `InvestmentResidual[_lead] ~ Uncertainty + Lev + Size + TobinsQ + ROA + CashFlow + SalesGrowth + DivIntensity + CashHoldings + firm_maturity + StockRet + EntityEffects + TimeEffects`
+
+Independent Variables:
+- Uncertainty: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+- Clarity Residuals: CEO_Clarity_Residual, Manager_Clarity_Residual
 
 Standard errors: firm-clustered (cov_type='clustered', cluster_entity=True).
 
-**Stage 3**: 112,968 calls, 101,923 with valid lead (90.2%).
+**Regressions:** 2 DVs × 6 IVs × 3 samples = **36 regressions**
 
 | Sample | H2 significant (β₁<0) | Notable measure |
 |--------|----------------------:|-----------------|
-| Main | **1/6** | CEO_Pres_Uncertainty (β=-0.0058, p=0.011) |
-| Finance | 0/6 | — |
-| Utility | 0/6 | — |
-| **Total** | **1/18** | — |
+| Main | **1/12** | CEO_Pres_Uncertainty (β=-0.0058, p=0.011) |
+| Finance | 0/12 | — |
+| Utility | 0/12 | — |
+| **Total** | **1/36** | — |
 
 **Result:** H2 PARTIALLY SUPPORTED. Only CEO presentation uncertainty in Main sample shows
 significant negative association with investment efficiency (p=0.011 one-tailed). No support
-from Q&A uncertainty measures, weak modal language, or other industry samples.
+from Q&A uncertainty measures, clarity residuals, or other industry samples.
 
 **Interpretation:** Limited evidence that managerial speech uncertainty relates to investment
 efficiency. The single significant result (CEO presentation uncertainty) suggests that when
@@ -528,24 +542,32 @@ Model: `Uncertainty ~ CCCL_lag + Size + Lev + ROA + TobinsQ + CashHoldings + Ent
 Tests whether manager uncertainty language predicts future stock illiquidity (Amihud).
 DV: `amihud_illiq_lead` (forward Amihud illiquidity ratio).
 
-Model: `amihud_illiq_lead ~ Mgr_Uncertainty + CEO_Uncertainty + Size + Lev + ROA + TobinsQ + Volatility + StockRet + EntityEffects + TimeEffects`
+Model: `amihud_illiq_lead ~ Uncertainty + Size + Lev + ROA + TobinsQ + Volatility + StockRet + EntityEffects + TimeEffects`
 
-| Sample | Measure | β₁ (Manager) | p-value | H7 Supported |
+**Independent Variables:**
+- A specs (all samples): CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+- B specs (Main only): CEO_Clarity_Residual, Manager_Clarity_Residual
+
+**Regressions:** 4 A-specs × 3 samples + 2 B-specs × 1 sample = **14 regressions**
+
+| Sample | Measure | β₁ | p-value | H7 Supported |
 |--------|---------|-------------:|--------:|:------------:|
-| Main | QA_Uncertainty | −0.0037 | 0.300 | No |
-| Main | QA_Weak_Modal | −0.0085 | 0.071 | No |
-| Main | Pres_Uncertainty | −0.0016 | 0.603 | No |
-| Finance | QA_Uncertainty | −0.0018 | 0.426 | No |
-| Finance | QA_Weak_Modal | −0.0038 | 0.278 | No |
-| Finance | Pres_Uncertainty | −0.0031 | 0.382 | No |
-| Utility | QA_Uncertainty | −0.00005 | 0.443 | No |
-| Utility | QA_Weak_Modal | 0.00007 | 0.437 | No |
-| Utility | Pres_Uncertainty | −0.00009 | 0.347 | No |
+| Main | CEO_QA_Uncertainty | −0.0034 | 0.979 | No |
+| Main | CEO_Pres_Uncertainty | −0.0022 | 0.786 | No |
+| Main | Manager_QA_Uncertainty | −0.0033 | 0.933 | No |
+| Main | Manager_Pres_Uncertainty | −0.0015 | 0.725 | No |
+| Main | CEO_Clarity_Residual (B) | 0.0004 | 0.361 | No |
+| Main | Manager_Clarity_Residual (B) | 0.0019 | 0.130 | No |
+| Finance | CEO_QA_Uncertainty | −0.0016 | 0.859 | No |
+| Finance | CEO_Pres_Uncertainty | −0.0012 | 0.881 | No |
+| Finance | Manager_QA_Uncertainty | −0.0004 | 0.621 | No |
+| Finance | Manager_Pres_Uncertainty | −0.0026 | 0.889 | No |
+| Utility | CEO_QA_Uncertainty | 0.00009 | 0.046 | Yes* |
+| Utility | CEO_Pres_Uncertainty | −0.0002 | 0.972 | No |
+| Utility | Manager_QA_Uncertainty | −0.000001 | 0.511 | No |
+| Utility | Manager_Pres_Uncertainty | −0.00006 | 0.739 | No |
 
-**H7-C (Spontaneity Gap):** β(QA) = −0.0037 vs β(Pres) = −0.0016 — NOT SUPPORTED (QA not > Pres).
-
-**Result:** H7 NOT SUPPORTED. Manager uncertainty does not predict increased illiquidity.
-All coefficients are negative (opposite direction) or near-zero.
+**Result:** H7 NOT SUPPORTED. Only 1/14 significant (Utility CEO_QA, p=0.046), likely a false positive given multiple testing. All other coefficients are negative (opposite direction) or near-zero.
 
 ### H9 Takeover Hazards — `run_h9_takeover_hazards`
 
@@ -605,6 +627,23 @@ IV: PRiskQ_lag (1-quarter lag) and PRiskQ_lag2 (2-quarter lag).
 Presentation uncertainty shows persistent effects; Q&A effects are contemporaneous only.
 Supports causal interpretation: political risk precedes language uncertainty.
 
+### H11-Lead Political Risk (Placebo Test) — `run_h11_prisk_uncertainty_lead`
+
+Tests whether FUTURE political risk affects CURRENT speech uncertainty (placebo test).
+IV: PRiskQ_lead (1-quarter forward) and PRiskQ_lead2 (2-quarters forward).
+
+**Purpose:** Test for reverse causality. Future political risk cannot cause current speech.
+Expected result: Lead coefficients should be insignificant.
+
+| Sample | N Obs Range | PRiskQ_lead Significant | PRiskQ_lead2 Significant |
+|--------|------------:|------------------------:|-------------------------:|
+| Main | 54,003–74,324 | 0/6 | 0/6 |
+| Finance | 10,952–17,811 | 0/6 | 0/6 |
+| Utility | 2,165–3,606 | 0/6 | 0/6 |
+
+**Result:** H11-Lead **NULL (PLACEBO CONFIRMED)** — 0/36 significant.
+Forward political risk does NOT predict current speech uncertainty, supporting causal interpretation that political risk causes speech uncertainty (not reverse causality).
+
 ### H12 Dividend Intensity — `run_h12_div_intensity`
 
 Tests whether language uncertainty predicts future dividend intensity.
@@ -621,9 +660,10 @@ DivIntensity_lead = DivIntensity shifted one fiscal year forward.
 |--------|-------------------:|-----------------------:|
 | Main | 15,175–21,653 | 0/12 |
 | Finance | 2,752–4,928 | 0/12 |
-| **Total** | | **0/24** |
+| Utility | 568–921 | 0/12 |
+| **Total** | | **0/36** |
 
-**Result:** H12 **NOT SUPPORTED** — 0/24 significant in predicted direction.
+**Result:** H12 **NOT SUPPORTED** — 0/36 significant in predicted direction.
 Language uncertainty does not predict future dividend intensity.
 All β₁ coefficients positive or near-zero (opposite of hypothesis).
 
@@ -637,8 +677,9 @@ Model: `CapexIntensity_{t+1} ~ Avg_Uncertainty_t + Size + Lev + ROA + TobinsQ + 
 
 | Sample | N Obs (firm-years) | H13.1 Significant (β₁<0) |
 |--------|-------------------:|-------------------------:|
-| Main | 15,175–21,653 | 0/12 |
-| Finance | 2,752–4,928 | 0/12 |
+| Main | 15,175–21,653 | 0/8 |
+| Finance | 2,752–4,928 | 0/8 |
+| Utility | 568–921 | 0/8 |
 | **Total** | | **0/24** |
 
 **Result:** H13.1 **NOT SUPPORTED** — 0/24 significant in predicted direction.
@@ -647,23 +688,29 @@ Model: `CapexIntensity_{t+1} ~ Avg_Uncertainty_t + Size + Lev + ROA + TobinsQ + 
 
 Tests whether language uncertainty predicts future employment growth.
 DV: EmploymentGrowth_lead = (emp_{t+1} - emp_t) / emp_t (firm-year level, forward).
-IV: Avg_Uncertainty = mean call-level uncertainty within firm-year.
+IV: Avg_CEO_Pres_Uncertainty_pct (single primary IV — CEO presentation uncertainty only).
 
-Model: `EmploymentGrowth_{t+1} ~ Avg_Uncertainty_t + Size + Lev + ROA + TobinsQ + CashHoldings + SalesGrowth + FirmFE + YearFE`
+Model: `EmploymentGrowth_{t+1} ~ Avg_CEO_Pres_Uncertainty_t + Size + Lev + ROA + TobinsQ + CashHoldings + DividendPayer + OCF_Volatility + FirmFE + YearFE`
+
+**Regressions:** 1 DV × 1 IV × 3 samples = **3 regressions**
 
 | Sample | N Obs (firm-years) | H13.2 Significant (β₁<0) |
 |--------|-------------------:|-------------------------:|
-| Main | 15,175–21,653 | 0/12 |
-| Finance | 2,752–4,928 | 0/12 |
-| **Total** | | **0/24** |
+| Main | 15,175–21,653 | 0/1 |
+| Finance | 2,752–4,928 | 0/1 |
+| Utility | 568–921 | 0/1 |
+| **Total** | | **0/3** |
 
-**Result:** H13.2 **NOT SUPPORTED** — 0/24 significant in predicted direction.
+**Result:** H13.2 **NOT SUPPORTED** — 0/3 significant in predicted direction.
 
 ### H14 Bid-Ask Spread Change — `run_h14_bidask_spread`
 
 Tests whether language uncertainty is associated with reduced market liquidity around earnings calls.
 DV: ΔSpread = Spread[+1,+3] - Spread[-3,-1] (change in relative bid-ask spread around call).
-IV: Call-level uncertainty measures (Manager_QA, CEO_QA, Manager_Pres, CEO_Pres).
+IV: Call-level uncertainty measures (6 total):
+- Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct
+- Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+- Manager_Clarity_Residual, CEO_Clarity_Residual
 
 Spread formula: `2 * (ASKHI - BIDLO) / (ASKHI + BIDLO)` using CRSP daily bid/ask data.
 
@@ -673,6 +720,8 @@ Model: `ΔSpread ~ Uncertainty + Size + StockPrice + Turnover + Volatility + Pre
 - Pre-call window: trading days -3, -2, -1 relative to call date
 - Post-call window: trading days +1, +2, +3 relative to call date
 - Minimum 2 valid trading days required in each window
+
+**Regressions:** 6 IVs × 3 samples = **18 regressions**
 
 | Sample | N Calls | ΔSpread Mean | ΔSpread SD |
 |--------|--------:|-------------:|-----------:|
@@ -686,7 +735,7 @@ Model: `ΔSpread ~ Uncertainty + Size + StockPrice + Turnover + Volatility + Pre
 | (2) Pres Uncertainty | 45,555 | — | — | 0.0002 | 0.28 | 0.397 |
 | (3) Joint | 44,686 | -0.0007 | 0.95 | 0.0002 | 0.28 | 0.397 |
 
-**Result:** H14 **NOT SUPPORTED** — 0/12 significant in predicted direction (β > 0).
+**Result:** H14 **NOT SUPPORTED** — 0/18 significant in predicted direction (β > 0).
 Mean ΔSpread is negative (spreads narrow after calls as uncertainty resolves), but language uncertainty does not significantly affect this narrowing.
 
 ### Summary Statistics (H11) — `generate_summary_stats`
@@ -698,6 +747,19 @@ No Stage 3 panel builder — reads `ceo_clarity_extended_panel.parquet` directly
 |-------|-----------|---------|
 | A — Linguistic | 6 (uncertainty + sentiment pct) | 60,435–84,567 |
 | B — Financial controls | 11 (Size, BM, Lev, ROA, …) | 67,965–87,994 |
+
+---
+
+## Archived Hypotheses
+
+The following hypotheses have been archived and are no longer part of the active pipeline:
+
+| Hypothesis | Description | Archive Location | Reason |
+|------------|-------------|------------------|--------|
+| H8 | Political Risk (PRiskFY - annual) | `.archive/h8_removal/` | Replaced by H11 (quarterly PRiskQ) |
+| H10 | Tone at Top | `.archive/` | Redundant with existing sentiment measures |
+| H0.1 | Manager Clarity | `src/f1d/variables/_archived/` | Insufficient CEO identification for manager-level clarity |
+| H0.4, H0.5 | Extended clarity variants | `src/f1d/econometric/_archived/` | Consolidated into H0.3 |
 
 ---
 
@@ -779,7 +841,6 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | `analyst_qa_negative.py` | `Analyst_QA_Negative_pct` | Stage 2 linguistic vars |
 | `manager_pres_weak_modal.py` | `Manager_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
 | `ceo_pres_weak_modal.py` | `CEO_Pres_Weak_Modal_pct` | Stage 2 linguistic vars |
-| `ceo_clarity_style.py` | `ClarityStyle_Realtime` | Stage 2 + frozen CEO assignment |
 
 ### Financial Variable Builders
 
@@ -821,11 +882,15 @@ All variable builders are in `src/f1d/shared/variables/`. Each module exports a 
 | `prisk_q.py` | `PRiskQ` | Hassan (quarterly PRisk) |
 | `prisk_q_lag.py` | `PRiskQ_lag` | Hassan (1-quarter lag) |
 | `prisk_q_lag2.py` | `PRiskQ_lag2` | Hassan (2-quarter lag) |
+| `prisk_q_lead.py` | `PRiskQ_lead` | Hassan (1-quarter forward) |
+| `prisk_q_lead2.py` | `PRiskQ_lead2` | Hassan (2-quarters forward) |
 | `div_intensity.py` | `DivIntensity` | Compustat (dvy_Q4 / atq) |
 | `bidask_spread_change.py` | `delta_spread`, `pre_call_spread` | CRSP (bid-ask spread change around call) |
 | `stock_price.py` | `StockPrice` | CRSP (price at call date) |
 | `turnover.py` | `Turnover` | CRSP (VOL/SHROUT at call date) |
 | `employment_growth_lead.py` | `EmploymentGrowth_lead` | Compustat (t+1 employee growth) |
+| `ceo_clarity_residual.py` | `CEO_Clarity_Residual` | H0.3 CEO Clarity Extended Stage 4 |
+| `manager_clarity_residual.py` | `Manager_Clarity_Residual` | H0.3 CEO Clarity Extended Stage 4 |
 
 ### Important Implementation Notes
 
@@ -1084,4 +1149,4 @@ For questions or issues, please open a GitHub issue or contact the thesis author
 
 ---
 
-*Last updated: 2026-03-05*
+*Last updated: 2026-03-09*
