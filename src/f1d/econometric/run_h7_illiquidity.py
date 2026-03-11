@@ -28,8 +28,10 @@ Hypothesis Tests (one-tailed):
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
-    - Finance: FF12 code 11
-    - Utility: FF12 code 8
+
+Note: Finance (FF12 code 11) and Utility (FF12 code 8) samples are excluded
+from this analysis. The panel still contains these observations for data
+provenance purposes, but regressions are run only on the Main sample.
 
 Minimum Calls Filter:
     Firms must have >= 5 calls in the regression sample.
@@ -39,7 +41,7 @@ Inputs:
     - outputs/variables/h7_illiquidity/latest/h7_illiquidity_panel.parquet
 
 Outputs:
-    - outputs/econometric/h7_illiquidity/{timestamp}/regression_{sample}_{spec}.txt
+    - outputs/econometric/h7_illiquidity/{timestamp}/regression_Main_{spec}.txt
     - outputs/econometric/h7_illiquidity/{timestamp}/h7_illiquidity_table.tex
     - outputs/econometric/h7_illiquidity/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h7_illiquidity/{timestamp}/summary_stats.csv
