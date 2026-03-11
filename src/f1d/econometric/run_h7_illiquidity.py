@@ -85,7 +85,7 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*
 
 CONFIG = {
     "min_calls": 5,
-    "samples": ["Main", "Finance", "Utility"],
+    "samples": ["Main"],
 }
 
 BASE_CONTROLS = [
@@ -160,11 +160,7 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     df["Uncertainty_Gap"] = (
         df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
     )
-    df["Weak_Modal_Gap"] = (
-        (df["Manager_QA_Weak_Modal_pct"] - df["Manager_Pres_Weak_Modal_pct"])
-        if "Manager_Pres_Weak_Modal_pct" in df.columns
-        else np.nan
-    )
+    # Note: Weak_Modal_Gap not computed - Manager_Pres_Weak_Modal_pct not in panel
 
     # Year from start_date (time FE axis)
     if "year" not in df.columns:
@@ -349,7 +345,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"columns (B1)--(B2) use clarity residuals (idiosyncratic uncertainty after firm/linguistic controls). "
         r"Firms with fewer than 5 calls are excluded. "
         r"Standard errors (in parentheses) are clustered at the firm level. "
-        r"All continuous controls are standardized within each model's estimation sample. "
+        r"All continuous controls are winsorized at 1\%/99\% per year. "
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H7).",
         r"}",
         r"\end{table}",
