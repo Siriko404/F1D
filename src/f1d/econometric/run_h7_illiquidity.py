@@ -447,7 +447,7 @@ def main(panel_path: Optional[str] = None) -> int:
     make_summary_stats_table(
         df=panel,
         variables=summary_vars,
-        sample_names=["Main", "Finance", "Utility"],
+        sample_names=["Main"],
         sample_col="sample",
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
