@@ -23,10 +23,8 @@ Uncertainty Measures (4):
     Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct,
     Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
 
-Industry Samples:
+Industry Sample:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
-    - Finance: FF12 code 11
-    - Utility: FF12 code 8
 
 Minimum Calls Filter:
     Firms must have >= 5 calls in the regression sample.
@@ -81,7 +79,7 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*
 
 CONFIG = {
     "min_calls": 5,
-    "samples": ["Main", "Finance", "Utility"],
+    "samples": ["Main"],
 }
 
 # H14 Controls per H14.txt:
@@ -266,7 +264,7 @@ def run_regression(
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Write a publication-ready LaTeX table for H14 results.
 
-    Columns = 4 uncertainty measures; panels = industry samples.
+    Columns = 6 uncertainty measures; panel = Main industry sample.
     Each cell shows the single IV coefficient for that measure.
 
     Note: all_results contains FLAT meta dicts (not nested like H1).
@@ -304,7 +302,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\midrule",
     ]
 
-    for sample in ["Main", "Finance", "Utility"]:
+    for sample in ["Main"]:
         # Filter results for this sample (FLAT structure - direct access)
         sample_res = [r for r in all_results if r.get("sample") == sample]
         if not sample_res:
@@ -457,7 +455,7 @@ def main(panel_path: Optional[str] = None) -> int:
     make_summary_stats_table(
         df=panel,
         variables=summary_vars,
-        sample_names=["Main", "Finance", "Utility"],
+        sample_names=["Main"],
         sample_col="sample",
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
@@ -481,7 +479,7 @@ def main(panel_path: Optional[str] = None) -> int:
     # ------------------------------------------------------------------
     # Run regressions by sample × measure
     # ------------------------------------------------------------------
-    for sample_name in ["Main", "Finance", "Utility"]:
+    for sample_name in ["Main"]:
         df_sample = df_prep[df_prep["sample"] == sample_name].copy()
 
         for uncertainty_var in UNCERTAINTY_MEASURES:

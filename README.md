@@ -317,7 +317,7 @@ zero row-delta on every panel merge, and all post-run checks passing.
 | H2 Investment | **Partial** | 1/36 significant (CEO_Pres_Uncertainty in Main) |
 | H3 Payout Policy | **Partial** | 1/36 significant (Finance payout_flexibility) |
 | H4 Leverage | **Partial** | 7/60 sig (Pres uncertainty + Lev_lag/Lev_t) |
-| H5 Analyst Dispersion | **Null** | 0/24 significant (8 specs × 3 samples) |
+| H5 Analyst Dispersion | **Null** | 0/12 significant (4 specs × 3 samples) |
 | H6 CCCL Speech | **Partial** | 4/21 sig (Finance only; pre-trends concerns) |
 | H7 Illiquidity | **Null** | 1/14 significant (Utility only, weak) |
 | H11 Political Risk Uncertainty | **STRONG SUPPORT** | 16/18 significant (all p<0.05) |
@@ -511,31 +511,19 @@ Tests whether manager uncertainty language predicts contemporaneous analyst fore
 - A3: `dispersion ~ Manager_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE`
 - A4: `dispersion ~ Manager_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE`
 
-**Model B (Gap Measures) — 4 specs per sample:**
-- B1: `dispersion ~ CEO_Pres_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
-- B2: `dispersion ~ Mgr_Pres_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
-- B3: `dispersion ~ CEO_Mgr_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
-- B4: `dispersion ~ CEO_Mgr_Pres_Gap + Controls + lagged_dispersion + FirmFE + YearFE`
-
-**Gap Definitions (Pres - QA, positive = more uncertain in prepared remarks):**
-- `CEO_Pres_QA_Gap = CEO_Pres_Uncertainty_pct - CEO_QA_Uncertainty_pct`
-- `Mgr_Pres_QA_Gap = Manager_Pres_Uncertainty_pct - Manager_QA_Uncertainty_pct`
-- `CEO_Mgr_QA_Gap = CEO_QA_Uncertainty_pct - Manager_QA_Uncertainty_pct` (regime gap)
-- `CEO_Mgr_Pres_Gap = CEO_Pres_Uncertainty_pct - Manager_Pres_Uncertainty_pct` (regime gap)
-
 **Controls:** `Analyst_QA_Uncertainty_pct`, `Entire_All_Negative_pct`, `Size`, `Lev`, `TobinsQ`,
 `earnings_volatility`, `earnings_surprise_ratio`, `loss_dummy`, `lagged_dispersion`
 
-| Sample | Model A (β₁>0) | Model B (β₁>0) |
-|--------|---------------:|---------------:|
-| Main | 0/4 | 0/4 |
-| Finance | 0/4 | 0/4 |
-| Utility | 0/4 | 0/4 |
-| **Total** | **0/12** | **0/12** |
+| Sample | Significant (β₁>0) |
+|--------|------------------:|
+| Main | 0/4 |
+| Finance | 0/4 |
+| Utility | 0/4 |
+| **Total** | **0/12** |
 
 **Result:** H5 NOT SUPPORTED. Analyst forecast dispersion is not significantly related
-to manager uncertainty language (β₁ coefficients negative or near-zero). Total: 24 regressions
-(8 specs × 3 samples).
+to manager uncertainty language (β₁ coefficients negative or near-zero). Total: 12 regressions
+(4 specs × 3 samples).
 
 ### H6 CCCL Speech — `run_h6_cccl`
 

@@ -3,9 +3,8 @@ Unit tests for H5 Analyst Dispersion Regression (run_h5_dispersion.py).
 
 Tests verify:
 - Data loading for analyst dispersion variables
-- Gap computation (Pres - QA direction)
 - Regression execution with dispersion as DV (current period t)
-- Hypothesis test logic for H5-A and H5-B (beta > 0)
+- Hypothesis test logic for H5 (beta > 0)
 - Output format and error handling
 """
 
@@ -32,7 +31,10 @@ def sample_h5_data():
     """Create sample H5 analyst dispersion data for testing.
 
     Uses NEW variable naming:
-    - dispersion: current period (t) DV
+    - delta_dispersion: change in dispersion (primary DV)
+    - dispersion_before: dispersion 3 trading days before call
+    - dispersion_after: dispersion 3 trading days after call
+    - dispersion: current period (t) DV (legacy)
     - lagged_dispersion: t-1 control
     - Entire_All_Negative_pct: linguistic control
     """
@@ -46,12 +48,20 @@ def sample_h5_data():
         for year_offset in range(n_years):
             fiscal_year = 2010 + year_offset
             fiscal_quarter = np.random.randint(1, 5)
+            # Generate correlated before/after values
+            disp_before = np.random.uniform(0.01, 0.2)
+            disp_change = np.random.uniform(-0.05, 0.05)
+            disp_after = disp_before + disp_change
             data.append({
                 "gvkey": gvkey,
                 "fiscal_year": fiscal_year,
                 "fiscal_quarter": fiscal_quarter,
-                # H5 DV (current period, contemporaneous)
-                "dispersion": np.random.uniform(0.01, 0.2),  # Analyst dispersion at t
+                # H5 DV (change in dispersion around call)
+                "delta_dispersion": disp_change,
+                "dispersion_before": disp_before,
+                "dispersion_after": disp_after,
+                # Legacy dispersion (for comparison)
+                "dispersion": disp_after,  # Use after as current period proxy
                 # Lagged dispersion (t-1 control)
                 "lagged_dispersion": np.random.uniform(0.01, 0.2),
                 # Uncertainty measures (Model A IVs)
@@ -71,20 +81,6 @@ def sample_h5_data():
             })
 
     return pd.DataFrame(data)
-
-
-@pytest.fixture
-def sample_h5_data_with_gaps(sample_h5_data):
-    """Create sample H5 data with computed gap measures."""
-    df = sample_h5_data.copy()
-
-    # Compute gaps (Pres - QA direction)
-    df["CEO_Pres_QA_Gap"] = df["CEO_Pres_Uncertainty_pct"] - df["CEO_QA_Uncertainty_pct"]
-    df["Mgr_Pres_QA_Gap"] = df["Manager_Pres_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"]
-    df["CEO_Mgr_QA_Gap"] = df["CEO_QA_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"]
-    df["CEO_Mgr_Pres_Gap"] = df["CEO_Pres_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-
-    return df
 
 
 @pytest.fixture
@@ -141,6 +137,23 @@ class TestH5DataLoading:
         assert "dispersion" in sample_h5_data.columns
         assert sample_h5_data["dispersion"].notna().all()
 
+    def test_delta_dispersion_present(self, sample_h5_data):
+        """Test that delta_dispersion (primary H5 DV) is present."""
+        assert "delta_dispersion" in sample_h5_data.columns
+        assert sample_h5_data["delta_dispersion"].notna().all()
+
+    def test_dispersion_before_after_present(self, sample_h5_data):
+        """Test that dispersion_before and dispersion_after are present."""
+        assert "dispersion_before" in sample_h5_data.columns
+        assert "dispersion_after" in sample_h5_data.columns
+        # Verify delta = after - before
+        expected_delta = sample_h5_data["dispersion_after"] - sample_h5_data["dispersion_before"]
+        pd.testing.assert_series_equal(
+            sample_h5_data["delta_dispersion"],
+            expected_delta,
+            check_names=False
+        )
+
     def test_lagged_dispersion_present(self, sample_h5_data):
         """Test that lagged_dispersion (t-1 control) is present."""
         assert "lagged_dispersion" in sample_h5_data.columns
@@ -181,64 +194,6 @@ class TestH5DataLoading:
 
 
 # ==============================================================================
-# Gap Computation Tests
-# ==============================================================================
-
-class TestH5GapComputation:
-    """Tests for gap measure computation."""
-
-    def test_gap_computation_pres_qa_direction(self, sample_h5_data_with_gaps):
-        """Test that Pres-QA gaps are computed correctly (Pres - QA)."""
-        df = sample_h5_data_with_gaps
-
-        # CEO Pres-QA Gap should be Pres - QA
-        expected_ceo_gap = df["CEO_Pres_Uncertainty_pct"] - df["CEO_QA_Uncertainty_pct"]
-        pd.testing.assert_series_equal(df["CEO_Pres_QA_Gap"], expected_ceo_gap, check_names=False)
-
-        # Manager Pres-QA Gap should be Pres - QA
-        expected_mgr_gap = df["Manager_Pres_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"]
-        pd.testing.assert_series_equal(df["Mgr_Pres_QA_Gap"], expected_mgr_gap, check_names=False)
-
-    def test_gap_computation_regime_direction(self, sample_h5_data_with_gaps):
-        """Test that regime gaps (CEO - Manager) are computed correctly."""
-        df = sample_h5_data_with_gaps
-
-        # CEO-Mgr QA Gap should be CEO QA - Manager QA
-        expected_qa_gap = df["CEO_QA_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"]
-        pd.testing.assert_series_equal(df["CEO_Mgr_QA_Gap"], expected_qa_gap, check_names=False)
-
-        # CEO-Mgr Pres Gap should be CEO Pres - Manager Pres
-        expected_pres_gap = df["CEO_Pres_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-        pd.testing.assert_series_equal(df["CEO_Mgr_Pres_Gap"], expected_pres_gap, check_names=False)
-
-    def test_positive_gap_means_more_uncertain_in_pres(self, sample_h5_data):
-        """Test that positive gap indicates more uncertainty in prepared remarks."""
-        df = sample_h5_data.copy()
-
-        # Create a case where Pres > QA (more uncertain in prepared remarks)
-        df.loc[0, "CEO_Pres_Uncertainty_pct"] = 8.0
-        df.loc[0, "CEO_QA_Uncertainty_pct"] = 3.0
-
-        gap = df.loc[0, "CEO_Pres_Uncertainty_pct"] - df.loc[0, "CEO_QA_Uncertainty_pct"]
-
-        assert gap > 0  # Positive gap = more uncertain in prepared remarks
-        assert gap == 5.0
-
-    def test_negative_gap_means_more_uncertain_in_qa(self, sample_h5_data):
-        """Test that negative gap indicates more uncertainty in Q&A."""
-        df = sample_h5_data.copy()
-
-        # Create a case where QA > Pres (more uncertain in Q&A)
-        df.loc[0, "CEO_Pres_Uncertainty_pct"] = 2.0
-        df.loc[0, "CEO_QA_Uncertainty_pct"] = 7.0
-
-        gap = df.loc[0, "CEO_Pres_Uncertainty_pct"] - df.loc[0, "CEO_QA_Uncertainty_pct"]
-
-        assert gap < 0  # Negative gap = more uncertain in Q&A
-        assert gap == -5.0
-
-
-# ==============================================================================
 # Regression Execution Tests
 # ==============================================================================
 
@@ -259,7 +214,7 @@ class TestH5RegressionExecution:
 
         result = run_panel_ols(
             df=df,
-            dependent="dispersion",  # NEW: current period DV
+            dependent="delta_dispersion",  # NEW: change in dispersion DV
             exog=["CEO_QA_Uncertainty_pct", "lagged_dispersion", "Analyst_QA_Uncertainty_pct"],
             entity_col="gvkey",
             time_col="fiscal_year",
@@ -287,7 +242,7 @@ class TestH5RegressionExecution:
 
         run_panel_ols(
             df=df,
-            dependent="dispersion",
+            dependent="delta_dispersion",  # NEW: change in dispersion DV
             exog=exog_vars,
             entity_col="gvkey",
             time_col="fiscal_year",
@@ -316,21 +271,12 @@ class TestH5ModelSpecifications:
         expected_specs = ["A1", "A2", "A3", "A4"]
         assert len(expected_specs) == 4
 
-    def test_model_b_has_four_specs(self):
-        """Test that Model B has exactly 4 specifications (B1-B4)."""
-        # B1: CEO Pres-QA Gap
-        # B2: Mgr Pres-QA Gap
-        # B3: CEO-Mgr QA Gap (regime)
-        # B4: CEO-Mgr Pres Gap (regime)
-        expected_specs = ["B1", "B2", "B3", "B4"]
-        assert len(expected_specs) == 4
-
     def test_total_regression_count(self):
-        """Test that total regressions = 8 specs × 3 samples = 24."""
-        n_specs = 8  # A1-A4 + B1-B4
+        """Test that total regressions = 4 specs × 3 samples = 12."""
+        n_specs = 4  # A1-A4
         n_samples = 3  # Main, Finance, Utility
         total = n_specs * n_samples
-        assert total == 24
+        assert total == 12
 
 
 # ==============================================================================
@@ -384,22 +330,6 @@ class TestH5HypothesisTests:
 
         assert h5a_supported is False
 
-    def test_h5b_gap_hypothesis_direction(self):
-        """Test that H5-B (gap) hypothesis is correctly specified (beta > 0)."""
-        # H5-B: Positive gap (more uncertain in Pres) -> higher dispersion
-        # Therefore beta > 0 (larger gap -> higher dispersion)
-
-        coef = 0.05  # Positive as expected for H5-B
-        p_two_tailed = 0.03
-
-        if coef > 0:
-            p_one_tailed = p_two_tailed / 2
-        else:
-            p_one_tailed = 1 - p_two_tailed / 2
-
-        assert p_one_tailed == 0.015
-        assert p_one_tailed < 0.05
-
 
 # ==============================================================================
 # Output Format Tests
@@ -431,17 +361,17 @@ class TestH5OutputFormat:
 class TestH5ErrorHandling:
     """Tests for H5 error handling."""
 
-    def test_missing_dispersion_raises_error(self, sample_h5_data):
-        """Test that missing dispersion raises error."""
+    def test_missing_delta_dispersion_raises_error(self, sample_h5_data):
+        """Test that missing delta_dispersion raises error."""
         from f1d.shared.panel_ols import run_panel_ols
 
         df = sample_h5_data.copy()
-        df = df.drop(columns=["dispersion"])
+        df = df.drop(columns=["delta_dispersion"])
 
         with pytest.raises(ValueError, match="Missing required columns"):
             run_panel_ols(
                 df=df,
-                dependent="dispersion",
+                dependent="delta_dispersion",
                 exog=["CEO_QA_Uncertainty_pct"],
                 entity_col="gvkey",
                 time_col="fiscal_year",

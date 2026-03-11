@@ -13,7 +13,7 @@ Description: Build CALL-LEVEL panel for H14 Language Uncertainty -> Bid-Ask Spre
     Step 5: Load EarningsSurpriseRatioBuilder for AbsSurprise control.
     Step 6: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 7: Create year_quarter variable for TimeEffects.
-    Step 8: Assign industry sample (Main / Finance / Utility).
+    Step 8: Assign industry sample (Main).
     Step 9: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).

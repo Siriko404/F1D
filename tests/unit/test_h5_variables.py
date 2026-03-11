@@ -195,50 +195,6 @@ class TestComputeLossDummy:
 
 
 # ==============================================================================
-# Test compute_uncertainty_gap
-# ==============================================================================
-
-
-class TestComputeUncertaintyGap:
-    """Tests for uncertainty gap calculation."""
-
-    def test_gap_calculation(self, sample_speech_df: pd.DataFrame) -> None:
-        """Test uncertainty gap: QA uncertainty - Pres uncertainty."""
-        df = sample_speech_df.copy()
-        df["uncertainty_gap"] = (
-            df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-        )
-
-        expected = (
-            df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-        )
-        pd.testing.assert_series_equal(df["uncertainty_gap"], expected, check_names=False)
-
-    def test_gap_positive_when_qa_higher(self, sample_speech_df: pd.DataFrame) -> None:
-        """Test gap is positive when QA uncertainty exceeds presentation."""
-        df = sample_speech_df.copy()
-        df["uncertainty_gap"] = (
-            df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-        )
-
-        assert (df["uncertainty_gap"] > 0).all()
-
-    def test_gap_can_be_negative(self) -> None:
-        """Test gap can be negative when presentation uncertainty is higher."""
-        df = pd.DataFrame(
-            {
-                "Manager_QA_Uncertainty_pct": [1.0, 1.5],
-                "Manager_Pres_Uncertainty_pct": [2.0, 2.5],
-            }
-        )
-        df["uncertainty_gap"] = (
-            df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-        )
-
-        assert (df["uncertainty_gap"] < 0).all()
-
-
-# ==============================================================================
 # Test Forward-Looking Dispersion
 # ==============================================================================
 
@@ -311,16 +267,10 @@ class TestH5VariablesIntegration:
         # Compute loss dummy
         comp["loss_dummy"] = (comp["ni"] < 0).astype(int)
 
-        # Compute uncertainty gap
-        speech["uncertainty_gap"] = (
-            speech["Manager_QA_Uncertainty_pct"] - speech["Manager_Pres_Uncertainty_pct"]
-        )
-
         # Verify all variables exist
         assert "dispersion" in ibes.columns
         assert "earnings_surprise" in ibes.columns
         assert "loss_dummy" in comp.columns
-        assert "uncertainty_gap" in speech.columns
 
     def test_dispersion_filtering_criteria(self, sample_ibes_df: pd.DataFrame) -> None:
         """Test that dispersion filtering criteria work correctly."""
@@ -338,6 +288,171 @@ class TestH5VariablesIntegration:
         # All filtered rows should meet criteria
         assert (filtered["numest"] >= numest_min).all()
         assert (filtered["meanest"].abs() >= meanest_min).all()
+
+
+# ==============================================================================
+# Test Delta Dispersion Computation
+# ==============================================================================
+
+
+class TestDeltaDispersionComputation:
+    """Tests for delta dispersion calculation from IBES Detail data."""
+
+    @pytest.fixture
+    def sample_ibes_detail_df(self) -> pd.DataFrame:
+        """Create sample IBES Detail data for testing delta dispersion."""
+        return pd.DataFrame({
+            "gvkey": ["001000", "001000", "001000", "001000", "001000", "001000"],
+            "actdats": pd.to_datetime([
+                "2021-03-01", "2021-03-05", "2021-03-10",  # Before call (3/15)
+                "2021-03-18", "2021-03-20", "2021-03-22",  # After call (3/15)
+            ]),
+            "analys": ["A1", "A2", "A3", "A1", "A2", "A3"],
+            "value": [1.00, 1.10, 0.90, 1.05, 1.20, 0.95],  # Analyst estimates
+            "fpedats": pd.to_datetime(["2021-03-31"] * 6),  # All for same quarter
+        })
+
+    def test_dispersion_at_date_basic(self, sample_ibes_detail_df: pd.DataFrame) -> None:
+        """Test computing dispersion at a specific date."""
+        df = sample_ibes_detail_df
+        target_date = pd.Timestamp("2021-03-12")  # 3 days before call
+
+        # Filter to estimates on/before target
+        active = df[df['actdats'] <= target_date]
+        # Keep most recent per analyst
+        active = active.sort_values('actdats').groupby('analys').last()
+        # Compute dispersion
+        stdev = active['value'].std()
+        mean = active['value'].mean()
+        dispersion = stdev / abs(mean)
+
+        # Should have 3 analysts
+        assert len(active) == 3
+        # Dispersion should be positive
+        assert dispersion > 0
+
+    def test_dispersion_requires_multiple_analysts(self) -> None:
+        """Test that dispersion is None if < 2 analysts."""
+        df = pd.DataFrame({
+            "gvkey": ["001000"],
+            "actdats": pd.to_datetime(["2021-03-10"]),
+            "analys": ["A1"],  # Only 1 analyst
+            "value": [1.00],
+            "fpedats": pd.to_datetime(["2021-03-31"]),
+        })
+
+        target_date = pd.Timestamp("2021-03-12")
+        active = df[df['actdats'] <= target_date]
+        active = active.sort_values('actdats').groupby('analys').last()
+
+        # Should have only 1 analyst - insufficient
+        assert len(active) < 2
+
+    def test_delta_dispersion_calculation(self, sample_ibes_detail_df: pd.DataFrame) -> None:
+        """Test delta = after - before."""
+        df = sample_ibes_detail_df
+        call_date = pd.Timestamp("2021-03-15")
+
+        # Compute dispersion before (3 days before)
+        date_before = call_date - pd.Timedelta(days=3)
+        active_before = df[df['actdats'] <= date_before]
+        active_before = active_before.sort_values('actdats').groupby('analys').last()
+        disp_before = active_before['value'].std() / abs(active_before['value'].mean())
+
+        # Compute dispersion after (3 days after)
+        date_after = call_date + pd.Timedelta(days=3)
+        active_after = df[df['actdats'] <= date_after]
+        active_after = active_after.sort_values('actdats').groupby('analys').last()
+        disp_after = active_after['value'].std() / abs(active_after['value'].mean())
+
+        # Delta = after - before
+        delta = disp_after - disp_before
+
+        # Delta should be a number
+        assert not pd.isna(delta)
+
+    def test_delta_can_be_negative(self, sample_ibes_detail_df: pd.DataFrame) -> None:
+        """Test that dispersion can decrease after call (negative delta)."""
+        # Create data where estimates converge after call (dispersion decreases)
+        # Before call: analysts have wide disagreement
+        # After call: analysts converge toward consensus
+        df = pd.DataFrame({
+            "gvkey": ["001000", "001000", "001000", "001000", "001000", "001000"],
+            "actdats": pd.to_datetime([
+                "2021-03-10", "2021-03-10", "2021-03-10",  # All before call (3 analysts)
+                "2021-03-18", "2021-03-18", "2021-03-18",  # All after call (same 3 analysts)
+            ]),
+            "analys": ["A1", "A2", "A3", "A1", "A2", "A3"],
+            # Before: high spread (1.00, 1.50, 0.50) -> mean=1.00, std~0.5
+            # After: converge (1.00, 1.01, 0.99) -> mean~1.00, std~0.01
+            "value": [1.00, 1.50, 0.50, 1.00, 1.01, 0.99],
+            "fpedats": pd.to_datetime(["2021-03-31"] * 6),
+        })
+
+        call_date = pd.Timestamp("2021-03-15")
+
+        # Dispersion before (3 calendar days before = March 12)
+        date_before = call_date - pd.Timedelta(days=3)
+        active_before = df[(df['actdats'] <= date_before)]
+        active_before = active_before.sort_values('actdats').groupby('analys').last()
+        disp_before = active_before['value'].std() / abs(active_before['value'].mean())
+
+        # Dispersion after (3 calendar days after = March 18)
+        date_after = call_date + pd.Timedelta(days=3)
+        active_after = df[(df['actdats'] <= date_after)]
+        active_after = active_after.sort_values('actdats').groupby('analys').last()
+        disp_after = active_after['value'].std() / abs(active_after['value'].mean())
+
+        delta = disp_after - disp_before
+
+        # Before: std=0.5, mean=1.0 -> dispersion=0.5
+        # After: std~0.01, mean~1.0 -> dispersion~0.01
+        # Delta should be negative (convergence)
+        assert disp_before > disp_after, f"Before={disp_before:.4f}, After={disp_after:.4f}"
+        assert delta < 0, f"Delta={delta:.4f} should be negative"
+
+    def test_stale_estimate_filter(self) -> None:
+        """Test that stale estimates are filtered out."""
+        df = pd.DataFrame({
+            "gvkey": ["001000", "001000", "001000"],
+            "actdats": pd.to_datetime([
+                "2020-01-01",  # Very stale (14+ months old)
+                "2021-03-01",  # Recent
+                "2021-03-10",  # Recent
+            ]),
+            "analys": ["A1", "A2", "A3"],
+            "value": [0.50, 1.00, 1.50],
+            "fpedats": pd.to_datetime(["2021-03-31"] * 3),
+        })
+
+        target_date = pd.Timestamp("2021-03-15")
+        max_age_days = 180
+
+        # Apply stale filter
+        active = df[df['actdats'] <= target_date]
+        age_days = (target_date - active['actdats']).dt.days
+        active = active[age_days <= max_age_days]
+
+        # Should exclude the stale estimate
+        assert len(active) == 2
+        assert "A1" not in active['analys'].values
+
+    def test_trading_day_offset(self) -> None:
+        """Test that 3 trading days excludes weekends."""
+        from pandas.tseries.offsets import CustomBusinessDay
+        from pandas.tseries.holiday import USFederalHolidayCalendar
+
+        bday = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+
+        # Friday call
+        call_date = pd.Timestamp("2021-03-12")  # Friday
+        date_before = call_date - 3 * bday
+        date_after = call_date + 3 * bday
+
+        # 3 trading days before Friday should be Tuesday
+        assert date_before.dayofweek == 1  # Tuesday
+        # 3 trading days after Friday should be Wednesday
+        assert date_after.dayofweek == 2  # Wednesday
 
 
 if __name__ == "__main__":

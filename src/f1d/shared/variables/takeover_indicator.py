@@ -134,6 +134,18 @@ class TakeoverIndicatorBuilder(VariableBuilder):
             )
         )
 
+        # Log Unknown classification details (Issue 2 investigation)
+        known_attitudes = self.UNINVITED_ATTITUDES | self.FRIENDLY_ATTITUDES
+        unknown_attitudes = sdc_filtered[
+            ~sdc_filtered["Deal Attitude"].isin(known_attitudes)
+        ]["Deal Attitude"].value_counts()
+        if len(unknown_attitudes) > 0:
+            print(
+                f"    Unknown Takeover_Type sources: "
+                + ", ".join(f"{k}: {v}" for k, v in unknown_attitudes.items())
+                + " (will be classified as 'Unknown')"
+            )
+
         # Merge SDC onto firm CUSIP map
         sdc_with_gvkey = firm_cusip.merge(
             sdc_filtered[["cusip6", "Date Announced", "Deal Attitude"]],

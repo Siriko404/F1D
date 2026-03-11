@@ -43,15 +43,12 @@ from f1d.shared.variables import (
     LevBuilder,
     TobinsQBuilder,
     EarningsVolatilityBuilder,
-    DispersionLeadBuilder,
-    PriorDispersionBuilder,
-    DispersionBuilder,
-    LaggedDispersionBuilder,
     NegativeSentimentBuilder,
     EarningsSurpriseRatioBuilder,
     LossDummyBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
+    DeltaDispersionBuilder,
 )
 
 
@@ -108,14 +105,17 @@ def build_panel(
         "earnings_volatility": EarningsVolatilityBuilder(
             var_config.get("earnings_volatility", {})
         ),
-        "dispersion_lead": DispersionLeadBuilder(var_config.get("dispersion_lead", {})),
-        "prior_dispersion": PriorDispersionBuilder(
-            var_config.get("prior_dispersion", {})
-        ),
-        "dispersion": DispersionBuilder(var_config.get("dispersion", {})),
-        "lagged_dispersion": LaggedDispersionBuilder(
-            var_config.get("lagged_dispersion", {})
-        ),
+        # IBES Summary-based builders removed (require missing tr_ibes.parquet)
+        # "dispersion_lead": DispersionLeadBuilder(var_config.get("dispersion_lead", {})),
+        # "prior_dispersion": PriorDispersionBuilder(
+        #     var_config.get("prior_dispersion", {})
+        # ),
+        # "dispersion": DispersionBuilder(var_config.get("dispersion", {})),
+        # "lagged_dispersion": LaggedDispersionBuilder(
+        #     var_config.get("lagged_dispersion", {})
+        # ),
+        # New IBES Detail-based builder
+        "delta_dispersion": DeltaDispersionBuilder(var_config.get("delta_dispersion", {})),
         "earnings_surprise_ratio": EarningsSurpriseRatioBuilder(
             var_config.get("earnings_surprise_ratio", {})
         ),
@@ -206,9 +206,12 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **Dispersion Lead (valid):** {panel['dispersion_lead'].notna().sum():,} calls",
+        f"- **Delta Dispersion (valid):** {panel['delta_dispersion'].notna().sum():,} calls",
+        f"- **Dispersion Before (valid):** {panel['dispersion_before'].notna().sum():,} calls",
+        f"- **Dispersion After (valid):** {panel['dispersion_after'].notna().sum():,} calls",
         "",
     ]
+
     report_path = out_dir / "report_step3_h5.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))

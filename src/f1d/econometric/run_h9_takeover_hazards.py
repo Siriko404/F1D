@@ -12,9 +12,8 @@ Models:
     Model 2: Cause-specific Cox PH    — Uninvited (Hostile + Unsolicited)
     Model 3: Cause-specific Cox PH    — Friendly (Friendly + Neutral)
 
-Each model is run twice:
-    Regime variant: ClarityManager + Manager_QA_Uncertainty_pct + controls
-    CEO variant:    ClarityCEO    + CEO_QA_Uncertainty_pct    + controls
+Each model uses CEO clarity:
+    CEO variant: ClarityCEO + CEO_QA_Uncertainty_pct + controls
 
 Hypothesis Tests (one-tailed):
     H9-A: beta(Clarity) < 0 (clearer managers have lower takeover hazard)
@@ -123,12 +122,13 @@ FINANCIAL_CONTROLS = [
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # Clarity measures (two variants)
-    {"col": "ClarityManager", "label": "Clarity (Manager)"},
+    # Clarity measures
     {"col": "ClarityCEO", "label": "Clarity (CEO)"},
-    # Uncertainty measures (two variants)
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
+    {"col": "Manager_Clarity_Residual", "label": "Manager Clarity Residual"},
+    # Uncertainty measures
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Manager_QA_Uncertainty_pct", "label": "Manager QA Uncertainty"},
     # Survival variables
     {"col": "duration", "label": "Duration (years)"},
     {"col": "Takeover", "label": "Takeover Event"},
@@ -145,17 +145,22 @@ SUMMARY_STATS_VARS = [
     {"col": "SurpDec", "label": "Earnings Surprise Decile"},
 ]
 
-# Two model variants
+# Model variants: CEO original + Clarity Residuals (H9 extension)
 MODEL_VARIANTS: Dict[str, Dict[str, str]] = {
-    "Regime": {
-        "clarity_var": "ClarityManager",
-        "uncertainty_var": "Manager_QA_Uncertainty_pct",
-        "description": "Manager Clarity (4.1) model",
-    },
     "CEO": {
         "clarity_var": "ClarityCEO",
         "uncertainty_var": "CEO_QA_Uncertainty_pct",
         "description": "CEO Clarity (4.1.1) model",
+    },
+    "CEO_Residual": {
+        "clarity_var": "CEO_Clarity_Residual",
+        "uncertainty_var": "CEO_QA_Uncertainty_pct",  # Pairs with CEO residual
+        "description": "CEO Clarity Residual (residualized uncertainty)",
+    },
+    "Manager_Residual": {
+        "clarity_var": "Manager_Clarity_Residual",
+        "uncertainty_var": "Manager_QA_Uncertainty_pct",  # Pairs with Manager residual
+        "description": "Manager Clarity Residual (residualized uncertainty)",
     },
 }
 
@@ -548,10 +553,11 @@ def generate_report(
         "|-------|---------|----------|---------------|-------|",
     ]
     key_vars = {
-        "ClarityManager",
         "ClarityCEO",
-        "Manager_QA_Uncertainty_pct",
+        "CEO_Clarity_Residual",
+        "Manager_Clarity_Residual",
         "CEO_QA_Uncertainty_pct",
+        "Manager_QA_Uncertainty_pct",
     }
     for row in all_hr_rows:
         if row.get("variable") in key_vars:
@@ -737,10 +743,11 @@ def main(panel_path: Optional[str] = None) -> int:
     if all_hr_rows:
         # Variable labels for the table
         var_labels = {
-            "ClarityManager": "Clarity (Manager)",
             "ClarityCEO": "Clarity (CEO)",
-            "Manager_QA_Uncertainty_pct": "Manager QA Uncertainty",
+            "CEO_Clarity_Residual": "CEO Clarity Residual",
+            "Manager_Clarity_Residual": "Manager Clarity Residual",
             "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
+            "Manager_QA_Uncertainty_pct": "Manager QA Uncertainty",
             "Size": "Firm Size (log AT)",
             "BM": "Book-to-Market",
             "Lev": "Leverage",

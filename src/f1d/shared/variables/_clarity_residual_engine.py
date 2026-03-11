@@ -53,6 +53,8 @@ class ClarityResidualEngine:
         output_dir = self._get_output_dir(root_path)
         file_path = output_dir / file_name
 
+        print(f"    ClarityResidualEngine: Loading from {output_dir}")
+
         if not file_path.exists():
             raise FileNotFoundError(
                 f"Clarity residual file not found: {file_path}\n"

@@ -9,33 +9,20 @@ Description: Run H5 Analyst Dispersion hypothesis test by loading the call-level
              industry sample, and outputting results.
 
 Model A (Uncertainty → Dispersion) — 4 regressions per sample:
-    A1: dispersion ~ CEO_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
-    A2: dispersion ~ CEO_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
-    A3: dispersion ~ Manager_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
-    A4: dispersion ~ Manager_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
-
-Model B (Gaps → Dispersion) — 4 regressions per sample:
-    B1: dispersion ~ CEO_Pres_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE
-    B2: dispersion ~ Mgr_Pres_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE
-    B3: dispersion ~ CEO_Mgr_QA_Gap + Controls + lagged_dispersion + FirmFE + YearFE
-    B4: dispersion ~ CEO_Mgr_Pres_Gap + Controls + lagged_dispersion + FirmFE + YearFE
-
-Gap Definitions (Pres - QA, positive = more uncertain in prepared remarks):
-    CEO_Pres_QA_Gap = CEO_Pres_Uncertainty_pct - CEO_QA_Uncertainty_pct
-    Mgr_Pres_QA_Gap = Manager_Pres_Uncertainty_pct - Manager_QA_Uncertainty_pct
-    CEO_Mgr_QA_Gap = CEO_QA_Uncertainty_pct - Manager_QA_Uncertainty_pct (regime gap)
-    CEO_Mgr_Pres_Gap = CEO_Pres_Uncertainty_pct - Manager_Pres_Uncertainty_pct (regime gap)
+    A1: delta_dispersion ~ CEO_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
+    A2: delta_dispersion ~ CEO_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
+    A3: delta_dispersion ~ Manager_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
+    A4: delta_dispersion ~ Manager_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
 
 Control Variables:
     Linguistic: Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct
     Financial: Size, Lev, TobinsQ, earnings_volatility, earnings_surprise_ratio, loss_dummy
     Lagged DV: lagged_dispersion
 
-Total: 24 regressions (8 specs × 3 samples)
+Total: 12 regressions (4 specs × 3 samples)
 
 Hypothesis Tests (one-tailed):
-    H5-A: beta(Uncertainty) > 0 (higher uncertainty -> higher dispersion)
-    H5-B: beta(Gap) > 0 (positive gap = more rehearsed uncertainty -> higher dispersion)
+    H5: beta(Uncertainty) > 0 (higher uncertainty -> higher dispersion)
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -107,15 +94,6 @@ MODEL_A_SPECS = [
     ("A4", "Manager_Pres_Uncertainty_pct", "Manager Pres Uncertainty"),
 ]
 
-# Model B: Gap measures (4 specs)
-# Gap direction: Pres - QA (positive = more uncertain in prepared remarks)
-MODEL_B_SPECS = [
-    ("B1", "CEO_Pres_QA_Gap", "CEO Pres-QA Gap", "CEO_Pres_Uncertainty_pct - CEO_QA_Uncertainty_pct"),
-    ("B2", "Mgr_Pres_QA_Gap", "Mgr Pres-QA Gap", "Manager_Pres_Uncertainty_pct - Manager_QA_Uncertainty_pct"),
-    ("B3", "CEO_Mgr_QA_Gap", "CEO-Mgr QA Gap", "CEO_QA_Uncertainty_pct - Manager_QA_Uncertainty_pct"),
-    ("B4", "CEO_Mgr_Pres_Gap", "CEO-Mgr Pres Gap", "CEO_Pres_Uncertainty_pct - Manager_Pres_Uncertainty_pct"),
-]
-
 # Base controls (common to all specs)
 BASE_CONTROLS = [
     "Analyst_QA_Uncertainty_pct",
@@ -136,6 +114,10 @@ BASE_CONTROLS = [
 
 SUMMARY_STATS_VARS = [
     # Dependent variable
+    {"col": "delta_dispersion", "label": "$\\Delta$ Analyst Dispersion"},
+    {"col": "dispersion_before", "label": "Dispersion$_{t-3}$"},
+    {"col": "dispersion_after", "label": "Dispersion$_{t+3}$"},
+    # Legacy dispersion (for comparison)
     {"col": "dispersion", "label": "Analyst Dispersion$_{t}$"},
     # Lagged DV
     {"col": "lagged_dispersion", "label": "Lagged Dispersion"},
@@ -144,11 +126,6 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    # Model B: Gap measures (computed)
-    {"col": "CEO_Pres_QA_Gap", "label": "CEO Pres-QA Gap"},
-    {"col": "Mgr_Pres_QA_Gap", "label": "Mgr Pres-QA Gap"},
-    {"col": "CEO_Mgr_QA_Gap", "label": "CEO-Mgr QA Gap"},
-    {"col": "CEO_Mgr_Pres_Gap", "label": "CEO-Mgr Pres Gap"},
     # Controls
     {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
     {"col": "Entire_All_Negative_pct", "label": "Entire Call Negative"},
@@ -171,40 +148,19 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
-    """Compute gap measures for Model B specs.
-
-    Gap direction: Pres - QA (positive = more uncertain in prepared remarks)
-    Regime gaps: CEO - Manager (positive = CEO more uncertain than team)
-    """
-    df = panel.copy()
-
-    # Pres-QA gaps (positive = more uncertain in prepared remarks)
-    df["CEO_Pres_QA_Gap"] = df["CEO_Pres_Uncertainty_pct"] - df["CEO_QA_Uncertainty_pct"]
-    df["Mgr_Pres_QA_Gap"] = df["Manager_Pres_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"]
-
-    # Regime gaps: CEO - Manager (positive = CEO more uncertain than broader team)
-    df["CEO_Mgr_QA_Gap"] = df["CEO_QA_Uncertainty_pct"] - df["Manager_QA_Uncertainty_pct"]
-    df["CEO_Mgr_Pres_Gap"] = df["CEO_Pres_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-
-    return df
-
-
 def run_regression(
     df_sample: pd.DataFrame,
     spec_id: str,
     key_iv: str,
     sample_name: str,
-    model_type: str,  # "A" or "B"
 ) -> Tuple[Any, Dict[str, Any]]:
     """Run a single regression specification.
 
     Args:
         df_sample: Filtered sample data
-        spec_id: Specification ID (e.g., "A1", "B3")
+        spec_id: Specification ID (e.g., "A1", "A2")
         key_iv: Key independent variable name
         sample_name: Sample name (Main, Finance, Utility)
-        model_type: "A" for uncertainty, "B" for gaps
 
     Returns:
         Tuple of (model, metadata dict)
@@ -212,7 +168,7 @@ def run_regression(
     controls = list(BASE_CONTROLS)
 
     # Required columns: DV, key IV, controls, FE vars
-    required = ["dispersion", key_iv] + controls + ["gvkey", "year"]
+    required = ["delta_dispersion", key_iv] + controls + ["gvkey", "year"]
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
 
     if len(df_reg) < 100:
@@ -220,7 +176,7 @@ def run_regression(
 
     # Build formula
     formula_parts = [key_iv] + controls
-    formula = "dispersion ~ " + " + ".join(formula_parts)
+    formula = "delta_dispersion ~ " + " + ".join(formula_parts)
 
     print(f"  Formula: {formula} + EntityEffects + TimeEffects")
     print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
@@ -271,7 +227,6 @@ def run_regression(
 
     meta = {
         "spec_id": spec_id,
-        "model_type": model_type,
         "key_iv": key_iv,
         "sample": sample_name,
         "n_obs": int(model.nobs),
@@ -293,7 +248,7 @@ def run_regression(
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Save LaTeX table with two panels: Model A (A1-A4) and Model B (B1-B4)."""
+    """Save LaTeX table with uncertainty measures (A1-A4)."""
     tex_path = out_dir / "h5_dispersion_table.tex"
 
     def get_res(spec_id, sample="Main"):
@@ -331,26 +286,20 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # Get Main sample results for all specs
     main_A = [get_res(f"A{i}") for i in range(1, 5)]
-    main_B = [get_res(f"B{i}") for i in range(1, 5)]
 
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{H5: Manager Uncertainty and Analyst Dispersion}",
+        "\\caption{H5: Manager Uncertainty and Change in Analyst Dispersion}",
         "\\label{tab:h5_dispersion}",
         "\\begin{tabular}{lcccc}",
         "\\toprule",
-        " & \\multicolumn{4}{c}{Model A: Uncertainty Measures} \\\\",
-        "\\cmidrule(lr){2-5}",
-        " & (A1) & (A2) & (A3) & (A4) \\\\",
+        " & (1) & (2) & (3) & (4) \\\\",
         " & CEO QA & CEO Pres & Mgr QA & Mgr Pres \\\\",
         "\\midrule",
     ]
 
-    # Panel A: Uncertainty coefficients
-    iv_labels_A = ["CEO QA Uncertainty", "CEO Pres Uncertainty",
-                   "Manager QA Uncertainty", "Manager Pres Uncertainty"]
-
+    # Uncertainty coefficients
     row1 = "Uncertainty Measure & "
     row1 += " & ".join([
         fmt_coef(r["beta1"], r["beta1_p_one"]) if r else ""
@@ -390,72 +339,17 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     ]) + " \\\\"
     lines.append(row_r2)
 
-    # Panel B: Gap measures
-    lines.extend([
-        "\\bottomrule",
-        "\\addlinespace",
-        "\\toprule",
-        " & \\multicolumn{4}{c}{Model B: Gap Measures} \\\\",
-        "\\cmidrule(lr){2-5}",
-        " & (B1) & (B2) & (B3) & (B4) \\\\",
-        " & CEO & Mgr & CEO-Mgr & CEO-Mgr \\\\",
-        " & Pres-QA & Pres-QA & QA & Pres \\\\",
-        "\\midrule",
-    ])
-
-    # Gap coefficients
-    row1_B = "Gap Measure & "
-    row1_B += " & ".join([
-        fmt_coef(r["beta1"], r["beta1_p_one"]) if r else ""
-        for r in main_B
-    ]) + " \\\\"
-    lines.append(row1_B)
-
-    row2_B = " & "
-    row2_B += " & ".join([
-        fmt_se(r["beta1_se"]) if r else ""
-        for r in main_B
-    ]) + " \\\\"
-    lines.append(row2_B)
-
-    # Add rows for controls and FE
-    lines.extend([
-        "\\midrule",
-        "Lagged Dispersion & Yes & Yes & Yes & Yes \\\\",
-        "Controls & Yes & Yes & Yes & Yes \\\\",
-        "Firm FE & Yes & Yes & Yes & Yes \\\\",
-        "Year FE & Yes & Yes & Yes & Yes \\\\",
-        "\\midrule",
-    ])
-
-    # Observations and R²
-    row_n_B = "Observations & "
-    row_n_B += " & ".join([
-        fmt_int(r["n_obs"]) if r else ""
-        for r in main_B
-    ]) + " \\\\"
-    lines.append(row_n_B)
-
-    row_r2_B = "Within-$R^2$ & "
-    row_r2_B += " & ".join([
-        fmt_r2(r["within_r2"]) if r else ""
-        for r in main_B
-    ]) + " \\\\"
-    lines.append(row_r2_B)
-
     lines.extend([
         "\\bottomrule",
         "\\end{tabular}",
         "\\\\[-0.5em]",
         "\\parbox{\\textwidth}{\\scriptsize ",
         "\\textit{Notes:} ",
-        "Model A tests whether manager uncertainty language predicts contemporaneous analyst dispersion. ",
-        "Model B tests whether uncertainty gaps (Pres-QA) and regime gaps (CEO-Mgr) predict dispersion. ",
-        "Positive gap = more uncertain in prepared remarks (B1-B2) or CEO more uncertain than broader team (B3-B4). ",
+        "This table tests whether manager uncertainty language predicts changes in analyst dispersion around earnings calls. ",
+        "The dependent variable is $\\Delta$ Dispersion = dispersion$_{t+3}$ $-$ dispersion$_{t-3}$ (3 trading days after minus before call). ",
         "All models use the Main industry sample (non-financial, non-utility firms). ",
         "Firms with fewer than 5 calls are excluded. ",
         "Standard errors are clustered at the firm level. ",
-        "All continuous controls are standardized. ",
         "Variables are winsorized at 1\\%/99\\% by year. ",
         "$^{*}$p$<$0.10, $^{**}$p$<$0.05, $^{***}$p$<$0.01 (one-tailed).",
         "}",
@@ -514,7 +408,11 @@ def main(panel_path: str | None = None) -> int:
             "gvkey",
             "year",
             "ff12_code",
-            # DV (current period)
+            # DV (change in dispersion)
+            "delta_dispersion",
+            "dispersion_before",
+            "dispersion_after",
+            # Legacy dispersion (for comparison)
             "dispersion",
             # Lagged DV control
             "lagged_dispersion",
@@ -538,15 +436,15 @@ def main(panel_path: str | None = None) -> int:
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
 
-    # Check for dispersion column
-    if "dispersion" not in panel.columns:
-        print("ERROR: 'dispersion' column not found in panel. Re-run panel builder.")
+    # Check for delta_dispersion column
+    if "delta_dispersion" not in panel.columns:
+        print("ERROR: 'delta_dispersion' column not found in panel. Re-run panel builder with DeltaDispersionBuilder.")
         return 1
 
     if "sample" not in panel.columns:
         panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
-    df_prep = prepare_regression_data(panel)
+    df_prep = panel.copy()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # ------------------------------------------------------------------
@@ -595,39 +493,7 @@ def main(panel_path: str | None = None) -> int:
                 continue
 
             model, meta = run_regression(
-                df_filtered, spec_id, key_iv, sample, model_type="A"
-            )
-
-            if model is not None:
-                all_results.append(meta)
-                with open(
-                    out_dir / f"regression_results_{sample}_{spec_id}.txt",
-                    "w",
-                ) as f:
-                    f.write(str(model.summary))
-
-    # ------------------------------------------------------------------
-    # Run Model B Specs (Gaps → Dispersion)
-    # ------------------------------------------------------------------
-    print("\n" + "=" * 60)
-    print("Running Model B (Gap Measures)")
-    print("=" * 60)
-
-    for sample in CONFIG["samples"]:
-        df_sample = df_prep[df_prep["sample"] == sample].copy()
-        df_sample["gvkey_count"] = df_sample.groupby("gvkey")["file_name"].transform("count")
-        df_filtered = df_sample[df_sample["gvkey_count"] >= CONFIG["min_calls"]].copy()
-
-        for spec_id, key_iv, iv_label, gap_formula in MODEL_B_SPECS:
-            print(f"\n--- {sample} / {spec_id}: {iv_label} ---")
-            print(f"  Gap Formula: {gap_formula}")
-
-            if len(df_filtered) < 100:
-                print("  Skipping: insufficient data")
-                continue
-
-            model, meta = run_regression(
-                df_filtered, spec_id, key_iv, sample, model_type="B"
+                df_filtered, spec_id, key_iv, sample
             )
 
             if model is not None:

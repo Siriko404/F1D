@@ -13,9 +13,7 @@ firm-year structure with:
   - Duration: years from first call to takeover announcement / end of sample
   - Takeover: 1 if firm received a bid, 0 otherwise
   - Takeover_Type: 'Uninvited', 'Friendly', 'None'
-  - ClarityManager (time-invariant CEO FE): merged per ceo_id × sample
   - ClarityCEO (time-invariant CEO FE): merged per ceo_id × sample
-  - Manager_QA_Uncertainty_pct: averaged across calls per firm-year
   - CEO_QA_Uncertainty_pct: averaged across calls per firm-year
   - Financial controls: last observation per firm-year
 
@@ -83,6 +81,8 @@ from f1d.shared.variables import (
     TakeoverIndicatorBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
 )
 
 
@@ -98,23 +98,11 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def load_clarity_scores(root_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Load ClarityManager and ClarityCEO scores from Stage 4 outputs."""
-    try:
-        mgr_dir = get_latest_output_dir(
-            root_path / "outputs" / "econometric" / "manager_clarity",
-            required_file="clarity_scores.parquet",
-        )
-        mgr = pd.read_parquet(
-            mgr_dir / "clarity_scores.parquet",
-            columns=["ceo_id", "sample", "ClarityManager"],
-        )
-        mgr["ceo_id"] = mgr["ceo_id"].astype(str)
-        print(f"    ClarityManager: {len(mgr):,} CEO-sample pairs")
-    except (OutputResolutionError, FileNotFoundError):
-        mgr = pd.DataFrame(columns=["ceo_id", "sample", "ClarityManager"])
-        print("    WARNING: ClarityManager not found — will be NaN")
+def load_clarity_scores(root_path: Path) -> pd.DataFrame:
+    """Load ClarityCEO scores from Stage 4 outputs.
 
+    Note: ClarityManager was deprecated on 2026-02-28. Only CEO clarity is loaded.
+    """
     try:
         ceo_dir = get_latest_output_dir(
             root_path / "outputs" / "econometric" / "ceo_clarity",
@@ -130,7 +118,7 @@ def load_clarity_scores(root_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
         ceo = pd.DataFrame(columns=["ceo_id", "sample", "ClarityCEO"])
         print("    WARNING: ClarityCEO not found — will be NaN")
 
-    return mgr, ceo
+    return ceo
 
 
 def build_call_panel(
@@ -186,6 +174,8 @@ def build_call_panel(
         "earnings_surprise": EarningsSurpriseBuilder(
             var_config.get("earnings_surprise", {})
         ),
+        "ceo_clarity_residual": CEOClarityResidualBuilder({}),
+        "manager_clarity_residual": ManagerClarityResidualBuilder({}),
     }
 
     for name, builder in builders.items():
@@ -276,6 +266,8 @@ def aggregate_to_firm_year(call_panel: pd.DataFrame) -> pd.DataFrame:
         "CEO_QA_Uncertainty_pct",
         "Analyst_QA_Uncertainty_pct",
         "Entire_All_Negative_pct",
+        "CEO_Clarity_Residual",
+        "Manager_Clarity_Residual",
     ]
     agg_last_cols = [
         "Size",
@@ -385,6 +377,19 @@ def build_counting_process_panel(
 
     firm_bounds["exit_year"] = firm_bounds.apply(get_exit_year, axis=1)
 
+    # Validate exit_year >= entry_year; skip invalid firms (Issue 6 fix)
+    # This occurs when takeover_year < entry_year (takeover before first observed call)
+    invalid_mask = firm_bounds["exit_year"] < firm_bounds["entry_year"]
+    n_invalid = int(invalid_mask.sum())
+    if n_invalid > 0:
+        invalid_gvkeys = firm_bounds.loc[invalid_mask, "gvkey"].tolist()
+        print(
+            f"  WARNING: Skipping {n_invalid} firms with exit_year < entry_year "
+            f"(takeover before first observed call)"
+        )
+        print(f"           Affected gvkeys: {invalid_gvkeys[:10]}{'...' if n_invalid > 10 else ''}")
+        firm_bounds = firm_bounds[~invalid_mask].copy()
+
     # Build counting-process rows: one row per firm-year at risk
     rows: List[pd.DataFrame] = []
     covariate_cols = [
@@ -457,6 +462,16 @@ def build_counting_process_panel(
 
     panel = pd.concat(rows, ignore_index=True)
 
+    # Issue 6 fix: Validate no negative durations (start >= stop)
+    negative_duration_mask = panel["start"] >= panel["stop"]
+    n_negative = int(negative_duration_mask.sum())
+    if n_negative > 0:
+        bad_rows = panel[negative_duration_mask][["gvkey", "start", "stop"]].head(10)
+        raise ValueError(
+            f"DATA BUG: {n_negative} rows have start >= stop (negative duration). "
+            f"First 10:\n{bad_rows.to_string()}"
+        )
+
     n_events = panel.groupby("gvkey")["Takeover"].max().sum()
     n_firms = panel["gvkey"].nunique()
     print(f"  Counting-process rows: {len(panel):,}")
@@ -500,29 +515,9 @@ def build_panel(
 
     # Step 3: Load clarity scores and merge onto firm-year
     print("\n  Loading clarity scores...")
-    mgr_clarity, ceo_clarity = load_clarity_scores(root_path)
+    ceo_clarity = load_clarity_scores(root_path)
 
     firm_year["ceo_id"] = firm_year["ceo_id"].astype(str)
-
-    if len(mgr_clarity) > 0:
-        before_len = len(firm_year)
-        firm_year = firm_year.merge(
-            mgr_clarity[["ceo_id", "sample", "ClarityManager"]],
-            on=["ceo_id", "sample"],
-            how="left",
-        )
-        after_len = len(firm_year)
-        delta = after_len - before_len
-        if after_len != before_len:
-            raise ValueError(
-                f"ClarityManager merge changed row count {before_len} → {after_len} (delta: {delta:+d})."
-            )
-        n_matched = firm_year["ClarityManager"].notna().sum()
-        print(
-            f"  After ClarityManager merge: {after_len:,} rows, {n_matched:,} matched (delta: {delta:+d})"
-        )
-    else:
-        firm_year["ClarityManager"] = float("nan")
 
     if len(ceo_clarity) > 0:
         before_len = len(firm_year)
@@ -567,10 +562,10 @@ def build_panel(
         "Takeover",
         "start",
         "stop",
-        "ClarityManager",
         "ClarityCEO",
-        "Manager_QA_Uncertainty_pct",
         "CEO_QA_Uncertainty_pct",
+        "CEO_Clarity_Residual",
+        "Manager_Clarity_Residual",
         "Size",
         "BM",
         "Lev",

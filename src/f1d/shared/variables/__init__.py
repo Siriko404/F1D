@@ -236,6 +236,7 @@ __all__ = [
     "LaggedDispersionBuilder",
     "EarningsSurpriseRatioBuilder",
     "LossDummyBuilder",
+    "DeltaDispersionBuilder",
     # H7
     "AmihudIlliqBuilder",
     # H14
@@ -280,6 +281,7 @@ from .dispersion import DispersionBuilder
 from .lagged_dispersion import LaggedDispersionBuilder
 from .earnings_surprise_ratio import EarningsSurpriseRatioBuilder
 from .loss_dummy import LossDummyBuilder
+from .delta_dispersion import DeltaDispersionBuilder
 
 # H7 Illiquidity
 from .amihud_illiq import AmihudIlliqBuilder
