@@ -137,6 +137,10 @@ from .investment_residual import InvestmentResidualBuilder
 from .cash_flow import CashFlowBuilder
 from .sales_growth import SalesGrowthBuilder
 
+# H9 Compustat variable builders (Expanded Robustness Block)
+from .intangibility import IntangibilityBuilder
+from .asset_growth import AssetGrowthBuilder
+
 # CRSP individual variable builders
 from .stock_return import StockReturnBuilder
 from .market_return import MarketReturnBuilder
@@ -205,6 +209,9 @@ __all__ = [
     "InvestmentResidualBuilder",
     "CashFlowBuilder",
     "SalesGrowthBuilder",
+    # H9 Compustat variable builders (Expanded Robustness Block)
+    "IntangibilityBuilder",
+    "AssetGrowthBuilder",
     # Weak modal builders (H1 — Stage 2 linguistic)
     "ManagerQAWeakModalBuilder",
     "CEOQAWeakModalBuilder",

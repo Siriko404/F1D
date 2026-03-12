@@ -1,0 +1,370 @@
+You are doing the FINAL H9 PASS.
+
+This pass must finish H9 so that:
+1. the IMPLEMENTATION matches the actual research design, and
+2. the PROVENANCE document is rewritten into a clean canonical structure.
+
+This pass supersedes the remaining incomplete parts of prior passes.
+
+Your entire response for this final pass must be written to exactly ONE markdown file with this exact filename:
+
+CLAUDE_H9_FINAL_PASS_06.md
+
+If that file already exists, overwrite it.
+Do not create any other markdown output files.
+
+==================================================
+FINAL OBJECTIVE
+==================================================
+
+You must make H9 correct on BOTH dimensions:
+
+A. IMPLEMENTATION
+- H9 must use CALL-TO-CALL hazard intervals, not firm-year intervals
+- the speech measure must be aligned to the risk interval that begins at that call
+- the corrected cause-specific event coding from Pass 03 must remain intact
+- the Compustat-only control rule from Pass 05 must remain intact
+- clarity score must remain the main “style” construct
+- residuals remain secondary / companion constructs
+
+B. PROVENANCE
+- docs/provenance/H9.md must be rewritten into a clean standard provenance structure
+- it must stop being a hybrid issue log / command notebook / rerun diary
+- it must describe the FINAL CURRENT H9 truth after this pass
+
+This is the FINAL H9 pass.
+Do not leave known architectural incompleteness behind.
+
+==================================================
+NON-NEGOTIABLE DESIGN REQUIREMENTS
+==================================================
+
+1. TIME INTERVALS MUST CHANGE
+The current year-to-year / firm-year hazard interval design is not acceptable as the final implementation.
+
+You must convert H9 to CALL-TO-CALL counting-process intervals.
+
+That means:
+- one observation interval per earnings call
+- interval start = call date
+- interval stop = earliest of:
+  a) next earnings call date for the same firm
+  b) takeover announcement date
+  c) administrative censor date
+  d) last observable date if no later call exists
+
+The speech variables measured at call t must govern the hazard risk beginning immediately after call t.
+
+2. EVENT DEFINITIONS MUST REMAIN CORRECT
+Keep the corrected event logic:
+- ALL_BIDS = any takeover bid in interval
+- UNINVITED = hostile + unsolicited only
+- FRIENDLY = friendly + neutral only
+- UNKNOWN = non-target / censored in cause-specific models
+
+Do not break the Pass 03 fix.
+
+3. CONTROLS MUST REMAIN COMPUSTAT-ONLY
+Do not reintroduce:
+- StockRet
+- MarketRet
+- SurpDec
+- EPS_Growth
+
+Keep the Compustat-only control structure from Pass 05.
+
+4. PRIMARY VS SECONDARY CONSTRUCTS
+Primary style models:
+- CEO clarity score
+- Manager clarity score (if actually available)
+
+Secondary / companion models:
+- CEO residual
+- Manager residual
+
+You must not blur clarity score and residual in the rewritten provenance or outputs.
+
+5. MANAGER CLARITY MUST BE HANDLED CORRECTLY
+You must search carefully for whether Manager clarity score truly exists in the repo inputs / upstream artifacts.
+
+If it DOES exist:
+- wire it in and run the intended primary Manager clarity family
+
+If it truly does NOT exist:
+- verify that carefully
+- do NOT hallucinate it
+- state the absence clearly in outputs and provenance
+- keep Manager residual as secondary only
+
+==================================================
+HARD RULES
+==================================================
+
+1. YOU MAY EDIT ONLY WHAT IS NECESSARY
+Likely edit targets:
+- src/f1d/variables/build_h9_takeover_panel.py
+- src/f1d/econometric/run_h9_takeover_hazards.py
+- H9-specific helper files only if strictly required
+- docs/provenance/H9.md
+
+Do not touch unrelated suites.
+
+2. DO NOT DO COSMETIC CLEANUP
+Only make edits that are necessary to:
+- implement call-to-call intervals
+- keep H9 outputs correct
+- regenerate H9 outputs
+- rewrite H9 provenance correctly
+
+3. VERIFY, DON’T GUESS
+Use actual repo files, actual run outputs, actual variable names.
+
+4. SINGLE FINAL OUTPUT FILE
+Write everything about this pass to:
+CLAUDE_H9_FINAL_PASS_06.md
+
+==================================================
+THE 6 TASKS YOU MUST COMPLETE
+==================================================
+
+TASK 1 — LOCK THE FINAL TARGET AND FIND ANY REMAINING GAPS
+
+Before editing, inspect the current H9 implementation and identify exactly what still remains incomplete relative to the FINAL target.
+
+You must explicitly verify:
+- where the current panel still uses firm-year intervals
+- what current start / stop columns represent
+- where call dates exist in the pipeline
+- whether next-call dates can be constructed from the transcript/call data already used by H9
+- whether Manager clarity score exists anywhere in repo data, upstream outputs, or loaded artifacts
+- whether the Stage 4 runner assumes annual intervals anywhere
+- whether current report generation assumes firm-year wording
+
+In the markdown output, create:
+
+# Task 1 — Final Gap Lock
+
+This section must include:
+- current state summary
+- final target summary
+- precise remaining gap list
+- exact file paths and evidence snippets
+
+This section must explicitly answer:
+1. Is H9 still firm-year in current code? Yes/No
+2. Can call-to-call intervals be built with existing repo inputs? Yes/No
+3. Does Manager clarity score exist in repo-accessible artifacts? Yes/No/Unverified
+
+Do not edit anything until this section is complete.
+
+--------------------------------------------------
+TASK 2 — REBUILD H9 PANEL TO CALL-TO-CALL INTERVALS
+--------------------------------------------------
+
+Now make the H9 panel correct.
+
+Requirements:
+- replace the firm-year interval logic with call-to-call interval logic
+- each row must correspond to one call-based risk interval
+- interval start must be the call date
+- interval stop must be the next call date, unless takeover/censoring occurs earlier
+- if takeover occurs between two calls, the interval must stop at takeover date and event=1
+- if no later call exists, censor at end-of-sample / last observable date per repo logic
+- do not create negative durations
+- do not assign the same takeover event to multiple intervals
+- keep the existing corrected cause-specific outcome mapping
+
+Compustat controls:
+- attach the most recent available Compustat observation as-of the call date
+- do not use look-ahead values
+- preserve the sparse and expanded Compustat-only control sets from Pass 05
+
+In the markdown output, create:
+
+# Task 2 — Call-to-Call Panel Implementation
+
+This section must include:
+- files edited
+- exact before / after snippets
+- exact new interval definition
+- how next-call dates were constructed
+- how takeover dates were aligned
+- how Compustat values were as-of matched to call dates
+- final panel row count and core columns
+
+If call-to-call implementation truly cannot be completed with existing repo inputs, STOP and document exactly why.
+Do not fake a partial implementation.
+
+--------------------------------------------------
+TASK 3 — UPDATE H9 RUNNER FOR THE NEW PANEL AND FINAL MODEL MENU
+--------------------------------------------------
+
+Now update the H9 hazard runner so it works correctly with the new call-to-call panel.
+
+Requirements:
+- keep Pass 03 cause-specific fix intact
+- keep Pass 05 Compustat-only controls intact
+- ensure the runner uses the new call-to-call start / stop columns correctly
+- ensure outputs / labels describe call-level intervals, not firm-year intervals
+
+Final model menu must be:
+
+PRIMARY STYLE MODELS
+- All bids ~ CEO clarity + sparse controls
+- Uninvited ~ CEO clarity + sparse controls
+- Friendly ~ CEO clarity + sparse controls
+
+If Manager clarity score exists:
+- All bids ~ Manager clarity + sparse controls
+- Uninvited ~ Manager clarity + sparse controls
+- Friendly ~ Manager clarity + sparse controls
+
+SECONDARY MODELS
+- same 3 event types for CEO residual
+- same 3 event types for Manager residual
+
+EXPANDED ROBUSTNESS
+- expanded Compustat controls for every family that actually exists
+
+Do not reintroduce uncertainty_var into the main models.
+
+In the markdown output, create:
+
+# Task 3 — Runner and Model Menu Update
+
+This section must include:
+- files edited
+- before / after snippets
+- final model menu actually run
+- whether Manager clarity family was included or not, with evidence
+
+--------------------------------------------------
+TASK 4 — RERUN THE FINAL H9 PIPELINE
+--------------------------------------------------
+
+After edits, rerun only what is needed for the final H9 suite:
+- H9 panel build
+- H9 hazard run
+
+Use the repo’s actual commands.
+Do not rerun unrelated suites.
+
+In the markdown output, create:
+
+# Task 4 — Final Rerun Log
+
+This section must include:
+- exact commands
+- success/failure
+- final output run paths
+- key regenerated files
+- panel dimensions
+- model count actually estimated
+
+If anything fails, stop and document the failure precisely.
+
+--------------------------------------------------
+TASK 5 — REWRITE docs/provenance/H9.md INTO THE CLEAN STANDARD STRUCTURE
+--------------------------------------------------
+
+Now rewrite docs/provenance/H9.md so it is a clean canonical provenance document for the FINAL H9 state.
+
+Do not preserve the current hybrid structure if it is messy.
+Replace it with the following exact top-level structure:
+
+I. Suite Identity and Status
+II. Research Question and Current Hypotheses
+III. Canonical Inputs and Upstream Dependencies
+IV. Sample Construction and Filters
+V. Variable Dictionary
+VI. Model Specification Register
+VII. Output Artifacts and Active Run Paths
+VIII. Verification Summary
+IX. Known Limitations / Open Issues
+X. Change Log
+
+Requirements for the rewritten H9.md:
+- describe the suite as it exists AFTER this final pass
+- clearly state that intervals are CALL-TO-CALL
+- clearly state event definitions
+- clearly state the Compustat-only control rule
+- clearly separate primary style vs secondary residual models
+- clearly state whether Manager clarity score exists and whether it is included
+- include the active run paths from this pass
+- include the verification summary from this pass
+- keep open issues honest and minimal
+- do NOT embed stale command snippets, broken assert blocks, or diary-like notes
+- do NOT leave contradictory legacy wording behind
+
+In the markdown output, create:
+
+# Task 5 — Provenance Rewrite Applied
+
+This section must include:
+- confirmation that H9.md was rewritten to the 10-section structure
+- the final status of H9
+- a short summary of the biggest changes in the rewritten provenance
+- list of any open issues still remaining
+
+--------------------------------------------------
+TASK 6 — FINAL VERIFICATION AND SINGLE OUTPUT FILE
+--------------------------------------------------
+
+Write exactly one markdown file:
+CLAUDE_H9_FINAL_PASS_06.md
+
+It must contain exactly these top-level headings in this exact order:
+
+# H9 Final Completion — Pass 06
+# Task 1 — Final Gap Lock
+# Task 2 — Call-to-Call Panel Implementation
+# Task 3 — Runner and Model Menu Update
+# Task 4 — Final Rerun Log
+# Task 5 — Provenance Rewrite Applied
+# Task 6 — Final Verification and Result
+
+Before the first heading, include this exact 5-line metadata block:
+
+File: CLAUDE_H9_FINAL_PASS_06.md
+Scope: Final H9 implementation + provenance completion
+Edits made: H9 files only
+Model/code changes made: Yes
+Status: Complete
+
+In Task 6 — Final Verification and Result, provide:
+
+A. A 12-row pass/fail verification table for:
+1. H9 uses call-to-call intervals
+2. interval start is call date
+3. interval stop is next call / event / censoring
+4. no negative durations
+5. no duplicated event assignment across intervals
+6. all-bids definition correct
+7. uninvited definition correct
+8. friendly definition correct
+9. unknown-type handling correct
+10. no CRSP/IBES controls remain
+11. provenance uses the clean 10-section structure
+12. final outputs and provenance describe the same implementation
+
+B. Final verdict:
+- FINAL COMPLETE
+- FINAL COMPLETE WITH ONE KNOWN LIMITATION
+- FINAL BLOCKED
+
+C. Files edited
+
+D. Final output run paths
+
+E. What remains, if anything
+
+==================================================
+EXECUTION DISCIPLINE
+==================================================
+
+This is the FINAL H9 pass.
+Work slowly.
+Do not leave the interval architecture unfinished.
+Do not leave the provenance doc in hybrid form.
+Do not stop at partial alignment.
+Implement the call-to-call design, rerun, rewrite provenance, verify, write the markdown file, and stop.

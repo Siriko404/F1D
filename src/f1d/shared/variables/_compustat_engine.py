@@ -129,6 +129,9 @@ COMPUSTAT_COLS = [
     "fcf_growth",
     "firm_maturity",
     "is_div_payer_5yr",
+    # H9 extension (Expanded Robustness Block)
+    "Intangibility",  # intanq / atq
+    "AssetGrowth",    # YoY asset growth
 ]
 
 REQUIRED_COMPUSTAT_COLS = [
@@ -166,6 +169,8 @@ REQUIRED_COMPUSTAT_COLS = [
     "seqq",  # Shareholders' equity (quarterly)
     "ibq",  # Income Before Extraordinary Items (quarterly)
     "iby",  # Income Before Extraordinary Items (annual)
+    # H9 extension (Expanded Robustness Block)
+    "intanq",  # Intangible Assets - Total (quarterly, for Intangibility ratio)
 ]
 
 
@@ -933,6 +938,85 @@ def _compute_h3_payout_policy(
     )
 
 
+def _compute_intangibility(comp: pd.DataFrame) -> pd.Series:
+    """Compute Intangibility ratio = intanq / atq.
+
+    Intangibility measures the proportion of intangible assets relative to total assets.
+    Used in takeover prediction models as intangible-rich firms may be harder to value
+    (Bates et al., 2006).
+
+    Returns NaN when:
+    - atq <= 0 (invalid denominator)
+    - intanq is missing
+
+    Returns a Series aligned to the original comp index.
+    """
+    intangibility = np.where(
+        (comp["atq"] > 0) & comp["intanq"].notna(),
+        comp["intanq"] / comp["atq"],
+        np.nan,
+    )
+    return pd.Series(intangibility, index=comp.index, name="Intangibility")
+
+
+def _compute_asset_growth(comp: pd.DataFrame) -> pd.Series:
+    """Compute AssetGrowth = (atq_t - atq_{t-4}) / |atq_{t-4}|.
+
+    Year-over-year asset growth using date-based lag (merge_asof).
+    Asset growth effect documented by Cooper et al. (2008) - high asset growth
+    predicts lower future returns. In takeover context, rapid asset growth may
+    signal expansion or acquisition activity.
+
+    Returns NaN when:
+    - Lagged atq is missing
+    - |atq_{t-4}| == 0 (division by zero)
+
+    Returns a Series aligned to the original comp index.
+    """
+    comp_work = comp[["gvkey", "datadate", "atq"]].copy()
+    comp_work["_row_id"] = np.arange(len(comp_work))
+
+    # Create lagged dataset for merge_asof
+    lag_df = (
+        comp_work[["gvkey", "datadate", "atq"]]
+        .rename(columns={"datadate": "lag_datadate", "atq": "atq_lag"})
+        .sort_values("lag_datadate")
+    )
+
+    # Target lag date is ~1 year prior
+    lookup = comp_work.copy()
+    lookup["target_lag_date"] = lookup["datadate"] - pd.Timedelta(days=365)
+    lookup = lookup.sort_values("target_lag_date")
+
+    # Merge to find prior year's assets
+    merged = pd.merge_asof(
+        lookup,
+        lag_df,
+        left_on="target_lag_date",
+        right_on="lag_datadate",
+        by="gvkey",
+        direction="backward",
+    )
+
+    # Accept lag only if within ±45 days of target (robust to fiscal calendar shifts)
+    date_diff = (merged["target_lag_date"] - merged["lag_datadate"]).abs()
+    valid = (
+        merged["lag_datadate"].notna()
+        & (date_diff <= pd.Timedelta(days=45))
+        & merged["atq_lag"].notna()
+        & (merged["atq_lag"].abs() > 0)
+    )
+
+    merged["AssetGrowth_tmp"] = np.where(
+        valid,
+        (merged["atq"] - merged["atq_lag"]) / merged["atq_lag"].abs(),
+        np.nan,
+    )
+
+    merged_sorted = merged.sort_values("_row_id")
+    return pd.Series(merged_sorted["AssetGrowth_tmp"].to_numpy(), name="AssetGrowth_tmp")
+
+
 def _compute_and_winsorize(
     comp: pd.DataFrame, root_path: Optional[Path] = None
 ) -> pd.DataFrame:
@@ -1023,6 +1107,10 @@ def _compute_and_winsorize(
     comp["firm_maturity"] = firm_mat
     comp["is_div_payer_5yr"] = div_payer_5yr
 
+    # --- H9 extension: Intangibility and AssetGrowth (Expanded Robustness Block) ---
+    comp["Intangibility"] = _compute_intangibility(comp)
+    comp["AssetGrowth"] = _compute_asset_growth(comp)
+
     # --- MINOR-9: Replace inf with NaN after ratio computations ---
     ratio_cols = [
         "BM",
@@ -1038,6 +1126,8 @@ def _compute_and_winsorize(
         "InvestmentResidual",
         "CashFlow",
         "SalesGrowth",
+        "Intangibility",
+        "AssetGrowth",
     ]
     for col in ratio_cols:
         comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)

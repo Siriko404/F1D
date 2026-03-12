@@ -1,0 +1,359 @@
+You are doing a STRICT IMPLEMENTATION-ALIGNMENT PASS for H9.
+
+This pass SUPERSEDES any prior plan to do a table-only cosmetic fix first.
+
+Your goal is to make the H9 SUITE ITSELF match the actual research question we now care about, within the CURRENT H9 architecture.
+
+IMPORTANT:
+Do NOT attempt a giant redesign of the architecture in this pass.
+Do NOT convert the suite to a new call-level survival framework in this pass.
+Do NOT rewrite the provenance doc in this pass.
+Do NOT do unrelated cleanup.
+
+This pass is to make the CURRENT H9 IMPLEMENTATION truthful, coherent, and correctly targeted.
+
+Your entire response for this pass must be written to exactly ONE markdown file with this exact filename:
+
+CLAUDE_H9_IMPLEMENT_PASS_05.md
+
+If that file already exists, overwrite it.
+Do not create any other markdown output markdown files.
+
+==================================================
+WHAT “CORRECT IMPLEMENTATION” MEANS IN THIS PASS
+==================================================
+
+H9 should now test:
+
+PRIMARY QUESTION
+Does clarity in speech increase the likelihood of receiving a takeover bid,
+especially an UNINVITED bid?
+
+Definitions:
+- Uninvited = Hostile + Unsolicited
+- Friendly = Friendly + Neutral
+- Unknown = not counted as target event in cause-specific models; keep existing corrected censoring behavior
+
+PRIMARY CONSTRUCT
+- clarity score = the main “style” variable
+- residual = secondary / companion variable, not the main clarity construct
+
+PRIMARY SPEAKER FAMILIES
+- CEO clarity score
+- Manager clarity score
+
+SECONDARY SPEAKER FAMILIES
+- CEO residual
+- Manager residual
+
+PRIMARY CONTROL CONSTRAINT
+- final H9 suite must use COMPUSTAT-ONLY controls
+- remove CRSP / IBES controls from the final H9 econometric specification
+
+IMPORTANT ARCHITECTURE CONSTRAINT
+- Keep the existing H9 firm-year survival architecture for this pass
+- Do NOT attempt a call-level redesign here
+- Make the current architecture internally correct first
+
+==================================================
+HARD RULES
+==================================================
+
+1. ALLOWED CODE EDIT TARGETS
+You may edit ONLY the files that are truly necessary to make H9 correct within the current architecture.
+
+Expected likely edit targets:
+- src/f1d/variables/build_h9_takeover_panel.py
+- src/f1d/econometric/run_h9_takeover_hazards.py
+
+You may edit one additional helper file ONLY IF absolutely required to source the needed variables or fix H9-specific report generation.
+If you think a third code file is needed, STOP and document why before editing it.
+
+2. DO NOT TOUCH THESE IN THIS PASS
+- docs/provenance/H9.md
+- any thesis prose docs
+- non-H9 suites
+- non-H9 report generators
+- unrelated variable engines unless absolutely required for H9 variables to flow through
+
+3. NO ARCHITECTURE LEAP
+Do not attempt:
+- call-level redesign
+- new estimator family
+- new data source integration beyond what the repo already has
+- grand refactors
+
+4. NO GUESSING
+Use actual repo variable names and actual available inputs.
+If manager clarity scores are not actually wired in, verify that and then wire them in carefully.
+Do not hallucinate columns.
+
+5. RERUN DISCIPLINE
+Rerun only what is needed after edits:
+- Stage 3 H9 panel build if panel variables changed
+- Stage 4 H9 hazard run after Stage 3 / code edits
+
+==================================================
+THE 6 TASKS YOU MUST COMPLETE
+==================================================
+
+TASK 1 — LOCK THE TARGET H9 SPEC AGAINST THE CURRENT CODE
+
+Before editing, inspect the current H9 implementation and explicitly identify where it differs from the desired target.
+
+You must verify:
+- what the current model families are
+- which speaker variants currently run
+- whether Manager clarity score is currently used anywhere
+- whether residual variants are currently mixed into the main table family
+- what the current controls are
+- whether CRSP / IBES controls are currently active in the H9 runner
+- whether the current report text still describes the wrong suite
+
+In the markdown output, create:
+
+# Task 1 — Target Spec Lock
+
+This section must include:
+- current H9 implementation summary
+- desired H9 implementation summary
+- a “gap list” with each mismatch
+- exact file path(s) and code snippet(s) supporting each mismatch
+
+Minimum mismatches to check explicitly:
+1. current controls still include StockRet / MarketRet / SurpDec
+2. current suite does not cleanly separate style models from residual models
+3. current suite does not yet treat CEO clarity + Manager clarity as the main constructs
+4. current presentation/report layer may still reflect old variant wording
+
+Do not edit anything until this section is complete.
+
+--------------------------------------------------
+TASK 2 — FIX THE PANEL / VARIABLE FLOW FOR THE CORRECT H9 INPUTS
+--------------------------------------------------
+
+Now fix the H9 variable flow so the final suite can estimate the intended models.
+
+Requirements:
+- ensure the H9 panel includes the correct speaker variables for final estimation:
+  - ClarityCEO (or exact repo equivalent)
+  - Manager clarity score (actual repo variable name, verify it)
+  - CEO residual
+  - Manager residual
+- keep the corrected takeover outcome variables from Pass 03
+- do not change event definitions again
+- do not change sample architecture again
+
+Compustat-only controls that must be available in the final H9 panel:
+PRIMARY SPARSE BLOCK
+- Size
+- BM
+- Lev
+- ROA
+- Cash
+
+EXPANDED ROBUSTNESS BLOCK
+- SalesGrowth
+- Intangibility
+- AssetGrowth
+
+Rules:
+- use actual repo naming conventions
+- use only Compustat-buildable controls in the final H9 econometric spec
+- if one of the 3 expanded controls is unavailable in the current repo pipeline, document that precisely and substitute NOTHING silently
+- keep the sparse block intact even if expanded block cannot be fully built
+
+In the markdown output, create:
+
+# Task 2 — Panel / Variable Flow Fixes
+
+This section must include:
+- files edited
+- exact before / after snippets
+- final variable list flowing into H9
+- any variable that could not be added and why
+
+--------------------------------------------------
+TASK 3 — FIX THE H9 ECONOMETRIC SPEC TO MATCH THE RESEARCH QUESTION
+--------------------------------------------------
+
+Edit the H9 econometric runner so the actual estimated suite matches the intended question.
+
+Implement this exact model organization:
+
+A. PRIMARY STYLE MODELS
+These are the main H9 models.
+
+Family 1:
+- All bids ~ CEO clarity + sparse Compustat controls
+- Uninvited ~ CEO clarity + sparse Compustat controls
+- Friendly ~ CEO clarity + sparse Compustat controls
+
+Family 2:
+- All bids ~ Manager clarity + sparse Compustat controls
+- Uninvited ~ Manager clarity + sparse Compustat controls
+- Friendly ~ Manager clarity + sparse Compustat controls
+
+B. SECONDARY RESIDUAL MODELS
+These are companion models, not the main clarity test.
+
+Family 3:
+- All bids ~ CEO residual + sparse Compustat controls
+- Uninvited ~ CEO residual + sparse Compustat controls
+- Friendly ~ CEO residual + sparse Compustat controls
+
+Family 4:
+- All bids ~ Manager residual + sparse Compustat controls
+- Uninvited ~ Manager residual + sparse Compustat controls
+- Friendly ~ Manager residual + sparse Compustat controls
+
+C. EXPANDED-CONTROL ROBUSTNESS
+Run expanded-control versions ONLY for the two PRIMARY style families if the expanded Compustat controls exist.
+Do not let expanded-control robustness replace the sparse primary suite.
+
+D. INFERENCE RULES
+- use two-sided inference for the main outputs
+- do not present one-tailed p-values as the main inference
+- keep hazard ratios / CIs aligned with the actual model outputs
+
+E. PRESENTATION RULE
+Do NOT force everything into one giant mixed table if that causes confusion.
+Preferred output structure:
+- one table/report section for PRIMARY STYLE MODELS
+- one table/report section for SECONDARY RESIDUAL MODELS
+- one robustness section for expanded controls
+
+F. DO NOT REINTRODUCE OLD CONTROLS
+The final H9 runner must no longer use:
+- StockRet
+- MarketRet
+- SurpDec
+
+In the markdown output, create:
+
+# Task 3 — Econometric Spec Fixes
+
+This section must include:
+- exact files edited
+- exact before / after snippets for control block(s), model variant definitions, and report labeling
+- final primary model menu
+- final secondary model menu
+- confirmation that CRSP / IBES controls are removed from final H9 spec
+
+--------------------------------------------------
+TASK 4 — RERUN ONLY WHAT IS NEEDED
+--------------------------------------------------
+
+After the edits:
+- rerun Stage 3 H9 panel build if panel variables changed
+- rerun Stage 4 H9 hazards
+
+Use the repo’s actual commands.
+Do not rerun unrelated stages.
+
+In the markdown output, create:
+
+# Task 4 — Rerun Log
+
+This section must include:
+- exact commands run
+- success/failure
+- output directories generated
+- list of key regenerated files
+
+If anything fails, stop and document the failure precisely.
+Do not start making unrelated fixes.
+
+--------------------------------------------------
+TASK 5 — VERIFY THAT H9 NOW MATCHES THE TARGET QUESTION
+--------------------------------------------------
+
+After rerun, verify all of the following:
+
+1. CEO clarity models exist and ran
+2. Manager clarity models exist and ran
+3. CEO residual models exist and ran
+4. Manager residual models exist and ran
+5. no final H9 model uses StockRet
+6. no final H9 model uses MarketRet
+7. no final H9 model uses SurpDec
+8. uninvited is defined as hostile + unsolicited
+9. friendly is defined as friendly + neutral
+10. unknown remains censored / non-target in cause-specific models
+11. style models and residual models are separated in output structure
+12. primary outputs focus on clarity score families, not residual families
+
+In the markdown output, create:
+
+# Task 5 — Post-Run Verification
+
+This section must include:
+- a 12-row pass/fail table for the checks above
+- short evidence snippets
+- any remaining defect
+
+If any of the 12 checks fail, say so explicitly.
+
+--------------------------------------------------
+TASK 6 — WRITE THE SINGLE OUTPUT FILE AND INCLUDE THE NEXT PROVENANCE TEMPLATE
+--------------------------------------------------
+
+Write exactly one markdown file:
+CLAUDE_H9_IMPLEMENT_PASS_05.md
+
+It must contain exactly these top-level headings in this exact order:
+
+# H9 Implementation Alignment — Pass 05
+# Task 1 — Target Spec Lock
+# Task 2 — Panel / Variable Flow Fixes
+# Task 3 — Econometric Spec Fixes
+# Task 4 — Rerun Log
+# Task 5 — Post-Run Verification
+# Task 6 — Final Result and Next Provenance Template
+
+Before the first heading, include this exact 5-line metadata block:
+
+File: CLAUDE_H9_IMPLEMENT_PASS_05.md
+Scope: H9 implementation alignment within current architecture
+Edits made: H9 implementation files only
+Model/code changes made: Yes
+Status: Complete
+
+In Task 6 — Final Result and Next Provenance Template, provide:
+1. final verdict:
+   - IMPLEMENTATION ALIGNED
+   - IMPLEMENTATION PARTIALLY ALIGNED
+   - IMPLEMENTATION BLOCKED
+2. files edited
+3. final output run path(s)
+4. concise list of what is now true about H9
+5. concise list of what still remains
+6. a RECOMMENDED STANDARD PROVENANCE OUTLINE for the next pass, using exactly this structure:
+
+   I. Suite Identity and Status
+   II. Research Question and Current Hypotheses
+   III. Canonical Inputs and Upstream Dependencies
+   IV. Sample Construction and Filters
+   V. Variable Dictionary
+   VI. Model Specification Register
+   VII. Output Artifacts and Active Run Paths
+   VIII. Verification Summary
+   IX. Known Limitations / Open Issues
+   X. Change Log
+
+For that outline:
+- do not rewrite the provenance doc yet
+- just provide the clean template headings and 1-2 sentence notes for what belongs in each section
+
+==================================================
+EXECUTION DISCIPLINE
+==================================================
+
+Work slowly.
+Inspect first.
+Edit only what is needed.
+Keep architecture fixed.
+Make the suite itself correct.
+Rerun only needed H9 stages.
+Write the markdown file.
+Stop.
