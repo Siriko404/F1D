@@ -18,6 +18,7 @@ import pandas as pd
 
 from .base import VariableBuilder, VariableResult, VariableStats
 from ._clarity_residual_engine import get_engine
+from f1d.shared.path_utils import OutputResolutionError
 
 
 class CEOClarityResidualBuilder(VariableBuilder):
@@ -40,8 +41,8 @@ class CEOClarityResidualBuilder(VariableBuilder):
 
         try:
             source_df = engine.get_ceo_residuals(root_path)
-        except FileNotFoundError as e:
-            # Return empty result if residuals not yet computed
+        except (FileNotFoundError, OutputResolutionError) as e:
+            # Return empty result if residuals not yet computed or H0.3 dir never existed
             return VariableResult(
                 data=pd.DataFrame(columns=["file_name", self.column]),
                 stats=VariableStats(

@@ -8,19 +8,22 @@ Description: Run H7 Illiquidity hypothesis test by loading the call-level panel
              from Stage 3, running fixed effects OLS regressions by industry
              sample, and outputting results.
 
-Model Specification (contemporaneous DV):
+Model Specification (post-call DV):
     Amihud_Illiq_{t} ~ Uncertainty_IV_t + Entire_All_Negative_pct + Analyst_QA_Uncertainty_pct +
                        Size + Lev + ROA + TobinsQ + Volatility + StockRet +
                        EntityEffects + TimeEffects
 
 Unit of observation: individual earnings call (file_name).
-DV: amihud_illiq (contemporaneous Amihud illiquidity measure).
+DV: amihud_illiq (post-call Amihud illiquidity measure, window [call+1d, next_call-5d]).
 
-Specifications (4 single-IV regressions):
+Specifications (6 single-IV regressions + 1 joint Manager spec):
     A1: CEO_QA_Uncertainty_pct
     A2: CEO_Pres_Uncertainty_pct
     A3: Manager_QA_Uncertainty_pct
     A4: Manager_Pres_Uncertainty_pct
+    A5: Joint (Manager_QA + Manager_Pres) — H7-C Wald test
+    B1: CEO_Clarity_Residual
+    B2: Manager_Clarity_Residual
 
 Hypothesis Tests (one-tailed):
     H7: beta(Uncertainty_IV) > 0 (vagueness increases illiquidity)
@@ -164,9 +167,12 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     )
     # Note: Weak_Modal_Gap not computed - Manager_Pres_Weak_Modal_pct not in panel
 
-    # Year from start_date (time FE axis)
-    if "year" not in df.columns:
-        df["year"] = pd.to_datetime(df["start_date"], errors="coerce").dt.year
+    # Integer quarter index for linearmodels (pd.Period not accepted as time index)
+    # call_quarter_int encodes (gvkey, quarter) uniquely: 2007Q3 → 8030
+    if "call_quarter" in df.columns:
+        df["call_quarter_int"] = (
+            df["call_quarter"].dt.year * 4 + df["call_quarter"].dt.quarter - 1
+        )
 
     return df
 
@@ -180,12 +186,12 @@ def run_regression(
 ) -> Tuple[Optional[Any], Dict[str, Any]]:
     """Run a single PanelOLS regression for the given spec.
 
-    DV  : amihud_illiq (contemporaneous illiquidity)
+    DV  : amihud_illiq (post-call illiquidity)
     IV  : iv_var (single uncertainty measure)
-    FE  : firm (gvkey) + year, clustered by entity (gvkey)
+    FE  : firm (gvkey) + call_quarter (integer), clustered by entity (gvkey)
     """
     required = (
-        ["amihud_illiq", iv_var] + BASE_CONTROLS + ["gvkey", "year", "file_name"]
+        ["amihud_illiq", iv_var] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
     )
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
 
@@ -209,7 +215,12 @@ def run_regression(
 
     t0 = datetime.now()
 
-    df_panel = df_reg.set_index(["gvkey", "year"])
+    if not df_reg.set_index(["gvkey", "call_quarter_int"]).index.is_unique:
+        n_dupes = df_reg.duplicated(subset=["gvkey", "call_quarter_int"]).sum()
+        warnings.warn(
+            f"[{spec_id}] Panel index (gvkey, call_quarter_int) has {n_dupes} non-unique pairs."
+        )
+    df_panel = df_reg.set_index(["gvkey", "call_quarter_int"])
 
     try:
         model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
@@ -222,6 +233,11 @@ def run_regression(
     print(f"  [OK] Complete in {duration:.1f}s")
     print(f"  R-squared (within): {model.rsquared_within:.4f}")
     print(f"  N obs:              {int(model.nobs):,}")
+
+    expected_regressors = {iv_var} | set(BASE_CONTROLS)
+    absorbed = expected_regressors - set(model.params.index)
+    if absorbed:
+        warnings.warn(f"[{spec_id}] Absorbed regressors: {absorbed}")
 
     beta1 = float(model.params.get(iv_var, np.nan))
     beta1_se = float(model.std_errors.get(iv_var, np.nan))
@@ -319,7 +335,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Analyst Uncertainty & Yes & Yes & Yes & Yes & Yes & Yes \\",
         r"Controls & Yes & Yes & Yes & Yes & Yes & Yes \\",
         r"Firm FE  & Yes & Yes & Yes & Yes & Yes & Yes \\",
-        r"Year FE  & Yes & Yes & Yes & Yes & Yes & Yes \\",
+        r"Quarter FE & Yes & Yes & Yes & Yes & Yes & Yes \\",
         r"\midrule",
     ]
 
@@ -347,7 +363,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"columns (B1)--(B2) use clarity residuals (idiosyncratic uncertainty after firm/linguistic controls). "
         r"Firms with fewer than 5 calls are excluded. "
         r"Standard errors (in parentheses) are clustered at the firm level. "
-        r"All continuous controls are winsorized at 1\%/99\% per year. "
+        r"CRSP and Compustat financial variables are winsorized at the 1st/99th percentile per year. "
+        r"Linguistic variables (all \textit{\_pct} columns) are winsorized at the 0th/99th percentile per year "
+        r"(upper-tail only, given their natural lower bound of zero). "
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H7).",
         r"}",
         r"\end{table}",
@@ -357,6 +375,221 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         f.write("\n".join(lines))
 
     print(f"  LaTeX table saved: {tex_path.name}")
+
+
+def _run_h7c_joint_regression(
+    df_sample: pd.DataFrame,
+    out_dir: Path,
+    min_calls: int = 5,
+) -> Optional[Dict[str, Any]]:
+    """Run joint Manager spec (A5) and formal Wald test for H7-C.
+
+    Tests H₀: β(Manager_QA) = β(Manager_Pres) via Wald χ² test.
+    H7-C uses Manager specs only; CEO specs excluded due to selection concerns (L5).
+    """
+    iv_qa = "Manager_QA_Uncertainty_pct"
+    iv_pres = "Manager_Pres_Uncertainty_pct"
+    required = (
+        ["amihud_illiq", iv_qa, iv_pres] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
+    )
+    df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
+
+    if min_calls > 1:
+        call_counts = df_reg.groupby("gvkey")["file_name"].transform("count")
+        df_reg = df_reg[call_counts >= min_calls].copy()
+
+    if len(df_reg) < 100:
+        print("  A5: insufficient data for joint Manager spec")
+        return None
+
+    formula = (
+        f"amihud_illiq ~ {iv_qa} + {iv_pres} + "
+        + " + ".join(BASE_CONTROLS)
+        + " + EntityEffects + TimeEffects"
+    )
+
+    # Report correlation between the two IVs (multicollinearity check)
+    try:
+        corr = df_reg[[iv_qa, iv_pres]].corr().iloc[0, 1]
+        print(f"  A5: Pearson r(Manager_QA, Manager_Pres) = {corr:.3f}")
+    except Exception:
+        pass
+
+    print(f"  A5 Formula: amihud_illiq ~ {iv_qa} + {iv_pres} + controls")
+    print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
+
+    df_panel = df_reg.set_index(["gvkey", "call_quarter_int"])
+
+    try:
+        model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+        model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+    except Exception as e:
+        print(f"  ERROR: A5 PanelOLS failed: {e}", file=sys.stderr)
+        return None
+
+    beta_qa = float(model.params.get(iv_qa, np.nan))
+    beta_pres = float(model.params.get(iv_pres, np.nan))
+    se_qa = float(model.std_errors.get(iv_qa, np.nan))
+    se_pres = float(model.std_errors.get(iv_pres, np.nan))
+    p_qa = float(model.pvalues.get(iv_qa, np.nan))
+    p_pres = float(model.pvalues.get(iv_pres, np.nan))
+
+    print(f"  beta(Manager_QA)   = {beta_qa:.4f}  SE={se_qa:.4f}  p={p_qa:.4f}")
+    print(f"  beta(Manager_Pres) = {beta_pres:.4f}  SE={se_pres:.4f}  p={p_pres:.4f}")
+
+    # Wald test: H₀: β_QA = β_Pres → β_QA − β_Pres = 0
+    wald_chi2 = np.nan
+    wald_pval = np.nan
+    h7c_supported = False
+    try:
+        params_names = list(model.params.index)
+        r = np.zeros(len(params_names))
+        r[params_names.index(iv_qa)] = 1.0
+        r[params_names.index(iv_pres)] = -1.0
+        wald = model.wald_test(
+            restriction=np.array([r]),
+            value=np.array([0.0]),
+        )
+        wald_chi2 = float(wald.stat)
+        wald_pval = float(wald.pval)
+        h7c_supported = (beta_qa > beta_pres) and (wald_pval < 0.05)
+        print(f"  Wald test (H0: b_QA=b_Pres): chi2={wald_chi2:.4f}  p={wald_pval:.4f}")
+        print(f"  H7-C: {'SUPPORTED' if h7c_supported else 'not supported'}")
+    except Exception as e:
+        print(f"  Wald test failed: {e}")
+
+    txt_file = out_dir / "regression_Main_A5.txt"
+    with open(txt_file, "w", encoding="utf-8") as f:
+        f.write(str(model.summary))
+
+    return {
+        "spec_id": "A5",
+        "sample": "Main",
+        "iv_var": "Joint_Manager",
+        "n_obs": int(model.nobs),
+        "n_firms": df_reg["gvkey"].nunique(),
+        "n_clusters": df_reg["gvkey"].nunique(),
+        "cluster_var": "gvkey",
+        "within_r2": float(model.rsquared_within),
+        "beta1": beta_qa,
+        "beta1_se": se_qa,
+        "beta1_t": float(model.tstats.get(iv_qa, np.nan)),
+        "beta1_p_two": p_qa,
+        "beta1_p_one": p_qa / 2 if beta_qa > 0 else 1 - p_qa / 2,
+        "h7_sig": False,
+        "beta_mgr_pres": beta_pres,
+        "wald_chi2": wald_chi2,
+        "wald_pval": wald_pval,
+        "h7c_supported": h7c_supported,
+    }
+
+
+def _run_robustness_battery(
+    df_prep: pd.DataFrame,
+    out_dir: Path,
+    min_calls: int = 5,
+) -> None:
+    """Run robustness checks for H7 primary Manager specs (A3/A4).
+
+    Checks:
+        1. Two-way cluster (firm × quarter) SEs
+        2. Subperiod: pre-GFC (year < 2008) and post-GFC (year >= 2008)
+        3. Large-firm sensitivity (firms with >= 50 calls over sample period)
+        4. Industry subsamples (within-Main FF12 groups)
+    """
+    robustness_results: List[Dict[str, Any]] = []
+    df_main = df_prep[df_prep["sample"] == "Main"].copy()
+
+    ROBUSTNESS_SPECS = [
+        ("A3", "Manager_QA_Uncertainty_pct"),
+        ("A4", "Manager_Pres_Uncertainty_pct"),
+    ]
+
+    def _fit_spec(df_r: pd.DataFrame, spec_id: str, iv_var: str, check_label: str, two_way: bool = False) -> Optional[Dict[str, Any]]:
+        required = (
+            ["amihud_illiq", iv_var] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
+        )
+        df_reg = df_r.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
+        if min_calls > 1:
+            cc = df_reg.groupby("gvkey")["file_name"].transform("count")
+            df_reg = df_reg[cc >= min_calls].copy()
+        if len(df_reg) < 50:
+            return None
+        formula = (
+            f"amihud_illiq ~ {iv_var} + " + " + ".join(BASE_CONTROLS)
+            + " + EntityEffects + TimeEffects"
+        )
+        df_panel = df_reg.set_index(["gvkey", "call_quarter_int"])
+        try:
+            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+            if two_way:
+                model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=True)
+            else:
+                model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+            beta = float(model.params.get(iv_var, np.nan))
+            se = float(model.std_errors.get(iv_var, np.nan))
+            p = float(model.pvalues.get(iv_var, np.nan))
+            print(f"  {spec_id} [{check_label}]: beta={beta:.4f}  SE={se:.4f}  p={p:.4f}  N={int(model.nobs):,}")
+            return {
+                "check": check_label, "spec_id": spec_id, "iv_var": iv_var,
+                "n_obs": int(model.nobs), "n_firms": df_reg["gvkey"].nunique(),
+                "beta1": beta, "beta1_se": se, "beta1_p_two": p,
+            }
+        except Exception as e:
+            print(f"  {spec_id} [{check_label}] failed: {e}")
+            return None
+
+    # (1) Two-way cluster (firm × quarter)
+    print("\n--- Robustness 1: Two-way cluster (firm × quarter) ---")
+    for spec_id, iv_var in ROBUSTNESS_SPECS:
+        res = _fit_spec(df_main, spec_id, iv_var, "two_way_cluster", two_way=True)
+        if res:
+            robustness_results.append(res)
+
+    # (2) Subperiod: pre-GFC (< 2008) and post-GFC (>= 2008)
+    print("\n--- Robustness 2: Subperiod (pre/post-GFC, split 2008) ---")
+    if "year" in df_main.columns:
+        for period_label, mask in [
+            ("pre_GFC", df_main["year"] < 2008),
+            ("post_GFC", df_main["year"] >= 2008),
+        ]:
+            df_sub = df_main[mask].copy()
+            print(f"  {period_label}: N={len(df_sub):,}  firms={df_sub['gvkey'].nunique():,}")
+            for spec_id, iv_var in ROBUSTNESS_SPECS:
+                res = _fit_spec(df_sub, spec_id, iv_var, period_label)
+                if res:
+                    robustness_results.append(res)
+
+    # (3) Large-firm sensitivity (firms with >= 50 calls over sample period)
+    print("\n--- Robustness 3: Large-firm sensitivity (>= 50 calls) ---")
+    call_freq = df_main.groupby("gvkey")["file_name"].transform("count")
+    df_large = df_main[call_freq >= 50].copy()
+    print(f"  Firms >= 50 calls: {df_large['gvkey'].nunique():,}  |  Obs: {len(df_large):,}")
+    for spec_id, iv_var in ROBUSTNESS_SPECS:
+        res = _fit_spec(df_large, spec_id, iv_var, "large_firm")
+        if res:
+            robustness_results.append(res)
+
+    # (4) Industry subsamples (within-Main FF12 groups)
+    print("\n--- Robustness 4: Industry subsamples (FF12) ---")
+    if "ff12_code" in df_main.columns:
+        ff12_groups = sorted(df_main["ff12_code"].dropna().unique())
+        for ff12 in ff12_groups:
+            df_ind = df_main[df_main["ff12_code"] == ff12].copy()
+            for spec_id, iv_var in ROBUSTNESS_SPECS:
+                res = _fit_spec(df_ind, spec_id, iv_var, f"ff12_{ff12}")
+                if res:
+                    res["ff12_code"] = ff12
+                    robustness_results.append(res)
+
+    # Save robustness results
+    if robustness_results:
+        rob_df = pd.DataFrame(robustness_results)
+        rob_path = out_dir / "robustness_results.csv"
+        rob_df.to_csv(rob_path, index=False)
+        print(f"\n  Saved: {rob_path.name} ({len(rob_df)} robustness checks)")
+    else:
+        print("  No robustness results to save.")
 
 
 def main(panel_path: Optional[str] = None) -> int:
@@ -405,6 +638,7 @@ def main(panel_path: Optional[str] = None) -> int:
             "file_name",
             "gvkey",
             "year",
+            "call_quarter",
             "ff12_code",
             "start_date",
             # DV (contemporaneous)
@@ -479,10 +713,12 @@ def main(panel_path: Optional[str] = None) -> int:
         for spec_id, iv_var, iv_label in SPECS:
             print(f"\n--- {sample} / {spec_id}: {iv_label} ---")
 
-            # B specs only run for Main sample (residuals computed from Main-only H0.3)
-            if spec_id in MAIN_ONLY_SPECS and sample != "Main":
-                print(f"\n--- {sample} / {spec_id}: SKIPPED (Main-only spec) ---")
-                continue
+            # B-specs are Main-only by design; enforced via CONFIG["samples"] = ["Main"]
+            if spec_id in MAIN_ONLY_SPECS and df_sample[iv_var].isna().all():
+                raise RuntimeError(
+                    f"{spec_id} ({iv_var}) is all-NaN. "
+                    f"Run H0.3 (ceo_clarity_extended) first and rebuild panel."
+                )
             model, meta = run_regression(
                 df_sample, spec_id, iv_var, sample,
                 min_calls=CONFIG["min_calls"]
@@ -497,56 +733,28 @@ def main(panel_path: Optional[str] = None) -> int:
                     f.write(str(model.summary))
 
     # ------------------------------------------------------------------
-    # Spontaneity gap test (H7-C): QA beta > Pres beta for Main sample
+    # H7-C: Joint Manager spec (A5) with formal Wald test
+    # H7-C is the Manager QA vs Pres comparison. CEO specs (A1/A2) are NOT
+    # included in the H7-C comparison due to CEO presence selection concerns.
     # ------------------------------------------------------------------
-    print("\n--- H7-C: Spontaneity Gap ---")
-    qa_ceo = next(
-        (
-            r
-            for r in all_results
-            if r["sample"] == "Main" and r["spec_id"] == "A1"  # CEO QA
-        ),
-        None,
-    )
-    qa_mgr = next(
-        (
-            r
-            for r in all_results
-            if r["sample"] == "Main" and r["spec_id"] == "A3"  # Manager QA
-        ),
-        None,
-    )
-    pres_ceo = next(
-        (
-            r
-            for r in all_results
-            if r["sample"] == "Main" and r["spec_id"] == "A2"  # CEO Pres
-        ),
-        None,
-    )
-    pres_mgr = next(
-        (
-            r
-            for r in all_results
-            if r["sample"] == "Main" and r["spec_id"] == "A4"  # Manager Pres
-        ),
-        None,
-    )
-
-    if qa_mgr and pres_mgr:
-        beta_qa = qa_mgr["beta1"]
-        beta_pres = pres_mgr["beta1"]
-        gap_sig = beta_qa > beta_pres and qa_mgr["h7_sig"]
-        print(f"  beta(Manager_QA_Uncertainty)   = {beta_qa:.4f}")
-        print(f"  beta(Manager_Pres_Uncertainty) = {beta_pres:.4f}")
-        print(f"  H7-C (QA > Pres): {'SUPPORTED' if gap_sig else 'not supported'}")
-    else:
-        print("  H7-C: insufficient results for comparison")
+    print("\n--- H7-C: Joint Manager Spec (Wald Test) ---")
+    df_main_h7c = df_prep[df_prep["sample"] == "Main"].copy()
+    h7c_result = _run_h7c_joint_regression(df_main_h7c, out_dir, min_calls=CONFIG["min_calls"])
+    if h7c_result:
+        all_results.append(h7c_result)
 
     # ------------------------------------------------------------------
     # Output
     # ------------------------------------------------------------------
     _save_latex_table(all_results, out_dir)
+
+    # ------------------------------------------------------------------
+    # Robustness Battery (L12/L13)
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("Robustness Battery")
+    print("=" * 60)
+    _run_robustness_battery(df_prep, out_dir, min_calls=CONFIG["min_calls"])
 
     # Generate sample attrition table
     if all_results:

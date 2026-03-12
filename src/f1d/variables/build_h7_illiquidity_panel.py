@@ -8,7 +8,7 @@ Description: Build CALL-LEVEL panel for H7 Speech Vagueness -> Stock Illiquidity
 
     Step 1: Load manifest + all call-level uncertainty measures.
     Step 2: Load base financial controls (Size, Lev, ROA, TobinsQ, Volatility, StockRet).
-    Step 3: Load the Amihud (2002) Illiquidity measure (contemporaneous).
+    Step 3: Load the Amihud (2002) Illiquidity measure (post-call window).
     Step 4: Load linguistic controls (Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct).
     Step 5: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 6: Assign industry sample (Main / Finance / Utility).
@@ -37,8 +37,6 @@ from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     NegativeSentimentBuilder,
@@ -85,12 +83,6 @@ def build_panel(
         ),
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
-        ),
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
-        ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
         ),
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
@@ -144,7 +136,11 @@ def build_panel(
         print(f"  After {name} merge: {after_len:,} rows (delta: {delta:+d})")
 
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
+    nan_ff12 = panel["ff12_code"].isna().sum()
+    if nan_ff12 > 0:
+        print(f"  NaN ff12_code classified as Main: {nan_ff12:,} calls")
     panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
+    panel["call_quarter"] = pd.to_datetime(panel["start_date"]).dt.to_period("Q")
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 

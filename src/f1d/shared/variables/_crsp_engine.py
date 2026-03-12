@@ -14,9 +14,9 @@ Bug fixes applied here (from red-team audit):
     CRITICAL-4: PERMNO coerce-and-dropna before astype(int) — if any CRSP row
                 has a NaN PERMNO (data quality issue) it is dropped cleanly
                 rather than crashing the entire year's computation.
-    MAJOR-2:    prev_call_date computed on the FULL manifest before year-filtering
-                so the first call of year Y correctly uses the prior call from
-                year Y-1 rather than getting NaN (which would drop the observation).
+    MAJOR-2:    prev_call_date and next_call_date computed on the FULL manifest
+                before year-filtering so the first/last call of year Y correctly
+                uses adjacent calls from year Y-1/Y+1 rather than getting NaN.
 """
 
 from __future__ import annotations
@@ -35,11 +35,11 @@ logger = logging.getLogger(__name__)
 CRSP_RETURN_COLS = ["StockRet", "MarketRet", "Volatility", "amihud_illiq"]
 
 # Additional columns needed for bid-ask spread calculations (H14)
-CRSP_BIDASK_COLS = ["BIDLO", "ASKHI", "SHROUT"]
+CRSP_BIDASK_COLS = ["BIDLO", "ASKHI", "BID", "ASK", "SHROUT"]
 
 MIN_TRADING_DAYS = 10
-DAYS_AFTER_PREV_CALL = 5
-DAYS_BEFORE_CURRENT_CALL = 5
+DAYS_AFTER_CURRENT_CALL = 1    # window starts 1 trading day after call
+DAYS_BEFORE_NEXT_CALL = 5      # window ends 5 trading days before next call
 
 
 def _load_crsp_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]:
@@ -69,7 +69,7 @@ def _load_crsp_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]
 
                     # Ensure columns exist before subsetting
                     # Include BIDLO, ASKHI, SHROUT for bid-ask spread calculations (H14)
-                    keep_cols = ["PERMNO", "date", "RET", "VWRETD", "VOL", "PRC", "BIDLO", "ASKHI", "SHROUT"]
+                    keep_cols = ["PERMNO", "date", "RET", "VWRETD", "VOL", "PRC", "BIDLO", "ASKHI", "BID", "ASK", "SHROUT"]
                     for c in keep_cols:
                         if c not in df.columns:
                             df[c] = np.nan
@@ -85,7 +85,7 @@ def _load_crsp_years(crsp_dir: Path, years: List[int]) -> Optional[pd.DataFrame]
     crsp = pd.concat(all_data, ignore_index=True)
 
     crsp["date"] = pd.to_datetime(crsp["date"])
-    for col in ["RET", "VOL", "VWRETD", "ASKHI", "BIDLO", "PRC", "SHROUT"]:
+    for col in ["RET", "VOL", "VWRETD", "ASKHI", "BIDLO", "BID", "ASK", "PRC", "SHROUT"]:
         if col in crsp.columns:
             crsp[col] = pd.to_numeric(crsp[col], errors="coerce")
     if "PRC" in crsp.columns:
@@ -178,7 +178,7 @@ def _compute_returns_for_manifest(
 
     valid = manifest[
         manifest["permno_int"].notna()
-        & manifest["prev_call_date"].notna()
+        & manifest["next_call_date"].notna()
         & (manifest["window_end"] > manifest["window_start"])
     ].copy()
 
@@ -311,18 +311,21 @@ class CRSPEngine:
             )
 
             # Load full manifest (all years) for prev_call_date — MAJOR-2 fix
-            logger.info("    CRSPEngine: loading manifest (full) for prev_call_date...")
+            logger.info("    CRSPEngine: loading manifest (full) for prev/next_call_date...")
             full_manifest = pd.read_parquet(
                 manifest_path, columns=["file_name", "gvkey", "start_date"]
             )
             full_manifest["gvkey"] = full_manifest["gvkey"].astype(str).str.zfill(6)
             full_manifest["start_date"] = pd.to_datetime(full_manifest["start_date"])
 
-            # --- MAJOR-2: Compute prev_call_date on FULL manifest ---
+            # --- MAJOR-2: Compute prev/next_call_date on FULL manifest ---
             full_manifest = full_manifest.sort_values(["gvkey", "start_date"])
             full_manifest["prev_call_date"] = full_manifest.groupby("gvkey")[
                 "start_date"
             ].shift(1)
+            full_manifest["next_call_date"] = full_manifest.groupby("gvkey")[
+                "start_date"
+            ].shift(-1)
             full_manifest["year"] = full_manifest["start_date"].dt.year
 
             # --- CRITICAL-3: Date-bounded PERMNO linkage via CCM ---
@@ -356,13 +359,13 @@ class CRSPEngine:
                 year_manifest = full_manifest[full_manifest["year"] == year].copy()
 
                 year_manifest["window_start"] = year_manifest[
-                    "prev_call_date"
-                ] + pd.Timedelta(days=DAYS_AFTER_PREV_CALL)
-                year_manifest["window_end"] = year_manifest[
                     "start_date"
-                ] - pd.Timedelta(days=DAYS_BEFORE_CURRENT_CALL)
+                ] + pd.Timedelta(days=DAYS_AFTER_CURRENT_CALL)
+                year_manifest["window_end"] = year_manifest[
+                    "next_call_date"
+                ] - pd.Timedelta(days=DAYS_BEFORE_NEXT_CALL)
 
-                crsp = _load_crsp_years(crsp_dir, [year - 1, year])
+                crsp = _load_crsp_years(crsp_dir, [year, year + 1])
                 if crsp is None:
                     logger.info(f"    CRSPEngine: no CRSP data for {year}, skipping")
                     year_manifest["StockRet"] = np.nan
