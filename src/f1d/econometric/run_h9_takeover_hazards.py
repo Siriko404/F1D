@@ -506,6 +506,8 @@ def extract_results(
     event_type: str,
     covariates: List[str],
     concordance: Optional[float] = None,
+    control_block: str = "sparse",
+    strata: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Extract key coefficient rows from fitted CoxPHFitter."""
     rows = []
@@ -531,6 +533,8 @@ def extract_results(
                     "concordance": concordance
                     if concordance is not None
                     else float("nan"),
+                    "control_block": control_block,
+                    "strata": strata if strata else "none",
                 }
             )
     return rows
@@ -755,7 +759,7 @@ def main(panel_path: Optional[str] = None) -> int:
             concordance = compute_concordance_time_varying(ctv, df_used, event_col)
 
             var_key_out = (
-                f"{variant_key}_expanded" if control_label == "expanded" else variant_key
+                f"{variant_key}_{control_label}" if control_label != "sparse" else variant_key
             )
             hr_rows = extract_results(
                 ctv,
@@ -766,6 +770,8 @@ def main(panel_path: Optional[str] = None) -> int:
                 event_type,
                 covariates,
                 concordance=concordance,
+                control_block=control_label,
+                strata=strata if strata else None,
             )
             all_hr_rows.extend(hr_rows)
 
@@ -820,33 +826,35 @@ def main(panel_path: Optional[str] = None) -> int:
                 variant_key, variant_spec, EXPANDED_CONTROLS, "expanded",
             )
 
-    # ---- D. YEAR-STRATIFIED ROBUSTNESS (primary style, sparse) ----
+    # ---- D. YEAR-STRATIFIED ROBUSTNESS (all variants, sparse) ----
     print(f"\n{'=' * 80}")
-    print("YEAR-STRATIFIED ROBUSTNESS (primary style)")
+    print("YEAR-STRATIFIED ROBUSTNESS (all variants)")
     print("=" * 80)
 
     for file_stem, event_col, model_label, event_type in model_defs:
         out_file = out_dir / f"{file_stem}_strata_year.txt"
         out_file.write_text(f"Generated: {timestamp}\n")
-        _run_variant(
-            f"{file_stem}_strata_year", event_col, model_label, event_type,
-            "CEO", MODEL_VARIANTS["CEO"], SPARSE_CONTROLS, "strata_year",
-            strata="year",
-        )
+        for variant_key, variant_spec in MODEL_VARIANTS.items():
+            _run_variant(
+                f"{file_stem}_strata_year", event_col, model_label, event_type,
+                variant_key, variant_spec, SPARSE_CONTROLS, "strata_year",
+                strata="year",
+            )
 
-    # ---- E. INDUSTRY-STRATIFIED ROBUSTNESS (primary style, sparse) ----
+    # ---- E. INDUSTRY-STRATIFIED ROBUSTNESS (all variants, sparse) ----
     print(f"\n{'=' * 80}")
-    print("INDUSTRY-STRATIFIED ROBUSTNESS (primary style)")
+    print("INDUSTRY-STRATIFIED ROBUSTNESS (all variants)")
     print("=" * 80)
 
     for file_stem, event_col, model_label, event_type in model_defs:
         out_file = out_dir / f"{file_stem}_strata_industry.txt"
         out_file.write_text(f"Generated: {timestamp}\n")
-        _run_variant(
-            f"{file_stem}_strata_industry", event_col, model_label, event_type,
-            "CEO", MODEL_VARIANTS["CEO"], SPARSE_CONTROLS, "strata_industry",
-            strata="ff12_code",
-        )
+        for variant_key, variant_spec in MODEL_VARIANTS.items():
+            _run_variant(
+                f"{file_stem}_strata_industry", event_col, model_label, event_type,
+                variant_key, variant_spec, SPARSE_CONTROLS, "strata_industry",
+                strata="ff12_code",
+            )
 
     # Save outputs
     print("\n" + "=" * 60)
