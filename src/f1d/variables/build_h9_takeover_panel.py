@@ -1,46 +1,54 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build Takeover Panel (4.3 Takeover Hazards)
+H9: Build Takeover Panel
 ================================================================================
 ID: variables/build_h9_takeover_panel
-Description: Build firm-year panel for Takeover Hazard survival analysis (4.3).
+Description: Build call-to-call counting-process panel for Takeover Hazard
+             survival analysis (H9).
 
-The panel is aggregated to firm-year level (not call-level), because Cox PH and
-Fine-Gray models require one observation per firm per year (time-varying
-covariates) or one observation per firm (time-invariant). Here we use the
-firm-year structure with:
-  - Duration: years from first call to takeover announcement / end of sample
-  - Takeover: 1 if firm received a bid, 0 otherwise
-  - Takeover_Type: 'Uninvited', 'Friendly', 'None'
-  - ClarityCEO (time-invariant CEO FE): merged per ceo_id × sample
-  - CEO_QA_Uncertainty_pct: averaged across calls per firm-year
-  - Financial controls: last observation per firm-year
+The panel uses CALL-TO-CALL intervals (not firm-year). Each row represents
+one risk interval that opens at an earnings call and closes at the earliest of:
+  (a) next earnings call date for the same firm
+  (b) takeover announcement date (if takeover occurs in interval)
+  (c) administrative censor date (end of sample period)
+
+Covariates measured at the call that opens the interval govern the hazard risk
+for that interval. Time units are days since 2000-01-01.
 
 Survival construction:
-  - Entry: year of first observed call for that firm
-  - Exit: year of takeover announcement OR last observed call year (censored)
-  - Duration = exit_year - entry_year + 1 (minimum 1)
+  - start: call date (days since 2000-01-01)
+  - stop:  min(next call date, takeover date, censor date) in same units
+  - Takeover: 1 only in the interval where a bid occurs, 0 otherwise
+  - Takeover_Type: 'Uninvited' (Hostile + Unsolicited), 'Friendly' (Friendly
+    + Neutral), 'None' (non-target), 'Unknown' (other attitude)
+
+Clarity constructs:
+  - ClarityCEO (time-invariant CEO FE): merged per ceo_id x sample
+  - CEO_Clarity_Residual: residualized CEO uncertainty (per call)
+  - Manager_Clarity_Residual: residualized Manager uncertainty (per call)
+  - ClarityManager: does NOT exist in the repo
+
+Financial Controls (Compustat-only, no CRSP/IBES):
+  - Size, BM, Lev, ROA, CashHoldings, SalesGrowth, Intangibility, AssetGrowth
+  - Matched to each call via the most recent fiscal year (as-of matching)
 
 Inputs (all raw):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
     - inputs/comp_na_daily_all/comp_na_daily_all.parquet  (Compustat)
-    - inputs/CRSP_DSF/CRSP_DSF_{year}_Q{q}.parquet        (CRSP daily)
-    - inputs/tr_ibes/tr_ibes.parquet                       (IBES)
-    - inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet   (CCM linktable)
     - inputs/SDC/sdc-ma-merged.parquet                     (SDC M&A)
-    - outputs/econometric/manager_clarity/latest/clarity_scores.parquet
     - outputs/econometric/ceo_clarity/latest/clarity_scores.parquet
+    - outputs/econometric/ceo_clarity_extended/latest/ceo_clarity_residual.parquet
+    - outputs/econometric/ceo_clarity_extended/latest/manager_clarity_residual.parquet
 
 Outputs:
-    - outputs/variables/takeover/{timestamp}/takeover_panel.parquet  (firm-year)
+    - outputs/variables/takeover/{timestamp}/takeover_panel.parquet  (call-to-call)
     - outputs/variables/takeover/{timestamp}/summary_stats.csv
-    - outputs/variables/takeover/{timestamp}/report_step3_takeover.md
+    - outputs/variables/takeover/{timestamp}/report_h9_panel.md
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 4 clarity scores (4.1, 4.1.1)
+    - Requires: Upstream clarity scores (H1, H0.3)
     - Uses: f1d.shared.variables, f1d.shared.config
 
 Author: Thesis Author
@@ -74,10 +82,10 @@ from f1d.shared.variables import (
     BMBuilder,
     LevBuilder,
     ROABuilder,
-    EPSGrowthBuilder,
-    StockReturnBuilder,
-    MarketReturnBuilder,
-    EarningsSurpriseBuilder,
+    CashHoldingsBuilder,
+    SalesGrowthBuilder,
+    IntangibilityBuilder,
+    AssetGrowthBuilder,
     TakeoverIndicatorBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -86,10 +94,14 @@ from f1d.shared.variables import (
 )
 
 
+# Reference date for converting dates to numeric days
+REFERENCE_DATE = pd.Timestamp("2000-01-01")
+
+
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build Takeover Panel (4.3)",
+        description="H9: Build Takeover Panel",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--dry-run", action="store_true")
@@ -99,9 +111,9 @@ def parse_arguments():
 
 
 def load_clarity_scores(root_path: Path) -> pd.DataFrame:
-    """Load ClarityCEO scores from Stage 4 outputs.
+    """Load ClarityCEO scores from upstream clarity outputs.
 
-    Note: ClarityManager was deprecated on 2026-02-28. Only CEO clarity is loaded.
+    Note: ClarityManager does not exist in the repo. Only CEO clarity is loaded.
     """
     try:
         ceo_dir = get_latest_output_dir(
@@ -129,9 +141,8 @@ def build_call_panel(
 ) -> pd.DataFrame:
     """Build call-level panel with all needed variables.
 
-    This intermediate panel is then aggregated to firm-year in build_panel().
+    Each row is one earnings call with its associated covariates.
     Includes linguistic uncertainty, financial controls, and manifest identifiers.
-    Excludes CCCL (not needed for survival analysis) and tone variables.
     """
     print("\n" + "=" * 60)
     print("Loading call-level variables")
@@ -168,12 +179,10 @@ def build_call_panel(
         "bm": BMBuilder({}),
         "lev": LevBuilder({}),
         "roa": ROABuilder({}),
-        "eps_growth": EPSGrowthBuilder({}),
-        "stock_return": StockReturnBuilder({}),
-        "market_return": MarketReturnBuilder({}),
-        "earnings_surprise": EarningsSurpriseBuilder(
-            var_config.get("earnings_surprise", {})
-        ),
+        "cash_holdings": CashHoldingsBuilder({}),
+        "sales_growth": SalesGrowthBuilder({}),
+        "intangibility": IntangibilityBuilder({}),
+        "asset_growth": AssetGrowthBuilder({}),
         "ceo_clarity_residual": CEOClarityResidualBuilder({}),
         "manager_clarity_residual": ManagerClarityResidualBuilder({}),
     }
@@ -244,247 +253,140 @@ def build_call_panel(
     return panel
 
 
-def aggregate_to_firm_year(call_panel: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate call-level panel to firm-year level.
-
-    For each gvkey × year:
-      - Uncertainty vars: mean across calls
-      - Financial controls: last value (year-end, sorted by start_date)
-      - CEO identifiers: most recent (last call per year)
-      - Counts: n_calls
-
-    Returns firm-year DataFrame.
-    """
-    print("\n" + "=" * 60)
-    print("Aggregating to firm-year")
-    print("=" * 60)
-
-    df = call_panel.sort_values(["gvkey", "year", "start_date"]).copy()
-
-    agg_mean_cols = [
-        "Manager_QA_Uncertainty_pct",
-        "CEO_QA_Uncertainty_pct",
-        "Analyst_QA_Uncertainty_pct",
-        "Entire_All_Negative_pct",
-        "CEO_Clarity_Residual",
-        "Manager_Clarity_Residual",
-    ]
-    agg_last_cols = [
-        "Size",
-        "BM",
-        "Lev",
-        "ROA",
-        "EPS_Growth",
-        "StockRet",
-        "MarketRet",
-        "SurpDec",
-        "ceo_id",
-        "ceo_name",
-        "sample",
-        "ff12_code",
-        "ff12_name",
-    ]
-    # Only aggregate columns present in panel
-    agg_mean_cols = [c for c in agg_mean_cols if c in df.columns]
-    agg_last_cols = [c for c in agg_last_cols if c in df.columns]
-
-    print(f"  Mean-aggregated columns: {agg_mean_cols}")
-    print(f"  Last-value columns: {agg_last_cols}")
-
-    # Build aggregation dict
-    agg_dict: Dict[str, Any] = {"n_calls": ("file_name", "count")}
-    for col in agg_mean_cols:
-        agg_dict[col] = (col, "mean")
-    for col in agg_last_cols:
-        agg_dict[col] = (col, "last")
-
-    firm_year = df.groupby(["gvkey", "year"]).agg(**agg_dict).reset_index()
-
-    print(f"  Firm-year panel: {len(firm_year):,} rows")
-    print(f"  Unique firms: {firm_year['gvkey'].nunique():,}")
-    print(f"  Year range: {firm_year['year'].min()} – {firm_year['year'].max()}")
-
-    return firm_year
-
-
-def build_counting_process_panel(
-    firm_year: pd.DataFrame,
+def build_call_to_call_panel(
+    call_panel: pd.DataFrame,
     takeover_data: pd.DataFrame,
     year_end: int,
 ) -> pd.DataFrame:
-    """Build counting-process format panel for CoxTimeVaryingFitter.
+    """Build call-to-call counting-process panel for CoxTimeVaryingFitter.
 
-    B7 fix: replaces one-row-per-firm with one-row-per-firm-year-at-risk.
-    Time-varying covariates (Size, Lev, ROA, StockRet, etc.) are now carried
-    at their actual observed values for each year rather than time-averaged.
+    Each row = one call-based risk interval:
+      - start = call date (days since 2000-01-01)
+      - stop  = min(next call date, takeover date, censor date) in same units
+      - Takeover = 1 only in the interval where a bid occurs
 
-    Counting-process format (Andersen-Gill):
-        start = year_t - 1   (open left endpoint, years since entry start)
-        stop  = year_t       (closed right endpoint)
-        event = 1 only in the final interval for event firms, else 0
-
-    For each firm, intervals run from (entry_year - 1) to exit_year.
-    The event is 1 only in the last interval of an event firm.
+    Covariates measured at the call that opens the interval govern hazard risk.
 
     Args:
-        firm_year: Firm-year aggregated panel (gvkey × year)
+        call_panel: Call-level panel with start_date and all covariates.
         takeover_data: Firm-level takeover indicators (gvkey, Takeover,
-                       Takeover_Type, Takeover_Date)
-        year_end: Last year of sample period (for censoring)
+                       Takeover_Type, Takeover_Date).
+        year_end: Last year of sample period (for administrative censoring).
 
     Returns:
-        Counting-process DataFrame with columns:
-            gvkey, start, stop, Takeover, Takeover_Uninvited, Takeover_Friendly,
-            Takeover_Type, all time-varying covariates, sample, ff12_code, etc.
+        Counting-process DataFrame with call-to-call intervals.
     """
     print("\n" + "=" * 60)
-    print("Building counting-process panel (B7 fix)")
+    print("Building call-to-call counting-process panel")
     print("=" * 60)
 
-    # Merge takeover data onto firm_year
-    firm_year = firm_year.merge(
-        takeover_data[["gvkey", "Takeover", "Takeover_Type", "Takeover_Date"]],
-        on="gvkey",
-        how="left",
+    censor_date = pd.Timestamp(f"{year_end}-12-31")
+
+    df = call_panel.copy()
+    df["call_date"] = pd.to_datetime(df["start_date"], errors="coerce").dt.normalize()
+    df = df.dropna(subset=["call_date"])
+    df = df.sort_values(["gvkey", "call_date"]).reset_index(drop=True)
+
+    n_calls_before = len(df)
+    n_firms_before = df["gvkey"].nunique()
+    print(f"  Input calls: {n_calls_before:,} from {n_firms_before:,} firms")
+
+    # Merge takeover data (firm-level: one row per gvkey)
+    tk = takeover_data[["gvkey", "Takeover", "Takeover_Type", "Takeover_Date"]].copy()
+    tk["Takeover_Date"] = pd.to_datetime(tk["Takeover_Date"], errors="coerce")
+    tk["Takeover_Date"] = tk["Takeover_Date"].dt.normalize()
+
+    df = df.merge(tk, on="gvkey", how="left")
+    df["Takeover"] = df["Takeover"].fillna(0).astype(int)
+    df["Takeover_Type"] = df["Takeover_Type"].fillna("None")
+
+    # Remove calls that occur on or after the takeover date (not at risk)
+    mask_at_risk = ~(
+        (df["Takeover"] == 1)
+        & df["Takeover_Date"].notna()
+        & (df["call_date"] >= df["Takeover_Date"])
     )
-    firm_year["Takeover"] = firm_year["Takeover"].fillna(0).astype(int)
-    firm_year["Takeover_Type"] = firm_year["Takeover_Type"].fillna("None")
-    firm_year["Takeover_Date"] = pd.to_datetime(
-        firm_year["Takeover_Date"], errors="coerce"
+    n_post = (~mask_at_risk).sum()
+    if n_post > 0:
+        print(f"  Removing {n_post:,} post-takeover call rows (not at risk)")
+    df = df[mask_at_risk].copy()
+
+    n_calls_after = len(df)
+    n_firms_after = df["gvkey"].nunique()
+    print(f"  At-risk calls: {n_calls_after:,} from {n_firms_after:,} firms")
+
+    # Compute next call date per firm
+    df = df.sort_values(["gvkey", "call_date"]).reset_index(drop=True)
+    df["next_call_date"] = df.groupby("gvkey")["call_date"].shift(-1)
+
+    # Stop date: min(next_call_date, censor_date)
+    df["stop_date"] = df["next_call_date"].fillna(censor_date)
+    df.loc[df["stop_date"] > censor_date, "stop_date"] = censor_date
+
+    # For event firms: if takeover_date falls in (call_date, stop_date], truncate
+    has_tk = (df["Takeover"] == 1) & df["Takeover_Date"].notna()
+    tk_in_interval = (
+        has_tk
+        & (df["Takeover_Date"] > df["call_date"])
+        & (df["Takeover_Date"] <= df["stop_date"])
     )
-    firm_year["takeover_year"] = firm_year["Takeover_Date"].dt.year
+    df.loc[tk_in_interval, "stop_date"] = df.loc[tk_in_interval, "Takeover_Date"]
 
-    # Determine exit year per firm (used to censor the counting process)
-    firm_bounds = (
-        firm_year.groupby("gvkey")
-        .agg(
-            entry_year=("year", "min"),
-            last_obs_year=("year", "max"),
-        )
-        .reset_index()
-    )
+    # Event indicator: 1 only in the interval containing the takeover
+    df["Takeover"] = tk_in_interval.astype(int)
 
-    # For event firms, exit_year = takeover_year; else min(last_obs_year, year_end)
-    takeover_map = firm_year.drop_duplicates("gvkey")[
-        ["gvkey", "Takeover", "takeover_year"]
-    ]
-    firm_bounds = firm_bounds.merge(takeover_map, on="gvkey", how="left")
+    # Convert to numeric (days since reference)
+    df["start"] = (df["call_date"] - REFERENCE_DATE).dt.days
+    df["stop"] = (df["stop_date"] - REFERENCE_DATE).dt.days
 
-    def get_exit_year(row: pd.Series) -> int:
-        if row["Takeover"] == 1 and pd.notna(row["takeover_year"]):
-            return int(row["takeover_year"])
-        return int(min(row["last_obs_year"], year_end))
+    # Duration in days (for summary stats)
+    df["duration"] = df["stop"] - df["start"]
 
-    firm_bounds["exit_year"] = firm_bounds.apply(get_exit_year, axis=1)
+    # Remove zero or negative duration intervals
+    bad_mask = df["duration"] <= 0
+    n_bad = int(bad_mask.sum())
+    if n_bad > 0:
+        print(f"  WARNING: Removing {n_bad:,} zero/negative duration intervals")
+        df = df[~bad_mask].copy()
 
-    # Validate exit_year >= entry_year; skip invalid firms (Issue 6 fix)
-    # This occurs when takeover_year < entry_year (takeover before first observed call)
-    invalid_mask = firm_bounds["exit_year"] < firm_bounds["entry_year"]
-    n_invalid = int(invalid_mask.sum())
-    if n_invalid > 0:
-        invalid_gvkeys = firm_bounds.loc[invalid_mask, "gvkey"].tolist()
-        print(
-            f"  WARNING: Skipping {n_invalid} firms with exit_year < entry_year "
-            f"(takeover before first observed call)"
-        )
-        print(f"           Affected gvkeys: {invalid_gvkeys[:10]}{'...' if n_invalid > 10 else ''}")
-        firm_bounds = firm_bounds[~invalid_mask].copy()
+    # Validate no start >= stop remains
+    if (df["start"] >= df["stop"]).any():
+        raise ValueError("DATA BUG: start >= stop rows remain after filtering")
 
-    # Build counting-process rows: one row per firm-year at risk
-    rows: List[pd.DataFrame] = []
-    covariate_cols = [
-        c
-        for c in firm_year.columns
-        if c
-        not in {
-            "gvkey",
-            "year",
-            "Takeover",
-            "Takeover_Type",
-            "Takeover_Date",
-            "takeover_year",
-            "n_calls",
-        }
-    ]
-
-    for _, bounds in firm_bounds.iterrows():
-        gvkey = bounds["gvkey"]
-        entry_year = int(bounds["entry_year"])
-        exit_year = int(bounds["exit_year"])
-        is_event = int(bounds["Takeover"]) == 1
-
-        # Subset firm-year rows at risk: years from entry to exit
-        fy_firm = (
-            firm_year[
-                (firm_year["gvkey"] == gvkey)
-                & (firm_year["year"] >= entry_year)
-                & (firm_year["year"] <= exit_year)
-            ]
-            .sort_values("year")
-            .copy()
-        )
-
-        if len(fy_firm) == 0:
-            # No observations in range — create a single interval from entry
-            single = pd.DataFrame(
-                {
-                    "gvkey": [gvkey],
-                    "start": [entry_year - 1],
-                    "stop": [exit_year],
-                    "Takeover": [int(is_event)],
-                    "Takeover_Type": ["None"],
-                }
-            )
-            rows.append(single)
-            continue
-
-        # Counting-process: start = prev_year (or entry_year - 1 for first row)
-        fy_firm = fy_firm.reset_index(drop=True)
-        fy_firm["start"] = fy_firm["year"].shift(1).fillna(entry_year - 1).astype(int)
-        fy_firm["stop"] = fy_firm["year"].astype(int)
-
-        # Event = 1 only in last row for event firms
-        fy_firm["Takeover"] = 0
-        if is_event:
-            fy_firm.loc[fy_firm.index[-1], "Takeover"] = 1
-
-        # Carry Takeover_Type as a time-constant column for the firm
-        fy_firm["Takeover_Type"] = (
-            fy_firm["Takeover_Type"].iloc[0]
-            if "Takeover_Type" in fy_firm.columns
-            else "None"
-        )
-        rows.append(
-            fy_firm[
-                ["gvkey", "start", "stop", "Takeover", "Takeover_Type"] + covariate_cols
-            ]
-        )
-
-    panel = pd.concat(rows, ignore_index=True)
-
-    # Issue 6 fix: Validate no negative durations (start >= stop)
-    negative_duration_mask = panel["start"] >= panel["stop"]
-    n_negative = int(negative_duration_mask.sum())
-    if n_negative > 0:
-        bad_rows = panel[negative_duration_mask][["gvkey", "start", "stop"]].head(10)
+    # Validate no duplicated event assignment: each firm should have at most 1 event row
+    event_per_firm = df.groupby("gvkey")["Takeover"].sum()
+    multi_event = event_per_firm[event_per_firm > 1]
+    if len(multi_event) > 0:
         raise ValueError(
-            f"DATA BUG: {n_negative} rows have start >= stop (negative duration). "
-            f"First 10:\n{bad_rows.to_string()}"
+            f"DATA BUG: {len(multi_event)} firms have >1 event row. "
+            f"First 5: {multi_event.head().to_dict()}"
         )
 
-    n_events = panel.groupby("gvkey")["Takeover"].max().sum()
-    n_firms = panel["gvkey"].nunique()
-    print(f"  Counting-process rows: {len(panel):,}")
+    # Drop helper columns
+    df = df.drop(
+        columns=["call_date", "next_call_date", "stop_date", "Takeover_Date"],
+        errors="ignore",
+    )
+
+    # Summary
+    n_event_firms = int(df.groupby("gvkey")["Takeover"].max().sum())
+    n_firms = df["gvkey"].nunique()
+    print(f"\n  Call-to-call intervals: {len(df):,}")
     print(f"  Unique firms: {n_firms:,}")
-    print(f"  Event firms: {n_events:,} / {n_firms:,}")
+    print(f"  Event firms: {n_event_firms:,} / {n_firms:,}")
+    print(f"  Duration (days): median={df['duration'].median():.0f}, "
+          f"mean={df['duration'].mean():.0f}, "
+          f"min={df['duration'].min()}, max={df['duration'].max()}")
 
-    # Takeover_Type breakdown (firm-level)
-    type_counts = firm_year.drop_duplicates("gvkey")["Takeover_Type"].value_counts()
-    print("  Takeover_Type breakdown (firm-level):")
-    for t, n in type_counts.items():
-        print(f"    {t}: {n:,}")
+    # Event type breakdown
+    event_rows = df[df["Takeover"] == 1]
+    if len(event_rows) > 0:
+        type_counts = event_rows["Takeover_Type"].value_counts()
+        print("  Event type breakdown:")
+        for t, n in type_counts.items():
+            print(f"    {t}: {n:,}")
 
-    return panel
+    return df
 
 
 def build_panel(
@@ -496,50 +398,47 @@ def build_panel(
     """Build complete takeover panel for survival analysis.
 
     Pipeline:
-      1. Build call-level panel (manifest + linguistic + financial)
-      2. Aggregate to firm-year
-      3. Add clarity scores (per ceo_id × sample, from latest firm-year CEO)
-      4. Load takeover indicators (firm-level from SDC)
-      5. Construct Duration and event columns
-      6. Merge firm-year covariates onto firm-level survival frame
+      1. Build call-level panel (manifest + linguistic + financial controls)
+      2. Merge ClarityCEO scores (per ceo_id x sample)
+      3. Load takeover indicators (firm-level from SDC)
+      4. Construct call-to-call counting-process intervals
 
-    Returns firm-level DataFrame suitable for CoxPH / Fine-Gray.
+    Returns call-to-call DataFrame suitable for CoxTimeVaryingFitter.
     """
     year_end = max(years)
 
     # Step 1: Call-level panel
     call_panel = build_call_panel(root_path, years, var_config, stats)
 
-    # Step 2: Aggregate to firm-year
-    firm_year = aggregate_to_firm_year(call_panel)
-
-    # Step 3: Load clarity scores and merge onto firm-year
+    # Step 2: Load clarity scores and merge at call level
     print("\n  Loading clarity scores...")
     ceo_clarity = load_clarity_scores(root_path)
 
-    firm_year["ceo_id"] = firm_year["ceo_id"].astype(str)
+    call_panel["ceo_id"] = call_panel["ceo_id"].astype(str)
 
     if len(ceo_clarity) > 0:
-        before_len = len(firm_year)
-        firm_year = firm_year.merge(
+        before_len = len(call_panel)
+        call_panel = call_panel.merge(
             ceo_clarity[["ceo_id", "sample", "ClarityCEO"]],
             on=["ceo_id", "sample"],
             how="left",
         )
-        after_len = len(firm_year)
+        after_len = len(call_panel)
         delta = after_len - before_len
         if after_len != before_len:
             raise ValueError(
-                f"ClarityCEO merge changed row count {before_len} → {after_len} (delta: {delta:+d})."
+                f"ClarityCEO merge changed row count {before_len} → {after_len} "
+                f"(delta: {delta:+d})."
             )
-        n_matched = firm_year["ClarityCEO"].notna().sum()
+        n_matched = call_panel["ClarityCEO"].notna().sum()
         print(
-            f"  After ClarityCEO merge: {after_len:,} rows, {n_matched:,} matched (delta: {delta:+d})"
+            f"  After ClarityCEO merge: {after_len:,} rows, "
+            f"{n_matched:,} matched (delta: {delta:+d})"
         )
     else:
-        firm_year["ClarityCEO"] = float("nan")
+        call_panel["ClarityCEO"] = float("nan")
 
-    # Step 4: Build takeover indicators (firm-level)
+    # Build takeover indicators (firm-level)
     print("\n  Loading takeover indicators from SDC...")
     takeover_config = dict(var_config.get("takeover_indicator", {}))
     takeover_config["year_start"] = min(years)
@@ -549,31 +448,28 @@ def build_panel(
     takeover_data = takeover_result.data
     stats["variable_stats"].append(asdict(takeover_result.stats))
 
-    # Step 5 (B7 fix): Build counting-process panel (one row per firm-year at risk)
-    # Time-varying covariates are now carried at their actual per-year values.
-    # Previously used time-averaged covariates on a one-row-per-firm panel, which
-    # is invalid for Cox PH when covariates genuinely vary across time.
-    panel = build_counting_process_panel(firm_year, takeover_data, year_end)
+    # Build call-to-call counting-process panel
+    panel = build_call_to_call_panel(call_panel, takeover_data, year_end)
 
-    print(f"\n  Final counting-process panel: {len(panel):,} firm-year rows")
+    print(f"\n  Final call-to-call panel: {len(panel):,} intervals")
     print(f"  Columns: {len(panel.columns)}")
     print(f"\n  Variable coverage:")
     for col in [
         "Takeover",
         "start",
         "stop",
+        "duration",
         "ClarityCEO",
-        "CEO_QA_Uncertainty_pct",
         "CEO_Clarity_Residual",
         "Manager_Clarity_Residual",
         "Size",
         "BM",
         "Lev",
         "ROA",
-        "EPS_Growth",
-        "StockRet",
-        "MarketRet",
-        "SurpDec",
+        "CashHoldings",
+        "SalesGrowth",
+        "Intangibility",
+        "AssetGrowth",
     ]:
         if col in panel.columns:
             n = panel[col].notna().sum()
@@ -601,7 +497,7 @@ def save_outputs(panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, root
     manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
     generate_manifest(
         output_dir=out_dir,
-        stage="stage3",
+        stage="h9_panel",
         timestamp=timestamp,
         input_paths={"master_manifest": manifest_input},
         output_files={
@@ -622,44 +518,67 @@ def generate_report(
         else 0
     )
     report_lines = [
-        "# Stage 3: Takeover Panel Build Report",
+        "# H9: Takeover Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
         "",
         "## Purpose",
         "",
-        "Counting-process survival panel for 4.3 Takeover Hazard Analysis (B7 fix).",
-        "One row per firm-year at risk. Time-varying covariates at actual per-year values.",
-        "start/stop columns define the counting-process intervals for CoxTimeVaryingFitter.",
+        "Call-to-call counting-process survival panel for H9 Takeover Hazard Analysis.",
+        "One row per call-based risk interval. Each interval opens at an earnings call",
+        "and closes at the next call, takeover announcement, or administrative censor.",
+        "Time units: days since 2000-01-01. start/stop columns for CoxTimeVaryingFitter.",
         "",
         "## Panel Summary",
         "",
-        f"- **Firm-year rows:** {len(panel):,}",
+        f"- **Call-to-call intervals:** {len(panel):,}",
         f"- **Unique firms:** {n_firms:,}",
         f"- **Columns:** {len(panel.columns)}",
         f"- **Takeover event firms:** {n_events:,} / {n_firms:,}",
         "",
     ]
-    if "Takeover_Type" in panel.columns:
-        report_lines.append("### Takeover Type Breakdown")
+
+    if "duration" in panel.columns:
+        report_lines.append("### Interval Duration (days)")
         report_lines.append("")
-        for t, n in panel["Takeover_Type"].value_counts().items():
-            report_lines.append(f"- {t}: {n:,}")
+        report_lines.append(
+            f"- Median: {panel['duration'].median():.0f} days"
+        )
+        report_lines.append(
+            f"- Mean: {panel['duration'].mean():.0f} days"
+        )
+        report_lines.append(
+            f"- Min: {panel['duration'].min()} days"
+        )
+        report_lines.append(
+            f"- Max: {panel['duration'].max()} days"
+        )
+        report_lines.append("")
+
+    if "Takeover_Type" in panel.columns:
+        report_lines.append("### Takeover Type Breakdown (event intervals)")
+        report_lines.append("")
+        event_rows = panel[panel["Takeover"] == 1]
+        if len(event_rows) > 0:
+            for t, n in event_rows["Takeover_Type"].value_counts().items():
+                report_lines.append(f"- {t}: {n:,}")
+        else:
+            report_lines.append("- No events")
         report_lines.append("")
 
     if "sample" in panel.columns:
-        report_lines.append("### Sample Distribution")
+        report_lines.append("### Sample Distribution (intervals)")
         report_lines.append("")
         for s in ["Main", "Finance", "Utility"]:
             n = (panel["sample"] == s).sum()
             report_lines.append(f"- {s}: {n:,}")
         report_lines.append("")
 
-    report_path = out_dir / "report_step3_takeover.md"
+    report_path = out_dir / "report_h9_panel.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
-    print(f"  Saved: report_step3_takeover.md")
+    print(f"  Saved: report_h9_panel.md")
 
 
 def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> int:
@@ -694,7 +613,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build Takeover Panel (4.3)")
+    print("H9: Build Takeover Panel")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")

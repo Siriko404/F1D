@@ -1,39 +1,52 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test Takeover Hazard Hypothesis (4.3)
+H9: Takeover Hazard Models
 ================================================================================
 ID: econometric/run_h9_takeover_hazards
-Description: Run Takeover Hazard models (4.3) using the firm-level survival
-             panel from Stage 3.
+Description: Run Takeover Hazard models (H9) using the call-to-call
+             counting-process panel from H9 panel builder.
+
+Research Question:
+    Does clarity in speech increase the likelihood of receiving a takeover bid,
+    especially an UNINVITED bid?
 
 Models:
     Model 1: Cox Proportional Hazards — All Takeovers
     Model 2: Cause-specific Cox PH    — Uninvited (Hostile + Unsolicited)
     Model 3: Cause-specific Cox PH    — Friendly (Friendly + Neutral)
 
-Each model uses CEO clarity:
-    CEO variant: ClarityCEO + CEO_QA_Uncertainty_pct + controls
+Model Variants:
+    PRIMARY STYLE MODELS:
+        - CEO clarity score (ClarityCEO) — main clarity construct
+        - Manager clarity score: does NOT exist in repo (noted as absent)
+    SECONDARY RESIDUAL MODELS:
+        - CEO residual (CEO_Clarity_Residual)
+        - Manager residual (Manager_Clarity_Residual)
 
-Hypothesis Tests (one-tailed):
-    H9-A: beta(Clarity) < 0 (clearer managers have lower takeover hazard)
+Hypothesis Tests (two-sided inference):
+    H9-A: beta(Clarity) < 0 (clearer CEOs have lower takeover hazard)
     H9-B: beta(Clarity, uninvited) < beta(Clarity, friendly)
           (clarity reduces hostile takeover hazard more than friendly)
 
-Financial controls: Size, BM, Lev, ROA, EPS_Growth, StockRet, MarketRet, SurpDec
+Financial controls (Compustat-only):
+    Sparse block (all models): Size, BM, Lev, ROA, CashHoldings
+    Expanded robustness (all families): + SalesGrowth, Intangibility, AssetGrowth
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
     (Finance ff12=11 and Utility ff12=8 excluded from all models)
 
-Minimum Calls Filter:
-    Firms must have >= 5 calls to be included in regression.
-
-Survival construction (from Stage 3):
-    Duration = years from first call to takeover announcement or end of sample
-    Takeover = 1 if bid received, 0 otherwise (censored)
+Survival construction (call-to-call intervals):
+    Each interval opens at an earnings call and closes at the earliest of:
+      (a) next earnings call date for the same firm
+      (b) takeover announcement date
+      (c) administrative censor date (end of sample)
+    Time units: days since 2000-01-01
+    Takeover = 1 only in the interval where a bid occurs, 0 otherwise
     Takeover_Uninvited = 1 if Takeover_Type == 'Uninvited', 0 otherwise
     Takeover_Friendly  = 1 if Takeover_Type == 'Friendly',  0 otherwise
+    Unknown types are correctly censored in cause-specific models.
 
 Inputs:
     - outputs/variables/takeover/latest/takeover_panel.parquet
@@ -44,7 +57,7 @@ Outputs:
     - outputs/econometric/takeover/{timestamp}/cox_cs_friendly.txt
     - outputs/econometric/takeover/{timestamp}/hazard_ratios.csv
     - outputs/econometric/takeover/{timestamp}/model_diagnostics.csv
-    - outputs/econometric/takeover/{timestamp}/report_step4_takeover.md
+    - outputs/econometric/takeover/{timestamp}/report_h9_takeover.md
     - outputs/econometric/takeover/{timestamp}/run_log.txt
     - outputs/econometric/takeover/{timestamp}/summary_stats.csv
     - outputs/econometric/takeover/{timestamp}/summary_stats.tex
@@ -52,7 +65,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_h9_takeover_panel)
+    - Requires: H9 panel (build_h9_takeover_panel)
     - Uses: lifelines, f1d.shared
 
 Author: Thesis Author
@@ -73,7 +86,7 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 
-# lifelines — always-bound pattern (B7 fix: CoxTimeVaryingFitter for counting-process)
+# lifelines — CoxTimeVaryingFitter for call-to-call counting-process intervals
 CoxTimeVaryingFitter: Any = None
 concordance_index: Any = None
 try:
@@ -104,16 +117,22 @@ from f1d.shared.regression_validation import (
 # Configuration
 # ==============================================================================
 
-# Financial controls (time-averaged in Stage 3)
-FINANCIAL_CONTROLS = [
+# Financial controls (Compustat-only, no CRSP/IBES)
+# Pass 05: Removed StockRet, MarketRet, SurpDec (CRSP/IBES)
+# Sparse block: used in ALL models (primary + secondary)
+SPARSE_CONTROLS = [
     "Size",
     "BM",
     "Lev",
     "ROA",
-    "EPS_Growth",
-    "StockRet",
-    "MarketRet",
-    "SurpDec",
+    "CashHoldings",
+]
+
+# Expanded robustness block: used in all families as robustness check
+EXPANDED_CONTROLS = SPARSE_CONTROLS + [
+    "SalesGrowth",
+    "Intangibility",
+    "AssetGrowth",
 ]
 
 
@@ -123,48 +142,52 @@ FINANCIAL_CONTROLS = [
 
 SUMMARY_STATS_VARS = [
     # Clarity measures
-    {"col": "ClarityCEO", "label": "Clarity (CEO)"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
-    {"col": "Manager_Clarity_Residual", "label": "Manager Clarity Residual"},
-    # Uncertainty measures
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Manager QA Uncertainty"},
+    {"col": "ClarityCEO", "label": "ClarityCEO"},
+    {"col": "CEO_Clarity_Residual", "label": "CEO_Clarity_Residual"},
+    {"col": "Manager_Clarity_Residual", "label": "Manager_Clarity_Residual"},
     # Survival variables
-    {"col": "duration", "label": "Duration (years)"},
-    {"col": "Takeover", "label": "Takeover Event"},
-    {"col": "Takeover_Uninvited", "label": "Uninvited Takeover"},
-    {"col": "Takeover_Friendly", "label": "Friendly Takeover"},
-    # Financial controls
-    {"col": "Size", "label": "Firm Size (log AT)"},
-    {"col": "BM", "label": "Book-to-Market"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "duration", "label": "duration"},
+    {"col": "Takeover", "label": "Takeover"},
+    {"col": "Takeover_Uninvited", "label": "Takeover_Uninvited"},
+    {"col": "Takeover_Friendly", "label": "Takeover_Friendly"},
+    # Financial controls — Sparse block (all models)
+    {"col": "Size", "label": "Size"},
+    {"col": "BM", "label": "BM"},
+    {"col": "Lev", "label": "Lev"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "EPS_Growth", "label": "EPS Growth"},
-    {"col": "StockRet", "label": "Stock Return"},
-    {"col": "MarketRet", "label": "Market Return"},
-    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
+    {"col": "CashHoldings", "label": "CashHoldings"},
+    # Financial controls — Expanded robustness block (primary style only)
+    {"col": "SalesGrowth", "label": "SalesGrowth"},
+    {"col": "Intangibility", "label": "Intangibility"},
+    {"col": "AssetGrowth", "label": "AssetGrowth"},
 ]
 
-# Model variants: CEO original + Clarity Residuals (H9 extension)
+# Model variants: CEO clarity score (PRIMARY) + Residuals (SECONDARY)
+# Pass 05: Reorganized to separate primary style models from secondary residual models
+# Note: Manager clarity score (ClarityManager) does not exist in the repo.
+# Only CEO clarity score (ClarityCEO) is available as a fixed-effect score.
+# Manager variants are available only as residuals from the clarity extended regression.
 MODEL_VARIANTS: Dict[str, Dict[str, str]] = {
+    # PRIMARY STYLE MODEL — CEO Clarity Score
     "CEO": {
         "clarity_var": "ClarityCEO",
-        "uncertainty_var": "CEO_QA_Uncertainty_pct",
-        "description": "CEO Clarity (4.1.1) model",
+        "description": "CEO Clarity Score (H1) — PRIMARY",
+        "family": "primary_style",
     },
+    # SECONDARY RESIDUAL MODELS — Residualized Uncertainty
     "CEO_Residual": {
         "clarity_var": "CEO_Clarity_Residual",
-        "uncertainty_var": "CEO_QA_Uncertainty_pct",  # Pairs with CEO residual
-        "description": "CEO Clarity Residual (residualized uncertainty)",
+        "description": "CEO Residual — SECONDARY (residualized uncertainty)",
+        "family": "secondary_residual",
     },
     "Manager_Residual": {
         "clarity_var": "Manager_Clarity_Residual",
-        "uncertainty_var": "Manager_QA_Uncertainty_pct",  # Pairs with Manager residual
-        "description": "Manager Clarity Residual (residualized uncertainty)",
+        "description": "Manager Residual — SECONDARY (residualized uncertainty)",
+        "family": "secondary_residual",
     },
 }
 
-# Counting-process columns (B7 fix: start/stop format)
+# Counting-process columns (call-to-call: start/stop in days since 2000-01-01)
 START_COL = "start"
 STOP_COL = "stop"
 EVENT_ALL_COL = "Takeover"
@@ -184,7 +207,7 @@ MIN_OBS = 50  # Survival models need fewer obs than OLS
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: Test Takeover Hazard Hypothesis (4.3)",
+        description="H9: Takeover Hazard Models",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--dry-run", action="store_true")
@@ -198,7 +221,7 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
-    """Load counting-process takeover panel from Stage 3 (B7 fix)."""
+    """Load call-to-call counting-process takeover panel."""
     print("\n" + "=" * 60)
     print("Loading panel")
     print("=" * 60)
@@ -217,23 +240,27 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
 
     panel = pd.read_parquet(panel_file)
     print(f"  Loaded: {panel_file}")
-    print(f"  Rows (firm-year intervals): {len(panel):,}")
+    print(f"  Rows (call-to-call intervals): {len(panel):,}")
     print(f"  Unique firms: {panel['gvkey'].nunique():,}")
     print(f"  Columns: {len(panel.columns)}")
 
     # Hard assertions
     if "ff12_code" not in panel.columns:
-        raise ValueError("'ff12_code' not found in takeover panel. Re-run Stage 3.")
+        raise ValueError("'ff12_code' not found in takeover panel. Re-run build_h9_takeover_panel.")
     for col in [START_COL, STOP_COL]:
         if col not in panel.columns:
             raise ValueError(
                 f"'{col}' not found in takeover panel. "
-                "Panel must be in counting-process format. Re-run Stage 3."
+                "Panel must be in counting-process format. Re-run build_h9_takeover_panel."
             )
 
     n_event_firms = panel.groupby("gvkey")[EVENT_ALL_COL].max().sum()
     n_firms = panel["gvkey"].nunique()
     print(f"  Takeover event firms: {int(n_event_firms):,} / {n_firms:,}")
+
+    if "duration" in panel.columns:
+        print(f"  Interval duration (days): median={panel['duration'].median():.0f}, "
+              f"mean={panel['duration'].mean():.0f}")
 
     return panel
 
@@ -243,12 +270,15 @@ def prepare_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
     df = panel[~panel["ff12_code"].isin(MAIN_SAMPLE_EXCLUDE_FF12)].copy()
     n_firms = df["gvkey"].nunique()
     n_event_firms = df.groupby("gvkey")[EVENT_ALL_COL].max().sum()
-    print(f"\n  Main sample: {len(df):,} firm-year rows, {n_firms:,} firms")
+    print(f"\n  Main sample: {len(df):,} call-to-call intervals, {n_firms:,} firms")
     print(f"  Takeover event firms (Main): {int(n_event_firms):,}")
 
     # Create cause-specific event indicators
-    df[EVENT_UNINVITED_COL] = (df["Takeover_Type"] == "Uninvited").astype(int)
-    df[EVENT_FRIENDLY_COL] = (df["Takeover_Type"] == "Friendly").astype(int)
+    # BUG FIX (Pass 03): Only mark as event when Takeover=1 AND type matches
+    # Previous code marked ALL intervals of firms with that takeover type as events,
+    # inflating cause-specific event counts by ~8-9x.
+    df[EVENT_UNINVITED_COL] = ((df[EVENT_ALL_COL] == 1) & (df["Takeover_Type"] == "Uninvited")).astype(int)
+    df[EVENT_FRIENDLY_COL] = ((df[EVENT_ALL_COL] == 1) & (df["Takeover_Type"] == "Friendly")).astype(int)
 
     n_uninvited = int(df[EVENT_UNINVITED_COL].sum())
     n_friendly = int(df[EVENT_FRIENDLY_COL].sum())
@@ -362,19 +392,21 @@ def run_cox_tv(
     covariates: List[str],
     title: str,
     out_file: Path,
+    strata: Optional[Any] = None,
 ) -> Optional[Any]:
     """Fit a Cox time-varying fitter (counting-process format).
 
-    B7 fix: uses CoxTimeVaryingFitter with start/stop columns instead of
-    CoxPHFitter with a single Duration column. Time-varying covariates are
-    now used at their actual per-year values rather than time-averaged.
+    Uses CoxTimeVaryingFitter with start/stop columns in call-to-call
+    intervals. Covariates are measured at the call that opens each interval.
+    Time units: days since 2000-01-01.
 
     Args:
-        df: Counting-process DataFrame (one row per firm-year at risk)
+        df: Counting-process DataFrame (one row per call-to-call interval)
         event_col: Event indicator column (Takeover, Takeover_Uninvited, Takeover_Friendly)
         covariates: List of covariate column names
         title: Model title for output file
         out_file: Path to append results to
+        strata: Column name(s) for stratified baseline hazard (None = unstratified)
 
     Returns:
         Fitted CoxTimeVaryingFitter or None on failure.
@@ -395,6 +427,9 @@ def run_cox_tv(
         raise ValueError(f"Column validation failed: {e}") from e
 
     needed_cols = [START_COL, STOP_COL, "gvkey", event_col] + covariates
+    if strata is not None:
+        strata_cols = [strata] if isinstance(strata, str) else list(strata)
+        needed_cols = needed_cols + [c for c in strata_cols if c not in needed_cols]
     needed_cols = [c for c in needed_cols if c in df.columns]
     df_clean = (
         df[needed_cols]
@@ -420,6 +455,15 @@ def run_cox_tv(
         print(f"  Skipping: too few event firms ({n_event_firms} < 5)")
         return None
 
+    # Strata sparsity diagnostic
+    if strata is not None:
+        strata_col = strata if isinstance(strata, str) else strata[0]
+        event_by_stratum = df_clean.groupby(strata_col)[event_col].sum()
+        sparse_strata = event_by_stratum[event_by_stratum < 5]
+        if len(sparse_strata) > 0:
+            print(f"  WARNING: {len(sparse_strata)} strata have <5 events: "
+                  f"{sparse_strata.to_dict()}")
+
     try:
         ctv = CoxTimeVaryingFitter()  # type: ignore[call-arg]
         ctv.fit(  # type: ignore[call-arg]
@@ -429,6 +473,7 @@ def run_cox_tv(
             stop_col=STOP_COL,
             event_col=event_col,
             formula=" + ".join(covariates),
+            strata=strata,
         )
     except Exception as e:
         print(f"  ERROR: Cox TV failed: {e}", file=sys.stderr)
@@ -521,16 +566,28 @@ def generate_report(
 ) -> None:
     """Generate markdown report."""
     report_lines = [
-        "# Stage 4: Takeover Hazard Results (4.3)",
+        "# H9: Takeover Hazard Results",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
         "",
-        "## Models",
+        "## Research Question",
         "",
-        "- Model 1 (Cox PH All): All takeovers — Regime and CEO variants",
-        "- Model 2 (Cox CS Uninvited): Cause-specific Cox — Uninvited only",
-        "- Model 3 (Cox CS Friendly): Cause-specific Cox — Friendly only",
+        "Does clarity in speech increase the likelihood of receiving a takeover bid,",
+        "especially an UNINVITED bid?",
+        "",
+        "## Model Structure",
+        "",
+        "- **PRIMARY STYLE MODELS**: CEO Clarity Score (ClarityCEO)",
+        "- **SECONDARY RESIDUAL MODELS**: CEO Residual, Manager Residual",
+        "- Model 1 (Cox PH All): All takeovers",
+        "- Model 2 (Cox CS Uninvited): Cause-specific Cox — Uninvited (Hostile + Unsolicited)",
+        "- Model 3 (Cox CS Friendly): Cause-specific Cox — Friendly (Friendly + Neutral)",
+        "",
+        "## Financial Controls (Compustat-only)",
+        "",
+        "- **Sparse block** (all models): Size, BM, Lev, ROA, CashHoldings",
+        "- **Expanded robustness** (all families): + SalesGrowth, Intangibility, AssetGrowth",
         "",
         "## Model Diagnostics",
         "",
@@ -547,7 +604,7 @@ def generate_report(
     report_lines.append("")
 
     report_lines += [
-        "## Key Coefficients (Clarity and Uncertainty)",
+        "## Key Coefficients (Clarity Variables)",
         "",
         "| Model | Variant | Variable | HR (exp coef) | p-val |",
         "|-------|---------|----------|---------------|-------|",
@@ -556,8 +613,6 @@ def generate_report(
         "ClarityCEO",
         "CEO_Clarity_Residual",
         "Manager_Clarity_Residual",
-        "CEO_QA_Uncertainty_pct",
-        "Manager_QA_Uncertainty_pct",
     }
     for row in all_hr_rows:
         if row.get("variable") in key_vars:
@@ -571,10 +626,10 @@ def generate_report(
             )
     report_lines.append("")
 
-    report_path = out_dir / "report_step4_takeover.md"
+    report_path = out_dir / "report_h9_takeover.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
-    print("  Saved: report_step4_takeover.md")
+    print("  Saved: report_h9_takeover.md")
 
 
 # ==============================================================================
@@ -602,7 +657,7 @@ def main(panel_path: Optional[str] = None) -> int:
     sys.stdout = dual
 
     print("=" * 80)
-    print("STAGE 4: Test Takeover Hazard Hypothesis (4.3)")
+    print("H9: Takeover Hazard Models")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output: {out_dir}")
@@ -663,6 +718,79 @@ def main(panel_path: Optional[str] = None) -> int:
         ("cox_cs_friendly", EVENT_FRIENDLY_COL, "Cox CS Friendly", "Friendly"),
     ]
 
+    def _run_variant(
+        file_stem: str,
+        event_col: str,
+        model_label: str,
+        event_type: str,
+        variant_key: str,
+        variant_spec: Dict[str, str],
+        controls: List[str],
+        control_label: str,
+        strata: Optional[Any] = None,
+    ) -> None:
+        """Run a single model variant and collect results."""
+        clarity_var = variant_spec["clarity_var"]
+        covariates = [clarity_var] + [c for c in controls if c in df.columns]
+        covariates = [c for c in covariates if c in df.columns]
+
+        suffix = f" [{control_label}]" if control_label != "sparse" else ""
+        title = f"{model_label} — {variant_spec['description']}{suffix}"
+
+        out_file = out_dir / f"{file_stem}.txt"
+        ctv = run_cox_tv(df, event_col, covariates, title, out_file, strata=strata)
+
+        if ctv is not None:
+            needed = [START_COL, STOP_COL, "gvkey", event_col] + covariates
+            needed = [c for c in needed if c in df.columns]
+            df_used = df[needed].dropna(
+                subset=[START_COL, STOP_COL, event_col] + covariates
+            )
+            n_intervals = len(df_used)
+            n_event_firms = (
+                int(df_used.groupby("gvkey")[event_col].max().sum())
+                if "gvkey" in df_used.columns
+                else int(df_used[event_col].sum())
+            )
+            concordance = compute_concordance_time_varying(ctv, df_used, event_col)
+
+            var_key_out = (
+                f"{variant_key}_expanded" if control_label == "expanded" else variant_key
+            )
+            hr_rows = extract_results(
+                ctv,
+                n_intervals,
+                n_event_firms,
+                model_label,
+                var_key_out,
+                event_type,
+                covariates,
+                concordance=concordance,
+            )
+            all_hr_rows.extend(hr_rows)
+
+            diag_rows.append(
+                {
+                    "model": model_label,
+                    "variant": var_key_out,
+                    "event_type": event_type,
+                    "event_col": event_col,
+                    "n_intervals": n_intervals,
+                    "n_event_firms": n_event_firms,
+                    "n_clusters": df_used["gvkey"].nunique()
+                    if "gvkey" in df_used.columns
+                    else n_intervals,
+                    "cluster_var": "gvkey",
+                    "concordance": concordance,
+                    "control_block": control_label,
+                    "strata": strata if strata else "none",
+                }
+            )
+            print(f"  Saved: {file_stem}.txt")
+        else:
+            print(f"  [{variant_key}] Model not fitted — insufficient data")
+
+    # ---- A. PRIMARY STYLE + B. SECONDARY RESIDUAL (all with sparse controls) ----
     for file_stem, event_col, model_label, event_type in model_defs:
         out_file = out_dir / f"{file_stem}.txt"
         out_file.write_text(f"Generated: {timestamp}\n")
@@ -672,65 +800,53 @@ def main(panel_path: Optional[str] = None) -> int:
         print("=" * 80)
 
         for variant_key, variant_spec in MODEL_VARIANTS.items():
-            clarity_var = variant_spec["clarity_var"]
-            uncertainty_var = variant_spec["uncertainty_var"]
+            _run_variant(
+                file_stem, event_col, model_label, event_type,
+                variant_key, variant_spec, SPARSE_CONTROLS, "sparse",
+            )
 
-            covariates = [clarity_var, uncertainty_var] + [
-                c for c in FINANCIAL_CONTROLS if c in df.columns
-            ]
-            # Only keep covariates present in panel
-            covariates = [c for c in covariates if c in df.columns]
+    # ---- C. EXPANDED-CONTROL ROBUSTNESS (all families) ----
+    print(f"\n{'=' * 80}")
+    print("EXPANDED-CONTROL ROBUSTNESS (all families)")
+    print("=" * 80)
 
-            title = f"{model_label} — {variant_spec['description']}"
+    for file_stem, event_col, model_label, event_type in model_defs:
+        out_file_expanded = out_dir / f"{file_stem}_expanded.txt"
+        out_file_expanded.write_text(f"Generated: {timestamp}\n")
 
-            ctv = run_cox_tv(df, event_col, covariates, title, out_file)
+        for variant_key, variant_spec in MODEL_VARIANTS.items():
+            _run_variant(
+                f"{file_stem}_expanded", event_col, model_label, event_type,
+                variant_key, variant_spec, EXPANDED_CONTROLS, "expanded",
+            )
 
-            if ctv is not None:
-                # Count observations used (counting-process format)
-                needed = [START_COL, STOP_COL, "gvkey", event_col] + covariates
-                needed = [c for c in needed if c in df.columns]
-                df_used = df[needed].dropna(
-                    subset=[START_COL, STOP_COL, event_col] + covariates
-                )
-                n_intervals = len(df_used)
-                n_event_firms = (
-                    int(df_used.groupby("gvkey")[event_col].max().sum())
-                    if "gvkey" in df_used.columns
-                    else int(df_used[event_col].sum())
-                )
-                # Compute concordance for time-varying model
-                concordance = compute_concordance_time_varying(ctv, df_used, event_col)
+    # ---- D. YEAR-STRATIFIED ROBUSTNESS (primary style, sparse) ----
+    print(f"\n{'=' * 80}")
+    print("YEAR-STRATIFIED ROBUSTNESS (primary style)")
+    print("=" * 80)
 
-                hr_rows = extract_results(
-                    ctv,
-                    n_intervals,
-                    n_event_firms,
-                    model_label,
-                    variant_key,
-                    event_type,
-                    covariates,
-                    concordance=concordance,
-                )
-                all_hr_rows.extend(hr_rows)
+    for file_stem, event_col, model_label, event_type in model_defs:
+        out_file = out_dir / f"{file_stem}_strata_year.txt"
+        out_file.write_text(f"Generated: {timestamp}\n")
+        _run_variant(
+            f"{file_stem}_strata_year", event_col, model_label, event_type,
+            "CEO", MODEL_VARIANTS["CEO"], SPARSE_CONTROLS, "strata_year",
+            strata="year",
+        )
 
-                diag_rows.append(
-                    {
-                        "model": model_label,
-                        "variant": variant_key,
-                        "event_type": event_type,
-                        "event_col": event_col,
-                        "n_intervals": n_intervals,
-                        "n_event_firms": n_event_firms,
-                        "n_clusters": df_used["gvkey"].nunique()
-                        if "gvkey" in df_used.columns
-                        else n_intervals,
-                        "cluster_var": "gvkey",
-                        "concordance": concordance,
-                    }
-                )
-                print(f"  Saved: {file_stem}.txt")
-            else:
-                print(f"  [{variant_key}] Model not fitted — insufficient data")
+    # ---- E. INDUSTRY-STRATIFIED ROBUSTNESS (primary style, sparse) ----
+    print(f"\n{'=' * 80}")
+    print("INDUSTRY-STRATIFIED ROBUSTNESS (primary style)")
+    print("=" * 80)
+
+    for file_stem, event_col, model_label, event_type in model_defs:
+        out_file = out_dir / f"{file_stem}_strata_industry.txt"
+        out_file.write_text(f"Generated: {timestamp}\n")
+        _run_variant(
+            f"{file_stem}_strata_industry", event_col, model_label, event_type,
+            "CEO", MODEL_VARIANTS["CEO"], SPARSE_CONTROLS, "strata_industry",
+            strata="ff12_code",
+        )
 
     # Save outputs
     print("\n" + "=" * 60)
@@ -743,19 +859,17 @@ def main(panel_path: Optional[str] = None) -> int:
     if all_hr_rows:
         # Variable labels for the table
         var_labels = {
-            "ClarityCEO": "Clarity (CEO)",
-            "CEO_Clarity_Residual": "CEO Clarity Residual",
-            "Manager_Clarity_Residual": "Manager Clarity Residual",
-            "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-            "Manager_QA_Uncertainty_pct": "Manager QA Uncertainty",
-            "Size": "Firm Size (log AT)",
-            "BM": "Book-to-Market",
-            "Lev": "Leverage",
+            "ClarityCEO": "ClarityCEO",
+            "CEO_Clarity_Residual": "CEO_Clarity_Residual",
+            "Manager_Clarity_Residual": "Manager_Clarity_Residual",
+            "Size": "Size",
+            "BM": "BM",
+            "Lev": "Lev",
             "ROA": "ROA",
-            "EPS_Growth": "EPS Growth",
-            "StockRet": "Stock Return",
-            "MarketRet": "Market Return",
-            "SurpDec": "Earnings Surprise Decile",
+            "CashHoldings": "CashHoldings",
+            "SalesGrowth": "SalesGrowth",
+            "Intangibility": "Intangibility",
+            "AssetGrowth": "AssetGrowth",
         }
         make_cox_hazard_table(
             results=all_hr_rows,
@@ -764,13 +878,15 @@ def main(panel_path: Optional[str] = None) -> int:
             label="tab:h9_takeover_hazard",
             note=(
                 "This table reports hazard ratios from Cox proportional hazards models "
-                r"estimating the effect of CEO clarity on takeover probability. "
+                r"estimating the effect of managerial clarity on takeover probability. "
                 "Panel A reports model diagnostics; Panel B reports hazard ratios (HR) "
                 "with standard errors in parentheses. "
                 r"HR $<$ 1 indicates lower hazard (longer survival); "
                 r"HR $>$ 1 indicates higher hazard. "
                 "Models estimated on the Main sample (non-financial, non-utility firms). "
-                "Firms with fewer than 5 calls are excluded. "
+                "Sparse controls: Size, BM, Lev, ROA, CashHoldings. "
+                "Expanded robustness adds SalesGrowth, Intangibility, AssetGrowth (all families). "
+                "Intervals are call-to-call (days since 2000-01-01). "
                 "All continuous controls are standardized within each model's estimation sample. "
                 r"Variables are winsorized at 1\%/99\% by year at the engine level."
             ),
@@ -795,7 +911,7 @@ def main(panel_path: Optional[str] = None) -> int:
     # Generate run manifest
     generate_manifest(
         output_dir=out_dir,
-        stage="stage4",
+        stage="h9_econometric",
         timestamp=timestamp,
         input_paths={"panel": panel_file},
         output_files={
