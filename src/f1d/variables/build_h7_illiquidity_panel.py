@@ -48,6 +48,7 @@ from f1d.shared.variables import (
     VolatilityBuilder,
     StockReturnBuilder,
     AmihudIlliqBuilder,
+    AmihudChangeBuilder,
     ManifestFieldsBuilder,
     CEOClarityResidualBuilder,
     ManagerClarityResidualBuilder,
@@ -99,6 +100,12 @@ def build_panel(
         "volatility": VolatilityBuilder(var_config.get("volatility", {})),
         "stock_ret": StockReturnBuilder(var_config.get("stock_ret", {})),
         "amihud_illiq": AmihudIlliqBuilder(var_config.get("amihud_illiq", {})),
+        # Delta Amihud: event-window change [+1,+3] - [-3,-1] (parallels H14 delta_spread)
+        "amihud_change": AmihudChangeBuilder(var_config.get("amihud_change", {})),
+        # Alternative event windows for robustness
+        "amihud_change_w5": AmihudChangeBuilder(
+            {**var_config.get("amihud_change", {}), "window_days": 5, "column_suffix": "_w5"}
+        ),
         "ceo_clarity_residual": CEOClarityResidualBuilder(
             var_config.get("ceo_clarity_residual", {})
         ),

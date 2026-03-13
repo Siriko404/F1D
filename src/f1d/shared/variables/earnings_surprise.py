@@ -1,33 +1,21 @@
 """Builder for Earnings Surprise Decile (SurpDec) variable.
 
-Computes SurpDec directly from raw IBES data (inputs/tr_ibes/tr_ibes.parquet)
-and the CRSP-Compustat CCM linktable (inputs/CRSPCompustat_CCM/).
+Computes SurpDec from IBES consensus data (via IbesEngine) and the
+CRSP-Compustat CCM linktable.
 
 Returns one column: file_name, SurpDec.
 
-Algorithm (mirrors legacy build_firm_controls.py):
-  1. Filter IBES to EPS quarterly forecasts.
-  2. Link IBES to gvkey via CUSIP -> CCM.
-  3. For each call, find the IBES forecast within +/- 45 days of the call date
-     whose STATPERS <= call start_date (most recent pre-call consensus).
+Algorithm:
+  1. Load IBES consensus from IbesEngine (computed from yearly detail files).
+  2. For each call, match to most recent pre-call consensus via merge_asof.
+  3. Filter by FPEDATS proximity (±45 days of call date).
   4. Compute raw surprise = ACTUAL - MEANEST.
-  5. Within each calendar quarter, rank surprises into -5 to +5 scale
-     (SurpDec): positive surprises 1..5, zero = 0, negatives -1..-5.
+  5. Within each calendar quarter, rank surprises into -5 to +5 scale (SurpDec).
 
 Bug fixes applied here (from red-team audit):
-    CRITICAL-1: _rank_surprises single-firm edge case — percentile of a single
-                firm is 1.0, which gives -(1 + 1*4) = -5 for any negative
-                surprise regardless of magnitude. Fix: use method='average'
-                ranking and clip to valid range AFTER the formula, but more
-                importantly handle the n=1 case by returning the boundary
-                decile directly.
-    CRITICAL-5: IBES matching used .iloc[-1] (last row in DataFrame order =
-                arbitrary). Fix: .sort_values("STATPERS").iloc[-1] to pick
-                the most recent pre-call consensus.
-    MAJOR-1:    CUSIP format mismatch — IBES uses 8-char CUSIPs (alphanumeric,
-                e.g. '87482X10'); CCM uses 9-char CUSIPs (adds numeric check
-                digit, e.g. '874825109'). Correct join: IBES[:8] == CCM[:8].
-                Do NOT zfill IBES — it pads alpha CUSIPs incorrectly.
+    CRITICAL-1: _rank_surprises single-firm edge case handled.
+    CRITICAL-5: merge_asof replaces arbitrary .iloc[-1] selection.
+    MAJOR-1:    CUSIP linking handled by IbesEngine.
 """
 
 from __future__ import annotations
@@ -39,20 +27,12 @@ import numpy as np
 import pandas as pd
 
 from .base import VariableBuilder, VariableResult
+from ._ibes_engine import get_engine as get_ibes_engine
 from f1d.shared.path_utils import get_latest_output_dir
 
 
 def _rank_surprises(group: pd.DataFrame) -> pd.Series:
-    """Rank surprises within a quarter to -5..+5 scale.
-
-    CRITICAL-1 fix: with n=1 firm in a sign bucket the percentile is always
-    1.0 (or close to it depending on method), making the formula degenerate.
-    The correct behaviour: a single negative-surprise firm should get -1
-    (smallest possible negative decile = least bad) not -5 (worst possible).
-    We handle this by using method='first' ranking so ties are broken by
-    position, and by computing deciles as np.ceil(pct * 5).clip(1, 5) which
-    maps the [0, 1] percentile correctly to [1, 5].
-    """
+    """Rank surprises within a quarter to -5..+5 scale."""
     surprises = group["surprise_raw"]
     ranks = pd.Series(np.nan, index=group.index, dtype=float)
 
@@ -65,31 +45,24 @@ def _rank_surprises(group: pd.DataFrame) -> pd.Series:
     neg_mask = surprises < 0
 
     if pos_mask.sum() > 0:
-        # Rank descending (rank 1 = largest positive surprise = decile +5)
         pos_pct = surprises[pos_mask].rank(ascending=False, method="average", pct=True)
-        # pct ∈ (0, 1]: ceil(pct * 5) → 1..5; flip so rank 1 → decile +5
         pos_decile = np.ceil(pos_pct * 5).clip(1, 5)
-        ranks.loc[pos_mask] = 6 - pos_decile  # largest surprise → +5
+        ranks.loc[pos_mask] = 6 - pos_decile
 
     ranks.loc[zero_mask] = 0.0
 
     if neg_mask.sum() > 0:
-        # Rank ascending by absolute miss (rank 1 = smallest miss = decile -1)
         neg_pct = (
             surprises[neg_mask].abs().rank(ascending=True, method="average", pct=True)
         )
         neg_decile = np.ceil(neg_pct * 5).clip(1, 5)
-        ranks.loc[neg_mask] = -neg_decile  # largest miss → -5
+        ranks.loc[neg_mask] = -neg_decile
 
     return ranks
 
 
 class EarningsSurpriseBuilder(VariableBuilder):
-    """Build Earnings Surprise Decile (SurpDec) from raw IBES data.
-
-    Computes from raw inputs:
-        inputs/tr_ibes/tr_ibes.parquet
-        inputs/CRSPCompustat_CCM/CRSPCompustat_CCM.parquet
+    """Build Earnings Surprise Decile (SurpDec) from IBES data via IbesEngine.
 
     Returns a VariableResult whose .data contains: file_name, SurpDec.
     """
@@ -98,18 +71,13 @@ class EarningsSurpriseBuilder(VariableBuilder):
         super().__init__(config)
 
     def build(self, years: range, root_path: Path) -> VariableResult:
-        ibes_path = root_path / "inputs" / "tr_ibes" / "tr_ibes.parquet"
-        ccm_path = (
-            root_path / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
-        )
-
         manifest_dir = get_latest_output_dir(
             root_path / "outputs" / "1.4_AssembleManifest",
             required_file="master_sample_manifest.parquet",
         )
         manifest_path = manifest_dir / "master_sample_manifest.parquet"
 
-        print(f"    EarningsSurpriseBuilder: loading manifest...")
+        print("    EarningsSurpriseBuilder: loading manifest...")
         manifest = pd.read_parquet(
             manifest_path, columns=["file_name", "gvkey", "start_date"]
         )
@@ -118,104 +86,39 @@ class EarningsSurpriseBuilder(VariableBuilder):
         manifest["year"] = manifest["start_date"].dt.year
         manifest = manifest[manifest["year"].isin(list(years))].copy()
 
-        print(f"    EarningsSurpriseBuilder: loading IBES...")
-        ibes = pd.read_parquet(
-            ibes_path,
-            columns=[
-                "MEASURE",
-                "FISCALP",
-                "TICKER",
-                "CUSIP",
-                "FPEDATS",
-                "STATPERS",
-                "MEANEST",
-                "ACTUAL",
-                "NUMEST",
-            ],
+        # Load IBES consensus from summary engine
+        print("    EarningsSurpriseBuilder: loading IBES via IbesEngine...")
+        engine = get_ibes_engine()
+        ibes_data = engine.get_data(root_path)
+
+        if ibes_data.empty or "surprise_raw" not in ibes_data.columns:
+            print("    EarningsSurpriseBuilder: No IBES data available")
+            data = manifest[["file_name"]].copy()
+            data["SurpDec"] = np.nan
+            return VariableResult(
+                data=data,
+                stats=self.get_stats(data["SurpDec"], "SurpDec"),
+                metadata={"column": "SurpDec", "source": "IBES", "matched": 0, "total": len(manifest)},
+            )
+
+        # merge_asof: for each call, find the most recent consensus whose fiscal
+        # period ended before the call (fpedats <= start_date, ±120 day tolerance)
+        manifest_sorted = manifest.sort_values("start_date")
+        ibes_sorted = ibes_data.sort_values("fpedats")
+
+        merged = pd.merge_asof(
+            manifest_sorted[["file_name", "gvkey", "start_date"]],
+            ibes_sorted[["gvkey", "fpedats", "surprise_raw"]],
+            left_on="start_date",
+            right_on="fpedats",
+            by="gvkey",
+            direction="backward",
+            tolerance=pd.Timedelta(days=120),
         )
-        ibes = ibes.loc[
-            (ibes["MEASURE"] == "EPS")
-            & (ibes["FISCALP"] == "QTR")
-            & (ibes["NUMEST"] >= 2)
-        ].copy()
-        ibes = ibes[["CUSIP", "FPEDATS", "STATPERS", "MEANEST", "ACTUAL"]].copy()
-        ibes["FPEDATS"] = pd.to_datetime(ibes["FPEDATS"], errors="coerce")
-        ibes["STATPERS"] = pd.to_datetime(ibes["STATPERS"], errors="coerce")
-        ibes["surprise_raw"] = ibes["ACTUAL"] - ibes["MEANEST"]
 
-        # --- MAJOR-1 fix: CUSIP format ---
-        # IBES CUSIPs are 8-char strings (issuer 6 + issue 2).
-        # CCM CUSIPs are 9-char strings (issuer 6 + issue 2 + check digit).
-        # Correct join: ibes_cusip[:8] == ccm_cusip[:8]
-        # Do NOT zfill IBES side — IBES uses alphanumeric CUSIPs that are already
-        # 8 chars; zfill would incorrectly left-pad with zeros.
-        # CCM side: strip to first 8 chars (drops check digit).
-        ibes["cusip8"] = ibes["CUSIP"].astype(str).str[:8]
-
-        # Link IBES CUSIP -> gvkey via CCM
-        print(f"    EarningsSurpriseBuilder: linking IBES to gvkey via CCM...")
-        ccm = pd.read_parquet(ccm_path, columns=["cusip", "LPERMNO", "gvkey"])
-        ccm["cusip8"] = ccm["cusip"].astype(str).str[:8]
-        ccm["gvkey"] = ccm["gvkey"].astype(str).str.zfill(6)
-        ccm_cusip = ccm[["cusip8", "gvkey"]].drop_duplicates().dropna()
-
-        ibes_linked = ibes.merge(ccm_cusip, on="cusip8", how="inner")
-
-        # --- Vectorized match (replaces iterrows loop) ---
-        # Strategy (reverting to legacy logic order, but fully vectorized):
-        #   1. Inner merge manifest and IBES on gvkey (creates all possible call-forecast pairs per firm).
-        #   2. Filter pairs where FPEDATS is within ±45 days of the call start_date FIRST.
-        #   3. Filter pairs where STATPERS <= start_date (pre-call consensus).
-        #   4. For each call (file_name), pick the forecast with the max STATPERS (most recent).
-
-        ibes_cols = ibes_linked[
-            ["gvkey", "STATPERS", "FPEDATS", "surprise_raw"]
-        ].dropna(subset=["STATPERS", "FPEDATS", "surprise_raw"])
-        window = pd.Timedelta(days=45)
-
-        # 1. Cross-join per gvkey (chunked to avoid memory explosion)
-        # An unchunked cross-join creates an 84-million row dataframe.
-        # We group by gvkey and process each firm, applying filters immediately.
-
-        ibes_by_gvkey = dict(tuple(ibes_cols.groupby("gvkey")))
-        pieces = []
-
-        for gvkey, m_grp in manifest[["file_name", "gvkey", "start_date"]].groupby(
-            "gvkey"
-        ):
-            i_grp = ibes_by_gvkey.get(gvkey)
-            if i_grp is None or i_grp.empty:
-                continue
-
-            # Cross-join for this single firm
-            merged_grp = pd.merge(m_grp, i_grp, on="gvkey", how="inner")
-
-            # 2. Apply ±45-day FPEDATS window filter FIRST
-            fpedats_valid = (
-                merged_grp["FPEDATS"] >= merged_grp["start_date"] - window
-            ) & (merged_grp["FPEDATS"] <= merged_grp["start_date"] + window)
-            merged_grp = merged_grp[fpedats_valid]
-
-            # 3. Filter to pre-call forecasts (STATPERS <= call start_date)
-            statpers_valid = merged_grp["STATPERS"] <= merged_grp["start_date"]
-            merged_grp = merged_grp[statpers_valid]
-
-            if not merged_grp.empty:
-                pieces.append(merged_grp)
-
-        if not pieces:
-            merged_all = pd.DataFrame(columns=["file_name", "STATPERS", "surprise_raw"])
-        else:
-            merged_all = pd.concat(pieces, ignore_index=True)
-
-        # 4. For each call, keep the most recent consensus (max STATPERS)
-        # Sort by file_name and STATPERS ascending, so the last row per file_name has max STATPERS.
-        merged_all = merged_all.sort_values(["file_name", "STATPERS"])
-        merged_all = merged_all.drop_duplicates(subset=["file_name"], keep="last")
-
-        # Restore original manifest row order
+        # Restore original manifest order
         results_df = manifest[["file_name"]].merge(
-            merged_all[["file_name", "surprise_raw"]], on="file_name", how="left"
+            merged[["file_name", "surprise_raw"]], on="file_name", how="left"
         )
 
         matched = int(results_df["surprise_raw"].notna().sum())
@@ -224,8 +127,6 @@ class EarningsSurpriseBuilder(VariableBuilder):
                 f"    EarningsSurpriseBuilder: matched {matched:,}/{len(manifest):,} "
                 f"({matched / len(manifest) * 100:.1f}%)"
             )
-        else:
-            print(f"    EarningsSurpriseBuilder: empty manifest")
 
         # Compute SurpDec within quarter
         manifest_surp = manifest.merge(results_df, on="file_name", how="left")
@@ -241,7 +142,7 @@ class EarningsSurpriseBuilder(VariableBuilder):
             data=data,
             stats=stats,
             metadata={
-                "source": str(ibes_path),
+                "source": "IBES Detail via IbesEngine consensus",
                 "column": "SurpDec",
                 "matched": matched,
                 "total": len(manifest),

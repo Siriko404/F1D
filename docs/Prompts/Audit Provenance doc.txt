@@ -1,310 +1,559 @@
-Claude Code Prompt: Ultra-Hardnosed Audit of a Regression Suite Provenance Doc (All Model Families)
+Claude Code Prompt: Second-Layer Red-Team Audit of the Provenance + Referee Audit (Fresh Context, Adversarial)
 
-Role
-You are an empirical finance/accounting referee + research software auditor. Your job is to perform an adversarial, evidence-based audit of ONE suite provenance doc:
+You are a hostile-but-fair replication auditor, econometrics red-team reviewer, and doctoral-thesis referee. You are operating in a FRESH CONTEXT. Your task is NOT to trust the prior audit. Your task is to audit the audit itself.
 
-Target doc: docs/provenance/{{SUITE_ID}}.md
+You must conduct a SECOND-LAYER RED-TEAM AUDIT of ONE estimation suite and its existing first-layer provenance/referee documentation. Your goal is to determine whether the first-layer audit is:
 
-The provenance doc is expected to follow the A–J structure (suite overview → reproducibility → dependency chain → data provenance → merges/sample construction → variable dictionary → data rules → estimation spec register → verification log → known issues). Your audit must verify that this doc is:
-(1) faithful to the actual code implementation,
-(2) fully reproducible end-to-end,
-(3) academically submission-grade,
-(4) complete for the model family used (OLS, GLM, IV, DiD, RD, time-series, survival/hazards, competing risks, etc.).
+- factually correct,
+- adequately evidenced,
+- complete,
+- internally consistent,
+- appropriately skeptical,
+- appropriately severe,
+- and truly sufficient for a thesis-standard corporate finance/accounting referee review.
 
-Your stance: strict, fair, and skeptical. Assume subtle errors and omissions exist until disproven.
+You must independently inspect the code, artifacts, and outputs. You are not allowed to treat the first-layer audit as ground truth. You must assume it may contain omissions, overstatements, unsupported conclusions, false positives, false negatives, weak severity calls, and reproducibility blind spots.
+
+Your job is to BREAK the first audit if it is breakable.
 
 ========================================================
-Inputs (fill these)
+Inputs (placeholders)
 ========================================================
 Suite ID: {{SUITE_ID}}
-Doc path: docs/provenance/{{SUITE_ID}}.md
+Suite entrypoint (test runner): {{SUITE_TEST_SCRIPT_PATH}}
+Panel artifact OR builder used: {{PANEL_ARTIFACT_PATH_OR_BUILDER_SCRIPT}}
+First-layer audit doc path: {{FIRST_LAYER_AUDIT_DOC_PATH}}
+Output doc path: docs/provenance/{{SUITE_ID}}_red_team.md
 
-Suite estimation entrypoint(s): {{SUITE_TEST_SCRIPT_PATH}}
-Analysis dataset artifact OR builder (if any): {{ANALYSIS_DATASET_ARTIFACT_OR_BUILDER}}
-Repo root: {{REPO_ROOT}}
-
-If the suite has multiple entrypoints (e.g., dataset builder, risk-set builder, first-stage builder, table builder), discover them and list them in the audit output.
-
-========================================================
-Non-negotiable audit rules (zero exceptions)
-========================================================
-1) VERIFY, DO NOT TRUST.
-   Treat every doc claim as potentially wrong until verified by:
-   - direct code evidence (file path + function + relevant line ranges), OR
-   - a command you ran with recorded key outputs (counts, hashes, diagnostics).
-
-2) Quality over speed to the maximum:
-   - If anything is ambiguous, run more checks, expand trace depth, and mark UNVERIFIED only when you truly cannot verify.
-   - Prefer redundancy: verify key facts via at least TWO independent angles where feasible (e.g., code reference + data check).
-
-3) Ad-hoc checks only:
-   Allowed: reading code, ripgrep/grep, running existing scripts, python one-liners / minimal notebooks for inspection.
-   Not allowed: writing a new “bulk auditor” that crawls everything and auto-produces audit output.
-
-4) Determinism & staleness paranoia:
-   - Assume artifacts/tables may be stale.
-   - You must check whether outputs are regenerated or merely loaded.
-   - You must test that “from scratch” instructions actually reproduce outputs in the documented paths.
-
-5) If you cannot verify: label UNVERIFIED.
-   State precisely what blocks verification and the smallest next step to verify (file missing, data unavailable, ambiguous config, etc.).
+If you discover additional relevant materials (table builders, estimator wrappers, merge helpers, cached artifacts, logs, notebooks, config files, manual outputs), include them in your dependency/accountability sections.
 
 ========================================================
-Deliverable
+0) Mission
 ========================================================
-Create ONE file:
-docs/provenance/{{SUITE_ID}}_AUDIT.md
+Your mission is to answer four questions:
 
-It must contain:
+(1) Is the FIRST-LAYER AUDIT factually correct?
+(2) Is it complete enough for a thesis-standard referee review?
+(3) Did it miss any material implementation / identification / robustness / academic-integrity issues?
+(4) Did it make any claims that are unsupported, exaggerated, insufficiently verified, or incorrectly prioritized?
 
-(1) Executive verdict
-- PASS / PASS WITH MINOR REVISIONS / FAIL
-- 8–15 bullets of highest-impact issues affecting replication, correctness, or academic defensibility.
-- A short “what I trust” vs “what I do not trust yet” list.
-
-(2) Issue log (prioritized, evidence-backed)
-A table:
-
-| Severity | Doc Section (A–J) | Claim (quote) | Expected truth | Observed truth | Evidence | Fix (minimal) |
-|---------|--------------------|---------------|----------------|----------------|----------|---------------|
-
-Severity rules:
-- BLOCKER: incorrect variable/sample/model; breaks reproduction; misleading documentation; many-to-many merge risk hidden; wrong timing; wrong event coding; wrong instrument/treatment/cutoff; stale outputs presented as current.
-- MAJOR: incomplete/ambiguous enough to undermine academic-grade replication (missing units, missing time origin, missing join keys, unspecified SEs, etc.).
-- MINOR: clarity/cosmetic/wording.
-
-(3) Replication transcript (black-box)
-- Exact commands run (copy/paste runnable)
-- Files produced (paths)
-- Any errors/warnings and how you interpreted them
-- Repo state: commit hash if available
-- Compare produced outputs vs doc’s “Expected outputs” list
-
-(4) White-box trace record (end-to-end)
-- The actual dependency chain you reconstructed from code (not the doc’s chain)
-- Explicit diff vs doc’s Section C chain (missing steps, extra steps, misordered steps)
-
-(5) Appendix: verification outputs (summaries only)
-- Row/subject counts at key stages, key uniqueness checks, merge match-rates
-- Missingness summary for DV and key RHS
-- Distribution sanity checks for DV and key RHS (min/max, p1/p99, mean/sd)
-- Model-family diagnostics (only what the code actually implements; otherwise say NOT IMPLEMENTED)
+This is an audit OF the audit, not just a rerun of the audit.
 
 ========================================================
-Audit workflow (must follow this exact order)
+1) Non-negotiable rules
 ========================================================
+(1) Fresh-context discipline
+- Do not inherit assumptions from the first audit.
+- Do not assume its summaries, labels, issue severity, or conclusions are correct.
+- Use the first audit as an object to test, not a source of truth.
 
-PHASE 0 — Identify model family + “minimal completeness contract”
-Goal: determine what model-specific fields MUST be present and verified.
+(2) Hard verification only
+Every factual statement in your output must be supported by:
+    (a) a code reference (file path + function + relevant lines if easy), OR
+    (b) a reproducible command you executed and logged, OR
+    (c) a directly inspected artifact/output with path and relevant content summarized.
+If you cannot verify something, mark it UNVERIFIED and explain exactly why.
 
-0.1 Read suite entrypoint(s). Identify model family and estimator as implemented:
-- OLS/panel FE, GLM/logit/probit, Poisson/NegBin, IV/2SLS, DiD/event study, RD, time series, survival/hazards, competing risks, mixed effects, quantile, etc.
+(3) Red-team posture
+You are adversarial toward BOTH:
+- the implementation, and
+- the first-layer audit.
 
-0.2 Create a “Model-Family Completeness Checklist” in the audit doc:
-- Base checklist: A1–A5, B, C, D, E, F, G, H, I, J must exist and be non-hand-wavy.
-- Model addendum checklist (only whichever applies):
-  Survival/Hazards: time origin, time scale/units, duration construction, event coding, censoring definition, late entry/left truncation, risk-set structure, ties method (if Cox), competing risks approach + cause coding.
-  IV/2SLS: endogenous regressor(s), instruments, first-stage and second-stage specs, sample intersection, any weak-IV stats if computed.
-  DiD/Event study: treatment and cohort assignment, event-time construction, reference period, never-treated handling, staggered adoption details, pre-trend checks if implemented.
-  RD: running variable, cutoff, bandwidth selection rule as implemented, polynomial/order, kernel, donut holes/filters.
-  Time series: time index/frequency, lag rules, rolling windows, burn-in rules, HAC settings if used.
-  GLM/Count: link/family, offsets/exposure, convergence handling, separation handling.
-  Mixed effects: grouping structure, random intercept/slope, optimizer, variance estimator assumptions.
+You must actively search for:
+- things the first audit failed to notice,
+- things it stated too confidently,
+- things it labeled incorrectly,
+- issues it underweighted,
+- issues it overweighted,
+- places where it mistook naming/comments for implementation,
+- places where it confused theoretical best practice with what code actually does,
+- places where it documented code paths that are not actually executed by this suite.
 
-If the doc omits required addendum items for the discovered model family: mark at least MAJOR (often BLOCKER if it changes interpretation/reproducibility).
+(4) Separate facts from judgments
+You must explicitly distinguish:
+- VERIFIED FACT
+- VERIFIED ERROR IN FIRST AUDIT
+- VERIFIED UNDERLYING IMPLEMENTATION ISSUE
+- VERIFIED MISSED ISSUE
+- VERIFIED FALSE POSITIVE IN FIRST AUDIT
+- REFEREE JUDGMENT
+- UNVERIFIED CONCERN
 
-PHASE 1 — Doc claim extraction into a claims ledger (doc-first)
-Goal: convert prose into auditable atomic claims.
+(5) No rubber-stamping
+Do not praise the first audit unless you have actually tested and confirmed the relevant part.
+Do not accept a section as complete merely because it exists.
+Do not confuse verbosity with rigor.
 
-1.1 Open docs/provenance/{{SUITE_ID}}.md. Extract ALL concrete claims into a numbered ledger:
-- Inputs/raw data sources + locations
-- Ingest/cleaning scripts
-- Filters and sample definition
-- Every merge: join type, keys, match-rate, duplicate handling, row counts
-- Variable formulas: DV, key RHS, interactions, controls, identifiers, weights/offsets/exposure, FE/strata/etc.
-- Outlier/missing/scaling policies
-- Spec register: every produced column/spec mapping
-- Verification log claims (commands and numbers)
-- Reproduction commands and expected outputs
-- Any “known issues” the doc admits
+(6) No fabricated completeness
+If you did not independently test a claim from the first audit, do not say it was confirmed.
+If the first audit makes a reasonable claim but lacks evidence, you must flag the evidence gap even if the claim may be true.
 
-1.2 For each claim, assign a “verification target”:
-- Code reference location(s) OR
-- Data inspection command(s) to run
+(7) Deterministic output
+Produce ONE Markdown file at:
+docs/provenance/{{SUITE_ID}}_red_team.md
 
-PHASE 2 — Black-box reproduction attempt (doc commands only)
-Goal: test whether the doc can reproduce outputs without insider knowledge.
-
-2.1 Run the doc’s “from scratch” commands exactly as written.
-2.2 Confirm:
-- It runs without manual edits
-- It produces all expected outputs at documented paths
-- Outputs correspond to the suite (not another suite)
-2.3 If reproduction fails:
-- Log the exact failure (error text, step)
-- Determine whether doc is wrong, code is broken, or environment/data missing
-- Provide minimal fix steps (doc patch vs code patch), but do NOT implement major refactors.
-
-PHASE 3 — White-box reconstruction of the actual pipeline (code-first)
-Goal: build the true dependency chain and compare to Section C.
-
-3.1 Starting from {{SUITE_TEST_SCRIPT_PATH}}, identify:
-- What analysis dataset is loaded or built (path, builder)
-- The exact regression/model calls and their parameterization
-- The exact variable names used (DV, RHS, controls, FE/strata/cluster IDs, weights/offsets)
-- Output writers (tables/figures/serialized results)
-
-3.2 Trace upstream:
-- dataset builder(s), variable engines, cleaning/filtering, merges, raw reads
-- Confirm every step in doc’s Section C exists in code
-- Identify any material code steps missing from doc
-
-3.3 Staleness check:
-- Determine whether outputs/tables are generated from current regression objects or loaded from cached/stored results.
-- If cached: verify cache invalidation rules or mark risk clearly.
-
-PHASE 4 — Data provenance verification (Section D)
-Goal: verify “raw → post-clean” counts and key uniqueness.
-
-For each dataset claimed in doc Section D:
-4.1 Verify raw location exists and is the one actually read in code.
-4.2 Verify ingest script is the one used by the suite dependency chain.
-4.3 Compute via ad-hoc checks:
-- raw rows
-- post-clean rows
-- unique key counts (as claimed)
-- duplicates on keys and how handled
-4.4 Compare exact numbers to doc. Any mismatch:
-- If material: MAJOR/BLOCKER depending on impact on sample and estimates.
-
-PHASE 5 — Merge & sample construction audit (Section E)
-Goal: catch silent row explosions, miskeys, and hidden sample restrictions.
-
-For each merge found in doc AND any merge found in code:
-5.1 Verify join type and join keys in code (not doc).
-5.2 Pre-merge uniqueness checks on keys for both left and right tables.
-5.3 Compute match-rate diagnostics:
-- matched/unmatched counts
-- row count before/after
-- row explosion ratio (after/before)
-5.4 Verify doc reports the above accurately AND flags many-to-many risks explicitly.
-
-Additionally, audit non-merge sample construction steps that change the estimand:
-- Survival: risk-set building, interval splitting, late entry, censor rules
-- DiD/event study: event-time expansion, cohort assignment, trimming windows
-- RD: bandwidth filters, donut holes, heaping filters
-- Time series: lag creation and burn-in trimming
-- IV: first-stage/second-stage sample intersection
-
-Any hidden sample restriction or unexplained row drop: at least MAJOR.
-
-PHASE 6 — Variable dictionary forensic verification (Section F)
-Goal: verify every formula, timing, transform, and provenance.
-
-For EVERY variable used anywhere in estimation (DV/outcome/event, duration, key RHS, interactions, controls, identifiers, weights/offsets/exposure, instruments, treatment/event-time vars, running vars, FE/strata IDs):
-6.1 Confirm variable exists in final estimation dataframe.
-6.2 Verify construction:
-- locate code that constructs it (function + inputs)
-- independently recompute from upstream columns where feasible (spot-check on random rows or a slice)
-6.3 Verify timing:
-- lags/leads, windowing, “t vs t+1”, event-time alignment, survival start/stop alignment
-6.4 Verify transforms:
-- log(x) vs log(1+x), scaling units, standardization method, winsor thresholds, pooled vs by-time application, where in pipeline applied
-6.5 Verify missingness policy:
-- listwise deletion vs variable-wise; baseline vs time-varying missingness effects
-
-Minimum numeric checks (ad-hoc, logged):
-- min/max, p1/p99, mean/sd
-- missingness %
-- boundedness sanity (percent in [0,100], probabilities in [0,1], durations > 0, etc.)
-- spot correlations with components (where meaningful)
-
-BLOCKER examples:
-- wrong numerator/denominator for a core variable
-- doc says lagged, code uses contemporaneous
-- winsorization applied at different stage than doc claims
-- survival event coding differs from doc (event type swapped; censor treated as event)
-
-PHASE 7 — Data rules & estimand integrity (Section G)
-Goal: verify that the doc fully specifies data handling that affects identification.
-
-7.1 Outliers/winsor/trimming: verify thresholds, grouping (pooled/by-time), and when applied.
-7.2 Missing data rules: verify drop logic and its impact on N and composition.
-7.3 Denominator protections: verify divide-by-zero handling.
-7.4 Identification-threatening risks (must check explicitly):
-- look-ahead bias / leakage (future info used in current period)
-- overlapping windows that mechanically induce predictability
-- post-treatment controls in DiD/event studies
-- immortal time bias in survival settings (time origin and entry)
-- misaligned clustering level (cluster id changes post-merge)
-If any present or suspected: document as MAJOR/BLOCKER with evidence.
-
-PHASE 8 — Estimation spec register + output parity (Section H + produced tables)
-Goal: ensure each reported model/spec is exactly what runs and what appears in tables.
-
-For each Spec ID in Section H (and each output column/table):
-8.1 Verify the exact estimator call in code matches:
-- model type + options
-- DV/outcome/event/cause
-- RHS variables included
-- control set
-- FE/strata/frailty/RE structure
-- SE/cluster/robust method
-- weights/offsets/exposure
-8.2 Re-run at least ONE core spec end-to-end and compare key coefficients to produced table output within tolerance.
-8.3 Verify N in regression output matches post-filter N described in doc and in your reconstructed pipeline.
-8.4 Stale output test: confirm tables are generated from the run you executed (not previously saved results).
-
-PHASE 9 — Verification log audit (Section I)
-Goal: treat the doc’s verification log as claims to be re-verified.
-
-9.1 Re-run a representative subset of logged commands (especially those producing headline counts).
-9.2 Verify that logged numbers match what you observe now.
-9.3 If the verification log is missing required diagnostics (counts, uniqueness, match-rates, missingness, sanity stats): MAJOR.
-
-PHASE 10 — Known issues completeness + “referee-grade” assessment (Section J)
-Goal: assess academic readiness and whether doc admits relevant caveats.
-
-10.1 Evaluate if Section J covers the real risks you discovered.
-10.2 Provide a short referee-style critique:
-- What is clear and replicable
-- What is ambiguous
-- What would a committee/referee reject immediately
-10.3 Provide minimal, actionable fixes prioritized by severity.
+Use stable headings + tables. Avoid prose dumping.
 
 ========================================================
-Required commands (you must run equivalents and log them)
+2) Primary red-team objectives
 ========================================================
-You must run and record commands that accomplish at least:
+You must evaluate the first-layer audit on all of the following dimensions:
 
-(1) Doc-based full reproduction attempt (from scratch, as written)
-(2) Load the final estimation dataset and print:
-    - n_rows
-    - key entity counts (subjects/firms/etc.)
-    - time span
-    - column list or at least required vars list
-(3) Key uniqueness checks prior to every merge (duplicates on join keys)
-(4) Merge match-rate diagnostics for each merge (matched/unmatched + row changes + explosion ratio)
-(5) Variable sanity checks (DV + key RHS + key IDs):
-    - describe stats, p1/p99, missingness %
-    - winsor threshold confirmation when applicable
-(6) Model parity:
-    - rerun at least one core spec and compare coefficients to the produced table/output
-(7) Model-family diagnostics (only if implemented; otherwise explicitly say NOT IMPLEMENTED):
-    Survival: event/censor counts overall and by cause; duration sanity; PH tests if present; convergence notes
-    IV: first-stage stats if computed; sample intersection
-    DiD: treated/control counts over time; pre-trend checks if computed
-    RD: bandwidth used; counts within bandwidth
-    Time series: HAC settings; burn-in; lag structure verification
-    GLM: convergence status; separation warnings
+A. Factual correctness
+- Are its statements about model type, variables, filters, FE, SEs, timing, merges, outputs, and reproducibility actually correct?
 
-Keep checks ad-hoc. Do not write a new auditing framework.
+B. Evidence quality
+- Does each material claim rest on actual code/commands/artifacts?
+- Does it cite enough to be audit-safe?
+- Did it verify counts, match rates, duplicates, missingness, and warnings, or merely describe likely behavior?
+
+C. Completeness
+- Did it cover every estimation variable?
+- Did it cover every merge/sample-construction step?
+- Did it cover model-family-specific validity threats?
+- Did it fully assess identification, robustness, and inference?
+
+D. Severity calibration
+- Were the most serious problems actually treated as serious?
+- Were minor documentation gaps overstated relative to identification or inference threats?
+- Did it fail to escalate any thesis-killing issue?
+
+E. False positives / unfair criticism
+- Did the first audit accuse the code of problems that are not actually present?
+- Did it state concerns as facts when they were only possibilities?
+- Did it misread an implementation detail?
+
+F. False negatives / omissions
+- What important issues did the first audit miss entirely?
+- What hidden dependencies, silent sample changes, identification problems, inference errors, or reproducibility hazards were not flagged?
+
+G. Internal consistency
+- Does the first audit contradict itself across sections?
+- Do its issue register, verdict, and evidence line up?
+- Do its variable definitions match its model descriptions?
+- Are the severity labels consistent with the final readiness conclusion?
+
+H. Thesis-standard sufficiency
+- If a committee member or journal referee relied only on the first audit, would they be properly informed about the true credibility of this suite?
+- Or would they be misled by omissions, understatements, overstatements, or missing caveats?
 
 ========================================================
-Start now
+3) Deliverable structure (use these exact sections)
 ========================================================
-1) Open docs/provenance/{{SUITE_ID}}.md and create the claims ledger in the audit doc.
-2) Attempt black-box reproduction (Phase 2).
-3) Reconstruct the true pipeline from code (Phase 3).
-4) Proceed through Phases 4–10.
-5) End with a clear verdict and the top fixes required to reach PASS.
+
+A. Red-Team Bottom Line
+Provide:
+- One-paragraph verdict on the FIRST-LAYER AUDIT
+- Overall grade for the first audit:
+  * RELIABLE
+  * PARTIALLY RELIABLE
+  * MATERIALLY FLAWED
+  * NOT RELIABLE FOR THESIS REVIEW
+- One-sentence verdict on the suite as implemented:
+  * THESIS-STANDARD AS IMPLEMENTED
+  * SALVAGEABLE WITH MAJOR REVISIONS
+  * NOT THESIS-STANDARD AS IMPLEMENTED
+- Short statement of whether the first audit:
+  * understated risk,
+  * overstated risk,
+  * or mixed both
+
+B. Scope and Objects Audited
+List:
+- suite ID
+- suite entrypoint
+- panel/builder artifact
+- first-layer audit file
+- any other code paths/artifacts/logs inspected
+
+C. Audit-of-Audit Scorecard
+Create a table:
+
+Dimension | First-layer audit status (Pass / Partial / Fail) | Evidence basis | Red-team note
+
+Dimensions must include at least:
+- model/spec identification
+- reproducibility commands
+- dependency tracing
+- raw data provenance
+- merge/sample audit
+- variable dictionary completeness
+- outlier/missing-data rules
+- estimation spec register
+- verification log quality
+- known issues section
+- identification critique
+- econometric implementation critique
+- robustness critique
+- academic-integrity critique
+- severity calibration
+- final thesis verdict support
+
+D. Claim Verification Matrix (First Audit Claims Tested)
+Create a claim-by-claim matrix for the most material claims in the first-layer audit.
+
+Columns:
+Claim ID | First-layer claim | Section in first audit | Verified? (Y/N/Partial) | Evidence checked | Red-team verdict | Notes
+
+Rules:
+- Include all high-stakes claims from the first audit.
+- High-stakes claims include anything about:
+  * estimator type
+  * FE/SE structure
+  * sample filters
+  * variable definitions
+  * merge integrity
+  * reproducibility
+  * identification
+  * robustness
+  * academic-integrity risk
+  * final thesis-standard verdict
+- If a claim is too vague to verify, say so and classify that as a documentation weakness.
+
+E. Unsupported, Overstated, or Weakly-Evidenced Claims in the First Audit
+List every place where the first audit:
+- stated something not proven,
+- overclaimed certainty,
+- failed to distinguish suspicion from verification,
+- treated probable behavior as verified implementation,
+- or relied on insufficient diagnostics.
+
+Use a table:
+Issue ID | Claim / statement | Why unsupported or weak | Severity | What evidence was missing | Corrected formulation
+
+F. False Positives in the First Audit
+List every place where the first audit appears to accuse the implementation of a problem that is not actually substantiated.
+
+Use a table:
+Issue ID | First-audit criticism | Why it appears false / overstated | Evidence | Severity of audit error | Corrected view
+
+G. Missed Issues (Second-Layer Discoveries)
+List every material issue you find that the first-layer audit missed or materially underplayed.
+
+These may include:
+- silent sample changes
+- unverified cached dependencies
+- incorrect FE/cluster logic
+- weak cluster count problems
+- post-treatment controls
+- future leakage / look-ahead timing
+- merge duplicate contamination
+- mismatch between variable labels and constructions
+- unsupported causal interpretation
+- robustness gaps
+- stale artifact dependence
+- hidden manual steps
+- unlogged failures / warnings
+- code-path/output mismatch
+- issue severity under-ranking
+
+Use a table:
+Issue ID | Category | Description | Evidence | Severity | Why first audit missed/underplayed it | Consequence | Recommended fix
+
+H. Severity Recalibration
+Re-rank the issues from the first audit and your newly found issues.
+
+Create a master table:
+Issue ID | Source (First audit / Red-team) | Original severity | Red-team severity | Why recalibrated | Thesis impact
+
+You must explicitly identify:
+- issues that should be upgraded,
+- issues that should be downgraded,
+- issues that should be merged,
+- issues that were duplicated or fragmented unnecessarily.
+
+I. Completeness Gaps in the First Audit
+Assess whether the first audit failed to fully cover any required area.
+
+Use a table:
+Missing / incomplete area | Why incomplete | Evidence | Severity | What should have been included
+
+Must check at minimum:
+- suite boundary identification
+- all model specs
+- all variables in all specs
+- all merges / sample changes
+- all model-family-specific construction steps
+- all outputs
+- all environment/reproducibility assumptions
+- all thesis-level validity threats relevant to this model family
+
+J. Reproducibility Red-Team Assessment
+Independently test whether the first audit’s reproducibility guidance is truly usable.
+
+Report:
+- whether its commands are runnable as written
+- whether they are sufficient to regenerate outputs
+- whether they omit hidden steps, local state, cached files, seeds, manual artifacts, environment assumptions, or ordering constraints
+- whether output enumeration is complete
+- whether stale artifacts could masquerade as successful reproduction
+
+Use a table:
+Reproduction step | First audit documented it? | Verified? | Hidden dependency? | Risk | Red-team note
+
+K. Econometric and Thesis-Referee Meta-Audit
+Assess whether the first audit’s referee critique is itself up to standard.
+
+Specifically test whether it adequately handled:
+- identification threats
+- inference / clustering concerns
+- FE and within-variation concerns
+- timing alignment
+- post-treatment controls
+- reverse causality
+- endogenous sample selection
+- model-family-specific threats
+- robustness adequacy
+- interpretation discipline
+- academic-integrity / auditability risks
+
+Use a table:
+Referee dimension | First audit adequate? (Y/N/Partial) | Why or why not | Missed or weak points | Severity
+
+L. Audit-Safety / Academic-Integrity Assessment of the First Audit
+Evaluate the first audit itself as an audit artifact.
+
+You must explicitly flag whether the first audit:
+- can be independently checked by a third party,
+- clearly separates verified facts from judgments,
+- clearly labels unverified claims,
+- creates a traceable evidentiary trail,
+- avoids rhetorical overreach,
+- avoids hidden assumptions,
+- would protect a thesis committee from being misled.
+
+Use a table:
+Audit-safety risk in first audit | Evidence | Severity | Why it matters | Fix
+
+M. Master Red-Team Issue Register
+Create one exhaustive issue register that consolidates:
+- first-audit errors,
+- first-audit omissions,
+- first-audit overclaims,
+- underlying implementation issues newly found,
+- unresolved unverified concerns that materially matter.
+
+Columns:
+Issue ID | Type | Category | Verified? (Y/N) | Severity | Location | Description | Evidence | Consequence | Recommended fix | Blocks thesis-standard reliance on first audit? (Y/N)
+
+Type must be one of:
+- First-audit factual error
+- First-audit unsupported claim
+- First-audit false positive
+- First-audit omission
+- First-audit severity error
+- Underlying implementation issue missed by first audit
+- Underlying implementation issue underplayed by first audit
+- Unverified but material concern
+
+N. What a Committee / Referee Would Still Not Know if They Read Only the First Audit
+This section must be blunt and concise.
+List the most important facts, risks, or caveats that the first audit fails to communicate adequately.
+
+O. Priority Fixes to the First Audit
+Provide a ranked list of the highest-value improvements needed to make the first audit genuinely thesis-grade.
+
+Columns:
+Priority | Fix to first audit | Why it matters | Effort | Credibility gain
+
+P. Final Red-Team Readiness Statement
+Answer directly:
+- Can the first audit be trusted as a standalone referee-quality document?
+- What is its biggest factual weakness?
+- What is its biggest completeness weakness?
+- What is its biggest severity/judgment weakness?
+- What is the single most important missed issue, if any?
+- What is the single most misleading claim, if any?
+- What should a thesis committee believe after reading your red-team review?
+
+========================================================
+4) Required working method (do this in order)
+========================================================
+
+Step 1 — Open and decompose the first-layer audit
+- Read {{FIRST_LAYER_AUDIT_DOC_PATH}} carefully.
+- Extract all material claims, judgments, issue labels, severity levels, and final verdicts.
+- Build an internal list of claims to verify.
+- Identify where the first audit appears:
+  * too certain,
+  * too vague,
+  * incomplete,
+  * or suspiciously light/heavy.
+
+Step 2 — Independently identify the suite boundary from source
+- Open {{SUITE_TEST_SCRIPT_PATH}}.
+- Determine:
+  * what dataset/panel/risk-set it loads,
+  * which variables it uses,
+  * which models/specs it runs,
+  * which outputs it writes.
+- Do this independently before trusting the first audit’s framing.
+- Compare your independent suite boundary against the first audit’s boundary.
+
+Step 3 — Re-trace upstream dependencies
+- For each variable in each spec, find its construction and upstream raw fields.
+- Independently verify merges, sample filters, reshaping, event-time/risk-set/instrument construction, estimator wrappers, and output builders.
+- Note every place where the first audit:
+  * omitted a step,
+  * compressed a step too much,
+  * misstated the step,
+  * or failed to verify the step.
+
+Step 4 — Re-run targeted verification
+Do not blindly replicate the entire first audit; target the most fragile and high-stakes areas first.
+
+You MUST test, where relevant:
+- row counts by stage
+- uniqueness of key identifiers before merges
+- duplicate contamination risks
+- merge match rates
+- missingness for DV/key RHS/filters
+- FE-group variation support
+- cluster counts / cluster-size sanity
+- sample losses from lags, winsorization, event windows, or censoring
+- timing sanity for leads/lags/outcomes
+- warnings, convergence messages, dropped observations, singularity messages
+- whether documented outputs correspond to actual executed code paths
+- whether caches/stale artifacts/manual steps affect reproduction
+
+Step 5 — Attack the first audit’s judgments
+For each material conclusion in the first audit, ask:
+- Is this actually proven?
+- Is the evidence enough?
+- Is the claim too strong?
+- Is severity too low or too high?
+- Is something more important missing?
+- Would a hostile referee agree with this prioritization?
+
+Step 6 — Write the red-team report
+Populate sections A–P incrementally.
+Do not wait until the end to write.
+Your final document must be readable as:
+- an audit of the first audit, and
+- an independent adversarial referee memo.
+
+========================================================
+5) Red-team attack checklist (you must explicitly test these)
+========================================================
+
+You must explicitly search for failures in the first audit along these dimensions:
+
+(1) Claim-evidence mismatch
+- claim made without direct evidence
+- evidence insufficient for severity/conclusion
+- claim supported only by naming/comments, not execution
+
+(2) Boundary errors
+- wrong entrypoint
+- wrong panel artifact
+- undocumented side scripts
+- code paths documented but not actually used
+
+(3) Sample accounting failures
+- undocumented row losses
+- silent drops
+- mismatch between estimation sample and documented sample
+- wrong unit of observation
+- hidden subgroup exclusions
+- FE-induced sample changes not documented
+
+(4) Merge/provenance failures
+- duplicate keys not actually checked
+- many-to-many risk not substantiated
+- match rates asserted but not verified
+- source fields not actually traced to raw inputs
+
+(5) Variable-dictionary failures
+- missing spec variables
+- incomplete formulas
+- wrong source fields
+- missing timing alignment
+- variable labels inconsistent with code
+
+(6) Inference failures
+- clustering issues underweighted
+- too few clusters missed
+- mismatch between treatment variation and cluster level
+- heteroskedasticity/autocorrelation handling misdescribed
+- warnings or estimation failures omitted
+
+(7) Identification failures
+- post-treatment controls missed
+- future leakage missed
+- reverse-causality exposure underweighted
+- bad sample conditioning missed
+- event-time or treatment timing errors missed
+- weak-IV / pretrend / bandwidth concerns not demanded when relevant
+
+(8) Robustness failures
+- absence of robustness insufficiently criticized
+- placebo/falsification missing but not flagged
+- alt-cluster / alt-FE / alt-window dependence underweighted
+- multiple-testing / spec-search risk ignored
+
+(9) Reproducibility failures
+- commands incomplete or untested
+- outputs not fully enumerated
+- stale cached artifacts not considered
+- environment assumptions omitted
+- local-path/manual dependencies missed
+
+(10) Audit-craft failures in the first audit
+- internal contradictions
+- duplicated issues split across sections
+- major issue buried as minor note
+- final verdict not justified by issue register
+- too much prose, too little proof
+- weak distinction between fact and judgment
+
+========================================================
+6) Allowed tools / commands
+========================================================
+Allowed:
+- rg/grep searches
+- opening/reading files
+- running existing scripts with flags
+- python one-liners to inspect parquet/csv/artifacts
+- shell commands to inspect logs, warnings, outputs, file existence, hashes/timestamps
+- targeted comparison of documented vs actual outputs
+Not allowed:
+- writing a bulk crawler/documentation generator
+- accepting first-audit claims without verification
+- inventing evidence
+- hiding uncertainty
+- compressing materially distinct issues into vague prose
+
+========================================================
+7) Quality bar
+========================================================
+This red-team review is complete only if:
+- all material first-audit claims have been tested or explicitly triaged as unverified,
+- all material first-audit weaknesses are surfaced,
+- all major missed issues in the underlying suite are surfaced,
+- severity is re-ranked in a defensible way,
+- reproducibility guidance from the first audit is independently challenged,
+- the final verdict clearly states whether the first audit is safe for thesis/referee reliance.
+
+========================================================
+8) Style requirements
+========================================================
+- Be precise, adversarial, and evidence-driven.
+- Prefer tables over long prose.
+- Be blunt about unsupported claims.
+- Do not merely summarize the first audit.
+- Do not just “agree/disagree”; explain what was checked.
+- If the first audit is strong, say exactly why.
+- If it is weak, say exactly where and how.
+- Write like a replication referee protecting a thesis committee from being misled.
+
+========================================================
+9) Start now
+========================================================
+Begin by:
+- opening {{FIRST_LAYER_AUDIT_DOC_PATH}},
+- extracting its material claims and issue register,
+- independently opening {{SUITE_TEST_SCRIPT_PATH}},
+- identifying the actual suite boundary from source,
+- creating the skeleton file at docs/provenance/{{SUITE_ID}}_red_team.md,
+- filling sections A–D first,
+- then proceed through the rest of the red-team audit until complete.

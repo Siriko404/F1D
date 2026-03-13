@@ -353,6 +353,7 @@ def run_regression(
         "StockRet",
         "MarketRet",
         "EPS_Growth",
+        "SurpDec",
     ]
     for var in continuous_vars:
         if var in df_reg.columns:

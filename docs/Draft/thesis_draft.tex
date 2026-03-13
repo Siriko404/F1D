@@ -1,0 +1,524 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{pdflscape}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{threeparttable}
+
+\geometry{margin=1in}
+\setstretch{1.44}
+\emergencystretch=3em
+\tolerance=1000
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+% --- Custom column types ---
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\begin{document}
+
+% ============================================================
+% TITLE
+% ============================================================
+\begin{center}
+{\LARGE \textbf{Uncertainty in Earnings Calls and Takeover Hazards}} \\[1.5em]
+{\large Sina Soleimanipour} \\[0.5em]
+{\normalsize Telfer School of Management, University of Ottawa} \\[1.5em]
+{\normalsize Thesis Advisors: Dr.\ Ali Akyol \quad Dr.\ Harshit Rajaiya} \\[1em]
+{\normalsize Draft — \today}
+\end{center}
+
+\vfill  % push title to vertical center
+\thispagestyle{empty}
+\newpage
+
+% ============================================================
+% I. ABSTRACT
+% ============================================================
+\section{Abstract}
+\label{sec:abstract}
+
+[Placeholder for abstract.]
+
+% ============================================================
+% II. CONCEPTUAL FRAMEWORK AND METHODOLOGY
+% ============================================================
+\section{Conceptual Framework and Methodology}
+\label{sec:framework}
+
+\subsection{Literature Review}
+\label{sec:litreview}
+
+[Placeholder for literature review.]
+
+\subsection{Methodology}
+\label{sec:methodology}
+
+We employ three estimation frameworks, each suited to the dependent variable and data structure of the hypothesis under study.
+
+\paragraph{Panel Fixed-Effects OLS (H0.3).}
+To replicate and extend Dzielinski et al.\ (2017), we estimate OLS regressions of QA-section uncertainty on presentation-section uncertainty, analyst uncertainty, negative sentiment, and financial controls. Each model includes CEO fixed effects and year fixed effects, both included as indicator variables. Standard errors are clustered at the CEO level. We estimate four specifications: a Manager variant and a CEO variant, each in a Baseline form (replicating the original study's control set: stock return, market return, EPS growth, and earnings surprise decile) and an Extended form that adds firm size, book-to-market, leverage, ROA, current ratio, R\&D intensity, and stock return volatility.
+
+\paragraph{Panel Fixed-Effects Regression (H7, H14).}
+To test whether linguistic uncertainty in earnings calls affects stock market illiquidity, we estimate panel regressions with firm and time fixed effects using the \textit{linearmodels} PanelOLS estimator. Standard errors are clustered at the firm level. For H7 (Amihud illiquidity change), the time fixed effect is a fiscal-quarter integer; for H14 (bid-ask spread change), it is a year--quarter index defined as $\text{year} \times 4 + \text{quarter}$. Both H7 and H14 use an event-study design with short event windows ($\pm$3 trading days around the call). Control variables include firm size, leverage, ROA, Tobin's Q, pre-call Amihud illiquidity, and two linguistic controls (negative sentiment and analyst uncertainty) for H7, or firm size, stock price, share turnover, return volatility, pre-call spread level, and absolute earnings surprise decile for H14. We estimate raw linguistic uncertainty variants (CEO QA, CEO presentation, manager QA, manager presentation) as well as clarity-residual variants that partial out the linguistic determinants of uncertainty identified in the H0.3 replication.
+
+\paragraph{Cox Proportional Hazards Models (H9).}
+To examine whether speech uncertainty predicts takeover likelihood, we estimate Cox proportional hazards models with time-varying covariates in counting-process (start, stop) format. We consider three event types: all takeovers, uninvited (hostile) takeovers, and friendly takeovers. Uninvited and friendly events are modeled as cause-specific hazards, treating competing event types as censored. Controls include firm size, book-to-market, leverage, ROA, and cash holdings. Standard errors are robust sandwich estimators, as is the default in the \textit{lifelines} CoxTimeVaryingFitter; we note that these are not clustered at the firm level. We report hazard ratios for the main (sparse) specification across three clarity variants: the CEO clarity score, the CEO clarity residual, and the manager clarity residual.
+
+% ============================================================
+% III. MAIN EMPIRICAL ANALYSES
+% ============================================================
+\section{Main Empirical Analyses}
+\label{sec:main}
+
+\subsection{Data Sources}
+\label{sec:data}
+
+Our data draw on several standard sources accessed through the Wharton Research Data Services (WRDS) platform. Quarterly accounting data (total assets, book equity, leverage, ROA, current ratio, R\&D expenditure, cash holdings) come from \textbf{Compustat Quarterly}. Daily stock-level data (prices, returns, trading volume, shares outstanding) come from \textbf{CRSP Daily}. We obtain individual analyst earnings forecasts and actuals from \textbf{IBES Detail}, which we use to construct earnings surprise measures. The link between Compustat and CRSP identifiers is established through the \textbf{CRSP--Compustat Merged (CCM)} linktable.
+
+The primary text data consist of \textbf{earnings call transcripts from Capital IQ} spanning 2002--2018. From each transcript, we extract linguistic uncertainty measures at the sentence level, separately for the presentation section (prepared remarks) and the Q\&A section (analyst--management dialogue). We further decompose each transcript by speaker role, distinguishing CEO speech from aggregate management speech. The master manifest contains 112,968 earnings call transcripts. Takeover events for H9 are identified from the SDC Platinum M\&A database, classified as Uninvited (comprising Hostile and Unsolicited bids) or Friendly (comprising Friendly and Neutral bids) and matched to the panel at the firm--quarter level.
+
+\subsection{Samples}
+\label{sec:samples}
+
+Starting from the master manifest of 112,968 earnings call transcripts, we apply several filters common across our hypothesis suites. We exclude firms in the Finance (Fama--French 12 industry code 11) and Utilities (code 8) sectors, following the convention of omitting regulated and financial industries from corporate governance and market microstructure analyses. For CEO-level specifications, we further restrict to CEOs with at least five observed calls, ensuring meaningful within-CEO variation for the fixed-effects estimator.
+
+The resulting estimation samples vary by hypothesis due to variable availability and listwise deletion of missing observations. The H0.3 replication yields 53,070 observations (Manager Baseline) and 38,671 observations (CEO Baseline), declining modestly to 51,569 and 37,517 in the Extended specifications. The H7 Amihud illiquidity change panel ranges from 38,214 (CEO clarity residual) to 78,679 (Manager QA) observations. The H14 bid-ask spread panel ranges from 38,218 (CEO clarity residual) to 55,485 (Manager presentation) observations. All H14 specifications include \textit{AbsSurpDec} ($|\text{SurpDec}|$, the absolute value of the earnings surprise decile rank) as a control, which has 69.8\% coverage in the Main panel. We construct \textit{AbsSurpDec} from IBES Detail consensus estimates matched via fiscal period end date (\textit{fpedats}) with a 120-day backward tolerance, requiring a minimum of two analysts and $|\text{MEANEST}| \geq 0.05$. The H9 takeover panel contains up to 54,981 firm--quarter intervals, with 307 takeover events in the CEO clarity variant (250 friendly, 40 uninvited, 17 unclassified). Event counts vary by variant due to the availability of clarity residuals (CEO Residual: 275 events; Manager Residual: 354 events).
+
+\subsection{Variable Measurement}
+\label{sec:variables}
+
+\paragraph{Linguistic Uncertainty Measures.}
+Following Dzielinski et al.\ (2017), we measure linguistic uncertainty as the percentage of words in an earnings call segment that are classified as uncertain by the Loughran--McDonald (LM) financial dictionary. Specifically, for a given segment $s$, $\text{Uncertainty\_pct}_s = 100 \times (\text{LM Uncertainty words in } s) / (\text{total words in } s)$. We compute this separately for the presentation section and the Q\&A section, and for CEO speech versus aggregate management speech, yielding four raw variants: \textit{CEO\_ QA\_ Uncertainty\_ pct}, \textit{CEO\_ Pres\_ Uncertainty\_ pct}, \textit{Manager\_ QA\_ Uncertainty\_ pct}, and \textit{Manager\_ Pres\_ Uncertainty\_ pct}. \textit{Analyst\_ QA\_ Uncertainty\_ pct} captures the percentage of LM uncertainty words spoken by analysts during Q\&A. All linguistic percentage variables are winsorized at the 99th percentile (upper-only) within each calendar year; no lower-bound winsorization is applied because these variables have a natural floor at zero (segments with no uncertain words).
+
+\paragraph{Clarity Scores and Residuals.}
+\textit{ClarityCEO} is the negative of the CEO fixed effect ($-\hat{\gamma}_i$) estimated in the H0.3 first-stage regression, standardized to zero mean and unit variance within each industry sample (Main, Finance, Utility). Higher values indicate CEOs who speak with less uncertainty conditional on firm and call characteristics.
+
+\textit{CEO\_ Clarity\_ Residual} and \textit{Manager\_ Clarity\_ Residual} are the call-level residuals from regressing QA-section uncertainty on its linguistic determinants (\textit{Manager\_ Pres\_ Uncertainty\_ pct}/\textit{CEO\_ Pres\_ Uncertainty\_ pct}, \textit{Analyst\_ QA\_ Uncertainty\_ pct}, \textit{Entire\_ All\_ Negative\_ pct}), financial controls, and CEO and year fixed effects. These residuals capture the component of QA uncertainty that is unexplained by observable linguistic, firm-level, and individual-level factors.
+
+\paragraph{Market Illiquidity Measures.}
+Both H7 and H14 employ an event-study design with symmetric $\pm$3 trading-day windows around the earnings call. \textit{delta\_amihud} is the change in Amihud (2002) illiquidity around the call: $\overline{A}_{[+1,+3]} - \overline{A}_{[-3,-1]}$, where daily Amihud illiquidity is $A_t = 10^6 \times |r_t| / (\text{VOL}_t \times |\text{PRC}_t|)$ using CRSP daily data (minimum 2 valid trading days per window). Trading-day positions are computed by rank rather than calendar days to handle weekends and holidays. \textit{pre\_call\_amihud} (the pre-window average $\overline{A}_{[-3,-1]}$) enters as a control variable. \textit{delta\_spread} is defined analogously as $\overline{S}_{[+1,+3]} - \overline{S}_{[-3,-1]}$, where the daily spread is $S_t = 2(\text{ASKHI}_t - \text{BIDLO}_t) / (\text{ASKHI}_t + \text{BIDLO}_t)$ from CRSP quote data (minimum 2 valid days per window).
+
+\paragraph{Takeover Indicator.}
+\textit{Takeover} equals one in the firm--quarter in which a takeover bid is announced, with separate indicators \textit{Takeover\_Uninvited} and \textit{Takeover\_Friendly}. Following a counting-process format, each firm--quarter contributes an interval at risk until the event or censoring.
+
+\paragraph{Negative Sentiment.}
+\textit{Entire\_All\_Negative\_pct} is the percentage of words in the entire call classified as negative by the Loughran--McDonald dictionary: $100 \times (\text{LM Negative words}) / (\text{total words})$, winsorized at 99\% (upper-only) per year.
+
+A comprehensive list of all variable definitions and formulas appears in Appendix~\ref{sec:app_vardef}.
+
+\subsection{Findings}
+\label{sec:findings}
+
+\subsubsection{Replication of Dzielinski et al.\ (H0.3)}
+\label{sec:h03}
+
+Table~\ref{tab:h03} reports OLS estimates of QA-section uncertainty on \textit{Manager\_ Pres\_ Uncertainty\_ pct}/\textit{CEO\_ Pres\_ Uncertainty\_ pct}, \textit{Analyst\_ QA\_ Uncertainty\_ pct}, \textit{Entire\_ All\_ Negative\_ pct}, and financial controls, with CEO and year fixed effects and CEO-clustered standard errors.
+
+The Baseline specifications replicate the original Dzielinski et al.\ (2017) model. In the Manager variant ($N = 53{,}070$, $R^2 = 0.418$), \textit{Manager\_Pres\_Uncertainty\_pct} enters with a coefficient of 0.096 ($p < 0.001$), \textit{Analyst\_QA\_Uncertainty\_pct} at 0.033 ($p < 0.001$), and \textit{Entire\_All\_Negative\_pct} at 0.077 ($p < 0.001$). The CEO variant ($N = 38{,}671$, $R^2 = 0.372$) yields similar magnitudes: \textit{CEO\_Pres\_Uncertainty\_pct} at 0.093, \textit{Analyst\_QA\_Uncertainty\_pct} at 0.033, and \textit{Entire\_All\_Negative\_pct} at 0.062 (all $p < 0.001$). [Placeholder: comparison with original paper coefficients.]
+
+The Extended specifications add seven firm-level controls---\textit{Size}, \textit{BM}, \textit{Lev}, \textit{ROA}, \textit{CurrentRatio}, \textit{RD\_Intensity}, and \textit{Volatility}---to test the robustness of the baseline associations. In the Manager Extended model ($N = 51{,}569$, $R^2 = 0.420$), the core linguistic coefficients remain virtually unchanged: \textit{Manager\_Pres\_Uncertainty\_pct} at 0.097, \textit{Analyst\_QA\_Uncertainty\_pct} at 0.033, and \textit{Entire\_All\_Negative\_pct} at 0.079 (all $p < 0.001$). Among the extended controls, \textit{ROA} (0.005, $p = 0.047$) and \textit{Volatility} (0.006, $p = 0.007$) are statistically significant, and \textit{CurrentRatio} (0.005, $p = 0.062$) is marginally so, while \textit{Lev}, \textit{Size}, \textit{BM}, and \textit{RD\_Intensity} are not. Of the base controls, \textit{EPS\_Growth} ($p = 0.049$ in the Baseline) loses significance in the Extended specification ($p = 0.245$). The CEO Extended model ($N = 37{,}517$, $R^2 = 0.372$) tells a similar story: \textit{CEO\_Pres\_Uncertainty\_pct} remains at 0.095 ($p < 0.001$), and among extended controls only \textit{ROA} (0.008, $p = 0.012$) reaches significance. The stability of the core coefficients across the baseline and extended specifications indicates that the Dzielinski et al.\ (2017) findings are robust to an enriched control set.
+
+\subsubsection{Uncertainty and Market Illiquidity (H7 \& H14)}
+\label{sec:h7h14}
+
+We test whether linguistic uncertainty in earnings calls increases post-call stock illiquidity, using two event-study measures: \textit{delta\_amihud} (H7) and \textit{delta\_spread} (H14), both computed over $\pm$3 trading-day windows around the call. All H7 and H14 $p$-values are one-tailed in the predicted direction ($\beta > 0$).
+
+\paragraph{\textit{delta\_amihud} (H7).}
+Table~\ref{tab:h7} reports panel fixed-effects regressions of \textit{delta\_amihud} (post-call minus pre-call Amihud illiquidity) on uncertainty variants, with firm and fiscal-quarter fixed effects and firm-clustered standard errors. Across seven specifications, no uncertainty measure reaches statistical significance at the 5\% level. The strongest signal comes from \textit{Manager\_QA\_Uncertainty\_pct} in Model A3 ($\beta = 0.329$, $p = 0.069$), which is directionally consistent with the hypothesis---higher uncertainty in the Q\&A section is associated with a modest increase in illiquidity---but does not reach conventional significance. \textit{Manager\_Pres\_Uncertainty\_pct} ($\beta = 0.110$, $p = 0.135$) is likewise positive but insignificant. The CEO-level variants are negative and far from significance: \textit{CEO\_QA\_Uncertainty\_pct} ($\beta = -0.063$, $p = 0.814$) and \textit{CEO\_Pres\_Uncertainty\_pct} ($\beta = -0.023$, $p = 0.769$). In Model A5, which includes both manager variants simultaneously, the joint Wald test is marginally significant ($\chi^2 = 2.757$, $p = 0.097$), though neither individual coefficient is significant. The clarity-residual models are likewise null: \textit{CEO\_Clarity\_Residual} ($\beta = 0.015$, $p = 0.165$) and \textit{Manager\_Clarity\_Residual} ($\beta = 0.007$, $p = 0.080$)---both directionally positive but insignificant.
+
+Among control variables, \textit{pre\_call\_amihud} is significant in the manager-level and clarity-residual specifications, with a positive coefficient in the manager variants ($\beta \approx 1.09$, $p = 0.016$) and a negative coefficient in the residual variants ($\beta \approx -0.71$ to $-0.79$, $p < 0.001$), consistent with mean-reversion dynamics in the Amihud measure. \textit{Size} reaches significance in both B1 and B2, and \textit{ROA} is significant in B2 ($p = 0.012$) and marginally so in B1 ($p = 0.064$), but neither reaches significance in the raw uncertainty specifications (A1--A5), where within-$R^2$ is very low (0.001--0.012).
+
+\paragraph{\textit{delta\_spread} (H14).}
+Table~\ref{tab:h14} reports panel fixed-effects regressions of \textit{delta\_spread} on the same uncertainty variants, with firm and year--quarter fixed effects and firm-clustered standard errors. Of six primary specifications, one reaches statistical significance: \textit{CEO\_Pres\_Uncertainty\_pct} ($\beta = 0.0004$, $p = 0.024$), indicating that a one-standard-deviation increase in CEO presentation uncertainty is associated with a 0.71\% standard-deviation increase in the bid-ask spread change---a small but statistically detectable effect. The remaining five specifications are insignificant: \textit{Manager\_QA\_Uncertainty\_pct} ($\beta = 0.0001$, $p = 0.353$), \textit{CEO\_QA\_Uncertainty\_pct} ($\beta = 0.0000$, $p = 0.421$), \textit{Manager\_Pres\_Uncertainty\_pct} ($\beta = 0.0002$, $p = 0.223$), \textit{Manager\_Clarity\_Residual} ($\beta = 0.0000$, $p = 0.418$), and \textit{CEO\_Clarity\_Residual} ($\beta = 0.0001$, $p = 0.396$). Controls---particularly \textit{PreCallSpread} ($\beta \approx -0.70$), \textit{Turnover}, \textit{StockPrice}, \textit{Volatility}, and \textit{AbsSurpDec}---dominate the explained variation ($R^2$ ranges from 0.457 to 0.466), indicating that the model captures spread dynamics well.
+
+Taken together, the H7 and H14 results provide limited support for the hypothesis that uncertainty in earnings call speech increases market illiquidity. The strongest H7 signal (\textit{Manager\_QA\_Uncertainty\_pct}, $p = 0.069$) is directionally consistent with the hypothesis but does not reach conventional significance. The sole significant H14 coefficient (\textit{CEO\_Pres\_Uncertainty\_pct}) is economically small. We note that the event-study design ($\pm$3 trading days) is well-suited to isolate call-level information effects; the absence of significant results is unlikely to reflect window-length misspecification.
+
+\subsubsection{Uncertainty and Takeover Likelihood (H9)}
+\label{sec:h9}
+
+Table~\ref{tab:h9} reports hazard ratios from Cox proportional hazards models with time-varying covariates and robust sandwich standard errors. We estimate nine sparse-specification models: three event types (\textit{Takeover}, \textit{Takeover\_Uninvited}, \textit{Takeover\_Friendly}) crossed with three clarity variants (\textit{ClarityCEO}, \textit{CEO\_Clarity\_Residual}, \textit{Manager\_Clarity\_Residual}).
+
+The results are uniformly null. For all takeovers, \textit{ClarityCEO} yields a hazard ratio of 0.997 ($p = 0.964$), meaning a one-unit increase in clarity is associated with essentially no change in takeover hazard. \textit{CEO\_Clarity\_Residual} HR $= 1.110$ ($p = 0.600$) and \textit{Manager\_Clarity\_Residual} HR $= 0.940$ ($p = 0.787$)---neither approaching significance.
+
+The cause-specific models for uninvited takeovers, which are of particular theoretical interest as they may proxy for external discipline imposed on uncertain management, are equally null: \textit{ClarityCEO} HR $= 1.112$ ($p = 0.529$), \textit{CEO\_Clarity\_Residual} HR $= 1.002$ ($p = 0.997$), \textit{Manager\_Clarity\_Residual} HR $= 1.339$ ($p = 0.646$). We note that the uninvited-takeover sample is small (36--46 events depending on variant), limiting statistical power, though the point estimates are also economically modest.
+
+For friendly takeovers (224--289 events), the pattern is the same: \textit{ClarityCEO} HR $= 1.008$ ($p = 0.908$), \textit{CEO\_Clarity\_Residual} HR $= 1.127$ ($p = 0.584$), \textit{Manager\_Clarity\_Residual} HR $= 0.902$ ($p = 0.679$).
+
+In sum, we find no evidence that linguistic uncertainty in earnings calls predicts takeover likelihood, whether measured via \textit{ClarityCEO} or as a clarity residual, and regardless of event type. The hypothesis that uncertain speech signals managerial quality problems that attract takeover interest receives no empirical support in our data.
+
+% ============================================================
+% IV. ADDITIONAL ANALYSES
+% ============================================================
+\section{Additional Analyses}
+\label{sec:additional}
+
+[Placeholder for additional analyses.]
+
+% ============================================================
+% V. CONCLUSION
+% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+[Placeholder for conclusion.]
+
+% ============================================================
+% VI. APPENDIX
+% ============================================================
+\clearpage
+\appendix
+\section{Appendix}
+\label{sec:appendix}
+
+\subsection{Variable Definitions}
+\label{sec:app_vardef}
+
+\begin{scriptsize}
+\begin{longtable}{L{5.5cm} L{2.0cm} L{7.0cm}}
+\caption{Variable Definitions} \label{tab:vardef} \\
+\toprule
+\textbf{Pipeline Variable} & \textbf{Suites} & \textbf{Definition} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pipeline Variable} & \textbf{Suites} & \textbf{Definition} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+\multicolumn{3}{l}{\textit{Panel A: Dependent Variables}} \\
+\midrule
+Manager\_QA\_Uncertainty\_pct & H0.3 & $100 \times (\text{LM Uncertainty words in Manager Q\&A}) / (\text{total Manager Q\&A words})$; winsorized 1\%/99\% per year \\
+CEO\_QA\_Uncertainty\_pct & H0.3 & $100 \times (\text{LM Uncertainty words in CEO Q\&A}) / (\text{total CEO Q\&A words})$; winsorized 1\%/99\% per year \\
+delta\_amihud & H7 & $\overline{A}_{[+1,+3]} - \overline{A}_{[-3,-1]}$ where $A_t = 10^6 \times |r_t| / (\text{VOL}_t \times |\text{PRC}_t|)$ (CRSP daily); trading-day positions by rank; min 2 days per window \\
+delta\_spread & H14 & $\overline{S}_{[+1,+3]} - \overline{S}_{[-3,-1]}$ where daily $S = 2(\text{ASKHI} - \text{BIDLO}) / (\text{ASKHI} + \text{BIDLO})$ (CRSP); min 2 days per window \\
+Takeover & H9 & $=1$ in the firm--quarter interval containing a takeover bid announcement (SDC M\&A) \\
+Takeover\_Uninvited & H9 & $=1$ if bid attitude is Hostile or Unsolicited (SDC) \\
+Takeover\_Friendly & H9 & $=1$ if bid attitude is Friendly or Neutral (SDC) \\
+\midrule
+
+\multicolumn{3}{l}{\textit{Panel B: Key Independent Variables}} \\
+\midrule
+Manager\_Pres\_Uncertainty\_pct & H0.3, H7, H14 & $100 \times (\text{LM Uncertainty words in Manager Pres}) / (\text{total Manager Pres words})$; winsorized 1\%/99\% per year \\
+CEO\_Pres\_Uncertainty\_pct & H0.3, H7, H14 & $100 \times (\text{LM Uncertainty words in CEO Pres}) / (\text{total CEO Pres words})$; winsorized 1\%/99\% per year \\
+Analyst\_QA\_Uncertainty\_pct & H0.3, H7 & $100 \times (\text{LM Uncertainty words in Analyst Q\&A}) / (\text{total Analyst Q\&A words})$; winsorized 1\%/99\% per year \\
+Entire\_All\_Negative\_pct & H0.3, H7 & $100 \times (\text{LM Negative words in entire call}) / (\text{total words in entire call})$; winsorized 1\%/99\% per year \\
+ClarityCEO & H9 & $-\hat{\gamma}_i$ from H0.3 CEO FE regression, z-scored within each industry sample (Main/Finance/Utility); higher $=$ clearer \\
+CEO\_Clarity\_Residual & H7, H9, H14 & Call-level residual $\hat{u}_{it}$ from H0.3 CEO Extended regression (CEO QA uncertainty on linguistic + financial controls + CEO FE + Year FE) \\
+Manager\_Clarity\_Residual & H7, H9, H14 & Call-level residual $\hat{u}_{it}$ from H0.3 Manager Extended regression (Manager QA uncertainty on linguistic + financial controls + CEO FE + Year FE) \\
+\midrule
+
+\multicolumn{3}{l}{\textit{Panel C: Financial Controls}} \\
+\midrule
+Size & All & $\ln(\texttt{atq})$ where $\texttt{atq} > 0$, else missing (Compustat quarterly total assets) \\
+BM & H0.3, H9 & $\texttt{ceqq} / (\texttt{cshoq} \times \texttt{prccq})$ (book equity / market cap; Compustat quarterly) \\
+Lev & All & $(\texttt{dlcq} + \texttt{dlttq}) / \texttt{atq}$ (interest-bearing debt only; missing debt filled as zero; Compustat quarterly) \\
+ROA & All & $\texttt{iby} / \overline{\texttt{atq}}$ where \texttt{iby} $=$ income before extraordinary items (annual, fiscal Q4) and $\overline{\texttt{atq}} = (\texttt{atq}_t + \texttt{atq}_{t-1})/2$ (Compustat) \\
+CurrentRatio & H0.3 & $\texttt{actq} / \texttt{lctq}$ (current assets / current liabilities; Compustat quarterly) \\
+RD\_Intensity & H0.3 & $\texttt{xrdq} / \texttt{atq}$ (R\&D expense / total assets; missing \texttt{xrdq} filled as zero; Compustat quarterly) \\
+Volatility & H0.3, H14 & $\text{std}(r_t) \times \sqrt{252} \times 100$ over inter-call window $[\text{call}_t + 1\text{d},\; \text{call}_{t+1} - 5\text{d}]$ (CRSP daily); min 10 days \\
+StockRet & H0.3 & Compound return $(\prod(1 + r_t) - 1) \times 100$ over inter-call window $[\text{call}_t + 1\text{d},\; \text{call}_{t+1} - 5\text{d}]$ (CRSP \texttt{RET}); min 10 days \\
+MarketRet & H0.3 & Compound CRSP value-weighted market return $(\prod(1 + \texttt{VWRETD}_t) - 1) \times 100$ over same inter-call window; min 10 days \\
+EPS\_Growth & H0.3 & $(\texttt{epspxq}_t - \texttt{epspxq}_{t-4}) / |\texttt{epspxq}_{t-4}|$; lag matched by date ($-365\text{d}$, $\pm 45$d tolerance; Compustat quarterly) \\
+SurpDec & H0.3 & Signed surprise rank $\in [-5, +5]$: within-quarter percentile of (IBES \texttt{ACTUAL} $-$ \texttt{MEANEST}), mapped to ordinal scale \\
+TobinsQ & H7 & $(\texttt{cshoq} \times \texttt{prccq} + \texttt{dlcq} + \texttt{dlttq}) / \texttt{atq}$ (market cap + interest-bearing debt) / total assets (Compustat quarterly) \\
+pre\_call\_amihud & H7 & $\overline{A}_{[-3,-1]}$ (pre-call average Amihud illiquidity); controls for pre-call liquidity level \\
+CashHoldings & H9 & $\texttt{cheq} / \texttt{atq}$ (cash and equivalents / total assets; Compustat quarterly) \\
+StockPrice & H14 & $|\texttt{PRC}|$ on or before call date (CRSP closing price, nearest prior trading day) \\
+Turnover & H14 & $\texttt{VOL} / (\texttt{SHROUT} \times 1000)$ on the call date (CRSP; both in thousands) \\
+PreCallSpread & H14 & Mean daily high-low spread $2(\text{ASKHI} - \text{BIDLO}) / (\text{ASKHI} + \text{BIDLO})$ over $[-3, -1]$ trading days before the call (CRSP); min 2 days \\
+AbsSurpDec & H0.3, H14 & $|\text{SurpDec}|$ (ordinal 0--5); from IBES Detail consensus matched via \texttt{fpedats} ($\pm 120$d), min 2 analysts, $|\texttt{MEANEST}| \geq 0.05$ \\
+duration & H9 & Interval length in the counting-process panel: $\text{stop} - \text{start}$ (calendar days between successive calls or censoring) \\
+\end{longtable}
+\end{scriptsize}
+
+% --- Unified Summary Statistics ---
+\begin{landscape}
+\subsection{Summary Statistics}
+\label{sec:app_sumstats}
+\begin{scriptsize}
+\begin{longtable}{@{}lrrrrrrrr@{}}
+\caption{Unified Summary Statistics --- All Variables Across Suites} \label{tab:sumstats} \\
+\toprule
+Variable & $N$ & Mean & SD & Min & P25 & Median & P75 & Max \\
+\midrule
+\endfirsthead
+\toprule
+Variable & $N$ & Mean & SD & Min & P25 & Median & P75 & Max \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+\multicolumn{9}{@{}l}{\textit{Panel A: Dependent Variables}} \\
+\midrule
+Manager QA Uncertainty (\%) & 84,484 & 0.821 & 0.321 & 0.000 & 0.599 & 0.792 & 1.009 & 2.037 \\
+CEO QA Uncertainty (\%) & 62,132 & 0.777 & 0.391 & 0.000 & 0.512 & 0.738 & 0.998 & 2.514 \\
+$\Delta$ Amihud Illiquidity & 86,906 & 0.092 & 12.624 & $-99.595$ & $-0.001$ & $-0.000$ & 0.000 & 2678.235 \\
+$\Delta$ Bid-Ask Spread & 87,157 & $-0.004$ & 0.022 & $-0.586$ & $-0.013$ & $-0.003$ & 0.005 & 1.167 \\
+Takeover (All) & 84,104 & 0.007 & 0.081 & 0.000 & 0.000 & 0.000 & 0.000 & 1.000 \\
+Takeover (Uninvited) & 84,104 & 0.001 & 0.029 & 0.000 & 0.000 & 0.000 & 0.000 & 1.000 \\
+Takeover (Friendly) & 84,104 & 0.006 & 0.074 & 0.000 & 0.000 & 0.000 & 0.000 & 1.000 \\
+\midrule
+
+\multicolumn{9}{@{}l}{\textit{Panel B: Key Independent Variables}} \\
+\midrule
+Manager Pres.\ Uncertainty (\%) & 86,038 & 0.863 & 0.353 & 0.000 & 0.613 & 0.822 & 1.066 & 2.096 \\
+CEO Pres.\ Uncertainty (\%) & 62,049 & 0.656 & 0.390 & 0.000 & 0.377 & 0.596 & 0.867 & 2.233 \\
+Analyst QA Uncertainty (\%) & 81,031 & 1.440 & 0.483 & 0.000 & 1.122 & 1.411 & 1.727 & 3.595 \\
+Negative Sentiment (\%) & 86,858 & 0.921 & 0.302 & 0.000 & 0.704 & 0.880 & 1.094 & 2.390 \\
+Clarity (CEO FE) & 52,080 & $-0.074$ & 0.975 & $-4.505$ & $-0.618$ & 0.019 & 0.608 & 3.270 \\
+CEO Clarity Residual & 38,671 & 0.000 & 0.299 & $-1.514$ & $-0.184$ & $-0.017$ & 0.164 & 1.763 \\
+Manager Clarity Residual & 53,070 & 0.000 & 0.235 & $-1.295$ & $-0.153$ & $-0.011$ & 0.141 & 1.293 \\
+\midrule
+
+\multicolumn{9}{@{}l}{\textit{Panel C: Financial Controls}} \\
+\midrule
+Size (log assets) & 87,994 & 7.471 & 1.661 & $-0.569$ & 6.301 & 7.376 & 8.544 & 12.459 \\
+Book-to-Market & 83,443 & 0.458 & 0.583 & $-20.775$ & 0.231 & 0.389 & 0.617 & 7.858 \\
+Leverage & 87,994 & 0.233 & 0.224 & 0.000 & 0.047 & 0.207 & 0.346 & 3.945 \\
+Return on Assets & 87,552 & 0.039 & 0.133 & $-3.983$ & 0.015 & 0.053 & 0.093 & 0.549 \\
+Current Ratio & 85,783 & 2.556 & 2.149 & 0.070 & 1.377 & 1.988 & 2.973 & 46.411 \\
+R\&D Intensity & 87,994 & 0.010 & 0.021 & 0.000 & 0.000 & 0.000 & 0.013 & 0.405 \\
+Stock Volatility & 82,599 & 36.756 & 21.244 & 9.439 & 22.971 & 31.276 & 43.815 & 211.916 \\
+Stock Return & 82,599 & 3.067 & 18.619 & $-74.041$ & $-6.806$ & 2.832 & 12.214 & 142.666 \\
+Market Return & 82,599 & 2.213 & 7.601 & $-36.285$ & $-1.332$ & 3.519 & 6.744 & 30.678 \\
+EPS Growth & 86,535 & 0.123 & 3.093 & $-36.830$ & $-0.319$ & 0.111 & 0.601 & 16.144 \\
+Earnings Surprise Decile & 61,544 & 1.209 & 3.026 & $-5.000$ & $-1.000$ & 2.000 & 4.000 & 5.000 \\
+Tobin's $Q$ & 86,781 & 1.829 & 1.508 & 0.082 & 0.960 & 1.386 & 2.143 & 35.413 \\
+Pre-Call Amihud & 86,906 & 0.044 & 1.380 & 0.000 & 0.000 & 0.001 & 0.004 & 267.826 \\
+Cash Holdings & 83,930 & 0.171 & 0.181 & 0.000 & 0.037 & 0.105 & 0.245 & 0.994 \\
+Stock Price & 87,188 & 38.694 & 51.720 & 0.035 & 14.898 & 28.240 & 48.170 & 2080.020 \\
+Turnover & 87,188 & 0.027 & 0.042 & 0.000 & 0.008 & 0.016 & 0.031 & 3.773 \\
+Pre-Call Spread & 87,157 & 0.042 & 0.027 & 0.000 & 0.025 & 0.036 & 0.051 & 0.733 \\
+$|$Surprise Decile$|$ & 61,544 & 2.930 & 1.426 & 0 & 2 & 3 & 4 & 5 \\
+Duration (days) & 84,104 & 94.573 & 80.555 & 1 & 84 & 91 & 96 & 1461 \\
+\\[-6pt]
+\multicolumn{9}{@{}l}{\textit{Note:} Summary statistics computed on the Main sample ($N = 88{,}205$) except H9 variables (full panel, $N = 84{,}104$).} \\
+\end{longtable}
+\end{scriptsize}
+\end{landscape}
+
+% ===== TABLE A.1: H0.3 =====
+\begin{table}[H]
+\centering
+\caption{H0.3 --- Replication and Extended Controls Robustness of Dzielinski et al.}
+\label{tab:h03}
+\begin{threeparttable}
+\begin{scriptsize}
+\renewcommand{\arraystretch}{0.75}
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{DV: Manager\_QA\_Uncertainty\_pct} & \multicolumn{2}{c}{DV: CEO\_QA\_Uncertainty\_pct} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+& (1) Baseline & (2) Extended & (3) Baseline & (4) Extended \\
+\midrule
+\textit{Linguistic Variables} \\
+Manager\_Pres\_Uncertainty\_pct / CEO\_Pres\_Uncertainty\_pct & \textbf{0.0960}$^{***}$ & \textbf{0.0970}$^{***}$ & \textbf{0.0930}$^{***}$ & \textbf{0.0950}$^{***}$ \\
+ & (0.006) & (0.006) & (0.007) & (0.007) \\
+Analyst\_QA\_Uncertainty\_pct & \textbf{0.0330}$^{***}$ & \textbf{0.0330}$^{***}$ & \textbf{0.0330}$^{***}$ & \textbf{0.0340}$^{***}$ \\
+ & (0.003) & (0.003) & (0.004) & (0.004) \\
+Entire\_All\_Negative\_pct & \textbf{0.0770}$^{***}$ & \textbf{0.0790}$^{***}$ & \textbf{0.0620}$^{***}$ & \textbf{0.0680}$^{***}$ \\
+ & (0.006) & (0.006) & (0.009) & (0.009) \\
+\textit{Base Controls} \\
+StockRet & 0.0000 & 0.0010 & 0.0020 & 0.0020 \\
+ & (0.001) & (0.001) & (0.002) & (0.002) \\
+MarketRet & 0.0010 & 0.0020 & $\mathbf{-0.0040}^{*}$ & $-0.0030$ \\
+ & (0.002) & (0.002) & (0.002) & (0.002) \\
+EPS\_Growth & \textbf{0.0020}$^{**}$ & 0.0010 & 0.0020 & 0.0000 \\
+ & (0.001) & (0.001) & (0.002) & (0.002) \\
+SurpDec & \textbf{0.0040}$^{***}$ & \textbf{0.0040}$^{***}$ & 0.0030 & 0.0020 \\
+ & (0.001) & (0.001) & (0.002) & (0.002) \\
+\textit{Extended Controls} \\
+Size & & 0.0000 & & 0.0020 \\
+ & & (0.010) & & (0.013) \\
+BM & & $-0.0030$ & & $-0.0030$ \\
+ & & (0.003) & & (0.004) \\
+Lev & & $-0.0060$ & & $-0.0090$ \\
+ & & (0.004) & & (0.006) \\
+ROA & & \textbf{0.0050}$^{**}$ & & \textbf{0.0080}$^{**}$ \\
+ & & (0.002) & & (0.003) \\
+CurrentRatio & & \textbf{0.0050}$^{*}$ & & 0.0030 \\
+ & & (0.003) & & (0.004) \\
+RD\_Intensity & & 0.0000 & & 0.0050 \\
+ & & (0.004) & & (0.004) \\
+Volatility & & \textbf{0.0060}$^{***}$ & & 0.0040 \\
+ & & (0.002) & & (0.003) \\
+\midrule
+CEO FE & Yes & Yes & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes \\
+SE Cluster & CEO & CEO & CEO & CEO \\
+$N$ & 53,070 & 51,569 & 38,671 & 37,517 \\
+$R^2$ & 0.418 & 0.420 & 0.372 & 0.372 \\
+Adj.\ $R^2$ & 0.389 & 0.392 & 0.339 & 0.338 \\
+\bottomrule
+\end{tabular}
+\end{scriptsize}
+\begin{tablenotes}[flushleft]
+\footnotesize
+\item \textit{Notes:} $^{***}p<0.01$, $^{**}p<0.05$, $^{*}p<0.10$. Standard errors clustered at CEO level in parentheses. Cols (1)--(2) use Manager\_Pres\_Uncertainty\_pct; cols (3)--(4) use CEO\_Pres\_Uncertainty\_pct. Baseline models replicate Dzielinski et al.\ (2017); Extended models add firm-level controls. All continuous controls are standardized within each model's estimation sample. Coefficients reflect standardized units.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+% ===== TABLE A.2: H7 =====
+\begin{table}[H]
+\centering
+\caption{H7 --- Linguistic Uncertainty and Amihud Illiquidity Change}
+\label{tab:h7}
+\begin{threeparttable}
+\begin{scriptsize}
+\renewcommand{\arraystretch}{0.85}
+\begin{tabular}{lccccccc}
+\toprule
+& (A1) & (A2) & (A3) & (A4) & (A5) & (B1) & (B2) \\
+& CEO QA & CEO Pres & Mgr QA & Mgr Pres & Mgr QA+Pres & CEO Resid & Mgr Resid \\
+\midrule
+CEO\_QA\_Uncertainty\_pct & $-0.0630$ & & & & & & \\
+ & (0.0706) & & & & & & \\[1pt]
+CEO\_Pres\_Uncertainty\_pct & & $-0.0229$ & & & & & \\
+ & & (0.0310) & & & & & \\[1pt]
+Manager\_QA\_Uncertainty\_pct & & & 0.3285 & & 0.3214 & & \\
+ & & & (0.2212) & & (0.2143) & & \\[1pt]
+Manager\_Pres\_Uncertainty\_pct & & & & 0.1100 & 0.0738 & & \\
+ & & & & (0.0998) & (0.0777) & & \\[1pt]
+CEO\_Clarity\_Residual & & & & & & 0.0151 & \\
+ & & & & & & (0.0155) & \\[1pt]
+Manager\_Clarity\_Residual & & & & & & & 0.0072 \\
+ & & & & & & & (0.0051) \\[1pt]
+Entire\_All\_Negative\_pct & 0.0584 & 0.0585 & $-0.2221$ & $-0.2077$ & $-0.2302$ & $\mathbf{0.0084}^{*}$ & 0.0051 \\
+ & (0.0485) & (0.0431) & (0.1944) & (0.1878) & (0.2024) & (0.0044) & (0.0035) \\[1pt]
+Analyst\_QA\_Uncertainty\_pct & $-0.0075$ & $-0.0092$ & $-0.3200$ & $-0.3093$ & $-0.3210$ & 0.0035 & 0.0021 \\
+ & (0.0101) & (0.0121) & (0.3133) & (0.3075) & (0.3142) & (0.0093) & (0.0065) \\[1pt]
+Size & $-0.2207$ & $-0.2234$ & $-0.2772$ & $-0.2798$ & $-0.2790$ & $\mathbf{-0.0174}^{**}$ & $\mathbf{-0.0129}^{**}$ \\
+ & (0.1883) & (0.1911) & (0.2164) & (0.2182) & (0.2179) & (0.0085) & (0.0059) \\[1pt]
+Lev & $-0.0959$ & $-0.0951$ & 0.5499 & 0.5491 & 0.5536 & $-0.0127$ & $-0.0097$ \\
+ & (0.0820) & (0.0805) & (0.6067) & (0.6068) & (0.6094) & (0.0224) & (0.0159) \\[1pt]
+ROA & $-0.3775$ & $-0.3794$ & 0.3942 & 0.4185 & 0.3969 & $\mathbf{-0.0642}^{*}$ & $\mathbf{-0.0810}^{**}$ \\
+ & (0.3059) & (0.3117) & (0.6895) & (0.7028) & (0.6918) & (0.0346) & (0.0322) \\[1pt]
+TobinsQ & $\mathbf{-0.0156}^{*}$ & $\mathbf{-0.0165}^{*}$ & $-0.0379$ & $-0.0371$ & $-0.0382$ & $-0.0019$ & $-0.0011$ \\
+ & (0.0089) & (0.0097) & (0.0360) & (0.0356) & (0.0362) & (0.0014) & (0.0010) \\[1pt]
+pre\_call\_amihud & $-0.4592$ & $-0.4586$ & $\mathbf{1.0867}^{**}$ & $\mathbf{1.0864}^{**}$ & $\mathbf{1.0867}^{**}$ & $\mathbf{-0.7935}^{***}$ & $\mathbf{-0.7136}^{***}$ \\
+ & (0.4124) & (0.4133) & (0.4527) & (0.4530) & (0.4527) & (0.0664) & (0.1009) \\[1pt]
+\midrule
+Firm FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Quarter FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+SE Cluster & Firm & Firm & Firm & Firm & Firm & Firm & Firm \\
+$N$ & 58,240 & 57,216 & 78,679 & 78,621 & 78,597 & 38,214 & 52,415 \\
+Entities & 1,626 & 1,619 & 1,845 & 1,846 & 1,845 & 1,291 & 1,504 \\
+$R^2$ (within) & 0.001 & 0.001 & 0.012 & 0.012 & 0.012 & 0.044 & 0.038 \\
+\bottomrule
+\end{tabular}
+\end{scriptsize}
+\begin{tablenotes}[flushleft]
+\footnotesize
+\item \textit{Notes:} $^{***}p<0.01$, $^{**}p<0.05$, $^{*}p<0.10$ (two-tailed). Standard errors clustered at firm level in parentheses. DV: delta\_amihud $= \overline{A}_{[+1,+3]} - \overline{A}_{[-3,-1]}$ (post-call minus pre-call Amihud illiquidity, $\pm$3 trading days). Uncertainty measure per column: (A1) CEO\_QA\_Uncertainty\_pct, (A2) CEO\_Pres\_Uncertainty\_pct, (A3) Manager\_QA\_Uncertainty\_pct, (A4) Manager\_Pres\_Uncertainty\_pct, (A5) both Manager QA and Pres entered simultaneously (Wald $\chi^2 = 2.757$, $p = 0.097$), (B1) CEO\_Clarity\_Residual, (B2) Manager\_Clarity\_Residual. All models include Entire\_All\_Negative\_pct, Analyst\_QA\_Uncertainty\_pct, and pre\_call\_amihud as controls.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+% ===== TABLE A.3: H9 =====
+\begin{table}[H]
+\centering
+\caption{H9 --- Takeover Hazard Ratios (Cox PH, Sparse Specification)}
+\label{tab:h9}
+\begin{threeparttable}
+\begin{scriptsize}
+\renewcommand{\arraystretch}{0.85}
+\begin{tabular}{lccccccccc}
+\toprule
+& \multicolumn{3}{c}{All Takeovers} & \multicolumn{3}{c}{Uninvited} & \multicolumn{3}{c}{Friendly} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& CEO & CEO & Mgr & CEO & CEO & Mgr & CEO & CEO & Mgr \\
+& Clarity & Resid & Resid & Clarity & Resid & Resid & Clarity & Resid & Resid \\
+\midrule
+Clarity Measure & 0.997 & 1.110 & 0.940 & 1.112 & 1.002 & 1.339 & 1.008 & 1.127 & 0.902 \\
+ & (0.059) & (0.198) & (0.227) & (0.168) & (0.552) & (0.634) & (0.065) & (0.219) & (0.250) \\[1pt]
+Size & 0.945 & 0.939 & $\mathbf{0.924}^{**}$ & 1.084 & 1.186 & $\mathbf{1.200}^{*}$ & $\mathbf{0.888}^{***}$ & $\mathbf{0.868}^{***}$ & $\mathbf{0.857}^{***}$ \\
+ & (0.041) & (0.044) & (0.038) & (0.108) & (0.116) & (0.098) & (0.046) & (0.050) & (0.043) \\[1pt]
+BM & $\mathbf{1.201}^{*}$ & 1.162 & 1.163 & $\mathbf{1.423}^{*}$ & 1.276 & 1.394 & $\mathbf{1.202}^{*}$ & 1.172 & 1.166 \\
+ & (0.094) & (0.107) & (0.099) & (0.213) & (0.245) & (0.218) & (0.105) & (0.119) & (0.109) \\[1pt]
+Lev & 1.390 & 1.401 & 1.353 & 1.326 & 1.325 & 1.296 & $\mathbf{1.505}^{*}$ & 1.487 & 1.459 \\
+ & (0.238) & (0.250) & (0.230) & (0.734) & (0.779) & (0.721) & (0.243) & (0.258) & (0.238) \\[1pt]
+ROA & $\mathbf{0.445}^{**}$ & $\mathbf{0.449}^{*}$ & 0.585 & 0.359 & 0.258 & 0.415 & $\mathbf{0.470}^{*}$ & 0.506 & 0.614 \\
+ & (0.408) & (0.471) & (0.414) & (1.215) & (1.211) & (1.147) & (0.431) & (0.513) & (0.442) \\[1pt]
+CashHoldings & 1.437 & 1.536 & 1.102 & 1.743 & 3.387 & 2.412 & 1.392 & 1.338 & 1.008 \\
+ & (0.356) & (0.374) & (0.326) & (1.018) & (1.016) & (0.899) & (0.388) & (0.411) & (0.356) \\[1pt]
+\midrule
+$N$ intervals & 51,627 & 40,310 & 54,981 & 51,627 & 40,310 & 54,981 & 51,627 & 40,310 & 54,981 \\
+Events & 307 & 275 & 354 & 40 & 36 & 46 & 250 & 224 & 289 \\
+Concordance & 0.518 & 0.518 & 0.519 & 0.569 & 0.580 & 0.566 & 0.486 & 0.509 & 0.504 \\
+\bottomrule
+\end{tabular}
+\end{scriptsize}
+\begin{tablenotes}[flushleft]
+\footnotesize
+\item \textit{Notes:} $^{***}p<0.01$, $^{**}p<0.05$, $^{*}p<0.10$. Cox proportional hazards models with time-varying covariates in counting-process format. Hazard ratios reported; standard errors of the log-hazard coefficient in parentheses. Uninvited and friendly are cause-specific models (competing events censored). Standard errors are robust sandwich estimators (not firm-clustered). Clarity measure per column: CEO Clarity = ClarityCEO (standardized composite clarity score), CEO Resid = CEO\_Clarity\_Residual, Mgr Resid = Manager\_Clarity\_Residual (both residuals from H0.3 first-stage regression).
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+% ===== TABLE A.4: H14 =====
+\begin{table}[H]
+\centering
+\caption{H14 --- Linguistic Uncertainty and Bid-Ask Spread Change}
+\label{tab:h14}
+\begin{threeparttable}
+\begin{footnotesize}
+\renewcommand{\arraystretch}{0.9}
+\begin{tabular}{lcccccc}
+\toprule
+& (1) & (2) & (3) & (4) & (5) & (6) \\
+& Mgr QA & CEO QA & Mgr Pres & CEO Pres & Mgr Resid & CEO Resid \\
+\midrule
+Uncertainty measure & 0.0001 & 0.0000 & 0.0002 & $\mathbf{0.0004}^{**}$ & 0.0000 & 0.0001 \\
+(see column header) & (0.0002) & (0.0002) & (0.0002) & (0.0002) & (0.0002) & (0.0002) \\
+ & [$p=0.353$] & [$p=0.421$] & [$p=0.223$] & [$p=0.024$] & [$p=0.418$] & [$p=0.396$] \\[1pt]
+Size & $\mathbf{-0.0009}^{***}$ & $\mathbf{-0.0010}^{***}$ & $\mathbf{-0.0009}^{***}$ & $\mathbf{-0.0010}^{***}$ & $\mathbf{-0.0008}^{***}$ & $\mathbf{-0.0009}^{***}$ \\
+ & (0.0002) & (0.0003) & (0.0002) & (0.0003) & (0.0002) & (0.0003) \\[1pt]
+StockPrice & $\mathbf{-0.0000}^{***}$ & $\mathbf{-0.0000}^{***}$ & $\mathbf{-0.0000}^{***}$ & $\mathbf{-0.0000}^{***}$ & $\mathbf{-0.0000}^{***}$ & $\mathbf{-0.0000}^{***}$ \\
+ & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\[1pt]
+Turnover & \textbf{0.0710}$^{***}$ & \textbf{0.0683}$^{***}$ & \textbf{0.0705}$^{***}$ & \textbf{0.0675}$^{***}$ & \textbf{0.0690}$^{***}$ & \textbf{0.0654}$^{***}$ \\
+ & (0.0037) & (0.0040) & (0.0037) & (0.0041) & (0.0035) & (0.0039) \\[1pt]
+Volatility & \textbf{0.0005}$^{***}$ & \textbf{0.0005}$^{***}$ & \textbf{0.0005}$^{***}$ & \textbf{0.0005}$^{***}$ & \textbf{0.0005}$^{***}$ & \textbf{0.0005}$^{***}$ \\
+ & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\[1pt]
+PreCallSpread & $\mathbf{-0.6887}^{***}$ & $\mathbf{-0.7010}^{***}$ & $\mathbf{-0.6894}^{***}$ & $\mathbf{-0.7009}^{***}$ & $\mathbf{-0.6919}^{***}$ & $\mathbf{-0.7063}^{***}$ \\
+ & (0.0214) & (0.0158) & (0.0211) & (0.0154) & (0.0230) & (0.0165) \\[1pt]
+AbsSurpDec & \textbf{0.0002}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0002}$^{***}$ \\
+ & (0.0001) & (0.0001) & (0.0001) & (0.0001) & (0.0001) & (0.0001) \\[1pt]
+\midrule
+Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+Year--Quarter FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+SE Cluster & Firm & Firm & Firm & Firm & Firm & Firm \\
+$N$ & 54,726 & 41,289 & 55,485 & 40,986 & 51,972 & 38,218 \\
+Entities & 1,534 & 1,332 & 1,541 & 1,331 & 1,509 & 1,298 \\
+$R^2$ (within) & 0.457 & 0.462 & 0.457 & 0.462 & 0.462 & 0.466 \\
+\bottomrule
+\end{tabular}
+\end{footnotesize}
+\begin{tablenotes}[flushleft]
+\footnotesize
+\item \textit{Notes:} $^{***}p<0.01$, $^{**}p<0.05$, $^{*}p<0.10$ (one-tailed for uncertainty measure: $\beta > 0$; two-tailed for controls). Standard errors clustered at firm level in parentheses. DV: delta\_spread (post$-$pre call bid-ask spread, $\pm$3 trading days). Sample conditioned on IBES consensus coverage (AbsSurpDec). Uncertainty measure per column: (1) Manager\_QA\_Uncertainty\_pct, (2) CEO\_QA\_Uncertainty\_pct, (3) Manager\_Pres\_Uncertainty\_pct, (4) CEO\_Pres\_Uncertainty\_pct, (5) Manager\_Clarity\_Residual, (6) CEO\_Clarity\_Residual.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\end{document}

@@ -84,7 +84,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
-warnings.filterwarnings("ignore")
+# L-10: Route warnings through print() so DualWriter captures them in run_log.txt
+# (warnings.filterwarnings("ignore") was removed — convergence/separation warnings must be visible)
+import warnings as _warnings_module
+
+def _print_warning(message, category, filename, lineno, file=None, line=None):
+    print(f"WARNING [{category.__name__}] {filename}:{lineno}: {message}")
+
+_warnings_module.showwarning = _print_warning
 
 # lifelines — CoxTimeVaryingFitter for call-to-call counting-process intervals
 CoxTimeVaryingFitter: Any = None
@@ -508,6 +515,8 @@ def extract_results(
     concordance: Optional[float] = None,
     control_block: str = "sparse",
     strata: Optional[str] = None,
+    epv: Optional[float] = None,
+    epv_flag: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Extract key coefficient rows from fitted CoxPHFitter."""
     rows = []
@@ -528,13 +537,15 @@ def extract_results(
                     "se_coef": summary.loc[var, "se(coef)"],
                     "z": summary.loc[var, "z"],
                     "p": summary.loc[var, "p"],
-                    "n_firms": df_clean_len,
+                    "n_intervals": df_clean_len,
                     "n_events": n_events,
                     "concordance": concordance
                     if concordance is not None
                     else float("nan"),
                     "control_block": control_block,
                     "strata": strata if strata else "none",
+                    "epv": epv if epv is not None else float("nan"),
+                    "epv_flag": epv_flag if epv_flag is not None else "unknown",
                 }
             )
     return rows
@@ -587,6 +598,17 @@ def generate_report(
         "- Model 1 (Cox PH All): All takeovers",
         "- Model 2 (Cox CS Uninvited): Cause-specific Cox — Uninvited (Hostile + Unsolicited)",
         "- Model 3 (Cox CS Friendly): Cause-specific Cox — Friendly (Friendly + Neutral)",
+        "",
+        "**H9-B evaluation (L-7):** H9-B is evaluated descriptively by comparing point estimates",
+        "of the Clarity coefficient in the uninvited and friendly cause-specific models. A formal",
+        "cross-model test is NOT conducted given the limited number of uninvited events (EPV < 10),",
+        "which makes cross-model inference unreliable. Uninvited expanded models (EPV < 5) are",
+        "suppressed from the LaTeX table and should not be used for inference.",
+        "",
+        "**Sensitivity note (RT-3):** The three clarity variants are estimated on structurally",
+        "different sub-samples (CEO: ~1,349 firms, CEO_Residual: ~1,318, Manager_Residual: ~1,543).",
+        "Cross-variant differences should be interpreted as **sensitivity across clarity constructs",
+        "and estimation samples**, NOT as robustness checks.",
         "",
         "## Financial Controls (Compustat-only)",
         "",
@@ -758,6 +780,16 @@ def main(panel_path: Optional[str] = None) -> int:
             )
             concordance = compute_concordance_time_varying(ctv, df_used, event_col)
 
+            # L-3/RT-5: Compute Events Per Variable (EPV) diagnostic
+            n_covariates = len(covariates)
+            epv = n_event_firms / n_covariates if n_covariates > 0 else float("nan")
+            print(f"  EPV: {epv:.1f} ({n_event_firms} events / {n_covariates} covariates)")
+            if epv < 10:
+                print(f"  WARNING: EPV={epv:.1f} < 10 (Peduzzi 1995 minimum)")
+            if epv < 5:
+                print(f"  CRITICAL: EPV={epv:.1f} < 5 — results will be suppressed from LaTeX table")
+            epv_flag = "critical" if epv < 5 else "low" if epv < 10 else "ok"
+
             var_key_out = (
                 f"{variant_key}_{control_label}" if control_label != "sparse" else variant_key
             )
@@ -772,6 +804,8 @@ def main(panel_path: Optional[str] = None) -> int:
                 concordance=concordance,
                 control_block=control_label,
                 strata=strata if strata else None,
+                epv=epv,
+                epv_flag=epv_flag,
             )
             all_hr_rows.extend(hr_rows)
 
@@ -790,6 +824,8 @@ def main(panel_path: Optional[str] = None) -> int:
                     "concordance": concordance,
                     "control_block": control_label,
                     "strata": strata if strata else "none",
+                    "epv": epv,
+                    "epv_flag": epv_flag,
                 }
             )
             print(f"  Saved: {file_stem}.txt")
@@ -879,8 +915,10 @@ def main(panel_path: Optional[str] = None) -> int:
             "Intangibility": "Intangibility",
             "AssetGrowth": "AssetGrowth",
         }
+        # Filter critical EPV models from LaTeX table (EPV < 5 — statistically invalid)
+        table_hr_rows = [r for r in all_hr_rows if r.get("epv_flag") != "critical"]
         make_cox_hazard_table(
-            results=all_hr_rows,
+            results=table_hr_rows,
             variable_labels=var_labels,
             caption="Hazard Ratios from Cox Proportional Hazards Models",
             label="tab:h9_takeover_hazard",
@@ -895,8 +933,9 @@ def main(panel_path: Optional[str] = None) -> int:
                 "Sparse controls: Size, BM, Lev, ROA, CashHoldings. "
                 "Expanded robustness adds SalesGrowth, Intangibility, AssetGrowth (all families). "
                 "Intervals are call-to-call (days since 2000-01-01). "
-                "All continuous controls are standardized within each model's estimation sample. "
-                r"Variables are winsorized at 1\%/99\% by year at the engine level."
+                r"Variables are winsorized at 1\%/99\% by year at the engine level. "
+                "Models with EPV $<$ 5 (Peduzzi et al. 1995 minimum = 10) are omitted from table; "
+                "all uninvited expanded models meet this criterion."
             ),
             output_path=out_dir / "takeover_table.tex",
         )
@@ -905,23 +944,71 @@ def main(panel_path: Optional[str] = None) -> int:
     duration = (datetime.now() - start_time).total_seconds()
     generate_report(all_hr_rows, diag_rows, out_dir, duration)
 
-    # Generate sample attrition table
+    # Generate sample attrition table — one complete-case row per clarity variant
     if diag_rows:
-        first_diag = diag_rows[0]
+        seen_variants: Dict[str, int] = {}
+        for d in diag_rows:
+            v = d.get("variant")
+            block = d.get("control_block", "")
+            event = d.get("event_type", "")
+            # Take first sparse, All-takeover model per variant
+            if v and v not in seen_variants and block == "sparse" and event == "All":
+                seen_variants[v] = d.get("n_intervals", 0)
         attrition_stages = [
             ("Full survival panel", len(panel)),
             ("Main sample (ex-Finance/Utility)", len(df)),
-            ("After complete-case filter", first_diag.get("n_intervals", 0)),
         ]
+        for v, n in seen_variants.items():
+            attrition_stages.append((f"Complete-case: {v}", n))
         generate_attrition_table(attrition_stages, out_dir, "H9 Takeover Hazards")
         print("  Saved: sample_attrition.csv and sample_attrition.tex")
 
-    # Generate run manifest
+    # RT-3: Generate variant sample characteristics table (from diagnostics, not raw DataFrames)
+    variant_sample_chars = []
+    seen_vc: set = set()
+    for d in diag_rows:
+        if d.get("control_block") == "sparse" and d.get("event_type") == "All":
+            v = d.get("variant")
+            if v and v not in seen_vc:
+                seen_vc.add(v)
+                variant_sample_chars.append({
+                    "Variant": v,
+                    "N_intervals": d.get("n_intervals"),
+                    "N_firms": d.get("n_clusters"),
+                    "N_events": d.get("n_event_firms"),
+                    "EPV": d.get("epv"),
+                    "EPV_flag": d.get("epv_flag"),
+                })
+    if variant_sample_chars:
+        pd.DataFrame(variant_sample_chars).to_csv(
+            out_dir / "variant_sample_chars.csv", index=False
+        )
+        print("  Saved: variant_sample_chars.csv")
+
+    # Generate run manifest — include upstream clarity input paths for reproducibility
+    manifest_input_paths: Dict[str, Any] = {"panel": panel_file}
+    try:
+        _ceo_clarity_dir = get_latest_output_dir(
+            root / "outputs" / "econometric" / "ceo_clarity",
+            required_file="clarity_scores.parquet",
+        )
+        manifest_input_paths["clarity_scores"] = _ceo_clarity_dir / "clarity_scores.parquet"
+    except Exception:
+        pass
+    try:
+        _ext_dir = get_latest_output_dir(
+            root / "outputs" / "econometric" / "ceo_clarity_extended",
+            required_file="ceo_clarity_residual.parquet",
+        )
+        manifest_input_paths["ceo_clarity_residual"] = _ext_dir / "ceo_clarity_residual.parquet"
+        manifest_input_paths["manager_clarity_residual"] = _ext_dir / "manager_clarity_residual.parquet"
+    except Exception:
+        pass
     generate_manifest(
         output_dir=out_dir,
         stage="h9_econometric",
         timestamp=timestamp,
-        input_paths={"panel": panel_file},
+        input_paths=manifest_input_paths,
         output_files={
             "diagnostics": out_dir / "model_diagnostics.csv",
             "table": out_dir / "takeover_table.tex",

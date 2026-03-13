@@ -10,7 +10,7 @@ Description: Build CALL-LEVEL panel for H14 Language Uncertainty -> Bid-Ask Spre
     Step 2: Load base financial controls (Size, Volatility).
     Step 3: Load CRSP-based controls (StockPrice, Turnover).
     Step 4: Load BidAskSpreadChangeBuilder for DV (delta_spread) and control (pre_call_spread).
-    Step 5: Load EarningsSurpriseRatioBuilder for AbsSurprise control.
+    Step 5: Load EarningsSurpriseBuilder for AbsSurpDec control (|SurpDec|).
     Step 6: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 7: Create year_quarter variable for TimeEffects.
     Step 8: Assign industry sample (Main).
@@ -24,7 +24,7 @@ Hypothesis H14:
 
     DV: delta_spread = Spread[+1,+3] - Spread[-3,-1]
     IV: Uncertainty measures (QA, Presentation)
-    Controls: Size, StockPrice, Turnover, Volatility, pre_call_spread, AbsSurprise
+    Controls: Size, StockPrice, Turnover, Volatility, pre_call_spread, AbsSurpDec
     Fixed Effects: Firm FE + year_quarter FE
 """
 
@@ -55,7 +55,7 @@ from f1d.shared.variables import (
     BidAskSpreadChangeBuilder,
     StockPriceBuilder,
     TurnoverBuilder,
-    EarningsSurpriseRatioBuilder,
+    EarningsSurpriseBuilder,
     CEOClarityResidualBuilder,
     ManagerClarityResidualBuilder,
     stats_list_to_dataframe,
@@ -111,11 +111,18 @@ def build_panel(
         # H14-specific CRSP controls
         "stock_price": StockPriceBuilder(var_config.get("stock_price", {})),
         "turnover": TurnoverBuilder(var_config.get("turnover", {})),
-        # DV and pre_call_spread control
+        # DV and pre_call_spread control (default ±3 window)
         "bidask_spread": BidAskSpreadChangeBuilder(var_config.get("bidask_spread_change", {})),
-        # Earnings surprise control
-        "earnings_surprise_ratio": EarningsSurpriseRatioBuilder(
-            var_config.get("earnings_surprise_ratio", {})
+        # Alternative event windows for robustness (L3)
+        "bidask_spread_w1": BidAskSpreadChangeBuilder(
+            {**var_config.get("bidask_spread_change", {}), "window_days": 1, "column_suffix": "_w1"}
+        ),
+        "bidask_spread_w5": BidAskSpreadChangeBuilder(
+            {**var_config.get("bidask_spread_change", {}), "window_days": 5, "column_suffix": "_w5"}
+        ),
+        # Earnings surprise control (|SurpDec| replaces old AbsSurprise ratio)
+        "earnings_surprise": EarningsSurpriseBuilder(
+            var_config.get("earnings_surprise", {})
         ),
     }
 
@@ -165,18 +172,29 @@ def build_panel(
     # Rename variables to match H14 spec
     panel = panel.rename(columns={
         "pre_call_spread": "PreCallSpread",
-        "earnings_surprise_ratio": "AbsSurprise",
-        "stock_price": "StockPrice",
+        "pre_call_spread_closing": "PreCallSpreadClosing",
     })
 
-    # Compute absolute earnings surprise
-    panel["AbsSurprise"] = panel["AbsSurprise"].abs()
+    # AbsSurpDec = |SurpDec| (replaces old AbsSurprise ratio which had ~23% coverage)
+    if "SurpDec" in panel.columns:
+        panel["AbsSurpDec"] = panel["SurpDec"].abs()
+
+    # L5: Verify H0.3 clarity residuals are actually populated (not all-NaN)
+    for resid_col in ["Manager_Clarity_Residual", "CEO_Clarity_Residual"]:
+        if resid_col in panel.columns and panel[resid_col].notna().sum() == 0:
+            raise ValueError(
+                f"H0.3 CEO Clarity Extended output required for H14 specs 5-6: "
+                f"'{resid_col}' is entirely NaN. Run H0.3 first."
+            )
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
     print(f"\n  Final panel: {len(panel):,} rows, {len(panel.columns)} columns")
     print(f"  Valid delta_spread: {panel['delta_spread'].notna().sum():,}")
     print(f"  Valid PreCallSpread: {panel['PreCallSpread'].notna().sum():,}")
+    for rob_col in ["delta_spread_closing", "delta_spread_w1", "delta_spread_w5", "pre_spread_change"]:
+        if rob_col in panel.columns:
+            print(f"  Valid {rob_col}: {panel[rob_col].notna().sum():,}")
 
     return panel
 
@@ -243,7 +261,7 @@ def generate_report(
         "- `Turnover`: Share turnover at call date (VOL/SHROUT)",
         "- `Volatility`: Return volatility over call window",
         "- `PreCallSpread`: Pre-call average bid-ask spread",
-        "- `AbsSurprise`: Absolute earnings surprise",
+        "- `AbsSurpDec`: Absolute earnings surprise decile (|SurpDec|)",
         "",
         "### Fixed Effects",
         "- `gvkey`: Firm fixed effects",

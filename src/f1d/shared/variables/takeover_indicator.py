@@ -89,6 +89,14 @@ class TakeoverIndicatorBuilder(VariableBuilder):
         )
         print(f"    Firm CUSIP map: {len(firm_cusip):,} unique gvkeys")
 
+        # L-5: Check for CUSIP6s matching multiple gvkeys (potential false positive risk)
+        cusip6_match_counts = firm_cusip.groupby("cusip6")["gvkey"].nunique()
+        ambiguous_cusip6 = cusip6_match_counts[cusip6_match_counts > 1]
+        n_ambiguous = len(ambiguous_cusip6)
+        if n_ambiguous > 0:
+            print(f"    WARNING: {n_ambiguous} CUSIP6s match multiple gvkeys "
+                  f"(potential false positive takeover assignments — biases toward null)")
+
         # Load SDC data
         sdc_path = root_path / "inputs" / "SDC" / self.SDC_FILE
         if not sdc_path.exists():

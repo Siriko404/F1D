@@ -39,15 +39,18 @@ from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyea
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
     SizeBuilder,
     LevBuilder,
     ROABuilder,
     TobinsQBuilder,
     CashHoldingsBuilder,
+    EarningsVolatilityBuilder,
+    RDIntensityBuilder,
+    VolatilityBuilder,
     CCCLInstrumentBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -173,23 +176,32 @@ def build_panel(
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
-        ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
-        ),
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
+        ),
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
+        ),
         "size": SizeBuilder(var_config.get("size", {})),
         "lev": LevBuilder(var_config.get("lev", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
+        "earnings_volatility": EarningsVolatilityBuilder(
+            var_config.get("earnings_volatility", {})
+        ),
+        "rd_intensity": RDIntensityBuilder(
+            var_config.get("rd_intensity", {})
+        ),
+        "volatility": VolatilityBuilder(
+            var_config.get("volatility", {})
+        ),
         "cccl_instrument_mkvalt": CCCLInstrumentBuilder(
             var_config.get("cccl_instrument_mkvalt", {})
         ),

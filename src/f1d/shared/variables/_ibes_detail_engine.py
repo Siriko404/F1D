@@ -20,7 +20,7 @@ Usage:
 
     engine = get_engine()
     df = engine.get_data(root_path, range(2015, 2019))
-    # Returns: DataFrame with gvkey, actdats, analys, value, fpedats
+    # Returns: DataFrame with gvkey, actdats, analys, value, fpedats, actual
 """
 
 from __future__ import annotations
@@ -128,6 +128,7 @@ class IbesDetailEngine:
             COLUMNS['measure'],
             COLUMNS['fpi'],
             COLUMNS['fpedats'],
+            'ACTUAL',  # Include ACTUAL for earnings surprise builders
         ]
 
         all_chunks = []
@@ -227,8 +228,13 @@ class IbesDetailEngine:
         chunk['analys'] = chunk[COLUMNS['analys']]
         chunk['value'] = chunk[COLUMNS['value']]
 
-        # Keep only needed columns
-        chunk = chunk[['gvkey', 'actdats', 'analys', 'value', 'fpedats']].copy()
+        # Include ACTUAL if available in source data
+        out_cols = ['gvkey', 'actdats', 'analys', 'value', 'fpedats']
+        if 'ACTUAL' in chunk.columns:
+            chunk['actual'] = pd.to_numeric(chunk['ACTUAL'], errors='coerce')
+            out_cols.append('actual')
+
+        chunk = chunk[out_cols].copy()
 
         return chunk
 

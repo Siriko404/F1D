@@ -8,13 +8,14 @@ Description: Run H7 Illiquidity hypothesis test by loading the call-level panel
              from Stage 3, running fixed effects OLS regressions by industry
              sample, and outputting results.
 
-Model Specification (post-call DV):
-    Amihud_Illiq_{t} ~ Uncertainty_IV_t + Entire_All_Negative_pct + Analyst_QA_Uncertainty_pct +
-                       Size + Lev + ROA + TobinsQ + Volatility + StockRet +
-                       EntityEffects + TimeEffects
+Model Specification (event-window DV):
+    delta_amihud ~ Uncertainty_IV_t + Entire_All_Negative_pct + Analyst_QA_Uncertainty_pct +
+                   Size + Lev + ROA + TobinsQ + pre_call_amihud +
+                   EntityEffects + TimeEffects
 
 Unit of observation: individual earnings call (file_name).
-DV: amihud_illiq (post-call Amihud illiquidity measure, window [call+1d, next_call-5d]).
+DV: delta_amihud (change in Amihud illiquidity around call, [+1,+3] - [-3,-1] trading days).
+    Parallels H14's delta_spread construction for methodological consistency.
 
 Specifications (6 single-IV regressions + 1 joint Manager spec):
     A1: CEO_QA_Uncertainty_pct
@@ -100,8 +101,7 @@ BASE_CONTROLS = [
     "Lev",
     "ROA",
     "TobinsQ",
-    "Volatility",
-    "StockRet",
+    "pre_call_amihud",
 ]
 
 SPECS = [
@@ -124,14 +124,16 @@ MAIN_ONLY_SPECS = {"B1", "B2"}
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # Dependent variable
-    {"col": "amihud_illiq", "label": "Amihud Illiquidity$_{t}$"},
+    # Dependent variables
+    {"col": "delta_amihud", "label": "$\\Delta$Amihud (post$-$pre call)"},
+    {"col": "amihud_illiq", "label": "Amihud Illiquidity (inter-call)"},
+    {"col": "pre_call_amihud", "label": "Pre-Call Amihud"},
     # Uncertainty measures (IVs)
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    # Linguistic controls (NEW)
+    # Linguistic controls
     {"col": "Entire_All_Negative_pct", "label": "Entire Call Negative"},
     {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
     # Financial controls
@@ -139,10 +141,8 @@ SUMMARY_STATS_VARS = [
     {"col": "Lev", "label": "Leverage"},
     {"col": "ROA", "label": "ROA"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
-    {"col": "Volatility", "label": "Return Volatility"},
-    {"col": "StockRet", "label": "Stock Return"},
     # Clarity residuals (B specs)
-    {"col": "CEO_Clarity_Residual", "label": "CEO ClarityResidual"},
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
     {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
 ]
 
@@ -160,12 +160,6 @@ def parse_arguments() -> argparse.Namespace:
 def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     """Derive computed columns needed for regressions."""
     df = panel.copy()
-
-    # QA-Presentation spontaneity gap (H7-C test)
-    df["Uncertainty_Gap"] = (
-        df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-    )
-    # Note: Weak_Modal_Gap not computed - Manager_Pres_Weak_Modal_pct not in panel
 
     # Integer quarter index for linearmodels (pd.Period not accepted as time index)
     # call_quarter_int encodes (gvkey, quarter) uniquely: 2007Q3 → 8030
@@ -186,12 +180,12 @@ def run_regression(
 ) -> Tuple[Optional[Any], Dict[str, Any]]:
     """Run a single PanelOLS regression for the given spec.
 
-    DV  : amihud_illiq (post-call illiquidity)
+    DV  : delta_amihud (event-window change in Amihud illiquidity)
     IV  : iv_var (single uncertainty measure)
     FE  : firm (gvkey) + call_quarter (integer), clustered by entity (gvkey)
     """
     required = (
-        ["amihud_illiq", iv_var] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
+        ["delta_amihud", iv_var] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
     )
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
 
@@ -204,12 +198,12 @@ def run_regression(
         return None, {}
 
     formula = (
-        f"amihud_illiq ~ {iv_var} + "
+        f"delta_amihud ~ {iv_var} + "
         + " + ".join(BASE_CONTROLS)
         + " + EntityEffects + TimeEffects"
     )
 
-    print(f"  Formula: amihud_illiq ~ {iv_var} + controls")
+    print(f"  Formula: delta_amihud ~ {iv_var} + controls")
     print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
     print("  Estimating with firm-clustered SEs...")
 
@@ -307,7 +301,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{H7: Speech Vagueness and Stock Illiquidity (Amihud 2002)}",
+        r"\caption{H7: Speech Vagueness and $\Delta$Amihud Illiquidity}",
         r"\label{tab:h7_illiquidity}",
         r"\begin{tabular}{lcccccc}",
         r"\toprule",
@@ -357,7 +351,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\\[-0.5em]",
         r"\parbox{\textwidth}{\scriptsize ",
         r"\textit{Notes:} "
-        r"Dependent variable is Amihud illiquidity$_{t}$ (Amihud 2002). "
+        r"Dependent variable is $\Delta$Amihud$_{t}$ = Amihud$_{[+1,+3]}$ $-$ Amihud$_{[-3,-1]}$ "
+        r"(change in Amihud illiquidity around the call, $\pm$3 trading days). "
         r"All models use the Main industry sample (non-financial, non-utility firms). "
         r"Columns (A1)--(A4) use raw uncertainty measures; "
         r"columns (B1)--(B2) use clarity residuals (idiosyncratic uncertainty after firm/linguistic controls). "
@@ -390,7 +385,7 @@ def _run_h7c_joint_regression(
     iv_qa = "Manager_QA_Uncertainty_pct"
     iv_pres = "Manager_Pres_Uncertainty_pct"
     required = (
-        ["amihud_illiq", iv_qa, iv_pres] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
+        ["delta_amihud", iv_qa, iv_pres] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
     )
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
 
@@ -403,7 +398,7 @@ def _run_h7c_joint_regression(
         return None
 
     formula = (
-        f"amihud_illiq ~ {iv_qa} + {iv_pres} + "
+        f"delta_amihud ~ {iv_qa} + {iv_pres} + "
         + " + ".join(BASE_CONTROLS)
         + " + EntityEffects + TimeEffects"
     )
@@ -415,7 +410,7 @@ def _run_h7c_joint_regression(
     except Exception:
         pass
 
-    print(f"  A5 Formula: amihud_illiq ~ {iv_qa} + {iv_pres} + controls")
+    print(f"  A5 Formula: delta_amihud ~ {iv_qa} + {iv_pres} + controls")
     print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
 
     df_panel = df_reg.set_index(["gvkey", "call_quarter_int"])
@@ -507,7 +502,7 @@ def _run_robustness_battery(
 
     def _fit_spec(df_r: pd.DataFrame, spec_id: str, iv_var: str, check_label: str, two_way: bool = False) -> Optional[Dict[str, Any]]:
         required = (
-            ["amihud_illiq", iv_var] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
+            ["delta_amihud", iv_var] + BASE_CONTROLS + ["gvkey", "call_quarter_int", "file_name"]
         )
         df_reg = df_r.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
         if min_calls > 1:
@@ -516,7 +511,7 @@ def _run_robustness_battery(
         if len(df_reg) < 50:
             return None
         formula = (
-            f"amihud_illiq ~ {iv_var} + " + " + ".join(BASE_CONTROLS)
+            f"delta_amihud ~ {iv_var} + " + " + ".join(BASE_CONTROLS)
             + " + EntityEffects + TimeEffects"
         )
         df_panel = df_reg.set_index(["gvkey", "call_quarter_int"])
@@ -632,37 +627,8 @@ def main(panel_path: Optional[str] = None) -> int:
     print("Loading panel")
     print("=" * 60)
     print(f"  File:    {panel_file}")
-    panel = pd.read_parquet(
-        panel_file,
-        columns=[
-            "file_name",
-            "gvkey",
-            "year",
-            "call_quarter",
-            "ff12_code",
-            "start_date",
-            # DV (contemporaneous)
-            "amihud_illiq",
-            # Uncertainty measures (IVs for all 4 specs)
-            "CEO_QA_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
-            "Manager_QA_Uncertainty_pct",
-            "Manager_Pres_Uncertainty_pct",
-            # Linguistic controls
-            "Entire_All_Negative_pct",
-            "Analyst_QA_Uncertainty_pct",
-            # Financial controls
-            "Size",
-            "Lev",
-            "ROA",
-            "TobinsQ",
-            "Volatility",
-            "StockRet",
-            # Clarity residuals (B specs)
-            "CEO_Clarity_Residual",
-            "Manager_Clarity_Residual",
-        ],
-    )
+    # Load all columns available in panel (delta_amihud added in updated Stage 3)
+    panel = pd.read_parquet(panel_file)
     print(f"  Rows:    {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
 
@@ -694,10 +660,12 @@ def main(panel_path: Optional[str] = None) -> int:
     print("  Saved: summary_stats.tex")
 
     # Sanity: DV coverage
-    n_dv = panel["amihud_illiq"].notna().sum()
-    print(f"  DV (amihud_illiq) non-missing: {n_dv:,} / {len(panel):,}")
+    n_dv = panel["delta_amihud"].notna().sum() if "delta_amihud" in panel.columns else 0
+    n_dv_old = panel["amihud_illiq"].notna().sum() if "amihud_illiq" in panel.columns else 0
+    print(f"  DV (delta_amihud) non-missing: {n_dv:,} / {len(panel):,}")
+    print(f"  Legacy (amihud_illiq) non-missing: {n_dv_old:,} / {len(panel):,}")
     if n_dv == 0:
-        print("  FATAL: DV is entirely NaN — check panel builder.")
+        print("  FATAL: delta_amihud is entirely NaN — rebuild panel with AmihudChangeBuilder.")
         return 1
 
     df_prep = prepare_regression_data(panel)

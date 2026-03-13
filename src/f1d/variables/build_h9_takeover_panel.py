@@ -339,6 +339,33 @@ def build_call_to_call_panel(
     df["start"] = (df["call_date"] - REFERENCE_DATE).dt.days
     df["stop"] = (df["stop_date"] - REFERENCE_DATE).dt.days
 
+    # L-6: Cap intervals at 4 years (1461 days) — censor event intervals exceeding cap
+    MAX_INTERVAL_DAYS = 1461  # 4 years
+    long_mask = df["stop"] - df["start"] > MAX_INTERVAL_DAYS
+    long_intervals = df[long_mask]
+    if len(long_intervals) > 0:
+        event_in_long = long_intervals[long_intervals["Takeover"] == 1]
+        print(f"WARNING: {len(long_intervals)} intervals > 4 years "
+              f"({len(event_in_long)} are event intervals — will be censored at cap)")
+        print(long_intervals[["gvkey", "start", "stop", "Takeover"]]
+              .sort_values("stop").head(10).to_string())
+
+    # For event intervals that exceed the cap: censor (Takeover → 0) to avoid phantom events
+    mask_too_long_event = long_mask & (df["Takeover"] == 1)
+    df.loc[mask_too_long_event, "Takeover"] = 0
+    df.loc[mask_too_long_event, "Takeover_Type"] = "None"
+
+    # Cap stop for all long intervals
+    df["stop"] = np.minimum(df["stop"], df["start"] + MAX_INTERVAL_DAYS)
+
+    # RT-6: Store cause-specific indicators in panel (AFTER cap, so zeroed events have Type=None)
+    df["Takeover_Uninvited"] = (
+        (df["Takeover"] == 1) & (df["Takeover_Type"] == "Uninvited")
+    ).astype(int)
+    df["Takeover_Friendly"] = (
+        (df["Takeover"] == 1) & (df["Takeover_Type"] == "Friendly")
+    ).astype(int)
+
     # Duration in days (for summary stats)
     df["duration"] = df["stop"] - df["start"]
 
@@ -394,6 +421,7 @@ def build_panel(
     years: range,
     var_config: Dict[str, Any],
     stats: Dict[str, Any],
+    out_dir: Optional[Path] = None,
 ) -> pd.DataFrame:
     """Build complete takeover panel for survival analysis.
 
@@ -450,6 +478,23 @@ def build_panel(
 
     # Build call-to-call counting-process panel
     panel = build_call_to_call_panel(call_panel, takeover_data, year_end)
+
+    # RT-4: Log dropped event firms (firms in SDC with Takeover=1 but no valid panel interval)
+    takeover_gvkeys_builder = set(
+        takeover_data[takeover_data["Takeover"] == 1]["gvkey"]
+    )
+    takeover_gvkeys_panel = set(panel[panel["Takeover"] == 1]["gvkey"])
+    dropped = takeover_gvkeys_builder - takeover_gvkeys_panel
+    if dropped:
+        print(f"WARNING: {len(dropped)} SDC event firms not in panel "
+              f"(no valid at-risk interval — likely all calls on/after takeover date):")
+        print(sorted(dropped))
+        if out_dir is not None:
+            out_dir.mkdir(parents=True, exist_ok=True)
+            pd.DataFrame({"gvkey": sorted(dropped)}).to_csv(
+                out_dir / "dropped_event_firms.csv", index=False
+            )
+            print(f"  Saved: dropped_event_firms.csv")
 
     print(f"\n  Final call-to-call panel: {len(panel):,} intervals")
     print(f"  Columns: {len(panel.columns)}")
@@ -620,7 +665,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print(f"Log dir:   {log_dir}")
     print(f"Years:     {year_start}-{year_end}")
 
-    panel = build_panel(root, years, var_config, stats)
+    panel = build_panel(root, years, var_config, stats, out_dir)
     save_outputs(panel, stats, out_dir, root, timestamp)
 
     duration = (datetime.now() - start_time).total_seconds()

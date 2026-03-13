@@ -674,9 +674,9 @@ def make_cox_hazard_table(
     if not results:
         return ""
 
-    # Column structure: 3 models x 2 variants = 6 data columns
+    # Column structure: 3 models x 3 variants = 9 data columns
     model_order = ["Cox PH All", "Cox CS Uninvited", "Cox CS Friendly"]
-    variant_order = ["Regime", "CEO"]
+    variant_order = ["CEO", "CEO_Residual", "Manager_Residual"]
 
     col_keys = []
     for model in model_order:
@@ -712,21 +712,21 @@ def make_cox_hazard_table(
     # Header row 1: Model names
     header1 = [""]
     for model in model_order:
-        header1.append(f"\\multicolumn{{2}}{{c}}{{{model}}}")
+        header1.append(f"\\multicolumn{{{len(variant_order)}}}{{c}}{{{model}}}")
     lines.append(" & ".join(header1) + r" \\")
 
     # cmidrule
     cmidrules = []
     for i in range(len(model_order)):
-        start = 2 + i * 2
-        end = start + 1
+        start = 2 + i * len(variant_order)
+        end = start + len(variant_order) - 1
         cmidrules.append(f"\\cmidrule(lr){{{start}-{end}}}")
     lines.append(" ".join(cmidrules))
 
     # Header row 2: Variants
     header2 = [""]
     for _ in model_order:
-        header2.extend(["Regime", "CEO"])
+        header2.extend([v.replace("_", " ") for v in variant_order])
     lines.append(" & ".join(header2) + r" \\")
     lines.append(r"\midrule")
 

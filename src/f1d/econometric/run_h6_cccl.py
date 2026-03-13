@@ -9,22 +9,21 @@ Description: Run H6 SEC Scrutiny hypothesis test by loading the call-level
              industry sample, and outputting results.
 
 Model Specification:
-    Uncertainty_t ~ CCCL_lag_{t-1} + Size + Lev + ROA + TobinsQ + CashHoldings +
+    Uncertainty_t ~ CCCL_t + Size + Lev + ROA + TobinsQ + CashHoldings +
+                    EarningsVolatility + RD_Intensity + Volatility +
                     C(gvkey) + C(year)
 
 Dependent Variables:
     1. Manager_QA_Uncertainty_pct
     2. CEO_QA_Uncertainty_pct
-    3. Manager_QA_Weak_Modal_pct
-    4. CEO_QA_Weak_Modal_pct
-    5. Manager_Pres_Uncertainty_pct
-    6. CEO_Pres_Uncertainty_pct
-    7. Uncertainty_Gap (QA - Pres)
+    3. Manager_Pres_Uncertainty_pct
+    4. CEO_Pres_Uncertainty_pct
+    5. Manager_Clarity_Residual
+    6. CEO_Clarity_Residual
 
 Hypothesis Tests (one-tailed):
-    H6-A: beta(CCCL_lag) < 0 (Scrutiny reduces uncertainty)
+    H6-A: beta(CCCL) < 0 (Scrutiny reduces uncertainty)
     H6-B: |beta(QA)| > |beta(Pres)| (Stronger effect in spontaneous speech)
-    H6-C: beta(CCCL_lag) < 0 for Uncertainty_Gap
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -84,11 +83,10 @@ CONFIG = {
     "dependent_variables": [
         "Manager_QA_Uncertainty_pct",
         "CEO_QA_Uncertainty_pct",
-        "Manager_QA_Weak_Modal_pct",
-        "CEO_QA_Weak_Modal_pct",
         "Manager_Pres_Uncertainty_pct",
         "CEO_Pres_Uncertainty_pct",
-        "Uncertainty_Gap",
+        "Manager_Clarity_Residual",
+        "CEO_Clarity_Residual",
     ],
     "samples": ["Main", "Finance", "Utility"],
 }
@@ -99,6 +97,9 @@ BASE_CONTROLS = [
     "ROA",
     "TobinsQ",
     "CashHoldings",
+    "earnings_volatility",
+    "RD_Intensity",
+    "Volatility",
 ]
 
 
@@ -107,22 +108,24 @@ BASE_CONTROLS = [
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # Dependent variables (uncertainty / gap measures)
+    # Dependent variables (uncertainty measures + clarity residuals)
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_QA_Weak_Modal_pct", "label": "Mgr QA Weak Modal"},
-    {"col": "CEO_QA_Weak_Modal_pct", "label": "CEO QA Weak Modal"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Uncertainty_Gap", "label": "QA-Pres Uncertainty Gap"},
+    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
     # Main independent variable (CCCL shift intensity)
-    {"col": "shift_intensity_mkvalt_ff48_lag", "label": "CCCL$_{t-1}$"},
+    {"col": "shift_intensity_mkvalt_ff48", "label": "CCCL Exposure$_t$"},
     # Controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "Lev", "label": "Leverage"},
     {"col": "ROA", "label": "ROA"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "CashHoldings", "label": "Cash Holdings"},
+    {"col": "earnings_volatility", "label": "Earnings Volatility"},
+    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
+    {"col": "Volatility", "label": "Stock Volatility"},
 ]
 
 
@@ -138,9 +141,6 @@ def parse_arguments() -> argparse.Namespace:
 
 def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     df = panel.copy()
-    df["Uncertainty_Gap"] = (
-        df["Manager_QA_Uncertainty_pct"] - df["Manager_Pres_Uncertainty_pct"]
-    )
     return df
 
 
@@ -152,12 +152,12 @@ def run_regression(
 ) -> Tuple[Any, Dict[str, Any]]:
     if pre_trends:
         iv_cols = [
-            "shift_intensity_mkvalt_ff48_lag",
+            "shift_intensity_mkvalt_ff48",
             "shift_intensity_mkvalt_ff48_lead1",
             "shift_intensity_mkvalt_ff48_lead2",
         ]
     else:
-        iv_cols = ["shift_intensity_mkvalt_ff48_lag"]
+        iv_cols = ["shift_intensity_mkvalt_ff48"]
 
     required = [dv_var] + iv_cols + BASE_CONTROLS + ["gvkey", "year"]
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
@@ -167,21 +167,21 @@ def run_regression(
 
     if pre_trends:
         formula = (
-            f"{dv_var} ~ shift_intensity_mkvalt_ff48_lag + shift_intensity_mkvalt_ff48_lead1 + shift_intensity_mkvalt_ff48_lead2 + "
+            f"{dv_var} ~ shift_intensity_mkvalt_ff48 + shift_intensity_mkvalt_ff48_lead1 + shift_intensity_mkvalt_ff48_lead2 + "
             + " + ".join(BASE_CONTROLS)
             + " + C(gvkey) + C(year)"
         )
         print(
-            f"  Formula: {dv_var} ~ CCCL_t-1 + CCCL_t+1 + CCCL_t+2 + {' + '.join(BASE_CONTROLS)} + C(gvkey) + C(year)"
+            f"  Formula: {dv_var} ~ CCCL_t + CCCL_t+1 + CCCL_t+2 + {' + '.join(BASE_CONTROLS)} + C(gvkey) + C(year)"
         )
     else:
         formula = (
-            f"{dv_var} ~ shift_intensity_mkvalt_ff48_lag + "
+            f"{dv_var} ~ shift_intensity_mkvalt_ff48 + "
             + " + ".join(BASE_CONTROLS)
             + " + C(gvkey) + C(year)"
         )
         print(
-            f"  Formula: {dv_var} ~ CCCL_lag + {' + '.join(BASE_CONTROLS)} + C(gvkey) + C(year)"
+            f"  Formula: {dv_var} ~ CCCL_t + {' + '.join(BASE_CONTROLS)} + C(gvkey) + C(year)"
         )
     print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
     print("  Estimating with firm-clustered SEs... (this may take a moment)")
@@ -215,10 +215,10 @@ def run_regression(
     within_r2 = float(model.rsquared_within)
     print(f"  Within-R²:          {within_r2:.4f}")
 
-    beta1 = model.params.get("shift_intensity_mkvalt_ff48_lag", np.nan)
-    p1_two = model.pvalues.get("shift_intensity_mkvalt_ff48_lag", np.nan)
-    beta1_se = model.std_errors.get("shift_intensity_mkvalt_ff48_lag", np.nan)
-    beta1_t = model.tstats.get("shift_intensity_mkvalt_ff48_lag", np.nan)
+    beta1 = model.params.get("shift_intensity_mkvalt_ff48", np.nan)
+    p1_two = model.pvalues.get("shift_intensity_mkvalt_ff48", np.nan)
+    beta1_se = model.std_errors.get("shift_intensity_mkvalt_ff48", np.nan)
+    beta1_t = model.tstats.get("shift_intensity_mkvalt_ff48", np.nan)
 
     # H6: beta1 < 0
     if not np.isnan(p1_two) and not np.isnan(beta1):
@@ -230,7 +230,7 @@ def run_regression(
     h6_text = "YES" if h6_sig else "no"
 
     print(
-        f"  beta1 (CCCL_lag): {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H6={h6_text}"
+        f"  beta1 (CCCL_t): {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H6={h6_text}"
     )
 
     meta = {
@@ -267,7 +267,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r_2 = get_res("CEO_QA_Uncertainty_pct")
     r_3 = get_res("Manager_Pres_Uncertainty_pct")
     r_4 = get_res("CEO_Pres_Uncertainty_pct")
-    r_5 = get_res("Uncertainty_Gap")
+    r_5 = get_res("Manager_Clarity_Residual")
+    r_6 = get_res("CEO_Clarity_Residual")
 
     def fmt_coef(val, pval):
         if val is None or pd.isna(val):
@@ -296,22 +297,23 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\centering",
         "\\caption{H6: SEC Scrutiny (CCCL) and Speech Vagueness}",
         "\\label{tab:h6_cccl}",
-        "\\begin{tabular}{lccccc}",
+        "\\begin{tabular}{lcccccc}",
         "\\toprule",
-        " & \\multicolumn{2}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} & \\multicolumn{1}{c}{Gap} \\\\",
-        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5} \\cmidrule(lr){6-6}",
-        " & Mgr Unc & CEO Unc & Mgr Unc & CEO Unc & Unc Gap \\\\",
-        " & (1) & (2) & (3) & (4) & (5) \\\\",
+        " & \\multicolumn{2}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} & \\multicolumn{2}{c}{Clarity Residual} \\\\",
+        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5} \\cmidrule(lr){6-7}",
+        " & Mgr Unc & CEO Unc & Mgr Unc & CEO Unc & Mgr Resid & CEO Resid \\\\",
+        " & (1) & (2) & (3) & (4) & (5) & (6) \\\\",
         "\\midrule",
     ]
 
     # Row 1: CCCL_lag
-    r1 = "CCCL Exposure$_{t-1}$ & "
+    r1 = "CCCL Exposure$_t$ & "
     r1 += f"{fmt_coef(r_1['beta1'], r_1['beta1_p_one'])} & " if r_1 else " & "
     r1 += f"{fmt_coef(r_2['beta1'], r_2['beta1_p_one'])} & " if r_2 else " & "
     r1 += f"{fmt_coef(r_3['beta1'], r_3['beta1_p_one'])} & " if r_3 else " & "
     r1 += f"{fmt_coef(r_4['beta1'], r_4['beta1_p_one'])} & " if r_4 else " & "
-    r1 += f"{fmt_coef(r_5['beta1'], r_5['beta1_p_one'])} \\\\" if r_5 else " \\\\"
+    r1 += f"{fmt_coef(r_5['beta1'], r_5['beta1_p_one'])} & " if r_5 else " & "
+    r1 += f"{fmt_coef(r_6['beta1'], r_6['beta1_p_one'])} \\\\" if r_6 else " \\\\"
     lines.append(r1)
 
     # Row 2: SE
@@ -320,15 +322,16 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r2 += f"{fmt_se(r_2['beta1_se'])} & " if r_2 else " & "
     r2 += f"{fmt_se(r_3['beta1_se'])} & " if r_3 else " & "
     r2 += f"{fmt_se(r_4['beta1_se'])} & " if r_4 else " & "
-    r2 += f"{fmt_se(r_5['beta1_se'])} \\\\" if r_5 else " \\\\"
+    r2 += f"{fmt_se(r_5['beta1_se'])} & " if r_5 else " & "
+    r2 += f"{fmt_se(r_6['beta1_se'])} \\\\" if r_6 else " \\\\"
     lines.append(r2)
 
     lines.extend(
         [
             "\\midrule",
-            "Controls & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Firm FE & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Year FE & Yes & Yes & Yes & Yes & Yes \\\\",
+            "Controls & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+            "Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+            "Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
             "\\midrule",
         ]
     )
@@ -338,7 +341,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rn += f"{r_2['n_obs']:,} & " if r_2 else " & "
     rn += f"{r_3['n_obs']:,} & " if r_3 else " & "
     rn += f"{r_4['n_obs']:,} & " if r_4 else " & "
-    rn += f"{r_5['n_obs']:,} \\\\" if r_5 else " \\\\"
+    rn += f"{r_5['n_obs']:,} & " if r_5 else " & "
+    rn += f"{r_6['n_obs']:,} \\\\" if r_6 else " \\\\"
     lines.append(rn)
 
     rr = "Within-$R^2$ & "
@@ -346,7 +350,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rr += f"{fmt_r2(r_2['within_r2'])} & " if r_2 else " & "
     rr += f"{fmt_r2(r_3['within_r2'])} & " if r_3 else " & "
     rr += f"{fmt_r2(r_4['within_r2'])} & " if r_4 else " & "
-    rr += f"{fmt_r2(r_5['within_r2'])} \\\\" if r_5 else " \\\\"
+    rr += f"{fmt_r2(r_5['within_r2'])} & " if r_5 else " & "
+    rr += f"{fmt_r2(r_6['within_r2'])} \\\\" if r_6 else " \\\\"
     lines.append(rr)
 
     lines.extend([
@@ -356,8 +361,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\parbox{\\textwidth}{\\scriptsize ",
         "\\textit{Notes:} "
         "This table reports the effect of SEC scrutiny (CCCL exposure) on speech vagueness. "
-        "Columns (1)--(2) use Q\\&A session measures; columns (3)--(4) use presentation measures; "
-        "column (5) uses the QA-Pres uncertainty gap. "
+        "Columns (1)--(2) use Q\\&A session uncertainty measures; columns (3)--(4) use presentation uncertainty measures; "
+        "columns (5)--(6) use clarity residuals from the H0.3 CEO Clarity Extended regression. "
         "All models use the Main industry sample (non-financial, non-utility firms). "
         "Firms with fewer than 5 calls are excluded. "
         "Standard errors are clustered at the firm level. "
@@ -415,15 +420,15 @@ def main(panel_path: str | None = None) -> int:
             "gvkey",
             "year",
             "ff12_code",
-            # Dependent variables (uncertainty measures)
+            # Dependent variables (uncertainty measures + clarity residuals)
             "Manager_QA_Uncertainty_pct",
             "CEO_QA_Uncertainty_pct",
-            "Manager_QA_Weak_Modal_pct",
-            "CEO_QA_Weak_Modal_pct",
             "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
+            "Manager_Clarity_Residual",
+            "CEO_Clarity_Residual",
             # Primary predictor (CCCL institutional shift intensity)
-            "shift_intensity_mkvalt_ff48_lag",
+            "shift_intensity_mkvalt_ff48",
             "shift_intensity_mkvalt_ff48_lead1",
             "shift_intensity_mkvalt_ff48_lead2",
             # Base controls
@@ -432,6 +437,9 @@ def main(panel_path: str | None = None) -> int:
             "ROA",
             "TobinsQ",
             "CashHoldings",
+            "earnings_volatility",
+            "RD_Intensity",
+            "Volatility",
         ],
     )
     print(f"  Rows: {len(panel):,}")
@@ -483,7 +491,7 @@ def main(panel_path: str | None = None) -> int:
             # The CCCL instrument dataset begins in 2005.
             # Filter gvkeys to those with >= 5 calls strictly within the non-null window.
             df_sample["gvkey_count"] = df_sample.groupby("gvkey")[
-                "shift_intensity_mkvalt_ff48_lag"
+                "shift_intensity_mkvalt_ff48"
             ].transform("count")
             df_filtered = df_sample[
                 df_sample["gvkey_count"] >= CONFIG["min_calls"]

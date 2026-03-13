@@ -246,6 +246,7 @@ __all__ = [
     "DeltaDispersionBuilder",
     # H7
     "AmihudIlliqBuilder",
+    "AmihudChangeBuilder",
     # H14
     "BidAskSpreadChangeBuilder",
     "StockPriceBuilder",
@@ -292,6 +293,7 @@ from .delta_dispersion import DeltaDispersionBuilder
 
 # H7 Illiquidity
 from .amihud_illiq import AmihudIlliqBuilder
+from .amihud_change import AmihudChangeBuilder
 
 # H14 Bid-Ask Spread Change
 from .bidask_spread_change import BidAskSpreadChangeBuilder

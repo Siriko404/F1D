@@ -1,24 +1,23 @@
-"""Builder for bid-ask spread change variables around earnings calls (H14).
+"""Builder for Amihud illiquidity change around earnings calls (H7).
 
 Reads raw CRSP daily stock files via the shared CRSPEngine.get_raw_daily_data().
-Returns columns: file_name, delta_spread, pre_call_spread, and optionally
-delta_spread_closing, pre_call_spread_closing, pre_spread_change.
+Returns columns: file_name, delta_amihud, pre_call_amihud.
 
 Event-window calculation (VECTORIZED with year-chunking for memory efficiency):
-    Spread_d = 2 * (ASKHI - BIDLO) / (ASKHI + BIDLO)          [high-low spread]
-    Spread_closing_d = 2 * (ASK - BID) / (ASK + BID)          [closing spread]
-    PreSpread  = mean(Spread for trading days in pre-window relative to call)
-    PostSpread = mean(Spread for trading days in post-window relative to call)
-    DeltaSpread = PostSpread - PreSpread
+    daily_illiq_d = |RET_d| / (VOL_d * |PRC_d|) * 1e6
+    PreAmihud  = mean(daily_illiq for trading days in pre-window relative to call)
+    PostAmihud = mean(daily_illiq for trading days in post-window relative to call)
+    DeltaAmihud = PostAmihud - PreAmihud
 
 Uses trading-day positions, not calendar days, to handle weekends/holidays.
+Mirrors the BidAskSpreadChangeBuilder design for consistency with H14.
 """
 
 from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -34,11 +33,11 @@ MIN_PRE_DAYS = 2
 MIN_POST_DAYS = 2
 
 
-class BidAskSpreadChangeBuilder(VariableBuilder):
-    """Compute bid-ask spread change around earnings calls (VECTORIZED).
+class AmihudChangeBuilder(VariableBuilder):
+    """Compute Amihud illiquidity change around earnings calls (VECTORIZED).
 
-    The dependent variable for H14: delta_spread = post_avg - pre_avg.
-    Also returns pre_call_spread as a control variable.
+    The dependent variable for H7: delta_amihud = post_avg - pre_avg.
+    Also returns pre_call_amihud as a control variable.
 
     Config options:
         window_days (int): Number of trading days in each window (default 3).
@@ -71,56 +70,46 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
         # Merge permno to manifest
         manifest = manifest.merge(permno_map, on="file_name", how="left")
 
-        # Load raw CRSP daily data (includes BIDLO, ASKHI, SHROUT)
+        # Load raw CRSP daily data (includes VOL, PRC, RET)
         engine = get_engine()
         crsp_data = engine.get_raw_daily_data(root_path, years=list(years))
 
         sfx = self.column_suffix
-        ds_col = f"delta_spread{sfx}"
-        pcs_col = f"pre_call_spread{sfx}"
-        dsc_col = f"delta_spread_closing{sfx}"
-        pcsc_col = f"pre_call_spread_closing{sfx}"
-        psc_col = f"pre_spread_change{sfx}"
+        da_col = f"delta_amihud{sfx}"
+        pca_col = f"pre_call_amihud{sfx}"
 
         if crsp_data.empty:
-            logger.warning("BidAskSpreadChangeBuilder: No CRSP data loaded!")
+            logger.warning("AmihudChangeBuilder: No CRSP data loaded!")
             result_df = manifest[["file_name"]].copy()
-            result_df[ds_col] = np.nan
-            result_df[pcs_col] = np.nan
-            result_df[dsc_col] = np.nan
-            result_df[pcsc_col] = np.nan
-            result_df[psc_col] = np.nan
+            result_df[da_col] = np.nan
+            result_df[pca_col] = np.nan
             return VariableResult(
                 data=result_df,
-                stats=self.get_stats(result_df[ds_col], ds_col),
-                metadata={"column": ds_col, "source": "CRSP"},
+                stats=self.get_stats(result_df[da_col], da_col),
+                metadata={"column": da_col, "source": "CRSP"},
             )
 
-        # Compute spread change using vectorized operations
-        results = self._compute_spread_change_vectorized(manifest, crsp_data)
+        # Compute amihud change using vectorized operations
+        results = self._compute_amihud_change_vectorized(manifest, crsp_data)
 
         # Rename columns if suffix is set
         if sfx:
             results = results.rename(columns={
-                "delta_spread": ds_col,
-                "pre_call_spread": pcs_col,
-                "delta_spread_closing": dsc_col,
-                "pre_call_spread_closing": pcsc_col,
-                "pre_spread_change": psc_col,
+                "delta_amihud": da_col,
+                "pre_call_amihud": pca_col,
             })
 
-        out_cols = ["file_name", ds_col, pcs_col, dsc_col, pcsc_col, psc_col]
-        # Only include columns that exist
+        out_cols = ["file_name", da_col, pca_col]
         out_cols = [c for c in out_cols if c in results.columns]
 
         return VariableResult(
             data=results[out_cols],
-            stats=self.get_stats(results[ds_col], ds_col),
+            stats=self.get_stats(results[da_col], da_col),
             metadata={
-                "column": ds_col,
+                "column": da_col,
                 "source": "CRSP via get_raw_daily_data",
                 "window_days": self.window_days,
-                "pre_call_spread": f"control variable (pre-call average spread)",
+                "pre_call_amihud": "control variable (pre-call average Amihud)",
             },
         )
 
@@ -199,19 +188,12 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
 
         return joined
 
-    def _compute_spread_change_vectorized(
+    def _compute_amihud_change_vectorized(
         self, manifest: pd.DataFrame, crsp: pd.DataFrame
     ) -> pd.DataFrame:
-        """Compute delta_spread and pre_call_spread using vectorized operations.
+        """Compute delta_amihud and pre_call_amihud using vectorized operations.
 
-        Memory-efficient implementation using year-chunking to avoid
-        creating massive intermediate arrays from the merge.
-
-        Algorithm:
-        1. Process calls by year
-        2. For each year, filter CRSP to relevant dates
-        3. Merge, filter to event window, compute spreads
-        4. Aggregate using groupby
+        Memory-efficient implementation using year-chunking.
         """
         # Filter manifest to valid permnos
         valid = manifest[manifest["permno_int"].notna()].copy()
@@ -219,19 +201,16 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
 
         if len(valid) == 0:
             result = manifest[["file_name"]].copy()
-            result["delta_spread"] = np.nan
-            result["pre_call_spread"] = np.nan
+            result["delta_amihud"] = np.nan
+            result["pre_call_amihud"] = np.nan
             return result
 
         # Prepare CRSP data
         crsp = crsp.copy()
         crsp = crsp[crsp["PERMNO"].notna()].copy()
         crsp["PERMNO"] = crsp["PERMNO"].astype(int)
-
-        # Add year column to CRSP for filtering
         crsp["crsp_year"] = crsp["date"].dt.year
 
-        # Add year column to manifest
         valid["call_year"] = valid["start_date"].dt.year
 
         # Process by year to avoid memory explosion
@@ -242,14 +221,11 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
                 continue
             year = int(year)
 
-            # Get calls for this year
             year_calls = valid[valid["call_year"] == year].copy()
-
             if year_calls.empty:
                 continue
 
-            # CRITICAL: First filter to only the PERMNOs we need for this year
-            # This avoids loading ALL CRSP data for all PERMNOs
+            # Filter CRSP to relevant PERMNOs and date range
             year_permnos = year_calls["permno_int"].unique()
             year_crsp = crsp[
                 crsp["PERMNO"].isin(year_permnos) &
@@ -259,49 +235,51 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
             if year_crsp.empty:
                 continue
 
-            # Process this year's calls
             year_results = self._process_year_calls(year_calls, year_crsp)
 
             if year_results is not None and not year_results.empty:
                 all_results.append(year_results)
 
         if not all_results:
-            logger.warning("BidAskSpreadChangeBuilder: No valid results!")
+            logger.warning("AmihudChangeBuilder: No valid results!")
             result = manifest[["file_name"]].copy()
-            result["delta_spread"] = np.nan
-            result["pre_call_spread"] = np.nan
+            result["delta_amihud"] = np.nan
+            result["pre_call_amihud"] = np.nan
             return result
 
         # Combine all years
         combined = pd.concat(all_results, ignore_index=True)
 
-        # Merge back to manifest — include all output columns
+        # Merge back to manifest
         result = manifest[["file_name"]].merge(
             combined,
             on="file_name",
             how="left",
         )
 
-        logger.info(f"  BidAskSpreadChangeBuilder: {result['delta_spread'].notna().sum():,} valid observations")
+        logger.info(f"  AmihudChangeBuilder: {result['delta_amihud'].notna().sum():,} valid observations")
 
         return result
 
     def _process_year_calls(
         self, year_calls: pd.DataFrame, year_crsp: pd.DataFrame
-    ) -> pd.DataFrame:
-        """Process one year's calls to compute spread change."""
+    ) -> Optional[pd.DataFrame]:
+        """Process one year's calls to compute Amihud change."""
         w = self.window_days
-        # Scale minimum valid days with window size
         min_pre = max(1, w - 1)
         min_post = max(1, w - 1)
 
-        # Merge calls with CRSP on PERMNO — include BID/ASK for closing spread
-        crsp_cols = ["PERMNO", "date", "BIDLO", "ASKHI"]
-        for c in ["BID", "ASK"]:
+        # Need VOL, PRC, RET for Amihud
+        required_crsp_cols = ["PERMNO", "date"]
+        for c in ["VOL", "PRC", "RET"]:
             if c in year_crsp.columns:
-                crsp_cols.append(c)
+                required_crsp_cols.append(c)
+            else:
+                logger.warning(f"AmihudChangeBuilder: Missing CRSP column {c}")
+                return None
+
         merged = year_calls[["file_name", "start_date", "permno_int"]].merge(
-            year_crsp[crsp_cols],
+            year_crsp[required_crsp_cols],
             left_on="permno_int",
             right_on="PERMNO",
             how="inner",
@@ -310,7 +288,7 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
         if merged.empty:
             return None
 
-        # Filter to calendar window around each call (scale with window size)
+        # Filter to calendar window around each call
         cal_window = max(15, w * 5)
         merged["date_diff"] = (merged["date"] - merged["start_date"]).dt.days.abs()
         merged = merged[merged["date_diff"] <= cal_window].copy()
@@ -318,29 +296,16 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
         if merged.empty:
             return None
 
-        # Compute high-low spread for each day
-        valid_spread_mask = (
-            merged["ASKHI"].notna() & merged["BIDLO"].notna() &
-            (merged["ASKHI"] > 0) & (merged["BIDLO"] > 0)
-        )
-        merged["spread"] = np.nan
-        merged.loc[valid_spread_mask, "spread"] = (
-            2 * (merged.loc[valid_spread_mask, "ASKHI"] - merged.loc[valid_spread_mask, "BIDLO"]) /
-            (merged.loc[valid_spread_mask, "ASKHI"] + merged.loc[valid_spread_mask, "BIDLO"])
-        )
+        # Compute daily Amihud illiquidity for each day
+        merged["VOL"] = pd.to_numeric(merged["VOL"], errors="coerce")
+        merged["PRC"] = pd.to_numeric(merged["PRC"], errors="coerce")
+        merged["RET"] = pd.to_numeric(merged["RET"], errors="coerce")
 
-        # Compute closing spread (BID/ASK) if columns available
-        has_closing = "BID" in merged.columns and "ASK" in merged.columns
-        if has_closing:
-            valid_closing_mask = (
-                merged["ASK"].notna() & merged["BID"].notna() &
-                (merged["ASK"] > 0) & (merged["BID"] > 0)
-            )
-            merged["spread_closing"] = np.nan
-            merged.loc[valid_closing_mask, "spread_closing"] = (
-                2 * (merged.loc[valid_closing_mask, "ASK"] - merged.loc[valid_closing_mask, "BID"]) /
-                (merged.loc[valid_closing_mask, "ASK"] + merged.loc[valid_closing_mask, "BID"])
-            )
+        merged["dollar_volume"] = merged["VOL"] * merged["PRC"].abs()
+        dollar_vol_masked = merged["dollar_volume"].replace(0, np.nan)
+        merged["daily_illiq"] = merged["RET"].abs() / dollar_vol_masked * 1e6
+        # Clamp Inf
+        merged["daily_illiq"] = merged["daily_illiq"].replace([np.inf, -np.inf], np.nan)
 
         # Sort by date within each call
         merged = merged.sort_values(["file_name", "date"])
@@ -376,73 +341,34 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
             .rank(ascending=True, method="first")
         )
 
-        # Get trading days in our windows (parameterized by window_days)
+        # Get trading days in our windows
         pre_window = merged[pre_mask & (merged["pre_rank"] <= w)].copy()
         post_window = merged[post_mask & (merged["post_rank"] <= w)].copy()
 
-        # --- High-low spread aggregation ---
+        # Amihud aggregation
         pre_avg = pre_window.groupby("file_name").agg(
-            pre_call_spread=("spread", "mean"),
-            pre_n_valid=("spread", lambda x: x.notna().sum()),
+            pre_call_amihud=("daily_illiq", "mean"),
+            pre_n_valid=("daily_illiq", lambda x: x.notna().sum()),
         ).reset_index()
 
         post_avg = post_window.groupby("file_name").agg(
-            post_call_spread=("spread", "mean"),
-            post_n_valid=("spread", lambda x: x.notna().sum()),
+            post_call_amihud=("daily_illiq", "mean"),
+            post_n_valid=("daily_illiq", lambda x: x.notna().sum()),
         ).reset_index()
 
-        spreads = pre_avg.merge(post_avg, on="file_name", how="outer")
-        spreads["delta_spread"] = spreads["post_call_spread"] - spreads["pre_call_spread"]
+        amihud = pre_avg.merge(post_avg, on="file_name", how="outer")
+        amihud["delta_amihud"] = amihud["post_call_amihud"] - amihud["pre_call_amihud"]
 
         # Apply minimum valid days filter
         min_valid_mask = (
-            (spreads["pre_n_valid"] >= min_pre) &
-            (spreads["post_n_valid"] >= min_post)
+            (amihud["pre_n_valid"] >= min_pre) &
+            (amihud["post_n_valid"] >= min_post)
         )
-        spreads.loc[~min_valid_mask, "delta_spread"] = np.nan
-        spreads.loc[~min_valid_mask, "pre_call_spread"] = np.nan
+        amihud.loc[~min_valid_mask, "delta_amihud"] = np.nan
+        amihud.loc[~min_valid_mask, "pre_call_amihud"] = np.nan
 
-        # --- Closing spread aggregation (L1) ---
-        if has_closing:
-            pre_avg_c = pre_window.groupby("file_name").agg(
-                pre_call_spread_closing=("spread_closing", "mean"),
-                pre_n_valid_c=("spread_closing", lambda x: x.notna().sum()),
-            ).reset_index()
-            post_avg_c = post_window.groupby("file_name").agg(
-                post_call_spread_closing=("spread_closing", "mean"),
-                post_n_valid_c=("spread_closing", lambda x: x.notna().sum()),
-            ).reset_index()
-            closing = pre_avg_c.merge(post_avg_c, on="file_name", how="outer")
-            closing["delta_spread_closing"] = (
-                closing["post_call_spread_closing"] - closing["pre_call_spread_closing"]
-            )
-            min_valid_c = (
-                (closing["pre_n_valid_c"] >= min_pre) &
-                (closing["post_n_valid_c"] >= min_post)
-            )
-            closing.loc[~min_valid_c, "delta_spread_closing"] = np.nan
-            closing.loc[~min_valid_c, "pre_call_spread_closing"] = np.nan
-            spreads = spreads.merge(
-                closing[["file_name", "delta_spread_closing", "pre_call_spread_closing"]],
-                on="file_name", how="left",
-            )
-
-        # --- Placebo DV (L2): pre-period spread change ---
-        # spread on day -1 minus spread on day -(window_days)
-        # Tests whether uncertainty predicts spread changes BEFORE the call
-        if w >= 2:
-            pre_first = pre_window[pre_window["pre_rank"] == w].set_index("file_name")["spread"]
-            pre_last = pre_window[pre_window["pre_rank"] == 1].set_index("file_name")["spread"]
-            placebo = (pre_last - pre_first).rename("pre_spread_change").reset_index()
-            spreads = spreads.merge(placebo, on="file_name", how="left")
-
-        out_cols = ["file_name", "delta_spread", "pre_call_spread"]
-        if has_closing:
-            out_cols += ["delta_spread_closing", "pre_call_spread_closing"]
-        if "pre_spread_change" in spreads.columns:
-            out_cols += ["pre_spread_change"]
-
-        return spreads[out_cols]
+        out_cols = ["file_name", "delta_amihud", "pre_call_amihud"]
+        return amihud[out_cols]
 
 
-__all__ = ["BidAskSpreadChangeBuilder"]
+__all__ = ["AmihudChangeBuilder"]

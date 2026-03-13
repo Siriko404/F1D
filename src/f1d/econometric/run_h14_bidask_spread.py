@@ -11,7 +11,7 @@ Description: Run H14 Bid-Ask Spread Change hypothesis test by loading the
 
 Model Specification:
     delta_spread ~ {uncertainty_var} + Size + StockPrice + Turnover + Volatility +
-                   PreCallSpread + AbsSurprise + EntityEffects + TimeEffects
+                   PreCallSpread + AbsSurpDec + EntityEffects + TimeEffects
 
 Unit of observation: individual earnings call (file_name).
 DV: delta_spread = Spread[+1,+3] - Spread[-3,-1]
@@ -19,9 +19,10 @@ DV: delta_spread = Spread[+1,+3] - Spread[-3,-1]
 Hypothesis Test (one-tailed):
     H14: beta({uncertainty_var}) > 0 (higher uncertainty increases spread)
 
-Uncertainty Measures (4):
+Uncertainty Measures (6):
     Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct,
-    Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+    Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
+    Manager_Clarity_Residual, CEO_Clarity_Residual
 
 Industry Sample:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -83,14 +84,14 @@ CONFIG = {
 }
 
 # H14 Controls per H14.txt:
-# Size, Price, Turnover, ReturnVolatility, PreCallSpread, AbsSurprise
+# Size, Price, Turnover, ReturnVolatility, PreCallSpread, AbsSurpDec
 BASE_CONTROLS = [
     "Size",
     "StockPrice",
     "Turnover",
     "Volatility",
     "PreCallSpread",
-    "AbsSurprise",
+    "AbsSurpDec",
 ]
 
 # Uncertainty Measures (6) - each tested individually
@@ -126,7 +127,7 @@ SUMMARY_STATS_VARS = [
     {"col": "StockPrice", "label": "Stock Price"},
     {"col": "Turnover", "label": "Share Turnover"},
     {"col": "Volatility", "label": "Return Volatility"},
-    {"col": "AbsSurprise", "label": "|Earnings Surprise|"},
+    {"col": "AbsSurpDec", "label": "|Earnings Surprise Decile|"},
 ]
 
 
@@ -169,21 +170,55 @@ def prepare_regression_data(panel: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _winsorize_cols(df: pd.DataFrame, cols: List[str]) -> pd.DataFrame:
+    """Winsorize specified columns at 1%/99% (L4). Modifies df in place."""
+    for col in cols:
+        if col in df.columns:
+            lo = df[col].quantile(0.01)
+            hi = df[col].quantile(0.99)
+            df[col] = df[col].clip(lower=lo, upper=hi)
+    return df
+
+
+# Columns to winsorize before regression (L4)
+# Excludes Volatility — already winsorized per-year in CRSP engine
+WINSORIZE_COLS = ["delta_spread", "Turnover", "StockPrice", "AbsSurpDec"]
+# Also winsorize robustness DV variants
+WINSORIZE_DV_VARIANTS = [
+    "delta_spread_closing", "delta_spread_w1", "delta_spread_w5", "pre_spread_change",
+]
+
+
 def run_regression(
     df_sample: pd.DataFrame,
     sample_name: str,
     uncertainty_var: str,
     min_calls: int = 5,
+    dv_col: str = "delta_spread",
+    controls: Optional[List[str]] = None,
+    cluster_time: bool = False,
+    label: str = "",
 ) -> Tuple[Optional[Any], Dict[str, Any]]:
     """Run a single PanelOLS regression for one uncertainty measure.
 
-    DV  : delta_spread (change in bid-ask spread around call)
+    DV  : dv_col (change in bid-ask spread around call)
     IV  : uncertainty_var (single uncertainty measure)
     FE  : firm (gvkey) + year_quarter, clustered by entity (gvkey)
+
+    Args:
+        controls: List of control variable names. Defaults to BASE_CONTROLS.
+        cluster_time: If True, add cluster_time=True for double-clustering (L8).
+        dv_col: Dependent variable column name (default: delta_spread).
+        label: Optional label for output identification.
     """
+    if controls is None:
+        controls = BASE_CONTROLS
+
     required = (
-        ["delta_spread", uncertainty_var] + BASE_CONTROLS + ["gvkey", "quarter_index", "file_name"]
+        [dv_col, uncertainty_var] + controls + ["gvkey", "quarter_index", "file_name"]
     )
+    # Only require columns that exist in the dataframe
+    required = [c for c in required if c in df_sample.columns]
     df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
 
     # Apply min_calls filter AFTER listwise deletion to avoid singletons
@@ -194,33 +229,47 @@ def run_regression(
     if len(df_reg) < 100:
         return None, {}
 
+    # L4: Winsorize continuous variables at 1%/99% before PanelOLS
+    wins_cols = [c for c in WINSORIZE_COLS + WINSORIZE_DV_VARIANTS if c in df_reg.columns]
+    df_reg = _winsorize_cols(df_reg, wins_cols)
+
     # Build formula with single IV
     formula = (
-        f"delta_spread ~ {uncertainty_var} + "
-        + " + ".join(BASE_CONTROLS)
+        f"{dv_col} ~ {uncertainty_var} + "
+        + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
 
-    print(f"  Formula: delta_spread ~ {uncertainty_var} + controls")
-    print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
-    print("  Estimating with firm-clustered SEs...")
+    cluster_label = "firm+quarter" if cluster_time else "firm"
+    print(f"  Formula: {dv_col} ~ {uncertainty_var} + {len(controls)} controls")
+    print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}  |  SE: {cluster_label}")
 
     t0 = datetime.now()
 
     # Use quarter_index for TimeEffects (must be numeric for PanelOLS)
+    # RT-MI-01: Deduplicate on (gvkey, quarter_index) before set_index
+    dup_mask = df_reg.duplicated(subset=["gvkey", "quarter_index"], keep=False)
+    n_dups = dup_mask.sum()
+    if n_dups > 0:
+        print(f"  Dedup: {n_dups} rows share (gvkey, quarter_index); keeping latest start_date")
+        df_reg = df_reg.sort_values("start_date").drop_duplicates(
+            subset=["gvkey", "quarter_index"], keep="last"
+        )
     df_panel = df_reg.set_index(["gvkey", "quarter_index"])
+    assert df_panel.index.is_unique, "Panel index (gvkey, quarter_index) not unique after dedup"
 
     try:
         model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-        model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+        fit_kwargs: Dict[str, Any] = {"cov_type": "clustered", "cluster_entity": True}
+        if cluster_time:
+            fit_kwargs["cluster_time"] = True
+        model = model_obj.fit(**fit_kwargs)
     except Exception as e:
         print(f"  ERROR: PanelOLS failed: {e}", file=sys.stderr)
         return None, {}
 
     duration = (datetime.now() - t0).total_seconds()
-    print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared (within): {model.rsquared_within:.4f}")
-    print(f"  N obs:              {int(model.nobs):,}")
+    print(f"  [OK] Complete in {duration:.1f}s  |  R2w={model.rsquared_within:.4f}  |  N={int(model.nobs):,}")
 
     # Extract single beta coefficient
     beta1 = float(model.params.get(uncertainty_var, np.nan))
@@ -245,6 +294,10 @@ def run_regression(
     meta: Dict[str, Any] = {
         "sample": sample_name,
         "uncertainty_var": uncertainty_var,
+        "dv": dv_col,
+        "controls": "_".join(sorted(controls)),
+        "clustering": cluster_label,
+        "label": label,
         "beta1": beta1,
         "beta1_se": se1,
         "beta1_t": t1,
@@ -254,7 +307,7 @@ def run_regression(
         "n_obs": int(model.nobs),
         "n_firms": df_reg["gvkey"].nunique(),
         "n_clusters": df_reg["gvkey"].nunique(),
-        "cluster_var": "gvkey",
+        "cluster_var": "gvkey" + ("+quarter" if cluster_time else ""),
         "within_r2": float(model.rsquared_within),
     }
 
@@ -408,35 +461,34 @@ def main(panel_path: Optional[str] = None) -> int:
     print("Loading panel")
     print("=" * 60)
     print(f"  File:    {panel_file}")
-    panel = pd.read_parquet(
-        panel_file,
-        columns=[
-            "file_name",
-            "gvkey",
-            "year",
-            "year_quarter",
-            "ff12_code",
-            "start_date",
-            "delta_spread",
-            # Uncertainty IVs
-            "Manager_QA_Uncertainty_pct",
-            "CEO_QA_Uncertainty_pct",
-            "Manager_Pres_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
-            # Clarity Residuals
-            "Manager_Clarity_Residual",
-            "CEO_Clarity_Residual",
-            # Controls
-            "Size",
-            "StockPrice",
-            "Turnover",
-            "Volatility",
-            "PreCallSpread",
-            "AbsSurprise",
-        ],
-    )
+
+    # Load all available columns, including robustness DV variants
+    required_cols = [
+        "file_name", "gvkey", "year", "year_quarter", "ff12_code", "start_date",
+        "delta_spread",
+        # Uncertainty IVs
+        "Manager_QA_Uncertainty_pct", "CEO_QA_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
+        # Clarity Residuals
+        "Manager_Clarity_Residual", "CEO_Clarity_Residual",
+        # Controls
+        "Size", "StockPrice", "Turnover", "Volatility", "PreCallSpread", "AbsSurpDec",
+    ]
+    # Robustness DV columns (may not exist in older panels)
+    robustness_dv_cols = [
+        "delta_spread_closing", "PreCallSpreadClosing",
+        "delta_spread_w1", "delta_spread_w5", "pre_spread_change",
+    ]
+    # Check which robustness columns actually exist in the parquet
+    parquet_cols = pd.read_parquet(panel_file, columns=None).columns.tolist()
+    load_cols = required_cols + [c for c in robustness_dv_cols if c in parquet_cols]
+
+    panel = pd.read_parquet(panel_file, columns=load_cols)
     print(f"  Rows:    {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+    rob_available = [c for c in robustness_dv_cols if c in panel.columns]
+    if rob_available:
+        print(f"  Robustness DVs available: {rob_available}")
 
     if "sample" not in panel.columns:
         panel["sample"] = assign_industry_sample(panel["ff12_code"])
@@ -475,15 +527,46 @@ def main(panel_path: Optional[str] = None) -> int:
     df_prep = prepare_regression_data(panel)
     out_dir.mkdir(parents=True, exist_ok=True)
     all_results: List[Dict[str, Any]] = []
+    robustness_results: List[Dict[str, Any]] = []
 
     # ------------------------------------------------------------------
-    # Run regressions by sample × measure
+    # Robustness configuration (L3, RT-MI-03, L8, RT-MI-04)
     # ------------------------------------------------------------------
+    # DV variants
+    dv_variants = {"primary": "delta_spread"}
+    for dv_name, dv_col in [
+        ("closing", "delta_spread_closing"),
+        ("w1", "delta_spread_w1"),
+        ("w5", "delta_spread_w5"),
+        ("placebo", "pre_spread_change"),
+    ]:
+        if dv_col in df_prep.columns:
+            dv_variants[dv_name] = dv_col
+
+    # Control variants (RT-MI-03: with/without AbsSurpDec; RT-MI-04: with/without PreCallSpread)
+    control_variants = {
+        "full": BASE_CONTROLS,
+        "no_AbsSurpDec": [c for c in BASE_CONTROLS if c != "AbsSurpDec"],
+        "no_PreCallSpread": [c for c in BASE_CONTROLS if c != "PreCallSpread"],
+    }
+
+    # Clustering variants (L8)
+    cluster_variants = {
+        "firm": False,
+        "firm_quarter": True,
+    }
+
+    # ------------------------------------------------------------------
+    # PRIMARY regressions: full controls, firm-clustered, ASKHI/BIDLO ±3
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("PRIMARY REGRESSIONS (6 measures × Main sample)")
+    print("=" * 60)
+
     for sample_name in ["Main"]:
         df_sample = df_prep[df_prep["sample"] == sample_name].copy()
 
         for uncertainty_var in UNCERTAINTY_MEASURES:
-            # Check if variable exists in panel
             if uncertainty_var not in df_sample.columns:
                 print(f"  WARNING: {uncertainty_var} not in panel -- skipping")
                 continue
@@ -496,7 +579,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
             model, meta = run_regression(
                 df_sample, sample_name, uncertainty_var,
-                min_calls=CONFIG["min_calls"]
+                min_calls=CONFIG["min_calls"],
+                label="primary",
             )
 
             if model is not None and meta:
@@ -506,9 +590,70 @@ def main(panel_path: Optional[str] = None) -> int:
                     f.write(str(model.summary))
 
     # ------------------------------------------------------------------
+    # ROBUSTNESS regressions: 6 measures × 3 controls × 2 clustering × N DVs
+    # ------------------------------------------------------------------
+    print("\n" + "=" * 60)
+    print("ROBUSTNESS REGRESSIONS")
+    print(f"  DVs: {list(dv_variants.keys())}")
+    print(f"  Controls: {list(control_variants.keys())}")
+    print(f"  Clustering: {list(cluster_variants.keys())}")
+    n_expected = len(UNCERTAINTY_MEASURES) * len(dv_variants) * len(control_variants) * len(cluster_variants)
+    print(f"  Expected: {len(UNCERTAINTY_MEASURES)} × {len(dv_variants)} × {len(control_variants)} × {len(cluster_variants)} = {n_expected}")
+    print("=" * 60)
+
+    rob_dir = out_dir / "robustness"
+    rob_dir.mkdir(parents=True, exist_ok=True)
+    rob_count = 0
+
+    for sample_name in ["Main"]:
+        df_sample = df_prep[df_prep["sample"] == sample_name].copy()
+
+        for dv_name, dv_col in dv_variants.items():
+            for ctrl_name, ctrl_list in control_variants.items():
+                # For placebo DV, exclude PreCallSpread to avoid mechanical correlation (L2)
+                if dv_name == "placebo" and "PreCallSpread" in ctrl_list:
+                    ctrl_list = [c for c in ctrl_list if c != "PreCallSpread"]
+
+                for clust_name, clust_time in cluster_variants.items():
+                    # Skip primary spec (already run above)
+                    if dv_name == "primary" and ctrl_name == "full" and clust_name == "firm":
+                        continue
+
+                    for uncertainty_var in UNCERTAINTY_MEASURES:
+                        if uncertainty_var not in df_sample.columns:
+                            continue
+                        if len(df_sample) < 100:
+                            continue
+
+                        rob_label = f"{dv_name}_{ctrl_name}_{clust_name}"
+                        model, meta = run_regression(
+                            df_sample, sample_name, uncertainty_var,
+                            min_calls=CONFIG["min_calls"],
+                            dv_col=dv_col,
+                            controls=ctrl_list,
+                            cluster_time=clust_time,
+                            label=rob_label,
+                        )
+
+                        if model is not None and meta:
+                            robustness_results.append(meta)
+                            rob_count += 1
+                            txt_file = rob_dir / f"robustness_{rob_label}_{uncertainty_var}.txt"
+                            with open(txt_file, "w", encoding="utf-8") as f:
+                                f.write(str(model.summary))
+
+    print(f"\n  Robustness regressions completed: {rob_count}")
+
+    # ------------------------------------------------------------------
     # Output
     # ------------------------------------------------------------------
     _save_latex_table(all_results, out_dir)
+
+    # Save robustness diagnostics
+    if robustness_results:
+        rob_df = pd.DataFrame(robustness_results)
+        rob_df.to_csv(out_dir / "robustness_diagnostics.csv", index=False)
+        print(f"  Saved: robustness_diagnostics.csv ({len(rob_df)} regressions)")
 
     # Generate sample attrition table
     if all_results:
