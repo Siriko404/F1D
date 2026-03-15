@@ -1,318 +1,181 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-02-21
+**Analysis Date:** 2026-03-15
 
 ## Naming Patterns
 
 **Files:**
-- Modules: `snake_case.py` (e.g., `chunked_reader.py`, `financial_utils.py`)
-- Tests: `test_*.py` or `*_test.py` (e.g., `test_config.py`, `test_h1_regression.py`)
-- Factories: `*_factory.py` in `tests/factories/` (e.g., `financial.py` for `sample_compustat_factory`)
+- Source modules: `snake_case.py` (e.g., `financial_utils.py`, `panel_ols.py`, `data_validation.py`)
+- Econometric runners: `run_h{N}_{hypothesis_name}.py` (e.g., `run_h1_cash_holdings.py`, `run_h7_illiquidity.py`)
+- Variable builders: `snake_case.py` named after the variable (e.g., `cash_holdings.py`, `amihud_illiq.py`, `earnings_surprise.py`)
+- Test files: `test_{module_name}.py` (e.g., `test_financial_utils.py`, `test_panel_ols.py`)
+- Config files: `snake_case.py` (e.g., `base.py`, `loader.py`, `step_configs.py`)
+- Archived code: placed in `_archived/` subdirectories with underscore prefix
 
 **Functions:**
-- snake_case: `read_in_chunks`, `calculate_firm_controls`, `validate_dataframe_schema`
-- Public API functions start with verb: `get_`, `load_`, `compute_`, `calculate_`, `validate_`, `run_`
+- Use `snake_case` for all functions: `calculate_firm_controls()`, `run_panel_ols()`, `compute_vif()`
+- Private/internal functions: prefix with underscore `_check_thin_cells()`, `_format_coefficient_table()`, `_finalize_data()`
+- Factory functions: prefix with `_factory` as inner callable, return via closure pattern
+- Builder methods: use `build()` as the primary entry point for `VariableBuilder` subclasses
 
 **Variables:**
-- snake_case: `gvkey`, `fyear`, `year_start`, `max_memory_percent`
-- DataFrame variables: `df`, `df_work`, `compustat_df`, `sample`
-- Constants: UPPER_SNAKE_CASE: `INPUT_SCHEMAS`, `LINEARMODELS_AVAILABLE`, `TIMESTAMP_PATTERN`
+- Local variables: `snake_case` (e.g., `firm_data`, `compustat_work`, `merge_cols`)
+- Constants: `UPPER_SNAKE_CASE` (e.g., `LINEARMODELS_AVAILABLE`, `INPUT_SCHEMAS`, `DEFAULT_LOG_DIR`)
+- DataFrame columns from Compustat: preserve original lowercase names (`at`, `dlc`, `dltt`, `oibdp`, `ceq`, `prcc_f`)
+- Computed control variables (annual): `snake_case` (`size`, `leverage`, `profitability`, `market_to_book`)
+- Computed control variables (quarterly): `PascalCase` (`Size`, `BM`, `Lev`, `ROA`, `CurrentRatio`, `RD_Intensity`)
 
-**Types:**
-- Classes: PascalCase: `DataSettings`, `LoggingSettings`, `MemoryAwareThrottler`, `ProjectConfig`
-- Exceptions: PascalCase with `Error` suffix: `DataValidationError`, `FinancialCalculationError`, `CollinearityError`, `OutputResolutionError`, `PathValidationError`
-- Type aliases: PascalCase or ALL_CAPS: `Path`, `Callable`, `F` (TypeVar)
+**Types/Classes:**
+- Use `PascalCase` for all classes: `VariableBuilder`, `VariableResult`, `VariableStats`
+- Exception classes: `PascalCase` ending in `Error` (e.g., `FinancialCalculationError`, `CollinearityError`, `WeakInstrumentError`, `DataValidationError`)
+- Pydantic settings: `PascalCase` ending in `Settings` or `Config` (e.g., `DataSettings`, `ProjectConfig`, `HashingConfig`)
 
 ## Code Style
 
 **Formatting:**
-- Tool: ruff (combined linter and formatter)
-- Line length: 88 characters (configured in `pyproject.toml`)
-- Indent width: 4 spaces
-- Quote style: Double quotes for strings (`"hello"`)
-- Trailing commas: Used for consistency in multi-line structures
+- Tool: Ruff formatter (replaces Black)
+- Line length: 88 characters
+- Indent: 4 spaces
+- Quote style: double quotes `"`
+- Trailing comma: preserved (skip-magic-trailing-comma = false)
+- Line ending: auto-detect
 
 **Linting:**
-- Tool: ruff
-- Enabled rules: E (pycodestyle errors), W (pycodestyle warnings), F (pyflakes), I (isort), B (flake8-bugbear), C4 (flake8-comprehensions), UP (pyupgrade), ARG (flake8-unused-arguments), SIM (flake8-simplify)
-- Config: `pyproject.toml` `[tool.ruff.lint]`
-- Per-file ignores: `__init__.py` allows E402, F401; `2_Scripts/**` ignores all; `tests/**` allows S101 (assert), ARG (unused fixtures)
+- Tool: Ruff linter
+- Target Python: 3.9
+- Rule sets enabled: E (pycodestyle), W (warnings), F (pyflakes), I (isort), B (flake8-bugbear), C4 (comprehensions), UP (pyupgrade), ARG (unused-arguments), SIM (simplify)
+- Ignored rules: E501 (line too long, handled by formatter), B008 (function calls in defaults)
+- Per-file ignores: `__init__.py` allows E402/F401; `tests/**` allows S101/ARG
+
+**Type Checking:**
+- Tool: mypy (tiered strictness)
+- Tier 1 (`f1d.shared.*`): strict mode with `ignore_missing_imports = true`
+- Tier 2 (`f1d.sample.*`, `f1d.econometric.*`, etc.): relaxed mode allowing untyped defs
+- Type stubs installed: `types-pandas`, `types-psutil`, `types-requests`, `types-PyYAML`
 
 ## Import Organization
 
-**Order:**
-1. Standard library imports
-2. Third-party imports
-3. Local imports (`from f1d...`)
+**Order (enforced by ruff isort):**
+1. `from __future__ import annotations` (when used)
+2. Standard library imports (`sys`, `os`, `pathlib`, `typing`, `warnings`, `datetime`)
+3. Third-party imports (`numpy`, `pandas`, `pydantic`, `structlog`, `linearmodels`, `statsmodels`)
+4. First-party imports (`from f1d.shared.*`)
 
-**Pattern from `src/f1d/shared/chunked_reader.py`:**
-```python
-import logging
-import time
-from functools import wraps
-from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    Optional,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+**Path Aliases:**
+- `f1d` is the top-level package (configured via `known-first-party = ["f1d"]` in ruff isort)
+- No other path aliases are used
 
-import pandas as pd
-import psutil
-import pyarrow as pa
-import pyarrow.parquet as pq
-import yaml
-```
-
-**Type imports:**
-- `from __future__ import annotations` at top for Python 3.9+ forward compatibility
-- Use `from typing import` for standard types
-- Use `cast()` from typing when type inference needs help
-
-**Conditional imports:**
-- Pattern for optional dependencies (linearmodels, scipy, etc.):
+**Import pattern for optional dependencies:**
 ```python
 try:
     from linearmodels.panel.model import PanelOLS
     LINEARMODELS_AVAILABLE = True
 except ImportError:
-    PanelOLS = None  # type: ignore[misc,assignment]
     LINEARMODELS_AVAILABLE = False
+    PanelOLS = None  # type: ignore[misc,assignment]
 ```
-
-**Path Aliases:**
-- No explicit path aliases configured in `pyproject.toml`
-- Imports use `from f1d.shared.module import function`
-- `src-layout` is enforced: `src/f1d/` is the package root
 
 ## Error Handling
 
-**Patterns:**
-- Custom exceptions defined per module with clear intent
-- Raise specific exceptions, not generic `Exception`
-- Use descriptive error messages with context
+**Custom Exception Hierarchy:**
+- Define domain-specific exceptions per module (not a global hierarchy)
+- `FinancialCalculationError` in `src/f1d/shared/data_validation.py`
+- `CollinearityError`, `MulticollinearityError` in `src/f1d/shared/panel_ols.py`
+- `WeakInstrumentError` in `src/f1d/shared/iv_regression.py`
+- `DataValidationError` in `src/f1d/shared/data_validation.py`
+- `ConfigError` in `src/f1d/shared/config/loader.py`
 
-**Custom Exceptions (from `src/f1d/shared/`):**
-- `DataValidationError`: Input data validation failures (`src/f1d/shared/data_validation.py`)
-- `FinancialCalculationError`: Financial calculation failures (`src/f1d/shared/data_validation.py`)
-- `CollinearityError`: Perfect multicollinearity in regression (`src/f1d/shared/panel_ols.py`, `src/f1d/shared/diagnostics.py`)
-- `MulticollinearityError`: High VIF threshold exceeded
-- `EnvValidationError`: Environment variable validation errors (`src/f1d/shared/env_validation.py`)
-- `WeakInstrumentError`: IV regression instrument weakness (`src/f1d/shared/iv_regression.py`)
-- `PathValidationError`: Path validation failures (`src/f1d/shared/path_utils.py`)
-- `OutputResolutionError`: Output directory resolution failures
-- `RegressionValidationError`: Regression validation errors (`src/f1d/shared/regression_validation.py`)
-
-**Exception Usage Pattern:**
+**Error message pattern:**
+- Include context about what failed, what was expected, and what was found
+- Example from `src/f1d/shared/financial_utils.py`:
 ```python
-# Check for specific error conditions and raise with context
-if gvkey is None:
-    raise FinancialCalculationError(
-        f"Cannot calculate firm controls: missing gvkey in row. "
-        f"Row columns: {list(row.index)}. "
-        f"Year: {year}"
-    )
-
-# Raise and catch specific exceptions in tests
-with pytest.raises(FinancialCalculationError, match="GVKEY"):
-    raise FinancialCalculationError(msg)
+raise FinancialCalculationError(
+    f"Cannot calculate firm controls: no Compustat data found. "
+    f"gvkey={gvkey}, year={year}. "
+    f"Available years for this gvkey: {list(available_years)}. "
+    f"Total Compustat records: {len(compustat_df)}"
+)
 ```
 
-**No bare except:**
-- Bare `except:` is prohibited
-- Always specify exception types
-- Use `finally` for cleanup
+**NaN for missing/invalid financial data:**
+- Use `np.nan` for invalid ratios (division by zero, negative denominators) rather than raising exceptions
+- Only raise exceptions for truly unrecoverable errors (missing gvkey, no matching data)
+- Guard divisions: `if data.get("at") and data["at"] > 0 else np.nan`
 
 ## Logging
 
-**Framework:** Python standard library `logging`
+**Framework:** structlog (structured logging)
+
+**Configuration:** `src/f1d/shared/logging/config.py`
 
 **Patterns:**
-- Module-level logger: `logger = logging.getLogger(__name__)`
-- Levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
-- Structlog configured via `pyproject.toml` logging settings
-
-**Example from `src/f1d/shared/chunked_reader.py`:**
-```python
-import logging
-logger = logging.getLogger(__name__)
-
-# Logging in functions
-logger.debug(f"Could not load chunk processing config, using defaults: {e}")
-logger.warning(f"Unexpected error reading parquet metadata: {type(e).__name__}: {e}")
-logger.info(f"Memory status for {operation_name}: ...")
-```
-
-**Console output for regression results:**
-- Use `print()` for formatted regression output (`_format_coefficient_table` in `src/f1d/shared/panel_ols.py`)
-- Use `warnings.warn()` for warnings
+- Get logger per module: `logger = get_logger(__name__)`
+- Log with structured key-value pairs: `logger.info("processing_started", rows=1000)`
+- Use `OperationContext` for correlated log entries across pipeline stages
+- Dual output: colored console + JSON file logging via `configure_dual_output()`
 
 ## Comments
 
-**When to Comment:**
-- Explain non-obvious business logic
-- Document algorithm choices
-- Note limitations or workarounds
-- Reference related standards/PHASE numbers
-
-**Module headers:**
-- Standardized format in all shared modules:
+**Module-level docstrings:**
+- Every source module has a detailed header block with: ID, Description, Inputs, Outputs, Dependencies, Author, Date
+- Use the box-comment pattern (with `====` separators) for module headers:
 ```python
-#!/usr/bin/env python3
 """
 ================================================================================
-SHARED MODULE: [Module Name]
+SHARED MODULE: Panel OLS with Fixed Effects
 ================================================================================
-ID: shared/[module_id]
-Description: [One-line summary]
-
-Purpose: [Purpose description]
-
-Inputs:
-    - [Input descriptions]
-
-Outputs:
-    - [Output descriptions]
-
-Deterministic: true/false
-Main Functions:
-    - [Function names]
-
-Dependencies:
-    - Utility module for [purpose]
-    - Uses: [libraries]
-
-Author: Thesis Author
-Date: 2026-02-11
-================================================================================
+ID: shared/panel_ols
+Description: ...
 """
 ```
 
-**Inline comments:**
-- Used sparingly, only when code is not self-explanatory
-- Prefer clear variable names over explanatory comments
+**Docstrings:**
+- Use Google-style docstrings with Args, Returns, Raises, Example sections
+- All public functions and classes have docstrings
+- Include type information in Args descriptions
 
-**JSDoc/TSDoc:**
-- Not used (Python codebase)
-- Google-style docstrings used instead (see CODE_QUALITY_STANDARD.md)
+**Inline comments:**
+- Use sparingly for non-obvious logic
+- Financial formula explanations: `# leverage = (dlc + dltt) / at`
+- Model specification comments in econometric runners
 
 ## Function Design
 
-**Size:**
-- No strict line limit enforced
-- Functions should be focused on single responsibility
-- Complex functions split into helper functions (e.g., `_check_thin_cells`, `_format_coefficient_table`)
+**Size:** Functions are generally 20-60 lines. Larger functions (~100 lines) exist in econometric runners but are structured linearly.
 
 **Parameters:**
-- Positional args first, then keyword args
-- Use `Optional[Type]` for nullable parameters
-- Provide defaults where appropriate
-- Type hints required for all parameters
+- Use type hints on all parameters: `def calculate_firm_controls(row: pd.Series, compustat_df: pd.DataFrame, year: int) -> Dict[str, Union[float, int, None]]:`
+- Use `Optional[X]` for nullable parameters with `None` defaults
+- Factory functions accept `**kwargs` for extensibility
 
 **Return Values:**
-- Always typed with `-> ReturnType`
-- Returns `Dict[str, Any]` for complex outputs from analysis functions
-- Return tuples for multiple related values
-
-**Example signature pattern:**
-```python
-def read_in_chunks(
-    file_path: Path,
-    columns: Optional[List[str]] = None,
-    chunk_size: Optional[int] = None,
-) -> Iterator[pd.DataFrame]:
-    """Read Parquet file in chunks using PyArrow row groups.
-
-    Args:
-        file_path: Path to Parquet file
-        columns: List of columns to read (None = all columns)
-        chunk_size: Number of rows per chunk (None = use row groups)
-
-    Yields:
-        DataFrame chunks
-    """
-```
+- Financial calculations return `Dict[str, Union[float, int, None]]`
+- Builders return `VariableResult` dataclass (data + stats + metadata)
+- Validation functions return `bool` or raise exceptions
+- Panel regression returns `Dict[str, Any]` with standardized keys
 
 ## Module Design
 
 **Exports:**
-- `__all__` lists public API symbols
-- Pattern from `src/f1d/shared/__init__.py`:
-```python
-__all__ = [
-    "DualWriter",
-    "parse_ff_industries",
-    "load_variable_descriptions",
-    "get_latest_output_dir",
-    "OutputResolutionError",
-    # Econometric utilities
-    "run_panel_ols",
-    "center_continuous",
-    "create_interaction",
-    "compute_vif",
-    "check_multicollinearity",
-]
-```
+- Use explicit `__all__` lists in `__init__.py` files
+- Re-export commonly used symbols from package `__init__.py` for convenience
+- Example: `src/f1d/shared/config/__init__.py` re-exports all config classes
 
 **Barrel Files:**
-- `src/f1d/shared/__init__.py`: Main shared module exports
-- `tests/factories/__init__.py`: Test fixture exports
-- Not heavily used elsewhere - direct imports preferred
+- `__init__.py` files serve as barrel re-exports for packages (`config`, `logging`, `observability`, `variables`)
+- Include comprehensive `__all__` lists
 
-**Module organization (from `src/f1d/shared/`):**
-- `config/`: Configuration loading and validation
-- Data handling: `chunked_reader.py`, `data_loading.py`, `data_validation.py`
-- Financial: `financial_utils.py`
-- Econometric: `panel_ols.py`, `iv_regression.py`, `regression_helpers.py`
-- Utilities: `path_utils.py`, `centering.py`, `diagnostics.py`
+**Base Class Pattern (Variable Builders):**
+- `VariableBuilder` base class in `src/f1d/shared/variables/base.py`
+- Each variable has its own module file (e.g., `cash_holdings.py`, `amihud_illiq.py`)
+- Subclasses implement `build()` method returning `VariableResult`
 
-## DataFrame Iteration Guidelines
-
-### Performance Reality
-
-| Pattern | DataFrame Size | Impact | Recommendation |
-|---------|---------------|--------|----------------|
-| .iterrows() | <10 rows | Negligible | Acceptable for display |
-| .iterrows() | 100-1K rows | Noticeable | Use .itertuples() |
-| .iterrows() | >1K rows | Significant | Vectorize with merge/groupby |
-
-### Preferred Patterns
-
-1. **merge()** - Join data instead of row-by-row lookup
-2. **groupby().transform()** - Group operations without iteration
-3. **explode()** - Expand lists to rows without loops
-4. **.itertuples()** - 5-10x faster when iteration is truly needed
-
-### Anti-Patterns to Avoid
-
-```python
-# BAD: Row-by-row lookup
-for _, row in df.iterrows():
-    data = lookup_table[row["key"]]
-
-# GOOD: Vectorized merge
-df.merge(lookup_table, on="key", how="left")
-```
-
-```python
-# BAD: Loop to expand dates
-records = []
-for _, row in df.iterrows():
-    for date in date_range:
-        records.append({...})
-
-# GOOD: explode()
-df["dates"] = df.apply(lambda r: date_range_func(r), axis=1)
-df.explode("dates")
-```
+**Configuration Pattern:**
+- Pydantic `BaseSettings` models in `src/f1d/shared/config/base.py`
+- YAML loading via `ProjectConfig.from_yaml()` class method
+- Environment variable overrides with `F1D_` prefix (e.g., `F1D_DATA__YEAR_START`)
+- Caching via `get_config()` in `src/f1d/shared/config/loader.py`
 
 ---
 
-*Convention analysis: 2026-02-21*
+*Convention analysis: 2026-03-15*
