@@ -49,7 +49,6 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # All Stage 3 scripts combined
 STAGE3_ALL_SCRIPTS = [
     "src/f1d/variables/build_h0_1_manager_clarity_panel.py",
-    "src/f1d/variables/build_h0_2_ceo_clarity_panel.py",
     "src/f1d/variables/build_h0_3_ceo_clarity_extended_panel.py",
     "src/f1d/variables/build_h0_5_ceo_tone_panel.py",
     "src/f1d/variables/build_h1_cash_holdings_panel.py",

@@ -264,8 +264,6 @@ __all__ = [
     "PRiskQLeadBuilder",
     # H11-Lead2
     "PRiskQLead2Builder",
-    # H13 Employment Growth
-    "EmploymentGrowthLeadBuilder",
     # Panel-building utilities
     "assign_industry_sample",
     "attach_fyearq",
@@ -318,9 +316,6 @@ from .prisk_q_lead import PRiskQLeadBuilder
 
 # H11-Lead2 Political Risk (Quarterly, 2-quarter Lead)
 from .prisk_q_lead2 import PRiskQLead2Builder
-
-# H13 Employment Growth Lead
-from .employment_growth_lead import EmploymentGrowthLeadBuilder
 
 # Panel-building utilities (canonical shared helpers — all panel builders must import from here)
 from .panel_utils import assign_industry_sample, attach_fyearq

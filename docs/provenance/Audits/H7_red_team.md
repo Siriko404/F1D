@@ -1,13 +1,12 @@
-# H7 Second-Layer Red-Team Audit (Fresh Context)
+# H7 Second-Layer Red-Team Audit
 
-**Generated:** 2026-03-12
+**Generated:** 2026-03-15
 **Suite ID:** H7
 **Auditor posture:** Fresh-context, adversarial. First-layer audit treated as object to test, not source of truth.
-**First-layer audit version:** Current `docs/provenance/H7.md` (post-fix, dated 2026-03-12)
+**First-layer audit version:** `docs/provenance/H7.md` (dated 2026-03-12)
+**Prior red-team version:** `docs/provenance/Audits/H7_red_team.md` (dated 2026-03-12) -- also audited
 **Code version audited:** Current `run_h7_illiquidity.py`, `build_h7_illiquidity_panel.py`, all shared engines
-**Output artifacts inspected:** `outputs/econometric/h7_illiquidity/2026-03-12_015407/` (latest)
-
-> **Note:** A prior red-team audit existed at this path. That audit was conducted against an older code version where the DV used a pre-call window. The code has since been fixed to use a post-call window. This audit is written entirely from scratch against the current codebase and current H7.md.
+**Latest output artifacts inspected:** `outputs/econometric/h7_illiquidity/2026-03-13_054310/`
 
 ---
 
@@ -15,17 +14,21 @@
 
 ### Verdict on the First-Layer Audit
 
-The current H7.md is a thorough, well-structured provenance document that correctly identifies the suite's core properties: post-call Amihud DV, firm + quarter FE, entity-clustered SEs, 7 specifications (A1-A5, B1-B2), and a uniformly null result. Its numerical claims (N obs, coefficients, p-values, sample counts) are independently verified against output artifacts and match exactly. Its issue register is comprehensive and mostly well-calibrated.
+The H7.md first-layer audit contains **two thesis-grade factual errors** that fundamentally undermine its reliability as a referee document:
 
-However, the audit contains one **materially misleading framing** in the robustness section: it reports marginal significance for the large-firm subsample and FF12_7 (Telecom) without disclosing that ALL marginally significant coefficients are **negative** — the opposite direction from H7's prediction (beta > 0). A referee reading "A3 becomes marginally significant (p=0.029)" would naturally assume partial support for H7, when in fact this is evidence *against* H7. The audit also contains one factual error (window described in "trading days" when the code uses calendar days) and several minor documentation gaps.
+1. **Wrong DV throughout.** The audit identifies the dependent variable as `amihud_illiq` (inter-call Amihud level) in sections A3, F, H (all 7 spec rows), I2, J2, K2, K3, L1, L3, L4, L15, M, and N. The actual DV used in every regression is `delta_amihud` (post-call minus pre-call Amihud change, [+1,+3] - [-3,-1] trading days). This is not a labeling quibble -- `amihud_illiq` and `delta_amihud` are fundamentally different constructs with different distributional properties, different economic interpretations, and different identification implications.
 
-**Overall grade for first audit:** PARTIALLY RELIABLE
-*(Core analysis sound; one misleading robustness framing; one factual error; several minor gaps.)*
+2. **Fabricated "bad controls" issue rated High/blocking.** The audit's L1 issue (rated High severity, marked as "Blocks thesis-standard? Y") claims Volatility and StockRet "share the DV window" and "mechanically absorb DV variation." In reality, **Volatility and StockRet do not appear anywhere in `run_h7_illiquidity.py`**. They are not in `BASE_CONTROLS`. They are not used in any H7 regression. The audit fabricated a High-severity blocking issue out of variables that are merely present in the panel but never enter a regression formula. This error was then **confirmed at High severity** by the prior red-team audit (RT-06), which also failed to check `BASE_CONTROLS`.
 
-**Suite as implemented:** THESIS-STANDARD AS IMPLEMENTED (FOR A NULL RESULT) — WITH CAVEATS
-*(Post-call DV timing correct; all specs null; bad-control and DV-skewness concerns remain unresolved but do not invalidate a null finding.)*
+These two errors together mean the audit's issue register, severity calibration, priority fix list, and final readiness statement are all built on a materially wrong foundation.
 
-**Risk direction of first audit:** Mixed — correctly identifies bad-control and DV-skewness threats; **understates risk** by presenting wrong-direction significance as if it were partial support.
+**Overall grade for first audit:** MATERIALLY FLAWED
+*(Two fundamental factual errors: wrong DV identification, fabricated blocking issue. Core N/p-value claims verified against older artifacts but not current outputs.)*
+
+**Suite as implemented:** SALVAGEABLE WITH MAJOR REVISIONS
+*(DV `delta_amihud` is unwinsorized with extreme range [-99.6, 2678.2]; `pre_call_amihud` control also unwinsorized with max=267.8. Distributional issues more severe than first audit realized, but apply to the actual DV, not the one documented.)*
+
+**Risk direction of first audit:** Mixed -- **overstated risk** via fabricated L1 (bad controls); **understated risk** by documenting the wrong DV and therefore mischaracterizing the distributional threat.
 
 ---
 
@@ -37,17 +40,20 @@ However, the audit contains one **materially misleading framing** in the robustn
 | Regression entrypoint | `src/f1d/econometric/run_h7_illiquidity.py` |
 | Panel builder | `src/f1d/variables/build_h7_illiquidity_panel.py` |
 | First-layer audit | `docs/provenance/H7.md` |
-| Latest diagnostics CSV | `outputs/econometric/h7_illiquidity/2026-03-12_015407/model_diagnostics.csv` |
-| Latest robustness CSV | `outputs/econometric/h7_illiquidity/2026-03-12_015407/robustness_results.csv` |
-| Latest LaTeX table | `outputs/econometric/h7_illiquidity/2026-03-12_015407/h7_illiquidity_table.tex` |
-| Latest sample attrition | `outputs/econometric/h7_illiquidity/2026-03-12_015407/sample_attrition.csv` |
+| Prior red-team audit | `docs/provenance/Audits/H7_red_team.md` |
+| AmihudChangeBuilder | `src/f1d/shared/variables/amihud_change.py` |
+| AmihudIlliqBuilder | `src/f1d/shared/variables/amihud_illiq.py` |
 | CRSP engine | `src/f1d/shared/variables/_crsp_engine.py` |
-| Compustat engine | `src/f1d/shared/variables/_compustat_engine.py` |
-| Linguistic engine | `src/f1d/shared/variables/_linguistic_engine.py` |
 | Clarity residual engine | `src/f1d/shared/variables/_clarity_residual_engine.py` |
+| CEO clarity residual builder | `src/f1d/shared/variables/ceo_clarity_residual.py` |
 | Panel utils | `src/f1d/shared/variables/panel_utils.py` |
 | Winsorization module | `src/f1d/shared/variables/winsorization.py` |
-| Clarity residual builders | `src/f1d/shared/variables/ceo_clarity_residual.py`, `manager_clarity_residual.py` |
+| Latest diagnostics CSV | `outputs/econometric/h7_illiquidity/2026-03-13_054310/model_diagnostics.csv` |
+| Latest robustness CSV | `outputs/econometric/h7_illiquidity/2026-03-13_054310/robustness_results.csv` |
+| Latest LaTeX table | `outputs/econometric/h7_illiquidity/2026-03-13_054310/h7_illiquidity_table.tex` |
+| Latest summary stats CSV | `outputs/econometric/h7_illiquidity/2026-03-13_054310/summary_stats.csv` |
+| Latest sample attrition | `outputs/econometric/h7_illiquidity/2026-03-13_054310/sample_attrition.csv` |
+| Regression output A3 | `outputs/econometric/h7_illiquidity/2026-03-13_054310/regression_Main_A3.txt` |
 
 ---
 
@@ -55,22 +61,22 @@ However, the audit contains one **materially misleading framing** in the robustn
 
 | Dimension | First-layer audit status | Evidence basis | Red-team note |
 |---|---|---|---|
-| Model / spec identification | **Pass** | SPECS list (L107-116), formula (L206-209), FE (L226), SE (L227) all verified vs code | Correctly identifies A1-A5 + B1-B2; unit of obs correct |
-| Reproducibility commands | **Pass** | Stage 3 + Stage 4 commands correct and runnable | H0.3 pre-req dependency noted but H0.3 command not provided |
-| Dependency tracing | **Pass** | 10-step chain matches code; all engines/builders verified | No orphan variables found in current builder |
-| Raw data provenance | **Partial** | CRSP/CCM/Compustat/Linguistic sources identified; raw row counts stated as VERIFIED but not independently reproduced by me | Counts are plausible given file structures |
-| Merge / sample audit | **Pass** | Zero-delta enforcement verified at `build_h7_illiquidity_panel.py:134-135`; match rates documented | Match rates consistent with engine outputs |
-| Variable dictionary completeness | **Pass** | All 17 regression variables documented with formulas, sources, timing, winsorization | No orphan variables in current panel builder |
-| Outlier / missing-data rules | **Pass** | Winsorization bounds verified: linguistic 0%/99% per-year (engine L255-258); CRSP 1%/99% per-year (engine L444-447); Compustat 1%/99% per-fyearq (engine L1158-1160) | All consistent with H7.md G section |
-| Estimation spec register | **Pass** | All 7 specs listed with N, controls, FE, SE — all numerically verified against model_diagnostics.csv | Pass |
-| Verification log quality | **Pass** | 17 verification steps; most independently reproducible | I14 contains factual error about which checks show significance (see G1) |
-| Known issues section | **Pass** | 6 issues (J1-J6) all real and verified | J1 (non-unique index) and J2 (DV skewness) properly elevated |
-| Identification critique | **Pass** | Reverse causality, OVB, bad controls, look-ahead, endogenous selection all covered | Bad-control (Volatility/StockRet) correctly identified as High |
-| Econometric implementation critique | **Pass** | Non-unique index, DV skewness, entity-only clustering, bad controls all flagged | Correctly assessed |
-| Robustness critique | **Partial** | K5 table comprehensive in LISTING robustness checks; **fails to disclose coefficient direction for significant subsample results** | See G1 — most important finding |
-| Academic-integrity critique | **Pass** | Warning suppression, stale artifact dependency, H0.3 cross-dependency all flagged | Low-severity items appropriately handled |
-| Severity calibration | **Partial** | L1 (bad controls) and L3 (DV skewness) correctly High; L4 (no log-DV) correctly High; some low-severity items could be consolidated | See H for recalibration |
-| Final thesis verdict support | **Pass** | "THESIS-STANDARD AS IMPLEMENTED (for a null result)" with caveats is well-supported | Verdict is defensible |
+| Model / spec identification | **Fail** | First audit identifies DV as `amihud_illiq` throughout; actual DV is `delta_amihud` (`run_h7_illiquidity.py` L188, L201, L206; regression output header: "Dep. Variable: delta_amihud") | Fundamental misidentification of the dependent variable. All downstream claims about DV properties are about the wrong variable. |
+| Reproducibility commands | **Pass** | Stage 3 + Stage 4 commands correct and runnable | Commands are accurate |
+| Dependency tracing | **Partial** | Builder chain correct. But audit misidentifies which builder produces the actual DV (`AmihudChangeBuilder` for `delta_amihud`, not `AmihudIlliqBuilder` for `amihud_illiq`). | `amihud_illiq` is loaded by the panel but never enters a regression formula as DV |
+| Raw data provenance | **Partial** | CRSP/CCM/Compustat sources identified. Raw row counts stated as verified but not independently reproduced. | Plausible |
+| Merge / sample audit | **Pass** | Zero-delta enforcement verified at `build_h7_illiquidity_panel.py:137-142` | Correct |
+| Variable dictionary completeness | **Fail** | Lists `amihud_illiq` as the DV; does not list `delta_amihud` or `pre_call_amihud` in the variable dictionary. Includes Volatility and StockRet as controls in the dictionary when they are not used in regressions. | Missing actual DV and actual control; includes phantom variables |
+| Outlier / missing-data rules | **Fail** | Discusses winsorization of `amihud_illiq` at 1%/99% (correct for that variable). But actual DV `delta_amihud` is NOT winsorized (verified: no winsorization in `AmihudChangeBuilder`). `pre_call_amihud` also unwinsorized. Summary stats show delta_amihud range [-99.6, 2678.2]. | The audit's winsorization discussion applies to a variable not used as DV |
+| Estimation spec register | **Fail** | All 7 spec rows list Outcome = `amihud_illiq`. Actual outcome is `delta_amihud`. N values (e.g., A3: 75,124) are from older run; latest run shows A3: 78,679. | Wrong DV, stale N counts |
+| Verification log quality | **Partial** | 17 verification steps documented. Steps 5-6, 11, 17 report stats for `amihud_illiq`, not the actual DV. Step 14 robustness claims verified against older artifacts. | Verification targeted wrong variable for DV-specific checks |
+| Known issues section | **Partial** | J1 (non-unique index), J4 (warning suppression), J5-J7 real. J2 (DV skewness) describes `amihud_illiq` skewness, not `delta_amihud` skewness. | J2 misattributed |
+| Identification critique | **Fail** | K2 "Contemporaneous confounders" row claims Volatility/StockRet are "bad controls" sharing DV window. These are not in `BASE_CONTROLS` and not used in any regression. | Fabricated identification threat |
+| Econometric implementation critique | **Fail** | K3 row 4 ("Volatility/StockRet as controls share DV window") is about phantom controls. K3 row 2 ("Extreme DV skewness") cites statistics for wrong variable. | Two of four K3 issues are wrong |
+| Robustness critique | **Partial** | Robustness checks listed. Prior red-team correctly identified missing coefficient-direction reporting. | First audit improved by prior red-team feedback on direction |
+| Academic-integrity critique | **Pass** | Warning suppression, stale artifacts, H0.3 dependency correctly flagged | Minor items handled |
+| Severity calibration | **Fail** | L1 (bad controls) rated High and blocking -- entirely false positive. L3 (DV skewness) rated High based on wrong variable's statistics. L4 (no log-DV) recommends `log(1+amihud_illiq)` when actual DV is delta_amihud (a change variable; log-transforming changes is non-standard). | Severity structure built on incorrect premises |
+| Final thesis verdict support | **Fail** | "Biggest threat: Untransformed DV + bad controls" -- bad controls do not exist; DV is misidentified. Priority fix #1 and #2 address non-existent problems. | Final verdict not supported by actual code |
 
 ---
 
@@ -78,37 +84,24 @@ However, the audit contains one **materially misleading framing** in the robustn
 
 | Claim ID | First-layer claim | Section | Verified? | Evidence checked | Red-team verdict | Notes |
 |---|---|---|---|---|---|---|
-| D1 | Panel: 112,968 rows, unique file_name | A1, I1-I2 | **Y** | Panel artifact structure; first audit states `file_name.is_unique=TRUE` | VERIFIED FACT | — |
-| D2 | Sample: Main=88,205; Finance=20,482; Utility=4,281 | I3 | **Y** | `assign_industry_sample()` logic verified at `panel_utils.py:67-72`; counts match | VERIFIED FACT | — |
-| D3 | amihud_illiq non-missing: 105,777 (93.6%) | I5 | **Y** | Consistent with CRSP engine min_trading_days=10 filter and next_call_date NaN rate | VERIFIED FACT | — |
-| D4 | A3: N=75,124, 1,831 firms | H, E2 | **Y** | `model_diagnostics.csv`: A3 n_obs=75124, n_firms=1831 | VERIFIED FACT | Exact match |
-| D5 | A1: N=56,218 | H | **Y** | `model_diagnostics.csv`: A1 n_obs=56218 | VERIFIED FACT | — |
-| D6 | B1: N=40,275 | H | **Y** | `model_diagnostics.csv`: B1 n_obs=40275 | VERIFIED FACT | — |
-| D7 | B2: N=54,452 | H | **Y** | `model_diagnostics.csv`: B2 n_obs=54452 | VERIFIED FACT | — |
-| D8 | A5 (joint): N=75,046; Wald chi2=1.21, p=0.271 | H | **Y** | `model_diagnostics.csv`: A5 n_obs=75046, wald_chi2=1.2119, wald_pval=0.2710 | VERIFIED FACT | — |
-| D9 | ALL coefficients insignificant | I13, K1 | **Y** | model_diagnostics.csv: all beta1_p_one > 0.10; LaTeX table: no stars on any coefficient | VERIFIED FACT | — |
-| D10 | DV window: [call+1 trading day, next_call-5 trading days] | A3 | **N** | `_crsp_engine.py:41-42,361-366`: `pd.Timedelta(days=DAYS_AFTER_CURRENT_CALL)` and `pd.Timedelta(days=DAYS_BEFORE_NEXT_CALL)` — these are CALENDAR days, not trading days | **VERIFIED ERROR IN FIRST AUDIT** | Code comment says "trading day" but `pd.Timedelta(days=N)` operates in calendar days. Functional impact is small (CRSP only has trading dates so effective window start = first trading date ≥ call+1 calendar day) but the 5-calendar-day end buffer ≈ 3-4 trading days, not 5 |
-| D11 | amihud_illiq = mean(\|daily_ret\|/dollar_volume) * 1e6 | F | **Y** | `_crsp_engine.py:221,248,256`: `daily_illiq = RET.abs() / dollar_vol_masked`, `mean_illiq = grp.mean()`, `illiq = mean_illiq * 1e6` | VERIFIED FACT | — |
-| D12 | Volatility = std(ret) * sqrt(252) * 100 | F | **Y** | `_crsp_engine.py:255`: `std_ret * np.sqrt(252) * 100` | VERIFIED FACT | — |
-| D13 | StockRet = compound return via log-sum trick | F | **Y** | `_crsp_engine.py:253`: `np.expm1(sum_log_ret) * 100` | VERIFIED FACT | — |
-| D14 | ROA = iby_annual / avg_assets, avg = (atq_t + atq_{t-1})/2 | F | **Y** | `_compustat_engine.py:1034-1043`: exact match | VERIFIED FACT | — |
-| D15 | Lev = (dlcq + dlttq) / atq with fillna(0) | F | **Y** | `_compustat_engine.py:1032` | VERIFIED FACT | — |
-| D16 | Size = ln(atq) for atq > 0 | F | **Y** | `_compustat_engine.py:1027` | VERIFIED FACT | — |
-| D17 | TobinsQ = (mktcap + debt_book) / atq | F | **Y** | `_compustat_engine.py:1056-1060` | VERIFIED FACT | — |
-| D18 | Linguistic vars: per-year 0%/99% upper-only | G | **Y** | `_linguistic_engine.py:255-258`: `winsorize_by_year(..., lower=0.0, upper=0.99)` | VERIFIED FACT | — |
-| D19 | CRSP vars: per-year 1%/99% | G | **Y** | `_crsp_engine.py:445-447`: `winsorize_by_year(result_with_year, CRSP_RETURN_COLS)` — defaults lower=0.01, upper=0.99 | VERIFIED FACT | — |
-| D20 | Compustat: per-fyearq 1%/99% | G | **Y** | `_compustat_engine.py:1157-1160`: `_winsorize_by_year(comp[col], year_col)` where `year_col = comp["fyearq"]` | VERIFIED FACT | — |
-| D21 | Clarity residuals not winsorized | G | **Y** | `ceo_clarity_residual.py:37`: `self._skip_winsorization = True`; same for manager | VERIFIED FACT | — |
-| D22 | PanelOLS with EntityEffects + TimeEffects, drop_absorbed=True | A2, H | **Y** | `run_h7_illiquidity.py:206-209,226` | VERIFIED FACT | — |
-| D23 | Entity-clustered SEs: cov_type="clustered", cluster_entity=True | A5, H | **Y** | `run_h7_illiquidity.py:227` | VERIFIED FACT | — |
-| D24 | One-tailed p-value: p/2 if beta>0 else 1-p/2 | K6 | **Y** | `run_h7_illiquidity.py:248` | VERIFIED FACT | — |
-| D25 | LaTeX table uses one-tailed p-values for stars | K6 | **Y** | `run_h7_illiquidity.py:324`: `fmt_coef(r['beta1'], r['beta1_p_one'])` | VERIFIED FACT | — |
-| D26 | Robustness: "only FF12_7 (Telecom) shows marginal significance" | I14 | **Partial** | `robustness_results.csv`: ff12_7 A3 p=0.050, ff12_7 A4 p=0.030 — TRUE. But large_firm A3 p=0.029 is ALSO significant. I14 contradicts K5. | **VERIFIED ERROR IN FIRST AUDIT** | I14 omits large_firm A3 significance; K5 does mention it, creating internal inconsistency |
-| D27 | Large-firm: "A3 becomes marginally significant (p=0.029)" | K5 | **Partial** | `robustness_results.csv`: large_firm A3 beta=-0.003700, p_two=0.029 — p-value correct. **But beta is NEGATIVE.** One-tailed p for H7 (beta>0) = 1 - 0.029/2 = 0.985. NOT significant for H7. | **VERIFIED MISSED ISSUE** | First audit reports two-tailed significance without noting the coefficient is in the WRONG direction for H7. Misleading to a referee. |
-| D28 | Zero-delta enforcement on all merges | E1 | **Y** | `build_h7_illiquidity_panel.py:134-135`: `if delta != 0: raise ValueError(...)` | VERIFIED FACT | — |
-| D29 | Min 5 calls filter after listwise deletion | E2 | **Y** | `run_h7_illiquidity.py:199-201` | VERIFIED FACT | — |
-| D30 | 1,515 duplicate (gvkey, call_quarter_int) pairs in A3 | E2, J1 | **Y** | `run_h7_illiquidity.py:218-222` warns on this; consistent with panel structure | VERIFIED FACT (by code logic) | Not independently verified on artifact |
-| D31 | H7-C Wald test: H0 beta_QA = beta_Pres | K1, A5 | **Y** | `run_h7_illiquidity.py:446-454`: restriction matrix r[qa]=1, r[pres]=-1, value=0 | VERIFIED FACT | — |
+| D1 | DV is `amihud_illiq` | A3, F, H | **N** | `run_h7_illiquidity.py` L188,201: formula uses `delta_amihud`; regression output header: "Dep. Variable: delta_amihud" | **VERIFIED ERROR IN FIRST AUDIT** | Fundamental DV misidentification throughout |
+| D2 | Volatility and StockRet are controls sharing DV window | K2, K3, L1 | **N** | `run_h7_illiquidity.py` L97-105: `BASE_CONTROLS` = [Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct, Size, Lev, ROA, TobinsQ, pre_call_amihud]. Grep for "Volatility" or "StockRet" in file: zero matches. | **VERIFIED FALSE POSITIVE IN FIRST AUDIT** | These variables are in the panel but never enter any regression formula |
+| D3 | Panel: 112,968 rows, unique file_name | A1, I1 | **Y** | Panel builder outputs manifest-keyed panel; zero-delta enforcement at L137-142 | VERIFIED FACT | |
+| D4 | Sample: Main=88,205 | I3 | **Y** | `assign_industry_sample()` at `panel_utils.py:46-73` verified | VERIFIED FACT | |
+| D5 | A3: N=75,124, 1,831 firms | H | **N** | `model_diagnostics.csv` (latest run 2026-03-13): A3 n_obs=78,679, n_firms=1,845 | **VERIFIED ERROR: STALE ARTIFACT** | Audit used older run artifacts; current code produces different N |
+| D6 | A1: N=56,218 | H | **N** | Latest: A1 n_obs=58,240, n_firms=1,626 | **VERIFIED ERROR: STALE ARTIFACT** | Same stale-artifact issue |
+| D7 | B1: N=40,275 | H | **N** | Latest: B1 n_obs=38,214, n_firms=1,291 | **VERIFIED ERROR: STALE ARTIFACT** | B1 decreased (possibly H0.3 re-run changed residual coverage) |
+| D8 | ALL coefficients insignificant | I13, K1 | **N** | Latest `model_diagnostics.csv`: A3 beta1_p_one=0.069 (10% level); B2 beta1_p_one=0.080. LaTeX table shows stars on A3 and B2 at 10% level. | **VERIFIED ERROR: STALE RESULT** | Current code produces marginally significant results for A3 and B2; audit's "uniformly null" conclusion is outdated |
+| D9 | PanelOLS with EntityEffects + TimeEffects, drop_absorbed=True | A2, H | **Y** | `run_h7_illiquidity.py` L220-221 | VERIFIED FACT | |
+| D10 | Entity-clustered SEs | A5, H | **Y** | `run_h7_illiquidity.py` L221: `cov_type="clustered", cluster_entity=True` | VERIFIED FACT | |
+| D11 | One-tailed p-value formula | K6 | **Y** | `run_h7_illiquidity.py` L242: `p1_one = p1_two / 2 if beta1 > 0 else 1 - p1_two / 2` | VERIFIED FACT | |
+| D12 | DV skewness = 13.5, kurtosis = 222 | I6, J2 | **N/A** | These statistics are for `amihud_illiq`, not the actual DV `delta_amihud`. `delta_amihud` has Mean=0.092, SD=12.62, range [-99.6, 2678.2] -- different distributional profile. | **VERIFIED: WRONG VARIABLE** | Statistics correctly computed for `amihud_illiq` but irrelevant to the actual DV |
+| D13 | Zero-delta enforcement on merges | E1 | **Y** | `build_h7_illiquidity_panel.py` L137-142 | VERIFIED FACT | |
+| D14 | Min 5 calls filter after listwise deletion | E2 | **Y** | `run_h7_illiquidity.py` L193-195 | VERIFIED FACT | |
+| D15 | H7-C Wald test implementation | K1, A5 | **Y** | `run_h7_illiquidity.py` L440-454 | VERIFIED FACT | |
+| D16 | `pre_call_amihud` used as control | Docstring | **Y** | `run_h7_illiquidity.py` L104: in `BASE_CONTROLS`. Regression output confirms "pre_call_amihud" parameter estimated. | VERIFIED FACT | First audit does not clearly document this as a control in its variable dictionary |
+| D17 | delta_amihud = PostAmihud - PreAmihud | Docstring L17 | **Y** | `amihud_change.py` L360: `amihud["delta_amihud"] = amihud["post_call_amihud"] - amihud["pre_call_amihud"]` | VERIFIED FACT | Correctly constructed but not documented in first audit |
+| D18 | delta_amihud window: +/-3 trading days | Docstring | **Y** | `amihud_change.py` L49: `self.window_days = config.get("window_days", 3)`. Trading-day positions used (L327-342). | VERIFIED FACT | Uses trading-day ranks, not calendar-day offsets |
 
 ---
 
@@ -116,10 +109,13 @@ However, the audit contains one **materially misleading framing** in the robustn
 
 | Issue ID | Claim / statement | Why unsupported or weak | Severity | Missing evidence | Corrected formulation |
 |---|---|---|---|---|---|
-| E1 | A3: "window [call_date + 1 trading day, next_call_date - 5 trading days]" | Code uses `pd.Timedelta(days=1)` and `pd.Timedelta(days=5)` — calendar days, not trading days. Code comment (L41-42) says "trading day" but implementation is calendar days. First audit parroted the comment without verifying. | **Low** | Inspect `pd.Timedelta(days=N)` semantics | "[call_date + 1 calendar day, next_call_date - 5 calendar days]" — effective buffer at end is ~3-4 trading days, not 5 |
-| E2 | I14: "28 checks; only FF12_7 (Telecom) shows marginal significance" | `robustness_results.csv` shows large_firm A3 also has p=0.029. First audit's own K5 section mentions this. Internal contradiction. | **Low** | Cross-check I14 against K5 and robustness_results.csv | "FF12_7 and large_firm A3 show marginal two-tailed significance" |
-| E3 | K5: "A3 becomes marginally significant (p=0.029)" for large firms | p=0.029 is a TWO-TAILED p-value. The beta is -0.003700 (NEGATIVE). H7 predicts beta > 0. The one-tailed p for H7 = 1 - 0.029/2 = 0.985. This result is NOT significant in the predicted direction — it is marginal evidence AGAINST H7. The first audit does not disclose the sign. | **Medium-High** | Report coefficient sign alongside p-value; compute one-tailed p for H7 direction | "Large-firm A3: beta = -0.0037 (wrong sign for H7), p_two = 0.029. One-tailed p for H7 (beta > 0) = 0.985. Not significant in predicted direction; marginal evidence against H7." |
-| E4 | K5 / I14: FF12_7 "shows marginal significance" | Same issue as E3: ff12_7 A3 beta = -0.0433, A4 beta = -0.0524. Both NEGATIVE. The significance is in the WRONG direction for H7. | **Medium** | Report coefficient signs | "FF12_7: negative coefficients; significance is against H7, not for it" |
+| E1 | "DV: `amihud_illiq`" (A3, F, H, throughout) | Actual DV is `delta_amihud`. Code formula at L201: `"delta_amihud ~ {iv_var} + ..."`. Regression output header: "Dep. Variable: delta_amihud". | **Critical** | Any inspection of `run_regression()` function or regression output | "DV: `delta_amihud` (change in Amihud illiquidity, post-call [+1,+3] minus pre-call [-3,-1] trading days)" |
+| E2 | L1: "Volatility and StockRet... mechanically absorb DV variation" (K2, K3, L1) | Volatility and StockRet are not in `BASE_CONTROLS` and do not appear anywhere in `run_h7_illiquidity.py`. Zero grep matches. | **Critical** | Inspect `BASE_CONTROLS` list at L97-105 | Remove L1 entirely; Volatility and StockRet are not regression controls in H7 |
+| E3 | "DV has extreme right skewness (skew=13.5, kurt=222)" (J2, K3, L3) | These statistics are for `amihud_illiq`, not the actual DV `delta_amihud`. The change variable has a different distribution (symmetric around zero with extreme tails). | **High** | Compute distribution statistics for `delta_amihud`, not `amihud_illiq` | "The actual DV `delta_amihud` has mean=0.092, SD=12.62, range [-99.6, 2678.2]; extreme dispersion and heavy tails but not necessarily right-skewed in the same way as levels" |
+| E4 | M priority #1: "Add log-transformed DV: `log(1 + amihud_illiq)`" | The actual DV is a change variable (`delta_amihud`). Log-transforming a change that takes negative values is not standard. The appropriate transformation for extreme tails in a change variable would be winsorization or a rank transform. | **High** | Understand the DV before recommending transformations | "Winsorize `delta_amihud` at 1%/99% per year, or test a rank-transformed DV. Log transformation is not applicable to a signed change variable." |
+| E5 | M priority #2: "Remove Volatility and StockRet from controls" | These are not controls. Nothing to remove. | **Critical** | Check `BASE_CONTROLS` | Remove this recommendation |
+| E6 | "N obs A3 = 75,124" (H, E2, multiple places) | Latest run: A3 N=78,679. Audit used older artifacts. | **Medium** | Run current code or inspect latest output | "N values reflect the 2026-03-12_015407 run; current code may produce different sample sizes depending on upstream data state" |
+| E7 | "ALL uncertainty coefficients are statistically insignificant" (I13, K1) | Latest run: A3 one-tailed p=0.069 (10% significant); B2 one-tailed p=0.080 (approaching 10%). LaTeX table shows stars. | **High** | Inspect current output artifacts | "Most coefficients are insignificant; A3 (Manager QA) shows marginal one-tailed significance at 10% (p=0.069) in the latest run" |
 
 ---
 
@@ -127,9 +123,9 @@ However, the audit contains one **materially misleading framing** in the robustn
 
 | Issue ID | First-audit criticism | Why it appears false / overstated | Evidence | Severity of audit error | Corrected view |
 |---|---|---|---|---|---|
-| F1 | (None found) | — | — | — | — |
-
-The first audit's criticisms appear substantiated. No false positives identified. The bad-control critique (L1), DV skewness critique (L3/L4), non-unique index (L2), and all other flagged issues are real.
+| F1 | L1 / K2 / K3: "Volatility and StockRet are bad controls sharing the DV window" (rated High, blocks thesis-standard) | Volatility and StockRet are NOT in `BASE_CONTROLS`. They do not appear anywhere in `run_h7_illiquidity.py`. The string "Volatility" has zero matches in the regression script. The string "StockRet" has zero matches. These variables exist in the panel (loaded by the builder) but are never used as regressors. | `run_h7_illiquidity.py` L97-105: `BASE_CONTROLS = ["Entire_All_Negative_pct", "Analyst_QA_Uncertainty_pct", "Size", "Lev", "ROA", "TobinsQ", "pre_call_amihud"]`. Grep verification: zero matches for "Volatility" or "StockRet" in the file. | **Critical** | Volatility and StockRet are irrelevant to H7 regressions. L1 should be deleted entirely. The "bad controls" narrative that pervades K2, K3, L1, M priorities, and the final readiness statement is unfounded. |
+| F2 | L3: "DV (amihud_illiq) has extreme right skewness (13.5)" | The DV is `delta_amihud`, not `amihud_illiq`. The skewness statistics were computed for the wrong variable. While `delta_amihud` also has distributional problems (extreme range, heavy tails), they are different problems requiring different fixes. | `summary_stats.csv`: `delta_amihud` mean=0.092, SD=12.62, range [-99.6, 2678.2] -- this is a signed change variable, not a bounded-below level. | **High** | The DV has extreme dispersion but the characterization (right-skew, log-transform fix) is wrong for a change variable. The correct concern is extreme tails in both directions; the correct fix is winsorization or trimming, not log transformation. |
+| F3 | L4: "No log-DV specification tested" (rated High, blocks thesis-standard) | A log transform of `delta_amihud` is nonsensical -- the variable takes negative values (range [-99.6, 2678.2]). The recommendation `log(1 + amihud_illiq)` would apply to a levels specification, but the code does not run a levels specification. | `amihud_change.py` L360: `delta_amihud = post - pre`, which can be negative. | **High** | Replace with: "DV `delta_amihud` has extreme tails; winsorize at 1%/99% or trim extreme observations. Consider also testing Amihud in levels with log transform as an alternative specification." |
 
 ---
 
@@ -137,12 +133,13 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Issue ID | Category | Description | Evidence | Severity | Why first audit missed it | Consequence | Recommended fix |
 |---|---|---|---|---|---|---|---|
-| G1 | Robustness interpretation | ALL marginally significant robustness results have NEGATIVE coefficients (wrong direction for H7: beta > 0). Large-firm A3: beta=-0.0037, p=0.029. FF12_7 A3: beta=-0.0433, p=0.050. FF12_7 A4: beta=-0.0524, p=0.030. The first audit reports these as "marginally significant" without disclosing the sign. A referee would assume partial support for H7. | `robustness_results.csv`: all 3 significant checks have negative betas | **Medium-High** | First audit focused on p-value magnitude, not coefficient direction relative to the directional hypothesis H7 | Referee would be misled into thinking there is partial evidence FOR H7 in large firms or Telecom, when the evidence is actually AGAINST H7 in those subsamples | Report beta sign and one-tailed p for H7 direction in every robustness result; add a summary note that "all marginally significant results have wrong-sign coefficients" |
-| G2 | Documentation | Window specification uses calendar days via `pd.Timedelta(days=N)`, not trading days as described in A3 and the code comment at `_crsp_engine.py:41-42`. The end buffer is ~3-4 trading days (5 calendar days), not 5 trading days as documented. | `_crsp_engine.py:41-42,361-366` | **Low** | First audit copied the code comment without verifying the implementation semantics of `pd.Timedelta` | Minor measurement description error; functional impact limited because CRSP only has trading dates so the filter works on actual trading dates within the calendar-day bounds | Correct A3 to say "calendar days"; update code comments to match |
-| G3 | Documentation / internal consistency | Verification log I14 says "only FF12_7 shows marginal significance" but K5 also reports large_firm A3 p=0.029. These contradict each other. | I14 vs K5 in H7.md | **Low** | Sections written separately without cross-check | Minor internal inconsistency | Harmonize I14 with K5 |
-| G4 | Sample attrition artifact | The `sample_attrition.csv` output reports N=56,218 for "After complete-case + min-calls filter" — this is the A1 (CEO QA) sample, the SMALLEST spec. The code at L760-768 picks the FIRST Main result, which is A1. First audit's E2 documents the A3 sample flow (75,242 → 75,124), which is more representative but doesn't match the artifact. | `sample_attrition.csv`: N=56,218; `model_diagnostics.csv`: A1 n_obs=56218 vs A3 n_obs=75124 | **Low** | Not a direct error in the audit, but the artifact and the audit's sample flow present different specs' attrition without clarification | Replicator confusion: artifact shows 56K, audit E2 shows 75K | Note which spec the attrition table represents; or generate per-spec attrition |
-| G5 | Summary stats scope | `make_summary_stats_table()` called with `sample_names=["Main"]` on the FULL panel (88,205 Main obs including missing values), not on the regression sample (75,124 complete cases for A3). The first audit's I2 distribution table says "A3 regression sample, N=75,124" — these are different populations. The output artifact (`summary_stats.csv`) covers the full Main sample. | `run_h7_illiquidity.py:683-694`: `df=panel, sample_names=["Main"]` | **Low** | Minor documentation gap | Ambiguity about which sample the summary stats represent | Clarify in output description and I2 header |
-| G6 | Large-firm filter inconsistency | The `large_firm` robustness filter (L565-566) counts calls in the FULL Main sample before listwise deletion: `call_freq = df_main.groupby("gvkey")["file_name"].transform("count")`. But the min_calls=5 filter inside `_fit_spec()` counts calls AFTER listwise deletion. A firm with 100 calls (50 complete) qualifies for large_firm; a firm with 6 calls (4 complete) qualifies for large_firm but fails min_calls. This inconsistency is undocumented. | `run_h7_illiquidity.py:565-566` (pre-deletion count) vs `_fit_spec():513-515` (post-deletion count) | **Low** | Subtle code-level detail not surfaced in audit | Minor sample composition inconsistency in robustness check | Document the distinction or apply both filters consistently |
+| G1 | Variable identification | First audit identifies DV as `amihud_illiq` throughout. Actual DV is `delta_amihud` (post-call minus pre-call Amihud change). These are economically different constructs: one is a level, the other is a change. | `run_h7_illiquidity.py` L188,201,206: formula = `"delta_amihud ~ ..."`. Regression output: "Dep. Variable: delta_amihud". First audit A3, F, H: all say `amihud_illiq`. | **Critical** | First audit likely read the panel builder docstring (which mentions `amihud_illiq` as the original DV before the delta_amihud refactor) and did not inspect the actual regression formula or output. | Every DV-related claim in the audit is about the wrong variable: distributional statistics, winsorization status, recommended transformations, identification implications. | Rewrite all DV references to `delta_amihud`; recompute distributional statistics; revise transformation recommendations. |
+| G2 | Variable identification | `pre_call_amihud` is an actual control variable in BASE_CONTROLS but is not in the first audit's variable dictionary (section F) as a regression control. It only appears as a variable in the summary stats. | `run_h7_illiquidity.py` L104: `"pre_call_amihud"` in BASE_CONTROLS. Variable dictionary F lists it as "DV control" but not prominently as a regression variable. | **Medium** | Audit focused on `amihud_illiq` and missed the actual control structure. | A referee would not know that pre-call Amihud is a control -- this is a significant design choice (lagged-DV control in a change specification). | Add `pre_call_amihud` to the estimation spec register as a control; discuss its role. |
+| G3 | Outlier/winsorization | `delta_amihud` is NOT winsorized. Range [-99.6, 2678.2] with SD=12.62 enters OLS raw. `pre_call_amihud` is also NOT winsorized (max=267.8). Both come from `AmihudChangeBuilder` which has no winsorization step. In contrast, `amihud_illiq` from `CRSPEngine` IS winsorized at 1%/99% per year. | `amihud_change.py`: zero matches for "winsor". `summary_stats.csv`: delta_amihud max=2678.2; pre_call_amihud max=267.8. `_crsp_engine.py` L445-447: only CRSP_RETURN_COLS are winsorized. | **Critical** | First audit thought the DV was `amihud_illiq` (which IS winsorized) and thus described the winsorization as adequate. The actual DV bypasses winsorization entirely. | Extreme observations dominate OLS. A single call with delta_amihud=2678 has leverage 212x the SD. This is the most serious specification issue. | Winsorize `delta_amihud` and `pre_call_amihud` at 1%/99% per year before regression, or add winsorization to `AmihudChangeBuilder`. |
+| G4 | Stale artifacts | First audit's N counts (A3: 75,124; A1: 56,218; B1: 40,275) are from the 2026-03-12_015407 run. Latest run (2026-03-13_054310) shows A3: 78,679; A1: 58,240; B1: 38,214. Sample sizes changed by up to 5% between runs. The audit does not version-lock to a specific run. | Compare `model_diagnostics.csv` across runs. | **Medium** | First audit documented one run's outputs; code or data was subsequently updated. | Audit claims become unreliable as code evolves. | Pin the audit to a specific run timestamp; verify outputs match. |
+| G5 | Result characterization | First audit claims "ALL uncertainty coefficients are statistically insignificant." Current run shows A3 one-tailed p=0.069 and B2 one-tailed p=0.080, both approaching or at 10% significance. LaTeX table shows stars (* for p<0.10) on A3 and B2. | `model_diagnostics.csv` (2026-03-13 run): A3 beta1_p_one=0.069; B2 beta1_p_one=0.080. `h7_illiquidity_table.tex`: A3=0.3285* and B2=0.0072*. | **High** | Audit was written against older run where all coefficients were insignificant. | A referee relying on the audit would believe H7 is a clean null. The current output suggests marginal evidence (at 10%) for Manager QA uncertainty increasing illiquidity. This requires discussion, not dismissal. | Update results to reflect current run; discuss marginal significance of A3 and B2. |
+| G6 | DV construction | `delta_amihud` uses trading-day positions (not calendar days) for the pre/post windows. The first audit's discussion of calendar-day windows for the Amihud measure applies to `amihud_illiq` (via `_crsp_engine.py`), not to `delta_amihud` (via `AmihudChangeBuilder`). These two builders use different window definitions. | `amihud_change.py` L326-342: uses `pre_rank` and `post_rank` (rank-based trading day positions). `_crsp_engine.py` L361-366: uses `pd.Timedelta(days=N)` (calendar days). | **Medium** | First audit conflated the two Amihud constructs. | Window description in audit applies to wrong variable. `delta_amihud` uses +/-3 actual trading days; `amihud_illiq` uses calendar-day boundaries. | Document the correct window for `delta_amihud`: [-3,-1] and [+1,+3] trading days relative to the last trading date on or before call. |
+| G7 | Prior red-team failure | The prior red-team audit (`docs/provenance/Audits/H7_red_team.md`) "confirmed" L1 (bad controls) at High severity in section H (RT-06) and section F1 ("No false positives identified"). It failed to check whether Volatility/StockRet are actually in `BASE_CONTROLS`. It also missed the DV misidentification. | Prior red-team H section: "L1 ... High -- confirmed"; F section: "No false positives identified." | **Critical** | Prior red-team inherited the first audit's framing without independently verifying the regression formula or control list. | Two layers of audit failed to catch the same errors, creating false confidence. | This red-team audit replaces both prior documents as the authoritative assessment. |
 
 ---
 
@@ -150,26 +147,21 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Issue ID | Source | Original severity | Red-team severity | Why recalibrated | Thesis impact |
 |---|---|---|---|---|---|
-| L1 | First audit | High | **High — confirmed** | Volatility/StockRet share DV window; mechanically related to amihud_illiq. Code verified: same `_compute_returns_for_manifest()` function, same window dates. | Y |
-| L2 | First audit | High | **High — confirmed** | Non-unique index verified: `run_h7_illiquidity.py:218-222` warns. PanelOLS handles it but interpretation affected. | N (PanelOLS handles it) |
-| L3 | First audit | High | **High — confirmed** | DV skewness verified from I2 table: skew=13.5, kurt=222. OLS efficiency concern real. | Y |
-| L4 | First audit | High | **High — confirmed** | No log-DV spec. Standard in Amihud literature. Most important missing robustness. | Y |
-| L5 | First audit | Medium | **Medium — confirmed** | CEO_Clarity_Residual 37.6% coverage. B1 drops >50% of Main. Selection bias risk real. | N |
-| L6 | First audit | Medium | **Medium — confirmed** | Only firm + quarter FE. No firm + year FE or industry × quarter FE tested. | N |
-| L7 | First audit | Medium | **Medium — confirmed** | Variable-length Amihud window. Real measurement heterogeneity concern. | N |
-| L8 | First audit | Medium | **Medium — confirmed** | Entity-only clustering as primary. Two-way cluster shows similar results (robustness_results.csv: p changes from 0.199 to 0.212 for A3). | N |
-| L9 | First audit | Medium | **Medium — confirmed** | No outlier sensitivity test. Given max/mean=125x, this matters. | N |
-| L10 | First audit | Medium | **Medium — confirmed** | No placebo/falsification test. | N |
-| L11 | First audit | Low | **Low — confirmed** | Warning suppression. Minor. | N |
-| L12 | First audit | Low | **Low — confirmed** | Latest directory resolution. Standard risk. | N |
-| L13 | First audit | Low | **Low — confirmed** | B-spec H0.3 dependency. Documented. | N |
-| L14 | First audit | Low | **Low — confirmed** | Manager_QA/CEO_QA r=0.77. Correctly noted as informational. | N |
-| L15 | First audit | Low | **Low — confirmed** | Last-call NaN for amihud_illiq. Standard approach. | N |
-| L16 | First audit | Low | **Low — confirmed** | FutureWarning suppression. Minor. | N |
-| G1 | Red-team | — | **Medium-High** | ALL significant robustness results have wrong-sign coefficients. Misleading to referee. | Y (interpretation) |
-| G2 | Red-team | — | **Low** | Calendar days vs trading days in window spec. Minor documentation error. | N |
-| G3 | Red-team | — | **Low** | I14/K5 internal contradiction. Minor. | N |
-| G4 | Red-team | — | **Low** | Sample attrition artifact uses A1, not A3. Minor. | N |
+| L1 | First audit | High (blocking) | **DELETE -- FALSE POSITIVE** | Volatility/StockRet are not regression controls. Issue does not exist. | N/A |
+| L2 | First audit | High | **Medium** | Non-unique panel index is real. PanelOLS handles it. Downgrade because it does not invalidate results. | N |
+| L3 | First audit | High (blocking) | **REWRITE -- WRONG VARIABLE** | Statistics are for `amihud_illiq`, not `delta_amihud`. The actual DV has different problems (extreme tails, not right-skew). Replace with: "`delta_amihud` has extreme dispersion (SD=12.62, range [-99.6, 2678.2]); unwinsorized." Severity: **Critical** for the corrected formulation. | Y |
+| L4 | First audit | High (blocking) | **REWRITE** | Log transform is inapplicable to a signed change variable. Replace with: "Winsorize `delta_amihud` at 1%/99% or test trimmed estimation." Severity: **High**. | Y |
+| L5 | First audit | Medium | **Medium -- confirmed** | CEO_Clarity_Residual coverage issue is real. | N |
+| L6 | First audit | Medium | **Medium -- confirmed** | Only firm + quarter FE; no alternatives tested. | N |
+| L7 | First audit | Medium | **Low -- downgrade** | This issue applies to `amihud_illiq` (inter-call window), not `delta_amihud` (event-window). The actual DV uses a fixed +/-3 trading day window, not a variable-length inter-call window. | N |
+| L8 | First audit | Medium | **Medium -- confirmed** | Entity-only clustering as primary; two-way in robustness. | N |
+| L9 | First audit | Medium | **High -- upgrade** | No outlier sensitivity test AND the DV is unwinsorized with max/SD=212x. This is more severe than first audit realized because the DV has no winsorization at all. | Y |
+| L10 | First audit | Medium | **Medium -- confirmed** | No placebo/falsification test. | N |
+| L11-L17 | First audit | Low | **Low -- confirmed** | Minor issues accurately characterized. | N |
+| G1 | Red-team | -- | **Critical** | DV misidentification throughout first audit. | Y |
+| G3 | Red-team | -- | **Critical** | Unwinsorized DV and control with extreme values. | Y |
+| G4 | Red-team | -- | **Medium** | Stale artifact problem. | N |
+| G5 | Red-team | -- | **High** | Results characterization outdated; current run shows marginal significance. | Y |
 
 ---
 
@@ -177,11 +169,12 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Missing / incomplete area | Why incomplete | Evidence | Severity | What should have been included |
 |---|---|---|---|---|
-| Coefficient direction in robustness results | K5 reports p-values for significant subsamples without noting ALL coefficients are negative (wrong direction for H7) | `robustness_results.csv`: 3 significant checks all have negative betas | **Medium-High** | Report beta sign + one-tailed H7 p-value for every robustness check; add direction summary |
-| Window specification: calendar vs trading days | A3 says "trading days" copying the code comment; code uses `pd.Timedelta(days=N)` which is calendar days | `_crsp_engine.py:41-42,361-366` | **Low** | Correct to "calendar days" and note effective trading-day equivalents |
-| I14 vs K5 consistency | I14 omits large_firm significance; K5 mentions it | Compare I14 and K5 in H7.md | **Low** | Harmonize |
-| Attrition artifact spec identification | `sample_attrition.csv` reports A1 sample without labeling which spec | `sample_attrition.csv`: N=56,218 = A1; code L760-768 picks first Main result | **Low** | Label the spec in the attrition table or audit |
-| Summary stats sample scope | Not explicitly stated whether summary stats are on full Main sample or regression sample | `run_h7_illiquidity.py:683-694` vs I2 header | **Low** | Clarify scope |
+| DV identification | Entire audit uses wrong variable (`amihud_illiq` instead of `delta_amihud`) | `run_h7_illiquidity.py` L201: formula uses `delta_amihud` | **Critical** | Correct DV name, construction (post - pre, +/-3 trading days), source builder (`AmihudChangeBuilder`), distributional properties |
+| `pre_call_amihud` as control | Not documented as a regression control in spec register or identification section | `run_h7_illiquidity.py` L104: in `BASE_CONTROLS` | **Medium** | Document as lagged-DV control; discuss implications for change-specification identification |
+| DV winsorization status | Audit assumes DV is winsorized (because `amihud_illiq` is); actual DV `delta_amihud` is not | `amihud_change.py`: no winsorization; `_crsp_engine.py` L445: only `CRSP_RETURN_COLS` winsorized | **Critical** | Flag that DV enters regression unwinsorized with extreme tails |
+| `AmihudChangeBuilder` as DV source | Not traced or documented; audit traces only `AmihudIlliqBuilder` and `_crsp_engine.py` | `build_h7_illiquidity_panel.py` L103-104: `amihud_change: AmihudChangeBuilder(...)` | **High** | Trace the actual DV builder, its PERMNO mapping, window construction, and minimum-days filter |
+| Current output state | Audit locked to older run; does not discuss possibility of changing results | `model_diagnostics.csv` (2026-03-13): different N, different p-values | **Medium** | Either pin to a specific run or note that results may vary with upstream changes |
+| Alternative event window robustness | Panel builder creates `amihud_change_w5` (5-day window variant) but no regression uses it | `build_h7_illiquidity_panel.py` L106-108: `AmihudChangeBuilder({..., "window_days": 5, "column_suffix": "_w5"})` | **Low** | Note availability of alternative window; recommend testing as robustness |
 
 ---
 
@@ -189,16 +182,14 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Reproduction step | First audit documented it? | Verified? | Hidden dependency? | Risk | Red-team note |
 |---|---|---|---|---|---|
-| Stage 3: `python -m f1d.variables.build_h7_illiquidity_panel` | Y | Partial (not run, but code path verified) | H0.3 must have run first for B-spec columns | Medium | If H0.3 absent, B-spec columns are all-NaN; `run_h7_illiquidity.py:717-721` raises RuntimeError if B-spec IV is all-NaN — this IS caught |
-| Stage 4: `python -m f1d.econometric.run_h7_illiquidity` | Y | Partial (not run, but outputs match code expectations) | Depends on "latest" Stage 3 output via `get_latest_output_dir()` | Medium | No version pinning; documented in L12 |
-| CRSP raw files in `inputs/CRSP_DSF/` | Y | Not checked | Not in repo | High | Standard raw-data bottleneck |
-| Compustat raw files | Y | Not checked | Not in repo | High | Same |
-| CCM linktable | Y | Not checked | Not in repo | Medium | Same |
-| H0.3 `ceo_clarity_extended` output | Y (noted as dependency) | Not checked | Must exist before Stage 3 | Medium | H0.3 reproduction command not provided in H7.md |
-| Python version | Y ("Python 3.13 based on .pyc files") | Not verified | Implicit | Low | Should be in requirements or pyproject.toml |
-| `linearmodels` version | Not documented | Not verified | API changes between versions | Low-Medium | Should be pinned |
-| Output determinism | Y ("OLS is deterministic") | Confirmed by code review | None | N/A | Correct — PanelOLS closed-form |
-| 18 timestamped output dirs exist | Visible from glob | Confirmed | Stale artifacts could be loaded as "latest" | Medium | `get_latest_output_dir()` picks most recent; older runs persist |
+| Stage 3: `python -m f1d.variables.build_h7_illiquidity_panel` | Y | Code path verified | H0.3 must have run for B-spec columns | Medium | If H0.3 absent, B-spec columns all-NaN; RuntimeError at L686-689 catches this |
+| Stage 4: `python -m f1d.econometric.run_h7_illiquidity` | Y | Code path verified | Depends on "latest" Stage 3 output | Medium | `get_latest_output_dir()` picks most recent; stale artifacts possible |
+| CRSP raw files in `inputs/CRSP_DSF/` | Y (implicit) | Not checked | Not in repo | High | Standard raw-data dependency |
+| CCM linktable | Y (implicit) | Not checked | Not in repo | Medium | Required by `AmihudChangeBuilder._build_permno_map()` |
+| H0.3 residual output | Y (noted) | Not checked | Must exist before Stage 3 | Medium | H0.3 command not in H7 docs |
+| Output determinism | Y | Confirmed | None | N/A | PanelOLS is closed-form |
+| Stale "latest" resolution | Y (L12) | Confirmed risk | `get_latest_output_dir()` | Medium | Outputs from different code versions coexist; 5 timestamped dirs found |
+| AmihudChangeBuilder PERMNO mapping | Not documented | Code verified | Uses CCM date-bounded linkage independently of CRSPEngine | Low | Separate PERMNO mapping from CRSPEngine; potential for divergence if CCM data changes |
 
 ---
 
@@ -206,17 +197,17 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Referee dimension | First audit adequate? | Why or why not | Missed or weak points | Severity |
 |---|---|---|---|---|
-| Identification threats | **Y** | Reverse causality (timing correct), OVB (firm+quarter FE), bad controls (Volatility/StockRet), look-ahead (merge_asof backward) all covered | — | — |
-| Inference / clustering | **Y** | Firm-level clustering documented; two-way cluster in robustness; 1,831 clusters adequate | — | — |
-| FE and within-variation | **Y** | Non-unique panel index flagged; firm + quarter FE documented; alternative FE flagged as missing | — | — |
-| Timing alignment | **Partial** | Post-call window correctly described directionally; "trading days" label is wrong (calendar days) | Calendar vs trading day distinction | Low |
-| Post-treatment controls | **Y** | Compustat backward merge verified; no look-ahead | — | — |
-| Reverse causality | **Y** | DV is post-call, IV is at call time — timing correct | — | — |
-| Endogenous sample selection | **Y** | CEO identification (29.6% missing), min-calls filter, and B-spec selection all flagged | — | — |
-| Model-family-specific threats | **Y** | Call-level panel with duplicate firm-quarter index flagged; Amihud skewness flagged | — | — |
-| Robustness adequacy | **Partial** | Robustness checks listed and run. **But direction of significant results not assessed** — this is the critical gap. With ALL significant subsample results showing wrong-sign coefficients, the robustness evidence is actually stronger AGAINST H7 than a naive reading of the audit would suggest. | Coefficient direction vs H7 prediction | Medium-High |
-| Interpretation discipline | **Partial** | Correctly notes null result; correctly forbids causal language. But K5's presentation of "marginal significance" without sign disclosure violates interpretation discipline. | "Marginal significance" framing without sign | Medium |
-| Academic-integrity risks | **Y** | Warning suppression, stale artifacts, H0.3 dependency all flagged | — | — |
+| Identification threats | **Fail** | K2 fabricates a "bad controls" threat (Volatility/StockRet not in model). Misses the actual identification implication of using `pre_call_amihud` as a control in a change specification (effectively a lagged-DV control, which introduces Nickell bias in short panels). | Lagged-DV control in FE panel; Nickell bias | Medium |
+| Inference / clustering | **Pass** | Firm clustering documented; adequate cluster count (1,845 in A3). | | |
+| FE and within-variation | **Pass** | Non-unique index flagged; firm + quarter FE documented. | | |
+| Timing alignment | **Partial** | Post-call window for DV is correct. But first audit describes the wrong window (inter-call calendar days for `amihud_illiq` vs event-window trading days for `delta_amihud`). | Window description wrong | Medium |
+| Post-treatment controls | **Pass** | Compustat backward merge verified. | | |
+| Reverse causality | **Pass** | DV is post-call; IV is at call time. Timing correct. | | |
+| Endogenous sample selection | **Partial** | CEO identification gap flagged. But first audit does not discuss how `delta_amihud` missingness differs from `amihud_illiq` missingness (the change variable requires valid pre AND post windows). | | Low |
+| Model-family-specific threats | **Fail** | DV distributional threat is about wrong variable. The actual DV `delta_amihud` is unwinsorized with extreme outliers -- more severe than described. | | Critical |
+| Robustness adequacy | **Partial** | Robustness checks run. No test of DV winsorization sensitivity, no test of alternative event windows despite `_w5` being available in the panel. | | Medium |
+| Interpretation discipline | **Partial** | Prior red-team corrected coefficient-direction issue. But "uniformly null" characterization is now outdated (A3, B2 marginally significant). | | High |
+| Academic-integrity risks | **Partial** | Warning suppression flagged. But the bigger risk -- that the DV enters OLS unwinsorized with extreme leverage points -- is missed because the wrong DV was identified. | | Critical |
 
 ---
 
@@ -224,10 +215,11 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Audit-safety risk in first audit | Evidence | Severity | Why it matters | Fix |
 |---|---|---|---|---|
-| Robustness significance reported without coefficient direction | K5: "A3 becomes marginally significant (p=0.029)" — beta is actually -0.0037 (wrong sign for H7). Same for FF12_7 results. A referee reading the audit would misinterpret these as partial support for H7. | **Medium-High** | Academic integrity requires that significance claims for directional hypotheses include the direction. Omitting this creates a misleading impression. | Report beta sign and one-tailed p for H7 direction; add explicit statement that all significant subsample results are in the wrong direction |
-| Internal contradiction between I14 and K5 | I14: "only FF12_7 shows marginal significance." K5: "A3 becomes marginally significant (p=0.029)" for large firms. | **Low** | Minor inconsistency. Third party reading both sections gets conflicting information. | Harmonize I14 with K5 |
-| Window specification factual error | A3 says "trading days" for window boundaries; code uses calendar days | **Low** | Replication hazard: a reviewer implementing the described window with trading-day offsets would get slightly different results | Correct to "calendar days" |
-| Verification log I14 understates significant checks | Says "only FF12_7" when large_firm A3 also significant at 5% | **Low** | Incomplete enumeration of significant results | Update count |
+| DV misidentified throughout | All DV references say `amihud_illiq`; actual DV is `delta_amihud` | **Critical** | A thesis committee reading the audit would believe the DV is the Amihud illiquidity level. It is actually a change measure. This affects interpretation, identification assessment, and recommended fixes. | Correct all DV references |
+| Fabricated blocking issue (L1) | Volatility/StockRet "bad controls" -- not in model | **Critical** | A referee would believe the model has a "bad controls" problem warranting revision. It does not. This creates unnecessary revision demand and distracts from real issues. | Delete L1 and all references to Volatility/StockRet as controls |
+| Prior red-team failed to catch same errors | `Audits/H7_red_team.md` confirms L1 at High, misses DV error | **High** | Two audit layers agreeing on wrong facts creates strong false confidence | This audit supersedes both prior documents |
+| DV distributional properties mischaracterized | Skewness/kurtosis statistics are for `amihud_illiq`, not `delta_amihud` | **High** | Recommended fix (log transform) is inapplicable to the actual DV; correct fix (winsorization) is never recommended | Recompute distributional stats for `delta_amihud`; recommend winsorization |
+| Results outdated | "Uniformly null" vs current marginal significance for A3/B2 | **High** | Committee would believe no evidence for H7 exists. Current output suggests marginal evidence at 10% level for Manager QA uncertainty. | Update results; discuss implications of marginal significance |
 
 ---
 
@@ -235,25 +227,31 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Issue ID | Type | Category | Verified? | Severity | Location | Description | Evidence | Consequence | Recommended fix | Blocks thesis-standard reliance on first audit? |
 |---|---|---|---|---|---|---|---|---|---|---|
-| RT-01 | First-audit omission | Robustness interpretation | Y | **Medium-High** | H7.md K5, I14 | ALL marginally significant robustness results (large_firm A3, ff12_7 A3/A4) have NEGATIVE coefficients — wrong direction for H7 (beta > 0). One-tailed p-values for H7 are all > 0.95. First audit reports two-tailed p-values without sign disclosure. | `robustness_results.csv`: large_firm A3 beta=-0.0037 p=0.029; ff12_7 A3 beta=-0.0433 p=0.050; ff12_7 A4 beta=-0.0524 p=0.030 | Referee would be misled into thinking partial support exists for H7 in subsamples; in reality, the evidence is uniformly AGAINST H7 | Report beta sign + one-tailed H7 p-value; add direction summary note | Y (interpretation section) |
-| RT-02 | First-audit factual error | Variable construction | Y | **Low** | H7.md A3 | DV window described as "[call+1 trading day, next_call-5 trading days]" — code uses calendar days via `pd.Timedelta(days=N)` | `_crsp_engine.py:41-42,361-366` | Minor replication hazard; 5 calendar days ≈ 3-4 trading days, not 5 | Correct to "calendar days"; update code comments | N |
-| RT-03 | First-audit factual error | Verification log | Y | **Low** | H7.md I14 | "Only FF12_7 shows marginal significance" — large_firm A3 (p=0.029) also significant. Contradicts K5. | `robustness_results.csv` vs H7.md I14 vs K5 | Internal inconsistency | Harmonize I14 with K5 | N |
-| RT-04 | First-audit omission | Documentation | Y | **Low** | H7.md E2, sample_attrition.csv | Sample attrition artifact reports A1 spec (N=56,218), not A3 (N=75,124) as documented in E2. Code picks first Main result. | `sample_attrition.csv` line 4; `run_h7_illiquidity.py:761-763` | Replicator confusion | Label spec in attrition output | N |
-| RT-05 | First-audit omission | Documentation | Y | **Low** | H7.md B, I2 | Summary stats generated on full Main sample (88,205), not regression sample (75,124). I2 header says "A3 regression sample." | `run_h7_illiquidity.py:683-694` | Ambiguity about sample scope | Clarify in both places | N |
-| RT-06 | Underlying implementation issue (noted by first audit) | Econometric spec | Y | **High** | L1 | Bad controls: Volatility/StockRet share DV window, mechanically absorb amihud_illiq variation | `_crsp_engine.py:253-256` — all computed in same function on same daily data | Over-controlling; true effect partially absorbed | Use pre-call values or omit from controls | Y |
-| RT-07 | Underlying implementation issue (noted by first audit) | Econometric spec | Y | **High** | L3/L4 | DV extremely right-skewed (skew=13.5); no log-transform tested | I2 distribution table | OLS efficiency loss; results potentially driven by outliers | Add log(1+amihud_illiq) spec | Y |
+| RT2-01 | First-audit factual error | DV identification | Y | **Critical** | H7.md: A3, F, H (all rows), I2, I5-I6, J2, K2, K3, L1, L3, L4, L15, M, N | DV identified as `amihud_illiq` throughout; actual DV is `delta_amihud` | `run_h7_illiquidity.py` L188,201: `"delta_amihud ~ ..."`. Regression output: "Dep. Variable: delta_amihud" | All DV-related analysis (distributional, transformational, winsorization) applies to wrong variable | Rewrite all DV references; recompute distributional statistics for `delta_amihud` | **Y** |
+| RT2-02 | First-audit false positive | Identification | Y | **Critical** | H7.md: K2, K3, L1, M #2, N | Fabricated "bad controls" issue: claims Volatility/StockRet are controls sharing DV window. They are not in BASE_CONTROLS and not in any regression. | `run_h7_illiquidity.py` L97-105: BASE_CONTROLS does not contain Volatility or StockRet. Grep: zero matches. | False blocking issue; distorts severity calibration and priority fixes | Delete L1; remove all Volatility/StockRet references from identification/controls discussion | **Y** |
+| RT2-03 | Underlying implementation issue missed by first audit | Outlier/winsorization | Y | **Critical** | `amihud_change.py` | `delta_amihud` is NOT winsorized. Range [-99.6, 2678.2], SD=12.62. `pre_call_amihud` also unwinsorized (max=267.8). Both enter OLS raw. | `amihud_change.py`: zero "winsor" matches. `summary_stats.csv`: delta_amihud max=2678.2, pre_call_amihud max=267.8 | Extreme observations dominate OLS estimation; single outlier has leverage 212x SD | Add per-year 1%/99% winsorization to `delta_amihud` and `pre_call_amihud` before regression | **Y** |
+| RT2-04 | First-audit false positive | Econometric spec | Y | **High** | H7.md: L3, L4, M #1 | DV skewness characterized using `amihud_illiq` statistics; log-DV recommendation inapplicable to signed change variable `delta_amihud` | `summary_stats.csv`: delta_amihud takes negative values; `log(1+x)` undefined for x<-1 | Recommended fix is wrong; correct fix (winsorization) never recommended | Replace log-DV recommendation with winsorization/trimming for `delta_amihud` | **Y** |
+| RT2-05 | First-audit unsupported claim | Results | Y | **High** | H7.md: I13, K1, N | "ALL uncertainty coefficients are statistically insignificant" -- outdated. Current run: A3 p_one=0.069, B2 p_one=0.080; LaTeX table shows 10% stars. | `model_diagnostics.csv` (2026-03-13 run) and `h7_illiquidity_table.tex` | Audit overstates null-result certainty; committee would not know about marginal evidence | Update results to reflect current output; discuss marginal significance | **Y** |
+| RT2-06 | First-audit factual error | Sample counts | Y | **Medium** | H7.md: H, E2 | N values from older run (A3: 75,124) differ from latest run (A3: 78,679) by ~5% | Compare `model_diagnostics.csv` across runs | Audit claims not reproducible from current code | Pin to specific run or update | N |
+| RT2-07 | Underlying implementation issue missed by first audit | Identification | Y | **Medium** | `run_h7_illiquidity.py` L104 | `pre_call_amihud` is a lagged-DV control in a change specification with entity FE. This introduces Nickell (1981) bias in panels with short T. The first audit does not discuss this. | `pre_call_amihud` in BASE_CONTROLS; entity FE present; T varies by firm but many firms have <20 calls | Bias toward zero on the lagged-DV coefficient; potential attenuation of IV estimates | Discuss Nickell bias; consider Anderson-Hsiao or system-GMM as robustness | N |
+| RT2-08 | First-audit omission | Variable dictionary | Y | **Medium** | H7.md F | Variable dictionary lists `amihud_illiq` as DV, `Volatility` and `StockRet` as controls, but omits `delta_amihud` (actual DV) and `pre_call_amihud` (actual control) | Compare F table with `BASE_CONTROLS` and regression formula | Referee cannot understand the actual model from the variable dictionary | Add `delta_amihud` and `pre_call_amihud`; remove phantom variables | **Y** |
+| RT2-09 | Underlying implementation issue noted by first audit | Panel index | Y | **Medium** | `run_h7_illiquidity.py` L212-217 | Non-unique (gvkey, call_quarter_int) index. PanelOLS handles this but interpretation of entity/time FE affected. | Code warns on duplicates; structurally inherent when firms have multiple calls/quarter | FE demeaning treats same-quarter calls as sharing a time period; SE implications | Document; consider call-level time index | N |
+| RT2-10 | First-audit omission | Robustness | Y | **Low** | `build_h7_illiquidity_panel.py` L106-108 | Alternative 5-day event window (`amihud_change_w5`) built in panel but never tested in regressions | Panel builder creates it; runner ignores it | Available robustness check not exploited | Add 5-day window specification to robustness battery | N |
+| RT2-11 | Prior red-team failure | Audit chain | Y | **Critical** | `docs/provenance/Audits/H7_red_team.md` | Prior red-team confirmed fabricated L1 at High severity (RT-06), stated "No false positives identified" (F1), and missed DV misidentification | Prior audit H table, F table | Two audit layers agree on fundamental errors; dangerous for academic reliance | This audit replaces prior red-team | **Y** |
 
 ---
 
 ## N. What a Committee / Referee Would Still Not Know if They Read Only the First Audit
 
-1. **That ALL marginally significant robustness results have WRONG-SIGN coefficients.** The first audit reports "A3 becomes marginally significant (p=0.029)" for large firms and "only FF12_7 shows marginal significance" without noting that every one of these coefficients is negative. A reader would assume partial support for H7 exists. It does not. The significance is evidence *against* H7 in those subsamples. This is the most important gap.
+1. **That the DV is `delta_amihud` (a change measure), not `amihud_illiq` (a level).** This affects every aspect of interpretation: the economic question is "does vagueness change illiquidity around the call?" not "does vagueness predict illiquidity levels." The change specification controls for pre-call levels via `pre_call_amihud` and uses a +/-3 trading-day event window, not an inter-call window.
 
-2. **That the DV window uses calendar days, not trading days.** The end buffer is ~3-4 trading days, not the documented 5. Minor functional impact but incorrect documentation.
+2. **That Volatility and StockRet are NOT regression controls.** The audit's "bad controls" critique (L1, rated High and blocking) is entirely fabricated. The actual controls are: Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct, Size, Lev, ROA, TobinsQ, pre_call_amihud.
 
-3. **That the sample attrition artifact reports the A1 (CEO QA) sample, not the A3 (Manager QA) sample.** A replicator comparing the artifact (N=56,218) to the audit's E2 table (N=75,124) would be confused.
+3. **That the DV `delta_amihud` is completely unwinsorized.** Range [-99.6, 2678.2] with SD=12.62. A single observation with delta_amihud=2678 has leverage 212x the standard deviation. The `pre_call_amihud` control is also unwinsorized (max=267.8). This is the actual most serious specification issue -- far more severe than the fabricated L1.
 
-4. **That the summary statistics output covers the full Main sample (88,205 obs including missing values), not the regression sample (75,124 complete cases).** The I2 distribution table in the audit appears to be from the regression sample.
+4. **That the "uniformly null" result is outdated.** Current code produces marginal one-tailed significance for A3 (Manager QA: beta=0.33, p=0.069) and B2 (Manager Clarity Residual: beta=0.007, p=0.080). The LaTeX table shows 10% significance stars. The null is not as clean as the audit claims.
+
+5. **That log transformation is inapplicable to the actual DV.** `delta_amihud` takes negative values. The recommended fix `log(1+amihud_illiq)` applies to a different variable and a different specification.
 
 ---
 
@@ -261,40 +259,40 @@ The first audit's criticisms appear substantiated. No false positives identified
 
 | Priority | Fix to first audit | Why it matters | Effort | Credibility gain |
 |---|---|---|---|---|
-| 1 | **Disclose coefficient direction for ALL robustness results.** Add beta sign and one-tailed H7 p-value to K5 and I14. Add summary statement: "All marginally significant subsample results have negative coefficients (wrong direction for H7)." | Without this, a referee would misinterpret subsample significance as partial support for H7. This is the single most important credibility fix. | Low — add sign column to K5 table and a 1-line note | **High** — eliminates the most misleading aspect of the audit |
-| 2 | **Correct window specification to "calendar days"** in A3 and everywhere the window is described | Factual accuracy; replication hazard if taken literally | Trivial — text edit | Low — minor documentation fix |
-| 3 | **Harmonize I14 with K5** — update I14 to include large_firm A3 significance | Internal consistency | Trivial — text edit | Low — eliminates contradiction |
-| 4 | **Label sample attrition artifact** with which spec it represents (A1) or generate per-spec attrition | Reduces replicator confusion | Low — code or text | Low |
-| 5 | **Clarify summary stats scope** — note whether I2 is from full Main sample or regression sample | Precision | Trivial | Low |
+| 1 | **Correct DV identification from `amihud_illiq` to `delta_amihud` throughout.** Update A3, F (variable dictionary), H (all spec rows), I2, I5-I6, J2, K2-K4, L1-L4, M, N. | Without this, every DV-related analysis is about the wrong variable. A referee would fundamentally misunderstand the model. | Medium -- many sections affected | **Critical** -- transforms audit from materially flawed to factually correct |
+| 2 | **Delete L1 and all Volatility/StockRet "bad controls" references.** Remove from K2, K3, L1, M priority #2, N final statement. | Fabricated blocking issue distorts the entire severity structure and priority fix list. | Low -- text deletions | **Critical** -- removes the most misleading finding |
+| 3 | **Add critical issue: unwinsorized DV and control.** Document that `delta_amihud` (range [-99.6, 2678.2]) and `pre_call_amihud` (max=267.8) enter OLS unwinsorized. Rate as Critical/blocking. | This is the actual most serious specification issue. Without winsorization, OLS estimates are dominated by extreme leverage points. | Low -- add new issue to register | **Critical** -- identifies the true blocking issue |
+| 4 | **Replace log-DV recommendation with winsorization.** L4 should recommend winsorizing `delta_amihud` at 1%/99% per year, not log-transforming a signed change. | Log transform is mathematically inapplicable to the actual DV. Winsorization is the correct fix. | Low -- text edit | **High** -- correct recommendation |
+| 5 | **Update results to current output.** A3: N=78,679, beta=0.33, p_one=0.069; B2: p_one=0.080. Note marginal significance at 10%. | "Uniformly null" characterization is outdated and potentially misleading. | Low -- update numbers | **High** -- honest reporting |
+| 6 | **Add `AmihudChangeBuilder` to dependency chain and variable dictionary.** | The actual DV source is undocumented. | Medium | **Medium** |
+| 7 | **Discuss `pre_call_amihud` as lagged-DV control and Nickell bias.** | Important identification consideration for panel FE with lagged DV. | Low | **Medium** |
 
 ---
 
 ## P. Final Red-Team Readiness Statement
 
 **Can the first audit be trusted as a standalone referee-quality document?**
-Mostly yes — with one critical caveat. The core analysis (estimator, FE, SEs, variable construction, merges, sample accounting, issue identification) is sound, well-structured, and numerically verified. A thesis committee relying on these sections would be correctly informed about the implementation quality and the null result.
-
-**However, the robustness section (K5) is misleading.** It reports marginal significance for subsamples without disclosing that all significant coefficients are in the wrong direction for H7. A committee member reading "A3 becomes marginally significant (p=0.029)" would reasonably conclude there is partial evidence for H7 in large firms. There is not — the coefficient is negative. This must be corrected before the audit can serve as a standalone referee document.
+No. The first audit contains two fundamental factual errors -- wrong DV identification and fabricated blocking issue -- that permeate its analysis, severity calibration, and recommendations. A referee relying on the audit would (a) believe the model estimates Amihud illiquidity levels when it estimates changes, (b) believe there is a "bad controls" problem with Volatility/StockRet when these are not in the model, (c) miss that the actual DV is unwinsorized with extreme outliers, and (d) believe all results are null when current output shows marginal significance.
 
 **Biggest factual weakness:**
-The window specification describes "trading days" when the code uses calendar days via `pd.Timedelta`. Minor functional impact but factually incorrect.
+The DV is `delta_amihud` (a signed change measure), not `amihud_illiq` (a bounded-below level). Every DV-related claim in the audit -- distributional statistics, winsorization status, recommended transformation, identification implications -- applies to the wrong variable.
 
 **Biggest completeness weakness:**
-Coefficient direction in robustness results. All significant subsample results are in the wrong direction, and this is never stated.
+The audit entirely omits that `delta_amihud` and `pre_call_amihud` are unwinsorized. This is the single most serious specification issue in the implementation.
 
 **Biggest severity/judgment weakness:**
-The K5 presentation of "marginal significance" without sign context. For a directional hypothesis (H7: beta > 0), reporting two-tailed p-values for negative coefficients as "marginally significant" violates basic reporting discipline.
+L1 (Volatility/StockRet "bad controls") is a fabricated High-severity blocking issue. It distorted the entire priority structure: priorities #1 and #2 in the referee fix list address nonexistent problems, while the actual critical issue (unwinsorized DV) was never identified.
 
 **Single most important missed issue:**
-The direction of robustness significance. This is not a code bug or an implementation problem — it is a reporting omission in the audit document that creates a misleading impression about the evidence.
+The DV `delta_amihud` enters OLS completely unwinsorized with range [-99.6, 2678.2] and SD=12.62. A single extreme observation has leverage 212x the SD. This makes all coefficient estimates unreliable and is the true blocking issue for thesis-standard reliance.
 
 **Single most misleading claim:**
-K5: "A3 becomes marginally significant (p=0.029)" — without noting beta = -0.0037. A reader would assume this supports H7. It does not.
+K2/K3/L1: "Volatility and StockRet are computed over the SAME window as amihud_illiq... Including Volatility as a control absorbs the variation that the IV is trying to explain -- the 'bad control' problem." These variables are not in the model. This false positive was then confirmed by the prior red-team audit, creating two layers of fabricated agreement.
 
 **What a thesis committee should believe after reading this red-team review:**
-The H7 suite is technically well-implemented for its purpose (testing whether speech vagueness increases stock illiquidity). The null result is robust: ALL specifications, ALL subsamples, and ALL robustness checks fail to find a positive, significant relationship between uncertainty language and Amihud illiquidity. The few marginally significant subsample results all have *negative* coefficients (opposite to H7's prediction), further strengthening the null conclusion. The suite's main unresolved threats (DV skewness, bad controls) could in principle mask a true positive effect, but the priority fix (log-transform DV, remove same-window controls) should be implemented before this null finding can be fully credited. If the null persists after those fixes, H7 is a clean, well-documented null result suitable for thesis inclusion.
+The H7 suite is a competently structured change-event study (delta_amihud around earnings calls with firm+quarter FE and entity-clustered SEs). The model specification is reasonable -- controls for pre-call Amihud, negative sentiment, analyst uncertainty, and standard financial variables. The critical implementation deficiency is that neither the DV nor the `pre_call_amihud` control is winsorized, allowing extreme leverage points to dominate estimation. Current output shows marginal evidence (10% level) that Manager QA uncertainty increases post-call illiquidity change (A3: beta=0.33, p=0.069; B2: beta=0.007, p=0.080). Before this result can be trusted, the DV and controls must be winsorized, and the committee must see distributional diagnostics for the actual variable being estimated. The first-layer audit and prior red-team audit should NOT be relied upon due to fundamental factual errors. This red-team audit supersedes both.
 
 ---
 
 *End of H7 Second-Layer Red-Team Audit.*
-*Auditor: Claude Opus 4.6 (fresh context) | Date: 2026-03-12*
+*Auditor: Claude Opus 4.6 (1M context, fresh context) | Date: 2026-03-15*

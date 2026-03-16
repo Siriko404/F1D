@@ -5,7 +5,6 @@ Tier 2: Stage-specific module - Stage 4 of the pipeline.
 This module runs panel regressions and diagnostics.
 
 Active Modules:
-    - run_h0_2_ceo_clarity: Run CEO Clarity hypothesis test
     - run_h0_3_ceo_clarity_extended: Run extended CEO Clarity robustness check
     - run_h1_cash_holdings: Run Cash Holdings hypothesis test
     - run_h2_investment: Run Investment hypothesis test
@@ -18,9 +17,11 @@ Active Modules:
 
 Archived Modules (in _archived/):
     - run_h0_1_manager_clarity: Superseded by H0.2
+    - run_h0_2_ceo_clarity: Archived
     - run_h0_4_ceo_clarity_regime: Consolidated into H0.2
     - run_h0_5_ceo_tone: Archived
     - run_h10_tone_at_top: Archived
+    - run_h13_2_employment: Archived
     - generate_h03_complete_table: Temporary workaround, now obsolete
 """
 

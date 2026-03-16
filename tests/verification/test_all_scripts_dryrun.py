@@ -35,7 +35,6 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # All scripts organized by stage
 ALL_SCRIPTS: List[str] = [
     "src/f1d/econometric/run_h0_1_manager_clarity.py",
-    "src/f1d/econometric/run_h0_2_ceo_clarity.py",
     "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
     "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py",
     "src/f1d/econometric/run_h0_5_ceo_tone.py",
@@ -56,7 +55,6 @@ ALL_SCRIPTS: List[str] = [
     "src/f1d/text/build_linguistic_variables.py",
     "src/f1d/text/tokenize_transcripts.py",
     "src/f1d/variables/build_h0_1_manager_clarity_panel.py",
-    "src/f1d/variables/build_h0_2_ceo_clarity_panel.py",
     "src/f1d/variables/build_h0_3_ceo_clarity_extended_panel.py",
     "src/f1d/variables/build_h0_5_ceo_tone_panel.py",
     "src/f1d/variables/build_h1_cash_holdings_panel.py",

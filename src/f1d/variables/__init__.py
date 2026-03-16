@@ -4,7 +4,6 @@ This package contains scripts that build complete panels for each
 hypothesis test by loading and merging variables from various sources.
 
 Active Modules:
-    - build_h0_2_ceo_clarity_panel: Build panel for CEO Clarity test (H0.2)
     - build_h0_3_ceo_clarity_extended_panel: Build extended CEO clarity panel
     - build_h1_cash_holdings_panel: Build panel for Cash Holdings test (H1)
     - build_h2_investment_panel: Build panel for Investment test (H2)
@@ -17,8 +16,10 @@ Active Modules:
 
 Archived Modules (in _archived/):
     - build_h0_1_manager_clarity_panel: Superseded by H0.2
+    - build_h0_2_ceo_clarity_panel: Archived
     - build_h0_5_ceo_tone_panel: Archived
     - build_h10_tone_at_top_panel: Archived
+    - build_h13_2_employment_panel: Archived
 """
 
 from pathlib import Path

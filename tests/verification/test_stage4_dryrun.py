@@ -9,7 +9,6 @@ Tests that all Stage 4 econometric analysis scripts:
 
 Stage 4 Scripts (econometric/):
     - run_h0_1_manager_clarity.py
-    - run_h0_2_ceo_clarity.py
     - run_h0_3_ceo_clarity_extended.py
     - run_h0_4_ceo_clarity_regime.py
     - run_h0_5_ceo_tone.py
@@ -43,7 +42,6 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # All Stage 4 scripts combined
 STAGE4_ALL_SCRIPTS = [
     "src/f1d/econometric/run_h0_1_manager_clarity.py",
-    "src/f1d/econometric/run_h0_2_ceo_clarity.py",
     "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
     "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py",
     "src/f1d/econometric/run_h0_5_ceo_tone.py",
