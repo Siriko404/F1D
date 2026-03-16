@@ -35,7 +35,7 @@ Sample Construction    Text Processing      Variable Building     Econometric An
 ───────────────────    ────────────────     ─────────────────     ────────────────────
 Transcripts ──┐        Tokenization         Per-hypothesis        PanelOLS / Cox PH
 Execucomp ────┤        (C++ compiler)       panel builders        regressions with
-CCM Link ─────┤              │              (80+ variable         firm + year FE,
+CCM Link ─────┤              │              (80+ variable         firm/industry + year FE,
               ▼              ▼              builders via          clustered SEs
      master_sample     linguistic           Builder pattern)           │
      _manifest         variables                 │                    ▼
@@ -53,7 +53,7 @@ Each stage reads from disk and writes to timestamped output directories under `o
 | Suite | Research Question | Model | DV |
 |-------|-------------------|-------|----|
 | **H0.3** | Does CEO clarity FE structure hold under extended controls? | PanelOLS | Clarity residuals |
-| **H1** | Does speech uncertainty predict cash holdings? | PanelOLS | CashHoldings (lead) |
+| **H1** | Does speech uncertainty predict cash holdings? | PanelOLS (Industry FE / Firm FE) | CashHoldings / CashHoldings_lead |
 | **H2** | Does uncertainty predict investment efficiency? | PanelOLS | InvestmentResidual (lead) |
 | **H3** | Does uncertainty predict payout policy stability? | PanelOLS | DividendStability / PayoutFlexibility (lead) |
 | **H4** | Does uncertainty predict leverage changes? | PanelOLS | Lev (lag/lead) |

@@ -58,19 +58,17 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # Linguistic uncertainty
+    # Linguistic uncertainty (H1 key IVs)
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
-    # Weak modal (H1 primary regressors)
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
-    ManagerPresWeakModalBuilder,
-    CEOPresWeakModalBuilder,
-    # Financial controls (Compustat engine)
+    # Clarity residuals (H1 key IVs — from H0.3 upstream)
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
+    # Financial controls — base (Compustat engine singleton)
     CashHoldingsBuilder,
     LevBuilder,
     SizeBuilder,
@@ -80,6 +78,11 @@ from f1d.shared.variables import (
     DividendPayerBuilder,
     OCFVolatilityBuilder,
     CurrentRatioBuilder,
+    # Financial controls — extended
+    SalesGrowthBuilder,
+    RDIntensityBuilder,
+    CashFlowBuilder,
+    VolatilityBuilder,
     # Manifest
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -132,24 +135,19 @@ def build_call_level_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
+        # Retained for downstream consumers (H0/H2 may reuse this panel)
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
         ),
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        # Weak modal
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
+        # Clarity residuals (from H0.3 upstream)
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
         ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
-        ),
-        "manager_pres_weak_modal": ManagerPresWeakModalBuilder(
-            var_config.get("manager_pres_weak_modal", {})
-        ),
-        "ceo_pres_weak_modal": CEOPresWeakModalBuilder(
-            var_config.get("ceo_pres_weak_modal", {})
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
         ),
         # Financial controls -- CompustatEngine is a singleton; all 9 share one load
         "cash_holdings": CashHoldingsBuilder({}),
@@ -161,6 +159,11 @@ def build_call_level_panel(
         "dividend_payer": DividendPayerBuilder({}),
         "ocf_volatility": OCFVolatilityBuilder({}),
         "current_ratio": CurrentRatioBuilder({}),
+        # Extended controls
+        "sales_growth": SalesGrowthBuilder({}),
+        "rd_intensity": RDIntensityBuilder({}),
+        "cash_flow": CashFlowBuilder({}),
+        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
     }
 
     # Build all variables
@@ -515,6 +518,14 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     for col in [
         "CashHoldings",
         "CashHoldings_lead",
+        # Key IVs
+        "CEO_QA_Uncertainty_pct",
+        "CEO_Pres_Uncertainty_pct",
+        "Manager_QA_Uncertainty_pct",
+        "Manager_Pres_Uncertainty_pct",
+        "CEO_Clarity_Residual",
+        "Manager_Clarity_Residual",
+        # Base controls
         "Lev",
         "Size",
         "TobinsQ",
@@ -522,11 +533,11 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         "CapexAt",
         "DividendPayer",
         "OCF_Volatility",
-        "CurrentRatio",
-        "Manager_QA_Uncertainty_pct",
-        "CEO_QA_Uncertainty_pct",
-        "Manager_QA_Weak_Modal_pct",
-        "CEO_QA_Weak_Modal_pct",
+        # Extended controls
+        "SalesGrowth",
+        "RD_Intensity",
+        "CashFlow",
+        "Volatility",
     ]:
         if col in panel.columns:
             n_valid = panel[col].notna().sum()
