@@ -1,31 +1,42 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build H12 Dividend Intensity Panel
+STAGE 3: Build H12 Payout Ratio Panel
 ================================================================================
 ID: variables/build_h12_div_intensity_panel
-Description: Build FIRM-YEAR panel for H12: Language Uncertainty predicts
-             Dividend Intensity (Cash Dividends / Total Assets).
+Description: Build FIRM-YEAR panel for H12: Speech Uncertainty predicts
+             Payout Ratio (DVC / IB, per Attig et al.).
 
     H12 Hypothesis:
-        DivIntensity_{i,t+1} = β0 + β1·Avg_Uncertainty_{i,t}
+        PayoutRatio_{i,t+1} = β0 + Σ β_k·Avg_Uncertainty_k_{i,t}
                               + γ'·Controls_{i,t}
-                              + FirmFE_i + YearFE_t + ε
+                              + FE + ε
 
-    Key coefficient: β1 (one-tailed test)
-        β1 < 0 (sig): Higher uncertainty language → lower dividends
-        β1 ≈ 0: Uncertainty language does NOT predict dividend intensity
+    6 Key IVs (all simultaneous):
+        CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
+        Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
+        CEO_Clarity_Residual, Manager_Clarity_Residual
 
-Unit of observation: firm-fiscal-year (gvkey, fyearq).
-DV: DivIntensity shifted one fiscal year forward (t+1).
+    Key coefficient: β_k (one-tailed test)
+        β_k < 0 (sig): Higher uncertainty → lower payout
+        β_k ≈ 0: No predictive relationship
 
-Step 1: Load manifest + 6 linguistic uncertainty measures.
-Step 2: Load DivIntensity (Compustat engine) and financial controls.
-Step 3: Aggregate call-level uncertainty to firm-year level:
-            Avg_Uncertainty = mean of call-level uncertainty per (gvkey, fyearq)
-            DivIntensity, controls = last non-missing per (gvkey, fyearq)
-Step 4: Create DivIntensity_lead = DivIntensity_{t+1} (forward one fiscal year).
-Step 5: Assign industry sample, save firm-year panel.
+Unit of observation: firm-fiscal-year (gvkey, fyearq_int).
+DV: PayoutRatio = dvy / iby (Attig et al.), PayoutRatio_lead = t+1.
+
+Step 1: Load manifest + 6 call-level IVs (uncertainty + clarity residuals).
+Step 2: Load PayoutRatio (Compustat engine) and financial controls.
+Step 3: Attach fyearq, aggregate call-level to firm-year:
+            IVs = mean across calls per (gvkey, fyearq)
+            Financials = last non-missing per (gvkey, fyearq)
+Step 4: Create PayoutRatio_lead = PayoutRatio_{t+1}.
+Step 5: Save firm-year panel.
+
+Aggregation rule (literature-backed):
+    Brochet, Loumioti & Serafeim: "firm-year level by averaging all ...
+    measures across quarterly conference calls."
+    Hassan, Hollander, van Lent & Tahoun (QJE): "at the annual frequency,
+    we take an arithmetic mean across all transcripts of a given firm and year."
 """
 
 from __future__ import annotations
@@ -46,42 +57,49 @@ from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import attach_fyearq, assign_industry_sample
 from f1d.shared.variables import (
     ManifestFieldsBuilder,
+    # Key IVs (call-level, to be averaged to firm-year)
+    ManagerQAUncertaintyBuilder,
+    CEOQAUncertaintyBuilder,
+    ManagerPresUncertaintyBuilder,
+    CEOPresUncertaintyBuilder,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
+    # DV source
+    PayoutRatioBuilder,
+    # Base controls
     SizeBuilder,
     LevBuilder,
     ROABuilder,
     TobinsQBuilder,
-    DivIntensityBuilder,
     CashHoldingsBuilder,
     CapexIntensityBuilder,
     OCFVolatilityBuilder,
-    CurrentRatioBuilder,
+    # Extended controls
+    SalesGrowthBuilder,
     RDIntensityBuilder,
-    ManagerQAUncertaintyBuilder,
-    ManagerPresUncertaintyBuilder,
-    CEOQAUncertaintyBuilder,
-    CEOPresUncertaintyBuilder,
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
+    CashFlowBuilder,
+    VolatilityBuilder,
     stats_list_to_dataframe,
 )
 
 
 # ---------------------------------------------------------------------------
-# 6 uncertainty measures to average across calls within firm-year
+# Call-level IVs to average across calls within firm-year
+# CRITICAL: Clarity Residuals MUST be in this list (mean aggregation + Avg_ prefix)
 # ---------------------------------------------------------------------------
-UNCERTAINTY_MEASURES: List[str] = [
+CALL_LEVEL_IVS: List[str] = [
     "Manager_QA_Uncertainty_pct",
     "CEO_QA_Uncertainty_pct",
     "Manager_Pres_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Weak_Modal_pct",
-    "CEO_QA_Weak_Modal_pct",
+    "CEO_Clarity_Residual",
+    "Manager_Clarity_Residual",
 ]
 
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H12 Language Uncertainty → Dividend Intensity Panel",
+        description="Stage 3: Build H12 Payout Ratio Panel (firm-year)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--dry-run", action="store_true")
@@ -98,22 +116,22 @@ def parse_arguments() -> argparse.Namespace:
 def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
     """Collapse call-level panel to firm-year (gvkey, fyearq).
 
-    For uncertainty measures: take the MEAN across all calls within each
-    (gvkey, fyearq). This gives the average uncertainty in the firm's
-    earnings calls during the year.
+    For IVs (uncertainty + clarity residuals): take the MEAN across all
+    calls within each (gvkey, fyearq). Rename with Avg_ prefix.
 
-    For financial variables (DivIntensity, controls, ff12_code): take the
+    For financial variables (PayoutRatio, controls, ff12_code): take the
     last non-missing value per (gvkey, fyearq) — these are constant within
     a firm-year from the Compustat merge.
 
-    Returns a DataFrame indexed on (gvkey, fyearq).
+    For Volatility: take last value per firm-year (CRSP-based, varies
+    across calls within firm-year; last call's value is most recent).
     """
     if "fyearq" not in panel.columns:
         raise ValueError("Panel must have a 'fyearq' column for firm-year aggregation.")
 
-    # Financial controls: take last value per firm-year (constant within FY)
+    # Financial controls + DV: take last value per firm-year (constant within FY)
     financial_cols = [
-        "DivIntensity",
+        "PayoutRatio",
         "Size",
         "Lev",
         "ROA",
@@ -121,14 +139,16 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
         "CashHoldings",
         "CapexAt",
         "OCF_Volatility",
-        "CurrentRatio",
+        "SalesGrowth",
         "RD_Intensity",
+        "CashFlow",
+        "Volatility",
         "ff12_code",
     ]
     existing_financial = [c for c in financial_cols if c in panel.columns]
 
-    # Uncertainty measures: take mean per firm-year
-    existing_uncertainty = [c for c in UNCERTAINTY_MEASURES if c in panel.columns]
+    # IVs: take mean per firm-year (CRITICAL: includes Clarity Residuals)
+    existing_ivs = [c for c in CALL_LEVEL_IVS if c in panel.columns]
 
     # Sort by (gvkey, fyearq, start_date) so "last" = last call in the FY
     df = panel.sort_values(["gvkey", "fyearq", "start_date"], na_position="last")
@@ -138,49 +158,45 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
         df.groupby(["gvkey", "fyearq"])[existing_financial].last().reset_index()
     )
 
-    # Uncertainty: mean across all calls in the firm-year
-    if existing_uncertainty:
-        firm_year_uncertainty = (
-            df.groupby(["gvkey", "fyearq"])[existing_uncertainty].mean().reset_index()
+    # IVs: mean across all calls in the firm-year, with Avg_ prefix
+    if existing_ivs:
+        firm_year_ivs = (
+            df.groupby(["gvkey", "fyearq"])[existing_ivs].mean().reset_index()
         )
-        # Rename uncertainty columns to indicate firm-year averaging
-        rename_map = {col: f"Avg_{col}" for col in existing_uncertainty}
-        firm_year_uncertainty = firm_year_uncertainty.rename(columns=rename_map)
+        rename_map = {col: f"Avg_{col}" for col in existing_ivs}
+        firm_year_ivs = firm_year_ivs.rename(columns=rename_map)
 
-        # Merge financial + uncertainty
         firm_year = firm_year_financial.merge(
-            firm_year_uncertainty, on=["gvkey", "fyearq"], how="left"
+            firm_year_ivs, on=["gvkey", "fyearq"], how="left"
         )
     else:
         firm_year = firm_year_financial
 
-    # Also count calls per firm-year (useful for diagnostics / min-calls filter)
+    # Count calls per firm-year (diagnostics)
     call_counts = df.groupby(["gvkey", "fyearq"]).size().reset_index(name="n_calls")
     firm_year = firm_year.merge(call_counts, on=["gvkey", "fyearq"], how="left")
 
     return firm_year
 
 
-def create_lead_div_intensity(firm_year: pd.DataFrame) -> pd.DataFrame:
-    """Create DivIntensity_lead = DivIntensity shifted one FY forward.
+def create_lead_payout_ratio(firm_year: pd.DataFrame) -> pd.DataFrame:
+    """Create PayoutRatio_lead = PayoutRatio shifted one FY forward.
 
-    - DivIntensity_lead_t = DivIntensity_{t+1} (DV: next-year dividend intensity)
+    - PayoutRatio_lead_t = PayoutRatio_{t+1} (DV: next-year payout ratio)
     - Gap years (non-consecutive fyearq) → NaN (no survivorship selection)
     """
     df = firm_year.copy()
-
     df = df.sort_values(["gvkey", "fyearq"]).reset_index(drop=True)
     df["next_fyearq"] = df.groupby("gvkey")["fyearq"].shift(-1)
-    df["DivIntensity_next"] = df.groupby("gvkey")["DivIntensity"].shift(-1)
+    df["PayoutRatio_next"] = df.groupby("gvkey")["PayoutRatio"].shift(-1)
 
-    # Null out non-consecutive years (gap > 1).
-    # Cast to Int64 before arithmetic to avoid IEEE 754 float precision risk.
+    # Null out non-consecutive years (gap > 1)
     fyearq_int = df["fyearq"].astype("Int64")
     next_fyearq_int = df["next_fyearq"].astype("Int64")
     is_consecutive = (next_fyearq_int - fyearq_int) == 1
-    df.loc[~is_consecutive, "DivIntensity_next"] = np.nan
+    df.loc[~is_consecutive, "PayoutRatio_next"] = np.nan
 
-    df = df.rename(columns={"DivIntensity_next": "DivIntensity_lead"})
+    df = df.rename(columns={"PayoutRatio_next": "PayoutRatio_lead"})
     df = df.drop(columns=["next_fyearq"], errors="ignore")
     return df
 
@@ -197,25 +213,12 @@ def build_panel(
     stats: Dict[str, Any],
 ) -> pd.DataFrame:
     print("\n" + "=" * 60)
-    print("Building H12 Dividend Intensity Panel")
+    print("Building H12 Payout Ratio Panel")
     print("=" * 60)
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # Financial controls (core)
-        "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
-        "roa": ROABuilder(var_config.get("roa", {})),
-        "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
-        # Financial controls (extended corporate finance)
-        "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
-        "capex_at": CapexIntensityBuilder(var_config.get("capex_intensity", {})),
-        "ocf_volatility": OCFVolatilityBuilder(var_config.get("ocf_volatility", {})),
-        "current_ratio": CurrentRatioBuilder(var_config.get("current_ratio", {})),
-        "rd_intensity": RDIntensityBuilder(var_config.get("rd_intensity", {})),
-        # DV source
-        "div_intensity": DivIntensityBuilder(var_config.get("div_intensity", {})),
-        # Uncertainty measures (call-level, to be averaged to firm-year)
+        # Key IVs (call-level, to be averaged to firm-year)
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
         ),
@@ -228,12 +231,27 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
         ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
         ),
+        # DV source
+        "payout_ratio": PayoutRatioBuilder(var_config.get("payout_ratio", {})),
+        # Base controls
+        "size": SizeBuilder(var_config.get("size", {})),
+        "lev": LevBuilder(var_config.get("lev", {})),
+        "roa": ROABuilder(var_config.get("roa", {})),
+        "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
+        "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
+        "capex_at": CapexIntensityBuilder(var_config.get("capex_intensity", {})),
+        "ocf_volatility": OCFVolatilityBuilder(var_config.get("ocf_volatility", {})),
+        # Extended controls
+        "sales_growth": SalesGrowthBuilder(var_config.get("sales_growth", {})),
+        "rd_intensity": RDIntensityBuilder(var_config.get("rd_intensity", {})),
+        "cash_flow": CashFlowBuilder(var_config.get("cash_flow", {})),
+        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
     }
 
     all_results = {}
@@ -263,17 +281,24 @@ def build_panel(
             raise ValueError(f"Merge '{name}' changed rows: {before_len} → {after_len}")
         print(f"  After {name} merge: {after_len:,} rows (delta: {delta:+d})")
 
-    # Coerce start_date to datetime64 before fyearq attachment and aggregation.
-    # aggregate_to_firm_year() sorts by start_date to select last call per FY.
+    # Coerce start_date to datetime64
     panel["start_date"] = pd.to_datetime(panel["start_date"], errors="coerce")
     panel = attach_fyearq(panel, root_path)
 
     # Aggregate to firm-year
     print("\n  Aggregating to firm-year level...")
-    print("  Uncertainty measures: averaged across calls per (gvkey, fyearq)")
+    print("  IVs (uncertainty + clarity): averaged across calls per (gvkey, fyearq)")
     print("  Financial variables: last non-missing per (gvkey, fyearq)")
     firm_year = aggregate_to_firm_year(panel)
     print(f"  Firm-year observations: {len(firm_year):,}")
+
+    # Create fyearq_int for regression time index
+    firm_year["fyearq_int"] = np.floor(
+        pd.to_numeric(firm_year["fyearq"], errors="coerce")
+    ).astype("Int64")
+
+    # Add year column for summary stats compatibility
+    firm_year["year"] = firm_year["fyearq_int"]
 
     # Diagnostics: call counts
     if "n_calls" in firm_year.columns:
@@ -286,11 +311,13 @@ def build_panel(
         )
 
     # Create forward DV
-    firm_year = create_lead_div_intensity(firm_year)
-    n_dv = firm_year["DivIntensity_lead"].notna().sum()
-    print(f"  DivIntensity_lead (valid): {n_dv:,} / {len(firm_year):,}")
+    firm_year = create_lead_payout_ratio(firm_year)
+    n_dv = firm_year["PayoutRatio_lead"].notna().sum()
+    n_dv_t = firm_year["PayoutRatio"].notna().sum()
+    print(f"  PayoutRatio (valid): {n_dv_t:,} / {len(firm_year):,}")
+    print(f"  PayoutRatio_lead (valid): {n_dv:,} / {len(firm_year):,}")
 
-    # Assign industry sample (Main/Finance/Utility) for filtering
+    # Assign industry sample
     if "ff12_code" in firm_year.columns:
         firm_year["sample"] = assign_industry_sample(firm_year["ff12_code"])
 
@@ -307,10 +334,10 @@ def save_outputs(
     timestamp: str,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    panel_path = out_dir / "h12_div_intensity_panel.parquet"
+    panel_path = out_dir / "h12_payout_panel.parquet"
     firm_year.to_parquet(panel_path, index=False)
     print(
-        f"\n  Saved: h12_div_intensity_panel.parquet "
+        f"\n  Saved: h12_payout_panel.parquet "
         f"({len(firm_year):,} rows, {len(firm_year.columns)} columns)"
     )
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
@@ -318,12 +345,8 @@ def save_outputs(
     stats_df.to_csv(stats_path, index=False)
     print(f"  Saved: summary_stats.csv ({len(stats_df)} variables)")
 
-    # Generate run manifest for reproducibility
     manifest_input = (
-        root
-        / "outputs"
-        / "1.4_AssembleManifest"
-        / "latest"
+        root / "outputs" / "1.4_AssembleManifest" / "latest"
         / "master_sample_manifest.parquet"
     )
     generate_manifest(
@@ -345,27 +368,34 @@ def generate_report(
     out_dir: Path,
     duration: float,
 ) -> None:
-    n_dv = (
-        firm_year["DivIntensity_lead"].notna().sum()
-        if "DivIntensity_lead" in firm_year.columns
+    n_dv_lead = (
+        firm_year["PayoutRatio_lead"].notna().sum()
+        if "PayoutRatio_lead" in firm_year.columns
         else 0
     )
-    avg_unc_cols = [c for c in firm_year.columns if c.startswith("Avg_")]
+    n_dv = (
+        firm_year["PayoutRatio"].notna().sum()
+        if "PayoutRatio" in firm_year.columns
+        else 0
+    )
+    avg_cols = [c for c in firm_year.columns if c.startswith("Avg_")]
     report_lines = [
-        "# Stage 3: H12 Dividend Intensity Panel Build Report",
+        "# Stage 3: H12 Payout Ratio Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
+        f"**DV:** PayoutRatio = DVC / IB (Attig et al.)",
         "",
         "## Panel Summary (Firm-Year Level)",
         f"- **Rows (firm-years):** {len(firm_year):,}",
         f"- **Columns:** {len(firm_year.columns)}",
-        f"- **DivIntensity_lead (DV, t+1, valid):** {n_dv:,}",
-        f"- **Uncertainty measures (averaged):** {len(avg_unc_cols)}",
+        f"- **PayoutRatio (DV, t, valid):** {n_dv:,}",
+        f"- **PayoutRatio_lead (DV, t+1, valid):** {n_dv_lead:,}",
+        f"- **IVs (averaged):** {len(avg_cols)}",
         "",
-        "## Uncertainty Measures Coverage",
+        "## IV Coverage (firm-year averages)",
     ]
-    for col in avg_unc_cols:
+    for col in avg_cols:
         n_valid = firm_year[col].notna().sum()
         report_lines.append(f"- {col}: {n_valid:,} / {len(firm_year):,}")
     report_lines.append("")
@@ -389,18 +419,17 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_h12_div_intensity_panel",
+        "step_id": "build_h12_payout_panel",
         "timestamp": timestamp,
         "variable_stats": [],
     }
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "h12_div_intensity" / timestamp
+    out_dir = root / "outputs" / "variables" / "h12_payout" / timestamp
 
-    # Setup logging to timestamped directory
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H12_DivIntensity",
+        suite_name="H12_Payout",
         timestamp=timestamp,
     )
 
@@ -414,11 +443,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H12 Language Uncertainty -> Dividend Intensity Panel")
+    print("STAGE 3: Build H12 Payout Ratio Panel (Attig et al.)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
     print(f"Log dir:   {log_dir}")
+    print(f"DV:        PayoutRatio = DVC / IB (NaN when IB <= 0)")
+    print(f"IVs:       6 call-level measures -> firm-year mean")
 
     firm_year = build_panel(root, years, var_config, stats)
     save_outputs(firm_year, stats, out_dir, root, timestamp)

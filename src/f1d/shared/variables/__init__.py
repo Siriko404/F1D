@@ -129,8 +129,9 @@ from .capex_intensity import CapexIntensityBuilder
 from .dividend_payer import DividendPayerBuilder
 from .ocf_volatility import OCFVolatilityBuilder
 
-# H12 Compustat variable builder (Dividend Intensity)
+# H12 Compustat variable builders (Dividend Intensity + Payout Ratio)
 from .div_intensity import DivIntensityBuilder
+from .payout_ratio import PayoutRatioBuilder
 
 # H2 Compustat variable builders (Biddle 2009 investment efficiency)
 from .investment_residual import InvestmentResidualBuilder
@@ -140,6 +141,9 @@ from .sales_growth import SalesGrowthBuilder
 # H9 Compustat variable builders (Expanded Robustness Block)
 from .intangibility import IntangibilityBuilder
 from .asset_growth import AssetGrowthBuilder
+
+# H15 Compustat variable builder (Share Repurchase)
+from .repurchase_indicator import RepurchaseIndicatorBuilder
 
 # CRSP individual variable builders
 from .stock_return import StockReturnBuilder
@@ -203,8 +207,9 @@ __all__ = [
     "CapexIntensityBuilder",
     "DividendPayerBuilder",
     "OCFVolatilityBuilder",
-    # H12 Compustat variable builder (Dividend Intensity)
+    # H12 Compustat variable builders (Dividend Intensity + Payout Ratio)
     "DivIntensityBuilder",
+    "PayoutRatioBuilder",
     # H2 Compustat variable builders (Biddle 2009 investment efficiency)
     "InvestmentResidualBuilder",
     "CashFlowBuilder",
@@ -212,6 +217,8 @@ __all__ = [
     # H9 Compustat variable builders (Expanded Robustness Block)
     "IntangibilityBuilder",
     "AssetGrowthBuilder",
+    # H15 Compustat variable builder (Share Repurchase)
+    "RepurchaseIndicatorBuilder",
     # Weak modal builders (H1 — Stage 2 linguistic)
     "ManagerQAWeakModalBuilder",
     "CEOQAWeakModalBuilder",
@@ -244,6 +251,7 @@ __all__ = [
     "EarningsSurpriseRatioBuilder",
     "LossDummyBuilder",
     "DeltaDispersionBuilder",
+    "PostCallDispersionBuilder",
     # H7
     "AmihudIlliqBuilder",
     "AmihudChangeBuilder",
@@ -288,6 +296,7 @@ from .lagged_dispersion import LaggedDispersionBuilder
 from .earnings_surprise_ratio import EarningsSurpriseRatioBuilder
 from .loss_dummy import LossDummyBuilder
 from .delta_dispersion import DeltaDispersionBuilder
+from .postcall_dispersion import PostCallDispersionBuilder
 
 # H7 Illiquidity
 from .amihud_illiq import AmihudIlliqBuilder

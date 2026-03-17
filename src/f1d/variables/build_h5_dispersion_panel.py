@@ -8,11 +8,14 @@ Description: Build CALL-LEVEL panel for H5 Analyst Dispersion hypothesis test.
 
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
-    Step 3: Add call year from start_date.
+    Step 3: Add call year and fiscal year (fyearq_int) from start_date.
     Step 4: Assign industry sample (Main / Finance / Utility).
     Step 5: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
+
+DV: PostCallDispersion (post-call analyst forecast dispersion, Druz et al. 2020)
+Control: PreCallDispersion (pre-call dispersion level)
 """
 
 from __future__ import annotations
@@ -30,25 +33,33 @@ import pandas as pd
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
-from f1d.shared.variables.panel_utils import assign_industry_sample
+from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
+    # Key IVs (6 simultaneous)
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
-    AnalystQAUncertaintyBuilder,
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
+    # DV + pre-call control
+    PostCallDispersionBuilder,
+    # Base controls
     SizeBuilder,
     LevBuilder,
+    ROABuilder,
     TobinsQBuilder,
-    EarningsVolatilityBuilder,
-    NegativeSentimentBuilder,
-    EarningsSurpriseRatioBuilder,
+    CapexIntensityBuilder,
+    DividendPayerBuilder,
+    OCFVolatilityBuilder,
+    # Extended controls
+    EarningsSurpriseBuilder,
     LossDummyBuilder,
+    AnalystQAUncertaintyBuilder,
+    NegativeSentimentBuilder,
+    # Infrastructure
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
-    DeltaDispersionBuilder,
 )
 
 
@@ -75,17 +86,12 @@ def build_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
+        # Key IVs
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
         ),
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
-        ),
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
-        ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
         ),
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
@@ -93,33 +99,39 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
+        ),
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
+        ),
+        # DV + pre-call control
+        "postcall_dispersion": PostCallDispersionBuilder(
+            var_config.get("postcall_dispersion", {})
+        ),
+        # Base controls
+        "size": SizeBuilder(var_config.get("size", {})),
+        "lev": LevBuilder(var_config.get("lev", {})),
+        "roa": ROABuilder(var_config.get("roa", {})),
+        "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
+        "capex_intensity": CapexIntensityBuilder(
+            var_config.get("capex_intensity", {})
+        ),
+        "dividend_payer": DividendPayerBuilder(var_config.get("dividend_payer", {})),
+        "ocf_volatility": OCFVolatilityBuilder(
+            var_config.get("ocf_volatility", {})
+        ),
+        # Extended controls
+        "earnings_surprise": EarningsSurpriseBuilder(
+            var_config.get("earnings_surprise", {})
+        ),
+        "loss_dummy": LossDummyBuilder(var_config.get("loss_dummy", {})),
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
         ),
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
-        "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
-        "earnings_volatility": EarningsVolatilityBuilder(
-            var_config.get("earnings_volatility", {})
-        ),
-        # IBES Summary-based builders removed (require missing tr_ibes.parquet)
-        # "dispersion_lead": DispersionLeadBuilder(var_config.get("dispersion_lead", {})),
-        # "prior_dispersion": PriorDispersionBuilder(
-        #     var_config.get("prior_dispersion", {})
-        # ),
-        # "dispersion": DispersionBuilder(var_config.get("dispersion", {})),
-        # "lagged_dispersion": LaggedDispersionBuilder(
-        #     var_config.get("lagged_dispersion", {})
-        # ),
-        # New IBES Detail-based builder
-        "delta_dispersion": DeltaDispersionBuilder(var_config.get("delta_dispersion", {})),
-        "earnings_surprise_ratio": EarningsSurpriseRatioBuilder(
-            var_config.get("earnings_surprise_ratio", {})
-        ),
-        "loss_dummy": LossDummyBuilder(var_config.get("loss_dummy", {})),
     }
 
     all_results = {}
@@ -132,7 +144,9 @@ def build_panel(
     panel = all_results["manifest"].data.copy()
 
     # Assert file_name uniqueness before merges
-    assert panel["file_name"].is_unique, f"Manifest file_name not unique: {panel['file_name'].duplicated().sum()} duplicates"
+    assert panel["file_name"].is_unique, (
+        f"Manifest file_name not unique: {panel['file_name'].duplicated().sum()} duplicates"
+    )
 
     for name, result in all_results.items():
         if name == "manifest":
@@ -155,11 +169,16 @@ def build_panel(
 
     if "ff12_code" not in panel.columns:
         raise ValueError(
-            "build_panel: 'ff12_code' not in panel after merges. "
-            "ManifestFieldsBuilder must include ff12_code."
+            "build_panel: 'ff12_code' not in panel. ManifestFieldsBuilder must include ff12_code."
         )
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
     panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
+
+    # Attach fiscal year and create fyearq_int (CRITICAL for runner time index)
+    panel = attach_fyearq(panel, root_path)
+    panel["fyearq_int"] = np.floor(
+        pd.to_numeric(panel["fyearq"], errors="coerce")
+    ).astype("Int64")
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
@@ -179,7 +198,6 @@ def save_outputs(panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, root
     stats_df.to_csv(stats_path, index=False)
     print(f"  Saved: summary_stats.csv ({len(stats_df)} variables)")
 
-    # Generate run manifest for reproducibility
     manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
     generate_manifest(
         output_dir=out_dir,
@@ -206,9 +224,18 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **Delta Dispersion (valid):** {panel['delta_dispersion'].notna().sum():,} calls",
-        f"- **Dispersion Before (valid):** {panel['dispersion_before'].notna().sum():,} calls",
-        f"- **Dispersion After (valid):** {panel['dispersion_after'].notna().sum():,} calls",
+        "",
+        "## Dependent Variable",
+        f"- **PostCallDispersion (valid):** {panel['PostCallDispersion'].notna().sum():,} calls",
+        f"- **PreCallDispersion (valid):** {panel['PreCallDispersion'].notna().sum():,} calls",
+        "",
+        "## Key IVs (6 simultaneous)",
+        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,}",
+        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,}",
+        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,}",
+        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,}",
+        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,}",
+        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,}",
         "",
     ]
 
@@ -232,7 +259,6 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "variables" / "h5_dispersion" / timestamp
 
-    # Setup logging to timestamped directory
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
         suite_name="H5_Dispersion",

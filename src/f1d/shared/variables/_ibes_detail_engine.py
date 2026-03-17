@@ -43,6 +43,7 @@ COLUMNS = {
     'measure': 'MEASURE',
     'fpi': 'FPI',
     'fpedats': 'FPEDATS',
+    'pdf': 'PDF',  # Primary/Diluted flag
 }
 
 # The global singleton instance
@@ -60,7 +61,8 @@ class IbesDetailEngine:
 
         # Configuration
         self.numest_min = 2  # Minimum analysts for valid dispersion
-        self.fpi_valid = ['6', '7']  # FPI 6 = current quarter, 7 = next quarter
+        self.fpi_valid = ['6', '7']  # FPI 6 = current quarter, 7 = next quarter (both needed: FPI is relative to estimate date, not call date)
+        self.pdf_valid = ['D']  # Diluted EPS only
         self.max_stale_days = 180  # Stale estimate filter (days)
 
     def get_data(self, root_path: Path, years: range) -> pd.DataFrame:
@@ -75,13 +77,18 @@ class IbesDetailEngine:
         """
         if (self._cache is not None and
             self._cache_root == root_path and
-            self._cache_years == years):
+            self._cache_years == years and
+            getattr(self, '_cache_fpi', None) == self.fpi_valid and
+            getattr(self, '_cache_pdf', None) == self.pdf_valid):
             return self._cache
 
         print(f"    IbesDetailEngine: Loading IBES Detail data for years {years.start}-{years.stop-1}...")
+        print(f"    IbesDetailEngine: FPI={self.fpi_valid}, PDF={self.pdf_valid}")
         self._cache = self._build_ibes_detail_panel(root_path, years)
         self._cache_root = root_path
         self._cache_years = years
+        self._cache_fpi = list(self.fpi_valid)
+        self._cache_pdf = list(self.pdf_valid)
         return self._cache
 
     def _build_ibes_detail_panel(self, root_path: Path, years: range) -> pd.DataFrame:
@@ -128,6 +135,7 @@ class IbesDetailEngine:
             COLUMNS['measure'],
             COLUMNS['fpi'],
             COLUMNS['fpedats'],
+            COLUMNS['pdf'],
             'ACTUAL',  # Include ACTUAL for earnings surprise builders
         ]
 
@@ -175,10 +183,11 @@ class IbesDetailEngine:
         # Use pyarrow.dataset for predicate pushdown
         dataset = ds.dataset(file_path, format="parquet")
 
-        # Filter at I/O level: MEASURE == "EPS" and FPI in ['6', '7']
+        # Filter at I/O level: MEASURE == "EPS", FPI filter, PDF filter
         filter_expr = (
             (pc.field(COLUMNS['measure']) == "EPS")
             & (pc.field(COLUMNS['fpi']).isin(self.fpi_valid))
+            & (pc.field(COLUMNS['pdf']).isin(self.pdf_valid))
         )
 
         try:

@@ -141,8 +141,8 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
         all_ccm_cols_lower = {c.lower(): c for c in all_ccm_cols}
 
         ccm_cols = ["gvkey", "LPERMNO"]
-        for date_col_lower in ["linkdt", "linkenddt"]:
-            actual_col = all_ccm_cols_lower.get(date_col_lower)
+        for col_lower in ["linkdt", "linkenddt", "linkprim"]:
+            actual_col = all_ccm_cols_lower.get(col_lower)
             if actual_col:
                 ccm_cols.append(actual_col)
 
@@ -154,6 +154,12 @@ class BidAskSpreadChangeBuilder(VariableBuilder):
         )
         if "lpermno" in ccm.columns:
             ccm = ccm.rename(columns={"lpermno": "LPERMNO"})
+
+        # Filter to primary CCM links only (same as _ibes_engine.py)
+        if "linkprim" in ccm.columns:
+            before_lp = len(ccm)
+            ccm = ccm[ccm["linkprim"].isin(["P", "C"])].copy()
+            logger.info(f"LINKPRIM filter: {len(ccm):,} / {before_lp:,} links retained")
 
         # Process CCM
         ccm = ccm.copy()

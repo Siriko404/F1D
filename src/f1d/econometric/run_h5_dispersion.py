@@ -4,51 +4,58 @@
 STAGE 4: Test H5 Analyst Dispersion Hypothesis
 ================================================================================
 ID: econometric/test_h5_dispersion
-Description: Run H5 Analyst Dispersion hypothesis test by loading the call-level
-             panel from Stage 3, running fixed effects OLS regressions by
-             industry sample, and outputting results.
+Description: Run H5 Analyst Dispersion hypothesis test using 4 model specifications
+             with 6 simultaneous uncertainty/clarity IVs, varying FE type and
+             control set. Main sample only.
 
-Model A (Uncertainty → Dispersion) — 4 regressions per sample:
-    A1: delta_dispersion ~ CEO_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
-    A2: delta_dispersion ~ CEO_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
-    A3: delta_dispersion ~ Manager_QA_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
-    A4: delta_dispersion ~ Manager_Pres_Uncertainty_pct + Controls + lagged_dispersion + FirmFE + YearFE
+Model Specifications (4 columns in one table):
+    Col 1: Industry FE (FF12) + FiscalYear FE, Base controls
+    Col 2: Firm FE + FiscalYear FE, Base controls
+    Col 3: Industry FE (FF12) + FiscalYear FE, Extended controls
+    Col 4: Firm FE + FiscalYear FE, Extended controls
 
-Control Variables:
-    Linguistic: Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct
-    Financial: Size, Lev, TobinsQ, earnings_volatility, earnings_surprise_ratio, loss_dummy
-    Lagged DV: lagged_dispersion
+DV: PostCallDispersion — post-call analyst forecast dispersion
+    SD(next-quarter EPS forecasts) / |Mean| * 100
+    Measured 3 trading days after earnings call.
+    Construction: Druz, Petzev, Wagner & Zeckhauser (2020);
+                  Diether, Malloy & Scherbina (2002).
 
-Total: 12 regressions (4 specs × 3 samples)
+Key Independent Variables (6, all enter simultaneously):
+    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
+    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
+    CEO_Clarity_Residual, Manager_Clarity_Residual
 
-Hypothesis Tests (one-tailed):
-    H5: beta(Uncertainty) > 0 (higher uncertainty -> higher dispersion)
+Base Controls (8):
+    Size, TobinsQ, ROA, Lev, CapexAt, DividendPayer, OCF_Volatility,
+    PreCallDispersion (lagged-DV control)
 
-Industry Samples:
-    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
-    - Finance: FF12 code 11
-    - Utility: FF12 code 8
+Extended Controls (Base + 4):
+    + SurpDec, loss_dummy, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct
 
-Minimum Calls Filter:
-    Firms must have >= 5 calls to be included in regression.
+Sample: Main only (FF12 codes 1-7, 9-10, 12).
+
+Hypothesis Test (one-tailed):
+    H5: beta(uncertainty_var) > 0 — higher uncertainty -> more dispersion.
+
+FE Time Index: fyearq_int (fiscal year).
+Standard Errors: Firm-clustered (groups=gvkey).
+Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
 Inputs:
     - outputs/variables/h5_dispersion/latest/h5_dispersion_panel.parquet
 
 Outputs:
-    - outputs/econometric/h5_dispersion/{timestamp}/regression_results_{sample}_{spec}.txt
+    - outputs/econometric/h5_dispersion/{timestamp}/regression_results_col{1-4}.txt
     - outputs/econometric/h5_dispersion/{timestamp}/h5_dispersion_table.tex
     - outputs/econometric/h5_dispersion/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h5_dispersion/{timestamp}/summary_stats.csv
     - outputs/econometric/h5_dispersion/{timestamp}/summary_stats.tex
-
-Deterministic: true
-Dependencies:
-    - Requires: Stage 3 (build_h5_dispersion_panel)
-    - Uses: statsmodels, linearmodels, f1d.shared.latex_tables_accounting
+    - outputs/econometric/h5_dispersion/{timestamp}/report_step4_H5.md
+    - outputs/econometric/h5_dispersion/{timestamp}/sample_attrition.csv
+    - outputs/econometric/h5_dispersion/{timestamp}/run_manifest.json
 
 Author: Thesis Author
-Date: 2026-03-08
+Date: 2026-03-17
 ================================================================================
 """
 
@@ -56,319 +63,584 @@ from __future__ import annotations
 
 import argparse
 import sys
-import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-import statsmodels.formula.api as smf  # type: ignore[import]
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
-from f1d.shared.variables.panel_utils import assign_industry_sample
 
-# Silence statsmodels covariance warnings
-warnings.filterwarnings(
-    "ignore", message="covariance of constraints does not have full rank"
-)
-
-CONFIG = {
-    "min_calls": 5,
-    "samples": ["Main", "Finance", "Utility"],
-}
 
 # ==============================================================================
-# Model Specifications
+# Configuration
 # ==============================================================================
 
-# Model A: Uncertainty measures (4 specs)
-MODEL_A_SPECS = [
-    ("A1", "CEO_QA_Uncertainty_pct", "CEO QA Uncertainty"),
-    ("A2", "CEO_Pres_Uncertainty_pct", "CEO Pres Uncertainty"),
-    ("A3", "Manager_QA_Uncertainty_pct", "Manager QA Uncertainty"),
-    ("A4", "Manager_Pres_Uncertainty_pct", "Manager Pres Uncertainty"),
+KEY_IVS = [
+    "CEO_QA_Uncertainty_pct",
+    "CEO_Pres_Uncertainty_pct",
+    "Manager_QA_Uncertainty_pct",
+    "Manager_Pres_Uncertainty_pct",
+    "CEO_Clarity_Residual",
+    "Manager_Clarity_Residual",
 ]
 
-# Base controls (common to all specs)
+# NOTE: PostCallDispersion is the DV — NOT a control.
+# PreCallDispersion is a lagged-DV control (pre-call dispersion level).
 BASE_CONTROLS = [
+    "Size",
+    "TobinsQ",
+    "ROA",
+    "Lev",
+    "CapexAt",
+    "DividendPayer",
+    "OCF_Volatility",
+    "PreCallDispersion",
+]
+
+EXTENDED_CONTROLS = BASE_CONTROLS + [
+    "SurpDec",
+    "loss_dummy",
     "Analyst_QA_Uncertainty_pct",
     "Entire_All_Negative_pct",
-    "Size",
-    "Lev",
-    "TobinsQ",
-    "earnings_volatility",
-    "earnings_surprise_ratio",
-    "loss_dummy",
-    "lagged_dispersion",  # Lagged DV for persistence
 ]
 
+MODEL_SPECS = [
+    {"col": 1, "dv": "PostCallDispersion", "fe": "industry", "controls": "base"},
+    {"col": 2, "dv": "PostCallDispersion", "fe": "firm",     "controls": "base"},
+    {"col": 3, "dv": "PostCallDispersion", "fe": "industry", "controls": "extended"},
+    {"col": 4, "dv": "PostCallDispersion", "fe": "firm",     "controls": "extended"},
+]
 
-# ==============================================================================
-# Summary Statistics Variables
-# ==============================================================================
+MIN_CALLS_PER_FIRM = 5
+
+VARIABLE_LABELS = {
+    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
+    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
+    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
+    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
+    "CEO_Clarity_Residual": "CEO Clarity Residual",
+    "Manager_Clarity_Residual": "Mgr Clarity Residual",
+}
 
 SUMMARY_STATS_VARS = [
-    # Dependent variable
-    {"col": "delta_dispersion", "label": "$\\Delta$ Analyst Dispersion"},
-    {"col": "dispersion_before", "label": "Dispersion$_{t-3}$"},
-    {"col": "dispersion_after", "label": "Dispersion$_{t+3}$"},
-    # Legacy dispersion (for comparison)
-    {"col": "dispersion", "label": "Analyst Dispersion$_{t}$"},
-    # Lagged DV
-    {"col": "lagged_dispersion", "label": "Lagged Dispersion"},
-    # Model A: Uncertainty measures
+    {"col": "PostCallDispersion", "label": "Post-Call Dispersion"},
+    {"col": "PreCallDispersion", "label": "Pre-Call Dispersion"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    # Controls
-    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
-    {"col": "Entire_All_Negative_pct", "label": "Entire Call Negative"},
+    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
+    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
     {"col": "Size", "label": "Firm Size (log AT)"},
-    {"col": "Lev", "label": "Leverage"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
-    {"col": "earnings_volatility", "label": "Earnings Volatility"},
-    {"col": "earnings_surprise_ratio", "label": "Earnings Surprise Ratio"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "CapexAt", "label": "CapEx / Assets"},
+    {"col": "DividendPayer", "label": "Dividend Payer"},
+    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "SurpDec", "label": "Earnings Surprise Decile"},
     {"col": "loss_dummy", "label": "Loss Dummy"},
+    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
+    {"col": "Entire_All_Negative_pct", "label": "Call Negative Sentiment"},
 ]
 
 
-def parse_arguments() -> argparse.Namespace:
+# ==============================================================================
+# CLI Arguments
+# ==============================================================================
+
+
+def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Test H5 Analyst Dispersion Hypothesis (Stage 4)"
+        description="Stage 4: Test H5 Analyst Dispersion Hypothesis (call-level)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--panel-path", type=str, help="Explicit path to H5 panel parquet"
+        "--dry-run", action="store_true", help="Validate inputs without executing"
+    )
+    parser.add_argument(
+        "--panel-path", type=str, default=None,
+        help="Path to panel parquet file (default: latest from Stage 3)",
     )
     return parser.parse_args()
 
 
-def run_regression(
-    df_sample: pd.DataFrame,
-    spec_id: str,
-    key_iv: str,
-    sample_name: str,
-) -> Tuple[Any, Dict[str, Any]]:
-    """Run a single regression specification.
+# ==============================================================================
+# Data Loading
+# ==============================================================================
 
-    Args:
-        df_sample: Filtered sample data
-        spec_id: Specification ID (e.g., "A1", "A2")
-        key_iv: Key independent variable name
-        sample_name: Sample name (Main, Finance, Utility)
 
-    Returns:
-        Tuple of (model, metadata dict)
-    """
-    controls = list(BASE_CONTROLS)
+def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
+    """Load call-level H5 panel from Stage 3 output."""
+    print("\n" + "=" * 60)
+    print("Loading panel")
+    print("=" * 60)
 
-    # Required columns: DV, key IV, controls, FE vars
-    required = ["delta_dispersion", key_iv] + controls + ["gvkey", "year"]
-    df_reg = df_sample.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
-
-    if len(df_reg) < 100:
-        return None, {}
-
-    # Build formula
-    formula_parts = [key_iv] + controls
-    formula = "delta_dispersion ~ " + " + ".join(formula_parts)
-
-    print(f"  Formula: {formula} + EntityEffects + TimeEffects")
-    print(f"  N calls: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}")
-    print("  Estimating with firm-clustered SEs... (this may take a moment)")
-
-    t0 = datetime.now()
-
-    # Convert to multi-index for PanelOLS
-    df_reg["gvkey_cat"] = df_reg["gvkey"].astype("category")
-    df_reg["year_cat"] = df_reg["year"].astype("category")
-    df_panel = df_reg.set_index(["gvkey", "year"])
-
-    try:
-        formula_panel = formula + " + EntityEffects + TimeEffects"
-        model_obj = PanelOLS.from_formula(formula_panel, data=df_panel, drop_absorbed=True)
-        model = model_obj.fit(cov_type="clustered", cluster_entity=True)
-    except Exception as e:
-        print(f"  ERROR: PanelOLS Regression failed: {e}", file=sys.stderr)
-        return None, {}
-
-    duration = (datetime.now() - t0).total_seconds()
-    print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared (within): {model.rsquared_within:.4f}")
-    print(f"  Adj R-squared:      {model.rsquared_inclusive:.4f}")
-    print(f"  N obs:              {int(model.nobs):,}")
-
-    # Use PanelOLS native within-R² directly
-    within_r2 = float(model.rsquared_within)
-    print(f"  Within-R²:          {within_r2:.4f}")
-
-    beta1 = model.params.get(key_iv, np.nan)
-    p1_two = model.pvalues.get(key_iv, np.nan)
-    beta1_se = model.std_errors.get(key_iv, np.nan)
-    beta1_t = model.tstats.get(key_iv, np.nan)
-
-    # H5: beta1 > 0 (one-tailed)
-    if not np.isnan(p1_two) and not np.isnan(beta1):
-        p1_one = p1_two / 2 if beta1 > 0 else 1 - p1_two / 2
+    if panel_path:
+        panel_file = Path(panel_path)
     else:
-        p1_one = np.nan
+        panel_dir = get_latest_output_dir(
+            root_path / "outputs" / "variables" / "h5_dispersion",
+            required_file="h5_dispersion_panel.parquet",
+        )
+        panel_file = panel_dir / "h5_dispersion_panel.parquet"
 
-    h5_sig = not np.isnan(p1_one) and p1_one < 0.05 and beta1 > 0
-    h5_text = "YES" if h5_sig else "no"
+    if not panel_file.exists():
+        raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
+    columns = [
+        "gvkey", "year", "fyearq_int", "ff12_code",
+        # DV
+        "PostCallDispersion",
+        # Key IVs
+        "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
+        "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
+        "CEO_Clarity_Residual", "Manager_Clarity_Residual",
+        # Base controls
+        "Size", "TobinsQ", "ROA", "Lev",
+        "CapexAt", "DividendPayer", "OCF_Volatility",
+        "PreCallDispersion",
+        # Extended controls
+        "SurpDec", "loss_dummy",
+        "Analyst_QA_Uncertainty_pct", "Entire_All_Negative_pct",
+    ]
+
+    panel = pd.read_parquet(panel_file, columns=columns)
+    print(f"  Loaded: {panel_file}")
+    print(f"  Rows: {len(panel):,}")
+    print(f"  Columns: {len(panel.columns)}")
+    return panel
+
+
+def filter_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
+    """Filter to Main sample only (exclude Finance ff12=11, Utility ff12=8)."""
+    before = len(panel)
+    main = panel[~panel["ff12_code"].isin([8, 11])].copy()
+    print(f"  Main sample filter: {len(main):,} / {before:,} "
+          f"(dropped {before - len(main):,} Finance/Utility)")
+    return main
+
+
+def prepare_regression_data(
+    panel: pd.DataFrame,
+    spec: Dict[str, Any],
+) -> pd.DataFrame:
+    """Prepare panel for a specific model specification."""
+    dv = spec["dv"]
+    controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+    required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+
+    missing = [c for c in required if c not in panel.columns]
+    if missing:
+        raise ValueError(
+            f"Required columns missing from panel: {missing}. Check Stage 3 output."
+        )
+
+    df = panel.copy()
+    df = df.replace([np.inf, -np.inf], np.nan)
+
+    for iv in KEY_IVS:
+        pct_missing = df[iv].isna().mean() * 100
+        if pct_missing > 50:
+            print(f"  WARNING: {iv} has {pct_missing:.1f}% missing values")
+
+    before = len(df)
+    df = df[df[dv].notna()].copy()
+    print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
+
+    complete_mask = df[required].notna().all(axis=1)
+    df = df[complete_mask].copy()
+    print(f"  After complete cases: {len(df):,}")
+
+    firm_counts = df["gvkey"].value_counts()
+    valid_firms = set(firm_counts[firm_counts >= MIN_CALLS_PER_FIRM].index)
+    df = df[df["gvkey"].isin(valid_firms)].copy()
     print(
-        f"  beta1 ({key_iv}):  {beta1:.4f}  SE={beta1_se:.4f}  p(one-tail)={p1_one:.4f}  H5={h5_text}"
+        f"  After >={MIN_CALLS_PER_FIRM} calls/firm: "
+        f"{len(df):,} calls, {df['gvkey'].nunique():,} firms"
     )
 
-    meta = {
-        "spec_id": spec_id,
-        "key_iv": key_iv,
-        "sample": sample_name,
+    return df
+
+
+# ==============================================================================
+# Regression
+# ==============================================================================
+
+
+def run_regression(
+    df_prepared: pd.DataFrame,
+    spec: Dict[str, Any],
+) -> Tuple[Any, Dict[str, Any]]:
+    """Run PanelOLS regression for a given model specification."""
+    col_num = spec["col"]
+    dv = spec["dv"]
+    fe_type = spec["fe"]
+    controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+
+    print(f"\n" + "=" * 60)
+    print(f"Running regression: Col ({col_num}) | DV={dv} | FE={fe_type} | Controls={spec['controls']}")
+    print("=" * 60)
+
+    if len(df_prepared) < 100:
+        print(f"  WARNING: Too few observations ({len(df_prepared)}), skipping")
+        return None, {}
+
+    exog = KEY_IVS + controls
+
+    print(f"  FE: {'Industry(FF12) + FiscalYear' if fe_type == 'industry' else 'Firm + FiscalYear'}")
+    print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
+    print(f"  Controls: {spec['controls']} ({len(controls)} vars)")
+    print("  Estimating with firm-clustered SEs via PanelOLS...")
+    t0 = datetime.now()
+
+    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+
+    try:
+        if fe_type == "industry":
+            dependent_data = df_panel[dv]
+            exog_data = df_panel[exog]
+            industry_data = df_panel["ff12_code"]
+            model_obj = PanelOLS(
+                dependent=dependent_data,
+                exog=exog_data,
+                entity_effects=False,
+                time_effects=True,
+                other_effects=industry_data,
+                drop_absorbed=True,
+                check_rank=False,
+            )
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+        else:
+            exog_str = " + ".join(exog)
+            formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
+            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+    except Exception as e:
+        print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
+        return None, {}
+
+    elapsed = (datetime.now() - t0).total_seconds()
+    print(f"  [OK] Complete in {elapsed:.1f}s")
+    print(f"  R-squared (within): {model.rsquared_within:.4f}")
+    print(f"  N obs: {int(model.nobs):,}")
+
+    # Build metadata with per-IV one-tailed p-values (H5: beta > 0)
+    meta: Dict[str, Any] = {
+        "col": col_num,
+        "dv": dv,
+        "fe": fe_type,
+        "controls": spec["controls"],
         "n_obs": int(model.nobs),
-        "n_firms": df_reg["gvkey"].nunique(),
-        "n_clusters": df_reg["gvkey"].nunique(),
-        "cluster_var": "gvkey",
-        "rsquared": float(model.rsquared_within),
-        "rsquared_adj": float(model.rsquared_inclusive),
-        "within_r2": within_r2,
-        "beta1": float(beta1),
-        "beta1_se": float(beta1_se),
-        "beta1_t": float(beta1_t),
-        "beta1_p_two": float(p1_two),
-        "beta1_p_one": float(p1_one),
-        "h5_sig": h5_sig,
+        "n_firms": df_prepared["gvkey"].nunique(),
+        "within_r2": float(model.rsquared_within),
     }
+
+    for iv in KEY_IVS:
+        beta = float(model.params.get(iv, np.nan))
+        se = float(model.std_errors.get(iv, np.nan))
+        p_two = float(model.pvalues.get(iv, np.nan))
+        t_stat = float(model.tstats.get(iv, np.nan))
+
+        if not np.isnan(p_two) and not np.isnan(beta):
+            p_one = p_two / 2 if beta > 0 else 1 - p_two / 2
+        else:
+            p_one = np.nan
+
+        meta[f"{iv}_beta"] = beta
+        meta[f"{iv}_se"] = se
+        meta[f"{iv}_t"] = t_stat
+        meta[f"{iv}_p_one"] = p_one
+
+        stars = _sig_stars(p_one)
+        print(f"  {iv}: beta={beta:.4f} SE={se:.4f} p1={p_one:.4f} {stars}")
 
     return model, meta
 
 
+# ==============================================================================
+# Output Generation
+# ==============================================================================
+
+
+def _sig_stars(p: float) -> str:
+    """Return significance stars for one-tailed p-value."""
+    if np.isnan(p):
+        return ""
+    if p < 0.01:
+        return "***"
+    if p < 0.05:
+        return "**"
+    if p < 0.10:
+        return "*"
+    return ""
+
+
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Save LaTeX table with uncertainty measures (A1-A4)."""
-    tex_path = out_dir / "h5_dispersion_table.tex"
+    """Write 4-column LaTeX table with stars + SE in parentheses."""
+    results_by_col = {}
+    for r in all_results:
+        meta = r.get("meta", {})
+        if meta:
+            results_by_col[meta["col"]] = meta
 
-    def get_res(spec_id, sample="Main"):
-        for r in all_results:
-            if r["sample"] == sample and r["spec_id"] == spec_id:
-                return r
-        return None
+    n_cols = 4
 
-    def fmt_coef(val, pval):
-        if val is None or pd.isna(val):
+    def fmt_coef(val: float, stars: str) -> str:
+        if np.isnan(val):
             return ""
-        stars = ""
-        if pval < 0.01:
-            stars = "^{***}"
-        elif pval < 0.05:
-            stars = "^{**}"
-        elif pval < 0.10:
-            stars = "^{*}"
         return f"{val:.4f}{stars}"
 
-    def fmt_se(val):
-        if val is None or pd.isna(val):
+    def fmt_se(val: float) -> str:
+        if np.isnan(val):
             return ""
         return f"({val:.4f})"
 
-    def fmt_int(val):
-        if val is None or pd.isna(val):
-            return ""
-        return f"{int(val):,}"
+    def fmt_int(val: int) -> str:
+        return f"{val:,}"
 
-    def fmt_r2(val):
-        if val is None or pd.isna(val):
+    def fmt_r2(val: float) -> str:
+        if np.isnan(val):
             return ""
-        return f"{val:.4f}"
-
-    # Get Main sample results for all specs
-    main_A = [get_res(f"A{i}") for i in range(1, 5)]
+        return f"{val:.3f}"
 
     lines = [
-        "\\begin{table}[htbp]",
-        "\\centering",
-        "\\caption{H5: Manager Uncertainty and Change in Analyst Dispersion}",
-        "\\label{tab:h5_dispersion}",
-        "\\begin{tabular}{lcccc}",
-        "\\toprule",
-        " & (1) & (2) & (3) & (4) \\\\",
-        " & CEO QA & CEO Pres & Mgr QA & Mgr Pres \\\\",
-        "\\midrule",
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Speech Uncertainty and Post-Call Analyst Dispersion}",
+        r"\label{tab:h5_dispersion}",
+        r"\scriptsize",
+        r"\begin{tabular}{l" + "c" * n_cols + "}",
+        r"\toprule",
     ]
 
-    # Uncertainty coefficients
-    row1 = "Uncertainty Measure & "
-    row1 += " & ".join([
-        fmt_coef(r["beta1"], r["beta1_p_one"]) if r else ""
-        for r in main_A
-    ]) + " \\\\"
-    lines.append(row1)
+    col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
+    lines.append(f" & {col_nums} " + r"\\")
 
-    row2 = " & "
-    row2 += " & ".join([
-        fmt_se(r["beta1_se"]) if r else ""
-        for r in main_A
-    ]) + " \\\\"
-    lines.append(row2)
+    lines.append(
+        r" & \multicolumn{4}{c}{Post-Call Analyst Dispersion} \\"
+    )
+    lines.append(r"\cmidrule(lr){2-5}")
+    lines.append(r"\midrule")
 
-    # Add rows for controls and FE
-    lines.extend([
-        "\\midrule",
-        "Lagged Dispersion & Yes & Yes & Yes & Yes \\\\",
-        "Controls & Yes & Yes & Yes & Yes \\\\",
-        "Firm FE & Yes & Yes & Yes & Yes \\\\",
-        "Year FE & Yes & Yes & Yes & Yes \\\\",
-        "\\midrule",
-    ])
+    for iv in KEY_IVS:
+        label = VARIABLE_LABELS.get(iv, iv)
+        coef_cells = []
+        for c in range(1, n_cols + 1):
+            meta = results_by_col.get(c, {})
+            beta = meta.get(f"{iv}_beta", np.nan)
+            p_one = meta.get(f"{iv}_p_one", np.nan)
+            coef_cells.append(fmt_coef(beta, _sig_stars(p_one)))
+        lines.append(f"{label} & " + " & ".join(coef_cells) + r" \\")
 
-    # Observations and R²
-    row_n = "Observations & "
-    row_n += " & ".join([
-        fmt_int(r["n_obs"]) if r else ""
-        for r in main_A
-    ]) + " \\\\"
-    lines.append(row_n)
+        se_cells = []
+        for c in range(1, n_cols + 1):
+            meta = results_by_col.get(c, {})
+            se = meta.get(f"{iv}_se", np.nan)
+            se_cells.append(fmt_se(se))
+        lines.append(f" & " + " & ".join(se_cells) + r" \\")
 
-    row_r2 = "Within-$R^2$ & "
-    row_r2 += " & ".join([
-        fmt_r2(r["within_r2"]) if r else ""
-        for r in main_A
-    ]) + " \\\\"
-    lines.append(row_r2)
+    lines.append(r"\midrule")
 
-    lines.extend([
-        "\\bottomrule",
-        "\\end{tabular}",
-        "\\\\[-0.5em]",
-        "\\parbox{\\textwidth}{\\scriptsize ",
-        "\\textit{Notes:} ",
-        "This table tests whether manager uncertainty language predicts changes in analyst dispersion around earnings calls. ",
-        "The dependent variable is $\\Delta$ Dispersion = dispersion$_{t+3}$ $-$ dispersion$_{t-3}$ (3 trading days after minus before call). ",
-        "All models use the Main industry sample (non-financial, non-utility firms). ",
-        "Firms with fewer than 5 calls are excluded. ",
-        "Standard errors are clustered at the firm level. ",
-        "Variables are winsorized at 1\\%/99\\% by year. ",
-        "$^{*}$p$<$0.10, $^{**}$p$<$0.05, $^{***}$p$<$0.01 (one-tailed).",
-        "}",
-        "\\end{table}",
-    ])
+    ctrl_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
+    lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
 
-    with open(tex_path, "w") as f:
+    ind_fe_cells = []
+    firm_fe_cells = []
+    year_fe_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        ind_fe_cells.append("Yes" if meta.get("fe") == "industry" else "")
+        firm_fe_cells.append("Yes" if meta.get("fe") == "firm" else "")
+        year_fe_cells.append("Yes")
+    lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
+    lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
+    lines.append(r"Fiscal Year FE & " + " & ".join(year_fe_cells) + r" \\")
+
+    lines.append(r"\midrule")
+
+    n_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        n_val = meta.get("n_obs", 0)
+        n_cells.append(fmt_int(n_val) if n_val else "")
+    lines.append(r"N & " + " & ".join(n_cells) + r" \\")
+
+    r2_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        r2_cells.append(fmt_r2(meta.get("within_r2", np.nan)))
+    lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
+
+    lines += [
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\begin{minipage}{\linewidth}",
+        r"\vspace{2pt}\scriptsize",
+        r"\textit{Notes:} ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H5: $\beta > 0$). ",
+        r"Standard errors (in parentheses) clustered at firm level. ",
+        r"Main sample (excludes financial and utility firms). ",
+        r"Industry FE uses Fama-French 12 industry dummies. ",
+        r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
+        r"Post-call analyst dispersion = SD(next-quarter EPS forecasts) / $|\overline{\text{EPS}}|$ $\times$ 100, ",
+        r"measured 3 trading days after the earnings call (Druz et al.\ 2020). ",
+        r"Pre-call dispersion (1 trading day before call) included as control in all specifications. ",
+        r"Variables winsorized at 1\%/99\%. ",
+        r"Unit of observation: individual earnings call.",
+        r"\end{minipage}",
+        r"\end{table}",
+    ]
+
+    tex_path = out_dir / "h5_dispersion_table.tex"
+    with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-
     print(f"  Saved: h5_dispersion_table.tex")
 
 
-def main(panel_path: str | None = None) -> int:
-    t0 = datetime.now()
-    timestamp = t0.strftime("%Y-%m-%d_%H%M%S")
+def save_outputs(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> pd.DataFrame:
+    """Save regression outputs."""
+    print("\n" + "=" * 60)
+    print("Saving outputs")
+    print("=" * 60)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    for r in all_results:
+        model = r.get("model")
+        meta = r.get("meta", {})
+        if model is None or not meta:
+            continue
+        col_num = meta.get("col", 0)
+        fname = f"regression_results_col{col_num}.txt"
+        fpath = out_dir / fname
+        with open(fpath, "w", encoding="utf-8") as f:
+            f.write(f"Model Specification: Col ({col_num})\n")
+            f.write(f"DV: {meta.get('dv')}\n")
+            f.write(f"FE: {meta.get('fe')}\n")
+            f.write(f"Controls: {meta.get('controls')}\n")
+            f.write("=" * 60 + "\n\n")
+            f.write(str(model.summary))
+        print(f"  Saved: {fname}")
+
+    diag_rows = [r["meta"] for r in all_results if r.get("meta")]
+    diag_df = pd.DataFrame(diag_rows)
+    diag_path = out_dir / "model_diagnostics.csv"
+    diag_df.to_csv(diag_path, index=False)
+    print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
+
+    _save_latex_table(all_results, out_dir)
+
+    return diag_df
+
+
+def generate_report(
+    all_results: List[Dict[str, Any]],
+    diag_df: pd.DataFrame,
+    out_dir: Path,
+    duration: float,
+) -> None:
+    """Generate markdown report summarising H5 results."""
+    lines = [
+        "# Stage 4: H5 Analyst Dispersion Hypothesis Test Report",
+        "",
+        f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        f"**Duration:** {duration:.1f} seconds",
+        f"**Unit of observation:** individual earnings call (call-level)",
+        f"**Sample:** Main only (excludes Finance FF12=11, Utility FF12=8)",
+        f"**Time index:** fyearq_int (fiscal year)",
+        f"**Hypothesis test:** One-tailed (H5: beta > 0)",
+        "",
+        "## Model Specifications",
+        "",
+        "All 6 key IVs enter each model simultaneously:",
+        "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
+        "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
+        "- CEO_Clarity_Residual, Manager_Clarity_Residual",
+        "",
+        "| Col | DV | FE | Controls |",
+        "|-----|----|----|----------|",
+    ]
+    for spec in MODEL_SPECS:
+        lines.append(
+            f"| ({spec['col']}) | {spec['dv']} | {spec['fe']} | {spec['controls']} |"
+        )
+
+    lines += [
+        "",
+        "## Results Summary",
+        "",
+        "| Col | DV | FE | Controls | N | Within-R² |",
+        "|-----|----|----|----------|---|-----------|",
+    ]
+
+    for r in all_results:
+        meta = r.get("meta", {})
+        if not meta:
+            continue
+        lines.append(
+            f"| ({meta['col']}) | {meta['dv']} | {meta['fe']} | "
+            f"{meta['controls']} | {meta['n_obs']:,} | {meta['within_r2']:.4f} |"
+        )
+
+    lines += [
+        "",
+        "## Key IV Coefficients (one-tailed p-values)",
+        "",
+        "| IV | Col | Beta | SE | p(one-tail) | Sig |",
+        "|----|-----|------|-----|-------------|-----|",
+    ]
+
+    for r in all_results:
+        meta = r.get("meta", {})
+        if not meta:
+            continue
+        for iv in KEY_IVS:
+            beta = meta.get(f"{iv}_beta", np.nan)
+            se = meta.get(f"{iv}_se", np.nan)
+            p_one = meta.get(f"{iv}_p_one", np.nan)
+            stars = _sig_stars(p_one)
+            if not np.isnan(beta):
+                lines.append(
+                    f"| {iv} | ({meta['col']}) | {beta:.4f} | {se:.4f} | "
+                    f"{p_one:.4f} | {stars} |"
+                )
+
+    lines.append("")
+
+    report_path = out_dir / "report_step4_H5.md"
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("  Saved: report_step4_H5.md")
+
+
+# ==============================================================================
+# Main
+# ==============================================================================
+
+
+def main(panel_path: Optional[str] = None) -> int:
+    """Main execution."""
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+    start_time = datetime.now()
+    timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
+
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h5_dispersion" / timestamp
 
-    # Setup logging to timestamped directory
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
         suite_name="H5_Dispersion",
@@ -376,157 +648,87 @@ def main(panel_path: str | None = None) -> int:
     )
 
     print("=" * 80)
-    print("STAGE 4: Test H5 Analyst Dispersion Hypothesis (call-level)")
+    print("STAGE 4: Test H5 Analyst Dispersion Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
     print(f"Log dir:   {log_dir}")
+    print(f"Sample:    Main only (FF12 != 8, 11)")
+    print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
+    print(f"Specs:     {len(MODEL_SPECS)} model columns")
+    print(f"Time FE:   fyearq_int (fiscal year)")
+    print(f"Test:      One-tailed (H5: beta > 0)")
 
-    if not panel_path:
-        try:
-            panel_dir = get_latest_output_dir(
-                root / "outputs" / "variables" / "h5_dispersion",
-                required_file="h5_dispersion_panel.parquet",
-            )
-            panel_file = panel_dir / "h5_dispersion_panel.parquet"
-        except Exception as e:
-            print(f"ERROR: Could not find Stage 3 panel: {e}")
-            return 1
-    else:
-        panel_file = Path(panel_path)
+    panel = load_panel(root, panel_path)
 
-    print("\n" + "=" * 60)
-    print("Loading panel")
-    print("=" * 60)
-    print(f"  Loaded: {panel_file}")
+    panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
+        root / "outputs" / "variables" / "h5_dispersion",
+        required_file="h5_dispersion_panel.parquet",
+    ) / "h5_dispersion_panel.parquet"
 
-    # Load columns needed for new specs
-    panel = pd.read_parquet(
-        panel_file,
-        columns=[
-            "file_name",
-            "gvkey",
-            "year",
-            "ff12_code",
-            # DV (change in dispersion)
-            "delta_dispersion",
-            "dispersion_before",
-            "dispersion_after",
-            # Legacy dispersion (for comparison)
-            "dispersion",
-            # Lagged DV control
-            "lagged_dispersion",
-            # Uncertainty measures (Model A IVs)
-            "CEO_QA_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
-            "Manager_QA_Uncertainty_pct",
-            "Manager_Pres_Uncertainty_pct",
-            # Linguistic controls
-            "Analyst_QA_Uncertainty_pct",
-            "Entire_All_Negative_pct",
-            # Financial controls
-            "Size",
-            "Lev",
-            "TobinsQ",
-            "earnings_volatility",
-            "earnings_surprise_ratio",
-            "loss_dummy",
-        ],
-    )
-    print(f"  Rows: {len(panel):,}")
-    print(f"  Columns: {len(panel.columns)}")
+    full_panel_n = len(panel)
+    panel = filter_main_sample(panel)
+    main_panel_n = len(panel)
 
-    # Check for delta_dispersion column
-    if "delta_dispersion" not in panel.columns:
-        print("ERROR: 'delta_dispersion' column not found in panel. Re-run panel builder with DeltaDispersionBuilder.")
-        return 1
+    print(f"\n  Main sample: {main_panel_n:,} calls, "
+          f"{panel['gvkey'].nunique():,} firms")
+    print(f"  PostCallDispersion non-null: {panel['PostCallDispersion'].notna().sum():,}")
+    print(f"  PreCallDispersion non-null: {panel['PreCallDispersion'].notna().sum():,}")
+    for iv in KEY_IVS:
+        n_valid = panel[iv].notna().sum()
+        pct = 100.0 * n_valid / main_panel_n if main_panel_n > 0 else 0
+        print(f"  {iv}: {n_valid:,} ({pct:.1f}%)")
 
-    if "sample" not in panel.columns:
-        panel["sample"] = assign_industry_sample(panel["ff12_code"])
-
-    df_prep = panel.copy()
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    # ------------------------------------------------------------------
-    # Summary Statistics (call-level, by sample)
-    # ------------------------------------------------------------------
     print("\n" + "=" * 60)
     print("Generating summary statistics")
     print("=" * 60)
-    summary_vars = [
-        {"col": v["col"], "label": v["label"]}
-        for v in SUMMARY_STATS_VARS
-        if v["col"] in df_prep.columns
-    ]
+    out_dir.mkdir(parents=True, exist_ok=True)
     make_summary_stats_table(
-        df=df_prep,
-        variables=summary_vars,
-        sample_names=["Main", "Finance", "Utility"],
-        sample_col="sample",
+        df=panel,
+        variables=SUMMARY_STATS_VARS,
+        sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics — H5 Analyst Dispersion",
+        caption="Summary Statistics — H5 Analyst Dispersion (Main Sample)",
         label="tab:summary_stats_h5",
     )
     print("  Saved: summary_stats.csv")
     print("  Saved: summary_stats.tex")
 
-    all_results = []
+    all_results: List[Dict[str, Any]] = []
 
-    # ------------------------------------------------------------------
-    # Run Model A Specs (Uncertainty → Dispersion)
-    # ------------------------------------------------------------------
-    print("\n" + "=" * 60)
-    print("Running Model A (Uncertainty Measures)")
-    print("=" * 60)
+    for spec in MODEL_SPECS:
+        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} FE={spec['fe']} "
+              f"Controls={spec['controls']} ---")
 
-    for sample in CONFIG["samples"]:
-        df_sample = df_prep[df_prep["sample"] == sample].copy()
-        df_sample["gvkey_count"] = df_sample.groupby("gvkey")["file_name"].transform("count")
-        df_filtered = df_sample[df_sample["gvkey_count"] >= CONFIG["min_calls"]].copy()
+        try:
+            df_prepared = prepare_regression_data(panel, spec)
+        except ValueError as e:
+            print(f"  ERROR preparing data: {e}", file=sys.stderr)
+            continue
 
-        for spec_id, key_iv, iv_label in MODEL_A_SPECS:
-            print(f"\n--- {sample} / {spec_id}: {iv_label} ---")
+        if len(df_prepared) < 100:
+            print(f"  Skipping: too few obs ({len(df_prepared)})")
+            continue
 
-            if len(df_filtered) < 100:
-                print("  Skipping: insufficient data")
-                continue
+        model, meta = run_regression(df_prepared, spec)
 
-            model, meta = run_regression(
-                df_filtered, spec_id, key_iv, sample
-            )
+        if model is not None and meta:
+            all_results.append({"model": model, "meta": meta})
 
-            if model is not None:
-                all_results.append(meta)
-                with open(
-                    out_dir / f"regression_results_{sample}_{spec_id}.txt",
-                    "w",
-                ) as f:
-                    f.write(str(model.summary))
+    diag_df = save_outputs(all_results, out_dir)
 
-    # ------------------------------------------------------------------
-    # Save outputs
-    # ------------------------------------------------------------------
-    print("\n" + "=" * 60)
-    print("Saving outputs")
-    print("=" * 60)
-
-    _save_latex_table(all_results, out_dir)
-    pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)
-    print("  Saved: model_diagnostics.csv")
-
-    # Generate sample attrition table
     if all_results:
-        main_result = next((r for r in all_results if r.get("sample") == "Main"), all_results[0])
+        first_meta = all_results[0].get("meta", {})
         attrition_stages = [
-            ("Master manifest", len(panel)),
-            ("Main sample filter", (panel["sample"] == "Main").sum()),
-            ("After complete-case + min-calls filter", main_result.get("n_obs", 0)),
+            ("Master manifest (full panel)", full_panel_n),
+            ("Main sample filter (excl Finance/Utility)", main_panel_n),
+            ("PostCallDispersion non-null", panel["PostCallDispersion"].notna().sum()),
+            ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ]
         generate_attrition_table(attrition_stages, out_dir, "H5 Analyst Dispersion")
         print("  Saved: sample_attrition.csv and sample_attrition.tex")
 
-    # Generate run manifest
     generate_manifest(
         output_dir=out_dir,
         stage="stage4",
@@ -540,12 +742,37 @@ def main(panel_path: str | None = None) -> int:
     )
     print("  Saved: run_manifest.json")
 
+    duration = (datetime.now() - start_time).total_seconds()
+    generate_report(all_results, diag_df, out_dir, duration)
+
     print("\n" + "=" * 80)
-    print(f"COMPLETE: {len(all_results)} regressions across {len(CONFIG['samples'])} samples")
+    print("COMPLETE")
     print("=" * 80)
+    print(f"Duration: {duration:.1f} seconds")
+    print(f"Output:   {out_dir}")
+    print(f"Total regressions completed: {len(all_results)}/{len(MODEL_SPECS)}")
+
+    for iv in KEY_IVS:
+        sig_count = sum(
+            1 for r in all_results
+            if r["meta"].get(f"{iv}_p_one", 1.0) < 0.05
+            and r["meta"].get(f"{iv}_beta", 0) > 0
+        )
+        print(f"  {iv}: {sig_count}/{len(all_results)} significant (p<0.05, one-tail)")
+
     return 0
 
 
 if __name__ == "__main__":
-    parser = parse_arguments()
-    sys.exit(main(panel_path=parser.panel_path))
+    args = parse_arguments()
+
+    if args.dry_run:
+        print("Dry-run mode: validating inputs...")
+        print(f"  KEY_IVS: {len(KEY_IVS)} variables")
+        print(f"  MODEL_SPECS: {len(MODEL_SPECS)} specifications")
+        print(f"  BASE_CONTROLS: {len(BASE_CONTROLS)} variables")
+        print(f"  EXTENDED_CONTROLS: {len(EXTENDED_CONTROLS)} variables")
+        print("[OK] All inputs validated")
+        sys.exit(0)
+
+    sys.exit(main(panel_path=args.panel_path))

@@ -116,8 +116,9 @@ COMPUSTAT_COLS = [
     "CapexAt",
     "DividendPayer",
     "OCF_Volatility",
-    # H12 extension (Dividend Intensity)
+    # H12 extension (Dividend Intensity + Payout Ratio)
     "DivIntensity",
+    "PayoutRatio",
     # H2 extension (Biddle 2009 investment residual)
     "InvestmentResidual",
     "CashFlow",
@@ -132,6 +133,9 @@ COMPUSTAT_COLS = [
     # H9 extension (Expanded Robustness Block)
     "Intangibility",  # intanq / atq
     "AssetGrowth",    # YoY asset growth
+    # H15 extension (Share Repurchase)
+    "REPO",     # Binary: cshopq > 0 (quarterly repurchase indicator)
+    "fqtr",     # Fiscal quarter (1-4) — needed for quarter-lead logic in panel builders
 ]
 
 REQUIRED_COMPUSTAT_COLS = [
@@ -171,6 +175,8 @@ REQUIRED_COMPUSTAT_COLS = [
     "iby",  # Income Before Extraordinary Items (annual)
     # H9 extension (Expanded Robustness Block)
     "intanq",  # Intangible Assets - Total (quarterly, for Intangibility ratio)
+    # H15 extension (Share Repurchase)
+    "cshopq",  # Total Shares Repurchased - Quarter (quarterly, NOT YTD cumulative)
 ]
 
 
@@ -1083,6 +1089,17 @@ def _compute_and_winsorize(
         np.nan,
     )
 
+    # --- H12 redesign: PayoutRatio = dvy / iby (Attig et al.) ---
+    # NaN when iby <= 0 (negative earnings, per Attig et al.)
+    # dvy NaN with iby > 0 => treat as 0 dividends (PayoutRatio = 0)
+    dvy_for_payout = pd.Series(dvy_annual, index=comp.index).fillna(0)
+    iby_for_payout = pd.Series(iby_annual, index=comp.index)
+    comp["PayoutRatio"] = np.where(
+        iby_for_payout > 0,
+        dvy_for_payout / iby_for_payout,
+        np.nan,
+    )
+
     comp["OCF_Volatility"] = _compute_ocf_volatility(comp)
 
     # --- H2 extension: Biddle (2009) investment residual + CashFlow + SalesGrowth ---
@@ -1111,6 +1128,15 @@ def _compute_and_winsorize(
     comp["Intangibility"] = _compute_intangibility(comp)
     comp["AssetGrowth"] = _compute_asset_growth(comp)
 
+    # --- H15 extension: REPO (quarterly share repurchase indicator) ---
+    # cshopq is quarterly (NOT YTD cumulative) — no Q4-only join needed.
+    # NaN cshopq → NaN REPO (missing data, not zero repurchases).
+    comp["REPO"] = np.where(
+        comp["cshopq"].notna() & (comp["cshopq"] > 0),
+        1.0,
+        np.where(comp["cshopq"].notna(), 0.0, np.nan),
+    )
+
     # --- MINOR-9: Replace inf with NaN after ratio computations ---
     ratio_cols = [
         "BM",
@@ -1122,6 +1148,7 @@ def _compute_and_winsorize(
         "TobinsQ",
         "CapexAt",
         "DivIntensity",
+        "PayoutRatio",
         "OCF_Volatility",
         "InvestmentResidual",
         "CashFlow",
@@ -1149,6 +1176,8 @@ def _compute_and_winsorize(
         "CashFlow",
         "SalesGrowth",
         "is_div_payer_5yr",
+        "REPO",       # binary indicator (H15)
+        "fqtr",       # fiscal quarter identifier (not a variable to winsorize)
     }
     winsorize_cols = [c for c in COMPUSTAT_COLS if c not in skip_winsorize]
     # Use fyearq as the year grouping column (integer fiscal year).

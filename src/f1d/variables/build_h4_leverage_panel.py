@@ -39,9 +39,6 @@ from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyea
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
-    AnalystQAUncertaintyBuilder,
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     SizeBuilder,
@@ -50,8 +47,12 @@ from f1d.shared.variables import (
     TobinsQBuilder,
     CashHoldingsBuilder,
     DividendPayerBuilder,
-    FirmMaturityBuilder,
-    EarningsVolatilityBuilder,
+    CapexIntensityBuilder,
+    OCFVolatilityBuilder,
+    SalesGrowthBuilder,
+    RDIntensityBuilder,
+    CashFlowBuilder,
+    VolatilityBuilder,
     ManifestFieldsBuilder,
     CEOClarityResidualBuilder,
     ManagerClarityResidualBuilder,
@@ -140,7 +141,7 @@ def create_leverage_temporal_vars(panel: pd.DataFrame, root_path: Path) -> pd.Da
 
     merged = df.merge(lookup, on=["gvkey", "fyearq_int"], how="left")
     merged = merged.sort_values("_row_id").drop(
-        columns=["_row_id", "fyearq_int", "start_date_dt"]
+        columns=["_row_id", "start_date_dt"]
     )
 
     # 9. Log coverage for all three variables
@@ -171,20 +172,11 @@ def build_panel(
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
-        ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
-        ),
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
-        ),
-        "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
-            var_config.get("analyst_qa_uncertainty", {})
         ),
         "size": SizeBuilder(var_config.get("size", {})),
         "lev": LevBuilder(var_config.get("lev", {})),
@@ -192,10 +184,16 @@ def build_panel(
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
         "dividend_payer": DividendPayerBuilder(var_config.get("dividend_payer", {})),
-        "firm_maturity": FirmMaturityBuilder(var_config.get("firm_maturity", {})),
-        "earnings_volatility": EarningsVolatilityBuilder(
-            var_config.get("earnings_volatility", {})
+        "capex_intensity": CapexIntensityBuilder(
+            var_config.get("capex_intensity", {})
         ),
+        "ocf_volatility": OCFVolatilityBuilder(
+            var_config.get("ocf_volatility", {})
+        ),
+        "sales_growth": SalesGrowthBuilder(var_config.get("sales_growth", {})),
+        "rd_intensity": RDIntensityBuilder(var_config.get("rd_intensity", {})),
+        "cash_flow": CashFlowBuilder(var_config.get("cash_flow", {})),
+        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
         "ceo_clarity_residual": CEOClarityResidualBuilder(
             var_config.get("ceo_clarity_residual", {})
         ),
@@ -274,7 +272,7 @@ def generate_report(
     panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, duration: float
 ) -> None:
     report_lines = [
-        "# Stage 3: H4 Leverage Discipline Panel Build Report",
+        "# Stage 3: H4 Leverage Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -283,10 +281,25 @@ def generate_report(
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
         "",
-        "## Temporal Leverage Variables",
-        f"- **Lev_lag (t-1):** {panel['Lev_lag'].notna().sum():,} calls",
-        f"- **Lev_t (current):** {panel['Lev_t'].notna().sum():,} calls",
+        "## Dependent Variables (Leverage)",
+        f"- **Lev (t):** {panel['Lev'].notna().sum():,} calls",
         f"- **Lev_lead (t+1):** {panel['Lev_lead'].notna().sum():,} calls",
+        "",
+        "## Key IVs (6 simultaneous)",
+        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,} calls",
+        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,} calls",
+        "",
+        "## Extended Controls",
+        f"- **CapexAt:** {panel['CapexAt'].notna().sum():,} calls",
+        f"- **OCF_Volatility:** {panel['OCF_Volatility'].notna().sum():,} calls",
+        f"- **SalesGrowth:** {panel['SalesGrowth'].notna().sum():,} calls",
+        f"- **RD_Intensity:** {panel['RD_Intensity'].notna().sum():,} calls",
+        f"- **CashFlow:** {panel['CashFlow'].notna().sum():,} calls",
+        f"- **Volatility:** {panel['Volatility'].notna().sum():,} calls",
         "",
     ]
     report_path = out_dir / "report_step3_h4.md"

@@ -56,15 +56,16 @@ Each stage reads from disk and writes to timestamped output directories under `o
 | **H1** | Does speech uncertainty predict cash holdings? | PanelOLS (Industry FE / Firm FE) | CashHoldings / CashHoldings_lead |
 | **H2** | Does uncertainty predict investment efficiency? | PanelOLS | InvestmentResidual (lead) |
 | **H3** | Does uncertainty predict payout policy stability? | PanelOLS | DividendStability / PayoutFlexibility (lead) |
-| **H4** | Does uncertainty predict leverage changes? | PanelOLS | Lev (lag/lead) |
-| **H5** | Does uncertainty predict analyst forecast dispersion? | PanelOLS | Dispersion |
+| **H4** | Does speech uncertainty predict leverage? | PanelOLS (Industry FE / Firm FE) | Lev / Lev_lead |
+| **H5** | Does speech uncertainty predict post-call analyst dispersion? | PanelOLS (Industry FE / Firm FE) | PostCallDispersion |
 | **H6** | Does exogenous uncertainty (CCCL instrument) affect outcomes? | PanelOLS (reduced form) | Linguistic DVs |
 | **H7** | Does uncertainty predict post-call illiquidity changes? | PanelOLS | delta_amihud |
 | **H9** | Does uncertainty predict takeover hazard rates? | Cox PH (survival) | Takeover event |
 | **H11** | Does political risk interact with speech uncertainty? | PanelOLS (base/lag/lead) | PRiskQ variants |
-| **H12** | Does uncertainty predict diversification intensity? | PanelOLS | DivIntensity (lead) |
-| **H13.1** | Does uncertainty predict capital expenditure? | PanelOLS | CapexAt (lead) |
-| **H14** | Does uncertainty predict bid-ask spread changes? | PanelOLS | delta_spread |
+| **H12** | Does speech uncertainty predict payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio / PayoutRatio_lead |
+| **H13** | Does speech uncertainty predict capital expenditure? | PanelOLS (Industry FE / Firm FE) | CapexAt / CapexAt_lead |
+| **H14** | Does speech uncertainty predict bid-ask spread changes? | PanelOLS (Industry FE / Firm FE) | DSPREAD (Lee 2016) |
+| **H15** | Does speech uncertainty predict share repurchases? | PanelOLS (Industry FE / Firm FE), LPM | REPO (binary, Duong et al. 2025) |
 
 **Supplementary:** `ceo_presence_probit.py` characterises determinants of CEO presence in Q&A sessions (selection analysis for H7).
 
@@ -171,8 +172,9 @@ python -m f1d.econometric.run_h1_cash_holdings
 | H11-lag | `python -m f1d.econometric.run_h11_prisk_uncertainty_lag` |
 | H11-lead | `python -m f1d.econometric.run_h11_prisk_uncertainty_lead` |
 | H12 | `python -m f1d.econometric.run_h12_div_intensity` |
-| H13.1 | `python -m f1d.econometric.run_h13_1_capex` |
+| H13 | `python -m f1d.econometric.run_h13_capex` |
 | H14 | `python -m f1d.econometric.run_h14_bidask_spread` |
+| H15 | `python -m f1d.econometric.run_h15_repurchase` |
 
 ### CLI Flags
 

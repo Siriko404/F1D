@@ -7,14 +7,17 @@ ID: variables/build_h14_bidask_spread_panel
 Description: Build CALL-LEVEL panel for H14 Language Uncertainty -> Bid-Ask Spread Change.
 
     Step 1: Load manifest + all call-level uncertainty measures.
-    Step 2: Load base financial controls (Size, Volatility).
-    Step 3: Load CRSP-based controls (StockPrice, Turnover).
-    Step 4: Load BidAskSpreadChangeBuilder for DV (delta_spread) and control (pre_call_spread).
+    Step 2: Load thesis-consistent Compustat controls (Size, TobinsQ, ROA, Lev,
+            CapexAt, DividendPayer, OCF_Volatility).
+    Step 3: Load CRSP-based controls (StockPrice, Turnover, Volatility).
+    Step 4: Load BidAskSpreadChangeBuilder for DV and PreCallSpread control.
     Step 5: Load EarningsSurpriseBuilder for AbsSurpDec control (|SurpDec|).
     Step 6: Merge everything onto manifest by file_name (zero row-delta enforced).
-    Step 7: Create year_quarter variable for TimeEffects.
-    Step 8: Assign industry sample (Main).
-    Step 9: Save call-level panel.
+    Step 7: Rename closing-quote columns to primary (DSPREAD, PreCallSpread).
+    Step 8: Attach fiscal year-quarter (fyearq_int) for time FE.
+    Step 9: Winsorize CRSP-derived variables at 1%/99%.
+    Step 10: Assign industry sample (Main / Finance / Utility).
+    Step 11: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
 
@@ -22,10 +25,13 @@ Hypothesis H14:
     Higher earnings-call language uncertainty is associated with a larger
     increase in bid-ask spreads around the conference call (lower market liquidity).
 
-    DV: delta_spread = Spread[+1,+3] - Spread[-3,-1]
-    IV: Uncertainty measures (QA, Presentation)
-    Controls: Size, StockPrice, Turnover, Volatility, pre_call_spread, AbsSurpDec
-    Fixed Effects: Firm FE + year_quarter FE
+    DV: DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])
+        where RelSpread_d = 2*(ASK_d - BID_d)/(ASK_d + BID_d)  [closing quotes]
+        Following Lee (2016, The Accounting Review).
+    IV: 6 simultaneous uncertainty/clarity measures (horse-race)
+    Controls (Base): Size, TobinsQ, ROA, Lev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread
+    Controls (Extended): Base + StockPrice, Turnover, Volatility, AbsSurpDec
+    Fixed Effects: Industry(FF12)/Firm FE + FiscalYear FE (fyearq_int)
 """
 
 from __future__ import annotations
@@ -44,20 +50,33 @@ from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
+from f1d.shared.variables.winsorization import winsorize_pooled
 from f1d.shared.variables import (
+    # Key IVs (6 simultaneous)
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    SizeBuilder,
-    VolatilityBuilder,
-    ManifestFieldsBuilder,
-    BidAskSpreadChangeBuilder,
-    StockPriceBuilder,
-    TurnoverBuilder,
-    EarningsSurpriseBuilder,
     CEOClarityResidualBuilder,
     ManagerClarityResidualBuilder,
+    # Thesis-consistent Compustat controls
+    SizeBuilder,
+    TobinsQBuilder,
+    ROABuilder,
+    LevBuilder,
+    CapexIntensityBuilder,
+    DividendPayerBuilder,
+    OCFVolatilityBuilder,
+    # H14-specific CRSP controls
+    VolatilityBuilder,
+    StockPriceBuilder,
+    TurnoverBuilder,
+    # DV builder
+    BidAskSpreadChangeBuilder,
+    # IBES control
+    EarningsSurpriseBuilder,
+    # Infrastructure
+    ManifestFieldsBuilder,
     stats_list_to_dataframe,
 )
 
@@ -85,7 +104,7 @@ def build_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # Uncertainty IVs
+        # Key IVs (6 simultaneous)
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
         ),
@@ -98,29 +117,33 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        # Clarity Residuals (from CEO Clarity Extended Stage 4)
         "ceo_clarity_residual": CEOClarityResidualBuilder(
             var_config.get("ceo_clarity_residual", {})
         ),
         "manager_clarity_residual": ManagerClarityResidualBuilder(
             var_config.get("manager_clarity_residual", {})
         ),
-        # Controls
+        # Thesis-consistent Compustat controls
         "size": SizeBuilder(var_config.get("size", {})),
-        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
+        "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
+        "roa": ROABuilder(var_config.get("roa", {})),
+        "lev": LevBuilder(var_config.get("lev", {})),
+        "capex_intensity": CapexIntensityBuilder(
+            var_config.get("capex_intensity", {})
+        ),
+        "dividend_payer": DividendPayerBuilder(var_config.get("dividend_payer", {})),
+        "ocf_volatility": OCFVolatilityBuilder(
+            var_config.get("ocf_volatility", {})
+        ),
         # H14-specific CRSP controls
+        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
         "stock_price": StockPriceBuilder(var_config.get("stock_price", {})),
         "turnover": TurnoverBuilder(var_config.get("turnover", {})),
-        # DV and pre_call_spread control (default ±3 window)
-        "bidask_spread": BidAskSpreadChangeBuilder(var_config.get("bidask_spread_change", {})),
-        # Alternative event windows for robustness (L3)
-        "bidask_spread_w1": BidAskSpreadChangeBuilder(
-            {**var_config.get("bidask_spread_change", {}), "window_days": 1, "column_suffix": "_w1"}
+        # DV and pre_call_spread control (±3 trading day window)
+        "bidask_spread": BidAskSpreadChangeBuilder(
+            var_config.get("bidask_spread_change", {})
         ),
-        "bidask_spread_w5": BidAskSpreadChangeBuilder(
-            {**var_config.get("bidask_spread_change", {}), "window_days": 5, "column_suffix": "_w5"}
-        ),
-        # Earnings surprise control (|SurpDec| replaces old AbsSurprise ratio)
+        # Earnings surprise control
         "earnings_surprise": EarningsSurpriseBuilder(
             var_config.get("earnings_surprise", {})
         ),
@@ -154,47 +177,58 @@ def build_panel(
             raise ValueError(f"Merge '{name}' changed rows {before_len} -> {after_len}")
         print(f"  After {name} merge: {after_len:,} rows (delta: {delta:+d})")
 
+    # Verify ff12_code is present
+    if "ff12_code" not in panel.columns:
+        raise ValueError(
+            "build_panel: 'ff12_code' not in panel. ManifestFieldsBuilder must include ff12_code."
+        )
+
+    # Rename closing-quote columns to primary DV and control
+    # Lee (2016): DSPREAD uses closing BID/ASK, not intraday ASKHI/BIDLO
+    panel = panel.rename(columns={
+        "delta_spread_closing": "DSPREAD",
+        "pre_call_spread_closing": "PreCallSpread",
+    })
+
+    # AbsSurpDec = |SurpDec| (earnings surprise magnitude)
+    if "SurpDec" in panel.columns:
+        panel["AbsSurpDec"] = panel["SurpDec"].abs()
+
     # Assign industry sample
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
     panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
 
-    # Create year_quarter variable for TimeEffects
-    # Per H14.txt: "time fixed effects, typically quarter or year-quarter"
-    panel["start_date_dt"] = pd.to_datetime(panel["start_date"], errors="coerce")
-    panel["quarter"] = panel["start_date_dt"].dt.quarter
-    panel["year_quarter"] = (
-        panel["year"].astype(str) + "_Q" + panel["quarter"].astype(str)
-    )
-
-    # Also attach fyearq for potential alternative FE specifications
+    # Attach fiscal year and create fyearq_int (CRITICAL for runner time index)
     panel = attach_fyearq(panel, root_path)
+    panel["fyearq_int"] = np.floor(
+        pd.to_numeric(panel["fyearq"], errors="coerce")
+    ).astype("Int64")
 
-    # Rename variables to match H14 spec
-    panel = panel.rename(columns={
-        "pre_call_spread": "PreCallSpread",
-        "pre_call_spread_closing": "PreCallSpreadClosing",
-    })
+    # Winsorize CRSP-derived variables at 1%/99% (pooled)
+    # Compustat variables are already winsorized by their engines
+    # Volatility is already winsorized per-year by CRSPEngine
+    winsorize_cols = ["DSPREAD", "PreCallSpread", "StockPrice", "Turnover", "AbsSurpDec"]
+    panel = winsorize_pooled(panel, winsorize_cols)
+    print(f"  Winsorized {len(winsorize_cols)} columns at 1%/99% pooled")
 
-    # AbsSurpDec = |SurpDec| (replaces old AbsSurprise ratio which had ~23% coverage)
-    if "SurpDec" in panel.columns:
-        panel["AbsSurpDec"] = panel["SurpDec"].abs()
-
-    # L5: Verify H0.3 clarity residuals are actually populated (not all-NaN)
+    # Verify clarity residuals are populated
     for resid_col in ["Manager_Clarity_Residual", "CEO_Clarity_Residual"]:
         if resid_col in panel.columns and panel[resid_col].notna().sum() == 0:
             raise ValueError(
-                f"H0.3 CEO Clarity Extended output required for H14 specs 5-6: "
+                f"H0.3 CEO Clarity Extended output required: "
                 f"'{resid_col}' is entirely NaN. Run H0.3 first."
             )
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
+    # Coverage report
     print(f"\n  Final panel: {len(panel):,} rows, {len(panel.columns)} columns")
-    print(f"  Valid delta_spread: {panel['delta_spread'].notna().sum():,}")
+    print(f"  Valid DSPREAD (DV): {panel['DSPREAD'].notna().sum():,}")
     print(f"  Valid PreCallSpread: {panel['PreCallSpread'].notna().sum():,}")
-    for rob_col in ["delta_spread_closing", "delta_spread_w1", "delta_spread_w5", "pre_spread_change"]:
-        if rob_col in panel.columns:
-            print(f"  Valid {rob_col}: {panel[rob_col].notna().sum():,}")
+    print(f"  Valid fyearq_int: {panel['fyearq_int'].notna().sum():,}")
+    for ctrl in ["TobinsQ", "ROA", "Lev", "CapexAt", "DividendPayer", "OCF_Volatility"]:
+        if ctrl in panel.columns:
+            print(f"  Valid {ctrl}: {panel[ctrl].notna().sum():,}")
 
     return panel
 
@@ -212,7 +246,6 @@ def save_outputs(panel: pd.DataFrame, stats: Dict[str, Any], out_dir: Path, root
     stats_df.to_csv(stats_path, index=False)
     print(f"  Saved: summary_stats.csv ({len(stats_df)} variables)")
 
-    # Generate run manifest for reproducibility
     manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"
     generate_manifest(
         output_dir=out_dir,
@@ -239,33 +272,40 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **Valid delta_spread (DV):** {panel['delta_spread'].notna().sum():,} calls",
-        f"- **Valid PreCallSpread:** {panel['PreCallSpread'].notna().sum():,} calls",
         "",
-        "## Key Variables",
+        "## Dependent Variable (Lee 2016)",
+        f"- **DSPREAD:** {panel['DSPREAD'].notna().sum():,} calls",
+        "  - RelSpread_d = 2*(ASK-BID)/(ASK+BID) [closing quotes]",
+        "  - DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])",
         "",
-        "### Dependent Variable",
-        "- `delta_spread`: Change in bid-ask spread around call (Spread[+1,+3] - Spread[-3,-1])",
+        "## Key IVs (6 simultaneous)",
+        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,} calls",
+        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,} calls",
         "",
-        "### Independent Variables (Uncertainty)",
-        "- `Manager_QA_Uncertainty_pct`: Manager Q&A language uncertainty",
-        "- `CEO_QA_Uncertainty_pct`: CEO Q&A language uncertainty",
-        "- `Manager_Pres_Uncertainty_pct`: Manager presentation language uncertainty",
-        "- `CEO_Pres_Uncertainty_pct`: CEO presentation language uncertainty",
-        "- `Manager_Clarity_Residual`: Manager Q&A uncertainty residual (after firm/linguistic controls)",
-        "- `CEO_Clarity_Residual`: CEO Q&A uncertainty residual (after firm/linguistic controls)",
+        "## Base Controls (Thesis-Consistent)",
+        f"- **Size:** {panel['Size'].notna().sum():,} calls",
+        f"- **TobinsQ:** {panel['TobinsQ'].notna().sum():,} calls",
+        f"- **ROA:** {panel['ROA'].notna().sum():,} calls",
+        f"- **Lev:** {panel['Lev'].notna().sum():,} calls",
+        f"- **CapexAt:** {panel['CapexAt'].notna().sum():,} calls",
+        f"- **DividendPayer:** {panel['DividendPayer'].notna().sum():,} calls",
+        f"- **OCF_Volatility:** {panel['OCF_Volatility'].notna().sum():,} calls",
+        f"- **PreCallSpread:** {panel['PreCallSpread'].notna().sum():,} calls",
         "",
-        "### Controls",
-        "- `Size`: Firm size (ln(atq))",
-        "- `StockPrice`: Stock price at call date",
-        "- `Turnover`: Share turnover at call date (VOL/SHROUT)",
-        "- `Volatility`: Return volatility over call window",
-        "- `PreCallSpread`: Pre-call average bid-ask spread",
-        "- `AbsSurpDec`: Absolute earnings surprise decile (|SurpDec|)",
+        "## Extended Controls (Microstructure Literature)",
+        f"- **StockPrice:** {panel['StockPrice'].notna().sum():,} calls",
+        f"- **Turnover:** {panel['Turnover'].notna().sum():,} calls",
+        f"- **Volatility:** {panel['Volatility'].notna().sum():,} calls",
+        f"- **AbsSurpDec:** {panel['AbsSurpDec'].notna().sum():,} calls",
         "",
-        "### Fixed Effects",
+        "## Fixed Effects",
         "- `gvkey`: Firm fixed effects",
-        "- `year_quarter`: Year-Quarter fixed effects (e.g., '2010_Q1')",
+        f"- `fyearq_int`: Fiscal year FE ({panel['fyearq_int'].notna().sum():,} valid)",
+        "- `ff12_code`: Industry FE (Fama-French 12)",
         "",
     ]
     report_path = out_dir / "report_step3_h14.md"

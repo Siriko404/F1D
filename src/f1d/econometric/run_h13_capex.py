@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H4 Leverage Hypothesis
+STAGE 4: Test H13 Capital Expenditure Hypothesis
 ================================================================================
-ID: econometric/test_h4_leverage
-Description: Run H4 Leverage hypothesis test using 8 model specifications
+ID: econometric/test_h13_capex
+Description: Run H13 Capital Expenditure hypothesis test using 8 model specifications
              with 6 simultaneous uncertainty/clarity IVs, varying DV, FE type,
              and control set. Main sample only.
 
 Model Specifications (8 columns in one table):
-    Cols 1-4: DV = Lev (contemporaneous)
-    Cols 5-8: DV = Lev_lead (t+1)
+    Cols 1-4: DV = CapexAt (contemporaneous)
+    Cols 5-8: DV = CapexAt_lead (t+1)
     Odd cols:  Industry FE (FF12 dummies) + FiscalYear FE
     Even cols: Firm FE + FiscalYear FE
     Cols 1-2, 5-6: Base controls
@@ -22,8 +22,8 @@ Key Independent Variables (6, all enter simultaneously):
     CEO_Clarity_Residual, Manager_Clarity_Residual
 
 Base Controls (7):
-    Size, TobinsQ, ROA, CapexAt, DividendPayer, OCF_Volatility, CashHoldings
-    NOTE: Lev is NOT a control — it is the DV.
+    Size, TobinsQ, ROA, Lev, CashHoldings, DividendPayer, OCF_Volatility
+    NOTE: CapexAt is NOT a control — it is the DV.
 
 Extended Controls (Base + 4):
     + SalesGrowth, RD_Intensity, CashFlow, Volatility
@@ -31,33 +31,33 @@ Extended Controls (Base + 4):
 Sample: Main only (FF12 codes 1-7, 9-10, 12).
 
 Hypothesis Test (two-tailed):
-    H4: beta(uncertainty_var) != 0 — no directional prediction.
+    H13: beta(uncertainty_var) != 0 — no directional prediction.
     Stars based on two-tailed p-values.
 
-FE Time Index: fyearq_int (fiscal year — fixes calendar year bug from old H4).
+FE Time Index: fyearq_int (fiscal year).
 Standard Errors: Firm-clustered (groups=gvkey).
 Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
 Inputs:
-    - outputs/variables/h4_leverage/latest/h4_leverage_panel.parquet
+    - outputs/variables/h13_capex/latest/h13_capex_panel.parquet
 
 Outputs:
-    - outputs/econometric/h4_leverage/{timestamp}/regression_results_col{1-8}.txt
-    - outputs/econometric/h4_leverage/{timestamp}/h4_leverage_table.tex
-    - outputs/econometric/h4_leverage/{timestamp}/model_diagnostics.csv
-    - outputs/econometric/h4_leverage/{timestamp}/summary_stats.csv
-    - outputs/econometric/h4_leverage/{timestamp}/summary_stats.tex
-    - outputs/econometric/h4_leverage/{timestamp}/report_step4_H4.md
-    - outputs/econometric/h4_leverage/{timestamp}/sample_attrition.csv
-    - outputs/econometric/h4_leverage/{timestamp}/run_manifest.json
+    - outputs/econometric/h13_capex/{timestamp}/regression_results_col{1-8}.txt
+    - outputs/econometric/h13_capex/{timestamp}/h13_capex_table.tex
+    - outputs/econometric/h13_capex/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h13_capex/{timestamp}/summary_stats.csv
+    - outputs/econometric/h13_capex/{timestamp}/summary_stats.tex
+    - outputs/econometric/h13_capex/{timestamp}/report_step4_H13.md
+    - outputs/econometric/h13_capex/{timestamp}/sample_attrition.csv
+    - outputs/econometric/h13_capex/{timestamp}/run_manifest.json
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_h4_leverage_panel), H0.3 (clarity residuals)
+    - Requires: Stage 3 (build_h13_capex_panel), H0.3 (clarity residuals)
     - Uses: linearmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-03-15
+Date: 2026-03-17
 ================================================================================
 """
 
@@ -92,16 +92,16 @@ KEY_IVS = [
     "Manager_Clarity_Residual",
 ]
 
-# NOTE: Lev is the DV — it must NOT appear as a control.
-# CashHoldings (which was the DV in H1) is a control here.
+# NOTE: CapexAt is the DV — it must NOT appear as a control.
+# Both Lev and CashHoldings are controls here (they are DVs in H4 and H1 respectively).
 BASE_CONTROLS = [
     "Size",
     "TobinsQ",
     "ROA",
-    "CapexAt",
+    "Lev",
+    "CashHoldings",
     "DividendPayer",
     "OCF_Volatility",
-    "CashHoldings",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -112,14 +112,14 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "Lev",      "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "Lev",      "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "Lev",      "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "Lev",      "fe": "firm",     "controls": "extended"},
-    {"col": 5, "dv": "Lev_lead", "fe": "industry", "controls": "base"},
-    {"col": 6, "dv": "Lev_lead", "fe": "firm",     "controls": "base"},
-    {"col": 7, "dv": "Lev_lead", "fe": "industry", "controls": "extended"},
-    {"col": 8, "dv": "Lev_lead", "fe": "firm",     "controls": "extended"},
+    {"col": 1, "dv": "CapexAt",      "fe": "industry", "controls": "base"},
+    {"col": 2, "dv": "CapexAt",      "fe": "firm",     "controls": "base"},
+    {"col": 3, "dv": "CapexAt",      "fe": "industry", "controls": "extended"},
+    {"col": 4, "dv": "CapexAt",      "fe": "firm",     "controls": "extended"},
+    {"col": 5, "dv": "CapexAt_lead", "fe": "industry", "controls": "base"},
+    {"col": 6, "dv": "CapexAt_lead", "fe": "firm",     "controls": "base"},
+    {"col": 7, "dv": "CapexAt_lead", "fe": "industry", "controls": "extended"},
+    {"col": 8, "dv": "CapexAt_lead", "fe": "firm",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -135,8 +135,8 @@ VARIABLE_LABELS = {
 
 # Summary statistics variable list
 SUMMARY_STATS_VARS = [
-    {"col": "Lev", "label": "Leverage$_t$"},
-    {"col": "Lev_lead", "label": "Leverage$_{t+1}$"},
+    {"col": "CapexAt", "label": "CapEx$_t$ / Assets"},
+    {"col": "CapexAt_lead", "label": "CapEx$_{t+1}$ / Assets"},
     # Key IVs
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
@@ -148,10 +148,10 @@ SUMMARY_STATS_VARS = [
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "CashHoldings", "label": "Cash Holdings"},
     {"col": "DividendPayer", "label": "Dividend Payer"},
     {"col": "OCF_Volatility", "label": "OCF Volatility"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
     # Extended controls
     {"col": "SalesGrowth", "label": "Sales Growth"},
     {"col": "RD_Intensity", "label": "R\\&D Intensity"},
@@ -167,7 +167,7 @@ SUMMARY_STATS_VARS = [
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: Test H4 Leverage Hypothesis (call-level)",
+        description="Stage 4: Test H13 Capital Expenditure Hypothesis (call-level)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -188,7 +188,7 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
-    """Load call-level H4 panel from Stage 3 output."""
+    """Load call-level H13 panel from Stage 3 output."""
     print("\n" + "=" * 60)
     print("Loading panel")
     print("=" * 60)
@@ -197,10 +197,10 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         panel_file = Path(panel_path)
     else:
         panel_dir = get_latest_output_dir(
-            root_path / "outputs" / "variables" / "h4_leverage",
-            required_file="h4_leverage_panel.parquet",
+            root_path / "outputs" / "variables" / "h13_capex",
+            required_file="h13_capex_panel.parquet",
         )
-        panel_file = panel_dir / "h4_leverage_panel.parquet"
+        panel_file = panel_dir / "h13_capex_panel.parquet"
 
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
@@ -208,15 +208,14 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code",
         # DVs
-        "Lev", "Lev_lead",
+        "CapexAt", "CapexAt_lead",
         # Key IVs
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
         "CEO_Clarity_Residual", "Manager_Clarity_Residual",
-        # Base controls (NOTE: no Lev here — it is the DV)
+        # Base controls (NOTE: no CapexAt here — it is the DV)
         "Size", "TobinsQ", "ROA",
-        "CapexAt", "DividendPayer", "OCF_Volatility",
-        "CashHoldings",
+        "Lev", "CashHoldings", "DividendPayer", "OCF_Volatility",
         # Extended controls
         "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
     ]
@@ -321,7 +320,7 @@ def run_regression(
     print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    # MultiIndex: gvkey (entity) × fyearq_int (fiscal year time)
+    # MultiIndex: gvkey (entity) x fyearq_int (fiscal year time)
     df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
 
     try:
@@ -355,7 +354,7 @@ def run_regression(
     print(f"  R-squared (within): {model.rsquared_within:.4f}")
     print(f"  N obs: {int(model.nobs):,}")
 
-    # Build metadata with per-IV two-tailed p-values (H4: no directional prediction)
+    # Build metadata with per-IV two-tailed p-values (H13: no directional prediction)
     meta: Dict[str, Any] = {
         "col": col_num,
         "dv": dv,
@@ -406,9 +405,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Write unified 8-column LaTeX table with stars + SE in parentheses.
 
     Layout:
-        Cols 1-4: Lev (contemporaneous)
-        Cols 5-8: Lev_lead (t+1)
-        Rows: 6 key IVs (coeff + SE), controls indicator, FE indicators, N, R²
+        Cols 1-4: CapexAt (contemporaneous)
+        Cols 5-8: CapexAt_lead (t+1)
+        Rows: 6 key IVs (coeff + SE), controls indicator, FE indicators, N, R-sq
     """
     results_by_col = {}
     for r in all_results:
@@ -439,8 +438,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Speech Uncertainty and Leverage}",
-        r"\label{tab:h4_leverage}",
+        r"\caption{Speech Uncertainty and Capital Expenditure}",
+        r"\label{tab:h13_capex}",
         r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}",
         r"\toprule",
@@ -452,8 +451,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # DV headers with multicolumn
     lines.append(
-        r" & \multicolumn{4}{c}{Leverage$_t$}"
-        r" & \multicolumn{4}{c}{Leverage$_{t+1}$} \\"
+        r" & \multicolumn{4}{c}{CapEx$_t$ / Assets}"
+        r" & \multicolumn{4}{c}{CapEx$_{t+1}$ / Assets} \\"
     )
     lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
     lines.append(r"\midrule")
@@ -508,7 +507,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         n_cells.append(fmt_int(n_val) if n_val else "")
     lines.append(r"N & " + " & ".join(n_cells) + r" \\")
 
-    # Within R²
+    # Within R-sq
     r2_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
@@ -526,7 +525,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
         r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
-        r"Contemporaneous DV (cols 1--4) is constant within firm-quarter; ",
+        r"CapEx intensity is constant within firm-fiscal-year (Q4 capxy / lagged assets); ",
         r"results should be interpreted alongside lead DV (cols 5--8). ",
         r"Variables winsorized at 1\%/99\% by year at engine level. ",
         r"Unit of observation: individual earnings call.",
@@ -534,10 +533,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\end{table}",
     ]
 
-    tex_path = out_dir / "h4_leverage_table.tex"
+    tex_path = out_dir / "h13_capex_table.tex"
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-    print(f"  Saved: h4_leverage_table.tex")
+    print(f"  Saved: h13_capex_table.tex")
 
 
 def save_outputs(
@@ -588,9 +587,9 @@ def generate_report(
     out_dir: Path,
     duration: float,
 ) -> None:
-    """Generate markdown report summarising H4 results."""
+    """Generate markdown report summarising H13 results."""
     lines = [
-        "# Stage 4: H4 Leverage Hypothesis Test Report",
+        "# Stage 4: H13 Capital Expenditure Hypothesis Test Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -617,12 +616,12 @@ def generate_report(
     lines += [
         "",
         "Standard errors: firm-clustered (cov_type='clustered', cluster_entity=True)",
-        "Two-tailed test: H4 beta != 0",
+        "Two-tailed test: H13 beta != 0",
         "",
         "## Results Summary",
         "",
-        "| Col | DV | FE | Controls | N | Within-R² |",
-        "|-----|----|----|----------|---|-----------|",
+        "| Col | DV | FE | Controls | N | Within-R-sq |",
+        "|-----|----|----|----------|---|-------------|",
     ]
 
     for r in all_results:
@@ -659,10 +658,10 @@ def generate_report(
 
     lines.append("")
 
-    report_path = out_dir / "report_step4_H4.md"
+    report_path = out_dir / "report_step4_H13.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-    print("  Saved: report_step4_H4.md")
+    print("  Saved: report_step4_H13.md")
 
 
 # ==============================================================================
@@ -678,17 +677,17 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h4_leverage" / timestamp
+    out_dir = root / "outputs" / "econometric" / "h13_capex" / timestamp
 
     # Setup logging
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H4_Leverage",
+        suite_name="H13_Capex",
         timestamp=timestamp,
     )
 
     print("=" * 80)
-    print("STAGE 4: Test H4 Leverage Hypothesis")
+    print("STAGE 4: Test H13 Capital Expenditure Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -704,9 +703,9 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Track panel path for manifest
     panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
-        root / "outputs" / "variables" / "h4_leverage",
-        required_file="h4_leverage_panel.parquet",
-    ) / "h4_leverage_panel.parquet"
+        root / "outputs" / "variables" / "h13_capex",
+        required_file="h13_capex_panel.parquet",
+    ) / "h13_capex_panel.parquet"
 
     # Filter to Main sample
     full_panel_n = len(panel)
@@ -715,8 +714,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
     print(f"\n  Main sample: {main_panel_n:,} calls, "
           f"{panel['gvkey'].nunique():,} firms")
-    print(f"  Lev non-null: {panel['Lev'].notna().sum():,}")
-    print(f"  Lev_lead non-null: {panel['Lev_lead'].notna().sum():,}")
+    print(f"  CapexAt non-null: {panel['CapexAt'].notna().sum():,}")
+    print(f"  CapexAt_lead non-null: {panel['CapexAt_lead'].notna().sum():,}")
     for iv in KEY_IVS:
         n_valid = panel[iv].notna().sum()
         pct = 100.0 * n_valid / main_panel_n if main_panel_n > 0 else 0
@@ -733,8 +732,8 @@ def main(panel_path: Optional[str] = None) -> int:
         sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics — H4 Leverage (Main Sample)",
-        label="tab:summary_stats_h4",
+        caption="Summary Statistics -- H13 Capital Expenditure (Main Sample)",
+        label="tab:summary_stats_h13",
     )
     print("  Saved: summary_stats.csv")
     print("  Saved: summary_stats.tex")
@@ -770,10 +769,10 @@ def main(panel_path: Optional[str] = None) -> int:
         attrition_stages = [
             ("Master manifest (full panel)", full_panel_n),
             ("Main sample filter (excl Finance/Utility)", main_panel_n),
-            ("After lead filter (col 5-8 only)", panel["Lev_lead"].notna().sum()),
+            ("After lead filter (col 5-8 only)", panel["CapexAt_lead"].notna().sum()),
             ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ]
-        generate_attrition_table(attrition_stages, out_dir, "H4 Leverage")
+        generate_attrition_table(attrition_stages, out_dir, "H13 Capital Expenditure")
         print("  Saved: sample_attrition.csv and sample_attrition.tex")
 
     # Run manifest
@@ -784,7 +783,7 @@ def main(panel_path: Optional[str] = None) -> int:
         input_paths={"panel": panel_file},
         output_files={
             "diagnostics": out_dir / "model_diagnostics.csv",
-            "table": out_dir / "h4_leverage_table.tex",
+            "table": out_dir / "h13_capex_table.tex",
         },
         panel_path=panel_file,
     )
@@ -802,7 +801,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Output:   {out_dir}")
     print(f"Total regressions completed: {len(all_results)}/{len(MODEL_SPECS)}")
 
-    # H4 significance summary (two-tailed)
+    # H13 significance summary (two-tailed)
     for iv in KEY_IVS:
         sig_count = sum(
             1 for r in all_results

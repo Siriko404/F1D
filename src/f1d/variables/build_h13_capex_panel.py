@@ -1,39 +1,31 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build H13.1 Capex Panel
+STAGE 3: Build H13 Capex Panel
 ================================================================================
-ID: variables/build_h13_1_capex_panel
-Description: Build CALL-LEVEL panel for H13.1 Future Capital Expenditure hypothesis test.
+ID: variables/build_h13_capex_panel
+Description: Build CALL-LEVEL panel for H13 Capital Expenditure hypothesis test.
 
-    This panel follows the H1 pattern:
-    one row per earnings call (file_name).
+    This panel follows the H1/H4 pattern:
+    one row per earnings call (file_name), 6 simultaneous IVs,
+    Base + Extended controls, fyearq_int time index.
 
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
-    Step 4: Compute CapexAt_lead per call:
-            - Average CapexAt within (gvkey, call_year) -> firm-year mean
-            - Shift firm-year mean by -1 year within gvkey -> next-year capex
-            - Merge back onto all calls by (gvkey, call_year)
-            - Calls belonging to a firm's last year get NaN lead (dropped later)
+    Step 4: Compute CapexAt_lead per call (fiscal-year based, consecutive year validated).
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
 
-Inputs:
-    - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
-    - outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet
-    - inputs/comp_na_daily_all/comp_na_daily_all.parquet  (Compustat)
-
 Outputs:
-    - outputs/variables/h13_1_capex/{timestamp}/h13_1_capex_panel.parquet
-    - outputs/variables/h13_1_capex/{timestamp}/summary_stats.csv
-    - outputs/variables/h13_1_capex/{timestamp}/run_manifest.json
+    - outputs/variables/h13_capex/{timestamp}/h13_capex_panel.parquet
+    - outputs/variables/h13_capex/{timestamp}/summary_stats.csv
+    - outputs/variables/h13_capex/{timestamp}/run_manifest.json
 
 Author: Thesis Author
-Date: 2026-03-06
+Date: 2026-03-17
 ================================================================================
 """
 
@@ -54,20 +46,27 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # All 4 uncertainty measures (H13.1 multi-IV)
-    CEOPresUncertaintyBuilder,
+    # 6 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
-    ManagerPresUncertaintyBuilder,
+    CEOPresUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
-    # Financial controls (Compustat engine)
-    CashHoldingsBuilder,
-    LevBuilder,
+    ManagerPresUncertaintyBuilder,
+    CEOClarityResidualBuilder,
+    ManagerClarityResidualBuilder,
+    # Base controls (Compustat engine)
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
+    LevBuilder,
+    CashHoldingsBuilder,
     CapexIntensityBuilder,
     DividendPayerBuilder,
     OCFVolatilityBuilder,
+    # Extended controls
+    SalesGrowthBuilder,
+    RDIntensityBuilder,
+    CashFlowBuilder,
+    VolatilityBuilder,
     # Manifest
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -76,7 +75,7 @@ from f1d.shared.variables import (
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H13.1 Capex Panel (call-level)",
+        description="Stage 3: Build H13 Capex Panel (call-level)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -107,28 +106,39 @@ def build_call_level_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # All 4 uncertainty measures (H13.1 multi-IV)
-        "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
-            var_config.get("ceo_pres_uncertainty", {})
-        ),
+        # 6 Key IVs (all simultaneous)
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
-        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
-            var_config.get("manager_pres_uncertainty", {})
+        "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
+            var_config.get("ceo_pres_uncertainty", {})
         ),
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
         ),
-        # Financial controls -- CompustatEngine is a singleton; all share one load
-        "cash_holdings": CashHoldingsBuilder({}),
-        "lev": LevBuilder({}),
+        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
+            var_config.get("manager_pres_uncertainty", {})
+        ),
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
+        ),
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
+        ),
+        # Base controls -- CompustatEngine is a singleton; all share one load
         "size": SizeBuilder({}),
         "tobins_q": TobinsQBuilder({}),
         "roa": ROABuilder({}),
-        "capex_intensity": CapexIntensityBuilder({}),  # For CapexAt control and lead
+        "lev": LevBuilder({}),
+        "cash_holdings": CashHoldingsBuilder({}),
+        "capex_intensity": CapexIntensityBuilder({}),  # For CapexAt DV and lead
         "dividend_payer": DividendPayerBuilder({}),
         "ocf_volatility": OCFVolatilityBuilder({}),
+        # Extended controls
+        "sales_growth": SalesGrowthBuilder(var_config.get("sales_growth", {})),
+        "rd_intensity": RDIntensityBuilder(var_config.get("rd_intensity", {})),
+        "cash_flow": CashFlowBuilder(var_config.get("cash_flow", {})),
+        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
     }
 
     # Build all variables
@@ -341,7 +351,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_h13_1_capex_panel",
+        "step_id": "build_h13_capex_panel",
         "timestamp": timestamp,
         "variable_stats": [],
         "timing": {},
@@ -350,12 +360,12 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Setup paths
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "h13_1_capex" / timestamp
+    out_dir = root / "outputs" / "variables" / "h13_capex" / timestamp
 
     # Setup logging to timestamped directory
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H13_1_Capex",
+        suite_name="H13_Capex",
         timestamp=timestamp,
     )
 
@@ -371,7 +381,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H13.1 Capex Panel (call-level)")
+    print("STAGE 3: Build H13 Capex Panel (call-level)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -403,10 +413,10 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    panel_path = out_dir / "h13_1_capex_panel.parquet"
+    panel_path = out_dir / "h13_capex_panel.parquet"
     panel.to_parquet(panel_path, index=False)
     print(
-        f"  Saved: h13_1_capex_panel.parquet "
+        f"  Saved: h13_capex_panel.parquet "
         f"({len(panel):,} rows, {len(panel.columns)} columns)"
     )
 
@@ -433,7 +443,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Report
     duration = (datetime.now() - start_time).total_seconds()
     report_lines = [
-        "# Stage 3: H13.1 Capex Panel Build Report",
+        "# Stage 3: H13 Capex Panel Build Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
@@ -442,8 +452,25 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         "",
         f"- **Unit:** Call-level (one row per earnings call)",
         f"- **Total rows:** {len(panel):,}",
-        f"- **Rows with valid CapexAt_lead:** {panel['CapexAt_lead'].notna().sum():,}",
         f"- **Columns:** {len(panel.columns)}",
+        "",
+        "## Dependent Variables (CapEx)",
+        f"- **CapexAt (t):** {panel['CapexAt'].notna().sum():,} calls",
+        f"- **CapexAt_lead (t+1):** {panel['CapexAt_lead'].notna().sum():,} calls",
+        "",
+        "## Key IVs (6 simultaneous)",
+        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,} calls",
+        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,} calls",
+        "",
+        "## Extended Controls",
+        f"- **SalesGrowth:** {panel['SalesGrowth'].notna().sum():,} calls",
+        f"- **RD_Intensity:** {panel['RD_Intensity'].notna().sum():,} calls",
+        f"- **CashFlow:** {panel['CashFlow'].notna().sum():,} calls",
+        f"- **Volatility:** {panel['Volatility'].notna().sum():,} calls",
         "",
         "## Sample Distribution",
         "",
@@ -455,13 +482,13 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         n_lead = panel.loc[panel["sample"] == sample, "CapexAt_lead"].notna().sum()
         report_lines.append(f"| {sample} | {n:,} | {n_lead:,} |")
 
-    report_path = out_dir / "report_step3_h13_1_capex.md"
+    report_path = out_dir / "report_step3_h13_capex.md"
     with open(report_path, "w") as f:
         f.write("\n".join(report_lines))
-    print(f"  Saved: report_step3_h13_1_capex.md")
+    print(f"  Saved: report_step3_h13_capex.md")
 
     print("\n" + "=" * 80)
-    print("H13.1 Capex Panel build complete.")
+    print("H13 Capex Panel build complete.")
     print(f"Duration: {duration:.1f} seconds")
     print("=" * 80)
 

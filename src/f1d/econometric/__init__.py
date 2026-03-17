@@ -14,6 +14,9 @@ Active Modules:
     - run_h6_cccl: Run CCCL hypothesis test
     - run_h7_illiquidity: Run Illiquidity hypothesis test
     - run_h9_takeover_hazards: Run Takeover Hazards hypothesis test
+    - run_h13_capex: Run Capital Expenditure hypothesis test
+    - run_h14_bidask_spread: Run Bid-Ask Spread hypothesis test
+    - run_h15_repurchase: Run Share Repurchase hypothesis test (LPM)
 
 Archived Modules (in _archived/):
     - run_h0_1_manager_clarity: Superseded by H0.2

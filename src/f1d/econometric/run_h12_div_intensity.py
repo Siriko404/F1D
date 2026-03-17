@@ -1,61 +1,68 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H12 Language Uncertainty → Dividend Intensity
+STAGE 4: Test H12 Payout Ratio Hypothesis
 ================================================================================
 ID: econometric/run_h12_div_intensity
-Description: Run H12 hypothesis test by loading the firm-year panel from Stage 3,
-             running fixed effects OLS regressions across 6 uncertainty measures
-             and 3 industry samples, and outputting results.
+Description: Run H12 hypothesis test using 8 model specifications
+             with 6 simultaneous uncertainty/clarity IVs (firm-year averaged),
+             varying DV, FE type, and control set. Main sample only.
 
-Model Specification:
-    DivIntensity_{i,t+1} = β0 + β1·Avg_Uncertainty_{i,t}
-                          + γ₁·Size + γ₂·Lev + γ₃·ROA + γ₄·TobinsQ
-                          + FirmFE_i + YearFE_t + ε
+Model Specifications (8 columns in one table):
+    Cols 1-4: DV = PayoutRatio (contemporaneous)
+    Cols 5-8: DV = PayoutRatio_lead (t+1)
+    Odd cols:  Industry FE (FF12 dummies) + FiscalYear FE
+    Even cols: Firm FE + FiscalYear FE
+    Cols 1-2, 5-6: Base controls
+    Cols 3-4, 7-8: Extended controls
 
-    Unit of obs: firm-fiscal-year (gvkey, fyearq)
-    DV: DivIntensity_lead = (dvy_Q4 / atq)_{t+1}
-    IV: Avg_Uncertainty = mean of call-level uncertainty within firm-year
+Key Independent Variables (6, all enter simultaneously, firm-year averaged):
+    Avg_CEO_QA_Uncertainty_pct, Avg_CEO_Pres_Uncertainty_pct,
+    Avg_Manager_QA_Uncertainty_pct, Avg_Manager_Pres_Uncertainty_pct,
+    Avg_CEO_Clarity_Residual, Avg_Manager_Clarity_Residual
+
+DV Construction (Attig et al.):
+    PayoutRatio = DVC / IB = dvy / iby
+    NaN when iby <= 0 (negative earnings).
+
+Base Controls (7):
+    Size, TobinsQ, ROA, Lev, CashHoldings, CapexAt, OCF_Volatility
+    NOTE: DividendPayer is NOT a control (endogenous with DV).
+
+Extended Controls (Base + 4):
+    + SalesGrowth, RD_Intensity, CashFlow, Volatility
+
+Sample: Main only (FF12 codes 1-7, 9-10, 12).
 
 Hypothesis Test (one-tailed):
-    H12: β1 < 0  — higher uncertainty language → lower dividend intensity
-         (vague managers pay fewer dividends)
+    H12: beta < 0 -- higher uncertainty language -> lower payout ratio.
+    Stars based on one-tailed p-values.
 
-Industry Samples:
-    - Main:    FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
-    - Finance: FF12 code 11
-    - Utility: FF12 code 8
-
-Uncertainty Measures (6, averaged to firm-year):
-    Avg_Manager_QA_Uncertainty_pct, Avg_CEO_QA_Uncertainty_pct,
-    Avg_Manager_QA_Weak_Modal_pct,  Avg_CEO_QA_Weak_Modal_pct,
-    Avg_Manager_Pres_Uncertainty_pct, Avg_CEO_Pres_Uncertainty_pct
-
-Controls: Size, Lev, ROA, TobinsQ (standard corporate finance set)
-FE: Firm + Year
-SE: Firm-clustered
+Unit of observation: firm-fiscal-year (gvkey, fyearq_int).
+FE Time Index: fyearq_int (fiscal year).
+Standard Errors: Firm-clustered (groups=gvkey).
+Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
 Inputs:
-    - outputs/variables/h12_div_intensity/latest/h12_div_intensity_panel.parquet
+    - outputs/variables/h12_payout/latest/h12_payout_panel.parquet
 
 Outputs:
-    - outputs/econometric/h12_div_intensity/{timestamp}/regression_results_{sample}_{measure}.txt
-    - outputs/econometric/h12_div_intensity/{timestamp}/h12_div_intensity_table.tex
-    - outputs/econometric/h12_div_intensity/{timestamp}/model_diagnostics.csv
-    - outputs/econometric/h12_div_intensity/{timestamp}/summary_stats.csv
-    - outputs/econometric/h12_div_intensity/{timestamp}/summary_stats.tex
-    - outputs/econometric/h12_div_intensity/{timestamp}/sanity_checks.txt
-    - outputs/econometric/h12_div_intensity/{timestamp}/report_step4_H12.md
+    - outputs/econometric/h12_payout/{timestamp}/regression_results_col{1-8}.txt
+    - outputs/econometric/h12_payout/{timestamp}/h12_payout_table.tex
+    - outputs/econometric/h12_payout/{timestamp}/model_diagnostics.csv
+    - outputs/econometric/h12_payout/{timestamp}/summary_stats.csv
+    - outputs/econometric/h12_payout/{timestamp}/summary_stats.tex
+    - outputs/econometric/h12_payout/{timestamp}/report_step4_H12.md
+    - outputs/econometric/h12_payout/{timestamp}/sample_attrition.csv
+    - outputs/econometric/h12_payout/{timestamp}/run_manifest.json
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_h12_div_intensity_panel)
+    - Requires: Stage 3 (build_h12_div_intensity_panel), H0.3 (clarity residuals)
     - Uses: linearmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
-Date: 2026-03-05
-
-Architecture: Firm-year panel + 6×3 regression loop pattern (adapted from run_h1_cash_holdings.py).
+Date: 2026-03-17
 ================================================================================
 """
 
@@ -63,7 +70,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-import warnings
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -76,103 +82,83 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
-from f1d.shared.variables.panel_utils import assign_industry_sample
-
-warnings.filterwarnings(
-    "ignore", message="covariance of constraints does not have full rank"
-)
-warnings.filterwarnings("ignore", category=FutureWarning, module="linearmodels.*")
 
 
 # ==============================================================================
 # Configuration
 # ==============================================================================
 
-# Dependent variables: both contemporaneous (t) and lead (t+1)
-DEPENDENT_VARIABLES = ["DivIntensity", "DivIntensity_lead"]
-
-# Firm-year averaged uncertainty measures (prefixed with Avg_ by panel builder)
-UNCERTAINTY_MEASURES = [
-    "Avg_Manager_QA_Uncertainty_pct",
+KEY_IVS = [
     "Avg_CEO_QA_Uncertainty_pct",
-    "Avg_Manager_QA_Weak_Modal_pct",
-    "Avg_CEO_QA_Weak_Modal_pct",
-    "Avg_Manager_Pres_Uncertainty_pct",
     "Avg_CEO_Pres_Uncertainty_pct",
+    "Avg_Manager_QA_Uncertainty_pct",
+    "Avg_Manager_Pres_Uncertainty_pct",
+    "Avg_CEO_Clarity_Residual",
+    "Avg_Manager_Clarity_Residual",
 ]
 
+# NOTE: PayoutRatio is the DV -- it must NOT appear as a control.
+# DividendPayer is NOT a control (endogenous with DV).
 BASE_CONTROLS = [
     "Size",
-    "Lev",
-    "ROA",
     "TobinsQ",
+    "ROA",
+    "Lev",
     "CashHoldings",
     "CapexAt",
-    "RD_Intensity",
+    "OCF_Volatility",
 ]
 
-# Minimum calls per firm-year to include (ensures meaningful average)
-MIN_CALLS_PER_FIRM = 5
+EXTENDED_CONTROLS = BASE_CONTROLS + [
+    "SalesGrowth",
+    "RD_Intensity",
+    "CashFlow",
+    "Volatility",
+]
+
+MODEL_SPECS = [
+    {"col": 1, "dv": "PayoutRatio",      "fe": "industry", "controls": "base"},
+    {"col": 2, "dv": "PayoutRatio",      "fe": "firm",     "controls": "base"},
+    {"col": 3, "dv": "PayoutRatio",      "fe": "industry", "controls": "extended"},
+    {"col": 4, "dv": "PayoutRatio",      "fe": "firm",     "controls": "extended"},
+    {"col": 5, "dv": "PayoutRatio_lead", "fe": "industry", "controls": "base"},
+    {"col": 6, "dv": "PayoutRatio_lead", "fe": "firm",     "controls": "base"},
+    {"col": 7, "dv": "PayoutRatio_lead", "fe": "industry", "controls": "extended"},
+    {"col": 8, "dv": "PayoutRatio_lead", "fe": "firm",     "controls": "extended"},
+]
 
 VARIABLE_LABELS = {
-    "DivIntensity_lead": "DivIntensity$_{t+1}$",
-    "DivIntensity": "DivIntensity$_{t}$",
-    "Avg_Manager_QA_Uncertainty_pct": "Manager_QA_Uncertainty",
-    "Avg_CEO_QA_Uncertainty_pct": "CEO_QA_Uncertainty",
-    "Avg_Manager_QA_Weak_Modal_pct": "Manager_QA_Weak_Modal",
-    "Avg_CEO_QA_Weak_Modal_pct": "CEO_QA_Weak_Modal",
-    "Avg_Manager_Pres_Uncertainty_pct": "Manager_Pres_Uncertainty",
-    "Avg_CEO_Pres_Uncertainty_pct": "CEO_Pres_Uncertainty",
-    "Size": "Size",
-    "Lev": "Leverage",
-    "ROA": "ROA",
-    "TobinsQ": "TobinsQ",
-    "CashHoldings": "CashHoldings",
-    "CapexAt": "CapexAt",
-    "OCF_Volatility": "OCF_Volatility",
-    "CurrentRatio": "CurrentRatio",
-    "RD_Intensity": "RD_Intensity",
+    "Avg_CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
+    "Avg_CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
+    "Avg_Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
+    "Avg_Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
+    "Avg_CEO_Clarity_Residual": "CEO Clarity Residual",
+    "Avg_Manager_Clarity_Residual": "Mgr Clarity Residual",
 }
-
-CONFIG = {
-    "min_firms": 50,
-    "min_obs": 200,
-}
-
-
-# ==============================================================================
-# Summary Statistics Variables
-# ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # DV
-    {"col": "DivIntensity_lead", "label": "DivIntensity$_{t+1}$"},
-    {"col": "DivIntensity", "label": "DivIntensity$_{t}$"},
-    # IVs (firm-year averaged - using exact column names from pipeline)
-    {
-        "col": "Avg_Manager_QA_Uncertainty_pct",
-        "label": "Avg_Manager_QA_Uncertainty_pct",
-    },
-    {"col": "Avg_CEO_QA_Uncertainty_pct", "label": "Avg_CEO_QA_Uncertainty_pct"},
-    {"col": "Avg_Manager_QA_Weak_Modal_pct", "label": "Avg_Manager_QA_Weak_Modal_pct"},
-    {"col": "Avg_CEO_QA_Weak_Modal_pct", "label": "Avg_CEO_QA_Weak_Modal_pct"},
-    {
-        "col": "Avg_Manager_Pres_Uncertainty_pct",
-        "label": "Avg_Manager_Pres_Uncertainty_pct",
-    },
-    {"col": "Avg_CEO_Pres_Uncertainty_pct", "label": "Avg_CEO_Pres_Uncertainty_pct"},
-    # Controls (using exact column names from pipeline)
-    {"col": "Size", "label": "Size"},
-    {"col": "Lev", "label": "Lev"},
+    {"col": "PayoutRatio", "label": "PayoutRatio$_t$"},
+    {"col": "PayoutRatio_lead", "label": "PayoutRatio$_{t+1}$"},
+    # Key IVs
+    {"col": "Avg_CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "Avg_CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "Avg_Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
+    {"col": "Avg_Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "Avg_CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
+    {"col": "Avg_Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
+    # Base controls
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "TobinsQ", "label": "TobinsQ"},
-    {"col": "CashHoldings", "label": "CashHoldings"},
-    {"col": "CapexAt", "label": "CapexAt"},
-    {"col": "OCF_Volatility", "label": "OCF_Volatility"},
-    {"col": "CurrentRatio", "label": "CurrentRatio"},
-    {"col": "RD_Intensity", "label": "RD_Intensity"},
-    # Calls per firm-year
-    {"col": "n_calls", "label": "n_calls"},
+    {"col": "Lev", "label": "Leverage"},
+    {"col": "CashHoldings", "label": "Cash Holdings"},
+    {"col": "CapexAt", "label": "CapEx / Assets"},
+    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    # Extended controls
+    {"col": "SalesGrowth", "label": "Sales Growth"},
+    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
+    {"col": "CashFlow", "label": "Cash Flow"},
+    {"col": "Volatility", "label": "Stock Volatility"},
 ]
 
 
@@ -181,89 +167,100 @@ SUMMARY_STATS_VARS = [
 # ==============================================================================
 
 
-def parse_arguments() -> argparse.Namespace:
+def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: Test H12 Language Uncertainty → Dividend Intensity (firm-year)",
+        description="Stage 4: Test H12 Payout Ratio Hypothesis (firm-year)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Validate inputs without executing"
     )
     parser.add_argument(
         "--panel-path",
         type=str,
         default=None,
-        help="Explicit path to H12 firm-year panel parquet",
+        help="Path to panel parquet file (default: latest from Stage 3)",
     )
-    parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
 
 # ==============================================================================
-# Sanity Checks
+# Data Loading
 # ==============================================================================
 
 
-def run_sanity_checks(df: pd.DataFrame, out_dir: Path) -> None:
-    """Print and save sanity checks on the loaded panel."""
-    lines = [
-        "=" * 70,
-        "H12 DIVIDEND INTENSITY PANEL — SANITY CHECKS",
-        "=" * 70,
-        f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        "",
-        f"N firm-years (raw):  {len(df):,}",
-        f"N firms (unique):    {df['gvkey'].nunique():,}",
-        "",
-    ]
+def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
+    """Load firm-year H12 panel from Stage 3 output."""
+    print("\n" + "=" * 60)
+    print("Loading panel")
+    print("=" * 60)
 
-    # DV
-    if "DivIntensity_lead" in df.columns:
-        dv = df["DivIntensity_lead"]
-        lines += [
-            "DivIntensity_lead (DV, t+1):",
-            f"  valid={dv.notna().sum():,} / {len(df):,}",
-            f"  mean={dv.mean():.4f}  SD={dv.std():.4f}",
-            f"  min={dv.min():.4f}  max={dv.max():.4f}",
-            "",
-        ]
+    if panel_path:
+        panel_file = Path(panel_path)
+    else:
+        panel_dir = get_latest_output_dir(
+            root_path / "outputs" / "variables" / "h12_payout",
+            required_file="h12_payout_panel.parquet",
+        )
+        panel_file = panel_dir / "h12_payout_panel.parquet"
 
-    if "DivIntensity" in df.columns:
-        di = df["DivIntensity"]
-        lines += [
-            "DivIntensity (contemporaneous):",
-            f"  valid={di.notna().sum():,} / {len(df):,}",
-            f"  mean={di.mean():.4f}  SD={di.std():.4f}",
-            f"  zero-dividend fraction: {(di == 0).sum()}/{di.notna().sum()} "
-            f"({100 * (di == 0).sum() / max(di.notna().sum(), 1):.1f}%)",
-            "",
-        ]
+    if not panel_file.exists():
+        raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
-    # Uncertainty measures
-    for col in UNCERTAINTY_MEASURES:
-        if col in df.columns:
-            s = df[col]
-            lines += [
-                f"{col}:",
-                f"  valid={s.notna().sum():,}  mean={s.mean():.4f}  SD={s.std():.4f}",
-            ]
-    lines.append("")
+    # Read all columns (red-team CHECK 12: avoid explicit column list)
+    panel = pd.read_parquet(panel_file)
+    print(f"  Loaded: {panel_file}")
+    print(f"  Rows: {len(panel):,}")
+    print(f"  Columns: {len(panel.columns)}")
+    return panel
 
-    # Calls per firm-year
-    if "n_calls" in df.columns:
-        nc = df["n_calls"]
-        lines += [
-            "Calls per firm-year:",
-            f"  mean={nc.mean():.1f}  median={nc.median():.0f}  "
-            f"min={nc.min():.0f}  max={nc.max():.0f}",
-            "",
-        ]
 
-    lines.append("=" * 70)
+def filter_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
+    """Filter to Main sample only (exclude Finance ff12=11, Utility ff12=8)."""
+    before = len(panel)
+    main = panel[~panel["ff12_code"].isin([8, 11])].copy()
+    print(f"  Main sample filter: {len(main):,} / {before:,} "
+          f"(dropped {before - len(main):,} Finance/Utility)")
+    return main
 
-    for line in lines:
-        print(f"  {line}")
 
-    sanity_path = out_dir / "sanity_checks.txt"
-    with open(sanity_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
-    print(f"  Sanity checks saved: {sanity_path.name}")
+def prepare_regression_data(
+    panel: pd.DataFrame,
+    spec: Dict[str, Any],
+) -> pd.DataFrame:
+    """Prepare panel for a specific model specification."""
+    dv = spec["dv"]
+    controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+    required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+
+    missing = [c for c in required if c not in panel.columns]
+    if missing:
+        raise ValueError(
+            f"Required columns missing from panel: {missing}. Check Stage 3 output."
+        )
+
+    df = panel.copy()
+    df = df.replace([np.inf, -np.inf], np.nan)
+
+    # Coverage check
+    for iv in KEY_IVS:
+        pct_missing = df[iv].isna().mean() * 100
+        if pct_missing > 50:
+            print(f"  WARNING: {iv} has {pct_missing:.1f}% missing values")
+
+    # Drop rows where DV is NaN (includes iby <= 0 cases)
+    before = len(df)
+    df = df[df[dv].notna()].copy()
+    print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
+
+    # Complete cases
+    complete_mask = df[required].notna().all(axis=1)
+    df = df[complete_mask].copy()
+    print(f"  After complete cases: {len(df):,}, {df['gvkey'].nunique():,} firms")
+
+    # No MIN_CALLS_PER_FIRM filter (include all firms)
+
+    return df
 
 
 # ==============================================================================
@@ -272,324 +269,383 @@ def run_sanity_checks(df: pd.DataFrame, out_dir: Path) -> None:
 
 
 def run_regression(
-    df: pd.DataFrame,
-    dv: str,
-    uncertainty_var: str,
-    sample_name: str,
-) -> Tuple[Optional[Any], Dict[str, Any]]:
-    """Run PanelOLS for a single DV, uncertainty measure, and industry sample.
+    df_prepared: pd.DataFrame,
+    spec: Dict[str, Any],
+) -> Tuple[Any, Dict[str, Any]]:
+    """Run PanelOLS regression for a given model specification.
 
-    Model:
-        DivIntensity or DivIntensity_lead ~ Uncertainty + Size + Lev + ROA + TobinsQ
-                                   + CashHoldings + CapexAt + OCF_Volatility
-                                   + CurrentRatio + RD_Intensity
-                                   + EntityEffects + TimeEffects
+    Industry FE: absorbed via other_effects (not dummies) + TimeEffects
+    Firm FE: EntityEffects + TimeEffects (via from_formula)
 
-    Standard errors: firm-clustered.
-
-    Returns (model_result, meta_dict).
+    All models: firm-clustered SEs, drop_absorbed=True.
+    Time index: fyearq_int (fiscal year).
     """
-    existing_controls = [c for c in BASE_CONTROLS if c in df.columns]
-    required_avail = [dv, uncertainty_var] + existing_controls + ["gvkey", "fyearq"]
+    col_num = spec["col"]
+    dv = spec["dv"]
+    fe_type = spec["fe"]
+    controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
 
-    df_reg = df.replace([np.inf, -np.inf], np.nan).dropna(subset=required_avail).copy()
+    print(f"\n" + "=" * 60)
+    print(f"Running regression: Col ({col_num}) | DV={dv} | FE={fe_type} | Controls={spec['controls']}")
+    print("=" * 60)
 
-    # Minimum calls per firm filter
-    firm_counts = df_reg["gvkey"].value_counts()
-    valid_firms = set(firm_counts[firm_counts >= MIN_CALLS_PER_FIRM].index)
-    df_reg = df_reg[df_reg["gvkey"].isin(valid_firms)].copy()
-
-    if (
-        len(df_reg) < CONFIG["min_obs"]
-        or df_reg["gvkey"].nunique() < CONFIG["min_firms"]
-    ):
-        print(
-            f"  Skipping {sample_name}/{dv}/{uncertainty_var}: insufficient data "
-            f"(N={len(df_reg):,}, firms={df_reg['gvkey'].nunique():,})"
-        )
+    if len(df_prepared) < 100:
+        print(f"  WARNING: Too few observations ({len(df_prepared)}), skipping")
         return None, {}
 
-    # Use original variable name in formula (no renaming)
-    # Include explicit intercept (1 +) for consistent reporting with H11 scripts
-    formula = (
-        f"{dv} ~ 1 + {uncertainty_var} + "
-        + " + ".join(existing_controls)
-        + " + EntityEffects + TimeEffects"
-    )
+    exog = KEY_IVS + controls
 
-    print(f"\n--- {sample_name} / {dv} / {uncertainty_var} ---")
-    print(
-        f"  N firm-years: {len(df_reg):,}  |  N firms: {df_reg['gvkey'].nunique():,}"
-        f"  |  N years: {df_reg['fyearq'].nunique():,}"
-    )
-    print(f"  Formula: {dv} ~ {uncertainty_var} + {' + '.join(existing_controls)}")
-    print("  Estimating with firm-clustered SEs...")
-
+    print(f"  FE: {'Industry(FF12) + FiscalYear' if fe_type == 'industry' else 'Firm + FiscalYear'}")
+    print(f"  N firm-years: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
+    print(f"  Controls: {spec['controls']} ({len(controls)} vars)")
+    print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    df_panel = df_reg.set_index(["gvkey", "fyearq"])
+    # MultiIndex: gvkey (entity) x fyearq_int (fiscal year time)
+    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
 
     try:
-        model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-        model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+        if fe_type == "industry":
+            # Absorb industry FE via other_effects (not C() dummies)
+            dependent_data = df_panel[dv]
+            exog_data = df_panel[exog]
+            industry_data = df_panel["ff12_code"]
+            model_obj = PanelOLS(
+                dependent=dependent_data,
+                exog=exog_data,
+                entity_effects=False,
+                time_effects=True,
+                other_effects=industry_data,
+                drop_absorbed=True,
+                check_rank=False,
+            )
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+        else:
+            # Firm FE: EntityEffects + TimeEffects
+            exog_str = " + ".join(exog)
+            formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
+            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
     except Exception as e:
-        print(f"  ERROR: PanelOLS failed: {e}", file=sys.stderr)
+        print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
         return None, {}
 
-    duration = (datetime.now() - t0).total_seconds()
-    print(
-        f"  [OK] Complete in {duration:.1f}s  |  Within-R²: {model.rsquared_within:.4f}"
-    )
+    elapsed = (datetime.now() - t0).total_seconds()
+    print(f"  [OK] Complete in {elapsed:.1f}s")
+    print(f"  R-squared (within): {model.rsquared_within:.4f}")
+    print(f"  N obs: {int(model.nobs):,}")
 
-    # Extract key coefficient using original variable name
-    beta1 = float(model.params.get(uncertainty_var, np.nan))
-    se1 = float(model.std_errors.get(uncertainty_var, np.nan))
-    t1 = float(model.tstats.get(uncertainty_var, np.nan))
-    p1_two = float(model.pvalues.get(uncertainty_var, np.nan))
-
-    # One-tailed test: H12 predicts β1 < 0
-    if not np.isnan(p1_two) and not np.isnan(beta1):
-        p1_one = p1_two / 2 if beta1 < 0 else 1 - p1_two / 2
-    else:
-        p1_one = np.nan
-
-    h12_sig = (not np.isnan(p1_one)) and (p1_one < 0.05) and (beta1 < 0)
-
-    print(
-        f"  β1 ({uncertainty_var}): {beta1:.4f}  SE={se1:.4f}  t={t1:.2f}  "
-        f"p(two)={p1_two:.4f}  p(one)={p1_one:.4f}  "
-        f"H12={'SUPPORTED' if h12_sig else 'not supported'}"
-    )
-
-    # Extract control coefficients
-    control_coefs = {}
-    for ctrl in existing_controls:
-        control_coefs[f"beta_{ctrl}"] = float(model.params.get(ctrl, np.nan))
-        control_coefs[f"se_{ctrl}"] = float(model.std_errors.get(ctrl, np.nan))
-        control_coefs[f"p_{ctrl}"] = float(model.pvalues.get(ctrl, np.nan))
-
+    # Build metadata with per-IV one-tailed p-values (H12: beta < 0)
     meta: Dict[str, Any] = {
-        "sample": sample_name,
+        "col": col_num,
         "dv": dv,
-        "uncertainty_var": uncertainty_var,
-        "beta1": beta1,
-        "beta1_se": se1,
-        "beta1_t": t1,
-        "beta1_p_two": p1_two,
-        "beta1_p_one": p1_one,
-        "beta1_signif": h12_sig,
+        "fe": fe_type,
+        "controls": spec["controls"],
         "n_obs": int(model.nobs),
-        "n_firms": df_reg["gvkey"].nunique(),
-        "n_clusters": df_reg["gvkey"].nunique(),
-        "cluster_var": "gvkey",
+        "n_firms": df_prepared["gvkey"].nunique(),
         "within_r2": float(model.rsquared_within),
-        **control_coefs,
     }
+
+    # Per-IV coefficients with one-tailed p-values
+    for iv in KEY_IVS:
+        beta = float(model.params.get(iv, np.nan))
+        se = float(model.std_errors.get(iv, np.nan))
+        p_two = float(model.pvalues.get(iv, np.nan))
+        t_stat = float(model.tstats.get(iv, np.nan))
+
+        # H12: beta < 0 (higher uncertainty -> lower payout)
+        if not np.isnan(p_two) and not np.isnan(beta):
+            p_one = p_two / 2 if beta < 0 else 1 - p_two / 2
+        else:
+            p_one = np.nan
+
+        meta[f"{iv}_beta"] = beta
+        meta[f"{iv}_se"] = se
+        meta[f"{iv}_t"] = t_stat
+        meta[f"{iv}_p_two"] = p_two
+        meta[f"{iv}_p_one"] = p_one
+
+        stars = _sig_stars(p_one)
+        print(f"  {iv}: beta={beta:.4f} SE={se:.4f} p1={p_one:.4f} {stars}")
 
     return model, meta
 
 
 # ==============================================================================
-# LaTeX Table
+# Output Generation
 # ==============================================================================
 
 
-def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write a publication-ready LaTeX table for H12 results.
-
-    Two panels per industry sample (DivIntensity and DivIntensity_lead).
-    6 columns per panel (one per uncertainty measure).
-    Shows β1 (Uncertainty) with SE, significance stars, controls row,
-    N, within-R².
-    """
-
-    def sig(p: float) -> str:
-        if p < 0.01:
-            return "^{***}"
-        elif p < 0.05:
-            return "^{**}"
-        elif p < 0.10:
-            return "^{*}"
+def _sig_stars(p: float) -> str:
+    """Return significance stars for one-tailed p-value."""
+    if np.isnan(p):
         return ""
+    if p < 0.01:
+        return "***"
+    if p < 0.05:
+        return "**"
+    if p < 0.10:
+        return "*"
+    return ""
 
-    def fmt_coef(val: float, pval: float) -> str:
-        if pd.isna(val):
+
+def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
+    """Write unified 8-column LaTeX table with stars + SE in parentheses.
+
+    Layout:
+        Cols 1-4: PayoutRatio (contemporaneous)
+        Cols 5-8: PayoutRatio_lead (t+1)
+        Rows: 6 key IVs (coeff + SE), controls indicator, FE indicators, N, R2
+    """
+    results_by_col = {}
+    for r in all_results:
+        meta = r.get("meta", {})
+        if meta:
+            results_by_col[meta["col"]] = meta
+
+    n_cols = 8
+
+    def fmt_coef(val: float, stars: str) -> str:
+        if np.isnan(val):
             return ""
-        return f"{val:.4f}{sig(pval)}"
+        return f"{val:.4f}{stars}"
 
     def fmt_se(val: float) -> str:
-        return "" if pd.isna(val) else f"({val:.4f})"
+        if np.isnan(val):
+            return ""
+        return f"({val:.4f})"
 
-    # Short labels for column headers (using exact column names from pipeline)
-    short_labels = {
-        "Avg_Manager_QA_Uncertainty_pct": "Manager_QA_Uncertainty",
-        "Avg_CEO_QA_Uncertainty_pct": "CEO_QA_Uncertainty",
-        "Avg_Manager_QA_Weak_Modal_pct": "Manager_QA_Weak_Modal",
-        "Avg_CEO_QA_Weak_Modal_pct": "CEO_QA_Weak_Modal",
-        "Avg_Manager_Pres_Uncertainty_pct": "Manager_Pres_Uncertainty",
-        "Avg_CEO_Pres_Uncertainty_pct": "CEO_Pres_Uncertainty",
-    }
+    def fmt_int(val: int) -> str:
+        return f"{val:,}"
 
-    samples = ["Main", "Finance", "Utility"]
+    def fmt_r2(val: float) -> str:
+        if np.isnan(val):
+            return ""
+        return f"{val:.3f}"
 
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{H12: Language Uncertainty and Dividend Intensity}",
-        r"\label{tab:h12_div_intensity}",
-        r"\small",
+        r"\caption{Speech Uncertainty and Payout Ratio}",
+        r"\label{tab:h12_payout}",
+        r"\scriptsize",
+        r"\begin{tabular}{l" + "c" * n_cols + "}",
+        r"\toprule",
     ]
 
-    for dv in DEPENDENT_VARIABLES:
-        dv_label = (
-            "DivIntensity$_{t}$" if dv == "DivIntensity" else "DivIntensity$_{t+1}$"
-        )
+    # Column numbers
+    col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
+    lines.append(f" & {col_nums} " + r"\\")
 
-        for sample in samples:
-            sample_results = [
-                r
-                for r in all_results
-                if r.get("sample") == sample and r.get("dv") == dv
-            ]
-            if not sample_results:
-                continue
+    # DV headers with multicolumn
+    lines.append(
+        r" & \multicolumn{4}{c}{PayoutRatio$_t$}"
+        r" & \multicolumn{4}{c}{PayoutRatio$_{t+1}$} \\"
+    )
+    lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
+    lines.append(r"\midrule")
 
-            # Order by UNCERTAINTY_MEASURES
-            ordered = []
-            for measure in UNCERTAINTY_MEASURES:
-                match = [
-                    r for r in sample_results if r.get("uncertainty_var") == measure
-                ]
-                if match:
-                    ordered.append(match[0])
-                else:
-                    ordered.append({})
+    # Key IV rows (coefficient + SE for each)
+    for iv in KEY_IVS:
+        label = VARIABLE_LABELS.get(iv, iv)
+        coef_cells = []
+        for c in range(1, n_cols + 1):
+            meta = results_by_col.get(c, {})
+            beta = meta.get(f"{iv}_beta", np.nan)
+            p_one = meta.get(f"{iv}_p_one", np.nan)
+            coef_cells.append(fmt_coef(beta, _sig_stars(p_one)))
+        lines.append(f"{label} & " + " & ".join(coef_cells) + r" \\")
 
-            n_cols = len(ordered)
-            col_spec = "l" + "c" * n_cols
+        se_cells = []
+        for c in range(1, n_cols + 1):
+            meta = results_by_col.get(c, {})
+            se = meta.get(f"{iv}_se", np.nan)
+            se_cells.append(fmt_se(se))
+        lines.append(f" & " + " & ".join(se_cells) + r" \\")
 
-            lines += [
-                "",
-                r"\vspace{0.5em}",
-                rf"\textbf{{Panel: {sample} Sample — {dv_label}}}",
-                r"\vspace{0.3em}",
-                "",
-                r"\begin{tabular}{" + col_spec + "}",
-                r"\toprule",
-            ]
+    lines.append(r"\midrule")
 
-            # Column headers
-            headers = " & ".join(
-                short_labels.get(UNCERTAINTY_MEASURES[i], f"({i + 1})")
-                for i in range(n_cols)
-            )
-            lines.append(r" & " + headers + r" \\")
-            lines.append(r"\midrule")
+    # Controls indicator
+    ctrl_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
+    lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
 
-            # β1 (Uncertainty) row
-            coef_vals = " & ".join(
-                fmt_coef(r.get("beta1", np.nan), r.get("beta1_p_one", np.nan))
-                for r in ordered
-            )
-            lines.append(r" & " + coef_vals + r" \\")
+    # FE indicators
+    ind_fe_cells = []
+    firm_fe_cells = []
+    year_fe_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        ind_fe_cells.append("Yes" if meta.get("fe") == "industry" else "")
+        firm_fe_cells.append("Yes" if meta.get("fe") == "firm" else "")
+        year_fe_cells.append("Yes")
+    lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
+    lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
+    lines.append(r"Fiscal Year FE & " + " & ".join(year_fe_cells) + r" \\")
 
-            # SE row
-            se_vals = " & ".join(fmt_se(r.get("beta1_se", np.nan)) for r in ordered)
-            lines.append(r" & " + se_vals + r" \\")
+    lines.append(r"\midrule")
 
-            # Control coefficients
-            for ctrl in BASE_CONTROLS:
-                ctrl_coef = " & ".join(
-                    fmt_coef(r.get(f"beta_{ctrl}", np.nan), r.get(f"p_{ctrl}", np.nan))
-                    for r in ordered
-                )
-                ctrl_label = VARIABLE_LABELS.get(ctrl, ctrl)
-                lines.append(rf"{ctrl_label} & " + ctrl_coef + r" \\")
-                ctrl_se = " & ".join(
-                    fmt_se(r.get(f"se_{ctrl}", np.nan)) for r in ordered
-                )
-                lines.append(r" & " + ctrl_se + r" \\")
+    # N
+    n_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        n_val = meta.get("n_obs", 0)
+        n_cells.append(fmt_int(n_val) if n_val else "")
+    lines.append(r"N & " + " & ".join(n_cells) + r" \\")
 
-            lines += [
-                r"\midrule",
-                r"Firm FE  & " + " & ".join("Yes" for _ in ordered) + r" \\",
-                r"Year FE  & " + " & ".join("Yes" for _ in ordered) + r" \\",
-                r"\midrule",
-                "Observations & "
-                + " & ".join(f"{r.get('n_obs', 0):,}" for r in ordered)
-                + r" \\",
-                "Firms & "
-                + " & ".join(f"{r.get('n_firms', 0):,}" for r in ordered)
-                + r" \\",
-                r"Within-$R^2$ & "
-                + " & ".join(f"{r.get('within_r2', np.nan):.4f}" for r in ordered)
-                + r" \\",
-                r"\bottomrule",
-                r"\end{tabular}",
-            ]
+    # Within R2
+    r2_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        r2_cells.append(fmt_r2(meta.get("within_r2", np.nan)))
+    lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
 
     lines += [
-        r"\\[-0.5em]",
-        r"\parbox{\textwidth}{\scriptsizeskip0pt\selectfont\scriptsize ",
-        r"\textit{Notes:} Dependent variables are Dividend Intensity$_{t}$ (contemporaneous) and Dividend Intensity$_{t+1}$ (one-year ahead). "
-        r"Unit of observation: firm--fiscal-year. "
-        r"Uncertainty measures are averaged across all earnings calls within the firm-year. "
-        r"Firms with fewer than 5 firm-year observations are excluded. "
-        r"Standard errors (in parentheses) are clustered at the firm level. "
-        r"Variables are winsorized at 1\%/99\% by year at the engine level. "
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for H12: $\beta_1 < 0$).",
-        r"}",
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\begin{minipage}{\linewidth}",
+        r"\vspace{2pt}\scriptsize",
+        r"\textit{Notes:} ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H12: $\beta < 0$). ",
+        r"Standard errors (in parentheses) clustered at firm level. ",
+        r"Main sample (excludes financial and utility firms). ",
+        r"Industry FE uses Fama-French 12 industry dummies. ",
+        r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
+        r"PayoutRatio = DVC / IB (Attig et al.); NaN when IB $\leq$ 0. ",
+        r"Unit of observation: firm-fiscal-year. ",
+        r"IVs are firm-year averages of quarterly call-level measures. ",
+        r"Variables winsorized at 1\%/99\% by year at engine level.",
+        r"\end{minipage}",
         r"\end{table}",
     ]
 
-    tex_path = out_dir / "h12_div_intensity_table.tex"
+    tex_path = out_dir / "h12_payout_table.tex"
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-    print(f"  LaTeX table saved: {tex_path.name}")
+    print(f"  Saved: h12_payout_table.tex")
 
 
-# ==============================================================================
-# Report Generation
-# ==============================================================================
-# Report Generation
-# ==============================================================================
+def save_outputs(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> pd.DataFrame:
+    """Save regression outputs."""
+    print("\n" + "=" * 60)
+    print("Saving outputs")
+    print("=" * 60)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Save individual regression result text files
+    for r in all_results:
+        model = r.get("model")
+        meta = r.get("meta", {})
+        if model is None or not meta:
+            continue
+        col_num = meta.get("col", 0)
+        fname = f"regression_results_col{col_num}.txt"
+        fpath = out_dir / fname
+        with open(fpath, "w", encoding="utf-8") as f:
+            f.write(f"Model Specification: Col ({col_num})\n")
+            f.write(f"DV: {meta.get('dv')}\n")
+            f.write(f"FE: {meta.get('fe')}\n")
+            f.write(f"Controls: {meta.get('controls')}\n")
+            f.write("=" * 60 + "\n\n")
+            f.write(str(model.summary))
+        print(f"  Saved: {fname}")
+
+    # Build model_diagnostics.csv
+    diag_rows = [r["meta"] for r in all_results if r.get("meta")]
+    diag_df = pd.DataFrame(diag_rows)
+    diag_path = out_dir / "model_diagnostics.csv"
+    diag_df.to_csv(diag_path, index=False)
+    print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
+
+    # LaTeX table
+    _save_latex_table(all_results, out_dir)
+
+    return diag_df
 
 
 def generate_report(
     all_results: List[Dict[str, Any]],
+    diag_df: pd.DataFrame,
     out_dir: Path,
     duration: float,
 ) -> None:
-    """Generate markdown report summarizing H12 results."""
-    n_sig = sum(1 for r in all_results if r.get("beta1_signif"))
-    n_total = len(all_results)
-
+    """Generate markdown report summarising H12 results."""
     lines = [
-        "# Stage 4: H12 Language Uncertainty → Dividend Intensity Report",
+        "# Stage 4: H12 Payout Ratio Hypothesis Test Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
+        f"**Unit of observation:** firm-fiscal-year",
+        f"**DV:** PayoutRatio = DVC / IB (Attig et al.)",
+        f"**Sample:** Main only (excludes Finance FF12=11, Utility FF12=8)",
+        f"**Time index:** fyearq_int (fiscal year)",
+        f"**Hypothesis test:** One-tailed (H12: beta < 0)",
         "",
-        "## Summary",
-        f"- Total regressions: {n_total}",
-        f"- H12 supported (β1 < 0, p < 0.05 one-tailed): **{n_sig}/{n_total}**",
+        "## Model Specifications",
         "",
-        "## Results by Sample",
+        "All 6 key IVs enter each model simultaneously (firm-year averaged):",
+        "- Avg_CEO_QA_Uncertainty_pct, Avg_CEO_Pres_Uncertainty_pct",
+        "- Avg_Manager_QA_Uncertainty_pct, Avg_Manager_Pres_Uncertainty_pct",
+        "- Avg_CEO_Clarity_Residual, Avg_Manager_Clarity_Residual",
+        "",
+        "| Col | DV | FE | Controls |",
+        "|-----|----|----|----------|",
+    ]
+    for spec in MODEL_SPECS:
+        lines.append(
+            f"| ({spec['col']}) | {spec['dv']} | {spec['fe']} | {spec['controls']} |"
+        )
+
+    lines += [
+        "",
+        "Standard errors: firm-clustered (cov_type='clustered', cluster_entity=True)",
+        "One-tailed test: H12 beta < 0",
+        "",
+        "## Results Summary",
+        "",
+        "| Col | DV | FE | Controls | N | Within-R2 |",
+        "|-----|----|----|----------|---|-----------|",
     ]
 
-    for sample in ["Main", "Finance", "Utility"]:
-        sample_results = [r for r in all_results if r.get("sample") == sample]
-        if not sample_results:
+    for r in all_results:
+        meta = r.get("meta", {})
+        if not meta:
             continue
-        sig_count = sum(1 for r in sample_results if r.get("beta1_signif"))
-        lines.append(f"**{sample}:** H12 {sig_count}/{len(sample_results)} significant")
-        for r in sample_results:
-            measure = r.get("uncertainty_var", "?")
-            b = r.get("beta1", np.nan)
-            p = r.get("beta1_p_one", np.nan)
-            star = " *" if r.get("beta1_signif") else ""
-            lines.append(f"  - {measure}: β1={b:.4f}, p(one)={p:.4f}{star}")
-        lines.append("")
+        lines.append(
+            f"| ({meta['col']}) | {meta['dv']} | {meta['fe']} | "
+            f"{meta['controls']} | {meta['n_obs']:,} | {meta['within_r2']:.4f} |"
+        )
+
+    lines += [
+        "",
+        "## Key IV Coefficients (one-tailed p-values, H12: beta < 0)",
+        "",
+        "| IV | Col | Beta | SE | p(one-tail) | Sig |",
+        "|----|-----|------|-----|-------------|-----|",
+    ]
+
+    for r in all_results:
+        meta = r.get("meta", {})
+        if not meta:
+            continue
+        for iv in KEY_IVS:
+            beta = meta.get(f"{iv}_beta", np.nan)
+            se = meta.get(f"{iv}_se", np.nan)
+            p_one = meta.get(f"{iv}_p_one", np.nan)
+            stars = _sig_stars(p_one)
+            if not np.isnan(beta):
+                lines.append(
+                    f"| {iv} | ({meta['col']}) | {beta:.4f} | {se:.4f} | "
+                    f"{p_one:.4f} | {stars} |"
+                )
+
+    lines.append("")
 
     report_path = out_dir / "report_step4_H12.md"
     with open(report_path, "w", encoding="utf-8") as f:
@@ -606,186 +662,107 @@ def main(panel_path: Optional[str] = None) -> int:
     """Main execution."""
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
-    t0 = datetime.now()
-    timestamp = t0.strftime("%Y-%m-%d_%H%M%S")
+    start_time = datetime.now()
+    timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
+
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h12_div_intensity" / timestamp
+    out_dir = root / "outputs" / "econometric" / "h12_payout" / timestamp
 
     # Setup logging
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H12_DivIntensity",
+        suite_name="H12_Payout",
         timestamp=timestamp,
     )
 
     print("=" * 80)
-    print("STAGE 4: Test H12 Language Uncertainty → Dividend Intensity")
+    print("STAGE 4: Test H12 Payout Ratio Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
     print(f"Log dir:   {log_dir}")
+    print(f"Sample:    Main only (FF12 != 8, 11)")
+    print(f"IVs:       {len(KEY_IVS)} (all simultaneous, firm-year averaged)")
+    print(f"Specs:     {len(MODEL_SPECS)} model columns")
+    print(f"Time FE:   fyearq_int (fiscal year)")
+    print(f"Test:      One-tailed (H12: beta < 0)")
 
-    # ------------------------------------------------------------------
-    # Load Stage 3 panel
-    # ------------------------------------------------------------------
-    if not panel_path:
-        try:
-            panel_dir = get_latest_output_dir(
-                root / "outputs" / "variables" / "h12_div_intensity",
-                required_file="h12_div_intensity_panel.parquet",
-            )
-            panel_file = panel_dir / "h12_div_intensity_panel.parquet"
-        except Exception as e:
-            print(f"ERROR: Could not find Stage 3 panel: {e}")
-            return 1
-    else:
-        panel_file = Path(panel_path)
+    # Load panel
+    panel = load_panel(root, panel_path)
 
-    print("\n" + "=" * 60)
-    print("Loading panel")
-    print("=" * 60)
-    print(f"  File: {panel_file}")
-    df = pd.read_parquet(panel_file)
-    print(f"  Rows: {len(df):,}")
-    print(f"  Columns: {len(df.columns)}")
+    # Track panel path for manifest
+    panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
+        root / "outputs" / "variables" / "h12_payout",
+        required_file="h12_payout_panel.parquet",
+    ) / "h12_payout_panel.parquet"
 
-    out_dir.mkdir(parents=True, exist_ok=True)
+    # Filter to Main sample
+    full_panel_n = len(panel)
+    panel = filter_main_sample(panel)
+    main_panel_n = len(panel)
 
-    # Assign sample if not already present
-    if "sample" not in df.columns and "ff12_code" in df.columns:
-        df["sample"] = assign_industry_sample(df["ff12_code"])
+    print(f"\n  Main sample: {main_panel_n:,} firm-years, "
+          f"{panel['gvkey'].nunique():,} firms")
+    print(f"  PayoutRatio non-null: {panel['PayoutRatio'].notna().sum():,}")
+    print(f"  PayoutRatio_lead non-null: {panel['PayoutRatio_lead'].notna().sum():,}")
+    for iv in KEY_IVS:
+        n_valid = panel[iv].notna().sum()
+        pct = 100.0 * n_valid / main_panel_n if main_panel_n > 0 else 0
+        print(f"  {iv}: {n_valid:,} ({pct:.1f}%)")
 
-    # ------------------------------------------------------------------
-    # Summary Statistics
-    # ------------------------------------------------------------------
+    # Generate summary stats (Main sample only)
     print("\n" + "=" * 60)
     print("Generating summary statistics")
     print("=" * 60)
-    summary_vars = [
-        {"col": v["col"], "label": v["label"]}
-        for v in SUMMARY_STATS_VARS
-        if v["col"] in df.columns
-    ]
+    out_dir.mkdir(parents=True, exist_ok=True)
     make_summary_stats_table(
-        df=df,
-        variables=summary_vars,
-        sample_names=["Main", "Finance", "Utility"] if "sample" in df.columns else None,
-        sample_col="sample" if "sample" in df.columns else None,
+        df=panel,
+        variables=SUMMARY_STATS_VARS,
+        sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics — H12 Dividend Intensity",
+        caption="Summary Statistics -- H12 Payout Ratio (Main Sample)",
         label="tab:summary_stats_h12",
     )
     print("  Saved: summary_stats.csv")
     print("  Saved: summary_stats.tex")
 
-    # ------------------------------------------------------------------
-    # Sanity Checks
-    # ------------------------------------------------------------------
-    print("\n" + "=" * 60)
-    print("Sanity checks")
-    print("=" * 60)
-    run_sanity_checks(df, out_dir)
-
-    # ------------------------------------------------------------------
-    # Run Regressions: 6 measures × 3 samples = 18 regressions
-    # ------------------------------------------------------------------
-    print("\n" + "=" * 60)
-    print("Regressions (6 measures × 3 samples)")
-    print("=" * 60)
-
+    # Run regressions: 8 model specifications
     all_results: List[Dict[str, Any]] = []
-    all_models: List[Dict[str, Any]] = []
 
-    for sample_name in ["Main", "Finance", "Utility"]:
-        if "sample" in df.columns:
-            df_sample = df[df["sample"] == sample_name].copy()
-        elif "ff12_code" in df.columns:
-            if sample_name == "Finance":
-                df_sample = df[df["ff12_code"] == 11].copy()
-            elif sample_name == "Utility":
-                df_sample = df[df["ff12_code"] == 8].copy()
-            else:
-                df_sample = df[~df["ff12_code"].isin([8, 11])].copy()
-        else:
-            # No industry classification — run all data as "Main" only
-            if sample_name != "Main":
-                continue
-            df_sample = df.copy()
+    for spec in MODEL_SPECS:
+        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} FE={spec['fe']} "
+              f"Controls={spec['controls']} ---")
 
-        n_sample = len(df_sample)
-        n_dv_lead = (
-            df_sample["DivIntensity_lead"].notna().sum()
-            if "DivIntensity_lead" in df_sample.columns
-            else 0
-        )
-        n_dv_concurrent = (
-            df_sample["DivIntensity"].notna().sum()
-            if "DivIntensity" in df_sample.columns
-            else 0
-        )
-        print(f"\n{'=' * 40}")
-        print(
-            f"Sample: {sample_name} ({n_sample:,} firm-years, {n_dv_concurrent:,} concurrent, {n_dv_lead:,} lead)"
-        )
-        print(f"{'=' * 40}")
+        try:
+            df_prepared = prepare_regression_data(panel, spec)
+        except ValueError as e:
+            print(f"  ERROR preparing data: {e}", file=sys.stderr)
+            continue
 
-        for dv in DEPENDENT_VARIABLES:
-            for uncertainty_var in UNCERTAINTY_MEASURES:
-                if uncertainty_var not in df_sample.columns:
-                    print(f"  WARNING: {uncertainty_var} not in panel — skipping")
-                    continue
+        if len(df_prepared) < 100:
+            print(f"  Skipping: too few obs ({len(df_prepared)})")
+            continue
 
-                model, meta = run_regression(
-                    df_sample, dv, uncertainty_var, sample_name
-                )
+        model, meta = run_regression(df_prepared, spec)
 
-                if model is not None and meta:
-                    all_results.append(meta)
-                    all_models.append({"model": model, "meta": meta})
+        if model is not None and meta:
+            all_results.append({"model": model, "meta": meta})
 
-                    # Save full regression output
-                    fname = (
-                        f"regression_results_{sample_name}_{dv}_{uncertainty_var}.txt"
-                    )
-                    fpath = out_dir / fname
-                    with open(fpath, "w", encoding="utf-8") as f:
-                        f.write(str(model.summary))
+    # Save outputs
+    diag_df = save_outputs(all_results, out_dir)
 
-    # ------------------------------------------------------------------
-    # Output
-    # ------------------------------------------------------------------
-    print("\n" + "=" * 60)
-    print("Saving outputs")
-    print("=" * 60)
-
+    # Sample attrition table
     if all_results:
-        # Model diagnostics CSV
-        pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)
-        print(f"  Saved: model_diagnostics.csv ({len(all_results)} regressions)")
-
-        # LaTeX table
-        _save_latex_table(all_results, out_dir)
-
-    # Attrition table
-    if all_results:
-        main_results = [r for r in all_results if r.get("sample") == "Main"]
-        if main_results:
-            first_meta = main_results[0]
-            attrition_stages = [
-                ("Full firm-year panel", len(df)),
-                (
-                    "Main sample filter",
-                    len(df[df["sample"] == "Main"])
-                    if "sample" in df.columns
-                    else len(df),
-                ),
-                ("After complete-case + min-calls filter", first_meta.get("n_obs", 0)),
-            ]
-            generate_attrition_table(
-                attrition_stages, out_dir, "H12 Dividend Intensity"
-            )
-            print("  Saved: sample_attrition.csv and sample_attrition.tex")
+        first_meta = all_results[0].get("meta", {})
+        attrition_stages = [
+            ("Full firm-year panel", full_panel_n),
+            ("Main sample filter (excl Finance/Utility)", main_panel_n),
+            ("PayoutRatio non-null (iby > 0)", panel["PayoutRatio"].notna().sum()),
+            ("After complete-case (col 1)", first_meta.get("n_obs", 0)),
+        ]
+        generate_attrition_table(attrition_stages, out_dir, "H12 Payout Ratio")
+        print("  Saved: sample_attrition.csv and sample_attrition.tex")
 
     # Run manifest
     generate_manifest(
@@ -795,15 +772,15 @@ def main(panel_path: Optional[str] = None) -> int:
         input_paths={"panel": panel_file},
         output_files={
             "diagnostics": out_dir / "model_diagnostics.csv",
-            "table": out_dir / "h12_div_intensity_table.tex",
+            "table": out_dir / "h12_payout_table.tex",
         },
         panel_path=panel_file,
     )
     print("  Saved: run_manifest.json")
 
     # Report
-    duration = (datetime.now() - t0).total_seconds()
-    generate_report(all_results, out_dir, duration)
+    duration = (datetime.now() - start_time).total_seconds()
+    generate_report(all_results, diag_df, out_dir, duration)
 
     # Final summary
     print("\n" + "=" * 80)
@@ -811,29 +788,29 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Duration: {duration:.1f} seconds")
     print(f"Output:   {out_dir}")
-    print(f"Total regressions completed: {len(all_results)}")
+    print(f"Total regressions completed: {len(all_results)}/{len(MODEL_SPECS)}")
 
-    h12_sig = sum(1 for r in all_results if r.get("beta1_signif"))
-    print(f"H12 supported (β1 < 0, p < 0.05 one-tail): {h12_sig}/{len(all_results)}")
-
-    for dv in DEPENDENT_VARIABLES:
-        dv_results = [r for r in all_results if r.get("dv") == dv]
-        dv_sig = sum(1 for r in dv_results if r.get("beta1_signif"))
-        print(f"  {dv}: {dv_sig}/{len(dv_results)} significant")
-
-    for sample in ["Main", "Finance", "Utility"]:
-        sample_res = [r for r in all_results if r.get("sample") == sample]
-        if sample_res:
-            sig_n = sum(1 for r in sample_res if r.get("beta1_signif"))
-            print(f"  {sample}: {sig_n}/{len(sample_res)} significant")
+    # H12 significance summary (one-tailed)
+    for iv in KEY_IVS:
+        sig_count = sum(
+            1 for r in all_results
+            if r["meta"].get(f"{iv}_p_one", 1.0) < 0.05
+        )
+        print(f"  {iv}: {sig_count}/{len(all_results)} significant (p<0.05, one-tail)")
 
     return 0
 
 
 if __name__ == "__main__":
     args = parse_arguments()
+
     if args.dry_run:
         print("Dry-run mode: validating inputs...")
+        print(f"  KEY_IVS: {len(KEY_IVS)} variables")
+        print(f"  MODEL_SPECS: {len(MODEL_SPECS)} specifications")
+        print(f"  BASE_CONTROLS: {len(BASE_CONTROLS)} variables")
+        print(f"  EXTENDED_CONTROLS: {len(EXTENDED_CONTROLS)} variables")
         print("[OK] All inputs validated")
         sys.exit(0)
+
     sys.exit(main(panel_path=args.panel_path))
