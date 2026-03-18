@@ -236,13 +236,9 @@ __all__ = [
     "CCCLInstrumentBuilder",
     # Takeover indicator builder (B.5 Takeover Hazards) — firm-level
     "TakeoverIndicatorBuilder",
-    # H3
-    "DivStabilityBuilder",
-    "PayoutFlexibilityBuilder",
+    # H3 (kept for H6/H11 — DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)
     "EarningsVolatilityBuilder",
-    "FCFGrowthBuilder",
     "FirmMaturityBuilder",
-    "IsDivPayer5yrBuilder",
     # H5
     "DispersionLeadBuilder",
     "PriorDispersionBuilder",
@@ -280,13 +276,9 @@ __all__ = [
     "winsorize_pooled",
 ]
 
-# H3 Payout Policy
-from .div_stability import DivStabilityBuilder
-from .payout_flexibility import PayoutFlexibilityBuilder
+# H3 Payout Policy (kept for H6/H11; DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)
 from .earnings_volatility import EarningsVolatilityBuilder
-from .fcf_growth import FCFGrowthBuilder
 from .firm_maturity import FirmMaturityBuilder
-from .is_div_payer_5yr import IsDivPayer5yrBuilder
 
 # H5 Analyst Dispersion
 from .dispersion_lead import DispersionLeadBuilder

@@ -33,25 +33,32 @@ import pandas as pd
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
-from f1d.shared.variables.panel_utils import assign_industry_sample
+from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    ManagerQAUncertaintyBuilder,
+    # 6 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
-    ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    NegativeSentimentBuilder,
-    AnalystQAUncertaintyBuilder,
-    SizeBuilder,
-    LevBuilder,
-    ROABuilder,
-    TobinsQBuilder,
-    VolatilityBuilder,
-    StockReturnBuilder,
-    AmihudIlliqBuilder,
-    AmihudChangeBuilder,
-    ManifestFieldsBuilder,
+    ManagerQAUncertaintyBuilder,
+    ManagerPresUncertaintyBuilder,
     CEOClarityResidualBuilder,
     ManagerClarityResidualBuilder,
+    # DV builder (produces delta_amihud + pre_call_amihud)
+    AmihudChangeBuilder,
+    # Base controls
+    SizeBuilder,
+    TobinsQBuilder,
+    ROABuilder,
+    LevBuilder,
+    CapexIntensityBuilder,
+    DividendPayerBuilder,
+    OCFVolatilityBuilder,
+    # Extended controls
+    VolatilityBuilder,
+    StockPriceBuilder,
+    TurnoverBuilder,
+    AnalystQAUncertaintyBuilder,
+    # Manifest
+    ManifestFieldsBuilder,
     stats_list_to_dataframe,
 )
 
@@ -79,32 +86,18 @@ def build_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
-            var_config.get("manager_qa_uncertainty", {})
-        ),
+        # 6 Key IVs (all simultaneous)
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
-        ),
-        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
-            var_config.get("manager_pres_uncertainty", {})
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "negative_sentiment": NegativeSentimentBuilder(var_config.get("negative_sentiment", {})),
-        "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(var_config.get("analyst_qa_uncertainty", {})),
-        "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
-        "roa": ROABuilder(var_config.get("roa", {})),
-        "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
-        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
-        "stock_ret": StockReturnBuilder(var_config.get("stock_ret", {})),
-        "amihud_illiq": AmihudIlliqBuilder(var_config.get("amihud_illiq", {})),
-        # Delta Amihud: event-window change [+1,+3] - [-3,-1] (parallels H14 delta_spread)
-        "amihud_change": AmihudChangeBuilder(var_config.get("amihud_change", {})),
-        # Alternative event windows for robustness
-        "amihud_change_w5": AmihudChangeBuilder(
-            {**var_config.get("amihud_change", {}), "window_days": 5, "column_suffix": "_w5"}
+        "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
+            var_config.get("manager_qa_uncertainty", {})
+        ),
+        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
+            var_config.get("manager_pres_uncertainty", {})
         ),
         "ceo_clarity_residual": CEOClarityResidualBuilder(
             var_config.get("ceo_clarity_residual", {})
@@ -112,6 +105,21 @@ def build_panel(
         "manager_clarity_residual": ManagerClarityResidualBuilder(
             var_config.get("manager_clarity_residual", {})
         ),
+        # DV (produces delta_amihud + pre_call_amihud)
+        "amihud_change": AmihudChangeBuilder(var_config.get("amihud_change", {})),
+        # Base controls
+        "size": SizeBuilder(var_config.get("size", {})),
+        "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
+        "roa": ROABuilder(var_config.get("roa", {})),
+        "lev": LevBuilder(var_config.get("lev", {})),
+        "capex_intensity": CapexIntensityBuilder({}),
+        "dividend_payer": DividendPayerBuilder({}),
+        "ocf_volatility": OCFVolatilityBuilder({}),
+        # Extended controls
+        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
+        "stock_price": StockPriceBuilder(var_config.get("stock_price", {})),
+        "turnover": TurnoverBuilder(var_config.get("turnover", {})),
+        "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(var_config.get("analyst_qa_uncertainty", {})),
     }
 
     all_results = {}
@@ -143,11 +151,11 @@ def build_panel(
         print(f"  After {name} merge: {after_len:,} rows (delta: {delta:+d})")
 
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
-    nan_ff12 = panel["ff12_code"].isna().sum()
-    if nan_ff12 > 0:
-        print(f"  NaN ff12_code classified as Main: {nan_ff12:,} calls")
     panel["year"] = pd.to_datetime(panel["start_date"], errors="coerce").dt.year
-    panel["call_quarter"] = pd.to_datetime(panel["start_date"]).dt.to_period("Q")
+
+    # Attach fyearq for fiscal year FE (switching from call_quarter_int)
+    panel = attach_fyearq(panel, root_path)
+    panel["fyearq_int"] = pd.to_numeric(panel["fyearq"], errors="coerce")
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
@@ -194,7 +202,8 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **Amihud Illiquidity (valid):** {panel['amihud_illiq'].notna().sum():,} calls",
+        f"- **delta_amihud (valid):** {panel['delta_amihud'].notna().sum():,} calls",
+        f"- **pre_call_amihud (valid):** {panel['pre_call_amihud'].notna().sum():,} calls",
         "",
     ]
     report_path = out_dir / "report_step3_h7.md"

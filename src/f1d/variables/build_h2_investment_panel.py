@@ -75,29 +75,30 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # Linguistic uncertainty
-    ManagerQAUncertaintyBuilder,
-    ManagerPresUncertaintyBuilder,
+    # 6 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    AnalystQAUncertaintyBuilder,
-    NegativeSentimentBuilder,
-    # Weak modal (H2 extended uncertainty measures)
-    ManagerQAWeakModalBuilder,
-    CEOQAWeakModalBuilder,
-    ManagerPresWeakModalBuilder,
-    CEOPresWeakModalBuilder,
-    # Clarity residuals (from H0.3 CEO Clarity Extended)
+    ManagerQAUncertaintyBuilder,
+    ManagerPresUncertaintyBuilder,
     CEOClarityResidualBuilder,
     ManagerClarityResidualBuilder,
-    # Financial controls (Compustat engine)
+    # DV builder
     InvestmentResidualBuilder,
-    LevBuilder,
+    # Base controls (Compustat engine)
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
-    CashFlowBuilder,
-    SalesGrowthBuilder,
+    LevBuilder,
+    CapexIntensityBuilder,
+    CashHoldingsBuilder,
+    DividendPayerBuilder,
+    OCFVolatilityBuilder,
+    # Extended controls
+    VolatilityBuilder,
+    RDIntensityBuilder,
+    # Extended linguistic controls
+    AnalystQAUncertaintyBuilder,
+    NegativeSentimentBuilder,
     # Manifest
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
@@ -137,49 +138,45 @@ def build_call_level_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # Linguistic uncertainty
-        "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
-            var_config.get("manager_qa_uncertainty", {})
-        ),
-        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
-            var_config.get("manager_pres_uncertainty", {})
-        ),
+        # 6 Key IVs (all simultaneous)
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
+        "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
+            var_config.get("manager_qa_uncertainty", {})
+        ),
+        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
+            var_config.get("manager_pres_uncertainty", {})
+        ),
+        "ceo_clarity_residual": CEOClarityResidualBuilder(
+            var_config.get("ceo_clarity_residual", {})
+        ),
+        "manager_clarity_residual": ManagerClarityResidualBuilder(
+            var_config.get("manager_clarity_residual", {})
+        ),
+        # DV
+        "investment_residual": InvestmentResidualBuilder({}),
+        # Base controls
+        "size": SizeBuilder({}),
+        "tobins_q": TobinsQBuilder({}),
+        "roa": ROABuilder({}),
+        "lev": LevBuilder({}),
+        "capex_intensity": CapexIntensityBuilder({}),
+        "cash_holdings": CashHoldingsBuilder({}),
+        "dividend_payer": DividendPayerBuilder({}),
+        "ocf_volatility": OCFVolatilityBuilder({}),
+        # Extended controls
+        "volatility": VolatilityBuilder(var_config.get("volatility", {})),
+        "rd_intensity": RDIntensityBuilder(var_config.get("rd_intensity", {})),
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
         ),
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        # Weak modal
-        "manager_qa_weak_modal": ManagerQAWeakModalBuilder(
-            var_config.get("manager_qa_weak_modal", {})
-        ),
-        "ceo_qa_weak_modal": CEOQAWeakModalBuilder(
-            var_config.get("ceo_qa_weak_modal", {})
-        ),
-        "manager_pres_weak_modal": ManagerPresWeakModalBuilder(
-            var_config.get("manager_pres_weak_modal", {})
-        ),
-        "ceo_pres_weak_modal": CEOPresWeakModalBuilder(
-            var_config.get("ceo_pres_weak_modal", {})
-        ),
-        # Clarity residuals (from CEO Clarity Extended Stage 4)
-        "ceo_clarity_residual": CEOClarityResidualBuilder({}),
-        "manager_clarity_residual": ManagerClarityResidualBuilder({}),
-        # H2 financial controls -- CompustatEngine is a singleton; all share one load
-        "investment_residual": InvestmentResidualBuilder({}),
-        "lev": LevBuilder({}),
-        "size": SizeBuilder({}),
-        "tobins_q": TobinsQBuilder({}),
-        "roa": ROABuilder({}),
-        "cash_flow": CashFlowBuilder({}),
-        "sales_growth": SalesGrowthBuilder({}),
     }
 
     # Build all variables

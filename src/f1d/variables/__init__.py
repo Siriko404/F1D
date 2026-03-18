@@ -7,7 +7,6 @@ Active Modules:
     - build_h0_3_ceo_clarity_extended_panel: Build extended CEO clarity panel
     - build_h1_cash_holdings_panel: Build panel for Cash Holdings test (H1)
     - build_h2_investment_panel: Build panel for Investment test (H2)
-    - build_h3_payout_policy_panel: Build panel for Payout Policy test (H3)
     - build_h4_leverage_panel: Build panel for Leverage test (H4)
     - build_h5_dispersion_panel: Build panel for Dispersion test (H5)
     - build_h6_cccl_panel: Build panel for CCCL test (H6)
@@ -22,6 +21,7 @@ Archived Modules (in _archived/):
     - build_h0_2_ceo_clarity_panel: Archived
     - build_h0_5_ceo_tone_panel: Archived
     - build_h10_tone_at_top_panel: Archived
+    - build_h3_payout_policy_panel: Archived (superseded by H12)
     - build_h13_2_employment_panel: Archived
 """
 

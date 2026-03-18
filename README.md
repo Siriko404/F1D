@@ -54,16 +54,16 @@ Each stage reads from disk and writes to timestamped output directories under `o
 |-------|-------------------|-------|----|
 | **H0.3** | Does CEO clarity FE structure hold under extended controls? | PanelOLS | Clarity residuals |
 | **H1** | Does speech uncertainty predict cash holdings? | PanelOLS (Industry FE / Firm FE) | CashHoldings / CashHoldings_lead |
-| **H2** | Does uncertainty predict investment efficiency? | PanelOLS | InvestmentResidual (lead) |
-| **H3** | Does uncertainty predict payout policy stability? | PanelOLS | DividendStability / PayoutFlexibility (lead) |
+| **H2** | Does speech uncertainty predict investment efficiency? | PanelOLS (Industry FE / Firm FE) | InvestmentResidual / InvestmentResidual_lead |
 | **H4** | Does speech uncertainty predict leverage? | PanelOLS (Industry FE / Firm FE) | Lev / Lev_lead |
 | **H5** | Does speech uncertainty predict post-call analyst dispersion? | PanelOLS (Industry FE / Firm FE) | PostCallDispersion |
 | **H6** | Does exogenous uncertainty (CCCL instrument) affect outcomes? | PanelOLS (reduced form) | Linguistic DVs |
-| **H7** | Does uncertainty predict post-call illiquidity changes? | PanelOLS | delta_amihud |
+| **H7** | Does speech uncertainty predict post-call illiquidity? | PanelOLS (Industry FE / Firm FE) | delta_amihud |
 | **H9** | Does uncertainty predict takeover hazard rates? | Cox PH (survival) | Takeover event |
 | **H11** | Does political risk interact with speech uncertainty? | PanelOLS (base/lag/lead) | PRiskQ variants |
 | **H12** | Does speech uncertainty predict payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio / PayoutRatio_lead |
 | **H13** | Does speech uncertainty predict capital expenditure? | PanelOLS (Industry FE / Firm FE) | CapexAt / CapexAt_lead |
+| **H13.1** | Does competition moderate the uncertainty-capex link? | PanelOLS + TNIC3HHI interaction | CapexAt / CapexAt_lead |
 | **H14** | Does speech uncertainty predict bid-ask spread changes? | PanelOLS (Industry FE / Firm FE) | DSPREAD (Lee 2016) |
 | **H15** | Does speech uncertainty predict share repurchases? | PanelOLS (Industry FE / Firm FE), LPM | REPO (binary, Duong et al. 2025) |
 
@@ -161,7 +161,6 @@ python -m f1d.econometric.run_h1_cash_holdings
 | H0.3 | `python -m f1d.econometric.run_h0_3_ceo_clarity_extended` |
 | H1 | `python -m f1d.econometric.run_h1_cash_holdings` |
 | H2 | `python -m f1d.econometric.run_h2_investment` |
-| H3 | `python -m f1d.econometric.run_h3_payout_policy` |
 | H4 | `python -m f1d.econometric.run_h4_leverage` |
 | H5 | `python -m f1d.econometric.run_h5_dispersion` |
 | H6 | `python -m f1d.econometric.run_h6_cccl` |
