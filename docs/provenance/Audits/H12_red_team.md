@@ -1,250 +1,305 @@
 # H12 Payout Ratio -- Second-Layer Red-Team Audit
 
-**Generated:** 2026-03-18
-**Auditor context:** Fresh-context, adversarial, doctoral-referee standard
+**Generated:** 2026-03-21
 **Suite ID:** H12
-**First-layer audit:** `docs/provenance/H12.md`
-**Runner:** `src/f1d/econometric/run_h12_div_intensity.py`
-**Panel builder:** `src/f1d/variables/build_h12_div_intensity_panel.py`
-**PayoutRatio engine:** `src/f1d/shared/variables/_compustat_engine.py` (lines 1103-1112)
+**Auditor role:** Hostile-but-fair replication auditor (second layer)
+**Target:** First-layer audit doc `docs/provenance/H12.md` (2026-03-18)
 
 ---
 
-## A. First-Layer Audit Claim Verification
+## A. Scope & Objective
 
-| # | Audit Claim | Code Evidence | Verdict |
-|---|-------------|---------------|---------|
-| A1 | "PayoutRatio = dvy / iby when iby > 0; NaN when iby <= 0" | `_compustat_engine.py` L1108-1112: `np.where(iby_for_payout > 0, dvy_for_payout / iby_for_payout, np.nan)` | **VERIFIED FACT** |
-| A2 | "Missing dvy with iby > 0 treated as PayoutRatio = 0" | L1106: `dvy_for_payout = pd.Series(dvy_annual, index=comp.index).fillna(0)` -- NaN dvy becomes 0 before division | **VERIFIED FACT** |
-| A3 | "dvy = annual common dividends, Q4 cumulative from Compustat" | L1089: `dvy_annual = _compute_annual_q4_variable(comp, "dvy", "_dvy_annual")` -- Q4-only join back pattern | **VERIFIED FACT** |
-| A4 | "iby = income before extraordinary items, annual, Q4 cumulative" | L1057: `iby_annual = _compute_annual_q4_variable(comp, "iby", "_iby_annual")` | **VERIFIED FACT** |
-| A5 | "4 simultaneous IVs" | `run_h12_div_intensity.py` L90-95: `KEY_IVS` list of 4 variables; L289: `exog = KEY_IVS + controls` | **VERIFIED FACT** |
-| A6 | "8 model specifications" | L116-125: `MODEL_SPECS` list with 8 dicts, cols 1-8 | **VERIFIED FACT** |
-| A7 | "Industry FE: Absorbed via constructor other_effects (FF12 dummies, not C() formula)" | L306-314: `PanelOLS(... other_effects=industry_data ...)` with `entity_effects=False` | **VERIFIED FACT** |
-| A8 | "Firm FE: EntityEffects + TimeEffects via from_formula" | L318-320: `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` | **VERIFIED FACT** |
-| A9 | "Firm-clustered SEs" | L315 and L321: `.fit(cov_type="clustered", cluster_entity=True)` | **VERIFIED FACT** |
-| A10 | "One-tailed test: beta < 0" | L349-351: `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2` | **VERIFIED FACT** |
-| A11 | "Time FE: fyearq_int (fiscal year)" | L298: `df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])` -- MultiIndex with fyearq_int as time dimension | **VERIFIED FACT** |
-| A12 | "Main sample only: FF12 codes 1-7, 9-10, 12" | L212-215: `panel[~panel["ff12_code"].isin([8, 11])]` -- excludes FF12=8 (Utility) and FF12=11 (Finance) | **VERIFIED FACT** |
-| A13 | "Base Controls (7): Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility" | L99-107: `BASE_CONTROLS` matches exactly | **VERIFIED FACT** |
-| A14 | "Extended Controls: Base + SalesGrowth, RD_Intensity, CashFlow, Volatility" | L109-114: `EXTENDED_CONTROLS = BASE_CONTROLS + [...]` matches exactly | **VERIFIED FACT** |
-| A15 | "DividendPayer is NOT a control" | L98 comment: `DividendPayer is NOT a control (endogenous with DV)` -- not in BASE_CONTROLS or EXTENDED_CONTROLS | **VERIFIED FACT** |
-| A16 | "PayoutRatio_lead = PayoutRatio shifted forward one fiscal year" | `build_h12_div_intensity_panel.py` L176-195: `create_lead_payout_ratio()` shifts by -1 within gvkey, NaN for non-consecutive years | **VERIFIED FACT** |
-| A17 | "ROA shares iby with PayoutRatio denominator -- mechanical linkage documented" | Engine L1057-1060: ROA = iby_annual / avg_assets; L1108: PayoutRatio = dvy / iby_annual. Same iby_annual variable. Audit A5 table notes this. | **VERIFIED FACT** |
-| A18 | "Aggregation: arithmetic mean across all quarterly calls within fiscal year" | Panel builder L157-158: `df.groupby(["gvkey", "fyearq"])[existing_ivs].mean()` | **VERIFIED FACT** |
-| A19 | "No MIN_CALLS_PER_FIRM filter" | Runner L254: comment "No MIN_CALLS_PER_FIRM filter (include all firms)" -- no filter code present | **VERIFIED FACT** |
-| A20 | "Winsorized at 1%/99% by year at engine level" | Engine L1194-1201: `_winsorize_by_year` applied to all COMPUSTAT_COLS except skip set; PayoutRatio is in COMPUSTAT_COLS and not in skip set | **VERIFIED FACT** |
+This audit independently verifies the factual claims, line-number references, and analytical completeness of the first-layer provenance audit for the H12 (Payout Ratio) suite. The second-layer auditor re-opens the runner (`src/f1d/econometric/run_h12_div_intensity.py`), panel builder (`src/f1d/variables/build_h12_div_intensity_panel.py`), and engine (`src/f1d/shared/variables/_compustat_engine.py`) to verify claims against the actual codebase.
 
 ---
 
-## B. Verified Errors in First-Layer Audit
+## B. First-Layer Claims Verification
 
-| # | Error | Details | Severity |
-|---|-------|---------|----------|
-| B1 | Output list incomplete | Audit Section D lists 9 output files including `sample_attrition.tex` (item 8), but the runner at L756 calls `generate_attrition_table(attrition_stages, out_dir, "H12 Payout Ratio")` which produces both `.csv` and `.tex`. The doc correctly lists both. However, the docstring in the runner (L48-57) lists only 8 outputs and omits `sample_attrition.tex` and `sample_attrition.csv`. This is a docstring-vs-code mismatch, not an audit error per se. | MINOR |
-| B2 | No verified errors in substance | All 20 factual claims checked against code are accurate. | N/A |
+### B1. Line-number reference accuracy
 
----
+The first-layer audit embeds dozens of line-number references to the engine, runner, and builder. Many are systematically off by 1-3 lines due to code drift since the audit was written. While the spirit of each reference is correct (the cited code exists nearby), the exact line numbers no longer match.
 
-## C. Verified Missed Issues in First-Layer Audit
+| Audit claim | Cited line | Actual line | Status |
+|------------|-----------|-------------|--------|
+| `dvy_annual` via `_compute_annual_q4_variable` | Engine L1089 | Engine L1091 | OFF-BY-2 |
+| `iby_annual` via `_compute_annual_q4_variable` | Engine L1057 | Engine L1059 | OFF-BY-2 |
+| `dvy_for_payout = ...fillna(0)` | Engine L1106 | Engine L1108 | OFF-BY-2 |
+| `np.where(iby_for_payout > 0, ...)` | Engine L1108-1112 | Engine L1110-1114 | OFF-BY-2 |
+| `Size = np.where(atq > 0, ...)` | Engine L1034 | Engine L1036 | OFF-BY-2 |
+| `PayoutRatio` in `ratio_cols` | Engine L1163 | Engine L1176 | OFF-BY-13 |
+| `inf -> NaN cleanup` | Engine L1151-1172 | Engine L1164-1186 | OFF-BY-13 |
+| `ratio_cols list` | Engine L1152-1170 | Engine L1165-1184 | OFF-BY-13 |
+| `skip_winsorize` set | Engine L1185-1193 | Engine L1199-1207 | OFF-BY-14 |
+| `winsorize_cols loop` | Engine L1194-1201 | Engine L1208-1215 | OFF-BY-14 |
+| `merge_asof backward` | Engine L1287-1294 | Engine L1301-1308 | OFF-BY-14 |
+| `_compute_annual_q4_variable` function | Engine L234-274 | Engine L236-276 | OFF-BY-2 |
+| `_winsorize_by_year min_obs=10` | Engine L444, L462 | Engine L446, L464 | OFF-BY-2 |
+| `OCF_Volatility rolling` | Engine L336-340 | Engine L340-342 | OFF-BY-4 |
 
-| # | Issue | Details | Severity |
-|---|-------|---------|----------|
-| C1 | **PayoutRatio has no upper bound or economic censoring** | PayoutRatio = dvy / iby can exceed 1.0 (and theoretically be very large when iby is positive but small). Attig et al. (2013) typically censor/bound payout ratios at 1.0 or 100% because values exceeding 100% represent firms paying out more than their earnings (drawing on reserves, borrowing for dividends). The implementation relies solely on winsorization at 1%/99% by year (engine level), but if many firms have PR > 1 in a given year, the 99th percentile could itself be well above 1.0. The first-layer audit does not flag or discuss this at all. **This is the single most material econometric concern for H12.** A referee would ask: what is the empirical distribution of PayoutRatio? What fraction exceeds 1.0? Is OLS on an unbounded DV with a natural lower bound of 0 appropriate? | **MAJOR** |
-| C2 | **ROA-PayoutRatio mechanical linkage is acknowledged but not addressed** | The audit notes "shares iby with PayoutRatio denominator -- mechanical linkage documented" but does not discuss the econometric implications. When ROA is high (denominator is large for given iby), PayoutRatio's denominator is also large (same iby). Thus ROA and PayoutRatio share a denominator component (iby), creating a spurious negative correlation: higher iby -> higher ROA AND lower PayoutRatio (for given dvy). This is a textbook denominator problem (Kronmal 1993). A sensitivity analysis dropping ROA or replacing it with a rank-based measure would be prudent. The first audit mentions it but treats documentation as sufficient. | **MODERATE** |
-| C3 | **`check_rank=False` in industry FE models** | Runner L313: `check_rank=False` disables rank verification for industry FE PanelOLS models. With `drop_absorbed=True`, collinear variables should be dropped, but skipping the rank check means the user will not be warned if unexpected collinearity exists (e.g., if an industry has too few observations to identify all controls). The audit does not mention this flag. | **MINOR** |
-| C4 | **`groupby.last()` is "last non-null", not "last row"** | Panel builder L151-153: `df.groupby(["gvkey", "fyearq"])[existing_financial].last()` -- pandas `groupby.last()` returns the last non-null value per group, not strictly the last row's value. If the last call in a fiscal year has a NaN for a financial variable but an earlier call has a valid value, the earlier value will be silently used. This is typically benign (financial variables are usually identical across calls in the same FY), but the behavior is undocumented and could be surprising. The first audit does not mention this. | **MINOR** |
-| C5 | **No intercept explicitly added to industry FE model exog** | Runner L289: `exog = KEY_IVS + controls` -- no constant column. For the industry FE specification (constructor-based, not from_formula), PanelOLS does not add a constant by default. The absorbed `other_effects` (industry) and `time_effects` (year) jointly serve as group means, so an intercept would be collinear and dropped by `drop_absorbed=True` anyway. However, if the number of absorbed effects is insufficient to span the constant, the model would be estimated without an intercept. Practically, with both industry and year effects, the constant IS spanned. Not an error, but undocumented. | **NEGLIGIBLE** |
-| C6 | **Summary statistics computed on pre-complete-case sample** | Runner L706-718: `make_summary_stats_table` is called on the full main-sample panel BEFORE complete-case filtering per regression. This means the summary statistics table describes a potentially larger sample than any regression actually uses. A referee might ask why summary stats don't match regression N. The first audit does not mention this discrepancy. | **MINOR** |
-| C7 | **Attrition table uses Col 1 N only** | Runner L749-756: attrition stages use `first_meta.get("n_obs", 0)` -- only Col 1's N. Cols 5-8 (PayoutRatio_lead) will have different (smaller) N due to the lead construction dropping non-consecutive years. The attrition table does not separately track lead DV attrition. | **MINOR** |
-| C8 | **No discussion of PayoutRatio = 0 mass point** | When dvy is NaN (or truly 0) and iby > 0, PayoutRatio is set to 0. This creates a mass point at zero (non-dividend-paying firms with positive earnings). OLS on a DV with a mass at zero and a long right tail is econometrically questionable. A Tobit model or two-part model (first stage: payer vs non-payer; second stage: conditional payout ratio) would be more appropriate. The first audit mentions "J3: 45.4% zeros in DivIntensity modeled with OLS" as fixed, but the fix (switching to PayoutRatio) may not fully resolve the issue -- the PayoutRatio DV likely still has many zeros. | **MODERATE** |
+**Verdict:** All references point to the correct code construct but are systematically offset. This is consistent with minor edits (added/removed lines) since the audit was authored. The references are **directionally correct but not pinpoint-accurate**.
 
----
+### B2. Formula accuracy
 
-## D. Verified False Positives in First-Layer Audit
+| Variable | Audit claim | Actual code | Verdict |
+|----------|------------|-------------|---------|
+| PayoutRatio | `dvy / iby when iby > 0` | `np.where(iby_for_payout > 0, dvy_for_payout / iby_for_payout, np.nan)` (L1110-1114) | **CORRECT** |
+| dvy fillna(0) | `fillna(0)` before division | `pd.Series(dvy_annual, ...).fillna(0)` (L1108) | **CORRECT** |
+| Size | `ln(atq)` | `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` (L1036) | **CORRECT** |
+| TobinsQ | `(atq + cshoq * prccq - ceqq) / atq` | `(mktcap + debt_book) / atq` where `mktcap = cshoq * prccq`, `debt_book = dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)` (L1069-1078) | **INCORRECT** -- see C1 |
+| BookLev | `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` | Same (L1041) | **CORRECT** |
+| ROA | `iby_annual / avg_assets` | Same (L1060-1062) | **CORRECT** |
+| CashHoldings | `cheq / atq` | Same (L1068) | **CORRECT** |
+| CapexAt | `capxy_annual / atq_annual_lag1` | Same (L1082-1087) | **CORRECT** |
+| RD_Intensity | `xrdq.fillna(0) / atq` | Same (L1065) | **CORRECT** |
 
-| # | Claim | Assessment |
-|---|-------|------------|
-| D1 | None identified | The first-layer audit does not make claims that are contradicted by the code. All bug-fix claims (J1-J11, calendar-year fix) are consistent with the current implementation. |
+### B3. Structural claims verification
 
----
-
-## E. Referee Judgments (Not Verifiable from Code Alone)
-
-| # | Concern | Assessment |
-|---|---------|------------|
-| E1 | **Attig et al. citation accuracy** | The audit cites "Attig et al." for PayoutRatio = DVC/IB. Attig, Boubakri, El Ghoul & Guedhami (2013, JFI) do use DVC/IB as the payout ratio. However, their exact handling of negative earnings may differ (some papers exclude firm-years with negative earnings entirely from the sample, others set PR=0 or NaN). The code sets NaN for iby<=0, which is the most conservative approach. Cannot verify without the original paper, but the approach is defensible. |
-| E2 | **One-tailed test direction justification** | H12 predicts beta < 0 (higher uncertainty -> lower payout). This is economically reasonable: uncertain managers may retain earnings as precautionary savings rather than committing to dividends. However, one-tailed tests are controversial when the theoretical prediction is not universally accepted. A two-tailed alternative should be reported for robustness. |
-| E3 | **Simultaneous-IV interpretation** | With 4 uncertainty IVs entering simultaneously, multicollinearity is a concern. CEO QA and Manager QA likely correlate, as do CEO Pres and Manager Pres. The audit does not report variance inflation factors (VIFs) or IV correlation matrices. |
-| E4 | **OLS appropriateness for bounded DV** | PayoutRatio is bounded [0, +inf) with iby>0 condition. With winsorization, it is bounded [p1, p99] per year. OLS does not respect bounds. A fractional response model (Papke and Wooldridge 1996/2008) would be more appropriate if most values are in [0,1]. If a substantial fraction exceeds 1.0, the distribution is problematic for any standard model. |
-
----
-
-## F. Variable Construction Deep-Dive
-
-### F1. PayoutRatio Construction Chain
-
-| Step | Location | Operation | Verified |
-|------|----------|-----------|----------|
-| 1 | Engine L1089 | `dvy_annual = _compute_annual_q4_variable(comp, "dvy", "_dvy_annual")` -- extracts Q4 dvy, joins to all quarters via gvkey+fyearq | YES |
-| 2 | Engine L1057 | `iby_annual = _compute_annual_q4_variable(comp, "iby", "_iby_annual")` -- same pattern for iby | YES |
-| 3 | Engine L1106 | `dvy_for_payout = pd.Series(dvy_annual).fillna(0)` -- NaN dvy -> 0 | YES |
-| 4 | Engine L1107 | `iby_for_payout = pd.Series(iby_annual)` -- no fillna, preserves NaN | YES |
-| 5 | Engine L1108-1112 | `np.where(iby_for_payout > 0, dvy_for_payout / iby_for_payout, np.nan)` | YES |
-| 6 | Engine L1163 | PayoutRatio included in inf->NaN cleanup | YES |
-| 7 | Engine L1194-1201 | PayoutRatio winsorized at 1%/99% per fyearq (not in skip_winsorize set) | YES |
-| 8 | PayoutRatioBuilder L51 | Builder extracts `["file_name", "PayoutRatio"]` from engine-computed data | YES |
-| 9 | Panel builder L151-153 | Financial aggregation via `groupby.last()` -- takes last non-null per firm-year | YES |
-| 10 | Panel builder L176-195 | Lead construction: shift(-1) within gvkey, NaN for non-consecutive fyearq | YES |
-
-### F2. PayoutRatio Boundary Analysis
-
-| Condition | Treatment | Concern Level |
-|-----------|-----------|---------------|
-| iby <= 0 | NaN (excluded from regression) | LOW -- appropriate |
-| iby > 0, dvy = NaN | PayoutRatio = 0 | MODERATE -- reasonable assumption but inflates zero mass |
-| iby > 0, dvy = 0 | PayoutRatio = 0 | LOW -- correct |
-| iby > 0, dvy > iby | PayoutRatio > 1.0 | **HIGH -- no censoring, only winsorization** |
-| iby very small but > 0 | PayoutRatio potentially very large | **HIGH -- division by near-zero denominator** |
+| # | Claim | Verification | Verdict |
+|---|-------|-------------|---------|
+| V5 | 4 simultaneous IVs in every model | Runner L90-95: `KEY_IVS` list with 4 entries; L289: `exog = KEY_IVS + controls` | **CONFIRMED** |
+| V6 | 8 model specifications | Runner L116-125: `MODEL_SPECS` list, 8 entries | **CONFIRMED** |
+| V7 | Industry FE: absorbed via `other_effects` | Runner L306-314: `PanelOLS(... other_effects=industry_data ...)` | **CONFIRMED** |
+| V8 | Firm FE: `EntityEffects + TimeEffects` via `from_formula` | Runner L318-320 | **CONFIRMED** |
+| V9 | Firm-clustered SEs | Runner L315, L321: `.fit(cov_type="clustered", cluster_entity=True)` | **CONFIRMED** |
+| V10 | One-tailed test: beta < 0 | Runner L350-351 | **CONFIRMED** |
+| V12 | Main sample excludes FF12={8,11} | Runner L214 | **CONFIRMED** |
+| V16 | PayoutRatio_lead: shift(-1) with consecutive-year check | Builder L184-191 | **CONFIRMED** |
+| V18 | IV aggregation = arithmetic mean | Builder L157-158 | **CONFIRMED** |
+| V19 | No MIN_CALLS_PER_FIRM filter | Runner L254 comment, no filter code | **CONFIRMED** |
 
 ---
 
-## G. Lead Variable Verification
+## C. Errors Found in First-Layer Audit
 
-| Check | Result |
-|-------|--------|
-| Lead constructed in panel builder (not runner) | YES -- `create_lead_payout_ratio()` in panel builder L176-195 |
-| Consecutive-year check | YES -- L188-191: `is_consecutive = (next_fyearq_int - fyearq_int) == 1`; non-consecutive -> NaN |
-| Direction correct (t+1, not t-1) | YES -- L184: `shift(-1)` on PayoutRatio within gvkey (next row = future) |
-| Lead uses same fyearq as base | YES -- both use fyearq from Compustat |
-| Lead survives NaN propagation | YES -- only NaN for non-consecutive years; PayoutRatio NaN in t+1 propagates correctly |
+### C1. TobinsQ formula is WRONG in the audit doc (MODERATE)
 
----
+**Audit doc Section 6c (TobinsQ) states:**
+> Formula: `(atq + cshoq * prccq - ceqq) / atq`
 
-## H. Fixed Effects Implementation Verification
+**Actual code (Engine L1069-1078):**
+```python
+mktcap = comp["cshoq"] * comp["prccq"]
+debt_c = comp["dlcq"].clip(lower=0).fillna(0)
+debt_t = comp["dlttq"].clip(lower=0).fillna(0)
+debt_book = np.where(comp["dlcq"].isna() & comp["dlttq"].isna(), np.nan, debt_c + debt_t)
+comp["TobinsQ"] = np.where(
+    comp["atq"].notna() & (comp["atq"] > 0) & mktcap.notna(),
+    (mktcap + debt_book) / comp["atq"],
+    np.nan,
+)
+```
 
-| Model | FE Implementation | Correct? | Notes |
-|-------|-------------------|----------|-------|
-| Industry + FiscalYear (odd cols) | `PanelOLS(... entity_effects=False, time_effects=True, other_effects=ff12_code, check_rank=False, drop_absorbed=True)` | YES | `check_rank=False` is noted concern (C3) |
-| Firm + FiscalYear (even cols) | `PanelOLS.from_formula("DV ~ 1 + ... + EntityEffects + TimeEffects", drop_absorbed=True)` | YES | Standard implementation |
-| Time index | `fyearq_int` (integer fiscal year) | YES | Correctly aligns with fiscal year DV timing |
-| Clustering | `cov_type="clustered", cluster_entity=True` (all models) | YES | Clusters by gvkey (firm) |
+The actual formula is `(market_cap + book_debt) / total_assets`, NOT `(total_assets + market_cap - book_equity) / total_assets`. While both are approximations of Tobin's Q, they are algebraically distinct: the audit's claimed formula replaces book equity (ceqq) with assets minus market cap, whereas the code uses the standard Chung & Pruitt (1994) approximation `(MVE + Debt) / TA`. The audit doc's formula is not what the code implements.
 
----
+Additionally, the audit doc description mentions `debt_book = np.where(dlcq.isna() & dlttq.isna(), np.nan, dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0))` in the "Intermediate" row, which IS correct, but then contradicts this with the top-level formula. The audit is internally inconsistent.
 
-## I. Sample Accounting
+### C2. RD_Intensity inf cleanup claim is WRONG (MINOR)
 
-| Stage | Description | Code Location |
-|-------|-------------|---------------|
-| 1 | Full firm-year panel loaded from Stage 3 parquet | Runner L183-208 |
-| 2 | Main sample filter: exclude FF12 = 8 (Utility), 11 (Finance) | Runner L211-216 |
-| 3 | DV non-null filter: PayoutRatio not NaN (i.e., iby > 0) | Runner L245-247 |
-| 4 | Complete-case filter: all required variables non-null | Runner L250-252 |
-| 5 | N < 100 guard: skip model if too few obs | Runner L285-287 |
+**Audit doc Section 6c (RD_Intensity) states:**
+> Inf cleanup: Not in explicit `ratio_cols` list, but any inf from division by zero atq would persist.
 
-**Concern:** Stages 3-4 are applied per model specification, so different DVs (PayoutRatio vs PayoutRatio_lead) and different control sets (Base vs Extended) produce different sample sizes. The attrition table only records Col 1's trajectory (C7 above).
+**Actual code (Engine L1171):** `RD_Intensity` IS in the `ratio_cols` list at line 1171. The audit doc falsely claims it is absent. Inf values from `xrdq.fillna(0) / atq` where `atq = 0` ARE properly cleaned to NaN.
 
----
+### C3. OCF_Volatility line references are stale (MINOR)
 
-## J. Merge/Provenance Verification
-
-| Check | Result |
-|-------|--------|
-| Panel builder merges all variables on `file_name` (1:1) | YES -- L264-269: validates `delta == 0` (no row change) |
-| Compustat matching via merge_asof (backward) | YES -- engine `match_to_manifest` L1287-1294 |
-| fyearq attached via canonical `attach_fyearq` | YES -- panel builder L274 |
-| Industry sample assigned via canonical `assign_industry_sample` | YES -- panel builder L310 |
-| Output parquet saved with all columns | YES -- panel builder L326 |
+The audit doc Section 6c claims OCF_Volatility's `rolling("1826D", min_periods=3).std()` is at Engine L336-340. The actual code is at L340-342. The audit also says the function spans Engine L307-356; it actually spans L309-358.
 
 ---
 
-## K. One-Tailed P-Value Implementation Verification
+## D. Omissions in First-Layer Audit
 
-| Check | Code | Correct? |
-|-------|------|----------|
-| Two-tailed p from PanelOLS | L346: `p_two = float(model.pvalues.get(iv, np.nan))` | YES |
-| One-tailed conversion when beta < 0 | L351: `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2` | YES |
-| Stars applied to one-tailed p | L361: `stars = _sig_stars(p_one)` | YES |
-| LaTeX table notes specify one-tailed | L504: `$^{*}p<0.10$, ... (one-tailed; H12: $\beta < 0$)` | YES |
+### D1. No mention of `PayoutRatio_q` (MINOR)
 
----
+The engine computes both `PayoutRatio` (annual, dvy/iby) and `PayoutRatio_q` (quarterly, `dvpspq * cshoq / ibq`) at Engine L1116-1125. The quarterly variant is in `COMPUSTAT_COLS`, in `ratio_cols`, and gets winsorized. The first-layer audit never mentions `PayoutRatio_q`. While it is not used in the H12 runner, its existence in the engine and its presence in `ratio_cols` alongside `PayoutRatio` should be documented for completeness. No impact on results.
 
-## L. LaTeX Table Verification
+### D2. No mention of `DivIntensity` still being computed (MINOR)
 
-| Check | Result |
-|-------|--------|
-| 8 columns generated | YES -- L399: `n_cols = 8` |
-| Columns 1-4 = PayoutRatio, 5-8 = PayoutRatio_lead | YES -- L434-437: multicolumn headers |
-| Controls indicator row | YES -- L462-466 |
-| Industry/Firm/Year FE indicator rows | YES -- L469-479 |
-| N and Within-R2 rows | YES -- L483-496 |
-| Table notes complete | YES -- includes one-tailed note, clustering, sample, Attig citation, winsorization |
+The engine still computes `DivIntensity = dvy_annual / atq_annual_lag1` at Engine L1096-1103 (the old H12 DV). This variable is in `COMPUSTAT_COLS` and is computed alongside `PayoutRatio`. The first-layer audit discusses the "redesign from old H12" in Section 14a but does not mention that the old DV is still being computed and carried through the engine. No impact on H12 results, but creates potential for confusion.
+
+### D3. Absence of VIF or correlation diagnostics (already noted but underweighted)
+
+The first-layer audit notes multicollinearity among the 4 IVs in Section 11c but treats it as a minor concern. Given that CEO is a subset of Manager (the audit doc correctly notes "All managers (includes CEO)"), the Manager QA and CEO QA variables are likely highly collinear. This is more than a documentation gap -- it is a material inference concern that could make individual IV coefficients unreliable and unstable across specifications.
+
+### D4. No discussion of `drop_absorbed=True` interaction with `entity_effects=False`
+
+In the industry FE model (Runner L306-314), `entity_effects=False` is set explicitly while `other_effects=industry_data` provides the industry dummies. The audit mentions `check_rank=False` but does not discuss whether `drop_absorbed=True` correctly handles the interaction between `time_effects=True` and `other_effects` when some industry-year cells may be singletons or empty. This is a potential edge-case concern for PanelOLS.
 
 ---
 
-## M. Robustness and Identification Concerns
+## E. Analytical Gaps in First-Layer Audit
 
-| # | Concern | Severity | Addressed by Audit? |
-|---|---------|----------|---------------------|
-| M1 | No upper-bound censoring of PayoutRatio | MAJOR | NO |
-| M2 | ROA-PayoutRatio denominator overlap (Kronmal 1993) | MODERATE | Mentioned but not addressed |
-| M3 | Mass point at PayoutRatio = 0 (OLS vs Tobit/two-part) | MODERATE | NO |
-| M4 | No VIF reporting for 4 correlated uncertainty IVs | MINOR | NO |
-| M5 | Survivorship bias in lead variable (only consecutive years) | LOW | YES -- documented |
-| M6 | No Hausman test for FE vs RE model choice | LOW | Common omission in applied work |
-| M7 | No alternative estimator sensitivity (fractional logit, Tobit) | MODERATE | NO |
-| M8 | Winsorization applied before lead construction (engine level) | LOW | Appropriate -- ensures lead is from winsorized data |
+### E1. PayoutRatio winsorization before lead construction creates look-ahead concern
 
----
+The first-layer audit (Section 6a, step 6-8) correctly documents that PayoutRatio is winsorized at the engine level (1%/99% per fiscal year) before the lead is constructed in the panel builder. However, it does not flag the subtle timing implication: the winsorization percentiles for year t+1's PayoutRatio are computed using ALL firms in year t+1, including those that will later be filtered out by FF12 exclusion or complete-case restrictions. The lead variable thus inherits winsorization bounds computed on a different population than the estimation sample. This is standard practice but should be explicitly acknowledged.
 
-## N. Reproducibility Assessment
+### E2. `groupby.last()` on `Volatility` conflates distinct values
 
-| Check | Result |
-|-------|--------|
-| Deterministic output (no random seeds needed) | YES |
-| Panel builder reproducible from manifest + Compustat | YES |
-| Runner reproducible from panel parquet | YES |
-| Manifest generated with input/output paths | YES -- runner L759-770 |
-| Timestamp-based output directories | YES -- runner L661 |
-| Dry-run mode available | YES -- runner L799-806, panel builder L454-455 |
+The audit doc (Section 6c, Volatility) correctly notes that "Volatility varies across calls within a firm-year because different calls have different inter-call windows." It then states the aggregation takes "the last call's volatility value." However, `groupby.last()` in pandas returns the last NON-NULL value, not the last row's value. If the last call within a firm-year has a NaN Volatility (e.g., fewer than 10 trading days in its window), the penultimate call's Volatility would be used instead. The audit mentions this semantic issue generically (L7) but does not flag the specific concern for Volatility, which is the one variable where within-firm-year variation is expected.
+
+### E3. No Hausman test or RE comparison mentioned
+
+The audit doc Section 11d states "No Hausman test for RE vs FE is reported, which is standard practice in applied corporate finance." This is a fair characterization but the audit should note that the absence of RE specifications means there is no efficiency comparison available. If FE is strictly more restrictive and the data supports RE, the FE estimates will be consistent but inefficient.
 
 ---
 
-## O. Audit-Craft Assessment of First-Layer Audit
+## F. Verification of Red-Team Findings Disposition (Section 13)
 
-| Dimension | Grade | Notes |
-|-----------|-------|-------|
-| Factual accuracy | A | All 20 claims verified against code. Zero errors found. |
-| Completeness | B- | Misses critical PayoutRatio bounding/censoring issue (C1), mass-point concern (C8), and ROA mechanical linkage resolution (C2). |
-| Variable dictionary | A- | Clear DV and IV definitions. ROA linkage noted but not resolved. |
-| Sample accounting | B | Attrition table described but only for Col 1; no discussion of sample variation across specs. |
-| Identification discussion | C+ | No discussion of DV distributional properties, estimator appropriateness, or VIF. |
-| Bug-fix documentation | A | Clear J1-J11 table with before/after. |
-| Redesign rationale | A | Well-justified switch from DivIntensity to PayoutRatio with Attig citation. |
+| Red-team ID | First-layer disposition | Second-layer assessment |
+|-------------|------------------------|------------------------|
+| C1 (no upper-bound censoring) | Documented as L1 (MAJOR) | **AGREE.** Real concern, correctly elevated. |
+| C2 (ROA-PayoutRatio Kronmal overlap) | Documented as L2 (MODERATE) | **AGREE.** Correctly identified. |
+| C3 (`check_rank=False`) | Documented as L6 (MINOR) | **AGREE.** Negligible with `drop_absorbed=True`. |
+| C4 (`groupby.last()` semantics) | Documented as L7 (MINOR) | **AGREE** but **UNDERWEIGHTED** for Volatility specifically (see E2). |
+| C5 (no intercept in industry FE) | Documented as NEGLIGIBLE | **AGREE.** Non-issue. |
+| C6 (summary stats pre-complete-case) | Documented as L4 (MINOR) | **AGREE.** Standard practice but should be disclosed. |
+| C7 (attrition table Col 1 only) | Documented as L5 (MINOR) | **AGREE.** |
+| C8 (mass point at zero) | Documented as L3 (MODERATE) | **AGREE.** Correctly identified. |
 
 ---
 
-## P. Summary Verdict
+## G. Design Decision Review
 
-### First-Layer Audit Quality
+### G1. PayoutRatio = dvy/iby vs. dvy/atq
 
-The first-layer audit (H12.md) is **factually accurate on every claim checked** (20/20). It provides a thorough description of the implementation, clearly documents the redesign rationale, and correctly catalogs the bug fixes from the old H12. The variable dictionary is clear and the model specifications are precisely documented.
+The audit doc Section 14a correctly explains the redesign rationale. The Attig et al. (2013) formulation is standard. **No objection.**
 
-### Material Gaps
+### G2. Four simultaneous IVs
 
-The audit's primary weakness is in **distributional and econometric appropriateness** analysis:
+The design choice to enter all four IVs simultaneously is well-motivated by the cited literature (Brochet et al., Hassan et al.). However, the high collinearity between CEO and Manager measures (CEO is a subset of Manager) makes interpretation of individual coefficients problematic. The audit should recommend examining each IV pair separately as a robustness check.
 
-1. **MAJOR (C1):** PayoutRatio has no upper-bound censoring. Firms paying dividends exceeding earnings (e.g., from retained earnings or debt) produce PayoutRatio > 1.0. Near-zero iby produces very large PayoutRatio. Winsorization at 99th percentile mitigates extreme outliers but does not address the fundamental problem that OLS on an unbounded ratio with a mass at zero is questionable. A referee would likely require either (a) censoring at 1.0 per Attig et al., (b) a robustness check with censored PayoutRatio, or (c) an alternative estimator (Tobit, fractional logit).
+### G3. Main sample only
 
-2. **MODERATE (C2, C8):** The ROA-PayoutRatio denominator overlap creates mechanical correlation. Combined with the mass point at zero (non-dividend payers with positive earnings), OLS coefficients may be biased or misleading. These are not novel concerns in the payout literature but should be explicitly acknowledged and addressed.
+Excluding Finance (FF12=11) and Utility (FF12=8) is standard in corporate finance empirical work. **No objection.**
 
-### Overall Assessment
+---
 
-The first-layer audit is a solid implementation-level document that accurately describes what the code does. It falls short of thesis-referee standard primarily in its silence on the econometric appropriateness of the chosen estimator for the specific DV distribution. A doctoral referee examining H12 would almost certainly ask about PayoutRatio bounding, the zero-mass-point problem, and the ROA denominator overlap -- none of which are adequately addressed in the current audit.
+## H. Output File Verification
 
-**Recommended actions (priority order):**
-1. Investigate empirical distribution of PayoutRatio (what fraction > 1.0? what is the 99th percentile?).
-2. Add a robustness specification with PayoutRatio censored at 1.0 (or report sensitivity).
-3. Report VIFs for the 4 uncertainty IVs.
-4. Acknowledge the ROA-PayoutRatio denominator linkage in the thesis text and consider a sensitivity check dropping ROA.
-5. Consider reporting Tobit or two-part model results as robustness.
+| Audit claim | Verification | Verdict |
+|------------|-------------|---------|
+| 8 output files listed in docstring | Runner L49-57 lists 8 files (omits `sample_attrition.tex`) | **CONFIRMED** -- audit correctly flags this mismatch |
+| 9 files produced in code | Runner produces: 8 regression results + table + diagnostics + summary stats (csv+tex) + report + attrition (csv+tex) + manifest = up to 14 files for a full run | **PARTIALLY INCORRECT** -- the audit says 9 files but the actual count is higher. The docstring lists 8, the audit claims 9, but a full run with all 8 regressions completing produces: 8 regression_results + 1 table + 1 diagnostics + 2 summary_stats + 1 report + 2 attrition + 1 manifest = 16 files. The audit's characterization of "9 files" is misleading. |
+
+---
+
+## I. Reproducibility Assessment
+
+| Property | Audit claim | Verification | Verdict |
+|----------|------------|-------------|---------|
+| Deterministic | Yes | No random seeds, no sampling, no stochastic operations | **CONFIRMED** |
+| Panel builder command | `python -m f1d.variables.build_h12_div_intensity_panel` | Builder has `__main__` block | **CONFIRMED** |
+| Dry-run command | `python -m f1d.econometric.run_h12_div_intensity --dry-run` | Runner L799-808 | **CONFIRMED** |
+| Timestamp-based dirs | Yes | Builder L416 and Runner L663 use datetime-stamped subdirectories | **CONFIRMED** (line refs off by ~2) |
+
+---
+
+## J. Estimation Implementation Audit
+
+### J1. Industry FE implementation
+
+The runner uses `PanelOLS` constructor with `other_effects=industry_data` where `industry_data = df_panel["ff12_code"]` (Runner L305). This absorbs industry FE correctly. Combined with `time_effects=True`, this gives Industry + FiscalYear two-way FE. **CONFIRMED correct.**
+
+### J2. Firm FE implementation
+
+The runner uses `PanelOLS.from_formula` with `EntityEffects + TimeEffects` (Runner L318-321). The entity index is `gvkey` (set at L298). **CONFIRMED correct.**
+
+### J3. Clustering implementation
+
+All models use `.fit(cov_type="clustered", cluster_entity=True)` (Runner L315, L321). Entity = gvkey = firm. **CONFIRMED correct.**
+
+### J4. One-tailed p-value computation
+
+Runner L350-351: `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2`. This is the standard one-tailed conversion for a left-tail test (H0: beta >= 0 vs H1: beta < 0). When beta < 0 (in the predicted direction), p_one = p_two / 2 (more significant). When beta > 0 (against prediction), p_one = 1 - p_two / 2 (less significant). **CONFIRMED correct.**
+
+---
+
+## K. Panel Construction Audit
+
+### K1. Merge integrity
+
+Builder L264-269: Each builder's data is merged on `file_name` with `how="left"`. After each merge, `delta = after_len - before_len` is checked and must equal 0 (no row inflation). **CONFIRMED correct.**
+
+### K2. Aggregation integrity
+
+Builder L151-153: Financial variables aggregated via `groupby(["gvkey", "fyearq"]).last()`.
+Builder L157-158: IVs aggregated via `groupby(["gvkey", "fyearq"]).mean()`.
+Builder L160: Rename with `Avg_` prefix.
+**CONFIRMED correct.**
+
+### K3. Lead variable construction
+
+Builder L183-195: `shift(-1)` within gvkey, consecutive-year check using Int64 arithmetic, non-consecutive years set to NaN. **CONFIRMED correct.**
+
+---
+
+## L. Summary of Findings
+
+### Errors in first-layer audit
+
+| ID | Severity | Description |
+|----|----------|-------------|
+| RT-C1 | **MODERATE** | TobinsQ formula incorrectly stated as `(atq + cshoq*prccq - ceqq) / atq`. Actual code computes `(mktcap + debt_book) / atq`. The audit's own "Intermediate" section contradicts its "Formula" row. |
+| RT-C2 | **MINOR** | RD_Intensity falsely claimed to be absent from `ratio_cols`. It IS in `ratio_cols` at Engine L1171. Inf values are properly cleaned. |
+| RT-C3 | **MINOR** | Systematic line-number drift (off by 2-14 lines) across all engine references. Directionally correct but not pinpoint-accurate. |
+| RT-C4 | **MINOR** | Output file count claimed as "9" is misleading. A full successful run produces 16 files (8 regression results + 8 other files). |
+
+### Omissions in first-layer audit
+
+| ID | Severity | Description |
+|----|----------|-------------|
+| RT-D1 | **MINOR** | `PayoutRatio_q` (quarterly variant) exists in the engine but is never mentioned. |
+| RT-D2 | **MINOR** | `DivIntensity` (old H12 DV) still computed in engine but not flagged as legacy. |
+| RT-D3 | **MODERATE** | CEO-subset-of-Manager collinearity concern underweighted. The 4-IV design enters Manager (which includes CEO) alongside CEO measures -- near-perfect collinearity for the same context segment is likely. |
+| RT-D4 | **MINOR** | Winsorization applied pre-sample-filter means lead variable inherits bounds from broader population. |
+
+### Analytical gaps
+
+| ID | Severity | Description |
+|----|----------|-------------|
+| RT-E1 | **MINOR** | `groupby.last()` for Volatility specifically (the one variable with within-firm-year variation) deserves dedicated discussion, not just generic mention. |
+| RT-E2 | **MINOR** | No mention of whether `drop_absorbed=True` correctly handles industry-year singletons in the `other_effects` specification. |
+
+---
+
+## M. Corrective Actions Required
+
+1. **Fix TobinsQ formula** in Section 6c to match the actual code: `(cshoq * prccq + debt_book) / atq` where `debt_book = np.where(dlcq.isna() & dlttq.isna(), np.nan, dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0))`.
+2. **Fix RD_Intensity inf cleanup claim** in Section 6c: RD_Intensity IS in `ratio_cols` and inf values ARE cleaned to NaN.
+3. **Update line-number references** or add a disclaimer that line numbers are approximate.
+4. **Fix output file count** in Section 8 to accurately reflect that a full run produces 16 files (8 regression result texts + 8 other outputs), not 9.
+5. **Strengthen multicollinearity discussion** in Section 11c to explicitly note that Manager measures include CEO, creating near-mechanical collinearity.
+
+---
+
+## N. Assessment of First-Layer Audit Quality
+
+**Overall grade: B+**
+
+The first-layer audit is thorough and well-structured. It correctly identifies the major econometric concerns (unbounded PayoutRatio, Kronmal overlap, mass point at zero) and documents the full construction chain with impressive detail. The verification log is comprehensive and all 25 verification claims are substantively correct.
+
+However, the audit contains one material formula error (TobinsQ), one factual error (RD_Intensity inf cleanup), and pervasive line-number drift. These issues are individually minor to moderate but collectively suggest the audit was written against a slightly different version of the codebase and was not fully re-verified against the current state.
+
+The identification and inference assessment (Section 11) is strong, particularly the Kronmal (1993) discussion and the mass-point-at-zero concern. The design decisions section is well-justified with literature citations.
+
+---
+
+## O. Materiality Assessment for Thesis Defense
+
+| Concern | Impact on H12 conclusions | Remediation urgency |
+|---------|--------------------------|---------------------|
+| Unbounded PayoutRatio (L1) | Could affect coefficient magnitudes if extreme values drive results | **HIGH** -- robustness check with censoring at 1.0 recommended |
+| ROA-PayoutRatio Kronmal overlap (L2) | May bias ROA coefficient negative, potentially inflating uncertainty IV significance | **MEDIUM** -- sensitivity analysis dropping ROA recommended |
+| Mass point at zero (L3) | OLS on mixed continuous/mass-point DV is econometrically suboptimal | **MEDIUM** -- Tobit or two-part model as robustness |
+| CEO-Manager collinearity (RT-D3) | Individual IV coefficients may be unreliable | **MEDIUM** -- report VIFs or run separate IV pairs |
+| TobinsQ formula error in audit (RT-C1) | No impact on code (code is correct), but audit doc is misleading | **LOW** -- fix audit doc |
+
+---
+
+## P. Sign-Off
+
+This second-layer red-team audit has independently verified the H12 first-layer provenance document against the current codebase. The code implementation is sound and the major econometric concerns identified in the first layer are legitimate and well-characterized. The errors found (TobinsQ formula, RD_Intensity claim, line drift, output count) are documentation errors that do not affect the actual regression pipeline.
+
+**The H12 suite code is fit for purpose, subject to the robustness recommendations in Sections 11 and 12 of the first-layer audit and the additional concerns raised in this document.**
+
+Auditor: Second-layer red-team (automated)
+Date: 2026-03-21

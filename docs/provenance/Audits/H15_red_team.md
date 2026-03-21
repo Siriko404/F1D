@@ -1,295 +1,278 @@
 # H15 Share Repurchase -- Second-Layer Red-Team Audit
 
-**Generated:** 2026-03-18
-**Auditor context:** Fresh (no prior involvement in H15 development or first-layer audit)
+**Generated:** 2026-03-21
+**Auditor role:** Hostile-but-fair replication auditor (second layer)
 **Suite ID:** H15
-**Estimation method:** Linear Probability Model (PanelOLS)
-**DV:** REPO_callqtr (binary: cshopq > 0 in call quarter)
+**First-layer doc:** `docs/provenance/H15.md`
+**Runner:** `src/f1d/econometric/run_h15_repurchase.py`
+**Panel builder:** `src/f1d/variables/build_h15_repurchase_panel.py`
 
 ---
 
-## A. Red-Team Bottom Line
+## A. Scope & Mandate
 
-The first-layer audit (H15.md) is **substantially accurate** but contains one **factually incorrect variable formula** (TobinsQ), has **stale results from a prior 6-IV specification** that are presented as current, and **omits several material econometric concerns** specific to the LPM choice with a 70.5% base-rate binary DV. The implementation itself is well-constructed with proper safeguards (merge deduplication, quarter-lead validation, year restriction for cshopq availability). However, the audit document fails to discuss LPM-specific diagnostics (predicted probabilities outside [0,1], heteroskedasticity inherent in binary DV with OLS, Horrace-Oaxaca bounds), and does not flag the non-unique (gvkey, fyearq_int) panel index that allows multiple calls per firm-year cell. No critical implementation bugs were found. The suite is at **CONDITIONAL PASS** readiness -- the TobinsQ formula claim needs correction, results need a fresh run, and the thesis text must address LPM limitations.
-
-**Verdict: CONDITIONAL PASS -- fixable issues, no fatal implementation flaws.**
+This audit independently verifies every factual claim in the first-layer provenance document (`H15.md`) against the actual source code. The goal is to catch errors in the audit itself: wrong line numbers, misquoted formulas, omitted risks, or findings that were accepted but never actually fixed.
 
 ---
 
-## B. Scope and Objects Audited
+## B. First-Layer Accuracy: Line-Number Spot Checks
 
-| Object | Path | Audited |
-|--------|------|---------|
-| First-layer audit | `docs/provenance/H15.md` | Full |
-| Econometric runner | `src/f1d/econometric/run_h15_repurchase.py` | Full (761 lines) |
-| Panel builder | `src/f1d/variables/build_h15_repurchase_panel.py` | Full (457 lines) |
-| Compustat engine | `src/f1d/shared/variables/_compustat_engine.py` | Targeted (REPO, TobinsQ, BookLev, ROA, CapexAt, DividendPayer, OCF_Volatility, CashHoldings, winsorization) |
-| RepurchaseIndicatorBuilder | `src/f1d/shared/variables/repurchase_indicator.py` | Full |
-| Panel utilities | `src/f1d/shared/variables/panel_utils.py` | Full |
-| Variables __init__ | `src/f1d/shared/variables/__init__.py` | Targeted |
-| BookLevBuilder | `src/f1d/shared/variables/book_lev.py` | Full |
-| LevBuilder | `src/f1d/shared/variables/lev.py` | Full |
+| Claim in H15.md | Cited location | Actual code | Verdict |
+|---|---|---|---|
+| `REPO_callqtr` = 1 if cshopq > 0 | Builder lines 251--254 | Builder lines 251--254: `np.where(comp["cshopq"].notna() & (comp["cshopq"] > 0), 1.0, ...)` | CONFIRMED |
+| `next_fqtr = fqtr_int % 4 + 1` | Builder lines 271--272 | Builder line 271: `panel["next_fqtr"] = panel["fqtr_int"] % 4 + 1` | CONFIRMED |
+| `next_fyearq` rollover at Q4 | Builder line 272 | Builder line 272: `panel["next_fyearq"] = panel["fyearq_int"] + (panel["fqtr_int"] == 4).astype(float)` | CONFIRMED |
+| Year restriction: `max(config.data.year_start, 2004)` | Builder line 335 | Builder line 335: `year_start = max(config.data.year_start, 2004)` | CONFIRMED |
+| Main sample filter: `~ff12_code.isin([8, 11])` | Runner line 206 | Runner line 206: `main = panel[~panel["ff12_code"].isin([8, 11])].copy()` | CONFIRMED |
+| `MIN_CALLS_PER_FIRM = 5` | Runner line 114 | Runner line 114: `MIN_CALLS_PER_FIRM = 5` | CONFIRMED |
+| Panel index: `gvkey x fyearq_int` | Runner line 283 | Runner line 283: `df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])` | CONFIRMED |
+| 4 KEY_IVS | Runner lines 82--86 | Runner lines 82--86: 4 uncertainty variables listed | CONFIRMED |
+| 8 BASE_CONTROLS | Runner lines 89--98 | Runner lines 89--98: 8 controls listed | CONFIRMED |
+| EXTENDED = Base + 4 | Runner lines 100--105 | Runner lines 100--105: `BASE_CONTROLS + [SalesGrowth, RD_Intensity, CashFlow, Volatility]` | CONFIRMED |
+| `drop_absorbed=True` | Runner lines 296, 303 | Runner line 296 (industry PanelOLS ctor), line 303 (firm `from_formula`) | CONFIRMED |
+| `check_rank=False` for industry FE only | Runner line 297 | Runner line 297: `check_rank=False` in industry model; absent from firm formula (line 303) | CONFIRMED |
+| P-values: `model.pvalues` two-tailed | Runner line 328 | Runner line 328: `p_two = float(model.pvalues.get(iv, np.nan))` | CONFIRMED |
+| REPO in COMPUSTAT_COLS | Engine line 140 | Engine line 140: `"REPO"` in COMPUSTAT_COLS list | CONFIRMED |
+| fqtr in COMPUSTAT_COLS | Engine line 141 | Engine line 141: `"fqtr"` in COMPUSTAT_COLS list | CONFIRMED |
+| REPO in skip_winsorize | Engine line 1205 | Engine line 1205: `"REPO"` in skip_winsorize set | CONFIRMED |
+| fqtr in skip_winsorize | Engine line 1206 | Engine line 1206: `"fqtr"` in skip_winsorize set | CONFIRMED |
+| Engine REPO formula | Engine lines 1158--1162 | Engine lines 1158--1162: identical three-way np.where logic | CONFIRMED |
+| merge_asof direction='backward' | Engine line 1307 | Engine line 1307: `direction="backward"` | CONFIRMED |
+| BookLev = (dlcq.fillna(0) + dlttq.fillna(0)) / atq | Engine line 1041 | Engine line 1041: confirmed | CONFIRMED |
+| TobinsQ = (mktcap + debt_book) / atq | Engine lines 1075--1078 | Engine lines 1075--1078: confirmed with guards | CONFIRMED |
+| ROA = iby_annual / avg_assets | Engine lines 1060--1062 | Engine lines 1060--1062: confirmed | CONFIRMED |
+| Size = ln(atq) where atq > 0 | Engine line 1036 | Engine line 1036: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | CONFIRMED (note: audit says line 1034, actual is 1036) |
+| CashHoldings = cheq / atq | Engine line 1068 | Engine line 1068: `comp["CashHoldings"] = comp["cheq"] / comp["atq"]` | CONFIRMED (note: audit says line 1066, actual is 1068) |
+| CapexAt = capxy_annual / atq_annual_lag1 | Engine lines 1082--1087 | Engine lines 1082--1087: confirmed | CONFIRMED (note: audit says lines 1079--1084, off by ~3) |
+| DividendPayer = dvy_annual > 0 | Engine lines 1092--1094 | Engine lines 1092--1094: `(dvy_annual.fillna(0) > 0).astype(float)` | CONFIRMED (note: audit says lines 1089--1092, off by ~3) |
+| OCF_Volatility: rolling 1826D, min_periods=3 | Engine line 341 | Engine line 341: `x.rolling("1826D", min_periods=3).std()` | CONFIRMED (note: audit says lines 307--356, function spans 309--358) |
+| Compustat lookup dedup keep='last' | Builder lines 258--263 | Builder lines 258--263: `drop_duplicates(..., keep="last")` | CONFIRMED |
+| REPO_callqtr merge row-count validation | Builder lines 288--292 | Builder lines 287--292: `if after_len != before_len: raise ValueError(...)` | CONFIRMED |
+| RepurchaseIndicatorBuilder returns REPO + fqtr | repurchase_indicator.py line 48 | Line 48: `data = merged[["file_name", "REPO", "fqtr"]].copy()` | CONFIRMED |
 
----
-
-## C. Audit-of-Audit Scorecard
-
-| Dimension | Grade | Notes |
-|-----------|-------|-------|
-| Factual accuracy | B- | TobinsQ formula is wrong; results are stale (6-IV, not 4-IV) |
-| Completeness | C+ | Missing LPM-specific diagnostics, no discussion of non-unique panel index |
-| Variable dictionary accuracy | B | 7/8 controls correctly described; TobinsQ formula error |
-| Econometric rigor | C | LPM choice justified but no discussion of heteroskedasticity, predicted probabilities, or Horrace-Oaxaca |
-| Reproducibility | B+ | Year restriction enforced, merge guards present, attrition tracked |
-| Sample accounting | B+ | Base rate reported, year restriction justified with data evidence |
-| Identification discussion | C+ | No discussion of endogeneity, reverse causality, or omitted variables |
-| Audit craft | B- | Well-structured but rubber-stamps several aspects without verification |
-
----
-
-## D. Claim Verification Matrix
-
-| # | Claim (from H15.md) | Verdict | Evidence |
-|---|---------------------|---------|----------|
-| D1 | "DV: REPO_callqtr = 1 if cshopq > 0 in the fiscal quarter containing the call" | **VERIFIED FACT** | `build_h15_repurchase_panel.py` lines 251-254: `np.where(comp["cshopq"].notna() & (comp["cshopq"] > 0), 1.0, ...)` |
-| D2 | "cshopq = Total Shares Repurchased (Compustat quarterly, NOT YTD cumulative)" | **VERIFIED FACT** | Compustat documentation confirms cshopq is quarterly (unlike capxy/dvy). Engine comment at line 1143 confirms. |
-| D3 | "merge_asof(direction='backward') matches calls to the reporting quarter" | **VERIFIED FACT** | `_compustat_engine.py` line 1287-1294: `pd.merge_asof(..., direction="backward")` |
-| D4 | "Panel builder leads REPO by one fiscal quarter to get the call quarter" | **VERIFIED FACT** | `build_h15_repurchase_panel.py` lines 271-272: `next_fqtr = fqtr_int % 4 + 1`, `next_fyearq = fyearq_int + (fqtr_int == 4)` |
-| D5 | "Quarter continuity validated: next_fqtr = fqtr % 4 + 1, with fiscal year rollover at Q4->Q1" | **VERIFIED FACT** | Arithmetic verified: 1->2, 2->3, 3->4, 4->1; fyearq incremented when fqtr==4 |
-| D6 | "TobinsQ = (atq + cshoq*prccq - ceqq) / atq" | **VERIFIED ERROR** | Actual code at `_compustat_engine.py` lines 1067-1077: `TobinsQ = (cshoq*prccq + dlcq + dlttq) / atq`. These are NOT algebraically equivalent: `atq - ceqq` includes all non-equity liabilities (AP, accruals, deferred revenue, etc.), while `dlcq + dlttq` is interest-bearing debt only. |
-| D7 | "BookLev = (dlcq + dlttq) / atq" | **VERIFIED FACT** | `_compustat_engine.py` line 1039: `comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]` |
-| D8 | "ROA = Annual income / average assets" | **VERIFIED FACT** | Lines 1050-1060: `iby_annual / ((atq_annual + atq_annual_lag1) / 2)` |
-| D9 | "CapexAt = Q4 capxy / lagged assets" | **VERIFIED FACT** | Lines 1079-1084: `capxy_annual / atq_annual_lag1` |
-| D10 | "DividendPayer = dvy > 0" | **VERIFIED FACT** | Lines 1089-1092: Q4 annual dvy, `fillna(0) > 0` |
-| D11 | "OCF_Volatility = Rolling 5yr std of oancfy/lagged_atq" | **VERIFIED FACT** | `_compute_ocf_volatility()` lines 307-356: rolling 1826D, min_periods=3, oancfy/atq_lag |
-| D12 | "Size = ln(total assets)" | **VERIFIED FACT** | Line 1034: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` |
-| D13 | "CashHoldings = cheq / atq" | **VERIFIED FACT** | Line 1066: `comp["CashHoldings"] = comp["cheq"] / comp["atq"]` |
-| D14 | "Industry FE: Absorbed via PanelOLS constructor other_effects" | **VERIFIED FACT** | Runner lines 290-298: `other_effects=industry_data, entity_effects=False, time_effects=True` |
-| D15 | "Firm FE: EntityEffects + TimeEffects via from_formula" | **VERIFIED FACT** | Runner lines 301-304 |
-| D16 | "Standard Errors: Firm-clustered, heteroscedasticity-robust" | **VERIFIED FACT** | Lines 299, 304: `cov_type="clustered", cluster_entity=True` |
-| D17 | "Year Range: 2004-2018 (cshopq unavailable in 2002-2003)" | **VERIFIED FACT** | Panel builder line 335: `year_start = max(config.data.year_start, 2004)` |
-| D18 | "Min calls/firm: 5" | **VERIFIED FACT** | Runner line 114: `MIN_CALLS_PER_FIRM = 5` |
-| D19 | "4 simultaneous IVs" | **VERIFIED FACT** | Runner lines 82-86: `KEY_IVS = [CEO_QA, CEO_Pres, Manager_QA, Manager_Pres]` |
-| D20 | "8 base controls" | **VERIFIED FACT** | Runner lines 89-98: 8 controls listed |
-| D21 | "Extended = Base + 4" | **VERIFIED FACT** | Runner lines 100-105: SalesGrowth, RD_Intensity, CashFlow, Volatility |
-| D22 | "Excluded: Finance (FF12=11), Utility (FF12=8)" | **VERIFIED FACT** | Runner line 206: `~panel["ff12_code"].isin([8, 11])` |
-| D23 | "Base rate: 70.5% of calls with REPO data have REPO_callqtr=1" | **UNVERIFIED** | Cannot verify without running the code; value from a prior run |
-| D24 | "Results are from pre-4IV run (6 IVs including CEO/Manager Clarity Residuals, N~27K)" | **VERIFIED FACT** | Audit explicitly states results are stale: "A fresh run is needed" |
-| D25 | "REPO not in {BookLev, CashHoldings, CapexAt}, so all three are controls" | **VERIFIED FACT** | REPO is binary indicator from cshopq; BookLev uses dlcq/dlttq/atq; CashHoldings uses cheq/atq; CapexAt uses capxy/atq_lag. No overlap. |
-| D26 | "P-values: Raw model.pvalues (two-tailed)" | **VERIFIED FACT** | Runner line 328: `p_two = float(model.pvalues.get(iv, np.nan))` |
-| D27 | "drop_absorbed=True" | **VERIFIED FACT** | Lines 296, 303 |
-| D28 | "Panel index: gvkey (entity) + fyearq_int (fiscal year)" | **VERIFIED FACT** | Runner line 283: `df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])` |
-| D29 | "Added REPO and fqtr to COMPUSTAT_COLS" | **VERIFIED FACT** | Engine lines 138-139 |
-| D30 | "REPO and fqtr added to skip_winsorize set" | **VERIFIED FACT** | Engine lines 1191-1192 |
-| D31 | "RepurchaseIndicatorBuilder follows DividendPayer pattern" | **VERIFIED FACT** | `repurchase_indicator.py`: uses same engine.match_to_manifest pattern |
-| D32 | "77% of firms have within-firm variation in REPO" | **UNVERIFIED** | Cannot verify without running; from a prior run |
+**Line-number drift summary:** Several line numbers are off by 2--4 lines (Size cited as 1034 vs actual 1036; CashHoldings cited as 1066 vs 1068; CapexAt cited as 1079--1084 vs 1082--1087; DividendPayer cited as 1089--1092 vs 1092--1094). These are minor and do not affect correctness of the claim. The drift is consistent with code changes that inserted lines above the cited locations after the first-layer audit was written.
 
 ---
 
-## E. Unsupported/Overstated Claims
+## C. First-Layer Accuracy: Formula Verification
 
-| # | Claim | Issue | Severity |
-|---|-------|-------|----------|
-| E1 | "TobinsQ = (atq + cshoq*prccq - ceqq) / atq" (audit Section A5) | **Formula is wrong.** Actual code computes `(cshoq*prccq + dlcq + dlttq) / atq`. The difference is material: `atq - ceqq` captures ALL non-equity liabilities (operating + financial), while `dlcq + dlttq` is financial debt only. For a typical S&P 500 firm, operating liabilities (AP, accruals, deferred revenue) are 15-30% of total assets, so the discrepancy is economically large. | **MAJOR** |
-| E2 | "Standard Errors: Firm-clustered, heteroscedasticity-robust" | Partially overstated. While clustered SEs are heteroskedasticity-consistent (HC1 by default in linearmodels), the audit does not note that with a binary DV, heteroskedasticity is **guaranteed** (Var(e|X) = p(1-p)), making this a minimum requirement, not a robustness feature. The audit implies this is sufficient without discussing LPM-specific limitations. | **MINOR** |
-| E3 | Results section presents 6 IVs including "CEO Clarity Residual" and "Manager Clarity Residual" | While the audit does note results are stale, the table structure implies 6 IVs are the current design. The actual code has 4 IVs only. A reader could misunderstand the current specification. | **MINOR** |
+All variable formulas stated in the first-layer audit match the actual code. No formula misquotation was found for any of the 16 variables (DV, 4 IVs, 8 base controls, 4 extended controls minus Volatility which is CRSP-based).
 
 ---
 
-## F. False Positives
+## D. Error Found: CashHoldings Inf Replacement Misstatement
 
-No false positives identified in the first-layer audit. The audit does not raise any issues that are incorrect.
+**Severity: MINOR (factual error in documentation, no impact on estimates)**
 
----
+The first-layer audit states in Section 6 (CashHoldings):
 
-## G. Missed Issues
+> "Not in explicit `ratio_cols` list but inf values are handled at the runner level via `df.replace([np.inf, -np.inf], np.nan)` (runner line 226)."
 
-| # | Issue | Severity | Category |
-|---|-------|----------|----------|
-| G1 | **Non-unique panel index.** The panel is indexed by (gvkey, fyearq_int), but the data is call-level with potentially 4+ calls per firm per fiscal year. PanelOLS accepts this but the econometric interpretation differs from standard two-way FE: "within-R2" measures variation within entity-time cells, not the standard panel within-estimator. The audit does not discuss this at all. | **MAJOR** | Econometric |
-| G2 | **No predicted probability diagnostics.** LPM produces predicted probabilities outside [0,1]. With a 70.5% base rate, the probability mass is concentrated near the upper bound, increasing the likelihood of predictions > 1. No diagnostic is computed or reported (e.g., fraction of fitted values outside [0,1]). Horrace and Oaxaca (2006) show that if >5% of predictions are outside [0,1], LPM coefficient estimates may be inconsistent. | **MAJOR** | Econometric |
-| G3 | **No logit/probit robustness check.** The audit justifies LPM over logit/probit by citing the incidental parameters problem with firm FE. This is correct for short panels (T small), but with T up to 15 years (2004-2018) and the industry FE models (Cols 1, 3) having no incidental parameters issue, a logit robustness check for the industry FE specifications is straightforward and would strengthen the thesis. | **MODERATE** | Robustness |
-| G4 | **No marginal effects comparison.** LPM coefficients are directly interpretable as marginal effects, but only at the mean. The audit claims "Coefficients represent marginal effects on the probability of share repurchase" (LaTeX table note, runner line 467) without noting this is an average marginal effect, not a marginal effect at specific covariate values. | **MINOR** | Interpretation |
-| G5 | **check_rank=False for industry FE but not for firm FE.** Runner line 297 sets `check_rank=False` for industry FE models, but the firm FE models (from_formula, line 303) do not set this parameter. This inconsistency is not discussed. If check_rank is needed for industry FE, why not for firm FE? | **MINOR** | Implementation |
-| G6 | **RepurchaseIndicatorBuilder loads REPO from engine (reporting quarter) but it is never used as DV.** The panel builder at line 222 checks `if "REPO" not in panel.columns` as a guard, but then constructs REPO_callqtr independently from raw Compustat data. The engine's REPO column is a wasted computation. This is not a bug but an inefficiency that the audit should document for clarity. | **MINOR** | Design |
-| G7 | **No discussion of Duong et al. (2025) methodology fidelity.** The audit cites Duong, Do, and Do (2025) for the REPO construction but does not detail which of their methods (they propose 5 methods) is implemented. The code uses their simplest method (quarterly cshopq > 0). The audit should note this and explain why the simpler method is sufficient. | **MODERATE** | Provenance |
-| G8 | **No endogeneity discussion.** Repurchase decisions and managerial speech uncertainty may be jointly determined by unobservable factors (e.g., board pressure, insider information). The audit does not discuss this or mention potential instruments/identification strategies. | **MODERATE** | Identification |
-| G9 | **70.5% base rate implications not discussed.** With a DV that is 1 in 70.5% of observations, the unconditional probability is far from 0.5. This means (a) the binary outcome is imbalanced, (b) within-firm variation in the DV is limited for firms that always repurchase, and (c) R-squared of 2% is partially due to the DV being near its ceiling. The audit notes the base rate but does not discuss its econometric implications. | **MODERATE** | Econometric |
-| G10 | **No collinearity diagnostics.** Four uncertainty measures enter simultaneously (CEO QA, CEO Pres, Manager QA, Manager Pres). These are likely highly correlated (especially Manager vs CEO for the same section). No VIF or condition number is reported. With null results across all IVs, multicollinearity could be masking individual effects. | **MODERATE** | Econometric |
+This is **factually incorrect**. `CashHoldings` IS explicitly listed in `ratio_cols` at engine line 1172:
 
----
+```python
+ratio_cols = [
+    ...
+    "CashHoldings",
+    ...
+]
+```
 
-## H. Severity Recalibration
-
-| Issue | First-Layer Severity | Red-Team Severity | Rationale |
-|-------|---------------------|-------------------|-----------|
-| TobinsQ formula error (E1) | Not flagged | **MAJOR** | Formula is factually wrong; affects thesis documentation. The regression itself is unaffected (code is correct), but the provenance document misstates the formula. |
-| Non-unique panel index (G1) | Not flagged | **MAJOR** | Affects econometric interpretation. Not a bug per se (PanelOLS handles it), but thesis committee will ask. |
-| No predicted probability diagnostics (G2) | Not flagged | **MAJOR** | Standard LPM requirement per Horrace-Oaxaca (2006). Must be reported even if results are null. |
-| No logit/probit robustness (G3) | Not flagged | **MODERATE** | Industry FE models could trivially add logit; null results reduce urgency but committee will expect. |
-| LPM justification (design decision E3 in H15.md) | Adequate | Adequate | The incidental parameters argument is correctly stated for firm FE specs. |
-| Stale results (E3) | Noted by audit | **MODERATE** | Audit correctly flags this, but the results table structure is misleading. |
+Therefore, inf replacement occurs at the engine level (line 1186), not merely at the runner level. The runner's inf replacement at line 226 is a redundant safety net, not the primary mechanism. The audit got the mechanism wrong but the end result (inf values are handled) is correct -- this is a documentation error, not a code bug.
 
 ---
 
-## I. Completeness Gaps
+## E. Error Found: RepurchaseIndicatorBuilder Docstring Inconsistency (Not Flagged)
 
-| Gap | Description | Impact |
-|-----|-------------|--------|
-| I1 | No LPM diagnostic section (predicted probabilities, Horrace-Oaxaca bounds) | Committee will ask for this |
-| I2 | No collinearity diagnostics (VIF/condition number for 4 correlated IVs) | Could explain null results |
-| I3 | No discussion of alternative DV definitions (dollar-based repurchase intensity, repurchase yield) | Limits robustness assessment |
-| I4 | No discussion of quarterly vs annual repurchase aggregation | Duong et al. discuss this; thesis should too |
-| I5 | No Hausman test or motivation for FE choice beyond incidental parameters | Standard panel econometrics requirement |
-| I6 | No economic magnitude discussion | Even with null results, coefficient bounds are informative |
-| I7 | No placebo/falsification test | E.g., does uncertainty predict repurchases 2+ quarters ahead? |
+**Severity: MINOR**
+
+`repurchase_indicator.py` line 8 says "Returns one column: file_name, REPO" but line 48 actually returns three columns: `file_name`, `REPO`, and `fqtr`. The first-layer audit correctly identifies the actual behavior (V26: "returns REPO + fqtr") but does not flag the misleading docstring as a code quality issue.
 
 ---
 
-## J. Reproducibility Assessment
+## F. Verification of Red-Team Findings Disposition (Section 13)
 
-| Criterion | Status | Notes |
-|-----------|--------|-------|
-| Data inputs specified | PASS | Compustat quarterly parquet, master manifest |
-| Year restriction enforced in code | PASS | `max(config.data.year_start, 2004)` at line 335 |
-| Merge guards present | PASS | Deduplication checks, row-count validation after every merge |
-| Attrition table generated | PASS | `generate_attrition_table()` at runner line 703 |
-| Manifest generated | PASS | `generate_manifest()` at runner line 713 |
-| Deterministic output paths | PASS | Timestamped output directories |
-| Random seed needed | N/A | No random operations |
-| Fresh run needed | **YES** | Current results are from a 6-IV specification; current code uses 4 IVs |
+The first-layer audit lists 12 red-team findings (E1--E3, G1--G10, M1--M12). I verify the disposition of each:
 
----
+| RT Finding | Disposition claimed | Verified? |
+|---|---|---|
+| E1/M1: TobinsQ formula corrected | Fixed in Section 6 | CONFIRMED -- Section 6 now shows correct formula `(cshoq*prccq + dlcq + dlttq) / atq` |
+| E2: LPM heteroskedasticity | Addressed in Section 11 | CONFIRMED -- Section 11 discusses guaranteed heteroskedasticity |
+| E3/M5: Stale results | Flagged throughout | CONFIRMED -- "STALE" warnings in Sections 1, 2, 9, results section |
+| G1/M2: Non-unique panel index | Addressed in Section 11 | CONFIRMED -- Section 11 has detailed discussion |
+| G2/M3: No Horrace-Oaxaca diagnostics | Listed as L2 (HIGH) | CONFIRMED -- L2 in Section 12 |
+| G3/M4: No logit robustness | Listed as L3 (MODERATE) | CONFIRMED -- L3 in Section 12 |
+| G4/M12: LPM marginal effects | Addressed in Section 11 | CONFIRMED -- discussed under "Marginal effects interpretation" |
+| G5/M10: check_rank inconsistency | Listed as L7 (MINOR) | CONFIRMED -- L7 in Section 12 |
+| G6/M11: Engine REPO redundancy | Listed as L8 (MINOR) | CONFIRMED -- L8 in Section 12, explained in Section 3 |
+| G7/M6: Duong et al. method | Fixed in Section 1 | CONFIRMED -- Method 1 explicitly identified with rationale |
+| G8/M7: Endogeneity discussion | Added to Section 11 | CONFIRMED -- dedicated subsection |
+| G9/M9: Base rate implications | Added to Section 11 | CONFIRMED -- dedicated subsection |
+| G10/M8: Collinearity diagnostics | Listed as L4 (MODERATE) | CONFIRMED -- L4 in Section 12 |
 
-## K. Econometric Meta-Audit
-
-### K1. LPM Appropriateness
-
-The LPM (OLS with binary DV) is a defensible choice when:
-- Fixed effects create incidental parameters problems in nonlinear models (firm FE in Cols 2, 4)
-- The primary interest is average marginal effects rather than individual predictions
-- Clustered SEs correct for heteroskedasticity
-
-However, the following LPM-specific concerns are not addressed:
-
-1. **Heteroskedasticity is guaranteed.** With Bernoulli DV, Var(e|X) = p(X)(1-p(X)). Clustered SEs handle this, but the audit should explicitly state this.
-
-2. **Predicted probabilities outside [0,1].** With a 70.5% base rate, predictions near 1.0 are common, and some will exceed 1.0. The Horrace-Oaxaca (2006) bound should be checked: if >5% of fitted values are outside [0,1], coefficient estimates may be inconsistent.
-
-3. **Industry FE models (Cols 1, 3) have no incidental parameters problem.** The justification for LPM over logit/probit applies only to firm FE models. The industry FE models could be estimated via logit as a robustness check at near-zero cost.
-
-### K2. Panel Structure
-
-The panel index is (gvkey, fyearq_int), but the unit of observation is the individual earnings call. A firm with 4 quarterly calls in a fiscal year has 4 rows with the same (gvkey, fyearq_int). PanelOLS treats this as a panel with repeated observations per cell. The "within-R2" of 2% should be interpreted as within-cell variation, not the standard panel within-estimator R2.
-
-### K3. Standard Errors
-
-Firm-clustered SEs with `cluster_entity=True` are appropriate. linearmodels clusters on the entity dimension of the multi-index (gvkey). This is correct for arbitrary within-firm serial correlation.
-
-### K4. Identification
-
-The identifying variation comes from within-firm, within-fiscal-year variation in quarterly uncertainty measures predicting quarterly repurchase decisions, after absorbing firm (or industry) and fiscal year fixed effects. This is a valid identification strategy if:
-- Uncertainty is measured before or contemporaneous with the repurchase decision (call quarter alignment addresses this)
-- No reverse causality (firms adjusting speech because they plan to repurchase)
-- No omitted time-varying confounders at the quarterly level
-
-The audit does not discuss any of these.
-
-### K5. Multiple Comparisons
-
-4 IVs x 4 specifications = 16 tests. All null. No multiple comparison correction is needed when all results are null (corrections only matter for false positive control).
+**All 12 dispositions verified as claimed.**
 
 ---
 
-## L. Audit-Safety Assessment
+## G. Omissions: Risks Not Identified by First-Layer Audit
 
-| Risk | Status | Notes |
-|------|--------|-------|
-| Implementation matches documentation | PARTIAL | TobinsQ formula mismatch. All other variables verified. |
-| Results match current specification | NO | Results are from 6-IV run; code currently has 4 IVs |
-| Sample construction is reproducible | YES | Year restriction, merge guards, attrition logging all present |
-| No silent data loss | YES | Every merge has before/after row count checks |
-| No incorrect inference | LOW RISK | Results are null across all specifications; risk of false positive is zero |
-| Audit covers all code paths | PARTIAL | Audit does not discuss `check_rank=False` inconsistency or REPO column redundancy |
+### G1. Summary statistics computed on pre-filter sample (MODERATE)
 
----
+**Runner lines 662--676:** The summary statistics table (`summary_stats.csv`, `summary_stats.tex`) is computed on the `panel` dataframe AFTER the main sample filter (line 647) but BEFORE the DV non-null filter, complete-case filter, and min-calls filter (applied inside `prepare_regression_data` starting at line 234). This means the summary statistics describe a different (larger) sample than the regression sample. For a repurchase study with 2004 year restriction and a 70.5% base rate, the summary stats sample could be substantially larger than the regression N.
 
-## M. Master Issue Register
+This is a standard but misleading practice. The thesis should either (a) compute summary statistics on the regression sample, or (b) clearly note the difference in the table caption. The first-layer audit does not flag this discrepancy.
 
-| ID | Severity | Category | Description | Source | Fix Required |
-|----|----------|----------|-------------|--------|--------------|
-| M1 | **MAJOR** | Documentation | TobinsQ formula in H15.md is wrong: states `(atq + cshoq*prccq - ceqq) / atq`, actual code uses `(cshoq*prccq + dlcq + dlttq) / atq` | D6, E1 | Correct formula in H15.md and all other provenance docs using this formula |
-| M2 | **MAJOR** | Econometric | Non-unique (gvkey, fyearq_int) panel index with call-level data not discussed | G1 | Add discussion in thesis text explaining multi-call-per-cell design |
-| M3 | **MAJOR** | Econometric | No predicted probability diagnostic for LPM | G2 | Add code to compute fraction of fitted values outside [0,1]; report in diagnostic output |
-| M4 | **MODERATE** | Robustness | No logit/probit robustness check for industry FE specifications | G3 | Add logit for Cols 1/3 as robustness; report in appendix |
-| M5 | **MODERATE** | Results | Stale results from 6-IV specification; current code uses 4 IVs | E3 | Run fresh with 4-IV specification; update results in H15.md |
-| M6 | **MODERATE** | Provenance | No discussion of which Duong et al. (2025) method is implemented | G7 | Add explicit statement that Method 1 (quarterly cshopq) is used |
-| M7 | **MODERATE** | Identification | No endogeneity discussion | G8 | Add paragraph in thesis text |
-| M8 | **MODERATE** | Econometric | No collinearity diagnostics for 4 correlated IVs | G10 | Add VIF computation to runner; report in diagnostics |
-| M9 | **MODERATE** | Econometric | 70.5% base rate implications not discussed | G9 | Add discussion of within-firm DV variation |
-| M10 | **MINOR** | Implementation | check_rank=False inconsistency between industry and firm FE models | G5 | Harmonize: either set for both or neither |
-| M11 | **MINOR** | Design | RepurchaseIndicatorBuilder loads engine REPO column but it is never used as DV | G6 | Document or remove the REPO check guard |
-| M12 | **MINOR** | Interpretation | LPM marginal effects are average, not at-the-mean | G4 | Clarify in LaTeX table note |
+### G2. No discussion of LPM goodness-of-fit alternatives (MINOR)
+
+The audit discusses within-R-squared (~2%) in the context of the high base rate but does not mention that R-squared is a poor measure of fit for binary outcomes. Count-R-squared (fraction correctly classified) or the Brier score would provide more informative diagnostics for an LPM. This is a committee-ready question.
+
+### G3. Attrition table omits intermediate steps (MINOR)
+
+The attrition table (runner lines 705--711) has only 4 stages: full panel, main sample, DV non-null, and final regression sample (col 1). It does not separately report the number of observations dropped by the complete-case filter versus the min-calls filter. These are conflated into a single "After complete-case + min-calls" stage. A replication auditor would want to see these separated to understand whether most attrition comes from missing controls or from the 5-call threshold.
+
+### G4. `file_name` column not loaded by runner (MINOR)
+
+The runner's `load_panel()` at lines 183--194 specifies an explicit column list and does NOT include `file_name`. This means the observation-level identifier is lost at the runner stage. While not needed for regression, it prevents any post-hoc inspection of which specific calls entered the regression. This is a minor traceability gap.
+
+### G5. LaTeX table note on winsorization is inaccurate (MINOR)
+
+The LaTeX table note (runner line 477) states "Variables winsorized at 1%/99% by year at engine level." This is incomplete: textual IVs are winsorized at 0%/99% (upper-only) by the LinguisticEngine, not 1%/99%. The first-layer audit correctly documents this asymmetry in Section 6 (Winsorization Summary) but does not flag the inaccurate LaTeX note.
 
 ---
 
-## N. What Committee Would Not Know
+## H. Code-Level Verification: Quarter-Lead Logic
 
-Reading only the first-layer audit (H15.md), a thesis committee would NOT know:
+The quarter-lead logic (builder lines 271--272) is the most critical construction for this suite. Independent verification:
 
-1. **The TobinsQ formula is misstated.** The committee would believe TobinsQ = (atq + cshoq*prccq - ceqq)/atq (a common approximation using the accounting identity), when the code actually uses (mktcap + interest-bearing debt)/atq (a different standard approximation). Both are valid Tobin's Q proxies, but they are NOT the same formula.
+- `fqtr_int = 1` -> `next_fqtr = 1 % 4 + 1 = 2`, `next_fyearq = fyearq_int + 0 = fyearq_int`. Correct: Q1 reporting -> Q2 call quarter.
+- `fqtr_int = 2` -> `next_fqtr = 2 % 4 + 1 = 3`, `next_fyearq = fyearq_int + 0`. Correct.
+- `fqtr_int = 3` -> `next_fqtr = 3 % 4 + 1 = 4`, `next_fyearq = fyearq_int + 0`. Correct.
+- `fqtr_int = 4` -> `next_fqtr = 4 % 4 + 1 = 0 + 1 = 1`, `next_fyearq = fyearq_int + 1`. Correct: Q4 reporting -> Q1 of next fiscal year.
 
-2. **The panel has multiple observations per (firm, year) cell.** The committee would assume standard two-way FE panel structure with one observation per (entity, time). The actual structure has 1-4 calls per cell, which changes the interpretation of "within" variation.
-
-3. **No LPM diagnostics have been computed.** The committee would not know whether predicted probabilities exceed [0,1], which is the primary econometric concern with LPM.
-
-4. **The results are stale.** While the audit notes this, the table layout (6 IVs) contradicts the stated 4-IV design, creating confusion about what was actually estimated.
-
-5. **No robustness to logit has been checked.** The committee would not know if the null results are robust to the functional form assumption.
-
-6. **Which Duong et al. (2025) method is used.** Duong et al. propose 5 methods; the simplest is implemented. Committee members familiar with the paper may question whether the more precise methods would yield different results.
+The logic is mathematically correct and handles the fiscal year rollover properly.
 
 ---
 
-## O. Priority Fixes
+## I. Code-Level Verification: Merge Guards
 
-### Tier 1 (Required before thesis submission)
+| Guard | Location | Verified |
+|---|---|---|
+| Manifest duplicate check | Builder lines 141--146 | CONFIRMED: raises ValueError |
+| Per-builder duplicate check | Builder lines 159--164 | CONFIRMED: raises ValueError |
+| Post-merge row count | Builder lines 175--182 | CONFIRMED: raises ValueError if count changes |
+| REPO_callqtr merge guard | Builder lines 287--292 | CONFIRMED: same pattern |
+| Compustat lookup dedup | Builder lines 258--263 | CONFIRMED: drop_duplicates(keep="last") |
+| Runner inf replacement | Runner line 226 | CONFIRMED: `df.replace([np.inf, -np.inf], np.nan)` |
+| Runner DV non-null | Runner line 234 | CONFIRMED: `df[df[dv].notna()]` |
+| Runner complete-case | Runner line 237 | CONFIRMED: `df[required].notna().all(axis=1)` |
+| Runner min-calls | Runner lines 241--243 | CONFIRMED: filters to firms with >= 5 calls |
 
-1. **Fix TobinsQ formula in H15.md** (and cross-check all other provenance docs). Change to: `TobinsQ = (cshoq*prccq + dlcq + dlttq) / atq` (market cap + book debt / total assets).
-
-2. **Run fresh 4-IV specification** and update results table in H15.md. Remove the 6-IV results and clarity residual rows.
-
-3. **Add predicted probability diagnostics.** Compute and report: (a) fraction of fitted values < 0, (b) fraction > 1, (c) mean and range of fitted values. Add to `model_diagnostics.csv`.
-
-4. **Add paragraph to thesis text** explaining (a) call-level panel with fiscal year FE, (b) multiple calls per (firm, year) cell, (c) LPM justification and limitations.
-
-### Tier 2 (Strongly recommended)
-
-5. **Add logit robustness check** for Cols 1/3 (industry FE). Report in appendix or footnote.
-
-6. **Add VIF computation** for the 4 IVs. Include in diagnostic output.
-
-7. **Add Duong et al. method identification** to the provenance document.
-
-### Tier 3 (Nice to have)
-
-8. **Harmonize check_rank parameter** across industry and firm FE models.
-
-9. **Document or simplify** the REPO column redundancy between engine and panel builder.
-
-10. **Add placebo test** (uncertainty -> REPO 2+ quarters ahead) to demonstrate temporal specificity.
+All merge guards verified. The pipeline has adequate protections against row multiplication and data corruption.
 
 ---
 
-## P. Final Readiness Statement
+## J. Code-Level Verification: Estimation Implementation
 
-**H15 is at CONDITIONAL PASS readiness.**
+| Parameter | Audit claim | Code verification | Verdict |
+|---|---|---|---|
+| Industry FE: `other_effects=industry_data` | Section 7 | Runner line 295: `other_effects=industry_data` where `industry_data = df_panel["ff12_code"]` (line 289) | CONFIRMED |
+| Industry FE: `entity_effects=False, time_effects=True` | Section 7 | Runner lines 293--294 | CONFIRMED |
+| Firm FE: `EntityEffects + TimeEffects` via formula | Section 7 | Runner line 302: formula includes `EntityEffects + TimeEffects` | CONFIRMED |
+| Clustered SEs: `cov_type="clustered", cluster_entity=True` | Section 7 | Runner lines 299 (industry), 304 (firm) | CONFIRMED |
+| Two-tailed p-values from model.pvalues | Section 7 | Runner line 328 | CONFIRMED |
+| Stars: `* p<0.10, ** p<0.05, *** p<0.01` | Section 7 | Runner lines 351--357: `_sig_stars()` function | CONFIRMED |
 
-The implementation is mechanically sound: the DV is correctly constructed from quarterly Compustat data with proper quarter-lead logic, merge guards prevent row multiplication, year restrictions are enforced for cshopq availability, and the estimation uses appropriate firm-clustered standard errors. The null results across all 16 IV-specification combinations are informative and internally consistent.
+---
 
-However, the first-layer audit has a factually incorrect TobinsQ formula (MAJOR), stale results from a prior specification (MODERATE), and fails to address standard LPM diagnostic requirements (MAJOR). The non-unique panel index is a legitimate design choice but must be discussed in the thesis text (MAJOR for documentation, not for implementation).
+## K. Structural Assessment of First-Layer Audit
 
-None of these issues require re-architecting the suite. All are fixable with (1) a documentation correction, (2) a fresh run, (3) adding ~20 lines of diagnostic code, and (4) a few paragraphs of thesis text discussing LPM limitations and the call-level panel structure.
+### Strengths
 
-**Blocking items for thesis submission:** M1 (TobinsQ formula), M3 (LPM diagnostics), M5 (fresh run).
-**Non-blocking but committee will ask:** M2 (panel structure), M4 (logit robustness), M8 (VIF).
+1. **Thorough variable dictionary.** All 16 variables have complete construction chains with code-level citations. The three-way REPO logic (1/0/NaN) is correctly explained.
+2. **Correct identification of LPM limitations.** The Horrace-Oaxaca bounds issue, incidental parameters justification for firm FE, and guaranteed heteroskedasticity are all correctly discussed.
+3. **Honest handling of stale results.** The audit does not try to hide the fact that results are from a prior specification.
+4. **Correct quarter-lead logic documentation.** The one-quarter-forward matching is explained clearly with the Duong et al. (2025) Method 1 rationale.
+5. **Design decisions well-documented.** Section 14 provides 8 design decisions with clear rationale.
+
+### Weaknesses
+
+1. **CashHoldings inf replacement misstatement** (Section D above). Minor factual error.
+2. **Summary statistics sample mismatch not flagged** (G1 above). The reader is led to believe summary stats describe the regression sample.
+3. **LaTeX note inaccuracy not flagged** (G5 above). The 1%/99% claim omits the textual IVs' 0%/99% asymmetry.
+4. **Line-number drift.** Several line numbers are off by 2--4 lines (Section B above), suggesting the audit was written against a slightly earlier version of the engine code.
+
+---
+
+## L. Severity-Ranked Issue Register
+
+| # | Severity | Issue | Source |
+|---|---|---|---|
+| R1 | **HIGH** | Results are stale (6-IV spec, N~27K). Fresh run required with current 4-IV code. | First-layer L1 (verified) |
+| R2 | **HIGH** | No Horrace-Oaxaca predicted probability diagnostics for LPM. | First-layer L2 (verified) |
+| R3 | **MODERATE** | No logit/probit robustness for industry FE specs (Cols 1, 3). | First-layer L3 (verified) |
+| R4 | **MODERATE** | No VIF/condition number diagnostics for 4 correlated IVs. | First-layer L4 (verified) |
+| R5 | **MODERATE** | Summary statistics computed on pre-regression-filter sample. | NEW (G1) |
+| R6 | **MODERATE** | Non-unique (gvkey, fyearq_int) panel index undiscussed in thesis text. | First-layer L5 (verified) |
+| R7 | **MODERATE** | No endogeneity discussion in thesis text. | First-layer L6 (verified) |
+| R8 | **MINOR** | CashHoldings inf replacement misattributed to runner instead of engine. | NEW (D) |
+| R9 | **MINOR** | LaTeX table note says 1%/99% winsorization but textual IVs use 0%/99%. | NEW (G5) |
+| R10 | **MINOR** | RepurchaseIndicatorBuilder docstring says "one column" but returns three. | NEW (E) |
+| R11 | **MINOR** | Attrition table conflates complete-case and min-calls stages. | NEW (G3) |
+| R12 | **MINOR** | `file_name` not loaded by runner, preventing post-hoc observation tracing. | NEW (G4) |
+| R13 | **MINOR** | `check_rank=False` inconsistency between industry/firm FE models. | First-layer L7 (verified) |
+| R14 | **MINOR** | Engine REPO column loaded but only used as pass-through for fqtr delivery. | First-layer L8 (verified) |
+| R15 | **MINOR** | Several line numbers in first-layer audit off by 2--4 lines due to code drift. | NEW (B) |
+
+---
+
+## M. First-Layer Audit Quality Grade
+
+| Dimension | Grade | Comment |
+|---|---|---|
+| Factual accuracy | A- | One minor factual error (CashHoldings inf replacement source). All other claims verified. |
+| Completeness | B+ | Covers all critical paths. Misses summary-stats sample mismatch (MODERATE) and LaTeX note inaccuracy. |
+| Risk identification | A- | Correctly identifies the two HIGH risks (stale results, Horrace-Oaxaca). Misses the summary-stats sample discrepancy. |
+| Code traceability | A- | Line numbers mostly correct, with small drift (2--4 lines) in ~5 citations. |
+| Disposition follow-through | A | All 12 red-team findings verified as correctly dispositioned. |
+
+**Overall: A-**
+
+The first-layer audit is thorough and substantially accurate. The most important issues (stale results, LPM diagnostics, quarter-lead logic, merge guards) are correctly documented. The new findings from this second-layer audit are all MINOR or MODERATE severity.
+
+---
+
+## N. Recommendations
+
+### Must-fix before thesis submission
+
+1. **Run fresh regressions** with current 4-IV specification (R1).
+2. **Add Horrace-Oaxaca diagnostics** to runner: compute fraction of fitted values outside [0, 1] (R2).
+3. **Add logit robustness check** for industry FE specifications (R3).
+
+### Should-fix
+
+4. **Add VIF computation** for the 4 IVs to rule out multicollinearity as explanation for null results (R4).
+5. **Compute summary statistics on the regression sample**, or add a clear note to the table caption (R5).
+6. **Correct the LaTeX table note** to mention 0%/99% for textual variables (R9).
+
+### Nice-to-fix
+
+7. Fix CashHoldings inf replacement description in first-layer audit (R8).
+8. Fix RepurchaseIndicatorBuilder docstring (R10).
+9. Separate attrition table stages for complete-case vs. min-calls (R11).
+10. Include `file_name` in runner column list for traceability (R12).
+11. Update drifted line numbers in first-layer audit (R15).
+
+---
+
+## O. Replication Confidence
+
+**Confidence level: HIGH (conditional on fresh run)**
+
+The code implementation is correct. The quarter-lead logic, merge guards, variable constructions, and estimation specifications all verify against the audit documentation. The primary barrier to replication is that the existing results are stale (from a prior 6-IV specification). Once a fresh run is executed with the current 4-IV code, results should be fully reproducible.
+
+---
+
+## P. Sign-Off
+
+This second-layer red-team audit was conducted by independently reading all source files and verifying every factual claim in the first-layer audit. The first-layer audit is substantially accurate (A- overall) with one minor factual error and a handful of omissions, none of which affect the correctness of the implementation. The two HIGH-severity issues (stale results, missing LPM diagnostics) were correctly identified by the first-layer audit and remain open action items.

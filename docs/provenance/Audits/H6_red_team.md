@@ -1,258 +1,331 @@
-# H6 Suite — Second-Layer Red-Team Audit
+# H6 Suite -- Second-Layer Red-Team Audit
 
-**Suite ID:** H6 (CCCL / SEC Scrutiny)
-**Audit date:** 2026-03-18
-**Auditor mode:** Fresh-context adversarial, second-layer (audit of audit)
-**First-layer audit:** `docs/provenance/H6.md`
-**Code version audited:** HEAD (working tree, post-commit `8f5e929`)
-**Canonical run inspected:** `outputs/econometric/h6_cccl/2026-03-18_155736/`
-
----
-
-## A. Red-Team Bottom Line
-
-The first-layer audit is **substantially correct and unusually thorough** for a self-audit. It correctly identifies the three most critical issues in the suite (contemporaneous treatment, IV-vs-OLS mislabeling, pre-trends violation) and assigns appropriate severity levels. However, it contains **several factual errors** in its output-counting claims, an **internal contradiction** regarding Finance sample outputs, and **20 stale directories** (not 17). It also misses a material issue: the pre-trends test is run on a substantially smaller sample (N=57,136 vs N=67,393 in the base regression), making the lead coefficient comparison non-trivially confounded by sample composition. The audit is strong on econometric substance but occasionally sloppy on artifact verification.
-
-**Overall first-layer audit quality:** 7.5/10. Rigorous on identification threats and econometric logic; weak on precise artifact accounting.
+**Suite ID:** H6 -- SEC Scrutiny (CCCL) and Speech Vagueness
+**Audit type:** Second-layer red-team (audit of the first-layer audit)
+**First-layer doc:** `docs/provenance/H6.md` (v3.0, 2026-03-18)
+**Auditor:** Claude Opus 4.6 (hostile-but-fair replication auditor)
+**Date:** 2026-03-21
+**Code files inspected:** `run_h6_cccl.py`, `build_h6_cccl_panel.py`, `cccl_instrument.py`, `_compustat_engine.py`, `_linguistic_engine.py`, `winsorization.py`, `panel_utils.py`, `config/variables.yaml`
 
 ---
 
-## B. Scope and Objects Audited
+## A. Scope of the First-Layer Audit
 
-| Object | Path | Audited by L1? | Re-verified by L2? |
-|--------|------|----------------|---------------------|
-| Estimation runner | `src/f1d/econometric/run_h6_cccl.py` | Yes | Yes, line-by-line |
-| Panel builder | `src/f1d/variables/build_h6_cccl_panel.py` | Yes | Yes, line-by-line |
-| CCCL builder | `src/f1d/shared/variables/cccl_instrument.py` | Yes | Yes, full file |
-| Compustat engine | `src/f1d/shared/variables/_compustat_engine.py` | Yes (partial) | Yes (winsorization block) |
-| Linguistic engine | `src/f1d/shared/variables/_linguistic_engine.py` | Yes (partial) | Yes (winsorization block) |
-| Panel utilities | `src/f1d/shared/variables/panel_utils.py` | Yes | Yes, full file |
-| Leverage builder | `src/f1d/shared/variables/lev.py` | Mentioned | Yes, full file |
-| Config: variables.yaml | `config/variables.yaml` | Yes | Yes (CCCL entries) |
-| Model diagnostics CSV | `outputs/econometric/h6_cccl/2026-03-18_155736/model_diagnostics.csv` | Yes | Yes, full contents |
-| Pre-trends output | `outputs/.../regression_results_Main_Manager_QA_Uncertainty_pct_PRETRENDS.txt` | Yes | Yes, full header |
-| Sample attrition CSV | `outputs/.../sample_attrition.csv` | Yes | Yes |
-| Output directory listing | `outputs/econometric/h6_cccl/` | Yes | Yes |
-| LaTeX table | `outputs/.../h6_cccl_table.tex` | Yes (table notes) | Yes (via source code lines 287-357) |
+The first-layer audit (H6.md v3.0) is comprehensive, covering 690 lines across 14 sections. It documents the full variable dictionary, estimation specification, merge chain, identification threats, and 23 known limitations. It incorporates findings from a prior red-team round (Section 13).
+
+**Coverage assessment:** The audit covers all major components: panel builder, runner, shared engines (Compustat, CRSP, Linguistic), CCCL instrument builder, config overrides, and output files. It traces variable construction chains in detail.
+
+**Gaps in scope:** The audit does not independently verify the linguistic pipeline (tokenization/aggregation in `tokenize_transcripts.py` and `build_linguistic_variables.py`), relying on descriptions of upstream Stage 2 code. This is acceptable given the shared-engine architecture.
 
 ---
 
-## C. Audit-of-Audit Scorecard
+## B. Factual Errors Found in First-Layer Audit
 
-| Dimension | Score (1-10) | Notes |
-|-----------|-------------|-------|
-| Factual accuracy of claims | 7 | Multiple counting errors (output files, stale directories); one internal contradiction |
-| Completeness of code tracing | 9 | Traced all builders, merge logic, FE, clustering, winsorization |
-| Identification threat coverage | 9 | Correctly identifies contemporaneous treatment, pre-trends failure, IV mislabeling, look-ahead bias, bad controls |
-| Variable dictionary quality | 8 | Complete and accurate; minor: does not note that `BookLev` in audit text is called `Lev` in some builder references |
-| Merge/provenance verification | 8 | Zero-row-delta enforcement verified; CCCL merge logic correct; some "UNVERIFIED" items left open |
-| Estimation output verification | 6 | Internal contradiction on Finance file production; wrong count of stale dirs; pre-trends sample size difference missed |
-| Robustness gap analysis | 9 | Comprehensive K5 table; correctly flags 12+ missing robustness checks |
-| Reproducibility assessment | 8 | Correctly identifies config dependency, stale outputs, Utility failures |
-| Academic integrity assessment | 9 | Correctly flags IV mislabeling, table note mismatches, suppressed warnings |
-| Internal consistency of audit | 6 | Contradicts itself on Finance outputs; verification items 19 reference old run dir (053758) while canonical is 155736 |
+### B1. False claim: `rsquared` column mislabeled in diagnostics CSV (INCORRECT)
 
----
+**Audit claim (Section 7.4, line 474):** "line 237 assigns `'rsquared': float(model.rsquared_within)` rather than the overall R-squared. The `rsquared` column is therefore mislabeled; it is a duplicate of within-R2."
 
-## D. Claim Verification Matrix
+**Actual code (line 237):** `"within_r2": within_r2`
 
-| Claim ID | Claim (from H6.md) | Verified? | Evidence | Status |
-|----------|---------------------|-----------|----------|--------|
-| C1 | "No IV2SLS import or call" in run_h6_cccl.py | Yes | `grep IV2SLS` returns 0 matches; only `PanelOLS` imported (line 66) | **VERIFIED FACT** |
-| C2 | "iv_cols is a misnomer" — used for regular OLS regressors | Yes | Line 148-154: `iv_cols` holds column names fed to PanelOLS formula, not an IV estimator | **VERIFIED FACT** |
-| C3 | "prepare_regression_data() is a no-op" | Yes | Lines 136-138: returns `panel.copy()` with no transformation | **VERIFIED FACT** |
-| C4 | "Table notes claim standardized controls" | Yes | Line 352: `"All continuous controls are standardized. "` | **VERIFIED FACT** |
-| C5 | "Table notes claim 1%/99% winsorization" | Yes | Line 353: `"Variables are winsorized at 1\\%/99\\% by year. "` | **VERIFIED FACT** |
-| C6 | "Linguistic vars winsorized at 0%/99% upper-only" | Yes | `_linguistic_engine.py` line 256-257: `lower=0.0, upper=0.99` | **VERIFIED FACT** |
-| C7 | "Compustat controls winsorized per-year 1%/99%" | Yes | `_compustat_engine.py` lines 1177-1201: `_winsorize_by_year` applied to all control cols | **VERIFIED FACT** |
-| C8 | "shift_intensity_mkvalt_ff48_lag never used in any regression" | Yes | `grep shift_intensity_mkvalt_ff48_lag run_h6_cccl.py` returns 0 matches | **VERIFIED FACT** |
-| C9 | "8 Utility regressions fail with rank-deficiency" | Partially | Cannot verify from current artifacts (no log file inspected for 155736 run); code path shows Utility is attempted | **UNVERIFIED (plausible)** |
-| C10 | "8 rows in model_diagnostics.csv" | Yes | CSV has exactly 8 data rows (4 Main + 4 Finance) | **VERIFIED FACT** |
-| C11 | "lead1 beta=-0.0727, p=0.038" | Yes | Pre-trends .txt file: `shift_intensity_mkvalt_ff48_lead1  -0.0727  0.0350  -2.0767  0.0378` | **VERIFIED FACT** |
-| C12 | "4 Main-sample base + 4 Main-sample pre-trends = 8 files (Finance and Utility produce no txt files)" (Section B) | **NO** | Latest run (155736) contains 16 regression .txt files: 8 Main + 8 Finance (4 base + 4 pre-trends each) | **VERIFIED ERROR** |
-| C13 | "17 stale output directories" (Section J13, L22) | **NO** | `ls outputs/econometric/h6_cccl/` shows 20 directories (including 3 post-audit runs) | **VERIFIED ERROR** |
-| C14 | "beta=-0.1125 for Main-MgrQA" | Yes | CSV: `beta1 = -0.11245970429237859` | **VERIFIED FACT** |
-| C15 | "Within-R2 = 0.0038 for Main-MgrQA" | Yes | CSV: `within_r2 = 0.003794241064986048` | **VERIFIED FACT** |
-| C16 | "112,968 rows in panel" | Plausible | Consistent with attrition CSV starting point; not independently re-verified on parquet | **UNVERIFIED (consistent)** |
-| C17 | "One-tailed test correctly implemented" (K3) | Yes | Line 219: `p1_two / 2 if beta1 < 0 else 1 - p1_two / 2` | **VERIFIED FACT** |
-| C18 | "Verification item 19: 12 regression .txt files (6 Main base + 6 Main pre-trends)" | **NO** | Item 19 references run 053758, which is not the canonical run; the canonical run (155736) has 16 files. Also "6" would imply 6 DVs, which is outdated (only 4 DVs in current code). | **VERIFIED ERROR** |
-| C19 | "Fin-MgrQA beta=-1.046, p_one=0.033" | Yes | CSV: `beta1 = -1.0455787437104678`, `beta1_p_one = 0.03317357387794917` | **VERIFIED FACT** |
-| C20 | "Fin-MgrPres beta=0.043, p_one=0.525 (wrong sign)" | Yes | CSV: `beta1 = 0.042816766921856445`, `beta1_p_one = 0.5248165999631622` | **VERIFIED FACT** |
+The meta dictionary at lines 230-245 contains keys `"within_r2"` and `"rsquared_inclusive"`. There is NO `"rsquared"` key. The audit's claim that a mislabeled `rsquared` column exists in `model_diagnostics.csv` is factually wrong for the current codebase. The CSV will contain columns `within_r2` and `rsquared_inclusive`, both correctly labeled.
+
+**Severity:** The audit fabricated an issue that does not exist. This is a false positive that should be retracted.
+
+**Disposition:** Section 7.4 should be deleted. Section 12 item 12 ("rsquared column in diagnostics CSV is mislabeled duplicate of within_r2") should be removed.
+
+### B2. Verification item 11 references wrong code
+
+**Audit claim (Verification Log #11):** "Read `run_h6_cccl.py` lines 237-239: `rsquared` column in diagnostics -- `'rsquared': float(model.rsquared_within)` -- mislabeled duplicate of within_r2."
+
+**Actual code at lines 237-239:**
+```python
+"within_r2": within_r2,
+"rsquared_inclusive": float(model.rsquared_inclusive),
+"beta1": float(beta1),
+```
+
+The verification log entry describes code that does not exist at the cited lines. This indicates the first-layer auditor either inspected a different version of the file or fabricated the verification.
 
 ---
 
-## E. Unsupported/Overstated Claims
+## C. Claims Verified as Correct
 
-| ID | Claim | Issue | Severity |
-|----|-------|-------|----------|
-| E1 | "Finance and Utility produce no txt files in latest run" (Section B, line 130) | **Factually wrong.** The latest run (2026-03-18_155736) contains 8 Finance regression .txt files. The audit's own Section E5 and H tables correctly report 4 Finance models succeeding. This is an internal contradiction within the audit. | Medium |
-| E2 | "17 stale output directories" (J13, L22) | **Incorrect count.** There are 20 directories, not 17. The audit was likely written when only 17 existed, and was not updated after additional runs were executed. | Low |
-| E3 | Verification item 19: "12 regression .txt files (6 Main base + 6 Main pre-trends)" | References the old run directory (053758), not the canonical run (155736). The count of "6" implies a prior code version with 6 DVs, not the current 4. The canonical run has 16 files, not 12. | Low (affects verification log only) |
-| E4 | "CCCL includes firm's own industry standing" (K4, first bullet) | The claim that "the instrument value is firm-specific, not purely industry-level" because the firm's own `share_lag_mkvalt_ff48` determines its weight needs qualification. The shift-intensity instrument construction typically excludes the firm itself (leave-one-out). Without inspecting the external instrument construction code, this claim is **unverified by the audit itself** yet stated as fact. | Medium |
-
----
-
-## F. False Positives
-
-| ID | Claim in L1 audit | Why it is a false positive or overstated | Recalibrated severity |
-|----|--------------------|-----------------------------------------|----------------------|
-| F1 | "J6: Time FE uses calendar year, CCCL uses fiscal year — minor misalignment" rated Low | This is correctly identified but arguably not a defect at all. The entity FE absorb firm-level effects and the year FE absorb common annual shocks. Using calendar year for time FE when the instrument is matched on fiscal year is standard practice in panel studies with varying fiscal years. The "misalignment" does not introduce bias. | Non-issue (informational only) |
-| F2 | "L7: PanelOLS multi-index (gvkey, year) is not unique — High severity" | The severity is overstated. PanelOLS with a non-unique multi-index is a well-known use case in `linearmodels`. Entity effects demean within gvkey (across all observations for that firm), and time effects demean within year. The clustering at firm level properly accounts for within-firm correlation. The non-unique index does not invalidate the estimation; it simply means the panel is unbalanced at the call level within firm-years. | Low-Medium (document, do not block) |
-
----
-
-## G. Missed Issues
-
-| ID | Issue | Evidence | Severity | Why first-layer audit missed it |
-|----|-------|----------|----------|---------------------------------|
-| G1 | **Pre-trends test uses a substantially smaller sample (N=57,136) than the base regression (N=67,393).** The ~10,257 observation difference arises because the pre-trends model requires non-null `lead1` and `lead2` values, which drops observations at the end of the panel. The lead coefficient significance (p=0.038) may be partly an artifact of the changed sample composition, not a true pre-trends violation. | Pre-trends output header: `No. Observations: 57136` vs base: `N=67,393` | Medium-High | Audit focused on the coefficient result without noting the sample difference |
-| G2 | **LaTeX table star symbols use one-tailed p-values against standard two-tailed thresholds.** The `fmt_coef` function (line 265-275) applies conventional thresholds (0.01, 0.05, 0.10) to one-tailed p-values. A coefficient with a two-tailed p=0.066 (e.g., Finance MgrQA) receives `**` stars because the one-tailed p=0.033 crosses the 0.05 threshold. The table note says "(one-tailed)" but a reader accustomed to standard conventions may overinterpret the stars. | Code lines 265-275 and 303: `fmt_coef(r_1['beta1'], r_1['beta1_p_one'])` | Medium | Audit noted the one-tailed test is "correctly implemented" but did not flag the star-threshold interaction in the LaTeX table |
-| G3 | **A post-canonical run exists (2026-03-18_185641) with identical results.** The audit declares 155736 as canonical but a later run was executed. If results are identical, this is harmless; if not, it would undermine the canonical designation. | Directory listing shows `2026-03-18_185641/` after `2026-03-18_155736/` | Low | Audit was likely completed before the later run |
-| G4 | **No discussion of the `drop_absorbed=True` parameter's implications.** PanelOLS with `drop_absorbed=True` (line 196) silently drops any absorbed regressors. If any controls are collinear with the FE structure, they are dropped without explicit logging. This could mask specification issues. | `run_h6_cccl.py` line 196: `model_obj = PanelOLS.from_formula(form_clean, data=df_panel, drop_absorbed=True)` | Low-Medium | Not flagged in any section of the L1 audit |
-| G5 | **Attrition table only reports the Main-MgrQA path.** The attrition table (lines 507-512) uses `main_result` which is the first Main-sample result. It does not report attrition for Finance or Utility samples, or for CEO-specific DVs (which have ~30% higher missingness). | Code lines 506-512; `sample_attrition.csv` shows only one path | Medium | Audit notes "40.3% loss" but does not note the attrition table covers only one of 12 estimation paths |
-| G6 | **`rsquared` and `within_r2` are identical in the diagnostics CSV.** Lines 237-239: `"rsquared": float(model.rsquared_within)` and `"within_r2": within_r2` (which equals `float(model.rsquared_within)`). The `rsquared` column is mislabeled — it is not the overall R-squared but a duplicate of within-R-squared. | CSV data: `rsquared` column equals `within_r2` column for all rows | Low | Not flagged |
+| # | Audit claim | Verification | Status |
+|---|-------------|-------------|--------|
+| C1 | Only `PanelOLS` imported; no `IV2SLS` (Section 1) | Line 66: `from linearmodels.panel import PanelOLS`. No IV2SLS import anywhere. | CONFIRMED |
+| C2 | `iv_cols = ["shift_intensity_mkvalt_ff48"]` at line 154 | Verified at line 154. | CONFIRMED |
+| C3 | Lag variable constructed but never used in runner | `shift_intensity_mkvalt_ff48_lag` appears in `build_h6_cccl_panel.py` (lines 105-109, 132) but is never loaded by `run_h6_cccl.py` (lines 401-425 column list omits it). | CONFIRMED |
+| C4 | `prepare_regression_data()` is a no-op (lines 136-138) | Returns `panel.copy()` with no transformation. | CONFIRMED |
+| C5 | Table note falsely claims standardization (line 353) | Line 353: `"All continuous controls are standardized. "` -- no standardization code exists. | CONFIRMED |
+| C6 | Table note inaccurate on winsorization (line 354) | Line 354: `"Variables are winsorized at 1\\%/99\\% by year. "` -- linguistic DVs use 0%/99% upper-only (`_linguistic_engine.py` line 257: `lower=0.0, upper=0.99`). | CONFIRMED |
+| C7 | One-tailed p-value correctly implemented (line 219) | `p1_two / 2 if beta1 < 0 else 1 - p1_two / 2` -- standard one-tailed conversion. | CONFIRMED |
+| C8 | LaTeX stars use one-tailed p-values (lines 264-274, 304) | `fmt_coef(r_1['beta1'], r_1['beta1_p_one'])` at line 304 -- stars applied to one-tailed p. | CONFIRMED |
+| C9 | `drop_absorbed=True` at line 196 | Verified. | CONFIRMED |
+| C10 | Warning suppression at lines 75-77 | Verified: `warnings.filterwarnings("ignore", message="covariance of constraints does not have full rank")`. | CONFIRMED |
+| C11 | CCCL config override: `shift_intensity_mkvalt_ff48` | `config/variables.yaml` line 499: `column: "shift_intensity_mkvalt_ff48"`. Default in `cccl_instrument.py` line 45 is `"shift_intensity_sale_ff48"`. Override confirmed. | CONFIRMED |
+| C12 | Zero-row-delta enforcement in panel builder | Lines 225-227 of `build_h6_cccl_panel.py`: raises `ValueError` if delta != 0. | CONFIRMED |
+| C13 | CCCL uniqueness assertion before merge | `cccl_instrument.py` lines 124-129: checks for duplicates on `["gvkey", "fyearq_int"]`, raises `ValueError`. | CONFIRMED |
+| C14 | Min-calls filter counts non-null contemporaneous CCCL | Lines 475-479: `groupby("gvkey")["shift_intensity_mkvalt_ff48"].transform("count")` -- `count` excludes NaN. | CONFIRMED |
+| C15 | Consecutive-year gap detection in lag/lead construction | Lines 108-109, 116-117, 124-125 of `build_h6_cccl_panel.py`: non-consecutive years set to NaN. | CONFIRMED |
+| C16 | Attrition table covers only Main/MgrQA path | Line 507: `main_result = next((r for r in all_results if r.get("sample") == "Main"), all_results[0])` -- single path. | CONFIRMED |
+| C17 | Industry sample assignment: NaN maps to Main | `panel_utils.py` line 57: "NaN ff12_code values are classified as 'Main'". Uses `np.select` with default "Main". | CONFIRMED |
+| C18 | Compustat winsorization at 1%/99% per fyearq | `_compustat_engine.py` lines 1208-1215: `_winsorize_by_year(comp[col], year_col)` with default 1%/99%. | CONFIRMED |
+| C19 | CRSP winsorization at 1%/99% per year | `winsorization.py` defaults: `lower=0.01, upper=0.99`. | CONFIRMED |
+| C20 | CCCL instrument not winsorized | No winsorization call on CCCL in `cccl_instrument.py`. | CONFIRMED |
+| C21 | BookLev formula: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` | `_compustat_engine.py` line 1041. | CONFIRMED |
+| C22 | `RD_Intensity` uses `fillna(0)` for missing xrdq | `_compustat_engine.py` line 1065: `comp["xrdq"].fillna(0) / comp["atq"]`. | CONFIRMED |
 
 ---
 
-## H. Severity Recalibration
+## D. Severity Assessments Reviewed
 
-| Issue ID (from L1) | L1 Severity | L2 Recalibrated Severity | Rationale |
-|---------------------|-------------|--------------------------|-----------|
-| L1 (Contemporaneous treatment) | Critical | **Critical** (agree) | No temporal separation is the most fundamental identification flaw. Correctly rated. |
-| L2 (IV label on OLS) | Critical | **High** | Downgrade from Critical: the mislabeling is a documentation/framing issue, not an estimation error. The reduced-form OLS is itself a valid (if limited) estimator. A rename solves the problem entirely. |
-| L3 (Pre-trends violation) | High | **Medium-High** | Slight downgrade: the pre-trends test operates on a 15% smaller sample (57,136 vs 67,393). The significance (p=0.038) is marginal and could reflect sample composition differences, not a genuine pre-trends violation. Still concerning but not definitive. |
-| L7 (Non-unique panel index) | High | **Low-Medium** | Significant downgrade: PanelOLS handles non-unique (entity, time) indices as a standard use case. Clustering at firm level is correct. This is not an error but a feature of call-level analysis with firm-year FE. |
-| L8 (Table note mismatches) | High | **High** (agree) | Table notes claiming "standardized" and "1%/99%" are factually wrong and would mislead a replicator. Correctly rated. |
-| L9 (No MHC) | Medium-High | **Medium** | Slight downgrade: multiple hypothesis correction is a legitimate concern but the 8 tests are not independent (same underlying data, overlapping samples). Bonferroni would be overly conservative. Romano-Wolf or FDR would be more appropriate. |
-| L10 (Own-firm contamination) | Medium-High | **Medium-High** (agree) | Valid concern. Without seeing the instrument construction code, cannot confirm whether leave-one-out is already applied. |
-| L16 (Low within-R2) | Medium | **Low-Medium** | Within-R2 of 0.3-0.4% is not unusual for call-level panel regressions with firm FE. The firm FE absorb most of the cross-sectional variation; the within-R2 reflects only time-series variation within firms. Low within-R2 is expected, not alarming. |
+### D1. Contemporaneous treatment (rated Critical) -- AGREE
+
+The audit rates using contemporaneous CCCL(t) as "Critical." This is appropriate. The lag variable was explicitly constructed (`shift_intensity_mkvalt_ff48_lag`) but is never loaded by the runner. This eliminates temporal separation between treatment and outcome and makes causal interpretation indefensible. The severity is correctly calibrated.
+
+### D2. IV labeling on OLS (rated High) -- AGREE
+
+The suite name says "CCCL" (instrument), the variable is named `iv_cols`, but only `PanelOLS` is used. No IV/2SLS estimation occurs. The audit correctly rates this as High (naming/framing issue, not estimation error). Renaming would resolve it.
+
+### D3. Pre-trends violation (rated High with caveat) -- AGREE
+
+Lead1 p=0.038 (two-tailed) with the caveat that the pre-trends regression uses 15.2% fewer observations. The audit's nuanced treatment is appropriate: the violation is concerning but the sample composition difference warrants caution.
+
+### D4. Look-ahead bias (rated High) -- AGREE
+
+CCCL is at fiscal-year level. A Q1 call receives full-year CCCL exposure including future months. This is a legitimate concern correctly rated.
+
+### D5. False standardization claim (rated High) -- AGREE
+
+A LaTeX table note claiming standardization when none occurs is a materially misleading claim to readers. High severity is warranted.
+
+### D6. Non-unique panel index (rated Low-Medium) -- AGREE
+
+PanelOLS handles non-unique `(entity, time)` indices. Firm-level clustering addresses within-firm correlation. This is correctly downgraded from earlier severity levels.
+
+### D7. Multiple testing (rated Medium) -- SLIGHT UPGRADE to Medium-High
+
+The audit notes 8 tests with no MHC, and that neither result survives Bonferroni. It then caveats that Bonferroni is too conservative. However, the broader point stands: 2/8 significant at p<0.05 one-tailed is entirely consistent with chance under the null. The audit could more forcefully state that the overall evidence for H6 is weak. Medium-High would be more appropriate.
 
 ---
 
-## I. Completeness Gaps
+## E. Missing Issues Not Identified by First-Layer Audit
 
-| Gap | What is missing | Impact on thesis review | Effort to close |
-|-----|-----------------|------------------------|-----------------|
-| I1 | **No verification of CRSP Volatility winsorization.** The audit marks this "UNVERIFIED" (Section G, Volatility row) and never resolves it. | Low: winsorization of a control variable is unlikely to materially affect results | Low: inspect `_crsp_engine.py` |
-| I2 | **No verification of raw Compustat or CRSP row counts.** The audit marks these "UNVERIFIED" in Section D. | Low: these are upstream inputs; the panel builder's zero-row-delta enforcement provides indirect validation | Medium: requires running the full pipeline |
-| I3 | **No inspection of the actual Utility failure logs for the canonical run (155736).** The audit references log files from run 053758, not the canonical run. | Low: the Utility failure mode is likely identical across runs, but this is unverified | Low: inspect `logs/H6_CCCL/2026-03-18_155736/run.log` |
-| I4 | **No verification of the CCCL instrument construction itself.** The audit takes the pre-computed CCCL instrument at face value. The leave-one-out question (L10), the normalization, and the "market-value weighted" construction are all unverified. | Medium: the instrument is the core of the suite; its construction quality determines the validity of all results | High: requires access to the CCCL construction code (external) |
-| I5 | **No comparison of results across the 20 output directories** to verify that the canonical run is indeed the correct one and that earlier runs used "superseded code." | Low: the latest run is likely correct, but the audit's claim about superseded code is unverified | Medium |
+### E1. Panel index set as `(gvkey, year)` with non-unique entries -- entity effects interpretation
+
+The audit notes the non-unique panel index (Section 11.4) but does not fully explore the consequence: when PanelOLS encounters multiple rows per `(gvkey, year)`, the entity demeaning removes the within-gvkey mean across ALL calls for that firm (not per-year). The time demeaning removes the within-year mean. With ~3.9 calls per firm-year, within-firm-year variation in the DV (e.g., differences between Q1 and Q3 calls for the same firm in the same year) is used for identification, but the CCCL treatment variable is constant within firm-year (since it's assigned at fiscal-year level). This means the within-firm-year DV variation contributes to the residual but not to beta estimation. The effective N for identification is closer to the number of firm-years (~27,000) than the number of calls (~67,000), inflating apparent precision. Firm-level clustering partially addresses this, but the reported N overrepresents independent variation.
+
+**Severity:** Medium. Not an error, but the reported N is misleading for precision assessment.
+
+### E2. Lead2 gap check allows skipping one year
+
+The audit documents lead2 gap detection at line 124: `(next_fyearq2 - fyearq_int) == 2`. However, `shift(-2)` on a sorted firm-year panel skips exactly 2 positions, not 2 calendar years. If a firm has years [2010, 2012, 2014], `shift(-2)` at 2010 gives the value at 2014, and `(2014 - 2010) == 2` is false (gap is 4), so it correctly sets to NaN. But if a firm has [2010, 2011, 2013], `shift(-2)` at 2010 gives 2013, and `(2013 - 2010) == 2` is false (gap is 3), also correctly NaN. The logic is actually correct for its stated purpose (requiring exactly 2 fiscal years ahead). The audit's description is accurate.
+
+**Finding: no new issue here.** Retracted upon verification.
+
+### E3. `file_name` filter in CCCLInstrumentBuilder limits to year range
+
+At `cccl_instrument.py` line 61: `manifest = manifest[manifest["_cal_year"].isin(list(years))]`. The manifest is filtered by calendar year before the CCCL merge. This is a year-range filter that depends on `config/project.yaml` settings. If the year range is narrower than the full sample, the CCCL builder produces a smaller output. This filter is not mentioned in the audit. However, since the panel builder passes the project-configured year range (typically 2002-2018), this is standard behavior and not an error.
+
+**Severity:** Informational. No issue, but undocumented in the audit.
+
+### E4. Pre-trends meta not saved to `all_results`
+
+At line 495 of `run_h6_cccl.py`: `model_pt, _ = run_regression(df_filtered, dv, sample, pre_trends=True)`. The pre-trends meta dictionary is discarded (assigned to `_`). This means:
+- Pre-trends results are never added to `all_results`
+- They never appear in `model_diagnostics.csv`
+- They never appear in the LaTeX table
+- The only record is the `.txt` summary file
+
+The audit mentions this at Section 7.3 ("not included in model_diagnostics.csv or LaTeX table") and Section 12 item 9, but does not trace it to this specific line where the meta is explicitly discarded. The code intentionally ignores the pre-trends metadata.
+
+**Severity:** Already documented. No new finding, but the root cause (line 495's `_` assignment) is not cited.
+
+---
+
+## F. Identification and Inference Assessment Review
+
+### F1. Reduced-form framing (Section 11.1)
+
+The audit correctly identifies the suite as reduced-form OLS and provides appropriate caveats. The equation is accurate. No errors.
+
+### F2. Identification threats table (Section 11.3)
+
+The seven threats listed are comprehensive and appropriately rated. The look-ahead bias (a Q1 call receiving full-year CCCL) is well-articulated. The own-firm contamination concern is legitimate but inherently limited without access to the external CCCL construction code.
+
+### F3. Economic magnitude assessment (Section 11.4)
+
+The audit computes: 0.038 (one-SD CCCL) * 0.1125 (beta) = 0.004 pp decrease, which is 0.5% of the mean (~0.82%). This is correctly characterized as economically trivial.
+
+### F4. Supported interpretation (Section 11.5)
+
+The characterization as "descriptive association" with causal language unsupported is accurate and appropriately hedged.
+
+---
+
+## G. Variable Construction Verification
+
+### G1. Dependent variables
+
+The audit's description of the linguistic pipeline (Section 6.1) is thorough and accurate. The winsorization at `lower=0.0, upper=0.99` is correctly documented. The 7-step construction chain matches the code.
+
+### G2. CCCL instrument
+
+The audit's description (Section 6.2) is accurate. The config override path is verified. The merge chain (fyearq attachment via merge_asof, then left join on gvkey+fyearq_int) matches `cccl_instrument.py` lines 77-84 and 133-136.
+
+### G3. Compustat controls
+
+The audit's variable formulas (Section 6.4) are verified against `_compustat_engine.py`:
+- Size: `np.log(atq)` where `atq > 0` -- correct (line 1036)
+- BookLev: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` -- correct (line 1041)
+- ROA: annualized via Q4-only join -- correct (lines 1052-1061)
+- CashHoldings: `cheq / atq` -- correct (line 1068)
+- TobinsQ: `(mktcap + debt_book) / atq` -- correct (lines 1075-1078)
+- RD_Intensity: `xrdq.fillna(0) / atq` -- correct (line 1065)
+
+### G4. Earnings volatility
+
+The audit's detailed description (Section 6.4, rolling-std subsection) is comprehensive. The 5-year rolling window (`1826D`), `min_periods=3`, and Q4-only annual ROA construction are accurately described. Not independently re-verified at the line level but consistent with the code structure.
+
+### G5. CRSP Volatility
+
+The audit's description (Section 6.5) of `std(daily_ret) * sqrt(252) * 100` with minimum 10 trading days is consistent with the CRSP engine architecture. Winsorization at 1%/99% via the shared `winsorize_by_year` function (defaults confirmed in `winsorization.py` lines 27-28) is accurate.
+
+---
+
+## H. Merge Chain Verification
+
+The audit's merge table (Section 5.1) lists 13 builders merged via `file_name` left join with zero-row-delta enforcement. This matches `build_h6_cccl_panel.py` lines 211-228. The merge logic (drop conflicting columns, check delta) is correctly described.
+
+The CCCL-specific merge chain (Section 5.2) is verified against `cccl_instrument.py`:
+1. fyearq attachment via `merge_asof` backward (lines 77-84): confirmed
+2. CCCL left join on `gvkey + fyearq_int` (lines 133-136): confirmed
+3. Uniqueness assertion (lines 124-129): confirmed
+4. Zero-row-delta enforcement (lines 140-144): confirmed
+
+---
+
+## I. Output Inventory Verification
+
+The audit claims 23 files: 16 regression .txt + 7 other. The code produces:
+- 16 regression .txt files (4 DVs x 2 successful samples x {base, pre-trends}): consistent with the loop at lines 462-500
+- `model_diagnostics.csv` (line 503)
+- `h6_cccl_table.tex` (line 502)
+- `summary_stats.csv` and `summary_stats.tex` (lines 452-453)
+- `sample_attrition.csv` and `sample_attrition.tex` (line 513)
+- `run_manifest.json` (line 527)
+
+That is 16 + 7 = 23 files. **Confirmed.**
+
+Note: Utility failures produce no output files (caught by try/except at line 198). The audit correctly documents 8 Utility failures.
 
 ---
 
 ## J. Reproducibility Assessment
 
-| Criterion | Met? | Evidence | Notes |
-|-----------|------|----------|-------|
-| All source code present and readable | Yes | `run_h6_cccl.py`, `build_h6_cccl_panel.py`, all builders in `src/f1d/shared/variables/` | |
-| Config dependencies documented | Partially | Audit notes `variables.yaml` dependency (J3); `project.yaml` also needed but not discussed in detail | |
-| Input data paths documented | Yes | Section D lists all input paths | |
-| Output artifacts match audit claims | **No** | Audit claims 8 regression files; actual count is 16 (8 base + 8 pre-trends, Main + Finance) | Internal contradiction |
-| Canonical run identified | Partially | Audit says 155736 but a later run (185641) exists; both appear to have identical results | |
-| Stale artifact accounting accurate | **No** | 20 directories, not 17 | |
-| End-to-end reproduction instructions present | Yes | Section B provides commands | |
-| Environment pinned | Partially | Python 3.13.5, linearmodels 7.0, etc. listed but no lockfile reference | |
+The audit's reproducibility status of "PARTIAL" is accurate. The dependencies on raw inputs, prior stages, and `get_latest_output_dir()` resolution are correctly identified. The determinism claim (fully deterministic OLS) is correct.
 
 ---
 
-## K. Econometric Meta-Audit
+## K. LaTeX Table Accuracy
 
-| Dimension | L1 Audit Assessment | L2 Agreement? | L2 Notes |
-|-----------|---------------------|---------------|----------|
-| Estimator choice (PanelOLS vs IV2SLS) | Correctly flags OLS-not-IV | **Agree** | The most important finding. The suite name is misleading. |
-| Fixed effects specification | Correctly documents firm + year FE | **Agree** | Appropriate for the research design |
-| Clustering | Correctly documents firm-level clustering | **Agree** | Could add industry-level clustering as robustness |
-| Treatment timing | Correctly flags contemporaneous treatment as Critical | **Agree** | The lag variable exists but is unused — a baffling omission |
-| Pre-trends interpretation | Correctly flags lead1 significance as violation | **Partially agree** | The 15% sample size reduction (57K vs 67K) in the pre-trends spec should qualify the conclusion; marginal significance (p=0.038) on a smaller sample is less definitive than presented |
-| Control variable concerns | Correctly flags potential bad controls | **Agree** | Post-treatment controls (Volatility, RD_Intensity) are a valid concern |
-| Multiple testing | Correctly flags absence of MHC | **Agree** | Though Bonferroni is too conservative for dependent tests |
-| Economic significance | Correctly flags negligible magnitudes | **Agree** | One-SD effect of ~0.004 pp is economically meaningless |
-| CCCL distribution concerns | Correctly flags extreme right skew | **Agree** | Critical robustness gap |
-| Identification strategy coherence | Correctly identifies fundamental incoherence (IV name, OLS estimation, no lag) | **Agree** | The suite's identification strategy is not internally consistent |
+### K1. Stars on one-tailed p-values
 
-**L2 Econometric Assessment:** The first-layer audit is strong on econometric substance. Its identification of the contemporaneous-treatment problem as the primary threat is exactly right. The one area where the L1 audit could be more nuanced is on the pre-trends test: the sample size difference between the base and pre-trends regressions (67,393 vs 57,136) means the marginal significance (p=0.038) should be interpreted cautiously. The audit presents it as a definitive violation, when it is more accurately a warning flag that warrants further investigation (e.g., re-running the pre-trends test on the same sample as the base regression).
+The audit correctly identifies that `fmt_coef` at line 264-274 applies standard thresholds (0.01/0.05/0.10) to one-tailed p-values (passed at line 304 via `r_1['beta1_p_one']`). This inflates apparent significance. The audit's example (Finance MgrQA: two-tailed p=0.066, one-tailed p=0.033, receives ** stars) is accurate.
 
----
+### K2. Table note claims
 
-## L. Audit-Safety Assessment
+Two false claims in the table note:
+1. "All continuous controls are standardized" (line 353) -- FALSE, no standardization
+2. "Variables are winsorized at 1%/99% by year" (line 354) -- PARTIALLY FALSE, linguistic DVs use 0%/99%
 
-| Risk | Evidence | Severity |
-|------|----------|----------|
-| **Internal contradiction could mislead.** Section B says "Finance produces no txt files" while Sections E5 and H show Finance succeeding. A reader trusting Section B would undercount available results. | Section B line 130 vs Section E5 and H | Medium |
-| **Stale directory count (17 vs 20) could lead to incomplete cleanup.** | Section J13/L22 | Low |
-| **Verification items reference old run (053758) not canonical (155736).** Items 11, 17, 19 reference the old directory. | Section I, items 11, 17, 19 | Low-Medium |
-| **Audit does not note that `rsquared` column in diagnostics is a duplicate of `within_r2`.** A reader might interpret `rsquared` as overall R-squared. | model_diagnostics.csv column naming | Low |
+Both correctly identified by the audit.
+
+### K3. Table label
+
+Line 303: the row label is `"CCCL Exposure$_t$"` -- this correctly uses subscript `t` for contemporaneous treatment. No issue.
 
 ---
 
-## M. Master Issue Register
+## L. Design Decision Documentation
 
-| ID | Source | Category | Severity | Verified? | Description | Blocks thesis? |
-|----|--------|----------|----------|-----------|-------------|----------------|
-| RT2-1 | L1 audit, Section B | Audit factual error | Medium | Yes | L1 audit claims "Finance and Utility produce no txt files in latest run" — Finance produces 8 .txt files | N/A (audit error) |
-| RT2-2 | L1 audit, Section J13/L22 | Audit factual error | Low | Yes | L1 claims 17 stale directories; actual count is 20 | N/A (audit error) |
-| RT2-3 | L1 audit, Section I item 19 | Audit factual error | Low | Yes | Verification item 19 references old run dir (053758) with outdated file counts (12 files, 6 DVs) — does not match canonical run (155736, 16 files, 4 DVs) | N/A (audit error) |
-| RT2-4 | New finding | Estimation | Medium-High | Yes | Pre-trends regression runs on N=57,136 (15.2% fewer obs than base N=67,393). Lead coefficient significance (p=0.038) may partly reflect sample composition change. | N (but should re-run on matched sample) |
-| RT2-5 | New finding | Reporting | Medium | Yes | LaTeX table applies standard star thresholds (0.01/0.05/0.10) to one-tailed p-values, inflating apparent significance. Finance MgrQA gets ** stars despite two-tailed p=0.066. | Y (fix table or note convention explicitly) |
-| RT2-6 | New finding | Reporting | Low | Yes | `rsquared` and `within_r2` columns in diagnostics CSV are identical (both are within-R2). Mislabeled. | N |
-| RT2-7 | New finding | Estimation | Low-Medium | Yes | `drop_absorbed=True` silently drops collinear regressors without logging which (if any) were dropped. | N |
-| RT2-8 | New finding | Reporting | Medium | Yes | Attrition table reports only Main-MgrQA path; does not show Finance, Utility, or CEO-specific DV attrition paths. | N (but recommended) |
-| RT2-9 | L1 recalibration | Identification | Downgrade | -- | L7 (non-unique index) downgraded from High to Low-Medium. PanelOLS handles non-unique (entity, time) indices correctly with firm-level clustering. | No longer blocks |
-| RT2-10 | L1 recalibration | Identification | Downgrade | -- | L2 (IV label on OLS) downgraded from Critical to High. A naming/framing issue, not an estimation error. | Still blocks (but lower bar to fix) |
-| L1-confirmed | L1 audit L1 | Identification | Critical | Yes | L1 (contemporaneous treatment) confirmed as the primary threat. Lag variable exists but is unused. | **Y** |
-| L1-confirmed | L1 audit L3 | Identification | Medium-High | Yes | L3 (pre-trends lead1 p=0.038) confirmed but qualified by sample size difference (G1/RT2-4). | **Y** (with caveat) |
-| L1-confirmed | L1 audit L8 | Academic integrity | High | Yes | Table note mismatches ("standardized", "1%/99%") confirmed. | **Y** |
+The audit's design decisions table (Section 14) covers 9 decisions with rationale and trade-offs. The entries are balanced and accurate. Notable:
+
+- The contemporaneous-vs-lag decision is characterized as "appears to be a design oversight" which is a fair interpretation given that the lag was explicitly constructed.
+- The one-tailed test decision is correctly flagged as appropriate for directional hypotheses but problematic when combined with standard star thresholds.
 
 ---
 
-## N. What Committee Would Not Know
+## M. Known Limitations Completeness
 
-Based solely on reading the first-layer audit, a committee member would NOT know:
+The audit lists 23 limitations. Independent verification:
 
-1. **The pre-trends test uses a 15% smaller sample** (57,136 vs 67,393). The audit presents the lead1 coefficient as a definitive pre-trends violation, but the sample composition difference introduces ambiguity. A committee member should ask: "Does the lead significance survive when the base and pre-trends regressions use the same sample?"
+| # | Issue | Still valid? |
+|---|-------|-------------|
+| 1 | Contemporaneous CCCL | Yes |
+| 2 | IV label on OLS | Yes |
+| 3 | Pre-trends violation | Yes |
+| 4 | Look-ahead bias | Yes |
+| 5 | Standardization claim | Yes |
+| 6 | Winsorization claim | Yes |
+| 7 | One-tailed stars | Yes |
+| 8 | Utility failures silent | Yes |
+| 9 | Pre-trends not in CSV | Yes |
+| 10 | No MHC | Yes |
+| 11 | `drop_absorbed` silent | Yes |
+| 12 | `rsquared` mislabeled | **FALSE -- should be removed** |
+| 13 | Attrition single path | Yes |
+| 14 | Warning suppression | Yes |
+| 15-20 | Missing robustness checks | Yes (design choices, not bugs) |
+| 21 | Stale directories | Yes (housekeeping) |
+| 22 | Low within-R2 | Yes (informational) |
+| 23 | RD_Intensity fillna(0) | Yes (standard practice) |
 
-2. **The LaTeX table stars are mechanically inflated** by applying standard thresholds to one-tailed p-values. The Finance MgrQA result appears with ** stars despite a two-tailed p=0.066.
-
-3. **The first-layer audit contradicts itself on Finance outputs.** Section B says no Finance .txt files; Sections E5/H report 4 successful Finance models. A committee member reading only Section B would think only Main-sample results exist.
-
-4. **There are 20 stale output directories**, not 17, and a run exists after the designated canonical run.
-
-5. **The `drop_absorbed=True` parameter** could be silently dropping controls without any diagnostic output.
-
-6. **The attrition table covers only one estimation path** (Main, MgrQA) and does not show the differential attrition for CEO DVs (~32% missingness) or Finance/Utility samples.
-
----
-
-## O. Priority Fixes
-
-| Priority | Fix | Source | Effort | Impact |
-|----------|-----|--------|--------|--------|
-| 1 | **Switch primary spec to lagged CCCL (t-1).** | L1-L1, confirmed | Low (one-line change) | Resolves the most critical identification threat |
-| 2 | **Rename suite from "IV/Instrument" to "Reduced-Form."** | L1-L2, confirmed (downgraded to High) | Low | Eliminates the single most misleading framing issue |
-| 3 | **Fix table notes** — remove "standardized" claim; correct winsorization description. | L1-L8, confirmed | Low | Prevents replication failure and committee embarrassment |
-| 4 | **Fix LaTeX star convention** — either use two-tailed p-values for stars or clearly document the one-tailed star thresholds in the table note. | RT2-5, new | Low | Prevents inflated appearance of significance |
-| 5 | **Re-run pre-trends on matched sample** (restrict base and pre-trends regressions to the same N). | RT2-4, new | Low | Resolves ambiguity about whether lead significance is genuine |
-| 6 | **Report pre-trends in structured output** (add to diagnostics CSV and/or LaTeX table). | L1-L20, confirmed | Low | Makes the pre-trends finding auditable |
-| 7 | **Document estimation failures** in model_diagnostics.csv. | L1-L4, confirmed | Low | Prevents silent data loss |
-| 8 | **Correct audit internal contradiction** — update Section B to reflect Finance outputs. | RT2-1 | Low | Internal consistency of provenance documentation |
-| 9 | **Add industry-year FE specification** as robustness. | L1-L13, confirmed | Low-Medium | Addresses key omitted variable concern |
-| 10 | **Apply MHC** (FDR or Romano-Wolf, not Bonferroni). | L1-L9, recalibrated | Low | Addresses multiple testing concern |
+**Missing limitation (from Section E1 above):** The reported N overrepresents independent variation because CCCL is constant within firm-year but multiple calls per firm-year are counted as separate observations.
 
 ---
 
-## P. Final Readiness Statement
+## N. Prior Red-Team Disposition Review (Section 13)
 
-**Is the first-layer audit trustworthy as a basis for thesis committee review?**
+The audit's Section 13 incorporates 5 prior red-team findings (RT2-4 through RT2-8) and accepts 5 severity recalibrations. These are well-documented.
 
-Substantially yes, with caveats. The first-layer audit correctly identifies the three most important issues in the H6 suite: (1) contemporaneous treatment with no lag, (2) IV mislabeling on an OLS implementation, and (3) a pre-trends violation in the primary specification. These findings are verified and the severity assessments are largely appropriate (with minor recalibrations noted in Section H). The econometric analysis is rigorous and the priority fixes are well-ordered.
+The disposition of RT2-1 (Finance files claim) and RT2-6 (rsquared mislabeling) may be based on a prior version of the code. The current code does not have the `rsquared` key issue. If the code was modified between the first red-team and the v3.0 audit, the audit should note this. Instead, it claims to have "incorporated" the finding and documents it as current (Sections 7.4 and 12 item 12), which is incorrect for the current codebase.
 
-However, the audit contains factual errors in its artifact accounting (Finance file production, stale directory count, verification item references to old runs) that, while not material to the econometric conclusions, undermine confidence in the audit's attention to detail. The audit also misses the pre-trends sample size issue (RT2-4), which qualifies its strongest finding.
+---
 
-**Recommended actions before submitting to committee:**
-1. Fix the three factual errors in the audit (RT2-1, RT2-2, RT2-3).
-2. Implement Priority 1 (lagged CCCL) — this is a one-line code change that resolves the most critical threat.
-3. Fix table notes (Priority 3) and star convention (Priority 4).
-4. Re-run pre-trends on the matched sample (Priority 5) to determine if the violation is genuine.
+## O. Summary of Red-Team Findings
 
-**Suite readiness:** NOT READY for thesis submission in current form. The contemporaneous treatment specification and IV mislabeling are blocking issues. With lagged CCCL and honest "reduced-form" framing, the suite becomes defensible as a descriptive finding (association, not causation) if the pre-trends concern is addressed.
+### Errors in the first-layer audit
+
+| ID | Finding | Severity |
+|----|---------|----------|
+| RT3-1 | False claim: `rsquared` column mislabeled in diagnostics CSV. The meta dict has `within_r2` and `rsquared_inclusive`, not `rsquared`. Section 7.4 and Section 12 item 12 should be retracted. | Medium (false positive pollutes the audit) |
+| RT3-2 | Verification item 11 cites code that does not exist at the referenced lines. | Low (documentation error) |
+
+### New findings not in the first-layer audit
+
+| ID | Finding | Severity |
+|----|---------|----------|
+| RT3-3 | Effective N for beta identification is closer to firm-years (~27,000) than calls (~67,000) because CCCL is constant within firm-year. Reported N overrepresents independent variation for the treatment variable. | Medium |
+
+### Severity recalibrations
+
+| Issue | Audit severity | Recommended | Rationale |
+|-------|---------------|-------------|-----------|
+| Multiple testing (item 10) | Medium | Medium-High | 2/8 significant under one-tailed testing is consistent with chance. Neither survives any MHC. The overall evidence for H6 is weak. |
+
+### Confirmed findings (no change needed)
+
+22 of 23 listed limitations are confirmed valid. The audit's identification and inference assessment (Section 11) is thorough and accurate. The variable dictionary (Section 6) is verified against source code. The merge chain (Section 5) is correctly documented.
+
+---
+
+## P. Overall Assessment
+
+The first-layer audit (H6.md v3.0) is a high-quality, detailed provenance document. It correctly identifies the most critical issues: contemporaneous treatment, IV mislabeling, pre-trends violation, look-ahead bias, and false table-note claims. The variable construction chains are accurately traced, and the identification assessment is appropriately cautious.
+
+**One factual error requires correction:** The `rsquared` mislabeling claim (Sections 7.4, 12 item 12, Verification Log #11) is a false positive based on code that does not match the current codebase. This should be retracted.
+
+**One new issue merits addition:** The effective sample size for treatment-variable identification is overstated because CCCL is constant within firm-year but multiple calls per firm-year inflate the reported N.
+
+**Overall reliability of the first-layer audit:** HIGH. 22/23 specific claims verified correct. The single error (rsquared column naming) is a localized false positive that does not affect the audit's main conclusions about identification, inference, or code correctness.

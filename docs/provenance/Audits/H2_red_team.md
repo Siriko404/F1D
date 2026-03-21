@@ -1,256 +1,333 @@
-# H2 Investment Efficiency -- Second-Layer Red-Team Audit
+# H2 Suite -- Second-Layer Red-Team Audit
 
-**Generated:** 2026-03-18
-**Suite ID:** H2
-**Auditor posture:** Hostile-but-fair, fresh-context, adversarial toward both implementation and first-layer audit
-**First-layer audit:** `docs/provenance/H2.md`
-**Suite entrypoint:** `src/f1d/econometric/run_h2_investment.py`
+**Suite ID:** H2 (Speech Uncertainty and Investment Efficiency)
+**Auditor:** Red-team layer 2 (hostile-but-fair replication audit)
+**Date:** 2026-03-21
+**First-layer doc:** `docs/provenance/H2.md` (2026-03-18)
+**Runner:** `src/f1d/econometric/run_h2_investment.py`
 **Panel builder:** `src/f1d/variables/build_h2_investment_panel.py`
-**Key upstream dependency:** `src/f1d/shared/variables/_compustat_engine.py` (function `_compute_biddle_residual`)
 
 ---
 
-## A. Red-Team Bottom Line
+## A. Overall Assessment of the First-Layer Audit
 
-The first-layer audit of H2 is **critically incomplete** -- it is a specification summary sheet, not an audit. It documents what the code *claims* to do (DVs, IVs, FE, controls, results) but performs zero verification of those claims against the actual implementation. It contains at least one factually incorrect claim (that CapexAt has no mechanical relation to InvestmentResidual). It omits all identification critique, all robustness assessment, all sample accounting, all dependency tracing, and all variable-dictionary verification. A thesis committee reading only the first-layer audit would learn the regression table layout and nothing about whether the results are trustworthy. Meanwhile, the implementation itself has a material specification issue: the Biddle (2009) first-stage OLS uses only SalesGrowth_lag as a predictor, omitting TobinQ_lag which is computed but unused -- a departure from the standard Biddle et al. (2009) specification. The panel builder docstring also documents H2b (leverage moderation) which is never tested in the runner. The suite is mechanically functional but underaudited.
+The first-layer audit is **thorough and substantially correct**. It accurately captures the model family (PanelOLS, 8 specifications, 2 DVs x 2 FE x 2 control sets), the Biddle (2009) residual construction chain (7 steps), variable definitions, merge logic, and known limitations. The identification critique in Section 11 is frank and appropriately skeptical. The treatment of prior red-team findings (Section 13) is well-organized.
 
----
-
-## B. Scope and Objects Audited
-
-| Object | Path | Lines Inspected |
-|--------|------|----------------|
-| First-layer audit | `docs/provenance/H2.md` | All (46 lines) |
-| Runner | `src/f1d/econometric/run_h2_investment.py` | All (611 lines) |
-| Panel builder | `src/f1d/variables/build_h2_investment_panel.py` | All (594 lines) |
-| Compustat engine (Biddle residual) | `src/f1d/shared/variables/_compustat_engine.py` | Lines 470-768 (`_compute_biddle_residual`), 443-467 (`_winsorize_by_year`), 234-304 (Q4 helpers), 1027-1203 (`_compute_and_winsorize`) |
-| InvestmentResidualBuilder | `src/f1d/shared/variables/investment_residual.py` | All (67 lines) |
-| Panel utilities | `src/f1d/shared/variables/panel_utils.py` | All (193 lines) |
-| BookLevBuilder | `src/f1d/shared/variables/book_lev.py` | All (57 lines) |
-| Variable registry init | `src/f1d/shared/variables/__init__.py` | All (330 lines) |
-| Financial utils (legacy) | `src/f1d/shared/financial_utils.py` | All (431 lines) -- confirmed not used by H2 pipeline |
+**However**, the audit contains several systematic line-number inaccuracies, one material omission in the summary statistics output, and a vestigial-code issue in the panel builder's report template that the first-layer audit fails to flag. These are documented below.
 
 ---
 
-## C. Audit-of-Audit Scorecard
+## B. Factual Accuracy of First-Layer Claims
 
-| Dimension | Score | Notes |
-|-----------|-------|-------|
-| Model/spec identification | 2/5 | Correct DV/IV/FE listing, but omits first-stage Biddle specification, omits H2b sub-hypothesis |
-| Reproducibility commands | 0/5 | No reproduction commands provided at all |
-| Dependency tracing | 1/5 | Lists only two files (panel, runner); omits `_compustat_engine.py`, `panel_utils.py`, FF48 zip, Compustat raw |
-| Raw data provenance | 0/5 | No mention of Compustat parquet path, FF48 SIC codes, linguistic variable sources |
-| Merge/sample audit | 0/5 | No merge verification, no sample accounting, no attrition documentation |
-| Variable dictionary completeness | 2/5 | Lists variable names but no definitions, formulas, or data sources |
-| Outlier/missing-data rules | 0/5 | No mention of winsorization (1%/99% by year), inf replacement, or missing-data handling |
-| Estimation spec register | 3/5 | 8-column layout documented; missing formula-level detail |
-| Verification log quality | 0/5 | No verification log exists |
-| Known issues section | 0/5 | No known issues documented |
-| Identification critique | 0/5 | No discussion of endogeneity, reverse causality, or omitted variable bias |
-| Econometric implementation critique | 0/5 | No analysis of PanelOLS settings, clustering, or FE specification |
-| Robustness critique | 0/5 | No robustness discussion whatsoever |
-| Academic-integrity critique | 0/5 | No one-tailed test justification analysis, no p-hacking discussion |
-| Severity calibration | N/A | No issues identified to calibrate |
-| Final thesis verdict support | 0/5 | No verdict provided |
+### B.1) Line Number Discrepancies (Low severity, pervasive)
 
-**Overall:** 8/80 (10%). The first-layer audit is a specification summary, not an audit.
+The first-layer audit cites specific line numbers from `_compustat_engine.py` that are systematically off by 1--3 lines. These are likely caused by incremental code edits after the audit was written. The logic described is correct in every case; only the line references are stale.
 
----
+| Audit Claim | Cited Line | Actual Line | Correct? |
+|-------------|-----------|-------------|----------|
+| capxy non-null guard | 606 | 608 | Logic correct, line off |
+| `reg_cols` definition | 705 | 707 | Logic correct, line off |
+| Min cell size < 20 | 713 | 715 | Logic correct, line off |
+| Post-OLS winsorize | 741 | 743-744 | Logic correct, line off |
+| Investment winsorize | 621 | 623 | Logic correct, line off |
+| SalesGrowth winsorize | 665 | 667 | Logic correct, line off |
+| TobinQ_lag computed | 669 | 671 | Logic correct, line off |
+| `skip_winsorize` set | 1187 | 1199 | Logic correct, line off |
+| `SalesGrowth` in skip | 1188 | 1203 | Logic correct, line off |
+| Deduplication keep="last" | 1251 | 1265 | Logic correct, line off |
 
-## D. Claim Verification Matrix
+**Verdict:** All logical descriptions are accurate. Line numbers should be refreshed but this does not affect reproducibility or correctness.
 
-| Claim ID | First-layer claim | Section | Verified? | Evidence checked | Red-team verdict | Notes |
-|----------|-------------------|---------|-----------|-----------------|-----------------|-------|
-| C1 | DVs = InvestmentResidual (t), InvestmentResidual_lead (t+1) | Spec table | Yes | `MODEL_SPECS` lines 107-115 of runner | VERIFIED FACT | Correct |
-| C2 | 4 simultaneous IVs: CEO/Manager x QA/Pres Uncertainty | Spec table | Yes | `KEY_IVS` lines 81-85 of runner | VERIFIED FACT | Correct |
-| C3 | 8 Base Controls: Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility | Spec table | Yes | `BASE_CONTROLS` lines 88-97 of runner | VERIFIED FACT | Correct |
-| C4 | Extended Controls (+4): Volatility, RD_Intensity, Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct | Spec table | Yes | `EXTENDED_CONTROLS` lines 99-104 of runner | VERIFIED FACT | Correct |
-| C5 | CashFlow, SalesGrowth excluded (Biddle first-stage inputs) | Spec/Design | Partially | CashFlow/SalesGrowth absent from `BASE_CONTROLS` and `EXTENDED_CONTROLS` | VERIFIED FACT (exclusion); VERIFIED ERROR (rationale) | See C8 |
-| C6 | FE: Industry(FF12) + FiscalYear / Firm + FiscalYear | Spec table | Yes | Lines 256-274 of runner | VERIFIED FACT | Industry via `other_effects`, Firm via `EntityEffects` |
-| C7 | Firm-clustered SEs | Spec table | Yes | `cov_type="clustered", cluster_entity=True` lines 269, 274 | VERIFIED FACT | |
-| C8 | "InvestmentResidual is not mechanically related to BookLev, CashHoldings, or CapexAt" | Design #3 | No | CapexAt = capxy/at_lag; InvestmentResidual = (capxy+xrdy+aqcy-sppey)/at_lag | **VERIFIED ERROR** | capxy appears in BOTH numerators and at_lag in BOTH denominators -- they share two components. The claim is factually incorrect. |
-| C9 | 8 model specifications (2 DVs x 2 FE x 2 controls) | Spec table | Yes | `MODEL_SPECS` has 8 entries | VERIFIED FACT | |
-| C10 | One-tailed: beta < 0 | Spec table | Yes | `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2` line 300 | VERIFIED FACT | Correctly implemented |
-| C11 | Main sample only (FF12 not in {8, 11}) | Spec table | Yes | `filter_main_sample` lines 188-192 | VERIFIED FACT | |
-| C12 | Manager QA Uncertainty 2/8 significant | Results | Unverifiable | No output artifacts checked; no reproduction run | UNVERIFIED | Cannot verify without running code or inspecting saved outputs |
-| C13 | Time index: fyearq_int (fiscal year) | Spec table | Yes | `df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])` line 253 | VERIFIED FACT | |
+### B.2) Variable Formula Verification
 
----
+| Variable | Audit Formula | Code Reality | Match? |
+|----------|--------------|--------------|--------|
+| Size | `ln(atq)` for `atq > 0` | `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` (engine line 1036) | YES |
+| BookLev | `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` | Engine line 1041 | YES |
+| TobinsQ | `(mktcap + debt_book) / atq` with NaN when both debts missing | Engine lines 1070-1079 | YES |
+| ROA | `iby_annual / avg_assets` | Engine lines 1052-1062 | YES |
+| CapexAt | `capxy_annual / atq_annual_lag1` | Engine lines 1081-1087 | YES |
+| CashHoldings | `cheq / atq` | Engine line 1068 | YES |
+| DividendPayer | `1(dvy_Q4_annual > 0)` | Engine lines 1091-1094 | YES |
+| RD_Intensity | `xrdq.fillna(0) / atq` | Engine line 1065 | YES |
+| OCF_Volatility | Rolling 5-yr std of (oancfy / atq_lag) | `_compute_ocf_volatility()` lines 309-358 | YES |
+| Investment numerator | `capxy.fillna(0) + xrdy.fillna(0) + aqcy.fillna(0) - sppey.fillna(0)` | Engine lines 601-606 | YES |
 
-## E. Unsupported, Overstated, or Weakly-Evidenced Claims
+**Verdict:** All variable formulas are accurately documented.
 
-| Issue ID | Claim/statement | Why unsupported or weak | Severity | What evidence was missing | Corrected formulation |
-|----------|-----------------|------------------------|----------|--------------------------|----------------------|
-| E1 | "InvestmentResidual is not mechanically related to... CapexAt" (Design Decision #3) | CapexAt = capxy_Q4 / atq; InvestmentResidual numerator = capxy + xrdy + aqcy - sppey, denominator = at_lag. capxy is a component of both. at_lag and atq are nearly identical for the same firm-year. The correlation is not "mechanical" in the sense of algebraic identity, but there is substantial shared component overlap. | High | Code inspection of `_compute_biddle_residual` (line 599-604) and `_compute_and_winsorize` (lines 1079-1085) | "CapexAt shares the capxy numerator component and similar atq denominator with the InvestmentResidual construction; partial mechanical overlap exists but is attenuated by the residual-from-OLS step" |
-| E2 | Implicit claim that Biddle (2009) specification is correctly implemented | The first audit cites "Biddle (2009)" repeatedly but never verifies the first-stage specification | High | The actual Biddle et al. (2009) paper uses SalesGrowth as the sole first-stage predictor in the baseline specification (Equation 1), which matches the code. However, TobinQ_lag is computed (line 669) but unused in the first-stage OLS (line 718), creating dead code that suggests an incomplete implementation or abandoned extension. | "First-stage uses SalesGrowth_lag only (matching Biddle 2009 Equation 1 baseline); TobinQ_lag is computed but not used (dead code)" |
-| E3 | Results claims (2/8 significant for Manager QA) | No output artifact was inspected to verify; the first audit does not reference any specific output file | Medium | Actual model_diagnostics.csv or regression_results files | "Results as reported by runner console output; not independently verified against saved artifacts" |
+### B.3) Fixed Effects Implementation
 
----
+| Claim | Code Evidence | Match? |
+|-------|--------------|--------|
+| Industry FE via `other_effects` | Runner line 265: `other_effects=industry_data` | YES |
+| `check_rank=False` for industry specs | Runner line 267 | YES |
+| Firm FE via `EntityEffects` formula | Runner line 272: `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` | YES |
+| Clustered SEs: `cov_type="clustered", cluster_entity=True` | Runner lines 269, 274 | YES |
 
-## F. False Positives in the First Audit
+### B.4) One-Tailed p-value Formula
 
-| Issue ID | First-audit criticism | Why false/overstated | Evidence | Severity of audit error | Corrected view |
-|----------|----------------------|---------------------|----------|------------------------|---------------|
+Audit claims: `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2` (runner line 300).
 
-The first-layer audit raises zero criticisms, so there are no false positives to evaluate. This is itself a finding: the audit is pure description with no critical analysis.
+Code at runner line 300:
+```python
+p_one = p_two / 2 if beta < 0 else 1 - p_two / 2
+```
 
----
+**Match: YES.** This is the standard one-tailed conversion for a left-tail test (H0: beta >= 0, H1: beta < 0). When beta < 0, the one-tailed p-value is half the two-tailed. When beta >= 0, the one-tailed p-value is 1 minus half the two-tailed (essentially no significance in the predicted direction).
 
-## G. Missed Issues
+### B.5) Biddle First-Stage: SalesGrowth Only
 
-| Issue ID | Category | Description | Evidence | Severity | Why first audit missed it | Consequence | Recommended fix |
-|----------|----------|-------------|----------|----------|--------------------------|-------------|----------------|
-| G1 | Specification | **CapexAt shares capxy component with InvestmentResidual DV** | `_compute_biddle_residual` line 599: Investment numerator includes capxy. `_compute_and_winsorize` line 1079: CapexAt = capxy_annual / atq_annual_lag1. Both use capxy from Q4 rows. | High | First audit did not trace variable definitions upstream to `_compustat_engine.py` | Including CapexAt as a control in a regression where the DV is a residual that mechanically contains capxy introduces partial mechanical correlation. The OLS residualization in the first stage mitigates but does not eliminate this. Could bias the coefficient on CapexAt and, through collinearity, affect uncertainty IV estimates. | Document the shared-component overlap. Consider dropping CapexAt from controls or testing sensitivity to its inclusion/exclusion. |
-| G2 | Specification | **H2b (leverage moderation) documented but never tested** | Panel builder docstring lines 32-33: "H2b: leverage attenuates the uncertainty-investment link (beta3 > 0)". Runner contains no interaction term (grep for "interaction", "BookLev.*Uncertainty", "H2b" returns no matches). | Medium | First audit did not compare docstring claims to actual implementation | A documented sub-hypothesis is never tested. Either the docstring is stale or the test was abandoned without documentation. Either way, provenance is incomplete. | Remove H2b from docstring if abandoned, or implement the interaction test if it is part of the thesis. |
-| G3 | DV construction | **TobinQ_lag computed as dead code in Biddle first-stage** | `_compute_biddle_residual` line 669: `annual["TobinQ_lag"] = ...`. Line 705-718: OLS uses only `["Investment", "SalesGrowth_lag"]`. TobinQ_lag is never referenced in the regression. | Medium | First audit did not read `_compustat_engine.py` at all | Dead code suggests an incomplete implementation. If TobinQ was intended as a Biddle first-stage predictor, its absence changes the residual. If it was correctly omitted (matching Biddle 2009 Equation 1), the dead code is misleading. | Remove TobinQ_lag computation or add a comment explaining why it is computed but not used. |
-| G4 | Sample accounting | **No attrition documentation in first audit** | The runner generates `sample_attrition.csv` (lines 567-573) but the first audit documents none of the sample filtering steps: full panel -> main sample -> DV non-missing -> complete cases -> min 5 calls/firm. | High | First audit does not document any sample flow | A committee cannot evaluate whether the sample is representative without knowing how many observations are lost at each step. | Add full sample attrition table to provenance doc. |
-| G5 | Identification | **No discussion of endogeneity or reverse causality** | Investment decisions are made by the same managers who speak in earnings calls. Managerial uncertainty in speech could reflect knowledge of poor investment prospects (reverse causality) rather than causing investment inefficiency. No IV, no diff-in-diff, no exogenous shock identification strategy. | High | First audit performs no identification analysis | Without identification strategy, the causal claim in H2 ("higher uncertainty -> lower investment efficiency") is unsupported. The regression establishes association only. | Document that H2 estimates a reduced-form association, not a causal effect. Discuss potential endogeneity and what additional identification would be needed for causal claims. |
-| G6 | Robustness | **No robustness analysis documented or discussed** | No alternative Biddle specifications (e.g., absolute residual, signed residual decomposition), no alternative IV definitions, no subsample analysis, no placebo tests. | Medium | First audit has no robustness section | Committee cannot assess sensitivity of findings to specification choices. | Add robustness discussion: alternative DV definitions, subsample stability, sensitivity to control set. |
-| G7 | Econometric | **check_rank=False in PanelOLS for industry FE specs** | Runner line 267: `check_rank=False`. This disables the rank check that would detect near-collinearity or absorbed variables. | Low-Medium | First audit does not examine PanelOLS configuration | Could mask collinearity problems in the exog matrix without warning. | Document why check_rank is disabled (performance? known false positives?) or enable it. |
-| G8 | Winsorization | **Triple-layer winsorization for some variables** | InvestmentResidual is winsorized inside `_compute_biddle_residual` (line 741), then all Compustat variables (except those in `skip_winsorize`) are winsorized again in `_compute_and_winsorize` (lines 1194-1201) -- but InvestmentResidual IS in `skip_winsorize` (line 1190). So InvestmentResidual is correctly single-winsorized. However, SalesGrowth is in `skip_winsorize` but is also NOT a final control in H2 (excluded). CashFlow is also in skip list. No issue for H2 specifically, but the first audit documents none of this winsorization logic. | Low | First audit mentions nothing about winsorization | Committee cannot verify data cleaning choices. | Document winsorization strategy in provenance. |
-| G9 | Dependency tracing | **Multiple upstream dependencies untraced** | The suite depends on: (1) `inputs/comp_na_daily_all/comp_na_daily_all.parquet`, (2) `inputs/FF1248/Siccodes48.zip`, (3) `outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet`, (4) `outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet`, (5) `config/project.yaml`, (6) `config/variables.yaml`. The first audit lists none of these. | Medium | First audit lists only two code files | Reproduction is impossible without knowing all inputs. | Add complete dependency tree to provenance. |
-| G10 | Unit of observation | **Call-level analysis with firm-year DV may inflate significance** | InvestmentResidual is an annual firm-level variable matched to all calls in that firm-year (via the merge-back step in `_compute_biddle_residual` lines 751-768 and the lead construction in `create_lead_variable`). Multiple calls per firm-year share the identical DV value. Firm-clustered SEs partially address this, but within-year call-level variation in IVs is exploited against a constant DV within firm-year. | Medium | First audit does not discuss the unit-of-observation mismatch | Effective N may be much lower than reported N. Within-firm-year variation in uncertainty (across Q1-Q4 calls) is mapped to an identical investment residual, potentially inflating t-statistics despite clustering. | Document the call-level vs. firm-year DV mismatch. Consider firm-year level analysis as a robustness check (collapse to one obs per firm-year). |
-| G11 | Reproducibility | **No reproduction commands or verification steps** | The first audit contains zero runnable commands. | High | The first audit is a specification summary, not a reproducibility document. | A third party cannot reproduce any result. | Add: `python -m f1d.variables.build_h2_investment_panel` and `python -m f1d.econometric.run_h2_investment` with expected output checksums. |
-| G12 | One-tailed test | **One-tailed test applied to all 4 IVs simultaneously without correction** | 4 IVs tested simultaneously across 8 specs = 32 tests. One-tailed test doubles the effective alpha for the predicted direction. No multiple-testing correction is applied. | Medium | First audit does not examine the testing framework | With 32 one-tailed tests at alpha=0.05, expected false positives under the null are 1.6. Finding 2/32 significant is barely above chance. | Document multiple-testing exposure. Consider Bonferroni or BH correction, or at minimum report it. |
+Audit claims `reg_cols = ["Investment", "SalesGrowth_lag"]`. Engine line 707 confirms: `reg_cols = ["Investment", "SalesGrowth_lag"]`. TobinQ_lag is computed at line 671 but never referenced in `reg_cols` or the OLS call.
+
+**Match: YES.**
+
+### B.6) Winsorization Pipeline
+
+Audit claims a three-stage winsorization for InvestmentResidual: (1) Investment pre-OLS, (2) SalesGrowth pre-OLS, (3) InvestmentResidual post-OLS, with no re-winsorization in `_compute_and_winsorize()`.
+
+Code confirms:
+- Engine line 623: `Investment` winsorized by year
+- Engine line 667: `SalesGrowth` winsorized by year
+- Engine lines 743-744: `InvestmentResidual` winsorized by year
+- Engine line 1199: `skip_winsorize` set includes `"InvestmentResidual"`, `"CashFlow"`, `"SalesGrowth"`
+
+**Match: YES.**
 
 ---
 
-## H. Severity Recalibration
+## C. Completeness Assessment
 
-| Issue ID | Source | Original severity | Red-team severity | Why recalibrated | Thesis impact |
-|----------|--------|-------------------|-------------------|------------------|---------------|
-| N/A | N/A | N/A | N/A | First audit raises no issues to recalibrate | N/A |
+### C.1) FINDING: Summary Stats Table Omits Two Extended Controls (Low-Medium)
 
-The first-layer audit identifies zero issues, so there is nothing to recalibrate. All issues in Section G are newly identified by this red-team audit.
+The runner's `SUMMARY_STATS_VARS` list (lines 125-141) does **not** include `Entire_All_Negative_pct` or `Analyst_QA_Uncertainty_pct`, despite both being extended controls used in columns 3-4, 7-8. This means the summary statistics CSV and LaTeX outputs will not report descriptive statistics for these two variables.
 
----
+The first-layer audit does not flag this omission. The `summary_stats.csv` output will be incomplete relative to the full variable set.
 
-## I. Completeness Gaps
+**Impact:** A referee asking for summary statistics of all regression variables will find two extended controls missing. This is a reporting gap, not a computation error.
 
-| Missing/incomplete area | Why incomplete | Evidence | Severity | What should have been included |
-|------------------------|---------------|----------|----------|-------------------------------|
-| Variable definitions | Audit lists variable names without formulas | E.g., "InvestmentResidual" is listed but the Biddle first-stage formula is never stated | High | Full formula: Investment = (capxy + xrdy + aqcy - sppey) / at_lag; OLS by FF48-year cell: Investment ~ SalesGrowth_lag; Residual = actual - predicted |
-| Winsorization rules | Not mentioned at all | `_winsorize_by_year` at 1%/99% with min 10 obs per year group applies to all Compustat controls | Medium | Document: 1%/99% by-year winsorization for all continuous controls; InvestmentResidual winsorized once post-OLS; DividendPayer binary (not winsorized) |
-| Missing-data handling | Not mentioned | fillna(0) for xrdy/aqcy/sppey in investment numerator; inf->NaN replacement; complete-case analysis at regression stage | Medium | Document all fillna decisions, especially the Biddle convention of treating missing R&D/acquisitions/asset-sales as zero |
-| Sample period | Not explicitly documented | "2002-2018" appears in runner report template (line 472) but not in the first audit | Low | State sample period explicitly |
-| MIN_CALLS_PER_FIRM | Not documented | Runner line 117: `MIN_CALLS_PER_FIRM = 5` -- firms with fewer than 5 earnings calls are dropped | Medium | Document the minimum-calls threshold and its impact on sample composition |
-| Biddle first-stage diagnostics | Not documented | Number of FF48-year cells run, skipped (too few obs), skipped (missing SIC) | Medium | Include first-stage OLS diagnostics: how many cells, how many firm-years get valid residuals |
-| Lead variable construction | Not documented | Complex fiscal-year-based lead with gap validation (lines 254-396 of panel builder) | High | Document: InvestmentResidual_lead = end-of-fiscal-year residual from fiscal year t+1; gap validation ensures consecutive fyearq; NaN for last fiscal year per firm |
-| Industry FE implementation | Not documented | Industry FE via PanelOLS `other_effects` (absorbed, not dummies) vs. Firm FE via `EntityEffects` formula | Low | Clarify that industry FE uses absorbed FF12 dummies, not explicit C() dummies |
+**Recommendation:** Add both variables to `SUMMARY_STATS_VARS`.
 
----
+### C.2) FINDING: Panel Builder Report Lists Vestigial Variables (Low)
 
-## J. Reproducibility Red-Team Assessment
+The panel builder's report template (lines 544-557) lists `CashFlow`, `SalesGrowth`, `Manager_QA_Weak_Modal_pct`, and `CEO_QA_Weak_Modal_pct` in the "Key Variable Coverage" section. `CashFlow` and `SalesGrowth` are intentionally excluded from H2 regressions (Biddle first-stage inputs), and `Weak_Modal_pct` variables are not part of the H2 specification at all (they belong to other suites).
 
-| Reproduction step | First audit documented it? | Verified? | Hidden dependency? | Risk | Red-team note |
-|-------------------|---------------------------|-----------|-------------------|------|---------------|
-| Load raw Compustat parquet | No | Yes (code path verified) | `inputs/comp_na_daily_all/comp_na_daily_all.parquet` | Medium | File must exist; no checksum or version documented |
-| Load FF48 SIC codes | No | Yes (code path verified) | `inputs/FF1248/Siccodes48.zip` | Medium | Required for Biddle first-stage industry classification |
-| Load master manifest | No | Yes (code path verified) | `outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet` | Medium | Depends on prior pipeline stage; "latest" symlink is non-deterministic |
-| Load linguistic variables | No | Yes (code path verified) | `outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet` | Medium | Per-year files; depends on NLP pipeline |
-| Load config files | No | Yes (code path verified) | `config/project.yaml`, `config/variables.yaml` | Low | Year range and variable config |
-| Build panel | No | Partially (code reviewed) | CompustatEngine singleton cache | Low | First call populates cache; subsequent calls reuse |
-| Run regressions | No | Partially (code reviewed) | linearmodels PanelOLS version | Medium | Results may vary with library version |
-| End-to-end reproduction | No | No | All above | High | No reproduction was attempted; no expected output hashes documented |
+The first-layer audit correctly notes that CashFlow and SalesGrowth are excluded from controls (Section 1.4, Section 14.1) but does not flag that the panel builder's own report template still references them and other irrelevant variables.
+
+**Impact:** Cosmetic only. The report will show "N/A" or skip these variables if they are not in the panel columns. No computational effect.
+
+### C.3) FINDING: Attrition Table Uses Column 1 N for "After complete-case + min-calls" (Medium)
+
+The runner (lines 571-576) hardcodes the attrition table's Stage 4 count as `first_meta.get("n_obs", 0)`, which is always column 1's N. This means the attrition table only reflects one specification's final sample size, even though N varies across specifications (base vs. extended controls, contemporaneous vs. lead DV).
+
+The first-layer audit notes this in Section 9 ("Attrition counts vary across model specifications") but does not explicitly flag that the attrition CSV only records column 1's count as the Stage 4 value. This is a fair disclosure but could be more precise.
+
+### C.4) Panel Builder Column Selection at Load Time
+
+The runner (lines 170-179) explicitly lists all columns to load from the parquet file. This is good practice for reproducibility. The first-layer audit does not mention this column-selection behavior, but it is not a concern.
 
 ---
 
-## K. Econometric and Thesis-Referee Meta-Audit
+## D. Skepticism Assessment
 
-| Referee dimension | First audit adequate? | Why or why not | Missed or weak points | Severity |
-|-------------------|----------------------|----------------|----------------------|----------|
-| Causal identification | No | No discussion at all | Reverse causality (managers who know about bad investments speak more uncertainly); omitted variable bias (firm distress drives both uncertainty and investment); no instrumental variable strategy | High |
-| DV construction validity | No | Biddle (2009) cited but first-stage specification not verified or documented | First-stage uses only SalesGrowth_lag (matches Biddle baseline but not extended specs); TobinQ_lag is dead code | Medium |
-| Unit of observation | No | Not discussed | Call-level analysis with firm-year DV; multiple calls per firm-year share identical DV | Medium |
-| Standard error adequacy | Partially | Firm-clustered SEs mentioned | Adequate for within-firm correlation but does not address the call-level/firm-year DV mismatch; consider two-way clustering (firm + year) | Medium |
-| Multiple testing | No | Not discussed | 32 one-tailed tests (4 IVs x 8 specs) with no correction | Medium |
-| Economic magnitude | No | Not discussed | Coefficients reported but economic significance (effect size in terms of investment efficiency units) not interpreted | Medium |
-| One-tailed justification | No | Not discussed | One-tailed test requires strong prior justification; the audit does not evaluate whether the prior is adequately supported | Low-Medium |
-| Contemporaneous vs. lead DV | No | Both DVs listed but not discussed | Why test both InvestmentResidual(t) and InvestmentResidual_lead(t+1)? The timing justification is absent | Low |
+### D.1) Appropriately Skeptical Claims
 
----
+The first-layer audit is commendably skeptical on:
 
-## L. Audit-Safety / Academic-Integrity Assessment
+1. **Identification** (Section 11.1): Correctly labels the design as "reduced-form association," warns about reverse causality, and states causal language is not supported.
+2. **Moulton problem** (Section 11.2): Correctly identifies the unit-of-observation mismatch (annual DV vs. call-level IVs) and notes that effective N is inflated.
+3. **Multiple testing** (Section 11.3): Correctly notes 32 tests at alpha=0.05 yield 1.6 expected false positives, and the 2 significant results are barely above chance.
+4. **One-tailed test justification** (Section 11.4): Correctly questions whether the directional prior is well-supported.
+5. **CapexAt mechanical overlap** (Section 12.1): Correctly identifies the shared `capxy` component.
 
-| Audit-safety risk | Evidence | Severity | Why it matters | Fix |
-|-------------------|----------|----------|---------------|-----|
-| First audit is pure specification summary | 46 lines of doc, zero criticisms, zero verification steps | High | Creates false confidence that the suite has been audited; a committee might rely on it as evidence of due diligence | Replace with a genuine audit containing verification log, identification critique, and known issues |
-| No falsification / placebo test discussion | No mention in first audit or runner | Medium | Without falsification tests, the significant results (2/8 for Manager QA) could be spurious | Add discussion of what would constitute a falsification failure |
-| No discussion of null results | 30/32 IV-spec combinations are insignificant; first audit reports this but does not discuss implications | Medium | The overwhelmingly null results may be the most important finding; silence on this understates the evidence | Discuss whether the null results suggest the hypothesis is unsupported |
+### D.2) Areas Where More Skepticism Would Be Warranted
 
----
+**D.2.1) The `_winsorize_by_year` function clips NaN values via `vals.clip()`**
 
-## M. Master Red-Team Issue Register
+In `_winsorize_by_year()` (engine lines 445-469), the function applies `vals.clip(lower=p1, upper=p99)` to ALL values in the group index (including NaN). Pandas `clip()` preserves NaN, so this is correct. However, the audit does not explicitly verify this NaN-preservation behavior, which is critical for data integrity.
 
-| Issue ID | Type | Category | Verified? | Severity | Location | Description | Evidence | Consequence | Recommended fix | Blocks thesis-standard reliance? |
-|----------|------|----------|-----------|----------|----------|-------------|----------|-------------|----------------|--------------------------------|
-| G1 | VERIFIED ERROR | Variable overlap | Yes | High | `_compustat_engine.py` lines 599, 1079 | CapexAt shares capxy component with InvestmentResidual DV; first audit falsely claims no mechanical relation | Both use capxy/at variants | Partial mechanical correlation in regression | Test sensitivity to CapexAt exclusion; correct provenance claim | Yes -- factual error in audit |
-| G2 | VERIFIED MISSED ISSUE | Stale docstring | Yes | Medium | `build_h2_investment_panel.py` lines 32-33 | H2b (leverage moderation) documented but never tested | grep returns no interaction terms in runner | Incomplete provenance | Remove stale docstring or implement test | No |
-| G3 | VERIFIED MISSED ISSUE | Dead code | Yes | Medium | `_compustat_engine.py` lines 669-670 | TobinQ_lag computed but unused in Biddle first-stage OLS | First-stage `reg_cols` at line 705 excludes TobinQ_lag | Misleading code; potential incomplete implementation | Remove dead code or document rationale | No |
-| G4 | VERIFIED MISSED ISSUE | Sample accounting | Yes | High | Runner lines 567-573 | No attrition documentation in first audit despite runner generating it | `generate_attrition_table` called but results not documented | Committee cannot evaluate sample representativeness | Add attrition table to provenance | Yes |
-| G5 | VERIFIED MISSED ISSUE | Identification | Yes | High | Runner; entire suite | No endogeneity / reverse causality discussion | Reduced-form OLS with no identification strategy | Causal interpretation unsupported | Add identification limitations section | Yes |
-| G6 | VERIFIED MISSED ISSUE | Robustness | Yes | Medium | First audit | No robustness analysis of any kind | No alternative specs, no placebo, no subsample analysis | Findings appear fragile (only 2/32 significant) | Add robustness discussion | No (but strongly recommended) |
-| G7 | VERIFIED MISSED ISSUE | Econometric config | Yes | Low-Medium | Runner line 267 | check_rank=False disables collinearity detection | PanelOLS constructor parameter | Could mask rank deficiency | Enable or document rationale | No |
-| G8 | VERIFIED FACT | Winsorization | Yes | Low | `_compustat_engine.py` lines 1185-1201 | Winsorization correctly applied; InvestmentResidual in skip_winsorize list | Code inspection | No double-winsorization for H2 DV | Document in provenance | No |
-| G9 | VERIFIED MISSED ISSUE | Dependencies | Yes | Medium | Panel builder; shared modules | 6+ upstream data dependencies untraced | Code path analysis | Reproduction impossible without dependency map | Add dependency tree | No (but recommended) |
-| G10 | VERIFIED MISSED ISSUE | Unit of observation | Yes | Medium | `_compute_biddle_residual` lines 751-768; runner | Call-level IVs regressed on firm-year DV | InvestmentResidual identical for all calls in same firm-year | Inflated effective N; potentially misleading standard errors | Discuss; add firm-year-level robustness check | No (but recommended) |
-| G11 | VERIFIED MISSED ISSUE | Reproducibility | Yes | High | First audit | Zero reproduction commands | No commands in doc | Third party cannot reproduce | Add commands with expected outputs | Yes |
-| G12 | VERIFIED MISSED ISSUE | Multiple testing | Yes | Medium | Runner lines 293-311 | 32 one-tailed tests with no correction | 4 IVs x 8 specs | Expected 1.6 false positives; 2 found barely exceeds chance | Document exposure; consider correction | No (but recommended) |
-| E1 | VERIFIED ERROR | Factual claim | Yes | High | `docs/provenance/H2.md` Design Decision #3 | "InvestmentResidual is not mechanically related to... CapexAt" is factually incorrect | Both use capxy in numerator and atq variants in denominator | Misleading provenance | Correct the claim | Yes |
+**Verdict:** No bug, but the audit could have been more explicit.
+
+**D.2.2) merge_asof backward direction has no maximum tolerance**
+
+Both the panel builder's `attach_fyearq()` and the Compustat engine's `match_to_manifest()` use `pd.merge_asof` with `direction="backward"` but no `tolerance` parameter. This means a call in 2018 could match to a Compustat observation from 2002 if no closer match exists. The first-layer audit notes the merge_asof pattern (Section 5.2) but does not flag the missing tolerance.
+
+**Impact:** In practice, this is unlikely to produce stale matches at scale (most firms have quarterly data), but the theoretical possibility exists. A 365-day tolerance would be a prudent safeguard.
 
 ---
 
-## N. What a Committee Would Still Not Know
+## E. Model Specification Register Verification
 
-After reading the first-layer audit, a thesis committee would still not know:
+| Spec | DV | FE | Controls | Audit | Code | Match? |
+|------|----|----|----------|-------|------|--------|
+| Col 1 | InvestmentResidual | industry | base | Sec 1.6 | `MODEL_SPECS[0]` | YES |
+| Col 2 | InvestmentResidual | firm | base | Sec 1.6 | `MODEL_SPECS[1]` | YES |
+| Col 3 | InvestmentResidual | industry | extended | Sec 1.6 | `MODEL_SPECS[2]` | YES |
+| Col 4 | InvestmentResidual | firm | extended | Sec 1.6 | `MODEL_SPECS[3]` | YES |
+| Col 5 | InvestmentResidual_lead | industry | base | Sec 1.6 | `MODEL_SPECS[4]` | YES |
+| Col 6 | InvestmentResidual_lead | firm | base | Sec 1.6 | `MODEL_SPECS[5]` | YES |
+| Col 7 | InvestmentResidual_lead | industry | extended | Sec 1.6 | `MODEL_SPECS[6]` | YES |
+| Col 8 | InvestmentResidual_lead | firm | extended | Sec 1.6 | `MODEL_SPECS[7]` | YES |
 
-1. **What the Biddle (2009) first-stage specification actually is** -- the formula for Investment and the OLS specification are never stated
-2. **How InvestmentResidual_lead is constructed** -- the fiscal-year-based lead with gap validation is a critical and complex construction step that is entirely undocumented
-3. **How many observations are lost at each filtering step** -- no attrition table
-4. **Whether CapexAt creates a mechanical correlation problem** -- the first audit incorrectly claims there is none
-5. **Why the results are overwhelmingly null (30/32 non-significant)** and what that implies for H2
-6. **Whether the causal interpretation is valid** -- no identification discussion
-7. **What data files are needed to reproduce the results** -- no dependency list
-8. **How winsorization is handled** -- not mentioned
-9. **Whether H2b (leverage moderation) was tested or abandoned** -- the docstring mentions it but no test exists
-10. **Whether the 2/32 significant results survive multiple testing correction** -- no correction applied or discussed
-11. **Whether the call-level unit of observation inflates significance** relative to firm-year analysis
-12. **What the economic magnitude of the estimated effects is** -- only statistical significance is reported
+All 8 specifications match exactly.
 
 ---
 
-## O. Priority Fixes
+## F. Dependency Chain Verification
 
-| Priority | Fix | Why it matters | Effort | Credibility gain |
-|----------|-----|----------------|--------|-----------------|
-| P0 | Correct the false claim that CapexAt has no mechanical relation to InvestmentResidual | Factual error in provenance documentation; directly misleading | Low (edit one sentence) | High |
-| P0 | Add identification limitations section discussing endogeneity and reverse causality | Committee will immediately ask about causality; the current doc is silent | Medium (write 1-2 paragraphs) | High |
-| P1 | Add complete sample attrition table | Standard for any regression-based thesis chapter | Low (runner already generates it; copy to provenance) | High |
-| P1 | Add full variable definitions with formulas | Biddle first-stage, lead construction, all controls | Medium | High |
-| P1 | Add reproduction commands | Currently zero commands documented | Low | High |
-| P2 | Remove or document H2b stale docstring | Provenance inconsistency | Low | Medium |
-| P2 | Remove TobinQ_lag dead code or add comment | Code cleanliness; prevents confusion about first-stage spec | Low | Medium |
-| P2 | Add dependency tree (all input files) | Reproduction requires knowing all inputs | Low-Medium | Medium |
-| P2 | Discuss null result implications (30/32 non-significant) | The null is arguably the most important finding | Medium | High |
-| P3 | Add multiple testing discussion | 32 one-tailed tests at alpha=0.05 | Low | Medium |
-| P3 | Add firm-year-level robustness check | Address call-level vs. firm-year DV mismatch | Medium-High (requires new analysis) | Medium |
-| P3 | Document winsorization strategy | Standard for transparency | Low | Low-Medium |
+The dependency chain in Section 3 is accurate. Verified paths:
+- Compustat path: `inputs/comp_na_daily_all/comp_na_daily_all.parquet` (engine line 1248-1249)
+- FF48 map: `inputs/FF1248/Siccodes48.zip` (engine `_load_ff48_map()`)
+- Manifest: `outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet`
+- Linguistic: `outputs/2_Textual_Analysis/2.2_Variables/latest/linguistic_variables_{year}.parquet`
+- Stage 3 output: `outputs/variables/h2_investment/{timestamp}/h2_investment_panel.parquet`
+- Stage 4 input: loads from `outputs/variables/h2_investment/latest/` via `get_latest_output_dir()`
 
 ---
 
-## P. Final Red-Team Readiness Statement
+## G. Known Limitations Assessment
 
-**Is the first-layer audit sufficient for thesis-standard reliance?** No.
+### G.1) CapexAt Shared Component (Section 12.1)
 
-The first-layer audit for H2 is a specification summary sheet that documents the regression table layout (DVs, IVs, controls, FE, results counts). It is not an audit. It contains one verified factual error (the claim that CapexAt has no mechanical relation to InvestmentResidual), performs zero verification of any claim against actual code, omits all identification critique, omits all sample accounting, omits all dependency tracing, omits all robustness discussion, and provides no reproduction commands. A thesis committee reading this document would learn the 8-column regression layout and nothing about whether the results are trustworthy or reproducible.
+The audit correctly identifies this. Verified: CapexAt = `capxy_annual / atq_annual_lag1` (engine lines 1081-1087), while InvestmentResidual numerator = `capxy + xrdy + aqcy - sppey` (engine lines 601-608). Both share `capxy`.
 
-The **implementation itself** is mechanically competent: the Biddle residual construction follows the standard approach (with the minor note that TobinQ_lag is dead code), the panel builder has proper zero-row-delta merge guards, the lead variable construction correctly handles fiscal-year gaps, and the runner correctly implements one-tailed p-values. The overwhelmingly null results (2/32 significant, barely above chance expectation of 1.6 under the null) are honestly reported.
+### G.2) H2b Leverage Moderation Never Tested (Section 12.2)
 
-**To reach thesis-standard:**
-- Fix the factual error about CapexAt (P0)
-- Add identification limitations (P0)
-- Add sample attrition, variable definitions, and reproduction commands (P1)
-- Discuss the implications of predominantly null findings (P2)
-- The first-layer audit needs to be expanded from a 46-line summary to a substantive audit document
+Verified: the panel builder docstring (lines 32-33) references H2b but the runner has zero interaction terms. No grep match for "interaction" or "H2b" in the runner. The audit correctly identifies this as stale documentation.
 
-**Estimated effort to remedy:** 4-6 hours of documentation work; no code changes required for core functionality.
+### G.3) TobinQ_lag Dead Code (Section 12.3)
+
+Verified: `TobinQ_lag` computed at engine line 671, never used in `reg_cols` at line 707. Correctly identified.
+
+### G.4) check_rank=False (Section 12.4)
+
+Verified at runner line 267. Correctly identified.
+
+### G.5) Null Results Discussion (Section 12.5)
+
+The audit's interpretation is statistically sound. 2/32 significant at p<0.05 with a chance expectation of 1.6 under the null is consistent with no true effect.
+
+---
+
+## H. Verification Log Cross-Check
+
+All 22 verification items (V1-V22) were spot-checked against the code. All are correct in substance, though line number citations are systematically 1-3 lines off (see Section B.1 above).
+
+---
+
+## I. Output Artifacts Verification
+
+The audit lists outputs in Sections 8.1 and 8.2. Verified against runner:
+- `regression_results_col{1-8}.txt`: runner lines 449-459
+- `h2_investment_table.tex`: runner line 437
+- `model_diagnostics.csv`: runner lines 461-464
+- `summary_stats.csv/.tex`: runner lines 544-550
+- `sample_attrition.csv`: runner lines 571-577 via `generate_attrition_table()`
+- `report_step4_H2.md`: runner lines 494-496
+- `run_manifest.json`: runner lines 579-585
+
+All artifacts confirmed.
+
+---
+
+## J. LaTeX Table Audit
+
+The LaTeX table generation (runner lines 327-440) was inspected:
+
+1. **Header structure:** Correctly labels 8 columns with DV groupings (cols 1-4: Investment Residual_t, cols 5-8: Investment Residual_{t+1}).
+2. **Coefficient formatting:** Uses 4 decimal places with one-tailed significance stars.
+3. **SE formatting:** Parenthesized, 4 decimal places.
+4. **FE rows:** Correctly labels Industry FE, Firm FE, Fiscal Year FE.
+5. **Table notes:** Accurately describes one-tailed test, firm clustering, Biddle exclusions, and winsorization.
+6. **Controls row:** Correctly distinguishes "Base" vs. "Extended."
+
+**Minor issue:** The table note says "Variables winsorized at 1%/99% by year at engine level" -- this is slightly misleading because linguistic variables use 0%/99% (upper-only) winsorization, not 1%/99%. The first-layer audit correctly documents the linguistic winsorization as "Per-year 0%/99% (upper-only)" in Section 6.2, but the LaTeX note in the actual output does not distinguish this. Not flagged by the first-layer audit.
+
+---
+
+## K. Sample Construction Logic
+
+### K.1) Main Sample Filter
+
+Runner `filter_main_sample()` drops FF12 in {8, 11}. Verified at runner line 190. Matches audit Section 1.6 and V10.
+
+### K.2) MIN_CALLS_PER_FIRM
+
+Runner line 117: `MIN_CALLS_PER_FIRM = 5`. Verified. Applied in `prepare_regression_data()` at lines 221-223. Matches audit V12.
+
+### K.3) Complete-Case Analysis
+
+Runner lines 217-218: `complete_mask = df[required].notna().all(axis=1)`. This is listwise deletion. Matches audit Section 5.5.
+
+---
+
+## L. Red-Team Findings Summary
+
+| ID | Finding | Severity | New? | Recommendation |
+|----|---------|----------|------|----------------|
+| RT2-1 | Systematic line number offsets (1-3 lines) throughout the audit | Low | Yes | Refresh all line citations against current codebase |
+| RT2-2 | `SUMMARY_STATS_VARS` omits `Entire_All_Negative_pct` and `Analyst_QA_Uncertainty_pct` | Low-Medium | Yes | Add both to `SUMMARY_STATS_VARS` in runner |
+| RT2-3 | Panel builder report template references vestigial variables (`CashFlow`, `SalesGrowth`, `Weak_Modal_pct`) | Low | Yes | Clean up report template variable list |
+| RT2-4 | `merge_asof` has no `tolerance` parameter -- theoretically allows stale Compustat matches | Low | Partially new | Consider adding 365-day tolerance |
+| RT2-5 | LaTeX table note does not distinguish 1%/99% (Compustat) from 0%/99% (linguistic) winsorization | Low | Yes | Amend table note or add footnote |
+| RT2-6 | Attrition CSV records only column 1's Stage-4 N; audit acknowledges variance but does not flag the single-column limitation of the output file | Low | Partially covered | Note in audit that attrition CSV is col-1 specific |
+
+---
+
+## M. First-Layer Audit Completeness Score
+
+| Dimension | Score (1-5) | Notes |
+|-----------|-------------|-------|
+| Variable definitions | 5/5 | All formulas verified correct |
+| Model specifications | 5/5 | All 8 specs match code exactly |
+| Data provenance | 5/5 | Full dependency chain documented |
+| Merge logic | 5/5 | Zero-row-delta, uniqueness guards, and merge_asof all documented |
+| Winsorization pipeline | 5/5 | All stages correctly documented, skip_winsorize verified |
+| Fixed effects implementation | 5/5 | Industry vs. firm FE code paths accurately described |
+| Identification critique | 5/5 | Reverse causality, omitted variables, Moulton problem all addressed |
+| Known limitations | 4/5 | Missing: summary stats omission (RT2-2), vestigial report vars (RT2-3) |
+| Line number accuracy | 2/5 | Systematically off by 1-3 lines throughout |
+| Output artifacts | 4/5 | Missing note about incomplete summary stats (RT2-2) |
+
+**Overall: 4.5/5.** The first-layer audit is of high quality and suitable for thesis-standard review. The findings above are minor and do not affect the validity of the econometric analysis or its interpretation.
+
+---
+
+## N. Disposition of First-Layer Red-Team Section (Section 13)
+
+The first-layer audit's Section 13 addresses 12 red-team findings (G1-G12 plus E1) from a previous audit round. All dispositions were verified:
+
+| Prior ID | Disposition Claimed | Verified? |
+|----------|-------------------|-----------|
+| G1 (CapexAt overlap) | Documented in Section 12.1 | YES |
+| G2 (H2b not tested) | Documented in Section 12.2 | YES |
+| G3 (TobinQ_lag dead code) | Documented in Sections 6.1, 12.3 | YES |
+| G4 (No attrition docs) | Addressed in Section 9 | YES |
+| G5 (No endogeneity discussion) | Addressed in Section 11.1 | YES |
+| G6 (No robustness analysis) | Acknowledged in Section 12.5 | YES |
+| G7 (check_rank=False) | Documented in Section 12.4 | YES |
+| G8 (Winsorization correct) | Verified in Sections 6.1, 6.3 | YES |
+| G9 (Upstream dependencies untraced) | Addressed in Sections 3, 4 | YES |
+| G10 (Unit mismatch) | Addressed in Section 11.2 | YES |
+| G11 (No reproduction commands) | Addressed in Section 2.1 | YES |
+| G12 (Multiple testing) | Addressed in Section 11.3 | YES |
+| E1 (False "no mechanical relation" claim) | Corrected in Section 12.1 | YES |
+
+All prior findings properly addressed.
+
+---
+
+## O. Recommendations for Thesis Author
+
+1. **Fix RT2-2:** Add `Entire_All_Negative_pct` and `Analyst_QA_Uncertainty_pct` to `SUMMARY_STATS_VARS` in the runner so summary statistics cover all regression variables.
+2. **Fix RT2-3:** Clean the panel builder's report template (lines 544-557) to remove references to `CashFlow`, `SalesGrowth`, `Manager_QA_Weak_Modal_pct`, and `CEO_QA_Weak_Modal_pct`.
+3. **Consider RT2-4:** Add a `tolerance=pd.Timedelta("365 days")` to `merge_asof` calls in `attach_fyearq()` to prevent theoretically possible stale Compustat matches.
+4. **Refresh line numbers** in the provenance doc (RT2-1) -- all logic is correct, but stale references could confuse future reviewers.
+5. **Amend LaTeX table note** (RT2-5) to clarify that linguistic variables use upper-only winsorization at 99th percentile, while Compustat variables use symmetric 1%/99%.
+
+---
+
+## P. Certification
+
+This second-layer red-team audit confirms that the first-layer audit (`docs/provenance/H2.md`) is **factually correct in all material respects**, **appropriately skeptical** about causal interpretation and inference, and **substantially complete** for thesis-standard review. The findings documented above (RT2-1 through RT2-6) are all low to low-medium severity and do not affect the validity of the H2 econometric analysis or its documented limitations.
+
+The first-layer audit is **approved for thesis submission** with the minor corrections recommended in Section O.

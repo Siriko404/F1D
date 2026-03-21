@@ -6,7 +6,7 @@
 [![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](https://mypy-lang.org/)
 
 Econometric pipeline for the thesis **"Uncertainty in Language and Corporate Outcomes."**
-Processes 112,968 earnings call observations across 2,429 firms (2002–2018) through a deterministic 4-stage pipeline, testing 13 hypothesis suites on whether CEO speech uncertainty predicts corporate financial outcomes.
+Processes 112,968 earnings call observations across 2,429 firms (2002–2018) through a deterministic 4-stage pipeline, testing 19 estimation suites across 16 hypotheses on whether CEO speech uncertainty predicts corporate financial outcomes.
 
 ---
 
@@ -35,7 +35,7 @@ Sample Construction    Text Processing      Variable Building     Econometric An
 ───────────────────    ────────────────     ─────────────────     ────────────────────
 Transcripts ──┐        Tokenization         Per-hypothesis        PanelOLS / Cox PH
 Execucomp ────┤        (C++ compiler)       panel builders        regressions with
-CCM Link ─────┤              │              (80+ variable         firm/industry + year FE,
+CCM Link ─────┤              │              (~79 variable         firm/industry + year FE,
               ▼              ▼              builders via          clustered SEs
      master_sample     linguistic           Builder pattern)           │
      _manifest         variables                 │                    ▼
@@ -54,14 +54,17 @@ Each stage reads from disk and writes to timestamped output directories under `o
 |-------|-------------------|-------|----|
 | **H0.3** | Does CEO clarity FE structure hold under extended controls? | PanelOLS | Clarity residuals |
 | **H1** | Does speech uncertainty predict cash holdings? | PanelOLS (Industry FE / Firm FE) | CashHoldings / CashHoldings_lead |
+| **H1.1** | Does product-market similarity (TNIC3TSIMM) moderate uncertainty→cash? | PanelOLS + TSIMM interaction | CashHoldings / CashHoldings_lead |
+| **H1.2** | Does financing constraint moderate uncertainty→cash? | PanelOLS + 3-category credit rating interaction | CashHoldings / CashHoldings_lead |
 | **H2** | Does speech uncertainty predict investment efficiency? | PanelOLS (Industry FE / Firm FE) | InvestmentResidual / InvestmentResidual_lead |
-| **H4** | Does speech uncertainty predict leverage? | PanelOLS (Industry FE / Firm FE) | Lev / Lev_lead |
+| **H4** | Does speech uncertainty predict leverage? | PanelOLS (Industry FE / Firm FE) | BookLev / BookLev_lead |
 | **H5** | Does speech uncertainty predict post-call analyst dispersion? | PanelOLS (Industry FE / Firm FE) | PostCallDispersion |
 | **H6** | Does exogenous uncertainty (CCCL instrument) affect outcomes? | PanelOLS (reduced form) | Linguistic DVs |
 | **H7** | Does speech uncertainty predict post-call illiquidity? | PanelOLS (Industry FE / Firm FE) | delta_amihud |
 | **H9** | Does uncertainty predict takeover hazard rates? | Cox PH (survival) | Takeover event |
-| **H11** | Does political risk interact with speech uncertainty? | PanelOLS (base/lag/lead) | PRiskQ variants |
+| **H11** | Does political risk interact with speech uncertainty? | PanelOLS (base/lag/lead) | Linguistic uncertainty (CEO/Manager QA/Pres) |
 | **H12** | Does speech uncertainty predict payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio / PayoutRatio_lead |
+| **H12Q** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE, calendar YQ FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr / PayoutRatio_q_lead_yr |
 | **H13** | Does speech uncertainty predict capital expenditure? | PanelOLS (Industry FE / Firm FE) | CapexAt / CapexAt_lead |
 | **H13.1** | Does competition moderate the uncertainty-capex link? | PanelOLS + TNIC3HHI interaction | CapexAt / CapexAt_lead |
 | **H14** | Does speech uncertainty predict bid-ask spread changes? | PanelOLS (Industry FE / Firm FE) | DSPREAD (Lee 2016) |
@@ -82,7 +85,7 @@ The following datasets must be present in `inputs/` before running. These are ex
 | Directory | Description | Source |
 |-----------|-------------|--------|
 | `Earnings_Calls_Transcripts/` | Earnings call transcripts with speaker data | Transcript provider |
-| `LM_dictionary/` | Loughran-McDonald sentiment dictionary | [SRAF](https://sraf.nd.edu/textual-analysis/resources/) |
+| `Loughran-McDonald_MasterDictionary_1993-2024.csv` | Loughran-McDonald sentiment dictionary (flat file) | [SRAF](https://sraf.nd.edu/textual-analysis/resources/) |
 | `comp_na_daily_all/` | Compustat quarterly fundamentals | WRDS Compustat |
 | `CRSP_DSF/` | CRSP daily stock files | WRDS CRSP |
 | `tr_ibes/` | IBES EPS analyst forecasts | WRDS IBES |
@@ -93,6 +96,8 @@ The following datasets must be present in `inputs/` before running. These are ex
 | `FirmLevelRisk/` | Hassan et al. political risk measures | Hassan et al. |
 | `Manager_roles/` | Manager role classification | Constructed |
 | `FF1248/` | Fama-French industry classifications | Kenneth French |
+| `TNIC3HHIdata/` | Hoberg-Phillips TNIC3 similarity data | [Hoberg-Phillips](https://hobergphillips.tuck.dartmouth.edu/) |
+| `compustat_daily_ratings/` | S&P credit ratings (splticrm) | WRDS Compustat Daily |
 
 ### System Requirements
 
@@ -160,6 +165,8 @@ python -m f1d.econometric.run_h1_cash_holdings
 |-------|---------|
 | H0.3 | `python -m f1d.econometric.run_h0_3_ceo_clarity_extended` |
 | H1 | `python -m f1d.econometric.run_h1_cash_holdings` |
+| H1.1 | `python -m f1d.econometric.run_h1_1_cash_tsimm` |
+| H1.2 | `python -m f1d.econometric.run_h1_2_cash_constraint` |
 | H2 | `python -m f1d.econometric.run_h2_investment` |
 | H4 | `python -m f1d.econometric.run_h4_leverage` |
 | H5 | `python -m f1d.econometric.run_h5_dispersion` |
@@ -171,7 +178,9 @@ python -m f1d.econometric.run_h1_cash_holdings
 | H11-lag | `python -m f1d.econometric.run_h11_prisk_uncertainty_lag` |
 | H11-lead | `python -m f1d.econometric.run_h11_prisk_uncertainty_lead` |
 | H12 | `python -m f1d.econometric.run_h12_div_intensity` |
+| H12Q | `python -m f1d.econometric.run_h12q_payout` |
 | H13 | `python -m f1d.econometric.run_h13_capex` |
+| H13.1 | `python -m f1d.econometric.run_h13_1_competition` |
 | H14 | `python -m f1d.econometric.run_h14_bidask_spread` |
 | H15 | `python -m f1d.econometric.run_h15_repurchase` |
 
@@ -203,7 +212,7 @@ F1D/
 │       ├── logging/                 #   Structured logging (structlog)
 │       ├── observability/           #   Runtime monitoring
 │       ├── outputs/                 #   Manifest + attrition tables
-│       ├── variables/               #   80+ individual variable builders
+│       ├── variables/               #   ~79 individual variable builders
 │       ├── panel_ols.py             #   PanelOLS regression runner
 │       ├── iv_regression.py         #   IV/2SLS regression
 │       └── latex_tables*.py         #   LaTeX table generation
@@ -212,7 +221,7 @@ F1D/
 ├── tests/                           # unit / integration / regression / verification / performance
 ├── docs/
 │   ├── Draft/                       # Thesis LaTeX document
-│   ├── provenance/                  # Data provenance docs (13 suites)
+│   ├── provenance/                  # Data provenance docs (19 suites)
 │   │   └── Audits/                  # Red-team adversarial audit reports
 │   ├── audits/                      # Code audit reports
 │   └── Prompts/                     # AI prompt templates
@@ -303,11 +312,11 @@ Additional code audit reports are in `docs/audits/`.
 | statsmodels | 0.14.6 | OLS, Probit, VIF diagnostics |
 | lifelines | 0.30.0 | Cox PH survival analysis (H9) |
 | scipy | 1.16.1 | Statistical tests |
-| structlog | ≥25.0 | Structured logging |
+| structlog | ≥25.0 | Structured logging (imported; not yet in requirements.txt) |
 | pydantic | ≥2.0 | Configuration validation |
 | pyarrow | 21.0.0 | Parquet I/O |
 | rapidfuzz | ≥3.14.0 | Fuzzy string matching (entity linking) |
-| pandera | ≥0.20.0 | DataFrame schema validation |
+| pandera | ≥0.20.0 | DataFrame schema validation (imported; not yet in requirements.txt) |
 
 Full dependency list with pinned versions in `requirements.txt`.
 

@@ -1,238 +1,277 @@
-# H4 Leverage -- Second-Layer Red-Team Audit
+# H4 Leverage --- Second-Layer Red-Team Audit
 
-**Auditor:** Automated adversarial red-team (fresh context, no trust inheritance)
-**Date:** 2026-03-18
+**Auditor:** Independent red-team (hostile-but-fair replication auditor)
+**Date:** 2026-03-21
 **Suite ID:** H4
-**First-Layer Audit:** `docs/provenance/H4.md`
+**First-layer audit:** `docs/provenance/H4.md` (dated 2026-03-18)
 **Runner:** `src/f1d/econometric/run_h4_leverage.py`
-**Panel Builder:** `src/f1d/variables/build_h4_leverage_panel.py`
+**Panel builder:** `src/f1d/variables/build_h4_leverage_panel.py`
 
 ---
 
-## A. Red-Team Bottom Line
+## A. Overall Assessment of First-Layer Audit
 
-| Dimension | Assessment |
-|-----------|------------|
-| First-layer audit factual accuracy | Mostly accurate but contains several material errors and omissions |
-| First-layer audit completeness | INCOMPLETE -- missed a critical output bug and several substantive issues |
-| Material missed issues | YES -- LaTeX table drops 8 of 16 models; docstring/output inconsistencies; Moulton concern imprecisely characterized |
-| Unsupported claims | YES -- audit claims "16-column LaTeX table" but code produces only 8 columns; output list includes `sample_attrition.tex` but runner docstring only lists 8 output files |
-| Overall red-team verdict | **CONDITIONAL PASS -- requires fixes before submission** |
+The first-layer audit is thorough in its coverage of variable construction chains, winsorization, merge logic, and fixed-effects specifications. However, it contains one **critical factual omission** (the lagged DV control that is present in every model specification) and numerous **stale line-number references** that suggest the audit was performed on a prior version of the code and not re-verified. The omission of the lagged DV control cascades into multiple downstream errors in the audit document (incorrect control counts, incorrect claim about no lagged DV control in Section 11.5).
+
+**Verdict:** The first-layer audit is substantially useful but requires material corrections before it meets thesis-standard review requirements.
 
 ---
 
-## B. Scope and Objects Audited
+## B. Critical Findings (Errors of Fact)
 
-| Object | Path | Hash/Version | Audited? |
-|--------|------|-------------|----------|
-| First-layer audit doc | `docs/provenance/H4.md` | git modified (unstaged) | YES -- full line-by-line |
-| Estimation runner | `src/f1d/econometric/run_h4_leverage.py` | git modified (unstaged) | YES -- full source |
-| Panel builder | `src/f1d/variables/build_h4_leverage_panel.py` | git modified (unstaged) | YES -- full source |
-| BookLev builder | `src/f1d/shared/variables/book_lev.py` | git modified (unstaged) | YES -- full source |
-| DebtToCapital builder | `src/f1d/shared/variables/debt_to_capital.py` | git modified (unstaged) | YES -- full source |
-| Compustat engine | `src/f1d/shared/variables/_compustat_engine.py` | git modified (unstaged) | YES -- full source |
-| Panel utilities | `src/f1d/shared/variables/panel_utils.py` | stable | YES -- full source |
-| Attrition table generator | `src/f1d/shared/outputs/attrition_table.py` | stable | YES -- full source |
-| LaTeX table output function | `_save_latex_table()` in runner | -- | YES -- line-by-line |
+### RT2-H4-01 | CRITICAL | Lagged DV control completely omitted from audit
 
----
+The first-layer audit states there are "7 base controls" (Section 6.3) and "base + 4 extended controls" (Section 6.4), listing `Size, TobinsQ, ROA, CapexAt, DividendPayer, OCF_Volatility, CashHoldings` as the base set. The audit further states in Section 11.5: "No lagged DV control is included (which would help isolate the incremental effect but risks absorbing the signal)."
 
-## C. Audit-of-Audit Scorecard
+**This is factually wrong.** Every entry in `MODEL_SPECS` (runner L111-126) includes a `lag_control` field:
+- BookLev models (cols 1-8): `"lag_control": "BookLev_lag"`
+- DebtToCapital models (cols 9-16): `"lag_control": "DebtToCapital_lag"`
 
-| Criterion | Score (1-5) | Notes |
-|-----------|-------------|-------|
-| Factual accuracy of claims | 3 | Several verifiably incorrect claims (16-col table, output file list, Moulton characterization) |
-| Completeness of variable dictionary | 4 | DVs, IVs, and controls are correctly enumerated and formulas verified |
-| Completeness of identification discussion | 3 | Missing discussion of multicollinearity among 4 simultaneous IVs; no VIF reported |
-| Completeness of robustness discussion | 2 | No discussion of alternative clustering, winsorization sensitivity, or subsample stability |
-| Completeness of sample accounting | 3 | Attrition table is present but incomplete (only tracks col-1 N, not DebtToCapital models) |
-| Internal consistency | 2 | 16 models defined vs 8-column LaTeX table; docstring says "col{1-8}" but 16 models run |
-| Boundary correctness | 4 | Suite boundary correctly identified; shared engine traced |
-| Red-team adversariality | 3 | Found some real bugs (fyearq drop) but missed the LaTeX table truncation |
+The `prepare_regression_data()` function (runner L249-252) and `run_regression()` (L312-315) both check for `lag_control` and append it to the controls list:
 
----
+```python
+lag_control = spec.get("lag_control")
+if lag_control:
+    controls = controls + [lag_control]
+```
 
-## D. Claim Verification Matrix
+The lagged DV then enters the exog matrix at L327: `exog = KEY_IVS + controls`.
 
-| # | Claim in First-Layer Audit | Verified? | Evidence | Verdict |
-|---|---------------------------|-----------|----------|---------|
-| D1 | "16-column LaTeX table" (Section A6, E) | **NO** | `_save_latex_table()` sets `n_cols = 8` and only renders cols 1-8 (BookLev). DebtToCapital cols 9-16 are computed but never appear in the LaTeX output. | **FALSE** |
-| D2 | BookLev = (dlcq + dlttq) / atq | YES | `_compustat_engine.py` line 1039 confirms formula. `fillna(0)` applied to both debt components. | Verified |
-| D3 | DebtToCapital = total_debt / (seqq + total_debt); NaN when denom <= 0 | YES | `_compustat_engine.py` lines 1042-1048 confirm formula and NaN condition. | Verified |
-| D4 | 4 simultaneous IVs | YES | `KEY_IVS` list at line 85-89 of runner contains exactly 4 variables, all enter `exog` simultaneously. | Verified |
-| D5 | Industry FE absorbed via `other_effects` | YES | Runner line 337: `other_effects=industry_data` for industry specs. | Verified |
-| D6 | Firm FE via `EntityEffects + TimeEffects` | YES | Runner line 345: formula includes `EntityEffects + TimeEffects`. | Verified |
-| D7 | Time index = `fyearq_int` (fiscal year) | YES | Runner line 324: `df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])`. | Verified |
-| D8 | Firm-clustered SEs | YES | Runner lines 341, 347: `cov_type="clustered", cluster_entity=True`. | Verified |
-| D9 | Two-tailed p-values | YES | Runner line 372: `p_two = float(model.pvalues.get(iv, np.nan))` -- uses raw pvalues from linearmodels which are two-tailed. | Verified |
-| D10 | "Contemporaneous BookLev is constant within firm-quarter" (Moulton concern) | **PARTIAL** | BookLev is the merge_asof-matched Compustat value. It is constant within a firm-quarter but can vary across quarters within a fiscal year. The concern is valid but imprecisely stated -- the Moulton issue is about within-quarter clustering, NOT within-fiscal-year. | **Imprecise** |
-| D11 | Main sample = FF12 codes 1-7, 9-10, 12 | YES | Runner line 233: `panel[~panel["ff12_code"].isin([8, 11])]`. FF12 has codes 1-12; excluding 8 and 11 leaves 1-7, 9-10, 12. | Verified |
-| D12 | Minimum calls >= 5 per firm | YES | Runner line 129: `MIN_CALLS_PER_FIRM = 5`. | Verified |
-| D13 | "fyearq_int dropped from panel" bug fixed | YES | Panel builder's `create_leverage_temporal_vars()` creates `fyearq_int` at line 140-142 and does not drop it. | Verified |
-| D14 | Output list includes `sample_attrition.tex` | **PARTIAL** | The `generate_attrition_table()` function does produce both CSV and TEX. But the runner docstring (line 44) only lists `col{1-8}` not `col{1-16}`. | Inconsistent with docstring |
-| D15 | "Requires consecutive fiscal years" for lead DVs | YES | `_create_temporal_vars_for_col()` line 101-102 checks `next_fyearq - fyearq_int == 1`. | Verified |
-| D16 | `drop_absorbed=True` | YES | Runner lines 338 (industry) and 346 (firm). | Verified |
+**Impact:** The actual base model has 8 controls (7 base + 1 lag), and the extended model has 12 controls (7 base + 4 extended + 1 lag). Every regression includes a lagged dependent variable as a control. This fundamentally changes the interpretation of the model: it is a partial-adjustment / dynamic panel specification, not a static panel regression. The first-layer audit's Section 11.5 critique about "no lagged DV control" is the exact opposite of reality. The SUMMARY_STATS_VARS list (runner L143-144) also includes `BookLev_lag` and `DebtToCapital_lag`, confirming these are first-class variables.
 
----
+**Implications for inference:**
+- Including a lagged DV as a regressor in a firm-FE model (Nickell bias) is a well-known econometric concern. With T potentially large (many fiscal years), the bias may be small, but it should be acknowledged.
+- The lagged DV is likely to absorb most of the cross-sectional and within-firm variation in leverage, potentially attenuating the uncertainty IV coefficients toward zero. If significant results survive the lagged DV control, they are more credible than the audit suggests.
 
-## E. Unsupported, Overstated, or Weakly-Evidenced Claims
+### RT2-H4-02 | MAJOR | Systematic line-number drift across all code references
 
-| # | Claim | Problem | Severity |
-|---|-------|---------|----------|
-| E1 | "16-column LaTeX table" (Section A6) | The LaTeX table function hardcodes `n_cols = 8` and only renders BookLev models (cols 1-8). DebtToCapital models (cols 9-16) are computed by the regression loop but silently omitted from the LaTeX output. The first-layer audit asserts 16 columns without verifying the actual output function. | **CRITICAL** |
-| E2 | Output list item "h4_leverage_table.tex -- unified 16-column LaTeX table" (Section E) | Same as E1. The table is 8 columns, not 16. | **CRITICAL** |
-| E3 | Runner docstring: "regression_results_col{1-8}.txt" | The code runs 16 models and writes `regression_results_col{1-16}.txt`. The docstring is stale, reflecting an earlier version that only had BookLev. | MINOR (doc-only) |
-| E4 | Audit Section E: "Results below are from the pre-4IV run" | The audit explicitly disclaims that results are stale, which is honest. But this means NO actual regression output was verified by the first-layer auditor. | MAJOR |
+The first-layer audit cites dozens of line numbers that are consistently off by 2-12 lines from the actual current code. A sample of discrepancies:
+
+| Audit citation | Claimed line | Actual line | Offset |
+|----------------|-------------|-------------|--------|
+| BookLev formula | `_compustat_engine.py` L1039 | L1041 | +2 |
+| DebtToCapital formula | L1042-1048 | L1043-1050 | +1 |
+| CashHoldings | L1066 | L1068 | +2 |
+| TobinsQ | L1067-1077 | L1069-1079 | +2 |
+| CapexAt | L1079-1085 | L1081-1087 | +2 |
+| DividendPayer | L1087-1092 | L1089-1094 (approx) | +2 |
+| Inf replacement | L1171-1172 | L1185-1186 | +14 |
+| skip_winsorize set | L1186 | L1199 | +13 |
+| Winsorize loop | L1194-1201 | L1208-1216 | +14 |
+| match_to_manifest | L1287-1294 | L1301-1308 | +14 |
+| `exog = KEY_IVS + controls` | runner L315 | L327 | +12 |
+| `n_cols = 8` | runner L418 | L430 | +12 |
+| MultiIndex set_index | runner L324 | L336 | +12 |
+| PanelOLS industry | runner L332-339 | L344-352 | +12 |
+| PanelOLS firm | runner L345-346 | L357-358 | +12 |
+| Two-tailed p | runner L372 | L384 | +12 |
+| Panel builder temporal vars | L73-104 | L73-104 | 0 (correct) |
+| Panel builder merge | L237-238 | L237-238 | 0 (correct) |
+
+The runner offsets are consistently +12 (suggesting ~12 lines were added after the audit, likely the `lag_control` lines and related `BookLev_lag`/`DebtToCapital_lag` columns). The engine offsets have two regimes: +2 for early lines, +13-14 for later lines, suggesting multiple insertions.
+
+**Impact:** A reviewer following the audit's line references will land on the wrong code. While the surrounding context usually makes the intent clear, this undermines confidence in the audit's claim of independent verification.
 
 ---
 
-## F. False Positives in the First Audit
+## C. Completeness Gaps
 
-| # | First-Audit Finding | Assessment | Rationale |
-|---|-------------------|------------|-----------|
-| F1 | F14 "Moulton problem" rated MAJOR | Correctly identified but imprecisely characterized. BookLev is constant within a *Compustat quarter* (same datadate), not within a *fiscal year*. Multiple calls in different quarters of the same fiscal year WILL have different BookLev values because merge_asof matches to different Compustat reporting dates. The Moulton concern is real but overstated by implying it affects all within-firm-year observations. | Severity appropriately MAJOR, but description needs correction |
-| F2 | None identified as false positive | -- | The other findings (F1 fyearq drop, F7/F8 control changes, F11 two-tailed, F21 DV flip, F23 ff12_code) are all verified as genuine issues with correct resolutions. |
+### RT2-H4-03 | MAJOR | LaTeX table does not disclose lagged DV control
 
----
+The `_save_latex_table()` function (runner L416-548) renders coefficient rows for the 4 key IVs and indicator rows for "Controls" (Base/Extended), "Industry FE", "Firm FE", and "Fiscal Year FE". There is no row indicating that a lagged DV control is included. The table notes (L536-545) also do not mention the lagged DV.
 
-## G. Missed Issues (Second-Layer Discoveries)
+A reader examining the LaTeX table would not know that `BookLev_lag` (or `DebtToCapital_lag`) is in the model. This is a separate issue from L1 (table truncation) -- even if the table were expanded to 16 columns, the lagged DV presence would remain undisclosed.
 
-| # | Issue | Severity | Description | Impact |
-|---|-------|----------|-------------|--------|
-| G1 | **LaTeX table truncated to 8 of 16 models** | **CRITICAL** | `_save_latex_table()` at line 418 hardcodes `n_cols = 8`. The function header, DV labels, and column loops all reference only BookLev (cols 1-8). DebtToCapital results (cols 9-16) are computed and saved to `model_diagnostics.csv` but are invisible in the thesis-facing LaTeX table. A committee reviewing only the LaTeX output would not see half the results. | Half of results unreported in primary output artifact |
-| G2 | **No multicollinearity diagnostics** | MAJOR | Four uncertainty measures enter simultaneously but share conceptual and measurement overlap (CEO QA vs Manager QA, QA vs Presentation). No VIF or correlation matrix is computed or reported. High collinearity among IVs could inflate standard errors and make individual coefficients unreliable, which is especially problematic when the hypothesis test is on individual IV coefficients. | Potentially unreliable inference on individual IV significance |
-| G3 | **`check_rank=False` suppresses rank warnings** | MAJOR | The industry FE specification uses `check_rank=False` (runner line 339), which silently suppresses warnings about near-singular design matrices. If the combination of 10 FF12 dummies + fiscal year dummies + 11 control variables creates near-collinearity, this would not be flagged. | Could mask numerical instability |
-| G4 | **Asymmetric DV construction** | MODERATE | Contemporaneous DV (`BookLev`) is the raw merge_asof-matched Compustat value that varies within fiscal year. Lead DV (`BookLev_lead`) is from the temporal function which deduplicates to ONE value per gvkey-fyearq (the last call's matched value), then shifts forward. This means `BookLev` has more within-group variation than `BookLev_lead`, potentially affecting comparative R-squared and coefficient magnitudes across contemporaneous vs lead specifications. | Systematic difference in within-group variation between t and t+1 specs |
-| G5 | **`fillna(0)` for missing debt components** | MODERATE | Both BookLev and DebtToCapital treat missing dlcq/dlttq as zero debt. If debt is genuinely unreported (rather than zero), this biases leverage downward for those observations. The first-layer audit mentions "Missing debt treated as zero per spec" but does not discuss the magnitude or selection implications. | Potential downward bias in leverage for firms with missing debt data |
-| G6 | **No negative BookLev guard** | LOW-MODERATE | BookLev = (dlcq.fillna(0) + dlttq.fillna(0)) / atq. If either dlcq or dlttq is negative (possible for some Compustat items), BookLev could be negative. Unlike the TobinsQ formula (line 1068-1069) where debt is `.clip(lower=0)`, BookLev has no floor. Negative leverage is economically meaningless. Winsorization at 1%/99% may handle extreme cases but does not enforce a floor at zero. | Possible nonsensical values in DV |
-| G7 | **Attrition table only tracks BookLev path** | LOW-MODERATE | The attrition table (runner lines 768-774) reports "After lead filter (col 5-8 only)" using `BookLev_lead` but does not separately track DebtToCapital or DebtToCapital_lead sample sizes. Since DebtToCapital has an additional NaN condition (denominator <= 0), its effective sample could be different. | Incomplete sample documentation |
-| G8 | **No intercept in industry FE spec** | LOW | Industry FE spec uses constructor-based PanelOLS (not from_formula). The exog data does not include a constant. `time_effects=True` and `other_effects=industry_data` together may or may not absorb the intercept depending on linearmodels' internal handling. This should be explicitly verified. | Possibly absorbed by FE, but worth confirming |
-| G9 | **Summary stats computed on pre-filter sample** | LOW | `make_summary_stats_table()` is called on the `panel` DataFrame (line 728) which has been filtered to Main sample but NOT yet filtered for complete cases or minimum calls. The regression sample may differ substantially from the summary statistics sample. | Descriptive statistics may not match the estimation sample |
+**Recommendation:** Add a "Lagged DV" indicator row to the table (Yes/Yes for all columns) and mention the lagged DV in the table notes.
+
+### RT2-H4-04 | MODERATE | Nickell bias not discussed
+
+With firm FE and a lagged DV, the standard Nickell (1981) bias applies. The bias is of order O(1/T). If the average firm has >10 fiscal years, the bias may be small, but this should be explicitly acknowledged. The first-layer audit's Section 11 (Identification & Inference Assessment) does not mention Nickell bias because it incorrectly believed no lagged DV was present.
+
+### RT2-H4-05 | LOW | `lag_control` absent from variable dictionary
+
+Section 6 of the first-layer audit provides a detailed variable dictionary but does not include entries for `BookLev_lag` or `DebtToCapital_lag`. These are created by `_create_temporal_vars_for_col()` (panel builder L73-104) using the same deduplication/shift logic as the lead variables, but shifted +1 instead of -1. The audit documents the lead construction chain but omits the lag.
 
 ---
 
-## H. Severity Recalibration
+## D. Verification of First-Layer Claims
 
-| Issue | First-Layer Severity | Red-Team Severity | Rationale for Change |
-|-------|---------------------|-------------------|---------------------|
-| F1: fyearq_int dropped | CRITICAL | CRITICAL | Agree -- would have caused wrong time FE. Confirmed fixed. |
-| F7: Old controls dropped | MAJOR | LOW | These were controls for a different DV direction. Dropping them is the correct design choice, not a "finding." |
-| F8: Analyst_QA dropped | MAJOR | LOW | Same rationale as F7 -- correct design choice for redesigned hypothesis. |
-| F11: Two-tailed p-values | MAJOR | MODERATE | The implementation is correct. The severity should reflect that this was a disclosure issue (now resolved), not an ongoing problem. |
-| F14: Moulton problem | MAJOR | MAJOR | Agree on severity but the characterization needs correction (see F1 in Section F). |
-| F21: Old falsification failure | MAJOR | LOW | Resolved by design. Not an ongoing issue. |
-| F23: ff12_code in required cols | MAJOR | LOW | A basic data-wrangling step, not a methodological concern. |
-| NEW G1: LaTeX table truncated | -- | **CRITICAL** | Half the results unreported. |
-| NEW G2: No VIF/multicollinearity | -- | MAJOR | Standard econometric diagnostic missing for simultaneous IVs. |
-| NEW G3: check_rank=False | -- | MAJOR | Suppresses potentially important numerical warnings. |
+### D.1 Claims confirmed as correct
 
----
+| Claim | Verified | Notes |
+|-------|----------|-------|
+| BookLev = (dlcq.fillna(0) + dlttq.fillna(0)) / atq | CORRECT | Engine L1041 |
+| DebtToCapital = total_debt / (seqq + total_debt); NaN when denom <= 0 | CORRECT | Engine L1043-1050 |
+| 4 simultaneous IVs | CORRECT | `KEY_IVS` list, runner L85-89 |
+| Industry FE via `other_effects` | CORRECT | Runner L349 |
+| Firm FE via `EntityEffects + TimeEffects` | CORRECT | Runner L357 |
+| Time index = `fyearq_int` | CORRECT | Runner L336 |
+| Firm-clustered SEs | CORRECT | Runner L353, L359 |
+| Two-tailed p-values from linearmodels `.pvalues` | CORRECT | Runner L384 |
+| Main sample = FF12 codes excluding 8, 11 | CORRECT | Runner L237 |
+| MIN_CALLS_PER_FIRM = 5 | CORRECT | Runner L129 |
+| `drop_absorbed=True` | CORRECT | Runner L350, L358 |
+| `check_rank=False` on industry spec only | CORRECT | Runner L351 |
+| LaTeX table = 8 columns (BookLev only) | CORRECT | `n_cols = 8` at runner L430 |
+| model_diagnostics.csv contains all 16 models | CORRECT | Runner L586 |
+| Lead DVs require consecutive fiscal years | CORRECT | Panel builder L101-102 |
+| No tolerance on merge_asof | CORRECT | Engine L1301-1308, no `tolerance` param |
+| Winsorization 1%/99% by fiscal year | CORRECT | Engine L1208-1216 |
+| Runner docstring says col{1-8} | CORRECT | Runner L44 |
+| 16 MODEL_SPECS entries | CORRECT | Runner L110-127 |
+| Zero row-delta enforced on merges | CORRECT | Panel builder L237-238 |
+| Temporal var deduplication keeps last call | CORRECT | Panel builder L83 `keep="last"` |
+| Consecutive-year NaN guard | CORRECT | Panel builder L93-94, L101-102 |
 
-## I. Completeness Gaps
+### D.2 Claims found incorrect or incomplete
 
-| Gap Area | What Is Missing | Severity |
-|----------|----------------|----------|
-| Variable construction deep-dive | Audit correctly reports formulas but does not trace the `merge_asof` matching tolerance -- there is no maximum gap restriction on how old a Compustat observation can be when matched to a call. A call in December 2015 could match to a June 2014 Compustat row if no closer data exists. | MODERATE |
-| Multicollinearity among IVs | No VIF table, no correlation matrix among the 4 uncertainty measures. The audit does not discuss whether CEO_QA and Manager_QA are collinear. | MAJOR |
-| Alternative clustering | No discussion of double-clustering (firm + year), which is standard for long-panel corporate finance. | MODERATE |
-| Subsample analysis | No discussion of whether results hold across different time periods, industries, or firm size groups. | LOW (robustness, not core) |
-| DebtToCapital coverage | Audit mentions DebtToCapital but does not verify its sample coverage rate or document NaN rates from the `denominator <= 0` condition. | MODERATE |
-| Economic magnitude | No discussion of whether coefficient magnitudes are economically meaningful (e.g., a 1-SD increase in uncertainty corresponds to what change in leverage?). | MODERATE |
-
----
-
-## J. Reproducibility Red-Team Assessment
-
-| Dimension | Assessment | Notes |
-|-----------|------------|-------|
-| Panel build determinism | GOOD | Uses manifest-based pipeline with timestamp-versioned outputs and `run_manifest.json`. |
-| Regression determinism | GOOD | PanelOLS is deterministic for the same input data. No random seed dependencies. |
-| Dependency pinning | UNKNOWN | No `requirements.txt` or `pyproject.toml` verified in this audit. linearmodels version could affect results. |
-| End-to-end reproducibility | NOT VERIFIED | The first-layer audit explicitly states results are from a "pre-4IV run." No fresh run output was verified by either audit layer. |
-| Cross-platform reproducibility | UNKNOWN | No evidence of testing on different OS/Python versions. |
-
----
-
-## K. Econometric and Thesis-Referee Meta-Audit
-
-| Concern | Severity | Discussion |
-|---------|----------|------------|
-| Endogeneity of uncertainty measures | MAJOR | Speech uncertainty may reflect firm conditions that also drive leverage (omitted variable bias). No IV strategy or natural experiment is proposed. The two-tailed test acknowledges uncertainty about direction, but does not address causality. This is a fundamental limitation that the first-layer audit acknowledges indirectly (by noting the redesigned DV direction) but does not discuss as an identification threat. |
-| Moulton problem | MAJOR | Correctly identified by first audit. Firm-clustered SEs partially address this, but the core issue remains: within a quarter, multiple calls from the same firm have identical BookLev. If most firms have only one call per quarter, this is moot; if multiple calls per quarter are common, the effective sample size is overstated. |
-| Simultaneous IV interpretation | MODERATE | With 4 correlated uncertainty measures entering simultaneously, individual coefficients represent partial effects conditional on the others. This makes interpretation challenging -- a null coefficient on CEO_QA does not mean CEO QA uncertainty is irrelevant, only that it has no incremental effect beyond the other three measures. The thesis text must carefully distinguish partial from marginal effects. |
-| Lead DV as causal test | MODERATE | Using `BookLev_lead` (t+1) is presented as a forward-looking test. But leverage is persistent (high autocorrelation), so contemporaneous uncertainty could merely proxy for current conditions that persist into next year. Lagged leverage as a control would help but is not included (understandably, as it would subsume the contemporaneous uncertainty signal). |
-| No lagged DV control | MODERATE | Standard leverage regressions often include lagged leverage to capture partial adjustment dynamics (Lemmon, Roberts & Zender 2008). The absence of a lagged DV makes coefficients harder to interpret as marginal effects. |
+| Claim | Assessment | Detail |
+|-------|-----------|--------|
+| "7 base controls" | INCORRECT | 7 base + 1 lag_control = 8 per spec |
+| "Base + 4 extended controls" | INCORRECT | 7 base + 4 extended + 1 lag = 12 per spec |
+| "No lagged DV control is included" (Section 11.5) | INCORRECT | Every spec includes lag_control |
+| `exog = KEY_IVS + controls` at runner L315 | STALE LINE | Actual: L327 |
+| "controls" at L315 | INCOMPLETE | `controls` already includes the lag_control by this point |
+| `n_cols = 8` at runner L418 | STALE LINE | Actual: L430 |
+| Inf replaced at engine L1171-1172 | STALE LINE | Actual: L1185-1186 |
+| match_to_manifest at L1287-1294 | STALE LINE | Actual: L1282-1308 |
 
 ---
 
-## L. Audit-Safety / Academic-Integrity Assessment
+## E. Assessment of Known Limitations List
 
-| Dimension | Assessment |
-|-----------|------------|
-| P-hacking risk | LOW-MODERATE: Two-tailed test is appropriate. But with 4 IVs x 16 specs = 64 IV-level tests, there is substantial multiple testing exposure. No familywise error rate correction discussed. |
-| Selective reporting risk | **HIGH** (due to G1): The LaTeX table only shows 8 of 16 models. If DebtToCapital results are weaker or contradictory, a reader would never know. This is a de facto selective reporting problem even if unintentional. |
-| HARKing risk | LOW: The two-tailed test and explicit "no directional prediction" note mitigate HARKing. |
-| Data snooping | LOW: Main sample restriction is standard and pre-registered in the research design. |
+The first-layer audit's 10 known limitations (L1-L10) are reviewed:
 
----
+| ID | Audit assessment | Red-team verdict |
+|----|-----------------|-----------------|
+| L1 (LaTeX table 8 cols) | CRITICAL | **CONFIRMED.** Genuine defect. |
+| L2 (No VIF diagnostics) | MAJOR | **CONFIRMED** but less severe with lagged DV -- collinearity of the 4 IVs is the relevant concern, and the lagged DV does not affect this. |
+| L3 (check_rank=False) | MAJOR | **CONFIRMED.** |
+| L4 (Asymmetric DV construction) | MODERATE | **CONFIRMED.** |
+| L5 (No merge_asof tolerance) | MODERATE | **CONFIRMED.** Shared-engine issue. |
+| L6 (Summary stats != estimation sample) | MODERATE | **CONFIRMED.** |
+| L7 (fillna(0) for debt, no clip) | MODERATE | **CONFIRMED.** |
+| L8 (Attrition tracks BookLev only) | LOW-MOD | **CONFIRMED.** |
+| L9 (Stale docstring) | LOW | **CONFIRMED.** |
+| L10 (No double-clustering) | LOW | **CONFIRMED.** |
 
-## M. Master Red-Team Issue Register
+**Missing from L-list:**
 
-| ID | Severity | Category | Description | Status | Recommendation |
-|----|----------|----------|-------------|--------|---------------|
-| RT-H4-01 | **CRITICAL** | Output | LaTeX table `_save_latex_table()` hardcodes `n_cols=8`, omitting DebtToCapital models (cols 9-16) from the thesis-facing table. | OPEN | Either (a) produce TWO 8-column tables (Panel A: BookLev, Panel B: DebtToCapital) or (b) produce one 16-column table. Update docstring and first-layer audit accordingly. |
-| RT-H4-02 | **MAJOR** | Identification | No multicollinearity diagnostics (VIF, condition number) for 4 simultaneous uncertainty IVs. | OPEN | Add VIF computation after regression. Report VIF for each IV in model_diagnostics.csv. Flag if any VIF > 10. |
-| RT-H4-03 | **MAJOR** | Estimation | `check_rank=False` suppresses rank deficiency warnings in industry FE specification. | OPEN | Remove `check_rank=False` or explicitly document why rank checking is disabled and what the rank of the design matrix is. |
-| RT-H4-04 | MODERATE | Construction | Asymmetric DV construction: `BookLev` (contemporaneous) is raw merge_asof value; `BookLev_lead` is fiscal-year-deduplicated then shifted. Different within-group variation. | OPEN | Document this asymmetry in the provenance doc. Consider whether `BookLev_t` (from temporal function) should be used as contemporaneous DV for consistency. |
-| RT-H4-05 | MODERATE | Documentation | First-layer audit Moulton concern says "constant within firm-quarter" -- technically correct but misleading when panel is indexed by fiscal year. | OPEN | Clarify that BookLev varies across quarters within a fiscal year, so the Moulton concern applies only to within-quarter clustering, not the full fiscal-year panel index. |
-| RT-H4-06 | MODERATE | Sample | Summary statistics computed on pre-complete-case sample; may not match estimation sample. | OPEN | Compute summary stats on the intersection sample (complete cases + min calls) used in estimation. |
-| RT-H4-07 | MODERATE | Construction | No maximum staleness guard on merge_asof: Compustat data from arbitrarily old quarters can match to recent calls. | OPEN | Add a `tolerance` parameter to merge_asof (e.g., 180 days) or document the distribution of match gaps. |
-| RT-H4-08 | MODERATE | Identification | No discussion of autocorrelation in leverage making lead-DV tests difficult to interpret. | OPEN | Acknowledge persistence in leverage and discuss implications in thesis text. |
-| RT-H4-09 | LOW-MODERATE | Construction | `fillna(0)` for missing dlcq/dlttq assumes missing = zero debt. No `.clip(lower=0)` applied to BookLev (unlike TobinsQ). | OPEN | Add `.clip(lower=0)` after fillna, or document why negative leverage is acceptable. |
-| RT-H4-10 | LOW-MODERATE | Output | Attrition table only tracks BookLev sample path; DebtToCapital attrition not separately documented. | OPEN | Add a DebtToCapital-specific attrition line or produce separate attrition for each DV. |
-| RT-H4-11 | LOW | Documentation | Runner docstring says `col{1-8}` output files; actual code produces `col{1-16}`. | OPEN | Update docstring to reflect 16 model specifications. |
-| RT-H4-12 | LOW | Robustness | No double-clustering (firm + year) sensitivity analysis. | OPEN | Add as robustness check or document why single-cluster is sufficient. |
+| New ID | Severity | Description |
+|--------|----------|-------------|
+| L11 | **MAJOR** | **Lagged DV control not disclosed in LaTeX table or table notes.** All 16 models include BookLev_lag or DebtToCapital_lag as a regressor, but the table has no indicator row for this, and the notes do not mention it. |
+| L12 | **MAJOR** | **Nickell bias with firm FE + lagged DV.** Even-numbered columns use firm FE alongside a lagged DV control. With finite T, the lagged DV coefficient is biased downward and other coefficients may inherit bias. Severity depends on average T per firm. |
+| L13 | **MODERATE** | **Lag-control creates matching asymmetry.** BookLev models (cols 1-8) control for BookLev_lag; DebtToCapital models (cols 9-16) control for DebtToCapital_lag. Since the lag variable is constructed from the same temporal-var pipeline as the lead, it inherits the same deduplication (keep-last-call) and consecutive-year requirements. Missing lag values create additional complete-case attrition not tracked in the attrition table. |
 
 ---
 
-## N. What a Committee Would Still Not Know
+## F. Assessment of Identification & Inference Section
 
-After reading both the first-layer audit and this red-team report, a thesis committee would still lack:
+Section 11 of the first-layer audit is well-structured but contains one critical factual error (11.5 re: lagged DV). With the lagged DV correction:
 
-1. **Actual regression results** -- Both audits acknowledge that no fresh run output has been verified. The committee has no evidence that the code runs successfully or what the results look like.
-2. **DebtToCapital results** -- Even if the code runs, the LaTeX table omits these. The committee would need to inspect `model_diagnostics.csv` directly.
-3. **Multicollinearity severity** -- No VIF or correlation matrix among the 4 uncertainty IVs.
-4. **Economic magnitude** -- No standardized coefficients or back-of-envelope calculations showing the economic significance of results.
-5. **Sample overlap with other suites** -- How much does the H4 estimation sample overlap with H1 (CashHoldings)? Since they share the same IVs and similar controls, are the results independent?
-6. **Leverage persistence** -- No AR(1) coefficient for BookLev reported. Without knowing how persistent leverage is, the committee cannot assess whether contemporaneous vs lead DV results are meaningfully different.
-7. **DebtToCapital NaN rate** -- How many observations are lost due to the `denominator <= 0` condition? If substantial, the DebtToCapital sample may have survivorship bias toward healthy firms.
+| Subsection | Assessment |
+|------------|-----------|
+| 11.1 Endogeneity | Adequate. Correctly notes co-determination concern. |
+| 11.2 Moulton Problem | Good. The "precision" clarification (within-quarter, not within-year) is a useful addition. |
+| 11.3 Multicollinearity Among IVs | Adequate. VIF recommendation is appropriate. |
+| 11.4 Simultaneous IV Interpretation | Adequate. |
+| 11.5 Leverage Persistence | **FACTUALLY INCORRECT.** States "No lagged DV control is included." The code includes BookLev_lag/DebtToCapital_lag in every model. Needs complete rewrite. With the lagged DV present, the relevant concern shifts from "leverage persistence biasing results" to "Nickell bias in firm-FE models" and "lagged DV potentially absorbing the signal." |
+| 11.6 Multiple Testing | Adequate. |
+| 11.7 Clustering | Adequate. |
 
----
+**Missing from Section 11:**
 
-## O. Priority Fixes
-
-| Priority | Issue ID | Action Required | Effort |
-|----------|----------|----------------|--------|
-| 1 (blocker) | RT-H4-01 | Fix `_save_latex_table()` to produce complete output for all 16 models (either one table with panels or two separate tables). | Low -- mechanical code change |
-| 2 (pre-defense) | RT-H4-02 | Add VIF computation and report in diagnostics. | Low -- add ~10 lines post-regression |
-| 3 (pre-defense) | RT-H4-03 | Remove `check_rank=False` or add explicit rank diagnostic. | Low -- one-line change + verification |
-| 4 (pre-defense) | RT-H4-11 | Update runner docstring to reflect 16 models. | Trivial |
-| 5 (recommended) | RT-H4-06 | Move summary stats to post-filter sample. | Low |
-| 6 (recommended) | RT-H4-05 | Correct Moulton description in provenance doc. | Trivial |
-| 7 (recommended) | RT-H4-10 | Add DebtToCapital attrition tracking. | Low |
+- **Nickell bias** (as above).
+- **Dynamic panel interpretation**: With a lagged DV, the model is a partial-adjustment specification. The IV coefficients now represent the short-run impact conditional on the prior level, and the long-run multiplier is beta_IV / (1 - rho), where rho is the lagged DV coefficient. The thesis text should report both.
+- **Potential for post-treatment bias**: BookLev_lag is measured at t-1 but could itself be influenced by uncertainty at t-1 (if the hypothesis is correct). Conditioning on it could attenuate the contemporaneous effect. This is a standard concern in dynamic panel models but should be noted.
 
 ---
 
-## P. Final Red-Team Readiness Statement
+## G. Assessment of Variable Dictionary
 
-**Verdict: CONDITIONAL PASS -- not submission-ready without fixes.**
-
-The H4 suite has a sound econometric design (appropriate FE structure, correct clustering, honest two-tailed testing) and the first-layer audit correctly identified and resolved the critical `fyearq_int` bug. However, the first-layer audit missed a critical output defect: the LaTeX table omits half the results. Combined with missing multicollinearity diagnostics and the suppressed rank-check warning, the suite requires targeted fixes before it meets thesis-defense standards.
-
-The minimum viable fix set is: (1) repair the LaTeX table to show all 16 models, (2) add VIF diagnostics, (3) re-enable or justify `check_rank=False`, and (4) update the runner docstring. These are all low-effort changes that do not require re-running the regressions.
-
-The broader identification concerns (endogeneity, leverage persistence, multiple testing) are substantive limitations that should be acknowledged in the thesis text but do not constitute implementation defects.
+The variable dictionary (Section 6) is detailed and mostly accurate for the variables it covers. The main gap is the omission of `BookLev_lag` and `DebtToCapital_lag`, which are constructed by the same `_create_temporal_vars_for_col()` function documented for the lead variables (Section 6.1.2, 6.1.4) but using `shift(+1)` instead of `shift(-1)`.
 
 ---
 
-*Report generated by second-layer red-team auditor. All claims verified against source code as of 2026-03-18.*
+## H. Assessment of Design Decisions Section
+
+Section 14 is comprehensive. One entry needs correction:
+
+- The row "8-column LaTeX table (BookLev only)" correctly identifies this as a code defect.
+- **Missing row:** A design-decision entry for the lagged DV control should be added, explaining the rationale (partial-adjustment model, isolating incremental effect of uncertainty beyond persistence).
+
+---
+
+## I. Assessment of Winsorization Summary
+
+Section 6.6 is complete and accurate for the variables it covers. No issues found with the winsorization pipeline documentation.
+
+---
+
+## J. Assessment of Output Inventory
+
+Section 8 is accurate. The note about summary_stats.csv sample and attrition table limitations are correct.
+
+---
+
+## K. Assessment of Red-Team Findings Disposition (Section 13)
+
+Section 13.2 lists 12 red-team findings (RT-H4-01 through RT-H4-12). These are all confirmed as correctly documented. However, the most significant finding that should have been in this list -- the lagged DV control -- was missed entirely because the first-layer auditor did not notice the `lag_control` field in MODEL_SPECS.
+
+---
+
+## L. Line Reference Accuracy Summary
+
+Of approximately 35 line-number citations in the first-layer audit:
+- **Panel builder references:** Mostly correct (L73-104, L237-238, L140-142).
+- **Runner references:** Systematically off by +12 lines. All runner line refs need updating.
+- **Engine references:** Off by +2 for early sections, +13-14 for later sections. All engine line refs need updating.
+
+---
+
+## M. Severity Summary
+
+| Severity | Count | IDs |
+|----------|-------|-----|
+| CRITICAL | 1 | RT2-H4-01 (lagged DV omission) |
+| MAJOR | 3 | RT2-H4-02 (line drift), RT2-H4-03 (LaTeX no lag indicator), RT2-H4-04 (Nickell bias) |
+| MODERATE | 1 | RT2-H4-05 (lag-control matching asymmetry, new L13) |
+| LOW | 1 | RT2-H4-06 (lag absent from variable dictionary) |
+
+---
+
+## N. Required Corrections Before Thesis Submission
+
+1. **Add `BookLev_lag` / `DebtToCapital_lag` to the variable dictionary** (Section 6) with full construction chain documentation.
+2. **Rewrite Section 11.5** to reflect the actual presence of the lagged DV control, and add Nickell bias discussion.
+3. **Update all line references** to match the current codebase.
+4. **Add L11, L12, L13** to the Known Limitations table.
+5. **Update control counts** throughout the document (8 base, 12 extended when including the lag control).
+6. **Add a design-decision entry** for the lagged DV control.
+7. **Fix the LaTeX table** (runner code change): add a "Lagged DV" indicator row and mention in table notes.
+
+---
+
+## O. Items NOT Requiring Correction
+
+The following aspects of the first-layer audit were verified as correct and complete:
+- DV construction chains (BookLev, DebtToCapital, and their leads)
+- IV construction chain (4 uncertainty measures)
+- Merge strategy documentation (merge_asof, zero row-delta)
+- FE specification documentation (industry vs firm)
+- Clustering documentation
+- P-value interpretation
+- Sample filtering logic
+- Winsorization pipeline
+- Temporal variable construction (deduplication, consecutive-year guard)
+- Output inventory
+
+---
+
+## P. Conclusion
+
+The first-layer audit is a high-quality document that covers most of the H4 suite's complexity accurately. Its single critical flaw -- missing the lagged DV control -- propagates into the identification discussion and control-count claims. The systematic line-number drift indicates the audit was not re-verified after a code revision that added the lag_control feature. Once the corrections in Section N are applied, the document will meet thesis-standard review requirements.
+
+---
+
+*Second-layer red-team audit conducted 2026-03-21. All findings verified against current codebase. No regression output was examined (no fresh run was executed).*

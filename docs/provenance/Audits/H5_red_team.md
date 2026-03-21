@@ -1,278 +1,284 @@
 # H5 Analyst Dispersion -- Second-Layer Red-Team Audit
 
+**Generated:** 2026-03-21
+**Auditor role:** Hostile-but-fair replication auditor (second layer)
 **Suite ID:** H5
-**Red-team audit date:** 2026-03-18
-**First-layer audit date:** 2026-03-17 (docs/provenance/H5.md)
-**Auditor posture:** Hostile-but-fair, independent fresh-context verification
-**Code state:** Post-redesign (commit 32e5e6e and later)
+**First-layer doc:** `docs/provenance/H5.md` (dated 2026-03-18)
+**Runner:** `src/f1d/econometric/run_h5_dispersion.py`
+**Panel builder:** `src/f1d/variables/build_h5_dispersion_panel.py`
 
 ---
 
-## A. Red-Team Bottom Line
+## A. First-Layer Audit Completeness
 
-The first-layer audit (H5.md) is a **post-redesign provenance document**, not a traditional red-team audit. It documents the new design decisions, model specifications, and resolved issues from the redesign. As a provenance/design document it is **largely accurate and well-structured**. However, it is **incomplete as a thesis-standard audit** because it does not adversarially probe the redesigned implementation for new issues introduced by the redesign itself.
+The first-layer audit (H5.md) is **unusually thorough** -- 714 lines covering 14 sections with a full variable dictionary, dependency chain, verification log, identification critique, and known-limitations register. It addresses its own prior red-team findings in Section 13. Coverage is comprehensive for a provenance document.
 
-**First-layer document grade:** LARGELY ACCURATE as provenance; INCOMPLETE as audit
+**Missing or thin areas:**
 
-**Suite implementation verdict:** CONDITIONALLY THESIS-STANDARD -- the redesign addresses the catastrophic issues from the prior implementation (broken DV, stale architecture), but introduces two material concerns that require verification or disclosure before thesis submission.
+1. The audit does not document the `ACTUAL` column from IBES Detail -- it is mentioned in Section 4.1 raw columns but never traced into the dispersion computation. `ACTUAL` is not used in the dispersion formula itself (only `VALUE` enters std/mean), so this is cosmetic rather than functional.
+2. No discussion of whether the `merge_asof` direction="forward" for FPEDATS matching (postcall_dispersion.py line 169) could systematically exclude calls near fiscal-year boundaries.
+3. The audit does not note that the `_compute_dispersions` method invokes `_dispersion_bulk` twice (once for pre-call, once for post-call) but the exact dispatch is not traced in the dependency chain.
 
-**Key red-team findings:**
-1. The PanelOLS duplicate multi-index problem persists in the redesigned code (MAJOR).
-2. The IBES Detail engine loads FPI=['6','7'] while the audit and all documentation claim FPI='6' only (MAJOR -- documentation mismatch, though likely functionally benign).
-3. No winsorization of control variables at the panel-builder level; winsorization is split across multiple engines with inconsistent strategies (MINOR -- documented but fragmented).
-4. The `check_rank=False` in the industry FE specification suppresses rank-deficiency warnings (MINOR).
+**Verdict:** ADEQUATE. The audit covers all material code paths and is well above the typical provenance document standard.
 
 ---
 
-## B. Scope and Objects Audited
+## B. Factual Accuracy of First-Layer Claims
 
-| Item | Path / ID |
-|------|-----------|
-| Suite ID | H5 |
-| Suite entrypoint | `src/f1d/econometric/run_h5_dispersion.py` |
-| Panel builder | `src/f1d/variables/build_h5_dispersion_panel.py` |
-| First-layer audit | `docs/provenance/H5.md` |
-| PostCallDispersionBuilder | `src/f1d/shared/variables/postcall_dispersion.py` |
-| IbesDetailEngine | `src/f1d/shared/variables/_ibes_detail_engine.py` |
-| CompustatEngine | `src/f1d/shared/variables/_compustat_engine.py` |
-| Panel utils | `src/f1d/shared/variables/panel_utils.py` |
-| Winsorization module | `src/f1d/shared/variables/winsorization.py` |
-| LossDummyBuilder | `src/f1d/shared/variables/loss_dummy.py` |
-| BookLevBuilder | `src/f1d/shared/variables/book_lev.py` |
-| ROABuilder | `src/f1d/shared/variables/roa.py` |
-| Prior red-team audit (obsolete) | `docs/provenance/Audits/H5_red_team.md` |
-| Shared variables __init__ | `src/f1d/shared/variables/__init__.py` |
+Each claim below was independently verified against source code.
 
----
+| # | Claim in H5.md | Verified? | Evidence | Notes |
+|---|----------------|-----------|----------|-------|
+| B1 | DV = SD/\|Mean\| x 100 | YES | `postcall_dispersion.py` lines 270-274 | Correct |
+| B2 | Post-call timing = +3 trading days | YES | line 56: `self.days_after = 3` | Correct |
+| B3 | Pre-call timing = -1 trading day | YES | line 55: `self.days_before = 1` | Correct |
+| B4 | USFederalHolidayCalendar used | YES | line 61 | Correct |
+| B5 | FPEDATS 120-day tolerance | YES | line 58, 169 | Correct |
+| B6 | Stale estimate filter = 180 days | YES | line 57 config default, line 245 | Correct |
+| B7 | NUMEST_MIN = 2 | YES | line 51, lines 259-260 | Correct |
+| B8 | 4 simultaneous IVs | YES | runner lines 83-87 | Correct |
+| B9 | 8 base controls | YES | runner lines 91-100 | Correct |
+| B10 | 4 extended additions | YES | runner lines 102-107 | Correct |
+| B11 | FF12 exclusions [8, 11] | YES | runner line 212 | Correct |
+| B12 | MIN_CALLS_PER_FIRM = 5 | YES | runner line 116 | Correct |
+| B13 | One-tailed formula | YES | runner line 340 | Correct |
+| B14 | Firm-clustered SEs | YES | runner lines 307, 312 | Correct |
+| B15 | Industry FE via other_effects | YES | runner lines 298-303 | Correct |
+| B16 | Firm FE via EntityEffects formula | YES | runner lines 309-311 | Correct |
+| B17 | drop_absorbed=True both specs | YES | runner lines 304, 311 | Correct |
+| B18 | check_rank=False in industry spec | YES | runner line 305 | Correct |
+| B19 | DV winsorization 1%/99% pooled | YES | postcall_dispersion.py lines 91-96 | Correct |
+| B20 | Compustat per-year 1%/99% | YES | _compustat_engine.py lines 1212-1215 | Correct |
+| B21 | Linguistic per-year 0%/99% upper-only | YES | _linguistic_engine.py lines 255-258 | Correct |
+| B22 | FPI=['6','7'] loaded by engine | YES | _ibes_detail_engine.py line 64 | Correct |
+| B23 | Zero-row-delta merge enforcement | YES | build_h5_dispersion_panel.py lines 154-159 | Correct |
+| B24 | file_name uniqueness assertion | YES | build_h5_dispersion_panel.py lines 139-141 | Correct |
+| B25 | fyearq_int = floor(to_numeric(fyearq)).astype(Int64) | YES | build_h5_dispersion_panel.py lines 171-173 | Correct |
+| B26 | BookLev = (dlcq.fillna(0) + dlttq.fillna(0)) / atq | YES | _compustat_engine.py line 1041 | Correct |
+| B27 | Size = ln(atq) for atq > 0 | YES | _compustat_engine.py line 1036 | Correct |
+| B28 | DividendPayer not winsorized (in skip set) | YES | _compustat_engine.py line 1200 | Correct |
+| B29 | std() uses ddof=1 (pandas default) | YES | postcall_dispersion.py line 266: `.agg(["std", "mean"])` | Correct |
+| B30 | Panel index set_index(["gvkey", "fyearq_int"]) | YES | runner line 291 | Correct |
 
-## C. Audit-of-Audit Scorecard
+**Line number accuracy:** Several line numbers in the audit are approximate (off by a few lines), which is normal given code evolution. No line reference pointed to an entirely wrong location. The references to `_compustat_engine.py` line 1186 for skip_winsorize (Section 6.4.6) should be line 1199. The reference to "lines 1151-1172" for inf replacement (Section 6.4.4) should be lines 1164-1186. These are minor documentation imprecisions, not factual errors.
 
-| Dimension | First-layer status | Evidence basis | Red-team verdict |
-|-----------|-------------------|----------------|-----------------|
-| Model/spec identification | Pass | 4 specs correctly documented (Industry/Firm FE x Base/Extended) | Accurate -- matches code MODEL_SPECS lines 109-114 |
-| Reproducibility commands | Pass | 3 explicit commands documented (build, dry-run, full run) | Commands match module paths |
-| Dependency tracing | Partial | Builder chain listed but not fully traced to raw sources | Does not trace IBES Detail engine's FPI/PDF filter settings |
-| Raw data provenance | Partial | IBES Detail, Compustat mentioned; no file hashes or versions | Adequate for provenance doc; insufficient for full audit |
-| Merge/sample audit | Partial | Zero-row-delta enforcement documented; merge match rates not | Panel builder enforces delta=0 (lines 155-159) -- verified |
-| Variable dictionary completeness | Pass | All 18 regression variables documented with sources | Matches code KEY_IVS + BASE_CONTROLS + EXTENDED_CONTROLS |
-| Outlier/missing-data rules | Partial | Winsorization documented for DV; control winsorization implicit | See issue MI-1 below |
-| Estimation spec register | Pass | 4 columns fully specified with DV/FE/controls | Matches code exactly |
-| Verification log quality | Fail | No verification log; this is a design document, not an audit | No evidence of independent execution or output inspection |
-| Known issues section | Pass | 7 issues documented with severity and resolution | All resolutions verified in code |
-| Identification critique | Fail | No identification critique present | Provenance doc, not audit -- but thesis standard requires it |
-| Econometric implementation critique | Fail | Not present | Missing from document scope |
-| Robustness critique | Fail | Not present | Missing from document scope |
-| Academic-integrity critique | Fail | Not present | Missing from document scope |
-| Severity calibration | Pass (for scope) | Red-team resolutions correctly prioritized | CRITICAL/MAJOR/MINOR labels appropriate |
-| Final thesis verdict support | Partial | "REDESIGNED" verdict stated; no readiness assessment | Does not assess whether redesign is itself thesis-ready |
-
----
-
-## D. Claim Verification Matrix
-
-| ID | First-layer claim | Section | Verified? | Evidence | Red-team verdict | Notes |
-|----|-------------------|---------|-----------|----------|-------------------|-------|
-| C1 | DV = PostCallDispersion = SD(next-Q EPS) / abs(Mean) x 100 | A3 | YES | `postcall_dispersion.py` lines 265-276: `agg["_sd"] / agg["_mean"].abs() * 100` | Confirmed | Formula matches code exactly |
-| C2 | Post-call timing: 3 trading days after call (USFederalHolidayCalendar) | A3 | YES | `postcall_dispersion.py` line 56: `self.days_after = 3`; line 61: `CustomBusinessDay(calendar=USFederalHolidayCalendar())` | Confirmed | |
-| C3 | FPI='6' (next-quarter EPS) | A3 | **PARTIAL** | Builder docstring says FPI=6 (line 15, 47), but IbesDetailEngine loads FPI=['6','7'] (line 64). Builder does NOT filter to FPI=6 only before computing dispersion. | **Documentation mismatch** | See MI-2 |
-| C4 | PDF='D' (diluted EPS) | A3 | YES | `_ibes_detail_engine.py` line 65: `self.pdf_valid = ['D']` | Confirmed | |
-| C5 | 120-day FPEDATS fence | A3/C | YES | `postcall_dispersion.py` line 58: `self.fpedats_max_days = 120`; line 169: `tolerance=pd.Timedelta(days=self.fpedats_max_days)` | Confirmed | |
-| C6 | Stale estimate filter: 180 days | A3 | YES | `postcall_dispersion.py` line 57: `self.max_stale_days = config.get("max_stale_days", 180)`; line 245: filter applied | Confirmed | |
-| C7 | Min 2 analysts | A3 | YES | `postcall_dispersion.py` line 51: `NUMEST_MIN = 2`; line 259-260: filter applied | Confirmed | |
-| C8 | 4 simultaneous IVs: CEO_QA, CEO_Pres, Mgr_QA, Mgr_Pres Uncertainty_pct | A4 | YES | `run_h5_dispersion.py` lines 83-87: KEY_IVS matches exactly | Confirmed | |
-| C9 | Base Controls (8): Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, PreCallDispersion | A5 | YES | `run_h5_dispersion.py` lines 91-100: BASE_CONTROLS = 8 items matching | Confirmed | |
-| C10 | Extended Controls (Base + 4) | A5 | YES | `run_h5_dispersion.py` lines 102-107: EXTENDED_CONTROLS = BASE + 4 | Confirmed | |
-| C11 | Main sample: FF12 codes 1-7, 9-10, 12 | A7 | YES | `run_h5_dispersion.py` lines 210-213: excludes ff12_code in [8, 11]; remaining = 1-7, 9-10, 12 | Confirmed | |
-| C12 | Min 5 calls per firm | A7 | YES | `run_h5_dispersion.py` line 116: `MIN_CALLS_PER_FIRM = 5` | Confirmed | |
-| C13 | One-tailed test: p_one = p_two / 2 if beta > 0 else 1 - p_two / 2 | A8 | YES | `run_h5_dispersion.py` line 340: exact match | Confirmed | |
-| C14 | Firm-clustered SEs | A9 | YES | `run_h5_dispersion.py` line 307, 312: `cov_type="clustered", cluster_entity=True` | Confirmed | |
-| C15 | Industry FE absorbed via PanelOLS other_effects (FF12) | A2 | YES | `run_h5_dispersion.py` lines 298-303: `entity_effects=False, time_effects=True, other_effects=industry_data` | Confirmed | |
-| C16 | Firm FE via EntityEffects + TimeEffects from_formula | A2 | YES | `run_h5_dispersion.py` lines 309-311: `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` | Confirmed | |
-| C17 | Panel Index: gvkey + fyearq_int | A1 | YES | `run_h5_dispersion.py` line 291: `df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])` | Confirmed | But see MI-3 for implications |
-| C18 | Winsorization 1%/99% pooled on DV | A3 | YES | `postcall_dispersion.py` lines 91-97: pooled winsorization of both Pre/PostCallDispersion | Confirmed | |
-| C19 | `attach_fyearq()` produces `fyearq` not `fyearq_int` -- resolution: explicit conversion | C | YES | `build_h5_dispersion_panel.py` lines 170-173: `attach_fyearq` + `np.floor(...).astype("Int64")` | Confirmed | |
-| C20 | ROABuilder added to builders list | C | YES | `build_h5_dispersion_panel.py` line 107: `"roa": ROABuilder(...)` | Confirmed | |
-| C21 | Unique Record Identifier: file_name | A1 | **PARTIAL** | file_name is the unique key in the PANEL (build step), but the runner does NOT load file_name (line 187-200 columns list excludes it) | Partial -- true for panel, not for regression | |
-| C22 | drop_absorbed=True | A2 | YES | Lines 305 (industry spec) and 311 (firm spec) | Confirmed | |
-| C23 | PreCallDispersion: 1 trading day before call | A3 | YES | `postcall_dispersion.py` line 55: `self.days_before = 1` | Confirmed | |
+**Verdict:** All factual claims are **CORRECT**. No fabricated or misleading assertions found.
 
 ---
 
-## E. Unsupported/Overstated Claims
+## C. Accuracy of Known Limitations (L-1 through L-7)
 
-| ID | Claim | Why weak | Severity | Missing evidence | Corrected formulation |
-|----|-------|----------|----------|------------------|----------------------|
-| E1 | "FPI=6 (next-quarter EPS forecasts only)" (A3, repeated throughout) | The IbesDetailEngine loads FPI=['6','7']. The PostCallDispersionBuilder does not filter to FPI=6 before computing dispersion. It joins on (gvkey, fpedats), pooling estimates from both FPI horizons targeting the same period end date. | MAJOR (documentation) | No code inspection of engine defaults | "IBES Detail data loaded with FPI in ['6','7']. Estimates are pooled by target FPEDATS regardless of FPI horizon. Both FPI=6 and FPI=7 estimates targeting the same period end date are included in the dispersion computation." |
-| E2 | "Estimation Unit: Call-level (individual earnings call)" (A1) | While the panel is built at call level, the PanelOLS regression uses (gvkey, fyearq_int) as its MultiIndex. Multiple calls per firm-year are treated as observations within the same (entity, time) cell. The estimation unit is effectively the call, but PanelOLS's demeaning operates at the (gvkey, fyearq_int) cell level. | MINOR (imprecise) | No discussion of PanelOLS behavior with duplicate indices | "Estimation unit is the individual earnings call. PanelOLS index is (gvkey, fyearq_int); firms with multiple calls per fiscal year have duplicate index entries. PanelOLS demeans at the index-cell level." |
-| E3 | "Variables winsorized at 1%/99%" (LaTeX table notes, line 486) | This blanket statement is imprecise. DV/control winsorization happens in different places: PostCallDispersion is pooled-winsorized in the builder; Compustat controls are year-winsorized in the engine; linguistic IVs are NOT winsorized in this pipeline (they may be winsorized upstream in Stage 2, but this is not documented here). | MINOR | No tracing of per-variable winsorization path | "PostCallDispersion and PreCallDispersion winsorized at 1%/99% pooled. Compustat controls winsorized at 1%/99% per fiscal year. Linguistic variables' winsorization depends on upstream Stage 2 processing." |
+| ID | Limitation | Accurate? | Assessment |
+|----|-----------|-----------|------------|
+| L-1 | FPI documented as '6' but engine loads ['6','7'] | YES | Independently confirmed: docstring line 15, metadata line 109 both say FPI='6'. Engine line 64 loads ['6','7']. The audit correctly identifies this as a documentation error. |
+| L-2 | Duplicate multi-index | YES | Correct analysis. Multiple calls per firm-year create non-unique (gvkey, fyearq_int) pairs. The audit's analysis of implications for entity vs. time demeaning is sound. |
+| L-3 | check_rank=False | YES | Correctly identified and correctly assessed as mitigated by drop_absorbed=True. |
+| L-4 | std() ddof=1 with min 2 analysts | YES | Correctly identified. Note: with exactly 2 analysts, std(ddof=1) = \|x1-x2\|/sqrt(2), which is a valid but potentially noisy measure. |
+| L-5 | Linguistic IV winsorization unclear | PARTIALLY OUTDATED | The audit says "Winsorization status depends on Stage 2 upstream processing" but then in Section 6.7 correctly documents that linguistic variables are winsorized at 0%/99% per-year by the LinguisticEngine. The L-5 text and the Section 6.7 table contradict each other. Section 6.7 is correct. |
+| L-6 | CCM linking first-duplicate | YES | Correctly identified as minor and standard practice. |
+| L-7 | No execution evidence | YES | Correctly flagged. No run output is referenced. |
 
----
-
-## F. False Positives
-
-| ID | Criticism (if any) | Why false | Evidence | Severity | Corrected view |
-|----|-------------------|-----------|----------|----------|----------------|
-| F1 | (No explicit criticisms in first-layer doc -- it is a provenance document, not an adversarial audit) | N/A | N/A | N/A | N/A |
-
-The first-layer document does not contain adversarial claims to evaluate as false positives. Its red-team resolutions (Section C) are all verified as correctly resolved in the current code.
+**Verdict:** Limitations are accurately identified and appropriately severity-rated. L-5 has an internal inconsistency (body text vs. summary table) but the table is correct.
 
 ---
 
-## G. Missed Issues
+## D. Issues the First-Layer Audit Missed
 
-| ID | Category | Description | Evidence | Severity | Why missed | Consequence | Fix |
-|----|----------|-------------|----------|----------|------------|-------------|-----|
-| MI-1 | Econometric | **PanelOLS duplicate multi-index persists.** `set_index(["gvkey", "fyearq_int"])` creates non-unique (entity, time) pairs because multiple earnings calls occur per firm-year. PanelOLS with EntityEffects demeans within each unique entity across time, but with TimeEffects, the time FE is estimated on a non-unique time index. For the industry FE spec (entity_effects=False, time_effects=True, other_effects=ff12_code), there is no entity demeaning at all -- just time FE and industry FE with clustered SEs. The firm FE spec uses EntityEffects which groups by gvkey (first index level), so the entity demeaning is correct, but the time demeaning pools all calls within a firm-year. | `run_h5_dispersion.py` line 291: `set_index(["gvkey", "fyearq_int"])`. Call-level data means ~3-4 calls per firm-year. | MAJOR | Provenance doc does not audit econometric implementation details | For industry FE specs (cols 1,3): coefficients are correct (no entity demeaning claimed). For firm FE specs (cols 2,4): entity demeaning groups by gvkey correctly, but time demeaning treats all calls in the same firm-year identically. Standard errors may be slightly affected but clustering at entity level should absorb within-firm-year correlation. | Document the duplicate-index behavior. Optionally verify coefficients match a manually-demeaned specification. Consider using a unique call-level time index (e.g., quarter rather than year). |
-| MI-2 | Variable construction | **FPI mismatch between documentation and engine.** The audit, builder docstrings, and metadata all state FPI='6' (next-quarter only). The IbesDetailEngine loads FPI=['6','7']. The dispersion computation joins on (gvkey, fpedats) without filtering by FPI, pooling estimates from both horizons that target the same period end date. | `_ibes_detail_engine.py` line 64: `self.fpi_valid = ['6', '7']` vs. `postcall_dispersion.py` line 15: "FPI='6' (next-quarter EPS forecasts only)" | MAJOR (doc) / MINOR (functional) | Provenance doc accepted builder docstrings at face value without tracing to engine defaults | Functionally, pooling FPI=6 and FPI=7 estimates for the same fpedats is defensible -- these are estimates targeting the same fiscal period. But the documentation is wrong and could mislead a replicator. | Correct all documentation to state FPI in ['6','7']. Add explicit justification for pooling both FPI horizons. Alternatively, filter to FPI=6 only in the builder if strict adherence to Druz et al. (2020) is desired. |
-| MI-3 | Econometric | **`check_rank=False` suppresses rank-deficiency detection in industry FE spec.** Line 305 sets `check_rank=False` for the industry FE specification. This means if the FF12 industry dummies are collinear with the time FE or regressors, PanelOLS will not warn. | `run_h5_dispersion.py` line 305 | MINOR | Not within scope of provenance doc | Could mask absorbed-variable pathologies. The `drop_absorbed=True` should handle collinearity, but suppressing the rank check reduces transparency. | Remove `check_rank=False` or document why it is needed (e.g., performance, known-benign rank deficiency). |
-| MI-4 | Identification | **No identification strategy critique in the provenance document.** The redesign follows the H1/H4 pattern but does not discuss reverse causality (managers adjust speech when they know analysts are dispersed), simultaneity, or omitted variable bias. | Absence from H5.md | MAJOR (for thesis standard) | Provenance doc scope did not include identification critique | A thesis committee would expect discussion of why speech uncertainty is not merely reflecting information already in analyst estimates (which PreCallDispersion partially controls for). | Add identification discussion to provenance or create separate audit document. |
-| MI-5 | Robustness | **No robustness specifications documented or implemented.** The 4-column design varies FE type and control set, which is specification sensitivity, not robustness. No IV/2SLS, placebo tests, or subsample stability checks. | `run_h5_dispersion.py`: only MODEL_SPECS with 4 entries | MAJOR (for thesis standard) | Outside provenance doc scope | Thesis committee will demand robustness evidence | Implement at minimum: (a) alternative DV timing windows, (b) placebo test with pre-call uncertainty, (c) subsample by firm size or analyst coverage |
-| MI-6 | Variable construction | **`std()` uses ddof=1 (sample std) in dispersion computation.** With NUMEST_MIN=2, two-analyst dispersion uses ddof=1, making the standard deviation sqrt(2) times larger than population std (ddof=0). This systematically inflates dispersion for low-analyst-count calls. | `postcall_dispersion.py` line 266: `agg(["std", "mean"])` -- pandas default ddof=1 | MINOR | Technical detail below provenance doc level | Does not affect cross-sectional ranking but inflates magnitude for low-coverage calls. Affects economic magnitude interpretation. | Document the ddof=1 convention. Consider ddof=0 for consistency with IBES literature, or raise NUMEST_MIN. |
-| MI-7 | Sample | **No discussion of IBES-Compustat linking methodology.** The IBES Detail engine uses CCM CUSIP8-to-GVKEY mapping with LINKPRIM in ['P','C'] and keeps first duplicate (line 120-121). Drop-duplicates on cusip8 keeping "first" is arbitrary when multiple gvkeys map to the same CUSIP8. | `_ibes_detail_engine.py` lines 115-121 | MINOR | Infrastructure-level detail | Could cause a small number of mislinked estimates. Standard in the literature but should be documented. | Document the CCM linking choices (LINKPRIM filter, duplicate resolution). |
-| MI-8 | Panel construction | **Linguistic IVs not explicitly winsorized in the panel builder.** The panel builder does not call any winsorization on the 4 key IVs or the extended linguistic controls. Winsorization depends entirely on whether Stage 2 outputs are pre-winsorized. | `build_h5_dispersion_panel.py`: no winsorize call | MINOR | Implicit assumption about upstream processing | If Stage 2 does not winsorize, extreme linguistic variable values enter regressions raw. The LaTeX table note "Variables winsorized at 1%/99%" would be inaccurate for these variables. | Verify Stage 2 winsorization or add explicit winsorization in the panel builder. Document the full winsorization chain. |
+### D-1. Summary Statistics Computed on Pre-Filtering Sample (MINOR -- reporting)
 
----
+**Finding:** `make_summary_stats_table` at runner lines 675-681 is called on `panel` AFTER `filter_main_sample` but BEFORE any regression-specific filtering (complete cases, min calls). The summary statistics therefore describe the main-sample universe, not the regression estimation sample. This is standard practice but could mislead if a reader assumes summary stats match the regression N.
 
-## H. Severity Recalibration
+**Impact:** Summary stats N will exceed regression N. Not a bug, but should be disclosed.
 
-| ID | Source | Original severity | Red-team severity | Why | Thesis impact |
-|----|--------|-------------------|-------------------|-----|---------------|
-| C-res-1 | H5.md Section C | CRITICAL (fyearq issue) | CRITICAL | Correctly identified and resolved. The fix is verified in code. | Resolved -- no longer blocks |
-| C-res-2 | H5.md Section C | CRITICAL (PDF column) | CRITICAL | Correctly identified and resolved. PDF in engine COLUMNS dict verified. | Resolved -- no longer blocks |
-| C-res-3 | H5.md Section C | MAJOR (120-day fence) | MAJOR | Correctly identified and resolved. Tolerance parameter verified in merge_asof. | Resolved -- no longer blocks |
-| C-res-4 | H5.md Section C | MAJOR (cache key) | MAJOR | Correctly identified and resolved. Cache key includes fpi/pdf (lines 81-82). | Resolved -- no longer blocks |
-| C-res-5 | H5.md Section C | MAJOR (ROABuilder) | MAJOR | Correctly identified and resolved. ROABuilder in builders dict (line 107). | Resolved -- no longer blocks |
-| C-res-6 | H5.md Section C | MAJOR (winsorization) | MAJOR | Correctly identified and resolved. Pooled 1%/99% in PostCallDispersionBuilder. | Resolved -- no longer blocks |
-| MI-1 | Red-team | N/A | MAJOR | PanelOLS duplicate index affects interpretation of within-estimator. Not a crash bug but an econometric interpretation concern. | Requires disclosure or verification |
-| MI-2 | Red-team | N/A | MAJOR (doc) / MINOR (functional) | Documentation systematically misstates FPI filter. Functionally defensible. | Requires documentation correction |
-| MI-4 | Red-team | N/A | MAJOR (thesis standard) | No identification discussion. | Blocks thesis without supplementary discussion |
-| MI-5 | Red-team | N/A | MAJOR (thesis standard) | No robustness. | Blocks thesis without supplementary tests |
-| MI-3 | Red-team | N/A | MINOR | check_rank=False is non-standard but not harmful with drop_absorbed=True. | Cosmetic / best practice |
-| MI-6 | Red-team | N/A | MINOR | ddof=1 convention well-known; affects magnitude not ranking. | Documentation only |
-| MI-7 | Red-team | N/A | MINOR | CCM linking is standard; documentation gap only. | Documentation only |
-| MI-8 | Red-team | N/A | MINOR | Linguistic variable winsorization chain unclear. | Requires verification |
+### D-2. Attrition Table Records PostCallDispersion Non-Null from Main Sample, Not Estimation Sample (MINOR -- reporting)
+
+**Finding:** At runner line 715, `panel["PostCallDispersion"].notna().sum()` uses the main-sample-filtered `panel` variable, which has not yet been filtered for complete cases. The attrition table stage 3 ("PostCallDispersion non-null") thus reports the count of calls with a valid DV in the main sample before control-variable filtering. This is correct for an attrition table but could be confusing if the step 4 count drops substantially due to missing controls.
+
+**Impact:** Cosmetic. The attrition table correctly shows progressive filtering.
+
+### D-3. LaTeX Table Note Still Says "Variables winsorized at 1%/99%" (MINOR -- documentation)
+
+**Finding:** Runner line 488 contains `r"Variables winsorized at 1\%/99\%. "`. The first-layer audit identifies this as L-5 and documents the correct per-variable-group winsorization chain in Section 6.7. However, the code itself has NOT been corrected -- the LaTeX table note remains a blanket (and inaccurate) statement. Linguistic variables are winsorized at 0%/99% (upper-only), not 1%/99%. Binary and ordinal variables are not winsorized at all. DV dispersion variables are winsorized pooled, not per-year.
+
+**Status:** The audit acknowledges this in L-5 but marks it as a documentation issue without flagging that the LaTeX output going into the thesis will carry this inaccuracy to the reader.
+
+### D-4. No Constant/Intercept in Industry FE Specification (MINOR -- econometric)
+
+**Finding:** In the industry FE specification (runner lines 298-306), `PanelOLS` is called with constructor arguments (not `from_formula`). The `exog` DataFrame does not include a constant column, and there is no `add_constant`. PanelOLS with `entity_effects=False` and `time_effects=True` plus `other_effects` will absorb the overall mean through the fixed effects, so no separate intercept is needed. However, the firm FE formula (line 310) includes `~ 1 + ...` (explicit intercept), which PanelOLS will absorb into the entity effects. The asymmetry is benign but the first-layer audit does not discuss it.
+
+**Impact:** None on coefficients. PanelOLS handles this correctly in both cases.
+
+### D-5. `year` Column Loaded but Not Used in Runner (COSMETIC)
+
+**Finding:** The runner loads `"year"` at line 188 but never uses it in any regression, filter, or output beyond being present in the DataFrame. This is dead weight in the column selection.
+
+**Impact:** None.
 
 ---
 
-## I. Completeness Gaps
+## E. Identification Critique Assessment
 
-| Area | Why incomplete | Evidence | Severity | What should have been included |
-|------|----------------|----------|----------|-------------------------------|
-| Identification strategy | Provenance doc does not discuss threats to causal interpretation | Absence from H5.md | MAJOR | Discussion of reverse causality (managers adjust speech based on expected dispersion), simultaneity, and OVB. PreCallDispersion as control partially addresses this but is insufficient. |
-| Robustness specification | No robustness tests documented or planned | Only 4 specs varying FE/controls | MAJOR | At minimum: alternative timing windows, placebo tests, subsample checks, alternative clustering |
-| Verification log | No evidence of pipeline execution or output inspection | No output statistics, no sample sizes from actual runs | MAJOR | Should include at minimum: actual sample sizes, R-squared values, key coefficient signs from a run |
-| Winsorization chain | Winsorization documented for DV but not traced for all variables | PostCallDispersion: builder-level pooled. Compustat controls: engine-level per-year. Linguistic IVs: undocumented. | MINOR | Full variable-by-variable winsorization register |
-| IBES FPI filter | Documentation states FPI=6 throughout; engine loads FPI=['6','7'] | Code vs. documentation mismatch | MINOR-MAJOR | Accurate description of what the engine actually loads |
-| PanelOLS index behavior | Not discussed despite call-level data with fiscal-year time index | set_index creates duplicates | MAJOR | Discussion of how PanelOLS handles non-unique (entity, time) pairs |
-| Prior audit relationship | H5.md does not reference or supersede the old red-team audit in `docs/provenance/Audits/H5_red_team.md` | Both documents exist | MINOR | Explicit statement that the prior audit applies to the pre-redesign code and is superseded |
+The first-layer audit's Section 11 provides a substantive identification critique covering reverse causality, simultaneity, and omitted variable bias. The critique is honest about what the design cannot establish (causal identification). The mitigations listed (PreCallDispersion control, extended controls, firm FE) are accurately described.
+
+**Missing from the identification discussion:**
+
+1. **Selection on observables vs. unobservables:** The audit does not discuss whether the control set is sufficient to proxy for the information environment. Specifically, no measure of earnings quality, guidance issuance, or call complexity is included beyond loss_dummy and SurpDec.
+
+2. **Mechanical correlation risk:** If analyst forecast dispersion and managerial speech uncertainty are both driven by the same firm-quarter earnings realization, the coefficient may be capturing a mechanical relationship rather than an information channel. The pre-call dispersion control partially addresses this, but the audit could be more explicit.
+
+3. **Post-treatment bias:** The extended controls include `Analyst_QA_Uncertainty_pct` and `Entire_All_Negative_pct`, which are measured during the same earnings call. If uncertainty language causally influences analyst questions (and vice versa), these controls are post-treatment and could attenuate the IV coefficients. The audit does not flag this.
+
+**Verdict:** The identification section is **good for a provenance document** but has room for deeper scrutiny on post-treatment controls.
+
+---
+
+## F. Econometric Specification Assessment
+
+| Check | Status | Notes |
+|-------|--------|-------|
+| Correct use of PanelOLS | PASS | Both constructor and formula approaches are valid |
+| Clustering level appropriate | PASS | Firm-level clustering for call-level data is standard |
+| Fixed effects correctly specified | PASS | Industry FE via other_effects, Firm FE via EntityEffects |
+| One-tailed test correctly implemented | PASS | `p_two / 2 if beta > 0 else 1 - p_two / 2` is the correct directional formula |
+| No look-ahead bias in controls | PASS | All controls use backward merge_asof from call date |
+| DV timing appropriate | PASS | +3 trading days post-call allows information absorption |
+
+**Potential concern:** The 4 IVs (CEO/Manager x QA/Pres uncertainty) are likely highly correlated with each other, as noted in the audit. With all 4 entering simultaneously, multicollinearity could inflate standard errors substantially, making individual IV significance tests uninformative. The audit notes this but does not recommend VIF diagnostics or sequential inclusion tests. This is an important methodological gap.
+
+---
+
+## G. Variable Construction Verification
+
+All 20 variables used in the regression (1 DV + 4 IVs + 8 base controls + 4 extended controls + 3 index/FE variables) were traced through the code. Construction formulas match the audit's documentation. No discrepancies found.
+
+**One observation:** The `ROA` formula uses `iby` (Income Before Extraordinary Items), not `ibq`. The audit references `ibq` at line 1059 for the NaN condition but the actual variable used is `iby` (annual, from Q4 extraction). The audit's Section 6.4.3 correctly describes the Q4 extraction chain. This is consistent.
+
+---
+
+## H. Data Flow Integrity
+
+The end-to-end dependency chain (Section 3) is accurate. I verified:
+
+1. ManifestFieldsBuilder produces file_name, gvkey, start_date, ff12_code.
+2. All builders merge on file_name with zero-row-delta enforcement.
+3. fyearq attachment uses backward merge_asof via CompustatEngine.
+4. Runner loads 20 columns (verified at lines 187-200 -- actually loads year too, so 21 columns total, though the audit says 20 "excludes file_name" which is technically inaccurate since `year` is also loaded but not counted).
+
+**Column count discrepancy:** The audit Section 3 says "Loads panel columns (20 columns, excludes file_name)." The actual column list at runner lines 187-200 has 20 items including `year` but excluding `file_name`. Since `year` is not used in any regression, this is accurate but the parenthetical could be clearer.
+
+---
+
+## I. Output Inventory Verification
+
+The output file list in Section 8 matches the code. All 8 files listed for the runner are produced by the save_outputs function, generate_report function, and generate_attrition_table/generate_manifest calls. The panel builder output list is also correct.
+
+One addition: the runner also produces `sample_attrition.tex` (line 719 mentions both csv and tex), which is not listed in the Section 8 table. This is a cosmetic omission.
 
 ---
 
 ## J. Reproducibility Assessment
 
-| Step | Documented? | Verified? | Hidden dependency? | Risk | Note |
-|------|-------------|-----------|-------------------|------|------|
-| Panel build: `python -m f1d.variables.build_h5_dispersion_panel` | YES (D) | Not executed | Yes: requires master_manifest.parquet, IBES yearly files, Compustat, CCM linking table, config YAML files | Medium | Command is correct per module structure. Depends on `get_latest_output_dir` for manifest path resolution. |
-| Dry-run: `python -m f1d.econometric.run_h5_dispersion --dry-run` | YES (D) | Not executed | No: only validates config constants | Low | Useful sanity check. Only prints variable counts, does not load data. |
-| Full run: `python -m f1d.econometric.run_h5_dispersion` | YES (D) | Not executed | Yes: requires panel parquet from previous step; depends on `get_latest_output_dir` for panel resolution | Medium | Should work if panel step completed successfully. |
-| Environment/packages | NOT documented | N/A | Yes: linearmodels, pandas, numpy, pyarrow versions affect results | Medium | No requirements.txt or version pinning documented in H5.md |
-| Input data versions | NOT documented | N/A | Yes: IBES Detail yearly files, Compustat parquet, CCM parquet -- no hashes or dates | High | A replicator would not know which data vintage was used |
-| Output validation | NOT documented | N/A | N/A | Medium | No expected output statistics to compare against |
+The reproduction commands in Section 2 are correct and sufficient. The required inputs table is accurate. One gap: the `config/project.yaml` and `config/variables.yaml` files are listed but their contents are not version-pinned or documented. Changes to these configs could change the year range, winsorization thresholds, or other parameters, breaking reproducibility.
 
 ---
 
-## K. Econometric Meta-Audit
+## K. Internal Consistency Check
 
-| Dimension | Adequate? | Why | Weak points | Severity |
-|-----------|-----------|-----|-------------|----------|
-| Identification strategy | NO | Not discussed in provenance doc | Reverse causality: managers may adjust speech when aware of analyst disagreement. PreCallDispersion as control is necessary but not sufficient -- it controls for level but not for the information flow from analyst community to management. | MAJOR |
-| Inference / clustering | YES | Firm-clustered SEs correctly implemented | Could consider two-way clustering (firm + time) as robustness | MINOR |
-| FE specification | YES | Industry(FF12)/Firm + FiscalYear FE well-specified | Industry FE uses other_effects (correct for PanelOLS); Firm FE uses EntityEffects (correct). FiscalYear as time FE is appropriate for annual variation. | -- |
-| Within-variation exploitation | PARTIAL | Firm FE specs absorb firm-level heterogeneity | With fiscal-year time FE, identification comes from within-firm deviations from annual average. Adequate if enough within-firm-year variation exists. | MINOR |
-| Standard error validity | YES | Entity clustering appropriate for call-level panel nested within firms | Robust to within-firm serial correlation and heteroskedasticity | -- |
-| Model specification | PARTIAL | 4 specs adequate for main results | No interaction terms, no nonlinear specifications, no quantile regressions | MINOR |
-| Economic magnitude | NOT ASSESSED | No output from actual runs in the provenance doc | Cannot evaluate without results | -- |
-| Multicollinearity | NOT ASSESSED | 4 simultaneous IVs (CEO/Manager x QA/Pres) likely correlated | VIF or correlation matrix not documented | MINOR |
-| Timing alignment | YES | Post-call dispersion at +3 trading days; pre-call at -1 trading day | Well-defined and literature-consistent | -- |
-| Lagged DV control | YES | PreCallDispersion included in all specs | Controls for persistence in dispersion levels; appropriate for change interpretation | -- |
+| Cross-reference | Consistent? | Notes |
+|-----------------|-------------|-------|
+| Section 1 "4 specs" vs. Section 7 table | YES | 4 specs, 2 FE x 2 controls |
+| Section 1 "8 base controls" vs. Section 6.4 | YES | 8 controls listed |
+| Section 6.7 winsorization table vs. code | YES | All entries verified |
+| L-5 body text vs. Section 6.7 table | NO | L-5 says "depends on Stage 2 upstream processing" but Section 6.7 correctly documents 0%/99% per-year. The L-5 text should be updated to match the table. |
+| Section 13 dispositions vs. L-1 through L-7 | YES | All prior red-team findings are addressed |
 
 ---
 
-## L. Audit-Safety Assessment
+## L. Severity Assessment of All Issues
 
-| Risk | Evidence | Severity | Why it matters | Fix |
-|------|----------|----------|----------------|-----|
-| Provenance doc mistaken for audit | H5.md is titled "Provenance & Reproducibility & Referee Audit" but contains no adversarial testing, no output verification, no identification critique | Medium | A committee member reading "Referee Audit" would expect adversarial evaluation and find none | Retitle as "Provenance & Design Document" or add genuine audit content |
-| Stale prior red-team audit | `docs/provenance/Audits/H5_red_team.md` dated 2026-03-15 audits pre-redesign code that no longer exists. It references `delta_dispersion`, `dispersion_lead`, and multi-sample architectures that are completely gone. | Medium | A reader finding this file would be confused about which audit applies | Archive or delete the old audit; add explicit supersession note |
-| FPI documentation error propagates | Every documentation layer (builder docstring, provenance doc, LaTeX table metadata) states FPI=6 only. The engine loads FPI=['6','7']. If a replicator implements FPI=6 only, they will get different results. | Medium | Replication failure risk | Correct all FPI documentation to match actual engine behavior |
-| No output artifacts referenced | H5.md documents no actual output directory, sample size, or coefficient from a run | Low | Cannot verify that the redesigned code has been successfully executed | Add at least one reference run with key statistics |
+### Issues from First-Layer Audit (re-rated)
 
----
+| ID | First-Layer Rating | Red-Team Rating | Rationale |
+|----|-------------------|-----------------|-----------|
+| L-1 | MAJOR (doc) | MAJOR (doc) | Agree. Builder docstring and metadata say FPI='6' but engine loads ['6','7']. A replicator following the code comments would be confused. Fix is trivial (update docstring + metadata). |
+| L-2 | MAJOR (econometric) | MODERATE | Downgrade. The analysis in the audit is correct that duplicate indices do not introduce bias. Firm-clustered SEs handle within-firm-year correlation. The main consequence is interpretational (time FE pools all calls in a fiscal year), which is defensible for annual time effects. |
+| L-3 | MINOR | MINOR | Agree. |
+| L-4 | MINOR | MINOR | Agree. |
+| L-5 | MINOR | MINOR | Agree, though the internal inconsistency in the audit text should be resolved. |
+| L-6 | MINOR | MINOR | Agree. |
+| L-7 | PROCEDURAL | PROCEDURAL | Agree. Must be resolved before thesis submission. |
 
-## M. Master Issue Register
+### New Issues Found in This Audit
 
-| ID | Type | Category | Verified? | Severity | Location | Description | Evidence | Consequence | Fix | Blocks thesis? |
-|----|------|----------|-----------|----------|----------|-------------|----------|-------------|-----|----------------|
-| MI-1 | Implementation concern | Econometric | YES | MAJOR | `run_h5_dispersion.py` line 291 | PanelOLS duplicate multi-index: set_index(["gvkey", "fyearq_int"]) with call-level data creates non-unique (entity, time) pairs. ~3-4 calls per firm-year typical. | Code line 291; call-level panel with fiscal-year time index | Entity demeaning (firm FE specs) groups correctly by gvkey. Time demeaning treats all calls in same firm-year identically. SEs should be robust due to entity clustering. Main risk: interpretation, not bias. | Document behavior; optionally verify with unique time index. Consider fyearq+fqtr as time index. | Conditional -- needs disclosure |
-| MI-2 | Documentation error | Variable construction | YES | MAJOR (doc) | `_ibes_detail_engine.py` line 64; `postcall_dispersion.py` line 15; `H5.md` A3 | FPI stated as '6' only throughout documentation; engine loads ['6','7']. Dispersion computed from all estimates targeting same fpedats regardless of FPI. | Engine default vs. all documentation | Replicator implementing FPI=6 only would get different results. Functionally, pooling is defensible. | Correct all documentation. Add justification for FPI pooling. | No (functional) / Yes (documentation accuracy) |
-| MI-3 | Implementation concern | Econometric | YES | MINOR | `run_h5_dispersion.py` line 305 | `check_rank=False` suppresses rank-deficiency detection in industry FE spec | Code line 305 | Could mask absorbed-variable issues; mitigated by drop_absorbed=True | Remove check_rank=False | No |
-| MI-4 | Completeness gap | Identification | YES | MAJOR | H5.md (absence) | No identification strategy discussion | Document scope | Committee will require identification discussion | Add identification section | Yes (thesis standard) |
-| MI-5 | Completeness gap | Robustness | YES | MAJOR | H5.md (absence); `run_h5_dispersion.py` (absence) | No robustness tests | Only 4 main specs exist | Committee will require robustness evidence | Implement robustness specifications | Yes (thesis standard) |
-| MI-6 | Implementation detail | Variable construction | YES | MINOR | `postcall_dispersion.py` line 266 | std() uses ddof=1; with 2 analysts, sample std is sqrt(2) times population std | pandas default | Magnitude inflation for low-coverage calls | Document convention | No |
-| MI-7 | Documentation gap | Data provenance | YES | MINOR | `_ibes_detail_engine.py` lines 115-121 | CCM linking: LINKPRIM in ['P','C'], first duplicate kept | Code inspection | Small mislink risk | Document | No |
-| MI-8 | Documentation gap | Winsorization | YES | MINOR | `build_h5_dispersion_panel.py` (absence) | Linguistic IVs not explicitly winsorized in panel builder | No winsorize call in builder | LaTeX note "Variables winsorized at 1%/99%" may be inaccurate for IVs | Verify Stage 2 winsorization | No |
-
----
-
-## N. What Committee Would Not Know
-
-1. **The PanelOLS multi-index has duplicates.** With ~3-4 calls per firm-year, the (gvkey, fyearq_int) index is non-unique. The provenance document does not discuss how PanelOLS handles this or what it means for the entity/time demeaning. A committee member would assume each observation has a unique (entity, time) pair.
-
-2. **The IBES engine loads both FPI=6 and FPI=7 estimates.** Every layer of documentation says FPI=6 only. A replicator following the documentation would get different dispersion values than the actual code produces.
-
-3. **Winsorization is fragmented across three different locations** with different strategies (pooled for DV in builder, per-year for Compustat controls in engine, unknown for linguistic variables). The blanket "Variables winsorized at 1%/99%" in the LaTeX notes obscures this heterogeneity.
-
-4. **There is no evidence the redesigned code has been executed.** The provenance document describes the design but cites no output directory, no sample sizes from an actual run, no coefficient values. The old red-team audit in `docs/provenance/Audits/H5_red_team.md` audits completely different code.
-
-5. **No identification strategy has been articulated.** The hypothesis that speech uncertainty predicts analyst dispersion faces the obvious challenge that uncertain managers may be uncertain precisely because they know analysts disagree, or because both are driven by the same underlying information environment. PreCallDispersion controls for level persistence but not for the information channel.
-
-6. **No robustness tests exist.** The 4 specifications vary FE type and control sets, but no alternative timing windows, placebo tests, IV strategies, or subsample analyses are implemented.
+| ID | Finding | Severity | Recommendation |
+|----|---------|----------|----------------|
+| D-1 | Summary stats on pre-regression sample | MINOR | Add a note in the table indicating the sample universe, or compute stats on the estimation sample |
+| D-3 | LaTeX table note inaccurately states "1%/99%" for all variables | MINOR | Update the LaTeX note to accurately reflect the heterogeneous winsorization scheme, or add a footnote |
+| D-4 | No explicit intercept in industry FE spec (asymmetry with firm FE spec) | COSMETIC | No action needed; PanelOLS handles this correctly |
+| D-5 | `year` column loaded but unused in runner | COSMETIC | No action needed |
+| E-post | Extended controls (Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct) may be post-treatment | MODERATE (methodological) | Discuss in thesis text; consider showing results with and without these controls |
 
 ---
 
-## O. Priority Fixes
+## M. Red-Team Verdict on First-Layer Audit
 
-| Priority | Fix | Why | Effort | Credibility gain |
-|----------|-----|-----|--------|------------------|
-| 1 | **Add identification discussion** to provenance document or separate audit | Committee will demand it; currently absent entirely | Low (writing) | High -- addresses the most obvious gap for any econometrics referee |
-| 2 | **Correct FPI documentation** throughout: builder docstrings, provenance doc, metadata. State FPI in ['6','7'] with justification for pooling. | Factual error that would cause replication failure | Low | High -- removes a falsifiable documentation error |
-| 3 | **Execute and document a reference run** with key statistics: sample sizes per spec, R-squared, key IV coefficient signs | Currently no evidence the redesigned code runs successfully | Medium | High -- proves the implementation works |
-| 4 | **Add robustness specifications**: alternative DV timing (+1 and +5 days), pre-call placebo test, subsample by analyst coverage | Zero robustness is thesis-blocking | High | Critical -- transforms from exploratory to thesis-standard |
-| 5 | **Document PanelOLS duplicate-index behavior**: verify coefficients match manually-demeaned version or document why duplicates are acceptable | Econometric interpretation concern | Medium | Medium -- preempts committee questions |
-| 6 | **Archive or supersede old red-team audit** at `docs/provenance/Audits/H5_red_team.md` which references completely different (pre-redesign) code | Stale audit causes confusion | Low | Medium -- removes outdated conflicting information |
-| 7 | **Trace and document full winsorization chain** per variable: which variables are winsorized, where, and how (pooled vs. per-year) | Current blanket claim is imprecise | Low | Low-Medium |
-| 8 | **Remove `check_rank=False`** from industry FE specification | Suppresses useful diagnostic; not needed with drop_absorbed=True | Trivial | Low |
+**Overall assessment: PASS -- the first-layer audit is factually correct, appropriately detailed, and adequately skeptical.**
+
+The audit accurately documents the code, correctly identifies the major issues (FPI mismatch, duplicate index, missing execution evidence), and provides a substantive identification critique. All 30 factual claims independently verified were correct.
+
+**Strengths:**
+- Exhaustive variable dictionary with verified construction chains
+- Honest identification critique that does not overclaim causal identification
+- Internal cross-referencing between known limitations and design decisions
+- Accurate winsorization summary table (Section 6.7) despite the inconsistent L-5 text
+
+**Weaknesses:**
+- Does not flag the post-treatment concern with extended linguistic controls
+- Does not note the LaTeX table note inaccuracy as requiring a code fix (only documents it)
+- Line number references are approximate in several places (functional, but a purist would want exact references)
 
 ---
 
-## P. Final Readiness Statement
+## N. Recommendations for Thesis Submission
 
-**Is the first-layer document factually correct?**
-Mostly yes. Of 23 verified claims, 21 are fully confirmed. Two are partially correct: (1) FPI is documented as '6' but the engine loads ['6','7'], and (2) file_name is listed as the unique record identifier but is not loaded by the regression runner. The resolved issues in Section C are all verified as correctly fixed in the current code.
+1. **Fix the builder docstring and metadata** (L-1): Change `postcall_dispersion.py` line 15 from `FPI='6'` to `FPI in ['6','7']` and line 109 metadata from `"6 (next quarter)"` to `"['6','7'] (current and next quarter)"`. This is a one-line documentation fix.
 
-**Is the first-layer document complete enough for thesis-standard review?**
-No. It is a design/provenance document, not an adversarial audit. It lacks: identification critique, robustness assessment, verification log with output statistics, econometric implementation review, and evidence of successful execution. These gaps are structural (document scope) rather than errors of commission.
+2. **Fix the LaTeX table note** (D-3): Replace the blanket "Variables winsorized at 1%/99%" with a more accurate statement, e.g., "Continuous financial controls winsorized at 1%/99% per fiscal year; linguistic variables at 0%/99% per calendar year; dispersion measures at 1%/99% pooled."
 
-**Did it miss material issues?**
-Yes. The two most material missed issues are:
-1. The PanelOLS duplicate multi-index (MI-1), which persists from the old architecture and affects econometric interpretation.
-2. The FPI documentation mismatch (MI-2), which would cause replication failure for anyone following the documentation.
+3. **Resolve L-5 internal inconsistency**: Update the L-5 body text to match the accurate Section 6.7 table, removing the "depends on Stage 2 upstream processing" characterization.
 
-**Any unsupported/exaggerated claims?**
-Three claims are imprecise (E1-E3), none are fabricated. The most consequential is the FPI='6' claim which appears in the provenance doc, builder docstrings, and LaTeX notes -- all incorrect relative to the engine's actual behavior.
+4. **Discuss post-treatment controls in thesis**: Note that Analyst_QA_Uncertainty_pct and Entire_All_Negative_pct are contemporaneous with the IVs and may attenuate coefficients if causally downstream of managerial speech.
 
-**Overall suite readiness:**
-The H5 redesign represents a substantial improvement over the prior implementation (which had a broken DV, stale architecture, and provenance crisis). The current implementation is architecturally sound. However, thesis submission requires: (1) an identification strategy discussion, (2) robustness tests, (3) FPI documentation correction, and (4) evidence from an actual executed run. With these additions, the suite would be thesis-ready.
+5. **Run the suite and record output** (L-7): Produce execution evidence (sample sizes, R-squared, coefficient signs) before thesis submission.
 
-**Can the committee trust the first-layer document?**
-As a design/provenance record: yes, with the FPI correction. As a standalone thesis audit: no -- it requires supplementation with adversarial evaluation covering identification, robustness, and output verification.
+6. **Consider VIF diagnostics**: The 4 correlated IVs entering simultaneously may produce uninformative individual t-tests. Report VIF or a joint F-test for the 4 IVs as a group.
+
+---
+
+## O. Disposition of Prior Red-Team Findings
+
+The first-layer audit's Section 13 addresses 11 findings from a previous red-team audit (MI-1 through MI-8, E1-E3). All dispositions were verified as accurate:
+
+- MI-1 (duplicate index): Correctly documented as L-2
+- MI-2 (FPI mismatch): Correctly documented as L-1
+- MI-4 (no identification discussion): Addressed in Section 11
+- MI-5 (no robustness): Acknowledged in Section 11.3
+- E1 (FPI claim): Corrected in the provenance document
+- E3 (winsorization blanket statement): Corrected in Section 6.7, though L-5 text is inconsistent
+
+All dispositions are appropriate.
+
+---
+
+## P. Sign-Off
+
+| Item | Status |
+|------|--------|
+| All factual claims verified | YES (30/30) |
+| Known limitations accurately rated | YES (7/7) |
+| New issues found | 5 (1 MODERATE, 2 MINOR, 2 COSMETIC) |
+| First-layer audit quality | PASS |
+| Thesis-blocking issues | L-7 (no execution evidence) -- must be resolved before submission |
+| Recommended code fixes | 2 (postcall_dispersion.py docstring/metadata, LaTeX table note) |
+
+**Second-layer audit status: COMPLETE**
