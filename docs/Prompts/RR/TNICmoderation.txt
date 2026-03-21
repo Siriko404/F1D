@@ -1,0 +1,406 @@
+## SECTION A — MODERATOR FIT MEMO
+
+I treated the final LaTeX results surface as the authority for eligible targets, the suite packets as the authority for unit/timing/FE interpretation, and the TNIC readme as the authority for TNIC construction: firm-year data keyed by `gvkey` and Compustat-matched year, not lagged by default, `TNIC3HHI` includes the focal firm, and `TNIC3HHI` can be missing when `TNIC3TSIMM` is present. 
+
+### 1) H1_F1_mgr_pres_cash
+
+* **finding_id:** `H1_F1_mgr_pres_cash`
+* **restated_finding:** `Manager_Pres_Uncertainty_pct` is the carried H1 signal: higher manager presentation uncertainty predicts higher `CashHoldings` and higher `CashHoldings_lead`, but only in Industry+FiscalYear specifications.
+* **variation_signature:** primarily **between-firm**; call-level IV with annual firm-year cash outcome repeated across calls within the same firm-year; **contemporaneous + lead**; **speaker-specific** and **section-specific**.
+* **TNIC_fit_assessment:** passes the eligibility gate, but only as a **secondary** moderation idea. A slow-moving annual market-structure layer is compatible with a between-firm cash result. The best economic channel is that product-space structure changes how much uncertain presentation language maps into precautionary liquidity policy.
+* **HHI_fit:** only partial. Concentration/market power can matter for cash policy, but here `TNIC3HHI` risks mostly re-labeling cross-sectional differences in cash-generation capacity or market power rather than adding new mechanism.
+* **TSIMM_fit:** better. `TNIC3TSIMM` can speak to differentiation vs. crowded product space; that is a more direct channel for why uncertainty in prepared remarks might map into stronger or weaker precautionary cash buffering.
+* **timing_alignment_note:** use `TNIC_t` for `CashHoldings_t`. For `CashHoldings_{t+1}`, `TNIC_t` is coherent only if explicitly framed as the call-year market environment; a lagged moderator requires an **explicitly constructed** `TNIC_{t-1}`.
+* **FE_compatibility_note:** good under the parent Industry+FY design; weak as a first-pass firm-FE moderation because the parent effect disappears there.
+* **missingness_risk_note:** start with `TNIC3TSIMM`; `TNIC3HHI` can drop observations that still have TSIMM.
+* **final_use_rank:** **plausible but secondary moderator candidate**. 
+
+### 2) H1_F2_mgr_qa_cash
+
+* **finding_id:** `H1_F2_mgr_qa_cash`
+* **restated_finding:** `Manager_QA_Uncertainty_pct` predicts higher contemporaneous `CashHoldings`, but only in Firm+FiscalYear specifications.
+* **variation_signature:** primarily **within-firm**; **contemporaneous**; call-level IV against an annual-ish cash outcome repeated within firm-quarter; **speaker-specific** and **section-specific**.
+* **TNIC_fit_assessment:** weak. The parent finding only survives under firm FE, while TNIC is an annual firm-year moderator that is likely too slow-moving to be a natural first interaction for this signature.
+* **HHI_fit:** weak.
+* **TSIMM_fit:** slightly better conceptually than HHI, but still weak because the core problem is FE/variation fit, not story fit.
+* **timing_alignment_note:** any interaction would have to use the same firm-year TNIC value repeated across calls in that year; lagging would make within-firm movement even thinner.
+* **FE_compatibility_note:** poor. A firm-FE moderation test asks annual TNIC to carry enough within-firm time variation to explain a finding that already lives only in within-firm variation.
+* **missingness_risk_note:** `TNIC3HHI` would add avoidable sample loss on top of an already demanding firm-FE design.
+* **final_use_rank:** **better as a control / stratifier / descriptive context than as a moderator**. 
+
+### 3) H2_F1_mgr_qa_invest
+
+* **finding_id:** `H2_F1_mgr_qa_invest`
+* **restated_finding:** the only H2 signal worth even screening is `Manager_QA_Uncertainty_pct` in industry-FE investment-efficiency specifications, but the H2 packet itself characterizes the suite as overwhelmingly null.
+* **variation_signature:** mostly **between-firm**; **contemporaneous**; call-level IV against an **annual firm-year DV** repeated across calls; outcome-specific to abnormal investment.
+* **TNIC_fit_assessment:** fails the economic-content screen in practice. Unit and timing can be aligned, but the parent result is barely above false-positive expectation and sits inside a suite the packet itself says is consistent with null.
+* **HHI_fit:** not compelling.
+* **TSIMM_fit:** not compelling.
+* **timing_alignment_note:** `TNIC_t` could be aligned, but alignment alone does not rescue a weak target.
+* **FE_compatibility_note:** mechanically acceptable under Industry+FY, substantively unpersuasive.
+* **missingness_risk_note:** extra HHI missingness would further weaken an already marginal use case.
+* **final_use_rank:** **not a useful addition for this finding**. 
+
+### 4) H4_F1_ceo_pres_booklev
+
+* **finding_id:** `H4_F1_ceo_pres_booklev`
+* **restated_finding:** on the final results surface, `CEO_Pres_Uncertainty_pct` is the recurring H4 BookLev signal: positive in Industry+FiscalYear BookLev specifications, both contemporaneously and one year forward.
+* **variation_signature:** mainly **between-firm**; **outcome-specific** to leverage; call-level IV with slow-moving accounting outcome; **contemporaneous + lead**; **section-specific**.
+* **TNIC_fit_assessment:** this is one of the cleanest TNIC moderation opportunities. Market structure is a natural layer for explaining why uncertain presentation language translates into more or less leverage capacity.
+* **HHI_fit:** strongest. `TNIC3HHI` captures focal-firm-inclusive concentration / market-power environment and maps directly to debt capacity, pricing power, and financing tolerance under uncertainty.
+* **TSIMM_fit:** plausible but secondary. Product similarity/differentiation can reroute financing responses, but the channel is less direct than with HHI.
+* **timing_alignment_note:** use `TNIC_t` for `BookLev_t`. For `BookLev_{t+1}`, prefer an **explicitly constructed** lag if the moderator is meant to be predetermined; do not assume lagging.
+* **FE_compatibility_note:** strong in the parent Industry+FY structure; not natural to force firm-FE moderation when the parent effect is not there.
+* **missingness_risk_note:** compare HHI and TSIMM on common support; HHI may shrink the estimation sample.
+* **final_use_rank:** **strong moderator candidate**. The design is analytically strong, although the H4 packet itself notes that its own audit did not verify a fresh run output, so this should stay tied to the final results surface rather than over-sold as packet-verified output. 
+
+### 5) H4_F2_ceo_pres_debtcap
+
+* **finding_id:** `H4_F2_ceo_pres_debtcap`
+* **restated_finding:** on the final results surface, `CEO_Pres_Uncertainty_pct` is also the recurring H4 DebtToCapital signal: positive in Industry+FiscalYear DebtToCapital specifications, contemporaneously and at t+1.
+* **variation_signature:** mainly **between-firm**; **outcome-specific** to capital-structure composition; call-level IV with slow-moving accounting outcome; **contemporaneous + lead**.
+* **TNIC_fit_assessment:** also a strong pass. If TNIC is useful anywhere in H4, it is here: product-market structure can plausibly condition whether uncertainty maps into more debt-heavy financing.
+* **HHI_fit:** strongest.
+* **TSIMM_fit:** plausible secondary.
+* **timing_alignment_note:** same logic as BookLev: `TNIC_t` for the contemporaneous DV; explicit lag if the lead interaction is meant to be predetermined.
+* **FE_compatibility_note:** strongest in cross-sectional Industry+FY logic.
+* **missingness_risk_note:** same HHI-vs-TSIMM support issue as above.
+* **final_use_rank:** **strong moderator candidate**. 
+
+### 6) H5_F1_ceo_pres_dispersion
+
+* **finding_id:** `H5_F1_ceo_pres_dispersion`
+* **restated_finding:** on the final results surface, `CEO_Pres_Uncertainty_pct` is the only H5 signal worth carrying forward for post-call analyst dispersion.
+* **variation_signature:** **call-level**; very short-horizon **post-call** outcome; mixed between-/within-firm signature; **speaker-specific** and **section-specific**.
+* **TNIC_fit_assessment:** partial pass only. An annual firm-year moderator can be interpreted as a background environment, but this is a fast event-window outcome, so the moderator is necessarily a coarse layer rather than a tightly matched state variable.
+* **HHI_fit:** weak to moderate, and indirect.
+* **TSIMM_fit:** better. Similarity/differentiation can plausibly amplify how uncertain presentations widen analyst disagreement, especially through peer-comparison noise.
+* **timing_alignment_note:** `TNIC_t` matched to the fiscal year containing the call is the coherent choice; lagging is optional, not automatic.
+* **FE_compatibility_note:** more credible in Industry+FY than in firm FE because annual TNIC is slow-moving.
+* **missingness_risk_note:** TSIMM should be the first pass; HHI risks sample loss for a design that is already call-window specific.
+* **final_use_rank:** **plausible but secondary moderator candidate**. Procedurally, this remains weaker than H1/H4 because the H5 packet documents the design but does not verify an executed run output. 
+
+### 7) H12_F1_avg_ceo_pres_payout_lead
+
+* **finding_id:** `H12_F1_avg_ceo_pres_payout_lead`
+* **restated_finding:** on the final results surface, `Avg_CEO_Pres_Uncertainty_pct` enters significantly only in firm-FE lead payout specifications, and in the positive direction rather than the original payout-reduction direction.
+* **variation_signature:** exact **firm-year** unit match; **lead/predictive**; primarily **within-firm**; annual averaged IV.
+* **TNIC_fit_assessment:** unit alignment is perfect, but moderation value is low. This is a within-firm, lead-only finding, and the most plausible TNIC channels risk becoming post-hoc reinterpretations rather than genuine moderator content.
+* **HHI_fit:** limited.
+* **TSIMM_fit:** weaker.
+* **timing_alignment_note:** if ever tested, use an **explicitly lagged** TNIC for the lead payout design.
+* **FE_compatibility_note:** poor as a first-pass moderator because annual TNIC may not move enough within firm under firm FE.
+* **missingness_risk_note:** HHI missingness would bite without offsetting conceptual gain.
+* **final_use_rank:** **better as a control / stratifier / descriptive context than as a moderator**. 
+
+### 8) H13_F1_mgr_qa_capex
+
+* **finding_id:** `H13_F1_mgr_qa_capex`
+* **restated_finding:** on the final results surface, `Manager_QA_Uncertainty_pct` is the recurring H13 signal: positive in Industry+FiscalYear `CapexAt` and `CapexAt_lead` specifications.
+* **variation_signature:** mainly **between-firm**; call-level IV against annual firm-year capex intensity repeated across calls; **contemporaneous + lead**; **speaker-specific** and **section-specific**.
+* **TNIC_fit_assessment:** strong pass. Strategic investment is exactly where a product-space moderator can add economic content rather than merely relabeling the result.
+* **HHI_fit:** plausible but secondary. Concentration can reduce or redirect strategic investment pressure under uncertainty.
+* **TSIMM_fit:** strongest. Total product similarity is the most direct market-structure layer for explaining how uncertainty maps into strategic investment intensity.
+* **timing_alignment_note:** use `TNIC_t` for `CapexAt_t`; for `CapexAt_{t+1}`, explicit lagging is cleaner if the moderator is meant to be predetermined.
+* **FE_compatibility_note:** strong in the parent Industry+FY design; no need to force firm-FE moderation first.
+* **missingness_risk_note:** HHI-vs-TSIMM sample-overlap reporting is essential.
+* **final_use_rank:** **strong moderator candidate**. The H13 packet carries only a mild staleness caveat, so this is usable but not as cleanly packet-verified as H1. 
+
+## SECTION B — ACCEPT / REJECT TABLE
+
+| finding_id                      | candidate_variable | eligible_as_moderator | why_or_why_not                                                                                                            | preferred_timing                                                   | preferred_FE_logic                                | usefulness_rank                                                            |
+| ------------------------------- | ------------------ | --------------------: | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| H1_F1_mgr_pres_cash             | TNIC3HHI           |                    no | Cross-sectional cash effect risks being re-labeled as market-power/cash-generation differences; low incremental content   | `TNIC_t` only if explored                                          | Industry+FY only                                  | not a useful addition for this finding                                     |
+| H1_F1_mgr_pres_cash             | TNIC3TSIMM         |                   yes | Differentiation/similarity can plausibly condition precautionary buffering in a between-firm presentation result          | `TNIC_t` for `CashHoldings_t`; explicit lag only if built for lead | Industry+FY first                                 | plausible but secondary moderator candidate                                |
+| H1_F2_mgr_qa_cash               | TNIC3HHI           |                    no | Parent finding is within-firm contemporaneous only; annual HHI is too slow-moving for a natural firm-FE interaction       | `TNIC_t`                                                           | Parent FE is firm+FY, but fit is poor             | better as a control / stratifier / descriptive context than as a moderator |
+| H1_F2_mgr_qa_cash               | TNIC3TSIMM         |                    no | Same within-firm fit problem despite slightly better concept                                                              | `TNIC_t`                                                           | Parent FE is firm+FY, but fit is poor             | better as a control / stratifier / descriptive context than as a moderator |
+| H2_F1_mgr_qa_invest             | TNIC3HHI           |                    no | Parent signal is barely above false-positive expectation in an overwhelmingly null suite                                  | `TNIC_t`                                                           | Industry+FY mechanically okay, substantively weak | not a useful addition for this finding                                     |
+| H2_F1_mgr_qa_invest             | TNIC3TSIMM         |                    no | Same; no real incremental economic content                                                                                | `TNIC_t`                                                           | Industry+FY mechanically okay, substantively weak | not a useful addition for this finding                                     |
+| H4_F1_ceo_pres_booklev          | TNIC3HHI           |                   yes | Concentration/market power maps directly to debt capacity and leverage tolerance under uncertainty                        | `TNIC_t`; explicit `TNIC_{t-1}` preferred for lead                 | Industry+FY first                                 | strong moderator candidate                                                 |
+| H4_F1_ceo_pres_booklev          | TNIC3TSIMM         |                   yes | Similarity/differentiation can reroute financing response, though less directly than HHI                                  | `TNIC_t`; explicit `TNIC_{t-1}` preferred for lead                 | Industry+FY first                                 | plausible but secondary moderator candidate                                |
+| H4_F2_ceo_pres_debtcap          | TNIC3HHI           |                   yes | Natural fit for debt-vs-equity composition under uncertainty                                                              | `TNIC_t`; explicit `TNIC_{t-1}` preferred for lead                 | Industry+FY first                                 | strong moderator candidate                                                 |
+| H4_F2_ceo_pres_debtcap          | TNIC3TSIMM         |                   yes | Product-space rivalry can change capital-structure response to uncertainty                                                | `TNIC_t`; explicit `TNIC_{t-1}` preferred for lead                 | Industry+FY first                                 | plausible but secondary moderator candidate                                |
+| H5_F1_ceo_pres_dispersion       | TNIC3HHI           |                    no | Annual concentration is too indirect for a +3-day analyst-reaction outcome                                                | `TNIC_t`                                                           | Industry+FY only if explored                      | better as a control / stratifier / descriptive context than as a moderator |
+| H5_F1_ceo_pres_dispersion       | TNIC3TSIMM         |                   yes | Product-space overlap can plausibly amplify analyst disagreement from uncertain presentations                             | `TNIC_t`                                                           | Industry+FY first; firm FE only as robustness     | plausible but secondary moderator candidate                                |
+| H12_F1_avg_ceo_pres_payout_lead | TNIC3HHI           |                    no | Exact unit match, but parent result is within-firm lead-only and likely too slow-moving under firm FE; high post-hoc risk | explicit `TNIC_{t-1}` if ever used                                 | Firm+FY parent, but poor fit                      | better as a control / stratifier / descriptive context than as a moderator |
+| H12_F1_avg_ceo_pres_payout_lead | TNIC3TSIMM         |                    no | Same, with weaker direct payout channel                                                                                   | explicit `TNIC_{t-1}` if ever used                                 | Firm+FY parent, but poor fit                      | better as a control / stratifier / descriptive context than as a moderator |
+| H13_F1_mgr_qa_capex             | TNIC3HHI           |                   yes | Concentration can dampen or redirect strategic investment response to uncertainty                                         | `TNIC_t`; explicit `TNIC_{t-1}` preferred for lead                 | Industry+FY first                                 | plausible but secondary moderator candidate                                |
+| H13_F1_mgr_qa_capex             | TNIC3TSIMM         |                   yes | Product similarity/differentiation is a direct strategic-investment channel                                               | `TNIC_t`; explicit `TNIC_{t-1}` preferred for lead                 | Industry+FY first                                 | strong moderator candidate                                                 |
+| H14_F0_spread_surface           | TNIC3HHI           |                    no | No fresh post-redesign results exist, so there is no eligible parent finding to moderate                                  | n/a                                                                | n/a                                               | not a useful addition for this finding                                     |
+| H14_F0_spread_surface           | TNIC3TSIMM         |                    no | No fresh post-redesign results exist, so there is no eligible parent finding to moderate                                  | n/a                                                                | n/a                                               | not a useful addition for this finding                                     |
+| H15_F0_repurchase_surface       | TNIC3HHI           |                    no | The packet says the results are stale, non-citable, and null in the stale run                                             | n/a                                                                | n/a                                               | not a useful addition for this finding                                     |
+| H15_F0_repurchase_surface       | TNIC3TSIMM         |                    no | Same                                                                                                                      | n/a                                                                | n/a                                               | not a useful addition for this finding                                     |
+
+H2 is rejected because its own packet says the significant pattern is barely above the false-positive expectation and the suite is consistent with null; H14 is rejected because the packet says there are no fresh post-redesign results; H15 is rejected because the packet labels its results stale and non-citable.   
+
+## SECTION C — PREFERRED DESIGNS
+
+Minimum coherent tests only. For call-level parent models, the moderator is annual and must be acknowledged as repeated within firm-year; the first-pass design should stay with the parent FE logic instead of forcing firm-FE moderation where the parent effect is absent. TNIC timing and missingness rules come from the readme. 
+
+| finding_id                | moderator_variable | preferred_channel                                                                           | preferred_interaction_form                     | preferred_FE_structure                                                                          | sample_unit_note                                                                 | expected_sign_on_interaction | main_design_risk                                                         |
+| ------------------------- | ------------------ | ------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------ |
+| H1_F1_mgr_pres_cash       | TNIC3TSIMM         | precautionary cash buffering is stronger in crowded / high-similarity product spaces        | `Manager_Pres_Uncertainty_pct × z(TNIC3TSIMM)` | Industry FE + FiscalYear FE on `CashHoldings_t` first; lead only second                         | call-level rows; annual moderator repeated within firm-year                      | positive                     | lead parent spec lacks lagged cash control                               |
+| H4_F1_ceo_pres_booklev    | TNIC3HHI           | market-power / debt-capacity buffer                                                         | `CEO_Pres_Uncertainty_pct × z(TNIC3HHI)`       | Industry FE + FiscalYear FE on `BookLev_t` first; `BookLev_lead` only after explicit lag choice | call-level rows; annual moderator repeated within firm-year                      | positive (tentative)         | H4 packet did not verify a fresh run output; HHI includes the focal firm |
+| H4_F1_ceo_pres_booklev    | TNIC3TSIMM         | rivalry / differentiation reroutes leverage response                                        | `CEO_Pres_Uncertainty_pct × z(TNIC3TSIMM)`     | Industry FE + FiscalYear FE                                                                     | call-level rows; annual moderator repeated within firm-year                      | negative (tentative)         | sign is more theory-sensitive than HHI                                   |
+| H4_F2_ceo_pres_debtcap    | TNIC3HHI           | market power conditions debt-vs-equity composition under uncertainty                        | `CEO_Pres_Uncertainty_pct × z(TNIC3HHI)`       | Industry FE + FiscalYear FE on `DebtToCapital_t` first; lead second with explicit lag           | call-level rows; annual moderator repeated within firm-year                      | positive (tentative)         | same H4 verification and HHI-interpretation risk                         |
+| H4_F2_ceo_pres_debtcap    | TNIC3TSIMM         | product-space rivalry changes capital-structure mix response                                | `CEO_Pres_Uncertainty_pct × z(TNIC3TSIMM)`     | Industry FE + FiscalYear FE                                                                     | call-level rows; annual moderator repeated within firm-year                      | negative (tentative)         | sign is theory-sensitive                                                 |
+| H5_F1_ceo_pres_dispersion | TNIC3TSIMM         | uncertain presentations create more analyst disagreement when product-space overlap is high | `CEO_Pres_Uncertainty_pct × z(TNIC3TSIMM)`     | Industry FE + FiscalYear FE first; keep `PreCallDispersion`; firm FE only as robustness         | call-level rows; event-window DV with annual moderator repeated within firm-year | positive (tentative)         | H5 packet lacks execution-verified run output                            |
+| H13_F1_mgr_qa_capex       | TNIC3HHI           | concentration dampens or redirects strategic-investment response to uncertainty             | `Manager_QA_Uncertainty_pct × z(TNIC3HHI)`     | Industry FE + FiscalYear FE on `CapexAt_t` first; lead second with explicit lag                 | call-level rows; annual capex DV repeated within firm-year                       | negative (tentative)         | H13 carries a mild staleness caveat; HHI missingness may erode support   |
+| H13_F1_mgr_qa_capex       | TNIC3TSIMM         | high product similarity intensifies strategic-investment response under uncertainty         | `Manager_QA_Uncertainty_pct × z(TNIC3TSIMM)`   | Industry FE + FiscalYear FE on `CapexAt_t` first; lead second with explicit lag                 | call-level rows; annual capex DV repeated within firm-year                       | positive (tentative)         | annual moderator repeated across calls within firm-year                  |
+
+## SECTION D — MODERATOR_PACKET
+
+BEGIN_MODERATOR_PACKET
+meta:
+moderator_source: TNIC_dataset
+unit_of_measure: firm_year
+default_key:
+- gvkey
+- fiscal_year_matched_year
+nondefault_requirements:
+- explicit_lag_if_used
+- evaluate_HHI_and_TSIMM_separately
+- repeated_values_within_firm_year_must_be_acknowledged
+
+findings:
+
+* finding_id: H1_F1_mgr_pres_cash
+  variation_signature: between_firm; call_level_IV; annual_cash_DV_repeated_within_firm_year; contemporaneous_and_lead; manager_presentation_specific
+  HHI:
+  eligible: false
+  economic_fit: Concentration can matter for cash policy, but here it mostly risks relabeling a cross-sectional market-power or cash-generation difference.
+  timing_choice: TNIC_t for CashHoldings_t; explicit lag only if separately constructed
+  FE_fit: Cross-sectional Industry+FY fit is acceptable, but not the natural first firm-FE design
+  missingness_risk: HHI can be missing when TSIMM is present; likely extra sample loss
+  usefulness_rank: not a useful addition for this finding
+  TSIMM:
+  eligible: true
+  economic_fit: Product similarity or differentiation can plausibly condition precautionary cash buffering from uncertain presentations.
+  timing_choice: TNIC_t for CashHoldings_t; TNIC_t or explicit TNIC_t_minus_1 for CashHoldings_t_plus_1 with justification
+  FE_fit: Best in Industry+FY cross-sectional design; repeated within firm-year must be acknowledged
+  missingness_risk: Lower than HHI because TSIMM can exist when HHI is missing
+  usefulness_rank: plausible but secondary moderator candidate
+  preferred_use: secondary_moderation_with_TSIMM_only
+  preferred_design:
+  dependent_variable: CashHoldings_t first; CashHoldings_lead second
+  main_IV: Manager_Pres_Uncertainty_pct
+  moderator: TNIC3TSIMM
+  interaction: Manager_Pres_Uncertainty_pct x TNIC3TSIMM
+  FE_structure: Industry_FE_plus_FiscalYear_FE
+  controls_policy: inherit parent controls; report that the annual moderator is repeated across call rows
+  expected_sign: positive
+  key_risks:
+  - lead parent specification omits lagged cash control
+  - annual moderator repeated across calls within firm-year
+  - result remains mostly cross-sectional
+
+* finding_id: H1_F2_mgr_qa_cash
+  variation_signature: within_firm; contemporaneous; call_level_IV; annual_cash_DV_repeated_within_firm_quarter; manager_QA_specific
+  HHI:
+  eligible: false
+  economic_fit: Weak because the parent finding survives only under firm FE and annual HHI is likely too slow-moving.
+  timing_choice: TNIC_t only
+  FE_fit: Poor in firm-FE moderation because the moderator may not move enough within firm over time
+  missingness_risk: Extra sample loss with little conceptual payoff
+  usefulness_rank: better as a control / stratifier / descriptive context than as a moderator
+  TSIMM:
+  eligible: false
+  economic_fit: Slightly better conceptually than HHI, but still weak because the main problem is FE fit.
+  timing_choice: TNIC_t only
+  FE_fit: Poor in firm-FE moderation because the moderator may not move enough within firm over time
+  missingness_risk: Better than HHI, but still not enough to rescue the design
+  usefulness_rank: better as a control / stratifier / descriptive context than as a moderator
+  preferred_use: control_or_stratifier_only
+  preferred_design:
+  dependent_variable: CashHoldings_t
+  main_IV: Manager_QA_Uncertainty_pct
+  moderator: none_recommended
+  interaction: none
+  FE_structure: Firm_FE_plus_FiscalYear_FE_parent_only
+  controls_policy: inherit parent controls
+  expected_sign: none
+  key_risks:
+  - annual moderator has little within-firm movement
+  - parent effect is contemporaneous only
+  - DV is repeated within firm-quarter
+
+* finding_id: H2_F1_mgr_qa_invest
+  variation_signature: between_firm; contemporaneous; call_level_IV; annual_investment_residual_repeated_within_firm_year
+  HHI:
+  eligible: false
+  economic_fit: Formally alignable, but the parent signal is too weak and too close to null-expectation false positives.
+  timing_choice: TNIC_t
+  FE_fit: Industry+FY is mechanically fine, but the parent result is not substantively compelling
+  missingness_risk: HHI loss further weakens support
+  usefulness_rank: not a useful addition for this finding
+  TSIMM:
+  eligible: false
+  economic_fit: Same; no clear incremental economic content beyond a weak parent result
+  timing_choice: TNIC_t
+  FE_fit: Industry+FY is mechanically fine, but the parent result is not substantively compelling
+  missingness_risk: Lower than HHI, but still not worth pursuing
+  usefulness_rank: not a useful addition for this finding
+  preferred_use: none
+  preferred_design:
+  dependent_variable: none
+  main_IV: none
+  moderator: none
+  interaction: none
+  FE_structure: none
+  controls_policy: none
+  expected_sign: none
+  key_risks:
+  - suite is overwhelmingly null
+  - annual DV versus call-level observation mismatch
+  - marginal significance is barely above null expectation
+
+* finding_id: H4_F1_ceo_pres_booklev
+  variation_signature: between_firm; leverage_outcome; call_level_IV; slow_moving_accounting_DV; contemporaneous_and_lead; CEO_presentation_specific
+  HHI:
+  eligible: true
+  economic_fit: Concentration and market power directly map to debt capacity and leverage tolerance under uncertainty.
+  timing_choice: TNIC_t for BookLev_t; explicit TNIC_t_minus_1 preferred for BookLev_lead
+  FE_fit: Strong in Industry+FY; not necessary to force firm-FE moderation first
+  missingness_risk: HHI can shrink the estimation sample and should be compared against TSIMM on common support
+  usefulness_rank: strong moderator candidate
+  TSIMM:
+  eligible: true
+  economic_fit: Product similarity or differentiation can reroute leverage response, though less directly than HHI.
+  timing_choice: TNIC_t for BookLev_t; explicit TNIC_t_minus_1 preferred for BookLev_lead
+  FE_fit: Strong in Industry+FY; secondary to HHI
+  missingness_risk: Usually safer support than HHI
+  usefulness_rank: plausible but secondary moderator candidate
+  preferred_use: HHI_first_TSIMM_second
+  preferred_design:
+  dependent_variable: BookLev_t first; BookLev_lead second
+  main_IV: CEO_Pres_Uncertainty_pct
+  moderator: TNIC3HHI
+  interaction: CEO_Pres_Uncertainty_pct x TNIC3HHI
+  FE_structure: Industry_FE_plus_FiscalYear_FE
+  controls_policy: inherit parent controls; do not switch away from cross-sectional FE logic on the first pass
+  expected_sign: positive_tentative
+  key_risks:
+  - H4 packet did not verify a fresh run output
+  - HHI includes the focal firm
+  - annual moderator is repeated within firm-year
+
+* finding_id: H4_F2_ceo_pres_debtcap
+  variation_signature: between_firm; capital_structure_composition_outcome; call_level_IV; slow_moving_accounting_DV; contemporaneous_and_lead; CEO_presentation_specific
+  HHI:
+  eligible: true
+  economic_fit: Concentration and market power can directly condition debt-versus-equity response to uncertainty.
+  timing_choice: TNIC_t for DebtToCapital_t; explicit TNIC_t_minus_1 preferred for DebtToCapital_lead
+  FE_fit: Strong in Industry+FY; not necessary to force firm-FE moderation first
+  missingness_risk: HHI can shrink support and should be benchmarked against TSIMM
+  usefulness_rank: strong moderator candidate
+  TSIMM:
+  eligible: true
+  economic_fit: Product-space rivalry can change the composition of financing under uncertainty.
+  timing_choice: TNIC_t for DebtToCapital_t; explicit TNIC_t_minus_1 preferred for DebtToCapital_lead
+  FE_fit: Strong in Industry+FY; secondary to HHI
+  missingness_risk: Usually safer than HHI
+  usefulness_rank: plausible but secondary moderator candidate
+  preferred_use: HHI_first_TSIMM_second
+  preferred_design:
+  dependent_variable: DebtToCapital_t first; DebtToCapital_lead second
+  main_IV: CEO_Pres_Uncertainty_pct
+  moderator: TNIC3HHI
+  interaction: CEO_Pres_Uncertainty_pct x TNIC3HHI
+  FE_structure: Industry_FE_plus_FiscalYear_FE
+  controls_policy: inherit parent controls
+  expected_sign: positive_tentative
+  key_risks:
+  - H4 packet did not verify a fresh run output
+  - HHI includes the focal firm
+  - annual moderator is repeated within firm-year
+
+* finding_id: H5_F1_ceo_pres_dispersion
+  variation_signature: call_level; event_window_outcome; mixed_between_and_within; CEO_presentation_specific; immediate_post_call
+  HHI:
+  eligible: false
+  economic_fit: Annual concentration is too indirect for a very short-horizon analyst-reaction outcome.
+  timing_choice: TNIC_t
+  FE_fit: At most Industry+FY as descriptive context
+  missingness_risk: HHI loss is not justified by the channel quality
+  usefulness_rank: better as a control / stratifier / descriptive context than as a moderator
+  TSIMM:
+  eligible: true
+  economic_fit: Product-space overlap can plausibly amplify analyst disagreement from uncertain presentations.
+  timing_choice: TNIC_t
+  FE_fit: Better in Industry+FY than in firm FE because the moderator is slow-moving
+  missingness_risk: Better support than HHI
+  usefulness_rank: plausible but secondary moderator candidate
+  preferred_use: TSIMM_secondary_only
+  preferred_design:
+  dependent_variable: PostCallDispersion
+  main_IV: CEO_Pres_Uncertainty_pct
+  moderator: TNIC3TSIMM
+  interaction: CEO_Pres_Uncertainty_pct x TNIC3TSIMM
+  FE_structure: Industry_FE_plus_FiscalYear_FE_first
+  controls_policy: inherit parent controls and keep PreCallDispersion in the specification
+  expected_sign: positive_tentative
+  key_risks:
+  - H5 packet lacks execution-verified output
+  - annual moderator is repeated within firm-year
+  - event-window outcome is faster-moving than the moderator
+
+* finding_id: H12_F1_avg_ceo_pres_payout_lead
+  variation_signature: firm_year; within_firm; lead_only; annual_averaged_IV; payout_outcome
+  HHI:
+  eligible: false
+  economic_fit: Unit alignment is exact, but the parent result is within-firm and lead-only, so moderation risks post-hoc reinterpretation.
+  timing_choice: explicit TNIC_t_minus_1 if ever used
+  FE_fit: Poor under firm FE because TNIC is likely too slow-moving
+  missingness_risk: HHI sample loss without enough conceptual gain
+  usefulness_rank: better as a control / stratifier / descriptive context than as a moderator
+  TSIMM:
+  eligible: false
+  economic_fit: Weaker direct payout channel than HHI and the same FE problem
+  timing_choice: explicit TNIC_t_minus_1 if ever used
+  FE_fit: Poor under firm FE because TNIC is likely too slow-moving
+  missingness_risk: Better than HHI, but still not enough to justify moderation
+  usefulness_rank: better as a control / stratifier / descriptive context than as a moderator
+  preferred_use: control_or_stratifier_only
+  preferred_design:
+  dependent_variable: PayoutRatio_lead
+  main_IV: Avg_CEO_Pres_Uncertainty_pct
+  moderator: none_recommended
+  interaction: none
+  FE_structure: Firm_FE_plus_FiscalYear_FE_parent_only
+  controls_policy: inherit parent controls
+  expected_sign: none
+  key_risks:
+  - parent result is opposite the original theoretical sign
+  - within-firm annual moderation is likely underpowered
+  - high risk of post-hoc relabeling
+
+* finding_id: H13_F1_mgr_qa_capex
+  variation_signature: between_firm; call_level_IV; annual_capex_DV_repeated_within_firm_year; contemporaneous_and_lead; manager_QA_specific
+  HHI:
+  eligible: true
+  economic_fit: Concentration can dampen or redirect the strategic-investment response to uncertainty.
+  timing_choice: TNIC_t for CapexAt_t; explicit TNIC_t_minus_1 preferred for CapexAt_lead
+  FE_fit: Strong in Industry+FY; secondary to TSIMM
+  missingness_risk: HHI can shrink support and should be reported against TSIMM on common support
+  usefulness_rank: plausible but secondary moderator candidate
+  TSIMM:
+  eligible: true
+  economic_fit: Product similarity or differentiation is a direct strategic-investment channel for uncertainty-capex linkages.
+  timing_choice: TNIC_t for CapexAt_t; explicit TNIC_t_minus_1 preferred for CapexAt_lead
+  FE_fit: Strong in Industry+FY; best first-pass moderator
+  missingness_risk: Better support than HHI
+  usefulness_rank: strong moderator candidate
+  preferred_use: TSIMM_first_HHI_second
+  preferred_design:
+  dependent_variable: CapexAt_t first; CapexAt_lead second
+  main_IV: Manager_QA_Uncertainty_pct
+  moderator: TNIC3TSIMM
+  interaction: Manager_QA_Uncertainty_pct x TNIC3TSIMM
+  FE_structure: Industry_FE_plus_FiscalYear_FE
+  controls_policy: inherit parent controls; keep the parent call-level design and acknowledge repeated moderator values
+  expected_sign: positive_tentative
+  key_risks:
+  - annual moderator repeated across calls within firm-year
+  - H13 carries a mild staleness caveat
+  - HHI and TSIMM may imply different signs and should not be pooled
+  END_MODERATOR_PACKET

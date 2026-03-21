@@ -12,7 +12,7 @@ Architecture:
     Individual Compustat variable builders (one column each):
         SizeBuilder           → Size = ln(atq)
         BMBuilder             → BM = ceqq / (cshoq * prccq)
-        LevBuilder            → Lev = (dlcq + dlttq) / atq
+        BookLevBuilder        → BookLev = (dlcq + dlttq) / atq
         ROABuilder            → ROA = iby_annual / avg_assets
         CurrentRatioBuilder   → CurrentRatio = actq / lctq
         RDIntensityBuilder    → RD_Intensity = xrdq / atq
@@ -116,7 +116,9 @@ from .ceo_pres_weak_modal import CEOPresWeakModalBuilder
 # Compustat individual variable builders
 from .size import SizeBuilder
 from .bm import BMBuilder
-from .lev import LevBuilder
+from .lev import LevBuilder  # backward compat alias
+from .book_lev import BookLevBuilder
+from .debt_to_capital import DebtToCapitalBuilder
 from .roa import ROABuilder
 from .current_ratio import CurrentRatioBuilder
 from .rd_intensity import RDIntensityBuilder
@@ -132,6 +134,7 @@ from .ocf_volatility import OCFVolatilityBuilder
 # H12 Compustat variable builders (Dividend Intensity + Payout Ratio)
 from .div_intensity import DivIntensityBuilder
 from .payout_ratio import PayoutRatioBuilder
+from .payout_ratio_quarterly import PayoutRatioQuarterlyBuilder
 
 # H2 Compustat variable builders (Biddle 2009 investment efficiency)
 from .investment_residual import InvestmentResidualBuilder
@@ -197,6 +200,8 @@ __all__ = [
     "SizeBuilder",
     "BMBuilder",
     "LevBuilder",
+    "BookLevBuilder",
+    "DebtToCapitalBuilder",
     "ROABuilder",
     "CurrentRatioBuilder",
     "RDIntensityBuilder",
@@ -210,6 +215,7 @@ __all__ = [
     # H12 Compustat variable builders (Dividend Intensity + Payout Ratio)
     "DivIntensityBuilder",
     "PayoutRatioBuilder",
+    "PayoutRatioQuarterlyBuilder",
     # H2 Compustat variable builders (Biddle 2009 investment efficiency)
     "InvestmentResidualBuilder",
     "CashFlowBuilder",

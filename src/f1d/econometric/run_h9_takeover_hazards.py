@@ -130,7 +130,7 @@ from f1d.shared.regression_validation import (
 SPARSE_CONTROLS = [
     "Size",
     "BM",
-    "Lev",
+    "BookLev",
     "ROA",
     "CashHoldings",
 ]
@@ -160,7 +160,7 @@ SUMMARY_STATS_VARS = [
     # Financial controls — Sparse block (all models)
     {"col": "Size", "label": "Size"},
     {"col": "BM", "label": "BM"},
-    {"col": "Lev", "label": "Lev"},
+    {"col": "BookLev", "label": "BookLev"},
     {"col": "ROA", "label": "ROA"},
     {"col": "CashHoldings", "label": "CashHoldings"},
     # Financial controls — Expanded robustness block (primary style only)
@@ -569,7 +569,7 @@ def save_outputs(
 
     if diag_rows:
         diag_df = pd.DataFrame(diag_rows)
-        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
         print(f"  Saved: model_diagnostics.csv ({len(diag_df)} rows)")
 
 
@@ -908,7 +908,7 @@ def main(panel_path: Optional[str] = None) -> int:
             "Manager_Clarity_Residual": "Manager_Clarity_Residual",
             "Size": "Size",
             "BM": "BM",
-            "Lev": "Lev",
+            "BookLev": "BookLev",
             "ROA": "ROA",
             "CashHoldings": "CashHoldings",
             "SalesGrowth": "SalesGrowth",

@@ -89,7 +89,7 @@ if PANDERA_AVAILABLE:
             "SurpDec": Column(float, nullable=True),
             "Size": Column(float, nullable=True, checks=Check.gt(0.0)),
             "BM": Column(float, nullable=True, checks=Check.gt(0.0)),
-            "Lev": Column(float, nullable=True, checks=Check.ge(0.0)),
+            "BookLev": Column(float, nullable=True, checks=Check.ge(0.0)),
             "ROA": Column(float, nullable=True),
         },
         strict=False,

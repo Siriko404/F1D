@@ -18,7 +18,7 @@ Models (Main sample only — robustness table):
        CEO_QA_Uncertainty_pct ~ C(ceo_id) + base_controls + extended_controls + C(year)
 
 Base controls:    StockRet, MarketRet, EPS_Growth, SurpDec
-Extended controls: Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, Volatility
+Extended controls: Size, BM, BookLev, ROA, CurrentRatio, RD_Intensity, Volatility
 
 Hypothesis Tests:
     This is a robustness check (not a hypothesis test).
@@ -103,7 +103,7 @@ BASE_FIRM_CONTROLS = ["StockRet", "MarketRet", "EPS_Growth", "SurpDec"]
 EXTENDED_CONTROLS = [
     "Size",
     "BM",
-    "Lev",
+    "BookLev",
     "ROA",
     "CurrentRatio",
     "RD_Intensity",
@@ -155,7 +155,7 @@ VARIABLE_LABELS = {
     "SurpDec": "Earnings Surprise Decile",
     "Size": "Size (log assets)",
     "BM": "Book-to-Market",
-    "Lev": "Leverage",
+    "BookLev": "Leverage",
     "ROA": "Return on Assets",
     "CurrentRatio": "Current Ratio",
     "RD_Intensity": r"R\&D Intensity",
@@ -186,7 +186,7 @@ SUMMARY_STATS_VARS = [
     # Extended controls
     {"col": "Size", "label": "Size (log assets)"},
     {"col": "BM", "label": "Book-to-Market"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "ROA", "label": "Return on Assets"},
     {"col": "CurrentRatio", "label": "Current Ratio"},
     {"col": "RD_Intensity", "label": "R&D Intensity"},
@@ -345,7 +345,7 @@ def run_regression(
     continuous_vars = [
         "Size",
         "BM",
-        "Lev",
+        "BookLev",
         "ROA",
         "CurrentRatio",
         "RD_Intensity",
@@ -495,7 +495,7 @@ def save_outputs(
             })
     if diag_rows:
         diag_df = pd.DataFrame(diag_rows)
-        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+        diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
         print(f"  Saved: model_diagnostics.csv ({len(diag_df)} rows)")
 
     # Save regression summaries

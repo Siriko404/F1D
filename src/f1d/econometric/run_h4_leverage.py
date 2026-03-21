@@ -4,22 +4,21 @@
 STAGE 4: Test H4 Leverage Hypothesis
 ================================================================================
 ID: econometric/test_h4_leverage
-Description: Run H4 Leverage hypothesis test using 8 model specifications
-             with 6 simultaneous uncertainty/clarity IVs, varying DV, FE type,
+Description: Run H4 Leverage hypothesis test using 16 model specifications
+             with 4 simultaneous uncertainty IVs, varying DV, FE type,
              and control set. Main sample only.
 
 Model Specifications (8 columns in one table):
-    Cols 1-4: DV = Lev (contemporaneous)
-    Cols 5-8: DV = Lev_lead (t+1)
+    Cols 1-4: DV = BookLev (contemporaneous)
+    Cols 5-8: DV = BookLev_lead (t+1)
     Odd cols:  Industry FE (FF12 dummies) + FiscalYear FE
     Even cols: Firm FE + FiscalYear FE
     Cols 1-2, 5-6: Base controls
     Cols 3-4, 7-8: Extended controls
 
-Key Independent Variables (6, all enter simultaneously):
+Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-    CEO_Clarity_Residual, Manager_Clarity_Residual
 
 Base Controls (7):
     Size, TobinsQ, ROA, CapexAt, DividendPayer, OCF_Volatility, CashHoldings
@@ -53,7 +52,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_h4_leverage_panel), H0.3 (clarity residuals)
+    - Requires: Stage 3 (build_h4_leverage_panel)
     - Uses: linearmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
@@ -87,10 +86,7 @@ KEY_IVS = [
     "CEO_QA_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
     "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual",
-    "Manager_Clarity_Residual",
-]
+    "Manager_Pres_Uncertainty_pct",]
 
 # NOTE: Lev is the DV — it must NOT appear as a control.
 # CashHoldings (which was the DV in H1) is a control here.
@@ -112,14 +108,22 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "Lev",      "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "Lev",      "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "Lev",      "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "Lev",      "fe": "firm",     "controls": "extended"},
-    {"col": 5, "dv": "Lev_lead", "fe": "industry", "controls": "base"},
-    {"col": 6, "dv": "Lev_lead", "fe": "firm",     "controls": "base"},
-    {"col": 7, "dv": "Lev_lead", "fe": "industry", "controls": "extended"},
-    {"col": 8, "dv": "Lev_lead", "fe": "firm",     "controls": "extended"},
+    {"col": 1,  "dv": "BookLev",            "fe": "industry", "controls": "base",     "lag_control": "BookLev_lag"},
+    {"col": 2,  "dv": "BookLev",            "fe": "firm",     "controls": "base",     "lag_control": "BookLev_lag"},
+    {"col": 3,  "dv": "BookLev",            "fe": "industry", "controls": "extended", "lag_control": "BookLev_lag"},
+    {"col": 4,  "dv": "BookLev",            "fe": "firm",     "controls": "extended", "lag_control": "BookLev_lag"},
+    {"col": 5,  "dv": "BookLev_lead",       "fe": "industry", "controls": "base",     "lag_control": "BookLev_lag"},
+    {"col": 6,  "dv": "BookLev_lead",       "fe": "firm",     "controls": "base",     "lag_control": "BookLev_lag"},
+    {"col": 7,  "dv": "BookLev_lead",       "fe": "industry", "controls": "extended", "lag_control": "BookLev_lag"},
+    {"col": 8,  "dv": "BookLev_lead",       "fe": "firm",     "controls": "extended", "lag_control": "BookLev_lag"},
+    {"col": 9,  "dv": "DebtToCapital",      "fe": "industry", "controls": "base",     "lag_control": "DebtToCapital_lag"},
+    {"col": 10, "dv": "DebtToCapital",      "fe": "firm",     "controls": "base",     "lag_control": "DebtToCapital_lag"},
+    {"col": 11, "dv": "DebtToCapital",      "fe": "industry", "controls": "extended", "lag_control": "DebtToCapital_lag"},
+    {"col": 12, "dv": "DebtToCapital",      "fe": "firm",     "controls": "extended", "lag_control": "DebtToCapital_lag"},
+    {"col": 13, "dv": "DebtToCapital_lead", "fe": "industry", "controls": "base",     "lag_control": "DebtToCapital_lag"},
+    {"col": 14, "dv": "DebtToCapital_lead", "fe": "firm",     "controls": "base",     "lag_control": "DebtToCapital_lag"},
+    {"col": 15, "dv": "DebtToCapital_lead", "fe": "industry", "controls": "extended", "lag_control": "DebtToCapital_lag"},
+    {"col": 16, "dv": "DebtToCapital_lead", "fe": "firm",     "controls": "extended", "lag_control": "DebtToCapital_lag"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -128,23 +132,21 @@ VARIABLE_LABELS = {
     "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
     "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
-    "CEO_Clarity_Residual": "CEO Clarity Residual",
-    "Manager_Clarity_Residual": "Mgr Clarity Residual",
-}
+    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
 
 # Summary statistics variable list
 SUMMARY_STATS_VARS = [
-    {"col": "Lev", "label": "Leverage$_t$"},
-    {"col": "Lev_lead", "label": "Leverage$_{t+1}$"},
+    {"col": "BookLev", "label": "BookLev$_t$"},
+    {"col": "BookLev_lead", "label": "BookLev$_{t+1}$"},
+    {"col": "DebtToCapital", "label": "DebtToCapital$_t$"},
+    {"col": "DebtToCapital_lead", "label": "DebtToCapital$_{t+1}$"},
+    {"col": "BookLev_lag", "label": "BookLev$_{t-1}$"},
+    {"col": "DebtToCapital_lag", "label": "DebtToCapital$_{t-1}$"},
     # Key IVs
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
-    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
-    # Base controls
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    # Base controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
@@ -208,17 +210,18 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code",
         # DVs
-        "Lev", "Lev_lead",
+        "BookLev", "BookLev_lead",
+        "DebtToCapital", "DebtToCapital_lead",
         # Key IVs
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "CEO_Clarity_Residual", "Manager_Clarity_Residual",
-        # Base controls (NOTE: no Lev here — it is the DV)
         "Size", "TobinsQ", "ROA",
         "CapexAt", "DividendPayer", "OCF_Volatility",
         "CashHoldings",
         # Extended controls
         "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+        # Lagged DVs (historical level controls)
+        "BookLev_lag", "DebtToCapital_lag",
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
@@ -243,7 +246,10 @@ def prepare_regression_data(
 ) -> pd.DataFrame:
     """Prepare panel for a specific model specification."""
     dv = spec["dv"]
+    lag_control = spec.get("lag_control")
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+    if lag_control:
+        controls = controls + [lag_control]
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
 
     missing = [c for c in required if c not in panel.columns]
@@ -303,10 +309,15 @@ def run_regression(
     col_num = spec["col"]
     dv = spec["dv"]
     fe_type = spec["fe"]
+    lag_control = spec.get("lag_control")
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+    if lag_control:
+        controls = controls + [lag_control]
 
     print(f"\n" + "=" * 60)
     print(f"Running regression: Col ({col_num}) | DV={dv} | FE={fe_type} | Controls={spec['controls']}")
+    if lag_control:
+        print(f"  Lagged DV control: {lag_control}")
     print("=" * 60)
 
     if len(df_prepared) < 100:
@@ -406,9 +417,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Write unified 8-column LaTeX table with stars + SE in parentheses.
 
     Layout:
-        Cols 1-4: Lev (contemporaneous)
-        Cols 5-8: Lev_lead (t+1)
-        Rows: 6 key IVs (coeff + SE), controls indicator, FE indicators, N, R²
+        Cols 1-4: BookLev (contemporaneous)
+        Cols 5-8: BookLev_lead (t+1)
+        Rows: 4 key IVs (coeff + SE), controls indicator, FE indicators, N, R²
     """
     results_by_col = {}
     for r in all_results:
@@ -434,6 +445,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_r2(val: float) -> str:
         if np.isnan(val):
             return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
         return f"{val:.3f}"
 
     lines = [
@@ -452,8 +465,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # DV headers with multicolumn
     lines.append(
-        r" & \multicolumn{4}{c}{Leverage$_t$}"
-        r" & \multicolumn{4}{c}{Leverage$_{t+1}$} \\"
+        r" & \multicolumn{4}{c}{BookLev$_t$}"
+        r" & \multicolumn{4}{c}{BookLev$_{t+1}$} \\"
     )
     lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
     lines.append(r"\midrule")
@@ -573,7 +586,7 @@ def save_outputs(
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
     diag_path = out_dir / "model_diagnostics.csv"
-    diag_df.to_csv(diag_path, index=False)
+    diag_df.to_csv(diag_path, index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
 
     # LaTeX table
@@ -601,10 +614,9 @@ def generate_report(
         "",
         "## Model Specifications",
         "",
-        "All 6 key IVs enter each model simultaneously:",
+        "All 4 key IVs enter each model simultaneously:",
         "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
         "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
-        "- CEO_Clarity_Residual, Manager_Clarity_Residual",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",
@@ -715,8 +727,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
     print(f"\n  Main sample: {main_panel_n:,} calls, "
           f"{panel['gvkey'].nunique():,} firms")
-    print(f"  Lev non-null: {panel['Lev'].notna().sum():,}")
-    print(f"  Lev_lead non-null: {panel['Lev_lead'].notna().sum():,}")
+    print(f"  Lev non-null: {panel['BookLev'].notna().sum():,}")
+    print(f"  BookLev_lead non-null: {panel['BookLev_lead'].notna().sum():,}")
     for iv in KEY_IVS:
         n_valid = panel[iv].notna().sum()
         pct = 100.0 * n_valid / main_panel_n if main_panel_n > 0 else 0
@@ -739,7 +751,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("  Saved: summary_stats.csv")
     print("  Saved: summary_stats.tex")
 
-    # Run regressions: 8 model specifications
+    # Run regressions: 16 model specifications
     all_results: List[Dict[str, Any]] = []
 
     for spec in MODEL_SPECS:
@@ -770,7 +782,7 @@ def main(panel_path: Optional[str] = None) -> int:
         attrition_stages = [
             ("Master manifest (full panel)", full_panel_n),
             ("Main sample filter (excl Finance/Utility)", main_panel_n),
-            ("After lead filter (col 5-8 only)", panel["Lev_lead"].notna().sum()),
+            ("After lead filter (col 5-8 only)", panel["BookLev_lead"].notna().sum()),
             ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ]
         generate_attrition_table(attrition_stages, out_dir, "H4 Leverage")

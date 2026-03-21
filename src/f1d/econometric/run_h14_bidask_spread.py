@@ -5,7 +5,7 @@ STAGE 4: Test H14 Bid-Ask Spread Hypothesis
 ================================================================================
 ID: econometric/test_h14_bidask_spread
 Description: Run H14 Bid-Ask Spread hypothesis test using 4 model specifications
-             with 6 simultaneous uncertainty/clarity IVs, varying FE type and
+             with 4 simultaneous uncertainty IVs, varying FE type and
              control set. Main sample only.
 
 Model Specifications (4 columns in one table):
@@ -19,13 +19,12 @@ DV: DSPREAD — change in average relative bid-ask spread around the earnings ca
     DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])  [trading days]
     Following Lee (2016, The Accounting Review).
 
-Key Independent Variables (6, all enter simultaneously):
+Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-    CEO_Clarity_Residual, Manager_Clarity_Residual
 
 Base Controls (8):
-    Size, TobinsQ, ROA, Lev, CapexAt, DividendPayer, OCF_Volatility,
+    Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility,
     PreCallSpread (lagged-DV control: pre-call relative spread level)
 
 Extended Controls (Base + 4):
@@ -35,9 +34,6 @@ Sample: Main only (FF12 codes 1-7, 9-10, 12).
 
 Hypothesis Test (one-tailed):
     H14: beta(uncertainty_var) > 0 — higher uncertainty -> wider spreads.
-    Note: Clarity residuals are expected to have negative coefficients
-    (more clarity -> narrower spreads). The one-tailed test is conservative
-    for clarity residuals by design (matches H1/H4/H5 pattern).
 
 FE Time Index: fyearq_int (fiscal year).
 Standard Errors: Firm-clustered (groups=gvkey).
@@ -92,10 +88,7 @@ KEY_IVS = [
     "CEO_QA_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
     "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual",
-    "Manager_Clarity_Residual",
-]
+    "Manager_Pres_Uncertainty_pct",]
 
 # NOTE: DSPREAD is the DV — NOT a control.
 # PreCallSpread is a lagged-DV control (pre-call relative spread level).
@@ -104,7 +97,7 @@ BASE_CONTROLS = [
     "Size",
     "TobinsQ",
     "ROA",
-    "Lev",
+    "BookLev",
     "CapexAt",
     "DividendPayer",
     "OCF_Volatility",
@@ -131,10 +124,7 @@ VARIABLE_LABELS = {
     "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
     "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
-    "CEO_Clarity_Residual": "CEO Clarity Residual",
-    "Manager_Clarity_Residual": "Mgr Clarity Residual",
-}
+    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
 
 SUMMARY_STATS_VARS = [
     {"col": "DSPREAD", "label": r"$\Delta$Spread (DV)"},
@@ -142,13 +132,10 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
-    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "CapexAt", "label": "CapEx / Assets"},
     {"col": "DividendPayer", "label": "Dividend Payer"},
     {"col": "OCF_Volatility", "label": "OCF Volatility"},
@@ -206,12 +193,10 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         "gvkey", "year", "fyearq_int", "ff12_code",
         # DV (Lee 2016 construction)
         "DSPREAD",
-        # Key IVs (6 simultaneous)
+        # Key IVs (4 simultaneous)
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "CEO_Clarity_Residual", "Manager_Clarity_Residual",
-        # Base controls
-        "Size", "TobinsQ", "ROA", "Lev",
+        "Size", "TobinsQ", "ROA", "BookLev",
         "CapexAt", "DividendPayer", "OCF_Volatility",
         "PreCallSpread",
         # Extended controls
@@ -415,6 +400,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_r2(val: float) -> str:
         if np.isnan(val):
             return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
         return f"{val:.3f}"
 
     lines = [
@@ -547,7 +534,7 @@ def save_outputs(
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
     diag_path = out_dir / "model_diagnostics.csv"
-    diag_df.to_csv(diag_path, index=False)
+    diag_df.to_csv(diag_path, index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
 
     _save_latex_table(all_results, out_dir)
@@ -575,10 +562,9 @@ def generate_report(
         "",
         "## Model Specifications",
         "",
-        "All 6 key IVs enter each model simultaneously:",
+        "All 4 key IVs enter each model simultaneously:",
         "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
         "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
-        "- CEO_Clarity_Residual, Manager_Clarity_Residual",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",

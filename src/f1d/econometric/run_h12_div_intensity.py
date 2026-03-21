@@ -5,7 +5,7 @@ STAGE 4: Test H12 Payout Ratio Hypothesis
 ================================================================================
 ID: econometric/run_h12_div_intensity
 Description: Run H12 hypothesis test using 8 model specifications
-             with 6 simultaneous uncertainty/clarity IVs (firm-year averaged),
+             with 4 simultaneous uncertainty IVs (firm-year averaged),
              varying DV, FE type, and control set. Main sample only.
 
 Model Specifications (8 columns in one table):
@@ -16,17 +16,16 @@ Model Specifications (8 columns in one table):
     Cols 1-2, 5-6: Base controls
     Cols 3-4, 7-8: Extended controls
 
-Key Independent Variables (6, all enter simultaneously, firm-year averaged):
+Key Independent Variables (4, all enter simultaneously, firm-year averaged):
     Avg_CEO_QA_Uncertainty_pct, Avg_CEO_Pres_Uncertainty_pct,
     Avg_Manager_QA_Uncertainty_pct, Avg_Manager_Pres_Uncertainty_pct,
-    Avg_CEO_Clarity_Residual, Avg_Manager_Clarity_Residual
 
 DV Construction (Attig et al.):
     PayoutRatio = DVC / IB = dvy / iby
     NaN when iby <= 0 (negative earnings).
 
 Base Controls (7):
-    Size, TobinsQ, ROA, Lev, CashHoldings, CapexAt, OCF_Volatility
+    Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility
     NOTE: DividendPayer is NOT a control (endogenous with DV).
 
 Extended Controls (Base + 4):
@@ -58,7 +57,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_h12_div_intensity_panel), H0.3 (clarity residuals)
+    - Requires: Stage 3 (build_h12_div_intensity_panel)
     - Uses: linearmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
@@ -93,8 +92,6 @@ KEY_IVS = [
     "Avg_CEO_Pres_Uncertainty_pct",
     "Avg_Manager_QA_Uncertainty_pct",
     "Avg_Manager_Pres_Uncertainty_pct",
-    "Avg_CEO_Clarity_Residual",
-    "Avg_Manager_Clarity_Residual",
 ]
 
 # NOTE: PayoutRatio is the DV -- it must NOT appear as a control.
@@ -103,7 +100,7 @@ BASE_CONTROLS = [
     "Size",
     "TobinsQ",
     "ROA",
-    "Lev",
+    "BookLev",
     "CashHoldings",
     "CapexAt",
     "OCF_Volatility",
@@ -132,8 +129,6 @@ VARIABLE_LABELS = {
     "Avg_CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
     "Avg_Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
     "Avg_Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
-    "Avg_CEO_Clarity_Residual": "CEO Clarity Residual",
-    "Avg_Manager_Clarity_Residual": "Mgr Clarity Residual",
 }
 
 SUMMARY_STATS_VARS = [
@@ -144,13 +139,11 @@ SUMMARY_STATS_VARS = [
     {"col": "Avg_CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Avg_Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "Avg_Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "Avg_CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
-    {"col": "Avg_Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
     # Base controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "CashHoldings", "label": "Cash Holdings"},
     {"col": "CapexAt", "label": "CapEx / Assets"},
     {"col": "OCF_Volatility", "label": "OCF Volatility"},
@@ -395,7 +388,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     Layout:
         Cols 1-4: PayoutRatio (contemporaneous)
         Cols 5-8: PayoutRatio_lead (t+1)
-        Rows: 6 key IVs (coeff + SE), controls indicator, FE indicators, N, R2
+        Rows: 4 key IVs (coeff + SE), controls indicator, FE indicators, N, R2
     """
     results_by_col = {}
     for r in all_results:
@@ -421,6 +414,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_r2(val: float) -> str:
         if np.isnan(val):
             return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
         return f"{val:.3f}"
 
     lines = [
@@ -560,7 +555,7 @@ def save_outputs(
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
     diag_path = out_dir / "model_diagnostics.csv"
-    diag_df.to_csv(diag_path, index=False)
+    diag_df.to_csv(diag_path, index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
 
     # LaTeX table
@@ -589,10 +584,9 @@ def generate_report(
         "",
         "## Model Specifications",
         "",
-        "All 6 key IVs enter each model simultaneously (firm-year averaged):",
+        "All 4 key IVs enter each model simultaneously (firm-year averaged):",
         "- Avg_CEO_QA_Uncertainty_pct, Avg_CEO_Pres_Uncertainty_pct",
         "- Avg_Manager_QA_Uncertainty_pct, Avg_Manager_Pres_Uncertainty_pct",
-        "- Avg_CEO_Clarity_Residual, Avg_Manager_Clarity_Residual",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",

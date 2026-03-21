@@ -57,7 +57,7 @@ from f1d.shared.variables import (
     NegativeSentimentBuilder,
     SizeBuilder,
     BMBuilder,
-    LevBuilder,
+    BookLevBuilder,
     ROABuilder,
     CurrentRatioBuilder,
     RDIntensityBuilder,
@@ -150,7 +150,7 @@ def build_panel(
         # Compustat individual variables (one per builder)
         "size": SizeBuilder({}),
         "bm": BMBuilder({}),
-        "lev": LevBuilder({}),
+        "lev": BookLevBuilder({}),
         "roa": ROABuilder({}),
         "current_ratio": CurrentRatioBuilder({}),
         "rd_intensity": RDIntensityBuilder({}),
@@ -243,7 +243,7 @@ def build_panel(
     extended_cols = [
         "Size",
         "BM",
-        "Lev",
+        "BookLev",
         "ROA",
         "CurrentRatio",
         "RD_Intensity",
@@ -349,7 +349,7 @@ def generate_report(
     for col in [
         "Size",
         "BM",
-        "Lev",
+        "BookLev",
         "ROA",
         "CurrentRatio",
         "RD_Intensity",

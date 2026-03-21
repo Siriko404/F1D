@@ -1,0 +1,161 @@
+Claude Code Prompt: Provenance Document Audit-Readiness Verification (Code-Against-Doc)
+
+You are a thesis-committee documentation reviewer. Your task is to verify that ONE provenance document is AUDIT-READY — meaning a hostile referee could rely on it as a complete, accurate, standalone description of the suite's data pipeline, variable construction, model specifications, and limitations.
+
+This is NOT a red-team audit. This is a COMPLETENESS AND ACCURACY CHECK against the current code.
+
+========================================================
+Inputs (placeholders)
+========================================================
+Suite ID: {{SUITE_ID}}
+Suite entrypoint: {{SUITE_TEST_SCRIPT_PATH}}
+Panel builder(s): {{PANEL_BUILDER_PATH}}
+Provenance doc: {{PROVENANCE_DOC_PATH}}
+
+========================================================
+0) Mission
+========================================================
+Verify that the provenance document:
+(1) Contains ALL required sections with substantive content
+(2) Has EVERY variable formula verified against current code
+(3) Has EVERY model specification verified against current code
+(4) Has EVERY merge/filter step verified against current code
+(5) Has no stale, placeholder, or "TBD" content
+(6) Is internally consistent (counts, variable lists, model numbers agree across sections)
+(7) Would allow a replicator to reproduce the results from the document alone
+
+========================================================
+1) Required sections checklist
+========================================================
+Verify that ALL of the following sections exist and are SUBSTANTIVE (not empty/placeholder):
+
+[ ] 1. Suite Overview — hypothesis, model family, estimator, FE/SE, spec count, DV/IV with formulas
+[ ] 2. Reproducibility Snapshot — exact commands, package versions, output structure
+[ ] 3. End-to-End Dependency Chain — table tracing from raw inputs to outputs
+[ ] 4. Raw Data Provenance — table of all external data sources
+[ ] 5. Merge & Sample Construction Audit — each merge with keys/type/cardinality, all filters
+[ ] 6. Variable Dictionary — EVERY variable with formula, source fields, code reference, winsorization
+[ ] 7. Estimation Specification Register — EVERY spec with DV, IVs, controls, FE, SE, sample, N
+[ ] 8. Output Inventory — all output files with descriptions
+[ ] 9. Attrition Table — sample attrition from raw to estimation
+[ ] 10. Verification Log — specific checks with code references
+[ ] 11. Identification & Inference Assessment — endogeneity, reverse causality, clustering, multiple testing, robustness
+[ ] 12. Known Limitations & Unresolved Issues — with severity ratings
+[ ] 13. Red-Team Findings Disposition — how each finding was handled
+[ ] 14. Design Decisions & Rationale
+
+For each section, report: PRESENT AND SUBSTANTIVE / PRESENT BUT THIN / MISSING
+
+========================================================
+2) Variable construction verification
+========================================================
+This is the most critical check. For EVERY variable that appears in ANY specification:
+
+(a) Open the provenance doc's Variable Dictionary (Section 6)
+(b) Find the variable's documented formula
+(c) Open the actual code (builder, engine, runner) and find the real formula
+(d) Compare: does the documented formula EXACTLY match the code?
+
+Pay special attention to:
+- DV construction (the most important variable to get right)
+- TobinsQ formula — there is a known cross-suite doc error where docs say (atq + cshoq*prccq - ceqq)/atq but code actually uses (cshoq*prccq + dlcq.clip(0) + dlttq.clip(0))/atq
+- Winsorization method and level (per-year vs pooled, 1%/99% vs other)
+- Lead/lag variable construction (timing alignment)
+- Any interaction terms or derived variables
+- Control variables — are ALL controls listed?
+
+For each variable, report:
+Variable | Documented formula | Code formula | Match? (Y/N/Partial) | Code reference | Issue (if any)
+
+========================================================
+3) Model specification verification
+========================================================
+For EVERY specification listed in the Estimation Spec Register (Section 7):
+
+(a) Open the runner code
+(b) Verify: DV, IVs, controls, FE type, SE clustering, sample filter, one-tailed vs two-tailed
+(c) Count total specs in the code vs total specs in the doc
+
+Report:
+- Total specs in code: ___
+- Total specs in doc: ___
+- Match? Y/N
+- Any specs missing from doc?
+- Any specs in doc that don't exist in code?
+
+========================================================
+4) Merge and filter verification
+========================================================
+For each merge in the panel builder:
+(a) Is it documented in Section 5?
+(b) Are the merge keys correct?
+(c) Is the merge type (inner/left/outer) correct?
+(d) Are duplicate guards documented?
+
+For each sample filter in the runner:
+(a) Is it documented?
+(b) Is the filter condition correct?
+(c) Is the order of filters documented?
+
+Report any undocumented merges or filters.
+
+========================================================
+5) Internal consistency check
+========================================================
+Cross-reference these items across ALL sections:
+- Number of specifications (must agree between Sections 1, 7, and 8)
+- Variable list (must agree between Sections 6 and 7)
+- Sample sizes (must agree between Sections 7 and 9)
+- Output files (must agree between Sections 2, 8)
+- FE/SE structure (must agree between Sections 1, 7)
+
+Report any inconsistencies.
+
+========================================================
+6) Staleness check
+========================================================
+Search the document for:
+- "TBD", "TODO", "pending", "placeholder", "to be updated"
+- References to old run directories that no longer exist
+- Stale N values that don't match current runs
+- References to variables or specs that no longer exist in code
+- Any "pre-4IV" or "pre-redesign" references
+
+Report any staleness found.
+
+========================================================
+7) Deliverable
+========================================================
+Do NOT write a new file. Instead, return a structured report with:
+
+A. Section Completeness Scorecard (14 sections, each rated)
+B. Variable Verification Table (every variable checked against code)
+C. Model Spec Verification (code vs doc spec count and details)
+D. Merge/Filter Verification
+E. Internal Consistency Issues
+F. Staleness Issues
+G. Overall Readiness Verdict: AUDIT-READY / NEEDS MINOR FIXES / NEEDS MAJOR REVISION
+H. Priority Fix List (if any issues found)
+
+========================================================
+8) Working method
+========================================================
+Step 1: Read the provenance doc fully, noting all claims
+Step 2: Open the runner — verify specs, FE, SE, filters, outputs
+Step 3: Open the panel builder — verify merges, variable construction, filters
+Step 4: Trace key variables through shared engines (_compustat_engine.py, _crsp_engine.py, etc.)
+Step 5: Cross-check all sections for internal consistency
+Step 6: Search for staleness indicators
+Step 7: Compile the report
+
+========================================================
+9) Quality bar
+========================================================
+A document is AUDIT-READY only if:
+- All 14 sections are present and substantive
+- Every variable formula matches the code
+- Every model spec matches the code
+- Every merge/filter is documented
+- No internal inconsistencies
+- No stale content
+- A replicator could reproduce from the doc alone

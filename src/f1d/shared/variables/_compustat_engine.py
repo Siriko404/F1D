@@ -105,7 +105,8 @@ logger = logging.getLogger(__name__)
 COMPUSTAT_COLS = [
     "Size",
     "BM",
-    "Lev",
+    "BookLev",
+    "DebtToCapital",
     "ROA",
     "CurrentRatio",
     "RD_Intensity",
@@ -119,6 +120,8 @@ COMPUSTAT_COLS = [
     # H12 extension (Dividend Intensity + Payout Ratio)
     "DivIntensity",
     "PayoutRatio",
+    # H12Q extension (Quarterly Payout Ratio)
+    "PayoutRatio_q",
     # H2 extension (Biddle 2009 investment residual)
     "InvestmentResidual",
     "CashFlow",
@@ -1035,7 +1038,17 @@ def _compute_and_winsorize(
     comp["BM"] = comp["ceqq"] / (comp["cshoq"] * comp["prccq"])
     # FIX: Spec defines leverage as (dlcq + dlttq) / atq (interest-bearing debt only)
     # ltq includes all liabilities (accounts payable, accrued expenses, etc.)
-    comp["Lev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]
+    comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]
+
+    # H4 extension: DebtToCapital = total debt / (shareholders' equity + total debt)
+    total_debt = comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)
+    total_capital = comp["seqq"] + total_debt
+    comp["DebtToCapital"] = np.where(
+        total_capital > 0,
+        total_debt / total_capital,
+        np.nan,
+    )
+
     # ROA: use annualized Q4 iby and average assets
     atq_annual = _compute_annual_q4_variable(comp, "atq", "_atq_annual")
     atq_annual_lag1 = _compute_annual_q4_variable_lag(comp, "atq", "_atq_annual_lag1")
@@ -1100,6 +1113,17 @@ def _compute_and_winsorize(
         np.nan,
     )
 
+    # --- H12Q: Quarterly PayoutRatio = (dvpspq × cshoq) / ibq ---
+    # True quarterly field (dvpspq is single-quarter, not YTD cumulative).
+    # Negative earnings filter: ibq <= 0 → NaN (explicit exclusion).
+    # Missing dividends: dvpspq NaN with ibq > 0 → 0 dividends → PayoutRatio_q = 0.
+    quarterly_div = comp["dvpspq"].fillna(0) * comp["cshoq"]
+    comp["PayoutRatio_q"] = np.where(
+        comp["ibq"] > 0,
+        quarterly_div / comp["ibq"],
+        np.nan,
+    )
+
     comp["OCF_Volatility"] = _compute_ocf_volatility(comp)
 
     # --- H2 extension: Biddle (2009) investment residual + CashFlow + SalesGrowth ---
@@ -1140,7 +1164,8 @@ def _compute_and_winsorize(
     # --- MINOR-9: Replace inf with NaN after ratio computations ---
     ratio_cols = [
         "BM",
-        "Lev",
+        "BookLev",
+        "DebtToCapital",
         "ROA",
         "CurrentRatio",
         "RD_Intensity",
@@ -1149,6 +1174,7 @@ def _compute_and_winsorize(
         "CapexAt",
         "DivIntensity",
         "PayoutRatio",
+        "PayoutRatio_q",
         "OCF_Volatility",
         "InvestmentResidual",
         "CashFlow",

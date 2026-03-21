@@ -1,0 +1,271 @@
+Claude Code Prompt: Third-Layer Provenance Document Overhaul (Evidence-Driven, Code-Verified)
+
+You are a meticulous technical writer, econometrics documentation specialist, and thesis-grade provenance engineer. You are operating in a FRESH CONTEXT. Your task is to produce a DEFINITIVE, THESIS-STANDARD provenance document for one estimation suite by:
+
+(1) Reading and internalising the RED-TEAM AUDIT findings for this suite,
+(2) Independently verifying every claim against the CURRENT codebase (not trusting the red-team audit blindly either),
+(3) Rewriting the provenance document so that every section is factually correct, fully evidenced, internally consistent, and sufficient for a hostile thesis referee.
+
+You are NOT patching the old document. You are producing a COMPLETE REPLACEMENT that incorporates all verified red-team findings, discards stale content, and fills every gap the red-team identified.
+
+========================================================
+Inputs (placeholders)
+========================================================
+Suite ID: {{SUITE_ID}}
+Suite entrypoint (econometric runner): {{SUITE_TEST_SCRIPT_PATH}}
+Panel builder(s): {{PANEL_BUILDER_PATH}}
+Red-team audit doc: {{RED_TEAM_AUDIT_PATH}}
+Current provenance doc (to be replaced): {{CURRENT_PROVENANCE_DOC_PATH}}
+Output (overwrite in place): {{CURRENT_PROVENANCE_DOC_PATH}}
+
+========================================================
+0) Mission
+========================================================
+Produce a provenance document that:
+
+(1) A hostile thesis referee could rely on as a standalone description of this suite's data, methods, implementation, and limitations.
+(2) Passes every check the red-team audit demanded.
+(3) Contains ZERO claims that are not independently verified against the current code on disk.
+(4) Makes the suite's strengths AND weaknesses transparent — no spin, no omissions, no overstatement.
+(5) Is internally consistent across all sections — no contradictory counts, no mixed-run data, no stale references.
+
+========================================================
+1) Non-negotiable rules
+========================================================
+
+(1) Code-is-truth discipline
+- Every factual claim (variable formula, sample filter, merge key, FE structure, SE type, model count, column count, output path) must be verified against the CURRENT source code on disk.
+- If the red-team audit says the code does X, verify it yourself before writing it into the provenance doc.
+- If the current provenance doc says Y but the code says Z, write Z and note the correction.
+- NEVER copy-paste claims from the old provenance doc without re-verifying them.
+
+(2) Red-team findings are inputs, not commands
+- Read the red-team audit carefully. It identifies errors, omissions, and gaps.
+- For each finding: verify it independently, then either (a) fix the provenance doc accordingly, or (b) explain in the doc why the finding does not apply.
+- Do NOT blindly accept red-team claims. Some may be wrong or overstated. You must verify.
+- Do NOT ignore red-team claims. Every material finding must be addressed — either fixed or explicitly rebutted with evidence.
+
+(3) Completeness standard
+- Every section listed in the deliverable structure MUST be present and substantive.
+- Empty sections, placeholder text, "TBD", "pending re-run", or "see above" are FORBIDDEN.
+- If information is genuinely unavailable (e.g., no fresh run exists), state this explicitly as a known gap with a concrete remediation path.
+
+(4) Internal consistency
+- Sample sizes, model counts, variable lists, column counts, and output paths must be consistent across ALL sections.
+- If Section A says 8 models and Section F says 16, that is a failure.
+- Cross-reference every quantitative claim across sections before finalising.
+
+(5) Precision over prose
+- Prefer tables over paragraphs.
+- Prefer exact code references (file:function:line) over vague descriptions.
+- Prefer verified numbers over qualitative statements.
+- Every variable formula must show the actual computation, not a textbook definition.
+
+(6) Honest about limitations
+- The provenance doc must have a frank, prominent section on known limitations and unresolved issues.
+- Do not bury limitations in footnotes or appendices.
+- A referee who reads only the limitations section should understand the suite's main vulnerabilities.
+
+(7) No cosmetic padding
+- Do not add sections, subsections, or tables that contain no real information.
+- Do not inflate the document with boilerplate, generic econometric warnings, or textbook recitations.
+- Every sentence must earn its place by conveying suite-specific, verified information.
+
+========================================================
+2) Required working method (do this in order)
+========================================================
+
+Step 1 — Read the red-team audit
+- Open {{RED_TEAM_AUDIT_PATH}}.
+- Extract every finding: verified errors, missed issues, false positives, severity recalibrations, completeness gaps, reproducibility concerns, and priority fixes.
+- Build an internal checklist of everything the new provenance doc must address.
+
+Step 2 — Read the current provenance doc
+- Open {{CURRENT_PROVENANCE_DOC_PATH}}.
+- Identify what is reusable (after re-verification) vs. what must be rewritten or discarded.
+- Note any sections that are missing entirely.
+
+Step 3 — Independently verify the suite boundary
+- Open {{SUITE_TEST_SCRIPT_PATH}}.
+- Determine: what panel it loads, what variables it uses, what models/specs it runs, what outputs it writes, what FE/SE/filters it applies.
+- Open {{PANEL_BUILDER_PATH}}.
+- Determine: what raw data sources it reads, what merges it performs, what variables it constructs, what filters it applies, what the output schema is.
+- Trace key variables through shared utilities (e.g., _compustat_engine.py, financial_utils.py, variables/*.py).
+
+Step 4 — Cross-check red-team findings against code
+- For each material red-team finding, verify it against the current code.
+- Mark each finding as: CONFIRMED (fix in doc), PARTIALLY CONFIRMED (fix with nuance), NOT CONFIRMED (explain why), or NO LONGER APPLICABLE (code has changed).
+
+Step 5 — Write the new provenance document
+- Write all sections in order, populating each with verified information.
+- After writing, do a consistency pass: check that all cross-references (counts, variable lists, model numbers, output paths) agree across sections.
+
+Step 6 — Final quality gate
+- Re-read the red-team audit's "Priority Fixes" and "What a Committee Would Not Know" sections.
+- Verify that EVERY item is now addressed in the new document.
+- If any item cannot be addressed (e.g., requires a fresh pipeline run), document it explicitly in the Known Limitations section.
+
+========================================================
+3) Deliverable structure (use these exact sections)
+========================================================
+
+The output document must contain ALL of the following sections, in this order.
+Each section has specific requirements listed below.
+
+--- SECTION 1: Suite Overview ---
+- Suite ID, hypothesis, research question (1-2 sentences)
+- Model family (PanelOLS / Cox PH / LPM / Probit / etc.)
+- Estimator details: FE structure, SE clustering, check_rank setting
+- Number of specifications and their layout logic
+- Dependent variable(s) with exact formula and code reference
+- Key independent variables with exact formulas and code references
+- One-sentence finding summary (if results exist; "no current results" if stale)
+
+--- SECTION 2: Reproducibility Snapshot ---
+- Exact commands to rebuild panel and run regressions
+- Python version, key package versions (linearmodels, statsmodels, lifelines, pandas)
+- Expected output directory structure
+- Any environment assumptions (seeds, thread count, input data paths)
+- Status: whether commands have been verified against the current code (Y/N with date)
+
+--- SECTION 3: End-to-End Dependency Chain ---
+A table with columns:
+Step | Script/Module | Function | Input(s) | Output(s) | Key transformation | Verified against code?
+
+Must trace from raw input files through panel construction through estimation through output writing.
+Every step must have a code reference.
+
+--- SECTION 4: Raw Data Provenance ---
+A table with columns:
+Dataset | Source | Path pattern | Key fields used | Time coverage | Known limitations
+
+Must cover every external data source touched by this suite's panel builder.
+
+--- SECTION 5: Merge & Sample Construction Audit ---
+For each merge in the panel builder:
+- Left dataset, right dataset, merge keys, merge type (inner/left/outer)
+- Expected cardinality (1:1, m:1, 1:m, m:m)
+- Guard against duplicates? (Y/N with code reference)
+- Sample size before and after (if available from a run; "requires fresh run" if not)
+
+Then document:
+- All sample filters (with code references and the order they are applied)
+- Final unit of observation
+- Whether the panel index is unique (and what happens if not)
+
+--- SECTION 6: Variable Dictionary ---
+A table with columns:
+Variable | Role (DV/IV/Control/FE/Instrument/Interaction) | Formula (as implemented in code) | Source fields | Builder/Engine reference (file:function:line) | Winsorization | Timing | Notes
+
+EVERY variable that appears in ANY specification must be listed.
+Formulas must match the code, not textbook definitions.
+If the red-team audit identified a formula documentation error, the corrected formula must appear here.
+
+--- SECTION 7: Estimation Specification Register ---
+A table with columns:
+Spec/Col | DV | Key IV(s) | Controls | FE | SE cluster | Sample filter | N (if available) | Notes
+
+Must list EVERY specification the runner produces.
+If results are stale or unavailable, note this but still list the spec structure.
+
+--- SECTION 8: Output Inventory ---
+A table with columns:
+Output type | Filename pattern | Content description | Columns/rows | Code reference
+
+Must cover: LaTeX tables, diagnostics CSVs, summary stats, attrition tables, any other outputs.
+Note any known issues with outputs (e.g., truncated columns, mislabeled headers).
+
+--- SECTION 9: Attrition Table ---
+Document the sample attrition from raw data to final estimation sample.
+If an attrition table is generated by the code, describe its structure and reference it.
+If attrition data is unavailable (no fresh run), state this and describe what the table should contain.
+
+Stage | Description | N (if available) | Code reference
+
+--- SECTION 10: Verification Log ---
+List specific verification checks performed during this documentation pass.
+Each entry: Check ID | What was checked | Method (code inspection / grep / artifact inspection) | Result | Code reference
+
+This is YOUR verification log — what you actually checked while writing this document.
+
+--- SECTION 11: Identification & Inference Assessment ---
+This section must be written from a thesis-referee perspective.
+Address ALL of the following (mark N/A if genuinely not applicable, with explanation):
+
+- Identification strategy: What variation identifies the effect? Within-firm? Within-industry? Cross-sectional?
+- Endogeneity concerns: Is the key IV plausibly exogenous? What are the main threats?
+- Reverse causality: Could the DV cause the IV?
+- Post-treatment controls: Are any controls potentially affected by the treatment?
+- Timing alignment: Are IVs measured before DVs? Any look-ahead risk?
+- Moulton problem: Is the DV constant within clusters while IVs vary at a finer level (or vice versa)?
+- Clustering adequacy: Is the cluster level appropriate? Are there enough clusters?
+- Multiple testing: How many tests does this suite run? What is the expected false-positive count under the null?
+- Robustness: What robustness checks exist? What is missing?
+- Interpretation discipline: Are findings described as predictive associations or causal effects?
+
+For each concern, state: (a) the concern, (b) how the implementation addresses it (or doesn't), (c) the residual risk, (d) what a referee should know.
+
+--- SECTION 12: Known Limitations & Unresolved Issues ---
+A table with columns:
+Issue ID | Category | Description | Severity (Critical/High/Medium/Low) | Source (Red-team / Self-identified / Prior audit) | Status (Open/Mitigated/Accepted) | Remediation path | Thesis impact
+
+This must incorporate ALL verified issues from the red-team audit, plus any new issues discovered during this documentation pass.
+Severity must be calibrated honestly — do not downplay.
+
+--- SECTION 13: Red-Team Findings Disposition ---
+A table showing how each material red-team finding was handled:
+Red-team Issue ID | Finding summary | Disposition (Fixed in doc / Rebutted / Acknowledged as limitation / Not applicable) | Evidence | Section where addressed
+
+This provides traceability from the red-team audit to the new provenance doc.
+
+--- SECTION 14: Design Decisions & Rationale ---
+Document key design choices that a referee might question:
+- Why this DV definition?
+- Why this FE structure?
+- Why this sample restriction?
+- Why one-tailed vs two-tailed tests?
+- Why this winsorization method?
+- Any other suite-specific design choices.
+
+Each decision: what was chosen, why, what alternative was considered, what the tradeoff is.
+
+========================================================
+4) Quality bar
+========================================================
+The document is complete only if:
+
+(a) Every variable in every spec has an exact formula verified against code.
+(b) Every merge is documented with keys, type, and cardinality.
+(c) Every red-team finding is dispositioned (fixed, rebutted, or acknowledged).
+(d) Every quantitative claim (N, model count, column count) is consistent across sections.
+(e) The identification section is substantive, not boilerplate.
+(f) The limitations section is honest and complete.
+(g) A hostile referee reading only this document would understand:
+    - exactly what was estimated,
+    - exactly how the data was constructed,
+    - exactly what the main threats to validity are,
+    - exactly what the suite does and does not establish.
+
+========================================================
+5) Style requirements
+========================================================
+- Be precise, evidence-driven, and concise.
+- Prefer tables over prose for structured information.
+- Use code references (file:function:line) liberally.
+- Do not pad with generic econometric boilerplate.
+- Do not use emojis.
+- Write in third person, present tense ("The runner loads...", "The builder merges...").
+- Use Markdown formatting with stable heading anchors.
+- Keep the document under 2000 lines if possible — density over volume.
+
+========================================================
+6) Start now
+========================================================
+Begin by:
+1. Reading {{RED_TEAM_AUDIT_PATH}} to extract the full findings checklist.
+2. Reading {{CURRENT_PROVENANCE_DOC_PATH}} to assess reusable content.
+3. Opening {{SUITE_TEST_SCRIPT_PATH}} and {{PANEL_BUILDER_PATH}} to independently verify the suite boundary.
+4. Tracing key variables through shared utilities.
+5. Writing the new document section by section, verifying each claim as you go.
+6. Performing a final consistency check across all sections.
+7. Writing the completed document to {{CURRENT_PROVENANCE_DOC_PATH}}.

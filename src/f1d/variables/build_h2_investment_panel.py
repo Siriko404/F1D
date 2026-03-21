@@ -75,20 +75,18 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # 6 Key IVs (all simultaneous)
+    # 4 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # DV builder
     InvestmentResidualBuilder,
     # Base controls (Compustat engine)
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
-    LevBuilder,
+    BookLevBuilder,
     CapexIntensityBuilder,
     CashHoldingsBuilder,
     DividendPayerBuilder,
@@ -138,7 +136,7 @@ def build_call_level_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # 6 Key IVs (all simultaneous)
+        # 4 Key IVs (all simultaneous)
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
@@ -151,19 +149,13 @@ def build_call_level_panel(
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         # DV
         "investment_residual": InvestmentResidualBuilder({}),
         # Base controls
         "size": SizeBuilder({}),
         "tobins_q": TobinsQBuilder({}),
         "roa": ROABuilder({}),
-        "lev": LevBuilder({}),
+        "lev": BookLevBuilder({}),
         "capex_intensity": CapexIntensityBuilder({}),
         "cash_holdings": CashHoldingsBuilder({}),
         "dividend_payer": DividendPayerBuilder({}),
@@ -552,7 +544,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     for col in [
         "InvestmentResidual",
         "InvestmentResidual_lead",
-        "Lev",
+        "BookLev",
         "Size",
         "TobinsQ",
         "ROA",

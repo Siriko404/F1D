@@ -1,37 +1,41 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H13.1 Competition-Moderated Capex Hypothesis
+STAGE 4: Test H13.1 TNIC-Moderated Capital Expenditure Hypothesis (Redesigned)
 ================================================================================
 ID: econometric/run_h13_1_competition
-Description: Test whether product market competition (Hoberg-Phillips TNIC3HHI)
-             moderates the uncertainty-capex relationship. Each of 6 IVs gets
-             its own regression with its own interaction term.
+Description: Test whether product-market structure (Hoberg-Phillips TNIC3TSIMM
+             and TNIC3HHI) moderates the Manager_QA_Uncertainty → CapexAt
+             relationship.
 
-Model Specification (one IV per model):
-    CapexAt = b1*IV_k + b2*tnic3hhi + b3*(IV_k x tnic3hhi) + controls + FE + e
+Model Specification (per moderator):
+    CapexAt = b1*Mgr_QA_Unc_c + b2*z(log(MOD)) + b3*(Mgr_QA_Unc_c x z(log(MOD)))
+            + controls [+ CapexAt_t for lead specs] + IndustryFE + FiscalYearFE + e
 
-    b3 is the coefficient of interest: does competitive intensity moderate
-    the effect of uncertainty language on capital expenditure?
+    b3 is the coefficient of interest: does market structure moderate
+    the effect of managerial Q&A uncertainty on capital expenditure?
 
-6 IVs (tested separately, one per model):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-    CEO_Clarity_Residual, Manager_Clarity_Residual
+Parent suite: H13 (Capital Expenditure)
+    Manager_QA_Uncertainty_pct significant in all 4 Industry+FY specs (p<0.005).
+    Moderation memo: TSIMM = primary (strong), HHI = robustness (secondary).
 
-2 DVs: CapexAt (t) and CapexAt_lead (t+1)
-2 FE: Industry(FF12)+FiscalYear, Firm+FiscalYear
-= 24 total regressions
+4 Models:
+    Cols 1-2: Moderator = z(log(TNIC3TSIMM)) — PRIMARY
+    Cols 3-4: Moderator = z(log(TNIC3HHI)) — ROBUSTNESS
+    Within each: CapexAt, CapexAt_lead
 
-Controls (Extended): Size, TobinsQ, ROA, Lev, CashHoldings, DividendPayer,
-    OCF_Volatility, SalesGrowth, RD_Intensity, CashFlow, Volatility
+Expected interaction signs (tentative):
+    TSIMM: positive (product similarity intensifies strategic investment response)
+    HHI: negative (concentration dampens strategic investment response)
 
-Competition measure: TNIC3HHI (Hoberg & Phillips JPE 2016)
-    Firm-specific text-based HHI from 10-K business descriptions.
-    High HHI = concentrated market. Low HHI = competitive market.
+Corr(log(HHI), log(TSIMM)) ≈ -0.70 — moderators are NOT independent.
+
+NOTE: This file REPLACES the original H13.1 competition runner which had
+critical issues: uncentered interactions, HHI-only, 16 models with 4 separate
+IVs, and only 1/16 significant result that failed Bonferroni correction.
 
 Sample: Main only (FF12 not in {8, 11}).
-Hypothesis: Two-tailed on interaction (b3 != 0).
+Hypothesis: All two-tailed (matching parent H13).
 Unit: Call-level (loads H13 panel, merges TNIC at load time).
 Panel index: ["gvkey", "fyearq_int"].
 SEs: Firm-clustered.
@@ -45,7 +49,7 @@ Outputs:
 
 Deterministic: true
 Author: Thesis Author
-Date: 2026-03-17
+Date: 2026-03-19
 ================================================================================
 """
 
@@ -71,49 +75,71 @@ from f1d.shared.path_utils import get_latest_output_dir
 # Configuration
 # ==============================================================================
 
-INDIVIDUAL_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual",
-    "Manager_Clarity_Residual",
-]
+IV = "Manager_QA_Uncertainty_pct"
+IV_CENTERED = "Manager_QA_Unc_c"
 
 CONTROLS = [
-    "Size", "TobinsQ", "ROA", "Lev", "CashHoldings",
+    "Size", "TobinsQ", "ROA", "BookLev", "CashHoldings",
     "DividendPayer", "OCF_Volatility",
     "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
 ]
 
-DVS = ["CapexAt", "CapexAt_lead"]
-FE_TYPES = ["industry", "firm"]
+MODERATORS = {
+    "tsimm": {
+        "raw": "tnic3tsimm",
+        "log": "log_tnic3tsimm",
+        "z": "z_log_tnic3tsimm",
+        "interaction": "MgrQAUnc_x_zlogTSIMM",
+        "label": "TNIC3TSIMM",
+        "tex_label": r"$z(\log(\mathrm{TSIMM}))$",
+        "tex_int_label": r"Mgr QA Unc $\times$ $z(\log(\mathrm{TSIMM}))$",
+    },
+    "hhi": {
+        "raw": "tnic3hhi",
+        "log": "log_tnic3hhi",
+        "z": "z_log_tnic3hhi",
+        "interaction": "MgrQAUnc_x_zlogHHI",
+        "label": "TNIC3HHI",
+        "tex_label": r"$z(\log(\mathrm{HHI}))$",
+        "tex_int_label": r"Mgr QA Unc $\times$ $z(\log(\mathrm{HHI}))$",
+    },
+}
 
 MIN_CALLS_PER_FIRM = 5
 
-IV_LABELS = {
-    "CEO_QA_Uncertainty_pct": "CEO QA Unc",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Unc",
-    "Manager_QA_Uncertainty_pct": "Mgr QA Unc",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Unc",
-    "CEO_Clarity_Residual": "CEO Clarity",
-    "Manager_Clarity_Residual": "Mgr Clarity",
+MODEL_SPECS = [
+    {"col": 1, "dv": "CapexAt",      "mod": "tsimm", "extra_controls": []},
+    {"col": 2, "dv": "CapexAt_lead", "mod": "tsimm", "extra_controls": ["CapexAt"]},
+    {"col": 3, "dv": "CapexAt",      "mod": "hhi",   "extra_controls": []},
+    {"col": 4, "dv": "CapexAt_lead", "mod": "hhi",   "extra_controls": ["CapexAt"]},
+]
+
+DV_TEX = {
+    "CapexAt": r"CapEx/AT$_t$",
+    "CapexAt_lead": r"CapEx/AT$_{t+1}$",
 }
 
-
-def _build_model_specs() -> List[Dict[str, str]]:
-    """Generate 24 model specs: 6 IVs x 2 DVs x 2 FE."""
-    specs = []
-    col = 0
-    for dv in DVS:
-        for fe in FE_TYPES:
-            for iv in INDIVIDUAL_IVS:
-                col += 1
-                specs.append({"col": col, "iv": iv, "dv": dv, "fe": fe})
-    return specs
-
-
-MODEL_SPECS = _build_model_specs()
+SUMMARY_STATS_VARS = [
+    {"col": "CapexAt", "label": "CapEx / Assets$_t$"},
+    {"col": "CapexAt_lead", "label": "CapEx / Assets$_{t+1}$"},
+    {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
+    {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
+    {"col": "tnic3tsimm", "label": "TNIC3TSIMM (raw)"},
+    {"col": "z_log_tnic3tsimm", "label": "$z(\\log(\\mathrm{TSIMM}))$"},
+    {"col": "tnic3hhi", "label": "TNIC3HHI (raw)"},
+    {"col": "z_log_tnic3hhi", "label": "$z(\\log(\\mathrm{HHI}))$"},
+    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "TobinsQ", "label": "Tobin's Q"},
+    {"col": "ROA", "label": "ROA"},
+    {"col": "BookLev", "label": "Book Leverage"},
+    {"col": "CashHoldings", "label": "Cash Holdings"},
+    {"col": "DividendPayer", "label": "Dividend Payer"},
+    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "SalesGrowth", "label": "Sales Growth"},
+    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
+    {"col": "CashFlow", "label": "Cash Flow"},
+    {"col": "Volatility", "label": "Stock Volatility"},
+]
 
 
 # ==============================================================================
@@ -123,7 +149,7 @@ MODEL_SPECS = _build_model_specs()
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: H13.1 Competition-Moderated Capex (call-level)",
+        description="Stage 4: H13.1 TNIC-Moderated Capex (redesigned, call-level)",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
@@ -135,15 +161,12 @@ def parse_arguments():
 # ==============================================================================
 
 
-def load_panel_with_tnic(
-    root_path: Path, panel_path: Optional[str] = None
-) -> pd.DataFrame:
-    """Load H13 call-level panel and merge TNIC3HHI at load time."""
+def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.DataFrame, Path]:
+    """Load call-level H13 capex panel from Stage 3 output."""
     print("\n" + "=" * 60)
-    print("Loading H13 panel + TNIC3HHI")
+    print("Loading H13 capex panel")
     print("=" * 60)
 
-    # Load H13 panel
     if panel_path:
         panel_file = Path(panel_path)
     else:
@@ -156,11 +179,25 @@ def load_panel_with_tnic(
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
-    panel = pd.read_parquet(panel_file)
-    print(f"  Loaded panel: {panel_file}")
-    print(f"  Rows: {len(panel):,}, Columns: {len(panel.columns)}")
+    columns = [
+        "gvkey", "year", "fyearq_int", "ff12_code",
+        "CapexAt", "CapexAt_lead",
+        IV,
+        *CONTROLS,
+    ]
 
-    # Load TNIC3HHI
+    panel = pd.read_parquet(panel_file, columns=columns)
+    print(f"  Loaded: {panel_file}")
+    print(f"  Rows: {len(panel):,}")
+    return panel, panel_file
+
+
+def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
+    """Load TNIC3 data and merge both tnic3tsimm and tnic3hhi into panel."""
+    print("\n" + "=" * 60)
+    print("Merging TNIC3 (TSIMM + HHI)")
+    print("=" * 60)
+
     tnic_path = root_path / "inputs" / "TNIC3HHIdata" / "TNIC3HHIdata.txt"
     if not tnic_path.exists():
         raise FileNotFoundError(f"TNIC data not found: {tnic_path}")
@@ -168,13 +205,11 @@ def load_panel_with_tnic(
     tnic = pd.read_csv(tnic_path, sep="\t")
     print(f"  Loaded TNIC: {len(tnic):,} rows, years {tnic['year'].min()}-{tnic['year'].max()}")
 
-    # Merge: panel gvkey (str zero-padded) -> int, fyearq_int (float) kept as-is
-    # NaN-safe: pandas handles float-to-int merge correctly (2005.0 == 2005)
     panel["_gvkey_int"] = pd.to_numeric(panel["gvkey"], errors="coerce")
 
     before = len(panel)
     panel = panel.merge(
-        tnic[["gvkey", "year", "tnic3hhi"]].rename(
+        tnic[["gvkey", "year", "tnic3tsimm", "tnic3hhi"]].rename(
             columns={"gvkey": "_gvkey_int", "year": "fyearq_int"}
         ),
         on=["_gvkey_int", "fyearq_int"],
@@ -183,16 +218,74 @@ def load_panel_with_tnic(
     assert len(panel) == before, f"TNIC merge changed row count: {before} -> {len(panel)}"
     panel = panel.drop(columns=["_gvkey_int"])
 
-    n_matched = panel["tnic3hhi"].notna().sum()
-    print(f"  TNIC match: {n_matched:,} / {len(panel):,} ({100*n_matched/len(panel):.1f}%)")
-    print(f"  tnic3hhi: mean={panel['tnic3hhi'].mean():.3f}, "
-          f"median={panel['tnic3hhi'].median():.3f}")
+    for mod_key, mod_info in MODERATORS.items():
+        raw_col = mod_info["raw"]
+        n_matched = panel[raw_col].notna().sum()
+        print(f"  {mod_info['label']} match: {n_matched:,} / {len(panel):,} "
+              f"({100 * n_matched / len(panel):.1f}%)")
 
-    return panel, panel_file
+    return panel
+
+
+def transform_moderators_and_center_iv(
+    panel: pd.DataFrame,
+) -> Tuple[pd.DataFrame, Dict[str, float]]:
+    """Log-transform + z-score both moderators, and mean-center IV on Main sample."""
+    print("\n" + "=" * 60)
+    print("Transforming moderators + centering IV")
+    print("=" * 60)
+
+    main_mask = ~panel["ff12_code"].isin([8, 11])
+    params: Dict[str, float] = {}
+
+    for mod_key, mod_info in MODERATORS.items():
+        raw_col = mod_info["raw"]
+        log_col = mod_info["log"]
+        z_col = mod_info["z"]
+
+        mod_main = panel.loc[main_mask, raw_col].dropna()
+        log_main = np.log(mod_main)
+        mu = log_main.mean()
+        sd = log_main.std()
+
+        panel[log_col] = np.log(panel[raw_col])
+        panel[z_col] = (panel[log_col] - mu) / sd
+
+        params[f"{mod_key}_mu"] = mu
+        params[f"{mod_key}_sd"] = sd
+
+        z_check = panel.loc[main_mask, z_col].dropna()
+        print(f"  {mod_info['label']}: N={len(mod_main):,}, "
+              f"log mean={mu:.4f}, log sd={sd:.4f}, "
+              f"z mean={z_check.mean():.4f}, z std={z_check.std():.4f}")
+
+    # Cross-moderator correlation
+    both_valid = main_mask & panel["z_log_tnic3hhi"].notna() & panel["z_log_tnic3tsimm"].notna()
+    if both_valid.sum() > 100:
+        corr = panel.loc[both_valid, "z_log_tnic3hhi"].corr(
+            panel.loc[both_valid, "z_log_tnic3tsimm"]
+        )
+        print(f"  Corr(z(log(HHI)), z(log(TSIMM))): {corr:.4f}")
+        params["cross_corr"] = corr
+
+    # IV: mean-center on Main sample
+    iv_main = panel.loc[main_mask, IV].dropna()
+    iv_mu = iv_main.mean()
+    panel[IV_CENTERED] = panel[IV] - iv_mu
+    params["iv_mu"] = iv_mu
+
+    print(f"  IV mean (Main): {iv_mu:.4f}")
+
+    return panel, params
+
+
+# ==============================================================================
+# Regression
+# ==============================================================================
 
 
 def filter_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
-    """Filter to Main sample only."""
+    """Filter to Main sample only (exclude Finance ff12=8, Utility ff12=11)."""
     before = len(panel)
     main = panel[~panel["ff12_code"].isin([8, 11])].copy()
     print(f"  Main sample: {len(main):,} / {before:,} "
@@ -204,11 +297,16 @@ def prepare_regression_data(
     panel: pd.DataFrame, spec: Dict[str, Any]
 ) -> pd.DataFrame:
     """Prepare data for one regression spec with interaction term."""
-    iv = spec["iv"]
     dv = spec["dv"]
-    interaction_col = f"{iv}_x_hhi"
+    mod_key = spec["mod"]
+    mod_info = MODERATORS[mod_key]
+    extra_controls = spec["extra_controls"]
+    all_controls = CONTROLS + extra_controls
 
-    required = [dv, iv, "tnic3hhi"] + CONTROLS + ["gvkey", "fyearq_int", "ff12_code"]
+    z_col = mod_info["z"]
+    int_col = mod_info["interaction"]
+
+    required = [dv, IV, IV_CENTERED, z_col] + all_controls + ["gvkey", "fyearq_int", "ff12_code"]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -217,123 +315,136 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Require ALL 6 IVs non-missing (match H13's sample for apples-to-apples comparison)
-    all_ivs_mask = df[INDIVIDUAL_IVS].notna().all(axis=1)
-    df = df[all_ivs_mask].copy()
-
-    # Create interaction term
-    df[interaction_col] = df[iv] * df["tnic3hhi"]
+    # Create interaction term using CENTERED IV
+    df[int_col] = df[IV_CENTERED] * df[z_col]
 
     # Drop NaN in DV
     before = len(df)
     df = df[df[dv].notna()].copy()
+    print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
 
-    # Complete cases (including tnic3hhi and interaction)
-    all_required = required + [interaction_col]
+    # Complete cases
+    all_required = required + [int_col]
     complete_mask = df[all_required].notna().all(axis=1)
     df = df[complete_mask].copy()
+    print(f"  After complete cases: {len(df):,}")
 
     # Min calls per firm
     firm_counts = df["gvkey"].value_counts()
     valid_firms = set(firm_counts[firm_counts >= MIN_CALLS_PER_FIRM].index)
     df = df[df["gvkey"].isin(valid_firms)].copy()
 
-    print(f"  Prepared: {len(df):,} calls, {df['gvkey'].nunique():,} firms "
-          f"(from {before:,})")
+    n_firms = df["gvkey"].nunique()
+    n_firm_years = df.groupby(["gvkey", "fyearq_int"]).ngroups
+    print(f"  After >={MIN_CALLS_PER_FIRM} calls/firm: "
+          f"{len(df):,} calls, {n_firms:,} firms, {n_firm_years:,} firm-years")
 
     return df
-
-
-# ==============================================================================
-# Regression
-# ==============================================================================
 
 
 def run_regression(
     df_prepared: pd.DataFrame, spec: Dict[str, Any]
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run one PanelOLS regression with IV + HHI + interaction."""
-    iv = spec["iv"]
+    """Run PanelOLS with Industry+FY FE and firm-clustered SEs."""
     dv = spec["dv"]
-    fe_type = spec["fe"]
     col_num = spec["col"]
-    interaction_col = f"{iv}_x_hhi"
+    mod_key = spec["mod"]
+    mod_info = MODERATORS[mod_key]
+    extra_controls = spec["extra_controls"]
+    all_controls = CONTROLS + extra_controls
 
-    print(f"\n{'='*60}")
-    print(f"Col ({col_num}) | IV={IV_LABELS.get(iv,iv)} | DV={dv} | FE={fe_type}")
-    print(f"{'='*60}")
+    z_col = mod_info["z"]
+    int_col = mod_info["interaction"]
+
+    print(f"\n{'=' * 60}")
+    print(f"Col ({col_num}) | DV={dv} | Mod={mod_info['label']} | FE=Industry+FY")
+    print(f"{'=' * 60}")
 
     if len(df_prepared) < 100:
         print(f"  Too few obs ({len(df_prepared)}), skipping")
         return None, {}
 
-    exog = [iv, "tnic3hhi", interaction_col] + CONTROLS
+    exog = [IV_CENTERED, z_col, int_col] + all_controls
 
-    print(f"  N={len(df_prepared):,}, firms={df_prepared['gvkey'].nunique():,}")
+    n_firms = df_prepared["gvkey"].nunique()
+    n_firm_years = df_prepared.groupby(["gvkey", "fyearq_int"]).ngroups
+    print(f"  N={len(df_prepared):,}, firms={n_firms:,}, firm-years={n_firm_years:,}")
+    if extra_controls:
+        print(f"  Extra controls: {extra_controls}")
     t0 = datetime.now()
 
     df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
 
     try:
-        if fe_type == "industry":
-            model_obj = PanelOLS(
-                dependent=df_panel[dv],
-                exog=df_panel[exog],
-                entity_effects=False,
-                time_effects=True,
-                other_effects=df_panel["ff12_code"],
-                drop_absorbed=True,
-                check_rank=False,
-            )
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
-        else:
-            exog_str = " + ".join(exog)
-            formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
-            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+        model_obj = PanelOLS(
+            dependent=df_panel[dv],
+            exog=df_panel[exog],
+            entity_effects=False,
+            time_effects=True,
+            other_effects=df_panel["ff12_code"],
+            drop_absorbed=True,
+            check_rank=False,
+        )
+        model = model_obj.fit(cov_type="clustered", cluster_entity=True)
     except Exception as e:
         print(f"  ERROR: {e}", file=sys.stderr)
         return None, {}
 
     elapsed = (datetime.now() - t0).total_seconds()
 
-    # Extract key coefficients
-    beta_iv = float(model.params.get(iv, np.nan))
-    se_iv = float(model.std_errors.get(iv, np.nan))
-    p_iv = float(model.pvalues.get(iv, np.nan))
+    # Extract coefficients — all two-tailed
+    beta_iv = float(model.params.get(IV_CENTERED, np.nan))
+    se_iv = float(model.std_errors.get(IV_CENTERED, np.nan))
+    p_two_iv = float(model.pvalues.get(IV_CENTERED, np.nan))
 
-    beta_hhi = float(model.params.get("tnic3hhi", np.nan))
-    se_hhi = float(model.std_errors.get("tnic3hhi", np.nan))
-    p_hhi = float(model.pvalues.get("tnic3hhi", np.nan))
+    beta_mod = float(model.params.get(z_col, np.nan))
+    se_mod = float(model.std_errors.get(z_col, np.nan))
+    p_two_mod = float(model.pvalues.get(z_col, np.nan))
 
-    beta_int = float(model.params.get(interaction_col, np.nan))
-    se_int = float(model.std_errors.get(interaction_col, np.nan))
-    p_int = float(model.pvalues.get(interaction_col, np.nan))
+    beta_int = float(model.params.get(int_col, np.nan))
+    se_int = float(model.std_errors.get(int_col, np.nan))
+    p_two_int = float(model.pvalues.get(int_col, np.nan))
 
-    stars_int = _sig_stars(p_int)
+    # Extract lagged DV control if present
+    beta_lag_dv = np.nan
+    se_lag_dv = np.nan
+    p_two_lag_dv = np.nan
+    if "CapexAt" in extra_controls:
+        beta_lag_dv = float(model.params.get("CapexAt", np.nan))
+        se_lag_dv = float(model.std_errors.get("CapexAt", np.nan))
+        p_two_lag_dv = float(model.pvalues.get("CapexAt", np.nan))
+
+    stars_iv = _sig_stars(p_two_iv)
+    stars_int = _sig_stars(p_two_int)
 
     print(f"  [OK] {elapsed:.1f}s | R2w={model.rsquared_within:.4f}")
-    print(f"  {iv}: b={beta_iv:.4f} p={p_iv:.4f}")
-    print(f"  tnic3hhi: b={beta_hhi:.4f} p={p_hhi:.4f}")
-    print(f"  INTERACTION: b={beta_int:.4f} p={p_int:.4f} {stars_int}")
+    print(f"  {IV}: b={beta_iv:.4f} p2={p_two_iv:.4f} {stars_iv}")
+    print(f"  {z_col}: b={beta_mod:.4f} p2={p_two_mod:.4f}")
+    print(f"  INTERACTION: b={beta_int:.4f} p2={p_two_int:.4f} {stars_int}")
+    if not np.isnan(beta_lag_dv):
+        print(f"  CapexAt_t (control): b={beta_lag_dv:.4f}")
 
     meta = {
         "col": col_num,
-        "iv": iv,
         "dv": dv,
-        "fe": fe_type,
+        "moderator": mod_key,
+        "fe": "industry",
         "n_obs": int(model.nobs),
-        "n_firms": df_prepared["gvkey"].nunique(),
+        "n_firms": n_firms,
+        "n_firm_years": n_firm_years,
         "within_r2": float(model.rsquared_within),
-        "beta_iv": beta_iv, "se_iv": se_iv, "p_two_iv": p_iv,
-        "beta_hhi": beta_hhi, "se_hhi": se_hhi, "p_two_hhi": p_hhi,
-        "beta_interaction": beta_int, "se_interaction": se_int, "p_two_interaction": p_int,
+        "beta_iv": beta_iv, "se_iv": se_iv, "p_two_iv": p_two_iv,
+        "beta_moderator": beta_mod, "se_moderator": se_mod, "p_two_moderator": p_two_mod,
+        "beta_interaction": beta_int, "se_interaction": se_int, "p_two_interaction": p_two_int,
+        "beta_lag_dv": beta_lag_dv, "se_lag_dv": se_lag_dv, "p_two_lag_dv": p_two_lag_dv,
+        "extra_controls": ",".join(extra_controls) if extra_controls else "",
     }
 
     return model, meta
 
 
 def _sig_stars(p: float) -> str:
+    """Significance stars for two-tailed p-value."""
     if np.isnan(p):
         return ""
     if p < 0.01:
@@ -350,109 +461,142 @@ def _sig_stars(p: float) -> str:
 # ==============================================================================
 
 
-def _save_latex_table(
-    all_results: List[Dict[str, Any]], dv: str, out_dir: Path
-) -> None:
-    """Write LaTeX table for one DV with Panel A (Industry FE) + Panel B (Firm FE)."""
+def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
+    """Write LaTeX table with Panel A (TSIMM, primary) + Panel B (HHI, robustness)."""
+    results_by_col = {}
+    for r in all_results:
+        meta = r.get("meta", {})
+        if meta:
+            results_by_col[meta["col"]] = meta
 
-    def _panel(fe_type: str, panel_label: str) -> List[str]:
-        results_for_fe = [
-            r for r in all_results
-            if r["meta"].get("dv") == dv and r["meta"].get("fe") == fe_type
-        ]
-        # Sort by IV order
-        iv_order = {iv: i for i, iv in enumerate(INDIVIDUAL_IVS)}
-        results_for_fe.sort(key=lambda r: iv_order.get(r["meta"]["iv"], 99))
+    def fmt_coef(val: float, stars: str) -> str:
+        if np.isnan(val):
+            return ""
+        return f"{val:.4f}{stars}"
 
-        lines = [
-            f"\\multicolumn{{7}}{{l}}{{\\textit{{{panel_label}}}}} \\\\",
-            "\\midrule",
-        ]
+    def fmt_se(val: float) -> str:
+        if np.isnan(val):
+            return ""
+        return f"({val:.4f})"
 
-        # Column headers
-        col_headers = " & ".join(IV_LABELS.get(r["meta"]["iv"], "?") for r in results_for_fe)
-        col_nums = " & ".join(f"({r['meta']['col']})" for r in results_for_fe)
+    def fmt_r2(val: float) -> str:
+        if np.isnan(val):
+            return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
+        return f"{val:.3f}"
+
+    def _panel_lines(mod_key: str, cols: List[int], panel_label: str) -> List[str]:
+        mod_info = MODERATORS[mod_key]
+        lines = []
+        lines.append(f"\\multicolumn{{3}}{{l}}{{\\textit{{{panel_label}}}}} \\\\")
+        lines.append("\\midrule")
+
+        col_nums = " & ".join(f"({c})" for c in cols)
+        dv_labels = " & ".join(DV_TEX.get(results_by_col.get(c, {}).get("dv", ""), "?") for c in cols)
         lines.append(f" & {col_nums} \\\\")
-        lines.append(f" & {col_headers} \\\\")
+        lines.append(f" & {dv_labels} \\\\")
         lines.append("\\midrule")
 
-        # IV row
+        # IV coefficient
         coefs = " & ".join(
-            f"{r['meta']['beta_iv']:.4f}{_sig_stars(r['meta']['p_two_iv'])}"
-            for r in results_for_fe
+            fmt_coef(results_by_col.get(c, {}).get("beta_iv", np.nan),
+                     _sig_stars(results_by_col.get(c, {}).get("p_two_iv", np.nan)))
+            for c in cols
         )
-        ses = " & ".join(f"({r['meta']['se_iv']:.4f})" for r in results_for_fe)
-        lines.append(f"$IV_k$ & {coefs} \\\\")
+        ses = " & ".join(fmt_se(results_by_col.get(c, {}).get("se_iv", np.nan)) for c in cols)
+        lines.append(f"Mgr QA Uncertainty & {coefs} \\\\")
         lines.append(f" & {ses} \\\\")
 
-        # HHI row
+        # Moderator coefficient
         coefs = " & ".join(
-            f"{r['meta']['beta_hhi']:.4f}{_sig_stars(r['meta']['p_two_hhi'])}"
-            for r in results_for_fe
+            fmt_coef(results_by_col.get(c, {}).get("beta_moderator", np.nan),
+                     _sig_stars(results_by_col.get(c, {}).get("p_two_moderator", np.nan)))
+            for c in cols
         )
-        ses = " & ".join(f"({r['meta']['se_hhi']:.4f})" for r in results_for_fe)
-        lines.append(f"TNIC3HHI & {coefs} \\\\")
+        ses = " & ".join(fmt_se(results_by_col.get(c, {}).get("se_moderator", np.nan)) for c in cols)
+        lines.append(f"{mod_info['tex_label']} & {coefs} \\\\")
         lines.append(f" & {ses} \\\\")
 
-        # Interaction row (key coefficient)
+        # Interaction coefficient (key)
         coefs = " & ".join(
-            f"{r['meta']['beta_interaction']:.4f}{_sig_stars(r['meta']['p_two_interaction'])}"
-            for r in results_for_fe
+            fmt_coef(results_by_col.get(c, {}).get("beta_interaction", np.nan),
+                     _sig_stars(results_by_col.get(c, {}).get("p_two_interaction", np.nan)))
+            for c in cols
         )
-        ses = " & ".join(f"({r['meta']['se_interaction']:.4f})" for r in results_for_fe)
-        lines.append(f"$IV_k \\times$ HHI & {coefs} \\\\")
+        ses = " & ".join(fmt_se(results_by_col.get(c, {}).get("se_interaction", np.nan)) for c in cols)
+        lines.append(f"{mod_info['tex_int_label']} & {coefs} \\\\")
         lines.append(f" & {ses} \\\\")
+
+        # Lagged DV
+        lag_coefs = []
+        lag_ses = []
+        has_lag = False
+        for c in cols:
+            m = results_by_col.get(c, {})
+            lag_val = m.get("beta_lag_dv", np.nan)
+            if not np.isnan(lag_val):
+                has_lag = True
+                lag_coefs.append(fmt_coef(lag_val, _sig_stars(m.get("p_two_lag_dv", np.nan))))
+                lag_ses.append(fmt_se(m.get("se_lag_dv", np.nan)))
+            else:
+                lag_coefs.append("")
+                lag_ses.append("")
+        if has_lag:
+            lines.append(f"CapEx/AT$_t$ (control) & {' & '.join(lag_coefs)} \\\\")
+            lines.append(f" & {' & '.join(lag_ses)} \\\\")
 
         lines.append("\\midrule")
 
-        # Footer rows
-        n_row = " & ".join(f"{r['meta']['n_obs']:,}" for r in results_for_fe)
-        r2_row = " & ".join(f"{r['meta']['within_r2']:.3f}" for r in results_for_fe)
-        fe_label = "Industry" if fe_type == "industry" else "Firm"
-        lines.append(f"Controls & " + " & ".join(["Ext"] * len(results_for_fe)) + " \\\\")
-        lines.append(f"{fe_label} FE & " + " & ".join(["Yes"] * len(results_for_fe)) + " \\\\")
-        lines.append(f"Fiscal Year FE & " + " & ".join(["Yes"] * len(results_for_fe)) + " \\\\")
+        lines.append("Controls & " + " & ".join(["Ext"] * len(cols)) + " \\\\")
+        lines.append("Industry FE & " + " & ".join(["Yes"] * len(cols)) + " \\\\")
+        lines.append("Fiscal Year FE & " + " & ".join(["Yes"] * len(cols)) + " \\\\")
         lines.append("\\midrule")
-        lines.append(f"N & {n_row} \\\\")
+
+        n_row = " & ".join(f"{results_by_col.get(c, {}).get('n_obs', 0):,}" for c in cols)
+        fy_row = " & ".join(f"{results_by_col.get(c, {}).get('n_firm_years', 0):,}" for c in cols)
+        r2_row = " & ".join(fmt_r2(results_by_col.get(c, {}).get("within_r2", np.nan)) for c in cols)
+        lines.append(f"N (calls) & {n_row} \\\\")
+        lines.append(f"N (firm-years) & {fy_row} \\\\")
         lines.append(f"Within-R$^2$ & {r2_row} \\\\")
 
         return lines
 
-    dv_label = "CapEx$_t$ / Assets" if dv == "CapexAt" else "CapEx$_{t+1}$ / Assets"
-
     lines = [
-        "\\begin{table}[htbp]",
-        "\\centering",
-        f"\\caption{{Competition-Moderated Speech Uncertainty and {dv_label}}}",
-        f"\\label{{tab:h13_1_{dv.lower()}}}",
-        "\\scriptsize",
-        "\\begin{tabular}{l" + "c" * 6 + "}",
-        "\\toprule",
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Market Structure--Moderated Speech Uncertainty and Capital Expenditure}",
+        r"\label{tab:h13_1_capex_tnic}",
+        r"\small",
+        r"\begin{tabular}{lcc}",
+        r"\toprule",
     ]
 
-    lines += _panel("industry", "Panel A: Industry FE")
+    lines += _panel_lines("tsimm", [1, 2], "Panel A: TNIC3TSIMM (primary)")
     lines.append("\\midrule")
-    lines += _panel("firm", "Panel B: Firm FE")
+    lines += _panel_lines("hhi", [3, 4], "Panel B: TNIC3HHI (robustness)")
 
     lines += [
-        "\\bottomrule",
-        "\\end{tabular}",
-        "\\begin{minipage}{\\linewidth}",
-        "\\vspace{2pt}\\scriptsize",
-        "\\textit{Notes:} ",
-        "$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed). ",
-        "Standard errors (in parentheses) clustered at firm level. ",
-        "Each column runs a separate regression with one IV, TNIC3HHI, and their interaction. ",
-        "TNIC3HHI is the Hoberg-Phillips (2016) text-based Herfindahl index. ",
-        "Main sample (excludes financial and utility firms). ",
-        "Extended controls in all specifications. ",
-        "Unit of observation: individual earnings call.",
-        "\\end{minipage}",
-        "\\end{table}",
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\begin{minipage}{\linewidth}",
+        r"\vspace{2pt}\scriptsize",
+        r"\textit{Notes:} ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (all two-tailed). ",
+        r"Mgr QA Uncertainty mean-centered; coefficient = effect at sample-mean uncertainty. ",
+        r"Standard errors (in parentheses) clustered at firm level. ",
+        r"Main sample (excludes financial and utility firms). ",
+        r"TNIC3TSIMM and TNIC3HHI from Hoberg--Phillips (2016), log-transformed and standardized. ",
+        r"TSIMM is the primary moderator (product similarity $\to$ strategic investment channel); ",
+        r"HHI serves as robustness (market concentration channel). ",
+        r"Col~(2) and Col~(4) include CapEx/AT$_t$ as additional control. ",
+        r"TNIC measures are firm-year variables repeated across calls within the same firm-year. ",
+        r"Unit of observation: individual earnings call.",
+        r"\end{minipage}",
+        r"\end{table}",
     ]
 
-    suffix = "capex" if dv == "CapexAt" else "capex_lead"
-    tex_path = out_dir / f"h13_1_competition_table_{suffix}.tex"
+    tex_path = out_dir / "h13_1_capex_tnic_table.tex"
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"  Saved: {tex_path.name}")
@@ -466,65 +610,84 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Individual regression .txt files
     for r in all_results:
         model = r.get("model")
         meta = r.get("meta", {})
         if model is None or not meta:
             continue
-        iv_short = meta["iv"].replace("_Uncertainty_pct", "").replace("_Residual", "")
-        fname = f"regression_results_{iv_short}_{meta['dv']}_{meta['fe']}.txt"
+        col_num = meta["col"]
+        mod_label = MODERATORS[meta["moderator"]]["label"]
+        fname = f"regression_results_col{col_num}_{meta['dv']}_{meta['moderator']}.txt"
         with open(out_dir / fname, "w", encoding="utf-8") as f:
-            f.write(f"H13.1 Competition-Moderated Regression\n")
-            f.write(f"IV: {meta['iv']}\n")
+            f.write(f"H13.1 TNIC-Moderated Capex Regression (Redesigned)\n")
+            f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
-            f.write(f"FE: {meta['fe']}\n")
-            f.write(f"Interaction: {meta['iv']}_x_hhi\n")
+            f.write(f"IV: {IV} (centered)\n")
+            f.write(f"Moderator: z(log({mod_label}))\n")
+            f.write(f"FE: Industry(FF12) + FiscalYear\n")
+            f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")
 
-    # Diagnostics CSV
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
-    diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+    diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} models)")
 
-    # LaTeX tables (one per DV)
-    for dv in DVS:
-        _save_latex_table(all_results, dv, out_dir)
+    _save_latex_table(all_results, out_dir)
 
     return diag_df
 
 
 def generate_report(
-    all_results: List[Dict[str, Any]], out_dir: Path, duration: float
+    all_results: List[Dict[str, Any]], out_dir: Path,
+    duration: float, params: Dict[str, float],
 ) -> None:
     """Generate markdown report."""
     lines = [
-        "# H13.1 Competition-Moderated Capex Report",
+        "# H13.1 TNIC-Moderated Capital Expenditure Report (Redesigned)",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Each IV tested separately with TNIC3HHI interaction",
-        f"**Competition measure:** TNIC3HHI (Hoberg & Phillips JPE 2016)",
+        f"**Design:** Manager_QA_Uncertainty x z(log(TNIC)) interaction",
+        f"**Moderators:** TSIMM (primary) + HHI (robustness)",
+        f"**Cross-corr:** {params.get('cross_corr', np.nan):.4f}",
+        f"**FE:** Industry(FF12) + FiscalYear (all models)",
+        f"**Parent suite:** H13 (Capital Expenditure)",
         "",
-        "## Interaction Results (beta_interaction, two-tailed p-values)",
+        "## Results",
         "",
-        "| IV | DV | FE | b_interaction | SE | p | Sig |",
-        "|----|----|----|---------------|-----|---|-----|",
+        "| Col | DV | Mod | b_iv | p2_iv | b_int | p2_int | N | N_fy | R2w |",
+        "|-----|----|-----|------|-------|-------|--------|---|------|-----|",
     ]
+
     for r in all_results:
         m = r.get("meta", {})
         if not m:
             continue
-        stars = _sig_stars(m["p_two_interaction"])
+        stars_iv = _sig_stars(m["p_two_iv"])
+        stars_int = _sig_stars(m["p_two_interaction"])
         lines.append(
-            f"| {IV_LABELS.get(m['iv'],m['iv'])} | {m['dv']} | {m['fe']} | "
-            f"{m['beta_interaction']:.4f} | {m['se_interaction']:.4f} | "
-            f"{m['p_two_interaction']:.4f} | {stars} |"
+            f"| ({m['col']}) | {m['dv']} | {m['moderator']} | "
+            f"{m['beta_iv']:.4f}{stars_iv} | {m['p_two_iv']:.4f} | "
+            f"{m['beta_interaction']:.4f}{stars_int} | {m['p_two_interaction']:.4f} | "
+            f"{m['n_obs']:,} | {m['n_firm_years']:,} | {m['within_r2']:.4f} |"
         )
-    lines.append("")
+
+    lines += [
+        "",
+        "## Notes",
+        "",
+        "- All tests two-tailed (matching parent H13)",
+        "- IV mean-centered to avoid multicollinearity",
+        "- TSIMM expected interaction: positive; HHI expected: negative",
+        f"- Corr(z(log(HHI)), z(log(TSIMM))) = {params.get('cross_corr', np.nan):.4f}",
+        "- Lead specs include CapexAt_t as control (capex persistence)",
+        "- TNIC measures are firm-year, repeated across calls",
+        "- SEs firm-clustered throughout",
+        "- This REPLACES the original H13.1 (uncentered, HHI-only, 16-model design)",
+    ]
 
     with open(out_dir / "report_step4_H13_1.md", "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
@@ -552,41 +715,47 @@ def main(panel_path: Optional[str] = None) -> int:
     )
 
     print("=" * 80)
-    print("STAGE 4: H13.1 Competition-Moderated Capex")
+    print("STAGE 4: H13.1 TNIC-Moderated Capex (Redesigned)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    6 IVs x 2 DVs x 2 FE = 24 regressions")
-    print(f"Competition: TNIC3HHI (Hoberg & Phillips JPE 2016)")
+    print(f"Design:    1 IV x 1 DV x 2 moderators x 2 temporal = 4 models")
+    print(f"Moderators: TSIMM (primary) + HHI (robustness)")
+    print(f"IV:        {IV}")
 
-    # Load panel + TNIC
-    panel, panel_file = load_panel_with_tnic(root, panel_path)
+    panel, panel_file = load_panel(root, panel_path)
+    panel = load_and_merge_tnic(panel, root)
+    panel, transform_params = transform_moderators_and_center_iv(panel)
 
-    # Filter to Main
     full_n = len(panel)
     panel = filter_main_sample(panel)
     main_n = len(panel)
 
-    # Summary stats
+    print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
+    for dv in ["CapexAt", "CapexAt_lead"]:
+        print(f"  {dv} non-null: {panel[dv].notna().sum():,}")
+    print(f"  {IV}: {panel[IV].notna().sum():,} ({100 * panel[IV].notna().mean():.1f}%)")
+    for mod_key, mod_info in MODERATORS.items():
+        z_col = mod_info["z"]
+        print(f"  {mod_info['label']}: {panel[z_col].notna().sum():,} "
+              f"({100 * panel[z_col].notna().mean():.1f}%)")
+
     out_dir.mkdir(parents=True, exist_ok=True)
-    stats_vars = [
-        {"col": "CapexAt", "label": "CapEx / Assets"},
-        {"col": "CapexAt_lead", "label": "CapEx$_{t+1}$ / Assets"},
-        {"col": "tnic3hhi", "label": "TNIC3 HHI"},
-    ] + [{"col": iv, "label": IV_LABELS.get(iv, iv)} for iv in INDIVIDUAL_IVS]
     make_summary_stats_table(
-        df=panel, variables=stats_vars, sample_names=None,
+        df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics -- H13.1 Competition-Moderated Capex",
+        caption="Summary Statistics --- H13.1 TNIC-Moderated Capex (Main Sample)",
         label="tab:summary_stats_h13_1",
     )
     print("  Saved: summary_stats.csv/.tex")
 
-    # Run 24 regressions
     all_results: List[Dict[str, Any]] = []
 
     for spec in MODEL_SPECS:
+        mod_label = MODERATORS[spec["mod"]]["label"]
+        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} Mod={mod_label} ---")
+
         try:
             df_prep = prepare_regression_data(panel, spec)
         except ValueError as e:
@@ -600,43 +769,51 @@ def main(panel_path: Optional[str] = None) -> int:
         if model is not None and meta:
             all_results.append({"model": model, "meta": meta})
 
-    # Save
     diag_df = save_outputs(all_results, out_dir)
 
-    # Attrition
+    tsimm_matched = panel["tnic3tsimm"].notna().sum()
+    hhi_matched = panel["tnic3hhi"].notna().sum()
     if all_results:
-        first = all_results[0]["meta"]
+        first_tsimm = next((r["meta"] for r in all_results if r["meta"]["moderator"] == "tsimm"), {})
+        first_hhi = next((r["meta"] for r in all_results if r["meta"]["moderator"] == "hhi"), {})
+        attrition_stages = [
+            ("Full panel (H13)", full_n),
+            ("Main sample (excl Finance/Utility)", main_n),
+            ("TNIC3TSIMM matched", tsimm_matched),
+            ("TNIC3HHI matched", hhi_matched),
+            ("After complete-case + min-calls (TSIMM, col 1)", first_tsimm.get("n_obs", 0)),
+            ("After complete-case + min-calls (HHI, col 3)", first_hhi.get("n_obs", 0)),
+        ]
         generate_attrition_table(
-            [
-                ("Full panel", full_n),
-                ("Main sample", main_n),
-                ("After TNIC + complete-case + min-calls", first["n_obs"]),
-            ],
-            out_dir, "H13.1 Competition-Moderated Capex",
+            attrition_stages, out_dir, "H13.1 TNIC-Moderated Capex",
         )
         print("  Saved: sample_attrition.csv/.tex")
 
-    # Manifest
     generate_manifest(
         output_dir=out_dir, stage="stage4", timestamp=timestamp,
-        input_paths={"panel": panel_file},
+        input_paths={
+            "panel": panel_file,
+            "tnic": root / "inputs" / "TNIC3HHIdata" / "TNIC3HHIdata.txt",
+        },
         output_files={"diagnostics": out_dir / "model_diagnostics.csv"},
         panel_path=panel_file,
     )
     print("  Saved: run_manifest.json")
 
-    # Report
     duration = (datetime.now() - start_time).total_seconds()
-    generate_report(all_results, out_dir, duration)
+    generate_report(all_results, out_dir, duration, transform_params)
 
-    # Summary
     print("\n" + "=" * 80)
     print("COMPLETE")
     print("=" * 80)
     print(f"Duration: {duration:.1f}s")
     print(f"Regressions: {len(all_results)}/{len(MODEL_SPECS)}")
-    n_sig = sum(1 for r in all_results if r["meta"]["p_two_interaction"] < 0.05)
-    print(f"Significant interactions (p<0.05): {n_sig}/{len(all_results)}")
+
+    for r in all_results:
+        m = r["meta"]
+        stars_int = _sig_stars(m["p_two_interaction"])
+        print(f"  Col ({m['col']}) {m['dv']} [{m['moderator']}]: "
+              f"IV b={m['beta_iv']:.4f} | Int b={m['beta_interaction']:.4f}{stars_int}")
 
     return 0
 
@@ -645,9 +822,10 @@ if __name__ == "__main__":
     args = parse_arguments()
     if args.dry_run:
         print("Dry-run: validating...")
-        print(f"  IVs: {len(INDIVIDUAL_IVS)}")
+        print(f"  IV: {IV}")
         print(f"  Specs: {len(MODEL_SPECS)}")
         print(f"  Controls: {len(CONTROLS)}")
+        print(f"  Moderators: {list(MODERATORS.keys())}")
         print("[OK]")
         sys.exit(0)
     sys.exit(main(panel_path=args.panel_path))

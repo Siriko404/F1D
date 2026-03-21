@@ -1,7 +1,7 @@
-"""Builder for Leverage (Lev) variable.
+"""Builder for Book Leverage (BookLev) variable — backward compat alias.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, Lev.
+Returns one column: file_name, BookLev.
 """
 
 from __future__ import annotations
@@ -44,12 +44,12 @@ class LevBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "Lev"]].copy()
-        stats = self.get_stats(data["Lev"], "Lev")
+        data = merged[["file_name", "BookLev"]].copy()
+        stats = self.get_stats(data["BookLev"], "BookLev")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "Lev", "source": "Compustat/dlcq,dlttq,atq"},
+            metadata={"column": "BookLev", "source": "Compustat/dlcq,dlttq,atq"},
         )
 
 

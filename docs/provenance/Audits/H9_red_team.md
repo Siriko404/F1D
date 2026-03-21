@@ -1,279 +1,271 @@
-# H9: Takeover Hazard Models — Second-Layer Red-Team Audit
+# H9: Second-Layer Red-Team Audit — Audit of the Audit
 
-**Audit date:** 2026-03-15
-**Auditor posture:** Hostile-but-fair replication auditor, adversarial toward both the implementation and the first-layer audit.
-**First-layer audit:** `docs/provenance/H9.md`
+**Audit target:** First-layer audit document `docs/provenance/H9.md`
+**Suite entrypoint:** `src/f1d/econometric/run_h9_takeover_hazards.py`
+**Panel builder:** `src/f1d/variables/build_h9_takeover_panel.py`
+**Auditor context:** Fresh-context, adversarial review of both implementation and first-layer audit
+**Date:** 2026-03-18
+
+**Verification classification key:**
+- **[VERIFIED FACT]** — confirmed by code inspection and/or data verification
+- **[VERIFIED ERROR]** — confirmed factual error in the first-layer audit
+- **[VERIFIED MISSED ISSUE]** — confirmed issue not identified in the first-layer audit
+- **[VERIFIED FALSE POSITIVE]** — issue flagged in first-layer audit that is not actually a problem
+- **[REFEREE JUDGMENT]** — substantive concern about inference or credibility, based on verified evidence
+- **[UNVERIFIED CONCERN]** — suspected issue that cannot be fully confirmed from available artifacts
 
 ---
 
 ## A. Red-Team Bottom Line
 
-The first-layer audit is a thorough, well-structured document that correctly identifies the suite boundary, traces dependencies end-to-end, and flags several genuine issues. However, it contains one **material factual error** that propagates through its entire inference assessment: it claims the standard errors are "Robust sandwich estimator (lifelines default for CoxTimeVaryingFitter)" when in fact the SEs are **model-based (inverse Hessian), not robust**. The `robust` parameter defaults to `False` in lifelines 0.30.0's `CoxTimeVaryingFitter.fit()`, and the H9 code does not pass `robust=True`. Furthermore, `robust=True` raises `NotImplementedError` for this estimator class. This error causes the first audit to *understate* the inference problem: not only are the SEs unclustered (as the audit correctly notes), they are not even heteroskedasticity-robust. The first audit's other factual claims are largely correct, and its issue register is reasonably complete, though it misses or underweights several items identified below.
+The first-layer audit is a thorough, well-structured document that correctly identifies the most critical methodological issue (model-based SEs, neither robust nor clustered) and the major survival-specific concerns (no PH test, calendar-time scale). However, the audit suffers from a **critical temporal-consistency failure**: it mixes sample counts, HR row counts, and EPV diagnostics from **two different panel builds** (2026-03-12 with `Lev` column and 59.7% ClarityCEO coverage vs. 2026-03-18 with `BookLev` column and 0% ClarityCEO coverage) without clearly distinguishing which run produced which numbers. The canonical run (2026-03-18_160645) uses a panel with **zero ClarityCEO observations**, meaning the primary clarity construct is entirely absent from the reported results. The audit buries this critical finding in parenthetical notes within the dependency chain (steps 9-10) rather than elevating it to a top-level blocking issue.
 
-**Overall grade for the first audit: PARTIALLY RELIABLE**
+Additionally, the audit contains an internal inconsistency in HR row counts (243 vs 162), an unflagged docstring/code mismatch (`Lev` vs `BookLev` in sparse controls description), and several missing issues related to the `BookLev` definition and the concordance index methodology.
 
-The factual error on SE type is material. Most other claims are verified. The audit is useful as a starting point but cannot be trusted as standalone referee documentation without correction.
-
-**Suite as implemented: SALVAGEABLE WITH MAJOR REVISIONS**
-
-The first audit's verdict of "SALVAGEABLE WITH MAJOR REVISIONS" is correct, but the severity of the inference gap is worse than stated.
-
-**Risk characterization of the first audit: Understated risk** on the SE/inference dimension (claimed robust when actually model-based); adequately stated risk on most other dimensions.
+**Overall audit quality: GOOD with critical factual errors requiring correction.**
 
 ---
 
 ## B. Scope and Objects Audited
 
-| Role | Path |
-|------|------|
-| Suite ID | H9 |
-| Suite entrypoint | `src/f1d/econometric/run_h9_takeover_hazards.py` |
-| Panel builder | `src/f1d/variables/build_h9_takeover_panel.py` |
-| First-layer audit | `docs/provenance/H9.md` |
-| Takeover indicator builder | `src/f1d/shared/variables/takeover_indicator.py` |
-| Compustat engine | `src/f1d/shared/variables/_compustat_engine.py` |
-| Path utils | `src/f1d/shared/path_utils.py` |
-| Latest panel artifact | `outputs/variables/takeover/2026-03-12_024947/takeover_panel.parquet` |
-| Latest econometric outputs | `outputs/econometric/takeover/2026-03-13_053120/` |
-| Run log inspected | `outputs/econometric/takeover/2026-03-13_053120/run_log.txt` |
-| Hazard ratios CSV | `outputs/econometric/takeover/2026-03-13_053120/hazard_ratios.csv` |
-| Model diagnostics CSV | `outputs/econometric/takeover/2026-03-13_053120/model_diagnostics.csv` |
-| lifelines version | 0.30.0 (verified via `lifelines.__version__`) |
+| Object | Path | Audited by L1? | Re-audited by L2? |
+|--------|------|----------------|-------------------|
+| Econometric runner | `src/f1d/econometric/run_h9_takeover_hazards.py` | Yes | Yes |
+| Panel builder | `src/f1d/variables/build_h9_takeover_panel.py` | Yes | Yes |
+| TakeoverIndicatorBuilder | `src/f1d/shared/variables/takeover_indicator.py` | Yes | Yes |
+| CompustatEngine (BookLev) | `src/f1d/shared/variables/_compustat_engine.py` | Partially | Yes |
+| First-layer audit | `docs/provenance/H9.md` | N/A (target) | Yes |
+| Canonical panel output | `outputs/variables/takeover/2026-03-18_160406/` | Claimed | Yes (verified 0% ClarityCEO) |
+| Canonical econometric output | `outputs/econometric/takeover/2026-03-18_160645/` | Claimed | Yes (verified 162 HR rows, 24 diag rows) |
+| Earlier panel output | `outputs/variables/takeover/2026-03-12_024947/` | Yes (numbers match) | Yes (verified 59.7% ClarityCEO) |
+| Earlier econometric output | `outputs/econometric/takeover/2026-03-13_053120/` | Yes (numbers match) | Yes (verified 243 HR rows) |
 
 ---
 
 ## C. Audit-of-Audit Scorecard
 
-| Dimension | First-layer status | Evidence basis | Red-team note |
-|-----------|-------------------|----------------|---------------|
-| Model/spec identification | Pass | Code inspection confirms 3 events x 3 variants x 4 configs = 36 models. Verified against `model_diagnostics.csv` (36 rows). | Correct and complete. |
-| Reproducibility commands | Pass | Commands `python -m f1d.variables.build_h9_takeover_panel` and `python -m f1d.econometric.run_h9_takeover_hazards` are documented and runnable. | Correct. |
-| Dependency tracing | Pass | All 14 builders, ClarityCEO merge, SDC merge, counting-process construction documented with line references. | Thorough. |
-| Raw data provenance | Pass | Manifest, Compustat, SDC, ClarityCEO, residuals all traced with row counts and uniqueness checks. | Verified against artifacts. |
-| Merge/sample audit | Pass | All merges documented with pre/post row counts, join types, key uniqueness. Row count validation in code confirmed. | Verified. |
-| Variable dictionary completeness | Pass | All 20 variables documented with formulas, timing, transforms, winsorization, source fields, code locations. | Comprehensive. |
-| Outlier/missing-data rules | Pass | Winsorization rules, listwise deletion, denominator protections, inf replacement all documented. | Verified against `_compustat_engine.py`. |
-| Estimation spec register | Pass | All 36 specs enumerated with model type, outcome, controls, strata, EPV. | Matches output. |
-| Verification log quality | Partial | 19 verification steps documented. But the audit references run date 2026-03-12 while latest output is 2026-03-13; it is unclear which run the audit actually verified. | Minor provenance gap. |
-| Known issues section | Partial | 6 issues documented (J1-J6). Misses the SE type error (claims robust when model-based). | Material omission on SE type. |
-| Identification critique | Pass | 12 identification threats enumerated in K2. Covers reverse causality, OVB, endogenous selection, survivorship, etc. | Thorough. |
-| Econometric implementation critique | **Fail** | Claims "Robust sandwich estimator" for SE. Actual: model-based (inverse Hessian). `robust=False` is the default; `robust=True` raises `NotImplementedError`. | **Material factual error.** |
-| Robustness critique | Pass | Robustness table in K5 correctly identifies gaps (no placebo, no alternative clustering, no sub-period, no nonlinearity). | Adequate. |
-| Academic-integrity critique | Pass | K7 table covers 11 risk dimensions with evidence. | Reasonable. |
-| Severity calibration | Partial | L-01 (clustering) rated Critical, L-02 (PH test) rated High. But L-01 should be even more severe given SEs are not even robust. | Understated due to SE error. |
-| Final thesis verdict support | Partial | "SALVAGEABLE WITH MAJOR REVISIONS" is correct. But the reasoning understates the SE problem. | Verdict is right; reasoning is partially wrong. |
+| Criterion | Score (1-5) | Rationale |
+|-----------|-------------|-----------|
+| Factual accuracy | 3 | Correct on most code-level claims; critical errors on row counts and run consistency |
+| Completeness of issue identification | 4 | Identified most major issues; missed BookLev naming inconsistency and ClarityCEO upstream breakage severity |
+| Severity calibration | 4 | Appropriate calibration of SE/clustering as Critical; appropriate downgrade of placebo tests for null-result suite |
+| Internal consistency | 2 | HR row count contradicts itself (243 vs 162); E5 sample counts from different panel build than canonical run |
+| Evidence quality | 3 | Many claims verified with code line references; but canonical run outputs contradict stated numbers |
+| Actionability of recommendations | 4 | Concrete fix recommendations with effort estimates; CoxPHFitter migration path well-specified |
+| Survival-analysis expertise | 4 | Correctly identifies counting-process format, Efron ties, cause-specific competing risks, EPV diagnostics |
+| Audit-craft discipline | 2 | Mixes data from multiple runs; does not clearly state which run each number comes from |
 
 ---
 
-## D. Claim Verification Matrix (First Audit Claims Tested)
+## D. Claim Verification Matrix
 
-| ID | First-layer claim | Section | Verified? | Evidence checked | Red-team verdict | Notes |
-|----|-------------------|---------|-----------|-----------------|-----------------|-------|
-| C1 | Estimator is `lifelines.CoxTimeVaryingFitter` | A2 | Y | `run_h9_takeover_hazards.py:100,475` | Correct | |
-| C2 | Tie method is Efron | A2 | Y | lifelines source: `_newton_raphson_for_efron_model` | Correct | |
-| C3 | SE = "Robust sandwich estimator (lifelines default)" | A5 | **N** | `CoxTimeVaryingFitter.fit` signature: `robust=False`; code does not pass `robust=True`; `robust=True` raises `NotImplementedError` | **FACTUALLY INCORRECT** | Model-based (inverse Hessian) SEs used. |
-| C4 | SE is NOT clustered by firm | A5 | Y | No `cluster_col` in `CoxTimeVaryingFitter.fit`; confirmed via `inspect.signature` | Correct | |
-| C5 | Panel has 107,644 rows x 31 cols | B | Y | `pd.read_parquet()` confirms shape (107644, 31) | Correct | |
-| C6 | 2,410 unique firms, 663 event firms | B | Y | `df['gvkey'].nunique()` = 2410; event firm count = 663 | Correct | |
-| C7 | Main sample: 84,104 intervals, 1,870 firms, 560 events | E5 | Y | Reproduced via filter and count | Correct | |
-| C8 | Complete-case CEO: 51,627 intervals, 1,349 firms, 307 events | E5 | Y | Reproduced via `dropna` on CEO + sparse controls | Correct | |
-| C9 | 243 HR rows, 36 diagnostic rows | B | Y | `hazard_ratios.csv` = 243 rows, `model_diagnostics.csv` = 36 rows | Correct | |
-| C10 | All clarity p-values > 0.49 | I-14, K6 | **N** | Min p = 0.480 (Manager_Residual_strata_year, Friendly model) | **Minor factual error** | Should say "p > 0.48". |
-| C11 | Concordance range 0.43-0.59 | I-13 | Y | `diag['concordance'].min()` = 0.432, `.max()` = 0.588 | Correct | |
-| C12 | ClarityCEO 40.3% missing in full panel | E2, I | Partial | In Main sample: 38.1% missing. In full panel: need to check. | First audit says 40.3% in multiple places referencing "panel" broadly; in Main it is 38.1%. | The 40.3% figure appears to be for the full panel (pre-Main filter). Confirmed: full panel ClarityCEO coverage = 64,217/107,644 = 59.7% non-missing = 40.3% missing. Correct for full panel, but some references in E2 may confuse full vs Main. |
-| C13 | No PH assumption test implemented | J6, K3, L-02 | Y | Grep for `schoenfeld`, `check_assumptions` yields no H9 hits | Correct | |
-| C14 | 26 Unknown-type events in Main sample | E4 step 7 | Y | Reproduced: 26 Unknown events in Main | Correct | |
-| C15 | Compustat merge_asof has no tolerance | L-09 | Y | `_compustat_engine.py:1246-1253` confirms no `tolerance` parameter | Correct | |
-| C16 | Deterministic: yes | B | Y | No random seeds, Cox PH is deterministic given data | Correct | |
-| C17 | 23 output files | B | Y | `ls` on latest output dir shows 23 files | Correct | |
-| C18 | Docstring says `takeover_hazard_table.tex` but code writes `takeover_table.tex` | Not flagged | Y | `run_h9_takeover_hazards.py:64` vs line 940 | **Missed by first audit** | Minor documentation inconsistency in source. |
-
----
-
-## E. Unsupported, Overstated, or Weakly-Evidenced Claims in the First Audit
-
-| ID | Claim / statement | Why unsupported or weak | Severity | Missing evidence | Corrected formulation |
-|----|-------------------|------------------------|----------|-----------------|----------------------|
-| E1 | "Standard errors: Robust sandwich estimator (lifelines default for CoxTimeVaryingFitter)" (A5, repeated in H spec register, K3, K7) | **Factually false.** `CoxTimeVaryingFitter.fit()` has `robust=False` as default. The code does not pass `robust=True`. In lifelines 0.30.0, `robust=True` raises `NotImplementedError`. | **Critical** | Should have inspected lifelines source or tested `robust` parameter. | "Standard errors: Model-based (inverse Hessian). Robust sandwich SE is NOT available for `CoxTimeVaryingFitter` in lifelines 0.30.0 (`robust=True` raises NotImplementedError). SEs are neither robust nor clustered." |
-| E2 | "all p > 0.49" (I-14, K6) | Minimum clarity p-value is 0.480 (Manager_Residual_strata_year, Friendly model). | Low | Should have computed `min(p)` from CSV. | "all p > 0.48" |
-| E3 | "The latest verified run completed in 19.4 seconds on 2026-03-12" (B) | The latest actual output directory is 2026-03-13_053120, which took 66.1 seconds. The audit references a prior run. | Low | Should cite the actual latest run or note which specific run was verified. | Cite the specific run timestamp verified. |
-| E4 | "Given all p > 0.49, this does not change the null conclusion" (K3 discussion of clustering) | With model-based SEs (not even robust), the understated SE problem is more severe than described. While the null conclusion is likely robust, the degree of SE understatement is larger than the audit implies. | Medium | Should have verified SE type before assessing clustering impact. | "Given all p > 0.48 with model-based (non-robust, non-clustered) SEs, the null conclusion is likely robust, but the true SEs could be substantially larger." |
-| E5 | L-01 states "CoxTimeVaryingFitter uses robust sandwich SE but does not cluster by gvkey" | The premise is wrong: it does NOT use robust sandwich SE. | **Critical** | Same as E1. | "CoxTimeVaryingFitter uses model-based (inverse Hessian) SE. It does not support robust SE (NotImplementedError) and does not cluster." |
+| # | Claim (from L1 audit) | Location in L1 | Verified? | Evidence | Verdict |
+|---|----------------------|----------------|-----------|----------|---------|
+| D1 | Panel has 107,644 rows x 31 columns | B, line 115; E4 line 253 | **YES** | Both panels (2026-03-12, 2026-03-18) confirmed 107,644 x 31 | [VERIFIED FACT] |
+| D2 | 2,410 unique firms, 663 event firms | E4 line 253 | **YES** | `df['gvkey'].nunique()` = 2,410; `groupby('gvkey')['Takeover'].max().sum()` = 663 | [VERIFIED FACT] |
+| D3 | hazard_ratios.csv has 243 coefficient rows | B, line 125 | **NO** | Canonical run (2026-03-18_160645) has 162 rows. The 2026-03-13 run has 243. Audit mixes runs. | [VERIFIED ERROR] |
+| D4 | model_diagnostics.csv has 24 rows | B, line 126 | **YES** | Both canonical and latest runs have 24 diagnostic rows | [VERIFIED FACT] |
+| D5 | ClarityCEO coverage: 59.7% (64,217/107,644) | D, line 187; E2 line 215 | **STALE** | True for 2026-03-12 panel. **FALSE** for canonical panel (2026-03-18_160406): 0/107,644 = 0%. | [VERIFIED ERROR] — numbers from wrong run |
+| D6 | Complete-case CEO: 51,627 intervals, 1,349 firms, 307 events | E5 line 261 | **STALE** | True for 2026-03-12 panel with `Lev`. Zero for canonical panel with `BookLev`. | [VERIFIED ERROR] — numbers from wrong run |
+| D7 | Complete-case CEO_Res: 40,310 intervals, 1,318 firms, 275 events | E5 line 262 | **STALE** | True for 2026-03-12 panel. For canonical: 36,860 / 1,272 / 78 events. | [VERIFIED ERROR] — numbers from wrong run |
+| D8 | Complete-case Mgr_Res: 54,981 intervals, 1,543 firms, 354 events | E5 line 263 | **STALE** | True for 2026-03-12 panel. For canonical: 50,628 / 1,488 / 101 events. | [VERIFIED ERROR] — numbers from wrong run |
+| D9 | SEs are model-based (inverse Hessian), not robust, not clustered | A5, J1, K3, L-01 | **YES** | Code at `run_h9_takeover_hazards.py:474-484` — no `robust=True` passed; confirmed default is `robust=False` | [VERIFIED FACT] |
+| D10 | No PH assumption test anywhere in H9 codebase | J6, K3, L-02 | **YES** | `grep -ri 'schoenfeld\|check_assumptions\|proportional_hazard' src/f1d/` returns no H9 hits | [VERIFIED FACT] |
+| D11 | Docstring says `takeover_hazard_table.tex`; code writes `takeover_table.tex` | J7, L-22 | **YES** | Docstring line 64 vs code line 940 confirmed | [VERIFIED FACT] |
+| D12 | Main sample: 84,104 intervals, 1,870 firms, 560 events | E5 line 260 | **YES** | Run log confirms; verified against both panels | [VERIFIED FACT] |
+| D13 | Uninvited events in Main: 73; Friendly: 461; Unknown: 26 | E4 line 251; I verification 4 | **YES** | Run log lines 20-24 confirm | [VERIFIED FACT] |
+| D14 | Sparse controls: Size, BM, BookLev, ROA, CashHoldings | A4 line 65 | **YES** | Code at `run_h9_takeover_hazards.py:130-136` confirms | [VERIFIED FACT] |
+| D15 | Cause-specific indicators created redundantly in panel builder and runner | J8, L-23 | **YES** | `build_h9_takeover_panel.py:362-367` and `run_h9_takeover_hazards.py:287-288` confirmed | [VERIFIED FACT] |
+| D16 | Counting-process format with start/stop in days since 2000-01-01 | A6, F line 291-292 | **YES** | `build_h9_takeover_panel.py:339-340` confirms REFERENCE_DATE = 2000-01-01 | [VERIFIED FACT] |
+| D17 | 4-year interval cap (1,461 days) | A6, G line 342 | **YES** | `build_h9_takeover_panel.py:343` confirms MAX_INTERVAL_DAYS = 1461 | [VERIFIED FACT] |
+| D18 | Multi-event validation: at most 1 event per firm | A6, line 96 | **YES** | `build_h9_takeover_panel.py:384-390` raises ValueError if >1 event per firm | [VERIFIED FACT] |
+| D19 | merge_asof has no tolerance | K4, L-09 | **YES** | `_compustat_engine.py:1287-1294` — no tolerance parameter in merge_asof call | [VERIFIED FACT] |
+| D20 | SDC first-bid-only approach | K4 line 547 | **YES** | `takeover_indicator.py:167-168` sorts by Date Announced and takes `.first()` per gvkey | [VERIFIED FACT] |
+| D21 | Year-stratified uninvited models have 14/17 strata <5 events | J5, H-spec line 386 | **UNVERIFIABLE** | Cannot independently verify from code alone; depends on data. Audit claims run_log evidence. | [UNVERIFIED CONCERN] — plausible given 24-33 total uninvited events across 17 years |
+| D22 | Concordance range 0.43-0.59 | I verification 13, line 427 | **PARTIALLY** | Canonical run diagnostics show range ~0.35-0.52. The 0.43-0.59 range may be from the earlier run with ClarityCEO. | [VERIFIED ERROR] — numbers from wrong run |
+| D23 | All clarity coefficients statistically insignificant (all p > 0.48) | I verification 14, line 428 | **UNVERIFIABLE for canonical** | May be true for 2026-03-13 run (with ClarityCEO). Cannot verify for canonical run which has only CEO_Res and Mgr_Res. | [UNVERIFIED CONCERN] |
+| D24 | Audit claims "canonical run is 2026-03-18_160645" | B, line 142 | **YES** | File exists with 23 output files | [VERIFIED FACT] — but canonical run has 0% ClarityCEO |
+| D25 | Docstring line 33 says "Sparse block: Size, BM, Lev, ROA, CashHoldings" | Not flagged | **MISSED** | Docstring says `Lev`; code SPARSE_CONTROLS says `BookLev`. This is a docstring/code mismatch. | [VERIFIED MISSED ISSUE] |
 
 ---
 
-## F. False Positives in the First Audit
+## E. Unsupported/Overstated Claims
 
-| ID | First-audit criticism | Why it appears false/overstated | Evidence | Severity of audit error | Corrected view |
-|----|----------------------|--------------------------------|----------|------------------------|----------------|
-| F1 | None identified | The first audit's criticisms of the implementation are generally warranted or understated. The main error is in the *characterization* of the SE problem (wrong premise, correct conclusion direction). | N/A | N/A | N/A |
-
-No false positives found. The first audit's issues are real; the problem is that one issue (SE type) is more severe than stated.
+| # | Claim | Location | Why unsupported/overstated |
+|---|-------|----------|---------------------------|
+| E1 | "243 coefficient rows" | B, line 125 | The canonical run (2026-03-18_160645) produces 162 HR rows, not 243. The 243 count comes from the 2026-03-13 run which used an older panel with ClarityCEO. The audit claims the canonical run is 2026-03-18 but reports numbers from 2026-03-13. |
+| E2 | "The null association between clarity and takeover hazard is consistently observed across 36 specifications" | N, line 662 | (a) The audit earlier notes only 24 models estimated, not 36. (b) The canonical run estimates only 24 models, of which 12 are CEO_Res and 12 are Mgr_Res — zero ClarityCEO models. The "36 specifications" number is unsupported by any run. |
+| E3 | Section E5 complete-case counts (51,627 / 40,310 / 54,981) | E5 lines 261-263 | These numbers come from the 2026-03-12 panel (with `Lev` column). The canonical panel (2026-03-18) has `BookLev` and 0% ClarityCEO, producing entirely different complete-case counts. The audit does not state which panel build these numbers come from. |
+| E4 | EPV values in H-spec register (51.2, 45.8, 59.0 for CEO, CRes, MRes sparse All) | H lines 355-357 | These EPV values derive from event counts (307, 275, 354) from the older panel. The canonical panel's event counts are (0, 78, 101), yielding EPV of (N/A, 13.0, 16.8). The entire estimation spec register is computed from stale data. |
+| E5 | "ClarityCEO: 40.3% missing" characterized as structural missingness | J2, L-03, K2, K4, N | While structural missingness was a valid concern at 40.3%, the actual problem is now 100% missing (0% coverage). The audit buries the 0% finding in parenthetical notes rather than elevating it to the primary blocking issue. |
 
 ---
 
-## G. Missed Issues (Second-Layer Discoveries)
+## F. False Positives
 
-| ID | Category | Description | Evidence | Severity | Why first audit missed/underplayed it | Consequence | Recommended fix |
-|----|----------|-------------|----------|----------|--------------------------------------|-------------|----------------|
-| G1 | Inference/SEs | **SEs are model-based, not robust.** `CoxTimeVaryingFitter.fit()` defaults to `robust=False` and `robust=True` raises `NotImplementedError` in lifelines 0.30.0. The H9 code does not pass `robust=True`. | `inspect.signature(CoxTimeVaryingFitter.fit)` shows `robust=False`; testing `robust=True` raises `NotImplementedError: Not available yet.` | **Critical** | First audit trusted the lifelines docstring (which misleadingly says "default: True" in the description but the actual parameter default is `False`) without testing. | SEs are likely understated for heteroskedasticity in addition to the clustering problem. All p-values, z-statistics, and confidence intervals in the output are based on model-based SEs with no heteroskedasticity correction. | Must either (a) switch to `CoxPHFitter` with `cluster_col` and `robust=True` using last-observation-per-subject or entry_col format, or (b) implement block bootstrap at the firm level. |
-| G2 | Documentation bug | **Docstring output filename mismatch.** `run_h9_takeover_hazards.py:64` says `takeover_hazard_table.tex` but code at line 940 writes `takeover_table.tex`. | Code inspection. | Low | Likely not in scope of first audit's focus, but it constitutes a documentation inaccuracy in the source that could confuse reproduction. | Minor confusion when checking output enumeration. | Fix docstring to match actual filename. |
-| G3 | Redundant code | **Cause-specific indicators created twice.** `build_h9_takeover_panel.py:362-367` creates `Takeover_Uninvited`/`Takeover_Friendly` in the panel. `prepare_main_sample()` at `run_h9_takeover_hazards.py:287-288` re-creates them identically. | Code inspection; verified outputs are identical via pandas comparison. | Low | Not a defect (results are identical) but creates maintenance risk: if one is changed without the other, silent discrepancy could occur. | No immediate impact; maintenance hazard. | Remove redundant creation in the runner; rely on panel-level indicators. |
-| G4 | Stale artifact risk | **Multiple stale panel directories exist.** 12 timestamped panel directories exist under `outputs/variables/takeover/`. The econometric runner uses `get_latest_output_dir()` which picks the chronologically latest. If a bad panel build occurs after the good one, it will be silently used. | `ls` on `outputs/variables/takeover/` shows 12 directories from 2026-02-19 through 2026-03-12. | Low-Medium | First audit mentions stale artifact risk as "Low" in K7 but does not enumerate the actual number of stale directories or assess the risk of accidental bad-panel usage. | Could use wrong panel if latest build is corrupt. | Document which panel timestamp the econometric results correspond to; consider cleaning old directories. |
-| G5 | Inference | **No power analysis or minimum detectable effect reported.** With 307 events for the primary All-Takeover/CEO model (and only 40 for Uninvited), the null result may simply reflect insufficient power. | Run log confirms event counts. Audit references null results but does not compute or request a power calculation. | Medium | First audit notes low EPV for uninvited models but does not request or flag the absence of a formal power analysis for the primary models. | A referee cannot distinguish "no effect" from "underpowered study" without knowing the minimum detectable hazard ratio. | Compute minimum detectable HR at 80% power for each model configuration. |
-| G6 | Model specification | **Calendar-time scale may be inappropriate.** The Cox model uses days-since-2000-01-01 as the time scale. For takeover hazard, a more natural time scale might be firm-age, listing-age, or CEO-tenure. Calendar time conflates firm-specific risk dynamics with economy-wide M&A wave patterns. | `build_h9_takeover_panel.py:339-340` confirms calendar-day time scale. Year-stratified models partially address this but do not change the underlying time scale. | Medium | First audit documents the time scale correctly but does not critique the choice. | If M&A activity clusters in time (e.g., 2005-2007 wave), calendar time scale may violate the PH assumption more severely than a firm-age scale. | Consider alternative time scales (firm-age, CEO tenure); at minimum discuss the choice. |
+| # | Issue flagged in L1 | Location | Why it is a false positive or overcounted |
+|---|---------------------|----------|------------------------------------------|
+| F1 | No verified false positives | — | The issues flagged in the first-layer audit are genuine. The SE/clustering concern (L-01), PH test absence (L-02), and structural missingness (L-03) are all real. The audit does not flag phantom issues. |
+
+---
+
+## G. Missed Issues
+
+| # | Issue | Severity | Evidence | Why it matters |
+|---|-------|----------|----------|---------------|
+| G1 | **ClarityCEO upstream breakage: 0% coverage in canonical panel** | **BLOCKING** | `python -c "import pandas as pd; df=pd.read_parquet('.../2026-03-18_185306/takeover_panel.parquet'); print(df['ClarityCEO'].notna().sum())"` returns 0. Same for 2026-03-18_160406 panel. | The PRIMARY clarity construct has zero observations. All 12 ClarityCEO-variant models are skipped in the canonical run. The audit mentions this in passing (dependency chain step 9) but does not create a top-level blocking issue for it. A thesis committee would need to know that the primary construct is entirely absent from results. |
+| G2 | **Docstring/code mismatch: `Lev` vs `BookLev` in sparse controls description** | Low | Docstring line 33: "Sparse block (all models): Size, BM, Lev, ROA, CashHoldings". Code SPARSE_CONTROLS line 133: `"BookLev"`. | The audit flagged the `takeover_hazard_table.tex` vs `takeover_table.tex` mismatch (J7/L-22) but missed this parallel mismatch in the same file. |
+| G3 | **BookLev vs Lev column name change breaks panel compatibility** | Medium | Old panel (2026-03-12) has column `Lev`; new panel (2026-03-18) has column `BookLev`. The runner expects `BookLev`. If the old panel is loaded, the `BookLev` covariate would not be found, and all observations for that covariate would be dropped as NaN. | The audit does not discuss the column rename or its impact on backward compatibility with older panel builds. |
+| G4 | **BookLev definition inconsistency: no `.clip(lower=0)` for quarterly computation** | Low-Medium | `_compustat_engine.py:1039`: `comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]` — no clipping of negative debt values. But the annual debt computation at line 628-629 uses `.clip(lower=0)`. | Negative dlcq values (which can occur for firms with net current asset positions) are included in quarterly BookLev but excluded from annual debt calculations. This creates inconsistency and could produce negative leverage values (though these would be winsorized). |
+| G5 | **Internal inconsistency in HR row counts** | Medium (audit-craft) | Section B line 125 says "243 coefficient rows." Dependency chain step 9 says "162 hazard ratio rows." These cannot both be correct for the same run. | A committee member reading the audit would be confused by contradictory numbers. The 243 comes from the 2026-03-13 run; the 162 from the canonical 2026-03-18 run. |
+| G6 | **Complete-case event counts in diagnostics do not match audit's E5 table** | High (audit-craft) | Canonical run diagnostics: CEO_Res All = 78 events, Mgr_Res All = 101 events. Audit E5: CRes = 275 events, MRes = 354 events. These are from different panel builds. | The audit's EPV calculations, event-count-based conclusions, and power analysis concerns are all computed from stale data. |
+| G7 | **No discussion of `formula` parameter in CoxTimeVaryingFitter** | Low | Code at line 482: `formula=" + ".join(covariates)`. The `formula` parameter in `CoxTimeVaryingFitter.fit()` was added in lifelines 0.27.0+. Earlier versions may not support it. | Reinforces the unpinned-version concern (L-21) but also means the audit's description of the model specification is incomplete — it does not mention how covariates are selected for the model. |
+| G8 | **Concordance sign convention not verified** | Low | `lifelines.utils.concordance_index` expects higher predicted_scores to correspond to shorter event_times (higher risk). The code passes partial hazard directly, which is correct. But the audit does not verify the sign convention, only noting the "approximation" aspect. | If a future code change inadvertently negated the hazard, the concordance would be inverted (showing ~0.50 as spurious good fit rather than genuine null). |
 
 ---
 
 ## H. Severity Recalibration
 
-| ID | Source | Original severity | Red-team severity | Why recalibrated | Thesis impact |
-|----|--------|-------------------|-------------------|------------------|---------------|
-| L-01 / G1 | First audit L-01 + Red-team G1 (merged) | Critical (clustering only) | **Critical+** | First audit's premise was wrong: SEs are not even robust, let alone clustered. The problem is strictly worse than described. | Blocks thesis-standard reliance. All reported SEs, z-stats, p-values, and CIs are computed from model-based (inverse-information) variance, with no heteroskedasticity or clustering correction. |
-| L-02 | First audit | High | High | No change. PH assumption test remains mandatory. | Blocks thesis-standard. |
-| L-03 | First audit | High | High | No change. Structural missingness concern is valid. | Blocks thesis-standard. |
-| L-04 | First audit | High | High | No change. OVB from missing governance controls is standard reviewer concern. | Blocks thesis-standard. |
-| L-05 | First audit | High | Medium | Downgraded. For a null-result suite, placebo tests are less urgent than for a suite claiming effects. The null is the conservative finding. | Does not block, but referee will request. |
-| L-06 | First audit | Medium | Subsumed into L-01/G1 | Merged. "No alternative clustering" is part of the broader SE problem. | Subsumed. |
-| L-07 | First audit | Medium | Medium | No change. | Does not block. |
-| L-08 | First audit | Medium | Medium | No change. | Does not block. |
-| L-09 | First audit | Medium | Medium | No change. Stale Compustat match risk is real. | Does not block, but should be fixed. |
-| L-10 / L-18 | First audit | Medium / Medium | Medium (merge) | L-10 and L-18 describe the same issue (Unknown-type events). Should be one entry. | Does not block. |
-| L-11 | First audit | Medium | Medium | No change. Year-stratified uninvited models are unreliable. | Does not block (correctly flagged as unreliable). |
-| L-12 | First audit | Low | Low | No change. | Minor. |
-| L-13 | First audit | Low | Low | No change. | Minor. |
-| L-14 | First audit | Low | Low | No change. | Minor. |
-| L-15 | First audit | Low | Low | No change. | Minor. |
-| L-16 | First audit | Low | Low | No change. | Minor. |
-| L-17 | First audit | Low | Low | No change. | Minor. |
-| G5 | Red-team | N/A | Medium | New. Absence of power analysis for null-result suite. | Does not block, but a referee will want this. |
-| G6 | Red-team | N/A | Medium | New. Calendar-time scale choice uncritiqued. | Does not block, but should be discussed. |
+| Issue | L1 Severity | L2 Severity | Rationale for change |
+|-------|-------------|-------------|---------------------|
+| L-01: Model-based SE (no robust/cluster) | Critical | Critical | **Agree.** Correctly identified as the most severe methodological issue. |
+| L-02: No PH assumption test | High | High | **Agree.** Mandatory for any Cox model publication. |
+| L-03: ClarityCEO structural missingness (40.3%) | High | **BLOCKING** | **Upgrade.** The audit characterizes this as 40.3% missing. The actual situation is far worse: the canonical panel has 0% ClarityCEO coverage. This is not "structural missingness" — it is a complete upstream data pipeline failure. The primary clarity construct is entirely absent from results. |
+| L-04: No governance/ownership controls | High | High | **Agree.** Standard omitted variable concern for takeover prediction. |
+| L-05: No placebo/falsification tests | Medium | Medium | **Agree.** Correctly downgraded for null-result suite. |
+| L-09: merge_asof no tolerance | Medium | Medium | **Agree.** Real issue but not thesis-blocking. |
+| L-10: Unknown-type events censored | Medium | Medium | **Agree.** 26 events of unknown type; sensitivity analysis warranted. |
+| L-19: No power analysis | Medium | Medium-High | **Slight upgrade.** With the canonical run having only 78-101 events (not 275-354), power analysis is even more critical. |
+| L-22: Docstring/code filename mismatch | Low | Low | **Agree.** Minor documentation issue. |
+| NEW G1: ClarityCEO 0% coverage in canonical panel | Not flagged as blocking | **BLOCKING** | The primary clarity construct has zero observations in the canonical run. This supersedes L-03 in severity. |
+| NEW G5: Internal inconsistency in HR row counts | Not flagged | Medium (audit-craft) | Undermines audit document reliability. |
 
 ---
 
-## I. Completeness Gaps in the First Audit
+## I. Completeness Gaps
 
-| Missing/incomplete area | Why incomplete | Evidence | Severity | What should have been included |
-|------------------------|----------------|----------|----------|-------------------------------|
-| SE type verification | Trusted lifelines docstring instead of testing actual `robust` default or attempting `robust=True`. | `CoxTimeVaryingFitter.fit` has `robust=False` as actual default; `robust=True` raises `NotImplementedError`. | **Critical** | Should have run a test fit or inspected `inspect.signature()` to confirm SE type. |
-| Power analysis | Not mentioned anywhere in the audit. | N/A | Medium | For a null-result suite, should have flagged absence of minimum detectable effect / power calculation. |
-| Time scale critique | Time scale documented but not critiqued. | Calendar-time scale used; no discussion of alternatives. | Low-Medium | Should have assessed whether calendar time is the appropriate risk time scale for takeover hazard. |
-| Stale directory enumeration | First audit says stale artifact risk is "Low" but does not count actual stale directories. | 12 stale panel directories exist. | Low | Should have enumerated stale directories and assessed risk. |
-| Source code documentation bug | Docstring/code filename mismatch not flagged. | `run_h9_takeover_hazards.py:64` vs line 940. | Low | Should have cross-checked docstring output list against actual code. |
-
----
-
-## J. Reproducibility Red-Team Assessment
-
-| Reproduction step | First audit documented it? | Verified? | Hidden dependency? | Risk | Red-team note |
-|-------------------|---------------------------|-----------|-------------------|------|---------------|
-| Build panel: `python -m f1d.variables.build_h9_takeover_panel` | Yes | Yes (output exists) | No | Low | Command is correct and runnable. |
-| Run estimation: `python -m f1d.econometric.run_h9_takeover_hazards` | Yes | Yes (output exists) | No | Low | Command is correct and runnable. |
-| Upstream H1 clarity scores must exist | Yes (C3) | Yes | Yes — requires prior `run_h1_*` completion | Medium | If clarity scores are stale or missing, panel build will produce NaN ClarityCEO. Not a hidden step per se but an ordering dependency. |
-| Upstream H0.3 residuals must exist | Yes (C3) | Yes | Yes — requires prior clarity extended run | Medium | Same ordering dependency. |
-| SDC raw data at `inputs/SDC/sdc-ma-merged.parquet` | Yes (D) | Yes (file exists) | No | Low | Raw data is present. |
-| Compustat raw data at `inputs/comp_na_daily_all/comp_na_daily_all.parquet` | Yes (D) | Yes (file exists) | No | Low | Raw data is present. |
-| lifelines version sensitivity | Partially (mentions lifelines but no version pin) | Yes — lifelines 0.30.0 installed | Yes — `robust` behavior is version-dependent | Medium | The `robust=False` default and `NotImplementedError` for `robust=True` are lifelines-version-specific. A different lifelines version might behave differently. First audit should pin the lifelines version. |
-| `get_latest_output_dir()` picks the chronologically latest panel | Not explicitly documented | Verified via code | Yes — silent dependency on directory naming | Medium | If directories are not chronologically ordered by name, wrong panel could be used. Currently 12 panel directories exist. |
-| Output enumeration completeness | Yes (B) | Yes — 23 files confirmed | No | Low | Complete. |
-| Environment (Python version) | Yes (Python 3.13) | Verified | No | Low | |
+| Gap | Impact on committee/referee understanding | L1 coverage |
+|-----|------------------------------------------|-------------|
+| Which panel build each number comes from | Committee cannot tell if E5 counts are current or stale | Not distinguished |
+| ClarityCEO upstream pipeline status | Committee would not know the primary construct is entirely missing from canonical results | Mentioned in passing at step 9, not elevated |
+| Column rename (Lev -> BookLev) impact | Committee would not know the panel structure changed between builds | Not mentioned |
+| Actual event counts in canonical run (78/101) vs audit's stated counts (275/354) | Committee would use wrong numbers for power assessment | Stale numbers reported |
+| Concordance range in canonical run (~0.35-0.52) vs audit's range (0.43-0.59) | Committee would have wrong discrimination quality assessment | Stale numbers reported |
+| Number of models actually producing results (24 vs 36 vs "all specifications") | Committee would think ClarityCEO models exist in results | Partially acknowledged but inconsistently |
 
 ---
 
-## K. Econometric and Thesis-Referee Meta-Audit
+## J. Reproducibility Assessment
 
-| Referee dimension | First audit adequate? | Why or why not | Missed or weak points | Severity |
-|-------------------|----------------------|----------------|----------------------|----------|
-| Identification threats | Y | 12 threats enumerated with evidence and severity. | None missed. | N/A |
-| Inference / clustering | **N** | **Incorrectly states SEs are robust sandwich.** Actual: model-based. The clustering concern is correct but understated because the baseline is worse than assumed. | SE type is wrong. Should say "model-based, non-robust, non-clustered." | Critical |
-| FE and within-variation | Y | Correctly notes no entity/time FE in base models; stratification as robustness. | None. | N/A |
-| Timing alignment | Y | Verified covariate timing (call date) precedes event. | None. | N/A |
-| Post-treatment controls | Y | Correctly verifies all controls are pre-treatment via merge_asof(backward). | None. | N/A |
-| Reverse causality | Y | Discussed for both time-invariant (ClarityCEO) and time-varying (residuals). | None. | N/A |
-| Endogenous sample selection | Y | 40% missingness flagged as structural. | Could be stronger: should explicitly request Heckman model or inverse-probability weighting, not just "report comparison." | Low |
-| Model-family-specific threats | Partial | PH assumption (correct), competing risks (correct), EPV (correct). | Missing: discussion of time-scale appropriateness (calendar vs firm-age); missing: power analysis for null result. | Medium |
-| Robustness adequacy | Y | Comprehensive table of implemented/missing robustness checks. | None. | N/A |
-| Interpretation discipline | Y | Correctly constrains interpretation to descriptive association. | None. | N/A |
-| Academic-integrity / auditability | Y | 11-item risk table in K7. | None. | N/A |
+| Criterion | Status | Evidence |
+|-----------|--------|---------|
+| Can panel builder run end-to-end? | **YES** | Multiple timestamped outputs exist; code has no hardcoded paths |
+| Can econometric runner run end-to-end? | **YES** | Multiple timestamped outputs exist; latest run (2026-03-18_185558) completed |
+| Do reported numbers match actual outputs? | **NO** | Section B says 243 HR rows; canonical run has 162. E5 sample counts from different panel build than canonical. Concordance range stale. |
+| Are results deterministic? | **YES** | Cox PH is deterministic given data; no random seeds needed |
+| Is environment fully specified? | **PARTIALLY** | lifelines version not pinned (L-21). Column name change (Lev->BookLev) could break reproducibility across panel versions. |
+| Can a third party reproduce from code alone? | **YES with caveats** | Code is self-contained; but reproducer would get different results depending on which panel build they use (pre- or post-BookLev rename) and whether ClarityCEO upstream is functioning |
 
 ---
 
-## L. Audit-Safety / Academic-Integrity Assessment of the First Audit
+## K. Econometric Meta-Audit
 
-| Audit-safety risk in first audit | Evidence | Severity | Why it matters | Fix |
-|----------------------------------|----------|----------|----------------|-----|
-| **Material factual error on SE type propagates through 6+ sections.** | A5, H (all 36 spec entries), K3 (first row), K7, L-01 all say "Robust sandwich." | Critical | A thesis committee reading the audit would believe SEs are robust when they are not. This mischaracterizes the inference apparatus. | Correct all references to state "model-based (inverse Hessian), non-robust, non-clustered." |
-| Minor factual error on p-value bound. | First audit says "all p > 0.49"; actual min = 0.480. | Low | Slightly overstates the distance from significance. Does not change conclusion. | Correct to "all p > 0.48." |
-| Audit references a specific run but latest output is from a different run. | Audit says "2026-03-12"; latest output is 2026-03-13_053120. | Low | Creates provenance ambiguity about which outputs were actually verified. | Cite the exact run timestamp verified. |
-| Fact/judgment separation is generally good. | Tags like [VERIFIED FACT], [REFEREE CONCERN], [VERIFIED IMPLEMENTATION ISSUE] used consistently. | None | Good practice. | None. |
-| Traceable evidentiary trail. | File paths and line numbers cited throughout. | None | Good practice. | None. |
-
----
-
-## M. Master Red-Team Issue Register
-
-| ID | Type | Category | Verified? | Severity | Location | Description | Evidence | Consequence | Recommended fix | Blocks thesis-standard reliance on first audit? |
-|----|------|----------|-----------|----------|----------|-------------|----------|-------------|-----------------|------------------------------------------------|
-| RT-01 | First-audit factual error | Inference/SEs | Y | **Critical** | A5, H, K3, K7, L-01 | First audit claims SEs are "Robust sandwich estimator (lifelines default)." Actual: model-based (inverse Hessian). `robust=False` is the default; `robust=True` raises `NotImplementedError`. | `inspect.signature(CoxTimeVaryingFitter.fit)` shows `robust=False`; testing `robust=True` raises `NotImplementedError`. | All SE characterizations in the first audit are wrong. The inference problem is worse than stated. | Correct all SE references. Switch estimator to `CoxPHFitter` with `cluster_col` and `robust=True`, or implement firm-level bootstrap. | **Y** |
-| RT-02 | First-audit factual error | Verification | Y | Low | I-14, K6 | Claims "all p > 0.49." Actual minimum p = 0.480. | `hazard_ratios.csv` min p for clarity vars = 0.480. | Minor — does not change null conclusion. | Correct to "all p > 0.48." | N |
-| RT-03 | Underlying implementation issue missed by first audit | Inference | Y | **Critical** | `run_h9_takeover_hazards.py:475-484` | SEs are model-based, not robust. The code does not pass `robust=True` to `CoxTimeVaryingFitter.fit()`. Even if it did, `robust=True` is not implemented. | See RT-01 evidence. | All z-statistics, p-values, and CIs are from model-based variance. No heteroskedasticity correction. | Switch to estimator supporting robust/clustered SE. | **Y** |
-| RT-04 | First-audit omission | Power/interpretation | Y | Medium | Not in first audit | No power analysis or minimum detectable effect for null-result suite. With 307 events (primary) and 40 uninvited events, the study may lack power to detect economically meaningful hazard ratios. | Event counts from `model_diagnostics.csv`. | Cannot distinguish "no effect" from "underpowered." | Compute minimum detectable HR at 80% power. | N |
-| RT-05 | First-audit omission | Model specification | Y | Medium | Not in first audit | Calendar-time scale used without critique. Alternative scales (firm-age, CEO tenure) may be more appropriate for takeover hazard. | `build_h9_takeover_panel.py:339-340`. | PH assumption more likely violated under calendar time if M&A waves exist. | Discuss time-scale choice; consider alternatives. | N |
-| RT-06 | Underlying implementation issue underplayed by first audit | Stale artifacts | Y | Low-Medium | K7 (rated "Low") | 12 stale panel directories exist. `get_latest_output_dir()` silently picks the latest by directory name. No mechanism to verify panel-econometric correspondence. | `ls` on panel output directory. | Could silently use wrong panel. | Document panel timestamp used; clean stale directories. | N |
-| RT-07 | First-audit omission | Documentation | Y | Low | `run_h9_takeover_hazards.py:64` vs 940 | Docstring says `takeover_hazard_table.tex`; code writes `takeover_table.tex`. | Code inspection. | Minor confusion for reproducers. | Fix docstring. | N |
-| RT-08 | Underlying implementation issue missed by first audit | Maintenance | Y | Low | `run_h9_takeover_hazards.py:287-288` and `build_h9_takeover_panel.py:362-367` | Cause-specific indicators created twice (panel builder + runner). Currently identical; future divergence risk. | Code inspection and pandas comparison. | Maintenance hazard. | Remove redundant creation in runner. | N |
-| RT-09 | First-audit severity error | Robustness | Y | Low | L-05 | Placebo/falsification tests rated High. For a null-result suite, this should be Medium — the null is already the conservative finding. | N/A | Overstated urgency relative to SE problem. | Downgrade to Medium. | N |
-| RT-10 | First-audit omission | Reproducibility | Y | Medium | B | lifelines version not pinned. `robust` behavior is version-dependent. | `lifelines.__version__` = 0.30.0. | Different lifelines version could change SE computation behavior. | Pin lifelines version in requirements. | N |
+| Econometric concern | L1 audit handling | L2 assessment |
+|--------------------|-------------------|---------------|
+| **SE/clustering** | Correctly identified as Critical; correctly notes `robust=True` raises NotImplementedError; correctly specifies CoxPHFitter migration path | **Adequate.** This is well-handled. |
+| **PH assumption testing** | Correctly identified as absent; rated High | **Adequate.** Correctly flags mandatory diagnostic. |
+| **Counting-process construction** | Thoroughly documented; start/stop intervals, post-takeover removal, 4-year cap | **Adequate.** Interval construction is sound. |
+| **Tied events handling** | States "Efron (lifelines default)" | **Adequate.** Efron is appropriate for tied events and is indeed the lifelines default. |
+| **Censoring mechanism** | Correctly describes administrative censoring (2018-12-31), 4-year cap censoring, Unknown-type censoring | **Adequate.** Censoring is well-documented. |
+| **Time-varying covariates** | Correctly notes covariates measured at call opening each interval | **Adequate.** ClarityCEO is time-invariant (CEO FE); residuals are time-varying. Both correctly handled. |
+| **Risk-set construction** | Correctly describes counting-process format with late entry | **Adequate.** lifelines CoxTimeVaryingFitter handles late entry natively. |
+| **Competing risks** | Correctly describes cause-specific Cox PH approach; notes Unknown events as censored | **Adequate.** Standard cause-specific approach. |
+| **EPV diagnostics** | Comprehensive EPV reporting with critical/low/ok flags; suppression from LaTeX for EPV<5 | **Adequate** for the earlier run. **Stale** for canonical run (event counts differ substantially). |
+| **Calendar time scale** | Flagged as L-20; correctly notes alternative scales not tested | **Adequate.** Good catch for a survival-specific concern. |
+| **Power analysis** | Flagged as L-19; correctly notes null-result needs power assessment | **Adequate** in identification; **stale** in specifics (uses 307 events from older run; canonical has 78-101). |
 
 ---
 
-## N. What a Committee / Referee Would Still Not Know if They Read Only the First Audit
+## L. Audit-Safety Assessment
 
-1. **The SEs are model-based, not robust.** The first audit says "Robust sandwich estimator" in 6+ locations. A committee member would believe the SEs have at least heteroskedasticity robustness. They do not. The inference apparatus is strictly weaker than described.
-
-2. **`robust=True` is not available for `CoxTimeVaryingFitter` in lifelines 0.30.0.** The recommended fix of "just add clustering" cannot be done within the current estimator class. A more fundamental estimator change is required (switch to `CoxPHFitter` with `entry_col`, or bootstrap).
-
-3. **The study may lack statistical power.** No minimum detectable effect is computed. With 40 uninvited events, the study cannot detect anything short of a very large hazard ratio for the Uninvited hypothesis.
-
-4. **The calendar-time scale choice is uncritiqued.** If M&A activity varies over time (it does), the PH assumption is more likely violated under calendar time than under a firm-specific time scale.
-
-5. **The lifelines version is not pinned.** SE computation behavior could differ across versions.
-
----
-
-## O. Priority Fixes to the First Audit
-
-| Priority | Fix to first audit | Why it matters | Effort | Credibility gain |
-|----------|-------------------|----------------|--------|------------------|
-| 1 | **Correct all "Robust sandwich SE" claims to "Model-based (inverse Hessian) SE."** Update A5, all H spec register entries, K3, K7, L-01. | Material factual error that misleads readers about inference quality. | Low (text edits) | Critical — eliminates false claim. |
-| 2 | **Update L-01 to state that SEs are neither robust nor clustered; note that `robust=True` raises `NotImplementedError`.** | The recommended fix path is more complex than the first audit suggests. | Low | High — corrects the fix recommendation. |
-| 3 | **Correct "all p > 0.49" to "all p > 0.48."** | Minor factual accuracy. | Trivial | Low. |
-| 4 | **Add power analysis gap as a known issue.** | Null-result suites require power assessment for credible interpretation. | Low | Medium. |
-| 5 | **Add lifelines version pin to environment section.** | SE behavior is version-dependent. | Trivial | Low-Medium. |
-| 6 | **Add time-scale critique to identification section.** | Standard survival analysis consideration missing. | Low | Low-Medium. |
-| 7 | **Fix run timestamp reference (2026-03-12 vs actual latest).** | Provenance accuracy. | Trivial | Low. |
+| Safety criterion | Status | Evidence |
+|-----------------|--------|---------|
+| Does audit clearly distinguish verified from unverified claims? | **YES** | Verification classification key used throughout (VERIFIED FACT, VERIFIED IMPLEMENTATION ISSUE, etc.) |
+| Does audit avoid rubber-stamping? | **YES** | Critical issues correctly flagged; "SALVAGEABLE WITH MAJOR REVISIONS" verdict is appropriately skeptical |
+| Does audit cite specific code lines? | **YES** | Line references provided for most claims (e.g., `run_h9_takeover_hazards.py:474-484`) |
+| Does audit flag its own limitations? | **PARTIALLY** | Does not flag that its numbers come from multiple runs; does not flag that the ClarityCEO breakage makes many of its statistics obsolete |
+| Is the audit internally consistent? | **NO** | HR row count: 243 (B) vs 162 (step 9). E5 counts from different panel than canonical. "36 specifications" (N) vs "24 models" (H). |
+| Could the audit mislead a committee? | **YES** | A committee reading E5 would believe CEO clarity models exist with 307 events. They do not — the canonical run has 0 ClarityCEO observations. |
 
 ---
 
-## P. Final Red-Team Readiness Statement
+## M. Master Issue Register
 
-**Can the first audit be trusted as a standalone referee-quality document?**
-No. The material factual error on SE type (claiming robust sandwich when actual SEs are model-based) disqualifies it as a standalone document. A referee reading this audit would form an incorrect belief about the inference apparatus. After correcting this single error and its downstream propagation, the audit would be close to referee-quality.
+| ID | Category | Severity | Source | Description | Evidence | Consequence | Recommended fix |
+|----|----------|----------|--------|-------------|----------|-------------|----------------|
+| RT-01 | Audit-craft / data pipeline | **BLOCKING** | L2 (new) | ClarityCEO has 0% coverage in canonical panel (2026-03-18_160406). All 12 primary-style models fail silently (skipped due to 0 observations). Upstream ClarityCEO pipeline is broken. | `pd.read_parquet('.../2026-03-18_160406/takeover_panel.parquet')['ClarityCEO'].notna().sum()` = 0 | Primary clarity construct entirely absent from canonical results. The suite produces only secondary residual models. | Fix upstream ClarityCEO merge in panel builder; rebuild panel; re-run econometric suite. |
+| RT-02 | Audit-craft | High | L2 (new) | First-layer audit mixes numbers from 2026-03-12 panel (with `Lev`, 59.7% ClarityCEO) and 2026-03-18 panel (with `BookLev`, 0% ClarityCEO). E5 sample counts, EPV values, concordance ranges, and HR row counts are internally inconsistent. | B line 125 says 243 HR rows; step 9 says 162. E5 counts verified against old panel, not canonical. | Committee would have incorrect understanding of sample composition, event counts, and model estimates. | Re-run audit against a single, current panel build. Clearly state which run each number comes from. |
+| RT-03 | Documentation | Medium | L2 (new) | Docstring line 33 says sparse controls include `Lev`; actual SPARSE_CONTROLS at line 133 says `BookLev`. Second docstring/code naming mismatch in same file (first is takeover_hazard_table.tex at line 64). | Code inspection of `run_h9_takeover_hazards.py:33` vs `:133` | Reproducers checking docstring would expect `Lev` column but find `BookLev`. | Fix docstring to say `BookLev`. |
+| RT-04 | Data pipeline | Medium | L2 (new) | Column rename from `Lev` to `BookLev` between panel builds (2026-03-12 vs 2026-03-18) is undocumented. The runner expects `BookLev`; older panels have `Lev`. | Old panel columns include `Lev`; new panel has `BookLev`; code expects `BookLev` | Backward incompatibility; older panels cannot be used with current runner. | Document the rename; consider migration script for older panels. |
+| RT-05 | Audit-craft | Medium | L2 (new) | Internal HR row count inconsistency: Section B claims 243; dependency chain step 9 claims 162. Both cannot be correct for the same run. | Line 125: "243 coefficient rows"; step 9: "162 hazard ratio rows" | Undermines audit credibility. | Correct to 162 for canonical run (or specify which run produced 243). |
+| RT-06 | Implementation | Low-Medium | L2 (new) | BookLev quarterly computation at `_compustat_engine.py:1039` does not clip negative dlcq/dlttq values, unlike the annual debt computation at lines 628-629 which uses `.clip(lower=0)`. | `comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]` vs `debt_c = annual["dlcq"].clip(lower=0).fillna(0)` | Negative debt values could produce anomalous leverage ratios. After winsorization, impact is likely minor. | Add `.clip(lower=0)` to quarterly BookLev computation for consistency. |
+| L-01 | Inference/SEs | **Critical** | L1 (confirmed) | SEs are model-based (inverse Hessian), neither robust nor clustered. CoxTimeVaryingFitter does not support robust=True or cluster_col. | Code at `run_h9_takeover_hazards.py:474-484` | SE underestimated; fix requires estimator class change. | Confirmed. Switch to CoxPHFitter or block bootstrap. |
+| L-02 | Econometric implementation | High | L1 (confirmed) | No PH assumption test. | No Schoenfeld/check_assumptions code found | PH assumption unverified. | Confirmed. Add PH test. |
+| L-03 | Identification | **BLOCKING** (upgraded from High) | L1 (recalibrated) | ClarityCEO has 0% coverage in canonical panel, not 40.3% as characterized. | Data verification of canonical panel | Primary construct entirely absent. | Superseded by RT-01. Fix upstream pipeline first. |
 
-**What is its biggest factual weakness?**
-The claim that `CoxTimeVaryingFitter` uses robust sandwich SE by default. It does not. The actual default is `robust=False`, and `robust=True` is not implemented.
+---
 
-**What is its biggest completeness weakness?**
-Absence of a power analysis discussion for a null-result suite. A referee cannot assess whether the null reflects a true zero effect or insufficient power without knowing the minimum detectable hazard ratio.
+## N. What Committee Would Not Know
 
-**What is its biggest severity/judgment weakness?**
-L-01 (clustering issue) is rated Critical, which is correct directionally, but the reasoning is built on a false premise (that the baseline is robust SE). The actual severity is worse: SEs are model-based with no heteroskedasticity correction at all.
+Based solely on reading the first-layer audit (H9.md), a thesis committee would NOT know:
 
-**What is the single most important missed issue?**
-RT-01/RT-03: SEs are model-based, not robust. This was missed because the first audit trusted the lifelines docstring (which misleadingly says "default: True" in the description text) without verifying the actual function signature or testing the parameter.
+1. **The primary clarity construct (ClarityCEO) has zero observations in the canonical run.** The audit mentions this in parenthetical notes at dependency chain step 9 but does not create a top-level blocking issue. A committee member reading Section E5 would believe that 51,627 intervals with 307 events exist for CEO clarity models.
 
-**What is the single most misleading claim?**
-"Standard errors: Robust sandwich estimator (lifelines default for CoxTimeVaryingFitter)" -- repeated in 6+ locations throughout the audit.
+2. **The EPV values in the H-spec register are stale.** The audit reports EPV of 51.2 for the primary CEO All-Takeover model (H9-S1-CEO). This model does not exist in the canonical run output.
 
-**What should a thesis committee believe after reading this red-team review?**
-The first-layer audit is a thorough, well-structured document that correctly identifies the suite boundary, data provenance, variable construction, and most implementation issues. Its verdict of "SALVAGEABLE WITH MAJOR REVISIONS" is correct. However, the inference problem is more severe than the first audit describes: the SEs are model-based (not robust, not clustered), and `CoxTimeVaryingFitter` does not support robust or clustered SE in the installed lifelines version. The practical fix requires switching to a different estimator class (`CoxPHFitter` with `entry_col` for late entry, `cluster_col='gvkey'`, `robust=True`) or implementing a firm-level block bootstrap. The uniformly null results (all clarity p > 0.48) are likely robust to this SE correction (model-based SEs are usually *smaller* than cluster-robust SEs, so corrected p-values would be even larger), but the methodological credibility of the suite requires proper inference before publication. After correcting the SE characterization error and adding power analysis, the first audit would be a reliable referee document.
+3. **The actual event counts in the canonical run's secondary models are substantially lower** than those reported in E5 (78 vs 275 for CEO_Res; 101 vs 354 for Mgr_Res). This makes the power analysis concern (L-19) far more acute than the audit suggests.
+
+4. **The concordance range reported (0.43-0.59) is from an earlier run.** The canonical run shows concordance ranging from ~0.35 to ~0.52, with several cause-specific models below 0.40.
+
+5. **The `Lev` to `BookLev` column rename** occurred between panel builds and affects backward compatibility.
+
+6. **The 243 HR row count is from a non-canonical run.** The canonical run produces 162 HR rows.
+
+---
+
+## O. Priority Fixes
+
+| Priority | Fix | Rationale | Effort |
+|----------|-----|-----------|--------|
+| 1 | **Fix ClarityCEO upstream pipeline** | Primary clarity construct has 0% coverage in canonical panel. Until fixed, the suite cannot test its primary hypothesis. | Medium — investigate why ClarityCEO merge produces zero matches in the latest panel builder run |
+| 2 | **Re-audit H9.md against a single, current panel build** | Current audit mixes numbers from multiple runs, creating internal inconsistencies. All E5 counts, EPV values, concordance ranges, and HR row counts need updating. | Medium — re-run verification commands against canonical outputs |
+| 3 | **Switch to robust, clustered SE** (L-01) | Foundation of valid inference. | Medium-High — estimator class change required |
+| 4 | **Add PH assumption test** (L-02) | Mandatory Cox diagnostic. | Low |
+| 5 | **Add power analysis** (L-19) | Essential for null-result credibility. Even more critical now that event counts are lower than reported. | Low |
+| 6 | **Fix docstring inconsistencies** (L-22, RT-03) | Two naming mismatches in runner docstring. | Trivial |
+| 7 | **Pin lifelines version** (L-21) | Reproducibility safeguard. | Trivial |
+
+---
+
+## P. Final Readiness Statement
+
+**Is the first-layer audit factually correct?**
+PARTIALLY. The audit correctly identifies the major methodological issues (SE/clustering, PH testing, structural missingness) and provides thorough code-level documentation. However, it contains critical factual errors: it mixes sample counts from different panel builds, reports stale EPV values and concordance ranges, and internally contradicts itself on HR row counts (243 vs 162). Most importantly, it fails to elevate the 0% ClarityCEO coverage to a top-level blocking issue.
+
+**Is the first-layer audit complete enough for thesis-standard review?**
+NO — not in its current state. The audit would give a committee an incorrect picture of the sample composition and event counts. The committee would believe that ClarityCEO models exist with 307 events when the canonical run has zero CEO observations. The audit needs to be re-run against the current canonical panel and outputs with all numbers verified from a single, consistent run.
+
+**Did the first-layer audit miss material issues?**
+YES. It missed:
+- The severity of the ClarityCEO upstream breakage (burying it in parenthetical notes instead of flagging it as blocking)
+- The docstring `Lev` vs code `BookLev` naming mismatch
+- The column rename breaking backward panel compatibility
+- The internal inconsistency in its own reported numbers
+
+**Are there unsupported or exaggerated claims?**
+YES. The claim of "243 coefficient rows" (Section B) does not match the canonical run (162 rows). The claim that "the null association is consistently observed across 36 specifications" (Section N) is unsupported — the canonical run estimates only 24 models (none with ClarityCEO). The E5 sample counts are presented as current but come from a different panel build.
+
+**What is the single biggest gap between the audit and reality?**
+The audit presents ClarityCEO missingness as a 40.3% structural issue requiring characterization (L-03), when the actual situation is a 100% pipeline failure requiring immediate fixing (RT-01). A committee reading the audit would believe that CEO clarity models exist with ~307 events. They do not — zero ClarityCEO observations exist in the canonical panel.
+
+**Overall L2 verdict: The first-layer audit is a GOOD document with CRITICAL factual errors. It must be re-run against the canonical panel outputs to correct stale numbers, and the ClarityCEO upstream breakage must be elevated to a top-level blocking issue before the audit is thesis-ready.**

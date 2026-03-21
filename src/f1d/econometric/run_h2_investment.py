@@ -5,7 +5,7 @@ STAGE 4: Test H2 Investment Efficiency Hypothesis
 ================================================================================
 ID: econometric/test_h2_investment
 Description: Run H2 Investment Efficiency hypothesis test using 8 model specifications
-             with 6 simultaneous uncertainty/clarity IVs, varying DV, FE type,
+             with 4 simultaneous uncertainty IVs, varying DV, FE type,
              and control set. Main sample only.
 
 Model Specifications (8 columns in one table):
@@ -16,14 +16,13 @@ Model Specifications (8 columns in one table):
     Cols 1-2, 5-6: Base controls
     Cols 3-4, 7-8: Extended controls
 
-Key Independent Variables (6, all enter simultaneously):
+Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-    CEO_Clarity_Residual, Manager_Clarity_Residual
 
 Base Controls (8):
-    Size, TobinsQ, ROA, Lev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility
-    NOTE: CashFlow and SalesGrowth EXCLUDED — they are inputs to the Biddle (2009)
+    Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility
+    NOTE: CashFlow and SalesGrowth EXCLUDED -- inputs to Biddle (2009)
     InvestmentResidual construction. Including them would create mechanical correlation.
 
 Extended Controls (Base + 4):
@@ -83,17 +82,14 @@ KEY_IVS = [
     "CEO_QA_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
     "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual",
-    "Manager_Clarity_Residual",
-]
+    "Manager_Pres_Uncertainty_pct",]
 
 # NOTE: CashFlow and SalesGrowth EXCLUDED — inputs to Biddle InvestmentResidual.
 BASE_CONTROLS = [
     "Size",
     "TobinsQ",
     "ROA",
-    "Lev",
+    "BookLev",
     "CapexAt",
     "CashHoldings",
     "DividendPayer",
@@ -124,10 +120,7 @@ VARIABLE_LABELS = {
     "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
     "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
-    "CEO_Clarity_Residual": "CEO Clarity Residual",
-    "Manager_Clarity_Residual": "Mgr Clarity Residual",
-}
+    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
 
 SUMMARY_STATS_VARS = [
     {"col": "InvestmentResidual", "label": "Investment Residual$_t$"},
@@ -135,13 +128,10 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
-    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "CapexAt", "label": "CapEx / Assets"},
     {"col": "CashHoldings", "label": "Cash Holdings"},
     {"col": "DividendPayer", "label": "Dividend Payer"},
@@ -182,8 +172,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         "InvestmentResidual", "InvestmentResidual_lead",
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "CEO_Clarity_Residual", "Manager_Clarity_Residual",
-        "Size", "TobinsQ", "ROA", "Lev", "CapexAt",
+        "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
         "CashHoldings", "DividendPayer", "OCF_Volatility",
         "Volatility", "RD_Intensity",
         "Entire_All_Negative_pct", "Analyst_QA_Uncertainty_pct",
@@ -351,7 +340,11 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_int(val):
         return f"{val:,}"
     def fmt_r2(val):
-        return "" if np.isnan(val) else f"{val:.3f}"
+        if np.isnan(val):
+            return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
+        return f"{val:.3f}"
 
     lines = [
         r"\begin{table}[htbp]",
@@ -467,7 +460,7 @@ def save_outputs(all_results, out_dir):
 
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
-    diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+    diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
 
     _save_latex_table(all_results, out_dir)

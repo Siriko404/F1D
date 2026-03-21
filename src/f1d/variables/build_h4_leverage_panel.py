@@ -10,9 +10,9 @@ Description: Build CALL-LEVEL panel for H4 Leverage Discipline hypothesis test.
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
     Step 4: Compute temporal leverage variables per call:
-            - Lev_lag: t-1 leverage (prior fiscal year)
-            - Lev_t: current leverage (same fiscal year)
-            - Lev_lead: t+1 leverage (next fiscal year)
+            - BookLev_lag: t-1 leverage (prior fiscal year)
+            - BookLev_t: current leverage (same fiscal year)
+            - BookLev_lead: t+1 leverage (next fiscal year)
             All require consecutive fiscal years within gvkey.
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
@@ -42,7 +42,8 @@ from f1d.shared.variables import (
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     SizeBuilder,
-    LevBuilder,
+    BookLevBuilder,
+    DebtToCapitalBuilder,
     ROABuilder,
     TobinsQBuilder,
     CashHoldingsBuilder,
@@ -54,8 +55,6 @@ from f1d.shared.variables import (
     CashFlowBuilder,
     VolatilityBuilder,
     ManifestFieldsBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     stats_list_to_dataframe,
 )
 
@@ -71,14 +70,44 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def create_leverage_temporal_vars(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """
-    Create Lev_lag (t-1), Lev_t (current), and Lev_lead (t+1) for H4.
+def _create_temporal_vars_for_col(
+    df: pd.DataFrame, col: str
+) -> pd.DataFrame:
+    """Create lag, t, and lead temporal variables for a single column.
 
-    Coverage expectations:
-    - Lev_t:    ~99.8% (same as Lev)
-    - Lev_lag:  ~93.3% (requires prior consecutive year)
-    - Lev_lead: ~85% (requires next consecutive year; 2018 calls lose it)
+    Returns a lookup DataFrame with columns:
+        gvkey, fyearq_int, {col}_lag, {col}_t, {col}_lead
+    """
+    firm_year = df.sort_values(
+        ["gvkey", "fyearq_int", "start_date_dt"]
+    ).drop_duplicates(subset=["gvkey", "fyearq_int"], keep="last")[
+        ["gvkey", "fyearq_int", col]
+    ]
+    firm_year = firm_year.sort_values(["gvkey", "fyearq_int"]).reset_index(drop=True)
+
+    firm_year["prev_fyearq"] = firm_year.groupby("gvkey")["fyearq_int"].shift(1)
+    firm_year["next_fyearq"] = firm_year.groupby("gvkey")["fyearq_int"].shift(-1)
+
+    # Lag (t-1)
+    firm_year[f"{col}_lag"] = firm_year.groupby("gvkey")[col].shift(1)
+    is_consecutive_prev = (firm_year["fyearq_int"] - firm_year["prev_fyearq"]) == 1
+    firm_year.loc[~is_consecutive_prev, f"{col}_lag"] = np.nan
+
+    # Current (t)
+    firm_year[f"{col}_t"] = firm_year[col]
+
+    # Lead (t+1)
+    firm_year[f"{col}_lead"] = firm_year.groupby("gvkey")[col].shift(-1)
+    is_consecutive_next = (firm_year["next_fyearq"] - firm_year["fyearq_int"]) == 1
+    firm_year.loc[~is_consecutive_next, f"{col}_lead"] = np.nan
+
+    return firm_year[["gvkey", "fyearq_int", f"{col}_lag", f"{col}_t", f"{col}_lead"]]
+
+
+def create_leverage_temporal_vars(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
+    """Create temporal variables for BookLev and DebtToCapital.
+
+    For each leverage measure, produces _lag (t-1), _t (current), _lead (t+1).
     """
     print("\n" + "=" * 60)
     print("Creating temporal leverage variables for H4 (call-level)")
@@ -94,62 +123,46 @@ def create_leverage_temporal_vars(panel: pd.DataFrame, root_path: Path) -> pd.Da
     )
     df_valid = df[valid_mask].copy()
 
+    lev_cols = ["BookLev", "DebtToCapital"]
+
     if len(df_valid) == 0:
         print("  WARNING: No valid rows for temporal variable creation.")
-        df["Lev_lag"] = np.nan
-        df["Lev_t"] = np.nan
-        df["Lev_lead"] = np.nan
+        for col in lev_cols:
+            df[f"{col}_lag"] = np.nan
+            df[f"{col}_t"] = np.nan
+            df[f"{col}_lead"] = np.nan
         return df
 
     df_valid["fyearq_int"] = df_valid["fyearq"].astype(int)
 
-    # 1. Take the last call's Leverage per fiscal year (proxy for annual value)
-    firm_year = df_valid.sort_values(
-        ["gvkey", "fyearq_int", "start_date_dt"]
-    ).drop_duplicates(subset=["gvkey", "fyearq_int"], keep="last")[
-        ["gvkey", "fyearq_int", "Lev"]
-    ]
-
-    # 2. Sort by firm and fiscal year
-    firm_year = firm_year.sort_values(["gvkey", "fyearq_int"]).reset_index(drop=True)
-
-    # 3. Create previous and next fiscal year columns for validation
-    firm_year["prev_fyearq"] = firm_year.groupby("gvkey")["fyearq_int"].shift(1)
-    firm_year["next_fyearq"] = firm_year.groupby("gvkey")["fyearq_int"].shift(-1)
-
-    # 4. Lev_lag: previous year's leverage (shift(1) on ascending years = t-1)
-    firm_year["Lev_lag"] = firm_year.groupby("gvkey")["Lev"].shift(1)
-    is_consecutive_prev = (firm_year["fyearq_int"] - firm_year["prev_fyearq"]) == 1
-    firm_year.loc[~is_consecutive_prev, "Lev_lag"] = np.nan
-
-    # 5. Lev_t: current year's leverage (direct copy)
-    firm_year["Lev_t"] = firm_year["Lev"]
-
-    # 6. Lev_lead: next year's leverage (shift(-1) on ascending years = t+1)
-    firm_year["Lev_lead"] = firm_year.groupby("gvkey")["Lev"].shift(-1)
-    is_consecutive_next = (firm_year["next_fyearq"] - firm_year["fyearq_int"]) == 1
-    firm_year.loc[~is_consecutive_next, "Lev_lead"] = np.nan
-
-    # 7. Create lookup table for merging
-    lookup = firm_year[["gvkey", "fyearq_int", "Lev_lag", "Lev_t", "Lev_lead"]].copy()
-
-    # 8. Merge temporal vars back onto all calls via (gvkey, fyearq_int)
+    # Build lookup for each leverage measure
     df["_row_id"] = np.arange(len(df))
     df["fyearq_int"] = np.floor(pd.to_numeric(df["fyearq"], errors="coerce")).astype(
         "Int64"
     )
 
-    merged = df.merge(lookup, on=["gvkey", "fyearq_int"], how="left")
-    merged = merged.sort_values("_row_id").drop(
-        columns=["_row_id", "start_date_dt"]
-    )
+    merged = df.copy()
+    for col in lev_cols:
+        if col not in df_valid.columns:
+            print(f"  WARNING: {col} not in panel, skipping temporal vars")
+            merged[f"{col}_lag"] = np.nan
+            merged[f"{col}_t"] = np.nan
+            merged[f"{col}_lead"] = np.nan
+            continue
 
-    # 9. Log coverage for all three variables
-    print("\n  Temporal Leverage Variables Coverage:")
-    for col in ["Lev_t", "Lev_lag", "Lev_lead"]:
-        n_valid = merged[col].notna().sum()
-        pct = 100 * n_valid / len(merged)
-        print(f"    {col:12s}: {n_valid:,} / {len(merged):,} ({pct:.1f}%)")
+        lookup = _create_temporal_vars_for_col(df_valid, col)
+        merged = merged.merge(lookup, on=["gvkey", "fyearq_int"], how="left")
+
+        print(f"\n  {col} Temporal Variables Coverage:")
+        for suffix in ["_t", "_lag", "_lead"]:
+            var = f"{col}{suffix}"
+            n_valid = merged[var].notna().sum()
+            pct = 100 * n_valid / len(merged)
+            print(f"    {var:25s}: {n_valid:,} / {len(merged):,} ({pct:.1f}%)")
+
+    merged = merged.sort_values("_row_id").drop(
+        columns=["_row_id", "start_date_dt"], errors="ignore"
+    )
 
     return merged
 
@@ -179,7 +192,8 @@ def build_panel(
             var_config.get("ceo_pres_uncertainty", {})
         ),
         "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
+        "book_lev": BookLevBuilder(var_config.get("book_lev", {})),
+        "debt_to_capital": DebtToCapitalBuilder(var_config.get("debt_to_capital", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
@@ -194,12 +208,6 @@ def build_panel(
         "rd_intensity": RDIntensityBuilder(var_config.get("rd_intensity", {})),
         "cash_flow": CashFlowBuilder(var_config.get("cash_flow", {})),
         "volatility": VolatilityBuilder(var_config.get("volatility", {})),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
     }
 
     all_results = {}
@@ -282,16 +290,16 @@ def generate_report(
         f"- **Columns:** {len(panel.columns)}",
         "",
         "## Dependent Variables (Leverage)",
-        f"- **Lev (t):** {panel['Lev'].notna().sum():,} calls",
-        f"- **Lev_lead (t+1):** {panel['Lev_lead'].notna().sum():,} calls",
+        f"- **BookLev (t):** {panel['BookLev'].notna().sum():,} calls",
+        f"- **BookLev_lead (t+1):** {panel['BookLev_lead'].notna().sum():,} calls",
+        f"- **DebtToCapital (t):** {panel['DebtToCapital'].notna().sum():,} calls",
+        f"- **DebtToCapital_lead (t+1):** {panel['DebtToCapital_lead'].notna().sum():,} calls",
         "",
-        "## Key IVs (6 simultaneous)",
+        "## Key IVs (4 simultaneous)",
         f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,} calls",
-        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,} calls",
         "",
         "## Extended Controls",
         f"- **CapexAt:** {panel['CapexAt'].notna().sum():,} calls",

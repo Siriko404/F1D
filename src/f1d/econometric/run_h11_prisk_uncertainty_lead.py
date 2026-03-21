@@ -17,10 +17,8 @@ Model Specification:
 Dependent Variables:
     1. Manager_QA_Uncertainty_pct
     2. CEO_QA_Uncertainty_pct
-    3. Manager_QA_Weak_Modal_pct
-    4. CEO_QA_Weak_Modal_pct
-    5. Manager_Pres_Uncertainty_pct
-    6. CEO_Pres_Uncertainty_pct
+    3. Manager_Pres_Uncertainty_pct
+    4. CEO_Pres_Uncertainty_pct
 
 Independent Variables:
     - PRiskQ_lead: Political risk from quarter t+1 (1-quarter lead)
@@ -95,8 +93,6 @@ CONFIG = {
     "dependent_variables": [
         "Manager_QA_Uncertainty_pct",
         "CEO_QA_Uncertainty_pct",
-        "Manager_Clarity_Residual",
-        "CEO_Clarity_Residual",
         "Manager_Pres_Uncertainty_pct",
         "CEO_Pres_Uncertainty_pct",
     ],
@@ -119,8 +115,6 @@ BASE_CONTROLS = [
 PRES_CONTROL_MAP = {
     "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
     "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
-    "Manager_Clarity_Residual": "Manager_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual": "CEO_Pres_Uncertainty_pct",
     "Manager_Pres_Uncertainty_pct": None,
     "CEO_Pres_Uncertainty_pct": None,
 }
@@ -134,8 +128,6 @@ SUMMARY_STATS_VARS = [
     # Dependent variables (uncertainty measures)
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     # Main independent variables (lead)
@@ -255,9 +247,8 @@ def run_regression(
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),
         "cluster_var": "gvkey",
-        "rsquared": float(model.rsquared_within),
-        "rsquared_adj": float(model.rsquared_inclusive),
         "within_r2": within_r2,
+        "rsquared_inclusive": float(model.rsquared_inclusive),
         "beta_prisk": float(beta_prisk),
         "beta_prisk_se": float(beta_se),
         "beta_prisk_t": float(beta_t),
@@ -288,15 +279,11 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     r_mq_1 = get_res_lead1("Manager_QA_Uncertainty_pct")
     r_cq_1 = get_res_lead1("CEO_QA_Uncertainty_pct")
-    r_mw_1 = get_res_lead1("Manager_Clarity_Residual")
-    r_cw_1 = get_res_lead1("CEO_Clarity_Residual")
     r_mp_1 = get_res_lead1("Manager_Pres_Uncertainty_pct")
     r_cp_1 = get_res_lead1("CEO_Pres_Uncertainty_pct")
 
     r_mq_2 = get_res_lead2("Manager_QA_Uncertainty_pct")
     r_cq_2 = get_res_lead2("CEO_QA_Uncertainty_pct")
-    r_mw_2 = get_res_lead2("Manager_Clarity_Residual")
-    r_cw_2 = get_res_lead2("CEO_Clarity_Residual")
     r_mp_2 = get_res_lead2("Manager_Pres_Uncertainty_pct")
     r_cp_2 = get_res_lead2("CEO_Pres_Uncertainty_pct")
 
@@ -320,6 +307,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_r2(val):
         if val is None or pd.isna(val):
             return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
         return f"{val:.4f}"
 
     lines = [
@@ -327,12 +316,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\centering",
         "\\caption{H11-Lead: Political Risk (Lead) and Language Uncertainty}",
         "\\label{tab:h11_prisk_uncertainty_lead}",
-        "\\begin{tabular}{lcccccc}",
+        "\\begin{tabular}{lcccc}",
         "\\toprule",
-        " & \\multicolumn{4}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} \\\\",
-        "\\cmidrule(lr){2-5} \\cmidrule(lr){6-7}",
-        " & Mgr Unc & CEO Unc & Mgr Resid & CEO Resid & Mgr Unc & CEO Unc \\\\",
-        " & (1) & (2) & (3) & (4) & (5) & (6) \\\\",
+        " & \\multicolumn{2}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} \\\\",
+        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5}",
+        " & Mgr Unc & CEO Unc & Mgr Unc & CEO Unc \\\\",
+        " & (1) & (2) & (3) & (4) \\\\",
         "\\midrule",
     ]
 
@@ -340,8 +329,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r1 = "Political Risk$_{t+1}$ & "
     r1 += f"{fmt_coef(r_mq_1['beta_prisk'], r_mq_1['beta_prisk_p_one'])} & " if r_mq_1 else " & "
     r1 += f"{fmt_coef(r_cq_1['beta_prisk'], r_cq_1['beta_prisk_p_one'])} & " if r_cq_1 else " & "
-    r1 += f"{fmt_coef(r_mw_1['beta_prisk'], r_mw_1['beta_prisk_p_one'])} & " if r_mw_1 else " & "
-    r1 += f"{fmt_coef(r_cw_1['beta_prisk'], r_cw_1['beta_prisk_p_one'])} & " if r_cw_1 else " & "
     r1 += f"{fmt_coef(r_mp_1['beta_prisk'], r_mp_1['beta_prisk_p_one'])} & " if r_mp_1 else " & "
     r1 += f"{fmt_coef(r_cp_1['beta_prisk'], r_cp_1['beta_prisk_p_one'])} \\\\" if r_cp_1 else " \\\\"
     lines.append(r1)
@@ -350,8 +337,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r2 = " & "
     r2 += f"{fmt_se(r_mq_1['beta_prisk_se'])} & " if r_mq_1 else " & "
     r2 += f"{fmt_se(r_cq_1['beta_prisk_se'])} & " if r_cq_1 else " & "
-    r2 += f"{fmt_se(r_mw_1['beta_prisk_se'])} & " if r_mw_1 else " & "
-    r2 += f"{fmt_se(r_cw_1['beta_prisk_se'])} & " if r_cw_1 else " & "
     r2 += f"{fmt_se(r_mp_1['beta_prisk_se'])} & " if r_mp_1 else " & "
     r2 += f"{fmt_se(r_cp_1['beta_prisk_se'])} \\\\" if r_cp_1 else " \\\\"
     lines.append(r2)
@@ -360,8 +345,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r3 = "Political Risk$_{t+2}$ & "
     r3 += f"{fmt_coef(r_mq_2['beta_prisk'], r_mq_2['beta_prisk_p_one'])} & " if r_mq_2 else " & "
     r3 += f"{fmt_coef(r_cq_2['beta_prisk'], r_cq_2['beta_prisk_p_one'])} & " if r_cq_2 else " & "
-    r3 += f"{fmt_coef(r_mw_2['beta_prisk'], r_mw_2['beta_prisk_p_one'])} & " if r_mw_2 else " & "
-    r3 += f"{fmt_coef(r_cw_2['beta_prisk'], r_cw_2['beta_prisk_p_one'])} & " if r_cw_2 else " & "
     r3 += f"{fmt_coef(r_mp_2['beta_prisk'], r_mp_2['beta_prisk_p_one'])} & " if r_mp_2 else " & "
     r3 += f"{fmt_coef(r_cp_2['beta_prisk'], r_cp_2['beta_prisk_p_one'])} \\\\" if r_cp_2 else " \\\\"
     lines.append(r3)
@@ -370,8 +353,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r4 = " & "
     r4 += f"{fmt_se(r_mq_2['beta_prisk_se'])} & " if r_mq_2 else " & "
     r4 += f"{fmt_se(r_cq_2['beta_prisk_se'])} & " if r_cq_2 else " & "
-    r4 += f"{fmt_se(r_mw_2['beta_prisk_se'])} & " if r_mw_2 else " & "
-    r4 += f"{fmt_se(r_cw_2['beta_prisk_se'])} & " if r_cw_2 else " & "
     r4 += f"{fmt_se(r_mp_2['beta_prisk_se'])} & " if r_mp_2 else " & "
     r4 += f"{fmt_se(r_cp_2['beta_prisk_se'])} \\\\" if r_cp_2 else " \\\\"
     lines.append(r4)
@@ -379,11 +360,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.extend(
         [
             "\\midrule",
-            "Pres. Uncertainty & Yes & Yes & Yes & Yes & No & No \\\\",
-            "Negative Sentiment & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Controls & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+            "Negative Sentiment & Yes & Yes & Yes & Yes \\\\",
+            "Controls & Yes & Yes & Yes & Yes \\\\",
+            "Firm FE & Yes & Yes & Yes & Yes \\\\",
+            "Year FE & Yes & Yes & Yes & Yes \\\\",
             "\\midrule",
         ]
     )
@@ -392,8 +372,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rn = "Observations & "
     rn += f"{r_mq_1['n_obs']:,} & " if r_mq_1 else " & "
     rn += f"{r_cq_1['n_obs']:,} & " if r_cq_1 else " & "
-    rn += f"{r_mw_1['n_obs']:,} & " if r_mw_1 else " & "
-    rn += f"{r_cw_1['n_obs']:,} & " if r_cw_1 else " & "
     rn += f"{r_mp_1['n_obs']:,} & " if r_mp_1 else " & "
     rn += f"{r_cp_1['n_obs']:,} \\\\" if r_cp_1 else " \\\\"
     lines.append(rn)
@@ -401,8 +379,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rr = "Within-$R^2$ & "
     rr += f"{fmt_r2(r_mq_1['within_r2'])} & " if r_mq_1 else " & "
     rr += f"{fmt_r2(r_cq_1['within_r2'])} & " if r_cq_1 else " & "
-    rr += f"{fmt_r2(r_mw_1['within_r2'])} & " if r_mw_1 else " & "
-    rr += f"{fmt_r2(r_cw_1['within_r2'])} & " if r_cw_1 else " & "
     rr += f"{fmt_r2(r_mp_1['within_r2'])} & " if r_mp_1 else " & "
     rr += f"{fmt_r2(r_cp_1['within_r2'])} \\\\" if r_cp_1 else " \\\\"
     lines.append(rr)
@@ -416,7 +392,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "This table reports the effect of lead political risk on language uncertainty. ",
         "Political Risk$_{t+1}$ is measured one quarter after the earnings call; ",
         "Political Risk$_{t+2}$ is measured two quarters after. ",
-        "Columns (1)--(4) use Q\\&A session measures; columns (5)--(6) use presentation measures. ",
+        "Columns (1)--(2) use Q\\&A session measures; columns (3)--(4) use presentation measures. ",
         "All models use the Main industry sample (non-financial, non-utility firms). ",
         "Firms with fewer than 5 calls are excluded. ",
         "Standard errors are clustered at the firm level. ",
@@ -478,8 +454,6 @@ def main(panel_path: str | None = None) -> int:
             # Dependent variables (uncertainty measures)
             "Manager_QA_Uncertainty_pct",
             "CEO_QA_Uncertainty_pct",
-            "Manager_Clarity_Residual",
-            "CEO_Clarity_Residual",
             "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
             # Primary predictors (lead)
@@ -579,7 +553,7 @@ def main(panel_path: str | None = None) -> int:
                         f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
-    pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)
+    pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
 
     # Generate sample attrition table
     if all_results:

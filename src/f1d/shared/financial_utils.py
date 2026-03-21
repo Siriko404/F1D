@@ -327,7 +327,7 @@ def calculate_firm_controls_quarterly(
     return {
         "Size": size,
         "BM": bm,
-        "Lev": leverage,
+        "BookLev": leverage,
         "ROA": roa,
         "CurrentRatio": current_ratio,
         "RD_Intensity": rd_intensity,
@@ -377,7 +377,7 @@ def compute_financial_controls_quarterly(
     )
 
     # Leverage: interest-bearing debt / total assets
-    compustat_df["Lev"] = (
+    compustat_df["BookLev"] = (
         compustat_df["dlcq"].fillna(0).clip(lower=0) +
         compustat_df["dlttq"].fillna(0).clip(lower=0)
     ) / compustat_df["atq"]
@@ -416,7 +416,7 @@ def compute_financial_controls_quarterly(
         for col in [
             "Size",
             "BM",
-            "Lev",
+            "BookLev",
             "ROA",
             "EPS_Growth",
             "CurrentRatio",

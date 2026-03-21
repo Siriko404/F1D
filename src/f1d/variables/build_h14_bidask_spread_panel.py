@@ -7,7 +7,7 @@ ID: variables/build_h14_bidask_spread_panel
 Description: Build CALL-LEVEL panel for H14 Language Uncertainty -> Bid-Ask Spread Change.
 
     Step 1: Load manifest + all call-level uncertainty measures.
-    Step 2: Load thesis-consistent Compustat controls (Size, TobinsQ, ROA, Lev,
+    Step 2: Load thesis-consistent Compustat controls (Size, TobinsQ, ROA, BookLev,
             CapexAt, DividendPayer, OCF_Volatility).
     Step 3: Load CRSP-based controls (StockPrice, Turnover, Volatility).
     Step 4: Load BidAskSpreadChangeBuilder for DV and PreCallSpread control.
@@ -28,8 +28,8 @@ Hypothesis H14:
     DV: DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])
         where RelSpread_d = 2*(ASK_d - BID_d)/(ASK_d + BID_d)  [closing quotes]
         Following Lee (2016, The Accounting Review).
-    IV: 6 simultaneous uncertainty/clarity measures (horse-race)
-    Controls (Base): Size, TobinsQ, ROA, Lev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread
+    IV: 4 simultaneous uncertainty measures (horse-race)
+    Controls (Base): Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread
     Controls (Extended): Base + StockPrice, Turnover, Volatility, AbsSurpDec
     Fixed Effects: Industry(FF12)/Firm FE + FiscalYear FE (fyearq_int)
 """
@@ -52,18 +52,16 @@ from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables.winsorization import winsorize_pooled
 from f1d.shared.variables import (
-    # Key IVs (6 simultaneous)
+    # Key IVs (4 simultaneous)
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # Thesis-consistent Compustat controls
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
-    LevBuilder,
+    BookLevBuilder,
     CapexIntensityBuilder,
     DividendPayerBuilder,
     OCFVolatilityBuilder,
@@ -104,7 +102,7 @@ def build_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # Key IVs (6 simultaneous)
+        # Key IVs (4 simultaneous)
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
         ),
@@ -117,17 +115,11 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         # Thesis-consistent Compustat controls
         "size": SizeBuilder(var_config.get("size", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
+        "lev": BookLevBuilder(var_config.get("lev", {})),
         "capex_intensity": CapexIntensityBuilder(
             var_config.get("capex_intensity", {})
         ),
@@ -211,13 +203,6 @@ def build_panel(
     panel = winsorize_pooled(panel, winsorize_cols)
     print(f"  Winsorized {len(winsorize_cols)} columns at 1%/99% pooled")
 
-    # Verify clarity residuals are populated
-    for resid_col in ["Manager_Clarity_Residual", "CEO_Clarity_Residual"]:
-        if resid_col in panel.columns and panel[resid_col].notna().sum() == 0:
-            raise ValueError(
-                f"H0.3 CEO Clarity Extended output required: "
-                f"'{resid_col}' is entirely NaN. Run H0.3 first."
-            )
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
@@ -226,7 +211,7 @@ def build_panel(
     print(f"  Valid DSPREAD (DV): {panel['DSPREAD'].notna().sum():,}")
     print(f"  Valid PreCallSpread: {panel['PreCallSpread'].notna().sum():,}")
     print(f"  Valid fyearq_int: {panel['fyearq_int'].notna().sum():,}")
-    for ctrl in ["TobinsQ", "ROA", "Lev", "CapexAt", "DividendPayer", "OCF_Volatility"]:
+    for ctrl in ["TobinsQ", "ROA", "BookLev", "CapexAt", "DividendPayer", "OCF_Volatility"]:
         if ctrl in panel.columns:
             print(f"  Valid {ctrl}: {panel[ctrl].notna().sum():,}")
 
@@ -278,19 +263,17 @@ def generate_report(
         "  - RelSpread_d = 2*(ASK-BID)/(ASK+BID) [closing quotes]",
         "  - DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])",
         "",
-        "## Key IVs (6 simultaneous)",
+        "## Key IVs (4 simultaneous)",
         f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,} calls",
-        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,} calls",
         "",
         "## Base Controls (Thesis-Consistent)",
         f"- **Size:** {panel['Size'].notna().sum():,} calls",
         f"- **TobinsQ:** {panel['TobinsQ'].notna().sum():,} calls",
         f"- **ROA:** {panel['ROA'].notna().sum():,} calls",
-        f"- **Lev:** {panel['Lev'].notna().sum():,} calls",
+        f"- **BookLev:** {panel['BookLev'].notna().sum():,} calls",
         f"- **CapexAt:** {panel['CapexAt'].notna().sum():,} calls",
         f"- **DividendPayer:** {panel['DividendPayer'].notna().sum():,} calls",
         f"- **OCF_Volatility:** {panel['OCF_Volatility'].notna().sum():,} calls",

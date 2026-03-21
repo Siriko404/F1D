@@ -12,10 +12,9 @@ Description: Build FIRM-YEAR panel for H12: Speech Uncertainty predicts
                               + γ'·Controls_{i,t}
                               + FE + ε
 
-    6 Key IVs (all simultaneous):
+    4 Key IVs (all simultaneous):
         CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-        Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-        CEO_Clarity_Residual, Manager_Clarity_Residual
+        Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
 
     Key coefficient: β_k (one-tailed test)
         β_k < 0 (sig): Higher uncertainty → lower payout
@@ -24,7 +23,7 @@ Description: Build FIRM-YEAR panel for H12: Speech Uncertainty predicts
 Unit of observation: firm-fiscal-year (gvkey, fyearq_int).
 DV: PayoutRatio = dvy / iby (Attig et al.), PayoutRatio_lead = t+1.
 
-Step 1: Load manifest + 6 call-level IVs (uncertainty + clarity residuals).
+Step 1: Load manifest + 4 call-level IVs (uncertainty).
 Step 2: Load PayoutRatio (Compustat engine) and financial controls.
 Step 3: Attach fyearq, aggregate call-level to firm-year:
             IVs = mean across calls per (gvkey, fyearq)
@@ -62,13 +61,11 @@ from f1d.shared.variables import (
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # DV source
     PayoutRatioBuilder,
     # Base controls
     SizeBuilder,
-    LevBuilder,
+    BookLevBuilder,
     ROABuilder,
     TobinsQBuilder,
     CashHoldingsBuilder,
@@ -85,15 +82,12 @@ from f1d.shared.variables import (
 
 # ---------------------------------------------------------------------------
 # Call-level IVs to average across calls within firm-year
-# CRITICAL: Clarity Residuals MUST be in this list (mean aggregation + Avg_ prefix)
 # ---------------------------------------------------------------------------
 CALL_LEVEL_IVS: List[str] = [
     "Manager_QA_Uncertainty_pct",
     "CEO_QA_Uncertainty_pct",
     "Manager_Pres_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual",
-    "Manager_Clarity_Residual",
 ]
 
 
@@ -116,7 +110,7 @@ def parse_arguments() -> argparse.Namespace:
 def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
     """Collapse call-level panel to firm-year (gvkey, fyearq).
 
-    For IVs (uncertainty + clarity residuals): take the MEAN across all
+    For IVs (uncertainty): take the MEAN across all
     calls within each (gvkey, fyearq). Rename with Avg_ prefix.
 
     For financial variables (PayoutRatio, controls, ff12_code): take the
@@ -133,7 +127,7 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
     financial_cols = [
         "PayoutRatio",
         "Size",
-        "Lev",
+        "BookLev",
         "ROA",
         "TobinsQ",
         "CashHoldings",
@@ -147,7 +141,7 @@ def aggregate_to_firm_year(panel: pd.DataFrame) -> pd.DataFrame:
     ]
     existing_financial = [c for c in financial_cols if c in panel.columns]
 
-    # IVs: take mean per firm-year (CRITICAL: includes Clarity Residuals)
+    # IVs: take mean per firm-year
     existing_ivs = [c for c in CALL_LEVEL_IVS if c in panel.columns]
 
     # Sort by (gvkey, fyearq, start_date) so "last" = last call in the FY
@@ -231,17 +225,11 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         # DV source
         "payout_ratio": PayoutRatioBuilder(var_config.get("payout_ratio", {})),
         # Base controls
         "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
+        "lev": BookLevBuilder(var_config.get("lev", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
@@ -287,7 +275,7 @@ def build_panel(
 
     # Aggregate to firm-year
     print("\n  Aggregating to firm-year level...")
-    print("  IVs (uncertainty + clarity): averaged across calls per (gvkey, fyearq)")
+    print("  IVs (uncertainty): averaged across calls per (gvkey, fyearq)")
     print("  Financial variables: last non-missing per (gvkey, fyearq)")
     firm_year = aggregate_to_firm_year(panel)
     print(f"  Firm-year observations: {len(firm_year):,}")
@@ -449,7 +437,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print(f"Output:    {out_dir}")
     print(f"Log dir:   {log_dir}")
     print(f"DV:        PayoutRatio = DVC / IB (NaN when IB <= 0)")
-    print(f"IVs:       6 call-level measures -> firm-year mean")
+    print(f"IVs:       4 call-level measures -> firm-year mean")
 
     firm_year = build_panel(root, years, var_config, stats)
     save_outputs(firm_year, stats, out_dir, root, timestamp)

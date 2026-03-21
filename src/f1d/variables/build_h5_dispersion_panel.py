@@ -35,18 +35,16 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # Key IVs (6 simultaneous)
+    # Key IVs (4 simultaneous)
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # DV + pre-call control
     PostCallDispersionBuilder,
     # Base controls
     SizeBuilder,
-    LevBuilder,
+    BookLevBuilder,
     ROABuilder,
     TobinsQBuilder,
     CapexIntensityBuilder,
@@ -99,19 +97,13 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         # DV + pre-call control
         "postcall_dispersion": PostCallDispersionBuilder(
             var_config.get("postcall_dispersion", {})
         ),
         # Base controls
         "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
+        "lev": BookLevBuilder(var_config.get("lev", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "capex_intensity": CapexIntensityBuilder(
@@ -229,13 +221,11 @@ def generate_report(
         f"- **PostCallDispersion (valid):** {panel['PostCallDispersion'].notna().sum():,} calls",
         f"- **PreCallDispersion (valid):** {panel['PreCallDispersion'].notna().sum():,} calls",
         "",
-        "## Key IVs (6 simultaneous)",
+        "## Key IVs (4 simultaneous)",
         f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,}",
         f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,}",
         f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,}",
         f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,}",
-        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,}",
-        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,}",
         "",
     ]
 

@@ -7,7 +7,7 @@ ID: variables/build_h13_capex_panel
 Description: Build CALL-LEVEL panel for H13 Capital Expenditure hypothesis test.
 
     This panel follows the H1/H4 pattern:
-    one row per earnings call (file_name), 6 simultaneous IVs,
+    one row per earnings call (file_name), 4 simultaneous IVs,
     Base + Extended controls, fyearq_int time index.
 
     Step 1: Load manifest + all call-level variables (linguistic + financial).
@@ -46,18 +46,16 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # 6 Key IVs (all simultaneous)
+    # 4 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # Base controls (Compustat engine)
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
-    LevBuilder,
+    BookLevBuilder,
     CashHoldingsBuilder,
     CapexIntensityBuilder,
     DividendPayerBuilder,
@@ -106,7 +104,7 @@ def build_call_level_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # 6 Key IVs (all simultaneous)
+        # 4 Key IVs (all simultaneous)
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
@@ -119,17 +117,11 @@ def build_call_level_panel(
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         # Base controls -- CompustatEngine is a singleton; all share one load
         "size": SizeBuilder({}),
         "tobins_q": TobinsQBuilder({}),
         "roa": ROABuilder({}),
-        "lev": LevBuilder({}),
+        "lev": BookLevBuilder({}),
         "cash_holdings": CashHoldingsBuilder({}),
         "capex_intensity": CapexIntensityBuilder({}),  # For CapexAt DV and lead
         "dividend_payer": DividendPayerBuilder({}),
@@ -458,13 +450,11 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         f"- **CapexAt (t):** {panel['CapexAt'].notna().sum():,} calls",
         f"- **CapexAt_lead (t+1):** {panel['CapexAt_lead'].notna().sum():,} calls",
         "",
-        "## Key IVs (6 simultaneous)",
+        "## Key IVs (4 simultaneous)",
         f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,} calls",
-        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,} calls",
         "",
         "## Extended Controls",
         f"- **SalesGrowth:** {panel['SalesGrowth'].notna().sum():,} calls",

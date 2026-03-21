@@ -18,8 +18,6 @@ Dependent Variables:
     2. CEO_QA_Uncertainty_pct
     3. Manager_Pres_Uncertainty_pct
     4. CEO_Pres_Uncertainty_pct
-    5. Manager_Clarity_Residual
-    6. CEO_Clarity_Residual
 
 Hypothesis Tests (one-tailed):
     H6-A: beta(CCCL) < 0 (Scrutiny reduces uncertainty)
@@ -85,15 +83,13 @@ CONFIG = {
         "CEO_QA_Uncertainty_pct",
         "Manager_Pres_Uncertainty_pct",
         "CEO_Pres_Uncertainty_pct",
-        "Manager_Clarity_Residual",
-        "CEO_Clarity_Residual",
     ],
     "samples": ["Main", "Finance", "Utility"],
 }
 
 BASE_CONTROLS = [
     "Size",
-    "Lev",
+    "BookLev",
     "ROA",
     "TobinsQ",
     "CashHoldings",
@@ -113,13 +109,11 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
     # Main independent variable (CCCL shift intensity)
     {"col": "shift_intensity_mkvalt_ff48", "label": "CCCL Exposure$_t$"},
     # Controls
     {"col": "Size", "label": "Firm Size (log AT)"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "ROA", "label": "ROA"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "CashHoldings", "label": "Cash Holdings"},
@@ -240,9 +234,8 @@ def run_regression(
         "n_firms": df_reg["gvkey"].nunique(),
         "n_clusters": df_reg["gvkey"].nunique(),
         "cluster_var": "gvkey",
-        "rsquared": float(model.rsquared_within),
-        "rsquared_adj": float(model.rsquared_inclusive),
         "within_r2": within_r2,
+        "rsquared_inclusive": float(model.rsquared_inclusive),
         "beta1": float(beta1),
         "beta1_se": float(beta1_se),
         "beta1_t": float(beta1_t),
@@ -267,8 +260,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r_2 = get_res("CEO_QA_Uncertainty_pct")
     r_3 = get_res("Manager_Pres_Uncertainty_pct")
     r_4 = get_res("CEO_Pres_Uncertainty_pct")
-    r_5 = get_res("Manager_Clarity_Residual")
-    r_6 = get_res("CEO_Clarity_Residual")
 
     def fmt_coef(val, pval):
         if val is None or pd.isna(val):
@@ -290,6 +281,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_r2(val):
         if val is None or pd.isna(val):
             return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
         return f"{val:.4f}"
 
     lines = [
@@ -297,12 +290,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\centering",
         "\\caption{H6: SEC Scrutiny (CCCL) and Speech Vagueness}",
         "\\label{tab:h6_cccl}",
-        "\\begin{tabular}{lcccccc}",
+        "\\begin{tabular}{lcccc}",
         "\\toprule",
-        " & \\multicolumn{2}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} & \\multicolumn{2}{c}{Clarity Residual} \\\\",
-        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5} \\cmidrule(lr){6-7}",
-        " & Mgr Unc & CEO Unc & Mgr Unc & CEO Unc & Mgr Resid & CEO Resid \\\\",
-        " & (1) & (2) & (3) & (4) & (5) & (6) \\\\",
+        " & \\multicolumn{2}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} \\\\",
+        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5}",
+        " & Mgr Unc & CEO Unc & Mgr Unc & CEO Unc \\\\",
+        " & (1) & (2) & (3) & (4) \\\\",
         "\\midrule",
     ]
 
@@ -311,9 +304,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r1 += f"{fmt_coef(r_1['beta1'], r_1['beta1_p_one'])} & " if r_1 else " & "
     r1 += f"{fmt_coef(r_2['beta1'], r_2['beta1_p_one'])} & " if r_2 else " & "
     r1 += f"{fmt_coef(r_3['beta1'], r_3['beta1_p_one'])} & " if r_3 else " & "
-    r1 += f"{fmt_coef(r_4['beta1'], r_4['beta1_p_one'])} & " if r_4 else " & "
-    r1 += f"{fmt_coef(r_5['beta1'], r_5['beta1_p_one'])} & " if r_5 else " & "
-    r1 += f"{fmt_coef(r_6['beta1'], r_6['beta1_p_one'])} \\\\" if r_6 else " \\\\"
+    r1 += f"{fmt_coef(r_4['beta1'], r_4['beta1_p_one'])} \\\\" if r_4 else " \\\\"
     lines.append(r1)
 
     # Row 2: SE
@@ -321,17 +312,15 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r2 += f"{fmt_se(r_1['beta1_se'])} & " if r_1 else " & "
     r2 += f"{fmt_se(r_2['beta1_se'])} & " if r_2 else " & "
     r2 += f"{fmt_se(r_3['beta1_se'])} & " if r_3 else " & "
-    r2 += f"{fmt_se(r_4['beta1_se'])} & " if r_4 else " & "
-    r2 += f"{fmt_se(r_5['beta1_se'])} & " if r_5 else " & "
-    r2 += f"{fmt_se(r_6['beta1_se'])} \\\\" if r_6 else " \\\\"
+    r2 += f"{fmt_se(r_4['beta1_se'])} \\\\" if r_4 else " \\\\"
     lines.append(r2)
 
     lines.extend(
         [
             "\\midrule",
-            "Controls & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
-            "Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\\\",
+            "Controls & Yes & Yes & Yes & Yes \\\\",
+            "Firm FE & Yes & Yes & Yes & Yes \\\\",
+            "Year FE & Yes & Yes & Yes & Yes \\\\",
             "\\midrule",
         ]
     )
@@ -340,18 +329,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rn += f"{r_1['n_obs']:,} & " if r_1 else " & "
     rn += f"{r_2['n_obs']:,} & " if r_2 else " & "
     rn += f"{r_3['n_obs']:,} & " if r_3 else " & "
-    rn += f"{r_4['n_obs']:,} & " if r_4 else " & "
-    rn += f"{r_5['n_obs']:,} & " if r_5 else " & "
-    rn += f"{r_6['n_obs']:,} \\\\" if r_6 else " \\\\"
+    rn += f"{r_4['n_obs']:,} \\\\" if r_4 else " \\\\"
     lines.append(rn)
 
     rr = "Within-$R^2$ & "
     rr += f"{fmt_r2(r_1['within_r2'])} & " if r_1 else " & "
     rr += f"{fmt_r2(r_2['within_r2'])} & " if r_2 else " & "
     rr += f"{fmt_r2(r_3['within_r2'])} & " if r_3 else " & "
-    rr += f"{fmt_r2(r_4['within_r2'])} & " if r_4 else " & "
-    rr += f"{fmt_r2(r_5['within_r2'])} & " if r_5 else " & "
-    rr += f"{fmt_r2(r_6['within_r2'])} \\\\" if r_6 else " \\\\"
+    rr += f"{fmt_r2(r_4['within_r2'])} \\\\" if r_4 else " \\\\"
     lines.append(rr)
 
     lines.extend([
@@ -361,8 +346,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\parbox{\\textwidth}{\\scriptsize ",
         "\\textit{Notes:} "
         "This table reports the effect of SEC scrutiny (CCCL exposure) on speech vagueness. "
-        "Columns (1)--(2) use Q\\&A session uncertainty measures; columns (3)--(4) use presentation uncertainty measures; "
-        "columns (5)--(6) use clarity residuals from the H0.3 CEO Clarity Extended regression. "
+        "Columns (1)--(2) use Q\\&A session uncertainty measures; columns (3)--(4) use presentation uncertainty measures. "
         "All models use the Main industry sample (non-financial, non-utility firms). "
         "Firms with fewer than 5 calls are excluded. "
         "Standard errors are clustered at the firm level. "
@@ -420,20 +404,18 @@ def main(panel_path: str | None = None) -> int:
             "gvkey",
             "year",
             "ff12_code",
-            # Dependent variables (uncertainty measures + clarity residuals)
+            # Dependent variables (uncertainty measures)
             "Manager_QA_Uncertainty_pct",
             "CEO_QA_Uncertainty_pct",
             "Manager_Pres_Uncertainty_pct",
             "CEO_Pres_Uncertainty_pct",
-            "Manager_Clarity_Residual",
-            "CEO_Clarity_Residual",
             # Primary predictor (CCCL institutional shift intensity)
             "shift_intensity_mkvalt_ff48",
             "shift_intensity_mkvalt_ff48_lead1",
             "shift_intensity_mkvalt_ff48_lead2",
             # Base controls
             "Size",
-            "Lev",
+            "BookLev",
             "ROA",
             "TobinsQ",
             "CashHoldings",
@@ -518,7 +500,7 @@ def main(panel_path: str | None = None) -> int:
                     f.write(str(model_pt.summary))
 
     _save_latex_table(all_results, out_dir)
-    pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False)
+    pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
 
     # Generate sample attrition table
     if all_results:

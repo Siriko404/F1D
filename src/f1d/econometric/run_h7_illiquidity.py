@@ -5,7 +5,7 @@ STAGE 4: Test H7 Post-Call Illiquidity Hypothesis
 ================================================================================
 ID: econometric/test_h7_illiquidity
 Description: Run H7 Illiquidity hypothesis test using 4 model specifications
-             with 6 simultaneous uncertainty/clarity IVs, varying FE type and
+             with 4 simultaneous uncertainty IVs, varying FE type and
              control set. Main sample only.
 
 Model Specifications (4 columns in one table):
@@ -16,13 +16,12 @@ Model Specifications (4 columns in one table):
 
 DV: delta_amihud — change in Amihud illiquidity around call ([+1,+3] - [-3,-1] days).
 
-Key Independent Variables (6, all enter simultaneously):
+Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-    CEO_Clarity_Residual, Manager_Clarity_Residual
 
 Base Controls (8, mirrors H14):
-    Size, TobinsQ, ROA, Lev, CapexAt, DividendPayer, OCF_Volatility, pre_call_amihud
+    Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, pre_call_amihud
 
 Extended Controls (Base + 4):
     + Volatility, StockPrice, Turnover, Analyst_QA_Uncertainty_pct
@@ -68,17 +67,14 @@ KEY_IVS = [
     "CEO_QA_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
     "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual",
-    "Manager_Clarity_Residual",
-]
+    "Manager_Pres_Uncertainty_pct",]
 
 # Mirrors H14 bid-ask spread pattern: standard 7 + lagged-DV control
 BASE_CONTROLS = [
     "Size",
     "TobinsQ",
     "ROA",
-    "Lev",
+    "BookLev",
     "CapexAt",
     "DividendPayer",
     "OCF_Volatility",
@@ -105,10 +101,7 @@ VARIABLE_LABELS = {
     "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
     "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
-    "CEO_Clarity_Residual": "CEO Clarity Residual",
-    "Manager_Clarity_Residual": "Mgr Clarity Residual",
-}
+    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
 
 SUMMARY_STATS_VARS = [
     {"col": "delta_amihud", "label": "$\\Delta$Amihud (post$-$pre call)"},
@@ -116,13 +109,10 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
-    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "CapexAt", "label": "CapEx / Assets"},
     {"col": "DividendPayer", "label": "Dividend Payer"},
     {"col": "OCF_Volatility", "label": "OCF Volatility"},
@@ -157,8 +147,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         "delta_amihud", "pre_call_amihud",
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "CEO_Clarity_Residual", "Manager_Clarity_Residual",
-        "Size", "TobinsQ", "ROA", "Lev", "CapexAt",
+        "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
         "DividendPayer", "OCF_Volatility",
         "Volatility", "StockPrice", "Turnover",
         "Analyst_QA_Uncertainty_pct",
@@ -294,7 +283,12 @@ def _save_latex_table(all_results, out_dir):
     def fmt_coef(v, s): return "" if np.isnan(v) else f"{v:.4f}{s}"
     def fmt_se(v): return "" if np.isnan(v) else f"({v:.4f})"
     def fmt_int(v): return f"{v:,}"
-    def fmt_r2(v): return "" if np.isnan(v) else f"{v:.3f}"
+    def fmt_r2(v):
+        if np.isnan(v):
+            return ""
+        if abs(v) < 0.001:
+            return f"{v:.2e}"
+        return f"{v:.3f}"
 
     lines = [
         r"\begin{table}[htbp]", r"\centering",
@@ -367,7 +361,7 @@ def save_outputs(all_results, out_dir):
 
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
-    diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False)
+    diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
     _save_latex_table(all_results, out_dir)
     return diag_df

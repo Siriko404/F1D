@@ -4571,7 +4571,7 @@ def compute_step31_process_stats(
             if col in [
                 "Size",
                 "BM",
-                "Lev",
+                "BookLev",
                 "ROA",
                 "EPS_Growth",
                 "SurpDec",
@@ -4637,7 +4637,7 @@ def compute_step31_output_stats(
         variables_list = [
             "Size",
             "BM",
-            "Lev",
+            "BookLev",
             "ROA",
             "EPS_Growth",
             "SurpDec",

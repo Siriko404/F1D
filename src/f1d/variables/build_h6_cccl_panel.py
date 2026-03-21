@@ -7,7 +7,7 @@ ID: variables/build_h6_cccl_panel
 Description: Build CALL-LEVEL panel for H6 SEC Scrutiny (CCCL) hypothesis test.
 
     Step 1: Load manifest + all call-level uncertainty measures.
-    Step 2: Load base financial controls (Size, Lev, ROA, TobinsQ, CashHoldings).
+    Step 2: Load base financial controls (Size, BookLev, ROA, TobinsQ, CashHoldings).
     Step 3: Load the CCCL instrument (shift_intensity_mkvalt_ff48).
     Step 4: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 5: Compute CCCL_lag (t-1 instrument) and future leads per call:
@@ -41,10 +41,8 @@ from f1d.shared.variables import (
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     SizeBuilder,
-    LevBuilder,
+    BookLevBuilder,
     ROABuilder,
     TobinsQBuilder,
     CashHoldingsBuilder,
@@ -182,14 +180,8 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
+        "lev": BookLevBuilder(var_config.get("lev", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),

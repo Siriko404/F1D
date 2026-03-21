@@ -10,7 +10,7 @@ Description: Characterise determinants of CEO presence in earnings call Q&A
 Derives binary indicator:
     CEO_present_QA = CEO_QA_Uncertainty_pct.notna()  (1 if CEO participated in Q&A)
 
-Runs probit: CEO_present_QA ~ Size + Lev + ROA + TobinsQ + Volatility + C(year)
+Runs probit: CEO_present_QA ~ Size + BookLev + ROA + TobinsQ + Volatility + C(year)
 
 Outputs:
     - ceo_presence_probit_summary.txt  (full statsmodels summary)
@@ -43,7 +43,7 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-PROBIT_CONTROLS = ["Size", "Lev", "ROA", "TobinsQ", "Volatility"]
+PROBIT_CONTROLS = ["Size", "BookLev", "ROA", "TobinsQ", "Volatility"]
 
 
 def parse_arguments() -> argparse.Namespace:

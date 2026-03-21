@@ -73,7 +73,7 @@ PANEL_A_VARS: List[Dict[str, str]] = [
 PANEL_B_VARS: List[Dict[str, str]] = [
     {"col": "Size", "label": "Size (log assets)"},
     {"col": "BM", "label": "Book-to-Market"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "ROA", "label": "Return on Assets"},
     {"col": "CurrentRatio", "label": "Current Ratio"},
     {"col": "RD_Intensity", "label": "R\\&D Intensity"},
@@ -92,7 +92,7 @@ CORR_VARS = [
     "Entire_All_Negative_pct",
     "Size",
     "BM",
-    "Lev",
+    "BookLev",
     "ROA",
     "StockRet",
     "MarketRet",

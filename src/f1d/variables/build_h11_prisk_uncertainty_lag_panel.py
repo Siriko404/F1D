@@ -41,12 +41,10 @@ from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
-    ManagerClarityResidualBuilder,
-    CEOClarityResidualBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     SizeBuilder,
-    LevBuilder,
+    BookLevBuilder,
     ROABuilder,
     TobinsQBuilder,
     CashHoldingsBuilder,
@@ -85,18 +83,12 @@ def build_panel(
     builders = {
         # Manifest
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # Dependent Variables (6 uncertainty measures)
+        # Dependent Variables (4 uncertainty measures)
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
         ),
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
         ),
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
@@ -116,7 +108,7 @@ def build_panel(
         ),
         # Finance Controls
         "size": SizeBuilder(var_config.get("size", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
+        "lev": BookLevBuilder(var_config.get("lev", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),

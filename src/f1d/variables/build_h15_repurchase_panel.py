@@ -7,7 +7,7 @@ ID: variables/build_h15_repurchase_panel
 Description: Build CALL-LEVEL panel for H15 Share Repurchase hypothesis test.
 
     This panel follows the H1/H4/H13 pattern:
-    one row per earnings call (file_name), 6 simultaneous IVs,
+    one row per earnings call (file_name), 4 simultaneous IVs,
     Base + Extended controls, fyearq_int time index.
 
     DV: REPO_callqtr — binary indicator (1 if cshopq > 0 in the call quarter).
@@ -44,18 +44,16 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # 6 Key IVs (all simultaneous)
+    # 4 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # Base controls (Compustat engine) — all 8 (REPO is DV, not in control set)
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
-    LevBuilder,
+    BookLevBuilder,
     CapexIntensityBuilder,
     CashHoldingsBuilder,
     DividendPayerBuilder,
@@ -101,7 +99,7 @@ def build_call_level_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # 6 Key IVs (all simultaneous)
+        # 4 Key IVs (all simultaneous)
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
@@ -114,17 +112,11 @@ def build_call_level_panel(
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
-        # Base controls — all 8 (REPO ∉ {Lev, CashHoldings, CapexAt})
+        # Base controls — all 8 (REPO ∉ {BookLev, CashHoldings, CapexAt})
         "size": SizeBuilder({}),
         "tobins_q": TobinsQBuilder({}),
         "roa": ROABuilder({}),
-        "lev": LevBuilder({}),
+        "lev": BookLevBuilder({}),
         "capex_intensity": CapexIntensityBuilder({}),
         "cash_holdings": CashHoldingsBuilder({}),
         "dividend_payer": DividendPayerBuilder({}),
@@ -425,13 +417,11 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         f"- **REPO_callqtr=0:** {(panel['REPO_callqtr']==0).sum():,} calls",
         f"- **REPO_callqtr=NaN:** {panel['REPO_callqtr'].isna().sum():,} calls",
         "",
-        "## Key IVs (6 simultaneous)",
+        "## Key IVs (4 simultaneous)",
         f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
         f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Clarity_Residual:** {panel['CEO_Clarity_Residual'].notna().sum():,} calls",
-        f"- **Manager_Clarity_Residual:** {panel['Manager_Clarity_Residual'].notna().sum():,} calls",
         "",
         "## Sample Distribution",
         "",

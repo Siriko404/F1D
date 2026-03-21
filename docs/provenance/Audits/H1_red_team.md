@@ -1,285 +1,290 @@
 # H1 Suite -- Second-Layer Red-Team Audit
 
 **Suite ID:** H1
-**Red-team date:** 2026-03-15
-**Auditor posture:** Adversarial, fresh-context
-**First-layer audit:** `docs/provenance/H1.md`
+**Audit date:** 2026-03-18
+**Auditor mode:** Fresh-context, adversarial, independent code inspection
+**First-layer audit path:** `docs/provenance/H1.md`
 
 ---
 
 ## A. Red-Team Bottom Line
 
-The first-layer audit is a thorough, well-structured document that correctly identifies the suite boundary, traces the dependency chain, and raises several legitimate identification and robustness concerns. However, it contains material omissions and at least two factual misses that would mislead a thesis committee: (1) it fails to notice that the LaTeX table note falsely claims controls are standardized when no standardization is implemented anywhere in the runner; (2) it fails to notice that the latest (and all prior) econometric output directories contain only 6 of the expected 18 regression result `.txt` files (Main sample only -- Finance and Utility `.txt` summaries are missing despite all 18 models appearing in `model_diagnostics.csv`). The first audit also inherits and repeats the table note error about "All models use the Main industry sample" but does not connect this to the broader pattern of artifact inaccuracy. Several severity assignments are defensible but the document understates the false-claim risk in the LaTeX table while spending proportionally too much text on low-severity documentation issues.
+The first-layer audit is **structurally competent but factually stale and materially incomplete**. Its central defect is that it documents a now-superseded 6-IV specification (run `2026-03-15_220402`, N~37,600) while claiming to describe a 4-IV redesign. The code on disk and the latest verified outputs (run `2026-03-18_185323`, N~57,200) use 4 IVs -- but the first audit's coefficient tables, sample sizes, within-R-squared values, and attrition accounting all reflect the old 6-IV run. This is not a minor versioning annoyance: the N values, significance patterns, and attrition story are materially different between the two specifications. A committee member reading the first audit would receive systematically wrong quantitative claims.
 
-**Overall grade for the first audit: PARTIALLY RELIABLE**
+Beyond the staleness issue, the first audit missed several genuine implementation and econometric concerns, overstated its severity on some items while under-weighting others, and left key sample-accounting cells marked "pending re-run" -- a serious completeness gap for a thesis-standard document.
 
-**Verdict on the suite as implemented: SALVAGEABLE WITH MAJOR REVISIONS**
-
-**Risk characterization of first audit: Mixed -- understated artifact-integrity risk and certain omissions, while appropriately flagging identification and robustness gaps.**
+**Overall grade for the first-layer audit: C+ (Adequate structure, materially stale data, several missed issues)**
 
 ---
 
 ## B. Scope and Objects Audited
 
-| Object | Path / identifier |
-|--------|-------------------|
-| Suite ID | H1 |
-| Suite entrypoint | `src/f1d/econometric/run_h1_cash_holdings.py` |
-| Panel builder | `src/f1d/variables/build_h1_cash_holdings_panel.py` |
-| First-layer audit | `docs/provenance/H1.md` |
-| Compustat engine | `src/f1d/shared/variables/_compustat_engine.py` |
-| Linguistic engine | `src/f1d/shared/variables/_linguistic_engine.py` |
-| Panel utilities | `src/f1d/shared/variables/panel_utils.py` |
-| Winsorization module | `src/f1d/shared/variables/winsorization.py` |
-| CashHoldings builder | `src/f1d/shared/variables/cash_holdings.py` |
-| Project config | `config/project.yaml` |
-| Latest econometric output | `outputs/econometric/h1_cash_holdings/2026-03-06_192445/` |
-| Latest panel output | `outputs/variables/h1_cash_holdings/2026-02-20_024619/` |
-| Run manifest | `outputs/econometric/h1_cash_holdings/2026-03-06_192445/run_manifest.json` |
-| Model diagnostics | `outputs/econometric/h1_cash_holdings/2026-03-06_192445/model_diagnostics.csv` |
-| LaTeX table | `outputs/econometric/h1_cash_holdings/2026-03-06_192445/h1_cash_holdings_table.tex` |
-| All 4 historical output directories inspected | `2026-03-01_234219`, `2026-03-02_230812`, `2026-03-06_192103`, `2026-03-06_192445` |
+| Object | Path | Inspected? |
+|--------|------|------------|
+| First-layer audit doc | `docs/provenance/H1.md` | Yes |
+| Econometric runner (Stage 4) | `src/f1d/econometric/run_h1_cash_holdings.py` | Yes, full |
+| Panel builder (Stage 3) | `src/f1d/variables/build_h1_cash_holdings_panel.py` | Yes, full |
+| Compustat engine | `src/f1d/shared/variables/_compustat_engine.py` | Yes, full |
+| Panel utilities | `src/f1d/shared/variables/panel_utils.py` | Yes, full |
+| Variable builders (__init__) | `src/f1d/shared/variables/__init__.py` | Yes |
+| BookLev builder | `src/f1d/shared/variables/book_lev.py` | Yes |
+| Lev builder (alias) | `src/f1d/shared/variables/lev.py` | Yes |
+| Financial utils (legacy) | `src/f1d/shared/financial_utils.py` | Yes |
+| Run `2026-03-15_220402` outputs | `outputs/econometric/h1_cash_holdings/2026-03-15_220402/` | Yes: model_diagnostics.csv, regression_results_col1.txt |
+| Run `2026-03-18_145113` outputs | `outputs/econometric/h1_cash_holdings/2026-03-18_145113/` | Yes: model_diagnostics.csv, regression_results_col1.txt, sample_attrition.csv, h1_cash_holdings_table.tex, report_step4_H1.md |
+| Run `2026-03-18_185323` outputs | `outputs/econometric/h1_cash_holdings/2026-03-18_185323/` | Yes: regression_results_col1.txt, model_diagnostics.csv |
 
 ---
 
 ## C. Audit-of-Audit Scorecard
 
-| Dimension | First-layer status | Evidence basis | Red-team note |
-|-----------|-------------------|----------------|---------------|
-| Model/spec identification | Pass | Correctly identifies PanelOLS, EntityEffects+TimeEffects, 6 measures x 3 samples = 18 specs | Matches code exactly |
-| Reproducibility commands | Partial | Commands listed but not tested; doesn't note stages 1-2 modules aren't importable as `python -m` without checking | Commands plausible but untested |
-| Dependency tracing | Pass | Traces from Compustat engine through builders to runner | Comprehensive and correct |
-| Raw data provenance | Pass | Lists Compustat, manifest, linguistic sources with locations | Correct |
-| Merge/sample audit | Pass | Correctly documents zero-row-delta enforcement, merge_asof, uniqueness guards | Verified against code |
-| Variable dictionary completeness | Pass | All 6 uncertainty measures + 7 controls + identifiers documented with formulas | Formulas verified against `_compustat_engine.py` |
-| Outlier/missing-data rules | Pass | Winsorization thresholds, inf->NaN, listwise deletion all documented | Verified; minor gap on linguistic 0%/99% vs Compustat 1%/99% correctly noted |
-| Estimation spec register | Pass | All 18 specs with N, R2, beta, p-values | Cross-checked against `model_diagnostics.csv` -- values match |
-| Verification log quality | Partial | 20 checks listed, but several are described rather than shown (no command outputs pasted) | Claims are plausible but not independently reproducible from the audit text alone |
-| Known issues section | Pass | 5 issues (J1-J5) all verified as legitimate | Correct |
-| Identification critique | Pass | Reverse causality, OVB, selection, look-ahead, confounds, survivorship, multiple testing all raised | Comprehensive for a panel FE suite |
-| Econometric implementation critique | Pass | Calendar/fiscal FE mismatch, call-level DV, no lagged DV, singleton dropping all flagged | Correct |
-| Robustness critique | Pass | Near-complete absence of robustness correctly identified as high-severity | Appropriately severe |
-| Academic-integrity critique | Partial | Catches table note error (L12) and raw-data-not-committed (L14), but **misses the false standardization claim** and **missing .txt files** | Material omission |
-| Severity calibration | Partial | L1-L3 (High) are correctly calibrated; some Medium issues could be upgraded | See Section H |
-| Final thesis verdict support | Pass | "SALVAGEABLE WITH MAJOR REVISIONS" is defensible | Agrees with red-team assessment |
+| Dimension | Grade | Rationale |
+|-----------|-------|-----------|
+| Factual correctness | D | Core quantitative claims (N, R-squared, coefficients, significance patterns) match the wrong run |
+| Evidence quality | C | Code references are generally correct but output references are stale |
+| Completeness | C- | Sample attrition marked "pending re-run" in 4 cells; no updated coefficient table |
+| Severity calibration | B- | Generally reasonable; some under-weighting (see Section H) |
+| False positives | B+ | No major false positives identified |
+| False negatives / omissions | C | Several genuine issues missed (see Section G) |
+| Internal consistency | D | Claims "4-IV specification" throughout but all quantitative data from 6-IV run |
+| Thesis-standard sufficiency | D+ | Not submission-ready due to stale data and incomplete attrition |
 
 ---
 
 ## D. Claim Verification Matrix (First Audit Claims Tested)
 
-| Claim ID | First-layer claim | Section | Verified? | Evidence checked | Red-team verdict | Notes |
-|----------|-------------------|---------|-----------|------------------|------------------|-------|
-| C1 | Estimator is `linearmodels.panel.PanelOLS` with `EntityEffects + TimeEffects`, `drop_absorbed=True` | A2 | Y | `run_h1_cash_holdings.py` lines 78, 342-347, 362 | Correct | Formula string includes `EntityEffects + TimeEffects`; `drop_absorbed=True` at line 362 |
-| C2 | SEs are firm-clustered (`cov_type="clustered"`, `cluster_entity=True`) | A5 | Y | `run_h1_cash_holdings.py` line 363 | Correct | `model_obj.fit(cov_type="clustered", cluster_entity=True)` |
-| C3 | DV is `CashHoldings_lead` = `cheq/atq` shifted by -1 fiscal year | A3 | Y | `_compustat_engine.py` line 1049, `build_h1_cash_holdings_panel.py` `create_lead_variable()` | Correct | Construction verified step by step |
-| C4 | Fiscal year continuity validated (non-consecutive get NaN) | A3 | Y | `build_h1_cash_holdings_panel.py` lines 337-339 | Correct | `consecutive = firm_year_eoy["fyearq_lead"] == (firm_year_eoy["fyearq_grp"] + 1)` |
-| C5 | Panel has 112,968 rows, 0 duplicate file_name, 2,429 unique gvkey | C (Step 4) | Partial | Cannot re-run; but `build_h1_cash_holdings_panel.py` enforces uniqueness assertions (lines 178-183, 198-203) | Plausible | Code guards exist; exact counts unverified without re-execution |
-| C6 | 18 regression result .txt files produced | B | **N** | All 4 output directories inspected; each contains only 6 `.txt` files (Main sample only) | **First-audit factual error** | `model_diagnostics.csv` has 18 rows but only Main `.txt` summaries exist on disk |
-| C7 | Compustat deduplicated on (gvkey, datadate), 0 dups found | D | Partial | `_compustat_engine.py` lines 1208-1216 enforce dedup | Code path exists; 0-dup claim unverified without re-execution |
-| C8 | Linguistic variables winsorized at 0%/99% per-year (upper-only) | G | Y | `_linguistic_engine.py` lines 255-258: `lower=0.0, upper=0.99` | Correct |
-| C9 | Compustat controls winsorized at 1%/99% by fiscal year | G | Y | `_compustat_engine.py` lines 1146-1160: `_winsorize_by_year()` | Correct; uses `fyearq` as grouping |
-| C10 | CashHoldings and Lev lack explicit `atq > 0` guard | J2 | Y | `_compustat_engine.py` line 1049: `comp["CashHoldings"] = comp["cheq"] / comp["atq"]`; line 1032: similar for Lev | Correct | inf->NaN catches `atq=0` but not `atq<0` |
-| C11 | TobinsQ code implements `(mktcap + debt_book) / atq` | J4/K4 | Y | `_compustat_engine.py` lines 1050-1060 | Correct | Docstring says different formula; code is `(mktcap + debt_book) / atq` |
-| C12 | OCF_Volatility max = 32.4, p99 = 0.36 | J3 | Partial | Cannot re-run descriptive stats; first audit claims verification check #8 | Plausible but unverified by red-team |
-| C13 | 24.2% of calls have `year != fyearq` | J1/K2/K3 | Partial | Cannot re-run; but this is a mechanical consequence of non-December FYE firms (~30% of S&P) | Plausible |
-| C14 | DV std within (gvkey, fyearq) = 0 for all groups | I (#10) | Partial | By construction (lead variable is firm-fiscal-year level, assigned identically to all calls in that group) | Mechanically true by construction logic |
-| C15 | LaTeX table note says "All models use the Main industry sample" | L12 | Y | `h1_cash_holdings_table.tex` line 33-34 | Correct -- this is indeed a table note error | First audit correctly caught this |
-| C16 | LaTeX table note claims "All continuous controls are standardized within each model's estimation sample" | Not in first audit | Y | `h1_cash_holdings_table.tex` line 38; `run_h1_cash_holdings.py` has zero standardization code | **First-audit omission** | False claim in output artifact; no standardization is performed |
-| C17 | `run_manifest.json` records input/output paths but not file hashes | L14 | **N** | `run_manifest.json` lines 8-9: `"input_hashes": {"panel": "f05975..."}` and `"panel_hash": "f05975..."` | **First-audit factual error** | Hashes ARE recorded in the manifest |
-| C18 | Main sample: 2/6 significant at 5% one-tailed | H | Y | `model_diagnostics.csv` rows 2-7: M1 p=0.005, M2 p=0.009, M3 p=0.054, M4 p=0.097, M5 p=0.624, M6 p=0.203 | Correct |
-| C19 | Finance sample: 4/6 significant | H | Y | `model_diagnostics.csv` rows 8-13: F1 p=0.003, F2 p=0.025, F3 p=0.006, F4 p=0.042, F5 p=0.661, F6 p=0.685 | Correct |
-| C20 | One-tailed p-value computed as `p_two/2 if beta>0 else 1-p_two/2` | K6 | Y | `run_h1_cash_holdings.py` lines 384-386 | Correct |
+| # | Claim in First Audit | Verdict | Evidence |
+|---|---------------------|---------|----------|
+| D1 | "4 simultaneous uncertainty IVs" in current code | VERIFIED FACT | `run_h1_cash_holdings.py` lines 80-84: KEY_IVS has exactly 4 entries |
+| D2 | "8 model specifications (2 DVs x 2 FE x 2 controls)" | VERIFIED FACT | `MODEL_SPECS` list at lines 103-112 has 8 entries |
+| D3 | "Results from verified run 2026-03-15_220402" | VERIFIED ERROR IN FIRST AUDIT | That run output contains 6 IVs (CEO_Clarity_Residual, Manager_Clarity_Residual present in model_diagnostics.csv). The audit claims 4-IV results from a 6-IV run. |
+| D4 | "Col 1 N = 37,661" | VERIFIED ERROR IN FIRST AUDIT | 37,661 is from the 6-IV run. The 4-IV code produces N=57,216 (verified in run 2026-03-18_185323) |
+| D5 | "Within-R-squared Col 1 = -0.064" | VERIFIED ERROR IN FIRST AUDIT | The 4-IV run gives -0.030. The -0.064 value is from the stale 6-IV run. |
+| D6 | "CEO QA Unc shows significance only under Firm FE with lead DV (cols 6, 8)" | VERIFIED ERROR IN FIRST AUDIT | In the 4-IV run (2026-03-18), CEO_QA has no significance at p<0.05 one-tailed in any column. Significance patterns completely changed. |
+| D7 | "Manager Pres Unc shows significance only under Industry FE (cols 1,3,5)" | PARTIALLY VERIFIED | In the 4-IV run, Mgr Pres Unc is significant in cols 1, 3, 5, 7 (Industry FE) -- pattern generally holds but extends to col 7 |
+| D8 | "Mgr QA Unc: 0/8 significant" | VERIFIED ERROR IN FIRST AUDIT | In 4-IV run, Mgr QA Unc is significant at p<0.01 in cols 2 and 4 (Firm FE, contemp DV) |
+| D9 | "FF12 codes 1-7, 9-10, 12 for Main sample" | VERIFIED FACT | `filter_main_sample()` at line 214: `~panel["ff12_code"].isin([8, 11])` excludes FF12=8 (Utility) and 11 (Finance). Remaining codes are 1-7, 9-10, 12. |
+| D10 | "Firm-clustered SEs in all 8 specs" | VERIFIED FACT | `run_regression()` lines 345, 351: `cov_type="clustered", cluster_entity=True` |
+| D11 | "One-tailed: H1 beta > 0" | VERIFIED FACT | Lines 379-380: `p_one = p_two / 2 if beta > 0 else 1 - p_two / 2` -- correct one-tailed transform |
+| D12 | "Stars: *** p<0.01, ** p<0.05, * p<0.10 (one-tailed)" | VERIFIED FACT | `_sig_stars()` at lines 400-410 matches |
+| D13 | "BookLev = (dlcq.fillna(0) + dlttq.fillna(0)) / atq" | VERIFIED FACT | `_compustat_engine.py` line 1039 |
+| D14 | "CashHoldings = cheq / atq" | VERIFIED FACT | `_compustat_engine.py` line 1066 |
+| D15 | "TobinsQ = (mktcap + debt_book) / atq" | VERIFIED FACT (code); VERIFIED INCONSISTENCY (project docs) | Code at lines 1073-1076 uses `(mktcap + debt_book) / atq` where `mktcap = cshoq*prccq`, `debt_book = dlcq+dlttq`. But `__init__.py` architecture comment says `TobinsQ = (atq + cshoq*prccq - ceqq) / atq` -- different formula |
+| D16 | "ROA = iby_annual / avg_assets" | VERIFIED FACT | `_compustat_engine.py` lines 1051-1060 |
+| D17 | "112,968 rows x 33 columns in panel" | UNVERIFIED CONCERN | Cannot verify column count without loading parquet; the code has 22 builders but "33 columns" plausible with manifest fields |
+| D18 | "Negative within-R2 expected for industry FE" | VERIFIED FACT | Confirmed in both 6-IV and 4-IV outputs |
+| D19 | "Panel builder uses 20 builders total" | VERIFIED ERROR IN FIRST AUDIT | Builder dict at lines 121-158 has 21 entries (manifest + 20 variable builders), not 20 |
+| D20 | "Lead variable validates fiscal-year continuity" | VERIFIED FACT | `create_lead_variable()` lines 330-334: consecutive check with NaN assignment for gaps |
+| D21 | "DividendPayer uses dvy (annual common dividends)" | VERIFIED FACT | `_compustat_engine.py` line 1089-1092: uses Q4 dvy annual value |
+| D22 | "OCF_Volatility: 5-year rolling min 3 periods" | VERIFIED FACT | `_compute_ocf_volatility()` line 338: `rolling("1826D", min_periods=3)` |
+| D23 | "Linguistic _pct columns winsorized 0%/99% by year" | UNVERIFIED CONCERN | Not independently verified in linguistic engine code |
+| D24 | "Min 5 calls per firm filter" | VERIFIED FACT | `MIN_CALLS_PER_FIRM = 5` at line 114; enforced at lines 270-276 |
+| D25 | "drop_absorbed=True" | VERIFIED FACT | Lines 343, 350 |
 
 ---
 
 ## E. Unsupported, Overstated, or Weakly-Evidenced Claims in the First Audit
 
-| Issue ID | Claim / statement | Why unsupported or weak | Severity | What evidence was missing | Corrected formulation |
-|----------|-------------------|-------------------------|----------|---------------------------|-----------------------|
-| E1 | "18 regression_results_{sample}_{measure}.txt files" (Section B) | All 4 output directories contain only 6 .txt files (Main sample only). Finance and Utility .txt files do not exist. | Medium | Directory listing of actual output | "6 regression_results .txt files (Main sample only); 18 regressions recorded in model_diagnostics.csv" |
-| E2 | "No output hash verification" / "run_manifest.json records input/output paths but not file hashes" (L14) | The run_manifest.json actually contains `input_hashes` and `panel_hash` with SHA-256 values | Low | Inspection of `run_manifest.json` | "run_manifest.json records panel input hash (SHA-256) but not output file hashes" |
-| E3 | Verification log check #10 "0/20,757 groups have >0 std" | This is mechanically true by construction (lead variable is assigned at firm-fiscal-year level to all calls) and requires no empirical verification | Low | N/A -- the claim is trivially true by design | Should be stated as "by construction" rather than presented as an empirical finding |
-| E4 | "Python >= 3.8" environment assumption (Section B) | PanelOLS `from_formula` with `EntityEffects + TimeEffects` syntax and `drop_absorbed` parameter require linearmodels >= 4.x; specific version not pinned | Low | Version pinning check | Should specify minimum linearmodels version and note that `drop_absorbed` is version-dependent |
-| E5 | "Linguistic Variables ... 112,968 total rows across 17 year files" (Section D) | Asserted but not cross-referenced against the year filtering that occurs in the linguistic engine (`get_data()` filters by `years` parameter) | Low | Counting across year files | Claim is plausible but evidence is described, not shown |
+| # | Claim | Problem | Severity |
+|---|-------|---------|----------|
+| E1 | "Results from verified run 2026-03-15_220402" with 4-IV specification | Run 2026-03-15_220402 is a 6-IV run (includes CEO_Clarity_Residual and Manager_Clarity_Residual). ALL quantitative claims derived from this run are wrong for the current 4-IV code. | Critical |
+| E2 | "N values 37,661 / 37,656 / 35,776 / 35,772" in Section A6 | These are 6-IV Ns. Actual 4-IV Ns are ~57,216 / 54,915 / 53,288 / 52,254. Nearly 50% more observations. | Critical |
+| E3 | Coefficient table in Section H reporting CEO QA Unc = 0.034* in Col 1 | From 6-IV run. In 4-IV run, CEO QA Unc Col 1 beta = 0.0011 (not significant). | Critical |
+| E4 | "CEO_QA_Uncertainty_pct: 2/8 significant" | In 4-IV run: CEO QA Unc is 0/8 significant at p<0.05. | High |
+| E5 | "Manager_Pres_Uncertainty_pct: 3/8 significant (cols 1, 3, 5)" | In 4-IV run: Mgr Pres Unc significant at p<0.05 in cols 1, 3, 5, 7 (4/8 Industry FE cols). | Medium |
+| E6 | Sample attrition cells marked "pending re-run" (Section E5) | Four cells left blank with placeholder text. Unacceptable for a thesis-standard audit. | High |
+| E7 | "CEO QA Uncertainty shows significance only under Firm FE with lead DV -- consistent with within-firm variation driving the result" | Incorrect interpretation because based on stale data. In 4-IV run CEO QA is never significant. | High |
 
 ---
 
 ## F. False Positives in the First Audit
 
-| Issue ID | First-audit criticism | Why it appears false / overstated | Evidence | Severity of audit error | Corrected view |
-|----------|----------------------|-----------------------------------|----------|------------------------|----------------|
-| F1 | L14: "No output hash verification" -- "run_manifest.json records input/output paths but not file hashes" | The manifest DOES record `input_hashes` and `panel_hash` (SHA-256). It is true that individual output file hashes are not recorded, but the claim as stated is misleading. | `run_manifest.json` contains `"input_hashes": {"panel": "f05975..."}` and `"panel_hash"` | Low | Input hashes are recorded; output file hashes are not. Restate precisely. |
-| F2 | J4/L13: "TobinsQ formula inconsistency" labeled as an issue | Both `(mktcap + debt)/atq` and `(atq + mktcap - ceqq)/atq` are standard Tobin's Q approximations. The docstring mismatch is a documentation issue, not a variable construction issue. The first audit correctly labels this as Low severity but includes it in J (Known Issues) alongside substantive problems. | Code inspection | Negligible | This is a docstring cleanup item, not a known issue that affects results |
+| # | Claim | Assessment |
+|---|-------|------------|
+| F1 | "L7: CEO variable selection (32% missing, endogenous)" rated Medium | REFEREE JUDGMENT: This is a fair concern -- CEO variables have ~30% missing. Not a false positive. |
+| F2 | "L1: Reverse causality -- no IV or exogenous variation" rated High, Blocks Thesis | REFEREE JUDGMENT: While true, characterizing this as "blocks thesis" may be overly harsh for a descriptive/associational study that explicitly disclaims causal identification. Standard for the genre. This is more of a limitation to acknowledge than a blocker. |
+
+No clear false positives identified. The first audit is if anything too lenient (see missed issues).
 
 ---
 
 ## G. Missed Issues (Second-Layer Discoveries)
 
-| Issue ID | Category | Description | Evidence | Severity | Why first audit missed/underplayed it | Consequence | Recommended fix |
-|----------|----------|-------------|----------|----------|--------------------------------------|-------------|-----------------|
-| G1 | **Artifact integrity** | LaTeX table note falsely claims "All continuous controls are standardized within each model's estimation sample" | `h1_cash_holdings_table.tex` line 38; `run_h1_cash_holdings.py` contains zero standardization code (grep for `standardiz/zscore/scale/normalize` returns only the table note string literal at line 582) | **High** | First audit caught the "Main industry sample" note error (L12) but did not check other note claims | If this table is included in the thesis, it makes a false methodological claim that could be caught by any referee who examines the code. This is an academic integrity risk. | Remove the standardization claim from the table note, or implement actual standardization |
-| G2 | **Output completeness** | Only 6 of 18 expected `regression_results_*.txt` files exist in ALL 4 output directories (only Main sample) | `ls` of all 4 output dirs: `2026-03-01_234219`, `2026-03-02_230812`, `2026-03-06_192103`, `2026-03-06_192445` -- each contains only `regression_results_Main_*.txt` | **Medium** | First audit assumed 18 .txt files without verifying disk contents | Finance and Utility model summaries are not preserved as text files. If a referee requests full regression output for non-Main samples, only `model_diagnostics.csv` (which has limited detail) is available. | Debug why `save_outputs()` only writes Main .txt files; possibly a PanelOLS model object GC issue or encoding error on Windows |
-| G3 | **LaTeX table accuracy** | Negative within-R2 values (-0.002, -0.003, -0.013) displayed for Utility CEO specs in the LaTeX table | `h1_cash_holdings_table.tex` lines 25-27; `model_diagnostics.csv` confirms negative within-R2 for Utility CEO specs | **Low-Medium** | First audit did not comment on negative within-R2 in the Utility CEO specifications | Negative within-R2 indicates the model with regressors fits worse than the FE-only model. While possible in PanelOLS, it signals that the regressors add noise for these specs. A referee may question why these specs are reported without comment. | Add a note to the table or thesis text explaining negative within-R2 for small-N specs |
-| G4 | **Attrition table incompleteness** | `sample_attrition.csv` only tracks Main sample attrition (112,968 -> 88,205 -> 82,236 -> 74,241). No attrition table for Finance or Utility samples. | `sample_attrition.csv` in output directory | **Low** | First audit documents attrition for Main (Section E5) but does not note absence of Finance/Utility attrition tables | A referee interested in the Finance subsample (which shows stronger results) cannot trace its attrition from the output artifacts | Generate attrition tables for all three samples |
-| G5 | **Min-calls filter applies AFTER complete-case** | `prepare_regression_data()` applies the >= 5 calls/firm filter AFTER complete-case filtering (line 285-288). A firm that has 10 calls pre-filtering but only 4 with complete data is excluded. This order-dependence is not documented. | `run_h1_cash_holdings.py` lines 274-291 | **Low** | First audit describes the filter sequence but does not flag the order-dependence as a potential concern | If the thesis reports "firms with >= 5 calls," the actual criterion is "firms with >= 5 complete-case calls for this specific measure," which differs across measures | Document that the min-calls filter is applied to the measure-specific estimation sample, not the raw panel |
-| G6 | **Panel builder includes variables not used by H1** | `build_h1_cash_holdings_panel.py` loads `AnalystQAUncertaintyBuilder`, `NegativeSentimentBuilder`, `CurrentRatioBuilder`, `ManagerPresWeakModalBuilder`, `CEOPresWeakModalBuilder` which are not used in the H1 regression | `build_h1_cash_holdings_panel.py` lines 135-163 vs `run_h1_cash_holdings.py` CONTROL_VARS and UNCERTAINTY_MEASURES | **Low** | First audit notes CurrentRatio is built but excluded; does not flag the other unused builders | Unused variables increase panel build time and memory but do not affect results. Minor reproducibility/cleanliness concern. | Remove unused builders from H1 panel or document why they are included (e.g., shared panel for multiple suites) |
+| # | Issue | Severity | Category |
+|---|-------|----------|----------|
+| G1 | **STALE REFERENCE RUN**: The first audit's "verified run" (2026-03-15_220402) is a 6-IV specification. The current code is 4-IV. ALL numeric results in the audit are wrong. | Critical | Audit-craft failure |
+| G2 | **Variable naming inconsistency**: The `2026-03-18_145113` run shows the leverage variable as "Lev" in regression outputs, while the code and audit call it "BookLev". The latest run `2026-03-18_185323` corrected this to "BookLev". This indicates the panel data column name was changed between runs. The audit does not document this renaming. | Medium | Variable-dictionary failure |
+| G3 | **TobinsQ formula inconsistency in project docs**: The `__init__.py` architecture comment says `TobinsQ = (atq + cshoq*prccq - ceqq) / atq`, but the actual engine code computes `(cshoq*prccq + dlcq + dlttq) / atq`. These are different formulas. The first audit correctly documents the code formula but does not flag the internal project documentation inconsistency. | Medium | Variable-dictionary failure |
+| G4 | **NEW significance pattern in 4-IV results**: `Manager_QA_Uncertainty_pct` is now significant (p<0.01, one-tailed) in Firm FE contemporaneous cols (2, 4) -- a new finding not documented by the first audit. This is a substantively important result. | High | Completeness failure |
+| G5 | **Effective degrees of freedom inflation from call-level analysis**: With 57,216 observations but only ~1,615 firms and ~18 time periods, the effective number of independent observations is much lower. The first audit mentions Moulton problem (L5, L8) but does not quantify the DV clustering structure: how many calls per firm-year? If mean is ~3-4, the "57,216" N is inflating apparent precision by sqrt(3-4)x. This deserves a higher severity than "Low" (L8). | Medium-High | Inference failure |
+| G6 | **No constant in Industry FE specification**: The PanelOLS constructor API (lines 336-344) does not include an intercept. For the industry FE model, `entity_effects=False` and `exog_data` does not include a constant. PanelOLS may add a constant automatically depending on the configuration, but this should be verified. The formula-based Firm FE model (line 349) includes `1 +` explicitly. | Medium | Identification failure |
+| G7 | **`check_rank=False` suppresses rank deficiency warnings**: Line 343 sets `check_rank=False` for Industry FE models. This could mask collinearity issues, especially with 10 industry dummies plus controls. | Low-Medium | Robustness failure |
+| G8 | **Attrition table in runner is incomplete**: `generate_attrition_table()` at lines 776-782 reports only 4 stages, with the last being col 1's N. It does not separately report the complete-case step and the min-calls step, making it impossible to decompose attrition. | Medium | Sample-accounting failure |
+| G9 | **Multiple testing correction not applied**: 32 hypothesis tests (4 IVs x 8 specs) with no Bonferroni, Holm, or FDR correction. The first audit mentions this (Priority Fix #5) but does not quantify the impact. With 32 tests at nominal alpha=0.05, expected false positives under the null = 1.6. | Medium | Inference failure |
+| G10 | **Summary stats generated on Main sample before complete-case filtering**: `make_summary_stats_table()` at line 735 runs on the full Main sample (88,205), not on the regression sample (~57,000). Summary stats may not match the estimation sample. | Medium | Reproducibility failure |
+| G11 | **Report header says "All 6 key IVs" in 2026-03-18 run output**: `report_step4_H1.md` from run `2026-03-18_145113` line 10 says "All 6 key IVs enter each model simultaneously" but only 4 IVs are used. This is a hardcoded string that was not updated. | Low | Audit-craft / code hygiene |
 
 ---
 
 ## H. Severity Recalibration
 
-| Issue ID | Source | Original severity | Red-team severity | Why recalibrated | Thesis impact |
-|----------|--------|-------------------|-------------------|------------------|---------------|
-| L1 | First audit | High | High | Agree -- reverse causality is the primary identification threat | Cannot support causal claims |
-| L2 | First audit | High | High | Agree -- OVB from missing controls is material | Coefficient interpretation limited |
-| L3 | First audit | High | High | Agree -- absence of robustness battery is the single biggest practical gap | Thesis defense at risk |
-| L4 | First audit | Medium | Medium | Agree -- calendar/fiscal FE mismatch introduces noise but unlikely systematic bias | Should fix but not blocking |
-| L5 | First audit | Medium | Medium | Agree -- effective N is overstated | Report firm-year counts |
-| L6 | First audit | Medium | Medium-High | **Upgrade** -- omitting lagged DV in a highly persistent series (AR(1) > 0.9 for cash holdings) biases ALL coefficients, not just the treatment. This is a more serious omission than the first audit's framing suggests. | Coefficient estimates may be materially biased |
-| L7 | First audit | Medium | Medium | Agree | Selection into CEO sample is endogenous |
-| L8 | First audit | Medium | Low-Medium | **Downgrade** -- docstring/comment language is cosmetic; what matters is the thesis text | Fix language but not blocking |
-| L9 | First audit | Medium | Medium | Agree -- 18 one-tailed tests need correction | Apply multiple testing correction |
-| L10 | First audit | Medium | Low | **Downgrade** -- negative `atq` is extremely rare in the Compustat-manifest intersection; winsorization likely handles any outliers | Add guard as best practice but not material |
-| L11 | First audit | Medium | Medium | Agree -- OCF_Volatility outliers can influence results | Add pooled winsorization fallback |
-| L12 | First audit | Low | Low | Agree | Fix table note |
-| L13 | First audit | Low | Negligible | **Downgrade** -- docstring alignment is pure documentation housekeeping | N/A |
-| L14 | First audit | Low | **Partially false** | Input hashes ARE recorded; output hashes are not. Restate. | N/A |
-| L15 | First audit | Low | Low | Agree | Add balanced panel check |
-| G1 | Red-team | N/A | **High** | False standardization claim in LaTeX table is an academic integrity risk | Must fix before thesis submission |
-| G2 | Red-team | N/A | Medium | Missing .txt files for 12/18 regressions | Debug and regenerate |
-| G3 | Red-team | N/A | Low-Medium | Negative within-R2 unreported | Add explanatory note |
-| G4 | Red-team | N/A | Low | Finance/Utility attrition not tracked | Generate attrition for all samples |
-| G5 | Red-team | N/A | Low | Min-calls filter order-dependence undocumented | Document |
-| G6 | Red-team | N/A | Low | Unused builders in panel | Clean up or document |
+| First Audit ID | First Audit Severity | Red-Team Severity | Rationale |
+|----------------|---------------------|-------------------|-----------|
+| L1 (Reverse causality) | High, blocks thesis | High, does NOT block thesis | Standard for descriptive corporate finance; acknowledged limitation |
+| L2 (OVB) | High, blocks thesis | Medium-High, does NOT block thesis | Extended controls mitigate; analyst/earnings surprise controls would help but are not thesis-blocking |
+| L3 (No lagged DV) | Medium-High, blocks thesis | High, blocks thesis | Agree this is severe given AR(1)>0.9 in cash holdings. But "blocks thesis" is correct only if causal claims are made. |
+| L5 (Effective N overstated) | Medium | Medium-High | Should be elevated: 57k calls / 1,615 firms = ~35 calls/firm. Standard errors may be substantially overstated. |
+| L8 (Moulton) | Low | Medium | L5 and L8 are the same problem restated. Combined, this is Medium or higher. |
+| L9 (Negative within-R2) | Low | Low | Agree |
+| J5 (No lagged DV) | Medium-High | High | Same as L3 above |
 
 ---
 
 ## I. Completeness Gaps in the First Audit
 
-| Missing / incomplete area | Why incomplete | Evidence | Severity | What should have been included |
-|--------------------------|----------------|----------|----------|-------------------------------|
-| LaTeX table note verification | First audit caught one table note error (L12: "Main industry sample") but did not systematically verify all note claims | `h1_cash_holdings_table.tex` line 38 claims standardization; line 33-34 claims Main-only. First audit only caught the second. | High | Systematic check of all LaTeX table note claims against implementation |
-| Output file completeness check | First audit assumed 18 .txt files without listing the directory | All 4 output directories contain only 6 Main .txt files | Medium | Directory listing showing actual output files |
-| Negative within-R2 discussion | Not mentioned anywhere in the first audit despite appearing in the diagnostics | `model_diagnostics.csv` and `h1_cash_holdings_table.tex` show negative within-R2 for Utility CEO specs | Low-Medium | Discussion of model fit for small-sample specs |
-| Run manifest content verification | First audit claimed no hash verification, but manifest contains hashes | `run_manifest.json` has `input_hashes` and `panel_hash` | Low | Inspection of manifest contents |
-| Finance sample result discussion | First audit notes Finance has 4/6 significant (stronger than Main), but does not discuss why financial firms show stronger effects or whether this is econometrically suspect | Results table shows Finance effects are systematically larger | Low | Discussion of why Finance results diverge from Main; possible concerns about financial firm cash holdings measurement |
+| # | Gap | Impact |
+|---|-----|--------|
+| I1 | Sample attrition table has 4 cells marked "pending re-run" | Referee cannot trace observation loss through the pipeline |
+| I2 | Coefficient table labeled "pre-4IV run" with no updated 4-IV coefficients | Referee has no valid quantitative results to evaluate |
+| I3 | No documentation of the 4-IV significance pattern changes vs 6-IV | Referee cannot assess whether the specification change is result-driven |
+| I4 | No VIF or multicollinearity diagnostics reported | With 4 correlated uncertainty measures entering simultaneously, VIF is essential |
+| I5 | No documentation of how many firms/calls have CEO present on call | The ~30% CEO missing rate is acknowledged but not investigated (selection on CEO participation) |
+| I6 | No comparison to literature benchmarks for coefficient magnitudes | Is a 0.022 effect of Mgr Pres Unc on Cash Holdings economically meaningful? No effect-size discussion. |
+| I7 | No time-series plot or temporal stability check | Are the results driven by a specific subperiod (e.g., 2008-2009 crisis)? |
+| I8 | TobinsQ formula inconsistency between engine code and __init__.py not flagged | Potential data integrity issue if other suites use the wrong formula understanding |
 
 ---
 
 ## J. Reproducibility Red-Team Assessment
 
-| Reproduction step | First audit documented it? | Verified? | Hidden dependency? | Risk | Red-team note |
-|-------------------|---------------------------|-----------|-------------------|------|---------------|
-| Stage 1: assemble_manifest | Y (command listed) | N (not re-run) | Y -- requires raw inputs/ data | Medium | Cannot reproduce without external data |
-| Stage 2: build_linguistic_variables | Y (command listed) | N | Y -- requires raw transcript parquets | Medium | Same as above |
-| Stage 3: build_h1_cash_holdings_panel | Y (command listed) | N | Y -- requires Stage 1+2 outputs | Low | Straightforward if prerequisites exist |
-| Stage 4: run_h1_cash_holdings | Y (command listed) | N | Partial -- `get_latest_output_dir` resolution is fragile | Low-Medium | First audit correctly flags this |
-| Panel parquet stale-artifact risk | Y (noted in L14 area) | Y | Y -- panel build timestamp (2026-02-20) != econometric run timestamp (2026-03-06); separated by 14 days | Medium | If panel builder code changed between panel build and econometric run, outputs may not match current code. `run_manifest.json` records panel hash, mitigating this. |
-| Output completeness | **N** | Y (verified) | N/A | Medium | Only 6/18 .txt files exist in output directory; first audit claims 18 |
-| Standardization claim in LaTeX | **N** | Y (verified as false) | N/A | High | LaTeX table note makes false methodological claim |
-| Environment/package versions | Partially | N | N/A | Low | First audit lists pandas, numpy, linearmodels, statsmodels versions but these were not pinned from a lockfile |
+| # | Check | Result |
+|---|-------|--------|
+| J1 | Can runner be invoked from current code? | YES -- code runs and produces valid 4-IV output (verified from `2026-03-18_185323` artifacts) |
+| J2 | Does latest output match code on disk? | YES -- `2026-03-18_185323` regression shows 4 IVs, BookLev column name, correct N |
+| J3 | Does the first audit's "verified run" match code on disk? | NO -- `2026-03-15_220402` is a 6-IV run; code now has 4 IVs |
+| J4 | Are output paths deterministic? | YES -- timestamped directories |
+| J5 | Can Stage 3 + Stage 4 be re-run from commands in the audit? | LIKELY YES but not independently verified (would require raw data access) |
+| J6 | Is there a "latest" symlink or pointer? | YES -- `get_latest_output_dir()` used |
+| J7 | Seed / determinism | Deterministic per audit claim; OLS is deterministic given fixed inputs |
 
 ---
 
 ## K. Econometric and Thesis-Referee Meta-Audit
 
-| Referee dimension | First audit adequate? | Why or why not | Missed or weak points | Severity |
-|-------------------|----------------------|----------------|----------------------|----------|
-| Identification threats | Y | Reverse causality, OVB, selection, look-ahead, confounds, survivorship all raised with appropriate severity | None significant | N/A |
-| Inference / clustering | Y | Firm-clustered SEs correctly identified as addressing Moulton problem; effective-N concern raised | Could note that cluster count for Utility (70-83 firms) is borderline for cluster asymptotics (Cameron, Gelbach & Miller 2008 suggest 50+ as minimum) | Low |
-| FE and within-variation | Partial | Calendar vs fiscal year mismatch flagged; singleton dropping noted | Does not discuss whether `drop_absorbed=True` might be dropping time periods (not just entities), which could affect the year FE structure | Low |
-| Timing alignment | Y | Look-ahead bias in DV discussed; calendar vs fiscal year mismatch flagged | Adequately covered | N/A |
-| Post-treatment controls | Partial | Not explicitly discussed as a separate concern | Some controls (ROA, TobinsQ) reflect outcomes that may be affected by the same shocks that drive uncertainty language. If uncertainty in Q1 call predicts cash at year-end t+1, and ROA at year-end t also responds to those shocks, ROA is partly post-treatment. | Low-Medium |
-| Reverse causality | Y | Correctly identified as high severity | None | N/A |
-| Endogenous sample selection | Y | CEO speaking selection correctly flagged | None | N/A |
-| Model-family-specific threats | Partial | Singleton dropping, within-variation, persistence all noted | Does not discuss incidental parameters problem (Nickell bias) -- with T=17 years and firm FE, Nickell bias is small but exists. Not material for this suite since no lagged DV is included. | Negligible |
-| Robustness adequacy | Y | Near-complete absence of robustness correctly flagged as High severity | None -- this is the strongest part of the first audit | N/A |
-| Interpretation discipline | Y | Causal language in docstrings flagged; fragile results documented | None | N/A |
-| Academic-integrity / auditability | **Partial** | Catches table note error (L12), raw data not committed (L14), fragile latest-dir resolution | **Misses false standardization claim (G1) and missing .txt files (G2)** | High |
+### K1. Identification Strategy Assessment
+
+The first audit correctly identifies the absence of causal identification (no IV, no exogenous shock, no RDD). This is the dominant limitation. The audit's characterization is fair but the "blocks thesis" label may be too strong for what appears to be a descriptive/associational study.
+
+### K2. Specification Choice Assessment
+
+The 4-IV simultaneous specification is a meaningful improvement over one-at-a-time entry. However, the first audit does not discuss:
+- Why these 4 measures were chosen (theoretical justification for speaker x section decomposition)
+- Whether the CEO and Manager measures are mechanically correlated (CEO is a subset of Manager)
+- What the correlation structure among the 4 IVs looks like (VIF analysis)
+- Whether horse-racing 4 correlated IVs inflates SE and reduces power for each
+
+### K3. Fixed Effects Assessment
+
+The industry FE vs firm FE comparison is well-designed and informative. The pattern where Mgr Pres Unc is significant under Industry FE but not Firm FE suggests the effect operates through between-firm variation, which is econometrically weaker for causal identification. The first audit notes this but does not discuss the Mundlak (1978) interpretation.
+
+### K4. Standard Error Assessment
+
+Firm-clustering is appropriate but may not be sufficient. The first audit does not consider:
+- Double-clustering by firm and time (Petersen 2009) as a robustness check
+- The panel is unbalanced (5-67 obs/firm); clustered SEs with small clusters can be biased (MacKinnon/White)
+
+### K5. Multiple Testing
+
+32 tests without correction is a real concern. At 5% significance: E[false positives] = 1.6 under the null. The 4-IV run shows approximately 6-8 significant results across 32 tests, which is above the null expectation but not overwhelmingly so.
 
 ---
 
 ## L. Audit-Safety / Academic-Integrity Assessment of the First Audit
 
-| Audit-safety risk in first audit | Evidence | Severity | Why it matters | Fix |
-|---------------------------------|----------|----------|----------------|-----|
-| False claim about output hash verification | L14 states "No output hash verification" / "run_manifest.json records paths but not file hashes" -- but manifest contains `input_hashes` and `panel_hash` | Low | Understates the existing reproducibility infrastructure | Correct L14 to accurately describe what manifest records |
-| Verification log lacks reproducible evidence | Section I lists 20 checks but provides no command outputs, no screenshots, no logs | Medium | A third party cannot independently confirm the verification checks were actually performed | Include command outputs or log excerpts for material checks |
-| Claimed output count not verified against disk | Section B claims 18 regression_results .txt files | Medium | Creates false expectation of complete output set | Verify output directory contents before claiming file counts |
-| Did not systematically audit LaTeX table notes | Only caught "Main industry sample" note error | High | Missed the false standardization claim which is an academic integrity risk | Systematically verify all table note claims against code |
-| Presents mechanically-true facts as empirical findings | Verification check #10 ("DV std = 0 within firm-year") is true by construction | Low | Inflates appearance of verification thoroughness | Label construction-derived properties as "by construction" |
+| # | Concern | Severity |
+|---|---------|----------|
+| L1 | First audit reports results from a superseded specification without clear labeling as obsolete | High -- could mislead a reader into citing wrong numbers |
+| L2 | Multiple "pending re-run" placeholders left in a published audit document | Medium -- signals incomplete review |
+| L3 | No explicit statement that the coefficient tables are from a different IV specification than the one described | High -- internal inconsistency that borders on misleading |
+| L4 | The audit acknowledges the staleness in parenthetical notes ("Results from pre-4IV run") but does not REMOVE the stale numbers | Medium -- half-measure that creates confusion |
+
+No evidence of deliberate misrepresentation. The staleness appears to result from a rapid redesign cycle where the audit was not fully updated after the specification change.
 
 ---
 
 ## M. Master Red-Team Issue Register
 
-| Issue ID | Type | Category | Verified? | Severity | Location | Description | Evidence | Consequence | Recommended fix | Blocks thesis reliance on first audit? |
-|----------|------|----------|-----------|----------|----------|-------------|----------|-------------|-----------------|---------------------------------------|
-| G1 | First-audit omission | Artifact integrity | Y | High | `h1_cash_holdings_table.tex` line 38 | LaTeX table note falsely claims controls are standardized; no standardization code exists | grep of `run_h1_cash_holdings.py` for standardiz/zscore/scale returns only the string literal | False methodological claim in thesis output | Remove claim or implement standardization | Y |
-| G2 | First-audit omission | Output completeness | Y | Medium | All 4 output directories | Only 6/18 regression_results .txt files exist (Main only) | `ls` of all output dirs | Finance/Utility detailed regression output unavailable | Debug save_outputs() for non-Main samples | N |
-| L1 | Underlying implementation issue underplayed by first audit | Identification | Y | High | Design-level | Reverse causality not addressable without IV or quasi-experiment | No IV implemented | Cannot support causal claims | Add IV or event study | Y |
-| L2 | Underlying implementation issue underplayed by first audit | Identification | Y | High | Design-level | OVB from missing controls (analyst uncertainty, earnings surprise, macro) | Control set is accounting-only | Coefficient conflates multiple channels | Add omitted controls | Y |
-| L3 | Underlying implementation issue missed by first audit | Robustness | Y | High | `run_h1_cash_holdings.py` | No robustness battery (alt FE, alt clustering, alt samples, placebo, nonlinearity) | Code inspection | Results not stress-tested | Implement robustness battery | Y |
-| L6-up | First-audit severity error | Econometric implementation | Y | Medium-High | `run_h1_cash_holdings.py` | Omitted lagged DV in highly persistent series (AR(1) > 0.9 for cash) biases all coefficients | Code comment "GAP-5" | Systematic bias in coefficient estimates | Add contemporaneous CashHoldings as control | Y |
-| E1 | First-audit factual error | Output documentation | Y | Medium | Section B | Claims 18 .txt files; only 6 exist | Directory listing | Misleading output enumeration | Correct to 6 | N |
-| E2 | First-audit factual error | Reproducibility | Y | Low | L14 | Claims no hash verification; manifest has input hashes | `run_manifest.json` inspection | Understates existing infrastructure | Correct statement | N |
-| G3 | First-audit omission | Model fit | Y | Low-Medium | `model_diagnostics.csv` | Negative within-R2 for Utility CEO specs not discussed | diagnostics CSV and LaTeX table | Unexplained model fit anomaly | Add discussion | N |
-| G4 | First-audit omission | Sample documentation | Y | Low | `sample_attrition.csv` | Finance/Utility attrition not tracked | Output file inspection | Incomplete attrition documentation | Generate for all samples | N |
-| G5 | First-audit omission | Sample construction | Y | Low | `run_h1_cash_holdings.py` lines 274-291 | Min-calls filter order-dependence undocumented | Code inspection | Actual filter criterion differs from stated | Document order | N |
-| L4 | Underlying implementation issue correctly identified | Inference | Y | Medium | `run_h1_cash_holdings.py` line 359 | Calendar year time FE vs fiscal year DV (24.2% mismatch) | Code inspection | Time FE misaligned | Use fyearq_int | N |
-| L5 | Underlying implementation issue correctly identified | Econometric | Y | Medium | Design-level | Call-level obs with firm-year DV; effective N overstated | By construction | Misleading sample size | Report firm-year counts; consider collapse | N |
-| L9 | Underlying implementation issue correctly identified | Inference | Y | Medium | All 18 specs | Multiple testing without correction | 18 one-tailed tests | False positive risk | Apply correction | N |
-| L11 | Underlying implementation issue correctly identified | Variable construction | Y | Medium | `_compustat_engine.py` | OCF_Volatility extreme outliers (max=32.4, p99=0.36) | First audit Section G | Single observations can drive results | Pooled winsorization fallback | N |
+| ID | Source | Severity | Description | Blocks Thesis? |
+|----|--------|----------|-------------|----------------|
+| RT-1 | G1 | Critical | First audit references stale 6-IV run; all quantitative claims invalid for current 4-IV code | N (implementation is fine; audit needs update) |
+| RT-2 | G4 | High | New Mgr QA Unc significance in Firm FE cols (2, 4) undocumented | N |
+| RT-3 | E1/E2/E3 | Critical | N values, coefficients, and significance patterns in audit are from wrong specification | N (audit-only) |
+| RT-4 | I1/E6 | High | Sample attrition incomplete (4 cells pending) | N (fixable) |
+| RT-5 | G5 | Medium-High | Effective N inflation from call-level analysis inadequately addressed | Y (needs robustness: firm-year collapse) |
+| RT-6 | G9 | Medium | 32 tests without multiple-testing correction | Y (needs at minimum FDR discussion) |
+| RT-7 | G3 | Medium | TobinsQ formula discrepancy between code and project docs | N |
+| RT-8 | L3 (first audit) | High | No lagged DV control for highly persistent series | Y |
+| RT-9 | G6 | Medium | No explicit constant in Industry FE constructor; potential intercept issue | N (PanelOLS likely handles) |
+| RT-10 | I4 | Medium | No VIF/multicollinearity diagnostics for 4 correlated IVs | N |
+| RT-11 | I6 | Medium | No economic magnitude / effect-size discussion | N |
+| RT-12 | G10 | Medium | Summary stats on full Main sample, not estimation sample | N |
+| RT-13 | G11 | Low | Report template still says "6 key IVs" in latest run | N |
+| RT-14 | G2 | Medium | Variable renaming (Lev -> BookLev) not documented across runs | N |
 
 ---
 
 ## N. What a Committee / Referee Would Still Not Know if They Read Only the First Audit
 
-1. **The LaTeX table output claims controls are standardized when they are not.** This is a false methodological claim that would appear in the thesis if the table is included as-is. No first-audit section flags this.
-
-2. **Only 6 of 18 expected regression result text files actually exist on disk.** The Finance and Utility detailed PanelOLS summary outputs are missing from all historical runs. A referee requesting full regression output for non-Main samples would find it unavailable.
-
-3. **The run manifest DOES contain input file hashes (SHA-256).** The first audit incorrectly states otherwise, potentially causing the committee to undervalue the existing reproducibility infrastructure.
-
-4. **Negative within-R2 values appear for several Utility specifications.** This signals that the model with regressors fits worse than the FE-only model for these small-sample specs, a fact not discussed anywhere in the first audit.
-
-5. **The omission of lagged cash holdings (contemporaneous CashHoldings) as a control may be more consequential than the first audit's "Medium" severity suggests**, given that cash holdings have AR(1) coefficients exceeding 0.9 in most panels.
+1. **The actual sample sizes, coefficients, and significance patterns for the current 4-IV specification.** The audit provides 6-IV numbers throughout.
+2. **That Manager QA Uncertainty is now significant under Firm FE** -- a potentially important result for the hypothesis.
+3. **That CEO QA Uncertainty is no longer significant in any specification** -- the key finding highlighted by the first audit has evaporated.
+4. **How many calls per firm-year exist** (the DV clustering density that drives the Moulton problem).
+5. **VIF values for the 4 simultaneously-entered IVs** (are CEO and Manager measures too correlated to disentangle?).
+6. **Whether the TobinsQ formula in the code matches the one described in the project architecture documentation.**
+7. **The complete sample attrition from full panel to estimation sample**, with separate rows for each filtering step.
+8. **Economic magnitude of the effects** -- what does a 1-standard-deviation increase in Mgr Pres Unc mean for cash holdings in dollar or percentage terms?
 
 ---
 
 ## O. Priority Fixes to the First Audit
 
-| Priority | Fix to first audit | Why it matters | Effort | Credibility gain |
-|----------|-------------------|----------------|--------|------------------|
-| 1 | **Add G1: Flag false standardization claim in LaTeX table note** | Academic integrity risk -- false methodological claim in thesis output artifact | Low | Critical |
-| 2 | **Correct E1: Fix output file count from 18 to 6 .txt files** | Factual error in output enumeration | Low | Medium |
-| 3 | **Upgrade L6 severity to Medium-High** | Omitting lagged DV in AR(1)>0.9 series is more consequential than current framing | Low | Medium |
-| 4 | **Correct E2/L14: Note that run_manifest has input hashes** | Factual error about existing reproducibility infrastructure | Low | Low-Medium |
-| 5 | **Add G3: Note negative within-R2 for Utility CEO specs** | Unreported model fit anomaly | Low | Low |
-| 6 | **Strengthen verification log with reproducible evidence** | Currently lists checks but provides no outputs; a third party cannot confirm | Medium | Medium |
-| 7 | **Add systematic table-note verification protocol** | Prevents future false-claim risks | Low | Medium |
+| # | Fix | Effort | Impact |
+|---|-----|--------|--------|
+| 1 | **Re-run verification with current 4-IV code and update ALL quantitative claims** (N, R2, coefficients, significance counts, attrition) | Medium | Critical -- nothing else matters until this is done |
+| 2 | **Complete the sample attrition table** with actual numbers for each filtering step | Low | High |
+| 3 | **Update the result summary and key patterns section** to reflect 4-IV findings (Mgr QA now significant in Firm FE; CEO QA no longer significant) | Low | High |
+| 4 | **Add VIF diagnostics** for the 4 simultaneous IVs and discuss multicollinearity | Low | Medium |
+| 5 | **Fix TobinsQ formula inconsistency** in `__init__.py` architecture comment vs engine code | Low | Medium |
+| 6 | **Add firm-year collapse robustness check** to address effective-N concerns | Medium | High |
+| 7 | **Add multiple-testing discussion** (at minimum Holm-Bonferroni bounds on the 32 tests) | Low | Medium |
+| 8 | **Add economic magnitude interpretation** for significant coefficients | Low | Medium |
+| 9 | **Fix report template string** that says "6 key IVs" in generated report | Trivial | Low |
+| 10 | **Resolve whether L1/L2 truly "block thesis"** or are standard acknowledged limitations | Low | Medium (framing) |
 
 ---
 
 ## P. Final Red-Team Readiness Statement
 
-**Can the first audit be trusted as a standalone referee-quality document?**
-Partially. It correctly identifies the suite boundary, traces dependencies, and raises the most important identification and robustness concerns. However, it contains two factual errors (output file count, hash verification claim) and one critical omission (false standardization claim in LaTeX table), which collectively mean a committee relying solely on this audit would be misinformed about the artifact integrity of the suite.
+**Is the first-layer audit ready for thesis submission?** NO.
 
-**What is its biggest factual weakness?**
-Claiming 18 regression result .txt files exist when only 6 are on disk, and claiming no hash verification exists when input hashes are recorded in the run manifest.
+**Primary reason:** The audit's quantitative claims are entirely based on a superseded 6-IV specification. Every number in Sections A6, E5, and H (the core tables) is wrong for the current codebase. A committee member relying on this audit would be misled about sample sizes (off by ~50%), significance patterns (CEO QA significance has disappeared; Mgr QA significance has appeared), and within-R-squared values.
 
-**What is its biggest completeness weakness?**
-Failure to systematically verify all claims in the LaTeX table note, leading to the missed false standardization claim (G1).
+**What must happen before the audit is submission-ready:**
+1. Re-run the verification with the current code and replace ALL stale numbers.
+2. Complete the "pending re-run" cells in the attrition table.
+3. Update the result interpretation to match the new significance pattern.
+4. Add VIF diagnostics and economic magnitude discussion.
 
-**What is its biggest severity/judgment weakness?**
-L6 (omitted lagged DV) is underweighted at Medium. Given the extreme persistence of cash holdings (AR(1) > 0.9), this omission likely biases all coefficient estimates and should be Medium-High.
+**What must happen before the UNDERLYING SUITE is thesis-ready:**
+1. Add lagged DV control for lead specifications (L3/RT-8).
+2. Provide firm-year-collapsed robustness as a supplement (RT-5).
+3. Add multiple-testing discussion or correction (RT-6).
+4. Resolve the TobinsQ formula inconsistency in project documentation (RT-7).
 
-**What is the single most important missed issue?**
-G1: The LaTeX table note falsely claims "All continuous controls are standardized within each model's estimation sample." No standardization is performed. If this table appears in the thesis, it contains a verifiably false methodological statement.
+**Bottom line:** The suite implementation is sound. The audit document is structurally competent but quantitatively stale and therefore not trustworthy in its current form. One full verification pass with the current code would bring it to thesis standard.
 
-**What is the single most misleading claim?**
-E1: The first audit's statement that 18 regression result .txt files are produced creates a false impression of complete output coverage. Only Main sample summaries are available.
+---
 
-**What should a thesis committee believe after reading this red-team review?**
-The first-layer audit is substantially correct in its identification of the H1 suite's primary weaknesses (reverse causality, OVB, missing robustness battery) and its "SALVAGEABLE WITH MAJOR REVISIONS" verdict is appropriate. The suite implementation is technically competent but econometrically incomplete. However, the first audit should not be treated as a complete artifact-integrity review: the false standardization claim in the LaTeX table must be fixed before thesis submission, the missing regression output files should be investigated, and the lagged DV omission deserves higher severity weight. After these corrections, the first audit plus this red-team supplement would constitute an adequate basis for committee review.
+## Revision History
+
+- **2026-03-18 (v1):** Initial second-layer red-team audit by independent reviewer.

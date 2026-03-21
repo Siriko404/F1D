@@ -5,7 +5,7 @@ STAGE 4: Test H13 Capital Expenditure Hypothesis
 ================================================================================
 ID: econometric/test_h13_capex
 Description: Run H13 Capital Expenditure hypothesis test using 8 model specifications
-             with 6 simultaneous uncertainty/clarity IVs, varying DV, FE type,
+             with 4 simultaneous uncertainty IVs, varying DV, FE type,
              and control set. Main sample only.
 
 Model Specifications (8 columns in one table):
@@ -16,13 +16,12 @@ Model Specifications (8 columns in one table):
     Cols 1-2, 5-6: Base controls
     Cols 3-4, 7-8: Extended controls
 
-Key Independent Variables (6, all enter simultaneously):
+Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-    CEO_Clarity_Residual, Manager_Clarity_Residual
 
 Base Controls (7):
-    Size, TobinsQ, ROA, Lev, CashHoldings, DividendPayer, OCF_Volatility
+    Size, TobinsQ, ROA, BookLev, CashHoldings, DividendPayer, OCF_Volatility
     NOTE: CapexAt is NOT a control — it is the DV.
 
 Extended Controls (Base + 4):
@@ -53,7 +52,7 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Stage 3 (build_h13_capex_panel), H0.3 (clarity residuals)
+    - Requires: Stage 3 (build_h13_capex_panel)
     - Uses: linearmodels, f1d.shared.latex_tables_accounting
 
 Author: Thesis Author
@@ -87,10 +86,7 @@ KEY_IVS = [
     "CEO_QA_Uncertainty_pct",
     "CEO_Pres_Uncertainty_pct",
     "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
-    "CEO_Clarity_Residual",
-    "Manager_Clarity_Residual",
-]
+    "Manager_Pres_Uncertainty_pct",]
 
 # NOTE: CapexAt is the DV — it must NOT appear as a control.
 # Both Lev and CashHoldings are controls here (they are DVs in H4 and H1 respectively).
@@ -98,7 +94,7 @@ BASE_CONTROLS = [
     "Size",
     "TobinsQ",
     "ROA",
-    "Lev",
+    "BookLev",
     "CashHoldings",
     "DividendPayer",
     "OCF_Volatility",
@@ -128,10 +124,7 @@ VARIABLE_LABELS = {
     "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
     "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
     "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
-    "CEO_Clarity_Residual": "CEO Clarity Residual",
-    "Manager_Clarity_Residual": "Mgr Clarity Residual",
-}
+    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
 
 # Summary statistics variable list
 SUMMARY_STATS_VARS = [
@@ -141,14 +134,11 @@ SUMMARY_STATS_VARS = [
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "CEO_Clarity_Residual", "label": "CEO Clarity Residual"},
-    {"col": "Manager_Clarity_Residual", "label": "Mgr Clarity Residual"},
-    # Base controls
+    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    # Base controls
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "Lev", "label": "Leverage"},
+    {"col": "BookLev", "label": "Leverage"},
     {"col": "CashHoldings", "label": "Cash Holdings"},
     {"col": "DividendPayer", "label": "Dividend Payer"},
     {"col": "OCF_Volatility", "label": "OCF Volatility"},
@@ -212,10 +202,8 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         # Key IVs
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "CEO_Clarity_Residual", "Manager_Clarity_Residual",
-        # Base controls (NOTE: no CapexAt here — it is the DV)
         "Size", "TobinsQ", "ROA",
-        "Lev", "CashHoldings", "DividendPayer", "OCF_Volatility",
+        "BookLev", "CashHoldings", "DividendPayer", "OCF_Volatility",
         # Extended controls
         "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
     ]
@@ -407,7 +395,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     Layout:
         Cols 1-4: CapexAt (contemporaneous)
         Cols 5-8: CapexAt_lead (t+1)
-        Rows: 6 key IVs (coeff + SE), controls indicator, FE indicators, N, R-sq
+        Rows: 4 key IVs (coeff + SE), controls indicator, FE indicators, N, R-sq
     """
     results_by_col = {}
     for r in all_results:
@@ -433,6 +421,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def fmt_r2(val: float) -> str:
         if np.isnan(val):
             return ""
+        if abs(val) < 0.001:
+            return f"{val:.2e}"
         return f"{val:.3f}"
 
     lines = [
@@ -572,7 +562,7 @@ def save_outputs(
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
     diag_path = out_dir / "model_diagnostics.csv"
-    diag_df.to_csv(diag_path, index=False)
+    diag_df.to_csv(diag_path, index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
 
     # LaTeX table
@@ -600,10 +590,9 @@ def generate_report(
         "",
         "## Model Specifications",
         "",
-        "All 6 key IVs enter each model simultaneously:",
+        "All 4 key IVs enter each model simultaneously:",
         "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
         "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
-        "- CEO_Clarity_Residual, Manager_Clarity_Residual",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",

@@ -66,11 +66,9 @@ from f1d.shared.variables import (
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
     # Clarity residuals (H1 key IVs — from H0.3 upstream)
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # Financial controls — base (Compustat engine singleton)
     CashHoldingsBuilder,
-    LevBuilder,
+    BookLevBuilder,
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
@@ -142,16 +140,9 @@ def build_call_level_panel(
         "negative_sentiment": NegativeSentimentBuilder(
             var_config.get("negative_sentiment", {})
         ),
-        # Clarity residuals (from H0.3 upstream)
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         # Financial controls -- CompustatEngine is a singleton; all 9 share one load
         "cash_holdings": CashHoldingsBuilder({}),
-        "lev": LevBuilder({}),
+        "lev": BookLevBuilder({}),
         "size": SizeBuilder({}),
         "tobins_q": TobinsQBuilder({}),
         "roa": ROABuilder({}),
@@ -523,10 +514,8 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct",
         "Manager_Pres_Uncertainty_pct",
-        "CEO_Clarity_Residual",
-        "Manager_Clarity_Residual",
         # Base controls
-        "Lev",
+        "BookLev",
         "Size",
         "TobinsQ",
         "ROA",

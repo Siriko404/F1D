@@ -7,7 +7,7 @@ ID: variables/build_h7_illiquidity_panel
 Description: Build CALL-LEVEL panel for H7 Speech Vagueness -> Stock Illiquidity.
 
     Step 1: Load manifest + all call-level uncertainty measures.
-    Step 2: Load base financial controls (Size, Lev, ROA, TobinsQ, Volatility, StockRet).
+    Step 2: Load base financial controls (Size, BookLev, ROA, TobinsQ, Volatility, StockRet).
     Step 3: Load the Amihud (2002) Illiquidity measure (post-call window).
     Step 4: Load linguistic controls (Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct).
     Step 5: Merge everything onto manifest by file_name (zero row-delta enforced).
@@ -35,20 +35,18 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
 from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
 from f1d.shared.variables import (
-    # 6 Key IVs (all simultaneous)
+    # 4 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
     # DV builder (produces delta_amihud + pre_call_amihud)
     AmihudChangeBuilder,
     # Base controls
     SizeBuilder,
     TobinsQBuilder,
     ROABuilder,
-    LevBuilder,
+    BookLevBuilder,
     CapexIntensityBuilder,
     DividendPayerBuilder,
     OCFVolatilityBuilder,
@@ -86,7 +84,7 @@ def build_panel(
 
     builders = {
         "manifest": ManifestFieldsBuilder(var_config.get("manifest", {})),
-        # 6 Key IVs (all simultaneous)
+        # 4 Key IVs (all simultaneous)
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
@@ -99,19 +97,13 @@ def build_panel(
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
         ),
-        "ceo_clarity_residual": CEOClarityResidualBuilder(
-            var_config.get("ceo_clarity_residual", {})
-        ),
-        "manager_clarity_residual": ManagerClarityResidualBuilder(
-            var_config.get("manager_clarity_residual", {})
-        ),
         # DV (produces delta_amihud + pre_call_amihud)
         "amihud_change": AmihudChangeBuilder(var_config.get("amihud_change", {})),
         # Base controls
         "size": SizeBuilder(var_config.get("size", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "roa": ROABuilder(var_config.get("roa", {})),
-        "lev": LevBuilder(var_config.get("lev", {})),
+        "lev": BookLevBuilder(var_config.get("lev", {})),
         "capex_intensity": CapexIntensityBuilder({}),
         "dividend_payer": DividendPayerBuilder({}),
         "ocf_volatility": OCFVolatilityBuilder({}),

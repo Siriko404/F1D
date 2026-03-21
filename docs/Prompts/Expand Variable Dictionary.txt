@@ -1,0 +1,183 @@
+Claude Code Prompt: Expand Variable Dictionary to Full Construction Detail
+
+You are a thesis documentation specialist. Your task is to EXPAND the Variable Dictionary section (Section 6) of ONE provenance document so that EVERY variable has its COMPLETE construction chain documented — from raw data source through every transformation to the final value used in estimation.
+
+========================================================
+Inputs (placeholders)
+========================================================
+Suite ID: {{SUITE_ID}}
+Suite entrypoint: {{SUITE_TEST_SCRIPT_PATH}}
+Panel builder(s): {{PANEL_BUILDER_PATH}}
+Provenance doc to modify: {{PROVENANCE_DOC_PATH}}
+
+========================================================
+Mission
+========================================================
+The current Variable Dictionary has one-line formulas (e.g., "cheq / atq" or "Stage 2 NLP"). This is insufficient for a thesis referee or replicator. You must expand EVERY variable entry to include the COMPLETE construction chain by tracing through the actual code.
+
+You are ONLY modifying Section 6 (Variable Dictionary) of the provenance doc. Do NOT touch other sections.
+
+========================================================
+What EVERY variable entry must include
+========================================================
+
+For each variable, the expanded entry must document ALL of the following:
+
+(1) **Raw source fields**: The exact field names from the raw data source (e.g., Compustat: `cheq`, `atq`; CRSP: `RET`, `VOL`, `PRC`; IBES: `actual`, `meanest`)
+
+(2) **Source dataset**: Which dataset provides the raw fields (Compustat Quarterly, CRSP DSF, IBES Detail, Transcripts, etc.)
+
+(3) **Construction steps**: Every transformation from raw field to final variable, in order:
+   - How raw data is loaded (engine, builder)
+   - Any filtering applied to raw data before computation
+   - The exact formula with code reference
+   - Any intermediate variables computed
+   - Missing value handling (fillna, NaN propagation, guards)
+   - Edge cases (division by zero, negative values, clipping)
+   - Temporal alignment (Q4 annual computation, lagging, leading)
+   - Aggregation (if variable is computed at different granularity than call-level)
+
+(4) **Winsorization**: Method (pooled vs per-year), bounds (1%/99% or 0%/99%), which engine applies it, code reference
+
+(5) **Merge into panel**: How the variable gets from the builder/engine to the panel (join key, join type)
+
+(6) **Code references**: File:function:line for the key computation step
+
+========================================================
+CRITICAL: Textual/Linguistic Variable Construction
+========================================================
+
+The textual variables (CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct, etc.) are the MAIN INDEPENDENT VARIABLES of this thesis. They MUST be documented in full detail:
+
+1. **Dictionary**: Loughran-McDonald (LM) Master Dictionary. Identify which word category is used (Uncertainty, Negative, Positive, etc.). Source: `inputs/LM_dictionary/`.
+
+2. **Tokenization**: Stage 2 text processing. Transcripts are tokenized by a C++ compiler (`src/f1d/text/`). The tokenizer processes raw transcript text into word tokens.
+
+3. **Speaker segmentation**: How the text is split into speaker sections:
+   - CEO vs all managers vs analysts
+   - Presentation vs Q&A sections
+   - How speaker roles are identified (Manager_roles data, Execucomp matching)
+
+4. **Word counting**: For each (speaker_section, call):
+   - Count of words matching the LM category (e.g., Uncertainty words)
+   - Total word count in that section
+   - Percentage = (category_count / total_count) × 100
+
+5. **Output**: Stored in `outputs/2_Textual_Analysis/2.2_Variables/{timestamp}/linguistic_variables_{year}.parquet`
+
+6. **Loading**: `LinguisticEngine` (singleton) loads all year files, concatenates them.
+
+7. **Winsorization**: Per-year, 0% lower / 99% upper (UPPER-ONLY). This means the lower bound is NOT winsorized — only extreme high values are capped. Code: `_linguistic_engine.py` lines 254-258, using `winsorize_by_year(combined, existing_pct_cols, year_col="year", lower=0.0, upper=0.99)`.
+
+8. **Builder extraction**: Individual builders (e.g., `ManagerQAUncertaintyBuilder`) query the engine and extract the specific column + `file_name`.
+
+9. **Panel merge**: Left join on `file_name` with zero-row-delta enforcement.
+
+You MUST trace the actual code to verify these steps. Do NOT copy this prompt text verbatim — verify each step independently.
+
+========================================================
+Compustat Financial Variable Construction Patterns
+========================================================
+
+Most Compustat variables follow one of these patterns. Trace the ACTUAL code for each:
+
+**Pattern A: Simple quarterly ratio** (e.g., CashHoldings, BookLev, Size, BM, RD_Intensity, CurrentRatio)
+- Raw fields loaded from Compustat quarterly parquet
+- Formula applied directly to quarterly observations
+- Matched to calls via `merge_asof` backward on (gvkey, datadate <= start_date)
+- Winsorized at 1%/99% by fiscal year at engine level
+
+**Pattern B: Q4 annual variable** (e.g., ROA, CapexAt, DividendPayer, OCF_Volatility)
+- Uses `_compute_annual_q4_variable()` which filters to `fqtr == 4` observations
+- These are YTD cumulative values at fiscal year-end
+- May involve lagged assets (`_compute_annual_q4_variable_lag` shifts fyearq +1)
+- Average assets computed as `(atq_annual + atq_annual_lag1) / 2`
+- Winsorized at 1%/99% by fiscal year
+
+**Pattern C: Composite with guards** (e.g., TobinsQ)
+- Multiple raw fields combined
+- `.clip(lower=0)` on debt components
+- NaN guards when all components missing
+- Division guards when denominator <= 0
+
+**Pattern D: Rolling window** (e.g., OCF_Volatility)
+- Computed on annual panel (one obs per firm-year)
+- Rolling window ("1826D" = ~5 years), min_periods
+- Standard deviation within window
+
+**Pattern E: CRSP-based** (e.g., StockRet, MarketRet, Volatility, pre_call_amihud)
+- CRSP daily data loaded for inter-call windows
+- Date-bounded CCM linkage (gvkey → PERMNO)
+- Minimum trading days requirement
+- Compound return or annualized volatility formula
+
+**Pattern F: IBES-based** (e.g., SurpDec, PostCallDispersion, PreCallDispersion)
+- IBES detail data with filter chain (MEASURE=EPS, FPI, stale, numest, meanest)
+- Earnings surprise = actual - meanest
+- Decile ranking within calendar quarter
+
+Trace the actual code path for each variable — do NOT assume it follows a standard pattern.
+
+========================================================
+Working method
+========================================================
+
+Step 1: Read the current provenance doc Section 6 to see current state
+Step 2: List ALL variables used in ANY specification (from the runner's KEY_IVS, BASE_CONTROLS, EXTENDED_CONTROLS, and DV)
+Step 3: For EACH variable, trace through:
+   a. The builder class (in src/f1d/shared/variables/)
+   b. The engine it queries (_compustat_engine.py, _crsp_engine.py, _linguistic_engine.py, _ibes_engine.py)
+   c. The exact computation (formula, guards, missing handling)
+   d. The winsorization step
+   e. How it merges into the panel
+Step 4: Rewrite Section 6 with expanded entries
+Step 5: Verify the expanded entries match the code
+
+========================================================
+Output format
+========================================================
+
+Rewrite Section 6 of the provenance doc. Keep the existing table structure but ADD a "Construction Detail" subsection below each table that provides the full step-by-step chain for each variable. Group variables by type:
+
+### 6.1 Dependent Variable(s)
+[Table + detailed construction chain]
+
+### 6.2 Key Independent Variables (Textual/Linguistic)
+[Table + FULL construction chain from dictionary through tokenization through winsorization]
+
+### 6.3 Base Control Variables
+[Table + construction details for each]
+
+### 6.4 Extended Control Variables
+[Table + construction details for each]
+
+### 6.5 Fixed-Effect and Identifier Variables
+[Table + how each is derived]
+
+For linguistic variables especially, include a SUBSECTION documenting:
+- The LM dictionary categories used
+- The tokenization pipeline
+- Speaker identification methodology
+- Section boundaries (Q&A vs Presentation)
+- The percentage formula
+- Upper-only winsorization rationale
+- Year-specific vs pooled treatment
+
+========================================================
+Quality bar
+========================================================
+A replicator reading Section 6 alone should be able to:
+- Identify every raw data field needed
+- Reproduce the exact computation
+- Understand all missing-value handling
+- Know the winsorization parameters
+- Trace the temporal alignment
+- Understand edge cases
+
+Do NOT leave any variable as "Stage 2 NLP" or "via builder" without full detail.
+Do NOT leave any formula without specifying which raw fields it uses.
+Do NOT omit missing-value handling, guards, or edge cases.
+
+========================================================
+IMPORTANT: Edit ONLY Section 6 of the provenance doc. Write the changes to the file.
+========================================================
