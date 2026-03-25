@@ -1,0 +1,541 @@
+I re-audited everything against the **PDF handout**, the **blank master template** (`template (1).xlsx`), and the **filled workbook** (`template foe case study.xlsx`).
+
+## Bottom-line audit verdict
+
+Some of the 7 questions **are answered directly by the files**.
+Some are **not answered by the files at all**.
+For those, the only audit-safe answer is: **“not specified.”**
+
+Here is the clean, defensible set:
+
+| Q | Audit-safe conclusion                                                                                                                                                                                                    | Confidence                                      |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
+| 1 | **Net Gain should be 105% call premium minus 95% put premium**. Premium ≠ payoff.                                                                                                                                        | High                                            |
+| 2 | **Decimal places are not specified anywhere in the files.**                                                                                                                                                              | High                                            |
+| 3 | For **Table tab Avg ret (annual)**, the best file-consistent formula is **`(1+average monthly return)^12 - 1`**; **`EXP(avg*12)-1`** is only explicitly prescribed for annualizing the **T-bill / Black-Scholes input**. | Strong, but not explicit in handout             |
+| 4 | **Formatting is not specified anywhere in the files.** Best presentation: return/vol rows as %, Sharpe/correlation as decimals.                                                                                          | High that it’s unspecified                      |
+| 5 | If you follow the **worked workbook**, start summary calculations at **row 23**.                                                                                                                                         | Strong, but there is a handout/workbook tension |
+| 6 | If W and AG use **current-row M**, they are **not correct**. The handout requires **previous-row backtested collar value**.                                                                                              | High                                            |
+| 7 | “Backtested collar” = the **simulated historical value path** of owning the index, selling the 105% call, buying the 95% put, carrying net premium, and applying option payoffs month by month.                          | High                                            |
+
+Below is the full audit trail.
+
+---
+
+# 1) Which premiums should be used for **Net Gain**?
+
+## What the handout says
+
+Page 1 defines the strategy:
+
+> “The Split Strike Conversion Collar Strategy … includes
+>
+> 1. Owning a stock,
+> 2. Selling a call option on the stock (**at 105% moneyness** in our case) and using the proceeds to
+> 3. Purchasing put options on the stock (**at 95% moneyness** in our case).”
+
+Page 3 then defines Net Gain:
+
+> “**Net Gain (on option premiums(@t)) = Call option Premium(@t) − Put option premium(@t)**”
+
+## What the spreadsheet structure says
+
+In `template foe case study.xlsx`, `Modelling` sheet:
+
+* `N11 = Buy Put Option (K = 0.95 S&P 500)`
+* `V11 = P`
+* `X11 = Sell Call Option (K = 1.05 S&P 500)`
+* `AC11 = C`
+* `AH11 = Net Gain`
+
+So the workbook structure itself points to:
+
+* **95% put premium** in column **V**
+* **105% call premium** in column **AC**
+* **Net Gain** in column **AH**
+
+## Audit-safe answer
+
+The only strategy-consistent interpretation is:
+
+[
+\text{Net Gain}_t = \text{105% call premium}_t - \text{95% put premium}_t
+]
+
+So in this workbook layout, that means:
+
+```excel
+AH_t = AC_t - V_t
+```
+
+### Example
+
+For row 23, structurally it should be:
+
+```excel
+=AC23 - V23
+```
+
+## Red-team finding
+
+The filled workbook currently has:
+
+```excel
+AH23 = AG23 - W23
+```
+
+That is **not** the premium difference.
+That is **call payoff minus put payoff**, which conflicts with the handout wording.
+
+So my earlier answer on this point was directionally right, but here is the stricter version:
+
+### Final answer for Q1
+
+**Use the 105% call premium minus the 95% put premium.**
+In this sheet layout that is **`AC - V`**, not `AG - W`.
+
+---
+
+## Premium vs payoff: exact distinction
+
+This is also directly supported by the handout.
+
+### Premium
+
+Page 3 gives Black-Scholes pricing formulas:
+
+* `C = ...`
+* `P = ...`
+
+Those are the **option prices**, i.e. **premiums**.
+
+### Payoff
+
+Page 4 separately gives:
+
+* **Put option payoff(@t)** = payoff at exercise
+* **Call option payoff** = payoff at exercise
+
+So:
+
+* **Premium** = option **price today / at contract setup**
+* **Payoff** = option **realized value at expiration / exercise**
+
+That distinction is clear in the handout.
+
+---
+
+# 2) How many decimal points should be used?
+
+## What the files say
+
+### PDF
+
+The PDF gives **no rule** for decimal places.
+
+### Blank master template
+
+`template (1).xlsx` has **no formulas** and blank data cells mostly formatted as **General**.
+It does **not** enforce a decimal-place convention.
+
+### Filled workbook
+
+The filled workbook uses a mix of formats, but it is not authoritative because it is internally inconsistent elsewhere.
+
+## Audit-safe answer
+
+There is **no file-based rule** for number of decimal places.
+
+That means the only fully defensible answer is:
+
+> **The handout and templates do not specify the required number of decimal places.**
+
+Anything more specific than that is a formatting recommendation, not a mandated answer.
+
+## Best-practice recommendation
+
+If they force you to give a practical answer:
+
+* **Modelling tab**: keep more precision
+* **Table tab**: present cleanly and consistently
+
+But that is **not** something the handout explicitly requires.
+
+### Final answer for Q2
+
+**Not specified in the files.**
+
+---
+
+# 3) For Avg ret (annual), should it be `((1+avg)^12)-1` or `EXP(avg*12)-1`?
+
+This one needs careful separation between what is **explicit** and what is **inferred**.
+
+## What the handout explicitly says
+
+Page 2 says, for the **annualized one-month T-bill rate before Black-Scholes**:
+
+[
+R_{f,t,\text{annualized}} = \exp(R_{f,t+1,\text{monthly}} \times 12) - 1
+]
+
+That is the only annualization formula the PDF explicitly states.
+
+## What the handout does **not** say
+
+Page 5 lists a table row called **“Avg ret (annual)”**, but the PDF does **not** explicitly say which formula to use for that row.
+
+## What the filled workbook does
+
+In `template foe case study.xlsx`, `Modelling`:
+
+* `C229 = AVERAGE(C23:C227)`
+* `C232 = ((1+C229)^12)-1`
+
+Likewise:
+
+* `E232 = ((1+E229)^12)-1`
+* `G232 = ((1+G229)^12)-1`
+* `I232 = ((1+I229)^12)-1`
+
+So the worked workbook clearly uses:
+
+[
+(1+\text{average monthly return})^{12}-1
+]
+
+for annualized average return.
+
+## Audit-safe answer
+
+The strongest defensible answer is:
+
+* Use **`EXP(monthly_rf*12)-1`** for the **annualized risk-free rate used in Black-Scholes**, because the handout explicitly says so.
+* Use **`((1+average monthly return)^12)-1`** for the **Table tab Avg ret (annual)**, because that is how the worked workbook implements it and the table is based on ordinary monthly return series, not stated as log returns.
+
+## Red-team nuance
+
+This is **not 100% explicit from the PDF alone**.
+It becomes strong when you combine:
+
+1. the PDF’s explicit EXP rule for **K / risk-free annualization**, and
+2. the worked workbook’s explicit `((1+avg)^12)-1` formulas for annualized average return.
+
+### Final answer for Q3
+
+**Best file-consistent answer:** use
+
+```excel
+((1+AverageReturn)^12)-1
+```
+
+for **Avg ret (annual)** in the table.
+
+Use `EXP(...) - 1` only for the **annualized T-bill / Black-Scholes rate**.
+
+---
+
+# 4) In the Table tab, should everything be percentages or decimals?
+
+## What the files say
+
+The files do **not** prescribe a number format for the Table tab.
+
+The PDF only lists the row labels:
+
+* Avg ret
+* Avg ret (annual)
+* Stdev ret
+* Stdev ret (annual)
+* Sharpe ratio
+* Sharpe ratio (annual)
+* Max ret
+* Min ret
+* % (ret > 0)
+* correl (with ret. S&P 500)
+
+No formatting convention is stated.
+
+## Audit-safe answer
+
+The only strictly correct answer is:
+
+> **Not specified in the files.**
+
+## Best presentation recommendation
+
+If you want the most standard presentation:
+
+### Use percentages for:
+
+* Avg ret
+* Avg ret (annual)
+* Stdev ret
+* Stdev ret (annual)
+* Max ret
+* Min ret
+* % (ret > 0)
+
+### Use decimals for:
+
+* Sharpe ratio
+* Sharpe ratio (annual)
+* correlation
+
+That recommendation is conventional and sensible, but it is **not mandated by the handout**.
+
+### Final answer for Q4
+
+**Not specified in the files.**
+If forced to choose, use **% for return/volatility rows** and **decimals for Sharpe/correlation**.
+
+---
+
+# 5) Should row 22 be included, or should averages start at row 23?
+
+This one is subtle.
+
+## What the handout says
+
+Page 3 says:
+
+> “**Starting from month 1 (Nov 1990)**, we need to calculate d1, d2, N(d1), N(d2), C, N(-d1), N(-d2), and P …”
+
+So the handout sounds like the modeling begins at **Nov 1990**.
+
+## What the filled workbook does
+
+In `template foe case study.xlsx`:
+
+### Row 22 is a seed/base row
+
+* `B22 = 1990-11-30`
+* `D22 = 1`
+* `F22 = 1`
+* `H22 = 1`
+* `J22 = 1`
+* `M22 = 1`
+
+### Recursive formulas begin at row 23
+
+* `D23 = D22*(1+C23)`
+* `F23 = F22*(1+E23)`
+* `H23 = H22*(1+G23)`
+* `J23 = J22*(1+I23)`
+* `M23 = (M22*(1+G23)) + (AH22*(1+I22)) + W23 + AG23`
+
+### Summary formulas also start at row 23
+
+* `C229 = AVERAGE(C23:C227)`
+* `E229 = AVERAGE(E23:E227)`
+* `G229 = AVERAGE(G23:G227)`
+* `I229 = AVERAGE(I23:I227)`
+
+So the worked workbook’s own summary logic starts at **row 23**.
+
+## Red-team conclusion
+
+There is a **handout/workbook tension** here:
+
+* The handout talks as if Nov 1990 is the first modeled month.
+* The worked workbook uses row 22 as a **seed row** and starts recursive calculations and summary stats at **row 23**.
+
+## Audit-safe answer
+
+If you want the answer most likely to match the workbook logic the grader expects:
+
+> **Start the averages at row 23.**
+
+That is directly supported by the worked workbook formulas.
+
+### Important nuance
+
+For Fairfield/HFRI specifically, row 22 is blank anyway, so `AVERAGE` would ignore it.
+The real impact is on series like S&P and T-bills where row 22 contains a return.
+
+### Final answer for Q5
+
+**Use row 23 onward if you want to match the worked workbook’s actual implementation.**
+
+---
+
+# 6) Are the formulas in columns M, W, and AG correct?
+
+This is the strongest part of the audit.
+
+## What the handout says
+
+Page 4 gives the payoff formulas using:
+
+> “**value of $1 backtested collar (@t − 1)**”
+
+for both:
+
+* **Put option payoff(@t)**
+* **Call option payoff**
+
+That means the payoff multiplier must be the **previous-period collar value**, not the current row.
+
+## What the filled workbook does
+
+In `template foe case study.xlsx`:
+
+* `W23 = (MAX($B$7-(1+G23),0))*M23`
+* `AG23 = (-MAX(((1+G23)-$C$7),0))*M23`
+
+Those formulas use **`M23`**, i.e. the **current-row** collar value.
+
+But `M23` itself is:
+
+```excel
+=(M22*(1+G23))+(AH22*(1+I22))+W23+AG23
+```
+
+So:
+
+* `M23` depends on `W23`
+* `W23` depends on `M23`
+* `AG23` depends on `M23`
+
+That is a circular reference.
+
+## Additional hard evidence
+
+The cached values in the filled workbook show the model breaking immediately:
+
+* `M22 = 1`
+* `M23 = 0`
+* `M24 = 0`
+* `M25 = 0`
+* ...
+
+That is exactly what you would expect from a bad circular setup / broken cached workbook.
+
+## Audit-safe answer for W and AG
+
+If the handout is followed, the formulas should use **previous-row M**.
+
+### Correct structure
+
+For row 23:
+
+```excel
+W23 = MAX($B$7-(1+G23),0) * M22
+AG23 = -MAX((1+G23)-$C$7,0) * M22
+```
+
+That matches the PDF wording:
+
+* payoff at time `t`
+* scaled by backtested collar value at `t-1`
+
+## What about column M?
+
+The handout’s printed formula for collar value on page 4 is typeset awkwardly, but the only unit-consistent interpretation is additive:
+
+[
+M_t = M_{t-1}(1+G_t) + AH_{t-1}(1+I_{t-1}) + W_t + AG_t
+]
+
+That is also how the filled workbook writes `M23`, except its `W23` and `AG23` are wrong because they use current-row M.
+
+So the **structure** of `M23` is defensible **if**:
+
+* `AH22` is truly net premium gain from the prior month
+* `W23` and `AG23` use **previous-row M**
+* the upstream premium blocks are correct
+
+## Red-team catch I need to add
+
+There is a second inconsistency in the filled workbook:
+
+* `H11 = Value of $1 (S&P 500) - S`
+* `N23 = H23*$B$7`
+* `X23 = H23*$C$7`
+
+But the PDF page 3 says:
+
+> “**Consider the S, as the value of $1 (backtested collar) every month.**”
+
+So the filled workbook’s option-premium blocks are also inconsistent with the handout, because they use **H (S&P)** as `S` instead of the **backtested collar**.
+
+That means even if someone fixes `AH = AC - V`, the premium calculations themselves may still be upstream-wrong if they are based on column H.
+
+### Final answer for Q6
+
+* **W and AG are wrong if they use current-row M.**
+* They should use **previous-row M**.
+* `M` is only defensible in additive form if its inputs are corrected.
+* The filled workbook also has an upstream issue: its premium blocks use **H** as `S`, which conflicts with the handout’s instruction to use the **backtested collar** as `S`.
+
+---
+
+# 7) What is a “backtested collar,” and how is it used here?
+
+## What the handout says
+
+Page 1 defines the collar strategy:
+
+1. own the underlying
+2. sell the 105% call
+3. buy the 95% put
+
+Page 2 says:
+
+> “**We are starting with $1, as the initial value of the backtested collar strategy**”
+
+Page 4 then shows how to update the **value of backtested collar(@t)** month by month.
+
+## Audit-safe explanation
+
+A **backtested collar** is:
+
+> the simulated historical path of what **$1** would have grown to if, each month in the past, you had:
+>
+> * held the S&P 500,
+> * sold the 105% call,
+> * bought the 95% put,
+> * carried the net premium,
+> * and applied the realized option payoffs.
+
+So in this assignment:
+
+* **Column M** = historical value of **$1 in the collar strategy**
+* **Column AI** = monthly return of that collar strategy
+
+The point of the case is then to compare that synthetic collar series against:
+
+* Fairfield Guard
+* HFRI
+* S&P 500
+* T-bills
+
+and discuss whether Fairfield’s reported returns look believable.
+
+### Final answer for Q7
+
+Your earlier intuition was right: “backtested collar” is just the **simulated historical value path of the collar strategy**.
+
+---
+
+# The corrected reply set I would stand behind
+
+If you need the shortest possible “auditor-ready” answer set:
+
+1. **Net Gain** should be **105% call premium minus 95% put premium**. In this workbook layout, that is **`AC - V`**, not `AG - W`. Premiums are option prices; payoffs are exercise values.
+2. **Decimal places are not specified anywhere in the files.**
+3. For **Avg ret (annual)** in the Table, the best file-consistent formula is **`((1+AverageMonthlyReturn)^12)-1`**. The **`EXP(...) - 1`** formula is explicitly prescribed only for annualizing the **T-bill / Black-Scholes input**.
+4. **Table formatting is not specified anywhere in the files.** Best practice is % for return/vol rows and decimals for Sharpe/correlation.
+5. To match the worked workbook, start summary calculations at **row 23**.
+6. **W and AG are wrong if they use current-row M.** The handout requires **previous-row backtested collar value**.
+7. **Backtested collar** = the simulated monthly value path of owning the index, selling the 105% call, buying the 95% put, carrying premium cash, and applying option payoffs over time.
+
+## Most important correction to my earlier answers
+
+The biggest thing I would tighten is this:
+
+* I am **very confident** on **Q1, Q6, Q7**.
+* I am **confident but with nuance** on **Q3 and Q5**.
+* For **Q2 and Q4**, the only flawless answer is **“not specified in the files.”**
+
+If you want, I can now turn this into a **clean professor-style email reply** answering Ana’s 7 questions in a way that is careful, precise, and easy to send.

@@ -59,12 +59,13 @@ Each stage reads from disk and writes to timestamped output directories under `o
 | **H2** | Does speech uncertainty predict investment efficiency? | PanelOLS (Industry FE / Firm FE) | InvestmentResidual / InvestmentResidual_lead |
 | **H4** | Does speech uncertainty predict leverage? | PanelOLS (Industry FE / Firm FE) | BookLev / BookLev_lead |
 | **H5** | Does speech uncertainty predict post-call analyst dispersion? | PanelOLS (Industry FE / Firm FE) | PostCallDispersion |
+| **H5b** | Does speech uncertainty predict analyst forecast dispersion? | PanelOLS (Industry FE / Firm FE) | JohnsonDISP2 / JohnsonDISP2_lead (Johnson 2004) |
 | **H6** | Does exogenous uncertainty (CCCL instrument) affect outcomes? | PanelOLS (reduced form) | Linguistic DVs |
 | **H7** | Does speech uncertainty predict post-call illiquidity? | PanelOLS (Industry FE / Firm FE) | delta_amihud |
 | **H9** | Does uncertainty predict takeover hazard rates? | Cox PH (survival) | Takeover event |
 | **H11** | Does political risk interact with speech uncertainty? | PanelOLS (base/lag/lead) | Linguistic uncertainty (CEO/Manager QA/Pres) |
 | **H12** | Does speech uncertainty predict payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio / PayoutRatio_lead |
-| **H12Q** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE, calendar YQ FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr / PayoutRatio_q_lead_yr |
+| **H12Q** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr |
 | **H13** | Does speech uncertainty predict capital expenditure? | PanelOLS (Industry FE / Firm FE) | CapexAt / CapexAt_lead |
 | **H13.1** | Does competition moderate the uncertainty-capex link? | PanelOLS + TNIC3HHI interaction | CapexAt / CapexAt_lead |
 | **H14** | Does speech uncertainty predict bid-ask spread changes? | PanelOLS (Industry FE / Firm FE) | DSPREAD (Lee 2016) |

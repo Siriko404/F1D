@@ -148,6 +148,9 @@ from .asset_growth import AssetGrowthBuilder
 # H15 Compustat variable builder (Share Repurchase)
 from .repurchase_indicator import RepurchaseIndicatorBuilder
 
+# H16 Compustat variable builder (R&D Investment Intensity — Jiang et al. 2021)
+from .rd_sales import RDSalesBuilder
+
 # CRSP individual variable builders
 from .stock_return import StockReturnBuilder
 from .market_return import MarketReturnBuilder
@@ -225,6 +228,8 @@ __all__ = [
     "AssetGrowthBuilder",
     # H15 Compustat variable builder (Share Repurchase)
     "RepurchaseIndicatorBuilder",
+    # H16 Compustat variable builder (R&D Investment Intensity)
+    "RDSalesBuilder",
     # Weak modal builders (H1 — Stage 2 linguistic)
     "ManagerQAWeakModalBuilder",
     "CEOQAWeakModalBuilder",
@@ -254,6 +259,7 @@ __all__ = [
     "LossDummyBuilder",
     "DeltaDispersionBuilder",
     "PostCallDispersionBuilder",
+    "JohnsonDispBuilder",
     # H7
     "AmihudIlliqBuilder",
     "AmihudChangeBuilder",
@@ -295,6 +301,7 @@ from .earnings_surprise_ratio import EarningsSurpriseRatioBuilder
 from .loss_dummy import LossDummyBuilder
 from .delta_dispersion import DeltaDispersionBuilder
 from .postcall_dispersion import PostCallDispersionBuilder
+from .johnson_disp import JohnsonDispBuilder
 
 # H7 Illiquidity
 from .amihud_illiq import AmihudIlliqBuilder

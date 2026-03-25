@@ -139,6 +139,8 @@ COMPUSTAT_COLS = [
     # H15 extension (Share Repurchase)
     "REPO",     # Binary: cshopq > 0 (quarterly repurchase indicator)
     "fqtr",     # Fiscal quarter (1-4) — needed for quarter-lead logic in panel builders
+    # H16 extension (R&D Investment Intensity — Jiang, John, Larsen 2021)
+    "RDSales",  # xrdy / saley (annual Q4-only; missing xrd→0; nonpositive sales→NaN)
 ]
 
 REQUIRED_COMPUSTAT_COLS = [
@@ -1064,6 +1066,17 @@ def _compute_and_winsorize(
     comp["CurrentRatio"] = comp["actq"] / comp["lctq"].replace(0, np.nan)
     comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]
 
+    # --- H16 extension: RDSales = xrdy / saley (Jiang, John, Larsen 2021) ---
+    # Annual R&D expense (Q4 YTD) / annual total sales (Q4 YTD).
+    # Missing xrd → 0 (standard convention). Nonpositive sales → NaN.
+    xrdy_annual = _compute_annual_q4_variable(comp, "xrdy", "_xrdy_annual")
+    saley_annual = _compute_annual_q4_variable(comp, "saley", "_saley_annual")
+    saleq_annual = _compute_annual_q4_variable(comp, "saleq", "_saleq_annual")
+    saley_series = pd.Series(saley_annual, index=comp.index)
+    sale_for_rd = saley_series.fillna(pd.Series(saleq_annual, index=comp.index))
+    xrd_for_rd = pd.Series(xrdy_annual, index=comp.index).fillna(0)
+    comp["RDSales"] = np.where(sale_for_rd > 0, xrd_for_rd / sale_for_rd, np.nan)
+
     # --- H1 extension: 5 new variables ---
     comp["CashHoldings"] = comp["cheq"] / comp["atq"]
     mktcap = comp["cshoq"] * comp["prccq"]
@@ -1181,6 +1194,7 @@ def _compute_and_winsorize(
         "SalesGrowth",
         "Intangibility",
         "AssetGrowth",
+        "RDSales",
     ]
     for col in ratio_cols:
         comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)

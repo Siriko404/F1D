@@ -10,7 +10,6 @@ Description: Build CALL-LEVEL panel for H12Q Quarterly Payout Ratio hypothesis.
     DV: PayoutRatio_q = (dvpspq × cshoq) / ibq (quarterly, ibq > 0 only).
     Lead DVs:
         PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
-        PayoutRatio_q_lead_yr:  same-quarter next year's PayoutRatio_q
 
 Inputs:
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
@@ -158,10 +157,9 @@ def build_call_level_panel(
 
 
 def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None) -> pd.DataFrame:
-    """Create two lead DVs at call level.
+    """Create lead DV at call level.
 
     1. PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
-    2. PayoutRatio_q_lead_yr: same-quarter-next-year's PayoutRatio_q
 
     Uses fiscal quarter from Compustat (fqtr) and fiscal year (fyearq).
     """
@@ -266,21 +264,8 @@ def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None)
     n_valid_lead_qtr = firm_qtr["PayoutRatio_q_lead_qtr"].notna().sum()
     print(f"  Firm-quarters with valid next-quarter lead: {n_valid_lead_qtr:,}")
 
-    # --- Lead 2: Same quarter next year (shift by ~4 quarters) ---
-    # Find the row where gvkey is same and fiscal_qtr_id = current_year+1, same quarter
-    target_yr_qtr = (firm_qtr["fyearq_int"] + 1) * 10 + firm_qtr["fqtr_int"]
-    # Self-join approach: create lookup of (gvkey, fiscal_qtr_id) -> PayoutRatio_q
-    lookup = firm_qtr.set_index(["gvkey", "fiscal_qtr_id"])["PayoutRatio_q"].to_dict()
-    firm_qtr["PayoutRatio_q_lead_yr"] = [
-        lookup.get((gvkey, tgt), np.nan)
-        for gvkey, tgt in zip(firm_qtr["gvkey"], target_yr_qtr)
-    ]
-
-    n_valid_lead_yr = firm_qtr["PayoutRatio_q_lead_yr"].notna().sum()
-    print(f"  Firm-quarters with valid same-quarter-next-year lead: {n_valid_lead_yr:,}")
-
     # --- Merge leads back to call level ---
-    lead_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "PayoutRatio_q_lead_qtr", "PayoutRatio_q_lead_yr"]].copy()
+    lead_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "PayoutRatio_q_lead_qtr"]].copy()
 
     before_len = len(panel)
     panel = panel.merge(lead_lookup, on=["gvkey", "fiscal_qtr_id"], how="left")
@@ -288,7 +273,6 @@ def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None)
         raise ValueError(f"Lead merge changed row count {before_len} -> {len(panel)}.")
 
     print(f"  Calls with next-quarter lead: {panel['PayoutRatio_q_lead_qtr'].notna().sum():,}")
-    print(f"  Calls with same-quarter-next-year lead: {panel['PayoutRatio_q_lead_yr'].notna().sum():,}")
 
     # Create calendar year-quarter identifier for FE
     panel["start_date_dt"] = pd.to_datetime(panel["start_date"], errors="coerce")

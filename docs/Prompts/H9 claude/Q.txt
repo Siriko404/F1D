@@ -1,0 +1,13 @@
+Another reply:
+
+Here are my list of questions: 
+
+	1	For the Net Gain calculations, the instruction says we have to use the difference between "the Premium of Call Option - Premium of Put Option". However, which premiums we should use? 95% has call and put option premium, 105% call and put option premium, so which ones should we use and why? Can you please also explain the distinction between Call/Put option Premiums and Payoffs? It's not clear to me. Net Gain is in Column AH in the Modelling tab. 
+	2	How many decimal points should we use in the Modelling tab and Table tab in the Excel spreadsheet?
+	3	For Average Return Annualized calculation in Table tab in spreadsheet, should we use ((1+Avgerage return)^12) - 1 formula or Exp(Average return*12) - 1 formula and why? Both give different answers, we are not sure which is correct. 
+	4	For the Table tab, should we put everything, except correlation in percentage or just leave all numbers in decimal points. 
+	5	Should we include the 1st blank cell to calculate average returns for Fairfield Guard? The first row (row 22) where the data starts have missing values across the row. So, we are not sure if we should start calculating average from Row 22 or Row 23 for Fairfield, S&P500, HFRI, T-Bill. The starting row of data impacts the average return calculations. 
+	6	Can you please look at the formulas we have for column M (Value of $1 Backrested collar), column W (Put option payoff), column AG (Call option payoff) and let me know if the formulas are correct? 
+	7	Also, I understand the concept of the Black-Scholes concept, sell Call options and use the premium to buy Put options to minimize loss. However, I am not sure what Backtested Collar is and how its being use in this assignment. I am confused about the concept and its application. I will really appreciate it if you can explain it as I need to understand it to write the written component of the assignment and fully comprehend the course material. 
+
+

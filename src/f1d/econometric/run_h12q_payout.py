@@ -11,18 +11,16 @@ DV: PayoutRatio_q = (dvpspq × cshoq) / ibq
 
 Lead DVs:
     PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
-    PayoutRatio_q_lead_yr:  same-quarter next year's PayoutRatio_q
 
-12 Model Specifications:
+8 Model Specifications:
     Cols 1-4:   DV = PayoutRatio_q (contemporaneous)
     Cols 5-8:   DV = PayoutRatio_q_lead_qtr (next quarter)
-    Cols 9-12:  DV = PayoutRatio_q_lead_yr (same quarter next year)
-    Odd cols:   Industry FE (FF12) + Calendar Year-Quarter FE
-    Even cols:  Firm FE + Calendar Year-Quarter FE
-    Cols 1-2, 5-6, 9-10:  Base controls
-    Cols 3-4, 7-8, 11-12: Extended controls
+    Odd cols:   Industry FE (FF12) + Fiscal Year-Quarter FE
+    Even cols:  Firm FE + Fiscal Year-Quarter FE
+    Cols 1-2, 5-6:  Base controls
+    Cols 3-4, 7-8:  Extended controls
 
-Lead specs (cols 5-12) include PayoutRatio_q as lagged DV control.
+Lead specs (cols 5-8) include PayoutRatio_q as lagged DV control.
 
 Key IVs (4, simultaneous, call-level):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -32,7 +30,7 @@ Hypothesis: One-tailed (β < 0 — higher uncertainty → lower payout).
 
 Sample: Main only (FF12 ≠ 8, 11).
 SEs: Firm-clustered.
-FE time: Calendar year-quarter (not fiscal year — quarterly DV needs quarterly FE).
+FE time: Fiscal year (fyearq_int), consistent with other suites.
 
 Known limitation: ~57% of firm-quarters with ibq > 0 have PayoutRatio_q = 0
 (dividend lumpiness). OLS with continuous DV; documented as limitation.
@@ -99,11 +97,6 @@ MODEL_SPECS = [
     {"col": 6,  "dv": "PayoutRatio_q_lead_qtr", "fe": "firm",     "controls": "base",     "extra_controls": ["PayoutRatio_q"]},
     {"col": 7,  "dv": "PayoutRatio_q_lead_qtr", "fe": "industry", "controls": "extended", "extra_controls": ["PayoutRatio_q"]},
     {"col": 8,  "dv": "PayoutRatio_q_lead_qtr", "fe": "firm",     "controls": "extended", "extra_controls": ["PayoutRatio_q"]},
-    # Lead: same quarter next year
-    {"col": 9,  "dv": "PayoutRatio_q_lead_yr",  "fe": "industry", "controls": "base",     "extra_controls": ["PayoutRatio_q"]},
-    {"col": 10, "dv": "PayoutRatio_q_lead_yr",  "fe": "firm",     "controls": "base",     "extra_controls": ["PayoutRatio_q"]},
-    {"col": 11, "dv": "PayoutRatio_q_lead_yr",  "fe": "industry", "controls": "extended", "extra_controls": ["PayoutRatio_q"]},
-    {"col": 12, "dv": "PayoutRatio_q_lead_yr",  "fe": "firm",     "controls": "extended", "extra_controls": ["PayoutRatio_q"]},
 ]
 
 VARIABLE_LABELS = {
@@ -116,7 +109,6 @@ VARIABLE_LABELS = {
 SUMMARY_STATS_VARS = [
     {"col": "PayoutRatio_q", "label": "PayoutRatio$_q$ (quarterly)"},
     {"col": "PayoutRatio_q_lead_qtr", "label": "PayoutRatio$_q$ (next quarter)"},
-    {"col": "PayoutRatio_q_lead_yr", "label": "PayoutRatio$_q$ (same qtr next year)"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
@@ -195,7 +187,7 @@ def prepare_regression_data(
     ctrl_key = spec["controls"]
     extra_controls = spec["extra_controls"]
     controls = (BASE_CONTROLS if ctrl_key == "base" else EXTENDED_CONTROLS) + extra_controls
-    required = [dv] + KEY_IVS + controls + ["gvkey", "cal_yearqtr", "ff12_code"]
+    required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -257,7 +249,7 @@ def run_regression(
     t0 = datetime.now()
 
     # Set panel index: gvkey × calendar year-quarter
-    df_panel = df_prepared.set_index(["gvkey", "cal_yearqtr"])
+    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
 
     try:
         if fe_type == "industry":
@@ -265,7 +257,7 @@ def run_regression(
                 dependent=df_panel[dv],
                 exog=df_panel[exog],
                 entity_effects=False,
-                time_effects=True,  # absorbs cal_yearqtr FE
+                time_effects=True,  # absorbs fyearq_int FE
                 other_effects=df_panel["ff12_code"],
                 drop_absorbed=True,
                 check_rank=False,
@@ -424,8 +416,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines += _panel_lines([1, 2, 3, 4], "Panel A", "PayoutRatio$_q$ (contemporaneous)")
     lines.append("\\midrule")
     lines += _panel_lines([5, 6, 7, 8], "Panel B", "PayoutRatio$_q$ (next quarter)")
-    lines.append("\\midrule")
-    lines += _panel_lines([9, 10, 11, 12], "Panel C", "PayoutRatio$_q$ (same qtr next year)")
 
     lines += [
         r"\bottomrule",
@@ -530,7 +520,6 @@ def main(panel_path: Optional[str] = None) -> int:
         print(f"  PayoutRatio_q == 0 (no div this quarter): {n_dv_zero:,} "
               f"({100 * n_dv_zero / n_dv_valid:.1f}%)")
     print(f"  PayoutRatio_q_lead_qtr non-null: {panel['PayoutRatio_q_lead_qtr'].notna().sum():,}")
-    print(f"  PayoutRatio_q_lead_yr non-null: {panel['PayoutRatio_q_lead_yr'].notna().sum():,}")
 
     # Summary stats
     out_dir.mkdir(parents=True, exist_ok=True)

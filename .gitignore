@@ -98,12 +98,24 @@ id_ed25519*
 *.dbpass
 db_password.*
 
-# IDE
+# IDE / AI tool config
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
+.claude/
+.openviking/
+*.stackdump
+convo*.txt
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
 
 # OS
 .DS_Store
