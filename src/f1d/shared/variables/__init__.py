@@ -148,6 +148,9 @@ from .asset_growth import AssetGrowthBuilder
 # H15 Compustat variable builder (Share Repurchase)
 from .repurchase_indicator import RepurchaseIndicatorBuilder
 
+# H17 Compustat variable builder (Repurchase Intensity)
+from .repurchase_intensity import RepurchaseIntensityBuilder
+
 # H16 Compustat variable builder (R&D Investment Intensity — Jiang et al. 2021)
 from .rd_sales import RDSalesBuilder
 
@@ -228,6 +231,8 @@ __all__ = [
     "AssetGrowthBuilder",
     # H15 Compustat variable builder (Share Repurchase)
     "RepurchaseIndicatorBuilder",
+    # H17 Compustat variable builder (Repurchase Intensity)
+    "RepurchaseIntensityBuilder",
     # H16 Compustat variable builder (R&D Investment Intensity)
     "RDSalesBuilder",
     # Weak modal builders (H1 — Stage 2 linguistic)

@@ -99,6 +99,19 @@ class AmihudChangeBuilder(VariableBuilder):
                 "pre_call_amihud": pca_col,
             })
 
+        # Per-year winsorization at 1%/99% — consistent with CRSP engine treatment.
+        # delta_amihud is extremely right-skewed (skew~162, kurtosis~29K unwinsorized)
+        # due to micro-cap stocks with near-zero dollar volume.
+        from .winsorization import winsorize_by_year
+
+        year_lookup = manifest[["file_name", "year"]].drop_duplicates("file_name")
+        results = results.merge(year_lookup, on="file_name", how="left")
+        winsorize_cols = [c for c in [da_col, pca_col] if c in results.columns]
+        results = winsorize_by_year(
+            results, winsorize_cols, year_col="year", lower=0.01, upper=0.99,
+        )
+        results = results.drop(columns=["year"])
+
         out_cols = ["file_name", da_col, pca_col]
         out_cols = [c for c in out_cols if c in results.columns]
 

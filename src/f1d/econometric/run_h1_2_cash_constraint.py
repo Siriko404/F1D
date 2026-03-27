@@ -4,7 +4,7 @@
 STAGE 4: Test H1.2 Financing-Constraint-Moderated Cash Holdings Hypothesis
 ================================================================================
 ID: econometric/run_h1_2_cash_constraint
-Description: Test whether the Manager_Pres_Uncertainty → CashHoldings relationship
+Description: Test whether the Manager_QA_Uncertainty → CashHoldings relationship
              is stronger for financially constrained firms, distinguishing
              below-investment-grade rated firms from unrated firms.
 
@@ -15,7 +15,7 @@ Channel: CH1 — Precautionary liquidity under external-finance frictions
 Model Specification (three-category moderator):
     CashHoldings = b1*Unc_c + b2*BelowIG + b3*Unrated
                  + b4*(Unc_c x BelowIG) + b5*(Unc_c x Unrated)
-                 + controls + IndustryFE + FiscalYearFE + e
+                 + controls + IndustryFE + CalendarYearFE + e
 
     Reference group: Investment-grade firms (BBB- and above).
     b4 = clean CH1 test: does the uncertainty→cash link strengthen for junk-rated firms?
@@ -29,11 +29,10 @@ Model Specification (three-category moderator):
     unrated firms hold far more (0.237). The binary moderator was mixing opposite signals.
 
 Parent suite: H1 (Cash Holdings)
-    Manager_Pres_Uncertainty_pct significant in Industry+FY specs (cols 1,3,5,7).
 
 2 Models:
-    Col 1: DV = CashHoldings_t,    Industry+FY FE, Extended controls
-    Col 2: DV = CashHoldings_lead, Industry+FY FE, Extended controls + CashHoldings_t
+    Col 1: DV = CashHoldings_t, Industry + Calendar Year FE, Extended controls
+    Col 2: DV = CashHoldings_t, Industry + Calendar Year-Quarter FE, Extended controls
 
 Moderator: Three-category from S&P splticrm (Compustat Daily Ratings)
     IG (reference): BBB- and above (both dummies = 0)
@@ -43,7 +42,7 @@ Moderator: Three-category from S&P splticrm (Compustat Daily Ratings)
 
 Sample: Main only (FF12 not in {8, 11}). Fiscal years 2002-2016 (ratings end 2017-02).
 Hypothesis: Two-tailed on interactions (b4, b5 != 0); one-tailed on main IV (b1 > 0).
-Unit: Call-level. Panel index: ["gvkey", "fyearq_int"]. SEs: Firm-clustered.
+Unit: Call-level. Panel index: ["gvkey", "cal_yr"] or ["gvkey", "cal_yr_qtr"]. SEs: Firm-clustered.
 
 Inputs:
     - outputs/variables/h1_cash_holdings/latest/h1_cash_holdings_panel.parquet
@@ -74,26 +73,28 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
 # Configuration
 # ==============================================================================
 
-IV = "Manager_Pres_Uncertainty_pct"
-IV_CENTERED = "Manager_Pres_Unc_c"  # mean-centered on Main sample
+IV = "Manager_QA_Uncertainty_pct"
+IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
 
 CONTROLS = [
     "BookLev", "Size", "TobinsQ", "ROA", "CapexAt",
     "DividendPayer", "OCF_Volatility",
     "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "Lagged_DV",  # Unified lagged DV
 ]
 
 # Three-category moderator (reference = IG)
 MOD_BELOW_IG = "BelowIG"
 MOD_UNRATED = "Unrated"
-INT_BELOW_IG = "MgrPresUnc_x_BelowIG"
-INT_UNRATED = "MgrPresUnc_x_Unrated"
+INT_BELOW_IG = "MgrQAUnc_x_BelowIG"
+INT_UNRATED = "MgrQAUnc_x_Unrated"
 
 # Investment-grade rating codes (BBB- and above)
 IG_RATINGS = {"AAA", "AA+", "AA", "AA-", "A+", "A", "A-", "BBB+", "BBB", "BBB-"}
@@ -103,15 +104,14 @@ YEAR_MIN = 2002
 YEAR_MAX = 2016
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CashHoldings",      "extra_controls": []},
-    {"col": 2, "dv": "CashHoldings_lead",  "extra_controls": ["CashHoldings"]},
+    {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": []},
+    {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": []},
 ]
 
 SUMMARY_STATS_VARS = [
     {"col": "CashHoldings", "label": "Cash Holdings$_t$"},
-    {"col": "CashHoldings_lead", "label": "Cash Holdings$_{t+1}$"},
-    {"col": IV, "label": "Mgr Pres Uncertainty (raw)"},
-    {"col": IV_CENTERED, "label": "Mgr Pres Uncertainty (centered)"},
+    {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
+    {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MOD_BELOW_IG, "label": "Below-IG (dummy)"},
     {"col": MOD_UNRATED, "label": "Unrated (dummy)"},
     {"col": "BookLev", "label": "Leverage"},
@@ -167,14 +167,20 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code", "start_date",
-        "CashHoldings", "CashHoldings_lead",
+        "CashHoldings", "CashHoldings_lag",
         IV,
-        *CONTROLS,
+        *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
+
+    # Build calendar year-quarter index for FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel, panel_file
 
 
@@ -298,11 +304,20 @@ def prepare_regression_data(
 ) -> pd.DataFrame:
     """Prepare data for one regression spec with two interaction terms."""
     dv = spec["dv"]
+    fe = spec["fe"]
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
+    # Determine time column based on FE type
+    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    lag_col = f"{dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
     required = ([dv, IV, IV_CENTERED, MOD_BELOW_IG, MOD_UNRATED]
-                + all_controls + ["gvkey", "fyearq_int", "ff12_code"])
+                + all_controls + ["gvkey", time_col, "ff12_code"])
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -332,12 +347,12 @@ def prepare_regression_data(
     df = df[df["gvkey"].isin(valid_firms)].copy()
 
     n_firms = df["gvkey"].nunique()
-    n_firm_years = df.groupby(["gvkey", "fyearq_int"]).ngroups
+    n_time_periods = df.groupby(["gvkey", time_col]).ngroups
     n_ig = int(((df[MOD_BELOW_IG] == 0) & (df[MOD_UNRATED] == 0)).sum())
     n_below_ig = int(df[MOD_BELOW_IG].sum())
     n_unrated = int(df[MOD_UNRATED].sum())
     print(f"  After >={MIN_CALLS_PER_FIRM} calls/firm: "
-          f"{len(df):,} calls, {n_firms:,} firms, {n_firm_years:,} firm-years")
+          f"{len(df):,} calls, {n_firms:,} firms, {n_time_periods:,} firm-time-periods")
     print(f"  Three-category split: {n_ig:,} IG ({100*n_ig/len(df):.1f}%) / "
           f"{n_below_ig:,} Below-IG ({100*n_below_ig/len(df):.1f}%) / "
           f"{n_unrated:,} Unrated ({100*n_unrated/len(df):.1f}%)")
@@ -380,14 +395,19 @@ def _extract_coef(model, name: str) -> Tuple[float, float, float]:
 def run_regression(
     df_prepared: pd.DataFrame, spec: Dict[str, Any]
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run PanelOLS with Industry+FY FE and firm-clustered SEs."""
+    """Run PanelOLS with Industry FE + Calendar Year or Year-Quarter FE."""
     dv = spec["dv"]
     col_num = spec["col"]
+    fe = spec["fe"]
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
+    # Determine time column and FE label
+    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+    fe_label = "Industry + CalYrQtr" if fe.endswith("_yq") else "Industry + CalYear"
+
     print(f"\n{'=' * 60}")
-    print(f"Col ({col_num}) | DV={dv} | FE=Industry+FY")
+    print(f"Col ({col_num}) | DV={dv} | FE={fe_label}")
     print(f"{'=' * 60}")
 
     if len(df_prepared) < 100:
@@ -398,8 +418,8 @@ def run_regression(
             INT_BELOW_IG, INT_UNRATED] + all_controls
 
     n_firms = df_prepared["gvkey"].nunique()
-    n_firm_years = df_prepared.groupby(["gvkey", "fyearq_int"]).ngroups
-    print(f"  N={len(df_prepared):,}, firms={n_firms:,}, firm-years={n_firm_years:,}")
+    n_time_periods = df_prepared.groupby(["gvkey", time_col]).ngroups
+    print(f"  N={len(df_prepared):,}, firms={n_firms:,}, firm-time-periods={n_time_periods:,}")
     if extra_controls:
         print(f"  Extra controls: {extra_controls}")
 
@@ -412,7 +432,7 @@ def run_regression(
         print(f"  VIF({MOD_UNRATED}): {vif.get(MOD_UNRATED, np.nan):.2f}")
 
     t0 = datetime.now()
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
         model_obj = PanelOLS(
@@ -459,16 +479,14 @@ def run_regression(
     print(f"  {MOD_UNRATED}: b={beta_unr:.4f} p2={p_two_unr:.4f}")
     print(f"  {INT_BELOW_IG}: b={beta_int_big:.4f} p2={p_two_int_big:.4f} {stars_int_big}")
     print(f"  {INT_UNRATED}: b={beta_int_unr:.4f} p2={p_two_int_unr:.4f} {stars_int_unr}")
-    if not np.isnan(beta_lag_dv):
-        print(f"  CashHoldings_t (control): b={beta_lag_dv:.4f}")
 
     n_ig = int(((df_prepared[MOD_BELOW_IG] == 0) & (df_prepared[MOD_UNRATED] == 0)).sum())
     n_below_ig = int(df_prepared[MOD_BELOW_IG].sum())
     n_unrated = int(df_prepared[MOD_UNRATED].sum())
 
     meta = {
-        "col": col_num, "dv": dv, "fe": "industry",
-        "n_obs": int(model.nobs), "n_firms": n_firms, "n_firm_years": n_firm_years,
+        "col": col_num, "dv": dv, "fe": fe,
+        "n_obs": int(model.nobs), "n_firms": n_firms, "n_time_periods": n_time_periods,
         "within_r2": float(model.rsquared_within),
         # Main IV
         "beta_iv": beta_iv, "se_iv": se_iv, "p_one_iv": p_one_iv, "p_two_iv": p_two_iv,
@@ -548,7 +566,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\begin{tabular}{lcc}",
         r"\toprule",
         r" & (1) & (2) \\",
-        r" & Cash Holdings$_t$ & Cash Holdings$_{t+1}$ \\",
+        r" & \multicolumn{2}{c}{Cash Holdings$_t$} \\",
+        r"\cmidrule(lr){2-3}",
+        r" & Cal Year FE & Cal Yr-Qtr FE \\",
         r"\midrule",
     ]
 
@@ -561,32 +581,25 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         lines.append(f" & {s1} & {s2} \\\\")
 
     # Main IV
-    _row("Mgr Pres Uncertainty", "beta_iv", "se_iv", "p_one_iv", _sig_stars_one)
+    _row("Mgr QA Uncertainty", "beta_iv", "se_iv", "p_one_iv", _sig_stars_one)
     # Below-IG level
     _row("Below-IG", "beta_below_ig", "se_below_ig", "p_two_below_ig", _sig_stars_two)
     # Unrated level
     _row("Unrated", "beta_unrated", "se_unrated", "p_two_unrated", _sig_stars_two)
     # Interaction: Below-IG (key)
-    _row(r"Mgr Pres Unc $\times$ Below-IG", "beta_int_below_ig", "se_int_below_ig", "p_two_int_below_ig", _sig_stars_two)
+    _row(r"Mgr QA Unc $\times$ Below-IG", "beta_int_below_ig", "se_int_below_ig", "p_two_int_below_ig", _sig_stars_two)
     # Interaction: Unrated
-    _row(r"Mgr Pres Unc $\times$ Unrated", "beta_int_unrated", "se_int_unrated", "p_two_int_unrated", _sig_stars_two)
-
-    # Lagged DV control (col 2 only)
-    if not np.isnan(m2.get("beta_lag_dv", np.nan)):
-        lines.append(
-            f"Cash Holdings$_t$ & & "
-            f"{fmt_coef(m2['beta_lag_dv'], _sig_stars_two(m2.get('p_two_lag_dv', np.nan)))} \\\\"
-        )
-        lines.append(f" & & {fmt_se(m2.get('se_lag_dv', np.nan))} \\\\")
+    _row(r"Mgr QA Unc $\times$ Unrated", "beta_int_unrated", "se_int_unrated", "p_two_int_unrated", _sig_stars_two)
 
     lines.append(r"\midrule")
     lines.append(r"Controls & Extended & Extended \\")
     lines.append(r"Industry FE & Yes & Yes \\")
-    lines.append(r"Fiscal Year FE & Yes & Yes \\")
+    lines.append(r"Calendar Year FE & Yes &  \\")
+    lines.append(r"Calendar Year-Quarter FE &  & Yes \\")
     lines.append(r"\midrule")
 
     lines.append(f"N (calls) & {m1.get('n_obs', 0):,} & {m2.get('n_obs', 0):,} \\\\")
-    lines.append(f"N (firm-years) & {m1.get('n_firm_years', 0):,} & {m2.get('n_firm_years', 0):,} \\\\")
+    lines.append(f"N (firm-time-periods) & {m1.get('n_time_periods', 0):,} & {m2.get('n_time_periods', 0):,} \\\\")
     lines.append(
         f"N (IG / Below-IG / Unrated) & "
         f"{m1.get('n_ig', 0):,} / {m1.get('n_below_ig', 0):,} / {m1.get('n_unrated', 0):,} & "
@@ -605,7 +618,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. ",
-        r"Main IV (Mgr Pres Uncertainty) mean-centered; one-tailed ($\beta > 0$). ",
+        r"Main IV (Mgr QA Uncertainty) mean-centered; one-tailed ($\beta > 0$). ",
         r"Interactions and moderator levels: two-tailed. ",
         r"Reference group: investment-grade firms (S\&P long-term issuer rating BBB$-$ or above). ",
         r"Below-IG: firms rated BB$+$ through SD. ",
@@ -615,7 +628,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Sample restricted to fiscal years 2002--2016 (ratings coverage). ",
-        r"Col~(2) includes Cash Holdings$_t$ as additional control. ",
+        r"Col~(1): Calendar Year FE. Col~(2): Calendar Year-Quarter FE. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
         r"\end{table}",
@@ -649,7 +662,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"IV: {IV} (centered)\n")
             f.write(f"Moderators: BelowIG (dummy), Unrated (dummy). Reference: IG\n")
             f.write(f"Interactions: {INT_BELOW_IG}, {INT_UNRATED}\n")
-            f.write(f"FE: Industry(FF12) + FiscalYear\n")
+            f.write(f"FE: {meta['fe']}\n")
             f.write(f"Sample years: {YEAR_MIN}-{YEAR_MAX}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
             f.write(f"VIF(int_below_ig): {meta.get('vif_int_below_ig', 'N/A')}\n")
@@ -679,11 +692,11 @@ def generate_report(
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Manager_Pres_Uncertainty × BelowIG / Unrated (two interactions)",
+        f"**Design:** Manager_QA_Uncertainty × BelowIG / Unrated (two interactions)",
         f"**Channel:** CH1 — Precautionary liquidity under external-finance frictions",
         f"**Moderator:** Three-category: IG (ref) / Below-IG / Unrated",
         f"**IV centering mean:** {iv_mu:.4f}",
-        f"**FE:** Industry(FF12) + FiscalYear (all models)",
+        f"**FE:** Col 1: Industry + CalYear; Col 2: Industry + CalYrQtr",
         f"**Sample years:** {YEAR_MIN}-{YEAR_MAX}",
         f"**Parent suite:** H1 (Cash Holdings)",
         "",
@@ -749,7 +762,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp:  {timestamp}")
     print(f"Output:     {out_dir}")
-    print(f"Design:     1 IV × 2 DVs × 2 interactions × Industry+FY FE = 2 models")
+    print(f"Design:     1 IV × 1 DV × 2 interactions × 2 FE types = 2 models")
     print(f"Channel:    CH1 — Precautionary liquidity under external-finance frictions")
     print(f"Moderator:  Three-category: IG (ref) / Below-IG / Unrated")
     print(f"IV:         {IV}")

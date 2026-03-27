@@ -4,17 +4,17 @@
 STAGE 4: Test H1 Cash Holdings Hypothesis
 ================================================================================
 ID: econometric/test_h1_cash_holdings
-Description: Run H1 Cash Holdings hypothesis test using 8 model specifications
+Description: Run H1 Cash Holdings hypothesis test using 12 model specifications
              with 4 simultaneous uncertainty IVs, varying DV, FE type,
              and control set. Main sample only.
 
-Model Specifications (8 columns in one table):
-    Cols 1-4: DV = CashHoldings (contemporaneous)
-    Cols 5-8: DV = CashHoldings_lead (t+1)
-    Odd cols:  Industry FE (FF12 dummies) + Year FE
-    Even cols: Firm FE + Year FE
-    Cols 1-2, 5-6: Base controls
-    Cols 3-4, 7-8: Extended controls
+Model Specifications (12 columns in one table):
+    Cols 1-4: DV = CashHoldings (contemporaneous), Calendar Year FE
+    Cols 5-6: DV = CashHoldings (contemporaneous), Calendar Year-Quarter FE
+    Cols 7-10: DV = CashHoldings_lead (t+1), Calendar Year FE
+    Cols 11-12: DV = CashHoldings_lead (t+1), Calendar Year-Quarter FE
+    Odd cols (1-4,7-10): Industry FE + Year FE / Even: Firm FE + Year FE
+    Cols 5-6, 11-12: Extended controls only, YQ FE
 
 Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -71,6 +71,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -91,6 +92,7 @@ BASE_CONTROLS = [
     "CapexAt",
     "DividendPayer",
     "OCF_Volatility",
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -101,14 +103,20 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CashHoldings",      "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "CashHoldings",      "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "CashHoldings",      "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "CashHoldings",      "fe": "firm",     "controls": "extended"},
-    {"col": 5, "dv": "CashHoldings_lead", "fe": "industry", "controls": "base"},
-    {"col": 6, "dv": "CashHoldings_lead", "fe": "firm",     "controls": "base"},
-    {"col": 7, "dv": "CashHoldings_lead", "fe": "industry", "controls": "extended"},
-    {"col": 8, "dv": "CashHoldings_lead", "fe": "firm",     "controls": "extended"},
+    {"col": 1,  "dv": "CashHoldings",      "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "CashHoldings",      "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "CashHoldings",      "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "CashHoldings",      "fe": "firm",        "controls": "extended"},
+    # Year-Quarter FE specs (Extended controls only)
+    {"col": 5,  "dv": "CashHoldings",      "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "CashHoldings",      "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "CashHoldings_lead", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "CashHoldings_lead", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "CashHoldings_lead", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "CashHoldings_lead", "fe": "firm",        "controls": "extended"},
+    # Year-Quarter FE specs (Extended controls only)
+    {"col": 11, "dv": "CashHoldings_lead", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "CashHoldings_lead", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -189,9 +197,10 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
+        "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
-        # DVs
-        "CashHoldings", "CashHoldings_lead",
+        # DVs + lagged DV
+        "CashHoldings", "CashHoldings_lead", "CashHoldings_lag",
         # Key IVs
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
@@ -205,6 +214,12 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -235,8 +250,18 @@ def prepare_regression_data(
         Prepared DataFrame ready for regression
     """
     dv = spec["dv"]
+    fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
 
     # Check required columns exist
     missing = [c for c in required if c not in panel.columns]
@@ -317,17 +342,22 @@ def run_regression(
     # Build exogenous variable list
     exog = KEY_IVS + controls
 
-    print(f"  FE: {'Industry(FF12) + Year' if fe_type == 'industry' else 'Firm + Year'}")
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     print(f"  Controls: {spec['controls']} ({len(controls)} vars)")
     print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
     # Create MultiIndex for PanelOLS
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             # Use constructor API with other_effects to ABSORB industry FE
             # (not C(ff12_code) dummies which spam the coefficient table)
             dependent_data = df_panel[dv]
@@ -411,11 +441,11 @@ def _sig_stars(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write unified 8-column LaTeX table with stars + SE in parentheses.
+    """Write unified 12-column LaTeX table with stars + SE in parentheses.
 
     Layout:
-        Cols 1-4: CashHoldings (contemporaneous)
-        Cols 5-8: CashHoldings_lead (t+1)
+        Cols 1-6: CashHoldings (contemporaneous) — 4 Year FE + 2 YQ FE
+        Cols 7-12: CashHoldings_lead (t+1) — 4 Year FE + 2 YQ FE
         Rows: 4 key IVs (coeff + SE), controls indicator, FE indicators, N, R²
     """
     # Sort results by column number
@@ -425,7 +455,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 8
+    n_cols = 12
 
     def fmt_coef(val: float, stars: str) -> str:
         if np.isnan(val):
@@ -463,10 +493,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # DV headers with multicolumn
     lines.append(
-        r" & \multicolumn{4}{c}{Cash Holdings$_t$}"
-        r" & \multicolumn{4}{c}{Cash Holdings$_{t+1}$} \\"
+        r" & \multicolumn{6}{c}{Cash Holdings$_t$}"
+        r" & \multicolumn{6}{c}{Cash Holdings$_{t+1}$} \\"
     )
-    lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     # Key IV rows (coefficient + SE for each)
@@ -502,14 +532,20 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     ind_fe_cells = []
     firm_fe_cells = []
     year_fe_cells = []
+    yr_qtr_fe_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
-        ind_fe_cells.append("Yes" if meta.get("fe") == "industry" else "")
-        firm_fe_cells.append("Yes" if meta.get("fe") == "firm" else "")
-        year_fe_cells.append("Yes")
+        fe = meta.get("fe", "")
+        base_fe = fe.replace("_yq", "") if fe else ""
+        is_yq = fe.endswith("_yq") if fe else False
+        ind_fe_cells.append("Yes" if base_fe == "industry" else "")
+        firm_fe_cells.append("Yes" if base_fe == "firm" else "")
+        year_fe_cells.append("Yes" if not is_yq else "")
+        yr_qtr_fe_cells.append("Yes" if is_yq else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
-    lines.append(r"Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
 
     lines.append(r"\midrule")
 
@@ -538,8 +574,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Contemporaneous DV (cols 1--4) is constant within firm-quarter; ",
-        r"results should be interpreted alongside lead DV (cols 5--8). ",
+        r"Contemporaneous DV (cols 1--6) is constant within firm-quarter; ",
+        r"results should be interpreted alongside lead DV (cols 7--12). ",
         r"Variables winsorized at 1\%/99\% by year at engine level. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",

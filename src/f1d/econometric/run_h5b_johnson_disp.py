@@ -13,15 +13,17 @@ DV: JohnsonDISP2 = SD(current-FY analyst forecasts at month-end) / atq
 Lead DV:
     JohnsonDISP2_lead: next fiscal quarter's JohnsonDISP2
 
-8 Model Specifications:
-    Cols 1-4:   DV = JohnsonDISP2 (contemporaneous)
-    Cols 5-8:   DV = JohnsonDISP2_lead (next quarter)
-    Odd cols:   Industry FE (FF12) + Fiscal Year FE
-    Even cols:  Firm FE + Fiscal Year FE
-    Cols 1-2, 5-6:  Base controls
-    Cols 3-4, 7-8:  Extended controls
+12 Model Specifications:
+    Cols 1-4:   DV = JohnsonDISP2 (contemporaneous), Calendar Year FE
+    Cols 5-6:   DV = JohnsonDISP2 (contemporaneous), Year-Quarter FE
+    Cols 7-10:  DV = JohnsonDISP2_lead (next quarter), Calendar Year FE
+    Cols 11-12: DV = JohnsonDISP2_lead (next quarter), Year-Quarter FE
+    Odd cols:   Industry FE (FF12)
+    Even cols:  Firm FE
+    Cols 1-2, 7-8:   Base controls
+    Cols 3-6, 9-12:  Extended controls
 
-Lead specs (cols 5-8) include JohnsonDISP2 as lagged DV control.
+Lead specs (cols 7-12) include JohnsonDISP2 as lagged DV control.
 
 Key IVs (4, simultaneous, call-level):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -31,7 +33,7 @@ Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion).
 
 Sample: Main only (FF12 != 8, 11).
 SEs: Firm-clustered.
-FE time: fyearq_int (fiscal year).
+FE time: fyearq_int (fiscal year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 ================================================================================
 """
 
@@ -51,6 +53,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -66,7 +69,7 @@ KEY_IVS = [
 
 BASE_CONTROLS = [
     "Size", "TobinsQ", "ROA", "BookLev", "CapexAt", "DividendPayer",
-    "OCF_Volatility", "JohnsonDISP2_lag",
+    "OCF_Volatility", "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -77,16 +80,22 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    # Contemporaneous
-    {"col": 1, "dv": "JohnsonDISP2",      "fe": "industry", "controls": "base",     "extra_controls": []},
-    {"col": 2, "dv": "JohnsonDISP2",      "fe": "firm",     "controls": "base",     "extra_controls": []},
-    {"col": 3, "dv": "JohnsonDISP2",      "fe": "industry", "controls": "extended", "extra_controls": []},
-    {"col": 4, "dv": "JohnsonDISP2",      "fe": "firm",     "controls": "extended", "extra_controls": []},
-    # Lead: next quarter
-    {"col": 5, "dv": "JohnsonDISP2_lead", "fe": "industry", "controls": "base",     "extra_controls": ["JohnsonDISP2"]},
-    {"col": 6, "dv": "JohnsonDISP2_lead", "fe": "firm",     "controls": "base",     "extra_controls": ["JohnsonDISP2"]},
-    {"col": 7, "dv": "JohnsonDISP2_lead", "fe": "industry", "controls": "extended", "extra_controls": ["JohnsonDISP2"]},
-    {"col": 8, "dv": "JohnsonDISP2_lead", "fe": "firm",     "controls": "extended", "extra_controls": ["JohnsonDISP2"]},
+    # Contemporaneous — Calendar Year FE
+    {"col": 1,  "dv": "JohnsonDISP2",      "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 2,  "dv": "JohnsonDISP2",      "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 3,  "dv": "JohnsonDISP2",      "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 4,  "dv": "JohnsonDISP2",      "fe": "firm",        "controls": "extended", "extra_controls": []},
+    # Contemporaneous — Year-Quarter FE (Extended controls only)
+    {"col": 5,  "dv": "JohnsonDISP2",      "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 6,  "dv": "JohnsonDISP2",      "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    # Lead: next quarter — Calendar Year FE
+    {"col": 7,  "dv": "JohnsonDISP2_lead", "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 8,  "dv": "JohnsonDISP2_lead", "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 9,  "dv": "JohnsonDISP2_lead", "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 10, "dv": "JohnsonDISP2_lead", "fe": "firm",        "controls": "extended", "extra_controls": []},
+    # Lead: next quarter — Year-Quarter FE (Extended controls only)
+    {"col": 11, "dv": "JohnsonDISP2_lead", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 12, "dv": "JohnsonDISP2_lead", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
 ]
 
 SUMMARY_STATS_VARS = [
@@ -141,13 +150,20 @@ def load_panel(root: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
     all_dvs = list({s["dv"] for s in MODEL_SPECS})
     all_extra = list({c for s in MODEL_SPECS for c in s.get("extra_controls", [])})
     columns = list(set(
-        all_dvs + KEY_IVS + EXTENDED_CONTROLS + all_extra
-        + ["gvkey", "fyearq_int", "ff12_code", "start_date", "file_name"]
+        all_dvs + KEY_IVS + [c for c in EXTENDED_CONTROLS if c != "Lagged_DV"] + all_extra
+        + ["gvkey", "fyearq_int", "ff12_code", "start_date", "file_name",
+           "JohnsonDISP2_lag"]
     ))
 
     panel = pd.read_parquet(panel_file, columns=[c for c in columns if c != "start_date"] + ["start_date"])
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -166,7 +182,17 @@ def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.Dat
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
     extra = spec.get("extra_controls", [])
     all_controls = controls + extra
+    fe_type = spec["fe"]
+
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
     required = [dv] + KEY_IVS + all_controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -219,13 +245,19 @@ def run_regression(
 
     exog = KEY_IVS + all_controls
 
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     t0 = datetime.now()
 
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             model_obj = PanelOLS(
                 dependent=df_panel[dv],
                 exog=df_panel[exog],

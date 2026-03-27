@@ -104,6 +104,7 @@ BASE_CONTROLS = [
     "CashHoldings",
     "CapexAt",
     "OCF_Volatility",
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -224,6 +225,13 @@ def prepare_regression_data(
     """Prepare panel for a specific model specification."""
     dv = spec["dv"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
 
     missing = [c for c in required if c not in panel.columns]

@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build H12Q Quarterly Payout Ratio Panel
+STAGE 3: Build H17 Repurchase Intensity Panel
 ================================================================================
-ID: variables/build_h12q_payout_panel
-Description: Build CALL-LEVEL panel for H12Q Quarterly Payout Ratio hypothesis.
+ID: variables/build_h17_repurchase_intensity_panel
+Description: Build CALL-LEVEL panel for H17 Repurchase Intensity hypothesis.
 
     Unit of observation: individual earnings call (file_name).
-    DV: PayoutRatio_q = (dvpspq × cshoq) / ibq (quarterly, ibq > 0 only).
+    DV: RepurchaseIntensity = quarterly_prstkcy / atq_{t-1}
+        (de-cumulated YTD prstkcy divided by previous quarter's total assets)
     Lead DVs:
-        PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
+        RepurchaseIntensity_lead_qtr: next fiscal quarter's RepurchaseIntensity
+
+    Known limitation: ~77% of firm-quarters have RepurchaseIntensity = 0
+    (many firms do not repurchase every quarter). OLS with continuous DV.
+    prstkcy includes both common AND preferred stock repurchases (standard).
 
 Inputs:
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
@@ -18,10 +23,10 @@ Inputs:
     - Linguistic variables (via shared builders)
 
 Outputs:
-    - outputs/variables/h12q_payout/{timestamp}/h12q_payout_panel.parquet
+    - outputs/variables/h17_repurchase_intensity/{timestamp}/h17_repurchase_intensity_panel.parquet
 
 Author: Thesis Author
-Date: 2026-03-21
+Date: 2026-03-26
 ================================================================================
 """
 
@@ -46,13 +51,14 @@ from f1d.shared.variables import (
     ManagerPresUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
-    PayoutRatioQuarterlyBuilder,
+    RepurchaseIntensityBuilder,
     SizeBuilder,
     BookLevBuilder,
     TobinsQBuilder,
     ROABuilder,
     CashHoldingsBuilder,
     CapexIntensityBuilder,
+    DividendPayerBuilder,
     OCFVolatilityBuilder,
     SalesGrowthBuilder,
     RDIntensityBuilder,
@@ -65,7 +71,7 @@ from f1d.shared.variables import (
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H12Q Quarterly Payout Panel (call-level)",
+        description="Stage 3: Build H17 Repurchase Intensity Panel (call-level)",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--year-start", type=int, default=None)
@@ -97,13 +103,14 @@ def build_call_level_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        "payout_ratio_q": PayoutRatioQuarterlyBuilder({}),
+        "repurchase_intensity": RepurchaseIntensityBuilder({}),
         "size": SizeBuilder({}),
         "book_lev": BookLevBuilder({}),
         "tobins_q": TobinsQBuilder({}),
         "roa": ROABuilder({}),
         "cash_holdings": CashHoldingsBuilder({}),
         "capex_intensity": CapexIntensityBuilder({}),
+        "dividend_payer": DividendPayerBuilder({}),
         "ocf_volatility": OCFVolatilityBuilder({}),
         "sales_growth": SalesGrowthBuilder({}),
         "rd_intensity": RDIntensityBuilder({}),
@@ -157,18 +164,19 @@ def build_call_level_panel(
 
 
 def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None) -> pd.DataFrame:
-    """Create lead DV at call level.
+    """Create lead and lag DVs at call level.
 
-    1. PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
+    1. RepurchaseIntensity_lead_qtr: next fiscal quarter's RepurchaseIntensity
+    2. RepurchaseIntensity_lag: previous fiscal quarter's RepurchaseIntensity
 
     Uses fiscal quarter from Compustat (fqtr) and fiscal year (fyearq).
     """
     print("\n" + "=" * 60)
-    print("Creating lead variables for PayoutRatio_q")
+    print("Creating lead/lag variables for RepurchaseIntensity")
     print("=" * 60)
 
-    if "PayoutRatio_q" not in panel.columns:
-        raise ValueError("'PayoutRatio_q' column missing.")
+    if "RepurchaseIntensity" not in panel.columns:
+        raise ValueError("'RepurchaseIntensity' column missing.")
 
     # Attach fyearq if not present
     if root_path is not None and "fyearq" not in panel.columns:
@@ -177,8 +185,7 @@ def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None)
     panel["fyearq_int"] = pd.to_numeric(panel["fyearq"], errors="coerce")
 
     # We need fqtr (fiscal quarter) to construct quarterly leads.
-    # fqtr comes from the Compustat engine via merge_asof.
-    # It should be attached by attach_fyearq or by the CompustatEngine.
+    # fqtr comes from the RepurchaseIntensityBuilder (via CompustatEngine).
     if "fqtr" not in panel.columns:
         # Get fqtr from CompustatEngine via merge_asof (per-group to avoid sort issues)
         from f1d.shared.variables._compustat_engine import get_engine
@@ -233,10 +240,10 @@ def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None)
     valid_mask = panel_dt["fiscal_qtr_id"].notna()
     panel_valid = panel_dt[valid_mask].copy()
 
-    # For each (gvkey, fiscal_qtr_id), take PayoutRatio_q from the call with latest start_date
+    # For each (gvkey, fiscal_qtr_id), take RepurchaseIntensity from the call with latest start_date
     latest_idx = panel_valid.groupby(["gvkey", "fiscal_qtr_id"])["start_date_dt"].idxmax()
     firm_qtr = panel_valid.loc[
-        latest_idx, ["gvkey", "fiscal_qtr_id", "fyearq_int", "fqtr_int", "PayoutRatio_q"]
+        latest_idx, ["gvkey", "fiscal_qtr_id", "fyearq_int", "fqtr_int", "RepurchaseIntensity"]
     ].copy()
     firm_qtr = firm_qtr.sort_values(["gvkey", "fiscal_qtr_id"]).reset_index(drop=True)
 
@@ -244,39 +251,38 @@ def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None)
 
     # --- Lead 1: Next fiscal quarter ---
     firm_qtr["fiscal_qtr_id_next"] = firm_qtr.groupby("gvkey")["fiscal_qtr_id"].shift(-1)
-    firm_qtr["PayoutRatio_q_lead_qtr_raw"] = firm_qtr.groupby("gvkey")["PayoutRatio_q"].shift(-1)
+    firm_qtr["RepurchaseIntensity_lead_qtr_raw"] = firm_qtr.groupby("gvkey")["RepurchaseIntensity"].shift(-1)
 
     # Check consecutive: next quarter should be current + 1 within year,
     # or Q1 of next year if current is Q4
     curr_fq = firm_qtr["fiscal_qtr_id"]
     next_fq = firm_qtr["fiscal_qtr_id_next"]
-    # Expected next: if fqtr < 4, same year + 1 quarter; if fqtr == 4, next year Q1
     expected_next = np.where(
         firm_qtr["fqtr_int"] < 4,
         curr_fq + 1,           # e.g., 20102 -> 20103
         (firm_qtr["fyearq_int"] + 1) * 10 + 1,  # e.g., 20104 -> 20111
     )
     consecutive_qtr = next_fq == expected_next
-    firm_qtr["PayoutRatio_q_lead_qtr"] = np.where(
-        consecutive_qtr, firm_qtr["PayoutRatio_q_lead_qtr_raw"], np.nan
+    firm_qtr["RepurchaseIntensity_lead_qtr"] = np.where(
+        consecutive_qtr, firm_qtr["RepurchaseIntensity_lead_qtr_raw"], np.nan
     )
 
-    n_valid_lead_qtr = firm_qtr["PayoutRatio_q_lead_qtr"].notna().sum()
+    n_valid_lead_qtr = firm_qtr["RepurchaseIntensity_lead_qtr"].notna().sum()
     print(f"  Firm-quarters with valid next-quarter lead: {n_valid_lead_qtr:,}")
 
     # --- Merge leads back to call level ---
-    lead_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "PayoutRatio_q_lead_qtr"]].copy()
+    lead_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "RepurchaseIntensity_lead_qtr"]].copy()
 
     before_len = len(panel)
     panel = panel.merge(lead_lookup, on=["gvkey", "fiscal_qtr_id"], how="left")
     if len(panel) != before_len:
         raise ValueError(f"Lead merge changed row count {before_len} -> {len(panel)}.")
 
-    print(f"  Calls with next-quarter lead: {panel['PayoutRatio_q_lead_qtr'].notna().sum():,}")
+    print(f"  Calls with next-quarter lead: {panel['RepurchaseIntensity_lead_qtr'].notna().sum():,}")
 
     # --- Lag: Previous fiscal quarter ---
     firm_qtr["fiscal_qtr_id_prev"] = firm_qtr.groupby("gvkey")["fiscal_qtr_id"].shift(1)
-    firm_qtr["PayoutRatio_q_lag_raw"] = firm_qtr.groupby("gvkey")["PayoutRatio_q"].shift(1)
+    firm_qtr["RepurchaseIntensity_lag_raw"] = firm_qtr.groupby("gvkey")["RepurchaseIntensity"].shift(1)
 
     # Check consecutive: prev quarter should be current - 1 within year,
     # or Q4 of prev year if current is Q1
@@ -287,18 +293,18 @@ def create_lead_variables(panel: pd.DataFrame, root_path: Optional[Path] = None)
         (firm_qtr["fyearq_int"] - 1) * 10 + 4,
     )
     consecutive_prev = prev_fq == expected_prev
-    firm_qtr["PayoutRatio_q_lag"] = np.where(
-        consecutive_prev, firm_qtr["PayoutRatio_q_lag_raw"], np.nan
+    firm_qtr["RepurchaseIntensity_lag"] = np.where(
+        consecutive_prev, firm_qtr["RepurchaseIntensity_lag_raw"], np.nan
     )
-    n_valid_lag = firm_qtr["PayoutRatio_q_lag"].notna().sum()
+    n_valid_lag = firm_qtr["RepurchaseIntensity_lag"].notna().sum()
     print(f"  Firm-quarters with valid prev-quarter lag: {n_valid_lag:,}")
 
-    lag_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "PayoutRatio_q_lag"]].copy()
+    lag_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "RepurchaseIntensity_lag"]].copy()
     before_len2 = len(panel)
     panel = panel.merge(lag_lookup, on=["gvkey", "fiscal_qtr_id"], how="left")
     if len(panel) != before_len2:
         raise ValueError(f"Lag merge changed row count {before_len2} -> {len(panel)}.")
-    print(f"  Calls with prev-quarter lag: {panel['PayoutRatio_q_lag'].notna().sum():,}")
+    print(f"  Calls with prev-quarter lag: {panel['RepurchaseIntensity_lag'].notna().sum():,}")
 
     # Create calendar year-quarter identifier for FE
     panel["start_date_dt"] = pd.to_datetime(panel["start_date"], errors="coerce")
@@ -316,17 +322,17 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_h12q_payout_panel",
+        "step_id": "build_h17_repurchase_intensity_panel",
         "timestamp": timestamp,
         "variable_stats": [],
     }
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "h12q_payout" / timestamp
+    out_dir = root / "outputs" / "variables" / "h17_repurchase_intensity" / timestamp
 
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H12Q_Payout",
+        suite_name="H17_RepurchaseIntensity",
         timestamp=timestamp,
     )
 
@@ -340,7 +346,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H12Q Quarterly Payout Panel (call-level)")
+    print("STAGE 3: Build H17 Repurchase Intensity Panel (call-level)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -355,24 +361,24 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Assign sample
     panel["sample"] = assign_industry_sample(panel["ff12_code"])
 
-    # Report negative earnings filter
-    n_neg_earnings = (panel["PayoutRatio_q"].isna()).sum()
-    n_with_dv = panel["PayoutRatio_q"].notna().sum()
-    print(f"\n  PayoutRatio_q non-null (ibq > 0): {n_with_dv:,}")
-    print(f"  PayoutRatio_q NaN (includes ibq <= 0): {n_neg_earnings:,}")
+    # Report DV coverage
+    n_with_dv = panel["RepurchaseIntensity"].notna().sum()
+    n_missing = panel["RepurchaseIntensity"].isna().sum()
+    print(f"\n  RepurchaseIntensity non-null: {n_with_dv:,}")
+    print(f"  RepurchaseIntensity NaN: {n_missing:,}")
 
     # Report zero mass point
     if n_with_dv > 0:
-        n_zeros = (panel["PayoutRatio_q"] == 0).sum()
-        print(f"  PayoutRatio_q == 0 (no dividend this quarter): {n_zeros:,} "
+        n_zeros = (panel["RepurchaseIntensity"] == 0).sum()
+        print(f"  RepurchaseIntensity == 0 (no repurchase this quarter): {n_zeros:,} "
               f"({100 * n_zeros / n_with_dv:.1f}% of non-null)")
 
     # Save
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    panel_path = out_dir / "h12q_payout_panel.parquet"
+    panel_path = out_dir / "h17_repurchase_intensity_panel.parquet"
     panel.to_parquet(panel_path, index=False)
-    print(f"\n  Saved: h12q_payout_panel.parquet ({len(panel):,} rows, {len(panel.columns)} cols)")
+    print(f"\n  Saved: h17_repurchase_intensity_panel.parquet ({len(panel):,} rows, {len(panel.columns)} cols)")
 
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
     stats_path = out_dir / "summary_stats.csv"

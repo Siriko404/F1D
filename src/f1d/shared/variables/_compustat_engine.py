@@ -141,6 +141,8 @@ COMPUSTAT_COLS = [
     "fqtr",     # Fiscal quarter (1-4) — needed for quarter-lead logic in panel builders
     # H16 extension (R&D Investment Intensity — Jiang, John, Larsen 2021)
     "RDSales",  # xrdy / saley (annual Q4-only; missing xrd→0; nonpositive sales→NaN)
+    # H17 extension (Repurchase Intensity — quarterly prstkcy / lagged atq)
+    "RepurchaseIntensity",  # de-cumulated prstkcy / atq_{t-1}
 ]
 
 REQUIRED_COMPUSTAT_COLS = [
@@ -182,6 +184,8 @@ REQUIRED_COMPUSTAT_COLS = [
     "intanq",  # Intangible Assets - Total (quarterly, for Intangibility ratio)
     # H15 extension (Share Repurchase)
     "cshopq",  # Total Shares Repurchased - Quarter (quarterly, NOT YTD cumulative)
+    # H17 extension (Repurchase Intensity)
+    "prstkcy",  # Purchase of Common and Preferred Stock, YTD cumulative ($M)
 ]
 
 
@@ -1174,6 +1178,55 @@ def _compute_and_winsorize(
         np.where(comp["cshopq"].notna(), 0.0, np.nan),
     )
 
+    # --- H17 extension: RepurchaseIntensity = quarterly_prstkcy / lagged_atq ---
+    # prstkcy is YTD cumulative within fiscal year. De-cumulate to quarterly flow.
+    # Q1: quarterly = prstkcy (first quarter, nothing to subtract)
+    # Q2-Q4: quarterly = prstkcy - prev_quarter_prstkcy (within same gvkey+fyearq)
+    comp_sorted = comp.sort_values(["gvkey", "datadate"])
+    comp["_prstkcy_prev"] = comp_sorted.groupby("gvkey")["prstkcy"].shift(1)
+    comp["_prev_fyearq"] = comp_sorted.groupby("gvkey")["fyearq"].shift(1)
+
+    is_q1 = comp["fqtr"] == 1
+    same_fy = comp["fyearq"] == comp["_prev_fyearq"]
+
+    comp["_quarterly_repurchases"] = np.where(
+        is_q1,
+        comp["prstkcy"].fillna(0),
+        np.where(
+            same_fy & comp["prstkcy"].notna() & comp["_prstkcy_prev"].notna(),
+            comp["prstkcy"] - comp["_prstkcy_prev"],
+            np.nan,
+        ),
+    )
+    # Clamp negatives to 0 (arise from restatements / data corrections)
+    comp["_quarterly_repurchases"] = comp["_quarterly_repurchases"].clip(lower=0)
+
+    # Lagged atq: previous quarter's total assets (one row shift within gvkey)
+    comp["_atq_prev_q"] = comp_sorted.groupby("gvkey")["atq"].shift(1)
+    comp["_datadate_prev"] = comp_sorted.groupby("gvkey")["datadate"].shift(1)
+    comp["_date_gap"] = (comp["datadate"] - comp["_datadate_prev"]).dt.days
+    # Invalidate lag if gap > 150 days (not a consecutive quarter)
+    comp["_atq_prev_q"] = np.where(
+        comp["_date_gap"].notna() & (comp["_date_gap"] > 0) & (comp["_date_gap"] <= 150),
+        comp["_atq_prev_q"],
+        np.nan,
+    )
+
+    comp["RepurchaseIntensity"] = np.where(
+        comp["_atq_prev_q"].notna()
+        & (comp["_atq_prev_q"] > 0)
+        & comp["_quarterly_repurchases"].notna(),
+        comp["_quarterly_repurchases"] / comp["_atq_prev_q"],
+        np.nan,
+    )
+
+    comp = comp.drop(
+        columns=[
+            "_prstkcy_prev", "_prev_fyearq", "_quarterly_repurchases",
+            "_atq_prev_q", "_datadate_prev", "_date_gap",
+        ]
+    )
+
     # --- MINOR-9: Replace inf with NaN after ratio computations ---
     ratio_cols = [
         "BM",
@@ -1195,6 +1248,7 @@ def _compute_and_winsorize(
         "Intangibility",
         "AssetGrowth",
         "RDSales",
+        "RepurchaseIntensity",
     ]
     for col in ratio_cols:
         comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)

@@ -1,50 +1,50 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H12Q Quarterly Payout Ratio Hypothesis
+STAGE 4: Test H17 Repurchase Intensity Hypothesis
 ================================================================================
-ID: econometric/run_h12q_payout
-Description: Run H12Q hypothesis test — quarterly PayoutRatio at call level.
+ID: econometric/run_h17_repurchase_intensity
+Description: Run H17 hypothesis test — quarterly RepurchaseIntensity at call level.
 
-DV: PayoutRatio_q = (dvpspq × cshoq) / ibq
-    Quarterly payout ratio. NaN when ibq <= 0 (explicit negative earnings filter).
+DV: RepurchaseIntensity = quarterly_prstkcy / atq_{t-1}
+    De-cumulated YTD prstkcy (Purchase of Common & Preferred Stock) divided by
+    previous quarter's total assets. NaN when atq_{t-1} <= 0 or missing.
 
 Lead DVs:
-    PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
+    RepurchaseIntensity_lead_qtr: next fiscal quarter's RepurchaseIntensity
 
 12 Model Specifications:
-    Cols 1-4:   DV = PayoutRatio_q (contemporaneous), Calendar Year FE
-    Cols 5-6:   DV = PayoutRatio_q (contemporaneous), Year-Quarter FE
-    Cols 7-10:  DV = PayoutRatio_q_lead_qtr (next quarter), Calendar Year FE
-    Cols 11-12: DV = PayoutRatio_q_lead_qtr (next quarter), Year-Quarter FE
+    Cols 1-4:   DV = RepurchaseIntensity (contemporaneous), Calendar Year FE
+    Cols 5-6:   DV = RepurchaseIntensity (contemporaneous), Year-Quarter FE
+    Cols 7-10:  DV = RepurchaseIntensity_lead_qtr (next quarter), Calendar Year FE
+    Cols 11-12: DV = RepurchaseIntensity_lead_qtr (next quarter), Year-Quarter FE
     Odd cols:   Industry FE (FF12)
     Even cols:  Firm FE
     Cols 1-2, 7-8:   Base controls
     Cols 3-6, 9-12:  Extended controls
 
-Lead specs (cols 7-12) include PayoutRatio_q as lagged DV control.
-
 Key IVs (4, simultaneous, call-level):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
 
-Hypothesis: One-tailed (β < 0 — higher uncertainty → lower payout).
+Hypothesis: Two-tailed.
 
-Sample: Main only (FF12 ≠ 8, 11).
+Known limitation: ~77% of firm-quarters have RepurchaseIntensity = 0
+(many firms do not repurchase every quarter). OLS with continuous DV.
+prstkcy includes both common AND preferred stock repurchases (standard in literature).
+
+Sample: Main only (FF12 != 8, 11).
 SEs: Firm-clustered.
-FE time: Fiscal year (fyearq_int); cal_yr_qtr (calendar year-quarter) for YQ specs.
-
-Known limitation: ~57% of firm-quarters with ibq > 0 have PayoutRatio_q = 0
-(dividend lumpiness). OLS with continuous DV; documented as limitation.
+FE time: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 
 Inputs:
-    - outputs/variables/h12q_payout/latest/h12q_payout_panel.parquet
+    - outputs/variables/h17_repurchase_intensity/latest/h17_repurchase_intensity_panel.parquet
 
 Outputs:
-    - outputs/econometric/h12q_payout/{timestamp}/...
+    - outputs/econometric/h17_repurchase_intensity/{timestamp}/...
 
 Author: Thesis Author
-Date: 2026-03-21
+Date: 2026-03-26
 ================================================================================
 """
 
@@ -79,8 +79,8 @@ KEY_IVS = [
 ]
 
 BASE_CONTROLS = [
-    "Size", "TobinsQ", "ROA", "BookLev", "CashHoldings",
-    "CapexAt", "OCF_Volatility",
+    "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
+    "CashHoldings", "DividendPayer", "OCF_Volatility",
     "Lagged_DV",
 ]
 
@@ -92,21 +92,21 @@ MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
     # Contemporaneous — Calendar Year FE
-    {"col": 1,  "dv": "PayoutRatio_q",          "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 2,  "dv": "PayoutRatio_q",          "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 3,  "dv": "PayoutRatio_q",          "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 4,  "dv": "PayoutRatio_q",          "fe": "firm",        "controls": "extended", "extra_controls": []},
+    {"col": 1,  "dv": "RepurchaseIntensity",          "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 2,  "dv": "RepurchaseIntensity",          "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 3,  "dv": "RepurchaseIntensity",          "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 4,  "dv": "RepurchaseIntensity",          "fe": "firm",        "controls": "extended", "extra_controls": []},
     # Contemporaneous — Year-Quarter FE (Extended controls only)
-    {"col": 5,  "dv": "PayoutRatio_q",          "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 6,  "dv": "PayoutRatio_q",          "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    {"col": 5,  "dv": "RepurchaseIntensity",          "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 6,  "dv": "RepurchaseIntensity",          "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
     # Lead: next quarter — Calendar Year FE
-    {"col": 7,  "dv": "PayoutRatio_q_lead_qtr", "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 8,  "dv": "PayoutRatio_q_lead_qtr", "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 9,  "dv": "PayoutRatio_q_lead_qtr", "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 10, "dv": "PayoutRatio_q_lead_qtr", "fe": "firm",        "controls": "extended", "extra_controls": []},
+    {"col": 7,  "dv": "RepurchaseIntensity_lead_qtr", "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 8,  "dv": "RepurchaseIntensity_lead_qtr", "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 9,  "dv": "RepurchaseIntensity_lead_qtr", "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 10, "dv": "RepurchaseIntensity_lead_qtr", "fe": "firm",        "controls": "extended", "extra_controls": []},
     # Lead: next quarter — Year-Quarter FE (Extended controls only)
-    {"col": 11, "dv": "PayoutRatio_q_lead_qtr", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 12, "dv": "PayoutRatio_q_lead_qtr", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    {"col": 11, "dv": "RepurchaseIntensity_lead_qtr", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 12, "dv": "RepurchaseIntensity_lead_qtr", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
 ]
 
 VARIABLE_LABELS = {
@@ -117,8 +117,8 @@ VARIABLE_LABELS = {
 }
 
 SUMMARY_STATS_VARS = [
-    {"col": "PayoutRatio_q", "label": "PayoutRatio$_q$ (quarterly)"},
-    {"col": "PayoutRatio_q_lead_qtr", "label": "PayoutRatio$_q$ (next quarter)"},
+    {"col": "RepurchaseIntensity", "label": "RepurchaseIntensity (quarterly)"},
+    {"col": "RepurchaseIntensity_lead_qtr", "label": "RepurchaseIntensity (next quarter)"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
@@ -129,9 +129,10 @@ SUMMARY_STATS_VARS = [
     {"col": "BookLev", "label": "Leverage"},
     {"col": "CashHoldings", "label": "Cash Holdings"},
     {"col": "CapexAt", "label": "CapEx / Assets"},
+    {"col": "DividendPayer", "label": "Dividend Payer"},
     {"col": "OCF_Volatility", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
+    {"col": "RD_Intensity", "label": r"R\&D Intensity"},
     {"col": "CashFlow", "label": "Cash Flow"},
     {"col": "Volatility", "label": "Stock Volatility"},
 ]
@@ -144,7 +145,7 @@ SUMMARY_STATS_VARS = [
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: H12Q Quarterly Payout Ratio (call-level)",
+        description="Stage 4: H17 Repurchase Intensity (call-level)",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
@@ -157,19 +158,19 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.DataFrame, Path]:
-    """Load call-level H12Q panel."""
+    """Load call-level H17 panel."""
     print("\n" + "=" * 60)
-    print("Loading H12Q panel")
+    print("Loading H17 panel")
     print("=" * 60)
 
     if panel_path:
         panel_file = Path(panel_path)
     else:
         panel_dir = get_latest_output_dir(
-            root_path / "outputs" / "variables" / "h12q_payout",
-            required_file="h12q_payout_panel.parquet",
+            root_path / "outputs" / "variables" / "h17_repurchase_intensity",
+            required_file="h17_repurchase_intensity_panel.parquet",
         )
-        panel_file = panel_dir / "h12q_payout_panel.parquet"
+        panel_file = panel_dir / "h17_repurchase_intensity_panel.parquet"
 
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
@@ -222,7 +223,7 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Drop NaN in DV (includes ibq <= 0 cases)
+    # Drop NaN in DV
     before = len(df)
     df = df[df[dv].notna()].copy()
     print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
@@ -305,7 +306,7 @@ def run_regression(
     elapsed = (datetime.now() - t0).total_seconds()
     print(f"  [OK] {elapsed:.1f}s | R2w={model.rsquared_within:.4f}")
 
-    # Build metadata with per-IV one-tailed p-values (H12: β < 0)
+    # Build metadata with two-tailed p-values
     meta: Dict[str, Any] = {
         "col": col_num,
         "dv": dv,
@@ -322,18 +323,12 @@ def run_regression(
         se = float(model.std_errors.get(iv, np.nan))
         p_two = float(model.pvalues.get(iv, np.nan))
 
-        # One-tailed: H12 expects β < 0
-        if not np.isnan(p_two) and not np.isnan(beta):
-            p_one = p_two / 2 if beta < 0 else 1 - p_two / 2
-        else:
-            p_one = np.nan
-
         meta[f"{iv}_beta"] = beta
         meta[f"{iv}_se"] = se
-        meta[f"{iv}_p_one"] = p_one
+        meta[f"{iv}_p_one"] = p_two  # two-tailed
 
-        stars = _sig_stars(p_one)
-        print(f"  {VARIABLE_LABELS.get(iv, iv)}: b={beta:.4f} p1={p_one:.4f} {stars}")
+        stars = _sig_stars(p_two)
+        print(f"  {VARIABLE_LABELS.get(iv, iv)}: b={beta:.4f} p2={p_two:.4f} {stars}")
 
     return model, meta
 
@@ -382,8 +377,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Speech Uncertainty and Quarterly Payout Ratio}",
-        r"\label{tab:h12q_payout}",
+        r"\caption{Speech Uncertainty and Repurchase Intensity}",
+        r"\label{tab:h17_repurchase_intensity}",
         r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}",
         r"\toprule",
@@ -395,8 +390,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # DV headers with multicolumn
     lines.append(
-        r" & \multicolumn{6}{c}{PayoutRatio$_q$}"
-        r" & \multicolumn{6}{c}{PayoutRatio$_q$ (next quarter)} \\"
+        r" & \multicolumn{6}{c}{RepurchaseIntensity}"
+        r" & \multicolumn{6}{c}{RepurchaseIntensity (next quarter)} \\"
     )
     lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
@@ -428,7 +423,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
     lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
 
-    # Lagged DV indicator (always Yes — Lagged_DV is in BASE_CONTROLS)
+    # Lagged DV indicator
     lines.append(r"Lagged DV & " + " & ".join(["Yes"] * n_cols) + r" \\")
 
     # FE indicators
@@ -447,7 +442,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         yr_qtr_fe_cells.append("Yes" if is_yq else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
-    lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Year FE & " + " & ".join(year_fe_cells) + r" \\")
     lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
 
     lines.append(r"\midrule")
@@ -473,19 +468,19 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\begin{minipage}{\linewidth}",
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; $\beta < 0$). ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed). ",
         r"Standard errors (in parentheses) clustered at firm level. ",
-        r"PayoutRatio$_q$ = (dvpspq $\times$ cshoq) / ibq; NaN when ibq $\leq$ 0. ",
+        r"RepurchaseIntensity = quarterly prstkcy / lagged atq (de-cumulated YTD to quarterly flow). ",
         r"Main sample (excludes financial and utility firms). ",
-        r"~57\% of firm-quarters with positive earnings have PayoutRatio$_q$ = 0 (dividend lumpiness). ",
-        r"Lead specs (cols 7--12) include PayoutRatio$_q$ as lagged DV control. ",
+        r"~77\% of firm-quarters have RepurchaseIntensity = 0. ",
+        r"prstkcy includes common and preferred stock repurchases. ",
         r"Year-quarter FE absorbs calendar year $\times$ quarter effects. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
         r"\end{table}",
     ]
 
-    tex_path = out_dir / "h12q_payout_table.tex"
+    tex_path = out_dir / "h17_repurchase_intensity_table.tex"
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"  Saved: {tex_path.name}")
@@ -507,10 +502,10 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
         col_num = meta["col"]
         fname = f"regression_results_col{col_num}.txt"
         with open(out_dir / fname, "w", encoding="utf-8") as f:
-            f.write(f"H12Q Quarterly Payout Ratio Regression\n")
+            f.write(f"H17 Repurchase Intensity Regression\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
-            f.write(f"FE: {meta['fe']} + Year-Quarter\n")
+            f.write(f"FE: {meta['fe']}\n")
             f.write(f"Controls: {meta['controls']}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
             f.write("=" * 60 + "\n\n")
@@ -539,21 +534,21 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h12q_payout" / timestamp
+    out_dir = root / "outputs" / "econometric" / "h17_repurchase_intensity" / timestamp
 
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H12Q_Payout",
+        suite_name="H17_RepurchaseIntensity",
         timestamp=timestamp,
     )
 
     print("=" * 80)
-    print("STAGE 4: H12Q Quarterly Payout Ratio")
+    print("STAGE 4: H17 Repurchase Intensity")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    4 IVs × 2 DVs × 3 FE × 2 controls = 12 models")
-    print(f"FE time:   fyearq_int (fiscal year) + cal_yr_qtr (calendar year-quarter)")
+    print(f"Design:    4 IVs x 2 DVs x 3 FE x 2 controls = 12 models")
+    print(f"FE time:   cal_yr (calendar year) + cal_yr_qtr (calendar year-quarter)")
 
     panel, panel_file = load_panel(root, panel_path)
 
@@ -561,15 +556,15 @@ def main(panel_path: Optional[str] = None) -> int:
     panel = filter_main_sample(panel)
     main_n = len(panel)
 
-    # Report negative earnings filter
-    n_dv_valid = panel["PayoutRatio_q"].notna().sum()
-    n_dv_zero = (panel["PayoutRatio_q"] == 0).sum()
+    # Report DV coverage
+    n_dv_valid = panel["RepurchaseIntensity"].notna().sum()
+    n_dv_zero = (panel["RepurchaseIntensity"] == 0).sum()
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
-    print(f"  PayoutRatio_q non-null (ibq > 0): {n_dv_valid:,}")
+    print(f"  RepurchaseIntensity non-null: {n_dv_valid:,}")
     if n_dv_valid > 0:
-        print(f"  PayoutRatio_q == 0 (no div this quarter): {n_dv_zero:,} "
+        print(f"  RepurchaseIntensity == 0 (no repurchase): {n_dv_zero:,} "
               f"({100 * n_dv_zero / n_dv_valid:.1f}%)")
-    print(f"  PayoutRatio_q_lead_qtr non-null: {panel['PayoutRatio_q_lead_qtr'].notna().sum():,}")
+    print(f"  RepurchaseIntensity_lead_qtr non-null: {panel['RepurchaseIntensity_lead_qtr'].notna().sum():,}")
 
     # Summary stats
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -577,8 +572,8 @@ def main(panel_path: Optional[str] = None) -> int:
         df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics --- H12Q Quarterly Payout Ratio (Main Sample)",
-        label="tab:summary_stats_h12q",
+        caption="Summary Statistics --- H17 Repurchase Intensity (Main Sample)",
+        label="tab:summary_stats_h17",
     )
     print("  Saved: summary_stats.csv/.tex")
 
@@ -610,10 +605,10 @@ def main(panel_path: Optional[str] = None) -> int:
         attrition_stages = [
             ("Full panel", full_n),
             ("Main sample (excl Finance/Utility)", main_n),
-            ("PayoutRatio_q non-null (ibq > 0)", n_dv_valid),
+            ("RepurchaseIntensity non-null", n_dv_valid),
             ("After complete-case + min-calls (col 1)", first["n_obs"]),
         ]
-        generate_attrition_table(attrition_stages, out_dir, "H12Q Quarterly Payout Ratio")
+        generate_attrition_table(attrition_stages, out_dir, "H17 Repurchase Intensity")
         print("  Saved: sample_attrition.csv/.tex")
 
     # Manifest
@@ -637,9 +632,8 @@ def main(panel_path: Optional[str] = None) -> int:
         sig_count = sum(
             1 for r in all_results
             if r["meta"].get(f"{iv}_p_one", 1.0) < 0.05
-            and r["meta"].get(f"{iv}_beta", 0) < 0
         )
-        print(f"  {VARIABLE_LABELS.get(iv, iv)}: {sig_count}/{len(all_results)} significant (p<0.05, one-tail)")
+        print(f"  {VARIABLE_LABELS.get(iv, iv)}: {sig_count}/{len(all_results)} significant (p<0.05, two-tail)")
 
     return 0
 

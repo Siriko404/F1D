@@ -19,10 +19,14 @@ Parent suite: H13 (Capital Expenditure)
     Manager_QA_Uncertainty_pct significant in all 4 Industry+FY specs (p<0.005).
     Moderation memo: TSIMM = primary (strong), HHI = robustness (secondary).
 
-4 Models:
-    Cols 1-2: Moderator = z(log(TNIC3TSIMM)) — PRIMARY
-    Cols 3-4: Moderator = z(log(TNIC3HHI)) — ROBUSTNESS
-    Within each: CapexAt, CapexAt_lead
+8 Models:
+    Cols 1-4: Calendar Year FE (Industry + FY)
+        1-2: Moderator = z(log(TNIC3TSIMM)) — PRIMARY
+        3-4: Moderator = z(log(TNIC3HHI)) — ROBUSTNESS
+    Cols 5-8: Year-Quarter FE (Industry + YQ)
+        5-6: Moderator = z(log(TNIC3TSIMM)) — PRIMARY
+        7-8: Moderator = z(log(TNIC3HHI)) — ROBUSTNESS
+    Within each pair: CapexAt, CapexAt_lead
 
 Expected interaction signs (tentative):
     TSIMM: positive (product similarity intensifies strategic investment response)
@@ -69,6 +73,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -82,6 +87,7 @@ CONTROLS = [
     "Size", "TobinsQ", "ROA", "BookLev", "CashHoldings",
     "DividendPayer", "OCF_Volatility",
     "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "Lagged_DV",  # Unified lagged DV
 ]
 
 MODERATORS = {
@@ -108,10 +114,16 @@ MODERATORS = {
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CapexAt",      "mod": "tsimm", "extra_controls": []},
-    {"col": 2, "dv": "CapexAt_lead", "mod": "tsimm", "extra_controls": ["CapexAt"]},
-    {"col": 3, "dv": "CapexAt",      "mod": "hhi",   "extra_controls": []},
-    {"col": 4, "dv": "CapexAt_lead", "mod": "hhi",   "extra_controls": ["CapexAt"]},
+    # Calendar Year FE
+    {"col": 1, "dv": "CapexAt",      "mod": "tsimm", "fe": "industry",    "extra_controls": []},
+    {"col": 2, "dv": "CapexAt_lead", "mod": "tsimm", "fe": "industry",    "extra_controls": []},
+    {"col": 3, "dv": "CapexAt",      "mod": "hhi",   "fe": "industry",    "extra_controls": []},
+    {"col": 4, "dv": "CapexAt_lead", "mod": "hhi",   "fe": "industry",    "extra_controls": []},
+    # Year-Quarter FE
+    {"col": 5, "dv": "CapexAt",      "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
+    {"col": 6, "dv": "CapexAt_lead", "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
+    {"col": 7, "dv": "CapexAt",      "mod": "hhi",   "fe": "industry_yq", "extra_controls": []},
+    {"col": 8, "dv": "CapexAt_lead", "mod": "hhi",   "fe": "industry_yq", "extra_controls": []},
 ]
 
 DV_TEX = {
@@ -181,14 +193,21 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "CapexAt", "CapexAt_lead",
+        "start_date",  # needed for cal_yr_qtr
+        "CapexAt", "CapexAt_lead", "CapexAt_lag",
         IV,
-        *CONTROLS,
+        *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yq = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yq:,} / {len(panel):,} ({100 * n_yq / len(panel):.1f}%)")
+
     return panel, panel_file
 
 
@@ -303,10 +322,18 @@ def prepare_regression_data(
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
     z_col = mod_info["z"]
     int_col = mod_info["interaction"]
 
-    required = [dv, IV, IV_CENTERED, z_col] + all_controls + ["gvkey", "fyearq_int", "ff12_code"]
+    fe_type = spec.get("fe", "industry")
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    required = [dv, IV, IV_CENTERED, z_col] + all_controls + ["gvkey", "fyearq_int", "ff12_code", time_col]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -345,7 +372,7 @@ def prepare_regression_data(
 def run_regression(
     df_prepared: pd.DataFrame, spec: Dict[str, Any]
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run PanelOLS with Industry+FY FE and firm-clustered SEs."""
+    """Run PanelOLS with Industry FE and firm-clustered SEs (Calendar Year or Year-Quarter)."""
     dv = spec["dv"]
     col_num = spec["col"]
     mod_key = spec["mod"]
@@ -356,8 +383,12 @@ def run_regression(
     z_col = mod_info["z"]
     int_col = mod_info["interaction"]
 
+    fe_type = spec.get("fe", "industry")
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    fe_label = "Industry+YQ" if fe_type.endswith("_yq") else "Industry+FY"
+
     print(f"\n{'=' * 60}")
-    print(f"Col ({col_num}) | DV={dv} | Mod={mod_info['label']} | FE=Industry+FY")
+    print(f"Col ({col_num}) | DV={dv} | Mod={mod_info['label']} | FE={fe_label}")
     print(f"{'=' * 60}")
 
     if len(df_prepared) < 100:
@@ -373,7 +404,7 @@ def run_regression(
         print(f"  Extra controls: {extra_controls}")
     t0 = datetime.now()
 
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
         model_obj = PanelOLS(
@@ -405,14 +436,10 @@ def run_regression(
     se_int = float(model.std_errors.get(int_col, np.nan))
     p_two_int = float(model.pvalues.get(int_col, np.nan))
 
-    # Extract lagged DV control if present
-    beta_lag_dv = np.nan
-    se_lag_dv = np.nan
-    p_two_lag_dv = np.nan
-    if "CapexAt" in extra_controls:
-        beta_lag_dv = float(model.params.get("CapexAt", np.nan))
-        se_lag_dv = float(model.std_errors.get("CapexAt", np.nan))
-        p_two_lag_dv = float(model.pvalues.get("CapexAt", np.nan))
+    # Extract lagged DV control
+    beta_lag_dv = float(model.params.get("Lagged_DV", np.nan))
+    se_lag_dv = float(model.std_errors.get("Lagged_DV", np.nan))
+    p_two_lag_dv = float(model.pvalues.get("Lagged_DV", np.nan))
 
     stars_iv = _sig_stars(p_two_iv)
     stars_int = _sig_stars(p_two_int)
@@ -422,13 +449,13 @@ def run_regression(
     print(f"  {z_col}: b={beta_mod:.4f} p2={p_two_mod:.4f}")
     print(f"  INTERACTION: b={beta_int:.4f} p2={p_two_int:.4f} {stars_int}")
     if not np.isnan(beta_lag_dv):
-        print(f"  CapexAt_t (control): b={beta_lag_dv:.4f}")
+        print(f"  Lagged_DV (control): b={beta_lag_dv:.4f}")
 
     meta = {
         "col": col_num,
         "dv": dv,
         "moderator": mod_key,
-        "fe": "industry",
+        "fe": fe_type,
         "n_obs": int(model.nobs),
         "n_firms": n_firms,
         "n_firm_years": n_firm_years,
@@ -486,10 +513,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             return f"{val:.2e}"
         return f"{val:.3f}"
 
-    def _panel_lines(mod_key: str, cols: List[int], panel_label: str) -> List[str]:
+    n_cols = 8  # 4 Calendar Year FE + 4 Year-Quarter FE
+    col_spec = "l" + "c" * n_cols
+
+    def _panel_lines(mod_key: str, cols_fy: List[int], cols_yq: List[int], panel_label: str) -> List[str]:
         mod_info = MODERATORS[mod_key]
+        cols = cols_fy + cols_yq
         lines = []
-        lines.append(f"\\multicolumn{{3}}{{l}}{{\\textit{{{panel_label}}}}} \\\\")
+        lines.append(f"\\multicolumn{{{n_cols + 1}}}{{l}}{{\\textit{{{panel_label}}}}} \\\\")
         lines.append("\\midrule")
 
         col_nums = " & ".join(f"({c})" for c in cols)
@@ -543,14 +574,19 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
                 lag_coefs.append("")
                 lag_ses.append("")
         if has_lag:
-            lines.append(f"CapEx/AT$_t$ (control) & {' & '.join(lag_coefs)} \\\\")
+            lines.append(f"Lagged\\_DV & {' & '.join(lag_coefs)} \\\\")
             lines.append(f" & {' & '.join(lag_ses)} \\\\")
 
         lines.append("\\midrule")
 
         lines.append("Controls & " + " & ".join(["Ext"] * len(cols)) + " \\\\")
         lines.append("Industry FE & " + " & ".join(["Yes"] * len(cols)) + " \\\\")
-        lines.append("Fiscal Year FE & " + " & ".join(["Yes"] * len(cols)) + " \\\\")
+
+        # FE row: Calendar Year for first half, Year-Quarter for second half
+        fy_vals = ["Yes"] * len(cols_fy) + [""] * len(cols_yq)
+        yq_vals = [""] * len(cols_fy) + ["Yes"] * len(cols_yq)
+        lines.append("Fiscal Year FE & " + " & ".join(fy_vals) + " \\\\")
+        lines.append("Year-Quarter FE & " + " & ".join(yq_vals) + " \\\\")
         lines.append("\\midrule")
 
         n_row = " & ".join(f"{results_by_col.get(c, {}).get('n_obs', 0):,}" for c in cols)
@@ -568,13 +604,13 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\caption{Market Structure--Moderated Speech Uncertainty and Capital Expenditure}",
         r"\label{tab:h13_1_capex_tnic}",
         r"\small",
-        r"\begin{tabular}{lcc}",
+        f"\\begin{{tabular}}{{{col_spec}}}",
         r"\toprule",
     ]
 
-    lines += _panel_lines("tsimm", [1, 2], "Panel A: TNIC3TSIMM (primary)")
+    lines += _panel_lines("tsimm", [1, 2], [5, 6], "Panel A: TNIC3TSIMM (primary)")
     lines.append("\\midrule")
-    lines += _panel_lines("hhi", [3, 4], "Panel B: TNIC3HHI (robustness)")
+    lines += _panel_lines("hhi", [3, 4], [7, 8], "Panel B: TNIC3HHI (robustness)")
 
     lines += [
         r"\bottomrule",
@@ -589,7 +625,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"TNIC3TSIMM and TNIC3HHI from Hoberg--Phillips (2016), log-transformed and standardized. ",
         r"TSIMM is the primary moderator (product similarity $\to$ strategic investment channel); ",
         r"HHI serves as robustness (market concentration channel). ",
-        r"Col~(2) and Col~(4) include CapEx/AT$_t$ as additional control. ",
+        r"Cols~(1)--(4): Calendar Year FE; Cols~(5)--(8): Year-Quarter FE. ",
         r"TNIC measures are firm-year variables repeated across calls within the same firm-year. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
@@ -624,7 +660,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"DV: {meta['dv']}\n")
             f.write(f"IV: {IV} (centered)\n")
             f.write(f"Moderator: z(log({mod_label}))\n")
-            f.write(f"FE: Industry(FF12) + FiscalYear\n")
+            f.write(f"FE: {meta['fe']}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
@@ -653,13 +689,13 @@ def generate_report(
         f"**Design:** Manager_QA_Uncertainty x z(log(TNIC)) interaction",
         f"**Moderators:** TSIMM (primary) + HHI (robustness)",
         f"**Cross-corr:** {params.get('cross_corr', np.nan):.4f}",
-        f"**FE:** Industry(FF12) + FiscalYear (all models)",
+        f"**FE:** Industry(FF12) + FiscalYear (cols 1-4), Industry(FF12) + Year-Quarter (cols 5-8)",
         f"**Parent suite:** H13 (Capital Expenditure)",
         "",
         "## Results",
         "",
-        "| Col | DV | Mod | b_iv | p2_iv | b_int | p2_int | N | N_fy | R2w |",
-        "|-----|----|-----|------|-------|-------|--------|---|------|-----|",
+        "| Col | DV | Mod | FE | b_iv | p2_iv | b_int | p2_int | N | N_fy | R2w |",
+        "|-----|----|-----|----|------|-------|-------|--------|---|------|-----|",
     ]
 
     for r in all_results:
@@ -668,8 +704,9 @@ def generate_report(
             continue
         stars_iv = _sig_stars(m["p_two_iv"])
         stars_int = _sig_stars(m["p_two_interaction"])
+        fe_short = "YQ" if m["fe"].endswith("_yq") else "FY"
         lines.append(
-            f"| ({m['col']}) | {m['dv']} | {m['moderator']} | "
+            f"| ({m['col']}) | {m['dv']} | {m['moderator']} | {fe_short} | "
             f"{m['beta_iv']:.4f}{stars_iv} | {m['p_two_iv']:.4f} | "
             f"{m['beta_interaction']:.4f}{stars_int} | {m['p_two_interaction']:.4f} | "
             f"{m['n_obs']:,} | {m['n_firm_years']:,} | {m['within_r2']:.4f} |"
@@ -683,7 +720,8 @@ def generate_report(
         "- IV mean-centered to avoid multicollinearity",
         "- TSIMM expected interaction: positive; HHI expected: negative",
         f"- Corr(z(log(HHI)), z(log(TSIMM))) = {params.get('cross_corr', np.nan):.4f}",
-        "- Lead specs include CapexAt_t as control (capex persistence)",
+        "- Lagged_DV included as control in all specs",
+        "- Cols 1-4: Calendar Year FE; Cols 5-8: Year-Quarter FE",
         "- TNIC measures are firm-year, repeated across calls",
         "- SEs firm-clustered throughout",
         "- This REPLACES the original H13.1 (uncentered, HHI-only, 16-model design)",
@@ -719,7 +757,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    1 IV x 1 DV x 2 moderators x 2 temporal = 4 models")
+    print(f"Design:    1 IV x 2 DVs x 2 moderators x 2 FE = 8 models")
     print(f"Moderators: TSIMM (primary) + HHI (robustness)")
     print(f"IV:        {IV}")
 
@@ -754,7 +792,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
     for spec in MODEL_SPECS:
         mod_label = MODERATORS[spec["mod"]]["label"]
-        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} Mod={mod_label} ---")
+        fe_label = "Industry+YQ" if spec.get("fe", "industry").endswith("_yq") else "Industry+FY"
+        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} Mod={mod_label} FE={fe_label} ---")
 
         try:
             df_prep = prepare_regression_data(panel, spec)
@@ -812,7 +851,8 @@ def main(panel_path: Optional[str] = None) -> int:
     for r in all_results:
         m = r["meta"]
         stars_int = _sig_stars(m["p_two_interaction"])
-        print(f"  Col ({m['col']}) {m['dv']} [{m['moderator']}]: "
+        fe_short = "YQ" if m["fe"].endswith("_yq") else "FY"
+        print(f"  Col ({m['col']}) {m['dv']} [{m['moderator']}] FE={fe_short}: "
               f"IV b={m['beta_iv']:.4f} | Int b={m['beta_interaction']:.4f}{stars_int}")
 
     return 0

@@ -4,17 +4,17 @@
 STAGE 4: Test H2 Investment Efficiency Hypothesis
 ================================================================================
 ID: econometric/test_h2_investment
-Description: Run H2 Investment Efficiency hypothesis test using 8 model specifications
+Description: Run H2 Investment Efficiency hypothesis test using 12 model specifications
              with 4 simultaneous uncertainty IVs, varying DV, FE type,
              and control set. Main sample only.
 
-Model Specifications (8 columns in one table):
-    Cols 1-4: DV = InvestmentResidual (contemporaneous)
-    Cols 5-8: DV = InvestmentResidual_lead (t+1)
-    Odd cols:  Industry FE (FF12 dummies) + FiscalYear FE
-    Even cols: Firm FE + FiscalYear FE
-    Cols 1-2, 5-6: Base controls
-    Cols 3-4, 7-8: Extended controls
+Model Specifications (12 columns in one table):
+    Cols 1-4: DV = InvestmentResidual (contemporaneous), Calendar Year FE
+    Cols 5-6: DV = InvestmentResidual (contemporaneous), Calendar Year-Quarter FE
+    Cols 7-10: DV = InvestmentResidual_lead (t+1), Calendar Year FE
+    Cols 11-12: DV = InvestmentResidual_lead (t+1), Calendar Year-Quarter FE
+    Odd cols (1-4,7-10): Industry FE + Year FE / Even: Firm FE + Year FE
+    Cols 5-6, 11-12: Extended controls only, YQ FE
 
 Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -72,6 +72,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -94,6 +95,7 @@ BASE_CONTROLS = [
     "CashHoldings",
     "DividendPayer",
     "OCF_Volatility",
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -104,14 +106,20 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "InvestmentResidual",      "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "InvestmentResidual",      "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "InvestmentResidual",      "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "InvestmentResidual",      "fe": "firm",     "controls": "extended"},
-    {"col": 5, "dv": "InvestmentResidual_lead", "fe": "industry", "controls": "base"},
-    {"col": 6, "dv": "InvestmentResidual_lead", "fe": "firm",     "controls": "base"},
-    {"col": 7, "dv": "InvestmentResidual_lead", "fe": "industry", "controls": "extended"},
-    {"col": 8, "dv": "InvestmentResidual_lead", "fe": "firm",     "controls": "extended"},
+    {"col": 1,  "dv": "InvestmentResidual",      "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "InvestmentResidual",      "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "InvestmentResidual",      "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "InvestmentResidual",      "fe": "firm",        "controls": "extended"},
+    # Year-Quarter FE specs (Extended controls only)
+    {"col": 5,  "dv": "InvestmentResidual",      "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "InvestmentResidual",      "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "InvestmentResidual_lead", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "InvestmentResidual_lead", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "InvestmentResidual_lead", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "InvestmentResidual_lead", "fe": "firm",        "controls": "extended"},
+    # Year-Quarter FE specs (Extended controls only)
+    {"col": 11, "dv": "InvestmentResidual_lead", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "InvestmentResidual_lead", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -168,8 +176,9 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
+        "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "InvestmentResidual", "InvestmentResidual_lead",
+        "InvestmentResidual", "InvestmentResidual_lead", "InvestmentResidual_lag",
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
         "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
         "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
@@ -182,6 +191,12 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -195,8 +210,18 @@ def filter_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
 
 def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.DataFrame:
     dv = spec["dv"]
+    fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -245,15 +270,20 @@ def run_regression(
 
     exog = KEY_IVS + controls
 
-    print(f"  FE: {'Industry(FF12) + FiscalYear' if fe_type == 'industry' else 'Firm + FiscalYear'}")
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             dependent_data = df_panel[dv]
             exog_data = df_panel[exog]
             industry_data = df_panel["ff12_code"]
@@ -331,7 +361,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 8
+    n_cols = 12
 
     def fmt_coef(val, stars):
         return "" if np.isnan(val) else f"{val:.4f}{stars}"
@@ -359,10 +389,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
     lines.append(
-        r" & \multicolumn{4}{c}{Investment Residual$_t$}"
-        r" & \multicolumn{4}{c}{Investment Residual$_{t+1}$} \\"
+        r" & \multicolumn{6}{c}{Investment Residual$_t$}"
+        r" & \multicolumn{6}{c}{Investment Residual$_{t+1}$} \\"
     )
-    lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     for iv in KEY_IVS:
@@ -390,15 +420,20 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
     lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
 
-    ind_fe, firm_fe, year_fe = [], [], []
+    ind_fe, firm_fe, year_fe, yr_qtr_fe = [], [], [], []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
-        ind_fe.append("Yes" if meta.get("fe") == "industry" else "")
-        firm_fe.append("Yes" if meta.get("fe") == "firm" else "")
-        year_fe.append("Yes")
+        fe = meta.get("fe", "")
+        base_fe = fe.replace("_yq", "") if fe else ""
+        is_yq = fe.endswith("_yq") if fe else False
+        ind_fe.append("Yes" if base_fe == "industry" else "")
+        firm_fe.append("Yes" if base_fe == "firm" else "")
+        year_fe.append("Yes" if not is_yq else "")
+        yr_qtr_fe.append("Yes" if is_yq else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe) + r" \\")
-    lines.append(r"Fiscal Year FE & " + " & ".join(year_fe) + r" \\")
+    lines.append(r"Calendar Year FE & " + " & ".join(year_fe) + r" \\")
+    lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe) + r" \\")
 
     lines.append(r"\midrule")
 

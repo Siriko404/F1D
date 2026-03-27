@@ -9,10 +9,10 @@ Description: Run H7 Illiquidity hypothesis test using 4 model specifications
              control set. Main sample only.
 
 Model Specifications (4 columns in one table):
-    Col 1: Industry FE (FF12) + FiscalYear FE, Base controls
-    Col 2: Firm FE + FiscalYear FE, Base controls
-    Col 3: Industry FE (FF12) + FiscalYear FE, Extended controls
-    Col 4: Firm FE + FiscalYear FE, Extended controls
+    Col 1: Industry FE (FF12) + CalYear FE, Base controls
+    Col 2: Firm FE + CalYear FE, Base controls
+    Col 3: Industry FE (FF12) + CalYear FE, Extended controls
+    Col 4: Firm FE + CalYear FE, Extended controls
 
 DV: delta_amihud — change in Amihud illiquidity around call ([+1,+3] - [-3,-1] days).
 
@@ -32,7 +32,7 @@ Hypothesis Test (one-tailed):
     H7: beta(uncertainty_var) > 0 — higher uncertainty -> more illiquidity.
     Stars based on one-tailed p-values.
 
-FE Time Index: fyearq_int (fiscal year).
+FE Time Index: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 Standard Errors: Firm-clustered (groups=gvkey).
 Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
@@ -57,6 +57,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -93,6 +94,9 @@ MODEL_SPECS = [
     {"col": 2, "dv": "delta_amihud", "fe": "firm",     "controls": "base"},
     {"col": 3, "dv": "delta_amihud", "fe": "industry", "controls": "extended"},
     {"col": 4, "dv": "delta_amihud", "fe": "firm",     "controls": "extended"},
+    # Year-Quarter FE specs (Extended controls only)
+    {"col": 5, "dv": "delta_amihud", "fe": "industry_yq", "controls": "extended"},
+    {"col": 6, "dv": "delta_amihud", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -143,6 +147,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
+        "start_date",  # needed for calendar year-quarter FE
         "gvkey", "year", "fyearq_int", "ff12_code",
         "delta_amihud", "pre_call_amihud",
         "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
@@ -155,6 +160,12 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     panel = pd.read_parquet(panel_file, columns=columns)
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}  |  Columns: {len(panel.columns)}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -168,8 +179,11 @@ def filter_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
 
 def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.DataFrame:
     dv = spec["dv"]
+    fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
     missing = [c for c in required if c not in panel.columns]
     if missing:
         raise ValueError(f"Required columns missing: {missing}")
@@ -212,15 +226,21 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
         return None, {}
 
     exog = KEY_IVS + controls
-    print(f"  FE: {'Industry(FF12) + FiscalYear' if fe_type == 'industry' else 'Firm + FiscalYear'}")
+
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             model_obj = PanelOLS(
                 dependent=df_panel[dv], exog=df_panel[exog],
                 entity_effects=False, time_effects=True,
@@ -228,7 +248,7 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
                 drop_absorbed=True, check_rank=False,
             )
             model = model_obj.fit(cov_type="clustered", cluster_entity=True)
-        else:
+        else:  # "firm"
             exog_str = " + ".join(exog)
             formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
             model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
@@ -278,7 +298,7 @@ def _sig_stars(p):
 
 def _save_latex_table(all_results, out_dir):
     results_by_col = {r["meta"]["col"]: r["meta"] for r in all_results if r.get("meta")}
-    n_cols = 4
+    n_cols = 6
 
     def fmt_coef(v, s): return "" if np.isnan(v) else f"{v:.4f}{s}"
     def fmt_se(v): return "" if np.isnan(v) else f"({v:.4f})"
@@ -298,8 +318,8 @@ def _save_latex_table(all_results, out_dir):
     ]
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
-    lines.append(r" & \multicolumn{4}{c}{$\Delta$Amihud Illiquidity} \\")
-    lines.append(r"\cmidrule(lr){2-5}")
+    lines.append(r" & \multicolumn{6}{c}{$\Delta$Amihud Illiquidity} \\")
+    lines.append(r"\cmidrule(lr){2-7}")
     lines.append(r"\midrule")
 
     for iv in KEY_IVS:
@@ -315,11 +335,23 @@ def _save_latex_table(all_results, out_dir):
     lines.append(r"\midrule")
     ctrl = ["Extended" if results_by_col.get(c, {}).get("controls") == "extended" else "Base" for c in range(1, n_cols + 1)]
     lines.append(r"Controls & " + " & ".join(ctrl) + r" \\")
-    ind = ["Yes" if results_by_col.get(c, {}).get("fe") == "industry" else "" for c in range(1, n_cols + 1)]
-    firm = ["Yes" if results_by_col.get(c, {}).get("fe") == "firm" else "" for c in range(1, n_cols + 1)]
-    lines.append(r"Industry FE & " + " & ".join(ind) + r" \\")
-    lines.append(r"Firm FE & " + " & ".join(firm) + r" \\")
-    lines.append(r"Fiscal Year FE & " + " & ".join(["Yes"] * n_cols) + r" \\")
+    ind_fe_cells = []
+    firm_fe_cells = []
+    year_fe_cells = []
+    yr_qtr_fe_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        fe = meta.get("fe", "")
+        base_fe = fe.replace("_yq", "") if fe else ""
+        is_yq = fe.endswith("_yq") if fe else False
+        ind_fe_cells.append("Yes" if base_fe == "industry" else "")
+        firm_fe_cells.append("Yes" if base_fe == "firm" else "")
+        year_fe_cells.append("Yes" if not is_yq else "")
+        yr_qtr_fe_cells.append("Yes" if is_yq else "")
+    lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
+    lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
+    lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
     lines.append(r"\midrule")
     ns = [fmt_int(results_by_col.get(c, {}).get("n_obs", 0)) for c in range(1, n_cols + 1)]
     lines.append(r"N & " + " & ".join(ns) + r" \\")
@@ -335,8 +367,8 @@ def _save_latex_table(all_results, out_dir):
         r"Main sample (excludes financial and utility firms). ",
         r"$\Delta$Amihud = post-call ([+1,+3] days) minus pre-call ([-3,-1] days) Amihud illiquidity. ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
-        r"Variables winsorized at 1\%/99\% by year at engine level. ",
+        r"Time FE uses calendar year (cal\_yr) or calendar year-quarter (cal\_yr\_qtr). ",
+        r"All variables winsorized at 1\%/99\% per year (controls at engine level; $\Delta$Amihud and pre-call Amihud at builder level). ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}", r"\end{table}",
     ]
@@ -385,7 +417,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Sample:    Main only (FF12 != 8, 11)")
     print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
     print(f"Specs:     {len(MODEL_SPECS)} model columns")
-    print(f"Time FE:   fyearq_int (fiscal year)")
+    print(f"Time FE:   cal_yr (calendar year) + cal_yr_qtr (calendar year-quarter)")
     print(f"Test:      One-tailed (beta > 0)")
 
     panel = load_panel(root, panel_path)

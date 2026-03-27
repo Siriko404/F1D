@@ -190,3 +190,29 @@ def attach_fyearq(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
         logger.debug("attach_fyearq: all %d calls matched to fyearq.", n_total)
 
     return panel
+
+
+def build_cal_yr_qtr_index(panel: pd.DataFrame) -> pd.DataFrame:
+    """Create calendar year-quarter time index for Year-Quarter FE specifications.
+
+    Derives calendar year and quarter from the call's start_date:
+        cal_yr  = start_date.dt.year   (e.g., 2010)
+        cal_qtr = start_date.dt.quarter (1-4)
+        cal_yr_qtr = cal_yr * 10 + cal_qtr  (e.g., 20103 = 2010 Q3)
+
+    Used as PanelOLS time index for Calendar Year-Quarter FE specs.
+    No Compustat data needed — purely derived from call date.
+
+    Args:
+        panel: DataFrame with start_date column (datetime64 or ISO string).
+
+    Returns:
+        panel (copy) with cal_yr, cal_qtr, and cal_yr_qtr columns added.
+        Rows with unparseable start_date get NaN.
+    """
+    panel = panel.copy()
+    dt = pd.to_datetime(panel["start_date"], errors="coerce")
+    panel["cal_yr"] = dt.dt.year.astype("Int64")
+    panel["cal_qtr"] = dt.dt.quarter.astype("Int64")
+    panel["cal_yr_qtr"] = (panel["cal_yr"] * 10 + panel["cal_qtr"]).astype("Int64")
+    return panel

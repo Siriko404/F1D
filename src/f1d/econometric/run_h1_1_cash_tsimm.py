@@ -5,23 +5,22 @@ STAGE 4: Test H1.1 TNIC-Moderated Cash Holdings Hypothesis
 ================================================================================
 ID: econometric/run_h1_1_cash_tsimm
 Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM)
-             moderates the Manager_Pres_Uncertainty → CashHoldings relationship.
+             moderates the Manager_QA_Uncertainty → CashHoldings relationship.
 
 Model Specification:
-    CashHoldings = b1*Mgr_Pres_Unc + b2*z(log(TSIMM))
-                 + b3*(Mgr_Pres_Unc x z(log(TSIMM)))
-                 + controls + IndustryFE + FiscalYearFE + e
+    CashHoldings = b1*Mgr_QA_Unc + b2*z(log(TSIMM))
+                 + b3*(Mgr_QA_Unc x z(log(TSIMM)))
+                 + controls + IndustryFE + CalendarYearFE + e
 
     b3 is the coefficient of interest: does product similarity moderate
-    the effect of managerial presentation uncertainty on cash holdings?
+    the effect of managerial QA uncertainty on cash holdings?
 
 Parent suite: H1 (Cash Holdings)
-    Manager_Pres_Uncertainty_pct significant in Industry+FY specs only.
     Moderation memo recommends TSIMM (not HHI) as secondary moderator.
 
 2 Models:
-    Col 1: DV = CashHoldings_t,    Industry+FY FE, Extended controls
-    Col 2: DV = CashHoldings_lead, Industry+FY FE, Extended controls + CashHoldings_t
+    Col 1: DV = CashHoldings_t, Industry + Calendar Year FE, Extended controls
+    Col 2: DV = CashHoldings_t, Industry + Calendar Year-Quarter FE, Extended controls
 
 Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
     Log-transformed then z-scored on Main sample.
@@ -29,7 +28,7 @@ Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
 Sample: Main only (FF12 not in {8, 11}).
 Hypothesis: Two-tailed on interaction (b3 != 0); one-tailed on main IV (b1 > 0).
 Unit: Call-level (loads H1 panel, merges TNIC at load time).
-Panel index: ["gvkey", "fyearq_int"].
+Panel index: ["gvkey", "cal_yr"] or ["gvkey", "cal_yr_qtr"].
 SEs: Firm-clustered.
 
 Inputs:
@@ -61,41 +60,42 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
 # Configuration
 # ==============================================================================
 
-IV = "Manager_Pres_Uncertainty_pct"
+IV = "Manager_QA_Uncertainty_pct"
 
 CONTROLS = [
     "BookLev", "Size", "TobinsQ", "ROA", "CapexAt",
     "DividendPayer", "OCF_Volatility",
     "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "Lagged_DV",  # Unified lagged DV
 ]
 
 MODERATOR_RAW = "tnic3tsimm"
 MODERATOR = "z_log_tnic3tsimm"
-IV_CENTERED = "Manager_Pres_Unc_c"  # mean-centered on Main sample
-INTERACTION = "MgrPresUnc_x_zlogTSIMM"
+IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
+INTERACTION = "MgrQAUnc_x_zlogTSIMM"
 
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CashHoldings",      "extra_controls": []},
-    {"col": 2, "dv": "CashHoldings_lead",  "extra_controls": ["CashHoldings"]},
+    {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": []},
+    {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": []},
 ]
 
-IV_LABEL = "Mgr Pres Uncertainty"
+IV_LABEL = "Mgr QA Uncertainty"
 MODERATOR_LABEL = r"$z(\log(\mathrm{TSIMM}))$"
-INTERACTION_LABEL = r"Mgr Pres Unc $\times$ $z(\log(\mathrm{TSIMM}))$"
+INTERACTION_LABEL = r"Mgr QA Unc $\times$ $z(\log(\mathrm{TSIMM}))$"
 
 SUMMARY_STATS_VARS = [
     {"col": "CashHoldings", "label": "Cash Holdings$_t$"},
-    {"col": "CashHoldings_lead", "label": "Cash Holdings$_{t+1}$"},
-    {"col": IV, "label": "Mgr Pres Uncertainty (raw)"},
-    {"col": IV_CENTERED, "label": "Mgr Pres Uncertainty (centered)"},
+    {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
+    {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MODERATOR_RAW, "label": "TNIC3TSIMM (raw)"},
     {"col": MODERATOR, "label": "$z(\\log(\\mathrm{TSIMM}))$"},
     {"col": "BookLev", "label": "Leverage"},
@@ -150,15 +150,22 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
+        "start_date",  # needed for cal_yr_qtr
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "CashHoldings", "CashHoldings_lead",
+        "CashHoldings", "CashHoldings_lag",
         IV,
-        *CONTROLS,
+        *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
+
+    # Build calendar year-quarter index for FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel, panel_file
 
 
@@ -266,10 +273,19 @@ def prepare_regression_data(
 ) -> pd.DataFrame:
     """Prepare data for one regression spec with interaction term."""
     dv = spec["dv"]
+    fe = spec["fe"]
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
-    required = [dv, IV, IV_CENTERED, MODERATOR] + all_controls + ["gvkey", "fyearq_int", "ff12_code"]
+    # Determine time column based on FE type
+    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    lag_col = f"{dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
+    required = [dv, IV, IV_CENTERED, MODERATOR] + all_controls + ["gvkey", time_col, "ff12_code"]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -300,9 +316,9 @@ def prepare_regression_data(
     df = df[df["gvkey"].isin(valid_firms)].copy()
 
     n_firms = df["gvkey"].nunique()
-    n_firm_years = df.groupby(["gvkey", "fyearq_int"]).ngroups
+    n_time_periods = df.groupby(["gvkey", time_col]).ngroups
     print(f"  After >={MIN_CALLS_PER_FIRM} calls/firm: "
-          f"{len(df):,} calls, {n_firms:,} firms, {n_firm_years:,} firm-years")
+          f"{len(df):,} calls, {n_firms:,} firms, {n_time_periods:,} firm-time-periods")
 
     return df
 
@@ -310,14 +326,19 @@ def prepare_regression_data(
 def run_regression(
     df_prepared: pd.DataFrame, spec: Dict[str, Any]
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run PanelOLS with Industry+FY FE and firm-clustered SEs."""
+    """Run PanelOLS with Industry FE + Calendar Year or Year-Quarter FE."""
     dv = spec["dv"]
     col_num = spec["col"]
+    fe = spec["fe"]
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
+    # Determine time column and FE label
+    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+    fe_label = "Industry + CalYrQtr" if fe.endswith("_yq") else "Industry + CalYear"
+
     print(f"\n{'=' * 60}")
-    print(f"Col ({col_num}) | DV={dv} | FE=Industry+FY")
+    print(f"Col ({col_num}) | DV={dv} | FE={fe_label}")
     print(f"{'=' * 60}")
 
     if len(df_prepared) < 100:
@@ -329,13 +350,13 @@ def run_regression(
     exog = [IV_CENTERED, MODERATOR, INTERACTION] + all_controls
 
     n_firms = df_prepared["gvkey"].nunique()
-    n_firm_years = df_prepared.groupby(["gvkey", "fyearq_int"]).ngroups
-    print(f"  N={len(df_prepared):,}, firms={n_firms:,}, firm-years={n_firm_years:,}")
+    n_time_periods = df_prepared.groupby(["gvkey", time_col]).ngroups
+    print(f"  N={len(df_prepared):,}, firms={n_firms:,}, firm-time-periods={n_time_periods:,}")
     if extra_controls:
         print(f"  Extra controls: {extra_controls}")
     t0 = datetime.now()
 
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
         model_obj = PanelOLS(
@@ -373,15 +394,6 @@ def run_regression(
     se_int = float(model.std_errors.get(INTERACTION, np.nan))
     p_two_int = float(model.pvalues.get(INTERACTION, np.nan))
 
-    # Extract lagged DV control if present
-    beta_lag_dv = np.nan
-    se_lag_dv = np.nan
-    p_two_lag_dv = np.nan
-    if "CashHoldings" in extra_controls:
-        beta_lag_dv = float(model.params.get("CashHoldings", np.nan))
-        se_lag_dv = float(model.std_errors.get("CashHoldings", np.nan))
-        p_two_lag_dv = float(model.pvalues.get("CashHoldings", np.nan))
-
     stars_iv = _sig_stars_one(p_one_iv)
     stars_int = _sig_stars_two(p_two_int)
 
@@ -389,22 +401,19 @@ def run_regression(
     print(f"  {IV}: b={beta_iv:.4f} p1={p_one_iv:.4f} {stars_iv}")
     print(f"  {MODERATOR}: b={beta_mod:.4f} p2={p_two_mod:.4f}")
     print(f"  INTERACTION: b={beta_int:.4f} p2={p_two_int:.4f} {stars_int}")
-    if not np.isnan(beta_lag_dv):
-        print(f"  CashHoldings_t (control): b={beta_lag_dv:.4f}")
 
     meta = {
         "col": col_num,
         "dv": dv,
-        "fe": "industry",
+        "fe": fe,
         "n_obs": int(model.nobs),
         "n_firms": n_firms,
-        "n_firm_years": n_firm_years,
+        "n_time_periods": n_time_periods,
         "within_r2": float(model.rsquared_within),
         "beta_iv": beta_iv, "se_iv": se_iv,
         "p_one_iv": p_one_iv, "p_two_iv": p_two_iv,
         "beta_moderator": beta_mod, "se_moderator": se_mod, "p_two_moderator": p_two_mod,
         "beta_interaction": beta_int, "se_interaction": se_int, "p_two_interaction": p_two_int,
-        "beta_lag_dv": beta_lag_dv, "se_lag_dv": se_lag_dv, "p_two_lag_dv": p_two_lag_dv,
         "extra_controls": ",".join(extra_controls) if extra_controls else "",
     }
 
@@ -476,20 +485,18 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\begin{tabular}{lcc}",
         r"\toprule",
         r" & (1) & (2) \\",
-        r" & Cash Holdings$_t$ & Cash Holdings$_{t+1}$ \\",
+        r" & \multicolumn{2}{c}{Cash Holdings$_t$} \\",
+        r"\cmidrule(lr){2-3}",
+        r" & Cal Year FE & Cal Yr-Qtr FE \\",
         r"\midrule",
     ]
-
-    # Main IV row
-    for col in [1, 2]:
-        pass  # handled below
 
     m1 = results_by_col.get(1, {})
     m2 = results_by_col.get(2, {})
 
     # IV coefficient
     lines.append(
-        f"Mgr Pres Uncertainty & "
+        f"Mgr QA Uncertainty & "
         f"{fmt_coef(m1.get('beta_iv', np.nan), _sig_stars_one(m1.get('p_one_iv', np.nan)))} & "
         f"{fmt_coef(m2.get('beta_iv', np.nan), _sig_stars_one(m2.get('p_one_iv', np.nan)))} \\\\"
     )
@@ -509,7 +516,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # Interaction coefficient (key)
     lines.append(
-        f"Mgr Pres Unc $\\times$ $z(\\log(\\mathrm{{TSIMM}}))$ & "
+        f"Mgr QA Unc $\\times$ $z(\\log(\\mathrm{{TSIMM}}))$ & "
         f"{fmt_coef(m1.get('beta_interaction', np.nan), _sig_stars_two(m1.get('p_two_interaction', np.nan)))} & "
         f"{fmt_coef(m2.get('beta_interaction', np.nan), _sig_stars_two(m2.get('p_two_interaction', np.nan)))} \\\\"
     )
@@ -517,31 +524,22 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         f" & {fmt_se(m1.get('se_interaction', np.nan))} & {fmt_se(m2.get('se_interaction', np.nan))} \\\\"
     )
 
-    # Lagged DV control (col 2 only)
-    if not np.isnan(m2.get("beta_lag_dv", np.nan)):
-        lines.append(
-            f"Cash Holdings$_t$ & & "
-            f"{fmt_coef(m2['beta_lag_dv'], _sig_stars_two(m2.get('p_two_lag_dv', np.nan)))} \\\\"
-        )
-        lines.append(
-            f" & & {fmt_se(m2.get('se_lag_dv', np.nan))} \\\\"
-        )
-
     lines.append(r"\midrule")
 
     # Footer
     lines.append(r"Controls & Extended & Extended \\")
     lines.append(r"Industry FE & Yes & Yes \\")
-    lines.append(r"Fiscal Year FE & Yes & Yes \\")
+    lines.append(r"Calendar Year FE & Yes &  \\")
+    lines.append(r"Calendar Year-Quarter FE &  & Yes \\")
     lines.append(r"\midrule")
 
     # N calls
     lines.append(
         f"N (calls) & {m1.get('n_obs', 0):,} & {m2.get('n_obs', 0):,} \\\\"
     )
-    # N firm-years
+    # N firm-time-periods
     lines.append(
-        f"N (firm-years) & {m1.get('n_firm_years', 0):,} & {m2.get('n_firm_years', 0):,} \\\\"
+        f"N (firm-time-periods) & {m1.get('n_time_periods', 0):,} & {m2.get('n_time_periods', 0):,} \\\\"
     )
     # Within R²
     lines.append(
@@ -556,14 +554,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. ",
-        r"Main IV (Mgr Pres Uncertainty) mean-centered; one-tailed ($\beta > 0$). ",
+        r"Main IV (Mgr QA Uncertainty) mean-centered; one-tailed ($\beta > 0$). ",
         r"Interaction and moderator: two-tailed. ",
         r"IV coefficient represents effect at sample-mean uncertainty. ",
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"TNIC3TSIMM is the Hoberg--Phillips (2016) total product similarity measure, ",
         r"log-transformed and standardized on the main sample. ",
-        r"Col~(2) includes Cash Holdings$_t$ as additional control. ",
+        r"Col~(1): Calendar Year FE. Col~(2): Calendar Year-Quarter FE. ",
         r"TNIC3TSIMM is a firm-year variable repeated across calls within the same firm-year. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
@@ -599,7 +597,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"IV: {IV}\n")
             f.write(f"Moderator: z(log(TNIC3TSIMM))\n")
             f.write(f"Interaction: {INTERACTION}\n")
-            f.write(f"FE: Industry(FF12) + FiscalYear\n")
+            f.write(f"FE: {meta['fe']}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
@@ -627,23 +625,23 @@ def generate_report(
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Manager_Pres_Uncertainty x z(log(TNIC3TSIMM)) interaction",
+        f"**Design:** Manager_QA_Uncertainty x z(log(TNIC3TSIMM)) interaction",
         f"**Moderator:** TNIC3TSIMM (Hoberg & Phillips JPE 2016), log-transformed, z-scored",
         f"**z-score parameters:** mu(log(TSIMM))={tsimm_mu:.4f}, sd(log(TSIMM))={tsimm_sd:.4f}",
-        f"**FE:** Industry(FF12) + FiscalYear (all models)",
+        f"**FE:** Col 1: Industry + CalYear; Col 2: Industry + CalYrQtr",
         f"**Parent suite:** H1 (Cash Holdings)",
         "",
         "## Model Specifications",
         "",
-        "| Col | DV | Extra Controls |",
-        "|-----|-----|----------------|",
-        "| (1) | CashHoldings_t | — |",
-        "| (2) | CashHoldings_lead | CashHoldings_t |",
+        "| Col | DV | FE |",
+        "|-----|-----|-----|",
+        "| (1) | CashHoldings_t | Industry + Calendar Year |",
+        "| (2) | CashHoldings_t | Industry + Calendar Year-Quarter |",
         "",
         "## Results",
         "",
-        "| Col | DV | b_iv | p1_iv | b_interaction | p2_interaction | N calls | N firm-years | R2w |",
-        "|-----|----|------|-------|---------------|----------------|---------|-------------|-----|",
+        "| Col | DV | FE | b_iv | p1_iv | b_interaction | p2_interaction | N calls | R2w |",
+        "|-----|----|-----|------|-------|---------------|----------------|---------|-----|",
     ]
 
     for r in all_results:
@@ -653,19 +651,19 @@ def generate_report(
         stars_iv = _sig_stars_one(m["p_one_iv"])
         stars_int = _sig_stars_two(m["p_two_interaction"])
         lines.append(
-            f"| ({m['col']}) | {m['dv']} | {m['beta_iv']:.4f}{stars_iv} | "
+            f"| ({m['col']}) | {m['dv']} | {m['fe']} | {m['beta_iv']:.4f}{stars_iv} | "
             f"{m['p_one_iv']:.4f} | {m['beta_interaction']:.4f}{stars_int} | "
-            f"{m['p_two_interaction']:.4f} | {m['n_obs']:,} | {m['n_firm_years']:,} | "
+            f"{m['p_two_interaction']:.4f} | {m['n_obs']:,} | "
             f"{m['within_r2']:.4f} |"
         )
 
     lines.append("")
     lines.append("## Notes")
     lines.append("")
-    lines.append("- Main IV (Mgr Pres Unc): one-tailed test (H1: beta > 0)")
+    lines.append("- Main IV (Mgr QA Unc): one-tailed test (H1: beta > 0)")
     lines.append("- Interaction: two-tailed test")
     lines.append("- TNIC3TSIMM is a firm-year variable, repeated across calls within firm-year")
-    lines.append("- Col (2) adds CashHoldings_t as control to address persistence (AR(1) > 0.9)")
+    lines.append("- Col (1): Calendar Year FE; Col (2): Calendar Year-Quarter FE")
     lines.append("- SEs firm-clustered throughout")
 
     with open(out_dir / "report_step4_H1_1.md", "w", encoding="utf-8") as f:
@@ -698,7 +696,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    1 IV x 2 DVs x Industry+FY FE = 2 models")
+    print(f"Design:    1 IV x 1 DV x 2 FE types = 2 models")
     print(f"Moderator: z(log(TNIC3TSIMM))")
     print(f"IV:        {IV}")
 
@@ -718,7 +716,6 @@ def main(panel_path: Optional[str] = None) -> int:
 
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
     print(f"  CashHoldings non-null: {panel['CashHoldings'].notna().sum():,}")
-    print(f"  CashHoldings_lead non-null: {panel['CashHoldings_lead'].notna().sum():,}")
     print(f"  {IV}: {panel[IV].notna().sum():,} "
           f"({100 * panel[IV].notna().mean():.1f}%)")
     print(f"  {MODERATOR}: {panel[MODERATOR].notna().sum():,} "

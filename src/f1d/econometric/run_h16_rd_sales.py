@@ -11,13 +11,15 @@ Description: Run H16 R&D Investment Intensity hypothesis test using 8 model spec
 Following Jiang, John, and Larsen (2021): RDSales = xrdy / saley.
 Missing R&D expense set to zero; nonpositive sales excluded.
 
-Model Specifications (8 columns in one table):
-    Cols 1-4: DV = RDSales (contemporaneous)
-    Cols 5-8: DV = RDSales_lead (t+1)
-    Odd cols:  Industry FE (FF12 dummies) + FiscalYear FE
-    Even cols: Firm FE + FiscalYear FE
-    Cols 1-2, 5-6: Base controls
-    Cols 3-4, 7-8: Extended controls
+Model Specifications (12 columns in one table):
+    Cols 1-4:   DV = RDSales (contemporaneous), Calendar Year FE
+    Cols 5-6:   DV = RDSales (contemporaneous), Year-Quarter FE
+    Cols 7-10:  DV = RDSales_lead (t+1), Calendar Year FE
+    Cols 11-12: DV = RDSales_lead (t+1), Year-Quarter FE
+    Odd cols:  Industry FE (FF12 dummies)
+    Even cols: Firm FE
+    Cols 1-2, 7-8:   Base controls
+    Cols 3-6, 9-12:  Extended controls
 
 Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -39,7 +41,7 @@ Hypothesis Test (two-tailed):
     H16: beta(uncertainty_var) != 0 — no directional prediction.
     Stars based on two-tailed p-values.
 
-FE Time Index: fyearq_int (fiscal year).
+FE Time Index: fyearq_int (fiscal year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 Standard Errors: Firm-clustered (groups=gvkey).
 Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
@@ -47,7 +49,7 @@ Inputs:
     - outputs/variables/h16_rd_sales/latest/h16_rd_sales_panel.parquet
 
 Outputs:
-    - outputs/econometric/h16_rd_sales/{timestamp}/regression_results_col{1-8}.txt
+    - outputs/econometric/h16_rd_sales/{timestamp}/regression_results_col{1-12}.txt
     - outputs/econometric/h16_rd_sales/{timestamp}/h16_rd_sales_table.tex
     - outputs/econometric/h16_rd_sales/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h16_rd_sales/{timestamp}/summary_stats.csv
@@ -82,6 +84,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -106,7 +109,7 @@ BASE_CONTROLS = [
     "CapexAt",
     "DividendPayer",
     "OCF_Volatility",
-    "RDSales_lagged",  # Lagged DV: RDSales_lag(t-1) for contemp, RDSales(t) for lead
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -116,16 +119,22 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    # Contemporaneous
-    {"col": 1, "dv": "RDSales",      "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "RDSales",      "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "RDSales",      "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "RDSales",      "fe": "firm",     "controls": "extended"},
-    # Lead: next fiscal year
-    {"col": 5, "dv": "RDSales_lead", "fe": "industry", "controls": "base"},
-    {"col": 6, "dv": "RDSales_lead", "fe": "firm",     "controls": "base"},
-    {"col": 7, "dv": "RDSales_lead", "fe": "industry", "controls": "extended"},
-    {"col": 8, "dv": "RDSales_lead", "fe": "firm",     "controls": "extended"},
+    # Contemporaneous — Calendar Year FE
+    {"col": 1,  "dv": "RDSales",      "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "RDSales",      "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "RDSales",      "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "RDSales",      "fe": "firm",        "controls": "extended"},
+    # Contemporaneous — Year-Quarter FE (Extended controls only)
+    {"col": 5,  "dv": "RDSales",      "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "RDSales",      "fe": "firm_yq",     "controls": "extended"},
+    # Lead: next fiscal year — Calendar Year FE
+    {"col": 7,  "dv": "RDSales_lead", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "RDSales_lead", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "RDSales_lead", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "RDSales_lead", "fe": "firm",        "controls": "extended"},
+    # Lead: next fiscal year — Year-Quarter FE (Extended controls only)
+    {"col": 11, "dv": "RDSales_lead", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "RDSales_lead", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -208,7 +217,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
-        "gvkey", "year", "fyearq_int", "ff12_code",
+        "gvkey", "year", "fyearq_int", "ff12_code", "start_date",
         # DVs + lagged DV
         "RDSales", "RDSales_lead", "RDSales_lag",
         # Key IVs
@@ -225,6 +234,12 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -243,23 +258,18 @@ def prepare_regression_data(
 ) -> pd.DataFrame:
     """Prepare panel for a specific model specification."""
     dv = spec["dv"]
+    fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
 
-    # Create unified lagged DV column: RDSales_lag(t-1) for contemp, RDSales(t) for lead
-    if "RDSales_lagged" not in panel.columns:
-        panel = panel.copy()
-        if dv == "RDSales":
-            panel["RDSales_lagged"] = panel["RDSales_lag"]
-        else:
-            panel["RDSales_lagged"] = panel["RDSales"]
-    elif dv == "RDSales":
-        panel = panel.copy()
-        panel["RDSales_lagged"] = panel["RDSales_lag"]
-    else:
-        panel = panel.copy()
-        panel["RDSales_lagged"] = panel["RDSales"]
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
 
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -320,8 +330,13 @@ def run_regression(
     fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
 
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
     print(f"\n" + "=" * 60)
-    print(f"Running regression: Col ({col_num}) | DV={dv} | FE={fe_type} | Controls={spec['controls']}")
+    print(f"Running regression: Col ({col_num}) | DV={dv} | FE={fe_label} | Controls={spec['controls']}")
     print("=" * 60)
 
     if len(df_prepared) < 100:
@@ -330,17 +345,17 @@ def run_regression(
 
     exog = KEY_IVS + controls
 
-    print(f"  FE: {'Industry(FF12) + FiscalYear' if fe_type == 'industry' else 'Firm + FiscalYear'}")
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     print(f"  Controls: {spec['controls']} ({len(controls)} vars)")
     print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    # MultiIndex: gvkey (entity) x fyearq_int (fiscal year time)
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    # MultiIndex: gvkey (entity) x time_col
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             # Absorb industry FE via other_effects (not C() dummies)
             dependent_data = df_panel[dv]
             exog_data = df_panel[exog]
@@ -418,14 +433,14 @@ def _sig_stars(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write unified 8-column LaTeX table with stars + SE in parentheses."""
+    """Write unified 12-column LaTeX table with stars + SE in parentheses."""
     results_by_col = {}
     for r in all_results:
         meta = r.get("meta", {})
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 8
+    n_cols = 12
 
     def fmt_coef(val: float, stars: str) -> str:
         if np.isnan(val):
@@ -463,10 +478,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # DV headers with multicolumn
     lines.append(
-        r" & \multicolumn{4}{c}{RDSales}"
-        r" & \multicolumn{4}{c}{RDSales\_lead} \\"
+        r" & \multicolumn{6}{c}{RDSales}"
+        r" & \multicolumn{6}{c}{RDSales\_lead} \\"
     )
-    lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     # Key IV rows (coefficient + SE for each)
@@ -496,21 +511,27 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
     lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
 
-    # Lagged DV indicator (always Yes — RDSales_lagged is in BASE_CONTROLS)
+    # Lagged DV indicator (always Yes — Lagged_DV is in BASE_CONTROLS)
     lines.append(r"Lagged DV & " + " & ".join(["Yes"] * n_cols) + r" \\")
 
     # FE indicators
     ind_fe_cells = []
     firm_fe_cells = []
     year_fe_cells = []
+    yr_qtr_fe_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
-        ind_fe_cells.append("Yes" if meta.get("fe") == "industry" else "")
-        firm_fe_cells.append("Yes" if meta.get("fe") == "firm" else "")
-        year_fe_cells.append("Yes")
+        fe = meta.get("fe", "")
+        base_fe = fe.replace("_yq", "") if fe else ""
+        is_yq = fe.endswith("_yq") if fe else False
+        ind_fe_cells.append("Yes" if base_fe == "industry" else "")
+        firm_fe_cells.append("Yes" if base_fe == "firm" else "")
+        year_fe_cells.append("Yes" if not is_yq else "")
+        yr_qtr_fe_cells.append("Yes" if is_yq else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
-    lines.append(r"Fiscal Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
 
     lines.append(r"\midrule")
 
@@ -539,10 +560,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
         r"R\&D investment intensity follows Jiang, John, and Larsen (2021): ",
         r"xrdy / saley (annual Q4-only). Missing R\&D set to zero; nonpositive sales excluded. ",
-        r"Lead specs (cols 5--8) include contemporaneous RDSales as lagged DV control. ",
+        r"Lead specs (cols 7--12) include contemporaneous RDSales as lagged DV control. ",
         r"Variables winsorized at 1\%/99\% by year at engine level. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
@@ -711,7 +731,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Sample:    Main only (FF12 != 8, 11)")
     print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
     print(f"Specs:     {len(MODEL_SPECS)} model columns")
-    print(f"Time FE:   fyearq_int (fiscal year)")
+    print(f"Time FE:   fyearq_int (fiscal year) + cal_yr_qtr (calendar year-quarter)")
     print(f"Test:      Two-tailed (no directional prediction)")
 
     # Load panel

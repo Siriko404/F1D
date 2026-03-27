@@ -9,10 +9,10 @@ Description: Run H15 Share Repurchase hypothesis test using 4 model specificatio
              control set. Main sample only. Linear probability model (binary DV).
 
 Model Specifications (4 columns in one table):
-    Col 1: Industry FE (FF12) + FiscalYear FE, Base controls
-    Col 2: Firm FE + FiscalYear FE, Base controls
-    Col 3: Industry FE (FF12) + FiscalYear FE, Extended controls
-    Col 4: Firm FE + FiscalYear FE, Extended controls
+    Col 1: Industry FE (FF12) + CalYear FE, Base controls
+    Col 2: Firm FE + CalYear FE, Base controls
+    Col 3: Industry FE (FF12) + CalYear FE, Extended controls
+    Col 4: Firm FE + CalYear FE, Extended controls
 
 DV: REPO_callqtr -- binary indicator for share repurchase in the call quarter.
     REPO_callqtr = 1 if cshopq > 0 in the fiscal quarter containing the call.
@@ -73,6 +73,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -109,6 +110,9 @@ MODEL_SPECS = [
     {"col": 2, "dv": "REPO_callqtr", "fe": "firm",     "controls": "base"},
     {"col": 3, "dv": "REPO_callqtr", "fe": "industry", "controls": "extended"},
     {"col": 4, "dv": "REPO_callqtr", "fe": "firm",     "controls": "extended"},
+    # Year-Quarter FE specs (Extended controls only)
+    {"col": 5, "dv": "REPO_callqtr", "fe": "industry_yq", "controls": "extended"},
+    {"col": 6, "dv": "REPO_callqtr", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -181,6 +185,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
+        "start_date",  # needed for calendar year-quarter FE
         "gvkey", "year", "fyearq_int", "ff12_code",
         # DV
         "REPO_callqtr",
@@ -197,6 +202,12 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -215,8 +226,11 @@ def prepare_regression_data(
 ) -> pd.DataFrame:
     """Prepare panel for a specific model specification."""
     dv = spec["dv"]
+    fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -274,16 +288,21 @@ def run_regression(
 
     exog = KEY_IVS + controls
 
-    print(f"  FE: {'Industry(FF12) + FiscalYear' if fe_type == 'industry' else 'Firm + FiscalYear'}")
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     print(f"  Controls: {spec['controls']} ({len(controls)} vars)")
     print("  Estimating LPM with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             dependent_data = df_panel[dv]
             exog_data = df_panel[exog]
             industry_data = df_panel["ff12_code"]
@@ -297,7 +316,7 @@ def run_regression(
                 check_rank=False,
             )
             model = model_obj.fit(cov_type="clustered", cluster_entity=True)
-        else:
+        else:  # "firm"
             exog_str = " + ".join(exog)
             formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
             model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
@@ -365,7 +384,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 4
+    n_cols = 6
 
     def fmt_coef(val: float, stars: str) -> str:
         if np.isnan(val):
@@ -401,9 +420,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(f" & {col_nums} " + r"\\")
 
     lines.append(
-        r" & \multicolumn{4}{c}{Share Repurchase (binary)} \\"
+        r" & \multicolumn{6}{c}{Share Repurchase (binary)} \\"
     )
-    lines.append(r"\cmidrule(lr){2-5}")
+    lines.append(r"\cmidrule(lr){2-7}")
     lines.append(r"\midrule")
 
     for iv in KEY_IVS:
@@ -434,14 +453,20 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     ind_fe_cells = []
     firm_fe_cells = []
     year_fe_cells = []
+    yr_qtr_fe_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
-        ind_fe_cells.append("Yes" if meta.get("fe") == "industry" else "")
-        firm_fe_cells.append("Yes" if meta.get("fe") == "firm" else "")
-        year_fe_cells.append("Yes")
+        fe = meta.get("fe", "")
+        base_fe = fe.replace("_yq", "") if fe else ""
+        is_yq = fe.endswith("_yq") if fe else False
+        ind_fe_cells.append("Yes" if base_fe == "industry" else "")
+        firm_fe_cells.append("Yes" if base_fe == "firm" else "")
+        year_fe_cells.append("Yes" if not is_yq else "")
+        yr_qtr_fe_cells.append("Yes" if is_yq else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
-    lines.append(r"Fiscal Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
 
     lines.append(r"\midrule")
 

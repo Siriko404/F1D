@@ -4,17 +4,18 @@
 STAGE 4: Test H4 Leverage Hypothesis
 ================================================================================
 ID: econometric/test_h4_leverage
-Description: Run H4 Leverage hypothesis test using 16 model specifications
+Description: Run H4 Leverage hypothesis test using 24 model specifications
              with 4 simultaneous uncertainty IVs, varying DV, FE type,
              and control set. Main sample only.
 
-Model Specifications (8 columns in one table):
-    Cols 1-4: DV = BookLev (contemporaneous)
-    Cols 5-8: DV = BookLev_lead (t+1)
-    Odd cols:  Industry FE (FF12 dummies) + FiscalYear FE
-    Even cols: Firm FE + FiscalYear FE
-    Cols 1-2, 5-6: Base controls
-    Cols 3-4, 7-8: Extended controls
+Model Specifications (24 columns, two DV panels of 12):
+    BookLev panel (cols 1-12):
+        Cols 1-6: DV = BookLev (contemporaneous)
+        Cols 7-12: DV = BookLev_lead (t+1)
+    DebtToCapital panel (cols 13-24):
+        Cols 13-18: DV = DebtToCapital (contemporaneous)
+        Cols 19-24: DV = DebtToCapital_lead (t+1)
+    Each 6-col block: Ind/Firm base, Ind/Firm ext, IndYQ/FirmYQ ext
 
 Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -33,7 +34,7 @@ Hypothesis Test (two-tailed):
     H4: beta(uncertainty_var) != 0 — no directional prediction.
     Stars based on two-tailed p-values.
 
-FE Time Index: fyearq_int (fiscal year — fixes calendar year bug from old H4).
+FE Time Index: fyearq_int (fiscal year) or cal_yr_qtr (calendar year-quarter for _yq specs).
 Standard Errors: Firm-clustered (groups=gvkey).
 Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
@@ -76,6 +77,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -98,6 +100,7 @@ BASE_CONTROLS = [
     "DividendPayer",
     "OCF_Volatility",
     "CashHoldings",
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -108,22 +111,32 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1,  "dv": "BookLev",            "fe": "industry", "controls": "base",     "lag_control": "BookLev_lag"},
-    {"col": 2,  "dv": "BookLev",            "fe": "firm",     "controls": "base",     "lag_control": "BookLev_lag"},
-    {"col": 3,  "dv": "BookLev",            "fe": "industry", "controls": "extended", "lag_control": "BookLev_lag"},
-    {"col": 4,  "dv": "BookLev",            "fe": "firm",     "controls": "extended", "lag_control": "BookLev_lag"},
-    {"col": 5,  "dv": "BookLev_lead",       "fe": "industry", "controls": "base",     "lag_control": "BookLev_lag"},
-    {"col": 6,  "dv": "BookLev_lead",       "fe": "firm",     "controls": "base",     "lag_control": "BookLev_lag"},
-    {"col": 7,  "dv": "BookLev_lead",       "fe": "industry", "controls": "extended", "lag_control": "BookLev_lag"},
-    {"col": 8,  "dv": "BookLev_lead",       "fe": "firm",     "controls": "extended", "lag_control": "BookLev_lag"},
-    {"col": 9,  "dv": "DebtToCapital",      "fe": "industry", "controls": "base",     "lag_control": "DebtToCapital_lag"},
-    {"col": 10, "dv": "DebtToCapital",      "fe": "firm",     "controls": "base",     "lag_control": "DebtToCapital_lag"},
-    {"col": 11, "dv": "DebtToCapital",      "fe": "industry", "controls": "extended", "lag_control": "DebtToCapital_lag"},
-    {"col": 12, "dv": "DebtToCapital",      "fe": "firm",     "controls": "extended", "lag_control": "DebtToCapital_lag"},
-    {"col": 13, "dv": "DebtToCapital_lead", "fe": "industry", "controls": "base",     "lag_control": "DebtToCapital_lag"},
-    {"col": 14, "dv": "DebtToCapital_lead", "fe": "firm",     "controls": "base",     "lag_control": "DebtToCapital_lag"},
-    {"col": 15, "dv": "DebtToCapital_lead", "fe": "industry", "controls": "extended", "lag_control": "DebtToCapital_lag"},
-    {"col": 16, "dv": "DebtToCapital_lead", "fe": "firm",     "controls": "extended", "lag_control": "DebtToCapital_lag"},
+    # BookLev block (12 cols): contemporaneous (1-6) + lead (7-12)
+    {"col": 1,  "dv": "BookLev",            "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "BookLev",            "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "BookLev",            "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "BookLev",            "fe": "firm",        "controls": "extended"},
+    {"col": 5,  "dv": "BookLev",            "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "BookLev",            "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "BookLev_lead",       "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "BookLev_lead",       "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "BookLev_lead",       "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "BookLev_lead",       "fe": "firm",        "controls": "extended"},
+    {"col": 11, "dv": "BookLev_lead",       "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "BookLev_lead",       "fe": "firm_yq",     "controls": "extended"},
+    # DebtToCapital block (12 cols): contemporaneous (13-18) + lead (19-24)
+    {"col": 13, "dv": "DebtToCapital",      "fe": "industry",    "controls": "base"},
+    {"col": 14, "dv": "DebtToCapital",      "fe": "firm",        "controls": "base"},
+    {"col": 15, "dv": "DebtToCapital",      "fe": "industry",    "controls": "extended"},
+    {"col": 16, "dv": "DebtToCapital",      "fe": "firm",        "controls": "extended"},
+    {"col": 17, "dv": "DebtToCapital",      "fe": "industry_yq", "controls": "extended"},
+    {"col": 18, "dv": "DebtToCapital",      "fe": "firm_yq",     "controls": "extended"},
+    {"col": 19, "dv": "DebtToCapital_lead", "fe": "industry",    "controls": "base"},
+    {"col": 20, "dv": "DebtToCapital_lead", "fe": "firm",        "controls": "base"},
+    {"col": 21, "dv": "DebtToCapital_lead", "fe": "industry",    "controls": "extended"},
+    {"col": 22, "dv": "DebtToCapital_lead", "fe": "firm",        "controls": "extended"},
+    {"col": 23, "dv": "DebtToCapital_lead", "fe": "industry_yq", "controls": "extended"},
+    {"col": 24, "dv": "DebtToCapital_lead", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -208,7 +221,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
-        "gvkey", "year", "fyearq_int", "ff12_code",
+        "gvkey", "year", "fyearq_int", "ff12_code", "start_date",
         # DVs
         "BookLev", "BookLev_lead",
         "DebtToCapital", "DebtToCapital_lead",
@@ -228,6 +241,12 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
     print(f"  Columns: {len(panel.columns)}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -246,11 +265,18 @@ def prepare_regression_data(
 ) -> pd.DataFrame:
     """Prepare panel for a specific model specification."""
     dv = spec["dv"]
-    lag_control = spec.get("lag_control")
+    fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
-    if lag_control:
-        controls = controls + [lag_control]
+
+    # Create Lagged_DV: always lag of the base DV (t-1)
+    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[lag_col]
+
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -304,20 +330,15 @@ def run_regression(
     Firm FE: EntityEffects + TimeEffects (via from_formula)
 
     All models: firm-clustered SEs, drop_absorbed=True.
-    Time index: fyearq_int (fiscal year).
+    Time index: fyearq_int (fiscal year) or cal_yr_qtr (calendar year-quarter).
     """
     col_num = spec["col"]
     dv = spec["dv"]
     fe_type = spec["fe"]
-    lag_control = spec.get("lag_control")
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
-    if lag_control:
-        controls = controls + [lag_control]
 
     print(f"\n" + "=" * 60)
     print(f"Running regression: Col ({col_num}) | DV={dv} | FE={fe_type} | Controls={spec['controls']}")
-    if lag_control:
-        print(f"  Lagged DV control: {lag_control}")
     print("=" * 60)
 
     if len(df_prepared) < 100:
@@ -326,17 +347,22 @@ def run_regression(
 
     exog = KEY_IVS + controls
 
-    print(f"  FE: {'Industry(FF12) + FiscalYear' if fe_type == 'industry' else 'Firm + FiscalYear'}")
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     print(f"  Controls: {spec['controls']} ({len(controls)} vars)")
     print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    # MultiIndex: gvkey (entity) × fyearq_int (fiscal year time)
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    # MultiIndex: gvkey (entity) × time (fiscal year or calendar year-quarter)
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             # Absorb industry FE via other_effects (not C() dummies)
             dependent_data = df_panel[dv]
             exog_data = df_panel[exog]
@@ -414,11 +440,11 @@ def _sig_stars(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write unified 8-column LaTeX table with stars + SE in parentheses.
+    """Write two-panel LaTeX table (BookLev + DebtToCapital) with 12 cols each.
 
-    Layout:
-        Cols 1-4: BookLev (contemporaneous)
-        Cols 5-8: BookLev_lead (t+1)
+    Layout per panel:
+        Cols 1-6: contemporaneous DV (Ind/Firm base, Ind/Firm ext, IndYQ/FirmYQ ext)
+        Cols 7-12: lead DV (same pattern)
         Rows: 4 key IVs (coeff + SE), controls indicator, FE indicators, N, R²
     """
     results_by_col = {}
@@ -426,8 +452,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         meta = r.get("meta", {})
         if meta:
             results_by_col[meta["col"]] = meta
-
-    n_cols = 8
 
     def fmt_coef(val: float, stars: str) -> str:
         if np.isnan(val):
@@ -449,85 +473,129 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             return f"{val:.2e}"
         return f"{val:.3f}"
 
+    def _build_panel_lines(
+        col_range: range,
+        contemp_label: str,
+        lead_label: str,
+    ) -> List[str]:
+        """Build table body lines for one DV panel (12 cols)."""
+        n_cols = len(col_range)
+        cols = list(col_range)
+        lines: List[str] = []
+
+        # Column numbers
+        col_nums = " & ".join(f"({i})" for i in cols)
+        lines.append(f" & {col_nums} " + r"\\")
+
+        # DV headers with multicolumn (6 contemp + 6 lead)
+        lines.append(
+            rf" & \multicolumn{{6}}{{c}}{{{contemp_label}}}"
+            rf" & \multicolumn{{6}}{{c}}{{{lead_label}}} \\"
+        )
+        lines.append(
+            rf"\cmidrule(lr){{2-7}} \cmidrule(lr){{8-{n_cols + 1}}}"
+        )
+        lines.append(r"\midrule")
+
+        # Key IV rows (coefficient + SE for each)
+        for iv in KEY_IVS:
+            label = VARIABLE_LABELS.get(iv, iv)
+            coef_cells = []
+            for c in cols:
+                meta = results_by_col.get(c, {})
+                beta = meta.get(f"{iv}_beta", np.nan)
+                p_two = meta.get(f"{iv}_p_two", np.nan)
+                coef_cells.append(fmt_coef(beta, _sig_stars(p_two)))
+            lines.append(f"{label} & " + " & ".join(coef_cells) + r" \\")
+
+            se_cells = []
+            for c in cols:
+                meta = results_by_col.get(c, {})
+                se = meta.get(f"{iv}_se", np.nan)
+                se_cells.append(fmt_se(se))
+            lines.append(f" & " + " & ".join(se_cells) + r" \\")
+
+        lines.append(r"\midrule")
+
+        # Controls indicator
+        ctrl_cells = []
+        for c in cols:
+            meta = results_by_col.get(c, {})
+            ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
+        lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
+
+        # FE indicators
+        ind_fe_cells = []
+        firm_fe_cells = []
+        fy_fe_cells = []
+        yq_fe_cells = []
+        for c in cols:
+            meta = results_by_col.get(c, {})
+            fe = meta.get("fe", "")
+            base_fe = fe.replace("_yq", "")
+            ind_fe_cells.append("Yes" if base_fe == "industry" else "")
+            firm_fe_cells.append("Yes" if base_fe == "firm" else "")
+            fy_fe_cells.append("Yes" if not fe.endswith("_yq") else "")
+            yq_fe_cells.append("Yes" if fe.endswith("_yq") else "")
+        lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
+        lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
+        lines.append(r"Calendar Year FE & " + " & ".join(fy_fe_cells) + r" \\")
+        lines.append(r"Cal Year-Qtr FE & " + " & ".join(yq_fe_cells) + r" \\")
+
+        lines.append(r"\midrule")
+
+        # N
+        n_cells = []
+        for c in cols:
+            meta = results_by_col.get(c, {})
+            n_val = meta.get("n_obs", 0)
+            n_cells.append(fmt_int(n_val) if n_val else "")
+        lines.append(r"N & " + " & ".join(n_cells) + r" \\")
+
+        # Within R²
+        r2_cells = []
+        for c in cols:
+            meta = results_by_col.get(c, {})
+            r2_cells.append(fmt_r2(meta.get("within_r2", np.nan)))
+        lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
+
+        return lines
+
+    n_cols = 12  # per panel
+
+    # Panel A: BookLev (cols 1-12)
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Speech Uncertainty and Leverage}",
-        r"\label{tab:h4_leverage}",
+        r"\caption{Speech Uncertainty and Leverage --- Panel A: BookLev}",
+        r"\label{tab:h4_leverage_A}",
         r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}",
         r"\toprule",
     ]
-
-    # Column numbers
-    col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
-    lines.append(f" & {col_nums} " + r"\\")
-
-    # DV headers with multicolumn
-    lines.append(
-        r" & \multicolumn{4}{c}{BookLev$_t$}"
-        r" & \multicolumn{4}{c}{BookLev$_{t+1}$} \\"
+    lines += _build_panel_lines(
+        range(1, 13), r"BookLev$_t$", r"BookLev$_{t+1}$",
     )
-    lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
-    lines.append(r"\midrule")
+    lines += [
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\end{table}",
+        "",
+    ]
 
-    # Key IV rows (coefficient + SE for each)
-    for iv in KEY_IVS:
-        label = VARIABLE_LABELS.get(iv, iv)
-        coef_cells = []
-        for c in range(1, n_cols + 1):
-            meta = results_by_col.get(c, {})
-            beta = meta.get(f"{iv}_beta", np.nan)
-            p_two = meta.get(f"{iv}_p_two", np.nan)
-            coef_cells.append(fmt_coef(beta, _sig_stars(p_two)))
-        lines.append(f"{label} & " + " & ".join(coef_cells) + r" \\")
-
-        se_cells = []
-        for c in range(1, n_cols + 1):
-            meta = results_by_col.get(c, {})
-            se = meta.get(f"{iv}_se", np.nan)
-            se_cells.append(fmt_se(se))
-        lines.append(f" & " + " & ".join(se_cells) + r" \\")
-
-    lines.append(r"\midrule")
-
-    # Controls indicator
-    ctrl_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
-    lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
-
-    # FE indicators
-    ind_fe_cells = []
-    firm_fe_cells = []
-    year_fe_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        ind_fe_cells.append("Yes" if meta.get("fe") == "industry" else "")
-        firm_fe_cells.append("Yes" if meta.get("fe") == "firm" else "")
-        year_fe_cells.append("Yes")
-    lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
-    lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
-    lines.append(r"Fiscal Year FE & " + " & ".join(year_fe_cells) + r" \\")
-
-    lines.append(r"\midrule")
-
-    # N
-    n_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        n_val = meta.get("n_obs", 0)
-        n_cells.append(fmt_int(n_val) if n_val else "")
-    lines.append(r"N & " + " & ".join(n_cells) + r" \\")
-
-    # Within R²
-    r2_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        r2_cells.append(fmt_r2(meta.get("within_r2", np.nan)))
-    lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
-
+    # Panel B: DebtToCapital (cols 13-24)
+    lines += [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Speech Uncertainty and Leverage --- Panel B: DebtToCapital}",
+        r"\label{tab:h4_leverage_B}",
+        r"\scriptsize",
+        r"\begin{tabular}{l" + "c" * n_cols + "}",
+        r"\toprule",
+    ]
+    lines += _build_panel_lines(
+        range(13, 25), r"DebtToCapital$_t$", r"DebtToCapital$_{t+1}$",
+    )
     lines += [
         r"\bottomrule",
         r"\end{tabular}",
@@ -538,9 +606,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
-        r"Contemporaneous DV (cols 1--4) is constant within firm-quarter; ",
-        r"results should be interpreted alongside lead DV (cols 5--8). ",
+        r"Calendar Year FE uses \texttt{fyearq\_int}; Cal Year-Qtr FE uses \texttt{cal\_yr\_qtr}. ",
         r"Variables winsorized at 1\%/99\% by year at engine level. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
@@ -751,7 +817,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("  Saved: summary_stats.csv")
     print("  Saved: summary_stats.tex")
 
-    # Run regressions: 16 model specifications
+    # Run regressions: 24 model specifications
     all_results: List[Dict[str, Any]] = []
 
     for spec in MODEL_SPECS:
@@ -782,7 +848,7 @@ def main(panel_path: Optional[str] = None) -> int:
         attrition_stages = [
             ("Master manifest (full panel)", full_panel_n),
             ("Main sample filter (excl Finance/Utility)", main_panel_n),
-            ("After lead filter (col 5-8 only)", panel["BookLev_lead"].notna().sum()),
+            ("After lead filter (col 7-12 only)", panel["BookLev_lead"].notna().sum()),
             ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ]
         generate_attrition_table(attrition_stages, out_dir, "H4 Leverage")

@@ -16,7 +16,8 @@
       "Bash(wc:*)",
       "Skill(gsd:plan-phase)",
       "Skill(gsd:plan-phase:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(python3:*)"
     ]
   }
 }

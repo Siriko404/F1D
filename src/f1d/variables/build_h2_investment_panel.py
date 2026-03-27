@@ -396,6 +396,77 @@ def create_lead_variable(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
     return panel
 
 
+def create_investment_residual_lag(panel: pd.DataFrame) -> pd.DataFrame:
+    """Create InvestmentResidual_lag at call level (previous fiscal year's InvestmentResidual).
+
+    For each firm-fiscal-year, takes the end-of-year InvestmentResidual (from the
+    latest call in that fiscal year) and shifts +1 within gvkey to get the
+    previous fiscal year's value. Only valid if fiscal years are consecutive.
+
+    Mirrors create_lead_variable() but shifts backward instead of forward.
+    """
+    print("\n" + "=" * 60)
+    print("Creating InvestmentResidual_lag (call-level, fiscal-year proxy)")
+    print("=" * 60)
+
+    # Reuse the firm-year EOY values already computed during lead construction
+    panel_dt = panel.copy()
+    panel_dt["start_date_dt"] = pd.to_datetime(panel_dt["start_date"], errors="coerce")
+
+    valid_mask = panel_dt["fyearq_int"].notna()
+    panel_valid = panel_dt[valid_mask].copy()
+
+    latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()
+    firm_year_eoy = panel_valid.loc[
+        latest_idx, ["gvkey", "fyearq_int", "InvestmentResidual"]
+    ].copy()
+    firm_year_eoy = firm_year_eoy.rename(
+        columns={"fyearq_int": "fyearq_grp", "InvestmentResidual": "InvestmentResidual_eoy"}
+    )
+
+    firm_year_eoy = firm_year_eoy.sort_values(["gvkey", "fyearq_grp"]).reset_index(
+        drop=True
+    )
+
+    # Shift +1 = previous fiscal year
+    firm_year_eoy["fyearq_prev"] = firm_year_eoy.groupby("gvkey")[
+        "fyearq_grp"
+    ].shift(1)
+    firm_year_eoy["InvestmentResidual_lag_raw"] = firm_year_eoy.groupby("gvkey")[
+        "InvestmentResidual_eoy"
+    ].shift(1)
+
+    # Validate consecutive fiscal years
+    consecutive = firm_year_eoy["fyearq_prev"] == (firm_year_eoy["fyearq_grp"] - 1)
+    firm_year_eoy["InvestmentResidual_lag"] = np.where(
+        consecutive, firm_year_eoy["InvestmentResidual_lag_raw"], np.nan
+    )
+
+    n_valid_lag = firm_year_eoy["InvestmentResidual_lag"].notna().sum()
+    n_first_year = firm_year_eoy["InvestmentResidual_lag_raw"].isna().sum()
+    n_gap_year = ((~consecutive) & firm_year_eoy["InvestmentResidual_lag_raw"].notna()).sum()
+    print(f"  Firm-fiscal-years (first year per firm, no prior): {n_first_year:,}")
+    print(f"  Firm-fiscal-years with fiscal year gap (lag nulled): {n_gap_year:,}")
+    print(f"  Firm-fiscal-years with valid consecutive lag: {n_valid_lag:,}")
+
+    # Merge lag back to call level
+    lag_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "InvestmentResidual_lag"]].copy()
+    lag_lookup = lag_lookup.rename(columns={"fyearq_grp": "fyearq_int"})
+
+    before_len = len(panel)
+    panel = panel.merge(lag_lookup, on=["gvkey", "fyearq_int"], how="left")
+    after_len = len(panel)
+    if after_len != before_len:
+        raise ValueError(
+            f"Lag merge changed row count {before_len} -> {after_len}. "
+            "Duplicate (gvkey, fyearq_int) in firm-year lag lookup."
+        )
+
+    print(f"  Calls with valid lag: {panel['InvestmentResidual_lag'].notna().sum():,}")
+
+    return panel
+
+
 def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> int:
     """Main execution."""
     start_time = datetime.now()
@@ -445,6 +516,9 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Step 3: Create InvestmentResidual_lead using fiscal year (C-5/M-9 fix)
     panel = create_lead_variable(panel, root)
+
+    # Step 3b: Create InvestmentResidual_lag at call level (previous fiscal year)
+    panel = create_investment_residual_lag(panel)
 
     # Step 4: Assign sample
     if "ff12_code" not in panel.columns:

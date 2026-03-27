@@ -1,50 +1,48 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H12Q Quarterly Payout Ratio Hypothesis
+STAGE 4: Test H18 SEC Comment Letter Receipt Hypothesis
 ================================================================================
-ID: econometric/run_h12q_payout
-Description: Run H12Q hypothesis test — quarterly PayoutRatio at call level.
+ID: econometric/run_h18_cccl_received
+Description: Run H18 hypothesis test — does speech uncertainty predict SEC
+             comment letter receipt in subsequent quarters?
 
-DV: PayoutRatio_q = (dvpspq × cshoq) / ibq
-    Quarterly payout ratio. NaN when ibq <= 0 (explicit negative earnings filter).
+DV: CCCL = 1 if firm received SEC comment letter between this call and the next call.
+    Window: (start_date_current, start_date_next_call].
 
-Lead DVs:
-    PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
-
-12 Model Specifications:
-    Cols 1-4:   DV = PayoutRatio_q (contemporaneous), Calendar Year FE
-    Cols 5-6:   DV = PayoutRatio_q (contemporaneous), Year-Quarter FE
-    Cols 7-10:  DV = PayoutRatio_q_lead_qtr (next quarter), Calendar Year FE
-    Cols 11-12: DV = PayoutRatio_q_lead_qtr (next quarter), Year-Quarter FE
+6 Model Specifications:
+    Cols 1-2:   DV = CCCL, Calendar Year FE (Base / Extended)
+    Cols 3-4:   DV = CCCL, Calendar Year FE (Extended)
+    Cols 5-6:   DV = CCCL, Year-Quarter FE (Extended)
     Odd cols:   Industry FE (FF12)
     Even cols:  Firm FE
     Cols 1-2, 7-8:   Base controls
     Cols 3-6, 9-12:  Extended controls
 
-Lead specs (cols 7-12) include PayoutRatio_q as lagged DV control.
-
 Key IVs (4, simultaneous, call-level):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
 
-Hypothesis: One-tailed (β < 0 — higher uncertainty → lower payout).
+Hypothesis: One-tailed (beta > 0 — higher uncertainty -> more SEC scrutiny).
 
-Sample: Main only (FF12 ≠ 8, 11).
+Estimator: LPM via PanelOLS (Linear Probability Model).
+Methodological justification: Timoneda (2021, Social Science Research) — Monte Carlo
+shows LPM-FE outperforms logit at base rates <5%. At ~0.4% treatment rate,
+heteroscedasticity is negligible (Var = p(1-p) ~ 0.004), linearity approximation
+excellent, no incidental parameters problem, no sample loss.
+
+Sample: Main only (FF12 != 8, 11).
 SEs: Firm-clustered.
-FE time: Fiscal year (fyearq_int); cal_yr_qtr (calendar year-quarter) for YQ specs.
-
-Known limitation: ~57% of firm-quarters with ibq > 0 have PayoutRatio_q = 0
-(dividend lumpiness). OLS with continuous DV; documented as limitation.
+FE time: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 
 Inputs:
-    - outputs/variables/h12q_payout/latest/h12q_payout_panel.parquet
+    - outputs/variables/h18_cccl_received/latest/h18_cccl_received_panel.parquet
 
 Outputs:
-    - outputs/econometric/h12q_payout/{timestamp}/...
+    - outputs/econometric/h18_cccl_received/{timestamp}/...
 
 Author: Thesis Author
-Date: 2026-03-21
+Date: 2026-03-26
 ================================================================================
 """
 
@@ -79,8 +77,8 @@ KEY_IVS = [
 ]
 
 BASE_CONTROLS = [
-    "Size", "TobinsQ", "ROA", "BookLev", "CashHoldings",
-    "CapexAt", "OCF_Volatility",
+    "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
+    "CashHoldings", "DividendPayer", "OCF_Volatility",
     "Lagged_DV",
 ]
 
@@ -91,22 +89,14 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    # Contemporaneous — Calendar Year FE
-    {"col": 1,  "dv": "PayoutRatio_q",          "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 2,  "dv": "PayoutRatio_q",          "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 3,  "dv": "PayoutRatio_q",          "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 4,  "dv": "PayoutRatio_q",          "fe": "firm",        "controls": "extended", "extra_controls": []},
-    # Contemporaneous — Year-Quarter FE (Extended controls only)
-    {"col": 5,  "dv": "PayoutRatio_q",          "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 6,  "dv": "PayoutRatio_q",          "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
-    # Lead: next quarter — Calendar Year FE
-    {"col": 7,  "dv": "PayoutRatio_q_lead_qtr", "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 8,  "dv": "PayoutRatio_q_lead_qtr", "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 9,  "dv": "PayoutRatio_q_lead_qtr", "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 10, "dv": "PayoutRatio_q_lead_qtr", "fe": "firm",        "controls": "extended", "extra_controls": []},
-    # Lead: next quarter — Year-Quarter FE (Extended controls only)
-    {"col": 11, "dv": "PayoutRatio_q_lead_qtr", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 12, "dv": "PayoutRatio_q_lead_qtr", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    # CCCL (call-to-next-call window) — Calendar Year FE
+    {"col": 1, "dv": "CCCL", "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 2, "dv": "CCCL", "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 3, "dv": "CCCL", "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 4, "dv": "CCCL", "fe": "firm",        "controls": "extended", "extra_controls": []},
+    # CCCL — Year-Quarter FE (Extended controls only)
+    {"col": 5, "dv": "CCCL", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 6, "dv": "CCCL", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
 ]
 
 VARIABLE_LABELS = {
@@ -117,8 +107,7 @@ VARIABLE_LABELS = {
 }
 
 SUMMARY_STATS_VARS = [
-    {"col": "PayoutRatio_q", "label": "PayoutRatio$_q$ (quarterly)"},
-    {"col": "PayoutRatio_q_lead_qtr", "label": "PayoutRatio$_q$ (next quarter)"},
+    {"col": "CCCL", "label": "CCCL (call-to-next-call)"},
     {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
     {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
     {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
@@ -129,9 +118,10 @@ SUMMARY_STATS_VARS = [
     {"col": "BookLev", "label": "Leverage"},
     {"col": "CashHoldings", "label": "Cash Holdings"},
     {"col": "CapexAt", "label": "CapEx / Assets"},
+    {"col": "DividendPayer", "label": "Dividend Payer"},
     {"col": "OCF_Volatility", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
+    {"col": "RD_Intensity", "label": r"R\&D Intensity"},
     {"col": "CashFlow", "label": "Cash Flow"},
     {"col": "Volatility", "label": "Stock Volatility"},
 ]
@@ -144,7 +134,7 @@ SUMMARY_STATS_VARS = [
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: H12Q Quarterly Payout Ratio (call-level)",
+        description="Stage 4: H18 CCCL Received (call-level)",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
@@ -157,19 +147,19 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.DataFrame, Path]:
-    """Load call-level H12Q panel."""
+    """Load call-level H18 panel."""
     print("\n" + "=" * 60)
-    print("Loading H12Q panel")
+    print("Loading H18 panel")
     print("=" * 60)
 
     if panel_path:
         panel_file = Path(panel_path)
     else:
         panel_dir = get_latest_output_dir(
-            root_path / "outputs" / "variables" / "h12q_payout",
-            required_file="h12q_payout_panel.parquet",
+            root_path / "outputs" / "variables" / "h18_cccl_received",
+            required_file="h18_cccl_received_panel.parquet",
         )
-        panel_file = panel_dir / "h12q_payout_panel.parquet"
+        panel_file = panel_dir / "h18_cccl_received_panel.parquet"
 
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
@@ -205,11 +195,9 @@ def prepare_regression_data(
     extra_controls = spec["extra_controls"]
     controls = (BASE_CONTROLS if ctrl_key == "base" else EXTENDED_CONTROLS) + extra_controls
 
-    # Create Lagged_DV: always lag of the base DV (t-1)
-    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
-    lag_col = f"{base_dv}_lag"
+    # Create Lagged_DV: CCCL received between prev call and this call
     panel = panel.copy()
-    panel["Lagged_DV"] = panel[lag_col]
+    panel["Lagged_DV"] = panel["CCCL_lag"]
 
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
     if fe_type.endswith("_yq"):
@@ -222,7 +210,7 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Drop NaN in DV (includes ibq <= 0 cases)
+    # Drop NaN in DV
     before = len(df)
     df = df[df[dv].notna()].copy()
     print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
@@ -250,7 +238,7 @@ def prepare_regression_data(
 def run_regression(
     df_prepared: pd.DataFrame, spec: Dict[str, Any],
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run PanelOLS with calendar year-quarter FE and firm-clustered SEs."""
+    """Run PanelOLS LPM with FE and firm-clustered SEs."""
     col_num = spec["col"]
     dv = spec["dv"]
     fe_type = spec["fe"]
@@ -258,7 +246,6 @@ def run_regression(
     extra_controls = spec["extra_controls"]
     controls = (BASE_CONTROLS if ctrl_key == "base" else EXTENDED_CONTROLS) + extra_controls
 
-    # Determine time index based on FE type
     time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
     base_fe = fe_type.replace("_yq", "")
     fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
@@ -272,11 +259,8 @@ def run_regression(
         return None, {}
 
     exog = KEY_IVS + controls
-
     n_firms = df_prepared["gvkey"].nunique()
     print(f"  N={len(df_prepared):,}, firms={n_firms:,}")
-    if extra_controls:
-        print(f"  Extra controls: {extra_controls}")
     t0 = datetime.now()
 
     df_panel = df_prepared.set_index(["gvkey", time_col])
@@ -305,7 +289,6 @@ def run_regression(
     elapsed = (datetime.now() - t0).total_seconds()
     print(f"  [OK] {elapsed:.1f}s | R2w={model.rsquared_within:.4f}")
 
-    # Build metadata with per-IV one-tailed p-values (H12: β < 0)
     meta: Dict[str, Any] = {
         "col": col_num,
         "dv": dv,
@@ -322,9 +305,9 @@ def run_regression(
         se = float(model.std_errors.get(iv, np.nan))
         p_two = float(model.pvalues.get(iv, np.nan))
 
-        # One-tailed: H12 expects β < 0
+        # One-tailed: H18 expects beta > 0
         if not np.isnan(p_two) and not np.isnan(beta):
-            p_one = p_two / 2 if beta < 0 else 1 - p_two / 2
+            p_one = p_two / 2 if beta > 0 else 1 - p_two / 2
         else:
             p_one = np.nan
 
@@ -333,7 +316,7 @@ def run_regression(
         meta[f"{iv}_p_one"] = p_one
 
         stars = _sig_stars(p_one)
-        print(f"  {VARIABLE_LABELS.get(iv, iv)}: b={beta:.4f} p1={p_one:.4f} {stars}")
+        print(f"  {VARIABLE_LABELS.get(iv, iv)}: b={beta:.6f} p1={p_one:.4f} {stars}")
 
     return model, meta
 
@@ -356,14 +339,14 @@ def _sig_stars(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write unified 12-column LaTeX table with stars + SE in parentheses."""
+    """Write unified 6-column LaTeX table."""
     results_by_col = {}
     for r in all_results:
         meta = r.get("meta", {})
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 12
+    n_cols = 6
 
     def fmt_coef(val, stars):
         return f"{val:.4f}{stars}" if not np.isnan(val) else ""
@@ -382,26 +365,22 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Speech Uncertainty and Quarterly Payout Ratio}",
-        r"\label{tab:h12q_payout}",
+        r"\caption{Speech Uncertainty and SEC Comment Letters}",
+        r"\label{tab:h18_cccl_received}",
         r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}",
         r"\toprule",
     ]
 
-    # Column numbers
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
 
-    # DV headers with multicolumn
     lines.append(
-        r" & \multicolumn{6}{c}{PayoutRatio$_q$}"
-        r" & \multicolumn{6}{c}{PayoutRatio$_q$ (next quarter)} \\"
+        r" & \multicolumn{6}{c}{CCCL\_fwd (call-to-next-call)} \\"
     )
-    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
+    lines.append(r"\cmidrule(lr){2-7}")
     lines.append(r"\midrule")
 
-    # Key IV rows (coefficient + SE for each)
     for iv in KEY_IVS:
         label = VARIABLE_LABELS.get(iv, iv)
         coef_cells = []
@@ -421,21 +400,15 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     lines.append(r"\midrule")
 
-    # Controls indicator
     ctrl_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
         ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
     lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
 
-    # Lagged DV indicator (always Yes — Lagged_DV is in BASE_CONTROLS)
     lines.append(r"Lagged DV & " + " & ".join(["Yes"] * n_cols) + r" \\")
 
-    # FE indicators
-    ind_fe_cells = []
-    firm_fe_cells = []
-    year_fe_cells = []
-    yr_qtr_fe_cells = []
+    ind_fe_cells, firm_fe_cells, year_fe_cells, yr_qtr_fe_cells = [], [], [], []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
         fe = meta.get("fe", "")
@@ -447,12 +420,11 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         yr_qtr_fe_cells.append("Yes" if is_yq else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
-    lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Year FE & " + " & ".join(year_fe_cells) + r" \\")
     lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
 
     lines.append(r"\midrule")
 
-    # N
     n_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
@@ -460,7 +432,6 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         n_cells.append(fmt_int(n_val) if n_val else "")
     lines.append(r"N & " + " & ".join(n_cells) + r" \\")
 
-    # Within R-sq
     r2_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
@@ -473,19 +444,18 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\begin{minipage}{\linewidth}",
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; $\beta < 0$). ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; $\beta > 0$). ",
         r"Standard errors (in parentheses) clustered at firm level. ",
-        r"PayoutRatio$_q$ = (dvpspq $\times$ cshoq) / ibq; NaN when ibq $\leq$ 0. ",
+        r"CCCL\_fwd = 1 if firm received SEC comment letter between this call and the next. ",
+        r"LPM (Linear Probability Model). ",
+        r"Timoneda (2021): LPM-FE outperforms logit at base rates $<$5\%. ",
         r"Main sample (excludes financial and utility firms). ",
-        r"~57\% of firm-quarters with positive earnings have PayoutRatio$_q$ = 0 (dividend lumpiness). ",
-        r"Lead specs (cols 7--12) include PayoutRatio$_q$ as lagged DV control. ",
-        r"Year-quarter FE absorbs calendar year $\times$ quarter effects. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
         r"\end{table}",
     ]
 
-    tex_path = out_dir / "h12q_payout_table.tex"
+    tex_path = out_dir / "h18_cccl_received_table.tex"
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"  Saved: {tex_path.name}")
@@ -507,10 +477,10 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
         col_num = meta["col"]
         fname = f"regression_results_col{col_num}.txt"
         with open(out_dir / fname, "w", encoding="utf-8") as f:
-            f.write(f"H12Q Quarterly Payout Ratio Regression\n")
+            f.write(f"H18 SEC Comment Letter Receipt Regression\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
-            f.write(f"FE: {meta['fe']} + Year-Quarter\n")
+            f.write(f"FE: {meta['fe']}\n")
             f.write(f"Controls: {meta['controls']}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
             f.write("=" * 60 + "\n\n")
@@ -539,21 +509,21 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h12q_payout" / timestamp
+    out_dir = root / "outputs" / "econometric" / "h18_cccl_received" / timestamp
 
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H12Q_Payout",
+        suite_name="H18_CCCL_Received",
         timestamp=timestamp,
     )
 
     print("=" * 80)
-    print("STAGE 4: H12Q Quarterly Payout Ratio")
+    print("STAGE 4: H18 SEC Comment Letter Receipt")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    4 IVs × 2 DVs × 3 FE × 2 controls = 12 models")
-    print(f"FE time:   fyearq_int (fiscal year) + cal_yr_qtr (calendar year-quarter)")
+    print(f"Design:    4 IVs x 1 DV x 3 FE x 2 controls = 6 models")
+    print(f"FE time:   cal_yr (calendar year) + cal_yr_qtr (calendar year-quarter)")
 
     panel, panel_file = load_panel(root, panel_path)
 
@@ -561,28 +531,22 @@ def main(panel_path: Optional[str] = None) -> int:
     panel = filter_main_sample(panel)
     main_n = len(panel)
 
-    # Report negative earnings filter
-    n_dv_valid = panel["PayoutRatio_q"].notna().sum()
-    n_dv_zero = (panel["PayoutRatio_q"] == 0).sum()
+    n_dv_valid = panel["CCCL"].notna().sum()
+    n_dv1 = (panel["CCCL"] == 1).sum()
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
-    print(f"  PayoutRatio_q non-null (ibq > 0): {n_dv_valid:,}")
-    if n_dv_valid > 0:
-        print(f"  PayoutRatio_q == 0 (no div this quarter): {n_dv_zero:,} "
-              f"({100 * n_dv_zero / n_dv_valid:.1f}%)")
-    print(f"  PayoutRatio_q_lead_qtr non-null: {panel['PayoutRatio_q_lead_qtr'].notna().sum():,}")
+    print(f"  CCCL non-null: {n_dv_valid:,}")
+    print(f"  CCCL=1: {n_dv1:,} ({100*n_dv1/n_dv_valid:.2f}%)")
 
-    # Summary stats
     out_dir.mkdir(parents=True, exist_ok=True)
     make_summary_stats_table(
         df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics --- H12Q Quarterly Payout Ratio (Main Sample)",
-        label="tab:summary_stats_h12q",
+        caption="Summary Statistics --- H18 CCCL Received (Main Sample)",
+        label="tab:summary_stats_h18",
     )
     print("  Saved: summary_stats.csv/.tex")
 
-    # Run 12 regressions
     all_results: List[Dict[str, Any]] = []
 
     for spec in MODEL_SPECS:
@@ -601,22 +565,19 @@ def main(panel_path: Optional[str] = None) -> int:
         if model is not None and meta:
             all_results.append({"model": model, "meta": meta})
 
-    # Save outputs
     diag_df = save_outputs(all_results, out_dir)
 
-    # Attrition
     if all_results:
         first = all_results[0]["meta"]
         attrition_stages = [
             ("Full panel", full_n),
             ("Main sample (excl Finance/Utility)", main_n),
-            ("PayoutRatio_q non-null (ibq > 0)", n_dv_valid),
+            ("CCCL=1 in Main", n_dv1),
             ("After complete-case + min-calls (col 1)", first["n_obs"]),
         ]
-        generate_attrition_table(attrition_stages, out_dir, "H12Q Quarterly Payout Ratio")
+        generate_attrition_table(attrition_stages, out_dir, "H18 CCCL Received")
         print("  Saved: sample_attrition.csv/.tex")
 
-    # Manifest
     generate_manifest(
         output_dir=out_dir, stage="stage4", timestamp=timestamp,
         input_paths={"panel": panel_file},
@@ -625,7 +586,6 @@ def main(panel_path: Optional[str] = None) -> int:
     )
     print("  Saved: run_manifest.json")
 
-    # Summary
     duration = (datetime.now() - start_time).total_seconds()
     print("\n" + "=" * 80)
     print("COMPLETE")
@@ -637,7 +597,7 @@ def main(panel_path: Optional[str] = None) -> int:
         sig_count = sum(
             1 for r in all_results
             if r["meta"].get(f"{iv}_p_one", 1.0) < 0.05
-            and r["meta"].get(f"{iv}_beta", 0) < 0
+            and r["meta"].get(f"{iv}_beta", 0) > 0
         )
         print(f"  {VARIABLE_LABELS.get(iv, iv)}: {sig_count}/{len(all_results)} significant (p<0.05, one-tail)")
 

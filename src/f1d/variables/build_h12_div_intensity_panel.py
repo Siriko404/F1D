@@ -195,6 +195,27 @@ def create_lead_payout_ratio(firm_year: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def create_lag_payout_ratio(firm_year: pd.DataFrame) -> pd.DataFrame:
+    """Create PayoutRatio_lag = PayoutRatio shifted one FY backward.
+
+    - PayoutRatio_lag_t = PayoutRatio_{t-1} (previous-year payout ratio)
+    - Gap years (non-consecutive fyearq) → NaN
+    """
+    df = firm_year.copy()
+    df = df.sort_values(["gvkey", "fyearq"]).reset_index(drop=True)
+    df["prev_fyearq"] = df.groupby("gvkey")["fyearq"].shift(1)
+    df["PayoutRatio_prev"] = df.groupby("gvkey")["PayoutRatio"].shift(1)
+
+    fyearq_int = df["fyearq"].astype("Int64")
+    prev_fyearq_int = df["prev_fyearq"].astype("Int64")
+    is_consecutive = (fyearq_int - prev_fyearq_int) == 1
+    df.loc[~is_consecutive, "PayoutRatio_prev"] = np.nan
+
+    df = df.rename(columns={"PayoutRatio_prev": "PayoutRatio_lag"})
+    df = df.drop(columns=["prev_fyearq"], errors="ignore")
+    return df
+
+
 # ---------------------------------------------------------------------------
 # Main panel builder
 # ---------------------------------------------------------------------------
@@ -308,6 +329,11 @@ def build_panel(
     # Assign industry sample
     if "ff12_code" in firm_year.columns:
         firm_year["sample"] = assign_industry_sample(firm_year["ff12_code"])
+
+    # Create lagged DV
+    firm_year = create_lag_payout_ratio(firm_year)
+    n_lag = firm_year["PayoutRatio_lag"].notna().sum()
+    print(f"  PayoutRatio_lag (valid): {n_lag:,} / {len(firm_year):,}")
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
