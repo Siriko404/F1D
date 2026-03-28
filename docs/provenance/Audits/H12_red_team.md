@@ -1,8 +1,8 @@
-# H12Q -- Second-Layer Red-Team Audit
+# H12 -- Second-Layer Red-Team Audit
 
 **Generated:** 2026-03-21
-**Suite ID:** H12Q
-**First-layer audit:** `docs/provenance/H12Q.md`
+**Suite ID:** H12
+**First-layer audit:** `docs/provenance/H12.md`
 **Red-team auditor standard:** Hostile-but-fair replication audit of the audit itself
 
 ---
@@ -11,7 +11,7 @@
 
 **PASS -- first-layer audit is substantially correct, thorough, and appropriately skeptical.**
 
-The H12Q first-layer audit is one of the strongest provenance documents in this project. It correctly traces the full variable construction chain from raw Compustat fields through to final regression output, identifies the three genuinely important issues (inflated N from call-level estimation, zero mass point, contemporaneous timing), and provides actionable fixes. I independently verified all code-path claims, formula transcriptions, and line references against the actual source. The audit is thesis-committee-ready with minor corrections noted below.
+The H12 first-layer audit is one of the strongest provenance documents in this project. It correctly traces the full variable construction chain from raw Compustat fields through to final regression output, identifies the three genuinely important issues (inflated N from call-level estimation, zero mass point, contemporaneous timing), and provides actionable fixes. I independently verified all code-path claims, formula transcriptions, and line references against the actual source. The audit is thesis-committee-ready with minor corrections noted below.
 
 ---
 
@@ -19,8 +19,8 @@ The H12Q first-layer audit is one of the strongest provenance documents in this 
 
 | Object | Path | Audited by L1 | Independently verified by L2 |
 |--------|------|:-:|:-:|
-| Runner | `src/f1d/econometric/run_h12q_payout.py` | Yes | Yes |
-| Panel builder | `src/f1d/variables/build_h12q_payout_panel.py` | Yes | Yes |
+| Runner | `src/f1d/econometric/run_h12_payout.py` | Yes | Yes |
+| Panel builder | `src/f1d/variables/build_h12_payout_panel.py` | Yes | Yes |
 | PayoutRatioQuarterlyBuilder | `src/f1d/shared/variables/payout_ratio_quarterly.py` | Yes | Yes |
 | CompustatEngine | `src/f1d/shared/variables/_compustat_engine.py` | Yes (relevant sections) | Yes |
 | `_winsorize_by_year()` | Engine L445-469 | Yes | Yes |
@@ -244,7 +244,7 @@ Reading only the first-layer audit, a thesis committee would NOT know:
 
 **The first-layer audit is APPROVED with minor supplements.**
 
-The H12Q first-layer audit is factually accurate, appropriately skeptical, and actionable. All 28 verified claims match the source code. The audit correctly identifies the two genuinely important methodological issues (inflated N from call-level estimation, zero mass point) and provides specific, implementable fixes.
+The H12 first-layer audit is factually accurate, appropriately skeptical, and actionable. All 28 verified claims match the source code. The audit correctly identifies the two genuinely important methodological issues (inflated N from call-level estimation, zero mass point) and provides specific, implementable fixes.
 
 Three minor supplements from the red-team:
 - IV multicollinearity (CEO is subset of Manager) should be acknowledged

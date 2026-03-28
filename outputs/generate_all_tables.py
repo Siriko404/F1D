@@ -86,7 +86,7 @@ SUITES = [
     {
         "id": "H1.1b",
         "type": "moderation",
-        "dir": "h1_1b_cash_tsimm_binary/PLACEHOLDER",
+        "dir": "h1_1b_cash_tsimm_binary/2026-03-28_193207",
         "caption": "H1.1b: Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
         "label": "tab:h1_1b",
         "cols": 2,
@@ -286,10 +286,10 @@ SUITES = [
     },
     # ── H12 ──
     {
-        "id": "H12Q",
-        "dir": "h12q_payout/2026-03-27_095009",
-        "caption": "H12Q: Speech Uncertainty and Quarterly Payout Ratio",
-        "label": "tab:h12q",
+        "id": "H12",
+        "dir": "h12_payout/2026-03-27_095009",
+        "caption": "H12: Speech Uncertainty and Quarterly Payout Ratio",
+        "label": "tab:h12",
         "cols": 12,
         "dvs": [
             (r"PayoutRatio\_q", 6),

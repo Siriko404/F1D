@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 3: Build H12Q Quarterly Payout Ratio Panel
+STAGE 3: Build H12 Quarterly Payout Ratio Panel
 ================================================================================
-ID: variables/build_h12q_payout_panel
-Description: Build CALL-LEVEL panel for H12Q Quarterly Payout Ratio hypothesis.
+ID: variables/build_h12_payout_panel
+Description: Build CALL-LEVEL panel for H12 Quarterly Payout Ratio hypothesis.
 
     Unit of observation: individual earnings call (file_name).
     DV: PayoutRatio_q = (dvpspq × cshoq) / ibq (quarterly, ibq > 0 only).
@@ -18,7 +18,7 @@ Inputs:
     - Linguistic variables (via shared builders)
 
 Outputs:
-    - outputs/variables/h12q_payout/{timestamp}/h12q_payout_panel.parquet
+    - outputs/variables/h12_payout/{timestamp}/h12_payout_panel.parquet
 
 Author: Thesis Author
 Date: 2026-03-21
@@ -65,7 +65,7 @@ from f1d.shared.variables import (
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 3: Build H12Q Quarterly Payout Panel (call-level)",
+        description="Stage 3: Build H12 Quarterly Payout Panel (call-level)",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--year-start", type=int, default=None)
@@ -316,17 +316,17 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     stats: Dict[str, Any] = {
-        "step_id": "build_h12q_payout_panel",
+        "step_id": "build_h12_payout_panel",
         "timestamp": timestamp,
         "variable_stats": [],
     }
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "variables" / "h12q_payout" / timestamp
+    out_dir = root / "outputs" / "variables" / "h12_payout" / timestamp
 
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H12Q_Payout",
+        suite_name="H12_Payout",
         timestamp=timestamp,
     )
 
@@ -340,7 +340,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     years = range(year_start, year_end + 1)
 
     print("=" * 80)
-    print("STAGE 3: Build H12Q Quarterly Payout Panel (call-level)")
+    print("STAGE 3: Build H12 Quarterly Payout Panel (call-level)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -370,9 +370,9 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Save
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    panel_path = out_dir / "h12q_payout_panel.parquet"
+    panel_path = out_dir / "h12_payout_panel.parquet"
     panel.to_parquet(panel_path, index=False)
-    print(f"\n  Saved: h12q_payout_panel.parquet ({len(panel):,} rows, {len(panel.columns)} cols)")
+    print(f"\n  Saved: h12_payout_panel.parquet ({len(panel):,} rows, {len(panel.columns)} cols)")
 
     stats_df = stats_list_to_dataframe([s for s in stats.get("variable_stats", [])])
     stats_path = out_dir / "summary_stats.csv"

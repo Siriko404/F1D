@@ -29,7 +29,7 @@
 | 12 | `run_h11_prisk_uncertainty_lag.py` | YES (within H11 row) | YES |
 | 13 | `run_h11_prisk_uncertainty_lead.py` | YES (within H11 row) | YES |
 | 14 | `run_h12_div_intensity.py` | YES | YES |
-| 15 | `run_h12q_payout.py` | **NO** | **NO** |
+| 15 | `run_h12_payout.py` | **NO** | **NO** |
 | 16 | `run_h13_capex.py` | YES | YES |
 | 17 | `run_h13_1_competition.py` | YES | YES |
 | 18 | `run_h14_bidask_spread.py` | YES | YES |
@@ -38,14 +38,14 @@
 **FINDING:** 3 active runners are missing from both the Hypothesis Suites table and the All Econometric Scripts commands table:
 - `run_h1_1_cash_tsimm.py` (H1.1 -- TNIC-moderated cash holdings)
 - `run_h1_2_cash_constraint.py` (H1.2 -- financing-constraint-moderated cash holdings)
-- `run_h12q_payout.py` (H12Q -- quarterly payout ratio)
+- `run_h12_payout.py` (H12 -- quarterly payout ratio)
 
 ### 1.2 Panel builders in codebase vs. README
 
 **Active panel builders found** (16 files in `src/f1d/variables/build_*_panel.py`):
 
 All 15 listed panel builders match the runners. Additionally:
-- `build_h12q_payout_panel.py` exists but is NOT referenced anywhere in the README.
+- `build_h12_payout_panel.py` exists but is NOT referenced anywhere in the README.
 
 No panel builders exist for H1.1 or H1.2 (those suites merge TNIC/ratings data at runtime from the H1 panel).
 
@@ -54,14 +54,14 @@ No panel builders exist for H1.1 or H1.2 (those suites merge TNIC/ratings data a
 **README claims:** "13 hypothesis suites" (line 9)
 **Actual count of distinct hypothesis IDs with active runners:**
 
-H0.3, H1, H1.1, H1.2, H2, H4, H5, H6, H7, H9, H11 (base/lag/lead), H12, H12Q, H13, H13.1, H14, H15 = **17 distinct suite IDs** (or 15 if H11 base/lag/lead count as 1 suite).
+H0.3, H1, H1.1, H1.2, H2, H4, H5, H6, H7, H9, H11 (base/lag/lead), H12, H12, H13, H13.1, H14, H15 = **17 distinct suite IDs** (or 15 if H11 base/lag/lead count as 1 suite).
 
-If we count the way the README does (H11 as one suite with sub-variants): the correct count is **16 hypothesis suites** (adding H1.1, H1.2, H12Q to the 13 listed).
+If we count the way the README does (H11 as one suite with sub-variants): the correct count is **16 hypothesis suites** (adding H1.1, H1.2, H12 to the 13 listed).
 
 ### 1.4 Provenance doc count claim
 
 **README claims:** "Data provenance docs (13 suites)" (line 215)
-**Actual provenance .md files in `docs/provenance/`:** 19 files (H0.3, H1, H1_1, H1_2, H2, H4, H5, H6, H7, H9, H11, H11-Lag, H11-Lead, H12, H12Q, H13, H13_1, H14, H15)
+**Actual provenance .md files in `docs/provenance/`:** 19 files (H0.3, H1, H1_1, H1_2, H2, H4, H5, H6, H7, H9, H11, H11-Lag, H11-Lead, H12, H12, H13, H13_1, H14, H15)
 
 The correct count is **19 provenance documents** (or 16 if H11/H11-Lag/H11-Lead/H1/H1_1/H1_2 are grouped by parent suite).
 
@@ -75,7 +75,7 @@ The correct count is **19 provenance documents** (or 16 if H11/H11-Lag/H11-Lead/
 |-------|-------------------|-------|----|--------|
 | **H1.1** | Does product-market similarity (TNIC3TSIMM) moderate uncertainty-cash link? | PanelOLS + TSIMM interaction | CashHoldings / CashHoldings_lead | **MISSING from table** |
 | **H1.2** | Does financing constraint moderate uncertainty-cash link? | PanelOLS + 3-category credit rating interaction | CashHoldings / CashHoldings_lead | **MISSING from table** |
-| **H12Q** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr / PayoutRatio_q_lead_yr | **MISSING from table** |
+| **H12** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr / PayoutRatio_q_lead_yr | **MISSING from table** |
 
 ### 2.2 Existing suite descriptions -- spot checks
 
@@ -112,7 +112,7 @@ All 13 existing rows in the hypothesis table were verified against runner docstr
 | H11-Lag_red_team.md | YES |
 | H11-Lead_red_team.md | YES |
 | H12_red_team.md | YES |
-| H12Q_red_team.md | YES (suite missing from README table) |
+| H12_red_team.md | YES (suite missing from README table) |
 | H13_red_team.md | YES |
 | H13_1_red_team.md | YES |
 | H13.1_red_team.md | Duplicate naming? |
@@ -185,7 +185,7 @@ This is a **factual error** -- the directory name in the prerequisites table doe
 |-------|-----------------|
 | H1.1 | `python -m f1d.econometric.run_h1_1_cash_tsimm` |
 | H1.2 | `python -m f1d.econometric.run_h1_2_cash_constraint` |
-| H12Q | `python -m f1d.econometric.run_h12q_payout` |
+| H12 | `python -m f1d.econometric.run_h12_payout` |
 
 ### 5.2 H13.1 command
 
@@ -341,13 +341,13 @@ Both `docs/provenance/_archive` and `docs/provenance/_archived` exist. This appe
 
 | ID | Section | Description | Current (wrong) | Correct | Severity |
 |----|---------|-------------|-----------------|---------|----------|
-| 1 | Intro / Hypothesis Table | Suite count is wrong | "13 hypothesis suites" | 16 hypothesis suites (adding H1.1, H1.2, H12Q) | **HIGH** |
+| 1 | Intro / Hypothesis Table | Suite count is wrong | "13 hypothesis suites" | 16 hypothesis suites (adding H1.1, H1.2, H12) | **HIGH** |
 | 2 | Hypothesis Table | H1.1 suite missing from table | Not listed | Add row: H1.1 -- TNIC-moderated cash holdings, PanelOLS + TSIMM interaction, DV: CashHoldings | **HIGH** |
 | 3 | Hypothesis Table | H1.2 suite missing from table | Not listed | Add row: H1.2 -- financing-constraint-moderated cash, PanelOLS + 3-cat credit interaction, DV: CashHoldings | **HIGH** |
-| 4 | Hypothesis Table | H12Q suite missing from table | Not listed | Add row: H12Q -- quarterly payout ratio, PanelOLS, DV: PayoutRatio_q variants | **HIGH** |
+| 4 | Hypothesis Table | H12 suite missing from table | Not listed | Add row: H12 -- quarterly payout ratio, PanelOLS, DV: PayoutRatio_q variants | **HIGH** |
 | 5 | Commands Table | H1.1 command missing | Not listed | `python -m f1d.econometric.run_h1_1_cash_tsimm` | **HIGH** |
 | 6 | Commands Table | H1.2 command missing | Not listed | `python -m f1d.econometric.run_h1_2_cash_constraint` | **HIGH** |
-| 7 | Commands Table | H12Q command missing | Not listed | `python -m f1d.econometric.run_h12q_payout` | **HIGH** |
+| 7 | Commands Table | H12 command missing | Not listed | `python -m f1d.econometric.run_h12_payout` | **HIGH** |
 | 8 | Commands Table | H13.1 command missing | Not listed | `python -m f1d.econometric.run_h13_1_competition` | **HIGH** |
 | 9 | Prerequisites | LM dictionary path is wrong | `LM_dictionary/` directory | `Loughran-McDonald_MasterDictionary_1993-2024.csv` (flat file in `inputs/`) | **HIGH** |
 | 10 | Prerequisites | TNIC3HHIdata input missing | Not listed | Add `TNIC3HHIdata/` -- Hoberg-Phillips TNIC (used by H1.1, H13.1) | **MEDIUM** |
@@ -373,9 +373,9 @@ Both `docs/provenance/_archive` and `docs/provenance/_archived` exist. This appe
 
 ### Critical pattern
 
-The root cause of most HIGH issues is that **3 sub-suites (H1.1, H1.2, H12Q) were added to the codebase after the README was last updated**. These suites have:
+The root cause of most HIGH issues is that **3 sub-suites (H1.1, H1.2, H12) were added to the codebase after the README was last updated**. These suites have:
 - Active runners
-- Panel builders (H12Q) or runtime data merging (H1.1, H1.2)
+- Panel builders (H12) or runtime data merging (H1.1, H1.2)
 - Full provenance documentation
 - Red-team audit reports
 - But zero README coverage
@@ -384,7 +384,7 @@ Additionally, H13.1 appears in the hypothesis table but is missing from the comm
 
 ### Recommended fix priority
 
-1. Add H1.1, H1.2, H12Q to both the Hypothesis Suites table and Commands table
+1. Add H1.1, H1.2, H12 to both the Hypothesis Suites table and Commands table
 2. Add H13.1 to the Commands table
 3. Fix the `LM_dictionary/` prerequisite to match the actual file path
 4. Add `TNIC3HHIdata/` and `compustat_daily_ratings/` to prerequisites

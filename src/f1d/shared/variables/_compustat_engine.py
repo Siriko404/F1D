@@ -120,7 +120,7 @@ COMPUSTAT_COLS = [
     # H12 extension (Dividend Intensity + Payout Ratio)
     "DivIntensity",
     "PayoutRatio",
-    # H12Q extension (Quarterly Payout Ratio)
+    # H12 extension (Quarterly Payout Ratio)
     "PayoutRatio_q",
     # H2 extension (Biddle 2009 investment residual)
     "InvestmentResidual",
@@ -1130,7 +1130,7 @@ def _compute_and_winsorize(
         np.nan,
     )
 
-    # --- H12Q: Quarterly PayoutRatio = (dvpspq × cshoq) / ibq ---
+    # --- H12: Quarterly PayoutRatio = (dvpspq × cshoq) / ibq ---
     # True quarterly field (dvpspq is single-quarter, not YTD cumulative).
     # Negative earnings filter: ibq <= 0 → NaN (explicit exclusion).
     # Missing dividends: dvpspq NaN with ibq > 0 → 0 dividends → PayoutRatio_q = 0.

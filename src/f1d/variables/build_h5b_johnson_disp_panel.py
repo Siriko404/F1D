@@ -169,7 +169,7 @@ def build_panel(
 def create_lead_lag_variables(panel: pd.DataFrame, root_path: Optional[Path] = None) -> pd.DataFrame:
     """Create lead and lag JohnsonDISP2 at call level using fiscal quarter shifting.
 
-    Adapts H12Q's lead construction pattern (fiscal_qtr_id shifting).
+    Adapts H12's lead construction pattern (fiscal_qtr_id shifting).
     """
     print("\n" + "=" * 60)
     print("Creating lead/lag variables for JohnsonDISP2")

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H12Q Quarterly Payout Ratio Hypothesis
+STAGE 4: Test H12 Quarterly Payout Ratio Hypothesis
 ================================================================================
-ID: econometric/run_h12q_payout
-Description: Run H12Q hypothesis test — quarterly PayoutRatio at call level.
+ID: econometric/run_h12_payout
+Description: Run H12 hypothesis test — quarterly PayoutRatio at call level.
 
 DV: PayoutRatio_q = (dvpspq × cshoq) / ibq
     Quarterly payout ratio. NaN when ibq <= 0 (explicit negative earnings filter).
@@ -38,10 +38,10 @@ Known limitation: ~57% of firm-quarters with ibq > 0 have PayoutRatio_q = 0
 (dividend lumpiness). OLS with continuous DV; documented as limitation.
 
 Inputs:
-    - outputs/variables/h12q_payout/latest/h12q_payout_panel.parquet
+    - outputs/variables/h12_payout/latest/h12_payout_panel.parquet
 
 Outputs:
-    - outputs/econometric/h12q_payout/{timestamp}/...
+    - outputs/econometric/h12_payout/{timestamp}/...
 
 Author: Thesis Author
 Date: 2026-03-21
@@ -144,7 +144,7 @@ SUMMARY_STATS_VARS = [
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: H12Q Quarterly Payout Ratio (call-level)",
+        description="Stage 4: H12 Quarterly Payout Ratio (call-level)",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
@@ -157,19 +157,19 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.DataFrame, Path]:
-    """Load call-level H12Q panel."""
+    """Load call-level H12 panel."""
     print("\n" + "=" * 60)
-    print("Loading H12Q panel")
+    print("Loading H12 panel")
     print("=" * 60)
 
     if panel_path:
         panel_file = Path(panel_path)
     else:
         panel_dir = get_latest_output_dir(
-            root_path / "outputs" / "variables" / "h12q_payout",
-            required_file="h12q_payout_panel.parquet",
+            root_path / "outputs" / "variables" / "h12_payout",
+            required_file="h12_payout_panel.parquet",
         )
-        panel_file = panel_dir / "h12q_payout_panel.parquet"
+        panel_file = panel_dir / "h12_payout_panel.parquet"
 
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
@@ -383,7 +383,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\begin{table}[htbp]",
         r"\centering",
         r"\caption{Speech Uncertainty and Quarterly Payout Ratio}",
-        r"\label{tab:h12q_payout}",
+        r"\label{tab:h12_payout}",
         r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}",
         r"\toprule",
@@ -485,7 +485,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\end{table}",
     ]
 
-    tex_path = out_dir / "h12q_payout_table.tex"
+    tex_path = out_dir / "h12_payout_table.tex"
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"  Saved: {tex_path.name}")
@@ -507,7 +507,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
         col_num = meta["col"]
         fname = f"regression_results_col{col_num}.txt"
         with open(out_dir / fname, "w", encoding="utf-8") as f:
-            f.write(f"H12Q Quarterly Payout Ratio Regression\n")
+            f.write(f"H12 Quarterly Payout Ratio Regression\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
             f.write(f"FE: {meta['fe']} + Year-Quarter\n")
@@ -539,16 +539,16 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h12q_payout" / timestamp
+    out_dir = root / "outputs" / "econometric" / "h12_payout" / timestamp
 
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H12Q_Payout",
+        suite_name="H12_Payout",
         timestamp=timestamp,
     )
 
     print("=" * 80)
-    print("STAGE 4: H12Q Quarterly Payout Ratio")
+    print("STAGE 4: H12 Quarterly Payout Ratio")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -577,8 +577,8 @@ def main(panel_path: Optional[str] = None) -> int:
         df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics --- H12Q Quarterly Payout Ratio (Main Sample)",
-        label="tab:summary_stats_h12q",
+        caption="Summary Statistics --- H12 Quarterly Payout Ratio (Main Sample)",
+        label="tab:summary_stats_h12",
     )
     print("  Saved: summary_stats.csv/.tex")
 
@@ -613,7 +613,7 @@ def main(panel_path: Optional[str] = None) -> int:
             ("PayoutRatio_q non-null (ibq > 0)", n_dv_valid),
             ("After complete-case + min-calls (col 1)", first["n_obs"]),
         ]
-        generate_attrition_table(attrition_stages, out_dir, "H12Q Quarterly Payout Ratio")
+        generate_attrition_table(attrition_stages, out_dir, "H12 Quarterly Payout Ratio")
         print("  Saved: sample_attrition.csv/.tex")
 
     # Manifest

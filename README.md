@@ -62,7 +62,7 @@ Each stage reads from disk and writes to timestamped output directories under `o
 | **H7** | Does speech uncertainty predict post-call illiquidity? | PanelOLS (Industry FE / Firm FE) | delta_amihud |
 | **H9** | Does uncertainty predict takeover hazard rates? | Cox PH (survival) | Takeover event |
 | **H11** | Does political risk interact with speech uncertainty? | PanelOLS (base/lag/lead) | Linguistic uncertainty (CEO/Manager QA/Pres) |
-| **H12Q** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr |
+| **H12** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr |
 | **H13** | Does speech uncertainty predict capital expenditure? | PanelOLS (Industry FE / Firm FE) | CapexAt / CapexAt_lead |
 | **H13.1** | Does competition moderate the uncertainty-capex link? | PanelOLS + TNIC3HHI interaction | CapexAt / CapexAt_lead |
 | **H14** | Does speech uncertainty predict bid-ask spread changes? | PanelOLS (Industry FE / Firm FE) | DSPREAD (Lee 2016) |
@@ -171,7 +171,7 @@ python -m f1d.econometric.run_h1_cash_holdings
 | H11 | `python -m f1d.econometric.run_h11_prisk_uncertainty` |
 | H11-lag | `python -m f1d.econometric.run_h11_prisk_uncertainty_lag` |
 | H11-lead | `python -m f1d.econometric.run_h11_prisk_uncertainty_lead` |
-| H12Q | `python -m f1d.econometric.run_h12q_payout` |
+| H12 | `python -m f1d.econometric.run_h12_payout` |
 | H13 | `python -m f1d.econometric.run_h13_capex` |
 | H13.1 | `python -m f1d.econometric.run_h13_1_competition` |
 | H14 | `python -m f1d.econometric.run_h14_bidask_spread` |

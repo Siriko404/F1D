@@ -10,7 +10,7 @@ PayoutRatio_q = (dvpspq × cshoq) / ibq
 Reads raw Compustat quarterly data via the shared CompustatEngine.
 Returns one column: file_name, PayoutRatio_q.
 
-H12Q suite: Tests whether speech uncertainty predicts quarterly payout ratio.
+H12 suite: Tests whether speech uncertainty predicts quarterly payout ratio.
 """
 
 from __future__ import annotations
