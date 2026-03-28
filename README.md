@@ -56,21 +56,16 @@ Each stage reads from disk and writes to timestamped output directories under `o
 | **H1** | Does speech uncertainty predict cash holdings? | PanelOLS (Industry FE / Firm FE) | CashHoldings / CashHoldings_lead |
 | **H1.1** | Does product-market similarity (TNIC3TSIMM) moderate uncertainty→cash? | PanelOLS + TSIMM interaction | CashHoldings / CashHoldings_lead |
 | **H1.2** | Does financing constraint moderate uncertainty→cash? | PanelOLS + 3-category credit rating interaction | CashHoldings / CashHoldings_lead |
-| **H2** | Does speech uncertainty predict investment efficiency? | PanelOLS (Industry FE / Firm FE) | InvestmentResidual / InvestmentResidual_lead |
 | **H4** | Does speech uncertainty predict leverage? | PanelOLS (Industry FE / Firm FE) | BookLev / BookLev_lead |
 | **H5** | Does speech uncertainty predict post-call analyst dispersion? | PanelOLS (Industry FE / Firm FE) | PostCallDispersion |
 | **H5b** | Does speech uncertainty predict analyst forecast dispersion? | PanelOLS (Industry FE / Firm FE) | JohnsonDISP2 / JohnsonDISP2_lead (Johnson 2004) |
-| **H6** | Does exogenous uncertainty (CCCL instrument) affect outcomes? | PanelOLS (reduced form) | Linguistic DVs |
 | **H7** | Does speech uncertainty predict post-call illiquidity? | PanelOLS (Industry FE / Firm FE) | delta_amihud |
 | **H9** | Does uncertainty predict takeover hazard rates? | Cox PH (survival) | Takeover event |
 | **H11** | Does political risk interact with speech uncertainty? | PanelOLS (base/lag/lead) | Linguistic uncertainty (CEO/Manager QA/Pres) |
-| **H12** | Does speech uncertainty predict payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio / PayoutRatio_lead |
 | **H12Q** | Does speech uncertainty predict quarterly payout ratio? | PanelOLS (Industry FE / Firm FE) | PayoutRatio_q / PayoutRatio_q_lead_qtr |
 | **H13** | Does speech uncertainty predict capital expenditure? | PanelOLS (Industry FE / Firm FE) | CapexAt / CapexAt_lead |
 | **H13.1** | Does competition moderate the uncertainty-capex link? | PanelOLS + TNIC3HHI interaction | CapexAt / CapexAt_lead |
 | **H14** | Does speech uncertainty predict bid-ask spread changes? | PanelOLS (Industry FE / Firm FE) | DSPREAD (Lee 2016) |
-| **H15** | Does speech uncertainty predict share repurchases? | PanelOLS (Industry FE / Firm FE), LPM | REPO (binary, Duong et al. 2025) |
-
 **Supplementary:** `ceo_presence_probit.py` characterises determinants of CEO presence in Q&A sessions (selection analysis for H7).
 
 All suites have full data provenance documentation and independent red-team audit reports — see [Data Provenance & Audit Documentation](#data-provenance--audit-documentation).
@@ -168,23 +163,18 @@ python -m f1d.econometric.run_h1_cash_holdings
 | H1 | `python -m f1d.econometric.run_h1_cash_holdings` |
 | H1.1 | `python -m f1d.econometric.run_h1_1_cash_tsimm` |
 | H1.2 | `python -m f1d.econometric.run_h1_2_cash_constraint` |
-| H2 | `python -m f1d.econometric.run_h2_investment` |
 | H4 | `python -m f1d.econometric.run_h4_leverage` |
 | H5 | `python -m f1d.econometric.run_h5_dispersion` |
-| H6 | `python -m f1d.econometric.run_h6_cccl` |
 | H7 | `python -m f1d.econometric.run_h7_illiquidity` |
 | H7 (selection) | `python -m f1d.econometric.ceo_presence_probit` |
 | H9 | `python -m f1d.econometric.run_h9_takeover_hazards` |
 | H11 | `python -m f1d.econometric.run_h11_prisk_uncertainty` |
 | H11-lag | `python -m f1d.econometric.run_h11_prisk_uncertainty_lag` |
 | H11-lead | `python -m f1d.econometric.run_h11_prisk_uncertainty_lead` |
-| H12 | `python -m f1d.econometric.run_h12_div_intensity` |
 | H12Q | `python -m f1d.econometric.run_h12q_payout` |
 | H13 | `python -m f1d.econometric.run_h13_capex` |
 | H13.1 | `python -m f1d.econometric.run_h13_1_competition` |
 | H14 | `python -m f1d.econometric.run_h14_bidask_spread` |
-| H15 | `python -m f1d.econometric.run_h15_repurchase` |
-
 ### CLI Flags
 
 All Stage 4 scripts support:

@@ -7,15 +7,12 @@ This module runs panel regressions and diagnostics.
 Active Modules:
     - run_h0_3_ceo_clarity_extended: Run extended CEO Clarity robustness check
     - run_h1_cash_holdings: Run Cash Holdings hypothesis test
-    - run_h2_investment: Run Investment hypothesis test
     - run_h4_leverage: Run Leverage hypothesis test
     - run_h5_dispersion: Run Dispersion hypothesis test
-    - run_h6_cccl: Run CCCL hypothesis test
     - run_h7_illiquidity: Run Illiquidity hypothesis test
     - run_h9_takeover_hazards: Run Takeover Hazards hypothesis test
     - run_h13_capex: Run Capital Expenditure hypothesis test
     - run_h14_bidask_spread: Run Bid-Ask Spread hypothesis test
-    - run_h15_repurchase: Run Share Repurchase hypothesis test (LPM)
 
 Archived Modules (in _archived/):
     - run_h0_1_manager_clarity: Superseded by H0.2

@@ -31,9 +31,6 @@ Architecture:
     IBES variable builder:
         EarningsSurpriseBuilder → SurpDec (earnings surprise decile -5..+5)
 
-    CCCL instrument builder (reads inputs/CCCL_instrument/):
-        CCCLInstrumentBuilder → shift_intensity_sale_ff48
-
     Textual variable builders (read Stage 2 outputs):
         ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder,
         AnalystQAUncertaintyBuilder, NegativeSentimentBuilder,
@@ -131,22 +128,16 @@ from .capex_intensity import CapexIntensityBuilder
 from .dividend_payer import DividendPayerBuilder
 from .ocf_volatility import OCFVolatilityBuilder
 
-# H12 Compustat variable builders (Dividend Intensity + Payout Ratio)
-from .div_intensity import DivIntensityBuilder
-from .payout_ratio import PayoutRatioBuilder
+# Quarterly Payout Ratio
 from .payout_ratio_quarterly import PayoutRatioQuarterlyBuilder
 
-# H2 Compustat variable builders (Biddle 2009 investment efficiency)
-from .investment_residual import InvestmentResidualBuilder
+# Extended control builders
 from .cash_flow import CashFlowBuilder
 from .sales_growth import SalesGrowthBuilder
 
 # H9 Compustat variable builders (Expanded Robustness Block)
 from .intangibility import IntangibilityBuilder
 from .asset_growth import AssetGrowthBuilder
-
-# H15 Compustat variable builder (Share Repurchase)
-from .repurchase_indicator import RepurchaseIndicatorBuilder
 
 # H17 Compustat variable builder (Repurchase Intensity)
 from .repurchase_intensity import RepurchaseIntensityBuilder
@@ -164,9 +155,6 @@ from .earnings_surprise import EarningsSurpriseBuilder
 
 # Manifest fields (Stage 1)
 from .manifest_fields import ManifestFieldsBuilder
-
-# CCCL instrument builder (inputs/CCCL_instrument/)
-from .cccl_instrument import CCCLInstrumentBuilder
 
 # Takeover indicator builder (inputs/SDC/) — firm-level, not call-level
 from .takeover_indicator import TakeoverIndicatorBuilder
@@ -218,19 +206,14 @@ __all__ = [
     "CapexIntensityBuilder",
     "DividendPayerBuilder",
     "OCFVolatilityBuilder",
-    # H12 Compustat variable builders (Dividend Intensity + Payout Ratio)
-    "DivIntensityBuilder",
-    "PayoutRatioBuilder",
+    # Quarterly Payout Ratio
     "PayoutRatioQuarterlyBuilder",
-    # H2 Compustat variable builders (Biddle 2009 investment efficiency)
-    "InvestmentResidualBuilder",
+    # Extended control builders
     "CashFlowBuilder",
     "SalesGrowthBuilder",
     # H9 Compustat variable builders (Expanded Robustness Block)
     "IntangibilityBuilder",
     "AssetGrowthBuilder",
-    # H15 Compustat variable builder (Share Repurchase)
-    "RepurchaseIndicatorBuilder",
     # H17 Compustat variable builder (Repurchase Intensity)
     "RepurchaseIntensityBuilder",
     # H16 Compustat variable builder (R&D Investment Intensity)
@@ -248,8 +231,6 @@ __all__ = [
     "EarningsSurpriseBuilder",
     # Manifest fields (Stage 1)
     "ManifestFieldsBuilder",
-    # CCCL instrument builder (B.4 Liquidity)
-    "CCCLInstrumentBuilder",
     # Takeover indicator builder (B.5 Takeover Hazards) — firm-level
     "TakeoverIndicatorBuilder",
     # H3 (kept for H6/H11 — DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)

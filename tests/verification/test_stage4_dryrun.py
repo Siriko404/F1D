@@ -13,11 +13,9 @@ Stage 4 Scripts (econometric/):
     - run_h0_4_ceo_clarity_regime.py
     - run_h0_5_ceo_tone.py
     - run_h1_cash_holdings.py
-    - run_h2_investment.py
     - run_h3_payout_policy.py
     - run_h4_leverage.py
     - run_h5_dispersion.py
-    - run_h6_cccl.py
     - run_h7_illiquidity.py
     - run_h9_takeover_hazards.py (survival analysis)
 
@@ -46,11 +44,9 @@ STAGE4_ALL_SCRIPTS = [
     "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py",
     "src/f1d/econometric/run_h0_5_ceo_tone.py",
     "src/f1d/econometric/run_h1_cash_holdings.py",
-    "src/f1d/econometric/run_h2_investment.py",
     "src/f1d/econometric/run_h3_payout_policy.py",
     "src/f1d/econometric/run_h4_leverage.py",
     "src/f1d/econometric/run_h5_dispersion.py",
-    "src/f1d/econometric/run_h6_cccl.py",
     "src/f1d/econometric/run_h7_illiquidity.py",
     "src/f1d/econometric/run_h9_takeover_hazards.py",
 ]
@@ -219,13 +215,6 @@ class TestStage4HypothesisMapping:
         h1_path = REPO_ROOT / "src/f1d/econometric/run_h1_cash_holdings.py"
         assert h1_path.exists(), "H1 Cash Holdings regression script should exist"
 
-    def test_h2_regression_exists(self):
-        """Verify H2 (Investment Efficiency) regression script exists."""
-        h2_path = REPO_ROOT / "src/f1d/econometric/run_h2_investment.py"
-        assert h2_path.exists(), (
-            "H2 Investment Efficiency regression script should exist"
-        )
-
     def test_h3_regression_exists(self):
         """Verify H3 (Payout Policy) regression script exists."""
         h3_path = REPO_ROOT / "src/f1d/econometric/run_h3_payout_policy.py"
@@ -240,11 +229,6 @@ class TestStage4HypothesisMapping:
         """Verify H5 (Dispersion) regression script exists."""
         h5_path = REPO_ROOT / "src/f1d/econometric/run_h5_dispersion.py"
         assert h5_path.exists(), "H5 Dispersion regression script should exist"
-
-    def test_h6_regression_exists(self):
-        """Verify H6 (CCC&L) regression script exists."""
-        h6_path = REPO_ROOT / "src/f1d/econometric/run_h6_cccl.py"
-        assert h6_path.exists(), "H6 CCC&L regression script should exist"
 
     def test_h7_regression_exists(self):
         """Verify H7 (Illiquidity) regression script exists."""
