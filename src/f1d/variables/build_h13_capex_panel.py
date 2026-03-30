@@ -13,7 +13,7 @@ Description: Build CALL-LEVEL panel for H13 Capital Expenditure hypothesis test.
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
-    Step 4: Compute CapexAt_lead per call (fiscal-year based, consecutive year validated).
+    Step 4: Compute CapexAt_lead and CapexAt_lag per call (fiscal-year based, consecutive year validated).
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 

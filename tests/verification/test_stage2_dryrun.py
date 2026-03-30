@@ -7,14 +7,12 @@ Tests that all Stage 2 text processing scripts:
 3. Execute dry-run validation without exceptions
 4. Follow the expected module structure (f1d.shared.* imports)
 
-Stage 2 Scripts (migrated from 2_Scripts/2_Text/):
-    - tokenize_and_count.py (was 2.1_TokenizeAndCount.py)
-    - construct_variables.py (was 2.2_ConstructVariables.py)
-    - report_step2.py (was 2.3_ReportStep2.py)
-    - verify_step2.py (was 2.3_VerifyStep2.py)
+Stage 2 Scripts (text/):
+    - tokenize_transcripts.py
+    - build_linguistic_variables.py
 
 Dependencies:
-    - Scripts depend on Step 1.4 outputs (master_sample_manifest.parquet)
+    - Scripts depend on Step 1 outputs (master_sample_manifest.parquet)
     - Scripts depend on inputs/transcripts/*.txt files
 """
 
@@ -27,12 +25,10 @@ import pytest
 # Repository root directory
 REPO_ROOT = Path(__file__).parent.parent.parent
 
-# Stage 2 text scripts to test (excluding utility modules)
+# Stage 2 text scripts to test (excluding __init__.py)
 STAGE2_SCRIPTS = [
-    "src/f1d/text/tokenize_and_count.py",
-    "src/f1d/text/construct_variables.py",
-    "src/f1d/text/report_step2.py",
-    "src/f1d/text/verify_step2.py",
+    "src/f1d/text/tokenize_transcripts.py",
+    "src/f1d/text/build_linguistic_variables.py",
 ]
 
 
@@ -174,40 +170,3 @@ class TestStage2ArgumentParsing:
         assert result.returncode == 0, f"--help failed for {script}: {result.stderr}"
         assert "usage:" in result.stdout.lower() or "usage:" in result.stderr.lower(), \
             f"--help should show usage for {script}"
-
-
-class TestStage2ParallelExecution:
-    """Test Stage 2 script parallel execution compatibility."""
-
-    def test_tokenizer_and_variables_are_parallelizable(self):
-        """Verify tokenize_and_count and construct_variables can run in parallel.
-
-        These scripts (2.1 and 2.2) are designed to run concurrently as they
-        have no interdependencies.
-        """
-        tokenizer_path = REPO_ROOT / "src/f1d/text/tokenize_and_count.py"
-        variables_path = REPO_ROOT / "src/f1d/text/construct_variables.py"
-
-        tokenizer_content = tokenizer_path.read_text(encoding="utf-8")
-        variables_content = variables_path.read_text(encoding="utf-8")
-
-        # Both scripts should exist
-        assert tokenizer_path.exists(), "tokenize_and_count.py should exist"
-        assert variables_path.exists(), "construct_variables.py should exist"
-
-        # Neither should depend on the other's output
-        # (they both depend on Step 1.4 output independently)
-        assert "tokenize_and_count" not in variables_content.lower() or \
-               "tokenize_and_count" not in variables_content, \
-            "construct_variables should not depend on tokenize_and_count output"
-
-    def test_report_and_verify_depend_on_variables(self):
-        """Verify report_step2 and verify_step2 depend on construct_variables."""
-        construct_vars_path = REPO_ROOT / "src/f1d/text/construct_variables.py"
-        report_path = REPO_ROOT / "src/f1d/text/report_step2.py"
-        verify_path = REPO_ROOT / "src/f1d/text/verify_step2.py"
-
-        # These scripts process outputs from construct_variables
-        assert construct_vars_path.exists(), "construct_variables.py should exist"
-        assert report_path.exists(), "report_step2.py should exist"
-        assert verify_path.exists(), "verify_step2.py should exist"

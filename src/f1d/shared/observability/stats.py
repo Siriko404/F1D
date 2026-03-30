@@ -3592,8 +3592,7 @@ def compute_financial_process_stats(
 
     Returns:
         Dictionary with keys:
-        - merge_outcomes: {compustat_controls: {...}, ibes_surprise: {...},
-                          cccl_instrument: {...}}
+        - merge_outcomes: {compustat_controls: {...}, ibes_surprise: {...}}
         - variable_coverage: {variable_name: {count, pct}}
         - overall_coverage_stats: {avg_coverage_pct, variables_above_90_pct,
                                    variables_below_50_pct}

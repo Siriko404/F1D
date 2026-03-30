@@ -15,7 +15,7 @@ Description: Build CALL-LEVEL panel for H7 Speech Vagueness -> Stock Illiquidity
     Step 7: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
-DV: amihud_illiq (contemporaneous Amihud illiquidity measure).
+DV: delta_amihud (post-call minus pre-call Amihud illiquidity change).
 """
 
 from __future__ import annotations

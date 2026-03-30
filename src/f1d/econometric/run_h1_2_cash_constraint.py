@@ -473,7 +473,7 @@ def run_regression(
     stars_int_big = _sig_stars_two(p_two_int_big)
     stars_int_unr = _sig_stars_two(p_two_int_unr)
 
-    print(f"  [OK] {elapsed:.1f}s | R2w={model.rsquared_within:.4f}")
+    print(f"  [OK] {elapsed:.1f}s | R2={model.rsquared:.4f}  Adj R2={1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  {IV_CENTERED}: b={beta_iv:.4f} p1={p_one_iv:.4f} {stars_iv}")
     print(f"  {MOD_BELOW_IG}: b={beta_big:.4f} p2={p_two_big:.4f}")
     print(f"  {MOD_UNRATED}: b={beta_unr:.4f} p2={p_two_unr:.4f}")
@@ -487,7 +487,8 @@ def run_regression(
     meta = {
         "col": col_num, "dv": dv, "fe": fe,
         "n_obs": int(model.nobs), "n_firms": n_firms, "n_time_periods": n_time_periods,
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
         # Main IV
         "beta_iv": beta_iv, "se_iv": se_iv, "p_one_iv": p_one_iv, "p_two_iv": p_two_iv,
         # Below-IG level
@@ -606,8 +607,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         f"{m2.get('n_ig', 0):,} / {m2.get('n_below_ig', 0):,} / {m2.get('n_unrated', 0):,} \\\\"
     )
     lines.append(
-        f"Within-R$^2$ & {fmt_r2(m1.get('within_r2', np.nan))} & "
-        f"{fmt_r2(m2.get('within_r2', np.nan))} \\\\"
+        f"$R^2$ & {fmt_r2(m1.get('r2', np.nan))} & "
+        f"{fmt_r2(m2.get('r2', np.nan))} \\\\"
+    )
+    lines.append(
+        f"Adj.~$R^2$ & {fmt_r2(m1.get('adj_r2', np.nan))} & "
+        f"{fmt_r2(m2.get('adj_r2', np.nan))} \\\\"
     )
     lines.append(f"Sample years & {YEAR_MIN}--{YEAR_MAX} & {YEAR_MIN}--{YEAR_MAX} \\\\")
 
@@ -668,6 +673,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"VIF(int_below_ig): {meta.get('vif_int_below_ig', 'N/A')}\n")
             f.write(f"VIF(int_unrated): {meta.get('vif_int_unrated', 'N/A')}\n")
             f.write(f"N: IG={meta['n_ig']}, Below-IG={meta['n_below_ig']}, Unrated={meta['n_unrated']}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")
@@ -702,7 +708,7 @@ def generate_report(
         "",
         "## Results",
         "",
-        "| Col | DV | b_iv (p1) | b_int_belowIG (p2) | b_int_unrated (p2) | N | R2w |",
+        "| Col | DV | b_iv (p1) | b_int_belowIG (p2) | b_int_unrated (p2) | N | R2 |",
         "|-----|----|-----------|--------------------|--------------------|---|-----|",
     ]
 
@@ -718,7 +724,7 @@ def generate_report(
             f"{m['beta_iv']:.4f}{s_iv} ({m['p_one_iv']:.3f}) | "
             f"{m['beta_int_below_ig']:.4f}{s_big} ({m['p_two_int_below_ig']:.3f}) | "
             f"{m['beta_int_unrated']:.4f}{s_unr} ({m['p_two_int_unrated']:.3f}) | "
-            f"{m['n_obs']:,} | {m['within_r2']:.4f} |"
+            f"{m['n_obs']:,} | {m['r2']:.4f} |"
         )
 
     lines += [

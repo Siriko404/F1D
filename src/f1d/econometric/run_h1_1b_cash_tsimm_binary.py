@@ -1,29 +1,33 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H1.1 TNIC-Moderated Cash Holdings Hypothesis
+STAGE 4: Test H1.1b Binary TNIC-Moderated Cash Holdings Hypothesis
 ================================================================================
-ID: econometric/run_h1_1_cash_tsimm
-Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM)
-             moderates the Manager_QA_Uncertainty → CashHoldings relationship.
+ID: econometric/run_h1_1b_cash_tsimm_binary
+Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM),
+             binarized at per-fiscal-year median, moderates the
+             Manager_QA_Uncertainty -> CashHoldings relationship.
 
 Model Specification:
-    CashHoldings = b1*Mgr_QA_Unc + b2*z(log(TSIMM))
-                 + b3*(Mgr_QA_Unc x z(log(TSIMM)))
+    CashHoldings = b1*Mgr_QA_Unc_c + b2*HighTSIMM
+                 + b3*(Mgr_QA_Unc_c x HighTSIMM)
                  + controls + IndustryFE + CalendarYearFE + e
 
-    b3 is the coefficient of interest: does product similarity moderate
-    the effect of managerial QA uncertainty on cash holdings?
+    HighTSIMM = 1 if tnic3tsimm > per-fiscal-year median (Main sample), 0 otherwise.
+    b1 = effect of uncertainty for low-TSIMM firms (reference group).
+    b1 + b3 = effect for high-TSIMM firms.
+    b3 = moderation increment (parameter of interest).
 
-Parent suite: H1 (Cash Holdings)
-    Moderation memo recommends TSIMM (not HHI) as secondary moderator.
+Parent suite: H1.1 (Continuous TNIC moderation)
+    This suite complements H1.1 with a binary moderator presentation,
+    standard in empirical corporate finance (Hoberg & Phillips 2016).
 
 2 Models:
     Col 1: DV = CashHoldings_t, Industry + Calendar Year FE, Extended controls
     Col 2: DV = CashHoldings_t, Industry + Calendar Year-Quarter FE, Extended controls
 
-Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
-    Log-transformed then z-scored on Main sample.
+Moderator: HighTSIMM (binary, above/below per-fiscal-year median of TNIC3TSIMM)
+    Median computed on Main sample before complete-case deletion.
 
 Sample: Main only (FF12 not in {8, 11}).
 Hypothesis: Two-tailed on interaction (b3 != 0); one-tailed on main IV (b1 > 0).
@@ -36,11 +40,11 @@ Inputs:
     - inputs/TNIC3HHIdata/TNIC3HHIdata.txt
 
 Outputs:
-    - outputs/econometric/h1_1_cash_tsimm/{timestamp}/...
+    - outputs/econometric/h1_1b_cash_tsimm_binary/{timestamp}/...
 
 Deterministic: true
 Author: Thesis Author
-Date: 2026-03-18
+Date: 2026-03-28
 ================================================================================
 """
 
@@ -77,9 +81,9 @@ CONTROLS = [
 ]
 
 MODERATOR_RAW = "tnic3tsimm"
-MODERATOR = "z_log_tnic3tsimm"
+MODERATOR = "HighTSIMM"
 IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
-INTERACTION = "MgrQAUnc_x_zlogTSIMM"
+INTERACTION = "MgrQAUnc_x_HighTSIMM"
 
 MIN_CALLS_PER_FIRM = 5
 
@@ -89,15 +93,15 @@ MODEL_SPECS = [
 ]
 
 IV_LABEL = "Mgr QA Uncertainty"
-MODERATOR_LABEL = r"$z(\log(\mathrm{TSIMM}))$"
-INTERACTION_LABEL = r"Mgr QA Unc $\times$ $z(\log(\mathrm{TSIMM}))$"
+MODERATOR_LABEL = "HighTSIMM"
+INTERACTION_LABEL = r"Mgr QA Unc $\times$ HighTSIMM"
 
 SUMMARY_STATS_VARS = [
     {"col": "CashHoldings", "label": "Cash Holdings$_t$"},
     {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MODERATOR_RAW, "label": "TNIC3TSIMM (raw)"},
-    {"col": MODERATOR, "label": "$z(\\log(\\mathrm{TSIMM}))$"},
+    {"col": MODERATOR, "label": "HighTSIMM (binary)"},
     {"col": "BookLev", "label": "Leverage"},
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
@@ -119,7 +123,7 @@ SUMMARY_STATS_VARS = [
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Stage 4: H1.1 TNIC-Moderated Cash Holdings (call-level)",
+        description="Stage 4: H1.1b Binary TNIC-Moderated Cash Holdings (call-level)",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
@@ -205,36 +209,40 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
 def transform_moderator_and_center_iv(
     panel: pd.DataFrame,
-) -> Tuple[pd.DataFrame, Dict[str, float]]:
-    """Log-transform + z-score TSIMM, and mean-center IV on Main sample.
+) -> Tuple[pd.DataFrame, Dict[str, Any]]:
+    """Create binary HighTSIMM indicator and mean-center IV on Main sample.
 
-    Both transformations use Main sample moments (after FF12 filter,
-    before complete-case deletion) so both models use identical values.
+    HighTSIMM = 1 if tnic3tsimm > per-fiscal-year median (Main sample).
+    Per-year median prevents the dummy from capturing secular trends in
+    product similarity over the 2002-2018 sample period.
 
-    Mean-centering the IV before forming the interaction is critical:
-    without it, Corr(moderator, interaction) ≈ 0.93 (severe multicollinearity).
-    With centering, Corr drops to ≈ 0.12.
+    Mean-centering the IV before forming the interaction reduces
+    multicollinearity between the moderator and interaction term.
     """
     print("\n" + "=" * 60)
-    print("Transforming moderator + centering IV")
+    print("Creating binary moderator + centering IV")
     print("=" * 60)
 
     main_mask = ~panel["ff12_code"].isin([8, 11])
 
-    # --- Moderator: log-transform then z-score ---
-    tsimm_main = panel.loc[main_mask, MODERATOR_RAW].dropna()
-    log_tsimm_main = np.log(tsimm_main)
-    tsimm_mu = log_tsimm_main.mean()
-    tsimm_sd = log_tsimm_main.std()
+    # --- Moderator: per-fiscal-year median split on Main sample ---
+    tsimm_main = panel.loc[main_mask].dropna(subset=[MODERATOR_RAW])
+    yearly_median = tsimm_main.groupby("fyearq_int")[MODERATOR_RAW].median()
 
-    panel["log_tnic3tsimm"] = np.log(panel[MODERATOR_RAW])
-    panel[MODERATOR] = (panel["log_tnic3tsimm"] - tsimm_mu) / tsimm_sd
+    panel["_tsimm_yr_median"] = panel["fyearq_int"].map(yearly_median)
+    panel[MODERATOR] = (panel[MODERATOR_RAW] > panel["_tsimm_yr_median"]).astype(float)
+    # NaN TSIMM stays NaN (will be dropped in complete-case filter)
+    panel.loc[panel[MODERATOR_RAW].isna(), MODERATOR] = np.nan
+    panel.drop(columns=["_tsimm_yr_median"], inplace=True)
 
-    print(f"  Main sample TSIMM obs: {len(tsimm_main):,}")
-    print(f"  log(TSIMM) mean: {tsimm_mu:.4f}, std: {tsimm_sd:.4f}")
+    high_n = int((panel.loc[main_mask, MODERATOR] == 1).sum())
+    low_n = int((panel.loc[main_mask, MODERATOR] == 0).sum())
+    total = high_n + low_n
 
-    z_main = panel.loc[main_mask, MODERATOR].dropna()
-    print(f"  z(log(TSIMM)) on Main: mean={z_main.mean():.4f}, std={z_main.std():.4f}")
+    print(f"  Main sample TSIMM obs: {total:,}")
+    print(f"  HighTSIMM=1: {high_n:,} ({100*high_n/total:.1f}%)")
+    print(f"  HighTSIMM=0: {low_n:,} ({100*low_n/total:.1f}%)")
+    print(f"  Per-year median range: [{yearly_median.min():.4f}, {yearly_median.max():.4f}]")
 
     # --- IV: mean-center on Main sample ---
     iv_main = panel.loc[main_mask, IV].dropna()
@@ -245,10 +253,11 @@ def transform_moderator_and_center_iv(
     print(f"  IV mean (Main): {iv_mu:.4f}")
     print(f"  IV centered mean (Main): {panel.loc[main_mask, IV_CENTERED].mean():.4f}")
 
-    params = {
-        "tsimm_mu": tsimm_mu,
-        "tsimm_sd": tsimm_sd,
+    params: Dict[str, Any] = {
         "iv_mu": iv_mu,
+        "yearly_medians": yearly_median.to_dict(),
+        "n_high": high_n,
+        "n_low": low_n,
     }
 
     return panel, params
@@ -294,9 +303,7 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Create interaction term using CENTERED IV to avoid multicollinearity
-    # Without centering: Corr(moderator, interaction) ≈ 0.93
-    # With centering:    Corr(moderator, interaction) ≈ 0.12
+    # Create interaction term using CENTERED IV
     df[INTERACTION] = df[IV_CENTERED] * df[MODERATOR]
 
     # Drop NaN in DV
@@ -346,7 +353,7 @@ def run_regression(
         return None, {}
 
     # Use centered IV in regression so main-effect coefficient represents
-    # the effect at mean TSIMM, and interaction is cleanly identified
+    # the effect for the reference group (low-TSIMM firms)
     exog = [IV_CENTERED, MODERATOR, INTERACTION] + all_controls
 
     n_firms = df_prepared["gvkey"].nunique()
@@ -375,7 +382,7 @@ def run_regression(
 
     elapsed = (datetime.now() - t0).total_seconds()
 
-    # Extract coefficients (IV is centered; coefficient = effect at mean TSIMM)
+    # Extract coefficients (IV is centered; coefficient = effect for low-TSIMM reference group)
     beta_iv = float(model.params.get(IV_CENTERED, np.nan))
     se_iv = float(model.std_errors.get(IV_CENTERED, np.nan))
     p_two_iv = float(model.pvalues.get(IV_CENTERED, np.nan))
@@ -480,8 +487,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Product Similarity--Moderated Speech Uncertainty and Cash Holdings}",
-        r"\label{tab:h1_1_cash_tsimm}",
+        r"\caption{Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings}",
+        r"\label{tab:h1_1b_cash_tsimm_binary}",
         r"\small",
         r"\begin{tabular}{lcc}",
         r"\toprule",
@@ -507,7 +514,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # Moderator coefficient
     lines.append(
-        f"$z(\\log(\\mathrm{{TSIMM}}))$ & "
+        f"HighTSIMM & "
         f"{fmt_coef(m1.get('beta_moderator', np.nan), _sig_stars_two(m1.get('p_two_moderator', np.nan)))} & "
         f"{fmt_coef(m2.get('beta_moderator', np.nan), _sig_stars_two(m2.get('p_two_moderator', np.nan)))} \\\\"
     )
@@ -517,7 +524,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # Interaction coefficient (key)
     lines.append(
-        f"Mgr QA Unc $\\times$ $z(\\log(\\mathrm{{TSIMM}}))$ & "
+        f"Mgr QA Unc $\\times$ HighTSIMM & "
         f"{fmt_coef(m1.get('beta_interaction', np.nan), _sig_stars_two(m1.get('p_two_interaction', np.nan)))} & "
         f"{fmt_coef(m2.get('beta_interaction', np.nan), _sig_stars_two(m2.get('p_two_interaction', np.nan)))} \\\\"
     )
@@ -564,16 +571,16 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"IV coefficient represents effect at sample-mean uncertainty. ",
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
-        r"TNIC3TSIMM is the Hoberg--Phillips (2016) total product similarity measure, ",
-        r"log-transformed and standardized on the main sample. ",
+        r"HighTSIMM is 1 if Hoberg--Phillips (2016) TNIC3TSIMM exceeds the per-fiscal-year median ",
+        r"on the main sample, 0 otherwise. ",
         r"Col~(1): Calendar Year FE. Col~(2): Calendar Year-Quarter FE. ",
-        r"TNIC3TSIMM is a firm-year variable repeated across calls within the same firm-year. ",
+        r"HighTSIMM is a binary firm-year variable repeated across calls within the same firm-year. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
         r"\end{table}",
     ]
 
-    tex_path = out_dir / "h1_1_cash_tsimm_table.tex"
+    tex_path = out_dir / "h1_1b_cash_tsimm_binary_table.tex"
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"  Saved: {tex_path.name}")
@@ -596,11 +603,11 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
         col_num = meta["col"]
         fname = f"regression_results_col{col_num}.txt"
         with open(out_dir / fname, "w", encoding="utf-8") as f:
-            f.write(f"H1.1 TNIC-Moderated Cash Holdings Regression\n")
+            f.write(f"H1.1b Binary TNIC-Moderated Cash Holdings Regression\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
             f.write(f"IV: {IV}\n")
-            f.write(f"Moderator: z(log(TNIC3TSIMM))\n")
+            f.write(f"Moderator: HighTSIMM (binary, per-fiscal-year median)\n")
             f.write(f"Interaction: {INTERACTION}\n")
             f.write(f"FE: {meta['fe']}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
@@ -623,19 +630,21 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
 
 def generate_report(
     all_results: List[Dict[str, Any]], out_dir: Path,
-    duration: float, tsimm_mu: float, tsimm_sd: float,
+    duration: float, transform_params: Dict[str, Any],
 ) -> None:
     """Generate markdown report."""
+    n_high = transform_params["n_high"]
+    n_low = transform_params["n_low"]
     lines = [
-        "# H1.1 TNIC-Moderated Cash Holdings Report",
+        "# H1.1b Binary TNIC-Moderated Cash Holdings Report",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Manager_QA_Uncertainty x z(log(TNIC3TSIMM)) interaction",
-        f"**Moderator:** TNIC3TSIMM (Hoberg & Phillips JPE 2016), log-transformed, z-scored",
-        f"**z-score parameters:** mu(log(TSIMM))={tsimm_mu:.4f}, sd(log(TSIMM))={tsimm_sd:.4f}",
+        f"**Design:** Manager_QA_Uncertainty x HighTSIMM (binary) interaction",
+        f"**Moderator:** HighTSIMM = 1 if TNIC3TSIMM > per-fiscal-year median (Main sample)",
+        f"**Split:** HighTSIMM=1: {n_high:,}, HighTSIMM=0: {n_low:,} ({100*n_high/(n_high+n_low):.1f}% high)",
         f"**FE:** Col 1: Industry + CalYear; Col 2: Industry + CalYrQtr",
-        f"**Parent suite:** H1 (Cash Holdings)",
+        f"**Parent suite:** H1.1 (Continuous TNIC moderation)",
         "",
         "## Model Specifications",
         "",
@@ -668,13 +677,13 @@ def generate_report(
     lines.append("")
     lines.append("- Main IV (Mgr QA Unc): one-tailed test (H1: beta > 0)")
     lines.append("- Interaction: two-tailed test")
-    lines.append("- TNIC3TSIMM is a firm-year variable, repeated across calls within firm-year")
+    lines.append("- HighTSIMM is a binary firm-year variable, repeated across calls within firm-year")
     lines.append("- Col (1): Calendar Year FE; Col (2): Calendar Year-Quarter FE")
     lines.append("- SEs firm-clustered throughout")
 
-    with open(out_dir / "report_step4_H1_1.md", "w", encoding="utf-8") as f:
+    with open(out_dir / "report_step4_H1_1b.md", "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-    print("  Saved: report_step4_H1_1.md")
+    print("  Saved: report_step4_H1_1b.md")
 
 
 # ==============================================================================
@@ -689,21 +698,21 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h1_1_cash_tsimm" / timestamp
+    out_dir = root / "outputs" / "econometric" / "h1_1b_cash_tsimm_binary" / timestamp
 
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H1_1_CashTSIMM",
+        suite_name="H1_1b_CashTSIMMBinary",
         timestamp=timestamp,
     )
 
     print("=" * 80)
-    print("STAGE 4: H1.1 TNIC-Moderated Cash Holdings")
+    print("STAGE 4: H1.1b Binary TNIC-Moderated Cash Holdings")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
     print(f"Design:    1 IV x 1 DV x 2 FE types = 2 models")
-    print(f"Moderator: z(log(TNIC3TSIMM))")
+    print(f"Moderator: HighTSIMM (binary, per-fiscal-year median)")
     print(f"IV:        {IV}")
 
     # Load panel
@@ -733,8 +742,8 @@ def main(panel_path: Optional[str] = None) -> int:
         df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
         output_csv=out_dir / "summary_stats.csv",
         output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics --- H1.1 TNIC-Moderated Cash Holdings (Main Sample)",
-        label="tab:summary_stats_h1_1",
+        caption="Summary Statistics --- H1.1b Binary TNIC-Moderated Cash Holdings (Main Sample)",
+        label="tab:summary_stats_h1_1b",
     )
     print("  Saved: summary_stats.csv/.tex")
 
@@ -771,7 +780,7 @@ def main(panel_path: Optional[str] = None) -> int:
             ("After complete-case + min-calls (col 1)", first["n_obs"]),
         ]
         generate_attrition_table(
-            attrition_stages, out_dir, "H1.1 TNIC-Moderated Cash Holdings",
+            attrition_stages, out_dir, "H1.1b Binary TNIC-Moderated Cash Holdings",
         )
         print("  Saved: sample_attrition.csv/.tex")
 
@@ -789,8 +798,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Report
     duration = (datetime.now() - start_time).total_seconds()
-    generate_report(all_results, out_dir, duration,
-                    transform_params["tsimm_mu"], transform_params["tsimm_sd"])
+    generate_report(all_results, out_dir, duration, transform_params)
 
     # Summary
     print("\n" + "=" * 80)

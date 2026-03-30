@@ -4,7 +4,7 @@
 STAGE 4: Test H14 Bid-Ask Spread Hypothesis
 ================================================================================
 ID: econometric/test_h14_bidask_spread
-Description: Run H14 Bid-Ask Spread hypothesis test using 4 model specifications
+Description: Run H14 Bid-Ask Spread hypothesis test using 6 model specifications
              with 4 simultaneous uncertainty IVs, varying FE type and
              control set. Main sample only.
 
@@ -35,7 +35,7 @@ Sample: Main only (FF12 codes 1-7, 9-10, 12).
 Hypothesis Test (one-tailed):
     H14: beta(uncertainty_var) > 0 — higher uncertainty -> wider spreads.
 
-FE Time Index: fyearq_int (fiscal year).
+FE Time Index: cal_yr (calendar year).
 Standard Errors: Firm-clustered (groups=gvkey).
 Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
@@ -339,7 +339,7 @@ def run_regression(
 
     elapsed = (datetime.now() - t0).total_seconds()
     print(f"  [OK] Complete in {elapsed:.1f}s")
-    print(f"  R-squared (within): {model.rsquared_within:.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  N obs: {int(model.nobs):,}")
 
     # Build metadata with per-IV one-tailed p-values (H14: beta > 0)
@@ -350,7 +350,8 @@ def run_regression(
         "controls": spec["controls"],
         "n_obs": int(model.nobs),
         "n_firms": df_prepared["gvkey"].nunique(),
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
     }
 
     for iv in KEY_IVS:
@@ -497,8 +498,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r2_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
-        r2_cells.append(fmt_r2(meta.get("within_r2", np.nan)))
-    lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
+        r2_cells.append(fmt_r2(meta.get("r2", np.nan)))
+    lines.append(r"$R^2$ & " + " & ".join(r2_cells) + r" \\")
+
+    adj_r2_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        adj_r2_cells.append(fmt_r2(meta.get("adj_r2", np.nan)))
+    lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2_cells) + r" \\")
 
     lines += [
         r"\bottomrule",
@@ -510,7 +517,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
+        r"Time FE uses calendar year (\texttt{cal\_yr}). ",
         r"Following Lee (2016), DSPREAD is the change in the average relative bid-ask spread ",
         r"from the [$-$3,$-$1] to [$+$1,$+$3] trading day window around the conference call, ",
         r"where daily relative spread = $2 \times (\text{Ask} - \text{Bid}) / (\text{Ask} + \text{Bid})$ ",
@@ -552,6 +559,7 @@ def save_outputs(
             f.write(f"DV: {meta.get('dv')}\n")
             f.write(f"FE: {meta.get('fe')}\n")
             f.write(f"Controls: {meta.get('controls')}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")
@@ -581,7 +589,7 @@ def generate_report(
         f"**Duration:** {duration:.1f} seconds",
         f"**Unit of observation:** individual earnings call (call-level)",
         f"**Sample:** Main only (excludes Finance FF12=11, Utility FF12=8)",
-        f"**Time index:** fyearq_int (fiscal year)",
+        f"**Time index:** cal_yr (calendar year)",
         f"**Hypothesis test:** One-tailed (H14: beta > 0)",
         f"**DV:** DSPREAD — Lee (2016) change in relative bid-ask spread (closing quotes)",
         "",
@@ -603,8 +611,8 @@ def generate_report(
         "",
         "## Results Summary",
         "",
-        "| Col | DV | FE | Controls | N | Within-R² |",
-        "|-----|----|----|----------|---|-----------|",
+        "| Col | DV | FE | Controls | N | R-sq |",
+        "|-----|----|----|----------|---|------|",
     ]
 
     for r in all_results:
@@ -613,7 +621,7 @@ def generate_report(
             continue
         lines.append(
             f"| ({meta['col']}) | {meta['dv']} | {meta['fe']} | "
-            f"{meta['controls']} | {meta['n_obs']:,} | {meta['within_r2']:.4f} |"
+            f"{meta['controls']} | {meta['n_obs']:,} | {meta['r2']:.4f} |"
         )
 
     lines += [
@@ -677,7 +685,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Sample:    Main only (FF12 != 8, 11)")
     print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
     print(f"Specs:     {len(MODEL_SPECS)} model columns")
-    print(f"Time FE:   fyearq_int (fiscal year)")
+    print(f"Time FE:   cal_yr (calendar year)")
     print(f"Test:      One-tailed (H14: beta > 0)")
     print(f"DV:        DSPREAD (Lee 2016, closing BID/ASK)")
 

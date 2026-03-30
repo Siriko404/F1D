@@ -2,7 +2,6 @@
 Shared fixtures for performance tests.
 
 This module provides test data fixtures for benchmarking Phase 62 optimizations:
-- Rolling window vectorization (H2 variables)
 - df.update() optimization (entity linking)
 
 Ref: .planning/phases/63-testing-validation/63-03-PLAN.md

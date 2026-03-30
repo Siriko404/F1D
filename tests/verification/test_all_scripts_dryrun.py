@@ -7,15 +7,14 @@ Tests that ALL scripts in the F1D pipeline:
 3. Don't manipulate sys.path (ROADMAP compliance)
 4. Support --dry-run or --help flags without unexpected errors
 
-This is an aggregate test that covers all 41+ scripts across all 4 stages.
-
 Pipeline Structure:
     Stage 1 (Sample): 5 scripts - Build sample manifest
-    Stage 2 (Text): 4 scripts - Process transcripts
-    Stage 3 (Financial): 17 scripts - Build financial features
-    Stage 4 (Econometric): 19 scripts - Run regressions
+    Stage 2 (Text): 2 scripts - Process transcripts
+    Stage 3 (Variables): 17 scripts - Build panel variables
+    Stage 4 (Econometric): 21 scripts - Run regressions
+    Reporting: 1 script - Generate summary stats
 
-Total: 45+ scripts
+Total: 46 scripts
 
 Usage:
     pytest tests/verification/test_all_scripts_dryrun.py -v
@@ -34,43 +33,67 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 
 # All scripts organized by stage
 ALL_SCRIPTS: List[str] = [
-    "src/f1d/econometric/run_h0_1_manager_clarity.py",
-    "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
-    "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py",
-    "src/f1d/econometric/run_h0_5_ceo_tone.py",
-    "src/f1d/econometric/run_h1_cash_holdings.py",
-    "src/f1d/econometric/run_h3_payout_policy.py",
-    "src/f1d/econometric/run_h4_leverage.py",
-    "src/f1d/econometric/run_h5_dispersion.py",
-    "src/f1d/econometric/run_h7_illiquidity.py",
-    "src/f1d/econometric/run_h9_takeover_hazards.py",
-    "src/f1d/reporting/generate_summary_stats.py",
-    "src/f1d/sample/assemble_manifest.py",
+    # Stage 1 (Sample)
     "src/f1d/sample/build_sample_manifest.py",
-    "src/f1d/sample/build_tenure_map.py",
     "src/f1d/sample/clean_metadata.py",
     "src/f1d/sample/link_entities.py",
-    "src/f1d/text/build_linguistic_variables.py",
+    "src/f1d/sample/build_tenure_map.py",
+    "src/f1d/sample/assemble_manifest.py",
+    # Stage 2 (Text)
     "src/f1d/text/tokenize_transcripts.py",
-    "src/f1d/variables/build_h0_1_manager_clarity_panel.py",
+    "src/f1d/text/build_linguistic_variables.py",
+    # Stage 3 (Variables)
     "src/f1d/variables/build_h0_3_ceo_clarity_extended_panel.py",
-    "src/f1d/variables/build_h0_5_ceo_tone_panel.py",
     "src/f1d/variables/build_h1_cash_holdings_panel.py",
-    "src/f1d/variables/build_h3_payout_policy_panel.py",
     "src/f1d/variables/build_h4_leverage_panel.py",
     "src/f1d/variables/build_h5_dispersion_panel.py",
+    "src/f1d/variables/build_h5b_johnson_disp_panel.py",
+    "src/f1d/variables/build_h5b_wang_disp_panel.py",
     "src/f1d/variables/build_h7_illiquidity_panel.py",
     "src/f1d/variables/build_h9_takeover_panel.py",
+    "src/f1d/variables/build_h11_prisk_uncertainty_panel.py",
+    "src/f1d/variables/build_h11_prisk_uncertainty_lag_panel.py",
+    "src/f1d/variables/build_h11_prisk_uncertainty_lead_panel.py",
+    "src/f1d/variables/build_h12_payout_panel.py",
+    "src/f1d/variables/build_h13_capex_panel.py",
+    "src/f1d/variables/build_h14_bidask_spread_panel.py",
+    "src/f1d/variables/build_h16_rd_sales_panel.py",
+    "src/f1d/variables/build_h17_repurchase_intensity_panel.py",
+    "src/f1d/variables/build_h18_cccl_received_panel.py",
+    # Stage 4 (Econometric)
+    "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
+    "src/f1d/econometric/run_h1_cash_holdings.py",
+    "src/f1d/econometric/run_h1_1_cash_tsimm.py",
+    "src/f1d/econometric/run_h1_1b_cash_tsimm_binary.py",
+    "src/f1d/econometric/run_h1_2_cash_constraint.py",
+    "src/f1d/econometric/run_h4_leverage.py",
+    "src/f1d/econometric/run_h5_dispersion.py",
+    "src/f1d/econometric/run_h5b_johnson_disp.py",
+    "src/f1d/econometric/run_h5b_wang_disp.py",
+    "src/f1d/econometric/run_h7_illiquidity.py",
+    "src/f1d/econometric/run_h9_takeover_hazards.py",
+    "src/f1d/econometric/run_h11_prisk_uncertainty.py",
+    "src/f1d/econometric/run_h11_prisk_uncertainty_lag.py",
+    "src/f1d/econometric/run_h11_prisk_uncertainty_lead.py",
+    "src/f1d/econometric/run_h12_payout.py",
+    "src/f1d/econometric/run_h13_1_competition.py",
+    "src/f1d/econometric/run_h13_capex.py",
+    "src/f1d/econometric/run_h14_bidask_spread.py",
+    "src/f1d/econometric/run_h16_rd_sales.py",
+    "src/f1d/econometric/run_h17_repurchase_intensity.py",
+    "src/f1d/econometric/run_h18_cccl_received.py",
+    # Reporting
+    "src/f1d/reporting/generate_summary_stats.py",
 ]
 
 # Count by stage
 SCRIPT_COUNTS = {
     "Stage 1": 5,
     "Stage 2": 2,
-    "Stage 3": 12,
-    "Stage 4": 14,
+    "Stage 3": 17,
+    "Stage 4": 21,
     "Reporting": 1,
-    "Total": 34,
+    "Total": 46,
 }
 
 
@@ -215,11 +238,11 @@ class TestPipelineSummary:
 
     def test_pipeline_script_counts(self):
         """Verify pipeline structure matches expectations."""
-        # Verify stage counts
         stage1_count = len([s for s in ALL_SCRIPTS if "/sample/" in s])
         stage2_count = len([s for s in ALL_SCRIPTS if "/text/" in s])
-        stage3_count = len([s for s in ALL_SCRIPTS if "/financial/" in s])
+        stage3_count = len([s for s in ALL_SCRIPTS if "/variables/" in s])
         stage4_count = len([s for s in ALL_SCRIPTS if "/econometric/" in s])
+        reporting_count = len([s for s in ALL_SCRIPTS if "/reporting/" in s])
 
         assert stage1_count == SCRIPT_COUNTS["Stage 1"], (
             f"Expected {SCRIPT_COUNTS['Stage 1']} Stage 1 scripts, found {stage1_count}"
@@ -227,15 +250,14 @@ class TestPipelineSummary:
         assert stage2_count == SCRIPT_COUNTS["Stage 2"], (
             f"Expected {SCRIPT_COUNTS['Stage 2']} Stage 2 scripts, found {stage2_count}"
         )
-        assert (
-            stage3_count == SCRIPT_COUNTS["Stage 3 V1"] + SCRIPT_COUNTS["Stage 3 V2"]
-        ), (
-            f"Expected {SCRIPT_COUNTS['Stage 3 V1'] + SCRIPT_COUNTS['Stage 3 V2']} Stage 3 scripts, found {stage3_count}"
+        assert stage3_count == SCRIPT_COUNTS["Stage 3"], (
+            f"Expected {SCRIPT_COUNTS['Stage 3']} Stage 3 scripts, found {stage3_count}"
         )
-        assert (
-            stage4_count == SCRIPT_COUNTS["Stage 4 V1"] + SCRIPT_COUNTS["Stage 4 V2"]
-        ), (
-            f"Expected {SCRIPT_COUNTS['Stage 4 V1'] + SCRIPT_COUNTS['Stage 4 V2']} Stage 4 scripts, found {stage4_count}"
+        assert stage4_count == SCRIPT_COUNTS["Stage 4"], (
+            f"Expected {SCRIPT_COUNTS['Stage 4']} Stage 4 scripts, found {stage4_count}"
+        )
+        assert reporting_count == SCRIPT_COUNTS["Reporting"], (
+            f"Expected {SCRIPT_COUNTS['Reporting']} Reporting scripts, found {reporting_count}"
         )
 
     def test_all_scripts_use_subprocess_pattern(self):

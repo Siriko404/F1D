@@ -20,8 +20,8 @@ Key Independent Variables (4, all enter simultaneously):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
     Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
 
-Base Controls (7):
-    Size, TobinsQ, ROA, BookLev, CashHoldings, DividendPayer, OCF_Volatility
+Base Controls (8):
+    Size, TobinsQ, ROA, BookLev, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV
     NOTE: CapexAt is NOT a control — it is the DV.
 
 Extended Controls (Base + 4):
@@ -33,7 +33,7 @@ Hypothesis Test (two-tailed):
     H13: beta(uncertainty_var) != 0 — no directional prediction.
     Stars based on two-tailed p-values.
 
-FE Time Index: fyearq_int (fiscal year).
+FE Time Index: cal_yr (calendar year).
 Standard Errors: Firm-clustered (groups=gvkey).
 Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
 
@@ -310,7 +310,7 @@ def run_regression(
     Firm FE: EntityEffects + TimeEffects (via from_formula)
 
     All models: firm-clustered SEs, drop_absorbed=True.
-    Time index: fyearq_int (fiscal year).
+    Time index: cal_yr (calendar year).
     """
     col_num = spec["col"]
     dv = spec["dv"]
@@ -338,7 +338,7 @@ def run_regression(
     print("  Estimating with firm-clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
-    # MultiIndex: gvkey (entity) x time_col (fiscal year or cal yr-qtr)
+    # MultiIndex: gvkey (entity) x time_col (calendar year or cal yr-qtr)
     df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
@@ -369,7 +369,7 @@ def run_regression(
 
     elapsed = (datetime.now() - t0).total_seconds()
     print(f"  [OK] Complete in {elapsed:.1f}s")
-    print(f"  R-squared (within): {model.rsquared_within:.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  N obs: {int(model.nobs):,}")
 
     # Build metadata with per-IV two-tailed p-values (H13: no directional prediction)
@@ -380,7 +380,8 @@ def run_regression(
         "controls": spec["controls"],
         "n_obs": int(model.nobs),
         "n_firms": df_prepared["gvkey"].nunique(),
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
     }
 
     # Per-IV coefficients with two-tailed p-values
@@ -533,12 +534,19 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         n_cells.append(fmt_int(n_val) if n_val else "")
     lines.append(r"N & " + " & ".join(n_cells) + r" \\")
 
-    # Within R-sq
+    # R-sq
     r2_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
-        r2_cells.append(fmt_r2(meta.get("within_r2", np.nan)))
-    lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
+        r2_cells.append(fmt_r2(meta.get("r2", np.nan)))
+    lines.append(r"$R^2$ & " + " & ".join(r2_cells) + r" \\")
+
+    # Adj R-sq
+    adj_r2_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        adj_r2_cells.append(fmt_r2(meta.get("adj_r2", np.nan)))
+    lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2_cells) + r" \\")
 
     lines += [
         r"\bottomrule",
@@ -550,7 +558,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses fiscal year (\texttt{fyearq\_int}). ",
+        r"Time FE uses calendar year (\texttt{cal\_yr}). ",
         r"CapEx intensity is constant within firm-fiscal-year (Q4 capxy / lagged assets); ",
         r"results should be interpreted alongside lead DV (cols 7--12). ",
         r"Variables winsorized at 1\%/99\% by year at engine level. ",
@@ -590,6 +598,7 @@ def save_outputs(
             f.write(f"DV: {meta.get('dv')}\n")
             f.write(f"FE: {meta.get('fe')}\n")
             f.write(f"Controls: {meta.get('controls')}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")
@@ -621,7 +630,7 @@ def generate_report(
         f"**Duration:** {duration:.1f} seconds",
         f"**Unit of observation:** individual earnings call (call-level)",
         f"**Sample:** Main only (excludes Finance FF12=11, Utility FF12=8)",
-        f"**Time index:** fyearq_int (fiscal year)",
+        f"**Time index:** cal_yr (calendar year)",
         f"**Hypothesis test:** Two-tailed (no directional prediction)",
         "",
         "## Model Specifications",
@@ -645,8 +654,8 @@ def generate_report(
         "",
         "## Results Summary",
         "",
-        "| Col | DV | FE | Controls | N | Within-R-sq |",
-        "|-----|----|----|----------|---|-------------|",
+        "| Col | DV | FE | Controls | N | R-sq |",
+        "|-----|----|----|----------|---|------|",
     ]
 
     for r in all_results:
@@ -655,7 +664,7 @@ def generate_report(
             continue
         lines.append(
             f"| ({meta['col']}) | {meta['dv']} | {meta['fe']} | "
-            f"{meta['controls']} | {meta['n_obs']:,} | {meta['within_r2']:.4f} |"
+            f"{meta['controls']} | {meta['n_obs']:,} | {meta['r2']:.4f} |"
         )
 
     lines += [
@@ -720,7 +729,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Sample:    Main only (FF12 != 8, 11)")
     print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
     print(f"Specs:     {len(MODEL_SPECS)} model columns")
-    print(f"Time FE:   fyearq_int (fiscal year)")
+    print(f"Time FE:   cal_yr (calendar year)")
     print(f"Test:      Two-tailed (no directional prediction)")
 
     # Load panel

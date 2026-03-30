@@ -33,7 +33,7 @@ Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion).
 
 Sample: Main only (FF12 != 8, 11).
 SEs: Firm-clustered.
-FE time: fyearq_int (fiscal year); cal_yr_qtr (calendar year-quarter) for YQ specs.
+FE time: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 ================================================================================
 """
 
@@ -278,12 +278,13 @@ def run_regression(
         return None, {}
 
     elapsed = (datetime.now() - t0).total_seconds()
-    print(f"  [OK] {elapsed:.1f}s | Within-R²: {model.rsquared_within:.4f} | N: {int(model.nobs):,}")
+    print(f"  [OK] {elapsed:.1f}s | R²: {model.rsquared:.4f} | Adj R²: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f} | N: {int(model.nobs):,}")
 
     meta: Dict[str, Any] = {
         "col": col_num, "dv": dv, "fe": fe_type, "controls": spec["controls"],
         "n_obs": int(model.nobs), "n_firms": df_prepared["gvkey"].nunique(),
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
     }
 
     for iv in KEY_IVS:
@@ -325,11 +326,12 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"H5b Johnson Dispersion Regression\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
-            f.write(f"FE: {'industry' if meta['fe'] == 'industry' else 'firm'} + Fiscal Year\n")
+            f.write(f"FE: {'industry' if meta['fe'] == 'industry' else 'firm'} + Calendar Year\n")
             f.write(f"Controls: {meta['controls']}\n")
             extra = [c for c in meta.get("extra_controls", []) if c]
             if extra:
                 f.write(f"Extra controls: {', '.join(extra)}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")

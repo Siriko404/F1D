@@ -42,7 +42,7 @@ Red-team audit fixes (2026-02-20):
                 quarters via gvkey+fyearq. This correctly classifies dividend
                 payers using full-year dividends regardless of when the call falls.
 
-H2 extension (2026-02-20):
+Biddle (2009) extension (2026-02-20):
     Added InvestmentResidual (Biddle 2009), CashFlow, SalesGrowth.
     Biddle (2009) investment residual:
         Investment = (capxy + xrdy + aqcy - sppey) / at_lag  (annual Q4-only)
@@ -53,7 +53,7 @@ H2 extension (2026-02-20):
     New Compustat columns: xrdy, aqcy, sppey, saley, sic.
     FF48 codes derived from sic via inputs/FF1248/Siccodes48.zip.
 
-H2 red-team audit fixes (2026-02-20):
+Biddle (2009) audit fixes (2026-02-20):
     C-4  TobinQ Biddle predictor: was fillna(0) on mktcap/ceqq -> biased residuals
          for firms with missing market cap (TobinQ degenerates to debt ratio) or
          missing book equity (TobinQ systematically overstated). Fixed: require all
@@ -117,27 +117,17 @@ COMPUSTAT_COLS = [
     "CapexAt",
     "DividendPayer",
     "OCF_Volatility",
-    # H12 extension (Dividend Intensity + Payout Ratio)
-    "DivIntensity",
-    "PayoutRatio",
     # H12 extension (Quarterly Payout Ratio)
     "PayoutRatio_q",
-    # H2 extension (Biddle 2009 investment residual)
-    "InvestmentResidual",
+    # Biddle (2009) — CashFlow & SalesGrowth kept; InvestmentResidual removed (H2 deleted)
     "CashFlow",
     "SalesGrowth",
-    # H3 extension
-    "div_stability",
-    "payout_flexibility",
+    # H3/H11 extension (kept: earnings_volatility, firm_maturity used by H11)
     "earnings_volatility",
-    "fcf_growth",
     "firm_maturity",
-    "is_div_payer_5yr",
     # H9 extension (Expanded Robustness Block)
     "Intangibility",  # intanq / atq
     "AssetGrowth",    # YoY asset growth
-    # H15 extension (Share Repurchase)
-    "REPO",     # Binary: cshopq > 0 (quarterly repurchase indicator)
     "fqtr",     # Fiscal quarter (1-4) — needed for quarter-lead logic in panel builders
     # H16 extension (R&D Investment Intensity — Jiang, John, Larsen 2021)
     "RDSales",  # xrdy / saley (annual Q4-only; missing xrd→0; nonpositive sales→NaN)
@@ -167,7 +157,7 @@ REQUIRED_COMPUSTAT_COLS = [
     "oancfy",
     "fyearq",
     "fqtr",  # fiscal quarter (1-4) -- used to identify Q4 rows for capxy/dvy
-    # H2 extension (Biddle 2009)
+    # Biddle (2009)
     "sic",  # SIC code -- for FF48 industry classification
     "saley",  # Annual total revenue YTD (M-1 fix: replaces quarterly saleq)
     "saleq",  # Quarterly revenue -- fallback when saley missing
@@ -182,8 +172,6 @@ REQUIRED_COMPUSTAT_COLS = [
     "iby",  # Income Before Extraordinary Items (annual)
     # H9 extension (Expanded Robustness Block)
     "intanq",  # Intangible Assets - Total (quarterly, for Intangibility ratio)
-    # H15 extension (Share Repurchase)
-    "cshopq",  # Total Shares Repurchased - Quarter (quarterly, NOT YTD cumulative)
     # H17 extension (Repurchase Intensity)
     "prstkcy",  # Purchase of Common and Preferred Stock, YTD cumulative ($M)
 ]
@@ -371,7 +359,7 @@ def _load_ff48_map(root_path: Path) -> Dict[int, int]:
     code. SIC codes not in any defined range are assigned to code 48 "Almost
     Nothing" (the explicit Fama-French residual category).
 
-    Fixes applied (H2 red-team audit):
+    Fixes applied (Biddle audit):
         M-4: Find the .txt file by extension rather than z.namelist()[0] to
              guard against ZIP ordering non-determinism and extraneous files.
         M-3: Prior catchall heuristic (highest code with no explicit ranges)
@@ -478,7 +466,7 @@ def _winsorize_by_year(
 def _compute_biddle_residual(
     comp: pd.DataFrame, root_path: Path
 ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-    """Compute Biddle (2009) investment residual and H2 control variables.
+    """Compute Biddle (2009) investment residual and Biddle (2009) control variables.
 
     Biddle et al. (2009, JAE) investment efficiency measure:
         Investment = (CapEx + R&D + Acquisitions - AssetSales) / lagged(AT)
@@ -751,7 +739,7 @@ def _compute_biddle_residual(
     )
 
     # ------------------------------------------------------------------
-    # Step 6: Join all three H2 variables back to the full quarterly panel
+    # Step 6: Join all three Biddle variables back to the full quarterly panel
     # via gvkey + fyearq (same Q4-join-back pattern as CapexAt/DividendPayer).
     # fyearq is integer in the annual panel; convert both sides to float for
     # the merge to avoid dtype mismatches (fyearq in comp is float64).
@@ -778,96 +766,44 @@ def _compute_biddle_residual(
 
 def _compute_h3_payout_policy(
     comp: pd.DataFrame,
-) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
-    """Compute H3 Payout Policy variables on an annual basis and align back.
+) -> Tuple[pd.Series, pd.Series]:
+    """Compute earnings_volatility and firm_maturity on an annual basis and align back.
 
-    Computes:
-      - div_stability: -StdDev(payout_ratio_lag) over trailing 5 years (1826D, min 3 obs)
-        where payout_ratio = dvy / iby (total dividends / income before extraordinary items)
-      - payout_flexibility: % of years with |Delta DPS| > 5% of prior DPS over trailing 5 years
-      - earnings_volatility: StdDev(annual ROA) over trailing 5 years
-      - fcf_growth: (FCF_t - FCF_{t-1}) / |FCF_{t-1}| where FCF = (oancfy - capxy) / atq
-      - firm_maturity: RE / TE (retained earnings / total equity)
-      - is_div_payer_5yr: Max(dps > 0) over trailing 5 years
+    Originally computed 6 H3 payout-policy variables; the 4 dead ones
+    (div_stability, payout_flexibility, fcf_growth, is_div_payer_5yr) were
+    removed after H3 was archived.  Only earnings_volatility and firm_maturity
+    remain (used by H11).
 
-    Returns six Series aligned to comp's index.
+    Returns two Series aligned to comp's index: (earnings_volatility, firm_maturity).
     """
     needed = [
         "gvkey",
         "datadate",
         "fyearq",
         "fqtr",
-        "dvpspq",
-        "epspxq",
         "req",
-        "seqq",
-        "oancfy",
-        "capxy",
         "atq",
-        "dvy",
         "iby",
     ]
     available = [c for c in needed if c in comp.columns]
     base = comp[available].dropna(subset=["fyearq"]).copy()
     base["fyearq"] = base["fyearq"].astype(int)
 
-    # 1. Flow variables (sum over 4 quarters for DPS and EPS)
-    flow_annual = (
-        base.groupby(["gvkey", "fyearq"])
-        .agg({"dvpspq": "sum", "epspxq": "sum"})
-        .rename(columns={"dvpspq": "dps", "epspxq": "eps"})
-    )
-
-    # 2. Point-in-time / Annual-total variables (last observation per year)
+    # Point-in-time / Annual-total variables (last Q4 observation per year)
     pit_annual = (
         base[base["fqtr"] == 4]
         .sort_values(["gvkey", "fyearq", "datadate"])
         .drop_duplicates(["gvkey", "fyearq"], keep="last")
     )
-    pit_annual = pit_annual.set_index(["gvkey", "fyearq"])
+    df = pit_annual.set_index(["gvkey", "fyearq"]).reset_index()
+    df = df.sort_values(["gvkey", "fyearq"])
 
-    # Merge flows and PIT
-    df = flow_annual.join(
-        pit_annual[["req", "seqq", "oancfy", "capxy", "atq", "datadate", "dvy", "iby"]]
-    )
-    df = df.reset_index().sort_values(["gvkey", "fyearq"])
-
-    # Ensure sequential years for lag operations
-    df["fyearq_lag"] = df.groupby("gvkey")["fyearq"].shift(1)
-    gap_mask = (df["fyearq"] - df["fyearq_lag"]) != 1
-
-    # FCF Growth
-    df["fcf"] = np.where(
-        (df["atq"].notna()) & (df["atq"] > 0),
-        (df["oancfy"].fillna(0) - df["capxy"].fillna(0)) / df["atq"],
-        np.nan,
-    )
-    df["fcf_lag"] = df.groupby("gvkey")["fcf"].shift(1)
-    df.loc[gap_mask, "fcf_lag"] = np.nan
-    df["fcf_growth"] = np.where(
-        (df["fcf_lag"].notna()) & (df["fcf_lag"] != 0),
-        (df["fcf"] - df["fcf_lag"]) / df["fcf_lag"].abs(),
-        np.nan,
-    )
-
-    # Firm Maturity
+    # Firm Maturity: RE / TA
     df["firm_maturity"] = np.where(
         (df["atq"].notna()) & (df["atq"] > 0), df["req"] / df["atq"], np.nan
     )
 
-    # Rolling window computations
-    df["dps_lag"] = df.groupby("gvkey")["dps"].shift(1)
-    df.loc[gap_mask, "dps_lag"] = np.nan
-    df["delta_dps"] = df["dps"] - df["dps_lag"]
-
-    # div_stability
-    df["payout_ratio"] = np.where(
-        (df["iby"].notna()) & (df["iby"] > 0), df["dvy"] / df["iby"], np.nan
-    )
-    df["payout_ratio_lag"] = df.groupby("gvkey")["payout_ratio"].shift(1)
-    df.loc[gap_mask, "payout_ratio_lag"] = np.nan
-
-    # earnings_volatility
+    # earnings_volatility: StdDev(annual ROA) over trailing 5 fiscal years
     df["roa_annual"] = np.where(
         (df["atq"].notna()) & (df["atq"] > 0), df["iby"] / df["atq"], np.nan
     )
@@ -877,44 +813,12 @@ def _compute_h3_payout_policy(
     df["dummy_date"] = pd.to_datetime(df["fyearq"].astype(str) + "-12-31")
     df_ts = df.set_index("dummy_date").sort_index()
 
-    # div_stability using 5-year rolling SD of lagged payout ratio
-    std_payout = (
-        df_ts.groupby("gvkey")["payout_ratio_lag"].rolling("1826D", min_periods=3).std()
-    )
-
-    # We now have Series indexed by [gvkey, dummy_date]
-    # df can be mapped back safely by setting its index too
-    df = df.set_index(["gvkey", "dummy_date"])
-    df["div_stability"] = -std_payout
-
-    # payout_flexibility
-    sig_change = (df["delta_dps"].abs() > 0.05 * df["dps_lag"].abs()).astype(float)
-    df["_sig_change"] = sig_change.where(
-        df["dps_lag"].notna() & df["delta_dps"].notna(), np.nan
-    )
-    df_ts = df.reset_index().set_index("dummy_date").sort_index()
-    payout_flex = (
-        df_ts.groupby("gvkey")["_sig_change"]  # type: ignore[call-overload]
-        .rolling("1826D", min_periods=2)
-        .mean()
-    )
-    df["payout_flexibility"] = payout_flex
-
     # earnings_volatility
     earn_vol = (
         df_ts.groupby("gvkey")["roa_annual"].rolling("1826D", min_periods=3).std()
     )
+    df = df.set_index(["gvkey", "dummy_date"])
     df["earnings_volatility"] = earn_vol
-
-    # is_div_payer_5yr
-    df["_is_payer"] = (df["dps"] > 0).astype(float)
-    df_ts = df.reset_index().set_index("dummy_date").sort_index()
-    is_div = (
-        df_ts.groupby("gvkey")["_is_payer"]  # type: ignore[call-overload]
-        .rolling("1826D", min_periods=1)
-        .max()
-    )
-    df["is_div_payer_5yr"] = is_div
 
     df = df.reset_index()
     df = df.drop(columns=["dummy_date"])
@@ -924,12 +828,8 @@ def _compute_h3_payout_policy(
         [
             "gvkey",
             "fyearq",
-            "div_stability",
-            "payout_flexibility",
             "earnings_volatility",
-            "fcf_growth",
             "firm_maturity",
-            "is_div_payer_5yr",
         ]
     ].copy()
     lookup["fyearq"] = lookup["fyearq"].astype(float)
@@ -944,12 +844,8 @@ def _compute_h3_payout_policy(
     merged = merged.sort_values("_idx")
 
     return (
-        pd.Series(merged["div_stability"].values, index=comp.index),
-        pd.Series(merged["payout_flexibility"].values, index=comp.index),
         pd.Series(merged["earnings_volatility"].values, index=comp.index),
-        pd.Series(merged["fcf_growth"].values, index=comp.index),
         pd.Series(merged["firm_maturity"].values, index=comp.index),
-        pd.Series(merged["is_div_payer_5yr"].values, index=comp.index),
     )
 
 
@@ -1110,26 +1006,6 @@ def _compute_and_winsorize(
         pd.Series(dvy_annual, index=comp.index).fillna(0) > 0
     ).astype(float)
 
-    # --- H12 extension: DivIntensity = dvy_annual (Q4 full-year) / atq_lag1 ---
-    # Uses lagged total assets (t-1) to avoid endogeneity with dividend decisions.
-    # atq_annual_lag1 is computed above (line ~951).
-    comp["DivIntensity"] = np.where(
-        pd.Series(atq_annual_lag1, index=comp.index) > 0,
-        pd.Series(dvy_annual, index=comp.index).fillna(0) / pd.Series(atq_annual_lag1, index=comp.index),
-        np.nan,
-    )
-
-    # --- H12 redesign: PayoutRatio = dvy / iby (Attig et al.) ---
-    # NaN when iby <= 0 (negative earnings, per Attig et al.)
-    # dvy NaN with iby > 0 => treat as 0 dividends (PayoutRatio = 0)
-    dvy_for_payout = pd.Series(dvy_annual, index=comp.index).fillna(0)
-    iby_for_payout = pd.Series(iby_annual, index=comp.index)
-    comp["PayoutRatio"] = np.where(
-        iby_for_payout > 0,
-        dvy_for_payout / iby_for_payout,
-        np.nan,
-    )
-
     # --- H12: Quarterly PayoutRatio = (dvpspq × cshoq) / ibq ---
     # True quarterly field (dvpspq is single-quarter, not YTD cumulative).
     # Negative earnings filter: ibq <= 0 → NaN (explicit exclusion).
@@ -1143,40 +1019,23 @@ def _compute_and_winsorize(
 
     comp["OCF_Volatility"] = _compute_ocf_volatility(comp)
 
-    # --- H2 extension: Biddle (2009) investment residual + CashFlow + SalesGrowth ---
+    # --- Biddle (2009) extension: CashFlow + SalesGrowth (InvestmentResidual removed — H2 deleted) ---
     if root_path is not None:
         ir, cf, sg = _compute_biddle_residual(comp, root_path)
-        comp["InvestmentResidual"] = ir
         comp["CashFlow"] = cf
         comp["SalesGrowth"] = sg
     else:
-        comp["InvestmentResidual"] = np.nan
         comp["CashFlow"] = np.nan
         comp["SalesGrowth"] = np.nan
 
-    # --- H3 extension: Payout Policy ---
-    div_stab, pay_flex, earn_vol, fcf_gr, firm_mat, div_payer_5yr = (
-        _compute_h3_payout_policy(comp)
-    )
-    comp["div_stability"] = div_stab
-    comp["payout_flexibility"] = pay_flex
+    # --- H3 extension: earnings_volatility + firm_maturity (used by H11) ---
+    earn_vol, firm_mat = _compute_h3_payout_policy(comp)
     comp["earnings_volatility"] = earn_vol
-    comp["fcf_growth"] = fcf_gr
     comp["firm_maturity"] = firm_mat
-    comp["is_div_payer_5yr"] = div_payer_5yr
 
     # --- H9 extension: Intangibility and AssetGrowth (Expanded Robustness Block) ---
     comp["Intangibility"] = _compute_intangibility(comp)
     comp["AssetGrowth"] = _compute_asset_growth(comp)
-
-    # --- H15 extension: REPO (quarterly share repurchase indicator) ---
-    # cshopq is quarterly (NOT YTD cumulative) — no Q4-only join needed.
-    # NaN cshopq → NaN REPO (missing data, not zero repurchases).
-    comp["REPO"] = np.where(
-        comp["cshopq"].notna() & (comp["cshopq"] > 0),
-        1.0,
-        np.where(comp["cshopq"].notna(), 0.0, np.nan),
-    )
 
     # --- H17 extension: RepurchaseIntensity = quarterly_prstkcy / lagged_atq ---
     # prstkcy is YTD cumulative within fiscal year. De-cumulate to quarterly flow.
@@ -1238,11 +1097,8 @@ def _compute_and_winsorize(
         "CashHoldings",
         "TobinsQ",
         "CapexAt",
-        "DivIntensity",
-        "PayoutRatio",
         "PayoutRatio_q",
         "OCF_Volatility",
-        "InvestmentResidual",
         "CashFlow",
         "SalesGrowth",
         "Intangibility",
@@ -1258,19 +1114,16 @@ def _compute_and_winsorize(
 
     # B3 fix: Apply per-year winsorization (1%/99% within each fyearq) to ALL
     # control variables, consistent with the per-year approach already used for
-    # InvestmentResidual, CashFlow, and SalesGrowth inside _compute_biddle_residual.
+    # CashFlow and SalesGrowth inside _compute_biddle_residual.
     # Prior code used pooled winsorization (one global percentile across all years),
     # which conflates tail observations from thick years (many firms) with thin years
     # (few firms), producing year-varying effective clip bounds.
-    # Skip: DividendPayer (binary), InvestmentResidual/CashFlow/SalesGrowth (already
-    # winsorized per-year inside _compute_biddle_residual — do not double-winsorize).
+    # Skip: DividendPayer (binary), CashFlow/SalesGrowth (already winsorized
+    # per-year inside _compute_biddle_residual — do not double-winsorize).
     skip_winsorize = {
         "DividendPayer",
-        "InvestmentResidual",
         "CashFlow",
         "SalesGrowth",
-        "is_div_payer_5yr",
-        "REPO",       # binary indicator (H15)
         "fqtr",       # fiscal quarter identifier (not a variable to winsorize)
     }
     winsorize_cols = [c for c in COMPUSTAT_COLS if c not in skip_winsorize]

@@ -10,17 +10,17 @@ Description: Test whether product-market structure (Hoberg-Phillips TNIC3TSIMM
 
 Model Specification (per moderator):
     CapexAt = b1*Mgr_QA_Unc_c + b2*z(log(MOD)) + b3*(Mgr_QA_Unc_c x z(log(MOD)))
-            + controls [+ CapexAt_t for lead specs] + IndustryFE + FiscalYearFE + e
+            + controls [+ CapexAt_t for lead specs] + IndustryFE + CalendarYearFE + e
 
     b3 is the coefficient of interest: does market structure moderate
     the effect of managerial Q&A uncertainty on capital expenditure?
 
 Parent suite: H13 (Capital Expenditure)
-    Manager_QA_Uncertainty_pct significant in all 4 Industry+FY specs (p<0.005).
+    Manager_QA_Uncertainty_pct significant in all 4 Industry+CalYr specs (p<0.005).
     Moderation memo: TSIMM = primary (strong), HHI = robustness (secondary).
 
 8 Models:
-    Cols 1-4: Calendar Year FE (Industry + FY)
+    Cols 1-4: Calendar Year FE (Industry + CalYr)
         1-2: Moderator = z(log(TNIC3TSIMM)) — PRIMARY
         3-4: Moderator = z(log(TNIC3HHI)) — ROBUSTNESS
     Cols 5-8: Year-Quarter FE (Industry + YQ)
@@ -41,7 +41,7 @@ IVs, and only 1/16 significant result that failed Bonferroni correction.
 Sample: Main only (FF12 not in {8, 11}).
 Hypothesis: All two-tailed (matching parent H13).
 Unit: Call-level (loads H13 panel, merges TNIC at load time).
-Panel index: ["gvkey", "fyearq_int"].
+Panel index: ["gvkey", "cal_yr"].
 SEs: Firm-clustered.
 
 Inputs:
@@ -385,7 +385,7 @@ def run_regression(
 
     fe_type = spec.get("fe", "industry")
     time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
-    fe_label = "Industry+YQ" if fe_type.endswith("_yq") else "Industry+FY"
+    fe_label = "Industry+YQ" if fe_type.endswith("_yq") else "Industry+CalYr"
 
     print(f"\n{'=' * 60}")
     print(f"Col ({col_num}) | DV={dv} | Mod={mod_info['label']} | FE={fe_label}")
@@ -444,7 +444,7 @@ def run_regression(
     stars_iv = _sig_stars(p_two_iv)
     stars_int = _sig_stars(p_two_int)
 
-    print(f"  [OK] {elapsed:.1f}s | R2w={model.rsquared_within:.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  {IV}: b={beta_iv:.4f} p2={p_two_iv:.4f} {stars_iv}")
     print(f"  {z_col}: b={beta_mod:.4f} p2={p_two_mod:.4f}")
     print(f"  INTERACTION: b={beta_int:.4f} p2={p_two_int:.4f} {stars_int}")
@@ -459,7 +459,8 @@ def run_regression(
         "n_obs": int(model.nobs),
         "n_firms": n_firms,
         "n_firm_years": n_firm_years,
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
         "beta_iv": beta_iv, "se_iv": se_iv, "p_two_iv": p_two_iv,
         "beta_moderator": beta_mod, "se_moderator": se_mod, "p_two_moderator": p_two_mod,
         "beta_interaction": beta_int, "se_interaction": se_int, "p_two_interaction": p_two_int,
@@ -585,16 +586,18 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         # FE row: Calendar Year for first half, Year-Quarter for second half
         fy_vals = ["Yes"] * len(cols_fy) + [""] * len(cols_yq)
         yq_vals = [""] * len(cols_fy) + ["Yes"] * len(cols_yq)
-        lines.append("Fiscal Year FE & " + " & ".join(fy_vals) + " \\\\")
+        lines.append("Calendar Year FE & " + " & ".join(fy_vals) + " \\\\")
         lines.append("Year-Quarter FE & " + " & ".join(yq_vals) + " \\\\")
         lines.append("\\midrule")
 
         n_row = " & ".join(f"{results_by_col.get(c, {}).get('n_obs', 0):,}" for c in cols)
         fy_row = " & ".join(f"{results_by_col.get(c, {}).get('n_firm_years', 0):,}" for c in cols)
-        r2_row = " & ".join(fmt_r2(results_by_col.get(c, {}).get("within_r2", np.nan)) for c in cols)
+        r2_row = " & ".join(fmt_r2(results_by_col.get(c, {}).get("r2", np.nan)) for c in cols)
+        adj_r2_row = " & ".join(fmt_r2(results_by_col.get(c, {}).get("adj_r2", np.nan)) for c in cols)
         lines.append(f"N (calls) & {n_row} \\\\")
         lines.append(f"N (firm-years) & {fy_row} \\\\")
-        lines.append(f"Within-R$^2$ & {r2_row} \\\\")
+        lines.append(f"$R^2$ & {r2_row} \\\\")
+        lines.append(f"Adj.~$R^2$ & {adj_r2_row} \\\\")
 
         return lines
 
@@ -662,6 +665,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"Moderator: z(log({mod_label}))\n")
             f.write(f"FE: {meta['fe']}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")
@@ -689,13 +693,13 @@ def generate_report(
         f"**Design:** Manager_QA_Uncertainty x z(log(TNIC)) interaction",
         f"**Moderators:** TSIMM (primary) + HHI (robustness)",
         f"**Cross-corr:** {params.get('cross_corr', np.nan):.4f}",
-        f"**FE:** Industry(FF12) + FiscalYear (cols 1-4), Industry(FF12) + Year-Quarter (cols 5-8)",
+        f"**FE:** Industry(FF12) + CalendarYear (cols 1-4), Industry(FF12) + Year-Quarter (cols 5-8)",
         f"**Parent suite:** H13 (Capital Expenditure)",
         "",
         "## Results",
         "",
-        "| Col | DV | Mod | FE | b_iv | p2_iv | b_int | p2_int | N | N_fy | R2w |",
-        "|-----|----|-----|----|------|-------|-------|--------|---|------|-----|",
+        "| Col | DV | Mod | FE | b_iv | p2_iv | b_int | p2_int | N | N_fy | R2 |",
+        "|-----|----|-----|----|------|-------|-------|--------|---|------|----|",
     ]
 
     for r in all_results:
@@ -704,12 +708,12 @@ def generate_report(
             continue
         stars_iv = _sig_stars(m["p_two_iv"])
         stars_int = _sig_stars(m["p_two_interaction"])
-        fe_short = "YQ" if m["fe"].endswith("_yq") else "FY"
+        fe_short = "YQ" if m["fe"].endswith("_yq") else "CalYr"
         lines.append(
             f"| ({m['col']}) | {m['dv']} | {m['moderator']} | {fe_short} | "
             f"{m['beta_iv']:.4f}{stars_iv} | {m['p_two_iv']:.4f} | "
             f"{m['beta_interaction']:.4f}{stars_int} | {m['p_two_interaction']:.4f} | "
-            f"{m['n_obs']:,} | {m['n_firm_years']:,} | {m['within_r2']:.4f} |"
+            f"{m['n_obs']:,} | {m['n_firm_years']:,} | {m['r2']:.4f} |"
         )
 
     lines += [
@@ -792,7 +796,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     for spec in MODEL_SPECS:
         mod_label = MODERATORS[spec["mod"]]["label"]
-        fe_label = "Industry+YQ" if spec.get("fe", "industry").endswith("_yq") else "Industry+FY"
+        fe_label = "Industry+YQ" if spec.get("fe", "industry").endswith("_yq") else "Industry+CalYr"
         print(f"\n--- Model ({spec['col']}): DV={spec['dv']} Mod={mod_label} FE={fe_label} ---")
 
         try:
@@ -851,7 +855,7 @@ def main(panel_path: Optional[str] = None) -> int:
     for r in all_results:
         m = r["meta"]
         stars_int = _sig_stars(m["p_two_interaction"])
-        fe_short = "YQ" if m["fe"].endswith("_yq") else "FY"
+        fe_short = "YQ" if m["fe"].endswith("_yq") else "CalYr"
         print(f"  Col ({m['col']}) {m['dv']} [{m['moderator']}] FE={fe_short}: "
               f"IV b={m['beta_iv']:.4f} | Int b={m['beta_interaction']:.4f}{stars_int}")
 

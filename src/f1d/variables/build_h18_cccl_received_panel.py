@@ -7,8 +7,8 @@ ID: variables/build_h18_cccl_received_panel
 Description: Build CALL-LEVEL panel for H18 SEC Comment Letter receipt hypothesis.
 
     Unit of observation: individual earnings call (file_name).
-    DV: CCCL_next1q = 1 if firm received SEC comment letter in next calendar quarter
-        CCCL_next2q = 1 if firm received SEC comment letter in next 2 calendar quarters
+    DV: CCCL = 1 if firm received SEC comment letter in next calendar quarter
+        CCCL_lag = 1 if firm received SEC comment letter in previous calendar quarter
 
     CIK-gvkey linkage: Combined CCM linktable + Compustat CIK field (integer match).
     Known: ~330 of 693 linked CCCL letters are from firms in our earnings call manifest.

@@ -2,8 +2,8 @@
 Unit tests for H9 Takeover Hazards (run_h9_takeover_hazards.py).
 
 Tests verify:
-- Data loading for H9-specific variables (earnings guidance precision)
-- Regression execution with guidance precision as DV
+- Data loading for H9-specific variables (Takeover Hazards, survival analysis)
+- Regression execution with Cox PH survival model
 - Hypothesis test logic for H9 (direction depends on hypothesis)
 - Output format and error handling
 """

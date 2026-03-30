@@ -16,8 +16,8 @@ DV: CCCL = 1 if firm received SEC comment letter between this call and the next 
     Cols 5-6:   DV = CCCL, Year-Quarter FE (Extended)
     Odd cols:   Industry FE (FF12)
     Even cols:  Firm FE
-    Cols 1-2, 7-8:   Base controls
-    Cols 3-6, 9-12:  Extended controls
+    Cols 1-2:   Base controls
+    Cols 3-6:   Extended controls
 
 Key IVs (4, simultaneous, call-level):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -287,7 +287,7 @@ def run_regression(
         return None, {}
 
     elapsed = (datetime.now() - t0).total_seconds()
-    print(f"  [OK] {elapsed:.1f}s | R2w={model.rsquared_within:.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
 
     meta: Dict[str, Any] = {
         "col": col_num,
@@ -296,7 +296,8 @@ def run_regression(
         "controls": ctrl_key,
         "n_obs": int(model.nobs),
         "n_firms": n_firms,
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
         "extra_controls": ",".join(extra_controls) if extra_controls else "",
     }
 
@@ -420,7 +421,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         yr_qtr_fe_cells.append("Yes" if is_yq else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
-    lines.append(r"Year FE & " + " & ".join(year_fe_cells) + r" \\")
+    lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
     lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
 
     lines.append(r"\midrule")
@@ -435,8 +436,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r2_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
-        r2_cells.append(fmt_r2(meta.get("within_r2", np.nan)))
-    lines.append(r"Within-R$^2$ & " + " & ".join(r2_cells) + r" \\")
+        r2_cells.append(fmt_r2(meta.get("r2", np.nan)))
+    lines.append(r"$R^2$ & " + " & ".join(r2_cells) + r" \\")
+
+    adj_r2_cells = []
+    for c in range(1, n_cols + 1):
+        meta = results_by_col.get(c, {})
+        adj_r2_cells.append(fmt_r2(meta.get("adj_r2", np.nan)))
+    lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2_cells) + r" \\")
 
     lines += [
         r"\bottomrule",
@@ -483,6 +490,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"FE: {meta['fe']}\n")
             f.write(f"Controls: {meta['controls']}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")

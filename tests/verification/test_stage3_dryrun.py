@@ -1,36 +1,33 @@
 """
-Stage 3 (Financial) dry-run verification tests.
+Stage 3 (Variables) dry-run verification tests.
 
-Tests that all Stage 3 financial feature scripts:
+Tests that all Stage 3 variable/panel builder scripts:
 1. Can be imported without errors
 2. Have proper --dry-run flag support
 3. Execute dry-run validation without exceptions
 4. Follow the expected module structure (f1d.shared.* imports)
 
-Stage 3 V1 Scripts (financial/v1/):
-    - 3.0_BuildFinancialFeatures.py (orchestrator)
-    - 3.1_FirmControls.py
-    - 3.2_MarketVariables.py
-    - 3.3_EventFlags.py
-    - 3.4_Utils.py (utility module)
-
-Stage 3 V2 Scripts (financial/v2/ - Hypothesis H1-H9):
-    - 3.1_H1Variables.py (Cash Holdings)
-    - 3.2_H2Variables.py (Investment Efficiency)
-    - 3.2a_AnalystDispersionPatch.py
-    - 3.3_H3Variables.py (Payout Policy)
-    - 3.5_H5Variables.py (Dispersion)
-    - 3.6_H6Variables.py (CCC&L)
-    - 3.7_H7IlliquidityVariables.py
-    - 3.9_H2_BiddleInvestmentResidual.py
-    - 3.10_H2_PRiskUncertaintyMerge.py
-    - 3.11_H9_StyleFrozen.py
-    - 3.12_H9_PRiskFY.py
-    - 3.13_H9_AbnormalInvestment.py
+Stage 3 Scripts (variables/):
+    - build_h0_3_ceo_clarity_extended_panel.py
+    - build_h1_cash_holdings_panel.py
+    - build_h4_leverage_panel.py
+    - build_h5_dispersion_panel.py
+    - build_h5b_johnson_disp_panel.py
+    - build_h5b_wang_disp_panel.py
+    - build_h7_illiquidity_panel.py
+    - build_h9_takeover_panel.py
+    - build_h11_prisk_uncertainty_panel.py
+    - build_h11_prisk_uncertainty_lag_panel.py
+    - build_h11_prisk_uncertainty_lead_panel.py
+    - build_h12_payout_panel.py
+    - build_h13_capex_panel.py
+    - build_h14_bidask_spread_panel.py
+    - build_h16_rd_sales_panel.py
+    - build_h17_repurchase_intensity_panel.py
+    - build_h18_cccl_received_panel.py
 
 Dependencies:
-    - V1 scripts depend on Step 2.2 outputs
-    - V2 scripts depend on Step 1.4 and Step 2.2 outputs
+    - Scripts depend on Stage 1 and Stage 2 outputs
 """
 
 import os
@@ -42,21 +39,25 @@ import pytest
 # Repository root directory
 REPO_ROOT = Path(__file__).parent.parent.parent
 
-# Stage 3 V1 financial scripts to test (excluding __init__.py)
-
-# Stage 3 V2 financial scripts to test (excluding __init__.py)
-
-# All Stage 3 scripts combined
+# All Stage 3 scripts combined (excluding __init__.py)
 STAGE3_ALL_SCRIPTS = [
-    "src/f1d/variables/build_h0_1_manager_clarity_panel.py",
     "src/f1d/variables/build_h0_3_ceo_clarity_extended_panel.py",
-    "src/f1d/variables/build_h0_5_ceo_tone_panel.py",
     "src/f1d/variables/build_h1_cash_holdings_panel.py",
-    "src/f1d/variables/build_h3_payout_policy_panel.py",
     "src/f1d/variables/build_h4_leverage_panel.py",
     "src/f1d/variables/build_h5_dispersion_panel.py",
+    "src/f1d/variables/build_h5b_johnson_disp_panel.py",
+    "src/f1d/variables/build_h5b_wang_disp_panel.py",
     "src/f1d/variables/build_h7_illiquidity_panel.py",
     "src/f1d/variables/build_h9_takeover_panel.py",
+    "src/f1d/variables/build_h11_prisk_uncertainty_panel.py",
+    "src/f1d/variables/build_h11_prisk_uncertainty_lag_panel.py",
+    "src/f1d/variables/build_h11_prisk_uncertainty_lead_panel.py",
+    "src/f1d/variables/build_h12_payout_panel.py",
+    "src/f1d/variables/build_h13_capex_panel.py",
+    "src/f1d/variables/build_h14_bidask_spread_panel.py",
+    "src/f1d/variables/build_h16_rd_sales_panel.py",
+    "src/f1d/variables/build_h17_repurchase_intensity_panel.py",
+    "src/f1d/variables/build_h18_cccl_received_panel.py",
 ]
 
 
@@ -74,17 +75,17 @@ def subprocess_env():
 
 
 class TestStage3ScriptImports:
-    """Test that Stage 3 V1 scripts can be imported."""
+    """Test that Stage 3 scripts can be imported."""
 
     @pytest.mark.parametrize("script", STAGE3_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_script_exists(self, script: str):
-        """Verify each V1 script file exists."""
+        """Verify each script file exists."""
         script_path = REPO_ROOT / script
         assert script_path.exists(), f"Script not found: {script_path}"
 
     @pytest.mark.parametrize("script", STAGE3_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_script_importable(self, script: str, subprocess_env: dict):
-        """Test that V1 script can be imported without errors."""
+        """Test that script can be imported without errors."""
         import sys
 
         script_path = REPO_ROOT / script
@@ -209,39 +210,20 @@ class TestStage3HypothesisMapping:
 
     def test_h1_script_exists(self):
         """Verify H1 (Cash Holdings) script exists."""
-        h1_path = REPO_ROOT / "src/f1d/financial/build_h1_cash_holdings_panel.py"
+        h1_path = REPO_ROOT / "src/f1d/variables/build_h1_cash_holdings_panel.py"
         assert h1_path.exists(), "H1 Cash Holdings script should exist"
-
-    def test_h3_script_exists(self):
-        """Verify H3 (Payout Policy) script exists."""
-        h3_path = REPO_ROOT / "src/f1d/financial/build_h3_payout_policy_panel.py"
-        assert h3_path.exists(), "H3 Payout Policy script should exist"
 
     def test_h5_script_exists(self):
         """Verify H5 (Dispersion) script exists."""
-        h5_path = REPO_ROOT / "src/f1d/financial/build_h5_dispersion_panel.py"
+        h5_path = REPO_ROOT / "src/f1d/variables/build_h5_dispersion_panel.py"
         assert h5_path.exists(), "H5 Dispersion script should exist"
 
     def test_h7_script_exists(self):
         """Verify H7 (Illiquidity) script exists."""
-        h7_path = REPO_ROOT / "src/f1d/financial/build_h7_illiquidity_panel.py"
+        h7_path = REPO_ROOT / "src/f1d/variables/build_h7_illiquidity_panel.py"
         assert h7_path.exists(), "H7 Illiquidity script should exist"
 
-    def test_h9_scripts_exist(self):
-        """Verify H9-related scripts exist."""
-        h9_style_path = REPO_ROOT / "src/f1d/variables/3.11_H9_StyleFrozen.py"
-        h9_prisk_path = REPO_ROOT / "src/f1d/variables/3.12_H9_PRiskFY.py"
-        h9_invest_path = REPO_ROOT / "src/f1d/variables/3.13_H9_AbnormalInvestment.py"
-
-        assert h9_style_path.exists(), "H9 StyleFrozen script should exist"
-        assert h9_prisk_path.exists(), "H9 PRiskFY script should exist"
-        assert h9_invest_path.exists(), "H9 AbnormalInvestment script should exist"
-
-    def test_v1_orchestrator_exists(self):
-        """Verify V1 orchestrator script exists."""
-        orchestrator_path = (
-            REPO_ROOT / "src/f1d/variables/3.0_BuildFinancialFeatures.py"
-        )
-        assert orchestrator_path.exists(), (
-            "V1 Financial orchestrator script should exist"
-        )
+    def test_h9_script_exists(self):
+        """Verify H9 (Takeover) script exists."""
+        h9_path = REPO_ROOT / "src/f1d/variables/build_h9_takeover_panel.py"
+        assert h9_path.exists(), "H9 Takeover script should exist"

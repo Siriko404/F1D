@@ -233,7 +233,7 @@ __all__ = [
     "ManifestFieldsBuilder",
     # Takeover indicator builder (B.5 Takeover Hazards) — firm-level
     "TakeoverIndicatorBuilder",
-    # H3 (kept for H6/H11 — DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)
+    # H3 (kept for H11 — DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)
     "EarningsVolatilityBuilder",
     "FirmMaturityBuilder",
     # H5
@@ -246,6 +246,7 @@ __all__ = [
     "DeltaDispersionBuilder",
     "PostCallDispersionBuilder",
     "JohnsonDispBuilder",
+    "WangDispBuilder",
     # H7
     "AmihudIlliqBuilder",
     "AmihudChangeBuilder",
@@ -274,7 +275,7 @@ __all__ = [
     "winsorize_pooled",
 ]
 
-# H3 Payout Policy (kept for H6/H11; DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)
+# H3 Payout Policy (kept for H11; DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)
 from .earnings_volatility import EarningsVolatilityBuilder
 from .firm_maturity import FirmMaturityBuilder
 
@@ -288,6 +289,7 @@ from .loss_dummy import LossDummyBuilder
 from .delta_dispersion import DeltaDispersionBuilder
 from .postcall_dispersion import PostCallDispersionBuilder
 from .johnson_disp import JohnsonDispBuilder
+from .wang_disp import WangDispBuilder
 
 # H7 Illiquidity
 from .amihud_illiq import AmihudIlliqBuilder

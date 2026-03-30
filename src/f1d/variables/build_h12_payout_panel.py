@@ -8,8 +8,9 @@ Description: Build CALL-LEVEL panel for H12 Quarterly Payout Ratio hypothesis.
 
     Unit of observation: individual earnings call (file_name).
     DV: PayoutRatio_q = (dvpspq × cshoq) / ibq (quarterly, ibq > 0 only).
-    Lead DVs:
+    Lead/Lag DVs:
         PayoutRatio_q_lead_qtr: next fiscal quarter's PayoutRatio_q
+        PayoutRatio_q_lag: previous fiscal quarter's PayoutRatio_q
 
 Inputs:
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet

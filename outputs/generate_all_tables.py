@@ -3,7 +3,7 @@
 
 Each table includes:
 - Explicit DV column headers
-- All 6 IVs with coefficients + SEs
+- All 4 IVs with coefficients + SEs
 - All control variables with coefficients + SEs
 - Significant coefficients in bold
 - FE indicators, N, Within-R²
@@ -190,6 +190,20 @@ SUITES = [
         "tail": "one",
         "hyp_dir": ">",
     },
+    # ── H5b Wang ──
+    {
+        "id": "H5b-Wang",
+        "dir": "h5b_wang_disp/2026-03-27_095026",
+        "caption": "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
+        "label": "tab:h5b_wang",
+        "cols": 12,
+        "dvs": [
+            ("WangDISP", 6),
+            (r"WangDISP\_lead", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
     # ── H7 ──
     {
         "id": "H7",
@@ -295,8 +309,8 @@ SUITES = [
             (r"PayoutRatio\_q", 6),
             (r"PayoutRatio\_q\_lead\_qtr", 6),
         ],
-        "tail": "two",
-        "hyp_dir": None,
+        "tail": "one",
+        "hyp_dir": "<",
         "time_fe_label": "Year FE",
     },
     # ── H13 family ──
@@ -410,7 +424,7 @@ SUITES = [
             (r"CCCL", 6),
         ],
         "tail": "one",
-        "hyp_dir": "pos",
+        "hyp_dir": ">",
     },
 ]
 
@@ -518,6 +532,7 @@ def sig_stars(pval, tail):
 
 def fmt_coef(beta, se, pval_two, tail, hyp_dir):
     """Format coefficient with bold if significant + stars."""
+    assert hyp_dir in (">", "<", None), f"Unrecognized hyp_dir: {hyp_dir!r}"
     if tail == "one" and hyp_dir == ">":
         p_test = pval_two / 2 if beta > 0 else 1 - pval_two / 2
     elif tail == "one" and hyp_dir == "<":

@@ -208,12 +208,8 @@ def run_regression(
 
     duration = (datetime.now() - t0).total_seconds()
     print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared (within): {model.rsquared_within:.4f}")
-    print(f"  Adj R-squared:      {model.rsquared_inclusive:.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  N obs:              {int(model.nobs):,}")
-
-    within_r2 = float(model.rsquared_within)
-    print(f"  Within-R2: {within_r2:.4f}")
 
     beta_prisk = model.params.get(iv_var, np.nan)
     p_two = model.pvalues.get(iv_var, np.nan)
@@ -244,8 +240,8 @@ def run_regression(
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),
         "cluster_var": "gvkey",
-        "within_r2": within_r2,
-        "rsquared_inclusive": float(model.rsquared_inclusive),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
         "beta_prisk": float(beta_prisk),
         "beta_prisk_se": float(beta_se),
         "beta_prisk_t": float(beta_t),
@@ -360,7 +356,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             "Negative Sentiment & Yes & Yes & Yes & Yes \\\\",
             "Controls & Yes & Yes & Yes & Yes \\\\",
             "Firm FE & Yes & Yes & Yes & Yes \\\\",
-            "Year FE & Yes & Yes & Yes & Yes \\\\",
+            "Calendar Year FE & Yes & Yes & Yes & Yes \\\\",
             "\\midrule",
         ]
     )
@@ -373,12 +369,19 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rn += f"{r_cp_1['n_obs']:,} \\\\" if r_cp_1 else " \\\\"
     lines.append(rn)
 
-    rr = "Within-$R^2$ & "
-    rr += f"{fmt_r2(r_mq_1['within_r2'])} & " if r_mq_1 else " & "
-    rr += f"{fmt_r2(r_cq_1['within_r2'])} & " if r_cq_1 else " & "
-    rr += f"{fmt_r2(r_mp_1['within_r2'])} & " if r_mp_1 else " & "
-    rr += f"{fmt_r2(r_cp_1['within_r2'])} \\\\" if r_cp_1 else " \\\\"
+    rr = "$R^2$ & "
+    rr += f"{fmt_r2(r_mq_1['r2'])} & " if r_mq_1 else " & "
+    rr += f"{fmt_r2(r_cq_1['r2'])} & " if r_cq_1 else " & "
+    rr += f"{fmt_r2(r_mp_1['r2'])} & " if r_mp_1 else " & "
+    rr += f"{fmt_r2(r_cp_1['r2'])} \\\\" if r_cp_1 else " \\\\"
     lines.append(rr)
+
+    ra = "Adj.~$R^2$ & "
+    ra += f"{fmt_r2(r_mq_1['adj_r2'])} & " if r_mq_1 else " & "
+    ra += f"{fmt_r2(r_cq_1['adj_r2'])} & " if r_cq_1 else " & "
+    ra += f"{fmt_r2(r_mp_1['adj_r2'])} & " if r_mp_1 else " & "
+    ra += f"{fmt_r2(r_cp_1['adj_r2'])} \\\\" if r_cp_1 else " \\\\"
+    lines.append(ra)
 
     lines.extend(["\\bottomrule", "\\end{tabular}"])
     # Add table notes
@@ -546,6 +549,7 @@ def main(panel_path: str | None = None) -> int:
                     # Save individual regression results with lag version in filename
                     lag_suffix = "lag1" if iv_var == "PRiskQ_lag" else "lag2"
                     with open(out_dir / f"regression_results_{sample}_{dv}_{lag_suffix}.txt", "w") as f:
+                        f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
                         f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)

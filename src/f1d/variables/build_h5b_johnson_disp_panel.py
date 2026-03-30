@@ -92,7 +92,7 @@ def build_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        # DV (Johnson 2020 dispersion)
+        # DV (Johnson 2004 dispersion)
         "johnson_disp": JohnsonDispBuilder(var_config.get("johnson_disp", {})),
         # Base controls
         "size": SizeBuilder(var_config.get("size", {})),

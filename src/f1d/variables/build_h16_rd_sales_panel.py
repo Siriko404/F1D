@@ -16,7 +16,7 @@ Description: Build CALL-LEVEL panel for H16 R&D Investment Intensity hypothesis 
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
-    Step 4: Compute RDSales_lead per call (fiscal-year based, consecutive year validated).
+    Step 4: Compute RDSales_lead and RDSales_lag per call (fiscal-year based, consecutive year validated).
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 

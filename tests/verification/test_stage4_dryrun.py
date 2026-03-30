@@ -8,19 +8,30 @@ Tests that all Stage 4 econometric analysis scripts:
 4. Follow the expected module structure (f1d.shared.* imports)
 
 Stage 4 Scripts (econometric/):
-    - run_h0_1_manager_clarity.py
     - run_h0_3_ceo_clarity_extended.py
-    - run_h0_4_ceo_clarity_regime.py
-    - run_h0_5_ceo_tone.py
     - run_h1_cash_holdings.py
-    - run_h3_payout_policy.py
+    - run_h1_1_cash_tsimm.py
+    - run_h1_1b_cash_tsimm_binary.py
+    - run_h1_2_cash_constraint.py
     - run_h4_leverage.py
     - run_h5_dispersion.py
+    - run_h5b_johnson_disp.py
+    - run_h5b_wang_disp.py
     - run_h7_illiquidity.py
     - run_h9_takeover_hazards.py (survival analysis)
+    - run_h11_prisk_uncertainty.py
+    - run_h11_prisk_uncertainty_lag.py
+    - run_h11_prisk_uncertainty_lead.py
+    - run_h12_payout.py
+    - run_h13_1_competition.py
+    - run_h13_capex.py
+    - run_h14_bidask_spread.py
+    - run_h16_rd_sales.py
+    - run_h17_repurchase_intensity.py
+    - run_h18_cccl_received.py
 
 Dependencies:
-    - Scripts depend on Step 3.x and Step 2.2 outputs
+    - Scripts depend on Stage 3 and Stage 2 outputs
     - run_h9_takeover_hazards.py uses lifelines for survival analysis
 """
 
@@ -33,22 +44,29 @@ import pytest
 # Repository root directory
 REPO_ROOT = Path(__file__).parent.parent.parent
 
-# Stage 4 V1 econometric scripts to test (excluding __init__.py)
-
-# Stage 4 V2 econometric scripts to test (excluding __init__.py)
-
-# All Stage 4 scripts combined
+# All Stage 4 econometric scripts to test (excluding __init__.py)
 STAGE4_ALL_SCRIPTS = [
-    "src/f1d/econometric/run_h0_1_manager_clarity.py",
     "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
-    "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py",
-    "src/f1d/econometric/run_h0_5_ceo_tone.py",
     "src/f1d/econometric/run_h1_cash_holdings.py",
-    "src/f1d/econometric/run_h3_payout_policy.py",
+    "src/f1d/econometric/run_h1_1_cash_tsimm.py",
+    "src/f1d/econometric/run_h1_1b_cash_tsimm_binary.py",
+    "src/f1d/econometric/run_h1_2_cash_constraint.py",
     "src/f1d/econometric/run_h4_leverage.py",
     "src/f1d/econometric/run_h5_dispersion.py",
+    "src/f1d/econometric/run_h5b_johnson_disp.py",
+    "src/f1d/econometric/run_h5b_wang_disp.py",
     "src/f1d/econometric/run_h7_illiquidity.py",
     "src/f1d/econometric/run_h9_takeover_hazards.py",
+    "src/f1d/econometric/run_h11_prisk_uncertainty.py",
+    "src/f1d/econometric/run_h11_prisk_uncertainty_lag.py",
+    "src/f1d/econometric/run_h11_prisk_uncertainty_lead.py",
+    "src/f1d/econometric/run_h12_payout.py",
+    "src/f1d/econometric/run_h13_1_competition.py",
+    "src/f1d/econometric/run_h13_capex.py",
+    "src/f1d/econometric/run_h14_bidask_spread.py",
+    "src/f1d/econometric/run_h16_rd_sales.py",
+    "src/f1d/econometric/run_h17_repurchase_intensity.py",
+    "src/f1d/econometric/run_h18_cccl_received.py",
 ]
 
 
@@ -66,17 +84,17 @@ def subprocess_env():
 
 
 class TestStage4ScriptImports:
-    """Test that Stage 4 V1 scripts can be imported."""
+    """Test that Stage 4 scripts can be imported."""
 
     @pytest.mark.parametrize("script", STAGE4_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_script_exists(self, script: str):
-        """Verify each V1 script file exists."""
+        """Verify each script file exists."""
         script_path = REPO_ROOT / script
         assert script_path.exists(), f"Script not found: {script_path}"
 
     @pytest.mark.parametrize("script", STAGE4_ALL_SCRIPTS, ids=lambda s: Path(s).stem)
     def test_script_importable(self, script: str, subprocess_env: dict):
-        """Test that V1 script can be imported without errors."""
+        """Test that script can be imported without errors."""
         import sys
 
         script_path = REPO_ROOT / script
@@ -190,8 +208,6 @@ class TestStage4ArgumentParsing:
         )
 
         # --help should exit with 0 and show usage
-        # Note: Some scripts may have Unicode in help text that fails on Windows
-        # This is a known issue with 4.9_CEOFixedEffects.py (Dzieliński)
         if result.returncode != 0:
             # Check if it's a Unicode encoding error (Windows console limitation)
             if "UnicodeEncodeError" in result.stderr:
@@ -215,11 +231,6 @@ class TestStage4HypothesisMapping:
         h1_path = REPO_ROOT / "src/f1d/econometric/run_h1_cash_holdings.py"
         assert h1_path.exists(), "H1 Cash Holdings regression script should exist"
 
-    def test_h3_regression_exists(self):
-        """Verify H3 (Payout Policy) regression script exists."""
-        h3_path = REPO_ROOT / "src/f1d/econometric/run_h3_payout_policy.py"
-        assert h3_path.exists(), "H3 Payout Policy regression script should exist"
-
     def test_h4_regression_exists(self):
         """Verify H4 (Leverage Discipline) regression script exists."""
         h4_path = REPO_ROOT / "src/f1d/econometric/run_h4_leverage.py"
@@ -237,15 +248,15 @@ class TestStage4HypothesisMapping:
 
 
 class TestStage4SurvivalAnalysis:
-    """Test survival analysis specific scripts (4.3_TakeoverHazards)."""
+    """Test survival analysis specific scripts (H9 Takeover Hazards)."""
 
     def test_takeover_hazards_script_exists(self):
-        """Verify 4.3_TakeoverHazards.py script exists."""
+        """Verify run_h9_takeover_hazards.py script exists."""
         haz_path = REPO_ROOT / "src/f1d/econometric/run_h9_takeover_hazards.py"
         assert haz_path.exists(), "Takeover Hazards script should exist"
 
     def test_takeover_hazards_uses_lifelines(self):
-        """Verify 4.3_TakeoverHazards.py uses lifelines for Cox PH."""
+        """Verify run_h9_takeover_hazards.py uses lifelines for Cox PH."""
         haz_path = REPO_ROOT / "src/f1d/econometric/run_h9_takeover_hazards.py"
         content = haz_path.read_text(encoding="utf-8")
 
@@ -254,7 +265,7 @@ class TestStage4SurvivalAnalysis:
         assert "CoxPHFitter" in content, "TakeoverHazards should use CoxPHFitter"
 
     def test_takeover_hazards_has_cause_specific_hazards(self):
-        """Verify 4.3_TakeoverHazards.py uses cause-specific Cox hazards.
+        """Verify run_h9_takeover_hazards.py uses cause-specific Cox hazards.
 
         As per 77-03 decision: Using cause-specific Cox hazards instead of
         FineGrayAFTFitter (not available in lifelines 0.30.0).
@@ -269,20 +280,3 @@ class TestStage4SurvivalAnalysis:
         assert (
             "cause-specific" in content.lower() or "cause_specific" in content.lower()
         ), "Should mention cause-specific hazards approach"
-
-
-class TestStage4CeoFixedEffects:
-    """Test CEO Fixed Effects script (H0.4 CEO Clarity Regime)."""
-
-    def test_ceo_fixed_effects_script_exists(self):
-        """Verify H0.4 CEO Clarity Regime script exists."""
-        cfe_path = REPO_ROOT / "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py"
-        assert cfe_path.exists(), "CEO Fixed Effects script should exist"
-
-    def test_ceo_fixed_effects_uses_statsmodels(self):
-        """Verify H0.4 CEO Clarity Regime uses statsmodels for regression."""
-        cfe_path = REPO_ROOT / "src/f1d/econometric/run_h0_4_ceo_clarity_regime.py"
-        content = cfe_path.read_text(encoding="utf-8")
-
-        # Check for statsmodels import
-        assert "statsmodels" in content, "CEO Fixed Effects should import statsmodels"

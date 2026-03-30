@@ -13,15 +13,17 @@ DV: WangDISP = SD(analyst forecasts T-31..T-1) / prccq_prior
 Lead DV:
     WangDISP_lead: next fiscal quarter's WangDISP
 
-8 Model Specifications:
-    Cols 1-4:   DV = WangDISP (contemporaneous)
-    Cols 5-8:   DV = WangDISP_lead (next quarter)
-    Odd cols:   Industry FE (FF12) + Fiscal Year FE
-    Even cols:  Firm FE + Fiscal Year FE
-    Cols 1-2, 5-6:  Base controls
-    Cols 3-4, 7-8:  Extended controls
+12 Model Specifications:
+    Cols 1-4:   DV = WangDISP (contemporaneous), Calendar Year FE
+    Cols 5-6:   DV = WangDISP (contemporaneous), Year-Quarter FE
+    Cols 7-10:  DV = WangDISP_lead (next quarter), Calendar Year FE
+    Cols 11-12: DV = WangDISP_lead (next quarter), Year-Quarter FE
+    Odd cols:   Industry FE (FF12)
+    Even cols:  Firm FE
+    Cols 1-2, 7-8:   Base controls
+    Cols 3-6, 9-12:  Extended controls
 
-Lead specs (cols 5-8) include WangDISP as lagged DV control.
+Lead specs (cols 7-12) include WangDISP as lagged DV control.
 
 Key IVs (4, simultaneous, call-level):
     CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
@@ -31,7 +33,7 @@ Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion).
 
 Sample: Main only (FF12 != 8, 11).
 SEs: Firm-clustered.
-FE time: fyearq_int (fiscal year).
+FE time: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 ================================================================================
 """
 
@@ -51,6 +53,7 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
 # ==============================================================================
@@ -77,16 +80,22 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    # Contemporaneous
-    {"col": 1, "dv": "WangDISP",      "fe": "industry", "controls": "base",     "extra_controls": []},
-    {"col": 2, "dv": "WangDISP",      "fe": "firm",     "controls": "base",     "extra_controls": []},
-    {"col": 3, "dv": "WangDISP",      "fe": "industry", "controls": "extended", "extra_controls": []},
-    {"col": 4, "dv": "WangDISP",      "fe": "firm",     "controls": "extended", "extra_controls": []},
-    # Lead: next quarter
-    {"col": 5, "dv": "WangDISP_lead", "fe": "industry", "controls": "base",     "extra_controls": ["WangDISP"]},
-    {"col": 6, "dv": "WangDISP_lead", "fe": "firm",     "controls": "base",     "extra_controls": ["WangDISP"]},
-    {"col": 7, "dv": "WangDISP_lead", "fe": "industry", "controls": "extended", "extra_controls": ["WangDISP"]},
-    {"col": 8, "dv": "WangDISP_lead", "fe": "firm",     "controls": "extended", "extra_controls": ["WangDISP"]},
+    # Contemporaneous — Calendar Year FE
+    {"col": 1,  "dv": "WangDISP",      "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 2,  "dv": "WangDISP",      "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 3,  "dv": "WangDISP",      "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 4,  "dv": "WangDISP",      "fe": "firm",        "controls": "extended", "extra_controls": []},
+    # Contemporaneous — Year-Quarter FE (Extended controls only)
+    {"col": 5,  "dv": "WangDISP",      "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 6,  "dv": "WangDISP",      "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    # Lead: next quarter — Calendar Year FE
+    {"col": 7,  "dv": "WangDISP_lead", "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 8,  "dv": "WangDISP_lead", "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 9,  "dv": "WangDISP_lead", "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 10, "dv": "WangDISP_lead", "fe": "firm",        "controls": "extended", "extra_controls": []},
+    # Lead: next quarter — Year-Quarter FE (Extended controls only)
+    {"col": 11, "dv": "WangDISP_lead", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 12, "dv": "WangDISP_lead", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
 ]
 
 SUMMARY_STATS_VARS = [
@@ -148,6 +157,12 @@ def load_panel(root: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
     panel = pd.read_parquet(panel_file, columns=[c for c in columns if c != "start_date"] + ["start_date"])
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
+
+    # Build calendar year-quarter index for YQ FE specs
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+
     return panel
 
 
@@ -166,7 +181,11 @@ def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.Dat
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
     extra = spec.get("extra_controls", [])
     all_controls = controls + extra
+    fe_type = spec["fe"]
+
     required = [dv] + KEY_IVS + all_controls + ["gvkey", "fyearq_int", "ff12_code"]
+    if fe_type.endswith("_yq"):
+        required.append("cal_yr_qtr")
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -219,13 +238,19 @@ def run_regression(
 
     exog = KEY_IVS + all_controls
 
+    # Determine time index based on FE type
+    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
     t0 = datetime.now()
 
-    df_panel = df_prepared.set_index(["gvkey", "fyearq_int"])
+    df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if fe_type == "industry":
+        if base_fe == "industry":
             model_obj = PanelOLS(
                 dependent=df_panel[dv],
                 exog=df_panel[exog],
@@ -246,12 +271,13 @@ def run_regression(
         return None, {}
 
     elapsed = (datetime.now() - t0).total_seconds()
-    print(f"  [OK] {elapsed:.1f}s | Within-R²: {model.rsquared_within:.4f} | N: {int(model.nobs):,}")
+    print(f"  [OK] {elapsed:.1f}s | R²: {model.rsquared:.4f} | Adj R²: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f} | N: {int(model.nobs):,}")
 
     meta: Dict[str, Any] = {
         "col": col_num, "dv": dv, "fe": fe_type, "controls": spec["controls"],
         "n_obs": int(model.nobs), "n_firms": df_prepared["gvkey"].nunique(),
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
     }
 
     for iv in KEY_IVS:
@@ -293,11 +319,14 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"H5b Wang Dispersion Regression\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
-            f.write(f"FE: {'industry' if meta['fe'] == 'industry' else 'firm'} + Fiscal Year\n")
+            base_fe = meta['fe'].replace('_yq', '')
+            time_label = 'Calendar Year-Quarter' if meta['fe'].endswith('_yq') else 'Calendar Year'
+            f.write(f"FE: {'industry' if base_fe == 'industry' else 'firm'} + {time_label}\n")
             f.write(f"Controls: {meta['controls']}\n")
             extra = [c for c in meta.get("extra_controls", []) if c]
             if extra:
                 f.write(f"Extra controls: {', '.join(extra)}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
             f.write(str(model.summary))
         print(f"  Saved: {fname}")

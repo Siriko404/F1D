@@ -4,7 +4,6 @@ Unit tests for V2 Econometric Scripts
 
 Tests core computation functions for:
 - CEO Fixed Effects
-- H2 PRisk x Uncertainty Investment
 - Regression Diagnostics
 - Panel Data Structure
 """
@@ -123,55 +122,6 @@ class TestCEOFixedEffects:
 # ==============================================================================
 # Test H2 PRisk x Uncertainty Investment
 # ==============================================================================
-
-
-class TestH2PRiskUncertaintyInvestment:
-    """Tests for H2 PRisk x Uncertainty interaction regression."""
-
-    def test_interaction_term_creation(self) -> None:
-        """Test creation of PRisk x Uncertainty interaction term."""
-        df = pd.DataFrame(
-            {
-                "prisk_std": [0.5, -0.3, 0.0, 1.2],
-                "uncertainty_std": [1.0, -0.5, 0.5, 0.8],
-            }
-        )
-
-        df["interaction"] = df["prisk_std"] * df["uncertainty_std"]
-
-        expected = df["prisk_std"] * df["uncertainty_std"]
-        pd.testing.assert_series_equal(df["interaction"], expected, check_names=False)
-
-    def test_interaction_coefficient_interpretation(self) -> None:
-        """Test interpretation of interaction coefficient."""
-        # If interaction coefficient is negative:
-        # Higher PRisk x Higher Uncertainty -> Lower Investment
-        interaction_coef = -0.15
-
-        # At high PRisk (1 SD) and high Uncertainty (1 SD):
-        # Investment = main + 1*1*(-0.15) = main - 0.15
-        marginal_effect_at_1sd = interaction_coef * 1 * 1
-        assert marginal_effect_at_1sd < 0
-
-    def test_marginal_effect_calculation(self) -> None:
-        """Test calculation of marginal effects."""
-        # Marginal effect of uncertainty on investment at different PRisk levels
-        beta_uncertainty = 0.10
-        beta_interaction = -0.05
-        prisk_level = 2.0  # High PRisk
-
-        # Marginal effect = beta_uncertainty + beta_interaction * PRisk
-        marginal_effect = beta_uncertainty + beta_interaction * prisk_level
-        assert marginal_effect == 0.0  # At PRisk=2, effect cancels out
-
-    def test_standardization_preserves_ordering(self) -> None:
-        """Test that standardization preserves relative ordering."""
-        values = pd.Series([10, 20, 30, 40, 50])
-        standardized = (values - values.mean()) / values.std()
-
-        # Original ordering should be preserved
-        assert standardized.argmax() == 4  # 50 still highest
-        assert standardized.argmin() == 0  # 10 still lowest
 
 
 # ==============================================================================

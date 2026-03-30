@@ -133,7 +133,7 @@ def build_call_level_panel(
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
         ),
-        # Retained for downstream consumers (H0/H2 may reuse this panel)
+        # Retained for downstream consumers (H0 may reuse this panel)
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
         ),

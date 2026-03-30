@@ -3,8 +3,6 @@
 Unit tests for auxiliary financial scripts (3.9, 3.10, 3.11, 3.12, 3.13)
 
 Tests core computation functions for:
-- H2 Biddle Investment Residual (3.9)
-- H2 PRisk x Uncertainty Merge (3.10)
 - H9 Style Frozen (3.11)
 - H9 PRisk FY (3.12)
 - H9 Abnormal Investment (3.13)

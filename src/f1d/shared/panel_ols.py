@@ -9,7 +9,7 @@ Description: Panel OLS regression with firm + year + industry fixed effects usin
              linearmodels.PanelOLS. Supports clustered standard errors, HAC
              adjustment, and comprehensive diagnostics.
 
-Purpose: Phases 33-35 (H1/H2/H3 Regressions) need standardized panel regression
+Purpose: Hypothesis suite regressions need standardized panel regression
          infrastructure with proper fixed effects, interaction terms, and
          multicollinearity diagnostics.
 

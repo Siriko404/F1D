@@ -29,9 +29,9 @@ Dynamic Covariates:
       (e.g., Manager_QA regressions control for Manager_Pres_Uncertainty_pct)
     - Analyst_QA_Uncertainty_pct is always included as a control.
 
-Hypothesis Tests (one-tailed):
-    H11-Lead:  beta(PRiskQ_lead) > 0  -- higher next-quarter political risk increases speech uncertainty
-    H11-Lead2: beta(PRiskQ_lead2) > 0 -- higher 2-quarter ahead political risk increases speech uncertainty
+Hypothesis Tests (two-tailed, placebo/falsification test):
+    H11-Lead:  beta(PRiskQ_lead) = 0  -- future political risk should NOT predict current speech uncertainty
+    H11-Lead2: beta(PRiskQ_lead2) = 0 -- future political risk should NOT predict current speech uncertainty
 
     NOTE: Lead tests are placebo tests for reverse causality.
     Expected result: Lead coefficients should be insignificant (future PRisk cannot cause current speech).
@@ -211,29 +211,22 @@ def run_regression(
 
     duration = (datetime.now() - t0).total_seconds()
     print(f"  [OK] Complete in {duration:.1f}s")
-    print(f"  R-squared (within): {model.rsquared_within:.4f}")
-    print(f"  Adj R-squared:      {model.rsquared_inclusive:.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  N obs:              {int(model.nobs):,}")
-
-    within_r2 = float(model.rsquared_within)
-    print(f"  Within-R2: {within_r2:.4f}")
 
     beta_prisk = model.params.get(iv_var, np.nan)
     p_two = model.pvalues.get(iv_var, np.nan)
     beta_se = model.std_errors.get(iv_var, np.nan)
     beta_t = model.tstats.get(iv_var, np.nan)
 
-    # Hypothesis test: beta > 0 (one-tailed)
-    if not np.isnan(p_two) and not np.isnan(beta_prisk):
-        p_one = p_two / 2 if beta_prisk > 0 else 1 - p_two / 2
-    else:
-        p_one = np.nan
+    # Hypothesis test: two-tailed (placebo/falsification test)
+    p_test = p_two
 
-    h_sig = not np.isnan(p_one) and p_one < 0.05 and beta_prisk > 0
+    h_sig = not np.isnan(p_test) and p_test < 0.05
     h_text = "YES" if h_sig else "no"
 
     print(
-        f"  beta1 ({iv_var}):   {beta_prisk:.4f}  SE={beta_se:.4f}  p(one-tail)={p_one:.4f}  H={h_text}"
+        f"  beta1 ({iv_var}):   {beta_prisk:.4f}  SE={beta_se:.4f}  p(two-tail)={p_test:.4f}  H={h_text}"
     )
 
     # Determine hypothesis name based on IV
@@ -247,13 +240,13 @@ def run_regression(
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),
         "cluster_var": "gvkey",
-        "within_r2": within_r2,
-        "rsquared_inclusive": float(model.rsquared_inclusive),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
         "beta_prisk": float(beta_prisk),
         "beta_prisk_se": float(beta_se),
         "beta_prisk_t": float(beta_t),
         "beta_prisk_p_two": float(p_two),
-        "beta_prisk_p_one": float(p_one),
+        "beta_prisk_p_two": float(p_test),
         hyp_name: h_sig,
     }
 
@@ -327,10 +320,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # Row 1: PRiskQ_lead (t+1)
     r1 = "Political Risk$_{t+1}$ & "
-    r1 += f"{fmt_coef(r_mq_1['beta_prisk'], r_mq_1['beta_prisk_p_one'])} & " if r_mq_1 else " & "
-    r1 += f"{fmt_coef(r_cq_1['beta_prisk'], r_cq_1['beta_prisk_p_one'])} & " if r_cq_1 else " & "
-    r1 += f"{fmt_coef(r_mp_1['beta_prisk'], r_mp_1['beta_prisk_p_one'])} & " if r_mp_1 else " & "
-    r1 += f"{fmt_coef(r_cp_1['beta_prisk'], r_cp_1['beta_prisk_p_one'])} \\\\" if r_cp_1 else " \\\\"
+    r1 += f"{fmt_coef(r_mq_1['beta_prisk'], r_mq_1['beta_prisk_p_two'])} & " if r_mq_1 else " & "
+    r1 += f"{fmt_coef(r_cq_1['beta_prisk'], r_cq_1['beta_prisk_p_two'])} & " if r_cq_1 else " & "
+    r1 += f"{fmt_coef(r_mp_1['beta_prisk'], r_mp_1['beta_prisk_p_two'])} & " if r_mp_1 else " & "
+    r1 += f"{fmt_coef(r_cp_1['beta_prisk'], r_cp_1['beta_prisk_p_two'])} \\\\" if r_cp_1 else " \\\\"
     lines.append(r1)
 
     # Row 2: SE for lead-1
@@ -343,10 +336,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # Row 3: PRiskQ_lead2 (t+2)
     r3 = "Political Risk$_{t+2}$ & "
-    r3 += f"{fmt_coef(r_mq_2['beta_prisk'], r_mq_2['beta_prisk_p_one'])} & " if r_mq_2 else " & "
-    r3 += f"{fmt_coef(r_cq_2['beta_prisk'], r_cq_2['beta_prisk_p_one'])} & " if r_cq_2 else " & "
-    r3 += f"{fmt_coef(r_mp_2['beta_prisk'], r_mp_2['beta_prisk_p_one'])} & " if r_mp_2 else " & "
-    r3 += f"{fmt_coef(r_cp_2['beta_prisk'], r_cp_2['beta_prisk_p_one'])} \\\\" if r_cp_2 else " \\\\"
+    r3 += f"{fmt_coef(r_mq_2['beta_prisk'], r_mq_2['beta_prisk_p_two'])} & " if r_mq_2 else " & "
+    r3 += f"{fmt_coef(r_cq_2['beta_prisk'], r_cq_2['beta_prisk_p_two'])} & " if r_cq_2 else " & "
+    r3 += f"{fmt_coef(r_mp_2['beta_prisk'], r_mp_2['beta_prisk_p_two'])} & " if r_mp_2 else " & "
+    r3 += f"{fmt_coef(r_cp_2['beta_prisk'], r_cp_2['beta_prisk_p_two'])} \\\\" if r_cp_2 else " \\\\"
     lines.append(r3)
 
     # Row 4: SE for lead-2
@@ -363,7 +356,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             "Negative Sentiment & Yes & Yes & Yes & Yes \\\\",
             "Controls & Yes & Yes & Yes & Yes \\\\",
             "Firm FE & Yes & Yes & Yes & Yes \\\\",
-            "Year FE & Yes & Yes & Yes & Yes \\\\",
+            "Calendar Year FE & Yes & Yes & Yes & Yes \\\\",
             "\\midrule",
         ]
     )
@@ -376,12 +369,19 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     rn += f"{r_cp_1['n_obs']:,} \\\\" if r_cp_1 else " \\\\"
     lines.append(rn)
 
-    rr = "Within-$R^2$ & "
-    rr += f"{fmt_r2(r_mq_1['within_r2'])} & " if r_mq_1 else " & "
-    rr += f"{fmt_r2(r_cq_1['within_r2'])} & " if r_cq_1 else " & "
-    rr += f"{fmt_r2(r_mp_1['within_r2'])} & " if r_mp_1 else " & "
-    rr += f"{fmt_r2(r_cp_1['within_r2'])} \\\\" if r_cp_1 else " \\\\"
+    rr = "$R^2$ & "
+    rr += f"{fmt_r2(r_mq_1['r2'])} & " if r_mq_1 else " & "
+    rr += f"{fmt_r2(r_cq_1['r2'])} & " if r_cq_1 else " & "
+    rr += f"{fmt_r2(r_mp_1['r2'])} & " if r_mp_1 else " & "
+    rr += f"{fmt_r2(r_cp_1['r2'])} \\\\" if r_cp_1 else " \\\\"
     lines.append(rr)
+
+    ra = "Adj.~$R^2$ & "
+    ra += f"{fmt_r2(r_mq_1['adj_r2'])} & " if r_mq_1 else " & "
+    ra += f"{fmt_r2(r_cq_1['adj_r2'])} & " if r_cq_1 else " & "
+    ra += f"{fmt_r2(r_mp_1['adj_r2'])} & " if r_mp_1 else " & "
+    ra += f"{fmt_r2(r_cp_1['adj_r2'])} \\\\" if r_cp_1 else " \\\\"
+    lines.append(ra)
 
     lines.extend(["\\bottomrule", "\\end{tabular}"])
     # Add table notes
@@ -550,6 +550,7 @@ def main(panel_path: str | None = None) -> int:
                     # Save individual regression results with lead version in filename
                     lead_suffix = "lead1" if iv_var == "PRiskQ_lead" else "lead2"
                     with open(out_dir / f"regression_results_{sample}_{dv}_{lead_suffix}.txt", "w") as f:
+                        f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
                         f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)

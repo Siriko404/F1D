@@ -14,8 +14,6 @@ Main Schemas:
     - FirmControlsSchema: Validates firm_controls_*.parquet
     - EventFlagsSchema: Validates event_flags_*.parquet
     - ManagerClaritySchema: Validates manager_clarity_scores.parquet
-    - InvestmentResidualSchema: Validates H2_InvestmentResiduals.parquet
-    - PRiskUncertaintySchema: Validates H2_PRiskUncertainty_Analysis.parquet
 
 Usage:
     from f1d.shared.output_schemas import validate_linguistic_variables
@@ -118,52 +116,12 @@ if PANDERA_AVAILABLE:
         coerce=True,
     )
 
-    # Schema for H2_InvestmentResiduals.parquet (Step 3.9)
-    InvestmentResidualSchema = DataFrameSchema(  # type: ignore[no-untyped-call]
-        {
-            "gvkey": Column(str, nullable=False),
-            "year": Column(int, nullable=False),
-            "InvestmentResidual": Column(float, nullable=True),
-            "TobinQ_lag": Column(float, nullable=True),
-            "SalesGrowth_lag": Column(float, nullable=True),
-            "CashFlow": Column(float, nullable=True),
-            "Size": Column(float, nullable=True),
-            "Leverage": Column(float, nullable=True),
-            "TobinQ": Column(float, nullable=True),
-            "SalesGrowth": Column(float, nullable=True),
-            "ff48_code": Column(int, nullable=True),
-        },
-        strict=False,
-        coerce=True,
-    )
-
-    # Schema for H2_PRiskUncertainty_Analysis.parquet (Step 3.10)
-    PRiskUncertaintySchema = DataFrameSchema(  # type: ignore[no-untyped-call]
-        {
-            "gvkey": Column(str, nullable=False),
-            "year": Column(int, nullable=False),
-            "InvestmentResidual": Column(float, nullable=True),
-            "PRisk_x_Uncertainty": Column(float, nullable=True),
-            "PRisk_std": Column(float, nullable=True),
-            "Manager_QA_Uncertainty_pct_std": Column(float, nullable=True),
-            "CashFlow": Column(float, nullable=True),
-            "Size": Column(float, nullable=True),
-            "Leverage": Column(float, nullable=True),
-            "TobinQ": Column(float, nullable=True),
-            "SalesGrowth": Column(float, nullable=True),
-        },
-        strict=False,
-        coerce=True,
-    )
-
 else:
     # Placeholder schemas when pandera is not available
     LinguisticVariablesSchema = None  # type: ignore[assignment]
     FirmControlsSchema = None  # type: ignore[assignment]
     EventFlagsSchema = None  # type: ignore[assignment]
     ManagerClaritySchema = None  # type: ignore[assignment]
-    InvestmentResidualSchema = None  # type: ignore[assignment]
-    PRiskUncertaintySchema = None  # type: ignore[assignment]
 
 
 # ==============================================================================
@@ -285,42 +243,6 @@ def validate_manager_clarity(
     """
     return _validate_with_schema(
         df, ManagerClaritySchema, "ManagerClaritySchema", warn_only
-    )
-
-
-def validate_investment_residual(
-    df: pd.DataFrame, warn_only: bool = True
-) -> pd.DataFrame:
-    """
-    Validate investment residuals DataFrame.
-
-    Args:
-        df: DataFrame with investment residuals
-        warn_only: If True, log warning on failure; if False, raise exception
-
-    Returns:
-        Validated DataFrame
-    """
-    return _validate_with_schema(
-        df, InvestmentResidualSchema, "InvestmentResidualSchema", warn_only
-    )
-
-
-def validate_prisk_uncertainty(
-    df: pd.DataFrame, warn_only: bool = True
-) -> pd.DataFrame:
-    """
-    Validate PRisk x Uncertainty DataFrame.
-
-    Args:
-        df: DataFrame with PRisk x Uncertainty analysis
-        warn_only: If True, log warning on failure; if False, raise exception
-
-    Returns:
-        Validated DataFrame
-    """
-    return _validate_with_schema(
-        df, PRiskUncertaintySchema, "PRiskUncertaintySchema", warn_only
     )
 
 

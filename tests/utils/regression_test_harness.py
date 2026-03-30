@@ -146,20 +146,6 @@ def generate_h1_data(n_firms: int = 50, n_years: int = 5, seed: int = 42) -> pd.
     return generate_panel_data(n_firms, n_years, seed, extra_cols)
 
 
-def generate_h2_data(n_firms: int = 50, n_years: int = 5, seed: int = 42) -> pd.DataFrame:
-    """Generate sample data for H2 (Investment Efficiency) tests."""
-    extra_cols = {
-        "investment_q": lambda: np.random.uniform(0.8, 1.5),
-        "Manager_QA_Uncertainty_pct": lambda: np.random.uniform(2, 8),
-        "analyst_qa_uncertainty": lambda: np.random.uniform(1, 5),
-        "firm_size": lambda: np.random.uniform(5, 10),
-        "tobins_q": lambda: np.random.uniform(0.8, 2.0),
-        "roa": lambda: np.random.uniform(-0.1, 0.2),
-        "leverage": lambda: np.random.uniform(0.1, 0.6),
-    }
-    return generate_panel_data(n_firms, n_years, seed, extra_cols)
-
-
 def generate_h3_data(n_firms: int = 50, n_years: int = 5, seed: int = 42) -> pd.DataFrame:
     """Generate sample data for H3 (Payout Policy) tests."""
     extra_cols = {
@@ -366,7 +352,6 @@ __all__ = [
     # Data generators
     "generate_panel_data",
     "generate_h1_data",
-    "generate_h2_data",
     "generate_h3_data",
     "generate_h4_data",
     "generate_h5_data",

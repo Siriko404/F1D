@@ -9,8 +9,9 @@ Description: Build CALL-LEVEL panel for H17 Repurchase Intensity hypothesis.
     Unit of observation: individual earnings call (file_name).
     DV: RepurchaseIntensity = quarterly_prstkcy / atq_{t-1}
         (de-cumulated YTD prstkcy divided by previous quarter's total assets)
-    Lead DVs:
+    Lead/Lag DVs:
         RepurchaseIntensity_lead_qtr: next fiscal quarter's RepurchaseIntensity
+        RepurchaseIntensity_lag: previous fiscal quarter's RepurchaseIntensity
 
     Known limitation: ~77% of firm-quarters have RepurchaseIntensity = 0
     (many firms do not repurchase every quarter). OLS with continuous DV.

@@ -259,13 +259,14 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
 
     elapsed = (datetime.now() - t0).total_seconds()
     print(f"  [OK] Complete in {elapsed:.1f}s")
-    print(f"  R-squared (within): {model.rsquared_within:.4f}")
+    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  N obs: {int(model.nobs):,}")
 
     meta: Dict[str, Any] = {
         "col": col_num, "dv": dv, "fe": fe_type, "controls": spec["controls"],
         "n_obs": int(model.nobs), "n_firms": df_prepared["gvkey"].nunique(),
-        "within_r2": float(model.rsquared_within),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
     }
 
     # One-tailed: H7 beta > 0 (higher uncertainty -> more illiquidity)
@@ -355,8 +356,10 @@ def _save_latex_table(all_results, out_dir):
     lines.append(r"\midrule")
     ns = [fmt_int(results_by_col.get(c, {}).get("n_obs", 0)) for c in range(1, n_cols + 1)]
     lines.append(r"N & " + " & ".join(ns) + r" \\")
-    r2s = [fmt_r2(results_by_col.get(c, {}).get("within_r2", np.nan)) for c in range(1, n_cols + 1)]
-    lines.append(r"Within-R$^2$ & " + " & ".join(r2s) + r" \\")
+    r2s = [fmt_r2(results_by_col.get(c, {}).get("r2", np.nan)) for c in range(1, n_cols + 1)]
+    lines.append(r"$R^2$ & " + " & ".join(r2s) + r" \\")
+    adj_r2s = [fmt_r2(results_by_col.get(c, {}).get("adj_r2", np.nan)) for c in range(1, n_cols + 1)]
+    lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2s) + r" \\")
 
     lines += [
         r"\bottomrule", r"\end{tabular}",
@@ -388,6 +391,7 @@ def save_outputs(all_results, out_dir):
         col_num = meta["col"]
         with open(out_dir / f"regression_results_col{col_num}.txt", "w", encoding="utf-8") as f:
             f.write(f"Col ({col_num}) | DV: {meta['dv']} | FE: {meta['fe']} | Controls: {meta['controls']}\n")
+            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n" + str(model.summary))
         print(f"  Saved: regression_results_col{col_num}.txt")
 

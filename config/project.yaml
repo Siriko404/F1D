@@ -138,8 +138,6 @@ step_09:
     winsorize_percentiles:
     - 1
     - 99
-  inputs:
-    cccl_instrument: inputs/CCCL_instrument/instrument_shift_intensity_2005_2022.parquet
   outputs:
     liquidity_data: calls_with_liquidity_{year}.parquet
     regression_results: regression_results_liquidity.txt

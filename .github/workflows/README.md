@@ -37,7 +37,7 @@ pip install pytest pytest-cov
 pytest tests/ -v
 
 # Run with coverage
-pytest tests/ --cov=2_Scripts --cov-report=html --cov-report=term
+pytest tests/ --cov=src/f1d --cov-report=html --cov-report=term
 
 # Run only unit tests (faster)
 pytest tests/unit/ -v
