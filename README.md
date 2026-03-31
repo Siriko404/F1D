@@ -16,7 +16,7 @@ identification         speaker role              variables per call       effect
 
 ## Hypothesis Suites
 
-21 estimation suites testing how speech uncertainty maps to corporate outcomes:
+19 estimation suites testing how speech uncertainty maps to corporate outcomes:
 
 | Suite | Dependent Variable | Hypothesis | Tail | Cols | Reference |
 |-------|-------------------|------------|------|------|-----------|
@@ -26,9 +26,7 @@ identification         speaker role              variables per call       effect
 | H1.1b | CashHoldings | Product similarity moderates H1 (binary median split) | mixed | 2 | Hoberg & Phillips (2016) |
 | H1.2 | CashHoldings | Financial constraint moderates H1 (WW/SA/KZ indices) | mixed | 2 | Whited & Wu (2006) |
 | H4 | BookLev / DebtToCapital (+ leads) | Uncertainty and leverage policy | two | 24 | -- |
-| H5 | PostCallDispersion | Higher uncertainty → greater analyst disagreement | one (+) | 6 | Druz et al. (2020) |
-| H5b | JohnsonDISP2 (+ lead) | Uncertainty → analyst dispersion (Johnson variant) | one (+) | 12 | Johnson (2004) |
-| H5b-Wang | WangDISP (+ lead) | Uncertainty → analyst dispersion (Wang variant) | one (+) | 12 | Wang (2020) |
+| H5 | WangDISP (+ lead) | Higher uncertainty → greater analyst dispersion | one (+) | 12 | Wang (2020) |
 | H7 | delta_amihud | Higher uncertainty → greater illiquidity change | one (+) | 6 | Amihud (2002) |
 | H9 | Takeover hazard | Clarity residual and takeover vulnerability | two | -- | Cox PH model |
 | H11 | QA/Pres Uncertainty | Political risk (PRiskQ) → more uncertain language | one (+) | 4 | Hassan et al. (2019) |
@@ -55,7 +53,7 @@ identification         speaker role              variables per call       effect
 | `inputs/comp_na_daily_all/` | Compustat North America Daily | CashHoldings, TobinsQ, BookLev, ROA, CapexAt, DividendPayer, OCF_Volatility, PayoutRatio_q, RepurchaseIntensity, RDSales, and more |
 | `inputs/CRSP_DSF/` | CRSP Daily Stock File | Amihud illiquidity, bid-ask spreads, stock prices, turnover |
 | `inputs/tr_ibes/` | IBES Summary Statistics | Analyst forecast dispersion (H5), earnings surprise |
-| `inputs/IBES_Detail/` | IBES Detail History | Individual analyst forecasts for Johnson/Wang dispersion (H5b) |
+| `inputs/IBES_Detail/` | IBES Detail History | Individual analyst forecasts for Wang dispersion (H5) |
 | `inputs/SDC/` | SDC M&A Database | Takeover indicators (H9) |
 | `inputs/TNIC/` | Hoberg-Phillips TNIC3 | Product similarity scores (H1.1, H1.1b, H13.1) |
 | `inputs/Hassan_PRisk/` | Hassan et al. PRisk | Firm-level political risk (H11) |
@@ -73,9 +71,7 @@ Each panel builder assembles call-level data by merging linguistic, financial, a
 | H0.3 | `python -m f1d.variables.build_h0_3_ceo_clarity_extended_panel` |
 | H1 | `python -m f1d.variables.build_h1_cash_holdings_panel` |
 | H4 | `python -m f1d.variables.build_h4_leverage_panel` |
-| H5 | `python -m f1d.variables.build_h5_dispersion_panel` |
-| H5b Johnson | `python -m f1d.variables.build_h5b_johnson_disp_panel` |
-| H5b Wang | `python -m f1d.variables.build_h5b_wang_disp_panel` |
+| H5 | `python -m f1d.variables.build_h5b_wang_disp_panel` |
 | H7 | `python -m f1d.variables.build_h7_illiquidity_panel` |
 | H9 | `python -m f1d.variables.build_h9_takeover_panel` |
 | H11 | `python -m f1d.variables.build_h11_prisk_uncertainty_panel` |
@@ -100,9 +96,7 @@ Each runner loads its panel, applies sample filters, and runs PanelOLS regressio
 | H1.1b | `python -m f1d.econometric.run_h1_1b_cash_tsimm_binary` |
 | H1.2 | `python -m f1d.econometric.run_h1_2_cash_constraint` |
 | H4 | `python -m f1d.econometric.run_h4_leverage` |
-| H5 | `python -m f1d.econometric.run_h5_dispersion` |
-| H5b Johnson | `python -m f1d.econometric.run_h5b_johnson_disp` |
-| H5b Wang | `python -m f1d.econometric.run_h5b_wang_disp` |
+| H5 | `python -m f1d.econometric.run_h5b_wang_disp` |
 | H7 | `python -m f1d.econometric.run_h7_illiquidity` |
 | H9 | `python -m f1d.econometric.run_h9_takeover_hazards` |
 | H11 | `python -m f1d.econometric.run_h11_prisk_uncertainty` |

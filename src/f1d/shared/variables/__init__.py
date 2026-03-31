@@ -236,16 +236,8 @@ __all__ = [
     # H3 (kept for H11 — DivStability, PayoutFlexibility, FCFGrowth, IsDivPayer5yr archived)
     "EarningsVolatilityBuilder",
     "FirmMaturityBuilder",
-    # H5
-    "DispersionLeadBuilder",
-    "PriorDispersionBuilder",
-    "DispersionBuilder",
-    "LaggedDispersionBuilder",
-    "EarningsSurpriseRatioBuilder",
+    # H5 (Wang 2020)
     "LossDummyBuilder",
-    "DeltaDispersionBuilder",
-    "PostCallDispersionBuilder",
-    "JohnsonDispBuilder",
     "WangDispBuilder",
     # H7
     "AmihudIlliqBuilder",
@@ -279,16 +271,8 @@ __all__ = [
 from .earnings_volatility import EarningsVolatilityBuilder
 from .firm_maturity import FirmMaturityBuilder
 
-# H5 Analyst Dispersion
-from .dispersion_lead import DispersionLeadBuilder
-from .prior_dispersion import PriorDispersionBuilder
-from .dispersion import DispersionBuilder
-from .lagged_dispersion import LaggedDispersionBuilder
-from .earnings_surprise_ratio import EarningsSurpriseRatioBuilder
+# H5 Analyst Dispersion (Wang 2020)
 from .loss_dummy import LossDummyBuilder
-from .delta_dispersion import DeltaDispersionBuilder
-from .postcall_dispersion import PostCallDispersionBuilder
-from .johnson_disp import JohnsonDispBuilder
 from .wang_disp import WangDispBuilder
 
 # H7 Illiquidity

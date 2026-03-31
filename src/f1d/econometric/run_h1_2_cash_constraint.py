@@ -82,6 +82,7 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 IV = "Manager_QA_Uncertainty_pct"
 IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
+IV_CENTERED_IG = "MgrQAUnc_x_IG"  # same variable, renamed in interaction specs
 
 CONTROLS = [
     "BookLev", "Size", "TobinsQ", "ROA", "CapexAt",
@@ -104,8 +105,12 @@ YEAR_MIN = 2002
 YEAR_MAX = 2016
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": []},
-    {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": []},
+    # Base specs: unconditional Manager_QA_Unc_c (no interactions)
+    {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": [], "interactions": False},
+    {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": [], "interactions": False},
+    # Interaction specs: Manager_QA_Unc_c = IG-reference conditional effect
+    {"col": 3, "dv": "CashHoldings", "fe": "industry",    "extra_controls": [], "interactions": True},
+    {"col": 4, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": [], "interactions": True},
 ]
 
 SUMMARY_STATS_VARS = [
@@ -316,6 +321,8 @@ def prepare_regression_data(
     panel = panel.copy()
     panel["Lagged_DV"] = panel[lag_col]
 
+    use_interactions = spec.get("interactions", True)
+
     required = ([dv, IV, IV_CENTERED, MOD_BELOW_IG, MOD_UNRATED]
                 + all_controls + ["gvkey", time_col, "ff12_code"])
 
@@ -326,9 +333,11 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Create two interaction terms: centered IV × each moderator dummy
-    df[INT_BELOW_IG] = df[IV_CENTERED] * df[MOD_BELOW_IG]
-    df[INT_UNRATED] = df[IV_CENTERED] * df[MOD_UNRATED]
+    # Create interaction terms only for interaction specs
+    if use_interactions:
+        df[IV_CENTERED_IG] = df[IV_CENTERED]  # rename: IG-conditional effect
+        df[INT_BELOW_IG] = df[IV_CENTERED] * df[MOD_BELOW_IG]
+        df[INT_UNRATED] = df[IV_CENTERED] * df[MOD_UNRATED]
 
     # Drop NaN in DV
     before = len(df)
@@ -336,7 +345,7 @@ def prepare_regression_data(
     print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
 
     # Complete cases
-    all_required = required + [INT_BELOW_IG, INT_UNRATED]
+    all_required = required + ([INT_BELOW_IG, INT_UNRATED] if use_interactions else [])
     complete_mask = df[all_required].notna().all(axis=1)
     df = df[complete_mask].copy()
     print(f"  After complete cases: {len(df):,}")
@@ -414,8 +423,12 @@ def run_regression(
         print(f"  Too few obs ({len(df_prepared)}), skipping")
         return None, {}
 
-    exog = [IV_CENTERED, MOD_BELOW_IG, MOD_UNRATED,
-            INT_BELOW_IG, INT_UNRATED] + all_controls
+    use_interactions = spec.get("interactions", True)
+    if use_interactions:
+        exog = [IV_CENTERED_IG, MOD_BELOW_IG, MOD_UNRATED,
+                INT_BELOW_IG, INT_UNRATED] + all_controls
+    else:
+        exog = [IV_CENTERED, MOD_BELOW_IG, MOD_UNRATED] + all_controls
 
     n_firms = df_prepared["gvkey"].nunique()
     n_time_periods = df_prepared.groupby(["gvkey", time_col]).ngroups
@@ -425,7 +438,7 @@ def run_regression(
 
     # VIF
     vif = compute_vif(df_prepared, exog)
-    if vif:
+    if vif and use_interactions:
         print(f"  VIF({INT_BELOW_IG}): {vif.get(INT_BELOW_IG, np.nan):.2f}")
         print(f"  VIF({INT_UNRATED}): {vif.get(INT_UNRATED, np.nan):.2f}")
         print(f"  VIF({MOD_BELOW_IG}): {vif.get(MOD_BELOW_IG, np.nan):.2f}")
@@ -451,12 +464,18 @@ def run_regression(
 
     elapsed = (datetime.now() - t0).total_seconds()
 
-    # Extract all 5 key coefficients
-    beta_iv, se_iv, p_two_iv = _extract_coef(model, IV_CENTERED)
+    # Extract key coefficients
+    iv_name = IV_CENTERED_IG if use_interactions else IV_CENTERED
+    beta_iv, se_iv, p_two_iv = _extract_coef(model, iv_name)
     beta_big, se_big, p_two_big = _extract_coef(model, MOD_BELOW_IG)
     beta_unr, se_unr, p_two_unr = _extract_coef(model, MOD_UNRATED)
-    beta_int_big, se_int_big, p_two_int_big = _extract_coef(model, INT_BELOW_IG)
-    beta_int_unr, se_int_unr, p_two_int_unr = _extract_coef(model, INT_UNRATED)
+
+    if use_interactions:
+        beta_int_big, se_int_big, p_two_int_big = _extract_coef(model, INT_BELOW_IG)
+        beta_int_unr, se_int_unr, p_two_int_unr = _extract_coef(model, INT_UNRATED)
+    else:
+        beta_int_big, se_int_big, p_two_int_big = np.nan, np.nan, np.nan
+        beta_int_unr, se_int_unr, p_two_int_unr = np.nan, np.nan, np.nan
 
     # One-tailed p for main IV (expected positive)
     if not np.isnan(p_two_iv) and not np.isnan(beta_iv):
@@ -470,15 +489,16 @@ def run_regression(
         beta_lag_dv, se_lag_dv, p_two_lag_dv = _extract_coef(model, "CashHoldings")
 
     stars_iv = _sig_stars_one(p_one_iv)
-    stars_int_big = _sig_stars_two(p_two_int_big)
-    stars_int_unr = _sig_stars_two(p_two_int_unr)
 
     print(f"  [OK] {elapsed:.1f}s | R2={model.rsquared:.4f}  Adj R2={1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  {IV_CENTERED}: b={beta_iv:.4f} p1={p_one_iv:.4f} {stars_iv}")
     print(f"  {MOD_BELOW_IG}: b={beta_big:.4f} p2={p_two_big:.4f}")
     print(f"  {MOD_UNRATED}: b={beta_unr:.4f} p2={p_two_unr:.4f}")
-    print(f"  {INT_BELOW_IG}: b={beta_int_big:.4f} p2={p_two_int_big:.4f} {stars_int_big}")
-    print(f"  {INT_UNRATED}: b={beta_int_unr:.4f} p2={p_two_int_unr:.4f} {stars_int_unr}")
+    if use_interactions:
+        stars_int_big = _sig_stars_two(p_two_int_big)
+        stars_int_unr = _sig_stars_two(p_two_int_unr)
+        print(f"  {INT_BELOW_IG}: b={beta_int_big:.4f} p2={p_two_int_big:.4f} {stars_int_big}")
+        print(f"  {INT_UNRATED}: b={beta_int_unr:.4f} p2={p_two_int_unr:.4f} {stars_int_unr}")
 
     n_ig = int(((df_prepared[MOD_BELOW_IG] == 0) & (df_prepared[MOD_UNRATED] == 0)).sum())
     n_below_ig = int(df_prepared[MOD_BELOW_IG].sum())
@@ -486,6 +506,7 @@ def run_regression(
 
     meta = {
         "col": col_num, "dv": dv, "fe": fe,
+        "interactions": use_interactions,
         "n_obs": int(model.nobs), "n_firms": n_firms, "n_time_periods": n_time_periods,
         "r2": float(model.rsquared),
         "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
@@ -503,8 +524,8 @@ def run_regression(
         "beta_lag_dv": beta_lag_dv, "se_lag_dv": se_lag_dv, "p_two_lag_dv": p_two_lag_dv,
         "extra_controls": ",".join(extra_controls) if extra_controls else "",
         # VIF
-        "vif_int_below_ig": vif.get(INT_BELOW_IG, np.nan) if vif else np.nan,
-        "vif_int_unrated": vif.get(INT_UNRATED, np.nan) if vif else np.nan,
+        "vif_int_below_ig": vif.get(INT_BELOW_IG, np.nan) if (vif and use_interactions) else np.nan,
+        "vif_int_unrated": vif.get(INT_UNRATED, np.nan) if (vif and use_interactions) else np.nan,
         # Counts
         "n_ig": n_ig, "n_below_ig": n_below_ig, "n_unrated": n_unrated,
         "sample_years": f"{YEAR_MIN}-{YEAR_MAX}",
@@ -535,7 +556,7 @@ def _sig_stars_two(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write clean 2-column LaTeX table with three-category moderator."""
+    """Write 4-column LaTeX table: 2 base + 2 interaction specs."""
     results_by_col = {}
     for r in all_results:
         meta = r.get("meta", {})
@@ -557,6 +578,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     m1 = results_by_col.get(1, {})
     m2 = results_by_col.get(2, {})
+    m3 = results_by_col.get(3, {})
+    m4 = results_by_col.get(4, {})
 
     lines = [
         r"\begin{table}[htbp]",
@@ -564,57 +587,72 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\caption{Financial Constraint--Moderated Speech Uncertainty and Cash Holdings (Three-Category)}",
         r"\label{tab:h1_2_cash_constraint}",
         r"\small",
-        r"\begin{tabular}{lcc}",
+        r"\begin{tabular}{lcccc}",
         r"\toprule",
-        r" & (1) & (2) \\",
-        r" & \multicolumn{2}{c}{Cash Holdings$_t$} \\",
-        r"\cmidrule(lr){2-3}",
-        r" & Cal Year FE & Cal Yr-Qtr FE \\",
+        r" & (1) & (2) & (3) & (4) \\",
+        r" & \multicolumn{2}{c}{Base} & \multicolumn{2}{c}{Interaction} \\",
+        r"\cmidrule(lr){2-3} \cmidrule(lr){4-5}",
+        r" & \multicolumn{4}{c}{Cash Holdings$_t$} \\",
         r"\midrule",
     ]
 
-    def _row(label, key_b, key_se, key_p, stars_fn):
-        b1 = fmt_coef(m1.get(key_b, np.nan), stars_fn(m1.get(key_p, np.nan)))
-        b2 = fmt_coef(m2.get(key_b, np.nan), stars_fn(m2.get(key_p, np.nan)))
-        s1 = fmt_se(m1.get(key_se, np.nan))
-        s2 = fmt_se(m2.get(key_se, np.nan))
-        lines.append(f"{label} & {b1} & {b2} \\\\")
-        lines.append(f" & {s1} & {s2} \\\\")
+    def _row(label, key_b, key_se, key_p, stars_fn, cols):
+        """Write one coefficient row across specified column metas."""
+        parts_b = []
+        parts_se = []
+        for m in cols:
+            parts_b.append(fmt_coef(m.get(key_b, np.nan), stars_fn(m.get(key_p, np.nan))))
+            parts_se.append(fmt_se(m.get(key_se, np.nan)))
+        lines.append(f"{label} & {' & '.join(parts_b)} \\\\")
+        lines.append(f" & {' & '.join(parts_se)} \\\\")
+
+    all_cols = [m1, m2, m3, m4]
+
+    # Main IV — unconditional in cols 1-2, IG-conditional in cols 3-4
+    _row(r"Manager\_QA\_Unc\_c", "beta_iv", "se_iv", "p_one_iv", _sig_stars_one, [m1, m2])
+    # blank cells for interaction cols on this row — write manually
+    # Actually, we need a combined row. Let me do it differently.
+
+    # Redo: write full 4-col rows
+    lines.pop()  # remove last two lines we just added
+    lines.pop()
+
+    def _row4(label, key_b, key_se, key_p, stars_fn):
+        parts_b = []
+        parts_se = []
+        for m in all_cols:
+            parts_b.append(fmt_coef(m.get(key_b, np.nan), stars_fn(m.get(key_p, np.nan))))
+            parts_se.append(fmt_se(m.get(key_se, np.nan)))
+        lines.append(f"{label} & {' & '.join(parts_b)} \\\\")
+        lines.append(f" & {' & '.join(parts_se)} \\\\")
 
     # Main IV
-    _row("Mgr QA Uncertainty", "beta_iv", "se_iv", "p_one_iv", _sig_stars_one)
+    _row4(r"Manager\_QA\_Unc\_c", "beta_iv", "se_iv", "p_one_iv", _sig_stars_one)
     # Below-IG level
-    _row("Below-IG", "beta_below_ig", "se_below_ig", "p_two_below_ig", _sig_stars_two)
+    _row4("BelowIG", "beta_below_ig", "se_below_ig", "p_two_below_ig", _sig_stars_two)
     # Unrated level
-    _row("Unrated", "beta_unrated", "se_unrated", "p_two_unrated", _sig_stars_two)
-    # Interaction: Below-IG (key)
-    _row(r"Mgr QA Unc $\times$ Below-IG", "beta_int_below_ig", "se_int_below_ig", "p_two_int_below_ig", _sig_stars_two)
-    # Interaction: Unrated
-    _row(r"Mgr QA Unc $\times$ Unrated", "beta_int_unrated", "se_int_unrated", "p_two_int_unrated", _sig_stars_two)
+    _row4("Unrated", "beta_unrated", "se_unrated", "p_two_unrated", _sig_stars_two)
+    # Interaction: Below-IG (only cols 3-4)
+    _row4(r"MgrQAUnc\_x\_BelowIG", "beta_int_below_ig", "se_int_below_ig", "p_two_int_below_ig", _sig_stars_two)
+    # Interaction: Unrated (only cols 3-4)
+    _row4(r"MgrQAUnc\_x\_Unrated", "beta_int_unrated", "se_int_unrated", "p_two_int_unrated", _sig_stars_two)
 
     lines.append(r"\midrule")
-    lines.append(r"Controls & Extended & Extended \\")
-    lines.append(r"Industry FE & Yes & Yes \\")
-    lines.append(r"Calendar Year FE & Yes &  \\")
-    lines.append(r"Calendar Year-Quarter FE &  & Yes \\")
+    lines.append(r"Controls & Ext & Ext & Ext & Ext \\")
+    lines.append(r"Industry FE & Yes & Yes & Yes & Yes \\")
+    lines.append(r"Calendar Year FE & Yes &  & Yes &  \\")
+    lines.append(r"Calendar Year-Quarter FE &  & Yes &  & Yes \\")
     lines.append(r"\midrule")
 
-    lines.append(f"N (calls) & {m1.get('n_obs', 0):,} & {m2.get('n_obs', 0):,} \\\\")
-    lines.append(f"N (firm-time-periods) & {m1.get('n_time_periods', 0):,} & {m2.get('n_time_periods', 0):,} \\\\")
-    lines.append(
-        f"N (IG / Below-IG / Unrated) & "
-        f"{m1.get('n_ig', 0):,} / {m1.get('n_below_ig', 0):,} / {m1.get('n_unrated', 0):,} & "
-        f"{m2.get('n_ig', 0):,} / {m2.get('n_below_ig', 0):,} / {m2.get('n_unrated', 0):,} \\\\"
-    )
-    lines.append(
-        f"$R^2$ & {fmt_r2(m1.get('r2', np.nan))} & "
-        f"{fmt_r2(m2.get('r2', np.nan))} \\\\"
-    )
-    lines.append(
-        f"Adj.~$R^2$ & {fmt_r2(m1.get('adj_r2', np.nan))} & "
-        f"{fmt_r2(m2.get('adj_r2', np.nan))} \\\\"
-    )
-    lines.append(f"Sample years & {YEAR_MIN}--{YEAR_MAX} & {YEAR_MIN}--{YEAR_MAX} \\\\")
+    n_row = " & ".join(f"{m.get('n_obs', 0):,}" for m in all_cols)
+    lines.append(f"N (calls) & {n_row} \\\\")
+    ntp_row = " & ".join(f"{m.get('n_time_periods', 0):,}" for m in all_cols)
+    lines.append(f"N (firm-time-periods) & {ntp_row} \\\\")
+    r2_row = " & ".join(fmt_r2(m.get("r2", np.nan)) for m in all_cols)
+    lines.append(f"$R^2$ & {r2_row} \\\\")
+    ar2_row = " & ".join(fmt_r2(m.get("adj_r2", np.nan)) for m in all_cols)
+    lines.append(f"Adj.~$R^2$ & {ar2_row} \\\\")
+    lines.append(f"Sample years & {YEAR_MIN}--{YEAR_MAX} & {YEAR_MIN}--{YEAR_MAX} & {YEAR_MIN}--{YEAR_MAX} & {YEAR_MIN}--{YEAR_MAX} \\\\")
 
     lines += [
         r"\bottomrule",
@@ -623,17 +661,18 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. ",
-        r"Main IV (Mgr QA Uncertainty) mean-centered; one-tailed ($\beta > 0$). ",
+        r"Main IV (Manager\_QA\_Unc\_c) mean-centered; one-tailed ($\beta > 0$). ",
         r"Interactions and moderator levels: two-tailed. ",
+        r"Cols~(1)--(2): base model (unconditional Manager\_QA\_Unc\_c). ",
+        r"Cols~(3)--(4): interaction model (Manager\_QA\_Unc\_c = IG-reference conditional effect). ",
         r"Reference group: investment-grade firms (S\&P long-term issuer rating BBB$-$ or above). ",
         r"Below-IG: firms rated BB$+$ through SD. ",
         r"Unrated: firms with no S\&P long-term issuer credit rating. ",
         r"Rating matched via merge\_asof to most recent rating before call date. ",
-        r"$\beta_1$ represents the uncertainty effect for IG firms only. ",
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Sample restricted to fiscal years 2002--2016 (ratings coverage). ",
-        r"Col~(1): Calendar Year FE. Col~(2): Calendar Year-Quarter FE. ",
+        r"Cols~(1),(3): Calendar Year FE. Cols~(2),(4): Calendar Year-Quarter FE. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
         r"\end{table}",
@@ -659,19 +698,25 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
         if model is None or not meta:
             continue
         col_num = meta["col"]
+        has_int = meta.get("interactions", True)
         fname = f"regression_results_col{col_num}.txt"
         with open(out_dir / fname, "w", encoding="utf-8") as f:
-            f.write(f"H1.2 Financing-Constraint-Moderated Cash Holdings (3-category)\n")
+            spec_type = "Interaction" if has_int else "Base"
+            f.write(f"H1.2 Financing-Constraint-Moderated Cash Holdings (3-category) [{spec_type}]\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
             f.write(f"IV: {IV} (centered)\n")
             f.write(f"Moderators: BelowIG (dummy), Unrated (dummy). Reference: IG\n")
-            f.write(f"Interactions: {INT_BELOW_IG}, {INT_UNRATED}\n")
+            if has_int:
+                f.write(f"Interactions: {INT_BELOW_IG}, {INT_UNRATED}\n")
+            else:
+                f.write(f"Interactions: none (base model)\n")
             f.write(f"FE: {meta['fe']}\n")
             f.write(f"Sample years: {YEAR_MIN}-{YEAR_MAX}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
-            f.write(f"VIF(int_below_ig): {meta.get('vif_int_below_ig', 'N/A')}\n")
-            f.write(f"VIF(int_unrated): {meta.get('vif_int_unrated', 'N/A')}\n")
+            if has_int:
+                f.write(f"VIF(int_below_ig): {meta.get('vif_int_below_ig', 'N/A')}\n")
+                f.write(f"VIF(int_unrated): {meta.get('vif_int_unrated', 'N/A')}\n")
             f.write(f"N: IG={meta['n_ig']}, Below-IG={meta['n_below_ig']}, Unrated={meta['n_unrated']}\n")
             f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
             f.write("=" * 60 + "\n\n")
@@ -768,7 +813,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp:  {timestamp}")
     print(f"Output:     {out_dir}")
-    print(f"Design:     1 IV × 1 DV × 2 interactions × 2 FE types = 2 models")
+    print(f"Design:     1 IV × 1 DV × (base + interaction) × 2 FE types = 4 models")
     print(f"Channel:    CH1 — Precautionary liquidity under external-finance frictions")
     print(f"Moderator:  Three-category: IG (ref) / Below-IG / Unrated")
     print(f"IV:         {IV}")
@@ -879,12 +924,16 @@ def main(panel_path: Optional[str] = None) -> int:
     for r in all_results:
         m = r["meta"]
         s_iv = _sig_stars_one(m["p_one_iv"])
-        s_big = _sig_stars_two(m["p_two_int_below_ig"])
-        s_unr = _sig_stars_two(m["p_two_int_unrated"])
-        print(f"  Col ({m['col']}) {m['dv']}: "
-              f"IV b={m['beta_iv']:.4f}{s_iv} | "
-              f"Int(BelowIG) b={m['beta_int_below_ig']:.4f}{s_big} | "
-              f"Int(Unrated) b={m['beta_int_unrated']:.4f}{s_unr}")
+        if m.get("interactions"):
+            s_big = _sig_stars_two(m["p_two_int_below_ig"])
+            s_unr = _sig_stars_two(m["p_two_int_unrated"])
+            print(f"  Col ({m['col']}) {m['dv']} [interaction]: "
+                  f"IV(IG ref) b={m['beta_iv']:.4f}{s_iv} | "
+                  f"Int(BelowIG) b={m['beta_int_below_ig']:.4f}{s_big} | "
+                  f"Int(Unrated) b={m['beta_int_unrated']:.4f}{s_unr}")
+        else:
+            print(f"  Col ({m['col']}) {m['dv']} [base]: "
+                  f"IV b={m['beta_iv']:.4f}{s_iv}")
 
     return 0
 

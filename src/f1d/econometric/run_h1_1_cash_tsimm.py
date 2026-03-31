@@ -8,15 +8,14 @@ Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM)
              moderates the Manager_QA_Uncertainty → CashHoldings relationship.
 
 Model Specification:
-    CashHoldings = b1*Mgr_QA_Unc + b2*z(log(TSIMM))
-                 + b3*(Mgr_QA_Unc x z(log(TSIMM)))
+    CashHoldings = b1*Mgr_QA_Unc_c + b2*z(log(TSIMM))
+                 + b3*(Mgr_QA_Unc_c x z(log(TSIMM)))
                  + controls + IndustryFE + CalendarYearFE + e
 
     b3 is the coefficient of interest: does product similarity moderate
     the effect of managerial QA uncertainty on cash holdings?
 
 Parent suite: H1 (Cash Holdings)
-    Moderation memo recommends TSIMM (not HHI) as secondary moderator.
 
 2 Models:
     Col 1: DV = CashHoldings_t, Industry + Calendar Year FE, Extended controls
@@ -26,7 +25,7 @@ Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
     Log-transformed then z-scored on Main sample.
 
 Sample: Main only (FF12 not in {8, 11}).
-Hypothesis: Two-tailed on interaction (b3 != 0); one-tailed on main IV (b1 > 0).
+Hypothesis: One-tailed on main IV (b1 > 0); two-tailed on interaction (b3 != 0).
 Unit: Call-level (loads H1 panel, merges TNIC at load time).
 Panel index: ["gvkey", "cal_yr"] or ["gvkey", "cal_yr_qtr"].
 SEs: Firm-clustered.
@@ -68,17 +67,17 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 IV = "Manager_QA_Uncertainty_pct"
+IV_CENTERED = "Manager_QA_Unc_c"
 
 CONTROLS = [
     "BookLev", "Size", "TobinsQ", "ROA", "CapexAt",
     "DividendPayer", "OCF_Volatility",
     "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
-    "Lagged_DV",  # Unified lagged DV
+    "Lagged_DV",
 ]
 
 MODERATOR_RAW = "tnic3tsimm"
 MODERATOR = "z_log_tnic3tsimm"
-IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
 INTERACTION = "MgrQAUnc_x_zlogTSIMM"
 
 MIN_CALLS_PER_FIRM = 5
@@ -87,10 +86,6 @@ MODEL_SPECS = [
     {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": []},
     {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": []},
 ]
-
-IV_LABEL = "Mgr QA Uncertainty"
-MODERATOR_LABEL = r"$z(\log(\mathrm{TSIMM}))$"
-INTERACTION_LABEL = r"Mgr QA Unc $\times$ $z(\log(\mathrm{TSIMM}))$"
 
 SUMMARY_STATS_VARS = [
     {"col": "CashHoldings", "label": "Cash Holdings$_t$"},
@@ -150,18 +145,17 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
-        "start_date",  # needed for cal_yr_qtr
+        "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
         "CashHoldings", "CashHoldings_lag",
         IV,
-        *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
+        *[c for c in CONTROLS if c != "Lagged_DV"],
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}")
 
-    # Build calendar year-quarter index for FE specs
     panel = build_cal_yr_qtr_index(panel)
     n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
     print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
@@ -182,7 +176,6 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
     tnic = pd.read_csv(tnic_path, sep="\t")
     print(f"  Loaded TNIC: {len(tnic):,} rows, years {tnic['year'].min()}-{tnic['year'].max()}")
 
-    # Merge on (gvkey_int, fyearq_int)
     panel["_gvkey_int"] = pd.to_numeric(panel["gvkey"], errors="coerce")
 
     before = len(panel)
@@ -198,7 +191,6 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     n_matched = panel[MODERATOR_RAW].notna().sum()
     print(f"  TNIC match: {n_matched:,} / {len(panel):,} ({100 * n_matched / len(panel):.1f}%)")
-    print(f"  tnic3tsimm range: [{panel[MODERATOR_RAW].min():.2f}, {panel[MODERATOR_RAW].max():.2f}]")
 
     return panel
 
@@ -206,22 +198,13 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 def transform_moderator_and_center_iv(
     panel: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, Dict[str, float]]:
-    """Log-transform + z-score TSIMM, and mean-center IV on Main sample.
-
-    Both transformations use Main sample moments (after FF12 filter,
-    before complete-case deletion) so both models use identical values.
-
-    Mean-centering the IV before forming the interaction is critical:
-    without it, Corr(moderator, interaction) ≈ 0.93 (severe multicollinearity).
-    With centering, Corr drops to ≈ 0.12.
-    """
+    """Log-transform + z-score TSIMM, and mean-center IV on Main sample."""
     print("\n" + "=" * 60)
     print("Transforming moderator + centering IV")
     print("=" * 60)
 
     main_mask = ~panel["ff12_code"].isin([8, 11])
 
-    # --- Moderator: log-transform then z-score ---
     tsimm_main = panel.loc[main_mask, MODERATOR_RAW].dropna()
     log_tsimm_main = np.log(tsimm_main)
     tsimm_mu = log_tsimm_main.mean()
@@ -236,14 +219,11 @@ def transform_moderator_and_center_iv(
     z_main = panel.loc[main_mask, MODERATOR].dropna()
     print(f"  z(log(TSIMM)) on Main: mean={z_main.mean():.4f}, std={z_main.std():.4f}")
 
-    # --- IV: mean-center on Main sample ---
     iv_main = panel.loc[main_mask, IV].dropna()
     iv_mu = iv_main.mean()
-
     panel[IV_CENTERED] = panel[IV] - iv_mu
 
     print(f"  IV mean (Main): {iv_mu:.4f}")
-    print(f"  IV centered mean (Main): {panel.loc[main_mask, IV_CENTERED].mean():.4f}")
 
     params = {
         "tsimm_mu": tsimm_mu,
@@ -277,10 +257,8 @@ def prepare_regression_data(
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
-    # Determine time column based on FE type
     time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
 
-    # Create Lagged_DV: always lag of the base DV (t-1)
     lag_col = f"{dv}_lag"
     panel = panel.copy()
     panel["Lagged_DV"] = panel[lag_col]
@@ -294,9 +272,7 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Create interaction term using CENTERED IV to avoid multicollinearity
-    # Without centering: Corr(moderator, interaction) ≈ 0.93
-    # With centering:    Corr(moderator, interaction) ≈ 0.12
+    # Create interaction term using CENTERED IV
     df[INTERACTION] = df[IV_CENTERED] * df[MODERATOR]
 
     # Drop NaN in DV
@@ -304,7 +280,7 @@ def prepare_regression_data(
     df = df[df[dv].notna()].copy()
     print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
 
-    # Complete cases (DV + IV + moderator + interaction + controls + identifiers)
+    # Complete cases
     all_required = required + [INTERACTION]
     complete_mask = df[all_required].notna().all(axis=1)
     df = df[complete_mask].copy()
@@ -333,9 +309,8 @@ def run_regression(
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
-    # Determine time column and FE label
     time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
-    fe_label = "Industry + CalYrQtr" if fe.endswith("_yq") else "Industry + CalYear"
+    fe_label = f"Industry + {'CalYrQtr' if fe.endswith('_yq') else 'CalYear'}"
 
     print(f"\n{'=' * 60}")
     print(f"Col ({col_num}) | DV={dv} | FE={fe_label}")
@@ -345,8 +320,6 @@ def run_regression(
         print(f"  Too few obs ({len(df_prepared)}), skipping")
         return None, {}
 
-    # Use centered IV in regression so main-effect coefficient represents
-    # the effect at mean TSIMM, and interaction is cleanly identified
     exog = [IV_CENTERED, MODERATOR, INTERACTION] + all_controls
 
     n_firms = df_prepared["gvkey"].nunique()
@@ -375,7 +348,6 @@ def run_regression(
 
     elapsed = (datetime.now() - t0).total_seconds()
 
-    # Extract coefficients (IV is centered; coefficient = effect at mean TSIMM)
     beta_iv = float(model.params.get(IV_CENTERED, np.nan))
     se_iv = float(model.std_errors.get(IV_CENTERED, np.nan))
     p_two_iv = float(model.pvalues.get(IV_CENTERED, np.nan))
@@ -422,7 +394,6 @@ def run_regression(
 
 
 def _sig_stars_one(p: float) -> str:
-    """Significance stars for one-tailed p-value."""
     if np.isnan(p):
         return ""
     if p < 0.01:
@@ -435,7 +406,6 @@ def _sig_stars_one(p: float) -> str:
 
 
 def _sig_stars_two(p: float) -> str:
-    """Significance stars for two-tailed p-value."""
     if np.isnan(p):
         return ""
     if p < 0.01:
@@ -452,133 +422,6 @@ def _sig_stars_two(p: float) -> str:
 # ==============================================================================
 
 
-def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write clean 2-column LaTeX table."""
-    results_by_col = {}
-    for r in all_results:
-        meta = r.get("meta", {})
-        if meta:
-            results_by_col[meta["col"]] = meta
-
-    def fmt_coef(val: float, stars: str) -> str:
-        if np.isnan(val):
-            return ""
-        return f"{val:.4f}{stars}"
-
-    def fmt_se(val: float) -> str:
-        if np.isnan(val):
-            return ""
-        return f"({val:.4f})"
-
-    def fmt_r2(val: float) -> str:
-        if np.isnan(val):
-            return ""
-        if abs(val) < 0.001:
-            return f"{val:.2e}"
-        return f"{val:.3f}"
-
-    lines = [
-        r"\begin{table}[htbp]",
-        r"\centering",
-        r"\caption{Product Similarity--Moderated Speech Uncertainty and Cash Holdings}",
-        r"\label{tab:h1_1_cash_tsimm}",
-        r"\small",
-        r"\begin{tabular}{lcc}",
-        r"\toprule",
-        r" & (1) & (2) \\",
-        r" & \multicolumn{2}{c}{Cash Holdings$_t$} \\",
-        r"\cmidrule(lr){2-3}",
-        r" & Cal Year FE & Cal Yr-Qtr FE \\",
-        r"\midrule",
-    ]
-
-    m1 = results_by_col.get(1, {})
-    m2 = results_by_col.get(2, {})
-
-    # IV coefficient
-    lines.append(
-        f"Mgr QA Uncertainty & "
-        f"{fmt_coef(m1.get('beta_iv', np.nan), _sig_stars_one(m1.get('p_one_iv', np.nan)))} & "
-        f"{fmt_coef(m2.get('beta_iv', np.nan), _sig_stars_one(m2.get('p_one_iv', np.nan)))} \\\\"
-    )
-    lines.append(
-        f" & {fmt_se(m1.get('se_iv', np.nan))} & {fmt_se(m2.get('se_iv', np.nan))} \\\\"
-    )
-
-    # Moderator coefficient
-    lines.append(
-        f"$z(\\log(\\mathrm{{TSIMM}}))$ & "
-        f"{fmt_coef(m1.get('beta_moderator', np.nan), _sig_stars_two(m1.get('p_two_moderator', np.nan)))} & "
-        f"{fmt_coef(m2.get('beta_moderator', np.nan), _sig_stars_two(m2.get('p_two_moderator', np.nan)))} \\\\"
-    )
-    lines.append(
-        f" & {fmt_se(m1.get('se_moderator', np.nan))} & {fmt_se(m2.get('se_moderator', np.nan))} \\\\"
-    )
-
-    # Interaction coefficient (key)
-    lines.append(
-        f"Mgr QA Unc $\\times$ $z(\\log(\\mathrm{{TSIMM}}))$ & "
-        f"{fmt_coef(m1.get('beta_interaction', np.nan), _sig_stars_two(m1.get('p_two_interaction', np.nan)))} & "
-        f"{fmt_coef(m2.get('beta_interaction', np.nan), _sig_stars_two(m2.get('p_two_interaction', np.nan)))} \\\\"
-    )
-    lines.append(
-        f" & {fmt_se(m1.get('se_interaction', np.nan))} & {fmt_se(m2.get('se_interaction', np.nan))} \\\\"
-    )
-
-    lines.append(r"\midrule")
-
-    # Footer
-    lines.append(r"Controls & Extended & Extended \\")
-    lines.append(r"Industry FE & Yes & Yes \\")
-    lines.append(r"Calendar Year FE & Yes &  \\")
-    lines.append(r"Calendar Year-Quarter FE &  & Yes \\")
-    lines.append(r"\midrule")
-
-    # N calls
-    lines.append(
-        f"N (calls) & {m1.get('n_obs', 0):,} & {m2.get('n_obs', 0):,} \\\\"
-    )
-    # N firm-time-periods
-    lines.append(
-        f"N (firm-time-periods) & {m1.get('n_time_periods', 0):,} & {m2.get('n_time_periods', 0):,} \\\\"
-    )
-    # R² and Adj R²
-    lines.append(
-        f"$R^2$ & {fmt_r2(m1.get('r2', np.nan))} & "
-        f"{fmt_r2(m2.get('r2', np.nan))} \\\\"
-    )
-    lines.append(
-        f"Adj.~$R^2$ & {fmt_r2(m1.get('adj_r2', np.nan))} & "
-        f"{fmt_r2(m2.get('adj_r2', np.nan))} \\\\"
-    )
-
-    lines += [
-        r"\bottomrule",
-        r"\end{tabular}",
-        r"\begin{minipage}{\linewidth}",
-        r"\vspace{2pt}\scriptsize",
-        r"\textit{Notes:} ",
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. ",
-        r"Main IV (Mgr QA Uncertainty) mean-centered; one-tailed ($\beta > 0$). ",
-        r"Interaction and moderator: two-tailed. ",
-        r"IV coefficient represents effect at sample-mean uncertainty. ",
-        r"Standard errors (in parentheses) clustered at firm level. ",
-        r"Main sample (excludes financial and utility firms). ",
-        r"TNIC3TSIMM is the Hoberg--Phillips (2016) total product similarity measure, ",
-        r"log-transformed and standardized on the main sample. ",
-        r"Col~(1): Calendar Year FE. Col~(2): Calendar Year-Quarter FE. ",
-        r"TNIC3TSIMM is a firm-year variable repeated across calls within the same firm-year. ",
-        r"Unit of observation: individual earnings call.",
-        r"\end{minipage}",
-        r"\end{table}",
-    ]
-
-    tex_path = out_dir / "h1_1_cash_tsimm_table.tex"
-    with open(tex_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
-    print(f"  Saved: {tex_path.name}")
-
-
 def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFrame:
     """Save all outputs."""
     print("\n" + "=" * 60)
@@ -587,7 +430,6 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Individual regression .txt files
     for r in all_results:
         model = r.get("model")
         meta = r.get("meta", {})
@@ -609,72 +451,12 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(str(model.summary))
         print(f"  Saved: {fname}")
 
-    # Diagnostics CSV
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
     diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} models)")
 
-    # LaTeX table
-    _save_latex_table(all_results, out_dir)
-
     return diag_df
-
-
-def generate_report(
-    all_results: List[Dict[str, Any]], out_dir: Path,
-    duration: float, tsimm_mu: float, tsimm_sd: float,
-) -> None:
-    """Generate markdown report."""
-    lines = [
-        "# H1.1 TNIC-Moderated Cash Holdings Report",
-        "",
-        f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Manager_QA_Uncertainty x z(log(TNIC3TSIMM)) interaction",
-        f"**Moderator:** TNIC3TSIMM (Hoberg & Phillips JPE 2016), log-transformed, z-scored",
-        f"**z-score parameters:** mu(log(TSIMM))={tsimm_mu:.4f}, sd(log(TSIMM))={tsimm_sd:.4f}",
-        f"**FE:** Col 1: Industry + CalYear; Col 2: Industry + CalYrQtr",
-        f"**Parent suite:** H1 (Cash Holdings)",
-        "",
-        "## Model Specifications",
-        "",
-        "| Col | DV | FE |",
-        "|-----|-----|-----|",
-        "| (1) | CashHoldings_t | Industry + Calendar Year |",
-        "| (2) | CashHoldings_t | Industry + Calendar Year-Quarter |",
-        "",
-        "## Results",
-        "",
-        "| Col | DV | FE | b_iv | p1_iv | b_interaction | p2_interaction | N calls | R2 |",
-        "|-----|----|-----|------|-------|---------------|----------------|---------|-----|",
-    ]
-
-    for r in all_results:
-        m = r.get("meta", {})
-        if not m:
-            continue
-        stars_iv = _sig_stars_one(m["p_one_iv"])
-        stars_int = _sig_stars_two(m["p_two_interaction"])
-        lines.append(
-            f"| ({m['col']}) | {m['dv']} | {m['fe']} | {m['beta_iv']:.4f}{stars_iv} | "
-            f"{m['p_one_iv']:.4f} | {m['beta_interaction']:.4f}{stars_int} | "
-            f"{m['p_two_interaction']:.4f} | {m['n_obs']:,} | "
-            f"{m['r2']:.4f} |"
-        )
-
-    lines.append("")
-    lines.append("## Notes")
-    lines.append("")
-    lines.append("- Main IV (Mgr QA Unc): one-tailed test (H1: beta > 0)")
-    lines.append("- Interaction: two-tailed test")
-    lines.append("- TNIC3TSIMM is a firm-year variable, repeated across calls within firm-year")
-    lines.append("- Col (1): Calendar Year FE; Col (2): Calendar Year-Quarter FE")
-    lines.append("- SEs firm-clustered throughout")
-
-    with open(out_dir / "report_step4_H1_1.md", "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
-    print("  Saved: report_step4_H1_1.md")
 
 
 # ==============================================================================
@@ -706,16 +488,12 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Moderator: z(log(TNIC3TSIMM))")
     print(f"IV:        {IV}")
 
-    # Load panel
     panel, panel_file = load_panel(root, panel_path)
 
-    # Merge TNIC
     panel = load_and_merge_tnic(panel, root)
 
-    # Transform moderator + center IV (on Main sample)
     panel, transform_params = transform_moderator_and_center_iv(panel)
 
-    # Filter to Main sample
     full_n = len(panel)
     panel = filter_main_sample(panel)
     main_n = len(panel)
@@ -727,7 +505,6 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"  {MODERATOR}: {panel[MODERATOR].notna().sum():,} "
           f"({100 * panel[MODERATOR].notna().mean():.1f}%)")
 
-    # Summary stats
     out_dir.mkdir(parents=True, exist_ok=True)
     make_summary_stats_table(
         df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
@@ -738,11 +515,10 @@ def main(panel_path: Optional[str] = None) -> int:
     )
     print("  Saved: summary_stats.csv/.tex")
 
-    # Run 2 regressions
     all_results: List[Dict[str, Any]] = []
 
     for spec in MODEL_SPECS:
-        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} ---")
+        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} FE={spec['fe']} ---")
 
         try:
             df_prep = prepare_regression_data(panel, spec)
@@ -757,7 +533,6 @@ def main(panel_path: Optional[str] = None) -> int:
         if model is not None and meta:
             all_results.append({"model": model, "meta": meta})
 
-    # Save outputs
     diag_df = save_outputs(all_results, out_dir)
 
     # Attrition
@@ -775,7 +550,6 @@ def main(panel_path: Optional[str] = None) -> int:
         )
         print("  Saved: sample_attrition.csv/.tex")
 
-    # Manifest
     generate_manifest(
         output_dir=out_dir, stage="stage4", timestamp=timestamp,
         input_paths={
@@ -787,12 +561,7 @@ def main(panel_path: Optional[str] = None) -> int:
     )
     print("  Saved: run_manifest.json")
 
-    # Report
     duration = (datetime.now() - start_time).total_seconds()
-    generate_report(all_results, out_dir, duration,
-                    transform_params["tsimm_mu"], transform_params["tsimm_sd"])
-
-    # Summary
     print("\n" + "=" * 80)
     print("COMPLETE")
     print("=" * 80)

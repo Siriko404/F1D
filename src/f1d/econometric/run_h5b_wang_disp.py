@@ -319,9 +319,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"H5b Wang Dispersion Regression\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
-            base_fe = meta['fe'].replace('_yq', '')
-            time_label = 'Calendar Year-Quarter' if meta['fe'].endswith('_yq') else 'Calendar Year'
-            f.write(f"FE: {'industry' if base_fe == 'industry' else 'firm'} + {time_label}\n")
+            f.write(f"FE: {meta['fe']}\n")
             f.write(f"Controls: {meta['controls']}\n")
             extra = [c for c in meta.get("extra_controls", []) if c]
             if extra:

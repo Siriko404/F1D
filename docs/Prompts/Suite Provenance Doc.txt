@@ -1,0 +1,479 @@
+================================================================================
+PROMPT: Create Thesis-Standard Provenance Document for Suite {{SUITE_ID}}
+================================================================================
+
+You are an expert econometrics research engineer and replication auditor.
+Your task: produce ONE comprehensive provenance document for hypothesis suite
+{{SUITE_ID}} in the F1D thesis pipeline.
+
+The document must serve two audiences:
+  (1) A thesis committee member who needs to understand exactly what was estimated
+  (2) A future researcher who needs to reproduce the results from code alone
+
+================================================================================
+INPUTS (fill before running)
+================================================================================
+
+Suite ID:            {{SUITE_ID}}
+Runner script:       src/f1d/econometric/run_{{RUNNER_NAME}}.py
+Panel builder:       src/f1d/variables/build_{{BUILDER_NAME}}_panel.py
+Output document:     docs/provenance/{{SUITE_ID}}.md
+
+================================================================================
+SECTION 0: NON-NEGOTIABLE RULES
+================================================================================
+
+(1) MANUAL TRACING ONLY
+    - Read files directly. Use grep/ripgrep for targeted searches.
+    - Run python one-liners to load artifacts and print counts/shapes/describe().
+    - Do NOT write a documentation generator script.
+    - Do NOT use bulk processing. Every claim must come from reading specific code.
+
+(2) EVERY FACTUAL CLAIM MUST BE VERIFIED
+    - Cite file path + function/line for every claim about code behavior.
+    - If something cannot be verified, mark it [UNVERIFIED] with explanation.
+    - Never infer behavior from naming alone when code can be read.
+
+(3) CODE IS THE SOURCE OF TRUTH
+    - If a docstring contradicts the code, report the code's behavior.
+    - If a variable name implies one thing but code does another, report the code.
+
+(4) MODEL-AGNOSTIC APPROACH
+    - Do NOT assume the suite uses PanelOLS. Read the runner to determine:
+      * What estimator is actually used (PanelOLS, OLS, Logit/Probit, Cox PH,
+        CoxTimeVaryingFitter, Poisson, IV/2SLS, or anything else)
+      * What the model object is and how it's fitted
+      * How standard errors are computed
+      * How p-values and significance are determined
+    - Fill out ONLY the sections relevant to the actual model family.
+    - Each model family has different diagnostics. Document what the code produces.
+
+(5) DETERMINISTIC OUTPUT
+    - Write ONE Markdown file at docs/provenance/{{SUITE_ID}}.md
+    - Use the exact section structure below.
+    - Tables over prose. Precise over verbose.
+
+================================================================================
+SECTION 1: WORKING METHOD (execute in this order)
+================================================================================
+
+STEP 1 — READ THE RUNNER (src/f1d/econometric/run_{{RUNNER_NAME}}.py)
+    a) Read the entire file top to bottom.
+    b) Identify:
+       - What estimator class/function is used (PanelOLS? CoxTimeVaryingFitter?
+         smf.ols? Logit? Something else?)
+       - MODEL_SPECS or equivalent: how many models, what varies between them
+       - DV(s): what column name(s) are the dependent variable(s)
+       - IV(s): what column name(s) are the key independent variables
+       - Controls: what column names appear in BASE_CONTROLS, EXTENDED_CONTROLS
+       - Fixed effects / strata / random effects: how specified
+       - Clustering / SE computation: how specified
+       - Tail test: one-tailed or two-tailed, direction, how p-values are computed
+       - Output files: what .tex, .csv, .txt, .md files are written
+       - Sample filters: min_calls, FF12 exclusions, year range, other filters
+    c) Record what you find. Do not proceed until you understand the full runner.
+
+STEP 2 — READ THE PANEL BUILDER (src/f1d/variables/build_{{BUILDER_NAME}}_panel.py)
+    a) Read the entire file top to bottom.
+    b) Identify:
+       - What builders are imported (from f1d.shared.variables import ...)
+       - What the builders dict contains (name → BuilderClass mappings)
+       - How the DV is constructed (formula, source data, any lead/lag logic)
+       - What merge operations happen (on what keys, what join type)
+       - What sample assignment happens (assign_industry_sample, etc.)
+       - What output files are produced (parquet panel, summary stats, report)
+    c) Record the full variable pipeline.
+
+STEP 3 — TRACE EACH VARIABLE TO ITS SOURCE
+    For EVERY variable that appears in any regression spec:
+    a) Find its builder file in src/f1d/shared/variables/
+    b) Read the builder to determine:
+       - What engine it calls (CompustatEngine, CRSPEngine, IbesEngine, etc.)
+       - What raw column(s) it reads from the engine
+       - What formula/transformation it applies
+       - What the output column name is
+       - Whether winsorization is applied (and at what level)
+    c) Record this for the Variable Dictionary section.
+
+STEP 4 — VERIFY KEY FACTS WITH TARGETED COMMANDS
+    Run these ad-hoc checks (adapt based on what model family you discovered):
+    a) Count MODEL_SPECS entries to confirm column count
+    b) Grep for the exact time_col assignment to confirm FE time index
+    c) Grep for cluster or cov_type to confirm SE computation
+    d) Grep for the tail test logic (p_two / 2, etc.)
+    e) Check what summary stats variables are listed
+    f) Check output directory naming
+
+STEP 5 — WRITE THE DOCUMENT
+    Fill sections A through L incrementally as you verify each part.
+    Do NOT leave writing to the end.
+
+================================================================================
+SECTION 2: DOCUMENT STRUCTURE (use these exact headings)
+================================================================================
+
+The output file docs/provenance/{{SUITE_ID}}.md must contain:
+
+------------------------------------------------------------------------
+A. SUITE IDENTITY
+------------------------------------------------------------------------
+
+Write a YAML-style header block:
+
+```yaml
+Suite ID:        {{SUITE_ID}}
+Title:           [from runner docstring or caption]
+Hypothesis:      [1-2 sentence research question]
+Direction:       [one-tailed beta > 0 / one-tailed beta < 0 / two-tailed / mixed]
+Model Family:    [PanelOLS / Cox PH / OLS / Logit / Probit / IV-2SLS / etc.]
+Estimator:       [exact class: linearmodels.PanelOLS / lifelines.CoxTimeVaryingFitter / etc.]
+Unit of Obs:     [call-level / firm-year / firm-quarter / call-to-call interval / etc.]
+Panel Index:     [e.g., (gvkey, cal_yr) or (gvkey, cal_yr_qtr)]
+Columns:         [number of model specifications]
+Reference:       [citation if any, or "--"]
+Runner:          src/f1d/econometric/run_{{RUNNER_NAME}}.py
+Panel Builder:   src/f1d/variables/build_{{BUILDER_NAME}}_panel.py
+```
+
+------------------------------------------------------------------------
+B. MODEL SPECIFICATION
+------------------------------------------------------------------------
+
+B1. Regression Equation
+    Write the full model equation in LaTeX-compatible notation.
+    Examples by model family:
+
+    PanelOLS:
+      DV_{i,t} = b1*IV1 + b2*IV2 + ... + Controls + alpha_i + gamma_t + epsilon
+
+    Cox PH:
+      h(t | X_i) = h_0(t) * exp(b1*Clarity + b2*Controls)
+
+    Logit/Probit:
+      P(Y=1 | X) = F(b1*IV + b2*Controls + FE)
+
+    Moderation:
+      DV = b1*IV_c + b2*Moderator + b3*(IV_c x Moderator) + Controls + FE
+
+    Adapt to whatever the code actually implements.
+
+B2. Dependent Variable(s)
+    Table:
+    | Variable Name (code) | Description | Formula | Source Engine | Timing |
+    |----------------------|-------------|---------|---------------|--------|
+
+    For each DV, specify:
+    - Exact column name as used in code
+    - How it's constructed (formula from raw fields)
+    - Which data engine provides it
+    - Timing convention: contemporaneous (t), lead (t+1), lag (t-1)
+    - For survival models: event indicator definition + censoring rules
+
+B3. Independent Variable(s)
+    Table with same structure as B2.
+    - For the standard 4-IV suites: list all 4 uncertainty measures
+    - For moderation suites: list main IV, moderator, and interaction term
+    - For reverse-causality (H11): note that IV/DV are swapped vs standard
+    - Document any centering, log-transform, z-scoring applied to IVs
+
+B4. Control Variables
+    Two tables if applicable (Base Controls, Extended Controls):
+    | Variable Name (code) | Description | Formula | Source Engine |
+    |----------------------|-------------|---------|---------------|
+
+    Include Lagged_DV and specify exactly what it lags.
+    Note any dynamic control logic (e.g., H11 auto-adds Pres control for QA DVs).
+
+B5. Fixed Effects / Stratification / Random Effects
+    Specify exactly what is absorbed/stratified:
+    | FE Type | Column Used | Description |
+    |---------|-------------|-------------|
+    | Entity  | gvkey / ff12_code | Firm FE or Industry FE |
+    | Time    | cal_yr / cal_yr_qtr / year | Calendar Year / Year-Quarter |
+
+    For Cox PH: document strata variables instead.
+    For OLS with dummies: document how FE are included.
+
+B6. Standard Errors and Clustering
+    - Exact cov_type argument
+    - Clustering dimension (entity, time, both)
+    - Any small-sample corrections
+
+B7. Hypothesis Test
+    - Direction: one-tailed (beta > 0), one-tailed (beta < 0), or two-tailed
+    - P-value computation: how two-tailed is converted to one-tailed (if applicable)
+    - Significance thresholds: *** p<0.01, ** p<0.05, * p<0.10
+    - For moderation suites: specify per-variable tail (main IV vs interaction)
+    - For Cox PH: specify hazard ratio interpretation
+
+------------------------------------------------------------------------
+C. MODEL SPECIFICATION REGISTER
+------------------------------------------------------------------------
+
+Create a table mapping EVERY model spec to its configuration:
+
+| Col | DV | Entity FE | Time FE | Controls | Notes |
+|-----|-----|-----------|---------|----------|-------|
+| 1   | ... | Industry  | Cal Yr  | Base     | ...   |
+| 2   | ... | Firm      | Cal Yr  | Base     | ...   |
+| ... | ... | ...       | ...     | ...      | ...   |
+
+This table must have one row per column in the output table.
+The "Col" numbering must match the LaTeX table column numbering.
+
+For non-tabular outputs (e.g., H9 Cox PH with multiple event types):
+adapt the table to show: Model ID, Event Type, Clarity Variant,
+Control Block, Strata, etc.
+
+------------------------------------------------------------------------
+D. SAMPLE CONSTRUCTION
+------------------------------------------------------------------------
+
+D1. Population
+    - Starting dataset: master_sample_manifest.parquet
+    - Total calls, unique firms, year range
+
+D2. Exclusion Criteria (in order applied)
+    Create an attrition cascade table:
+    | Step | Filter | Rows Before | Rows After | Dropped |
+    |------|--------|-------------|------------|---------|
+    | 1    | Full manifest | -- | N | -- |
+    | 2    | Main sample (excl FF12=8,11) | N | M | N-M |
+    | 3    | DV non-missing | M | K | M-K |
+    | 4    | Complete case (all vars) | K | J | K-J |
+    | 5    | Min calls per firm (>=5) | J | F | J-F |
+
+    Adapt steps based on what the code actually does.
+    For Cox PH: include interval construction, capping, event censoring steps.
+    For moderation: include moderator data merge step.
+
+D3. Sample Counts per Specification
+    If N varies across model specs (due to different DVs or FE), document:
+    | Col | N (observations) | N (firms) |
+    |-----|-----------------|-----------|
+
+------------------------------------------------------------------------
+E. VARIABLE DICTIONARY
+------------------------------------------------------------------------
+
+Complete table of EVERY variable appearing in any regression spec:
+
+| Variable (code) | Label | Type | Formula | Source | Winsorized | Timing |
+|-----------------|-------|------|---------|--------|------------|--------|
+
+Where:
+- Type: DV / IV / Control / FE / Moderator / Interaction / Lagged_DV / Event / Duration
+- Formula: exact construction (e.g., "cheq / atq", "oancfy / avg_assets")
+- Source: engine name + raw fields (e.g., "CompustatEngine: cheq, atq")
+- Winsorized: "1%/99% by year" or "No" or "At engine level"
+- Timing: contemporaneous / lead / lag / rolling window / etc.
+
+Rules:
+- EVERY variable must have an explicit formula, not "computed in engine"
+- If the formula is complex (e.g., Biddle residual), describe the steps
+- For interaction terms, describe how the interaction is formed and whether
+  components are centered
+
+------------------------------------------------------------------------
+F. DATA PIPELINE
+------------------------------------------------------------------------
+
+F1. Dependency Chain
+    Numbered list from raw data to final output:
+
+    1. Raw inputs: [list source files/directories]
+    2. Engine loading: [which engines, what they compute]
+    3. Panel builder: [merge sequence, join keys, output parquet]
+    4. Runner loading: [what panel it loads, what columns it selects]
+    5. Sample filtering: [what gets dropped, in what order]
+    6. Regression estimation: [estimator, specs, output files]
+    7. Table generation: [if applicable, how results feed into generate_all_tables.py]
+
+F2. Data Engines Used
+    | Engine | Source Data | Variables Provided to This Suite |
+    |--------|------------|--------------------------------|
+
+F3. Merge Operations
+    For each merge in the panel builder:
+    | Left | Right | Keys | Type | Notes |
+    |------|-------|------|------|-------|
+
+------------------------------------------------------------------------
+G. OUTPUTS
+------------------------------------------------------------------------
+
+G1. Stage 3 Outputs (Panel Builder)
+    | File | Description |
+    |------|-------------|
+    | {suite}_panel.parquet | Call-level panel with all variables |
+    | summary_stats.csv | Variable summary statistics |
+    | report_step3_{suite}.md | Build report |
+
+G2. Stage 4 Outputs (Runner)
+    | File | Description |
+    |------|-------------|
+    | {suite}_table.tex | Publication LaTeX table ({N} columns) |
+    | model_diagnostics.csv | Per-model regression metadata |
+    | summary_stats.csv/.tex | Main sample summary statistics |
+    | sample_attrition.csv/.tex | Attrition cascade |
+    | regression_results_col{1-N}.txt | Individual model outputs |
+    | report_step4_{suite}.md | Results report |
+
+    Adapt based on what the runner actually writes.
+    For Cox PH: list the .txt files per model variant.
+
+G3. Summary Statistics
+    List which variables are included in summary stats and what metrics
+    are computed (N, Mean, SD, Min, P25, Median, P75, Max).
+
+------------------------------------------------------------------------
+H. OUTLIER AND MISSING DATA TREATMENT
+------------------------------------------------------------------------
+
+H1. Winsorization
+    - Level: [1%/99% by calendar year — at CompustatEngine level]
+    - Applied to: [list which variables]
+    - NOT applied to: [linguistic IVs — bounded [0,100] by construction]
+
+H2. Missing Data Policy
+    - [Complete-case deletion: rows dropped if any required variable is NaN]
+    - [Inf/-Inf replaced with NaN before regression]
+
+H3. Transformations
+    List any log, z-score, centering, or scaling applied to variables.
+
+------------------------------------------------------------------------
+I. GENERATE_ALL_TABLES.PY ENTRY
+------------------------------------------------------------------------
+
+If this suite has an entry in outputs/generate_all_tables.py, document:
+
+```python
+{
+    "id": "...",
+    "tail": "...",
+    "hyp_dir": "...",
+    "cols": ...,
+    "dvs": [...],
+    "key_vars": [...],
+    "key_tails": [...],  # if applicable
+    ...
+}
+```
+
+Verify that:
+- tail/hyp_dir matches the runner's actual hypothesis direction
+- cols matches the number of MODEL_SPECS
+- dvs match the actual DV column names
+- key_vars match the actual variable names used in regressions
+
+------------------------------------------------------------------------
+J. REPRODUCTION COMMANDS
+------------------------------------------------------------------------
+
+Exact commands to reproduce from scratch:
+
+```bash
+# Stage 3: Build panel
+python -m f1d.variables.build_{{BUILDER_NAME}}_panel
+
+# Stage 4: Run regressions
+python -m f1d.econometric.run_{{RUNNER_NAME}}
+
+# Generate tables (if applicable)
+python outputs/generate_all_tables.py
+```
+
+------------------------------------------------------------------------
+K. MODEL-FAMILY ADDENDUM
+------------------------------------------------------------------------
+
+Fill ONLY the subsection that matches the actual model family.
+Write "N/A" for all others.
+
+K1. PanelOLS Specifics
+    - Entity effects: absorbed or dummy-coded
+    - Time effects: absorbed or dummy-coded
+    - other_effects usage (industry FE via ff12_code)
+    - drop_absorbed behavior
+    - Singleton handling
+
+K2. Cox Proportional Hazards Specifics
+    - Time origin and time scale (days since reference date)
+    - Duration construction (start/stop columns)
+    - Event definition (what constitutes an event)
+    - Censoring rules (administrative censoring date, competing events)
+    - Risk set: one-row-per-subject vs start-stop intervals
+    - Ties method (Efron/Breslow)
+    - Strata variables (if baseline hazard is stratified)
+    - Concordance index computation
+    - Events Per Variable (EPV) and suppression rules
+    - Competing risks approach (cause-specific vs Fine-Gray)
+
+K3. Logit/Probit/LPM Specifics
+    - Link function
+    - Binary outcome construction rules
+    - Separation handling
+    - Marginal effects computation (if applicable)
+    - Pseudo-R-squared type
+
+K4. IV/2SLS Specifics
+    - Endogenous regressor(s)
+    - Instrument(s) and instrument construction
+    - First-stage specification
+    - Second-stage specification
+    - Weak instrument diagnostics
+
+K5. OLS (non-panel) Specifics
+    - How FE are handled (absorbed, dummies, formula)
+    - HC robust SE type
+    - Any special weighting
+
+K6. Other Model Family
+    - Document whatever the code uses, following the same level of detail.
+
+------------------------------------------------------------------------
+L. KNOWN ISSUES AND NOTES
+------------------------------------------------------------------------
+
+List anything noteworthy:
+- Any inconsistency between docstring and code (note code is truth)
+- Any variables computed but not used
+- Any known limitations of the specification
+- Any future work flagged in comments
+
+================================================================================
+SECTION 3: QUALITY BAR
+================================================================================
+
+The document is complete ONLY if:
+
+[x] Every variable in every regression spec appears in the Variable Dictionary
+    with explicit formula and source engine
+[x] The model equation matches what the code actually estimates
+[x] The specification register accounts for every model column
+[x] The attrition cascade has row counts for each filter step
+[x] The tail test direction matches between runner code and generate_all_tables.py
+[x] The FE specification matches between docstring, code, and this document
+[x] Every merge in the panel builder is documented with join keys and type
+[x] The output file list matches what the runner actually writes
+[x] The model-family addendum is filled for the correct family only
+[x] Any claim marked [UNVERIFIED] has an explanation of what blocks verification
+
+================================================================================
+SECTION 4: BEGIN
+================================================================================
+
+Start by:
+1. Open the runner file: src/f1d/econometric/run_{{RUNNER_NAME}}.py
+2. Determine the model family (what estimator class is instantiated)
+3. List all MODEL_SPECS and required variables
+4. Open the panel builder and trace the variable pipeline
+5. Create the skeleton file at docs/provenance/{{SUITE_ID}}.md
+6. Fill sections A, B, C first (these define the suite)
+7. Then fill D, E, F (data pipeline)
+8. Then fill G, H, I, J (outputs and reproduction)
+9. Then fill K (model-family addendum)
+10. Finally fill L (known issues)
+
+Do not skip any section. Do not use placeholder text in the final document.

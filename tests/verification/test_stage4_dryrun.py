@@ -14,8 +14,6 @@ Stage 4 Scripts (econometric/):
     - run_h1_1b_cash_tsimm_binary.py
     - run_h1_2_cash_constraint.py
     - run_h4_leverage.py
-    - run_h5_dispersion.py
-    - run_h5b_johnson_disp.py
     - run_h5b_wang_disp.py
     - run_h7_illiquidity.py
     - run_h9_takeover_hazards.py (survival analysis)
@@ -52,8 +50,6 @@ STAGE4_ALL_SCRIPTS = [
     "src/f1d/econometric/run_h1_1b_cash_tsimm_binary.py",
     "src/f1d/econometric/run_h1_2_cash_constraint.py",
     "src/f1d/econometric/run_h4_leverage.py",
-    "src/f1d/econometric/run_h5_dispersion.py",
-    "src/f1d/econometric/run_h5b_johnson_disp.py",
     "src/f1d/econometric/run_h5b_wang_disp.py",
     "src/f1d/econometric/run_h7_illiquidity.py",
     "src/f1d/econometric/run_h9_takeover_hazards.py",
@@ -235,11 +231,6 @@ class TestStage4HypothesisMapping:
         """Verify H4 (Leverage Discipline) regression script exists."""
         h4_path = REPO_ROOT / "src/f1d/econometric/run_h4_leverage.py"
         assert h4_path.exists(), "H4 Leverage Discipline regression script should exist"
-
-    def test_h5_regression_exists(self):
-        """Verify H5 (Dispersion) regression script exists."""
-        h5_path = REPO_ROOT / "src/f1d/econometric/run_h5_dispersion.py"
-        assert h5_path.exists(), "H5 Dispersion regression script should exist"
 
     def test_h7_regression_exists(self):
         """Verify H7 (Illiquidity) regression script exists."""

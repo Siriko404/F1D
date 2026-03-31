@@ -4,16 +4,14 @@ Tier 2: Stage-specific module - Stage 4 of the pipeline.
 
 This module runs panel regressions and diagnostics.
 
-Active Modules (21 runners):
+Active Modules (19 runners):
     - run_h0_3_ceo_clarity_extended: Extended CEO Clarity robustness check
     - run_h1_cash_holdings: Cash Holdings hypothesis test
     - run_h1_1_cash_tsimm: Cash Holdings (Tsimm channel/moderation)
     - run_h1_1b_cash_tsimm_binary: Cash Holdings (Tsimm binary)
     - run_h1_2_cash_constraint: Cash Constraint hypothesis test
     - run_h4_leverage: Leverage hypothesis test
-    - run_h5_dispersion: Analyst Forecast Dispersion hypothesis test
-    - run_h5b_johnson_disp: Johnson Dispersion hypothesis test
-    - run_h5b_wang_disp: Wang Dispersion hypothesis test
+    - run_h5b_wang_disp: Analyst Forecast Dispersion hypothesis test (H5, Wang 2020)
     - run_h7_illiquidity: Illiquidity hypothesis test
     - run_h9_takeover_hazards: Takeover Hazards hypothesis test
     - run_h11_prisk_uncertainty: Political Risk x Uncertainty hypothesis test

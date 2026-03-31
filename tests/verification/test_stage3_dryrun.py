@@ -11,8 +11,6 @@ Stage 3 Scripts (variables/):
     - build_h0_3_ceo_clarity_extended_panel.py
     - build_h1_cash_holdings_panel.py
     - build_h4_leverage_panel.py
-    - build_h5_dispersion_panel.py
-    - build_h5b_johnson_disp_panel.py
     - build_h5b_wang_disp_panel.py
     - build_h7_illiquidity_panel.py
     - build_h9_takeover_panel.py
@@ -44,8 +42,6 @@ STAGE3_ALL_SCRIPTS = [
     "src/f1d/variables/build_h0_3_ceo_clarity_extended_panel.py",
     "src/f1d/variables/build_h1_cash_holdings_panel.py",
     "src/f1d/variables/build_h4_leverage_panel.py",
-    "src/f1d/variables/build_h5_dispersion_panel.py",
-    "src/f1d/variables/build_h5b_johnson_disp_panel.py",
     "src/f1d/variables/build_h5b_wang_disp_panel.py",
     "src/f1d/variables/build_h7_illiquidity_panel.py",
     "src/f1d/variables/build_h9_takeover_panel.py",
@@ -212,11 +208,6 @@ class TestStage3HypothesisMapping:
         """Verify H1 (Cash Holdings) script exists."""
         h1_path = REPO_ROOT / "src/f1d/variables/build_h1_cash_holdings_panel.py"
         assert h1_path.exists(), "H1 Cash Holdings script should exist"
-
-    def test_h5_script_exists(self):
-        """Verify H5 (Dispersion) script exists."""
-        h5_path = REPO_ROOT / "src/f1d/variables/build_h5_dispersion_panel.py"
-        assert h5_path.exists(), "H5 Dispersion script should exist"
 
     def test_h7_script_exists(self):
         """Verify H7 (Illiquidity) script exists."""

@@ -4,39 +4,26 @@
 STAGE 4: Test H13.1 TNIC-Moderated Capital Expenditure Hypothesis (Redesigned)
 ================================================================================
 ID: econometric/run_h13_1_competition
-Description: Test whether product-market structure (Hoberg-Phillips TNIC3TSIMM
-             and TNIC3HHI) moderates the Manager_QA_Uncertainty → CapexAt
-             relationship.
+Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM)
+             moderates the Manager_QA_Uncertainty → CapexAt relationship.
 
-Model Specification (per moderator):
-    CapexAt = b1*Mgr_QA_Unc_c + b2*z(log(MOD)) + b3*(Mgr_QA_Unc_c x z(log(MOD)))
+Model Specification:
+    CapexAt = b1*Mgr_QA_Unc_c + b2*z(log(TSIMM)) + b3*(Mgr_QA_Unc_c x z(log(TSIMM)))
             + controls [+ CapexAt_t for lead specs] + IndustryFE + CalendarYearFE + e
 
-    b3 is the coefficient of interest: does market structure moderate
+    b3 is the coefficient of interest: does product similarity moderate
     the effect of managerial Q&A uncertainty on capital expenditure?
 
 Parent suite: H13 (Capital Expenditure)
     Manager_QA_Uncertainty_pct significant in all 4 Industry+CalYr specs (p<0.005).
-    Moderation memo: TSIMM = primary (strong), HHI = robustness (secondary).
 
-8 Models:
-    Cols 1-4: Calendar Year FE (Industry + CalYr)
-        1-2: Moderator = z(log(TNIC3TSIMM)) — PRIMARY
-        3-4: Moderator = z(log(TNIC3HHI)) — ROBUSTNESS
-    Cols 5-8: Year-Quarter FE (Industry + YQ)
-        5-6: Moderator = z(log(TNIC3TSIMM)) — PRIMARY
-        7-8: Moderator = z(log(TNIC3HHI)) — ROBUSTNESS
+4 Models:
+    Cols 1-2: Calendar Year FE (Industry + CalYr)
+    Cols 3-4: Year-Quarter FE (Industry + YQ)
     Within each pair: CapexAt, CapexAt_lead
 
-Expected interaction signs (tentative):
-    TSIMM: positive (product similarity intensifies strategic investment response)
-    HHI: negative (concentration dampens strategic investment response)
-
-Corr(log(HHI), log(TSIMM)) ≈ -0.70 — moderators are NOT independent.
-
-NOTE: This file REPLACES the original H13.1 competition runner which had
-critical issues: uncentered interactions, HHI-only, 16 models with 4 separate
-IVs, and only 1/16 significant result that failed Bonferroni correction.
+Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
+    Log-transformed then z-scored on Main sample.
 
 Sample: Main only (FF12 not in {8, 11}).
 Hypothesis: All two-tailed (matching parent H13).
@@ -100,15 +87,6 @@ MODERATORS = {
         "tex_label": r"$z(\log(\mathrm{TSIMM}))$",
         "tex_int_label": r"Mgr QA Unc $\times$ $z(\log(\mathrm{TSIMM}))$",
     },
-    "hhi": {
-        "raw": "tnic3hhi",
-        "log": "log_tnic3hhi",
-        "z": "z_log_tnic3hhi",
-        "interaction": "MgrQAUnc_x_zlogHHI",
-        "label": "TNIC3HHI",
-        "tex_label": r"$z(\log(\mathrm{HHI}))$",
-        "tex_int_label": r"Mgr QA Unc $\times$ $z(\log(\mathrm{HHI}))$",
-    },
 }
 
 MIN_CALLS_PER_FIRM = 5
@@ -117,13 +95,9 @@ MODEL_SPECS = [
     # Calendar Year FE
     {"col": 1, "dv": "CapexAt",      "mod": "tsimm", "fe": "industry",    "extra_controls": []},
     {"col": 2, "dv": "CapexAt_lead", "mod": "tsimm", "fe": "industry",    "extra_controls": []},
-    {"col": 3, "dv": "CapexAt",      "mod": "hhi",   "fe": "industry",    "extra_controls": []},
-    {"col": 4, "dv": "CapexAt_lead", "mod": "hhi",   "fe": "industry",    "extra_controls": []},
     # Year-Quarter FE
-    {"col": 5, "dv": "CapexAt",      "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
-    {"col": 6, "dv": "CapexAt_lead", "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
-    {"col": 7, "dv": "CapexAt",      "mod": "hhi",   "fe": "industry_yq", "extra_controls": []},
-    {"col": 8, "dv": "CapexAt_lead", "mod": "hhi",   "fe": "industry_yq", "extra_controls": []},
+    {"col": 3, "dv": "CapexAt",      "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
+    {"col": 4, "dv": "CapexAt_lead", "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
 ]
 
 DV_TEX = {
@@ -138,8 +112,6 @@ SUMMARY_STATS_VARS = [
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": "tnic3tsimm", "label": "TNIC3TSIMM (raw)"},
     {"col": "z_log_tnic3tsimm", "label": "$z(\\log(\\mathrm{TSIMM}))$"},
-    {"col": "tnic3hhi", "label": "TNIC3HHI (raw)"},
-    {"col": "z_log_tnic3hhi", "label": "$z(\\log(\\mathrm{HHI}))$"},
     {"col": "Size", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
@@ -212,9 +184,9 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
 
 def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """Load TNIC3 data and merge both tnic3tsimm and tnic3hhi into panel."""
+    """Load TNIC3 data and merge tnic3tsimm into panel."""
     print("\n" + "=" * 60)
-    print("Merging TNIC3 (TSIMM + HHI)")
+    print("Merging TNIC3TSIMM")
     print("=" * 60)
 
     tnic_path = root_path / "inputs" / "TNIC3HHIdata" / "TNIC3HHIdata.txt"
@@ -228,7 +200,7 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     before = len(panel)
     panel = panel.merge(
-        tnic[["gvkey", "year", "tnic3tsimm", "tnic3hhi"]].rename(
+        tnic[["gvkey", "year", "tnic3tsimm"]].rename(
             columns={"gvkey": "_gvkey_int", "year": "fyearq_int"}
         ),
         on=["_gvkey_int", "fyearq_int"],
@@ -277,15 +249,6 @@ def transform_moderators_and_center_iv(
         print(f"  {mod_info['label']}: N={len(mod_main):,}, "
               f"log mean={mu:.4f}, log sd={sd:.4f}, "
               f"z mean={z_check.mean():.4f}, z std={z_check.std():.4f}")
-
-    # Cross-moderator correlation
-    both_valid = main_mask & panel["z_log_tnic3hhi"].notna() & panel["z_log_tnic3tsimm"].notna()
-    if both_valid.sum() > 100:
-        corr = panel.loc[both_valid, "z_log_tnic3hhi"].corr(
-            panel.loc[both_valid, "z_log_tnic3tsimm"]
-        )
-        print(f"  Corr(z(log(HHI)), z(log(TSIMM))): {corr:.4f}")
-        params["cross_corr"] = corr
 
     # IV: mean-center on Main sample
     iv_main = panel.loc[main_mask, IV].dropna()
@@ -514,7 +477,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             return f"{val:.2e}"
         return f"{val:.3f}"
 
-    n_cols = 8  # 4 Calendar Year FE + 4 Year-Quarter FE
+    n_cols = 4  # 2 Calendar Year FE + 2 Year-Quarter FE
     col_spec = "l" + "c" * n_cols
 
     def _panel_lines(mod_key: str, cols_fy: List[int], cols_yq: List[int], panel_label: str) -> List[str]:
@@ -611,9 +574,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\toprule",
     ]
 
-    lines += _panel_lines("tsimm", [1, 2], [5, 6], "Panel A: TNIC3TSIMM (primary)")
-    lines.append("\\midrule")
-    lines += _panel_lines("hhi", [3, 4], [7, 8], "Panel B: TNIC3HHI (robustness)")
+    lines += _panel_lines("tsimm", [1, 2], [3, 4], "TNIC3TSIMM")
 
     lines += [
         r"\bottomrule",
@@ -625,10 +586,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Mgr QA Uncertainty mean-centered; coefficient = effect at sample-mean uncertainty. ",
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"Main sample (excludes financial and utility firms). ",
-        r"TNIC3TSIMM and TNIC3HHI from Hoberg--Phillips (2016), log-transformed and standardized. ",
-        r"TSIMM is the primary moderator (product similarity $\to$ strategic investment channel); ",
-        r"HHI serves as robustness (market concentration channel). ",
-        r"Cols~(1)--(4): Calendar Year FE; Cols~(5)--(8): Year-Quarter FE. ",
+        r"TNIC3TSIMM from Hoberg--Phillips (2016), log-transformed and standardized. ",
+        r"Cols~(1)--(2): Calendar Year FE; Cols~(3)--(4): Year-Quarter FE. ",
         r"TNIC measures are firm-year variables repeated across calls within the same firm-year. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
@@ -761,8 +720,8 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    1 IV x 2 DVs x 2 moderators x 2 FE = 8 models")
-    print(f"Moderators: TSIMM (primary) + HHI (robustness)")
+    print(f"Design:    1 IV x 2 DVs x 1 moderator x 2 FE = 4 models")
+    print(f"Moderator: TSIMM")
     print(f"IV:        {IV}")
 
     panel, panel_file = load_panel(root, panel_path)
@@ -815,17 +774,13 @@ def main(panel_path: Optional[str] = None) -> int:
     diag_df = save_outputs(all_results, out_dir)
 
     tsimm_matched = panel["tnic3tsimm"].notna().sum()
-    hhi_matched = panel["tnic3hhi"].notna().sum()
     if all_results:
-        first_tsimm = next((r["meta"] for r in all_results if r["meta"]["moderator"] == "tsimm"), {})
-        first_hhi = next((r["meta"] for r in all_results if r["meta"]["moderator"] == "hhi"), {})
+        first = all_results[0]["meta"]
         attrition_stages = [
             ("Full panel (H13)", full_n),
             ("Main sample (excl Finance/Utility)", main_n),
             ("TNIC3TSIMM matched", tsimm_matched),
-            ("TNIC3HHI matched", hhi_matched),
-            ("After complete-case + min-calls (TSIMM, col 1)", first_tsimm.get("n_obs", 0)),
-            ("After complete-case + min-calls (HHI, col 3)", first_hhi.get("n_obs", 0)),
+            ("After complete-case + min-calls (col 1)", first["n_obs"]),
         ]
         generate_attrition_table(
             attrition_stages, out_dir, "H13.1 TNIC-Moderated Capex",

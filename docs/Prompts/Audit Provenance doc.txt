@@ -1,559 +1,417 @@
-Claude Code Prompt: Second-Layer Red-Team Audit of the Provenance + Referee Audit (Fresh Context, Adversarial)
-
-You are a hostile-but-fair replication auditor, econometrics red-team reviewer, and doctoral-thesis referee. You are operating in a FRESH CONTEXT. Your task is NOT to trust the prior audit. Your task is to audit the audit itself.
-
-You must conduct a SECOND-LAYER RED-TEAM AUDIT of ONE estimation suite and its existing first-layer provenance/referee documentation. Your goal is to determine whether the first-layer audit is:
-
-- factually correct,
-- adequately evidenced,
-- complete,
-- internally consistent,
-- appropriately skeptical,
-- appropriately severe,
-- and truly sufficient for a thesis-standard corporate finance/accounting referee review.
-
-You must independently inspect the code, artifacts, and outputs. You are not allowed to treat the first-layer audit as ground truth. You must assume it may contain omissions, overstatements, unsupported conclusions, false positives, false negatives, weak severity calls, and reproducibility blind spots.
-
-Your job is to BREAK the first audit if it is breakable.
-
-========================================================
-Inputs (placeholders)
-========================================================
-Suite ID: {{SUITE_ID}}
-Suite entrypoint (test runner): {{SUITE_TEST_SCRIPT_PATH}}
-Panel artifact OR builder used: {{PANEL_ARTIFACT_PATH_OR_BUILDER_SCRIPT}}
-First-layer audit doc path: {{FIRST_LAYER_AUDIT_DOC_PATH}}
-Output doc path: docs/provenance/{{SUITE_ID}}_red_team.md
-
-If you discover additional relevant materials (table builders, estimator wrappers, merge helpers, cached artifacts, logs, notebooks, config files, manual outputs), include them in your dependency/accountability sections.
-
-========================================================
-0) Mission
-========================================================
-Your mission is to answer four questions:
-
-(1) Is the FIRST-LAYER AUDIT factually correct?
-(2) Is it complete enough for a thesis-standard referee review?
-(3) Did it miss any material implementation / identification / robustness / academic-integrity issues?
-(4) Did it make any claims that are unsupported, exaggerated, insufficiently verified, or incorrectly prioritized?
-
-This is an audit OF the audit, not just a rerun of the audit.
-
-========================================================
-1) Non-negotiable rules
-========================================================
-(1) Fresh-context discipline
-- Do not inherit assumptions from the first audit.
-- Do not assume its summaries, labels, issue severity, or conclusions are correct.
-- Use the first audit as an object to test, not a source of truth.
-
-(2) Hard verification only
-Every factual statement in your output must be supported by:
-    (a) a code reference (file path + function + relevant lines if easy), OR
-    (b) a reproducible command you executed and logged, OR
-    (c) a directly inspected artifact/output with path and relevant content summarized.
-If you cannot verify something, mark it UNVERIFIED and explain exactly why.
-
-(3) Red-team posture
-You are adversarial toward BOTH:
-- the implementation, and
-- the first-layer audit.
-
-You must actively search for:
-- things the first audit failed to notice,
-- things it stated too confidently,
-- things it labeled incorrectly,
-- issues it underweighted,
-- issues it overweighted,
-- places where it mistook naming/comments for implementation,
-- places where it confused theoretical best practice with what code actually does,
-- places where it documented code paths that are not actually executed by this suite.
-
-(4) Separate facts from judgments
-You must explicitly distinguish:
-- VERIFIED FACT
-- VERIFIED ERROR IN FIRST AUDIT
-- VERIFIED UNDERLYING IMPLEMENTATION ISSUE
-- VERIFIED MISSED ISSUE
-- VERIFIED FALSE POSITIVE IN FIRST AUDIT
-- REFEREE JUDGMENT
-- UNVERIFIED CONCERN
-
-(5) No rubber-stamping
-Do not praise the first audit unless you have actually tested and confirmed the relevant part.
-Do not accept a section as complete merely because it exists.
-Do not confuse verbosity with rigor.
-
-(6) No fabricated completeness
-If you did not independently test a claim from the first audit, do not say it was confirmed.
-If the first audit makes a reasonable claim but lacks evidence, you must flag the evidence gap even if the claim may be true.
-
-(7) Deterministic output
-Produce ONE Markdown file at:
-docs/provenance/{{SUITE_ID}}_red_team.md
-
-Use stable headings + tables. Avoid prose dumping.
-
-========================================================
-2) Primary red-team objectives
-========================================================
-You must evaluate the first-layer audit on all of the following dimensions:
-
-A. Factual correctness
-- Are its statements about model type, variables, filters, FE, SEs, timing, merges, outputs, and reproducibility actually correct?
-
-B. Evidence quality
-- Does each material claim rest on actual code/commands/artifacts?
-- Does it cite enough to be audit-safe?
-- Did it verify counts, match rates, duplicates, missingness, and warnings, or merely describe likely behavior?
-
-C. Completeness
-- Did it cover every estimation variable?
-- Did it cover every merge/sample-construction step?
-- Did it cover model-family-specific validity threats?
-- Did it fully assess identification, robustness, and inference?
-
-D. Severity calibration
-- Were the most serious problems actually treated as serious?
-- Were minor documentation gaps overstated relative to identification or inference threats?
-- Did it fail to escalate any thesis-killing issue?
-
-E. False positives / unfair criticism
-- Did the first audit accuse the code of problems that are not actually present?
-- Did it state concerns as facts when they were only possibilities?
-- Did it misread an implementation detail?
-
-F. False negatives / omissions
-- What important issues did the first audit miss entirely?
-- What hidden dependencies, silent sample changes, identification problems, inference errors, or reproducibility hazards were not flagged?
-
-G. Internal consistency
-- Does the first audit contradict itself across sections?
-- Do its issue register, verdict, and evidence line up?
-- Do its variable definitions match its model descriptions?
-- Are the severity labels consistent with the final readiness conclusion?
-
-H. Thesis-standard sufficiency
-- If a committee member or journal referee relied only on the first audit, would they be properly informed about the true credibility of this suite?
-- Or would they be misled by omissions, understatements, overstatements, or missing caveats?
-
-========================================================
-3) Deliverable structure (use these exact sections)
-========================================================
-
-A. Red-Team Bottom Line
-Provide:
-- One-paragraph verdict on the FIRST-LAYER AUDIT
-- Overall grade for the first audit:
-  * RELIABLE
-  * PARTIALLY RELIABLE
-  * MATERIALLY FLAWED
-  * NOT RELIABLE FOR THESIS REVIEW
-- One-sentence verdict on the suite as implemented:
-  * THESIS-STANDARD AS IMPLEMENTED
-  * SALVAGEABLE WITH MAJOR REVISIONS
-  * NOT THESIS-STANDARD AS IMPLEMENTED
-- Short statement of whether the first audit:
-  * understated risk,
-  * overstated risk,
-  * or mixed both
-
-B. Scope and Objects Audited
-List:
-- suite ID
-- suite entrypoint
-- panel/builder artifact
-- first-layer audit file
-- any other code paths/artifacts/logs inspected
-
-C. Audit-of-Audit Scorecard
-Create a table:
-
-Dimension | First-layer audit status (Pass / Partial / Fail) | Evidence basis | Red-team note
-
-Dimensions must include at least:
-- model/spec identification
-- reproducibility commands
-- dependency tracing
-- raw data provenance
-- merge/sample audit
-- variable dictionary completeness
-- outlier/missing-data rules
-- estimation spec register
-- verification log quality
-- known issues section
-- identification critique
-- econometric implementation critique
-- robustness critique
-- academic-integrity critique
-- severity calibration
-- final thesis verdict support
-
-D. Claim Verification Matrix (First Audit Claims Tested)
-Create a claim-by-claim matrix for the most material claims in the first-layer audit.
-
-Columns:
-Claim ID | First-layer claim | Section in first audit | Verified? (Y/N/Partial) | Evidence checked | Red-team verdict | Notes
-
-Rules:
-- Include all high-stakes claims from the first audit.
-- High-stakes claims include anything about:
-  * estimator type
-  * FE/SE structure
-  * sample filters
-  * variable definitions
-  * merge integrity
-  * reproducibility
-  * identification
-  * robustness
-  * academic-integrity risk
-  * final thesis-standard verdict
-- If a claim is too vague to verify, say so and classify that as a documentation weakness.
-
-E. Unsupported, Overstated, or Weakly-Evidenced Claims in the First Audit
-List every place where the first audit:
-- stated something not proven,
-- overclaimed certainty,
-- failed to distinguish suspicion from verification,
-- treated probable behavior as verified implementation,
-- or relied on insufficient diagnostics.
-
-Use a table:
-Issue ID | Claim / statement | Why unsupported or weak | Severity | What evidence was missing | Corrected formulation
-
-F. False Positives in the First Audit
-List every place where the first audit appears to accuse the implementation of a problem that is not actually substantiated.
-
-Use a table:
-Issue ID | First-audit criticism | Why it appears false / overstated | Evidence | Severity of audit error | Corrected view
-
-G. Missed Issues (Second-Layer Discoveries)
-List every material issue you find that the first-layer audit missed or materially underplayed.
-
-These may include:
-- silent sample changes
-- unverified cached dependencies
-- incorrect FE/cluster logic
-- weak cluster count problems
-- post-treatment controls
-- future leakage / look-ahead timing
-- merge duplicate contamination
-- mismatch between variable labels and constructions
-- unsupported causal interpretation
-- robustness gaps
-- stale artifact dependence
-- hidden manual steps
-- unlogged failures / warnings
-- code-path/output mismatch
-- issue severity under-ranking
-
-Use a table:
-Issue ID | Category | Description | Evidence | Severity | Why first audit missed/underplayed it | Consequence | Recommended fix
-
-H. Severity Recalibration
-Re-rank the issues from the first audit and your newly found issues.
-
-Create a master table:
-Issue ID | Source (First audit / Red-team) | Original severity | Red-team severity | Why recalibrated | Thesis impact
-
-You must explicitly identify:
-- issues that should be upgraded,
-- issues that should be downgraded,
-- issues that should be merged,
-- issues that were duplicated or fragmented unnecessarily.
-
-I. Completeness Gaps in the First Audit
-Assess whether the first audit failed to fully cover any required area.
-
-Use a table:
-Missing / incomplete area | Why incomplete | Evidence | Severity | What should have been included
-
-Must check at minimum:
-- suite boundary identification
-- all model specs
-- all variables in all specs
-- all merges / sample changes
-- all model-family-specific construction steps
-- all outputs
-- all environment/reproducibility assumptions
-- all thesis-level validity threats relevant to this model family
-
-J. Reproducibility Red-Team Assessment
-Independently test whether the first audit’s reproducibility guidance is truly usable.
-
-Report:
-- whether its commands are runnable as written
-- whether they are sufficient to regenerate outputs
-- whether they omit hidden steps, local state, cached files, seeds, manual artifacts, environment assumptions, or ordering constraints
-- whether output enumeration is complete
-- whether stale artifacts could masquerade as successful reproduction
-
-Use a table:
-Reproduction step | First audit documented it? | Verified? | Hidden dependency? | Risk | Red-team note
-
-K. Econometric and Thesis-Referee Meta-Audit
-Assess whether the first audit’s referee critique is itself up to standard.
-
-Specifically test whether it adequately handled:
-- identification threats
-- inference / clustering concerns
-- FE and within-variation concerns
-- timing alignment
-- post-treatment controls
-- reverse causality
-- endogenous sample selection
-- model-family-specific threats
-- robustness adequacy
-- interpretation discipline
-- academic-integrity / auditability risks
-
-Use a table:
-Referee dimension | First audit adequate? (Y/N/Partial) | Why or why not | Missed or weak points | Severity
-
-L. Audit-Safety / Academic-Integrity Assessment of the First Audit
-Evaluate the first audit itself as an audit artifact.
-
-You must explicitly flag whether the first audit:
-- can be independently checked by a third party,
-- clearly separates verified facts from judgments,
-- clearly labels unverified claims,
-- creates a traceable evidentiary trail,
-- avoids rhetorical overreach,
-- avoids hidden assumptions,
-- would protect a thesis committee from being misled.
-
-Use a table:
-Audit-safety risk in first audit | Evidence | Severity | Why it matters | Fix
-
-M. Master Red-Team Issue Register
-Create one exhaustive issue register that consolidates:
-- first-audit errors,
-- first-audit omissions,
-- first-audit overclaims,
-- underlying implementation issues newly found,
-- unresolved unverified concerns that materially matter.
-
-Columns:
-Issue ID | Type | Category | Verified? (Y/N) | Severity | Location | Description | Evidence | Consequence | Recommended fix | Blocks thesis-standard reliance on first audit? (Y/N)
-
-Type must be one of:
-- First-audit factual error
-- First-audit unsupported claim
-- First-audit false positive
-- First-audit omission
-- First-audit severity error
-- Underlying implementation issue missed by first audit
-- Underlying implementation issue underplayed by first audit
-- Unverified but material concern
-
-N. What a Committee / Referee Would Still Not Know if They Read Only the First Audit
-This section must be blunt and concise.
-List the most important facts, risks, or caveats that the first audit fails to communicate adequately.
-
-O. Priority Fixes to the First Audit
-Provide a ranked list of the highest-value improvements needed to make the first audit genuinely thesis-grade.
-
-Columns:
-Priority | Fix to first audit | Why it matters | Effort | Credibility gain
-
-P. Final Red-Team Readiness Statement
-Answer directly:
-- Can the first audit be trusted as a standalone referee-quality document?
-- What is its biggest factual weakness?
-- What is its biggest completeness weakness?
-- What is its biggest severity/judgment weakness?
-- What is the single most important missed issue, if any?
-- What is the single most misleading claim, if any?
-- What should a thesis committee believe after reading your red-team review?
-
-========================================================
-4) Required working method (do this in order)
-========================================================
-
-Step 1 — Open and decompose the first-layer audit
-- Read {{FIRST_LAYER_AUDIT_DOC_PATH}} carefully.
-- Extract all material claims, judgments, issue labels, severity levels, and final verdicts.
-- Build an internal list of claims to verify.
-- Identify where the first audit appears:
-  * too certain,
-  * too vague,
-  * incomplete,
-  * or suspiciously light/heavy.
-
-Step 2 — Independently identify the suite boundary from source
-- Open {{SUITE_TEST_SCRIPT_PATH}}.
-- Determine:
-  * what dataset/panel/risk-set it loads,
-  * which variables it uses,
-  * which models/specs it runs,
-  * which outputs it writes.
-- Do this independently before trusting the first audit’s framing.
-- Compare your independent suite boundary against the first audit’s boundary.
-
-Step 3 — Re-trace upstream dependencies
-- For each variable in each spec, find its construction and upstream raw fields.
-- Independently verify merges, sample filters, reshaping, event-time/risk-set/instrument construction, estimator wrappers, and output builders.
-- Note every place where the first audit:
-  * omitted a step,
-  * compressed a step too much,
-  * misstated the step,
-  * or failed to verify the step.
-
-Step 4 — Re-run targeted verification
-Do not blindly replicate the entire first audit; target the most fragile and high-stakes areas first.
-
-You MUST test, where relevant:
-- row counts by stage
-- uniqueness of key identifiers before merges
-- duplicate contamination risks
-- merge match rates
-- missingness for DV/key RHS/filters
-- FE-group variation support
-- cluster counts / cluster-size sanity
-- sample losses from lags, winsorization, event windows, or censoring
-- timing sanity for leads/lags/outcomes
-- warnings, convergence messages, dropped observations, singularity messages
-- whether documented outputs correspond to actual executed code paths
-- whether caches/stale artifacts/manual steps affect reproduction
-
-Step 5 — Attack the first audit’s judgments
-For each material conclusion in the first audit, ask:
-- Is this actually proven?
-- Is the evidence enough?
-- Is the claim too strong?
-- Is severity too low or too high?
-- Is something more important missing?
-- Would a hostile referee agree with this prioritization?
-
-Step 6 — Write the red-team report
-Populate sections A–P incrementally.
-Do not wait until the end to write.
-Your final document must be readable as:
-- an audit of the first audit, and
-- an independent adversarial referee memo.
-
-========================================================
-5) Red-team attack checklist (you must explicitly test these)
-========================================================
-
-You must explicitly search for failures in the first audit along these dimensions:
-
-(1) Claim-evidence mismatch
-- claim made without direct evidence
-- evidence insufficient for severity/conclusion
-- claim supported only by naming/comments, not execution
-
-(2) Boundary errors
-- wrong entrypoint
-- wrong panel artifact
-- undocumented side scripts
-- code paths documented but not actually used
-
-(3) Sample accounting failures
-- undocumented row losses
-- silent drops
-- mismatch between estimation sample and documented sample
-- wrong unit of observation
-- hidden subgroup exclusions
-- FE-induced sample changes not documented
-
-(4) Merge/provenance failures
-- duplicate keys not actually checked
-- many-to-many risk not substantiated
-- match rates asserted but not verified
-- source fields not actually traced to raw inputs
-
-(5) Variable-dictionary failures
-- missing spec variables
-- incomplete formulas
-- wrong source fields
-- missing timing alignment
-- variable labels inconsistent with code
-
-(6) Inference failures
-- clustering issues underweighted
-- too few clusters missed
-- mismatch between treatment variation and cluster level
-- heteroskedasticity/autocorrelation handling misdescribed
-- warnings or estimation failures omitted
-
-(7) Identification failures
-- post-treatment controls missed
-- future leakage missed
-- reverse-causality exposure underweighted
-- bad sample conditioning missed
-- event-time or treatment timing errors missed
-- weak-IV / pretrend / bandwidth concerns not demanded when relevant
-
-(8) Robustness failures
-- absence of robustness insufficiently criticized
-- placebo/falsification missing but not flagged
-- alt-cluster / alt-FE / alt-window dependence underweighted
-- multiple-testing / spec-search risk ignored
-
-(9) Reproducibility failures
-- commands incomplete or untested
-- outputs not fully enumerated
-- stale cached artifacts not considered
-- environment assumptions omitted
-- local-path/manual dependencies missed
-
-(10) Audit-craft failures in the first audit
-- internal contradictions
-- duplicated issues split across sections
-- major issue buried as minor note
-- final verdict not justified by issue register
-- too much prose, too little proof
-- weak distinction between fact and judgment
-
-========================================================
-6) Allowed tools / commands
-========================================================
-Allowed:
-- rg/grep searches
-- opening/reading files
-- running existing scripts with flags
-- python one-liners to inspect parquet/csv/artifacts
-- shell commands to inspect logs, warnings, outputs, file existence, hashes/timestamps
-- targeted comparison of documented vs actual outputs
-Not allowed:
-- writing a bulk crawler/documentation generator
-- accepting first-audit claims without verification
-- inventing evidence
-- hiding uncertainty
-- compressing materially distinct issues into vague prose
-
-========================================================
-7) Quality bar
-========================================================
-This red-team review is complete only if:
-- all material first-audit claims have been tested or explicitly triaged as unverified,
-- all material first-audit weaknesses are surfaced,
-- all major missed issues in the underlying suite are surfaced,
-- severity is re-ranked in a defensible way,
-- reproducibility guidance from the first audit is independently challenged,
-- the final verdict clearly states whether the first audit is safe for thesis/referee reliance.
-
-========================================================
-8) Style requirements
-========================================================
-- Be precise, adversarial, and evidence-driven.
-- Prefer tables over long prose.
-- Be blunt about unsupported claims.
-- Do not merely summarize the first audit.
-- Do not just “agree/disagree”; explain what was checked.
-- If the first audit is strong, say exactly why.
-- If it is weak, say exactly where and how.
-- Write like a replication referee protecting a thesis committee from being misled.
-
-========================================================
-9) Start now
-========================================================
-Begin by:
-- opening {{FIRST_LAYER_AUDIT_DOC_PATH}},
-- extracting its material claims and issue register,
-- independently opening {{SUITE_TEST_SCRIPT_PATH}},
-- identifying the actual suite boundary from source,
-- creating the skeleton file at docs/provenance/{{SUITE_ID}}_red_team.md,
-- filling sections A–D first,
-- then proceed through the rest of the red-team audit until complete.
+================================================================================
+PROMPT: Adversarial Audit of Provenance Document for Suite {{SUITE_ID}}
+================================================================================
+
+You are a hostile auditor. Your job is to verify that the provenance document
+at docs/provenance/{{SUITE_ID}}.md was created correctly, completely, and
+accurately by checking EVERY claim against the actual code.
+
+You have two reference documents:
+  (1) The PROMPT that was used to create the provenance doc:
+      docs/Prompts/Suite Provenance Doc.txt
+  (2) The PROVENANCE DOC that was produced:
+      docs/provenance/{{SUITE_ID}}.md
+
+Your job is to audit (2) against BOTH (1) and the actual codebase.
+
+================================================================================
+INPUTS (fill before running)
+================================================================================
+
+Suite ID:            {{SUITE_ID}}
+Runner script:       src/f1d/econometric/run_{{RUNNER_NAME}}.py
+Panel builder:       src/f1d/variables/build_{{BUILDER_NAME}}_panel.py
+Provenance doc:      docs/provenance/{{SUITE_ID}}.md
+Creation prompt:     docs/Prompts/Suite Provenance Doc.txt
+
+================================================================================
+NON-NEGOTIABLE RULES
+================================================================================
+
+(1) ASSUME EVERYTHING IN THE PROVENANCE DOC IS WRONG until you prove it correct.
+    Do not give benefit of the doubt. Do not skim. Read every line.
+
+(2) MANUAL VERIFICATION ONLY.
+    - Read the provenance doc line by line.
+    - For every factual claim, open the referenced source file and verify.
+    - Use grep for targeted searches. Run python one-liners to check counts.
+    - Do NOT write scripts that auto-validate. Check each claim by hand.
+
+(3) CODE IS THE ONLY SOURCE OF TRUTH.
+    - If the provenance doc says X and the code says Y, the doc is WRONG.
+    - If the provenance doc says X and the code is ambiguous, mark UNVERIFIABLE.
+    - If the provenance doc says X and you cannot find supporting code, mark UNSUPPORTED.
+
+(4) THE CREATION PROMPT IS THE SPECIFICATION.
+    - Every section required by the creation prompt MUST exist in the provenance doc.
+    - Every quality gate in the creation prompt MUST be met.
+    - Missing sections = FAIL. Incomplete tables = FAIL. Placeholder text = FAIL.
+
+================================================================================
+AUDIT PHASE 1: STRUCTURAL COMPLETENESS
+================================================================================
+
+Read docs/Prompts/Suite Provenance Doc.txt to extract the required sections.
+Then read docs/provenance/{{SUITE_ID}}.md and check:
+
+For EACH required section (A through L), answer:
+
+| Section | Required by Prompt | Present in Doc | Complete | Notes |
+|---------|-------------------|----------------|----------|-------|
+| A. Suite Identity | Yes | ? | ? | |
+| B. Model Specification | Yes | ? | ? | |
+| B1. Regression Equation | Yes | ? | ? | |
+| B2. Dependent Variable(s) | Yes | ? | ? | |
+| B3. Independent Variable(s) | Yes | ? | ? | |
+| B4. Control Variables | Yes | ? | ? | |
+| B5. Fixed Effects | Yes | ? | ? | |
+| B6. Standard Errors | Yes | ? | ? | |
+| B7. Hypothesis Test | Yes | ? | ? | |
+| C. Spec Register | Yes | ? | ? | |
+| D. Sample Construction | Yes | ? | ? | |
+| D1. Population | Yes | ? | ? | |
+| D2. Exclusion Criteria | Yes | ? | ? | |
+| D3. Sample Counts per Spec | Yes | ? | ? | |
+| E. Variable Dictionary | Yes | ? | ? | |
+| F. Data Pipeline | Yes | ? | ? | |
+| F1. Dependency Chain | Yes | ? | ? | |
+| F2. Data Engines | Yes | ? | ? | |
+| F3. Merge Operations | Yes | ? | ? | |
+| G. Outputs | Yes | ? | ? | |
+| G1. Stage 3 Outputs | Yes | ? | ? | |
+| G2. Stage 4 Outputs | Yes | ? | ? | |
+| G3. Summary Statistics | Yes | ? | ? | |
+| H. Outlier/Missing Treatment | Yes | ? | ? | |
+| I. generate_all_tables Entry | Yes | ? | ? | |
+| J. Reproduction Commands | Yes | ? | ? | |
+| K. Model-Family Addendum | Yes | ? | ? | |
+| L. Known Issues | Yes | ? | ? | |
+
+For each section marked incomplete or missing, record exactly what is missing.
+
+================================================================================
+AUDIT PHASE 2: FACTUAL ACCURACY — SECTION A (Suite Identity)
+================================================================================
+
+Read Section A of the provenance doc. For each field:
+
+A-1. Suite ID
+     - Does it match the actual suite?
+     VERIFY: trivial.
+
+A-2. Title
+     - Open the runner. Read the docstring or caption.
+     - Does the provenance doc title match?
+
+A-3. Hypothesis
+     - Read the runner docstring's hypothesis statement.
+     - Does the provenance doc's hypothesis match?
+
+A-4. Direction (tail test)
+     - Open the runner. Find the tail test implementation.
+     - Grep for `p_two / 2`, `p_one`, or equivalent.
+     - Does the provenance doc's direction match the code?
+
+A-5. Model Family
+     - Open the runner. Find what estimator class is instantiated.
+     - Grep for `PanelOLS`, `CoxTimeVaryingFitter`, `Logit`, `smf.ols`, etc.
+     - Does the provenance doc's model family match?
+
+A-6. Estimator
+     - Exact class name. Verify against import statements in the runner.
+
+A-7. Unit of Observation
+     - Read the panel builder. What does each row represent?
+     - Does the doc's claim match?
+
+A-8. Panel Index
+     - Find `set_index(...)` in the runner.
+     - Does the doc's panel index match the actual code?
+
+A-9. Columns (number of model specs)
+     - Count entries in MODEL_SPECS (or equivalent) in the runner.
+     - Does the doc's column count match?
+
+A-10. Runner and Panel Builder paths
+      - Do the file paths exist on disk?
+
+Record: PASS or FAIL for each, with evidence.
+
+================================================================================
+AUDIT PHASE 3: FACTUAL ACCURACY — SECTION B (Model Specification)
+================================================================================
+
+B1-CHECK: Regression Equation
+    - Read the runner's actual regression formula construction.
+    - Does the provenance doc's equation include every term that appears in code?
+    - Does the provenance doc's equation exclude terms that do NOT appear in code?
+    - For moderation suites: is the interaction term correctly documented?
+    - For Cox PH: is the hazard function correctly written?
+
+B2-CHECK: Dependent Variable(s)
+    - For each DV listed in the provenance doc:
+      a) Grep the runner for the DV column name. Does it appear as the LHS?
+      b) Open the builder/engine that creates it. Does the formula match?
+      c) Is the timing (t, t+1, lag) correct?
+    - Are ANY DVs used in the runner MISSING from the provenance doc?
+
+B3-CHECK: Independent Variable(s)
+    - For each IV listed:
+      a) Grep the runner for the IV column name. Is it in the regression formula?
+      b) Is the source engine correct?
+      c) For centered IVs: is the centering documented? Is it correct?
+    - Are ANY IVs used in the runner MISSING from the provenance doc?
+
+B4-CHECK: Control Variables
+    - Read BASE_CONTROLS and EXTENDED_CONTROLS from the runner.
+    - Does every control in the code appear in the provenance doc?
+    - Does every control in the provenance doc appear in the code?
+    - Is Lagged_DV documented? Is its construction correct?
+    - Are there dynamic controls (e.g., H11's Pres auto-add)? Are they documented?
+
+B5-CHECK: Fixed Effects
+    - Find the FE specification in the runner (entity_effects, time_effects,
+      other_effects, strata, C(year), etc.)
+    - Does the provenance doc's FE table match?
+    - Is the time FE column correct (cal_yr vs cal_yr_qtr vs year vs fyearq_int)?
+    - For Cox PH: are strata correctly documented?
+
+B6-CHECK: Standard Errors
+    - Find cov_type and cluster arguments in the runner.
+    - Does the provenance doc match?
+
+B7-CHECK: Hypothesis Test
+    - Find the p-value computation in the runner.
+    - Is the direction correct?
+    - Is the conversion from two-tailed to one-tailed correct?
+    - For mixed-tail suites: is each variable's tail correctly documented?
+
+Record: PASS or FAIL for each, with evidence.
+
+================================================================================
+AUDIT PHASE 4: FACTUAL ACCURACY — SECTION C (Spec Register)
+================================================================================
+
+- Count rows in the spec register table.
+- Does it match the number of MODEL_SPECS in the runner?
+- For each row, verify:
+  a) DV matches the spec's actual DV
+  b) Entity FE matches (industry vs firm)
+  c) Time FE matches (cal_yr vs cal_yr_qtr)
+  d) Controls set matches (base vs extended)
+- Are any specs in the code MISSING from the table?
+- Are any specs in the table NOT in the code?
+
+================================================================================
+AUDIT PHASE 5: FACTUAL ACCURACY — SECTION D (Sample Construction)
+================================================================================
+
+D1-CHECK: Population
+    - Are the stated totals (calls, firms, year range) plausible?
+    - Cross-reference against project scope if known (112,968 calls, 2,429 firms, 2002-2018).
+
+D2-CHECK: Exclusion Criteria
+    - Read the runner's sample filtering code step by step.
+    - Does the attrition cascade in the provenance doc match the code's filter order?
+    - Are the filter descriptions accurate?
+    - For Cox PH: is interval construction, capping, event censoring documented?
+    - For moderation: is moderator data merge documented?
+
+D3-CHECK: Sample Counts per Spec
+    - If N varies across specs, is this documented?
+    - Are the counts plausible?
+
+================================================================================
+AUDIT PHASE 6: FACTUAL ACCURACY — SECTION E (Variable Dictionary)
+================================================================================
+
+This is the MOST IMPORTANT section to audit. Check EVERY row:
+
+For each variable in the dictionary:
+    a) Does the variable name match what the code uses? (exact string match)
+    b) Is the formula correct? Open the builder or engine and verify.
+    c) Is the source engine correct?
+    d) Is the winsorization claim correct?
+    e) Is the timing correct?
+
+Then check COMPLETENESS:
+    f) Read the runner's MODEL_SPECS. List EVERY variable referenced.
+    g) Read BASE_CONTROLS and EXTENDED_CONTROLS. List every variable.
+    h) Is EVERY variable from (f) and (g) in the dictionary?
+    i) Are FE columns (gvkey, ff12_code, cal_yr, cal_yr_qtr) in the dictionary?
+
+Record: PASS or FAIL for each variable, with evidence for failures.
+
+================================================================================
+AUDIT PHASE 7: FACTUAL ACCURACY — SECTIONS F, G, H
+================================================================================
+
+F-CHECK: Data Pipeline
+    - Is the dependency chain complete? (raw -> engine -> builder -> runner -> table)
+    - Are all engines listed that this suite actually uses?
+    - Are all merges in the panel builder documented with correct keys and types?
+
+G-CHECK: Outputs
+    - Open the runner. Find every file-write operation (to_csv, to_parquet, open().write, etc.)
+    - Is every output file listed in the provenance doc?
+    - Is any file listed in the doc NOT actually written by the code?
+
+H-CHECK: Outlier/Missing Treatment
+    - Is winsorization correctly described (level, scope, when applied)?
+    - Is the missing data policy correct (complete-case deletion)?
+    - Are any transformations (log, z-score, centering) documented?
+    - Grep the runner for `inf`, `replace`, `dropna`, `fillna` — are these documented?
+
+================================================================================
+AUDIT PHASE 8: FACTUAL ACCURACY — SECTION I (Table Generator Entry)
+================================================================================
+
+- Open outputs/generate_all_tables.py
+- Find the SUITES entry for this suite
+- Compare EVERY field against what the provenance doc claims:
+  a) "id" matches?
+  b) "tail" / "hyp_dir" / "key_tails" matches?
+  c) "cols" matches?
+  d) "dvs" matches?
+  e) "key_vars" matches?
+- Does the provenance doc flag any discrepancies?
+- If the suite has NO entry in generate_all_tables.py, does the doc say so?
+
+================================================================================
+AUDIT PHASE 9: FACTUAL ACCURACY — SECTION K (Model-Family Addendum)
+================================================================================
+
+- Which model family was identified in Section A?
+- Is the CORRECT subsection of K filled out (K1 for PanelOLS, K2 for Cox PH, etc.)?
+- Are the OTHER subsections marked N/A or omitted?
+- For the filled subsection, verify each claim:
+
+  PanelOLS (K1):
+  - entity_effects: verify against code
+  - other_effects: verify against code
+  - drop_absorbed: verify against code
+
+  Cox PH (K2):
+  - Time origin: verify against code
+  - Event definition: verify against code
+  - Censoring rules: verify against code
+  - Ties method: verify against code
+  - Strata: verify against code
+  - Concordance computation: verify against code
+  - EPV rules: verify against code
+
+  (Adapt for other model families)
+
+================================================================================
+AUDIT PHASE 10: QUALITY GATE CHECKLIST
+================================================================================
+
+The creation prompt specifies 10 quality gates. Verify each:
+
+| # | Quality Gate | Met? | Evidence |
+|---|-------------|------|----------|
+| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | ? | |
+| 2 | The model equation matches what the code actually estimates | ? | |
+| 3 | The specification register accounts for every model column | ? | |
+| 4 | The attrition cascade has row counts for each filter step | ? | |
+| 5 | The tail test direction matches between runner code and generate_all_tables.py | ? | |
+| 6 | The FE specification matches between docstring, code, and this document | ? | |
+| 7 | Every merge in the panel builder is documented with join keys and type | ? | |
+| 8 | The output file list matches what the runner actually writes | ? | |
+| 9 | The model-family addendum is filled for the correct family only | ? | |
+| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | ? | |
+
+================================================================================
+AUDIT PHASE 11: CROSS-REFERENCE CONSISTENCY
+================================================================================
+
+Check internal consistency WITHIN the provenance doc:
+
+1. Do the DVs in Section B2 match the DVs in Section C (spec register)?
+2. Do the DVs in Section C match the DVs in Section I (table generator entry)?
+3. Do the controls in Section B4 match the variables in Section E (dictionary)?
+4. Does the column count in Section A match the rows in Section C?
+5. Does the column count in Section A match "cols" in Section I?
+6. Does the tail direction in Section A match Section B7 match Section I?
+7. Does the FE in Section B5 match Section C match Section K?
+8. Does the panel index in Section A match the set_index in Section K?
+
+Flag any internal contradictions.
+
+================================================================================
+OUTPUT REQUIREMENTS
+================================================================================
+
+You MUST write your complete audit report to a file. Do NOT only return it
+in your response. The audit report must be saved to:
+
+    docs/provenance/Audits/{{SUITE_ID}}_audit.md
+
+Create the docs/provenance/Audits/ directory if it does not exist.
+
+The file must contain your FULL analysis — every phase, every check, every
+verification result, every piece of evidence. Do not summarize or abbreviate.
+A reader of the audit file must be able to see exactly what you checked,
+what the provenance doc claimed, what the code actually says, and whether
+each claim passed or failed.
+
+Structure the audit report as follows:
+
+### AUDIT SUMMARY
+
+| Category | Total Checks | Passed | Failed | Score |
+|----------|-------------|--------|--------|-------|
+| Structural Completeness (Phase 1) | | | | |
+| Suite Identity (Phase 2) | | | | |
+| Model Specification (Phase 3) | | | | |
+| Spec Register (Phase 4) | | | | |
+| Sample Construction (Phase 5) | | | | |
+| Variable Dictionary (Phase 6) | | | | |
+| Pipeline/Outputs/Treatment (Phase 7) | | | | |
+| Table Generator Entry (Phase 8) | | | | |
+| Model-Family Addendum (Phase 9) | | | | |
+| Quality Gates (Phase 10) | | | | |
+| Cross-Reference Consistency (Phase 11) | | | | |
+| **TOTAL** | | | | |
+
+### VERDICT
+
+One of:
+- **PASS**: All checks pass. Document is accurate and complete.
+- **PASS WITH NOTES**: Minor issues that do not affect accuracy. List them.
+- **FAIL — INCOMPLETE**: Missing required sections or content. List what's missing.
+- **FAIL — INACCURATE**: Factual errors found. List every error with evidence.
+- **FAIL — BOTH**: Missing content AND factual errors.
+
+### FAILURES (detailed)
+
+For each failure:
+| Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
+|-------|-------|----------------------|-----------------|----------|-------------|
+
+### CORRECTIONS REQUIRED
+
+Numbered list of exact edits needed to bring the provenance doc to PASS status.
+Each correction must specify:
+- Which section of the provenance doc to edit
+- What the current (wrong) text says
+- What it should say instead
+- The code reference proving the correction
+
+================================================================================
+BEGIN
+================================================================================
+
+Start by:
+1. Read the creation prompt (docs/Prompts/Suite Provenance Doc.txt) to understand
+   what was required
+2. Read the provenance doc (docs/provenance/{{SUITE_ID}}.md) end to end
+3. Begin Phase 1 (structural completeness) — check every required section exists
+4. Proceed through Phases 2-11 sequentially
+5. Write the COMPLETE audit report to docs/provenance/Audits/{{SUITE_ID}}_audit.md
+   - Create the directory if needed (mkdir -p docs/provenance/Audits)
+   - The file must contain ALL phase results, ALL verification evidence,
+     ALL tables, the summary, verdict, failures, and corrections
+   - This is your PRIMARY deliverable — do NOT skip writing the file
+
+Do not skip any phase. Do not assume any claim is correct without verification.

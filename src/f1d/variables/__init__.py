@@ -3,13 +3,11 @@
 This package contains scripts that build complete panels for each
 hypothesis test by loading and merging variables from various sources.
 
-Active Modules (17 panel builders):
+Active Modules (15 panel builders):
     - build_h0_3_ceo_clarity_extended_panel: Extended CEO clarity panel
     - build_h1_cash_holdings_panel: Cash Holdings panel (H1)
     - build_h4_leverage_panel: Leverage panel (H4)
-    - build_h5_dispersion_panel: Analyst Forecast Dispersion panel (H5)
-    - build_h5b_johnson_disp_panel: Johnson Dispersion panel (H5b)
-    - build_h5b_wang_disp_panel: Wang Dispersion panel (H5b)
+    - build_h5b_wang_disp_panel: Analyst Forecast Dispersion panel (H5, Wang 2020)
     - build_h7_illiquidity_panel: Illiquidity panel (H7)
     - build_h9_takeover_panel: Takeover panel (H9)
     - build_h11_prisk_uncertainty_panel: Political Risk x Uncertainty panel (H11)

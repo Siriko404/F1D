@@ -16,35 +16,6 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent / "econometric"
 
 SUITES = [
-    # ── H0.3 ── (Task 3: key_vars + Task 2: pipeline labels)
-    {
-        "id": "H0.3",
-        "type": "moderation",
-        "dir": "ceo_clarity_extended/2026-03-18_212113",
-        "caption": "H0.3: Extended Controls Robustness --- CEO and Manager Clarity",
-        "label": "tab:h0_3",
-        "cols": 4,
-        "col_files": {
-            1: "regression_results_manager_baseline.txt",
-            2: "regression_results_manager_extended.txt",
-            3: "regression_results_ceo_baseline.txt",
-            4: "regression_results_ceo_extended.txt",
-        },
-        "dvs": [
-            (r"Manager\_QA\_Uncertainty\_pct", 2),
-            (r"CEO\_QA\_Uncertainty\_pct", 2),
-        ],
-        "col_dv_labels": ["Baseline", "Extended", "Baseline", "Extended"],
-        "key_vars": ["Manager_Pres_Uncertainty_pct", "CEO_Pres_Uncertainty_pct", "Analyst_QA_Uncertainty_pct", "Entire_All_Negative_pct"],
-        "key_labels": [r"Manager\_Pres\_Uncertainty\_pct", r"CEO\_Pres\_Uncertainty\_pct", r"Analyst\_QA\_Uncertainty\_pct", r"Entire\_All\_Negative\_pct"],
-        "key_tails": ["two", "two", "two", "two"],
-        "fe_rows": [
-            ("CEO/Manager FE", ["Yes"] * 4),
-            ("Year FE", ["Yes"] * 4),
-        ],
-        "r2_label": "$R^2$",
-        "skip_adj_r2": True,
-    },
     # ── H1 family ──
     {
         "id": "H1",
@@ -62,7 +33,7 @@ SUITES = [
     {
         "id": "H1.1",
         "type": "moderation",
-        "dir": "h1_1_cash_tsimm/2026-03-27_094942",
+        "dir": "h1_1_cash_tsimm/2026-03-31_155414",
         "caption": "H1.1: Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
         "label": "tab:h1_1",
         "cols": 2,
@@ -86,7 +57,7 @@ SUITES = [
     {
         "id": "H1.1b",
         "type": "moderation",
-        "dir": "h1_1b_cash_tsimm_binary/2026-03-28_193207",
+        "dir": "h1_1b_cash_tsimm_binary/2026-03-31_155928",
         "caption": "H1.1b: Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
         "label": "tab:h1_1b",
         "cols": 2,
@@ -110,22 +81,35 @@ SUITES = [
     {
         "id": "H1.2",
         "type": "moderation",
-        "dir": "h1_2_cash_constraint/2026-03-27_094942",
+        "dir": "h1_2_cash_constraint/2026-03-31_133436",
         "caption": "H1.2: Financial Constraint--Moderated Speech Uncertainty and Cash Holdings (Three-Category)",
         "label": "tab:h1_2",
         "cols": 2,
+        "col_files": {
+            1: "regression_results_col3.txt",
+            2: "regression_results_col4.txt",
+        },
         "dvs": [
             ("CashHoldings", 2),
         ],
+        "base_iv": {
+            "files": {
+                1: "regression_results_col1.txt",
+                2: "regression_results_col2.txt",
+            },
+            "var": "Manager_QA_Unc_c",
+            "label": r"Manager\_QA\_Unc\_c",
+            "tail": "one_pos",
+        },
         "key_vars": [
-            "Manager_QA_Unc_c",
+            "MgrQAUnc_x_IG",
             "BelowIG",
             "Unrated",
             "MgrQAUnc_x_BelowIG",
             "MgrQAUnc_x_Unrated",
         ],
         "key_labels": [
-            r"Manager\_QA\_Unc\_c",
+            r"MgrQAUnc\_x\_IG",
             "BelowIG",
             "Unrated",
             r"MgrQAUnc\_x\_BelowIG",
@@ -163,39 +147,12 @@ SUITES = [
         "tail": "two",
         "hyp_dir": None,
     },
-    # ── H5 ──
+    # ── H5 (Wang 2020) ──
     {
         "id": "H5",
-        "dir": "h5_dispersion/2026-03-27_094943",
-        "caption": "H5: Speech Uncertainty and Post-Call Analyst Dispersion",
+        "dir": "h5b_wang_disp/2026-03-31_140307",
+        "caption": "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
         "label": "tab:h5",
-        "cols": 6,
-        "dvs": [
-            ("PostCallDispersion", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H5b ──
-    {
-        "id": "H5b",
-        "dir": "h5b_johnson_disp/2026-03-27_094956",
-        "caption": "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Johnson 2004)",
-        "label": "tab:h5b",
-        "cols": 12,
-        "dvs": [
-            ("JohnsonDISP2", 6),
-            (r"JohnsonDISP2\_lead", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H5b Wang ──
-    {
-        "id": "H5b-Wang",
-        "dir": "h5b_wang_disp/2026-03-27_095026",
-        "caption": "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
-        "label": "tab:h5b_wang",
         "cols": 12,
         "dvs": [
             ("WangDISP", 6),
@@ -269,35 +226,6 @@ SUITES = [
         "key_labels": [r"PRiskQ\_lag", r"PRiskQ\_lag2"],
         "key_tails": ["one_pos", "one_pos"],
     },
-    {
-        "id": "H11-Lead",
-        "type": "moderation",
-        "dir": "h11_prisk_uncertainty_lead/2026-03-27_095003",
-        "caption": "H11-Lead: Lead Political Risk and Language Uncertainty (Placebo)",
-        "label": "tab:h11_lead",
-        "cols": 8,
-        "col_files": {
-            1: "regression_results_Main_Manager_QA_Uncertainty_pct_lead1.txt",
-            2: "regression_results_Main_CEO_QA_Uncertainty_pct_lead1.txt",
-            3: "regression_results_Main_Manager_Pres_Uncertainty_pct_lead1.txt",
-            4: "regression_results_Main_CEO_Pres_Uncertainty_pct_lead1.txt",
-            5: "regression_results_Main_Manager_QA_Uncertainty_pct_lead2.txt",
-            6: "regression_results_Main_CEO_QA_Uncertainty_pct_lead2.txt",
-            7: "regression_results_Main_Manager_Pres_Uncertainty_pct_lead2.txt",
-            8: "regression_results_Main_CEO_Pres_Uncertainty_pct_lead2.txt",
-        },
-        "dvs": [
-            (r"PRiskQ\_lead", 4),
-            (r"PRiskQ\_lead2", 4),
-        ],
-        "col_dv_labels": [
-            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
-            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
-        ],
-        "key_vars": ["PRiskQ_lead", "PRiskQ_lead2"],
-        "key_labels": [r"PRiskQ\_lead", r"PRiskQ\_lead2"],
-        "key_tails": ["two", "two"],
-    },
     # ── H12 ──
     {
         "id": "H12",
@@ -330,29 +258,19 @@ SUITES = [
     {
         "id": "H13.1",
         "type": "moderation",
-        "dir": "h13_1_competition/2026-03-27_095014",
-        "caption": "H13.1: Product Market Competition--Moderated Speech Uncertainty and Capital Expenditure",
+        "dir": "h13_1_competition/2026-03-31_155548",
+        "caption": "H13.1: Product Similarity--Moderated Speech Uncertainty and Capital Expenditure",
         "label": "tab:h13_1",
-        "cols": 8,
+        "cols": 4,
         "col_files": {
             1: "regression_results_col1_CapexAt_tsimm.txt",
-            2: "regression_results_col2_CapexAt_lead_tsimm.txt",
-            3: "regression_results_col3_CapexAt_hhi.txt",
-            4: "regression_results_col4_CapexAt_lead_hhi.txt",
-            5: "regression_results_col5_CapexAt_tsimm.txt",
-            6: "regression_results_col6_CapexAt_lead_tsimm.txt",
-            7: "regression_results_col7_CapexAt_hhi.txt",
-            8: "regression_results_col8_CapexAt_lead_hhi.txt",
+            2: "regression_results_col3_CapexAt_tsimm.txt",
+            3: "regression_results_col2_CapexAt_lead_tsimm.txt",
+            4: "regression_results_col4_CapexAt_lead_tsimm.txt",
         },
         "dvs": [
-            ("TSIMM", 4),
-            ("HHI", 4),
-        ],
-        "col_dv_labels": [
-            "CapexAt", r"CapexAt\_lead",
-            "CapexAt", r"CapexAt\_lead",
-            "CapexAt", r"CapexAt\_lead",
-            "CapexAt", r"CapexAt\_lead",
+            ("CapexAt", 2),
+            (r"CapexAt\_lead", 2),
         ],
         "lagged_dv_var": "Lagged_DV",
         "lagged_dv_label": r"Lagged\_DV",
@@ -360,17 +278,13 @@ SUITES = [
             "Manager_QA_Unc_c",
             "z_log_tnic3tsimm",
             "MgrQAUnc_x_zlogTSIMM",
-            "z_log_tnic3hhi",
-            "MgrQAUnc_x_zlogHHI",
         ],
         "key_labels": [
             r"Manager\_QA\_Unc\_c",
             r"z\_log\_tnic3tsimm",
             r"MgrQAUnc\_x\_zlogTSIMM",
-            r"z\_log\_tnic3hhi",
-            r"MgrQAUnc\_x\_zlogHHI",
         ],
-        "key_tails": ["two", "two", "two", "two", "two"],
+        "key_tails": ["two", "two", "two"],
     },
     # ── H14 ──
     {
@@ -416,7 +330,7 @@ SUITES = [
     # ── H18 ──
     {
         "id": "H18",
-        "dir": "h18_cccl_received/2026-03-27_095021",
+        "dir": "h18_cccl_received/2026-03-31_151907",
         "caption": "H18: Speech Uncertainty and SEC Comment Letters",
         "label": "tab:h18",
         "cols": 6,
@@ -876,6 +790,37 @@ def generate_moderation_table(suite):
         lines.append(f" & {sub_labels} " + r"\\")
 
     lines.append(r"\midrule")
+
+    # Base IV row: unconditional IV from separate base-model files
+    base_iv = suite.get("base_iv")
+    if base_iv:
+        base_data = {}
+        for pos, fname in base_iv["files"].items():
+            fpath = suite_dir / fname
+            if fpath.exists():
+                results, *_ = parse_txt(fpath)
+                base_data[pos] = results
+        bvar = base_iv["var"]
+        blabel = base_iv["label"]
+        btail = base_iv.get("tail", "two")
+        coef_cells = []
+        se_cells = []
+        for c in range(1, n_cols + 1):
+            if c in base_data and bvar in base_data[c]:
+                beta, se, pval = base_data[c][bvar]
+                if btail == "one_pos":
+                    b_str, s_str = fmt_coef(beta, se, pval, "one", ">")
+                elif btail == "one_neg":
+                    b_str, s_str = fmt_coef(beta, se, pval, "one", "<")
+                else:
+                    b_str, s_str = fmt_coef(beta, se, pval, "two", None)
+                coef_cells.append(b_str)
+                se_cells.append(s_str)
+            else:
+                coef_cells.append("")
+                se_cells.append("")
+        lines.append(f"{blabel} & " + " & ".join(coef_cells) + r" \\")
+        lines.append(f" & " + " & ".join(se_cells) + r" \\")
 
     # Key variable rows (IV, moderator(s), interaction(s))
     for var, label, tail_type in zip(key_vars, key_labels, key_tails):
