@@ -133,6 +133,9 @@ COMPUSTAT_COLS = [
     "RDSales",  # xrdy / saley (annual Q4-only; missing xrd→0; nonpositive sales→NaN)
     # H17 extension (Repurchase Intensity — quarterly prstkcy / lagged atq)
     "RepurchaseIntensity",  # de-cumulated prstkcy / atq_{t-1}
+    # H19/H20 extension (Leary & Roberts 2010 financing classification)
+    "ExternalFunding",      # 1=external (debt or equity issuance >5%), 0=internal
+    "DebtChoice",           # 1=debt-only, 0=equity or dual (NaN if internal)
 ]
 
 REQUIRED_COMPUSTAT_COLS = [
@@ -174,6 +177,8 @@ REQUIRED_COMPUSTAT_COLS = [
     "intanq",  # Intangible Assets - Total (quarterly, for Intangibility ratio)
     # H17 extension (Repurchase Intensity)
     "prstkcy",  # Purchase of Common and Preferred Stock, YTD cumulative ($M)
+    # H19/H20 extension (Leary & Roberts 2010 financing classification)
+    "sstky",  # Sale of Common and Preferred Stock, YTD cumulative ($M)
 ]
 
 
@@ -1086,6 +1091,95 @@ def _compute_and_winsorize(
         ]
     )
 
+    # --- H19/H20 extension: Leary & Roberts (2010) financing classification ---
+    # Annual classification: debt issuance if balance-sheet change in total debt
+    # exceeds 5% of lagged assets; equity issuance if net stock issuance (sale
+    # minus purchase) exceeds 5% of lagged assets. Both are annual, using Q4 values.
+    #
+    # Debt: balance-sheet change approach — Δ(dlcq + dlttq)
+    # Equity: cash-flow-statement approach — (sstky - prstkcy) at Q4
+    # Threshold: 5% of lagged total assets (atq at Q4 of prior fiscal year)
+    #
+    # Classification (Table 3, p.341):
+    #   Internal = neither threshold met
+    #   Debt = debt only
+    #   Equity = equity only
+    #   Dual = both met → classified as equity per L&R convention
+
+    # Step 1: Total debt at Q4 (balance sheet level)
+    _both_debt_nan = comp["dlcq"].isna() & comp["dlttq"].isna()
+    comp["_total_debt_q"] = np.where(
+        _both_debt_nan, np.nan, comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)
+    )
+
+    # Step 2: Annual debt level (Q4) and lagged annual debt level (Q4 of t-1)
+    _debt_annual = _compute_annual_q4_variable(comp, "_total_debt_q", "_debt_annual")
+    _debt_annual_lag = _compute_annual_q4_variable_lag(
+        comp, "_total_debt_q", "_debt_annual_lag"
+    )
+
+    # Step 3: Annual equity issuance from cash flow statement (Q4 = full year)
+    _sstky_annual = _compute_annual_q4_variable(comp, "sstky", "_sstky_annual")
+    _prstkcy_annual = _compute_annual_q4_variable(comp, "prstkcy", "_prstkcy_annual")
+
+    # Both-NaN guard: if both sstky and prstkcy are NaN, net equity is NaN (not 0)
+    _both_eq_nan = pd.Series(_sstky_annual, index=comp.index).isna() & pd.Series(
+        _prstkcy_annual, index=comp.index
+    ).isna()
+    _net_equity_raw = np.where(
+        _both_eq_nan,
+        np.nan,
+        pd.Series(_sstky_annual, index=comp.index).fillna(0).values
+        - pd.Series(_prstkcy_annual, index=comp.index).fillna(0).values,
+    )
+
+    # Step 4: Compute ratios scaled by lagged total assets
+    # Reuse atq_annual_lag1 computed earlier (~line 956)
+    _lagged_at = pd.Series(atq_annual_lag1, index=comp.index)
+    _valid_denom = _lagged_at.notna() & (_lagged_at > 0)
+
+    _net_debt_ratio = np.where(
+        _valid_denom
+        & pd.Series(_debt_annual, index=comp.index).notna()
+        & pd.Series(_debt_annual_lag, index=comp.index).notna(),
+        (
+            pd.Series(_debt_annual, index=comp.index).values
+            - pd.Series(_debt_annual_lag, index=comp.index).values
+        )
+        / _lagged_at.values,
+        np.nan,
+    )
+    _net_equity_ratio = np.where(
+        _valid_denom & ~_both_eq_nan,
+        _net_equity_raw / _lagged_at.values,
+        np.nan,
+    )
+
+    # Step 5: Classification (5% threshold per Leary & Roberts 2010)
+    _LR_THRESHOLD = 0.05
+    _is_debt = pd.Series(_net_debt_ratio, index=comp.index) > _LR_THRESHOLD
+    _is_equity = pd.Series(_net_equity_ratio, index=comp.index) > _LR_THRESHOLD
+    _has_valid_class = (
+        pd.Series(_net_debt_ratio, index=comp.index).notna()
+        | pd.Series(_net_equity_ratio, index=comp.index).notna()
+    )
+
+    # ExternalFunding: 1 if debt or equity issuance event, 0 if internal
+    comp["ExternalFunding"] = np.where(
+        ~_has_valid_class, np.nan, np.where(_is_debt | _is_equity, 1.0, 0.0)
+    )
+
+    # DebtChoice: 1 if debt-only, 0 if equity or dual; NaN if internal
+    # Dual issuers (both thresholds met) classified as equity per L&R convention
+    comp["DebtChoice"] = np.where(
+        comp["ExternalFunding"] != 1.0,
+        np.nan,
+        np.where(_is_debt & ~_is_equity, 1.0, 0.0),
+    )
+
+    # Cleanup temp columns
+    comp = comp.drop(columns=["_total_debt_q"])
+
     # --- MINOR-9: Replace inf with NaN after ratio computations ---
     ratio_cols = [
         "BM",
@@ -1124,7 +1218,9 @@ def _compute_and_winsorize(
         "DividendPayer",
         "CashFlow",
         "SalesGrowth",
-        "fqtr",       # fiscal quarter identifier (not a variable to winsorize)
+        "fqtr",              # fiscal quarter identifier (not a variable to winsorize)
+        "ExternalFunding",   # binary classification (L&R 2010)
+        "DebtChoice",        # binary classification (L&R 2010)
     }
     winsorize_cols = [c for c in COMPUSTAT_COLS if c not in skip_winsorize]
     # Use fyearq as the year grouping column (integer fiscal year).

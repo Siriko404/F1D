@@ -4,7 +4,7 @@ Tier 2: Stage-specific module - Stage 4 of the pipeline.
 
 This module runs panel regressions and diagnostics.
 
-Active Modules (19 runners):
+Active Modules (22 runners):
     - run_h0_3_ceo_clarity_extended: Extended CEO Clarity robustness check
     - run_h1_cash_holdings: Cash Holdings hypothesis test
     - run_h1_1_cash_tsimm: Cash Holdings (Tsimm channel/moderation)
@@ -24,6 +24,10 @@ Active Modules (19 runners):
     - run_h16_rd_sales: R&D Investment Intensity hypothesis test
     - run_h17_repurchase_intensity: Repurchase Intensity hypothesis test
     - run_h18_cccl_received: CCCL Received hypothesis test
+    - run_h18b_cccl_logit: CCCL Logit robustness check (H18b)
+    - run_h21_sec_letters: SEC Comment Letter Count hypothesis test (H21)
+    - run_h19_external_funding: External vs Internal Funding hypothesis test (H19, Leary & Roberts 2010)
+    - run_h20_debt_choice: Debt vs Equity Choice hypothesis test (H20, Leary & Roberts 2010)
 
 Archived Modules (in _archived/):
     - run_h0_1_manager_clarity: Superseded by H0.2

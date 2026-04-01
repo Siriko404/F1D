@@ -1,623 +1,692 @@
-# Adversarial Audit: H5b-Wang Provenance Document
+================================================================================
+ADVERSARIAL AUDIT REPORT: H5 Provenance Document
+================================================================================
 
-**Audit Date**: 2026-03-30
-**Auditor**: Claude Opus 4.6 (hostile auditor mode)
-**Provenance Doc**: `docs/provenance/H5b-Wang.md`
-**Creation Prompt**: `docs/Prompts/Suite Provenance Doc.txt`
-**Runner**: `src/f1d/econometric/run_h5b_wang_disp.py`
-**Panel Builder**: `src/f1d/variables/build_h5b_wang_disp_panel.py`
+Auditor:       Claude (hostile auditor mode)
+Audit date:    2026-03-31
+Suite:         H5
+Provenance:    docs/provenance/H5.md
+Runner:        src/f1d/econometric/run_h5b_wang_disp.py
+Builder:       src/f1d/variables/build_h5b_wang_disp_panel.py
+Creation prompt: docs/Prompts/Suite Provenance Doc.txt
 
----
-
-## AUDIT SUMMARY
+================================================================================
+### AUDIT SUMMARY
+================================================================================
 
 | Category | Total Checks | Passed | Failed | Score |
-|----------|-------------|--------|--------|-------|
-| Structural Completeness (Phase 1) | 24 | 23 | 1 | 96% |
+|---|---|---|---|---|
+| Structural Completeness (Phase 1) | 28 | 28 | 0 | 100% |
 | Suite Identity (Phase 2) | 10 | 10 | 0 | 100% |
-| Model Specification (Phase 3) | 7 | 6 | 1 | 86% |
-| Spec Register (Phase 4) | 13 | 13 | 0 | 100% |
-| Sample Construction (Phase 5) | 5 | 5 | 0 | 100% |
-| Variable Dictionary (Phase 6) | 20 | 19 | 1 | 95% |
-| Pipeline/Outputs/Treatment (Phase 7) | 10 | 9 | 1 | 90% |
-| Table Generator Entry (Phase 8) | 5 | 4 | 1 | 80% |
+| Model Specification (Phase 3) | 7 | 7 | 0 | 100% |
+| Spec Register (Phase 4) | 5 | 5 | 0 | 100% |
+| Sample Construction (Phase 5) | 3 | 3 | 0 | 100% |
+| Variable Dictionary (Phase 6) | 21 | 21 | 0 | 100% |
+| Pipeline/Outputs/Treatment (Phase 7) | 9 | 7 | 2 | 78% |
+| Table Generator Entry (Phase 8) | 5 | 3 | 2 | 60% |
 | Model-Family Addendum (Phase 9) | 5 | 5 | 0 | 100% |
-| Quality Gates (Phase 10) | 10 | 10 | 0 | 100% |
-| Cross-Reference Consistency (Phase 11) | 8 | 8 | 0 | 100% |
-| **TOTAL** | **117** | **112** | **5** | **96%** |
+| Quality Gates (Phase 10) | 10 | 9 | 1 | 90% |
+| Cross-Reference Consistency (Phase 11) | 8 | 6 | 2 | 75% |
+| **TOTAL** | **111** | **104** | **7** | **94%** |
 
----
+================================================================================
+### VERDICT
+================================================================================
 
-## VERDICT
+**FAIL — INACCURATE**: Factual errors found. The provenance doc contains
+inaccuracies concentrated in Section I (generate_all_tables.py entry) — the
+`id`, `label`, `caption`, and `dir` fields are stale/wrong (the suite was
+renamed from "H5b-Wang" to "H5" and a new run updated the dir timestamp).
+Section F1 Step 7 carries forward the same stale id and a wrong line reference.
+These errors propagate into internal inconsistency between Section A (Suite ID:
+H5) and Section I (still citing "H5b-Wang"). All other 104 checks pass.
 
-**PASS WITH NOTES**: The provenance document is substantively accurate and complete. Five minor issues were found, none of which affect the accuracy of the model specification, variable construction, or reproducibility. All five issues are incorrect line-number references or trivial labeling matters.
+================================================================================
+### PHASE 1: STRUCTURAL COMPLETENESS
+================================================================================
 
----
-
-## PHASE 1: STRUCTURAL COMPLETENESS
-
-Read the creation prompt (`docs/Prompts/Suite Provenance Doc.txt`) to extract all required sections (A through L). Then checked each section in the provenance doc.
+Source of truth for required sections: docs/Prompts/Suite Provenance Doc.txt
+Sections A through L are all required.
 
 | Section | Required by Prompt | Present in Doc | Complete | Notes |
-|---------|-------------------|----------------|----------|-------|
-| A. Suite Identity | Yes | Yes | Yes | All YAML fields present |
-| B. Model Specification | Yes | Yes | Yes | Header present |
-| B1. Regression Equation | Yes | Yes | Yes | Full equation with lead variant documented |
-| B2. Dependent Variable(s) | Yes | Yes | Yes | Both WangDISP and WangDISP_lead listed |
-| B3. Independent Variable(s) | Yes | Yes | Yes | All 4 IVs documented |
-| B4. Control Variables | Yes | Yes | Yes | Both Base and Extended tables present |
-| B5. Fixed Effects | Yes | Yes | Yes | Full FE table with spec mapping |
-| B6. Standard Errors | Yes | Yes | Yes | Clustering documented |
-| B7. Hypothesis Test | Yes | Yes | Yes | Direction, p-value computation, thresholds |
-| C. Spec Register | Yes | Yes | Yes | 12 rows, one per column |
-| D. Sample Construction | Yes | Yes | Yes | |
-| D1. Population | Yes | Yes | Yes | Manifest, counts, year range |
+|---|---|---|---|---|
+| A. Suite Identity | Yes | Yes | Yes | YAML block present |
+| B. Model Specification | Yes | Yes | Yes | All subsections present |
+| B1. Regression Equation | Yes | Yes | Yes | Equation present with FE notation |
+| B2. Dependent Variable(s) | Yes | Yes | Yes | Table with 2 DVs |
+| B3. Independent Variable(s) | Yes | Yes | Yes | Table with 4 IVs |
+| B4. Control Variables | Yes | Yes | Yes | Base + Extended tables present |
+| B5. Fixed Effects | Yes | Yes | Yes | FE table with specs column |
+| B6. Standard Errors | Yes | Yes | Yes | cov_type and clustering documented |
+| B7. Hypothesis Test | Yes | Yes | Yes | Direction + p-value logic documented |
+| C. Spec Register | Yes | Yes | Yes | 12-row table |
+| D. Sample Construction | Yes | Yes | Yes | All 3 subsections present |
+| D1. Population | Yes | Yes | Yes | Starting dataset + totals |
 | D2. Exclusion Criteria | Yes | Yes | Yes | 4-step attrition cascade |
-| D3. Sample Counts per Spec | Yes | Yes | Yes | Per-col N with UNVERIFIED flags for cols 5-6/11-12 |
-| E. Variable Dictionary | Yes | Yes | Yes | 20 rows covering all variables |
-| F. Data Pipeline | Yes | Yes | Yes | |
-| F1. Dependency Chain | Yes | Yes | Yes | 7-step chain |
-| F2. Data Engines | Yes | Yes | Yes | 5 engines listed |
-| F3. Merge Operations | Yes | Yes | Yes | 17 merges documented |
-| G. Outputs | Yes | Yes | Yes | |
-| G1. Stage 3 Outputs | Yes | Yes | MINOR | Lists 3 files; panel builder does NOT produce a `report_step3_*.md` -- that file is absent from the list; however, the builder also does not generate one (no `.md` report), so the doc correctly omits it. PASS. |
-| G2. Stage 4 Outputs | Yes | Yes | Yes | 7 output types documented |
-| G3. Summary Statistics | Yes | Yes | Yes | 14 variables listed |
-| H. Outlier/Missing Treatment | Yes | Yes | Yes | Winsorization, missing policy, transformations |
-| I. generate_all_tables Entry | Yes | Yes | Yes | Full Python dict shown |
-| J. Reproduction Commands | Yes | Yes | Yes | 3 commands |
-| K. Model-Family Addendum | Yes | Yes | Yes | K1 filled, K2-K6 N/A |
-| L. Known Issues | Yes | Yes | Yes | 7 issues documented |
-
-**Phase 1 Result: 23 PASS, 1 MINOR NOTE (G1 stage 3 report file -- not a failure, just noting no .md report is generated by builder)**
-
-However, one structural item from the creation prompt (Section G) specifies `report_step3_{suite}.md` as an expected Stage 3 output. The builder code does NOT generate this file. The provenance doc correctly omits it. But the creation prompt's template listed it. This is not a failure of the provenance doc; the doc accurately reflects the code. Counting as PASS.
-
----
-
-## PHASE 2: FACTUAL ACCURACY -- SECTION A (Suite Identity)
-
-### A-1. Suite ID
-- **Doc claims**: `H5b-Wang`
-- **Verification**: Matches `generate_all_tables.py` entry `"id": "H5b-Wang"` at line 171. Runner docstring says "H5b Wang (2020)".
-- **Result**: PASS
-
-### A-2. Title
-- **Doc claims**: "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)"
-- **Verification**: Runner docstring line 4: `STAGE 4: Test H5b Wang (2020) Analyst Dispersion Hypothesis`. Caption in `generate_all_tables.py` line 173: `"H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)"`.
-- **Result**: PASS
-
-### A-3. Hypothesis
-- **Doc claims**: "Higher managerial uncertainty language during earnings calls leads to greater analyst forecast dispersion, measured as the price-scaled standard deviation of individual analyst EPS forecasts in the pre-announcement window."
-- **Verification**: Runner docstring line 32: `Hypothesis: One-tailed (beta > 0 -- higher uncertainty -> higher dispersion)`. The doc's hypothesis is a reasonable elaboration.
-- **Result**: PASS
-
-### A-4. Direction (tail test)
-- **Doc claims**: One-tailed (beta > 0)
-- **Verification**: Runner line 287: `p_one = p_two / 2 if (not np.isnan(p_two) and beta > 0) else (1 - p_two / 2 ...)`. Runner line 365: `print(f"Test:      One-tailed (beta > 0)")`.
-- **Result**: PASS
-
-### A-5. Model Family
-- **Doc claims**: PanelOLS
-- **Verification**: Runner line 50: `from linearmodels.panel import PanelOLS`. Lines 254 and 267 instantiate PanelOLS.
-- **Result**: PASS
-
-### A-6. Estimator
-- **Doc claims**: `linearmodels.panel.PanelOLS`
-- **Verification**: Import at line 50: `from linearmodels.panel import PanelOLS`.
-- **Result**: PASS
-
-### A-7. Unit of Observation
-- **Doc claims**: Call-level (individual earnings call)
-- **Verification**: Builder docstring line 9: "Unit of observation: individual earnings call (file_name)." Panel is built from manifest with one row per file_name.
-- **Result**: PASS
-
-### A-8. Panel Index
-- **Doc claims**: `(gvkey, cal_yr)` for Calendar Year FE specs; `(gvkey, cal_yr_qtr)` for Year-Quarter FE specs
-- **Verification**: Runner line 250: `df_panel = df_prepared.set_index(["gvkey", time_col])` where `time_col` is determined at line 242: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`.
-- **Result**: PASS
-
-### A-9. Columns (number of model specs)
-- **Doc claims**: 12
-- **Verification**: `MODEL_SPECS` list at lines 82-98 has exactly 12 entries (cols 1-12).
-- **Result**: PASS
-
-### A-10. Runner and Panel Builder paths
-- **Doc claims**: `src/f1d/econometric/run_h5b_wang_disp.py` and `src/f1d/variables/build_h5b_wang_disp_panel.py`
-- **Verification**: Both files exist on disk and were successfully read.
-- **Result**: PASS
-
-**Phase 2 Result: 10/10 PASS**
-
----
-
-## PHASE 3: FACTUAL ACCURACY -- SECTION B (Model Specification)
-
-### B1-CHECK: Regression Equation
-- **Doc claims**: `WangDISP_{i,t} = b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct + Controls + alpha_i + gamma_t + epsilon_{i,t}`
-- **Verification**: Runner line 239: `exog = KEY_IVS + all_controls`. KEY_IVS at lines 63-68 lists the 4 IVs. The formula construction at line 266 for firm FE: `f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`. For industry FE: PanelOLS called with `entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"]` (lines 254-262). The equation correctly represents both variants.
-- For lead specs, doc states DV is `WangDISP_lead` -- verified at MODEL_SPECS cols 7-12 (line 92-98).
-- **Result**: PASS
-
-### B2-CHECK: Dependent Variable(s)
-- **Doc claims**: WangDISP (contemporaneous) and WangDISP_lead (next fiscal quarter)
-- **Verification**: MODEL_SPECS shows `"dv": "WangDISP"` for cols 1-6 and `"dv": "WangDISP_lead"` for cols 7-12 (lines 84-98). Builder creates WangDISP_lead via fiscal quarter shifting in `create_lead_lag_variables()` (builder lines 169-300).
-- WangDISP formula: SD of latest analyst EPS forecasts in T-31..T-1 window, divided by prccq_lag (prior quarter price). Verified in `wang_disp.py` lines 138-255.
-- **Doc claims "prccq_prior"**: The code uses variable name `prccq_lag` (wang_disp.py line 129). The docstring at line 14 says "prccq_prior". The provenance doc's variable dictionary says "prccq lagged by one quarter" which is accurate. The formula description says "prccq_prior" aligning with the docstring, though the internal variable name is `prccq_lag`. This is acceptable -- the doc describes the economic concept, not the internal variable name.
-- **Result**: PASS
-
-### B3-CHECK: Independent Variable(s)
-- **Doc claims**: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
-- **Verification**: KEY_IVS at runner lines 63-68 exactly matches these 4 variables.
-- **Doc claims no centering/log/z-scoring**: Verified -- no transformation code found for IVs in the runner or linguistic engine beyond per-year 0%/99% winsorization.
-- **Result**: PASS
-
-### B4-CHECK: Control Variables
-- **Doc's Base Controls**: Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, WangDISP_lag
-- **Code BASE_CONTROLS** (lines 70-73): `["Size", "TobinsQ", "ROA", "BookLev", "CapexAt", "DividendPayer", "OCF_Volatility", "WangDISP_lag"]`
-- **Exact match**: PASS
-
-- **Doc's Extended Controls**: Base + SurpDec, loss_dummy, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct
-- **Code EXTENDED_CONTROLS** (lines 75-78): `BASE_CONTROLS + ["SurpDec", "loss_dummy", "Analyst_QA_Uncertainty_pct", "Entire_All_Negative_pct"]`
-- **Exact match**: PASS
-
-- **Doc claims WangDISP_lag is in BASE_CONTROLS and appears in all 12 columns**: Verified -- it is indeed in BASE_CONTROLS at line 73. Since all specs use either BASE or EXTENDED (which includes BASE), it appears in all 12 columns.
-- **Result**: PASS
-
-### B5-CHECK: Fixed Effects
-- **Doc claims**: Industry FE via ff12_code other_effects on odd cols; Firm FE via EntityEffects on even cols; cal_yr for cols 1-4, 7-10; cal_yr_qtr for cols 5-6, 11-12.
-- **Verification**: Runner line 242: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`. MODEL_SPECS: cols 1-4 have `fe` in `{industry, firm}` (cal_yr); cols 5-6 have `fe` in `{industry_yq, firm_yq}` (cal_yr_qtr); cols 7-10 have `fe` in `{industry, firm}` (cal_yr); cols 11-12 have `fe` in `{industry_yq, firm_yq}` (cal_yr_qtr).
-- **Doc's spec-to-FE mapping**: Correct.
-- **Doc claims line references "runner lines 242-250"**: Line 242 is time_col, line 250 is set_index. Accurate.
-- **Doc claims `cal_yr` from `start_date.dt.year` in panel_utils.py line 215**: Verified -- panel_utils.py line 215: `panel["cal_yr"] = dt.dt.year.astype("Int64")`.
-- **Doc claims `cal_yr_qtr` = `cal_yr * 10 + cal_qtr` at panel_utils.py line 217**: Verified -- panel_utils.py line 217: `panel["cal_yr_qtr"] = (panel["cal_yr"] * 10 + panel["cal_qtr"]).astype("Int64")`.
-- **Result**: PASS
-
-### B6-CHECK: Standard Errors and Clustering
-- **Doc claims**: `cov_type="clustered"`, `cluster_entity=True`
-- **Verification**: Runner line 263: `model = model_obj.fit(cov_type="clustered", cluster_entity=True)`. Runner line 268: `model = model_obj.fit(cov_type="clustered", cluster_entity=True)`.
-- **Doc claims line references "runner line 263 and 268"**: Verified.
-- **Result**: PASS
-
-### B7-CHECK: Hypothesis Test
-- **Doc claims**: One-tailed (beta > 0). `p_one = p_two / 2` if `beta > 0`, else `p_one = 1 - p_two / 2` (runner lines 287-288).
-- **Verification**: Runner line 287: `p_one = p_two / 2 if (not np.isnan(p_two) and beta > 0) else (1 - p_two / 2 if not np.isnan(p_two) else np.nan)`.
-- **Doc claims line 287-288**: The code is all on line 287 (one line). The doc says "lines 287-288" suggesting it spans two lines. Looking at the code, it is a single line 287. This is a very minor inaccuracy in line reference.
-- **FAIL (MINOR)**: The doc says "runner lines 287-288" but the p_one computation is entirely on line 287. Line 288 is `meta[f"{iv}_beta"] = beta`.
-- **Doc claims significance thresholds at line 291**: Verified -- line 291: `stars = "***" if p_one < 0.01 else "**" if p_one < 0.05 else "*" if p_one < 0.10 else ""`.
-- **Result**: FAIL (minor -- line reference off by one)
-
-**Phase 3 Result: 6 PASS, 1 FAIL (minor line reference)**
-
----
-
-## PHASE 4: FACTUAL ACCURACY -- SECTION C (Spec Register)
-
-Verified each of the 12 rows against MODEL_SPECS (runner lines 82-98):
-
-| Col | Doc DV | Code DV | Match | Doc Entity FE | Code Entity FE | Match | Doc Time FE | Code Time FE | Match | Doc Controls | Code Controls | Match |
-|-----|--------|---------|-------|---------------|----------------|-------|-------------|--------------|-------|--------------|---------------|-------|
-| 1 | WangDISP | WangDISP | Y | Industry (FF12) | industry | Y | Calendar Year | cal_yr | Y | Base | base | Y |
-| 2 | WangDISP | WangDISP | Y | Firm | firm | Y | Calendar Year | cal_yr | Y | Base | base | Y |
-| 3 | WangDISP | WangDISP | Y | Industry (FF12) | industry | Y | Calendar Year | cal_yr | Y | Extended | extended | Y |
-| 4 | WangDISP | WangDISP | Y | Firm | firm | Y | Calendar Year | cal_yr | Y | Extended | extended | Y |
-| 5 | WangDISP | WangDISP | Y | Industry (FF12) | industry_yq | Y | Calendar Year-Quarter | cal_yr_qtr | Y | Extended | extended | Y |
-| 6 | WangDISP | WangDISP | Y | Firm | firm_yq | Y | Calendar Year-Quarter | cal_yr_qtr | Y | Extended | extended | Y |
-| 7 | WangDISP_lead | WangDISP_lead | Y | Industry (FF12) | industry | Y | Calendar Year | cal_yr | Y | Base | base | Y |
-| 8 | WangDISP_lead | WangDISP_lead | Y | Firm | firm | Y | Calendar Year | cal_yr | Y | Base | base | Y |
-| 9 | WangDISP_lead | WangDISP_lead | Y | Industry (FF12) | industry | Y | Calendar Year | cal_yr | Y | Extended | extended | Y |
-| 10 | WangDISP_lead | WangDISP_lead | Y | Firm | firm | Y | Calendar Year | cal_yr | Y | Extended | extended | Y |
-| 11 | WangDISP_lead | WangDISP_lead | Y | Industry (FF12) | industry_yq | Y | Calendar Year-Quarter | cal_yr_qtr | Y | Extended | extended | Y |
-| 12 | WangDISP_lead | WangDISP_lead | Y | Firm | firm_yq | Y | Calendar Year-Quarter | cal_yr_qtr | Y | Extended | extended | Y |
-
-- **Row count**: 12 rows in doc, 12 entries in MODEL_SPECS. Match.
-- **Doc claims source "runner lines 82-98"**: Verified.
-- **No specs in code are missing from the table**: Verified.
-- **No specs in the table are absent from the code**: Verified.
-
-**Phase 4 Result: 13/13 PASS**
-
----
-
-## PHASE 5: FACTUAL ACCURACY -- SECTION D (Sample Construction)
-
-### D1-CHECK: Population
-- **Doc claims**: Starting dataset `master_sample_manifest.parquet`, 112,968 total calls, year range 2002-2018.
-- **Verification**: Consistent with project scope (memory: `project_thesis_scope.md` -- 112,968 calls, 2,429 firms, 2002-2018). Runner loads manifest via `load_panel()` at line 138.
-- **Result**: PASS
-
-### D2-CHECK: Exclusion Criteria
-- **Doc claims attrition cascade**:
-  1. Full panel (manifest): 112,968
-  2. Main sample (excl FF12=8 Utility, FF12=11 Finance): 88,205 (dropped 24,763)
-  3. WangDISP non-null: 37,446 (dropped 50,759)
-  4. Complete case + min 5 calls/firm (col 1, base controls): 17,089 (dropped 20,357)
-
-- **Verification of filter order in runner**:
-  - Runner line 172: `panel[~panel["ff12_code"].isin([8, 11])]` -- Main sample filter. Matches step 2.
-  - Runner line 198: `df[df[dv].notna()]` -- DV non-null filter. Matches step 3.
-  - Runner lines 201-203: Complete case filter. Matches step 4.
-  - Runner lines 205-207: Min 5 calls/firm filter. Matches step 4 (combined).
-  - The doc combines complete-case and min-calls into one step, which matches how the runner reports attrition at lines 414-420 (4 stages).
-- **Result**: PASS
-
-### D3-CHECK: Sample Counts per Specification
-- **Doc provides counts for cols 1-4, 7-10 from 8-column run (2026-03-27)**: Plausible counts given the attrition cascade.
-- **Doc marks cols 5-6, 11-12 as [UNVERIFIED] with clear explanation**: The 12-column runner was coded after the last run. The doc explains this at the bottom of D3 and in L1.
-- **Doc claims expected N is the same as cols 3-4 and 9-10**: Logically correct since `cal_yr_qtr` is derived from `start_date` which is always non-null (panel_utils.py line 214 uses `errors="coerce"` but start_date is a manifest field that should always be populated).
-- **Result**: PASS (UNVERIFIED items are properly flagged)
-
-**Phase 5 Result: 5/5 PASS**
-
----
-
-## PHASE 6: FACTUAL ACCURACY -- SECTION E (Variable Dictionary)
-
-Checked each of the 20 variables in the dictionary against code:
-
-### DVs
-
-**WangDISP**:
-- **Name**: `WangDISP` -- matches code (`wang_disp.py` line 246, builder output column).
-- **Formula**: "SD(latest analyst EPS forecasts in [T-31, T-1]) / prccq_prior; min 2 analysts; FPEDATS within 120 days" -- Code uses `prccq_lag` internally (wang_disp.py line 129), but the economic concept is "prior quarter-end price". The wang_disp.py docstring at line 14 says "prccq_prior". Formula description is accurate.
-- **Source**: IbesDetailEngine + CompustatEngine -- Verified (wang_disp.py line 36-37 imports both).
-- **Winsorized**: "1%/99% pooled (wang_disp.py lines 85-89)" -- Verified: lines 84-89 show pooled 1%/99% winsorization.
-- **Timing**: Contemporaneous -- Correct.
-- **Result**: PASS
-
-**WangDISP_lead**:
-- **Name**: `WangDISP_lead` -- matches code (builder line 263).
-- **Formula**: "WangDISP from next consecutive fiscal quarter for same gvkey; validated via fiscal_qtr_id consecutive check" -- Verified in builder lines 250-265.
-- **Winsorized**: "Same as WangDISP (applied before shifting)" -- Correct; winsorization happens in WangDispBuilder before the builder creates lead/lag.
-- **Result**: PASS
-
-**WangDISP_lag**:
-- **Name**: `WangDISP_lag` -- matches code (builder line 282).
-- **Type**: Lagged_DV -- Correct; it is in BASE_CONTROLS.
-- **Formula**: Same pattern as lead but backward. Verified in builder lines 270-284.
-- **Result**: PASS
-
-### IVs
-
-**CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct**:
-- **Names**: All 4 match KEY_IVS at runner lines 63-68.
-- **Formula**: "(uncertainty word count / total word count) * 100" -- These are Stage 2 linguistic percentage variables loaded via LinguisticEngine.
-- **Source**: LinguisticEngine -- Verified.
-- **Winsorized**: "0%/99% per-year upper-only" -- Verified in `_linguistic_engine.py` line 255-258: `winsorize_by_year(..., lower=0.0, upper=0.99, min_obs=10)`.
-- **Result**: PASS (all 4)
-
-### Base Controls
-
-**Size**: `ln(atq), only for atq > 0` -- Verified: `_compustat_engine.py` line 938: `comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. PASS.
-
-**TobinsQ**: `(cshoq * prccq + dlcq + dlttq) / atq; dlcq/dlttq clipped >= 0 and filled 0` -- Verified: lines 982-991. `debt_c = comp["dlcq"].clip(lower=0).fillna(0)`, `debt_t = comp["dlttq"].clip(lower=0).fillna(0)`, `comp["TobinsQ"] = (mktcap + debt_book) / comp["atq"]`. PASS.
-
-**ROA**: `iby_annual (Q4) / avg(atq_t, atq_{t-1}); avg_assets > 0` -- Verified: lines 958-964. Uses `_compute_annual_q4_variable(comp, "iby", ...)` and `avg_assets`. PASS.
-
-**BookLev**: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` -- Verified: line 943: `comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`. PASS.
-
-**CapexAt**: `capxy_annual (Q4-only, joined to all quarters) / atq_lag_annual; atq_lag > 0` -- Verified: lines 994-998. Uses `_compute_annual_q4_variable(comp, "capxy", ...)` and `atq_annual_lag1`. PASS.
-
-**DividendPayer**: `1 if dvy_annual (Q4-only, joined to all quarters) > 0, else 0` -- Verified: lines 1002-1007. PASS.
-
-**OCF_Volatility**: `Rolling 5-year std (min 3 years, 1826-day window) of oancfy / atq_{t-1} per gvkey; uses last Q4 obs per fiscal year` -- Verified: `_compute_ocf_volatility()` at lines 303-336. PASS.
-
-### Extended Controls
-
-**SurpDec**: `(ACTUAL - MEANEST) ranked into -5..+5 scale within calendar quarter; merge_asof backward matching, 120-day tolerance` -- Verified in `earnings_surprise.py` lines 64-149. The builder loads IBES via IbesEngine, computes surprise_raw = ACTUAL - MEANEST, then ranks within `call_quarter` (calendar quarter from start_date). The doc says "within calendar quarter" which is correct (line 133: `manifest_surp["call_quarter"] = manifest_surp["start_date"].dt.to_period("Q")`). PASS.
-
-**loss_dummy**: `1 if ibq < 0, else 0; merge_asof backward to call date` -- The doc claims source is CompustatEngine: ibq. Verified that LossDummyBuilder exists and uses CompustatEngine. PASS.
-
-**Analyst_QA_Uncertainty_pct**: Same pattern as IVs. Source is LinguisticEngine. Winsorized 0%/99% per-year upper-only. PASS.
-
-**Entire_All_Negative_pct**: Same pattern. Source is LinguisticEngine. PASS.
-
-### FE Columns
-
-**gvkey**: Firm identifier from Manifest. PASS.
-**ff12_code**: Fama-French 12-industry code from CompustatEngine. PASS.
-**cal_yr**: `start_date.dt.year` from panel_utils.py. PASS.
-**cal_yr_qtr**: `cal_yr * 10 + start_date.dt.quarter` from panel_utils.py. PASS.
-
-### Completeness Check
-
-- **All variables in MODEL_SPECS DVs**: WangDISP, WangDISP_lead -- both in dictionary. PASS.
-- **All KEY_IVS**: All 4 in dictionary. PASS.
-- **All BASE_CONTROLS**: All 8 in dictionary. PASS.
-- **All EXTENDED_CONTROLS**: All 12 in dictionary (8 base + 4 extended). PASS.
-- **FE columns** (gvkey, ff12_code, cal_yr, cal_yr_qtr): All 4 in dictionary. PASS.
-- **Missing from dictionary?**: `fyearq_int` is referenced in `prepare_regression_data()` at runner line 186 as a required column but is NOT in the variable dictionary. However, the provenance doc's Known Issue #6 explains that `fyearq_int` serves as a complete-case filter column, not a regression variable. It is debatable whether it should be in the dictionary. Since it is not used in the regression equation itself (not in KEY_IVS, controls, or FE), omitting it from the variable dictionary is defensible but not ideal.
-- **FAIL (VERY MINOR)**: `fyearq_int` is used as a required column in `prepare_regression_data()` (line 186) and thus affects sample size, but it is not in the variable dictionary. The doc addresses this in Known Issue #6 but does not add it to the dictionary.
-
-**Phase 6 Result: 19 PASS, 1 FAIL (very minor -- fyearq_int not in dictionary despite being a required column for complete-case filtering)**
-
----
-
-## PHASE 7: FACTUAL ACCURACY -- SECTIONS F, G, H
-
-### F-CHECK: Data Pipeline
-
-**F1. Dependency Chain**:
-- 7-step chain is complete and accurate.
-- Step 1 (Raw inputs): Lists IBES Detail, CCM, Compustat, manifest, Stage 2 linguistic files. All verified.
-- Step 2 (Engines): Lists IbesDetailEngine, CompustatEngine, LinguisticEngine, IbesEngine (Summary). All verified.
-- Step 3 (Panel builder): Describes merge sequence, assign_industry_sample, attach_fyearq, create_lead_lag_variables. Verified in builder code.
-- Step 4 (Runner loading): Describes cal_yr_qtr construction and panel index setting. Verified.
-- Step 5 (Sample filtering): Describes FF12 exclusion, inf replacement, DV filter, complete case, min calls. Matches runner's `filter_main_sample()` and `prepare_regression_data()`.
-- Step 6 (Regression): Describes PanelOLS for 12 specs with correct FE and clustering. Verified.
-- Step 7 (Table generation): Claims entry at "line 195" of generate_all_tables.py. **FAIL**: The actual `"id": "H5b-Wang"` entry starts at line 171 (the `{` opening brace is at line 170, `"id"` at line 171). The doc says "line 195" which is incorrect.
-- **Result**: PASS for pipeline logic, FAIL for line reference
-
-**F2. Data Engines Used**:
-- 5 engines listed. All verified as used by this suite. PASS.
-
-**F3. Merge Operations**:
-- 17 merges documented (16 builder-level left joins on file_name + 1 lead_lag merge on gvkey/fiscal_qtr_id).
-- Verified each merge type as "left" in builder code (line 146).
-- Doc claims zero row-count change assertions at "builder lines 148-150": Verified -- lines 148-150 contain the row-count check.
-- Doc claims lead/lag merge validates row count at "line 294-295": Verified -- builder lines 294-295.
-- **Result**: PASS
-
-### G-CHECK: Outputs
-
-**G1. Stage 3 Outputs**:
-- Panel parquet: `h5b_wang_disp_panel.parquet` -- Verified at builder line 306.
-- `summary_stats.csv` -- Verified at builder line 311.
-- `run_manifest.json` -- Verified at builder line 314 (generate_manifest call).
-- Output directory pattern `outputs/variables/h5b_wang_disp/{timestamp}/` -- Verified at builder line 338.
-- **Result**: PASS
-
-**G2. Stage 4 Outputs**:
-- `regression_results_col{1-12}.txt` -- Verified at runner line 318 (`f"regression_results_col{col_num}.txt"`).
-- `model_diagnostics.csv` -- Verified at runner line 336.
-- `summary_stats.csv` and `summary_stats.tex` -- Verified at runner lines 385-386 (make_summary_stats_table writes both).
-- `sample_attrition.csv` and `sample_attrition.tex` -- Verified at runner line 420 (generate_attrition_table).
-- `run_manifest.json` -- Verified at runner lines 422-427.
-- Output directory pattern `outputs/econometric/h5b_wang_disp/{timestamp}/` -- Verified at runner line 355.
-- **Result**: PASS
-
-**G3. Summary Statistics**:
-- Doc lists 14 variables matching SUMMARY_STATS_VARS at runner lines 101-116.
-- Verified each variable name and label against the code. All match.
-- **Result**: PASS
-
-### H-CHECK: Outlier/Missing Treatment
-
-**H1. Winsorization**:
-- Compustat controls at 1%/99% per fiscal year: Verified in `_compustat_engine.py` lines 1130-1136 (winsorizes by `fyearq`). The doc says "1%/99% per fiscal year" which is correct.
-- Linguistic IVs at 0%/99% per calendar year upper-only: Verified in `_linguistic_engine.py` lines 255-258.
-- WangDISP at 1%/99% pooled: Verified in `wang_disp.py` lines 84-89.
-- SurpDec not winsorized: Correct (discrete ranked variable).
-- DividendPayer exempt: Correct (binary).
-- loss_dummy exempt: Correct (binary).
-- **Result**: PASS
-
-**H2. Missing Data Policy**:
-- Complete-case deletion: Verified at runner lines 201-203.
-- Inf/-Inf replaced with NaN: Verified at runner line 195.
-- WangDISP requires >= 2 analysts and valid prccq_prior > 0: Verified in wang_disp.py (NUMEST_MIN = 2 at line 48; prccq_lag > 0 check at line 245).
-- **Result**: PASS
-
-**H3. Transformations**:
-- Size = ln(atq): Verified.
-- No other transformations: Verified -- no log/z-score/centering found for other variables.
-- **Result**: PASS
-
-**Phase 7 Result: 9 PASS, 1 FAIL (line reference for generate_all_tables entry -- doc says line 195, actual is line 171)**
-
----
-
-## PHASE 8: FACTUAL ACCURACY -- SECTION I (Table Generator Entry)
-
-- **Doc's entry**:
-  ```python
-  {
-      "id": "H5b-Wang",
-      "dir": "h5b_wang_disp/2026-03-27_095026",
-      "caption": "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
-      "label": "tab:h5b_wang",
-      "cols": 12,
-      "dvs": [("WangDISP", 6), (r"WangDISP\_lead", 6)],
-      "tail": "one",
-      "hyp_dir": ">",
-  }
-  ```
-
-- **Actual code** (generate_all_tables.py lines 170-182):
-  ```python
-  {
-      "id": "H5b-Wang",
-      "dir": "h5b_wang_disp/2026-03-27_095026",
-      "caption": "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
-      "label": "tab:h5b_wang",
-      "cols": 12,
-      "dvs": [("WangDISP", 6), (r"WangDISP\_lead", 6)],
-      "tail": "one",
-      "hyp_dir": ">",
-  }
-  ```
-
-### Field-by-field verification:
-- `"id"`: "H5b-Wang" -- **PASS**
-- `"dir"`: "h5b_wang_disp/2026-03-27_095026" -- **PASS** (matches code)
-- `"caption"`: matches -- **PASS**
-- `"label"`: "tab:h5b_wang" -- **PASS**
-- `"cols"`: 12 -- **PASS** (matches `len(MODEL_SPECS)` = 12)
-- `"dvs"`: `[("WangDISP", 6), ("WangDISP\_lead", 6)]` -- **PASS** (6 contemporaneous + 6 lead)
-- `"tail"`: "one" -- **PASS** (matches runner one-tailed test)
-- `"hyp_dir"`: ">" -- **PASS** (matches runner beta > 0 test)
-- No `key_vars` specified -- **PASS** (standard 4-IV suite, none needed)
-
-### Line reference:
-- **Doc claims "lines 193-206"**: The actual entry spans lines 170-182 in generate_all_tables.py. The H5b-Wang `"id"` is at line 171, closing `}` at line 182.
-- **FAIL**: Line reference is wrong. Doc says 193-206, actual is 170-182.
-
-**Phase 8 Result: 4 PASS, 1 FAIL (incorrect line reference)**
-
----
-
-## PHASE 9: FACTUAL ACCURACY -- SECTION K (Model-Family Addendum)
-
-### K1. PanelOLS Specifics (the correct family)
-
-**Entity effects -- Industry FE (odd columns)**:
-- Doc claims: `entity_effects=False`, `other_effects=df_panel["ff12_code"]` (runner line 259)
-- Verification: Lines 257-259: `entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"]`. PASS.
-
-**Entity effects -- Firm FE (even columns)**:
-- Doc claims: `EntityEffects` in formula (runner line 267)
-- Verification: Line 266: `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`. PASS.
-
-**Time effects**:
-- Doc claims: `time_effects=True` with panel index `(gvkey, cal_yr)` for cols 1-4, 7-10; `(gvkey, cal_yr_qtr)` for cols 5-6, 11-12 (runner line 250).
-- Verification: Line 250: `df_panel = df_prepared.set_index(["gvkey", time_col])`. PASS.
-
-**drop_absorbed**:
-- Doc claims: `True` for all specs (runner lines 261, 267).
-- Verification: Line 260: `drop_absorbed=True` (industry). Line 267: `PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)` (firm). PASS.
-
-**check_rank**:
-- Doc claims: `False` for industry FE specs only (runner line 262); not set for firm FE specs.
-- Verification: Line 261: `check_rank=False` (only in industry block). Firm block uses `from_formula` which does not pass check_rank (default True). PASS.
-
-**Singleton handling**:
-- Doc claims: linearmodels default (no explicit singleton dropping). Correct -- no explicit code for singletons found. PASS.
-
-### K2-K6: All marked N/A
-- Correct -- this suite uses PanelOLS only. PASS.
-
-**Phase 9 Result: 5/5 PASS**
-
----
-
-## PHASE 10: QUALITY GATE CHECKLIST
+| D3. Sample Counts per Spec | Yes | Yes | Yes | Table with UNVERIFIED notes for YQ specs |
+| E. Variable Dictionary | Yes | Yes | Yes | 21 variables; all types covered |
+| F. Data Pipeline | Yes | Yes | Yes | All 3 subsections present |
+| F1. Dependency Chain | Yes | Yes | Yes | 7-step numbered list |
+| F2. Data Engines | Yes | Yes | Yes | 5 engines documented |
+| F3. Merge Operations | Yes | Yes | Yes | 17-row merge table |
+| G. Outputs | Yes | Yes | Yes | All 3 subsections present |
+| G1. Stage 3 Outputs | Yes | Yes | Yes | 3 files listed |
+| G2. Stage 4 Outputs | Yes | Yes | Yes | 7 files listed |
+| G3. Summary Statistics | Yes | Yes | Yes | 14-variable table |
+| H. Outlier/Missing Treatment | Yes | Yes | Yes | H1-H3 subsections present |
+| I. generate_all_tables Entry | Yes | Yes | Partial | Fields present but id/label/caption/dir are stale |
+| J. Reproduction Commands | Yes | Yes | Yes | 3 commands present |
+| K. Model-Family Addendum | Yes | Yes | Yes | K1 filled; K2-K6 marked N/A |
+| L. Known Issues | Yes | Yes | Yes | 7 numbered issues |
+
+PHASE 1 RESULT: All 28 structural checks PASS. Content accuracy issues
+are addressed in subsequent phases.
+
+================================================================================
+### PHASE 2: SUITE IDENTITY (Section A)
+================================================================================
+
+**A-1. Suite ID**
+- Provenance doc: `H5`
+- Expected: H5 (this is the SUITE_ID input)
+- RESULT: PASS
+
+**A-2. Title**
+- Provenance doc: "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)"
+- generate_all_tables.py line 154: `"caption": "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)"`
+- Runner docstring (line 4): "STAGE 4: Test H5b Wang (2020) Analyst Dispersion Hypothesis" — the runner still uses internal "H5b" label, but the official suite-level title matches generate_all_tables.py.
+- RESULT: PASS
+
+**A-3. Hypothesis**
+- Provenance doc: "Higher managerial uncertainty language during earnings calls leads to greater analyst forecast dispersion, measured as the price-scaled standard deviation of individual analyst EPS forecasts in the pre-announcement window."
+- Runner docstring (line 34): "Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion)."
+- Provenance doc hypothesis is a full prose expansion; consistent with runner intent.
+- RESULT: PASS
+
+**A-4. Direction (tail test)**
+- Provenance doc: "One-tailed (beta > 0)"
+- Runner line 35: `"Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion)."`
+- Runner line 364: `print(f"Test: One-tailed (beta > 0)")`
+- Runner line 287: `p_one = p_two / 2 if (not np.isnan(p_two) and beta > 0) else (1 - p_two / 2 ...)`
+- RESULT: PASS
+
+**A-5. Model Family**
+- Provenance doc: "PanelOLS"
+- Runner line 50: `from linearmodels.panel import PanelOLS`
+- Runner lines 254, 267: PanelOLS instantiated both directly and via from_formula
+- RESULT: PASS
+
+**A-6. Estimator**
+- Provenance doc: "linearmodels.panel.PanelOLS"
+- Runner import (line 50): `from linearmodels.panel import PanelOLS` — exact module path confirmed
+- RESULT: PASS
+
+**A-7. Unit of Observation**
+- Provenance doc: "Call-level (individual earnings call)"
+- Builder docstring (line 9): "Unit of observation: individual earnings call (file_name)."
+- RESULT: PASS
+
+**A-8. Panel Index**
+- Provenance doc: "(gvkey, cal_yr) for Calendar Year FE specs; (gvkey, cal_yr_qtr) for Year-Quarter FE specs"
+- Runner line 250: `df_panel = df_prepared.set_index(["gvkey", time_col])`
+- Runner line 242: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`
+- The dual index claim is correct.
+- RESULT: PASS
+
+**A-9. Columns (number of model specs)**
+- Provenance doc: "12"
+- Runner MODEL_SPECS (lines 82-98): 12 entries, cols 1-12
+- RESULT: PASS
+
+**A-10. Runner and Panel Builder paths**
+- Provenance doc runner: `src/f1d/econometric/run_h5b_wang_disp.py`
+- Provenance doc builder: `src/f1d/variables/build_h5b_wang_disp_panel.py`
+- Both files verified to exist on disk.
+- RESULT: PASS
+
+**PHASE 2 RESULT: 10/10 PASS**
+
+================================================================================
+### PHASE 3: MODEL SPECIFICATION (Section B)
+================================================================================
+
+**B1-CHECK: Regression Equation**
+- Provenance doc equation:
+  `WangDISP_{i,t} = b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct + Controls + alpha_i + gamma_t + epsilon_{i,t}`
+- Runner KEY_IVS (lines 63-68): `["CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct", "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct"]`
+- Runner formula (line 266): `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` where exog = KEY_IVS + all_controls
+- Equation correctly shows 4 IVs + Controls + entity FE (alpha_i) + time FE (gamma_t). No interaction terms. No centering.
+- RESULT: PASS
+
+**B2-CHECK: Dependent Variable(s)**
+- Provenance doc: WangDISP (contemporaneous), WangDISP_lead (next quarter)
+- Runner MODEL_SPECS: DVs are "WangDISP" (cols 1-6) and "WangDISP_lead" (cols 7-12) — exact column names match.
+- WangDISP formula: "SD(latest analyst EPS forecasts in [T-31, T-1]) / prccq_prior; min 2 analysts; FPEDATS within 120 days" — verified against wang_disp.py structure.
+- WangDISP_lead: "next consecutive fiscal quarter for same gvkey; validated via fiscal_qtr_id consecutive check" — VERIFIED: builder lines 251-265 use shift(-1) then validate with expected_next comparison.
+- RESULT: PASS
+
+**B3-CHECK: Independent Variable(s)**
+- Provenance doc: 4 IVs with exact names matching runner KEY_IVS.
+- "No centering, log-transform, or z-scoring is applied to IVs" — runner does not apply any such transformations before regression; consistent.
+- RESULT: PASS
+
+**B4-CHECK: Control Variables**
+- Runner BASE_CONTROLS (lines 70-73): `["Size", "TobinsQ", "ROA", "BookLev", "CapexAt", "DividendPayer", "OCF_Volatility", "WangDISP_lag"]` — 8 variables
+- Provenance doc Base Controls table: same 8 variables. EXACT MATCH.
+- Runner EXTENDED_CONTROLS (lines 75-78): BASE_CONTROLS + `["SurpDec", "loss_dummy", "Analyst_QA_Uncertainty_pct", "Entire_All_Negative_pct"]` — 4 additional
+- Provenance doc Extended Controls: same 4 additional variables. EXACT MATCH.
+- WangDISP_lag documented as lagged DV, included in BASE_CONTROLS — confirmed by runner line 72.
+- RESULT: PASS
+
+**B5-CHECK: Fixed Effects**
+- Provenance doc: Industry (odd cols) via `other_effects=ff12_code`; Firm (even cols) via `EntityEffects`; cal_yr for cols 1-4, 7-10; cal_yr_qtr for cols 5-6, 11-12.
+- Runner line 242: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"` — MATCHES
+- Runner lines 253-262: industry FE uses `entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"]` — MATCHES
+- Runner lines 265-268: firm FE uses `EntityEffects + TimeEffects` in formula — MATCHES
+- panel_utils.py (confirmed at offset 200-218): cal_yr = dt.dt.year (line 215), cal_yr_qtr = cal_yr * 10 + cal_qtr where cal_qtr = dt.dt.quarter (line 217) — MATCHES doc's formula and line cites.
+- RESULT: PASS
+
+**B6-CHECK: Standard Errors**
+- Provenance doc: `cov_type="clustered"`, `cluster_entity=True`
+- Runner line 263: `model_obj.fit(cov_type="clustered", cluster_entity=True)` — industry branch
+- Runner line 268: `model_obj.fit(cov_type="clustered", cluster_entity=True)` — firm branch
+- RESULT: PASS
+
+**B7-CHECK: Hypothesis Test**
+- Provenance doc: "p_one = p_two / 2 if beta > 0, else p_one = 1 - p_two / 2 (runner line 287)"
+- Runner line 287: `p_one = p_two / 2 if (not np.isnan(p_two) and beta > 0) else (1 - p_two / 2 if not np.isnan(p_two) else np.nan)` — EXACT MATCH
+- Stars (line 291): `"***" if p_one < 0.01 else "**" if p_one < 0.05 else "*" if p_one < 0.10 else ""` — MATCHES doc's stated thresholds
+- RESULT: PASS
+
+**PHASE 3 RESULT: 7/7 PASS**
+
+================================================================================
+### PHASE 4: SPEC REGISTER (Section C)
+================================================================================
+
+Provenance doc claims: 12-row spec register sourced from "MODEL_SPECS list, runner lines 82-98".
+
+**Count check:**
+Runner MODEL_SPECS (lines 82-98): 12 entries (cols 1-12). Provenance doc: 12 rows. MATCHES.
+
+**Per-row verification against runner MODEL_SPECS:**
+
+| Col (doc) | DV (doc) | Entity FE (doc) | Time FE (doc) | Controls (doc) | Runner CODE | Match? |
+|---|---|---|---|---|---|---|
+| 1 | WangDISP | Industry (FF12) | Calendar Year | Base | col:1, dv:"WangDISP", fe:"industry", controls:"base" | PASS |
+| 2 | WangDISP | Firm | Calendar Year | Base | col:2, dv:"WangDISP", fe:"firm", controls:"base" | PASS |
+| 3 | WangDISP | Industry (FF12) | Calendar Year | Extended | col:3, dv:"WangDISP", fe:"industry", controls:"extended" | PASS |
+| 4 | WangDISP | Firm | Calendar Year | Extended | col:4, dv:"WangDISP", fe:"firm", controls:"extended" | PASS |
+| 5 | WangDISP | Industry (FF12) | Calendar Year-Quarter | Extended | col:5, dv:"WangDISP", fe:"industry_yq", controls:"extended" | PASS |
+| 6 | WangDISP | Firm | Calendar Year-Quarter | Extended | col:6, dv:"WangDISP", fe:"firm_yq", controls:"extended" | PASS |
+| 7 | WangDISP_lead | Industry (FF12) | Calendar Year | Base | col:7, dv:"WangDISP_lead", fe:"industry", controls:"base" | PASS |
+| 8 | WangDISP_lead | Firm | Calendar Year | Base | col:8, dv:"WangDISP_lead", fe:"firm", controls:"base" | PASS |
+| 9 | WangDISP_lead | Industry (FF12) | Calendar Year | Extended | col:9, dv:"WangDISP_lead", fe:"industry", controls:"extended" | PASS |
+| 10 | WangDISP_lead | Firm | Calendar Year | Extended | col:10, dv:"WangDISP_lead", fe:"firm", controls:"extended" | PASS |
+| 11 | WangDISP_lead | Industry (FF12) | Calendar Year-Quarter | Extended | col:11, dv:"WangDISP_lead", fe:"industry_yq", controls:"extended" | PASS |
+| 12 | WangDISP_lead | Firm | Calendar Year-Quarter | Extended | col:12, dv:"WangDISP_lead", fe:"firm_yq", controls:"extended" | PASS |
+
+All 12 specs verified. No missing or extra rows. Line reference "runner lines 82-98" is correct.
+
+**PHASE 4 RESULT: 5/5 PASS (count, all 12 rows, DVs, FE types, controls)**
+
+================================================================================
+### PHASE 5: SAMPLE CONSTRUCTION (Section D)
+================================================================================
+
+**D1-CHECK: Population**
+- Provenance doc: "Starting dataset: master_sample_manifest.parquet; Total calls: 112,968; Year range: 2002-2018"
+- Project scope in memory: "112,968 calls, 2,429 firms, 2002-2018" — consistent.
+- Runner (line 414): `stages = [("Full panel", full_n), ...]` where full_n = len(panel) loaded from manifest.
+- RESULT: PASS
+
+**D2-CHECK: Exclusion Criteria (Attrition Cascade)**
+- Runner filter order (reading code linearly):
+  1. `load_panel()` reads manifest (112,968 rows) — line 366
+  2. `filter_main_sample()` excludes ff12_code in [8, 11] — line 373
+  3. `prepare_regression_data()` — replace inf with NaN — line 195
+  4. `prepare_regression_data()` — DV non-null filter — line 198-199
+  5. `prepare_regression_data()` — complete case filter — line 201-202
+  6. `prepare_regression_data()` — min 5 calls/firm — line 206-208
+- Provenance doc attrition cascade:
+  Step 1: Full panel → 112,968
+  Step 2: Main sample (excl FF12=8,11) → 88,205 (dropped 24,763)
+  Step 3: WangDISP non-null → 37,446 (dropped 50,759)
+  Step 4: Complete case + min 5 calls/firm (col 1, base controls) → 17,089 (dropped 20,357)
+- The runner's attrition_table (lines 411-418) constructs the same stages structure. Steps 3 and the note about WangDISP coverage match runner line 376's diagnostic print.
+- The doc merges complete-case + min-calls into one step — acceptable since the runner's attrition diagnostic does the same.
+- RESULT: PASS
+
+**D3-CHECK: Sample Counts per Spec**
+- Provenance doc documents 8 cols with actual counts and 4 YQ cols as [UNVERIFIED] with clear explanation: "12-col run not yet produced". This is an honest [UNVERIFIED] consistent with Quality Gate 10.
+- RESULT: PASS (UNVERIFIED entries properly flagged with explanations)
+
+**PHASE 5 RESULT: 3/3 PASS**
+
+================================================================================
+### PHASE 6: VARIABLE DICTIONARY (Section E)
+================================================================================
+
+All 21 variables verified against runner MODEL_SPECS, BASE_CONTROLS, EXTENDED_CONTROLS, and source files.
+
+**DVs (3 variables):**
+
+| Variable | In Runner As | Formula in Doc | Winsorization in Doc | Code Confirms? |
+|---|---|---|---|---|
+| WangDISP | MODEL_SPECS dv (cols 1-6) | "SD(latest analyst EPS forecasts in [T-31, T-1]) / prccq_prior; min 2 analysts; FPEDATS within 120 days" | "1%/99% pooled (wang_disp.py lines 85-89)" | PASS — wang_disp.py lines 84-90 clip at quantile(0.01)/quantile(0.99) pooled |
+| WangDISP_lead | MODEL_SPECS dv (cols 7-12) | "WangDISP from next consecutive fiscal quarter; validated via fiscal_qtr_id consecutive check" | Same as WangDISP (applied before shifting) | PASS — builder lines 251-265 shift(-1) then validate consecutive quarters |
+| WangDISP_lag | BASE_CONTROLS[7] | "WangDISP from prior consecutive fiscal quarter; validated via fiscal_qtr_id consecutive check" | Same as WangDISP (applied before shifting) | PASS — builder lines 271-284 shift(1) then validate consecutive quarters |
+
+**IVs (4 variables):**
+
+| Variable | In Runner As | Formula | Winsorization | Code Confirms? |
+|---|---|---|---|---|
+| CEO_QA_Uncertainty_pct | KEY_IVS[0] | "(LM uncertainty words in CEO Q&A turns / total words) * 100" | "0%/99% per-year upper-only" | PASS |
+| CEO_Pres_Uncertainty_pct | KEY_IVS[1] | "(LM uncertainty words in CEO Pres turns / total words) * 100" | "0%/99% per-year upper-only" | PASS |
+| Manager_QA_Uncertainty_pct | KEY_IVS[2] | "(LM uncertainty words in all-manager Q&A turns / total words) * 100" | "0%/99% per-year upper-only" | PASS |
+| Manager_Pres_Uncertainty_pct | KEY_IVS[3] | "(LM uncertainty words in all-manager Pres turns / total words) * 100" | "0%/99% per-year upper-only" | PASS |
+
+**Base Controls (8 variables — WangDISP_lag already above):**
+
+| Variable | In Runner | Formula | Winsorization | Code Confirms? |
+|---|---|---|---|---|
+| Size | BASE_CONTROLS[0] | "ln(atq), only for atq > 0" | "1%/99% per-year" | PASS |
+| TobinsQ | BASE_CONTROLS[1] | "(cshoq * prccq + dlcq + dlttq) / atq; dlcq/dlttq clipped >= 0 and filled 0" | "1%/99% per-year" | PASS |
+| ROA | BASE_CONTROLS[2] | "iby_annual (Q4) / avg(atq_t, atq_{t-1}); avg_assets > 0" | "1%/99% per-year" | PASS |
+| BookLev | BASE_CONTROLS[3] | "(dlcq.fillna(0) + dlttq.fillna(0)) / atq" | "1%/99% per-year" | PASS |
+| CapexAt | BASE_CONTROLS[4] | "capxy_annual (Q4-only) / atq_lag_annual; atq_lag > 0" | "1%/99% per-year" | PASS |
+| DividendPayer | BASE_CONTROLS[5] | "1 if dvy_annual (Q4-only) > 0, else 0" | "Not winsorized (binary)" | PASS |
+| OCF_Volatility | BASE_CONTROLS[6] | "Rolling 5-year std (min 3 years, 1826-day window) of oancfy / atq_{t-1} per gvkey" | "1%/99% per-year" | PASS |
+
+**Extended Controls (4 additional):**
+
+| Variable | In Runner | Formula | Winsorization | Code Confirms? |
+|---|---|---|---|---|
+| SurpDec | EXTENDED_CONTROLS+4 | "(ACTUAL - MEANEST) ranked into -5..+5 within each calendar quarter; merge_asof backward, 120-day tolerance" | "No" | PASS |
+| loss_dummy | EXTENDED_CONTROLS+5 | "1 if ibq < 0, else 0; merge_asof backward to call date" | "No (binary)" | PASS |
+| Analyst_QA_Uncertainty_pct | EXTENDED_CONTROLS+6 | "(LM uncertainty words in analyst Q&A turns / total words) * 100" | "0%/99% per-year upper-only" | PASS |
+| Entire_All_Negative_pct | EXTENDED_CONTROLS+7 | "(LM negative words in entire call / total words) * 100" | "0%/99% per-year upper-only" | PASS |
+
+**FE and filter columns (5 variables):**
+
+| Variable | Code Usage | Formula in Doc | Code Confirms? |
+|---|---|---|---|
+| gvkey | Panel index; firm filter | "6-digit zero-padded GVKEY from Compustat" | PASS |
+| ff12_code | other_effects; FF12 filter | "FF48-to-FF12 mapping applied at engine level" | PASS |
+| cal_yr | Panel index (cal_yr specs) | "start_date.dt.year" | PASS — panel_utils.py line 215 |
+| cal_yr_qtr | Panel index (YQ specs) | "cal_yr * 10 + start_date.dt.quarter" | PASS — panel_utils.py line 217 |
+| fyearq_int | required list (runner line 186); complete-case filter | "floor(fyearq) cast to Int64" | PASS — builder line 160 |
+
+**Completeness check:**
+Runner required columns (line 186): `[dv] + KEY_IVS + all_controls + ["gvkey", "fyearq_int", "ff12_code"]` plus conditionally `"cal_yr_qtr"`. All variables in this list are in the dictionary. Variables `start_date`, `file_name`, `sample`, `year`, `fqtr`, `fqtr_int`, `fiscal_qtr_id` are build/merge intermediates not appearing in regressions — correct to exclude from dictionary.
+
+**PHASE 6 RESULT: 21/21 PASS**
+
+================================================================================
+### PHASE 7: DATA PIPELINE, OUTPUTS, TREATMENT (Sections F, G, H)
+================================================================================
+
+**F-CHECK: Data Pipeline**
+
+F1 — Dependency Chain:
+- Steps 1-6: All verified against code. Descriptions are accurate.
+- Step 7: "generate_all_tables.py has entry `"id": "H5b-Wang"` at line 184"
+  FAIL — actual id is "H5" at line 152 (generate_all_tables.py lines 151-163).
+  This is the same stale naming error as Section I.
+
+F2 — Data Engines:
+- 5 engines listed: IbesDetailEngine, CompustatEngine, LinguisticEngine, IbesEngine (Summary), ManifestFieldsBuilder.
+- Builder imports (lines 33-57) confirm all 5. PASS.
+
+F3 — Merge Operations:
+- Doc lists 17 merges. Builder: 16 file_name-based merges (one per non-manifest builder in dict) + 1 lead_lag merge on ["gvkey", "fiscal_qtr_id"] = 17 total. EXACT MATCH.
+- Doc cites "builder lines 148-150" for row-count assertion. Runner lines 145-150 contain the delta check and ValueError raise. PASS.
+
+**G-CHECK: Outputs**
+
+G1 — Stage 3 Outputs (builder save_outputs lines 303-324):
+- `h5b_wang_disp_panel.parquet` — line 306. PASS.
+- `summary_stats.csv` — line 311. PASS.
+- `run_manifest.json` — generated by generate_manifest() called at lines 314-323; manifest_generator.py writes run_manifest.json. PASS.
+- Provenance doc lists exactly these 3 files. PASS.
+
+G2 — Stage 4 Outputs (runner):
+- `regression_results_col{1-12}.txt` — runner lines 316-330, one per model. PASS.
+- `model_diagnostics.csv` — runner line 334. PASS.
+- `summary_stats.csv` — runner line 385 (make_summary_stats_table output_csv arg). PASS.
+- `summary_stats.tex` — runner line 385 (make_summary_stats_table output_tex arg). PASS.
+- `sample_attrition.csv` — generated by generate_attrition_table() (attrition_table.py line 47). PASS.
+- `sample_attrition.tex` — generated by generate_attrition_table() (attrition_table.py line 51). PASS.
+- `run_manifest.json` — generated by generate_manifest() call at runner lines 420-425. PASS.
+- Provenance doc lists exactly 7 files matching the above. PASS.
+- NOTE: No `{suite}_table.tex` produced by the runner itself (that is generate_all_tables.py's job). Provenance doc correctly omits it from G2. PASS.
+
+G3 — Summary Statistics:
+- Runner SUMMARY_STATS_VARS (lines 101-116): 14 entries.
+- Provenance doc table: 14 variables with matching labels. PASS.
+
+**H-CHECK: Outlier/Missing Treatment**
+
+H1 — Winsorization:
+- Compustat controls: "1%/99% per fiscal year (_winsorize_by_year() in _compustat_engine.py)" — consistent with CompustatEngine behavior. PASS.
+- Linguistic IVs: "0%/99% per calendar year (upper-only)" — consistent with LinguisticEngine behavior. PASS.
+- WangDISP: "1%/99% pooled (wang_disp.py lines 85-89)" — VERIFIED: wang_disp.py lines 85-90 clip at quantile(0.01)/quantile(0.99) of all non-null values pooled. PASS.
+- SurpDec: "Not winsorized (discrete ranked variable)" — correct. PASS.
+
+H2 — Missing Data Policy:
+- "Complete-case deletion" — runner line 201 `complete_mask = df[required].notna().all(axis=1)`. PASS.
+- "Inf/-Inf replaced with NaN before complete-case filter (runner line 195)" — runner line 195 `df = df.replace([np.inf, -np.inf], np.nan)`. PASS.
+- "WangDISP requires >= 2 analysts AND valid prccq_prior > 0" — consistent with WangDispBuilder. PASS.
+
+H3 — Transformations:
+- "Size: natural log of atq (only for atq > 0)" — consistent with SizeBuilder. PASS.
+- "No other log, z-score, centering, or scaling applied" — no contradicting code found. PASS.
+
+**PHASE 7 FAILURES:**
+1. F1 Step 7: id stated as "H5b-Wang" — actual is "H5"
+2. F1 Step 7: line stated as "line 184" — actual entry begins at line 151
+
+**PHASE 7 RESULT: 7/9 PASS**
+
+================================================================================
+### PHASE 8: TABLE GENERATOR ENTRY (Section I)
+================================================================================
+
+Provenance doc Section I claims:
+
+```python
+{
+    "id": "H5b-Wang",
+    "dir": "h5b_wang_disp/2026-03-27_095026",
+    "caption": "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
+    "label": "tab:h5b_wang",
+    "cols": 12,
+    "dvs": [
+        ("WangDISP", 6),
+        (r"WangDISP\_lead", 6),
+    ],
+    "tail": "one",
+    "hyp_dir": ">",
+}
+```
+
+Source: `outputs/generate_all_tables.py lines 183-195`.
+
+Actual code at outputs/generate_all_tables.py lines 151-163:
+
+```python
+{
+    "id": "H5",
+    "dir": "h5b_wang_disp/2026-03-31_140307",
+    "caption": "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
+    "label": "tab:h5",
+    "cols": 12,
+    "dvs": [
+        ("WangDISP", 6),
+        (r"WangDISP\_lead", 6),
+    ],
+    "tail": "one",
+    "hyp_dir": ">",
+},
+```
+
+**Field-by-field comparison:**
+
+| Field | Provenance Doc Claims | Actual Code | Match? |
+|---|---|---|---|
+| "id" | "H5b-Wang" | "H5" | FAIL |
+| "dir" | "h5b_wang_disp/2026-03-27_095026" | "h5b_wang_disp/2026-03-31_140307" | FAIL (stale timestamp) |
+| "caption" | "H5b: Speech Uncertainty..." | "H5: Speech Uncertainty..." | FAIL ("H5b:" vs "H5:") |
+| "label" | "tab:h5b_wang" | "tab:h5" | FAIL |
+| "cols" | 12 | 12 | PASS |
+| "dvs" | [("WangDISP", 6), ("WangDISP\_lead", 6)] | same | PASS |
+| "tail" | "one" | "one" | PASS |
+| "hyp_dir" | ">" | ">" | PASS |
+| Source line ref | "lines 183-195" | lines 151-163 | FAIL (wrong line numbers) |
+
+The provenance doc was written when the suite was still named "H5b-Wang" in
+generate_all_tables.py. Since then: (1) the suite id was changed from "H5b-Wang"
+to "H5"; (2) the label was changed from "tab:h5b_wang" to "tab:h5"; (3) the
+caption prefix was changed from "H5b:" to "H5:"; (4) a new run updated the dir
+timestamp from 2026-03-27 to 2026-03-31. The provenance doc was not updated.
+
+Note on `dir` discrepancy: the timestamp change reflects a legitimate new run
+producing the 12-column output. This is inherently mutable and not a structural
+error in the doc, but it should be updated to the current value.
+
+**PHASE 8 RESULT: 3/5 PASS (cols, dvs, tail/hyp_dir pass; id/label/caption/dir/line-refs fail)**
+
+================================================================================
+### PHASE 9: MODEL-FAMILY ADDENDUM (Section K)
+================================================================================
+
+Suite uses PanelOLS — K1 should be filled; K2-K6 should be N/A.
+
+**K1 — PanelOLS Specifics:**
+
+Entity effects:
+- Doc: "Industry FE (odd cols): entity_effects=False, other_effects=df_panel["ff12_code"] (runner line 259)"
+- Code (runner lines 257-260): `entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"]` — PASS
+- Doc: "Firm FE (even cols): EntityEffects in formula (runner line 267)"
+- Code (runner line 265-267): formula = "... + EntityEffects + TimeEffects" — PASS
+
+Time effects:
+- Doc: "Calendar Year FE: time_effects=True with panel index (gvkey, cal_yr) (runner line 250)"
+- Code (runner line 250): `df_panel = df_prepared.set_index(["gvkey", time_col])` where time_col = "cal_yr" for non-YQ — PASS
+- Doc: "Calendar Year-Quarter FE: time_effects=True with panel index (gvkey, cal_yr_qtr) (runner line 250)"
+- Code: same, time_col = "cal_yr_qtr" for YQ — PASS
+
+drop_absorbed:
+- Doc: "True for all specs (runner lines 261, 267)"
+- Code (runner line 261): `drop_absorbed=True` in industry branch
+- Code (runner line 267): `drop_absorbed=True` in firm branch
+- PASS
+
+check_rank:
+- Doc: "False for industry FE specs only (runner line 262); not set for firm FE specs (default True in linearmodels)"
+- Code (runner line 261-262): industry branch has `check_rank=False`; firm branch (line 267) via from_formula does not set it
+- PASS
+
+Singleton handling:
+- Doc: "linearmodels default behavior (no explicit singleton dropping)"
+- No `singletons` argument found in runner — PASS
+
+K2-K6 marked N/A — PASS (correct for PanelOLS suite)
+
+**PHASE 9 RESULT: 5/5 PASS**
+
+================================================================================
+### PHASE 10: QUALITY GATE CHECKLIST
+================================================================================
 
 | # | Quality Gate | Met? | Evidence |
-|---|-------------|------|----------|
-| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | Yes | All 20 variables verified in Phase 6. fyearq_int is a marginal omission but is documented in Known Issue #6. |
-| 2 | The model equation matches what the code actually estimates | Yes | Verified in Phase 3 B1-CHECK. |
-| 3 | The specification register accounts for every model column | Yes | 12 rows for 12 specs, verified in Phase 4. |
-| 4 | The attrition cascade has row counts for each filter step | Yes | 4-step cascade with counts verified in Phase 5. |
-| 5 | The tail test direction matches between runner code and generate_all_tables.py | Yes | Both use one-tailed beta > 0 / tail="one" / hyp_dir=">". |
-| 6 | The FE specification matches between docstring, code, and this document | Yes | Runner docstring line 36, code lines 242-268, and doc Section B5 all consistent. |
-| 7 | Every merge in the panel builder is documented with join keys and type | Yes | 17 merges documented in F3 with keys and types. |
-| 8 | The output file list matches what the runner actually writes | Yes | All 7 output types verified in Phase 7 G-CHECK. |
-| 9 | The model-family addendum is filled for the correct family only | Yes | K1 (PanelOLS) filled; K2-K6 marked N/A. |
-| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | Yes | Cols 5-6, 11-12 sample counts are UNVERIFIED with clear explanation that 12-col run has not been produced yet. |
+|---|---|---|---|
+| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | YES | All 21 variables checked in Phase 6; all passed |
+| 2 | The model equation matches what the code actually estimates | YES | B1 check verified 4 IVs + controls + entity/time FE in equation |
+| 3 | The specification register accounts for every model column | YES | 12 rows in spec register match 12 MODEL_SPECS entries; all configurations correct |
+| 4 | The attrition cascade has row counts for each filter step | YES | 4-step cascade with actual counts; YQ specs properly flagged [UNVERIFIED] with explanation |
+| 5 | The tail test direction matches between runner code and generate_all_tables.py | YES | Runner: p_two/2 if beta>0 (one-tailed, beta>0); actual generate_all_tables.py: "tail":"one","hyp_dir":">" |
+| 6 | The FE specification matches between docstring, code, and this document | YES | Runner docstring line 36 matches code and doc |
+| 7 | Every merge in the panel builder is documented with join keys and type | YES | 17 merges (16 on file_name + 1 on gvkey+fiscal_qtr_id) all documented in F3 table |
+| 8 | The output file list matches what the runner actually writes | YES | 7 Stage 4 outputs and 3 Stage 3 outputs verified |
+| 9 | The model-family addendum is filled for the correct family only | YES | K1 filled for PanelOLS; K2-K6 N/A |
+| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | YES | D3 YQ spec counts flagged [UNVERIFIED] with clear explanation: "12-col run not yet produced" |
 
-**Phase 10 Result: 10/10 PASS**
+Note on Gate 5: the gate passes on the substance (tail direction is correctly documented)
+but Section I has the wrong id/label/caption. Gates assess correctness of the documented
+fields, and the tail/cols/dvs fields in Section I are all correct.
 
----
+**PHASE 10 RESULT: 9/10 PASS**
 
-## PHASE 11: CROSS-REFERENCE CONSISTENCY
+The one failing area is implicitly Gate 2 / Gate 8 scope: Section I's factual
+errors (id, label, caption, dir) are not covered by any of the 10 gates
+directly, but they fail the overall accuracy requirement.
 
-### Check 1: DVs in Section B2 vs Section C
-- B2 lists WangDISP and WangDISP_lead.
-- C shows WangDISP for cols 1-6 and WangDISP_lead for cols 7-12.
-- **Consistent**: PASS
+================================================================================
+### PHASE 11: CROSS-REFERENCE CONSISTENCY
+================================================================================
 
-### Check 2: DVs in Section C vs Section I
-- C: WangDISP (6 cols) + WangDISP_lead (6 cols)
-- I: `"dvs": [("WangDISP", 6), ("WangDISP\_lead", 6)]`
-- **Consistent**: PASS
+1. **DVs in B2 match DVs in C (spec register)?**
+   - B2: WangDISP, WangDISP_lead
+   - C: WangDISP (rows 1-6), WangDISP_lead (rows 7-12)
+   - CONSISTENT — PASS
 
-### Check 3: Controls in Section B4 vs Section E
-- B4 lists 12 control variables (8 base + 4 extended).
-- E has entries for all 12 controls.
-- **Consistent**: PASS
+2. **DVs in C match DVs in Section I (table generator)?**
+   - C: WangDISP (6 cols), WangDISP_lead (6 cols)
+   - I (provenance doc): `"dvs": [("WangDISP", 6), ("WangDISP_lead", 6)]`
+   - I (actual code): same
+   - CONSISTENT — PASS
 
-### Check 4: Column count in Section A vs rows in Section C
-- A: Columns = 12
-- C: 12 rows
-- **Consistent**: PASS
+3. **Controls in B4 match variables in E (dictionary)?**
+   - B4 Base: Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, WangDISP_lag (8)
+   - B4 Extended additional: SurpDec, loss_dummy, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct (4)
+   - All 12 appear in Section E with formula/source.
+   - CONSISTENT — PASS
 
-### Check 5: Column count in Section A vs "cols" in Section I
-- A: Columns = 12
-- I: `"cols": 12`
-- **Consistent**: PASS
+4. **Column count in A matches rows in C?**
+   - A: "Columns: 12"
+   - C: 12 rows
+   - CONSISTENT — PASS
 
-### Check 6: Tail direction in Section A vs B7 vs Section I
-- A: "One-tailed (beta > 0)"
-- B7: "One-tailed (beta > 0)"
-- I: `"tail": "one"`, `"hyp_dir": ">"`
-- **Consistent**: PASS
+5. **Column count in A matches "cols" in Section I?**
+   - A: "Columns: 12"
+   - I (provenance doc): `"cols": 12`
+   - I (actual code): `"cols": 12`
+   - CONSISTENT — PASS
 
-### Check 7: FE in Section B5 vs Section C vs Section K
-- B5: Industry/Firm entity FE; cal_yr/cal_yr_qtr time FE, with spec assignments.
-- C: Odd cols = Industry (FF12), Even cols = Firm; cols 1-4/7-10 = Calendar Year, cols 5-6/11-12 = Calendar Year-Quarter.
-- K1: `entity_effects=False, other_effects=ff12_code` for industry; `EntityEffects` for firm; `time_effects=True`.
-- **Consistent**: PASS
+6. **Tail direction in A matches B7 matches I?**
+   - A: "Direction: One-tailed (beta > 0)"
+   - B7: "One-tailed (beta > 0). p_one = p_two / 2 if beta > 0"
+   - I (provenance doc): `"tail": "one", "hyp_dir": ">"`
+   - CONSISTENT internally — PASS
 
-### Check 8: Panel index in Section A vs set_index in Section K
-- A: `(gvkey, cal_yr)` for Cal Year; `(gvkey, cal_yr_qtr)` for Year-Quarter.
-- K1: Panel index set to `(gvkey, cal_yr)` or `(gvkey, cal_yr_qtr)` depending on spec.
-- **Consistent**: PASS
+7. **FE in B5 matches C matches K?**
+   - B5: Industry (odd) / Firm (even) / cal_yr (cols 1-4, 7-10) / cal_yr_qtr (cols 5-6, 11-12)
+   - C: Spec register shows Industry/Firm x CalYear/CalYrQtr — matches B5
+   - K1: "Calendar Year FE: (gvkey, cal_yr)"; "Calendar Year-Quarter FE: (gvkey, cal_yr_qtr)"
+   - CONSISTENT — PASS
 
-**Phase 11 Result: 8/8 PASS**
+8. **Panel index in A matches set_index in K?**
+   - A: "(gvkey, cal_yr) for Calendar Year FE specs; (gvkey, cal_yr_qtr) for Year-Quarter FE specs"
+   - K1: "time_effects=True with panel index set to (gvkey, cal_yr) (runner line 250)"
+   - Runner line 250: `df_panel = df_prepared.set_index(["gvkey", time_col])` where time_col switches on spec
+   - CONSISTENT — PASS
 
----
+**INTERNAL INCONSISTENCIES DETECTED:**
 
-## FAILURES (detailed)
+Inconsistency 1 (A vs I):
+- Section A: `Suite ID: H5`
+- Section I: `"id": "H5b-Wang"` — INCONSISTENT
+- Section I should read `"id": "H5"` to match generate_all_tables.py and Section A.
+
+Inconsistency 2 (A title vs I caption):
+- Section A: Title = "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)"
+- Section I: caption = "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)"
+- The "H5b:" prefix in Section I's caption is inconsistent with "H5:" in Section A.
+
+**PHASE 11 RESULT: 6/8 PASS (two internal inconsistencies between A and I)**
+
+================================================================================
+### FAILURES (detailed)
+================================================================================
 
 | Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
-|-------|-------|----------------------|-----------------|----------|-------------|
-| 3 (B7) | P-value line reference | "runner lines 287-288" | p_one computation is entirely on line 287; line 288 is `meta[f"{iv}_beta"] = beta` | Very Minor | Change "lines 287-288" to "line 287" |
-| 6 (E) | fyearq_int in dictionary | fyearq_int omitted from Variable Dictionary | fyearq_int is listed in `required` at runner line 186 and affects complete-case filtering | Very Minor | Either add fyearq_int to variable dictionary or note its omission (partially addressed in Known Issue #6) |
-| 7 (F1) | generate_all_tables line reference | "line 195" in dependency chain step 7 | H5b-Wang entry is at line 171 of generate_all_tables.py | Minor | Change "line 195" to "line 171" |
-| 8 (I) | generate_all_tables line reference | "lines 193-206" in Section I source note | H5b-Wang entry spans lines 170-182 | Minor | Change "lines 193-206" to "lines 170-182" |
-| 6 (E) | fyearq_int role | Not in variable dictionary | Used as required column in prepare_regression_data (line 186) for complete-case filtering | Very Minor | Add to dictionary with Type=Filter or acknowledge in existing Known Issue #6 |
+|---|---|---|---|---|---|
+| 8 | generate_all_tables.py "id" | "H5b-Wang" | "H5" | HIGH — wrong suite identifier | Update Section I code block |
+| 8 | generate_all_tables.py "label" | "tab:h5b_wang" | "tab:h5" | HIGH — wrong LaTeX label | Update Section I code block |
+| 8 | generate_all_tables.py "caption" | "H5b: Speech Uncertainty..." | "H5: Speech Uncertainty..." | HIGH — wrong caption prefix | Update Section I code block |
+| 8 | generate_all_tables.py "dir" | "h5b_wang_disp/2026-03-27_095026" | "h5b_wang_disp/2026-03-31_140307" | MEDIUM — stale output directory | Update Section I code block |
+| 8 | generate_all_tables.py source lines | "lines 183-195" | lines 151-163 | LOW — wrong line numbers | Update Section I source note |
+| 7 | F1 Step 7 id reference | `"id": "H5b-Wang"` | `"id": "H5"` | MEDIUM — carries forward Section I error | Update F1 Step 7 |
+| 7 | F1 Step 7 line reference | "at line 184" | entry begins at line 151 | LOW — wrong line number | Update F1 Step 7 |
 
----
+================================================================================
+### CORRECTIONS REQUIRED
+================================================================================
 
-## CORRECTIONS REQUIRED
+1. **Section I — Replace entire generate_all_tables.py code block**
+   - Current (wrong):
+     ```python
+     {
+         "id": "H5b-Wang",
+         "dir": "h5b_wang_disp/2026-03-27_095026",
+         "caption": "H5b: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
+         "label": "tab:h5b_wang",
+         "cols": 12,
+         "dvs": [
+             ("WangDISP", 6),
+             (r"WangDISP\_lead", 6),
+         ],
+         "tail": "one",
+         "hyp_dir": ">",
+     }
+     ```
+   - Should be:
+     ```python
+     {
+         "id": "H5",
+         "dir": "h5b_wang_disp/2026-03-31_140307",
+         "caption": "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
+         "label": "tab:h5",
+         "cols": 12,
+         "dvs": [
+             ("WangDISP", 6),
+             (r"WangDISP\_lead", 6),
+         ],
+         "tail": "one",
+         "hyp_dir": ">",
+     }
+     ```
+   - Code reference: `outputs/generate_all_tables.py` lines 151-163
 
-1. **Section B7, paragraph 2**: Change `"runner lines 287-288"` to `"runner line 287"`.
-   - **Current**: `p_one = p_two / 2` if `beta > 0`, else `p_one = 1 - p_two / 2` (runner lines 287-288).
-   - **Corrected**: `p_one = p_two / 2` if `beta > 0`, else `p_one = 1 - p_two / 2` (runner line 287).
-   - **Evidence**: Runner line 287 contains the full expression. Line 288 is `meta[f"{iv}_beta"] = beta`.
+2. **Section I — Update source line reference**
+   - Current: "Source: `outputs/generate_all_tables.py` lines 183-195."
+   - Should be: "Source: `outputs/generate_all_tables.py` lines 151-163."
+   - Code reference: entry comment `# -- H5 (Wang 2020) --` at line 150, dict opens at line 151, closes at line 163.
 
-2. **Section F1, Step 7**: Change `"line 195"` to `"line 171"`.
-   - **Current**: `outputs/generate_all_tables.py` has entry `"id": "H5b-Wang"` at line 195
-   - **Corrected**: `outputs/generate_all_tables.py` has entry `"id": "H5b-Wang"` at line 171
-   - **Evidence**: Grep confirms `"id": "H5b-Wang"` is at line 171 of generate_all_tables.py.
+3. **Section I — Update Verification block**
+   - The Verification block currently states:
+     "`tail="one"` and `hyp_dir=">"` match runner's one-tailed beta > 0 test (runner line 287, 365)."
+     "`cols=12` matches `len(MODEL_SPECS)` = 12 (runner lines 82-98)."
+     "`dvs` = `[("WangDISP", 6), ("WangDISP_lead", 6)]` matches 6 contemporaneous + 6 lead columns."
+   - These verification statements are CORRECT but should also note:
+     "`id="H5"`, `label="tab:h5"`, and `caption` prefix "H5:" match the suite's current name."
+   - Code reference: `outputs/generate_all_tables.py` lines 152, 154-155.
 
-3. **Section I, Source note**: Change `"lines 193-206"` to `"lines 170-182"`.
-   - **Current**: Source: `outputs/generate_all_tables.py` lines 193-206.
-   - **Corrected**: Source: `outputs/generate_all_tables.py` lines 170-182.
-   - **Evidence**: The H5b-Wang SUITES entry begins at line 170 (`{`) with `"id"` at line 171 and closing `},` at line 182.
+4. **Section F1 Step 7 — Update narrative**
+   - Current: "`outputs/generate_all_tables.py` has entry `"id": "H5b-Wang"` at line 184"
+   - Should be: "`outputs/generate_all_tables.py` has entry `"id": "H5"` at lines 151-163"
+   - Code reference: `outputs/generate_all_tables.py` line 152.
 
-4. **Section E (Variable Dictionary)**: Consider adding `fyearq_int` as a row with Type=Filter.
-   - **Rationale**: fyearq_int is listed in `required` at runner line 186 and causes rows with NaN fyearq_int to be dropped during complete-case filtering. While not a regression variable, it affects the final sample size.
-   - **Suggested addition**: `| fyearq_int | Fiscal year-quarter (integer) | Filter | floor(fyearq) cast to Int64 | CompustatEngine (fyearq) via attach_fyearq() | No | -- |`
-   - **Alternatively**: Expand Known Issue #6 to explicitly note that fyearq_int's absence from the variable dictionary is intentional because it is a filter column, not a regression variable.
+================================================================================
+### NOTES ON NON-FAILURES
+================================================================================
 
----
+1. The `dir` timestamp discrepancy (2026-03-27 → 2026-03-31) is because a new
+   12-column run was completed on 2026-03-31 after the provenance doc was written
+   (which documented the 8-column run). This is expected to become stale with
+   future runs and is inherently mutable. Correction 1 above addresses it.
 
-## KNOWN ISSUES VERIFICATION
+2. The [UNVERIFIED] entries in D3 (cols 5-6, 11-12) reflect the state at doc
+   creation time when only the 8-column output existed. With the 2026-03-31 run
+   now available, these could be filled in but are not strictly wrong — the doc
+   was accurate at write time.
 
-The provenance doc lists 7 known issues. Brief verification of each:
+3. Known Issue #1 documents "the dir path...contains only 8 columns". This is now
+   superseded by the new 2026-03-31 run but is historically accurate and harmless.
 
-1. **Output directory mismatch (8 vs 12 cols)**: Verified. The dir points to a pre-12-column run. Accurate.
-2. **Stale FE label in output files**: The doc correctly notes this is a stale label from the old runner. Verified.
-3. **WangDISP pooled winsorization**: Verified at wang_disp.py lines 84-89. Accurate.
-4. **IBES Detail FPI=[6,7] logic**: Verified at `_ibes_detail_engine.py` line 64. Accurate.
-5. **Lead/lag consecutive quarter validation**: Verified in builder lines 255-264 and 274-284. Accurate.
-6. **fyearq_int as filter column**: Verified at runner line 186 (required list) and line 154 (loaded in columns). The doc correctly identifies it as a complete-case filter rather than FE time index. Accurate.
-7. **SurpDec and loss_dummy not in SUMMARY_STATS_VARS**: Verified at runner lines 101-116. Neither SurpDec nor loss_dummy appears in SUMMARY_STATS_VARS. Accurate.
+4. Known Issue #2 on stale "FE: industry + Fiscal Year" label in text output files:
+   runner line 322 writes `f"FE: {meta['fe']}"` where meta["fe"] is the fe_type
+   string (e.g., "industry", "firm_yq"). The runner does not produce "Fiscal Year"
+   text — the Known Issue's description of what "stale label" was written by the
+   old runner is a historical note rather than a current bug.
 
-All 7 known issues are factually correct.
+5. The naming mismatch between Suite ID "H5" and runner/builder filenames
+   "h5b_wang_disp" is a known naming artifact. The runner and builder were named
+   before the rename; file names were not changed to match the new suite ID.
+   Section A correctly documents both names. The errors in Section I stem from
+   this historical naming confusion.
 
----
-
-## FINAL VERDICT
-
-**PASS WITH NOTES**
-
-The H5b-Wang provenance document is substantively accurate and complete. It correctly describes the model specification, variable construction, data pipeline, fixed effects, standard errors, hypothesis test, and all 12 model specifications. The variable dictionary covers all regression variables with accurate formulas and source engines. The cross-reference consistency is perfect -- no internal contradictions found.
-
-The 5 failures are all very minor:
-- 3 are incorrect line-number references in generate_all_tables.py and the runner (the referenced content is correct, just the line numbers are wrong)
-- 1 is a single-line vs two-line reference ambiguity
-- 1 is a debatable omission of fyearq_int from the variable dictionary (partially addressed in Known Issue #6)
-
-None of these affect the scientific accuracy, reproducibility, or completeness of the provenance document. A thesis committee member or future researcher reading this document would be able to understand and reproduce the analysis correctly.
+================================================================================
+END OF AUDIT REPORT — H5
+================================================================================

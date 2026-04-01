@@ -340,6 +340,61 @@ SUITES = [
         "tail": "one",
         "hyp_dir": ">",
     },
+    # ── H19 ──
+    {
+        "id": "H19",
+        "dir": "h19_external_funding/2026-03-31_195049",
+        "caption": "H19: Speech Uncertainty and External vs Internal Financing",
+        "label": "tab:h19",
+        "cols": 12,
+        "dvs": [
+            ("ExternalFunding", 6),
+            (r"ExternalFunding\_lead", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": "<",
+    },
+    # ── H20 ──
+    {
+        "id": "H20",
+        "dir": "h20_debt_choice/2026-03-31_195118",
+        "caption": "H20: Speech Uncertainty and Debt vs Equity Choice",
+        "label": "tab:h20",
+        "cols": 6,
+        "dvs": [
+            ("DebtChoice", 6),
+        ],
+        "tail": "two",
+        "hyp_dir": None,
+    },
+    # ── H18b (Logit robustness) ──
+    {
+        "id": "H18b",
+        "dir": "h18b_cccl_logit/2026-03-31_195228",
+        "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
+        "label": "tab:h18b",
+        "cols": 2,
+        "dvs": [
+            (r"CCCL", 2),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+        "r2_label": r"Pseudo~$R^2$",
+        "skip_adj_r2": True,
+    },
+    # ── H21 ──
+    {
+        "id": "H21",
+        "dir": "h21_sec_letters/2026-03-31_210515",
+        "caption": "H21: Speech Uncertainty and SEC Comment Letter Count",
+        "label": "tab:h21",
+        "cols": 6,
+        "dvs": [
+            (r"SEC\_Letters\_fwd", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
 ]
 
 IV_NAMES = [
@@ -1117,6 +1172,7 @@ def generate_table(suite):
     lines.append(r"N & " + " & ".join(n_cells) + r" \\")
 
     # R² and Adj R² rows
+    r2_label = suite.get("r2_label", r"$R^2$")
     r2_cells = []
     adj_r2_cells = []
     for c in range(1, n_cols + 1):
@@ -1127,8 +1183,9 @@ def generate_table(suite):
             r2_cells.append("")
         adj = col_data.get(c, {}).get("adj_r2")
         adj_r2_cells.append(f"{adj:.3f}" if adj is not None else "")
-    lines.append(r"$R^2$ & " + " & ".join(r2_cells) + r" \\")
-    lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2_cells) + r" \\")
+    lines.append(f"{r2_label} & " + " & ".join(r2_cells) + r" \\")
+    if not suite.get("skip_adj_r2"):
+        lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2_cells) + r" \\")
 
     lines.append(r"\bottomrule")
     lines.append(r"\end{tabular}")

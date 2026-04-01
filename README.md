@@ -39,6 +39,8 @@ identification         speaker role              variables per call       effect
 | H16 | RDSales (+ lead) | Uncertainty and R&D investment intensity | two | 12 | Jiang et al. (2021) |
 | H17 | RepurchaseIntensity (+ lead) | Uncertainty and share repurchase intensity | two | 12 | -- |
 | H18 | CCCL | Higher uncertainty → more SEC comment letters | one (+) | 6 | -- |
+| H18b | CCCL | Logit robustness check for H18 (no Firm/YrQtr FE) | one (+) | 2 | Timoneda (2021) |
+| H21 | SEC_Letters_fwd | Higher uncertainty → more SEC UPLOAD letters (count) | one (+) | 6 | -- |
 
 **Independent variables** (4 simultaneous IVs per suite):
 - `Manager_QA_Uncertainty_pct` — all managers, Q&A section
@@ -109,6 +111,8 @@ Each runner loads its panel, applies sample filters, and runs PanelOLS regressio
 | H16 | `python -m f1d.econometric.run_h16_rd_sales` |
 | H17 | `python -m f1d.econometric.run_h17_repurchase_intensity` |
 | H18 | `python -m f1d.econometric.run_h18_cccl_received` |
+| H18b | `python -m f1d.econometric.run_h18b_cccl_logit` |
+| H21 | `python -m f1d.econometric.run_h21_sec_letters` |
 
 All runners support `--dry-run` for validation without execution, and `--year-start` / `--year-end` for subsetting.
 

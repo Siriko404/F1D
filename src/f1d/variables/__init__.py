@@ -3,7 +3,7 @@
 This package contains scripts that build complete panels for each
 hypothesis test by loading and merging variables from various sources.
 
-Active Modules (15 panel builders):
+Active Modules (16 panel builders):
     - build_h0_3_ceo_clarity_extended_panel: Extended CEO clarity panel
     - build_h1_cash_holdings_panel: Cash Holdings panel (H1)
     - build_h4_leverage_panel: Leverage panel (H4)
@@ -19,6 +19,7 @@ Active Modules (15 panel builders):
     - build_h16_rd_sales_panel: R&D Investment Intensity panel (H16)
     - build_h17_repurchase_intensity_panel: Repurchase Intensity panel (H17)
     - build_h18_cccl_received_panel: CCCL Received panel (H18)
+    - build_h19_h20_financing_panel: External Funding / Debt Choice panel (H19/H20, Leary & Roberts 2010)
 
 Archived Modules (in _archived/):
     - build_h0_1_manager_clarity_panel: Superseded by H0.2
