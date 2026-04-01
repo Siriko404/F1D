@@ -1,11 +1,11 @@
-# H14 Provenance Document -- Adversarial Audit Report
+# Adversarial Audit Report — Suite H14 (Bid-Ask Spread Change)
 
-**Audit Date:** 2026-03-30
-**Auditor:** Hostile auditor (automated adversarial review)
-**Provenance Doc:** `docs/provenance/H14.md`
+**Auditor:** Claude Sonnet 4.6 (hostile adversarial mode)
+**Date:** 2026-04-01
+**Suite:** H14 — Speech Uncertainty and Bid-Ask Spread Changes
+**Provenance doc:** `docs/provenance/H14.md`
 **Runner:** `src/f1d/econometric/run_h14_bidask_spread.py`
-**Panel Builder:** `src/f1d/variables/build_h14_bidask_spread_panel.py`
-**Creation Prompt:** `docs/Prompts/Suite Provenance Doc.txt`
+**Panel builder:** `src/f1d/variables/build_h14_bidask_spread_panel.py`
 
 ---
 
@@ -13,410 +13,533 @@
 
 | Category | Total Checks | Passed | Failed | Score |
 |----------|-------------|--------|--------|-------|
-| Structural Completeness (Phase 1) | 25 | 24 | 1 | 96.0% |
-| Suite Identity (Phase 2) | 10 | 10 | 0 | 100.0% |
-| Model Specification (Phase 3) | 7 | 7 | 0 | 100.0% |
-| Spec Register (Phase 4) | 7 | 7 | 0 | 100.0% |
-| Sample Construction (Phase 5) | 4 | 3 | 1 | 75.0% |
-| Variable Dictionary (Phase 6) | 22 | 22 | 0 | 100.0% |
-| Pipeline/Outputs/Treatment (Phase 7) | 9 | 9 | 0 | 100.0% |
-| Table Generator Entry (Phase 8) | 6 | 5 | 1 | 83.3% |
-| Model-Family Addendum (Phase 9) | 6 | 6 | 0 | 100.0% |
-| Quality Gates (Phase 10) | 10 | 9 | 1 | 90.0% |
-| Cross-Reference Consistency (Phase 11) | 8 | 8 | 0 | 100.0% |
-| **TOTAL** | **114** | **110** | **4** | **96.5%** |
+| Structural Completeness (Phase 1) | 26 | 26 | 0 | 100% |
+| Suite Identity (Phase 2) | 10 | 9 | 1 | 90% |
+| Model Specification (Phase 3) | 7 | 6 | 1 | 86% |
+| Spec Register (Phase 4) | 4 | 4 | 0 | 100% |
+| Sample Construction (Phase 5) | 3 | 2 | 1 | 67% |
+| Variable Dictionary (Phase 6) | 20 | 19 | 1 | 95% |
+| Pipeline/Outputs/Treatment (Phase 7) | 9 | 9 | 0 | 100% |
+| Table Generator Entry (Phase 8) | 5 | 4 | 1 | 80% |
+| Model-Family Addendum (Phase 9) | 6 | 6 | 0 | 100% |
+| Quality Gates (Phase 10) | 10 | 9 | 1 | 90% |
+| Cross-Reference Consistency (Phase 11) | 8 | 7 | 1 | 88% |
+| **TOTAL** | **108** | **101** | **7** | **94%** |
 
 ---
 
 ## VERDICT
 
-**PASS WITH NOTES**: The provenance document is substantially accurate and complete. Four issues were found, all minor:
+**FAIL — INACCURATE**
 
-1. Section D2 (Attrition Cascade) omits actual row counts -- filter descriptions are present and correct, but the column structure from the creation prompt template (Rows Before / Rows After / Dropped) is not used.
-2. Section I incorrectly states the main loop line number in `generate_all_tables.py` as 1215; the actual line is 1234.
-3. Runner docstring says "4 columns" and lists `col{1-4}` outputs, but code has 6 MODEL_SPECS. The provenance doc correctly documents 6 columns (code is truth), but does not explicitly flag the stale docstring.
-4. `fyearq_int` is included in the runner's `required` list for complete-case filtering (line 241) despite never being used as a FE column. This is not documented as a known issue.
-
-None of these affect the document's core accuracy regarding model specification, variable construction, or regression configuration.
-
----
-
-## FAILURES (detailed)
-
-| Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
-|-------|-------|----------------------|-----------------|----------|-------------|
-| 5 | D2 attrition cascade row counts | D2 table has columns: Step, Filter, Description (no counts) | Creation prompt requires: Step, Filter, Rows Before, Rows After, Dropped | Minor | Add row counts or note them as runtime-dependent with col-1 representative values |
-| 8 | I main loop line number | "falls through to generate_table() ... in the main loop at line 1215" | Main loop `for suite in SUITES:` is at line 1234; `generate_table(suite)` call at line 1259 | Minor | Change "line 1215" to "line 1234" |
-| 10 | QG4 attrition row counts | No row counts in D2 | Quality Gate 4 requires row counts per filter step | Minor | Same fix as Phase 5 D2 |
-| -- | Known issue (not scored) | Not documented | `fyearq_int` is in `required` list (line 241) causing complete-case drops for missing fiscal year, despite not being used as FE | Info | Add as Known Issue #8 |
+The document is structurally complete and mostly accurate. However, **3 factual errors** and **4 minor inaccuracies** were identified through code verification. The most significant error is an incorrect TobinsQ formula in Section B4 (the formula omits the `clip(lower=0)` and special null-handling that the engine code implements). A line-number error in Section I references the wrong line for `generate_table()`. These errors are correctible without structural changes.
 
 ---
 
 ## PHASE 1: STRUCTURAL COMPLETENESS
 
-Read `docs/Prompts/Suite Provenance Doc.txt` to extract required sections A-L. Then verified each exists in `docs/provenance/H14.md`.
+**Method:** Compare each required section (A through L) from the creation prompt against the actual document.
 
-| Section | Required by Prompt | Present in Doc | Complete | Notes |
-|---------|-------------------|----------------|----------|-------|
-| A. Suite Identity | Yes | Yes | Yes | All YAML fields present |
+| Section | Required | Present | Complete | Notes |
+|---------|----------|---------|----------|-------|
+| A. Suite Identity | Yes | Yes | Yes | YAML block present, all fields populated |
 | B. Model Specification | Yes | Yes | Yes | All subsections present |
-| B1. Regression Equation | Yes | Yes | Yes | LaTeX equation with all terms |
-| B2. Dependent Variable(s) | Yes | Yes | Yes | DSPREAD with full construction detail |
-| B3. Independent Variable(s) | Yes | Yes | Yes | All 4 IVs listed |
-| B4. Control Variables | Yes | Yes | Yes | Base (8) + Extended (12) tables |
-| B5. Fixed Effects | Yes | Yes | Yes | Full FE table with column mapping |
-| B6. Standard Errors | Yes | Yes | Yes | Clustered, firm-level |
-| B7. Hypothesis Test | Yes | Yes | Yes | One-tailed with p-value formula |
-| C. Spec Register | Yes | Yes | Yes | 6 rows matching 6 MODEL_SPECS |
-| D. Sample Construction | Yes | Yes | Partial | **D2 missing row counts** |
-| D1. Population | Yes | Yes | Yes | manifest, year range stated |
-| D2. Exclusion Criteria | Yes | Yes | **Partial** | Filter steps correct but no row counts per step |
-| D3. Sample Counts per Spec | Yes | Yes | Yes | Documents that N varies, explains why |
-| E. Variable Dictionary | Yes | Yes | Yes | All 20 variables present |
-| F. Data Pipeline | Yes | Yes | Yes | Full dependency chain |
+| B1. Regression Equation | Yes | Yes | Yes | LaTeX equation with all 4 IVs |
+| B2. Dependent Variable(s) | Yes | Yes | Yes | Table present, DSPREAD construction detailed |
+| B3. Independent Variable(s) | Yes | Yes | Yes | All 4 IVs in table with source |
+| B4. Control Variables | Yes | Yes | Yes | Two tables (Base 8, Extended +4) |
+| B5. Fixed Effects | Yes | Yes | Yes | 4-row table with applicable cols |
+| B6. Standard Errors | Yes | Yes | Yes | cov_type, cluster_entity documented |
+| B7. Hypothesis Test | Yes | Yes | Yes | One-tailed p_one formula documented |
+| C. Spec Register | Yes | Yes | Yes | 6-row table matching MODEL_SPECS |
+| D. Sample Construction | Yes | Yes | Yes | D1, D2, D3 all present |
+| D1. Population | Yes | Yes | Yes | 112,968 calls, 2002-2018 stated |
+| D2. Exclusion Criteria | Yes | Yes | Yes | Attrition cascade with N values |
+| D3. Sample Counts per Spec | Yes | Yes | Yes | Variation documented |
+| E. Variable Dictionary | Yes | Yes | Yes | All 20 variables including FE columns |
+| F. Data Pipeline | Yes | Yes | Yes | F1, F2, F3 all present |
 | F1. Dependency Chain | Yes | Yes | Yes | 7-step chain |
 | F2. Data Engines | Yes | Yes | Yes | 5 engines listed |
-| F3. Merge Operations | Yes | Yes | Yes | 16 panel builder merges + 2 within-builder merges |
-| G. Outputs | Yes | Yes | Yes | Stage 3 + Stage 4 outputs |
+| F3. Merge Operations | Yes | Yes | Yes | 16+2 merges documented |
+| G. Outputs | Yes | Yes | Yes | G1, G2, G3 present |
 | G1. Stage 3 Outputs | Yes | Yes | Yes | 4 files listed |
 | G2. Stage 4 Outputs | Yes | Yes | Yes | 9 files listed |
-| G3. Summary Statistics | Yes | Yes | Yes | 17 variables with labels |
-| H. Outlier/Missing Treatment | Yes | Yes | Yes | 3 subsections |
-| I. generate_all_tables Entry | Yes | Yes | Yes | Full entry with verification table |
+| G3. Summary Statistics | Yes | Yes | Yes | 17 variables listed with metrics |
+| H. Outlier/Missing Treatment | Yes | Yes | Yes | H1, H2, H3 present |
+| I. generate_all_tables Entry | Yes | Yes | Yes | Python dict present, verification table |
 | J. Reproduction Commands | Yes | Yes | Yes | 3 commands |
 | K. Model-Family Addendum | Yes | Yes | Yes | K1 filled, K2-K6 marked N/A |
-| L. Known Issues | Yes | Yes | Yes | 7 issues documented |
+| L. Known Issues | Yes | Yes | Yes | 9 known issues documented |
 
-**Phase 1 Result: 24/25 PASS (1 partial for D2 missing row counts)**
+**Phase 1 Result: PASS — All 26 structural checks passed.**
 
 ---
 
-## PHASE 2: FACTUAL ACCURACY -- SECTION A (Suite Identity)
+## PHASE 2: FACTUAL ACCURACY — SECTION A (Suite Identity)
+
+**Method:** Verify each YAML field against code.
 
 ### A-1. Suite ID
-- **Doc claims:** H14
-- **Verification:** Trivially correct.
+- **Claim:** H14
+- **Verification:** Trivial — matches runner filename, generate_all_tables.py entry
 - **Result:** PASS
 
 ### A-2. Title
-- **Doc claims:** "Speech Uncertainty and Bid-Ask Spread Changes"
-- **Code evidence:** Runner docstring (line 4): "Test H14 Bid-Ask Spread Hypothesis". LaTeX table caption (line 430): "Speech Uncertainty and Bid-Ask Spread Changes". generate_all_tables.py caption: "H14: Speech Uncertainty and Bid-Ask Spread Changes".
-- **Result:** PASS (matches table caption)
+- **Claim:** "Speech Uncertainty and Bid-Ask Spread Changes"
+- **Verification:** Runner `_save_latex_table` (line 430): `r"\caption{Speech Uncertainty and Bid-Ask Spread Changes}"`. Also generate_all_tables.py: `"caption": "H14: Speech Uncertainty and Bid-Ask Spread Changes"`. Match.
+- **Result:** PASS
 
 ### A-3. Hypothesis
-- **Doc claims:** "Higher earnings-call language uncertainty is associated with a larger increase in bid-ask spreads around the conference call (lower market liquidity)."
-- **Code evidence:** Runner docstring (lines 35-36): "H14: beta(uncertainty_var) > 0 -- higher uncertainty -> wider spreads." Panel builder docstring (lines 25-26): "Higher earnings-call language uncertainty is associated with a larger increase in bid-ask spreads around the conference call (lower market liquidity)."
+- **Claim:** "Higher earnings-call language uncertainty is associated with a larger increase in bid-ask spreads around the conference call (lower market liquidity)."
+- **Verification:** Runner docstring (line 36): `H14: beta(uncertainty_var) > 0 — higher uncertainty -> wider spreads.` Builder docstring (line 24-26): matches same description. The provenance doc's longer form is consistent.
 - **Result:** PASS
 
 ### A-4. Direction (tail test)
-- **Doc claims:** one-tailed beta > 0
-- **Code evidence:** Runner line 364: `p_one = p_two / 2 if beta > 0 else 1 - p_two / 2`. Runner line 36: "H14: beta(uncertainty_var) > 0". generate_all_tables.py: `"tail": "one", "hyp_dir": ">"`.
+- **Claim:** "one-tailed beta > 0"
+- **Verification:** Runner line 364: `p_one = p_two / 2 if beta > 0 else 1 - p_two / 2`. Runner docstring line 35: `Hypothesis Test (one-tailed):`. generate_all_tables.py: `"tail": "one", "hyp_dir": ">"`. All consistent.
 - **Result:** PASS
 
 ### A-5. Model Family
-- **Doc claims:** PanelOLS
-- **Code evidence:** Runner line 71: `from linearmodels.panel import PanelOLS`. Lines 321, 334: `PanelOLS(...)` and `PanelOLS.from_formula(...)`.
+- **Claim:** "PanelOLS"
+- **Verification:** Runner line 71: `from linearmodels.panel import PanelOLS`. Runner lines 321-334: PanelOLS constructor and from_formula calls.
 - **Result:** PASS
 
 ### A-6. Estimator
-- **Doc claims:** linearmodels.panel.PanelOLS
-- **Code evidence:** Runner line 71: `from linearmodels.panel import PanelOLS`.
+- **Claim:** "linearmodels.panel.PanelOLS"
+- **Verification:** Runner import (line 71): `from linearmodels.panel import PanelOLS`. Exact class confirmed.
 - **Result:** PASS
 
 ### A-7. Unit of Observation
-- **Doc claims:** call-level (individual earnings call)
-- **Code evidence:** Panel builder docstring (line 22): "Unit of observation: the individual earnings call (file_name)." Runner line 590: "Unit of observation: individual earnings call (call-level)".
+- **Claim:** "call-level (individual earnings call)"
+- **Verification:** Builder docstring (line 22): "Unit of observation: the individual earnings call (file_name)." Runner docstring (line 4): "CALL-LEVEL panel". `file_name` is the merge key throughout.
 - **Result:** PASS
 
 ### A-8. Panel Index
-- **Doc claims:** `(gvkey, cal_yr)` for cols 1-4; `(gvkey, cal_yr_qtr)` for cols 5-6
-- **Code evidence:** Runner line 304: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`. Runner line 314: `df_panel = df_prepared.set_index(["gvkey", time_col])`. MODEL_SPECS cols 1-4 have fe="industry"/"firm" (no "_yq"), cols 5-6 have fe="industry_yq"/"firm_yq".
+- **Claim:** "(gvkey, cal_yr) for cols 1-4; (gvkey, cal_yr_qtr) for cols 5-6"
+- **Verification:**
+  - Runner line 304: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`.
+  - Runner line 314: `df_panel = df_prepared.set_index(["gvkey", time_col])`.
+  - MODEL_SPECS cols 5-6 have `fe: "industry_yq"` and `fe: "firm_yq"` which endswith("_yq") = True → cal_yr_qtr.
+  - Cols 1-4 use `cal_yr`. Split is correct.
 - **Result:** PASS
 
-### A-9. Columns (number of model specs)
-- **Doc claims:** 6
-- **Code evidence:** Runner lines 115-123: `MODEL_SPECS` has exactly 6 entries (col 1 through col 6).
+### A-9. Columns
+- **Claim:** "6"
+- **Verification:** Runner MODEL_SPECS list (lines 115-123): 6 entries. `len(MODEL_SPECS) = 6`. CONFIRMED.
+- **Note:** Runner module-level docstring (line 11) says "4 columns in one table" — stale. Provenance doc correctly follows code-is-truth (6 columns), documented as Known Issue #9.
 - **Result:** PASS
 
 ### A-10. Runner and Panel Builder paths
-- **Doc claims:** Runner: `src/f1d/econometric/run_h14_bidask_spread.py`, Panel Builder: `src/f1d/variables/build_h14_bidask_spread_panel.py`
-- **Verification:** Both files exist and were read during this audit.
+- **Claim:** `src/f1d/econometric/run_h14_bidask_spread.py` and `src/f1d/variables/build_h14_bidask_spread_panel.py`
+- **Verification:** Both files confirmed to exist on disk.
 - **Result:** PASS
 
-**Phase 2 Result: 10/10 PASS**
+**Phase 2 Result: 9 explicit checks PASS. One anomaly (stale docstring) correctly documented in doc.**
 
 ---
 
-## PHASE 3: FACTUAL ACCURACY -- SECTION B (Model Specification)
+## PHASE 3: FACTUAL ACCURACY — SECTION B (Model Specification)
 
 ### B1-CHECK: Regression Equation
-- **Doc claims:** `DSPREAD_{i,t} = b1*CEO_QA_Unc + b2*CEO_Pres_Unc + b3*Mgr_QA_Unc + b4*Mgr_Pres_Unc + Controls + alpha_i + delta_t + epsilon`
-- **Code evidence:** Runner line 301: `exog = KEY_IVS + controls`. KEY_IVS has 4 uncertainty measures. Formula for firm FE (line 333): `"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`. For industry FE: separate dependent, exog, other_effects, time_effects. All 4 IVs enter simultaneously.
-- **Assessment:** Equation correctly represents the code. All terms present, no extra terms.
+
+- **Claim:** `DSPREAD_{i,t} = beta_1*CEO_QA_Unc + beta_2*CEO_Pres_Unc + beta_3*Mgr_QA_Unc + beta_4*Mgr_Pres_Unc + gamma'*Controls + alpha_i + delta_t + epsilon_{i,t}`
+- **Verification:** Runner KEY_IVS (lines 88-92): 4 IVs in stated order. Runner line 301: `exog = KEY_IVS + controls`. All 4 IVs enter simultaneously. Entity FE (alpha_i) is either firm or industry depending on spec. Time FE (delta_t) is always present. Formula is correct.
 - **Result:** PASS
 
-### B2-CHECK: Dependent Variable(s)
-- **Doc claims:** DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1]) using closing BID/ASK quotes.
-- **Code evidence:** Panel builder line 181: `panel = panel.rename(columns={"delta_spread_closing": "DSPREAD"})`. BidAskSpreadChangeBuilder line 346-348: closing spread = `2 * (ASK - BID) / (ASK + BID)`. Lines 422-423: `delta_spread_closing = post_call_spread_closing - pre_call_spread_closing`.
-- **Construction steps verification:**
-  - Step 1 (CCM linkage): builder `_build_permno_map` at line 127-206. Date-bounded: line 192-194 `linkdt <= start_date <= linkenddt`. PASS.
-  - Step 2 (Reference date): builder line 355-359: last trading day on or before call. PASS.
-  - Step 3 (Pre-window): builder line 372-376: pre_rank by date descending. PASS.
-  - Step 4 (Post-window): builder line 379-383: post_rank by date ascending. PASS.
-  - Step 5 (Closing spread): builder line 346-348. PASS.
-  - Step 6 (Pre/Post averages): builder lines 413-420 for closing variant. PASS.
-  - Step 7 (Delta): builder line 422-423. PASS.
-  - Step 8 (Min 2 days): builder lines 300-302: `min_pre = max(1, w - 1) = max(1, 3-1) = 2`. Lines 425-430: filter applied. PASS.
-  - Step 9 (Rename): panel builder line 181. PASS.
+### B2-CHECK: Dependent Variable
+
+- **Claim:** DSPREAD = `mean(2*(ASK-BID)/(ASK+BID) for [+1,+3]) - mean(2*(ASK-BID)/(ASK+BID) for [-3,-1])` using closing quotes
+- **Verification (builder `bidask_spread_change.py`):**
+  - Line 346-348: `spread_closing = 2*(ASK-BID)/(ASK+BID)` — CONFIRMED
+  - Lines 416-429: `delta_spread_closing = post_call_spread_closing - pre_call_spread_closing` — CONFIRMED
+  - Lines 386-387: `pre_window = merged[pre_mask & (merged["pre_rank"] <= w)]` where `w=3` — 3 trading days — CONFIRMED
+  - Lines 300-302: `min_pre = max(1, w-1) = 2` — minimum 2 days required — CONFIRMED
+  - Panel builder lines 180-183: `rename({"delta_spread_closing": "DSPREAD"})` — CONFIRMED
+  - Doc says "line 181 of panel builder" for the rename — line 181 is the inner dict entry `"delta_spread_closing": "DSPREAD"`. Minor line-number imprecision; functionally correct.
 - **Result:** PASS
 
-### B3-CHECK: Independent Variable(s)
-- **Doc claims:** CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct from LinguisticEngine.
-- **Code evidence:** Runner lines 88-92: `KEY_IVS` lists all 4 exact column names. Panel builder imports CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder, ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder (lines 56-59). All enter simultaneously via `exog = KEY_IVS + controls` (runner line 301).
-- **Missing IVs check:** No other IVs exist in the code. PASS.
+### B3-CHECK: Independent Variables
+
+- **Claim:** 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+- **Verification:** Runner KEY_IVS (lines 88-92): exact 4 variable names match. Panel builder imports (lines 56-59): CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder, ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder — all confirmed. Bounded [0,100]: not in any winsorize_cols list — CONFIRMED.
 - **Result:** PASS
 
 ### B4-CHECK: Control Variables
-- **Doc claims:** Base Controls (8): Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread. Extended Controls (Base + 4): + StockPrice, Turnover, Volatility, AbsSurpDec.
-- **Code evidence:** Runner lines 97-106: `BASE_CONTROLS` = [Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread]. 8 variables. PASS. Runner lines 108-113: `EXTENDED_CONTROLS` = BASE_CONTROLS + [StockPrice, Turnover, Volatility, AbsSurpDec]. 12 variables. PASS.
-- **PreCallSpread as lagged-DV:** Documented as "PreCallSpread (lagged-DV control: pre-call relative spread level)". Code: PreCallSpread = `pre_call_spread_closing` = mean of closing spread for [-3,-1] window, constructed by BidAskSpreadChangeBuilder. This IS the pre-call level of the DV's denominator, functioning as a lagged-DV control. PASS.
-- **Dynamic controls:** No dynamic control logic found in runner. None documented. PASS.
-- **Every control in code in doc:** Verified all 8 base + 4 extended. PASS.
-- **Every control in doc in code:** No extras in doc. PASS.
-- **Result:** PASS
+
+**BASE_CONTROLS verification (runner lines 97-106):**
+```
+Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread
+```
+Doc B4 Base Controls table: same 8 variables — CONFIRMED.
+
+**EXTENDED_CONTROLS (runner lines 108-113):**
+```
+BASE + StockPrice, Turnover, Volatility, AbsSurpDec
+```
+Doc B4 Extended table: same 4 additions — CONFIRMED.
+
+**FORMULA ERROR — TobinsQ in B4:**
+
+- **Doc B4 claims:** `(cshoq * prccq + dlcq + dlttq) / atq (missing debt treated as zero)`
+- **Actual code (`_compustat_engine.py` lines 987-997):**
+  ```python
+  mktcap = comp["cshoq"] * comp["prccq"]
+  debt_c = comp["dlcq"].clip(lower=0).fillna(0)
+  debt_t = comp["dlttq"].clip(lower=0).fillna(0)
+  debt_book = np.where(
+      comp["dlcq"].isna() & comp["dlttq"].isna(), np.nan, debt_c + debt_t
+  )
+  comp["TobinsQ"] = np.where(
+      comp["atq"].notna() & (comp["atq"] > 0) & mktcap.notna(),
+      (mktcap + debt_book) / comp["atq"],
+      np.nan,
+  )
+  ```
+- **B4 formula is wrong:** It omits (1) `clip(lower=0)` applied to both debt components, (2) the special null rule — if BOTH dlcq AND dlttq are NaN, debt_book = NaN (not 0), making TobinsQ = NaN, and (3) the condition that cshoq*prccq must be non-null.
+- Section E (Variable Dictionary) is closer: `(cshoq*prccq + dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)) / atq` — but still omits the both-null edge case and mktcap null condition.
+- **Result: FAIL**
+
+**Other formula verifications:**
+- BookLev: Engine line 948: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` — Doc says same. PASS.
+- ROA: Engine lines 960-969: `iby_annual(Q4) / ((atq_annual + atq_annual_lag1) / 2)` — Doc says same. PASS.
+- Size: Engine line 943: `ln(atq) for atq > 0 else NaN` — Doc says same. PASS.
+- CapexAt: Engine lines 999-1003: `capxy_annual(Q4) / atq_annual_lag1` — Doc says same. PASS.
+- DividendPayer: Binary; skip_winsorize excludes it. Confirmed from engine CRITICAL-2 fix. PASS.
+- OCF_Volatility: "rolling 5-year std (min 3 yrs) of oancfy / atq_{t-1}" — Builder docstring + changelog. PASS.
+- PreCallSpread: `pre_call_spread_closing` renamed in panel builder line 182. Mean of closing spread in [-3,-1] window. PASS.
+- StockPrice: CRSPEngine line 92: `crsp["PRC"] = crsp["PRC"].abs()`. Builder renames PRC→StockPrice. PASS.
+- Turnover: TurnoverBuilder lines 231-233: `VOL / (SHROUT * 1000)`. PASS.
+- Volatility: `std(daily RET) * sqrt(252) * 100`, min 10 days. PASS.
+- AbsSurpDec: Panel builder line 187: `SurpDec.abs()`. EarningsSurpriseBuilder `_rank_surprises` confirms [-5,+5] scale. PASS.
 
 ### B5-CHECK: Fixed Effects
-- **Doc claims:** Industry (ff12_code via other_effects) for cols 1,3,5; Firm (gvkey via EntityEffects) for cols 2,4,6; Cal Year (cal_yr) for cols 1-4; Cal Yr-Qtr (cal_yr_qtr) for cols 5-6.
-- **Code evidence:**
-  - Industry FE: Runner lines 317-329: `PanelOLS(entity_effects=False, time_effects=True, other_effects=industry_data)` where `industry_data = df_panel["ff12_code"]`. PASS.
-  - Firm FE: Runner line 333: `"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`. PASS.
-  - Time FE: Runner line 304: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`. Line 314: `set_index(["gvkey", time_col])`. PASS.
-  - Col mapping: MODEL_SPECS cols 1-4 use "industry"/"firm" (cal_yr), cols 5-6 use "industry_yq"/"firm_yq" (cal_yr_qtr). PASS.
-- **Time FE source:** `build_cal_yr_qtr_index` in `panel_utils.py` lines 195-218 creates `cal_yr = start_date.dt.year` and `cal_yr_qtr = cal_yr * 10 + cal_qtr`. These are calendar, not fiscal. PASS.
+
+- Industry FE (cols 1,3,5): `entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"]` — Runner lines 323-329. CONFIRMED.
+- Firm FE (cols 2,4,6): `EntityEffects + TimeEffects` in formula string — Runner line 333. CONFIRMED.
+- Cal Year (cols 1-4): `time_col = "cal_yr"` for non-_yq specs — Runner line 304. CONFIRMED.
+- Cal Yr-Qtr (cols 5-6): `time_col = "cal_yr_qtr"` for _yq specs — Runner line 304. CONFIRMED.
+- `build_cal_yr_qtr_index()`: `cal_yr = start_date.dt.year`, `cal_yr_qtr = cal_yr * 10 + cal_qtr` — panel_utils.py lines 215-217. CONFIRMED.
 - **Result:** PASS
 
-### B6-CHECK: Standard Errors and Clustering
-- **Doc claims:** cov_type="clustered", cluster_entity=True (firm-level, gvkey). Lines 330, 335.
-- **Code evidence:** Runner line 330: `model_obj.fit(cov_type="clustered", cluster_entity=True)`. Line 335: same. Both industry and firm FE specs use identical clustering.
+### B6-CHECK: Standard Errors
+
+- **Claim:** `cov_type="clustered"`, `cluster_entity=True` (firm-level), lines 330 and 335.
+- **Verification:** Runner line 330: `model_obj.fit(cov_type="clustered", cluster_entity=True)` (industry specs). Runner line 335: same (firm specs). CONFIRMED.
 - **Result:** PASS
 
 ### B7-CHECK: Hypothesis Test
-- **Doc claims:** One-tailed beta > 0. `p_one = p_two / 2 if beta > 0 else 1 - p_two / 2` at line 364. Stars: *** p<0.01, ** p<0.05, * p<0.10 at lines 384-394.
-- **Code evidence:** Runner line 364: `p_one = p_two / 2 if beta > 0 else 1 - p_two / 2`. PASS. Runner lines 384-394: `_sig_stars` function with exact thresholds. PASS.
+
+- **Claim:** `p_one = p_two / 2 if beta > 0 else 1 - p_two / 2` (runner line 364)
+- **Verification:** Runner line 364: exact code match. CONFIRMED.
+- **Claim:** `_sig_stars` at lines 384-394
+- **Verification:** `_sig_stars` defined at lines 384-394: `if p < 0.01: "***"; if p < 0.05: "**"; if p < 0.10: "*"`. CONFIRMED.
 - **Result:** PASS
 
-**Phase 3 Result: 7/7 PASS**
+**Phase 3 Result: 6/7 PASS. One FAIL: B4 TobinsQ formula is simplified and incorrect relative to code.**
 
 ---
 
-## PHASE 4: FACTUAL ACCURACY -- SECTION C (Spec Register)
+## PHASE 4: FACTUAL ACCURACY — SECTION C (Spec Register)
 
-- **Row count:** Doc has 6 rows (cols 1-6). MODEL_SPECS has 6 entries. PASS.
-- **Col 1:** DV=DSPREAD, Entity=Industry(FF12), Time=Cal Year, Controls=Base(8). Code: `{"col": 1, "dv": "DSPREAD", "fe": "industry", "controls": "base"}`. PASS.
-- **Col 2:** DV=DSPREAD, Entity=Firm, Time=Cal Year, Controls=Base(8). Code: `{"col": 2, "dv": "DSPREAD", "fe": "firm", "controls": "base"}`. PASS.
-- **Col 3:** DV=DSPREAD, Entity=Industry(FF12), Time=Cal Year, Controls=Extended(12). Code: `{"col": 3, "dv": "DSPREAD", "fe": "industry", "controls": "extended"}`. PASS.
-- **Col 4:** DV=DSPREAD, Entity=Firm, Time=Cal Year, Controls=Extended(12). Code: `{"col": 4, "dv": "DSPREAD", "fe": "firm", "controls": "extended"}`. PASS.
-- **Col 5:** DV=DSPREAD, Entity=Industry(FF12), Time=Cal Yr-Qtr, Controls=Extended(12). Code: `{"col": 5, "dv": "DSPREAD", "fe": "industry_yq", "controls": "extended"}`. PASS.
-- **Col 6:** DV=DSPREAD, Entity=Firm, Time=Cal Yr-Qtr, Controls=Extended(12). Code: `{"col": 6, "dv": "DSPREAD", "fe": "firm_yq", "controls": "extended"}`. PASS.
+**Method:** Compare every row against MODEL_SPECS in runner (lines 115-123).
 
-**Phase 4 Result: 7/7 PASS**
+**Runner MODEL_SPECS:**
+```python
+{"col": 1, "dv": "DSPREAD", "fe": "industry",    "controls": "base"},
+{"col": 2, "dv": "DSPREAD", "fe": "firm",         "controls": "base"},
+{"col": 3, "dv": "DSPREAD", "fe": "industry",    "controls": "extended"},
+{"col": 4, "dv": "DSPREAD", "fe": "firm",         "controls": "extended"},
+{"col": 5, "dv": "DSPREAD", "fe": "industry_yq", "controls": "extended"},
+{"col": 6, "dv": "DSPREAD", "fe": "firm_yq",     "controls": "extended"},
+```
+
+**Row-by-row verification:**
+
+| Doc Row | DV | Entity FE | Time FE | Controls | Code Match |
+|---------|-----|-----------|---------|----------|-----------|
+| Col 1 | DSPREAD | Industry (FF12) | Cal Year | Base (8) | CONFIRMED: fe="industry", controls="base" |
+| Col 2 | DSPREAD | Firm | Cal Year | Base (8) | CONFIRMED: fe="firm", controls="base" |
+| Col 3 | DSPREAD | Industry (FF12) | Cal Year | Extended (12) | CONFIRMED: fe="industry", controls="extended" |
+| Col 4 | DSPREAD | Firm | Cal Year | Extended (12) | CONFIRMED: fe="firm", controls="extended" |
+| Col 5 | DSPREAD | Industry (FF12) | Cal Yr-Qtr | Extended (12) | CONFIRMED: fe="industry_yq"→time_col=cal_yr_qtr |
+| Col 6 | DSPREAD | Firm | Cal Yr-Qtr | Extended (12) | CONFIRMED: fe="firm_yq"→time_col=cal_yr_qtr |
+
+- Row count: 6 — matches len(MODEL_SPECS) = 6. CONFIRMED.
+- "Extended (12)": BASE_CONTROLS=8 + 4 extended = 12. CONFIRMED.
+- Doc source note "runner lines 115-123": Lines 115-123 span the MODEL_SPECS list. CONFIRMED.
+
+**Phase 4 Result: 4/4 PASS.**
 
 ---
 
-## PHASE 5: FACTUAL ACCURACY -- SECTION D (Sample Construction)
+## PHASE 5: FACTUAL ACCURACY — SECTION D (Sample Construction)
 
 ### D1-CHECK: Population
-- **Doc claims:** Starting dataset: master_sample_manifest.parquet, year range 2002-2018.
-- **Code evidence:** Runner line 186-191: loads from `outputs/variables/h14_bidask_spread/latest/h14_bidask_spread_panel.parquet`. Panel builder loads manifest from `outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet`. Project scope: 112,968 calls, 2,429 firms, 2002-2018.
+
+- **Claim:** Starting from `master_sample_manifest.parquet`, 2002-2018, 112,968 total calls.
+- **Verification:** Project scope: 112,968 calls, 2,429 firms, 2002-2018 (per project_thesis_scope.md). Runner line 189: loads from manifest. Panel builder lines 324-328: year range from config. Consistent with project scope.
 - **Result:** PASS
 
 ### D2-CHECK: Exclusion Criteria
-- **Doc claims 5 filter steps:**
-  1. Full manifest -- Code: panel builder loads all calls from manifest. PASS.
-  2. Main sample filter (excl FF12=8,11) -- Code: runner line 227: `panel[~panel["ff12_code"].isin([8, 11])]`. PASS.
-  3. DV non-missing (DSPREAD NaN) -- Code: runner line 260: `df[df[dv].notna()]`. PASS.
-  4. Complete case (all vars NaN) -- Code: runner lines 263-264: `df[required].notna().all(axis=1)`. PASS.
-  5. Min 5 calls per firm -- Code: runner lines 267-269: `firm_counts >= MIN_CALLS_PER_FIRM` where `MIN_CALLS_PER_FIRM = 5` (line 125). PASS.
-- **Filter order:** Matches code order in `prepare_regression_data` (lines 252-273). PASS.
-- **Missing row counts:** The creation prompt template requires columns "Rows Before | Rows After | Dropped". The provenance doc D2 table has only "Step | Filter | Description" -- **no actual counts**. The doc notes: "Attrition counts vary by specification... The runner's generate_attrition_table records col-1 counts as representative (runner line 753-759)." This is informative but does not meet the creation prompt's template.
-- **Result:** FAIL (row counts missing from D2 table)
+
+**Doc's 5-step cascade:**
+
+| Step | Filter | N |
+|------|--------|---|
+| 1 | Full manifest | 112,968 |
+| 2 | Main sample (excl FF12=8,11) | 88,205 |
+| 3 | DV non-missing | 87,119 |
+| 4 | Complete case | -- |
+| 5 | Min calls per firm (>=5) | 57,044 |
+
+**Runner's actual attrition output (lines 752-759):**
+```python
+attrition_stages = [
+    ("Master manifest (full panel)", full_panel_n),
+    ("Main sample filter (excl Finance/Utility)", main_panel_n),
+    ("DSPREAD non-null", panel["DSPREAD"].notna().sum()),
+    ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
+]
+```
+
+**Issues:**
+1. The runner generates EXACTLY 4 stages in `sample_attrition.csv` / `sample_attrition.tex`. The doc shows 5 conceptual steps, with steps 4+5 combined (step 4 N = "--"). The doc's note acknowledges this: "Steps 4 and 5 are applied jointly in the runner."
+2. Stage 3 "DSPREAD non-null" uses `panel["DSPREAD"].notna().sum()` computed on the post-main-sample-filter panel. Doc's Step 3 N=87,119 is for this count. Correct interpretation.
+3. The actual CSV output will have 4 rows, not matching the 5-row D2 table. A reader checking the file will see different structure.
+4. The doc says "runner line 753-759" — correct range for the attrition_stages list (lines 752-759 in runner).
+- **Result: PASS WITH CAVEAT** — Conceptually correct but actual output file has 4 stages. Doc's note is there but imprecise.
 
 ### D3-CHECK: Sample Counts per Spec
-- **Doc claims:** N varies across specifications due to different control sets and FE granularity.
-- **Code evidence:** Runner line 240: `controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS`. Different required lists per spec. Complete-case filter drops different rows per spec. PASS.
+
+- **Claim:** N varies across specs due to different control sets.
+- **Verification:** `prepare_regression_data` called per spec (runner line 735). Extended controls introduce additional missingness. CONFIRMED.
 - **Result:** PASS
 
-### Note on fyearq_int in required list
-- Runner line 241: `required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]`. The `fyearq_int` column is included in the complete-case check, meaning rows with missing fiscal year mappings are dropped even though `fyearq_int` is never used as a FE or regression variable. This is not documented as a known issue in the provenance doc. This causes some unnecessary sample attrition. Flagged as informational finding.
-
-**Phase 5 Result: 3/4 PASS**
+**Phase 5 Result: 2/3 PASS. D2 has caveat about 4-stage vs 5-step representation.**
 
 ---
 
-## PHASE 6: FACTUAL ACCURACY -- SECTION E (Variable Dictionary)
+## PHASE 6: FACTUAL ACCURACY — SECTION E (Variable Dictionary)
 
-Verified each of the 20 variables (+ 4 FE columns = 24 rows) in the dictionary.
+**Method:** Verify all 20 variable rows against builder and engine code.
 
-### DV
-| Variable | Name Match | Formula Match | Source Match | Winsorization Match | Timing Match | Result |
-|----------|-----------|---------------|-------------|---------------------|-------------|--------|
-| DSPREAD | Yes (runner line 200, MODEL_SPECS line 116) | Yes (closing BID/ASK verified in builder lines 340-348) | Yes (CRSPEngine via BidAskSpreadChangeBuilder) | Yes (1%/99% pooled, panel builder line 202) | Yes (event-window) | PASS |
+### DSPREAD (DV)
+- Formula: closing bid-ask spread change — builder confirmed. PASS.
+- Winsorized 1%/99% pooled at panel builder line 202. CONFIRMED. PASS.
+- Timing: Event-window. PASS.
 
-### IVs (4)
-| Variable | Name Match | Formula Match | Source Match | Winsorization Match | Timing Match | Result |
-|----------|-----------|---------------|-------------|---------------------|-------------|--------|
-| CEO_QA_Uncertainty_pct | Yes (runner KEY_IVS line 89) | Yes (% uncertainty words) | Yes (LinguisticEngine) | Yes (No, bounded [0,100]) | Yes (contemporaneous) | PASS |
-| CEO_Pres_Uncertainty_pct | Yes (runner KEY_IVS line 90) | Yes | Yes | Yes | Yes | PASS |
-| Manager_QA_Uncertainty_pct | Yes (runner KEY_IVS line 91) | Yes | Yes | Yes | Yes | PASS |
-| Manager_Pres_Uncertainty_pct | Yes (runner KEY_IVS line 92) | Yes | Yes | Yes | Yes | PASS |
+### IV Variables (4)
+- CEO_QA_Uncertainty_pct: LinguisticEngine, bounded [0,100]. CONFIRMED. PASS.
+- CEO_Pres_Uncertainty_pct: same pattern. PASS.
+- Manager_QA_Uncertainty_pct: same pattern. PASS.
+- Manager_Pres_Uncertainty_pct: same pattern. PASS.
 
-### Base Controls (8)
-| Variable | Name Match | Formula Match | Source Match | Winsorization Match | Timing Match | Result |
-|----------|-----------|---------------|-------------|---------------------|-------------|--------|
-| Size | Yes (runner BASE_CONTROLS line 98) | Yes (ln(atq)) | Yes (CompustatEngine) | Yes (1%/99% by fyearq) | Yes | PASS |
-| TobinsQ | Yes (line 99) | Yes ((cshoq*prccq + dlcq + dlttq)/atq) | Yes | Yes | Yes | PASS |
-| ROA | Yes (line 100) | Yes (iby_annual/avg_assets) | Yes | Yes | Yes | PASS |
-| BookLev | Yes (line 101) | Yes ((dlcq+dlttq)/atq, missing as 0) | Yes | Yes | Yes | PASS |
-| CapexAt | Yes (line 102) | Yes (capxy_annual/atq_lag) | Yes | Yes | Yes | PASS |
-| DividendPayer | Yes (line 103) | Yes (1 if dvy_annual>0) | Yes | Yes (No, binary; in skip_winsorize) | Yes | PASS |
-| OCF_Volatility | Yes (line 104) | Yes (rolling 5yr std, min 3) | Yes | Yes (1%/99% by fyearq) | Yes | PASS |
-| PreCallSpread | Yes (line 105) | Yes (mean of closing spread [-3,-1]) | Yes (CRSPEngine via BidAskSpreadChangeBuilder) | Yes (1%/99% pooled, line 202) | Yes (pre-event) | PASS |
+### Size
+- Formula: `ln(atq) for atq > 0; else NaN` — Engine line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. CONFIRMED. PASS.
+- Winsorized "by fiscal year": engine groups by `fyearq` (fiscal year integer per code comment line 1226). CONFIRMED. PASS.
 
-### Extended Controls (additional 4)
-| Variable | Name Match | Formula Match | Source Match | Winsorization Match | Timing Match | Result |
-|----------|-----------|---------------|-------------|---------------------|-------------|--------|
-| StockPrice | Yes (runner EXTENDED line 109) | Yes (abs(PRC), CRSPEngine line 92) | Yes (CRSPEngine via StockPriceBuilder) | Yes (1%/99% pooled, line 202) | Yes | PASS |
-| Turnover | Yes (line 110) | Yes (VOL/(SHROUT*1000)) | Yes (CRSPEngine via TurnoverBuilder) | Yes (1%/99% pooled, line 202) | Yes | PASS |
-| Volatility | Yes (line 111) | Yes (std(RET)*sqrt(252)*100) | Yes (CRSPEngine via VolatilityBuilder) | Yes (1%/99% by calendar year at CRSPEngine level, line 445) | Yes (inter-call window) | PASS |
-| AbsSurpDec | Yes (line 112) | Yes (abs(SurpDec), panel builder line 187) | Yes (IbesEngine via EarningsSurpriseBuilder) | Yes (1%/99% pooled, line 202) | Yes | PASS |
+### TobinsQ
+- Formula in E: `(cshoq*prccq + dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)) / atq`
+- **Code (`_compustat_engine.py` lines 987-997):**
+  - `debt_c = dlcq.clip(lower=0).fillna(0)`
+  - `debt_t = dlttq.clip(lower=0).fillna(0)`
+  - `debt_book = np.where(dlcq.isna() & dlttq.isna(), np.nan, debt_c + debt_t)` ← both-null → NaN
+  - `TobinsQ = np.where(atq.notna() & atq > 0 & mktcap.notna(), (mktcap + debt_book) / atq, np.nan)` ← also requires mktcap non-null
+- **E formula misses:**
+  1. When BOTH dlcq AND dlttq are NaN, `debt_book` is NaN (not 0), making TobinsQ = NaN. The E formula implies independently fillna(0) on each, giving 0+0=0 when both missing.
+  2. The condition `mktcap.notna()` (cshoq*prccq non-null) is also required.
+- **Result: FAIL** (minor — main formula logic is captured, but edge case documentation is incomplete)
 
-### FE Columns (4)
-| Variable | Name Match | Source Match | Result |
-|----------|-----------|-------------|--------|
-| gvkey | Yes | Yes (manifest) | PASS |
-| ff12_code | Yes | Yes (manifest) | PASS |
-| cal_yr | Yes (start_date.dt.year) | Yes (panel_utils.py line 215) | PASS |
-| cal_yr_qtr | Yes (cal_yr*10+cal_qtr) | Yes (panel_utils.py line 217) | PASS |
+### ROA
+- Formula: `iby_annual(Q4) / ((atq_annual + atq_annual_lag1) / 2)` — Engine lines 959-969. CONFIRMED. PASS.
 
-### Completeness Check
-- **Every variable from MODEL_SPECS in dictionary?** DSPREAD (DV) + 4 IVs + 8 base + 4 extended = 17. All present. PASS.
-- **Every variable from BASE_CONTROLS and EXTENDED_CONTROLS in dictionary?** All 12 present. PASS.
-- **FE columns in dictionary?** gvkey, ff12_code, cal_yr, cal_yr_qtr. All present. PASS.
+### BookLev
+- Formula: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` — Engine line 948. CONFIRMED. PASS.
 
-**Phase 6 Result: 22/22 PASS**
+### CapexAt
+- Formula: `capxy_annual(Q4) / atq_annual_lag1` — Engine lines 999-1003. CONFIRMED. PASS.
+
+### DividendPayer
+- Binary; 1 if dvy_annual(Q4) > 0, else 0. Excluded from winsorization. CONFIRMED. PASS.
+
+### OCF_Volatility
+- Formula: rolling 5-year std (min 3 yrs) of oancfy/atq_{t-1}. Builder docstring + engine changelog. CONFIRMED. PASS.
+
+### PreCallSpread
+- Formula: mean(closing spread in [-3,-1] window). Panel builder line 182 rename. CONFIRMED. PASS.
+
+### StockPrice
+- Formula: abs(PRC). CRSPEngine line 92: `crsp["PRC"] = crsp["PRC"].abs()`. StockPriceBuilder renames PRC→StockPrice. CONFIRMED. PASS.
+- Doc says "applied in CRSPEngine line 92" — CONFIRMED.
+
+### Turnover
+- Formula: `VOL / (SHROUT * 1000)`. TurnoverBuilder lines 231-233. CONFIRMED. PASS.
+
+### Volatility
+- Formula: `std(daily RET) * sqrt(252) * 100`, inter-call window, min 10 days. VolatilityBuilder uses `engine.get_data()`. CONFIRMED. PASS.
+- Winsorized per calendar year at CRSPEngine level: CRSPEngine lines 444-447: `winsorize_by_year(..., year_col="year")` where `year = start_date.dt.year`. CONFIRMED. PASS.
+
+### AbsSurpDec
+- Formula: `abs(SurpDec)` where SurpDec is ranked ACTUAL-MEANEST into [-5,+5] within quarter. Panel builder line 187. EarningsSurpriseBuilder `_rank_surprises` function. IbesEngine `surprise_raw = actual - meanest`. CONFIRMED. PASS.
+
+### FE Columns (gvkey, ff12_code, cal_yr, cal_yr_qtr)
+- All four documented with correct sources and formulas. CONFIRMED. PASS.
+
+**Phase 6 Result: 19/20 PASS. One FAIL: TobinsQ in E omits both-null debt edge case and mktcap null condition.**
 
 ---
 
-## PHASE 7: FACTUAL ACCURACY -- SECTIONS F, G, H
+## PHASE 7: FACTUAL ACCURACY — SECTIONS F, G, H
 
 ### F-CHECK: Data Pipeline
 
-**F1. Dependency Chain:**
-- 7 numbered steps: raw inputs, engine loading, panel builder, runner loading, sample filtering, regression estimation, table generation. All verified against code. PASS.
+**F1. Dependency Chain (7 steps):**
+1. Raw inputs: CRSP_DSF, CCM, CompustatNA, linguistic, manifest, IBES — CONFIRMED from engine source files.
+2. Engine loading: 4 engines (CRSPEngine get_raw, CRSPEngine get_data, CompustatEngine, LinguisticEngine, IbesEngine). CONFIRMED.
+3. Panel builder: 16 merges, rename delta_spread_closing → DSPREAD, attach fyearq_int, winsorize 5 cols. CONFIRMED.
+4. Runner loading: loads parquet, builds cal_yr_qtr index via `build_cal_yr_qtr_index()`. CONFIRMED (runner lines 217-218).
+5. Sample filtering: main sample filter then per-spec: DV non-null → complete case → min calls. CONFIRMED.
+6. Regression: PanelOLS, 6 specs, one-tailed p-values. CONFIRMED.
+7. Table generation: runner writes its own LaTeX, also in generate_all_tables.py. CONFIRMED.
+- **Result:** PASS
 
 **F2. Data Engines:**
-- CRSPEngine (get_raw_daily_data): provides DSPREAD, PreCallSpread, StockPrice, Turnover. Verified: BidAskSpreadChangeBuilder uses `engine.get_raw_daily_data()` (builder line 76). StockPriceBuilder and TurnoverBuilder also use raw daily data. PASS.
-- CRSPEngine (get_data): provides Volatility. Verified: VolatilityBuilder uses `CRSPEngine.get_data()` (separate cache `_cache` at CRSPEngine line 453). PASS.
-- CompustatEngine: provides Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility. Verified: all builders import from CompustatEngine. PASS.
-- LinguisticEngine: provides 4 uncertainty IVs. Verified: builders import from LinguisticEngine. PASS.
-- IbesEngine: provides SurpDec -> AbsSurpDec. Verified: EarningsSurpriseBuilder uses IbesEngine. PASS.
+- 5 engines listed with correct variables. All confirmed against builder source files.
+- CRSPEngine (get_raw) → DSPREAD, PreCallSpread, StockPrice, Turnover. CONFIRMED.
+- CRSPEngine (get_data) → Volatility. CONFIRMED (VolatilityBuilder line 38).
+- CompustatEngine → 7 Compustat controls. CONFIRMED.
+- LinguisticEngine → 4 IVs. CONFIRMED.
+- IbesEngine → SurpDec/AbsSurpDec. CONFIRMED.
+- **Result:** PASS
 
 **F3. Merge Operations:**
-- 16 panel builder merges documented, all on `file_name` with `left` join and zero row-delta enforced.
-- Code verification: Panel builder lines 153-170 show the merge loop. Every builder result is merged via `panel.merge(data, on="file_name", how="left")` with delta check `if delta != 0: raise ValueError`. PASS.
-- Within-builder merges (CCM linkage + per-year CRSP): builder line 185 (manifest to CCM on gvkey), line 309-314 (year_calls to year_crsp on permno_int=PERMNO, inner). Documented correctly. PASS.
+- 16 panel builder merges documented. Panel builder loop at lines 153-169: iterates builder dict (17 entries - 1 manifest = 16 merges), all left on file_name, zero row-delta enforced. Order matches builder dict. CONFIRMED.
+- 2 internal BidAsk builder merges (manifest→CCM, year_calls→year_crsp). CONFIRMED (builder lines 185, 309).
+- **Result:** PASS
 
 ### G-CHECK: Outputs
 
-**G1. Stage 3 Outputs:**
-| Claimed File | Code Evidence | Match |
-|---|---|---|
-| h14_bidask_spread_panel.parquet | Panel builder line 223-224: `panel.to_parquet(panel_path)` | PASS |
-| summary_stats.csv | Panel builder line 230-231: `stats_df.to_csv(stats_path)` | PASS |
-| run_manifest.json | Panel builder line 235-244: `generate_manifest(...)` | PASS |
-| report_step3_h14.md | Panel builder line 294: `report_path = out_dir / "report_step3_h14.md"` | PASS |
+**G1. Stage 3 (4 files):**
+- `h14_bidask_spread_panel.parquet`: panel builder line 223. CONFIRMED.
+- `summary_stats.csv`: panel builder line 230. CONFIRMED.
+- `run_manifest.json`: panel builder `generate_manifest()` call lines 234-244. CONFIRMED.
+- `report_step3_h14.md`: panel builder line 294. CONFIRMED.
+- **Result:** PASS
 
-**G2. Stage 4 Outputs:**
-| Claimed File | Code Evidence | Match |
-|---|---|---|
-| h14_bidask_spread_table.tex | Runner line 532: `tex_path = out_dir / "h14_bidask_spread_table.tex"` | PASS |
-| model_diagnostics.csv | Runner line 569-570: `diag_path = out_dir / "model_diagnostics.csv"` | PASS |
-| summary_stats.csv | Runner line 720: `output_csv=out_dir / "summary_stats.csv"` | PASS |
-| summary_stats.tex | Runner line 721: `output_tex=out_dir / "summary_stats.tex"` | PASS |
-| sample_attrition.csv | attrition_table.py line 47: writes `sample_attrition.csv` | PASS |
-| sample_attrition.tex | attrition_table.py line 51: writes `sample_attrition.tex` | PASS |
-| regression_results_col{1-6}.txt | Runner line 555: `f"regression_results_col{col_num}.txt"` (iterates 6 specs) | PASS |
-| report_step4_H14.md | Runner line 652: `report_path = out_dir / "report_step4_H14.md"` | PASS |
-| run_manifest.json | Runner line 762-772: `generate_manifest(...)` | PASS |
+**G2. Stage 4 (9 files):**
+- `h14_bidask_spread_table.tex`: runner line 532. CONFIRMED.
+- `model_diagnostics.csv`: runner lines 569-570. CONFIRMED.
+- `summary_stats.csv`: runner line 720 (argument to make_summary_stats_table). CONFIRMED.
+- `summary_stats.tex`: runner line 721. CONFIRMED.
+- `sample_attrition.csv` + `sample_attrition.tex`: runner lines 753-760 call `generate_attrition_table()`. `attrition_table.py` lines 47, 52 write both files. CONFIRMED.
+- `regression_results_col{1-6}.txt`: runner lines 554-565, iterates over all 6 MODEL_SPECS. CONFIRMED.
+- `report_step4_H14.md`: runner line 652. CONFIRMED.
+- `run_manifest.json`: runner lines 762-772. CONFIRMED.
+- **Result:** PASS
 
-- **Extra files in doc not written by code?** No. PASS.
-- **Files written by code not in doc?** No. PASS.
+**G3. Summary Statistics:**
+- SUMMARY_STATS_VARS (runner lines 133-150): 17 variables. All 17 listed in doc's G3 table. Labels match. CONFIRMED.
+- **Result:** PASS
 
 ### H-CHECK: Outlier/Missing Treatment
 
 **H1. Winsorization:**
-- Compustat vars by fiscal year: Code confirms `_winsorize_by_year(comp[col], year_col)` where `year_col = comp["fyearq"]` (CompustatEngine line 1133-1136). Doc correctly says "1%/99% by fiscal year". PASS.
-- CRSP Volatility by calendar year: Code confirms `winsorize_by_year(result_with_year, CRSP_RETURN_COLS, year_col="year")` where year = start_date.dt.year (CRSPEngine lines 444-446). PASS.
-- Panel builder pooled: Code confirms `winsorize_pooled(panel, ["DSPREAD", "PreCallSpread", "StockPrice", "Turnover", "AbsSurpDec"])` at panel builder line 203. PASS.
-- Linguistic IVs NOT winsorized: Not in any winsorize list. PASS.
-- DividendPayer NOT winsorized: In CompustatEngine `skip_winsorize` set (line 1124). PASS.
+- Compustat (Size, TobinsQ, ROA, BookLev, CapexAt, OCF_Volatility): `_winsorize_by_year(comp[col], comp["fyearq"])` — engine lines 1229-1232. DividendPayer excluded (skip_winsorize). CONFIRMED.
+- Volatility: CRSPEngine lines 444-447: `winsorize_by_year(result_with_year, CRSP_RETURN_COLS, year_col="year")`. Calendar year. CONFIRMED.
+- DSPREAD, PreCallSpread, StockPrice, Turnover, AbsSurpDec: `winsorize_pooled()` at panel builder line 202. CONFIRMED.
+- Linguistic IVs: not in any winsorize_cols list. CONFIRMED.
+- **Result:** PASS
 
 **H2. Missing Data Policy:**
-- Complete-case deletion: Runner line 263-264. PASS.
-- Inf replaced: Runner line 252: `df.replace([np.inf, -np.inf], np.nan)`. PASS.
-- BidAskSpreadChangeBuilder min days: builder lines 300-302 (min_pre=min_post=2), lines 404-409 (filter applied). PASS.
+- `df.replace([np.inf, -np.inf], np.nan)`: runner line 252. CONFIRMED.
+- Complete-case deletion: runner lines 263-264. CONFIRMED.
+- BidAsk min 2 days: builder `_process_year_calls` lines 300-302, 404-409. CONFIRMED.
+- **Result:** PASS
 
 **H3. Transformations:**
-- Size = ln(atq): verified in CompustatEngine. PASS.
-- AbsSurpDec = abs(SurpDec): panel builder line 187. PASS.
-- StockPrice = abs(PRC): CRSPEngine line 92. PASS.
-- No centering/z-scoring documented, none found in code. PASS.
+- Size: ln(atq). CONFIRMED.
+- AbsSurpDec: abs(SurpDec). Panel builder line 187. CONFIRMED.
+- StockPrice: abs(PRC). CRSPEngine line 92. CONFIRMED.
+- No centering, z-scoring, scaling. No evidence in code. CONFIRMED.
+- **Result:** PASS
 
-**Phase 7 Result: 9/9 PASS**
-
----
-
-## PHASE 8: FACTUAL ACCURACY -- SECTION I (Table Generator Entry)
-
-- **"id" = "H14":** Code line 366: `"id": "H14"`. PASS.
-- **"tail" = "one":** Code line 374: `"tail": "one"`. PASS.
-- **"hyp_dir" = ">":** Code line 375: `"hyp_dir": ">"`. PASS.
-- **"cols" = 6:** Code line 370: `"cols": 6`. PASS.
-- **"dvs" = [("DSPREAD", 6)]:** Code lines 371-373: `"dvs": [("DSPREAD", 6)]`. PASS.
-- **Main loop line number:** Doc claims "falls through to generate_table() (standard 4-IV suite handler) in the main loop at line 1215." Code: `for suite in SUITES:` is at line 1234. `generate_table(suite)` call is at line 1259. **FAIL -- wrong line number.**
-  - The factual claim about behavior is correct (no `type` key, falls through to `generate_table`), but the line reference is wrong.
-
-**Phase 8 Result: 5/6 PASS**
+**Phase 7 Result: 9/9 PASS.**
 
 ---
 
-## PHASE 9: FACTUAL ACCURACY -- SECTION K (Model-Family Addendum)
+## PHASE 8: FACTUAL ACCURACY — SECTION I (Table Generator Entry)
 
-### K1: PanelOLS Specifics
+**Actual entry from `outputs/generate_all_tables.py` (lines 289-301):**
+```python
+# ── H14 ──
+{
+    "id": "H14",
+    "dir": "h14_bidask_spread/2026-03-27_095017",
+    "caption": "H14: Speech Uncertainty and Bid-Ask Spread Changes",
+    "label": "tab:h14",
+    "cols": 6,
+    "dvs": [
+        ("DSPREAD", 6),
+    ],
+    "tail": "one",
+    "hyp_dir": ">",
+},
+```
+
+**Field-by-field comparison:**
+
+| Field | Doc Claims | Actual Code | Match? |
+|-------|-----------|-------------|--------|
+| id | "H14" | "H14" | YES |
+| dir | "h14_bidask_spread/2026-03-27_095017" | same | YES |
+| caption | "H14: Speech Uncertainty and Bid-Ask Spread Changes" | same | YES |
+| label | "tab:h14" | "tab:h14" | YES |
+| cols | 6 | 6 | YES |
+| dvs | [("DSPREAD", 6)] | same | YES |
+| tail | "one" | "one" | YES |
+| hyp_dir | ">" | ">" | YES |
+| key_vars | (absent) | (absent) | YES |
+
+**Line number error in Section I note:**
+- **Doc claims:** "falls through to `generate_table()` (standard 4-IV suite handler) in the main loop at **line 1234**"
+- **Actual code:** Line 1234: `tex = generate_interaction_table(suite)` (for `type == "interaction"` branch). Line **1241**: `tex = generate_table(suite)` (the `else` clause).
+- **ERROR:** Line number is wrong. 1234 is for the interaction handler, not generate_table(). The correct line is 1241.
+- The functional description is correct (H14 has no "type" key, falls to else → generate_table()).
+- **Result: FAIL** (wrong line number in note)
+
+**Phase 8 Result: 4/5 PASS. One FAIL: line number for generate_table() is 1241, not 1234.**
+
+---
+
+## PHASE 9: FACTUAL ACCURACY — SECTION K (Model-Family Addendum)
+
+### K1. PanelOLS Specifics
 
 **Industry FE specs (cols 1, 3, 5):**
-- entity_effects=False: Code line 325. PASS.
-- time_effects=True: Code line 326. PASS.
-- other_effects=df_panel["ff12_code"]: Code line 327. PASS.
-- drop_absorbed=True: Code line 328. PASS.
-- check_rank=False: Code line 329. PASS.
-- SE: cov_type="clustered", cluster_entity=True: Code line 330. PASS.
+- `entity_effects=False`: runner line 324. CONFIRMED.
+- `time_effects=True`: runner line 325. CONFIRMED.
+- `other_effects=df_panel["ff12_code"]`: runner lines 320-328. CONFIRMED.
+- `drop_absorbed=True`: runner line 327. CONFIRMED.
+- `check_rank=False`: runner line 328. CONFIRMED.
+- SE: runner line 330: `model_obj.fit(cov_type="clustered", cluster_entity=True)`. CONFIRMED.
+- Doc says "runner lines 321-329" — the PanelOLS constructor spans lines 321-329. CONFIRMED.
 
 **Firm FE specs (cols 2, 4, 6):**
-- EntityEffects + TimeEffects in formula: Code line 333: `f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`. PASS.
-- drop_absorbed=True: Code line 334: `PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)`. PASS.
-- SE: cov_type="clustered", cluster_entity=True: Code line 335. PASS.
+- Formula: `f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` — runner line 333. CONFIRMED.
+- `drop_absorbed=True`: runner line 334 (`PanelOLS.from_formula(..., drop_absorbed=True)`). CONFIRMED.
+- SE: runner line 335. CONFIRMED.
 
 **Time index construction:**
-- Cols 1-4 use cal_yr, cols 5-6 use cal_yr_qtr: Code line 304 and 314. PASS.
+- Cols 1-4: `time_col = "cal_yr"`, `set_index(["gvkey", "cal_yr"])` — runner lines 304, 314. CONFIRMED.
+- Cols 5-6: `time_col = "cal_yr_qtr"`, `set_index(["gvkey", "cal_yr_qtr"])` — runner lines 304, 314. CONFIRMED.
 
-**R-squared reporting:**
-- R2 = model.rsquared: Code line 353. PASS.
-- Adj R2 manually computed: Code line 354: `1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid`. PASS.
+**R-squared:**
+- `model.rsquared` — runner line 342, 353. CONFIRMED.
+- Adj R-squared: `1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid` — runner line 354 (in meta dict). CONFIRMED.
 
-**K2-K6 marked N/A:** Correct, not PanelOLS. PASS.
+**K2-K6:** All marked N/A. Suite is PanelOLS — correct.
 
-**Phase 9 Result: 6/6 PASS**
+**Phase 9 Result: 6/6 PASS.**
 
 ---
 
@@ -424,83 +547,174 @@ Verified each of the 20 variables (+ 4 FE columns = 24 rows) in the dictionary.
 
 | # | Quality Gate | Met? | Evidence |
 |---|-------------|------|----------|
-| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | **PASS** | All 17 regression variables + 4 FE columns present in Section E with formulas and sources |
-| 2 | The model equation matches what the code actually estimates | **PASS** | B1 equation verified against runner exog construction (line 301) and PanelOLS specifications |
-| 3 | The specification register accounts for every model column | **PASS** | 6 rows in Section C matching 6 MODEL_SPECS entries |
-| 4 | The attrition cascade has row counts for each filter step | **FAIL** | Section D2 has filter descriptions but no row counts. Doc notes counts are runtime-dependent but does not provide representative counts. |
-| 5 | The tail test direction matches between runner code and generate_all_tables.py | **PASS** | Runner: one-tailed beta>0 (line 364). generate_all_tables.py: tail="one", hyp_dir=">" (lines 374-375). Section B7, Section I, Section A all consistent. |
-| 6 | The FE specification matches between docstring, code, and this document | **PASS** | Doc B5 matches runner code (lines 304, 314, 321-335). Panel builder docstring mentions fyearq_int but code uses cal_yr -- doc correctly notes code is truth (Known Issue #1). |
-| 7 | Every merge in the panel builder is documented with join keys and type | **PASS** | F3 documents all 16 panel builder merges on file_name + 2 within-builder merges with correct keys and types |
-| 8 | The output file list matches what the runner actually writes | **PASS** | G1 (4 files) + G2 (9 files) verified against code file-write operations |
-| 9 | The model-family addendum is filled for the correct family only | **PASS** | K1 (PanelOLS) filled with verified claims. K2-K6 marked N/A. |
-| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | **PASS** | No [UNVERIFIED] markers in the document; all claims are supported by code references |
+| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | MOSTLY | All variables present. TobinsQ formula in E misses both-null edge case and mktcap null condition. |
+| 2 | The model equation matches what the code actually estimates | YES | B1 equation verified: 4 IVs + controls + entity FE + time FE. |
+| 3 | The specification register accounts for every model column | YES | 6-row spec register matches 6 MODEL_SPECS exactly. |
+| 4 | The attrition cascade has row counts for each filter step | PARTIAL | D2 Step 4 N = "--" (no count for complete-case alone). Actual output CSV has 4 stages not 5. |
+| 5 | The tail test direction matches between runner code and generate_all_tables.py | YES | Runner: `p_two/2 if beta > 0`. GAT: `"tail": "one", "hyp_dir": ">"`. |
+| 6 | The FE specification matches between docstring, code, and this document | YES | B5, C, K1 all consistent with runner code. |
+| 7 | Every merge in the panel builder is documented with join keys and type | YES | F3: 16 panel builder merges + 2 internal BidAsk builder merges. All verified. |
+| 8 | The output file list matches what the runner actually writes | YES | G2: 9 files listed; all confirmed against runner write operations. |
+| 9 | The model-family addendum is filled for the correct family only | YES | K1 (PanelOLS) filled; K2-K6 = N/A. |
+| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | YES | No [UNVERIFIED] markers in doc. All claims verified or flagged as known issues. |
 
-**Phase 10 Result: 9/10 PASS**
+**Phase 10 Result: 9/10 PASS. Quality gate #4 partially met.**
 
 ---
 
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
-| Check | Sections Compared | Consistent? | Notes |
-|-------|------------------|-------------|-------|
-| 1. DVs in B2 match DVs in C | B2: DSPREAD. C: all 6 rows have DSPREAD. | PASS | |
-| 2. DVs in C match DVs in I | C: DSPREAD x 6. I: dvs=[("DSPREAD", 6)]. | PASS | |
-| 3. Controls in B4 match variables in E | B4: 8 base + 4 extended = 12 control vars. E: all 12 present with Type=Control. | PASS | |
-| 4. Column count in A matches rows in C | A: 6 columns. C: 6 rows. | PASS | |
-| 5. Column count in A matches "cols" in I | A: 6. I: cols=6. | PASS | |
-| 6. Tail direction: A matches B7 matches I | A: one-tailed beta>0. B7: one-tailed beta>0. I: tail="one", hyp_dir=">". | PASS | |
-| 7. FE in B5 matches C matches K | B5: Industry/Firm + CalYr/CalYrQtr by col. C: same mapping. K1: same split. | PASS | |
-| 8. Panel index in A matches set_index in K | A: (gvkey, cal_yr) for 1-4, (gvkey, cal_yr_qtr) for 5-6. K1: same via time_col logic. | PASS | |
+### Check 1: DVs in B2 match DVs in C
+- B2: DSPREAD. C: all 6 rows = DSPREAD. PASS.
 
-**Phase 11 Result: 8/8 PASS**
+### Check 2: DVs in C match DVs in I
+- C: DSPREAD across all 6 cols. I: `"dvs": [("DSPREAD", 6)]`. PASS.
+
+### Check 3: Controls in B4 match variables in E
+- B4 Base (8) + Extended (+4) = 12 controls. All 12 appear in E with formulas. PASS.
+
+### Check 4: Column count in A matches rows in C
+- A: 6. C: 6 rows. PASS.
+
+### Check 5: Column count in A matches "cols" in I
+- A: 6. I: `"cols": 6`. PASS.
+
+### Check 6: Tail direction in A matches B7 matches I
+- A: "one-tailed beta > 0". B7: `p_two/2 if beta > 0`. I: `"tail": "one", "hyp_dir": ">"`. PASS.
+
+### Check 7: FE in B5 matches C matches K
+- B5 table: Industry (ff12_code), Firm (gvkey), Cal Year (cal_yr), Cal Yr-Qtr (cal_yr_qtr).
+- C: cols 1,3,5 = Industry; 2,4,6 = Firm; 1-4 = Cal Year; 5-6 = Cal Yr-Qtr.
+- K1: other_effects=ff12_code for industry, EntityEffects for firm, time_effects=True for both, cal_yr/cal_yr_qtr as time index.
+- All consistent. PASS.
+
+### Check 8: Panel index in A matches set_index in K
+- A: "(gvkey, cal_yr) for cols 1-4; (gvkey, cal_yr_qtr) for cols 5-6"
+- K1: "Cols 1-4: Panel index = (gvkey, cal_yr) ... (runner line 304, 314); Cols 5-6: (gvkey, cal_yr_qtr)"
+- Code: runner line 314: `df_prepared.set_index(["gvkey", time_col])`. CONFIRMED. PASS.
+
+**INTERNAL INCONSISTENCY DETECTED:**
+- B4 TobinsQ formula: `(cshoq * prccq + dlcq + dlttq) / atq`
+- E TobinsQ formula: `(cshoq*prccq + dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)) / atq`
+- These describe the same variable with different precision. B4 is an oversimplification of E. A reader relying on B4 would have a wrong formula.
+- **Result: FAIL** (internal B4 vs E TobinsQ inconsistency)
+
+**Phase 11 Result: 7/8 PASS. One FAIL: B4 vs E TobinsQ formula inconsistency.**
+
+---
+
+## FAILURES (Detailed)
+
+| Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
+|-------|-------|----------------------|-----------------|----------|-------------|
+| 3 / 11 | TobinsQ formula in Section B4 | `(cshoq * prccq + dlcq + dlttq) / atq (missing debt treated as zero)` | `(mktcap + debt_book) / atq` where `debt_c = dlcq.clip(lower=0).fillna(0)`, `debt_t = dlttq.clip(lower=0).fillna(0)`, `debt_book = np.where(dlcq.isna() & dlttq.isna(), np.nan, debt_c + debt_t)`; also requires `mktcap.notna()` | Medium — B4 formula omits clip(lower=0), the both-null-NaN rule, and mktcap non-null requirement | Update B4 formula |
+| 6 | TobinsQ formula in Section E (Variable Dictionary) | `(cshoq*prccq + dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)) / atq` | Same as above — additionally, when both dlcq AND dlttq are NaN, debt_book = NaN (not 0), making TobinsQ = NaN; also requires mktcap non-null | Minor — E is better than B4 but still incomplete | Add both-null edge case note |
+| 8 | generate_table() line number in Section I note | "in the main loop at **line 1234**" | `generate_table()` is at line **1241** (else clause). Line 1234 is `generate_interaction_table()` for type=="interaction" | Low — functional description correct, line number wrong | Fix line number to 1241 |
+| 5 / 10 | D2 attrition cascade stages | 5-step conceptual cascade (step 4 N = "--") | Runner `generate_attrition_table()` writes 4-stage CSV/TEX. Steps 4+5 combined into one stage. | Low — note in doc partially covers; actual output file structure differs from doc | Clarify D2 note |
 
 ---
 
 ## CORRECTIONS REQUIRED
 
-### Correction 1: Section D2 -- Add Row Counts
+### Correction 1 — Section B4: TobinsQ formula
 
-**Current text (D2 table structure):**
-```
-| Step | Filter | Description |
-```
-
-**Should be:**
-```
-| Step | Filter | Description | N (representative, col-1) |
-```
-With actual row counts from a representative run added. Alternatively, add a note that exact counts are runtime-dependent and point to `sample_attrition.csv` in the Stage 4 output directory, but the creation prompt template expects inline counts.
-
-**Code reference:** Runner lines 753-758 show the attrition stages with actual counts for col 1. The provenance doc should include either these counts from a representative run or restructure to match the creation prompt template.
-
-### Correction 2: Section I -- Fix Line Number
+**Section:** B4 Control Variables, Base Controls table row for TobinsQ
 
 **Current text:**
-> "H14 has no `"type"` key, so it falls through to `generate_table()` (standard 4-IV suite handler) in the main loop at line 1215."
+```
+| TobinsQ | Tobin's Q | (cshoq * prccq + dlcq + dlttq) / atq | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq |
+```
+Note in cell says "(missing debt treated as zero)" after the formula.
 
-**Should say:**
-> "H14 has no `"type"` key, so it falls through to `generate_table()` (standard 4-IV suite handler) in the main loop at line 1234."
+**Replace with:**
+```
+| TobinsQ | Tobin's Q | (cshoq * prccq + dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)) / atq; NaN when both dlcq and dlttq are NaN, or when cshoq*prccq is NaN | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq |
+```
 
-**Code reference:** `outputs/generate_all_tables.py` line 1234: `for suite in SUITES:`.
-
-### Correction 3 (Optional): Section L -- Add Known Issue #8
-
-**Add to Known Issues:**
-> 8. **fyearq_int included in complete-case required list despite not being a FE column.** The runner's `prepare_regression_data` (line 241) includes `fyearq_int` in the `required` list used for complete-case filtering. However, `fyearq_int` is never used as a panel index or FE dimension (cal_yr and cal_yr_qtr are used instead). This causes rows with missing fiscal year mappings (from Compustat) to be dropped unnecessarily, potentially reducing sample size slightly.
-
-### Correction 4 (Optional): Section L -- Note Stale Docstring
-
-**Strengthen Known Issue #1 or add separate entry:**
-The runner docstring at line 11 says "4 columns in one table" and line 46 lists `regression_results_col{1-4}.txt`, but the actual code has 6 MODEL_SPECS generating col{1-6} outputs. The provenance doc correctly documents 6 columns (following code-is-truth), but could explicitly flag this docstring staleness.
+**Code reference:** `src/f1d/shared/variables/_compustat_engine.py` lines 987-997:
+```python
+mktcap = comp["cshoq"] * comp["prccq"]
+debt_c = comp["dlcq"].clip(lower=0).fillna(0)
+debt_t = comp["dlttq"].clip(lower=0).fillna(0)
+debt_book = np.where(comp["dlcq"].isna() & comp["dlttq"].isna(), np.nan, debt_c + debt_t)
+comp["TobinsQ"] = np.where(
+    comp["atq"].notna() & (comp["atq"] > 0) & mktcap.notna(),
+    (mktcap + debt_book) / comp["atq"], np.nan,
+)
+```
 
 ---
 
-## ADDITIONAL NOTES
+### Correction 2 — Section E: TobinsQ formula (Variable Dictionary)
 
-1. **BidAskSpreadChangeBuilder placebo line range:** The provenance doc Known Issue #3 cites "builder lines 439-448" for the placebo. The actual code spans lines 436-443 (logic) through 448-449 (output selection). The range is approximately correct but slightly imprecise. Not scored as a failure since the content is accurate.
+**Section:** E. Variable Dictionary, TobinsQ row
 
-2. **Panel builder attach_fyearq line reference:** The provenance doc F1 correctly distinguishes between `attach_fyearq()` (panel builder line 194) and `build_cal_yr_qtr_index()` (runner line 217). The reference to panel_utils.py lines 195-218 for `build_cal_yr_qtr_index` is also correct.
+**Current text (Formula column):**
+```
+(cshoq*prccq + dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)) / atq
+```
 
-3. **Double winsorization avoidance for Volatility:** The provenance doc Known Issue #5 correctly documents that Volatility is winsorized per-year at CRSPEngine level and is NOT in the panel builder's `winsorize_cols` list. This prevents double winsorization. Verified against panel builder line 202 (Volatility not in list) and CRSPEngine lines 444-446 (winsorized there). Correct.
+**Replace with:**
+```
+(cshoq*prccq + dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)) / atq; NaN if both dlcq and dlttq are simultaneously NaN (preserves null rather than treating as 0), or if cshoq*prccq is NaN
+```
 
-4. **Closing vs high-low spread variants:** The provenance doc Known Issue #2 correctly notes that the builder computes both `delta_spread` (ASKHI/BIDLO) and `delta_spread_closing` (ASK/BID), and only the closing variant is renamed to DSPREAD. Verified at panel builder lines 180-183 and builder lines 327-348 vs 340-348.
+**Code reference:** `_compustat_engine.py` lines 990-992: `debt_book = np.where(comp["dlcq"].isna() & comp["dlttq"].isna(), np.nan, debt_c + debt_t)` and lines 993-996 requiring `mktcap.notna()`.
+
+---
+
+### Correction 3 — Section I: Wrong line number for generate_table()
+
+**Section:** I. generate_all_tables.py Entry — Note paragraph at bottom
+
+**Current text:**
+```
+Note: No `key_vars` field is specified in the entry. H14 has no `"type"` key, so it falls through to `generate_table()` (standard 4-IV suite handler) in the main loop at line 1234.
+```
+
+**Replace with:**
+```
+Note: No `key_vars` field is specified in the entry. H14 has no `"type"` key, so it falls through to `generate_table()` (standard 4-IV suite handler) in the main loop at line 1241.
+```
+
+**Code reference:** `outputs/generate_all_tables.py` line 1234 is `tex = generate_interaction_table(suite)` (for type=="interaction" branch). Line 1241: `tex = generate_table(suite)` (in the `else` clause, which H14 reaches because it has no "type" key).
+
+---
+
+### Correction 4 — Section D2: Clarify attrition cascade output vs conceptual view
+
+**Section:** D2. Exclusion Criteria — note paragraph
+
+**Current text (append to existing note):**
+
+Add the following sentence at the end of the note:
+
+```
+Note: The 5-step D2 table above is a conceptual breakdown for clarity. The actual `sample_attrition.csv` and `sample_attrition.tex` files written to disk contain exactly 4 stages: (1) Master manifest, (2) Main sample filter, (3) DSPREAD non-null, (4) After complete-case + min-calls (col 1). Steps 4 and 5 of the conceptual cascade are combined into a single stage in the output files.
+```
+
+**Code reference:** Runner lines 752-759: `attrition_stages` list has exactly 4 tuples. `attrition_table.py` `generate_attrition_table()` iterates this list to produce the output files.
+
+---
+
+## ADDITIONAL NOTES (Non-Blocking)
+
+### Note A: Stale runner docstring — correctly handled
+
+The runner module-level docstring (line 11) says "4 columns" and the Outputs section (line 46) lists `regression_results_col{1-4}.txt`. The actual MODEL_SPECS has 6 entries. The provenance doc follows code-is-truth (documents 6 columns) and flags this as Known Issue #9. No correction needed.
+
+### Note B: Panel builder docstring FiscalYear FE — correctly handled
+
+The panel builder docstring (line 34) says "Fixed Effects: Industry(FF12)/Firm FE + FiscalYear FE (fyearq_int)". The runner actually uses `cal_yr`/`cal_yr_qtr`, not `fyearq_int`, as the panel time index. The provenance doc correctly identifies this in Known Issue #1. No correction needed.
+
+### Note C: Compustat winsorization grouping
+
+The doc says Compustat variables are winsorized "by fiscal year." The engine groups by `comp["fyearq"]`, which is the 4-digit fiscal year integer (e.g., 2003) per code comment at line 1226: "Use fyearq as the year grouping column (integer fiscal year)." The doc's description "by fiscal year" is accurate — `fyearq` here is fiscal year, not fiscal year-quarter.
+
+### Note D: TobinsQ builder docstring discrepancy from engine
+
+The `tobins_q.py` builder docstring says `(AT + cshoq*prccq - CEQ) / AT` — this was an older formula that was replaced during the H1 audit (engine changelog: "TobinsQ: was (mkvaltq+ltq)/atq -- mkvaltq has 41% missing rate. Fixed to (atq + cshoq*prccq - ceqq)/atq"). The actual engine code now computes `(cshoq*prccq + debt_book) / atq`. The builder docstring is stale relative to the engine. The provenance doc's E formula is closer to the actual engine code than the builder docstring. This is correctly identified via code-is-truth principle.
+
+### Note E: fyearq_int in complete-case required list — correctly documented
+
+Known Issue #8 correctly identifies that `fyearq_int` is included in the `required` list for complete-case filtering (runner line 241) despite not being used as a FE column. This causes rows without Compustat fiscal year mappings to be dropped. Well-documented.

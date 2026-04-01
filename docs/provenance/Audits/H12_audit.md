@@ -1,11 +1,12 @@
-# Adversarial Audit: Provenance Document for Suite H12
+# Adversarial Audit Report: Suite H12
 
-**Audit Date:** 2026-03-30
-**Auditor:** Claude Opus 4.6 (hostile audit mode)
-**Provenance Doc:** `docs/provenance/H12.md`
-**Runner:** `src/f1d/econometric/run_h12_payout.py`
-**Panel Builder:** `src/f1d/variables/build_h12_payout_panel.py`
-**Creation Prompt:** `docs/Prompts/Suite Provenance Doc.txt`
+**Auditor**: Hostile adversarial automated audit
+**Date**: 2026-04-01
+**Suite**: H12 — Speech Uncertainty and Quarterly Payout Ratio
+**Runner**: `src/f1d/econometric/run_h12_payout.py`
+**Panel Builder**: `src/f1d/variables/build_h12_payout_panel.py`
+**Provenance Doc**: `docs/provenance/H12.md`
+**Audit Prompt**: `docs/Prompts/Audit Provenance doc.txt`
 
 ---
 
@@ -13,554 +14,30 @@
 
 | Category | Total Checks | Passed | Failed | Score |
 |----------|-------------|--------|--------|-------|
-| Structural Completeness (Phase 1) | 27 | 26 | 1 | 96.3% |
-| Suite Identity (Phase 2) | 10 | 10 | 0 | 100.0% |
-| Model Specification (Phase 3) | 7 | 5 | 2 | 71.4% |
-| Spec Register (Phase 4) | 13 | 13 | 0 | 100.0% |
-| Sample Construction (Phase 5) | 5 | 5 | 0 | 100.0% |
-| Variable Dictionary (Phase 6) | 25 | 23 | 2 | 92.0% |
-| Pipeline/Outputs/Treatment (Phase 7) | 9 | 8 | 1 | 88.9% |
-| Table Generator Entry (Phase 8) | 5 | 5 | 0 | 100.0% |
-| Model-Family Addendum (Phase 9) | 5 | 5 | 0 | 100.0% |
-| Quality Gates (Phase 10) | 10 | 9 | 1 | 90.0% |
-| Cross-Reference Consistency (Phase 11) | 8 | 8 | 0 | 100.0% |
-| **TOTAL** | **124** | **117** | **7** | **94.4%** |
+| Structural Completeness (Phase 1) | 26 | 25 | 1 | 96% |
+| Suite Identity (Phase 2) | 10 | 9 | 1 | 90% |
+| Model Specification (Phase 3) | 7 | 6 | 1 | 86% |
+| Spec Register (Phase 4) | 4 | 4 | 0 | 100% |
+| Sample Construction (Phase 5) | 3 | 2 | 1 | 67% |
+| Variable Dictionary (Phase 6) | 20 | 20 | 0 | 100% |
+| Pipeline/Outputs/Treatment (Phase 7) | 9 | 9 | 0 | 100% |
+| Table Generator Entry (Phase 8) | 5 | 4 | 1 | 80% |
+| Model-Family Addendum (Phase 9) | 5 | 5 | 0 | 100% |
+| Quality Gates (Phase 10) | 10 | 9 | 1 | 90% |
+| Cross-Reference Consistency (Phase 11) | 8 | 8 | 0 | 100% |
+| **TOTAL** | **107** | **101** | **6** | **94%** |
 
 ---
 
 ## VERDICT
 
-**FAIL -- INACCURATE**: Factual errors found. 4 distinct issues identified (some affecting multiple checks). The most significant error is the Volatility window description, which describes a completely different window than what the code implements. The TobinsQ formula is oversimplified, omitting the negative-debt clipping and the both-NaN guard. These require correction.
-
----
-
-## Phase 1: STRUCTURAL COMPLETENESS
-
-Read the creation prompt (`docs/Prompts/Suite Provenance Doc.txt`) to extract required sections A through L. Then verified each section's presence and completeness in the provenance doc.
-
-| Section | Required by Prompt | Present in Doc | Complete | Notes |
-|---------|-------------------|----------------|----------|-------|
-| A. Suite Identity | Yes | Yes | Yes | YAML block with all required fields |
-| B. Model Specification | Yes | Yes | Yes | All subsections present |
-| B1. Regression Equation | Yes | Yes | Yes | Two equations (contemporaneous + lead) |
-| B2. Dependent Variable(s) | Yes | Yes | Yes | Table + detailed construction |
-| B3. Independent Variable(s) | Yes | Yes | Yes | Table with all 4 IVs |
-| B4. Control Variables | Yes | Yes | Yes | Base + Extended tables with Lagged_DV detail |
-| B5. Fixed Effects | Yes | Yes | Yes | Table with cols mapping |
-| B6. Standard Errors | Yes | Yes | Yes | Clustered entity |
-| B7. Hypothesis Test | Yes | Yes | Yes | Code snippet + thresholds |
-| C. Spec Register | Yes | Yes | Yes | 12 rows |
-| D. Sample Construction | Yes | Yes | Yes | All subsections present |
-| D1. Population | Yes | Yes | Yes | 112,968 / 2,429 / 2002-2018 |
-| D2. Exclusion Criteria | Yes | Yes | Yes | Attrition cascade table |
-| D3. Sample Counts per Spec | Yes | Yes | Yes | 12-row table |
-| E. Variable Dictionary | Yes | Yes | Yes | 25 variables listed |
-| F. Data Pipeline | Yes | Yes | Yes | All subsections present |
-| F1. Dependency Chain | Yes | Yes | Yes | 7-step chain |
-| F2. Data Engines | Yes | Yes | Yes | 3 engines |
-| F3. Merge Operations | Yes | Yes | Yes | Builder + lead/lag merges |
-| G. Outputs | Yes | Yes | Yes | All subsections present |
-| G1. Stage 3 Outputs | Yes | Yes | PARTIAL | Missing report_step3 file (see note) |
-| G2. Stage 4 Outputs | Yes | Yes | Yes | All files listed |
-| G3. Summary Statistics | Yes | Yes | Yes | 17 variables listed |
-| H. Outlier/Missing Treatment | Yes | Yes | Yes | H1-H3 all present |
-| I. generate_all_tables Entry | Yes | Yes | Yes | Python dict + verification |
-| J. Reproduction Commands | Yes | Yes | Yes | 3 commands |
-| K. Model-Family Addendum | Yes | Yes | Yes | K1 filled, K2-K6 N/A |
-| L. Known Issues | Yes | Yes | Yes | 6 issues documented |
-
-**Phase 1 Result: 26/27 PASS.**
-
-**G1 Note:** The creation prompt template shows `report_step3_{suite}.md` as a standard Stage 3 output. The provenance doc does not list this file. However, examining the panel builder code, it does NOT produce a `report_step3_*.md` file -- it only writes `h12_payout_panel.parquet`, `summary_stats.csv`, and `run_manifest.json`. So the provenance doc is correct to omit it, but it deviates from the prompt template without explanation. **Marked PARTIAL** -- the doc correctly reflects the code, but the template discrepancy is unacknowledged. Similarly, `report_step4_*.md` is not produced by the runner and correctly omitted from G2.
-
----
-
-## Phase 2: FACTUAL ACCURACY -- SECTION A (Suite Identity)
-
-**A-1. Suite ID**
-- Doc claims: `H12`
-- Verification: Runner docstring line 6 says `ID: econometric/run_h12_payout`, generate_all_tables line 292 says `"id": "H12"`.
-- **PASS**
-
-**A-2. Title**
-- Doc claims: `Speech Uncertainty and Quarterly Payout Ratio`
-- Verification: Runner line 4 says `STAGE 4: Test H12 Quarterly Payout Ratio Hypothesis`. The LaTeX caption at line 386 says `Speech Uncertainty and Quarterly Payout Ratio`. generate_all_tables line 294 says `H12: Speech Uncertainty and Quarterly Payout Ratio`.
-- **PASS**
-
-**A-3. Hypothesis**
-- Doc claims: `Does managerial speech uncertainty during earnings calls predict lower quarterly dividend payout ratios?`
-- Verification: Runner docstring line 31 says `Hypothesis: One-tailed (beta < 0 -- higher uncertainty -> lower payout).`
-- The doc's phrasing is consistent with the code's direction.
-- **PASS**
-
-**A-4. Direction**
-- Doc claims: `one-tailed beta < 0`
-- Verification: Runner line 308 comment says `H12: beta < 0`. Line 328: `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2`. generate_all_tables line 302: `"hyp_dir": "<"`.
-- **PASS**
-
-**A-5. Model Family**
-- Doc claims: `PanelOLS`
-- Verification: Runner line 61: `from linearmodels.panel import PanelOLS`. Lines 286-300: PanelOLS instantiation.
-- **PASS**
-
-**A-6. Estimator**
-- Doc claims: `linearmodels.panel.PanelOLS`
-- Verification: Runner line 61: `from linearmodels.panel import PanelOLS`.
-- **PASS**
-
-**A-7. Unit of Observation**
-- Doc claims: `call-level (individual earnings call)`
-- Verification: Runner docstring line 9: `Quarterly payout ratio. NaN when ibq <= 0`. Panel builder docstring line 9: `Unit of observation: individual earnings call (file_name)`. Each row is a call, not aggregated.
-- **PASS**
-
-**A-8. Panel Index**
-- Doc claims: `(gvkey, cal_yr) for cols 1-4, 7-10; (gvkey, cal_yr_qtr) for cols 5-6, 11-12`
-- Verification: Runner line 262: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`. Line 282: `df_panel = df_prepared.set_index(["gvkey", time_col])`. The `_yq` suffix appears on cols 5-6 and 11-12 (MODEL_SPECS lines 100-101, 108-109).
-- **PASS**
-
-**A-9. Columns**
-- Doc claims: `12`
-- Verification: `len(MODEL_SPECS)` at runner lines 93-110 = 12 entries (col 1 through col 12).
-- **PASS**
-
-**A-10. File Paths**
-- Doc claims: `src/f1d/econometric/run_h12_payout.py` and `src/f1d/variables/build_h12_payout_panel.py`
-- Verification: Both files exist and were read successfully.
-- **PASS**
-
-**Phase 2 Result: 10/10 PASS.**
-
----
-
-## Phase 3: FACTUAL ACCURACY -- SECTION B (Model Specification)
-
-### B1-CHECK: Regression Equation
-
-- Doc shows two equations: contemporaneous (cols 1-6) and lead (cols 7-12).
-- Both equations list 4 IVs simultaneously: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct.
-- Runner line 274: `exog = KEY_IVS + controls` -- all 4 IVs + controls in every spec.
-- The equations show alpha_i (entity FE) and delta_t (time FE) with a note that alpha_i is Industry FF12 or Firm, delta_t is cal_yr or cal_yr_qtr. This matches the code.
-- No centering, no interaction terms -- consistent with code.
-- **PASS**
-
-### B2-CHECK: Dependent Variable(s)
-
-- **PayoutRatio_q**: Doc says `(dvpspq x cshoq) / ibq; NaN when ibq <= 0; dvpspq NaN with ibq > 0 treated as 0`.
-  - Code at `_compustat_engine.py` lines 1013-1018: `quarterly_div = comp["dvpspq"].fillna(0) * comp["cshoq"]`, then `PayoutRatio_q = quarterly_div / ibq when ibq > 0, else NaN`.
-  - **Match confirmed.**
-
-- **PayoutRatio_q_lead_qtr**: Doc says `PayoutRatio_q shifted forward one consecutive fiscal quarter within gvkey`.
-  - Code at `build_h12_payout_panel.py` lines 246-263: shift -1 within gvkey, consecutive check using fiscal_qtr_id.
-  - **Match confirmed.**
-
-- Doc's construction detail sections verified against code: fiscal_qtr_id construction (line 225), latest start_date selection (line 238), consecutiveness check (lines 252-259), NaN for non-consecutive (line 261-263).
-- No DVs used in code are missing from the doc.
-- **PASS**
-
-### B3-CHECK: Independent Variable(s)
-
-- Doc lists 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct.
-- Runner lines 74-79: KEY_IVS = exactly these 4.
-- Source engine: LinguisticEngine -- confirmed via builder imports (lines 46-49).
-- "No centering, log-transform, or z-scoring" -- confirmed: no transformation code found in runner for IVs.
-- **PASS**
-
-### B4-CHECK: Control Variables
-
-- **BASE_CONTROLS** (runner lines 81-85): Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility, Lagged_DV. Doc lists exactly these 8.
-- **EXTENDED_CONTROLS** (runner lines 87-89): BASE_CONTROLS + SalesGrowth, RD_Intensity, CashFlow, Volatility. Doc lists exactly these 4 additional.
-
-- **TobinsQ formula error**: Doc B4 says `(cshoq x prccq + dlcq + dlttq) / atq; missing debt filled as 0`.
-  - Actual code (`_compustat_engine.py` lines 982-992):
-    - `mktcap = cshoq * prccq`
-    - `debt_c = dlcq.clip(lower=0).fillna(0)` -- negative debt clipped to 0
-    - `debt_t = dlttq.clip(lower=0).fillna(0)` -- negative debt clipped to 0
-    - `debt_book = np.where(dlcq.isna() & dlttq.isna(), np.nan, debt_c + debt_t)` -- NaN when BOTH missing
-    - `TobinsQ = (mktcap + debt_book) / atq` when `atq > 0` and `mktcap.notna()`
-  - The doc's formula omits: (1) the `.clip(lower=0)` on negative debt values, (2) the `debt_book = NaN` guard when both dlcq and dlttq are NaN, (3) the `mktcap.notna()` condition.
-  - The doc says "missing debt filled as 0" which is partially correct (each individual component is fillna(0)), but critically wrong when BOTH are NaN (debt_book becomes NaN, not 0).
-  - **FAIL -- Oversimplified formula misses negative-debt clipping and both-NaN guard.**
-
-- **Volatility formula error**: Doc B4 says `std(daily_ret) x sqrt(252) x 100 over [prev_call + 5d, call - 5d]; min 10 trading days`.
-  - Actual code (`_crsp_engine.py` lines 41-42, 361-366):
-    - `DAYS_AFTER_CURRENT_CALL = 1` (window starts 1 day after current call)
-    - `DAYS_BEFORE_NEXT_CALL = 5` (window ends 5 days before next call)
-    - `window_start = start_date + Timedelta(days=1)`
-    - `window_end = next_call_date - Timedelta(days=5)`
-  - The doc says `[prev_call + 5d, call - 5d]` -- this is the **wrong** window. The correct window is `[current_call + 1d, next_call - 5d]`.
-  - **FAIL -- Completely wrong window description.**
-
-- **Lagged_DV detail** (runner lines 208-212): Doc says `base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")`. Code confirms: line 209 `base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")`. Line 210: `lag_col = f"{base_dv}_lag"`. Line 212: `panel["Lagged_DV"] = panel[lag_col]`. Match confirmed.
-- No dynamic controls (no auto-add logic). Confirmed.
-
-**Phase 3 Result: 5/7 PASS, 2 FAIL (TobinsQ formula, Volatility window).**
-
----
-
-## Phase 4: FACTUAL ACCURACY -- SECTION C (Spec Register)
-
-Verified each of the 12 rows against MODEL_SPECS (runner lines 93-110):
-
-| Col | Doc DV | Code DV | Doc Entity FE | Code FE | Doc Time FE | Code Time FE | Doc Controls | Code Controls | PASS? |
-|-----|--------|---------|---------------|---------|-------------|-------------|-------------|--------------|-------|
-| 1 | PayoutRatio_q | PayoutRatio_q | Industry (FF12) | industry | Cal Year | cal_yr | Base | base | PASS |
-| 2 | PayoutRatio_q | PayoutRatio_q | Firm | firm | Cal Year | cal_yr | Base | base | PASS |
-| 3 | PayoutRatio_q | PayoutRatio_q | Industry (FF12) | industry | Cal Year | cal_yr | Extended | extended | PASS |
-| 4 | PayoutRatio_q | PayoutRatio_q | Firm | firm | Cal Year | cal_yr | Extended | extended | PASS |
-| 5 | PayoutRatio_q | PayoutRatio_q | Industry (FF12) | industry_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
-| 6 | PayoutRatio_q | PayoutRatio_q | Firm | firm_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
-| 7 | PayoutRatio_q_lead_qtr | PayoutRatio_q_lead_qtr | Industry (FF12) | industry | Cal Year | cal_yr | Base | base | PASS |
-| 8 | PayoutRatio_q_lead_qtr | PayoutRatio_q_lead_qtr | Firm | firm | Cal Year | cal_yr | Base | base | PASS |
-| 9 | PayoutRatio_q_lead_qtr | PayoutRatio_q_lead_qtr | Industry (FF12) | industry | Cal Year | cal_yr | Extended | extended | PASS |
-| 10 | PayoutRatio_q_lead_qtr | PayoutRatio_q_lead_qtr | Firm | firm | Cal Year | cal_yr | Extended | extended | PASS |
-| 11 | PayoutRatio_q_lead_qtr | PayoutRatio_q_lead_qtr | Industry (FF12) | industry_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
-| 12 | PayoutRatio_q_lead_qtr | PayoutRatio_q_lead_qtr | Firm | firm_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
-
-- Count: 12 rows in doc, 12 in MODEL_SPECS. Match.
-- No specs in code missing from table.
-- No specs in table not in code.
-
-**Phase 4 Result: 13/13 PASS.**
-
----
-
-## Phase 5: FACTUAL ACCURACY -- SECTION D (Sample Construction)
-
-### D1-CHECK: Population
-
-- Doc says: 112,968 calls, 2,429 firms, 2002-2018.
-- Cross-reference with project scope (memory file `project_thesis_scope.md`): 112,968 calls, 2,429 firms, 2002-2018.
-- **PASS**
-
-### D2-CHECK: Exclusion Criteria
-
-Doc's attrition cascade:
-
-| Step | Doc Filter | Code Reference |
-|------|-----------|---------------|
-| 1 | Full panel: 112,968 | Runner line 569: `full_n = len(panel)` |
-| 2 | Main sample (excl FF12 8,11): 88,205 | Runner lines 189-195: `~panel["ff12_code"].isin([8, 11])` |
-| 3 | PayoutRatio_q non-null (ibq > 0): 70,695 | Runner lines 225-228: `df[dv].notna()` |
-| 4 | Complete-case + min-calls >= 5: 40,910 | Runner lines 231-240 |
-
-- Filter order matches code execution order. Step 3 (DV non-null) happens before complete-case and min-calls.
-- The doc notes these are from a specific run (2026-03-27_095009), which is plausible.
-- The doc correctly notes "col 1" and that other columns differ.
-- **PASS**
-
-### D3-CHECK: Sample Counts per Spec
-
-- Doc provides 12-row table with N and N(firms) per col.
-- N drops from cols 1-2 (40,910) to cols 3-6 (39,290) due to extended controls requiring more non-missing values. Plausible.
-- N drops from contemporaneous to lead (39,019 for cols 7-8) due to lead variable requiring consecutive quarter data. Plausible.
-- Further drop to 38,281 for cols 9-12 (extended controls on lead DV). Plausible.
-- All counts sourced from `model_diagnostics.csv`.
-- **PASS**
-
-**Phase 5 Result: 5/5 PASS.**
-
----
-
-## Phase 6: FACTUAL ACCURACY -- SECTION E (Variable Dictionary)
-
-Verified each variable in the dictionary:
-
-### DVs
-
-| Variable | Name Match | Formula | Source | Winsorization | Timing | PASS? |
-|----------|-----------|---------|--------|--------------|--------|-------|
-| PayoutRatio_q | Yes (code uses `PayoutRatio_q`) | Doc: `(dvpspq.fillna(0) x cshoq) / ibq; NaN when ibq <= 0`. Code: same formula at `_compustat_engine.py:1013-1018`. | CompustatEngine -- correct | Doc: `1%/99% by fiscal year`. Code: PayoutRatio_q is in COMPUSTAT_COLS and not in skip_winsorize, so it IS winsorized 1%/99% by fyearq. Correct. | Contemporaneous -- correct | PASS |
-| PayoutRatio_q_lead_qtr | Yes | Doc: `shifted +1 consecutive fiscal quarter per gvkey`. Code: `build_h12_payout_panel.py:246-263`. Correct. | CompustatEngine (derived) -- correct | Doc: `Via PayoutRatio_q winsorization`. The lead is constructed from already-winsorized PayoutRatio_q values. Correct. | Lead (t+1 qtr) -- correct | PASS |
-| PayoutRatio_q_lag | Yes | Doc: `shifted -1 consecutive fiscal quarter per gvkey`. Code: `build_h12_payout_panel.py:278-302`. Correct. | CompustatEngine (derived) -- correct | Doc: `Via PayoutRatio_q winsorization`. Same logic as lead. Correct. | Lag (t-1 qtr) -- correct | PASS |
-
-### IVs
-
-| Variable | Name Match | Formula | Source | Winsorization | Timing | PASS? |
-|----------|-----------|---------|--------|--------------|--------|-------|
-| CEO_QA_Uncertainty_pct | Yes | `(uncertainty words / total words) x 100` -- consistent with LinguisticEngine construction | LinguisticEngine -- correct | Doc: `0%/99% upper-only per year`. Code: `_linguistic_engine.py:255-258`: `winsorize_by_year(..., lower=0.0, upper=0.99, ...)`. Correct. | Contemporaneous -- correct | PASS |
-| CEO_Pres_Uncertainty_pct | Yes | Same formula pattern | LinguisticEngine -- correct | Same winsorization | Contemporaneous | PASS |
-| Manager_QA_Uncertainty_pct | Yes | Same formula pattern | LinguisticEngine -- correct | Same winsorization | Contemporaneous | PASS |
-| Manager_Pres_Uncertainty_pct | Yes | Same formula pattern | LinguisticEngine -- correct | Same winsorization | Contemporaneous | PASS |
-
-### Controls
-
-| Variable | Name Match | Formula | Source | Winsorization | Timing | PASS? |
-|----------|-----------|---------|--------|--------------|--------|-------|
-| Size | Yes | Doc: `ln(atq); NaN when atq <= 0`. Code: `_compustat_engine.py:938`: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. Correct. | CompustatEngine: atq -- correct | 1%/99% by fiscal year -- correct (in winsorize_cols) | Contemporaneous | PASS |
-| TobinsQ | Yes | Doc: `(cshoq x prccq + dlcq.fillna(0) + dlttq.fillna(0)) / atq; requires atq > 0 and mktcap non-null`. Code: uses `.clip(lower=0).fillna(0)` on debt, and `debt_book = NaN` when both dlcq and dlttq are NaN. Doc omits clip(lower=0) and the both-NaN guard. | CompustatEngine -- correct | 1%/99% by fiscal year -- correct | Contemporaneous | **FAIL** |
-| ROA | Yes | Doc: `iby_annual (Q4) / ((atq_t + atq_{t-1}) / 2); requires avg_assets > 0`. Code: `_compustat_engine.py:954-964`. Uses annual Q4 iby and average assets. Correct. | CompustatEngine -- correct | 1%/99% by fiscal year -- correct | Contemporaneous | PASS |
-| BookLev | Yes | Doc: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq`. Code: `_compustat_engine.py:943`: `(comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`. Correct. | CompustatEngine -- correct | 1%/99% -- correct | Contemporaneous | PASS |
-| CashHoldings | Yes | Doc: `cheq / atq`. Code: `_compustat_engine.py:981`: `comp["cheq"] / comp["atq"]`. Correct. | CompustatEngine -- correct | 1%/99% -- correct | Contemporaneous | PASS |
-| CapexAt | Yes | Doc: `capxy_annual (Q4) / atq_{t-1}; requires lagged atq > 0`. Code: `_compustat_engine.py:994-1000`. Uses annual Q4 capxy and lagged atq. Correct. | CompustatEngine -- correct | 1%/99% -- correct | Contemporaneous | PASS |
-| OCF_Volatility | Yes | Doc: `Rolling 5-year std (min 3 yrs) of (oancfy / atq_{t-1}) per gvkey; uses Q4-only annual panel`. Code verified at `_compute_ocf_volatility()`. Correct. | CompustatEngine -- correct | 1%/99% -- correct | Contemporaneous | PASS |
-| SalesGrowth | Yes | Doc: `(saley_t - saley_{t-1}) / abs(saley_{t-1}); Q4-only annual; saleq fallback`. Code: `_compustat_engine.py:653-657`. Correct. | CompustatEngine -- correct | Doc: `1%/99% by fiscal year (inside Biddle residual computation)`. Code: winsorized at line 661 inside `_compute_biddle_residual`, skipped in main winsorize loop (skip_winsorize set). Correct. | Contemporaneous | PASS |
-| RD_Intensity | Yes | Doc: `xrdq.fillna(0) / atq`. Code: `_compustat_engine.py:967`: `comp["xrdq"].fillna(0) / comp["atq"]`. Correct. | CompustatEngine -- correct | 1%/99% -- correct | Contemporaneous | PASS |
-| CashFlow | Yes | Doc: `oancfy (Q4 annual) / avg_assets; avg = (atq_t + atq_{t-1}) / 2, fallback to atq_t`. Code: `_compustat_engine.py:679-686`. Uses avg_assets with fallback. Correct. | CompustatEngine -- correct | Doc: `1%/99% by fiscal year (inside Biddle residual computation)`. Code: winsorized at line 688. Correct. | Contemporaneous | PASS |
-| Volatility | Yes | Doc formula correct: `std(daily_ret) x sqrt(252) x 100`. Code: `_crsp_engine.py:255`: `std_ret * np.sqrt(252) * 100`. Formula correct. But doc window description WRONG: says `[prev_call + 5d, call - 5d]`. Actual window: `[start_date + 1d, next_call_date - 5d]`. | CRSPEngine -- correct | Doc: `1%/99% per year`. Code: `_crsp_engine.py:445-447`: default lower=0.01, upper=0.99. Correct. | Contemporaneous | **FAIL** (window) |
-
-### FE Variables
-
-| Variable | Name Match | Type | Source | PASS? |
-|----------|-----------|------|--------|-------|
-| gvkey | Yes | FE (entity) | Manifest | PASS |
-| ff12_code | Yes | FE (other) | Manifest (SIC-to-FF12) | PASS |
-| cal_yr | Yes | FE (time) | `start_date.dt.year` via `build_cal_yr_qtr_index()`. Code at `panel_utils.py:215`: `dt.dt.year`. Correct. | PASS |
-| cal_yr_qtr | Yes | FE (time) | Doc: `cal_yr x 10 + start_date.dt.quarter`. Code at `panel_utils.py:217`: `panel["cal_yr"] * 10 + panel["cal_qtr"]`. Correct. | PASS |
-
-### Completeness Check
-
-- All variables from MODEL_SPECS (DVs + IVs + controls) are in the dictionary: Yes
-- All BASE_CONTROLS present: Yes (Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility, Lagged_DV)
-- All EXTENDED_CONTROLS present: Yes (adds SalesGrowth, RD_Intensity, CashFlow, Volatility)
-- FE columns present: Yes (gvkey, ff12_code, cal_yr, cal_yr_qtr)
-- PayoutRatio_q_lag (used as Lagged_DV source) present: Yes
-
-**Phase 6 Result: 23/25 PASS, 2 FAIL (TobinsQ formula detail, Volatility window).**
-
----
-
-## Phase 7: FACTUAL ACCURACY -- SECTIONS F, G, H
-
-### F-CHECK: Data Pipeline
-
-**F1. Dependency Chain**:
-- 7 steps from raw inputs through table generation. Verified each step:
-  1. Raw inputs: master_sample_manifest, Compustat, CRSP, linguistic parquets -- correct.
-  2. Engine loading: CompustatEngine, CRSPEngine, LinguisticEngine -- correct.
-  3. Panel builder outputs `h12_payout_panel.parquet` -- correct (builder line 374).
-  4. Runner loads from `outputs/variables/h12_payout/latest/` -- correct (runner line 169).
-  5. Sample filtering: FF12 != 8,11, Lagged_DV creation, inf replacement, DV non-null, complete-case, min 5 calls -- correct order matches code (runner lines 189-241).
-  6. PanelOLS with firm-clustered SEs, 12 specs -- correct.
-  7. Entry in generate_all_tables.py -- correct.
-- **PASS**
-
-**F2. Data Engines**:
-- Doc lists 3 engines: CompustatEngine, CRSPEngine, LinguisticEngine.
-- CompustatEngine provides: PayoutRatio_q, Size, BookLev, TobinsQ, ROA, CashHoldings, CapexAt, OCF_Volatility, SalesGrowth, RD_Intensity, CashFlow, fqtr -- all confirmed in COMPUSTAT_COLS and builder.
-- CRSPEngine provides: Volatility -- confirmed.
-- LinguisticEngine provides: 4 uncertainty IVs -- confirmed via builder imports.
-- **PASS**
-
-**F3. Merge Operations**:
-- Doc lists 16 builder merges (all on file_name, left join) + 2 lead/lag merges (on gvkey + fiscal_qtr_id, left join).
-- Verified builder merge loop at lines 130-146: iterates all_results except manifest, merges on file_name, left join. Row count assertion at line 144. Conflicting columns dropped at line 141.
-- Lead/lag merges verified at lines 272 and 299.
-- **PASS**
-
-### G-CHECK: Outputs
-
-**G1. Stage 3 Outputs**:
-- Doc lists: `h12_payout_panel.parquet`, `summary_stats.csv`, `run_manifest.json`.
-- Code: builder line 374 writes parquet, line 380 writes summary_stats.csv, line 384 calls generate_manifest.
-- No `report_step3_*.md` file is produced by the builder. Doc correctly does not list it.
-- **PASS**
-
-**G2. Stage 4 Outputs**:
-- Doc lists: `h12_payout_table.tex`, `model_diagnostics.csv`, `summary_stats.csv`, `summary_stats.tex`, `sample_attrition.csv`, `sample_attrition.tex`, `regression_results_col{1-12}.txt`, `run_manifest.json`.
-- Code verification:
-  - Runner line 496: writes `h12_payout_table.tex` -- match.
-  - Runner line 531: writes `model_diagnostics.csv` -- match.
-  - Runner lines 585-591: writes `summary_stats.csv` and `summary_stats.tex` -- match.
-  - Runner line 625: calls `generate_attrition_table` -- writes `sample_attrition.csv` and `sample_attrition.tex` -- match.
-  - Runner lines 516-517: writes `regression_results_col{N}.txt` -- match.
-  - Runner line 629: calls `generate_manifest` -- writes `run_manifest.json` -- match.
-- No outputs in code missing from doc. No phantom outputs in doc.
-- **PASS**
-
-**G3. Summary Statistics**:
-- Doc lists 17 variables matching SUMMARY_STATS_VARS (runner lines 119-137).
-- Verified every variable name and label matches.
-- Metrics: `make_summary_stats_table` computes N, Mean, SD, Min, P25, Median, P75, Max -- consistent with doc.
-- **PASS**
-
-### H-CHECK: Outlier/Missing Treatment
-
-**H1. Winsorization**:
-- Compustat 1%/99% by fyearq: Correct. Code at `_compustat_engine.py:1115-1136`. Uses `_winsorize_by_year(comp[col], year_col)` where year_col = fyearq.
-- Skip set: DividendPayer, CashFlow, SalesGrowth, fqtr. Confirmed at lines 1123-1128.
-- CashFlow and SalesGrowth winsorized inside Biddle at lines 661 and 688. Correct.
-- Linguistic 0%/99% upper-only per year: Correct. Code at `_linguistic_engine.py:255-258`: `lower=0.0, upper=0.99`.
-- CRSP 1%/99% per year: Correct. Code at `_crsp_engine.py:445-447`: default `lower=0.01, upper=0.99`.
-- Min obs threshold 10 for all: Confirmed in all three engines.
-- **PASS**
-
-**H2. Missing Data Policy**:
-- Complete-case deletion: Runner line 231-232. Correct.
-- Inf replacement: Runner line 223. Correct.
-- Negative earnings: ibq <= 0 produces NaN at engine level. Correct.
-- Missing dividends: dvpspq.fillna(0). Correct.
-- Non-consecutive fiscal quarters: lead/lag = NaN for gaps. Correct.
-- **PASS**
-
-**H3. Transformations**:
-- Doc lists Size (log), Volatility (annualized), OCF_Volatility (rolling std).
-- No centering, z-scoring, or scaling on IVs or DVs. Confirmed.
-- **PASS** with one note: the Volatility window description is still wrong here (repeated from E), but the transformation formula itself (std * sqrt(252) * 100) is correct. The window issue is already captured in Phase 6.
-
-**Phase 7 Result: 8/9 PASS. The Volatility window error propagates but is counted only once (in Phase 6). All other checks PASS.**
-
-Wait -- reviewing more carefully: Section H does NOT repeat the window description. It only says "std(daily_ret) x sqrt(252) x 100" for the transformation, and the window is in Section E. So H3 is clean.
-
-**Phase 7 Result (corrected): 9/9 PASS.**
-
-Actually, I need to re-examine. The question is whether Section F step 5 or H mentions the Volatility window. Let me re-check:
-- F1 step 5 does not mention Volatility window.
-- H3 Transformations table says "std(daily_ret) x sqrt(252) x 100" without window. Clean.
-
-**Phase 7 Final Result: 9/9 PASS.**
-
----
-
-## Phase 8: FACTUAL ACCURACY -- SECTION I (Table Generator Entry)
-
-Doc quotes the following entry from `outputs/generate_all_tables.py` lines 290-304:
-
-```python
-{
-    "id": "H12",
-    "dir": "h12_payout/2026-03-27_095009",
-    "caption": "H12: Speech Uncertainty and Quarterly Payout Ratio",
-    "label": "tab:h12",
-    "cols": 12,
-    "dvs": [
-        (r"PayoutRatio\_q", 6),
-        (r"PayoutRatio\_q\_lead\_qtr", 6),
-    ],
-    "tail": "one",
-    "hyp_dir": "<",
-    "time_fe_label": "Year FE",
-}
-```
-
-Verified against actual code at lines 291-304:
-
-| Field | Doc Value | Code Value | PASS? |
-|-------|----------|------------|-------|
-| id | "H12" | "H12" | PASS |
-| dir | "h12_payout/2026-03-27_095009" | "h12_payout/2026-03-27_095009" | PASS |
-| cols | 12 | 12 | PASS |
-| tail / hyp_dir | "one" / "<" | "one" / "<" | PASS |
-| dvs | PayoutRatio_q (6) + lead_qtr (6) | Same | PASS |
-
-Note: The entry does NOT have `key_vars`, `key_labels`, or `key_tails` fields. This is because H12 uses the standard `generate_table()` path which auto-discovers IVs from the regression output files rather than requiring explicit key_vars. The provenance doc does not mention this absence but also does not claim these fields exist. Acceptable.
-
-The doc notes that `time_fe_label: "Year FE"` is used as a label but the actual runner uses both cal_yr and cal_yr_qtr. This discrepancy is documented in the provenance doc's own verification section. This is a known limitation of the table generator labeling, not an error in the provenance doc.
-
-**Phase 8 Result: 5/5 PASS.**
-
----
-
-## Phase 9: FACTUAL ACCURACY -- SECTION K (Model-Family Addendum)
-
-Model family is PanelOLS (confirmed in Phase 2). Section K1 is filled; K2-K6 are marked N/A. Correct structure.
-
-### K1 Verification
-
-**Entity effects -- Industry FE specs (cols 1,3,5,7,9,11)**:
-- Doc: `entity_effects=False, other_effects=df_panel["ff12_code"], time_effects=True, drop_absorbed=True`
-- Code (runner lines 286-294): Exact match. `entity_effects=False`, `time_effects=True`, `other_effects=df_panel["ff12_code"]`, `drop_absorbed=True`.
-- **PASS**
-
-**Entity effects -- Firm FE specs (cols 2,4,6,8,10,12)**:
-- Doc: `EntityEffects` in formula with `TimeEffects`, `drop_absorbed=True`
-- Code (runner lines 297-300): `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`, `PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)`.
-- **PASS**
-
-**Time effects**:
-- Doc: Calendar Year specs indexed on `(gvkey, cal_yr)`, Year-Quarter on `(gvkey, cal_yr_qtr)`, both with `time_effects=True`.
-- Code: line 262 sets time_col, line 282 sets index. Industry path uses `time_effects=True` explicitly; firm path uses `TimeEffects` in formula.
-- **PASS**
-
-**drop_absorbed**:
-- Doc: `True` for all specs.
-- Code: line 292 and 299 both set `drop_absorbed=True`.
-- **PASS**
-
-**check_rank**:
-- Doc: `False` for industry FE specs (runner line 293); default for firm FE formula specs.
-- Code: line 293: `check_rank=False`. Firm FE path does not set check_rank (uses default from PanelOLS.from_formula).
-- **PASS**
-
-**Phase 9 Result: 5/5 PASS.**
-
----
-
-## Phase 10: QUALITY GATE CHECKLIST
-
-| # | Quality Gate | Met? | Evidence |
-|---|-------------|------|----------|
-| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | YES | All 25 variables (2 DVs, 1 lagged DV, 4 IVs, 12 controls, 4 FE columns, 2 additional computed) have entries with formulas and source engines. Verified in Phase 6. |
-| 2 | The model equation matches what the code actually estimates | YES | Two equations (contemporaneous + lead) match runner's exog construction: KEY_IVS + controls with entity + time FE. Verified in Phase 3 B1. |
-| 3 | The specification register accounts for every model column | YES | 12 rows matching 12 MODEL_SPECS entries. All DV/FE/control combinations verified. Phase 4. |
-| 4 | The attrition cascade has row counts for each filter step | YES | 4-step cascade with row counts from actual run output. Phase 5. |
-| 5 | The tail test direction matches between runner code and generate_all_tables.py | YES | Runner: beta < 0 (line 328). generate_all_tables: `"tail": "one"`, `"hyp_dir": "<"`. Match. |
-| 6 | The FE specification matches between docstring, code, and this document | YES | Docstring (lines 16-21, 35): cal_yr and cal_yr_qtr. Code (lines 262, 282, 285-300): same. Doc sections B5, C, K1: consistent. |
-| 7 | Every merge in the panel builder is documented with join keys and type | YES | 16 file_name merges + 2 lead/lag merges all documented in F3 with keys and join type. Phase 7. |
-| 8 | The output file list matches what the runner actually writes | YES | All 8+ output file types documented, verified against code write operations. Phase 7 G-check. |
-| 9 | The model-family addendum is filled for the correct family only | YES | K1 (PanelOLS) filled with verified details. K2-K6 marked N/A. Phase 9. |
-| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | NO | No [UNVERIFIED] markers in the doc. However, the Volatility window description and TobinsQ formula are stated as verified facts but are INCORRECT. Gate 10 is technically met (no unverified claims exist), but the spirit is violated because incorrect claims should have been flagged as unverifiable or verified more carefully. |
-
-Wait -- re-reading gate 10: "Any claim marked [UNVERIFIED] has an explanation." Since no claims are marked [UNVERIFIED], this gate is technically satisfied. The issue is that claims are presented as verified when they are actually wrong, which is a different problem (covered by gates 1-2).
-
-**Quality Gate 10 reassessment**: MET. No [UNVERIFIED] markers exist, so the requirement is vacuously satisfied.
-
-But I note that Quality Gate 1 says "every variable... with explicit formula." TobinsQ and Volatility have incorrect formulas/descriptions. Does gate 1 require the formulas to be CORRECT? The gate says "appears... with explicit formula and source engine." Having an explicit formula that is wrong is borderline. I will mark it as FAIL since the intent is accuracy.
-
-| # | Quality Gate | Met? |
-|---|-------------|------|
-| 1 | Every variable... with explicit formula and source engine | **NO** -- TobinsQ formula oversimplified (missing clip/both-NaN guard); Volatility window wrong |
-| 2-10 | (as above) | YES |
-
-**Phase 10 Result: 9/10 PASS, 1 FAIL (Gate 1 -- formula accuracy).**
-
----
-
-## Phase 11: CROSS-REFERENCE CONSISTENCY
-
-### Check 1: DVs in B2 match DVs in C (spec register)
-- B2 lists: PayoutRatio_q, PayoutRatio_q_lead_qtr
-- C uses: PayoutRatio_q (cols 1-6), PayoutRatio_q_lead_qtr (cols 7-12)
-- **CONSISTENT**
-
-### Check 2: DVs in C match DVs in I (table generator)
-- C: PayoutRatio_q (6 cols) + PayoutRatio_q_lead_qtr (6 cols)
-- I: `(r"PayoutRatio\_q", 6)`, `(r"PayoutRatio\_q\_lead\_qtr", 6)`
-- **CONSISTENT**
-
-### Check 3: Controls in B4 match variables in E (dictionary)
-- B4 Base: Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility, Lagged_DV
-- B4 Extended adds: SalesGrowth, RD_Intensity, CashFlow, Volatility
-- E has all 12 controls + PayoutRatio_q_lag (source of Lagged_DV).
-- **CONSISTENT**
-
-### Check 4: Column count in A matches rows in C
-- A: 12 columns
-- C: 12 rows
-- **CONSISTENT**
-
-### Check 5: Column count in A matches "cols" in I
-- A: 12
-- I: `"cols": 12`
-- **CONSISTENT**
-
-### Check 6: Tail direction in A matches B7 matches I
-- A: `one-tailed beta < 0`
-- B7: `One-tailed (beta < 0)`, code snippet `p_two / 2 if beta < 0`
-- I: `"tail": "one"`, `"hyp_dir": "<"`
-- **CONSISTENT**
-
-### Check 7: FE in B5 matches C matches K
-- B5: Industry (ff12_code) for odd cols, Firm (gvkey) for even cols; cal_yr for cols 1-4,7-10, cal_yr_qtr for cols 5-6,11-12
-- C: Industry(FF12) for odd, Firm for even; Cal Year or Cal Year-Quarter matching B5 col assignments
-- K1: entity_effects=False + other_effects=ff12_code for industry; EntityEffects for firm; time_effects via index
-- **CONSISTENT**
-
-### Check 8: Panel index in A matches set_index in K
-- A: `(gvkey, cal_yr)` for cols 1-4,7-10; `(gvkey, cal_yr_qtr)` for cols 5-6,11-12
-- K1: `panel indexed on (gvkey, cal_yr)` for Calendar Year specs; `(gvkey, cal_yr_qtr)` for Year-Quarter specs
-- **CONSISTENT**
-
-**Phase 11 Result: 8/8 PASS.**
+**PASS WITH NOTES** — The document is factually accurate on all structural claims
+(estimator, FE, tail test, variable formulas, spec register, controls, attrition, merges,
+and the generate_all_tables.py entry). Six issues were found: four are wrong/stale line
+number references (non-critical), one is a zero-inflation percentage discrepancy between
+the doc and the code/LaTeX output (~52.8% vs ~57%), and one is the attrition table
+missing a "Rows Before" column required by the creation prompt spec. None of these
+invalidate the core scientific content.
 
 ---
 
@@ -568,89 +45,624 @@ But I note that Quality Gate 1 says "every variable... with explicit formula." T
 
 | Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
 |-------|-------|----------------------|-----------------|----------|-------------|
-| 3 (B4) | TobinsQ formula | `(cshoq x prccq + dlcq + dlttq) / atq; missing debt filled as 0` | `mktcap = cshoq * prccq; debt_c = dlcq.clip(lower=0).fillna(0); debt_t = dlttq.clip(lower=0).fillna(0); debt_book = NaN when both dlcq and dlttq are NaN, else debt_c + debt_t; TobinsQ = (mktcap + debt_book) / atq when atq > 0 and mktcap not NaN` | MEDIUM | Yes -- formula in B4 and E must include clip(lower=0) and both-NaN guard |
-| 3 (B4) | Volatility window | `std(daily_ret) x sqrt(252) x 100 over [prev_call + 5d, call - 5d]; min 10 trading days` | `window_start = start_date + Timedelta(days=1); window_end = next_call_date - Timedelta(days=5)` i.e. `[current_call + 1d, next_call - 5d]` | HIGH | Yes -- window description in B4 and E is completely wrong |
-| 6 (E) | TobinsQ formula | Same as B4 | Same as B4 | MEDIUM | Yes -- same fix needed in variable dictionary |
-| 6 (E) | Volatility window | Same as B4 | Same as B4 | HIGH | Yes -- same fix needed in variable dictionary |
-| 10 | Gate 1 (formula accuracy) | Formulas presented as verified | TobinsQ and Volatility descriptions contain errors | MEDIUM | Fixing the above fixes this gate |
-| 1 (G1) | report_step3 file | Not listed (correct per code) | Builder does not produce report_step3 | LOW | No code fix needed, but doc could note this deviation from prompt template |
+| 2 | A-10: Line reference for PayoutRatio_q construction | "_compustat_engine.py lines 1009-1018" | Lines 1014-1023 (block starts at 1014 comment, computation at 1018-1023) | Low | Update line reference |
+| 3 | B4/L.1: Zero-inflation percentage | Section L.1 says "approximately 52.8%" for zero PayoutRatio_q | Runner docstring line 37: "~57%"; LaTeX table note line 488: "~57%" | Medium | Align to "~57%" throughout |
+| 5 | D2: Attrition table column structure | "Rows After / Dropped / % Retained" | Creation prompt requires "Rows Before / Rows After / Dropped" | Low | Add "Rows Before" column |
+| 8 | Section I line reference | "From `outputs/generate_all_tables.py` lines 290-304" | H12 entry is at lines 229-243 | Low | Update line numbers |
+| 8 | Section H.1 winsorize line reference | "`_winsorize_by_year` in `_compustat_engine.py` lines 439-450" | Function def starts at line 444, body through 468 | Low | Update line reference to 444-468 |
+
+---
+
+## PHASE 1: STRUCTURAL COMPLETENESS
+
+Read `docs/Prompts/Suite Provenance Doc.txt` for required sections.
+Checked against `docs/provenance/H12.md`.
+
+| Section | Required by Prompt | Present in Doc | Complete | Notes |
+|---------|-------------------|----------------|----------|-------|
+| A. Suite Identity | Yes | Yes | Yes | YAML block complete |
+| B. Model Specification | Yes | Yes | Yes | All subsections present |
+| B1. Regression Equation | Yes | Yes | Yes | Two LaTeX equations (contemporaneous + lead) |
+| B2. Dependent Variable(s) | Yes | Yes | Yes | Table + construction detail |
+| B3. Independent Variable(s) | Yes | Yes | Yes | All 4 IVs listed |
+| B4. Control Variables | Yes | Yes | Yes | Base + Extended tables, Lagged_DV detail |
+| B5. Fixed Effects | Yes | Yes | Yes | Table with col references |
+| B6. Standard Errors | Yes | Yes | Yes | cov_type + clustering dimension |
+| B7. Hypothesis Test | Yes | Yes | Yes | One-tailed, direction, p-value code, stars |
+| C. Spec Register | Yes | Yes | Yes | 12-row table matches MODEL_SPECS |
+| D. Sample Construction | Yes | Yes | Yes | D1, D2, D3 present |
+| D1. Population | Yes | Yes | Yes | 112,968 calls, 2,429 firms, 2002-2018 |
+| D2. Exclusion Criteria | Yes | Yes | PARTIAL | Present but missing "Rows Before" column (creation prompt requires it) |
+| D3. Sample Counts per Spec | Yes | Yes | Yes | 12-row table with N and N_firms |
+| E. Variable Dictionary | Yes | Yes | Yes | 20 variables including FE columns |
+| F. Data Pipeline | Yes | Yes | Yes | F1, F2, F3 present |
+| F1. Dependency Chain | Yes | Yes | Yes | 7-step chain documented |
+| F2. Data Engines | Yes | Yes | Yes | 3 engines listed |
+| F3. Merge Operations | Yes | Yes | Yes | All merges with join keys and type |
+| G. Outputs | Yes | Yes | Yes | G1, G2, G3 present |
+| G1. Stage 3 Outputs | Yes | Yes | Yes | parquet + csv + json |
+| G2. Stage 4 Outputs | Yes | Yes | Yes | All 8 output types listed |
+| G3. Summary Statistics | Yes | Yes | Yes | 17 variables, 8 metrics |
+| H. Outlier/Missing Treatment | Yes | Yes | Yes | H1, H2, H3 present |
+| I. generate_all_tables Entry | Yes | Yes | Yes | Full entry shown (wrong line numbers) |
+| J. Reproduction Commands | Yes | Yes | Yes | 3-command block |
+| K. Model-Family Addendum | Yes | Yes | Yes | K1 (PanelOLS) filled; K2-K6 marked N/A |
+| L. Known Issues | Yes | Yes | Yes | 6 items listed |
+
+**Phase 1 Result**: 25/26 PASS. One partial failure: D2 attrition table missing "Rows Before" column.
+
+---
+
+## PHASE 2: FACTUAL ACCURACY — SECTION A (Suite Identity)
+
+### A-1. Suite ID
+- Doc claims: "H12"
+- Verification: Runner docstring line 6: "ID: econometric/run_h12_payout"; docstring line 4: "Test H12 Quarterly Payout Ratio Hypothesis"; builder docstring line 6: "ID: variables/build_h12_payout_panel".
+- **PASS**
+
+### A-2. Title
+- Doc claims: "Speech Uncertainty and Quarterly Payout Ratio"
+- Verification: generate_all_tables.py line 233: `"caption": "H12: Speech Uncertainty and Quarterly Payout Ratio"`. Runner docstring line 7 describes the hypothesis more technically. Caption match is direct.
+- **PASS**
+
+### A-3. Hypothesis
+- Doc claims: "Does managerial speech uncertainty during earnings calls predict lower quarterly dividend payout ratios?"
+- Verification: Runner docstring line 31: "Hypothesis: One-tailed (β < 0 — higher uncertainty → lower payout)." Doc paraphrases this accurately as a research question.
+- **PASS**
+
+### A-4. Direction (tail test)
+- Doc claims: "one-tailed beta < 0"
+- Verification: Runner line 328: `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2`; runner docstring line 31: "One-tailed (β < 0)"; generate_all_tables.py lines 240-241: `"tail": "one", "hyp_dir": "<"`.
+- **PASS**
+
+### A-5. Model Family
+- Doc claims: "PanelOLS"
+- Verification: Runner line 61: `from linearmodels.panel import PanelOLS`. Model instantiated at lines 286-299.
+- **PASS**
+
+### A-6. Estimator
+- Doc claims: "linearmodels.panel.PanelOLS"
+- Verification: Import at runner line 61: `from linearmodels.panel import PanelOLS`. Used at lines 286-299.
+- **PASS**
+
+### A-7. Unit of Observation
+- Doc claims: "call-level (individual earnings call)"
+- Verification: Builder docstring line 9: "Unit of observation: individual earnings call (file_name)."
+- **PASS**
+
+### A-8. Panel Index
+- Doc claims: "(gvkey, cal_yr) for cols 1-4, 7-10; (gvkey, cal_yr_qtr) for cols 5-6, 11-12"
+- Verification:
+  - Runner line 262: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`
+  - Runner line 282: `df_panel = df_prepared.set_index(["gvkey", time_col])`
+  - MODEL_SPECS: cols 5,6 have fe="industry_yq","firm_yq"; cols 11,12 have fe="industry_yq","firm_yq" → cal_yr_qtr. All others use cal_yr.
+  - Claim is exact.
+- **PASS**
+
+### A-9. Columns (number of model specs)
+- Doc claims: 12
+- Verification: MODEL_SPECS at runner lines 93-110 has exactly 12 entries (col 1 through col 12).
+- **PASS**
+
+### A-10. Runner and Panel Builder paths + internal line references
+- File paths: Both files exist on disk and were read.
+- Doc also cites: "_compustat_engine.py lines 1009-1018" for PayoutRatio_q construction detail in B2.
+- Verification: The PayoutRatio_q code block comment is at line 1014 ("--- H12: Quarterly PayoutRatio..."). The computation is at lines 1018-1023. Lines 1009-1013 contain the DividendPayer block (unrelated code).
+- **FAIL** — The line reference should be 1014-1023, not 1009-1018. (Low severity: the quoted content is accurate, only the numbers are stale.)
+
+**Phase 2 Result**: 9/10 PASS.
+
+---
+
+## PHASE 3: FACTUAL ACCURACY — SECTION B (Model Specification)
+
+### B1-CHECK: Regression Equation
+- Doc claims: Four IVs + Controls + α_i (entity FE) + δ_t (time FE)
+- Verification: Runner line 274: `exog = KEY_IVS + controls`; PanelOLS with entity_effects/EntityEffects and time_effects/TimeEffects (lines 286-300). No interaction terms, no centering.
+- **PASS**
+
+### B2-CHECK: Dependent Variable(s)
+
+**PayoutRatio_q**
+- Doc formula: "(dvpspq.fillna(0) x cshoq) / ibq; NaN when ibq <= 0"
+- Verification: `_compustat_engine.py` lines 1018-1023:
+  ```python
+  quarterly_div = comp["dvpspq"].fillna(0) * comp["cshoq"]
+  comp["PayoutRatio_q"] = np.where(comp["ibq"] > 0, quarterly_div / comp["ibq"], np.nan)
+  ```
+  Exact match.
+- Source engine: CompustatEngine — correct (PayoutRatioQuarterlyBuilder calls `get_engine()` from `_compustat_engine`)
+- **PASS**
+
+**PayoutRatio_q_lead_qtr**
+- Doc claims: "PayoutRatio_q shifted +1 consecutive fiscal quarter within gvkey"
+- Verification: Builder lines 247-263: `shift(-1)` on groupby-gvkey sorted by fiscal_qtr_id; consecutive check via `expected_next`; non-consecutive → NaN.
+- **PASS**
+
+### B3-CHECK: Independent Variables
+- Doc claims 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+- Verification: Runner lines 74-79: KEY_IVS = exactly these 4 strings; all 4 in `exog` at runner line 274.
+- Doc claims no centering applied.
+- Verification: No centering code for IVs in runner or builder.
+- **PASS**
+
+### B4-CHECK: Control Variables
+
+**BASE_CONTROLS**
+- Doc claims: Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility, Lagged_DV (8 items)
+- Verification: Runner lines 81-85:
+  ```python
+  BASE_CONTROLS = ["Size", "TobinsQ", "ROA", "BookLev", "CashHoldings",
+                   "CapexAt", "OCF_Volatility", "Lagged_DV"]
+  ```
+  Exact match, 8 items.
+- **PASS**
+
+**EXTENDED_CONTROLS**
+- Doc claims: BASE_CONTROLS + SalesGrowth, RD_Intensity, CashFlow, Volatility
+- Verification: Runner lines 87-89:
+  ```python
+  EXTENDED_CONTROLS = BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]
+  ```
+  Exact match.
+- **PASS**
+
+**Lagged_DV detail**
+- Doc claims: `base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")`, then `lag_col = f"{base_dv}_lag"`, then `panel["Lagged_DV"] = panel[lag_col]`
+- Verification: Runner lines 208-212: exact match.
+- **PASS**
+
+**Zero-inflation percentage in L.1 (referenced from B4 Lagged_DV notes)**
+- Doc claims Section L.1: "approximately 52.8% of main-sample firm-quarters with ibq > 0 have PayoutRatio_q = 0"
+- Verification:
+  - Runner docstring line 37: "~57% of firm-quarters with ibq > 0 have PayoutRatio_q = 0"
+  - LaTeX table note (runner line 488): r"~57\% of firm-quarters with positive earnings have PayoutRatio$_q$ = 0"
+  - The 52.8% figure is nowhere in the code. It may be from a run-time calculation, but the code-documented value is ~57%.
+- **FAIL** — Section L.1 says 52.8% but runner docstring and LaTeX output say ~57%. Medium severity as it affects a disclosure about the DV's zero mass point.
+
+### B5-CHECK: Fixed Effects
+- Doc claims:
+  - Industry FE: ff12_code via `other_effects`, entity_effects=False, time_effects=True
+  - Firm FE: EntityEffects + TimeEffects in formula
+  - Cal Year: time_col="cal_yr" for non-_yq specs
+  - Cal Year-Quarter: time_col="cal_yr_qtr" for _yq specs
+- Verification:
+  - Runner lines 285-294 (industry): `PanelOLS(..., entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"], drop_absorbed=True, check_rank=False)` — match
+  - Runner lines 297-299 (firm): `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` — match
+  - Runner line 262: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"` — match
+- **PASS**
+
+### B6-CHECK: Standard Errors
+- Doc claims: cov_type="clustered", cluster_entity=True
+- Verification: Runner lines 295 and 300: both `model_obj.fit(cov_type="clustered", cluster_entity=True)` — exact match.
+- **PASS**
+
+### B7-CHECK: Hypothesis Test
+- Doc claims: One-tailed beta < 0; `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2`
+- Verification: Runner lines 327-328: exact match.
+- Doc claims stars: *** p<0.01, ** p<0.05, * p<0.10
+- Verification: Runner lines 342-351 `_sig_stars` function: exact match.
+- **PASS**
+
+**Phase 3 Result**: 6/7 PASS. One failure: zero-inflation percentage (52.8% vs ~57%).
+
+---
+
+## PHASE 4: FACTUAL ACCURACY — SECTION C (Spec Register)
+
+### Count check
+- Doc has 12 rows (cols 1-12).
+- `len(MODEL_SPECS)` at runner lines 93-110 = 12.
+- **PASS**
+
+### Row-by-row verification against MODEL_SPECS (runner lines 93-110):
+
+| Doc Col | Doc DV | Doc Entity FE | Doc Time FE | Doc Controls | Code DV | Code fe | Code controls | Match |
+|---------|--------|---------------|-------------|--------------|---------|---------|---------------|-------|
+| 1 | PayoutRatio_q | Industry (FF12) | Cal Year | Base | PayoutRatio_q | industry | base | PASS |
+| 2 | PayoutRatio_q | Firm | Cal Year | Base | PayoutRatio_q | firm | base | PASS |
+| 3 | PayoutRatio_q | Industry (FF12) | Cal Year | Extended | PayoutRatio_q | industry | extended | PASS |
+| 4 | PayoutRatio_q | Firm | Cal Year | Extended | PayoutRatio_q | firm | extended | PASS |
+| 5 | PayoutRatio_q | Industry (FF12) | Cal Year-Quarter | Extended | PayoutRatio_q | industry_yq | extended | PASS |
+| 6 | PayoutRatio_q | Firm | Cal Year-Quarter | Extended | PayoutRatio_q | firm_yq | extended | PASS |
+| 7 | PayoutRatio_q_lead_qtr | Industry (FF12) | Cal Year | Base | PayoutRatio_q_lead_qtr | industry | base | PASS |
+| 8 | PayoutRatio_q_lead_qtr | Firm | Cal Year | Base | PayoutRatio_q_lead_qtr | firm | base | PASS |
+| 9 | PayoutRatio_q_lead_qtr | Industry (FF12) | Cal Year | Extended | PayoutRatio_q_lead_qtr | industry | extended | PASS |
+| 10 | PayoutRatio_q_lead_qtr | Firm | Cal Year | Extended | PayoutRatio_q_lead_qtr | firm | extended | PASS |
+| 11 | PayoutRatio_q_lead_qtr | Industry (FF12) | Cal Year-Quarter | Extended | PayoutRatio_q_lead_qtr | industry_yq | extended | PASS |
+| 12 | PayoutRatio_q_lead_qtr | Firm | Cal Year-Quarter | Extended | PayoutRatio_q_lead_qtr | firm_yq | extended | PASS |
+
+All 12 specs match exactly. No specs in code missing from table; no table specs not in code.
+
+**Phase 4 Result**: 4/4 PASS.
+
+---
+
+## PHASE 5: FACTUAL ACCURACY — SECTION D (Sample Construction)
+
+### D1-CHECK: Population
+- Doc claims: 112,968 calls, 2,429 firms, 2002-2018
+- Verification: These match the project scope (memory: project_thesis_scope.md). The runner records `full_n = len(panel)` at line 569 and prints it. The builder loads the full master manifest (line 383: `manifest_input = root / "outputs" / "1.4_AssembleManifest" / "latest" / "master_sample_manifest.parquet"`).
+- **PASS** (consistent with established project scope)
+
+### D2-CHECK: Exclusion Criteria (Attrition Cascade)
+- Doc table columns: "Step | Filter | Rows After | Dropped | % Retained"
+- Creation prompt D2 specifies: "Step | Filter | Rows Before | Rows After | Dropped"
+- The doc is MISSING the "Rows Before" column.
+- Filter steps/descriptions DO match the runner's `attrition_stages` list at lines 619-624:
+  1. ("Full panel", full_n) → 112,968
+  2. ("Main sample (excl Finance/Utility)", main_n) → 88,205
+  3. ("PayoutRatio_q non-null (ibq > 0)", n_dv_valid) → 70,695
+  4. ("After complete-case + min-calls (col 1)", first["n_obs"]) → 40,910
+- Filter logic matches: FF12 filter at runner lines 189-195; DV non-null at lines 225-228; complete-case at lines 230-232; min-calls at lines 235-240.
+- **PARTIAL PASS** — content correct; column structure deviates from creation prompt spec.
+
+### D3-CHECK: Sample Counts per Spec
+- Doc claims counts from "model_diagnostics.csv" for run 2026-03-27_095009.
+- Counts range from 40,910 (col 1-2 contemporaneous base) down to 38,281 (lead extended).
+- These are run-time statistics. Cannot be verified from code alone.
+- The explanation for N differences (extended controls require more non-null variables; lead DV has fewer non-null values) is logically consistent with the code.
+- **PASS** (plausible, internally consistent with code logic)
+
+**Phase 5 Result**: 2/3 PASS (D2 column structure partial failure).
+
+---
+
+## PHASE 6: FACTUAL ACCURACY — SECTION E (Variable Dictionary)
+
+Full check of all 20 variables.
+
+### DVs (2 variables)
+
+**PayoutRatio_q**
+- Formula: `(dvpspq.fillna(0) x cshoq) / ibq; NaN when ibq <= 0` — matches `_compustat_engine.py` lines 1018-1023. **PASS**
+- Source: CompustatEngine: dvpspq, cshoq, ibq — correct. **PASS**
+- Winsorized: "1%/99% by fiscal year" — `PayoutRatio_q` is in COMPUSTAT_COLS (line 121), NOT in skip_winsorize set (lines 1217-1224). Winsorized via `_winsorize_by_year(comp[col], year_col)` at lines 1230-1232 where `year_col = comp["fyearq"]`. **PASS**
+
+**PayoutRatio_q_lead_qtr**
+- Formula: "PayoutRatio_q shifted +1 consecutive fiscal quarter per gvkey" — matches builder lines 247-263. **PASS**
+- Winsorized: "Via PayoutRatio_q winsorization" — correct, the lead is derived from already-winsorized values. **PASS**
+
+### Lagged DV (1 variable)
+
+**PayoutRatio_q_lag**
+- Formula: "PayoutRatio_q shifted -1 consecutive fiscal quarter per gvkey" — matches builder lines 279-301: `shift(1)` on sorted gvkey groups (backward shift = previous period) with consecutive prev check. **PASS**
+- Winsorized: "Via PayoutRatio_q winsorization" — correct. **PASS**
+
+### IVs (4 variables)
+
+**CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct**
+- Formula: "(uncertainty words / total words) x 100 in [role] turns" — standard linguistic pct computation from LinguisticEngine. Builder imports CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder, ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder (lines 46-53). **PASS**
+- Winsorized: "0%/99% upper-only per year" — `_linguistic_engine.py` lines 255-258: `winsorize_by_year(..., lower=0.0, upper=0.99, min_obs=10)`. **PASS**
+
+### Controls (11 variables)
+
+**Size**
+- Formula: "ln(atq); NaN when atq <= 0" — standard CompustatEngine computation. In COMPUSTAT_COLS, not in skip_winsorize → 1%/99% by fyearq. **PASS**
+
+**TobinsQ**
+- Formula: "(cshoq x prccq + debt_book) / atq; debt_c = dlcq.clip(lower=0).fillna(0), debt_t = dlttq.clip(lower=0).fillna(0), debt_book = NaN when both NaN else debt_c + debt_t; requires atq > 0 and mktcap non-null" — complex formula but documented precisely. In COMPUSTAT_COLS, not in skip_winsorize. **PASS**
+
+**ROA**
+- Formula: "iby_annual (Q4) / ((atq_t + atq_{t-1}) / 2); requires avg_assets > 0"
+- Verification: `_compustat_engine.py` lines 959-969:
+  - `atq_annual` = _compute_annual_q4_variable(comp, "atq", ...)
+  - `atq_annual_lag1` = _compute_annual_q4_variable_lag(comp, "atq", ...)
+  - `avg_assets = (atq_annual + atq_annual_lag1) / 2`
+  - `iby_annual = _compute_annual_q4_variable(comp, "iby", ...)`
+  - `comp["ROA"] = np.where(avg_assets > 0, iby_annual / avg_assets, np.nan)`
+  - Exact match. In COMPUSTAT_COLS, not in skip_winsorize → 1%/99% by fyearq. **PASS**
+
+**BookLev**
+- Formula: "(dlcq.fillna(0) + dlttq.fillna(0)) / atq" — standard. In COMPUSTAT_COLS. **PASS**
+
+**CashHoldings**
+- Formula: "cheq / atq" — standard. In COMPUSTAT_COLS. **PASS**
+
+**CapexAt**
+- Formula: "capxy_annual (Q4) / atq_{t-1}; requires lagged atq > 0" — Q4-annual pattern confirmed by engine (dvy/capxy are YTD cumulative, Q4-only join). In COMPUSTAT_COLS. **PASS**
+
+**OCF_Volatility**
+- Formula: "Rolling 5-year std (min 3 yrs) of (oancfy / atq_{t-1}) per gvkey; uses Q4-only annual panel" — computed via `_compute_ocf_volatility(comp)` at engine line 1025. In COMPUSTAT_COLS. **PASS**
+
+**SalesGrowth**
+- Formula: "(saley_t - saley_{t-1}) / abs(saley_{t-1}); Q4-only annual; saleq fallback"
+- Winsorized: "1%/99% by fiscal year (inside Biddle residual computation)"
+- Verification: SalesGrowth IS in skip_winsorize (engine line 1218-1219: `"CashFlow", "SalesGrowth"` are listed). Per engine comments lines 1215-1216: "CashFlow/SalesGrowth already winsorized per-year inside _compute_biddle_residual — do not double-winsorize". **PASS**
+
+**RD_Intensity**
+- Formula: "xrdq.fillna(0) / atq" — standard. In COMPUSTAT_COLS. **PASS**
+
+**CashFlow**
+- Formula: "oancfy (Q4 annual) / avg_assets; avg = (atq_t + atq_{t-1}) / 2, fallback to atq_t"
+- Winsorized: "1%/99% by fiscal year (inside Biddle residual computation)"
+- Verification: Same as SalesGrowth — CashFlow in skip_winsorize, winsorized inside _compute_biddle_residual. **PASS**
+
+**Volatility**
+- Formula: "std(daily_ret) x sqrt(252) x 100 over [current_call + 1d, next_call - 5d]; requires >= 10 trading days"
+- Source: CRSPEngine: RET
+- Winsorized: "1%/99% per year" — CRSPEngine lines 444-447: `winsorize_by_year(result_with_year, CRSP_RETURN_COLS, year_col="year")` with default lower=0.01, upper=0.99. **PASS**
+
+### FE Identifiers (4 variables)
+
+**gvkey**: firm identifier, no winsorization. **PASS**
+**ff12_code**: Fama-French 12-industry code from SIC mapping. No winsorization. **PASS**
+**cal_yr**: `start_date.dt.year` — confirmed `build_cal_yr_qtr_index` at panel_utils.py line 215. **PASS**
+**cal_yr_qtr**: `cal_yr x 10 + start_date.dt.quarter` — confirmed panel_utils.py line 217: `(panel["cal_yr"] * 10 + panel["cal_qtr"])`. **PASS**
+
+**Phase 6 Result**: 20/20 PASS.
+
+---
+
+## PHASE 7: FACTUAL ACCURACY — SECTIONS F, G, H
+
+### F-CHECK: Data Pipeline
+
+**F1. Dependency Chain (7 steps)**
+1. Raw inputs: manifest + Compustat + CRSP + linguistic parquets — matches builder imports and engine usage. **PASS**
+2. Engine loading: CompustatEngine (PayoutRatio_q + controls), CRSPEngine (Volatility), LinguisticEngine (4 uncertainty IVs). **PASS**
+3. Panel builder: merge sequence on file_name (left), lead/lag creation, sample assignment. Matches builder code. **PASS**
+4. Runner loading: `get_latest_output_dir` for h12_payout_panel.parquet + `build_cal_yr_qtr_index`. Matches runner lines 168-184. **PASS**
+5. Sample filtering: FF12 != 8,11 (runner lines 189-195); DV NaN drop (225-228); complete-case (230-232); min 5 calls (235-240). **PASS**
+6. Regression: PanelOLS, 12 specs, one-tailed p-values. **PASS**
+7. Table generation via generate_all_tables.py. **PASS**
+
+**F2. Data Engines**
+- Three engines listed with correct source data and variables. Builder imports confirm. **PASS**
+
+**F3. Merge Operations**
+- 16 variable builder merges documented (manifest + 15 builders), all on file_name, all left join.
+- Code: Builder lines 130-145: `panel.merge(data, on="file_name", how="left")` inside loop over all builder outputs. **PASS**
+- Lead merge on (gvkey, fiscal_qtr_id) left join (builder line 272). **PASS**
+- Lag merge on (gvkey, fiscal_qtr_id) left join (builder line 299). **PASS**
+- Doc also notes: "Each merge asserts no row count change (line 145). Conflicting columns dropped from right side before merge (line 142)." — both confirmed in builder code. **PASS**
+
+**G-CHECK: Outputs**
+
+**G1. Stage 3 Outputs**
+- `h12_payout_panel.parquet`: Builder line 374: `panel_path = out_dir / "h12_payout_panel.parquet"`. **PASS**
+- `summary_stats.csv`: Builder lines 378-381. **PASS**
+- `run_manifest.json`: Builder lines 383-389 via `generate_manifest(...)` which writes `run_manifest.json` (confirmed in `manifest_generator.py` line 73). **PASS**
+- Note about on-disk name `h12q_payout_panel.parquet` from older run: correctly documented in G1 and L.2. **PASS**
+
+**G2. Stage 4 Outputs**
+- `h12_payout_table.tex`: Runner line 496: `tex_path = out_dir / "h12_payout_table.tex"`. **PASS**
+- `model_diagnostics.csv`: Runner line 531. **PASS**
+- `summary_stats.csv` and `summary_stats.tex`: Runner lines 585-592. **PASS**
+- `sample_attrition.csv` and `sample_attrition.tex`: Runner line 626 via `generate_attrition_table`. **PASS**
+- `regression_results_col{1-12}.txt`: Runner lines 516-527 (writes `f"regression_results_col{col_num}.txt"`). **PASS**
+- `run_manifest.json`: Runner lines 629-634 via `generate_manifest(...)`. **PASS**
+- No spurious files listed; no files omitted from code. **PASS**
+
+**G3. Summary Statistics**
+- Doc lists 17 variables with labels matching SUMMARY_STATS_VARS.
+- Verification: Runner lines 119-137: 17 entries, every variable name and label in doc matches code exactly. **PASS**
+
+**H-CHECK: Outlier/Missing Treatment**
+
+**H1. Winsorization**
+
+*Compustat variables*:
+- Doc claims 1%/99% per fiscal year, min 10 obs. Verified: `_winsorize_by_year` default min_obs=10 (line 445); applied via loop at engine lines 1230-1232 using `year_col = comp["fyearq"]`.
+- Doc claims skip set: DividendPayer, CashFlow, SalesGrowth, fqtr.
+- Verification: Engine lines 1217-1224: `skip_winsorize = {"DividendPayer", "CashFlow", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}`. Doc does not mention ExternalFunding/DebtChoice in skip set, but these are H19/H20 variables not relevant to H12. The H12 variables' treatment is correctly described.
+- **PASS**
+
+*Linguistic IVs*:
+- Doc claims 0%/99% upper-only per year. Confirmed: `_linguistic_engine.py` lines 255-258: `lower=0.0, upper=0.99, min_obs=10`. **PASS**
+
+*CRSP variables*:
+- Doc claims 1%/99% per year. Confirmed: `_crsp_engine.py` lines 445-447: `winsorize_by_year(...)` with default lower=0.01, upper=0.99. **PASS**
+
+Doc cites "lines 439-450" for `_winsorize_by_year`. The function definition is at line 444, not 439. Lines 439-443 are prior code (closing bracket of another function). This is a wrong line reference.
+- **FAIL (low severity)** — wrong line reference for _winsorize_by_year (444-468, not 439-450).
+
+**H2. Missing Data Policy**
+- Complete-case deletion: runner line 231: `complete_mask = df[required].notna().all(axis=1)`. **PASS**
+- Inf/-Inf replacement: runner line 223: `df = df.replace([np.inf, -np.inf], np.nan)`. **PASS**
+
+**H3. Transformations**
+- Size = ln(atq), Volatility annualized, OCF_Volatility rolling std — all correctly documented. **PASS**
+
+**Phase 7 Result**: Counting the H1 line reference failure as the Phase 8 failure (already tracked), 9/9 PASS on core content. The `_winsorize_by_year` line reference error is tracked in the failures table.
+
+---
+
+## PHASE 8: FACTUAL ACCURACY — SECTION I (Table Generator Entry)
+
+### Line Number Claim
+- Doc states: "From `outputs/generate_all_tables.py` lines 290-304"
+- Verification: Grep confirmed H12 entry at lines 229-243 (comment at 229, dict at 230-243).
+- **FAIL — wrong line number** (low severity)
+
+### Field-by-field comparison of H12 entry (actual lines 229-243 vs doc claims):
+
+| Field | Doc Claims | Actual Code | Match |
+|-------|-----------|-------------|-------|
+| "id" | "H12" | "H12" | PASS |
+| "dir" | "h12_payout/2026-03-27_095009" | "h12_payout/2026-03-27_095009" | PASS |
+| "caption" | "H12: Speech Uncertainty and Quarterly Payout Ratio" | same | PASS |
+| "label" | "tab:h12" | "tab:h12" | PASS |
+| "cols" | 12 | 12 | PASS |
+| "dvs" | [(r"PayoutRatio\_q", 6), (r"PayoutRatio\_q\_lead\_qtr", 6)] | same | PASS |
+| "tail" | "one" | "one" | PASS |
+| "hyp_dir" | "<" | "<" | PASS |
+| "time_fe_label" | "Year FE" | "Year FE" | PASS |
+
+All field values match exactly. The one-tailed beta < 0 direction is consistent across runner and generate_all_tables.py.
+
+Doc verification notes: "tail: 'one' and hyp_dir: '<' -- matches runner's one-tailed beta < 0 direction (confirmed)". Confirmed correct.
+
+**Phase 8 Result**: 4/5 PASS (wrong line number reference only).
+
+---
+
+## PHASE 9: FACTUAL ACCURACY — SECTION K (Model-Family Addendum)
+
+### K1. PanelOLS Specifics
+
+**Entity effects**:
+- Industry FE specs: doc says `entity_effects=False`, `other_effects=df_panel["ff12_code"]`, `time_effects=True`, `drop_absorbed=True`.
+- Verification: Runner lines 286-294 (inside `if base_fe == "industry":` block): exact match.
+- **PASS**
+
+- Firm FE specs: doc says `EntityEffects` in formula with `TimeEffects`, `drop_absorbed=True`.
+- Verification: Runner lines 297-299: `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`, `PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)`. Exact match.
+- **PASS**
+
+**Time effects**:
+- Cal Year specs: panel indexed on (gvkey, cal_yr) with time_effects=True. Verified.
+- Cal Year-Quarter specs: panel indexed on (gvkey, cal_yr_qtr) with TimeEffects in formula. Verified.
+- **PASS**
+
+**drop_absorbed**: True for all specs — confirmed lines 292 (industry) and 299 (firm). **PASS**
+
+**check_rank**: False for industry FE specs (line 293); default (True) for firm FE formula specs. Doc says "default for firm FE formula specs". Correct. **PASS**
+
+**Singleton handling**: "Default PanelOLS behavior (singletons may be absorbed; no explicit singleton drop)." No singleton-drop code in runner. **PASS**
+
+### K2-K6: Non-applicable sections
+All marked N/A. Correct for PanelOLS. **PASS**
+
+**Phase 9 Result**: 5/5 PASS.
+
+---
+
+## PHASE 10: QUALITY GATE CHECKLIST
+
+| # | Quality Gate | Met? | Evidence |
+|---|-------------|------|----------|
+| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | YES | All 20 variables documented. fyearq_int appears in required list (runner line 214) but is not a regression variable (not in exog); correctly omitted from E. | PASS |
+| 2 | The model equation matches what the code actually estimates | YES | Equation: 4 IVs + Controls + entity FE + time FE. Matches `exog = KEY_IVS + controls` plus PanelOLS FE structure. | PASS |
+| 3 | The specification register accounts for every model column | YES | 12 rows for 12 MODEL_SPECS; all dimensions verified against code. | PASS |
+| 4 | The attrition cascade has row counts for each filter step | PARTIAL | Row counts present for all 4 steps. But "Rows Before" column required by creation prompt is missing. | PARTIAL |
+| 5 | The tail test direction matches between runner code and generate_all_tables.py | YES | Runner: one-tailed beta < 0 (lines 327-328); generate_all_tables.py: tail="one", hyp_dir="<" (lines 240-241). | PASS |
+| 6 | The FE specification matches between docstring, code, and this document | YES | Runner docstring line 35: "FE time: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs" matches code and doc. | PASS |
+| 7 | Every merge in the panel builder is documented with join keys and type | YES | All 16 builder merges + 2 lead/lag merges documented in F3 with keys and join type. | PASS |
+| 8 | The output file list matches what the runner actually writes | YES | All 8 output types verified against runner code. No extras, no omissions. | PASS |
+| 9 | The model-family addendum is filled for the correct family only | YES | K1 (PanelOLS) filled; K2-K6 marked N/A. | PASS |
+| 10 | Any claim marked [UNVERIFIED] has explanation | YES | No [UNVERIFIED] claims found in the document. | PASS |
+
+**Phase 10 Result**: 9/10 PASS (Gate 4 partially met).
+
+---
+
+## PHASE 11: CROSS-REFERENCE CONSISTENCY
+
+### Check 1: DVs in B2 match DVs in C
+- B2: PayoutRatio_q (contemporaneous), PayoutRatio_q_lead_qtr (lead)
+- C: cols 1-6 use PayoutRatio_q; cols 7-12 use PayoutRatio_q_lead_qtr
+- **PASS**
+
+### Check 2: DVs in C match DVs in I
+- C: PayoutRatio_q (6 cols) + PayoutRatio_q_lead_qtr (6 cols)
+- I: `dvs = [(r"PayoutRatio\_q", 6), (r"PayoutRatio\_q\_lead\_qtr", 6)]`
+- **PASS**
+
+### Check 3: Controls in B4 match variables in E
+- B4 BASE_CONTROLS (8): Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility, Lagged_DV — all in E.
+- B4 EXTENDED adds (4): SalesGrowth, RD_Intensity, CashFlow, Volatility — all in E.
+- **PASS**
+
+### Check 4: Column count in A matches rows in C
+- A: Columns = 12; C: 12 rows
+- **PASS**
+
+### Check 5: Column count in A matches "cols" in I
+- A: Columns = 12; I: "cols": 12
+- **PASS**
+
+### Check 6: Tail direction in A, B7, and I are consistent
+- A: "one-tailed beta < 0"
+- B7: "One-tailed (beta < 0)"
+- I: tail="one", hyp_dir="<"
+- All three consistent.
+- **PASS**
+
+### Check 7: FE in B5 matches C matches K
+- B5: Industry FE (ff12_code/other_effects, entity_effects=False) for odd cols; Firm FE (EntityEffects) for even; Cal Year / Cal Year-Quarter by fe suffix
+- C: Shows Industry/Firm and Cal Year/Cal Year-Quarter for each col, consistent with B5
+- K1: Documents entity_effects=False, other_effects=ff12_code for industry; EntityEffects formula for firm; time index by cal_yr vs cal_yr_qtr
+- All three consistent.
+- **PASS**
+
+### Check 8: Panel index in A matches set_index in K
+- A: "(gvkey, cal_yr) for cols 1-4, 7-10; (gvkey, cal_yr_qtr) for cols 5-6, 11-12"
+- K1: "Calendar Year specs: panel indexed on (gvkey, cal_yr); Calendar Year-Quarter specs: panel indexed on (gvkey, cal_yr_qtr)"
+- Both consistent; matches runner line 282: `set_index(["gvkey", time_col])`
+- **PASS**
+
+**Phase 11 Result**: 8/8 PASS. No internal contradictions found.
 
 ---
 
 ## CORRECTIONS REQUIRED
 
-### Correction 1: TobinsQ formula in Section B4
+### Correction 1 (Low Severity) — Wrong line reference for PayoutRatio_q block
+- **Section**: B2 "PayoutRatio_q construction detail"
+- **Current**: "verified at `_compustat_engine.py` lines 1009-1018"
+- **Correct**: "verified at `_compustat_engine.py` lines 1014-1023"
+- **Evidence**: Lines 1009-1013 are the DividendPayer block. The H12 PayoutRatio_q comment is at line 1014; the computation (`quarterly_div` and `np.where`) is at lines 1018-1023.
 
-**Current (wrong):**
-```
-| TobinsQ | Tobin's Q | (cshoq x prccq + dlcq + dlttq) / atq; missing debt filled as 0 | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq |
-```
+### Correction 2 (Medium Severity) — Zero-inflation percentage inconsistency
+- **Section**: L (Known Issues and Notes), item 1
+- **Current**: "Approximately 52.8% of main-sample firm-quarters with ibq > 0 have PayoutRatio_q = 0"
+- **Correct**: "Approximately 57% of main-sample firm-quarters with ibq > 0 have PayoutRatio_q = 0"
+- **Evidence**: Runner docstring line 37: "~57% of firm-quarters with ibq > 0 have PayoutRatio_q = 0"; LaTeX table note at runner line 488: `r"~57\% of firm-quarters with positive earnings have PayoutRatio$_q$ = 0"`. The 52.8% figure may reflect a different sample cut (e.g., before FF12 filtering) but the code-documented value is uniformly ~57%.
 
-**Should be:**
-```
-| TobinsQ | Tobin's Q | (cshoq x prccq + debt_book) / atq; debt_c = dlcq.clip(lower=0).fillna(0), debt_t = dlttq.clip(lower=0).fillna(0), debt_book = NaN when both dlcq and dlttq are NaN else debt_c + debt_t; requires atq > 0 and mktcap non-null | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq |
-```
+### Correction 3 (Low Severity) — Attrition table column structure
+- **Section**: D2, attrition cascade table
+- **Current columns**: "Step | Filter | Rows After | Dropped | % Retained"
+- **Required columns** (per creation prompt): "Step | Filter | Rows Before | Rows After | Dropped"
+- **Fix**: Add "Rows Before" column. Values: Step 1 = N/A; Step 2 = 112,968; Step 3 = 88,205; Step 4 = 70,695.
 
-**Code reference:** `_compustat_engine.py` lines 982-992.
+### Correction 4 (Low Severity) — Wrong line number for generate_all_tables.py entry
+- **Section**: I (generate_all_tables.py Entry)
+- **Current**: "From `outputs/generate_all_tables.py` lines 290-304"
+- **Correct**: "From `outputs/generate_all_tables.py` lines 229-243"
+- **Evidence**: H12 entry confirmed at lines 229-243 via grep.
 
-### Correction 2: Volatility window in Section B4
-
-**Current (wrong):**
-```
-| Volatility | Stock return volatility | std(daily_ret) x sqrt(252) x 100 over [prev_call + 5d, call - 5d]; min 10 trading days | CRSPEngine: RET |
-```
-
-**Should be:**
-```
-| Volatility | Stock return volatility | std(daily_ret) x sqrt(252) x 100 over [current_call + 1d, next_call - 5d]; min 10 trading days | CRSPEngine: RET |
-```
-
-**Code reference:** `_crsp_engine.py` lines 41-42, 361-366:
-- `DAYS_AFTER_CURRENT_CALL = 1`
-- `DAYS_BEFORE_NEXT_CALL = 5`
-- `window_start = start_date + Timedelta(days=DAYS_AFTER_CURRENT_CALL)`
-- `window_end = next_call_date - Timedelta(days=DAYS_BEFORE_NEXT_CALL)`
-
-### Correction 3: TobinsQ formula in Section E (Variable Dictionary)
-
-**Current (wrong):**
-```
-| TobinsQ | Tobin's Q | Control | (cshoq x prccq + dlcq.fillna(0) + dlttq.fillna(0)) / atq; requires atq > 0 and mktcap non-null | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% by fiscal year | Contemporaneous |
-```
-
-**Should be:**
-```
-| TobinsQ | Tobin's Q | Control | (cshoq x prccq + debt_book) / atq; debt_c = dlcq.clip(lower=0).fillna(0), debt_t = dlttq.clip(lower=0).fillna(0), debt_book = NaN when both dlcq & dlttq are NaN else debt_c + debt_t; requires atq > 0 and mktcap non-null | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% by fiscal year | Contemporaneous |
-```
-
-**Code reference:** Same as Correction 1.
-
-### Correction 4: Volatility window in Section E (Variable Dictionary)
-
-**Current (wrong):**
-```
-| Volatility | Stock Volatility | Control | std(daily_ret) x sqrt(252) x 100 over [prev_call + 5d, call - 5d]; requires >= 10 trading days | CRSPEngine: RET | 1%/99% per year | Contemporaneous |
-```
-
-**Should be:**
-```
-| Volatility | Stock Volatility | Control | std(daily_ret) x sqrt(252) x 100 over [current_call + 1d, next_call - 5d]; requires >= 10 trading days | CRSPEngine: RET | 1%/99% per year | Contemporaneous |
-```
-
-**Code reference:** Same as Correction 2.
+### Correction 5 (Low Severity) — Wrong line number for _winsorize_by_year
+- **Section**: H.1 (Compustat variables winsorization)
+- **Current**: "via `_winsorize_by_year` in `_compustat_engine.py` lines 439-450"
+- **Correct**: "via `_winsorize_by_year` in `_compustat_engine.py` lines 444-468"
+- **Evidence**: `def _winsorize_by_year(` is at line 444; function body runs through line 468.
 
 ---
 
-## ADDITIONAL OBSERVATIONS (non-blocking)
+## EVIDENCE LOG
 
-1. **BookLev vs TobinsQ debt handling inconsistency**: BookLev uses `dlcq.fillna(0) + dlttq.fillna(0)` without the clip(lower=0) or both-NaN guard that TobinsQ uses. This is a code design difference, not a doc error -- the provenance doc accurately reflects both formulas as implemented. But it is worth noting that the two variables handle missing/negative debt differently.
+Complete verification record for all critical claims:
 
-2. **R-squared description in L3**: Known issue L3 states "The R-squared reported by PanelOLS in these specs is the overall (not within) R-squared." This claim about PanelOLS reporting overall R-squared is potentially misleading. PanelOLS with `entity_effects=True` reports within-R-squared by default (`.rsquared`). However, the runner computes adj_R2 manually at line 306-307: `1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid`. The behavior depends on whether entity effects are absorbed. This observation does not affect the audit score but merits review.
-
-3. **Zero-inflation percentage discrepancy**: The provenance doc L1 says "Approximately 52.8%" while the runner docstring line 37 says "~57%". These refer to different samples (L1 seems to reference the full main sample; docstring may reference the filtered regression sample). Not a doc error per se, but the discrepancy should be acknowledged.
-
-4. **generate_all_tables.py entry missing key_vars**: The H12 entry uses the standard `generate_table()` path which auto-discovers variables from regression output files. Unlike some other suites, H12 does not define `key_vars`, `key_labels`, or `key_tails`. The provenance doc does not explicitly flag this but also does not claim these fields exist. Not an error.
-
----
-
-*Audit completed 2026-03-30. All 11 phases executed. 124 individual checks performed.*
+| Claim | Verified At | Result |
+|-------|------------|--------|
+| One-tailed beta < 0 p-value formula | runner line 328: `p_one = p_two / 2 if beta < 0 else 1 - p_two / 2` | PASS |
+| generate_all_tables.py tail="one", hyp_dir="<" | lines 240-241 | PASS |
+| MODEL_SPECS has 12 entries | runner lines 93-110 | PASS |
+| PayoutRatio_q = (dvpspq.fillna(0) * cshoq) / ibq; NaN when ibq <= 0 | engine lines 1018-1023 | PASS |
+| PayoutRatio_q winsorized 1%/99% by fyearq | COMPUSTAT_COLS line 121; skip_winsorize lines 1217-1224; loop lines 1230-1232 | PASS |
+| Linguistic IVs winsorized 0%/99% upper-only per year | _linguistic_engine.py lines 255-258 (lower=0.0, upper=0.99) | PASS |
+| CRSP Volatility winsorized 1%/99% per year | _crsp_engine.py lines 445-447 (default lower=0.01, upper=0.99) | PASS |
+| BASE_CONTROLS = 8 variables | runner lines 81-85 | PASS |
+| EXTENDED_CONTROLS = BASE + 4 | runner lines 87-89 | PASS |
+| Lagged_DV construction via base_dv.replace + _lag suffix | runner lines 208-212 | PASS |
+| Lead variable: shift(-1) within gvkey, consecutive check | builder lines 247-263 | PASS |
+| Lag variable: shift(1) within gvkey, consecutive check | builder lines 279-301 | PASS |
+| Industry FE: entity_effects=False, other_effects=ff12_code, time_effects=True | runner lines 286-294 | PASS |
+| Firm FE: EntityEffects + TimeEffects in formula | runner lines 297-299 | PASS |
+| cov_type="clustered", cluster_entity=True | runner lines 295 and 300 | PASS |
+| Panel set_index(["gvkey", time_col]) | runner line 282 | PASS |
+| cal_yr_qtr = cal_yr * 10 + cal_qtr | panel_utils.py line 217 | PASS |
+| h12_payout_table.tex output | runner line 496 | PASS |
+| model_diagnostics.csv output | runner line 531 | PASS |
+| summary_stats.csv/.tex output | runner lines 585-592 | PASS |
+| sample_attrition.csv/.tex output | runner line 626 | PASS |
+| regression_results_col{N}.txt output | runner lines 516-527 | PASS |
+| run_manifest.json output (runner) | runner lines 629-634 + manifest_generator.py line 73 | PASS |
+| h12_payout_panel.parquet output (builder) | builder line 374 | PASS |
+| SUMMARY_STATS_VARS has 17 entries with matching labels | runner lines 119-137 | PASS |
+| H12 entry in generate_all_tables.py at lines 229-243 | grep confirmed | PASS |
+| Zero-inflation ~52.8% claim in L.1 | Runner docstring line 37 says ~57%; LaTeX note line 488 says ~57% | FAIL |
+| _winsorize_by_year at lines 439-450 | Function def at line 444 | FAIL |
+| PayoutRatio_q block at lines 1009-1018 | Block at lines 1014-1023 | FAIL |
+| generate_all_tables.py entry at lines 290-304 | Entry at lines 229-243 | FAIL |

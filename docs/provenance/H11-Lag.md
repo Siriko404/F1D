@@ -90,7 +90,7 @@ Each specification tests exactly ONE IV against ONE DV. The two IVs are never in
 | `Analyst_QA_Uncertainty_pct` | Analyst Q&A uncertainty word percentage | (LM uncertainty word count by analysts in Q&A / total analyst Q&A words) * 100 | LinguisticEngine |
 | `Entire_All_Negative_pct` | Entire-call negative sentiment percentage | (LM negative word count for entire call / total call words) * 100 | LinguisticEngine |
 | `Size` | Firm size | ln(atq) | CompustatEngine: atq |
-| `TobinsQ` | Tobin's Q | (cshoq * prccq + dlcq + dlttq) / atq | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq |
+| `TobinsQ` | Tobin's Q | (cshoq×prccq + debt_book) / atq, where debt_book = clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0); debt_book=NaN if both dlcq and dlttq are NaN; result=NaN if atq missing/≤0 or mktcap (cshoq×prccq) missing | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq |
 | `ROA` | Return on assets | iby_annual / avg_assets, where avg_assets = (atq_t + atq_{t-1}) / 2 | CompustatEngine: iby, atq |
 | `CashHoldings` | Cash and equivalents ratio | cheq / atq | CompustatEngine: cheq, atq |
 | `DividendPayer` | Binary dividend payer indicator | 1 if dvy_annual > 0, else 0 | CompustatEngine: dvy |
@@ -212,7 +212,7 @@ Exact counts are recorded in `model_diagnostics.csv` at runtime (lines 236--251,
 | `Analyst_QA_Uncertainty_pct` | Analyst QA Uncertainty | Control | (LM uncertainty count / total words) * 100, for analysts in Q&A section | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
 | `Entire_All_Negative_pct` | Negative Sentiment | Control | (LM negative count / total words) * 100, for entire call | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
 | `Size` | Firm Size (log AT) | Control | ln(atq) where atq > 0; else NaN | CompustatEngine: atq | 1%/99% per fiscal year (engine level) | Contemporaneous (merge_asof backward) |
-| `TobinsQ` | Tobin's Q | Control | (cshoq * prccq + debt_book) / atq | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
+| `TobinsQ` | Tobin's Q | Control | (cshoq×prccq + debt_book) / atq, where debt_book = clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0); debt_book=NaN if both dlcq and dlttq are NaN; result=NaN if atq missing/≤0 or mktcap (cshoq×prccq) missing | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
 | `ROA` | Return on Assets | Control | iby_annual (Q4 value) / avg_assets, where avg_assets = (atq_t + atq_{t-1}) / 2 | CompustatEngine: iby, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
 | `CashHoldings` | Cash Holdings | Control | cheq / atq | CompustatEngine: cheq, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
 | `DividendPayer` | Dividend Payer | Control | 1 if dvy_annual (Q4 cumulative) > 0, else 0 | CompustatEngine: dvy | No (binary variable, skip_winsorize) | Contemporaneous |
@@ -514,3 +514,5 @@ N/A
 6. **Attrition table is simplified.** The runner's attrition cascade (lines 564--568) only records three stages: Master manifest, Main sample filter, and final post-filter count. It does not separately report DV non-missing, IV non-missing, and min-calls stages. Detailed per-step attrition is not available without runtime data.
 
 7. **Linguistic winsorization is asymmetric (0%/99% upper-only).** The LinguisticEngine applies upper-only winsorization (lower=0.0, upper=0.99) because linguistic percentage variables are bounded at 0 by construction. This differs from the symmetric 1%/99% winsorization used for Compustat and PRisk variables.
+
+8. **Runner's internal LaTeX footnote incorrectly claims standardization.** The `_save_latex_table` function (line 399) writes the table note "All continuous controls are standardized." into the runner's own LaTeX output (`h11_prisk_uncertainty_lag_table.tex`). However, no standardization (z-scoring, centering, or any other scaling) code exists anywhere in the runner or panel builder. This note is factually incorrect. The generate_all_tables.py publication table does not reproduce this footnote and is unaffected. The runner's standalone LaTeX file carries a false methodological claim that should be corrected by removing that footnote line. Source: run_h11_prisk_uncertainty_lag.py line 399.

@@ -97,7 +97,7 @@ Both are merged via `manifest.merge(prisk_df, left_on=["gvkey", "cal_q_lead*"], 
 | `Analyst_QA_Uncertainty_pct` | Analyst Q&A uncertainty word percentage | (LM uncertainty word count by analysts in Q&A / total analyst Q&A word count) * 100 | LinguisticEngine |
 | `Entire_All_Negative_pct` | Negative sentiment (entire call) | (LM negative word count entire call / total word count entire call) * 100 | LinguisticEngine |
 | `Size` | Firm size | ln(atq) where atq > 0 | CompustatEngine |
-| `TobinsQ` | Tobin's Q | (cshoq * prccq + dlcq + dlttq) / atq | CompustatEngine |
+| `TobinsQ` | Tobin's Q | (cshoq * prccq + clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0)) / atq; debt NaN only when both dlcq and dlttq are NaN | CompustatEngine |
 | `ROA` | Return on assets | iby_annual (Q4) / avg_assets, where avg_assets = (atq_t + atq_{t-1}) / 2 | CompustatEngine |
 | `CashHoldings` | Cash holdings ratio | cheq / atq | CompustatEngine |
 | `DividendPayer` | Dividend payer indicator | 1 if dvy_annual > 0 (Q4 annual value), else 0 | CompustatEngine |
@@ -158,7 +158,7 @@ There are no Industry FE specs -- all columns use firm FE.
 
 ## C. MODEL SPECIFICATION REGISTER
 
-The runner iterates over 2 IVs x 4 DVs x 3 samples = 24 regressions. The main LaTeX table (built by `_save_latex_table`) uses only the **Main sample** (8 columns). The `generate_all_tables.py` entry also uses 8 columns.
+The runner iterates over 2 IVs x 4 DVs x 3 samples = 24 regressions. The main LaTeX table (built by `_save_latex_table`) uses only the **Main sample** (8 columns). H11-Lead has no entry in `generate_all_tables.py` (removed 2026-03-31; see Section I).
 
 | Col | DV | IV | Entity FE | Time FE | Controls | Pres Control |
 |-----|---|---|---|---|---|---|
@@ -240,7 +240,7 @@ further into the future (edge-of-sample loss).
 | `Analyst_QA_Uncertainty_pct` | Analyst QA Uncertainty | Control | (LM uncertainty words by analysts in Q&A / total analyst Q&A words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
 | `Entire_All_Negative_pct` | Negative Sentiment | Control | (LM negative words entire call / total words entire call) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
 | `Size` | Firm Size (log AT) | Control | ln(atq) where atq > 0 | CompustatEngine: atq | 1%/99% per fiscal year (fyearq) | Contemporaneous (merge_asof backward) |
-| `TobinsQ` | Tobin's Q | Control | (cshoq * prccq + dlcq + dlttq) / atq | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
+| `TobinsQ` | Tobin's Q | Control | (cshoq * prccq + clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0)) / atq; debt component is NaN only when BOTH dlcq and dlttq are NaN | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
 | `ROA` | Return on Assets | Control | iby_annual (Q4) / ((atq_t + atq_{t-1}) / 2) | CompustatEngine: iby, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
 | `CashHoldings` | Cash Holdings | Control | cheq / atq | CompustatEngine: cheq, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
 | `DividendPayer` | Dividend Payer | Control | 1 if dvy_annual (Q4) > 0, else 0 | CompustatEngine: dvy | No (binary) | Contemporaneous |
@@ -249,7 +249,7 @@ further into the future (edge-of-sample loss).
 | `gvkey` | Firm identifier | FE (entity) | 6-digit zero-padded Compustat identifier | Manifest | N/A | N/A |
 | `year` | Calendar year | FE (time) | Derived from start_date via `.dt.year` | Manifest: start_date | N/A | N/A |
 
-*Sources: _compustat_engine.py lines 938, 962, 981, 988, 1005, 802--803, 806--821; _linguistic_engine.py lines 255--257; prisk_q_lead.py lines 170, 182--183; prisk_q_lead2.py lines 173, 185--186.*
+*Sources: _compustat_engine.py lines 943, 962, 981, 988, 1005, 802--803, 806--821; _linguistic_engine.py lines 255--257; prisk_q_lead.py lines 170, 182--183; prisk_q_lead2.py lines 173, 185--186.*
 
 ---
 
@@ -285,7 +285,7 @@ further into the future (edge-of-sample loss).
 
 6. **Regression estimation:** PanelOLS with firm-clustered SEs, 24 models (3 samples x 4 DVs x 2 IVs)
 
-7. **Table generation:** `generate_all_tables.py` uses "type": "moderation" with 8 col_files (Main sample only)
+7. **Table generation:** H11-Lead has no entry in `generate_all_tables.py` (removed 2026-03-31). The runner's built-in `_save_latex_table` produces a standalone 4-column table (`h11_prisk_uncertainty_lead_table.tex`) when the runner is executed directly. This table is not part of the main thesis table generation pipeline.
 
 ### F2. Data Engines Used
 
@@ -401,7 +401,7 @@ Metrics computed: N, Mean, SD, Min, P25, Median, P75, Max (via `make_summary_sta
 **Compustat variables** (Size, TobinsQ, ROA, CashHoldings, firm_maturity, earnings_volatility):
 - Level: 1%/99% per fiscal year (fyearq)
 - Applied at CompustatEngine level before merge to manifest
-- Skip list: DividendPayer (binary), CashFlow, SalesGrowth (_compustat_engine.py lines 1121--1128)
+- Skip list: DividendPayer (binary), CashFlow, SalesGrowth, fqtr, ExternalFunding, DebtChoice (_compustat_engine.py lines 1217--1224)
 
 **Linguistic variables** (all _pct columns including DVs, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct):
 - Level: 0%/99% upper-only per year (lower bound at 0th percentile = no lower clipping)
@@ -420,7 +420,7 @@ Metrics computed: N, Mean, SD, Min, P25, Median, P75, Max (via `make_summary_sta
 
 ### H3. Transformations
 
-- `Size` = ln(atq) -- log transform (CompustatEngine line 938)
+- `Size` = ln(atq) -- log transform (CompustatEngine line 943)
 - No centering or z-scoring applied to any variables
 - No standardization applied despite LaTeX table note stating "All continuous controls are standardized" -- this note is inaccurate per the code
 
@@ -428,48 +428,21 @@ Metrics computed: N, Mean, SD, Min, P25, Median, P75, Max (via `make_summary_sta
 
 ## I. GENERATE_ALL_TABLES.PY ENTRY
 
-```python
-{
-    "id": "H11-Lead",
-    "type": "moderation",
-    "dir": "h11_prisk_uncertainty_lead/2026-03-27_095003",
-    "caption": "H11-Lead: Lead Political Risk and Language Uncertainty (Placebo)",
-    "label": "tab:h11_lead",
-    "cols": 8,
-    "col_files": {
-        1: "regression_results_Main_Manager_QA_Uncertainty_pct_lead1.txt",
-        2: "regression_results_Main_CEO_QA_Uncertainty_pct_lead1.txt",
-        3: "regression_results_Main_Manager_Pres_Uncertainty_pct_lead1.txt",
-        4: "regression_results_Main_CEO_Pres_Uncertainty_pct_lead1.txt",
-        5: "regression_results_Main_Manager_QA_Uncertainty_pct_lead2.txt",
-        6: "regression_results_Main_CEO_QA_Uncertainty_pct_lead2.txt",
-        7: "regression_results_Main_Manager_Pres_Uncertainty_pct_lead2.txt",
-        8: "regression_results_Main_CEO_Pres_Uncertainty_pct_lead2.txt",
-    },
-    "dvs": [
-        (r"PRiskQ\_lead", 4),
-        (r"PRiskQ\_lead2", 4),
-    ],
-    "col_dv_labels": [
-        "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
-        "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
-    ],
-    "key_vars": ["PRiskQ_lead", "PRiskQ_lead2"],
-    "key_labels": [r"PRiskQ\_lead", r"PRiskQ\_lead2"],
-    "key_tails": ["two", "two"],
-}
-```
+H11-Lead has **NO entry** in `outputs/generate_all_tables.py`.
 
-**Verification:**
+This suite was removed from the thesis report on 2026-03-31 (see `project_archived_suites.md`,
+item 11: "Removed from report 2026-03-31 (placebo test, not needed in tables)"). The runner
+and panel builder still exist and the suite can be run independently, but its output does not
+appear in the published thesis tables.
 
-| Check | Expected | Actual | Match |
-|---|---|---|---|
-| `key_tails` = "two" | Two-tailed (placebo test) | Runner line 223: `p_test = p_two` (no halving) | YES |
-| `cols` = 8 | 4 DVs x 2 leads (Main sample) | 8 col_files entries, all Main sample | YES |
-| `key_vars` | PRiskQ_lead, PRiskQ_lead2 | CONFIG["iv_vars"] = same | YES |
-| `col_dv_labels` | 4 DVs repeated for each lead | Mgr QA, CEO QA, Mgr Pres, CEO Pres x 2 | YES |
+Verification: `grep -n "H11" outputs/generate_all_tables.py` returns H11 (line 179) and
+H11-Lag (line 201) only -- no H11-Lead entry. Lines 248--276 of `generate_all_tables.py`
+contain the H13 entry, not H11-Lead.
 
-*Source: generate_all_tables.py, lines 248--276.*
+If H11-Lead is reinstated in the thesis, the entry would structurally mirror H11-Lag with:
+- `"key_tails": ["two", "two"]` (two-tailed placebo test; runner line 223: `p_test = p_two`)
+- `"cols": 8` (4 DVs x 2 leads, Main sample only)
+- `"key_vars": ["PRiskQ_lead", "PRiskQ_lead2"]`
 
 ---
 
@@ -479,11 +452,11 @@ Metrics computed: N, Mean, SD, Min, P25, Median, P75, Max (via `make_summary_sta
 # Stage 3: Build panel
 python -m f1d.variables.build_h11_prisk_uncertainty_lead_panel
 
-# Stage 4: Run regressions
+# Stage 4: Run regressions (produces standalone h11_prisk_uncertainty_lead_table.tex)
 python -m f1d.econometric.run_h11_prisk_uncertainty_lead
 
-# Generate tables (if applicable)
-python outputs/generate_all_tables.py
+# NOTE: H11-Lead is NOT in generate_all_tables.py (removed 2026-03-31).
+# The runner produces its own built-in LaTeX table directly.
 ```
 
 ---
@@ -530,6 +503,8 @@ N/A
 
 5. **N varies across columns.** The CEO DVs have materially fewer observations (~54K vs ~75K for Manager DVs), and lead2 specs have slightly fewer than lead1 due to edge-of-sample loss.
 
-6. **Built-in LaTeX table structure differs from generate_all_tables.py output.** The runner's `_save_latex_table` produces a 4-column table (one row for PRiskQ_lead, one for PRiskQ_lead2), while `generate_all_tables.py` produces an 8-column table (cols 1-4 for lead1, cols 5-8 for lead2). The 8-column version is what appears in the thesis.
+6. **Built-in LaTeX table is standalone.** The runner's `_save_latex_table` produces a 4-column table (one row for PRiskQ_lead, one for PRiskQ_lead2). This standalone `.tex` file is not part of the main thesis table generation pipeline (see item 8 below).
 
-7. **All regressions run across 3 industry samples.** While only the Main sample appears in the published table, Finance and Utility sample regressions are also estimated and saved. This enables robustness checking.
+7. **All regressions run across 3 industry samples.** While only the Main sample would appear in any published table, Finance and Utility sample regressions are also estimated and saved. This enables robustness checking.
+
+8. **H11-Lead removed from thesis tables (2026-03-31).** The suite's entry was removed from `generate_all_tables.py` on 2026-03-31 (removed as placebo test not needed in final report; see `project_archived_suites.md` item 11). The runner and panel builder remain operational for independent execution. No thesis table is generated from this suite.

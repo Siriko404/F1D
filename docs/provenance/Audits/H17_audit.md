@@ -1,11 +1,11 @@
-# AUDIT REPORT: Suite H17 Provenance Document
-
-**Audit Date:** 2026-03-30
-**Auditor:** Adversarial Code Auditor (automated)
-**Provenance Doc:** `docs/provenance/H17.md`
-**Runner:** `src/f1d/econometric/run_h17_repurchase_intensity.py`
-**Panel Builder:** `src/f1d/variables/build_h17_repurchase_intensity_panel.py`
-**Creation Prompt:** `docs/Prompts/Suite Provenance Doc.txt`
+# Adversarial Audit Report: Suite H17
+**Auditor**: Claude Sonnet 4.6 (hostile adversarial mode)
+**Date**: 2026-04-01
+**Suite**: H17 — Speech Uncertainty and Repurchase Intensity
+**Provenance Doc**: docs/provenance/H17.md
+**Runner**: src/f1d/econometric/run_h17_repurchase_intensity.py
+**Panel Builder**: src/f1d/variables/build_h17_repurchase_intensity_panel.py
+**Table Generator**: outputs/generate_all_tables.py
 
 ---
 
@@ -13,425 +13,597 @@
 
 | Category | Total Checks | Passed | Failed | Score |
 |----------|-------------|--------|--------|-------|
-| Structural Completeness (Phase 1) | 26 | 25 | 1 | 96% |
+| Structural Completeness (Phase 1) | 26 | 26 | 0 | 100% |
 | Suite Identity (Phase 2) | 10 | 10 | 0 | 100% |
 | Model Specification (Phase 3) | 7 | 7 | 0 | 100% |
-| Spec Register (Phase 4) | 5 | 5 | 0 | 100% |
-| Sample Construction (Phase 5) | 3 | 2 | 1 | 67% |
-| Variable Dictionary (Phase 6) | 23 | 23 | 0 | 100% |
-| Pipeline/Outputs/Treatment (Phase 7) | 9 | 9 | 0 | 100% |
-| Table Generator Entry (Phase 8) | 5 | 5 | 0 | 100% |
-| Model-Family Addendum (Phase 9) | 6 | 6 | 0 | 100% |
-| Quality Gates (Phase 10) | 10 | 9 | 1 | 90% |
+| Spec Register (Phase 4) | 14 | 14 | 0 | 100% |
+| Sample Construction (Phase 5) | 5 | 5 | 0 | 100% |
+| Variable Dictionary (Phase 6) | 26 | 24 | 2 | 92% |
+| Pipeline/Outputs/Treatment (Phase 7) | 12 | 11 | 1 | 92% |
+| Table Generator Entry (Phase 8) | 8 | 8 | 0 | 100% |
+| Model-Family Addendum (Phase 9) | 7 | 7 | 0 | 100% |
+| Quality Gates (Phase 10) | 10 | 8 | 2 | 80% |
 | Cross-Reference Consistency (Phase 11) | 8 | 8 | 0 | 100% |
-| **TOTAL** | **112** | **110** | **2** | **98%** |
+| **TOTAL** | **133** | **128** | **5** | **96%** |
 
 ---
 
 ## VERDICT
 
-**PASS WITH NOTES**: Two minor issues found that do not affect factual accuracy of the econometric specification or variable construction. Both relate to the attrition cascade table format (missing row counts) as required by the creation prompt.
-
----
-
-## FAILURES (detailed)
-
-| Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
-|-------|-------|----------------------|-----------------|----------|-------------|
-| 1 | D2 Attrition Table Format | Table has 3 columns: Step, Filter, Description | Creation prompt requires 5 columns: Step, Filter, Rows Before, Rows After, Dropped | Minor | Add row count columns (runtime-dependent; mark [UNVERIFIED] with note) |
-| 10 | QG#4: Attrition cascade row counts | "Exact counts are recorded in model_diagnostics.csv at runtime" | Creation prompt Quality Gate #4 requires "row counts for each filter step" in the doc itself | Minor | Add placeholder row count columns or mark [UNVERIFIED] |
+**PASS WITH NOTES**: The document is structurally complete and largely accurate. Five minor issues were found: two factual line-number errors in section L (Known Issues), one variable dictionary gap (fyearq_int not documented as required column), one pipeline note gap (cal_yearqtr orphan column in panel builder not mentioned), and one attrition table stage-count discrepancy (D2 table shows 5 conceptual steps while generated CSV has 4 stages). None of these affect the correctness of the regression specification, variable formulas, or any substantive claim. All five require corrections enumerated below.
 
 ---
 
 ## PHASE 1: STRUCTURAL COMPLETENESS
 
-Checked every section required by the creation prompt (`docs/Prompts/Suite Provenance Doc.txt`) against `docs/provenance/H17.md`.
+Read: docs/Prompts/Suite Provenance Doc.txt (required sections A-L).
+Read: docs/provenance/H17.md end to end.
 
 | Section | Required by Prompt | Present in Doc | Complete | Notes |
 |---------|-------------------|----------------|----------|-------|
-| A. Suite Identity | Yes | Yes | Yes | YAML block with all 11 fields |
-| B. Model Specification | Yes | Yes | Yes | All 7 subsections present |
-| B1. Regression Equation | Yes | Yes | Yes | LaTeX equations for both contemporaneous and lead |
-| B2. Dependent Variable(s) | Yes | Yes | Yes | Table with 2 DVs + de-cumulation logic |
-| B3. Independent Variable(s) | Yes | Yes | Yes | Table with 4 IVs |
-| B4. Control Variables | Yes | Yes | Yes | Two tables: Base (9 controls incl Lagged_DV) + Extended (4 additional) |
-| B5. Fixed Effects | Yes | Yes | Yes | Table with 4 FE types |
-| B6. Standard Errors | Yes | Yes | Yes | cov_type, clustering documented |
-| B7. Hypothesis Test | Yes | Yes | Yes | Direction, p-value computation, legacy misnomer noted |
-| C. Spec Register | Yes | Yes | Yes | 12-row table matching MODEL_SPECS |
-| D. Sample Construction | Yes | Yes | Partial | D1 population present; D2 lacks row counts (see below) |
-| D1. Population | Yes | Yes | Yes | Starting dataset, year range |
-| D2. Exclusion Criteria | Yes | Yes | **No** | Table has Step/Filter/Description but MISSING Rows Before/Rows After/Dropped columns per creation prompt |
-| D3. Sample Counts per Spec | Yes | Yes | Yes | Documents that N varies across specs; defers to model_diagnostics.csv |
-| E. Variable Dictionary | Yes | Yes | Yes | 22-row table covering all variables |
-| F. Data Pipeline | Yes | Yes | Yes | All 3 subsections present |
-| F1. Dependency Chain | Yes | Yes | Yes | 7-step numbered chain |
-| F2. Data Engines | Yes | Yes | Yes | 3 engines documented |
-| F3. Merge Operations | Yes | Yes | Yes | Multiple merge tables covering panel builder + engine-level |
-| G. Outputs | Yes | Yes | Yes | G1, G2, G3 all present |
-| G1. Stage 3 Outputs | Yes | Yes | Yes | 3 files listed |
-| G2. Stage 4 Outputs | Yes | Yes | Yes | 8 file types listed |
-| G3. Summary Statistics | Yes | Yes | Yes | 18 variables with labels + metrics |
-| H. Outlier/Missing Treatment | Yes | Yes | Yes | H1, H2, H3 all present |
-| I. generate_all_tables Entry | Yes | Yes | Yes | Python dict + verification table |
-| J. Reproduction Commands | Yes | Yes | Yes | 3 commands |
-| K. Model-Family Addendum | Yes | Yes | Yes | K1 filled (PanelOLS), K2-K6 marked N/A |
-| L. Known Issues | Yes | Yes | Yes | 6 issues documented |
+| A. Suite Identity | Yes | Yes | Yes | YAML block present, all fields filled |
+| B. Model Specification | Yes | Yes | Yes | |
+| B1. Regression Equation | Yes | Yes | Yes | Contemp and lead equations both shown in LaTeX |
+| B2. Dependent Variable(s) | Yes | Yes | Yes | RepurchaseIntensity + lead, full de-cumulation 7-step logic |
+| B3. Independent Variable(s) | Yes | Yes | Yes | All 4 IVs with formulas, no centering noted |
+| B4. Control Variables | Yes | Yes | Yes | Base (9) and Extended (+4) tables |
+| B5. Fixed Effects | Yes | Yes | Yes | All 4 FE variants with column usage |
+| B6. Standard Errors | Yes | Yes | Yes | clustered, cluster_entity=True |
+| B7. Hypothesis Test | Yes | Yes | Yes | Two-tailed; legacy _p_one field correctly noted |
+| C. Spec Register | Yes | Yes | Yes | 12 rows, one per MODEL_SPECS entry |
+| D. Sample Construction | Yes | Yes | Yes | |
+| D1. Population | Yes | Yes | Yes | 112,968 calls, year range cited |
+| D2. Exclusion Criteria | Yes | Yes | Yes | 5-step cascade; counts UNVERIFIED with explanation |
+| D3. Sample Counts per Spec | Yes | Yes | Yes | N varies documented; directed to diagnostics CSV |
+| E. Variable Dictionary | Yes | Yes | Yes* | 24 variables tabulated; fyearq_int MISSING — see FAIL-3 |
+| F. Data Pipeline | Yes | Yes | Yes | |
+| F1. Dependency Chain | Yes | Yes | Yes | 7-step chain from raw data to table |
+| F2. Data Engines Used | Yes | Yes | Yes | 3 engines documented |
+| F3. Merge Operations | Yes | Yes | Yes | All merges documented with keys and join type |
+| G. Outputs | Yes | Yes | Yes | |
+| G1. Stage 3 Outputs | Yes | Yes | Yes | 3 files (parquet + stats csv + manifest) |
+| G2. Stage 4 Outputs | Yes | Yes | Yes | 8 output types; verified against runner |
+| G3. Summary Statistics | Yes | Yes | Yes | 18 variables listed; lines 119-138 cited |
+| H. Outlier/Missing Treatment | Yes | Yes | Yes | Winsorization, missing policy, transformations |
+| I. generate_all_tables Entry | Yes | Yes | Yes | Full entry reproduced with verification table |
+| J. Reproduction Commands | Yes | Yes | Yes | 3-step commands |
+| K. Model-Family Addendum | Yes | Yes | Yes | K1 filled; K2-K6 N/A |
+| L. Known Issues | Yes | Yes | Yes | 6 issues; 2 contain line number errors (FAIL-1, FAIL-2) |
 
-**Phase 1 Result: 25/26 PASS. 1 FAIL (D2 missing row counts).**
+**Structural result: PASS — 26/26 sections present and substantively populated. No placeholder text found.**
 
 ---
 
-## PHASE 2: FACTUAL ACCURACY -- SECTION A (Suite Identity)
+## PHASE 2: SUITE IDENTITY (Section A)
 
 ### A-1. Suite ID
-- **Claim:** H17
-- **Verification:** Matches runner file path and generate_all_tables entry `"id": "H17"`.
-- **Result:** PASS
+**Doc claims**: H17
+**Evidence**: "Suite ID: H17" in YAML block.
+**PASS**
 
 ### A-2. Title
-- **Claim:** "H17: Speech Uncertainty and Repurchase Intensity"
-- **Verification:** Runner docstring line 4: "STAGE 4: Test H17 Repurchase Intensity Hypothesis". Runner LaTeX caption (line 382): "Speech Uncertainty and Repurchase Intensity". generate_all_tables caption (line 395): "H17: Speech Uncertainty and Repurchase Intensity". Matches.
-- **Result:** PASS
+**Doc claims**: "H17: Speech Uncertainty and Repurchase Intensity"
+**Code**: generate_all_tables.py line 320: `"caption": "H17: Speech Uncertainty and Repurchase Intensity"`. Runner docstring line 5: "Run H17 hypothesis test — quarterly RepurchaseIntensity at call level." Title is consistent with generate_all_tables.py caption.
+**PASS**
 
 ### A-3. Hypothesis
-- **Claim:** "Does managerial speech uncertainty during earnings calls predict the intensity of share repurchases in the current or next fiscal quarter?"
-- **Verification:** Runner docstring (lines 9-10): DV = RepurchaseIntensity (contemporaneous) and RepurchaseIntensity_lead_qtr (next quarter). IVs = 4 uncertainty measures. The hypothesis statement accurately captures the research question.
-- **Result:** PASS
+**Doc claims**: "Does managerial speech uncertainty during earnings calls predict the intensity of share repurchases in the current or next fiscal quarter?"
+**Code**: Runner docstring lines 6-22 describe RepurchaseIntensity DV with 4 uncertainty IVs across 12 specs. The one-sentence hypothesis is the provenance doc's own formulation; code does not state a single hypothesis sentence. Content is behaviorally consistent.
+**PASS**
 
 ### A-4. Direction (tail test)
-- **Claim:** "two-tailed"
-- **Verification:** Runner line 30: "Hypothesis: Two-tailed." Runner line 479: "(two-tailed)". `_sig_stars()` function (line 337-346) uses direct p-value thresholds without one-tailed conversion. Line 329: `meta[f"{iv}_p_one"] = p_two` stores two-tailed p directly.
-- **Result:** PASS
+**Doc claims**: "two-tailed"
+**Code**:
+- Runner docstring line 30: "Hypothesis: Two-tailed."
+- generate_all_tables.py line 327: `"tail": "two"`
+- Runner line 479: `r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed)."`
+- `_sig_stars()` (lines 337-346): applies `p < 0.01/0.05/0.10` directly without halving.
+**PASS**
 
 ### A-5. Model Family
-- **Claim:** "PanelOLS"
-- **Verification:** Runner line 61: `from linearmodels.panel import PanelOLS`. Lines 287 and 300: `PanelOLS(...)` and `PanelOLS.from_formula(...)`.
-- **Result:** PASS
+**Doc claims**: "PanelOLS"
+**Code**: Runner line 61: `from linearmodels.panel import PanelOLS`. Used at lines 287 and 300.
+**PASS**
 
 ### A-6. Estimator
-- **Claim:** "linearmodels.panel.PanelOLS"
-- **Verification:** Runner line 61: `from linearmodels.panel import PanelOLS`. Correct fully qualified import path.
-- **Result:** PASS
+**Doc claims**: "linearmodels.panel.PanelOLS"
+**Code**: `from linearmodels.panel import PanelOLS` — exact module path matches.
+**PASS**
 
 ### A-7. Unit of Observation
-- **Claim:** "call-level (individual earnings call)"
-- **Verification:** Panel builder docstring (line 9): "Unit of observation: individual earnings call (file_name)." Manifest is keyed by `file_name`, each row is one call.
-- **Result:** PASS
+**Doc claims**: "call-level (individual earnings call)"
+**Code**: Panel builder docstring line 9: "Unit of observation: individual earnings call (file_name)." Manifest keyed on file_name; all merges preserve file_name rows 1:1.
+**PASS**
 
 ### A-8. Panel Index
-- **Claim:** "(gvkey, cal_yr) for cols 1-4, 7-10; (gvkey, cal_yr_qtr) for cols 5-6, 11-12"
-- **Verification:** Runner line 283: `df_panel = df_prepared.set_index(["gvkey", time_col])`. Line 263: `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"`. Cols 5-6 have `fe="industry_yq"/"firm_yq"`, cols 11-12 have `fe="industry_yq"/"firm_yq"`. All others are non-`_yq`. Matches.
-- **Result:** PASS
+**Doc claims**: "(gvkey, cal_yr) for cols 1-4, 7-10; (gvkey, cal_yr_qtr) for cols 5-6, 11-12"
+**Code**: Runner `run_regression()` lines 263 and 283:
+```python
+time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+df_panel = df_prepared.set_index(["gvkey", time_col])
+```
+MODEL_SPECS: cols 5,6,11,12 have fe ending in "_yq"; cols 1-4,7-10 do not. Entity index is always gvkey (ff12_code passed as other_effects, not as entity index). Both index components verified.
+**PASS**
 
-### A-9. Columns (number of model specs)
-- **Claim:** 12
-- **Verification:** Runner lines 93-109: `MODEL_SPECS` contains exactly 12 entries with col numbers 1-12.
-- **Result:** PASS
+### A-9. Column Count
+**Doc claims**: 12
+**Code**: MODEL_SPECS list (lines 93-110) has 12 dict entries, numbered col 1 through col 12.
+**PASS**
 
-### A-10. Runner and Panel Builder paths
-- **Claim:** `src/f1d/econometric/run_h17_repurchase_intensity.py` and `src/f1d/variables/build_h17_repurchase_intensity_panel.py`
-- **Verification:** Both files exist and were read successfully.
-- **Result:** PASS
-
-**Phase 2 Result: 10/10 PASS.**
+### A-10. File Paths
+**Doc claims**:
+- Runner: `src/f1d/econometric/run_h17_repurchase_intensity.py`
+- Panel Builder: `src/f1d/variables/build_h17_repurchase_intensity_panel.py`
+**Verification**: Both files confirmed to exist on disk via filesystem check.
+**PASS**
 
 ---
 
-## PHASE 3: FACTUAL ACCURACY -- SECTION B (Model Specification)
+## PHASE 3: MODEL SPECIFICATION (Section B)
 
 ### B1-CHECK: Regression Equation
-- **Claim:** Two equations (contemporaneous and lead), each with 4 IVs + Controls + entity FE + time FE.
-- **Verification:** Runner line 275: `exog = KEY_IVS + controls`. KEY_IVS has exactly 4 IVs. Controls include Lagged_DV. Entity FE is either Industry (ff12_code via `other_effects`) or Firm (via `EntityEffects`). Time FE is via `time_effects=True`. The equations correctly include all terms.
-- **Result:** PASS
+
+**Doc claims** (Contemporaneous, cols 1-6):
+RepurchaseIntensity_{i,t} = beta1*CEO_QA + beta2*CEO_Pres + beta3*Mgr_QA + beta4*Mgr_Pres + gamma*Controls + alpha_i + delta_t + epsilon
+
+**Code**: Runner `run_regression()` line 275: `exog = KEY_IVS + controls`. KEY_IVS = [CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct] (lines 74-79). Industry path (lines 287-296): `PanelOLS(dependent=dv, exog=exog, entity_effects=False, time_effects=True, other_effects=ff12_code)`. Firm path (lines 298-301): formula `= f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`.
+
+Equation in doc matches all terms used in code. Lead DV equation has identical structure with RepurchaseIntensity_lead_qtr.
+**PASS**
 
 ### B2-CHECK: Dependent Variable(s)
-- **Claim:** RepurchaseIntensity (contemporaneous) and RepurchaseIntensity_lead_qtr (lead).
-- **Verification:** Runner MODEL_SPECS: cols 1-6 use `"dv": "RepurchaseIntensity"`, cols 7-12 use `"dv": "RepurchaseIntensity_lead_qtr"`. De-cumulation logic documented in provenance (lines 50-58) matches CompustatEngine code (lines 1040-1087): Q1 = prstkcy.fillna(0), Q2-Q4 = prstkcy - prev_prstkcy within same fyearq, negatives clipped to 0, divided by lagged atq (validated consecutive, gap <= 150 days). Lead construction in panel builder (lines 253-269) matches: shift(-1) within gvkey, consecutive-quarter validation.
-- **Result:** PASS
+
+**RepurchaseIntensity**:
+- Column name in MODEL_SPECS: "RepurchaseIntensity" — PASS
+- Formula: `quarterly_prstkcy / atq_{t-1}` — code _compustat_engine.py line 1083: `comp["_quarterly_repurchases"] / comp["_atq_prev_q"]` — PASS
+- De-cumulation Q1: `comp["prstkcy"].fillna(0)` (line 1058) — PASS
+- De-cumulation Q2-Q4: `comp["prstkcy"] - comp["_prstkcy_prev"]` within same fyearq (line 1061) — PASS
+- Negative clamp: `clip(lower=0)` (line 1066) — PASS
+- Lagged atq validation: gap > 150 days → NaN (lines 1073-1077) — PASS
+- Inf → NaN after ratio (line 1203-1204 for RepurchaseIntensity in ratio_cols list) — PASS
+
+**RepurchaseIntensity_lead_qtr**:
+- Panel builder `create_lead_variables()` lines 254-269: fiscal_qtr_id shift(-1) with consecutive check — PASS
+- Consecutive check: if fqtr < 4, next = curr+1; if fqtr == 4, next = (fyearq+1)*10+1 — PASS
+- Non-consecutive produces NaN — PASS
+
+**PASS**
 
 ### B3-CHECK: Independent Variable(s)
-- **Claim:** 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct.
-- **Verification:** Runner lines 74-79: `KEY_IVS = ["CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct", "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct"]`. All 4 are from LinguisticEngine. No centering/transformation applied (correct per doc). Complete match.
-- **Result:** PASS
+
+**Doc claims**: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct. No centering, log, or z-score.
+**Code**: KEY_IVS list exactly matches (runner lines 74-79). These are passed directly in `exog = KEY_IVS + controls` without any transformation in the runner. Panel builder imports CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder, ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder — LinguisticEngine-based builders.
+**PASS**
 
 ### B4-CHECK: Control Variables
-- **Claim:** Base (9 controls including Lagged_DV) + Extended (Base + 4: SalesGrowth, RD_Intensity, CashFlow, Volatility).
-- **Verification:** Runner lines 81-88:
-  - BASE_CONTROLS = ["Size", "TobinsQ", "ROA", "BookLev", "CapexAt", "CashHoldings", "DividendPayer", "OCF_Volatility", "Lagged_DV"] -- 9 items, matches.
-  - EXTENDED_CONTROLS = BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"] -- 13 items, matches.
-- Every control in the code appears in the provenance doc, and vice versa.
-- Lagged_DV documented as RepurchaseIntensity_lag. Runner line 210-213 confirms: `base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")`, `lag_col = f"{base_dv}_lag"`, `panel["Lagged_DV"] = panel[lag_col]`. This always lags the base DV. Correct.
-- No dynamic control logic.
-- **Result:** PASS
+
+**BASE_CONTROLS** doc vs code:
+| Variable | In Doc | In Code (BASE_CONTROLS) | Match |
+|----------|--------|------------------------|-------|
+| Size | Yes | Yes | PASS |
+| TobinsQ | Yes | Yes | PASS |
+| ROA | Yes | Yes | PASS |
+| BookLev | Yes | Yes | PASS |
+| CapexAt | Yes | Yes | PASS |
+| CashHoldings | Yes | Yes | PASS |
+| DividendPayer | Yes | Yes | PASS |
+| OCF_Volatility | Yes | Yes | PASS |
+| Lagged_DV | Yes | Yes | PASS |
+
+Runner lines 81-85 list exactly these 9. No extra or missing controls.
+
+**EXTENDED_CONTROLS** = BASE + [SalesGrowth, RD_Intensity, CashFlow, Volatility]:
+Runner lines 87-89: identical. **PASS**
+
+**Lagged_DV construction** (runner lines 210-213):
+```python
+base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
+lag_col = f"{base_dv}_lag"
+panel["Lagged_DV"] = panel[lag_col]
+```
+For lead specs, base_dv = "RepurchaseIntensity", lag_col = "RepurchaseIntensity_lag". PASS.
+
+**PASS**
 
 ### B5-CHECK: Fixed Effects
-- **Claim:** Industry (ff12_code) for odd cols, Firm (gvkey) for even cols, Cal Yr (cal_yr) for cols 1-4/7-10, Cal Yr-Qtr (cal_yr_qtr) for cols 5-6/11-12.
-- **Verification:** Runner lines 286-301:
-  - Industry: `PanelOLS(entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"])`. Odd cols have `fe="industry"` or `fe="industry_yq"`.
-  - Firm: `PanelOLS.from_formula(... + EntityEffects + TimeEffects)`. Even cols have `fe="firm"` or `fe="firm_yq"`.
-  - Time: `time_effects=True` on both paths. `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"` (line 263).
-  - `cal_yr` and `cal_yr_qtr` derived from `start_date` via `build_cal_yr_qtr_index()` in `panel_utils.py` (lines 195-218). Confirmed calendar, not fiscal.
-- Complete match.
-- **Result:** PASS
+
+**Doc claims**:
+- Cols 1,3,5,7,9,11: Industry FE (ff12_code) via other_effects, entity_effects=False, time_effects=True
+- Cols 2,4,6,8,10,12: Firm FE (gvkey) via EntityEffects in formula + TimeEffects
+- Cols 1-4,7-10: Time = cal_yr
+- Cols 5-6,11-12: Time = cal_yr_qtr
+
+**Code** (runner lines 263-301):
+- `time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"` — verified
+- Industry path: `PanelOLS(entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"])` — verified
+- Firm path: formula with `EntityEffects + TimeEffects` — verified
+- MODEL_SPECS: cols with fe="industry" or fe="firm" use cal_yr; fe="industry_yq" or fe="firm_yq" use cal_yr_qtr — verified
+
+**PASS**
+
+Doc claim about cal_yr/cal_yr_qtr source (build_cal_yr_qtr_index in panel_utils.py):
+- panel_utils.py lines 195-217: `cal_yr = dt.dt.year`, `cal_yr_qtr = cal_yr * 10 + cal_qtr` — PASS
+- Runner line 183: `panel = build_cal_yr_qtr_index(panel)` — PASS
+- Column is derived from `start_date` (calendar date), not Compustat fiscal date — PASS
 
 ### B6-CHECK: Standard Errors
-- **Claim:** `cov_type="clustered"`, `cluster_entity=True` (firm-level).
-- **Verification:** Runner line 296: `model.fit(cov_type="clustered", cluster_entity=True)`. Line 301: same. Both paths use identical SE specification.
-- **Result:** PASS
+
+**Doc claims**: cov_type="clustered", cluster_entity=True
+**Code** (lines 296 and 301):
+```python
+model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+```
+Both industry and firm paths use identical call.
+**PASS**
 
 ### B7-CHECK: Hypothesis Test
-- **Claim:** Two-tailed. P-values from PanelOLS used directly. Stars: *** p<0.01, ** p<0.05, * p<0.10. Legacy `_p_one` misnomer noted.
-- **Verification:** `_sig_stars()` (lines 337-346): returns "***" if p < 0.01, "**" if p < 0.05, "*" if p < 0.10, else "". Line 325: `p_two = float(model.pvalues.get(iv, np.nan))`. Line 329: `meta[f"{iv}_p_one"] = p_two`. No one-tailed conversion. LaTeX notes (line 479): "(two-tailed)". All matches.
-- **Result:** PASS
 
-**Phase 3 Result: 7/7 PASS.**
-
----
-
-## PHASE 4: FACTUAL ACCURACY -- SECTION C (Spec Register)
-
-### Check 1: Row count matches MODEL_SPECS
-- Provenance doc has 12 rows (cols 1-12). Runner MODEL_SPECS has 12 entries (cols 1-12). PASS.
-
-### Check 2: DV per row
-- Cols 1-6 in doc: RepurchaseIntensity. Code: `"dv": "RepurchaseIntensity"` for cols 1-6. PASS.
-- Cols 7-12 in doc: RepurchaseIntensity_lead_qtr. Code: `"dv": "RepurchaseIntensity_lead_qtr"` for cols 7-12. PASS.
-
-### Check 3: Entity FE per row
-- Doc: Odd cols = Industry (FF12), Even cols = Firm. Code: col 1 = `"fe": "industry"`, col 2 = `"fe": "firm"`, col 3 = `"fe": "industry"`, col 4 = `"fe": "firm"`, col 5 = `"fe": "industry_yq"` (industry entity + yq time), col 6 = `"fe": "firm_yq"`, etc. Doc correctly maps odd to Industry and even to Firm. PASS.
-
-### Check 4: Time FE per row
-- Doc: Cols 1-4, 7-10 = Cal Yr. Cols 5-6, 11-12 = Cal Yr-Qtr.
-- Code: Cols 1-4 have `fe` without `_yq` suffix, so `time_col = "cal_yr"`. Cols 5-6 have `_yq` suffix, so `time_col = "cal_yr_qtr"`. Same pattern for 7-12. PASS.
-
-### Check 5: Controls per row
-- Doc: Cols 1-2, 7-8 = Base. Cols 3-6, 9-12 = Extended.
-- Code: col 1 = `"controls": "base"`, col 2 = `"controls": "base"`, col 3 = `"controls": "extended"`, etc. Col 7 = base, col 8 = base, col 9 = extended, col 10 = extended, col 11 = extended, col 12 = extended. Matches doc layout. PASS.
-
-**Phase 4 Result: 5/5 PASS.**
+**Doc claims**: Two-tailed. model.pvalues used directly (no halving). `{iv}_p_one` stores two-tailed values (legacy name).
+**Code**:
+- Line 325: `p_two = float(model.pvalues.get(iv, np.nan))`
+- Line 329: `meta[f"{iv}_p_one"] = p_two  # two-tailed`
+- Line 331: `stars = _sig_stars(p_two)` using two-tailed thresholds
+- `_sig_stars()` (lines 337-346): `< 0.01 → ***`, `< 0.05 → **`, `< 0.10 → *` — no one-tailed conversion
+**PASS**
 
 ---
 
-## PHASE 5: FACTUAL ACCURACY -- SECTION D (Sample Construction)
+## PHASE 4: SPEC REGISTER (Section C)
+
+Counted MODEL_SPECS in runner: 12 entries (cols 1-12).
+Counted rows in provenance doc Section C table: 12 rows.
+Every row verified:
+
+| Col | Doc DV | Code DV | Doc Entity FE | Code fe | Doc Time FE | Code time_col | Doc Controls | Code controls | Match? |
+|-----|--------|---------|--------------|---------|-------------|--------------|-------------|--------------|--------|
+| 1 | RepurchaseIntensity | RepurchaseIntensity | Industry (FF12) | industry | Cal Yr | cal_yr | Base | base | PASS |
+| 2 | RepurchaseIntensity | RepurchaseIntensity | Firm | firm | Cal Yr | cal_yr | Base | base | PASS |
+| 3 | RepurchaseIntensity | RepurchaseIntensity | Industry (FF12) | industry | Cal Yr | cal_yr | Extended | extended | PASS |
+| 4 | RepurchaseIntensity | RepurchaseIntensity | Firm | firm | Cal Yr | cal_yr | Extended | extended | PASS |
+| 5 | RepurchaseIntensity | RepurchaseIntensity | Industry (FF12) | industry_yq | Cal Yr-Qtr | cal_yr_qtr | Extended | extended | PASS |
+| 6 | RepurchaseIntensity | RepurchaseIntensity | Firm | firm_yq | Cal Yr-Qtr | cal_yr_qtr | Extended | extended | PASS |
+| 7 | RepurchaseIntensity_lead_qtr | RepurchaseIntensity_lead_qtr | Industry (FF12) | industry | Cal Yr | cal_yr | Base | base | PASS |
+| 8 | RepurchaseIntensity_lead_qtr | RepurchaseIntensity_lead_qtr | Firm | firm | Cal Yr | cal_yr | Base | base | PASS |
+| 9 | RepurchaseIntensity_lead_qtr | RepurchaseIntensity_lead_qtr | Industry (FF12) | industry | Cal Yr | cal_yr | Extended | extended | PASS |
+| 10 | RepurchaseIntensity_lead_qtr | RepurchaseIntensity_lead_qtr | Firm | firm | Cal Yr | cal_yr | Extended | extended | PASS |
+| 11 | RepurchaseIntensity_lead_qtr | RepurchaseIntensity_lead_qtr | Industry (FF12) | industry_yq | Cal Yr-Qtr | cal_yr_qtr | Extended | extended | PASS |
+| 12 | RepurchaseIntensity_lead_qtr | RepurchaseIntensity_lead_qtr | Firm | firm_yq | Cal Yr-Qtr | cal_yr_qtr | Extended | extended | PASS |
+
+Layout note (doc): "Odd = Industry FE, Even = Firm FE" — verified. PASS.
+Layout note (doc): "Cols 1-2, 7-8 = Base; Cols 3-6, 9-12 = Extended" — verified. PASS.
+
+**Phase 4: PASS — 14/14**
+
+---
+
+## PHASE 5: SAMPLE CONSTRUCTION (Section D)
 
 ### D1-CHECK: Population
-- **Claim:** Starting from `master_sample_manifest.parquet` (Stage 1.4), ~112,968 calls, 2002-2018.
-- **Verification:** Panel builder line 21: `outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet`. Year range from config (variable, but project scope is 2002-2018 per memory). Call count of ~112,968 consistent with project scope.
-- **Result:** PASS
+**Doc claims**: ~112,968 calls, year range 2002-2018.
+**Verification**: Consistent with project-wide scope (memory/project_thesis_scope.md: 112,968 calls, 2,429 firms, 2002-2018). Runner does not independently print firm count at startup. PASS.
 
 ### D2-CHECK: Exclusion Criteria
-- **Filter order claim:** Full panel -> Main sample (excl FF12=8,11) -> DV non-missing -> Complete case -> Min calls per firm (>=5).
-- **Verification against runner code:**
-  1. `load_panel()` loads full panel (line 178).
-  2. `filter_main_sample()` (line 565): `panel[~panel["ff12_code"].isin([8, 11])]`. Correct.
-  3. `prepare_regression_data()`, line 229: `df = df[df[dv].notna()]`. Correct.
-  4. Line 233: `complete_mask = df[required].notna().all(axis=1)`. Correct.
-  5. Lines 237-239: `firm_counts >= MIN_CALLS_PER_FIRM` (=5). Correct.
-- **Filter order matches code execution order.** PASS.
-- **Row counts:** The provenance doc does NOT include row count columns (Rows Before, Rows After, Dropped) in the attrition table. The creation prompt specifies these columns. The doc says "Exact counts are recorded in `model_diagnostics.csv` at runtime" which is reasonable since counts are runtime-dependent, but the creation prompt template shows row count columns.
-- **Result:** FAIL (missing row count columns per creation prompt requirement)
+**Doc claims 5 steps in order**:
+1. Full panel (year range)
+2. Main sample: `ff12_code not in [8, 11]`
+3. DV non-missing
+4. Complete case (Inf→NaN, then dropna)
+5. Min calls >= 5 per gvkey
+
+**Code verification**:
+- Step 2: `filter_main_sample()` line 193: `panel[~panel["ff12_code"].isin([8, 11])]` — PASS
+- Step 3: `prepare_regression_data()` lines 227-229: `df[df[dv].notna()]` — PASS
+- Step 4: lines 224, 232-233: `df.replace([np.inf, -np.inf], np.nan)` then `df[required].notna().all(axis=1)` — PASS
+- Step 5: lines 236-240: `firm_counts[firm_counts >= 5]` — PASS
+- Order: Inf→NaN first, then DV filter, then complete case, then min calls — PASS
+
+**All counts marked [UNVERIFIED] with explanation "runtime-dependent"**: Acceptable per audit rules. PASS.
 
 ### D3-CHECK: Sample Counts per Spec
-- **Claim:** N varies across specs due to different DVs, extended controls missingness, and cal_yr_qtr coverage.
-- **Verification:** This is accurate. Different DVs (contemporaneous vs lead) have different non-null counts. Extended controls add SalesGrowth/RD_Intensity/CashFlow/Volatility which may have additional NaN. YQ specs require cal_yr_qtr. Accurate reasoning.
-- **Result:** PASS
+Doc says N varies due to DV differences, extended controls, and cal_yr_qtr non-null requirement. Code confirms this: `prepare_regression_data()` runs independently per spec with different required column lists. PASS.
 
-**Phase 5 Result: 2/3 PASS, 1 FAIL.**
+**Phase 5: PASS — 5/5**
 
 ---
 
-## PHASE 6: FACTUAL ACCURACY -- SECTION E (Variable Dictionary)
+## PHASE 6: VARIABLE DICTIONARY (Section E)
 
-Checked EVERY row in the Variable Dictionary against source code.
+26 variables in the dictionary. Verified each against code.
 
-### DVs
+### DV Variables (4 entries)
 
-| Variable | Name Match | Formula Correct | Source Correct | Winsorized Correct | Timing Correct | Result |
-|----------|-----------|----------------|---------------|-------------------|---------------|--------|
-| RepurchaseIntensity | Yes | Yes: quarterly_prstkcy / atq_{t-1}, de-cumulated, negatives clamped | Yes: CompustatEngine, prstkcy, atq, fqtr, fyearq | Yes: 1%/99% by fyearq (in COMPUSTAT_COLS, not in skip_winsorize) | Yes: Contemporaneous | PASS |
-| RepurchaseIntensity_lead_qtr | Yes | Yes: Next consecutive fiscal quarter's RI, via fiscal_qtr_id shifting | Yes: Panel builder shift(-1) with consecutive validation | Yes: Inherited from RI | Yes: Lead (t+1 qtr) | PASS |
-| RepurchaseIntensity_lag | Yes | Yes: Previous consecutive fiscal quarter's RI | Yes: Panel builder shift(+1) with consecutive validation | Yes: Inherited | Yes: Lag (t-1 qtr) | PASS |
+**RepurchaseIntensity** (code name: "RepurchaseIntensity"):
+- Formula: quarterly_prstkcy / atq_{t-1}, de-cumulated, negatives clamped
+- Code: _compustat_engine.py lines 1056-1085 — PASS
+- Winsorized: "1%/99% by fiscal year" — RepurchaseIntensity IS in COMPUSTAT_COLS (line 135), NOT in skip_winsorize (lines 1217-1224), IS winsorized via `_winsorize_by_year` with fyearq as year column — PASS
+- Timing: contemporaneous — PASS
 
-### Lagged_DV
+**RepurchaseIntensity_lead_qtr** (code name used in MODEL_SPECS):
+- Formula: next consecutive fiscal quarter's RepurchaseIntensity
+- Code: panel builder lines 254-269: `firm_qtr.groupby("gvkey")["RepurchaseIntensity"].shift(-1)` with consecutive check — PASS
+- Winsorized: "Inherited from RepurchaseIntensity" — correct; no additional winsorization applied to the shifted column — PASS
 
-| Variable | Name Match | Formula Correct | Source Correct | Winsorized Correct | Timing Correct | Result |
-|----------|-----------|----------------|---------------|-------------------|---------------|--------|
-| Lagged_DV | Yes | Yes: = RepurchaseIntensity_lag (always lags base DV) | Yes: Runner line 213: panel["RepurchaseIntensity_lag"] | Yes: Inherited | Yes: Lag (t-1 qtr) | PASS |
+**RepurchaseIntensity_lag** (source for Lagged_DV):
+- Code: panel builder lines 285-308: `firm_qtr.groupby("gvkey")["RepurchaseIntensity"].shift(1)` with consecutive prev check — PASS
 
-### IVs
+**Lagged_DV**:
+- Code: runner lines 210-213: `panel["Lagged_DV"] = panel["RepurchaseIntensity_lag"]` (for all specs, including lead specs) — PASS
 
-| Variable | Name Match | Formula Correct | Source Correct | Winsorized Correct | Timing Correct | Result |
-|----------|-----------|----------------|---------------|-------------------|---------------|--------|
-| CEO_QA_Uncertainty_pct | Yes: exact string in KEY_IVS | Yes: (unc words / total words) * 100, CEO QA | Yes: LinguisticEngine | Yes: No (bounded [0,100]) | Yes: Contemporaneous | PASS |
-| CEO_Pres_Uncertainty_pct | Yes | Yes | Yes: LinguisticEngine | Yes: No | Yes | PASS |
-| Manager_QA_Uncertainty_pct | Yes | Yes | Yes: LinguisticEngine | Yes: No | Yes | PASS |
-| Manager_Pres_Uncertainty_pct | Yes | Yes | Yes: LinguisticEngine | Yes: No | Yes | PASS |
+### IV Variables (4 entries)
 
-### Controls
+All four uncertainty IVs (CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct):
+- In KEY_IVS list: PASS
+- Formula (uncertainty words / total words) * 100 by section: consistent with LinguisticEngine pattern — PASS
+- Winsorized: No (bounded [0,100] by construction): PASS — no winsorization applied to linguistic variables
+- Timing: Contemporaneous: PASS
 
-| Variable | Name Match | Formula Correct | Source Correct | Winsorized Correct | Timing Correct | Result |
-|----------|-----------|----------------|---------------|-------------------|---------------|--------|
-| Size | Yes | Yes: ln(atq), NaN when atq <= 0 | Yes: CompustatEngine: atq | Yes: 1%/99% by fyearq (in COMPUSTAT_COLS) | Yes | PASS |
-| TobinsQ | Yes | Yes: (cshoq * prccq + dlcq + dlttq) / atq | Yes: CompustatEngine | Yes: 1%/99% by fyearq | Yes | PASS |
-| ROA | Yes | Yes: iby_annual (Q4) / avg_assets | Yes: CompustatEngine | Yes: 1%/99% by fyearq | Yes | PASS |
-| BookLev | Yes | Yes: (dlcq.fillna(0) + dlttq.fillna(0)) / atq | Yes: CompustatEngine | Yes: 1%/99% by fyearq | Yes | PASS |
-| CapexAt | Yes | Yes: capxy_annual (Q4) / atq_lag1_annual | Yes: CompustatEngine | Yes: 1%/99% by fyearq | Yes | PASS |
-| CashHoldings | Yes | Yes: cheq / atq | Yes: CompustatEngine | Yes: 1%/99% by fyearq | Yes | PASS |
-| DividendPayer | Yes | Yes: 1 if dvy_annual > 0, else 0 | Yes: CompustatEngine | Yes: No (binary, in skip_winsorize) | Yes | PASS |
-| OCF_Volatility | Yes | Yes: Rolling 5-yr std (min 3 yrs) of oancfy/atq_{t-1} | Yes: CompustatEngine | Yes: 1%/99% by fyearq | Yes | PASS |
-| SalesGrowth | Yes | Yes: (saley_t - saley_{t-1}) / abs(saley_{t-1}), Q4 saley with saleq fallback | Yes: CompustatEngine | Yes: 1%/99% by fyearq inside Biddle (in skip_winsorize for main loop) | Yes | PASS |
-| RD_Intensity | Yes | Yes: xrdq.fillna(0) / atq | Yes: CompustatEngine | Yes: 1%/99% by fyearq | Yes | PASS |
-| CashFlow | Yes | Yes: oancfy / avg_assets, fallback to atq_t | Yes: CompustatEngine | Yes: 1%/99% by fyearq inside Biddle (in skip_winsorize for main loop) | Yes | PASS |
-| Volatility | Yes | Yes: std(daily_ret) * sqrt(252) * 100 | Yes: CRSPEngine | Yes: No | Yes | PASS |
+### Control Variables — Base (9 variables)
 
-### FE Columns
+**Size**: ln(atq); NaN when atq <= 0
+- Code line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` — PASS
+- Winsorized: 1%/99% by fyearq — PASS
 
-| Variable | Name Match | Formula Correct | Source Correct | Winsorized Correct | Timing Correct | Result |
-|----------|-----------|----------------|---------------|-------------------|---------------|--------|
-| ff12_code | Yes | Yes: SIC-based industry classification | Yes: ManifestFieldsBuilder | Yes: No | Yes: Static | PASS |
-| gvkey | Yes | Yes: Compustat firm identifier, zero-padded 6 digits | Yes: ManifestFieldsBuilder | Yes: No | Yes: Static | PASS |
-| cal_yr | Yes | Yes: start_date.dt.year | Yes: panel_utils.build_cal_yr_qtr_index (line 215) | Yes: No | Yes: Contemporaneous | PASS |
-| cal_yr_qtr | Yes | Yes: cal_yr * 10 + start_date.dt.quarter | Yes: panel_utils.build_cal_yr_qtr_index (line 217) | Yes: No | Yes: Contemporaneous | PASS |
+**TobinsQ**: (cshoq * prccq + dlcq + dlttq) / atq
+- Code: uses mktcap = cshoq*prccq, debt = dlcq.fillna(0)+dlttq.fillna(0), TobinsQ = (mktcap+debt)/atq — PASS
+- Winsorized: 1%/99% — PASS
 
-### Completeness Check
-All variables in MODEL_SPECS are covered:
-- DVs: RepurchaseIntensity, RepurchaseIntensity_lead_qtr -- in dictionary
-- IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct -- in dictionary
-- BASE_CONTROLS: Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV -- all in dictionary
-- EXTENDED add-ons: SalesGrowth, RD_Intensity, CashFlow, Volatility -- all in dictionary
-- FE columns: gvkey, ff12_code, cal_yr, cal_yr_qtr -- all in dictionary
-- Lagged_DV source (RepurchaseIntensity_lag) -- in dictionary
-- No variables missing.
+**ROA**: iby_annual (Q4) / avg_assets where avg_assets = (atq_annual + atq_annual_lag1) / 2
+- Code lines 960-969: _compute_annual_q4_variable for iby; avg_assets from annual atq values — PASS
+- Note: Doc says "avg_assets = (atq_t + atq_{t-1}) / 2" without clarifying these are Q4-annual values, not quarterly. This is slightly ambiguous but not factually incorrect given the broader context of "iby_annual (Q4)". Not a failure.
+- Winsorized: 1%/99% — PASS
 
-**Phase 6 Result: 23/23 PASS.**
+**BookLev**: (dlcq.fillna(0) + dlttq.fillna(0)) / atq — PASS. Winsorized: 1%/99% — PASS.
+
+**CapexAt**: capxy_annual (Q4) / atq_lag1_annual
+- Code lines 999-1005: `capxy_annual / atq_annual_lag1` — PASS
+- Winsorized: 1%/99% — PASS
+
+**CashHoldings**: cheq / atq — PASS. Winsorized: 1%/99% — PASS.
+
+**DividendPayer**: 1 if dvy_annual (Q4) > 0, else 0
+- Code: `_compute_annual_q4_variable(comp, "dvy")` then indicator — PASS
+- Winsorized: No (binary) — DividendPayer in skip_winsorize (line 1218) — PASS
+
+**OCF_Volatility**: Rolling 5-yr std (min 3 yrs) of (oancfy / atq_{t-1}) per firm
+- Code: `_compute_ocf_volatility()` line 340: rolling("1826D", min_periods=3).std() — PASS
+- "1826D" = approximately 5 years in days — PASS
+- Winsorized: 1%/99% — PASS
+
+**Lagged_DV**: see DV section above. PASS.
+
+### Control Variables — Extended additional (4 variables)
+
+**SalesGrowth**: (saley_t - saley_{t-1}) / abs(saley_{t-1}); Q4-only; saley with saleq fallback
+- Code: _compute_biddle_residual() lines 649-666 — PASS
+- Winsorized: "1%/99% by fiscal year (inside Biddle)" — PASS. SalesGrowth in skip_winsorize (line 1220) to prevent double-winsorization.
+
+**RD_Intensity**: xrdq.fillna(0) / atq
+- Code line 972: `comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]` — PASS
+- Winsorized: 1%/99% — PASS
+
+**CashFlow**: oancfy / avg_assets; avg = (atq_t + atq_{t-1})/2, fallback to atq_t
+- Code: _compute_biddle_residual() lines 680-693 — PASS
+- Winsorized: "1%/99% by fiscal year (inside Biddle)" — PASS. CashFlow in skip_winsorize (line 1219).
+
+**Volatility**: std(daily_ret) * sqrt(252) * 100; window [prev_call+5d, call-5d]; min 10 days
+- Source: CRSPEngine: RET — PASS
+- Winsorized: No — PASS (CRSPEngine-derived, not in _compute_and_winsorize loop)
+
+### FE Identifier Columns (4 entries)
+
+**ff12_code**: from ManifestFieldsBuilder (from manifest) — PASS
+**gvkey**: from ManifestFieldsBuilder — PASS
+**cal_yr**: start_date.dt.year from panel_utils.build_cal_yr_qtr_index — PASS
+**cal_yr_qtr**: cal_yr * 10 + start_date.dt.quarter from panel_utils — PASS
 
 ---
 
-## PHASE 7: FACTUAL ACCURACY -- SECTIONS F, G, H
+### FAIL-3: MISSING VARIABLE — fyearq_int
+
+**Provenance doc claims**: fyearq_int is not listed in the variable dictionary.
+**Code**:
+- Panel builder line 186: `panel["fyearq_int"] = pd.to_numeric(panel["fyearq"], errors="coerce")`
+- Runner line 215: `required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]`
+- fyearq_int is a required non-null column that participates in complete-case filtering.
+- Rows where fyearq_int is NaN are dropped during complete-case, silently affecting sample size.
+**Severity**: Minor. fyearq_int is a derived integer identifier, not a substantive regression variable or FE column. Its effect on sample is small (fyearq is largely complete in Compustat). But it should appear in the dictionary as a required identifier.
+
+---
+
+### FAIL-4: MISSING NOTE — cal_yearqtr orphan column in panel builder
+
+**Provenance doc claims**: No mention anywhere of the `cal_yearqtr` column.
+**Code**: Panel builder `create_lead_variables()` lines 311-315:
+```python
+panel["start_date_dt"] = pd.to_datetime(panel["start_date"], errors="coerce")
+panel["cal_yearqtr"] = (
+    panel["start_date_dt"].dt.year * 10 + panel["start_date_dt"].dt.quarter
+)
+panel = panel.drop(columns=["start_date_dt"], errors="ignore")
+```
+This `cal_yearqtr` column is saved into the panel parquet but is never used by the runner. The runner obtains `cal_yr_qtr` (and `cal_yr`, `cal_qtr`) from `build_cal_yr_qtr_index()` called at runner line 183. The two columns are computed identically, but the name difference creates a redundant column in the parquet.
+**Comparison**: H12 provenance doc (docs/provenance/H12.md) Known Issue 6 explicitly documents this pattern: "cal_yearqtr vs cal_yr_qtr: The panel builder creates a cal_yearqtr column (line 306-308), while the runner creates cal_yr_qtr via build_cal_yr_qtr_index()..."
+**Severity**: Minor — no impact on results. Documentation gap compared to H12 standard.
+
+---
+
+## PHASE 7: PIPELINE, OUTPUTS, TREATMENT (Sections F, G, H)
 
 ### F-CHECK: Data Pipeline
 
-**F1: Dependency Chain (7 steps)**
-1. Raw inputs: Compustat parquet, linguistic outputs, CRSP, manifest. Verified correct file paths.
-2. Engine loading: CompustatEngine, LinguisticEngine, CRSPEngine. All three are used by the panel builder's 18 builders.
-3. Panel builder: Merges all builder outputs via `file_name` (left join). Creates lead/lag via fiscal_qtr_id. Assigns sample. Saves parquet. All correct per builder code.
-4. Runner loading: Loads panel parquet, calls `build_cal_yr_qtr_index()`. Verified at runner lines 178-186.
-5. Sample filtering: Creates Lagged_DV, replaces inf, drops DV-missing, complete-case, min calls. Verified at runner lines 199-243.
-6. Regression: 12 PanelOLS models. Verified at runner lines 250-334.
-7. Table generation: generate_all_tables.py entry. Verified entry exists at line 392.
-- **Result:** PASS
+**F1 — Dependency Chain (7 steps)**:
+Verified each step against code:
+1. Raw inputs: Compustat parquet, linguistic output dir, CRSP files, master_sample_manifest.parquet — consistent with panel builder imports and file paths in docstring. PASS.
+2. Engine loading: CompustatEngine (RepurchaseIntensity + controls), LinguisticEngine (4 IVs), CRSPEngine (Volatility) — builders dict in panel builder lines 93-120. PASS.
+3. Panel builder: 18 builders (counted: manifest + 4 IVs + repurchase_intensity + size + book_lev + tobins_q + roa + cash_holdings + capex_intensity + dividend_payer + ocf_volatility + sales_growth + rd_intensity + cash_flow + volatility = 18), file_name merges, fiscal_qtr_id lead/lag creation. PASS.
+4. Runner loading: loads parquet (lines 169-173), calls build_cal_yr_qtr_index (line 183), filter_main_sample (line 565). PASS.
+5. Sample filtering: Lagged_DV creation (line 213), Inf→NaN (line 224), DV filter (lines 227-229), complete case (lines 232-233), min calls (lines 236-240). PASS.
+6. Regression: 12 PanelOLS specs in MODEL_SPECS loop. PASS.
+7. Table generation: generate_all_tables.py entry. PASS.
 
-**F2: Data Engines**
-- CompustatEngine provides RepurchaseIntensity + all Compustat controls + fqtr. Verified via RepurchaseIntensityBuilder (returns `["file_name", "RepurchaseIntensity", "fqtr"]`) and all control builders.
-- LinguisticEngine provides 4 uncertainty IVs. Verified via 4 uncertainty builders.
-- CRSPEngine provides Volatility. Verified via VolatilityBuilder.
-- **Result:** PASS
+**F2 — Data Engines**: CompustatEngine, LinguisticEngine, CRSPEngine — all verified against builder imports (panel builder lines 50-70). PASS.
 
-**F3: Merge Operations**
-- Panel builder: manifest base merged with each builder output on `file_name` (left join, 1:1). Verified at builder lines 137-153.
-- Lead merge: panel merged with lead_lookup on `["gvkey", "fiscal_qtr_id"]` (left join). Verified at builder line 278.
-- Lag merge: panel merged with lag_lookup on `["gvkey", "fiscal_qtr_id"]` (left join). Verified at builder line 305.
-- CompustatEngine internal: merge_asof backward on gvkey (by), start_date/datadate (asof). Verified via engine match_to_manifest pattern.
-- fqtr attachment: merge_asof per gvkey group when fqtr missing. Verified at builder lines 196-226.
-- All merge keys and types are documented correctly.
-- **Result:** PASS
+**F3 — Merge Operations**:
+All 4 merge types documented:
+- Manifest base + each builder via file_name (left join, 1:1 validated): code lines 150-153. PASS.
+- lead_lookup merge: `on=["gvkey", "fiscal_qtr_id"], how="left"` (line 278). PASS.
+- lag_lookup merge: `on=["gvkey", "fiscal_qtr_id"], how="left"` (line 305). PASS.
+- CompustatEngine merge_asof backward within gvkey: code pattern verified. PASS.
+- fqtr attachment per-gvkey merge_asof (lines 196-226): matches doc description. PASS.
 
 ### G-CHECK: Outputs
 
-**G1: Stage 3 Outputs (Panel Builder)**
-Code writes (builder lines 380-395):
-1. `h17_repurchase_intensity_panel.parquet` -- line 381. Documented. PASS.
-2. `summary_stats.csv` -- line 386. Documented. PASS.
-3. `run_manifest.json` -- line 390 (`generate_manifest`). Documented. PASS.
-No `report_step3_*.md` is written (confirmed by grep). Provenance doc correctly omits it.
+**G1 (Panel Builder)**:
+Doc lists: h17_repurchase_intensity_panel.parquet, summary_stats.csv, run_manifest.json
+Code: panel builder lines 380-394 writes exactly these 3 files. No extra files. PASS.
+Builder does NOT write a report.md file — doc correctly omits it. PASS.
 
-**G2: Stage 4 Outputs (Runner)**
-Code writes (runner lines 491-630):
-1. `h17_repurchase_intensity_table.tex` -- line 491. Documented. PASS.
-2. `model_diagnostics.csv` -- line 526. Documented. PASS.
-3. `summary_stats.csv` + `summary_stats.tex` -- lines 582-583. Documented. PASS.
-4. `sample_attrition.csv` + `sample_attrition.tex` -- line 620 (`generate_attrition_table`). Documented. PASS.
-5. `regression_results_col{1-12}.txt` -- line 511. Documented. PASS.
-6. `run_manifest.json` -- line 624 (`generate_manifest`). Documented. PASS.
-No files in code are missing from doc. No files in doc are absent from code.
-- **Result:** PASS
+**G2 (Runner)**:
+Doc lists: h17_repurchase_intensity_table.tex, model_diagnostics.csv, summary_stats.csv, summary_stats.tex, sample_attrition.csv, sample_attrition.tex, regression_results_col{1-12}.txt, run_manifest.json.
 
-**G3: Summary Statistics**
-- 18 variables listed in provenance doc's G3 table.
-- Runner lines 119-138: `SUMMARY_STATS_VARS` has exactly 18 entries.
-- Every variable/label pair matches between doc and code.
-- Minor note: RD_Intensity label in code is `r"R\&D Intensity"` (LaTeX escaped), doc shows `R&D Intensity`. This is a rendering difference, not a factual error -- the same label will appear in the LaTeX output.
-- Metrics: "N, Mean, SD, Min, P25, Median, P75, Max (via make_summary_stats_table)". This is standard for the shared utility.
-- **Result:** PASS
+Code:
+- h17_repurchase_intensity_table.tex: line 491 `with open(tex_path, "w")` — PASS
+- model_diagnostics.csv: line 526 `diag_df.to_csv(out_dir / "model_diagnostics.csv")` — PASS
+- summary_stats.csv: line 582 `output_csv=out_dir / "summary_stats.csv"` — PASS
+- summary_stats.tex: line 583 `output_tex=out_dir / "summary_stats.tex"` — PASS
+- sample_attrition.csv/.tex: line 620 `generate_attrition_table(attrition_stages, out_dir, ...)` — PASS (function writes both)
+- regression_results_col{N}.txt: lines 511-522 `open(out_dir / fname, "w")` — PASS
+- run_manifest.json: lines 624-629 `generate_manifest(...)` — PASS
+
+Runner does NOT write a report_step4 file — doc correctly omits it. PASS.
+
+**G3 — Summary Statistics**:
+Doc claims 18 variables from "runner lines 119-138". Code: SUMMARY_STATS_VARS defined at lines 119-138 with exactly 18 entries. All 18 variable names and labels match the doc's G3 table exactly. PASS.
 
 ### H-CHECK: Outlier/Missing Treatment
 
-**H1: Winsorization**
-- **Claim:** 1%/99% by fiscal year (fyearq) at CompustatEngine level, min 10 obs per year group.
-- **Verification:** `_winsorize_by_year()` at engine line 439: 1%/99%, `min_obs=10`. Grouping column is `comp["fyearq"]` (line 1133). Correct.
-- **Applied to:** Doc lists Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, OCF_Volatility, RD_Intensity, RepurchaseIntensity. Code: `winsorize_cols = [c for c in COMPUSTAT_COLS if c not in skip_winsorize]` where skip_winsorize = {DividendPayer, CashFlow, SalesGrowth, fqtr}. RepurchaseIntensity IS in COMPUSTAT_COLS (line 135) and NOT in skip_winsorize, so it IS winsorized. All other listed variables are in COMPUSTAT_COLS and not skipped. Correct.
-- **NOT applied to:** Linguistic IVs (bounded), DividendPayer (binary, in skip), Volatility (CRSP), fqtr (identifier, in skip). CashFlow and SalesGrowth winsorized inside Biddle, skipped in main loop. All correct.
-- **Result:** PASS
+**H1 — Winsorization**:
+- Level: "1%/99% by fiscal year (fyearq)" — code uses `year_col = comp["fyearq"]` (line 1229), `_winsorize_by_year` with min_obs=10 (line 453). PASS.
+- Applied to (from doc): Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, OCF_Volatility, RD_Intensity, RepurchaseIntensity — all in COMPUSTAT_COLS, none in skip_winsorize. PASS.
+- CashFlow/SalesGrowth in skip_winsorize (lines 1219-1220) because already winsorized in Biddle. PASS.
+- NOT applied: linguistic IVs (no winsorization in LinguisticEngine), DividendPayer (in skip_winsorize line 1218), Volatility (CRSPEngine, not in _compute_and_winsorize). PASS.
 
-**H2: Missing Data Policy**
-- Complete-case deletion: runner line 233. Inf/NaN replacement: runner line 224 (`df.replace([np.inf, -np.inf], np.nan)`) and engine lines 1109-1110. RepurchaseIntensity set to NaN conditions: all correctly documented.
-- **Result:** PASS
+**H2 — Missing Data**:
+- Inf/-Inf → NaN in CompustatEngine (line 1203-1204 for ratio_cols) and runner (line 224). PASS.
+- Complete-case deletion via `df[required].notna().all(axis=1)` (line 233). PASS.
+- RepurchaseIntensity-specific NaN rules (bad de-cumulation, missing/non-positive lagged atq, non-consecutive gap): all documented and code-verified. PASS.
 
-**H3: Transformations**
-- Size = ln(atq). Correct.
-- OCF_Volatility = rolling std. Correct.
-- Volatility = annualized (sqrt(252) * 100). Correct.
-- No centering/z-scoring on IVs or DV. Correct.
-- **Result:** PASS
-
-**Phase 7 Result: 9/9 PASS.**
+**H3 — Transformations**:
+- Size: ln(atq) — code line 943. PASS.
+- OCF_Volatility: rolling std — code function `_compute_ocf_volatility()`. PASS.
+- Volatility: annualized std(daily_ret) * sqrt(252) * 100 — from CRSPEngine/VolatilityBuilder. PASS.
 
 ---
 
-## PHASE 8: FACTUAL ACCURACY -- SECTION I (Table Generator Entry)
+### FAIL-5: ATTRITION TABLE STAGE COUNT DISCREPANCY
 
-### Entry verification against `outputs/generate_all_tables.py` lines 391-404:
+**Provenance doc claims (D2)**: 5-step attrition cascade with complete-case (step 4) and min-calls (step 5) as separate steps.
+**Code**: Runner lines 614-619 generate the actual attrition CSV/TEX with 4 stages:
+```python
+attrition_stages = [
+    ("Full panel", full_n),
+    ("Main sample (excl Finance/Utility)", main_n),
+    ("RepurchaseIntensity non-null", n_dv_valid),
+    ("After complete-case + min-calls (col 1)", first["n_obs"]),
+]
+generate_attrition_table(attrition_stages, out_dir, "H17 Repurchase Intensity")
+```
+The actual output files (`sample_attrition.csv`, `sample_attrition.tex`) contain 4 rows, collapsing steps 4 and 5 into one entry labeled "After complete-case + min-calls (col 1)".
+**Impact**: The 5-step conceptual description in D2 is accurate about what the code logically does. The discrepancy is that anyone reading the output CSV will see 4 rows, not 5.
+**Severity**: Minor.
 
-| Field | Provenance Doc Claims | generate_all_tables.py Actual | Match? |
-|-------|----------------------|------------------------------|--------|
+---
+
+## PHASE 8: GENERATE_ALL_TABLES.PY ENTRY (Section I)
+
+**Provenance doc shows**:
+```python
+{
+    "id": "H17",
+    "dir": "h17_repurchase_intensity/2026-03-27_095020",
+    "caption": "H17: Speech Uncertainty and Repurchase Intensity",
+    "label": "tab:h17",
+    "cols": 12,
+    "dvs": [
+        ("RepurchaseIntensity", 6),
+        (r"RepurchaseIntensity\_lead\_qtr", 6),
+    ],
+    "tail": "two",
+    "hyp_dir": None,
+}
+```
+
+**Actual code** (generate_all_tables.py lines 317-329): Character-for-character identical.
+
+**Field verification**:
+| Field | Doc | Code | Match |
+|-------|-----|------|-------|
 | id | "H17" | "H17" | PASS |
-| dir | "h17_repurchase_intensity/2026-03-27_095020" | "h17_repurchase_intensity/2026-03-27_095020" | PASS |
-| caption | "H17: Speech Uncertainty and Repurchase Intensity" | "H17: Speech Uncertainty and Repurchase Intensity" | PASS |
+| dir | "h17_repurchase_intensity/2026-03-27_095020" | same | PASS |
+| caption | "H17: Speech Uncertainty and Repurchase Intensity" | same | PASS |
 | label | "tab:h17" | "tab:h17" | PASS |
 | cols | 12 | 12 | PASS |
-| dvs | [("RepurchaseIntensity", 6), (r"RepurchaseIntensity\_lead\_qtr", 6)] | [("RepurchaseIntensity", 6), (r"RepurchaseIntensity\_lead\_qtr", 6)] | PASS |
+| dvs[0] | ("RepurchaseIntensity", 6) | same | PASS |
+| dvs[1] | (r"RepurchaseIntensity\_lead\_qtr", 6) | same | PASS |
 | tail | "two" | "two" | PASS |
 | hyp_dir | None | None | PASS |
 
-### Cross-verification with runner:
-- tail = "two" matches runner line 30 "Hypothesis: Two-tailed." PASS.
-- hyp_dir = None matches two-tailed (no direction). PASS.
-- cols = 12 matches `len(MODEL_SPECS) = 12`. PASS.
-- dvs: 6 contemporaneous + 6 lead matches MODEL_SPECS (cols 1-6 = RepurchaseIntensity, cols 7-12 = RepurchaseIntensity_lead_qtr). PASS.
+No key_vars or key_tails fields in the actual entry; doc correctly omits them.
 
-Note: H17 entry has no `key_vars` or `key_tails` fields, which is correct -- only certain suites (e.g., H0.3, H1.1) use these. The provenance doc correctly does not mention them.
+Doc verification table checks:
+- tail matches runner two-tailed hypothesis: PASS
+- hyp_dir None for two-tailed: PASS
+- cols 12 = len(MODEL_SPECS) = 12: PASS
+- dvs: 6 contemp + 6 lead = 12: PASS
 
-**Phase 8 Result: 5/5 PASS.**
+**Phase 8: PASS — 8/8**
 
 ---
 
-## PHASE 9: FACTUAL ACCURACY -- SECTION K (Model-Family Addendum)
+## PHASE 9: MODEL-FAMILY ADDENDUM (Section K)
 
-### K1. PanelOLS Specifics (FILLED -- correct family)
+Identified model family: PanelOLS. K1 should be filled; K2-K6 should be N/A.
 
-| Claim | Verification | Result |
-|-------|-------------|--------|
-| Industry FE: `other_effects=df_panel["ff12_code"]`, `entity_effects=False`, `time_effects=True` | Runner lines 287-295: `PanelOLS(entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"], drop_absorbed=True, check_rank=False)` | PASS |
-| Firm FE: `EntityEffects` in `PanelOLS.from_formula()` with `TimeEffects` | Runner lines 298-300: `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`, `PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)` | PASS |
-| `time_effects=True` for both paths | API path: explicit. Formula path: via `+ TimeEffects`. | PASS |
-| `drop_absorbed=True` for all specifications | Runner line 293 (API path) and line 300 (formula path). Both True. | PASS |
-| `check_rank=False` for industry FE; default for firm FE | Runner line 294: `check_rank=False` (industry path only). Formula path does not specify `check_rank`, so defaults. | PASS |
-| R-squared: overall R2 + manual Adj R2 = 1 - (1-R2)*(nobs-1)/df_resid | Runner line 307: `model.rsquared` and `1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid`. | PASS |
+### K1 — PanelOLS Specifics
 
-### K2-K6: All marked N/A. Correct (model family is PanelOLS only).
+**Entity effects (Industry FE)**:
+- Doc: `other_effects=df_panel["ff12_code"]` with `entity_effects=False, time_effects=True`
+- Code lines 287-293: `PanelOLS(entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"])`
+- **PASS**
 
-**Phase 9 Result: 6/6 PASS.**
+**Entity effects (Firm FE)**:
+- Doc: `EntityEffects` in `PanelOLS.from_formula()` with `TimeEffects`
+- Code lines 298-300: `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` followed by `PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)`
+- **PASS**
+
+**Time effects**:
+- Doc: `time_effects=True` for both paths; cal_yr for YrFE specs; cal_yr_qtr for YQ specs
+- Code: industry path has explicit `time_effects=True` (line 291); firm path uses `TimeEffects` keyword in formula (line 299); time index set via `set_index(["gvkey", time_col])` (line 283) where time_col switches per spec
+- **PASS**
+
+**drop_absorbed**:
+- Doc: True for all specifications
+- Code: line 293 (industry path) and line 300 (firm path) both have `drop_absorbed=True`
+- **PASS**
+
+**check_rank**:
+- Doc: False for industry FE (API path); default for firm FE (formula path)
+- Code: line 294 has `check_rank=False` in industry path; no check_rank argument in firm path (line 300)
+- **PASS**
+
+**Singleton handling**:
+- Doc: Default PanelOLS behavior via drop_absorbed=True
+- Code: No explicit singleton handling; drop_absorbed=True handles absorbed parameters
+- **PASS**
+
+**R-squared reporting**:
+- Doc: Overall R² (model.rsquared) + manually computed Adj R²: `1 - (1-R2)*(nobs-1)/df_resid`
+- Code lines 307 and 318: `model.rsquared` and `1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid`
+- **PASS**
+
+**K2-K6**: All N/A. Correct — suite uses PanelOLS only.
+
+**Phase 9: PASS — 7/7**
 
 ---
 
@@ -439,104 +611,135 @@ Note: H17 entry has no `key_vars` or `key_tails` fields, which is correct -- onl
 
 | # | Quality Gate | Met? | Evidence |
 |---|-------------|------|----------|
-| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | **Yes** | All 22 variables verified in Phase 6 with formulas and sources |
-| 2 | The model equation matches what the code actually estimates | **Yes** | Phase 3 B1-CHECK confirmed all terms present |
-| 3 | The specification register accounts for every model column | **Yes** | Phase 4: 12 rows match 12 MODEL_SPECS entries |
-| 4 | The attrition cascade has row counts for each filter step | **No** | Section D2 has filter descriptions but no row count columns (Rows Before/Rows After/Dropped). Doc defers to runtime model_diagnostics.csv. |
-| 5 | The tail test direction matches between runner code and generate_all_tables.py | **Yes** | Phase 8: "two" in both; runner line 30 confirms |
-| 6 | The FE specification matches between docstring, code, and this document | **Yes** | Runner docstring (lines 21-22, 38), code (lines 263, 283, 287-301), doc Section B5 -- all consistent |
-| 7 | Every merge in the panel builder is documented with join keys and type | **Yes** | Phase 7 F3: all 5 merge operations documented with correct keys |
-| 8 | The output file list matches what the runner actually writes | **Yes** | Phase 7 G1+G2: all files verified, none missing, none extra |
-| 9 | The model-family addendum is filled for the correct family only | **Yes** | Phase 9: K1 (PanelOLS) filled, K2-K6 marked N/A |
-| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | **Yes** | No [UNVERIFIED] claims exist in the document |
+| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | PARTIAL | fyearq_int is a required non-null column (runner line 215) not in the dict. 24/25 required variables covered. |
+| 2 | The model equation matches what the code actually estimates | YES | B1 equations verified against exog construction and FE paths in runner |
+| 3 | The specification register accounts for every model column | YES | 12 rows in C verified against 12 MODEL_SPECS entries; all fields match |
+| 4 | The attrition cascade has row counts for each filter step | PARTIAL | Counts correctly marked [UNVERIFIED]; but cascade shows 5 steps while actual output CSV has 4 stages (complete-case + min-calls combined) |
+| 5 | The tail test direction matches between runner code and generate_all_tables.py | YES | Runner docstring: "Two-tailed"; generate_all_tables: "tail": "two"; _sig_stars uses two-tailed thresholds |
+| 6 | The FE specification matches between docstring, code, and this document | YES | Docstring (lines 17-22), code (lines 263-301), doc (B5, K1) all agree |
+| 7 | Every merge in the panel builder is documented with join keys and type | YES | F3 documents all 5 merge operations with correct keys and join types |
+| 8 | The output file list matches what the runner actually writes | YES | G1 (3 files) and G2 (8 file types) verified against all write operations in runner/builder |
+| 9 | The model-family addendum is filled for the correct family only | YES | K1 (PanelOLS) filled with all sub-checks; K2-K6 all N/A |
+| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | YES | All 15 [UNVERIFIED] cells in D2 explained as "runtime-dependent; see sample_attrition.csv" |
 
-**Phase 10 Result: 9/10 PASS, 1 FAIL (QG#4).**
+**Phase 10: 8/10** (QG-1 partial: fyearq_int gap; QG-4 partial: stage count mismatch)
 
 ---
 
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
-### 1. DVs in Section B2 match Section C (spec register)?
-- B2: RepurchaseIntensity, RepurchaseIntensity_lead_qtr.
-- C: Cols 1-6 = RepurchaseIntensity, Cols 7-12 = RepurchaseIntensity_lead_qtr.
-- **CONSISTENT.** PASS.
+### Check 1: DVs in B2 match DVs in C
+B2: RepurchaseIntensity, RepurchaseIntensity_lead_qtr.
+C: cols 1-6 DV = RepurchaseIntensity; cols 7-12 DV = RepurchaseIntensity_lead_qtr.
+**PASS**
 
-### 2. DVs in Section C match Section I (table generator)?
-- C: RepurchaseIntensity (6 cols), RepurchaseIntensity_lead_qtr (6 cols).
-- I: `"dvs": [("RepurchaseIntensity", 6), ("RepurchaseIntensity\_lead\_qtr", 6)]`.
-- **CONSISTENT.** PASS.
+### Check 2: DVs in C match DVs in I
+C: RepurchaseIntensity (6 cols) + RepurchaseIntensity_lead_qtr (6 cols).
+I: `("RepurchaseIntensity", 6), (r"RepurchaseIntensity\_lead\_qtr", 6)`.
+**PASS**
 
-### 3. Controls in Section B4 match Section E (variable dictionary)?
-- B4 Base: Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV.
-- B4 Extended adds: SalesGrowth, RD_Intensity, CashFlow, Volatility.
-- E: All 13 control variables present with formulas + Lagged_DV source (RepurchaseIntensity_lag).
-- **CONSISTENT.** PASS.
+### Check 3: Controls in B4 match variables in E
+B4 Base 9 controls: all 9 appear in E with formulas. B4 Extended +4: SalesGrowth, RD_Intensity, CashFlow, Volatility all in E.
+Lagged_DV and RepurchaseIntensity_lag both in E.
+**PASS**
 
-### 4. Column count in Section A matches rows in Section C?
-- A: Columns = 12.
-- C: 12 rows (cols 1-12).
-- **CONSISTENT.** PASS.
+### Check 4: Column count in A matches rows in C
+A: "Columns: 12". C table: 12 rows.
+**PASS**
 
-### 5. Column count in Section A matches "cols" in Section I?
-- A: Columns = 12.
-- I: `"cols": 12`.
-- **CONSISTENT.** PASS.
+### Check 5: Column count in A matches "cols" in I
+A: 12. I: `"cols": 12`.
+**PASS**
 
-### 6. Tail direction in Section A matches B7 matches I?
-- A: "two-tailed".
-- B7: "Direction: Two-tailed".
-- I: `"tail": "two"`, `"hyp_dir": None`.
-- **CONSISTENT.** PASS.
+### Check 6: Tail direction in A matches B7 matches I
+A: "two-tailed". B7: "Two-tailed. P-value computation: Two-tailed p-values used directly from PanelOLS output." I: `"tail": "two"`.
+**PASS**
 
-### 7. FE in Section B5 matches Section C matches Section K?
-- B5: Industry (ff12_code) for odd cols, Firm (gvkey) for even cols, Cal Yr or Cal Yr-Qtr.
-- C: Odd = Industry (FF12), Even = Firm. Cols 1-4/7-10 = Cal Yr, Cols 5-6/11-12 = Cal Yr-Qtr.
-- K1: Industry FE via `other_effects`, Firm FE via `EntityEffects`, time via `time_effects=True`.
-- **CONSISTENT.** PASS.
+### Check 7: FE in B5 matches C matches K1
+B5: Industry (ff12_code) via other_effects; Firm (gvkey) via EntityEffects; time = cal_yr or cal_yr_qtr.
+C: FE columns clearly specify Industry/Firm and Cal Yr/Cal Yr-Qtr per spec.
+K1: entity_effects=False + other_effects=ff12_code (industry); EntityEffects + TimeEffects formula (firm); time_effects=True for both; cal_yr or cal_yr_qtr as panel time index.
+All three sections consistent.
+**PASS**
 
-### 8. Panel index in Section A matches set_index in Section K?
-- A: `(gvkey, cal_yr)` for cols 1-4/7-10; `(gvkey, cal_yr_qtr)` for cols 5-6/11-12.
-- K1: `cal_yr` used as time index for Calendar Year FE; `cal_yr_qtr` for Year-Quarter FE.
-- Code: `df_panel = df_prepared.set_index(["gvkey", time_col])` where `time_col` switches.
-- **CONSISTENT.** PASS.
+### Check 8: Panel index in A matches set_index in K1
+A: "(gvkey, cal_yr) for cols 1-4, 7-10; (gvkey, cal_yr_qtr) for cols 5-6, 11-12"
+K1: "cal_yr used as panel time index for Calendar Year FE specs. cal_yr_qtr used as panel time index for Year-Quarter FE specs."
+Code (runner line 283): `df_panel = df_prepared.set_index(["gvkey", time_col])` where time_col switches per spec.
+**PASS**
 
-**Phase 11 Result: 8/8 PASS.**
+**Phase 11: PASS — 8/8**
+
+---
+
+## FAILURES (DETAILED)
+
+| # | Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
+|---|-------|-------|----------------------|-----------------|----------|-------------|
+| 1 | L | L.6 — line number for fillna(0) | "line 1053: `comp["prstkcy"].fillna(0)`" | Line 1053 = `is_q1 = comp["fqtr"] == 1`; fillna(0) is at line 1058 | Minor | Change "line 1053" to "line 1058" |
+| 2 | B2 | De-cumulation line range | "(CompustatEngine, lines 1040-1087)" | H17 extension begins at line 1045; comp.drop() runs through line 1092 | Minor | Change to "lines 1045-1092" |
+| 3 | E | Variable dictionary completeness | fyearq_int absent | Runner line 215 requires fyearq_int non-null; panel builder line 186 creates it | Minor | Add fyearq_int to dictionary as Identifier type |
+| 4 | L | Known Issues | No mention of cal_yearqtr orphan column | Panel builder line 312 creates cal_yearqtr; runner never uses it (uses cal_yr_qtr from build_cal_yr_qtr_index) | Minor | Add known issue matching H12.md Known Issue 6 |
+| 5 | D2/G | Attrition stage count | D2 table has 5 separate steps | Runner attrition_stages (lines 614-619) has 4 entries: complete-case and min-calls combined into one | Minor | Add note: actual sample_attrition.csv has 4 stages, combining steps 4-5 |
 
 ---
 
 ## CORRECTIONS REQUIRED
 
-### Correction 1: Section D2 -- Add Row Count Columns to Attrition Table
+### Correction 1: Fix line reference in L.6 (Known Issues)
 
-**Section:** D. Sample Construction > D2. Exclusion Criteria
-**Current (wrong) text:**
+**Section**: L — Known Issues, item 6, last sentence
+**Current text**: `"(line 1053: comp["prstkcy"].fillna(0))"`
+**Correct text**: `"(line 1058: comp["prstkcy"].fillna(0))"`
+**Code reference**: `_compustat_engine.py` line 1053 = `is_q1 = comp["fqtr"] == 1`; line 1058 = `comp["prstkcy"].fillna(0)` (inside the np.where for is_q1 branch).
 
+### Correction 2: Fix de-cumulation line range in B2
+
+**Section**: B2 — Dependent Variable(s), de-cumulation logic header
+**Current text**: `"De-cumulation logic (CompustatEngine, lines 1040-1087):"`
+**Correct text**: `"De-cumulation logic (CompustatEngine, lines 1045-1092):"`
+**Code reference**: `_compustat_engine.py` line 1045 = `# --- H17 extension: RepurchaseIntensity...`; lines run through `comp = comp.drop(columns=[...])` at 1087-1092. Logical block ends at 1092.
+
+### Correction 3: Add fyearq_int to Variable Dictionary (Section E)
+
+**Section**: E — Variable Dictionary, at end of FE identifier rows
+**Current text**: Table ends after `cal_yr_qtr` row.
+**Add row**:
 ```
-| Step | Filter | Description |
-|------|--------|-------------|
-| 1 | Full panel | All calls from master manifest within year range |
-| 2 | Main sample | Exclude FF12 = 8 (Utility) and FF12 = 11 (Finance) |
-| 3 | DV non-missing | Drop rows where DV ... is NaN |
-| 4 | Complete case | Drop rows where any required variable ... is NaN |
-| 5 | Min calls per firm | Require >= 5 calls per firm (gvkey) |
+| fyearq_int | Fiscal Year (integer) | Identifier | pd.to_numeric(fyearq, errors="coerce") | Panel builder: fyearq from CompustatEngine | No | Static per fiscal quarter |
 ```
+**Code reference**: Panel builder line 186: `panel["fyearq_int"] = pd.to_numeric(panel["fyearq"], errors="coerce")`. Runner line 215: `required = [..., "fyearq_int", ...]` — fyearq_int must be non-null to pass complete-case filter.
 
-**Should say instead:** Add "Rows Before", "Rows After", and "Dropped" columns per the creation prompt template. Since exact counts are runtime-dependent (the pipeline was run at a specific point in time), the doc should either:
-- (a) Include the actual counts from the most recent run, or
-- (b) Mark the counts as [UNVERIFIED -- runtime-dependent; see `sample_attrition.csv` and `model_diagnostics.csv` for actual values], which satisfies Quality Gate #10.
+### Correction 4: Add cal_yearqtr Known Issue (Section L)
 
-**Code reference:** Runner lines 614-620 call `generate_attrition_table()` which writes `sample_attrition.csv` with the actual row counts. The values passed are `full_n`, `main_n`, `n_dv_valid`, and `first["n_obs"]`. These are runtime values.
+**Section**: L — Known Issues
+**Current text**: 6 issues listed; none mentions cal_yearqtr.
+**Add** (new item 7):
+> 7. **cal_yearqtr vs cal_yr_qtr**: The panel builder's `create_lead_variables()` function (lines 311-314) creates a `cal_yearqtr` column (computed as `start_date.dt.year * 10 + start_date.dt.quarter` from start_date). This column is stored in the panel parquet but is never read by the runner. The runner independently creates `cal_yr_qtr` (and `cal_yr`, `cal_qtr`) via `build_cal_yr_qtr_index()` (panel_utils.py, called at runner line 183). Both formulas are identical, so results are unaffected. The redundant `cal_yearqtr` column appears in the panel parquet alongside the correct `cal_yr_qtr` column. This is also documented in H12.md Known Issue 6 as a pattern shared across panel builders.
+**Code reference**: Panel builder lines 311-314 create `cal_yearqtr`; runner line 183 calls `build_cal_yr_qtr_index()` which creates `cal_yr_qtr`.
 
-**Severity:** Minor. The filter descriptions and ordering are correct. Only the row count columns are missing.
+### Correction 5: Add attrition stage count note (Section D2)
+
+**Section**: D2 — Exclusion Criteria, end note paragraph
+**Current text**: "Note: Steps 3-5 are applied independently per model specification in `prepare_regression_data()`. N may vary across columns due to different DVs and different required columns (e.g., cal_yr_qtr for YQ specs)."
+**Add** after this paragraph:
+> Note on output file: The `sample_attrition.csv` and `sample_attrition.tex` files generated at runtime (runner lines 614-619) contain only 4 stages, combining steps 4 and 5 into a single entry labeled "After complete-case + min-calls (col 1)". The 5-step conceptual cascade above describes the code's filter logic; the 4-stage output table is what appears in the actual files.
+**Code reference**: Runner lines 614-619, `attrition_stages` list with 4 tuples passed to `generate_attrition_table()`.
 
 ---
 
-## ADDITIONAL NOTES (not failures)
+## ADDITIONAL OBSERVATIONS (NOT FAILURES)
 
-1. **RD_Intensity summary stats label**: The code uses `r"R\&D Intensity"` (LaTeX-escaped), while the provenance doc Section G3 shows `R&D Intensity` (unescaped). This is a rendering-level difference -- both represent the same string in LaTeX output. Not a factual error.
+1. **ROA avg_assets precision**: B4 describes "avg_assets = (atq_t + atq_{t-1}) / 2" without clarifying these are annual (Q4) atq values. The leading phrase "iby_annual (Q4)" implies annual context, so this is mildly ambiguous but consistent. No correction required.
 
-2. **LaTeX label discrepancy (informational)**: The runner's own table uses `\label{tab:h17_repurchase_intensity}` (line 382), while generate_all_tables.py uses `"label": "tab:h17"` (line 396). These are two different output contexts (runner's standalone table vs generate_all_tables regenerated table). The provenance doc correctly documents the generate_all_tables entry, which is the canonical publication label.
+2. **Builder count verification**: Doc claims "18 builders" in F1. Code has exactly 18 entries in the `builders` dict (lines 93-120): manifest + 4 IVs + repurchase_intensity + size + book_lev + tobins_q + roa + cash_holdings + capex_intensity + dividend_payer + ocf_volatility + sales_growth + rd_intensity + cash_flow + volatility. CORRECT.
 
-3. **`fyearq_int` in required columns**: The runner's `prepare_regression_data()` at line 215 includes `"fyearq_int"` in the `required` list, meaning rows with NaN `fyearq_int` are dropped at the complete-case step. This column is not used as an FE or in regressions, but it IS required for the data to pass the complete-case filter. The provenance doc does not explicitly call this out in the variable dictionary or attrition description. However, `fyearq_int` is derived from `fyearq` (panel builder line 186: `panel["fyearq_int"] = pd.to_numeric(panel["fyearq"], errors="coerce")`), and its presence is a consequence of the fiscal quarter identification needed for lead/lag construction. This is a minor documentation gap but does not affect accuracy of any regression claim.
+3. **Legacy _p_one field**: B7 and L.3 correctly identify and explain the legacy naming. Line 329 reference in B7/L.3 is accurate (`meta[f"{iv}_p_one"] = p_two  # two-tailed`). This documentation is a genuine aid to future readers.
 
-4. **`cal_yr` not in required list for non-YQ specs**: For non-YQ specifications, `cal_yr` is used as the time index (`set_index(["gvkey", "cal_yr"])`) but is NOT in the `required` list at line 215. This means rows with NaN `cal_yr` would not be filtered out at the complete-case step, but would cause issues at `set_index`. In practice, `cal_yr` is derived from `start_date.dt.year` and would only be NaN if `start_date` cannot be parsed, which would also cause other failures. This is a minor robustness note, not a provenance doc error.
+4. **Extended-only for YQ specs (cols 5-6, 11-12)**: Correctly documented in C layout note. Consistent with MODEL_SPECS entries.
+
+5. **77% zero mass point**: Correctly cited from runner docstring line 32. Noted in both L.1 and runner LaTeX notes line 483.
+
+6. **prstkcy scope (common + preferred)**: Correctly noted as L.2. Runner docstring line 33 confirms: "prstkcy includes both common AND preferred stock repurchases (standard)."
+
+7. **Inf→NaN double handling**: Doc H2 notes Inf→NaN in both CompustatEngine (line 1203-1204) and runner (line 224). Both locations verified in code. Correctly documented.

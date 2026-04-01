@@ -1,11 +1,12 @@
-# H9 Provenance Document -- Adversarial Audit Report
+# H9 Provenance Audit Report
 
-**Audit Date:** 2026-03-30
-**Auditor:** Hostile adversarial audit per `docs/Prompts/Audit Provenance doc.txt`
-**Provenance Doc:** `docs/provenance/H9.md`
-**Runner:** `src/f1d/econometric/run_h9_takeover_hazards.py`
-**Panel Builder:** `src/f1d/variables/build_h9_takeover_panel.py`
-**Method:** Manual line-by-line verification against codebase. Every claim checked against actual source files.
+**Suite:** H9 — Takeover Hazard Models  
+**Audit Date:** 2026-04-01  
+**Auditor:** Adversarial automated audit (manual line-level verification)  
+**Provenance Doc:** `docs/provenance/H9.md`  
+**Runner:** `src/f1d/econometric/run_h9_takeover_hazards.py`  
+**Panel Builder:** `src/f1d/variables/build_h9_takeover_panel.py`  
+**Audit Prompt:** `docs/Prompts/Audit Provenance doc.txt`
 
 ---
 
@@ -13,454 +14,359 @@
 
 | Category | Total Checks | Passed | Failed | Score |
 |----------|-------------|--------|--------|-------|
-| Structural Completeness (Phase 1) | 27 | 27 | 0 | 100% |
-| Suite Identity (Phase 2) | 10 | 9 | 1 | 90% |
-| Model Specification (Phase 3) | 7 | 7 | 0 | 100% |
+| Structural Completeness (Phase 1) | 27 | 26 | 1 | 96% |
+| Suite Identity (Phase 2) | 10 | 10 | 0 | 100% |
+| Model Specification (Phase 3) | 7 | 5 | 2 | 71% |
 | Spec Register (Phase 4) | 5 | 5 | 0 | 100% |
 | Sample Construction (Phase 5) | 3 | 3 | 0 | 100% |
-| Variable Dictionary (Phase 6) | 17 | 16 | 1 | 94% |
-| Pipeline/Outputs/Treatment (Phase 7) | 6 | 6 | 0 | 100% |
+| Variable Dictionary (Phase 6) | 20 | 19 | 1 | 95% |
+| Pipeline/Outputs/Treatment (Phase 7) | 10 | 8 | 2 | 80% |
 | Table Generator Entry (Phase 8) | 1 | 1 | 0 | 100% |
-| Model-Family Addendum (Phase 9) | 10 | 10 | 0 | 100% |
-| Quality Gates (Phase 10) | 10 | 10 | 0 | 100% |
+| Model-Family Addendum (Phase 9) | 10 | 9 | 1 | 90% |
+| Quality Gates (Phase 10) | 10 | 7 | 3 | 70% |
 | Cross-Reference Consistency (Phase 11) | 8 | 8 | 0 | 100% |
-| **TOTAL** | **104** | **102** | **2** | **98%** |
+| **TOTAL** | **111** | **101** | **10** | **91%** |
 
 ---
 
 ## VERDICT
 
-**PASS WITH NOTES**: Two minor issues found that do not affect factual accuracy of any regression claim or variable formula. Both are cosmetic line-number reference errors that point to the correct vicinity of the code.
-
----
-
-## FAILURES (detailed)
-
-| Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
-|-------|-------|----------------------|-----------------|----------|-------------|
-| 2 | A-4 (Direction line ref) | "runner docstring line 28" | Line 27 says "Hypothesis Tests (two-sided inference):"; line 28 is the H9-A hypothesis | Minor | Update line reference from 28 to 27 |
-| 6 | Variable Dict: Takeover_Uninvited source | "Derived in runner line 287" | Runner line 287: correct. But panel builder also creates these at lines 362-367. Doc omits the panel builder derivation. | Minor | Note that cause-specific indicators are created in BOTH the panel builder (lines 362-367) AND re-derived in the runner (lines 287-288, with BUG FIX) |
+**FAIL — INACCURATE**: Factual errors found. The document is structurally complete and largely accurate, but contains verified factual errors including a materially wrong claim about standard error computation, incorrect line citations, and an undisclosed conditional output.
 
 ---
 
 ## PHASE 1: STRUCTURAL COMPLETENESS
 
-Read the creation prompt (`docs/Prompts/Suite Provenance Doc.txt`) to extract required sections A through L. Then checked `docs/provenance/H9.md` for each.
+Read `docs/Prompts/Suite Provenance Doc.txt` to identify all required sections.
 
 | Section | Required by Prompt | Present in Doc | Complete | Notes |
 |---------|-------------------|----------------|----------|-------|
-| A. Suite Identity | Yes | Yes | Yes | YAML header block with all required fields |
-| B. Model Specification | Yes | Yes | Yes | All subsections present |
-| B1. Regression Equation | Yes | Yes | Yes | Cox PH equation in LaTeX, unstratified + stratified forms |
-| B2. Dependent Variable(s) | Yes | Yes | Yes | Table with 5 entries (3 event indicators + start/stop) |
-| B3. Independent Variable(s) | Yes | Yes | Yes | 3 clarity variants documented with known ClarityCEO issue |
-| B4. Control Variables | Yes | Yes | Yes | Sparse and Expanded tables, note on no Lagged_DV |
-| B5. Fixed Effects | Yes | Yes | Yes | Stratification table (4 configurations) |
-| B6. Standard Errors | Yes | Yes | Yes | Robust sandwich via lifelines |
-| B7. Hypothesis Test | Yes | Yes | Yes | Two-sided, HR interpretation, H9-B note |
-| C. Spec Register | Yes | Yes | Yes | 36-row model register (3 x 3 x 4) |
-| D. Sample Construction | Yes | Yes | Yes | D1, D2, D3 all present |
-| D1. Population | Yes | Yes | Yes | Starting dataset, counts, year range |
-| D2. Exclusion Criteria | Yes | Yes | Yes | Stage 3 and Stage 4 attrition tables |
-| D3. Sample Counts per Spec | Yes | Yes | Yes | Per-variant table with N, firms, events, EPV |
-| E. Variable Dictionary | Yes | Yes | Yes | 15 variable rows with formulas and sources |
-| F. Data Pipeline | Yes | Yes | Yes | F1, F2, F3 all present |
-| F1. Dependency Chain | Yes | Yes | Yes | 7-step chain from raw inputs to table generation |
-| F2. Data Engines | Yes | Yes | Yes | 6-engine table |
-| F3. Merge Operations | Yes | Yes | Yes | Panel builder merges + TakeoverIndicatorBuilder internal merges |
-| G. Outputs | Yes | Yes | Yes | G1, G2, G3 all present |
-| G1. Stage 3 Outputs | Yes | Yes | Yes | 5 files listed |
-| G2. Stage 4 Outputs | Yes | Yes | Yes | 21 files listed |
-| G3. Summary Statistics | Yes | Yes | Yes | Variable list and metrics documented |
-| H. Outlier/Missing Treatment | Yes | Yes | Yes | H1, H2, H3 all present |
-| I. generate_all_tables Entry | Yes | Yes | Yes | Correctly states no entry exists |
-| J. Reproduction Commands | Yes | Yes | Yes | Stage 3, Stage 4, and optional arguments |
-| K. Model-Family Addendum | Yes | Yes | Yes | K2 (Cox PH) filled; K1, K3, K4, K5, K6 all marked N/A |
+| A. Suite Identity | Yes | Yes | Yes | Complete YAML block present |
+| B. Model Specification | Yes | Yes | Yes | All sub-sections present |
+| B1. Regression Equation | Yes | Yes | Yes | Cox PH equation in LaTeX |
+| B2. Dependent Variable(s) | Yes | Yes | Yes | Event/duration vars documented |
+| B3. Independent Variable(s) | Yes | Yes | Yes | 3 clarity variants documented |
+| B4. Control Variables | Yes | Yes | Yes | Sparse + Expanded blocks documented |
+| B5. Fixed Effects | Yes | Yes | Yes | Stratification documented (Cox PH adapted) |
+| B6. Standard Errors | Yes | Yes | **Inaccurate** | Present but factually wrong — see Phase 3 |
+| B7. Hypothesis Test | Yes | Yes | **Minor error** | Line citation off by one |
+| C. Spec Register | Yes | Yes | Yes | 36-model register with all statuses |
+| D. Sample Construction | Yes | Yes | Yes | Both stage 3 and stage 4 attrition |
+| D1. Population | Yes | Yes | Yes | Starting counts documented |
+| D2. Exclusion Criteria | Yes | Yes | Partial | Builder steps 2-4 lack exact row counts; say "Logged in builder" |
+| D3. Sample Counts per Spec | Yes | Yes | Yes | Per-variant table present |
+| E. Variable Dictionary | Yes | Yes | Yes | 20 variables with formulas |
+| F. Data Pipeline | Yes | Yes | Yes | All 3 sub-sections present |
+| F1. Dependency Chain | Yes | Yes | Yes | 7-step chain documented |
+| F2. Data Engines | Yes | Yes | Yes | All engines listed |
+| F3. Merge Operations | Yes | Yes | Yes | Builder and TakeoverIndicatorBuilder merges |
+| G. Outputs | Yes | Yes | Yes | All sub-sections present |
+| G1. Stage 3 Outputs | Yes | Yes | Partial | `dropped_event_firms.csv` listed but conditional; not disclosed |
+| G2. Stage 4 Outputs | Yes | Yes | Yes | All 22 output files listed and verified |
+| G3. Summary Statistics | Yes | Yes | Yes | Variables listed, metrics named |
+| H. Outlier/Missing Treatment | Yes | Yes | Yes | All 3 sub-sections present |
+| I. generate_all_tables Entry | Yes | Yes | Yes | Correctly states "no entry" with evidence |
+| J. Reproduction Commands | Yes | Yes | Yes | Full bash commands with optional args |
+| K. Model-Family Addendum | Yes | Yes | Yes | K2 filled, K1/K3/K4/K5/K6 all N/A |
 | L. Known Issues | Yes | Yes | Yes | 11 issues documented |
 
-**Phase 1 Result: 27/27 PASS.** All required sections exist and contain substantive content. No placeholder text found.
+**Phase 1 Summary:** One structural deficiency in G1: `dropped_event_firms.csv` is presented as a definitive output when it is written conditionally (only when SDC event firms are absent from the panel AND `out_dir is not None`; builder lines 492-496).
 
 ---
 
-## PHASE 2: FACTUAL ACCURACY -- SECTION A (Suite Identity)
+## PHASE 2: SUITE IDENTITY (Section A)
 
-### A-1. Suite ID
-- **Doc claims:** H9
-- **Verification:** Trivially correct. Runner docstring line 5: "ID: econometric/run_h9_takeover_hazards"
-- **PASS**
+**A-1. Suite ID:** "H9" — trivially correct. PASS
 
-### A-2. Title
-- **Doc claims:** "Takeover Hazard Models"
-- **Verification:** Runner docstring line 4: "H9: Takeover Hazard Models"; runner line 217: `description="H9: Takeover Hazard Models"`
-- **PASS**
+**A-2. Title:** Doc says "Takeover Hazard Models". Runner docstring line 3: "H9: Takeover Hazard Models". PASS
 
-### A-3. Hypothesis
-- **Doc claims:** "Does clarity in speech increase the likelihood of receiving a takeover bid, especially an uninvited (hostile/unsolicited) bid? H9-A: beta(Clarity) < 0 ... H9-B: beta(Clarity, uninvited) < beta(Clarity, friendly)"
-- **Verification:** Runner docstring lines 10-11: "Does clarity in speech increase the likelihood of receiving a takeover bid, especially an UNINVITED bid?"; lines 28-30: H9-A and H9-B hypotheses match.
-- **PASS**
+**A-3. Hypothesis:** Doc says "Does clarity in speech increase the likelihood of receiving a takeover bid, especially an uninvited (hostile/unsolicited) bid? H9-A: beta(Clarity) < 0... H9-B: beta(Clarity, uninvited) < beta(Clarity, friendly)". Runner docstring lines 10-13 say identical content. PASS
 
-### A-4. Direction (tail test)
-- **Doc claims:** "Two-sided inference (runner docstring line 28)"
-- **Verification:** Runner docstring line 27: "Hypothesis Tests (two-sided inference):". Line 28 is "H9-A: beta(Clarity) < 0 ...". The direction claim is correct (two-sided), but the line reference is off by one -- should be line 27, not line 28.
-- **FAIL (minor)** -- Line reference should be 27, not 28. The factual claim (two-sided) is correct.
+**A-4. Direction (tail test):** Doc says "Two-sided inference (runner docstring line 27)". Runner line 27: "Hypothesis Tests (two-sided inference):". PASS
 
-### A-5. Model Family
-- **Doc claims:** "Cox Proportional Hazards (time-varying covariates)"
-- **Verification:** Runner line 100: `from lifelines import CoxTimeVaryingFitter`. Used throughout `run_cox_tv()` (line 475).
-- **PASS**
+**A-5. Model Family:** Doc says "Cox Proportional Hazards (time-varying covariates)". Runner line 100: `from lifelines import CoxTimeVaryingFitter`. PASS
 
-### A-6. Estimator
-- **Doc claims:** "lifelines.CoxTimeVaryingFitter"
-- **Verification:** Runner line 100: `from lifelines import CoxTimeVaryingFitter`; line 475: `ctv = CoxTimeVaryingFitter()`.
-- **PASS**
+**A-6. Estimator:** Doc says "lifelines.CoxTimeVaryingFitter". Runner line 100 confirms. PASS
 
-### A-7. Unit of Observation
-- **Doc claims:** "Call-to-call interval (counting-process format)"
-- **Verification:** Panel builder docstring: "Each row represents one risk interval that opens at an earnings call and closes at the earliest of: (a) next earnings call date for the same firm, (b) takeover announcement date, (c) administrative censor date". Runner line 231: "Load call-to-call counting-process takeover panel."
-- **PASS**
+**A-7. Unit of Observation:** Doc says "Call-to-call interval (counting-process format)". Builder docstring: "Each row represents one risk interval that opens at an earnings call and closes at the earliest of: (a) next earnings call... (b) takeover announcement date... (c) administrative censor date". PASS
 
-### A-8. Panel Index
-- **Doc claims:** "(gvkey, start/stop) -- not a standard panel index; intervals defined by (start, stop] in days since 2000-01-01"
-- **Verification:** Runner line 478: `id_col="gvkey"`, lines 479-480: `start_col=START_COL, stop_col=STOP_COL`. No `set_index()` call; CoxTimeVaryingFitter uses `id_col`/`start_col`/`stop_col` parameters directly.
-- **PASS**
+**A-8. Panel Index:** Doc says "(gvkey, start/stop)". Runner uses `id_col="gvkey"`, `start_col=START_COL`, `stop_col=STOP_COL` at lines 478-480. PASS
 
-### A-9. Columns (number of model specs)
-- **Doc claims:** "Non-tabular -- 3 event types x 3 clarity variants x 4 control configurations = up to 36 model fits"
-- **Verification:** Runner code: 3 model_defs (lines 741-745: All, Uninvited, Friendly) x 3 MODEL_VARIANTS (lines 177-195: CEO, CEO_Residual, Manager_Residual) x 4 control blocks (sparse at line 836, expanded at line 850, strata_year at line 865, strata_industry at line 880) = 36 total model fits. Doc's arithmetic is correct.
-- **PASS**
+**A-9. Columns (number of model specs):** Doc says "Non-tabular -- 3 event types x 3 clarity variants x 4 control configurations = up to 36 model fits". Runner has 3 `model_defs`, 3 `MODEL_VARIANTS`, and 4 execution blocks (lines 836-893) = 36 fits. PASS
 
-### A-10. Runner and Panel Builder paths
-- **Doc claims:** Runner: `src/f1d/econometric/run_h9_takeover_hazards.py`; Panel Builder: `src/f1d/variables/build_h9_takeover_panel.py`
-- **Verification:** Both files exist on disk and have been read.
-- **PASS**
-
-**Phase 2 Result: 9/10 PASS, 1 FAIL (minor line reference).**
+**A-10. Runner and Panel Builder paths:**
+- `src/f1d/econometric/run_h9_takeover_hazards.py` — verified exists.
+- `src/f1d/variables/build_h9_takeover_panel.py` — verified exists.
+PASS
 
 ---
 
-## PHASE 3: FACTUAL ACCURACY -- SECTION B (Model Specification)
+## PHASE 3: MODEL SPECIFICATION (Section B)
 
 ### B1-CHECK: Regression Equation
-- **Doc claims:** Cox PH hazard function with time-varying covariates: `h_i(t | X_i(t)) = h_0(t) * exp(beta1 * Clarity + gamma * Controls)`, plus stratified version with `h_{0,s}(t)`.
-- **Verification:** Runner `run_cox_tv()` line 482: `formula=" + ".join(covariates)`. Covariates = [clarity_var] + controls (lines 760-761). CoxTimeVaryingFitter estimates the partial likelihood Cox model. Stratified version uses `strata=` parameter (line 483). Equation correctly represents the code.
-- **PASS**
 
-### B2-CHECK: Dependent Variables
-- **Doc lists:** Takeover, Takeover_Uninvited, Takeover_Friendly, start, stop
-- **Verification:**
-  - `Takeover` (EVENT_ALL_COL, runner line 200) -- used as event_col in Cox PH All models.
-  - `Takeover_Uninvited` (EVENT_UNINVITED_COL, runner line 201) -- used in cause-specific Uninvited models.
-  - `Takeover_Friendly` (EVENT_FRIENDLY_COL, runner line 202) -- used in cause-specific Friendly models.
-  - `start` (START_COL = "start", runner line 198) -- used as start_col in CoxTimeVaryingFitter.fit().
-  - `stop` (STOP_COL = "stop", runner line 199) -- used as stop_col.
-  - Event definitions match: Takeover=1 only when bid falls in (call_date, stop_date] (builder line 336). Cause-specific indicators correctly defined at runner lines 287-288.
-  - No DVs missing from doc.
-- **PASS**
+Doc presents:
+```
+h_i(t | X_i(t)) = h_0(t) * exp(β1 * Clarity_{i,t} + γ * Controls_{i,t})
+```
+And the stratified variant with `h_{0,s}(t)`.
 
-### B3-CHECK: Independent Variables
-- **Doc lists:** ClarityCEO, CEO_Clarity_Residual, Manager_Clarity_Residual
-- **Verification:** MODEL_VARIANTS (runner lines 177-195) has exactly these three clarity variables: CEO -> ClarityCEO, CEO_Residual -> CEO_Clarity_Residual, Manager_Residual -> Manager_Clarity_Residual.
-  - ClarityCEO source: clarity_scores.parquet (builder line 123-126).
-  - CEO_Clarity_Residual source: CEOClarityResidualBuilder (builder line 186).
-  - Manager_Clarity_Residual source: ManagerClarityResidualBuilder (builder line 187).
-  - No centering documented, none applied in code. Correct.
-  - No IVs in code missing from doc.
-- **PASS**
+Runner line 482: `formula=" + ".join(covariates)` where `covariates = [clarity_var] + controls`. The formula construction matches Cox PH. Strata confirmed by `strata=strata` at line 483. Doc cites "lines 396-504 (run_cox_tv function)". Verified: `run_cox_tv` starts at line 396, return at line 504. PASS
+
+### B2-CHECK: Dependent Variable(s)
+
+- `Takeover`: builder line 336 `df["Takeover"] = tk_in_interval.astype(int)`. PASS
+- `Takeover_Uninvited`: builder lines 362-364 (after interval cap), runner line 287. PASS
+- `Takeover_Friendly`: builder lines 365-367, runner line 288. PASS
+- `start`: builder line 339 `df["start"] = (df["call_date"] - REFERENCE_DATE).dt.days`. REFERENCE_DATE = `pd.Timestamp("2000-01-01")` at builder line 98. PASS
+- `stop`: builder lines 323-324 (fillna and cap to censor_date), line 333 (truncate at takeover_date), line 340 (convert to days). PASS
+
+### B3-CHECK: Independent Variable(s)
+
+Runner `MODEL_VARIANTS` (lines 177-195):
+- `"CEO"`: `clarity_var: "ClarityCEO"` PASS
+- `"CEO_Residual"`: `clarity_var: "CEO_Clarity_Residual"` PASS
+- `"Manager_Residual"`: `clarity_var: "Manager_Clarity_Residual"` PASS
+
+Doc notes ClarityCEO 0% coverage. Runner skips models at MIN_OBS=50 check (lines 207, 448). PASS
 
 ### B4-CHECK: Control Variables
-- **Doc claims:** Sparse = Size, BM, BookLev, ROA, CashHoldings; Expanded = Sparse + SalesGrowth, Intangibility, AssetGrowth; No Lagged_DV.
-- **Verification:**
-  - SPARSE_CONTROLS (runner lines 130-136): ["Size", "BM", "BookLev", "ROA", "CashHoldings"]. Matches.
-  - EXPANDED_CONTROLS (runner lines 139-143): SPARSE_CONTROLS + ["SalesGrowth", "Intangibility", "AssetGrowth"]. Matches.
-  - No Lagged_DV in code. Correct -- Cox PH has no traditional DV to lag.
-  - Note: doc mentions "BookLev" as "Book leverage (interest-bearing debt)" with formula "(dlcq + dlttq) / atq" while runner docstring line 33 says "Lev". The code uses "BookLev" (line 133). The provenance doc correctly uses the code name "BookLev", not the docstring abbreviation "Lev". Good.
-- **PASS**
+
+Runner SPARSE_CONTROLS (lines 130-136): `["Size", "BM", "BookLev", "ROA", "CashHoldings"]`
+Runner EXPANDED_CONTROLS (lines 139-143): SPARSE_CONTROLS + `["SalesGrowth", "Intangibility", "AssetGrowth"]`
+
+Doc documents exactly these variables in correct blocks. Doc cites "lines 130-143" which is correct. PASS
+
+No Lagged_DV — correct for Cox PH. PASS
 
 ### B5-CHECK: Fixed Effects / Stratification
-- **Doc claims:** 4 configurations: Unstratified (sparse), Unstratified (expanded), Year-stratified (strata="year"), Industry-stratified (strata="ff12_code").
-- **Verification:**
-  - Unstratified sparse: lines 836-848 (strata not passed, defaults to None).
-  - Unstratified expanded: lines 850-863 (strata not passed).
-  - Year-stratified: lines 865-878, `strata="year"` (line 877).
-  - Industry-stratified: lines 880-893, `strata="ff12_code"` (line 892).
-  - Matches exactly.
-- **PASS**
 
-### B6-CHECK: Standard Errors
-- **Doc claims:** lifelines CoxTimeVaryingFitter uses robust sandwich variance estimator by default; id_col="gvkey" identifies subjects; no explicit cov_type argument.
-- **Verification:** Runner line 475: `ctv = CoxTimeVaryingFitter()` -- no cov_type parameter. Line 478: `id_col="gvkey"`. lifelines documentation confirms robust variance estimation is default for CoxTimeVaryingFitter. No clustering parameter is explicitly set.
-- **PASS**
+Doc documents 4 stratification configurations mapping to 4 runner blocks:
+- Block A (sparse, no strata): lines 836-848
+- Block C (expanded, no strata): lines 850-863
+- Block D (strata="year"): lines 865-878, strata="year" at line 877
+- Block E (strata="ff12_code"): lines 880-893, strata="ff12_code" at line 892
 
-### B7-CHECK: Hypothesis Test
-- **Doc claims:** Two-sided inference; lifelines reports two-sided p-values from Wald z-test; standard significance thresholds; HR interpretation documented; H9-B evaluated descriptively, no formal cross-model test.
-- **Verification:**
-  - Runner docstring line 27: "two-sided inference". Correct.
-  - No conversion from two-tailed to one-tailed in the code. lifelines reports two-sided p-values natively.
-  - Runner lines 602-606: H9-B evaluation described as descriptive, not formal.
-  - No explicit significance threshold code; standard *** < 0.01, ** < 0.05, * < 0.10 assumed by table generator.
-  - All claims verified.
-- **PASS**
+All verified. Doc citation "lines 865-893" is accurate. PASS
 
-**Phase 3 Result: 7/7 PASS.**
+### B6-CHECK: Standard Errors — **FAIL**
 
----
+**CRITICAL ERROR.** Doc claims:
 
-## PHASE 4: FACTUAL ACCURACY -- SECTION C (Spec Register)
+> "lifelines.CoxTimeVaryingFitter uses the **robust sandwich variance estimator** by default, which accounts for within-subject correlation in the counting-process format."
 
-### Row count
-- **Doc claims:** 36 model fits (3 event types x 3 clarity variants x 4 control configurations).
-- **Verification:** The spec register table in the provenance doc has exactly 36 rows (Model IDs 1-36). The runner loops: 3 model_defs x 3 MODEL_VARIANTS x 4 blocks (sparse, expanded, strata_year, strata_industry) = 36. **PASS**
+**Code evidence:**
+- Runner line 475: `ctv = CoxTimeVaryingFitter()` — no `robust` parameter.
+- Runner lines 476-484: `ctv.fit(df_clean, id_col="gvkey", start_col=START_COL, stop_col=STOP_COL, event_col=event_col, formula=..., strata=strata)` — no `robust` parameter.
 
-### DV correctness per spec
-- IDs 1-3 (sparse, All): event_col = Takeover. **PASS**
-- IDs 4-6 (sparse, Uninvited): event_col = Takeover_Uninvited. **PASS**
-- IDs 7-9 (sparse, Friendly): event_col = Takeover_Friendly. **PASS**
-- Pattern continues correctly for expanded (10-18), strata_year (19-27), strata_industry (28-36). **PASS**
+The lifelines library requires `robust=True` to be explicitly passed to `CoxTimeVaryingFitter()` to activate robust sandwich variance estimation. Without it, the standard (inverse information matrix) variance estimator is used. The code does NOT pass `robust=True`.
 
-### Clarity variant correctness
-- CEO models (IDs 1,4,7,10,13,16,19,22,25,28,31,34): clarity_var = ClarityCEO. **PASS**
-- CEO_Residual models (IDs 2,5,8,11,14,17,20,23,26,29,32,35): clarity_var = CEO_Clarity_Residual. **PASS**
-- Manager_Residual models (IDs 3,6,9,12,15,18,21,24,27,30,33,36): clarity_var = Manager_Clarity_Residual. **PASS**
+The additional statement "lifelines handles this internally through the counting-process likelihood which conditions on the risk set at each event time" conflates the partial likelihood computation (correct description of Cox PH) with variance estimation (a separate step). These are distinct. FAIL
 
-### Strata correctness
-- IDs 1-18: Strata = None. **PASS**
-- IDs 19-27: Strata = year. **PASS**
-- IDs 28-36: Strata = ff12_code. **PASS**
+### B7-CHECK: Hypothesis Test — **Minor FAIL**
 
-### No missing or extra specs
-- All 36 combinations are accounted for. No spec in code is missing from the table. No table row lacks a corresponding code path. **PASS**
+Doc says "two-sided inference (runner docstring line 28: 'two-sided inference')".
 
-**Phase 4 Result: 5/5 PASS.**
+**Code evidence:** Runner line 27 (not 28) says "Hypothesis Tests (two-sided inference):". Line 28 says "    H9-A: beta(Clarity) < 0 (clearer CEOs have lower takeover hazard)".
+
+Line citation is off by one. MINOR FAIL
+
+Doc says "lifelines reports two-sided p-values by default from the Wald z-test". This is correct for lifelines CoxTimeVaryingFitter. PASS
 
 ---
 
-## PHASE 5: FACTUAL ACCURACY -- SECTION D (Sample Construction)
+## PHASE 4: SPEC REGISTER (Section C)
+
+**Count check:** Doc has 36 model rows (IDs 1-36) = 3 event types × 3 clarity variants × 4 control configs. PASS
+
+**Configuration verification:**
+- 3 event types (All/Uninvited/Friendly): runner `model_defs` lines 741-745. PASS
+- 3 clarity variants (CEO/CEO_Residual/Manager_Residual): runner `MODEL_VARIANTS` lines 177-195. PASS
+- 4 control configs (Sparse-None, Expanded-None, Sparse-year, Sparse-ff12_code): runner blocks A-E. PASS
+
+**CEO skipping:** 12 CEO slots (IDs 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34). 3 event types × 4 control configs = 12. IDs match. PASS
+
+**EPV values:** CEO_Residual sparse All: 78/6 = 13.0; Manager_Residual sparse All: 101/6 = 16.83 ≈ 16.8. Both match doc. PASS
+
+---
+
+## PHASE 5: SAMPLE CONSTRUCTION (Section D)
 
 ### D1-CHECK: Population
-- **Doc claims:** Starting dataset: master_sample_manifest.parquet; 112,968 calls; 2,429 firms; 2002-2018; after interval construction: 107,644 intervals from 2,410 firms.
-- **Verification:** Project scope (from memory) confirms 112,968 calls, 2,429 firms, 2002-2018. The 107,644 interval count and 2,410 firm count come from runtime output (run_log.txt). Plausible: some calls are removed (post-takeover calls, zero-duration intervals) reducing from ~112K calls to ~107K intervals, and a few firms may be fully dropped.
-- **PASS**
+
+Doc says "Total calls: 112,968; Unique firms: 2,429; Year range: 2002-2018." Matches project scope in memory. PASS
+
+Doc says "107,644 intervals from 2,410 firms" after panel builder. Sourced from run artifacts. PASS (plausible)
 
 ### D2-CHECK: Exclusion Criteria
-- **Doc claims:** Stage 3 attrition: (1) full panel 107,644, (2) post-takeover removal, (3) zero/negative duration removal, (4) interval cap at 1,461 days. Stage 4: (1) full panel 107,644, (2) Main sample ex-FF12=8,11 -> 84,104, (3) complete-case CEO_Residual -> 36,860, (3) complete-case Manager_Residual -> 50,628.
-- **Verification against code:**
-  - Stage 3: Builder lines 304-316 (post-takeover removal), 373-377 (zero/negative duration removal), 343-359 (interval cap). Order matches.
-  - Stage 4: Runner line 277 (`~panel["ff12_code"].isin(MAIN_SAMPLE_EXCLUDE_FF12)`); lines 441-444 (dropna on start, stop, event_col + covariates). The attrition numbers come from runtime output (sample_attrition.csv). Structure matches the code pipeline.
-- **PASS**
 
-### D3-CHECK: Sample Counts per Model Variant
-- **Doc claims:** CEO: 0 obs (skipped); CEO_Residual: 36,860 intervals, 1,272 firms, 78 events, EPV 13.0; Manager_Residual: 50,628 intervals, 1,488 firms, 101 events, EPV 16.8.
-- **Verification:** These numbers come from variant_sample_chars.csv (runtime output). EPV computation verified against code: runner lines 784-785 (`epv = n_event_firms / n_covariates`). For sparse controls: 6 covariates (1 clarity + 5 controls). CEO_Residual: 78/6 = 13.0. Manager_Residual: 101/6 = 16.83. Both match. CEO 0 obs is the known ClarityCEO blocker.
-- **PASS**
+Builder-level filters:
+1. `call_date` NaN removal: builder line 287. Documented implicitly.
+2. Post-takeover removal: mask at lines 304-312. Doc Step 2 correct.
+3. Zero-duration removal: lines 373-377. Doc Step 3 correct.
+4. Interval cap at 1,461 days: lines 342-359. Doc Step 4 correct.
 
-**Phase 5 Result: 3/3 PASS.**
+**PARTIAL:** Steps 2-4 show "Logged in builder" / "Varies" for row counts. Exact counts are available at runtime but not populated in the doc. Quality Gate 4 failure — see Phase 10.
 
----
+Runner-level filters:
+- FF12 exclusion (8 and 11): runner line 277. Doc confirms. PASS
+- Complete-case deletion per variant: line 443. Doc confirms. PASS
 
-## PHASE 6: FACTUAL ACCURACY -- SECTION E (Variable Dictionary)
+### D3-CHECK: Sample Counts per Spec
 
-Checked every row of the Variable Dictionary table against the actual code.
-
-### Takeover (Event)
-- **Formula:** "1 if firm received any bid (Completed/Withdrawn/Pending) from US public acquirer in interval"
-- **Code:** Builder line 336: `df["Takeover"] = tk_in_interval.astype(int)` where `tk_in_interval` requires bid in (call_date, stop_date]. TakeoverIndicatorBuilder line 128: `sdc["Deal Status"].isin(["Completed", "Withdrawn", "Pending"])`.
-- **Source:** SDC M&A. Correct.
-- **PASS**
-
-### Takeover_Uninvited (Event)
-- **Formula:** "1 if Takeover==1 AND Takeover_Type=='Uninvited'"
-- **Code:** Runner line 287: `df[EVENT_UNINVITED_COL] = ((df[EVENT_ALL_COL] == 1) & (df["Takeover_Type"] == "Uninvited")).astype(int)`. Matches.
-- **Source claimed:** "Derived in runner line 287". Correct, but incomplete: the panel builder ALSO creates this variable at lines 362-363: `df["Takeover_Uninvited"] = ((df["Takeover"] == 1) & (df["Takeover_Type"] == "Uninvited")).astype(int)`. The runner re-derives it with the BUG FIX (Pass 03) override. This is a minor omission -- the doc should note both derivations.
-- **FAIL (minor)**
-
-### Takeover_Friendly (Event)
-- **Formula:** "1 if Takeover==1 AND Takeover_Type=='Friendly'"
-- **Code:** Runner line 288 and builder line 365-367. Both match formula.
-- **PASS**
-
-### start (Duration)
-- **Formula:** "(call_date - 2000-01-01).days"
-- **Code:** Builder line 339: `df["start"] = (df["call_date"] - REFERENCE_DATE).dt.days` where REFERENCE_DATE = pd.Timestamp("2000-01-01") (line 98).
-- **PASS**
-
-### stop (Duration)
-- **Formula:** "min(next_call_date, takeover_date, 2018-12-31) in days since 2000-01-01"
-- **Code:** Builder lines 323-324: `df["stop_date"] = df["next_call_date"].fillna(censor_date)` then `df.loc[df["stop_date"] > censor_date, "stop_date"] = censor_date`. For event firms, line 333 truncates to takeover_date if it falls in interval. Then line 340: `df["stop"] = (df["stop_date"] - REFERENCE_DATE).dt.days`. Matches.
-- **PASS**
-
-### duration (Duration)
-- **Formula:** "stop - start"
-- **Code:** Builder line 370: `df["duration"] = df["stop"] - df["start"]`.
-- **PASS**
-
-### ClarityCEO (IV)
-- **Formula:** "CEO fixed effect from H1 clarity regression (one score per ceo_id x sample)"
-- **Code:** Builder lines 113-133: loads clarity_scores.parquet columns ["ceo_id", "sample", "ClarityCEO"]. Merged at lines 449-453 on ["ceo_id", "sample"]. Correct.
-- **PASS**
-
-### CEO_Clarity_Residual (IV)
-- **Formula:** "CEO_QA_Uncertainty_pct - predicted from H0.3 firm/linguistic controls"
-- **Code:** CEOClarityResidualBuilder imported at builder line 92. Loaded at line 186. This loads pre-computed residuals from upstream.
-- **PASS**
-
-### Manager_Clarity_Residual (IV)
-- Same structure as CEO_Clarity_Residual. ManagerClarityResidualBuilder at builder line 93, loaded at line 187.
-- **PASS**
-
-### Size (Control)
-- **Formula:** "ln(atq), atq > 0; else NaN"
-- **Code:** CompustatEngine compute_variables builds Size as ln(atq). SizeBuilder wraps this.
-- **Winsorization:** "1%/99% by fyearq" -- Code: _winsorize_by_year at line 1136 with fyearq. Size is in COMPUSTAT_COLS (line 106) and not in skip_winsorize. Correct.
-- **PASS**
-
-### BM (Control)
-- **Formula:** "ceqq / (cshoq * prccq)"
-- **Code:** CompustatEngine computes BM from these Compustat fields. Winsorized per-year. Correct.
-- **PASS**
-
-### BookLev (Control)
-- **Formula:** "(dlcq + dlttq) / atq; missing debt = 0"
-- **Code:** CompustatEngine computes BookLev. Correct.
-- **PASS**
-
-### ROA (Control)
-- **Formula:** "iby_annual / ((atq_t + atq_{t-1}) / 2)"
-- **Code:** CompustatEngine computes ROA using income before taxes and average total assets. Correct.
-- **PASS**
-
-### CashHoldings (Control)
-- **Formula:** "cheq / atq"
-- **Code:** CompustatEngine. Correct.
-- **PASS**
-
-### SalesGrowth (Control)
-- **Formula:** "(saley_t - saley_{t-1}) / abs(saley_{t-1}); Q4-only annual panel"
-- **Winsorization:** "1%/99% by fyearq (pre-use only; no double-winsorization per C-6 fix)"
-- **Code:** SalesGrowth computed inside `_compute_biddle_residual` (line 661: `_winsorize_by_year`), then in skip_winsorize set (line 1126) to avoid double-winsorization. Correct.
-- **PASS**
-
-### Intangibility (Control)
-- **Formula:** "intanq / atq"
-- **Code:** CompustatEngine. In COMPUSTAT_COLS (line 129). Winsorized per-year. Correct.
-- **PASS**
-
-### AssetGrowth (Control)
-- **Formula:** "(atq_t - atq_{t-4}) / abs(atq_{t-4}); date-based lag, +/-45 day tolerance"
-- **Code:** CompustatEngine. In COMPUSTAT_COLS (line 130). Winsorized per-year. Correct.
-- **PASS**
-
-### Completeness check
-- All variables from SPARSE_CONTROLS (5), EXPANDED_CONTROLS (3 additional), MODEL_VARIANTS clarity vars (3), event indicators (3), start/stop/duration (3), plus gvkey, ff12_code, year, sample, Takeover_Type (5 ID/filter/strata vars) are in the dictionary. Total: 20 variables documented. All regression variables accounted for.
-- **PASS**
-
-**Phase 6 Result: 16/17 PASS, 1 FAIL (minor -- incomplete source note for Takeover_Uninvited).**
+EPV verification:
+- CEO_Residual sparse: 78 event firms / 6 covariates = 13.0. PASS
+- Manager_Residual sparse: 101 / 6 = 16.83 ≈ 16.8. PASS
 
 ---
 
-## PHASE 7: FACTUAL ACCURACY -- SECTIONS F, G, H
+## PHASE 6: VARIABLE DICTIONARY (Section E)
+
+Verification of all 20 dictionary rows:
+
+| Variable | Formula Claim | Code Evidence | Pass/Fail |
+|----------|--------------|---------------|-----------|
+| `Takeover` | 1 if bid in (call_date, stop_date] | Builder line 336 | PASS |
+| `Takeover_Uninvited` | 1 if Takeover==1 AND type=='Uninvited' | Builder 362-364, runner 287 | PASS |
+| `Takeover_Friendly` | 1 if Takeover==1 AND type=='Friendly' | Builder 365-367, runner 288 | PASS |
+| `start` | (call_date - 2000-01-01).days | Builder line 339, REFERENCE_DATE line 98 | PASS |
+| `stop` | min(next_call_date, takeover_date, 2018-12-31) days | Builder lines 323-324, 333, 340 | PASS |
+| `duration` | stop - start | Builder line 370 | PASS |
+| `ClarityCEO` | CEO FE from H1; one score per ceo_id×sample | Builder lines 123-126 | PASS |
+| `CEO_Clarity_Residual` | CEO_QA_Uncertainty_pct - predicted from H0.3 | Builder line 186 (CEOClarityResidualBuilder) | PASS |
+| `Manager_Clarity_Residual` | Manager_QA_Uncertainty_pct - predicted from H0.3 | Builder line 187 (ManagerClarityResidualBuilder) | PASS |
+| `Size` | ln(atq), atq > 0; else NaN | Engine line 943 | PASS |
+| `BM` | ceqq / (cshoq * prccq) | Engine line 945 | PASS |
+| `BookLev` | (dlcq + dlttq) / atq; missing debt = 0 | Engine line 948 (fillna(0) confirmed) | PASS |
+| `ROA` | iby_annual / avg_assets; avg=(atq_t+atq_{t-1})/2 | Engine lines 960-969 | PASS |
+| `CashHoldings` | cheq / atq | Engine line 986 | PASS |
+| `SalesGrowth` | (saley_t - saley_{t-1}) / abs(saley_{t-1}) | Engine lines 658-663 | PASS |
+| `Intangibility` | intanq / atq | Engine lines 870-874 | PASS |
+| `AssetGrowth` | (atq_t - atq_{t-4}) / abs(atq_{t-4}); date-lag ±45d | Engine lines 892-928 (365-day target, ±45d tolerance) | PASS |
+| `gvkey` | 6-digit Compustat identifier | Manifest | PASS |
+| `ff12_code` | FF12 industry classification | Manifest | PASS |
+| `year` | start_date.dt.year | Builder line 248 | PASS |
+
+**Completeness check:** All variables used in runner covariates ([ClarityCEO/CEO_Clarity_Residual/Manager_Clarity_Residual] + [Size/BM/BookLev/ROA/CashHoldings] + optional [SalesGrowth/Intangibility/AssetGrowth]) plus structural columns (start, stop, gvkey, ff12_code, year) plus event columns (Takeover, Takeover_Uninvited, Takeover_Friendly) are all in the dictionary. PASS
+
+**FAIL — Line citation in E footnote:** Doc says formulas verified against "_compustat_engine.py compute_variables function (lines 937-1038)". The actual range for `_compute_and_winsorize()` spans lines 936-1234. The cited range 937-1038 omits the inf-to-NaN replacement (lines 1183-1204) and the winsorization loop (lines 1209-1234). The function is named `_compute_and_winsorize`, not "compute_variables". MINOR FAIL
+
+---
+
+## PHASE 7: PIPELINE / OUTPUTS / TREATMENT (Sections F, G, H)
 
 ### F-CHECK: Data Pipeline
 
-**F1. Dependency Chain:**
-- 7 steps documented from raw inputs through table generation. Verified:
-  1. Raw inputs: manifest, Compustat, SDC, clarity scores, residuals, linguistic. All correct paths.
-  2. Engine loading: CompustatEngine, LinguisticEngine, ClarityResidualEngine. All present in builder imports (lines 76-94).
-  3. Panel builder: left joins on file_name, ClarityCEO on ceo_id+sample, takeover on gvkey. Verified at builder lines 205-234 (file_name merges), 449-453 (ClarityCEO), 299 (takeover).
-  4. Runner loading: loads takeover_panel.parquet. Verified at runner line 248.
-  5. Sample filtering: FF12 exclusion (runner line 277), complete-case deletion (runner line 443). Correct.
-  6. Regression estimation: CoxTimeVaryingFitter.fit() (runner lines 475-484). Correct.
-  7. Table generation: make_cox_hazard_table() (runner lines 920-941), not via generate_all_tables.py. Correct.
-- **PASS**
+**F1 Dependency Chain:** 7-step chain verified step by step. All steps match code behavior. PASS
 
-**F2. Data Engines:**
-- 6 engines listed: CompustatEngine, LinguisticEngine, ClarityResidualEngine, direct parquet load (ClarityCEO), TakeoverIndicatorBuilder, ManifestFieldsBuilder.
-- Verified all are used in builder (lines 76-94, 113-133, 469-476).
-- **PASS**
+**F2 Data Engines:**
+- CompustatEngine: builder lines 178-185 (SizeBuilder, BMBuilder, BookLevBuilder, ROABuilder, CashHoldingsBuilder, SalesGrowthBuilder, IntangibilityBuilder, AssetGrowthBuilder). PASS
+- LinguisticEngine (via individual builders): lines 166-175 (ManagerQAUncertaintyBuilder, CEOQAUncertaintyBuilder, AnalystQAUncertaintyBuilder, NegativeSentimentBuilder). PASS
+- ClarityResidualEngine: lines 186-187 (CEOClarityResidualBuilder, ManagerClarityResidualBuilder). PASS
+- Direct parquet load: builder lines 119-131 (`clarity_scores.parquet`). PASS
+- TakeoverIndicatorBuilder: builder line 89 (import), lines 470-476 (build call). PASS
+- ManifestFieldsBuilder: builder line 165. PASS
 
-**F3. Merge Operations:**
-- Panel builder merges: (1) manifest x each builder on file_name (LEFT), verified at lines 227; (2) call panel x ClarityCEO on ceo_id+sample (LEFT), verified at lines 449-453; (3) call panel x takeover on gvkey (LEFT), verified at line 299.
-- TakeoverIndicatorBuilder internal: (1) firm_cusip x SDC on cusip6 (INNER), line 158-162; (2) all_gvkeys x sdc_first on gvkey (LEFT), line 209.
-- All documented correctly.
-- **PASS**
+**F3 Merge Operations:**
+- Call panel merges (file_name LEFT): builder line 227 confirmed. PASS
+- ClarityCEO merge (ceo_id, sample LEFT): builder lines 449-453 confirmed. PASS
+- TakeoverIndicatorBuilder internal merges: doc cites "takeover_indicator.py lines 157-209". NOT INDEPENDENTLY VERIFIED — `takeover_indicator.py` was not read end-to-end in this audit. Marked UNVERIFIED for internal merge details.
 
 ### G-CHECK: Outputs
 
-**G1. Stage 3 (Panel Builder):**
-- Doc lists: takeover_panel.parquet, summary_stats.csv, report_h9_panel.md, run_manifest.json, dropped_event_firms.csv.
-- Code verification: panel.to_parquet (line 531), stats_df.to_csv (line 538), generate_manifest (line 543), report_h9_panel.md (line 623), dropped_event_firms.csv (line 494-495, conditional).
-- **PASS**
+**G1 Builder outputs — PARTIAL FAIL:**
+Actual writes in `save_outputs()` (lines 527-553):
+- `takeover_panel.parquet` (line 530). Listed. PASS
+- `summary_stats.csv` (line 537). Listed. PASS
+- `run_manifest.json` (line 543 via `generate_manifest()`). Listed. PASS
+- `report_h9_panel.md` (line 623 via `generate_report()`). Listed. PASS
+- `dropped_event_firms.csv`: written conditionally at builder lines 492-496 only when `dropped` set is non-empty. Doc lists it without noting the conditional nature. FAIL
 
-**G2. Stage 4 (Runner):**
-- Doc lists 21 files. Verified against runner code:
-  - 12 .txt files: 3 models x 4 blocks (sparse, expanded, strata_year, strata_industry). Verified: sparse at line 837, expanded at line 856, strata_year at line 871, strata_industry at line 886.
-  - hazard_ratios.csv (line 567), model_diagnostics.csv (line 572), takeover_table.tex (line 940), summary_stats.csv (line 729), summary_stats.tex (line 729), sample_attrition.csv/tex (line 963), variant_sample_chars.csv (line 983-984), report_h9_takeover.md (line 655), run_log.txt (line 681-682), run_manifest.json (line 1007-1017).
-  - All 21 files verified. No file listed in doc that the code does not write. No file written by code missing from doc.
-- **PASS**
+**G2 Runner outputs — PASS:**
+Verified all 22 files against actual write operations:
+- 12 `.txt` model files: blocks A-E (lines 836-893), write_text at lines 838/857/872/887 plus `fh.write` in run_cox_tv (line 497). PASS
+- `hazard_ratios.csv`: line 567. PASS
+- `model_diagnostics.csv`: line 572. PASS
+- `takeover_table.tex`: line 940. PASS
+- `summary_stats.csv` and `summary_stats.tex`: line 730 (`make_summary_stats_table`). PASS
+- `sample_attrition.csv` and `sample_attrition.tex`: line 963 (`generate_attrition_table()`). PASS
+- `variant_sample_chars.csv`: line 983. PASS
+- `report_h9_takeover.md`: line 656. PASS
+- `run_manifest.json`: line 1007. PASS
+
+Note: Docstring line 64 lists `takeover_hazard_table.tex` but code writes `takeover_table.tex`. Doc correctly documents this mismatch in L.11. PASS
 
 ### H-CHECK: Outlier/Missing Treatment
 
-**H1. Winsorization:**
-- Doc claims 1%/99% by fyearq at CompustatEngine level for financial controls. Code: `_winsorize_by_year(comp[col], year_col)` at line 1136 uses fyearq. Confirmed.
-- Doc claims clarity variables not winsorized. Correct: they are not Compustat variables and are not in COMPUSTAT_COLS.
-- Doc claims SalesGrowth winsorized once (pre-use in Biddle). Code: line 661 (winsorized inside Biddle), skip_winsorize set at line 1126. Correct.
-- **PASS**
+**H1 Winsorization:**
+Doc lists Size, BM, BookLev, ROA, CashHoldings, Intangibility, AssetGrowth as winsorized 1%/99% by fyearq.
+Engine `skip_winsorize` set (lines 1217-1224): `{"DividendPayer", "CashFlow", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}` — none of the listed controls are in this set. All are in `COMPUSTAT_COLS`. Outer winsorization loop (lines 1225-1232) applies to all non-skipped COMPUSTAT_COLS. PASS
 
-**H2. Missing Data:**
-- Doc claims complete-case deletion via dropna. Code: runner line 443: `.dropna(subset=[START_COL, STOP_COL, event_col] + covariates)`. Correct.
-- Doc claims inf replaced with NaN at CompustatEngine level. Code: lines 1089-1110 replace inf/-inf with NaN. Correct.
-- Doc claims zero/negative duration removed in panel builder. Code: builder line 373-377. Correct.
-- **PASS**
+SalesGrowth: winsorized at line 666 (inside `_compute_biddle_residual()`), excluded from outer loop via `skip_winsorize` at line 1220. Doc claim "pre-use only; no double-winsorization per C-6 fix" is accurate. PASS
 
-**H3. Transformations:**
-- Doc claims Size uses ln(atq); all other variables: no additional transformation. Correct per code.
-- **PASS**
+Min observations per year = 10: `_winsorize_by_year` signature line 445 `min_obs: int = 10`. PASS
 
-**Phase 7 Result: 6/6 PASS.**
+**H2 Missing Data — FAIL:**
+Doc says "Inf/-Inf replaced with NaN at CompustatEngine level (lines 1088-1108)".
+
+**Code:** Lines 1087-1092 are `comp = comp.drop(columns=["_prstkcy_prev", "_prev_fyearq", "_quarterly_repurchases", "_atq_prev_q", "_datadate_prev", "_date_gap"])` — dropping temporary columns. Lines 1094-1108 are the start of the Leary & Roberts financing classification section comments and variable setup. Neither contains inf replacement.
+
+The actual inf-to-NaN replacement is the `ratio_cols` block at lines 1183-1204:
+```python
+ratio_cols = ["BM", "BookLev", "DebtToCapital", "ROA", ...]
+for col in ratio_cols:
+    comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)
+```
+The line citation is wrong by approximately 95 lines. FAIL
+
+Complete-case deletion: runner line 443 `.dropna(subset=[START_COL, STOP_COL, event_col] + covariates)`. PASS
+
+Zero-duration removal: builder lines 373-377. PASS
+
+**H3 Transformations:** Size = ln(atq) confirmed at engine line 943. PASS
 
 ---
 
-## PHASE 8: FACTUAL ACCURACY -- SECTION I (Table Generator Entry)
+## PHASE 8: TABLE GENERATOR ENTRY (Section I)
 
-- **Doc claims:** "H9 has no entry in outputs/generate_all_tables.py."
-- **Verification:** Grep for "H9", "h9", "takeover" in generate_all_tables.py returned no matches. Confirmed: no entry exists. Doc correctly states this and explains why (Cox PH custom table via make_cox_hazard_table).
-- **PASS**
+Doc states H9 has no entry in `outputs/generate_all_tables.py`.
 
-**Phase 8 Result: 1/1 PASS.**
+**Verification:** Grep for "h9|H9|takeover|Takeover" in `outputs/generate_all_tables.py` returned "No matches found." PASS
 
 ---
 
-## PHASE 9: FACTUAL ACCURACY -- SECTION K (Model-Family Addendum)
+## PHASE 9: MODEL-FAMILY ADDENDUM (Section K)
 
-Model family identified in Section A: Cox Proportional Hazards. Section K2 should be filled, all others N/A.
+### K1/K3/K4/K5/K6: All N/A. PASS
 
-### K1 (PanelOLS): Marked N/A. **PASS**
-### K3 (Logit/Probit/LPM): Marked N/A. **PASS**
-### K4 (IV/2SLS): Marked N/A. **PASS**
-### K5 (OLS): Marked N/A. **PASS**
-### K6 (Other): Marked N/A. **PASS**
+### K2: Cox Proportional Hazards Specifics
 
-### K2 (Cox PH) -- detailed verification:
+**Time origin:** REFERENCE_DATE = `pd.Timestamp("2000-01-01")` at builder line 98. Doc cites "panel builder line 98". PASS
 
-**Time origin:** "2000-01-01 (REFERENCE_DATE, panel builder line 98)"
-- Code: `REFERENCE_DATE = pd.Timestamp("2000-01-01")` at builder line 98. **PASS**
+**Duration construction:** (start, stop] intervals, covariates at call opening. Builder lines 256-416. PASS
 
-**Duration construction:** Counting-process (start, stop] intervals. Verified against builder lines 256-416. **PASS**
+**Event definition:** Takeover=1 only in interval where first bid falls; validated at builder lines 383-390 (no firm > 1 event row). PASS
 
-**Event definition:** Takeover=1 in single interval where first bid falls in (call_date, stop_date]. Each firm at most 1 event (validated at builder lines 383-391). Cause-specific indicators correctly defined. **PASS**
+**Censoring rules (4 documented):**
+1. Admin censor at 2018-12-31: builder line 283 `censor_date = pd.Timestamp(f"{year_end}-12-31")`. PASS
+2. Interval cap at 1,461 days with event censoring: builder lines 342-359. PASS
+3. Post-takeover calls removed: builder lines 304-312. PASS
+4. Right-censoring for non-events: standard Cox PH behavior. PASS
 
-**Censoring rules:** 4 rules documented: (1) administrative censor at 2018-12-31 (builder lines 283, 324), (2) interval cap at 1,461 days (builder lines 343-359), (3) post-takeover calls removed (builder lines 304-316), (4) right-censoring for non-event firms. All verified. **PASS**
+**Risk set format:** Start-stop counting-process. `id_col="gvkey"` at runner line 479. PASS
 
-**Ties method:** "Efron's method by default". lifelines CoxTimeVaryingFitter does indeed use Efron by default per lifelines documentation. No explicit ties parameter in code. **PASS**
+**Ties method:** Doc says "Efron's method by default — no explicit ties parameter set." Confirmed: no ties-related argument appears anywhere in the runner (grep returned no matches). The Efron default is a library-level fact not verifiable from code alone, marked PASS with caveat.
 
-**Strata:** Unstratified (default), year-stratified (`strata="year"`, runner line 877), industry-stratified (`strata="ff12_code"`, runner line 892). Sparsity diagnostic at runner lines 466-472. All verified. **PASS**
+**Strata variables:**
+- `strata="year"` at runner line 877. Doc cites "runner line 877". PASS
+- `strata="ff12_code"` at runner line 892. Doc cites "runner line 892". PASS
+- Sparsity diagnostic at lines 466-472. Doc cites these lines. PASS
 
-**Concordance computation:** Custom `compute_concordance_time_varying()` at runner lines 321-393. Steps: predict partial hazard, mean per subject, last observation for event time, Harrell's C via `concordance_index()`. Min 10 subjects (line 378). Returns None on exception (line 392). All verified. **PASS**
+**Concordance index:** Custom function `compute_concordance_time_varying()` at lines 321-393. Doc description of 7 steps matches code. Minimum 10 subjects check at line 378. Return None on exception at line 391. PASS
 
-**EPV and suppression:** EPV = n_event_firms / n_covariates (lines 784-785). Thresholds: >= 10 "ok", 5-10 "low", < 5 "critical" (lines 787-791). EPV < 5 suppressed from LaTeX table (line 919). All verified. **PASS**
+**EPV:** EPV = N_event_firms / N_covariates (lines 784-785). Thresholds: critical < 5, low < 10, ok >= 10 (lines 787-791). Suppression at line 919. PASS
 
-**Competing risks:** Cause-specific hazard approach, not Fine-Gray. Events of other types censored in each cause-specific model. Unknown events censored in both models (runner lines 297-311). All verified. **PASS**
-
-**Phase 9 Result: 10/10 PASS.**
+**K2 FAIL — SE claim propagated from B6:** Section K2 does not repeat the SE claim, so no distinct K2 failure beyond B6.
 
 ---
 
@@ -468,87 +374,137 @@ Model family identified in Section A: Cox Proportional Hazards. Section K2 shoul
 
 | # | Quality Gate | Met? | Evidence |
 |---|-------------|------|----------|
-| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | YES | All 3 IVs, 8 controls, 5 event/duration vars, 4 ID/filter vars present with formulas. Phase 6 verified each. |
-| 2 | The model equation matches what the code actually estimates | YES | Phase 3 B1-CHECK verified Cox PH equation matches run_cox_tv() implementation. |
-| 3 | The specification register accounts for every model column | YES | Phase 4 verified all 36 model fits are in the register table. |
-| 4 | The attrition cascade has row counts for each filter step | YES | Phase 5 D2-CHECK verified Stage 3 and Stage 4 attrition tables with counts. |
-| 5 | The tail test direction matches between runner code and generate_all_tables.py | YES | Runner uses two-sided (docstring line 27). No generate_all_tables.py entry exists (correct for Cox PH suite). |
-| 6 | The FE specification matches between docstring, code, and this document | YES | Stratification configs match: unstratified (no strata), year-stratified (strata="year"), industry-stratified (strata="ff12_code"). Consistent across docstring, code, and provenance doc. |
-| 7 | Every merge in the panel builder is documented with join keys and type | YES | Phase 7 F3-CHECK verified all 3 panel builder merges and 2 TakeoverIndicatorBuilder internal merges. |
-| 8 | The output file list matches what the runner actually writes | YES | Phase 7 G-CHECK verified all 21 Stage 4 files and 5 Stage 3 files. |
-| 9 | The model-family addendum is filled for the correct family only | YES | K2 (Cox PH) filled with detailed specifications. K1, K3, K4, K5, K6 all marked N/A. |
-| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | YES | No [UNVERIFIED] claims found in the provenance doc. All claims carry code citations. |
+| 1 | Every variable in every regression spec appears in Variable Dictionary with explicit formula and source engine | YES | All 20 variables documented with explicit formulas and engine citations |
+| 2 | The model equation matches what the code actually estimates | YES | Cox PH equation matches `formula=" + ".join(covariates)` + CoxTimeVaryingFitter.fit() |
+| 3 | The specification register accounts for every model column | YES | 36-model register covers all 3×3×4 combinations with status |
+| 4 | The attrition cascade has row counts for each filter step | PARTIAL | Stage 4 rows have actual counts; Stage 3 builder steps 2-4 say "Logged in builder" / "Varies" without counts |
+| 5 | The tail test direction matches between runner code and generate_all_tables.py | YES | Two-sided in runner; no generate_all_tables.py entry (correctly documented) |
+| 6 | The FE specification matches between docstring, code, and this document | YES | Stratification documented correctly across B5, C, K2 |
+| 7 | Every merge in the panel builder is documented with join keys and type | PARTIAL | Builder-level merges documented; TakeoverIndicatorBuilder internal merges cited but not independently verified in this audit |
+| 8 | The output file list matches what the runner actually writes | PARTIAL | All runner outputs verified; `dropped_event_firms.csv` listed without noting conditional nature |
+| 9 | The model-family addendum is filled for the correct family only | YES | K2 filled; K1/K3/K4/K5/K6 all N/A |
+| 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | NO | Doc makes no use of [UNVERIFIED] tags; the SE claim (B6) should be marked [UNVERIFIED] or corrected, not stated definitively as "robust sandwich by default" |
 
-**Phase 10 Result: 10/10 PASS.**
+**Gate failures:** Gates 4, 8, 10.
 
 ---
 
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
-### Check 1: DVs in B2 match DVs in C (spec register)?
-- B2 lists: Takeover, Takeover_Uninvited, Takeover_Friendly.
-- C lists event types: All (Takeover), Uninvited (Takeover_Uninvited), Friendly (Takeover_Friendly).
-- **CONSISTENT**
+1. **DVs in B2 vs C:** B2 defines Takeover/Takeover_Uninvited/Takeover_Friendly. Section C uses "All/Uninvited/Friendly" as event types mapping to these columns. CONSISTENT
+2. **DVs in C vs I:** No generate_all_tables.py entry. No cross-reference needed. CONSISTENT
+3. **Controls in B4 vs E:** B4 sparse = [Size, BM, BookLev, ROA, CashHoldings]; expanded adds [SalesGrowth, Intangibility, AssetGrowth]. Section E documents all 8 with formulas. CONSISTENT
+4. **Column count in A vs C:** A says "up to 36 model fits". C has exactly 36 rows. CONSISTENT
+5. **Column count in A vs I:** Non-tabular; no I entry. A states "Non-tabular". CONSISTENT
+6. **Tail direction in A vs B7 vs I:** A says "Two-sided inference"; B7 says "Two-sided inference"; no I entry. CONSISTENT
+7. **FE in B5 vs C vs K:** B5 four stratification configs match C "Strata" column entries and K2 strata documentation. CONSISTENT
+8. **Panel index in A vs K:** A says "(gvkey, start/stop)". K2 confirms `id_col="gvkey"`, `start_col=START_COL`, `stop_col=STOP_COL`. CONSISTENT
 
-### Check 2: DVs in C match DVs in I (table generator)?
-- No generate_all_tables.py entry for H9. N/A (not applicable -- consistent by absence).
-- **CONSISTENT**
+All 8 cross-reference checks: PASS
 
-### Check 3: Controls in B4 match variables in E (dictionary)?
-- B4 Sparse: Size, BM, BookLev, ROA, CashHoldings. All 5 in E. **CONSISTENT**
-- B4 Expanded: adds SalesGrowth, Intangibility, AssetGrowth. All 3 in E. **CONSISTENT**
+---
 
-### Check 4: Column count in A matches rows in C?
-- A says "36 model fits". C has 36 rows. **CONSISTENT**
+## FAILURES (Detailed)
 
-### Check 5: Column count in A matches "cols" in I?
-- No generate_all_tables.py entry. N/A. **CONSISTENT**
-
-### Check 6: Tail direction in A matches B7 matches I?
-- A: "Two-sided inference". B7: "Two-sided inference". I: No entry (N/A). **CONSISTENT**
-
-### Check 7: FE in B5 matches C matches K?
-- B5: 4 stratification configs (unstratified sparse, unstratified expanded, year-stratified, industry-stratified).
-- C: Strata column shows None, None, year, ff12_code across the 4 blocks.
-- K2: Documents same 4 configs (unstratified default, strata="year", strata="ff12_code").
-- **CONSISTENT**
-
-### Check 8: Panel index in A matches set_index in K?
-- A: "(gvkey, start/stop) -- not a standard panel index; intervals defined by (start, stop] in days since 2000-01-01"
-- K2: "Subject identification: id_col='gvkey' (runner line 479)" and start_col/stop_col documented.
-- Note: K2 says "runner line 479" but the actual `id_col="gvkey"` is at line 478 (line 479 is `start_col=START_COL`). However, this is the same off-by-one pattern noted in the Direction line reference -- minor. The factual claim is correct.
-- **CONSISTENT**
-
-**Phase 11 Result: 8/8 CONSISTENT.**
+| Phase | Check | Provenance Doc Claims | Actual Code Says | Severity | Fix Required |
+|-------|-------|----------------------|-----------------|----------|-------------|
+| B6 | Standard error method | "uses the **robust sandwich variance estimator** by default" | `CoxTimeVaryingFitter()` called with no `robust=True`; standard (inverse information matrix) variance is used | HIGH | Correct to "standard variance (inverse information matrix)"; `robust=True` not passed |
+| B7 | Line citation for "two-sided inference" | "runner docstring line 28: 'two-sided inference'" | Line 27 says "Hypothesis Tests (two-sided inference):" | LOW | Change "line 28" to "line 27" |
+| G1 | Conditional output disclosure | `dropped_event_firms.csv` listed as definitive output | Written conditionally only when `dropped` set is non-empty (builder lines 492-496) | LOW | Add "(conditional)" note |
+| H2 | Line citation for inf/NaN replacement | "CompustatEngine level (lines 1088-1108)" | Actual inf replacement: `ratio_cols` loop at lines 1183-1204; lines 1088-1108 contain unrelated code | MEDIUM | Correct to "lines 1183-1204" |
+| E | Line citation for formula verification footnote | "_compustat_engine.py compute_variables function (lines 937-1038)" | Function name is `_compute_and_winsorize`; full range is lines 936-1234; cited range misses winsorization loop (1209-1234) and inf replacement (1183-1204) | LOW | Correct function name and extend range to 936-1234 |
+| D2 | Attrition cascade row counts | Steps 2-4 say "Logged in builder" / "Varies" | Exact counts available from builder runtime logs but not populated in doc | LOW | Add actual run counts or use [UNVERIFIED] with explanation |
+| Phase 10 | Quality gate 10 | No [UNVERIFIED] tags used | B6 SE claim is stated definitively but is factually wrong; should be verified or tagged | MEDIUM | Correct B6 claim; remove false confidence |
 
 ---
 
 ## CORRECTIONS REQUIRED
 
-Two minor corrections needed to bring the provenance doc to full PASS:
+**Correction 1 (HIGH SEVERITY) — Section B6:**
 
-### Correction 1: Section A Direction line reference
+Current text:
+> "lifelines.CoxTimeVaryingFitter uses the **robust sandwich variance estimator** by default, which accounts for within-subject correlation in the counting-process format. The `id_col="gvkey"` parameter (line 479) identifies subjects. No explicit `cov_type` or `cluster_entity` argument is passed -- lifelines handles this internally through the counting-process likelihood which conditions on the risk set at each event time."
 
-- **Section:** A. SUITE IDENTITY, `Direction` field
-- **Current text:** `Direction: Two-sided inference (runner docstring line 28)`
-- **Should say:** `Direction: Two-sided inference (runner docstring line 27)`
-- **Code reference:** `run_h9_takeover_hazards.py` line 27: `Hypothesis Tests (two-sided inference):` -- line 28 is the H9-A hypothesis statement, not the direction declaration.
+Replace with:
+> "lifelines.CoxTimeVaryingFitter uses the **standard variance estimator** (inverse information matrix) by default. The constructor is called with no arguments (line 475: `CoxTimeVaryingFitter()`), and no `robust=True` parameter is passed to `fit()` (lines 476-484). The `id_col="gvkey"` parameter identifies subjects for the partial likelihood; it does NOT activate robust/sandwich standard errors. To obtain robust SEs in lifelines, `robust=True` must be explicitly passed to `CoxTimeVaryingFitter(robust=True)`. Standard (non-robust) SEs are used in this suite."
 
-### Correction 2: Section E Variable Dictionary, Takeover_Uninvited source note
-
-- **Section:** E. VARIABLE DICTIONARY, row for `Takeover_Uninvited`
-- **Current text:** `Derived in runner line 287`
-- **Should say:** `Created in panel builder (lines 362-363) and re-derived in runner (line 287, BUG FIX from Pass 03 -- see L.6)`
-- **Code reference:** Panel builder `build_h9_takeover_panel.py` line 362: `df["Takeover_Uninvited"] = ((df["Takeover"] == 1) & (df["Takeover_Type"] == "Uninvited")).astype(int)`. Runner line 287 re-creates this with the same logic after the Pass 03 bug fix. Both locations should be cited for completeness.
+Code reference: `run_h9_takeover_hazards.py` lines 475-484.
 
 ---
 
-## ADDITIONAL NOTES (non-failures)
+**Correction 2 (LOW SEVERITY) — Section B7:**
 
-1. **Docstring/code output filename mismatch (already documented in L.11):** The runner docstring line 64 lists `takeover_hazard_table.tex` but the code writes `takeover_table.tex` (line 940). The provenance doc correctly identifies the code as truth and documents this in Known Issues L.11. No correction needed.
+Current: `"two-sided inference (runner docstring line 28: "two-sided inference")"`
 
-2. **Line reference precision:** Several line references in the provenance doc are off by 1-2 lines (e.g., line 479 vs actual line 478 for id_col). These are cosmetic and do not affect the factual accuracy of any claim, but suggest the doc was written against a slightly different version of the code or line counting was manual. The two corrections above cover the substantive cases.
+Replace: `"two-sided inference (runner docstring line 27: "Hypothesis Tests (two-sided inference):")"`
 
-3. **Runtime data dependency:** Several claims in Section D (attrition counts, variant sample sizes) depend on runtime output files (sample_attrition.csv, variant_sample_chars.csv) from the 2026-03-18 run. These cannot be verified against code alone but are plausible given the code logic and project scope. No correction needed.
+Code reference: `run_h9_takeover_hazards.py` line 27.
 
-4. **Comprehensive Known Issues section:** L.1 through L.11 cover all significant issues including the ClarityCEO blocker, low EPV, concordance near 0.5, unused linguistic variables, BUG FIX documentation, CUSIP6 ambiguity, no formal H9-B test, no ClarityManager, hard-coded censor date, and the docstring/code filename mismatch. This is thorough and accurate.
+---
+
+**Correction 3 (MEDIUM SEVERITY) — Section H2:**
+
+Current: `"Inf/-Inf replaced with NaN at CompustatEngine level (lines 1088-1108)"`
+
+Replace: `"Inf/-Inf replaced with NaN at CompustatEngine level in _compute_and_winsorize() (lines 1183-1204: ratio_cols loop calling comp[col].replace([np.inf, -np.inf], np.nan) for BM, BookLev, ROA, CashHoldings, SalesGrowth, Intangibility, AssetGrowth, and other ratio variables)"`
+
+Code reference: `_compustat_engine.py` lines 1183-1204.
+
+---
+
+**Correction 4 (LOW SEVERITY) — Section G1:**
+
+Current row:
+`| outputs/variables/takeover/{timestamp}/dropped_event_firms.csv | SDC event firms with no valid panel interval (if any) |`
+
+Replace with:
+`| outputs/variables/takeover/{timestamp}/dropped_event_firms.csv | SDC event firms with no valid panel interval — **conditional**: only written when at least one such firm exists (builder lines 492-496: `if dropped:` block) |`
+
+Code reference: `build_h9_takeover_panel.py` lines 492-496.
+
+---
+
+**Correction 5 (LOW SEVERITY) — Section E footnote:**
+
+Current: `"Source: All formulas verified against builder files and _compustat_engine.py compute_variables function (lines 937-1038)."`
+
+Replace: `"Source: All formulas verified against builder files and _compustat_engine.py _compute_and_winsorize() function (lines 936-1234), including inf-to-NaN replacement at lines 1183-1204 and per-year winsorization loop at lines 1209-1234."`
+
+Code reference: `_compustat_engine.py` lines 936-1234.
+
+---
+
+**Correction 6 (LOW SEVERITY) — Section D2, builder attrition steps 2-4:**
+
+Current Steps 2-4 show "Logged in builder" / "Varies" / "0 rows dropped (intervals capped, not removed)" without exact row counts.
+
+Replace: Either populate with actual counts from the latest builder run log, or change each cell to `[UNVERIFIED — counts printed by builder at runtime; not available at documentation time; see run_log.txt for the specific run]`.
+
+Code reference: `build_h9_takeover_panel.py` line 309-311 (post-takeover count), lines 374-376 (zero-duration count), lines 346-348 (cap count) — all printed but not captured in the doc.
+
+---
+
+## MATERIALLY CORRECT CLAIMS (no correction needed)
+
+The following claims are accurate and require no change:
+
+- All 36 spec register entries and EPV calculations (EPV = events/covariates formula matches code)
+- All control variable formulas: Size (ln(atq)), BM (ceqq/(cshoq*prccq)), BookLev ((dlcq+dlttq)/atq fillna(0)), ROA (iby_annual/avg_assets), CashHoldings (cheq/atq), Intangibility (intanq/atq), AssetGrowth (date-based 365d lag, ±45d tolerance), SalesGrowth ((saley_t - saley_{t-1})/abs(saley_{t-1}))
+- REFERENCE_DATE = 2000-01-01 and day-count conversion (builder line 98)
+- Interval cap at 1,461 days with event censoring-on-cap (builder lines 342-359)
+- Post-takeover call removal logic (builder lines 304-312)
+- Cause-specific competing risks approach: separate Cox models; other event types censored
+- EPV thresholds: critical < 5, low < 10, ok >= 10 (runner lines 787-791)
+- LaTeX table suppression of critical-EPV models (runner line 919)
+- generate_all_tables.py "no entry" claim — verified by grep returning no matches
+- All 22 G2 runner output files — fully verified against write operations
+- ClarityCEO 0% coverage blocker — correctly documented with mechanism
+- Runner docstring/code mismatch on table filename — correctly flagged in L.11
+- SalesGrowth single winsorization (no double-winsorization per C-6 fix)
+- Winsorization min_obs = 10 (engine line 445)
+- Concordance computation steps (7 steps in compute_concordance_time_varying match code exactly)
+- Internal consistency across all 8 cross-reference checks
+
+---
+
+*End of H9 Provenance Audit Report — 2026-04-01*
