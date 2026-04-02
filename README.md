@@ -38,8 +38,8 @@ identification         speaker role              variables per call       effect
 | H14 | DSPREAD | Higher uncertainty → wider bid-ask spread change | one (+) | 6 | Lee (2016) |
 | H16 | RDSales (+ lead) | Uncertainty and R&D investment intensity | two | 12 | Jiang et al. (2021) |
 | H17 | RepurchaseIntensity (+ lead) | Uncertainty and share repurchase intensity | two | 12 | -- |
-| H18 | CommentLetter | Higher uncertainty → more SEC comment letters | one (+) | 6 | -- |
-| H18b | CommentLetter | Logit robustness check for H18 (no Firm/YrQtr FE) | one (+) | 2 | Timoneda (2021) |
+| H18 | CCCL | Higher uncertainty → more SEC comment letters | one (+) | 6 | -- |
+| H18b | CCCL | Logit robustness check for H18 (no Firm/YrQtr FE) | one (+) | 2 | Timoneda (2021) |
 | H21 | SEC_Letters_fwd | Higher uncertainty → more SEC UPLOAD letters (count) | one (+) | 6 | -- |
 | H7b | PostCallAmihud | Higher uncertainty → higher post-call Amihud level | one (+) | 6 | Amihud (2002) |
 | H14b | PostCallSpread | Higher uncertainty → higher post-call spread level | one (+) | 6 | Leuz & Verrecchia (2000) |

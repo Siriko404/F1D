@@ -619,7 +619,7 @@ variables:
   comment_letter:
     stage: input
     source: "inputs/EDGAR_CommentLetters"
-    column: "CommentLetter"
+    column: "CCCL"
     formula: "1 if SEC comment letter received in next quarter, 0 otherwise"
     reference: "cdm2013"
     role: dv

@@ -19,7 +19,7 @@ SUITES = [
     # ── H1 family ──
     {
         "id": "H1",
-        "dir": "h1_cash_holdings/2026-03-27_094942",
+        "dir": "h1_cash_holdings/2026-04-02_124102",
         "caption": "H1: Speech Uncertainty and Cash Holdings",
         "label": "tab:h1",
         "cols": 12,
@@ -33,7 +33,7 @@ SUITES = [
     {
         "id": "H1.1",
         "type": "moderation",
-        "dir": "h1_1_cash_tsimm/2026-03-31_155414",
+        "dir": "h1_1_cash_tsimm/2026-04-02_124916",
         "caption": "H1.1: Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
         "label": "tab:h1_1",
         "cols": 2,
@@ -42,7 +42,7 @@ SUITES = [
         ],
         "key_vars": [
             "Manager_QA_Unc_c",
-            "z_log_tnic3tsimm",
+            "z_log_TotalSimilarity",
             "MgrQAUnc_x_zlogTSIMM",
         ],
         "key_labels": [
@@ -57,7 +57,7 @@ SUITES = [
     {
         "id": "H1.1b",
         "type": "moderation",
-        "dir": "h1_1b_cash_tsimm_binary/2026-03-31_155928",
+        "dir": "h1_1b_cash_tsimm_binary/2026-04-02_124927",
         "caption": "H1.1b: Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
         "label": "tab:h1_1b",
         "cols": 2,
@@ -81,7 +81,7 @@ SUITES = [
     {
         "id": "H1.2",
         "type": "moderation",
-        "dir": "h1_2_cash_constraint/2026-03-31_133436",
+        "dir": "h1_2_cash_constraint/2026-04-02_124940",
         "caption": "H1.2: Financial Constraint--Moderated Speech Uncertainty and Cash Holdings (Three-Category)",
         "label": "tab:h1_2",
         "cols": 2,
@@ -122,7 +122,7 @@ SUITES = [
     # ── H4 family ──
     {
         "id": "H4a",
-        "dir": "h4_leverage/2026-03-27_094942",
+        "dir": "h4_leverage/2026-04-02_125309",
         "caption": "H4a: Speech Uncertainty and Book Leverage",
         "label": "tab:h4a",
         "cols": 12,
@@ -135,7 +135,7 @@ SUITES = [
     },
     {
         "id": "H4b",
-        "dir": "h4_leverage/2026-03-27_094942",
+        "dir": "h4_leverage/2026-04-02_125309",
         "caption": "H4b: Speech Uncertainty and Debt-to-Capital",
         "label": "tab:h4b",
         "cols": 12,
@@ -150,7 +150,7 @@ SUITES = [
     # ── H5 (Wang 2020) ──
     {
         "id": "H5",
-        "dir": "h5b_wang_disp/2026-03-31_140307",
+        "dir": "h5b_wang_disp/2026-04-02_130908",
         "caption": "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
         "label": "tab:h5",
         "cols": 12,
@@ -164,7 +164,7 @@ SUITES = [
     # ── H7 ──
     {
         "id": "H7",
-        "dir": "h7_illiquidity/2026-03-27_094957",
+        "dir": "h7_illiquidity/2026-04-02_131525",
         "caption": "H7: Speech Uncertainty and Post-Call Illiquidity",
         "label": "tab:h7",
         "cols": 6,
@@ -177,7 +177,7 @@ SUITES = [
     # ── H7b ──
     {
         "id": "H7b",
-        "dir": "h7b_amihud_level/2026-04-01_115601",
+        "dir": "h7b_amihud_level/2026-04-02_131541",
         "caption": "H7b: Speech Uncertainty and Post-Call Amihud Illiquidity Level",
         "label": "tab:h7b",
         "cols": 6,
@@ -191,7 +191,7 @@ SUITES = [
     {
         "id": "H11",
         "type": "moderation",
-        "dir": "h11_prisk_uncertainty/2026-03-27_095000",
+        "dir": "h11_prisk_uncertainty/2026-04-02_132019",
         "caption": "H11: Political Risk and Language Uncertainty",
         "label": "tab:h11",
         "cols": 4,
@@ -213,7 +213,7 @@ SUITES = [
     {
         "id": "H11-Lag",
         "type": "moderation",
-        "dir": "h11_prisk_uncertainty_lag/2026-03-27_095002",
+        "dir": "h11_prisk_uncertainty_lag/2026-04-02_132208",
         "caption": "H11-Lag: Lagged Political Risk and Language Uncertainty",
         "label": "tab:h11_lag",
         "cols": 8,
@@ -242,7 +242,7 @@ SUITES = [
     # ── H12 ──
     {
         "id": "H12",
-        "dir": "h12_payout/2026-03-27_095009",
+        "dir": "h12_payout/2026-04-02_132912",
         "caption": "H12: Speech Uncertainty and Quarterly Payout Ratio",
         "label": "tab:h12",
         "cols": 12,
@@ -257,7 +257,7 @@ SUITES = [
     # ── H13 family ──
     {
         "id": "H13",
-        "dir": "h13_capex/2026-03-27_095013",
+        "dir": "h13_capex/2026-04-02_133235",
         "caption": "H13: Speech Uncertainty and Capital Expenditure",
         "label": "tab:h13",
         "cols": 12,
@@ -271,7 +271,7 @@ SUITES = [
     {
         "id": "H13.1",
         "type": "moderation",
-        "dir": "h13_1_competition/2026-03-31_155548",
+        "dir": "h13_1_competition/2026-04-02_133255",
         "caption": "H13.1: Product Similarity--Moderated Speech Uncertainty and Capital Expenditure",
         "label": "tab:h13_1",
         "cols": 4,
@@ -289,7 +289,7 @@ SUITES = [
         "lagged_dv_label": r"Lagged\_DV",
         "key_vars": [
             "Manager_QA_Unc_c",
-            "z_log_tnic3tsimm",
+            "z_log_TotalSimilarity",
             "MgrQAUnc_x_zlogTSIMM",
         ],
         "key_labels": [
@@ -302,7 +302,7 @@ SUITES = [
     # ── H14 ──
     {
         "id": "H14",
-        "dir": "h14_bidask_spread/2026-03-27_095017",
+        "dir": "h14_bidask_spread/2026-04-02_133911",
         "caption": "H14: Speech Uncertainty and Bid-Ask Spread Changes",
         "label": "tab:h14",
         "cols": 6,
@@ -315,7 +315,7 @@ SUITES = [
     # ── H14b ──
     {
         "id": "H14b",
-        "dir": "h14b_spread_level/2026-04-01_120601",
+        "dir": "h14b_spread_level/2026-04-02_133934",
         "caption": "H14b: Speech Uncertainty and Post-Call Bid-Ask Spread Level",
         "label": "tab:h14b",
         "cols": 6,
@@ -328,7 +328,7 @@ SUITES = [
     # ── H16 ──
     {
         "id": "H16",
-        "dir": "h16_rd_sales/2026-03-27_095019",
+        "dir": "h16_rd_sales/2026-04-02_134256",
         "caption": r"H16: Speech Uncertainty and R\&D Investment Intensity",
         "label": "tab:h16",
         "cols": 12,
@@ -342,7 +342,7 @@ SUITES = [
     # ── H17 ──
     {
         "id": "H17",
-        "dir": "h17_repurchase_intensity/2026-03-27_095020",
+        "dir": "h17_repurchase_intensity/2026-04-02_134619",
         "caption": "H17: Speech Uncertainty and Repurchase Intensity",
         "label": "tab:h17",
         "cols": 12,
@@ -356,12 +356,12 @@ SUITES = [
     # ── H18 ──
     {
         "id": "H18",
-        "dir": "h18_cccl_received/2026-03-31_151907",
+        "dir": "h18_cccl_received/2026-04-02_150950",
         "caption": "H18: Speech Uncertainty and SEC Comment Letters",
         "label": "tab:h18",
         "cols": 6,
         "dvs": [
-            (r"CommentLetter", 6),
+            (r"CCCL", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -369,12 +369,12 @@ SUITES = [
     # ── H18b (Logit robustness) ──
     {
         "id": "H18b",
-        "dir": "h18b_cccl_logit/2026-03-31_195228",
+        "dir": "h18b_cccl_logit/2026-04-02_151005",
         "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
         "label": "tab:h18b",
         "cols": 2,
         "dvs": [
-            (r"CommentLetter", 2),
+            (r"CCCL", 2),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -384,7 +384,7 @@ SUITES = [
     # ── H19 ──
     {
         "id": "H19",
-        "dir": "h19_external_funding/2026-03-31_195049",
+        "dir": "h19_external_funding/2026-04-02_135326",
         "caption": "H19: Speech Uncertainty and External vs Internal Financing",
         "label": "tab:h19",
         "cols": 12,
@@ -398,7 +398,7 @@ SUITES = [
     # ── H20 ──
     {
         "id": "H20",
-        "dir": "h20_debt_choice/2026-03-31_195118",
+        "dir": "h20_debt_choice/2026-04-02_135344",
         "caption": "H20: Speech Uncertainty and Debt vs Equity Choice",
         "label": "tab:h20",
         "cols": 6,
@@ -411,7 +411,7 @@ SUITES = [
     # ── H21 ──
     {
         "id": "H21",
-        "dir": "h21_sec_letters/2026-03-31_210515",
+        "dir": "h21_sec_letters/2026-04-02_135701",
         "caption": "H21: Speech Uncertainty and SEC Comment Letter Count",
         "label": "tab:h21",
         "cols": 6,
@@ -472,7 +472,7 @@ CTRL_DISPLAY = {
     "pre_call_amihud": "PreCallILLIQ",
     "amihud_illiq": "ILLIQ",
     "WangDISP": "DISP",
-    "CCCL": "CommentLetter",
+    "CCCL": "CCCL",
     "PRiskQ": "PRisk",
     "PRiskQ_lag": "PRisk_lag",
     "PRiskQ_lag2": "PRisk_lag2",

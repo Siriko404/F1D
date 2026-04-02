@@ -90,13 +90,13 @@ MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
     # CCCL (call-to-next-call window) — Calendar Year FE
-    {"col": 1, "dv": "CommentLetter", "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 2, "dv": "CommentLetter", "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 3, "dv": "CommentLetter", "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 4, "dv": "CommentLetter", "fe": "firm",        "controls": "extended", "extra_controls": []},
+    {"col": 1, "dv": "CCCL", "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 2, "dv": "CCCL", "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 3, "dv": "CCCL", "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 4, "dv": "CCCL", "fe": "firm",        "controls": "extended", "extra_controls": []},
     # CCCL — Year-Quarter FE (Extended controls only)
-    {"col": 5, "dv": "CommentLetter", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 6, "dv": "CommentLetter", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    {"col": 5, "dv": "CCCL", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 6, "dv": "CCCL", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
 ]
 
 VARIABLE_LABELS = {
@@ -107,7 +107,7 @@ VARIABLE_LABELS = {
 }
 
 SUMMARY_STATS_VARS = [
-    {"col": "CommentLetter", "label": "CCCL (call-to-next-call)"},
+    {"col": "CCCL", "label": "CCCL (call-to-next-call)"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
@@ -539,8 +539,8 @@ def main(panel_path: Optional[str] = None) -> int:
     panel = filter_main_sample(panel)
     main_n = len(panel)
 
-    n_dv_valid = panel["CommentLetter"].notna().sum()
-    n_dv1 = (panel["CommentLetter"] == 1).sum()
+    n_dv_valid = panel["CCCL"].notna().sum()
+    n_dv1 = (panel["CCCL"] == 1).sum()
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
     print(f"  CCCL non-null: {n_dv_valid:,}")
     print(f"  CCCL=1: {n_dv1:,} ({100*n_dv1/n_dv_valid:.2f}%)")

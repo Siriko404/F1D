@@ -180,8 +180,8 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     before = len(panel)
     panel = panel.merge(
-        tnic[["gvkey", "year", "TotalSimilarity"]].rename(
-            columns={"gvkey": "_gvkey_int", "year": "fyearq_int"}
+        tnic[["gvkey", "year", "tnic3tsimm"]].rename(
+            columns={"gvkey": "_gvkey_int", "year": "fyearq_int", "tnic3tsimm": "TotalSimilarity"}
         ),
         on=["_gvkey_int", "fyearq_int"],
         how="left",

@@ -105,7 +105,7 @@ Read Section A YAML block against `run_h18b_cccl_logit.py` docstring and code.
 - **PASS**
 
 **A-3. Hypothesis: "Does speech uncertainty during earnings calls predict SEC comment letter receipt in the subsequent calendar quarter?"**
-- Runner docstring lines 10-12: "Logit robustness check for H18. Same DV (CommentLetter binary), same IVs, same controls — replaces LPM with logistic regression."
+- Runner docstring lines 10-12: "Logit robustness check for H18. Same DV (CCCL binary), same IVs, same controls — replaces LPM with logistic regression."
 - Hypothesis content is consistent.
 - **PASS**
 
@@ -178,12 +178,12 @@ Lambda (logistic CDF) notation correct for smf.logit ✓.
 
 ### B2-CHECK: Dependent Variable(s)
 
-Doc: `CommentLetter | Binary | 1 if firm received CommentLetter in cal quarter Q+1 | Lead (Q+1)`
+Doc: `CCCL | Binary | 1 if firm received CCCL in cal quarter Q+1 | Lead (Q+1)`
 
-Runner line 92: `"dv": "CommentLetter"` in MODEL_SPECS.
-Runner line 484: `n_dv_valid = panel["CommentLetter"].notna().sum()` — CommentLetter used as DV.
-Builder `create_cccl_dvs` lines 276-279: `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0; panel["CommentLetter"] = cccl_fwd`
-Construction detail (B2 step 4): "CommentLetter = 1 if (gvkey, Q+1) is in the event set; 0 otherwise" — verified correct.
+Runner line 92: `"dv": "CCCL"` in MODEL_SPECS.
+Runner line 484: `n_dv_valid = panel["CCCL"].notna().sum()` — CCCL used as DV.
+Builder `create_cccl_dvs` lines 276-279: `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0; panel["CCCL"] = cccl_fwd`
+Construction detail (B2 step 4): "CCCL = 1 if (gvkey, Q+1) is in the event set; 0 otherwise" — verified correct.
 CCCL_lag created: `cccl_lag[i] = 1.0 if (g, q_prev) in cccl_set else 0.0; panel["CCCL_lag"] = cccl_lag` — used for Lagged_DV.
 **PASS**
 
@@ -266,8 +266,8 @@ Lagged_DV construction: Runner line 191: `panel["Lagged_DV"] = panel["CCCL_lag"]
 
 Runner `MODEL_SPECS` (lines 91-94):
 ```python
-{"col": 1, "dv": "CommentLetter", "controls": "base",     "fe_formula": "C(ff12_code) + C(cal_yr)"},
-{"col": 2, "dv": "CommentLetter", "controls": "extended",  "fe_formula": "C(ff12_code) + C(cal_yr)"},
+{"col": 1, "dv": "CCCL", "controls": "base",     "fe_formula": "C(ff12_code) + C(cal_yr)"},
+{"col": 2, "dv": "CCCL", "controls": "extended",  "fe_formula": "C(ff12_code) + C(cal_yr)"},
 ```
 Both specs use identical `fe_formula = "C(ff12_code) + C(cal_yr)"`.
 Doc table: Industry FE=`C(ff12_code)`, Calendar Year FE=`C(cal_yr)`, no Firm FE, no Year-Qtr FE ✓.
@@ -315,17 +315,17 @@ Runner `MODEL_SPECS` (lines 91-94) has exactly 2 entries.
 
 | Code Col | Code DV | Code Controls | Code FE |
 |----------|---------|---------------|---------|
-| 1 | CommentLetter | base | C(ff12_code) + C(cal_yr) |
-| 2 | CommentLetter | extended | C(ff12_code) + C(cal_yr) |
+| 1 | CCCL | base | C(ff12_code) + C(cal_yr) |
+| 2 | CCCL | extended | C(ff12_code) + C(cal_yr) |
 
 Doc spec register:
 | Col | DV | Industry FE | Year FE | Firm FE | Year-Qtr FE | Controls |
 |-----|----|----|----|----|----|----|
-| 1 | CommentLetter | FF12 dummies | Cal Year dummies | No | No | Base |
-| 2 | CommentLetter | FF12 dummies | Cal Year dummies | No | No | Extended |
+| 1 | CCCL | FF12 dummies | Cal Year dummies | No | No | Base |
+| 2 | CCCL | FF12 dummies | Cal Year dummies | No | No | Extended |
 
 - Row count matches: 2 ✓
-- DV matches: CommentLetter both cols ✓
+- DV matches: CCCL both cols ✓
 - Industry FE: FF12 dummies (C(ff12_code)) ✓
 - Year FE: Cal Year dummies (C(cal_yr)) ✓
 - Firm FE: No ✓ (intentionally omitted due to separation)
@@ -356,14 +356,14 @@ Doc attrition cascade:
 |------|--------|---|---------|
 | 1 | Full panel | 112,968 | -- |
 | 2 | Main sample (excl FF12=8 Utility, FF12=11 Finance) | 88,205 | 24,763 |
-| 3 | CommentLetter=1 in Main (informational) | 280 | -- |
+| 3 | CCCL=1 in Main (informational) | 280 | -- |
 | 4 | After complete-case + min-calls (col 1) | 57,216 | 30,989 |
 
 Code verification:
 - Step 1: `full_n = len(panel)` (runner line 480) ✓
 - Step 2: `filter_main_sample` (runner line 481): `~ff12_code.isin([8, 11])` ✓
   - FF12=8: Utility, FF12=11: Finance — matches `panel_utils.py` lines 53-54 ✓
-- Step 3: `n_dv1 = (panel["CommentLetter"] == 1).sum()` (runner line 485); added to attrition_stages as informational ✓
+- Step 3: `n_dv1 = (panel["CCCL"] == 1).sum()` (runner line 485); added to attrition_stages as informational ✓
 - Step 4: `generate_attrition_table` with `first["n_obs"]` (runner lines 521-528) ✓
   Filter sequence (runner `prepare_regression_data`, lines 179-225):
   a) Inf→NaN (line 199) ✓
@@ -393,7 +393,7 @@ These values are from `model_diagnostics.csv` (actual run output). The doc corre
 The E table must contain every variable in every regression spec. Verified against runner MODEL_SPECS and builder code.
 
 **Completeness check**: Variables in any spec:
-- DV: CommentLetter ✓ (in E)
+- DV: CCCL ✓ (in E)
 - Key IVs (4): UncAnsCEO ✓, UncPreCEO ✓, UncAnsMgr ✓, UncPreMgr ✓
 - Base controls (8 + Lagged_DV): lnAssets ✓, TobinsQ ✓, ROA ✓, Leverage ✓, Capex ✓, CashRatio ✓, DivDummy ✓, sCFO ✓, Lagged_DV ✓
 - Extended controls (+4): SalesGrowth ✓, RDSales ✓, CashFlowAt ✓, DailyVola ✓
@@ -404,7 +404,7 @@ The E table must contain every variable in every regression spec. Verified again
 
 | Variable | Doc Formula | Code Formula | Status |
 |----------|-------------|--------------|--------|
-| CommentLetter | 1 if (gvkey, Q+1) in CommentLetter event set | `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0` | PASS |
+| CCCL | 1 if (gvkey, Q+1) in CCCL event set | `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0` | PASS |
 | UncAnsCEO | Uncertainty words / total words * 100 | LinguisticEngine Stage 2 parquets | PASS |
 | Lagged_DV | CCCL_lag from runner line 191 | `panel["Lagged_DV"] = panel["CCCL_lag"]` | PASS |
 | lnAssets | ln(atq), atq > 0; zero/neg → NaN | `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | PASS |
@@ -428,7 +428,7 @@ The E table must contain every variable in every regression spec. Verified again
 - Linguistic IVs: 0%/99% per-year (upper-only) — verified in `_linguistic_engine.py` lines 255-257 ✓
 - Compustat controls (lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, sCFO, SalesGrowth, RDSales, CashFlowAt): 1%/99% per-fyearq — verified as CompustatEngine applies winsorization ✓
 - DivDummy: Not winsorized (binary) ✓
-- CommentLetter, CCCL_lag: Not winsorized (binary) ✓
+- CCCL, CCCL_lag: Not winsorized (binary) ✓
 - DailyVola: Not winsorized ✓
 
 **Phase 6 Result: 19/22 PASS** (3 FAIL: TobinsQ formula, TobinsQ source fields, ROA fallback — same root errors as Phase 3)
@@ -440,7 +440,7 @@ The E table must contain every variable in every regression spec. Verified again
 ### F-CHECK: Data Pipeline
 
 **F1. Dependency Chain:**
-Step 1 (Raw inputs): manifest, CommentLetter letters, CCM, Compustat, Stage 2 linguistic, CRSP ✓
+Step 1 (Raw inputs): manifest, CCCL letters, CCM, Compustat, Stage 2 linguistic, CRSP ✓
 Step 2 (Engine loading): LinguisticEngine, CompustatEngine, CRSPEngine ✓
 Step 3 (Panel builder): "merges 16 builder outputs" — **verified as correct** (17 total, 16 non-manifest) ✓
 Step 4 (Runner loading): `get_latest_output_dir()` → parquet load → `build_cal_yr_qtr_index()` ✓
@@ -454,7 +454,7 @@ Step 7 (Table generation): `generate_all_tables.py` entry documented ✓
 | LinguisticEngine | Stage 2 year-partitioned parquets | 4 uncertainty IVs | PASS |
 | CompustatEngine | comp_na_daily_all.parquet | 11 controls | PASS |
 | CRSPEngine | CRSP daily files | DailyVola | PASS |
-| Direct load (CommentLetter) | cccl_conversations_all_years.parquet + CCM | CommentLetter, CCCL_lag | PASS |
+| Direct load (CCCL) | cccl_conversations_all_years.parquet + CCM | CCCL, CCCL_lag | PASS |
 | ManifestFieldsBuilder | master_sample_manifest.parquet | file_name, gvkey, ff12_code, start_date | PASS |
 
 **F3. Merge Operations:**
@@ -462,7 +462,7 @@ Step 7 (Table generation): `generate_all_tables.py` entry documented ✓
 |---------|------|-------|-----|------|--------|
 | 1 | manifest | each of **15** builder outputs | file_name | left | **FAIL: should be 16** |
 | 2 | panel | CompustatEngine (fyearq) | gvkey+start_date→datadate (asof) | asof | PASS |
-| 3 | CommentLetter letters | CIK-gvkey map | cik_int | inner | PASS |
+| 3 | CCCL letters | CIK-gvkey map | cik_int | inner | PASS |
 | 4 | CCM map | Compustat CIK map | cik_int | outer (concat+dedup) | PASS |
 
 The F3 merge table states "15 builder outputs" but the actual `builders` dict in the panel builder has 17 entries (manifest + 16 others), meaning 16 non-manifest outputs are merged. This is WRONG. F1 step 3 correctly says "16 builder outputs".
@@ -494,7 +494,7 @@ Runner writes (from `save_outputs` and `main`):
 Doc G2 lists 8 rows (combining csv/tex where applicable) and explicitly notes no `report_step4` file. **PASS**. Doc note at G2 end: "The runner itself does not write a separate h18b_table.tex" — confirmed by absence of any `.tex` table write in runner. ✓
 
 **G3. Summary Statistics:**
-Runner `SUMMARY_STATS_VARS` (lines 103-121): 17 variables — CommentLetter, 4 IVs, lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, DivDummy, sCFO, SalesGrowth, RDSales, CashFlowAt, DailyVola.
+Runner `SUMMARY_STATS_VARS` (lines 103-121): 17 variables — CCCL, 4 IVs, lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, DivDummy, sCFO, SalesGrowth, RDSales, CashFlowAt, DailyVola.
 Doc G3 lists same 17 variables ✓.
 Metrics: N, Mean, SD, Min, P25, Median, P75, Max via `make_summary_stats_table` ✓.
 Summary stats computed on main sample BEFORE complete-case filtering (runner line 491: called after `filter_main_sample` but before regression loops) ✓.
@@ -507,7 +507,7 @@ Summary stats computed on main sample BEFORE complete-case filtering (runner lin
 - Compustat controls 1%/99% per-fyearq: verified in CompustatEngine ✓
 - DivDummy excluded from winsorization (binary) ✓
 - Linguistic IVs 0%/99% per-year upper-only: verified in `_linguistic_engine.py` lines 255-257 ✓
-- CommentLetter DV and CCCL_lag not winsorized (binary) ✓
+- CCCL DV and CCCL_lag not winsorized (binary) ✓
 - DailyVola not winsorized at Compustat level (CRSP-sourced) ✓
 **PASS**
 
@@ -540,7 +540,7 @@ Doc transcription:
     "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
     "label": "tab:h18b",
     "cols": 2,
-    "dvs": [(r"CommentLetter", 2)],
+    "dvs": [(r"CCCL", 2)],
     "tail": "one",
     "hyp_dir": ">",
     "r2_label": r"Pseudo~$R^2$",
@@ -558,7 +558,7 @@ Actual `outputs/generate_all_tables.py` lines 370-384 (verified by direct read):
     "label": "tab:h18b",
     "cols": 2,
     "dvs": [
-        (r"CommentLetter", 2),
+        (r"CCCL", 2),
     ],
     "tail": "one",
     "hyp_dir": ">",
@@ -573,7 +573,7 @@ Verification:
 - `caption` exact match ✓
 - `label: "tab:h18b"` ✓
 - `cols: 2` matches `len(MODEL_SPECS) = 2` ✓
-- `dvs: [(r"CommentLetter", 2)]` — single DV across both cols ✓
+- `dvs: [(r"CCCL", 2)]` — single DV across both cols ✓
 - `tail: "one"` matches runner one-tailed test ✓
 - `hyp_dir: ">"` matches beta > 0 direction ✓
 - `r2_label: r"Pseudo~$R^2$"` — runner writes `pseudo_r2` to txt file; label override is correct ✓
@@ -598,11 +598,11 @@ The creation prompt offers K3 for Logit/Probit/LPM and K6 for "Other Model Famil
 
 **Link function:** "Logistic (sigmoid). smf.logit() uses the logistic CDF." — correct for smf.logit ✓
 
-**Binary outcome construction:** "CommentLetter ∈ {0, 1}; identical to H18 LPM." — builder creates 0.0/1.0 float values ✓
+**Binary outcome construction:** "CCCL ∈ {0, 1}; identical to H18 LPM." — builder creates 0.0/1.0 float values ✓
 
 **Separation handling:**
-- "~95% of firms have CommentLetter=0 for all observations" — matches runner docstring line 18 ✓
-- "26 of 67 quarters have zero CommentLetter events" — matches runner docstring line 20 ✓
+- "~95% of firms have CCCL=0 for all observations" — matches runner docstring line 18 ✓
+- "26 of 67 quarters have zero CCCL events" — matches runner docstring line 20 ✓
 - "Only Industry FE + Calendar Year FE are feasible" — matches MODEL_SPECS ✓
 - Per-FE-group zero-event warnings at runtime (runner lines 259-263) ✓
 - Timoneda (2021) citation consistent with runner docstring ✓
@@ -651,10 +651,10 @@ The creation prompt offers K3 for Logit/Probit/LPM and K6 for "Other Model Famil
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
 1. **DVs in B2 match DVs in C?**
-   B2: `CommentLetter`. C: Col 1 and Col 2 both DV=`CommentLetter`. **CONSISTENT ✓**
+   B2: `CCCL`. C: Col 1 and Col 2 both DV=`CCCL`. **CONSISTENT ✓**
 
 2. **DVs in C match DVs in I?**
-   C: `CommentLetter`. I: `"dvs": [(r"CommentLetter", 2)]` — CommentLetter across both columns. **CONSISTENT ✓**
+   C: `CCCL`. I: `"dvs": [(r"CCCL", 2)]` — CCCL across both columns. **CONSISTENT ✓**
 
 3. **Controls in B4 match variables in E?**
    B4 lists: lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV (base) + SalesGrowth, RDSales, CashFlowAt, DailyVola (extended).
@@ -765,4 +765,4 @@ Doc says "missing dlcq or dlttq treated as 0." The actual code uses `fillna(0)` 
 The doc claims `at="overall"` is the statsmodels default. Verified via statsmodels source: `def get_margeff(self, at='overall', ...)`. Confirmed correct.
 
 **Note 6: L7 event count discrepancy**
-Known Issue 7 in the doc explains that col 2 has 196 events vs col 1's 200 events because extended-controls complete-case filtering drops some CommentLetter=1 rows. This is correctly documented.
+Known Issue 7 in the doc explains that col 2 has 196 events vs col 1's 200 events because extended-controls complete-case filtering drops some CCCL=1 rows. This is correctly documented.

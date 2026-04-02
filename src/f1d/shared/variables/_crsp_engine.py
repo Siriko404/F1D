@@ -169,12 +169,12 @@ def _compute_returns_for_manifest(
         crsp: CRSP daily stock file DataFrame (PERMNO already int, NaN dropped)
 
     Returns:
-        manifest with StockRet, MarketRet, Volatility columns added
+        manifest with StockRet, MarketRet, DailyVola columns added
     """
     manifest = manifest.copy()
     manifest["StockRet"] = np.nan
     manifest["MarketRet"] = np.nan
-    manifest["Volatility"] = np.nan
+    manifest["DailyVola"] = np.nan
 
     valid = manifest[
         manifest["permno_int"].notna()
@@ -370,7 +370,7 @@ class CRSPEngine:
                     logger.info(f"    CRSPEngine: no CRSP data for {year}, skipping")
                     year_manifest["StockRet"] = np.nan
                     year_manifest["MarketRet"] = np.nan
-                    year_manifest["Volatility"] = np.nan
+                    year_manifest["DailyVola"] = np.nan
                     year_manifest["ILLIQ"] = np.nan
                     all_results.append(
                         year_manifest[
@@ -378,7 +378,7 @@ class CRSPEngine:
                                 "file_name",
                                 "StockRet",
                                 "MarketRet",
-                                "Volatility",
+                                "DailyVola",
                                 "ILLIQ",
                             ]
                         ]
@@ -400,7 +400,7 @@ class CRSPEngine:
                             "file_name",
                             "StockRet",
                             "MarketRet",
-                            "Volatility",
+                            "DailyVola",
                             "ILLIQ",
                         ]
                     ]

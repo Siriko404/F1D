@@ -89,8 +89,8 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CommentLetter", "controls": "base",     "fe_formula": "C(ff12_code) + C(cal_yr)"},
-    {"col": 2, "dv": "CommentLetter", "controls": "extended",  "fe_formula": "C(ff12_code) + C(cal_yr)"},
+    {"col": 1, "dv": "CCCL", "controls": "base",     "fe_formula": "C(ff12_code) + C(cal_yr)"},
+    {"col": 2, "dv": "CCCL", "controls": "extended",  "fe_formula": "C(ff12_code) + C(cal_yr)"},
 ]
 
 VARIABLE_LABELS = {
@@ -101,7 +101,7 @@ VARIABLE_LABELS = {
 }
 
 SUMMARY_STATS_VARS = [
-    {"col": "CommentLetter", "label": "CCCL (call-to-next-call)"},
+    {"col": "CCCL", "label": "CCCL (call-to-next-call)"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
@@ -481,8 +481,8 @@ def main(panel_path: Optional[str] = None) -> int:
     panel = filter_main_sample(panel)
     main_n = len(panel)
 
-    n_dv_valid = panel["CommentLetter"].notna().sum()
-    n_dv1 = (panel["CommentLetter"] == 1).sum()
+    n_dv_valid = panel["CCCL"].notna().sum()
+    n_dv1 = (panel["CCCL"] == 1).sum()
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
     print(f"  CCCL non-null: {n_dv_valid:,}")
     print(f"  CCCL=1: {n_dv1:,} ({100*n_dv1/n_dv_valid:.2f}%)")

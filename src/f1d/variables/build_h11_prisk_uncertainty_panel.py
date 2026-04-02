@@ -53,7 +53,7 @@ from f1d.shared.variables import (
     EarningsVolatilityBuilder,
     ManifestFieldsBuilder,
     NegativeSentimentBuilder,
-    PRiskBuilder,
+    PRiskQBuilder,
     stats_list_to_dataframe,
 )
 
@@ -96,7 +96,7 @@ def build_panel(
             var_config.get("ceo_pres_uncertainty", {})
         ),
         # Main Independent Variable (NEW)
-        "prisk_q": PRiskBuilder(var_config.get("prisk_q", {})),
+        "prisk_q": PRiskQBuilder(var_config.get("prisk_q", {})),
         # Linguistic Controls
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
