@@ -276,10 +276,10 @@ def create_cccl_dvs(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
         cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0
         cccl_lag[i] = 1.0 if (g, q_prev) in cccl_set else 0.0
 
-    panel["CCCL"] = cccl_fwd
+    panel["CommentLetter"] = cccl_fwd
     panel["CCCL_lag"] = cccl_lag
 
-    n_fwd = (panel["CCCL"] == 1).sum()
+    n_fwd = (panel["CommentLetter"] == 1).sum()
     n_lag = (panel["CCCL_lag"] == 1).sum()
     print(f"  CCCL=1: {n_fwd:,} / {len(panel):,} ({100*n_fwd/len(panel):.2f}%)")
     print(f"  CCCL_lag=1: {n_lag:,}")

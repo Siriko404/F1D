@@ -22,16 +22,16 @@ Model Specifications (12 columns in one table):
     Cols 3-6, 9-12:  Extended controls
 
 Key Independent Variables (4, all enter simultaneously):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr,
 
 Base Controls (8):
-    Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, DividendPayer, OCF_Volatility
-    NOTE: RD_Intensity EXCLUDED — DV is R&D-based (bad control).
-    NOTE: CapexAt included (not the DV here, unlike H13).
+    lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, DivDummy, sCFO
+    NOTE: RDSales EXCLUDED — DV is R&D-based (bad control).
+    NOTE: Capex included (not the DV here, unlike H13).
 
 Extended Controls (Base + 3):
-    + SalesGrowth, CashFlow, Volatility
+    + SalesGrowth, CashFlow, DailyVola
 
 Lead specs (cols 7-12) include RDSales as lagged DV control.
 
@@ -92,30 +92,30 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",
 ]
 
-# NOTE: RD_Intensity EXCLUDED — DV is R&D-based (bad control: same numerator concept).
-# NOTE: CapexAt included (not the DV here, unlike H13).
+# NOTE: RDSales EXCLUDED — DV is R&D-based (bad control: same numerator concept).
+# NOTE: Capex included (not the DV here, unlike H13).
 BASE_CONTROLS = [
-    "Size",
+    "lnAssets",
     "TobinsQ",
     "ROA",
-    "BookLev",
-    "CashHoldings",
-    "CapexAt",
-    "DividendPayer",
-    "OCF_Volatility",
+    "Leverage",
+    "CashRatio",
+    "Capex",
+    "DivDummy",
+    "sCFO",
     "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
     "SalesGrowth",
-    "CashFlow",
-    "Volatility",
+    "CashFlowAt",
+    "DailyVola",
 ]
 
 MODEL_SPECS = [
@@ -140,10 +140,10 @@ MODEL_SPECS = [
 MIN_CALLS_PER_FIRM = 5
 
 VARIABLE_LABELS = {
-    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
-    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
+    "UncAnsCEO": "CEO QA Uncertainty",
+    "UncPreCEO": "CEO Pres Uncertainty",
+    "UncAnsMgr": "Mgr QA Uncertainty",
+    "UncPreMgr": "Mgr Pres Uncertainty",
 }
 
 # Summary statistics variable list
@@ -151,23 +151,23 @@ SUMMARY_STATS_VARS = [
     {"col": "RDSales", "label": "R\\&D / Sales (t)"},
     {"col": "RDSales_lead", "label": "R\\&D / Sales (t+1)"},
     # Key IVs
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
     # Base controls
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     # Extended controls
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -221,13 +221,13 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         # DVs + lagged DV
         "RDSales", "RDSales_lead", "RDSales_lag",
         # Key IVs
-        "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
-        "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
+        "UncAnsCEO", "UncPreCEO",
+        "UncAnsMgr", "UncPreMgr",
         # Base controls
-        "Size", "TobinsQ", "ROA",
-        "BookLev", "CashHoldings", "CapexAt", "DividendPayer", "OCF_Volatility",
+        "lnAssets", "TobinsQ", "ROA",
+        "Leverage", "CashRatio", "Capex", "DivDummy", "sCFO",
         # Extended controls
-        "SalesGrowth", "CashFlow", "Volatility",
+        "SalesGrowth", "CashFlowAt", "DailyVola",
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
@@ -647,8 +647,8 @@ def generate_report(
         "## Model Specifications",
         "",
         "All 4 key IVs enter each model simultaneously:",
-        "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
-        "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
+        "- UncAnsCEO, UncPreCEO",
+        "- UncAnsMgr, UncPreMgr",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",

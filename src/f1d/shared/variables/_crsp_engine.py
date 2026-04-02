@@ -32,7 +32,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-CRSP_RETURN_COLS = ["StockRet", "MarketRet", "Volatility", "amihud_illiq"]
+CRSP_RETURN_COLS = ["StockRet", "MarketRet", "DailyVola", "ILLIQ"]
 
 # Additional columns needed for bid-ask spread calculations (H14)
 CRSP_BIDASK_COLS = ["BIDLO", "ASKHI", "BID", "ASK", "SHROUT"]
@@ -257,8 +257,8 @@ def _compute_returns_for_manifest(
 
     manifest["StockRet"] = manifest["file_name"].map(stock_rets)
     manifest["MarketRet"] = manifest["file_name"].map(market_rets)
-    manifest["Volatility"] = manifest["file_name"].map(stock_vol)
-    manifest["amihud_illiq"] = manifest["file_name"].map(illiq)
+    manifest["DailyVola"] = manifest["file_name"].map(stock_vol)
+    manifest["ILLIQ"] = manifest["file_name"].map(illiq)
 
     return manifest
 
@@ -269,7 +269,7 @@ class CRSPEngine:
     Usage:
         engine = CRSPEngine()
         df = engine.get_data(root_path, manifest_path)
-        # df has columns: file_name, StockRet, MarketRet, Volatility
+        # df has columns: file_name, StockRet, MarketRet, DailyVola
 
     The result is cached after the first call — subsequent calls with the same
     root_path return the cached DataFrame immediately.
@@ -287,7 +287,7 @@ class CRSPEngine:
         return (
             self._cache is not None
             and self._cache_root == root_path
-            and "amihud_illiq" in self._cache.columns
+            and "ILLIQ" in self._cache.columns
         )
 
     def get_data(self, root_path: Path, manifest_path: Path) -> pd.DataFrame:
@@ -371,7 +371,7 @@ class CRSPEngine:
                     year_manifest["StockRet"] = np.nan
                     year_manifest["MarketRet"] = np.nan
                     year_manifest["Volatility"] = np.nan
-                    year_manifest["amihud_illiq"] = np.nan
+                    year_manifest["ILLIQ"] = np.nan
                     all_results.append(
                         year_manifest[
                             [
@@ -379,7 +379,7 @@ class CRSPEngine:
                                 "StockRet",
                                 "MarketRet",
                                 "Volatility",
-                                "amihud_illiq",
+                                "ILLIQ",
                             ]
                         ]
                     )
@@ -387,7 +387,7 @@ class CRSPEngine:
 
                 year_manifest = _compute_returns_for_manifest(year_manifest, crsp)
                 n_ret = year_manifest["StockRet"].notna().sum()
-                n_illiq = year_manifest["amihud_illiq"].notna().sum()
+                n_illiq = year_manifest["ILLIQ"].notna().sum()
                 logger.info(
                     f"    CRSPEngine: {year} — "
                     f"StockRet {n_ret:,}/{len(year_manifest):,}, "
@@ -401,7 +401,7 @@ class CRSPEngine:
                             "StockRet",
                             "MarketRet",
                             "Volatility",
-                            "amihud_illiq",
+                            "ILLIQ",
                         ]
                     ]
                 )

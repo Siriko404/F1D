@@ -141,6 +141,48 @@ LINGUISTIC_PCT_COLUMNS = [
     "NonCEO_Manager_QA_Weak_Modal_pct",
 ]
 
+# =========================================================================
+# Standard variable name mapping (DWZ 2021 convention)
+# =========================================================================
+# Stage 2 outputs use descriptive names (e.g., Manager_QA_Uncertainty_pct in parquet).
+# The pipeline standardizes to DWZ (2021) naming: [Measure][Context][Speaker]
+#   Measure: Unc, Neg, Pos, WMod
+#   Context: Ans (Q&A), Pre (presentation), Que (analyst questions), Call (entire)
+#   Speaker: CEO, Mgr (all managers), NoCEO (non-CEO managers), omitted for call-level
+#
+# Rename applied after loading — Stage 2 parquet files are NOT modified.
+LINGUISTIC_RENAME_MAP = {
+    # Uncertainty
+    "Manager_QA_Uncertainty_pct": "UncAnsMgr",
+    "Manager_Pres_Uncertainty_pct": "UncPreMgr",
+    "CEO_QA_Uncertainty_pct": "UncAnsCEO",
+    "CEO_Pres_Uncertainty_pct": "UncPreCEO",
+    "Analyst_QA_Uncertainty_pct": "UncQue",
+    "NonCEO_Manager_QA_Uncertainty_pct": "UncAnsNoCEO",
+    "NonCEO_Manager_Pres_Uncertainty_pct": "UncPreNoCEO",
+    "Entire_All_Uncertainty_pct": "UncCall",
+    "Entire_All_Negative_pct": "NegCall",
+    # Positive sentiment
+    "Manager_QA_Positive_pct": "PosAnsMgr",
+    "Manager_Pres_Positive_pct": "PosPreMgr",
+    "CEO_QA_Positive_pct": "PosAnsCEO",
+    "CEO_Pres_Positive_pct": "PosPreCEO",
+    "NonCEO_Manager_QA_Positive_pct": "PosAnsNoCEO",
+    "Analyst_QA_Positive_pct": "PosQue",
+    # Negative sentiment
+    "Manager_QA_Negative_pct": "NegAnsMgr",
+    "Manager_Pres_Negative_pct": "NegPreMgr",
+    "CEO_QA_Negative_pct": "NegAnsCEO",
+    "CEO_Pres_Negative_pct": "NegPreCEO",
+    "NonCEO_Manager_QA_Negative_pct": "NegAnsNoCEO",
+    "Analyst_QA_Negative_pct": "NegQue",
+    # Weak modal
+    "Manager_QA_Weak_Modal_pct": "WModAnsMgr",
+    "Manager_Pres_Weak_Modal_pct": "WModPreMgr",
+    "CEO_QA_Weak_Modal_pct": "WModAnsCEO",
+    "CEO_Pres_Weak_Modal_pct": "WModPreCEO",
+}
+
 
 class LinguisticEngine:
     """Load Stage 2 linguistic variables, apply winsorization, cache result.
@@ -148,7 +190,7 @@ class LinguisticEngine:
     Usage:
         engine = LinguisticEngine()
         df = engine.get_data(root_path, years)
-        # df has columns: file_name, Manager_QA_Uncertainty_pct, CEO_QA_Positive_pct, ...
+        # df has columns: file_name, UncAnsMgr, PosAnsCEO, ...
 
     The result is cached after the first call — subsequent calls with the same
     root_path return the cached DataFrame immediately.
@@ -259,6 +301,16 @@ class LinguisticEngine:
                 logger.info(f"  Winsorized {len(existing_pct_cols)} percentage columns (per-year 0%/99% upper-only)")
             # === END WINSORIZATION ===
 
+            # === RENAME to DWZ (2021) standard names ===
+            rename_cols = {k: v for k, v in LINGUISTIC_RENAME_MAP.items()
+                          if k in combined.columns}
+            if rename_cols:
+                combined = combined.rename(columns=rename_cols)
+                logger.info(
+                    f"  Renamed {len(rename_cols)} columns to DWZ standard "
+                    f"(e.g., {list(rename_cols.items())[:2]})"
+                )
+
             self._cache = combined
             self._cache_root = root_path
             return combined
@@ -313,4 +365,4 @@ def get_engine() -> LinguisticEngine:
     return _engine
 
 
-__all__ = ["LinguisticEngine", "LINGUISTIC_PCT_COLUMNS", "get_engine"]
+__all__ = ["LinguisticEngine", "LINGUISTIC_PCT_COLUMNS", "LINGUISTIC_RENAME_MAP", "get_engine"]

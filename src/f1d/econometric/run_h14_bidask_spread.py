@@ -20,15 +20,15 @@ DV: DSPREAD — change in average relative bid-ask spread around the earnings ca
     Following Lee (2016, The Accounting Review).
 
 Key Independent Variables (4, all enter simultaneously):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr,
 
 Base Controls (8):
-    Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility,
+    lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO,
     PreCallSpread (lagged-DV control: pre-call relative spread level)
 
 Extended Controls (Base + 4):
-    + StockPrice, Turnover, Volatility, AbsSurpDec
+    + StockPrice, Turnover, DailyVola, AbsSurpDec
 
 Sample: Main only (FF12 codes 1-7, 9-10, 12).
 
@@ -86,29 +86,29 @@ warnings.filterwarnings(
 # ==============================================================================
 
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",]
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",]
 
 # NOTE: DSPREAD is the DV — NOT a control.
 # PreCallSpread is a lagged-DV control (pre-call relative spread level).
 # Lev included for thesis consistency with H1/H5 (omitted only from H4 where Lev is DV).
 BASE_CONTROLS = [
-    "Size",
+    "lnAssets",
     "TobinsQ",
     "ROA",
-    "BookLev",
-    "CapexAt",
-    "DividendPayer",
-    "OCF_Volatility",
+    "Leverage",
+    "Capex",
+    "DivDummy",
+    "sCFO",
     "PreCallSpread",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
     "StockPrice",
     "Turnover",
-    "Volatility",
+    "DailyVola",
     "AbsSurpDec",
 ]
 
@@ -125,27 +125,27 @@ MODEL_SPECS = [
 MIN_CALLS_PER_FIRM = 5
 
 VARIABLE_LABELS = {
-    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
-    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
+    "UncAnsCEO": "CEO QA Uncertainty",
+    "UncPreCEO": "CEO Pres Uncertainty",
+    "UncAnsMgr": "Mgr QA Uncertainty",
+    "UncPreMgr": "Mgr Pres Uncertainty",}
 
 SUMMARY_STATS_VARS = [
     {"col": "DSPREAD", "label": r"$\Delta$Spread (DV)"},
     {"col": "PreCallSpread", "label": "Pre-Call Spread"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     {"col": "StockPrice", "label": "Stock Price"},
     {"col": "Turnover", "label": "Share Turnover"},
-    {"col": "Volatility", "label": "Return Volatility"},
+    {"col": "DailyVola", "label": "Return Volatility"},
     {"col": "AbsSurpDec", "label": r"$|$Earnings Surprise Decile$|$"},
 ]
 
@@ -199,13 +199,13 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         # DV (Lee 2016 construction)
         "DSPREAD",
         # Key IVs (4 simultaneous)
-        "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
-        "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "Size", "TobinsQ", "ROA", "BookLev",
-        "CapexAt", "DividendPayer", "OCF_Volatility",
+        "UncAnsCEO", "UncPreCEO",
+        "UncAnsMgr", "UncPreMgr",
+        "lnAssets", "TobinsQ", "ROA", "Leverage",
+        "Capex", "DivDummy", "sCFO",
         "PreCallSpread",
         # Extended controls
-        "StockPrice", "Turnover", "Volatility", "AbsSurpDec",
+        "StockPrice", "Turnover", "DailyVola", "AbsSurpDec",
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
@@ -596,8 +596,8 @@ def generate_report(
         "## Model Specifications",
         "",
         "All 4 key IVs enter each model simultaneously:",
-        "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
-        "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
+        "- UncAnsCEO, UncPreCEO",
+        "- UncAnsMgr, UncPreMgr",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",

@@ -167,17 +167,17 @@ Matches provenance doc. All 4 IVs enter simultaneously confirmed at runner line 
 
 ### B2-CHECK: Dependent Variable(s)
 
-**CashHoldings:**
+**CashRatio:**
 - Claim: `cheq / atq`, CompustatEngine `_compustat_engine.py` line 981, contemporaneous via merge_asof backward.
-- Code: `_compustat_engine.py` line 981 — `comp["CashHoldings"] = comp["cheq"] / comp["atq"]`. Merge_asof backward is the standard CompustatEngine pattern (lines 1222-1229).
+- Code: `_compustat_engine.py` line 981 — `comp["CashRatio"] = comp["cheq"] / comp["atq"]`. Merge_asof backward is the standard CompustatEngine pattern (lines 1222-1229).
 - **PASS**
 
-**CashHoldings_lead:**
-- Claim: "CashHoldings from firm's latest call in fiscal year t+1, shifted back to year t; requires consecutive FY."
-- Code: Builder `create_lead_variable()` lines 239-376. Line 309 — `latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()`. Line 326 — `.shift(-1)` to get next fiscal year. Line 331 — consecutive FY validation. The latest call's CashHoldings is used as end-of-year value; that value is then shifted -1 to assign next year's EOY cash to the current year's calls.
+**CashRatio_lead:**
+- Claim: "CashRatio from firm's latest call in fiscal year t+1, shifted back to year t; requires consecutive FY."
+- Code: Builder `create_lead_variable()` lines 239-376. Line 309 — `latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()`. Line 326 — `.shift(-1)` to get next fiscal year. Line 331 — consecutive FY validation. The latest call's CashRatio is used as end-of-year value; that value is then shifted -1 to assign next year's EOY cash to the current year's calls.
 - Claim accurately reflects code. **PASS.**
 
-**OBSERVATION (not a failure):** The builder's module-level docstring (lines 16-18) says the lead uses "Average CashHoldings within (gvkey, call_year)" — this is stale and wrong relative to the actual code. The provenance doc's B2 correctly says "latest call," matching the code. However, this stale docstring is not flagged in Known Issues (see Phase 6 failure below).
+**OBSERVATION (not a failure):** The builder's module-level docstring (lines 16-18) says the lead uses "Average CashRatio within (gvkey, call_year)" — this is stale and wrong relative to the actual code. The provenance doc's B2 correctly says "latest call," matching the code. However, this stale docstring is not flagged in Known Issues (see Phase 6 failure below).
 
 **Result: PASS**
 
@@ -186,10 +186,10 @@ Matches provenance doc. All 4 IVs enter simultaneously confirmed at runner line 
 **Runner KEY_IVS (lines 81-85):**
 ```python
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",
 ]
 ```
 All four match provenance doc variable names exactly. Formulas (LM uncertainty word count / total words * 100 for respective speaker/section combinations) are correct per LinguisticEngine architecture.
@@ -200,9 +200,9 @@ All four match provenance doc variable names exactly. Formulas (LM uncertainty w
 
 ### B4-CHECK: Control Variables
 
-**BASE_CONTROLS from runner (lines 87-96):** `["BookLev", "Size", "TobinsQ", "ROA", "CapexAt", "DividendPayer", "OCF_Volatility", "Lagged_DV"]` — 8 variables. Matches provenance doc. ✓
+**BASE_CONTROLS from runner (lines 87-96):** `["Leverage", "lnAssets", "TobinsQ", "ROA", "Capex", "DivDummy", "sCFO", "Lagged_DV"]` — 8 variables. Matches provenance doc. ✓
 
-**EXTENDED_CONTROLS from runner (lines 98-103):** `BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]` — 12 variables total. Matches provenance doc ("Base + 4 additional = 12 variables"). ✓
+**EXTENDED_CONTROLS from runner (lines 98-103):** `BASE_CONTROLS + ["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]` — 12 variables total. Matches provenance doc ("Base + 4 additional = 12 variables"). ✓
 
 **Lagged_DV construction:** Runner lines 256-260 —
 ```python
@@ -210,17 +210,17 @@ base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
 lag_col = f"{base_dv}_lag"
 panel["Lagged_DV"] = panel[lag_col]
 ```
-For both DV = "CashHoldings" and DV = "CashHoldings_lead": `base_dv = "CashHoldings"`, so `lag_col = "CashHoldings_lag"`. Provenance doc correctly states Lagged_DV = CashHoldings_lag in both cases. ✓
+For both DV = "CashRatio" and DV = "CashRatio_lead": `base_dv = "CashRatio"`, so `lag_col = "CashRatio_lag"`. Provenance doc correctly states Lagged_DV = CashRatio_lag in both cases. ✓
 
 Individual formula spot-checks:
-- BookLev: `_compustat_engine.py` line 943 — `(comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`. ✓
-- Size: line 938 — `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. ✓
+- Leverage: `_compustat_engine.py` line 943 — `(comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`. ✓
+- lnAssets: line 938 — `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. ✓
 - TobinsQ: lines 982-992 — `(mktcap + debt_book) / atq` with clipped debt, NaN conditions. ✓
 - ROA: lines 954-964 — `iby_annual / avg_assets` using Q4 annual values. ✓
-- CapexAt: lines 994-999 — `capxy_annual / atq_annual_lag1`. ✓
-- DividendPayer: lines 1004-1007 — `(dvy_annual.fillna(0) > 0).astype(float)`. ✓
-- RD_Intensity: line 967 — `xrdq.fillna(0) / atq`. ✓
-- SalesGrowth, CashFlow: lines 644-688 (Biddle). ✓
+- Capex: lines 994-999 — `capxy_annual / atq_annual_lag1`. ✓
+- DivDummy: lines 1004-1007 — `(dvy_annual.fillna(0) > 0).astype(float)`. ✓
+- RDSales: line 967 — `xrdq.fillna(0) / atq`. ✓
+- SalesGrowth, CashFlowAt: lines 644-688 (Biddle). ✓
 
 **Result: PASS**
 
@@ -270,36 +270,36 @@ Matches provenance doc exactly. Significance thresholds confirmed at runner line
 
 **MODEL_SPECS from runner (lines 105-120) — 12 entries:**
 ```
-col 1:  CashHoldings,      fe=industry,    controls=base
-col 2:  CashHoldings,      fe=firm,        controls=base
-col 3:  CashHoldings,      fe=industry,    controls=extended
-col 4:  CashHoldings,      fe=firm,        controls=extended
-col 5:  CashHoldings,      fe=industry_yq, controls=extended
-col 6:  CashHoldings,      fe=firm_yq,     controls=extended
-col 7:  CashHoldings_lead, fe=industry,    controls=base
-col 8:  CashHoldings_lead, fe=firm,        controls=base
-col 9:  CashHoldings_lead, fe=industry,    controls=extended
-col 10: CashHoldings_lead, fe=firm,        controls=extended
-col 11: CashHoldings_lead, fe=industry_yq, controls=extended
-col 12: CashHoldings_lead, fe=firm_yq,     controls=extended
+col 1:  CashRatio,      fe=industry,    controls=base
+col 2:  CashRatio,      fe=firm,        controls=base
+col 3:  CashRatio,      fe=industry,    controls=extended
+col 4:  CashRatio,      fe=firm,        controls=extended
+col 5:  CashRatio,      fe=industry_yq, controls=extended
+col 6:  CashRatio,      fe=firm_yq,     controls=extended
+col 7:  CashRatio_lead, fe=industry,    controls=base
+col 8:  CashRatio_lead, fe=firm,        controls=base
+col 9:  CashRatio_lead, fe=industry,    controls=extended
+col 10: CashRatio_lead, fe=firm,        controls=extended
+col 11: CashRatio_lead, fe=industry_yq, controls=extended
+col 12: CashRatio_lead, fe=firm_yq,     controls=extended
 ```
 
 **Spec register in provenance doc (12 rows) — verified row by row:**
 
 | Col | DV Match | Entity FE Match | Time FE Match | Controls Match |
 |-----|----------|-----------------|---------------|----------------|
-| 1 | CashHoldings ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Base (8) ✓ |
-| 2 | CashHoldings ✓ | Firm ✓ | Calendar Year ✓ | Base (8) ✓ |
-| 3 | CashHoldings ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Extended (12) ✓ |
-| 4 | CashHoldings ✓ | Firm ✓ | Calendar Year ✓ | Extended (12) ✓ |
-| 5 | CashHoldings ✓ | Industry (FF12) ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
-| 6 | CashHoldings ✓ | Firm ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
-| 7 | CashHoldings_lead ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Base (8) ✓ |
-| 8 | CashHoldings_lead ✓ | Firm ✓ | Calendar Year ✓ | Base (8) ✓ |
-| 9 | CashHoldings_lead ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Extended (12) ✓ |
-| 10 | CashHoldings_lead ✓ | Firm ✓ | Calendar Year ✓ | Extended (12) ✓ |
-| 11 | CashHoldings_lead ✓ | Industry (FF12) ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
-| 12 | CashHoldings_lead ✓ | Firm ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
+| 1 | CashRatio ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Base (8) ✓ |
+| 2 | CashRatio ✓ | Firm ✓ | Calendar Year ✓ | Base (8) ✓ |
+| 3 | CashRatio ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Extended (12) ✓ |
+| 4 | CashRatio ✓ | Firm ✓ | Calendar Year ✓ | Extended (12) ✓ |
+| 5 | CashRatio ✓ | Industry (FF12) ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
+| 6 | CashRatio ✓ | Firm ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
+| 7 | CashRatio_lead ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Base (8) ✓ |
+| 8 | CashRatio_lead ✓ | Firm ✓ | Calendar Year ✓ | Base (8) ✓ |
+| 9 | CashRatio_lead ✓ | Industry (FF12) ✓ | Calendar Year ✓ | Extended (12) ✓ |
+| 10 | CashRatio_lead ✓ | Firm ✓ | Calendar Year ✓ | Extended (12) ✓ |
+| 11 | CashRatio_lead ✓ | Industry (FF12) ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
+| 12 | CashRatio_lead ✓ | Firm ✓ | Cal Year-Quarter ✓ | Extended (12) ✓ |
 
 All 12 rows match exactly. Row count = 12 = len(MODEL_SPECS). No specs missing or extra.
 
@@ -344,7 +344,7 @@ All 6 steps confirmed. Filter order matches code execution order. ✓
 
 ### D3-CHECK: Sample Counts per Spec
 
-**Claim:** N varies across specs because: (1) Cols 7-12 use CashHoldings_lead which has additional NaN; (2) YQ specs require cal_yr_qtr non-null; (3) Extended control specs may drop more rows due to missing SalesGrowth, RD_Intensity, CashFlow, or Volatility.
+**Claim:** N varies across specs because: (1) Cols 7-12 use CashRatio_lead which has additional NaN; (2) YQ specs require cal_yr_qtr non-null; (3) Extended control specs may drop more rows due to missing SalesGrowth, RDSales, CashFlowAt, or DailyVola.
 
 **Code:** Logically correct.
 - (1) Builder lines 369-375 confirm calls without lead get NaN lead; `prepare_regression_data()` drops DV-null rows at line 286. ✓
@@ -366,31 +366,31 @@ Claim that `model_diagnostics.csv` contains exact per-column N: confirmed at run
 All 16 regression variables (KEY_IVS + BASE_CONTROLS + EXTENDED_CONTROLS) plus DVs and index columns verified against code:
 
 **DVs:**
-- `CashHoldings`: `cheq / atq` at `_compustat_engine.py` line 981. 1%/99% winsorization. ✓
-- `CashHoldings_lead`: latest call per (gvkey, fyearq_int) shifted -1 year; consecutive FY required. Builder lines 308-334. ✓
-- `CashHoldings_lag`: latest call per (gvkey, fyearq_int) shifted +1 year; consecutive FY required. Builder lines 379-447. ✓
-- `Lagged_DV`: alias for CashHoldings_lag, assigned at runner lines 256-260. ✓
+- `CashRatio`: `cheq / atq` at `_compustat_engine.py` line 981. 1%/99% winsorization. ✓
+- `CashRatio_lead`: latest call per (gvkey, fyearq_int) shifted -1 year; consecutive FY required. Builder lines 308-334. ✓
+- `CashRatio_lag`: latest call per (gvkey, fyearq_int) shifted +1 year; consecutive FY required. Builder lines 379-447. ✓
+- `Lagged_DV`: alias for CashRatio_lag, assigned at runner lines 256-260. ✓
 
 **IVs:**
-- `CEO_QA_Uncertainty_pct`: LM uncertainty / CEO Q&A words * 100. LinguisticEngine. 0%/99% upper-only winsorization. ✓
-- `CEO_Pres_Uncertainty_pct`: same formula for CEO presentation. ✓
-- `Manager_QA_Uncertainty_pct`: same formula for all managers in Q&A. ✓
-- `Manager_Pres_Uncertainty_pct`: same formula for all managers in presentation. ✓
+- `UncAnsCEO`: LM uncertainty / CEO Q&A words * 100. LinguisticEngine. 0%/99% upper-only winsorization. ✓
+- `UncPreCEO`: same formula for CEO presentation. ✓
+- `UncAnsMgr`: same formula for all managers in Q&A. ✓
+- `UncPreMgr`: same formula for all managers in presentation. ✓
 
 **Base Controls:**
-- `BookLev`: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` at line 943. ✓
-- `Size`: `ln(atq)` for atq > 0; NaN otherwise at line 938. ✓
+- `Leverage`: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` at line 943. ✓
+- `lnAssets`: `ln(atq)` for atq > 0; NaN otherwise at line 938. ✓
 - `TobinsQ`: `(mktcap + debt_book) / atq` with clip(lower=0).fillna(0) debt; NaN conditions at lines 982-992. ✓
 - `ROA`: `iby_annual / avg_assets` (Q4 annual, average assets) at lines 954-964. ✓
-- `CapexAt`: `capxy_annual / atq_annual_lag1` at lines 994-999. ✓
-- `DividendPayer`: `float(dvy_annual.fillna(0) > 0)` at lines 1004-1007. Not winsorized (binary). ✓
-- `OCF_Volatility`: rolling 5-year std of `oancfy / atq_lag` per gvkey, min 3 periods. CompustatEngine lines 303-352. ✓
+- `Capex`: `capxy_annual / atq_annual_lag1` at lines 994-999. ✓
+- `DivDummy`: `float(dvy_annual.fillna(0) > 0)` at lines 1004-1007. Not winsorized (binary). ✓
+- `sCFO`: rolling 5-year std of `oancfy / atq_lag` per gvkey, min 3 periods. CompustatEngine lines 303-352. ✓
 
 **Extended Controls:**
 - `SalesGrowth`: `(sale_t - sale_lag) / abs(sale_lag)` with saley/saleq fallback; consecutive FY. Lines 644-661. ✓
-- `RD_Intensity`: `xrdq.fillna(0) / atq` at line 967. ✓
-- `CashFlow`: `oancfy / avg_assets` (Q4 annual, fallback to end-of-year atq if lag missing). Lines 674-688. ✓
-- `Volatility`: `std(daily_RET) * sqrt(252) * 100` over inter-call window; min 10 trading days. CRSPEngine. ✓
+- `RDSales`: `xrdq.fillna(0) / atq` at line 967. ✓
+- `CashFlowAt`: `oancfy / avg_assets` (Q4 annual, fallback to end-of-year atq if lag missing). Lines 674-688. ✓
+- `DailyVola`: `std(daily_RET) * sqrt(252) * 100` over inter-call window; min 10 trading days. CRSPEngine. ✓
 
 **FE/Index columns:** ff12_code, gvkey, cal_yr, cal_yr_qtr, fyearq_int — all correctly described. ✓
 
@@ -412,7 +412,7 @@ None of these appear anywhere in `run_h1_cash_holdings.py` (confirmed by grep: n
 ### FAIL 2 — Stale builder docstring discrepancy not in Known Issues
 
 The builder module-level docstring (lines 16-18) says:
-> "Average CashHoldings within (gvkey, call_year) -> firm-year mean"
+> "Average CashRatio within (gvkey, call_year) -> firm-year mean"
 
 The actual code at `create_lead_variable()` (lines 308-334) uses `idxmax()` to select the LATEST call within each (gvkey, fyearq_int) — NOT an average. The provenance doc correctly describes the latest-call method in B2. However, the Known Issues section does not flag this stale/wrong builder docstring. Known Issue #5 flags a different stale comment (line 794), but this builder docstring issue is absent.
 
@@ -447,8 +447,8 @@ The actual code at `create_lead_variable()` (lines 308-334) uses `idxmax()` to s
 - Step 2 (merge_asof gvkey + date in CompustatEngine): CompustatEngine lines 1222-1229. ✓
 - Step 3 (CRSP file_name map): CRSPEngine architecture. ✓
 - Step 4 (fyearq attachment via merge_asof): builder line 280 (`attach_fyearq`). ✓
-- Step 5 (CashHoldings_lead merge on gvkey, fyearq_int): builder line 361. ✓
-- Step 6 (CashHoldings_lag merge on gvkey, fyearq_int): builder line 437. ✓
+- Step 5 (CashRatio_lead merge on gvkey, fyearq_int): builder line 361. ✓
+- Step 6 (CashRatio_lag merge on gvkey, fyearq_int): builder line 437. ✓
 
 All 6 merge steps accurate. ✓
 
@@ -491,13 +491,13 @@ All other G2 paths use forward slashes. This is a copy-paste formatting inconsis
 | Claim | Code | Match |
 |-------|------|-------|
 | Compustat vars: 1%/99% by fiscal year | `_compustat_engine.py` `_winsorize_by_year()` lines 439-463 | ✓ |
-| CashFlow, SalesGrowth: winsorized inside Biddle; NOT double-winsorized (skip_winsorize, lines 1123-1126) | Lines 661, 688 (inside Biddle), lines 1123-1126 (exclusion) | ✓ |
-| DividendPayer: not winsorized (binary, skip_winsorize line 1124) | Line 1124 confirmed | ✓ |
+| CashFlowAt, SalesGrowth: winsorized inside Biddle; NOT double-winsorized (skip_winsorize, lines 1123-1126) | Lines 661, 688 (inside Biddle), lines 1123-1126 (exclusion) | ✓ |
+| DivDummy: not winsorized (binary, skip_winsorize line 1124) | Line 1124 confirmed | ✓ |
 | Linguistic IVs: 0%/99% upper-only per calendar year (`lower=0.0, upper=0.99`) | `_linguistic_engine.py` line 257 | ✓ |
-| Volatility: 1%/99% per calendar year | CRSPEngine lines 445-447 | ✓ |
+| DailyVola: 1%/99% per calendar year | CRSPEngine lines 445-447 | ✓ |
 
 **H2. Missing Data:** Complete-case deletion at lines 290-291; inf replacement at line 276. ✓
-**H3. Transformations:** ln(atq) for Size (line 938); annualization for Volatility; percentage scaling for linguistic IVs at Stage 2. ✓
+**H3. Transformations:** ln(atq) for lnAssets (line 938); annualization for DailyVola; percentage scaling for linguistic IVs at Stage 2. ✓
 
 **Phase 7 Result: 8/9 pass. One FAIL: backslash path separator in G2 (cosmetic). One additional undocumented Known Issue: stale IBES raw input reference in builder docstring.**
 
@@ -515,8 +515,8 @@ All other G2 paths use forward slashes. This is a copy-paste formatting inconsis
     "label": "tab:h1",
     "cols": 12,
     "dvs": [
-        ("CashHoldings", 6),
-        (r"CashHoldings\_lead", 6),
+        ("CashRatio", 6),
+        (r"CashRatio\_lead", 6),
     ],
     "tail": "one",
     "hyp_dir": ">",
@@ -532,7 +532,7 @@ All other G2 paths use forward slashes. This is a copy-paste formatting inconsis
 | `caption` | `"H1: Speech Uncertainty and Cash Holdings"` | `"H1: Speech Uncertainty and Cash Holdings"` | ✓ YES |
 | `label` | `"tab:h1"` | `"tab:h1"` | ✓ YES |
 | `cols` | `12` | `12` | ✓ YES |
-| `dvs` | `[("CashHoldings", 6), (r"CashHoldings\_lead", 6)]` | same | ✓ YES |
+| `dvs` | `[("CashRatio", 6), (r"CashRatio\_lead", 6)]` | same | ✓ YES |
 | `tail` | `"one"` | `"one"` | ✓ YES |
 | `hyp_dir` | `">"` | `">"` | ✓ YES |
 
@@ -550,7 +550,7 @@ Entry content is accurate. ✓
 | `cols` = 12 matches MODEL_SPECS | ✓ confirmed | PASS |
 | `tail` = "one" matches runner | ✓ confirmed | PASS |
 | `hyp_dir` = ">" matches runner | ✓ confirmed | PASS |
-| DV split: CashHoldings(6), CashHoldings_lead(6) | ✓ confirmed | PASS |
+| DV split: CashRatio(6), CashRatio_lead(6) | ✓ confirmed | PASS |
 
 **Phase 8 Result: 4/5 pass. One FAIL: source line numbers cited as 49-61; actual lines are 20-32.**
 
@@ -615,13 +615,13 @@ All constructor parameter claims verified against runner lines 360-381:
 Check internal consistency within the provenance doc:
 
 ### 1. DVs in B2 match DVs in C (spec register)?
-- B2: `CashHoldings`, `CashHoldings_lead`
-- C: Cols 1-6 use CashHoldings; Cols 7-12 use CashHoldings_lead
+- B2: `CashRatio`, `CashRatio_lead`
+- C: Cols 1-6 use CashRatio; Cols 7-12 use CashRatio_lead
 - **CONSISTENT ✓**
 
 ### 2. DVs in C match DVs in I (table generator)?
-- C: CashHoldings (6 cols), CashHoldings_lead (6 cols)
-- I: `("CashHoldings", 6), (r"CashHoldings\_lead", 6)`
+- C: CashRatio (6 cols), CashRatio_lead (6 cols)
+- I: `("CashRatio", 6), (r"CashRatio\_lead", 6)`
 - **CONSISTENT ✓**
 
 ### 3. Controls in B4 match variables in E (dictionary)?
@@ -669,7 +669,7 @@ Check internal consistency within the provenance doc:
 | 10 | Quality Gate 4 — attrition counts | D2 documents filter stages without numeric counts | Creation prompt requires "row counts for each filter step" (Rows Before / Rows After / Dropped). The runner generates `sample_attrition.csv` with actual counts. | MEDIUM | Add numeric counts to D2 table from latest run, or add explicit reference to sample_attrition.csv |
 | 7 | G2 path separator | `` `outputs\econometric\h1_cash_holdings\{timestamp}\model_diagnostics.csv` `` | All other paths in doc use forward slashes; this is inconsistent | LOW (cosmetic) | Change to forward slashes |
 | 6 | L — computed-but-unused variables | Known Issues 1-8 do not mention CurrentRatio, AnalystQAUncertainty, NegativeSentiment | Builder imports and runs CurrentRatioBuilder (lines 78, 152), AnalystQAUncertaintyBuilder (lines 137-139), NegativeSentimentBuilder (lines 140-142); none appear in runner | LOW | Add Known Issue #9 |
-| 6 | L — stale builder module docstring | Known Issues do not flag stale docstring in builder lines 16-18 | Builder docstring says "Average CashHoldings"; code uses `idxmax()` (latest call) | LOW | Add Known Issue #10 |
+| 6 | L — stale builder module docstring | Known Issues do not flag stale docstring in builder lines 16-18 | Builder docstring says "Average CashRatio"; code uses `idxmax()` (latest call) | LOW | Add Known Issue #10 |
 | 3/7 | L — stale IBES docstring | Known Issues do not flag IBES raw input claim | Builder docstring line 31 lists `tr_ibes/tr_ibes.parquet`; no IBES builder is imported or used | LOW | Add Known Issue #11 |
 
 ---
@@ -749,7 +749,7 @@ Check internal consistency within the provenance doc:
 >    - `NegativeSentimentBuilder` (lines 140-142): produces `NegativeSentiment_pct`
 >    None of these appear in `run_h1_cash_holdings.py` (KEY_IVS, BASE_CONTROLS, or EXTENDED_CONTROLS). They are present in the parquet and do not affect regression results. They may be retained for downstream reuse by other suites.
 
-> 10. **Stale module-level docstring in panel builder.** Lines 16-18 of `build_h1_cash_holdings_panel.py` describe the CashHoldings_lead construction as "Average CashHoldings within (gvkey, call_year) -> firm-year mean". This description is stale and incorrect relative to the actual code. The function `create_lead_variable()` (lines 308-334) uses `idxmax()` to select the LATEST call within each `(gvkey, fyearq_int)` group, not an average. This is the B6 fiscal-year fix described in `create_lead_variable()`. The module-level docstring has not been updated to reflect this.
+> 10. **Stale module-level docstring in panel builder.** Lines 16-18 of `build_h1_cash_holdings_panel.py` describe the CashRatio_lead construction as "Average CashRatio within (gvkey, call_year) -> firm-year mean". This description is stale and incorrect relative to the actual code. The function `create_lead_variable()` (lines 308-334) uses `idxmax()` to select the LATEST call within each `(gvkey, fyearq_int)` group, not an average. This is the B6 fiscal-year fix described in `create_lead_variable()`. The module-level docstring has not been updated to reflect this.
 
 > 11. **IBES listed as raw input in builder docstring but not used.** Builder docstring line 31 lists `inputs/tr_ibes/tr_ibes.parquet` (IBES data) as a raw input dependency. No IBES engine, IBES builder, or `IbesEngine` class is imported or called anywhere in `build_h1_cash_holdings_panel.py`. This is a stale artifact copied from another pipeline configuration. The H1 suite does not use IBES data.
 

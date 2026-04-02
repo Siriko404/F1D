@@ -42,11 +42,11 @@
 | 8 | I — generate_all_tables.py dir field | `"dir": "h18_cccl_received/2026-03-27_095021"` | `"dir": "h18_cccl_received/2026-03-31_151907"` (generate_all_tables.py line 333) | Medium | Update dir to match current generate_all_tables.py entry |
 | 8 | I — generate_all_tables.py line numbers | "lines 405-417" | H18 entry is at lines 330-342 | Medium | Update line citation |
 | 7 | H2 — CompustatEngine line for `_compute_and_winsorize` | "CompustatEngine line 1134" | `_compute_and_winsorize` defined at line 936; line 1134 is inside a repurchase computation, unrelated | Medium | Correct to line 936 |
-| 7 | H2 — CompustatEngine line for missing xrdq = 0 | "CompustatEngine line 967" | `comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]` is at line 972 | Minor | Correct to line 972 |
-| 7 | H2 — CompustatEngine line for missing debt = 0 | "CompustatEngine line 943" | `comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]` is at line 948; line 943 is Size computation | Minor | Correct to line 948 |
+| 7 | H2 — CompustatEngine line for missing xrdq = 0 | "CompustatEngine line 967" | `comp["RDSales"] = comp["xrdq"].fillna(0) / comp["atq"]` is at line 972 | Minor | Correct to line 972 |
+| 7 | H2 — CompustatEngine line for missing debt = 0 | "CompustatEngine line 943" | `comp["Leverage"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]` is at line 948; line 943 is lnAssets computation | Minor | Correct to line 948 |
 | 3 | B7 — p-value code snippet | Shows 4-line if/else with bare `if beta > 0:` check | Actual is a ternary inside a NaN guard: `if not np.isnan(p_two) and not np.isnan(beta): p_one = p_two / 2 if beta > 0 else 1 - p_two / 2 else: p_one = np.nan` (runner lines 310-313) | Minor | Replace simplified snippet with exact code from runner |
 | 9 | K1 — check_rank line number | "runner line 278" | `check_rank=False` is at line 277 | Minor | Correct to line 277 |
-| 2/L | Known Issues — runner docstring vs builder contradiction not flagged | L.4 flags the `_fwd` label vs `CCCL` column name; does NOT flag that runner docstring line 10-11 says "between this call and the next call / Window: (start_date_current, start_date_next_call]" — contradicting builder's calendar-quarter (Q+1) implementation | Builder `create_cccl_dvs()` computes `CCCL = 1 if (gvkey, Q+1_calendar_quarter) in cccl_set` — a forward-looking calendar-quarter lookup, NOT a call-to-next-call window | Medium | Add to L. Known Issues that runner docstring lines 10-11 describe a call-to-call window that does not match the builder's calendar-quarter Q+1 implementation |
+| 2/L | Known Issues — runner docstring vs builder contradiction not flagged | L.4 flags the `_fwd` label vs `CommentLetter` column name; does NOT flag that runner docstring line 10-11 says "between this call and the next call / Window: (start_date_current, start_date_next_call]" — contradicting builder's calendar-quarter (Q+1) implementation | Builder `create_cccl_dvs()` computes `CommentLetter = 1 if (gvkey, Q+1_calendar_quarter) in cccl_set` — a forward-looking calendar-quarter lookup, NOT a call-to-next-call window | Medium | Add to L. Known Issues that runner docstring lines 10-11 describe a call-to-call window that does not match the builder's calendar-quarter Q+1 implementation |
 
 ---
 
@@ -159,22 +159,22 @@ Read creation prompt `docs/Prompts/Suite Provenance Doc.txt` for required sectio
 ## PHASE 3: FACTUAL ACCURACY — SECTION B (Model Specification)
 
 **B1-CHECK: Regression Equation**
-- Doc equation: `CCCL_{i,t} = b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct + Controls + alpha_j + gamma_t + epsilon_{i,t}`
-- Runner lines 261: `exog = KEY_IVS + controls` where KEY_IVS has 4 items and controls is BASE_CONTROLS or EXTENDED_CONTROLS. DV is always "CCCL" (all 6 specs use the same DV).
+- Doc equation: `CCCL_{i,t} = b1*UncAnsCEO + b2*UncPreCEO + b3*UncAnsMgr + b4*UncPreMgr + Controls + alpha_j + gamma_t + epsilon_{i,t}`
+- Runner lines 261: `exog = KEY_IVS + controls` where KEY_IVS has 4 items and controls is BASE_CONTROLS or EXTENDED_CONTROLS. DV is always "CommentLetter" (all 6 specs use the same DV).
 - Alpha_j notation: for industry FE (odd cols) = other_effects on ff12_code; for firm FE (even cols) = EntityEffects on gvkey. Both documented.
 - Gamma_t notation: cal_yr or cal_yr_qtr. Documented.
 - **PASS**
 
 **B2-CHECK: Dependent Variable(s)**
-- Doc: CCCL = "1 if `(gvkey, cal_qtr_id+1)` exists in CCCL event set"
-- Builder `create_cccl_dvs()` (lines 272-276): `q_next = _next_cal_qtr(q)` then `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0`. Then `panel["CCCL"] = cccl_fwd` at line 279.
+- Doc: CommentLetter = "1 if `(gvkey, cal_qtr_id+1)` exists in CommentLetter event set"
+- Builder `create_cccl_dvs()` (lines 272-276): `q_next = _next_cal_qtr(q)` then `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0`. Then `panel["CommentLetter"] = cccl_fwd` at line 279.
 - This is "next calendar quarter Q+1" — matches doc.
 - Timing claim: "Lead (Q+1)" — PASS
-- Source: "CCCL input file + CIK-gvkey map" — PASS
+- Source: "CommentLetter input file + CIK-gvkey map" — PASS
 - **PASS**
 
 **B3-CHECK: Independent Variable(s)**
-- Doc lists 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+- Doc lists 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
 - Runner KEY_IVS (lines 72-77): exactly these 4. **PASS**
 - Winsorization claim: "0%/99% per-year (upper-only)" — verified at `_linguistic_engine.py` line 255-257: `winsorize_by_year(combined, cols, year_col="year", lower=0.0, upper=0.99)`. **PASS**
 - Source: "LinguisticEngine (Stage 2 outputs)" — verified by builder imports: `CEOQAUncertaintyBuilder`, `CEOPresUncertaintyBuilder`, `ManagerQAUncertaintyBuilder`, `ManagerPresUncertaintyBuilder` all call `engine.get_data()` from `_linguistic_engine`. **PASS**
@@ -182,10 +182,10 @@ Read creation prompt `docs/Prompts/Suite Provenance Doc.txt` for required sectio
 - **PASS**
 
 **B4-CHECK: Control Variables**
-- BASE_CONTROLS (runner lines 79-83): Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV — 9 variables.
-- Doc base controls table: Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV — 9 variables. **PASS**
-- EXTENDED_CONTROLS (runner lines 85-87): BASE_CONTROLS + SalesGrowth, RD_Intensity, CashFlow, Volatility — 13 total.
-- Doc extended controls: "Base Controls plus: SalesGrowth, RD_Intensity, CashFlow, Volatility" — **PASS**
+- BASE_CONTROLS (runner lines 79-83): lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV — 9 variables.
+- Doc base controls table: lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV — 9 variables. **PASS**
+- EXTENDED_CONTROLS (runner lines 85-87): BASE_CONTROLS + SalesGrowth, RDSales, CashFlowAt, DailyVola — 13 total.
+- Doc extended controls: "Base Controls plus: SalesGrowth, RDSales, CashFlowAt, DailyVola" — **PASS**
 - Lagged_DV detail: runner line 200 `panel["Lagged_DV"] = panel["CCCL_lag"]`. Doc says "assigned from CCCL_lag, which is the binary indicator for whether the firm received a comment letter in the calendar quarter preceding the call (Q-1)." Builder confirms: `cccl_lag[i] = 1.0 if (g, q_prev) in cccl_set` at line 277. **PASS**
 - **PASS**
 
@@ -231,12 +231,12 @@ Read creation prompt `docs/Prompts/Suite Provenance Doc.txt` for required sectio
 
 | Col | Doc DV | Code DV | Doc Entity FE | Code fe | Doc Time FE | Code time_col | Doc Controls | Code controls | PASS? |
 |-----|--------|---------|---------------|---------|-------------|---------------|--------------|---------------|-------|
-| 1 | CCCL | CCCL | Industry (FF12) | industry | Cal Year | cal_yr | Base | base | PASS |
-| 2 | CCCL | CCCL | Firm | firm | Cal Year | cal_yr | Base | base | PASS |
-| 3 | CCCL | CCCL | Industry (FF12) | industry | Cal Year | cal_yr | Extended | extended | PASS |
-| 4 | CCCL | CCCL | Firm | firm | Cal Year | cal_yr | Extended | extended | PASS |
-| 5 | CCCL | CCCL | Industry (FF12) | industry_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
-| 6 | CCCL | CCCL | Firm | firm_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
+| 1 | CommentLetter | CommentLetter | Industry (FF12) | industry | Cal Year | cal_yr | Base | base | PASS |
+| 2 | CommentLetter | CommentLetter | Firm | firm | Cal Year | cal_yr | Base | base | PASS |
+| 3 | CommentLetter | CommentLetter | Industry (FF12) | industry | Cal Year | cal_yr | Extended | extended | PASS |
+| 4 | CommentLetter | CommentLetter | Firm | firm | Cal Year | cal_yr | Extended | extended | PASS |
+| 5 | CommentLetter | CommentLetter | Industry (FF12) | industry_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
+| 6 | CommentLetter | CommentLetter | Firm | firm_yq | Cal Year-Quarter | cal_yr_qtr | Extended | extended | PASS |
 
 Doc says "Confirmed 6 entries" and "runner lines 91-99" — MODEL_SPECS starts at line 91 and has 6 entries ending at line 99. **PASS**
 
@@ -255,9 +255,9 @@ No specs missing. No specs extra. **Phase 4 Score**: 7/7.
 **D2-CHECK: Exclusion Criteria**
 - Step 1: "Full panel | 112,968". Runner line 538: `full_n = len(panel)` before filter. Main function loads panel then records full_n. **PASS**
 - Step 2: "Main sample (excl FF12=8,11 Finance/Utility) | 88,205". Runner line 182: `main = panel[~panel["ff12_code"].isin([8, 11])]`. **PASS**
-- Step 3: "CCCL=1 in Main (informational) | 280". Runner lines 545-546: `n_dv1 = (panel["CCCL"] == 1).sum()`. Used in attrition table at line 583. This is informational, not a filter. **PASS**
+- Step 3: "CommentLetter=1 in Main (informational) | 280". Runner lines 545-546: `n_dv1 = (panel["CommentLetter"] == 1).sum()`. Used in attrition table at line 583. This is informational, not a filter. **PASS**
 - Step 4: "After complete-case + min-calls (col 1) | 57,216". Runner lines 215-228: DV filter → complete-case → min 5 calls per firm. **PASS**
-- Doc note: "CCCL is fully populated for all main sample rows because any firm-quarter without a CCCL event is coded as 0." Builder: `cccl_fwd = np.zeros(len(panel), dtype=np.float64)` then only set to 1 or NaN. NaN only when `pd.isna(q)` (no start_date). For firms with valid start_date, CCCL is always 0 or 1. **PASS**
+- Doc note: "CommentLetter is fully populated for all main sample rows because any firm-quarter without a CommentLetter event is coded as 0." Builder: `cccl_fwd = np.zeros(len(panel), dtype=np.float64)` then only set to 1 or NaN. NaN only when `pd.isna(q)` (no start_date). For firms with valid start_date, CommentLetter is always 0 or 1. **PASS**
 
 **D3-CHECK: Sample Counts per Spec**
 - Doc shows cols 1-2: N=57,216, firms=1,615; cols 3-6: N=54,915, firms=1,595
@@ -274,24 +274,24 @@ For each variable: checked name, formula, source, winsorization, timing against 
 
 | Variable | Code Name | Formula | Source | Winsorized | Timing | Status |
 |----------|-----------|---------|--------|------------|--------|--------|
-| CCCL | Matches | "1 if (gvkey, Q+1) in cccl_set" — matches builder lines 272-276, 279 | CCCL input + CIK-gvkey map — matches | No (binary) — correct | Lead (Q+1) | PASS |
-| CEO_QA_Uncertainty_pct | Matches runner KEY_IVS | "Uncertainty words / total words * 100, CEO Q&A" — matches LinguisticEngine output column description | LinguisticEngine: Stage 2 — matches builder import | 0%/99% per-year (upper-only) — matches `_linguistic_engine.py` line 255-257 with lower=0.0, upper=0.99 | Contemporaneous | PASS |
-| CEO_Pres_Uncertainty_pct | Matches | Same formula, CEO Pres section | Same engine | Same winsorization | Contemporaneous | PASS |
-| Manager_QA_Uncertainty_pct | Matches | Same formula, Mgr Q&A | Same engine | Same winsorization | Contemporaneous | PASS |
-| Manager_Pres_Uncertainty_pct | Matches | Same formula, Mgr Pres | Same engine | Same winsorization | Contemporaneous | PASS |
-| Lagged_DV | "CCCL_lag" in code, "Lagged_DV" in regression | "CCCL_lag = 1 if firm received CCCL in cal quarter Q-1" — matches builder lines 274, 277 (`q_prev = _prev_cal_qtr(q)`) | CCCL input + CIK-gvkey map | No (binary) | Lag (Q-1) | PASS |
-| Size | Matches BASE_CONTROLS | "ln(atq), atq > 0" — matches `_compustat_engine.py` line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | CompustatEngine: atq | 1%/99% per-fyearq — Size is in COMPUSTAT_CONTROL_COLUMNS list (line 117) which gets winsorized | Contemporaneous | PASS |
+| CommentLetter | Matches | "1 if (gvkey, Q+1) in cccl_set" — matches builder lines 272-276, 279 | CommentLetter input + CIK-gvkey map — matches | No (binary) — correct | Lead (Q+1) | PASS |
+| UncAnsCEO | Matches runner KEY_IVS | "Uncertainty words / total words * 100, CEO Q&A" — matches LinguisticEngine output column description | LinguisticEngine: Stage 2 — matches builder import | 0%/99% per-year (upper-only) — matches `_linguistic_engine.py` line 255-257 with lower=0.0, upper=0.99 | Contemporaneous | PASS |
+| UncPreCEO | Matches | Same formula, CEO Pres section | Same engine | Same winsorization | Contemporaneous | PASS |
+| UncAnsMgr | Matches | Same formula, Mgr Q&A | Same engine | Same winsorization | Contemporaneous | PASS |
+| UncPreMgr | Matches | Same formula, Mgr Pres | Same engine | Same winsorization | Contemporaneous | PASS |
+| Lagged_DV | "CCCL_lag" in code, "Lagged_DV" in regression | "CCCL_lag = 1 if firm received CommentLetter in cal quarter Q-1" — matches builder lines 274, 277 (`q_prev = _prev_cal_qtr(q)`) | CommentLetter input + CIK-gvkey map | No (binary) | Lag (Q-1) | PASS |
+| lnAssets | Matches BASE_CONTROLS | "ln(atq), atq > 0" — matches `_compustat_engine.py` line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | CompustatEngine: atq | 1%/99% per-fyearq — lnAssets is in COMPUSTAT_CONTROL_COLUMNS list (line 117) which gets winsorized | Contemporaneous | PASS |
 | TobinsQ | Matches | "(cshoq*prccq + debt_book) / atq, where debt_book = dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0) (NaN if both missing)" — matches engine lines 987-996 exactly | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
 | ROA | Matches | "iby_annual (Q4) / avg(atq_t, atq_{t-1})" — matches engine lines 960-969 | CompustatEngine: iby, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
-| BookLev | Matches | "(dlcq + dlttq) / atq, missing debt = 0" — matches engine line 948: fillna(0) | CompustatEngine: dlcq, dlttq, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
-| CapexAt | Matches | "capxy_annual (Q4) / atq_lag" — matches engine lines 999-1005 | CompustatEngine: capxy, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
-| CashHoldings | Matches | "cheq / atq" — matches engine line 986 | CompustatEngine: cheq, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
-| DividendPayer | Matches | "1 if dvy_annual (Q4) > 0, else 0" — matches engine lines 1009-1012 | CompustatEngine: dvy | No (binary) — doc says "No (binary)" — PASS | Contemporaneous | PASS |
-| OCF_Volatility | Matches | "Rolling 5-yr std (min 3 yrs) of oancfy/atq_{t-1} per gvkey" — matches `_compute_ocf_volatility()` lines 308-357 | CompustatEngine: oancfy, atq | 1%/99% per-fyearq (listed in COMPUSTAT_CONTROL_COLUMNS) | Rolling window | PASS |
+| Leverage | Matches | "(dlcq + dlttq) / atq, missing debt = 0" — matches engine line 948: fillna(0) | CompustatEngine: dlcq, dlttq, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
+| Capex | Matches | "capxy_annual (Q4) / atq_lag" — matches engine lines 999-1005 | CompustatEngine: capxy, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
+| CashRatio | Matches | "cheq / atq" — matches engine line 986 | CompustatEngine: cheq, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
+| DivDummy | Matches | "1 if dvy_annual (Q4) > 0, else 0" — matches engine lines 1009-1012 | CompustatEngine: dvy | No (binary) — doc says "No (binary)" — PASS | Contemporaneous | PASS |
+| sCFO | Matches | "Rolling 5-yr std (min 3 yrs) of oancfy/atq_{t-1} per gvkey" — matches `_compute_ocf_volatility()` lines 308-357 | CompustatEngine: oancfy, atq | 1%/99% per-fyearq (listed in COMPUSTAT_CONTROL_COLUMNS) | Rolling window | PASS |
 | SalesGrowth | Matches | "(saley_t - saley_{t-1}) / abs(saley_{t-1}), Q4 annual" — matches `_compute_biddle_residual` docstring line 484 and implementation | CompustatEngine: saley (saleq fallback) — matches M-1 note in Biddle docstring | 1%/99% per-fyearq (Biddle pipeline) — verified at engine line 666 | Contemporaneous | PASS |
-| RD_Intensity | Matches | "xrdq / atq, missing xrdq = 0" — matches engine line 972: `comp["xrdq"].fillna(0) / comp["atq"]` | CompustatEngine: xrdq, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
-| CashFlow | Matches | "oancfy / avg(atq_t, atq_{t-1}), Q4 annual" — matches Biddle docstring M-2 and implementation | CompustatEngine: oancfy, atq | 1%/99% per-fyearq (Biddle pipeline) | Contemporaneous | PASS |
-| Volatility | Matches | "std(daily_ret) * sqrt(252) * 100 over [prev_call+5d, call-5d], min 10 days" — matches `volatility.py` lines 6-9 exactly | CRSPEngine: daily stock returns | No — doc says "Not in Compustat winsorization; bounded by construction." Volatility is not in any winsorize call. PASS | Inter-call window | PASS |
+| RDSales | Matches | "xrdq / atq, missing xrdq = 0" — matches engine line 972: `comp["xrdq"].fillna(0) / comp["atq"]` | CompustatEngine: xrdq, atq | 1%/99% per-fyearq | Contemporaneous | PASS |
+| CashFlowAt | Matches | "oancfy / avg(atq_t, atq_{t-1}), Q4 annual" — matches Biddle docstring M-2 and implementation | CompustatEngine: oancfy, atq | 1%/99% per-fyearq (Biddle pipeline) | Contemporaneous | PASS |
+| DailyVola | Matches | "std(daily_ret) * sqrt(252) * 100 over [prev_call+5d, call-5d], min 10 days" — matches `volatility.py` lines 6-9 exactly | CRSPEngine: daily stock returns | No — doc says "Not in Compustat winsorization; bounded by construction." DailyVola is not in any winsorize call. PASS | Inter-call window | PASS |
 | gvkey | FE identifier | -- | Manifest | -- | -- | PASS |
 | ff12_code | Fama-French 12 | -- | Manifest | -- | -- | PASS |
 | cal_yr | FE time (cols 1-4) | "start_date.dt.year" — panel_utils.py line 215 | Derived | -- | -- | PASS |
@@ -306,9 +306,9 @@ All 22 variable dictionary rows verified. **Phase 6 Score**: 22/22.
 **F-CHECK: Data Pipeline**
 
 F1. Dependency Chain — 7 steps documented:
-- Step 1 (Raw inputs): manifest, CCCL file, CCM, Compustat, Stage 2, CRSP. All inputs verified in builder code lines 90-102 (CIK map), lines 133-145 (CCCL load), builder imports. **PASS**
-- Step 2 (Engine loading): LinguisticEngine (linguistic IVs), CompustatEngine (controls), CRSPEngine (Volatility). Builder imports at lines 51-69. **PASS**
-- Step 3 (Panel builder): merge sequence (file_name, left join), fyearq via merge_asof, CCCL DV creation, sample assignment. All verified in builder main() lines 327-337. **PASS**
+- Step 1 (Raw inputs): manifest, CommentLetter file, CCM, Compustat, Stage 2, CRSP. All inputs verified in builder code lines 90-102 (CIK map), lines 133-145 (CommentLetter load), builder imports. **PASS**
+- Step 2 (Engine loading): LinguisticEngine (linguistic IVs), CompustatEngine (controls), CRSPEngine (DailyVola). Builder imports at lines 51-69. **PASS**
+- Step 3 (Panel builder): merge sequence (file_name, left join), fyearq via merge_asof, CommentLetter DV creation, sample assignment. All verified in builder main() lines 327-337. **PASS**
 - Step 4 (Runner loading): panel parquet → `build_cal_yr_qtr_index()` → main sample filter. Runner lines 158-185. **PASS**
 - Step 5 (Sample filtering): Lagged_DV assignment → inf→NaN → DV filter → complete-case → min 5 calls. Runner lines 200-228. **PASS**
 - Step 6 (Regression): PanelOLS, 6 specs, firm-clustered SEs. **PASS**
@@ -316,7 +316,7 @@ F1. Dependency Chain — 7 steps documented:
 
 F2. Data Engines — 5 engines:
 - LinguisticEngine: verified via builder imports and `_linguistic_engine.get_engine()`. **PASS**
-- CompustatEngine: verified via SizeBuilder, BookLevBuilder, etc. **PASS**
+- CompustatEngine: verified via SizeBuilder, LeverageBuilder, etc. **PASS**
 - CRSPEngine: verified via VolatilityBuilder → `_crsp_engine.get_engine()`. **PASS**
 - Direct load: CIK-gvkey from CCM/Compustat. Builder `_build_cik_gvkey_map()` lines 83-109. **PASS**
 - ManifestFieldsBuilder: builder import line 68, `ManifestFieldsBuilder`. **PASS**
@@ -324,7 +324,7 @@ F2. Data Engines — 5 engines:
 F3. Merge Operations — 3 merges:
 - manifest ← each builder output on file_name, left: builder lines 200-216. **PASS**
 - panel ← CompustatEngine fyearq via merge_asof: `attach_fyearq()` called at builder line 330. **PASS**
-- CCCL letters ← CIK-gvkey map on cik_int, inner: `cccl.merge(cik_gvkey_map, on="cik_int", how="inner")` at builder line 142. **PASS**
+- CommentLetter letters ← CIK-gvkey map on cik_int, inner: `cccl.merge(cik_gvkey_map, on="cik_int", how="inner")` at builder line 142. **PASS**
 
 **G-CHECK: Outputs**
 
@@ -349,7 +349,7 @@ G2. Stage 4 Outputs — runner writes:
 
 H1. Winsorization:
 - Compustat controls 1%/99% per fyearq at CompustatEngine level. Doc references "_compustat_engine.py line 1134" for this. **FAIL**: `_compute_and_winsorize` is defined at line 936, not 1134. Line 1134 is inside the repurchase-variable computation, unrelated to winsorization logic.
-- Doc says missing debt = 0 at "CompustatEngine line 943" — actual: line 948 (BookLev fillna). Line 943 is the Size computation.
+- Doc says missing debt = 0 at "CompustatEngine line 943" — actual: line 948 (Leverage fillna). Line 943 is the lnAssets computation.
 - Doc says missing xrdq = 0 at "CompustatEngine line 967" — actual: line 972.
 - Linguistic IVs 0%/99% per-year upper-only at "_linguistic_engine.py line 255" — **PASS**, verified at line 255.
 
@@ -358,8 +358,8 @@ H2. Missing Data Policy:
 - Inf/-Inf → NaN: runner line 211. Doc says "runner line 211". **PASS**
 
 H3. Transformations:
-- Size = ln(atq). **PASS**
-- Volatility = std * sqrt(252) * 100. **PASS**
+- lnAssets = ln(atq). **PASS**
+- DailyVola = std * sqrt(252) * 100. **PASS**
 - No centering/z-score on IVs. **PASS**
 
 **Phase 7 Score**: 7/9 (2 failures: stale G2 directory, wrong CompustatEngine line for `_compute_and_winsorize`)
@@ -379,7 +379,7 @@ Read `outputs/generate_all_tables.py`. H18 entry is at lines 330-342:
         "label": "tab:h18",
         "cols": 6,
         "dvs": [
-            (r"CCCL", 6),
+            (r"CommentLetter", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -395,7 +395,7 @@ Read `outputs/generate_all_tables.py`. H18 entry is at lines 330-342:
 | `"caption"` | `"H18: Speech Uncertainty and SEC Comment Letters"` | `"H18: Speech Uncertainty and SEC Comment Letters"` | PASS |
 | `"label"` | `"tab:h18"` | `"tab:h18"` | PASS |
 | `"cols"` | `6` | `6` | PASS |
-| `"dvs"` | `[(r"CCCL", 6)]` | `[(r"CCCL", 6)]` | PASS |
+| `"dvs"` | `[(r"CommentLetter", 6)]` | `[(r"CommentLetter", 6)]` | PASS |
 | `"tail"` | `"one"` | `"one"` | PASS |
 | `"hyp_dir"` | `">"` | `">"` | PASS |
 | Line numbers | "lines 405-417" | Lines 330-342 | **FAIL** |
@@ -457,11 +457,11 @@ Model family identified in Section A: LPM via PanelOLS.
 
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
-1. **DVs in B2 vs C**: B2 lists CCCL. Section C shows CCCL for all 6 cols. **PASS**
+1. **DVs in B2 vs C**: B2 lists CommentLetter. Section C shows CommentLetter for all 6 cols. **PASS**
 
-2. **DVs in C vs I**: Section C shows CCCL. Section I `"dvs": [(r"CCCL", 6)]`. **PASS**
+2. **DVs in C vs I**: Section C shows CommentLetter. Section I `"dvs": [(r"CommentLetter", 6)]`. **PASS**
 
-3. **Controls in B4 vs E**: B4 lists 9 base + 4 extended = 13 controls. Variable dictionary has entries for all 13 (Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV, SalesGrowth, RD_Intensity, CashFlow, Volatility). **PASS**
+3. **Controls in B4 vs E**: B4 lists 9 base + 4 extended = 13 controls. Variable dictionary has entries for all 13 (lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV, SalesGrowth, RDSales, CashFlowAt, DailyVola). **PASS**
 
 4. **Column count in A vs C**: A says 6 columns. C has 6 rows. **PASS**
 
@@ -514,13 +514,13 @@ The following edits are needed to bring the provenance doc to PASS status:
 - Section: H2. Missing Data Policy
 - Current text: "Missing R&D (xrdq) treated as zero per standard convention (CompustatEngine line 967)"
 - Should be: "Missing R&D (xrdq) treated as zero per standard convention (CompustatEngine line 972)"
-- Code reference: `_compustat_engine.py` line 972: `comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]`
+- Code reference: `_compustat_engine.py` line 972: `comp["RDSales"] = comp["xrdq"].fillna(0) / comp["atq"]`
 
 **Correction 5 — Section H2: Correct CompustatEngine line for missing debt = 0**
 - Section: H2. Missing Data Policy
-- Current text: "Missing debt (dlcq, dlttq) treated as zero for BookLev (CompustatEngine line 943)"
-- Should be: "Missing debt (dlcq, dlttq) treated as zero for BookLev (CompustatEngine line 948)"
-- Code reference: `_compustat_engine.py` line 948: `comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`; line 943 is the Size computation.
+- Current text: "Missing debt (dlcq, dlttq) treated as zero for Leverage (CompustatEngine line 943)"
+- Should be: "Missing debt (dlcq, dlttq) treated as zero for Leverage (CompustatEngine line 948)"
+- Code reference: `_compustat_engine.py` line 948: `comp["Leverage"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`; line 943 is the lnAssets computation.
 
 **Correction 6 — Section B7: Replace simplified p-value code snippet with accurate version**
 - Section: B7. Hypothesis Test
@@ -573,8 +573,8 @@ Critical line references cited in the provenance document, verified against actu
 | G3 | "runner SUMMARY_STATS_VARS, lines 109-127" | `run_h18_cccl_received.py` | 109-127 | SUMMARY_STATS_VARS list | PASS |
 | H1 | "_linguistic_engine.py line 255" for winsorize | `_linguistic_engine.py` | 255 | `combined = winsorize_by_year(...)` | PASS |
 | H2 | "CompustatEngine line 1134" for `_compute_and_winsorize` | `_compustat_engine.py` | 936 | `def _compute_and_winsorize(` | **FAIL** |
-| H2 | "CompustatEngine line 967" for xrdq fillna(0) | `_compustat_engine.py` | 972 | `comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]` | **FAIL** |
-| H2 | "CompustatEngine line 943" for BookLev fillna(0) | `_compustat_engine.py` | 948 | `comp["BookLev"] = (comp["dlcq"].fillna(0) + ...)` | **FAIL** |
+| H2 | "CompustatEngine line 967" for xrdq fillna(0) | `_compustat_engine.py` | 972 | `comp["RDSales"] = comp["xrdq"].fillna(0) / comp["atq"]` | **FAIL** |
+| H2 | "CompustatEngine line 943" for Leverage fillna(0) | `_compustat_engine.py` | 948 | `comp["Leverage"] = (comp["dlcq"].fillna(0) + ...)` | **FAIL** |
 | I | "lines 405-417" for H18 entry | `outputs/generate_all_tables.py` | 330-342 | H18 dict entry | **FAIL** |
 | K1 | "runner line 249" for time_col assignment | `run_h18_cccl_received.py` | 249 | `time_col = "cal_yr_qtr" if ...` | PASS |
 | K1 | "runner line 278" for check_rank=False | `run_h18_cccl_received.py` | 277 | `check_rank=False,` | **FAIL** |

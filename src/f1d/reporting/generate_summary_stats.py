@@ -61,38 +61,38 @@ from f1d.shared.config import get_config
 
 # Panel A: Linguistic variables (in display order)
 PANEL_A_VARS: List[Dict[str, str]] = [
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Manager QA Uncertainty (\\%)"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Manager Pres Uncertainty (\\%)"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty (\\%)"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty (\\%)"},
-    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty (\\%)"},
-    {"col": "Entire_All_Negative_pct", "label": "All-Speaker Negative Sentiment (\\%)"},
+    {"col": "UncAnsMgr", "label": "Manager QA Uncertainty (\\%)"},
+    {"col": "UncPreMgr", "label": "Manager Pres Uncertainty (\\%)"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty (\\%)"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty (\\%)"},
+    {"col": "UncQue", "label": "Analyst QA Uncertainty (\\%)"},
+    {"col": "NegCall", "label": "All-Speaker Negative Sentiment (\\%)"},
 ]
 
 # Panel B: Financial controls (in display order)
 PANEL_B_VARS: List[Dict[str, str]] = [
-    {"col": "Size", "label": "Size (log assets)"},
-    {"col": "BM", "label": "Book-to-Market"},
-    {"col": "BookLev", "label": "Leverage"},
+    {"col": "lnAssets", "label": "Size (log assets)"},
+    {"col": "BTM", "label": "Book-to-Market"},
+    {"col": "Leverage", "label": "Leverage"},
     {"col": "ROA", "label": "Return on Assets"},
     {"col": "CurrentRatio", "label": "Current Ratio"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
-    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "RDSales", "label": "R\\&D Intensity"},
+    {"col": "EPSgrowth", "label": "EPS Growth"},
     {"col": "StockRet", "label": "Stock Return (\\%)"},
     {"col": "MarketRet", "label": "Market Return (\\%)"},
-    {"col": "Volatility", "label": "Return Volatility (annualized)"},
+    {"col": "DailyVola", "label": "Return Volatility (annualized)"},
     {"col": "SurpDec", "label": "Earnings Surprise Decile"},
 ]
 
 # Correlation matrix variables
 CORR_VARS = [
-    "Manager_QA_Uncertainty_pct",
-    "CEO_QA_Uncertainty_pct",
-    "Analyst_QA_Uncertainty_pct",
-    "Entire_All_Negative_pct",
-    "Size",
-    "BM",
-    "BookLev",
+    "UncAnsMgr",
+    "UncAnsCEO",
+    "UncQue",
+    "NegCall",
+    "lnAssets",
+    "BTM",
+    "Leverage",
     "ROA",
     "StockRet",
     "MarketRet",

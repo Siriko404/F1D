@@ -125,15 +125,15 @@ Runner line 482: `formula=" + ".join(covariates)` where `covariates = [clarity_v
 
 Runner `MODEL_VARIANTS` (lines 177-195):
 - `"CEO"`: `clarity_var: "ClarityCEO"` PASS
-- `"CEO_Residual"`: `clarity_var: "CEO_Clarity_Residual"` PASS
-- `"Manager_Residual"`: `clarity_var: "Manager_Clarity_Residual"` PASS
+- `"CEO_Residual"`: `clarity_var: "UncResCEO"` PASS
+- `"Manager_Residual"`: `clarity_var: "UncResMgr"` PASS
 
 Doc notes ClarityCEO 0% coverage. Runner skips models at MIN_OBS=50 check (lines 207, 448). PASS
 
 ### B4-CHECK: Control Variables
 
-Runner SPARSE_CONTROLS (lines 130-136): `["Size", "BM", "BookLev", "ROA", "CashHoldings"]`
-Runner EXPANDED_CONTROLS (lines 139-143): SPARSE_CONTROLS + `["SalesGrowth", "Intangibility", "AssetGrowth"]`
+Runner SPARSE_CONTROLS (lines 130-136): `["lnAssets", "BTM", "Leverage", "ROA", "CashRatio"]`
+Runner EXPANDED_CONTROLS (lines 139-143): SPARSE_CONTROLS + `["SalesGrowth", "FracInt", "dAA"]`
 
 Doc documents exactly these variables in correct blocks. Doc cites "lines 130-143" which is correct. PASS
 
@@ -233,21 +233,21 @@ Verification of all 20 dictionary rows:
 | `stop` | min(next_call_date, takeover_date, 2018-12-31) days | Builder lines 323-324, 333, 340 | PASS |
 | `duration` | stop - start | Builder line 370 | PASS |
 | `ClarityCEO` | CEO FE from H1; one score per ceo_id×sample | Builder lines 123-126 | PASS |
-| `CEO_Clarity_Residual` | CEO_QA_Uncertainty_pct - predicted from H0.3 | Builder line 186 (CEOClarityResidualBuilder) | PASS |
-| `Manager_Clarity_Residual` | Manager_QA_Uncertainty_pct - predicted from H0.3 | Builder line 187 (ManagerClarityResidualBuilder) | PASS |
-| `Size` | ln(atq), atq > 0; else NaN | Engine line 943 | PASS |
-| `BM` | ceqq / (cshoq * prccq) | Engine line 945 | PASS |
-| `BookLev` | (dlcq + dlttq) / atq; missing debt = 0 | Engine line 948 (fillna(0) confirmed) | PASS |
+| `UncResCEO` | UncAnsCEO - predicted from H0.3 | Builder line 186 (CEOClarityResidualBuilder) | PASS |
+| `UncResMgr` | UncAnsMgr - predicted from H0.3 | Builder line 187 (ManagerClarityResidualBuilder) | PASS |
+| `lnAssets` | ln(atq), atq > 0; else NaN | Engine line 943 | PASS |
+| `BTM` | ceqq / (cshoq * prccq) | Engine line 945 | PASS |
+| `Leverage` | (dlcq + dlttq) / atq; missing debt = 0 | Engine line 948 (fillna(0) confirmed) | PASS |
 | `ROA` | iby_annual / avg_assets; avg=(atq_t+atq_{t-1})/2 | Engine lines 960-969 | PASS |
-| `CashHoldings` | cheq / atq | Engine line 986 | PASS |
+| `CashRatio` | cheq / atq | Engine line 986 | PASS |
 | `SalesGrowth` | (saley_t - saley_{t-1}) / abs(saley_{t-1}) | Engine lines 658-663 | PASS |
-| `Intangibility` | intanq / atq | Engine lines 870-874 | PASS |
-| `AssetGrowth` | (atq_t - atq_{t-4}) / abs(atq_{t-4}); date-lag ±45d | Engine lines 892-928 (365-day target, ±45d tolerance) | PASS |
+| `FracInt` | intanq / atq | Engine lines 870-874 | PASS |
+| `dAA` | (atq_t - atq_{t-4}) / abs(atq_{t-4}); date-lag ±45d | Engine lines 892-928 (365-day target, ±45d tolerance) | PASS |
 | `gvkey` | 6-digit Compustat identifier | Manifest | PASS |
 | `ff12_code` | FF12 industry classification | Manifest | PASS |
 | `year` | start_date.dt.year | Builder line 248 | PASS |
 
-**Completeness check:** All variables used in runner covariates ([ClarityCEO/CEO_Clarity_Residual/Manager_Clarity_Residual] + [Size/BM/BookLev/ROA/CashHoldings] + optional [SalesGrowth/Intangibility/AssetGrowth]) plus structural columns (start, stop, gvkey, ff12_code, year) plus event columns (Takeover, Takeover_Uninvited, Takeover_Friendly) are all in the dictionary. PASS
+**Completeness check:** All variables used in runner covariates ([ClarityCEO/UncResCEO/UncResMgr] + [lnAssets/BTM/Leverage/ROA/CashRatio] + optional [SalesGrowth/FracInt/dAA]) plus structural columns (start, stop, gvkey, ff12_code, year) plus event columns (Takeover, Takeover_Uninvited, Takeover_Friendly) are all in the dictionary. PASS
 
 **FAIL — Line citation in E footnote:** Doc says formulas verified against "_compustat_engine.py compute_variables function (lines 937-1038)". The actual range for `_compute_and_winsorize()` spans lines 936-1234. The cited range 937-1038 omits the inf-to-NaN replacement (lines 1183-1204) and the winsorization loop (lines 1209-1234). The function is named `_compute_and_winsorize`, not "compute_variables". MINOR FAIL
 
@@ -260,7 +260,7 @@ Verification of all 20 dictionary rows:
 **F1 Dependency Chain:** 7-step chain verified step by step. All steps match code behavior. PASS
 
 **F2 Data Engines:**
-- CompustatEngine: builder lines 178-185 (SizeBuilder, BMBuilder, BookLevBuilder, ROABuilder, CashHoldingsBuilder, SalesGrowthBuilder, IntangibilityBuilder, AssetGrowthBuilder). PASS
+- CompustatEngine: builder lines 178-185 (SizeBuilder, BMBuilder, LeverageBuilder, ROABuilder, CashRatioBuilder, SalesGrowthBuilder, FracIntBuilder, dAABuilder). PASS
 - LinguisticEngine (via individual builders): lines 166-175 (ManagerQAUncertaintyBuilder, CEOQAUncertaintyBuilder, AnalystQAUncertaintyBuilder, NegativeSentimentBuilder). PASS
 - ClarityResidualEngine: lines 186-187 (CEOClarityResidualBuilder, ManagerClarityResidualBuilder). PASS
 - Direct parquet load: builder lines 119-131 (`clarity_scores.parquet`). PASS
@@ -299,8 +299,8 @@ Note: Docstring line 64 lists `takeover_hazard_table.tex` but code writes `takeo
 ### H-CHECK: Outlier/Missing Treatment
 
 **H1 Winsorization:**
-Doc lists Size, BM, BookLev, ROA, CashHoldings, Intangibility, AssetGrowth as winsorized 1%/99% by fyearq.
-Engine `skip_winsorize` set (lines 1217-1224): `{"DividendPayer", "CashFlow", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}` — none of the listed controls are in this set. All are in `COMPUSTAT_COLS`. Outer winsorization loop (lines 1225-1232) applies to all non-skipped COMPUSTAT_COLS. PASS
+Doc lists lnAssets, BTM, Leverage, ROA, CashRatio, FracInt, dAA as winsorized 1%/99% by fyearq.
+Engine `skip_winsorize` set (lines 1217-1224): `{"DivDummy", "CashFlowAt", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}` — none of the listed controls are in this set. All are in `COMPUSTAT_COLS`. Outer winsorization loop (lines 1225-1232) applies to all non-skipped COMPUSTAT_COLS. PASS
 
 SalesGrowth: winsorized at line 666 (inside `_compute_biddle_residual()`), excluded from outer loop via `skip_winsorize` at line 1220. Doc claim "pre-use only; no double-winsorization per C-6 fix" is accurate. PASS
 
@@ -313,7 +313,7 @@ Doc says "Inf/-Inf replaced with NaN at CompustatEngine level (lines 1088-1108)"
 
 The actual inf-to-NaN replacement is the `ratio_cols` block at lines 1183-1204:
 ```python
-ratio_cols = ["BM", "BookLev", "DebtToCapital", "ROA", ...]
+ratio_cols = ["BTM", "Leverage", "DebtToCapital", "ROA", ...]
 for col in ratio_cols:
     comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)
 ```
@@ -323,7 +323,7 @@ Complete-case deletion: runner line 443 `.dropna(subset=[START_COL, STOP_COL, ev
 
 Zero-duration removal: builder lines 373-377. PASS
 
-**H3 Transformations:** Size = ln(atq) confirmed at engine line 943. PASS
+**H3 Transformations:** lnAssets = ln(atq) confirmed at engine line 943. PASS
 
 ---
 
@@ -393,7 +393,7 @@ Doc states H9 has no entry in `outputs/generate_all_tables.py`.
 
 1. **DVs in B2 vs C:** B2 defines Takeover/Takeover_Uninvited/Takeover_Friendly. Section C uses "All/Uninvited/Friendly" as event types mapping to these columns. CONSISTENT
 2. **DVs in C vs I:** No generate_all_tables.py entry. No cross-reference needed. CONSISTENT
-3. **Controls in B4 vs E:** B4 sparse = [Size, BM, BookLev, ROA, CashHoldings]; expanded adds [SalesGrowth, Intangibility, AssetGrowth]. Section E documents all 8 with formulas. CONSISTENT
+3. **Controls in B4 vs E:** B4 sparse = [lnAssets, BTM, Leverage, ROA, CashRatio]; expanded adds [SalesGrowth, FracInt, dAA]. Section E documents all 8 with formulas. CONSISTENT
 4. **Column count in A vs C:** A says "up to 36 model fits". C has exactly 36 rows. CONSISTENT
 5. **Column count in A vs I:** Non-tabular; no I entry. A states "Non-tabular". CONSISTENT
 6. **Tail direction in A vs B7 vs I:** A says "Two-sided inference"; B7 says "Two-sided inference"; no I entry. CONSISTENT
@@ -446,7 +446,7 @@ Code reference: `run_h9_takeover_hazards.py` line 27.
 
 Current: `"Inf/-Inf replaced with NaN at CompustatEngine level (lines 1088-1108)"`
 
-Replace: `"Inf/-Inf replaced with NaN at CompustatEngine level in _compute_and_winsorize() (lines 1183-1204: ratio_cols loop calling comp[col].replace([np.inf, -np.inf], np.nan) for BM, BookLev, ROA, CashHoldings, SalesGrowth, Intangibility, AssetGrowth, and other ratio variables)"`
+Replace: `"Inf/-Inf replaced with NaN at CompustatEngine level in _compute_and_winsorize() (lines 1183-1204: ratio_cols loop calling comp[col].replace([np.inf, -np.inf], np.nan) for BTM, Leverage, ROA, CashRatio, SalesGrowth, FracInt, dAA, and other ratio variables)"`
 
 Code reference: `_compustat_engine.py` lines 1183-1204.
 
@@ -489,7 +489,7 @@ Code reference: `build_h9_takeover_panel.py` line 309-311 (post-takeover count),
 The following claims are accurate and require no change:
 
 - All 36 spec register entries and EPV calculations (EPV = events/covariates formula matches code)
-- All control variable formulas: Size (ln(atq)), BM (ceqq/(cshoq*prccq)), BookLev ((dlcq+dlttq)/atq fillna(0)), ROA (iby_annual/avg_assets), CashHoldings (cheq/atq), Intangibility (intanq/atq), AssetGrowth (date-based 365d lag, ±45d tolerance), SalesGrowth ((saley_t - saley_{t-1})/abs(saley_{t-1}))
+- All control variable formulas: lnAssets (ln(atq)), BTM (ceqq/(cshoq*prccq)), Leverage ((dlcq+dlttq)/atq fillna(0)), ROA (iby_annual/avg_assets), CashRatio (cheq/atq), FracInt (intanq/atq), dAA (date-based 365d lag, ±45d tolerance), SalesGrowth ((saley_t - saley_{t-1})/abs(saley_{t-1}))
 - REFERENCE_DATE = 2000-01-01 and day-count conversion (builder line 98)
 - Interval cap at 1,461 days with event censoring-on-cap (builder lines 342-359)
 - Post-takeover call removal logic (builder lines 304-312)

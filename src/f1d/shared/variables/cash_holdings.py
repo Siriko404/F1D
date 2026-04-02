@@ -1,7 +1,7 @@
-"""Builder for CashHoldings variable (cash and equivalents / total assets).
+"""Builder for CashRatio variable (cash and equivalents / total assets).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, CashHoldings.
+Returns one column: file_name, CashRatio.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class CashHoldingsBuilder(VariableBuilder):
-    """Build CashHoldings = cheq / atq from raw Compustat quarterly data."""
+    """Build CashRatio = cheq / atq from raw Compustat quarterly data."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -40,12 +40,12 @@ class CashHoldingsBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "CashHoldings"]].copy()
-        stats = self.get_stats(data["CashHoldings"], "CashHoldings")
+        data = merged[["file_name", "CashRatio"]].copy()
+        stats = self.get_stats(data["CashRatio"], "CashRatio")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "CashHoldings", "source": "Compustat/cheq/atq"},
+            metadata={"column": "CashRatio", "source": "Compustat/cheq/atq"},
         )
 
 

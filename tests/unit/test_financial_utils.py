@@ -470,14 +470,14 @@ class TestCalculateFirmControlsQuarterly:
         assert result["CurrentRatio"] == pytest.approx(expected, rel=1e-5)
 
     def test_calculates_rd_intensity(self, sample_quarterly_compustat):
-        """Test that RD_Intensity is calculated correctly."""
+        """Test that RDSales is calculated correctly."""
         row = pd.Series({"gvkey": "000001", "datadate": pd.Timestamp("2020-06-30")})
         result = calculate_firm_controls_quarterly(
             row, sample_quarterly_compustat, pd.Timestamp("2020-06-30")
         )
-        assert "RD_Intensity" in result
+        assert "RDSales" in result
         expected = 22 / 1050
-        assert result["RD_Intensity"] == pytest.approx(expected, rel=1e-5)
+        assert result["RDSales"] == pytest.approx(expected, rel=1e-5)
 
     def test_finds_closest_datadate(self, sample_quarterly_compustat):
         """Test that function finds data closest to specified date."""
@@ -497,7 +497,7 @@ class TestCalculateFirmControlsQuarterly:
         result = calculate_firm_controls_quarterly(
             row, sample_quarterly_compustat, pd.Timestamp("2020-06-30")
         )
-        expected_keys = ["Size", "BM", "Lev", "ROA", "CurrentRatio", "RD_Intensity"]
+        expected_keys = ["Size", "BM", "Lev", "ROA", "CurrentRatio", "RDSales"]
         for key in expected_keys:
             assert key in result, f"Missing key: {key}"
 
@@ -528,7 +528,7 @@ class TestCalculateFirmControlsQuarterly:
         assert pd.isna(result["CurrentRatio"])
 
     def test_handles_missing_xrdq_treats_as_zero(self, sample_quarterly_compustat):
-        """Test that missing xrdq is treated as zero for RD_Intensity."""
+        """Test that missing xrdq is treated as zero for RDSales."""
         df = sample_quarterly_compustat.copy()
         df.loc[1, "xrdq"] = np.nan
         row = pd.Series({"gvkey": "000001", "datadate": pd.Timestamp("2020-06-30")})
@@ -537,7 +537,7 @@ class TestCalculateFirmControlsQuarterly:
         )
         # Missing xrdq should be treated as 0
         expected = 0 / 1050
-        assert result["RD_Intensity"] == pytest.approx(expected, rel=1e-5)
+        assert result["RDSales"] == pytest.approx(expected, rel=1e-5)
 
     def test_handles_zero_atq_returns_nan_size(self, sample_quarterly_compustat):
         """Test that zero atq returns NaN for Size."""
@@ -681,8 +681,8 @@ class TestComputeFinancialControlsQuarterly:
         assert "Lev" in result.columns
         assert "ROA" in result.columns
         assert "CurrentRatio" in result.columns
-        assert "RD_Intensity" in result.columns
-        assert "EPS_Growth" in result.columns
+        assert "RDSales" in result.columns
+        assert "EPSgrowth" in result.columns
 
     @pytest.mark.xfail(reason="pandas/numpy compatibility issue with .clip() internal sum()")
     def test_winsorize_parameter_affects_output(self, sample_quarterly_df):
@@ -703,15 +703,15 @@ class TestComputeFinancialControlsQuarterly:
         assert not result_no_winsor["Size"].equals(result_winsor["Size"])
 
     def test_calculates_eps_growth(self, sample_quarterly_df):
-        """Test that EPS_Growth is calculated correctly."""
+        """Test that EPSgrowth is calculated correctly."""
         result = compute_financial_controls_quarterly(
             sample_quarterly_df.copy(), winsorize=False
         )
-        assert "EPS_Growth" in result.columns
-        # EPS_Growth requires 4 quarters of data for lag
+        assert "EPSgrowth" in result.columns
+        # EPSgrowth requires 4 quarters of data for lag
         # Rows with lag4 data should have non-NaN values
         # Use any() to check for at least one non-NaN value
-        assert result["EPS_Growth"].notna().any()
+        assert result["EPSgrowth"].notna().any()
 
     def test_handles_zero_lctq_for_current_ratio(self, sample_quarterly_df):
         """Test that zero lctq is handled in CurrentRatio calculation."""
@@ -723,15 +723,15 @@ class TestComputeFinancialControlsQuarterly:
 
     @pytest.mark.xfail(reason="pandas/numpy compatibility issue with .fillna() internal sum()")
     def test_handles_missing_xrdq_treats_as_zero(self, sample_quarterly_df):
-        """Test that missing xrdq is treated as zero for RD_Intensity."""
+        """Test that missing xrdq is treated as zero for RDSales."""
         df = sample_quarterly_df.copy()
         # Set a single xrdq value to NaN to test fillna behavior
         df.loc[df.index[0], "xrdq"] = np.nan
         result = compute_financial_controls_quarterly(df, winsorize=False)
-        # Missing xrdq should be treated as 0, so RD_Intensity should be 0/atq
-        # Check that RD_Intensity was computed (not NaN from division by 0)
-        assert "RD_Intensity" in result.columns
-        assert not pd.isna(result.loc[df.index[0], "RD_Intensity"])
+        # Missing xrdq should be treated as 0, so RDSales should be 0/atq
+        # Check that RDSales was computed (not NaN from division by 0)
+        assert "RDSales" in result.columns
+        assert not pd.isna(result.loc[df.index[0], "RDSales"])
 
     def test_size_is_log_atq(self, sample_quarterly_df):
         """Test that Size is calculated as log(atq)."""

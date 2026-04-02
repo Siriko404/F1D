@@ -58,7 +58,7 @@ Reading `docs/Prompts/Suite Provenance Doc.txt` and comparing to `docs/provenanc
 | A. Suite Identity | Yes | Yes | Yes | All YAML fields present |
 | B. Model Specification | Yes | Yes | Yes | |
 | B1. Regression Equation | Yes | Yes | Yes | Full LaTeX-style equation with lead DV note |
-| B2. Dependent Variable(s) | Yes | Yes | Yes | WangDISP and WangDISP_lead with formula/timing |
+| B2. Dependent Variable(s) | Yes | Yes | Yes | DISP and DISP_lead with formula/timing |
 | B3. Independent Variable(s) | Yes | Yes | Yes | All 4 IVs; centering note present |
 | B4. Control Variables | Yes | Yes | Yes | Base and Extended tables; Lagged_DV note |
 | B5. Fixed Effects | Yes | Yes | Yes | Industry/Firm + Cal Yr/YQ table with source line |
@@ -104,7 +104,7 @@ Reading `docs/Prompts/Suite Provenance Doc.txt` and comparing to `docs/provenanc
 **A-3. Hypothesis**
 - Doc claims: "Higher managerial uncertainty language during earnings calls leads to greater analyst forecast dispersion, measured as the price-scaled standard deviation of individual analyst EPS forecasts in the pre-announcement window."
 - Runner docstring line 32: `"Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion)."`
-- Runner docstring lines 9-11 define WangDISP as SD(analyst forecasts T-31..T-1) / prccq_prior.
+- Runner docstring lines 9-11 define DISP as SD(analyst forecasts T-31..T-1) / prccq_prior.
 - Doc correctly expands the one-liner.
 - **PASS**
 
@@ -153,19 +153,19 @@ Reading `docs/Prompts/Suite Provenance Doc.txt` and comparing to `docs/provenanc
 ## PHASE 3: MODEL SPECIFICATION (Section B)
 
 **B1-CHECK: Regression Equation**
-- Doc equation: `WangDISP_{i,t} = b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct + Controls + alpha_i + gamma_t + epsilon_{i,t}`
-- Runner KEY_IVS (lines 63-68): `["CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct", "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct"]` ✓ all 4 in equation
+- Doc equation: `DISP_{i,t} = b1*UncAnsCEO + b2*UncPreCEO + b3*UncAnsMgr + b4*UncPreMgr + Controls + alpha_i + gamma_t + epsilon_{i,t}`
+- Runner KEY_IVS (lines 63-68): `["UncAnsCEO", "UncPreCEO", "UncAnsMgr", "UncPreMgr"]` ✓ all 4 in equation
 - Runner lines 265-266 (firm FE path): `formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"` where `exog = KEY_IVS + all_controls` ✓
 - Industry FE path (lines 254-262): `PanelOLS(dependent=..., exog=..., entity_effects=False, time_effects=True, other_effects=df_panel["ff12_code"], ...)` ✓
 - Lead DV for cols 7-12 documented ✓
 - **PASS**
 
 **B2-CHECK: Dependent Variable(s)**
-- Doc claims: WangDISP (contemporaneous), WangDISP_lead (next fiscal quarter)
-- Runner MODEL_SPECS: `"dv": "WangDISP"` (cols 1-6), `"dv": "WangDISP_lead"` (cols 7-12) ✓
+- Doc claims: DISP (contemporaneous), DISP_lead (next fiscal quarter)
+- Runner MODEL_SPECS: `"dv": "DISP"` (cols 1-6), `"dv": "DISP_lead"` (cols 7-12) ✓
 - WangDispBuilder (`wang_disp.py` lines 9, 244-250): formula is SD of analyst EPS forecasts in T-31..T-1 window divided by prccq_lag ✓
 - Doc says denominator is "prccq_prior" which matches `prccq_lag` (the prior quarter's stock price) ✓
-- WangDISP_lead: `create_lead_lag_variables()` in builder uses `groupby("gvkey")["WangDISP"].shift(-1)` with consecutive-quarter validation (lines 251-265) ✓
+- DISP_lead: `create_lead_lag_variables()` in builder uses `groupby("gvkey")["DISP"].shift(-1)` with consecutive-quarter validation (lines 251-265) ✓
 - **PASS**
 
 **B3-CHECK: Independent Variables**
@@ -173,15 +173,15 @@ Reading `docs/Prompts/Suite Provenance Doc.txt` and comparing to `docs/provenanc
 - Runner KEY_IVS confirmed (lines 63-68) ✓
 - No centering code found in runner ✓
 - Builder imports: `ManagerQAUncertaintyBuilder`, `CEOQAUncertaintyBuilder`, `ManagerPresUncertaintyBuilder`, `CEOPresUncertaintyBuilder` (lines 35-38) ✓
-- Column names `CEO_QA_Uncertainty_pct`, `CEO_Pres_Uncertainty_pct`, `Manager_QA_Uncertainty_pct`, `Manager_Pres_Uncertainty_pct` confirmed in runner ✓
+- Column names `UncAnsCEO`, `UncPreCEO`, `UncAnsMgr`, `UncPreMgr` confirmed in runner ✓
 - **PASS**
 
 **B4-CHECK: Control Variables**
-- Doc BASE_CONTROLS: `["Size", "TobinsQ", "ROA", "BookLev", "CapexAt", "DividendPayer", "OCF_Volatility", "WangDISP_lag"]`
+- Doc BASE_CONTROLS: `["lnAssets", "TobinsQ", "ROA", "Leverage", "Capex", "DivDummy", "sCFO", "DISP_lag"]`
 - Runner lines 70-73: exact match ✓
-- Doc EXTENDED_CONTROLS: `BASE_CONTROLS + ["SurpDec", "loss_dummy", "Analyst_QA_Uncertainty_pct", "Entire_All_Negative_pct"]`
+- Doc EXTENDED_CONTROLS: `BASE_CONTROLS + ["SurpDec", "Loss", "UncQue", "NegCall"]`
 - Runner lines 75-77: exact match ✓
-- WangDISP_lag confirmed in BASE_CONTROLS (serves as lagged DV for all 12 specs) ✓
+- DISP_lag confirmed in BASE_CONTROLS (serves as lagged DV for all 12 specs) ✓
 - No dynamic control logic in this suite (no H11-style auto-add) — consistent with doc ✓
 - **PASS**
 
@@ -220,18 +220,18 @@ Spec register has 12 rows. MODEL_SPECS has 12 entries (runner lines 82-99).
 
 | Doc Col | Doc DV | Doc Entity FE | Doc Time FE | Doc Controls | Code `col` | Code `dv` | Code `fe` | Code `controls` | Match? |
 |---------|--------|---------------|-------------|--------------|------------|-----------|-----------|-----------------|--------|
-| 1 | WangDISP | Industry (FF12) | Calendar Year | Base | 1 | WangDISP | industry | base | ✓ |
-| 2 | WangDISP | Firm | Calendar Year | Base | 2 | WangDISP | firm | base | ✓ |
-| 3 | WangDISP | Industry (FF12) | Calendar Year | Extended | 3 | WangDISP | industry | extended | ✓ |
-| 4 | WangDISP | Firm | Calendar Year | Extended | 4 | WangDISP | firm | extended | ✓ |
-| 5 | WangDISP | Industry (FF12) | Calendar Year-Quarter | Extended | 5 | WangDISP | industry_yq | extended | ✓ |
-| 6 | WangDISP | Firm | Calendar Year-Quarter | Extended | 6 | WangDISP | firm_yq | extended | ✓ |
-| 7 | WangDISP_lead | Industry (FF12) | Calendar Year | Base | 7 | WangDISP_lead | industry | base | ✓ |
-| 8 | WangDISP_lead | Firm | Calendar Year | Base | 8 | WangDISP_lead | firm | base | ✓ |
-| 9 | WangDISP_lead | Industry (FF12) | Calendar Year | Extended | 9 | WangDISP_lead | industry | extended | ✓ |
-| 10 | WangDISP_lead | Firm | Calendar Year | Extended | 10 | WangDISP_lead | firm | extended | ✓ |
-| 11 | WangDISP_lead | Industry (FF12) | Calendar Year-Quarter | Extended | 11 | WangDISP_lead | industry_yq | extended | ✓ |
-| 12 | WangDISP_lead | Firm | Calendar Year-Quarter | Extended | 12 | WangDISP_lead | firm_yq | extended | ✓ |
+| 1 | DISP | Industry (FF12) | Calendar Year | Base | 1 | DISP | industry | base | ✓ |
+| 2 | DISP | Firm | Calendar Year | Base | 2 | DISP | firm | base | ✓ |
+| 3 | DISP | Industry (FF12) | Calendar Year | Extended | 3 | DISP | industry | extended | ✓ |
+| 4 | DISP | Firm | Calendar Year | Extended | 4 | DISP | firm | extended | ✓ |
+| 5 | DISP | Industry (FF12) | Calendar Year-Quarter | Extended | 5 | DISP | industry_yq | extended | ✓ |
+| 6 | DISP | Firm | Calendar Year-Quarter | Extended | 6 | DISP | firm_yq | extended | ✓ |
+| 7 | DISP_lead | Industry (FF12) | Calendar Year | Base | 7 | DISP_lead | industry | base | ✓ |
+| 8 | DISP_lead | Firm | Calendar Year | Base | 8 | DISP_lead | firm | base | ✓ |
+| 9 | DISP_lead | Industry (FF12) | Calendar Year | Extended | 9 | DISP_lead | industry | extended | ✓ |
+| 10 | DISP_lead | Firm | Calendar Year | Extended | 10 | DISP_lead | firm | extended | ✓ |
+| 11 | DISP_lead | Industry (FF12) | Calendar Year-Quarter | Extended | 11 | DISP_lead | industry_yq | extended | ✓ |
+| 12 | DISP_lead | Firm | Calendar Year-Quarter | Extended | 12 | DISP_lead | firm_yq | extended | ✓ |
 
 Doc line citation: "runner lines 82-98". MODEL_SPECS closes at line 99 (the `]`). Substantively correct.
 
@@ -254,10 +254,10 @@ Doc line citation: "runner lines 82-98". MODEL_SPECS closes at line 99 (the `]`)
 |------|-----------|--------------|-----------|--------|
 | 1 | "Full panel (manifest)" | `("Full panel", full_n)` | 112,968 | ✓ |
 | 2 | "Main sample (excl FF12=8 Utility, FF12=11 Finance)" | `("Main sample (excl Finance/Utility)", main_n)` | 88,205 | ✓ |
-| 3 | "WangDISP non-null" | `("WangDISP non-null", panel["WangDISP"].notna().sum())` | 37,446 | ✓ |
+| 3 | "DISP non-null" | `("DISP non-null", panel["DISP"].notna().sum())` | 37,446 | ✓ |
 | 4 | "Complete case + min 5 calls/firm (col 1, base controls)" | `("After complete-case + min-calls (col 1)", first_n)` | 17,089 | ✓ |
 
-- Filter order in code: `filter_main_sample()` → print WangDISP non-null → `prepare_regression_data()` (complete-case + min calls) ✓
+- Filter order in code: `filter_main_sample()` → print DISP non-null → `prepare_regression_data()` (complete-case + min calls) ✓
 - **PASS**
 
 **D3-CHECK: Sample Counts per Spec**
@@ -275,60 +275,60 @@ Checking all 21 variables (rows) in the dictionary. Code is the source of truth.
 
 **DVs (2 variables):**
 
-1. `WangDISP` — Formula: "SD(latest analyst EPS forecasts in [T-31, T-1]) / prccq_prior; min 2 analysts; FPEDATS within 120 days"
+1. `DISP` — Formula: "SD(latest analyst EPS forecasts in [T-31, T-1]) / prccq_prior; min 2 analysts; FPEDATS within 120 days"
    - `wang_disp.py` line 52: `self.window_days = 31`; line 53: `self.fpedats_max_days = 120`; line 48: `NUMEST_MIN = 2`
    - `_wang_dispersion_bulk()` computes std of analyst forecasts per call ✓
    - Price: `prccq_lag` = prior quarter-end price (line 129: `price.groupby("gvkey")["prccq"].shift(1)`) ✓
    - Winsorization: "1%/99% pooled (wang_disp.py lines 85-89)" — code lines 84-90: `valid.quantile(0.01)`, `valid.quantile(0.99)`, `.clip(lo, hi)` ✓
    - **PASS**
 
-2. `WangDISP_lead` — Formula: "WangDISP shifted forward by one consecutive fiscal quarter per gvkey"
-   - Builder lines 251-265: `firm_qtr.groupby("gvkey")["WangDISP"].shift(-1)` with consecutive-quarter validation ✓
+2. `DISP_lead` — Formula: "DISP shifted forward by one consecutive fiscal quarter per gvkey"
+   - Builder lines 251-265: `firm_qtr.groupby("gvkey")["DISP"].shift(-1)` with consecutive-quarter validation ✓
    - **PASS**
 
 **Lagged DV (1 variable):**
 
-3. `WangDISP_lag` — Formula: "WangDISP shifted backward by one consecutive fiscal quarter per gvkey"
-   - Builder lines 271-284: `firm_qtr.groupby("gvkey")["WangDISP"].shift(1)` with consecutive-prev validation ✓
+3. `DISP_lag` — Formula: "DISP shifted backward by one consecutive fiscal quarter per gvkey"
+   - Builder lines 271-284: `firm_qtr.groupby("gvkey")["DISP"].shift(1)` with consecutive-prev validation ✓
    - **PASS**
 
 **Key IVs (4 variables):**
 
-4. `CEO_QA_Uncertainty_pct` — LinguisticEngine output, formula = uncertainty word count in CEO QA turns / total word count * 100
+4. `UncAnsCEO` — LinguisticEngine output, formula = uncertainty word count in CEO QA turns / total word count * 100
    - Column name confirmed in LinguisticEngine (`_linguistic_engine.py`) ✓
    - **PASS**
 
-5. `CEO_Pres_Uncertainty_pct` — LinguisticEngine ✓ **PASS**
+5. `UncPreCEO` — LinguisticEngine ✓ **PASS**
 
-6. `Manager_QA_Uncertainty_pct` — LinguisticEngine ✓ **PASS**
+6. `UncAnsMgr` — LinguisticEngine ✓ **PASS**
 
-7. `Manager_Pres_Uncertainty_pct` — LinguisticEngine ✓ **PASS**
+7. `UncPreMgr` — LinguisticEngine ✓ **PASS**
 
-**Base Controls (7 variables, plus WangDISP_lag already covered):**
+**Base Controls (7 variables, plus DISP_lag already covered):**
 
-8. `Size` — `ln(atq)`, CompustatEngine ✓ (standard) **PASS**
+8. `lnAssets` — `ln(atq)`, CompustatEngine ✓ (standard) **PASS**
 
 9. `TobinsQ` — `(cshoq * prccq + dlcq + dlttq) / atq` ✓ **PASS**
 
 10. `ROA` — `iby_annual (Q4) / avg(atq_t, atq_{t-1})` ✓ **PASS**
 
-11. `BookLev` — `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` ✓ **PASS**
+11. `Leverage` — `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` ✓ **PASS**
 
-12. `CapexAt` — `capxy_annual (Q4-only) / atq_lag_annual` ✓ **PASS**
+12. `Capex` — `capxy_annual (Q4-only) / atq_lag_annual` ✓ **PASS**
 
-13. `DividendPayer` — binary, `dvy_annual > 0` ✓ **PASS**
+13. `DivDummy` — binary, `dvy_annual > 0` ✓ **PASS**
 
-14. `OCF_Volatility` — rolling 5-year std of `oancfy / atq_{t-1}` ✓ **PASS**
+14. `sCFO` — rolling 5-year std of `oancfy / atq_{t-1}` ✓ **PASS**
 
 **Extended Controls (4 variables):**
 
 15. `SurpDec` — IbesEngine (Summary), ranked -5..+5 within calendar quarter ✓ **PASS**
 
-16. `loss_dummy` — `1 if ibq < 0, else 0`, CompustatEngine ✓ **PASS**
+16. `Loss` — `1 if ibq < 0, else 0`, CompustatEngine ✓ **PASS**
 
-17. `Analyst_QA_Uncertainty_pct` — `analyst_qa_uncertainty.py` line 27: `self.column = config.get("column", "Analyst_QA_Uncertainty_pct")` — column name confirmed ✓ **PASS**
+17. `UncQue` — `analyst_qa_uncertainty.py` line 27: `self.column = config.get("column", "UncQue")` — column name confirmed ✓ **PASS**
 
-18. `Entire_All_Negative_pct` — `negative_sentiment.py` line 27: `self.column = config.get("column", "Entire_All_Negative_pct")` — column name confirmed ✓ **PASS**
+18. `NegCall` — `negative_sentiment.py` line 27: `self.column = config.get("column", "NegCall")` — column name confirmed ✓ **PASS**
 
 **FE / Infrastructure Variables (5 variables):**
 
@@ -396,26 +396,26 @@ G2 (Runner — `run_h5b_wang_disp.py`):
 - No `{suite}_table.tex` from runner (that is generate_all_tables.py) — doc correctly omits ✓
 
 G3 (Summary Stats):
-- Doc lists 14 vars from WangDISP through OCF_Volatility
+- Doc lists 14 vars from DISP through sCFO
 - Runner SUMMARY_STATS_VARS lines 101-116: exactly 14 entries; labels match doc ✓
-- Doc correctly notes (L-7) that SurpDec and loss_dummy are NOT in SUMMARY_STATS_VARS ✓
+- Doc correctly notes (L-7) that SurpDec and Loss are NOT in SUMMARY_STATS_VARS ✓
 
 **H-CHECK: Outlier / Missing Treatment**
 
 H1 Winsorization:
-- WangDISP: pooled 1%/99% — `wang_disp.py` lines 84-90 ✓
+- DISP: pooled 1%/99% — `wang_disp.py` lines 84-90 ✓
 - Compustat controls: 1%/99% per fiscal year at engine level — standard CompustatEngine pattern ✓
 - Linguistic IVs: 0%/99% per calendar year (upper-only) — standard LinguisticEngine pattern ✓
 - SurpDec: not winsorized (discrete ranked) ✓
-- DividendPayer, loss_dummy: binary, exempt ✓
+- DivDummy, Loss: binary, exempt ✓
 
 H2 Missing Data:
 - Complete-case deletion: runner line 201 `df[required].notna().all(axis=1)` ✓
 - Inf/-Inf replaced with NaN: runner line 195 `df.replace([np.inf, -np.inf], np.nan)` ✓
-- WangDISP requires >=2 analysts + prccq>0: `wang_disp.py` NUMEST_MIN=2 (line 48), line 245 `valid_price = result["prccq_lag"].notna() & (result["prccq_lag"] > 0)` ✓
+- DISP requires >=2 analysts + prccq>0: `wang_disp.py` NUMEST_MIN=2 (line 48), line 245 `valid_price = result["prccq_lag"].notna() & (result["prccq_lag"] > 0)` ✓
 
 H3 Transformations:
-- Size = ln(atq), atq>0 only ✓
+- lnAssets = ln(atq), atq>0 only ✓
 - No other transforms ✓
 
 **Phase 7 Result**: 9/9 checks pass.
@@ -436,8 +436,8 @@ Opening `outputs/generate_all_tables.py`. The H5 entry is at **lines 150-163**:
     "label": "tab:h5",
     "cols": 12,
     "dvs": [
-        ("WangDISP", 6),
-        (r"WangDISP\_lead", 6),
+        ("DISP", 6),
+        (r"DISP\_lead", 6),
     ],
     "tail": "one",
     "hyp_dir": ">",
@@ -453,8 +453,8 @@ Opening `outputs/generate_all_tables.py`. The H5 entry is at **lines 150-163**:
     "label": "tab:h5b_wang",
     "cols": 12,
     "dvs": [
-        ("WangDISP", 6),
-        (r"WangDISP\_lead", 6),
+        ("DISP", 6),
+        (r"DISP\_lead", 6),
     ],
     "tail": "one",
     "hyp_dir": ">",
@@ -471,7 +471,7 @@ Source cited: "outputs/generate_all_tables.py lines 183-195"
 | `"caption"` | `"H5b: Speech Uncertainty..."` | `"H5: Speech Uncertainty..."` | **FAIL** |
 | `"label"` | `"tab:h5b_wang"` | `"tab:h5"` | **FAIL** |
 | `"cols"` | `12` | `12` | PASS |
-| `"dvs"` | `[("WangDISP", 6), (r"WangDISP\_lead", 6)]` | same | PASS |
+| `"dvs"` | `[("DISP", 6), (r"DISP\_lead", 6)]` | same | PASS |
 | `"tail"` | `"one"` | `"one"` | PASS |
 | `"hyp_dir"` | `">"` | `">"` | PASS |
 | `key_vars` | absent (correct — no key_vars in code) | absent | PASS |
@@ -554,13 +554,13 @@ Note: QG5 functional question (tail direction) is fully met. The Section I id/la
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
 1. **DVs in Section B2 vs Section C**
-   - B2: WangDISP, WangDISP_lead
-   - C: WangDISP (cols 1-6), WangDISP_lead (cols 7-12) ✓
+   - B2: DISP, DISP_lead
+   - C: DISP (cols 1-6), DISP_lead (cols 7-12) ✓
    - **CONSISTENT**
 
 2. **DVs in Section C vs Section I**
-   - C: WangDISP (6 cols), WangDISP_lead (6 cols)
-   - I (doc): `dvs=[("WangDISP", 6), ("WangDISP_lead", 6)]` — these field values are correct ✓
+   - C: DISP (6 cols), DISP_lead (6 cols)
+   - I (doc): `dvs=[("DISP", 6), ("DISP_lead", 6)]` — these field values are correct ✓
    - **CONSISTENT** (the dvs field is correct even though id/label are wrong)
 
 3. **Controls in Section B4 vs Section E**

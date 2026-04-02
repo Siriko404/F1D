@@ -225,7 +225,7 @@ def setup_run_logging(
 
     Args:
         log_base_dir: Base directory for logs (e.g., Path("logs"))
-        suite_name: Hypothesis suite name (e.g., "H1_CashHoldings")
+        suite_name: Hypothesis suite name (e.g., "H1_CashRatio")
         timestamp: Optional timestamp string. If None, generates current timestamp.
         log_level: Logging level (default: "INFO")
         tee_output: If True, capture print() output to log file (default: True)

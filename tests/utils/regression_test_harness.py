@@ -136,8 +136,8 @@ def generate_h1_data(n_firms: int = 50, n_years: int = 5, seed: int = 42) -> pd.
     """Generate sample data for H1 (Cash Holdings) tests."""
     extra_cols = {
         "cash_ratio": lambda: np.random.uniform(0.05, 0.3),
-        "Manager_QA_Uncertainty_pct": lambda: np.random.uniform(2, 8),
-        "CEO_QA_Uncertainty_pct": lambda: np.random.uniform(2, 8),
+        "UncAnsMgr": lambda: np.random.uniform(2, 8),
+        "UncAnsCEO": lambda: np.random.uniform(2, 8),
         "firm_size": lambda: np.random.uniform(5, 10),
         "tobins_q": lambda: np.random.uniform(0.8, 2.0),
         "roa": lambda: np.random.uniform(-0.1, 0.2),
@@ -151,9 +151,9 @@ def generate_h3_data(n_firms: int = 50, n_years: int = 5, seed: int = 42) -> pd.
     extra_cols = {
         "div_stability": lambda: np.random.uniform(0, 1),
         "payout_flexibility": lambda: np.random.uniform(0, 1),
-        "Manager_QA_Uncertainty_pct": lambda: np.random.uniform(2, 8),
+        "UncAnsMgr": lambda: np.random.uniform(2, 8),
         "leverage": lambda: np.random.uniform(0.1, 0.6),
-        "earnings_volatility": lambda: np.random.uniform(0, 0.2),
+        "EarnVol": lambda: np.random.uniform(0, 0.2),
         "firm_size": lambda: np.random.uniform(5, 10),
     }
     return generate_panel_data(n_firms, n_years, seed, extra_cols)
@@ -163,7 +163,7 @@ def generate_h4_data(n_firms: int = 50, n_years: int = 5, seed: int = 42) -> pd.
     """Generate sample data for H4 (Leverage Discipline) tests."""
     extra_cols = {
         "leverage": lambda: np.random.uniform(0.1, 0.6),
-        "Manager_QA_Uncertainty_pct": lambda: np.random.uniform(2, 8),
+        "UncAnsMgr": lambda: np.random.uniform(2, 8),
         "analyst_qa_uncertainty": lambda: np.random.uniform(1, 5),
         "firm_size": lambda: np.random.uniform(5, 10),
         "tobins_q": lambda: np.random.uniform(0.8, 2.0),
@@ -176,7 +176,7 @@ def generate_h5_data(n_firms: int = 50, n_years: int = 5, seed: int = 42) -> pd.
     extra_cols = {
         "dispersion_lead": lambda: np.random.uniform(0.01, 0.2),
         "Manager_QA_Weak_Modal_pct": lambda: np.random.uniform(1, 5),
-        "Manager_QA_Uncertainty_pct": lambda: np.random.uniform(2, 8),
+        "UncAnsMgr": lambda: np.random.uniform(2, 8),
         "prior_dispersion": lambda: np.random.uniform(0.01, 0.2),
         "analyst_coverage": lambda: np.random.uniform(1, 4),
         "firm_size": lambda: np.random.uniform(5, 10),
@@ -205,9 +205,9 @@ def generate_ceo_data(
                 "ceo_id": ceo_id,
                 "gvkey": str(ceo_idx % 10).zfill(6),
                 "year": year,
-                "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
-                "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                "Analyst_QA_Uncertainty_pct": np.random.uniform(1, 5),
+                "UncAnsCEO": np.random.uniform(2, 8),
+                "UncPreCEO": np.random.uniform(1, 5),
+                "UncQue": np.random.uniform(1, 5),
             })
 
     return pd.DataFrame(data)

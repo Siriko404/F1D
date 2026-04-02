@@ -90,7 +90,7 @@ Required sections per the creation prompt (Sections A through L):
 
 ### A-3. Hypothesis
 **Doc claims:** "Does higher quarterly political risk exposure increase language uncertainty in earnings call speech?"
-**Code says:** Runner docstring line 29: `"H11: beta(PRiskQ) > 0  -- higher political risk increases speech uncertainty"`. The doc's phrasing is an accurate English paraphrase.
+**Code says:** Runner docstring line 29: `"H11: beta(PRisk) > 0  -- higher political risk increases speech uncertainty"`. The doc's phrasing is an accurate English paraphrase.
 **Verdict:** PASS.
 
 ### A-4. Direction
@@ -144,37 +144,37 @@ This is unambiguously a one-tailed test for beta > 0.
 
 **Doc claims:**
 ```
-Uncertainty_{i,t} = b1 * PRiskQ_{i,t} + b2 * Analyst_QA_Uncertainty_pct_{i,t}
+Uncertainty_{i,t} = b1 * PRisk_{i,t} + b2 * UncQue_{i,t}
                     + [b3 * Pres_Uncertainty_pct_{i,t}]
-                    + b4 * Entire_All_Negative_pct_{i,t}
-                    + b5 * Size_{i,t} + b6 * TobinsQ_{i,t} + b7 * ROA_{i,t}
-                    + b8 * CashHoldings_{i,t} + b9 * DividendPayer_{i,t}
-                    + b10 * firm_maturity_{i,t} + b11 * earnings_volatility_{i,t}
+                    + b4 * NegCall_{i,t}
+                    + b5 * lnAssets_{i,t} + b6 * TobinsQ_{i,t} + b7 * ROA_{i,t}
+                    + b8 * CashRatio_{i,t} + b9 * DivDummy_{i,t}
+                    + b10 * FirmMat_{i,t} + b11 * EarnVol_{i,t}
                     + alpha_i + gamma_t + epsilon_{i,t}
 ```
 
 **Code says (runner lines 175–179):**
 ```python
 formula = (
-    f"{dv_var} ~ 1 + PRiskQ + "
+    f"{dv_var} ~ 1 + PRisk + "
     + " + ".join(controls)
     + " + EntityEffects + TimeEffects"
 )
 ```
 `controls = list(BASE_CONTROLS)` (9 items) + optional pres_control.
 
-`BASE_CONTROLS` (lines 94–104): `["Analyst_QA_Uncertainty_pct", "Entire_All_Negative_pct", "Size", "TobinsQ", "ROA", "CashHoldings", "DividendPayer", "firm_maturity", "earnings_volatility"]`
+`BASE_CONTROLS` (lines 94–104): `["UncQue", "NegCall", "lnAssets", "TobinsQ", "ROA", "CashRatio", "DivDummy", "FirmMat", "EarnVol"]`
 
-The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityEffects + TimeEffects. Ordering in the doc matches BASE_CONTROLS ordering. The intercept `~ 1 +` is in the code but not shown in the doc equation (standard academic notation).
+The doc equation captures all 9 base controls + PRisk + optional Pres + EntityEffects + TimeEffects. Ordering in the doc matches BASE_CONTROLS ordering. The intercept `~ 1 +` is in the code but not shown in the doc equation (standard academic notation).
 **Verdict:** PASS.
 
 ### B2-CHECK: Dependent Variable(s)
 
 **Doc lists 4 DVs:**
-1. `Manager_QA_Uncertainty_pct`
-2. `CEO_QA_Uncertainty_pct`
-3. `Manager_Pres_Uncertainty_pct`
-4. `CEO_Pres_Uncertainty_pct`
+1. `UncAnsMgr`
+2. `UncAnsCEO`
+3. `UncPreMgr`
+4. `UncPreCEO`
 
 **Code says:** `CONFIG["dependent_variables"]` (runner lines 85–91) lists exactly these 4 DVs in exactly this order. All 4 loaded from parquet (lines 411–414).
 **Verdict:** PASS — all 4 DVs documented, none missing or extra.
@@ -182,7 +182,7 @@ The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityE
 ### B3-CHECK: Independent Variable(s)
 
 **Doc claims:**
-- Single IV: `PRiskQ`
+- Single IV: `PRisk`
 - Source: `inputs/FirmLevelRisk/firmquarter_2022q1.csv` (tab-separated)
 - Dedup: max PRisk per (gvkey, cal_q)
 - Winsorization: 1%/99% per year
@@ -196,7 +196,7 @@ The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityE
 
 ### B4-CHECK: Control Variables
 
-**Doc lists BASE_CONTROLS (9 controls):** `Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct, Size, TobinsQ, ROA, CashHoldings, DividendPayer, firm_maturity, earnings_volatility`
+**Doc lists BASE_CONTROLS (9 controls):** `UncQue, NegCall, lnAssets, TobinsQ, ROA, CashRatio, DivDummy, FirmMat, EarnVol`
 
 **Code says (runner lines 94–104):** Exact match — 9 items in same order. **PASS.**
 
@@ -235,7 +235,7 @@ The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityE
 ### B7-CHECK: Hypothesis Test
 
 **Doc claims:**
-- One-tailed, beta(PRiskQ) > 0
+- One-tailed, beta(PRisk) > 0
 - `p_one = p_two / 2 if beta_prisk > 0 else 1 - p_two / 2` (runner lines 211-213)
 - `h11_sig = not np.isnan(p_one) and p_one < 0.05 and beta_prisk > 0` (runner line 216)
 - Star thresholds at "lines 261-266"
@@ -264,10 +264,10 @@ The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityE
 
 | Col | Doc DV | Code DV | Match |
 |---|---|---|---|
-| 1 | Manager_QA_Uncertainty_pct | Manager_QA_Uncertainty_pct | Yes |
-| 2 | CEO_QA_Uncertainty_pct | CEO_QA_Uncertainty_pct | Yes |
-| 3 | Manager_Pres_Uncertainty_pct | Manager_Pres_Uncertainty_pct | Yes |
-| 4 | CEO_Pres_Uncertainty_pct | CEO_Pres_Uncertainty_pct | Yes |
+| 1 | UncAnsMgr | UncAnsMgr | Yes |
+| 2 | UncAnsCEO | UncAnsCEO | Yes |
+| 3 | UncPreMgr | UncPreMgr | Yes |
+| 4 | UncPreCEO | UncPreCEO | Yes |
 
 **Verdict:** PASS.
 
@@ -315,7 +315,7 @@ The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityE
 
 ## PHASE 6: FACTUAL ACCURACY — SECTION E (Variable Dictionary)
 
-### DVs: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+### DVs: UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO
 
 **Doc claims:**
 - Formula: `(uncertainty words / total words) * 100` per speaker/section
@@ -326,12 +326,12 @@ The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityE
 
 **Finding: FAIL — UNVERIFIABLE.** The claim that the lower trim is 0.0 rather than 0.01 is plausible (linguistic pcts are bounded ≥0 so lower trim is conceptually appropriate) but is not verifiable from the code read in this audit. The doc does NOT mark this [UNVERIFIED], violating quality gate 10.
 
-### PRiskQ
+### PRisk
 
 **Doc claims:**
 - Source: `inputs/FirmLevelRisk/firmquarter_2022q1.csv` (tab-sep)
 - Dedup: max PRisk per (gvkey, cal_q)
-- Winsorized: 1%/99% per year in PRiskQBuilder
+- Winsorized: 1%/99% per year in PRiskBuilder
 
 **Code says (prisk_q.py):**
 - Line 37: `PRISK_FILE = "inputs/FirmLevelRisk/firmquarter_2022q1.csv"` ✓
@@ -340,20 +340,20 @@ The doc equation captures all 9 base controls + PRiskQ + optional Pres + EntityE
 - Line 141: `winsorize_by_year(prisk_df, ["PRisk"], year_col="year")` with default `lower=0.01, upper=0.99` ✓
 **Verdict:** PASS.
 
-### Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct
+### UncQue, NegCall
 
 Same LinguisticEngine source and winsorization claim as the 4 DVs. Same UNVERIFIABLE note applies regarding `lower=0.0`. **PASS WITH CONCERN** (same as DVs).
 
-### Size, TobinsQ, ROA, CashHoldings, DividendPayer, firm_maturity, earnings_volatility
+### lnAssets, TobinsQ, ROA, CashRatio, DivDummy, FirmMat, EarnVol
 
-**Doc claims:** CompustatEngine, 1%/99% per fyearq (except DividendPayer = binary, not winsorized). Formulas claimed:
-- Size: `ln(atq)`, atq > 0 required
+**Doc claims:** CompustatEngine, 1%/99% per fyearq (except DivDummy = binary, not winsorized). Formulas claimed:
+- lnAssets: `ln(atq)`, atq > 0 required
 - TobinsQ: `(cshoq * prccq + dlcq + dlttq) / atq`
 - ROA: `iby_annual (Q4) / avg_assets`
-- CashHoldings: `cheq / atq`
-- DividendPayer: `1 if dvy_annual > 0 else 0`
-- firm_maturity: `req / atq` (Q4 row)
-- earnings_volatility: rolling 5-year std of annual ROA
+- CashRatio: `cheq / atq`
+- DivDummy: `1 if dvy_annual > 0 else 0`
+- FirmMat: `req / atq` (Q4 row)
+- EarnVol: rolling 5-year std of annual ROA
 
 These are all project-standard formulas. Without reading each builder source, they cannot be individually verified here — but they are consistent with all other suite provenance documents and the project's standard variable construction. No contradictory evidence was found in the builder or runner code read for this audit.
 **Verdict:** PASS (consistent with project standard).
@@ -374,18 +374,18 @@ These are all project-standard formulas. Without reading each builder source, th
 | Variable in Regression | In Dictionary? |
 |---|---|
 | DV (4 uncertainty measures) | Yes |
-| PRiskQ | Yes |
-| Analyst_QA_Uncertainty_pct | Yes |
-| Entire_All_Negative_pct | Yes |
-| Size | Yes |
+| PRisk | Yes |
+| UncQue | Yes |
+| NegCall | Yes |
+| lnAssets | Yes |
 | TobinsQ | Yes |
 | ROA | Yes |
-| CashHoldings | Yes |
-| DividendPayer | Yes |
-| firm_maturity | Yes |
-| earnings_volatility | Yes |
-| Manager_Pres_Uncertainty_pct (dynamic control) | Yes (typed "DV / Control") |
-| CEO_Pres_Uncertainty_pct (dynamic control) | Yes (typed "DV / Control") |
+| CashRatio | Yes |
+| DivDummy | Yes |
+| FirmMat | Yes |
+| EarnVol | Yes |
+| UncPreMgr (dynamic control) | Yes (typed "DV / Control") |
+| UncPreCEO (dynamic control) | Yes (typed "DV / Control") |
 | gvkey (entity FE) | Yes |
 | year (time FE) | Yes |
 
@@ -401,11 +401,11 @@ All 15 variable types are present. No missing entries.
 
 **F1 Step 3 — "16 builders total":**
 Builder file imports 16 builders (lines 40–57):
-`ManifestFieldsBuilder, ManagerQAUncertaintyBuilder, CEOQAUncertaintyBuilder, AnalystQAUncertaintyBuilder, ManagerPresUncertaintyBuilder, CEOPresUncertaintyBuilder, SizeBuilder, BookLevBuilder, ROABuilder, TobinsQBuilder, CashHoldingsBuilder, DividendPayerBuilder, FirmMaturityBuilder, EarningsVolatilityBuilder, NegativeSentimentBuilder, PRiskQBuilder` = 16. ✓
+`ManifestFieldsBuilder, ManagerQAUncertaintyBuilder, CEOQAUncertaintyBuilder, AnalystQAUncertaintyBuilder, ManagerPresUncertaintyBuilder, CEOPresUncertaintyBuilder, SizeBuilder, LeverageBuilder, ROABuilder, TobinsQBuilder, CashRatioBuilder, DivDummyBuilder, FirmMaturityBuilder, EarningsVolatilityBuilder, NegativeSentimentBuilder, PRiskBuilder` = 16. ✓
 
-**F2 Data Engines — 4 engines listed:** LinguisticEngine, CompustatEngine, PRiskQBuilder, ManifestFieldsBuilder. All confirmed by builder imports. ✓
+**F2 Data Engines — 4 engines listed:** LinguisticEngine, CompustatEngine, PRiskBuilder, ManifestFieldsBuilder. All confirmed by builder imports. ✓
 
-**F3 Merge Operations — 15 merges documented (1 manifest + 14 variable merges):** Builder code (lines 129–146) runs `panel.merge(data, on="file_name", how="left")` with delta-check for each builder. `BookLevBuilder` correctly noted as built-but-unused. ✓
+**F3 Merge Operations — 15 merges documented (1 manifest + 14 variable merges):** Builder code (lines 129–146) runs `panel.merge(data, on="file_name", how="left")` with delta-check for each builder. `LeverageBuilder` correctly noted as built-but-unused. ✓
 
 **Verdict:** PASS.
 
@@ -445,17 +445,17 @@ All 4 G1 files verified. **PASS.**
 
 **H1. Winsorization:**
 - Compustat variables: `1%/99% per fyearq`. Standard project behavior. PASS.
-- DividendPayer: Not winsorized. Correct (binary variable). PASS.
+- DivDummy: Not winsorized. Correct (binary variable). PASS.
 - Linguistic variables: `0%/99% upper-only per-year`. The `lower=0.0` parameter is UNVERIFIABLE (see Phase 6). PASS WITH CONCERN.
-- PRiskQ: `1%/99% per year`. Confirmed at prisk_q.py line 141. PASS.
+- PRisk: `1%/99% per year`. Confirmed at prisk_q.py line 141. PASS.
 
 **H2. Missing Data Policy:**
 - Runner line 164: `panel.replace([np.inf, -np.inf], np.nan).dropna(subset=required)` ✓
-- PRiskQ NaN for unmatched calls — confirmed by left join in prisk_q.py ✓
+- PRisk NaN for unmatched calls — confirmed by left join in prisk_q.py ✓
 **Verdict:** PASS.
 
 **H3. Transformations:**
-- `Size = ln(atq)`. Standard. PASS.
+- `lnAssets = ln(atq)`. Standard. PASS.
 - "LaTeX table notes state 'All continuous controls are standardized' but code does NOT apply standardization." Verified: runner line 356 writes the note "All continuous controls are standardized" but no z-scoring anywhere in the runner. Code is truth. Doc correctly identifies this inconsistency. PASS.
 
 **Phase 7 failures:** 1 (G2 phantom file `report_step4_h11.md`).
@@ -474,18 +474,18 @@ All 4 G1 files verified. **PASS.**
     "label": "tab:h11",
     "cols": 4,
     "col_files": {
-        1: "regression_results_Main_Manager_QA_Uncertainty_pct.txt",
-        2: "regression_results_Main_CEO_QA_Uncertainty_pct.txt",
-        3: "regression_results_Main_Manager_Pres_Uncertainty_pct.txt",
-        4: "regression_results_Main_CEO_Pres_Uncertainty_pct.txt",
+        1: "regression_results_Main_UncAnsMgr.txt",
+        2: "regression_results_Main_UncAnsCEO.txt",
+        3: "regression_results_Main_UncPreMgr.txt",
+        4: "regression_results_Main_UncPreCEO.txt",
     },
     "dvs": [
         (r"QA\_Uncertainty\_pct", 2),
         (r"Pres\_Uncertainty\_pct", 2),
     ],
     "col_dv_labels": ["Manager", "CEO", "Manager", "CEO"],
-    "key_vars": ["PRiskQ"],
-    "key_labels": ["PRiskQ"],
+    "key_vars": ["PRisk"],
+    "key_labels": ["PRisk"],
     "key_tails": ["one_pos"],
 }
 ```
@@ -501,18 +501,18 @@ All 4 G1 files verified. **PASS.**
     "label": "tab:h11",
     "cols": 4,
     "col_files": {
-        1: "regression_results_Main_Manager_QA_Uncertainty_pct.txt",
-        2: "regression_results_Main_CEO_QA_Uncertainty_pct.txt",
-        3: "regression_results_Main_Manager_Pres_Uncertainty_pct.txt",
-        4: "regression_results_Main_CEO_Pres_Uncertainty_pct.txt",
+        1: "regression_results_Main_UncAnsMgr.txt",
+        2: "regression_results_Main_UncAnsCEO.txt",
+        3: "regression_results_Main_UncPreMgr.txt",
+        4: "regression_results_Main_UncPreCEO.txt",
     },
     "dvs": [
         (r"QA\_Uncertainty\_pct", 2),
         (r"Pres\_Uncertainty\_pct", 2),
     ],
     "col_dv_labels": ["Manager", "CEO", "Manager", "CEO"],
-    "key_vars": ["PRiskQ"],
-    "key_labels": ["PRiskQ"],
+    "key_vars": ["PRisk"],
+    "key_labels": ["PRisk"],
     "key_tails": ["one_pos"],
 },
 ```
@@ -530,8 +530,8 @@ The dictionary content is an **exact match** between doc and code. All fields ve
 | `col_files` | 4 entries | 4 entries (lines 185–190) | Yes |
 | `dvs` | 2 spans | same (lines 191–194) | Yes |
 | `col_dv_labels` | ["Manager","CEO","Manager","CEO"] | same (line 195) | Yes |
-| `key_vars` | ["PRiskQ"] | same (line 196) | Yes |
-| `key_labels` | ["PRiskQ"] | same (line 197) | Yes |
+| `key_vars` | ["PRisk"] | same (line 196) | Yes |
+| `key_labels` | ["PRisk"] | same (line 197) | Yes |
 | `key_tails` | ["one_pos"] | same (line 198) | Yes |
 | **Source lines** | **"lines 197-218"** | **Actual: lines 178–199** | **FAIL** |
 
@@ -578,7 +578,7 @@ Code:
 | 4 | The attrition cascade has row counts for each filter step | **PARTIAL** | Section D2 shows a 3-row attrition table but uses runtime code expressions (`len(panel)`, etc.) instead of integer counts. Rationale given: "runtime-dependent." The creation prompt says "has row counts for each filter step." This is technically borderline — acceptable if marked [UNVERIFIED] with explanation, but it is not so marked. |
 | 5 | The tail test direction matches between runner code and generate_all_tables.py | **YES** | Runner: `p_one = p_two / 2 if beta_prisk > 0` (one-tailed positive). Table: `"key_tails": ["one_pos"]`. Perfect match. |
 | 6 | The FE specification matches between docstring, code, and this document | **YES** | Runner docstring: `C(gvkey) + C(year)`. Code formula: `EntityEffects + TimeEffects` on `(gvkey, year)` index. Doc: Firm FE + Year. All consistent. |
-| 7 | Every merge in the panel builder is documented with join keys and type | **YES** | F3 table has 15 rows (manifest + 14 variable builders), all using `file_name / left join`. BookLevBuilder correctly noted as built-but-unused. |
+| 7 | Every merge in the panel builder is documented with join keys and type | **YES** | F3 table has 15 rows (manifest + 14 variable builders), all using `file_name / left join`. LeverageBuilder correctly noted as built-but-unused. |
 | 8 | The output file list matches what the runner actually writes | **NO** | G2 lists `report_step4_h11.md` which the runner never writes. Zero occurrences of "report_step4" in runner code. |
 | 9 | The model-family addendum is filled for the correct family only | **YES** | K1 (PanelOLS) filled with entity effects, time effects, other_effects, drop_absorbed, R2 reporting. K2–K6 = N/A. |
 | 10 | Any claim marked [UNVERIFIED] has an explanation of what blocks verification | **NO** | No [UNVERIFIED] markers are used anywhere in the document. Two claims are unverifiable without additional code reading: (a) linguistic variable `lower=0.0` winsorization parameter; (b) exact integer attrition counts. Neither is marked [UNVERIFIED] with explanation. |
@@ -590,7 +590,7 @@ Code:
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
 ### 1. DVs in B2 match DVs in C?
-B2: `Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct`
+B2: `UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO`
 C (published table, Cols 1–4): same 4 DVs.
 **CONSISTENT.**
 
@@ -724,4 +724,4 @@ The H11 provenance document is substantially accurate and well-constructed. It c
 - **MEDIUM (2):** Wrong line-number citation for generate_all_tables.py (197-218 vs 178-199); linguistic variable winsorization `lower=0.0` claim not marked [UNVERIFIED].
 - **LOW (2):** Missing [UNVERIFIED] markers for attrition counts; missing stale-comment note in L.
 
-**All core scientific claims are accurate:** IV/DV design, formula, FE structure, tail test, clustering, PRiskQ construction, and the generate_all_tables.py entry content are all verified correct.
+**All core scientific claims are accurate:** IV/DV design, formula, FE structure, tail test, clustering, PRisk construction, and the generate_all_tables.py entry content are all verified correct.

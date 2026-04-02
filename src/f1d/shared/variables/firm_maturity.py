@@ -1,7 +1,7 @@
 """Builder for Firm Maturity (firm_maturity) variable.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, firm_maturity.
+Returns one column: file_name, FirmMat.
 
 Firm Maturity measures the lifecycle stage of a firm based on
 characteristics such as age, sales growth, and capital structure.
@@ -40,12 +40,12 @@ class FirmMaturityBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "firm_maturity"]].copy()
-        stats = self.get_stats(data["firm_maturity"], "firm_maturity")
+        data = merged[["file_name", "FirmMat"]].copy()
+        stats = self.get_stats(data["FirmMat"], "FirmMat")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "firm_maturity", "source": "Compustat"},
+            metadata={"column": "FirmMat", "source": "Compustat"},
         )
 
 __all__ = ["FirmMaturityBuilder"]

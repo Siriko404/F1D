@@ -22,10 +22,17 @@ H1 extension (2026-02-19):
 
 H1 audit fixes (2026-02-19):
     TobinsQ: was (mkvaltq+ltq)/atq -- mkvaltq has 41% missing rate.
-             Fixed to (atq + cshoq*prccq - ceqq)/atq which matches v2 design
-             and cshoq*prccq has only 9.5% missing rate.
+             Switched to cshoq*prccq (9.5% missing rate).
              Requires: cshoq, prccq, ceqq (already in REQUIRED_COMPUSTAT_COLS).
              Remove: mkvaltq (no longer needed).
+
+Variable audit fix (2026-04-01):
+    TobinsQ: was (mktcap + dlcq + dlttq)/atq (Chung & Pruitt 1994 approx,
+             only interest-bearing debt). Fixed to (atq - ceqq + mktcap)/atq
+             per Bates, Kahle & Stulz (2009, JF) standard — replaces book
+             equity with market equity, retaining all non-equity liabilities.
+    CapexAt: was capxy_Q4 / atq_{t-1} (lagged assets). Fixed to capxy_Q4 / atq
+             (contemporaneous assets) per Bates, Kahle & Stulz (2009, JF).
     DividendPayer: was dvpq>0 (preferred dividends quarterly -- only 9.7% payers).
                    Fixed to dvy>0 (annual common dividends -- ~32% payers).
                    Requires: dvy instead of dvpq.
@@ -103,31 +110,30 @@ logger = logging.getLogger(__name__)
 
 # All columns produced by this engine (excludes file_name — matched in builders)
 COMPUSTAT_COLS = [
-    "Size",
-    "BM",
-    "BookLev",
+    "lnAssets",
+    "BTM",
+    "Leverage",
     "DebtToCapital",
     "ROA",
     "CurrentRatio",
-    "RD_Intensity",
-    "EPS_Growth",
+    "EPSgrowth",
     # H1 extension
-    "CashHoldings",
+    "CashRatio",
     "TobinsQ",
-    "CapexAt",
-    "DividendPayer",
-    "OCF_Volatility",
+    "Capex",
+    "DivDummy",
+    "sCFO",
     # H12 extension (Quarterly Payout Ratio)
     "PayoutRatio_q",
-    # Biddle (2009) — CashFlow & SalesGrowth kept; InvestmentResidual removed (H2 deleted)
-    "CashFlow",
+    # Biddle (2009) — CashFlowAt & SalesGrowth kept; InvestmentResidual removed (H2 deleted)
+    "CashFlowAt",
     "SalesGrowth",
-    # H3/H11 extension (kept: earnings_volatility, firm_maturity used by H11)
-    "earnings_volatility",
-    "firm_maturity",
+    # H3/H11 extension (kept: EarnVol, FirmMat used by H11)
+    "EarnVol",
+    "FirmMat",
     # H9 extension (Expanded Robustness Block)
-    "Intangibility",  # intanq / atq
-    "AssetGrowth",    # YoY asset growth
+    "FracInt",  # intanq / atq
+    "dAA",    # YoY asset growth
     "fqtr",     # Fiscal quarter (1-4) — needed for quarter-lead logic in panel builders
     # H16 extension (R&D Investment Intensity — Jiang, John, Larsen 2021)
     "RDSales",  # xrdy / saley (annual Q4-only; missing xrd→0; nonpositive sales→NaN)
@@ -174,7 +180,7 @@ REQUIRED_COMPUSTAT_COLS = [
     "ibq",  # Income Before Extraordinary Items (quarterly)
     "iby",  # Income Before Extraordinary Items (annual)
     # H9 extension (Expanded Robustness Block)
-    "intanq",  # Intangible Assets - Total (quarterly, for Intangibility ratio)
+    "intanq",  # Intangible Assets - Total (quarterly, for FracInt ratio)
     # H17 extension (Repurchase Intensity)
     "prstkcy",  # Purchase of Common and Preferred Stock, YTD cumulative ($M)
     # H19/H20 extension (Leary & Roberts 2010 financing classification)
@@ -222,14 +228,14 @@ def _compute_eps_growth_date_based(comp: pd.DataFrame) -> pd.Series:
         & (merged["epspxq_lag"] != 0)
     )
 
-    merged["EPS_Growth_tmp"] = np.where(
+    merged["EPSgrowth_tmp"] = np.where(
         valid,
         (merged["epspxq"] - merged["epspxq_lag"]) / merged["epspxq_lag"].abs(),
         np.nan,
     )
 
     merged_sorted = merged.sort_values("_row_id")
-    return pd.Series(merged_sorted["EPS_Growth_tmp"].to_numpy(), name="EPS_Growth_tmp")
+    return pd.Series(merged_sorted["EPSgrowth_tmp"].to_numpy(), name="EPSgrowth_tmp")
 
 
 def _compute_annual_q4_variable(
@@ -245,7 +251,7 @@ def _compute_annual_q4_variable(
     Args:
         comp: Full Compustat DataFrame (must have fqtr, fyearq, gvkey, raw_col).
         raw_col: The cumulative Compustat column (e.g. 'capxy', 'dvy').
-        out_col: The output column name (e.g. 'CapexAt_annual', 'DividendPayer').
+        out_col: The output column name (e.g. 'Capex_annual', 'DivDummy').
 
     Returns:
         Series aligned to comp's index.
@@ -306,7 +312,7 @@ def _compute_annual_q4_variable_lag(
 
 
 def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
-    """Compute OCF_Volatility = rolling 5-year std of (oancfy / atq_{t-1}) per gvkey.
+    """Compute sCFO = rolling 5-year std of (oancfy / atq_{t-1}) per gvkey.
 
     oancfy is an annual flow variable -- use the last observation per gvkey-fyearq
     to get one data point per fiscal year. Then compute rolling std over 5 years
@@ -336,25 +342,25 @@ def _compute_ocf_volatility(comp: pd.DataFrame) -> pd.Series:
 
     annual["dummy_date"] = pd.to_datetime(annual["fyearq"].astype(str) + "-12-31")
     annual = annual.sort_values("dummy_date").set_index("dummy_date")
-    annual["OCF_Volatility_annual"] = annual.groupby("gvkey")["ocf_ratio"].transform(
+    annual["sCFO_annual"] = annual.groupby("gvkey")["ocf_ratio"].transform(
         lambda x: x.rolling("1826D", min_periods=3).std()
     )
     annual = annual.reset_index()
 
-    lookup = annual[["gvkey", "fyearq", "OCF_Volatility_annual"]].copy()
+    lookup = annual[["gvkey", "fyearq", "sCFO_annual"]].copy()
 
     comp_aligned = comp[["gvkey", "fyearq"]].copy()
     comp_aligned["fyearq"] = comp_aligned["fyearq"].astype("Int64")
     comp_aligned["_idx"] = np.arange(len(comp_aligned))
 
     merged = comp_aligned.merge(
-        lookup.rename(columns={"OCF_Volatility_annual": "OCF_Volatility"}),
+        lookup.rename(columns={"sCFO_annual": "sCFO"}),
         on=["gvkey", "fyearq"],
         how="left",
         validate="m:1",
     )
     merged = merged.sort_values("_idx")
-    return pd.Series(merged["OCF_Volatility"].to_numpy(), name="OCF_Volatility")  # type: ignore[return-value]
+    return pd.Series(merged["sCFO"].to_numpy(), name="sCFO")  # type: ignore[return-value]
 
 
 def _load_ff48_map(root_path: Path) -> Dict[int, int]:
@@ -485,7 +491,7 @@ def _compute_biddle_residual(
             where sale = saley (annual total revenue) with saleq fallback
 
     All on Q4-only annual panel (one row per gvkey-fyearq), then joined back
-    to all quarters via gvkey+fyearq, identical to the CapexAt/DividendPayer
+    to all quarters via gvkey+fyearq, identical to the Capex/DivDummy
     Q4-join pattern.
 
     Audit fixes applied:
@@ -624,23 +630,19 @@ def _compute_biddle_residual(
     # ------------------------------------------------------------------
     # Step 4: First-stage predictors
     # ------------------------------------------------------------------
-    # C-4 fix: TobinQ Biddle predictor — require all components non-null.
+    # Tobin's Q Biddle predictor: (AT - Book Equity + Market Equity) / AT
+    # Per Bates, Kahle & Stulz (2009, JF) standard.
     mktcap = annual["cshoq"] * annual["prccq"]
-    debt_c = annual["dlcq"].clip(lower=0).fillna(0)
-    debt_t = annual["dlttq"].clip(lower=0).fillna(0)
-    debt_book = np.where(
-        annual["dlcq"].isna() & annual["dlttq"].isna(), np.nan, debt_c + debt_t
-    )
 
     all_present = (
         annual["atq"].notna()
         & (annual["atq"] > 0)
         & mktcap.notna()
-        & pd.Series(debt_book).notna()
+        & annual["ceqq"].notna()
     )
     annual["TobinQ"] = np.where(
         all_present,
-        (mktcap + debt_book) / annual["atq"],
+        (annual["atq"] - annual["ceqq"] + mktcap) / annual["atq"],
         np.nan,
     )
     annual["TobinQ"] = annual["TobinQ"].replace([np.inf, -np.inf], np.nan)
@@ -745,7 +747,7 @@ def _compute_biddle_residual(
 
     # ------------------------------------------------------------------
     # Step 6: Join all three Biddle variables back to the full quarterly panel
-    # via gvkey + fyearq (same Q4-join-back pattern as CapexAt/DividendPayer).
+    # via gvkey + fyearq (same Q4-join-back pattern as Capex/DivDummy).
     # fyearq is integer in the annual panel; convert both sides to float for
     # the merge to avoid dtype mismatches (fyearq in comp is float64).
     # ------------------------------------------------------------------
@@ -772,14 +774,14 @@ def _compute_biddle_residual(
 def _compute_h3_payout_policy(
     comp: pd.DataFrame,
 ) -> Tuple[pd.Series, pd.Series]:
-    """Compute earnings_volatility and firm_maturity on an annual basis and align back.
+    """Compute EarnVol and FirmMat on an annual basis and align back.
 
     Originally computed 6 H3 payout-policy variables; the 4 dead ones
     (div_stability, payout_flexibility, fcf_growth, is_div_payer_5yr) were
-    removed after H3 was archived.  Only earnings_volatility and firm_maturity
+    removed after H3 was archived.  Only EarnVol and FirmMat
     remain (used by H11).
 
-    Returns two Series aligned to comp's index: (earnings_volatility, firm_maturity).
+    Returns two Series aligned to comp's index: (EarnVol, FirmMat).
     """
     needed = [
         "gvkey",
@@ -804,11 +806,11 @@ def _compute_h3_payout_policy(
     df = df.sort_values(["gvkey", "fyearq"])
 
     # Firm Maturity: RE / TA
-    df["firm_maturity"] = np.where(
+    df["FirmMat"] = np.where(
         (df["atq"].notna()) & (df["atq"] > 0), df["req"] / df["atq"], np.nan
     )
 
-    # earnings_volatility: StdDev(annual ROA) over trailing 5 fiscal years
+    # EarnVol: StdDev(annual ROA) over trailing 5 fiscal years
     df["roa_annual"] = np.where(
         (df["atq"].notna()) & (df["atq"] > 0), df["iby"] / df["atq"], np.nan
     )
@@ -818,12 +820,12 @@ def _compute_h3_payout_policy(
     df["dummy_date"] = pd.to_datetime(df["fyearq"].astype(str) + "-12-31")
     df_ts = df.set_index("dummy_date").sort_index()
 
-    # earnings_volatility
+    # EarnVol
     earn_vol = (
         df_ts.groupby("gvkey")["roa_annual"].rolling("1826D", min_periods=3).std()
     )
     df = df.set_index(["gvkey", "dummy_date"])
-    df["earnings_volatility"] = earn_vol
+    df["EarnVol"] = earn_vol
 
     df = df.reset_index()
     df = df.drop(columns=["dummy_date"])
@@ -833,8 +835,8 @@ def _compute_h3_payout_policy(
         [
             "gvkey",
             "fyearq",
-            "earnings_volatility",
-            "firm_maturity",
+            "EarnVol",
+            "FirmMat",
         ]
     ].copy()
     lookup["fyearq"] = lookup["fyearq"].astype(float)
@@ -849,15 +851,15 @@ def _compute_h3_payout_policy(
     merged = merged.sort_values("_idx")
 
     return (
-        pd.Series(merged["earnings_volatility"].values, index=comp.index),
-        pd.Series(merged["firm_maturity"].values, index=comp.index),
+        pd.Series(merged["EarnVol"].values, index=comp.index),
+        pd.Series(merged["FirmMat"].values, index=comp.index),
     )
 
 
 def _compute_intangibility(comp: pd.DataFrame) -> pd.Series:
-    """Compute Intangibility ratio = intanq / atq.
+    """Compute FracInt ratio = intanq / atq.
 
-    Intangibility measures the proportion of intangible assets relative to total assets.
+    FracInt measures the proportion of intangible assets relative to total assets.
     Used in takeover prediction models as intangible-rich firms may be harder to value
     (Bates et al., 2006).
 
@@ -872,11 +874,11 @@ def _compute_intangibility(comp: pd.DataFrame) -> pd.Series:
         comp["intanq"] / comp["atq"],
         np.nan,
     )
-    return pd.Series(intangibility, index=comp.index, name="Intangibility")
+    return pd.Series(intangibility, index=comp.index, name="FracInt")
 
 
 def _compute_asset_growth(comp: pd.DataFrame) -> pd.Series:
-    """Compute AssetGrowth = (atq_t - atq_{t-4}) / |atq_{t-4}|.
+    """Compute dAA = (atq_t - atq_{t-4}) / |atq_{t-4}|.
 
     Year-over-year asset growth using date-based lag (merge_asof).
     Asset growth effect documented by Cooper et al. (2008) - high asset growth
@@ -923,14 +925,14 @@ def _compute_asset_growth(comp: pd.DataFrame) -> pd.Series:
         & (merged["atq_lag"].abs() > 0)
     )
 
-    merged["AssetGrowth_tmp"] = np.where(
+    merged["dAA_tmp"] = np.where(
         valid,
         (merged["atq"] - merged["atq_lag"]) / merged["atq_lag"].abs(),
         np.nan,
     )
 
     merged_sorted = merged.sort_values("_row_id")
-    return pd.Series(merged_sorted["AssetGrowth_tmp"].to_numpy(), name="AssetGrowth_tmp")
+    return pd.Series(merged_sorted["dAA_tmp"].to_numpy(), name="dAA_tmp")
 
 
 def _compute_and_winsorize(
@@ -940,12 +942,12 @@ def _compute_and_winsorize(
     comp = comp.sort_values(["gvkey", "datadate"]).reset_index(drop=True)
 
     # --- MAJOR-6: Size = ln(atq) only for positive atq; zero/neg → NaN ---
-    comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)
+    comp["lnAssets"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)
 
-    comp["BM"] = comp["ceqq"] / (comp["cshoq"] * comp["prccq"])
+    comp["BTM"] = comp["ceqq"] / (comp["cshoq"] * comp["prccq"])
     # FIX: Spec defines leverage as (dlcq + dlttq) / atq (interest-bearing debt only)
     # ltq includes all liabilities (accounts payable, accrued expenses, etc.)
-    comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]
+    comp["Leverage"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]
 
     # H4 extension: DebtToCapital = total debt / (shareholders' equity + total debt)
     total_debt = comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)
@@ -969,8 +971,6 @@ def _compute_and_winsorize(
     )
 
     comp["CurrentRatio"] = comp["actq"] / comp["lctq"].replace(0, np.nan)
-    comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]
-
     # --- H16 extension: RDSales = xrdy / saley (Jiang, John, Larsen 2021) ---
     # Annual R&D expense (Q4 YTD) / annual total sales (Q4 YTD).
     # Missing xrd → 0 (standard convention). Nonpositive sales → NaN.
@@ -983,31 +983,39 @@ def _compute_and_winsorize(
     comp["RDSales"] = np.where(sale_for_rd > 0, xrd_for_rd / sale_for_rd, np.nan)
 
     # --- H1 extension: 5 new variables ---
-    comp["CashHoldings"] = comp["cheq"] / comp["atq"]
+    comp["CashRatio"] = comp["cheq"] / comp["atq"]
     mktcap = comp["cshoq"] * comp["prccq"]
     debt_c = comp["dlcq"].clip(lower=0).fillna(0)
     debt_t = comp["dlttq"].clip(lower=0).fillna(0)
     debt_book = np.where(
         comp["dlcq"].isna() & comp["dlttq"].isna(), np.nan, debt_c + debt_t
     )
+    # Tobin's Q: (AT - Book Equity + Market Equity) / AT
+    # Standard per Bates, Kahle & Stulz (2009, JF), Opler et al. (1999),
+    # Rajan & Zingales (1995). Replaces book equity with market equity
+    # while retaining all non-equity liabilities.
     comp["TobinsQ"] = np.where(
-        comp["atq"].notna() & (comp["atq"] > 0) & mktcap.notna(),
-        (mktcap + debt_book) / comp["atq"],
+        comp["atq"].notna()
+        & (comp["atq"] > 0)
+        & mktcap.notna()
+        & comp["ceqq"].notna(),
+        (comp["atq"] - comp["ceqq"] + mktcap) / comp["atq"],
         np.nan,
     )
 
+    # Capex: capex / contemporaneous total assets per Bates et al. (2009, JF)
     capxy_annual = _compute_annual_q4_variable(comp, "capxy", "_capxy_annual")
-    comp["CapexAt"] = np.where(
-        pd.Series(atq_annual_lag1, index=comp.index) > 0,
+    comp["Capex"] = np.where(
+        pd.Series(atq_annual, index=comp.index) > 0,
         pd.Series(capxy_annual, index=comp.index)
-        / pd.Series(atq_annual_lag1, index=comp.index),
+        / pd.Series(atq_annual, index=comp.index),
         np.nan,
     )
 
     # CRITICAL-2 fix: dvy is YTD cumulative -- use Q4 annual value joined to
     # all quarters to classify dividend payers using the full fiscal year.
     dvy_annual = _compute_annual_q4_variable(comp, "dvy", "_dvy_annual")
-    comp["DividendPayer"] = (
+    comp["DivDummy"] = (
         pd.Series(dvy_annual, index=comp.index).fillna(0) > 0
     ).astype(float)
 
@@ -1022,25 +1030,25 @@ def _compute_and_winsorize(
         np.nan,
     )
 
-    comp["OCF_Volatility"] = _compute_ocf_volatility(comp)
+    comp["sCFO"] = _compute_ocf_volatility(comp)
 
     # --- Biddle (2009) extension: CashFlow + SalesGrowth (InvestmentResidual removed — H2 deleted) ---
     if root_path is not None:
         ir, cf, sg = _compute_biddle_residual(comp, root_path)
-        comp["CashFlow"] = cf
+        comp["CashFlowAt"] = cf
         comp["SalesGrowth"] = sg
     else:
-        comp["CashFlow"] = np.nan
+        comp["CashFlowAt"] = np.nan
         comp["SalesGrowth"] = np.nan
 
-    # --- H3 extension: earnings_volatility + firm_maturity (used by H11) ---
+    # --- H3 extension: EarnVol + FirmMat (used by H11) ---
     earn_vol, firm_mat = _compute_h3_payout_policy(comp)
-    comp["earnings_volatility"] = earn_vol
-    comp["firm_maturity"] = firm_mat
+    comp["EarnVol"] = earn_vol
+    comp["FirmMat"] = firm_mat
 
-    # --- H9 extension: Intangibility and AssetGrowth (Expanded Robustness Block) ---
-    comp["Intangibility"] = _compute_intangibility(comp)
-    comp["AssetGrowth"] = _compute_asset_growth(comp)
+    # --- H9 extension: FracInt and dAA (Expanded Robustness Block) ---
+    comp["FracInt"] = _compute_intangibility(comp)
+    comp["dAA"] = _compute_asset_growth(comp)
 
     # --- H17 extension: RepurchaseIntensity = quarterly_prstkcy / lagged_atq ---
     # prstkcy is YTD cumulative within fiscal year. De-cumulate to quarterly flow.
@@ -1182,21 +1190,20 @@ def _compute_and_winsorize(
 
     # --- MINOR-9: Replace inf with NaN after ratio computations ---
     ratio_cols = [
-        "BM",
-        "BookLev",
+        "BTM",
+        "Leverage",
         "DebtToCapital",
         "ROA",
         "CurrentRatio",
-        "RD_Intensity",
-        "CashHoldings",
+        "CashRatio",
         "TobinsQ",
-        "CapexAt",
+        "Capex",
         "PayoutRatio_q",
-        "OCF_Volatility",
-        "CashFlow",
+        "sCFO",
+        "CashFlowAt",
         "SalesGrowth",
-        "Intangibility",
-        "AssetGrowth",
+        "FracInt",
+        "dAA",
         "RDSales",
         "RepurchaseIntensity",
     ]
@@ -1204,7 +1211,7 @@ def _compute_and_winsorize(
         comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)
 
     # --- MAJOR-3: Date-based EPS lag ---
-    comp["EPS_Growth"] = _compute_eps_growth_date_based(comp)
+    comp["EPSgrowth"] = _compute_eps_growth_date_based(comp)
 
     # B3 fix: Apply per-year winsorization (1%/99% within each fyearq) to ALL
     # control variables, consistent with the per-year approach already used for
@@ -1212,11 +1219,11 @@ def _compute_and_winsorize(
     # Prior code used pooled winsorization (one global percentile across all years),
     # which conflates tail observations from thick years (many firms) with thin years
     # (few firms), producing year-varying effective clip bounds.
-    # Skip: DividendPayer (binary), CashFlow/SalesGrowth (already winsorized
+    # Skip: DivDummy (binary), CashFlowAt/SalesGrowth (already winsorized
     # per-year inside _compute_biddle_residual — do not double-winsorize).
     skip_winsorize = {
-        "DividendPayer",
-        "CashFlow",
+        "DivDummy",
+        "CashFlowAt",
         "SalesGrowth",
         "fqtr",              # fiscal quarter identifier (not a variable to winsorize)
         "ExternalFunding",   # binary classification (L&R 2010)
@@ -1324,7 +1331,7 @@ class CompustatEngine:
             direction="backward",
         )
 
-        matched = merged["Size"].notna().sum()
+        matched = merged["lnAssets"].notna().sum()
         total = len(merged)
         logger.info(
             f"    CompustatEngine: matched {matched:,}/{total:,} "

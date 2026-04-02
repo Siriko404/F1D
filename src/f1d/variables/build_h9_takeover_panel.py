@@ -23,23 +23,20 @@ Survival construction:
   - Takeover_Type: 'Uninvited' (Hostile + Unsolicited), 'Friendly' (Friendly
     + Neutral), 'None' (non-target), 'Unknown' (other attitude)
 
-Clarity constructs:
-  - ClarityCEO (time-invariant CEO FE): merged per ceo_id x sample
-  - CEO_Clarity_Residual: residualized CEO uncertainty (per call)
-  - Manager_Clarity_Residual: residualized Manager uncertainty (per call)
-  - ClarityManager: does NOT exist in the repo
+Uncertainty IVs (4 standard uncertainty measures, all present simultaneously):
+  - UncAnsMgr:    Manager uncertainty in Q&A segment
+  - UncAnsCEO:    CEO uncertainty in Q&A segment
+  - UncPreMgr:    Manager uncertainty in Presentation segment
+  - UncPreCEO:    CEO uncertainty in Presentation segment
 
 Financial Controls (Compustat-only, no CRSP/IBES):
-  - Size, BM, Lev, ROA, CashHoldings, SalesGrowth, Intangibility, AssetGrowth
+  - lnAssets, BTM, Leverage, ROA, CashRatio, SalesGrowth, FracInt, dAA
   - Matched to each call via the most recent fiscal year (as-of matching)
 
 Inputs (all raw):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
     - inputs/comp_na_daily_all/comp_na_daily_all.parquet  (Compustat)
     - inputs/SDC/sdc-ma-merged.parquet                     (SDC M&A)
-    - outputs/econometric/ceo_clarity/latest/clarity_scores.parquet
-    - outputs/econometric/ceo_clarity_extended/latest/ceo_clarity_residual.parquet
-    - outputs/econometric/ceo_clarity_extended/latest/manager_clarity_residual.parquet
 
 Outputs:
     - outputs/variables/takeover/{timestamp}/takeover_panel.parquet  (call-to-call)
@@ -48,7 +45,6 @@ Outputs:
 
 Deterministic: true
 Dependencies:
-    - Requires: Upstream clarity scores (H1, H0.3)
     - Uses: f1d.shared.variables, f1d.shared.config
 
 Author: Thesis Author
@@ -71,11 +67,13 @@ import pandas as pd
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
-from f1d.shared.path_utils import get_latest_output_dir, OutputResolutionError
+from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
+    ManagerPresUncertaintyBuilder,
+    CEOPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
     SizeBuilder,
@@ -89,8 +87,6 @@ from f1d.shared.variables import (
     TakeoverIndicatorBuilder,
     ManifestFieldsBuilder,
     stats_list_to_dataframe,
-    CEOClarityResidualBuilder,
-    ManagerClarityResidualBuilder,
 )
 
 
@@ -109,28 +105,6 @@ def parse_arguments():
     parser.add_argument("--year-end", type=int, default=None)
     return parser.parse_args()
 
-
-def load_clarity_scores(root_path: Path) -> pd.DataFrame:
-    """Load ClarityCEO scores from upstream clarity outputs.
-
-    Note: ClarityManager does not exist in the repo. Only CEO clarity is loaded.
-    """
-    try:
-        ceo_dir = get_latest_output_dir(
-            root_path / "outputs" / "econometric" / "ceo_clarity",
-            required_file="clarity_scores.parquet",
-        )
-        ceo = pd.read_parquet(
-            ceo_dir / "clarity_scores.parquet",
-            columns=["ceo_id", "sample", "ClarityCEO"],
-        )
-        ceo["ceo_id"] = ceo["ceo_id"].astype(str)
-        print(f"    ClarityCEO: {len(ceo):,} CEO-sample pairs")
-    except (OutputResolutionError, FileNotFoundError):
-        ceo = pd.DataFrame(columns=["ceo_id", "sample", "ClarityCEO"])
-        print("    WARNING: ClarityCEO not found — will be NaN")
-
-    return ceo
 
 
 def build_call_panel(
@@ -169,6 +143,12 @@ def build_call_panel(
         "ceo_qa_uncertainty": CEOQAUncertaintyBuilder(
             var_config.get("ceo_qa_uncertainty", {})
         ),
+        "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
+            var_config.get("manager_pres_uncertainty", {})
+        ),
+        "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
+            var_config.get("ceo_pres_uncertainty", {})
+        ),
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
         ),
@@ -183,8 +163,6 @@ def build_call_panel(
         "sales_growth": SalesGrowthBuilder({}),
         "intangibility": IntangibilityBuilder({}),
         "asset_growth": AssetGrowthBuilder({}),
-        "ceo_clarity_residual": CEOClarityResidualBuilder({}),
-        "manager_clarity_residual": ManagerClarityResidualBuilder({}),
     }
 
     for name, builder in builders.items():
@@ -426,10 +404,9 @@ def build_panel(
     """Build complete takeover panel for survival analysis.
 
     Pipeline:
-      1. Build call-level panel (manifest + linguistic + financial controls)
-      2. Merge ClarityCEO scores (per ceo_id x sample)
-      3. Load takeover indicators (firm-level from SDC)
-      4. Construct call-to-call counting-process intervals
+      1. Build call-level panel (manifest + linguistic uncertainty IVs + financial controls)
+      2. Load takeover indicators (firm-level from SDC)
+      3. Construct call-to-call counting-process intervals
 
     Returns call-to-call DataFrame suitable for CoxTimeVaryingFitter.
     """
@@ -437,34 +414,6 @@ def build_panel(
 
     # Step 1: Call-level panel
     call_panel = build_call_panel(root_path, years, var_config, stats)
-
-    # Step 2: Load clarity scores and merge at call level
-    print("\n  Loading clarity scores...")
-    ceo_clarity = load_clarity_scores(root_path)
-
-    call_panel["ceo_id"] = call_panel["ceo_id"].astype(str)
-
-    if len(ceo_clarity) > 0:
-        before_len = len(call_panel)
-        call_panel = call_panel.merge(
-            ceo_clarity[["ceo_id", "sample", "ClarityCEO"]],
-            on=["ceo_id", "sample"],
-            how="left",
-        )
-        after_len = len(call_panel)
-        delta = after_len - before_len
-        if after_len != before_len:
-            raise ValueError(
-                f"ClarityCEO merge changed row count {before_len} → {after_len} "
-                f"(delta: {delta:+d})."
-            )
-        n_matched = call_panel["ClarityCEO"].notna().sum()
-        print(
-            f"  After ClarityCEO merge: {after_len:,} rows, "
-            f"{n_matched:,} matched (delta: {delta:+d})"
-        )
-    else:
-        call_panel["ClarityCEO"] = float("nan")
 
     # Build takeover indicators (firm-level)
     print("\n  Loading takeover indicators from SDC...")
@@ -504,17 +453,18 @@ def build_panel(
         "start",
         "stop",
         "duration",
-        "ClarityCEO",
-        "CEO_Clarity_Residual",
-        "Manager_Clarity_Residual",
-        "Size",
-        "BM",
-        "BookLev",
+        "UncAnsMgr",
+        "UncAnsCEO",
+        "UncPreMgr",
+        "UncPreCEO",
+        "lnAssets",
+        "BTM",
+        "Leverage",
         "ROA",
-        "CashHoldings",
+        "CashRatio",
         "SalesGrowth",
-        "Intangibility",
-        "AssetGrowth",
+        "FracInt",
+        "dAA",
     ]:
         if col in panel.columns:
             n = panel[col].notna().sum()

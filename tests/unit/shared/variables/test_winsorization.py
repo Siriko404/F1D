@@ -270,7 +270,7 @@ class TestCRSPEngineWinsorization:
     """Tests for CRSPEngine-level winsorization.
 
     These tests verify that CRSPEngine applies per-year 1%/99% winsorization
-    to StockRet, MarketRet, Volatility, and amihud_illiq columns.
+    to StockRet, MarketRet, Volatility, and ILLIQ columns.
     """
 
     @pytest.mark.skip(reason="Integration test - requires actual CRSP data files")
@@ -288,7 +288,7 @@ class TestCRSPEngineWinsorization:
         # assert df["StockRet"].max() < 150, f"StockRet max={df['StockRet'].max()} not winsorized"
         # assert df["StockRet"].min() > -95, f"StockRet min={df['StockRet'].min()} not winsorized"
         # assert df["Volatility"].max() < 200, f"Volatility max={df['Volatility'].max()} not winsorized"
-        # assert df["amihud_illiq"].max() < 1000, f"amihud_illiq max={df['amihud_illiq'].max()} not winsorized"
+        # assert df["ILLIQ"].max() < 1000, f"ILLIQ max={df['ILLIQ'].max()} not winsorized"
 
 
 class TestCrossPanelConsistency:
@@ -315,9 +315,9 @@ class TestCrossPanelConsistency:
         # Requires actual panel builds - run as integration test
         # panel_h01 = pd.read_parquet("outputs/variables/manager_clarity/latest/*.parquet")
         # panel_h03 = pd.read_parquet("outputs/variables/ceo_clarity_extended/latest/*.parquet")
-        # merged = panel_h01[["file_name", "Manager_QA_Uncertainty_pct"]].merge(
-        #     panel_h03[["file_name", "Manager_QA_Uncertainty_pct"]],
+        # merged = panel_h01[["file_name", "UncAnsMgr"]].merge(
+        #     panel_h03[["file_name", "UncAnsMgr"]],
         #     on="file_name", suffixes=("_h01", "_h03")
         # )
-        # diff = (merged["Manager_QA_Uncertainty_pct_h01"] - merged["Manager_QA_Uncertainty_pct_h03"]).abs()
-        # assert diff.max() < 1e-10, f"Manager_QA_Uncertainty_pct differs across panels: max diff={diff.max()}"
+        # diff = (merged["UncAnsMgr_h01"] - merged["UncAnsMgr_h03"]).abs()
+        # assert diff.max() < 1e-10, f"UncAnsMgr differs across panels: max diff={diff.max()}"

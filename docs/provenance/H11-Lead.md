@@ -52,7 +52,7 @@ $$
 where:
 - $\alpha_i$ = firm fixed effects (EntityEffects, absorbed via `gvkey` index)
 - $\delta_t$ = calendar year fixed effects (TimeEffects, absorbed via `year` index)
-- $\text{IV}$ is either `PRiskQ_lead` (t+1) or `PRiskQ_lead2` (t+2)
+- $\text{IV}$ is either `PRisk_lead` (t+1) or `PRisk_lead2` (t+2)
 - $\mathbf{X}_{i,t}$ = controls (including dynamic Presentation control for QA DVs)
 
 Exact formula string (runner line 187--191):
@@ -66,10 +66,10 @@ Exact formula string (runner line 187--191):
 
 | Variable Name (code) | Description | Formula | Source Engine | Timing |
 |---|---|---|---|---|
-| `Manager_QA_Uncertainty_pct` | All managers' Q&A uncertainty word percentage | (LM uncertainty word count by managers in Q&A / total manager Q&A word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
-| `CEO_QA_Uncertainty_pct` | CEO Q&A uncertainty word percentage | (LM uncertainty word count by CEO in Q&A / total CEO Q&A word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
-| `Manager_Pres_Uncertainty_pct` | All managers' presentation uncertainty word percentage | (LM uncertainty word count by managers in presentation / total manager presentation word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
-| `CEO_Pres_Uncertainty_pct` | CEO presentation uncertainty word percentage | (LM uncertainty word count by CEO in presentation / total CEO presentation word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncAnsMgr` | All managers' Q&A uncertainty word percentage | (LM uncertainty word count by managers in Q&A / total manager Q&A word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncAnsCEO` | CEO Q&A uncertainty word percentage | (LM uncertainty word count by CEO in Q&A / total CEO Q&A word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncPreMgr` | All managers' presentation uncertainty word percentage | (LM uncertainty word count by managers in presentation / total manager presentation word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncPreCEO` | CEO presentation uncertainty word percentage | (LM uncertainty word count by CEO in presentation / total CEO presentation word count) * 100 | LinguisticEngine | Contemporaneous (call-level) |
 
 *Source: run_h11_prisk_uncertainty_lead.py CONFIG lines 93--98; builder files: manager_qa_uncertainty.py, ceo_qa_uncertainty.py, manager_pres_uncertainty.py, ceo_pres_uncertainty.py.*
 
@@ -77,12 +77,12 @@ Exact formula string (runner line 187--191):
 
 | Variable Name (code) | Description | Formula | Source Engine | Timing |
 |---|---|---|---|---|
-| `PRiskQ_lead` | 1-quarter lead political risk | Hassan et al. (2019) PRisk from calendar quarter Q+1, matched to call in quarter Q via (gvkey, cal_q_lead) | PRiskQLeadBuilder (inputs/FirmLevelRisk/firmquarter_2022q1.csv) | Lead t+1 (next quarter) |
-| `PRiskQ_lead2` | 2-quarter lead political risk | Hassan et al. (2019) PRisk from calendar quarter Q+2, matched to call in quarter Q via (gvkey, cal_q_lead2) | PRiskQLead2Builder (inputs/FirmLevelRisk/firmquarter_2022q1.csv) | Lead t+2 (two quarters ahead) |
+| `PRisk_lead` | 1-quarter lead political risk | Hassan et al. (2019) PRisk from calendar quarter Q+1, matched to call in quarter Q via (gvkey, cal_q_lead) | PRiskLeadBuilder (inputs/FirmLevelRisk/firmquarter_2022q1.csv) | Lead t+1 (next quarter) |
+| `PRisk_lead2` | 2-quarter lead political risk | Hassan et al. (2019) PRisk from calendar quarter Q+2, matched to call in quarter Q via (gvkey, cal_q_lead2) | PRiskLead2Builder (inputs/FirmLevelRisk/firmquarter_2022q1.csv) | Lead t+2 (two quarters ahead) |
 
 Lead construction logic:
-- PRiskQ_lead: `_get_next_quarter("2010q2")` returns `"2010q3"`; `"2010q4"` returns `"2011q1"` (prisk_q_lead.py line 69--82).
-- PRiskQ_lead2: `_get_next2_quarter("2010q2")` returns `"2010q4"`; `"2010q3"` returns `"2011q1"` (prisk_q_lead2.py line 69--85).
+- PRisk_lead: `_get_next_quarter("2010q2")` returns `"2010q3"`; `"2010q4"` returns `"2011q1"` (prisk_q_lead.py line 69--82).
+- PRisk_lead2: `_get_next2_quarter("2010q2")` returns `"2010q4"`; `"2010q3"` returns `"2011q1"` (prisk_q_lead2.py line 69--85).
 
 Both are merged via `manifest.merge(prisk_df, left_on=["gvkey", "cal_q_lead*"], right_on=["gvkey", "cal_q"], how="left")`.
 
@@ -94,24 +94,24 @@ Both are merged via `manifest.merge(prisk_df, left_on=["gvkey", "cal_q_lead*"], 
 
 | Variable Name (code) | Description | Formula | Source Engine |
 |---|---|---|---|
-| `Analyst_QA_Uncertainty_pct` | Analyst Q&A uncertainty word percentage | (LM uncertainty word count by analysts in Q&A / total analyst Q&A word count) * 100 | LinguisticEngine |
-| `Entire_All_Negative_pct` | Negative sentiment (entire call) | (LM negative word count entire call / total word count entire call) * 100 | LinguisticEngine |
-| `Size` | Firm size | ln(atq) where atq > 0 | CompustatEngine |
+| `UncQue` | Analyst Q&A uncertainty word percentage | (LM uncertainty word count by analysts in Q&A / total analyst Q&A word count) * 100 | LinguisticEngine |
+| `NegCall` | Negative sentiment (entire call) | (LM negative word count entire call / total word count entire call) * 100 | LinguisticEngine |
+| `lnAssets` | Firm size | ln(atq) where atq > 0 | CompustatEngine |
 | `TobinsQ` | Tobin's Q | (cshoq * prccq + clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0)) / atq; debt NaN only when both dlcq and dlttq are NaN | CompustatEngine |
 | `ROA` | Return on assets | iby_annual (Q4) / avg_assets, where avg_assets = (atq_t + atq_{t-1}) / 2 | CompustatEngine |
-| `CashHoldings` | Cash holdings ratio | cheq / atq | CompustatEngine |
-| `DividendPayer` | Dividend payer indicator | 1 if dvy_annual > 0 (Q4 annual value), else 0 | CompustatEngine |
-| `firm_maturity` | Firm maturity (retained earnings/assets) | req / atq | CompustatEngine |
-| `earnings_volatility` | Earnings volatility | Rolling 5-year std dev of annual ROA (iby/atq), min 3 obs | CompustatEngine |
+| `CashRatio` | Cash holdings ratio | cheq / atq | CompustatEngine |
+| `DivDummy` | Dividend payer indicator | 1 if dvy_annual > 0 (Q4 annual value), else 0 | CompustatEngine |
+| `FirmMat` | Firm maturity (retained earnings/assets) | req / atq | CompustatEngine |
+| `EarnVol` | Earnings volatility | Rolling 5-year std dev of annual ROA (iby/atq), min 3 obs | CompustatEngine |
 
 **Dynamic Presentation Control** (QA DVs only):
 
 | DV | Additional Control Added |
 |---|---|
-| `Manager_QA_Uncertainty_pct` | `Manager_Pres_Uncertainty_pct` |
-| `CEO_QA_Uncertainty_pct` | `CEO_Pres_Uncertainty_pct` |
-| `Manager_Pres_Uncertainty_pct` | None |
-| `CEO_Pres_Uncertainty_pct` | None |
+| `UncAnsMgr` | `UncPreMgr` |
+| `UncAnsCEO` | `UncPreCEO` |
+| `UncPreMgr` | None |
+| `UncPreCEO` | None |
 
 The PRES_CONTROL_MAP (runner lines 115--120) adds the corresponding Presentation measure
 as a control when the DV is a QA measure. This ensures QA regressions control for
@@ -162,14 +162,14 @@ The runner iterates over 2 IVs x 4 DVs x 3 samples = 24 regressions. The main La
 
 | Col | DV | IV | Entity FE | Time FE | Controls | Pres Control |
 |-----|---|---|---|---|---|---|
-| 1 | Manager_QA_Uncertainty_pct | PRiskQ_lead | Firm | Cal Year | Base | Manager_Pres_Uncertainty_pct |
-| 2 | CEO_QA_Uncertainty_pct | PRiskQ_lead | Firm | Cal Year | Base | CEO_Pres_Uncertainty_pct |
-| 3 | Manager_Pres_Uncertainty_pct | PRiskQ_lead | Firm | Cal Year | Base | -- |
-| 4 | CEO_Pres_Uncertainty_pct | PRiskQ_lead | Firm | Cal Year | Base | -- |
-| 5 | Manager_QA_Uncertainty_pct | PRiskQ_lead2 | Firm | Cal Year | Base | Manager_Pres_Uncertainty_pct |
-| 6 | CEO_QA_Uncertainty_pct | PRiskQ_lead2 | Firm | Cal Year | Base | CEO_Pres_Uncertainty_pct |
-| 7 | Manager_Pres_Uncertainty_pct | PRiskQ_lead2 | Firm | Cal Year | Base | -- |
-| 8 | CEO_Pres_Uncertainty_pct | PRiskQ_lead2 | Firm | Cal Year | Base | -- |
+| 1 | UncAnsMgr | PRisk_lead | Firm | Cal Year | Base | UncPreMgr |
+| 2 | UncAnsCEO | PRisk_lead | Firm | Cal Year | Base | UncPreCEO |
+| 3 | UncPreMgr | PRisk_lead | Firm | Cal Year | Base | -- |
+| 4 | UncPreCEO | PRisk_lead | Firm | Cal Year | Base | -- |
+| 5 | UncAnsMgr | PRisk_lead2 | Firm | Cal Year | Base | UncPreMgr |
+| 6 | UncAnsCEO | PRisk_lead2 | Firm | Cal Year | Base | UncPreCEO |
+| 7 | UncPreMgr | PRisk_lead2 | Firm | Cal Year | Base | -- |
+| 8 | UncPreCEO | PRisk_lead2 | Firm | Cal Year | Base | -- |
 
 All 8 columns use identical FE (Firm + Calendar Year) and clustering (entity-level).
 
@@ -194,7 +194,7 @@ Attrition cascade from actual `sample_attrition.csv` output (latest run 2026-03-
 | 2 | Main sample filter (FF12 excl 8, 11) | 88,205 | 24,763 |
 | 3 | Complete-case + min-calls filter (>= 5) | 75,224 | 12,981 |
 
-Note: The attrition reported is for the Main sample with PRiskQ_lead and DV = Manager_QA_Uncertainty_pct. Other DV/IV/sample combinations have slightly different N due to variable-specific missingness.
+Note: The attrition reported is for the Main sample with PRisk_lead and DV = UncAnsMgr. Other DV/IV/sample combinations have slightly different N due to variable-specific missingness.
 
 Filtering steps in code order:
 1. Panel builder loads manifest, filters by year range (builder line 152).
@@ -210,14 +210,14 @@ From `model_diagnostics.csv` (Main sample only):
 
 | Col | DV | IV | N (obs) | N (firms) |
 |-----|---|---|---------|-----------|
-| 1 | Manager_QA_Uncertainty_pct | PRiskQ_lead | 75,224 | 1,805 |
-| 2 | CEO_QA_Uncertainty_pct | PRiskQ_lead | 54,661 | 1,578 |
-| 3 | Manager_Pres_Uncertainty_pct | PRiskQ_lead | 75,243 | 1,805 |
-| 4 | CEO_Pres_Uncertainty_pct | PRiskQ_lead | 54,979 | 1,580 |
-| 5 | Manager_QA_Uncertainty_pct | PRiskQ_lead2 | 74,942 | 1,802 |
-| 6 | CEO_QA_Uncertainty_pct | PRiskQ_lead2 | 54,453 | 1,574 |
-| 7 | Manager_Pres_Uncertainty_pct | PRiskQ_lead2 | 74,961 | 1,802 |
-| 8 | CEO_Pres_Uncertainty_pct | PRiskQ_lead2 | 54,774 | 1,577 |
+| 1 | UncAnsMgr | PRisk_lead | 75,224 | 1,805 |
+| 2 | UncAnsCEO | PRisk_lead | 54,661 | 1,578 |
+| 3 | UncPreMgr | PRisk_lead | 75,243 | 1,805 |
+| 4 | UncPreCEO | PRisk_lead | 54,979 | 1,580 |
+| 5 | UncAnsMgr | PRisk_lead2 | 74,942 | 1,802 |
+| 6 | UncAnsCEO | PRisk_lead2 | 54,453 | 1,574 |
+| 7 | UncPreMgr | PRisk_lead2 | 74,961 | 1,802 |
+| 8 | UncPreCEO | PRisk_lead2 | 54,774 | 1,577 |
 
 CEO DVs have fewer observations because CEO identification yields more missingness.
 Lead2 has slightly fewer observations than lead1 because Q+2 matching requires data
@@ -231,21 +231,21 @@ further into the future (edge-of-sample loss).
 
 | Variable (code) | Label | Type | Formula | Source | Winsorized | Timing |
 |---|---|---|---|---|---|---|
-| `Manager_QA_Uncertainty_pct` | Mgr QA Uncertainty | DV | (LM uncertainty words by managers in Q&A / total manager Q&A words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
-| `CEO_QA_Uncertainty_pct` | CEO QA Uncertainty | DV | (LM uncertainty words by CEO in Q&A / total CEO Q&A words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
-| `Manager_Pres_Uncertainty_pct` | Mgr Pres Uncertainty | DV | (LM uncertainty words by managers in pres / total manager pres words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
-| `CEO_Pres_Uncertainty_pct` | CEO Pres Uncertainty | DV | (LM uncertainty words by CEO in pres / total CEO pres words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
-| `PRiskQ_lead` | Political Risk (t+1) | IV | Hassan et al. (2019) quarterly PRisk for (gvkey, cal_quarter+1) | firmquarter_2022q1.csv | 1%/99% per year | Lead (Q+1) |
-| `PRiskQ_lead2` | Political Risk (t+2) | IV | Hassan et al. (2019) quarterly PRisk for (gvkey, cal_quarter+2) | firmquarter_2022q1.csv | 1%/99% per year | Lead (Q+2) |
-| `Analyst_QA_Uncertainty_pct` | Analyst QA Uncertainty | Control | (LM uncertainty words by analysts in Q&A / total analyst Q&A words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
-| `Entire_All_Negative_pct` | Negative Sentiment | Control | (LM negative words entire call / total words entire call) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
-| `Size` | Firm Size (log AT) | Control | ln(atq) where atq > 0 | CompustatEngine: atq | 1%/99% per fiscal year (fyearq) | Contemporaneous (merge_asof backward) |
+| `UncAnsMgr` | Mgr QA Uncertainty | DV | (LM uncertainty words by managers in Q&A / total manager Q&A words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
+| `UncAnsCEO` | CEO QA Uncertainty | DV | (LM uncertainty words by CEO in Q&A / total CEO Q&A words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
+| `UncPreMgr` | Mgr Pres Uncertainty | DV | (LM uncertainty words by managers in pres / total manager pres words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
+| `UncPreCEO` | CEO Pres Uncertainty | DV | (LM uncertainty words by CEO in pres / total CEO pres words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
+| `PRisk_lead` | Political Risk (t+1) | IV | Hassan et al. (2019) quarterly PRisk for (gvkey, cal_quarter+1) | firmquarter_2022q1.csv | 1%/99% per year | Lead (Q+1) |
+| `PRisk_lead2` | Political Risk (t+2) | IV | Hassan et al. (2019) quarterly PRisk for (gvkey, cal_quarter+2) | firmquarter_2022q1.csv | 1%/99% per year | Lead (Q+2) |
+| `UncQue` | Analyst QA Uncertainty | Control | (LM uncertainty words by analysts in Q&A / total analyst Q&A words) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
+| `NegCall` | Negative Sentiment | Control | (LM negative words entire call / total words entire call) * 100 | LinguisticEngine: Stage 2 parquet | 0%/99% upper-only per year | Contemporaneous |
+| `lnAssets` | Firm Size (log AT) | Control | ln(atq) where atq > 0 | CompustatEngine: atq | 1%/99% per fiscal year (fyearq) | Contemporaneous (merge_asof backward) |
 | `TobinsQ` | Tobin's Q | Control | (cshoq * prccq + clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0)) / atq; debt component is NaN only when BOTH dlcq and dlttq are NaN | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
 | `ROA` | Return on Assets | Control | iby_annual (Q4) / ((atq_t + atq_{t-1}) / 2) | CompustatEngine: iby, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
-| `CashHoldings` | Cash Holdings | Control | cheq / atq | CompustatEngine: cheq, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
-| `DividendPayer` | Dividend Payer | Control | 1 if dvy_annual (Q4) > 0, else 0 | CompustatEngine: dvy | No (binary) | Contemporaneous |
-| `firm_maturity` | Firm Maturity | Control | req / atq | CompustatEngine: req, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
-| `earnings_volatility` | Earnings Volatility | Control | Rolling 5-fiscal-year std dev of (iby/atq), min 3 observations | CompustatEngine: iby, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
+| `CashRatio` | Cash Holdings | Control | cheq / atq | CompustatEngine: cheq, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
+| `DivDummy` | Dividend Payer | Control | 1 if dvy_annual (Q4) > 0, else 0 | CompustatEngine: dvy | No (binary) | Contemporaneous |
+| `FirmMat` | Firm Maturity | Control | req / atq | CompustatEngine: req, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
+| `EarnVol` | Earnings DailyVola | Control | Rolling 5-fiscal-year std dev of (iby/atq), min 3 observations | CompustatEngine: iby, atq | 1%/99% per fiscal year (fyearq) | Contemporaneous |
 | `gvkey` | Firm identifier | FE (entity) | 6-digit zero-padded Compustat identifier | Manifest | N/A | N/A |
 | `year` | Calendar year | FE (time) | Derived from start_date via `.dt.year` | Manifest: start_date | N/A | N/A |
 
@@ -266,7 +266,7 @@ further into the future (edge-of-sample loss).
 2. **Engine loading:**
    - LinguisticEngine: loads Stage 2 year-partitioned parquets, applies 0%/99% upper-only per-year winsorization
    - CompustatEngine: loads Compustat quarterly, computes derived variables, applies 1%/99% per-year winsorization
-   - PRiskQLeadBuilder and PRiskQLead2Builder: load Hassan CSV, apply 1%/99% per-year winsorization
+   - PRiskLeadBuilder and PRiskLead2Builder: load Hassan CSV, apply 1%/99% per-year winsorization
 
 3. **Panel builder** (`build_h11_prisk_uncertainty_lead_panel.py`):
    - Loads manifest via ManifestFieldsBuilder
@@ -291,10 +291,10 @@ further into the future (edge-of-sample loss).
 
 | Engine | Source Data | Variables Provided to This Suite |
 |--------|------------|--------------------------------|
-| LinguisticEngine | Stage 2 year-partitioned parquet files | Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct |
-| CompustatEngine | Compustat quarterly fundamentals | Size, TobinsQ, ROA, CashHoldings, DividendPayer, firm_maturity, earnings_volatility |
-| PRiskQLeadBuilder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRiskQ_lead |
-| PRiskQLead2Builder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRiskQ_lead2 |
+| LinguisticEngine | Stage 2 year-partitioned parquet files | UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO, UncQue, NegCall |
+| CompustatEngine | Compustat quarterly fundamentals | lnAssets, TobinsQ, ROA, CashRatio, DivDummy, FirmMat, EarnVol |
+| PRiskLeadBuilder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRisk_lead |
+| PRiskLead2Builder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRisk_lead2 |
 
 ### F3. Merge Operations
 
@@ -306,26 +306,26 @@ All merges occur in `build_h11_prisk_uncertainty_lead_panel.py`:
 | panel | CEOQAUncertaintyBuilder output | `file_name` | Left | Zero row-delta enforced |
 | panel | ManagerPresUncertaintyBuilder output | `file_name` | Left | Zero row-delta enforced |
 | panel | CEOPresUncertaintyBuilder output | `file_name` | Left | Zero row-delta enforced |
-| panel | PRiskQLeadBuilder output | `file_name` | Left | Zero row-delta enforced |
-| panel | PRiskQLead2Builder output | `file_name` | Left | Zero row-delta enforced |
+| panel | PRiskLeadBuilder output | `file_name` | Left | Zero row-delta enforced |
+| panel | PRiskLead2Builder output | `file_name` | Left | Zero row-delta enforced |
 | panel | AnalystQAUncertaintyBuilder output | `file_name` | Left | Zero row-delta enforced |
 | panel | NegativeSentimentBuilder output | `file_name` | Left | Zero row-delta enforced |
 | panel | SizeBuilder output | `file_name` | Left | Zero row-delta enforced |
-| panel | BookLevBuilder output | `file_name` | Left | Zero row-delta enforced; BookLev built but NOT used in regressions |
+| panel | LeverageBuilder output | `file_name` | Left | Zero row-delta enforced; Leverage built but NOT used in regressions |
 | panel | ROABuilder output | `file_name` | Left | Zero row-delta enforced |
 | panel | TobinsQBuilder output | `file_name` | Left | Zero row-delta enforced |
-| panel | CashHoldingsBuilder output | `file_name` | Left | Zero row-delta enforced |
-| panel | DividendPayerBuilder output | `file_name` | Left | Zero row-delta enforced |
+| panel | CashRatioBuilder output | `file_name` | Left | Zero row-delta enforced |
+| panel | DivDummyBuilder output | `file_name` | Left | Zero row-delta enforced |
 | panel | FirmMaturityBuilder output | `file_name` | Left | Zero row-delta enforced |
 | panel | EarningsVolatilityBuilder output | `file_name` | Left | Zero row-delta enforced |
 
-Within the PRiskQLeadBuilder:
+Within the PRiskLeadBuilder:
 
 | Left | Right | Keys | Type | Notes |
 |------|-------|------|------|-------|
 | manifest (with cal_q_lead) | prisk_df | left: (gvkey, cal_q_lead), right: (gvkey, cal_q) | Left | Matches Q+1 PRisk to call |
 
-Within the PRiskQLead2Builder:
+Within the PRiskLead2Builder:
 
 | Left | Right | Keys | Type | Notes |
 |------|-------|------|------|-------|
@@ -374,21 +374,21 @@ Variables included (runner lines 127--146):
 
 | Variable | Label |
 |---|---|
-| Manager_QA_Uncertainty_pct | Mgr QA Uncertainty |
-| CEO_QA_Uncertainty_pct | CEO QA Uncertainty |
-| Manager_Pres_Uncertainty_pct | Mgr Pres Uncertainty |
-| CEO_Pres_Uncertainty_pct | CEO Pres Uncertainty |
-| PRiskQ_lead | Political Risk$_{t+1}$ |
-| PRiskQ_lead2 | Political Risk$_{t+2}$ |
-| Analyst_QA_Uncertainty_pct | Analyst QA Uncertainty |
-| Entire_All_Negative_pct | Negative Sentiment |
-| Size | Firm Size (log AT) |
+| UncAnsMgr | Mgr QA Uncertainty |
+| UncAnsCEO | CEO QA Uncertainty |
+| UncPreMgr | Mgr Pres Uncertainty |
+| UncPreCEO | CEO Pres Uncertainty |
+| PRisk_lead | Political Risk$_{t+1}$ |
+| PRisk_lead2 | Political Risk$_{t+2}$ |
+| UncQue | Analyst QA Uncertainty |
+| NegCall | Negative Sentiment |
+| lnAssets | Firm Size (log AT) |
 | TobinsQ | Tobin's Q |
 | ROA | ROA |
-| CashHoldings | Cash Holdings |
-| DividendPayer | Dividend Payer |
-| firm_maturity | Firm Maturity |
-| earnings_volatility | Earnings Volatility |
+| CashRatio | Cash Holdings |
+| DivDummy | Dividend Payer |
+| FirmMat | Firm Maturity |
+| EarnVol | Earnings DailyVola |
 
 Metrics computed: N, Mean, SD, Min, P25, Median, P75, Max (via `make_summary_stats_table`). Stratified by sample (Main, Finance, Utility).
 
@@ -398,16 +398,16 @@ Metrics computed: N, Mean, SD, Min, P25, Median, P75, Max (via `make_summary_sta
 
 ### H1. Winsorization
 
-**Compustat variables** (Size, TobinsQ, ROA, CashHoldings, firm_maturity, earnings_volatility):
+**Compustat variables** (lnAssets, TobinsQ, ROA, CashRatio, FirmMat, EarnVol):
 - Level: 1%/99% per fiscal year (fyearq)
 - Applied at CompustatEngine level before merge to manifest
-- Skip list: DividendPayer (binary), CashFlow, SalesGrowth, fqtr, ExternalFunding, DebtChoice (_compustat_engine.py lines 1217--1224)
+- Skip list: DivDummy (binary), CashFlowAt, SalesGrowth, fqtr, ExternalFunding, DebtChoice (_compustat_engine.py lines 1217--1224)
 
-**Linguistic variables** (all _pct columns including DVs, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct):
+**Linguistic variables** (all _pct columns including DVs, UncQue, NegCall):
 - Level: 0%/99% upper-only per year (lower bound at 0th percentile = no lower clipping)
 - Applied at LinguisticEngine level (_linguistic_engine.py lines 255--257)
 
-**PRiskQ_lead and PRiskQ_lead2:**
+**PRisk_lead and PRisk_lead2:**
 - Level: 1%/99% per year
 - Applied within each builder via `winsorize_by_year(prisk_df, ["PRisk"], year_col="year")`
 - prisk_q_lead.py line 170; prisk_q_lead2.py line 173
@@ -420,7 +420,7 @@ Metrics computed: N, Mean, SD, Min, P25, Median, P75, Max (via `make_summary_sta
 
 ### H3. Transformations
 
-- `Size` = ln(atq) -- log transform (CompustatEngine line 943)
+- `lnAssets` = ln(atq) -- log transform (CompustatEngine line 943)
 - No centering or z-scoring applied to any variables
 - No standardization applied despite LaTeX table note stating "All continuous controls are standardized" -- this note is inaccurate per the code
 
@@ -442,7 +442,7 @@ contain the H13 entry, not H11-Lead.
 If H11-Lead is reinstated in the thesis, the entry would structurally mirror H11-Lag with:
 - `"key_tails": ["two", "two"]` (two-tailed placebo test; runner line 223: `p_test = p_two`)
 - `"cols": 8` (4 DVs x 2 leads, Main sample only)
-- `"key_vars": ["PRiskQ_lead", "PRiskQ_lead2"]`
+- `"key_vars": ["PRisk_lead", "PRisk_lead2"]`
 
 ---
 
@@ -493,7 +493,7 @@ N/A
 
 ## L. KNOWN ISSUES AND NOTES
 
-1. **BookLevBuilder is imported and built in the panel builder (line 116) but NOT used in any regression.** The variable `BookLev` does not appear in `BASE_CONTROLS` or `PRES_CONTROL_MAP`. This is dead weight in the panel but does not affect results.
+1. **LeverageBuilder is imported and built in the panel builder (line 116) but NOT used in any regression.** The variable `Leverage` does not appear in `BASE_CONTROLS` or `PRES_CONTROL_MAP`. This is dead weight in the panel but does not affect results.
 
 2. **No Lagged_DV control.** Unlike most other suites in this thesis, H11-Lead does not include a lagged dependent variable as a control. This is consistent with the H11 family's design (H11 and H11-Lag also lack Lagged_DV).
 
@@ -503,7 +503,7 @@ N/A
 
 5. **N varies across columns.** The CEO DVs have materially fewer observations (~54K vs ~75K for Manager DVs), and lead2 specs have slightly fewer than lead1 due to edge-of-sample loss.
 
-6. **Built-in LaTeX table is standalone.** The runner's `_save_latex_table` produces a 4-column table (one row for PRiskQ_lead, one for PRiskQ_lead2). This standalone `.tex` file is not part of the main thesis table generation pipeline (see item 8 below).
+6. **Built-in LaTeX table is standalone.** The runner's `_save_latex_table` produces a 4-column table (one row for PRisk_lead, one for PRisk_lead2). This standalone `.tex` file is not part of the main thesis table generation pipeline (see item 8 below).
 
 7. **All regressions run across 3 industry samples.** While only the Main sample would appear in any published table, Finance and Utility sample regressions are also estimated and saved. This enables robustness checking.
 

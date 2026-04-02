@@ -1,6 +1,6 @@
 """Builder for Non-CEO Manager Presentation Uncertainty variable.
 
-Queries the shared LinguisticEngine for NonCEO_Manager_Pres_Uncertainty_pct.
+Queries the shared LinguisticEngine for UncPreNoCEO.
 Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
@@ -19,12 +19,12 @@ class NonCEOManagerPresUncertaintyBuilder(VariableBuilder):
     """Build Non-CEO Manager Presentation Uncertainty variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    Column: NonCEO_Manager_Pres_Uncertainty_pct
+    Column: UncPreNoCEO
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "NonCEO_Manager_Pres_Uncertainty_pct")
+        self.column = config.get("column", "UncPreNoCEO")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         engine = get_engine()

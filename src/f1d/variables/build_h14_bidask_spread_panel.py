@@ -7,8 +7,8 @@ ID: variables/build_h14_bidask_spread_panel
 Description: Build CALL-LEVEL panel for H14 Language Uncertainty -> Bid-Ask Spread Change.
 
     Step 1: Load manifest + all call-level uncertainty measures.
-    Step 2: Load thesis-consistent Compustat controls (Size, TobinsQ, ROA, BookLev,
-            CapexAt, DividendPayer, OCF_Volatility).
+    Step 2: Load thesis-consistent Compustat controls (lnAssets, TobinsQ, ROA, Leverage,
+            Capex, DivDummy, sCFO).
     Step 3: Load CRSP-based controls (StockPrice, Turnover, Volatility).
     Step 4: Load BidAskSpreadChangeBuilder for DV and PreCallSpread control.
     Step 5: Load EarningsSurpriseBuilder for AbsSurpDec control (|SurpDec|).
@@ -29,8 +29,8 @@ Hypothesis H14:
         where RelSpread_d = 2*(ASK_d - BID_d)/(ASK_d + BID_d)  [closing quotes]
         Following Lee (2016, The Accounting Review).
     IV: 4 simultaneous uncertainty measures (horse-race)
-    Controls (Base): Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread
-    Controls (Extended): Base + StockPrice, Turnover, Volatility, AbsSurpDec
+    Controls (Base): lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, PreCallSpread
+    Controls (Extended): Base + StockPrice, Turnover, DailyVola, AbsSurpDec
     Fixed Effects: Industry(FF12)/Firm FE + FiscalYear FE (fyearq_int)
 """
 
@@ -211,7 +211,7 @@ def build_panel(
     print(f"  Valid DSPREAD (DV): {panel['DSPREAD'].notna().sum():,}")
     print(f"  Valid PreCallSpread: {panel['PreCallSpread'].notna().sum():,}")
     print(f"  Valid fyearq_int: {panel['fyearq_int'].notna().sum():,}")
-    for ctrl in ["TobinsQ", "ROA", "BookLev", "CapexAt", "DividendPayer", "OCF_Volatility"]:
+    for ctrl in ["TobinsQ", "ROA", "Leverage", "Capex", "DivDummy", "sCFO"]:
         if ctrl in panel.columns:
             print(f"  Valid {ctrl}: {panel[ctrl].notna().sum():,}")
 
@@ -264,25 +264,25 @@ def generate_report(
         "  - DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])",
         "",
         "## Key IVs (4 simultaneous)",
-        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **UncAnsCEO:** {panel['UncAnsCEO'].notna().sum():,} calls",
+        f"- **UncPreCEO:** {panel['UncPreCEO'].notna().sum():,} calls",
+        f"- **UncAnsMgr:** {panel['UncAnsMgr'].notna().sum():,} calls",
+        f"- **UncPreMgr:** {panel['UncPreMgr'].notna().sum():,} calls",
         "",
         "## Base Controls (Thesis-Consistent)",
-        f"- **Size:** {panel['Size'].notna().sum():,} calls",
+        f"- **lnAssets:** {panel['lnAssets'].notna().sum():,} calls",
         f"- **TobinsQ:** {panel['TobinsQ'].notna().sum():,} calls",
         f"- **ROA:** {panel['ROA'].notna().sum():,} calls",
-        f"- **BookLev:** {panel['BookLev'].notna().sum():,} calls",
-        f"- **CapexAt:** {panel['CapexAt'].notna().sum():,} calls",
-        f"- **DividendPayer:** {panel['DividendPayer'].notna().sum():,} calls",
-        f"- **OCF_Volatility:** {panel['OCF_Volatility'].notna().sum():,} calls",
+        f"- **Leverage:** {panel['Leverage'].notna().sum():,} calls",
+        f"- **Capex:** {panel['Capex'].notna().sum():,} calls",
+        f"- **DivDummy:** {panel['DivDummy'].notna().sum():,} calls",
+        f"- **sCFO:** {panel['sCFO'].notna().sum():,} calls",
         f"- **PreCallSpread:** {panel['PreCallSpread'].notna().sum():,} calls",
         "",
         "## Extended Controls (Microstructure Literature)",
         f"- **StockPrice:** {panel['StockPrice'].notna().sum():,} calls",
         f"- **Turnover:** {panel['Turnover'].notna().sum():,} calls",
-        f"- **Volatility:** {panel['Volatility'].notna().sum():,} calls",
+        f"- **Volatility:** {panel['DailyVola'].notna().sum():,} calls",
         f"- **AbsSurpDec:** {panel['AbsSurpDec'].notna().sum():,} calls",
         "",
         "## Fixed Effects",

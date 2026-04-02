@@ -1,7 +1,7 @@
-"""Builder for CapexAt variable (capital expenditures / total assets).
+"""Builder for Capex variable (capital expenditures / total assets).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, CapexAt.
+Returns one column: file_name, Capex.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class CapexIntensityBuilder(VariableBuilder):
-    """Build CapexAt = capxy_annual / atq_lag from raw Compustat quarterly data."""
+    """Build Capex = capxy_annual / atq_lag from raw Compustat quarterly data."""
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -40,12 +40,12 @@ class CapexIntensityBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "CapexAt"]].copy()
-        stats = self.get_stats(data["CapexAt"], "CapexAt")
+        data = merged[["file_name", "Capex"]].copy()
+        stats = self.get_stats(data["Capex"], "Capex")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "CapexAt", "source": "Compustat/capxy_Q4/atq"},
+            metadata={"column": "Capex", "source": "Compustat/capxy_Q4/atq"},
         )
 
 

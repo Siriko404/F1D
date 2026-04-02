@@ -45,7 +45,7 @@ of `generate_all_tables.py` contain the H13 and H13.1 entries, not H11-Lead. Add
 Section F1, step 7 claims "generate_all_tables.py uses 'type': 'moderation' with 8 col_files"
 which is also false.
 
-Secondary failures: three line-number citations in the Variable Dictionary are wrong (Size at
+Secondary failures: three line-number citations in the Variable Dictionary are wrong (lnAssets at
 line 938, winsorization skip list at lines 1121–1128), and the TobinsQ formula omits the
 clip/fillna behavior of the debt components.
 
@@ -113,15 +113,15 @@ The doc title is consistent in spirit; slightly more formal for publication.
 ### A-3. Hypothesis
 Doc says: "Future political risk (1- and 2-quarter leads) should NOT predict current earnings-call
 language uncertainty. This is a placebo/falsification test for reverse causality."
-Runner docstring lines 32–37 state: "Tests BOTH 1-quarter lead (PRiskQ_lead) AND 2-quarter lead
-(PRiskQ_lead2). [...] Lead tests are placebo tests for reverse causality. Expected result: Lead
+Runner docstring lines 32–37 state: "Tests BOTH 1-quarter lead (PRisk_lead) AND 2-quarter lead
+(PRisk_lead2). [...] Lead tests are placebo tests for reverse causality. Expected result: Lead
 coefficients should be insignificant."
 **PASS**
 
 ### A-4. Direction (tail test)
 Doc says: `Two-tailed (beta = 0 under null; expected insignificance)`
 Runner line 223: `p_test = p_two` — two-tailed p-value used directly, no halving.
-Runner docstring lines 33–34: "H11-Lead: beta(PRiskQ_lead) = 0 -- future political risk should NOT predict current speech uncertainty"
+Runner docstring lines 33–34: "H11-Lead: beta(PRisk_lead) = 0 -- future political risk should NOT predict current speech uncertainty"
 **PASS**
 
 ### A-5. Model Family
@@ -194,10 +194,10 @@ formula = (
 
 ### B2-CHECK: Dependent Variables
 4 DVs listed:
-- `Manager_QA_Uncertainty_pct` — runner line 94, loaded at runner line 455
-- `CEO_QA_Uncertainty_pct` — runner line 95, loaded at runner line 456
-- `Manager_Pres_Uncertainty_pct` — runner line 96, loaded at runner line 457
-- `CEO_Pres_Uncertainty_pct` — runner line 97, loaded at runner line 458
+- `UncAnsMgr` — runner line 94, loaded at runner line 455
+- `UncAnsCEO` — runner line 95, loaded at runner line 456
+- `UncPreMgr` — runner line 96, loaded at runner line 457
+- `UncPreCEO` — runner line 97, loaded at runner line 458
 
 All 4 appear in CONFIG["dependent_variables"] and in the panel load column list.
 Formula "(LM uncertainty word count / total word count) * 100" is correct per LinguisticEngine.
@@ -206,7 +206,7 @@ No DVs in the runner are missing from the doc.
 **PASS**
 
 ### B3-CHECK: Independent Variables
-`PRiskQ_lead` and `PRiskQ_lead2` — runner CONFIG["iv_vars"] line 100.
+`PRisk_lead` and `PRisk_lead2` — runner CONFIG["iv_vars"] line 100.
 Both loaded at runner lines 460–461.
 Lead construction: _get_next_quarter (prisk_q_lead.py line 69), _get_next2_quarter (prisk_q_lead2.py line 69) — doc cites correct line numbers.
 Doc examples for _get_next_quarter: "2010q2" → "2010q3" ✓; "2010q4" → "2011q1" ✓
@@ -218,15 +218,15 @@ Doc examples for _get_next2_quarter: "2010q2" → "2010q4" ✓; "2010q3" → "20
 Runner BASE_CONTROLS (lines 103–113):
 ```python
 BASE_CONTROLS = [
-    "Analyst_QA_Uncertainty_pct",
-    "Entire_All_Negative_pct",
-    "Size",
+    "UncQue",
+    "NegCall",
+    "lnAssets",
     "TobinsQ",
     "ROA",
-    "CashHoldings",
-    "DividendPayer",
-    "firm_maturity",
-    "earnings_volatility",
+    "CashRatio",
+    "DivDummy",
+    "FirmMat",
+    "EarnVol",
 ]
 ```
 Doc lists all 9 controls in the Base Controls table. ✓
@@ -234,10 +234,10 @@ Doc lists all 9 controls in the Base Controls table. ✓
 PRES_CONTROL_MAP (lines 115–120):
 ```python
 PRES_CONTROL_MAP = {
-    "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
-    "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct": None,
-    "CEO_Pres_Uncertainty_pct": None,
+    "UncAnsMgr": "UncPreMgr",
+    "UncAnsCEO": "UncPreCEO",
+    "UncPreMgr": None,
+    "UncPreCEO": None,
 }
 ```
 Doc's dynamic control table matches exactly. ✓
@@ -293,8 +293,8 @@ The spec register table has 8 rows (Cols 1–8).
 Runner runs 4 DVs × 3 samples × 2 IVs = 24 regressions, but the LaTeX table and spec register
 cover only the 8 Main-sample columns.
 
-Col 1–4: IV = PRiskQ_lead, DVs = Manager_QA, CEO_QA, Manager_Pres, CEO_Pres
-Col 5–8: IV = PRiskQ_lead2, DVs = same 4 DVs
+Col 1–4: IV = PRisk_lead, DVs = Manager_QA, CEO_QA, Manager_Pres, CEO_Pres
+Col 5–8: IV = PRisk_lead2, DVs = same 4 DVs
 
 For each column, entity FE = Firm (gvkey), Time FE = Cal Year (year), Controls = Base.
 Pres control added for QA DVs (cols 1, 2, 5, 6).
@@ -358,22 +358,22 @@ Winsorization: "0%/99% upper-only per year" — LinguisticEngine line 257:
 Lower=0.0 means no lower clipping (effectively 0th percentile). ✓
 **PASS** for rows 1–4.
 
-### Row 5–6: IVs (PRiskQ_lead, PRiskQ_lead2)
+### Row 5–6: IVs (PRisk_lead, PRisk_lead2)
 Formula: Hassan et al. (2019) quarterly PRisk matched to Q+1 / Q+2.
 Source: firmquarter_2022q1.csv.
 Winsorization: "1%/99% per year" — prisk_q_lead.py line 170: `winsorize_by_year(prisk_df, ["PRisk"], year_col="year")` ✓
 prisk_q_lead2.py line 173: same. ✓
 **PASS** for rows 5–6.
 
-### Row 7–8: Controls (Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct)
+### Row 7–8: Controls (UncQue, NegCall)
 These are also linguistic variables — winsorization should be "0%/99% upper-only per year".
 Doc says "0%/99% upper-only per year". ✓
 **PASS** for rows 7–8.
 
-### Row 9: Size
+### Row 9: lnAssets
 Doc says: `ln(atq) where atq > 0`, Source: CompustatEngine: atq, Winsorized: "1%/99% per fiscal year (fyearq)".
-Code (_compustat_engine.py line 943): `comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` ✓
-Winsorization: Size is in `COMPUSTAT_COLS` and NOT in `skip_winsorize`, so it is winsorized at lines 1225–1232 via fyearq. ✓
+Code (_compustat_engine.py line 943): `comp["lnAssets"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` ✓
+Winsorization: lnAssets is in `COMPUSTAT_COLS` and NOT in `skip_winsorize`, so it is winsorized at lines 1225–1232 via fyearq. ✓
 Doc cites "CompustatEngine line 938" — **WRONG line number.** Actual line is 943.
 **FAIL** (wrong line number citation; formula and winsorization claim are correct)
 
@@ -403,22 +403,22 @@ Doc says: `iby_annual (Q4) / ((atq_t + atq_{t-1}) / 2)`
 Code lines 960–969: computes Q4-only iby_annual and atq_annual, atq_annual_lag1; avg_assets = (atq_annual + atq_annual_lag1) / 2; ROA = iby_annual / avg_assets. ✓
 **PASS**
 
-### Row 12: CashHoldings
+### Row 12: CashRatio
 Doc says: `cheq / atq`
-Code line 986: `comp["CashHoldings"] = comp["cheq"] / comp["atq"]` ✓
+Code line 986: `comp["CashRatio"] = comp["cheq"] / comp["atq"]` ✓
 **PASS**
 
-### Row 13: DividendPayer
+### Row 13: DivDummy
 Doc says: `1 if dvy_annual (Q4) > 0, else 0`
-Code: DividendPayer uses `_compute_annual_q4_variable` for `dvy` then checks > 0. ✓ (verified from engine changelog)
+Code: DivDummy uses `_compute_annual_q4_variable` for `dvy` then checks > 0. ✓ (verified from engine changelog)
 **PASS**
 
-### Row 14: firm_maturity
+### Row 14: FirmMat
 Doc says: `req / atq`
-Code line 807–809: `df["firm_maturity"] = np.where((df["atq"].notna()) & (df["atq"] > 0), df["req"] / df["atq"], np.nan)` ✓
+Code line 807–809: `df["FirmMat"] = np.where((df["atq"].notna()) & (df["atq"] > 0), df["req"] / df["atq"], np.nan)` ✓
 **PASS**
 
-### Row 15: earnings_volatility
+### Row 15: EarnVol
 Doc says: "Rolling 5-fiscal-year std dev of annual ROA (iby/atq), min 3 obs"
 Code lines 811–826: uses `roa_annual = iby / atq`, then `rolling("1826D", min_periods=3).std()`. ✓
 1826 days ≈ 5 years. min_periods=3 ✓
@@ -436,21 +436,21 @@ Builder line 156: `panel["year"] = pd.to_datetime(panel["start_date"], errors="c
 
 ### Completeness check
 Runner loads columns (lines 450–472):
-file_name, gvkey, year, ff12_code, Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct,
-Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct, PRiskQ_lead, PRiskQ_lead2,
-Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct, Size, TobinsQ, ROA, CashHoldings,
-DividendPayer, firm_maturity, earnings_volatility.
+file_name, gvkey, year, ff12_code, UncAnsMgr, UncAnsCEO,
+UncPreMgr, UncPreCEO, PRisk_lead, PRisk_lead2,
+UncQue, NegCall, lnAssets, TobinsQ, ROA, CashRatio,
+DivDummy, FirmMat, EarnVol.
 All appear in the Variable Dictionary. `ff12_code` is used for sample splitting but is not in
 a regression spec — the doc does not include it, which is consistent with the creation prompt
 ("every variable appearing in any regression spec").
 **PASS**
 
 ### Winsorization skip list line citation
-Doc says "Skip list: DividendPayer (binary), CashFlow, SalesGrowth (_compustat_engine.py lines 1121–1128)"
+Doc says "Skip list: DivDummy (binary), CashFlowAt, SalesGrowth (_compustat_engine.py lines 1121–1128)"
 Actual code: skip_winsorize dict is at lines 1217–1224.
-**FAIL** — wrong line numbers. The skip list content is correct (includes DividendPayer, CashFlow, SalesGrowth, plus fqtr, ExternalFunding, DebtChoice), but the cited lines are 96 lines off.
+**FAIL** — wrong line numbers. The skip list content is correct (includes DivDummy, CashFlowAt, SalesGrowth, plus fqtr, ExternalFunding, DebtChoice), but the cited lines are 96 lines off.
 
-**Phase 6: 15/18 PASS (3 failures: Size line citation, TobinsQ formula incomplete, skip list line citation)**
+**Phase 6: 15/18 PASS (3 failures: lnAssets line citation, TobinsQ formula incomplete, skip list line citation)**
 
 ---
 
@@ -460,7 +460,7 @@ Actual code: skip_winsorize dict is at lines 1217–1224.
 
 **F1. Dependency Chain (7 steps)**
 Step 1: Raw inputs — firmquarter_2022q1.csv, master_sample_manifest.parquet, linguistic parquets, Compustat. ✓
-Step 2: Engine loading — LinguisticEngine, CompustatEngine, PRiskQLeadBuilder, PRiskQLead2Builder. ✓
+Step 2: Engine loading — LinguisticEngine, CompustatEngine, PRiskLeadBuilder, PRiskLead2Builder. ✓
 Step 3: Panel builder merges on file_name, assigns sample, derives year. ✓
 Step 4: Runner loads panel with explicit column list. ✓
 Step 5: Sample filtering per (DV, IV, sample). ✓
@@ -473,14 +473,14 @@ Step 6: 24 PanelOLS regressions. ✓
 4 engines listed:
 - LinguisticEngine: 6 variables ✓
 - CompustatEngine: 7 variables ✓
-- PRiskQLeadBuilder: PRiskQ_lead ✓
-- PRiskQLead2Builder: PRiskQ_lead2 ✓
+- PRiskLeadBuilder: PRisk_lead ✓
+- PRiskLead2Builder: PRisk_lead2 ✓
 All verified against panel builder imports and builder code. **PASS**
 
 **F3. Merge Operations**
 16 merges at panel level on `file_name` (left join) + 2 internal merges for PRisk builders.
 All verified against panel builder loop (lines 136–153) and builder code.
-BookLevBuilder is included ("built but NOT used in regressions") — correctly noted. ✓
+LeverageBuilder is included ("built but NOT used in regressions") — correctly noted. ✓
 **PASS**
 
 ### G-CHECK: Outputs
@@ -520,8 +520,8 @@ Doc also claims the table note says "All continuous controls are standardized" i
 **H1. Winsorization**
 Compustat variables: 1%/99% per fyearq. ✓ (engine lines 1225–1232)
 Linguistic variables: 0%/99% upper-only per year. ✓ (engine line 257)
-PRiskQ_lead: 1%/99% per year (prisk_q_lead.py line 170). ✓
-PRiskQ_lead2: 1%/99% per year (prisk_q_lead2.py line 173). ✓
+PRisk_lead: 1%/99% per year (prisk_q_lead.py line 170). ✓
+PRisk_lead2: 1%/99% per year (prisk_q_lead2.py line 173). ✓
 
 **H1 Line citation failure:** Doc says "_compustat_engine.py lines 1121–1128" for the skip list.
 Actual: lines 1217–1224. This is a secondary citation of the same error noted in Phase 6.
@@ -533,7 +533,7 @@ Doc correctly documents both inf-replacement and complete-case deletion. ✓
 **PASS**
 
 **H3. Transformations**
-`Size` = ln(atq). ✓
+`lnAssets` = ln(atq). ✓
 No centering or z-scoring. ✓
 Doc notes the LaTeX table "All continuous controls are standardized" is inaccurate — correctly flagged as code issue. ✓
 **PASS**
@@ -629,7 +629,7 @@ Model family is PanelOLS → K1 should be filled; K2–K6 should be N/A.
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
 ### Check 1: DVs in B2 match DVs in C (spec register)
-B2: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct.
+B2: UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO.
 C: Same 4 DVs appear across cols 1–8. ✓
 **PASS**
 
@@ -678,7 +678,7 @@ A: "(gvkey, year)". K1: "Entity dimension = gvkey, Time dimension = year". Runne
 | 8 | Section I — entry existence | H11-Lead has an entry in generate_all_tables.py with id, type, dir, caption, label, cols=8, col_files (8 entries), dvs, col_dv_labels, key_vars, key_labels, key_tails | H11-Lead has NO entry in generate_all_tables.py. The suite was removed from tables on 2026-03-31. | CRITICAL | Replace Section I with accurate statement that H11-Lead has no generate_all_tables entry and note removal date |
 | 8 | Section I — cited lines (248–276) | "Source: generate_all_tables.py, lines 248–276." | Lines 248–276 contain H13 entry. No H11-Lead entry exists anywhere in the file. | HIGH | Remove/correct all line citations in Section I |
 | 7 | F1 step 7 | "generate_all_tables.py uses 'type': 'moderation' with 8 col_files (Main sample only)" | No generate_all_tables.py entry for H11-Lead exists. | HIGH | Correct F1 step 7 to reflect actual status |
-| 6 | Size line citation | "_compustat_engine.py line 938" for Size formula | Actual line is 943 | LOW | Update line citation to 943 |
+| 6 | lnAssets line citation | "_compustat_engine.py line 938" for lnAssets formula | Actual line is 943 | LOW | Update line citation to 943 |
 | 6 | TobinsQ formula | "(cshoq * prccq + dlcq + dlttq) / atq" | `(mktcap + max(dlcq,0).fillna(0) + max(dlttq,0).fillna(0)) / atq` where debt is NaN only if BOTH dlcq and dlttq are NaN | MEDIUM | Update formula to reflect clip(lower=0).fillna(0) behavior and both-NaN guard |
 | 6/7 | Winsorization skip list line citation | "_compustat_engine.py lines 1121–1128" | Actual skip_winsorize dict is at lines 1217–1224 | LOW | Update line citations to 1217–1224 |
 | 11 | C↔I cross-reference | Col count in C matches cols in I; DVs in C match I | Section I is fabricated; no entry in generate_all_tables.py | HIGH | Follows from Section I correction |
@@ -708,7 +708,7 @@ Lines 248–276 of `generate_all_tables.py` contain the H13 entry, not H11-Lead.
 If H11-Lead is reinstated in the thesis, the entry would structurally mirror H11-Lag with:
 - "key_tails": ["two", "two"]  (two-tailed placebo test)
 - "cols": 8  (4 DVs x 2 leads)
-- "key_vars": ["PRiskQ_lead", "PRiskQ_lead2"]
+- "key_vars": ["PRisk_lead", "PRisk_lead2"]
 ```
 Code reference: `grep -n "H11" outputs/generate_all_tables.py` returns H11 (line 179) and
 H11-Lag (line 201) only — no H11-Lead entry.
@@ -722,11 +722,11 @@ Should say: "7. Table generation: H11-Lead has no entry in `generate_all_tables.
 
 ---
 
-**Correction 3 — Variable Dictionary, Size line citation (LOW)**
-Section: `## E. VARIABLE DICTIONARY`, Size row source column
+**Correction 3 — Variable Dictionary, lnAssets line citation (LOW)**
+Section: `## E. VARIABLE DICTIONARY`, lnAssets row source column
 Current: "_compustat_engine.py lines 938, ..."
 Should say: "_compustat_engine.py line 943, ..."
-Code reference: `_compustat_engine.py` line 943: `comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`
+Code reference: `_compustat_engine.py` line 943: `comp["lnAssets"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`
 
 ---
 
@@ -742,9 +742,9 @@ Code reference: `_compustat_engine.py` lines 987–997 (clip(lower=0).fillna(0) 
 
 **Correction 5 — Winsorization skip list line citations (LOW)**
 Section: `## H. OUTLIER AND MISSING DATA TREATMENT / H1. Winsorization`
-Current: "Skip list: DividendPayer (binary), CashFlow, SalesGrowth (_compustat_engine.py lines 1121–1128)"
-Should say: "Skip list: DividendPayer (binary), CashFlow, SalesGrowth, fqtr, ExternalFunding, DebtChoice (_compustat_engine.py lines 1217–1224)"
-Code reference: `_compustat_engine.py` lines 1217–1224: `skip_winsorize = {"DividendPayer", "CashFlow", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}`
+Current: "Skip list: DivDummy (binary), CashFlowAt, SalesGrowth (_compustat_engine.py lines 1121–1128)"
+Should say: "Skip list: DivDummy (binary), CashFlowAt, SalesGrowth, fqtr, ExternalFunding, DebtChoice (_compustat_engine.py lines 1217–1224)"
+Code reference: `_compustat_engine.py` lines 1217–1224: `skip_winsorize = {"DivDummy", "CashFlowAt", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}`
 
 Note: The doc also omits `fqtr`, `ExternalFunding`, and `DebtChoice` from the skip list.
 ExternalFunding and DebtChoice are irrelevant to H11-Lead, but fqtr is a Compustat column that

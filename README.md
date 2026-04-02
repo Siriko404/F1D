@@ -21,38 +21,40 @@ identification         speaker role              variables per call       effect
 | Suite | Dependent Variable | Hypothesis | Tail | Cols | Reference |
 |-------|-------------------|------------|------|------|-----------|
 | H0.3 | Manager/CEO QA Uncertainty | Extended controls robustness check | two | 4 | -- |
-| H1 | CashHoldings, CashHoldings_lead | Higher uncertainty → more precautionary cash | one (+) | 12 | Opler et al. (1999) |
-| H1.1 | CashHoldings | Product similarity moderates H1 (continuous z(log(TSIMM))) | mixed | 2 | Hoberg & Phillips (2016) |
-| H1.1b | CashHoldings | Product similarity moderates H1 (binary median split) | mixed | 2 | Hoberg & Phillips (2016) |
-| H1.2 | CashHoldings | Financial constraint moderates H1 (WW/SA/KZ indices) | mixed | 2 | Whited & Wu (2006) |
-| H4 | BookLev / DebtToCapital (+ leads) | Uncertainty and leverage policy | two | 24 | -- |
-| H5 | WangDISP (+ lead) | Higher uncertainty → greater analyst dispersion | one (+) | 12 | Wang (2020) |
-| H7 | delta_amihud | Higher uncertainty → greater illiquidity change | one (+) | 6 | Amihud (2002) |
+| H1 | CashRatio, CashRatio_lead | Higher uncertainty → more precautionary cash | one (+) | 12 | Opler et al. (1999) |
+| H1.1 | CashRatio | Product similarity moderates H1 (continuous z(log(TSIMM))) | mixed | 2 | Hoberg & Phillips (2016) |
+| H1.1b | CashRatio | Product similarity moderates H1 (binary median split) | mixed | 2 | Hoberg & Phillips (2016) |
+| H1.2 | CashRatio | Financial constraint moderates H1 (WW/SA/KZ indices) | mixed | 2 | Whited & Wu (2006) |
+| H4 | Leverage / DebtToCapital (+ leads) | Uncertainty and leverage policy | two | 24 | -- |
+| H5 | DISP (+ lead) | Higher uncertainty → greater analyst dispersion | one (+) | 12 | Wang (2020) |
+| H7 | DeltaILLIQ | Higher uncertainty → greater illiquidity change | one (+) | 6 | Amihud (2002) |
 | H9 | Takeover hazard | Clarity residual and takeover vulnerability | two | -- | Cox PH model |
-| H11 | QA/Pres Uncertainty | Political risk (PRiskQ) → more uncertain language | one (+) | 4 | Hassan et al. (2019) |
+| H11 | QA/Pres Uncertainty | Political risk (PRisk) → more uncertain language | one (+) | 4 | Hassan et al. (2019) |
 | H11-Lag | QA/Pres Uncertainty | Lagged political risk (Q-1, Q-2) → uncertainty | one (+) | 8 | Hassan et al. (2019) |
 | H11-Lead | QA/Pres Uncertainty | Lead political risk (placebo/falsification) | two | 8 | Hassan et al. (2019) |
 | H12 | PayoutRatio_q (+ lead) | Higher uncertainty → lower payout ratio | one (-) | 12 | -- |
-| H13 | CapexAt (+ lead) | Uncertainty and capital expenditure | two | 12 | -- |
-| H13.1 | CapexAt | Product competition moderates H13 (TSIMM/HHI) | two | 8 | Hoberg & Phillips (2016) |
+| H13 | Capex (+ lead) | Uncertainty and capital expenditure | two | 12 | -- |
+| H13.1 | Capex | Product competition moderates H13 (TSIMM/HHI) | two | 8 | Hoberg & Phillips (2016) |
 | H14 | DSPREAD | Higher uncertainty → wider bid-ask spread change | one (+) | 6 | Lee (2016) |
 | H16 | RDSales (+ lead) | Uncertainty and R&D investment intensity | two | 12 | Jiang et al. (2021) |
 | H17 | RepurchaseIntensity (+ lead) | Uncertainty and share repurchase intensity | two | 12 | -- |
-| H18 | CCCL | Higher uncertainty → more SEC comment letters | one (+) | 6 | -- |
-| H18b | CCCL | Logit robustness check for H18 (no Firm/YrQtr FE) | one (+) | 2 | Timoneda (2021) |
+| H18 | CommentLetter | Higher uncertainty → more SEC comment letters | one (+) | 6 | -- |
+| H18b | CommentLetter | Logit robustness check for H18 (no Firm/YrQtr FE) | one (+) | 2 | Timoneda (2021) |
 | H21 | SEC_Letters_fwd | Higher uncertainty → more SEC UPLOAD letters (count) | one (+) | 6 | -- |
+| H7b | PostCallAmihud | Higher uncertainty → higher post-call Amihud level | one (+) | 6 | Amihud (2002) |
+| H14b | PostCallSpread | Higher uncertainty → higher post-call spread level | one (+) | 6 | Leuz & Verrecchia (2000) |
 
 **Independent variables** (4 simultaneous IVs per suite):
-- `Manager_QA_Uncertainty_pct` — all managers, Q&A section
-- `CEO_QA_Uncertainty_pct` — CEO only, Q&A section
-- `Manager_Pres_Uncertainty_pct` — all managers, presentation
-- `CEO_Pres_Uncertainty_pct` — CEO only, presentation
+- `UncAnsMgr` — all managers, Q&A section
+- `UncAnsCEO` — CEO only, Q&A section
+- `UncPreMgr` — all managers, presentation
+- `UncPreCEO` — CEO only, presentation
 
 ## Required Inputs
 
 | Directory | Source | Used By |
 |-----------|--------|---------|
-| `inputs/comp_na_daily_all/` | Compustat North America Daily | CashHoldings, TobinsQ, BookLev, ROA, CapexAt, DividendPayer, OCF_Volatility, PayoutRatio_q, RepurchaseIntensity, RDSales, and more |
+| `inputs/comp_na_daily_all/` | Compustat North America Daily | CashRatio, TobinsQ, Leverage, ROA, Capex, DivDummy, sCFO, PayoutRatio_q, RepurchaseIntensity, RDSales, and more |
 | `inputs/CRSP_DSF/` | CRSP Daily Stock File | Amihud illiquidity, bid-ask spreads, stock prices, turnover |
 | `inputs/tr_ibes/` | IBES Summary Statistics | Analyst forecast dispersion (H5), earnings surprise |
 | `inputs/IBES_Detail/` | IBES Detail History | Individual analyst forecasts for Wang dispersion (H5) |
@@ -113,6 +115,8 @@ Each runner loads its panel, applies sample filters, and runs PanelOLS regressio
 | H18 | `python -m f1d.econometric.run_h18_cccl_received` |
 | H18b | `python -m f1d.econometric.run_h18b_cccl_logit` |
 | H21 | `python -m f1d.econometric.run_h21_sec_letters` |
+| H7b | `python -m f1d.econometric.run_h7b_amihud_level` |
+| H14b | `python -m f1d.econometric.run_h14b_spread_level` |
 
 All runners support `--dry-run` for validation without execution, and `--year-start` / `--year-end` for subsetting.
 
@@ -167,7 +171,7 @@ All call-level suites use the same core specification:
 - **Time FE**: Calendar Year (`cal_yr`) or Calendar Year-Quarter (`cal_yr_qtr`)
 - **Standard errors**: Firm-clustered (`cluster_entity=True`)
 - **Sample**: Main sample excludes Finance (FF12=8) and Utilities (FF12=11)
-- **Controls**: Lagged DV, Size, ROA, TobinsQ, CapexAt, DividendPayer, OCF_Volatility, plus suite-specific extended controls
+- **Controls**: Lagged DV, lnAssets, ROA, TobinsQ, Capex, DivDummy, sCFO, plus suite-specific extended controls
 - **Column layout**: Odd columns use Industry + Year FE; even columns use Firm + Year FE; YQ specs add Year-Quarter FE variants
 
 Exception: H9 uses a Cox proportional hazards model (`lifelines.CoxTimeVaryingFitter`), not PanelOLS.
@@ -178,7 +182,7 @@ Seven singleton data engines handle all external data loading with thread-safe c
 
 | Engine | Source | Key Variables |
 |--------|--------|---------------|
-| CompustatEngine | Compustat quarterly | CashHoldings, BookLev, ROA, TobinsQ, CapexAt, PayoutRatio_q, RepurchaseIntensity, RDSales |
+| CompustatEngine | Compustat quarterly | CashRatio, Leverage, ROA, TobinsQ, Capex, PayoutRatio_q, RepurchaseIntensity, RDSales |
 | CRSPEngine | CRSP daily | Amihud illiquidity, bid-ask spreads, stock price, turnover |
 | IbesEngine | IBES summary | Analyst consensus dispersion, earnings surprise |
 | IbesDetailEngine | IBES detail | Individual analyst forecasts (Johnson/Wang dispersion) |

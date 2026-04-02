@@ -6,28 +6,28 @@ STAGE 4: Test H5b Wang (2020) Analyst Dispersion Hypothesis
 ID: econometric/run_h5b_wang_disp
 Description: Run H5b hypothesis test — Wang (2020) analyst forecast dispersion.
 
-DV: WangDISP = SD(analyst forecasts T-31..T-1) / prccq_prior
+DV: DISP = SD(analyst forecasts T-31..T-1) / prccq_prior
     Price-scaled pre-announcement analyst forecast dispersion.
     Reference: Wang (2020, Review of Accounting and Finance 19(3): 289-312).
 
 Lead DV:
-    WangDISP_lead: next fiscal quarter's WangDISP
+    DISP_lead: next fiscal quarter's DISP
 
 12 Model Specifications:
-    Cols 1-4:   DV = WangDISP (contemporaneous), Calendar Year FE
-    Cols 5-6:   DV = WangDISP (contemporaneous), Year-Quarter FE
-    Cols 7-10:  DV = WangDISP_lead (next quarter), Calendar Year FE
-    Cols 11-12: DV = WangDISP_lead (next quarter), Year-Quarter FE
+    Cols 1-4:   DV = DISP (contemporaneous), Calendar Year FE
+    Cols 5-6:   DV = DISP (contemporaneous), Year-Quarter FE
+    Cols 7-10:  DV = DISP_lead (next quarter), Calendar Year FE
+    Cols 11-12: DV = DISP_lead (next quarter), Year-Quarter FE
     Odd cols:   Industry FE (FF12)
     Even cols:  Firm FE
     Cols 1-2, 7-8:   Base controls
     Cols 3-6, 9-12:  Extended controls
 
-Lead specs (cols 7-12) include WangDISP as lagged DV control.
+Lead specs (cols 7-12) include DISP as lagged DV control.
 
 Key IVs (4, simultaneous, call-level):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr
 
 Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion).
 
@@ -61,58 +61,58 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",
 ]
 
 BASE_CONTROLS = [
-    "Size", "TobinsQ", "ROA", "BookLev", "CapexAt", "DividendPayer",
-    "OCF_Volatility", "WangDISP_lag",
+    "lnAssets", "TobinsQ", "ROA", "Leverage", "Capex", "DivDummy",
+    "sCFO", "DISP_lag",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
-    "SurpDec", "loss_dummy", "Analyst_QA_Uncertainty_pct",
-    "Entire_All_Negative_pct",
+    "SurpDec", "Loss", "UncQue",
+    "NegCall",
 ]
 
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
     # Contemporaneous — Calendar Year FE
-    {"col": 1,  "dv": "WangDISP",      "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 2,  "dv": "WangDISP",      "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 3,  "dv": "WangDISP",      "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 4,  "dv": "WangDISP",      "fe": "firm",        "controls": "extended", "extra_controls": []},
+    {"col": 1,  "dv": "DISP",      "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 2,  "dv": "DISP",      "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 3,  "dv": "DISP",      "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 4,  "dv": "DISP",      "fe": "firm",        "controls": "extended", "extra_controls": []},
     # Contemporaneous — Year-Quarter FE (Extended controls only)
-    {"col": 5,  "dv": "WangDISP",      "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 6,  "dv": "WangDISP",      "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    {"col": 5,  "dv": "DISP",      "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 6,  "dv": "DISP",      "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
     # Lead: next quarter — Calendar Year FE
-    {"col": 7,  "dv": "WangDISP_lead", "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 8,  "dv": "WangDISP_lead", "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 9,  "dv": "WangDISP_lead", "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 10, "dv": "WangDISP_lead", "fe": "firm",        "controls": "extended", "extra_controls": []},
+    {"col": 7,  "dv": "DISP_lead", "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 8,  "dv": "DISP_lead", "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 9,  "dv": "DISP_lead", "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 10, "dv": "DISP_lead", "fe": "firm",        "controls": "extended", "extra_controls": []},
     # Lead: next quarter — Year-Quarter FE (Extended controls only)
-    {"col": 11, "dv": "WangDISP_lead", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 12, "dv": "WangDISP_lead", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    {"col": 11, "dv": "DISP_lead", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 12, "dv": "DISP_lead", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
 ]
 
 SUMMARY_STATS_VARS = [
-    {"col": "WangDISP", "label": "Wang DISP (contemporaneous)"},
-    {"col": "WangDISP_lead", "label": "Wang DISP (next quarter)"},
-    {"col": "WangDISP_lag", "label": "Wang DISP (prior quarter)"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "Size", "label": "Firm Size"},
+    {"col": "DISP", "label": "Wang DISP (contemporaneous)"},
+    {"col": "DISP_lead", "label": "Wang DISP (next quarter)"},
+    {"col": "DISP_lag", "label": "Wang DISP (prior quarter)"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "lnAssets", "label": "Firm Size"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "CapexAt", "label": "CapEx/Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "Capex", "label": "CapEx/Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
 ]
 
 
@@ -373,9 +373,9 @@ def main(panel_path: Optional[str] = None) -> int:
     panel = filter_main_sample(panel)
     main_n = len(panel)
 
-    print(f"\n  WangDISP non-null: {panel['WangDISP'].notna().sum():,}")
-    print(f"  WangDISP_lead non-null: {panel['WangDISP_lead'].notna().sum():,}")
-    print(f"  WangDISP_lag non-null: {panel['WangDISP_lag'].notna().sum():,}")
+    print(f"\n  DISP non-null: {panel['DISP'].notna().sum():,}")
+    print(f"  DISP_lead non-null: {panel['DISP_lead'].notna().sum():,}")
+    print(f"  DISP_lag non-null: {panel['DISP_lag'].notna().sum():,}")
 
     # Summary stats
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -412,7 +412,7 @@ def main(panel_path: Optional[str] = None) -> int:
         stages = [
             ("Full panel", full_n),
             ("Main sample (excl Finance/Utility)", main_n),
-            ("WangDISP non-null", panel["WangDISP"].notna().sum()),
+            ("DISP non-null", panel["DISP"].notna().sum()),
             ("After complete-case + min-calls (col 1)", first_n),
         ]
         generate_attrition_table(stages, out_dir, "H5b Wang Dispersion")

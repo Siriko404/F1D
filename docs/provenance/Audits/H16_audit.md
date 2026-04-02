@@ -30,7 +30,7 @@
 
 ## VERDICT
 
-**FAIL — INACCURATE**: The provenance document is structurally complete and mostly accurate but contains 8 verifiable factual errors. These include one substantively wrong claim (RD_Intensity described as loaded for summary statistics when it is not), incorrect line number references in three places, and a mismatch between the documented attrition cascade and the attrition table actually produced by the code. No required sections are missing.
+**FAIL — INACCURATE**: The provenance document is structurally complete and mostly accurate but contains 8 verifiable factual errors. These include one substantively wrong claim (RDSales described as loaded for summary statistics when it is not), incorrect line number references in three places, and a mismatch between the documented attrition cascade and the attrition table actually produced by the code. No required sections are missing.
 
 ---
 
@@ -147,17 +147,17 @@ Read `docs/Prompts/Suite Provenance Doc.txt` for required sections A-L. Checked 
 - **PASS**
 
 **B3-CHECK: Independent Variables**
-- Doc lists 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct.
+- Doc lists 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr.
 - Runner KEY_IVS (lines 94-99): exactly these 4 variables in the same order.
 - "No centering, log-transformation, or z-scoring applied" -- no transformation code found for these variables in runner or builders.
 - **PASS**
 
 **B4-CHECK: Control Variables**
 - Doc: "Base Controls (9, including Lagged_DV)".
-- Runner BASE_CONTROLS (lines 103-113): Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, DividendPayer, OCF_Volatility, Lagged_DV = 9 items. Matches doc exactly.
+- Runner BASE_CONTROLS (lines 103-113): lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, DivDummy, sCFO, Lagged_DV = 9 items. Matches doc exactly.
 - NOTE: Runner docstring (line 28) says "Base Controls (8)" listing only 8 items (omits Lagged_DV). This is a bug in the runner docstring. The provenance doc correctly reflects the actual code list (9), not the docstring (8). Doc is right; runner docstring is misleading.
-- EXTENDED_CONTROLS (line 115): BASE_CONTROLS + SalesGrowth, CashFlow, Volatility. Doc says "Extended Controls (= Base + 3 additional)". ✓
-- RD_Intensity exclusion note: verified at runner line 101.
+- EXTENDED_CONTROLS (line 115): BASE_CONTROLS + SalesGrowth, CashFlowAt, DailyVola. Doc says "Extended Controls (= Base + 3 additional)". ✓
+- RDSales exclusion note: verified at runner line 101.
 - **PASS**
 
 **B5-CHECK: Fixed Effects**
@@ -271,13 +271,13 @@ The dictionary has 22 variables. Verified each:
 - Panel builder `create_rdsales_lag()`: shift +1, validate fyearq-1. ✓
 - **PASS**
 
-**CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct (IVs)**
+**UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr (IVs)**
 - All documented as (uncertainty word count / total word count) * 100.
 - Source: LinguisticEngine. Winsorization: "No (bounded [0,100] by construction)".
 - Runner KEY_IVS confirmed (lines 94-99).
 - **PASS (x4)**
 
-**Size (Control)**
+**lnAssets (Control)**
 - Formula: `ln(atq); NaN if atq <= 0`. Winsorized 1%/99% by fiscal year.
 - In COMPUSTAT_COLS, not in skip_winsorize. ✓
 - **PASS**
@@ -292,14 +292,14 @@ The dictionary has 22 variables. Verified each:
 - Consistent with M-2 fix (avg assets denominator) documented in engine changelog line 82.
 - **PASS**
 
-**BookLev (Control)**
+**Leverage (Control)**
 - Formula: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq`
-- Engine line 948: `comp["BookLev"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`. Exact match. ✓
+- Engine line 948: `comp["Leverage"] = (comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]`. Exact match. ✓
 - **PASS**
 
-**CashHoldings, CapexAt, DividendPayer, OCF_Volatility (Controls)**
+**CashRatio, Capex, DivDummy, sCFO (Controls)**
 - All verified by builder file names and column outputs.
-- DividendPayer "Not winsorized (binary)": in skip_winsorize. ✓
+- DivDummy "Not winsorized (binary)": in skip_winsorize. ✓
 - **PASS (x4)**
 
 **SalesGrowth (Control)**
@@ -307,12 +307,12 @@ The dictionary has 22 variables. Verified each:
 - Engine line 666: `annual["SalesGrowth"] = _winsorize_by_year(annual["SalesGrowth"], annual["fyearq"])` inside `_compute_biddle_residual()`. SalesGrowth is in skip_winsorize (no double-winsorization). ✓
 - **PASS**
 
-**CashFlow (Control)**
+**CashFlowAt (Control)**
 - Formula: `oancfy / avg_assets = (atq_t + atq_{t-1}) / 2`.
-- Engine line 693: `annual["CashFlow"] = _winsorize_by_year(annual["CashFlow"], annual["fyearq"])`. CashFlow in skip_winsorize. ✓
+- Engine line 693: `annual["CashFlowAt"] = _winsorize_by_year(annual["CashFlowAt"], annual["fyearq"])`. CashFlowAt in skip_winsorize. ✓
 - **PASS**
 
-**Volatility (Control)**
+**DailyVola (Control)**
 - Formula: `std(daily_ret) * sqrt(252) * 100 over [prev_call + 5d, call - 5d]; min 10 trading days`.
 - Source CRSPEngine. "No (computed at builder level, not winsorized)". ✓
 - **PASS**
@@ -326,15 +326,15 @@ The dictionary has 22 variables. Verified each:
 - All documented with correct derivation. cal_yr = start_date.dt.year, cal_yr_qtr = cal_yr * 10 + quarter. Verified at panel_utils.py lines 215-217. ✓
 - **PASS (x4)**
 
-**FAIL-3 (Section L.1 -- RD_Intensity usage claim):**
-The variable dictionary does not list RD_Intensity, which is correct. However, Section L.1 claims: "The variable is loaded for summary statistics only." This is factually wrong.
+**FAIL-3 (Section L.1 -- RDSales usage claim):**
+The variable dictionary does not list RDSales, which is correct. However, Section L.1 claims: "The variable is loaded for summary statistics only." This is factually wrong.
 
 Evidence:
-1. Runner `SUMMARY_STATS_VARS` (lines 150-171): RD_Intensity is absent from this list. It is not included in summary statistics.
-2. Runner `load_panel()` column selection (lines 219-231): RD_Intensity is not in the `columns` list. The runner explicitly does not read RD_Intensity from the parquet file.
-3. The runner never reads, processes, or outputs RD_Intensity in any form.
+1. Runner `SUMMARY_STATS_VARS` (lines 150-171): RDSales is absent from this list. It is not included in summary statistics.
+2. Runner `load_panel()` column selection (lines 219-231): RDSales is not in the `columns` list. The runner explicitly does not read RDSales from the parquet file.
+3. The runner never reads, processes, or outputs RDSales in any form.
 
-RD_Intensity is loaded by the panel builder into the parquet file (builder line 136: `"rd_intensity": RDIntensityBuilder(...)`), but the runner stage (Stage 4) never touches it. It is fully dormant in Stage 4.
+RDSales is loaded by the panel builder into the parquet file (builder line 136: `"rd_intensity": RDIntensityBuilder(...)`), but the runner stage (Stage 4) never touches it. It is fully dormant in Stage 4.
 
 ---
 
@@ -352,7 +352,7 @@ F1 Dependency Chain (7 steps): Verified all steps against code.
 - Table generation: runner writes its own .tex; also in generate_all_tables.py. ✓
 - **PASS**
 
-F2 Data Engines: CompustatEngine, LinguisticEngine, CRSPEngine. All confirmed present. RD_Intensity listed as provided -- defensible at Stage 3 level though unused in Stage 4.
+F2 Data Engines: CompustatEngine, LinguisticEngine, CRSPEngine. All confirmed present. RDSales listed as provided -- defensible at Stage 3 level though unused in Stage 4.
 - **PASS (with note -- see L.1 correction)**
 
 F3 Merge Operations: All documented with file_name keys (left join), lead/lag merges on (gvkey, fyearq_int), CompustatEngine merge_asof backward on start_date/datadate. All verified in code.
@@ -389,15 +389,15 @@ G3 Summary Statistics:
 
 H1 Winsorization:
 - **FAIL-4a (line reference):** Doc says "`_winsorize_by_year()` (CompustatEngine line 439)". Actual: `def _winsorize_by_year(` is at line 444. Off by 5.
-- **FAIL-4b (incomplete skip list):** Doc says skip list = {DividendPayer, CashFlow, SalesGrowth, fqtr}. Actual skip_winsorize set (`_compustat_engine.py` lines 1217-1222) also contains ExternalFunding and DebtChoice. These are non-H16 variables but the doc's characterization of the skip list is incomplete.
+- **FAIL-4b (incomplete skip list):** Doc says skip list = {DivDummy, CashFlowAt, SalesGrowth, fqtr}. Actual skip_winsorize set (`_compustat_engine.py` lines 1217-1222) also contains ExternalFunding and DebtChoice. These are non-H16 variables but the doc's characterization of the skip list is incomplete.
 - All other winsorization claims correct: 1%/99% by fyearq, min 10 obs per group, RDSales is included in winsorize_cols. ✓
 
 H2 Missing Data Policy:
-- **FAIL-5 (wrong line reference for engine-level Inf replacement):** Doc says "Also replaced at engine level after ratio computation (CompustatEngine line 1109-1110)". Runner line 281 reference is correct. But engine line 1109 is: `# Step 1: Total debt at Q4 (balance sheet level)` -- no Inf replacement at that line. Actual Inf replacements at engine level: line 1204 (`comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)` in the _compute_and_winsorize loop), and lines 335, 621, 646, 663, 692 (inside helpers for OCF ratio, Investment, TobinsQ, SalesGrowth, CashFlow respectively). Line 1109-1110 is completely wrong.
+- **FAIL-5 (wrong line reference for engine-level Inf replacement):** Doc says "Also replaced at engine level after ratio computation (CompustatEngine line 1109-1110)". Runner line 281 reference is correct. But engine line 1109 is: `# Step 1: Total debt at Q4 (balance sheet level)` -- no Inf replacement at that line. Actual Inf replacements at engine level: line 1204 (`comp[col] = comp[col].replace([np.inf, -np.inf], np.nan)` in the _compute_and_winsorize loop), and lines 335, 621, 646, 663, 692 (inside helpers for OCF ratio, Investment, TobinsQ, SalesGrowth, CashFlowAt respectively). Line 1109-1110 is completely wrong.
 - Runner line 281 reference is correct. ✓
 
 H3 Transformations:
-- Size = ln(atq), DividendPayer = binary, RDSales lead/lag = fiscal-year shift. ✓
+- lnAssets = ln(atq), DivDummy = binary, RDSales lead/lag = fiscal-year shift. ✓
 - **PASS**
 
 ---
@@ -489,9 +489,9 @@ Internal consistency checks within docs/provenance/H16.md:
 |---|-------|-------|----------------------|-----------------|----------|-------------|
 | FAIL-1 | 5 (D2) | Attrition Step 4 | "Complete case -- Drop rows where any required variable (DV, IVs, controls, FE indices) is NaN; Inf/-Inf replaced with NaN before check" | Runner attrition_stages step 4 (line 818): `("After lead filter (col 5-8 only)", panel["RDSales_lead"].notna().sum())` -- counts calls with non-null RDSales_lead on the main-sample panel before any per-spec filtering. This is a pre-filter DV availability count, not a complete-case drop. | MEDIUM | Correct D2 step 4 to describe what the attrition table actually reports at this step |
 | FAIL-2 | 5 (D2) | Attrition Steps 4-5 structure | Docs shows complete-case (step 4) and min-calls (step 5) as separate steps | Runner line 819: `("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0))` -- combines complete-case and min-calls into ONE attrition row, using col 1 N | MEDIUM | Correct D2 to show step 5 is a combined complete-case + min-calls row (col 1 only) |
-| FAIL-3 | 6 (E) / L.1 | RD_Intensity usage | L.1: "The variable is loaded for summary statistics only" | (1) SUMMARY_STATS_VARS (runner lines 150-171): RD_Intensity absent. (2) load_panel() column selection (runner lines 219-231): RD_Intensity absent. RD_Intensity is in the Stage 3 parquet but Stage 4 never reads, processes, or outputs it in any form. | HIGH | Correct L.1 to state RD_Intensity is written to Stage 3 parquet but is not loaded or used in Stage 4 (not in regressions, not in summary stats) |
+| FAIL-3 | 6 (E) / L.1 | RDSales usage | L.1: "The variable is loaded for summary statistics only" | (1) SUMMARY_STATS_VARS (runner lines 150-171): RDSales absent. (2) load_panel() column selection (runner lines 219-231): RDSales absent. RDSales is in the Stage 3 parquet but Stage 4 never reads, processes, or outputs it in any form. | HIGH | Correct L.1 to state RDSales is written to Stage 3 parquet but is not loaded or used in Stage 4 (not in regressions, not in summary stats) |
 | FAIL-4a | 7 (H1) | _winsorize_by_year line reference | "CompustatEngine line 439" | `def _winsorize_by_year(` is at line 444 of _compustat_engine.py, not line 439 | LOW | Change "line 439" to "line 444" |
-| FAIL-4b | 7 (H1) | Winsorization skip list | skip_winsorize = {DividendPayer, CashFlow, SalesGrowth, fqtr} | Actual skip_winsorize (_compustat_engine.py lines 1217-1222) also includes ExternalFunding and DebtChoice | LOW | Add ExternalFunding and DebtChoice to the skip list description (noting these are non-H16 suite variables) |
+| FAIL-4b | 7 (H1) | Winsorization skip list | skip_winsorize = {DivDummy, CashFlowAt, SalesGrowth, fqtr} | Actual skip_winsorize (_compustat_engine.py lines 1217-1222) also includes ExternalFunding and DebtChoice | LOW | Add ExternalFunding and DebtChoice to the skip list description (noting these are non-H16 suite variables) |
 | FAIL-5 | 7 (H2) | Engine-level Inf replacement line | "CompustatEngine line 1109-1110" | Line 1109: `# Step 1: Total debt at Q4 (balance sheet level)` -- no Inf replacement here. Actual: line 1204 in _compute_and_winsorize() loop; also lines 335, 621, 646, 663, 692 in ratio helpers | MEDIUM | Correct to cite line 1204 for the main loop and lines 335/621/646/663/692 for within-helper replacements |
 | FAIL-6 | 8 (I) | generate_all_tables.py line reference | "lines 364-377" | H16 entry spans lines 302-315. Lines 364-377 are within the H17 entry. | LOW | Change "lines 364-377" to "lines 302-315" |
 
@@ -505,9 +505,9 @@ Current text:
 > "The variable is loaded for summary statistics only."
 
 Required replacement:
-> "The variable is written to the Stage 3 parquet by the panel builder but is **not loaded by the runner** (absent from the runner's `load_panel()` column selection at lines 219-231) and **not included in summary statistics** (absent from `SUMMARY_STATS_VARS` at lines 150-171). RD_Intensity is currently unused in Stage 4."
+> "The variable is written to the Stage 3 parquet by the panel builder but is **not loaded by the runner** (absent from the runner's `load_panel()` column selection at lines 219-231) and **not included in summary statistics** (absent from `SUMMARY_STATS_VARS` at lines 150-171). RDSales is currently unused in Stage 4."
 
-Proof: Runner lines 219-231 (column selection list), runner lines 150-171 (SUMMARY_STATS_VARS list). Neither contains "RD_Intensity".
+Proof: Runner lines 219-231 (column selection list), runner lines 150-171 (SUMMARY_STATS_VARS list). Neither contains "RDSales".
 
 ---
 
@@ -533,7 +533,7 @@ Current text:
 > Also replaced at engine level after ratio computation (CompustatEngine line 1109-1110)
 
 Required replacement:
-> Also replaced at engine level: in the main `_compute_and_winsorize()` loop at line 1204, and inside ratio-computation helpers at lines 335 (OCF ratio), 621 (Investment), 646 (TobinsQ), 663 (SalesGrowth), 692 (CashFlow).
+> Also replaced at engine level: in the main `_compute_and_winsorize()` loop at line 1204, and inside ratio-computation helpers at lines 335 (OCF ratio), 621 (Investment), 646 (TobinsQ), 663 (SalesGrowth), 692 (CashFlowAt).
 
 Proof: `_compustat_engine.py` lines 335, 621, 646, 663, 692, 1204 -- all contain `.replace([np.inf, -np.inf], np.nan)`.
 
@@ -554,10 +554,10 @@ Proof: `_compustat_engine.py` line 444: `def _winsorize_by_year(`.
 **CORRECTION 5 (LOW) -- Section H1, skip list**
 
 Current text:
-> Skip: DividendPayer (binary), CashFlow/SalesGrowth (already winsorized per-year inside `_compute_biddle_residual`), and fqtr (identifier).
+> Skip: DivDummy (binary), CashFlowAt/SalesGrowth (already winsorized per-year inside `_compute_biddle_residual`), and fqtr (identifier).
 
 Required replacement:
-> Skip: DividendPayer (binary), CashFlow/SalesGrowth (already winsorized per-year inside `_compute_biddle_residual` -- do not double-winsorize), fqtr (fiscal quarter identifier), ExternalFunding (binary, H20 suite), DebtChoice (binary, H20 suite).
+> Skip: DivDummy (binary), CashFlowAt/SalesGrowth (already winsorized per-year inside `_compute_biddle_residual` -- do not double-winsorize), fqtr (fiscal quarter identifier), ExternalFunding (binary, H20 suite), DebtChoice (binary, H20 suite).
 
 Proof: `_compustat_engine.py` lines 1217-1222, `skip_winsorize` set definition.
 

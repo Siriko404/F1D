@@ -123,12 +123,12 @@ One-tailed in negative direction. Runner docstring line 27: "One-tailed (beta < 
 
 Doc equation:
 ```
-ExternalFunding_{i,t} = b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct
-                      + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct
+ExternalFunding_{i,t} = b1*UncAnsCEO + b2*UncPreCEO
+                      + b3*UncAnsMgr + b4*UncPreMgr
                       + Controls + alpha_j + gamma_t + epsilon_{i,t}
 ```
 
-Runner `KEY_IVS` (lines 73-78): `CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct`. The `exog` list (line 272) is `KEY_IVS + controls`. Doc equation correctly lists all 4 IVs plus controls plus FE. **PASS.**
+Runner `KEY_IVS` (lines 73-78): `UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr`. The `exog` list (line 272) is `KEY_IVS + controls`. Doc equation correctly lists all 4 IVs plus controls plus FE. **PASS.**
 
 **B2-CHECK: Dependent Variable(s)**
 
@@ -143,7 +143,7 @@ Timing for `ExternalFunding_lead`: Doc says "Lead (fiscal year T+1)". Constructi
 
 Doc lists all 4 IVs with formula "(Uncertainty word count / total word count) * 100". Source: "LinguisticEngine (Stage 2 outputs)". Winsorization: "0%/99% per-year (upper-only)".
 
-Verified against `_linguistic_engine.py`: applies `winsorize_by_year(..., lower=0.0, upper=0.99)` to all `_pct` columns including `CEO_QA_Uncertainty_pct`, `CEO_Pres_Uncertainty_pct`, `Manager_QA_Uncertainty_pct`, `Manager_Pres_Uncertainty_pct`.
+Verified against `_linguistic_engine.py`: applies `winsorize_by_year(..., lower=0.0, upper=0.99)` to all `_pct` columns including `UncAnsCEO`, `UncPreCEO`, `UncAnsMgr`, `UncPreMgr`.
 
 **MINOR ISSUE — B3 winsorization description**: The doc says "bounded [0, ~2.5] by construction" but ~2.5 is presented as the theoretical maximum (percentage of Loughran-McDonald uncertainty words), not the actual post-winsorization 99th percentile. This is acceptable framing but technically imprecise; the ~2.5 claim is an illustrative estimate, not a code-verified bound. Mark as **ACCEPTABLE** — not a material error.
 
@@ -153,17 +153,17 @@ All 4 IVs verified in runner `KEY_IVS` list. **PASS.**
 
 Runner `BASE_CONTROLS` (lines 80-84):
 ```python
-"Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
-"CashHoldings", "DividendPayer", "OCF_Volatility",
+"lnAssets", "TobinsQ", "ROA", "Leverage", "Capex",
+"CashRatio", "DivDummy", "sCFO",
 "Lagged_DV"
 ```
 That is 9 base controls (including Lagged_DV).
 
-Doc Base Controls table lists: Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV. **COUNT MATCHES: 9.**
+Doc Base Controls table lists: lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV. **COUNT MATCHES: 9.**
 
-Runner `EXTENDED_CONTROLS` (lines 86-89): `BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]` = 13 total.
+Runner `EXTENDED_CONTROLS` (lines 86-89): `BASE_CONTROLS + ["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]` = 13 total.
 
-Doc Extended Controls: Base Controls plus SalesGrowth, RD_Intensity, CashFlow, Volatility. **MATCHES.**
+Doc Extended Controls: Base Controls plus SalesGrowth, RDSales, CashFlowAt, DailyVola. **MATCHES.**
 
 `Lagged_DV` assignment (runner line 211): `panel["Lagged_DV"] = panel["ExternalFunding_lag"]`. Doc says "ExternalFunding_lag = previous fiscal year's ExternalFunding classification." **CORRECT.**
 
@@ -308,28 +308,28 @@ Doc has 21 entries in the Variable Dictionary. Checking EVERY entry:
 
 | Var | Doc Winsorize | Code Winsorize | Match? |
 |-----|---------------|----------------|--------|
-| CEO_QA_Uncertainty_pct | 0%/99% per-year (upper-only) | `winsorize_by_year(..., lower=0.0, upper=0.99)` in `_linguistic_engine.py` | **PASS** |
-| CEO_Pres_Uncertainty_pct | 0%/99% per-year (upper-only) | Same | **PASS** |
-| Manager_QA_Uncertainty_pct | 0%/99% per-year (upper-only) | Same | **PASS** |
-| Manager_Pres_Uncertainty_pct | 0%/99% per-year (upper-only) | Same | **PASS** |
+| UncAnsCEO | 0%/99% per-year (upper-only) | `winsorize_by_year(..., lower=0.0, upper=0.99)` in `_linguistic_engine.py` | **PASS** |
+| UncPreCEO | 0%/99% per-year (upper-only) | Same | **PASS** |
+| UncAnsMgr | 0%/99% per-year (upper-only) | Same | **PASS** |
+| UncPreMgr | 0%/99% per-year (upper-only) | Same | **PASS** |
 
 **Control variables:**
 
 | Var | Doc Formula | Code Formula | Winsorize match? | Match? |
 |-----|-------------|--------------|-----------------|--------|
 | Lagged_DV | ExternalFunding_lag = previous fiscal year's ExternalFunding | Runner line 211: `panel["Lagged_DV"] = panel["ExternalFunding_lag"]` | No (binary) — correct | **PASS** |
-| Size | ln(atq), atq > 0 | Engine line 975 (approx): `np.where(comp["atq"].notna() & (comp["atq"] > 0), np.log(comp["atq"]), np.nan)` | 1%/99% per-fyearq | **PASS** |
+| lnAssets | ln(atq), atq > 0 | Engine line 975 (approx): `np.where(comp["atq"].notna() & (comp["atq"] > 0), np.log(comp["atq"]), np.nan)` | 1%/99% per-fyearq | **PASS** |
 | TobinsQ | (cshoq*prccq + debt_book) / atq | Engine lines 987-997: `(mktcap + debt_book) / comp["atq"]` where `mktcap = cshoq * prccq` | 1%/99% per-fyearq | **PASS** |
 | ROA | iby_annual (Q4) / avg(atq_t, atq_{t-1}) | Engine: `iby_annual / avg_assets` where avg_assets averages current and lagged atq | 1%/99% per-fyearq | **PASS** |
-| BookLev | (dlcq + dlttq) / atq, missing debt = 0 | Engine line 948: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` | 1%/99% per-fyearq | **PASS** |
-| CapexAt | capxy_annual (Q4) / atq_lag | Engine lines 999-1005: `CapexAt = capxy_annual / atq_annual_lag1` | 1%/99% per-fyearq | **PASS** |
-| CashHoldings | cheq / atq | Engine line 986: `comp["CashHoldings"] = comp["cheq"] / comp["atq"]` | 1%/99% per-fyearq | **PASS** |
-| DividendPayer | 1 if dvy_annual (Q4) > 0, else 0 | Engine: `np.where(dvy_annual > 0, 1.0, 0.0)` | No (binary) — correct | **PASS** |
-| OCF_Volatility | Rolling 5-yr std (min 3 yrs) of oancfy/atq_{t-1} per gvkey | Engine: rolling window computation on `oancfy/atq_lag` | 1%/99% per-fyearq | **PASS** |
+| Leverage | (dlcq + dlttq) / atq, missing debt = 0 | Engine line 948: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` | 1%/99% per-fyearq | **PASS** |
+| Capex | capxy_annual (Q4) / atq_lag | Engine lines 999-1005: `Capex = capxy_annual / atq_annual_lag1` | 1%/99% per-fyearq | **PASS** |
+| CashRatio | cheq / atq | Engine line 986: `comp["CashRatio"] = comp["cheq"] / comp["atq"]` | 1%/99% per-fyearq | **PASS** |
+| DivDummy | 1 if dvy_annual (Q4) > 0, else 0 | Engine: `np.where(dvy_annual > 0, 1.0, 0.0)` | No (binary) — correct | **PASS** |
+| sCFO | Rolling 5-yr std (min 3 yrs) of oancfy/atq_{t-1} per gvkey | Engine: rolling window computation on `oancfy/atq_lag` | 1%/99% per-fyearq | **PASS** |
 | SalesGrowth | (saley_t - saley_{t-1}) / abs(saley_{t-1}), Q4 annual | CompustatEngine or Biddle residual pipeline | 1%/99% per-fyearq (inside Biddle residual pipeline) | **PASS** |
-| RD_Intensity | xrdq / atq, missing xrdq = 0 | Engine (approx line 972): `comp["xrdq"].fillna(0) / comp["atq"]` | 1%/99% per-fyearq | **PASS** |
-| CashFlow | oancfy / avg(atq_t, atq_{t-1}), Q4 annual | Engine: Biddle residual pipeline | 1%/99% per-fyearq (inside Biddle residual pipeline) | **PASS** |
-| Volatility | std(daily_ret) * sqrt(252) * 100 over inter-call window, min 10 days | CRSPEngine: VolatilityBuilder | No (CRSP, not in Compustat winsorization) | **PASS** |
+| RDSales | xrdq / atq, missing xrdq = 0 | Engine (approx line 972): `comp["xrdq"].fillna(0) / comp["atq"]` | 1%/99% per-fyearq | **PASS** |
+| CashFlowAt | oancfy / avg(atq_t, atq_{t-1}), Q4 annual | Engine: Biddle residual pipeline | 1%/99% per-fyearq (inside Biddle residual pipeline) | **PASS** |
+| DailyVola | std(daily_ret) * sqrt(252) * 100 over inter-call window, min 10 days | CRSPEngine: VolatilityBuilder | No (CRSP, not in Compustat winsorization) | **PASS** |
 
 **FE columns:**
 
@@ -422,11 +422,11 @@ H1. Winsorization:
 - Compustat: "1%/99% per fiscal year (fyearq), `_compute_and_winsorize`, `_compustat_engine.py` lines 1225-1232." Actual: `skip_winsorize` set at lines 1217-1224; winsorize loop at lines 1225-1232. The doc's line range 1225-1232 is technically accurate for the *loop*, while the skip_winsorize definition starts at 1217. **ACCEPTABLE.**
 - `ExternalFunding` excluded at engine line 1222. DebtChoice at line 1223. **Verified. PASS.**
 - Linguistic IVs: 0%/99% per-year upper-only. **Verified. PASS.**
-- Not applied to Volatility (CRSP). **Consistent with code — VolatilityBuilder is separate from CompustatEngine. PASS.**
+- Not applied to DailyVola (CRSP). **Consistent with code — VolatilityBuilder is separate from CompustatEngine. PASS.**
 
 H2. Missing data: Complete-case deletion, inf replacement. Runner line 222: `df.replace([np.inf, -np.inf], np.nan)`. Runner lines 230-231: `complete_mask = df[required].notna().all(axis=1)`. **PASS.**
 
-H3. Transformations: Size = ln(atq), Volatility annualized * sqrt(252) * 100, no centering. **Verified in code. PASS.**
+H3. Transformations: lnAssets = ln(atq), DailyVola annualized * sqrt(252) * 100, no centering. **Verified in code. PASS.**
 
 **Phase 7 verdict**: 14 of 15 checks PASS. One FAIL: builder count is 18 (not 17) and non-manifest merges is 17 (not 16).
 
@@ -461,7 +461,7 @@ Verified against actual `outputs/generate_all_tables.py` lines 343-356:
 - `"tail": "one"` — PASS. Runner is one-tailed.
 - `"hyp_dir": "<"` — PASS. Runner expects beta < 0.
 
-**Note**: The H19 entry does NOT have `key_vars` or `key_tails` fields (unlike moderation suites). The doc does not mention this absence, but it is correct — the standard `generate_table()` function uses the global `IV_NAMES` list to identify IVs, not a per-suite `key_vars`. H19's four IVs (`CEO_QA_Uncertainty_pct`, etc.) are all in `IV_NAMES` (lines 400-406 of `generate_all_tables.py`), so the standard dispatcher works correctly. The doc's decision not to note the absence of `key_vars` is an omission, but not an error. **ACCEPTABLE.**
+**Note**: The H19 entry does NOT have `key_vars` or `key_tails` fields (unlike moderation suites). The doc does not mention this absence, but it is correct — the standard `generate_table()` function uses the global `IV_NAMES` list to identify IVs, not a per-suite `key_vars`. H19's four IVs (`UncAnsCEO`, etc.) are all in `IV_NAMES` (lines 400-406 of `generate_all_tables.py`), so the standard dispatcher works correctly. The doc's decision not to note the absence of `key_vars` is an omission, but not an error. **ACCEPTABLE.**
 
 Doc also states: "Also entry in `outputs/generate_all_tables.py` for unified pipeline." This is consistent with the H19 entry routing through `generate_table()` (no `type` field → falls through to `else` branch at line 1241 of `generate_all_tables.py`). The doc's claim at F1 Step 7 that "Runner writes its own 12-column LaTeX table... Also entry in generate_all_tables.py" is accurate: BOTH a standalone LaTeX table (from the runner directly) AND a generate_all_tables entry exist. **PASS.**
 
@@ -520,7 +520,7 @@ Doc fills K1 (PanelOLS Specifics) and marks K2-K6 as N/A.
 
 2. **DVs in C match DVs in I?** Section C shows ExternalFunding (6 cols) and ExternalFunding_lead (6 cols). Section I: `"dvs": [("ExternalFunding", 6), (r"ExternalFunding\_lead", 6)]`. **PASS.**
 
-3. **Controls in B4 match variables in E?** Base controls (B4): Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV — all 9 appear in Section E. Extended controls: adds SalesGrowth, RD_Intensity, CashFlow, Volatility — all 4 appear in Section E. **PASS.**
+3. **Controls in B4 match variables in E?** Base controls (B4): lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV — all 9 appear in Section E. Extended controls: adds SalesGrowth, RDSales, CashFlowAt, DailyVola — all 4 appear in Section E. **PASS.**
 
 4. **Column count in A matches rows in C?** A says "Columns: 12". C has 12 rows. **PASS.**
 
@@ -582,9 +582,9 @@ The doc contains a "Section N: Audit Sign-off" which records a prior audit by "C
 
 The doc correctly identifies and documents that the Timoneda (2021) justification is misapplied (ExternalFunding base rate 26.6% >> <5% threshold). This is accurately flagged as a MAJOR issue in Section L. The audit confirms this finding. No additional action required beyond what the doc already states.
 
-**Note C: BookLev bad control (already documented in doc as Issue #2)**
+**Note C: Leverage bad control (already documented in doc as Issue #2)**
 
-The doc correctly identifies BookLev as a potential bad control (shares dlcq+dlttq numerator concept with DV's debt channel). This is accurately flagged as MODERATE in Section L. Corr(ExternalFunding, BookLev) = 0.168 cited. This audit confirms the issue exists.
+The doc correctly identifies Leverage as a potential bad control (shares dlcq+dlttq numerator concept with DV's debt channel). This is accurately flagged as MODERATE in Section L. Corr(ExternalFunding, Leverage) = 0.168 cited. This audit confirms the issue exists.
 
 **Note D: Line number accuracy overall**
 

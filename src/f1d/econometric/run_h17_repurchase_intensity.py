@@ -24,8 +24,8 @@ Lead DVs:
     Cols 3-6, 9-12:  Extended controls
 
 Key IVs (4, simultaneous, call-level):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr
 
 Hypothesis: Two-tailed.
 
@@ -72,20 +72,20 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",
 ]
 
 BASE_CONTROLS = [
-    "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
-    "CashHoldings", "DividendPayer", "OCF_Volatility",
+    "lnAssets", "TobinsQ", "ROA", "Leverage", "Capex",
+    "CashRatio", "DivDummy", "sCFO",
     "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
-    "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -110,31 +110,31 @@ MODEL_SPECS = [
 ]
 
 VARIABLE_LABELS = {
-    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
-    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
+    "UncAnsCEO": "CEO QA Uncertainty",
+    "UncPreCEO": "CEO Pres Uncertainty",
+    "UncAnsMgr": "Mgr QA Uncertainty",
+    "UncPreMgr": "Mgr Pres Uncertainty",
 }
 
 SUMMARY_STATS_VARS = [
     {"col": "RepurchaseIntensity", "label": "RepurchaseIntensity (quarterly)"},
     {"col": "RepurchaseIntensity_lead_qtr", "label": "RepurchaseIntensity (next quarter)"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": r"R\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": r"R\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 

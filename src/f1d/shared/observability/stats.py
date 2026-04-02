@@ -3673,7 +3673,7 @@ def compute_financial_output_stats(
 
     Args:
         df_output: Output DataFrame with firm control variables
-                   (must contain Size, BM, Lev, ROA, EPS_Growth, etc.)
+                   (must contain lnAssets, BTM, Leverage, ROA, EPSgrowth, etc.)
         variable_names: List of variable names to analyze
 
     Returns:
@@ -4002,7 +4002,7 @@ def compute_market_output_stats(
         - variable_distributions: {var_name: {mean, median, std, min, max,
                                               q25, q75, percentiles, zeros, nans}}
         - liquidity_analysis: {amihud_stats: {...}, corwin_schultz_stats: {...},
-                              delta_amihud_stats: {...}}
+                              DeltaILLIQ_stats: {...}}
         - return_analysis: {stock_ret_stats: {...}, market_ret_stats: {...},
                            excess_return_stats: {...}}
         - volatility_stats: {mean, median, std, percentiles}
@@ -4081,16 +4081,16 @@ def compute_market_output_stats(
             }
 
     if "Delta_Amihud" in df_output.columns:
-        delta_amihud = df_output["Delta_Amihud"].dropna()
-        if len(delta_amihud) > 0:
-            stats["liquidity_analysis"]["delta_amihud_stats"] = {
-                "mean": round(float(delta_amihud.mean()), 6),
-                "median": round(float(delta_amihud.median()), 6),
-                "std": round(float(delta_amihud.std()), 6),
-                "min": round(float(delta_amihud.min()), 6),
-                "max": round(float(delta_amihud.max()), 6),
+        delta_illiq = df_output["Delta_Amihud"].dropna()
+        if len(delta_illiq) > 0:
+            stats["liquidity_analysis"]["DeltaILLIQ_stats"] = {
+                "mean": round(float(delta_illiq.mean()), 6),
+                "median": round(float(delta_illiq.median()), 6),
+                "std": round(float(delta_illiq.std()), 6),
+                "min": round(float(delta_illiq.min()), 6),
+                "max": round(float(delta_illiq.max()), 6),
                 "positive_pct": round(
-                    (delta_amihud > 0).sum() / len(delta_amihud) * 100, 2
+                    (delta_illiq > 0).sum() / len(delta_illiq) * 100, 2
                 ),
             }
 
@@ -4568,14 +4568,14 @@ def compute_step31_process_stats(
         # Build variables list and coverage from DataFrame
         for col in variable_coverage_df.columns:
             if col in [
-                "Size",
+                "lnAssets",
                 "BM",
-                "BookLev",
+                "Leverage",
                 "ROA",
-                "EPS_Growth",
+                "EPSgrowth",
                 "SurpDec",
                 "CurrentRatio",
-                "RD_Intensity",
+                "RDSales",
             ]:
                 non_null = variable_coverage_df[col].notna().sum()
                 total = len(variable_coverage_df)
@@ -4634,14 +4634,14 @@ def compute_step31_output_stats(
     # Auto-detect variables if not provided
     if variables_list is None:
         variables_list = [
-            "Size",
+            "lnAssets",
             "BM",
-            "BookLev",
+            "Leverage",
             "ROA",
-            "EPS_Growth",
+            "EPSgrowth",
             "SurpDec",
             "CurrentRatio",
-            "RD_Intensity",
+            "RDSales",
         ]
 
     # Add shift intensity variants if present
@@ -4887,7 +4887,7 @@ def compute_step32_output_stats(
         - variable_distributions: {var_name: {mean, median, std, percentiles, zeros}}
         - return_analysis: {stock_ret_stats, market_ret_stats, positive_return_pct}
         - liquidity_analysis: {amihud_stats, corwin_schultz_stats}
-        - delta_analysis: {delta_amihud_stats, delta_corwin_schultz_stats, sign_distribution}
+        - delta_analysis: {DeltaILLIQ_stats, delta_corwin_schultz_stats, sign_distribution}
         - volatility_analysis: {annualized_volatility_stats}
         - correlation_matrix: Pearson correlations between market variables
         - temporal_trends: Average values by year

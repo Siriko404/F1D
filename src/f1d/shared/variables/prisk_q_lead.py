@@ -16,10 +16,10 @@ Processing:
     5. Compute lead calendar quarter (next quarter)
     6. Merge on (gvkey, cal_q_lead)
 
-Output columns: file_name, PRiskQ_lead
+Output columns: file_name, PRisk_lead
 
 Temporal Structure:
-    PRiskQ_lead is measured over calendar quarter Q+1
+    PRisk_lead is measured over calendar quarter Q+1
     Earnings call happens within calendar quarter Q
     Lead relationship (next quarter's political risk)
 
@@ -130,7 +130,7 @@ class PRiskQLeadBuilder(VariableBuilder):
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = "PRiskQ_lead"
+        self.column = "PRisk_lead"
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         # 1. Load manifest to get file_name + gvkey + start_date
@@ -179,17 +179,17 @@ class PRiskQLeadBuilder(VariableBuilder):
             suffixes=("", "_prisk"),
         )
 
-        # Rename PRisk to PRiskQ_lead
-        merged = merged.rename(columns={"PRisk": "PRiskQ_lead"})
+        # PRisk_lead column (1-quarter lead)
+        merged = merged.rename(columns={"PRisk": "PRisk_lead"})
 
         # 7. Align back to original manifest (preserve row order & count)
         data = manifest[["file_name"]].merge(
-            merged[["file_name", "PRiskQ_lead"]], on="file_name", how="left"
+            merged[["file_name", "PRisk_lead"]], on="file_name", how="left"
         )
         data = data.drop_duplicates(subset=["file_name"])
 
         # Compute match statistics
-        n_matched = data["PRiskQ_lead"].notna().sum()
+        n_matched = data["PRisk_lead"].notna().sum()
         n_total = len(data)
         pct_matched = 100.0 * n_matched / n_total if n_total > 0 else 0.0
         print(
@@ -197,10 +197,10 @@ class PRiskQLeadBuilder(VariableBuilder):
         )
 
         return VariableResult(
-            data=data[["file_name", "PRiskQ_lead"]].copy(),
-            stats=self.get_stats(data["PRiskQ_lead"], "PRiskQ_lead"),
+            data=data[["file_name", "PRisk_lead"]].copy(),
+            stats=self.get_stats(data["PRisk_lead"], "PRisk_lead"),
             metadata={
-                "column": "PRiskQ_lead",
+                "column": "PRisk_lead",
                 "source": "Hassan et al. (2019) quarterly PRisk",
                 "description": (
                     "Lead quarterly political risk exposure matched to calls by "

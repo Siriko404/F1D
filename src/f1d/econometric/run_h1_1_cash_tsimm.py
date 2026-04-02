@@ -5,12 +5,12 @@ STAGE 4: Test H1.1 TNIC-Moderated Cash Holdings Hypothesis
 ================================================================================
 ID: econometric/run_h1_1_cash_tsimm
 Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM)
-             moderates the Manager_QA_Uncertainty → CashHoldings relationship.
+             moderates the UncAnsMgr → CashRatio relationship.
 
 Model Specification:
-    CashHoldings = b1*Mgr_QA_Unc_c + b2*z(log(TSIMM))
-                 + b3*(Mgr_QA_Unc_c x z(log(TSIMM)))
-                 + controls + IndustryFE + CalendarYearFE + e
+    CashRatio = b1*Mgr_QA_Unc_c + b2*z(log(TSIMM))
+               + b3*(Mgr_QA_Unc_c x z(log(TSIMM)))
+               + controls + IndustryFE + CalendarYearFE + e
 
     b3 is the coefficient of interest: does product similarity moderate
     the effect of managerial QA uncertainty on cash holdings?
@@ -18,8 +18,8 @@ Model Specification:
 Parent suite: H1 (Cash Holdings)
 
 2 Models:
-    Col 1: DV = CashHoldings_t, Industry + Calendar Year FE, Extended controls
-    Col 2: DV = CashHoldings_t, Industry + Calendar Year-Quarter FE, Extended controls
+    Col 1: DV = CashRatio_t, Industry + Calendar Year FE, Extended controls
+    Col 2: DV = CashRatio_t, Industry + Calendar Year-Quarter FE, Extended controls
 
 Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
     Log-transformed then z-scored on Main sample.
@@ -66,44 +66,44 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # Configuration
 # ==============================================================================
 
-IV = "Manager_QA_Uncertainty_pct"
+IV = "UncAnsMgr"
 IV_CENTERED = "Manager_QA_Unc_c"
 
 CONTROLS = [
-    "BookLev", "Size", "TobinsQ", "ROA", "CapexAt",
-    "DividendPayer", "OCF_Volatility",
-    "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
+    "DivDummy", "sCFO",
+    "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
     "Lagged_DV",
 ]
 
-MODERATOR_RAW = "tnic3tsimm"
-MODERATOR = "z_log_tnic3tsimm"
+MODERATOR_RAW = "TotalSimilarity"
+MODERATOR = "z_log_TotalSimilarity"
 INTERACTION = "MgrQAUnc_x_zlogTSIMM"
 
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": []},
-    {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": []},
+    {"col": 1, "dv": "CashRatio", "fe": "industry",    "extra_controls": []},
+    {"col": 2, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": []},
 ]
 
 SUMMARY_STATS_VARS = [
-    {"col": "CashHoldings", "label": "Cash Holdings$_t$"},
+    {"col": "CashRatio", "label": "Cash Holdings$_t$"},
     {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MODERATOR_RAW, "label": "TNIC3TSIMM (raw)"},
     {"col": MODERATOR, "label": "$z(\\log(\\mathrm{TSIMM}))$"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": "R\\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -147,7 +147,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     columns = [
         "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "CashHoldings", "CashHoldings_lag",
+        "CashRatio", "CashRatio_lag",
         IV,
         *[c for c in CONTROLS if c != "Lagged_DV"],
     ]
@@ -164,7 +164,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
 
 def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """Load TNIC3 data and merge tnic3tsimm into panel."""
+    """Load TNIC3 data and merge TotalSimilarity into panel."""
     print("\n" + "=" * 60)
     print("Merging TNIC3TSIMM")
     print("=" * 60)
@@ -180,7 +180,7 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     before = len(panel)
     panel = panel.merge(
-        tnic[["gvkey", "year", "tnic3tsimm"]].rename(
+        tnic[["gvkey", "year", "TotalSimilarity"]].rename(
             columns={"gvkey": "_gvkey_int", "year": "fyearq_int"}
         ),
         on=["_gvkey_int", "fyearq_int"],
@@ -210,8 +210,8 @@ def transform_moderator_and_center_iv(
     tsimm_mu = log_tsimm_main.mean()
     tsimm_sd = log_tsimm_main.std()
 
-    panel["log_tnic3tsimm"] = np.log(panel[MODERATOR_RAW])
-    panel[MODERATOR] = (panel["log_tnic3tsimm"] - tsimm_mu) / tsimm_sd
+    panel["log_TotalSimilarity"] = np.log(panel[MODERATOR_RAW])
+    panel[MODERATOR] = (panel["log_TotalSimilarity"] - tsimm_mu) / tsimm_sd
 
     print(f"  Main sample TSIMM obs: {len(tsimm_main):,}")
     print(f"  log(TSIMM) mean: {tsimm_mu:.4f}, std: {tsimm_sd:.4f}")
@@ -499,7 +499,7 @@ def main(panel_path: Optional[str] = None) -> int:
     main_n = len(panel)
 
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
-    print(f"  CashHoldings non-null: {panel['CashHoldings'].notna().sum():,}")
+    print(f"  CashRatio non-null: {panel['CashRatio'].notna().sum():,}")
     print(f"  {IV}: {panel[IV].notna().sum():,} "
           f"({100 * panel[IV].notna().mean():.1f}%)")
     print(f"  {MODERATOR}: {panel[MODERATOR].notna().sum():,} "

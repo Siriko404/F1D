@@ -1,12 +1,12 @@
-"""Builder for WangDISP — Wang (2020) analyst forecast dispersion.
+"""Builder for DISP — Wang (2020) analyst forecast dispersion.
 
 Computes pre-announcement analyst forecast dispersion following Wang (2020,
 Review of Accounting and Finance 19(3): 289-312).
 
-Output columns: file_name, WangDISP
+Output columns: file_name, DISP
 
 Construction:
-    WangDISP = SD(latest analyst EPS forecasts in T-31..T-1 window) / prccq_prior
+    DISP = SD(latest analyst EPS forecasts in T-31..T-1 window) / prccq_prior
     where:
         - T = earnings announcement date (start_date)
         - Forecasts: each analyst's most recent quarterly EPS forecast issued
@@ -39,9 +39,9 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class WangDispBuilder(VariableBuilder):
-    """Build WangDISP from IBES Detail + Compustat prccq.
+    """Build DISP from IBES Detail + Compustat prccq.
 
-    WangDISP: SD of analyst forecasts issued T-31..T-1, scaled by prior
+    DISP: SD of analyst forecasts issued T-31..T-1, scaled by prior
     quarter-end stock price. Wang (2020) definition.
     """
 
@@ -53,7 +53,7 @@ class WangDispBuilder(VariableBuilder):
         self.fpedats_max_days = 120  # Date fence for FPEDATS matching
 
     def build(self, years: range, root_path: Path) -> VariableResult:
-        """Build WangDISP for all calls."""
+        """Build DISP for all calls."""
         # Load manifest
         manifest_dir = get_latest_output_dir(
             root_path / "outputs" / "1.4_AssembleManifest",
@@ -82,24 +82,24 @@ class WangDispBuilder(VariableBuilder):
         final = manifest[["file_name"]].merge(results, on="file_name", how="left")
 
         # Winsorize at 1%/99% pooled (Wang 2020)
-        valid = final["WangDISP"].dropna()
+        valid = final["DISP"].dropna()
         if len(valid) > 0:
             lo = valid.quantile(0.01)
             hi = valid.quantile(0.99)
-            final["WangDISP"] = final["WangDISP"].clip(lo, hi)
-            print(f"    WangDispBuilder: Winsorized WangDISP at [{lo:.6f}, {hi:.6f}]")
+            final["DISP"] = final["DISP"].clip(lo, hi)
+            print(f"    WangDispBuilder: Winsorized DISP at [{lo:.6f}, {hi:.6f}]")
 
-        coverage = final["WangDISP"].notna().sum()
+        coverage = final["DISP"].notna().sum()
         print(f"    WangDispBuilder: Final coverage: {coverage:,} / {len(final):,} "
               f"({100 * coverage / len(final):.1f}%)")
 
-        stats = self.get_stats(final["WangDISP"], "WangDISP")
+        stats = self.get_stats(final["DISP"], "DISP")
 
         return VariableResult(
             data=final,
             stats=stats,
             metadata={
-                "columns": ["WangDISP"],
+                "columns": ["DISP"],
                 "source": "IBES Detail + Compustat prccq",
                 "window": f"T-{self.window_days} to T-1 (pre-announcement)",
                 "denominator": "prccq_lag (prior fiscal quarter-end stock price)",
@@ -149,7 +149,7 @@ class WangDispBuilder(VariableBuilder):
         3. Filter to T-31..T-1 window, keep latest per analyst, compute SD
         4. Merge prccq_lag, divide SD by prior quarter price
         """
-        print(f"    WangDispBuilder: Computing WangDISP for {len(manifest):,} calls...")
+        print(f"    WangDispBuilder: Computing DISP for {len(manifest):,} calls...")
 
         calls = manifest[["file_name", "gvkey", "start_date"]].copy()
         calls["date_min"] = calls["start_date"] - pd.Timedelta(days=self.window_days)
@@ -191,7 +191,7 @@ class WangDispBuilder(VariableBuilder):
 
         matched = matched.dropna(subset=["target_fpedats"])
         if len(matched) == 0:
-            return pd.DataFrame(columns=["file_name", "WangDISP"])
+            return pd.DataFrame(columns=["file_name", "DISP"])
 
         # ── Step 2: Join with IBES estimates on (gvkey, target_fpedats) ──
         estimates = ibes[["gvkey", "fpedats", "actdats", "analys", "value"]].copy()
@@ -243,16 +243,16 @@ class WangDispBuilder(VariableBuilder):
 
         # DISP = SD / prccq_lag (NaN if price missing or <= 0)
         valid_price = result["prccq_lag"].notna() & (result["prccq_lag"] > 0)
-        result["WangDISP"] = np.where(
+        result["DISP"] = np.where(
             valid_price & result["_sd"].notna(),
             result["_sd"] / result["prccq_lag"],
             np.nan,
         )
 
-        n_valid = result["WangDISP"].notna().sum()
-        print(f"    WangDispBuilder: {n_valid:,} calls with valid WangDISP")
+        n_valid = result["DISP"].notna().sum()
+        print(f"    WangDispBuilder: {n_valid:,} calls with valid DISP")
 
-        return result[["file_name", "WangDISP"]]
+        return result[["file_name", "DISP"]]
 
     def _wang_dispersion_bulk(self, pairs: pd.DataFrame) -> pd.DataFrame:
         """Compute SD of analyst forecasts in T-31..T-1 window.

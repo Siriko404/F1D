@@ -23,7 +23,7 @@ Before any phase-level checks are possible, a critical pre-condition fails:
 
 4. **No entry in `outputs/generate_all_tables.py`:**
    Grep confirms zero matches for "h5b_johnson", "H5b_johnson", "JohnsonDISP".
-   The only H5 entry is for H5 (Wang 2020 WangDISP), id="H5".
+   The only H5 entry is for H5 (Wang 2020 DISP), id="H5".
 
 5. **Suite officially archived (per project memory):**
    `project_archived_suites.md` entry (2026-03-31):
@@ -173,7 +173,7 @@ A-3. Hypothesis: "Higher linguistic uncertainty in earnings calls increases
 A-4. Direction: One-tailed (beta > 0)
      EVIDENCE: .pyc string constants: "Test: One-tailed (beta > 0)"
      p-value stored as `_p_one` suffix (confirmed in model_diagnostics.csv
-     column headers: CEO_QA_Uncertainty_pct_p_one, etc.)
+     column headers: UncAnsCEO_p_one, etc.)
      VERDICT: N/A (no doc).
 
 A-5. Model Family: PanelOLS
@@ -223,15 +223,15 @@ No Section B to audit. Forensic reconstruction follows.
 From .pyc: `formula = dv + " ~ 1 + " + regressors + " + EntityEffects + TimeEffects"`
 
 For base-controls spec (cols 1-2, 7-8):
-    JohnsonDISP2_{i,t} = b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct
-        + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct
-        + b5*Size + b6*TobinsQ + b7*ROA + b8*BookLev + b9*CapexAt
-        + b10*DividendPayer + b11*OCF_Volatility + b12*Lagged_DV
+    JohnsonDISP2_{i,t} = b1*UncAnsCEO + b2*UncPreCEO
+        + b3*UncAnsMgr + b4*UncPreMgr
+        + b5*lnAssets + b6*TobinsQ + b7*ROA + b8*Leverage + b9*Capex
+        + b10*DivDummy + b11*sCFO + b12*Lagged_DV
         + alpha_entity + gamma_time + epsilon
 
 For extended-controls spec (cols 3-6, 9-12):
-    (adds) + b13*SurpDec + b14*loss_dummy + b15*Analyst_QA_Uncertainty_pct
-            + b16*Entire_All_Negative_pct
+    (adds) + b13*SurpDec + b14*Loss + b15*UncQue
+            + b16*NegCall
 
 Lead-DV specs (cols 7-12): DV = JohnsonDISP2_lead; Lagged_DV = JohnsonDISP2_lag
 
@@ -276,26 +276,26 @@ this is the documented archival reason).
 **B3. Independent Variables (reconstructed)**
 
 BASE_CONTROLS list from .pyc:
-  ('CEO_QA_Uncertainty_pct', 'CEO_Pres_Uncertainty_pct',
-   'Manager_QA_Uncertainty_pct', 'Manager_Pres_Uncertainty_pct')
+  ('UncAnsCEO', 'UncPreCEO',
+   'UncAnsMgr', 'UncPreMgr')
 
 | Variable Name (code) | Description | Source | Timing |
 |----------------------|-------------|--------|--------|
-| CEO_QA_Uncertainty_pct | CEO Q&A section uncertainty word % | CEOQAUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
-| CEO_Pres_Uncertainty_pct | CEO prepared remarks uncertainty word % | CEOPresUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
-| Manager_QA_Uncertainty_pct | Non-CEO manager Q&A uncertainty word % | ManagerQAUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
-| Manager_Pres_Uncertainty_pct | Non-CEO manager prepared remarks uncertainty word % | ManagerPresUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
+| UncAnsCEO | CEO Q&A section uncertainty word % | CEOQAUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
+| UncPreCEO | CEO prepared remarks uncertainty word % | CEOPresUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
+| UncAnsMgr | Non-CEO manager Q&A uncertainty word % | ManagerQAUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
+| UncPreMgr | Non-CEO manager prepared remarks uncertainty word % | ManagerPresUncertaintyBuilder: SpeechEngine | Contemporaneous (t) |
 
 No centering or interaction terms. Standard 4-IV simultaneous approach.
 
 **B4. Control Variables (reconstructed)**
 
 BASE_CONTROLS from .pyc:
-  ['Size', 'TobinsQ', 'ROA', 'BookLev', 'CapexAt', 'DividendPayer',
-   'OCF_Volatility', 'Lagged_DV']
+  ['lnAssets', 'TobinsQ', 'ROA', 'Leverage', 'Capex', 'DivDummy',
+   'sCFO', 'Lagged_DV']
 
-EXTENDED_CONTROLS = BASE_CONTROLS + ['SurpDec', 'loss_dummy',
-   'Analyst_QA_Uncertainty_pct', 'Entire_All_Negative_pct']
+EXTENDED_CONTROLS = BASE_CONTROLS + ['SurpDec', 'Loss',
+   'UncQue', 'NegCall']
 
 Lagged_DV:
 - For JohnsonDISP2 specs (cols 1-6): Lagged_DV = JohnsonDISP2_lag
@@ -331,7 +331,7 @@ EVIDENCE: regression_results_col1.txt: "Cov. Estimator: Clustered"
 
 One-tailed, beta > 0. p-values stored as `_p_one`.
 EVIDENCE: .pyc: p_one stored via suffix "_p_one". model_diagnostics.csv columns
-are all "_p_one" (e.g., CEO_QA_Uncertainty_pct_p_one). .pyc docstring:
+are all "_p_one" (e.g., UncAnsCEO_p_one). .pyc docstring:
 "Hypothesis: One-tailed (beta > 0 — higher uncertainty -> higher dispersion)."
 
 Conversion: standard pattern — p_one = p_two / 2 when beta > 0, else 1 - p_two/2.
@@ -367,8 +367,8 @@ EVIDENCE: model_diagnostics.csv (12 rows confirmed). Observation counts verified
 against regression_results_col*.txt.
 
 Note: Col1-2 have N=21,209 but cols 3-6 have N=19,509 — the drop is due to
-extended controls (SurpDec, loss_dummy, Analyst_QA_Uncertainty_pct,
-Entire_All_Negative_pct) having additional missing values.
+extended controls (SurpDec, Loss, UncQue,
+NegCall) having additional missing values.
 
 **Phase 4 result: N/A — no provenance document to audit. Spec register
 reconstructed from model_diagnostics.csv (ground truth).**
@@ -429,25 +429,25 @@ No Section E to audit. Reconstructed variable dictionary:
 | JohnsonDISP2 | Johnson DISP2 (contemporaneous) | DV | SD(current-FY EPS forecasts outstanding at month-end) / atq; FPI=1, PDF=D, age<=180d, fpedats>=month_end, min 2 analysts | JohnsonDispBuilder: IBES Detail (FPI=1) + CompustatEngine (atq) | 1%/99% pooled | Contemporaneous (t) |
 | JohnsonDISP2_lead | Johnson DISP2 (next quarter) | DV | JohnsonDISP2 from next fiscal quarter (fiscal_qtr_id+1 shift) | Same as JohnsonDISP2, via lead-lag builder | 1%/99% pooled | Lead (t+1 qtr) |
 | JohnsonDISP2_lag | Johnson DISP2 (prior quarter) | Lagged_DV | JohnsonDISP2 from prior fiscal quarter (fiscal_qtr_id-1 shift) | Same as JohnsonDISP2, via lead-lag builder | 1%/99% pooled | Lag (t-1 qtr) |
-| CEO_QA_Uncertainty_pct | CEO QA Uncertainty | IV | % uncertain words in CEO Q&A section | CEOQAUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
-| CEO_Pres_Uncertainty_pct | CEO Pres Uncertainty | IV | % uncertain words in CEO prepared remarks | CEOPresUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
-| Manager_QA_Uncertainty_pct | Mgr QA Uncertainty | IV | % uncertain words in non-CEO manager Q&A | ManagerQAUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
-| Manager_Pres_Uncertainty_pct | Mgr Pres Uncertainty | IV | % uncertain words in non-CEO manager prepared remarks | ManagerPresUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
-| Size | Firm Size | Control | log(market cap) | SizeBuilder: CompustatEngine (mkvaltq or prccq*cshoq) | Yes (1%/99% by year at engine) | Contemporaneous (t) |
+| UncAnsCEO | CEO QA Uncertainty | IV | % uncertain words in CEO Q&A section | CEOQAUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
+| UncPreCEO | CEO Pres Uncertainty | IV | % uncertain words in CEO prepared remarks | CEOPresUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
+| UncAnsMgr | Mgr QA Uncertainty | IV | % uncertain words in non-CEO manager Q&A | ManagerQAUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
+| UncPreMgr | Mgr Pres Uncertainty | IV | % uncertain words in non-CEO manager prepared remarks | ManagerPresUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
+| lnAssets | Firm Size | Control | log(market cap) | SizeBuilder: CompustatEngine (mkvaltq or prccq*cshoq) | Yes (1%/99% by year at engine) | Contemporaneous (t) |
 | TobinsQ | Tobin's Q | Control | (atq + prccq*cshoq - ceqq) / atq | TobinsQBuilder: CompustatEngine | Yes (1%/99% by year at engine) | Contemporaneous (t) |
 | ROA | ROA | Control | oiadpq / avg(atq) | ROABuilder: CompustatEngine | Yes (1%/99% by year at engine) | Contemporaneous (t) |
-| BookLev | Leverage | Control | (dlcq+dlttq) / atq | BookLevBuilder: CompustatEngine | Yes (1%/99% by year at engine) | Contemporaneous (t) |
-| CapexAt | CapEx/Assets | Control | capxy / atq or capxq/atq | CapexIntensityBuilder: CompustatEngine | Yes (1%/99% by year at engine) | Contemporaneous (t) |
-| DividendPayer | Dividend Payer | Control | 1 if dvpq>0 else 0 (binary) | DividendPayerBuilder: CompustatEngine | No (binary) | Contemporaneous (t) |
-| OCF_Volatility | OCF Volatility | Control | rolling SD of operating cash flows / assets | OCFVolatilityBuilder: CompustatEngine | Yes (1%/99% by year at engine) | Rolling window |
+| Leverage | Leverage | Control | (dlcq+dlttq) / atq | LeverageBuilder: CompustatEngine | Yes (1%/99% by year at engine) | Contemporaneous (t) |
+| Capex | CapEx/Assets | Control | capxy / atq or capxq/atq | CapexIntensityBuilder: CompustatEngine | Yes (1%/99% by year at engine) | Contemporaneous (t) |
+| DivDummy | Dividend Payer | Control | 1 if dvpq>0 else 0 (binary) | DivDummyBuilder: CompustatEngine | No (binary) | Contemporaneous (t) |
+| sCFO | OCF Volatility | Control | rolling SD of operating cash flows / assets | OCFVolatilityBuilder: CompustatEngine | Yes (1%/99% by year at engine) | Rolling window |
 | SurpDec | -- | Extended Control | Earnings surprise decile rank | EarningsSurpriseBuilder: IBESEngine | Yes (at engine) | Contemporaneous (t) |
-| loss_dummy | -- | Extended Control | 1 if net income < 0 else 0 | LossDummyBuilder: CompustatEngine | No (binary) | Contemporaneous (t) |
-| Analyst_QA_Uncertainty_pct | -- | Extended Control | % uncertain words in analyst Q&A section | AnalystQAUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
-| Entire_All_Negative_pct | -- | Extended Control | % negative-sentiment words in full call | NegativeSentimentBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
+| Loss | -- | Extended Control | 1 if net income < 0 else 0 | LossDummyBuilder: CompustatEngine | No (binary) | Contemporaneous (t) |
+| UncQue | -- | Extended Control | % uncertain words in analyst Q&A section | AnalystQAUncertaintyBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
+| NegCall | -- | Extended Control | % negative-sentiment words in full call | NegativeSentimentBuilder: SpeechEngine | No (bounded by construction) | Contemporaneous (t) |
 
 EVIDENCE: Builder imports from .pyc builder bytecode: JohnsonDispBuilder,
-SizeBuilder, BookLevBuilder, ROABuilder, TobinsQBuilder, CapexIntensityBuilder,
-DividendPayerBuilder, OCFVolatilityBuilder, EarningsSurpriseBuilder,
+SizeBuilder, LeverageBuilder, ROABuilder, TobinsQBuilder, CapexIntensityBuilder,
+DivDummyBuilder, OCFVolatilityBuilder, EarningsSurpriseBuilder,
 LossDummyBuilder, AnalystQAUncertaintyBuilder, NegativeSentimentBuilder,
 ManagerQAUncertaintyBuilder, CEOQAUncertaintyBuilder, ManagerPresUncertaintyBuilder,
 CEOPresUncertaintyBuilder, ManifestFieldsBuilder.
@@ -484,8 +484,8 @@ F1. Dependency Chain:
        Compustat quarterly (atq, mkvaltq, prccq, ceqq, dlcq, dlttq,
        oiadpq, capxq, cshoq, dvpq), SpeechEngine transcripts
     2. Engine loading: JohnsonDispBuilder (IBES Detail + Compustat atq),
-       SizeBuilder, ROABuilder, TobinsQBuilder, BookLevBuilder,
-       CapexIntensityBuilder, DividendPayerBuilder, OCFVolatilityBuilder,
+       SizeBuilder, ROABuilder, TobinsQBuilder, LeverageBuilder,
+       CapexIntensityBuilder, DivDummyBuilder, OCFVolatilityBuilder,
        EarningsSurpriseBuilder, LossDummyBuilder,
        AnalystQAUncertaintyBuilder, NegativeSentimentBuilder,
        ManagerQAUncertaintyBuilder, CEOQAUncertaintyBuilder,
@@ -509,21 +509,21 @@ F2. Data Engines:
     | Engine | Source Data | Variables Provided |
     |--------|-------------|-------------------|
     | JohnsonDispBuilder | IBES Detail (FPI=1) + Compustat atq | JohnsonDISP2 |
-    | SizeBuilder | Compustat mkvaltq/prccq/cshoq | Size |
+    | SizeBuilder | Compustat mkvaltq/prccq/cshoq | lnAssets |
     | TobinsQBuilder | Compustat atq/prccq/cshoq/ceqq | TobinsQ |
     | ROABuilder | Compustat oiadpq/atq | ROA |
-    | BookLevBuilder | Compustat dlcq/dlttq/atq | BookLev |
-    | CapexIntensityBuilder | Compustat capxq/atq | CapexAt |
-    | DividendPayerBuilder | Compustat dvpq | DividendPayer |
-    | OCFVolatilityBuilder | Compustat oancfq/atq (rolling) | OCF_Volatility |
+    | LeverageBuilder | Compustat dlcq/dlttq/atq | Leverage |
+    | CapexIntensityBuilder | Compustat capxq/atq | Capex |
+    | DivDummyBuilder | Compustat dvpq | DivDummy |
+    | OCFVolatilityBuilder | Compustat oancfq/atq (rolling) | sCFO |
     | EarningsSurpriseBuilder | IBES Summary | SurpDec |
-    | LossDummyBuilder | Compustat niq | loss_dummy |
-    | CEOQAUncertaintyBuilder | SpeechEngine | CEO_QA_Uncertainty_pct |
-    | CEOPresUncertaintyBuilder | SpeechEngine | CEO_Pres_Uncertainty_pct |
-    | ManagerQAUncertaintyBuilder | SpeechEngine | Manager_QA_Uncertainty_pct |
-    | ManagerPresUncertaintyBuilder | SpeechEngine | Manager_Pres_Uncertainty_pct |
-    | AnalystQAUncertaintyBuilder | SpeechEngine | Analyst_QA_Uncertainty_pct |
-    | NegativeSentimentBuilder | SpeechEngine | Entire_All_Negative_pct |
+    | LossDummyBuilder | Compustat niq | Loss |
+    | CEOQAUncertaintyBuilder | SpeechEngine | UncAnsCEO |
+    | CEOPresUncertaintyBuilder | SpeechEngine | UncPreCEO |
+    | ManagerQAUncertaintyBuilder | SpeechEngine | UncAnsMgr |
+    | ManagerPresUncertaintyBuilder | SpeechEngine | UncPreMgr |
+    | AnalystQAUncertaintyBuilder | SpeechEngine | UncQue |
+    | NegativeSentimentBuilder | SpeechEngine | NegCall |
     | ManifestFieldsBuilder | master_sample_manifest.parquet | ff12_code, start_date, gvkey |
 
 F3. Merge Operations (reconstructed from builder .pyc):
@@ -561,9 +561,9 @@ G2. Stage 4 Outputs:
 G3. Summary Statistics:
     Variables tracked in summary_stats (from .pyc SUMMARY_STATS_VARS constant):
     JohnsonDISP2, JohnsonDISP2_lead, JohnsonDISP2_lag,
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-    Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr,
+    lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO
     (14 variables; extended controls not separately in summary stats)
     Metrics: N, Mean, SD, Min, P25, Median, P75, Max (standard)
 
@@ -580,7 +580,7 @@ H2. Missing Data Policy:
     Inf/-Inf replacement: standard runner pattern (confirmed from .pyc "inf" handling).
 
 H3. Transformations:
-    Size: log-transformed (standard SizeBuilder formula = log(market_cap))
+    lnAssets: log-transformed (standard SizeBuilder formula = log(market_cap))
     JohnsonDISP2: no log or z-score. Raw value retained (this is the root cause
     of the archival — mean=0.0001, max=0.0014 — all coefficients show as 0.0000
     in .4f format tables).
@@ -609,8 +609,8 @@ The only H5-family entry is:
     "label": "tab:h5",
     "cols": 12,
     "dvs": [
-        ("WangDISP", 6),
-        ("WangDISP\\_lead", 6),
+        ("DISP", 6),
+        ("DISP\\_lead", 6),
     ],
     "tail": "one",
     "hyp_dir": ">",
@@ -806,7 +806,7 @@ ADDITIONAL FORENSIC NOTES
 
 4. **Hypothesis test results (not supportive):**
    model_diagnostics.csv shows: no IV achieves p_one < 0.05 in cols 1-6.
-   Cols 9 and 11 show Manager_Pres_Uncertainty_pct significant (p_one=0.0002,
+   Cols 9 and 11 show UncPreMgr significant (p_one=0.0002,
    0.0001). However, this was moot given the display problem and archival decision.
 
 5. **generate_all_tables.py absence confirmed:**

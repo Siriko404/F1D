@@ -1,6 +1,6 @@
 """Builder for Manager Q&A Uncertainty variable.
 
-Queries the shared LinguisticEngine for Manager_QA_Uncertainty_pct.
+Queries the shared LinguisticEngine for UncAnsMgr.
 Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
@@ -19,7 +19,7 @@ class ManagerQAUncertaintyBuilder(VariableBuilder):
     """Build Manager Q&A Uncertainty variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    Column: Manager_QA_Uncertainty_pct
+    Column: UncAnsMgr
 
     Example:
         config = load_variable_config()["manager_qa_uncertainty"]
@@ -30,7 +30,7 @@ class ManagerQAUncertaintyBuilder(VariableBuilder):
     def __init__(self, config: Dict[str, Any]):
         """Initialize with variable config."""
         super().__init__(config)
-        self.column = config.get("column", "Manager_QA_Uncertainty_pct")
+        self.column = config.get("column", "UncAnsMgr")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         """Build Manager Q&A Uncertainty variable.
@@ -43,7 +43,7 @@ class ManagerQAUncertaintyBuilder(VariableBuilder):
             root_path: Project root path
 
         Returns:
-            VariableResult with file_name and Manager_QA_Uncertainty_pct columns
+            VariableResult with file_name and UncAnsMgr columns
         """
         engine = get_engine()
         all_data = engine.get_data(root_path, years)

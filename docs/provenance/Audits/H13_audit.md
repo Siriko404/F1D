@@ -56,7 +56,7 @@ Reference: `docs/Prompts/Suite Provenance Doc.txt` required sections A through L
 | A. Suite Identity | Yes | Yes | Yes | YAML block present, all fields populated |
 | B. Model Specification | Yes | Yes | Yes | |
 | B1. Regression Equation | Yes | Yes | Yes | Full LaTeX equation present |
-| B2. Dependent Variables | Yes | Yes | Yes | CapexAt and CapexAt_lead documented |
+| B2. Dependent Variables | Yes | Yes | Yes | Capex and Capex_lead documented |
 | B3. Independent Variables | Yes | Yes | Yes | All 4 IVs documented |
 | B4. Control Variables | Yes | Yes | Yes | Base (8) and Extended (12) documented with Lagged_DV note |
 | B5. Fixed Effects | Yes | Yes | Yes | Industry/Firm x Cal Yr/Cal Yr-Qtr |
@@ -145,7 +145,7 @@ RESULT: **PASS**
 ## PHASE 3: MODEL SPECIFICATION (Section B)
 
 **B1-CHECK: Regression Equation**
-Doc equation: `CapexAt_{i,t} = β1·CEO_QA_Uncertainty_pct + β2·CEO_Pres_Uncertainty_pct + β3·Manager_QA_Uncertainty_pct + β4·Manager_Pres_Uncertainty_pct + γ'Controls + α_i + δ_t + ε`
+Doc equation: `Capex_{i,t} = β1·UncAnsCEO + β2·UncPreCEO + β3·UncAnsMgr + β4·UncPreMgr + γ'Controls + α_i + δ_t + ε`
 Code construction (runner lines 328, 362-364):
 ```python
 exog = KEY_IVS + controls  # 4 IVs + 8 or 12 controls
@@ -155,27 +155,27 @@ All 4 IVs enter simultaneously. Controls included per spec. Entity and time FE a
 RESULT: **PASS**
 
 **B2-CHECK: Dependent Variables**
-Doc: CapexAt (contemporaneous) and CapexAt_lead (t+1).
-Code: MODEL_SPECS shows `"dv": "CapexAt"` for cols 1-6, `"dv": "CapexAt_lead"` for cols 7-12.
-CapexAt formula: `capxy_annual / atq_annual_lag1` (CompustatEngine lines 999-1005, where capxy_annual = Q4-only capxy joined to all quarters, atq_annual_lag1 = prior year Q4 atq).
-CapexAt_lead: constructed by `create_capex_lead()` in panel builder -- takes latest-call CapexAt within each (gvkey, fyearq_int), shifts -1 within gvkey, validates consecutive fiscal years.
+Doc: Capex (contemporaneous) and Capex_lead (t+1).
+Code: MODEL_SPECS shows `"dv": "Capex"` for cols 1-6, `"dv": "Capex_lead"` for cols 7-12.
+Capex formula: `capxy_annual / atq_annual_lag1` (CompustatEngine lines 999-1005, where capxy_annual = Q4-only capxy joined to all quarters, atq_annual_lag1 = prior year Q4 atq).
+Capex_lead: constructed by `create_capex_lead()` in panel builder -- takes latest-call Capex within each (gvkey, fyearq_int), shifts -1 within gvkey, validates consecutive fiscal years.
 Timing: contemporaneous (t) and lead (t+1). Correct.
 RESULT: **PASS**
 
 **B3-CHECK: Independent Variables**
-Doc lists 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct.
+Doc lists 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr.
 Code: `KEY_IVS` (runner lines 86-90) exactly matches these 4 variables. All enter simultaneously (`exog = KEY_IVS + controls` line 328). No centering, log-transform, or z-scoring applied.
 Source: LinguisticEngine.
 RESULT: **PASS**
 
 **B4-CHECK: Control Variables**
-Doc lists BASE_CONTROLS as 8 variables: Size, TobinsQ, ROA, BookLev, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV.
-Code `BASE_CONTROLS` (runner lines 94-103): `["Size", "TobinsQ", "ROA", "BookLev", "CashHoldings", "DividendPayer", "OCF_Volatility", "Lagged_DV"]`. Exactly 8. Match.
+Doc lists BASE_CONTROLS as 8 variables: lnAssets, TobinsQ, ROA, Leverage, CashRatio, DivDummy, sCFO, Lagged_DV.
+Code `BASE_CONTROLS` (runner lines 94-103): `["lnAssets", "TobinsQ", "ROA", "Leverage", "CashRatio", "DivDummy", "sCFO", "Lagged_DV"]`. Exactly 8. Match.
 
-Doc lists EXTENDED_CONTROLS as Base + 4: SalesGrowth, RD_Intensity, CashFlow, Volatility.
-Code `EXTENDED_CONTROLS` (runner lines 105-110): `BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]`. Match.
+Doc lists EXTENDED_CONTROLS as Base + 4: SalesGrowth, RDSales, CashFlowAt, DailyVola.
+Code `EXTENDED_CONTROLS` (runner lines 105-110): `BASE_CONTROLS + ["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]`. Match.
 
-Lagged_DV construction: runner lines 251-255, `base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")`, `lag_col = f"{base_dv}_lag"`, `panel["Lagged_DV"] = panel[lag_col]`. For CapexAt specs: CapexAt_lag. For CapexAt_lead specs: also CapexAt_lag. Doc note 70 says exactly this. PASS.
+Lagged_DV construction: runner lines 251-255, `base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")`, `lag_col = f"{base_dv}_lag"`, `panel["Lagged_DV"] = panel[lag_col]`. For Capex specs: Capex_lag. For Capex_lead specs: also Capex_lag. Doc note 70 says exactly this. PASS.
 RESULT: **PASS**
 
 **B5-CHECK: Fixed Effects**
@@ -217,18 +217,18 @@ Doc spec register has 12 rows. MODEL_SPECS has 12 entries.
 
 | Verified Col | Doc DV | Doc Entity FE | Doc Time FE | Doc Controls | Code `fe` value | Code `controls` | Match |
 |---|---|---|---|---|---|---|---|
-| 1 | CapexAt | Industry (FF12) | Cal Year | Base | `industry` | `base` | ✓ |
-| 2 | CapexAt | Firm | Cal Year | Base | `firm` | `base` | ✓ |
-| 3 | CapexAt | Industry (FF12) | Cal Year | Extended | `industry` | `extended` | ✓ |
-| 4 | CapexAt | Firm | Cal Year | Extended | `firm` | `extended` | ✓ |
-| 5 | CapexAt | Industry (FF12) | Cal Year-Quarter | Extended | `industry_yq` | `extended` | ✓ |
-| 6 | CapexAt | Firm | Cal Year-Quarter | Extended | `firm_yq` | `extended` | ✓ |
-| 7 | CapexAt_lead | Industry (FF12) | Cal Year | Base | `industry` | `base` | ✓ |
-| 8 | CapexAt_lead | Firm | Cal Year | Base | `firm` | `base` | ✓ |
-| 9 | CapexAt_lead | Industry (FF12) | Cal Year | Extended | `industry` | `extended` | ✓ |
-| 10 | CapexAt_lead | Firm | Cal Year | Extended | `firm` | `extended` | ✓ |
-| 11 | CapexAt_lead | Industry (FF12) | Cal Year-Quarter | Extended | `industry_yq` | `extended` | ✓ |
-| 12 | CapexAt_lead | Firm | Cal Year-Quarter | Extended | `firm_yq` | `extended` | ✓ |
+| 1 | Capex | Industry (FF12) | Cal Year | Base | `industry` | `base` | ✓ |
+| 2 | Capex | Firm | Cal Year | Base | `firm` | `base` | ✓ |
+| 3 | Capex | Industry (FF12) | Cal Year | Extended | `industry` | `extended` | ✓ |
+| 4 | Capex | Firm | Cal Year | Extended | `firm` | `extended` | ✓ |
+| 5 | Capex | Industry (FF12) | Cal Year-Quarter | Extended | `industry_yq` | `extended` | ✓ |
+| 6 | Capex | Firm | Cal Year-Quarter | Extended | `firm_yq` | `extended` | ✓ |
+| 7 | Capex_lead | Industry (FF12) | Cal Year | Base | `industry` | `base` | ✓ |
+| 8 | Capex_lead | Firm | Cal Year | Base | `firm` | `base` | ✓ |
+| 9 | Capex_lead | Industry (FF12) | Cal Year | Extended | `industry` | `extended` | ✓ |
+| 10 | Capex_lead | Firm | Cal Year | Extended | `firm` | `extended` | ✓ |
+| 11 | Capex_lead | Industry (FF12) | Cal Year-Quarter | Extended | `industry_yq` | `extended` | ✓ |
+| 12 | Capex_lead | Firm | Cal Year-Quarter | Extended | `firm_yq` | `extended` | ✓ |
 
 All 12 rows verified against code. No missing specs, no phantom specs. PASS.
 
@@ -261,11 +261,11 @@ Code verification:
 - `complete_mask = df[required].notna().all(axis=1)` (lines 282-283) ✓
 - `firm_counts = df["gvkey"].value_counts()`, `valid_firms = ... firm_counts >= MIN_CALLS_PER_FIRM`, `MIN_CALLS_PER_FIRM = 5` (lines 287-289, line 129) ✓
 
-Note: Steps 3-6 applied per-specification (doc correctly notes this). CapexAt_lead specs have fewer observations (doc correctly notes this).
+Note: Steps 3-6 applied per-specification (doc correctly notes this). Capex_lead specs have fewer observations (doc correctly notes this).
 RESULT: **PASS**
 
 **D3-CHECK: Sample Counts**
-Doc: "N varies across specs due to different DVs (CapexAt vs CapexAt_lead) and different control requirements (base vs extended). The runner records `n_obs` and `n_firms` per model in `model_diagnostics.csv`. Exact counts are produced at runtime."
+Doc: "N varies across specs due to different DVs (Capex vs Capex_lead) and different control requirements (base vs extended). The runner records `n_obs` and `n_firms` per model in `model_diagnostics.csv`. Exact counts are produced at runtime."
 Code: `meta["n_obs"] = int(model.nobs)`, `meta["n_firms"] = df_prepared["gvkey"].nunique()`, saved to `model_diagnostics.csv`. This is correct.
 RESULT: **PASS**
 
@@ -281,18 +281,18 @@ Every variable in any regression spec verified against source code.
 
 | Variable | Doc Formula | Code Formula | Source | Winsor | Timing | Match |
 |---|---|---|---|---|---|---|
-| CapexAt | capxy (Q4 annual) / atq (lagged annual, t-1) | `capxy_annual / atq_annual_lag1` where capxy_annual = Q4 capxy joined to all quarters, atq_annual_lag1 = prior year Q4 atq shifted forward 1 year | CompustatEngine lines 999-1005 | 1%/99% by fiscal year | Contemporaneous | ✓ |
-| CapexAt_lead | CapexAt for next consecutive fiscal year via gvkey+fyearq_int shift(-1) | `create_capex_lead()` in panel builder: takes latest-call CapexAt per (gvkey,fyearq_int), shift -1 within gvkey, NaN if not consecutive | Panel builder `create_capex_lead()` | Inherits from CapexAt | Lead (t+1) | ✓ |
-| CapexAt_lag | CapexAt for prior consecutive fiscal year via shift(+1) | `create_capex_lag()` in panel builder: takes latest-call CapexAt per (gvkey,fyearq_int), shift +1, NaN if not consecutive | Panel builder `create_capex_lag()` | Inherits from CapexAt | Lag (t-1) | ✓ |
+| Capex | capxy (Q4 annual) / atq (lagged annual, t-1) | `capxy_annual / atq_annual_lag1` where capxy_annual = Q4 capxy joined to all quarters, atq_annual_lag1 = prior year Q4 atq shifted forward 1 year | CompustatEngine lines 999-1005 | 1%/99% by fiscal year | Contemporaneous | ✓ |
+| Capex_lead | Capex for next consecutive fiscal year via gvkey+fyearq_int shift(-1) | `create_capex_lead()` in panel builder: takes latest-call Capex per (gvkey,fyearq_int), shift -1 within gvkey, NaN if not consecutive | Panel builder `create_capex_lead()` | Inherits from Capex | Lead (t+1) | ✓ |
+| Capex_lag | Capex for prior consecutive fiscal year via shift(+1) | `create_capex_lag()` in panel builder: takes latest-call Capex per (gvkey,fyearq_int), shift +1, NaN if not consecutive | Panel builder `create_capex_lag()` | Inherits from Capex | Lag (t-1) | ✓ |
 
 **IVs:**
 
 | Variable | Doc Formula | Code Source | Winsor | Match |
 |---|---|---|---|---|
-| CEO_QA_Uncertainty_pct | (uncertainty words / total words) * 100, CEO Q&A section | LinguisticEngine (CEOQAUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
-| CEO_Pres_Uncertainty_pct | (uncertainty words / total words) * 100, CEO presentation | LinguisticEngine (CEOPresUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
-| Manager_QA_Uncertainty_pct | (uncertainty words / total words) * 100, all-managers Q&A | LinguisticEngine (ManagerQAUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
-| Manager_Pres_Uncertainty_pct | (uncertainty words / total words) * 100, all-managers presentation | LinguisticEngine (ManagerPresUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
+| UncAnsCEO | (uncertainty words / total words) * 100, CEO Q&A section | LinguisticEngine (CEOQAUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
+| UncPreCEO | (uncertainty words / total words) * 100, CEO presentation | LinguisticEngine (CEOPresUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
+| UncAnsMgr | (uncertainty words / total words) * 100, all-managers Q&A | LinguisticEngine (ManagerQAUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
+| UncPreMgr | (uncertainty words / total words) * 100, all-managers presentation | LinguisticEngine (ManagerPresUncertaintyBuilder) | 0%/99% upper-only per year | ✓ |
 
 LinguisticEngine winsorization confirmed: `winsorize_by_year(combined, existing_pct_cols, year_col="year", lower=0.0, upper=0.99, min_obs=10)` (LinguisticEngine line 255-258). Matches doc claim of "0%/99% upper-only per calendar year". PASS.
 
@@ -300,23 +300,23 @@ LinguisticEngine winsorization confirmed: `winsorize_by_year(combined, existing_
 
 | Variable | Doc Formula | Code Formula | Verified | Match |
 |---|---|---|---|---|
-| Size | ln(atq); atq <= 0 yields NaN | `comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` (engine line 943) | ✓ | ✓ |
+| lnAssets | ln(atq); atq <= 0 yields NaN | `comp["lnAssets"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` (engine line 943) | ✓ | ✓ |
 | TobinsQ | (cshoq * prccq + dlcq + dlttq) / atq; requires atq > 0 and mktcap non-missing | `(mktcap + debt_book) / comp["atq"]` where `mktcap = cshoq * prccq`, `debt_book = dlcq.clip(lower=0).fillna(0) + dlttq.clip(lower=0).fillna(0)` (engine lines 987-997) | ✓ | ✓ |
 | ROA | iby (Q4 annual) / avg_assets, avg_assets = (atq_t + atq_{t-1}) / 2 | `iby_annual / avg_assets` where iby_annual = Q4 iby, avg_assets = (atq_annual + atq_annual_lag1) / 2 (engine lines 959-969) | ✓ | ✓ |
-| BookLev | (dlcq + dlttq) / atq; missing debt treated as zero | `(comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]` (engine line 948) | ✓ | ✓ |
-| CashHoldings | cheq / atq | `comp["CashHoldings"] = comp["cheq"] / comp["atq"]` (engine line 986) | ✓ | ✓ |
-| DividendPayer | 1 if dvy (Q4 annual) > 0, else 0 | Q4 dvy annual joined to all quarters, then `dvy_annual.fillna(0) > 0` cast to float (engine lines 1009-1012) | ✓ | ✓ |
-| OCF_Volatility | Rolling 5-year std (min 3 yrs) of (oancfy / atq_{t-1}) per gvkey | OCFVolatilityBuilder calls engine `_compute_ocf_volatility()`. OCFVolatilityBuilder docstring: "rolling 5-year std (min 3 yrs) of (oancfy/atq_{t-1}) per gvkey" | ✓ | ✓ |
-| Lagged_DV | CapexAt_lag for all H13 specs | `panel["Lagged_DV"] = panel[lag_col]` where `lag_col = f"{base_dv}_lag"` = "CapexAt_lag" (runner lines 252-255) | ✓ | ✓ |
+| Leverage | (dlcq + dlttq) / atq; missing debt treated as zero | `(comp["dlcq"].fillna(0) + comp["dlttq"].fillna(0)) / comp["atq"]` (engine line 948) | ✓ | ✓ |
+| CashRatio | cheq / atq | `comp["CashRatio"] = comp["cheq"] / comp["atq"]` (engine line 986) | ✓ | ✓ |
+| DivDummy | 1 if dvy (Q4 annual) > 0, else 0 | Q4 dvy annual joined to all quarters, then `dvy_annual.fillna(0) > 0` cast to float (engine lines 1009-1012) | ✓ | ✓ |
+| sCFO | Rolling 5-year std (min 3 yrs) of (oancfy / atq_{t-1}) per gvkey | OCFVolatilityBuilder calls engine `_compute_ocf_volatility()`. OCFVolatilityBuilder docstring: "rolling 5-year std (min 3 yrs) of (oancfy/atq_{t-1}) per gvkey" | ✓ | ✓ |
+| Lagged_DV | Capex_lag for all H13 specs | `panel["Lagged_DV"] = panel[lag_col]` where `lag_col = f"{base_dv}_lag"` = "Capex_lag" (runner lines 252-255) | ✓ | ✓ |
 
 **Extended Controls:**
 
 | Variable | Doc Formula | Code Formula | Verified | Match |
 |---|---|---|---|---|
 | SalesGrowth | (saley_t - saley_{t-1}) / abs(saley_{t-1}); saleq fallback | `_compute_biddle_residual()` in engine: uses saley (annual total revenue) with saleq fallback | ✓ | ✓ |
-| RD_Intensity | xrdq / atq; missing xrdq treated as 0 | `comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]` (engine line 972) | ✓ | ✓ |
-| CashFlow | oancfy / avg_assets; avg = (atq_t + atq_{t-1}) / 2 | `annual["oancfy"] / avg_assets` in `_compute_biddle_residual()` (engine lines 685-692) | ✓ | ✓ |
-| Volatility | std(daily_ret) * sqrt(252) * 100 over [prev_call+5d, call-5d], min 10 days | VolatilityBuilder/CRSPEngine: "std(daily_ret) * sqrt(252) * 100 over window [prev_call_date + 5 days, call start_date - 5 days], >= 10 trading days" | ✓ | ✓ |
+| RDSales | xrdq / atq; missing xrdq treated as 0 | `comp["RDSales"] = comp["xrdq"].fillna(0) / comp["atq"]` (engine line 972) | ✓ | ✓ |
+| CashFlowAt | oancfy / avg_assets; avg = (atq_t + atq_{t-1}) / 2 | `annual["oancfy"] / avg_assets` in `_compute_biddle_residual()` (engine lines 685-692) | ✓ | ✓ |
+| DailyVola | std(daily_ret) * sqrt(252) * 100 over [prev_call+5d, call-5d], min 10 days | VolatilityBuilder/CRSPEngine: "std(daily_ret) * sqrt(252) * 100 over window [prev_call_date + 5 days, call start_date - 5 days], >= 10 trading days" | ✓ | ✓ |
 
 **FE Columns:**
 
@@ -328,11 +328,11 @@ LinguisticEngine winsorization confirmed: `winsorize_by_year(combined, existing_
 | cal_yr_qtr | FE/Index | cal_yr * 10 + start_date.dt.quarter (line 217) | ✓ |
 
 **Winsorization checks:**
-- CapexAt: in `COMPUSTAT_COLS` list (line 117), NOT in `skip_winsorize` set (line 1217-1224), therefore winsorized by `_winsorize_by_year` (lines 1225-1232). Doc claims "1%/99% by fiscal year". PASS.
+- Capex: in `COMPUSTAT_COLS` list (line 117), NOT in `skip_winsorize` set (line 1217-1224), therefore winsorized by `_winsorize_by_year` (lines 1225-1232). Doc claims "1%/99% by fiscal year". PASS.
 - SalesGrowth: explicitly in `skip_winsorize` (line 1220). Winsorized inside `_compute_biddle_residual()` at line 666. Doc says "1%/99% by fiscal year (in Biddle residual computation)". PASS.
-- CashFlow: explicitly in `skip_winsorize` (line 1219). Winsorized inside `_compute_biddle_residual()` at line 693. Doc says "1%/99% by fiscal year (in Biddle residual computation)". PASS.
-- DividendPayer: explicitly in `skip_winsorize` (line 1218). Doc says "No (binary)". PASS.
-- Volatility: not in COMPUSTAT_COLS (CRSPEngine). Doc says "No (not in Compustat engine winsorization loop)". PASS.
+- CashFlowAt: explicitly in `skip_winsorize` (line 1219). Winsorized inside `_compute_biddle_residual()` at line 693. Doc says "1%/99% by fiscal year (in Biddle residual computation)". PASS.
+- DivDummy: explicitly in `skip_winsorize` (line 1218). Doc says "No (binary)". PASS.
+- DailyVola: not in COMPUSTAT_COLS (CRSPEngine). Doc says "No (not in Compustat engine winsorization loop)". PASS.
 
 **Completeness check:**
 All variables in MODEL_SPECS (4 IVs + 8 base controls + 4 extended controls + Lagged_DV + DVs + FE columns) are present in the variable dictionary. No variables in any regression spec are missing from the dictionary. PASS.
@@ -347,14 +347,14 @@ All variables in MODEL_SPECS (4 IVs + 8 base controls + 4 extended controls + La
 
 F1. Dependency chain is 7-step, covers: raw inputs → engine loading → panel builder → runner loading → sample filtering → regression estimation → table generation. PASS.
 
-F2. Three engines: CompustatEngine (financial variables), LinguisticEngine (linguistic IVs), CRSPEngine (Volatility). All used by the suite. No missing engines. PASS.
+F2. Three engines: CompustatEngine (financial variables), LinguisticEngine (linguistic IVs), CRSPEngine (DailyVola). All used by the suite. No missing engines. PASS.
 
 F3. Merge operations (19 total):
 - 16 file_name-based merges (manifest + each of 16 builders) — all verified against panel builder `build_call_level_panel()` which iterates over `builders` dict (16 entries including manifest → 15 non-manifest merges). Wait — the builders dict has 17 entries (manifest + 16 builders). The provenance doc shows 16 non-manifest merges = correct.
   - Verified: manifest (1), ceo_qa_uncertainty (2), ceo_pres_uncertainty (3), manager_qa_uncertainty (4), manager_pres_uncertainty (5), size (6), tobins_q (7), roa (8), lev (9), cash_holdings (10), capex_intensity (11), dividend_payer (12), ocf_volatility (13), sales_growth (14), rd_intensity (15), cash_flow (16), volatility (17). That is 17 builders, 16 non-manifest = 16 file_name merges. ✓
 - fyearq attach via `attach_fyearq()` (merge_asof on gvkey, start_date → datadate) ✓
-- CapexAt_lead lookup merge by (gvkey, fyearq_int) ✓
-- CapexAt_lag lookup merge by (gvkey, fyearq_int) ✓
+- Capex_lead lookup merge by (gvkey, fyearq_int) ✓
+- Capex_lag lookup merge by (gvkey, fyearq_int) ✓
 Total: 16 + 1 + 1 + 1 = 19. PASS.
 
 **G-CHECK: Outputs**
@@ -388,20 +388,20 @@ Similarly, the runner's docstring (line 50) lists `sample_attrition.csv` but NOT
 
 H1. Winsorization:
 - Compustat financial variables: 1%/99% by fiscal year (fyearq), `_winsorize_by_year()` in CompustatEngine (lines 1225-1232). Threshold: 10 obs minimum per year-group. PASS.
-- CapexAt is in `winsorize_cols` (included in COMPUSTAT_COLS, not in skip_winsorize). PASS.
-- SalesGrowth and CashFlow: winsorized inside `_compute_biddle_residual()` (lines 666, 693) and excluded from main loop. PASS.
-- DividendPayer: in skip_winsorize (binary). PASS.
+- Capex is in `winsorize_cols` (included in COMPUSTAT_COLS, not in skip_winsorize). PASS.
+- SalesGrowth and CashFlowAt: winsorized inside `_compute_biddle_residual()` (lines 666, 693) and excluded from main loop. PASS.
+- DivDummy: in skip_winsorize (binary). PASS.
 - Linguistic IVs: 0%/99% upper-only per calendar year via LinguisticEngine. PASS.
-- Volatility: no Compustat-engine winsorization (CRSPEngine). PASS.
+- DailyVola: no Compustat-engine winsorization (CRSPEngine). PASS.
 
 H2. Missing data policy:
 - `df.replace([np.inf, -np.inf], np.nan)` (runner line 268). PASS.
 - Complete-case: `df[required].notna().all(axis=1)` (runner line 282). PASS.
-- CapexAt_lead/CapexAt_lag: NaN for last/first fiscal year or gaps. PASS.
+- Capex_lead/Capex_lag: NaN for last/first fiscal year or gaps. PASS.
 
 H3. Transformations:
-- Size: ln(atq). PASS.
-- Volatility: annualized via sqrt(252) * 100. PASS.
+- lnAssets: ln(atq). PASS.
+- DailyVola: annualized via sqrt(252) * 100. PASS.
 
 **Phase 7 Result: 9/9 PASS**
 
@@ -418,8 +418,8 @@ The provenance doc reproduces the H13 entry as:
     "label": "tab:h13",
     "cols": 12,
     "dvs": [
-        ("CapexAt", 6),
-        (r"CapexAt\_lead", 6),
+        ("Capex", 6),
+        (r"Capex\_lead", 6),
     ],
     "tail": "two",
     "hyp_dir": None,
@@ -435,8 +435,8 @@ Verified against `outputs/generate_all_tables.py` lines 245-257:
     "label": "tab:h13",
     "cols": 12,
     "dvs": [
-        ("CapexAt", 6),
-        (r"CapexAt\_lead", 6),
+        ("Capex", 6),
+        (r"Capex\_lead", 6),
     ],
     "tail": "two",
     "hyp_dir": None,
@@ -448,7 +448,7 @@ Verified against `outputs/generate_all_tables.py` lines 245-257:
 **CHECK: caption** — "H13: Speech Uncertainty and Capital Expenditure" matches. PASS.
 **CHECK: label** — "tab:h13" matches. PASS.
 **CHECK: cols** — 12 matches. PASS.
-**CHECK: dvs** — ("CapexAt", 6) and (r"CapexAt\_lead", 6) match. PASS.
+**CHECK: dvs** — ("Capex", 6) and (r"Capex\_lead", 6) match. PASS.
 **CHECK: tail** — "two" matches. PASS.
 **CHECK: hyp_dir** — None matches. PASS.
 
@@ -461,10 +461,10 @@ Doc says "the global `IV_NAMES` list (line 407--412) applies".
 Actual: IV_NAMES is at lines 400-405:
 ```python
 400  IV_NAMES = [
-401      "CEO_QA_Uncertainty_pct",
-402      "CEO_Pres_Uncertainty_pct",
-403      "Manager_QA_Uncertainty_pct",
-404      "Manager_Pres_Uncertainty_pct",
+401      "UncAnsCEO",
+402      "UncPreCEO",
+403      "UncAnsMgr",
+404      "UncPreMgr",
 405  ]
 ```
 The reference is off by approximately 7 lines.
@@ -476,7 +476,7 @@ The reference is off by approximately 7 lines.
 | tail | "two" | "two" (line 255) | ✓ |
 | hyp_dir | None | None (line 256) | ✓ |
 | cols | 12 | 12 (line 250) | ✓ |
-| dvs | CapexAt (6), CapexAt_lead (6) | identical | ✓ |
+| dvs | Capex (6), Capex_lead (6) | identical | ✓ |
 
 All content claims correct. Only line number references are wrong.
 
@@ -547,8 +547,8 @@ Quality Gate 4 is a qualified pass: the doc correctly explains why row counts ar
 
 | Check | Section A | Section B/C/E/I/K | Consistent? |
 |---|---|---|---|
-| 1. DVs in B2 match DVs in C | CapexAt, CapexAt_lead | C rows use CapexAt (cols 1-6), CapexAt_lead (cols 7-12) | ✓ |
-| 2. DVs in C match DVs in I | CapexAt (6), CapexAt_lead (6) | I dvs: ("CapexAt", 6), ("CapexAt_lead", 6) | ✓ |
+| 1. DVs in B2 match DVs in C | Capex, Capex_lead | C rows use Capex (cols 1-6), Capex_lead (cols 7-12) | ✓ |
+| 2. DVs in C match DVs in I | Capex (6), Capex_lead (6) | I dvs: ("Capex", 6), ("Capex_lead", 6) | ✓ |
 | 3. Controls in B4 match variables in E | 12 controls listed in B4 | All 12 appear in E dictionary | ✓ |
 | 4. Column count in A matches rows in C | A: 12 | C: 12 rows | ✓ |
 | 5. Column count in A matches cols in I | A: 12 | I cols: 12 | ✓ |
@@ -576,8 +576,8 @@ No internal contradictions found.
 ### Correction 2 — Section I: Fix IV_NAMES line reference
 
 **Section:** I. GENERATE_ALL_TABLES.PY ENTRY (verification paragraph, last sentence)
-**Current text:** "the global `IV_NAMES` list (line 407--412) applies: CEO_QA_Uncertainty_pct, ..."
-**Corrected text:** "the global `IV_NAMES` list (lines 400--405) applies: CEO_QA_Uncertainty_pct, ..."
+**Current text:** "the global `IV_NAMES` list (line 407--412) applies: UncAnsCEO, ..."
+**Corrected text:** "the global `IV_NAMES` list (lines 400--405) applies: UncAnsCEO, ..."
 **Code reference:** `outputs/generate_all_tables.py` line 400: `IV_NAMES = [`, line 405: closing bracket.
 
 ---
@@ -596,26 +596,26 @@ No internal contradictions found.
 ### Runner MODEL_SPECS (lines 112-127, verified)
 ```python
 MODEL_SPECS = [
-    {"col": 1,  "dv": "CapexAt",      "fe": "industry",    "controls": "base"},
-    {"col": 2,  "dv": "CapexAt",      "fe": "firm",        "controls": "base"},
-    {"col": 3,  "dv": "CapexAt",      "fe": "industry",    "controls": "extended"},
-    {"col": 4,  "dv": "CapexAt",      "fe": "firm",        "controls": "extended"},
-    {"col": 5,  "dv": "CapexAt",      "fe": "industry_yq", "controls": "extended"},
-    {"col": 6,  "dv": "CapexAt",      "fe": "firm_yq",     "controls": "extended"},
-    {"col": 7,  "dv": "CapexAt_lead", "fe": "industry",    "controls": "base"},
-    {"col": 8,  "dv": "CapexAt_lead", "fe": "firm",        "controls": "base"},
-    {"col": 9,  "dv": "CapexAt_lead", "fe": "industry",    "controls": "extended"},
-    {"col": 10, "dv": "CapexAt_lead", "fe": "firm",        "controls": "extended"},
-    {"col": 11, "dv": "CapexAt_lead", "fe": "industry_yq", "controls": "extended"},
-    {"col": 12, "dv": "CapexAt_lead", "fe": "firm_yq",     "controls": "extended"},
+    {"col": 1,  "dv": "Capex",      "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "Capex",      "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "Capex",      "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "Capex",      "fe": "firm",        "controls": "extended"},
+    {"col": 5,  "dv": "Capex",      "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "Capex",      "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "Capex_lead", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "Capex_lead", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "Capex_lead", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "Capex_lead", "fe": "firm",        "controls": "extended"},
+    {"col": 11, "dv": "Capex_lead", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "Capex_lead", "fe": "firm_yq",     "controls": "extended"},
 ]
 ```
 12 entries — matches provenance doc claim.
 
-### CapexAt Formula (CompustatEngine, verified)
+### Capex Formula (CompustatEngine, verified)
 ```python
 capxy_annual = _compute_annual_q4_variable(comp, "capxy", "_capxy_annual")
-comp["CapexAt"] = np.where(
+comp["Capex"] = np.where(
     pd.Series(atq_annual_lag1, index=comp.index) > 0,
     pd.Series(capxy_annual, index=comp.index) / pd.Series(atq_annual_lag1, index=comp.index),
     np.nan,
@@ -634,8 +634,8 @@ Matches provenance doc formula "capxy (Q4 annual) / atq (lagged annual, t-1)".
     "label": "tab:h13",
     "cols": 12,
     "dvs": [
-        ("CapexAt", 6),
-        (r"CapexAt\_lead", 6),
+        ("Capex", 6),
+        (r"Capex\_lead", 6),
     ],
     "tail": "two",
     "hyp_dir": None,
@@ -645,15 +645,15 @@ Matches provenance doc formula "capxy (Q4 annual) / atq (lagged annual, t-1)".
 ### Winsorization skip set (CompustatEngine lines 1217-1224)
 ```python
 skip_winsorize = {
-    "DividendPayer",
-    "CashFlow",
+    "DivDummy",
+    "CashFlowAt",
     "SalesGrowth",
     "fqtr",
     "ExternalFunding",
     "DebtChoice",
 }
 ```
-CapexAt is NOT in this set → it is winsorized by `_winsorize_by_year`. Matches provenance doc.
+Capex is NOT in this set → it is winsorized by `_winsorize_by_year`. Matches provenance doc.
 
 ### Lagged_DV dynamic construction (runner lines 251-255)
 ```python
@@ -662,6 +662,6 @@ lag_col = f"{base_dv}_lag"
 panel = panel.copy()
 panel["Lagged_DV"] = panel[lag_col]
 ```
-For CapexAt specs: base_dv = "CapexAt", lag_col = "CapexAt_lag".
-For CapexAt_lead specs: base_dv = "CapexAt", lag_col = "CapexAt_lag".
+For Capex specs: base_dv = "Capex", lag_col = "Capex_lag".
+For Capex_lead specs: base_dv = "Capex", lag_col = "Capex_lag".
 Matches provenance doc description exactly.

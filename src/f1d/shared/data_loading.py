@@ -344,7 +344,7 @@ def load_all_data(
             fc_cols = ["file_name"] + [
                 c
                 for c in fc.columns
-                if c in ["StockRet", "MarketRet", "EPS_Growth", "SurpDec"]
+                if c in ["StockRet", "MarketRet", "EPSgrowth", "SurpDec"]
             ]
             merged = safe_merge(
                 merged,
@@ -360,7 +360,7 @@ def load_all_data(
             mv_cols = ["file_name"] + [
                 c
                 for c in mv.columns
-                if c in ["StockRet", "MarketRet", "EPS_Growth", "SurpDec"]
+                if c in ["StockRet", "MarketRet", "EPSgrowth", "SurpDec"]
             ]
             merged = safe_merge(
                 merged,

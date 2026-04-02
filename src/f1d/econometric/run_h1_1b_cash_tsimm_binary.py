@@ -6,14 +6,14 @@ STAGE 4: Test H1.1b Binary TNIC-Moderated Cash Holdings Hypothesis
 ID: econometric/run_h1_1b_cash_tsimm_binary
 Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM),
              binarized at per-fiscal-year median, moderates the
-             Manager_QA_Uncertainty -> CashHoldings relationship.
+             UncAnsMgr -> CashRatio relationship.
 
 Model Specification:
-    CashHoldings = b1*Mgr_QA_Unc_c + b2*HighTSIMM
-                 + b3*(Mgr_QA_Unc_c x HighTSIMM)
-                 + controls + IndustryFE + CalendarYearFE + e
+    CashRatio = b1*Mgr_QA_Unc_c + b2*HighTSIMM
+              + b3*(Mgr_QA_Unc_c x HighTSIMM)
+              + controls + IndustryFE + CalendarYearFE + e
 
-    HighTSIMM = 1 if tnic3tsimm > per-fiscal-year median (Main sample), 0 otherwise.
+    HighTSIMM = 1 if TotalSimilarity > per-fiscal-year median (Main sample), 0 otherwise.
     b1 = effect of uncertainty for low-TSIMM firms (reference group).
     b1 + b3 = effect for high-TSIMM firms.
     b3 = moderation increment (parameter of interest).
@@ -23,8 +23,8 @@ Parent suite: H1.1 (Continuous TNIC moderation)
     standard in empirical corporate finance (Hoberg & Phillips 2016).
 
 2 Models:
-    Col 1: DV = CashHoldings_t, Industry + Calendar Year FE, Extended controls
-    Col 2: DV = CashHoldings_t, Industry + Calendar Year-Quarter FE, Extended controls
+    Col 1: DV = CashRatio_t, Industry + Calendar Year FE, Extended controls
+    Col 2: DV = CashRatio_t, Industry + Calendar Year-Quarter FE, Extended controls
 
 Moderator: HighTSIMM (binary, above/below per-fiscal-year median of TNIC3TSIMM)
     Median computed on Main sample before complete-case deletion.
@@ -71,16 +71,16 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # Configuration
 # ==============================================================================
 
-IV = "Manager_QA_Uncertainty_pct"
+IV = "UncAnsMgr"
 
 CONTROLS = [
-    "BookLev", "Size", "TobinsQ", "ROA", "CapexAt",
-    "DividendPayer", "OCF_Volatility",
-    "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
+    "DivDummy", "sCFO",
+    "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
     "Lagged_DV",  # Unified lagged DV
 ]
 
-MODERATOR_RAW = "tnic3tsimm"
+MODERATOR_RAW = "TotalSimilarity"
 MODERATOR = "HighTSIMM"
 IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
 INTERACTION = "MgrQAUnc_x_HighTSIMM"
@@ -88,8 +88,8 @@ INTERACTION = "MgrQAUnc_x_HighTSIMM"
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": []},
-    {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": []},
+    {"col": 1, "dv": "CashRatio", "fe": "industry",    "extra_controls": []},
+    {"col": 2, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": []},
 ]
 
 IV_LABEL = "Mgr QA Uncertainty"
@@ -97,22 +97,22 @@ MODERATOR_LABEL = "HighTSIMM"
 INTERACTION_LABEL = r"Mgr QA Unc $\times$ HighTSIMM"
 
 SUMMARY_STATS_VARS = [
-    {"col": "CashHoldings", "label": "Cash Holdings$_t$"},
+    {"col": "CashRatio", "label": "Cash Holdings$_t$"},
     {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MODERATOR_RAW, "label": "TNIC3TSIMM (raw)"},
     {"col": MODERATOR, "label": "HighTSIMM (binary)"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": "R\\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -156,7 +156,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     columns = [
         "start_date",  # needed for cal_yr_qtr
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "CashHoldings", "CashHoldings_lag",
+        "CashRatio", "CashRatio_lag",
         IV,
         *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
@@ -174,7 +174,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
 
 def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """Load TNIC3 data and merge tnic3tsimm into panel."""
+    """Load TNIC3 data and merge TotalSimilarity into panel."""
     print("\n" + "=" * 60)
     print("Merging TNIC3TSIMM")
     print("=" * 60)
@@ -191,7 +191,7 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     before = len(panel)
     panel = panel.merge(
-        tnic[["gvkey", "year", "tnic3tsimm"]].rename(
+        tnic[["gvkey", "year", "TotalSimilarity"]].rename(
             columns={"gvkey": "_gvkey_int", "year": "fyearq_int"}
         ),
         on=["_gvkey_int", "fyearq_int"],
@@ -202,7 +202,7 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     n_matched = panel[MODERATOR_RAW].notna().sum()
     print(f"  TNIC match: {n_matched:,} / {len(panel):,} ({100 * n_matched / len(panel):.1f}%)")
-    print(f"  tnic3tsimm range: [{panel[MODERATOR_RAW].min():.2f}, {panel[MODERATOR_RAW].max():.2f}]")
+    print(f"  TotalSimilarity range: [{panel[MODERATOR_RAW].min():.2f}, {panel[MODERATOR_RAW].max():.2f}]")
 
     return panel
 
@@ -212,7 +212,7 @@ def transform_moderator_and_center_iv(
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Create binary HighTSIMM indicator and mean-center IV on Main sample.
 
-    HighTSIMM = 1 if tnic3tsimm > per-fiscal-year median (Main sample).
+    HighTSIMM = 1 if TotalSimilarity > per-fiscal-year median (Main sample).
     Per-year median prevents the dummy from capturing secular trends in
     product similarity over the 2002-2018 sample period.
 
@@ -640,7 +640,7 @@ def generate_report(
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Manager_QA_Uncertainty x HighTSIMM (binary) interaction",
+        f"**Design:** UncAnsMgr x HighTSIMM (binary) interaction",
         f"**Moderator:** HighTSIMM = 1 if TNIC3TSIMM > per-fiscal-year median (Main sample)",
         f"**Split:** HighTSIMM=1: {n_high:,}, HighTSIMM=0: {n_low:,} ({100*n_high/(n_high+n_low):.1f}% high)",
         f"**FE:** Col 1: Industry + CalYear; Col 2: Industry + CalYrQtr",
@@ -650,8 +650,8 @@ def generate_report(
         "",
         "| Col | DV | FE |",
         "|-----|-----|-----|",
-        "| (1) | CashHoldings_t | Industry + Calendar Year |",
-        "| (2) | CashHoldings_t | Industry + Calendar Year-Quarter |",
+        "| (1) | CashRatio_t | Industry + Calendar Year |",
+        "| (2) | CashRatio_t | Industry + Calendar Year-Quarter |",
         "",
         "## Results",
         "",
@@ -730,7 +730,7 @@ def main(panel_path: Optional[str] = None) -> int:
     main_n = len(panel)
 
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
-    print(f"  CashHoldings non-null: {panel['CashHoldings'].notna().sum():,}")
+    print(f"  CashRatio non-null: {panel['CashRatio'].notna().sum():,}")
     print(f"  {IV}: {panel[IV].notna().sum():,} "
           f"({100 * panel[IV].notna().mean():.1f}%)")
     print(f"  {MODERATOR}: {panel[MODERATOR].notna().sum():,} "

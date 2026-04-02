@@ -19,8 +19,8 @@ Description: Run H20 hypothesis test — does speech uncertainty predict the cho
     Cols 3-6:   Extended controls
 
 Key IVs (4, simultaneous, call-level):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr
 
 Hypothesis: Two-tailed (direction theoretically ambiguous).
 
@@ -29,7 +29,7 @@ Methodological justification: Timoneda (2021, Social Science Research) — Monte
 shows LPM-FE outperforms logit at base rates <5%.
 
 Sample: Main only (FF12 != 8, 11). Restricted to external funders (ExternalFunding=1).
-BookLev excluded (bad control: shares numerator with debt issuance DV).
+Leverage excluded (bad control: shares numerator with debt issuance DV).
 SEs: Firm-clustered.
 FE time: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
 
@@ -68,20 +68,20 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",
 ]
 
 BASE_CONTROLS = [
-    "Size", "TobinsQ", "ROA", "CapexAt",
-    "CashHoldings", "DividendPayer", "OCF_Volatility",
+    "lnAssets", "TobinsQ", "ROA", "Capex",
+    "CashRatio", "DivDummy", "sCFO",
     "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
-    "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -98,30 +98,30 @@ MODEL_SPECS = [
 ]
 
 VARIABLE_LABELS = {
-    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
-    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",
+    "UncAnsCEO": "CEO QA Uncertainty",
+    "UncPreCEO": "CEO Pres Uncertainty",
+    "UncAnsMgr": "Mgr QA Uncertainty",
+    "UncPreMgr": "Mgr Pres Uncertainty",
 }
 
 SUMMARY_STATS_VARS = [
     {"col": "DebtChoice", "label": "Debt Choice (1=debt-only)"},
     {"col": "ExternalFunding_lag", "label": "Lagged DV (ExternalFunding lag)"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": r"R\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": r"R\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -456,7 +456,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed). ",
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"DebtChoice = 1 if debt-only financing, 0 if equity or dual. ",
-        r"BookLev excluded (bad control: shares numerator with debt issuance DV). ",
+        r"Leverage excluded (bad control: shares numerator with debt issuance DV). ",
         r"Sample restricted to external funders (ExternalFunding=1). ",
         r"LPM (Linear Probability Model). ",
         r"Main sample (excludes financial and utility firms). ",

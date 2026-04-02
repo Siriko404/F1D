@@ -1,43 +1,30 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H7 Post-Call Illiquidity Hypothesis
+STAGE 4: Test H7b Post-Call Amihud Illiquidity LEVEL
 ================================================================================
-ID: econometric/test_h7_illiquidity
-Description: Run H7 Illiquidity hypothesis test using 4 model specifications
-             with 4 simultaneous uncertainty IVs, varying FE type and
-             control set. Main sample only.
+ID: econometric/run_h7b_amihud_level
+Description: Run H7b — does speech uncertainty predict higher post-call Amihud
+             illiquidity LEVELS? Uses the same H7 panel, computing
+             PostCallAmihud = PreCallILLIQ + DeltaILLIQ at runner time.
 
-Model Specifications (4 columns in one table):
-    Col 1: Industry FE (FF12) + CalYear FE, Base controls
-    Col 2: Firm FE + CalYear FE, Base controls
-    Col 3: Industry FE (FF12) + CalYear FE, Extended controls
-    Col 4: Firm FE + CalYear FE, Extended controls
+DV: PostCallAmihud — post-call Amihud illiquidity level (mean daily illiq [+1,+3]).
+    Computed as: PreCallILLIQ + DeltaILLIQ (both from H7 panel).
 
-DV: DeltaILLIQ — change in Amihud illiquidity around call ([+1,+3] - [-3,-1] days).
+Note: By Frisch-Waugh-Lovell, when PreCallILLIQ is a control (which it is),
+the IV coefficients are algebraically identical to H7's delta regression.
+This suite is implemented for completeness per Amihud (2002).
 
-Key Independent Variables (4, all enter simultaneously):
-    UncAnsCEO, UncPreCEO,
-    UncAnsMgr, UncPreMgr,
+6 Model Specifications:
+    Cols 1-2: Industry/Firm FE + CalYear FE, Base controls
+    Cols 3-4: Industry/Firm FE + CalYear FE, Extended controls
+    Cols 5-6: Industry/Firm FE + CalYrQtr FE, Extended controls
 
-Base Controls (8, mirrors H14):
-    lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, PreCallILLIQ
-
-Extended Controls (Base + 4):
-    + DailyVola, StockPrice, Turnover, UncQue
-
-Sample: Main only (FF12 codes 1-7, 9-10, 12).
-
-Hypothesis Test (one-tailed):
-    H7: beta(uncertainty_var) > 0 — higher uncertainty -> more illiquidity.
-    Stars based on one-tailed p-values.
-
-FE Time Index: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
-Standard Errors: Firm-clustered (groups=gvkey).
-Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
+Hypothesis: One-tailed (beta > 0) — higher uncertainty -> higher post-call illiquidity.
+Ref: Amihud (2002, Journal of Financial Markets).
 
 Author: Thesis Author
-Date: 2026-03-17
+Date: 2026-03-31
 ================================================================================
 """
 
@@ -90,13 +77,13 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "DeltaILLIQ", "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "DeltaILLIQ", "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "DeltaILLIQ", "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "DeltaILLIQ", "fe": "firm",     "controls": "extended"},
+    {"col": 1, "dv": "PostCallAmihud", "fe": "industry", "controls": "base"},
+    {"col": 2, "dv": "PostCallAmihud", "fe": "firm",     "controls": "base"},
+    {"col": 3, "dv": "PostCallAmihud", "fe": "industry", "controls": "extended"},
+    {"col": 4, "dv": "PostCallAmihud", "fe": "firm",     "controls": "extended"},
     # Year-Quarter FE specs (Extended controls only)
-    {"col": 5, "dv": "DeltaILLIQ", "fe": "industry_yq", "controls": "extended"},
-    {"col": 6, "dv": "DeltaILLIQ", "fe": "firm_yq",     "controls": "extended"},
+    {"col": 5, "dv": "PostCallAmihud", "fe": "industry_yq", "controls": "extended"},
+    {"col": 6, "dv": "PostCallAmihud", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -108,7 +95,7 @@ VARIABLE_LABELS = {
     "UncPreMgr": "Mgr Pres Uncertainty",}
 
 SUMMARY_STATS_VARS = [
-    {"col": "DeltaILLIQ", "label": "$\\Delta$Amihud (post$-$pre call)"},
+    {"col": "PostCallAmihud", "label": "Post-Call Amihud Level"},
     {"col": "PreCallILLIQ", "label": "Pre-Call Amihud"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
@@ -125,7 +112,7 @@ SUMMARY_STATS_VARS = [
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Stage 4: Test H7 Illiquidity (call-level)")
+    parser = argparse.ArgumentParser(description="Stage 4: Test H7b Amihud Level (call-level)")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
     return parser.parse_args()
@@ -160,6 +147,14 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     panel = pd.read_parquet(panel_file, columns=columns)
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}  |  Columns: {len(panel.columns)}")
+
+    # Compute post-call level DV = pre + delta
+    panel["PostCallAmihud"] = panel["PreCallILLIQ"] + panel["DeltaILLIQ"]
+    n_neg = (panel["PostCallAmihud"] < 0).sum()
+    if n_neg > 0:
+        print(f"  WARNING: {n_neg} negative PostCallAmihud values (winsorization artifact)")
+    print(f"  PostCallAmihud: mean={panel['PostCallAmihud'].mean():.6f}, "
+          f"non-null={panel['PostCallAmihud'].notna().sum():,}")
 
     # Build calendar year-quarter index for YQ FE specs
     panel = build_cal_yr_qtr_index(panel)
@@ -313,13 +308,13 @@ def _save_latex_table(all_results, out_dir):
 
     lines = [
         r"\begin{table}[htbp]", r"\centering",
-        r"\caption{Speech Uncertainty and Post-Call Illiquidity}",
-        r"\label{tab:h7_illiquidity}", r"\scriptsize",
+        r"\caption{Speech Uncertainty and Post-Call Amihud Illiquidity Level}",
+        r"\label{tab:h7b_amihud_level}", r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}", r"\toprule",
     ]
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
-    lines.append(r" & \multicolumn{6}{c}{$\Delta$Amihud Illiquidity} \\")
+    lines.append(r" & \multicolumn{6}{c}{Post-Call Amihud Illiquidity Level} \\")
     lines.append(r"\cmidrule(lr){2-7}")
     lines.append(r"\midrule")
 
@@ -375,9 +370,9 @@ def _save_latex_table(all_results, out_dir):
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}", r"\end{table}",
     ]
-    with open(out_dir / "h7_illiquidity_table.tex", "w", encoding="utf-8") as f:
+    with open(out_dir / "h7b_amihud_level_table.tex", "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-    print(f"  Saved: h7_illiquidity_table.tex")
+    print(f"  Saved: h7b_amihud_level_table.tex")
 
 
 def save_outputs(all_results, out_dir):
@@ -410,11 +405,11 @@ def main(panel_path: Optional[str] = None) -> int:
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[3]
-    out_dir = root / "outputs" / "econometric" / "h7_illiquidity" / timestamp
-    log_dir = setup_run_logging(log_base_dir=root / "logs", suite_name="H7_Illiquidity", timestamp=timestamp)
+    out_dir = root / "outputs" / "econometric" / "h7b_amihud_level" / timestamp
+    log_dir = setup_run_logging(log_base_dir=root / "logs", suite_name="H7b_Amihud_Level", timestamp=timestamp)
 
     print("=" * 80)
-    print("STAGE 4: Test H7 Post-Call Illiquidity Hypothesis")
+    print("STAGE 4: Test H7b Post-Call Amihud Level Hypothesis")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -444,7 +439,7 @@ def main(panel_path: Optional[str] = None) -> int:
     make_summary_stats_table(
         df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
         output_csv=out_dir / "summary_stats.csv", output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics -- H7 Illiquidity (Main Sample)",
+        caption="Summary Statistics -- H7b Amihud Level (Main Sample)",
         label="tab:summary_stats_h7",
     )
 
@@ -470,21 +465,21 @@ def main(panel_path: Optional[str] = None) -> int:
         generate_attrition_table([
             ("Full panel", full_panel_n),
             ("Main sample", main_panel_n),
-            ("DeltaILLIQ non-null", panel["DeltaILLIQ"].notna().sum()),
+            ("PostCallAmihud non-null", panel["PostCallAmihud"].notna().sum()),
             ("Complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
-        ], out_dir, "H7 Illiquidity")
+        ], out_dir, "H7b Amihud Level")
 
     generate_manifest(
         output_dir=out_dir, stage="stage4", timestamp=timestamp,
         input_paths={"panel": panel_file},
         output_files={"diagnostics": out_dir / "model_diagnostics.csv",
-                      "table": out_dir / "h7_illiquidity_table.tex"},
+                      "table": out_dir / "h7b_amihud_level_table.tex"},
         panel_path=panel_file,
     )
 
     duration = (datetime.now() - start_time).total_seconds()
     with open(out_dir / "report_step4_H7.md", "w", encoding="utf-8") as f:
-        f.write(f"# H7 Illiquidity Report\n\n**Duration:** {duration:.1f}s\n**Sample:** Main only\n")
+        f.write(f"# H7b Amihud Level Report\n\n**Duration:** {duration:.1f}s\n**Sample:** Main only\n")
     print(f"  Saved: report_step4_H7.md")
 
     print("\n" + "=" * 80)

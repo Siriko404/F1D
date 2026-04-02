@@ -9,16 +9,16 @@ Description: Run 4 regressions against one shared panel to test whether adding
 
 Models (Main sample only — robustness table):
     1. Manager Baseline:
-       Manager_QA_Uncertainty_pct ~ C(ceo_id) + base_controls + C(year)
+       UncAnsMgr ~ C(ceo_id) + base_controls + C(year)
     2. Manager Extended:
-       Manager_QA_Uncertainty_pct ~ C(ceo_id) + base_controls + extended_controls + C(year)
+       UncAnsMgr ~ C(ceo_id) + base_controls + extended_controls + C(year)
     3. CEO Baseline:
-       CEO_QA_Uncertainty_pct ~ C(ceo_id) + base_controls + C(year)
+       UncAnsCEO ~ C(ceo_id) + base_controls + C(year)
     4. CEO Extended:
-       CEO_QA_Uncertainty_pct ~ C(ceo_id) + base_controls + extended_controls + C(year)
+       UncAnsCEO ~ C(ceo_id) + base_controls + extended_controls + C(year)
 
-Base controls:    StockRet, MarketRet, EPS_Growth, SurpDec
-Extended controls: Size, BM, BookLev, ROA, CurrentRatio, RD_Intensity, Volatility
+Base controls:    StockRet, MarketRet, EPSgrowth, SurpDec
+Extended controls: lnAssets, BTM, Leverage, ROA, CurrentRatio, RDSales, DailyVola
 
 Hypothesis Tests:
     This is a robustness check (not a hypothesis test).
@@ -87,50 +87,50 @@ from f1d.shared.variables.panel_utils import assign_industry_sample
 # ==============================================================================
 
 BASE_LINGUISTIC_CONTROLS_MANAGER = [
-    "Manager_Pres_Uncertainty_pct",
-    "Analyst_QA_Uncertainty_pct",
-    "Entire_All_Negative_pct",
+    "UncPreMgr",
+    "UncQue",
+    "NegCall",
 ]
 
 BASE_LINGUISTIC_CONTROLS_CEO = [
-    "CEO_Pres_Uncertainty_pct",
-    "Analyst_QA_Uncertainty_pct",
-    "Entire_All_Negative_pct",
+    "UncPreCEO",
+    "UncQue",
+    "NegCall",
 ]
 
-BASE_FIRM_CONTROLS = ["StockRet", "MarketRet", "EPS_Growth", "SurpDec"]
+BASE_FIRM_CONTROLS = ["StockRet", "MarketRet", "EPSgrowth", "SurpDec"]
 
 EXTENDED_CONTROLS = [
-    "Size",
-    "BM",
-    "BookLev",
+    "lnAssets",
+    "BTM",
+    "Leverage",
     "ROA",
     "CurrentRatio",
-    "RD_Intensity",
-    "Volatility",
+    "RDSales",
+    "DailyVola",
 ]
 
 MODELS: Dict[str, Dict[str, Any]] = {
     "Manager_Baseline": {
-        "dependent_var": "Manager_QA_Uncertainty_pct",
+        "dependent_var": "UncAnsMgr",
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_MANAGER,
         "firm_controls": BASE_FIRM_CONTROLS,
         "description": "Manager Q&A Uncertainty — baseline controls",
     },
     "Manager_Extended": {
-        "dependent_var": "Manager_QA_Uncertainty_pct",
+        "dependent_var": "UncAnsMgr",
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_MANAGER,
         "firm_controls": BASE_FIRM_CONTROLS + EXTENDED_CONTROLS,
         "description": "Manager Q&A Uncertainty — extended controls",
     },
     "CEO_Baseline": {
-        "dependent_var": "CEO_QA_Uncertainty_pct",
+        "dependent_var": "UncAnsCEO",
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_CEO,
         "firm_controls": BASE_FIRM_CONTROLS,
         "description": "CEO Q&A Uncertainty — baseline controls",
     },
     "CEO_Extended": {
-        "dependent_var": "CEO_QA_Uncertainty_pct",
+        "dependent_var": "UncAnsCEO",
         "linguistic_controls": BASE_LINGUISTIC_CONTROLS_CEO,
         "firm_controls": BASE_FIRM_CONTROLS + EXTENDED_CONTROLS,
         "description": "CEO Q&A Uncertainty — extended controls",
@@ -145,21 +145,21 @@ MIN_CALLS = 5
 # ==============================================================================
 
 VARIABLE_LABELS = {
-    "Manager_Pres_Uncertainty_pct": "Manager Pres Uncertainty",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
-    "Analyst_QA_Uncertainty_pct": "Analyst QA Uncertainty",
-    "Entire_All_Negative_pct": "Negative Sentiment",
+    "UncPreMgr": "Manager Pres Uncertainty",
+    "UncPreCEO": "CEO Pres Uncertainty",
+    "UncQue": "Analyst QA Uncertainty",
+    "NegCall": "Negative Sentiment",
     "StockRet": "Stock Return",
     "MarketRet": "Market Return",
-    "EPS_Growth": "EPS Growth",
+    "EPSgrowth": "EPS Growth",
     "SurpDec": "Earnings Surprise Decile",
-    "Size": "Size (log assets)",
-    "BM": "Book-to-Market",
-    "BookLev": "Leverage",
+    "lnAssets": "Size (log assets)",
+    "BTM": "Book-to-Market",
+    "Leverage": "Leverage",
     "ROA": "Return on Assets",
     "CurrentRatio": "Current Ratio",
-    "RD_Intensity": r"R\&D Intensity",
-    "Volatility": "Stock Volatility",
+    "RDSales": r"R\&D Intensity",
+    "DailyVola": "Stock Volatility",
 }
 
 
@@ -169,28 +169,28 @@ VARIABLE_LABELS = {
 
 SUMMARY_STATS_VARS = [
     # Dependent variables (both Manager and CEO)
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Manager QA Uncertainty"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Manager QA Uncertainty"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     # Linguistic controls (Manager)
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Manager Pres Uncertainty"},
+    {"col": "UncPreMgr", "label": "Manager Pres Uncertainty"},
     # Linguistic controls (CEO)
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     # Common controls
-    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
-    {"col": "Entire_All_Negative_pct", "label": "Negative Sentiment"},
+    {"col": "UncQue", "label": "Analyst QA Uncertainty"},
+    {"col": "NegCall", "label": "Negative Sentiment"},
     # Base firm controls
     {"col": "StockRet", "label": "Stock Return"},
     {"col": "MarketRet", "label": "Market Return"},
-    {"col": "EPS_Growth", "label": "EPS Growth"},
+    {"col": "EPSgrowth", "label": "EPS Growth"},
     {"col": "SurpDec", "label": "Earnings Surprise Decile"},
     # Extended controls
-    {"col": "Size", "label": "Size (log assets)"},
-    {"col": "BM", "label": "Book-to-Market"},
-    {"col": "BookLev", "label": "Leverage"},
+    {"col": "lnAssets", "label": "Size (log assets)"},
+    {"col": "BTM", "label": "Book-to-Market"},
+    {"col": "Leverage", "label": "Leverage"},
     {"col": "ROA", "label": "Return on Assets"},
     {"col": "CurrentRatio", "label": "Current Ratio"},
-    {"col": "RD_Intensity", "label": "R&D Intensity"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": "R&D Intensity"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -343,16 +343,16 @@ def run_regression(
 
     # Standardize continuous controls for numerical stability (prevents SVD convergence issues)
     continuous_vars = [
-        "Size",
-        "BM",
-        "BookLev",
+        "lnAssets",
+        "BTM",
+        "Leverage",
         "ROA",
         "CurrentRatio",
-        "RD_Intensity",
-        "Volatility",
+        "RDSales",
+        "DailyVola",
         "StockRet",
         "MarketRet",
-        "EPS_Growth",
+        "EPSgrowth",
         "SurpDec",
     ]
     for var in continuous_vars:
@@ -524,10 +524,10 @@ def generate_report(
         "",
         "| Model | DV | Controls |",
         "|-------|-----|---------|",
-        "| Manager Baseline | Manager_QA_Uncertainty_pct | Base |",
-        "| Manager Extended | Manager_QA_Uncertainty_pct | Base + Extended |",
-        "| CEO Baseline     | CEO_QA_Uncertainty_pct     | Base |",
-        "| CEO Extended     | CEO_QA_Uncertainty_pct     | Base + Extended |",
+        "| Manager Baseline | UncAnsMgr | Base |",
+        "| Manager Extended | UncAnsMgr | Base + Extended |",
+        "| CEO Baseline     | UncAnsCEO | Base |",
+        "| CEO Extended     | UncAnsCEO | Base + Extended |",
         "",
         "## Results Summary (Main Sample)",
         "",

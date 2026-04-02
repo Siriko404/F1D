@@ -77,7 +77,7 @@ class VariableBuilder:
         config = {
             "source": "outputs/2_Textual_Analysis/2.2_Variables/latest",
             "file_pattern": "linguistic_variables_{year}.parquet",
-            "column": "Manager_QA_Uncertainty_pct"
+            "column": "UncAnsMgr"
         }
         builder = ManagerQAUncertaintyBuilder(config)
         result = builder.build(range(2002, 2019), root_path)

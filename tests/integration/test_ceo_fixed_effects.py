@@ -50,14 +50,14 @@ def sample_ceo_data():
                 "year": year,
                 "call_date": pd.Timestamp(f"{year}-{(call_offset % 12) + 1:02d}-15"),
                 # Dependent variable
-                "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
+                "UncAnsCEO": np.random.uniform(2, 8),
                 # Speech controls
-                "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                "Analyst_QA_Uncertainty_pct": np.random.uniform(1, 5),
+                "UncPreCEO": np.random.uniform(1, 5),
+                "UncQue": np.random.uniform(1, 5),
                 "CEO_All_Negative_pct": np.random.uniform(0, 5),
                 # Firm characteristics
                 "SurpDec": np.random.randint(1, 10),
-                "EPS_Growth": np.random.uniform(-0.5, 0.5),
+                "EPSgrowth": np.random.uniform(-0.5, 0.5),
                 "StockRet": np.random.uniform(-0.3, 0.5),
                 "MarketRet": np.random.uniform(-0.1, 0.2),
             })
@@ -89,16 +89,16 @@ def mock_regression_result():
         "model": MagicMock(),
         "params": pd.Series({
             "Intercept": 5.0,
-            "CEO_Pres_Uncertainty_pct": 0.3,
-            "Analyst_QA_Uncertainty_pct": 0.5,
+            "UncPreCEO": 0.3,
+            "UncQue": 0.5,
             "C(ceo_id)[T.CEO_001]": -0.5,  # CEO fixed effect
             "C(ceo_id)[T.CEO_002]": 0.3,
             "C(ceo_id)[T.CEO_003]": -0.8,
         }),
         "bse": pd.Series({
             "Intercept": 0.5,
-            "CEO_Pres_Uncertainty_pct": 0.1,
-            "Analyst_QA_Uncertainty_pct": 0.15,
+            "UncPreCEO": 0.1,
+            "UncQue": 0.15,
             "C(ceo_id)[T.CEO_001]": 0.2,
             "C(ceo_id)[T.CEO_002]": 0.25,
             "C(ceo_id)[T.CEO_003]": 0.18,
@@ -219,33 +219,33 @@ class TestCEORegressionSpecification:
     def test_baseline_specification_variables(self):
         """Test that baseline specification includes correct variables."""
         # Table 3 Col 1: UncAns ~ CEO FE + UncPreCEO + UncQue + Year FE
-        baseline_vars = ["CEO_Pres_Uncertainty_pct", "Analyst_QA_Uncertainty_pct"]
+        baseline_vars = ["UncPreCEO", "UncQue"]
 
-        assert "CEO_Pres_Uncertainty_pct" in baseline_vars
-        assert "Analyst_QA_Uncertainty_pct" in baseline_vars
+        assert "UncPreCEO" in baseline_vars
+        assert "UncQue" in baseline_vars
 
     def test_full_equation4_variables(self):
         """Test that full Equation 4 includes all variables."""
         # Table 3 Col 2: Full Equation 4
         full_vars = [
-            "CEO_Pres_Uncertainty_pct",
-            "Analyst_QA_Uncertainty_pct",
+            "UncPreCEO",
+            "UncQue",
             "CEO_All_Negative_pct",
             "SurpDec",
-            "EPS_Growth",
+            "EPSgrowth",
             "StockRet",
             "MarketRet",
         ]
 
         # Verify all required variables are present
-        required_vars = ["CEO_Pres_Uncertainty_pct", "Analyst_QA_Uncertainty_pct"]
+        required_vars = ["UncPreCEO", "UncQue"]
         for var in required_vars:
             assert var in full_vars
 
     def test_dependent_variable_is_ceo_qa_uncertainty(self, sample_ceo_data):
-        """Test that DV is CEO_QA_Uncertainty_pct (not Manager, not Presentation)."""
+        """Test that DV is UncAnsCEO (not Manager, not Presentation)."""
         # Per paper: UncAns = CEO Q&A uncertainty only
-        dv_col = "CEO_QA_Uncertainty_pct"
+        dv_col = "UncAnsCEO"
 
         assert dv_col in sample_ceo_data.columns
         assert "QA" in dv_col  # Should be Q&A, not Presentation
@@ -328,11 +328,11 @@ class TestTableIA1Robustness:
 
     def test_baseline_spec_is_spec_3(self):
         """Test that Baseline (Eq. 4 = Table 3 Col 1) is spec 3."""
-        spec_3_vars = ["CEO_Pres_Uncertainty_pct", "Analyst_QA_Uncertainty_pct"]
+        spec_3_vars = ["UncPreCEO", "UncQue"]
 
         # Spec 3 should match Table 3 Col 1
-        assert "CEO_Pres_Uncertainty_pct" in spec_3_vars
-        assert "Analyst_QA_Uncertainty_pct" in spec_3_vars
+        assert "UncPreCEO" in spec_3_vars
+        assert "UncQue" in spec_3_vars
 
 
 # ==============================================================================
@@ -351,17 +351,17 @@ class TestCEOFixedEffectsErrorHandling:
 
     def test_missing_dv_raises_error(self, sample_ceo_data):
         """Test that missing dependent variable raises error."""
-        df = sample_ceo_data.drop(columns=["CEO_QA_Uncertainty_pct"])
+        df = sample_ceo_data.drop(columns=["UncAnsCEO"])
 
         # Should not have DV column
-        assert "CEO_QA_Uncertainty_pct" not in df.columns
+        assert "UncAnsCEO" not in df.columns
 
     def test_empty_dataframe_after_filtering(self):
         """Test handling when no CEOs meet minimum call requirement."""
         # Create data where all CEOs have < 5 calls
         df = pd.DataFrame({
             "ceo_id": ["CEO_001"] * 3 + ["CEO_002"] * 2,
-            "CEO_QA_Uncertainty_pct": [5.0, 5.5, 4.8, 6.0, 5.2],
+            "UncAnsCEO": [5.0, 5.5, 4.8, 6.0, 5.2],
         })
 
         # After filtering for >= 5 calls, no CEOs remain

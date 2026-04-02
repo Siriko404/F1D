@@ -58,7 +58,7 @@ def sample_uncertainty_df() -> pd.DataFrame:
         {
             "gvkey": ["001000", "001000", "001001", "001001", "001002"],
             "year": [2020, 2021, 2020, 2021, 2021],
-            "Manager_QA_Uncertainty_pct": [2.5, 3.0, 3.5, 3.2, 1.5],
+            "UncAnsMgr": [2.5, 3.0, 3.5, 3.2, 1.5],
         }
     )
 
@@ -223,9 +223,9 @@ class TestInteractionTerm:
         # Standardize
         prisk["PRisk_std"] = (prisk["PRisk"] - prisk["PRisk"].mean()) / prisk["PRisk"].std()
         uncertainty["Uncertainty_std"] = (
-            uncertainty["Manager_QA_Uncertainty_pct"]
-            - uncertainty["Manager_QA_Uncertainty_pct"].mean()
-        ) / uncertainty["Manager_QA_Uncertainty_pct"].std()
+            uncertainty["UncAnsMgr"]
+            - uncertainty["UncAnsMgr"].mean()
+        ) / uncertainty["UncAnsMgr"].std()
 
         # Merge and create interaction
         merged = prisk.merge(uncertainty, on=["gvkey", "year"])
@@ -264,7 +264,7 @@ class TestMergeOperations:
 
         # Add extra row to uncertainty that won't match
         extra_row = pd.DataFrame(
-            {"gvkey": ["999999"], "year": [2021], "Manager_QA_Uncertainty_pct": [5.0]}
+            {"gvkey": ["999999"], "year": [2021], "UncAnsMgr": [5.0]}
         )
         uncertainty = pd.concat([uncertainty, extra_row], ignore_index=True)
 
@@ -333,9 +333,9 @@ class TestAuxiliaryScriptsIntegration:
         # Standardize
         merged["PRisk_std"] = (merged["PRisk"] - merged["PRisk"].mean()) / merged["PRisk"].std()
         merged["Uncertainty_std"] = (
-            merged["Manager_QA_Uncertainty_pct"]
-            - merged["Manager_QA_Uncertainty_pct"].mean()
-        ) / merged["Manager_QA_Uncertainty_pct"].std()
+            merged["UncAnsMgr"]
+            - merged["UncAnsMgr"].mean()
+        ) / merged["UncAnsMgr"].std()
 
         # Create interaction
         merged["PRisk_x_Uncertainty"] = merged["PRisk_std"] * merged["Uncertainty_std"]

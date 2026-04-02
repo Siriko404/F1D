@@ -68,7 +68,7 @@ if PANDERA_AVAILABLE:
             "sic": Column(str, nullable=True),
             # Linguistic variables (nullable - NaN means "no text in section")
             # These are pct columns, should be 0-100 range
-            "Manager_QA_Uncertainty_pct": Column(
+            "UncAnsMgr": Column(
                 float, nullable=True, checks=Check.ge(0.0)
             ),
         },
@@ -83,11 +83,11 @@ if PANDERA_AVAILABLE:
             "gvkey": Column(str, nullable=True),
             "StockRet": Column(float, nullable=True),
             "MarketRet": Column(float, nullable=True),
-            "EPS_Growth": Column(float, nullable=True),
+            "EPSgrowth": Column(float, nullable=True),
             "SurpDec": Column(float, nullable=True),
-            "Size": Column(float, nullable=True, checks=Check.gt(0.0)),
+            "lnAssets": Column(float, nullable=True, checks=Check.gt(0.0)),
             "BM": Column(float, nullable=True, checks=Check.gt(0.0)),
-            "BookLev": Column(float, nullable=True, checks=Check.ge(0.0)),
+            "Leverage": Column(float, nullable=True, checks=Check.ge(0.0)),
             "ROA": Column(float, nullable=True),
         },
         strict=False,

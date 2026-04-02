@@ -7,7 +7,7 @@ NaN when denominator <= 0 (negative equity exceeding debt).
 Reads raw Compustat quarterly data via the shared CompustatEngine.
 Returns one column: file_name, DebtToCapital.
 
-H4 extension: Second leverage DV alongside BookLev.
+H4 extension: Second leverage DV alongside Leverage.
 """
 
 from __future__ import annotations

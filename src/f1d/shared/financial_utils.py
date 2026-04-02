@@ -250,7 +250,7 @@ def calculate_firm_controls_quarterly(
         datadate: Date for data selection (typically call's start_date)
 
     Returns:
-        Dictionary with: Size, BM, Lev, ROA, CurrentRatio, RD_Intensity
+        Dictionary with: lnAssets, BM, Leverage, ROA, CurrentRatio, RDSales
 
     Raises:
         FinancialCalculationError: If gvkey is missing or no data found before datadate
@@ -316,7 +316,7 @@ def calculate_firm_controls_quarterly(
     )
 
     # R&D Intensity: R&D / total assets (quarterly, treat missing as 0)
-    # RD_Intensity: xrdq / atq
+    # RDSales: xrdq / atq
     xrdq_val = data.get("xrdq")
     rd_intensity = (
         (xrdq_val if pd.notna(xrdq_val) else 0) / data["atq"]
@@ -325,12 +325,12 @@ def calculate_firm_controls_quarterly(
     )
 
     return {
-        "Size": size,
+        "lnAssets": size,
         "BM": bm,
-        "BookLev": leverage,
+        "Leverage": leverage,
         "ROA": roa,
         "CurrentRatio": current_ratio,
-        "RD_Intensity": rd_intensity,
+        "RDSales": rd_intensity,
     }
 
 
@@ -349,8 +349,8 @@ def compute_financial_controls_quarterly(
         winsorize: If True, winsorize at 1% and 99% (default: True)
 
     Returns:
-        DataFrame with added control variables (Size, BM, Lev, ROA,
-        EPS_Growth, CurrentRatio, RD_Intensity)
+        DataFrame with added control variables (lnAssets, BM, Leverage, ROA,
+        EPSgrowth, CurrentRatio, RDSales)
 
     Note:
         Requires columns: gvkey, datadate, atq, ceqq, cshoq, prccq, dlcq, dlttq, niq,
@@ -369,7 +369,7 @@ def compute_financial_controls_quarterly(
 
     # Compute control variables
     # Size: ln(atq)
-    compustat_df["Size"] = np.log(compustat_df["atq"].clip(lower=0.01))
+    compustat_df["lnAssets"] = np.log(compustat_df["atq"].clip(lower=0.01))
 
     # Book-to-Market: ceqq / (cshoq * prccq)
     compustat_df["BM"] = compustat_df["ceqq"] / (
@@ -377,7 +377,7 @@ def compute_financial_controls_quarterly(
     )
 
     # Leverage: interest-bearing debt / total assets
-    compustat_df["BookLev"] = (
+    compustat_df["Leverage"] = (
         compustat_df["dlcq"].fillna(0).clip(lower=0) +
         compustat_df["dlttq"].fillna(0).clip(lower=0)
     ) / compustat_df["atq"]
@@ -399,13 +399,13 @@ def compute_financial_controls_quarterly(
     )
 
     # R&D Intensity: xrdq / atq (treat missing R&D as 0)
-    compustat_df["RD_Intensity"] = compustat_df["xrdq"].fillna(0) / compustat_df["atq"]
+    compustat_df["RDSales"] = compustat_df["xrdq"].fillna(0) / compustat_df["atq"]
 
     # EPS Growth: (EPS - EPS_lag4) / |EPS_lag4|
     mask = compustat_df["epspxq_lag4"].notna() & (compustat_df["epspxq_lag4"] != 0)
-    compustat_df["EPS_Growth"] = np.nan
+    compustat_df["EPSgrowth"] = np.nan
     # Use np.where to avoid pandas indexing issues with boolean masks
-    compustat_df["EPS_Growth"] = np.where(
+    compustat_df["EPSgrowth"] = np.where(
         mask,
         (compustat_df["epspxq"] - compustat_df["epspxq_lag4"]) / compustat_df["epspxq_lag4"].abs(),
         np.nan
@@ -414,13 +414,13 @@ def compute_financial_controls_quarterly(
     # Winsorize extreme values if requested
     if winsorize:
         for col in [
-            "Size",
+            "lnAssets",
             "BM",
-            "BookLev",
+            "Leverage",
             "ROA",
-            "EPS_Growth",
+            "EPSgrowth",
             "CurrentRatio",
-            "RD_Intensity",
+            "RDSales",
         ]:
             # Use any() instead of sum() for numpy compatibility
             if compustat_df[col].notna().any():

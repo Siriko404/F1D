@@ -1,7 +1,7 @@
 """Builder for Stock Volatility variable.
 
 Reads raw CRSP daily stock files via the shared CRSPEngine.
-Returns one column: file_name, Volatility.
+Returns one column: file_name, DailyVola.
 
 Volatility = annualized standard deviation of daily returns (%) over the window
     [prev_call_date + 5 days, call start_date - 5 days],
@@ -47,14 +47,14 @@ class VolatilityBuilder(VariableBuilder):
         ]
 
         data = result_df[result_df["file_name"].isin(valid_files)][
-            ["file_name", "Volatility"]
+            ["file_name", "DailyVola"]
         ].copy()
 
-        stats = self.get_stats(data["Volatility"], "Volatility")
+        stats = self.get_stats(data["DailyVola"], "DailyVola")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "Volatility", "source": "CRSP/RET"},
+            metadata={"column": "DailyVola", "source": "CRSP/RET"},
         )
 
 

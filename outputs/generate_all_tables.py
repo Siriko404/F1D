@@ -24,8 +24,8 @@ SUITES = [
         "label": "tab:h1",
         "cols": 12,
         "dvs": [
-            ("CashHoldings", 6),
-            (r"CashHoldings\_lead", 6),
+            ("CashRatio", 6),
+            (r"CashRatio\_lead", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -38,7 +38,7 @@ SUITES = [
         "label": "tab:h1_1",
         "cols": 2,
         "dvs": [
-            ("CashHoldings", 2),
+            ("CashRatio", 2),
         ],
         "key_vars": [
             "Manager_QA_Unc_c",
@@ -47,7 +47,7 @@ SUITES = [
         ],
         "key_labels": [
             r"Manager\_QA\_Unc\_c",
-            r"z\_log\_tnic3tsimm",
+            r"z\_log\_TotalSimilarity",
             r"MgrQAUnc\_x\_zlogTSIMM",
         ],
         "key_tails": ["one_pos", "two", "two"],
@@ -62,7 +62,7 @@ SUITES = [
         "label": "tab:h1_1b",
         "cols": 2,
         "dvs": [
-            ("CashHoldings", 2),
+            ("CashRatio", 2),
         ],
         "key_vars": [
             "Manager_QA_Unc_c",
@@ -90,7 +90,7 @@ SUITES = [
             2: "regression_results_col4.txt",
         },
         "dvs": [
-            ("CashHoldings", 2),
+            ("CashRatio", 2),
         ],
         "base_iv": {
             "files": {
@@ -127,8 +127,8 @@ SUITES = [
         "label": "tab:h4a",
         "cols": 12,
         "dvs": [
-            ("BookLev", 6),
-            (r"BookLev\_lead", 6),
+            ("Leverage", 6),
+            (r"Leverage\_lead", 6),
         ],
         "tail": "two",
         "hyp_dir": None,
@@ -155,8 +155,8 @@ SUITES = [
         "label": "tab:h5",
         "cols": 12,
         "dvs": [
-            ("WangDISP", 6),
-            (r"WangDISP\_lead", 6),
+            ("DISP", 6),
+            (r"DISP\_lead", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -169,7 +169,20 @@ SUITES = [
         "label": "tab:h7",
         "cols": 6,
         "dvs": [
-            (r"delta\_amihud", 6),
+            (r"DeltaILLIQ", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H7b ──
+    {
+        "id": "H7b",
+        "dir": "h7b_amihud_level/2026-04-01_115601",
+        "caption": "H7b: Speech Uncertainty and Post-Call Amihud Illiquidity Level",
+        "label": "tab:h7b",
+        "cols": 6,
+        "dvs": [
+            (r"PostCallAmihud", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -183,18 +196,18 @@ SUITES = [
         "label": "tab:h11",
         "cols": 4,
         "col_files": {
-            1: "regression_results_Main_Manager_QA_Uncertainty_pct.txt",
-            2: "regression_results_Main_CEO_QA_Uncertainty_pct.txt",
-            3: "regression_results_Main_Manager_Pres_Uncertainty_pct.txt",
-            4: "regression_results_Main_CEO_Pres_Uncertainty_pct.txt",
+            1: "regression_results_Main_UncAnsMgr.txt",
+            2: "regression_results_Main_UncAnsCEO.txt",
+            3: "regression_results_Main_UncPreMgr.txt",
+            4: "regression_results_Main_UncPreCEO.txt",
         },
         "dvs": [
             (r"QA\_Uncertainty\_pct", 2),
             (r"Pres\_Uncertainty\_pct", 2),
         ],
         "col_dv_labels": ["Manager", "CEO", "Manager", "CEO"],
-        "key_vars": ["PRiskQ"],
-        "key_labels": ["PRiskQ"],
+        "key_vars": ["PRisk"],
+        "key_labels": ["PRisk"],
         "key_tails": ["one_pos"],
     },
     {
@@ -205,25 +218,25 @@ SUITES = [
         "label": "tab:h11_lag",
         "cols": 8,
         "col_files": {
-            1: "regression_results_Main_Manager_QA_Uncertainty_pct_lag1.txt",
-            2: "regression_results_Main_CEO_QA_Uncertainty_pct_lag1.txt",
-            3: "regression_results_Main_Manager_Pres_Uncertainty_pct_lag1.txt",
-            4: "regression_results_Main_CEO_Pres_Uncertainty_pct_lag1.txt",
-            5: "regression_results_Main_Manager_QA_Uncertainty_pct_lag2.txt",
-            6: "regression_results_Main_CEO_QA_Uncertainty_pct_lag2.txt",
-            7: "regression_results_Main_Manager_Pres_Uncertainty_pct_lag2.txt",
-            8: "regression_results_Main_CEO_Pres_Uncertainty_pct_lag2.txt",
+            1: "regression_results_Main_UncAnsMgr_lag1.txt",
+            2: "regression_results_Main_UncAnsCEO_lag1.txt",
+            3: "regression_results_Main_UncPreMgr_lag1.txt",
+            4: "regression_results_Main_UncPreCEO_lag1.txt",
+            5: "regression_results_Main_UncAnsMgr_lag2.txt",
+            6: "regression_results_Main_UncAnsCEO_lag2.txt",
+            7: "regression_results_Main_UncPreMgr_lag2.txt",
+            8: "regression_results_Main_UncPreCEO_lag2.txt",
         },
         "dvs": [
-            (r"PRiskQ\_lag", 4),
-            (r"PRiskQ\_lag2", 4),
+            (r"PRisk\_lag", 4),
+            (r"PRisk\_lag2", 4),
         ],
         "col_dv_labels": [
             "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
             "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
         ],
-        "key_vars": ["PRiskQ_lag", "PRiskQ_lag2"],
-        "key_labels": [r"PRiskQ\_lag", r"PRiskQ\_lag2"],
+        "key_vars": ["PRisk_lag", "PRisk_lag2"],
+        "key_labels": [r"PRisk\_lag", r"PRisk\_lag2"],
         "key_tails": ["one_pos", "one_pos"],
     },
     # ── H12 ──
@@ -249,8 +262,8 @@ SUITES = [
         "label": "tab:h13",
         "cols": 12,
         "dvs": [
-            ("CapexAt", 6),
-            (r"CapexAt\_lead", 6),
+            ("Capex", 6),
+            (r"Capex\_lead", 6),
         ],
         "tail": "two",
         "hyp_dir": None,
@@ -263,14 +276,14 @@ SUITES = [
         "label": "tab:h13_1",
         "cols": 4,
         "col_files": {
-            1: "regression_results_col1_CapexAt_tsimm.txt",
-            2: "regression_results_col3_CapexAt_tsimm.txt",
-            3: "regression_results_col2_CapexAt_lead_tsimm.txt",
-            4: "regression_results_col4_CapexAt_lead_tsimm.txt",
+            1: "regression_results_col1_Capex_tsimm.txt",
+            2: "regression_results_col3_Capex_tsimm.txt",
+            3: "regression_results_col2_Capex_lead_tsimm.txt",
+            4: "regression_results_col4_Capex_lead_tsimm.txt",
         },
         "dvs": [
-            ("CapexAt", 2),
-            (r"CapexAt\_lead", 2),
+            ("Capex", 2),
+            (r"Capex\_lead", 2),
         ],
         "lagged_dv_var": "Lagged_DV",
         "lagged_dv_label": r"Lagged\_DV",
@@ -281,7 +294,7 @@ SUITES = [
         ],
         "key_labels": [
             r"Manager\_QA\_Unc\_c",
-            r"z\_log\_tnic3tsimm",
+            r"z\_log\_TotalSimilarity",
             r"MgrQAUnc\_x\_zlogTSIMM",
         ],
         "key_tails": ["two", "two", "two"],
@@ -295,6 +308,19 @@ SUITES = [
         "cols": 6,
         "dvs": [
             ("DSPREAD", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H14b ──
+    {
+        "id": "H14b",
+        "dir": "h14b_spread_level/2026-04-01_120601",
+        "caption": "H14b: Speech Uncertainty and Post-Call Bid-Ask Spread Level",
+        "label": "tab:h14b",
+        "cols": 6,
+        "dvs": [
+            (r"PostCallSpread", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -335,10 +361,25 @@ SUITES = [
         "label": "tab:h18",
         "cols": 6,
         "dvs": [
-            (r"CCCL", 6),
+            (r"CommentLetter", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
+    },
+    # ── H18b (Logit robustness) ──
+    {
+        "id": "H18b",
+        "dir": "h18b_cccl_logit/2026-03-31_195228",
+        "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
+        "label": "tab:h18b",
+        "cols": 2,
+        "dvs": [
+            (r"CommentLetter", 2),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+        "r2_label": r"Pseudo~$R^2$",
+        "skip_adj_r2": True,
     },
     # ── H19 ──
     {
@@ -366,21 +407,6 @@ SUITES = [
         ],
         "tail": "two",
         "hyp_dir": None,
-    },
-    # ── H18b (Logit robustness) ──
-    {
-        "id": "H18b",
-        "dir": "h18b_cccl_logit/2026-03-31_195228",
-        "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
-        "label": "tab:h18b",
-        "cols": 2,
-        "dvs": [
-            (r"CCCL", 2),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-        "r2_label": r"Pseudo~$R^2$",
-        "skip_adj_r2": True,
     },
     # ── H21 ──
     {
@@ -412,14 +438,67 @@ IV_ALIASES = {
     "Avg_Manager_Pres_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
 }
 
+# Display names for table output (old pipeline name -> new standard name)
+IV_DISPLAY = {
+    "CEO_QA_Uncertainty_pct": "UncAnsCEO",
+    "CEO_Pres_Uncertainty_pct": "UncPreCEO",
+    "Manager_QA_Uncertainty_pct": "UncAnsMgr",
+    "Manager_Pres_Uncertainty_pct": "UncPreMgr",
+    "Avg_CEO_QA_Uncertainty_pct": "UncAnsCEO",
+    "Avg_CEO_Pres_Uncertainty_pct": "UncPreCEO",
+    "Avg_Manager_QA_Uncertainty_pct": "UncAnsMgr",
+    "Avg_Manager_Pres_Uncertainty_pct": "UncPreMgr",
+}
+
+# Control display names (old pipeline name -> new standard name)
+CTRL_DISPLAY = {
+    "Size": "lnAssets",
+    "BM": "BTM",
+    "BookLev": "Leverage",
+    "CashHoldings": "CashRatio",
+    "DividendPayer": "DivDummy",
+    "OCF_Volatility": "sCFO",
+    "CashFlow": "CashFlowAt",
+    "CapexAt": "Capex",
+    "RD_Intensity": "RDSales",
+    "Intangibility": "FracInt",
+    "AssetGrowth": "dAA",
+    "EPS_Growth": "EPSgrowth",
+    "loss_dummy": "Loss",
+    "earnings_volatility": "EarnVol",
+    "firm_maturity": "FirmMat",
+    "Volatility": "DailyVola",
+    "delta_amihud": "DeltaILLIQ",
+    "pre_call_amihud": "PreCallILLIQ",
+    "amihud_illiq": "ILLIQ",
+    "WangDISP": "DISP",
+    "CCCL": "CommentLetter",
+    "PRiskQ": "PRisk",
+    "PRiskQ_lag": "PRisk_lag",
+    "PRiskQ_lag2": "PRisk_lag2",
+    "PRiskQ_lead": "PRisk_lead",
+    "PRiskQ_lead2": "PRisk_lead2",
+    "tnic3tsimm": "TotalSimilarity",
+    "z_log_tnic3tsimm": "z_log_TotalSimilarity",
+    "Analyst_QA_Uncertainty_pct": "UncQue",
+    "Entire_All_Negative_pct": "NegCall",
+    "Entire_All_Uncertainty_pct": "UncCall",
+}
+
 def fix_bare_superscripts(tex):
     """Fix bare ^{...} outside math mode → $^{...}$ for prebuilt tex files."""
     return re.sub(r'(?<!\$)\^(\{[^}]*\})', r'$^\1$', tex)
 
 
+def display_name(varname):
+    """Map old pipeline variable name to new standard display name."""
+    return IV_DISPLAY.get(varname, CTRL_DISPLAY.get(varname, varname))
+
+
 def tex_escape(varname):
-    """Escape variable name for LaTeX — use the exact name from the report."""
-    return varname.replace("_", r"\_")
+    """Escape variable name for LaTeX — applies display rename first."""
+    name = display_name(varname)
+    return name.replace("_", r"\_")
 
 
 def parse_txt(fpath):
@@ -543,17 +622,17 @@ def generate_interaction_table(suite):
 
     # Define columns: (DV, FE) combos
     col_specs = [
-        ("CapexAt", "industry"),
-        ("CapexAt", "firm"),
-        ("CapexAt_lead", "industry"),
-        ("CapexAt_lead", "firm"),
+        ("Capex", "industry"),
+        ("Capex", "firm"),
+        ("Capex_lead", "industry"),
+        ("Capex_lead", "firm"),
     ]
 
     ivs = [
-        ("CEO_QA_Uncertainty_pct", r"CEO QA Uncertainty"),
-        ("CEO_Pres_Uncertainty_pct", r"CEO Pres Uncertainty"),
-        ("Manager_QA_Uncertainty_pct", r"Mgr QA Uncertainty"),
-        ("Manager_Pres_Uncertainty_pct", r"Mgr Pres Uncertainty"),
+        ("UncAnsCEO", r"UncAnsCEO"),
+        ("UncPreCEO", r"UncPreCEO"),
+        ("UncAnsMgr", r"UncAnsMgr"),
+        ("UncPreMgr", r"UncPreMgr"),
     ]
 
     def _get_row(iv_name, dv, fe):
@@ -617,7 +696,7 @@ def generate_interaction_table(suite):
     coef_cells = []
     se_cells = []
     for dv, fe in col_specs:
-        row = _get_row("Manager_QA_Uncertainty_pct", dv, fe)
+        row = _get_row("UncAnsMgr", dv, fe)
         if row is not None:
             coef_cells.append(_fmt(row["beta_hhi"], row["p_two_hhi"]))
             se_cells.append(f"({row['se_hhi']:.4f})")
@@ -650,8 +729,8 @@ def generate_interaction_table(suite):
     # --- Control coefficients from parsed .txt files ---
     # Build file mapping: (dv, fe) -> txt file path
     dv_file_map = {
-        "CapexAt": "CapexAt",
-        "CapexAt_lead": "CapexAt_lead",
+        "Capex": "Capex",
+        "Capex_lead": "Capex_lead",
     }
     fe_file_map = {"industry": "industry", "firm": "firm"}
     # Use Manager_QA regression for control coefficients (representative)

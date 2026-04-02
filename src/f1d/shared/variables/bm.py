@@ -1,7 +1,7 @@
 """Builder for Book-to-Market (BM) variable.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, BM.
+Returns one column: file_name, BTM.
 """
 
 from __future__ import annotations
@@ -40,12 +40,12 @@ class BMBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "BM"]].copy()
-        stats = self.get_stats(data["BM"], "BM")
+        data = merged[["file_name", "BTM"]].copy()
+        stats = self.get_stats(data["BTM"], "BTM")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "BM", "source": "Compustat/ceqq,cshoq,prccq"},
+            metadata={"column": "BTM", "source": "Compustat/ceqq,cshoq,prccq"},
         )
 
 

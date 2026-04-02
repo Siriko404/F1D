@@ -1,7 +1,7 @@
 """Builder for Size variable (log total assets).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, Size.
+Returns one column: file_name, lnAssets.
 """
 
 from __future__ import annotations
@@ -40,12 +40,12 @@ class SizeBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "Size"]].copy()
-        stats = self.get_stats(data["Size"], "Size")
+        data = merged[["file_name", "lnAssets"]].copy()
+        stats = self.get_stats(data["lnAssets"], "lnAssets")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "Size", "source": "Compustat/atq"},
+            metadata={"column": "lnAssets", "source": "Compustat/atq"},
         )
 
 

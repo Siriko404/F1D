@@ -30,7 +30,7 @@
 
 ## VERDICT
 
-**PASS WITH NOTES**: The document is largely accurate and complete with high fidelity on all core econometric claims. Six issues found: one line-number inaccuracy in B7, one builder count error in F1 (states "16 non-manifest merges" when the actual count is 17), one undocumented panel-builder column (cal_yearqtr), one winsorization nuance for Volatility (description "bounded by construction" is imprecise), and two quality gate failures derived from the above. No material factual errors in the core IV/DV definitions, regression formula, FE specification, tail direction, MODEL_SPECS, or generate_all_tables.py entry. The Known Issues section (L) is unusually thorough and accurate. All line-number citations verified against actual code (only minor 2-line offset on one citation). Corrections required are minor.
+**PASS WITH NOTES**: The document is largely accurate and complete with high fidelity on all core econometric claims. Six issues found: one line-number inaccuracy in B7, one builder count error in F1 (states "16 non-manifest merges" when the actual count is 17), one undocumented panel-builder column (cal_yearqtr), one winsorization nuance for DailyVola (description "bounded by construction" is imprecise), and two quality gate failures derived from the above. No material factual errors in the core IV/DV definitions, regression formula, FE specification, tail direction, MODEL_SPECS, or generate_all_tables.py entry. The Known Issues section (L) is unusually thorough and accurate. All line-number citations verified against actual code (only minor 2-line offset on one citation). Corrections required are minor.
 
 ---
 
@@ -45,7 +45,7 @@ Read `docs/Prompts/Suite Provenance Doc.txt` required sections (A through L). Ch
 | B1. Regression Equation | Yes | Yes | Yes | Full equation with alpha_j and gamma_t notation |
 | B2. Dependent Variable(s) | Yes | Yes | Yes | DebtChoice with construction detail and code snippet |
 | B3. Independent Variable(s) | Yes | Yes | Yes | All 4 IVs documented with formulas |
-| B4. Control Variables | Yes | Yes | Yes | Base + Extended + Lagged_DV + BookLev exclusion noted |
+| B4. Control Variables | Yes | Yes | Yes | Base + Extended + Lagged_DV + Leverage exclusion noted |
 | B5. Fixed Effects | Yes | Yes | Yes | FE table with col assignments |
 | B6. Standard Errors | Yes | Yes | Yes | cov_type and cluster_entity documented |
 | B7. Hypothesis Test | Yes | Yes | Yes | Two-tailed, manual verification of p-value shown |
@@ -138,7 +138,7 @@ Read `docs/Prompts/Suite Provenance Doc.txt` required sections (A through L). Ch
 ## PHASE 3: FACTUAL ACCURACY — SECTION B (Model Specification)
 
 **B1-CHECK: Regression Equation**
-- Doc equation: `DebtChoice_{i,t} = b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct + Controls + alpha_j + gamma_t + epsilon_{i,t}`
+- Doc equation: `DebtChoice_{i,t} = b1*UncAnsCEO + b2*UncPreCEO + b3*UncAnsMgr + b4*UncPreMgr + Controls + alpha_j + gamma_t + epsilon_{i,t}`
 - Runner: `exog = KEY_IVS + controls` (line 268), where KEY_IVS = 4 uncertainty vars and controls = BASE_CONTROLS or EXTENDED_CONTROLS. PanelOLS with entity/time effects.
 - All four IVs appear in exog. Controls are additive. FE via entity/time effects.
 - Notation `alpha_j` (industry j or firm j) and `gamma_t` (cal_yr or cal_yr_qtr) matches code.
@@ -163,7 +163,7 @@ Read `docs/Prompts/Suite Provenance Doc.txt` required sections (A through L). Ch
 - Result: **PASS**
 
 **B3-CHECK: Independent Variables**
-- Doc claims 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+- Doc claims 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
 - Runner KEY_IVS (lines 70-75) lists exactly these 4. Confirmed.
 - LinguisticEngine provides these columns: verified in `_linguistic_engine.py` LINGUISTIC_PCT_COLUMNS list (lines 74, 67, 118, 111).
 - Doc says "bounded [0, ~2.5] by construction (percentage of LM uncertainty words)." The "~2.5" upper bound is empirical (from 99th-percentile winsorization), not strictly by construction. Minor imprecision but not materially wrong; the hard lower bound of 0 is by construction (can't have negative word percentage).
@@ -171,12 +171,12 @@ Read `docs/Prompts/Suite Provenance Doc.txt` required sections (A through L). Ch
 - Result: **PASS**
 
 **B4-CHECK: Control Variables**
-- Runner `BASE_CONTROLS` (lines 77-81): `["Size", "TobinsQ", "ROA", "CapexAt", "CashHoldings", "DividendPayer", "OCF_Volatility", "Lagged_DV"]` — 8 variables.
-- Doc Base Controls table: Size, TobinsQ, ROA, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV. **MATCHES.**
-- Runner `EXTENDED_CONTROLS` (lines 83-85): BASE_CONTROLS + `["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]` — 12 variables.
-- Doc Extended Controls table: adds SalesGrowth, RD_Intensity, CashFlow, Volatility. **MATCHES.**
+- Runner `BASE_CONTROLS` (lines 77-81): `["lnAssets", "TobinsQ", "ROA", "Capex", "CashRatio", "DivDummy", "sCFO", "Lagged_DV"]` — 8 variables.
+- Doc Base Controls table: lnAssets, TobinsQ, ROA, Capex, CashRatio, DivDummy, sCFO, Lagged_DV. **MATCHES.**
+- Runner `EXTENDED_CONTROLS` (lines 83-85): BASE_CONTROLS + `["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]` — 12 variables.
+- Doc Extended Controls table: adds SalesGrowth, RDSales, CashFlowAt, DailyVola. **MATCHES.**
 - Lagged_DV: Doc correctly states it is `ExternalFunding_lag` (runner line 207), NOT `DebtChoice_lag`. Confirmed.
-- BookLev exclusion: Confirmed absent from both BASE_CONTROLS and EXTENDED_CONTROLS. Doc provides correct rationale (bad control, shared numerator).
+- Leverage exclusion: Confirmed absent from both BASE_CONTROLS and EXTENDED_CONTROLS. Doc provides correct rationale (bad control, shared numerator).
 - Result: **PASS**
 
 **B5-CHECK: Fixed Effects**
@@ -280,38 +280,38 @@ Verified every variable against actual code.
 | Variable | Name Match | Formula Correct | Source Correct | Winsorization Correct | Timing Correct | Result |
 |----------|-----------|-----------------|----------------|----------------------|----------------|--------|
 | DebtChoice | Yes | Yes (engine lines 1172-1178, formula traced) | CompustatEngine | No (binary, in skip_winsorize at engine line 1222-1223) | Contemporaneous FY T | PASS |
-| CEO_QA_Uncertainty_pct | Yes | Yes (uncertainty words / total * 100) | LinguisticEngine | 0%/99% per-year upper-only (confirmed: lower=0.0, upper=0.99) | Contemporaneous | PASS |
-| CEO_Pres_Uncertainty_pct | Yes | Yes | LinguisticEngine | Same | Contemporaneous | PASS |
-| Manager_QA_Uncertainty_pct | Yes | Yes | LinguisticEngine | Same | Contemporaneous | PASS |
-| Manager_Pres_Uncertainty_pct | Yes | Yes | LinguisticEngine | Same | Contemporaneous | PASS |
+| UncAnsCEO | Yes | Yes (uncertainty words / total * 100) | LinguisticEngine | 0%/99% per-year upper-only (confirmed: lower=0.0, upper=0.99) | Contemporaneous | PASS |
+| UncPreCEO | Yes | Yes | LinguisticEngine | Same | Contemporaneous | PASS |
+| UncAnsMgr | Yes | Yes | LinguisticEngine | Same | Contemporaneous | PASS |
+| UncPreMgr | Yes | Yes | LinguisticEngine | Same | Contemporaneous | PASS |
 | Lagged_DV | Yes | ExternalFunding_lag (runner line 207 confirmed) | CompustatEngine + fiscal year shift | No (binary) | Lag FY T-1 | PASS |
-| Size | Yes | ln(atq), atq > 0 | CompustatEngine: atq | 1%/99% per-fyearq (in COMPUSTAT_COLS, not in skip_winsorize) | Contemporaneous | PASS |
+| lnAssets | Yes | ln(atq), atq > 0 | CompustatEngine: atq | 1%/99% per-fyearq (in COMPUSTAT_COLS, not in skip_winsorize) | Contemporaneous | PASS |
 | TobinsQ | Yes | (cshoq*prccq + debt_book) / atq | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
 | ROA | Yes | iby_annual (Q4) / avg_assets | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
-| CapexAt | Yes | capxy_annual (Q4) / atq_lag | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
-| CashHoldings | Yes | cheq / atq | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
-| DividendPayer | Yes | 1 if dvy_annual (Q4) > 0, else 0 | CompustatEngine | No (binary) | Contemporaneous | PASS |
-| OCF_Volatility | Yes | Rolling 5-yr std of oancfy/atq_{t-1} per gvkey | CompustatEngine | 1%/99% per-fyearq (in COMPUSTAT_COLS, not in skip_winsorize) | Rolling window | PASS |
+| Capex | Yes | capxy_annual (Q4) / atq_lag | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
+| CashRatio | Yes | cheq / atq | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
+| DivDummy | Yes | 1 if dvy_annual (Q4) > 0, else 0 | CompustatEngine | No (binary) | Contemporaneous | PASS |
+| sCFO | Yes | Rolling 5-yr std of oancfy/atq_{t-1} per gvkey | CompustatEngine | 1%/99% per-fyearq (in COMPUSTAT_COLS, not in skip_winsorize) | Rolling window | PASS |
 | SalesGrowth | Yes | (saley_t - saley_{t-1}) / abs(saley_{t-1}) Q4 annual | CompustatEngine | 1%/99% per-year inside Biddle pipeline (line 666 confirmed) | Contemporaneous | PASS |
-| RD_Intensity | Yes | xrdq / atq, missing xrdq = 0 | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
-| CashFlow | Yes | oancfy / avg(atq_t, atq_{t-1}), Q4 annual | CompustatEngine | 1%/99% per-year inside Biddle pipeline (line 693 confirmed) | Contemporaneous | PASS |
-| Volatility | Yes | std(daily_ret) * sqrt(252) * 100 inter-call window | CRSPEngine | **FAIL — see below** | Inter-call window | FAIL |
+| RDSales | Yes | xrdq / atq, missing xrdq = 0 | CompustatEngine | 1%/99% per-fyearq | Contemporaneous | PASS |
+| CashFlowAt | Yes | oancfy / avg(atq_t, atq_{t-1}), Q4 annual | CompustatEngine | 1%/99% per-year inside Biddle pipeline (line 693 confirmed) | Contemporaneous | PASS |
+| DailyVola | Yes | std(daily_ret) * sqrt(252) * 100 inter-call window | CRSPEngine | **FAIL — see below** | Inter-call window | FAIL |
 | gvkey | Yes | -- | Manifest | -- | -- | PASS |
 | ff12_code | Yes | -- | Manifest | -- | -- | PASS |
 | cal_yr | Yes | start_date.dt.year | Derived from start_date | -- | -- | PASS |
 | cal_yr_qtr | Yes | year*10 + quarter from start_date | Derived from start_date | -- | -- | PASS |
 
-**Volatility winsorization FAIL detail:**
+**DailyVola winsorization FAIL detail:**
 - Doc claims: `"No (not in Compustat winsorization; bounded by construction)"`
-- Code: VolatilityBuilder (`volatility.py`) has NO winsorization code. Confirmed by reading file — no `winsorize`, `clip`, or `quantile` calls. Volatility is computed as `std(daily_ret) * sqrt(252) * 100` and returned without any clipping.
-- The claim "not in Compustat winsorization" is correct — Volatility comes from CRSPEngine, not Compustat.
+- Code: VolatilityBuilder (`volatility.py`) has NO winsorization code. Confirmed by reading file — no `winsorize`, `clip`, or `quantile` calls. DailyVola is computed as `std(daily_ret) * sqrt(252) * 100` and returned without any clipping.
+- The claim "not in Compustat winsorization" is correct — DailyVola comes from CRSPEngine, not Compustat.
 - However, "bounded by construction" is inaccurate. Stock return volatility as computed (annualized daily return std) is NOT bounded — it can theoretically reach extreme values for penny stocks or periods with wild price swings. The claim "bounded by construction" is factually wrong. The correct statement is "not winsorized; can reach extreme values."
 - This is a misleading description but not a catastrophic error (the key fact — not winsorized — is stated correctly).
-- Result: **FAIL** (minor inaccuracy: "bounded by construction" is wrong for Volatility)
+- Result: **FAIL** (minor inaccuracy: "bounded by construction" is wrong for DailyVola)
 
 **COMPLETENESS CHECK**: Every variable in MODEL_SPECS is in the dictionary. All 4 KEY_IVS, all 8 base controls, all 4 extended controls, all 4 FE columns (gvkey, ff12_code, cal_yr, cal_yr_qtr). The only unlisted column is `cal_yearqtr` (created in create_financing_dvs) — but this column is NOT used in any regression spec (the runner creates cal_yr_qtr separately via build_cal_yr_qtr_index). The omission is therefore not a completeness failure for the regression variable dictionary; it is a pipeline documentation gap (addressed in Phase 7).
 
-**Phase 6 result**: 20/21 PASS (1 failure: Volatility "bounded by construction" claim is wrong).
+**Phase 6 result**: 20/21 PASS (1 failure: DailyVola "bounded by construction" claim is wrong).
 
 ---
 
@@ -389,11 +389,11 @@ Step 7 (Table generation): "Runner writes its own 6-column LaTeX table" (lines 3
 
 **H1. Winsorization:**
 - Compustat controls at "1%/99% per fiscal year (fyearq)": confirmed, `_winsorize_by_year(comp[col], comp["fyearq"])` at engine line 1230-1232. **PASS.**
-- skip_winsorize set {DividendPayer, CashFlow, SalesGrowth, fqtr, ExternalFunding, DebtChoice}: confirmed at engine lines 1217-1224. **PASS.**
+- skip_winsorize set {DivDummy, CashFlowAt, SalesGrowth, fqtr, ExternalFunding, DebtChoice}: confirmed at engine lines 1217-1224. **PASS.**
 - SalesGrowth winsorized inside `_compute_biddle_residual` at engine line 666 via `_winsorize_by_year(annual["SalesGrowth"], annual["fyearq"])`. **PASS.**
-- CashFlow similarly at engine line 693. **PASS.**
+- CashFlowAt similarly at engine line 693. **PASS.**
 - Linguistic IVs: 0%/99% per-year upper-only (lower=0.0, upper=0.99). Confirmed at `_linguistic_engine.py` lines 255-258. **PASS.**
-- Volatility: "No (not in Compustat winsorization; bounded by construction)" — "not winsorized" is correct; "bounded by construction" is inaccurate (Volatility is NOT bounded; it can be arbitrarily large for extreme stocks). This echoes the Phase 6 FAIL. Flagged again but no separate FAIL (same issue).
+- DailyVola: "No (not in Compustat winsorization; bounded by construction)" — "not winsorized" is correct; "bounded by construction" is inaccurate (DailyVola is NOT bounded; it can be arbitrarily large for extreme stocks). This echoes the Phase 6 FAIL. Flagged again but no separate FAIL (same issue).
 
 **H2. Missing Data Policy:**
 - "Complete-case deletion" via `df[required].notna().all(axis=1)` at runner lines 226-227. **CONFIRMED.**
@@ -403,8 +403,8 @@ Step 7 (Table generation): "Runner writes its own 6-column LaTeX table" (lines 3
 - Result: **PASS**
 
 **H3. Transformations:**
-- Size: natural log of total assets. Confirmed in CompustatEngine (SizeBuilder returns ln(atq)).
-- Volatility: annualized (*sqrt(252)) and percentage (*100). Confirmed in VolatilityBuilder.
+- lnAssets: natural log of total assets. Confirmed in CompustatEngine (SizeBuilder returns ln(atq)).
+- DailyVola: annualized (*sqrt(252)) and percentage (*100). Confirmed in VolatilityBuilder.
 - No centering/z-scoring. No transformations applied to IVs. **PASS.**
 
 **Phase 7 result**: 13/15 PASS. Two failures:
@@ -518,7 +518,7 @@ No internal contradictions found. The document is internally self-consistent.
 |-------|-------|----------------------|-----------------|----------|-------------|
 | 3 (B7) | P-value line reference | "runner lines 316-319" for p-value computation | Line 314: `p_two = float(model.pvalues.get(iv, np.nan))`; lines 317-319 for meta assignment | Low | Update line reference to 314-319 |
 | 3 (B7) | sig_stars line reference | "`_sig_stars` function, lines 327-333" | `def _sig_stars` spans lines 327-336 (7 lines including `return ""`at 336) | Low | Update to 327-336 |
-| 6 (E) | Volatility winsorization description | "No (not in Compustat winsorization; bounded by construction)" | Not winsorized (correct); but NOT bounded by construction — annualized std dev can be extremely large | Low | Remove "bounded by construction"; say "No (not winsorized; computed from CRSPEngine)" |
+| 6 (E) | DailyVola winsorization description | "No (not in Compustat winsorization; bounded by construction)" | Not winsorized (correct); but NOT bounded by construction — annualized std dev can be extremely large | Low | Remove "bounded by construction"; say "No (not winsorized; computed from CRSPEngine)" |
 | 7 (F1) | Builder count | "Instantiates 17 builders" | 18 total builders in dict (1 manifest + 17 non-manifest) | Low-Moderate | Update to "18 builders (1 manifest + 17 non-manifest)" |
 | 7 (F1/F3) | Merge count | "Merges 16 non-manifest builder outputs" | 17 non-manifest builders, all merged via file_name (none skipped by the len-check) | Low-Moderate | Update to "Merges 17 non-manifest builder outputs" |
 | 7 (F1) | Undocumented column | No mention of `cal_yearqtr` column | `create_financing_dvs()` creates `cal_yearqtr` (builder lines 256-260) which ends up in the parquet but is never used by the runner (runner uses `cal_yr_qtr` from build_cal_yr_qtr_index) | Low | Add note in F1 step 3 or F3 that panel parquet contains a redundant `cal_yearqtr` column (not to be confused with `cal_yr_qtr` used by runner) |
@@ -539,8 +539,8 @@ No internal contradictions found. The document is internally self-consistent.
 - **Should say**: "runner `_sig_stars` function, lines 327-336"  
 - **Code reference**: `def _sig_stars` starts line 327, final `return ""` is line 336
 
-**Correction 3** — Section E, Volatility winsorization description  
-- **Section**: E. Variable Dictionary, Volatility row  
+**Correction 3** — Section E, DailyVola winsorization description  
+- **Section**: E. Variable Dictionary, DailyVola row  
 - **Current (wrong)**: `"No (not in Compustat winsorization; bounded by construction)"`  
 - **Should say**: `"No (not winsorized; from CRSPEngine, not subject to Compustat engine winsorization)"`  
 - **Code reference**: `volatility.py` — no winsorize/clip/quantile calls; values are raw std * sqrt(252) * 100
@@ -587,7 +587,7 @@ The H20 provenance document is materially accurate and structurally complete. Al
 
 Six issues require correction:
 - Two minor line-number inaccuracies (B7)
-- One slightly inaccurate winsorization description (Volatility "bounded by construction")
+- One slightly inaccurate winsorization description (DailyVola "bounded by construction")
 - One builder count error (18 total, not 17)
 - One merge count error (17 non-manifest, not 16)
 - One undocumented panel column (cal_yearqtr)

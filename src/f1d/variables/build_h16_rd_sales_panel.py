@@ -131,7 +131,7 @@ def build_call_level_panel(
         "capex_intensity": CapexIntensityBuilder({}),
         "dividend_payer": DividendPayerBuilder({}),
         "ocf_volatility": OCFVolatilityBuilder({}),
-        # Extended controls (RD_Intensity loaded for summary stats, excluded from regressions)
+        # Extended controls (RDSales loaded for summary stats, excluded from regressions)
         "sales_growth": SalesGrowthBuilder(var_config.get("sales_growth", {})),
         "rd_intensity": RDIntensityBuilder(var_config.get("rd_intensity", {})),
         "cash_flow": CashFlowBuilder(var_config.get("cash_flow", {})),
@@ -228,7 +228,7 @@ def create_rdsales_lead(
     with non-December fiscal year-ends.
 
     The lead is the firm's R&D investment intensity in fiscal year t+1.
-    Construction follows H13's CapexAt_lead pattern:
+    Construction follows H13's Capex_lead pattern:
     1. Attach fyearq via merge_asof (call start_date -> Compustat datadate).
     2. For each (gvkey, fyearq_int), take RDSales from the call with the
        LATEST start_date within that fiscal year.
@@ -527,16 +527,16 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         f"- **RDSales_lead (t+1):** {panel['RDSales_lead'].notna().sum():,} calls",
         "",
         "## Key IVs (4 simultaneous)",
-        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **UncAnsCEO:** {panel['UncAnsCEO'].notna().sum():,} calls",
+        f"- **UncPreCEO:** {panel['UncPreCEO'].notna().sum():,} calls",
+        f"- **UncAnsMgr:** {panel['UncAnsMgr'].notna().sum():,} calls",
+        f"- **UncPreMgr:** {panel['UncPreMgr'].notna().sum():,} calls",
         "",
         "## Extended Controls",
         f"- **SalesGrowth:** {panel['SalesGrowth'].notna().sum():,} calls",
-        f"- **RD_Intensity:** {panel['RD_Intensity'].notna().sum():,} calls",
-        f"- **CashFlow:** {panel['CashFlow'].notna().sum():,} calls",
-        f"- **Volatility:** {panel['Volatility'].notna().sum():,} calls",
+        f"- **RDSales:** {panel['RDSales'].notna().sum():,} calls",
+        f"- **CashFlowAt:** {panel['CashFlowAt'].notna().sum():,} calls",
+        f"- **DailyVola:** {panel['DailyVola'].notna().sum():,} calls",
         "",
         "## Sample Distribution",
         "",

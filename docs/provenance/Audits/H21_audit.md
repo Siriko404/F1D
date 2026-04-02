@@ -163,10 +163,10 @@ Verified on disk: Both files confirmed to exist at exactly those paths.
 
 Doc equation:
 ```
-SEC_Letters_fwd_{i,t} = b1*CEO_QA_Uncertainty_pct
-                       + b2*CEO_Pres_Uncertainty_pct
-                       + b3*Manager_QA_Uncertainty_pct
-                       + b4*Manager_Pres_Uncertainty_pct
+SEC_Letters_fwd_{i,t} = b1*UncAnsCEO
+                       + b2*UncPreCEO
+                       + b3*UncAnsMgr
+                       + b4*UncPreMgr
                        + Controls + alpha_j + gamma_t + epsilon_{i,t}
 ```
 
@@ -196,7 +196,7 @@ Timing claim "Lead (Q+1)" is correct (`_next_cal_qtr` advances by one quarter).
 
 **B3-CHECK: Independent Variable(s)**
 
-Doc lists 4 IVs: `CEO_QA_Uncertainty_pct`, `CEO_Pres_Uncertainty_pct`, `Manager_QA_Uncertainty_pct`, `Manager_Pres_Uncertainty_pct`.
+Doc lists 4 IVs: `UncAnsCEO`, `UncPreCEO`, `UncAnsMgr`, `UncPreMgr`.
 
 Runner KEY_IVS (lines 67-72): exactly these 4 variables. No others.  
 Builder imports: `CEOQAUncertaintyBuilder`, `CEOPresUncertaintyBuilder`, `ManagerQAUncertaintyBuilder`, `ManagerPresUncertaintyBuilder` (lines 51-56).  
@@ -207,21 +207,21 @@ Winsorization: "0%/99% per-year (upper-only) at LinguisticEngine level" — veri
 
 **B4-CHECK: Control Variables**
 
-Doc BASE_CONTROLS: `["Size", "TobinsQ", "ROA", "BookLev", "CapexAt", "CashHoldings", "DividendPayer", "OCF_Volatility", "Lagged_DV"]`
+Doc BASE_CONTROLS: `["lnAssets", "TobinsQ", "ROA", "Leverage", "Capex", "CashRatio", "DivDummy", "sCFO", "Lagged_DV"]`
 
 Runner BASE_CONTROLS (lines 74-78):
 ```python
 BASE_CONTROLS = [
-    "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
-    "CashHoldings", "DividendPayer", "OCF_Volatility",
+    "lnAssets", "TobinsQ", "ROA", "Leverage", "Capex",
+    "CashRatio", "DivDummy", "sCFO",
     "Lagged_DV",
 ]
 ```
 Exact match. 9 elements. **PASS**
 
-Doc EXTENDED_CONTROLS adds: `["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]`
+Doc EXTENDED_CONTROLS adds: `["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]`
 
-Runner EXTENDED_CONTROLS (lines 80-82): `BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]`  
+Runner EXTENDED_CONTROLS (lines 80-82): `BASE_CONTROLS + ["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]`  
 Exact match. **PASS**
 
 `Lagged_DV` assignment: Doc says "runner line 193, `Lagged_DV` is assigned from `SEC_Letters_lag`".  
@@ -403,7 +403,7 @@ Doc table:
 | 5 | 54,915 | 1,595 |
 | 6 | 54,915 | 1,595 |
 
-These values come from `model_diagnostics.csv` per the doc's attribution. The explanation that cols 1-2 have higher N because extended controls (SalesGrowth, RD_Intensity, CashFlow, Volatility) introduce additional missings is consistent with the code logic (complete-case deletion on `required` columns, which includes extended controls for cols 3-6).  
+These values come from `model_diagnostics.csv` per the doc's attribution. The explanation that cols 1-2 have higher N because extended controls (SalesGrowth, RDSales, CashFlowAt, DailyVola) introduce additional missings is consistent with the code logic (complete-case deletion on `required` columns, which includes extended controls for cols 3-6).  
 **PASS** (values from actual run output; explanation mechanically correct)
 
 **Phase 5 result: PASS (5/5)**
@@ -423,8 +423,8 @@ The dictionary contains 21 rows:
 **Completeness check**: All variables appearing in any spec are accounted for:
 - DV: `SEC_Letters_fwd` ✓
 - KEY_IVS: 4 uncertainty pcts ✓
-- BASE_CONTROLS: `Size`, `TobinsQ`, `ROA`, `BookLev`, `CapexAt`, `CashHoldings`, `DividendPayer`, `OCF_Volatility`, `Lagged_DV` — all 9 present ✓
-- EXTENDED-only: `SalesGrowth`, `RD_Intensity`, `CashFlow`, `Volatility` — all 4 present ✓
+- BASE_CONTROLS: `lnAssets`, `TobinsQ`, `ROA`, `Leverage`, `Capex`, `CashRatio`, `DivDummy`, `sCFO`, `Lagged_DV` — all 9 present ✓
+- EXTENDED-only: `SalesGrowth`, `RDSales`, `CashFlowAt`, `DailyVola` — all 4 present ✓
 - FE columns: `gvkey`, `ff12_code`, `cal_yr`, `cal_yr_qtr` — all 4 present ✓
 - `fyearq_int` is required in the `required` list (runner line 195) but is not in the regression formula. It is NOT in the variable dictionary. This is noted in Known Issues (L.6) — the doc explains it is carried as metadata only. Not a dictionary omission error per se, though some auditors would include it.
 
@@ -434,31 +434,31 @@ The dictionary contains 21 rows:
 |----------|-------------|--------------|-----------|
 | SEC_Letters_fwd | count_dict.get((gvkey, Q+1), 0) | `fwd[i] = float(count_dict.get((g, _next_cal_qtr(q)), 0))` (builder line 284) | PASS |
 | SEC_Letters_lag (Lagged_DV) | count_dict.get((gvkey, Q-1), 0) | `lag[i] = float(count_dict.get((g, _prev_cal_qtr(q)), 0))` (builder line 285) | PASS |
-| CEO_QA_Uncertainty_pct | Uncertainty words / total * 100, CEO Q&A | LinguisticEngine via CEOQAUncertaintyBuilder | PASS |
-| CEO_Pres_Uncertainty_pct | Uncertainty words / total * 100, CEO Pres | LinguisticEngine via CEOPresUncertaintyBuilder | PASS |
-| Manager_QA_Uncertainty_pct | Uncertainty words / total * 100, Mgr Q&A | LinguisticEngine via ManagerQAUncertaintyBuilder | PASS |
-| Manager_Pres_Uncertainty_pct | Uncertainty words / total * 100, Mgr Pres | LinguisticEngine via ManagerPresUncertaintyBuilder | PASS |
-| Size | ln(atq), atq > 0 | CompustatEngine line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | PASS |
+| UncAnsCEO | Uncertainty words / total * 100, CEO Q&A | LinguisticEngine via CEOQAUncertaintyBuilder | PASS |
+| UncPreCEO | Uncertainty words / total * 100, CEO Pres | LinguisticEngine via CEOPresUncertaintyBuilder | PASS |
+| UncAnsMgr | Uncertainty words / total * 100, Mgr Q&A | LinguisticEngine via ManagerQAUncertaintyBuilder | PASS |
+| UncPreMgr | Uncertainty words / total * 100, Mgr Pres | LinguisticEngine via ManagerPresUncertaintyBuilder | PASS |
+| lnAssets | ln(atq), atq > 0 | CompustatEngine line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | PASS |
 | TobinsQ | (cshoq*prccq + debt_book) / atq | CompustatEngine lines 993-997: `(mktcap + debt_book) / comp["atq"]`; `mktcap = cshoq * prccq`; `debt_book = dlcq.clip(0).fillna(0) + dlttq.clip(0).fillna(0)` | PASS |
 | ROA | iby_annual (Q4) / avg_assets | CompustatEngine lines 960-968: `avg_assets = (atq_annual + atq_annual_lag1) / 2`, `ROA = iby_annual / avg_assets` | PASS |
-| BookLev | (dlcq + dlttq) / atq, missing debt = 0 | CompustatEngine: standard book leverage formula; `fillna(0)` for debt fields | PASS |
-| CapexAt | capxy_annual (Q4) / atq_lag | CompustatEngine lines 999-1005: `capxy_annual / atq_annual_lag1`; `atq_annual_lag1` is lagged annual Q4 assets | PASS |
-| CashHoldings | cheq / atq | CompustatEngine: standard formula | PASS |
-| DividendPayer | 1 if dvy_annual (Q4) > 0, else 0 | CompustatEngine lines 1009-1012: `(dvy_annual.fillna(0) > 0).astype(float)` | PASS |
-| OCF_Volatility | Rolling 5-yr std (min 3 yrs) of oancfy/atq_{t-1} per gvkey | CompustatEngine `_compute_ocf_volatility()` (line 308): "rolling 5-year std of (oancfy / atq_{t-1}) per gvkey" | PASS |
+| Leverage | (dlcq + dlttq) / atq, missing debt = 0 | CompustatEngine: standard book leverage formula; `fillna(0)` for debt fields | PASS |
+| Capex | capxy_annual (Q4) / atq_lag | CompustatEngine lines 999-1005: `capxy_annual / atq_annual_lag1`; `atq_annual_lag1` is lagged annual Q4 assets | PASS |
+| CashRatio | cheq / atq | CompustatEngine: standard formula | PASS |
+| DivDummy | 1 if dvy_annual (Q4) > 0, else 0 | CompustatEngine lines 1009-1012: `(dvy_annual.fillna(0) > 0).astype(float)` | PASS |
+| sCFO | Rolling 5-yr std (min 3 yrs) of oancfy/atq_{t-1} per gvkey | CompustatEngine `_compute_ocf_volatility()` (line 308): "rolling 5-year std of (oancfy / atq_{t-1}) per gvkey" | PASS |
 | SalesGrowth | (saley_t - saley_{t-1}) / abs(saley_{t-1}), Q4 annual | CompustatEngine: SalesGrowth formula | PASS |
-| RD_Intensity | xrdq / atq, missing xrdq = 0 | CompustatEngine: standard R&D ratio; fillna(0) for xrdq | PASS |
-| CashFlow | oancfy / avg(atq_t, atq_{t-1}), Q4 annual | CompustatEngine: Biddle-pattern cash flow formula | PASS |
-| Volatility | std(daily_ret) * sqrt(252) * 100, [prev_call+5d, call-5d], min 10 days | `volatility.py` docstring (lines 6-9): "std(daily_ret) * sqrt(252) * 100" over "[prev_call_date + 5 days, call start_date - 5 days], requiring >= 10 trading days" | PASS |
+| RDSales | xrdq / atq, missing xrdq = 0 | CompustatEngine: standard R&D ratio; fillna(0) for xrdq | PASS |
+| CashFlowAt | oancfy / avg(atq_t, atq_{t-1}), Q4 annual | CompustatEngine: Biddle-pattern cash flow formula | PASS |
+| DailyVola | std(daily_ret) * sqrt(252) * 100, [prev_call+5d, call-5d], min 10 days | `volatility.py` docstring (lines 6-9): "std(daily_ret) * sqrt(252) * 100" over "[prev_call_date + 5 days, call start_date - 5 days], requiring >= 10 trading days" | PASS |
 | gvkey | Firm identifier, entity FE | Manifest | PASS |
 | ff12_code | FF12 industry code, industry FE | Manifest | PASS |
 | cal_yr | start_date.dt.year | `panel_utils.py` line 215: `panel["cal_yr"] = dt.dt.year.astype("Int64")` | PASS |
 | cal_yr_qtr | year*10 + quarter from start_date | `panel_utils.py` line 217: `panel["cal_yr_qtr"] = (panel["cal_yr"] * 10 + panel["cal_qtr"]).astype("Int64")` | PASS |
 
 **Winsorization checks**:
-- Compustat controls (Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, OCF_Volatility, CashFlow, SalesGrowth, RD_Intensity): Doc says "1%/99% per fiscal year (fyearq), applied at CompustatEngine level (`_compute_and_winsorize`, `_compustat_engine.py` line 936)". Verified: function at line 936 computes and winsorizes. **PASS**
-- DividendPayer: Doc says "No (binary)". Correct — binary variable not winsorized. **PASS**
-- Volatility: Doc says "No (not in Compustat winsorization; bounded by construction)". Correct — CRSP-sourced, not in Compustat engine. **PASS**
+- Compustat controls (lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, sCFO, CashFlowAt, SalesGrowth, RDSales): Doc says "1%/99% per fiscal year (fyearq), applied at CompustatEngine level (`_compute_and_winsorize`, `_compustat_engine.py` line 936)". Verified: function at line 936 computes and winsorizes. **PASS**
+- DivDummy: Doc says "No (binary)". Correct — binary variable not winsorized. **PASS**
+- DailyVola: Doc says "No (not in Compustat winsorization; bounded by construction)". Correct — CRSP-sourced, not in Compustat engine. **PASS**
 - LM IVs: Doc says "0%/99% per-year (upper-only)". Verified at `_linguistic_engine.py` line 255: `winsorize_by_year(..., lower=0.0, upper=0.99, ...)`. **PASS**
 - DV (SEC_Letters_fwd, SEC_Letters_lag): Doc says "Not winsorized". Correct — no winsorization applied to count DVs. **PASS**
 
@@ -484,7 +484,7 @@ F2. Data Engines:
 |--------|-----------|-----------|
 | LinguisticEngine | 4 uncertainty pcts | PASS — confirmed via builder imports |
 | CompustatEngine | 11 accounting controls | PASS — confirmed via CompustatEngine `WINSORIZED_COLUMNS` list |
-| CRSPEngine | Volatility | PASS — confirmed via VolatilityBuilder |
+| CRSPEngine | DailyVola | PASS — confirmed via VolatilityBuilder |
 | Direct load (EDGAR) | SEC_Letters_fwd, SEC_Letters_lag | PASS — confirmed via `_load_edgar_upload_counts()` |
 | ManifestFieldsBuilder | file_name, gvkey, ff12_code, start_date | PASS — confirmed via builder imports |
 
@@ -524,9 +524,9 @@ Doc lists SUMMARY_STATS_VARS. Runner SUMMARY_STATS_VARS (lines 104-122) contains
 **H-CHECK: Outlier/Missing Treatment**
 
 H1. Winsorization:
-- Compustat controls at 1%/99% per fyearq: Confirmed (`_compustat_engine.py` line 936). Listed variables (Size, BookLev, TobinsQ, ROA, CapexAt, CashHoldings, RD_Intensity, OCF_Volatility, CashFlow, SalesGrowth) match the `WINSORIZED_COLUMNS` list in the engine. PASS
-- DividendPayer not winsorized (binary): Confirmed. PASS
-- Volatility not winsorized: Confirmed — CRSPEngine, not CompustatEngine. PASS
+- Compustat controls at 1%/99% per fyearq: Confirmed (`_compustat_engine.py` line 936). Listed variables (lnAssets, Leverage, TobinsQ, ROA, Capex, CashRatio, RDSales, sCFO, CashFlowAt, SalesGrowth) match the `WINSORIZED_COLUMNS` list in the engine. PASS
+- DivDummy not winsorized (binary): Confirmed. PASS
+- DailyVola not winsorized: Confirmed — CRSPEngine, not CompustatEngine. PASS
 - LM IVs at 0%/99% per year: Confirmed (`_linguistic_engine.py` line 255). PASS
 - DV not winsorized: Confirmed — no winsorization applied to count DVs. PASS
 
@@ -534,12 +534,12 @@ H2. Missing Data:
 - Complete-case deletion (runner lines 210-211): `complete_mask = df[required].notna().all(axis=1)` — exact match. PASS
 - Inf/-Inf → NaN (runner line 204): `df.replace([np.inf, -np.inf], np.nan)` — exact match. PASS
 - Missing xrdq treated as 0: Confirmed — CompustatEngine `fillna(0)` for xrdq. PASS
-- Missing debt treated as 0 for BookLev: Confirmed — CompustatEngine. PASS
+- Missing debt treated as 0 for Leverage: Confirmed — CompustatEngine. PASS
 - SEC_Letters_fwd is 0 (not NaN) when no letters: Confirmed — builder lines 273-285: `fwd = np.zeros(...)`, only set to NaN when `pd.isna(q)`. PASS
 
 H3. Transformations:
-- Size = ln(atq): Confirmed. PASS
-- Volatility annualized (* sqrt(252)) and expressed as %: Confirmed by VolatilityBuilder docstring. PASS
+- lnAssets = ln(atq): Confirmed. PASS
+- DailyVola annualized (* sqrt(252)) and expressed as %: Confirmed by VolatilityBuilder docstring. PASS
 - No centering/z-scoring: No such operations found in runner or builder. PASS
 
 **H-CHECK result: PASS**

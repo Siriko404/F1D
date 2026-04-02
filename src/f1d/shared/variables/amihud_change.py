@@ -1,7 +1,7 @@
 """Builder for Amihud illiquidity change around earnings calls (H7).
 
 Reads raw CRSP daily stock files via the shared CRSPEngine.get_raw_daily_data().
-Returns columns: file_name, delta_amihud, pre_call_amihud.
+Returns columns: file_name, DeltaILLIQ, PreCallILLIQ.
 
 Event-window calculation (VECTORIZED with year-chunking for memory efficiency):
     daily_illiq_d = |RET_d| / (VOL_d * |PRC_d|) * 1e6
@@ -36,8 +36,8 @@ MIN_POST_DAYS = 2
 class AmihudChangeBuilder(VariableBuilder):
     """Compute Amihud illiquidity change around earnings calls (VECTORIZED).
 
-    The dependent variable for H7: delta_amihud = post_avg - pre_avg.
-    Also returns pre_call_amihud as a control variable.
+    The dependent variable for H7: DeltaILLIQ = post_avg - pre_avg.
+    Also returns PreCallILLIQ as a control variable.
 
     Config options:
         window_days (int): Number of trading days in each window (default 3).
@@ -75,8 +75,8 @@ class AmihudChangeBuilder(VariableBuilder):
         crsp_data = engine.get_raw_daily_data(root_path, years=list(years))
 
         sfx = self.column_suffix
-        da_col = f"delta_amihud{sfx}"
-        pca_col = f"pre_call_amihud{sfx}"
+        da_col = f"DeltaILLIQ{sfx}"
+        pca_col = f"PreCallILLIQ{sfx}"
 
         if crsp_data.empty:
             logger.warning("AmihudChangeBuilder: No CRSP data loaded!")
@@ -95,12 +95,12 @@ class AmihudChangeBuilder(VariableBuilder):
         # Rename columns if suffix is set
         if sfx:
             results = results.rename(columns={
-                "delta_amihud": da_col,
-                "pre_call_amihud": pca_col,
+                "DeltaILLIQ": da_col,
+                "PreCallILLIQ": pca_col,
             })
 
         # Per-year winsorization at 1%/99% — consistent with CRSP engine treatment.
-        # delta_amihud is extremely right-skewed (skew~162, kurtosis~29K unwinsorized)
+        # DeltaILLIQ is extremely right-skewed (skew~162, kurtosis~29K unwinsorized)
         # due to micro-cap stocks with near-zero dollar volume.
         from .winsorization import winsorize_by_year
 
@@ -122,7 +122,7 @@ class AmihudChangeBuilder(VariableBuilder):
                 "column": da_col,
                 "source": "CRSP via get_raw_daily_data",
                 "window_days": self.window_days,
-                "pre_call_amihud": "control variable (pre-call average Amihud)",
+                "PreCallILLIQ": "control variable (pre-call average Amihud)",
             },
         )
 
@@ -204,7 +204,7 @@ class AmihudChangeBuilder(VariableBuilder):
     def _compute_amihud_change_vectorized(
         self, manifest: pd.DataFrame, crsp: pd.DataFrame
     ) -> pd.DataFrame:
-        """Compute delta_amihud and pre_call_amihud using vectorized operations.
+        """Compute DeltaILLIQ and PreCallILLIQ using vectorized operations.
 
         Memory-efficient implementation using year-chunking.
         """
@@ -214,8 +214,8 @@ class AmihudChangeBuilder(VariableBuilder):
 
         if len(valid) == 0:
             result = manifest[["file_name"]].copy()
-            result["delta_amihud"] = np.nan
-            result["pre_call_amihud"] = np.nan
+            result["DeltaILLIQ"] = np.nan
+            result["PreCallILLIQ"] = np.nan
             return result
 
         # Prepare CRSP data
@@ -256,8 +256,8 @@ class AmihudChangeBuilder(VariableBuilder):
         if not all_results:
             logger.warning("AmihudChangeBuilder: No valid results!")
             result = manifest[["file_name"]].copy()
-            result["delta_amihud"] = np.nan
-            result["pre_call_amihud"] = np.nan
+            result["DeltaILLIQ"] = np.nan
+            result["PreCallILLIQ"] = np.nan
             return result
 
         # Combine all years
@@ -270,7 +270,7 @@ class AmihudChangeBuilder(VariableBuilder):
             how="left",
         )
 
-        logger.info(f"  AmihudChangeBuilder: {result['delta_amihud'].notna().sum():,} valid observations")
+        logger.info(f"  AmihudChangeBuilder: {result['DeltaILLIQ'].notna().sum():,} valid observations")
 
         return result
 
@@ -360,27 +360,27 @@ class AmihudChangeBuilder(VariableBuilder):
 
         # Amihud aggregation
         pre_avg = pre_window.groupby("file_name").agg(
-            pre_call_amihud=("daily_illiq", "mean"),
+            PreCallILLIQ=("daily_illiq", "mean"),
             pre_n_valid=("daily_illiq", lambda x: x.notna().sum()),
         ).reset_index()
 
         post_avg = post_window.groupby("file_name").agg(
-            post_call_amihud=("daily_illiq", "mean"),
+            PostCallILLIQ=("daily_illiq", "mean"),
             post_n_valid=("daily_illiq", lambda x: x.notna().sum()),
         ).reset_index()
 
         amihud = pre_avg.merge(post_avg, on="file_name", how="outer")
-        amihud["delta_amihud"] = amihud["post_call_amihud"] - amihud["pre_call_amihud"]
+        amihud["DeltaILLIQ"] = amihud["PostCallILLIQ"] - amihud["PreCallILLIQ"]
 
         # Apply minimum valid days filter
         min_valid_mask = (
             (amihud["pre_n_valid"] >= min_pre) &
             (amihud["post_n_valid"] >= min_post)
         )
-        amihud.loc[~min_valid_mask, "delta_amihud"] = np.nan
-        amihud.loc[~min_valid_mask, "pre_call_amihud"] = np.nan
+        amihud.loc[~min_valid_mask, "DeltaILLIQ"] = np.nan
+        amihud.loc[~min_valid_mask, "PreCallILLIQ"] = np.nan
 
-        out_cols = ["file_name", "delta_amihud", "pre_call_amihud"]
+        out_cols = ["file_name", "DeltaILLIQ", "PreCallILLIQ"]
         return amihud[out_cols]
 
 

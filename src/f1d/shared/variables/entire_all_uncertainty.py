@@ -1,6 +1,6 @@
 """Builder for Entire Call Uncertainty variable.
 
-Queries the shared LinguisticEngine for Entire_All_Uncertainty_pct.
+Queries the shared LinguisticEngine for UncCall.
 Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
@@ -19,12 +19,12 @@ class EntireAllUncertaintyBuilder(VariableBuilder):
     """Build Entire Call Uncertainty variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    Column: Entire_All_Uncertainty_pct
+    Column: UncCall
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "Entire_All_Uncertainty_pct")
+        self.column = config.get("column", "UncCall")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         engine = get_engine()

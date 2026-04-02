@@ -1,4 +1,4 @@
-"""Builder for loss_dummy (H5 Control Variable).
+"""Builder for Loss (H5 Control Variable).
 
 1 if ibq < 0, else 0. Fetched from Compustat engine.
 """
@@ -38,13 +38,13 @@ class LossDummyBuilder(VariableBuilder):
         engine = get_engine()
         comp = engine.get_data(root_path)
 
-        # We compute loss_dummy on the fly and merge it via standard backward ASOF
-        comp["loss_dummy"] = np.where(
+        # We compute Loss on the fly and merge it via standard backward ASOF
+        comp["Loss"] = np.where(
             comp["ibq"].isna(), np.nan, (comp["ibq"] < 0).astype(float)
         )
 
         fyearq_df = (
-            comp[["gvkey", "datadate", "loss_dummy"]].dropna().sort_values("datadate")
+            comp[["gvkey", "datadate", "Loss"]].dropna().sort_values("datadate")
         )
 
         manifest_sorted = manifest.sort_values("start_date").dropna(
@@ -63,15 +63,15 @@ class LossDummyBuilder(VariableBuilder):
 
         merged = merged.sort_values("_row_idx")
         final_merged = manifest[["file_name"]].merge(
-            merged[["file_name", "loss_dummy"]], on="file_name", how="left"
+            merged[["file_name", "Loss"]], on="file_name", how="left"
         )
 
-        data = final_merged[["file_name", "loss_dummy"]].copy()
-        stats = self.get_stats(data["loss_dummy"], "loss_dummy")
+        data = final_merged[["file_name", "Loss"]].copy()
+        stats = self.get_stats(data["Loss"], "Loss")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "loss_dummy", "source": "Compustat ibq < 0"},
+            metadata={"column": "Loss", "source": "Compustat ibq < 0"},
         )
 
 

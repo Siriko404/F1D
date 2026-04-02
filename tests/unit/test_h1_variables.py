@@ -51,7 +51,7 @@ def sample_compustat_df() -> pd.DataFrame:
 # ==============================================================================
 
 
-class TestComputeCashHoldings:
+class TestComputeCashRatio:
     """Tests for compute_cash_holdings function."""
 
     def test_basic_calculation(self, sample_compustat_df: pd.DataFrame) -> None:
@@ -193,7 +193,7 @@ class TestComputeROA:
 # ==============================================================================
 
 
-class TestComputeDividendPayer:
+class TestComputeDivDummy:
     """Tests for compute_dividend_payer function."""
 
     def test_basic_calculation(self, sample_compustat_df: pd.DataFrame) -> None:

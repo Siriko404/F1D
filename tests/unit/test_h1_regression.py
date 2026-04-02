@@ -42,12 +42,12 @@ def sample_h1_data():
                 "gvkey": gvkey,
                 "fiscal_year": fiscal_year,
                 "cash_ratio": np.random.uniform(0.05, 0.3),
-                "Manager_QA_Uncertainty_pct": np.random.uniform(2, 8),
-                "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
+                "UncAnsMgr": np.random.uniform(2, 8),
+                "UncAnsCEO": np.random.uniform(2, 8),
                 "Manager_QA_Weak_Modal_pct": np.random.uniform(1, 5),
                 "CEO_QA_Weak_Modal_pct": np.random.uniform(1, 5),
-                "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
+                "UncPreMgr": np.random.uniform(1, 5),
+                "UncPreCEO": np.random.uniform(1, 5),
                 "firm_size": np.random.uniform(5, 10),
                 "tobins_q": np.random.uniform(0.8, 2.0),
                 "roa": np.random.uniform(-0.1, 0.2),
@@ -72,12 +72,12 @@ def sample_speech_data():
             "file_name": f"call_{i}.docx",
             "gvkey": gvkey,
             "start_date": pd.Timestamp(f"201{ i % 5 }-06-15"),
-            "Manager_QA_Uncertainty_pct": np.random.uniform(2, 8),
-            "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
+            "UncAnsMgr": np.random.uniform(2, 8),
+            "UncAnsCEO": np.random.uniform(2, 8),
             "Manager_QA_Weak_Modal_pct": np.random.uniform(1, 5),
             "CEO_QA_Weak_Modal_pct": np.random.uniform(1, 5),
-            "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-            "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
+            "UncPreMgr": np.random.uniform(1, 5),
+            "UncPreCEO": np.random.uniform(1, 5),
         })
 
     return pd.DataFrame(data)
@@ -92,7 +92,7 @@ def mock_panel_ols_result():
             "Coefficient": [-0.05, 0.02, -0.01],
             "Std. Error": [0.02, 0.01, 0.005],
             "t-stat": [-2.5, 2.0, -2.0],
-        }, index=["Manager_QA_Uncertainty_pct_c", "firm_size", "leverage"]),
+        }, index=["UncAnsMgr_c", "firm_size", "leverage"]),
         "summary": {
             "rsquared": 0.35,
             "rsquared_within": 0.15,
@@ -118,7 +118,7 @@ class TestH1DataLoading:
     def test_load_h1_variables_basic(self, sample_h1_data, tmp_path):
         """Test that H1 variables load correctly from parquet."""
         # Save sample data to parquet
-        h1_file = tmp_path / "H1_CashHoldings.parquet"
+        h1_file = tmp_path / "H1_CashRatio.parquet"
         sample_h1_data.to_parquet(h1_file, index=False)
 
         # Load and verify
@@ -140,12 +140,12 @@ class TestH1DataLoading:
     def test_uncertainty_measures_present(self, sample_h1_data):
         """Test that all required uncertainty measures are present."""
         uncertainty_cols = [
-            "Manager_QA_Uncertainty_pct",
-            "CEO_QA_Uncertainty_pct",
+            "UncAnsMgr",
+            "UncAnsCEO",
             "Manager_QA_Weak_Modal_pct",
             "CEO_QA_Weak_Modal_pct",
-            "Manager_Pres_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
+            "UncPreMgr",
+            "UncPreCEO",
         ]
 
         for col in uncertainty_cols:
@@ -176,7 +176,7 @@ class TestH1RegressionExecution:
         result = run_panel_ols(
             df=df,
             dependent="cash_ratio",
-            exog=["Manager_QA_Uncertainty_pct", "firm_size"],
+            exog=["UncAnsMgr", "firm_size"],
             entity_col="gvkey",
             time_col="fiscal_year",
             entity_effects=True,
@@ -203,7 +203,7 @@ class TestH1RegressionExecution:
         result = run_panel_ols(
             df=df,
             dependent="cash_ratio",
-            exog=["Manager_QA_Uncertainty_pct"],
+            exog=["UncAnsMgr"],
             entity_col="gvkey",
             time_col="fiscal_year",
             entity_effects=True,
@@ -259,15 +259,15 @@ class TestH1OutputFormat:
         """Test that p-values can be extracted from model."""
         # Mock pvalues attribute
         mock_panel_ols_result["model"].pvalues = pd.Series({
-            "Manager_QA_Uncertainty_pct_c": 0.012,
+            "UncAnsMgr_c": 0.012,
             "firm_size": 0.045,
             "leverage": 0.085,
         })
 
         pvalues = mock_panel_ols_result["model"].pvalues
 
-        assert "Manager_QA_Uncertainty_pct_c" in pvalues.index
-        assert pvalues["Manager_QA_Uncertainty_pct_c"] < 0.05
+        assert "UncAnsMgr_c" in pvalues.index
+        assert pvalues["UncAnsMgr_c"] < 0.05
 
 
 # ==============================================================================
@@ -288,7 +288,7 @@ class TestH1ErrorHandling:
             run_panel_ols(
                 df=df,
                 dependent="cash_ratio",
-                exog=["Manager_QA_Uncertainty_pct"],
+                exog=["UncAnsMgr"],
                 entity_col="gvkey",
                 time_col="fiscal_year",
             )

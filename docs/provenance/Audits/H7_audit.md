@@ -149,8 +149,8 @@ Doc equation:
 $$\Delta\text{Amihud}_{i,t} = \beta_1 \text{CEO\_QA\_Unc} + \beta_2 \text{CEO\_Pres\_Unc} + \beta_3 \text{Mgr\_QA\_Unc} + \beta_4 \text{Mgr\_Pres\_Unc} + \gamma' \mathbf{Controls} + \alpha_i + \delta_t + \varepsilon_{i,t}$$
 
 Verification:
-- DV `delta_amihud` — runner `MODEL_SPECS` entries all have `"dv": "delta_amihud"`. MATCH.
-- 4 IVs: `KEY_IVS` (lines 67-71) = `CEO_QA_Uncertainty_pct`, `CEO_Pres_Uncertainty_pct`, `Manager_QA_Uncertainty_pct`, `Manager_Pres_Uncertainty_pct`. MATCH.
+- DV `DeltaILLIQ` — runner `MODEL_SPECS` entries all have `"dv": "DeltaILLIQ"`. MATCH.
+- 4 IVs: `KEY_IVS` (lines 67-71) = `UncAnsCEO`, `UncPreCEO`, `UncAnsMgr`, `UncPreMgr`. MATCH.
 - Controls: `exog = KEY_IVS + controls` (runner line 228). MATCH.
 - Entity FE (`alpha_i`): industry or firm depending on spec. MATCH.
 - Time FE (`delta_t`): `cal_yr` or `cal_yr_qtr`. MATCH.
@@ -158,22 +158,22 @@ Verification:
 
 **B2-CHECK: Dependent Variable**
 
-Doc claims `delta_amihud` = PostAmihud - PreAmihud, daily_illiq = |RET| / (VOL * |PRC|) * 1e6, Pre = mean([-3,-1] trading days), Post = mean([+1,+3] trading days).
+Doc claims `DeltaILLIQ` = PostAmihud - PreAmihud, daily_illiq = |RET| / (VOL * |PRC|) * 1e6, Pre = mean([-3,-1] trading days), Post = mean([+1,+3] trading days).
 
 `amihud_change.py`:
 - Line 319: `merged["daily_illiq"] = merged["RET"].abs() / dollar_vol_masked * 1e6` where `dollar_vol_masked = merged["VOL"] * merged["PRC"].abs()` (lines 317-318). Formula is `|RET| / (|VOL| * |PRC|) * 1e6`. MATCH.
 - Lines 343-355: pre-window uses `pre_rank <= w` (w=3), post-window uses `post_rank <= w` (w=3). Trading-day positions 1–3 pre and post. MATCH.
-- Line 373: `amihud["delta_amihud"] = amihud["post_call_amihud"] - amihud["pre_call_amihud"]`. MATCH.
+- Line 373: `amihud["DeltaILLIQ"] = amihud["post_call_amihud"] - amihud["PreCallILLIQ"]`. MATCH.
 - Source: `CRSPEngine.get_raw_daily_data()` — `amihud_change.py` line 75: `crsp_data = engine.get_raw_daily_data(root_path, years=list(years))`. MATCH.
 - **PASS**
 
 **B3-CHECK: Independent Variables**
 
 All 4 IVs in `KEY_IVS` (lines 67-71):
-- `CEO_QA_Uncertainty_pct` — MATCH
-- `CEO_Pres_Uncertainty_pct` — MATCH
-- `Manager_QA_Uncertainty_pct` — MATCH
-- `Manager_Pres_Uncertainty_pct` — MATCH
+- `UncAnsCEO` — MATCH
+- `UncPreCEO` — MATCH
+- `UncAnsMgr` — MATCH
+- `UncPreMgr` — MATCH
 
 Source: LinguisticEngine (via `CEOQAUncertaintyBuilder`, etc. imported in builder). MATCH.
 No centering, log-transform, or z-scoring applied to IVs. MATCH.
@@ -182,15 +182,15 @@ No centering, log-transform, or z-scoring applied to IVs. MATCH.
 **B4-CHECK: Control Variables**
 
 BASE_CONTROLS (runner lines 74-83):
-- Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, pre_call_amihud
+- lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, PreCallILLIQ
 
-Doc Base Controls table: Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, pre_call_amihud — 8 variables, exact match.
+Doc Base Controls table: lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, PreCallILLIQ — 8 variables, exact match.
 
-EXTENDED_CONTROLS (runner lines 85-90) = BASE_CONTROLS + Volatility, StockPrice, Turnover, Analyst_QA_Uncertainty_pct
+EXTENDED_CONTROLS (runner lines 85-90) = BASE_CONTROLS + DailyVola, StockPrice, Turnover, UncQue
 
-Doc Extended Controls table: Volatility, StockPrice, Turnover, Analyst_QA_Uncertainty_pct — 4 additional, exact match.
+Doc Extended Controls table: DailyVola, StockPrice, Turnover, UncQue — 4 additional, exact match.
 
-`pre_call_amihud` correctly noted as "Lagged DV / pre-event level control."
+`PreCallILLIQ` correctly noted as "Lagged DV / pre-event level control."
 - **PASS**
 
 **B5-CHECK: Fixed Effects**
@@ -233,23 +233,23 @@ Runner MODEL_SPECS (lines 92-100), 6 entries:
 
 | Col | Code DV | Code fe | Code controls |
 |---|---|---|---|
-| 1 | delta_amihud | industry | base |
-| 2 | delta_amihud | firm | base |
-| 3 | delta_amihud | industry | extended |
-| 4 | delta_amihud | firm | extended |
-| 5 | delta_amihud | industry_yq | extended |
-| 6 | delta_amihud | firm_yq | extended |
+| 1 | DeltaILLIQ | industry | base |
+| 2 | DeltaILLIQ | firm | base |
+| 3 | DeltaILLIQ | industry | extended |
+| 4 | DeltaILLIQ | firm | extended |
+| 5 | DeltaILLIQ | industry_yq | extended |
+| 6 | DeltaILLIQ | firm_yq | extended |
 
 Doc spec register (6 rows):
 
 | Col | Doc DV | Doc Entity FE | Doc Time FE | Doc Controls |
 |---|---|---|---|---|
-| 1 | delta_amihud | Industry (FF12) | Cal Yr | Base (8) |
-| 2 | delta_amihud | Firm | Cal Yr | Base (8) |
-| 3 | delta_amihud | Industry (FF12) | Cal Yr | Extended (12) |
-| 4 | delta_amihud | Firm | Cal Yr | Extended (12) |
-| 5 | delta_amihud | Industry (FF12) | Cal Yr-Qtr | Extended (12) |
-| 6 | delta_amihud | Firm | Cal Yr-Qtr | Extended (12) |
+| 1 | DeltaILLIQ | Industry (FF12) | Cal Yr | Base (8) |
+| 2 | DeltaILLIQ | Firm | Cal Yr | Base (8) |
+| 3 | DeltaILLIQ | Industry (FF12) | Cal Yr | Extended (12) |
+| 4 | DeltaILLIQ | Firm | Cal Yr | Extended (12) |
+| 5 | DeltaILLIQ | Industry (FF12) | Cal Yr-Qtr | Extended (12) |
+| 6 | DeltaILLIQ | Firm | Cal Yr-Qtr | Extended (12) |
 
 Row-by-row verification:
 - Col 1: DV match, industry FE (`entity_effects=False, other_effects=ff12_code`), cal_yr, base. MATCH.
@@ -289,7 +289,7 @@ Step-by-step verification against runner code:
 |---|---|---|
 | 1 | Full manifest | Panel builder loads all manifest rows for year range |
 | 2 | Main sample (excl FF12=8,11) | `filter_main_sample()` lines 172-177: `~panel["ff12_code"].isin([8, 11])` |
-| 3 | DV non-missing (delta_amihud) | `prepare_regression_data()` line 199: `df = df[df[dv].notna()]` |
+| 3 | DV non-missing (DeltaILLIQ) | `prepare_regression_data()` line 199: `df = df[df[dv].notna()]` |
 | 4 | Complete case (all required vars non-NaN) | Lines 202-203: `complete_mask = df[required].notna().all(axis=1)` |
 | 5 | Min calls per firm (>=5) | Lines 206-208: `firm_counts >= MIN_CALLS_PER_FIRM` where `MIN_CALLS_PER_FIRM = 5` |
 
@@ -300,7 +300,7 @@ Doc additionally notes: "Inf/-Inf values are replaced with NaN before filtering 
 
 **D3-CHECK: Sample Counts**
 
-Doc correctly notes counts are runtime-dependent and defers to `sample_attrition.csv`. The attrition table generator is called at runner lines 470-475 with 4 stages: Full panel, Main sample, delta_amihud non-null, Complete-case + min-calls (col 1). This matches the doc's description of the 5-step cascade (the attrition table itself collapses steps 3-5 from D2 into a single "Complete-case + min-calls (col 1)" entry).
+Doc correctly notes counts are runtime-dependent and defers to `sample_attrition.csv`. The attrition table generator is called at runner lines 470-475 with 4 stages: Full panel, Main sample, DeltaILLIQ non-null, Complete-case + min-calls (col 1). This matches the doc's description of the 5-step cascade (the attrition table itself collapses steps 3-5 from D2 into a single "Complete-case + min-calls (col 1)" entry).
 
 Runner line reference for attrition: "runner line 470--475" — confirmed.
 - **PASS**
@@ -313,32 +313,32 @@ Runner line reference for attrition: "runner line 470--475" — confirmed.
 
 Verified all 17 rows:
 
-**`delta_amihud` (DV)**
+**`DeltaILLIQ` (DV)**
 - Formula: PostAmihud - PreAmihud, daily_illiq = |RET|/(VOL*|PRC|)*1e6, Pre mean([-3,-1]), Post mean([+1,+3]).
 - Code: `amihud_change.py` lines 317-319, 362-373. MATCH.
 - Winsorized: "1%/99% by calendar year (at AmihudChangeBuilder level)" — lines 110-112: `winsorize_by_year(results, winsorize_cols, year_col="year", lower=0.01, upper=0.99)`. MATCH.
 - Source: CRSPEngine via `get_raw_daily_data()`. MATCH.
 - **PASS**
 
-**`pre_call_amihud` (Control/Lagged DV proxy)**
+**`PreCallILLIQ` (Control/Lagged DV proxy)**
 - Formula: mean(daily_illiq for trading days [-3,-1]).
 - Code: `amihud_change.py` pre_avg computation lines 362-365. MATCH.
-- Winsorized: same as delta_amihud. MATCH.
+- Winsorized: same as DeltaILLIQ. MATCH.
 - **PASS**
 
-**`CEO_QA_Uncertainty_pct` (IV)**
+**`UncAnsCEO` (IV)**
 - Formula: (uncertainty words by CEO in Q&A) / (total CEO words in Q&A) * 100.
 - Source: LinguisticEngine. MATCH.
 - Winsorized: "0%/99% upper-only per-year" — `_linguistic_engine.py` lines 254-258: `winsorize_by_year(combined, existing_pct_cols, year_col="year", lower=0.0, upper=0.99, min_obs=10)`. MATCH.
 - **PASS**
 
-**`CEO_Pres_Uncertainty_pct`, `Manager_QA_Uncertainty_pct`, `Manager_Pres_Uncertainty_pct` (IVs)**
-- Same structure and source as CEO_QA_Uncertainty_pct. All verified through same LinguisticEngine path. MATCH.
+**`UncPreCEO`, `UncAnsMgr`, `UncPreMgr` (IVs)**
+- Same structure and source as UncAnsCEO. All verified through same LinguisticEngine path. MATCH.
 - **PASS (3 variables)**
 
-**`Size` (Control)**
+**`lnAssets` (Control)**
 - Formula: `ln(atq), for atq > 0; else NaN`.
-- `_compustat_engine.py` line 943: `comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. MATCH.
+- `_compustat_engine.py` line 943: `comp["lnAssets"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. MATCH.
 - Source: CompustatEngine: atq. MATCH.
 - Winsorized: "1%/99% by fiscal year (at engine level)" — `_compute_and_winsorize()` lines 1229-1232 apply `_winsorize_by_year(comp[col], year_col)` where `year_col = comp["fyearq"]`. MATCH.
 - **PASS**
@@ -362,27 +362,27 @@ Verified all 17 rows:
 - Consistent with engine construction pattern. PASS.
 - **PASS**
 
-**`BookLev` (Control)**
+**`Leverage` (Control)**
 - Formula: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq`.
 - Engine: line 947 area — confirmed (dlcq + dlttq) / atq with fillna(0) treatment. MATCH.
 - **PASS**
 
-**`CapexAt` (Control)**
+**`Capex` (Control)**
 - Formula: `capxy_annual (Q4 only) / atq_lag (prior year Q4 total assets)`.
 - Engine lines 999-1003: `capxy_annual / atq_annual_lag1`. MATCH.
 - **PASS**
 
-**`DividendPayer` (Control)**
+**`DivDummy` (Control)**
 - Formula: `1 if dvy_annual (Q4 only) > 0, else 0`. Not winsorized (binary).
 - Consistent with engine construction. PASS.
 - **PASS**
 
-**`OCF_Volatility` (Control)**
+**`sCFO` (Control)**
 - Formula: rolling 5-year std (min 3 yrs) of (oancfy / atq_{t-1}) per gvkey.
 - Source: CompustatEngine: oancfy, atq. Rolling window via 1826-day dummy date approach.
 - **PASS**
 
-**`Volatility` (Control)**
+**`DailyVola` (Control)**
 - Formula: `std(daily RET) * sqrt(252) * 100` over inter-call window, min 10 trading days.
 - Source: CRSPEngine `get_data()`. Winsorized 1%/99% by calendar year via `CRSP_RETURN_COLS` path (`_crsp_engine.py` lines 445-447).
 - **PASS**
@@ -397,7 +397,7 @@ Verified all 17 rows:
 - Source: CRSPEngine `get_raw_daily_data()`.
 - **PASS**
 
-**`Analyst_QA_Uncertainty_pct` (Control/Extended)**
+**`UncQue` (Control/Extended)**
 - Formula: (uncertainty words by analysts in Q&A) / (total analyst words in Q&A) * 100.
 - Source: LinguisticEngine. Winsorized 0%/99% upper-only. MATCH.
 - **PASS**
@@ -418,7 +418,7 @@ Verified all 17 rows:
 - All 4 KEY_IVS: present ✓
 - All 8 BASE_CONTROLS: present ✓
 - All 4 extended-only controls: present ✓
-- DV delta_amihud: present ✓
+- DV DeltaILLIQ: present ✓
 - FE columns (gvkey, ff12_code, cal_yr, cal_yr_qtr): present ✓
 - No regression variable missing from the dictionary.
 
@@ -448,13 +448,13 @@ Step 4 (Runner loading): **FAIL.** Doc says "selecting 21 columns." Runner `load
 columns = [
     "start_date",                                          # 1
     "gvkey", "year", "fyearq_int", "ff12_code",           # 2-5
-    "delta_amihud", "pre_call_amihud",                    # 6-7
-    "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct", # 8-9
-    "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct", # 10-11
-    "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",       # 12-16
-    "DividendPayer", "OCF_Volatility",                    # 17-18
-    "Volatility", "StockPrice", "Turnover",               # 19-21
-    "Analyst_QA_Uncertainty_pct",                         # 22
+    "DeltaILLIQ", "PreCallILLIQ",                    # 6-7
+    "UncAnsCEO", "UncPreCEO", # 8-9
+    "UncAnsMgr", "UncPreMgr", # 10-11
+    "lnAssets", "TobinsQ", "ROA", "Leverage", "Capex",       # 12-16
+    "DivDummy", "sCFO",                    # 17-18
+    "DailyVola", "StockPrice", "Turnover",               # 19-21
+    "UncQue",                         # 22
 ]
 ```
 Count = **22 columns**, not 21.
@@ -469,10 +469,10 @@ Step 7 (Table generation): generate_all_tables.py entry documented. **PASS.**
 
 | Engine | Source | Variables |
 |---|---|---|
-| CompustatEngine | comp_na_daily_all.parquet | Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility |
-| CRSPEngine (get_data) | CRSP_DSF parquets | Volatility |
-| CRSPEngine (get_raw_daily_data) | CRSP_DSF parquets | delta_amihud, pre_call_amihud, StockPrice, Turnover |
-| LinguisticEngine | linguistic_variables_{year}.parquet | 4 IVs + Analyst_QA_Uncertainty_pct |
+| CompustatEngine | comp_na_daily_all.parquet | lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO |
+| CRSPEngine (get_data) | CRSP_DSF parquets | DailyVola |
+| CRSPEngine (get_raw_daily_data) | CRSP_DSF parquets | DeltaILLIQ, PreCallILLIQ, StockPrice, Turnover |
+| LinguisticEngine | linguistic_variables_{year}.parquet | 4 IVs + UncQue |
 
 Doc lists exactly these 4 engines. Verified against builder imports and builder code. **PASS.**
 
@@ -522,7 +522,7 @@ Doc: "Level: 1%/99% by fiscal year — Applied at: CompustatEngine level (`_wins
 
 The min_obs threshold of 10 is correct (`_winsorize_by_year` signature line 445: `min_obs: int = 10`). The level 1%/99% and by-fiscal-year grouping are correct. Only the line citation is wrong.
 
-*CRSP variables (Volatility):*
+*CRSP variables (DailyVola):*
 Doc: "Applied at: CRSPEngine `get_data()` level (`winsorize_by_year` in `_crsp_engine.py`, line 445)"
 Code: `_crsp_engine.py` line 445: `result_with_year = winsorize_by_year(result_with_year, CRSP_RETURN_COLS, year_col="year")`. MATCH. **PASS.**
 
@@ -541,7 +541,7 @@ Code: lines 254-258: `combined = winsorize_by_year(combined, existing_pct_cols, 
 - Dollar volume zero → NaN: `amihud_change.py` line 318. Doc cites line 318. MATCH. **PASS.**
 
 **H3 Transformations:**
-- Size = ln(atq). Correct.
+- lnAssets = ln(atq). Correct.
 - No centering/z-scoring. Correct.
 - 1e6 scaling for Amihud. Correct.
 - **PASS.**
@@ -589,7 +589,7 @@ All 5 content fields (id, tail, cols, dvs, hyp_dir) verified PASS.
 **Verification bullets in doc:**
 - `tail: "one"` and `hyp_dir: ">"` match runner one-tailed beta>0 — PASS.
 - `cols: 6` matches `len(MODEL_SPECS) = 6` — PASS.
-- `dvs: [("delta_amihud", 6)]` matches single DV across all 6 specs — PASS.
+- `dvs: [("DeltaILLIQ", 6)]` matches single DV across all 6 specs — PASS.
 - No `key_vars` field — confirmed: entry has no `key_vars` key. PASS.
 
 **FAIL — line range citation:**
@@ -665,8 +665,8 @@ Doc claims:
 
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
-1. **DVs in B2 vs C**: B2 table: `delta_amihud`. C register: all 6 rows have `delta_amihud`. CONSISTENT ✓
-2. **DVs in C vs I**: C: `delta_amihud` (6 specs). I: `"dvs": [(r"delta\_amihud", 6)]`. CONSISTENT ✓
+1. **DVs in B2 vs C**: B2 table: `DeltaILLIQ`. C register: all 6 rows have `DeltaILLIQ`. CONSISTENT ✓
+2. **DVs in C vs I**: C: `DeltaILLIQ` (6 specs). I: `"dvs": [(r"delta\_amihud", 6)]`. CONSISTENT ✓
 3. **Controls in B4 vs E**: B4 lists 8 base + 4 extended = 12 controls. Section E contains all 12 as `Control` type rows. CONSISTENT ✓
 4. **Column count A vs C**: A: `Columns: 6`. C: 6 rows. CONSISTENT ✓
 5. **Column count A vs I**: A: `Columns: 6`. I: `"cols": 6`. CONSISTENT ✓
@@ -707,7 +707,7 @@ Doc claims:
 - Location: Section F ("Data Pipeline") → F1 → Step 4 ("Runner loading")
 - Current text: `Loads panel parquet, selecting 21 columns`
 - Correct text: `Loads panel parquet, selecting 22 columns`
-- Proof: `run_h7_illiquidity.py` lines 149-159 define `columns = [...]` with 22 entries: start_date, gvkey, year, fyearq_int, ff12_code, delta_amihud, pre_call_amihud, CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, Volatility, StockPrice, Turnover, Analyst_QA_Uncertainty_pct.
+- Proof: `run_h7_illiquidity.py` lines 149-159 define `columns = [...]` with 22 entries: start_date, gvkey, year, fyearq_int, ff12_code, DeltaILLIQ, PreCallILLIQ, UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr, lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, DailyVola, StockPrice, Turnover, UncQue.
 
 **Correction 4: Section I, source citation line**
 - Location: Section I ("generate_all_tables.py Entry") → line immediately after the Python code block

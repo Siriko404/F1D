@@ -10,9 +10,9 @@ Description: Build CALL-LEVEL panel for H4 Leverage Discipline hypothesis test.
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
     Step 4: Compute temporal leverage variables per call:
-            - BookLev_lag: t-1 leverage (prior fiscal year)
-            - BookLev_t: current leverage (same fiscal year)
-            - BookLev_lead: t+1 leverage (next fiscal year)
+            - Leverage_lag: t-1 leverage (prior fiscal year)
+            - Leverage_t: current leverage (same fiscal year)
+            - Leverage_lead: t+1 leverage (next fiscal year)
             All require consecutive fiscal years within gvkey.
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
@@ -105,7 +105,7 @@ def _create_temporal_vars_for_col(
 
 
 def create_leverage_temporal_vars(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """Create temporal variables for BookLev and DebtToCapital.
+    """Create temporal variables for Leverage and DebtToCapital.
 
     For each leverage measure, produces _lag (t-1), _t (current), _lead (t+1).
     """
@@ -123,7 +123,7 @@ def create_leverage_temporal_vars(panel: pd.DataFrame, root_path: Path) -> pd.Da
     )
     df_valid = df[valid_mask].copy()
 
-    lev_cols = ["BookLev", "DebtToCapital"]
+    lev_cols = ["Leverage", "DebtToCapital"]
 
     if len(df_valid) == 0:
         print("  WARNING: No valid rows for temporal variable creation.")
@@ -290,24 +290,24 @@ def generate_report(
         f"- **Columns:** {len(panel.columns)}",
         "",
         "## Dependent Variables (Leverage)",
-        f"- **BookLev (t):** {panel['BookLev'].notna().sum():,} calls",
-        f"- **BookLev_lead (t+1):** {panel['BookLev_lead'].notna().sum():,} calls",
+        f"- **Leverage (t):** {panel['Leverage'].notna().sum():,} calls",
+        f"- **Leverage_lead (t+1):** {panel['Leverage_lead'].notna().sum():,} calls",
         f"- **DebtToCapital (t):** {panel['DebtToCapital'].notna().sum():,} calls",
         f"- **DebtToCapital_lead (t+1):** {panel['DebtToCapital_lead'].notna().sum():,} calls",
         "",
         "## Key IVs (4 simultaneous)",
-        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **UncAnsCEO:** {panel['UncAnsCEO'].notna().sum():,} calls",
+        f"- **UncPreCEO:** {panel['UncPreCEO'].notna().sum():,} calls",
+        f"- **UncAnsMgr:** {panel['UncAnsMgr'].notna().sum():,} calls",
+        f"- **UncPreMgr:** {panel['UncPreMgr'].notna().sum():,} calls",
         "",
         "## Extended Controls",
-        f"- **CapexAt:** {panel['CapexAt'].notna().sum():,} calls",
-        f"- **OCF_Volatility:** {panel['OCF_Volatility'].notna().sum():,} calls",
+        f"- **Capex:** {panel['Capex'].notna().sum():,} calls",
+        f"- **sCFO:** {panel['sCFO'].notna().sum():,} calls",
         f"- **SalesGrowth:** {panel['SalesGrowth'].notna().sum():,} calls",
-        f"- **RD_Intensity:** {panel['RD_Intensity'].notna().sum():,} calls",
-        f"- **CashFlow:** {panel['CashFlow'].notna().sum():,} calls",
-        f"- **Volatility:** {panel['Volatility'].notna().sum():,} calls",
+        f"- **RDSales:** {panel['RDSales'].notna().sum():,} calls",
+        f"- **CashFlowAt:** {panel['CashFlowAt'].notna().sum():,} calls",
+        f"- **DailyVola:** {panel['DailyVola'].notna().sum():,} calls",
         "",
     ]
     report_path = out_dir / "report_step3_h4.md"

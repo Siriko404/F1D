@@ -1,6 +1,6 @@
 """Builder for CEO Presentation Positive Sentiment variable.
 
-Queries the shared LinguisticEngine for CEO_Pres_Positive_pct.
+Queries the shared LinguisticEngine for PosPreCEO.
 Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
@@ -19,12 +19,12 @@ class CEOPresPositiveBuilder(VariableBuilder):
     """Build CEO Presentation Positive Sentiment variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    Column: CEO_Pres_Positive_pct
+    Column: PosPreCEO
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "CEO_Pres_Positive_pct")
+        self.column = config.get("column", "PosPreCEO")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         engine = get_engine()

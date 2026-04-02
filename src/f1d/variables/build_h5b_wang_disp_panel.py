@@ -7,9 +7,9 @@ ID: variables/build_h5b_wang_disp_panel
 Description: Build CALL-LEVEL panel for H5b Wang Dispersion hypothesis test.
 
     Unit of observation: individual earnings call (file_name).
-    DV: WangDISP = SD(analyst forecasts T-31..T-1) / prccq_prior
-    Lead DV: WangDISP_lead = next fiscal quarter's WangDISP
-    Lagged DV control: WangDISP_lag = prior fiscal quarter's WangDISP
+    DV: DISP = SD(analyst forecasts T-31..T-1) / prccq_prior
+    Lead DV: DISP_lead = next fiscal quarter's DISP
+    Lagged DV control: DISP_lag = prior fiscal quarter's DISP
 
 Reference: Wang (2020, Review of Accounting and Finance 19(3): 289-312).
 """
@@ -110,7 +110,7 @@ def build_panel(
         "earnings_surprise": EarningsSurpriseBuilder(
             var_config.get("earnings_surprise", {})
         ),
-        "loss_dummy": LossDummyBuilder(var_config.get("loss_dummy", {})),
+        "Loss": LossDummyBuilder(var_config.get("Loss", {})),
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
         ),
@@ -167,16 +167,16 @@ def build_panel(
 
 
 def create_lead_lag_variables(panel: pd.DataFrame, root_path: Optional[Path] = None) -> pd.DataFrame:
-    """Create lead and lag WangDISP at call level using fiscal quarter shifting.
+    """Create lead and lag DISP at call level using fiscal quarter shifting.
 
     Adapts H12's lead construction pattern (fiscal_qtr_id shifting).
     """
     print("\n" + "=" * 60)
-    print("Creating lead/lag variables for WangDISP")
+    print("Creating lead/lag variables for DISP")
     print("=" * 60)
 
-    if "WangDISP" not in panel.columns:
-        raise ValueError("'WangDISP' column missing.")
+    if "DISP" not in panel.columns:
+        raise ValueError("'DISP' column missing.")
 
     # Attach fqtr if not present
     if root_path is not None and "fyearq" not in panel.columns:
@@ -238,18 +238,18 @@ def create_lead_lag_variables(panel: pd.DataFrame, root_path: Optional[Path] = N
     valid_mask = panel_dt["fiscal_qtr_id"].notna()
     panel_valid = panel_dt[valid_mask].copy()
 
-    # For each (gvkey, fiscal_qtr_id), take WangDISP from call with latest start_date
+    # For each (gvkey, fiscal_qtr_id), take DISP from call with latest start_date
     latest_idx = panel_valid.groupby(["gvkey", "fiscal_qtr_id"])["start_date_dt"].idxmax()
     firm_qtr = panel_valid.loc[
-        latest_idx, ["gvkey", "fiscal_qtr_id", "fyearq_int", "fqtr_int", "WangDISP"]
+        latest_idx, ["gvkey", "fiscal_qtr_id", "fyearq_int", "fqtr_int", "DISP"]
     ].copy()
     firm_qtr = firm_qtr.sort_values(["gvkey", "fiscal_qtr_id"]).reset_index(drop=True)
 
     print(f"  Unique firm-quarters: {len(firm_qtr):,}")
 
-    # --- Lead: Next fiscal quarter's WangDISP ---
+    # --- Lead: Next fiscal quarter's DISP ---
     firm_qtr["fiscal_qtr_id_next"] = firm_qtr.groupby("gvkey")["fiscal_qtr_id"].shift(-1)
-    firm_qtr["WangDISP_lead_raw"] = firm_qtr.groupby("gvkey")["WangDISP"].shift(-1)
+    firm_qtr["DISP_lead_raw"] = firm_qtr.groupby("gvkey")["DISP"].shift(-1)
 
     # Validate consecutive quarters
     curr_fq = firm_qtr["fiscal_qtr_id"]
@@ -260,16 +260,16 @@ def create_lead_lag_variables(panel: pd.DataFrame, root_path: Optional[Path] = N
         (firm_qtr["fyearq_int"] + 1) * 10 + 1,
     )
     consecutive_qtr = next_fq == expected_next
-    firm_qtr["WangDISP_lead"] = np.where(
-        consecutive_qtr, firm_qtr["WangDISP_lead_raw"], np.nan
+    firm_qtr["DISP_lead"] = np.where(
+        consecutive_qtr, firm_qtr["DISP_lead_raw"], np.nan
     )
 
-    n_lead = firm_qtr["WangDISP_lead"].notna().sum()
+    n_lead = firm_qtr["DISP_lead"].notna().sum()
     print(f"  Firm-quarters with valid next-quarter lead: {n_lead:,}")
 
-    # --- Lag: Prior fiscal quarter's WangDISP ---
+    # --- Lag: Prior fiscal quarter's DISP ---
     firm_qtr["fiscal_qtr_id_prev"] = firm_qtr.groupby("gvkey")["fiscal_qtr_id"].shift(1)
-    firm_qtr["WangDISP_lag_raw"] = firm_qtr.groupby("gvkey")["WangDISP"].shift(1)
+    firm_qtr["DISP_lag_raw"] = firm_qtr.groupby("gvkey")["DISP"].shift(1)
 
     # Validate consecutive (backwards)
     prev_fq = firm_qtr["fiscal_qtr_id_prev"]
@@ -279,23 +279,23 @@ def create_lead_lag_variables(panel: pd.DataFrame, root_path: Optional[Path] = N
         (firm_qtr["fyearq_int"] - 1) * 10 + 4,
     )
     consecutive_prev = prev_fq == expected_prev
-    firm_qtr["WangDISP_lag"] = np.where(
-        consecutive_prev, firm_qtr["WangDISP_lag_raw"], np.nan
+    firm_qtr["DISP_lag"] = np.where(
+        consecutive_prev, firm_qtr["DISP_lag_raw"], np.nan
     )
 
-    n_lag = firm_qtr["WangDISP_lag"].notna().sum()
+    n_lag = firm_qtr["DISP_lag"].notna().sum()
     print(f"  Firm-quarters with valid prior-quarter lag: {n_lag:,}")
 
     # --- Merge lead + lag back to call level ---
-    lead_lag_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "WangDISP_lead", "WangDISP_lag"]].copy()
+    lead_lag_lookup = firm_qtr[["gvkey", "fiscal_qtr_id", "DISP_lead", "DISP_lag"]].copy()
 
     before_len = len(panel)
     panel = panel.merge(lead_lag_lookup, on=["gvkey", "fiscal_qtr_id"], how="left")
     if len(panel) != before_len:
         raise ValueError(f"Lead/lag merge changed row count {before_len} -> {len(panel)}.")
 
-    print(f"  Calls with next-quarter lead: {panel['WangDISP_lead'].notna().sum():,}")
-    print(f"  Calls with prior-quarter lag: {panel['WangDISP_lag'].notna().sum():,}")
+    print(f"  Calls with next-quarter lead: {panel['DISP_lead'].notna().sum():,}")
+    print(f"  Calls with prior-quarter lag: {panel['DISP_lag'].notna().sum():,}")
 
     return panel
 

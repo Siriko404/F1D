@@ -1,6 +1,6 @@
 """Builder for Manager Presentation Positive Sentiment variable.
 
-Queries the shared LinguisticEngine for Manager_Pres_Positive_pct.
+Queries the shared LinguisticEngine for PosPreMgr.
 Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
@@ -19,12 +19,12 @@ class ManagerPresPositiveBuilder(VariableBuilder):
     """Build Manager Presentation Positive Sentiment variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    Column: Manager_Pres_Positive_pct
+    Column: PosPreMgr
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "Manager_Pres_Positive_pct")
+        self.column = config.get("column", "PosPreMgr")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         engine = get_engine()

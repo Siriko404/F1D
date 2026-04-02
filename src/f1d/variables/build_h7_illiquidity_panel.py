@@ -7,15 +7,15 @@ ID: variables/build_h7_illiquidity_panel
 Description: Build CALL-LEVEL panel for H7 Speech Vagueness -> Stock Illiquidity.
 
     Step 1: Load manifest + all call-level uncertainty measures.
-    Step 2: Load base financial controls (Size, BookLev, ROA, TobinsQ, Volatility, StockRet).
+    Step 2: Load base financial controls (lnAssets, Leverage, ROA, TobinsQ, DailyVola, StockRet).
     Step 3: Load the Amihud (2002) Illiquidity measure (post-call window).
-    Step 4: Load linguistic controls (Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct).
+    Step 4: Load linguistic controls (NegCall, UncQue).
     Step 5: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 6: Assign industry sample (Main / Finance / Utility).
     Step 7: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
-DV: delta_amihud (post-call minus pre-call Amihud illiquidity change).
+DV: DeltaILLIQ (post-call minus pre-call Amihud illiquidity change).
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ from f1d.shared.variables import (
     CEOPresUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
-    # DV builder (produces delta_amihud + pre_call_amihud)
+    # DV builder (produces DeltaILLIQ + PreCallILLIQ)
     AmihudChangeBuilder,
     # Base controls
     SizeBuilder,
@@ -97,7 +97,7 @@ def build_panel(
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
         ),
-        # DV (produces delta_amihud + pre_call_amihud)
+        # DV (produces DeltaILLIQ + PreCallILLIQ)
         "amihud_change": AmihudChangeBuilder(var_config.get("amihud_change", {})),
         # Base controls
         "size": SizeBuilder(var_config.get("size", {})),
@@ -194,8 +194,8 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **delta_amihud (valid):** {panel['delta_amihud'].notna().sum():,} calls",
-        f"- **pre_call_amihud (valid):** {panel['pre_call_amihud'].notna().sum():,} calls",
+        f"- **DeltaILLIQ (valid):** {panel['DeltaILLIQ'].notna().sum():,} calls",
+        f"- **PreCallILLIQ (valid):** {panel['PreCallILLIQ'].notna().sum():,} calls",
         "",
     ]
     report_path = out_dir / "report_step3_h7.md"

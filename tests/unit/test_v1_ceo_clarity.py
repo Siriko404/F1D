@@ -39,9 +39,9 @@ def sample_linguistic_df() -> pd.DataFrame:
     return pd.DataFrame(
         {
             "file_name": ["call_001", "call_002", "call_003", "call_004", "call_005"],
-            "Manager_QA_Uncertainty_pct": [2.5, 3.0, 3.5, 2.8, 1.5],
-            "CEO_QA_Uncertainty_pct": [2.0, 2.5, 3.0, 2.2, 1.2],
-            "Manager_Pres_Uncertainty_pct": [1.5, 2.0, 2.5, 1.8, 1.0],
+            "UncAnsMgr": [2.5, 3.0, 3.5, 2.8, 1.5],
+            "UncAnsCEO": [2.0, 2.5, 3.0, 2.2, 1.2],
+            "UncPreMgr": [1.5, 2.0, 2.5, 1.8, 1.0],
         }
     )
 
@@ -54,7 +54,7 @@ def sample_firm_controls_df() -> pd.DataFrame:
             "file_name": ["call_001", "call_002", "call_003", "call_004", "call_005"],
             "StockRet": [0.05, 0.08, -0.02, 0.10, 0.03],
             "MarketRet": [0.06, 0.07, 0.05, 0.08, 0.04],
-            "EPS_Growth": [0.10, 0.15, -0.05, 0.20, 0.08],
+            "EPSgrowth": [0.10, 0.15, -0.05, 0.20, 0.08],
             "SurpDec": [0.01, 0.02, -0.01, 0.03, 0.00],
         }
     )
@@ -124,7 +124,7 @@ class TestDataMerging:
         # All manifest rows should be preserved
         assert len(merged) == len(manifest)
         # Linguistic columns should be present
-        assert "CEO_QA_Uncertainty_pct" in merged.columns
+        assert "UncAnsCEO" in merged.columns
 
     def test_merge_preserves_ceo_id(
         self, sample_manifest_df: pd.DataFrame, sample_linguistic_df: pd.DataFrame
@@ -161,12 +161,12 @@ class TestClarityScoreCalculation:
         df = pd.DataFrame(
             {
                 "ceo_id": ["CEO001", "CEO001", "CEO002", "CEO002"],
-                "CEO_QA_Uncertainty_pct": [2.0, 2.5, 3.0, 3.5],
+                "UncAnsCEO": [2.0, 2.5, 3.0, 3.5],
             }
         )
 
         # Calculate mean uncertainty per CEO (would be used for fixed effect)
-        ceo_means = df.groupby("ceo_id")["CEO_QA_Uncertainty_pct"].mean()
+        ceo_means = df.groupby("ceo_id")["UncAnsCEO"].mean()
 
         # CEO001 should have lower mean uncertainty than CEO002
         assert ceo_means["CEO001"] < ceo_means["CEO002"]
@@ -218,20 +218,20 @@ class TestRegressionSpecification:
 
     def test_formula_includes_uncertainty(self) -> None:
         """Test that regression formula includes uncertainty variable."""
-        uncertainty_var = "CEO_QA_Uncertainty_pct"
-        controls = ["StockRet", "MarketRet", "EPS_Growth"]
+        uncertainty_var = "UncAnsCEO"
+        controls = ["StockRet", "MarketRet", "EPSgrowth"]
 
         formula_parts = [uncertainty_var] + controls
-        formula = " ~ ".join(["CEO_QA_Uncertainty_pct", " + ".join(controls)])
+        formula = " ~ ".join(["UncAnsCEO", " + ".join(controls)])
 
-        assert "CEO_QA_Uncertainty_pct" in formula
+        assert "UncAnsCEO" in formula
         assert "StockRet" in formula
 
     def test_formula_with_entity_effects(self) -> None:
         """Test formula includes entity (CEO) fixed effects."""
         # Entity effects are typically handled by the regression method, not formula
         # But verify the structure
-        formula = "CEO_QA_Uncertainty_pct ~ StockRet + MarketRet + EntityEffects"
+        formula = "UncAnsCEO ~ StockRet + MarketRet + EntityEffects"
         assert "EntityEffects" in formula
 
 
@@ -308,7 +308,7 @@ class TestV1EconometricIntegration:
 
         # Step 3: Calculate CEO-level statistics
         ceo_stats = main_sample.groupby("ceo_id").agg(
-            {"CEO_QA_Uncertainty_pct": "mean", "file_name": "count"}
+            {"UncAnsCEO": "mean", "file_name": "count"}
         ).reset_index()
         ceo_stats.columns = ["ceo_id", "mean_uncertainty", "n_calls"]
 

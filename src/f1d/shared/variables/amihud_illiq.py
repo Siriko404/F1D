@@ -1,7 +1,7 @@
 """Builder for Amihud Illiquidity (amihud_illiq) variable.
 
 Reads raw CRSP daily stock files via the shared CRSPEngine.
-Returns one column: file_name, amihud_illiq.
+Returns one column: file_name, ILLIQ.
 
 Amihud Illiquidity = mean(|daily_ret| / dollar_volume) * 1e6,
 computed over the call window [prev_call + 5d, call - 5d],
@@ -42,15 +42,15 @@ class AmihudIlliqBuilder(VariableBuilder):
         crsp_data = engine.get_data(root_path, manifest_path)
         
         merged = manifest.merge(
-            crsp_data[["file_name", "amihud_illiq"]], on="file_name", how="left"
+            crsp_data[["file_name", "ILLIQ"]], on="file_name", how="left"
         )
         
-        data = merged[["file_name", "amihud_illiq"]].copy()
+        data = merged[["file_name", "ILLIQ"]].copy()
         
         return VariableResult(
             data=data,
-            stats=self.get_stats(data["amihud_illiq"], "amihud_illiq"),
-            metadata={"column": "amihud_illiq", "source": "CRSP via CRSPEngine"},
+            stats=self.get_stats(data["ILLIQ"], "ILLIQ"),
+            metadata={"column": "ILLIQ", "source": "CRSP via CRSPEngine"},
         )
 
 __all__ = ["AmihudIlliqBuilder"]

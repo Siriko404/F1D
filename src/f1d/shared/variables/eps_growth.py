@@ -1,9 +1,9 @@
 """Builder for EPS Growth variable.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, EPS_Growth.
+Returns one column: file_name, EPSgrowth.
 
-EPS_Growth = (epspxq - lag_epspxq) / |lag_epspxq|
+EPSgrowth = (epspxq - lag_epspxq) / |lag_epspxq|
 where lag is identified by datadate arithmetic (±45 days of one year ago),
 not by row-count shift(4), making it robust to missing/irregular quarters.
 """
@@ -44,12 +44,12 @@ class EPSGrowthBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "EPS_Growth"]].copy()
-        stats = self.get_stats(data["EPS_Growth"], "EPS_Growth")
+        data = merged[["file_name", "EPSgrowth"]].copy()
+        stats = self.get_stats(data["EPSgrowth"], "EPSgrowth")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "EPS_Growth", "source": "Compustat/epspxq"},
+            metadata={"column": "EPSgrowth", "source": "Compustat/epspxq"},
         )
 
 

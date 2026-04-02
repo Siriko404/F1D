@@ -9,15 +9,15 @@ Description: Build CALL-LEVEL panel for H11-Lag Political Risk hypothesis test.
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date and calendar quarter.
-    Step 4: Add PRiskQ_lag (1-quarter lag) and PRiskQ_lag2 (2-quarter lag).
+    Step 4: Add PRisk_lag (1-quarter lag) and PRisk_lag2 (2-quarter lag).
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
 
 Temporal Structure:
-    PRiskQ_lag: Calendar quarter Q-1 (1-quarter lag)
-    PRiskQ_lag2: Calendar quarter Q-2 (2-quarter lag)
+    PRisk_lag: Calendar quarter Q-1 (1-quarter lag)
+    PRisk_lag2: Calendar quarter Q-2 (2-quarter lag)
     Earnings call happens within calendar quarter Q
 """
 
@@ -113,9 +113,9 @@ def build_panel(
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
         "dividend_payer": DividendPayerBuilder(var_config.get("dividend_payer", {})),
-        "firm_maturity": FirmMaturityBuilder(var_config.get("firm_maturity", {})),
-        "earnings_volatility": EarningsVolatilityBuilder(
-            var_config.get("earnings_volatility", {})
+        "FirmMat": FirmMaturityBuilder(var_config.get("FirmMat", {})),
+        "EarnVol": EarningsVolatilityBuilder(
+            var_config.get("EarnVol", {})
         ),
     }
 
@@ -159,21 +159,21 @@ def build_panel(
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
-    # Log PRiskQ_lag match statistics
+    # Log PRisk_lag match statistics
     priskq_result = all_results.get("prisk_q_lag")
     if priskq_result and priskq_result.metadata:
         meta = priskq_result.metadata
         print(
-            f"\n  PRiskQ_lag Match Stats: {meta.get('n_matched', 0):,} / "
+            f"\n  PRisk_lag Match Stats: {meta.get('n_matched', 0):,} / "
             f"{meta.get('n_total', 0):,} calls ({meta.get('pct_matched', 0):.1f}%)"
         )
 
-    # Log PRiskQ_lag2 match statistics
+    # Log PRisk_lag2 match statistics
     priskq_lag2_result = all_results.get("prisk_q_lag2")
     if priskq_lag2_result and priskq_lag2_result.metadata:
         meta = priskq_lag2_result.metadata
         print(
-            f"  PRiskQ_lag2 Match Stats: {meta.get('n_matched', 0):,} / "
+            f"  PRisk_lag2 Match Stats: {meta.get('n_matched', 0):,} / "
             f"{meta.get('n_total', 0):,} calls ({meta.get('pct_matched', 0):.1f}%)"
         )
 
@@ -220,14 +220,14 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **PRiskQ_lag (valid):** {panel['PRiskQ_lag'].notna().sum():,} calls",
-        f"- **PRiskQ_lag2 (valid):** {panel['PRiskQ_lag2'].notna().sum():,} calls",
+        f"- **PRisk_lag (valid):** {panel['PRisk_lag'].notna().sum():,} calls",
+        f"- **PRisk_lag2 (valid):** {panel['PRisk_lag2'].notna().sum():,} calls",
         "",
         "## Model Specification",
-        "`Uncertainty_it ~ PRiskQ_lag_it + Controls_it + EntityEffects + TimeEffects`",
+        "`Uncertainty_it ~ PRisk_lag_it + Controls_it + EntityEffects + TimeEffects`",
         "",
         "## Temporal Structure",
-        "- PRiskQ_lag: Calendar quarter Q-1 (lagged by one quarter)",
+        "- PRisk_lag: Calendar quarter Q-1 (lagged by one quarter)",
         "- Earnings call: Within calendar quarter Q",
         "- Causal direction: Prior quarter's political risk affects current speech",
         "",

@@ -56,9 +56,9 @@ def sample_speech_df() -> pd.DataFrame:
             "file_name": ["call_001", "call_002", "call_003"],
             "gvkey": ["001000", "001001", "001002"],
             "start_date": pd.to_datetime(["2021-03-15", "2021-03-16", "2021-03-17"]),
-            "Manager_QA_Uncertainty_pct": [2.5, 3.0, 1.5],
-            "Manager_Pres_Uncertainty_pct": [1.5, 2.0, 1.0],
-            "CEO_QA_Uncertainty_pct": [2.0, 2.5, 1.2],
+            "UncAnsMgr": [2.5, 3.0, 1.5],
+            "UncPreMgr": [1.5, 2.0, 1.0],
+            "UncAnsCEO": [2.0, 2.5, 1.2],
         }
     )
 
@@ -157,41 +157,41 @@ class TestComputeEarningsSurprise:
 
 
 # ==============================================================================
-# Test compute_loss_dummy
+# Test compute_Loss
 # ==============================================================================
 
 
 class TestComputeLossDummy:
     """Tests for loss dummy calculation."""
 
-    def test_loss_dummy_calculation(self, sample_compustat_df: pd.DataFrame) -> None:
+    def test_Loss_calculation(self, sample_compustat_df: pd.DataFrame) -> None:
         """Test loss dummy: 1 if NI < 0."""
         df = sample_compustat_df.copy()
-        df["loss_dummy"] = (df["ni"] < 0).astype(int)
+        df["Loss"] = (df["ni"] < 0).astype(int)
 
         expected = (df["ni"] < 0).astype(int)
-        pd.testing.assert_series_equal(df["loss_dummy"], expected, check_names=False)
+        pd.testing.assert_series_equal(df["Loss"], expected, check_names=False)
 
-    def test_loss_dummy_binary(self, sample_compustat_df: pd.DataFrame) -> None:
+    def test_Loss_binary(self, sample_compustat_df: pd.DataFrame) -> None:
         """Test that loss dummy is binary (0 or 1)."""
         df = sample_compustat_df.copy()
-        df["loss_dummy"] = (df["ni"] < 0).astype(int)
+        df["Loss"] = (df["ni"] < 0).astype(int)
 
-        assert set(df["loss_dummy"].unique()).issubset({0, 1})
+        assert set(df["Loss"].unique()).issubset({0, 1})
 
-    def test_loss_dummy_for_profitable_firms(self) -> None:
+    def test_Loss_for_profitable_firms(self) -> None:
         """Test loss dummy is 0 for profitable firms."""
         df = pd.DataFrame({"ni": [100.0, 200.0, 50.0]})
-        df["loss_dummy"] = (df["ni"] < 0).astype(int)
+        df["Loss"] = (df["ni"] < 0).astype(int)
 
-        assert (df["loss_dummy"] == 0).all()
+        assert (df["Loss"] == 0).all()
 
-    def test_loss_dummy_for_loss_firms(self) -> None:
+    def test_Loss_for_loss_firms(self) -> None:
         """Test loss dummy is 1 for loss-making firms."""
         df = pd.DataFrame({"ni": [-100.0, -50.0, -10.0]})
-        df["loss_dummy"] = (df["ni"] < 0).astype(int)
+        df["Loss"] = (df["ni"] < 0).astype(int)
 
-        assert (df["loss_dummy"] == 1).all()
+        assert (df["Loss"] == 1).all()
 
 
 # ==============================================================================
@@ -265,12 +265,12 @@ class TestH5VariablesIntegration:
         ].abs()
 
         # Compute loss dummy
-        comp["loss_dummy"] = (comp["ni"] < 0).astype(int)
+        comp["Loss"] = (comp["ni"] < 0).astype(int)
 
         # Verify all variables exist
         assert "dispersion" in ibes.columns
         assert "earnings_surprise" in ibes.columns
-        assert "loss_dummy" in comp.columns
+        assert "Loss" in comp.columns
 
     def test_dispersion_filtering_criteria(self, sample_ibes_df: pd.DataFrame) -> None:
         """Test that dispersion filtering criteria work correctly."""

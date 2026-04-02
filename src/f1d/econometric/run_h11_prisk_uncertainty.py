@@ -9,24 +9,24 @@ Description: Run H11 Political Risk hypothesis test by loading the call-level
              industry sample and uncertainty measure, and outputting results.
 
 Model Specification:
-    Uncertainty_t ~ PRiskQ_t + Analyst_Uncertainty_t + [Pres_Uncertainty_t] +
-                    Entire_All_Negative_pct + Size + TobinsQ + ROA + CashHoldings +
-                    DividendPayer + firm_maturity + earnings_volatility +
+    Uncertainty_t ~ PRisk_t + UncQue_t + [UncPre*_t] +
+                    NegCall + lnAssets + TobinsQ + ROA + CashRatio +
+                    DivDummy + FirmMat + EarnVol +
                     C(gvkey) + C(year)
 
 Dependent Variables:
-    1. Manager_QA_Uncertainty_pct
-    2. CEO_QA_Uncertainty_pct
-    3. Manager_Pres_Uncertainty_pct
-    4. CEO_Pres_Uncertainty_pct
+    1. UncAnsMgr
+    2. UncAnsCEO
+    3. UncPreMgr
+    4. UncPreCEO
 
 Dynamic Covariates:
     - If DV is a QA measure, the corresponding Presentation measure is added as a control.
-      (e.g., Manager_QA regressions control for Manager_Pres_Uncertainty_pct)
-    - Analyst_QA_Uncertainty_pct is always included as a control.
+      (e.g., UncAnsMgr regressions control for UncPreMgr)
+    - UncQue is always included as a control.
 
 Hypothesis Tests (one-tailed):
-    H11: beta(PRiskQ) > 0  -- higher political risk increases speech uncertainty
+    H11: beta(PRisk) > 0  -- higher political risk increases speech uncertainty
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -83,31 +83,31 @@ warnings.filterwarnings(
 CONFIG = {
     "min_calls": 5,
     "dependent_variables": [
-        "Manager_QA_Uncertainty_pct",
-        "CEO_QA_Uncertainty_pct",
-        "Manager_Pres_Uncertainty_pct",
-        "CEO_Pres_Uncertainty_pct",
+        "UncAnsMgr",
+        "UncAnsCEO",
+        "UncPreMgr",
+        "UncPreCEO",
     ],
     "samples": ["Main", "Finance", "Utility"],
 }
 
 BASE_CONTROLS = [
-    "Analyst_QA_Uncertainty_pct",
-    "Entire_All_Negative_pct",
-    "Size",
+    "UncQue",
+    "NegCall",
+    "lnAssets",
     "TobinsQ",
     "ROA",
-    "CashHoldings",
-    "DividendPayer",
-    "firm_maturity",
-    "earnings_volatility",
+    "CashRatio",
+    "DivDummy",
+    "FirmMat",
+    "EarnVol",
 ]
 
 PRES_CONTROL_MAP = {
-    "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
-    "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct": None,
-    "CEO_Pres_Uncertainty_pct": None,
+    "UncAnsMgr": "UncPreMgr",
+    "UncAnsCEO": "UncPreCEO",
+    "UncPreMgr": None,
+    "UncPreCEO": None,
 }
 
 
@@ -117,22 +117,22 @@ PRES_CONTROL_MAP = {
 
 SUMMARY_STATS_VARS = [
     # Dependent variables (uncertainty measures)
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     # Main independent variable
-    {"col": "PRiskQ", "label": "Political Risk$_{t}$"},
+    {"col": "PRisk", "label": "Political Risk$_{t}$"},
     # Controls
-    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
-    {"col": "Entire_All_Negative_pct", "label": "Negative Sentiment"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "UncQue", "label": "Analyst QA Uncertainty"},
+    {"col": "NegCall", "label": "Negative Sentiment"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "firm_maturity", "label": "Firm Maturity"},
-    {"col": "earnings_volatility", "label": "Earnings Volatility"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "FirmMat", "label": "Firm Maturity"},
+    {"col": "EarnVol", "label": "Earnings Volatility"},
 ]
 
 
@@ -155,7 +155,7 @@ def prepare_regression_data(
     if pres_control:
         controls.append(pres_control)
 
-    required = [dv_var, "PRiskQ"] + controls + ["gvkey", "year"]
+    required = [dv_var, "PRisk"] + controls + ["gvkey", "year"]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -173,13 +173,13 @@ def run_regression(
     controls: List[str],
 ) -> Tuple[Any, Dict[str, Any]]:
     formula = (
-        f"{dv_var} ~ 1 + PRiskQ + "
+        f"{dv_var} ~ 1 + PRisk + "
         + " + ".join(controls)
         + " + EntityEffects + TimeEffects"
     )
 
     print(
-        f"  Formula: {dv_var} ~ PRiskQ + {' + '.join(controls)} + EntityEffects + TimeEffects"
+        f"  Formula: {dv_var} ~ PRisk + {' + '.join(controls)} + EntityEffects + TimeEffects"
     )
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
@@ -202,12 +202,12 @@ def run_regression(
     print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  N obs:              {int(model.nobs):,}")
 
-    beta_prisk = model.params.get("PRiskQ", np.nan)
-    p_two = model.pvalues.get("PRiskQ", np.nan)
-    beta_se = model.std_errors.get("PRiskQ", np.nan)
-    beta_t = model.tstats.get("PRiskQ", np.nan)
+    beta_prisk = model.params.get("PRisk", np.nan)
+    p_two = model.pvalues.get("PRisk", np.nan)
+    beta_se = model.std_errors.get("PRisk", np.nan)
+    beta_t = model.tstats.get("PRisk", np.nan)
 
-    # H11: beta(PRiskQ) > 0 (Higher political risk increases speech uncertainty)
+    # H11: beta(PRisk) > 0 (Higher political risk increases speech uncertainty)
     if not np.isnan(p_two) and not np.isnan(beta_prisk):
         p_one = p_two / 2 if beta_prisk > 0 else 1 - p_two / 2
     else:
@@ -217,7 +217,7 @@ def run_regression(
     h11_text = "YES" if h11_sig else "no"
 
     print(
-        f"  beta1 (PRiskQ):   {beta_prisk:.4f}  SE={beta_se:.4f}  p(one-tail)={p_one:.4f}  H11={h11_text}"
+        f"  beta1 (PRisk):   {beta_prisk:.4f}  SE={beta_se:.4f}  p(one-tail)={p_one:.4f}  H11={h11_text}"
     )
 
     meta = {
@@ -250,10 +250,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
                 return r
         return None
 
-    r_mq = get_res("Manager_QA_Uncertainty_pct")
-    r_cq = get_res("CEO_QA_Uncertainty_pct")
-    r_mp = get_res("Manager_Pres_Uncertainty_pct")
-    r_cp = get_res("CEO_Pres_Uncertainty_pct")
+    r_mq = get_res("UncAnsMgr")
+    r_cq = get_res("UncAnsCEO")
+    r_mp = get_res("UncPreMgr")
+    r_cp = get_res("UncPreCEO")
 
     def fmt_coef(val, pval):
         if val is None or pd.isna(val):
@@ -293,7 +293,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\midrule",
     ]
 
-    # Row 1: PRiskQ
+    # Row 1: PRisk
     r1 = "Political Risk$_{t}$ & "
     r1 += f"{fmt_coef(r_mq['beta_prisk'], r_mq['beta_prisk_p_one'])} & " if r_mq else " & "
     r1 += f"{fmt_coef(r_cq['beta_prisk'], r_cq['beta_prisk_p_one'])} & " if r_cq else " & "
@@ -408,22 +408,22 @@ def main(panel_path: str | None = None) -> int:
             "year",
             "ff12_code",
             # Dependent variables (uncertainty measures)
-            "Manager_QA_Uncertainty_pct",
-            "CEO_QA_Uncertainty_pct",
-            "Manager_Pres_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
+            "UncAnsMgr",
+            "UncAnsCEO",
+            "UncPreMgr",
+            "UncPreCEO",
             # Primary predictor
-            "PRiskQ",
+            "PRisk",
             # Base controls
-            "Analyst_QA_Uncertainty_pct",
-            "Entire_All_Negative_pct",
-            "Size",
+            "UncQue",
+            "NegCall",
+            "lnAssets",
             "TobinsQ",
             "ROA",
-            "CashHoldings",
-            "DividendPayer",
-            "firm_maturity",
-            "earnings_volatility",
+            "CashRatio",
+            "DivDummy",
+            "FirmMat",
+            "EarnVol",
         ],
     )
     print(f"  Rows: {len(panel):,}")

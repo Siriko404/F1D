@@ -10,23 +10,23 @@ Architecture:
         _crsp_engine.CRSPEngine            — loads CRSP yearly, caches result
 
     Individual Compustat variable builders (one column each):
-        SizeBuilder           → Size = ln(atq)
-        BMBuilder             → BM = ceqq / (cshoq * prccq)
-        BookLevBuilder        → BookLev = (dlcq + dlttq) / atq
+        SizeBuilder           → lnAssets = ln(atq)
+        BMBuilder             → BTM = ceqq / (cshoq * prccq)
+        BookLevBuilder        → Leverage = (dlcq + dlttq) / atq
         ROABuilder            → ROA = iby_annual / avg_assets
         CurrentRatioBuilder   → CurrentRatio = actq / lctq
-        RDIntensityBuilder    → RD_Intensity = xrdq / atq
-        EPSGrowthBuilder      → EPS_Growth (date-based YoY, robust to gaps)
-        CashHoldingsBuilder   → CashHoldings = cheq / atq
+        RDIntensityBuilder    → RDSales = xrdq / atq
+        EPSGrowthBuilder      → EPSgrowth (date-based YoY, robust to gaps)
+        CashHoldingsBuilder   → CashRatio = cheq / atq
         TobinsQBuilder        → TobinsQ = (atq + cshoq*prccq - ceqq) / atq
-        CapexIntensityBuilder → CapexAt = capxy_Q4 / atq
-        DividendPayerBuilder  → DividendPayer = (dvy_Q4 > 0).astype(float)
-        OCFVolatilityBuilder  → OCF_Volatility = rolling 5yr std (min 3) of oancfy/atq_{t-1}
+        CapexIntensityBuilder → Capex = capxy_Q4 / atq
+        DividendPayerBuilder  → DivDummy = (dvy_Q4 > 0).astype(float)
+        OCFVolatilityBuilder  → sCFO = rolling 5yr std (min 3) of oancfy/atq_{t-1}
 
     Individual CRSP variable builders (one column each):
         StockReturnBuilder    → StockRet (compound return over call window)
         MarketReturnBuilder   → MarketRet (compound VWRETD over call window)
-        VolatilityBuilder     → Volatility (annualized std over call window)
+        VolatilityBuilder     → DailyVola (annualized std over call window)
 
     IBES variable builder:
         EarningsSurpriseBuilder → SurpDec (earnings surprise decile -5..+5)
@@ -88,7 +88,6 @@ from .ceo_qa_uncertainty import CEOQAUncertaintyBuilder
 from .ceo_pres_uncertainty import CEOPresUncertaintyBuilder
 from .nonceo_manager_qa_uncertainty import NonCEOManagerQAUncertaintyBuilder
 from .nonceo_manager_pres_uncertainty import NonCEOManagerPresUncertaintyBuilder
-from .cfo_qa_uncertainty import CFOQAUncertaintyBuilder
 
 # Tone/sentiment builders (Positive/Negative pct per speaker/context — Stage 2)
 from .manager_qa_positive import ManagerQAPositiveBuilder
@@ -179,7 +178,6 @@ __all__ = [
     "CEOPresUncertaintyBuilder",
     "NonCEOManagerQAUncertaintyBuilder",
     "NonCEOManagerPresUncertaintyBuilder",
-    "CFOQAUncertaintyBuilder",
     # Tone/sentiment builders (Positive/Negative pct per speaker/context)
     "ManagerQAPositiveBuilder",
     "ManagerQANegativeBuilder",

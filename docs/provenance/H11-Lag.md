@@ -32,7 +32,7 @@ Panel Builder:   src/f1d/variables/build_h11_prisk_uncertainty_lag_panel.py
 
 ### B1. Regression Equation
 
-Each specification estimates a single IV against a single DV (not all 4 IVs simultaneously). Two IVs are tested: PRiskQ_lag (t-1) and PRiskQ_lag2 (t-2).
+Each specification estimates a single IV against a single DV (not all 4 IVs simultaneously). Two IVs are tested: PRisk_lag (t-1) and PRisk_lag2 (t-2).
 
 **For QA dependent variables (cols 1, 2, 5, 6):**
 
@@ -61,10 +61,10 @@ where $\alpha_i$ is firm FE (EntityEffects, absorbed via gvkey index) and $\delt
 
 | Variable Name (code) | Description | Formula | Source Engine | Timing |
 |---|---|---|---|---|
-| `Manager_QA_Uncertainty_pct` | All managers' Q&A uncertainty word percentage | (LM uncertainty word count by managers in Q&A / total manager Q&A words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
-| `CEO_QA_Uncertainty_pct` | CEO Q&A uncertainty word percentage | (LM uncertainty word count by CEO in Q&A / total CEO Q&A words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
-| `Manager_Pres_Uncertainty_pct` | All managers' presentation uncertainty word percentage | (LM uncertainty word count by managers in presentation / total manager presentation words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
-| `CEO_Pres_Uncertainty_pct` | CEO presentation uncertainty word percentage | (LM uncertainty word count by CEO in presentation / total CEO presentation words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncAnsMgr` | All managers' Q&A uncertainty word percentage | (LM uncertainty word count by managers in Q&A / total manager Q&A words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncAnsCEO` | CEO Q&A uncertainty word percentage | (LM uncertainty word count by CEO in Q&A / total CEO Q&A words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncPreMgr` | All managers' presentation uncertainty word percentage | (LM uncertainty word count by managers in presentation / total manager presentation words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
+| `UncPreCEO` | CEO presentation uncertainty word percentage | (LM uncertainty word count by CEO in presentation / total CEO presentation words) * 100 | LinguisticEngine | Contemporaneous (call-level) |
 
 Note: This is the reverse IV/DV structure compared to the standard 4-IV suites. Here, the uncertainty measures are DVs and political risk is the IV.
 
@@ -74,8 +74,8 @@ Note: This is the reverse IV/DV structure compared to the standard 4-IV suites. 
 
 | Variable Name (code) | Description | Formula | Source Engine | Timing |
 |---|---|---|---|---|
-| `PRiskQ_lag` | Quarterly political risk exposure, 1-quarter lag | PRisk from Hassan et al. (2019) for calendar quarter Q-1, matched to call in quarter Q via (gvkey, cal_q_lag) | PRiskQLagBuilder: inputs/FirmLevelRisk/firmquarter_2022q1.csv | Lag t-1 (prior quarter) |
-| `PRiskQ_lag2` | Quarterly political risk exposure, 2-quarter lag | PRisk from Hassan et al. (2019) for calendar quarter Q-2, matched to call in quarter Q via (gvkey, cal_q_lag2) | PRiskQLag2Builder: inputs/FirmLevelRisk/firmquarter_2022q1.csv | Lag t-2 (two quarters prior) |
+| `PRisk_lag` | Quarterly political risk exposure, 1-quarter lag | PRisk from Hassan et al. (2019) for calendar quarter Q-1, matched to call in quarter Q via (gvkey, cal_q_lag) | PRiskLagBuilder: inputs/FirmLevelRisk/firmquarter_2022q1.csv | Lag t-1 (prior quarter) |
+| `PRisk_lag2` | Quarterly political risk exposure, 2-quarter lag | PRisk from Hassan et al. (2019) for calendar quarter Q-2, matched to call in quarter Q via (gvkey, cal_q_lag2) | PRiskLag2Builder: inputs/FirmLevelRisk/firmquarter_2022q1.csv | Lag t-2 (two quarters prior) |
 
 Each specification tests exactly ONE IV against ONE DV. The two IVs are never in the same regression.
 
@@ -87,24 +87,24 @@ Each specification tests exactly ONE IV against ONE DV. The two IVs are never in
 
 | Variable Name (code) | Description | Formula | Source Engine |
 |---|---|---|---|
-| `Analyst_QA_Uncertainty_pct` | Analyst Q&A uncertainty word percentage | (LM uncertainty word count by analysts in Q&A / total analyst Q&A words) * 100 | LinguisticEngine |
-| `Entire_All_Negative_pct` | Entire-call negative sentiment percentage | (LM negative word count for entire call / total call words) * 100 | LinguisticEngine |
-| `Size` | Firm size | ln(atq) | CompustatEngine: atq |
+| `UncQue` | Analyst Q&A uncertainty word percentage | (LM uncertainty word count by analysts in Q&A / total analyst Q&A words) * 100 | LinguisticEngine |
+| `NegCall` | Entire-call negative sentiment percentage | (LM negative word count for entire call / total call words) * 100 | LinguisticEngine |
+| `lnAssets` | Firm size | ln(atq) | CompustatEngine: atq |
 | `TobinsQ` | Tobin's Q | (cshoq×prccq + debt_book) / atq, where debt_book = clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0); debt_book=NaN if both dlcq and dlttq are NaN; result=NaN if atq missing/≤0 or mktcap (cshoq×prccq) missing | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq |
 | `ROA` | Return on assets | iby_annual / avg_assets, where avg_assets = (atq_t + atq_{t-1}) / 2 | CompustatEngine: iby, atq |
-| `CashHoldings` | Cash and equivalents ratio | cheq / atq | CompustatEngine: cheq, atq |
-| `DividendPayer` | Binary dividend payer indicator | 1 if dvy_annual > 0, else 0 | CompustatEngine: dvy |
-| `firm_maturity` | Firm maturity (retained earnings ratio) | req / atq | CompustatEngine: req, atq |
-| `earnings_volatility` | Earnings volatility | Rolling std(iby/atq) over trailing 5 fiscal years (1826 days), min 3 obs | CompustatEngine: iby, atq |
+| `CashRatio` | Cash and equivalents ratio | cheq / atq | CompustatEngine: cheq, atq |
+| `DivDummy` | Binary dividend payer indicator | 1 if dvy_annual > 0, else 0 | CompustatEngine: dvy |
+| `FirmMat` | Firm maturity (retained earnings ratio) | req / atq | CompustatEngine: req, atq |
+| `EarnVol` | Earnings volatility | Rolling std(iby/atq) over trailing 5 fiscal years (1826 days), min 3 obs | CompustatEngine: iby, atq |
 
 **Dynamic Presentation Control (QA DVs only):**
 
 | DV | Added Control |
 |---|---|
-| `Manager_QA_Uncertainty_pct` | `Manager_Pres_Uncertainty_pct` |
-| `CEO_QA_Uncertainty_pct` | `CEO_Pres_Uncertainty_pct` |
-| `Manager_Pres_Uncertainty_pct` | None |
-| `CEO_Pres_Uncertainty_pct` | None |
+| `UncAnsMgr` | `UncPreMgr` |
+| `UncAnsCEO` | `UncPreCEO` |
+| `UncPreMgr` | None |
+| `UncPreCEO` | None |
 
 **No Lagged_DV:** This suite does not include a lagged dependent variable control.
 
@@ -147,14 +147,14 @@ The published table (generate_all_tables.py) shows 8 columns, all from the Main 
 
 | Col | DV | IV | Entity FE | Time FE | Controls | Notes |
 |-----|---|---|-----------|---------|----------|-------|
-| 1 | Manager_QA_Uncertainty_pct | PRiskQ_lag | Firm | Cal Year | Base + Manager_Pres_Uncertainty_pct | Main sample, lag-1 |
-| 2 | CEO_QA_Uncertainty_pct | PRiskQ_lag | Firm | Cal Year | Base + CEO_Pres_Uncertainty_pct | Main sample, lag-1 |
-| 3 | Manager_Pres_Uncertainty_pct | PRiskQ_lag | Firm | Cal Year | Base only | Main sample, lag-1 |
-| 4 | CEO_Pres_Uncertainty_pct | PRiskQ_lag | Firm | Cal Year | Base only | Main sample, lag-1 |
-| 5 | Manager_QA_Uncertainty_pct | PRiskQ_lag2 | Firm | Cal Year | Base + Manager_Pres_Uncertainty_pct | Main sample, lag-2 |
-| 6 | CEO_QA_Uncertainty_pct | PRiskQ_lag2 | Firm | Cal Year | Base + CEO_Pres_Uncertainty_pct | Main sample, lag-2 |
-| 7 | Manager_Pres_Uncertainty_pct | PRiskQ_lag2 | Firm | Cal Year | Base only | Main sample, lag-2 |
-| 8 | CEO_Pres_Uncertainty_pct | PRiskQ_lag2 | Firm | Cal Year | Base only | Main sample, lag-2 |
+| 1 | UncAnsMgr | PRisk_lag | Firm | Cal Year | Base + UncPreMgr | Main sample, lag-1 |
+| 2 | UncAnsCEO | PRisk_lag | Firm | Cal Year | Base + UncPreCEO | Main sample, lag-1 |
+| 3 | UncPreMgr | PRisk_lag | Firm | Cal Year | Base only | Main sample, lag-1 |
+| 4 | UncPreCEO | PRisk_lag | Firm | Cal Year | Base only | Main sample, lag-1 |
+| 5 | UncAnsMgr | PRisk_lag2 | Firm | Cal Year | Base + UncPreMgr | Main sample, lag-2 |
+| 6 | UncAnsCEO | PRisk_lag2 | Firm | Cal Year | Base + UncPreCEO | Main sample, lag-2 |
+| 7 | UncPreMgr | PRisk_lag2 | Firm | Cal Year | Base only | Main sample, lag-2 |
+| 8 | UncPreCEO | PRisk_lag2 | Firm | Cal Year | Base only | Main sample, lag-2 |
 
 All 8 columns use identical FE structure (firm + calendar year). The variation is in DV and IV.
 
@@ -193,7 +193,7 @@ Note: The exact row counts per step depend on runtime data and vary by DV (becau
 N varies across model specs due to:
 - Different DVs having different missingness patterns
 - QA specs include an extra Presentation control (one more column to be non-missing)
-- PRiskQ_lag vs PRiskQ_lag2 have different coverage (lag-2 loses an extra quarter of edge data)
+- PRisk_lag vs PRisk_lag2 have different coverage (lag-2 loses an extra quarter of edge data)
 
 Exact counts are recorded in `model_diagnostics.csv` at runtime (lines 236--251, written at line 556).
 
@@ -203,25 +203,25 @@ Exact counts are recorded in `model_diagnostics.csv` at runtime (lines 236--251,
 
 | Variable (code) | Label | Type | Formula | Source | Winsorized | Timing |
 |---|---|---|---|---|---|---|
-| `Manager_QA_Uncertainty_pct` | Mgr QA Uncertainty | DV | (LM uncertainty count / total words) * 100, for managers in Q&A section | LinguisticEngine: Stage 2 year-partitioned parquets | 0%/99% upper-only per-year (engine level) | Contemporaneous |
-| `CEO_QA_Uncertainty_pct` | CEO QA Uncertainty | DV | (LM uncertainty count / total words) * 100, for CEO in Q&A section | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
-| `Manager_Pres_Uncertainty_pct` | Mgr Pres Uncertainty | DV / Control | (LM uncertainty count / total words) * 100, for managers in presentation | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
-| `CEO_Pres_Uncertainty_pct` | CEO Pres Uncertainty | DV / Control | (LM uncertainty count / total words) * 100, for CEO in presentation | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
-| `PRiskQ_lag` | Political Risk (t-1) | IV | PRisk from Hassan et al. (2019) for cal quarter Q-1 | PRiskQLagBuilder: firmquarter_2022q1.csv | 1%/99% per-year (builder level) | Lag t-1 |
-| `PRiskQ_lag2` | Political Risk (t-2) | IV | PRisk from Hassan et al. (2019) for cal quarter Q-2 | PRiskQLag2Builder: firmquarter_2022q1.csv | 1%/99% per-year (builder level) | Lag t-2 |
-| `Analyst_QA_Uncertainty_pct` | Analyst QA Uncertainty | Control | (LM uncertainty count / total words) * 100, for analysts in Q&A section | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
-| `Entire_All_Negative_pct` | Negative Sentiment | Control | (LM negative count / total words) * 100, for entire call | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
-| `Size` | Firm Size (log AT) | Control | ln(atq) where atq > 0; else NaN | CompustatEngine: atq | 1%/99% per fiscal year (engine level) | Contemporaneous (merge_asof backward) |
+| `UncAnsMgr` | Mgr QA Uncertainty | DV | (LM uncertainty count / total words) * 100, for managers in Q&A section | LinguisticEngine: Stage 2 year-partitioned parquets | 0%/99% upper-only per-year (engine level) | Contemporaneous |
+| `UncAnsCEO` | CEO QA Uncertainty | DV | (LM uncertainty count / total words) * 100, for CEO in Q&A section | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
+| `UncPreMgr` | Mgr Pres Uncertainty | DV / Control | (LM uncertainty count / total words) * 100, for managers in presentation | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
+| `UncPreCEO` | CEO Pres Uncertainty | DV / Control | (LM uncertainty count / total words) * 100, for CEO in presentation | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
+| `PRisk_lag` | Political Risk (t-1) | IV | PRisk from Hassan et al. (2019) for cal quarter Q-1 | PRiskLagBuilder: firmquarter_2022q1.csv | 1%/99% per-year (builder level) | Lag t-1 |
+| `PRisk_lag2` | Political Risk (t-2) | IV | PRisk from Hassan et al. (2019) for cal quarter Q-2 | PRiskLag2Builder: firmquarter_2022q1.csv | 1%/99% per-year (builder level) | Lag t-2 |
+| `UncQue` | Analyst QA Uncertainty | Control | (LM uncertainty count / total words) * 100, for analysts in Q&A section | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
+| `NegCall` | Negative Sentiment | Control | (LM negative count / total words) * 100, for entire call | LinguisticEngine | 0%/99% upper-only per-year (engine level) | Contemporaneous |
+| `lnAssets` | Firm Size (log AT) | Control | ln(atq) where atq > 0; else NaN | CompustatEngine: atq | 1%/99% per fiscal year (engine level) | Contemporaneous (merge_asof backward) |
 | `TobinsQ` | Tobin's Q | Control | (cshoq×prccq + debt_book) / atq, where debt_book = clip(dlcq,0).fillna(0) + clip(dlttq,0).fillna(0); debt_book=NaN if both dlcq and dlttq are NaN; result=NaN if atq missing/≤0 or mktcap (cshoq×prccq) missing | CompustatEngine: cshoq, prccq, dlcq, dlttq, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
 | `ROA` | Return on Assets | Control | iby_annual (Q4 value) / avg_assets, where avg_assets = (atq_t + atq_{t-1}) / 2 | CompustatEngine: iby, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
-| `CashHoldings` | Cash Holdings | Control | cheq / atq | CompustatEngine: cheq, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
-| `DividendPayer` | Dividend Payer | Control | 1 if dvy_annual (Q4 cumulative) > 0, else 0 | CompustatEngine: dvy | No (binary variable, skip_winsorize) | Contemporaneous |
-| `firm_maturity` | Firm Maturity | Control | req / atq (retained earnings / total assets) | CompustatEngine: req, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
-| `earnings_volatility` | Earnings Volatility | Control | rolling std(iby/atq) over trailing 1826 days (~5 years), min 3 obs | CompustatEngine: iby, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
+| `CashRatio` | Cash Holdings | Control | cheq / atq | CompustatEngine: cheq, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
+| `DivDummy` | Dividend Payer | Control | 1 if dvy_annual (Q4 cumulative) > 0, else 0 | CompustatEngine: dvy | No (binary variable, skip_winsorize) | Contemporaneous |
+| `FirmMat` | Firm Maturity | Control | req / atq (retained earnings / total assets) | CompustatEngine: req, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
+| `EarnVol` | Earnings DailyVola | Control | rolling std(iby/atq) over trailing 1826 days (~5 years), min 3 obs | CompustatEngine: iby, atq | 1%/99% per fiscal year (engine level) | Contemporaneous |
 | `gvkey` | Firm identifier | FE (Entity) | 6-digit Compustat identifier | Manifest | N/A | N/A |
 | `year` | Calendar year | FE (Time) | start_date.dt.year | Manifest: start_date | N/A | N/A |
 
-*Source: Builder files enumerated in Sections B2--B5; _compustat_engine.py lines 938 (Size), 981 (CashHoldings), 943 (BookLev), 962 (ROA), 988 (TobinsQ), 1005 (DividendPayer), 802 (firm_maturity), 807--821 (earnings_volatility); _linguistic_engine.py lines 255--258 (winsorization); build_linguistic_variables.py line 496 (pct formula).*
+*Source: Builder files enumerated in Sections B2--B5; _compustat_engine.py lines 938 (lnAssets), 981 (CashRatio), 943 (Leverage), 962 (ROA), 988 (TobinsQ), 1005 (DivDummy), 802 (FirmMat), 807--821 (EarnVol); _linguistic_engine.py lines 255--258 (winsorization); build_linguistic_variables.py line 496 (pct formula).*
 
 ---
 
@@ -270,10 +270,10 @@ Exact counts are recorded in `model_diagnostics.csv` at runtime (lines 236--251,
 
 | Engine | Source Data | Variables Provided to This Suite |
 |---|---|---|
-| LinguisticEngine | Stage 2 year-partitioned parquets | Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct |
-| CompustatEngine | Compustat quarterly fundamentals | Size, TobinsQ, ROA, CashHoldings, DividendPayer, firm_maturity, earnings_volatility, BookLev (built but not used in regressions) |
-| PRiskQLagBuilder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRiskQ_lag |
-| PRiskQLag2Builder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRiskQ_lag2 |
+| LinguisticEngine | Stage 2 year-partitioned parquets | UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO, UncQue, NegCall |
+| CompustatEngine | Compustat quarterly fundamentals | lnAssets, TobinsQ, ROA, CashRatio, DivDummy, FirmMat, EarnVol, Leverage (built but not used in regressions) |
+| PRiskLagBuilder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRisk_lag |
+| PRiskLag2Builder (standalone) | inputs/FirmLevelRisk/firmquarter_2022q1.csv | PRisk_lag2 |
 
 ### F3. Merge Operations
 
@@ -285,18 +285,18 @@ All merges occur in the panel builder (lines 130--148). Every merge is a left jo
 | panel | ceo_qa_uncertainty | file_name | left | LinguisticEngine data |
 | panel | manager_pres_uncertainty | file_name | left | LinguisticEngine data |
 | panel | ceo_pres_uncertainty | file_name | left | LinguisticEngine data |
-| panel | prisk_q_lag | file_name | left | PRiskQLagBuilder: manifest merged with PRisk on (gvkey, cal_q_lag) internally |
-| panel | prisk_q_lag2 | file_name | left | PRiskQLag2Builder: manifest merged with PRisk on (gvkey, cal_q_lag2) internally |
+| panel | prisk_q_lag | file_name | left | PRiskLagBuilder: manifest merged with PRisk on (gvkey, cal_q_lag) internally |
+| panel | prisk_q_lag2 | file_name | left | PRiskLag2Builder: manifest merged with PRisk on (gvkey, cal_q_lag2) internally |
 | panel | analyst_qa_uncertainty | file_name | left | LinguisticEngine data |
 | panel | negative_sentiment | file_name | left | LinguisticEngine data |
 | panel | size | file_name | left | CompustatEngine data |
-| panel | lev (BookLev) | file_name | left | CompustatEngine data; built but NOT used in runner |
+| panel | lev (Leverage) | file_name | left | CompustatEngine data; built but NOT used in runner |
 | panel | roa | file_name | left | CompustatEngine data |
 | panel | tobins_q | file_name | left | CompustatEngine data |
 | panel | cash_holdings | file_name | left | CompustatEngine data |
 | panel | dividend_payer | file_name | left | CompustatEngine data |
-| panel | firm_maturity | file_name | left | CompustatEngine data |
-| panel | earnings_volatility | file_name | left | CompustatEngine data |
+| panel | FirmMat | file_name | left | CompustatEngine data |
+| panel | EarnVol | file_name | left | CompustatEngine data |
 
 *Source: build_h11_prisk_uncertainty_lag_panel.py, lines 130--148.*
 
@@ -342,21 +342,21 @@ Variables included in summary stats (lines 124--143):
 
 | Variable | Label |
 |---|---|
-| Manager_QA_Uncertainty_pct | Mgr QA Uncertainty |
-| CEO_QA_Uncertainty_pct | CEO QA Uncertainty |
-| Manager_Pres_Uncertainty_pct | Mgr Pres Uncertainty |
-| CEO_Pres_Uncertainty_pct | CEO Pres Uncertainty |
-| PRiskQ_lag | Political Risk$_{t-1}$ |
-| PRiskQ_lag2 | Political Risk$_{t-2}$ |
-| Analyst_QA_Uncertainty_pct | Analyst QA Uncertainty |
-| Entire_All_Negative_pct | Negative Sentiment |
-| Size | Firm Size (log AT) |
+| UncAnsMgr | Mgr QA Uncertainty |
+| UncAnsCEO | CEO QA Uncertainty |
+| UncPreMgr | Mgr Pres Uncertainty |
+| UncPreCEO | CEO Pres Uncertainty |
+| PRisk_lag | Political Risk$_{t-1}$ |
+| PRisk_lag2 | Political Risk$_{t-2}$ |
+| UncQue | Analyst QA Uncertainty |
+| NegCall | Negative Sentiment |
+| lnAssets | Firm Size (log AT) |
 | TobinsQ | Tobin's Q |
 | ROA | ROA |
-| CashHoldings | Cash Holdings |
-| DividendPayer | Dividend Payer |
-| firm_maturity | Firm Maturity |
-| earnings_volatility | Earnings Volatility |
+| CashRatio | Cash Holdings |
+| DivDummy | Dividend Payer |
+| FirmMat | Firm Maturity |
+| EarnVol | Earnings DailyVola |
 
 Summary statistics are computed by sample (Main, Finance, Utility) via `make_summary_stats_table` (lines 492--503).
 
@@ -368,20 +368,20 @@ Summary statistics are computed by sample (Main, Finance, Utility) via `make_sum
 
 **Linguistic variables (DVs + linguistic controls):**
 - Level: 0%/99% upper-only per calendar year
-- Applied to: All _pct columns (Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct)
+- Applied to: All _pct columns (UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO, UncQue, NegCall)
 - Applied at: LinguisticEngine level (shared across all suites)
 - Source: _linguistic_engine.py, lines 255--258
 
 **Compustat variables (financial controls):**
 - Level: 1%/99% per fiscal year (fyearq)
-- Applied to: Size, TobinsQ, ROA, CashHoldings, firm_maturity, earnings_volatility, BookLev (built but unused)
-- NOT applied to: DividendPayer (binary; in skip_winsorize set)
+- Applied to: lnAssets, TobinsQ, ROA, CashRatio, FirmMat, EarnVol, Leverage (built but unused)
+- NOT applied to: DivDummy (binary; in skip_winsorize set)
 - Applied at: CompustatEngine level (shared across all suites)
 - Source: _compustat_engine.py, lines 1130--1136
 
 **PRisk variables (IVs):**
 - Level: 1%/99% per calendar year
-- Applied to: PRiskQ_lag, PRiskQ_lag2 (PRisk values winsorized before lag matching)
+- Applied to: PRisk_lag, PRisk_lag2 (PRisk values winsorized before lag matching)
 - Applied at: Builder level (prisk_q_lag.py line 165, prisk_q_lag2.py line 168)
 - Source: prisk_q_lag.py lines 164--166, prisk_q_lag2.py lines 167--169
 
@@ -395,7 +395,7 @@ Summary statistics are computed by sample (Main, Finance, Utility) via `make_sum
 
 | Variable | Transformation |
 |---|---|
-| `Size` | Natural logarithm of atq (atq must be > 0; otherwise NaN) |
+| `lnAssets` | Natural logarithm of atq (atq must be > 0; otherwise NaN) |
 | All others | No additional transformations beyond ratio construction |
 
 No centering, z-scoring, or scaling is applied to IVs.
@@ -413,25 +413,25 @@ No centering, z-scoring, or scaling is applied to IVs.
     "label": "tab:h11_lag",
     "cols": 8,
     "col_files": {
-        1: "regression_results_Main_Manager_QA_Uncertainty_pct_lag1.txt",
-        2: "regression_results_Main_CEO_QA_Uncertainty_pct_lag1.txt",
-        3: "regression_results_Main_Manager_Pres_Uncertainty_pct_lag1.txt",
-        4: "regression_results_Main_CEO_Pres_Uncertainty_pct_lag1.txt",
-        5: "regression_results_Main_Manager_QA_Uncertainty_pct_lag2.txt",
-        6: "regression_results_Main_CEO_QA_Uncertainty_pct_lag2.txt",
-        7: "regression_results_Main_Manager_Pres_Uncertainty_pct_lag2.txt",
-        8: "regression_results_Main_CEO_Pres_Uncertainty_pct_lag2.txt",
+        1: "regression_results_Main_UncAnsMgr_lag1.txt",
+        2: "regression_results_Main_UncAnsCEO_lag1.txt",
+        3: "regression_results_Main_UncPreMgr_lag1.txt",
+        4: "regression_results_Main_UncPreCEO_lag1.txt",
+        5: "regression_results_Main_UncAnsMgr_lag2.txt",
+        6: "regression_results_Main_UncAnsCEO_lag2.txt",
+        7: "regression_results_Main_UncPreMgr_lag2.txt",
+        8: "regression_results_Main_UncPreCEO_lag2.txt",
     },
     "dvs": [
-        (r"PRiskQ\_lag", 4),
-        (r"PRiskQ\_lag2", 4),
+        (r"PRisk\_lag", 4),
+        (r"PRisk\_lag2", 4),
     ],
     "col_dv_labels": [
         "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
         "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
     ],
-    "key_vars": ["PRiskQ_lag", "PRiskQ_lag2"],
-    "key_labels": [r"PRiskQ\_lag", r"PRiskQ\_lag2"],
+    "key_vars": ["PRisk_lag", "PRisk_lag2"],
+    "key_labels": [r"PRisk\_lag", r"PRisk\_lag2"],
     "key_tails": ["one_pos", "one_pos"],
 }
 ```
@@ -442,7 +442,7 @@ No centering, z-scoring, or scaling is applied to IVs.
 |---|---|
 | key_tails `["one_pos", "one_pos"]` matches runner one-tailed beta > 0 | PASS |
 | cols = 8 matches 4 DVs * 2 IVs (Main sample only) | PASS |
-| key_vars `["PRiskQ_lag", "PRiskQ_lag2"]` match runner CONFIG["iv_vars"] | PASS |
+| key_vars `["PRisk_lag", "PRisk_lag2"]` match runner CONFIG["iv_vars"] | PASS |
 | col_files naming matches runner output naming pattern (lag1/lag2 suffix) | PASS |
 | No top-level "tail" or "hyp_dir" field (type="moderation" uses key_tails instead) | Noted |
 
@@ -501,7 +501,7 @@ N/A
 
 ## L. KNOWN ISSUES AND NOTES
 
-1. **BookLev built but not used in regressions.** The panel builder imports and builds `BookLevBuilder` (line 47 of panel builder), but `BookLev` is not in BASE_CONTROLS and is not loaded by the runner (the runner's column list at lines 448--472 does not include BookLev). This is harmless dead weight in the panel parquet.
+1. **Leverage built but not used in regressions.** The panel builder imports and builds `LeverageBuilder` (line 47 of panel builder), but `Leverage` is not in BASE_CONTROLS and is not loaded by the runner (the runner's column list at lines 448--472 does not include Leverage). This is harmless dead weight in the panel parquet.
 
 2. **No Lagged_DV control.** Unlike most other suites in the thesis pipeline, H11-Lag does not include a lagged dependent variable control. This is consistent with the H11 family design where the DV is a call-level linguistic measure without a natural prior-call lag structure.
 
@@ -509,7 +509,7 @@ N/A
 
 4. **Runner LaTeX table is 4-column format, not 8-column.** The runner's internal `_save_latex_table` function (lines 256--406) produces a 4-column table with separate rows for lag-1 and lag-2 coefficients. The generate_all_tables.py entry uses an 8-column layout where each lag gets its own 4 columns. These are two different table presentations of the same results.
 
-5. **generate_all_tables.py "dvs" field is misleading.** The entry lists `dvs` as `[(r"PRiskQ\_lag", 4), (r"PRiskQ\_lag2", 4)]`, but PRiskQ_lag/lag2 are IVs, not DVs. This field appears to be used by the table generator to label column groups (IV variant, not DV), which is specific to the H11 family's reversed IV/DV structure. The `type: "moderation"` classification in generate_all_tables.py drives a different table layout than the standard suite type.
+5. **generate_all_tables.py "dvs" field is misleading.** The entry lists `dvs` as `[(r"PRisk\_lag", 4), (r"PRisk\_lag2", 4)]`, but PRisk_lag/lag2 are IVs, not DVs. This field appears to be used by the table generator to label column groups (IV variant, not DV), which is specific to the H11 family's reversed IV/DV structure. The `type: "moderation"` classification in generate_all_tables.py drives a different table layout than the standard suite type.
 
 6. **Attrition table is simplified.** The runner's attrition cascade (lines 564--568) only records three stages: Master manifest, Main sample filter, and final post-filter count. It does not separately report DV non-missing, IV non-missing, and min-calls stages. Detailed per-step attrition is not available without runtime data.
 

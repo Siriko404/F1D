@@ -9,14 +9,14 @@ Description: Build CALL-LEVEL panel for H11 Political Risk hypothesis test.
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date and calendar quarter.
-    Step 4: Add PRiskQ (contemporaneous quarterly political risk).
+    Step 4: Add PRisk (contemporaneous quarterly political risk).
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
 
 Temporal Structure:
-    PRiskQ is measured over calendar quarter Q
+    PRisk is measured over calendar quarter Q
     Earnings call happens within calendar quarter Q
     Contemporaneous relationship (same quarter, no lag)
 """
@@ -53,7 +53,7 @@ from f1d.shared.variables import (
     EarningsVolatilityBuilder,
     ManifestFieldsBuilder,
     NegativeSentimentBuilder,
-    PRiskQBuilder,
+    PRiskBuilder,
     stats_list_to_dataframe,
 )
 
@@ -96,7 +96,7 @@ def build_panel(
             var_config.get("ceo_pres_uncertainty", {})
         ),
         # Main Independent Variable (NEW)
-        "prisk_q": PRiskQBuilder(var_config.get("prisk_q", {})),
+        "prisk_q": PRiskBuilder(var_config.get("prisk_q", {})),
         # Linguistic Controls
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
@@ -111,9 +111,9 @@ def build_panel(
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
         "dividend_payer": DividendPayerBuilder(var_config.get("dividend_payer", {})),
-        "firm_maturity": FirmMaturityBuilder(var_config.get("firm_maturity", {})),
-        "earnings_volatility": EarningsVolatilityBuilder(
-            var_config.get("earnings_volatility", {})
+        "FirmMat": FirmMaturityBuilder(var_config.get("FirmMat", {})),
+        "EarnVol": EarningsVolatilityBuilder(
+            var_config.get("EarnVol", {})
         ),
     }
 
@@ -157,12 +157,12 @@ def build_panel(
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
-    # Log PRiskQ match statistics
+    # Log PRisk match statistics
     priskq_result = all_results.get("prisk_q")
     if priskq_result and priskq_result.metadata:
         meta = priskq_result.metadata
         print(
-            f"\n  PRiskQ Match Stats: {meta.get('n_matched', 0):,} / "
+            f"\n  PRisk Match Stats: {meta.get('n_matched', 0):,} / "
             f"{meta.get('n_total', 0):,} calls ({meta.get('pct_matched', 0):.1f}%)"
         )
 
@@ -209,13 +209,13 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **PRiskQ (valid):** {panel['PRiskQ'].notna().sum():,} calls",
+        f"- **PRisk (valid):** {panel['PRisk'].notna().sum():,} calls",
         "",
         "## Model Specification",
-        "`Uncertainty_it ~ PRiskQ_it + Controls_it + EntityEffects + TimeEffects`",
+        "`Uncertainty_it ~ PRisk_it + Controls_it + EntityEffects + TimeEffects`",
         "",
         "## Temporal Structure",
-        "- PRiskQ: Calendar quarter Q (contemporaneous, no lag)",
+        "- PRisk: Calendar quarter Q (contemporaneous, no lag)",
         "- Earnings call: Within calendar quarter Q",
         "",
     ]

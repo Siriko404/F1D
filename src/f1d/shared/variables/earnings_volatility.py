@@ -1,7 +1,7 @@
 """Builder for Earnings Volatility (earnings_volatility) variable.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, earnings_volatility.
+Returns one column: file_name, EarnVol.
 
 Earnings Volatility = rolling standard deviation of quarterly earnings
 scaled by total assets, measuring earnings predictability.
@@ -40,12 +40,12 @@ class EarningsVolatilityBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "earnings_volatility"]].copy()
-        stats = self.get_stats(data["earnings_volatility"], "earnings_volatility")
+        data = merged[["file_name", "EarnVol"]].copy()
+        stats = self.get_stats(data["EarnVol"], "EarnVol")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "earnings_volatility", "source": "Compustat"},
+            metadata={"column": "EarnVol", "source": "Compustat"},
         )
 
 __all__ = ["EarningsVolatilityBuilder"]

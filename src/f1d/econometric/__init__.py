@@ -26,6 +26,8 @@ Active Modules (22 runners):
     - run_h18_cccl_received: CCCL Received hypothesis test
     - run_h18b_cccl_logit: CCCL Logit robustness check (H18b)
     - run_h21_sec_letters: SEC Comment Letter Count hypothesis test (H21)
+    - run_h7b_amihud_level: Post-Call Amihud Illiquidity Level (H7b)
+    - run_h14b_spread_level: Post-Call Bid-Ask Spread Level (H14b)
     - run_h19_external_funding: External vs Internal Funding hypothesis test (H19, Leary & Roberts 2010)
     - run_h20_debt_choice: Debt vs Equity Choice hypothesis test (H20, Leary & Roberts 2010)
 

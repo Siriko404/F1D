@@ -98,7 +98,7 @@ def realistic_takeover_data():
             "event": event,
             "event_type": takeover_type,
             "ClarityCEO": ceo_clarity,
-            "Manager_QA_Uncertainty_pct": qa_uncertainty,
+            "UncAnsMgr": qa_uncertainty,
             "Size": size,
             "Leverage": leverage,
             "ROA": roa,
@@ -138,7 +138,7 @@ class TestCoxPHIntegration:
             df=realistic_takeover_data,
             time_col="time",
             event_col="event",
-            formula="ClarityCEO + Manager_QA_Uncertainty_pct + Size + Leverage + ROA",
+            formula="ClarityCEO + UncAnsMgr + Size + Leverage + ROA",
         )
 
         # Verify basic output structure
@@ -152,7 +152,7 @@ class TestCoxPHIntegration:
         # Verify all covariates are in results
         expected_covariates = [
             "ClarityCEO",
-            "Manager_QA_Uncertainty_pct",
+            "UncAnsMgr",
             "Size",
             "Leverage",
             "ROA",
@@ -178,7 +178,7 @@ class TestCoxPHIntegration:
             df=realistic_takeover_data,
             time_col="time",
             event_col="event",
-            formula="ClarityCEO + Manager_QA_Uncertainty_pct",
+            formula="ClarityCEO + UncAnsMgr",
         )
 
         # Check that summary contains standard errors and p-values
@@ -189,7 +189,7 @@ class TestCoxPHIntegration:
         assert "exp(coef)" in summary, "Summary missing exp(coef) column"
 
         # Hazard ratios should be positive
-        for cov in ["ClarityCEO", "Manager_QA_Uncertainty_pct"]:
+        for cov in ["ClarityCEO", "UncAnsMgr"]:
             hr = summary["exp(coef)"][cov]
             assert hr > 0, f"Hazard ratio for {cov} should be positive: {hr}"
 
@@ -224,7 +224,7 @@ class TestFineGrayIntegration:
             df=competing_risks_data,
             time_col="time",
             event_col="event_cr",
-            formula="ClarityCEO + Manager_QA_Uncertainty_pct + Size",
+            formula="ClarityCEO + UncAnsMgr + Size",
         )
 
         # Verify output structure
@@ -239,7 +239,7 @@ class TestFineGrayIntegration:
         assert result["method"] == "cause_specific_hazards"
 
         # Verify covariates present
-        expected_covariates = ["ClarityCEO", "Manager_QA_Uncertainty_pct", "Size"]
+        expected_covariates = ["ClarityCEO", "UncAnsMgr", "Size"]
         for cov in expected_covariates:
             assert cov in result["coefficients"], f"Missing coefficient for {cov}"
 

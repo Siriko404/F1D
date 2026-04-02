@@ -5,7 +5,7 @@ regression. The residual represents the component of Manager language uncertaint
 that cannot be explained by firm and linguistic factors.
 
 Source: outputs/econometric/ceo_clarity_extended/{latest}/manager_clarity_residual.parquet
-Output column: Manager_Clarity_Residual
+Output column: UncResMgr
 Merge key: file_name (call-level identifier)
 """
 
@@ -32,7 +32,7 @@ class ManagerClarityResidualBuilder(VariableBuilder):
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "Manager_Clarity_Residual")
+        self.column = config.get("column", "UncResMgr")
         # Skip winsorization - residuals are already cleaned from regression
         self._skip_winsorization = True
 

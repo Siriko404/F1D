@@ -1,14 +1,32 @@
 # =============================================================================
-# F1D Variable Source Configuration
+# F1D Variable Registry — Authoritative Source
 # =============================================================================
-# This file defines all variable sources for the F1D econometric analysis.
-# Each variable specifies its source location and column mapping.
+# Last audit: 2026-04-01 | Total variables: ~70 | Papers: 16 in NotebookLM
 #
-# Path Resolution:
-#   - Sources point to parent directories containing timestamped subdirectories
-#   - Variable builders automatically find the timestamp subdirectory with the
-#     most matching files
-#   - File patterns use {year} placeholder for year-partitioned data
+# All variable names follow paper-standard conventions:
+#   Textual: DWZ (2021) pattern — [Measure][Context][Speaker]
+#   Compustat: Bates et al. (2009) / paper-specific labels
+#   CRSP: DWZ (2021) labels
+#   IBES: Wang (2020) / DWZ (2021) labels
+#
+# Reference key:
+#   bks2009  = Bates, Kahle & Stulz (2009, JF)
+#   rz1995   = Rajan & Zingales (1995, JF)
+#   amihud02 = Amihud (2002, JFM)
+#   dds2004  = DeAngelo, DeAngelo & Skinner (2004, JFE)
+#   dwz2021  = Dzielinski, Wagner & Zeckhauser (2021)
+#   wang2020 = Wang (2020, RAF)
+#   hp2016   = Hoberg & Phillips (2016, JPE)
+#   lee2016  = Lee (2016, TAR)
+#   jjl2021  = Jiang, John & Larsen (2021, RQFA)
+#   hhlt2019 = Hassan, Hollander, van Lent & Tahoun (2019, QJE)
+#   bhv2009  = Biddle, Hilary & Verdi (2009, JAE)
+#   lr2010   = Leary & Roberts (2010, JFE)
+#   tim2021  = Timoneda (2021, SSR)
+#   cdm2013  = Cassell, Dreher & Myers (2013, TAR)
+#   ff2001   = Fama & French (2001, JFE)
+#   opsw1999 = Opler, Pinkowitz, Stulz & Williamson (1999, JFE)
+#   lm2011   = Loughran & McDonald (2011, JF) — word lists
 #
 # Architecture:
 #   Stage 1 (Sample):     outputs/1.4_AssembleManifest/{timestamp}/
@@ -48,63 +66,65 @@ variables:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "Manager_QA_Uncertainty_pct"
+    column: "UncAnsMgr"
+    reference: "dwz2021 (thesis extension to all managers)"
+    role: iv
     description: "Manager Q&A uncertainty percentage (all managers including CEO)"
 
   manager_pres_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "Manager_Pres_Uncertainty_pct"
+    column: "UncPreMgr"
     description: "Manager presentation uncertainty percentage"
 
   analyst_qa_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "Analyst_QA_Uncertainty_pct"
+    column: "UncQue"
     description: "Analyst Q&A uncertainty percentage"
 
   negative_sentiment:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "Entire_All_Negative_pct"
+    column: "NegCall"
     description: "Entire call negative sentiment percentage"
 
   entire_all_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "Entire_All_Uncertainty_pct"
+    column: "UncCall"
     description: "Entire call uncertainty percentage (all speakers)"
 
   ceo_qa_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "CEO_QA_Uncertainty_pct"
+    column: "UncAnsCEO"
     description: "CEO-only Q&A uncertainty percentage (not full management team)"
 
   ceo_pres_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "CEO_Pres_Uncertainty_pct"
+    column: "UncPreCEO"
     description: "CEO-only presentation uncertainty percentage"
 
   nonceo_manager_qa_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "NonCEO_Manager_QA_Uncertainty_pct"
+    column: "UncAnsNoCEO"
     description: "Non-CEO manager Q&A uncertainty percentage"
 
   nonceo_manager_pres_uncertainty:
     stage: 2
     source: "outputs/2_Textual_Analysis/2.2_Variables"
     file_pattern: "linguistic_variables_{year}.parquet"
-    column: "NonCEO_Manager_Pres_Uncertainty_pct"
+    column: "UncPreNoCEO"
     description: "Non-CEO manager presentation uncertainty percentage"
 
   cfo_qa_uncertainty:
@@ -227,7 +247,7 @@ variables:
     stage: 3
     source: "outputs/3_Financial_Features"
     file_pattern: "firm_controls_{year}.parquet"
-    column: "EPS_Growth"
+    column: "EPSgrowth"
     description: "EPS growth rate (year-over-year)"
 
   earnings_surprise:
@@ -278,7 +298,7 @@ variables:
   cash_holdings:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "CashHoldings"
+    column: "CashRatio"
     formula: "cheq / atq"
     description: "Cash and short-term investments as fraction of total assets (Compustat)"
 
@@ -286,27 +306,29 @@ variables:
     stage: input
     source: "inputs/comp_na_daily_all"
     column: "TobinsQ"
-    formula: "(mktcap + dlcq + dlttq) / atq"
-    description: "Tobin's Q: (book assets + market equity - book equity) / book assets (Compustat; Chung & Pruitt 1994 approximation)"
+    formula: "(atq - ceqq + cshoq*prccq) / atq"
+    reference: "Bates, Kahle & Stulz (2009, JF)"
+    description: "Tobin's Q: (book assets - book equity + market equity) / book assets"
 
   capex_intensity:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "CapexAt"
-    formula: "capxy_Q4 / atq_lag1  (Q4-only full-year capxy joined back to all quarters)"
-    description: "Annual capital expenditures as fraction of total assets (Compustat; capxy Q4 full-year value to avoid YTD cumulation bias)"
+    column: "Capex"
+    formula: "capxy_Q4 / atq  (Q4-only full-year capxy, contemporaneous total assets)"
+    reference: "Bates, Kahle & Stulz (2009, JF)"
+    description: "Annual capital expenditures as fraction of total assets (Compustat; contemporaneous denominator per Bates et al.)"
 
   dividend_payer:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "DividendPayer"
+    column: "DivDummy"
     formula: "(dvy_Q4 > 0).astype(float)  (Q4-only full-year dvy joined back to all quarters by gvkey+fyearq)"
     description: "Binary: 1 if firm paid common dividends in the fiscal year (Compustat; dvy Q4 full-year value; ~45% payers)"
 
   ocf_volatility:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "OCF_Volatility"
+    column: "sCFO"
     formula: "rolling 5-year std (min 3 obs) of (oancfy / atq_lag) per gvkey; denominator is lagged assets per spec"
     description: "Operating cash flow volatility: rolling 5yr std of OCF/lagged_assets (Compustat; matches spec design)"
 
@@ -317,9 +339,10 @@ variables:
   cash_flow:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "CashFlow"
+    column: "CashFlowAt"
     formula: "oancfy / avg_assets where avg_assets = (atq_t + atq_{t-1})/2; fallback to atq_t when prior missing"
-    description: "Operating cash flow as fraction of total assets (Compustat)"
+    reference: "Bates, Kahle & Stulz (2009, JF)"
+    description: "Operating cash flow as fraction of total assets (Compustat; OCF/assets control)"
 
   sales_growth:
     stage: input
@@ -359,17 +382,17 @@ variables:
   # H11 Controls (from H3 payout policy engine; only kept variables)
   # ===========================================================================
 
-  earnings_volatility:
+  earn_vol:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "earnings_volatility"
+    column: "EarnVol"
     formula: "SD(annual iby/atq) over trailing 5 years (min 3 obs); computes profitability ratio first, then SD"
     description: "Earnings volatility (H11 control)"
 
-  firm_maturity:
+  firm_mat:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "firm_maturity"
+    column: "FirmMat"
     formula: "req / atq"
     description: "Firm maturity (H11 control)"
 
@@ -412,10 +435,10 @@ variables:
     formula: "|ACTUAL - MEANEST| / |MEANEST| (from IBES _ibes_engine)"
     description: "Absolute earnings surprise magnitude (H5 Control)"
 
-  loss_dummy:
+  loss:
     stage: input
     source: "inputs/comp_na_daily_all"
-    column: "loss_dummy"
+    column: "Loss"
     formula: "1 if ibq < 0 else 0"
     description: "Loss indicator variable (H5 Control)"
 
@@ -426,7 +449,7 @@ variables:
   amihud_illiq:
     stage: input
     source: "inputs/CRSP_DSF"
-    column: "amihud_illiq"
+    column: "ILLIQ"
     formula: "mean(|RET| / (VOL * |PRC|)) * 1e6 across inter-call window"
     description: "Amihud (2002) illiquidity ratio (H7 dependent variable)"
 
@@ -440,12 +463,249 @@ variables:
     stage: 4
     source: "outputs/econometric/ceo_clarity_extended"
     file_name: "ceo_clarity_residual.parquet"
-    column: "CEO_Clarity_Residual"
+    column: "UncResCEO"
     description: "CEO Q&A uncertainty residual after controlling for firm/linguistic factors"
 
   manager_clarity_residual:
     stage: 4
     source: "outputs/econometric/ceo_clarity_extended"
     file_name: "manager_clarity_residual.parquet"
-    column: "Manager_Clarity_Residual"
+    column: "UncResMgr"
+    reference: "dwz2021 (thesis extension to all managers)"
     description: "Manager Q&A uncertainty residual after controlling for firm/linguistic factors"
+
+  # ===========================================================================
+  # Compustat Controls (missing from original YAML, now added)
+  # ===========================================================================
+
+  ln_assets:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "lnAssets"
+    formula: "ln(atq)"
+    reference: "dwz2021"
+    role: control
+    description: "Firm size: natural log of total assets"
+
+  btm:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "BTM"
+    formula: "ceqq / (cshoq * prccq)"
+    reference: "wang2020, lee2016"
+    role: control
+    description: "Book-to-market ratio"
+
+  leverage:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "Leverage"
+    formula: "(dlcq + dlttq) / atq"
+    reference: "bks2009, rz1995"
+    role: control
+    description: "Book leverage: total interest-bearing debt / total assets"
+
+  debt_to_capital:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "DebtToCapital"
+    formula: "(dlcq + dlttq) / (seqq + dlcq + dlttq)"
+    reference: "rz1995"
+    role: dv
+    suites: [H4]
+    description: "Debt-to-capital ratio"
+
+  roa:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "ROA"
+    formula: "iby_annual / avg_assets"
+    reference: "wang2020, dwz2021"
+    role: control
+    description: "Return on assets"
+
+  current_ratio:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "CurrentRatio"
+    formula: "actq / lctq"
+    reference: "lr2010"
+    role: control
+    description: "Current ratio"
+
+  frac_int:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "FracInt"
+    formula: "intanq / atq"
+    reference: "dwz2021"
+    role: control
+    suites: [H9]
+    description: "Fraction of intangible assets to total assets"
+
+  daa:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "dAA"
+    formula: "(atq_t - atq_{t-1yr}) / |atq_{t-1yr}|"
+    reference: "ff2001"
+    role: control
+    suites: [H9]
+    description: "Asset growth rate"
+
+  # ===========================================================================
+  # CRSP Market Variables (missing from original YAML, now added)
+  # ===========================================================================
+
+  daily_vola:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "DailyVola"
+    formula: "annualized std(daily_ret) * sqrt(252) * 100"
+    reference: "dwz2021"
+    role: control
+    description: "Daily stock return volatility (annualized)"
+
+  stock_price:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "StockPrice"
+    formula: "PRC from CRSP"
+    role: control
+    description: "Stock price"
+
+  turnover:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "Turnover"
+    formula: "VOL / SHROUT"
+    role: control
+    description: "Share turnover"
+
+  delta_illiq:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "DeltaILLIQ"
+    formula: "PostCallILLIQ - PreCallILLIQ over [+1,+3] vs [-3,-1] days"
+    reference: "amihud02"
+    role: dv
+    suites: [H7]
+    description: "Change in Amihud illiquidity around earnings call"
+
+  # ===========================================================================
+  # External Data Variables (missing from original YAML, now added)
+  # ===========================================================================
+
+  prisk:
+    stage: input
+    source: "inputs/PRisk"
+    column: "PRisk"
+    formula: "Bigram political risk measure from earnings call transcripts"
+    reference: "hhlt2019"
+    role: dv
+    suites: [H11, H11-Lag, H11-Lead]
+    description: "Firm-level political risk (Hassan et al. 2019)"
+
+  total_similarity:
+    stage: input
+    source: "inputs/TNIC"
+    column: "TotalSimilarity"
+    formula: "Sum of pairwise cosine similarities from 10-K product descriptions"
+    reference: "hp2016"
+    role: moderator
+    suites: [H1.1, H1.1b, H13.1]
+    description: "Hoberg-Phillips total product similarity"
+
+  comment_letter:
+    stage: input
+    source: "inputs/EDGAR_CommentLetters"
+    column: "CommentLetter"
+    formula: "1 if SEC comment letter received in next quarter, 0 otherwise"
+    reference: "cdm2013"
+    role: dv
+    suites: [H18, H18b]
+    description: "SEC comment letter received (binary, forward-looking)"
+
+  sec_letters_fwd:
+    stage: input
+    source: "inputs/EDGAR_CommentLetters"
+    column: "SEC_Letters_fwd"
+    formula: "Count of SEC-originated letters (UPLOAD type) in next calendar quarter"
+    reference: "cdm2013 (thesis extension to count)"
+    role: dv
+    suites: [H21]
+    description: "SEC comment letter count (forward-looking)"
+
+  # ===========================================================================
+  # Dependent Variables (missing from original YAML, now added)
+  # ===========================================================================
+
+  disp:
+    stage: input
+    source: "inputs/tr_ibes"
+    column: "DISP"
+    formula: "SD(latest analyst EPS forecasts in T-31..T-1 window) / prccq_prior"
+    reference: "wang2020"
+    role: dv
+    suites: [H5]
+    description: "Analyst forecast dispersion (Wang 2020)"
+
+  dspread:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "DSPREAD"
+    formula: "mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1]) where RelSpread = 2*(ASK-BID)/(ASK+BID)"
+    reference: "lee2016"
+    role: dv
+    suites: [H14]
+    description: "Change in closing bid-ask spread around earnings call"
+
+  rd_sales:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "RDSales"
+    formula: "xrdy_Q4 / saley_Q4"
+    reference: "bks2009, jjl2021"
+    role: dv
+    suites: [H16]
+    description: "R&D expenditure / sales (annual)"
+
+  payout_ratio_q:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "PayoutRatio_q"
+    formula: "(dvpspq * cshoq) / ibq"
+    reference: "dds2004"
+    role: dv
+    suites: [H12]
+    description: "Quarterly payout ratio"
+
+  repurchase_intensity:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "RepurchaseIntensity"
+    formula: "de-cumulated quarterly prstkcy / lagged atq"
+    reference: "Thesis Advisor Suggestion"
+    role: dv
+    suites: [H17]
+    description: "Quarterly share repurchase intensity"
+
+  external_funding:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "ExternalFunding"
+    formula: "1 if debt or equity issuance > 5% of lagged assets, 0 otherwise"
+    reference: "lr2010"
+    role: dv
+    suites: [H19]
+    description: "External financing indicator (Leary & Roberts 2010)"
+
+  debt_choice:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "DebtChoice"
+    formula: "1 if debt-only, 0 if equity/dual; NaN if internal"
+    reference: "lr2010"
+    role: dv
+    suites: [H20]
+    description: "Debt vs equity choice (conditional on ExternalFunding=1)"

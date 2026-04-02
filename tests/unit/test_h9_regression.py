@@ -45,20 +45,20 @@ def sample_h9_data():
                 "guidance_precision": np.random.uniform(0, 1),  # Higher = more precise
                 "guidance_precision_lead1": np.random.uniform(0, 1),
                 # Uncertainty measures
-                "Manager_QA_Uncertainty_pct": np.random.uniform(2, 8),
-                "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
+                "UncAnsMgr": np.random.uniform(2, 8),
+                "UncAnsCEO": np.random.uniform(2, 8),
                 "Manager_QA_Weak_Modal_pct": np.random.uniform(1, 5),
                 "CEO_QA_Weak_Modal_pct": np.random.uniform(1, 5),
-                "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
+                "UncPreMgr": np.random.uniform(1, 5),
+                "UncPreCEO": np.random.uniform(1, 5),
                 # Controls
                 "firm_size": np.random.uniform(5, 10),
                 "tobins_q": np.random.uniform(0.8, 2.0),
                 "roa": np.random.uniform(-0.1, 0.2),
                 "leverage": np.random.uniform(0.1, 0.6),
-                "earnings_volatility": np.random.uniform(0, 0.2),
+                "EarnVol": np.random.uniform(0, 0.2),
                 "analyst_coverage": np.random.uniform(1, 4),
-                "loss_dummy": np.random.randint(0, 2),
+                "Loss": np.random.randint(0, 2),
                 "guidance_frequency": np.random.randint(1, 5),
             })
 
@@ -75,7 +75,7 @@ def mock_panel_ols_result():
             "Std. Error": [0.018, 0.01, 0.008],
             "t-stat": [-2.22, 2.0, 1.25],
         }, index=[
-            "Manager_QA_Uncertainty_pct",  # Key IV for H9
+            "UncAnsMgr",  # Key IV for H9
             "firm_size",
             "analyst_coverage",
         ]),
@@ -121,12 +121,12 @@ class TestH9DataLoading:
     def test_all_uncertainty_measures_present(self, sample_h9_data):
         """Test that all uncertainty measures are present."""
         uncertainty_cols = [
-            "Manager_QA_Uncertainty_pct",
-            "CEO_QA_Uncertainty_pct",
+            "UncAnsMgr",
+            "UncAnsCEO",
             "Manager_QA_Weak_Modal_pct",
             "CEO_QA_Weak_Modal_pct",
-            "Manager_Pres_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
+            "UncPreMgr",
+            "UncPreCEO",
         ]
 
         for col in uncertainty_cols:
@@ -139,9 +139,9 @@ class TestH9DataLoading:
             "tobins_q",
             "roa",
             "leverage",
-            "earnings_volatility",
+            "EarnVol",
             "analyst_coverage",
-            "loss_dummy",
+            "Loss",
             "guidance_frequency",
         ]
 
@@ -171,7 +171,7 @@ class TestH9RegressionExecution:
         result = run_panel_ols(
             df=df,
             dependent="guidance_precision_lead1",
-            exog=["Manager_QA_Uncertainty_pct", "firm_size", "analyst_coverage"],
+            exog=["UncAnsMgr", "firm_size", "analyst_coverage"],
             entity_col="gvkey",
             time_col="fiscal_year",
             entity_effects=True,
@@ -196,7 +196,7 @@ class TestH9RegressionExecution:
         run_panel_ols(
             df=df,
             dependent="guidance_precision_lead1",
-            exog=["Manager_QA_Uncertainty_pct"],
+            exog=["UncAnsMgr"],
             entity_col="gvkey",
             time_col="fiscal_year",
             entity_effects=True,
@@ -304,7 +304,7 @@ class TestH9ErrorHandling:
             run_panel_ols(
                 df=df,
                 dependent="guidance_precision_lead1",
-                exog=["Manager_QA_Uncertainty_pct"],
+                exog=["UncAnsMgr"],
                 entity_col="gvkey",
                 time_col="fiscal_year",
             )

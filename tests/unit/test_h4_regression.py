@@ -47,12 +47,12 @@ def sample_h4_data():
                 # H4 IV (lagged leverage)
                 "leverage": np.random.uniform(0.1, 0.6),
                 # Uncertainty DVs (H4 tests reverse causality)
-                "Manager_QA_Uncertainty_pct": np.random.uniform(2, 8),
-                "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
+                "UncAnsMgr": np.random.uniform(2, 8),
+                "UncAnsCEO": np.random.uniform(2, 8),
                 "Manager_QA_Weak_Modal_pct": np.random.uniform(1, 5),
                 "CEO_QA_Weak_Modal_pct": np.random.uniform(1, 5),
-                "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
+                "UncPreMgr": np.random.uniform(1, 5),
+                "UncPreCEO": np.random.uniform(1, 5),
                 # Analyst uncertainty control
                 "analyst_qa_uncertainty": np.random.uniform(1, 5),
                 # Controls
@@ -61,8 +61,8 @@ def sample_h4_data():
                 "roa": np.random.uniform(-0.1, 0.2),
                 "cash_holdings": np.random.uniform(0.05, 0.3),
                 "dividend_payer": np.random.randint(0, 2),
-                "firm_maturity": np.random.uniform(0, 1),
-                "earnings_volatility": np.random.uniform(0, 0.2),
+                "FirmMat": np.random.uniform(0, 1),
+                "EarnVol": np.random.uniform(0, 0.2),
                 "n_calls": np.random.randint(1, 5),
             })
 
@@ -122,12 +122,12 @@ class TestH4DataLoading:
     def test_all_uncertainty_dvs_present(self, sample_h4_data):
         """Test that all uncertainty DVs are present for H4."""
         uncertainty_cols = [
-            "Manager_QA_Uncertainty_pct",
-            "CEO_QA_Uncertainty_pct",
+            "UncAnsMgr",
+            "UncAnsCEO",
             "Manager_QA_Weak_Modal_pct",
             "CEO_QA_Weak_Modal_pct",
-            "Manager_Pres_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
+            "UncPreMgr",
+            "UncPreCEO",
         ]
 
         for col in uncertainty_cols:
@@ -220,7 +220,7 @@ class TestH4RegressionExecution:
 
         result = run_panel_ols(
             df=df,
-            dependent="Manager_QA_Uncertainty_pct",  # DV is uncertainty
+            dependent="UncAnsMgr",  # DV is uncertainty
             exog=["leverage_lag1", "analyst_qa_uncertainty", "firm_size"],
             entity_col="gvkey",
             time_col="fiscal_year",
@@ -248,7 +248,7 @@ class TestH4RegressionExecution:
 
         run_panel_ols(
             df=df,
-            dependent="Manager_QA_Uncertainty_pct",
+            dependent="UncAnsMgr",
             exog=["leverage_lag1", "analyst_qa_uncertainty"],
             entity_col="gvkey",
             time_col="fiscal_year",
@@ -276,7 +276,7 @@ class TestH4RegressionExecution:
 
         run_panel_ols(
             df=df,
-            dependent="Manager_QA_Uncertainty_pct",  # DV is uncertainty
+            dependent="UncAnsMgr",  # DV is uncertainty
             exog=["leverage_lag1"],
             entity_col="gvkey",
             time_col="fiscal_year",
@@ -439,7 +439,7 @@ class TestH4ErrorHandling:
         with pytest.raises(ValueError, match="Missing required columns"):
             run_panel_ols(
                 df=df,
-                dependent="Manager_QA_Uncertainty_pct",
+                dependent="UncAnsMgr",
                 exog=["leverage_lag1"],  # This column doesn't exist
                 entity_col="gvkey",
                 time_col="fiscal_year",

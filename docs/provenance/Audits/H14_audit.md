@@ -160,7 +160,7 @@ The document is structurally complete and mostly accurate. However, **3 factual 
 
 ### B3-CHECK: Independent Variables
 
-- **Claim:** 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+- **Claim:** 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
 - **Verification:** Runner KEY_IVS (lines 88-92): exact 4 variable names match. Panel builder imports (lines 56-59): CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder, ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder — all confirmed. Bounded [0,100]: not in any winsorize_cols list — CONFIRMED.
 - **Result:** PASS
 
@@ -168,13 +168,13 @@ The document is structurally complete and mostly accurate. However, **3 factual 
 
 **BASE_CONTROLS verification (runner lines 97-106):**
 ```
-Size, TobinsQ, ROA, BookLev, CapexAt, DividendPayer, OCF_Volatility, PreCallSpread
+lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, PreCallSpread
 ```
 Doc B4 Base Controls table: same 8 variables — CONFIRMED.
 
 **EXTENDED_CONTROLS (runner lines 108-113):**
 ```
-BASE + StockPrice, Turnover, Volatility, AbsSurpDec
+BASE + StockPrice, Turnover, DailyVola, AbsSurpDec
 ```
 Doc B4 Extended table: same 4 additions — CONFIRMED.
 
@@ -200,16 +200,16 @@ Doc B4 Extended table: same 4 additions — CONFIRMED.
 - **Result: FAIL**
 
 **Other formula verifications:**
-- BookLev: Engine line 948: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` — Doc says same. PASS.
+- Leverage: Engine line 948: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` — Doc says same. PASS.
 - ROA: Engine lines 960-969: `iby_annual(Q4) / ((atq_annual + atq_annual_lag1) / 2)` — Doc says same. PASS.
-- Size: Engine line 943: `ln(atq) for atq > 0 else NaN` — Doc says same. PASS.
-- CapexAt: Engine lines 999-1003: `capxy_annual(Q4) / atq_annual_lag1` — Doc says same. PASS.
-- DividendPayer: Binary; skip_winsorize excludes it. Confirmed from engine CRITICAL-2 fix. PASS.
-- OCF_Volatility: "rolling 5-year std (min 3 yrs) of oancfy / atq_{t-1}" — Builder docstring + changelog. PASS.
+- lnAssets: Engine line 943: `ln(atq) for atq > 0 else NaN` — Doc says same. PASS.
+- Capex: Engine lines 999-1003: `capxy_annual(Q4) / atq_annual_lag1` — Doc says same. PASS.
+- DivDummy: Binary; skip_winsorize excludes it. Confirmed from engine CRITICAL-2 fix. PASS.
+- sCFO: "rolling 5-year std (min 3 yrs) of oancfy / atq_{t-1}" — Builder docstring + changelog. PASS.
 - PreCallSpread: `pre_call_spread_closing` renamed in panel builder line 182. Mean of closing spread in [-3,-1] window. PASS.
 - StockPrice: CRSPEngine line 92: `crsp["PRC"] = crsp["PRC"].abs()`. Builder renames PRC→StockPrice. PASS.
 - Turnover: TurnoverBuilder lines 231-233: `VOL / (SHROUT * 1000)`. PASS.
-- Volatility: `std(daily RET) * sqrt(252) * 100`, min 10 days. PASS.
+- DailyVola: `std(daily RET) * sqrt(252) * 100`, min 10 days. PASS.
 - AbsSurpDec: Panel builder line 187: `SurpDec.abs()`. EarningsSurpriseBuilder `_rank_surprises` confirms [-5,+5] scale. PASS.
 
 ### B5-CHECK: Fixed Effects
@@ -329,12 +329,12 @@ attrition_stages = [
 - Timing: Event-window. PASS.
 
 ### IV Variables (4)
-- CEO_QA_Uncertainty_pct: LinguisticEngine, bounded [0,100]. CONFIRMED. PASS.
-- CEO_Pres_Uncertainty_pct: same pattern. PASS.
-- Manager_QA_Uncertainty_pct: same pattern. PASS.
-- Manager_Pres_Uncertainty_pct: same pattern. PASS.
+- UncAnsCEO: LinguisticEngine, bounded [0,100]. CONFIRMED. PASS.
+- UncPreCEO: same pattern. PASS.
+- UncAnsMgr: same pattern. PASS.
+- UncPreMgr: same pattern. PASS.
 
-### Size
+### lnAssets
 - Formula: `ln(atq) for atq > 0; else NaN` — Engine line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)`. CONFIRMED. PASS.
 - Winsorized "by fiscal year": engine groups by `fyearq` (fiscal year integer per code comment line 1226). CONFIRMED. PASS.
 
@@ -353,16 +353,16 @@ attrition_stages = [
 ### ROA
 - Formula: `iby_annual(Q4) / ((atq_annual + atq_annual_lag1) / 2)` — Engine lines 959-969. CONFIRMED. PASS.
 
-### BookLev
+### Leverage
 - Formula: `(dlcq.fillna(0) + dlttq.fillna(0)) / atq` — Engine line 948. CONFIRMED. PASS.
 
-### CapexAt
+### Capex
 - Formula: `capxy_annual(Q4) / atq_annual_lag1` — Engine lines 999-1003. CONFIRMED. PASS.
 
-### DividendPayer
+### DivDummy
 - Binary; 1 if dvy_annual(Q4) > 0, else 0. Excluded from winsorization. CONFIRMED. PASS.
 
-### OCF_Volatility
+### sCFO
 - Formula: rolling 5-year std (min 3 yrs) of oancfy/atq_{t-1}. Builder docstring + engine changelog. CONFIRMED. PASS.
 
 ### PreCallSpread
@@ -375,7 +375,7 @@ attrition_stages = [
 ### Turnover
 - Formula: `VOL / (SHROUT * 1000)`. TurnoverBuilder lines 231-233. CONFIRMED. PASS.
 
-### Volatility
+### DailyVola
 - Formula: `std(daily RET) * sqrt(252) * 100`, inter-call window, min 10 days. VolatilityBuilder uses `engine.get_data()`. CONFIRMED. PASS.
 - Winsorized per calendar year at CRSPEngine level: CRSPEngine lines 444-447: `winsorize_by_year(..., year_col="year")` where `year = start_date.dt.year`. CONFIRMED. PASS.
 
@@ -406,7 +406,7 @@ attrition_stages = [
 **F2. Data Engines:**
 - 5 engines listed with correct variables. All confirmed against builder source files.
 - CRSPEngine (get_raw) → DSPREAD, PreCallSpread, StockPrice, Turnover. CONFIRMED.
-- CRSPEngine (get_data) → Volatility. CONFIRMED (VolatilityBuilder line 38).
+- CRSPEngine (get_data) → DailyVola. CONFIRMED (VolatilityBuilder line 38).
 - CompustatEngine → 7 Compustat controls. CONFIRMED.
 - LinguisticEngine → 4 IVs. CONFIRMED.
 - IbesEngine → SurpDec/AbsSurpDec. CONFIRMED.
@@ -444,8 +444,8 @@ attrition_stages = [
 ### H-CHECK: Outlier/Missing Treatment
 
 **H1. Winsorization:**
-- Compustat (Size, TobinsQ, ROA, BookLev, CapexAt, OCF_Volatility): `_winsorize_by_year(comp[col], comp["fyearq"])` — engine lines 1229-1232. DividendPayer excluded (skip_winsorize). CONFIRMED.
-- Volatility: CRSPEngine lines 444-447: `winsorize_by_year(result_with_year, CRSP_RETURN_COLS, year_col="year")`. Calendar year. CONFIRMED.
+- Compustat (lnAssets, TobinsQ, ROA, Leverage, Capex, sCFO): `_winsorize_by_year(comp[col], comp["fyearq"])` — engine lines 1229-1232. DivDummy excluded (skip_winsorize). CONFIRMED.
+- DailyVola: CRSPEngine lines 444-447: `winsorize_by_year(result_with_year, CRSP_RETURN_COLS, year_col="year")`. Calendar year. CONFIRMED.
 - DSPREAD, PreCallSpread, StockPrice, Turnover, AbsSurpDec: `winsorize_pooled()` at panel builder line 202. CONFIRMED.
 - Linguistic IVs: not in any winsorize_cols list. CONFIRMED.
 - **Result:** PASS
@@ -457,7 +457,7 @@ attrition_stages = [
 - **Result:** PASS
 
 **H3. Transformations:**
-- Size: ln(atq). CONFIRMED.
+- lnAssets: ln(atq). CONFIRMED.
 - AbsSurpDec: abs(SurpDec). Panel builder line 187. CONFIRMED.
 - StockPrice: abs(PRC). CRSPEngine line 92. CONFIRMED.
 - No centering, z-scoring, scaling. No evidence in code. CONFIRMED.

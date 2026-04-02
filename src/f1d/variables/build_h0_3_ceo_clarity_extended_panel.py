@@ -7,9 +7,9 @@ ID: variables/build_h0_3_ceo_clarity_extended_panel
 Description: Build panel for the CEO Clarity Extended Controls robustness test
              (4.1.2). Loads all variables needed for 4 regressions:
                1. Manager Baseline (Manager_QA_Uncertainty + base controls)
-               2. Manager Extended (+ Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, Volatility)
+               2. Manager Extended (+ lnAssets, BTM, Leverage, ROA, CurrentRatio, RDSales, DailyVola)
                3. CEO Baseline    (CEO_QA_Uncertainty + base controls)
-               4. CEO Extended    (+ Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, Volatility)
+               4. CEO Extended    (+ lnAssets, BTM, Leverage, ROA, CurrentRatio, RDSales, DailyVola)
 
 Inputs (all raw):
     - outputs/1.4_AssembleManifest/latest/master_sample_manifest.parquet
@@ -108,13 +108,13 @@ def build_panel(
     Builds one panel that serves all 4 regressions (Manager/CEO × Baseline/Extended).
     Variables loaded:
       Textual (Stage 2):
-        Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
-        CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-        Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct
+        UncAnsMgr, UncPreMgr,
+        UncAnsCEO, UncPreCEO,
+        UncQue, NegCall
       Financial (raw Compustat):
-        Size, BM, Lev, ROA, CurrentRatio, RD_Intensity, EPS_Growth
+        lnAssets, BTM, Leverage, ROA, CurrentRatio, RDSales, EPSgrowth
       Financial (raw CRSP):
-        StockRet, MarketRet, Volatility
+        StockRet, MarketRet, DailyVola
       Financial (raw IBES):
         SurpDec
     """
@@ -241,13 +241,13 @@ def build_panel(
 
     # Report variable coverage for extended controls
     extended_cols = [
-        "Size",
-        "BM",
-        "BookLev",
+        "lnAssets",
+        "BTM",
+        "Leverage",
         "ROA",
         "CurrentRatio",
-        "RD_Intensity",
-        "Volatility",
+        "RDSales",
+        "DailyVola",
     ]
     print(f"\n  Extended control coverage:")
     for col in extended_cols:
@@ -347,13 +347,13 @@ def generate_report(
     report_lines.append("| Variable | N Non-Missing | % Coverage |")
     report_lines.append("|----------|--------------|------------|")
     for col in [
-        "Size",
-        "BM",
-        "BookLev",
+        "lnAssets",
+        "BTM",
+        "Leverage",
         "ROA",
         "CurrentRatio",
-        "RD_Intensity",
-        "Volatility",
+        "RDSales",
+        "DailyVola",
     ]:
         if col in panel.columns:
             n = panel[col].notna().sum()

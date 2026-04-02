@@ -46,7 +46,7 @@ class TestNoInfValues:
         df = df.copy()
 
         # Simulate standardization
-        for col in ["Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct"]:
+        for col in ["UncAnsMgr", "UncPreMgr"]:
             df[f"{col}_std"] = (df[col] - df[col].mean()) / df[col].std()
             assert not np.isinf(df[f"{col}_std"]).any()
 
@@ -105,7 +105,7 @@ class TestMissingVariableHandling:
             "ceo_id": ["CEO001", "CEO002"],
         })
 
-        required_cols = ["Manager_QA_Uncertainty_pct", "StockRet", "EPS_Growth"]
+        required_cols = ["UncAnsMgr", "StockRet", "EPSgrowth"]
 
         with pytest.raises(ValueError, match="Missing required columns"):
             missing = [c for c in required_cols if c not in df.columns]
@@ -120,10 +120,10 @@ class TestMissingVariableHandling:
             "StockRet": [0.05, 0.03],
         })
 
-        required_cols = ["file_name", "ceo_id", "StockRet", "EPS_Growth", "MarketRet"]
+        required_cols = ["file_name", "ceo_id", "StockRet", "EPSgrowth", "MarketRet"]
         missing = [c for c in required_cols if c not in df.columns]
 
-        assert set(missing) == {"EPS_Growth", "MarketRet"}
+        assert set(missing) == {"EPSgrowth", "MarketRet"}
 
 
 # ==============================================================================
@@ -147,7 +147,7 @@ class TestNaNHandling:
         df.loc[0, "StockRet"] = np.nan
 
         # Other columns should remain NaN-free
-        assert df["EPS_Growth"].notna().all()
+        assert df["EPSgrowth"].notna().all()
         assert df["MarketRet"].notna().all()
 
 
@@ -174,10 +174,10 @@ class TestColumnTypeIntegrity:
         df = synthetic_manager_clarity_panel(n_rows=100)
 
         numeric_cols = [
-            "Manager_QA_Uncertainty_pct",
+            "UncAnsMgr",
             "StockRet",
             "MarketRet",
-            "EPS_Growth",
+            "EPSgrowth",
         ]
 
         for col in numeric_cols:

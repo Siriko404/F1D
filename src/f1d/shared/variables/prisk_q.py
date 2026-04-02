@@ -13,10 +13,10 @@ Processing:
     4. For each call, determine calendar quarter from start_date
     5. Merge on (gvkey, cal_q)
 
-Output columns: file_name, PRiskQ
+Output columns: file_name, PRisk
 
 Temporal Structure:
-    PRiskQ is measured over calendar quarter Q
+    PRisk is measured over calendar quarter Q
     Earnings call happens within calendar quarter Q
     Contemporaneous relationship (same quarter, no lag)
 """
@@ -97,13 +97,13 @@ def _load_prisk_quarterly(prisk_path: Path, years: range) -> pd.DataFrame:
 class PRiskQBuilder(VariableBuilder):
     """Match quarterly PRisk onto each earnings call by (gvkey, calendar_quarter).
 
-    This builder implements the H11 hypothesis where PRiskQ is matched
+    This builder implements the H11 hypothesis where PRisk is matched
     contemporaneously to calls in the same calendar quarter (no lag).
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = "PRiskQ"
+        self.column = "PRisk"
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         # 1. Load manifest to get file_name + gvkey + start_date
@@ -148,17 +148,17 @@ class PRiskQBuilder(VariableBuilder):
             how="left",
         )
 
-        # Rename PRisk to PRiskQ
-        merged = merged.rename(columns={"PRisk": "PRiskQ"})
+        # PRisk column (contemporaneous match)
+        merged = merged.rename(columns={"PRisk": "PRisk"})
 
         # 6. Align back to original manifest (preserve row order & count)
         data = manifest[["file_name"]].merge(
-            merged[["file_name", "PRiskQ"]], on="file_name", how="left"
+            merged[["file_name", "PRisk"]], on="file_name", how="left"
         )
         data = data.drop_duplicates(subset=["file_name"])
 
         # Compute match statistics
-        n_matched = data["PRiskQ"].notna().sum()
+        n_matched = data["PRisk"].notna().sum()
         n_total = len(data)
         pct_matched = 100.0 * n_matched / n_total if n_total > 0 else 0.0
         print(
@@ -166,10 +166,10 @@ class PRiskQBuilder(VariableBuilder):
         )
 
         return VariableResult(
-            data=data[["file_name", "PRiskQ"]].copy(),
-            stats=self.get_stats(data["PRiskQ"], "PRiskQ"),
+            data=data[["file_name", "PRisk"]].copy(),
+            stats=self.get_stats(data["PRisk"], "PRisk"),
             metadata={
-                "column": "PRiskQ",
+                "column": "PRisk",
                 "source": "Hassan et al. (2019) quarterly PRisk",
                 "description": (
                     "Quarterly political risk exposure matched to calls by "

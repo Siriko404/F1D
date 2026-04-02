@@ -9,15 +9,15 @@ Description: Build CALL-LEVEL panel for H11-Lead Political Risk hypothesis test.
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date and calendar quarter.
-    Step 4: Add PRiskQ_lead (1-quarter lead) and PRiskQ_lead2 (2-quarter lead).
+    Step 4: Add PRisk_lead (1-quarter lead) and PRisk_lead2 (2-quarter lead).
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 
 Unit of observation: the individual earnings call (file_name).
 
 Temporal Structure:
-    PRiskQ_lead: Calendar quarter Q+1 (1-quarter lead)
-    PRiskQ_lead2: Calendar quarter Q+2 (2-quarter lead)
+    PRisk_lead: Calendar quarter Q+1 (1-quarter lead)
+    PRisk_lead2: Calendar quarter Q+2 (2-quarter lead)
     Earnings call happens within calendar quarter Q
 
 Purpose:
@@ -118,9 +118,9 @@ def build_panel(
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
         "cash_holdings": CashHoldingsBuilder(var_config.get("cash_holdings", {})),
         "dividend_payer": DividendPayerBuilder(var_config.get("dividend_payer", {})),
-        "firm_maturity": FirmMaturityBuilder(var_config.get("firm_maturity", {})),
-        "earnings_volatility": EarningsVolatilityBuilder(
-            var_config.get("earnings_volatility", {})
+        "FirmMat": FirmMaturityBuilder(var_config.get("FirmMat", {})),
+        "EarnVol": EarningsVolatilityBuilder(
+            var_config.get("EarnVol", {})
         ),
     }
 
@@ -164,21 +164,21 @@ def build_panel(
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 
-    # Log PRiskQ_lead match statistics
+    # Log PRisk_lead match statistics
     priskq_result = all_results.get("prisk_q_lead")
     if priskq_result and priskq_result.metadata:
         meta = priskq_result.metadata
         print(
-            f"\n  PRiskQ_lead Match Stats: {meta.get('n_matched', 0):,} / "
+            f"\n  PRisk_lead Match Stats: {meta.get('n_matched', 0):,} / "
             f"{meta.get('n_total', 0):,} calls ({meta.get('pct_matched', 0):.1f}%)"
         )
 
-    # Log PRiskQ_lead2 match statistics
+    # Log PRisk_lead2 match statistics
     priskq_lead2_result = all_results.get("prisk_q_lead2")
     if priskq_lead2_result and priskq_lead2_result.metadata:
         meta = priskq_lead2_result.metadata
         print(
-            f"  PRiskQ_lead2 Match Stats: {meta.get('n_matched', 0):,} / "
+            f"  PRisk_lead2 Match Stats: {meta.get('n_matched', 0):,} / "
             f"{meta.get('n_total', 0):,} calls ({meta.get('pct_matched', 0):.1f}%)"
         )
 
@@ -225,14 +225,14 @@ def generate_report(
         "## Panel Summary",
         f"- **Rows:** {len(panel):,}",
         f"- **Columns:** {len(panel.columns)}",
-        f"- **PRiskQ_lead (valid):** {panel['PRiskQ_lead'].notna().sum():,} calls",
-        f"- **PRiskQ_lead2 (valid):** {panel['PRiskQ_lead2'].notna().sum():,} calls",
+        f"- **PRisk_lead (valid):** {panel['PRisk_lead'].notna().sum():,} calls",
+        f"- **PRisk_lead2 (valid):** {panel['PRisk_lead2'].notna().sum():,} calls",
         "",
         "## Model Specification",
-        "`Uncertainty_it ~ PRiskQ_lead_it + Controls_it + EntityEffects + TimeEffects`",
+        "`Uncertainty_it ~ PRisk_lead_it + Controls_it + EntityEffects + TimeEffects`",
         "",
         "## Temporal Structure",
-        "- PRiskQ_lead: Calendar quarter Q+1 (lead by one quarter)",
+        "- PRisk_lead: Calendar quarter Q+1 (lead by one quarter)",
         "- Earnings call: Within calendar quarter Q",
         "- Purpose: Placebo test for reverse causality (future PRisk should not affect current speech)",
         "",

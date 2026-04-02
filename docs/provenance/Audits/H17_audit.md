@@ -146,7 +146,7 @@ MODEL_SPECS: cols 5,6,11,12 have fe ending in "_yq"; cols 1-4,7-10 do not. Entit
 **Doc claims** (Contemporaneous, cols 1-6):
 RepurchaseIntensity_{i,t} = beta1*CEO_QA + beta2*CEO_Pres + beta3*Mgr_QA + beta4*Mgr_Pres + gamma*Controls + alpha_i + delta_t + epsilon
 
-**Code**: Runner `run_regression()` line 275: `exog = KEY_IVS + controls`. KEY_IVS = [CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct] (lines 74-79). Industry path (lines 287-296): `PanelOLS(dependent=dv, exog=exog, entity_effects=False, time_effects=True, other_effects=ff12_code)`. Firm path (lines 298-301): formula `= f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`.
+**Code**: Runner `run_regression()` line 275: `exog = KEY_IVS + controls`. KEY_IVS = [UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr] (lines 74-79). Industry path (lines 287-296): `PanelOLS(dependent=dv, exog=exog, entity_effects=False, time_effects=True, other_effects=ff12_code)`. Firm path (lines 298-301): formula `= f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"`.
 
 Equation in doc matches all terms used in code. Lead DV equation has identical structure with RepurchaseIntensity_lead_qtr.
 **PASS**
@@ -171,7 +171,7 @@ Equation in doc matches all terms used in code. Lead DV equation has identical s
 
 ### B3-CHECK: Independent Variable(s)
 
-**Doc claims**: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct. No centering, log, or z-score.
+**Doc claims**: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr. No centering, log, or z-score.
 **Code**: KEY_IVS list exactly matches (runner lines 74-79). These are passed directly in `exog = KEY_IVS + controls` without any transformation in the runner. Panel builder imports CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder, ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder — LinguisticEngine-based builders.
 **PASS**
 
@@ -180,19 +180,19 @@ Equation in doc matches all terms used in code. Lead DV equation has identical s
 **BASE_CONTROLS** doc vs code:
 | Variable | In Doc | In Code (BASE_CONTROLS) | Match |
 |----------|--------|------------------------|-------|
-| Size | Yes | Yes | PASS |
+| lnAssets | Yes | Yes | PASS |
 | TobinsQ | Yes | Yes | PASS |
 | ROA | Yes | Yes | PASS |
-| BookLev | Yes | Yes | PASS |
-| CapexAt | Yes | Yes | PASS |
-| CashHoldings | Yes | Yes | PASS |
-| DividendPayer | Yes | Yes | PASS |
-| OCF_Volatility | Yes | Yes | PASS |
+| Leverage | Yes | Yes | PASS |
+| Capex | Yes | Yes | PASS |
+| CashRatio | Yes | Yes | PASS |
+| DivDummy | Yes | Yes | PASS |
+| sCFO | Yes | Yes | PASS |
 | Lagged_DV | Yes | Yes | PASS |
 
 Runner lines 81-85 list exactly these 9. No extra or missing controls.
 
-**EXTENDED_CONTROLS** = BASE + [SalesGrowth, RD_Intensity, CashFlow, Volatility]:
+**EXTENDED_CONTROLS** = BASE + [SalesGrowth, RDSales, CashFlowAt, DailyVola]:
 Runner lines 87-89: identical. **PASS**
 
 **Lagged_DV construction** (runner lines 210-213):
@@ -331,7 +331,7 @@ Doc says N varies due to DV differences, extended controls, and cal_yr_qtr non-n
 
 ### IV Variables (4 entries)
 
-All four uncertainty IVs (CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct):
+All four uncertainty IVs (UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr):
 - In KEY_IVS list: PASS
 - Formula (uncertainty words / total words) * 100 by section: consistent with LinguisticEngine pattern — PASS
 - Winsorized: No (bounded [0,100] by construction): PASS — no winsorization applied to linguistic variables
@@ -339,7 +339,7 @@ All four uncertainty IVs (CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Mana
 
 ### Control Variables — Base (9 variables)
 
-**Size**: ln(atq); NaN when atq <= 0
+**lnAssets**: ln(atq); NaN when atq <= 0
 - Code line 943: `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` — PASS
 - Winsorized: 1%/99% by fyearq — PASS
 
@@ -352,19 +352,19 @@ All four uncertainty IVs (CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Mana
 - Note: Doc says "avg_assets = (atq_t + atq_{t-1}) / 2" without clarifying these are Q4-annual values, not quarterly. This is slightly ambiguous but not factually incorrect given the broader context of "iby_annual (Q4)". Not a failure.
 - Winsorized: 1%/99% — PASS
 
-**BookLev**: (dlcq.fillna(0) + dlttq.fillna(0)) / atq — PASS. Winsorized: 1%/99% — PASS.
+**Leverage**: (dlcq.fillna(0) + dlttq.fillna(0)) / atq — PASS. Winsorized: 1%/99% — PASS.
 
-**CapexAt**: capxy_annual (Q4) / atq_lag1_annual
+**Capex**: capxy_annual (Q4) / atq_lag1_annual
 - Code lines 999-1005: `capxy_annual / atq_annual_lag1` — PASS
 - Winsorized: 1%/99% — PASS
 
-**CashHoldings**: cheq / atq — PASS. Winsorized: 1%/99% — PASS.
+**CashRatio**: cheq / atq — PASS. Winsorized: 1%/99% — PASS.
 
-**DividendPayer**: 1 if dvy_annual (Q4) > 0, else 0
+**DivDummy**: 1 if dvy_annual (Q4) > 0, else 0
 - Code: `_compute_annual_q4_variable(comp, "dvy")` then indicator — PASS
-- Winsorized: No (binary) — DividendPayer in skip_winsorize (line 1218) — PASS
+- Winsorized: No (binary) — DivDummy in skip_winsorize (line 1218) — PASS
 
-**OCF_Volatility**: Rolling 5-yr std (min 3 yrs) of (oancfy / atq_{t-1}) per firm
+**sCFO**: Rolling 5-yr std (min 3 yrs) of (oancfy / atq_{t-1}) per firm
 - Code: `_compute_ocf_volatility()` line 340: rolling("1826D", min_periods=3).std() — PASS
 - "1826D" = approximately 5 years in days — PASS
 - Winsorized: 1%/99% — PASS
@@ -377,15 +377,15 @@ All four uncertainty IVs (CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Mana
 - Code: _compute_biddle_residual() lines 649-666 — PASS
 - Winsorized: "1%/99% by fiscal year (inside Biddle)" — PASS. SalesGrowth in skip_winsorize (line 1220) to prevent double-winsorization.
 
-**RD_Intensity**: xrdq.fillna(0) / atq
-- Code line 972: `comp["RD_Intensity"] = comp["xrdq"].fillna(0) / comp["atq"]` — PASS
+**RDSales**: xrdq.fillna(0) / atq
+- Code line 972: `comp["RDSales"] = comp["xrdq"].fillna(0) / comp["atq"]` — PASS
 - Winsorized: 1%/99% — PASS
 
-**CashFlow**: oancfy / avg_assets; avg = (atq_t + atq_{t-1})/2, fallback to atq_t
+**CashFlowAt**: oancfy / avg_assets; avg = (atq_t + atq_{t-1})/2, fallback to atq_t
 - Code: _compute_biddle_residual() lines 680-693 — PASS
-- Winsorized: "1%/99% by fiscal year (inside Biddle)" — PASS. CashFlow in skip_winsorize (line 1219).
+- Winsorized: "1%/99% by fiscal year (inside Biddle)" — PASS. CashFlowAt in skip_winsorize (line 1219).
 
-**Volatility**: std(daily_ret) * sqrt(252) * 100; window [prev_call+5d, call-5d]; min 10 days
+**DailyVola**: std(daily_ret) * sqrt(252) * 100; window [prev_call+5d, call-5d]; min 10 days
 - Source: CRSPEngine: RET — PASS
 - Winsorized: No — PASS (CRSPEngine-derived, not in _compute_and_winsorize loop)
 
@@ -434,7 +434,7 @@ This `cal_yearqtr` column is saved into the panel parquet but is never used by t
 **F1 — Dependency Chain (7 steps)**:
 Verified each step against code:
 1. Raw inputs: Compustat parquet, linguistic output dir, CRSP files, master_sample_manifest.parquet — consistent with panel builder imports and file paths in docstring. PASS.
-2. Engine loading: CompustatEngine (RepurchaseIntensity + controls), LinguisticEngine (4 IVs), CRSPEngine (Volatility) — builders dict in panel builder lines 93-120. PASS.
+2. Engine loading: CompustatEngine (RepurchaseIntensity + controls), LinguisticEngine (4 IVs), CRSPEngine (DailyVola) — builders dict in panel builder lines 93-120. PASS.
 3. Panel builder: 18 builders (counted: manifest + 4 IVs + repurchase_intensity + size + book_lev + tobins_q + roa + cash_holdings + capex_intensity + dividend_payer + ocf_volatility + sales_growth + rd_intensity + cash_flow + volatility = 18), file_name merges, fiscal_qtr_id lead/lag creation. PASS.
 4. Runner loading: loads parquet (lines 169-173), calls build_cal_yr_qtr_index (line 183), filter_main_sample (line 565). PASS.
 5. Sample filtering: Lagged_DV creation (line 213), Inf→NaN (line 224), DV filter (lines 227-229), complete case (lines 232-233), min calls (lines 236-240). PASS.
@@ -479,9 +479,9 @@ Doc claims 18 variables from "runner lines 119-138". Code: SUMMARY_STATS_VARS de
 
 **H1 — Winsorization**:
 - Level: "1%/99% by fiscal year (fyearq)" — code uses `year_col = comp["fyearq"]` (line 1229), `_winsorize_by_year` with min_obs=10 (line 453). PASS.
-- Applied to (from doc): Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, OCF_Volatility, RD_Intensity, RepurchaseIntensity — all in COMPUSTAT_COLS, none in skip_winsorize. PASS.
-- CashFlow/SalesGrowth in skip_winsorize (lines 1219-1220) because already winsorized in Biddle. PASS.
-- NOT applied: linguistic IVs (no winsorization in LinguisticEngine), DividendPayer (in skip_winsorize line 1218), Volatility (CRSPEngine, not in _compute_and_winsorize). PASS.
+- Applied to (from doc): lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, sCFO, RDSales, RepurchaseIntensity — all in COMPUSTAT_COLS, none in skip_winsorize. PASS.
+- CashFlowAt/SalesGrowth in skip_winsorize (lines 1219-1220) because already winsorized in Biddle. PASS.
+- NOT applied: linguistic IVs (no winsorization in LinguisticEngine), DivDummy (in skip_winsorize line 1218), DailyVola (CRSPEngine, not in _compute_and_winsorize). PASS.
 
 **H2 — Missing Data**:
 - Inf/-Inf → NaN in CompustatEngine (line 1203-1204 for ratio_cols) and runner (line 224). PASS.
@@ -489,9 +489,9 @@ Doc claims 18 variables from "runner lines 119-138". Code: SUMMARY_STATS_VARS de
 - RepurchaseIntensity-specific NaN rules (bad de-cumulation, missing/non-positive lagged atq, non-consecutive gap): all documented and code-verified. PASS.
 
 **H3 — Transformations**:
-- Size: ln(atq) — code line 943. PASS.
-- OCF_Volatility: rolling std — code function `_compute_ocf_volatility()`. PASS.
-- Volatility: annualized std(daily_ret) * sqrt(252) * 100 — from CRSPEngine/VolatilityBuilder. PASS.
+- lnAssets: ln(atq) — code line 943. PASS.
+- sCFO: rolling std — code function `_compute_ocf_volatility()`. PASS.
+- DailyVola: annualized std(daily_ret) * sqrt(252) * 100 — from CRSPEngine/VolatilityBuilder. PASS.
 
 ---
 
@@ -639,7 +639,7 @@ I: `("RepurchaseIntensity", 6), (r"RepurchaseIntensity\_lead\_qtr", 6)`.
 **PASS**
 
 ### Check 3: Controls in B4 match variables in E
-B4 Base 9 controls: all 9 appear in E with formulas. B4 Extended +4: SalesGrowth, RD_Intensity, CashFlow, Volatility all in E.
+B4 Base 9 controls: all 9 appear in E with formulas. B4 Extended +4: SalesGrowth, RDSales, CashFlowAt, DailyVola all in E.
 Lagged_DV and RepurchaseIntensity_lag both in E.
 **PASS**
 

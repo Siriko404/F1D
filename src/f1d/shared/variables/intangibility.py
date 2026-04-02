@@ -1,7 +1,7 @@
-"""Builder for Intangibility variable (intangible assets / total assets).
+"""Builder for FracInt variable (intangible assets / total assets).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, Intangibility.
+Returns one column: file_name, FracInt.
 """
 
 from __future__ import annotations
@@ -17,9 +17,9 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class IntangibilityBuilder(VariableBuilder):
-    """Build Intangibility = intanq / atq from raw Compustat quarterly data.
+    """Build FracInt = intanq / atq from raw Compustat quarterly data.
 
-    Intangibility measures the proportion of intangible assets relative to total assets.
+    FracInt measures the proportion of intangible assets relative to total assets.
     Used in takeover prediction models as intangible-rich firms may be harder to value
     (Bates et al., 2006).
     """
@@ -45,12 +45,12 @@ class IntangibilityBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "Intangibility"]].copy()
-        stats = self.get_stats(data["Intangibility"], "Intangibility")
+        data = merged[["file_name", "FracInt"]].copy()
+        stats = self.get_stats(data["FracInt"], "FracInt")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "Intangibility", "source": "Compustat/intanq/atq"},
+            metadata={"column": "FracInt", "source": "Compustat/intanq/atq"},
         )
 
 

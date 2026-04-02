@@ -100,7 +100,7 @@ Read `docs/Prompts/Suite Provenance Doc.txt` to extract required sections, then 
 **A-2. Title**
 - Provenance doc claims: `Speech Uncertainty and Leverage Discipline`
 - Builder docstring (line 7): `"Build CALL-LEVEL panel for H4 Leverage Discipline hypothesis test."` — confirms "Leverage Discipline" as the suite name.
-- Runner `setup_run_logging` call (line 773): `suite_name="H4_Leverage"`. LaTeX caption (runner line 578): `"Speech Uncertainty and Leverage --- Panel A: BookLev"`.
+- Runner `setup_run_logging` call (line 773): `suite_name="H4_Leverage"`. LaTeX caption (runner line 578): `"Speech Uncertainty and Leverage --- Panel A: Leverage"`.
 - The provenance doc title "Speech Uncertainty and Leverage Discipline" is consistent with the builder docstring.
 - PASS
 
@@ -163,19 +163,19 @@ Read `docs/Prompts/Suite Provenance Doc.txt` to extract required sections, then 
 - PASS
 
 **B2-CHECK: Dependent Variable(s)**
-- Provenance doc lists: BookLev, BookLev_lead, DebtToCapital, DebtToCapital_lead.
-- Runner `MODEL_SPECS` (lines 113-140): DVs used are exactly `"BookLev"`, `"BookLev_lead"`, `"DebtToCapital"`, `"DebtToCapital_lead"`.
+- Provenance doc lists: Leverage, Leverage_lead, DebtToCapital, DebtToCapital_lead.
+- Runner `MODEL_SPECS` (lines 113-140): DVs used are exactly `"Leverage"`, `"Leverage_lead"`, `"DebtToCapital"`, `"DebtToCapital_lead"`.
 - No other DVs appear in MODEL_SPECS.
 - Formula verification:
-  - BookLev formula `(dlcq + dlttq) / atq; missing debt filled as 0` — consistent with CompustatEngine convention (doc references engine line 943).
-  - BookLev_lead: builder `_create_temporal_vars_for_col` (lines 100-102) — `shift(-1)` set to NaN unless consecutive fyearq. Correct.
+  - Leverage formula `(dlcq + dlttq) / atq; missing debt filled as 0` — consistent with CompustatEngine convention (doc references engine line 943).
+  - Leverage_lead: builder `_create_temporal_vars_for_col` (lines 100-102) — `shift(-1)` set to NaN unless consecutive fyearq. Correct.
   - DebtToCapital: `(dlcq + dlttq) / (seqq + dlcq + dlttq); NaN if denom <= 0` — consistent with DebtToCapitalBuilder.
   - DebtToCapital_lead: same temporal logic applied to DebtToCapital column.
 - Timing correctly stated as contemporaneous (t) for base and t+1 for lead variants.
 - PASS
 
 **B3-CHECK: Independent Variable(s)**
-- Provenance doc lists: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct.
+- Provenance doc lists: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr.
 - Runner `KEY_IVS` (lines 87-91): exactly these 4 variables and no others.
 - These appear in regression via `exog = KEY_IVS + controls`.
 - Source engine: LinguisticEngine (Stage 2 textual analysis parquets) — consistent with builder importing all four uncertainty builders.
@@ -183,10 +183,10 @@ Read `docs/Prompts/Suite Provenance Doc.txt` to extract required sections, then 
 - PASS
 
 **B4-CHECK: Control Variables**
-- Runner `BASE_CONTROLS` (lines 95-104): `["Size", "TobinsQ", "ROA", "CapexAt", "DividendPayer", "OCF_Volatility", "CashHoldings", "Lagged_DV"]` — 8 variables.
-- Runner `EXTENDED_CONTROLS` (lines 106-111): `BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]` — 12 variables.
+- Runner `BASE_CONTROLS` (lines 95-104): `["lnAssets", "TobinsQ", "ROA", "Capex", "DivDummy", "sCFO", "CashRatio", "Lagged_DV"]` — 8 variables.
+- Runner `EXTENDED_CONTROLS` (lines 106-111): `BASE_CONTROLS + ["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]` — 12 variables.
 - Provenance doc Base Controls (8): matches code list exactly.
-- Provenance doc Extended Controls (+4): SalesGrowth, RD_Intensity, CashFlow, Volatility — matches code exactly.
+- Provenance doc Extended Controls (+4): SalesGrowth, RDSales, CashFlowAt, DailyVola — matches code exactly.
 - Lagged_DV construction: runner lines 272-275: `base_dv = dv.replace("_lead_qtr", "").replace("_lead", ""); lag_col = f"{base_dv}_lag"; panel["Lagged_DV"] = panel[lag_col]`
 - Provenance doc note: "the base DV name is extracted by stripping `_lead` suffix, then `_lag` is appended" — correctly describes the code.
 - Lev exclusion note citing runner lines 93-94: code reads `"NOTE: Lev is the DV — it must NOT appear as a control."` — confirmed.
@@ -227,21 +227,21 @@ Read `docs/Prompts/Suite Provenance Doc.txt` to extract required sections, then 
 
 | Col | Doc Claims | Code (MODEL_SPECS) | Match |
 |-----|-----------|---------------------|-------|
-| 1 | BookLev, Industry FF12, Cal Year, Base | dv="BookLev", fe="industry", controls="base" | ✓ |
-| 2 | BookLev, Firm, Cal Year, Base | dv="BookLev", fe="firm", controls="base" | ✓ |
-| 3 | BookLev, Industry FF12, Cal Year, Extended | dv="BookLev", fe="industry", controls="extended" | ✓ |
-| 4 | BookLev, Firm, Cal Year, Extended | dv="BookLev", fe="firm", controls="extended" | ✓ |
-| 5 | BookLev, Industry FF12, Cal Year-Qtr, Extended | dv="BookLev", fe="industry_yq", controls="extended" | ✓ |
-| 6 | BookLev, Firm, Cal Year-Qtr, Extended | dv="BookLev", fe="firm_yq", controls="extended" | ✓ |
-| 7 | BookLev_lead, Industry FF12, Cal Year, Base | dv="BookLev_lead", fe="industry", controls="base" | ✓ |
-| 12 | BookLev_lead, Firm, Cal Year-Qtr, Extended | dv="BookLev_lead", fe="firm_yq", controls="extended" | ✓ |
+| 1 | Leverage, Industry FF12, Cal Year, Base | dv="Leverage", fe="industry", controls="base" | ✓ |
+| 2 | Leverage, Firm, Cal Year, Base | dv="Leverage", fe="firm", controls="base" | ✓ |
+| 3 | Leverage, Industry FF12, Cal Year, Extended | dv="Leverage", fe="industry", controls="extended" | ✓ |
+| 4 | Leverage, Firm, Cal Year, Extended | dv="Leverage", fe="firm", controls="extended" | ✓ |
+| 5 | Leverage, Industry FF12, Cal Year-Qtr, Extended | dv="Leverage", fe="industry_yq", controls="extended" | ✓ |
+| 6 | Leverage, Firm, Cal Year-Qtr, Extended | dv="Leverage", fe="firm_yq", controls="extended" | ✓ |
+| 7 | Leverage_lead, Industry FF12, Cal Year, Base | dv="Leverage_lead", fe="industry", controls="base" | ✓ |
+| 12 | Leverage_lead, Firm, Cal Year-Qtr, Extended | dv="Leverage_lead", fe="firm_yq", controls="extended" | ✓ |
 | 13 | DebtToCapital, Industry FF12, Cal Year, Base | dv="DebtToCapital", fe="industry", controls="base" | ✓ |
 | 18 | DebtToCapital, Firm, Cal Year-Qtr, Extended | dv="DebtToCapital", fe="firm_yq", controls="extended" | ✓ |
 | 19 | DebtToCapital_lead, Industry FF12, Cal Year, Base | dv="DebtToCapital_lead", fe="industry", controls="base" | ✓ |
 | 24 | DebtToCapital_lead, Firm, Cal Year-Qtr, Extended | dv="DebtToCapital_lead", fe="firm_yq", controls="extended" | ✓ |
 
 - Lagged_DV source assignment:
-  - Cols 1-12 (BookLev specs): Lagged_DV = BookLev_lag. Runner line 272: `base_dv = dv.replace("_lead", "")` → for dv="BookLev" or "BookLev_lead", base_dv = "BookLev"; lag_col = "BookLev_lag". ✓
+  - Cols 1-12 (Leverage specs): Lagged_DV = Leverage_lag. Runner line 272: `base_dv = dv.replace("_lead", "")` → for dv="Leverage" or "Leverage_lead", base_dv = "Leverage"; lag_col = "Leverage_lag". ✓
   - Cols 13-24 (DebtToCapital specs): Lagged_DV = DebtToCapital_lag. Same logic: base_dv = "DebtToCapital", lag_col = "DebtToCapital_lag". ✓
 - No specs missing from table; no specs in table absent from code.
 
@@ -285,8 +285,8 @@ The variable dictionary contains 23 rows. Each is verified individually.
 
 | Variable | Provenance Claims | Verification | Result |
 |----------|------------------|--------------|--------|
-| BookLev | (dlcq + dlttq) / atq; missing debt = 0; CompustatEngine; 1%/99% by fiscal year; t | Builder imports BookLevBuilder; missing debt fill convention confirmed (engine line 943 cited in doc); winsorization pattern consistent with CompustatEngine | PASS |
-| BookLev_lead | BookLev shifted +1 fiscal year; consecutive fyearq required; 1%/99% (base is winsorized); t+1 | Builder `_create_temporal_vars_for_col` lines 100-102: `shift(-1)` for lead, set NaN unless `(next_fyearq - fyearq_int) == 1`; inherits winsorization from base BookLev | PASS |
+| Leverage | (dlcq + dlttq) / atq; missing debt = 0; CompustatEngine; 1%/99% by fiscal year; t | Builder imports LeverageBuilder; missing debt fill convention confirmed (engine line 943 cited in doc); winsorization pattern consistent with CompustatEngine | PASS |
+| Leverage_lead | Leverage shifted +1 fiscal year; consecutive fyearq required; 1%/99% (base is winsorized); t+1 | Builder `_create_temporal_vars_for_col` lines 100-102: `shift(-1)` for lead, set NaN unless `(next_fyearq - fyearq_int) == 1`; inherits winsorization from base Leverage | PASS |
 | DebtToCapital | (dlcq + dlttq) / (seqq + dlcq + dlttq); NaN if denom <= 0; CompustatEngine; 1%/99%; t | Builder imports DebtToCapitalBuilder; formula matches standard debt-to-capital ratio | PASS |
 | DebtToCapital_lead | DebtToCapital shifted +1 fiscal year; consecutive fyearq required; t+1 | Same `_create_temporal_vars_for_col` applied to DebtToCapital column | PASS |
 
@@ -294,39 +294,39 @@ The variable dictionary contains 23 rows. Each is verified individually.
 
 | Variable | Provenance Claims | Verification | Result |
 |----------|------------------|--------------|--------|
-| BookLev_lag | BookLev shifted -1 fiscal year; consecutive fyearq required; Lagged_DV; t-1 | `_create_temporal_vars_for_col` lines 92-94: `shift(1)`, set NaN if `(fyearq_int - prev_fyearq) != 1` | PASS |
+| Leverage_lag | Leverage shifted -1 fiscal year; consecutive fyearq required; Lagged_DV; t-1 | `_create_temporal_vars_for_col` lines 92-94: `shift(1)`, set NaN if `(fyearq_int - prev_fyearq) != 1` | PASS |
 | DebtToCapital_lag | DebtToCapital shifted -1 fiscal year; consecutive fyearq required; t-1 | Same function applied to DebtToCapital column | PASS |
 
 **IVs (4 rows):**
 
 | Variable | Provenance Claims | Verification | Result |
 |----------|------------------|--------------|--------|
-| CEO_QA_Uncertainty_pct | (uncertainty count / total count) * 100, CEO Q&A; LinguisticEngine; 0%/99% upper-only by year; contemporaneous | Builder imports CEOQAUncertaintyBuilder; LinguisticEngine applies 0%/99% winsorization to _pct columns | PASS |
-| CEO_Pres_Uncertainty_pct | Same formula for CEO presentation; LinguisticEngine; 0%/99% upper-only | Builder imports CEOPresUncertaintyBuilder | PASS |
-| Manager_QA_Uncertainty_pct | All-manager Q&A uncertainty; LinguisticEngine; 0%/99% upper-only | Builder imports ManagerQAUncertaintyBuilder | PASS |
-| Manager_Pres_Uncertainty_pct | All-manager presentation uncertainty; LinguisticEngine; 0%/99% upper-only | Builder imports ManagerPresUncertaintyBuilder | PASS |
+| UncAnsCEO | (uncertainty count / total count) * 100, CEO Q&A; LinguisticEngine; 0%/99% upper-only by year; contemporaneous | Builder imports CEOQAUncertaintyBuilder; LinguisticEngine applies 0%/99% winsorization to _pct columns | PASS |
+| UncPreCEO | Same formula for CEO presentation; LinguisticEngine; 0%/99% upper-only | Builder imports CEOPresUncertaintyBuilder | PASS |
+| UncAnsMgr | All-manager Q&A uncertainty; LinguisticEngine; 0%/99% upper-only | Builder imports ManagerQAUncertaintyBuilder | PASS |
+| UncPreMgr | All-manager presentation uncertainty; LinguisticEngine; 0%/99% upper-only | Builder imports ManagerPresUncertaintyBuilder | PASS |
 
 **Base Controls (7 rows, excluding Lagged_DV):**
 
 | Variable | Provenance Claims | Verification | Result |
 |----------|------------------|--------------|--------|
-| Size | ln(atq); NaN if atq <= 0; CompustatEngine: atq; 1%/99%; contemporaneous | Builder imports SizeBuilder; standard log total assets | PASS |
+| lnAssets | ln(atq); NaN if atq <= 0; CompustatEngine: atq; 1%/99%; contemporaneous | Builder imports SizeBuilder; standard log total assets | PASS |
 | TobinsQ | (cshoq * prccq + clip(dlcq,0) + clip(dlttq,0)) / atq; NaN if mktcap or atq missing; CompustatEngine: cshoq, prccq, dlcq, dlttq, atq; 1%/99% | Builder imports TobinsQBuilder; L4 notes algebraic difference from docstring — engine code (clipped debt) is source of truth | PASS |
 | ROA | iby_annual (Q4) / avg_assets; avg_assets = (atq_t + atq_{t-1}) / 2; CompustatEngine: iby, atq; 1%/99% | Builder imports ROABuilder | PASS |
-| CapexAt | capxy_annual (Q4) / atq_{t-1}; CompustatEngine: capxy, atq; 1%/99% | Builder imports CapexIntensityBuilder | PASS |
-| DividendPayer | 1 if dvy_annual (Q4) > 0, else 0; CompustatEngine: dvy; No (binary) | Builder imports DividendPayerBuilder; binary variable correctly excluded from winsorization | PASS |
-| OCF_Volatility | rolling 5-yr std (min 3 yrs) of (oancfy / atq_{t-1}); CompustatEngine: oancfy, atq; 1%/99% | Builder imports OCFVolatilityBuilder | PASS |
-| CashHoldings | cheq / atq; CompustatEngine: cheq, atq; 1%/99% | Builder imports CashHoldingsBuilder | PASS |
-| Lagged_DV | = BookLev_lag or DebtToCapital_lag depending on spec; Control; t-1 | Runner lines 272-275: dynamically assigned from lag column of base DV | PASS |
+| Capex | capxy_annual (Q4) / atq_{t-1}; CompustatEngine: capxy, atq; 1%/99% | Builder imports CapexIntensityBuilder | PASS |
+| DivDummy | 1 if dvy_annual (Q4) > 0, else 0; CompustatEngine: dvy; No (binary) | Builder imports DivDummyBuilder; binary variable correctly excluded from winsorization | PASS |
+| sCFO | rolling 5-yr std (min 3 yrs) of (oancfy / atq_{t-1}); CompustatEngine: oancfy, atq; 1%/99% | Builder imports OCFVolatilityBuilder | PASS |
+| CashRatio | cheq / atq; CompustatEngine: cheq, atq; 1%/99% | Builder imports CashRatioBuilder | PASS |
+| Lagged_DV | = Leverage_lag or DebtToCapital_lag depending on spec; Control; t-1 | Runner lines 272-275: dynamically assigned from lag column of base DV | PASS |
 
 **Extended Controls (4 additional rows):**
 
 | Variable | Provenance Claims | Verification | Result |
 |----------|------------------|--------------|--------|
 | SalesGrowth | (saley_t - saley_{t-1}) / abs(saley_{t-1}); Q4 annual; fallback saleq; CompustatEngine: saley, saleq; 1%/99% (inside Biddle) | Builder imports SalesGrowthBuilder; winsorization inside _compute_biddle_residual (L5 in doc) | PASS |
-| RD_Intensity | xrdq / atq; missing xrdq = 0; CompustatEngine: xrdq, atq; 1%/99% | Builder imports RDIntensityBuilder; missing xrdq convention noted in H2 (engine line 967) | PASS |
-| CashFlow | oancfy / avg_assets; avg_assets = (atq_t + atq_{t-1}) / 2; CompustatEngine: oancfy, atq; 1%/99% (inside Biddle) | Builder imports CashFlowBuilder; same Biddle double-winsorization protection as SalesGrowth | PASS |
-| Volatility | std(daily_ret) * sqrt(252) * 100; inter-call window, min 10 days; CRSPEngine: daily RET; No (not winsorized) | Builder imports VolatilityBuilder; correctly marked not winsorized — CRSPEngine has no winsorization; confirmed in L3 | PASS |
+| RDSales | xrdq / atq; missing xrdq = 0; CompustatEngine: xrdq, atq; 1%/99% | Builder imports RDIntensityBuilder; missing xrdq convention noted in H2 (engine line 967) | PASS |
+| CashFlowAt | oancfy / avg_assets; avg_assets = (atq_t + atq_{t-1}) / 2; CompustatEngine: oancfy, atq; 1%/99% (inside Biddle) | Builder imports CashFlowAtBuilder; same Biddle double-winsorization protection as SalesGrowth | PASS |
+| DailyVola | std(daily_ret) * sqrt(252) * 100; inter-call window, min 10 days; CRSPEngine: daily RET; No (not winsorized) | Builder imports VolatilityBuilder; correctly marked not winsorized — CRSPEngine has no winsorization; confirmed in L3 | PASS |
 
 **FE / Index columns (4 rows):**
 
@@ -342,7 +342,7 @@ The variable dictionary contains 23 rows. Each is verified individually.
 - All 4 IVs from KEY_IVS are in dictionary ✓
 - All 8 BASE_CONTROLS (including Lagged_DV) are in dictionary ✓
 - All 4 additional EXTENDED_CONTROLS are in dictionary ✓
-- Both lagged DV columns (BookLev_lag, DebtToCapital_lag) explicitly in dictionary ✓
+- Both lagged DV columns (Leverage_lag, DebtToCapital_lag) explicitly in dictionary ✓
 - All 4 FE/index columns (gvkey, ff12_code, cal_yr, cal_yr_qtr) are in dictionary ✓
 - No variable in any regression spec is absent from the dictionary.
 
@@ -363,13 +363,13 @@ F1. Dependency Chain:
 
 F2. Data Engines:
 - CompustatEngine, CRSPEngine, LinguisticEngine — all three correctly assigned to their variables.
-- CompustatEngine provides all financial variables (12 listed); CRSPEngine provides Volatility; LinguisticEngine provides the 4 uncertainty IVs.
+- CompustatEngine provides all financial variables (12 listed); CRSPEngine provides DailyVola; LinguisticEngine provides the 4 uncertainty IVs.
 - PASS
 
 F3. Merge Operations:
 - Provenance doc F3 table has 19 merges: 17 builder merges + 2 temporal lookup merges.
 - Builder `build_panel` (lines 220-238): iterates over 17 non-manifest builders, each merged by `file_name` (left join). Zero row-delta enforcement via `if delta != 0: raise ValueError(...)`.
-- `create_leverage_temporal_vars` (line 154): merges `lookup` for each of 2 leverage columns (`BookLev`, `DebtToCapital`) on `["gvkey", "fyearq_int"]` (left join).
+- `create_leverage_temporal_vars` (line 154): merges `lookup` for each of 2 leverage columns (`Leverage`, `DebtToCapital`) on `["gvkey", "fyearq_int"]` (left join).
 - Total: 17 + 2 = 19 merges. All keys and join types accurately documented.
 - PASS
 
@@ -404,10 +404,10 @@ G3. Summary Statistics:
 H1. Winsorization:
 - Compustat variables: 1%/99% by fiscal year (fyearq) via `_winsorize_by_year` ✓
 - Applied variables list matches code expectations for CompustatEngine ✓
-- DividendPayer excluded (binary) ✓
-- CashFlow and SalesGrowth winsorized inside `_compute_biddle_residual`, explicitly skipped in main loop (L5) ✓
+- DivDummy excluded (binary) ✓
+- CashFlowAt and SalesGrowth winsorized inside `_compute_biddle_residual`, explicitly skipped in main loop (L5) ✓
 - Linguistic variables: 0%/99% upper-only by year ✓
-- Volatility not winsorized (CRSPEngine has no winsorization; not in CompustatEngine COMPUSTAT_COLS list) ✓
+- DailyVola not winsorized (CRSPEngine has no winsorization; not in CompustatEngine COMPUSTAT_COLS list) ✓
 - Minimum 10 observations per year group for Compustat winsorization ✓
 - PASS
 
@@ -419,8 +419,8 @@ H2. Missing Data Policy:
 - PASS
 
 H3. Transformations:
-- Size: ln(atq) ✓
-- Volatility: annualized (daily std * sqrt(252) * 100) ✓
+- lnAssets: ln(atq) ✓
+- DailyVola: annualized (daily std * sqrt(252) * 100) ✓
 - No centering or z-scoring — confirmed ✓
 - PASS
 
@@ -441,7 +441,7 @@ Compared provenance doc Section I against actual `outputs/generate_all_tables.py
 | caption | "H4a: Speech Uncertainty and Book Leverage" | "H4a: Speech Uncertainty and Book Leverage" | ✓ |
 | label | "tab:h4a" | "tab:h4a" | ✓ |
 | cols | 12 | 12 | ✓ |
-| dvs | [("BookLev", 6), (r"BookLev\_lead", 6)] | same | ✓ |
+| dvs | [("Leverage", 6), (r"Leverage\_lead", 6)] | same | ✓ |
 | tail | "two" | "two" | ✓ |
 | hyp_dir | None | None | ✓ |
 | col_offset | (not present) | (not present) | ✓ |
@@ -518,20 +518,20 @@ Model family: PanelOLS. Only K1 should be filled; K2–K6 should be N/A.
 ### PHASE 11: CROSS-REFERENCE CONSISTENCY
 
 **Check 1: DVs in B2 match DVs in C?**
-- B2: BookLev, BookLev_lead, DebtToCapital, DebtToCapital_lead (4 DVs)
-- C: same 4 DVs distributed across 24 specs (Panel A: BookLev and BookLev_lead; Panel B: DebtToCapital and DebtToCapital_lead)
+- B2: Leverage, Leverage_lead, DebtToCapital, DebtToCapital_lead (4 DVs)
+- C: same 4 DVs distributed across 24 specs (Panel A: Leverage and Leverage_lead; Panel B: DebtToCapital and DebtToCapital_lead)
 - CONSISTENT ✓
 
 **Check 2: DVs in C match DVs in I?**
-- C Panel A: BookLev (cols 1-6), BookLev_lead (cols 7-12) → 6 each
+- C Panel A: Leverage (cols 1-6), Leverage_lead (cols 7-12) → 6 each
 - C Panel B: DebtToCapital (cols 13-18), DebtToCapital_lead (cols 19-24) → 6 each
-- I H4a dvs: `("BookLev", 6), ("BookLev_lead", 6)` ✓
+- I H4a dvs: `("Leverage", 6), ("Leverage_lead", 6)` ✓
 - I H4b dvs: `("DebtToCapital", 6), ("DebtToCapital_lead", 6)` ✓
 - CONSISTENT ✓
 
 **Check 3: Controls in B4 match variables in E?**
-- B4 Base Controls (8): Size, TobinsQ, ROA, CapexAt, DividendPayer, OCF_Volatility, CashHoldings, Lagged_DV — all 8 have entries in E ✓
-- B4 Extended Controls additional (4): SalesGrowth, RD_Intensity, CashFlow, Volatility — all 4 in E ✓
+- B4 Base Controls (8): lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO, CashRatio, Lagged_DV — all 8 have entries in E ✓
+- B4 Extended Controls additional (4): SalesGrowth, RDSales, CashFlowAt, DailyVola — all 4 in E ✓
 - CONSISTENT ✓
 
 **Check 4: Column count in A matches rows in C?**
@@ -577,6 +577,6 @@ Points of note (not failures, but worth acknowledging):
 
 3. **TobinsQ formula**: The provenance doc (B4 and E) correctly uses the engine code formula (clipped debt) rather than the algebraically equivalent textbook formula from the docstring. This is the correct approach per project rules.
 
-4. **Volatility unwinsorized**: Correctly noted in E (Winsorized = "No") and documented in L3 and H1 with explanation.
+4. **DailyVola unwinsorized**: Correctly noted in E (Winsorized = "No") and documented in L3 and H1 with explanation.
 
-5. **Biddle double-winsorization**: CashFlow and SalesGrowth are winsorized inside `_compute_biddle_residual` and protected from the main winsorization loop. Correctly documented in L5 and H1.
+5. **Biddle double-winsorization**: CashFlowAt and SalesGrowth are winsorized inside `_compute_biddle_residual` and protected from the main winsorization loop. Correctly documented in L5 and H1.

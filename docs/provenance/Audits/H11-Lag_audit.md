@@ -93,7 +93,7 @@ Required sections per prompt: A (Suite Identity), B (B1–B7), C (Spec Register)
 
 ### A-3. Hypothesis
 - Doc: "Higher political risk in quarter t-1 (and t-2) is associated with higher language uncertainty in subsequent earnings calls."
-- Runner docstring lines 32–34: `"H11-Lag: beta(PRiskQ_lag) > 0 -- higher prior-quarter political risk increases speech uncertainty"` and `"H11-Lag2: beta(PRiskQ_lag2) > 0 -- higher 2-quarter prior political risk increases speech uncertainty"`
+- Runner docstring lines 32–34: `"H11-Lag: beta(PRisk_lag) > 0 -- higher prior-quarter political risk increases speech uncertainty"` and `"H11-Lag2: beta(PRisk_lag2) > 0 -- higher 2-quarter prior political risk increases speech uncertainty"`
 - **PASS — consistent**
 
 ### A-4. Direction (tail test)
@@ -151,38 +151,38 @@ Required sections per prompt: A (Suite Identity), B (B1–B7), C (Spec Register)
 ### B2-CHECK: Dependent Variable(s)
 All 4 DVs verified:
 
-1. `Manager_QA_Uncertainty_pct` — runner line 91 (CONFIG); runner load line 454; panel builder ManagerQAUncertaintyBuilder line 87. **PASS**
-2. `CEO_QA_Uncertainty_pct` — runner line 92; load line 455; panel builder CEOQAUncertaintyBuilder line 90. **PASS**
-3. `Manager_Pres_Uncertainty_pct` — runner line 93; load line 456; panel builder ManagerPresUncertaintyBuilder line 93. **PASS**
-4. `CEO_Pres_Uncertainty_pct` — runner line 94; load line 457; panel builder CEOPresUncertaintyBuilder line 96. **PASS**
+1. `UncAnsMgr` — runner line 91 (CONFIG); runner load line 454; panel builder ManagerQAUncertaintyBuilder line 87. **PASS**
+2. `UncAnsCEO` — runner line 92; load line 455; panel builder CEOQAUncertaintyBuilder line 90. **PASS**
+3. `UncPreMgr` — runner line 93; load line 456; panel builder ManagerPresUncertaintyBuilder line 93. **PASS**
+4. `UncPreCEO` — runner line 94; load line 457; panel builder CEOPresUncertaintyBuilder line 96. **PASS**
 
 Timing (contemporaneous call-level), source (LinguisticEngine), and formula description verified against LinguisticEngine builder pattern. **PASS**
 
 ### B3-CHECK: Independent Variable(s)
-1. `PRiskQ_lag`:
-   - Runner CONFIG["iv_vars"] line 97: `"PRiskQ_lag"`. Runner loads at line 459. **PASS**
+1. `PRisk_lag`:
+   - Runner CONFIG["iv_vars"] line 97: `"PRisk_lag"`. Runner loads at line 459. **PASS**
    - Source file: `inputs/FirmLevelRisk/firmquarter_2022q1.csv` (prisk_q_lag.py line 40). **PASS**
    - Lag mechanism: manifest `cal_q_lag = _get_prev_quarter(cal_q)` merged to PRisk `cal_q` (prisk_q_lag.py lines 156, 169–175). **PASS**
-   - Output column `PRiskQ_lag` (prisk_q_lag.py line 178). **PASS**
+   - Output column `PRisk_lag` (prisk_q_lag.py line 178). **PASS**
 
-2. `PRiskQ_lag2`:
+2. `PRisk_lag2`:
    - Same structure; 2-quarter lag via `_get_prev2_quarter` (prisk_q_lag2.py line 64–80). **PASS**
-   - Output column `PRiskQ_lag2` (prisk_q_lag2.py line 181). **PASS**
+   - Output column `PRisk_lag2` (prisk_q_lag2.py line 181). **PASS**
 
 ### B4-CHECK: Control Variables
 BASE_CONTROLS (runner lines 100–110) — 9 controls:
 ```
-Analyst_QA_Uncertainty_pct, Entire_All_Negative_pct, Size, TobinsQ, ROA,
-CashHoldings, DividendPayer, firm_maturity, earnings_volatility
+UncQue, NegCall, lnAssets, TobinsQ, ROA,
+CashRatio, DivDummy, FirmMat, EarnVol
 ```
 Provenance doc B4 base controls table lists exactly these 9 variables. **PASS**
 
 PRES_CONTROL_MAP (runner lines 112–117):
 ```python
-"Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
-"CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
-"Manager_Pres_Uncertainty_pct": None,
-"CEO_Pres_Uncertainty_pct": None,
+"UncAnsMgr": "UncPreMgr",
+"UncAnsCEO": "UncPreCEO",
+"UncPreMgr": None,
+"UncPreCEO": None,
 ```
 Doc's Dynamic Presentation Control sub-table matches exactly. **PASS**
 
@@ -238,18 +238,18 @@ The documented formula omits: (a) lower-clipping of debt components at 0, (b) fi
 
 ### Column-by-column verification against code
 
-Runner outer loop = CONFIG["iv_vars"] (PRiskQ_lag first, then PRiskQ_lag2); inner = CONFIG["dependent_variables"] (4 DVs in declared order); sample filter = Main. File suffix = "lag1" or "lag2".
+Runner outer loop = CONFIG["iv_vars"] (PRisk_lag first, then PRisk_lag2); inner = CONFIG["dependent_variables"] (4 DVs in declared order); sample filter = Main. File suffix = "lag1" or "lag2".
 
 | Col | DV (Doc) | DV (Code) | IV (Doc) | IV (Code) | Entity FE | Time FE | Controls (Doc) | Match? |
 |-----|---------|----------|---------|----------|-----------|---------|----------------|--------|
-| 1 | Manager_QA_Uncertainty_pct | Manager_QA_Uncertainty_pct | PRiskQ_lag | PRiskQ_lag | Firm | Cal Year | Base + Mgr Pres | PASS |
-| 2 | CEO_QA_Uncertainty_pct | CEO_QA_Uncertainty_pct | PRiskQ_lag | PRiskQ_lag | Firm | Cal Year | Base + CEO Pres | PASS |
-| 3 | Manager_Pres_Uncertainty_pct | Manager_Pres_Uncertainty_pct | PRiskQ_lag | PRiskQ_lag | Firm | Cal Year | Base only | PASS |
-| 4 | CEO_Pres_Uncertainty_pct | CEO_Pres_Uncertainty_pct | PRiskQ_lag | PRiskQ_lag | Firm | Cal Year | Base only | PASS |
-| 5 | Manager_QA_Uncertainty_pct | Manager_QA_Uncertainty_pct | PRiskQ_lag2 | PRiskQ_lag2 | Firm | Cal Year | Base + Mgr Pres | PASS |
-| 6 | CEO_QA_Uncertainty_pct | CEO_QA_Uncertainty_pct | PRiskQ_lag2 | PRiskQ_lag2 | Firm | Cal Year | Base + CEO Pres | PASS |
-| 7 | Manager_Pres_Uncertainty_pct | Manager_Pres_Uncertainty_pct | PRiskQ_lag2 | PRiskQ_lag2 | Firm | Cal Year | Base only | PASS |
-| 8 | CEO_Pres_Uncertainty_pct | CEO_Pres_Uncertainty_pct | PRiskQ_lag2 | PRiskQ_lag2 | Firm | Cal Year | Base only | PASS |
+| 1 | UncAnsMgr | UncAnsMgr | PRisk_lag | PRisk_lag | Firm | Cal Year | Base + Mgr Pres | PASS |
+| 2 | UncAnsCEO | UncAnsCEO | PRisk_lag | PRisk_lag | Firm | Cal Year | Base + CEO Pres | PASS |
+| 3 | UncPreMgr | UncPreMgr | PRisk_lag | PRisk_lag | Firm | Cal Year | Base only | PASS |
+| 4 | UncPreCEO | UncPreCEO | PRisk_lag | PRisk_lag | Firm | Cal Year | Base only | PASS |
+| 5 | UncAnsMgr | UncAnsMgr | PRisk_lag2 | PRisk_lag2 | Firm | Cal Year | Base + Mgr Pres | PASS |
+| 6 | UncAnsCEO | UncAnsCEO | PRisk_lag2 | PRisk_lag2 | Firm | Cal Year | Base + CEO Pres | PASS |
+| 7 | UncPreMgr | UncPreMgr | PRisk_lag2 | PRisk_lag2 | Firm | Cal Year | Base only | PASS |
+| 8 | UncPreCEO | UncPreCEO | PRisk_lag2 | PRisk_lag2 | Firm | Cal Year | Base only | PASS |
 
 The generate_all_tables.py col_files (lines 207–215) confirm this exact DV-IV-lag ordering.
 
@@ -297,19 +297,19 @@ All 6 linguistic percentage variables:
 
 ### IVs
 
-`PRiskQ_lag`:
+`PRisk_lag`:
 - Formula: "PRisk from Hassan et al. (2019) for cal quarter Q-1". **PASS**
 - Winsorization: "1%/99% per-year (builder level)" — `prisk_q_lag.py` line 165: `winsorize_by_year(prisk_df, ["PRisk"], year_col="year")`. Default is 1%/99%. **PASS**
-- Source: `PRiskQLagBuilder: firmquarter_2022q1.csv`. **PASS**
+- Source: `PRiskLagBuilder: firmquarter_2022q1.csv`. **PASS**
 
-`PRiskQ_lag2`:
+`PRisk_lag2`:
 - Same structure; `prisk_q_lag2.py` line 168. **PASS**
 
 ### Financial controls
 
-`Size`:
+`lnAssets`:
 - Doc: `ln(atq) where atq > 0; else NaN`
-- Code: `comp["Size"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` (line 943)
+- Code: `comp["lnAssets"] = np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` (line 943)
 - **PASS — exact match**
 
 `TobinsQ` — **FAIL** (same issue as B4 above):
@@ -322,19 +322,19 @@ All 6 linguistic percentage variables:
 - Doc: `iby_annual (Q4 value) / avg_assets, where avg_assets = (atq_t + atq_{t-1}) / 2`
 - Code: `_compute_annual_q4_variable(comp, "iby", ...)` and `(atq_annual + atq_annual_lag1) / 2` (lines 960–968). ROA = NaN if avg_assets ≤ 0. **PASS**
 
-`CashHoldings`:
+`CashRatio`:
 - Doc: `cheq / atq`
-- Code: `comp["CashHoldings"] = comp["cheq"] / comp["atq"]` (line 986). **PASS**
+- Code: `comp["CashRatio"] = comp["cheq"] / comp["atq"]` (line 986). **PASS**
 
-`DividendPayer`:
+`DivDummy`:
 - Doc: `1 if dvy_annual (Q4 cumulative) > 0, else 0`; No winsorization (binary)
 - Code: `dvy_annual = _compute_annual_q4_variable(comp, "dvy", ...)`. `(pd.Series(dvy_annual).fillna(0) > 0).astype(float)` (lines 1009–1012). In `skip_winsorize` (line 1218). **PASS**
 
-`firm_maturity`:
+`FirmMat`:
 - Doc: `req / atq (retained earnings / total assets)`
 - Code: `np.where((df["atq"].notna()) & (df["atq"] > 0), df["req"] / df["atq"], np.nan)` (lines 807–809). **PASS**
 
-`earnings_volatility`:
+`EarnVol`:
 - Doc: `rolling std(iby/atq) over trailing 1826 days (~5 years), min 3 obs`
 - Code: `df_ts.groupby("gvkey")["roa_annual"].rolling("1826D", min_periods=3).std()` (lines 822–824). `roa_annual = where(atq > 0, iby/atq, NaN)` (line 812–814). **PASS**
 
@@ -345,7 +345,7 @@ All 6 linguistic percentage variables:
 - `start_date.dt.year`; panel builder line 151. **PASS**
 
 ### Completeness check
-All variables referenced in any regression spec (DVs, IVs, BASE_CONTROLS, dynamic Pres controls, FE columns) are present in the dictionary. BookLev is built but not in regressions — correctly excluded from the dictionary and flagged in L item 1 and F2. The omission is appropriate per the creation prompt which requires only "every variable in every regression spec".
+All variables referenced in any regression spec (DVs, IVs, BASE_CONTROLS, dynamic Pres controls, FE columns) are present in the dictionary. Leverage is built but not in regressions — correctly excluded from the dictionary and flagged in L item 1 and F2. The omission is appropriate per the creation prompt which requires only "every variable in every regression spec".
 
 **Phase 6 Summary: 16/17 PASS (TobinsQ formula fails)**
 
@@ -361,9 +361,9 @@ All variables referenced in any regression spec (DVs, IVs, BASE_CONTROLS, dynami
 - Step 7: "generate_all_tables.py reads 8 Main-sample .txt files" — consistent with col_files. **PASS**
 
 **F2. Data Engines (4 engines):**
-All 4 verified against panel builder imports (lines 40–58): LinguisticEngine (indirectly via ManagerQAUncertaintyBuilder etc.), CompustatEngine (indirectly via SizeBuilder etc.), PRiskQLagBuilder, PRiskQLag2Builder. **PASS**
+All 4 verified against panel builder imports (lines 40–58): LinguisticEngine (indirectly via ManagerQAUncertaintyBuilder etc.), CompustatEngine (indirectly via SizeBuilder etc.), PRiskLagBuilder, PRiskLag2Builder. **PASS**
 
-Note on BookLev: doc states "built but NOT used in runner" — confirmed: BookLev absent from runner column list (lines 448–471). **PASS**
+Note on Leverage: doc states "built but NOT used in runner" — confirmed: Leverage absent from runner column list (lines 448–471). **PASS**
 
 **F3. Merge Operations (16 merges):**
 Panel builder merge loop (lines 131–148): iterates over all 15 non-manifest builders; each merges on `file_name`, `how="left"`, zero row-delta enforced. 16 total operations (including manifest base load). **PASS**
@@ -400,7 +400,7 @@ PRisk variables:
 - Doc: "1%/99% per calendar year at builder level"
 - Code `prisk_q_lag.py` line 165 and `prisk_q_lag2.py` line 168: `winsorize_by_year(prisk_df, ["PRisk"], year_col="year")`. **PASS**
 
-DividendPayer skip:
+DivDummy skip:
 - Doc: "No (binary variable, skip_winsorize)"
 - Code: in `skip_winsorize` set (`_compustat_engine.py` line 1218). **PASS**
 
@@ -410,7 +410,7 @@ DividendPayer skip:
 
 **H3. Transformations — FAIL (omission in Section L):**
 
-Doc states: "No centering, z-scoring, or scaling is applied to IVs. Only Size uses natural log."
+Doc states: "No centering, z-scoring, or scaling is applied to IVs. Only lnAssets uses natural log."
 
 This is correct for the actual regression code. However, the runner's internal LaTeX table footnote (`_save_latex_table` line 399) states:
 > `"All continuous controls are standardized. "`
@@ -438,20 +438,20 @@ Full entry from generate_all_tables.py (lines 200–228) — reproduced verbatim
     "label": "tab:h11_lag",
     "cols": 8,
     "col_files": {
-        1: "regression_results_Main_Manager_QA_Uncertainty_pct_lag1.txt",
-        2: "regression_results_Main_CEO_QA_Uncertainty_pct_lag1.txt",
-        3: "regression_results_Main_Manager_Pres_Uncertainty_pct_lag1.txt",
-        4: "regression_results_Main_CEO_Pres_Uncertainty_pct_lag1.txt",
-        5: "regression_results_Main_Manager_QA_Uncertainty_pct_lag2.txt",
-        6: "regression_results_Main_CEO_QA_Uncertainty_pct_lag2.txt",
-        7: "regression_results_Main_Manager_Pres_Uncertainty_pct_lag2.txt",
-        8: "regression_results_Main_CEO_Pres_Uncertainty_pct_lag2.txt",
+        1: "regression_results_Main_UncAnsMgr_lag1.txt",
+        2: "regression_results_Main_UncAnsCEO_lag1.txt",
+        3: "regression_results_Main_UncPreMgr_lag1.txt",
+        4: "regression_results_Main_UncPreCEO_lag1.txt",
+        5: "regression_results_Main_UncAnsMgr_lag2.txt",
+        6: "regression_results_Main_UncAnsCEO_lag2.txt",
+        7: "regression_results_Main_UncPreMgr_lag2.txt",
+        8: "regression_results_Main_UncPreCEO_lag2.txt",
     },
-    "dvs": [(r"PRiskQ\_lag", 4), (r"PRiskQ\_lag2", 4)],
+    "dvs": [(r"PRisk\_lag", 4), (r"PRisk\_lag2", 4)],
     "col_dv_labels": ["Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
                       "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres"],
-    "key_vars": ["PRiskQ_lag", "PRiskQ_lag2"],
-    "key_labels": [r"PRiskQ\_lag", r"PRiskQ\_lag2"],
+    "key_vars": ["PRisk_lag", "PRisk_lag2"],
+    "key_labels": [r"PRisk\_lag", r"PRisk\_lag2"],
     "key_tails": ["one_pos", "one_pos"],
 }
 ```
@@ -464,8 +464,8 @@ Field-by-field verification:
 | "type" | "moderation" | "moderation" | PASS |
 | "cols" | 8 | 8 | PASS |
 | "key_tails" | ["one_pos","one_pos"] | ["one_pos","one_pos"] | PASS |
-| "key_vars" | ["PRiskQ_lag","PRiskQ_lag2"] | ["PRiskQ_lag","PRiskQ_lag2"] | PASS |
-| col_files naming | lag1/lag2 suffix | runner line 550: `"lag1" if iv_var == "PRiskQ_lag" else "lag2"` | PASS |
+| "key_vars" | ["PRisk_lag","PRisk_lag2"] | ["PRisk_lag","PRisk_lag2"] | PASS |
+| col_files naming | lag1/lag2 suffix | runner line 550: `"lag1" if iv_var == "PRisk_lag" else "lag2"` | PASS |
 
 Tail direction: `key_tails = ["one_pos","one_pos"]` (one-tailed beta > 0) matches runner line 221 (one-tailed, beta > 0). **PASS**
 
@@ -523,7 +523,7 @@ All marked N/A. Correct — suite uses PanelOLS only. **PASS**
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
 ### Check 1: DVs in B2 match DVs in C
-- B2 DVs: Manager_QA_Uncertainty_pct, CEO_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct, CEO_Pres_Uncertainty_pct
+- B2 DVs: UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO
 - Spec register C: same 4 DVs across 8 rows. **PASS**
 
 ### Check 2: DVs in C match DVs in I
@@ -636,11 +636,11 @@ All marked N/A. Correct — suite uses PanelOLS only. **PASS**
 
 ## ADDITIONAL OBSERVATIONS (not failures)
 
-1. **PRisk builder merge description:** The doc states PRiskQLagBuilder matches "via (gvkey, cal_q_lag)." The actual merge uses `left_on=["gvkey", "cal_q_lag"], right_on=["gvkey", "cal_q"]` — joining the call's lagged quarter key to the PRisk table's contemporaneous quarter column. The description is correct in substance. Not a failure.
+1. **PRisk builder merge description:** The doc states PRiskLagBuilder matches "via (gvkey, cal_q_lag)." The actual merge uses `left_on=["gvkey", "cal_q_lag"], right_on=["gvkey", "cal_q"]` — joining the call's lagged quarter key to the PRisk table's contemporaneous quarter column. The description is correct in substance. Not a failure.
 
 2. **Compustat winsorization uses fyearq (integer) as year grouper:** The doc says "per fiscal year (fyearq)" which correctly identifies this. Code confirmed: `year_col = comp["fyearq"]` (line 1229). Not a failure.
 
-3. **earnings_volatility uses annual Q4 panel internally then joins back:** The rolling window is computed on an annual panel (`dummy_date = fyearq-12-31`) then joined back to all quarters via `(gvkey, fyearq)`. The doc describes this accurately as "Rolling std(iby/atq) over trailing 1826 days, min 3 obs". Not a failure.
+3. **EarnVol uses annual Q4 panel internally then joins back:** The rolling window is computed on an annual panel (`dummy_date = fyearq-12-31`) then joined back to all quarters via `(gvkey, fyearq)`. The doc describes this accurately as "Rolling std(iby/atq) over trailing 1826 days, min 3 obs". Not a failure.
 
 4. **Panel builder does not include report file in `generate_manifest()` output_files dict:** `save_outputs()` lines 197–208 records only `panel_path` and `stats_path`. The `report_step3_h11_lag.md` (line 235) is written by `generate_report()` separately and is not in the manifest JSON. The doc's G1 output list correctly lists the report as a produced file (it is written to disk). This is a minor implementation detail, not a provenance doc error.
 

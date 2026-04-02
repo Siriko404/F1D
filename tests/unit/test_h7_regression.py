@@ -5,7 +5,7 @@ Tests verify:
 - Data loading for illiquidity variables (Amihud ratio)
 - Regression execution with contemporaneous illiquidity as DV
 - Hypothesis test logic for H7 (beta > 0)
-- New control variables (Entire_All_Negative_pct, Analyst_QA_Uncertainty_pct)
+- New control variables (NegCall, UncQue)
 - Single-IV specification structure (A1-A4)
 - Output format and error handling
 """
@@ -43,21 +43,21 @@ def sample_h7_data():
                 "gvkey": gvkey,
                 "year": year,
                 # H7 DV (contemporaneous illiquidity)
-                "amihud_illiq": np.random.uniform(0.1, 5.0),
+                "ILLIQ": np.random.uniform(0.1, 5.0),
                 # Uncertainty measures (4 IVs for A1-A4)
-                "CEO_QA_Uncertainty_pct": np.random.uniform(2, 8),
-                "CEO_Pres_Uncertainty_pct": np.random.uniform(1, 5),
-                "Manager_QA_Uncertainty_pct": np.random.uniform(2, 8),
-                "Manager_Pres_Uncertainty_pct": np.random.uniform(1, 5),
+                "UncAnsCEO": np.random.uniform(2, 8),
+                "UncPreCEO": np.random.uniform(1, 5),
+                "UncAnsMgr": np.random.uniform(2, 8),
+                "UncPreMgr": np.random.uniform(1, 5),
                 # New linguistic controls
-                "Entire_All_Negative_pct": np.random.uniform(0.5, 3.0),
-                "Analyst_QA_Uncertainty_pct": np.random.uniform(1, 4),
+                "NegCall": np.random.uniform(0.5, 3.0),
+                "UncQue": np.random.uniform(1, 4),
                 # Financial controls
-                "Size": np.random.uniform(5, 10),
-                "Lev": np.random.uniform(0.1, 0.6),
+                "lnAssets": np.random.uniform(5, 10),
+                "Leverage": np.random.uniform(0.1, 0.6),
                 "ROA": np.random.uniform(-0.1, 0.2),
                 "TobinsQ": np.random.uniform(0.5, 3.0),
-                "Volatility": np.random.uniform(0.01, 0.1),
+                "DailyVola": np.random.uniform(0.01, 0.1),
                 "StockRet": np.random.uniform(-0.3, 0.3),
             })
 
@@ -74,9 +74,9 @@ def mock_panel_ols_result():
             "Std. Error": [0.15, 0.02, 0.01],
             "t-stat": [2.33, 2.5, -2.0],
         }, index=[
-            "CEO_QA_Uncertainty_pct",
-            "Entire_All_Negative_pct",
-            "Analyst_QA_Uncertainty_pct",
+            "UncAnsCEO",
+            "NegCall",
+            "UncQue",
         ]),
         "summary": {
             "rsquared": 0.28,
@@ -110,19 +110,19 @@ class TestH7DataLoading:
         assert len(loaded) == len(sample_h7_data)
         assert "gvkey" in loaded.columns
         assert "year" in loaded.columns
-        assert "amihud_illiq" in loaded.columns  # Contemporaneous DV
+        assert "ILLIQ" in loaded.columns  # Contemporaneous DV
 
     def test_illiquidity_dv_present(self, sample_h7_data):
         """Test that contemporaneous illiquidity DV is present."""
-        assert "amihud_illiq" in sample_h7_data.columns
+        assert "ILLIQ" in sample_h7_data.columns
 
     def test_all_ivs_available(self, sample_h7_data):
         """Test that all 4 uncertainty IVs are available."""
         iv_cols = [
-            "CEO_QA_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
-            "Manager_QA_Uncertainty_pct",
-            "Manager_Pres_Uncertainty_pct",
+            "UncAnsCEO",
+            "UncPreCEO",
+            "UncAnsMgr",
+            "UncPreMgr",
         ]
 
         for col in iv_cols:
@@ -130,16 +130,16 @@ class TestH7DataLoading:
 
     def test_new_controls_present(self, sample_h7_data):
         """Test that new linguistic controls are present."""
-        assert "Entire_All_Negative_pct" in sample_h7_data.columns
-        assert "Analyst_QA_Uncertainty_pct" in sample_h7_data.columns
+        assert "NegCall" in sample_h7_data.columns
+        assert "UncQue" in sample_h7_data.columns
 
     def test_financial_controls_present(self, sample_h7_data):
         """Test that financial controls are present."""
-        assert "Size" in sample_h7_data.columns
-        assert "Lev" in sample_h7_data.columns
+        assert "lnAssets" in sample_h7_data.columns
+        assert "Leverage" in sample_h7_data.columns
         assert "ROA" in sample_h7_data.columns
         assert "TobinsQ" in sample_h7_data.columns
-        assert "Volatility" in sample_h7_data.columns
+        assert "DailyVola" in sample_h7_data.columns
         assert "StockRet" in sample_h7_data.columns
 
 
@@ -164,9 +164,9 @@ class TestH7RegressionExecution:
 
         result = run_panel_ols(
             df=df,
-            dependent="amihud_illiq",  # Contemporaneous DV
-            exog=["CEO_QA_Uncertainty_pct", "Entire_All_Negative_pct",
-                  "Analyst_QA_Uncertainty_pct", "Size", "Lev"],
+            dependent="ILLIQ",  # Contemporaneous DV
+            exog=["UncAnsCEO", "NegCall",
+                  "UncQue", "lnAssets", "Leverage"],
             entity_col="gvkey",
             time_col="year",
             entity_effects=True,
@@ -190,8 +190,8 @@ class TestH7RegressionExecution:
 
         run_panel_ols(
             df=df,
-            dependent="amihud_illiq",  # Contemporaneous DV
-            exog=["CEO_QA_Uncertainty_pct"],
+            dependent="ILLIQ",  # Contemporaneous DV
+            exog=["UncAnsCEO"],
             entity_col="gvkey",
             time_col="year",
             entity_effects=True,
@@ -200,7 +200,7 @@ class TestH7RegressionExecution:
         )
 
         call_args = mock_run_panel_ols.call_args
-        assert call_args[1]["dependent"] == "amihud_illiq"
+        assert call_args[1]["dependent"] == "ILLIQ"
 
 
 # ==============================================================================
@@ -274,13 +274,13 @@ class TestH7ErrorHandling:
         from f1d.shared.panel_ols import run_panel_ols
 
         df = sample_h7_data.copy()
-        df = df.drop(columns=["amihud_illiq"])
+        df = df.drop(columns=["ILLIQ"])
 
         with pytest.raises(ValueError, match="Missing required columns"):
             run_panel_ols(
                 df=df,
-                dependent="amihud_illiq",
-                exog=["CEO_QA_Uncertainty_pct"],
+                dependent="ILLIQ",
+                exog=["UncAnsCEO"],
                 entity_col="gvkey",
                 time_col="year",
             )

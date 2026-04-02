@@ -318,7 +318,7 @@ def load_variable_config(path: Optional[Path] = None, reload: bool = False) -> D
         >>> from f1d.shared.config.loader import load_variable_config
         >>> var_config = load_variable_config()
         >>> var_config["manager_qa_uncertainty"]["column"]
-        'Manager_QA_Uncertainty_pct'
+        'UncAnsMgr'
     """
     global _variable_config
 

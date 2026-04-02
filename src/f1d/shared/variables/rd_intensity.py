@@ -1,7 +1,7 @@
-"""Builder for R&D Intensity variable.
+"""Builder for R&D Sales variable.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, RD_Intensity.
+Returns one column: file_name, RDSales.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class RDIntensityBuilder(VariableBuilder):
-    """Build RD_Intensity = xrdq / atq from raw Compustat quarterly data.
+    """Build RDSales = xrdq / atq from raw Compustat quarterly data.
 
     Missing R&D (xrdq = NaN) is treated as zero per standard convention.
     """
@@ -43,12 +43,12 @@ class RDIntensityBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "RD_Intensity"]].copy()
-        stats = self.get_stats(data["RD_Intensity"], "RD_Intensity")
+        data = merged[["file_name", "RDSales"]].copy()
+        stats = self.get_stats(data["RDSales"], "RDSales")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "RD_Intensity", "source": "Compustat/xrdq,atq"},
+            metadata={"column": "RDSales", "source": "Compustat/xrdq,atq"},
         )
 
 

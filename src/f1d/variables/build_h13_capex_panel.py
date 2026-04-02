@@ -13,7 +13,7 @@ Description: Build CALL-LEVEL panel for H13 Capital Expenditure hypothesis test.
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
-    Step 4: Compute CapexAt_lead and CapexAt_lag per call (fiscal-year based, consecutive year validated).
+    Step 4: Compute Capex_lead and Capex_lag per call (fiscal-year based, consecutive year validated).
     Step 5: Assign industry sample (Main / Finance / Utility).
     Step 6: Save call-level panel.
 
@@ -215,15 +215,15 @@ def build_call_level_panel(
 def create_capex_lead(
     panel: pd.DataFrame, root_path: Optional[Path] = None
 ) -> pd.DataFrame:
-    """Create CapexAt_lead at call level.
+    """Create Capex_lead at call level.
 
     Uses fyearq (Compustat fiscal year) to correctly handle ~30% of firms
     with non-December fiscal year-ends.
 
     The lead is the firm's capital expenditure intensity in fiscal year t+1.
-    Construction follows H1's CashHoldings_lead pattern:
+    Construction follows H1's CashRatio_lead pattern:
     1. Attach fyearq via merge_asof (call start_date → Compustat datadate).
-    2. For each (gvkey, fyearq_int), take CapexAt from the call with the
+    2. For each (gvkey, fyearq_int), take Capex from the call with the
        LATEST start_date within that fiscal year.
     3. Sort by gvkey, fyearq_int; shift -1 within gvkey -> next-fiscal-year capex.
     4. Validate that next row is exactly fyearq+1 (not +2 due to gaps);
@@ -234,12 +234,12 @@ def create_capex_lead(
     All call-level rows are preserved -- Stage 4 drops NaN lead rows itself.
     """
     print("\n" + "=" * 60)
-    print("Creating CapexAt_lead (call-level, fiscal-year proxy)")
+    print("Creating Capex_lead (call-level, fiscal-year proxy)")
     print("=" * 60)
 
-    if "CapexAt" not in panel.columns:
+    if "Capex" not in panel.columns:
         raise ValueError(
-            "'CapexAt' column missing -- cannot create lead variable."
+            "'Capex' column missing -- cannot create lead variable."
         )
     if "start_date" not in panel.columns:
         raise ValueError(
@@ -279,10 +279,10 @@ def create_capex_lead(
 
     latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()
     firm_year_eoy = panel_valid.loc[
-        latest_idx, ["gvkey", "fyearq_int", "CapexAt"]
+        latest_idx, ["gvkey", "fyearq_int", "Capex"]
     ].copy()
     firm_year_eoy = firm_year_eoy.rename(
-        columns={"fyearq_int": "fyearq_grp", "CapexAt": "CapexAt_eoy"}
+        columns={"fyearq_int": "fyearq_grp", "Capex": "Capex_eoy"}
     )
 
     print(f"  Unique firm-fiscal-years: {len(firm_year_eoy):,}")
@@ -294,19 +294,19 @@ def create_capex_lead(
     firm_year_eoy["fyearq_lead"] = firm_year_eoy.groupby("gvkey")["fyearq_grp"].shift(
         -1
     )
-    firm_year_eoy["CapexAt_lead_raw"] = firm_year_eoy.groupby("gvkey")[
-        "CapexAt_eoy"
+    firm_year_eoy["Capex_lead_raw"] = firm_year_eoy.groupby("gvkey")[
+        "Capex_eoy"
     ].shift(-1)
 
     # Step 4: validate fiscal year continuity -- only keep lead if fyearq+1
     consecutive = firm_year_eoy["fyearq_lead"] == (firm_year_eoy["fyearq_grp"] + 1)
-    firm_year_eoy["CapexAt_lead"] = np.where(
-        consecutive, firm_year_eoy["CapexAt_lead_raw"], np.nan
+    firm_year_eoy["Capex_lead"] = np.where(
+        consecutive, firm_year_eoy["Capex_lead_raw"], np.nan
     )
 
-    n_last_year = firm_year_eoy["CapexAt_lead_raw"].isna().sum()
-    n_gap_year = ((~consecutive) & firm_year_eoy["CapexAt_lead_raw"].notna()).sum()
-    n_valid_lead = firm_year_eoy["CapexAt_lead"].notna().sum()
+    n_last_year = firm_year_eoy["Capex_lead_raw"].isna().sum()
+    n_gap_year = ((~consecutive) & firm_year_eoy["Capex_lead_raw"].notna()).sum()
+    n_valid_lead = firm_year_eoy["Capex_lead"].notna().sum()
     print(
         f"  Firm-fiscal-years with no next year (last fiscal year per firm): "
         f"{n_last_year:,}"
@@ -315,7 +315,7 @@ def create_capex_lead(
     print(f"  Firm-fiscal-years with valid consecutive lead: {n_valid_lead:,}")
 
     # Step 5: merge lead back to call level on (gvkey, fyearq_int)
-    lead_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "CapexAt_lead"]].copy()
+    lead_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "Capex_lead"]].copy()
     lead_lookup = lead_lookup.rename(columns={"fyearq_grp": "fyearq_int"})
 
     before_len = len(panel)
@@ -327,27 +327,27 @@ def create_capex_lead(
             "Duplicate (gvkey, fyearq_int) in firm-year lead lookup."
         )
 
-    n_calls_no_lead = panel["CapexAt_lead"].isna().sum()
+    n_calls_no_lead = panel["Capex_lead"].isna().sum()
     print(f"  Call-level rows: {len(panel):,}")
     print(
         f"  Calls without lead (last-fiscal-year + gaps + missing fyearq): {n_calls_no_lead:,}"
     )
-    print(f"  Calls with valid lead: {panel['CapexAt_lead'].notna().sum():,}")
+    print(f"  Calls with valid lead: {panel['Capex_lead'].notna().sum():,}")
 
     return panel
 
 
 def create_capex_lag(panel: pd.DataFrame) -> pd.DataFrame:
-    """Create CapexAt_lag at call level (previous fiscal year's CapexAt).
+    """Create Capex_lag at call level (previous fiscal year's Capex).
 
-    For each firm-fiscal-year, takes the end-of-year CapexAt (from the
+    For each firm-fiscal-year, takes the end-of-year Capex (from the
     latest call in that fiscal year) and shifts +1 within gvkey to get the
     previous fiscal year's value. Only valid if fiscal years are consecutive.
 
     Mirrors create_capex_lead() but shifts backward instead of forward.
     """
     print("\n" + "=" * 60)
-    print("Creating CapexAt_lag (call-level, fiscal-year proxy)")
+    print("Creating Capex_lag (call-level, fiscal-year proxy)")
     print("=" * 60)
 
     # Reuse the firm-year EOY values already computed during lead construction
@@ -359,10 +359,10 @@ def create_capex_lag(panel: pd.DataFrame) -> pd.DataFrame:
 
     latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()
     firm_year_eoy = panel_valid.loc[
-        latest_idx, ["gvkey", "fyearq_int", "CapexAt"]
+        latest_idx, ["gvkey", "fyearq_int", "Capex"]
     ].copy()
     firm_year_eoy = firm_year_eoy.rename(
-        columns={"fyearq_int": "fyearq_grp", "CapexAt": "CapexAt_eoy"}
+        columns={"fyearq_int": "fyearq_grp", "Capex": "Capex_eoy"}
     )
 
     firm_year_eoy = firm_year_eoy.sort_values(["gvkey", "fyearq_grp"]).reset_index(
@@ -373,25 +373,25 @@ def create_capex_lag(panel: pd.DataFrame) -> pd.DataFrame:
     firm_year_eoy["fyearq_prev"] = firm_year_eoy.groupby("gvkey")[
         "fyearq_grp"
     ].shift(1)
-    firm_year_eoy["CapexAt_lag_raw"] = firm_year_eoy.groupby("gvkey")[
-        "CapexAt_eoy"
+    firm_year_eoy["Capex_lag_raw"] = firm_year_eoy.groupby("gvkey")[
+        "Capex_eoy"
     ].shift(1)
 
     # Validate consecutive fiscal years
     consecutive = firm_year_eoy["fyearq_prev"] == (firm_year_eoy["fyearq_grp"] - 1)
-    firm_year_eoy["CapexAt_lag"] = np.where(
-        consecutive, firm_year_eoy["CapexAt_lag_raw"], np.nan
+    firm_year_eoy["Capex_lag"] = np.where(
+        consecutive, firm_year_eoy["Capex_lag_raw"], np.nan
     )
 
-    n_valid_lag = firm_year_eoy["CapexAt_lag"].notna().sum()
-    n_first_year = firm_year_eoy["CapexAt_lag_raw"].isna().sum()
-    n_gap_year = ((~consecutive) & firm_year_eoy["CapexAt_lag_raw"].notna()).sum()
+    n_valid_lag = firm_year_eoy["Capex_lag"].notna().sum()
+    n_first_year = firm_year_eoy["Capex_lag_raw"].isna().sum()
+    n_gap_year = ((~consecutive) & firm_year_eoy["Capex_lag_raw"].notna()).sum()
     print(f"  Firm-fiscal-years (first year per firm, no prior): {n_first_year:,}")
     print(f"  Firm-fiscal-years with fiscal year gap (lag nulled): {n_gap_year:,}")
     print(f"  Firm-fiscal-years with valid consecutive lag: {n_valid_lag:,}")
 
     # Merge lag back to call level
-    lag_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "CapexAt_lag"]].copy()
+    lag_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "Capex_lag"]].copy()
     lag_lookup = lag_lookup.rename(columns={"fyearq_grp": "fyearq_int"})
 
     before_len = len(panel)
@@ -403,7 +403,7 @@ def create_capex_lag(panel: pd.DataFrame) -> pd.DataFrame:
             "Duplicate (gvkey, fyearq_int) in firm-year lag lookup."
         )
 
-    print(f"  Calls with valid lag: {panel['CapexAt_lag'].notna().sum():,}")
+    print(f"  Calls with valid lag: {panel['Capex_lag'].notna().sum():,}")
 
     return panel
 
@@ -455,10 +455,10 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Step 1-2: Build call-level panel
     panel = build_call_level_panel(root, years, var_config, stats)
 
-    # Step 3: Create CapexAt_lead at call level (use fyearq)
+    # Step 3: Create Capex_lead at call level (use fyearq)
     panel = create_capex_lead(panel, root_path=root)
 
-    # Step 3b: Create CapexAt_lag at call level (previous fiscal year)
+    # Step 3b: Create Capex_lag at call level (previous fiscal year)
     panel = create_capex_lag(panel)
 
     # Step 4: Assign sample
@@ -469,7 +469,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print("\n  Sample distribution (all calls, including last-year):")
     for sample in ["Main", "Finance", "Utility"]:
         n = (panel["sample"] == sample).sum()
-        n_lead = panel.loc[panel["sample"] == sample, "CapexAt_lead"].notna().sum()
+        n_lead = panel.loc[panel["sample"] == sample, "Capex_lead"].notna().sum()
         print(f"    {sample}: {n:,} calls total, {n_lead:,} with valid lead")
 
     # Step 5: Save outputs
@@ -521,20 +521,20 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         f"- **Columns:** {len(panel.columns)}",
         "",
         "## Dependent Variables (CapEx)",
-        f"- **CapexAt (t):** {panel['CapexAt'].notna().sum():,} calls",
-        f"- **CapexAt_lead (t+1):** {panel['CapexAt_lead'].notna().sum():,} calls",
+        f"- **Capex (t):** {panel['Capex'].notna().sum():,} calls",
+        f"- **Capex_lead (t+1):** {panel['Capex_lead'].notna().sum():,} calls",
         "",
         "## Key IVs (4 simultaneous)",
-        f"- **CEO_QA_Uncertainty_pct:** {panel['CEO_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **CEO_Pres_Uncertainty_pct:** {panel['CEO_Pres_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_QA_Uncertainty_pct:** {panel['Manager_QA_Uncertainty_pct'].notna().sum():,} calls",
-        f"- **Manager_Pres_Uncertainty_pct:** {panel['Manager_Pres_Uncertainty_pct'].notna().sum():,} calls",
+        f"- **UncAnsCEO:** {panel['UncAnsCEO'].notna().sum():,} calls",
+        f"- **UncPreCEO:** {panel['UncPreCEO'].notna().sum():,} calls",
+        f"- **UncAnsMgr:** {panel['UncAnsMgr'].notna().sum():,} calls",
+        f"- **UncPreMgr:** {panel['UncPreMgr'].notna().sum():,} calls",
         "",
         "## Extended Controls",
         f"- **SalesGrowth:** {panel['SalesGrowth'].notna().sum():,} calls",
-        f"- **RD_Intensity:** {panel['RD_Intensity'].notna().sum():,} calls",
-        f"- **CashFlow:** {panel['CashFlow'].notna().sum():,} calls",
-        f"- **Volatility:** {panel['Volatility'].notna().sum():,} calls",
+        f"- **RDSales:** {panel['RDSales'].notna().sum():,} calls",
+        f"- **CashFlowAt:** {panel['CashFlowAt'].notna().sum():,} calls",
+        f"- **DailyVola:** {panel['DailyVola'].notna().sum():,} calls",
         "",
         "## Sample Distribution",
         "",
@@ -543,7 +543,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     ]
     for sample in ["Main", "Finance", "Utility"]:
         n = (panel["sample"] == sample).sum()
-        n_lead = panel.loc[panel["sample"] == sample, "CapexAt_lead"].notna().sum()
+        n_lead = panel.loc[panel["sample"] == sample, "Capex_lead"].notna().sum()
         report_lines.append(f"| {sample} | {n:,} | {n_lead:,} |")
 
     report_path = out_dir / "report_step3_h13_capex.md"

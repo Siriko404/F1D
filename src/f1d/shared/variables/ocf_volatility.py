@@ -1,10 +1,10 @@
-"""Builder for OCF_Volatility variable (rolling 5-year std of operating cash flow / assets).
+"""Builder for sCFO variable (rolling 5-year std of operating cash flow / assets).
 
 Uses 5-year rolling window with minimum 3 years required (matches v2 design).
 Previously used 4-year window with min 2 years.
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, OCF_Volatility.
+Returns one column: file_name, sCFO.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class OCFVolatilityBuilder(VariableBuilder):
-    """Build OCF_Volatility = rolling 5-year std (min 3 yrs) of (oancfy/atq_{t-1}) per gvkey.
+    """Build sCFO = rolling 5-year std (min 3 yrs) of (oancfy/atq_{t-1}) per gvkey.
 
     Uses lagged assets to avoid correlated measurement error from contemporaneous
     asset changes.
@@ -47,13 +47,13 @@ class OCFVolatilityBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "OCF_Volatility"]].copy()
-        stats = self.get_stats(data["OCF_Volatility"], "OCF_Volatility")
+        data = merged[["file_name", "sCFO"]].copy()
+        stats = self.get_stats(data["sCFO"], "sCFO")
         return VariableResult(
             data=data,
             stats=stats,
             metadata={
-                "column": "OCF_Volatility",
+                "column": "sCFO",
                 "source": "Compustat/oancfy/atq_{t-1} rolling std",
             },
         )

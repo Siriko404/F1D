@@ -66,7 +66,7 @@ def sample_clarity_input_data():
                 "Clarity": observed_clarity,
                 "gvkey": f"{ceo_id % 10:06d}",
                 "ff12_code": (ceo_id % 12) + 1,
-                "Manager_QA_Uncertainty_pct": np.random.uniform(10, 30),
+                "UncAnsMgr": np.random.uniform(10, 30),
             }
             data.append(row)
 
@@ -110,7 +110,7 @@ def sample_summary_stats_input():
     return pd.DataFrame({
         "file_name": [f"call_{i:04d}.docx" for i in range(n)],
         "ClarityCEO": np.random.normal(0, 1, n),
-        "Manager_QA_Uncertainty_pct": np.random.uniform(5, 35, n),
+        "UncAnsMgr": np.random.uniform(5, 35, n),
         "Size": np.exp(np.random.normal(7, 1.5, n)),
         "BM": np.random.uniform(0.5, 2.0, n),
         "Lev": np.random.uniform(0.1, 0.8, n),

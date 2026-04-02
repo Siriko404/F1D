@@ -247,7 +247,7 @@ class Step08Config(BaseStepConfig):
         default_factory=lambda: {
             "dependent_var": "MaQaUnc_pct",
             "linguistic_controls": ["MaPresUnc_pct", "AnaQaUnc_pct", "EntireCallNeg_pct"],
-            "firm_controls": ["SurpDec", "EPS_Growth", "StockRet", "MarketRet"],
+            "firm_controls": ["SurpDec", "EPSgrowth", "StockRet", "MarketRet"],
             "fixed_effects": ["CEO_ID", "year"],
             "min_calls_per_ceo": 5,
         },

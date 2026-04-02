@@ -9,23 +9,23 @@ Description: Run H13 Capital Expenditure hypothesis test using 12 model specific
              and control set. Main sample only.
 
 Model Specifications (12 columns in one table):
-    Cols 1-4: DV = CapexAt (contemporaneous), Calendar Year FE
-    Cols 5-6: DV = CapexAt (contemporaneous), Calendar Year-Quarter FE
-    Cols 7-10: DV = CapexAt_lead (t+1), Calendar Year FE
-    Cols 11-12: DV = CapexAt_lead (t+1), Calendar Year-Quarter FE
+    Cols 1-4: DV = Capex (contemporaneous), Calendar Year FE
+    Cols 5-6: DV = Capex (contemporaneous), Calendar Year-Quarter FE
+    Cols 7-10: DV = Capex_lead (t+1), Calendar Year FE
+    Cols 11-12: DV = Capex_lead (t+1), Calendar Year-Quarter FE
     Odd cols (1-4,7-10): Industry FE + Year FE / Even: Firm FE + Year FE
     Cols 5-6, 11-12: Extended controls only, YQ FE
 
 Key Independent Variables (4, all enter simultaneously):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr,
 
 Base Controls (8):
-    Size, TobinsQ, ROA, BookLev, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV
-    NOTE: CapexAt is NOT a control — it is the DV.
+    lnAssets, TobinsQ, ROA, Leverage, CashRatio, DivDummy, sCFO, Lagged_DV
+    NOTE: Capex is NOT a control — it is the DV.
 
 Extended Controls (Base + 4):
-    + SalesGrowth, RD_Intensity, CashFlow, Volatility
+    + SalesGrowth, RDSales, CashFlow, DailyVola
 
 Sample: Main only (FF12 codes 1-7, 9-10, 12).
 
@@ -84,77 +84,77 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",]
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",]
 
-# NOTE: CapexAt is the DV — it must NOT appear as a control.
-# Both Lev and CashHoldings are controls here (they are DVs in H4 and H1 respectively).
+# NOTE: Capex is the DV — it must NOT appear as a control.
+# Both Leverage and CashRatio are controls here (they are DVs in H4 and H1 respectively).
 BASE_CONTROLS = [
-    "Size",
+    "lnAssets",
     "TobinsQ",
     "ROA",
-    "BookLev",
-    "CashHoldings",
-    "DividendPayer",
-    "OCF_Volatility",
+    "Leverage",
+    "CashRatio",
+    "DivDummy",
+    "sCFO",
     "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
     "SalesGrowth",
-    "RD_Intensity",
-    "CashFlow",
-    "Volatility",
+    "RDSales",
+    "CashFlowAt",
+    "DailyVola",
 ]
 
 MODEL_SPECS = [
-    {"col": 1,  "dv": "CapexAt",      "fe": "industry",    "controls": "base"},
-    {"col": 2,  "dv": "CapexAt",      "fe": "firm",        "controls": "base"},
-    {"col": 3,  "dv": "CapexAt",      "fe": "industry",    "controls": "extended"},
-    {"col": 4,  "dv": "CapexAt",      "fe": "firm",        "controls": "extended"},
+    {"col": 1,  "dv": "Capex",      "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "Capex",      "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "Capex",      "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "Capex",      "fe": "firm",        "controls": "extended"},
     # Year-Quarter FE specs (Extended controls only)
-    {"col": 5,  "dv": "CapexAt",      "fe": "industry_yq", "controls": "extended"},
-    {"col": 6,  "dv": "CapexAt",      "fe": "firm_yq",     "controls": "extended"},
-    {"col": 7,  "dv": "CapexAt_lead", "fe": "industry",    "controls": "base"},
-    {"col": 8,  "dv": "CapexAt_lead", "fe": "firm",        "controls": "base"},
-    {"col": 9,  "dv": "CapexAt_lead", "fe": "industry",    "controls": "extended"},
-    {"col": 10, "dv": "CapexAt_lead", "fe": "firm",        "controls": "extended"},
+    {"col": 5,  "dv": "Capex",      "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "Capex",      "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "Capex_lead", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "Capex_lead", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "Capex_lead", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "Capex_lead", "fe": "firm",        "controls": "extended"},
     # Year-Quarter FE specs (Extended controls only)
-    {"col": 11, "dv": "CapexAt_lead", "fe": "industry_yq", "controls": "extended"},
-    {"col": 12, "dv": "CapexAt_lead", "fe": "firm_yq",     "controls": "extended"},
+    {"col": 11, "dv": "Capex_lead", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "Capex_lead", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
 
 VARIABLE_LABELS = {
-    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
-    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
+    "UncAnsCEO": "CEO QA Uncertainty",
+    "UncPreCEO": "CEO Pres Uncertainty",
+    "UncAnsMgr": "Mgr QA Uncertainty",
+    "UncPreMgr": "Mgr Pres Uncertainty",}
 
 # Summary statistics variable list
 SUMMARY_STATS_VARS = [
-    {"col": "CapexAt", "label": "CapEx$_t$ / Assets"},
-    {"col": "CapexAt_lead", "label": "CapEx$_{t+1}$ / Assets"},
+    {"col": "Capex", "label": "CapEx$_t$ / Assets"},
+    {"col": "Capex_lead", "label": "CapEx$_{t+1}$ / Assets"},
     # Key IVs
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    # Base controls
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},    # Base controls
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     # Extended controls
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": "R\\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -207,14 +207,14 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
         # DVs
-        "CapexAt", "CapexAt_lead", "CapexAt_lag",
+        "Capex", "Capex_lead", "Capex_lag",
         # Key IVs
-        "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
-        "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "Size", "TobinsQ", "ROA",
-        "BookLev", "CashHoldings", "DividendPayer", "OCF_Volatility",
+        "UncAnsCEO", "UncPreCEO",
+        "UncAnsMgr", "UncPreMgr",
+        "lnAssets", "TobinsQ", "ROA",
+        "Leverage", "CashRatio", "DivDummy", "sCFO",
         # Extended controls
-        "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+        "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
@@ -424,8 +424,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Write unified 12-column LaTeX table with stars + SE in parentheses.
 
     Layout:
-        Cols 1-6: CapexAt (contemporaneous) — 4 Year FE + 2 YQ FE
-        Cols 7-12: CapexAt_lead (t+1) — 4 Year FE + 2 YQ FE
+        Cols 1-6: Capex (contemporaneous) — 4 Year FE + 2 YQ FE
+        Cols 7-12: Capex_lead (t+1) — 4 Year FE + 2 YQ FE
         Rows: 4 key IVs (coeff + SE), controls indicator, FE indicators, N, R-sq
     """
     results_by_col = {}
@@ -636,8 +636,8 @@ def generate_report(
         "## Model Specifications",
         "",
         "All 4 key IVs enter each model simultaneously:",
-        "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
-        "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
+        "- UncAnsCEO, UncPreCEO",
+        "- UncAnsMgr, UncPreMgr",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",
@@ -748,8 +748,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
     print(f"\n  Main sample: {main_panel_n:,} calls, "
           f"{panel['gvkey'].nunique():,} firms")
-    print(f"  CapexAt non-null: {panel['CapexAt'].notna().sum():,}")
-    print(f"  CapexAt_lead non-null: {panel['CapexAt_lead'].notna().sum():,}")
+    print(f"  Capex non-null: {panel['Capex'].notna().sum():,}")
+    print(f"  Capex_lead non-null: {panel['Capex_lead'].notna().sum():,}")
     for iv in KEY_IVS:
         n_valid = panel[iv].notna().sum()
         pct = 100.0 * n_valid / main_panel_n if main_panel_n > 0 else 0
@@ -803,7 +803,7 @@ def main(panel_path: Optional[str] = None) -> int:
         attrition_stages = [
             ("Master manifest (full panel)", full_panel_n),
             ("Main sample filter (excl Finance/Utility)", main_panel_n),
-            ("After lead filter (col 5-8 only)", panel["CapexAt_lead"].notna().sum()),
+            ("After lead filter (col 5-8 only)", panel["Capex_lead"].notna().sum()),
             ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ]
         generate_attrition_table(attrition_stages, out_dir, "H13 Capital Expenditure")

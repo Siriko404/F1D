@@ -30,7 +30,7 @@
 
 ## VERDICT
 
-**FAIL — INACCURATE**: The provenance document is structurally complete but contains 5 factual errors of varying severity. The most material errors are (1) the wrong TobinsQ formula throughout (copied from an outdated engine comment rather than actual code), (2) the wrong ROA fallback claim (fallback exists for CashFlow only, not ROA), and (3) an internal inconsistency between F1 and F3 on builder count. Remaining errors are minor line-number and label precision issues.
+**FAIL — INACCURATE**: The provenance document is structurally complete but contains 5 factual errors of varying severity. The most material errors are (1) the wrong TobinsQ formula throughout (copied from an outdated engine comment rather than actual code), (2) the wrong ROA fallback claim (fallback exists for CashFlowAt only, not ROA), and (3) an internal inconsistency between F1 and F3 on builder count. Remaining errors are minor line-number and label precision issues.
 
 ---
 
@@ -40,7 +40,7 @@
 |-------|-------|----------------------|-----------------|----------|-------------|
 | 3/B4 | TobinsQ formula | `(atq + cshoq*prccq - ceqq) / atq` | `(cshoq*prccq + dlcq_clipped + dlttq_clipped) / atq` — i.e., Market Cap + Book Debt, not Market Cap minus Book Equity | HIGH | Correct formula in B4 and E |
 | 3/B4 | TobinsQ source fields | Lists `cshoq, prccq, ceqq, atq` | Actual code uses `cshoq, prccq, dlcq, dlttq, atq` (ceqq NOT used; dlcq, dlttq instead) | HIGH | Correct source field list |
-| 3/B4 | ROA fallback | "avg_assets falls back to atq_t when prior year missing" | No fallback exists for ROA. `avg_assets = (atq_t + atq_{t-1}) / 2`; if lag is NaN, avg_assets is NaN and ROA is NaN. The fallback logic exists only for CashFlow (engine line 685-686), not ROA. | MEDIUM | Remove fallback claim from ROA in B4 and E |
+| 3/B4 | ROA fallback | "avg_assets falls back to atq_t when prior year missing" | No fallback exists for ROA. `avg_assets = (atq_t + atq_{t-1}) / 2`; if lag is NaN, avg_assets is NaN and ROA is NaN. The fallback logic exists only for CashFlowAt (engine line 685-686), not ROA. | MEDIUM | Remove fallback claim from ROA in B4 and E |
 | 3/B6 | cov_kwds line number | "cov_kwds={"groups": ...} (runner line 271)" | Line 271 is `)` (closing parenthesis). Both `cov_type` and `cov_kwds` are on the same line 270. | LOW | Update to "runner line 270 (both cov_type and cov_kwds)" |
 | 7/F1 | AME get_margeff line number | "model.get_margeff(at=\"overall\") (runner line 306)" | Line 305 is the `get_margeff` call; line 306 is `mfx_df = mfx.summary_frame()` | LOW | Update citation to runner line 305 |
 | 7/F3 | Builder count | "each of 15 builder outputs" (F3 merge table) | 16 non-manifest builders: manager_qa_uncertainty, manager_pres_uncertainty, ceo_qa_uncertainty, ceo_pres_uncertainty, size, book_lev, tobins_q, roa, cash_holdings, capex_intensity, dividend_payer, ocf_volatility, sales_growth, rd_intensity, cash_flow, volatility | MEDIUM | Update F3 merge table from "15 builder outputs" to "16 builder outputs" |
@@ -105,7 +105,7 @@ Read Section A YAML block against `run_h18b_cccl_logit.py` docstring and code.
 - **PASS**
 
 **A-3. Hypothesis: "Does speech uncertainty during earnings calls predict SEC comment letter receipt in the subsequent calendar quarter?"**
-- Runner docstring lines 10-12: "Logit robustness check for H18. Same DV (CCCL binary), same IVs, same controls — replaces LPM with logistic regression."
+- Runner docstring lines 10-12: "Logit robustness check for H18. Same DV (CommentLetter binary), same IVs, same controls — replaces LPM with logistic regression."
 - Hypothesis content is consistent.
 - **PASS**
 
@@ -158,8 +158,8 @@ Read Section A YAML block against `run_h18b_cccl_logit.py` docstring and code.
 Doc equation:
 ```
 P(CCCL_{i,t} = 1 | X) = Lambda(
-    b1*CEO_QA_Uncertainty_pct + b2*CEO_Pres_Uncertainty_pct
-    + b3*Manager_QA_Uncertainty_pct + b4*Manager_Pres_Uncertainty_pct
+    b1*UncAnsCEO + b2*UncPreCEO
+    + b3*UncAnsMgr + b4*UncPreMgr
     + Controls + C(ff12_code) + C(cal_yr)
 )
 ```
@@ -171,19 +171,19 @@ formula = f"{dv} ~ {rhs}"
 ```
 where `fe_formula = "C(ff12_code) + C(cal_yr)"` for both specs.
 
-All 4 IVs in the equation? Keys: CEO_QA_Uncertainty_pct ✓, CEO_Pres_Uncertainty_pct ✓, Manager_QA_Uncertainty_pct ✓, Manager_Pres_Uncertainty_pct ✓.
+All 4 IVs in the equation? Keys: UncAnsCEO ✓, UncPreCEO ✓, UncAnsMgr ✓, UncPreMgr ✓.
 FE terms: C(ff12_code) ✓, C(cal_yr) ✓.
 Lambda (logistic CDF) notation correct for smf.logit ✓.
 **PASS**
 
 ### B2-CHECK: Dependent Variable(s)
 
-Doc: `CCCL | Binary | 1 if firm received CCCL in cal quarter Q+1 | Lead (Q+1)`
+Doc: `CommentLetter | Binary | 1 if firm received CommentLetter in cal quarter Q+1 | Lead (Q+1)`
 
-Runner line 92: `"dv": "CCCL"` in MODEL_SPECS.
-Runner line 484: `n_dv_valid = panel["CCCL"].notna().sum()` — CCCL used as DV.
-Builder `create_cccl_dvs` lines 276-279: `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0; panel["CCCL"] = cccl_fwd`
-Construction detail (B2 step 4): "CCCL = 1 if (gvkey, Q+1) is in the event set; 0 otherwise" — verified correct.
+Runner line 92: `"dv": "CommentLetter"` in MODEL_SPECS.
+Runner line 484: `n_dv_valid = panel["CommentLetter"].notna().sum()` — CommentLetter used as DV.
+Builder `create_cccl_dvs` lines 276-279: `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0; panel["CommentLetter"] = cccl_fwd`
+Construction detail (B2 step 4): "CommentLetter = 1 if (gvkey, Q+1) is in the event set; 0 otherwise" — verified correct.
 CCCL_lag created: `cccl_lag[i] = 1.0 if (g, q_prev) in cccl_set else 0.0; panel["CCCL_lag"] = cccl_lag` — used for Lagged_DV.
 **PASS**
 
@@ -192,10 +192,10 @@ CCCL_lag created: `cccl_lag[i] = 1.0 if (g, q_prev) in cccl_set else 0.0; panel[
 Runner `KEY_IVS` (lines 72-77):
 ```python
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",
 ]
 ```
 Doc lists all 4 with correct names ✓. Formula "(Uncertainty word count / total word count) * 100" — confirmed in LinguisticEngine docstring.
@@ -208,20 +208,20 @@ Winsorization claim: "0%/99% per-year (upper-only)" — verified in `_linguistic
 Runner `BASE_CONTROLS` (lines 79-83):
 ```python
 BASE_CONTROLS = [
-    "Size", "TobinsQ", "ROA", "BookLev", "CapexAt",
-    "CashHoldings", "DividendPayer", "OCF_Volatility",
+    "lnAssets", "TobinsQ", "ROA", "Leverage", "Capex",
+    "CashRatio", "DivDummy", "sCFO",
     "Lagged_DV",
 ]
 ```
 Runner `EXTENDED_CONTROLS` (lines 85-87):
 ```python
 EXTENDED_CONTROLS = BASE_CONTROLS + [
-    "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
 ]
 ```
 
-Doc B4 base controls table: `Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV` — 9 entries ✓ matches code.
-Doc B4 extended adds: `SalesGrowth, RD_Intensity, CashFlow, Volatility` — 4 entries ✓ matches code.
+Doc B4 base controls table: `lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV` — 9 entries ✓ matches code.
+Doc B4 extended adds: `SalesGrowth, RDSales, CashFlowAt, DailyVola` — 4 entries ✓ matches code.
 
 **TobinsQ formula — FAIL:**
 - Doc B4 claims: `(atq + cshoq*prccq - ceqq) / atq`
@@ -252,11 +252,11 @@ Doc B4 extended adds: `SalesGrowth, RD_Intensity, CashFlow, Volatility` — 4 en
   comp["ROA"] = np.where(avg_assets > 0, iby_annual / avg_assets, np.nan)
   ```
   No fallback. If `atq_{t-1}` is NaN, `avg_assets` is NaN, ROA is NaN.
-- The fallback logic EXISTS for CashFlow (`_compustat_engine.py` line 686: `avg_assets = avg_assets.where(avg_assets.notna(), annual["atq"])`), but NOT for ROA.
-- The doc incorrectly applies the CashFlow fallback description to ROA.
+- The fallback logic EXISTS for CashFlowAt (`_compustat_engine.py` line 686: `avg_assets = avg_assets.where(avg_assets.notna(), annual["atq"])`), but NOT for ROA.
+- The doc incorrectly applies the CashFlowAt fallback description to ROA.
 - **FAIL (MEDIUM severity)**
 
-All other B4 control formulas: Size (ln(atq), atq>0→NaN ✓), BookLev ((dlcq+dlttq)/atq ✓ — note: actual code does `fillna(0)` on individual components unless BOTH NaN, doc slightly simplifies to "missing=0" which is acceptable), CapexAt (capxy_annual/atq_lag ✓), CashHoldings (cheq/atq ✓), DividendPayer (dvy_annual>0 ✓), OCF_Volatility (5yr rolling std oancfy/atq_{t-1} ✓), SalesGrowth ((saley-saley_lag)/|saley_lag| ✓), RD_Intensity (xrdq.fillna(0)/atq ✓), CashFlow (oancfy/avg_assets with fallback ✓), Volatility (std*sqrt(252)*100 over [prev+5d,call-5d] min 10 days ✓).
+All other B4 control formulas: lnAssets (ln(atq), atq>0→NaN ✓), Leverage ((dlcq+dlttq)/atq ✓ — note: actual code does `fillna(0)` on individual components unless BOTH NaN, doc slightly simplifies to "missing=0" which is acceptable), Capex (capxy_annual/atq_lag ✓), CashRatio (cheq/atq ✓), DivDummy (dvy_annual>0 ✓), sCFO (5yr rolling std oancfy/atq_{t-1} ✓), SalesGrowth ((saley-saley_lag)/|saley_lag| ✓), RDSales (xrdq.fillna(0)/atq ✓), CashFlowAt (oancfy/avg_assets with fallback ✓), DailyVola (std*sqrt(252)*100 over [prev+5d,call-5d] min 10 days ✓).
 
 Lagged_DV construction: Runner line 191: `panel["Lagged_DV"] = panel["CCCL_lag"]` ✓
 
@@ -266,8 +266,8 @@ Lagged_DV construction: Runner line 191: `panel["Lagged_DV"] = panel["CCCL_lag"]
 
 Runner `MODEL_SPECS` (lines 91-94):
 ```python
-{"col": 1, "dv": "CCCL", "controls": "base",     "fe_formula": "C(ff12_code) + C(cal_yr)"},
-{"col": 2, "dv": "CCCL", "controls": "extended",  "fe_formula": "C(ff12_code) + C(cal_yr)"},
+{"col": 1, "dv": "CommentLetter", "controls": "base",     "fe_formula": "C(ff12_code) + C(cal_yr)"},
+{"col": 2, "dv": "CommentLetter", "controls": "extended",  "fe_formula": "C(ff12_code) + C(cal_yr)"},
 ```
 Both specs use identical `fe_formula = "C(ff12_code) + C(cal_yr)"`.
 Doc table: Industry FE=`C(ff12_code)`, Calendar Year FE=`C(cal_yr)`, no Firm FE, no Year-Qtr FE ✓.
@@ -315,17 +315,17 @@ Runner `MODEL_SPECS` (lines 91-94) has exactly 2 entries.
 
 | Code Col | Code DV | Code Controls | Code FE |
 |----------|---------|---------------|---------|
-| 1 | CCCL | base | C(ff12_code) + C(cal_yr) |
-| 2 | CCCL | extended | C(ff12_code) + C(cal_yr) |
+| 1 | CommentLetter | base | C(ff12_code) + C(cal_yr) |
+| 2 | CommentLetter | extended | C(ff12_code) + C(cal_yr) |
 
 Doc spec register:
 | Col | DV | Industry FE | Year FE | Firm FE | Year-Qtr FE | Controls |
 |-----|----|----|----|----|----|----|
-| 1 | CCCL | FF12 dummies | Cal Year dummies | No | No | Base |
-| 2 | CCCL | FF12 dummies | Cal Year dummies | No | No | Extended |
+| 1 | CommentLetter | FF12 dummies | Cal Year dummies | No | No | Base |
+| 2 | CommentLetter | FF12 dummies | Cal Year dummies | No | No | Extended |
 
 - Row count matches: 2 ✓
-- DV matches: CCCL both cols ✓
+- DV matches: CommentLetter both cols ✓
 - Industry FE: FF12 dummies (C(ff12_code)) ✓
 - Year FE: Cal Year dummies (C(cal_yr)) ✓
 - Firm FE: No ✓ (intentionally omitted due to separation)
@@ -356,14 +356,14 @@ Doc attrition cascade:
 |------|--------|---|---------|
 | 1 | Full panel | 112,968 | -- |
 | 2 | Main sample (excl FF12=8 Utility, FF12=11 Finance) | 88,205 | 24,763 |
-| 3 | CCCL=1 in Main (informational) | 280 | -- |
+| 3 | CommentLetter=1 in Main (informational) | 280 | -- |
 | 4 | After complete-case + min-calls (col 1) | 57,216 | 30,989 |
 
 Code verification:
 - Step 1: `full_n = len(panel)` (runner line 480) ✓
 - Step 2: `filter_main_sample` (runner line 481): `~ff12_code.isin([8, 11])` ✓
   - FF12=8: Utility, FF12=11: Finance — matches `panel_utils.py` lines 53-54 ✓
-- Step 3: `n_dv1 = (panel["CCCL"] == 1).sum()` (runner line 485); added to attrition_stages as informational ✓
+- Step 3: `n_dv1 = (panel["CommentLetter"] == 1).sum()` (runner line 485); added to attrition_stages as informational ✓
 - Step 4: `generate_attrition_table` with `first["n_obs"]` (runner lines 521-528) ✓
   Filter sequence (runner `prepare_regression_data`, lines 179-225):
   a) Inf→NaN (line 199) ✓
@@ -393,10 +393,10 @@ These values are from `model_diagnostics.csv` (actual run output). The doc corre
 The E table must contain every variable in every regression spec. Verified against runner MODEL_SPECS and builder code.
 
 **Completeness check**: Variables in any spec:
-- DV: CCCL ✓ (in E)
-- Key IVs (4): CEO_QA_Uncertainty_pct ✓, CEO_Pres_Uncertainty_pct ✓, Manager_QA_Uncertainty_pct ✓, Manager_Pres_Uncertainty_pct ✓
-- Base controls (8 + Lagged_DV): Size ✓, TobinsQ ✓, ROA ✓, BookLev ✓, CapexAt ✓, CashHoldings ✓, DividendPayer ✓, OCF_Volatility ✓, Lagged_DV ✓
-- Extended controls (+4): SalesGrowth ✓, RD_Intensity ✓, CashFlow ✓, Volatility ✓
+- DV: CommentLetter ✓ (in E)
+- Key IVs (4): UncAnsCEO ✓, UncPreCEO ✓, UncAnsMgr ✓, UncPreMgr ✓
+- Base controls (8 + Lagged_DV): lnAssets ✓, TobinsQ ✓, ROA ✓, Leverage ✓, Capex ✓, CashRatio ✓, DivDummy ✓, sCFO ✓, Lagged_DV ✓
+- Extended controls (+4): SalesGrowth ✓, RDSales ✓, CashFlowAt ✓, DailyVola ✓
 - FE/cluster: ff12_code ✓, cal_yr ✓, gvkey ✓
 - `fyearq_int`: In `required` list (runner line 193) but NOT in the Variable Dictionary. This is a borderline omission — fyearq_int is not a regression variable; it is used only for the complete-case check. The doc covers its construction in F1 step 3 ("Converts `fyearq` to numeric as `fyearq_int`"). Marginal omission, not a material quality gate failure.
 
@@ -404,32 +404,32 @@ The E table must contain every variable in every regression spec. Verified again
 
 | Variable | Doc Formula | Code Formula | Status |
 |----------|-------------|--------------|--------|
-| CCCL | 1 if (gvkey, Q+1) in CCCL event set | `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0` | PASS |
-| CEO_QA_Uncertainty_pct | Uncertainty words / total words * 100 | LinguisticEngine Stage 2 parquets | PASS |
+| CommentLetter | 1 if (gvkey, Q+1) in CommentLetter event set | `cccl_fwd[i] = 1.0 if (g, q_next) in cccl_set else 0.0` | PASS |
+| UncAnsCEO | Uncertainty words / total words * 100 | LinguisticEngine Stage 2 parquets | PASS |
 | Lagged_DV | CCCL_lag from runner line 191 | `panel["Lagged_DV"] = panel["CCCL_lag"]` | PASS |
-| Size | ln(atq), atq > 0; zero/neg → NaN | `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | PASS |
+| lnAssets | ln(atq), atq > 0; zero/neg → NaN | `np.where(comp["atq"] > 0, np.log(comp["atq"]), np.nan)` | PASS |
 | **TobinsQ** | **(atq + cshoq*prccq - ceqq) / atq** | **(cshoq*prccq + dlcq_clipped + dlttq_clipped) / atq** | **FAIL** |
 | TobinsQ source | cshoq, prccq, ceqq, atq | cshoq, prccq, dlcq, dlttq, atq — ceqq NOT used | **FAIL** |
 | **ROA** | **avg_assets falls back to atq_t when prior year missing** | **No fallback — NaN when lag missing** | **FAIL** |
-| BookLev | (dlcq + dlttq) / atq; missing=0 | `fillna(0)` on individual components; NaN if BOTH missing | PASS (acceptable simplification) |
-| CapexAt | capxy_annual / atq_lag | `capxy_annual / atq_annual_lag1` | PASS |
-| CashHoldings | cheq / atq | `comp["cheq"] / comp["atq"]` | PASS |
-| DividendPayer | 1 if dvy_annual (Q4) > 0 | `(dvy_annual.fillna(0) > 0).astype(float)` | PASS |
-| OCF_Volatility | 5yr rolling std (min 3 yrs) oancfy/atq_{t-1} | `_compute_ocf_volatility`: 5yr min 3, uses atq_lag | PASS |
+| Leverage | (dlcq + dlttq) / atq; missing=0 | `fillna(0)` on individual components; NaN if BOTH missing | PASS (acceptable simplification) |
+| Capex | capxy_annual / atq_lag | `capxy_annual / atq_annual_lag1` | PASS |
+| CashRatio | cheq / atq | `comp["cheq"] / comp["atq"]` | PASS |
+| DivDummy | 1 if dvy_annual (Q4) > 0 | `(dvy_annual.fillna(0) > 0).astype(float)` | PASS |
+| sCFO | 5yr rolling std (min 3 yrs) oancfy/atq_{t-1} | `_compute_ocf_volatility`: 5yr min 3, uses atq_lag | PASS |
 | SalesGrowth | (saley-saley_lag)/|saley_lag|; saleq fallback | `annual["sale_annual"] = saley.fillna(saleq)` | PASS |
-| RD_Intensity | xrdq.fillna(0) / atq | `comp["xrdq"].fillna(0) / comp["atq"]` | PASS |
-| CashFlow | oancfy / avg(atq_t, atq_{t-1}); fallback to atq_t | Engine line 686 fallback confirmed | PASS |
-| Volatility | std(daily_ret)*sqrt(252)*100 over [prev+5d, call-5d] min 10 days | `volatility.py` docstring line 6-8: same | PASS |
+| RDSales | xrdq.fillna(0) / atq | `comp["xrdq"].fillna(0) / comp["atq"]` | PASS |
+| CashFlowAt | oancfy / avg(atq_t, atq_{t-1}); fallback to atq_t | Engine line 686 fallback confirmed | PASS |
+| DailyVola | std(daily_ret)*sqrt(252)*100 over [prev+5d, call-5d] min 10 days | `volatility.py` docstring line 6-8: same | PASS |
 | ff12_code | Integer FF12 code; enters as C(ff12_code) | From manifest; cast to int runner line 223 | PASS |
 | cal_yr | start_date.dt.year; built by build_cal_yr_qtr_index() | panel_utils.py line 215: `panel["cal_yr"] = dt.dt.year.astype("Int64")` | PASS |
 | gvkey | 6-digit zero-padded Compustat ID | Builder line 255, runner preserves | PASS |
 
 **Winsorization claims:**
 - Linguistic IVs: 0%/99% per-year (upper-only) — verified in `_linguistic_engine.py` lines 255-257 ✓
-- Compustat controls (Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, OCF_Volatility, SalesGrowth, RD_Intensity, CashFlow): 1%/99% per-fyearq — verified as CompustatEngine applies winsorization ✓
-- DividendPayer: Not winsorized (binary) ✓
-- CCCL, CCCL_lag: Not winsorized (binary) ✓
-- Volatility: Not winsorized ✓
+- Compustat controls (lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, sCFO, SalesGrowth, RDSales, CashFlowAt): 1%/99% per-fyearq — verified as CompustatEngine applies winsorization ✓
+- DivDummy: Not winsorized (binary) ✓
+- CommentLetter, CCCL_lag: Not winsorized (binary) ✓
+- DailyVola: Not winsorized ✓
 
 **Phase 6 Result: 19/22 PASS** (3 FAIL: TobinsQ formula, TobinsQ source fields, ROA fallback — same root errors as Phase 3)
 
@@ -440,7 +440,7 @@ The E table must contain every variable in every regression spec. Verified again
 ### F-CHECK: Data Pipeline
 
 **F1. Dependency Chain:**
-Step 1 (Raw inputs): manifest, CCCL letters, CCM, Compustat, Stage 2 linguistic, CRSP ✓
+Step 1 (Raw inputs): manifest, CommentLetter letters, CCM, Compustat, Stage 2 linguistic, CRSP ✓
 Step 2 (Engine loading): LinguisticEngine, CompustatEngine, CRSPEngine ✓
 Step 3 (Panel builder): "merges 16 builder outputs" — **verified as correct** (17 total, 16 non-manifest) ✓
 Step 4 (Runner loading): `get_latest_output_dir()` → parquet load → `build_cal_yr_qtr_index()` ✓
@@ -453,8 +453,8 @@ Step 7 (Table generation): `generate_all_tables.py` entry documented ✓
 |--------|--------|-----------|--------|
 | LinguisticEngine | Stage 2 year-partitioned parquets | 4 uncertainty IVs | PASS |
 | CompustatEngine | comp_na_daily_all.parquet | 11 controls | PASS |
-| CRSPEngine | CRSP daily files | Volatility | PASS |
-| Direct load (CCCL) | cccl_conversations_all_years.parquet + CCM | CCCL, CCCL_lag | PASS |
+| CRSPEngine | CRSP daily files | DailyVola | PASS |
+| Direct load (CommentLetter) | cccl_conversations_all_years.parquet + CCM | CommentLetter, CCCL_lag | PASS |
 | ManifestFieldsBuilder | master_sample_manifest.parquet | file_name, gvkey, ff12_code, start_date | PASS |
 
 **F3. Merge Operations:**
@@ -462,7 +462,7 @@ Step 7 (Table generation): `generate_all_tables.py` entry documented ✓
 |---------|------|-------|-----|------|--------|
 | 1 | manifest | each of **15** builder outputs | file_name | left | **FAIL: should be 16** |
 | 2 | panel | CompustatEngine (fyearq) | gvkey+start_date→datadate (asof) | asof | PASS |
-| 3 | CCCL letters | CIK-gvkey map | cik_int | inner | PASS |
+| 3 | CommentLetter letters | CIK-gvkey map | cik_int | inner | PASS |
 | 4 | CCM map | Compustat CIK map | cik_int | outer (concat+dedup) | PASS |
 
 The F3 merge table states "15 builder outputs" but the actual `builders` dict in the panel builder has 17 entries (manifest + 16 others), meaning 16 non-manifest outputs are merged. This is WRONG. F1 step 3 correctly says "16 builder outputs".
@@ -494,7 +494,7 @@ Runner writes (from `save_outputs` and `main`):
 Doc G2 lists 8 rows (combining csv/tex where applicable) and explicitly notes no `report_step4` file. **PASS**. Doc note at G2 end: "The runner itself does not write a separate h18b_table.tex" — confirmed by absence of any `.tex` table write in runner. ✓
 
 **G3. Summary Statistics:**
-Runner `SUMMARY_STATS_VARS` (lines 103-121): 17 variables — CCCL, 4 IVs, Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, DividendPayer, OCF_Volatility, SalesGrowth, RD_Intensity, CashFlow, Volatility.
+Runner `SUMMARY_STATS_VARS` (lines 103-121): 17 variables — CommentLetter, 4 IVs, lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, DivDummy, sCFO, SalesGrowth, RDSales, CashFlowAt, DailyVola.
 Doc G3 lists same 17 variables ✓.
 Metrics: N, Mean, SD, Min, P25, Median, P75, Max via `make_summary_stats_table` ✓.
 Summary stats computed on main sample BEFORE complete-case filtering (runner line 491: called after `filter_main_sample` but before regression loops) ✓.
@@ -505,10 +505,10 @@ Summary stats computed on main sample BEFORE complete-case filtering (runner lin
 
 **H1. Winsorization:**
 - Compustat controls 1%/99% per-fyearq: verified in CompustatEngine ✓
-- DividendPayer excluded from winsorization (binary) ✓
+- DivDummy excluded from winsorization (binary) ✓
 - Linguistic IVs 0%/99% per-year upper-only: verified in `_linguistic_engine.py` lines 255-257 ✓
-- CCCL DV and CCCL_lag not winsorized (binary) ✓
-- Volatility not winsorized at Compustat level (CRSP-sourced) ✓
+- CommentLetter DV and CCCL_lag not winsorized (binary) ✓
+- DailyVola not winsorized at Compustat level (CRSP-sourced) ✓
 **PASS**
 
 **H2. Missing Data Policy:**
@@ -520,8 +520,8 @@ Summary stats computed on main sample BEFORE complete-case filtering (runner lin
 **PASS**
 
 **H3. Transformations:**
-- Size: ln(atq) ✓
-- Volatility: annualized (*sqrt(252)) and percentage (*100) ✓
+- lnAssets: ln(atq) ✓
+- DailyVola: annualized (*sqrt(252)) and percentage (*100) ✓
 - AMEs = dy/dx post-estimation ✓
 - No centering/z-scoring ✓
 **PASS**
@@ -540,7 +540,7 @@ Doc transcription:
     "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
     "label": "tab:h18b",
     "cols": 2,
-    "dvs": [(r"CCCL", 2)],
+    "dvs": [(r"CommentLetter", 2)],
     "tail": "one",
     "hyp_dir": ">",
     "r2_label": r"Pseudo~$R^2$",
@@ -558,7 +558,7 @@ Actual `outputs/generate_all_tables.py` lines 370-384 (verified by direct read):
     "label": "tab:h18b",
     "cols": 2,
     "dvs": [
-        (r"CCCL", 2),
+        (r"CommentLetter", 2),
     ],
     "tail": "one",
     "hyp_dir": ">",
@@ -573,7 +573,7 @@ Verification:
 - `caption` exact match ✓
 - `label: "tab:h18b"` ✓
 - `cols: 2` matches `len(MODEL_SPECS) = 2` ✓
-- `dvs: [(r"CCCL", 2)]` — single DV across both cols ✓
+- `dvs: [(r"CommentLetter", 2)]` — single DV across both cols ✓
 - `tail: "one"` matches runner one-tailed test ✓
 - `hyp_dir: ">"` matches beta > 0 direction ✓
 - `r2_label: r"Pseudo~$R^2$"` — runner writes `pseudo_r2` to txt file; label override is correct ✓
@@ -598,11 +598,11 @@ The creation prompt offers K3 for Logit/Probit/LPM and K6 for "Other Model Famil
 
 **Link function:** "Logistic (sigmoid). smf.logit() uses the logistic CDF." — correct for smf.logit ✓
 
-**Binary outcome construction:** "CCCL ∈ {0, 1}; identical to H18 LPM." — builder creates 0.0/1.0 float values ✓
+**Binary outcome construction:** "CommentLetter ∈ {0, 1}; identical to H18 LPM." — builder creates 0.0/1.0 float values ✓
 
 **Separation handling:**
-- "~95% of firms have CCCL=0 for all observations" — matches runner docstring line 18 ✓
-- "26 of 67 quarters have zero CCCL events" — matches runner docstring line 20 ✓
+- "~95% of firms have CommentLetter=0 for all observations" — matches runner docstring line 18 ✓
+- "26 of 67 quarters have zero CommentLetter events" — matches runner docstring line 20 ✓
 - "Only Industry FE + Calendar Year FE are feasible" — matches MODEL_SPECS ✓
 - Per-FE-group zero-event warnings at runtime (runner lines 259-263) ✓
 - Timoneda (2021) citation consistent with runner docstring ✓
@@ -651,13 +651,13 @@ The creation prompt offers K3 for Logit/Probit/LPM and K6 for "Other Model Famil
 ## PHASE 11: CROSS-REFERENCE CONSISTENCY
 
 1. **DVs in B2 match DVs in C?**
-   B2: `CCCL`. C: Col 1 and Col 2 both DV=`CCCL`. **CONSISTENT ✓**
+   B2: `CommentLetter`. C: Col 1 and Col 2 both DV=`CommentLetter`. **CONSISTENT ✓**
 
 2. **DVs in C match DVs in I?**
-   C: `CCCL`. I: `"dvs": [(r"CCCL", 2)]` — CCCL across both columns. **CONSISTENT ✓**
+   C: `CommentLetter`. I: `"dvs": [(r"CommentLetter", 2)]` — CommentLetter across both columns. **CONSISTENT ✓**
 
 3. **Controls in B4 match variables in E?**
-   B4 lists: Size, TobinsQ, ROA, BookLev, CapexAt, CashHoldings, DividendPayer, OCF_Volatility, Lagged_DV (base) + SalesGrowth, RD_Intensity, CashFlow, Volatility (extended).
+   B4 lists: lnAssets, TobinsQ, ROA, Leverage, Capex, CashRatio, DivDummy, sCFO, Lagged_DV (base) + SalesGrowth, RDSales, CashFlowAt, DailyVola (extended).
    E table contains all 13 control variables. **CONSISTENT ✓** (formula errors present in both, internally consistent)
 
 4. **Column count in A matches rows in C?**
@@ -714,13 +714,13 @@ The source fields column must also be corrected:
 **Location:** Section B4, Base Controls table, ROA row, Formula column
 **Current wrong text:** `iby_annual (Q4 row only) / avg(atq_t, atq_{t-1}); avg_assets falls back to atq_t when prior year missing`
 **Correct text:** `iby_annual (Q4 row only) / avg(atq_t, atq_{t-1}); ROA is NaN when prior year atq is missing (no fallback)`
-**Code reference:** `_compustat_engine.py` lines 959-969 — no fallback logic present, in contrast to CashFlow which has explicit fallback at line 686
+**Code reference:** `_compustat_engine.py` lines 959-969 — no fallback logic present, in contrast to CashFlowAt which has explicit fallback at line 686
 
 ### Correction 4 (MEDIUM): Fix ROA fallback claim in Section E (Variable Dictionary)
 
 **Location:** Section E, ROA row, Formula column
 **Current wrong text:** `iby_annual (Q4 row only) / avg(atq_t, atq_{t-1}); avg_assets falls back to atq_t when prior year missing`
-**Correct text:** `iby_annual (Q4 row only) / avg(atq_t, atq_{t-1}); NaN when prior year atq missing (no fallback — contrast with CashFlow)`
+**Correct text:** `iby_annual (Q4 row only) / avg(atq_t, atq_{t-1}); NaN when prior year atq missing (no fallback — contrast with CashFlowAt)`
 **Code reference:** `_compustat_engine.py` lines 959-969
 
 ### Correction 5 (MEDIUM): Fix builder count in Section F3
@@ -758,11 +758,11 @@ The source fields column must also be corrected:
 **Note 3: Pseudo-R² line citation in K3**
 K3 says "Accessed via `model.prsquared` (runner line 279)." Line 279 is the print statement; the actual stored value is at line 292: `meta["pseudo_r2"] = float(model.prsquared)`. The `.prsquared` attribute is correct; the line number is the print rather than the storage assignment. Very minor.
 
-**Note 4: BookLev missing-value edge case**
+**Note 4: Leverage missing-value edge case**
 Doc says "missing dlcq or dlttq treated as 0." The actual code uses `fillna(0)` on individual components but preserves NaN if BOTH dlcq AND dlttq are NaN (engine line 990: `np.where(comp["dlcq"].isna() & comp["dlttq"].isna(), np.nan, ...)`). The doc's simplification is slightly inaccurate (would imply 0/atq=0 in the both-null case, but actual result is NaN). This is a low-severity imprecision but not counted as a formal failure given the acceptable simplification convention.
 
 **Note 5: AME `at="overall"` default**
 The doc claims `at="overall"` is the statsmodels default. Verified via statsmodels source: `def get_margeff(self, at='overall', ...)`. Confirmed correct.
 
 **Note 6: L7 event count discrepancy**
-Known Issue 7 in the doc explains that col 2 has 196 events vs col 1's 200 events because extended-controls complete-case filtering drops some CCCL=1 rows. This is correctly documented.
+Known Issue 7 in the doc explains that col 2 has 196 events vs col 1's 200 events because extended-controls complete-case filtering drops some CommentLetter=1 rows. This is correctly documented.

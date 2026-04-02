@@ -4,7 +4,7 @@
 STAGE 4: Test H1.2 Financing-Constraint-Moderated Cash Holdings Hypothesis
 ================================================================================
 ID: econometric/run_h1_2_cash_constraint
-Description: Test whether the Manager_QA_Uncertainty → CashHoldings relationship
+Description: Test whether the UncAnsMgr → CashRatio relationship
              is stronger for financially constrained firms, distinguishing
              below-investment-grade rated firms from unrated firms.
 
@@ -13,9 +13,9 @@ Channel: CH1 — Precautionary liquidity under external-finance frictions
     (2007); Bates, Kahle & Stulz (2009).
 
 Model Specification (three-category moderator):
-    CashHoldings = b1*Unc_c + b2*BelowIG + b3*Unrated
-                 + b4*(Unc_c x BelowIG) + b5*(Unc_c x Unrated)
-                 + controls + IndustryFE + CalendarYearFE + e
+    CashRatio = b1*Unc_c + b2*BelowIG + b3*Unrated
+              + b4*(Unc_c x BelowIG) + b5*(Unc_c x Unrated)
+              + controls + IndustryFE + CalendarYearFE + e
 
     Reference group: Investment-grade firms (BBB- and above).
     b4 = clean CH1 test: does the uncertainty→cash link strengthen for junk-rated firms?
@@ -31,8 +31,8 @@ Model Specification (three-category moderator):
 Parent suite: H1 (Cash Holdings)
 
 2 Models:
-    Col 1: DV = CashHoldings_t, Industry + Calendar Year FE, Extended controls
-    Col 2: DV = CashHoldings_t, Industry + Calendar Year-Quarter FE, Extended controls
+    Col 1: DV = CashRatio_t, Industry + Calendar Year FE, Extended controls
+    Col 2: DV = CashRatio_t, Industry + Calendar Year-Quarter FE, Extended controls
 
 Moderator: Three-category from S&P splticrm (Compustat Daily Ratings)
     IG (reference): BBB- and above (both dummies = 0)
@@ -80,14 +80,14 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # Configuration
 # ==============================================================================
 
-IV = "Manager_QA_Uncertainty_pct"
+IV = "UncAnsMgr"
 IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
 IV_CENTERED_IG = "MgrQAUnc_x_IG"  # same variable, renamed in interaction specs
 
 CONTROLS = [
-    "BookLev", "Size", "TobinsQ", "ROA", "CapexAt",
-    "DividendPayer", "OCF_Volatility",
-    "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
+    "DivDummy", "sCFO",
+    "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
     "Lagged_DV",  # Unified lagged DV
 ]
 
@@ -106,30 +106,30 @@ YEAR_MAX = 2016
 
 MODEL_SPECS = [
     # Base specs: unconditional Manager_QA_Unc_c (no interactions)
-    {"col": 1, "dv": "CashHoldings", "fe": "industry",    "extra_controls": [], "interactions": False},
-    {"col": 2, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": [], "interactions": False},
+    {"col": 1, "dv": "CashRatio", "fe": "industry",    "extra_controls": [], "interactions": False},
+    {"col": 2, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": False},
     # Interaction specs: Manager_QA_Unc_c = IG-reference conditional effect
-    {"col": 3, "dv": "CashHoldings", "fe": "industry",    "extra_controls": [], "interactions": True},
-    {"col": 4, "dv": "CashHoldings", "fe": "industry_yq", "extra_controls": [], "interactions": True},
+    {"col": 3, "dv": "CashRatio", "fe": "industry",    "extra_controls": [], "interactions": True},
+    {"col": 4, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": True},
 ]
 
 SUMMARY_STATS_VARS = [
-    {"col": "CashHoldings", "label": "Cash Holdings$_t$"},
+    {"col": "CashRatio", "label": "Cash Holdings$_t$"},
     {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MOD_BELOW_IG, "label": "Below-IG (dummy)"},
     {"col": MOD_UNRATED, "label": "Unrated (dummy)"},
-    {"col": "BookLev", "label": "Leverage"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "Leverage", "label": "Leverage"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": "R\\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -172,7 +172,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code", "start_date",
-        "CashHoldings", "CashHoldings_lag",
+        "CashRatio", "CashRatio_lag",
         IV,
         *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
@@ -485,8 +485,8 @@ def run_regression(
 
     # Lagged DV control if present
     beta_lag_dv, se_lag_dv, p_two_lag_dv = np.nan, np.nan, np.nan
-    if "CashHoldings" in extra_controls:
-        beta_lag_dv, se_lag_dv, p_two_lag_dv = _extract_coef(model, "CashHoldings")
+    if "CashRatio" in extra_controls:
+        beta_lag_dv, se_lag_dv, p_two_lag_dv = _extract_coef(model, "CashRatio")
 
     stars_iv = _sig_stars_one(p_one_iv)
 
@@ -743,7 +743,7 @@ def generate_report(
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Manager_QA_Uncertainty × BelowIG / Unrated (two interactions)",
+        f"**Design:** UncAnsMgr × BelowIG / Unrated (two interactions)",
         f"**Channel:** CH1 — Precautionary liquidity under external-finance frictions",
         f"**Moderator:** Three-category: IG (ref) / Below-IG / Unrated",
         f"**IV centering mean:** {iv_mu:.4f}",

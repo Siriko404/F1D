@@ -1,7 +1,7 @@
 """Builder for AssetGrowth variable (year-over-year total asset growth).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, AssetGrowth.
+Returns one column: file_name, dAA.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class AssetGrowthBuilder(VariableBuilder):
-    """Build AssetGrowth = (atq_t - atq_{t-4}) / |atq_{t-4}| from Compustat.
+    """Build dAA = (atq_t - atq_{t-4}) / |atq_{t-4}| from Compustat.
 
     Year-over-year asset growth using date-based lag.
     Asset growth effect documented by Cooper et al. (2008) - high asset growth
@@ -46,12 +46,12 @@ class AssetGrowthBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "AssetGrowth"]].copy()
-        stats = self.get_stats(data["AssetGrowth"], "AssetGrowth")
+        data = merged[["file_name", "dAA"]].copy()
+        stats = self.get_stats(data["dAA"], "dAA")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "AssetGrowth", "source": "Compustat/atq (date-based lag)"},
+            metadata={"column": "dAA", "source": "Compustat/atq (date-based lag)"},
         )
 
 

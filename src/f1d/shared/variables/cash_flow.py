@@ -1,7 +1,7 @@
 """Builder for CashFlow variable (operating cash flow / total assets).
 
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, CashFlow.
+Returns one column: file_name, CashFlowAt.
 
 Formula: CashFlow = oancfy / avg_assets
     oancfy: operating cash flows (net cash from operating activities; annual, Q4-only via Biddle engine)
@@ -44,12 +44,12 @@ class CashFlowBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "CashFlow"]].copy()
-        stats = self.get_stats(data["CashFlow"], "CashFlow")
+        data = merged[["file_name", "CashFlowAt"]].copy()
+        stats = self.get_stats(data["CashFlowAt"], "CashFlowAt")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "CashFlow", "source": "Compustat/oancfy/atq"},
+            metadata={"column": "CashFlowAt", "source": "Compustat/oancfy/atq"},
         )
 
 

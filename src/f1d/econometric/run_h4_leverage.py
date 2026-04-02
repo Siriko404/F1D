@@ -9,24 +9,24 @@ Description: Run H4 Leverage hypothesis test using 24 model specifications
              and control set. Main sample only.
 
 Model Specifications (24 columns, two DV panels of 12):
-    BookLev panel (cols 1-12):
-        Cols 1-6: DV = BookLev (contemporaneous)
-        Cols 7-12: DV = BookLev_lead (t+1)
+    Leverage panel (cols 1-12):
+        Cols 1-6: DV = Leverage (contemporaneous)
+        Cols 7-12: DV = Leverage_lead (t+1)
     DebtToCapital panel (cols 13-24):
         Cols 13-18: DV = DebtToCapital (contemporaneous)
         Cols 19-24: DV = DebtToCapital_lead (t+1)
     Each 6-col block: Ind/Firm base, Ind/Firm ext, IndYQ/FirmYQ ext
 
 Key Independent Variables (4, all enter simultaneously):
-    CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct,
-    Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct,
+    UncAnsCEO, UncPreCEO,
+    UncAnsMgr, UncPreMgr,
 
 Base Controls (8):
-    Size, TobinsQ, ROA, CapexAt, DividendPayer, OCF_Volatility, CashHoldings, Lagged_DV
-    NOTE: Lev is NOT a control — it is the DV.
+    lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO, CashRatio, Lagged_DV
+    NOTE: Leverage is NOT a control — it is the DV.
 
 Extended Controls (Base + 4):
-    + SalesGrowth, RD_Intensity, CashFlow, Volatility
+    + SalesGrowth, RDSales, CashFlow, DailyVola
 
 Sample: Main only (FF12 codes 1-7, 9-10, 12).
 
@@ -85,45 +85,45 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 KEY_IVS = [
-    "CEO_QA_Uncertainty_pct",
-    "CEO_Pres_Uncertainty_pct",
-    "Manager_QA_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct",]
+    "UncAnsCEO",
+    "UncPreCEO",
+    "UncAnsMgr",
+    "UncPreMgr",]
 
 # NOTE: Lev is the DV — it must NOT appear as a control.
-# CashHoldings (which was the DV in H1) is a control here.
+# CashRatio (which was the DV in H1) is a control here.
 BASE_CONTROLS = [
-    "Size",
+    "lnAssets",
     "TobinsQ",
     "ROA",
-    "CapexAt",
-    "DividendPayer",
-    "OCF_Volatility",
-    "CashHoldings",
+    "Capex",
+    "DivDummy",
+    "sCFO",
+    "CashRatio",
     "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
     "SalesGrowth",
-    "RD_Intensity",
-    "CashFlow",
-    "Volatility",
+    "RDSales",
+    "CashFlowAt",
+    "DailyVola",
 ]
 
 MODEL_SPECS = [
-    # BookLev block (12 cols): contemporaneous (1-6) + lead (7-12)
-    {"col": 1,  "dv": "BookLev",            "fe": "industry",    "controls": "base"},
-    {"col": 2,  "dv": "BookLev",            "fe": "firm",        "controls": "base"},
-    {"col": 3,  "dv": "BookLev",            "fe": "industry",    "controls": "extended"},
-    {"col": 4,  "dv": "BookLev",            "fe": "firm",        "controls": "extended"},
-    {"col": 5,  "dv": "BookLev",            "fe": "industry_yq", "controls": "extended"},
-    {"col": 6,  "dv": "BookLev",            "fe": "firm_yq",     "controls": "extended"},
-    {"col": 7,  "dv": "BookLev_lead",       "fe": "industry",    "controls": "base"},
-    {"col": 8,  "dv": "BookLev_lead",       "fe": "firm",        "controls": "base"},
-    {"col": 9,  "dv": "BookLev_lead",       "fe": "industry",    "controls": "extended"},
-    {"col": 10, "dv": "BookLev_lead",       "fe": "firm",        "controls": "extended"},
-    {"col": 11, "dv": "BookLev_lead",       "fe": "industry_yq", "controls": "extended"},
-    {"col": 12, "dv": "BookLev_lead",       "fe": "firm_yq",     "controls": "extended"},
+    # Leverage block (12 cols): contemporaneous (1-6) + lead (7-12)
+    {"col": 1,  "dv": "Leverage",            "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "Leverage",            "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "Leverage",            "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "Leverage",            "fe": "firm",        "controls": "extended"},
+    {"col": 5,  "dv": "Leverage",            "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "Leverage",            "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "Leverage_lead",       "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "Leverage_lead",       "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "Leverage_lead",       "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "Leverage_lead",       "fe": "firm",        "controls": "extended"},
+    {"col": 11, "dv": "Leverage_lead",       "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "Leverage_lead",       "fe": "firm_yq",     "controls": "extended"},
     # DebtToCapital block (12 cols): contemporaneous (13-18) + lead (19-24)
     {"col": 13, "dv": "DebtToCapital",      "fe": "industry",    "controls": "base"},
     {"col": 14, "dv": "DebtToCapital",      "fe": "firm",        "controls": "base"},
@@ -142,36 +142,36 @@ MODEL_SPECS = [
 MIN_CALLS_PER_FIRM = 5
 
 VARIABLE_LABELS = {
-    "CEO_QA_Uncertainty_pct": "CEO QA Uncertainty",
-    "CEO_Pres_Uncertainty_pct": "CEO Pres Uncertainty",
-    "Manager_QA_Uncertainty_pct": "Mgr QA Uncertainty",
-    "Manager_Pres_Uncertainty_pct": "Mgr Pres Uncertainty",}
+    "UncAnsCEO": "CEO QA Uncertainty",
+    "UncPreCEO": "CEO Pres Uncertainty",
+    "UncAnsMgr": "Mgr QA Uncertainty",
+    "UncPreMgr": "Mgr Pres Uncertainty",}
 
 # Summary statistics variable list
 SUMMARY_STATS_VARS = [
-    {"col": "BookLev", "label": "BookLev$_t$"},
-    {"col": "BookLev_lead", "label": "BookLev$_{t+1}$"},
+    {"col": "Leverage", "label": "Leverage$_t$"},
+    {"col": "Leverage_lead", "label": "Leverage$_{t+1}$"},
     {"col": "DebtToCapital", "label": "DebtToCapital$_t$"},
     {"col": "DebtToCapital_lead", "label": "DebtToCapital$_{t+1}$"},
-    {"col": "BookLev_lag", "label": "BookLev$_{t-1}$"},
+    {"col": "Leverage_lag", "label": "Leverage$_{t-1}$"},
     {"col": "DebtToCapital_lag", "label": "DebtToCapital$_{t-1}$"},
     # Key IVs
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},    # Base controls
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},    # Base controls
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CapexAt", "label": "CapEx / Assets"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
+    {"col": "Capex", "label": "CapEx / Assets"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
     # Extended controls
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": "R\\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -223,18 +223,18 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code", "start_date",
         # DVs
-        "BookLev", "BookLev_lead",
+        "Leverage", "Leverage_lead",
         "DebtToCapital", "DebtToCapital_lead",
         # Key IVs
-        "CEO_QA_Uncertainty_pct", "CEO_Pres_Uncertainty_pct",
-        "Manager_QA_Uncertainty_pct", "Manager_Pres_Uncertainty_pct",
-        "Size", "TobinsQ", "ROA",
-        "CapexAt", "DividendPayer", "OCF_Volatility",
-        "CashHoldings",
+        "UncAnsCEO", "UncPreCEO",
+        "UncAnsMgr", "UncPreMgr",
+        "lnAssets", "TobinsQ", "ROA",
+        "Capex", "DivDummy", "sCFO",
+        "CashRatio",
         # Extended controls
-        "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+        "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
         # Lagged DVs (historical level controls)
-        "BookLev_lag", "DebtToCapital_lag",
+        "Leverage_lag", "DebtToCapital_lag",
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
@@ -441,7 +441,7 @@ def _sig_stars(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write two-panel LaTeX table (BookLev + DebtToCapital) with 12 cols each.
+    """Write two-panel LaTeX table (Leverage + DebtToCapital) with 12 cols each.
 
     Layout per panel:
         Cols 1-6: contemporaneous DV (Ind/Firm base, Ind/Firm ext, IndYQ/FirmYQ ext)
@@ -571,18 +571,18 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     n_cols = 12  # per panel
 
-    # Panel A: BookLev (cols 1-12)
+    # Panel A: Leverage (cols 1-12)
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Speech Uncertainty and Leverage --- Panel A: BookLev}",
+        r"\caption{Speech Uncertainty and Leverage --- Panel A: Leverage}",
         r"\label{tab:h4_leverage_A}",
         r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}",
         r"\toprule",
     ]
     lines += _build_panel_lines(
-        range(1, 13), r"BookLev$_t$", r"BookLev$_{t+1}$",
+        range(1, 13), r"Leverage$_t$", r"Leverage$_{t+1}$",
     )
     lines += [
         r"\bottomrule",
@@ -690,8 +690,8 @@ def generate_report(
         "## Model Specifications",
         "",
         "All 4 key IVs enter each model simultaneously:",
-        "- CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct",
-        "- Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct",
+        "- UncAnsCEO, UncPreCEO",
+        "- UncAnsMgr, UncPreMgr",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",
@@ -802,8 +802,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
     print(f"\n  Main sample: {main_panel_n:,} calls, "
           f"{panel['gvkey'].nunique():,} firms")
-    print(f"  Lev non-null: {panel['BookLev'].notna().sum():,}")
-    print(f"  BookLev_lead non-null: {panel['BookLev_lead'].notna().sum():,}")
+    print(f"  Lev non-null: {panel['Leverage'].notna().sum():,}")
+    print(f"  Leverage_lead non-null: {panel['Leverage_lead'].notna().sum():,}")
     for iv in KEY_IVS:
         n_valid = panel[iv].notna().sum()
         pct = 100.0 * n_valid / main_panel_n if main_panel_n > 0 else 0
@@ -857,7 +857,7 @@ def main(panel_path: Optional[str] = None) -> int:
         attrition_stages = [
             ("Master manifest (full panel)", full_panel_n),
             ("Main sample filter (excl Finance/Utility)", main_panel_n),
-            ("After lead filter (col 7-12 only)", panel["BookLev_lead"].notna().sum()),
+            ("After lead filter (col 7-12 only)", panel["Leverage_lead"].notna().sum()),
             ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ]
         generate_attrition_table(attrition_stages, out_dir, "H4 Leverage")

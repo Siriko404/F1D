@@ -1,6 +1,6 @@
 """Builder for Non-CEO Manager Q&A Negative Sentiment variable.
 
-Queries the shared LinguisticEngine for NonCEO_Manager_QA_Negative_pct.
+Queries the shared LinguisticEngine for NegAnsNoCEO.
 Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
@@ -19,12 +19,12 @@ class NonCEOManagerQANegativeBuilder(VariableBuilder):
     """Build Non-CEO Manager Q&A Negative Sentiment variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    Column: NonCEO_Manager_QA_Negative_pct
+    Column: NegAnsNoCEO
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "NonCEO_Manager_QA_Negative_pct")
+        self.column = config.get("column", "NegAnsNoCEO")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         engine = get_engine()

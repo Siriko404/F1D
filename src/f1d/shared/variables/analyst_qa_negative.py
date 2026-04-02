@@ -1,6 +1,6 @@
 """Builder for Analyst Q&A Negative Sentiment variable.
 
-Queries the shared LinguisticEngine for Analyst_QA_Negative_pct.
+Queries the shared LinguisticEngine for NegQue.
 Winsorization (pooled 1%/99%) is applied at engine level for consistency.
 """
 
@@ -19,12 +19,12 @@ class AnalystQANegativeBuilder(VariableBuilder):
     """Build Analyst Q&A Negative Sentiment variable via LinguisticEngine.
 
     Source: outputs/2_Textual_Analysis/2.2_Variables/latest/
-    Column: Analyst_QA_Negative_pct
+    Column: NegQue
     """
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "Analyst_QA_Negative_pct")
+        self.column = config.get("column", "NegQue")
 
     def build(self, years: range, root_path: Path) -> VariableResult:
         engine = get_engine()

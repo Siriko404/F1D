@@ -5,22 +5,22 @@ STAGE 4: Test H13.1 TNIC-Moderated Capital Expenditure Hypothesis (Redesigned)
 ================================================================================
 ID: econometric/run_h13_1_competition
 Description: Test whether product-market similarity (Hoberg-Phillips TNIC3TSIMM)
-             moderates the Manager_QA_Uncertainty → CapexAt relationship.
+             moderates the UncAnsMgr → Capex relationship.
 
 Model Specification:
-    CapexAt = b1*Mgr_QA_Unc_c + b2*z(log(TSIMM)) + b3*(Mgr_QA_Unc_c x z(log(TSIMM)))
-            + controls [+ CapexAt_t for lead specs] + IndustryFE + CalendarYearFE + e
+    Capex = b1*Mgr_QA_Unc_c + b2*z(log(TSIMM)) + b3*(Mgr_QA_Unc_c x z(log(TSIMM)))
+          + controls [+ Capex_t for lead specs] + IndustryFE + CalendarYearFE + e
 
     b3 is the coefficient of interest: does product similarity moderate
     the effect of managerial Q&A uncertainty on capital expenditure?
 
 Parent suite: H13 (Capital Expenditure)
-    Manager_QA_Uncertainty_pct significant in all 4 Industry+CalYr specs (p<0.005).
+    UncAnsMgr significant in all 4 Industry+CalYr specs (p<0.005).
 
 4 Models:
     Cols 1-2: Calendar Year FE (Industry + CalYr)
     Cols 3-4: Year-Quarter FE (Industry + YQ)
-    Within each pair: CapexAt, CapexAt_lead
+    Within each pair: Capex, Capex_lead
 
 Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
     Log-transformed then z-scored on Main sample.
@@ -67,21 +67,21 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # Configuration
 # ==============================================================================
 
-IV = "Manager_QA_Uncertainty_pct"
+IV = "UncAnsMgr"
 IV_CENTERED = "Manager_QA_Unc_c"
 
 CONTROLS = [
-    "Size", "TobinsQ", "ROA", "BookLev", "CashHoldings",
-    "DividendPayer", "OCF_Volatility",
-    "SalesGrowth", "RD_Intensity", "CashFlow", "Volatility",
+    "lnAssets", "TobinsQ", "ROA", "Leverage", "CashRatio",
+    "DivDummy", "sCFO",
+    "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
     "Lagged_DV",  # Unified lagged DV
 ]
 
 MODERATORS = {
     "tsimm": {
-        "raw": "tnic3tsimm",
-        "log": "log_tnic3tsimm",
-        "z": "z_log_tnic3tsimm",
+        "raw": "TotalSimilarity",
+        "log": "log_TotalSimilarity",
+        "z": "z_log_TotalSimilarity",
         "interaction": "MgrQAUnc_x_zlogTSIMM",
         "label": "TNIC3TSIMM",
         "tex_label": r"$z(\log(\mathrm{TSIMM}))$",
@@ -93,36 +93,36 @@ MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
     # Calendar Year FE
-    {"col": 1, "dv": "CapexAt",      "mod": "tsimm", "fe": "industry",    "extra_controls": []},
-    {"col": 2, "dv": "CapexAt_lead", "mod": "tsimm", "fe": "industry",    "extra_controls": []},
+    {"col": 1, "dv": "Capex",      "mod": "tsimm", "fe": "industry",    "extra_controls": []},
+    {"col": 2, "dv": "Capex_lead", "mod": "tsimm", "fe": "industry",    "extra_controls": []},
     # Year-Quarter FE
-    {"col": 3, "dv": "CapexAt",      "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
-    {"col": 4, "dv": "CapexAt_lead", "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
+    {"col": 3, "dv": "Capex",      "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
+    {"col": 4, "dv": "Capex_lead", "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
 ]
 
 DV_TEX = {
-    "CapexAt": r"CapEx/AT$_t$",
-    "CapexAt_lead": r"CapEx/AT$_{t+1}$",
+    "Capex": r"CapEx/AT$_t$",
+    "Capex_lead": r"CapEx/AT$_{t+1}$",
 }
 
 SUMMARY_STATS_VARS = [
-    {"col": "CapexAt", "label": "CapEx / Assets$_t$"},
-    {"col": "CapexAt_lead", "label": "CapEx / Assets$_{t+1}$"},
+    {"col": "Capex", "label": "CapEx / Assets$_t$"},
+    {"col": "Capex_lead", "label": "CapEx / Assets$_{t+1}$"},
     {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
-    {"col": "tnic3tsimm", "label": "TNIC3TSIMM (raw)"},
-    {"col": "z_log_tnic3tsimm", "label": "$z(\\log(\\mathrm{TSIMM}))$"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "TotalSimilarity", "label": "TNIC3TSIMM (raw)"},
+    {"col": "z_log_TotalSimilarity", "label": "$z(\\log(\\mathrm{TSIMM}))$"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "BookLev", "label": "Book Leverage"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "OCF_Volatility", "label": "OCF Volatility"},
+    {"col": "Leverage", "label": "Book Leverage"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "sCFO", "label": "OCF Volatility"},
     {"col": "SalesGrowth", "label": "Sales Growth"},
-    {"col": "RD_Intensity", "label": "R\\&D Intensity"},
-    {"col": "CashFlow", "label": "Cash Flow"},
-    {"col": "Volatility", "label": "Stock Volatility"},
+    {"col": "RDSales", "label": "R\\&D Intensity"},
+    {"col": "CashFlowAt", "label": "Cash Flow"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
 ]
 
 
@@ -166,7 +166,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code",
         "start_date",  # needed for cal_yr_qtr
-        "CapexAt", "CapexAt_lead", "CapexAt_lag",
+        "Capex", "Capex_lead", "Capex_lag",
         IV,
         *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
@@ -184,7 +184,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
 
 def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
-    """Load TNIC3 data and merge tnic3tsimm into panel."""
+    """Load TNIC3 data and merge TotalSimilarity into panel."""
     print("\n" + "=" * 60)
     print("Merging TNIC3TSIMM")
     print("=" * 60)
@@ -200,7 +200,7 @@ def load_and_merge_tnic(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
 
     before = len(panel)
     panel = panel.merge(
-        tnic[["gvkey", "year", "tnic3tsimm"]].rename(
+        tnic[["gvkey", "year", "TotalSimilarity"]].rename(
             columns={"gvkey": "_gvkey_int", "year": "fyearq_int"}
         ),
         on=["_gvkey_int", "fyearq_int"],
@@ -649,7 +649,7 @@ def generate_report(
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Manager_QA_Uncertainty x z(log(TNIC)) interaction",
+        f"**Design:** UncAnsMgr x z(log(TNIC)) interaction",
         f"**Moderators:** TSIMM (primary) + HHI (robustness)",
         f"**Cross-corr:** {params.get('cross_corr', np.nan):.4f}",
         f"**FE:** Industry(FF12) + CalendarYear (cols 1-4), Industry(FF12) + Year-Quarter (cols 5-8)",
@@ -733,7 +733,7 @@ def main(panel_path: Optional[str] = None) -> int:
     main_n = len(panel)
 
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
-    for dv in ["CapexAt", "CapexAt_lead"]:
+    for dv in ["Capex", "Capex_lead"]:
         print(f"  {dv} non-null: {panel[dv].notna().sum():,}")
     print(f"  {IV}: {panel[IV].notna().sum():,} ({100 * panel[IV].notna().mean():.1f}%)")
     for mod_key, mod_info in MODERATORS.items():
@@ -773,7 +773,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     diag_df = save_outputs(all_results, out_dir)
 
-    tsimm_matched = panel["tnic3tsimm"].notna().sum()
+    tsimm_matched = panel["TotalSimilarity"].notna().sum()
     if all_results:
         first = all_results[0]["meta"]
         attrition_stages = [

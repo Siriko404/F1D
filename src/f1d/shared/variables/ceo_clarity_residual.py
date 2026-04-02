@@ -5,7 +5,7 @@ regression. The residual represents the component of CEO language uncertainty
 that cannot be explained by firm and linguistic factors.
 
 Source: outputs/econometric/ceo_clarity_extended/{latest}/ceo_clarity_residual.parquet
-Output column: CEO_Clarity_Residual
+Output column: UncResCEO
 Merge key: file_name (call-level identifier)
 """
 
@@ -32,7 +32,7 @@ class CEOClarityResidualBuilder(VariableBuilder):
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        self.column = config.get("column", "CEO_Clarity_Residual")
+        self.column = config.get("column", "UncResCEO")
         # Skip winsorization - residuals are already cleaned from regression
         self._skip_winsorization = True
 

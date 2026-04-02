@@ -13,8 +13,8 @@ Description: Build CALL-LEVEL panel for H1 Cash Holdings hypothesis test.
     Step 1: Load manifest + all call-level variables (linguistic + financial).
     Step 2: Merge everything onto manifest by file_name (zero row-delta enforced).
     Step 3: Add call year from start_date.
-    Step 4: Compute CashHoldings_lead per call:
-            - Average CashHoldings within (gvkey, call_year) -> firm-year mean
+    Step 4: Compute CashRatio_lead per call:
+            - Average CashRatio within (gvkey, call_year) -> firm-year mean
             - Shift firm-year mean by -1 year within gvkey -> next-year cash
             - Merge back onto all calls by (gvkey, call_year)
             - Calls belonging to a firm's last year get NaN lead (dropped later)
@@ -239,7 +239,7 @@ def build_call_level_panel(
 def create_lead_variable(
     panel: pd.DataFrame, root_path: Optional[Path] = None
 ) -> pd.DataFrame:
-    """Create CashHoldings_lead at call level.
+    """Create CashRatio_lead at call level.
 
     B6 fix: Uses fyearq (Compustat fiscal year) instead of calendar year to
     correctly handle ~30% of firms with non-December fiscal year-ends.
@@ -247,12 +247,12 @@ def create_lead_variable(
     Compustat controls for non-December fiscal year firms.
 
     The lead is the firm's END-OF-FISCAL-YEAR cash holdings in fiscal year t+1.
-    'End of fiscal year' = the CashHoldings value from the most recent prior
+    'End of fiscal year' = the CashRatio value from the most recent prior
     Compustat filing matched to the LAST call of a given firm-fiscal-year.
 
     Construction:
     1. Attach fyearq via merge_asof (call start_date → Compustat datadate).
-    2. For each (gvkey, fyearq_int), take CashHoldings from the call with the
+    2. For each (gvkey, fyearq_int), take CashRatio from the call with the
        LATEST start_date within that fiscal year (proxy for Q4/year-end filing).
     3. Sort by gvkey, fyearq_int; shift -1 within gvkey -> next-fiscal-year cash.
     4. CRITICAL: validate that next row is exactly fyearq+1 (not +2 due to gaps);
@@ -263,12 +263,12 @@ def create_lead_variable(
     All call-level rows are preserved -- Stage 4 drops NaN lead rows itself.
     """
     print("\n" + "=" * 60)
-    print("Creating CashHoldings_lead (call-level, fiscal-year proxy, B6 fix)")
+    print("Creating CashRatio_lead (call-level, fiscal-year proxy, B6 fix)")
     print("=" * 60)
 
-    if "CashHoldings" not in panel.columns:
+    if "CashRatio" not in panel.columns:
         raise ValueError(
-            "'CashHoldings' column missing -- cannot create lead variable."
+            "'CashRatio' column missing -- cannot create lead variable."
         )
     if "start_date" not in panel.columns:
         raise ValueError(
@@ -308,10 +308,10 @@ def create_lead_variable(
 
     latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()
     firm_year_eoy = panel_valid.loc[
-        latest_idx, ["gvkey", "fyearq_int", "CashHoldings"]
+        latest_idx, ["gvkey", "fyearq_int", "CashRatio"]
     ].copy()
     firm_year_eoy = firm_year_eoy.rename(
-        columns={"fyearq_int": "fyearq_grp", "CashHoldings": "CashHoldings_eoy"}
+        columns={"fyearq_int": "fyearq_grp", "CashRatio": "CashRatio_eoy"}
     )
 
     print(f"  Unique firm-fiscal-years: {len(firm_year_eoy):,}")
@@ -323,19 +323,19 @@ def create_lead_variable(
     firm_year_eoy["fyearq_lead"] = firm_year_eoy.groupby("gvkey")["fyearq_grp"].shift(
         -1
     )
-    firm_year_eoy["CashHoldings_lead_raw"] = firm_year_eoy.groupby("gvkey")[
-        "CashHoldings_eoy"
+    firm_year_eoy["CashRatio_lead_raw"] = firm_year_eoy.groupby("gvkey")[
+        "CashRatio_eoy"
     ].shift(-1)
 
     # Step 4: validate fiscal year continuity -- only keep lead if fyearq+1
     consecutive = firm_year_eoy["fyearq_lead"] == (firm_year_eoy["fyearq_grp"] + 1)
-    firm_year_eoy["CashHoldings_lead"] = np.where(
-        consecutive, firm_year_eoy["CashHoldings_lead_raw"], np.nan
+    firm_year_eoy["CashRatio_lead"] = np.where(
+        consecutive, firm_year_eoy["CashRatio_lead_raw"], np.nan
     )
 
-    n_last_year = firm_year_eoy["CashHoldings_lead_raw"].isna().sum()
-    n_gap_year = ((~consecutive) & firm_year_eoy["CashHoldings_lead_raw"].notna()).sum()
-    n_valid_lead = firm_year_eoy["CashHoldings_lead"].notna().sum()
+    n_last_year = firm_year_eoy["CashRatio_lead_raw"].isna().sum()
+    n_gap_year = ((~consecutive) & firm_year_eoy["CashRatio_lead_raw"].notna()).sum()
+    n_valid_lead = firm_year_eoy["CashRatio_lead"].notna().sum()
     print(
         f"  Firm-fiscal-years with no next year (last fiscal year per firm): "
         f"{n_last_year:,}"
@@ -343,18 +343,18 @@ def create_lead_variable(
     print(f"  Firm-fiscal-years with fiscal year gap (lead nulled): {n_gap_year:,}")
     print(f"  Firm-fiscal-years with valid consecutive lead: {n_valid_lead:,}")
 
-    # Sanity check: CashHoldings_lead must be in [0, 1.5] (cash/assets ratio)
-    lead_vals = firm_year_eoy["CashHoldings_lead"].dropna()
+    # Sanity check: CashRatio_lead must be in [0, 1.5] (cash/assets ratio)
+    lead_vals = firm_year_eoy["CashRatio_lead"].dropna()
     if len(lead_vals) > 0:
         if (lead_vals < 0).any() or (lead_vals > 1.5).any():
             n_bad = ((lead_vals < 0) | (lead_vals > 1.5)).sum()
             print(
-                f"  WARNING: {n_bad} CashHoldings_lead values outside [0, 1.5] "
+                f"  WARNING: {n_bad} CashRatio_lead values outside [0, 1.5] "
                 f"-- check winsorization"
             )
 
     # Step 5: merge lead back to call level on (gvkey, fyearq_int)
-    lead_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "CashHoldings_lead"]].copy()
+    lead_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "CashRatio_lead"]].copy()
     lead_lookup = lead_lookup.rename(columns={"fyearq_grp": "fyearq_int"})
 
     before_len = len(panel)
@@ -366,27 +366,27 @@ def create_lead_variable(
             "Duplicate (gvkey, fyearq_int) in firm-year lead lookup."
         )
 
-    n_calls_no_lead = panel["CashHoldings_lead"].isna().sum()
+    n_calls_no_lead = panel["CashRatio_lead"].isna().sum()
     print(f"  Call-level rows: {len(panel):,}")
     print(
         f"  Calls without lead (last-fiscal-year + gaps + missing fyearq): {n_calls_no_lead:,}"
     )
-    print(f"  Calls with valid lead: {panel['CashHoldings_lead'].notna().sum():,}")
+    print(f"  Calls with valid lead: {panel['CashRatio_lead'].notna().sum():,}")
 
     return panel
 
 
 def create_lag_variable(panel: pd.DataFrame) -> pd.DataFrame:
-    """Create CashHoldings_lag at call level (previous fiscal year's CashHoldings).
+    """Create CashRatio_lag at call level (previous fiscal year's CashRatio).
 
-    For each firm-fiscal-year, takes the end-of-year CashHoldings (from the
+    For each firm-fiscal-year, takes the end-of-year CashRatio (from the
     latest call in that fiscal year) and shifts +1 within gvkey to get the
     previous fiscal year's value. Only valid if fiscal years are consecutive.
 
     Mirrors create_lead_variable() but shifts backward instead of forward.
     """
     print("\n" + "=" * 60)
-    print("Creating CashHoldings_lag (call-level, fiscal-year proxy)")
+    print("Creating CashRatio_lag (call-level, fiscal-year proxy)")
     print("=" * 60)
 
     # Reuse the firm-year EOY values already computed during lead construction
@@ -398,10 +398,10 @@ def create_lag_variable(panel: pd.DataFrame) -> pd.DataFrame:
 
     latest_idx = panel_valid.groupby(["gvkey", "fyearq_int"])["start_date_dt"].idxmax()
     firm_year_eoy = panel_valid.loc[
-        latest_idx, ["gvkey", "fyearq_int", "CashHoldings"]
+        latest_idx, ["gvkey", "fyearq_int", "CashRatio"]
     ].copy()
     firm_year_eoy = firm_year_eoy.rename(
-        columns={"fyearq_int": "fyearq_grp", "CashHoldings": "CashHoldings_eoy"}
+        columns={"fyearq_int": "fyearq_grp", "CashRatio": "CashRatio_eoy"}
     )
 
     firm_year_eoy = firm_year_eoy.sort_values(["gvkey", "fyearq_grp"]).reset_index(
@@ -412,25 +412,25 @@ def create_lag_variable(panel: pd.DataFrame) -> pd.DataFrame:
     firm_year_eoy["fyearq_prev"] = firm_year_eoy.groupby("gvkey")[
         "fyearq_grp"
     ].shift(1)
-    firm_year_eoy["CashHoldings_lag_raw"] = firm_year_eoy.groupby("gvkey")[
-        "CashHoldings_eoy"
+    firm_year_eoy["CashRatio_lag_raw"] = firm_year_eoy.groupby("gvkey")[
+        "CashRatio_eoy"
     ].shift(1)
 
     # Validate consecutive fiscal years
     consecutive = firm_year_eoy["fyearq_prev"] == (firm_year_eoy["fyearq_grp"] - 1)
-    firm_year_eoy["CashHoldings_lag"] = np.where(
-        consecutive, firm_year_eoy["CashHoldings_lag_raw"], np.nan
+    firm_year_eoy["CashRatio_lag"] = np.where(
+        consecutive, firm_year_eoy["CashRatio_lag_raw"], np.nan
     )
 
-    n_valid_lag = firm_year_eoy["CashHoldings_lag"].notna().sum()
-    n_first_year = firm_year_eoy["CashHoldings_lag_raw"].isna().sum()
-    n_gap_year = ((~consecutive) & firm_year_eoy["CashHoldings_lag_raw"].notna()).sum()
+    n_valid_lag = firm_year_eoy["CashRatio_lag"].notna().sum()
+    n_first_year = firm_year_eoy["CashRatio_lag_raw"].isna().sum()
+    n_gap_year = ((~consecutive) & firm_year_eoy["CashRatio_lag_raw"].notna()).sum()
     print(f"  Firm-fiscal-years (first year per firm, no prior): {n_first_year:,}")
     print(f"  Firm-fiscal-years with fiscal year gap (lag nulled): {n_gap_year:,}")
     print(f"  Firm-fiscal-years with valid consecutive lag: {n_valid_lag:,}")
 
     # Merge lag back to call level
-    lag_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "CashHoldings_lag"]].copy()
+    lag_lookup = firm_year_eoy[["gvkey", "fyearq_grp", "CashRatio_lag"]].copy()
     lag_lookup = lag_lookup.rename(columns={"fyearq_grp": "fyearq_int"})
 
     before_len = len(panel)
@@ -442,7 +442,7 @@ def create_lag_variable(panel: pd.DataFrame) -> pd.DataFrame:
             "Duplicate (gvkey, fyearq_int) in firm-year lag lookup."
         )
 
-    print(f"  Calls with valid lag: {panel['CashHoldings_lag'].notna().sum():,}")
+    print(f"  Calls with valid lag: {panel['CashRatio_lag'].notna().sum():,}")
 
     return panel
 
@@ -467,7 +467,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Setup logging to timestamped directory
     log_dir = setup_run_logging(
         log_base_dir=root / "logs",
-        suite_name="H1_CashHoldings",
+        suite_name="H1_CashRatio",
         timestamp=timestamp,
     )
 
@@ -494,10 +494,10 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     # Step 1-2: Build call-level panel
     panel = build_call_level_panel(root, years, var_config, stats)
 
-    # Step 3: Create CashHoldings_lead at call level (B6 fix: use fyearq)
+    # Step 3: Create CashRatio_lead at call level (B6 fix: use fyearq)
     panel = create_lead_variable(panel, root_path=root)
 
-    # Step 3b: Create CashHoldings_lag at call level (previous fiscal year)
+    # Step 3b: Create CashRatio_lag at call level (previous fiscal year)
     panel = create_lag_variable(panel)
 
     # Step 4: Assign sample
@@ -508,7 +508,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     print("\n  Sample distribution (all calls, including last-year):")
     for sample in ["Main", "Finance", "Utility"]:
         n = (panel["sample"] == sample).sum()
-        n_lead = panel.loc[panel["sample"] == sample, "CashHoldings_lead"].notna().sum()
+        n_lead = panel.loc[panel["sample"] == sample, "CashRatio_lead"].notna().sum()
         print(f"    {sample}: {n:,} calls total, {n_lead:,} with valid lead")
 
     # Step 5: Save outputs
@@ -560,7 +560,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         f"- **Unique firms:** {panel['gvkey'].nunique():,}",
         f"- **Year range:** {int(panel['year'].min())}-{int(panel['year'].max())}",
         f"- **Total columns:** {len(panel.columns)}",
-        f"- **Calls with valid CashHoldings_lead:** {panel['CashHoldings_lead'].notna().sum():,}",
+        f"- **Calls with valid CashRatio_lead:** {panel['CashRatio_lead'].notna().sum():,}",
         "",
         "### Sample Distribution",
         "",
@@ -569,7 +569,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     ]
     for sample in ["Main", "Finance", "Utility"]:
         n = (panel["sample"] == sample).sum()
-        n_lead = panel.loc[panel["sample"] == sample, "CashHoldings_lead"].notna().sum()
+        n_lead = panel.loc[panel["sample"] == sample, "CashRatio_lead"].notna().sum()
         pct = 100.0 * n_lead / n if n > 0 else 0
         report_lines.append(f"| {sample} | {n:,} | {n_lead:,} | {pct:.1f}% |")
 
@@ -581,26 +581,26 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
         "|----------|--------------|------|-----|",
     ]
     for col in [
-        "CashHoldings",
-        "CashHoldings_lead",
+        "CashRatio",
+        "CashRatio_lead",
         # Key IVs
-        "CEO_QA_Uncertainty_pct",
-        "CEO_Pres_Uncertainty_pct",
-        "Manager_QA_Uncertainty_pct",
-        "Manager_Pres_Uncertainty_pct",
+        "UncAnsCEO",
+        "UncPreCEO",
+        "UncAnsMgr",
+        "UncPreMgr",
         # Base controls
-        "BookLev",
-        "Size",
+        "Leverage",
+        "lnAssets",
         "TobinsQ",
         "ROA",
-        "CapexAt",
-        "DividendPayer",
-        "OCF_Volatility",
+        "Capex",
+        "DivDummy",
+        "sCFO",
         # Extended controls
         "SalesGrowth",
-        "RD_Intensity",
-        "CashFlow",
-        "Volatility",
+        "RDSales",
+        "CashFlowAt",
+        "DailyVola",
     ]:
         if col in panel.columns:
             n_valid = panel[col].notna().sum()
@@ -618,7 +618,7 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
     stats["timing"]["duration_seconds"] = round(duration, 2)
     stats["panel"]["n_rows"] = len(panel)
     stats["panel"]["n_columns"] = len(panel.columns)
-    stats["panel"]["n_with_lead"] = int(panel["CashHoldings_lead"].notna().sum())
+    stats["panel"]["n_with_lead"] = int(panel["CashRatio_lead"].notna().sum())
 
     print("\n" + "=" * 80)
     print("COMPLETE")

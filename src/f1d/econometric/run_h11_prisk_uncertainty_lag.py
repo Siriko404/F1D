@@ -8,30 +8,30 @@ Description: Run H11-Lag Political Risk hypothesis tests by loading the call-lev
              panel from Stage 3, running fixed effects OLS regressions by
              industry sample and uncertainty measure, and outputting results.
 
-             Tests BOTH 1-quarter lag (PRiskQ_lag) AND 2-quarter lag (PRiskQ_lag2).
+             Tests BOTH 1-quarter lag (PRisk_lag) AND 2-quarter lag (PRisk_lag2).
 
 Model Specification:
-    Uncertainty_t ~ PRiskQ_lag_t + Controls_it + EntityEffects + TimeEffects
-    Uncertainty_t ~ PRiskQ_lag2_t + Controls_it + EntityEffects + TimeEffects
+    Uncertainty_t ~ PRisk_lag_t + Controls_it + EntityEffects + TimeEffects
+    Uncertainty_t ~ PRisk_lag2_t + Controls_it + EntityEffects + TimeEffects
 
 Dependent Variables:
-    1. Manager_QA_Uncertainty_pct
-    2. CEO_QA_Uncertainty_pct
-    3. Manager_Pres_Uncertainty_pct
-    4. CEO_Pres_Uncertainty_pct
+    1. UncAnsMgr
+    2. UncAnsCEO
+    3. UncPreMgr
+    4. UncPreCEO
 
 Independent Variables:
-    - PRiskQ_lag: Political risk from quarter t-1 (1-quarter lag)
-    - PRiskQ_lag2: Political risk from quarter t-2 (2-quarter lag)
+    - PRisk_lag: Political risk from quarter t-1 (1-quarter lag)
+    - PRisk_lag2: Political risk from quarter t-2 (2-quarter lag)
 
 Dynamic Covariates:
     - If DV is a QA measure, the corresponding Presentation measure is added as a control.
-      (e.g., Manager_QA regressions control for Manager_Pres_Uncertainty_pct)
-    - Analyst_QA_Uncertainty_pct is always included as a control.
+      (e.g., UncAnsMgr regressions control for UncPreMgr)
+    - UncQue is always included as a control.
 
 Hypothesis Tests (one-tailed):
-    H11-Lag:  beta(PRiskQ_lag) > 0  -- higher prior-quarter political risk increases speech uncertainty
-    H11-Lag2: beta(PRiskQ_lag2) > 0 -- higher 2-quarter prior political risk increases speech uncertainty
+    H11-Lag:  beta(PRisk_lag) > 0  -- higher prior-quarter political risk increases speech uncertainty
+    H11-Lag2: beta(PRisk_lag2) > 0 -- higher 2-quarter prior political risk increases speech uncertainty
 
 Industry Samples:
     - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
@@ -88,32 +88,32 @@ warnings.filterwarnings(
 CONFIG = {
     "min_calls": 5,
     "dependent_variables": [
-        "Manager_QA_Uncertainty_pct",
-        "CEO_QA_Uncertainty_pct",
-        "Manager_Pres_Uncertainty_pct",
-        "CEO_Pres_Uncertainty_pct",
+        "UncAnsMgr",
+        "UncAnsCEO",
+        "UncPreMgr",
+        "UncPreCEO",
     ],
     "samples": ["Main", "Finance", "Utility"],
-    "iv_vars": ["PRiskQ_lag", "PRiskQ_lag2"],  # Test both lag-1 and lag-2
+    "iv_vars": ["PRisk_lag", "PRisk_lag2"],  # Test both lag-1 and lag-2
 }
 
 BASE_CONTROLS = [
-    "Analyst_QA_Uncertainty_pct",
-    "Entire_All_Negative_pct",
-    "Size",
+    "UncQue",
+    "NegCall",
+    "lnAssets",
     "TobinsQ",
     "ROA",
-    "CashHoldings",
-    "DividendPayer",
-    "firm_maturity",
-    "earnings_volatility",
+    "CashRatio",
+    "DivDummy",
+    "FirmMat",
+    "EarnVol",
 ]
 
 PRES_CONTROL_MAP = {
-    "Manager_QA_Uncertainty_pct": "Manager_Pres_Uncertainty_pct",
-    "CEO_QA_Uncertainty_pct": "CEO_Pres_Uncertainty_pct",
-    "Manager_Pres_Uncertainty_pct": None,
-    "CEO_Pres_Uncertainty_pct": None,
+    "UncAnsMgr": "UncPreMgr",
+    "UncAnsCEO": "UncPreCEO",
+    "UncPreMgr": None,
+    "UncPreCEO": None,
 }
 
 
@@ -123,23 +123,23 @@ PRES_CONTROL_MAP = {
 
 SUMMARY_STATS_VARS = [
     # Dependent variables (uncertainty measures)
-    {"col": "Manager_QA_Uncertainty_pct", "label": "Mgr QA Uncertainty"},
-    {"col": "CEO_QA_Uncertainty_pct", "label": "CEO QA Uncertainty"},
-    {"col": "Manager_Pres_Uncertainty_pct", "label": "Mgr Pres Uncertainty"},
-    {"col": "CEO_Pres_Uncertainty_pct", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
+    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     # Main independent variables (lagged)
-    {"col": "PRiskQ_lag", "label": "Political Risk$_{t-1}$"},
-    {"col": "PRiskQ_lag2", "label": "Political Risk$_{t-2}$"},
+    {"col": "PRisk_lag", "label": "Political Risk$_{t-1}$"},
+    {"col": "PRisk_lag2", "label": "Political Risk$_{t-2}$"},
     # Controls
-    {"col": "Analyst_QA_Uncertainty_pct", "label": "Analyst QA Uncertainty"},
-    {"col": "Entire_All_Negative_pct", "label": "Negative Sentiment"},
-    {"col": "Size", "label": "Firm Size (log AT)"},
+    {"col": "UncQue", "label": "Analyst QA Uncertainty"},
+    {"col": "NegCall", "label": "Negative Sentiment"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
-    {"col": "CashHoldings", "label": "Cash Holdings"},
-    {"col": "DividendPayer", "label": "Dividend Payer"},
-    {"col": "firm_maturity", "label": "Firm Maturity"},
-    {"col": "earnings_volatility", "label": "Earnings Volatility"},
+    {"col": "CashRatio", "label": "Cash Holdings"},
+    {"col": "DivDummy", "label": "Dividend Payer"},
+    {"col": "FirmMat", "label": "Firm Maturity"},
+    {"col": "EarnVol", "label": "Earnings Volatility"},
 ]
 
 
@@ -230,7 +230,7 @@ def run_regression(
     )
 
     # Determine hypothesis name based on IV
-    hyp_name = "h11_lag_sig" if iv_var == "PRiskQ_lag" else "h11_lag2_sig"
+    hyp_name = "h11_lag_sig" if iv_var == "PRisk_lag" else "h11_lag2_sig"
 
     meta = {
         "dv": dv_var,
@@ -259,26 +259,26 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     # Get results for Main sample, lag-1
     def get_res_lag1(dv):
         for r in all_results:
-            if r.get("sample") == "Main" and r.get("dv") == dv and r.get("iv") == "PRiskQ_lag":
+            if r.get("sample") == "Main" and r.get("dv") == dv and r.get("iv") == "PRisk_lag":
                 return r
         return None
 
     # Get results for Main sample, lag-2
     def get_res_lag2(dv):
         for r in all_results:
-            if r.get("sample") == "Main" and r.get("dv") == dv and r.get("iv") == "PRiskQ_lag2":
+            if r.get("sample") == "Main" and r.get("dv") == dv and r.get("iv") == "PRisk_lag2":
                 return r
         return None
 
-    r_mq_1 = get_res_lag1("Manager_QA_Uncertainty_pct")
-    r_cq_1 = get_res_lag1("CEO_QA_Uncertainty_pct")
-    r_mp_1 = get_res_lag1("Manager_Pres_Uncertainty_pct")
-    r_cp_1 = get_res_lag1("CEO_Pres_Uncertainty_pct")
+    r_mq_1 = get_res_lag1("UncAnsMgr")
+    r_cq_1 = get_res_lag1("UncAnsCEO")
+    r_mp_1 = get_res_lag1("UncPreMgr")
+    r_cp_1 = get_res_lag1("UncPreCEO")
 
-    r_mq_2 = get_res_lag2("Manager_QA_Uncertainty_pct")
-    r_cq_2 = get_res_lag2("CEO_QA_Uncertainty_pct")
-    r_mp_2 = get_res_lag2("Manager_Pres_Uncertainty_pct")
-    r_cp_2 = get_res_lag2("CEO_Pres_Uncertainty_pct")
+    r_mq_2 = get_res_lag2("UncAnsMgr")
+    r_cq_2 = get_res_lag2("UncAnsCEO")
+    r_mp_2 = get_res_lag2("UncPreMgr")
+    r_cp_2 = get_res_lag2("UncPreCEO")
 
     def fmt_coef(val, pval):
         if val is None or pd.isna(val):
@@ -318,7 +318,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\midrule",
     ]
 
-    # Row 1: PRiskQ_lag (t-1)
+    # Row 1: PRisk_lag (t-1)
     r1 = "Political Risk$_{t-1}$ & "
     r1 += f"{fmt_coef(r_mq_1['beta_prisk'], r_mq_1['beta_prisk_p_one'])} & " if r_mq_1 else " & "
     r1 += f"{fmt_coef(r_cq_1['beta_prisk'], r_cq_1['beta_prisk_p_one'])} & " if r_cq_1 else " & "
@@ -334,7 +334,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     r2 += f"{fmt_se(r_cp_1['beta_prisk_se'])} \\\\" if r_cp_1 else " \\\\"
     lines.append(r2)
 
-    # Row 3: PRiskQ_lag2 (t-2)
+    # Row 3: PRisk_lag2 (t-2)
     r3 = "Political Risk$_{t-2}$ & "
     r3 += f"{fmt_coef(r_mq_2['beta_prisk'], r_mq_2['beta_prisk_p_one'])} & " if r_mq_2 else " & "
     r3 += f"{fmt_coef(r_cq_2['beta_prisk'], r_cq_2['beta_prisk_p_one'])} & " if r_cq_2 else " & "
@@ -451,23 +451,23 @@ def main(panel_path: str | None = None) -> int:
             "year",
             "ff12_code",
             # Dependent variables (uncertainty measures)
-            "Manager_QA_Uncertainty_pct",
-            "CEO_QA_Uncertainty_pct",
-            "Manager_Pres_Uncertainty_pct",
-            "CEO_Pres_Uncertainty_pct",
+            "UncAnsMgr",
+            "UncAnsCEO",
+            "UncPreMgr",
+            "UncPreCEO",
             # Primary predictors (lagged)
-            "PRiskQ_lag",
-            "PRiskQ_lag2",
+            "PRisk_lag",
+            "PRisk_lag2",
             # Base controls
-            "Analyst_QA_Uncertainty_pct",
-            "Entire_All_Negative_pct",
-            "Size",
+            "UncQue",
+            "NegCall",
+            "lnAssets",
             "TobinsQ",
             "ROA",
-            "CashHoldings",
-            "DividendPayer",
-            "firm_maturity",
-            "earnings_volatility",
+            "CashRatio",
+            "DivDummy",
+            "FirmMat",
+            "EarnVol",
         ],
     )
     print(f"  Rows: {len(panel):,}")
@@ -547,7 +547,7 @@ def main(panel_path: str | None = None) -> int:
                 if model is not None:
                     all_results.append(meta)
                     # Save individual regression results with lag version in filename
-                    lag_suffix = "lag1" if iv_var == "PRiskQ_lag" else "lag2"
+                    lag_suffix = "lag1" if iv_var == "PRisk_lag" else "lag2"
                     with open(out_dir / f"regression_results_{sample}_{dv}_{lag_suffix}.txt", "w") as f:
                         f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
                         f.write(str(model.summary))
@@ -558,7 +558,7 @@ def main(panel_path: str | None = None) -> int:
     # Generate sample attrition table
     if all_results:
         main_result = next(
-            (r for r in all_results if r.get("sample") == "Main" and r.get("iv") == "PRiskQ_lag"),
+            (r for r in all_results if r.get("sample") == "Main" and r.get("iv") == "PRisk_lag"),
             all_results[0]
         )
         attrition_stages = [

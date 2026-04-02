@@ -10,7 +10,7 @@ Usage:
     panel = winsorize_by_year(panel, ["StockRet", "MarketRet", "Volatility"])
 
     # Linguistic variables: pooled 1%/99%
-    panel = winsorize_pooled(panel, ["Manager_QA_Uncertainty_pct", ...])
+    panel = winsorize_pooled(panel, ["UncAnsMgr", ...])
 """
 
 from __future__ import annotations

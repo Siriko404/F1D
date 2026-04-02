@@ -8,9 +8,9 @@ Description: Characterise determinants of CEO presence in earnings call Q&A
              to support discussion of selection concerns in H7 (L5).
 
 Derives binary indicator:
-    CEO_present_QA = CEO_QA_Uncertainty_pct.notna()  (1 if CEO participated in Q&A)
+    CEO_present_QA = UncAnsCEO.notna()  (1 if CEO participated in Q&A)
 
-Runs probit: CEO_present_QA ~ Size + BookLev + ROA + TobinsQ + Volatility + C(year)
+Runs probit: CEO_present_QA ~ lnAssets + Leverage + ROA + TobinsQ + DailyVola + C(year)
 
 Outputs:
     - ceo_presence_probit_summary.txt  (full statsmodels summary)
@@ -43,7 +43,7 @@ from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.path_utils import get_latest_output_dir
 
 
-PROBIT_CONTROLS = ["Size", "BookLev", "ROA", "TobinsQ", "Volatility"]
+PROBIT_CONTROLS = ["lnAssets", "Leverage", "ROA", "TobinsQ", "DailyVola"]
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -88,7 +88,7 @@ def main(panel_path: Optional[str] = None) -> int:
     else:
         panel_file = Path(panel_path)
 
-    cols = ["file_name", "gvkey", "year", "sample", "CEO_QA_Uncertainty_pct"] + PROBIT_CONTROLS
+    cols = ["file_name", "gvkey", "year", "sample", "UncAnsCEO"] + PROBIT_CONTROLS
     panel = pd.read_parquet(panel_file, columns=cols)
     print(f"  Loaded: {len(panel):,} rows")
 
@@ -100,9 +100,9 @@ def main(panel_path: Optional[str] = None) -> int:
     # ------------------------------------------------------------------
     # Derive CEO_present_QA from NaN pattern
     # ------------------------------------------------------------------
-    panel["CEO_present_QA"] = panel["CEO_QA_Uncertainty_pct"].notna().astype(int)
+    panel["CEO_present_QA"] = panel["UncAnsCEO"].notna().astype(int)
     n_present = panel["CEO_present_QA"].sum()
-    n_absent = (~panel["CEO_QA_Uncertainty_pct"].notna()).sum()
+    n_absent = (~panel["UncAnsCEO"].notna()).sum()
     pct_absent = 100.0 * n_absent / len(panel)
     print(f"\n  CEO present in Q&A: {n_present:,} ({100 - pct_absent:.1f}%)")
     print(f"  CEO absent  in Q&A: {n_absent:,} ({pct_absent:.1f}%)")

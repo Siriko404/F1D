@@ -1,8 +1,8 @@
-"""Builder for Book Leverage (BookLev) variable.
+"""Builder for Book Leverage (Leverage) variable.
 
-BookLev = (dlcq + dlttq) / atq (interest-bearing debt / total assets).
+Leverage = (dlcq + dlttq) / atq (interest-bearing debt / total assets).
 Reads raw Compustat quarterly data via the shared CompustatEngine.
-Returns one column: file_name, BookLev.
+Returns one column: file_name, Leverage.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class BookLevBuilder(VariableBuilder):
-    """Build BookLev = (dlcq + dlttq) / atq (interest-bearing debt only).
+    """Build Leverage = (dlcq + dlttq) / atq (interest-bearing debt only).
 
     Uses debt in current liabilities (dlcq) + long-term debt (dlttq),
     excluding operating liabilities. Missing debt treated as zero per spec.
@@ -45,12 +45,12 @@ class BookLevBuilder(VariableBuilder):
         engine = get_engine()
         merged = engine.match_to_manifest(manifest, root_path)
 
-        data = merged[["file_name", "BookLev"]].copy()
-        stats = self.get_stats(data["BookLev"], "BookLev")
+        data = merged[["file_name", "Leverage"]].copy()
+        stats = self.get_stats(data["Leverage"], "Leverage")
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "BookLev", "source": "Compustat/dlcq,dlttq,atq"},
+            metadata={"column": "Leverage", "source": "Compustat/dlcq,dlttq,atq"},
         )
 
 

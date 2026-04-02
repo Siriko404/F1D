@@ -114,7 +114,7 @@ step_08:
     - EntireCallNeg_pct
     firm_controls:
     - SurpDec
-    - EPS_Growth
+    - EPSgrowth
     - StockRet
     - MarketRet
     fixed_effects:

@@ -147,7 +147,7 @@ Checked against `docs/provenance/H12.md`.
 ### A-10. Runner and Panel Builder paths + internal line references
 - File paths: Both files exist on disk and were read.
 - Doc also cites: "_compustat_engine.py lines 1009-1018" for PayoutRatio_q construction detail in B2.
-- Verification: The PayoutRatio_q code block comment is at line 1014 ("--- H12: Quarterly PayoutRatio..."). The computation is at lines 1018-1023. Lines 1009-1013 contain the DividendPayer block (unrelated code).
+- Verification: The PayoutRatio_q code block comment is at line 1014 ("--- H12: Quarterly PayoutRatio..."). The computation is at lines 1018-1023. Lines 1009-1013 contain the DivDummy block (unrelated code).
 - **FAIL** — The line reference should be 1014-1023, not 1009-1018. (Low severity: the quoted content is accurate, only the numbers are stale.)
 
 **Phase 2 Result**: 9/10 PASS.
@@ -180,7 +180,7 @@ Checked against `docs/provenance/H12.md`.
 - **PASS**
 
 ### B3-CHECK: Independent Variables
-- Doc claims 4 IVs: CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct
+- Doc claims 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
 - Verification: Runner lines 74-79: KEY_IVS = exactly these 4 strings; all 4 in `exog` at runner line 274.
 - Doc claims no centering applied.
 - Verification: No centering code for IVs in runner or builder.
@@ -189,20 +189,20 @@ Checked against `docs/provenance/H12.md`.
 ### B4-CHECK: Control Variables
 
 **BASE_CONTROLS**
-- Doc claims: Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility, Lagged_DV (8 items)
+- Doc claims: lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, sCFO, Lagged_DV (8 items)
 - Verification: Runner lines 81-85:
   ```python
-  BASE_CONTROLS = ["Size", "TobinsQ", "ROA", "BookLev", "CashHoldings",
-                   "CapexAt", "OCF_Volatility", "Lagged_DV"]
+  BASE_CONTROLS = ["lnAssets", "TobinsQ", "ROA", "Leverage", "CashRatio",
+                   "Capex", "sCFO", "Lagged_DV"]
   ```
   Exact match, 8 items.
 - **PASS**
 
 **EXTENDED_CONTROLS**
-- Doc claims: BASE_CONTROLS + SalesGrowth, RD_Intensity, CashFlow, Volatility
+- Doc claims: BASE_CONTROLS + SalesGrowth, RDSales, CashFlowAt, DailyVola
 - Verification: Runner lines 87-89:
   ```python
-  EXTENDED_CONTROLS = BASE_CONTROLS + ["SalesGrowth", "RD_Intensity", "CashFlow", "Volatility"]
+  EXTENDED_CONTROLS = BASE_CONTROLS + ["SalesGrowth", "RDSales", "CashFlowAt", "DailyVola"]
   ```
   Exact match.
 - **PASS**
@@ -331,13 +331,13 @@ Full check of all 20 variables.
 
 ### IVs (4 variables)
 
-**CEO_QA_Uncertainty_pct, CEO_Pres_Uncertainty_pct, Manager_QA_Uncertainty_pct, Manager_Pres_Uncertainty_pct**
+**UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr**
 - Formula: "(uncertainty words / total words) x 100 in [role] turns" — standard linguistic pct computation from LinguisticEngine. Builder imports CEOQAUncertaintyBuilder, CEOPresUncertaintyBuilder, ManagerQAUncertaintyBuilder, ManagerPresUncertaintyBuilder (lines 46-53). **PASS**
 - Winsorized: "0%/99% upper-only per year" — `_linguistic_engine.py` lines 255-258: `winsorize_by_year(..., lower=0.0, upper=0.99, min_obs=10)`. **PASS**
 
 ### Controls (11 variables)
 
-**Size**
+**lnAssets**
 - Formula: "ln(atq); NaN when atq <= 0" — standard CompustatEngine computation. In COMPUSTAT_COLS, not in skip_winsorize → 1%/99% by fyearq. **PASS**
 
 **TobinsQ**
@@ -353,32 +353,32 @@ Full check of all 20 variables.
   - `comp["ROA"] = np.where(avg_assets > 0, iby_annual / avg_assets, np.nan)`
   - Exact match. In COMPUSTAT_COLS, not in skip_winsorize → 1%/99% by fyearq. **PASS**
 
-**BookLev**
+**Leverage**
 - Formula: "(dlcq.fillna(0) + dlttq.fillna(0)) / atq" — standard. In COMPUSTAT_COLS. **PASS**
 
-**CashHoldings**
+**CashRatio**
 - Formula: "cheq / atq" — standard. In COMPUSTAT_COLS. **PASS**
 
-**CapexAt**
+**Capex**
 - Formula: "capxy_annual (Q4) / atq_{t-1}; requires lagged atq > 0" — Q4-annual pattern confirmed by engine (dvy/capxy are YTD cumulative, Q4-only join). In COMPUSTAT_COLS. **PASS**
 
-**OCF_Volatility**
+**sCFO**
 - Formula: "Rolling 5-year std (min 3 yrs) of (oancfy / atq_{t-1}) per gvkey; uses Q4-only annual panel" — computed via `_compute_ocf_volatility(comp)` at engine line 1025. In COMPUSTAT_COLS. **PASS**
 
 **SalesGrowth**
 - Formula: "(saley_t - saley_{t-1}) / abs(saley_{t-1}); Q4-only annual; saleq fallback"
 - Winsorized: "1%/99% by fiscal year (inside Biddle residual computation)"
-- Verification: SalesGrowth IS in skip_winsorize (engine line 1218-1219: `"CashFlow", "SalesGrowth"` are listed). Per engine comments lines 1215-1216: "CashFlow/SalesGrowth already winsorized per-year inside _compute_biddle_residual — do not double-winsorize". **PASS**
+- Verification: SalesGrowth IS in skip_winsorize (engine line 1218-1219: `"CashFlowAt", "SalesGrowth"` are listed). Per engine comments lines 1215-1216: "CashFlowAt/SalesGrowth already winsorized per-year inside _compute_biddle_residual — do not double-winsorize". **PASS**
 
-**RD_Intensity**
+**RDSales**
 - Formula: "xrdq.fillna(0) / atq" — standard. In COMPUSTAT_COLS. **PASS**
 
-**CashFlow**
+**CashFlowAt**
 - Formula: "oancfy (Q4 annual) / avg_assets; avg = (atq_t + atq_{t-1}) / 2, fallback to atq_t"
 - Winsorized: "1%/99% by fiscal year (inside Biddle residual computation)"
-- Verification: Same as SalesGrowth — CashFlow in skip_winsorize, winsorized inside _compute_biddle_residual. **PASS**
+- Verification: Same as SalesGrowth — CashFlowAt in skip_winsorize, winsorized inside _compute_biddle_residual. **PASS**
 
-**Volatility**
+**DailyVola**
 - Formula: "std(daily_ret) x sqrt(252) x 100 over [current_call + 1d, next_call - 5d]; requires >= 10 trading days"
 - Source: CRSPEngine: RET
 - Winsorized: "1%/99% per year" — CRSPEngine lines 444-447: `winsorize_by_year(result_with_year, CRSP_RETURN_COLS, year_col="year")` with default lower=0.01, upper=0.99. **PASS**
@@ -400,7 +400,7 @@ Full check of all 20 variables.
 
 **F1. Dependency Chain (7 steps)**
 1. Raw inputs: manifest + Compustat + CRSP + linguistic parquets — matches builder imports and engine usage. **PASS**
-2. Engine loading: CompustatEngine (PayoutRatio_q + controls), CRSPEngine (Volatility), LinguisticEngine (4 uncertainty IVs). **PASS**
+2. Engine loading: CompustatEngine (PayoutRatio_q + controls), CRSPEngine (DailyVola), LinguisticEngine (4 uncertainty IVs). **PASS**
 3. Panel builder: merge sequence on file_name (left), lead/lag creation, sample assignment. Matches builder code. **PASS**
 4. Runner loading: `get_latest_output_dir` for h12_payout_panel.parquet + `build_cal_yr_qtr_index`. Matches runner lines 168-184. **PASS**
 5. Sample filtering: FF12 != 8,11 (runner lines 189-195); DV NaN drop (225-228); complete-case (230-232); min 5 calls (235-240). **PASS**
@@ -444,8 +444,8 @@ Full check of all 20 variables.
 
 *Compustat variables*:
 - Doc claims 1%/99% per fiscal year, min 10 obs. Verified: `_winsorize_by_year` default min_obs=10 (line 445); applied via loop at engine lines 1230-1232 using `year_col = comp["fyearq"]`.
-- Doc claims skip set: DividendPayer, CashFlow, SalesGrowth, fqtr.
-- Verification: Engine lines 1217-1224: `skip_winsorize = {"DividendPayer", "CashFlow", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}`. Doc does not mention ExternalFunding/DebtChoice in skip set, but these are H19/H20 variables not relevant to H12. The H12 variables' treatment is correctly described.
+- Doc claims skip set: DivDummy, CashFlowAt, SalesGrowth, fqtr.
+- Verification: Engine lines 1217-1224: `skip_winsorize = {"DivDummy", "CashFlowAt", "SalesGrowth", "fqtr", "ExternalFunding", "DebtChoice"}`. Doc does not mention ExternalFunding/DebtChoice in skip set, but these are H19/H20 variables not relevant to H12. The H12 variables' treatment is correctly described.
 - **PASS**
 
 *Linguistic IVs*:
@@ -462,7 +462,7 @@ Doc cites "lines 439-450" for `_winsorize_by_year`. The function definition is a
 - Inf/-Inf replacement: runner line 223: `df = df.replace([np.inf, -np.inf], np.nan)`. **PASS**
 
 **H3. Transformations**
-- Size = ln(atq), Volatility annualized, OCF_Volatility rolling std — all correctly documented. **PASS**
+- lnAssets = ln(atq), DailyVola annualized, sCFO rolling std — all correctly documented. **PASS**
 
 **Phase 7 Result**: Counting the H1 line reference failure as the Phase 8 failure (already tracked), 9/9 PASS on core content. The `_winsorize_by_year` line reference error is tracked in the failures table.
 
@@ -560,8 +560,8 @@ All marked N/A. Correct for PanelOLS. **PASS**
 - **PASS**
 
 ### Check 3: Controls in B4 match variables in E
-- B4 BASE_CONTROLS (8): Size, TobinsQ, ROA, BookLev, CashHoldings, CapexAt, OCF_Volatility, Lagged_DV — all in E.
-- B4 EXTENDED adds (4): SalesGrowth, RD_Intensity, CashFlow, Volatility — all in E.
+- B4 BASE_CONTROLS (8): lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, sCFO, Lagged_DV — all in E.
+- B4 EXTENDED adds (4): SalesGrowth, RDSales, CashFlowAt, DailyVola — all in E.
 - **PASS**
 
 ### Check 4: Column count in A matches rows in C
@@ -602,7 +602,7 @@ All marked N/A. Correct for PanelOLS. **PASS**
 - **Section**: B2 "PayoutRatio_q construction detail"
 - **Current**: "verified at `_compustat_engine.py` lines 1009-1018"
 - **Correct**: "verified at `_compustat_engine.py` lines 1014-1023"
-- **Evidence**: Lines 1009-1013 are the DividendPayer block. The H12 PayoutRatio_q comment is at line 1014; the computation (`quarterly_div` and `np.where`) is at lines 1018-1023.
+- **Evidence**: Lines 1009-1013 are the DivDummy block. The H12 PayoutRatio_q comment is at line 1014; the computation (`quarterly_div` and `np.where`) is at lines 1018-1023.
 
 ### Correction 2 (Medium Severity) — Zero-inflation percentage inconsistency
 - **Section**: L (Known Issues and Notes), item 1
@@ -642,7 +642,7 @@ Complete verification record for all critical claims:
 | PayoutRatio_q = (dvpspq.fillna(0) * cshoq) / ibq; NaN when ibq <= 0 | engine lines 1018-1023 | PASS |
 | PayoutRatio_q winsorized 1%/99% by fyearq | COMPUSTAT_COLS line 121; skip_winsorize lines 1217-1224; loop lines 1230-1232 | PASS |
 | Linguistic IVs winsorized 0%/99% upper-only per year | _linguistic_engine.py lines 255-258 (lower=0.0, upper=0.99) | PASS |
-| CRSP Volatility winsorized 1%/99% per year | _crsp_engine.py lines 445-447 (default lower=0.01, upper=0.99) | PASS |
+| CRSP DailyVola winsorized 1%/99% per year | _crsp_engine.py lines 445-447 (default lower=0.01, upper=0.99) | PASS |
 | BASE_CONTROLS = 8 variables | runner lines 81-85 | PASS |
 | EXTENDED_CONTROLS = BASE + 4 | runner lines 87-89 | PASS |
 | Lagged_DV construction via base_dv.replace + _lag suffix | runner lines 208-212 | PASS |
