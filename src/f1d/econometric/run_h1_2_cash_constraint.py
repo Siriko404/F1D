@@ -457,7 +457,7 @@ def run_regression(
             drop_absorbed=True,
             check_rank=False,
         )
-        model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+        model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=True)
     except Exception as e:
         print(f"  ERROR: {e}", file=sys.stderr)
         return None, {}
@@ -510,6 +510,7 @@ def run_regression(
         "n_obs": int(model.nobs), "n_firms": n_firms, "n_time_periods": n_time_periods,
         "r2": float(model.rsquared),
         "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
+        "dv_mean": float(model.model.dependent.dataframe.mean().iloc[0]),
         # Main IV
         "beta_iv": beta_iv, "se_iv": se_iv, "p_one_iv": p_one_iv, "p_two_iv": p_two_iv,
         # Below-IG level
@@ -669,7 +670,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Below-IG: firms rated BB$+$ through SD. ",
         r"Unrated: firms with no S\&P long-term issuer credit rating. ",
         r"Rating matched via merge\_asof to most recent rating before call date. ",
-        r"Standard errors (in parentheses) clustered at firm level. ",
+        r"Standard errors (in parentheses) two-way clustered (firm, time). ",
         r"Main sample (excludes financial and utility firms). ",
         r"Sample restricted to fiscal years 2002--2016 (ratings coverage). ",
         r"Cols~(1),(3): Calendar Year FE. Cols~(2),(4): Calendar Year-Quarter FE. ",

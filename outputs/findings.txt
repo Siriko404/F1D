@@ -1,0 +1,1346 @@
+*** important note: manager is ALL managers, including the CEO.
+
+COMPREHENSIVE REGRESSION FINDINGS
+===================================
+23 Suites | 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
+Significance: * p<0.10, ** p<0.05, *** p<0.01
+Thesis-scope suites (H1, H4, H13, H16, H1.2) updated from model_diagnostics.csv (2026-04-03).
+  These 6 suites use two-way clustering (firm, time) per Cameron, Gelbach & Miller (2011).
+  Other 17 suites from all_tables.tex and model_diagnostics.csv (2026-04-02), firm-only clustering.
+H9 Cox hazard ratios extracted from hazard_ratios.csv (2026-04-02).
+H11-Lead coefficients extracted from regression_results_Main (2026-04-02).
+DV means reported (regression-sample) for thesis-scope suites.
+Standardized effects: one-SD(UncAnsMgr) = 0.3081.
+
+COLUMN-TO-FE KEY (standard 12-col / 6-col suites):
+  Col 1 / 7:   Industry FE + Year FE          (basic controls)
+  Col 2 / 8:   Firm FE    + Year FE            (basic controls)
+  Col 3 / 9:   Industry FE + Year FE           (extended controls)
+  Col 4 / 10:  Firm FE    + Year FE            (extended controls)
+  Col 5 / 11:  Industry FE + Year-Quarter FE   (extended controls)
+  Col 6 / 12:  Firm FE    + Year-Quarter FE    (extended controls)
+  Cols 1-6: current DV | Cols 7-12: lead DV
+
+COLUMN-TO-FE KEY (moderation 2-col suites: H1.1, H1.1b, H1.2):
+  Col 1: Industry FE + Year FE
+  Col 2: Industry FE + Year-Quarter FE
+
+COLUMN-TO-FE KEY (H13.1, 4 cols):
+  Col 1: Capex,      Industry FE + Year FE
+  Col 2: Capex,      Industry FE + Year-Quarter FE
+  Col 3: Capex_lead, Industry FE + Year FE
+  Col 4: Capex_lead, Industry FE + Year-Quarter FE
+
+COLUMN-TO-FE KEY (H11, 4 cols):
+  Col 1: Mgr QA DV,  Firm FE + Year FE
+  Col 2: CEO QA DV,  Firm FE + Year FE
+  Col 3: Mgr Pres DV, Firm FE + Year FE
+  Col 4: CEO Pres DV, Firm FE + Year FE
+
+COLUMN-TO-FE KEY (H11-Lag, 8 cols):
+  Cols 1-4: PRisk_lag  (Mgr QA, CEO QA, Mgr Pres, CEO Pres), all Firm FE + Year FE
+  Cols 5-8: PRisk_lag2 (same order), all Firm FE + Year FE
+
+COLUMN-TO-FE KEY (H11-Lead, 8 cols):
+  Cols 1-4: PRisk_lead  (Mgr QA, CEO QA, Mgr Pres, CEO Pres), all Firm FE + Year FE
+  Cols 5-8: PRisk_lead2 (same order), all Firm FE + Year FE
+
+COLUMN-TO-FE KEY (H12, 12 cols):
+  Same as standard 12-col but Year FE label reads "Year FE" (calendar year, not fiscal)
+
+COLUMN-TO-FE KEY (H18b, 2 cols):
+  Col 1: Industry FE + Year FE (basic controls)
+  Col 2: Industry FE + Year FE (extended controls)
+  AME coefficients from logit model.
+
+
+================================================================================
+H1: SPEECH UNCERTAINTY AND CASH HOLDINGS
+================================================================================
+DV: CashRatio (cols 1-6), CashRatio_lead (cols 7-12)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed (beta > 0)
+SEs: Two-way clustered (firm, time). N=56,131 (base), 53,880 (extended).
+DV Mean: CashRatio = 0.1660, CashRatio_lead = 0.1675
+One-SD(UncAnsMgr) effect: +0.0011 (col4, Firm FE) = 0.67% of mean; +0.0022 (col3, Ind FE) = 1.33% of mean
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 12 cols
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   SIGNIFICANT -- positive
+      CashRatio:
+        col1 +0.0036**  [Ind FE, Yr FE, basic]
+        col2 +0.0034**  [Firm FE, Yr FE, basic]
+        col3 +0.0072*** [Ind FE, Yr FE, extended]
+        col4 +0.0036**  [Firm FE, Yr FE, extended]
+        col5 +0.0044**  [Ind FE, YrQtr FE, extended]
+        col6 +0.0036**  [Firm FE, YrQtr FE, extended]
+      CashRatio_lead:
+        col9 +0.0065*** [Ind FE, Yr FE, extended] -- 1 of 6 cols
+  UncPreMgr:   NO SIGNIFICANCE across all 12 cols
+
+SUMMARY: UncAnsMgr is the sole significant IV for current CashRatio (robust across all 6 specs, ** to ***).
+         Lead DV shows significance in only 1 of 6 specs (col 9, ***).
+
+OPEN QUESTIONS:
+  Q1. Why does UncAnsMgr drive cash but UncAnsCEO does not? QA section has both CEO and managers -- what distinguishes the manager signal?
+  Q2. Why is UncPreMgr (prepared remarks) completely insignificant? Is the QA section the only informative channel?
+  Q3. Why does significance largely vanish for the lead DV? Is the cash-hoarding response contemporaneous only?
+
+
+================================================================================
+H1.1: PRODUCT SIMILARITY-MODERATED CASH HOLDINGS (continuous TSIMM)
+================================================================================
+DV: CashRatio (2 cols)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed (beta > 0) for IV, moderator, and interaction
+
+  Manager_QA_Unc_c:      SIGNIFICANT -- positive
+      col1 +0.0049*** [Ind FE, Yr FE]
+      col2 +0.0050*** [Ind FE, YrQtr FE]
+  z_log_TotalSimilarity:  SIGNIFICANT -- positive
+      col1 +0.0057*** [Ind FE, Yr FE]
+      col2 +0.0055*** [Ind FE, YrQtr FE]
+  MgrQAUnc_x_zlogTSIMM:  NOT SIGNIFICANT (0.0019 / 0.0019)
+
+SUMMARY: Main effects of both uncertainty and product similarity are strong, but the
+         interaction is NOT significant. Competition does not moderate the uncertainty-cash link.
+
+OPEN QUESTIONS:
+  Q4. If TSIMM doesn't moderate, why do both main effects load so strongly? Possible omitted moderator?
+  Q5. Does the lack of interaction mean competition channels are independent of uncertainty channels?
+
+
+================================================================================
+H1.1b: BINARY PRODUCT SIMILARITY-MODERATED CASH HOLDINGS
+================================================================================
+DV: CashRatio (2 cols)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed (beta > 0) for IV, moderator, and interaction
+
+  Manager_QA_Unc_c:         SIGNIFICANT -- positive
+      col1 +0.0048*** [Ind FE, Yr FE]
+      col2 +0.0049*** [Ind FE, YrQtr FE]
+  HighTSIMM:                SIGNIFICANT -- positive
+      col1 +0.0060*** [Ind FE, Yr FE]
+      col2 +0.0058*** [Ind FE, YrQtr FE]
+  MgrQAUnc_x_HighTSIMM:    NOT SIGNIFICANT (0.0009 / 0.0009)
+
+SUMMARY: Identical pattern to H1.1. Binary split does not rescue the interaction.
+
+OPEN QUESTIONS:
+  Q6. Same as Q4-Q5. Both continuous and binary TSIMM fail to moderate. Is this a definitive null?
+
+
+================================================================================
+H1.2: FINANCIAL CONSTRAINT-MODERATED CASH HOLDINGS (Three-Category)
+================================================================================
+DV: CashRatio (2 cols)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed for base IV (beta > 0); two-tailed for categories & interactions
+SEs: Two-way clustered (firm, time). N=67,487.
+DV Mean: CashRatio = 0.1716
+One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
+
+  Manager_QA_Unc_c:     SIGNIFICANT -- positive
+      col1 +0.0057*** [Ind FE, Yr FE]
+      col2 +0.0055*** [Ind FE, YrQtr FE]
+  MgrQAUnc_x_IG:        NOT SIGNIFICANT (0.0016 / 0.0010)
+  BelowIG:              PARTIAL
+      col1 +0.0034*** [Ind FE, Yr FE] -- loses significance in col2 (-0.0007)
+  Unrated:              PARTIAL
+      col1 +0.0062*** [Ind FE, Yr FE] -- loses significance in col2 (-0.0003)
+  MgrQAUnc_x_BelowIG:  NOT SIGNIFICANT (0.0003 / 0.0005)
+  MgrQAUnc_x_Unrated:  SIGNIFICANT -- positive
+      col1 +0.0068*** [Ind FE, Yr FE]
+      col2 +0.0073*** [Ind FE, YrQtr FE]
+
+SUMMARY: The interaction with Unrated status is significant and robust. Firms without
+         credit ratings show an amplified uncertainty-cash link. IG and BelowIG interactions are null.
+
+OPEN QUESTIONS:
+  Q7. Why does the Unrated interaction work but TSIMM (H1.1/H1.1b) does not?
+      Unrated firms face higher info asymmetry -- is this the underlying channel?
+  Q8. BelowIG interaction is null. Is the constraint story really about information opacity (unrated) rather than credit risk (below IG)?
+
+
+================================================================================
+H4a: SPEECH UNCERTAINTY AND BOOK LEVERAGE
+================================================================================
+DV: Leverage (cols 1-6), Leverage_lead (cols 7-12)
+    Formula: Leverage = (dlcq + dlttq) / atq
+      dlcq  = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq = Long-Term Debt (Compustat Quarterly)
+      atq   = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF); Rajan & Zingales (1995, JF)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=56,131 (base), 53,880 (extended).
+DV Mean: Leverage = 0.2307, Leverage_lead = 0.2348
+One-SD(UncAnsMgr) effect on Leverage_lead: -0.0026 (col10, Firm FE) = 1.12% of mean
+
+  UncAnsCEO:   SIGNIFICANT for Leverage_lead -- positive
+      Leverage:       Not significant in any col
+      Leverage_lead:
+        col7  +0.0068** [Ind FE, Yr FE, basic]
+        col8  +0.0052*  [Firm FE, Yr FE, basic]
+        col9  +0.0070** [Ind FE, Yr FE, extended]
+        col10 +0.0055*  [Firm FE, Yr FE, extended]
+        col11 +0.0068** [Ind FE, YrQtr FE, extended]
+        col12 +0.0055** [Firm FE, YrQtr FE, extended]
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   SIGNIFICANT for lead DV only -- negative
+      Leverage:
+        NOT SIGNIFICANT under two-way clustering (was marginal * under firm-only for col2, col3)
+      Leverage_lead:
+        col7  -0.0071** [Ind FE, Yr FE, basic]
+        col8  -0.0090** [Firm FE, Yr FE, basic]
+        col9  -0.0090** [Ind FE, Yr FE, extended]
+        col10 -0.0085** [Firm FE, Yr FE, extended]
+        col11 -0.0067*  [Ind FE, YrQtr FE, extended]
+        col12 -0.0079** [Firm FE, YrQtr FE, extended]
+  UncPreMgr:   NO SIGNIFICANCE across all 12 cols
+
+SUMMARY: UncAnsCEO and UncAnsMgr both significant for lead leverage -- but with OPPOSITE signs.
+         UncAnsCEO = positive (more uncertainty -> more leverage next period)
+         UncAnsMgr = negative (more uncertainty -> less leverage next period)
+         Current-DV UncAnsMgr significance lost under two-way clustering (was marginal * under firm-only).
+
+OPEN QUESTIONS:
+  Q9.  OPPOSITE SIGNS: Why does CEO uncertainty predict higher future leverage while manager uncertainty predicts lower?
+       Possible: CEO uncertainty reflects strategic positioning (signaling willingness to take risk),
+       while manager uncertainty reflects operational caution?
+  Q10. Why are both effects concentrated in the LEAD DV? Is leverage adjustment slow?
+  Q11. Why is UncPreMgr completely silent across all 12 specs? Same pattern as H1.
+
+
+================================================================================
+H4b: SPEECH UNCERTAINTY AND DEBT-TO-CAPITAL
+================================================================================
+DV: DebtToCapital (cols 1-6), DebtToCapital_lead (cols 7-12)
+    Formula: DebtToCapital = (dlcq + dlttq) / (seqq + dlcq + dlttq)
+      dlcq  = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq = Long-Term Debt (Compustat Quarterly)
+      seqq  = Stockholders' Equity (Compustat Quarterly)
+      Reference: Rajan & Zingales (1995, JF)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=55,950 (base), 53,713 (extended).
+DV Mean: DebtToCapital = 0.3384, DebtToCapital_lead = 0.3461
+One-SD(UncAnsMgr) effect on DebtToCapital_lead: -0.0063 (col9, Ind FE) = 1.82% of mean
+
+  UncAnsCEO:   NEAR-NULL under two-way clustering (collapsed from 7 to 1 spec)
+      DebtToCapital:
+        NOT SIGNIFICANT (was marginal * for col1 under firm-only clustering, now NS p=0.109)
+      DebtToCapital_lead:
+        col12 +0.0074*  [Firm FE, YrQtr FE, extended] -- only surviving spec (p=0.095)
+        (was * in all 6 lead cols under firm-only clustering; 5 of 6 lost under two-way clustering)
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   SIGNIFICANT for lead DV -- negative
+      DebtToCapital:
+        col3 -0.0060*   [Ind FE, Yr FE, extended] -- only 1 of 6 (downgraded from ** to *)
+      DebtToCapital_lead:
+        col7  -0.0145** [Ind FE, Yr FE, basic]
+        col8  -0.0125*  [Firm FE, Yr FE, basic] (downgraded from **)
+        col9  -0.0204***[Ind FE, Yr FE, extended]
+        col10 -0.0126*  [Firm FE, Yr FE, extended] (downgraded from **)
+        col11 -0.0137** [Ind FE, YrQtr FE, extended]
+        col12 -0.0114*  [Firm FE, YrQtr FE, extended]
+  UncPreMgr:   NO SIGNIFICANCE across all 12 cols
+
+SUMMARY: Corroborates H4a. UncAnsMgr predicts significantly lower future market leverage (lead-concentrated).
+         UncAnsCEO effect nearly vanished under two-way clustering: 7 marginal * specs collapsed to 1.
+         This is the largest casualty of double-clustering across all thesis suites.
+
+OPEN QUESTIONS:
+  Q12. The UncAnsMgr negative sign is consistent across H4a and H4b. Is this a precautionary de-leveraging story?
+  Q13. UncAnsCEO stays marginal * in H4b vs mixed */*** in H4a. Is Book Leverage more responsive to CEO signals than market leverage?
+
+
+================================================================================
+H5: SPEECH UNCERTAINTY AND ANALYST FORECAST DISPERSION (Wang 2020)
+================================================================================
+DV: DISP (cols 1-6), DISP_lead (cols 7-12)
+    Formula: DISP = SD(analyst EPS forecasts in [T-31, T-1]) / prccq_prior
+      SD(forecasts) = Standard deviation of individual analyst EPS estimates (IBES Detail)
+      prccq_prior   = Prior quarter's closing stock price (Compustat Quarterly)
+      Window: forecasts issued 1-31 days before fiscal period end date
+      Reference: Wang (2020, Review of Accounting and Finance)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 12 cols
+      NOTE: Coefficients are negative (wrong sign) but correctly suppressed under one-tailed test.
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   MARGINAL -- positive (Industry FE only)
+      DISP:
+        col3 +0.0002** [Ind FE, Yr FE, extended] -- 1 of 6
+      DISP_lead:
+        col9 +0.0002** [Ind FE, Yr FE, extended] -- 1 of 6
+  UncPreMgr:   MARGINAL -- positive (survives Firm FE; 2/12 cols at **, 5/12 at * only)
+      DISP:
+        col2 +0.0002** [Firm FE, Yr FE, basic]
+        col4 +0.0001*  [Firm FE, Yr FE, extended]
+        col6 +0.0001*  [Firm FE, YrQtr FE, extended]
+      DISP_lead:
+        col8  +0.0003** [Firm FE, Yr FE, basic]
+        col9  +0.0002*  [Ind FE, Yr FE, extended]
+        col10 +0.0002*  [Firm FE, Yr FE, extended]
+        col12 +0.0002*  [Firm FE, YrQtr FE, extended]
+
+SUMMARY: Both UncAnsMgr and UncPreMgr significant with positive sign (in hypothesized direction).
+         UncPreMgr is STRONGER and survives Firm FE.
+         UncAnsMgr only significant under Industry FE (vanishes with Firm FE).
+         UncAnsCEO shows ** hits but with WRONG (negative) sign -- higher CEO QA uncertainty predicts LOWER dispersion.
+         Magnitudes are tiny (0.0001-0.0003).
+
+OPEN QUESTIONS:
+  Q14. Why is UncPreMgr the stronger signal here, when in most other suites it is weaker or null?
+       Is the presentation section more informative for analyst-side outcomes?
+  Q15. Why does UncAnsMgr lose significance under Firm FE but UncPreMgr survives?
+       Is the QA effect driven by between-firm differences rather than within-firm variation?
+  Q16. UncAnsCEO has wrong-sign ** hits. Does higher CEO QA uncertainty actually REDUCE dispersion
+       (perhaps by providing more information that anchors forecasts)?
+
+
+================================================================================
+H7: SPEECH UNCERTAINTY AND POST-CALL ILLIQUIDITY
+================================================================================
+DV: DeltaILLIQ (6 cols)
+    Formula: DeltaILLIQ = PostCallILLIQ - PreCallILLIQ
+      daily_ILLIQ = |RET| / (VOL * |PRC|) * 1e6
+      PreCallILLIQ  = mean(daily_ILLIQ) over [-3, -1] trading days before call
+      PostCallILLIQ = mean(daily_ILLIQ) over [+1, +3] trading days after call
+      RET = Daily stock return (CRSP DSF)
+      VOL = Daily trading volume in shares (CRSP DSF)
+      PRC = Daily closing price (CRSP DSF)
+      Reference: Amihud (2002, Journal of Financial Markets)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:   NO SIGNIFICANCE
+  UncPreCEO:   NO SIGNIFICANCE
+  UncAnsMgr:   NO SIGNIFICANCE
+  UncPreMgr:   NO SIGNIFICANCE
+
+SUMMARY: COMPLETE NULL. No IV is significant in any specification.
+
+OPEN QUESTIONS:
+  Q17. Total null despite theory predicting higher illiquidity from uncertainty. Is DeltaILLIQ too noisy?
+  Q18. PreCallILLIQ loads heavily (lagged DV analog). Does the pre-call level absorb all the signal?
+  Q19. Given H14 shows some bid-ask spread effects, why doesn't Amihud illiquidity respond?
+
+
+================================================================================
+H7b: SPEECH UNCERTAINTY AND POST-CALL AMIHUD ILLIQUIDITY LEVEL
+================================================================================
+DV: PostCallAmihud (6 cols)
+    Formula: PostCallAmihud = mean(|RET| / (VOL * |PRC|) * 1e6) over [+1, +3] trading days
+      RET = Daily stock return (CRSP DSF)
+      VOL = Daily trading volume in shares (CRSP DSF)
+      PRC = Daily closing price (CRSP DSF)
+      Reference: Amihud (2002, Journal of Financial Markets)
+Tail: One-tailed (beta > 0)
+NOTE: Level specification (algebraically equivalent to H7 delta with PreCallILLIQ control)
+
+  UncAnsCEO:   NO SIGNIFICANCE
+  UncPreCEO:   NO SIGNIFICANCE
+  UncAnsMgr:   NO SIGNIFICANCE
+  UncPreMgr:   NO SIGNIFICANCE
+
+SUMMARY: COMPLETE NULL -- identical to H7. Switching from delta to level does not rescue
+         the illiquidity result. All IV coefficients are tiny and far from significance.
+         PreCallILLIQ loads at ~0.85 (near-unit root behavior).
+
+OPEN QUESTIONS:
+  Q20. H7 and H7b are algebraically equivalent. The level form confirms the null is not
+       an artifact of the differencing approach.
+  Q21. Given the extremely high persistence of Amihud illiquidity (PreCallILLIQ coeff ~0.85),
+       is there simply no room for speech uncertainty to affect the residual variation?
+
+
+================================================================================
+H9: SPEECH UNCERTAINTY AND TAKEOVER RISK (Cox PH)
+================================================================================
+DV: Time-to-takeover event (Cox proportional hazards)
+    Formula: Time from first earnings call to first takeover bid receipt
+      Event types: All bids, Uninvited bids, Friendly bids
+      Source: SDC Platinum M&A database
+      Reference: Thesis-specific construction
+Tail: Two-tailed
+Source: hazard_ratios.csv (2026-04-02)
+Models: Cox PH All (any takeover), Cox CS Uninvited, Cox CS Friendly
+Variants: sparse (basic controls), expanded (extended controls), strata_year, strata_industry
+
+--- COX PH ALL (any takeover), sparse ---
+  N_intervals=57,072; N_events=352; Concordance=0.495
+  UncAnsMgr:  coef=-0.1747, HR=0.840, p=0.529  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.1693, HR=1.184, p=0.448  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.3644, HR=0.695, p=0.084  MARGINAL -- negative (p<0.10)
+  UncPreCEO:  coef=+0.1037, HR=1.109, p=0.584  NO SIGNIFICANCE
+
+--- COX PH ALL (any takeover), expanded ---
+  N_intervals=56,587; N_events=352; Concordance=0.463
+  UncAnsMgr:  coef=-0.1512, HR=0.860, p=0.587  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.1694, HR=1.185, p=0.449  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.3478, HR=0.706, p=0.099  MARGINAL -- negative (p<0.10)
+  UncPreCEO:  coef=+0.1135, HR=1.120, p=0.550  NO SIGNIFICANCE
+
+--- COX PH ALL, strata_year ---
+  Concordance=0.550
+  UncAnsMgr:  coef=+0.0153, HR=1.015, p=0.954  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.0421, HR=1.043, p=0.840  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.3283, HR=0.720, p=0.121  NO SIGNIFICANCE
+  UncPreCEO:  coef=+0.0394, HR=1.040, p=0.838  NO SIGNIFICANCE
+
+--- COX PH ALL, strata_industry ---
+  Concordance=0.480
+  UncAnsMgr:  coef=-0.1269, HR=0.881, p=0.651  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.1911, HR=1.211, p=0.395  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.4022, HR=0.669, p=0.061  MARGINAL -- negative (p<0.10)
+  UncPreCEO:  coef=+0.1800, HR=1.197, p=0.347  NO SIGNIFICANCE
+
+--- COX CS FRIENDLY, sparse ---
+  N_events=284; Concordance=0.492
+  UncAnsMgr:  coef=-0.2592, HR=0.772, p=0.405  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.1974, HR=1.218, p=0.431  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.5555, HR=0.574, p=0.020  SIGNIFICANT ** -- negative
+  UncPreCEO:  coef=+0.0684, HR=1.071, p=0.752  NO SIGNIFICANCE
+
+--- COX CS FRIENDLY, expanded ---
+  N_events=284; Concordance=0.435
+  UncAnsMgr:  coef=-0.2190, HR=0.803, p=0.484  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.1932, HR=1.213, p=0.444  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.5397, HR=0.583, p=0.024  SIGNIFICANT ** -- negative
+  UncPreCEO:  coef=+0.0813, HR=1.085, p=0.708  NO SIGNIFICANCE
+
+--- COX CS FRIENDLY, strata_year ---
+  N_events=284; Concordance=0.520
+  UncAnsMgr:  coef=-0.0302, HR=0.970, p=0.919  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.0603, HR=1.062, p=0.795  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.5239, HR=0.592, p=0.030  SIGNIFICANT ** -- negative
+  UncPreCEO:  coef=+0.0019, HR=1.002, p=0.993  NO SIGNIFICANCE
+
+--- COX CS FRIENDLY, strata_industry ---
+  N_events=284; Concordance=0.483
+  UncAnsMgr:  coef=-0.1597, HR=0.852, p=0.588  NO SIGNIFICANCE
+  UncAnsCEO:  coef=+0.2287, HR=1.257, p=0.364  NO SIGNIFICANCE
+  UncPreMgr:  coef=-0.5812, HR=0.559, p=0.017  SIGNIFICANT ** -- negative
+  UncPreCEO:  coef=+0.0395, HR=1.040, p=0.854  NO SIGNIFICANCE
+
+--- COX CS UNINVITED ---
+  N_events=51; EPV_flag=low/critical; ALL IVs NO SIGNIFICANCE across all variants.
+  NOTE: Only 51 uninvited takeover events. EPV critically low. Results unreliable.
+
+SUMMARY: For overall takeover hazard (All events), UncPreMgr shows marginal negative effects
+         (p~0.06-0.10) across sparse, expanded, and strata_industry variants.
+         For FRIENDLY takeovers specifically, UncPreMgr is significant at p<0.05 across all
+         4 variants (sparse, expanded, strata_year, strata_industry): higher presentation
+         uncertainty REDUCES friendly takeover hazard (HR~0.56-0.59).
+         All other IVs are null. Uninvited results are underpowered (51 events only).
+         Concordance is near 0.50 (random), indicating very low predictive power overall.
+
+OPEN QUESTIONS:
+  Q22. Why does UncPreMgr (presentation uncertainty) predict lower FRIENDLY takeover hazard?
+       Does scripted uncertainty signal that the firm is a less attractive/more complex target?
+  Q23. Concordance ~0.50 means the model is barely better than random. Should the H9 results
+       be interpreted with extreme caution?
+  Q24. Uninvited takeovers are too rare (51 events) for reliable Cox estimation. Is this suite
+       useful only for the Friendly sub-model?
+
+
+================================================================================
+H11: POLITICAL RISK AND LANGUAGE UNCERTAINTY
+================================================================================
+DV: QA_Uncertainty_pct (Mgr col1, CEO col2), Pres_Uncertainty_pct (Mgr col3, CEO col4)
+    Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
+      DVs: UncAnsMgr, UncAnsCEO (Q&A answers), UncPreMgr, UncPreCEO (presentation)
+      Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
+      Reference: Dzielinski, Wagner & Zeckhauser (2021)
+Tail: One-tailed for PRisk (beta > 0)
+NOTE: REVERSED CAUSALITY -- uncertainty is the DV, political risk is the IV.
+All specs: Firm FE + Year FE
+
+  PRisk: SIGNIFICANT *** in ALL 4 cols -- positive
+      col1 +0.0001*** [Firm FE, Yr FE] -- DV = Mgr QA Uncertainty
+      col2 +0.0001*** [Firm FE, Yr FE] -- DV = CEO QA Uncertainty
+      col3 +0.0002*** [Firm FE, Yr FE] -- DV = Mgr Pres Uncertainty
+      col4 +0.0002*** [Firm FE, Yr FE] -- DV = CEO Pres Uncertainty
+
+SUMMARY: Political risk strongly and universally predicts higher speech uncertainty.
+         Effect is larger for Presentation sections (0.0002 for both Mgr and CEO Pres vs 0.0001 for QA).
+
+OPEN QUESTIONS:
+  Q25. This is the only suite where ALL measures respond. Is political risk a universal driver of language uncertainty?
+  Q26. Presentation sections have larger coefficients. Does the prepared speech reflect political risk more?
+
+
+================================================================================
+H11-Lag: LAGGED POLITICAL RISK AND LANGUAGE UNCERTAINTY
+================================================================================
+DV: Uncertainty measures predicted by lagged political risk
+    Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
+      DVs: UncAnsMgr, UncAnsCEO (Q&A answers), UncPreMgr, UncPreCEO (presentation)
+      Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
+      Reference: Dzielinski, Wagner & Zeckhauser (2021)
+Tail: One-tailed (beta > 0)
+NOTE: Reversed causality. All specs: Firm FE + Year FE.
+
+  PRisk_lag:  SIGNIFICANT in ALL 4 cols -- positive
+      col1 +0.0000*** [Firm FE, Yr FE] -- DV = Mgr QA
+      col2 +0.0000*** [Firm FE, Yr FE] -- DV = CEO QA
+      col3 +0.0001*** [Firm FE, Yr FE] -- DV = Mgr Pres
+      col4 +0.0001*** [Firm FE, Yr FE] -- DV = CEO Pres
+  PRisk_lag2: SIGNIFICANT in ALL 4 cols -- positive
+      col5 +0.0000*** [Firm FE, Yr FE] -- DV = Mgr QA
+      col6 +0.0000**  [Firm FE, Yr FE] -- DV = CEO QA
+      col7 +0.0000*** [Firm FE, Yr FE] -- DV = Mgr Pres
+      col8 +0.0000*** [Firm FE, Yr FE] -- DV = CEO Pres
+
+SUMMARY: Lagged political risk (1 and 2 quarters) still predicts uncertainty. Confirms H11.
+         Lag2 slightly weaker (CEO_QA drops from *** to **).
+
+OPEN QUESTIONS:
+  Q27. Persistence of the effect over 2 quarters -- is political risk a slow-moving state variable
+       that shapes speech patterns durably, or is this autocorrelation in PRisk?
+
+
+================================================================================
+H11-Lead: LEAD POLITICAL RISK AND LANGUAGE UNCERTAINTY (Placebo)
+================================================================================
+DV: Uncertainty measures predicted by FUTURE political risk (placebo test)
+    Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
+      DVs: UncAnsMgr, UncAnsCEO (Q&A answers), UncPreMgr, UncPreCEO (presentation)
+      Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
+      Reference: Dzielinski, Wagner & Zeckhauser (2021)
+Tail: One-tailed (beta > 0 under null; expected to be insignificant)
+NOTE: Reversed causality. All specs: Firm FE + Year FE.
+Source: regression_results_Main_*.txt (2026-04-02)
+
+  PRisk_lead (t+1):  SIGNIFICANT in ALL 4 cols -- positive
+      col1 coef=4.388e-05, p=0.0000*** -- DV = Mgr QA
+      col2 coef=3.269e-05, p=0.0090*** -- DV = CEO QA
+      col3 coef=5.211e-05, p=0.0000*** -- DV = Mgr Pres
+      col4 coef=7.437e-05, p=0.0000*** -- DV = CEO Pres
+  PRisk_lead2 (t+2): SIGNIFICANT in ALL 4 cols -- positive
+      col5 coef=3.275e-05, p=0.0000*** -- DV = Mgr QA
+      col6 coef=2.788e-05, p=0.0173**  -- DV = CEO QA
+      col7 coef=2.685e-05, p=0.0017*** -- DV = Mgr Pres
+      col8 coef=4.923e-05, p=0.0000*** -- DV = CEO Pres
+
+SUMMARY: PLACEBO FAILS. Future political risk (1 and 2 quarters ahead) also significantly
+         predicts current speech uncertainty. This was intended as a falsification test --
+         if only past/current political risk should matter, future risk should be null.
+         The fact that lead risk is significant suggests either: (a) political risk is highly
+         persistent/predictable, so lead values proxy for current conditions; or
+         (b) there is a confound (both uncertainty and political risk respond to the same
+         slow-moving macroeconomic factors).
+
+OPEN QUESTIONS:
+  Q28. The placebo test fails decisively. Does this undermine the causal interpretation of H11/H11-Lag?
+       If future political risk predicts current uncertainty just as well as past risk, the
+       relationship may be driven by a common slow-moving factor rather than a causal channel.
+  Q29. Lead2 coefficients are smaller than Lead1, and Lead1 is smaller than contemporaneous (H11).
+       The monotonic decay is consistent with autocorrelation in political risk rather than
+       pure confounding. Is this a measurement issue rather than a causal concern?
+  Q30. Should the thesis frame H11 results as "association" rather than "effect" given this placebo result?
+
+
+================================================================================
+H12: SPEECH UNCERTAINTY AND QUARTERLY PAYOUT RATIO
+================================================================================
+DV: PayoutRatio_q (cols 1-6), PayoutRatio_q_lead_qtr (cols 7-12)
+    Formula: PayoutRatio_q = (dvpspq * cshoq) / ibq
+      dvpspq = Dividends Per Share (Compustat Quarterly)
+      cshoq  = Common Shares Outstanding (Compustat Quarterly)
+      ibq    = Income Before Extraordinary Items (Compustat Quarterly)
+      NaN when ibq <= 0 (loss quarters excluded)
+      Reference: DeAngelo, DeAngelo & Skinner (2004, JFE)
+Tail: One-tailed (beta < 0) -- hypothesis predicts uncertainty REDUCES payout
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 12 cols
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   NO SIGNIFICANCE across all 12 cols
+      NOTE: col9 has +0.0386 (wrong sign for beta < 0 hypothesis), correctly suppressed.
+  UncPreMgr:   MARGINAL -- negative (correct sign, Industry FE only, current DV only)
+      PayoutRatio_q:
+        col1 -0.0336* [Ind FE, Yr FE, basic]
+      PayoutRatio_q_lead_qtr:
+        col7 -0.0330* [Ind FE, Yr FE, basic]
+
+SUMMARY: UncPreMgr shows mild significance under Industry FE but vanishes under Firm FE.
+         Effect is in the hypothesized negative direction. UncAnsMgr has one anomalous positive hit.
+         UncAnsCEO and UncPreCEO are completely null.
+
+OPEN QUESTIONS:
+  Q31. Why does UncPreMgr (not UncAnsMgr) drive the payout result?
+       Is the presentation's forward-looking tone more relevant for dividend decisions?
+  Q32. Why does significance vanish under Firm FE? Is this a between-firm compositional effect?
+  Q33. UncAnsMgr is completely null for payout. Inconsistent with cash (H1) where UncAnsMgr is the driver.
+       Why does the same IV matter for cash but not payout?
+
+
+================================================================================
+H13: SPEECH UNCERTAINTY AND CAPITAL EXPENDITURE
+================================================================================
+DV: Capex (cols 1-6), Capex_lead (cols 7-12)
+    Formula: Capex = capxy_Q4 / atq
+      capxy = Capital Expenditures, fiscal-year cumulative (Compustat Annual via Q4)
+      atq   = Total Assets, contemporaneous (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=56,114 (base), 53,864 (extended).
+DV Mean: Capex = 0.0487, Capex_lead = 0.0481
+One-SD(UncAnsMgr) effect on Capex: +0.0006 (col3, Ind FE) = 1.24% of mean
+
+  UncAnsCEO:   SIGNIFICANT for Capex under Firm FE only -- positive
+      Capex:
+        col2 +0.0015*** [Firm FE, Yr FE, basic]
+        col4 +0.0015*** [Firm FE, Yr FE, extended]
+        col6 +0.0014*** [Firm FE, YrQtr FE, extended]
+      Capex_lead: Not significant
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   SIGNIFICANT -- positive (Industry FE only, vanishes under Firm FE)
+      Capex:
+        col3 +0.0020*** [Ind FE, Yr FE, extended] -- 1 of 6 (upgraded from ** to ***)
+      Capex_lead:
+        col7  +0.0028** [Ind FE, Yr FE, basic]
+        col9  +0.0050***[Ind FE, Yr FE, extended]
+        col11 +0.0029***[Ind FE, YrQtr FE, extended]
+  UncPreMgr:   NO SIGNIFICANCE across all 12 cols
+
+SUMMARY: UncAnsMgr robustly predicts higher capex under Industry FE (both current and lead).
+         Effect completely vanishes under Firm FE. Lead DV effects are LARGER than current.
+         UncAnsCEO is significant under Firm FE for current Capex only (positive, 3 specs, all ***).
+         Positive sign: more uncertainty -> more investment.
+
+OPEN QUESTIONS:
+  Q34. Positive sign is puzzling under a precautionary motive. If uncertainty makes firms hoard cash (H1),
+       why does it also increase capex? Possible: real-options channel (invest to resolve uncertainty)?
+  Q35. Firm FE kills UncAnsMgr significance but reveals UncAnsCEO significance. Different IVs
+       capture between-firm vs within-firm variation?
+  Q36. Lead DV has LARGER UncAnsMgr coefficients. Is this a delayed investment response?
+
+
+================================================================================
+H13.1: PRODUCT SIMILARITY-MODERATED CAPEX
+================================================================================
+DV: Capex (cols 1-2), Capex_lead (cols 3-4)
+    Formula: Capex = capxy_Q4 / atq
+      capxy = Capital Expenditures, fiscal-year cumulative (Compustat Annual via Q4)
+      atq   = Total Assets, contemporaneous (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: Two-tailed for all
+
+  Manager_QA_Unc_c:      SIGNIFICANT -- positive
+      col1 +0.0014*** [Ind FE, Yr FE, Capex]
+      col2 +0.0013**  [Ind FE, YrQtr FE, Capex]
+      col3 +0.0019*** [Ind FE, Yr FE, Capex_lead]
+      col4 +0.0020*** [Ind FE, YrQtr FE, Capex_lead]
+  z_log_TotalSimilarity:  SIGNIFICANT -- positive
+      col1 +0.0020*** [Ind FE, Yr FE, Capex]
+      col2 +0.0020*** [Ind FE, YrQtr FE, Capex]
+      col3 +0.0027*** [Ind FE, Yr FE, Capex_lead]
+      col4 +0.0026*** [Ind FE, YrQtr FE, Capex_lead]
+  MgrQAUnc_x_zlogTSIMM:  SIGNIFICANT -- positive
+      col1 +0.0015** [Ind FE, Yr FE, Capex]
+      col2 +0.0015** [Ind FE, YrQtr FE, Capex]
+      col3 +0.0030***[Ind FE, Yr FE, Capex_lead]
+      col4 +0.0030***[Ind FE, YrQtr FE, Capex_lead]
+
+SUMMARY: ALL three terms significant in ALL 4 specs. Interaction IS significant for capex
+         (unlike cash in H1.1/H1.1b). Higher product similarity AMPLIFIES the uncertainty-capex link.
+         Lead effects are approximately double the current effects.
+
+OPEN QUESTIONS:
+  Q37. Why does the TSIMM interaction work for capex (H13.1) but NOT for cash (H1.1)?
+       Are competitive pressures channeled through investment rather than precautionary savings?
+  Q38. Interaction is positive: firms in similar product markets invest MORE when uncertain.
+       Is this a competitive arms-race effect (can't afford to delay investment when rivals are close)?
+  Q39. Magnitudes roughly double from current to lead DV. Same delayed response as H13.
+
+
+================================================================================
+H14: SPEECH UNCERTAINTY AND BID-ASK SPREAD CHANGES
+================================================================================
+DV: DSPREAD (6 cols)
+    Formula: DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])
+      RelSpread = 2 * (ASK - BID) / (ASK + BID)
+      ASK = Daily closing ask price (CRSP DSF)
+      BID = Daily closing bid price (CRSP DSF)
+      Window: [-3,-1] and [+1,+3] trading days around earnings call
+      Reference: Lee (2016, The Accounting Review)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:   NO SIGNIFICANCE
+  UncPreCEO:   NO SIGNIFICANCE (negative coefficients, wrong sign, correctly suppressed)
+  UncAnsMgr:   MARGINAL
+      col3 +0.0001*** [Ind FE, Yr FE, extended] -- only 1 of 6
+  UncPreMgr:   MARGINAL
+      col2 +0.0001** [Firm FE, Yr FE, basic]
+      col3 +0.0001***[Ind FE, Yr FE, extended]
+      (vanishes entirely under YrQtr FE cols 5-6)
+
+SUMMARY: Very sparse significance. UncPreMgr and UncAnsMgr show up in 1-2 specs each,
+         but vanish entirely under YrQtr FE (cols 5-6). Not robust.
+         UncPreCEO has wrong-sign hits. Magnitudes extremely small (0.0001).
+
+OPEN QUESTIONS:
+  Q40. Is the bid-ask spread too insensitive to capture speech uncertainty effects?
+       Magnitudes are economically trivial even where statistically significant.
+  Q41. Significance dies under YrQtr FE. Is the effect seasonal/time-varying rather than speech-driven?
+  Q42. Combined with H7's total null: market microstructure DVs (DeltaILLIQ, DSPREAD) seem unresponsive to speech uncertainty.
+
+
+================================================================================
+H14b: SPEECH UNCERTAINTY AND POST-CALL BID-ASK SPREAD LEVEL
+================================================================================
+DV: PostCallSpread (6 cols)
+    Formula: PostCallSpread = mean(RelSpread) over [+1,+3] trading days
+      RelSpread = 2 * (ASK - BID) / (ASK + BID)
+      ASK = Daily closing ask price (CRSP DSF)
+      BID = Daily closing bid price (CRSP DSF)
+      Reference: Lee (2016, The Accounting Review)
+Tail: One-tailed (beta > 0)
+NOTE: Level specification (algebraically equivalent to H14 delta with PreCallSpread control)
+
+  UncAnsCEO:   NO SIGNIFICANCE
+  UncPreCEO:   NO SIGNIFICANCE (negative coefficients, wrong sign, correctly suppressed)
+  UncAnsMgr:   MARGINAL
+      col3 +0.0001*** [Ind FE, Yr FE, extended] -- only 1 of 6
+  UncPreMgr:   SIGNIFICANT -- positive (survives Firm FE in level spec)
+      col2 +0.0001** [Firm FE, Yr FE, basic]
+      col3 +0.0001***[Ind FE, Yr FE, extended]
+      col4 +0.0001** [Firm FE, Yr FE, extended]
+      col6 +0.0001** [Firm FE, YrQtr FE, extended]
+
+SUMMARY: UncPreMgr is more robust in the level specification (H14b) than the delta (H14).
+         It reaches significance in 4 of 6 cols, including Firm FE and YrQtr FE -- a notable
+         improvement over H14 where it vanished under YrQtr FE.
+         UncAnsMgr remains sparse (1 col). UncPreCEO shows wrong-sign hits.
+         Magnitudes still tiny (0.0001).
+
+OPEN QUESTIONS:
+  Q43. The level spec rescues UncPreMgr significance under Firm FE + YrQtr FE. Is the level
+       form a better specification than the delta for bid-ask spreads?
+  Q44. UncPreCEO is consistently negative (wrong sign) across both H14 and H14b. Does CEO
+       presentation uncertainty actually NARROW spreads? Could this reflect information provision?
+  Q45. Even with improved significance in H14b, the economic magnitude remains trivial (0.0001).
+       Is this practically meaningful?
+
+
+================================================================================
+H16: SPEECH UNCERTAINTY AND R&D INVESTMENT INTENSITY
+================================================================================
+DV: RDSales (cols 1-6), RDSales_lead (cols 7-12)
+    Formula: RDSales = xrdy_Q4 / saley_Q4
+      xrdy  = Research and Development Expense, annual (Compustat Annual via Q4)
+      saley = Sales/Turnover (Net), annual (Compustat Annual via Q4)
+      Reference: Bates, Kahle & Stulz (2009, JF); Jiang, John & Larsen (2021, RQFA)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=56,130 (base), 53,892 (extended).
+DV Mean: RDSales = 0.0645, RDSales_lead = 0.0658
+One-SD(UncAnsMgr) effect on RDSales: +0.0112 (col3, Ind FE) = 17.4% of mean; +0.0071 (col4, Firm FE) = 11.0% of mean
+
+  UncAnsCEO:   MARGINAL -- negative (Firm FE + extended only)
+      RDSales:
+        col4 -0.0151*  [Firm FE, Yr FE, extended]
+        col6 -0.0145*  [Firm FE, YrQtr FE, extended]
+      RDSales_lead: Not significant
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   SIGNIFICANT for current DV -- positive (ALL 6 COLS)
+      RDSales:
+        col1 +0.0440** [Ind FE, Yr FE, basic]
+        col2 +0.0255** [Firm FE, Yr FE, basic]
+        col3 +0.0364*** [Ind FE, Yr FE, extended] (upgraded from ** to ***)
+        col4 +0.0232** [Firm FE, Yr FE, extended]
+        col5 +0.0401** [Ind FE, YrQtr FE, extended]
+        col6 +0.0215** [Firm FE, YrQtr FE, extended]
+      RDSales_lead: Not significant in any col
+  UncPreMgr:   NO SIGNIFICANCE across all 12 cols
+
+SUMMARY: UncAnsMgr robustly predicts higher R&D spending across all 6 specs for current DV (** to ***).
+         Effect vanishes entirely for lead DV. UncAnsCEO has marginal negative hits under Firm FE.
+         Magnitudes are substantial (0.02-0.04). One-SD effect = 11-17% of DV mean — largest across all suites.
+
+OPEN QUESTIONS:
+  Q46. UncAnsMgr is positive for both capex (H13) and R&D (H16). Consistent real-options story:
+       uncertainty drives more investment of all types?
+  Q47. UncAnsCEO is marginally NEGATIVE for R&D (Firm FE). Opposite to UncAnsMgr.
+       Same opposing-sign pattern as H4a leverage. CEO vs Manager divergence again.
+  Q48. Why does the effect vanish for lead R&D? Is R&D spending too sticky to show a lagged response?
+  Q49. UncAnsMgr survives BOTH Industry and Firm FE here (unlike H13 where Firm FE kills it).
+       R&D seems more responsive to within-firm uncertainty variation than capex.
+
+
+================================================================================
+H17: SPEECH UNCERTAINTY AND REPURCHASE INTENSITY
+================================================================================
+DV: RepurchaseIntensity (cols 1-6), RepurchaseIntensity_lead_qtr (cols 7-12)
+    Formula: RepurchaseIntensity = prstkcy_q / atq_lag
+      prstkcy_q = De-cumulated quarterly purchase of common stock (Compustat Quarterly)
+      atq_lag   = Total Assets, lagged one quarter (Compustat Quarterly)
+      De-cumulation: prstkcy_q = prstkcy_t - prstkcy_{t-1} (within fiscal year)
+      Reference: Thesis Advisor Suggestion
+Tail: Two-tailed
+
+  UncAnsCEO:   NO SIGNIFICANCE (all cols very small, near zero)
+  UncPreCEO:   MARGINAL / MIXED
+      RepurchaseIntensity:
+        col1 -0.0005*  [Ind FE, Yr FE, basic] -- negative, 1 spec only
+      RepurchaseIntensity_lead_qtr:
+        col8 +0.0005*  [Firm FE, Yr FE, basic] -- positive, 1 spec only (OPPOSITE SIGN to current)
+  UncAnsMgr:   SIGNIFICANT -- negative (Industry FE only, vanishes under Firm FE)
+      RepurchaseIntensity:
+        col1 -0.0009*** [Ind FE, Yr FE, basic]
+        col3 -0.0009*** [Ind FE, Yr FE, extended]
+        col5 -0.0009*** [Ind FE, YrQtr FE, extended]
+      RepurchaseIntensity_lead_qtr:
+        col7  -0.0009** [Ind FE, Yr FE, basic]
+        col9  -0.0007** [Ind FE, Yr FE, extended]
+        col11 -0.0007*  [Ind FE, YrQtr FE, extended]
+  UncPreMgr:   SIGNIFICANT -- positive (survives Firm FE for current DV)
+      RepurchaseIntensity:
+        col1 +0.0010*** [Ind FE, Yr FE, basic]
+        col2 +0.0007**  [Firm FE, Yr FE, basic]
+        col3 +0.0009*** [Ind FE, Yr FE, extended]
+        col4 +0.0006**  [Firm FE, Yr FE, extended]
+        col5 +0.0008*** [Ind FE, YrQtr FE, extended]
+        col6 +0.0006*   [Firm FE, YrQtr FE, extended]
+      RepurchaseIntensity_lead_qtr:
+        col7  +0.0009** [Ind FE, Yr FE, basic]
+        col9  +0.0008** [Ind FE, Yr FE, extended]
+        col11 +0.0008** [Ind FE, YrQtr FE, extended]
+        (vanishes under Firm FE for lead DV)
+
+SUMMARY: UncAnsMgr and UncPreMgr BOTH significant but with OPPOSITE SIGNS.
+         UncAnsMgr = negative (uncertainty -> fewer repurchases). Industry FE only.
+         UncPreMgr = positive (uncertainty -> more repurchases). Survives Firm FE for current DV.
+         UncPreCEO flips sign between specs (unreliable).
+
+OPEN QUESTIONS:
+  Q50. CRITICAL: UncAnsMgr and UncPreMgr have OPPOSITE signs. This is unique across all suites.
+       Why would QA uncertainty reduce repurchases but presentation uncertainty increase them?
+  Q51. Is the QA negative sign consistent with precautionary behavior (same as cash hoarding in H1)?
+       More QA uncertainty -> retain cash -> fewer buybacks.
+  Q52. Why does UncPreMgr predict MORE repurchases? Does prepared-section uncertainty signal
+       something different than spontaneous QA uncertainty?
+  Q53. UncAnsMgr vanishes under Firm FE. Cross-sectional only? UncPreMgr survives Firm FE (current DV).
+
+
+================================================================================
+H18: SPEECH UNCERTAINTY AND SEC COMMENT LETTERS (CCCL)
+================================================================================
+DV: CCCL (binary, 6 cols)
+    Formula: CCCL = 1 if firm received SEC comment letter in next calendar quarter (Q+1), 0 otherwise
+      Source: EDGAR Comment Letters database (SEC UPLOAD-type filings)
+      CIK-to-gvkey linkage via CCM + Compustat direct CIK field
+      Reference: Cassell, Dreher & Myers (2013, The Accounting Review)
+Tail: One-tailed (beta > 0)
+Model: LPM (Linear Probability Model)
+DV base rate: ~0.27% (extremely rare event)
+
+  UncAnsCEO:   NO SIGNIFICANCE
+  UncPreCEO:   NO SIGNIFICANCE
+  UncAnsMgr:   NO SIGNIFICANCE
+  UncPreMgr:   MARGINAL -- positive
+      col1 +0.0019*  [Ind FE, Yr FE, basic]
+      col2 +0.0024*  [Firm FE, Yr FE, basic]
+      col6 +0.0023*  [Firm FE, YrQtr FE, extended]
+      (cols 3-5: not significant -- 0.0015, 0.0022, 0.0015)
+
+SUMMARY: UncPreMgr is the sole significant IV but only marginal (* in 3 of 6 specs).
+         R-squared near zero. Model has near-zero explanatory power.
+
+OPEN QUESTIONS:
+  Q54. Why UncPreMgr and not UncAnsMgr? The presentation is scripted -- does SEC respond
+       to the prepared narrative rather than spontaneous answers?
+  Q55. Near-zero R-squared. Is the LPM even appropriate for a 0.27% base-rate event?
+       Results are technically significant but practically meaningless.
+  Q56. Should this suite be interpreted with extreme caution given the near-zero fit?
+
+
+================================================================================
+H18b: LOGIT ROBUSTNESS -- SEC COMMENT LETTERS (CCCL)
+================================================================================
+DV: CCCL (binary, 2 cols)
+    Formula: CCCL = 1 if firm received SEC comment letter in next calendar quarter (Q+1), 0 otherwise
+      Source: EDGAR Comment Letters database (SEC UPLOAD-type filings)
+      CIK-to-gvkey linkage via CCM + Compustat direct CIK field
+      Reference: Cassell, Dreher & Myers (2013, The Accounting Review)
+Tail: One-tailed (beta > 0)
+Model: Logit (AME coefficients reported)
+NOTE: Industry FE + Year FE only (no Firm FE -- logit cannot handle large FE)
+
+  UncAnsCEO:   NO SIGNIFICANCE
+      col1 -0.0011  col2 -0.0013
+  UncPreCEO:   NO SIGNIFICANCE
+      col1 -0.0006  col2 -0.0000
+  UncAnsMgr:   NO SIGNIFICANCE
+      col1 -0.0006  col2 -0.0003
+  UncPreMgr:   MARGINAL -- positive (basic controls only)
+      col1 +0.0020** [Ind FE, Yr FE, basic]
+      col2 +0.0014   [Ind FE, Yr FE, extended] -- loses significance with extended controls
+
+SUMMARY: Logit partially confirms LPM (H18) result: UncPreMgr is positive and significant
+         with basic controls (col1), but loses significance with extended controls (col2).
+         The logit AME of +0.0020 is economically similar to the LPM coefficient.
+         Pseudo R2 ~0.09, substantially better than LPM R2 ~0.
+
+OPEN QUESTIONS:
+  Q57. UncPreMgr significance weakens from ** (basic) to not significant (extended) in logit.
+       The LPM result may be fragile. Is the CCCL finding robust enough for the thesis?
+  Q58. Logit pseudo R2 (0.09) is much better than LPM R2 (~0.001). Does the logit better
+       fit the rare-event structure of CCCL?
+
+
+================================================================================
+H19: SPEECH UNCERTAINTY AND EXTERNAL VS INTERNAL FINANCING
+================================================================================
+DV: ExternalFunding (cols 1-6), ExternalFunding_lead (cols 7-12)
+    Formula: ExternalFunding = 1 if max(debt_issuance, equity_issuance) > 5% of lagged assets
+      debt_issuance   = delta(dlcq + dlttq) / lagged_atq
+      equity_issuance = (sstky - prstkcy) / lagged_atq
+      dlcq   = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq  = Long-Term Debt (Compustat Quarterly)
+      sstky  = Sale of Common and Preferred Stock (Compustat Quarterly, cumulative)
+      prstkcy = Purchase of Common and Preferred Stock (Compustat Quarterly, cumulative)
+      Reference: Leary & Roberts (2010, JFE)
+Tail: One-tailed (beta < 0) -- hypothesis: uncertainty increases internal funding
+Classification: Leary & Roberts (2010, JFE). Debt issuance if delta(dlcq+dlttq)/lagged_atq > 5%;
+  equity issuance if (sstky-prstkcy)/lagged_atq > 5%. Internal if neither. Dual -> equity.
+Sample split: 73.1% internal, 26.9% external (at call level)
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 12 cols (all positive -- wrong sign for hypothesis)
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   NO SIGNIFICANCE across all 12 cols
+  UncPreMgr:   MARGINAL -- negative (correct sign, lead DV only, Firm FE only)
+      ExternalFunding: positive coefficients (wrong sign) correctly suppressed
+      ExternalFunding_lead:
+        col8  -0.0193* [Firm FE, Yr FE, basic]
+        col10 -0.0188* [Firm FE, Yr FE, extended]
+        col12 -0.0188* [Firm FE, YrQtr FE, extended]
+        (all under Firm FE; Industry FE cols null)
+
+SUMMARY: Near-null results. UncPreMgr shows marginal * significance for the lead DV
+         under Firm FE with the correct negative sign (uncertainty reduces future external funding).
+         Current DV has positive coefficients (wrong sign, suppressed). All other IVs null.
+
+OPEN QUESTIONS:
+  Q59. UncPreMgr is positive (wrong sign). Does presentation uncertainty actually signal
+       conditions that require external funding (e.g., operational uncertainty drives capital needs)?
+  Q60. All effects vanish under Firm FE. Is this purely a cross-sectional compositional effect?
+  Q61. The 5% threshold from L&R (1980-2005 sample) may be inappropriate for 2002-2018.
+       Should alternative thresholds (3%, 10%) be tested?
+
+
+================================================================================
+H20: SPEECH UNCERTAINTY AND DEBT VS EQUITY CHOICE
+================================================================================
+DV: DebtChoice (6 cols)
+    Formula: DebtChoice = 1 if debt-only issuance, 0 if equity-only or dual; NaN if internal
+      Conditional on ExternalFunding = 1
+      Dual issuers (both debt and equity > 5%) classified as equity per Leary & Roberts convention
+      Reference: Leary & Roberts (2010, JFE)
+Tail: Two-tailed
+Sample: RESTRICTED to ExternalFunding == 1 (~27% of main sample, ~12,700-13,200 calls)
+Classification: Leary & Roberts (2010, JFE). DebtChoice = 1 if debt-only issuance,
+  0 if equity-only or dual issuance. Dual -> equity per L&R convention.
+Controls: Leverage EXCLUDED (bad control: shares numerator with debt issuance DV)
+Sample split among external funders: 70% debt-only, 30% equity/dual
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 6 cols (all negative, small)
+  UncPreCEO:   SIGNIFICANT -- negative (Industry FE only, vanishes under Firm FE)
+      col1 -0.0499*** [Ind FE, Yr FE, basic]
+      col3 -0.0480*** [Ind FE, Yr FE, extended]
+      col5 -0.0435**  [Ind FE, YrQtr FE, extended]
+      (all 3 Firm FE cols: not significant)
+  UncAnsMgr:   SIGNIFICANT -- positive (Industry FE only, vanishes under Firm FE)
+      col1 +0.0454**  [Ind FE, Yr FE, basic]
+      col3 +0.1273*** [Ind FE, Yr FE, extended]
+      col5 +0.0411**  [Ind FE, YrQtr FE, extended]
+      (all 3 Firm FE cols: not significant)
+  UncPreMgr:   SIGNIFICANT -- positive (Industry FE only, vanishes under Firm FE)
+      col1 +0.0480**  [Ind FE, Yr FE, basic]
+      col3 +0.1057*** [Ind FE, Yr FE, extended]
+      col5 +0.0447**  [Ind FE, YrQtr FE, extended]
+      (all 3 Firm FE cols: not significant)
+
+SUMMARY: Strong Industry FE results, complete null under Firm FE.
+         UncPreCEO: negative (more uncertainty -> less debt, more equity)
+         UncAnsMgr and UncPreMgr: positive (more uncertainty -> more debt, less equity)
+         OPPOSITE SIGNS between CEO and Manager measures.
+         All effects are cross-sectional only (vanish under within-firm identification).
+         Col 3 shows anomalously large coefficients for UncAnsMgr (+0.1273) and
+         UncPreMgr (+0.1057) -- these jump from ~0.05 to ~0.10-0.13 when adding extended
+         controls, which is unusual and potentially fragile.
+
+OPEN QUESTIONS:
+  Q62. OPPOSITE SIGNS between UncPreCEO (negative) and UncAnsMgr/UncPreMgr (positive).
+       Why does CEO uncertainty push toward equity while manager uncertainty pushes toward debt?
+       Possible: CEO uncertainty signals adverse selection (equity-like risk), while manager
+       uncertainty signals operational caution (debt = safer, less information-sensitive)?
+  Q63. All effects vanish under Firm FE. Are these purely cross-sectional compositional effects?
+       Firms that always use debt may also have managers who always sound uncertain.
+  Q64. The coefficient jump in col3 (extended controls) is suspicious. UncAnsMgr goes from
+       0.0454 to 0.1273 when adding SalesGrowth/RDSales/CashFlowAt/DailyVola. This suggests
+       the extended controls are correlated with the IV in a way that inflates the coefficient.
+       Is this a suppressor effect or a sign of multicollinearity?
+  Q65. Restricted sample (~12,700 calls, ~930 firms). Is this large enough for reliable Firm FE?
+       With ~930 firms averaging ~13.6 calls each, within-firm variation may be insufficient.
+
+
+================================================================================
+H21: SPEECH UNCERTAINTY AND SEC COMMENT LETTER COUNT
+================================================================================
+DV: SEC_Letters_fwd (6 cols)
+    Formula: SEC_Letters_fwd = count of SEC-originated UPLOAD letters in next calendar quarter (Q+1)
+      Source: EDGAR Comment Letters database (filtered to SEC-originated UPLOAD type)
+      CIK-to-gvkey linkage via CCM + Compustat direct CIK field
+      Reference: Cassell, Dreher & Myers (2013, TAR) (thesis extension to count)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 6 cols
+  UncPreCEO:   NO SIGNIFICANCE across all 6 cols
+  UncAnsMgr:   NO SIGNIFICANCE across all 6 cols
+  UncPreMgr:   NO SIGNIFICANCE across all 6 cols
+
+SUMMARY: COMPLETE NULL. No IV is significant in any specification.
+         Unlike H18 (binary CCCL receipt) where UncPreMgr was marginally significant,
+         the letter COUNT shows no relationship with speech uncertainty at all.
+         R-squared is very low (~0.004-0.005).
+
+OPEN QUESTIONS:
+  Q66. H18 shows marginal UncPreMgr significance for CCCL receipt (binary), but H21 shows
+       nothing for letter count. Is the SEC's decision to SEND a letter related to uncertainty,
+       but the NUMBER of letters is driven by other factors (firm complexity, response quality)?
+  Q67. Should H18 and H21 together be interpreted as: speech uncertainty may slightly predict
+       SEC attention (first letter), but does not predict the intensity of the engagement?
+
+
+================================================================================
+ROBUSTNESS ANALYSES (Phase C, 2026-04-03)
+================================================================================
+
+C1: SINGLE-IV SPECIFICATIONS (UncAnsMgr only, larger N ~74-78K vs ~56K)
+----------------------------------------------------------------------
+  | Suite    | Sig current DV        | Sig lead DV            |
+  | H1       | 6/6 ***               | 6/6 (2***, 3**, 1*)    |
+  | H4 (Lev) | 0/6                   | 0/6                    |
+  | H4 (DtC) | 3/6 (1**, 2*)         | 0/6                    |
+  | H13      | 3/6 (Ind FE)          | 3/6 (Ind FE)           |
+  | H16      | 3/6 (Ind FE)          | 1/6 (*)                |
+
+  KEY FINDINGS:
+  - H1 STRENGTHENS: all *** for current, 6/6 lead (vs 1/6 in main 4-IV spec).
+    Multicollinearity with UncAnsCEO (r=0.77) was suppressing H1 lead significance.
+  - H4 Leverage: COMPLETELY NULL even with UncAnsMgr alone. Main-table lead
+    significance was driven by multicollinearity with UncAnsCEO.
+  - H4 DebtToCapital: 3/6 current signal emerges — was masked by 4-IV specification.
+  - H13 and H16: Industry FE pattern unchanged — Firm FE null confirms cross-sectional nature.
+
+
+C2: NoCEO DECOMPOSITION (UncAnsNoCEO + UncAnsCEO entered simultaneously)
+--------------------------------------------------------------------------
+  | Suite | UncAnsNoCEO sig                     | UncAnsCEO sig                      |
+  | H1    | 2/12 (col3 *, col5 * — Ind FE)      | 10/12 (4 current + 6 lead)         |
+  | H4    | 0/24                                 | 1/24 (DtC col13 *)                 |
+  | H13   | 2/12 (col3 *, col5 * — Ind FE)       | 2/12 (col2 **, col4 **)            |
+  | H16   | 3/12 (col1 *, col3 *, col5 * — Ind FE) | 6/12 (3 current *, 2 lead **, 1*) |
+
+  CRITICAL FINDING: UncAnsNoCEO shows only scattered marginal * significance
+  (all at Industry FE), while UncAnsCEO is robust — especially for cash holdings (H1: 10/12).
+  This REVERSES the main-table pattern where UncAnsMgr appears dominant.
+
+  COVERAGE ARTIFACT EXPLANATION:
+    UncAnsMgr availability: 95.8% of calls (84,484/88,205)
+    UncAnsCEO availability: 70.4% of calls (62,132/88,205)
+    Complete-case 4-IV filtering: ~56K obs
+    UncAnsMgr captures the CEO signal PLUS has 39% more observations.
+    The CEO is the PRIMARY driver; non-CEO managers contribute marginally at Industry FE.
+
+  IMPLICATION: The thesis's "management-team aggregate dominates CEO" claim needs careful
+  reframing: "UncAnsMgr is a more robust predictor because of superior coverage, but
+  the underlying signal is CEO-driven."
+
+
+C3: NO-LAGGED-DV ROBUSTNESS (H1 and H16 only)
+-----------------------------------------------
+  | Suite | UncAnsMgr sig                                        | UncPreMgr sig                |
+  | H1    | 3/12 (col2,4,6 Firm FE current **)                   | 6/12 (all Ind FE specs **)   |
+  | H16   | 8/12 (col1,3,5 ***, col2 *, col4 **, col6 *, col7 **, col11 *) | --               |
+
+  H1: Industry FE specs LOSE UncAnsMgr significance without lagged DV (lagged DV was proxying
+  for persistent cash levels which correlate with uncertainty). Firm FE specs GAIN ** significance
+  (lagged DV was absorbing within-firm variance that the IV also explains).
+  SURPRISE: UncPreMgr goes from 0/12 in main spec to 6/12 ** — the lagged DV was entirely
+  absorbing UncPreMgr's signal in the main specification.
+
+  H16: Much MORE robust without lagged DV (8/12 vs 6/12 in main). RDSales is highly persistent;
+  the lagged DV absorbs most variation, suppressing the true IV effect.
+
+  Conclusion: Lagged DV inclusion is conservative — main-table results understate the IV effect.
+
+
+STANDARDIZED EFFECTS SUMMARY (thesis-scope suites, one-SD(UncAnsMgr) = 0.3081):
+  | Suite | DV (benchmark spec)           | Beta    | One-SD Effect | % of DV Mean |
+  | H1    | CashRatio (col4, Firm FE ext) | +0.0036 | +0.0011       | 0.67%        |
+  | H1    | CashRatio (col3, Ind FE ext)  | +0.0072 | +0.0022       | 1.33%        |
+  | H4a   | Leverage_lead (col10, Firm FE)| -0.0085 | -0.0026       | 1.12%        |
+  | H4b   | DtC_lead (col9, Ind FE ext)   | -0.0204 | -0.0063       | 1.82%        |
+  | H16   | RDSales (col3, Ind FE ext)    | +0.0364 | +0.0112       | 17.4%        |
+  | H16   | RDSales (col4, Firm FE ext)   | +0.0232 | +0.0071       | 11.0%        |
+  | H13   | Capex (col3, Ind FE ext)      | +0.0020 | +0.0006       | 1.24%        |
+  | H1.2  | x_Unrated (col1, Ind FE)      | +0.0068 | +0.0021       | 1.23%        |
+
+  Note: Non-thesis suites (17) use firm-only clustering; DV means not available in their
+  diagnostics. Standardized effects for those suites are omitted — any effect sizes would be
+  based on potentially overstated SEs and lack regression-sample DV means for context.
+
+
+C4: CEO PRESENCE PROBIT
+------------------------
+  N = 82,197 calls. DV = CEO_present_QA (1 = CEO participated in Q&A).
+  CEO absent from Q&A in ~26-30% of calls (29.6% in probit sample; 26.5% as UncAnsCEO null rate).
+  Pseudo R² = 0.022 (CEO presence is not well-predicted by observables).
+
+  Predictors of CEO ABSENCE (inverted from presence coefficients):
+    Larger firms     (lnAssets = -0.079 for presence)
+    Lower leverage   (Leverage = +0.165 for presence)
+    Lower ROA        (ROA = +0.393 for presence)
+    Higher Tobin's Q (TobinsQ = -0.045 for presence)
+
+  Interpretation: CEO absence is partially systematic (larger, higher-growth firms) but
+  the low pseudo R² means it is largely idiosyncratic. This mitigates but does not eliminate
+  selection concerns for UncAnsCEO-based results.
+
+
+C5: PRisk AUTOCORRELATION (H11 construct validation)
+------------------------------------------------------
+  Model: PRisk_t = alpha + rho * PRisk_{t-1} + quarter_dummies + epsilon
+  SEs: Firm-clustered. N = 79,749 firm-quarters, 1,849 firms, 67 quarters.
+
+  rho (AR1) = 0.303  (SE=0.011, t=26.9, p<0.001)
+  R² = 0.103
+
+  Interpretation: Moderate persistence (rho=0.30, not extreme >0.80). This supports
+  framing H11 as construct validation rather than causal: the contemporaneous association
+  between PRisk and speech uncertainty reflects shared slow-moving perceptions, and the
+  H11-Lead "placebo failure" is consistent with moderate serial correlation in PRisk
+  rather than reverse causality.
+
+
+================================================================================
+================================================================================
+CROSS-SUITE PATTERN ANALYSIS
+================================================================================
+================================================================================
+
+
+PATTERN 1: UncAnsMgr IS THE DOMINANT IV
+-----------------------------------------
+UncAnsMgr is the ONLY consistently significant IV across the core suites:
+  H1  (CashRatio):            * to *** positive, ALL 6 specs (Ind+Firm, Yr+YrQtr) -- robust
+  H4a (Leverage_lead):        * to ** negative, survives Firm FE -- robust
+  H4b (DebtToCapital_lead):   * to *** negative, survives Firm FE -- robust
+  H5  (DISP):                 ** positive, Industry FE only, 1 col each -- marginal
+  H13 (Capex):                ** to *** positive, Industry FE only -- partial
+  H13.1 (Capex moderated):    ** to *** positive, Industry FE only (moderation suite) -- robust
+  H16 (RDSales):              ** positive, ALL 6 specs (Ind+Firm, Yr+YrQtr) -- robust
+  H17 (RepurchaseIntensity):  ** to *** negative, Industry FE only -- partial
+  H20 (DebtChoice):           ** to *** positive, Industry FE only -- partial
+
+  -> Q68. What makes the QA section uniquely informative? Is it the spontaneous/unscripted nature?
+  -> Q69. Why does UncAnsMgr survive Firm FE for cash (H1), leverage (H4a/b), R&D (H16)
+          but NOT for capex (H13), dispersion (H5), repurchases (H17), debt choice (H20)?
+
+  UPDATE (Phase C): C2 NoCEO decomposition reveals UncAnsMgr dominance is a COVERAGE ARTIFACT.
+  When UncAnsMgr is decomposed into UncAnsNoCEO + UncAnsCEO (zero overlap, r=0.14):
+    - UncAnsNoCEO: scattered marginal * at Industry FE only
+    - UncAnsCEO: dominant (H1: 10/12, H16: 6/12)
+  UncAnsMgr captures the CEO signal + has 39% more observations (95.8% vs 70.4% availability).
+  See ROBUSTNESS ANALYSES section C2 and PATTERN 10 below for details.
+
+
+PATTERN 2: CEO MEASURES ARE ALMOST UNIVERSALLY NULL
+----------------------------------------------------
+UncAnsCEO is significant ONLY for:
+  H4a (Leverage_lead):   positive, ALL 6 lead specs including Firm FE -- robust
+  H13 (Capex current):   positive, Firm FE only (3 specs)
+  H16 (RDSales):         marginally negative, Firm FE + extended only (2 specs)
+  H5  (DISP):            negative (WRONG SIGN), Firm FE + extended (4 specs)
+UncPreCEO is significant for:
+  H14/H14b (DSPREAD/PostCallSpread): negative (WRONG SIGN), Firm FE (scattered)
+  H17 col1 (one spec, not robust)
+  H20 (DebtChoice): *** negative, Industry FE only (3/6 specs) -- firms with uncertain CEO presentations choose equity over debt
+
+  -> Q70. Why is CEO speech almost never informative? Do CEOs use more controlled/rehearsed language
+          that obscures uncertainty? Or is the CEO sample smaller (fewer observations per firm)?
+  -> Q71. When UncAnsCEO IS significant (H4a, H16), the sign is OPPOSITE to UncAnsMgr.
+          Is this a systematic pattern? Does CEO uncertainty signal something different than manager uncertainty?
+
+
+PATTERN 3: UncPreMgr IS A SECONDARY CHANNEL
+------------------------------------------------
+UncPreMgr is significant for:
+  H5  (DISP):                 positive, survives Firm FE -- STRONGER than UncAnsMgr here
+  H9  (Takeover, Friendly):   negative, significant ** in Cox cause-specific (HR~0.57-0.59)
+  H12 (PayoutRatio_q):        negative, Industry FE only -- marginal
+  H14 (DSPREAD):              positive, Yr FE only -- marginal (2 specs)
+  H14b (PostCallSpread):      positive, survives Firm FE (4/6 specs) -- improved vs H14
+  H17 (RepurchaseIntensity):  positive, survives Firm FE for current DV -- OPPOSITE sign to UncAnsMgr
+  H18 (CCCL):                 positive, marginal * (3/6 specs)
+  H18b (CCCL logit):          positive, ** basic controls only
+  H19 (ExternalFunding):      positive (WRONG SIGN), Industry FE only (3/6 specs)
+  H20 (DebtChoice):           positive, Industry FE only (3/6 specs) -- same sign as UncAnsMgr
+
+  -> Q72. UncPreMgr wins in H5 (dispersion), H9 (takeover), H14b (spread level), H17 (repurchase), and H18 (CCCL).
+          These are analyst/SEC/payout/market-related DVs. Is the prepared section more relevant for
+          information-intermediary outcomes?
+  -> Q73. In H17, UncAnsMgr and UncPreMgr have opposite signs. This is the ONLY suite with this pattern.
+          What does this mean for interpretation?
+
+
+PATTERN 4: INDUSTRY FE vs FIRM FE
+-----------------------------------
+Effects that VANISH under Firm FE:
+  H5  (DISP):             UncAnsMgr sig at Ind FE, null at Firm FE
+  H12 (PayoutRatio_q):    UncPreMgr sig at Ind FE, null at Firm FE
+  H13 (Capex):            UncAnsMgr sig at Ind FE, null at Firm FE
+  H17 (Repurchase):       UncAnsMgr sig at Ind FE, null at Firm FE
+  H17 (Repurchase lead):  UncPreMgr sig at Ind FE, null at Firm FE
+  H19 (ExternalFunding):  UncPreMgr sig at Ind FE, null at Firm FE
+  H20 (DebtChoice):       ALL 3 sig IVs (UncPreCEO, UncAnsMgr, UncPreMgr) null at Firm FE
+
+Effects that SURVIVE Firm FE:
+  H1  (CashRatio):          UncAnsMgr ** to *** under Firm FE
+  H4a (Leverage_lead):      Both UncAnsCEO and UncAnsMgr survive Firm FE
+  H4b (DebtToCapital_lead): UncAnsMgr * to ** under Firm FE
+  H5  (DISP):               UncPreMgr * to ** under Firm FE; UncAnsCEO ** (wrong sign)
+  H13 (Capex current):      UncAnsCEO ** under Firm FE
+  H14b (PostCallSpread):    UncPreMgr ** under Firm FE
+  H16 (RDSales):            UncAnsMgr ** under Firm FE
+  H17 (Repurchase current): UncPreMgr * to ** under Firm FE
+
+  -> Q74. Cash, leverage, R&D effects survive within-firm identification. Capex (UncAnsMgr), payout, financing do not.
+          Is this a power issue, or are the latter effects genuinely cross-sectional?
+
+  UPDATE (Phase A): Under two-way clustering, H4a UncAnsMgr current-DV (cols 2,3) lost marginal * significance.
+  H4b UncAnsCEO near-totally collapsed (7 specs → 1). These were fragile results revealed by honest inference.
+
+
+PATTERN 5: CURRENT vs LEAD DV
+-------------------------------
+  H1:  Strong for current, weak for lead (1 of 6 lead cols)
+  H4a: Weak for current, STRONG for lead (leverage adjusts slowly)
+  H4b: Same as H4a (market leverage also lead-concentrated)
+  H5:  Both current and lead (scattered)
+  H13: UncAnsMgr: weak current, strong lead (Industry FE). UncAnsCEO: current only (Firm FE).
+  H16: Strong for current, NULL for lead (R&D sticky?)
+  H17: Both current and lead
+  H12: Both (scattered, marginal)
+  H19: Current only for UncPreMgr (Industry FE)
+  H20: Current only (no lead tested)
+
+  -> Q75. Leverage effects are lead-concentrated. Investment (capex) effects grow for lead.
+          Cash effects are current-concentrated. Is there a timing hierarchy in corporate responses to uncertainty?
+  -> Q76. R&D (H16) is current-only. Is R&D too sticky to show lagged responses?
+
+
+PATTERN 6: SIGN CONSISTENCY
+-----------------------------
+UncAnsMgr sign direction:
+  POSITIVE: CashRatio, DISP, Capex, RDSales, DSPREAD (1 col), DebtChoice
+  NEGATIVE: Leverage, DebtToCapital, RepurchaseIntensity
+
+  -> Q77. Positive for cash/investment/dispersion, negative for leverage/payout.
+          Consistent story: uncertainty -> hoard cash, invest more, lever less, pay out less?
+  -> Q78. But positive for capex AND cash hoarding seems contradictory. Where does the cash come from
+          if the firm is also investing more? Is it debt reduction freeing up balance sheet space?
+
+
+PATTERN 7: COMPLETE NULLS
+---------------------------
+  H7  (DeltaILLIQ):       Total null across all IVs and all specs
+  H7b (PostCallAmihud):   Total null (confirms H7 -- level spec doesn't help)
+  H21 (SEC_Letters_fwd):  Total null across all IVs and all specs
+
+  Near-nulls:
+  H14 (DSPREAD):          Near-null (2-3 marginal hits, vanish under YrQtr FE)
+  H19 (ExternalFunding):  UncPreMgr has wrong-sign *** hits; all other IVs null
+  H9  (Takeover, All):    Near-null (UncPreMgr marginal p~0.08 only)
+
+  -> Q79. Both Amihud illiquidity measures (H7, H7b) are null. Speech uncertainty does not seem to
+          affect trading liquidity. Is this because market participants don't attend to these signals,
+          or because the DV measurement windows are wrong?
+  -> Q80. H21 is null while H18 is marginal. The binary SEC decision may weakly relate to uncertainty
+          but the intensity does not.
+
+
+PATTERN 8: H11/H11-Lag/H11-Lead STAND APART
+----------------------------------------------
+H11 and H11-Lag are the ONLY suites where ALL measures (CEO and Manager, QA and Pres) are significant.
+They also have REVERSED causality (uncertainty is the DV, political risk is the IV).
+All specs use Firm FE + Year FE.
+H11-Lead (placebo test) also shows significance for ALL measures -- the falsification FAILS.
+
+  -> Q81. Political risk is a universal driver of language uncertainty, while language uncertainty
+          is a selective predictor of corporate outcomes. The asymmetry is noteworthy.
+  -> Q82. Is the H11/H11-Lag result about measurement validation (political risk makes people sound uncertain)
+          rather than economic substance?
+  -> Q83. The H11-Lead placebo failure means the relationship may reflect common slow-moving factors
+          rather than a directional causal channel from political risk to speech.
+
+
+PATTERN 9: H20 DEBT-EQUITY CHOICE -- CEO vs MANAGER SIGN SPLIT
+----------------------------------------------------------------
+H20 is the ONLY suite where UncPreCEO is significant AND has OPPOSITE sign to Manager measures:
+  UncPreCEO:   negative (uncertainty -> equity choice)
+  UncAnsMgr:   positive (uncertainty -> debt choice)
+  UncPreMgr:   positive (uncertainty -> debt choice)
+
+This adds to H4a (where UncAnsCEO is positive for leverage while UncAnsMgr is negative) and
+H16 (where UncAnsCEO is marginally negative for R&D while UncAnsMgr is positive).
+
+  -> Q84. Three suites now show CEO-Manager sign divergence (H4a, H16, H20).
+          Is CEO uncertainty fundamentally different from manager uncertainty?
+          Possible: CEOs signal strategic intent while managers signal operational reality.
+  -> Q85. In H20, the UncPreCEO effect is consistent with Myers & Majluf (1984): CEO uncertainty
+          signals adverse selection, making equity issuance more costly relative to debt -- but the
+          firm still issues equity (perhaps because uncertainty is so severe that even debt markets
+          are spooked). Meanwhile managers' uncertainty predicts debt -- consistent with pecking order
+          (debt is less information-sensitive).
+
+
+PATTERN 10: UncAnsMgr DOMINANCE IS A COVERAGE ARTIFACT (Phase C finding)
+--------------------------------------------------------------------------
+  UncAnsMgr availability: 95.8% of calls (84,484/88,205)
+  UncAnsCEO availability: 70.4% of calls (62,132/88,205)
+  Complete-case 4-IV filtering: ~56K obs
+
+  C2 NoCEO decomposition results:
+    UncAnsNoCEO: marginal * at Industry FE only (H1: 2/12, H13: 2/12, H16: 3/12)
+    UncAnsCEO: dominant (H1: 10/12, H16: 6/12, H13: 2/12)
+
+  Implication: UncAnsMgr captures the CEO signal PLUS has 39% more observations.
+  The CEO is the PRIMARY driver of cash holdings (H1) and R&D (H16) results.
+  Non-CEO managers contribute only marginally at Industry FE.
+
+  The correct thesis framing is: "UncAnsMgr is a more robust predictor because of
+  superior coverage, but the underlying signal is CEO-driven. The management-team
+  aggregate dominates in main tables not because non-CEO managers drive the result,
+  but because UncAnsMgr has 39% more observations than UncAnsCEO."
+
+  -> Q86. If the CEO drives the signal, why does UncAnsCEO appear null in the main 4-IV tables?
+          Answer: multicollinearity (r=0.77 with UncAnsMgr) + lower coverage (70.4% vs 95.8%).
+          The single-IV robustness (C1) confirms this: removing multicollinearity makes H1 STRONGER.
+  -> Q87. The non-CEO marginal * results at Industry FE could reflect residual CEO contamination
+          (firms where CEO speaks but is categorized differently) or genuine non-CEO information.
+          The evidence does not fully resolve this.

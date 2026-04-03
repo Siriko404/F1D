@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-"""Generate complete LaTeX tables for all hypothesis suites from regression .txt files.
+"""Generate LaTeX tables for the 6 thesis-scope suites.
 
-Each table includes:
-- Explicit DV column headers
-- All 4 IVs with coefficients + SEs
-- All control variables with coefficients + SEs
-- Significant coefficients in bold
-- FE indicators, N, Within-R²
+Thesis tables (6 suites): H1, H1.2, H4a, H4b, H13, H16
+Includes: DV means (regression-sample), R² footnote, two-way clustered SEs.
+Output: thesis_tables.tex + thesis_tables.pdf
 """
 
 import re
@@ -26,6 +23,7 @@ def _load_dv_means(suite_dir, col_offset=0):
     df = pd.read_csv(diag_path)
     if "dv_mean" not in df.columns:
         return {}
+    # Build lookup: raw dv name -> mean (use first row per dv)
     means = {}
     for _, row in df.iterrows():
         dv = row["dv"]
@@ -34,7 +32,7 @@ def _load_dv_means(suite_dir, col_offset=0):
     return means
 
 SUITES = [
-    # ── H1 family ──
+    # -- H1: Cash Holdings --
     {
         "id": "H1",
         "dir": "h1_cash_holdings/2026-04-03_031235",
@@ -48,54 +46,7 @@ SUITES = [
         "tail": "one",
         "hyp_dir": ">",
     },
-    {
-        "id": "H1.1",
-        "type": "moderation",
-        "dir": "h1_1_cash_tsimm/2026-04-02_124916",
-        "caption": "H1.1: Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
-        "label": "tab:h1_1",
-        "cols": 2,
-        "dvs": [
-            ("CashRatio", 2),
-        ],
-        "key_vars": [
-            "Manager_QA_Unc_c",
-            "z_log_TotalSimilarity",
-            "MgrQAUnc_x_zlogTSIMM",
-        ],
-        "key_labels": [
-            r"Manager\_QA\_Unc\_c",
-            r"z\_log\_TotalSimilarity",
-            r"MgrQAUnc\_x\_zlogTSIMM",
-        ],
-        "key_tails": ["one_pos", "two", "two"],
-        "lagged_dv_var": "Lagged_DV",
-        "lagged_dv_label": r"Lagged\_DV",
-    },
-    {
-        "id": "H1.1b",
-        "type": "moderation",
-        "dir": "h1_1b_cash_tsimm_binary/2026-04-02_124927",
-        "caption": "H1.1b: Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
-        "label": "tab:h1_1b",
-        "cols": 2,
-        "dvs": [
-            ("CashRatio", 2),
-        ],
-        "key_vars": [
-            "Manager_QA_Unc_c",
-            "HighTSIMM",
-            "MgrQAUnc_x_HighTSIMM",
-        ],
-        "key_labels": [
-            r"Manager\_QA\_Unc\_c",
-            "HighTSIMM",
-            r"MgrQAUnc\_x\_HighTSIMM",
-        ],
-        "key_tails": ["one_pos", "two", "two"],
-        "lagged_dv_var": "Lagged_DV",
-        "lagged_dv_label": r"Lagged\_DV",
-    },
+    # -- H1.2: Financial Constraint Moderation --
     {
         "id": "H1.2",
         "type": "moderation",
@@ -137,7 +88,7 @@ SUITES = [
         "lagged_dv_var": "Lagged_DV",
         "lagged_dv_label": r"Lagged\_DV",
     },
-    # ── H4 family ──
+    # -- H4a: Book Leverage --
     {
         "id": "H4a",
         "dir": "h4_leverage/2026-04-03_031328",
@@ -151,6 +102,7 @@ SUITES = [
         "tail": "two",
         "hyp_dir": None,
     },
+    # -- H4b: Debt-to-Capital --
     {
         "id": "H4b",
         "dir": "h4_leverage/2026-04-03_031328",
@@ -165,114 +117,7 @@ SUITES = [
         "tail": "two",
         "hyp_dir": None,
     },
-    # ── H5 (Wang 2020) ──
-    {
-        "id": "H5",
-        "dir": "h5b_wang_disp/2026-04-02_130908",
-        "caption": "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
-        "label": "tab:h5",
-        "cols": 12,
-        "dvs": [
-            ("DISP", 6),
-            (r"DISP\_lead", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H7 ──
-    {
-        "id": "H7",
-        "dir": "h7_illiquidity/2026-04-02_131525",
-        "caption": "H7: Speech Uncertainty and Post-Call Illiquidity",
-        "label": "tab:h7",
-        "cols": 6,
-        "dvs": [
-            (r"DeltaILLIQ", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H7b ──
-    {
-        "id": "H7b",
-        "dir": "h7b_amihud_level/2026-04-02_131541",
-        "caption": "H7b: Speech Uncertainty and Post-Call Amihud Illiquidity Level",
-        "label": "tab:h7b",
-        "cols": 6,
-        "dvs": [
-            (r"PostCallAmihud", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H11 family ──
-    {
-        "id": "H11",
-        "type": "moderation",
-        "dir": "h11_prisk_uncertainty/2026-04-02_132019",
-        "caption": "H11: Political Risk and Language Uncertainty",
-        "label": "tab:h11",
-        "cols": 4,
-        "col_files": {
-            1: "regression_results_Main_UncAnsMgr.txt",
-            2: "regression_results_Main_UncAnsCEO.txt",
-            3: "regression_results_Main_UncPreMgr.txt",
-            4: "regression_results_Main_UncPreCEO.txt",
-        },
-        "dvs": [
-            (r"QA\_Uncertainty\_pct", 2),
-            (r"Pres\_Uncertainty\_pct", 2),
-        ],
-        "col_dv_labels": ["Manager", "CEO", "Manager", "CEO"],
-        "key_vars": ["PRisk"],
-        "key_labels": ["PRisk"],
-        "key_tails": ["one_pos"],
-    },
-    {
-        "id": "H11-Lag",
-        "type": "moderation",
-        "dir": "h11_prisk_uncertainty_lag/2026-04-02_132208",
-        "caption": "H11-Lag: Lagged Political Risk and Language Uncertainty",
-        "label": "tab:h11_lag",
-        "cols": 8,
-        "col_files": {
-            1: "regression_results_Main_UncAnsMgr_lag1.txt",
-            2: "regression_results_Main_UncAnsCEO_lag1.txt",
-            3: "regression_results_Main_UncPreMgr_lag1.txt",
-            4: "regression_results_Main_UncPreCEO_lag1.txt",
-            5: "regression_results_Main_UncAnsMgr_lag2.txt",
-            6: "regression_results_Main_UncAnsCEO_lag2.txt",
-            7: "regression_results_Main_UncPreMgr_lag2.txt",
-            8: "regression_results_Main_UncPreCEO_lag2.txt",
-        },
-        "dvs": [
-            (r"PRisk\_lag", 4),
-            (r"PRisk\_lag2", 4),
-        ],
-        "col_dv_labels": [
-            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
-            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
-        ],
-        "key_vars": ["PRisk_lag", "PRisk_lag2"],
-        "key_labels": [r"PRisk\_lag", r"PRisk\_lag2"],
-        "key_tails": ["one_pos", "one_pos"],
-    },
-    # ── H12 ──
-    {
-        "id": "H12",
-        "dir": "h12_payout/2026-04-02_132912",
-        "caption": "H12: Speech Uncertainty and Quarterly Payout Ratio",
-        "label": "tab:h12",
-        "cols": 12,
-        "dvs": [
-            (r"PayoutRatio\_q", 6),
-            (r"PayoutRatio\_q\_lead\_qtr", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": "<",
-        "time_fe_label": "Year FE",
-    },
-    # ── H13 family ──
+    # -- H13: Capital Expenditure --
     {
         "id": "H13",
         "dir": "h13_capex/2026-04-03_031508",
@@ -286,64 +131,7 @@ SUITES = [
         "tail": "two",
         "hyp_dir": None,
     },
-    {
-        "id": "H13.1",
-        "type": "moderation",
-        "dir": "h13_1_competition/2026-04-02_133255",
-        "caption": "H13.1: Product Similarity--Moderated Speech Uncertainty and Capital Expenditure",
-        "label": "tab:h13_1",
-        "cols": 4,
-        "col_files": {
-            1: "regression_results_col1_Capex_tsimm.txt",
-            2: "regression_results_col3_Capex_tsimm.txt",
-            3: "regression_results_col2_Capex_lead_tsimm.txt",
-            4: "regression_results_col4_Capex_lead_tsimm.txt",
-        },
-        "dvs": [
-            ("Capex", 2),
-            (r"Capex\_lead", 2),
-        ],
-        "lagged_dv_var": "Lagged_DV",
-        "lagged_dv_label": r"Lagged\_DV",
-        "key_vars": [
-            "Manager_QA_Unc_c",
-            "z_log_TotalSimilarity",
-            "MgrQAUnc_x_zlogTSIMM",
-        ],
-        "key_labels": [
-            r"Manager\_QA\_Unc\_c",
-            r"z\_log\_TotalSimilarity",
-            r"MgrQAUnc\_x\_zlogTSIMM",
-        ],
-        "key_tails": ["two", "two", "two"],
-    },
-    # ── H14 ──
-    {
-        "id": "H14",
-        "dir": "h14_bidask_spread/2026-04-02_133911",
-        "caption": "H14: Speech Uncertainty and Bid-Ask Spread Changes",
-        "label": "tab:h14",
-        "cols": 6,
-        "dvs": [
-            ("DSPREAD", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H14b ──
-    {
-        "id": "H14b",
-        "dir": "h14b_spread_level/2026-04-02_133934",
-        "caption": "H14b: Speech Uncertainty and Post-Call Bid-Ask Spread Level",
-        "label": "tab:h14b",
-        "cols": 6,
-        "dvs": [
-            (r"PostCallSpread", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H16 ──
+    # -- H16: R&D Investment Intensity --
     {
         "id": "H16",
         "dir": "h16_rd_sales/2026-04-03_031435",
@@ -356,88 +144,6 @@ SUITES = [
         ],
         "tail": "two",
         "hyp_dir": None,
-    },
-    # ── H17 ──
-    {
-        "id": "H17",
-        "dir": "h17_repurchase_intensity/2026-04-02_134619",
-        "caption": "H17: Speech Uncertainty and Repurchase Intensity",
-        "label": "tab:h17",
-        "cols": 12,
-        "dvs": [
-            ("RepurchaseIntensity", 6),
-            (r"RepurchaseIntensity\_lead\_qtr", 6),
-        ],
-        "tail": "two",
-        "hyp_dir": None,
-    },
-    # ── H18 ──
-    {
-        "id": "H18",
-        "dir": "h18_cccl_received/2026-04-02_150950",
-        "caption": "H18: Speech Uncertainty and SEC Comment Letters",
-        "label": "tab:h18",
-        "cols": 6,
-        "dvs": [
-            (r"CCCL", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-    },
-    # ── H18b (Logit robustness) ──
-    {
-        "id": "H18b",
-        "dir": "h18b_cccl_logit/2026-04-02_151005",
-        "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
-        "label": "tab:h18b",
-        "cols": 2,
-        "dvs": [
-            (r"CCCL", 2),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
-        "r2_label": r"Pseudo~$R^2$",
-        "skip_adj_r2": True,
-    },
-    # ── H19 ──
-    {
-        "id": "H19",
-        "dir": "h19_external_funding/2026-04-02_135326",
-        "caption": "H19: Speech Uncertainty and External vs Internal Financing",
-        "label": "tab:h19",
-        "cols": 12,
-        "dvs": [
-            ("ExternalFunding", 6),
-            (r"ExternalFunding\_lead", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": "<",
-    },
-    # ── H20 ──
-    {
-        "id": "H20",
-        "dir": "h20_debt_choice/2026-04-02_135344",
-        "caption": "H20: Speech Uncertainty and Debt vs Equity Choice",
-        "label": "tab:h20",
-        "cols": 6,
-        "dvs": [
-            ("DebtChoice", 6),
-        ],
-        "tail": "two",
-        "hyp_dir": None,
-    },
-    # ── H21 ──
-    {
-        "id": "H21",
-        "dir": "h21_sec_letters/2026-04-02_135701",
-        "caption": "H21: Speech Uncertainty and SEC Comment Letter Count",
-        "label": "tab:h21",
-        "cols": 6,
-        "dvs": [
-            (r"SEC\_Letters\_fwd", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": ">",
     },
 ]
 
@@ -851,11 +557,7 @@ def generate_interaction_table(suite):
     lines.append(r" TNIC3HHI is the Hoberg-Phillips (2016) text-based Herfindahl index.")
     lines.append(r" Control coefficients shown from Manager QA regression (representative).")
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H16"}
-    if suite.get("id", "") in _twoway_ids:
-        lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
-    else:
-        lines.append(r" Standard errors (in parentheses) clustered at firm level.")
+    lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     lines.append(r" Main sample (excludes financial and utility firms).")
     lines.append(r"\end{minipage}")
     lines.append(r"\end{table}")
@@ -1126,11 +828,7 @@ def generate_moderation_table(suite):
     lines.append(r"\textit{Notes:} ")
     lines.append(tail_note)
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H16"}
-    if suite.get("id", "") in _twoway_ids:
-        lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
-    else:
-        lines.append(r" Standard errors (in parentheses) clustered at firm level.")
+    lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     lines.append(r" Main sample (excludes financial and utility firms).")
     lines.append(r" $R^2$ includes absorbed fixed effects (not within-$R^2$).")
     lines.append(r"\end{minipage}")
@@ -1337,11 +1035,7 @@ def generate_table(suite):
     lines.append(r"\vspace{2pt}\scriptsize")
     lines.append(r"\textit{Notes:} " + sig_note)
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H16"}
-    if suite.get("id", "") in _twoway_ids:
-        lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
-    else:
-        lines.append(r" Standard errors (in parentheses) clustered at firm level.")
+    lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     lines.append(r" Main sample (excludes financial and utility firms).")
     lines.append(r" $R^2$ includes absorbed fixed effects (not within-$R^2$).")
     lines.append(r"\end{minipage}")
@@ -1406,7 +1100,7 @@ def main():
             master.append(r"\clearpage")
     master.append(r"\end{document}")
 
-    tex_path = out_dir / "all_tables.tex"
+    tex_path = out_dir / "thesis_tables.tex"
     tex_path.write_text("\n".join(master), encoding="utf-8")
     print(f"\nWrote {tex_path}")
 
@@ -1419,7 +1113,7 @@ def main():
         text=True,
     )
     if result.returncode == 0:
-        print(f"SUCCESS: {out_dir / 'all_tables.pdf'}")
+        print(f"SUCCESS: {out_dir / 'thesis_tables.pdf'}")
     else:
         print("FAILED:")
         for line in result.stdout.split("\n"):
@@ -1428,7 +1122,7 @@ def main():
 
     # Cleanup aux files
     for ext in [".aux", ".log"]:
-        p = out_dir / f"all_tables{ext}"
+        p = out_dir / f"thesis_tables{ext}"
         if p.exists():
             p.unlink()
 

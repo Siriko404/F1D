@@ -63,6 +63,7 @@ from f1d.shared.variables import (
     ManagerPresUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    NonCEOManagerQAUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
     # Clarity residuals (H1 key IVs — from H0.3 upstream)
@@ -132,6 +133,9 @@ def build_call_level_panel(
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
+            var_config.get("nonceo_manager_qa_uncertainty", {})
         ),
         # Retained for downstream consumers (H0 may reuse this panel)
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(

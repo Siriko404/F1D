@@ -41,6 +41,7 @@ from f1d.shared.variables import (
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    NonCEOManagerQAUncertaintyBuilder,
     SizeBuilder,
     BookLevBuilder,
     DebtToCapitalBuilder,
@@ -190,6 +191,9 @@ def build_panel(
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
+            var_config.get("nonceo_manager_qa_uncertainty", {})
         ),
         "size": SizeBuilder(var_config.get("size", {})),
         "book_lev": BookLevBuilder(var_config.get("book_lev", {})),

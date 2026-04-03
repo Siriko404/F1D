@@ -1,0 +1,334 @@
+*** important note: manager is ALL managers, including the CEO.
+
+THESIS-SCOPE REGRESSION FINDINGS
+====================================
+6 Suites | Primary IV: UncAnsMgr | Two-way clustered (firm, time)
+SD(UncAnsMgr) = 0.3081 | Main sample: excludes financial and utility firms
+All coefficients from model_diagnostics.csv (2026-04-03).
+Significance: * p<0.10, ** p<0.05, *** p<0.01
+
+NARRATIVE ARC:
+  1. Uncertainty -> +Cash (H1) -- flagship finding
+  2. Where does cash come from? -> -Leverage (H4a, H4b)
+  3. But firms also +R&D -> growth options, not paralysis (H16)
+  4. Capex does NOT respond within-firm -> R&D != Capex under uncertainty (H13)
+  5. Who is most affected? -> information-opaque (unrated) firms (H1.2)
+
+COLUMN-TO-FE KEY (standard 12-col suites: H1, H4, H13, H16):
+  Col 1 / 7:   Industry FE + Year FE          (basic controls)
+  Col 2 / 8:   Firm FE    + Year FE            (basic controls)
+  Col 3 / 9:   Industry FE + Year FE           (extended controls)
+  Col 4 / 10:  Firm FE    + Year FE            (extended controls)
+  Col 5 / 11:  Industry FE + Year-Quarter FE   (extended controls)
+  Col 6 / 12:  Firm FE    + Year-Quarter FE    (extended controls)
+  Cols 1-6: current DV | Cols 7-12: lead DV
+
+COLUMN-TO-FE KEY (moderation 2-col suite: H1.2):
+  Col 1: Industry FE + Year FE
+  Col 2: Industry FE + Year-Quarter FE
+
+
+================================================================================
+H1: SPEECH UNCERTAINTY AND CASH HOLDINGS (Flagship)
+================================================================================
+DV: CashRatio (cols 1-6), CashRatio_lead (cols 7-12)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed (beta > 0)
+SEs: Two-way clustered (firm, time). N=56,131 (base), 53,880 (extended).
+DV Mean: CashRatio = 0.1660, CashRatio_lead = 0.1675
+One-SD(UncAnsMgr) effect: +0.0011 (col4, Firm FE) = 0.67% of mean; +0.0022 (col3, Ind FE) = 1.33% of mean
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 12 cols
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols
+  UncAnsMgr:   SIGNIFICANT -- positive
+      CashRatio:
+        col1 +0.0036**  [Ind FE, Yr FE, basic]
+        col2 +0.0034**  [Firm FE, Yr FE, basic]
+        col3 +0.0072*** [Ind FE, Yr FE, extended]
+        col4 +0.0036**  [Firm FE, Yr FE, extended]
+        col5 +0.0044**  [Ind FE, YrQtr FE, extended]
+        col6 +0.0036**  [Firm FE, YrQtr FE, extended]
+      CashRatio_lead:
+        col9 +0.0065*** [Ind FE, Yr FE, extended] -- 1 of 6 cols
+  UncPreMgr:   NO SIGNIFICANCE across all 12 cols
+
+RESULT: UncAnsMgr is the sole significant IV. Robust across all 6 current-DV specs (** to ***).
+        Lead DV: 1 of 6 specs (col9, ***).
+        Economic magnitude: small (0.67-1.33% of mean), consistent with BKS (2009) corporate cash literature.
+
+
+================================================================================
+H4a: SPEECH UNCERTAINTY AND BOOK LEVERAGE
+================================================================================
+DV: Leverage (cols 1-6), Leverage_lead (cols 7-12)
+    Formula: Leverage = (dlcq + dlttq) / atq
+      dlcq  = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq = Long-Term Debt (Compustat Quarterly)
+      atq   = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF); Rajan & Zingales (1995, JF)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=56,131 (base), 53,880 (extended).
+DV Mean: Leverage = 0.2307, Leverage_lead = 0.2348
+One-SD(UncAnsMgr) effect on Leverage_lead: -0.0026 (col10, Firm FE) = 1.12% of mean
+
+  UncAnsCEO:   SIGNIFICANT for Leverage_lead -- positive (OPPOSITE sign to UncAnsMgr)
+      Leverage_lead:
+        col7  +0.0068** [Ind FE, Yr FE, basic]
+        col8  +0.0052*  [Firm FE, Yr FE, basic]
+        col9  +0.0070** [Ind FE, Yr FE, extended]
+        col10 +0.0055*  [Firm FE, Yr FE, extended]
+        col11 +0.0068** [Ind FE, YrQtr FE, extended]
+        col12 +0.0055** [Firm FE, YrQtr FE, extended]
+  UncAnsMgr:   SIGNIFICANT for lead DV only -- negative
+      Leverage: NOT SIGNIFICANT (lost marginal * under two-way clustering)
+      Leverage_lead:
+        col7  -0.0071** [Ind FE, Yr FE, basic]
+        col8  -0.0090** [Firm FE, Yr FE, basic]
+        col9  -0.0090** [Ind FE, Yr FE, extended]
+        col10 -0.0085** [Firm FE, Yr FE, extended]
+        col11 -0.0067*  [Ind FE, YrQtr FE, extended]
+        col12 -0.0079** [Firm FE, YrQtr FE, extended]
+
+RESULT: Lead-concentrated leverage effect. UncAnsMgr predicts lower future leverage (6/6 specs, ** or *).
+        UncAnsCEO predicts HIGHER future leverage (opposite sign). The balance sheet adjustment
+        follows speech uncertainty with a one-quarter lag.
+
+
+================================================================================
+H4b: SPEECH UNCERTAINTY AND DEBT-TO-CAPITAL
+================================================================================
+DV: DebtToCapital (cols 1-6), DebtToCapital_lead (cols 7-12)
+    Formula: DebtToCapital = (dlcq + dlttq) / (seqq + dlcq + dlttq)
+      dlcq  = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq = Long-Term Debt (Compustat Quarterly)
+      seqq  = Stockholders' Equity (Compustat Quarterly)
+      Reference: Rajan & Zingales (1995, JF)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=55,950 (base), 53,713 (extended).
+DV Mean: DebtToCapital = 0.3384, DebtToCapital_lead = 0.3461
+One-SD(UncAnsMgr) effect on DebtToCapital_lead: -0.0063 (col9, Ind FE) = 1.82% of mean
+
+  UncAnsCEO:   NEAR-NULL under two-way clustering (collapsed from 7 to 1 spec)
+      DebtToCapital_lead:
+        col12 +0.0074*  [Firm FE, YrQtr FE, extended] -- only surviving spec
+  UncAnsMgr:   SIGNIFICANT for lead DV -- negative
+      DebtToCapital:
+        col3 -0.0060*   [Ind FE, Yr FE, extended] -- only 1 of 6
+      DebtToCapital_lead:
+        col7  -0.0145** [Ind FE, Yr FE, basic]
+        col8  -0.0125*  [Firm FE, Yr FE, basic]
+        col9  -0.0204***[Ind FE, Yr FE, extended]
+        col10 -0.0126*  [Firm FE, Yr FE, extended]
+        col11 -0.0137** [Ind FE, YrQtr FE, extended]
+        col12 -0.0114*  [Firm FE, YrQtr FE, extended]
+
+RESULT: Corroborates H4a with market-based leverage measure. Lead-concentrated, negative.
+        UncAnsCEO nearly vanished under two-way clustering (7 specs -> 1).
+        Largest casualty of double-clustering across thesis suites.
+
+
+================================================================================
+H16: SPEECH UNCERTAINTY AND R&D INVESTMENT INTENSITY
+================================================================================
+DV: RDSales (cols 1-6), RDSales_lead (cols 7-12)
+    Formula: RDSales = xrdy_Q4 / saley_Q4
+      xrdy  = Research and Development Expense, annual (Compustat Annual via Q4)
+      saley = Sales/Turnover (Net), annual (Compustat Annual via Q4)
+      Reference: Bates, Kahle & Stulz (2009, JF); Jiang, John & Larsen (2021, RQFA)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=56,130 (base), 53,892 (extended).
+DV Mean: RDSales = 0.0645, RDSales_lead = 0.0658
+One-SD(UncAnsMgr) effect: +0.0112 (col3, Ind FE) = 17.4% of mean; +0.0071 (col4, Firm FE) = 11.0% of mean
+
+  UncAnsCEO:   MARGINAL -- negative (Firm FE + extended only)
+      RDSales:
+        col4 -0.0151*  [Firm FE, Yr FE, extended]
+        col6 -0.0145*  [Firm FE, YrQtr FE, extended]
+  UncAnsMgr:   SIGNIFICANT for current DV -- positive (ALL 6 COLS)
+      RDSales:
+        col1 +0.0440** [Ind FE, Yr FE, basic]
+        col2 +0.0255** [Firm FE, Yr FE, basic]
+        col3 +0.0364*** [Ind FE, Yr FE, extended]
+        col4 +0.0232** [Firm FE, Yr FE, extended]
+        col5 +0.0401** [Ind FE, YrQtr FE, extended]
+        col6 +0.0215** [Firm FE, YrQtr FE, extended]
+      RDSales_lead: Not significant
+
+RESULT: Most robust result alongside H1. ALL 6 specs significant (** to ***) for current DV.
+        Effect vanishes for lead. Magnitudes are LARGE: 11-17% of DV mean.
+        This is the growth-options channel: uncertainty predicts higher R&D (exploration), not capex (commitment).
+
+
+================================================================================
+H13: SPEECH UNCERTAINTY AND CAPITAL EXPENDITURE (Contrast)
+================================================================================
+DV: Capex (cols 1-6), Capex_lead (cols 7-12)
+    Formula: Capex = capxy_Q4 / atq
+      capxy = Capital Expenditures, fiscal-year cumulative (Compustat Annual via Q4)
+      atq   = Total Assets, contemporaneous (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: Two-tailed
+SEs: Two-way clustered (firm, time). N=56,114 (base), 53,864 (extended).
+DV Mean: Capex = 0.0487, Capex_lead = 0.0481
+One-SD(UncAnsMgr) effect on Capex: +0.0006 (col3, Ind FE) = 1.24% of mean
+
+  UncAnsCEO:   SIGNIFICANT for Capex under Firm FE only -- positive
+      Capex:
+        col2 +0.0015*** [Firm FE, Yr FE, basic]
+        col4 +0.0015*** [Firm FE, Yr FE, extended]
+        col6 +0.0014*** [Firm FE, YrQtr FE, extended]
+  UncAnsMgr:   SIGNIFICANT -- positive (Industry FE only, vanishes under Firm FE)
+      Capex:
+        col3 +0.0020*** [Ind FE, Yr FE, extended] -- only 1 of 6
+      Capex_lead:
+        col7  +0.0028** [Ind FE, Yr FE, basic]
+        col9  +0.0050***[Ind FE, Yr FE, extended]
+        col11 +0.0029***[Ind FE, YrQtr FE, extended]
+
+RESULT: H13 is the CONTRAST to H16. Capex (irreversible investment) dies under Firm FE for UncAnsMgr.
+        This confirms Dixit & Pindyck (1994) real options prediction for irreversible investment.
+        R&D survives within-firm (H16) but capex does not — different investment types respond differently.
+        UncAnsCEO shows the opposite: significant ONLY under Firm FE (3 specs, ***).
+
+
+================================================================================
+H1.2: FINANCIAL CONSTRAINT-MODERATED CASH HOLDINGS (Mechanism)
+================================================================================
+DV: CashRatio (2 base + 2 interaction cols)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed for base IV (beta > 0); two-tailed for categories & interactions
+SEs: Two-way clustered (firm, time). N=67,487.
+DV Mean: CashRatio = 0.1716
+One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
+
+  Manager_QA_Unc_c (base specs):  SIGNIFICANT -- positive
+      col1 +0.0057*** [Ind FE, Yr FE]
+      col2 +0.0055*** [Ind FE, YrQtr FE]
+  MgrQAUnc_x_IG:       NOT SIGNIFICANT
+  MgrQAUnc_x_BelowIG:  NOT SIGNIFICANT
+  MgrQAUnc_x_Unrated:  SIGNIFICANT -- positive
+      col1 +0.0068*** [Ind FE, Yr FE]
+      col2 +0.0073*** [Ind FE, YrQtr FE]
+
+RESULT: Unrated firms (no credit rating = highest information opacity) show an amplified
+        uncertainty-cash link. IG and BelowIG interactions are null. The moderation story is
+        about INFORMATION OPACITY, not credit risk per se. This is the mechanism channel:
+        uncertainty predicts higher cash holdings in firms where external stakeholders have the
+        least information about the firm's prospects.
+
+
+================================================================================
+================================================================================
+CROSS-SUITE NARRATIVE
+================================================================================
+================================================================================
+
+THE STORY: Linguistic uncertainty in earnings conference calls predicts a coherent
+equilibrium response in corporate financial decisions:
+
+1. +CASH (H1): Firms whose managers sound more uncertain hold more cash. The effect is
+   contemporaneous and robust across all fixed-effect structures. Economic magnitude is
+   small but consistent with the corporate cash literature (0.67-1.33% of DV mean).
+
+2. -LEVERAGE (H4a, H4b): Uncertainty predicts lower FUTURE leverage (lead-concentrated).
+   Both book leverage and debt-to-capital show the same pattern. The balance sheet
+   adjustment lags the uncertainty signal by one quarter.
+
+3. +R&D (H16): Uncertainty predicts HIGHER R&D spending. This is the growth-options channel:
+   R&D is exploratory and option-like (capped downside, unlimited upside). Firms invest
+   in R&D to explore and resolve uncertainty. Effect is large (11-17% of DV mean) and
+   survives both Industry and Firm FE.
+
+4. CAPEX DOES NOT RESPOND WITHIN-FIRM (H13): Capital expenditure — irreversible, committed
+   investment — shows UncAnsMgr significance at Industry FE only, dying under Firm FE.
+   This confirms Dixit & Pindyck (1994): irreversible investment is deferred under
+   uncertainty. The contrast with H16 is the key insight: R&D (exploration) increases
+   while capex (commitment) does not.
+
+5. INFORMATION OPACITY AMPLIFIES (H1.2): The uncertainty-cash link is strongest for
+   unrated firms — those with highest information opacity. This provides the mechanism:
+   uncertainty matters most where external monitoring is weakest.
+
+TIMING: Cash and R&D are contemporaneous. Leverage is lead-concentrated. Consistent with
+an immediate response (hoard cash + explore via R&D) followed by a delayed balance sheet
+adjustment (reduce debt next quarter).
+
+
+================================================================================
+ROBUSTNESS SUMMARY
+================================================================================
+
+C1: SINGLE-IV (UncAnsMgr only, N~74-78K vs main ~56K)
+  H1: 6/6 *** current + 6/6 lead (STRONGER than main). Multicollinearity was suppressing lead.
+  H4: Leverage completely null. DebtToCapital 3/6 marginal current.
+  H13: 3/6 Industry FE current + 3/6 lead. Pattern unchanged.
+  H16: 3/6 Industry FE current + 1/6 lead. Pattern unchanged.
+
+C2: NoCEO DECOMPOSITION (UncAnsNoCEO + UncAnsCEO)
+  H1: UncAnsNoCEO 2/12 marginal *, UncAnsCEO 10/12 dominant.
+  CEO drives the cash holdings signal. UncAnsMgr dominance is a coverage artifact
+  (95.8% vs 70.4% availability). See Pattern 10 in fishing deck for full analysis.
+
+C3: NO-LAGGED-DV (H1, H16)
+  H1: 3/12 (Firm FE current specs **). UncPreMgr emerges at 6/12 ** (lagged DV was absorbing it).
+  H16: 8/12 (much stronger without lagged DV).
+  Main-table results are conservative — lagged DV absorbs part of the IV effect.
+
+C4: CEO PRESENCE PROBIT
+  CEO absent in ~26-30% of calls. Predictors of absence: larger firms, lower leverage,
+  lower ROA, higher Tobin's Q. Pseudo R2 = 0.022 (mostly idiosyncratic).
+
+C5: PRisk AR(1)
+  rho = 0.30 (moderate persistence). Supports H11 "construct validation" framing.
+
+
+================================================================================
+NoCEO DECOMPOSITION FINDING
+================================================================================
+
+When UncAnsMgr is decomposed into UncAnsNoCEO (non-CEO managers) + UncAnsCEO (CEO only),
+the results REVERSE the main-table pattern:
+
+  H1 (Cash Holdings): UncAnsCEO 10/12 significant, UncAnsNoCEO 2/12 marginal *
+  H16 (R&D):          UncAnsCEO 6/12 significant, UncAnsNoCEO 3/12 marginal *
+  H13 (Capex):        UncAnsCEO 2/12 (**), UncAnsNoCEO 2/12 marginal *
+  H4 (Leverage):      UncAnsCEO 1/24 marginal, UncAnsNoCEO 0/24
+
+The CEO drives the underlying signal, not the management team. UncAnsMgr's apparent
+superiority in the main tables is a coverage artifact:
+  UncAnsMgr coverage: 95.8% of calls (84,484/88,205)
+  UncAnsCEO coverage: 70.4% of calls (62,132/88,205)
+
+UncAnsMgr captures the CEO signal PLUS has 39% more observations, making it a more
+ROBUST predictor by virtue of coverage, not because non-CEO managers drive the result.
+
+HONEST FRAMING: "UncAnsMgr is the preferred measure for its statistical robustness and
+superior coverage. The NoCEO decomposition reveals that the CEO component carries the
+primary signal. Non-CEO managers contribute only marginal Industry-FE significance,
+which may reflect residual CEO contamination or genuine but weak non-CEO information."
+
+
+================================================================================
+STANDARDIZED EFFECTS SUMMARY
+================================================================================
+
+  | Suite | DV (benchmark spec)           | Beta    | One-SD Effect | % of DV Mean |
+  | H1    | CashRatio (col4, Firm FE ext) | +0.0036 | +0.0011       | 0.67%        |
+  | H1    | CashRatio (col3, Ind FE ext)  | +0.0072 | +0.0022       | 1.33%        |
+  | H4a   | Leverage_lead (col10, Firm FE)| -0.0085 | -0.0026       | 1.12%        |
+  | H4b   | DtC_lead (col9, Ind FE ext)   | -0.0204 | -0.0063       | 1.82%        |
+  | H16   | RDSales (col3, Ind FE ext)    | +0.0364 | +0.0112       | 17.4%        |
+  | H16   | RDSales (col4, Firm FE ext)   | +0.0232 | +0.0071       | 11.0%        |
+  | H13   | Capex (col3, Ind FE ext)      | +0.0020 | +0.0006       | 1.24%        |
+  | H1.2  | x_Unrated (col1, Ind FE)      | +0.0068 | +0.0021       | 1.23%        |
+
+H16 magnitudes (11-17%) are notably large and warrant scrutiny (see Decision 3 in
+revision_decisions.md for investigation notes on R&D heavy-tailed distribution).
+H1, H4a/b, H13 magnitudes (0.67-1.82%) are small, consistent with the corporate finance
+literature where effects of 1-2% of DV mean are standard.

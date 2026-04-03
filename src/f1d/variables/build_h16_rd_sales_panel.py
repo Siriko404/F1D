@@ -52,6 +52,7 @@ from f1d.shared.variables import (
     # 4 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    NonCEOManagerQAUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     # Base controls (Compustat engine)
@@ -115,6 +116,9 @@ def build_call_level_panel(
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
+            var_config.get("nonceo_manager_qa_uncertainty", {})
         ),
         "manager_qa_uncertainty": ManagerQAUncertaintyBuilder(
             var_config.get("manager_qa_uncertainty", {})
