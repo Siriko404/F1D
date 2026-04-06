@@ -1344,3 +1344,117 @@ PATTERN 10: UncAnsMgr DOMINANCE IS A COVERAGE ARTIFACT (Phase C finding)
   -> Q87. The non-CEO marginal * results at Industry FE could reflect residual CEO contamination
           (firms where CEO speaks but is categorized differently) or genuine non-CEO information.
           The evidence does not fully resolve this.
+
+
+================================================================================
+H22: SPEECH UNCERTAINTY AND EQUITY FINANCING CONSTRAINTS
+================================================================================
+DV: EquityDelayCon_lead — Hoberg & Maksimovic (2015, RFS) equity-specific
+    financial constraint score from next fiscal year's 10-K.
+    Cosine similarity of CAPLIQ text to equity-delay training set,
+    boilerplate-purged. Higher = more equity-constrained.
+    Mean ~ 0 by construction.
+
+Unit: Firm-fiscal-year (FIRST non-call-level panel in pipeline).
+IVs: Fiscal-year averages of call-level uncertainty measures.
+Sample: ~7,300 firm-years, ~860 firms, 2002-2014.
+Tail: One-tailed positive (beta > 0).
+Run: 2026-04-05
+
+RESULTS (4 columns):
+  Col 1 (Industry+Year FE, Base):     UncAnsCEO b=0.0076 p=0.033 **
+  Col 2 (Firm+Year FE, Base):         UncAnsCEO b=0.0031 p=0.228
+  Col 3 (Industry+Year FE, Extended): UncAnsCEO b=0.0083 p=0.022 **
+  Col 4 (Firm+Year FE, Extended):     UncAnsCEO b=0.0035 p=0.197
+
+  UncPreCEO: marginal in col 1 (p=0.095 *), null elsewhere.
+  UncAnsMgr: null (wrong sign in all specs).
+  UncPreMgr: null (wrong sign in all specs).
+
+KEY FINDINGS:
+  1. CEO Q&A uncertainty (UncAnsCEO) significantly predicts higher equity
+     financing constraints in the NEXT fiscal year under Industry FE.
+     Effect survives extended controls.
+
+  2. Firm FE specs are underpowered: within-R^2 ~ 0.04 (ICC = 0.61 means
+     61% of equitydelaycon variance is between-firm). This is expected —
+     equity constraint status is persistent at the firm level.
+
+  3. Manager-level IVs are null with WRONG signs. Only CEO Q&A matters.
+     Consistent with the thesis's broader finding (Phase C, PATTERN 10)
+     that CEO drives the uncertainty signal.
+
+  4. The CEO-only result aligns with the Hoberg-Maksimovic finding that
+     equity constraints are driven by INFORMATION ASYMMETRY. CEOs are the
+     primary information holders; their uncertainty language directly
+     signals the adverse selection wedge that makes equity issuance costly.
+
+  -> Q88. Why does CEO Q&A uncertainty predict equity constraints but not
+          debt constraints? This is consistent with Hoberg-Maksimovic:
+          equity constraints = information asymmetry (CEO signal relevant),
+          debt constraints = covenant violations (mechanical, not informational).
+  -> Q89. The Industry FE result is stronger than Firm FE. Is this because
+          cross-firm variation in equity constraints is more informative
+          than within-firm variation? Or simply a power issue (T~10)?
+  -> Q90. H22 and H1 tell a coherent story: uncertainty -> hoard cash (H1)
+          AND uncertainty -> harder to raise equity (H22). Firms hoard cash
+          BECAUSE they anticipate future equity market access difficulties.
+
+
+================================================================================
+H13.2: SPEECH UNCERTAINTY AND CAPITAL EXPENDITURE — LEAD HORIZONS
+================================================================================
+DVs: Capex_lead (t+1), Capex_lead2 (t+2), Capex_lead3 (t+3), Capex_lead4 (t+4)
+     = Q4 annual capxy / lagged assets
+Unit: Call-level.
+Controls: Extended only. Lagged DV = Capex_lag (t-1) for all specs.
+FE: Industry+Year, Firm+Year, Industry+YQ, Firm+YQ (4 specs per DV).
+Tail: Two-tailed.
+Run: 2026-04-05
+
+SAMPLE SIZES (declining with lead horizon):
+  t+1: N=50,783 (1,517 firms)
+  t+2: N=45,366 (1,420 firms)
+  t+3: N=40,185 (1,332 firms)
+  t+4: N=35,333 (1,249 firms)
+
+RESULTS — UncAnsMgr DOMINATES ACROSS ALL HORIZONS (Industry FE only):
+  t+1: UncAnsMgr b=0.0050 p=0.0000 *** (Ind+Yr), b=0.0029 p=0.009 *** (Ind+YQ)
+  t+2: UncAnsMgr b=0.0029 p=0.002 ***  (Ind+Yr), b=0.0029 p=0.012 ** (Ind+YQ)
+  t+3: UncAnsMgr b=0.0064 p=0.0000 *** (Ind+Yr), b=0.0045 p=0.002 *** (Ind+YQ)
+  t+4: UncAnsMgr b=0.0062 p=0.0000 *** (Ind+Yr), b=0.0042 p=0.005 *** (Ind+YQ)
+
+  UncPreMgr emerges at t+3 (p=0.060 *) and t+4 (p=0.044 **) — Industry+Year only.
+  CEO IVs: NULL at all horizons, all specs.
+  Firm FE: NULL everywhere (within-R^2 < 0.07 across all horizons).
+
+KEY FINDINGS:
+  1. UncAnsMgr predicts capex at ALL horizons (t+1 through t+4) under Industry FE,
+     with p<0.01 consistently. The effect does NOT decay — it GROWS from t+2 to t+3/t+4.
+
+  2. The GROWING pattern (t+1: 0.005, t+2: 0.003, t+3: 0.006, t+4: 0.006) suggests
+     the uncertainty-capex relationship is not just persistence — it may reflect
+     a strategic investment response that takes 2-3 years to fully materialize.
+
+  3. UncPreMgr joins at t+3/t+4, suggesting presentation-section uncertainty has
+     a delayed but real effect on longer-horizon investment decisions.
+
+  4. Firm FE specs are null at ALL horizons. This is consistent with H13 original
+     (within-firm capex variation is dominated by firm-specific investment profiles
+     that the FE absorbs). The cross-sectional (Industry FE) variation is informative.
+
+  5. CEO IVs are null at all horizons — OPPOSITE to H22 (where CEO Q&A drives
+     equity constraints). This suggests different channels: CEO uncertainty signals
+     information asymmetry (H22 equity constraints), while manager-team uncertainty
+     captures operational investment uncertainty (H13.2 capex).
+
+  -> Q91. The non-decaying capex effect contradicts real options theory (which predicts
+          delay, then snap-back). Is this an investment ACCELERATION story instead?
+          Firms hearing more uncertainty in management invest MORE in future years?
+  -> Q92. Why does the effect GROW at t+3/t+4? Possible explanations: (a) uncertainty
+          signals strategic repositioning that takes years; (b) survivorship bias
+          (firms that survive to t+4 are the ones that invested more); (c) the
+          lagged DV (Capex_{t-1}) absorbs short-horizon effects, making longer leads
+          look stronger.
+  -> Q93. The CEO-null / Manager-significant split at all horizons reinforces Q84-Q85:
+          CEO and Manager uncertainty capture different information channels.

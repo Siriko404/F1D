@@ -1,0 +1,1861 @@
+ ▐▛███▜▌   Claude Code v2.1.87
+▝▜█████▛▘  Opus 4.6 (1M context) · Claude Max
+  ▘▘ ▝▝    ~\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datas…
+
+✻ Conversation compacted (ctrl+o for history)
+
+
+❯ /compact                                                                      
+  ⎿  Compacted (ctrl+o to see full summary)
+  ⎿  Referenced file generate_all_tables.py
+  ⎿  Referenced file all_tables.tex
+  ⎿  Read econometric\h1_1b_cash_tsimm_binary\2026-03-31_155928\regression_resul
+     ts_col2.txt (59 lines)
+  ⎿  Read econometric\h1_1b_cash_tsimm_binary\2026-03-31_155928\regression_resul
+     ts_col1.txt (59 lines)
+  ⎿  Read econometric\h13_1_competition\2026-03-31_155548\regression_results_col
+     4_CapexAt_lead_tsimm.txt (58 lines)
+  ⎿  Plan file referenced (~\.claude\plans\magical-bouncing-locket.md)
+
+❯ okay. C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets 
+\Datasets\Data_Processing\F1D\outputs\findings.txt check this. your task is to  
+rewrite this txt file, in a more systematic organized way. it must show which   
+IndepV with which FE it was significant, what was the sign of the coef, how     
+many stars, for which DV. then asking questions, if only manager is sig, why    
+not CEO and vice versa. if the signs are different, or the qa vs pres, etc.     
+analyze thoroughly and make the file complete. the goal now is not to answer    
+the questions. we want to record the findings explicitely and record the open   
+questions which are made by them. you must mention ALL suites, even if they     
+dont have any signnificances (just record No Significance across any IV).       
+
+● Let me start by reading the current findings file and the table generator to
+  understand all suites and their results.
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me read the SUITES config and then systematically pull the regression
+  results for all 17 suites.
+
+  Read 1 file (ctrl+o to expand)
+
+● Now I need to read the actual regression outputs for all 17 suites. Let me
+  first check the file structure for the standard suites.
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me quickly check the IV/FE mapping for each column in the standard suites.
+
+● Bash(for i in 1 2 3 4 5 6 7 8 9 10 11 12; do echo "=== Col $i ==="; head -8
+      "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/D
+      atasets/Data_Pr…)
+  ⎿  === Col 1 ===
+     DV: CashHoldings
+     FE: industry
+     … +33 lines (ctrl+o to expand)
+
+● Bash(for i in 1 2 3 4 5 6 7 8 9 10 11 12; do echo "=== Col $i ==="; head -8
+      "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/D
+      atasets/Data_Pr…)
+  ⎿  === Col 1 ===
+     DV: CashHoldings
+     FE: industry
+     … +33 lines (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ are you stuck?                                                                
+
+● No, just being inefficient. Let me extract everything at once with a script.
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ no scripts. you can read the results from the latex file                      
+
+● Good call. Let me read the compiled LaTeX output directly.
+
+  Read 1 file (ctrl+o to expand)
+
+● I now have all 17 tables. Let me write the comprehensive findings file.
+
+● Write(outputs\findings.txt)
+  ⎿  Added 482 lines, removed 48 lines
+        1 +COMPREHENSIVE REGRESSION FINDINGS                             
+        2 +===================================                           
+        3 +17 Suites | 4 IVs: CEO_QA, CEO_Pres, Manager_QA, Manager_Pres 
+        4 +Significance: * p<0.10, ** p<0.05, *** p<0.01                 
+        5 +Standard 12-col layout: Ind/Firm FE x Basic/Extended/Extended 
+          +x Yr/Yr/YrQtr FE x Current/Lead DV                            
+        6 +Standard 6-col layout:  Same but no Lead DV                   
+        7 +Moderation suites: Industry FE only, Yr vs YrQtr FE           
+        8  
+        2 -===========================                                   
+        9 +All coefficients and stars extracted directly from all_tables.
+          +tex (2026-03-31).                                             
+       10  
+       11  
+        5 -h1 Manager QA Uncertainty pct for t                           
+       12 +==============================================================
+          +==================                                            
+       13 +H1: SPEECH UNCERTAINTY AND CASH HOLDINGS                      
+       14 +==============================================================
+          +==================                                            
+       15 +DV: CashHoldings (cols 1-6), CashHoldings_lead (cols 7-12)    
+       16 +Tail: One-tailed (beta > 0)                                   
+       17  
+        7 -***                                                           
+        8 -why (channel)                                                 
+        9 -why not Pres                                                  
+       10 -why not CEO                                                   
+       18 +  CEO_QA:      NO SIGNIFICANCE across all 12 cols             
+       19 +  CEO_Pres:    NO SIGNIFICANCE across all 12 cols             
+       20 +  Manager_QA:  SIGNIFICANT -- positive                        
+       21 +      CashHoldings:      col1 +0.0039** col2 +0.0041*** col3 +
+          +0.0068*** col4 +0.0045*** col5 +0.0045*** col6 +0.0045***     
+       22 +      CashHoldings_lead: col9 +0.0050* only (1 of 6 cols)     
+       23 +  Manager_Pres: NO SIGNIFICANCE across all 12 cols            
+       24  
+       12 -H1.1 and H1.1b competition interaction does not explain       
+       13 -H1.2 Unrated interaction is sig                               
+       25 +SUMMARY: Manager_QA is the sole significant IV for current Cas
+          +hHoldings (robust across all 6 specs).                        
+       26 +         Lead DV shows marginal significance in only 1 of 6 sp
+          +ecs.                                                          
+       27  
+       28 +OPEN QUESTIONS:                                               
+       29 +  Q1. Why does Manager_QA drive cash but CEO_QA does not? QA s
+          +ection has both CEO and managers -- what distinguishes the man
+          +ager signal?                                                  
+       30 +  Q2. Why is Manager_Pres (prepared remarks) completely insign
+          +ificant? Is the QA section the only informative channel?      
+       31 +  Q3. Why does significance largely vanish for the lead DV? Is
+          + the cash-hoarding response contemporaneous only?             
+       32  
+       33  
+       17 -===========================                                   
+       34 +==============================================================
+          +==================                                            
+       35 +H1.1: PRODUCT SIMILARITY-MODERATED CASH HOLDINGS (continuous T
+          +SIMM)                                                         
+       36 +==============================================================
+          +==================                                            
+       37 +DV: CashHoldings (2 cols: Industry+Yr, Industry+YrQtr)        
+       38 +Tail: One-tailed for Manager_QA_Unc_c (beta > 0); two-tailed f
+          +or moderator & interaction                                    
+       39  
+       40 +  Manager_QA_Unc_c:      SIGNIFICANT +0.0049*** / +0.0050*** (
+          +both cols)                                                    
+       41 +  z_log_tnic3tsimm:      SIGNIFICANT +0.0047*** / +0.0045*** (
+          +both cols)                                                    
+       42 +  MgrQAUnc_x_zlogTSIMM:  NOT SIGNIFICANT (0.0015 / 0.0015)    
+       43  
+       44 +SUMMARY: Main effects of both uncertainty and product similari
+          +ty are strong, but the                                        
+       45 +         interaction is NOT significant. Competition does not 
+          +moderate the uncertainty-cash link.                           
+       46  
+       21 -H4a Book Leverage                                             
+       47 +OPEN QUESTIONS:                                               
+       48 +  Q4. If TSIMM doesn't moderate, why do both main effects load
+          + so strongly? Possible omitted moderator?                     
+       49 +  Q5. Does the lack of interaction mean competition channels a
+          +re independent of uncertainty channels?                       
+       50  
+       23 -CEO QA is sig positive for t+1                                
+       24 -Manager QA is sig negative for t+1                            
+       51  
+       26 -***                                                           
+       27 -why different signs                                           
+       28 -why not pres                                                  
+       52 +==============================================================
+          +==================                                            
+       53 +H1.1b: BINARY PRODUCT SIMILARITY-MODERATED CASH HOLDINGS      
+       54 +==============================================================
+          +==================                                            
+       55 +DV: CashHoldings (2 cols: Industry+Yr, Industry+YrQtr)        
+       56 +Tail: One-tailed for Manager_QA_Unc_c (beta > 0); two-tailed f
+          +or moderator & interaction                                    
+       57  
+       58 +  Manager_QA_Unc_c:         SIGNIFICANT +0.0050*** / +0.0051**
+          +* (both cols)                                                 
+       59 +  HighTSIMM:                SIGNIFICANT +0.0048*** / +0.0046**
+          +* (both cols)                                                 
+       60 +  MgrQAUnc_x_HighTSIMM:    NOT SIGNIFICANT (0.0004 / 0.0005)  
+       61  
+       62 +SUMMARY: Identical pattern to H1.1. Binary split does not resc
+          +ue the interaction.                                           
+       63  
+       64 +OPEN QUESTIONS:                                               
+       65 +  Q6. Same as Q4-Q5. Both continuous and binary TSIMM fail to 
+          +moderate. Is this a definitive null?                          
+       66  
+       33 -H4b Debt to cap (market leverage)                             
+       67  
+       35 -Mgr qa sig negative for t+1                                   
+       36 -ceo qa loses significance majorly                             
+       68 +==============================================================
+          +==================                                            
+       69 +H1.2: FINANCIAL CONSTRAINT-MODERATED CASH HOLDINGS (Three-Cate
+          +gory)                                                         
+       70 +==============================================================
+          +==================                                            
+       71 +DV: CashHoldings (2 cols: Industry+Yr, Industry+YrQtr)        
+       72 +Tail: One-tailed for base IV (beta > 0); two-tailed for catego
+          +ries & interactions                                           
+       73  
+       38 -***                                                           
+       39 -why the significance loss                                     
+       74 +  Manager_QA_Unc_c:     SIGNIFICANT +0.0055*** / +0.0053*** (b
+          +oth cols)                                                     
+       75 +  MgrQAUnc_x_IG:        NOT SIGNIFICANT                       
+       76 +  BelowIG:              col1 +0.0039*** only (loses sig in col
+          +2)                                                            
+       77 +  Unrated:              col1 +0.0059*** only (loses sig in col
+          +2)                                                            
+       78 +  MgrQAUnc_x_BelowIG:  NOT SIGNIFICANT                        
+       79 +  MgrQAUnc_x_Unrated:  SIGNIFICANT +0.0071*** / +0.0075*** (bo
+          +th cols)                                                      
+       80  
+       81 +SUMMARY: The interaction with Unrated status is significant an
+          +d robust. Firms without                                       
+       82 +         credit ratings show an amplified uncertainty-cash lin
+          +k. IG and BelowIG interactions are null.                      
+       83  
+       42 -=============================                                 
+       84 +OPEN QUESTIONS:                                               
+       85 +  Q7. Why does the Unrated interaction work but TSIMM (H1.1/H1
+          +.1b) does not?                                                
+       86 +      Unrated firms face higher info asymmetry -- is this the 
+          +underlying channel?                                           
+       87 +  Q8. BelowIG interaction is null. Is the constraint story rea
+          +lly about information opacity (unrated) rather than credit ris
+          +k (below IG)?                                                 
+       88  
+       89  
+       45 -H5 wang                                                       
+       90 +==============================================================
+          +==================                                            
+       91 +H4a: SPEECH UNCERTAINTY AND BOOK LEVERAGE                     
+       92 +==============================================================
+          +==================                                            
+       93 +DV: BookLev (cols 1-6), BookLev_lead (cols 7-12)              
+       94 +Tail: Two-tailed                                              
+       95  
+       47 -Manager Pres and QA is sig not both t and t+1                 
+       96 +  CEO_QA:      SIGNIFICANT for BookLev_lead ONLY -- positive  
+       97 +      BookLev:      Not significant                           
+       98 +      BookLev_lead: col7 +0.0066** col8 +0.0050* col9 +0.0066*
+          +* col10 +0.0051* col11 +0.0065** col12 +0.0051*               
+       99 +  CEO_Pres:    NO SIGNIFICANCE across all 12 cols             
+      100 +  Manager_QA:  SIGNIFICANT -- negative                        
+      101 +      BookLev:      col2 -0.0034* only (1 of 6)               
+      102 +      BookLev_lead: col7 -0.0068* col8 -0.0086** col9 -0.0077*
+          +* col10 -0.0078** col12 -0.0072** (5 of 6)                    
+      103 +  Manager_Pres: NO SIGNIFICANCE across all 12 cols            
+      104  
+       49 -***                                                           
+       50 -why not CEO                                                   
+      105 +SUMMARY: CEO_QA and Manager_QA both significant for lead lever
+          +age -- but with OPPOSITE signs.                               
+      106 +         CEO_QA = positive (more uncertainty -> more leverage 
+          +next period)                                                  
+      107 +         Manager_QA = negative (more uncertainty -> less lever
+          +age next period)                                              
+      108  
+      109 +OPEN QUESTIONS:                                               
+      110 +  Q9.  OPPOSITE SIGNS: Why does CEO uncertainty predict higher
+          + future leverage while manager uncertainty predicts lower?    
+      111 +       Possible: CEO uncertainty reflects strategic positionin
+          +g (signaling willingness to take risk),                       
+      112 +       while manager uncertainty reflects operational caution?
+      113 +  Q10. Why are both effects concentrated in the LEAD DV? Is le
+          +verage adjustment slow?                                       
+      114 +  Q11. Why is Manager_Pres completely silent across all 12 spe
+          +cs? Same pattern as H1.                                       
+      115  
+      116  
+      117 +==============================================================
+          +==================                                            
+      118 +H4b: SPEECH UNCERTAINTY AND DEBT-TO-CAPITAL                   
+      119 +==============================================================
+          +==================                                            
+      120 +DV: DebtToCapital (cols 1-6), DebtToCapital_lead (cols 7-12)  
+      121 +Tail: Two-tailed                                              
+      122  
+       55 -=============================                                 
+      123 +  CEO_QA:      MARGINAL                                       
+      124 +      DebtToCapital:      col1 +0.0043* only (1 of 6)         
+      125 +      DebtToCapital_lead: col9 +0.0082* col12 +0.0070* (2 of 6
+          +, marginal)                                                   
+      126 +  CEO_Pres:    NO SIGNIFICANCE across all 12 cols             
+      127 +  Manager_QA:  SIGNIFICANT for lead DV -- negative            
+      128 +      DebtToCapital:      col3 -0.0057* only (1 of 6)         
+      129 +      DebtToCapital_lead: col7 -0.0146** col8 -0.0118** col9 -
+          +0.0186*** col10 -0.0114* col11 -0.0131* col12 -0.0103*        
+      130 +  Manager_Pres: NO SIGNIFICANCE across all 12 cols            
+      131  
+       57 -H12 mild sig for Pres                                         
+      132 +SUMMARY: Corroborates H4a. Manager_QA predicts significantly l
+          +ower future market leverage.                                  
+      133 +         CEO_QA effect is weaker and positive (same direction 
+          +as H4a but less robust).                                      
+      134  
+      135 +OPEN QUESTIONS:                                               
+      136 +  Q12. The Manager_QA negative sign is consistent across H4a a
+          +nd H4b. Is this a precautionary de-leveraging story?          
+      137 +  Q13. CEO_QA loses most significance in H4b vs H4a. Is Book L
+          +everage more responsive to CEO signals than market leverage?  
+      138  
+       60 -========================                                      
+      139  
+       62 -H13                                                           
+      140 +==============================================================
+          +==================                                            
+      141 +H5: SPEECH UNCERTAINTY AND ANALYST FORECAST DISPERSION (Wang 2
+          +020)                                                          
+      142 +==============================================================
+          +==================                                            
+      143 +DV: WangDISP (cols 1-6), WangDISP_lead (cols 7-12)            
+      144 +Tail: One-tailed (beta > 0)                                   
+      145  
+       64 -manager qa for capex both t and t+1                           
+      146 +  CEO_QA:      NO SIGNIFICANCE across all 12 cols             
+      147 +  CEO_Pres:    NO SIGNIFICANCE across all 12 cols             
+      148 +  Manager_QA:  SIGNIFICANT -- positive (SCATTERED)            
+      149 +      WangDISP:      col1 +0.0001* col3 +0.0002*** col5 +0.000
+          +1* (Industry FE only, not Firm FE)                            
+      150 +      WangDISP_lead: col7 +0.0001* col9 +0.0002** (2 of 6)    
+      151 +  Manager_Pres: SIGNIFICANT -- positive (MORE ROBUST THAN QA) 
+      152 +      WangDISP:      col2 +0.0002*** col3 +0.0001* col4 +0.000
+          +2** col6 +0.0002** (4 of 6)                                   
+      153 +      WangDISP_lead: col8 +0.0003** col9 +0.0002** col10 +0.00
+          +02** col12 +0.0002* (4 of 6)                                  
+      154  
+       66 -***                                                           
+       67 -why not ceo and why not pres                                  
+      155 +SUMMARY: Both Manager_QA and Manager_Pres significant with pos
+          +itive sign.                                                   
+      156 +         Manager_Pres is STRONGER and survives Firm FE better.
+      157 +         Manager_QA only significant under Industry FE (vanish
+          +es with Firm FE).                                             
+      158 +         Magnitudes are tiny (0.0001-0.0003).                 
+      159  
+      160 +OPEN QUESTIONS:                                               
+      161 +  Q14. Why is Manager_Pres the stronger signal here, when in m
+          +ost other suites it is weaker or null?                        
+      162 +       Is the presentation section more informative for analys
+          +t-side outcomes?                                              
+      163 +  Q15. Why does Manager_QA lose significance under Firm FE but
+          + Manager_Pres survives?                                       
+      164 +       Is the QA effect driven by between-firm differences rat
+          +her than within-firm variation?                               
+      165 +  Q16. CEO measures completely null. Why don't CEO speech patt
+          +erns affect analyst dispersion at all?                        
+      166  
+       70 -==========================                                    
+      167  
+      168 +==============================================================
+          +==================                                            
+      169 +H7: SPEECH UNCERTAINTY AND POST-CALL ILLIQUIDITY              
+      170 +==============================================================
+          +==================                                            
+      171 +DV: delta_amihud (6 cols)                                     
+      172 +Tail: One-tailed (beta > 0)                                   
+      173  
+       73 -h13.1 interaction is sig                                      
+      174 +  CEO_QA:      NO SIGNIFICANCE                                
+      175 +  CEO_Pres:    NO SIGNIFICANCE                                
+      176 +  Manager_QA:  NO SIGNIFICANCE                                
+      177 +  Manager_Pres: NO SIGNIFICANCE                               
+      178  
+       75 -============================                                  
+      179 +SUMMARY: COMPLETE NULL. No IV is significant in any specificat
+          +ion.                                                          
+      180  
+      181 +OPEN QUESTIONS:                                               
+      182 +  Q17. Total null despite theory predicting higher illiquidity
+          + from uncertainty. Is delta_amihud too noisy?                 
+      183 +  Q18. Pre_call_amihud loads heavily (lagged DV analog). Does 
+          +the pre-call level absorb all the signal?                     
+      184 +  Q19. Given H14 shows some bid-ask spread effects, why doesn'
+          +t Amihud illiquidity respond?                                 
+      185  
+       78 -h16 RD investment                                             
+      186  
+       80 -mgr qa is sig for t                                           
+      187 +==============================================================
+          +==================                                            
+      188 +H11: POLITICAL RISK AND LANGUAGE UNCERTAINTY                  
+      189 +==============================================================
+          +==================                                            
+      190 +DV: QA_Uncertainty_pct (Mgr, CEO cols 1-2), Pres_Uncertainty_p
+          +ct (Mgr, CEO cols 3-4)                                        
+      191 +Tail: One-tailed for PRiskQ (beta > 0)                        
+      192 +NOTE: This suite has REVERSED causality -- uncertainty is the 
+          +DV, political risk is the IV.                                 
+      193  
+       82 -***                                                           
+       83 -the usual whys                                                
+      194 +  PRiskQ: SIGNIFICANT *** in ALL 4 cols -- positive           
+      195 +      Mgr_QA:   +0.0001***                                    
+      196 +      CEO_QA:   +0.0001***                                    
+      197 +      Mgr_Pres: +0.0001***                                    
+      198 +      CEO_Pres: +0.0002***                                    
+      199  
+       85 -=========================                                     
+      200 +SUMMARY: Political risk strongly and universally predicts high
+          +er speech uncertainty.                                        
+      201 +         Effect is larger for Presentation sections (0.0002 fo
+          +r CEO_Pres vs 0.0001 for others).                             
+      202  
+       87 -h17 repurchase                                                
+      203 +OPEN QUESTIONS:                                               
+      204 +  Q20. This is the only suite where ALL measures respond. Is p
+          +olitical risk a universal driver of language uncertainty?     
+      205 +  Q21. CEO_Pres has the largest coefficient. Does the CEO's pr
+          +epared speech reflect political risk most?                    
+      206  
+      207  
+       90 -Manager qa is sig neg                                         
+       91 -mgr pres is sig positive                                      
+      208 +==============================================================
+          +==================                                            
+      209 +H11-Lag: LAGGED POLITICAL RISK AND LANGUAGE UNCERTAINTY       
+      210 +==============================================================
+          +==================                                            
+      211 +DV: PRiskQ_lag (cols 1-4), PRiskQ_lag2 (cols 5-8)             
+      212 +Each DV group: Mgr QA, CEO QA, Mgr Pres, CEO Pres             
+      213 +Tail: One-tailed (beta > 0)                                   
+      214 +NOTE: Reversed causality (uncertainty DVs predicted by lagged 
+          +political risk IVs).                                          
+      215  
+      216 +  PRiskQ_lag:  SIGNIFICANT in ALL 4 cols                      
+      217 +      Mgr_QA +0.0000*** | CEO_QA +0.0000*** | Mgr_Pres +0.0001
+          +*** | CEO_Pres +0.0001***                                     
+      218 +  PRiskQ_lag2: SIGNIFICANT in ALL 4 cols                      
+      219 +      Mgr_QA +0.0000*** | CEO_QA +0.0000** | Mgr_Pres +0.0000*
+          +** | CEO_Pres +0.0000***                                      
+      220  
+       94 -***                                                           
+       95 -why diff signs                                                
+      221 +SUMMARY: Lagged political risk (1 and 2 quarters) still predic
+          +ts uncertainty. Confirms H11.                                 
+      222 +         Lag2 slightly weaker (CEO_QA drops from *** to **).  
+      223  
+      224 +OPEN QUESTIONS:                                               
+      225 +  Q22. Persistence of the effect over 2 quarters -- is politic
+          +al risk a slow-moving state variable                          
+      226 +       that shapes speech patterns durably, or is this autocor
+          +relation in PRiskQ?                                           
+      227  
+       98 -============================                                  
+      228  
+      100 -H18 CCCL                                                      
+      229 +==============================================================
+          +==================                                            
+      230 +H12: SPEECH UNCERTAINTY AND QUARTERLY PAYOUT RATIO            
+      231 +==============================================================
+          +==================                                            
+      232 +DV: PayoutRatio_q (cols 1-6), PayoutRatio_q_lead_qtr (cols 7-1
+          +2)                                                            
+      233 +Tail: One-tailed (beta < 0) -- hypothesis predicts uncertainty
+          + REDUCES payout                                               
+      234  
+      102 -mgr pres in sig                                               
+      235 +  CEO_QA:      MARGINAL                                       
+      236 +      PayoutRatio_q:            Not significant               
+      237 +      PayoutRatio_q_lead_qtr:   col12 -0.0168* only (1 of 6, m
+          +arginal)                                                      
+      238 +  CEO_Pres:    NO SIGNIFICANCE across all 12 cols             
+      239 +  Manager_QA:  NO SIGNIFICANCE across all 12 cols             
+      240 +  Manager_Pres: SIGNIFICANT -- negative (SCATTERED)           
+      241 +      PayoutRatio_q:            col1 -0.0342** col5 -0.0332** 
+          +(2 of 6, Industry FE only)                                    
+      242 +      PayoutRatio_q_lead_qtr:   col7 -0.0329** col11 -0.0286* 
+          +(2 of 6, Industry FE only)                                    
+      243  
+      244 +SUMMARY: Manager_Pres shows mild significance under Industry F
+          +E but vanishes under Firm FE.                                 
+      245 +         Effect is in the hypothesized negative direction. CEO
+          +_QA has one marginal lead hit.                                
+      246 +         Manager_QA is completely null.                       
+      247  
+      248 +OPEN QUESTIONS:                                               
+      249 +  Q23. Why does Manager_Pres (not Manager_QA) drive the payout
+          + result?                                                      
+      250 +       Is the presentation's forward-looking tone more relevan
+          +t for dividend decisions?                                     
+      251 +  Q24. Why does significance vanish under Firm FE? Is this a b
+          +etween-firm compositional effect?                             
+      252 +  Q25. Manager_QA is completely null for payout. Inconsistent 
+          +with cash (H1) where Manager_QA is the driver.                
+      253 +       Why does the same IV matter for cash but not payout?   
+      254  
+      255 +                                                              
+      256 +==============================================================
+          +==================                                            
+      257 +H13: SPEECH UNCERTAINTY AND CAPITAL EXPENDITURE               
+      258 +==============================================================
+          +==================                                            
+      259 +DV: CapexAt (cols 1-6), CapexAt_lead (cols 7-12)              
+      260 +Tail: Two-tailed                                              
+      261 +                                                              
+      262 +  CEO_QA:      NO SIGNIFICANCE across all 12 cols             
+      263 +  CEO_Pres:    NO SIGNIFICANCE across all 12 cols             
+      264 +  Manager_QA:  SIGNIFICANT -- positive (Industry FE only)     
+      265 +      CapexAt:      col1 +0.0025** col3 +0.0041*** col5 +0.002
+          +5** (all Industry FE)                                         
+      266 +      CapexAt_lead: col7 +0.0048*** col9 +0.0089*** col11 +0.0
+          +052*** (all Industry FE)                                      
+      267 +  Manager_Pres: NO SIGNIFICANCE across all 12 cols            
+      268 +                                                              
+      269 +SUMMARY: Manager_QA robustly predicts higher capex (both curre
+          +nt and lead) under Industry FE.                               
+      270 +         Effect completely vanishes under Firm FE. Lead DV eff
+          +ects are LARGER than current.                                 
+      271 +         Positive sign: more uncertainty -> more investment.  
+      272 +                                                              
+      273 +OPEN QUESTIONS:                                               
+      274 +  Q26. Positive sign is puzzling under a precautionary motive.
+          + If uncertainty makes firms hoard cash (H1),                  
+      275 +       why does it also increase capex? Possible: real-options
+          + channel (invest to resolve uncertainty)?                     
+      276 +  Q27. Firm FE kills all significance. Is the capex effect pur
+          +ely cross-sectional (between-firm), not within-firm?          
+      277 +  Q28. CEO measures completely null again. Same pattern as H1.
+          + Is CEO speech never informative for investment?              
+      278 +  Q29. Lead DV has LARGER coefficients. Is this a delayed inve
+          +stment response?                                              
+      279 +                                                              
+      280 +                                                              
+      281 +==============================================================
+          +==================                                            
+      282 +H13.1: PRODUCT SIMILARITY-MODERATED CAPEX                     
+      283 +==============================================================
+          +==================                                            
+      284 +DV: CapexAt (cols 1-2), CapexAt_lead (cols 3-4)               
+      285 +Tail: Two-tailed for all                                      
+      286 +                                                              
+      287 +  Manager_QA_Unc_c:      SIGNIFICANT -- positive              
+      288 +      CapexAt:      +0.0016** / +0.0016**                     
+      289 +      CapexAt_lead: +0.0031*** / +0.0031***                   
+      290 +  z_log_tnic3tsimm:      SIGNIFICANT -- positive              
+      291 +      CapexAt:      +0.0033*** / +0.0033***                   
+      292 +      CapexAt_lead: +0.0041*** / +0.0041***                   
+      293 +  MgrQAUnc_x_zlogTSIMM:  SIGNIFICANT -- positive              
+      294 +      CapexAt:      +0.0019** / +0.0019**                     
+      295 +      CapexAt_lead: +0.0039*** / +0.0038***                   
+      296 +                                                              
+      297 +SUMMARY: ALL three terms significant. Interaction IS significa
+          +nt for capex (unlike cash in H1.1/H1.1b).                     
+      298 +         Higher product similarity AMPLIFIES the uncertainty-c
+          +apex link.                                                    
+      299 +         Lead effects are approximately double the current eff
+          +ects.                                                         
+      300 +                                                              
+      301 +OPEN QUESTIONS:                                               
+      302 +  Q30. Why does the TSIMM interaction work for capex (H13.1) b
+          +ut NOT for cash (H1.1)?                                       
+      303 +       Are competitive pressures channeled through investment 
+          +rather than precautionary savings?                            
+      304 +  Q31. Interaction is positive: firms in similar product marke
+          +ts invest MORE when uncertain.                                
+      305 +       Is this a competitive arms-race effect (can't afford to
+          + delay investment when rivals are close)?                     
+      306 +  Q32. Magnitudes roughly double from current to lead DV. Same
+          + delayed response as H13.                                     
+      307 +                                                              
+      308 +                                                              
+      309 +==============================================================
+          +==================                                            
+      310 +H14: SPEECH UNCERTAINTY AND BID-ASK SPREAD CHANGES            
+      311 +==============================================================
+          +==================                                            
+      312 +DV: DSPREAD (6 cols)                                          
+      313 +Tail: One-tailed (beta > 0)                                   
+      314 +                                                              
+      315 +  CEO_QA:      NO SIGNIFICANCE                                
+      316 +  CEO_Pres:    NO SIGNIFICANCE                                
+      317 +  Manager_QA:  MARGINAL                                       
+      318 +      col3 +0.0001*** only (Industry FE + Extended + Yr)      
+      319 +  Manager_Pres: MARGINAL                                      
+      320 +      col2 +0.0001*** col3 +0.0001*** (Firm FE Basic + Industr
+          +y FE Extended, both Yr FE)                                    
+      321 +                                                              
+      322 +SUMMARY: Very sparse significance. Manager_Pres and Manager_QA
+          + show up in 1-2 specs each,                                   
+      323 +         but vanish entirely under YrQtr FE (cols 5-6). Not ro
+          +bust.                                                         
+      324 +         Magnitudes extremely small (0.0001).                 
+      325 +                                                              
+      326 +OPEN QUESTIONS:                                               
+      327 +  Q33. Is the bid-ask spread too insensitive to capture speech
+          + uncertainty effects?                                         
+      328 +       Magnitudes are economically trivial even where statisti
+          +cally significant.                                            
+      329 +  Q34. Significance dies under YrQtr FE. Is the effect seasona
+          +l/time-varying rather than speech-driven?                     
+      330 +  Q35. Combined with H7's total null: market microstructure DV
+          +s seem unresponsive to speech uncertainty.                    
+      331 +       Is this a power issue or a genuine null?               
+      332 +                                                              
+      333 +                                                              
+      334 +==============================================================
+          +==================                                            
+      335 +H16: SPEECH UNCERTAINTY AND R&D INVESTMENT INTENSITY          
+      336 +==============================================================
+          +==================                                            
+      337 +DV: RDSales (cols 1-6), RDSales_lead (cols 7-12)              
+      338 +Tail: Two-tailed                                              
+      339 +                                                              
+      340 +  CEO_QA:      MARGINAL -- negative (Firm FE only, lead=no)   
+      341 +      RDSales: col4 -0.0156* col6 -0.0150* (Firm FE + Extended
+          + only)                                                        
+      342 +      RDSales_lead: Not significant                           
+      343 +  CEO_Pres:    NO SIGNIFICANCE across all 12 cols             
+      344 +  Manager_QA:  SIGNIFICANT for current DV -- positive (ALL 6 C
+          +OLS)                                                          
+      345 +      RDSales: col1 +0.0435** col2 +0.0257** col3 +0.0352** co
+          +l4 +0.0232** col5 +0.0389** col6 +0.0216**                    
+      346 +      RDSales_lead: Not significant in any col                
+      347 +  Manager_Pres: NO SIGNIFICANCE across all 12 cols            
+      348 +                                                              
+      349 +SUMMARY: Manager_QA robustly predicts higher R&D spending acro
+          +ss all 6 specs for current DV.                                
+      350 +         Effect vanishes entirely for lead DV. CEO_QA has marg
+          +inal negative hits under Firm FE.                             
+      351 +         Magnitudes are substantial (0.02-0.04).              
+      352 +                                                              
+      353 +OPEN QUESTIONS:                                               
+      354 +  Q36. Manager_QA is positive for both capex (H13) and R&D (H1
+          +6). Consistent real-options story:                            
+      355 +       uncertainty drives more investment of all types?       
+      356 +  Q37. CEO_QA is marginally NEGATIVE for R&D (Firm FE). Opposi
+          +te to Manager_QA.                                             
+      357 +       Same opposing-sign pattern as H4a leverage. CEO vs Mana
+          +ger divergence again.                                         
+      358 +  Q38. Why does the effect vanish for lead R&D? Is R&D spendin
+          +g too sticky to show a lagged response?                       
+      359 +  Q39. Manager_QA survives BOTH Industry and Firm FE here (unl
+          +ike H13 where Firm FE kills it).                              
+      360 +       R&D seems more responsive to within-firm uncertainty va
+          +riation than capex.                                           
+      361 +                                                              
+      362 +                                                              
+      363 +==============================================================
+          +==================                                            
+      364 +H17: SPEECH UNCERTAINTY AND REPURCHASE INTENSITY              
+      365 +==============================================================
+          +==================                                            
+      366 +DV: RepurchaseIntensity (cols 1-6), RepurchaseIntensity_lead_q
+          +tr (cols 7-12)                                                
+      367 +Tail: Two-tailed                                              
+      368 +                                                              
+      369 +  CEO_QA:      NO SIGNIFICANCE (all cols very small, near zero
+          +)                                                             
+      370 +  CEO_Pres:    MARGINAL / MIXED                               
+      371 +      RepurchaseIntensity:      col1 -0.0005** (negative, Indu
+          +stry FE only)                                                 
+      372 +      RepurchaseIntensity_lead: col8 +0.0005* (positive, Firm 
+          +FE only)                                                      
+      373 +  Manager_QA:  SIGNIFICANT -- negative (Industry FE only)     
+      374 +      RepurchaseIntensity:      col1 -0.0009*** col3 -0.0009**
+          +* col5 -0.0008*** (all Industry FE)                           
+      375 +      RepurchaseIntensity_lead: col7 -0.0008** col9 -0.0007* c
+          +ol11 -0.0006* (all Industry FE)                               
+      376 +  Manager_Pres: SIGNIFICANT -- positive                       
+      377 +      RepurchaseIntensity:      col1 +0.0010*** col2 +0.0006**
+          + col3 +0.0009*** col4 +0.0006* col5 +0.0008*** col6 +0.0006*  
+      378 +      RepurchaseIntensity_lead: col7 +0.0009** col9 +0.0008** 
+          +col11 +0.0008** (Industry FE only)                            
+      379 +                                                              
+      380 +SUMMARY: Manager_QA and Manager_Pres BOTH significant but with
+          + OPPOSITE SIGNS.                                              
+      381 +         Manager_QA = negative (uncertainty -> fewer repurchas
+          +es). Industry FE only.                                        
+      382 +         Manager_Pres = positive (uncertainty -> more repurcha
+          +ses). Survives Firm FE for current DV.                        
+      383 +         CEO_Pres flips sign between specs (unreliable).      
+      384 +                                                              
+      385 +OPEN QUESTIONS:                                               
+      386 +  Q40. CRITICAL: Manager_QA and Manager_Pres have OPPOSITE sig
+          +ns. This is unique across all suites.                         
+      387 +       Why would QA uncertainty reduce repurchases but present
+          +ation uncertainty increase them?                              
+      388 +  Q41. Is the QA negative sign consistent with precautionary b
+          +ehavior (same as cash hoarding in H1)?                        
+      389 +       More QA uncertainty -> retain cash -> fewer buybacks.  
+      390 +  Q42. Why does Manager_Pres predict MORE repurchases? Does pr
+          +epared-section uncertainty signal                             
+      391 +       something different than spontaneous QA uncertainty?   
+      392 +  Q43. Manager_QA vanishes under Firm FE. Cross-sectional only
+          +? Manager_Pres survives Firm FE (current DV).                 
+      393 +                                                              
+      394 +                                                              
+      395 +==============================================================
+          +==================                                            
+      396 +H18: SPEECH UNCERTAINTY AND SEC COMMENT LETTERS (CCCL)        
+      397 +==============================================================
+          +==================                                            
+      398 +DV: CCCL (binary, 6 cols)                                     
+      399 +Tail: One-tailed (beta > 0)                                   
+      400 +Model: LPM (Linear Probability Model)                         
+      401 +DV base rate: 0.27% (extremely rare event)                    
+      402 +                                                              
+      403 +  CEO_QA:      NO SIGNIFICANCE                                
+      404 +  CEO_Pres:    NO SIGNIFICANCE                                
+      405 +  Manager_QA:  NO SIGNIFICANCE                                
+      406 +  Manager_Pres: SIGNIFICANT -- positive (ALL 6 COLS)          
+      407 +      col1 +0.0020** col2 +0.0024** col3 +0.0016* col4 +0.0021
+          +* col5 +0.0016* col6 +0.0022*                                 
+      408 +                                                              
+      409 +SUMMARY: Manager_Pres is the sole significant IV, robust acros
+          +s all specs including Firm FE.                                
+      410 +         But marginal (mostly * significance in extended specs
+          +). R-squared ~ 0.                                             
+      411 +         Model has near-zero explanatory power.               
+      412 +                                                              
+      413 +OPEN QUESTIONS:                                               
+      414 +  Q44. Why Manager_Pres and not Manager_QA? The presentation i
+          +s scripted -- does SEC respond                                
+      415 +       to the prepared narrative rather than spontaneous answe
+          +rs?                                                           
+      416 +  Q45. Near-zero R-squared. Is the LPM even appropriate for a 
+          +0.27% base-rate event?                                        
+      417 +       Results are technically significant but practically mea
+          +ningless.                                                     
+      418 +  Q46. Should this suite be interpreted with extreme caution g
+          +iven the near-zero fit?                                       
+      419 +                                                              
+      420 +                                                              
+      421 +==============================================================
+          +==================                                            
+      422 +==============================================================
+          +==================                                            
+      423 +CROSS-SUITE PATTERN ANALYSIS                                  
+      424 +==============================================================
+          +==================                                            
+      425 +==============================================================
+          +==================                                            
+      426 +                                                              
+      427 +                                                              
+      428 +PATTERN 1: MANAGER_QA IS THE DOMINANT IV                      
+      429 +-----------------------------------------                     
+      430 +Manager_QA is the ONLY consistently significant IV across the 
+          +core suites:                                                  
+      431 +  H1  (CashHoldings):     *** positive -- robust              
+      432 +  H4a (BookLev_lead):     ** negative  -- robust              
+      433 +  H4b (DebtToCapital_lead): *** negative -- robust            
+      434 +  H5  (WangDISP):         * to *** positive -- scattered      
+      435 +  H13 (CapexAt):          ** to *** positive -- Industry FE on
+          +ly                                                            
+      436 +  H13.1 (CapexAt moderated): ** to *** positive -- robust     
+      437 +  H16 (RDSales):          ** positive -- robust across all spe
+          +cs                                                            
+      438 +  H17 (RepurchaseIntensity): *** negative -- Industry FE only 
+      439 +                                                              
+      440 +  -> Q47. What makes the QA section uniquely informative? Is i
+          +t the spontaneous/unscripted nature?                          
+      441 +  -> Q48. Why does Manager_QA almost never survive Firm FE for
+          + capex (H13) but does for cash (H1), R&D (H16)?               
+      442 +                                                              
+      443 +                                                              
+      444 +PATTERN 2: CEO MEASURES ARE ALMOST UNIVERSALLY NULL           
+      445 +----------------------------------------------------          
+      446 +CEO_QA is significant ONLY for:                               
+      447 +  H4a (BookLev_lead):  positive (opposite to Manager_QA)      
+      448 +  H16 (RDSales):       marginally negative (opposite to Manage
+          +r_QA)                                                         
+      449 +CEO_Pres: significant only in H17 col1 (one spec, not robust) 
+      450 +                                                              
+      451 +  -> Q49. Why is CEO speech almost never informative? Do CEOs 
+          +use more controlled/rehearsed language                        
+      452 +          that obscures uncertainty? Or is the CEO sample too 
+          +small (fewer observations per firm)?                          
+      453 +  -> Q50. When CEO_QA IS significant (H4a, H16), the sign is O
+          +PPOSITE to Manager_QA.                                        
+      454 +          Is this a systematic pattern? Does CEO uncertainty s
+          +ignal something different than manager uncertainty?           
+      455 +                                                              
+      456 +                                                              
+      457 +PATTERN 3: MANAGER_PRES IS A SECONDARY CHANNEL                
+      458 +------------------------------------------------              
+      459 +Manager_Pres is significant for:                              
+      460 +  H5  (WangDISP):            positive -- STRONGER than Manager
+          +_QA                                                           
+      461 +  H12 (PayoutRatio_q):       negative -- scattered, Industry F
+          +E only                                                        
+      462 +  H14 (DSPREAD):             positive -- marginal             
+      463 +  H17 (RepurchaseIntensity): positive -- OPPOSITE sign to Mana
+          +ger_QA                                                        
+      464 +  H18 (CCCL):                positive -- sole significant IV  
+      465 +                                                              
+      466 +  -> Q51. Manager_Pres wins in H5 (analyst dispersion), H17 (r
+          +epurchase, opposite sign), and H18 (CCCL).                    
+      467 +          These are analyst/SEC/payout-related DVs. Is the pre
+          +pared section more relevant for                               
+      468 +          information-intermediary outcomes?                  
+      469 +  -> Q52. In H17, Manager_QA and Manager_Pres have opposite si
+          +gns. This is the ONLY suite with this pattern.                
+      470 +          What does this mean for interpretation?             
+      471 +                                                              
+      472 +                                                              
+      473 +PATTERN 4: INDUSTRY FE vs FIRM FE                             
+      474 +-----------------------------------                           
+      475 +Several effects vanish under Firm FE:                         
+      476 +  H13 (CapexAt):           Manager_QA sig under Industry FE, n
+          +ull under Firm FE                                             
+      477 +  H12 (PayoutRatio_q):     Manager_Pres sig under Industry FE,
+          + null under Firm FE                                           
+      478 +  H17 (Repurchase):        Manager_QA sig under Industry FE, n
+          +ull under Firm FE                                             
+      479 +  H5  (WangDISP):          Manager_QA sig under Industry FE, n
+          +ull under Firm FE                                             
+      480 +                                                              
+      481 +Effects that SURVIVE Firm FE:                                 
+      482 +  H1  (CashHoldings):      Manager_QA *** under both          
+      483 +  H4a (BookLev_lead):      Both CEO_QA and Manager_QA survive 
+          +Firm FE                                                       
+      484 +  H4b (DebtToCapital_lead): Manager_QA survives Firm FE       
+      485 +  H16 (RDSales):           Manager_QA ** under both           
+      486 +  H17 (Repurchase):        Manager_Pres survives Firm FE (curr
+          +ent DV)                                                       
+      487 +  H18 (CCCL):              Manager_Pres survives Firm FE      
+      488 +                                                              
+      489 +  -> Q53. Cash, leverage, R&D effects survive within-firm iden
+          +tification. Capex, payout, dispersion do not.                 
+      490 +          Is this a power issue, or are the latter effects gen
+          +uinely cross-sectional?                                       
+      491 +                                                              
+      492 +                                                              
+      493 +PATTERN 5: CURRENT vs LEAD DV                                 
+      494 +-------------------------------                               
+      495 +  H1:  Strong for current, weak for lead                      
+      496 +  H4a: Weak for current, STRONG for lead (leverage adjusts slo
+          +wly)                                                          
+      497 +  H4b: Same as H4a (market leverage also lead-concentrated)   
+      498 +  H5:  Both current and lead (scattered)                      
+      499 +  H13: Both, but lead coefficients LARGER                     
+      500 +  H16: Strong for current, NULL for lead (R&D sticky?)        
+      501 +  H17: Both current and lead                                  
+      502 +  H12: Both (scattered)                                       
+      503 +                                                              
+      504 +  -> Q54. Leverage effects are lead-concentrated. Investment (
+          +capex) effects grow for lead.                                 
+      505 +          Cash effects are current-concentrated. Is there a ti
+          +ming hierarchy in corporate responses to uncertainty?         
+      506 +  -> Q55. R&D (H16) is current-only. Is R&D too sticky to show
+          + lagged responses?                                            
+      507 +                                                              
+      508 +                                                              
+      509 +PATTERN 6: SIGN CONSISTENCY                                   
+      510 +-----------------------------                                 
+      511 +Manager_QA sign direction:                                    
+      512 +  POSITIVE: CashHoldings, WangDISP, CapexAt, RDSales, DSPREAD 
+      513 +  NEGATIVE: BookLev, DebtToCapital, RepurchaseIntensity       
+      514 +                                                              
+      515 +  -> Q56. Positive for cash/investment, negative for leverage/
+          +payout.                                                       
+      516 +          Consistent story: uncertainty -> hoard cash, invest 
+          +more, lever less, pay out less?                               
+      517 +  -> Q57. But positive for capex AND cash hoarding seems contr
+          +adictory. Where does the cash come from                       
+      518 +          if the firm is also investing more? Is it debt reduc
+          +tion freeing up balance sheet space?                          
+      519 +                                                              
+      520 +                                                              
+      521 +PATTERN 7: COMPLETE NULLS                                     
+      522 +---------------------------                                   
+      523 +  H7  (delta_amihud):  Total null across all IVs              
+      524 +  H14 (DSPREAD):       Near-null (1-2 marginal hits)          
+      525 +                                                              
+      526 +  -> Q58. Both market microstructure DVs are null/near-null. S
+          +peech uncertainty does not seem to                            
+      527 +          affect trading liquidity. Is this because market par
+          +ticipants don't attend to these signals,                      
+      528 +          or because the DV measurement windows are wrong?    
+      529 +                                                              
+      530 +                                                              
+      531 +PATTERN 8: H11/H11-Lag STAND APART                            
+      532 +-------------------------------------                         
+      533 +These are the ONLY suites where ALL measures (CEO and Manager,
+          + QA and Pres) are significant.                                
+      534 +They also have REVERSED causality (uncertainty is the DV, poli
+          +tical risk is the IV).                                        
+      535 +                                                              
+      536 +  -> Q59. Political risk is a universal driver of language unc
+          +ertainty, while language uncertainty                          
+      537 +          is a selective predictor of corporate outcomes. The 
+          +asymmetry is noteworthy.                                      
+      538 +  -> Q60. Is the H11/H11-Lag result about measurement validati
+          +on (political risk makes people sound uncertain)              
+      539 +          rather than economic substance?                     
+
+● Done. The rewritten findings.txt covers all 17 suites with:
+
+  - Exact significance for every IV in every column (sign, stars, which FE)
+  - Suite-level summaries and 60 open questions
+  - 8 cross-suite patterns at the end:
+    a. Manager_QA dominance
+    b. CEO measures nearly universal null
+    c. Manager_Pres as secondary channel
+    d. Industry vs Firm FE survival
+    e. Current vs Lead DV timing
+    f. Sign consistency across suites
+    g. Market microstructure nulls (H7, H14)
+    h. H11/H11-Lag as reversed-causality outliers
+✻ Worked for 4m 40s
+
+❯ you did not include the fixed effects specification for the significant       
+results                                                                         
+
+● You're right. Let me rewrite with FE specs for every significant entry.
+
+  Read 1 file (ctrl+o to expand)
+
+● Write(outputs\findings.txt)
+  ⎿  Added 248 lines, removed 103 lines
+       2  ===================================
+       3  17 Suites | 4 IVs: CEO_QA, CEO_Pres, Manager_QA, Manager_Pres
+       4  Significance: * p<0.10, ** p<0.05, *** p<0.01
+       5 -Standard 12-col layout: Ind/Firm FE x Basic/Extended/Extended x
+         - Yr/Yr/YrQtr FE x Current/Lead DV                              
+       6 -Standard 6-col layout:  Same but no Lead DV                    
+       7 -Moderation suites: Industry FE only, Yr vs YrQtr FE            
+       8 -                                                               
+       5  All coefficients and stars extracted directly from all_tables.t
+          ex (2026-03-31).
+       6  
+       7 +COLUMN-TO-FE KEY (standard 12-col / 6-col suites):             
+       8 +  Col 1 / 7:   Industry FE + Year FE          (basic controls) 
+       9 +  Col 2 / 8:   Firm FE    + Year FE            (basic controls)
+      10 +  Col 3 / 9:   Industry FE + Year FE           (extended contro
+         +ls)                                                            
+      11 +  Col 4 / 10:  Firm FE    + Year FE            (extended contro
+         +ls)                                                            
+      12 +  Col 5 / 11:  Industry FE + Year-Quarter FE   (extended contro
+         +ls)                                                            
+      13 +  Col 6 / 12:  Firm FE    + Year-Quarter FE    (extended contro
+         +ls)                                                            
+      14 +  Cols 1-6: current DV | Cols 7-12: lead DV                    
+      15  
+      16 +COLUMN-TO-FE KEY (moderation 2-col suites: H1.1, H1.1b, H1.2): 
+      17 +  Col 1: Industry FE + Year FE                                 
+      18 +  Col 2: Industry FE + Year-Quarter FE                         
+      19 +                                                               
+      20 +COLUMN-TO-FE KEY (H13.1, 4 cols):                              
+      21 +  Col 1: CapexAt,      Industry FE + Year FE                   
+      22 +  Col 2: CapexAt,      Industry FE + Year-Quarter FE           
+      23 +  Col 3: CapexAt_lead, Industry FE + Year FE                   
+      24 +  Col 4: CapexAt_lead, Industry FE + Year-Quarter FE           
+      25 +                                                               
+      26 +COLUMN-TO-FE KEY (H11, 4 cols):                                
+      27 +  Col 1: Mgr QA DV,  Firm FE + Year FE                         
+      28 +  Col 2: CEO QA DV,  Firm FE + Year FE                         
+      29 +  Col 3: Mgr Pres DV, Firm FE + Year FE                        
+      30 +  Col 4: CEO Pres DV, Firm FE + Year FE                        
+      31 +                                                               
+      32 +COLUMN-TO-FE KEY (H11-Lag, 8 cols):                            
+      33 +  Cols 1-4: PRiskQ_lag  (Mgr QA, CEO QA, Mgr Pres, CEO Pres), a
+         +ll Firm FE + Year FE                                           
+      34 +  Cols 5-8: PRiskQ_lag2 (same order), all Firm FE + Year FE    
+      35 +                                                               
+      36 +COLUMN-TO-FE KEY (H12, 12 cols):                               
+      37 +  Same as standard 12-col but Year FE label reads "Year FE" (ca
+         +lendar year, not fiscal)                                       
+      38 +                                                               
+      39 +                                                               
+      40  ===============================================================
+          =================
+      41  H1: SPEECH UNCERTAINTY AND CASH HOLDINGS
+      42  ===============================================================
+          =================
+     ...
+      46    CEO_QA:      NO SIGNIFICANCE across all 12 cols
+      47    CEO_Pres:    NO SIGNIFICANCE across all 12 cols
+      48    Manager_QA:  SIGNIFICANT -- positive
+      21 -      CashHoldings:      col1 +0.0039** col2 +0.0041*** col3 +0
+         -.0068*** col4 +0.0045*** col5 +0.0045*** col6 +0.0045***       
+      22 -      CashHoldings_lead: col9 +0.0050* only (1 of 6 cols)      
+      49 +      CashHoldings:                                            
+      50 +        col1 +0.0039**  [Ind FE, Yr FE, basic]                 
+      51 +        col2 +0.0041*** [Firm FE, Yr FE, basic]                
+      52 +        col3 +0.0068*** [Ind FE, Yr FE, extended]              
+      53 +        col4 +0.0045*** [Firm FE, Yr FE, extended]             
+      54 +        col5 +0.0045*** [Ind FE, YrQtr FE, extended]           
+      55 +        col6 +0.0045*** [Firm FE, YrQtr FE, extended]          
+      56 +      CashHoldings_lead:                                       
+      57 +        col9 +0.0050*   [Ind FE, Yr FE, extended] -- only 1 of 
+         +6 cols                                                         
+      58    Manager_Pres: NO SIGNIFICANCE across all 12 cols
+      59  
+      60  SUMMARY: Manager_QA is the sole significant IV for current Cash
+          Holdings (robust across all 6 specs).
+     ...
+      69  ===============================================================
+          =================
+      70  H1.1: PRODUCT SIMILARITY-MODERATED CASH HOLDINGS (continuous TS
+          IMM)
+      71  ===============================================================
+          =================
+      37 -DV: CashHoldings (2 cols: Industry+Yr, Industry+YrQtr)         
+      72 +DV: CashHoldings (2 cols)                                      
+      73  Tail: One-tailed for Manager_QA_Unc_c (beta > 0); two-tailed fo
+          r moderator & interaction
+      74  
+      40 -  Manager_QA_Unc_c:      SIGNIFICANT +0.0049*** / +0.0050*** (b
+         -oth cols)                                                      
+      41 -  z_log_tnic3tsimm:      SIGNIFICANT +0.0047*** / +0.0045*** (b
+         -oth cols)                                                      
+      75 +  Manager_QA_Unc_c:      SIGNIFICANT -- positive               
+      76 +      col1 +0.0049*** [Ind FE, Yr FE]                          
+      77 +      col2 +0.0050*** [Ind FE, YrQtr FE]                       
+      78 +  z_log_tnic3tsimm:      SIGNIFICANT -- positive               
+      79 +      col1 +0.0047*** [Ind FE, Yr FE]                          
+      80 +      col2 +0.0045*** [Ind FE, YrQtr FE]                       
+      81    MgrQAUnc_x_zlogTSIMM:  NOT SIGNIFICANT (0.0015 / 0.0015)
+      82  
+      83  SUMMARY: Main effects of both uncertainty and product similarit
+          y are strong, but the
+     ...
+       91  ==============================================================
+           ==================
+       92  H1.1b: BINARY PRODUCT SIMILARITY-MODERATED CASH HOLDINGS
+       93  ==============================================================
+           ==================
+       55 -DV: CashHoldings (2 cols: Industry+Yr, Industry+YrQtr)        
+       94 +DV: CashHoldings (2 cols)                                     
+       95  Tail: One-tailed for Manager_QA_Unc_c (beta > 0); two-tailed f
+           or moderator & interaction
+       96  
+       58 -  Manager_QA_Unc_c:         SIGNIFICANT +0.0050*** / +0.0051**
+          -* (both cols)                                                 
+       59 -  HighTSIMM:                SIGNIFICANT +0.0048*** / +0.0046**
+          -* (both cols)                                                 
+       97 +  Manager_QA_Unc_c:         SIGNIFICANT -- positive           
+       98 +      col1 +0.0050*** [Ind FE, Yr FE]                         
+       99 +      col2 +0.0051*** [Ind FE, YrQtr FE]                      
+      100 +  HighTSIMM:                SIGNIFICANT -- positive           
+      101 +      col1 +0.0048*** [Ind FE, Yr FE]                         
+      102 +      col2 +0.0046*** [Ind FE, YrQtr FE]                      
+      103    MgrQAUnc_x_HighTSIMM:    NOT SIGNIFICANT (0.0004 / 0.0005)
+      104  
+      105  SUMMARY: Identical pattern to H1.1. Binary split does not resc
+           ue the interaction.
+     ...
+      111  ==============================================================
+           ==================
+      112  H1.2: FINANCIAL CONSTRAINT-MODERATED CASH HOLDINGS (Three-Cate
+           gory)
+      113  ==============================================================
+           ==================
+       71 -DV: CashHoldings (2 cols: Industry+Yr, Industry+YrQtr)        
+      114 +DV: CashHoldings (2 cols)                                     
+      115  Tail: One-tailed for base IV (beta > 0); two-tailed for catego
+           ries & interactions
+      116  
+       74 -  Manager_QA_Unc_c:     SIGNIFICANT +0.0055*** / +0.0053*** (b
+          -oth cols)                                                     
+      117 +  Manager_QA_Unc_c:     SIGNIFICANT -- positive               
+      118 +      col1 +0.0055*** [Ind FE, Yr FE]                         
+      119 +      col2 +0.0053*** [Ind FE, YrQtr FE]                      
+      120    MgrQAUnc_x_IG:        NOT SIGNIFICANT
+       76 -  BelowIG:              col1 +0.0039*** only (loses sig in col
+          -2)                                                            
+       77 -  Unrated:              col1 +0.0059*** only (loses sig in col
+          -2)                                                            
+      121 +  BelowIG:              PARTIAL                               
+      122 +      col1 +0.0039*** [Ind FE, Yr FE] -- loses significance in
+          + col2                                                         
+      123 +  Unrated:              PARTIAL                               
+      124 +      col1 +0.0059*** [Ind FE, Yr FE] -- loses significance in
+          + col2                                                         
+      125    MgrQAUnc_x_BelowIG:  NOT SIGNIFICANT
+       79 -  MgrQAUnc_x_Unrated:  SIGNIFICANT +0.0071*** / +0.0075*** (bo
+          -th cols)                                                      
+      126 +  MgrQAUnc_x_Unrated:  SIGNIFICANT -- positive                
+      127 +      col1 +0.0071*** [Ind FE, Yr FE]                         
+      128 +      col2 +0.0075*** [Ind FE, YrQtr FE]                      
+      129  
+      130  SUMMARY: The interaction with Unrated status is significant an
+           d robust. Firms without
+      131           credit ratings show an amplified uncertainty-cash lin
+           k. IG and BelowIG interactions are null.
+     ...
+      144  
+      145    CEO_QA:      SIGNIFICANT for BookLev_lead ONLY -- positive
+      146        BookLev:      Not significant
+       98 -      BookLev_lead: col7 +0.0066** col8 +0.0050* col9 +0.0066*
+          -* col10 +0.0051* col11 +0.0065** col12 +0.0051*               
+      147 +      BookLev_lead:                                           
+      148 +        col7  +0.0066** [Ind FE, Yr FE, basic]                
+      149 +        col8  +0.0050*  [Firm FE, Yr FE, basic]               
+      150 +        col9  +0.0066** [Ind FE, Yr FE, extended]             
+      151 +        col10 +0.0051*  [Firm FE, Yr FE, extended]            
+      152 +        col11 +0.0065** [Ind FE, YrQtr FE, extended]          
+      153 +        col12 +0.0051*  [Firm FE, YrQtr FE, extended]         
+      154    CEO_Pres:    NO SIGNIFICANCE across all 12 cols
+      155    Manager_QA:  SIGNIFICANT -- negative
+      101 -      BookLev:      col2 -0.0034* only (1 of 6)               
+      102 -      BookLev_lead: col7 -0.0068* col8 -0.0086** col9 -0.0077*
+          -* col10 -0.0078** col12 -0.0072** (5 of 6)                    
+      156 +      BookLev:                                                
+      157 +        col2 -0.0034*  [Firm FE, Yr FE, basic] -- only 1 of 6 
+      158 +      BookLev_lead:                                           
+      159 +        col7  -0.0068*  [Ind FE, Yr FE, basic]                
+      160 +        col8  -0.0086** [Firm FE, Yr FE, basic]               
+      161 +        col9  -0.0077** [Ind FE, Yr FE, extended]             
+      162 +        col10 -0.0078** [Firm FE, Yr FE, extended]            
+      163 +        col12 -0.0072** [Firm FE, YrQtr FE, extended]         
+      164 +        (col11 not significant: -0.0057 [Ind FE, YrQtr FE, ext
+          +ended])                                                       
+      165    Manager_Pres: NO SIGNIFICANCE across all 12 cols
+      166  
+      167  SUMMARY: CEO_QA and Manager_QA both significant for lead lever
+           age -- but with OPPOSITE signs.
+     ...
+      183  Tail: Two-tailed
+      184  
+      185    CEO_QA:      MARGINAL
+      124 -      DebtToCapital:      col1 +0.0043* only (1 of 6)         
+      125 -      DebtToCapital_lead: col9 +0.0082* col12 +0.0070* (2 of 6
+          -, marginal)                                                   
+      186 +      DebtToCapital:                                          
+      187 +        col1 +0.0043*  [Ind FE, Yr FE, basic] -- only 1 of 6  
+      188 +      DebtToCapital_lead:                                     
+      189 +        col9  +0.0082*  [Ind FE, Yr FE, extended]             
+      190 +        col12 +0.0070*  [Firm FE, YrQtr FE, extended]         
+      191 +        (2 of 6, both marginal *)                             
+      192    CEO_Pres:    NO SIGNIFICANCE across all 12 cols
+      193    Manager_QA:  SIGNIFICANT for lead DV -- negative
+      128 -      DebtToCapital:      col3 -0.0057* only (1 of 6)         
+      129 -      DebtToCapital_lead: col7 -0.0146** col8 -0.0118** col9 -
+          -0.0186*** col10 -0.0114* col11 -0.0131* col12 -0.0103*        
+      194 +      DebtToCapital:                                          
+      195 +        col3 -0.0057*   [Ind FE, Yr FE, extended] -- only 1 of
+          + 6                                                            
+      196 +      DebtToCapital_lead:                                     
+      197 +        col7  -0.0146** [Ind FE, Yr FE, basic]                
+      198 +        col8  -0.0118** [Firm FE, Yr FE, basic]               
+      199 +        col9  -0.0186***[Ind FE, Yr FE, extended]             
+      200 +        col10 -0.0114*  [Firm FE, Yr FE, extended]            
+      201 +        col11 -0.0131*  [Ind FE, YrQtr FE, extended]          
+      202 +        col12 -0.0103*  [Firm FE, YrQtr FE, extended]         
+      203    Manager_Pres: NO SIGNIFICANCE across all 12 cols
+      204  
+      205  SUMMARY: Corroborates H4a. Manager_QA predicts significantly l
+           ower future market leverage.
+     ...
+      218  
+      219    CEO_QA:      NO SIGNIFICANCE across all 12 cols
+      220    CEO_Pres:    NO SIGNIFICANCE across all 12 cols
+      148 -  Manager_QA:  SIGNIFICANT -- positive (SCATTERED)            
+      149 -      WangDISP:      col1 +0.0001* col3 +0.0002*** col5 +0.000
+          -1* (Industry FE only, not Firm FE)                            
+      150 -      WangDISP_lead: col7 +0.0001* col9 +0.0002** (2 of 6)    
+      151 -  Manager_Pres: SIGNIFICANT -- positive (MORE ROBUST THAN QA) 
+      152 -      WangDISP:      col2 +0.0002*** col3 +0.0001* col4 +0.000
+          -2** col6 +0.0002** (4 of 6)                                   
+      153 -      WangDISP_lead: col8 +0.0003** col9 +0.0002** col10 +0.00
+          -02** col12 +0.0002* (4 of 6)                                  
+      221 +  Manager_QA:  SIGNIFICANT -- positive (Industry FE only, vani
+          +shes under Firm FE)                                           
+      222 +      WangDISP:                                               
+      223 +        col1 +0.0001*   [Ind FE, Yr FE, basic]                
+      224 +        col3 +0.0002*** [Ind FE, Yr FE, extended]             
+      225 +        col5 +0.0001*   [Ind FE, YrQtr FE, extended]          
+      226 +      WangDISP_lead:                                          
+      227 +        col7 +0.0001*   [Ind FE, Yr FE, basic]                
+      228 +        col9 +0.0002**  [Ind FE, Yr FE, extended]             
+      229 +  Manager_Pres: SIGNIFICANT -- positive (MORE ROBUST, survives
+          + Firm FE)                                                     
+      230 +      WangDISP:                                               
+      231 +        col2 +0.0002*** [Firm FE, Yr FE, basic]               
+      232 +        col3 +0.0001*   [Ind FE, Yr FE, extended]             
+      233 +        col4 +0.0002**  [Firm FE, Yr FE, extended]            
+      234 +        col6 +0.0002**  [Firm FE, YrQtr FE, extended]         
+      235 +      WangDISP_lead:                                          
+      236 +        col8  +0.0003** [Firm FE, Yr FE, basic]               
+      237 +        col9  +0.0002** [Ind FE, Yr FE, extended]             
+      238 +        col10 +0.0002** [Firm FE, Yr FE, extended]            
+      239 +        col12 +0.0002*  [Firm FE, YrQtr FE, extended]         
+      240  
+      241  SUMMARY: Both Manager_QA and Manager_Pres significant with pos
+           itive sign.
+      156 -         Manager_Pres is STRONGER and survives Firm FE better.
+      242 +         Manager_Pres is STRONGER and survives Firm FE.       
+      243           Manager_QA only significant under Industry FE (vanish
+           es with Firm FE).
+      244           Magnitudes are tiny (0.0001-0.0003).
+      245  
+     ...
+      273  ==============================================================
+           ==================
+      274  H11: POLITICAL RISK AND LANGUAGE UNCERTAINTY
+      275  ==============================================================
+           ==================
+      190 -DV: QA_Uncertainty_pct (Mgr, CEO cols 1-2), Pres_Uncertainty_p
+          -ct (Mgr, CEO cols 3-4)                                        
+      276 +DV: QA_Uncertainty_pct (Mgr col1, CEO col2), Pres_Uncertainty_
+          +pct (Mgr col3, CEO col4)                                      
+      277  Tail: One-tailed for PRiskQ (beta > 0)
+      192 -NOTE: This suite has REVERSED causality -- uncertainty is the 
+          -DV, political risk is the IV.                                 
+      278 +NOTE: REVERSED CAUSALITY -- uncertainty is the DV, political r
+          +isk is the IV.                                                
+      279 +All specs: Firm FE + Year FE                                  
+      280  
+      281    PRiskQ: SIGNIFICANT *** in ALL 4 cols -- positive
+      195 -      Mgr_QA:   +0.0001***                                    
+      196 -      CEO_QA:   +0.0001***                                    
+      197 -      Mgr_Pres: +0.0001***                                    
+      198 -      CEO_Pres: +0.0002***                                    
+      282 +      col1 +0.0001*** [Firm FE, Yr FE] -- DV = Mgr QA Uncertai
+          +nty                                                           
+      283 +      col2 +0.0001*** [Firm FE, Yr FE] -- DV = CEO QA Uncertai
+          +nty                                                           
+      284 +      col3 +0.0001*** [Firm FE, Yr FE] -- DV = Mgr Pres Uncert
+          +ainty                                                         
+      285 +      col4 +0.0002*** [Firm FE, Yr FE] -- DV = CEO Pres Uncert
+          +ainty                                                         
+      286  
+      287  SUMMARY: Political risk strongly and universally predicts high
+           er speech uncertainty.
+      288           Effect is larger for Presentation sections (0.0002 fo
+           r CEO_Pres vs 0.0001 for others).
+     ...
+      295  ==============================================================
+           ==================
+      296  H11-Lag: LAGGED POLITICAL RISK AND LANGUAGE UNCERTAINTY
+      297  ==============================================================
+           ==================
+      211 -DV: PRiskQ_lag (cols 1-4), PRiskQ_lag2 (cols 5-8)             
+      212 -Each DV group: Mgr QA, CEO QA, Mgr Pres, CEO Pres             
+      298 +DV: Uncertainty measures predicted by lagged political risk   
+      299  Tail: One-tailed (beta > 0)
+      214 -NOTE: Reversed causality (uncertainty DVs predicted by lagged 
+          -political risk IVs).                                          
+      300 +NOTE: Reversed causality. All specs: Firm FE + Year FE.       
+      301  
+      216 -  PRiskQ_lag:  SIGNIFICANT in ALL 4 cols                      
+      217 -      Mgr_QA +0.0000*** | CEO_QA +0.0000*** | Mgr_Pres +0.0001
+          -*** | CEO_Pres +0.0001***                                     
+      218 -  PRiskQ_lag2: SIGNIFICANT in ALL 4 cols                      
+      219 -      Mgr_QA +0.0000*** | CEO_QA +0.0000** | Mgr_Pres +0.0000*
+          -** | CEO_Pres +0.0000***                                      
+      302 +  PRiskQ_lag:  SIGNIFICANT in ALL 4 cols -- positive          
+      303 +      col1 +0.0000*** [Firm FE, Yr FE] -- DV = Mgr QA         
+      304 +      col2 +0.0000*** [Firm FE, Yr FE] -- DV = CEO QA         
+      305 +      col3 +0.0001*** [Firm FE, Yr FE] -- DV = Mgr Pres       
+      306 +      col4 +0.0001*** [Firm FE, Yr FE] -- DV = CEO Pres       
+      307 +  PRiskQ_lag2: SIGNIFICANT in ALL 4 cols -- positive          
+      308 +      col5 +0.0000*** [Firm FE, Yr FE] -- DV = Mgr QA         
+      309 +      col6 +0.0000**  [Firm FE, Yr FE] -- DV = CEO QA         
+      310 +      col7 +0.0000*** [Firm FE, Yr FE] -- DV = Mgr Pres       
+      311 +      col8 +0.0000*** [Firm FE, Yr FE] -- DV = CEO Pres       
+      312  
+      313  SUMMARY: Lagged political risk (1 and 2 quarters) still predic
+           ts uncertainty. Confirms H11.
+      314           Lag2 slightly weaker (CEO_QA drops from *** to **).
+     ...
+      326  
+      327    CEO_QA:      MARGINAL
+      328        PayoutRatio_q:            Not significant
+      237 -      PayoutRatio_q_lead_qtr:   col12 -0.0168* only (1 of 6, m
+          -arginal)                                                      
+      329 +      PayoutRatio_q_lead_qtr:                                 
+      330 +        col12 -0.0168*  [Firm FE, YrQtr FE, extended] -- only 
+          +1 of 6                                                        
+      331    CEO_Pres:    NO SIGNIFICANCE across all 12 cols
+      332    Manager_QA:  NO SIGNIFICANCE across all 12 cols
+      240 -  Manager_Pres: SIGNIFICANT -- negative (SCATTERED)           
+      241 -      PayoutRatio_q:            col1 -0.0342** col5 -0.0332** 
+          -(2 of 6, Industry FE only)                                    
+      242 -      PayoutRatio_q_lead_qtr:   col7 -0.0329** col11 -0.0286* 
+          -(2 of 6, Industry FE only)                                    
+      333 +  Manager_Pres: SIGNIFICANT -- negative (Industry FE only, van
+          +ishes under Firm FE)                                          
+      334 +      PayoutRatio_q:                                          
+      335 +        col1 -0.0342**  [Ind FE, Yr FE, basic]                
+      336 +        col5 -0.0332**  [Ind FE, YrQtr FE, extended]          
+      337 +      PayoutRatio_q_lead_qtr:                                 
+      338 +        col7  -0.0329** [Ind FE, Yr FE, basic]                
+      339 +        col11 -0.0286*  [Ind FE, YrQtr FE, extended]          
+      340  
+      341  SUMMARY: Manager_Pres shows mild significance under Industry F
+           E but vanishes under Firm FE.
+      342           Effect is in the hypothesized negative direction. CEO
+           _QA has one marginal lead hit.
+     ...
+      358  
+      359    CEO_QA:      NO SIGNIFICANCE across all 12 cols
+      360    CEO_Pres:    NO SIGNIFICANCE across all 12 cols
+      264 -  Manager_QA:  SIGNIFICANT -- positive (Industry FE only)     
+      265 -      CapexAt:      col1 +0.0025** col3 +0.0041*** col5 +0.002
+          -5** (all Industry FE)                                         
+      266 -      CapexAt_lead: col7 +0.0048*** col9 +0.0089*** col11 +0.0
+          -052*** (all Industry FE)                                      
+      361 +  Manager_QA:  SIGNIFICANT -- positive (Industry FE only, vani
+          +shes under Firm FE)                                           
+      362 +      CapexAt:                                                
+      363 +        col1 +0.0025** [Ind FE, Yr FE, basic]                 
+      364 +        col3 +0.0041***[Ind FE, Yr FE, extended]              
+      365 +        col5 +0.0025** [Ind FE, YrQtr FE, extended]           
+      366 +      CapexAt_lead:                                           
+      367 +        col7  +0.0048***[Ind FE, Yr FE, basic]                
+      368 +        col9  +0.0089***[Ind FE, Yr FE, extended]             
+      369 +        col11 +0.0052***[Ind FE, YrQtr FE, extended]          
+      370    Manager_Pres: NO SIGNIFICANCE across all 12 cols
+      371  
+      372  SUMMARY: Manager_QA robustly predicts higher capex (both curre
+           nt and lead) under Industry FE.
+     ...
+      388  Tail: Two-tailed for all
+      389  
+      390    Manager_QA_Unc_c:      SIGNIFICANT -- positive
+      288 -      CapexAt:      +0.0016** / +0.0016**                     
+      289 -      CapexAt_lead: +0.0031*** / +0.0031***                   
+      391 +      col1 +0.0016** [Ind FE, Yr FE, CapexAt]                 
+      392 +      col2 +0.0016** [Ind FE, YrQtr FE, CapexAt]              
+      393 +      col3 +0.0031***[Ind FE, Yr FE, CapexAt_lead]            
+      394 +      col4 +0.0031***[Ind FE, YrQtr FE, CapexAt_lead]         
+      395    z_log_tnic3tsimm:      SIGNIFICANT -- positive
+      291 -      CapexAt:      +0.0033*** / +0.0033***                   
+      292 -      CapexAt_lead: +0.0041*** / +0.0041***                   
+      396 +      col1 +0.0033*** [Ind FE, Yr FE, CapexAt]                
+      397 +      col2 +0.0033*** [Ind FE, YrQtr FE, CapexAt]             
+      398 +      col3 +0.0041*** [Ind FE, Yr FE, CapexAt_lead]           
+      399 +      col4 +0.0041*** [Ind FE, YrQtr FE, CapexAt_lead]        
+      400    MgrQAUnc_x_zlogTSIMM:  SIGNIFICANT -- positive
+      294 -      CapexAt:      +0.0019** / +0.0019**                     
+      295 -      CapexAt_lead: +0.0039*** / +0.0038***                   
+      401 +      col1 +0.0019** [Ind FE, Yr FE, CapexAt]                 
+      402 +      col2 +0.0019** [Ind FE, YrQtr FE, CapexAt]              
+      403 +      col3 +0.0039***[Ind FE, Yr FE, CapexAt_lead]            
+      404 +      col4 +0.0038***[Ind FE, YrQtr FE, CapexAt_lead]         
+      405  
+      297 -SUMMARY: ALL three terms significant. Interaction IS significa
+          -nt for capex (unlike cash in H1.1/H1.1b).                     
+      298 -         Higher product similarity AMPLIFIES the uncertainty-c
+          -apex link.                                                    
+      406 +SUMMARY: ALL three terms significant in ALL 4 specs. Interacti
+          +on IS significant for capex                                   
+      407 +         (unlike cash in H1.1/H1.1b). Higher product similarit
+          +y AMPLIFIES the uncertainty-capex link.                       
+      408           Lead effects are approximately double the current eff
+           ects.
+      409  
+      410  OPEN QUESTIONS:
+     ...
+      424    CEO_QA:      NO SIGNIFICANCE
+      425    CEO_Pres:    NO SIGNIFICANCE
+      426    Manager_QA:  MARGINAL
+      318 -      col3 +0.0001*** only (Industry FE + Extended + Yr)      
+      427 +      col3 +0.0001*** [Ind FE, Yr FE, extended] -- only 1 of 6
+      428    Manager_Pres: MARGINAL
+      320 -      col2 +0.0001*** col3 +0.0001*** (Firm FE Basic + Industr
+          -y FE Extended, both Yr FE)                                    
+      429 +      col2 +0.0001*** [Firm FE, Yr FE, basic]                 
+      430 +      col3 +0.0001*** [Ind FE, Yr FE, extended]               
+      431 +      (vanishes entirely under YrQtr FE cols 5-6)             
+      432  
+      433  SUMMARY: Very sparse significance. Manager_Pres and Manager_QA
+            show up in 1-2 specs each,
+      434           but vanish entirely under YrQtr FE (cols 5-6). Not ro
+           bust.
+     ...
+      448  DV: RDSales (cols 1-6), RDSales_lead (cols 7-12)
+      449  Tail: Two-tailed
+      450  
+      340 -  CEO_QA:      MARGINAL -- negative (Firm FE only, lead=no)   
+      341 -      RDSales: col4 -0.0156* col6 -0.0150* (Firm FE + Extended
+          - only)                                                        
+      451 +  CEO_QA:      MARGINAL -- negative (Firm FE + extended only) 
+      452 +      RDSales:                                                
+      453 +        col4 -0.0156*  [Firm FE, Yr FE, extended]             
+      454 +        col6 -0.0150*  [Firm FE, YrQtr FE, extended]          
+      455        RDSales_lead: Not significant
+      456    CEO_Pres:    NO SIGNIFICANCE across all 12 cols
+      457    Manager_QA:  SIGNIFICANT for current DV -- positive (ALL 6 C
+           OLS)
+      345 -      RDSales: col1 +0.0435** col2 +0.0257** col3 +0.0352** co
+          -l4 +0.0232** col5 +0.0389** col6 +0.0216**                    
+      458 +      RDSales:                                                
+      459 +        col1 +0.0435** [Ind FE, Yr FE, basic]                 
+      460 +        col2 +0.0257** [Firm FE, Yr FE, basic]                
+      461 +        col3 +0.0352** [Ind FE, Yr FE, extended]              
+      462 +        col4 +0.0232** [Firm FE, Yr FE, extended]             
+      463 +        col5 +0.0389** [Ind FE, YrQtr FE, extended]           
+      464 +        col6 +0.0216** [Firm FE, YrQtr FE, extended]          
+      465        RDSales_lead: Not significant in any col
+      466    Manager_Pres: NO SIGNIFICANCE across all 12 cols
+      467  
+     ...
+      487  
+      488    CEO_QA:      NO SIGNIFICANCE (all cols very small, near zero
+           )
+      489    CEO_Pres:    MARGINAL / MIXED
+      371 -      RepurchaseIntensity:      col1 -0.0005** (negative, Indu
+          -stry FE only)                                                 
+      372 -      RepurchaseIntensity_lead: col8 +0.0005* (positive, Firm 
+          -FE only)                                                      
+      373 -  Manager_QA:  SIGNIFICANT -- negative (Industry FE only)     
+      374 -      RepurchaseIntensity:      col1 -0.0009*** col3 -0.0009**
+          -* col5 -0.0008*** (all Industry FE)                           
+      375 -      RepurchaseIntensity_lead: col7 -0.0008** col9 -0.0007* c
+          -ol11 -0.0006* (all Industry FE)                               
+      376 -  Manager_Pres: SIGNIFICANT -- positive                       
+      377 -      RepurchaseIntensity:      col1 +0.0010*** col2 +0.0006**
+          - col3 +0.0009*** col4 +0.0006* col5 +0.0008*** col6 +0.0006*  
+      378 -      RepurchaseIntensity_lead: col7 +0.0009** col9 +0.0008** 
+          -col11 +0.0008** (Industry FE only)                            
+      490 +      RepurchaseIntensity:                                    
+      491 +        col1 -0.0005** [Ind FE, Yr FE, basic] -- negative, 1 s
+          +pec only                                                      
+      492 +      RepurchaseIntensity_lead:                               
+      493 +        col8 +0.0005*  [Firm FE, Yr FE, basic] -- positive, 1 
+          +spec only (OPPOSITE SIGN to current)                          
+      494 +  Manager_QA:  SIGNIFICANT -- negative (Industry FE only, vani
+          +shes under Firm FE)                                           
+      495 +      RepurchaseIntensity:                                    
+      496 +        col1 -0.0009*** [Ind FE, Yr FE, basic]                
+      497 +        col3 -0.0009*** [Ind FE, Yr FE, extended]             
+      498 +        col5 -0.0008*** [Ind FE, YrQtr FE, extended]          
+      499 +      RepurchaseIntensity_lead:                               
+      500 +        col7  -0.0008** [Ind FE, Yr FE, basic]                
+      501 +        col9  -0.0007*  [Ind FE, Yr FE, extended]             
+      502 +        col11 -0.0006*  [Ind FE, YrQtr FE, extended]          
+      503 +  Manager_Pres: SIGNIFICANT -- positive (survives Firm FE for 
+          +current DV)                                                   
+      504 +      RepurchaseIntensity:                                    
+      505 +        col1 +0.0010*** [Ind FE, Yr FE, basic]                
+      506 +        col2 +0.0006**  [Firm FE, Yr FE, basic]               
+      507 +        col3 +0.0009*** [Ind FE, Yr FE, extended]             
+      508 +        col4 +0.0006*   [Firm FE, Yr FE, extended]            
+      509 +        col5 +0.0008*** [Ind FE, YrQtr FE, extended]          
+      510 +        col6 +0.0006*   [Firm FE, YrQtr FE, extended]         
+      511 +      RepurchaseIntensity_lead:                               
+      512 +        col7  +0.0009** [Ind FE, Yr FE, basic]                
+      513 +        col9  +0.0008** [Ind FE, Yr FE, extended]             
+      514 +        col11 +0.0008** [Ind FE, YrQtr FE, extended]          
+      515 +        (vanishes under Firm FE for lead DV)                  
+      516  
+      517  SUMMARY: Manager_QA and Manager_Pres BOTH significant but with
+            OPPOSITE SIGNS.
+      518           Manager_QA = negative (uncertainty -> fewer repurchas
+           es). Industry FE only.
+     ...
+      540    CEO_QA:      NO SIGNIFICANCE
+      541    CEO_Pres:    NO SIGNIFICANCE
+      542    Manager_QA:  NO SIGNIFICANCE
+      406 -  Manager_Pres: SIGNIFICANT -- positive (ALL 6 COLS)          
+      407 -      col1 +0.0020** col2 +0.0024** col3 +0.0016* col4 +0.0021
+          -* col5 +0.0016* col6 +0.0022*                                 
+      543 +  Manager_Pres: SIGNIFICANT -- positive (ALL 6 COLS, survives 
+          +Firm FE)                                                      
+      544 +      col1 +0.0020** [Ind FE, Yr FE, basic]                   
+      545 +      col2 +0.0024** [Firm FE, Yr FE, basic]                  
+      546 +      col3 +0.0016*  [Ind FE, Yr FE, extended]                
+      547 +      col4 +0.0021*  [Firm FE, Yr FE, extended]               
+      548 +      col5 +0.0016*  [Ind FE, YrQtr FE, extended]             
+      549 +      col6 +0.0022*  [Firm FE, YrQtr FE, extended]            
+      550  
+      551  SUMMARY: Manager_Pres is the sole significant IV, robust acros
+           s all specs including Firm FE.
+      410 -         But marginal (mostly * significance in extended specs
+          -). R-squared ~ 0.                                             
+      552 +         But marginal (* in extended specs). R-squared ~ 0.   
+      553           Model has near-zero explanatory power.
+      554  
+      555  OPEN QUESTIONS:
+     ...
+      570  PATTERN 1: MANAGER_QA IS THE DOMINANT IV
+      571  -----------------------------------------
+      572  Manager_QA is the ONLY consistently significant IV across the 
+           core suites:
+      431 -  H1  (CashHoldings):     *** positive -- robust              
+      432 -  H4a (BookLev_lead):     ** negative  -- robust              
+      433 -  H4b (DebtToCapital_lead): *** negative -- robust            
+      434 -  H5  (WangDISP):         * to *** positive -- scattered      
+      435 -  H13 (CapexAt):          ** to *** positive -- Industry FE on
+          -ly                                                            
+      436 -  H13.1 (CapexAt moderated): ** to *** positive -- robust     
+      437 -  H16 (RDSales):          ** positive -- robust across all spe
+          -cs                                                            
+      438 -  H17 (RepurchaseIntensity): *** negative -- Industry FE only 
+      573 +  H1  (CashHoldings):        *** positive, ALL 6 specs (Ind+Fi
+          +rm, Yr+YrQtr) -- robust                                       
+      574 +  H4a (BookLev_lead):        * to ** negative, survives Firm F
+          +E -- robust                                                   
+      575 +  H4b (DebtToCapital_lead):  * to *** negative, survives Firm 
+          +FE -- robust                                                  
+      576 +  H5  (WangDISP):            * to *** positive, Industry FE on
+          +ly -- partial                                                 
+      577 +  H13 (CapexAt):             ** to *** positive, Industry FE o
+          +nly -- partial                                                
+      578 +  H13.1 (CapexAt moderated): ** to *** positive, Industry FE o
+          +nly (moderation suite) -- robust                              
+      579 +  H16 (RDSales):             ** positive, ALL 6 specs (Ind+Fir
+          +m, Yr+YrQtr) -- robust                                        
+      580 +  H17 (RepurchaseIntensity): *** negative, Industry FE only --
+          + partial                                                      
+      581  
+      582    -> Q47. What makes the QA section uniquely informative? Is i
+           t the spontaneous/unscripted nature?
+      441 -  -> Q48. Why does Manager_QA almost never survive Firm FE for
+          - capex (H13) but does for cash (H1), R&D (H16)?               
+      583 +  -> Q48. Why does Manager_QA survive Firm FE for cash (H1), l
+          +everage (H4a/b), R&D (H16)                                    
+      584 +          but NOT for capex (H13), dispersion (H5), repurchase
+          +s (H17)?                                                      
+      585  
+      586  
+      587  PATTERN 2: CEO MEASURES ARE ALMOST UNIVERSALLY NULL
+      588  ----------------------------------------------------
+      589  CEO_QA is significant ONLY for:
+      447 -  H4a (BookLev_lead):  positive (opposite to Manager_QA)      
+      448 -  H16 (RDSales):       marginally negative (opposite to Manage
+          -r_QA)                                                         
+      590 +  H4a (BookLev_lead):  positive, ALL 6 lead specs including Fi
+          +rm FE                                                         
+      591 +  H16 (RDSales):       marginally negative, Firm FE + extended
+          + only (2 specs)                                               
+      592  CEO_Pres: significant only in H17 col1 (one spec, not robust)
+      593  
+      594    -> Q49. Why is CEO speech almost never informative? Do CEOs 
+           use more controlled/rehearsed language
+     ...
+      600  PATTERN 3: MANAGER_PRES IS A SECONDARY CHANNEL
+      601  ------------------------------------------------
+      602  Manager_Pres is significant for:
+      460 -  H5  (WangDISP):            positive -- STRONGER than Manager
+          -_QA                                                           
+      461 -  H12 (PayoutRatio_q):       negative -- scattered, Industry F
+          -E only                                                        
+      462 -  H14 (DSPREAD):             positive -- marginal             
+      463 -  H17 (RepurchaseIntensity): positive -- OPPOSITE sign to Mana
+          -ger_QA                                                        
+      464 -  H18 (CCCL):                positive -- sole significant IV  
+      603 +  H5  (WangDISP):            positive, survives Firm FE -- STR
+          +ONGER than Manager_QA here                                    
+      604 +  H12 (PayoutRatio_q):       negative, Industry FE only -- sca
+          +ttered                                                        
+      605 +  H14 (DSPREAD):             positive, Yr FE only -- marginal 
+          +(2 specs)                                                     
+      606 +  H17 (RepurchaseIntensity): positive, survives Firm FE for cu
+          +rrent DV -- OPPOSITE sign to Manager_QA                       
+      607 +  H18 (CCCL):                positive, survives Firm FE -- sol
+          +e significant IV                                              
+      608  
+      609    -> Q51. Manager_Pres wins in H5 (analyst dispersion), H17 (r
+           epurchase, opposite sign), and H18 (CCCL).
+      610            These are analyst/SEC/payout-related DVs. Is the pre
+           pared section more relevant for
+     ...
+      615  
+      616  PATTERN 4: INDUSTRY FE vs FIRM FE
+      617  -----------------------------------
+      475 -Several effects vanish under Firm FE:                         
+      476 -  H13 (CapexAt):           Manager_QA sig under Industry FE, n
+          -ull under Firm FE                                             
+      477 -  H12 (PayoutRatio_q):     Manager_Pres sig under Industry FE,
+          - null under Firm FE                                           
+      478 -  H17 (Repurchase):        Manager_QA sig under Industry FE, n
+          -ull under Firm FE                                             
+      479 -  H5  (WangDISP):          Manager_QA sig under Industry FE, n
+          -ull under Firm FE                                             
+      618 +Effects that VANISH under Firm FE:                            
+      619 +  H5  (WangDISP):          Manager_QA sig at Ind FE, null at F
+          +irm FE                                                        
+      620 +  H12 (PayoutRatio_q):     Manager_Pres sig at Ind FE, null at
+          + Firm FE                                                      
+      621 +  H13 (CapexAt):           Manager_QA sig at Ind FE, null at F
+          +irm FE                                                        
+      622 +  H17 (Repurchase):        Manager_QA sig at Ind FE, null at F
+          +irm FE                                                        
+      623 +  H17 (Repurchase lead):   Manager_Pres sig at Ind FE, null at
+          + Firm FE                                                      
+      624  
+      625  Effects that SURVIVE Firm FE:
+      482 -  H1  (CashHoldings):      Manager_QA *** under both          
+      626 +  H1  (CashHoldings):      Manager_QA *** under Firm FE       
+      627    H4a (BookLev_lead):      Both CEO_QA and Manager_QA survive 
+           Firm FE
+      484 -  H4b (DebtToCapital_lead): Manager_QA survives Firm FE       
+      485 -  H16 (RDSales):           Manager_QA ** under both           
+      486 -  H17 (Repurchase):        Manager_Pres survives Firm FE (curr
+          -ent DV)                                                       
+      487 -  H18 (CCCL):              Manager_Pres survives Firm FE      
+      628 +  H4b (DebtToCapital_lead): Manager_QA * to ** under Firm FE  
+      629 +  H16 (RDSales):           Manager_QA ** under Firm FE        
+      630 +  H17 (Repurchase current): Manager_Pres * to ** under Firm FE
+      631 +  H18 (CCCL):              Manager_Pres * to ** under Firm FE 
+      632  
+      633    -> Q53. Cash, leverage, R&D effects survive within-firm iden
+           tification. Capex, payout, dispersion do not.
+      634            Is this a power issue, or are the latter effects gen
+           uinely cross-sectional?
+     ...
+      664  
+      665  PATTERN 7: COMPLETE NULLS
+      666  ---------------------------
+      523 -  H7  (delta_amihud):  Total null across all IVs              
+      524 -  H14 (DSPREAD):       Near-null (1-2 marginal hits)          
+      667 +  H7  (delta_amihud):  Total null across all IVs and all specs
+      668 +  H14 (DSPREAD):       Near-null (2-3 marginal hits, Yr FE onl
+          +y, vanish under YrQtr FE)                                     
+      669  
+      670    -> Q58. Both market microstructure DVs are null/near-null. S
+           peech uncertainty does not seem to
+      671            affect trading liquidity. Is this because market par
+           ticipants don't attend to these signals,
+     ...
+      676  -------------------------------------
+      677  These are the ONLY suites where ALL measures (CEO and Manager,
+            QA and Pres) are significant.
+      678  They also have REVERSED causality (uncertainty is the DV, poli
+           tical risk is the IV).
+      679 +All specs use Firm FE + Year FE.                              
+      680  
+      681    -> Q59. Political risk is a universal driver of language unc
+           ertainty, while language uncertainty
+      682            is a selective predictor of corporate outcomes. The 
+           asymmetry is noteworthy.
+
+● Done. Every significant entry now includes the exact FE specification in
+  brackets: [Ind/Firm FE, Yr/YrQtr FE, basic/extended]. The column-to-FE key at
+  the top serves as the master reference.
+
+✻ Churned for 3m 19s
+
+❯ commit and push all to master                                                 
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git status)
+  ⎿  On branch master
+     Your branch is up to date with 'origin/master'.
+     … +27 lines (ctrl+o to expand)
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git diff --stat)
+  ⎿  warning: in the working copy of 'README.md', LF will be replaced by CR
+     LF the next time Git touches it
+     warning: in the working copy of 'docs/Prompts/Audit Provenance doc.txt
+     … +41 lines (ctrl+o to expand)
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git log --oneline -5)
+  ⎿  c97e0a4 feat: comprehensive documentation audit — fix tail tests, FE s
+     trings, dead code, align H5b Wang, rewrite README
+     38c5216 feat: rename H12Q (quarterly payout ratio) to H12
+     … +5 lines (ctrl+o to expand)
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git status -u -- outputs/findings.txt)
+  ⎿  On branch master
+     Your branch is up to date with 'origin/master'.
+
+     nothing to commit, working tree clean
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && ls docs/provenance/)
+  ⎿  Audits/
+     H0.3.md
+     H1.1.md
+     … +17 lines (ctrl+o to expand)
+
+● findings.txt appears to be gitignored (in outputs/). Let me stage all the
+  tracked changes plus the new provenance docs, then commit.
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git add README.md "docs/Prompts/Audit
+      Provenance do…)
+  ⎿  Error: Exit code 1
+     warning: in the working copy of 'README.md', LF will be replaced by CRLF 
+     the next time Git touches it
+     warning: in the working copy of 'docs/Prompts/Audit Provenance doc.txt', LF
+      will be replaced by CRLF the next time Git touches it
+     warning: in the working copy of 'src/f1d/econometric/__init__.py', LF will 
+     be replaced by CRLF the next time Git touches it
+     warning: in the working copy of 
+     'src/f1d/econometric/run_h1_1_cash_tsimm.py', LF will be replaced by CRLF 
+     the next time Git touches it
+     warning: in the working copy of 'src/f1d/variables/__init__.py', LF will be
+      replaced by CRLF the next time Git touches it
+     warning: in the working copy of 
+     'tests/verification/test_all_scripts_dryrun.py', LF will be replaced by 
+     CRLF the next time Git touches it
+     warning: in the working copy of 'tests/verification/test_stage3_dryrun.py',
+      LF will be replaced by CRLF the next time Git touches it
+     warning: in the working copy of 'tests/verification/test_stage4_dryrun.py',
+      LF will be replaced by CRLF the next time Git touches it
+     The following paths are ignored by one of your .gitignore files:
+     … +43 lines (ctrl+o to see all)
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git rm
+      docs/audits/audit_01_methodology.md docs/aud…)
+  ⎿  Cancelled: parallel tool call Bash(cd 
+     "C:/Users/sinas/OneDrive/Desktop/Proj…) errored
+
+● Need to force-add the outputs file since outputs/ is gitignored. Let me fix
+  this.
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git add -f
+      outputs/generate_all_tables.py)
+  ⎿  (No output)
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git rm
+      docs/audits/audit_01_methodology.md docs/aud…)
+  ⎿  rm 'docs/audits/audit_01_methodology.md'
+     rm 'docs/audits/audit_02_data_samples_variables.md'
+     rm 'docs/audits/audit_03_findings.md'
+     … +15 lines (ctrl+o to expand)
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git status --short)
+  ⎿  M  README.md
+     M  "docs/Prompts/Audit Provenance doc.txt"
+     A  "docs/Prompts/Suite Provenance Doc.txt"
+     … +35 lines (ctrl+o to expand)
+
+● All staged. Let me commit and push.
+
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git commit -m "$(cat <<'EOF'
+      feat: archive H5/H5b-J…)
+  ⎿  [master 70bad30] feat: archive H5/H5b-Johnson, remove HHI from H1.1/H1
+     3.1, add H1.1b back, remove H0.3 from tables, add provenance docs
+      70 files changed, 21588 insertions(+), 6645 deletions(-)
+     … +44 lines (ctrl+o to expand)
+● Bash(cd "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datase
+      ts/Datasets/Data_Processing/F1D" && git push origin master)
+  ⎿  To https://github.com/Siriko404/F1D.git
+        c97e0a4..70bad30  master -> master
+
+● Committed and pushed to master. 70 files changed (+21,588 / -6,645).
+
+● Ran 1 stop hook (ctrl+o to expand)
+  ⎿  Stop hook error: Failed with non-blocking status code:
+  /c/Users/sinas/.claude/plugins/marketplaces/claude-plugins-official/pl
+  ugins/ralph-loop/hooks/stop-hook.sh: line 32: jq: command not found
+
+✻ Cogitated for 2m 33s
+
+❯ okay. now we want to implement a suite, with a DV which is a binary           
+indicator, which if the external funding has been the majority, it gives 1 and  
+if internal, it gives 0. we want to have it with the difinition of pecking      
+order theory. so i want you to first analyze this thoroughly and see if this    
+test can explain some of the findings. my supervisor mentioned it might explain 
+ cash holdings, capex, r&d, etc. i want you to think how this must be done, and 
+ if it makes sense                                                              
+
+● Let me think through this carefully before writing any code.
+
+  Pecking Order Theory and the Proposed DV
+
+  The theory (Myers & Majluf, 1984): Firms prefer internal financing (retained
+  earnings, cash flow) first, then debt, then equity last. The driver is
+  information asymmetry -- external financing is costly because outsiders know
+  less about firm value.
+
+  The proposed DV: Binary = 1 if external funding > internal funding, 0
+  otherwise.
+
+  Construction would likely be:
+  - Internal funds = operating cash flow (oancf) or net income + depreciation
+  (ib + dp)
+  - External funds = net debt issuance (dltis - dltr) + net equity issuance
+  (sstk - prstkc)
+  - Binary = 1 if External > Internal
+
+  Does it make sense? My honest assessment: probably not.
+
+  Problem 1: Tautological overlap with existing DVs. The binary DV is
+  mechanically composed of the same balance sheet items that are already DVs in
+  other suites:
+  - Cash holdings (H1) = accumulated internal funds
+  - Leverage (H4a/b) = external debt usage
+  - Repurchases (H17) = returning cash instead of retaining it internally
+  - Payout (H12) = same
+
+  Finding that uncertainty predicts External_Funding_Majority would not be a new
+   finding -- it would just bundle H1 + H4 + H17 into a single variable. We
+  already know the answer: uncertainty pushes firms toward internal funding
+  (more cash, less debt, fewer payouts).
+
+  Problem 2: It doesn't "explain" the other findings -- it IS the other 
+  findings. Your supervisor suggested it might explain cash, capex, R&D. But for
+   it to explain those, it would need to be a mediator or an independent
+  variable, not another DV in the same regression framework. As a DV predicted
+  by the same IVs (speech uncertainty), it just adds another row to the findings
+   table without resolving any of the open questions.
+
+  Problem 3: The existing results already tell the pecking order story. Look at
+  your Manager_QA findings read together:
+  - Cash ↑ (H1): building internal reserves
+  - Leverage ↓ (H4a/b): avoiding external debt
+  - Payout ↓ (H12, via Pres): retaining cash
+  - Repurchases ↓ (H17): not disbursing cash
+
+  This IS the pecking order prediction. A binary DV just re-packages what's
+  already there.
+
+  Problem 4: Binary DV construction issues. Many firms have negative operating
+  cash flow in a given quarter (loss-making firms), making the internal/external
+   split ambiguous. The >50% threshold is arbitrary. And if most firm-quarters
+  are internally funded (which is empirically true), you get a skewed base rate
+  similar to H18's CCCL problem (0.27% base rate, near-zero R-squared).
+
+  When would it make sense?
+
+  It would make sense as a mediation test: Uncertainty → funding choice shift →
+  cash/capex/R&D. But that requires a different methodology (Sobel test,
+  structural equations, or at minimum a two-stage design), not the standard
+  PanelOLS we use. Adding it as another standalone DV suite gives you a 13th
+  result that says the same thing as the other 12.
+
+  What would actually help explain the findings?
+
+  The real open questions from the findings are:
+  - Q40/Q52: Why do Manager_QA and Manager_Pres have opposite signs in H17?
+  - Q9/Q50: Why do CEO_QA and Manager_QA have opposite signs in H4a/H16?
+  - Q30: Why does TSIMM moderate capex (H13.1) but not cash (H1.1)?
+  - Q56-57: How can uncertainty increase BOTH cash AND capex simultaneously?
+
+  A funding-source binary DV doesn't address any of these.
+
+  My recommendation: Don't implement this suite. The pecking order story is
+  already embedded in your existing results. If your supervisor wants a pecking
+  order angle, the better approach is to frame the existing H1 + H4 + H17
+  results together as pecking order evidence in the paper's discussion section,
+  rather than creating a new DV that mechanically recombines them.
+
+  Do you want me to proceed differently, or does this analysis change the
+  direction?
+
+● Ran 1 stop hook (ctrl+o to expand)
+  ⎿  Stop hook error: Failed with non-blocking status code:
+  /c/Users/sinas/.claude/plugins/marketplaces/claude-plugins-official/pl
+  ugins/ralph-loop/hooks/stop-hook.sh: line 32: jq: command not found
+
+✻ Brewed for 1m 9s
+
+❯ whats wrong again with cccl?                                                  
+
+● Nothing is "wrong" with the code or the results -- the numbers are correct.
+  The concern is interpretive:
+
+  - 0.27% base rate -- only 302 events out of 112,968 observations
+  - R-squared ~ 0.0003 (Adj. R-squared negative) -- the model explains
+  essentially nothing
+  - Manager_Pres is statistically significant (* to **) but the coefficients are
+   tiny (0.0016-0.0024) and the model has zero predictive power
+
+  It's a valid result, just a very weak one. I brought it up as a parallel to
+  warn that a binary pecking order DV could face the same issue if the base rate
+   is extreme.
+
+● Ran 1 stop hook (ctrl+o to expand)
+  ⎿  Stop hook error: Failed with non-blocking status code:
+  /c/Users/sinas/.claude/plugins/marketplaces/claude-plugins-official/pl
+  ugins/ralph-loop/hooks/stop-hook.sh: line 32: jq: command not found

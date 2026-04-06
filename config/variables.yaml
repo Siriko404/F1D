@@ -24,6 +24,7 @@
 #   lr2010   = Leary & Roberts (2010, JFE)
 #   tim2021  = Timoneda (2021, SSR)
 #   cdm2013  = Cassell, Dreher & Myers (2013, TAR)
+#   hm2015   = Hoberg & Maksimovic (2015, RFS)
 #   ff2001   = Fama & French (2001, JFE)
 #   opsw1999 = Opler, Pinkowitz, Stulz & Williamson (1999, JFE)
 #   lm2011   = Loughran & McDonald (2011, JF) — word lists
@@ -635,6 +636,26 @@ variables:
     role: dv
     suites: [H21]
     description: "SEC comment letter count (forward-looking)"
+
+  equitydelaycon:
+    stage: input
+    source: "inputs/ConstraintsDatabase_ext2015"
+    column: "equitydelaycon"
+    formula: "Cosine similarity of 10-K CAPLIQ text to equity-delay training set, boilerplate-purged"
+    reference: "hm2015"
+    role: dv
+    suites: [H22]
+    description: "Hoberg-Maksimovic equity financing constraint score (higher = more constrained)"
+
+  equitydelaycon_lead:
+    stage: derived
+    source: "equitydelaycon shifted -1 within gvkey"
+    column: "EquityDelayCon_lead"
+    formula: "equitydelaycon(t+1) — next fiscal year's equity constraint score"
+    reference: "hm2015"
+    role: dv
+    suites: [H22]
+    description: "Lead equity financing constraint (DV in H22 regression)"
 
   # ===========================================================================
   # Dependent Variables (missing from original YAML, now added)

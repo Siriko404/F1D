@@ -317,6 +317,22 @@ SUITES = [
         ],
         "key_tails": ["two", "two", "two"],
     },
+    # ── H13.2 ──
+    {
+        "id": "H13.2",
+        "dir": "h13_2_capex_leads/2026-04-05_155414",
+        "caption": "H13.2: Speech Uncertainty and Capital Expenditure --- Lead Horizons",
+        "label": "tab:h13_2",
+        "cols": 16,
+        "dvs": [
+            (r"Capex\_lead", 4),
+            (r"Capex\_lead2", 4),
+            (r"Capex\_lead3", 4),
+            (r"Capex\_lead4", 4),
+        ],
+        "tail": "two",
+        "hyp_dir": None,
+    },
     # ── H14 ──
     {
         "id": "H14",
@@ -438,6 +454,57 @@ SUITES = [
         ],
         "tail": "one",
         "hyp_dir": ">",
+    },
+    # ── H22 ──
+    {
+        "id": "H22",
+        "dir": "h22_equity_constraints/2026-04-05_145526",
+        "caption": "H22: Speech Uncertainty and Equity Financing Constraints",
+        "label": "tab:h22",
+        "cols": 4,
+        "dvs": [
+            (r"EquityDelayCon\_lead", 4),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H23 ──
+    {
+        "id": "H23",
+        "type": "moderation",
+        "dir": "h23_competition_uncertainty/2026-04-05_160232",
+        "caption": "H23: Product-Market Competition and Uncertainty Language",
+        "label": "tab:h23",
+        "cols": 8,
+        "col_files": {
+            1: "regression_results_col1.txt",
+            2: "regression_results_col2.txt",
+            3: "regression_results_col3.txt",
+            4: "regression_results_col4.txt",
+            5: "regression_results_col5.txt",
+            6: "regression_results_col6.txt",
+            7: "regression_results_col7.txt",
+            8: "regression_results_col8.txt",
+        },
+        "dvs": [
+            (r"QA\_Uncertainty", 2),
+            (r"Pres\_Uncertainty", 2),
+            (r"QA\_Uncertainty", 2),
+            (r"Pres\_Uncertainty", 2),
+        ],
+        "col_dv_labels": [
+            "Manager", "CEO", "Manager", "CEO",
+            "Manager", "CEO", "Manager", "CEO",
+        ],
+        "key_vars": ["z_log_TotalSimilarity"],
+        "key_labels": [r"$z(\log(\mathrm{TSIMM}))$"],
+        "key_tails": ["two"],
+        "fe_rows": [
+            ("Industry FE", ["Yes", "Yes", "Yes", "Yes", "", "", "", ""]),
+            ("Firm FE", ["", "", "", "", "Yes", "Yes", "Yes", "Yes"]),
+            ("Year FE", ["Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes"]),
+        ],
+        "time_fe_label": "Year FE",
     },
 ]
 
@@ -851,7 +918,7 @@ def generate_interaction_table(suite):
     lines.append(r" TNIC3HHI is the Hoberg-Phillips (2016) text-based Herfindahl index.")
     lines.append(r" Control coefficients shown from Manager QA regression (representative).")
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H16"}
+    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16"}
     if suite.get("id", "") in _twoway_ids:
         lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     else:
@@ -1126,7 +1193,7 @@ def generate_moderation_table(suite):
     lines.append(r"\textit{Notes:} ")
     lines.append(tail_note)
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H16"}
+    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16"}
     if suite.get("id", "") in _twoway_ids:
         lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     else:
@@ -1337,7 +1404,7 @@ def generate_table(suite):
     lines.append(r"\vspace{2pt}\scriptsize")
     lines.append(r"\textit{Notes:} " + sig_note)
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H16"}
+    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16"}
     if suite.get("id", "") in _twoway_ids:
         lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     else:

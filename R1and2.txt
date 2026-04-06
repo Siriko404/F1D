@@ -1,0 +1,516 @@
+## Bottom line
+
+I did **not** find a top-tier paper in the capital-structure literature I checked that uses your **exact quarterly binary DV**:
+**1 = predominantly debt-financed, 0 = predominantly equity-financed, conditional on the firm raising external capital in that quarter.**
+
+What I did find are three very close, well-cited top-tier templates, all at the **annual** firm-year level:
+
+1. **Hovakimian, Opler, and Titman (2001, JFQA)** classify firm-years into debt or equity issuance/repurchase events using **net issue amounts relative to book assets**, and **omit firm-years with both debt and equity issues/repurchases**. ([IDEAS/RePEc][1])
+2. **Leary and Roberts (2010, JFE)** classify annual firm-years into **internal / debt / equity / dual** financing using a **5% of lagged assets** threshold; if both debt and equity are issued, they treat the observation as **equity** for their debt-vs-equity exercise. ([IDEAS/RePEc][2])
+3. **Huang, Ritter, and Denis (2021, RFS)** classify annual firm-years into **pure debt / pure equity / dual / no external financing** using statement-of-cash-flows measures and explicit thresholds on both assets and market equity. ([IDEAS/RePEc][3])
+
+So the literature gives you **published components and annual classification rules**, but I did not find a paper that already packages them into your exact **quarterly** binary regression DV. ([IDEAS/RePEc][1])
+
+---
+
+## Part 1. Closest published papers and their exact definitions
+
+### 1) Leary, Mark T., and Michael R. Roberts. 2010.
+
+**“The pecking order, debt capacity, and information asymmetry.”**
+*Journal of Financial Economics* **95**(3): 332–355. ([IDEAS/RePEc][2])
+
+This is the **closest top-tier paper** I found to your intended dependent variable, but it is **annual**, not quarterly. They define financing decisions as follows:
+
+* **Debt issuance**:
+  a **net change in total book debt** from (t-1) to (t), normalized by book assets in (t-1), **in excess of 5%**. ([Finance Department][4])
+* **Equity issuance (primary definition)**:
+  **sale of common and preferred stock, net of repurchases**, during year (t), divided by book assets in (t-1), **in excess of 5%**. ([Finance Department][4])
+* **If neither debt nor equity is issued**, the firm is treated as using **internal resources**. ([Finance Department][4])
+* **Dual issues** are classified as **equity issues**. ([Finance Department][4])
+
+Their appendix gives the key Compustat balance-sheet debt definition:
+
+* **Debt = data 9 + data 34**
+  i.e., long-term debt plus debt in current liabilities. ([Finance Department][4])
+
+Their sample is:
+
+* Compustat, **1980–2005**
+* exclude **financials** (SIC 6000–6999)
+* exclude **utilities** (SIC 4900–4999)
+* trim top/bottom 1% of variables used
+* final sample: **34,470 firm-years** with non-missing data. ([Finance Department][4])
+
+**Why it matters for you:** this is the cleanest published top-tier precedent for an annual **debt-vs-equity financing choice** conditional on active financing, but it is **not quarterly**. ([Finance Department][4])
+
+---
+
+### 2) Hovakimian, Armen, Tim Opler, and Sheridan Titman. 2001.
+
+**“The Debt-Equity Choice.”**
+*Journal of Financial and Quantitative Analysis* **36**(1): 1–24. ([IDEAS/RePEc][1])
+
+This paper is also very close conceptually. The key classification rule reported in the accessible abstract/snippet is:
+
+* A firm is defined as **issuing** or **repurchasing** a security when the **net amount issued (repurchased)** divided by **book assets** exceeds **5%**. ([JSTOR][5])
+* **Firm-years in which both debt and equity are issued (or repurchased)** are **omitted**. ([Cambridge University Press & Assessment][6])
+
+This is a direct precedent for a **debt-vs-equity issuer classification**, but again it is not your exact quarterly conditional binary. ([JSTOR][5])
+
+---
+
+### 3) Huang, Rongbing, Jay R. Ritter, and David Denis. 2021.
+
+**“Corporate Cash Shortfalls and Financing Decisions.”**
+*Review of Financial Studies* **34**(4): 1789–1833. ([IDEAS/RePEc][3])
+
+This is the cleanest recent top-tier paper for explicit annual financing-type classification from Compustat cash-flow items:
+
+* **Pure equity issue** if
+  (\Delta E_t/Assets_{t-1} \ge 0.05) and (\Delta E_t/ME_{t-1} \ge 0.03),
+  and debt does **not** simultaneously pass both thresholds. ([Websites][7])
+* **Pure debt issue** if
+  (\Delta D_t/Assets_{t-1} \ge 0.05) and (\Delta D_t/ME_{t-1} \ge 0.03),
+  and equity does **not** simultaneously pass both thresholds. ([Websites][7])
+* **Dual issue** if both debt and equity pass both thresholds. ([Websites][7])
+
+Their appendix defines:
+
+* (\Delta D) = change in interest-bearing debt from the statement of cash flows
+* (\Delta E) = change in equity from the statement of cash flows. ([Websites][7])
+
+This is still **annual**, but it is probably the best published template if you want a clean **externally financed / debt / equity / dual** taxonomy. ([Websites][7])
+
+---
+
+## Part 2. Standard published definitions of each component
+
+## A. Net debt issuance
+
+### A1) Standard flow-of-funds net debt issuance: **data 111 − data 114**
+
+The most canonical pecking-order implementation in the top-tier literature is:
+
+* **Net debt issuance = data 111 − data 114**
+* i.e., **Long-Term Debt – Issuance** minus **Long-Term Debt – Reduction**. ([Leeds Faculty][8])
+
+This appears explicitly in Lemmon and Zender’s discussion of the Frank and Goyal approach:
+
+* “the financing deficit is equal to the sum of **net debt (data 111 − data 114)** and **equity issues (data 108 − data 115)**.” ([Leeds Faculty][8])
+
+That is a **statement-of-cash-flows / flow-of-funds** measure, not a balance-sheet change. ([Leeds Faculty][8])
+
+### A2) Frank, Murray Z., and Vidhan K. Goyal. 2003.
+
+**“Testing the pecking order theory of capital structure.”**
+*Journal of Financial Economics* **67**(2): 217–248. ([ScienceDirect][9])
+
+Frank and Goyal’s financing-deficit framework is the classic annual pecking-order setup. Their financing deficit is built from dividends, investment, changes in working capital, and internal cash flow, and the associated external financing is split into **net debt** and **net equity**. ([ScienceDirect][10])
+
+Their sample, as summarized in Lemmon and Zender, is:
+
+* all CRSP/Compustat firms, **1971–2000** in Lemmon–Zender’s replication of the Frank–Goyal construction
+* exclude **regulated** firms (SIC 4900–4999)
+* exclude **financials** (SIC 6000–6999)
+* exclude firms with minimum assets < $1m or minimum sales < 0
+* drop missing financing-deficit / net debt / net equity observations
+* scale by lagged assets
+* trim observations with deficit or net issues > 200% of lagged assets. ([Leeds Faculty][8])
+
+### A3) Interest-bearing debt change in Huang, Ritter, and Denis (2021)
+
+Huang et al. give a more refined **statement-of-cash-flows** debt measure:
+
+* For **format codes 1–3**:
+  (\Delta D = DLTIS - DLTR - DLCCH)
+* For **format code 7**:
+  (\Delta D = DLTIS - DLTR + DLCCH) ([Websites][7])
+
+So this is still a **flow** measure, but it distinguishes the role of **changes in current debt** (`DLCCH`). ([Websites][7])
+
+### A4) Balance-sheet change debt measure in Leary and Roberts (2010)
+
+Leary and Roberts define the debt stock as:
+
+* **Debt = data 9 + data 34** ([Finance Department][4])
+
+and identify a debt-issuance event when the **change in total book debt** from (t-1) to (t), divided by lagged assets, exceeds 5%. That is a **balance-sheet change** approach, not a statement-of-cash-flows net issuance approach. ([Finance Department][4])
+
+### A5) Shyam-Sunder and Myers (1999)
+
+Shyam-Sunder and Myers’ basic pecking-order test is built around the financing deficit and debt financing of that deficit. Their sample starts from the Industrial Compustat files, excludes financials and regulated utilities, and excludes major mergers. ([ScienceDirect][11])
+
+A key difference, highlighted by Lemmon and Zender, is that **Shyam-Sunder and Myers include the current portion of long-term debt in the financing deficit beyond its role in working capital**, whereas Frank and Goyal do not. ([Leeds Faculty][8])
+
+I could verify the **conceptual definition** from the original paper, but I did **not** verify a published Compustat-mnemonic appendix for Shyam-Sunder and Myers in this session, so I do not want to overstate item-level precision there. ([ScienceDirect][11])
+
+---
+
+## B. Net equity issuance
+
+### B1) Standard flow-of-funds net equity issuance: **data 108 − data 115**
+
+Again, the canonical flow-of-funds definition in this literature is:
+
+* **Net equity issuance = data 108 − data 115**
+* i.e., **Sale of Common and Preferred Stock** minus **Purchase of Common and Preferred Stock**. ([Leeds Faculty][8])
+
+This is the exact annual top-tier definition used in the Frank–Goyal / Lemmon–Zender pecking-order tradition. ([Leeds Faculty][8])
+
+Using modern Compustat mnemonics, these are typically:
+
+* `SSTK` / `SSTKY` for sale of stock
+* `PRSTKC` / `PRSTKCY` for purchase/repurchase of stock,
+  depending on annual versus quarterly/Xpressfeed delivery. The public Xpressfeed manual explicitly lists the quarterly/YTD mnemonics `SSTKY` and `PRSTKCY`. ([Boston University][12])
+
+### B2) Leary and Roberts (2010)
+
+Their primary equity-issuance event measure is:
+
+* **sale of common and preferred stock, net of repurchases**, during year (t), divided by lagged assets, and **greater than 5%**. ([Finance Department][4])
+
+This nets repurchases out. ([Finance Department][4])
+
+### B3) Fama, Eugene F., and Kenneth R. French. 2005.
+
+**“Financing decisions: who issues stock?”**
+*Journal of Financial Economics* **76**(3): 549–582. ([ScienceDirect][13])
+
+Fama and French use two important annual **equity** measures:
+
+1. **Book-based net equity issuance**
+   (dSB = dSE - dRE)
+   where (dSE) is the change in stockholders’ equity and (dRE) is the change in adjusted retained earnings. They also write
+   (dSB/A = Def/A - dL/A). ([Academia][14])
+
+2. **Share/market-value-based issuance measure**
+   (dSM) is the **split-adjusted change in shares outstanding** times the **average of beginning- and end-of-year split-adjusted stock prices**. ([Academia][14])
+
+Their sample requires, among other items, assets (6), liabilities (181), adjusted retained earnings (36), stock price (199), shares outstanding (25), and split factor (27), and excludes utilities and financials. ([Academia][14])
+
+Important caveat: Fama and French explicitly note that the book-equity measure can pick up **issues and repurchases together** and can also reflect **dirty-surplus accounting items**; and they emphasize that cash-flow measures miss noncash equity issues such as stock-financed acquisitions and employee stock grants. ([Academia][14])
+
+So:
+
+* **Flow-of-funds measure** (`SSTK - PRSTKC`) = cash proceeds net of repurchases.
+* **Fama–French book measure** (`dSE - dRE`) = a broader annual net equity change that includes more than cash issuance/repurchase flows. ([Academia][14])
+
+---
+
+## C. External financing indicator / issuer dummies
+
+### C1) Hovakimian, Opler, and Titman (2001)
+
+* **Issue / repurchase event** if net amount issued / repurchased exceeds **5% of book assets**.
+* **Dual issue/repurchase years omitted**. ([JSTOR][5])
+
+### C2) Leary and Roberts (2010)
+
+* **Debt issue** if debt change / lagged assets > 5%.
+* **Equity issue** if net stock sale / lagged assets > 5%.
+* **Internal** if neither.
+* **Dual** treated as **equity**. ([Finance Department][4])
+
+### C3) Lemmon and Zender (2010)
+
+Michael L. Lemmon and Jaime F. Zender, **“Debt Capacity and Tests of Capital Structure Theories,”** *JFQA* **45**(5): 1161–1187, define “issuers” in one subsample table as firm-years where **net equity issues exceed 5% of lagged total assets**. ([EconPapers][15])
+
+### C4) Huang, Ritter, and Denis (2021)
+
+* **No external financing / pure debt / pure equity / dual**, based on explicit thresholds in both assets and market equity. ([Websites][7])
+
+---
+
+## Part 3. Construction issues and edge cases
+
+## 1) What is the standard sample restriction for “externally financing firms”?
+
+The standard published approach is **not** “any positive net issuance.” It is usually a **material-issue threshold**:
+
+* **5% of lagged assets** is the most common annual cutoff in Hovakimian et al. and Leary–Roberts. ([JSTOR][5])
+* Huang–Ritter–Denis add a second filter using **3% of lagged market equity** in addition to **5% of lagged assets**. ([Websites][7])
+
+That is the closest published answer to your question “how do I exclude purely internally funded periods?”: published papers usually define external-financing periods as those with **material** debt and/or equity issuance, not merely small positive net flows. ([Finance Department][4])
+
+---
+
+## 2) How are simultaneous debt issuance and retirement, or simultaneous stock issuance and repurchases, handled?
+
+Within a security type, the standard **flow** definitions already **net** the two sides:
+
+* **Net debt** = `DLTIS - DLTR` (or the Huang–Ritter interest-bearing debt version that also incorporates `DLCCH`). ([Leeds Faculty][8])
+* **Net equity** = `SSTK - PRSTKC`. ([Leeds Faculty][8])
+
+But Compustat’s own documentation warns that these cash-flow items can be reported as **combined figures**:
+
+* `DLTISY` can be reported **net of long-term debt reduction** in some cases. ([Boston University][12])
+* `DLTRY` can be reported where issuance/reduction are combined. ([Boston University][12])
+* `PRSTKCY` can be reported where **sale is reported net of purchase**. ([Boston University][12])
+* `SSTKY` can be reported where **purchase is reported net of sale**. ([Boston University][12])
+
+So the literature’s net-flow definitions are standard, but they **do not recover gross churn** when firms both issue and retire within the same security class. ([Boston University][12])
+
+---
+
+## 3) How are simultaneous debt and equity issues handled?
+
+There is **no single universal convention** in the literature:
+
+* **Hovakimian et al. (2001): omit dual issues**. ([Cambridge University Press & Assessment][6])
+* **Leary and Roberts (2010): classify dual issues as equity**. ([Finance Department][4])
+* **Huang, Ritter, and Denis (2021): keep a separate dual category**. ([Websites][7])
+
+So if your dependent variable must be binary, the literature gives you **published precedents for all three treatments**, but not one unanimous standard. ([Cambridge University Press & Assessment][6])
+
+---
+
+## 4) What about firm-periods with negative net issuance on both sides?
+
+Those are **not** external-financing periods in the usual pecking-order/capital-structure sense. They are periods of **debt retirement and equity payout/repurchase** rather than capital raising. That is consistent with the event-taxonomy logic in Hovakimian et al. and Leary–Roberts, where the relevant conditional debt-vs-equity choice is among observations that actually enter external capital markets. ([JSTOR][5])
+
+---
+
+## 5) Approximate empirical base rate: debt-dominant vs equity-dominant
+
+Two useful annual benchmarks:
+
+### Leary and Roberts (2010)
+
+Their sample distribution is:
+
+* **Internal** 67.5%
+* **Debt** 22.6%
+* **Equity** 7.1%
+* **Dual** 2.8% ([Finance Department][4])
+
+That implies that among **externally financed** firm-years only, roughly:
+
+* **Debt only** ≈ 69.5%
+* **Equity only** ≈ 21.8%
+* **Dual** ≈ 8.6%
+
+If you follow their convention and fold **dual into equity**, the split becomes about **69.5% debt vs 30.5% equity**. ([Finance Department][4])
+
+### Huang, Ritter, and Denis (2021)
+
+Their annual distribution is:
+
+* **No external financing** 70.8%
+* **Pure debt** 18.6%
+* **Dual** 2.6%
+* **Pure equity** 8.0% ([Websites][7])
+
+Among **externally financed** firm-years only, that implies roughly:
+
+* **Pure debt** ≈ 63.7%
+* **Pure equity** ≈ 27.4%
+* **Dual** ≈ 8.9% ([Websites][7])
+
+So a fair summary of the annual U.S. public-firm literature is: **debt-financed observations are more common than equity-financed observations, typically by something like 2:1 once you condition on material external financing**, though the exact split depends on whether dual issues are excluded or folded into equity. ([Finance Department][4])
+
+A wrinkle is that Fama and French (2005) show that **net equity issuance is very common annually**, especially among smaller firms, and for small firms in 1983–2002 average annual net stock issuance exceeded average annual net new debt. ([Academia][14])
+
+---
+
+## 6) Annual vs quarterly Compustat: are quarterly issuance items reliable?
+
+### What I could verify
+
+The official/public Compustat and WRDS documentation does support the existence of quarterly/YTD cash-flow items and explicitly says they are **year-to-date**, not stand-alone quarter flows:
+
+* S&P Extract labels cash-flow style interim data as **`CO_IFNDY` = year-to-date like cash flow**. ([S&P Global][16])
+* WRDS publishes a **QUARTERIZE** macro whose explicit purpose is to **“Quarterize Compustat YTM Cash Flow Variables in FUNDQ”** and notes that Compustat quarterly cash-flow variables in FUNDQ ending in **`y`** are YTD variables. ([WRDS][17])
+* The older Compustat manual says for the quarterly cash-flow items:
+
+  * **Sale of Common and Preferred Stock**: quarterly data reflect **year-to-date figures for each quarter**. ([Boston University][12])
+  * **Purchase of Common and Preferred Stock**: quarterly data reflect **year-to-date figures for each quarter**. ([Boston University][12])
+  * **Long-Term Debt – Issuance**: quarterly data reflect **year-to-date figures for each quarter**. ([Boston University][12])
+
+### Publicly verifiable quarterly/Xpressfeed mnemonics
+
+In the public Xpressfeed documentation I could verify:
+
+* `DLTISY` = Long-Term Debt – Issuance (statement of cash flows)
+* `DLTRY` = Long-Term Debt – Reduction (statement of cash flows)
+* `SSTKY` = Sale of Common and Preferred Stock
+* `PRSTKCY` = Purchase of Common and Preferred Stock. ([Portfolio123 Community][18])
+
+So the quarterly debt reduction mnemonic I could verify publicly is **`DLTRY`**, **not `DLTRQ`**. `DLTRQ` may be a typo or a delivery-channel-specific alias, but I did not find an official public source for `DLTRQ`, so I would not rely on it without checking your local WRDS/S&P dictionary. ([Portfolio123 Community][18])
+
+### Practical conclusion
+
+The quarterly items are **usable**, but only with two big warnings:
+
+1. **They are YTD and must be de-cumulated to quarter flows.** ([WRDS][17])
+2. **Compustat combined-figure conventions can net one side against the other**, so they are still net-flow measures, not gross issuance records. ([Boston University][12])
+
+### What the published capital-structure literature does
+
+The canonical papers I checked here—Shyam-Sunder & Myers, Frank & Goyal, Fama & French, Leary & Roberts, Lemmon & Zender, and Huang–Ritter–Denis—are all built around **annual** Compustat financing measures, not quarterly financing-choice dummies. ([Scilit][19])
+
+So the literature supports the **components**, but I did **not** find a top-tier quarterly paper in this specific line of work that validates a prepackaged quarterly debt-vs-equity binary from Compustat alone. ([IDEAS/RePEc][2])
+
+---
+
+## Cleanest takeaways for your design memo
+
+* There is **no exact published quarterly binary** I could verify. ([IDEAS/RePEc][1])
+* The **most standard debt/equity flow definitions** are:
+
+  * **Net debt** = `DLTIS - DLTR` (or, in Huang et al., `DLTIS - DLTR ± DLCCH` depending on format code). ([Leeds Faculty][8])
+  * **Net equity** = `SSTK - PRSTKC`. ([Leeds Faculty][8])
+* The **most standard external-financing restriction** is a **material threshold**, usually **5% of lagged assets**, sometimes with an additional market-equity threshold. ([JSTOR][5])
+* For **dual debt+equity issues**, published precedents differ: **omit**, **equity**, or **separate dual category**. ([Cambridge University Press & Assessment][6])
+* For **quarterly Compustat**, the financing-flow variables are **YTD** and require **de-cumulation**. ([WRDS][17])
+
+If useful, I can turn this into a **paper-by-paper methods appendix** with a compact comparison table of formula, Compustat items, sample restriction, and treatment of dual issues.
+
+[1]: https://ideas.repec.org/a/cup/jfinqa/v36y2001i01p1-24_00.html "https://ideas.repec.org/a/cup/jfinqa/v36y2001i01p1-24_00.html"
+[2]: https://ideas.repec.org/r/eee/jfinec/v95y2010i3p332-355.html "https://ideas.repec.org/r/eee/jfinec/v95y2010i3p332-355.html"
+[3]: https://ideas.repec.org/a/oup/rfinst/v34y2021i4p1789-1833..html "https://ideas.repec.org/a/oup/rfinst/v34y2021i4p1789-1833..html"
+[4]: https://finance.wharton.upenn.edu/~mrrobert/resources/Publications/PeckingOrderJFE2010.pdf "https://finance.wharton.upenn.edu/~mrrobert/resources/Publications/PeckingOrderJFE2010.pdf"
+[5]: https://www.jstor.org/stable/2676195 "https://www.jstor.org/stable/2676195"
+[6]: https://www.cambridge.org/core/services/aop-cambridge-core/content/view/58D273B51505C6E0383022388C1D09BF/S0022109000009376a.pdf/debtequity_choice.pdf "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/58D273B51505C6E0383022388C1D09BF/S0022109000009376a.pdf/debtequity_choice.pdf"
+[7]: https://site.warrington.ufl.edu/ritter/files/CashShortfall-_June15_2020.pdf "https://site.warrington.ufl.edu/ritter/files/CashShortfall-_June15_2020.pdf"
+[8]: https://leeds-faculty.colorado.edu/zender/papers/LZ2_July_30_2007.pdf "https://leeds-faculty.colorado.edu/zender/papers/LZ2_July_30_2007.pdf"
+[9]: https://www.sciencedirect.com/journal/journal-of-financial-economics/vol/67/issue/2 "https://www.sciencedirect.com/journal/journal-of-financial-economics/vol/67/issue/2"
+[10]: https://www.sciencedirect.com/science/article/pii/S0304405X02002520 "https://www.sciencedirect.com/science/article/pii/S0304405X02002520"
+[11]: https://www.sciencedirect.com/science/article/abs/pii/S0304405X98000518 "https://www.sciencedirect.com/science/article/abs/pii/S0304405X98000518"
+[12]: https://sites.bu.edu/qm222projectcourse/files/2014/08/compustat_users_guide-2003.pdf "https://sites.bu.edu/qm222projectcourse/files/2014/08/compustat_users_guide-2003.pdf"
+[13]: https://www.sciencedirect.com/journal/journal-of-financial-economics/vol/76/issue/3 "https://www.sciencedirect.com/journal/journal-of-financial-economics/vol/76/issue/3"
+[14]: https://www.academia.edu/17054364/05_Fama_y_French_2005 "https://www.academia.edu/17054364/05_Fama_y_French_2005"
+[15]: https://econpapers.repec.org/RePEc%3Acup%3Ajfinqa%3Av%3A45%3Ay%3A2010%3Ai%3A05%3Ap%3A1161-1187_00 "https://econpapers.repec.org/RePEc%3Acup%3Ajfinqa%3Av%3A45%3Ay%3A2010%3Ai%3A05%3Ap%3A1161-1187_00"
+[16]: https://www.support.marketplace.spglobal.com/content/dam/spglobal/mi/en/documents/marketplace/extract/extract-getting-started-202207.pdf "https://www.support.marketplace.spglobal.com/content/dam/spglobal/mi/en/documents/marketplace/extract/extract-getting-started-202207.pdf"
+[17]: https://wrds-www.wharton.upenn.edu/pages/wrds-research/macros/wrds-macro-quarterize/ "https://wrds-www.wharton.upenn.edu/pages/wrds-research/macros/wrds-macro-quarterize/"
+[18]: https://community.portfolio123.com/uploads/short-url/tHKKrq3JHjUaqym1zJrNvj0egTK.pdf "https://community.portfolio123.com/uploads/short-url/tHKKrq3JHjUaqym1zJrNvj0egTK.pdf"
+[19]: https://www.scilit.com/publications/6ff5b667cb3d7a5045287d02e03b9d0c "https://www.scilit.com/publications/6ff5b667cb3d7a5045287d02e03b9d0c"
+
+
+
+## Bottom line
+
+I did **not** find a top-tier finance/accounting paper in the journal set you named that constructs the exact **quarterly** binary you want: a firm-quarter indicator equal to 1 when **actual external funds raised exceed internal funds generated**, and 0 otherwise. The closest top-tier papers do one of two different things instead: they either use **annual financing-deficit / net debt / net equity flow definitions** (Shyam-Sunder & Myers 1999; Frank & Goyal 2003; Lemmon & Zender 2010), or they classify observations as **internal vs. debt vs. equity** based on issuance activity rather than on a majority-of-funding-flow comparison (Leary & Roberts 2010; Huang & Ritter 2021). ([ScienceDirect][1])
+
+The biggest quarterly implementation issue is that Compustat’s quarterly cash-flow financing items for debt and equity are defined as **year-to-date** figures, not quarter-increment figures. In the Compustat data definitions, annual item 111 / quarterly item 86 is long-term debt issuance, 114 / 92 is long-term debt reduction, 108 / 84 is sale of common and preferred stock, and 115 / 93 is purchase of common and preferred stock; the quarterly entries are explicitly marked as **year-to-date**. ([Tevgeniou][2])
+
+## Part 1: exact paper search
+
+The closest paper I found is:
+
+**Leary, Mark T., and Michael R. Roberts. 2010. “The Pecking Order, Debt Capacity, and Information Asymmetry.” Journal of Financial Economics 95(3): 332–355.** The paper’s financing-classification rule is annual, not quarterly, and it is not a majority-flow measure. A firm-year is classified as a **debt issuance** if the change in total debt (long-term plus short-term) divided by lagged assets exceeds 5%; an **equity issuance** if the sale of common and preferred stock net of purchases exceeds 5% of lagged assets; and **internal financing** is assumed if no issuance is made. Their sample split is 67.5% internal, 22.6% debt, 7.1% equity, and 2.8% dual. That is the nearest top-tier “internal vs external” classification I could verify, but it is **not** “internal funds vs total external funds raised.” ([ScienceDirect][3])
+
+A second close paper is:
+
+**Huang, Rongbing, and Jay R. Ritter. 2021. “Corporate Cash Shortfalls and Financing Decisions.” Review of Financial Studies 34(4): 1789–1833.** This paper defines significant **annual** net debt or net equity issuance using cash-flow-statement proceeds, with a threshold of at least **5% of beginning assets and 3% of beginning market equity**. It studies issuance decisions under cash depletion, not a majority-of-funding-flow binary. It does report a **quarterly appendix check**, but the main design is still annual. ([OUP Academic][4])
+
+So my answer to Part 1 is: **no exact top-tier quarterly paper found**; the closest verified precedent is **Leary & Roberts (2010)**, but it is an **issuance-classification** variable, not your desired binary. ([Finance Department][5])
+
+## Part 2: standard published definitions of each side
+
+### A. Internal funding / internal financing
+
+The oldest canonical pecking-order definition is from:
+
+**Shyam-Sunder, Lakshmi, and Stewart C. Myers. 1999. “Testing Static Tradeoff against Pecking Order Models of Capital Structure.” Journal of Financial Economics 51(2): 219–244.** In their setup, the key internal-funds term is **(C_t)** inside the financing-deficit identity
+[
+DEF_t = DIV_t + X_t + W_t + R_t - C_t.
+]
+Here (C_t) is the internal cash-flow term, and (R_t) is the current portion of long-term debt. The paper gives the conceptual identity, but in the material I could verify it does **not** spell out modern Compustat mnemonic strings. ([ScienceDirect][1])
+
+The most standard top-tier operationalization is:
+
+**Frank, Murray Z., and Vidhan K. Goyal. 2003. “Testing the Pecking Order Theory of Capital Structure.” Journal of Financial Economics 67(2): 217–248.** They define
+[
+DEF_t = DIV_t + I_t + \Delta W_t - C_t = DD_t + DE_t,
+]
+where (C_t) is **cash flow after interest and taxes**, (DD_t) is **net debt issued**, and (DE_t) is **net equity issued**. They define (C_t) as income before extraordinary items + depreciation and amortization + extraordinary items and discontinued operations + deferred taxes + equity in net loss/earnings + other funds from operations + gain(loss) from sales of PPE and other investments. They also explicitly note that Shyam-Sunder & Myers add the current portion of long-term debt, but Frank & Goyal largely prefer the version without that extra term. ([ICDST E-print Archive][6])
+
+For an exact top-tier **Compustat item-number implementation** of the internal-funds side, the cleanest source I verified is the appendix to **Leary & Roberts (2010)**. Their annual Compustat implementation gives:
+
+* **Dividends** = `data127`
+* **Investment** = `data128 + data113 + data129 + data219 - data107 - data109` for format codes 1/2/3, with a format-7 alternative
+* **Cash Flow** = `data123 + data125 + data124 + data126 + data106 + data217 + data213 + data218` for format codes 1/2/3 post-1986, with slightly different formulas for pre-1987 and format 7
+* **Change in Net Working Capital** varies by format code as listed in the appendix. ([Finance Department][5])
+
+So, for “internal financing,” the literature-backed answer is: the standard object is **internal cash flow / cash flow after interest and taxes** from the financing-deficit identity, and the most explicit top-tier Compustat implementation I verified is in **Leary & Roberts (2010), Appendix A**, using legacy Compustat item numbers rather than modern mnemonic names. ([ICDST E-print Archive][6])
+
+### B. External funding / external financing
+
+Again, the standard top-tier source is **Frank & Goyal (2003)**. Their decomposition is:
+
+* **Total external financing** = (DD_t + DE_t)
+* **Net debt issued** (DD_t) = long-term debt issuance − long-term debt reduction
+* **Net equity issued** (DE_t) = sale of common stock − stock repurchases. ([ICDST E-print Archive][6])
+
+Frank & Goyal’s Compustat item numbers are explicitly summarized in the article metadata/snippets as:
+
+* **Net debt issued** = `#111 - #114`
+* **Net equity issued** = `#108 - #115`. ([ScienceDirect][7])
+
+**Lemmon, Michael L., and Jaime F. Zender. 2010. “Debt Capacity and Tests of Capital Structure Theories.” Journal of Financial and Quantitative Analysis 45(5): 1161–1187.** They explicitly say they follow **Frank & Goyal (2003)** and compute the financing deficit from internal cash flow, change in working capital, investments, and cash dividends; “by definition,” the financing deficit equals **net debt (`data111 - data114`) plus equity issues (`data108 - data115`)**. ([Cambridge University Press & Assessment][8])
+
+For your **quarterly** panel, the Compustat manual verifies the quarterly versions of those cash-flow items:
+
+* annual 111 / quarterly 86 = long-term debt issuance
+* annual 114 / quarterly 92 = long-term debt reduction
+* annual 108 / quarterly 84 = sale of common and preferred stock
+* annual 115 / quarterly 93 = purchase of common and preferred stock,
+  and the quarterly entries are **year-to-date**. ([Tevgeniou][2])
+
+Modern WRDS-style mnemonics commonly associated with those items are **DLTIS / DLTR / SSTK / PRSTKC** annually and **DLTISQ / DLTRQ / SSTKQ / PRSTKCQ** quarterly, but I did **not** find a top-tier paper in your journal set that prints those quarterly mnemonic strings as the canonical definition; the top-tier papers I verified mostly use **legacy Compustat item numbers** instead. ([Larry Schrenk][9])
+
+## Part 3: feasibility of the quarterly binary
+
+### Can you build the binary cleanly from published definitions?
+
+**Yes, conceptually — but it would be your own quarterly literature-based construction, not a named top-tier published variable that I could verify.** The literature gives you published definitions for the pieces: internal cash flow, investment, working-capital changes, dividends, and net debt and net equity issuance. What I did **not** find is a top-tier paper that already packages those pieces into your exact quarterly **majority internal vs majority external** dummy. ([ICDST E-print Archive][6])
+
+### Main edge cases
+
+**Negative internal cash flow.** In the pecking-order identities, internal funds are the (C_t) / cash-flow term. If that term is negative, then a majority comparison between “internal” and “external” becomes awkward, because the internal leg is not merely small; it is below zero. That does not break the accounting identity, but it makes the binary harder to interpret economically. ([NBER][10])
+
+**Netting masks gross flows.** The standard external-finance measures are **net** debt and **net** equity issues. Compustat also warns that issuance items can be reported net of reductions or combined with other cash-flow lines. So a quarter with simultaneous issue-and-retire activity can look small on a net basis even when gross external financing is large. ([ICDST E-print Archive][6])
+
+**Current portion of long-term debt.** Shyam-Sunder & Myers include the current portion of long-term debt in the financing deficit; Frank & Goyal and Lemmon & Zender explicitly prefer the version that does **not** separately include it. So even before you get to the binary split, there is already one published fork in the literature. ([NBER][10])
+
+**Cash and working-capital treatment.** Frank & Goyal include the change in cash and cash equivalents inside the working-capital term and discuss that this choice can matter when firms raise funds and temporarily park proceeds in cash. That matters for your setting because a speech-uncertainty shock could plausibly affect precautionary cash retention as well as the source of finance. ([ICDST E-print Archive][6])
+
+**Quarterly year-to-date reporting.** This is the big one for your design. The Compustat quarterly financing-flow items are year-to-date, so a fiscal Q3 observation is not a pure Q3 flow unless converted from YTD into a quarter increment. That is a data-structure issue, not a theory issue, but it directly affects whether a quarterly dummy is measured correctly. ([Tevgeniou][2])
+
+### Expected base rate
+
+I did **not** find a published benchmark for the exact **quarterly majority-flow** split. The best paper-backed annual reference points I found are:
+
+* **Leary & Roberts (2010):** 67.5% internal, 22.6% debt, 7.1% equity, 2.8% dual. ([Finance Department][5])
+* **Huang & Ritter (2021):** 21.2% of firm-years have a significant net debt issue and 10.6% have a significant net equity issue under their cutoffs. ([Websites][11])
+
+So the safest answer is: **I can give you annual paper-backed benchmarks, but I cannot give you a paper-backed quarterly base rate for your exact binary.** Any sharper number would be my inference, not a literature result. ([Finance Department][5])
+
+### Similar binary-ish splits in the literature
+
+The literature does use nearby constructs, just not your exact one:
+
+* **Internal vs debt vs equity vs dual issuance** in **Leary & Roberts (2010)**. ([Finance Department][5])
+* **Significant net debt issue / significant net equity issue** in **Huang & Ritter (2021)**, motivated by cash shortfalls. ([OUP Academic][4])
+* **Equity issue / retire patterns** in **Fama & French (2005)**, who report that most firms issue or retire equity each year and that more than half of yearly equity decisions violate the pecking order. ([ScienceDirect][12])
+* **Financing-deficit regressions** in **Shyam-Sunder & Myers (1999)** and **Frank & Goyal (2003)**, which are usually continuous-flow tests rather than your binary split. ([NBER][10])
+
+## Recommendation for your paper design decision
+
+For a **quarterly** dependent variable, the literature supports the **components**, but not the finished binary. So the honest way to describe it in a paper would be something like: you are constructing a **quarterly analogue based on standard published financing-flow definitions** from Shyam-Sunder & Myers, Frank & Goyal, Lemmon & Zender, and Leary & Roberts, rather than adopting a previously named quarterly dummy. ([NBER][10])
+
+If you want, I can turn this into a **methods-note style writeup** for your paper that lists only the quarterly-usable published components, flags the YTD issue, and gives you a citation-ready paragraph for the variable-construction section.
+
+[1]: https://www.sciencedirect.com/science/article/pii/S0304405X98000518?utm_source=chatgpt.com "Testing static tradeoff against pecking order models of capital ..."
+[2]: https://tevgeniou.github.io/EquityRiskFactors/CompustatManualChpt5.pdf "https://tevgeniou.github.io/EquityRiskFactors/CompustatManualChpt5.pdf"
+[3]: https://www.sciencedirect.com/science/article/pii/S0304405X0900230X "https://www.sciencedirect.com/science/article/pii/S0304405X0900230X"
+[4]: https://academic.oup.com/rfs/article-abstract/34/4/1789/5897423 "https://academic.oup.com/rfs/article-abstract/34/4/1789/5897423"
+[5]: https://finance.wharton.upenn.edu/~mrrobert/resources/Publications/PeckingOrderJFE2010.pdf "https://finance.wharton.upenn.edu/~mrrobert/resources/Publications/PeckingOrderJFE2010.pdf"
+[6]: https://dl1.icdst.org/pdfs/files/3478a67f74da072c080bee1eac261d60.pdf "PII: S0304-405X(02)00252-0"
+[7]: https://www.sciencedirect.com/science/article/pii/S0304405X02002520?utm_source=chatgpt.com "Testing the pecking order theory of capital structure"
+[8]: https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/abs/debt-capacity-and-tests-of-capital-structure-theories/F31F64C22AAD8F472EBD50EC24A8A154?utm_source=chatgpt.com "Debt Capacity and Tests of Capital Structure Theories"
+[9]: https://larryschrenk.com/Compustat/SampleQueries/Financial%20Statements-Compustat%20Template.docx?utm_source=chatgpt.com "Lawrence P. Schrenk Home Page.htm"
+[10]: https://www.nber.org/system/files/working_papers/w4722/w4722.pdf "https://www.nber.org/system/files/working_papers/w4722/w4722.pdf"
+[11]: https://site.warrington.ufl.edu/ritter/files/CashShortfall-_June15_2020.pdf "https://site.warrington.ufl.edu/ritter/files/CashShortfall-_June15_2020.pdf"
+[12]: https://www.sciencedirect.com/science/article/pii/S0304405X04001849?utm_source=chatgpt.com "Financing decisions: who issues stock? - ScienceDirect"
