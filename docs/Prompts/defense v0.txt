@@ -1,0 +1,28 @@
+┌─────┬────────────────┬──────────────────────────────────────────────┬──────────────────────────────────────┐
+  │  #  │     Paper      │               What It Carries                │           Can You Drop It?           │
+  ├─────┼────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────┤
+  │     │ Atanassov,     │ H16 theory: uncertainty → R&D up (growth     │                                      │
+  │ 1   │ Julio & Leng   │ options, learning). Also establishes CapEx   │ No. Primary theoretical anchor for   │
+  │     │ (2024)         │ should go DOWN, which our Firm FE null for   │ H16.                                 │
+  │     │                │ UncAnsMgr-CapEx confirms.                    │                                      │
+  ├─────┼────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────┤
+  │     │                │ H13.1 theory: competition erodes "option to  │                                      │
+  │ 2   │ Grenadier      │ wait" → firms invest despite uncertainty.    │ No. Without this, the positive       │
+  │     │ (2002, RFS)    │ The game-theoretic mechanism behind your     │ interaction has no theory.           │
+  │     │                │ TSIMM interaction.                           │                                      │
+  ├─────┼────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────┤
+  │     │ Doshi, Kumar & │ H13.1 empirical precedent: positive          │ No. Only empirical paper finding     │
+  │ 3   │  Yerramilli    │ uncertainty-investment dominates in          │ CapEx up under uncertainty in        │
+  │     │ (2018, MS)     │ competitive industries. Closest existing     │ competitive settings.                │
+  │     │                │ finding to yours.                            │                                      │
+  ├─────┼────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────┤
+  │     │                │ Industry FE defense: Q&A uncertainty is      │                                      │
+  │ 4   │ DWZ (2021)     │ persistent trait, Firm FE absorbs it,        │ No. Without this, a referee kills    │
+  │     │                │ Industry FE is appropriate. They use         │ your H13 for "failing Firm FE."      │
+  │     │                │ Industry FE themselves.                      │                                      │
+  ├─────┼────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────┤
+  │     │                │ Analogue: they find competition amplifies    │ Stretch to drop — but if             │
+  │ 5   │ Vo & Le (2017) │ uncertainty-R&D. Your H13.1 extends this     │ space-constrained, you could fold    │
+  │     │                │ from R&D to CapEx. Also provides Industry FE │ their argument into a footnote       │
+  │     │                │  > Firm FE precedent.                        │ citing Grenadier + Doshi instead.    │
+  └─────┴────────────────┴──────────────────────────────────────────────┴──────────────────────────────────────┘

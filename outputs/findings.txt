@@ -2,7 +2,7 @@
 
 COMPREHENSIVE REGRESSION FINDINGS
 ===================================
-23 Suites | 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
+25 Suites | 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
 Significance: * p<0.10, ** p<0.05, *** p<0.01
 Thesis-scope suites (H1, H4, H13, H16, H1.2) updated from model_diagnostics.csv (2026-04-03).
   These 6 suites use two-way clustering (firm, time) per Cameron, Gelbach & Miller (2011).
@@ -1458,3 +1458,89 @@ KEY FINDINGS:
           look stronger.
   -> Q93. The CEO-null / Manager-significant split at all horizons reinforces Q84-Q85:
           CEO and Manager uncertainty capture different information channels.
+
+
+================================================================================
+H19b: SPEECH UNCERTAINTY AND EXTERNAL VS INTERNAL FINANCING (Chang et al. 2006)
+================================================================================
+DV: ChangExternalFunding / ChangExternalFunding_lead (12 cols)
+    Formula: ChangExternalFunding = 1 if cash-flow debt (dltisy-dltry+dlcchy)/lagged_at > 5%
+             OR equity (sstky-prstkcy)/lagged_at > 5%, 0 if internal
+             Debt: cash flow statement items (Chang, Dasgupta & Hilary 2006)
+             Equity: IDENTICAL to L&R (sstky-prstkcy)
+             Dual: counted as external (1), NOT separately classified
+    Sample: 25.1% external, 74.9% internal (cf. H19 L&R: ~26% external)
+Tail: One-tailed (beta < 0)
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 12 cols (p1 > 0.57)
+  UncPreCEO:   NO SIGNIFICANCE across all 12 cols (p1 > 0.19)
+  UncAnsMgr:   MARGINAL at 10% in col 3/5 (industry FE, extended, p1=0.09)
+               — negative coefficient (more uncertainty -> less external funding)
+               Coef: -0.0148 to -0.0146 (current DV only)
+               Lead DV: not significant (p1 > 0.33)
+  UncPreMgr:   NO SIGNIFICANCE across all 12 cols (p1 > 0.47)
+               Note: positive coefficient (opposite to hypothesis direction)
+
+SUMMARY: ESSENTIALLY A NULL RESULT, consistent with H19 (L&R).
+         Only UncAnsMgr shows marginal significance (p=0.09, one-tailed) in
+         industry FE + extended controls. No firm FE significance.
+         The Chang cash-flow debt classification produces nearly identical results
+         to the L&R balance-sheet classification, validating robustness.
+
+COMPARISON WITH H19 (L&R classification):
+  - H19: UncAnsMgr marginal at 10% in col 3/5 (same pattern)
+  - H19b: Identical pattern, slightly smaller coefficients
+  - Both classifications show the same null/marginal result
+  - Expected correlation between L&R and Chang measures: ~0.85-0.94
+
+OPEN QUESTIONS:
+  -> Q94. Both H19 and H19b show only marginal UncAnsMgr significance. Is the
+          external-vs-internal funding decision simply not driven by speech uncertainty,
+          or is the 5% threshold too coarse to capture the relationship?
+  -> Q95. UncPreMgr has a POSITIVE coefficient (opposite to hypothesis). In H20b,
+          UncPreMgr is significantly POSITIVE for debt choice. Is there a consistent
+          story where presentation uncertainty actually PROMOTES external financing?
+
+
+================================================================================
+H20b: SPEECH UNCERTAINTY AND DEBT VS EQUITY CHOICE (Chang et al. 2006)
+================================================================================
+DV: ChangDebtChoice (6 cols)
+    Formula: ChangDebtChoice = 1 if debt-only, 0 if equity-only
+             Dual issuers EXCLUDED (NaN) — key difference from H20 (L&R classifies dual as equity)
+    Sample restricted to ChangExternalFunding == 1: ~11,500 calls, ~865 firms
+    Tail: Two-tailed
+    Controls: INCLUDE Leverage (not a bad control under Chang — DV uses cash-flow items,
+              not balance-sheet items like H20's DebtChoice)
+
+  UncAnsCEO:   NO SIGNIFICANCE across all 6 cols (p2 > 0.24)
+  UncPreCEO:   *** SIGNIFICANT in col 1 (p2=0.005), col 3 (p2=0.009), col 5 (p2=0.013)
+               Industry FE only. Negative coefficient (-0.044 to -0.050)
+               Firm FE: null (p2 > 0.45)
+  UncAnsMgr:   NO SIGNIFICANCE across all 6 cols (p2 > 0.17)
+  UncPreMgr:   *** SIGNIFICANT in col 1 (p2=0.005), col 3 (p2=0.004), col 5 (p2=0.006)
+               Industry FE only. POSITIVE coefficient (+0.058 to +0.061)
+               Firm FE: null (p2 > 0.42)
+
+SUMMARY: Strong Industry FE results, complete null under Firm FE — IDENTICAL pattern to H20.
+         UncPreCEO: negative (more CEO pres uncertainty -> less debt, more equity)
+         UncPreMgr: positive (more mgr pres uncertainty -> more debt, less equity)
+         OPPOSITE SIGNS between CEO and Manager presentation measures.
+         All effects are cross-sectional only (vanish under within-firm identification).
+
+COMPARISON WITH H20 (L&R classification):
+  - H20: UncPreCEO significant in industry FE (negative); UncAnsMgr/UncPreMgr positive
+  - H20b: SAME pattern — UncPreCEO negative, UncPreMgr positive, both significant
+  - Key difference: H20b EXCLUDES dual issuers (cleaner test), H20 includes them
+  - Both produce essentially identical conclusions: cross-sectional effect only
+  - H20b includes Leverage in controls (not a bad control under cash-flow DV)
+
+OPEN QUESTIONS:
+  -> Q96. Same Q62 from H20: OPPOSITE SIGNS between UncPreCEO (negative) and UncPreMgr (positive).
+          CEO presentation uncertainty pushes toward equity; manager presentation pushes toward debt.
+          This is robust across both L&R and Chang classifications.
+  -> Q97. Firm FE null in BOTH H20 and H20b. The financing choice-uncertainty relationship
+          is purely cross-sectional. Is this a firm-characteristic story rather than a
+          dynamic response to uncertainty?
+  -> Q98. Leverage is significant in H20b (not in H20). Does this confirm that the
+          bad-control exclusion in H20 was masking a real leverage effect?

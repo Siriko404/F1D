@@ -28,6 +28,7 @@
 #   ff2001   = Fama & French (2001, JFE)
 #   opsw1999 = Opler, Pinkowitz, Stulz & Williamson (1999, JFE)
 #   lm2011   = Loughran & McDonald (2011, JF) — word lists
+#   cdh2006  = Chang, Dasgupta & Hilary (2006, JF) — analyst coverage & financing
 #
 # Architecture:
 #   Stage 1 (Sample):     outputs/1.4_AssembleManifest/{timestamp}/
@@ -730,3 +731,24 @@ variables:
     role: dv
     suites: [H20]
     description: "Debt vs equity choice (conditional on ExternalFunding=1)"
+
+  # H19b/H20b — Chang, Dasgupta & Hilary (2006, JF) financing classification
+  chang_external_funding:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "ChangExternalFunding"
+    formula: "1 if cash-flow debt (dltisy-dltry+dlcchy) or equity (sstky-prstkcy) > 5% of lagged atq; 0 if internal"
+    reference: "cdh2006"
+    role: dv
+    suites: [H19b]
+    description: "External vs internal financing (Chang et al. 2006 cash-flow debt classification)"
+
+  chang_debt_choice:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "ChangDebtChoice"
+    formula: "1 if debt-only, 0 if equity-only; NaN if dual or internal (dual excluded per Chang et al. 2006)"
+    reference: "cdh2006"
+    role: dv
+    suites: [H20b]
+    description: "Debt vs equity choice excluding dual issuers (Chang et al. 2006)"

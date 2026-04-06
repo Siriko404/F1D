@@ -142,6 +142,9 @@ COMPUSTAT_COLS = [
     # H19/H20 extension (Leary & Roberts 2010 financing classification)
     "ExternalFunding",      # 1=external (debt or equity issuance >5%), 0=internal
     "DebtChoice",           # 1=debt-only, 0=equity or dual (NaN if internal)
+    # H19b/H20b extension (Chang, Dasgupta & Hilary 2006 financing classification)
+    "ChangExternalFunding",  # 1=external, 0=internal (cash-flow debt, per Chang et al. 2006)
+    "ChangDebtChoice",       # 1=debt-only, 0=equity-only; NaN=dual/internal (per Chang et al. 2006)
 ]
 
 REQUIRED_COMPUSTAT_COLS = [
@@ -185,6 +188,10 @@ REQUIRED_COMPUSTAT_COLS = [
     "prstkcy",  # Purchase of Common and Preferred Stock, YTD cumulative ($M)
     # H19/H20 extension (Leary & Roberts 2010 financing classification)
     "sstky",  # Sale of Common and Preferred Stock, YTD cumulative ($M)
+    # H19b/H20b extension (Chang, Dasgupta & Hilary 2006 cash-flow debt)
+    "dltisy",  # Long-term debt issuance, YTD cumulative
+    "dltry",   # Long-term debt reduction, YTD cumulative
+    "dlcchy",  # Changes in current debt (short-term), YTD cumulative
 ]
 
 
@@ -1185,6 +1192,63 @@ def _compute_and_winsorize(
         np.where(_is_debt & ~_is_equity, 1.0, 0.0),
     )
 
+    # --- H19b/H20b extension: Chang, Dasgupta & Hilary (2006) financing classification ---
+    # Same pecking-order framework as L&R but uses CASH FLOW STATEMENT debt items
+    # instead of balance sheet change:
+    #   Debt = dltisy(Q4) - dltry(Q4) + dlcchy(Q4)  (issuance - reduction + short-term change)
+    #   Equity = IDENTICAL to L&R (sstky - prstkcy, reused from above)
+    # Threshold: same 5% of lagged assets
+    # Dual issuers: EXCLUDED (ChangDebtChoice = NaN), unlike L&R which classifies as equity
+
+    _dltisy_annual = _compute_annual_q4_variable(comp, "dltisy", "_dltisy_annual")
+    _dltry_annual = _compute_annual_q4_variable(comp, "dltry", "_dltry_annual")
+    _dlcchy_annual = _compute_annual_q4_variable(comp, "dlcchy", "_dlcchy_annual")
+
+    # All-NaN guard: NaN only if ALL 3 components missing; individual fillna(0)
+    _all_cf_nan = (
+        pd.Series(_dltisy_annual, index=comp.index).isna()
+        & pd.Series(_dltry_annual, index=comp.index).isna()
+        & pd.Series(_dlcchy_annual, index=comp.index).isna()
+    )
+    _chang_net_debt = np.where(
+        _all_cf_nan,
+        np.nan,
+        pd.Series(_dltisy_annual, index=comp.index).fillna(0).values
+        - pd.Series(_dltry_annual, index=comp.index).fillna(0).values
+        + pd.Series(_dlcchy_annual, index=comp.index).fillna(0).values,
+    )
+
+    _chang_debt_ratio = np.where(
+        _valid_denom & ~_all_cf_nan,
+        _chang_net_debt / _lagged_at.values,
+        np.nan,
+    )
+
+    _is_chang_debt = pd.Series(_chang_debt_ratio, index=comp.index) > _LR_THRESHOLD
+    _is_equity_ser = pd.Series(_net_equity_ratio, index=comp.index) > _LR_THRESHOLD
+    _has_chang_valid = (
+        pd.Series(_chang_debt_ratio, index=comp.index).notna()
+        | pd.Series(_net_equity_ratio, index=comp.index).notna()
+    )
+
+    comp["ChangExternalFunding"] = np.where(
+        ~_has_chang_valid,
+        np.nan,
+        np.where(_is_chang_debt | _is_equity_ser, 1.0, 0.0),
+    )
+
+    # Dual issuers → NaN (excluded per Chang et al. 2006)
+    # Debt-only (1), Equity-only (0), Dual or Internal (NaN)
+    comp["ChangDebtChoice"] = np.where(
+        comp["ChangExternalFunding"] != 1.0,
+        np.nan,
+        np.where(
+            _is_chang_debt & ~_is_equity_ser,
+            1.0,
+            np.where(~_is_chang_debt & _is_equity_ser, 0.0, np.nan),
+        ),
+    )
+
     # Cleanup temp columns
     comp = comp.drop(columns=["_total_debt_q"])
 
@@ -1228,6 +1292,8 @@ def _compute_and_winsorize(
         "fqtr",              # fiscal quarter identifier (not a variable to winsorize)
         "ExternalFunding",   # binary classification (L&R 2010)
         "DebtChoice",        # binary classification (L&R 2010)
+        "ChangExternalFunding",  # binary classification (Chang et al. 2006)
+        "ChangDebtChoice",       # binary classification (Chang et al. 2006)
     }
     winsorize_cols = [c for c in COMPUSTAT_COLS if c not in skip_winsorize]
     # Use fyearq as the year grouping column (integer fiscal year).

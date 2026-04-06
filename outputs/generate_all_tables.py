@@ -442,6 +442,33 @@ SUITES = [
         "tail": "two",
         "hyp_dir": None,
     },
+    # ── H19b (Chang et al. 2006 robustness) ──
+    {
+        "id": "H19b",
+        "dir": "h19b_external_funding/2026-04-06_151522",
+        "caption": r"H19b: Speech Uncertainty and External vs Internal Financing (Chang et al. 2006)",
+        "label": "tab:h19b",
+        "cols": 12,
+        "dvs": [
+            ("ChangExternalFunding", 6),
+            (r"ChangExternalFunding\_lead", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": "<",
+    },
+    # ── H20b (Chang et al. 2006 robustness) ──
+    {
+        "id": "H20b",
+        "dir": "h20b_debt_choice/2026-04-06_151540",
+        "caption": r"H20b: Speech Uncertainty and Debt vs Equity Choice (Chang et al. 2006)",
+        "label": "tab:h20b",
+        "cols": 6,
+        "dvs": [
+            ("ChangDebtChoice", 6),
+        ],
+        "tail": "two",
+        "hyp_dir": None,
+    },
     # ── H21 ──
     {
         "id": "H21",

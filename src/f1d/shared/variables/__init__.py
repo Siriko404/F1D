@@ -144,6 +144,9 @@ from .repurchase_intensity import RepurchaseIntensityBuilder
 # H19/H20 Compustat variable builder (Leary & Roberts 2010 financing classification)
 from .external_funding import ExternalFundingBuilder
 
+# H19b/H20b Compustat variable builder (Chang, Dasgupta & Hilary 2006 financing classification)
+from .chang_external_funding import ChangExternalFundingBuilder
+
 # H16 Compustat variable builder (R&D Investment Intensity — Jiang et al. 2021)
 from .rd_sales import RDSalesBuilder
 
@@ -219,6 +222,10 @@ __all__ = [
     "RepurchaseIntensityBuilder",
     # H19/H20 Compustat variable builder (Leary & Roberts 2010 financing classification)
     "ExternalFundingBuilder",
+    # H19b/H20b Compustat variable builder (Chang, Dasgupta & Hilary 2006 financing classification)
+    "ChangExternalFundingBuilder",
+    # H19b/H20b Compustat variable builder (Chang, Dasgupta & Hilary 2006 financing classification)
+    "ChangExternalFundingBuilder",
     # H16 Compustat variable builder (R&D Investment Intensity)
     "RDSalesBuilder",
     # Weak modal builders (H1 — Stage 2 linguistic)
