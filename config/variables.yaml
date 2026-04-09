@@ -1,7 +1,7 @@
 # =============================================================================
 # F1D Variable Registry — Authoritative Source
 # =============================================================================
-# Last audit: 2026-04-01 | Total variables: ~70 | Papers: 16 in NotebookLM
+# Last audit: 2026-04-09 | Total variables: ~73 | Papers: 28 in NotebookLM
 #
 # All variable names follow paper-standard conventions:
 #   Textual: DWZ (2021) pattern — [Measure][Context][Speaker]
@@ -29,6 +29,9 @@
 #   opsw1999 = Opler, Pinkowitz, Stulz & Williamson (1999, JFE)
 #   lm2011   = Loughran & McDonald (2011, JF) — word lists
 #   cdh2006  = Chang, Dasgupta & Hilary (2006, JF) — analyst coverage & financing
+#   bbd2016   = Baker, Bloom & Davis (2016, QJE) — US Economic Policy Uncertainty (EPU)
+#   davis2016 = Davis (2016, NBER WP 22740) — Global Economic Policy Uncertainty (GEPU)
+#   ci2022    = Caldara & Iacoviello (2022, AER) — Geopolitical Risk (GPR)
 #
 # Architecture:
 #   Stage 1 (Sample):     outputs/1.4_AssembleManifest/{timestamp}/
@@ -607,6 +610,45 @@ variables:
     role: dv
     suites: [H11, H11-Lag, H11-Lead]
     description: "Firm-level political risk (Hassan et al. 2019)"
+
+  # --- H24 / H24b / H25 Aggregate Macro Uncertainty Series ---
+  # All three are monthly aggregate indices matched to each call by its calendar month.
+  # Used as IVs with call-level uncertainty DVs (reverse-direction tests analogous to H11).
+  # Loaded by MacroUncertaintyBuilder in src/f1d/shared/variables/macro_uncertainty.py.
+
+  macro_uncertainty_us_epu:
+    stage: input
+    source: "inputs/EconomicPolicyUncertaintyIndex/US"
+    file_name: "US_Policy_Uncertainty_Data.xlsx"
+    sheet: "Main News Index"
+    column: "US_EPU_log"
+    formula: "log(News_Based_Policy_Uncert_Index) matched by calendar month of call start_date"
+    reference: "bbd2016"
+    role: iv
+    suites: [H24]
+    description: "Baker, Bloom & Davis (2016, QJE) US News-Based Economic Policy Uncertainty index (log-transformed)"
+
+  macro_uncertainty_gepu:
+    stage: input
+    source: "inputs/EconomicPolicyUncertaintyIndex/Global"
+    file_name: "Global_Policy_Uncertainty_Data.xlsx"
+    column: "GEPU_log"
+    formula: "log(GEPU_current) — GDP-weighted average of 16 country EPU indices, matched by calendar month of call start_date"
+    reference: "davis2016"
+    role: iv
+    suites: [H24b]
+    description: "Davis (2016, NBER WP 22740) Global Economic Policy Uncertainty (GEPU) index (log-transformed, current-$ GDP weights)"
+
+  macro_uncertainty_gpr:
+    stage: input
+    source: "inputs/matteoiacoviello/GPR_Global"
+    file_name: "data_gpr_export.xls"
+    column: "GPR_log"
+    formula: "log(GPR) — recent headline Geopolitical Risk index, matched by calendar month of call start_date"
+    reference: "ci2022"
+    role: iv
+    suites: [H25]
+    description: "Caldara & Iacoviello (2022, AER) headline Geopolitical Risk index (log-transformed, 10-newspaper recent version)"
 
   total_similarity:
     stage: input

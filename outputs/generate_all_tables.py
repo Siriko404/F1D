@@ -533,6 +533,118 @@ SUITES = [
         ],
         "time_fe_label": "Year FE",
     },
+    # ── H24 / H24b / H25 Macro Uncertainty Suites ──
+    # Reverse-direction suites: aggregate monthly macro uncertainty (EPU / GEPU / GPR)
+    # predicts call-level language uncertainty. Firm FE only, NO time FE (would absorb
+    # the macro IV). SEs two-way clustered (firm, cal_yr_qtr).
+    # NOTE: the `dir` timestamp strings below are placeholders (_PENDING_STAGE4_)
+    # and must be updated to the actual Stage 4 output timestamps after running
+    # the three runners.
+    {
+        "id": "H24",
+        "type": "moderation",
+        "dir": "h24_us_epu/2026-04-09_155907",
+        "caption": "H24: US Economic Policy Uncertainty and Call Language Uncertainty",
+        "label": "tab:h24",
+        "cols": 8,
+        "col_files": {
+            1: "regression_results_Main_UncAnsMgr.txt",
+            2: "regression_results_Main_UncPreMgr.txt",
+            3: "regression_results_Main_UncAnsCEO.txt",
+            4: "regression_results_Main_UncPreCEO.txt",
+            5: "regression_results_Main_UncAnsMgr_lead1.txt",
+            6: "regression_results_Main_UncPreMgr_lead1.txt",
+            7: "regression_results_Main_UncAnsCEO_lead1.txt",
+            8: "regression_results_Main_UncPreCEO_lead1.txt",
+        },
+        "dvs": [
+            (r"Contemporaneous", 4),
+            (r"Next Quarter (t+1)", 4),
+        ],
+        "col_dv_labels": [
+            "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
+            "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
+        ],
+        "key_vars": ["US_EPU_log"],
+        "key_labels": [r"$\log(\mathrm{US\ EPU})_{t}$"],
+        "key_tails": ["one_pos"],
+        "fe_rows": [
+            ("Firm FE", ["Yes"] * 8),
+            ("Year FE", ["No"] * 8),
+            ("Year-Quarter FE", ["No"] * 8),
+        ],
+        "time_fe_label": "Year FE",
+    },
+    {
+        "id": "H24b",
+        "type": "moderation",
+        "dir": "h24b_global_epu/2026-04-09_155942",
+        "caption": "H24b: Global Economic Policy Uncertainty and Call Language Uncertainty",
+        "label": "tab:h24b",
+        "cols": 8,
+        "col_files": {
+            1: "regression_results_Main_UncAnsMgr.txt",
+            2: "regression_results_Main_UncPreMgr.txt",
+            3: "regression_results_Main_UncAnsCEO.txt",
+            4: "regression_results_Main_UncPreCEO.txt",
+            5: "regression_results_Main_UncAnsMgr_lead1.txt",
+            6: "regression_results_Main_UncPreMgr_lead1.txt",
+            7: "regression_results_Main_UncAnsCEO_lead1.txt",
+            8: "regression_results_Main_UncPreCEO_lead1.txt",
+        },
+        "dvs": [
+            (r"Contemporaneous", 4),
+            (r"Next Quarter (t+1)", 4),
+        ],
+        "col_dv_labels": [
+            "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
+            "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
+        ],
+        "key_vars": ["GEPU_log"],
+        "key_labels": [r"$\log(\mathrm{GEPU})_{t}$"],
+        "key_tails": ["one_pos"],
+        "fe_rows": [
+            ("Firm FE", ["Yes"] * 8),
+            ("Year FE", ["No"] * 8),
+            ("Year-Quarter FE", ["No"] * 8),
+        ],
+        "time_fe_label": "Year FE",
+    },
+    {
+        "id": "H25",
+        "type": "moderation",
+        "dir": "h25_gpr/2026-04-09_160005",
+        "caption": "H25: Geopolitical Risk and Call Language Uncertainty",
+        "label": "tab:h25",
+        "cols": 8,
+        "col_files": {
+            1: "regression_results_Main_UncAnsMgr.txt",
+            2: "regression_results_Main_UncPreMgr.txt",
+            3: "regression_results_Main_UncAnsCEO.txt",
+            4: "regression_results_Main_UncPreCEO.txt",
+            5: "regression_results_Main_UncAnsMgr_lead1.txt",
+            6: "regression_results_Main_UncPreMgr_lead1.txt",
+            7: "regression_results_Main_UncAnsCEO_lead1.txt",
+            8: "regression_results_Main_UncPreCEO_lead1.txt",
+        },
+        "dvs": [
+            (r"Contemporaneous", 4),
+            (r"Next Quarter (t+1)", 4),
+        ],
+        "col_dv_labels": [
+            "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
+            "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
+        ],
+        "key_vars": ["GPR_log"],
+        "key_labels": [r"$\log(\mathrm{GPR})_{t}$"],
+        "key_tails": ["one_pos"],
+        "fe_rows": [
+            ("Firm FE", ["Yes"] * 8),
+            ("Year FE", ["No"] * 8),
+            ("Year-Quarter FE", ["No"] * 8),
+        ],
+        "time_fe_label": "Year FE",
+    },
 ]
 
 IV_NAMES = [

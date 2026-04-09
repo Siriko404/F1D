@@ -216,3 +216,224 @@ def build_cal_yr_qtr_index(panel: pd.DataFrame) -> pd.DataFrame:
     panel["cal_qtr"] = dt.dt.quarter.astype("Int64")
     panel["cal_yr_qtr"] = (panel["cal_yr"] * 10 + panel["cal_qtr"]).astype("Int64")
     return panel
+
+
+def _collapse_to_firm_quarter(
+    panel: pd.DataFrame,
+    base_cols: list,
+) -> pd.DataFrame:
+    """Internal helper — collapse call-level panel to one row per (gvkey, cal_yr_qtr).
+
+    For firms/quarters with multiple calls (rare), keeps the latest call by start_date
+    (matches H13.2 `_get_firm_year_eoy_capex` pattern via groupby(...).idxmax()).
+    Returns a firm-quarter DataFrame sorted by (gvkey, cal_yr_qtr).
+    """
+    panel_dt = panel.copy()
+    panel_dt["_start_date_dt"] = pd.to_datetime(panel_dt["start_date"], errors="coerce")
+
+    valid_mask = (
+        panel_dt["cal_yr_qtr"].notna()
+        & panel_dt["gvkey"].notna()
+        & panel_dt["_start_date_dt"].notna()
+    )
+    valid = panel_dt[valid_mask]
+
+    latest_idx = valid.groupby(["gvkey", "cal_yr_qtr"])["_start_date_dt"].idxmax()
+    cols_to_keep = ["gvkey", "cal_yr_qtr", "cal_yr", "cal_qtr"] + list(base_cols)
+    firm_qtr = valid.loc[latest_idx, cols_to_keep].copy()
+    firm_qtr = firm_qtr.sort_values(["gvkey", "cal_yr_qtr"]).reset_index(drop=True)
+    return firm_qtr
+
+
+def create_next_quarter_lead(
+    panel: pd.DataFrame,
+    base_cols: list,
+) -> pd.DataFrame:
+    """Create {col}_lead1 for each col in base_cols via calendar-quarter shift within gvkey.
+
+    Pattern cloned from `build_h5b_wang_disp_panel.py` (H5b DISP_lead), swapping
+    `fiscal_qtr_id` for `cal_yr_qtr` so the lead is defined on calendar-time,
+    not fiscal-time. This keeps the lead aligned with monthly/quarterly macro
+    IVs that are indexed by calendar months, and avoids any dependency on
+    `attach_fyearq`.
+
+    Algorithm:
+        1. Collapse the call-level panel to one row per (gvkey, cal_yr_qtr),
+           keeping the latest call by start_date for the rare multi-call quarters.
+        2. Within each firm, shift the target columns by -1 along the
+           firm-quarter sort order.
+        3. Accept the shifted value only if the next firm-quarter row is the
+           strictly next calendar quarter (cal_yr_qtr + 1 within a year, or
+           (cal_yr+1)*10 + 1 across year boundaries). Null out otherwise.
+        4. Merge the {col}_lead1 columns back to every call in the original
+           (gvkey, cal_yr_qtr) bin via a left join. All calls in the same
+           (gvkey, cal_yr_qtr) will receive the same lead value — this is
+           intentional because the "next call's value" is a firm-quarter fact.
+
+    Args:
+        panel: Call-level DataFrame. Must contain: file_name, gvkey, cal_yr_qtr,
+               cal_yr, cal_qtr, start_date, and every column listed in base_cols.
+        base_cols: List of column names whose next-quarter values should be
+                   created. Each will yield a new column {col}_lead1.
+
+    Returns:
+        panel (copy) with new columns {col}_lead1. Rows whose next
+        calendar-quarter call is missing or non-consecutive get NaN.
+
+    Raises:
+        ValueError: if any required column is missing from panel.
+        ValueError: if the internal merge changes row count (should not happen).
+    """
+    if not base_cols:
+        return panel.copy()
+
+    required = [
+        "file_name",
+        "gvkey",
+        "cal_yr_qtr",
+        "cal_yr",
+        "cal_qtr",
+        "start_date",
+    ] + list(base_cols)
+    missing = [c for c in required if c not in panel.columns]
+    if missing:
+        raise ValueError(
+            f"create_next_quarter_lead: panel is missing required columns: {missing}"
+        )
+
+    firm_qtr = _collapse_to_firm_quarter(panel, base_cols)
+
+    # Expected next cal_yr_qtr: within-year increment if cal_qtr<4, else year rollover
+    cal_yr_arr = firm_qtr["cal_yr"].astype("Int64").to_numpy()
+    cal_qtr_arr = firm_qtr["cal_qtr"].astype("Int64").to_numpy()
+    cal_yr_qtr_arr = firm_qtr["cal_yr_qtr"].astype("Int64").to_numpy()
+    expected_next = np.where(
+        cal_qtr_arr < 4,
+        cal_yr_qtr_arr + 1,
+        (cal_yr_arr + 1) * 10 + 1,
+    )
+
+    next_cyq = firm_qtr.groupby("gvkey")["cal_yr_qtr"].shift(-1)
+    consecutive = next_cyq.to_numpy() == expected_next
+
+    new_cols = []
+    for col in base_cols:
+        lead_col = f"{col}_lead1"
+        raw_shifted = firm_qtr.groupby("gvkey")[col].shift(-1)
+        firm_qtr[lead_col] = np.where(consecutive, raw_shifted.to_numpy(), np.nan)
+        new_cols.append(lead_col)
+
+    lookup = firm_qtr[["gvkey", "cal_yr_qtr"] + new_cols].copy()
+
+    before_len = len(panel)
+    panel_out = panel.merge(lookup, on=["gvkey", "cal_yr_qtr"], how="left")
+    if len(panel_out) != before_len:
+        raise ValueError(
+            f"create_next_quarter_lead: merge changed row count "
+            f"{before_len} -> {len(panel_out)}"
+        )
+
+    n_total = len(panel_out)
+    for lc in new_cols:
+        n_matched = panel_out[lc].notna().sum()
+        pct = 100.0 * n_matched / n_total if n_total else 0.0
+        logger.debug(
+            "create_next_quarter_lead: %s populated for %d/%d (%.1f%%) calls",
+            lc,
+            n_matched,
+            n_total,
+            pct,
+        )
+
+    return panel_out
+
+
+def create_prior_quarter_lag(
+    panel: pd.DataFrame,
+    base_cols: list,
+) -> pd.DataFrame:
+    """Create {col}_lag for each col in base_cols via calendar-quarter shift within gvkey.
+
+    Mirror of `create_next_quarter_lead` for the prior calendar quarter. Used to
+    produce the `Lagged_DV` controls required by the standing pipeline rule.
+
+    Algorithm is symmetric: collapse to firm-quarter, shift by +1 along the
+    firm-quarter sort order, accept the shifted value only if the prior
+    firm-quarter row is the strictly previous calendar quarter (cal_yr_qtr - 1
+    within a year, or (cal_yr-1)*10 + 4 across year boundaries).
+
+    Args:
+        panel: Call-level DataFrame. Must contain: file_name, gvkey, cal_yr_qtr,
+               cal_yr, cal_qtr, start_date, and every column listed in base_cols.
+        base_cols: List of column names whose prior-quarter values should be
+                   created. Each will yield a new column {col}_lag.
+
+    Returns:
+        panel (copy) with new columns {col}_lag.
+
+    Raises:
+        ValueError: if any required column is missing from panel.
+        ValueError: if the internal merge changes row count.
+    """
+    if not base_cols:
+        return panel.copy()
+
+    required = [
+        "file_name",
+        "gvkey",
+        "cal_yr_qtr",
+        "cal_yr",
+        "cal_qtr",
+        "start_date",
+    ] + list(base_cols)
+    missing = [c for c in required if c not in panel.columns]
+    if missing:
+        raise ValueError(
+            f"create_prior_quarter_lag: panel is missing required columns: {missing}"
+        )
+
+    firm_qtr = _collapse_to_firm_quarter(panel, base_cols)
+
+    # Expected prior cal_yr_qtr: within-year decrement if cal_qtr>1, else year rollback
+    cal_yr_arr = firm_qtr["cal_yr"].astype("Int64").to_numpy()
+    cal_qtr_arr = firm_qtr["cal_qtr"].astype("Int64").to_numpy()
+    cal_yr_qtr_arr = firm_qtr["cal_yr_qtr"].astype("Int64").to_numpy()
+    expected_prev = np.where(
+        cal_qtr_arr > 1,
+        cal_yr_qtr_arr - 1,
+        (cal_yr_arr - 1) * 10 + 4,
+    )
+
+    prev_cyq = firm_qtr.groupby("gvkey")["cal_yr_qtr"].shift(1)
+    consecutive = prev_cyq.to_numpy() == expected_prev
+
+    new_cols = []
+    for col in base_cols:
+        lag_col = f"{col}_lag"
+        raw_shifted = firm_qtr.groupby("gvkey")[col].shift(1)
+        firm_qtr[lag_col] = np.where(consecutive, raw_shifted.to_numpy(), np.nan)
+        new_cols.append(lag_col)
+
+    lookup = firm_qtr[["gvkey", "cal_yr_qtr"] + new_cols].copy()
+
+    before_len = len(panel)
+    panel_out = panel.merge(lookup, on=["gvkey", "cal_yr_qtr"], how="left")
+    if len(panel_out) != before_len:
+        raise ValueError(
+            f"create_prior_quarter_lag: merge changed row count "
+            f"{before_len} -> {len(panel_out)}"
+        )
+
+    n_total = len(panel_out)
+    for lc in new_cols:
+        n_matched = panel_out[lc].notna().sum()
+        pct = 100.0 * n_matched / n_total if n_total else 0.0
+        logger.debug(
+            "create_prior_quarter_lag: %s populated for %d/%d (%.1f%%) calls",
+            lc,
+            n_matched,
+            n_total,
+            pct,
+        )
+
+    return panel_out

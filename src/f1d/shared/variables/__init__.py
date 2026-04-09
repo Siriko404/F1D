@@ -269,6 +269,8 @@ __all__ = [
     "PRiskQLeadBuilder",
     # H11-Lead2
     "PRiskQLead2Builder",
+    # H24/H24b/H25 Macro Uncertainty (EPU / GEPU / GPR)
+    "MacroUncertaintyBuilder",
     # Panel-building utilities
     "assign_industry_sample",
     "attach_fyearq",
@@ -312,6 +314,10 @@ from .prisk_q_lead import PRiskQLeadBuilder
 
 # H11-Lead2 Political Risk (Quarterly, 2-quarter Lead)
 from .prisk_q_lead2 import PRiskQLead2Builder
+
+# H24/H24b/H25 Macro Uncertainty — aggregate monthly macro indices matched by calendar month
+# (Caldara-Iacoviello 2022 GPR, BBD 2016 US EPU, Davis 2016 GEPU)
+from .macro_uncertainty import MacroUncertaintyBuilder
 
 # Panel-building utilities (canonical shared helpers — all panel builders must import from here)
 from .panel_utils import assign_industry_sample, attach_fyearq
