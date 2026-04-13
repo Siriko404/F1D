@@ -297,50 +297,86 @@ SUITES = [
         "dir": "h11_prisk_uncertainty",
         "caption": "H11: Political Risk and Language Uncertainty",
         "label": "tab:h11",
-        "cols": 4,
-        "col_files": {
-            1: "regression_results_Main_UncAnsMgr.txt",
-            2: "regression_results_Main_UncAnsCEO.txt",
-            3: "regression_results_Main_UncPreMgr.txt",
-            4: "regression_results_Main_UncPreCEO.txt",
-        },
-        "dvs": [
-            (r"QA\_Uncertainty\_pct", 2),
-            (r"Pres\_Uncertainty\_pct", 2),
-        ],
-        "col_dv_labels": ["Manager", "CEO", "Manager", "CEO"],
-        "key_vars": ["PRisk"],
-        "key_labels": ["PRisk"],
-        "key_tails": ["one_pos"],
-    },
-    {
-        "id": "H11-Lag",
-        "type": "moderation",
-        "dir": "h11_prisk_uncertainty_lag",
-        "caption": "H11-Lag: Lagged Political Risk and Language Uncertainty",
-        "label": "tab:h11_lag",
         "cols": 8,
         "col_files": {
-            1: "regression_results_Main_UncAnsMgr_lag1.txt",
-            2: "regression_results_Main_UncAnsCEO_lag1.txt",
-            3: "regression_results_Main_UncPreMgr_lag1.txt",
-            4: "regression_results_Main_UncPreCEO_lag1.txt",
-            5: "regression_results_Main_UncAnsMgr_lag2.txt",
-            6: "regression_results_Main_UncAnsCEO_lag2.txt",
-            7: "regression_results_Main_UncPreMgr_lag2.txt",
-            8: "regression_results_Main_UncPreCEO_lag2.txt",
+            1: "regression_results_Main_UncAnsMgr_industry.txt",
+            2: "regression_results_Main_UncAnsCEO_industry.txt",
+            3: "regression_results_Main_UncPreMgr_industry.txt",
+            4: "regression_results_Main_UncPreCEO_industry.txt",
+            5: "regression_results_Main_UncAnsMgr_firm.txt",
+            6: "regression_results_Main_UncAnsCEO_firm.txt",
+            7: "regression_results_Main_UncPreMgr_firm.txt",
+            8: "regression_results_Main_UncPreCEO_firm.txt",
         },
         "dvs": [
-            (r"PRisk\_lag", 4),
-            (r"PRisk\_lag2", 4),
+            (r"Industry FE", 4),
+            (r"Firm FE", 4),
         ],
         "col_dv_labels": [
             "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
             "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
         ],
-        "key_vars": ["PRisk_lag", "PRisk_lag2"],
-        "key_labels": [r"PRisk\_lag", r"PRisk\_lag2"],
-        "key_tails": ["one_pos", "one_pos"],
+        "key_vars": ["PRisk"],
+        "key_labels": ["PRisk"],
+        "key_tails": ["one_pos"],
+    },
+    {
+        "id": "H11-Lag1",
+        "type": "moderation",
+        "dir": "h11_prisk_uncertainty_lag",
+        "caption": "H11-Lag1: Political Risk (1-Qtr Lag) and Language Uncertainty",
+        "label": "tab:h11_lag1",
+        "cols": 8,
+        "col_files": {
+            1: "regression_results_Main_UncAnsMgr_lag1_industry.txt",
+            2: "regression_results_Main_UncAnsCEO_lag1_industry.txt",
+            3: "regression_results_Main_UncPreMgr_lag1_industry.txt",
+            4: "regression_results_Main_UncPreCEO_lag1_industry.txt",
+            5: "regression_results_Main_UncAnsMgr_lag1_firm.txt",
+            6: "regression_results_Main_UncAnsCEO_lag1_firm.txt",
+            7: "regression_results_Main_UncPreMgr_lag1_firm.txt",
+            8: "regression_results_Main_UncPreCEO_lag1_firm.txt",
+        },
+        "dvs": [
+            (r"Industry FE", 4),
+            (r"Firm FE", 4),
+        ],
+        "col_dv_labels": [
+            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
+            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
+        ],
+        "key_vars": ["PRisk_lag"],
+        "key_labels": [r"PRisk$_{t-1}$"],
+        "key_tails": ["one_pos"],
+    },
+    {
+        "id": "H11-Lag2",
+        "type": "moderation",
+        "dir": "h11_prisk_uncertainty_lag",
+        "caption": "H11-Lag2: Political Risk (2-Qtr Lag) and Language Uncertainty",
+        "label": "tab:h11_lag2",
+        "cols": 8,
+        "col_files": {
+            1: "regression_results_Main_UncAnsMgr_lag2_industry.txt",
+            2: "regression_results_Main_UncAnsCEO_lag2_industry.txt",
+            3: "regression_results_Main_UncPreMgr_lag2_industry.txt",
+            4: "regression_results_Main_UncPreCEO_lag2_industry.txt",
+            5: "regression_results_Main_UncAnsMgr_lag2_firm.txt",
+            6: "regression_results_Main_UncAnsCEO_lag2_firm.txt",
+            7: "regression_results_Main_UncPreMgr_lag2_firm.txt",
+            8: "regression_results_Main_UncPreCEO_lag2_firm.txt",
+        },
+        "dvs": [
+            (r"Industry FE", 4),
+            (r"Firm FE", 4),
+        ],
+        "col_dv_labels": [
+            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
+            "Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres",
+        ],
+        "key_vars": ["PRisk_lag2"],
+        "key_labels": [r"PRisk$_{t-2}$"],
+        "key_tails": ["one_pos"],
     },
     # ── H12 ──
     {
@@ -583,9 +619,10 @@ SUITES = [
         "dir": "h20b_debt_choice",
         "caption": r"H20b: Speech Uncertainty and Debt vs Equity Choice (Chang et al. 2006)",
         "label": "tab:h20b",
-        "cols": 6,
+        "cols": 12,
         "dvs": [
             ("ChangDebtChoice", 6),
+            (r"ChangDebtChoice\_lead", 6),
         ],
         "tail": "two",
         "hyp_dir": None,
@@ -1601,8 +1638,12 @@ def generate_table(suite):
         firm_cells.append("Yes" if base_fe == "firm" else "")
         year_cells.append("Yes" if not is_yq else "")
         yr_qtr_cells.append("Yes" if is_yq else "")
-    lines.append(r"Industry FE & " + " & ".join(ind_cells) + r" \\")
-    lines.append(r"Firm FE & " + " & ".join(firm_cells) + r" \\")
+    has_ind = any(c == "Yes" for c in ind_cells)
+    has_firm = any(c == "Yes" for c in firm_cells)
+    if has_ind:
+        lines.append(r"Industry FE & " + " & ".join(ind_cells) + r" \\")
+    if has_firm:
+        lines.append(r"Firm FE & " + " & ".join(firm_cells) + r" \\")
     time_fe = suite.get("time_fe_label", "Year FE")
     lines.append(f"{time_fe} & " + " & ".join(year_cells) + r" \\")
     if any(c == "Yes" for c in yr_qtr_cells):

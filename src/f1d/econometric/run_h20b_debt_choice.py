@@ -12,14 +12,14 @@ Description: Run H20b hypothesis test — does speech uncertainty predict the ch
              ChangDebtChoice uses cash-flow statement debt items (dltisy - dltry + dlcchy),
              not balance-sheet items (dlcq + dlttq).
 
-6 Model Specifications:
-    Cols 1-2:   DV = ChangDebtChoice, Calendar Year FE (Base / Extended)
-    Cols 3-4:   DV = ChangDebtChoice, Calendar Year FE (Extended)
-    Cols 5-6:   DV = ChangDebtChoice, Year-Quarter FE (Extended)
+12 Model Specifications:
+    Cols 1-6:   DV = ChangDebtChoice (contemporaneous)
+    Cols 7-12:  DV = ChangDebtChoice_lead (next fiscal year)
+    Cols 1-2, 7-8:   Calendar Year FE (Base controls)
+    Cols 3-4, 9-10:  Calendar Year FE (Extended controls)
+    Cols 5-6, 11-12: Year-Quarter FE (Extended controls)
     Odd cols:   Industry FE (FF12)
     Even cols:  Firm FE
-    Cols 1-2:   Base controls
-    Cols 3-6:   Extended controls
 
 Key IVs (4, simultaneous, call-level):
     UncAnsCEO, UncPreCEO,
@@ -90,14 +90,22 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    # ChangDebtChoice — Calendar Year FE
-    {"col": 1, "dv": "ChangDebtChoice", "fe": "industry",    "controls": "base",     "extra_controls": []},
-    {"col": 2, "dv": "ChangDebtChoice", "fe": "firm",        "controls": "base",     "extra_controls": []},
-    {"col": 3, "dv": "ChangDebtChoice", "fe": "industry",    "controls": "extended", "extra_controls": []},
-    {"col": 4, "dv": "ChangDebtChoice", "fe": "firm",        "controls": "extended", "extra_controls": []},
-    # ChangDebtChoice — Year-Quarter FE (Extended controls only)
-    {"col": 5, "dv": "ChangDebtChoice", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
-    {"col": 6, "dv": "ChangDebtChoice", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    # ChangDebtChoice (contemporaneous) — Calendar Year FE
+    {"col": 1,  "dv": "ChangDebtChoice",      "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 2,  "dv": "ChangDebtChoice",      "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 3,  "dv": "ChangDebtChoice",      "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 4,  "dv": "ChangDebtChoice",      "fe": "firm",        "controls": "extended", "extra_controls": []},
+    # ChangDebtChoice (contemporaneous) — Year-Quarter FE (Extended controls only)
+    {"col": 5,  "dv": "ChangDebtChoice",      "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 6,  "dv": "ChangDebtChoice",      "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
+    # ChangDebtChoice_lead (next fiscal year) — Calendar Year FE
+    {"col": 7,  "dv": "ChangDebtChoice_lead", "fe": "industry",    "controls": "base",     "extra_controls": []},
+    {"col": 8,  "dv": "ChangDebtChoice_lead", "fe": "firm",        "controls": "base",     "extra_controls": []},
+    {"col": 9,  "dv": "ChangDebtChoice_lead", "fe": "industry",    "controls": "extended", "extra_controls": []},
+    {"col": 10, "dv": "ChangDebtChoice_lead", "fe": "firm",        "controls": "extended", "extra_controls": []},
+    # ChangDebtChoice_lead (next fiscal year) — Year-Quarter FE (Extended controls only)
+    {"col": 11, "dv": "ChangDebtChoice_lead", "fe": "industry_yq", "controls": "extended", "extra_controls": []},
+    {"col": 12, "dv": "ChangDebtChoice_lead", "fe": "firm_yq",     "controls": "extended", "extra_controls": []},
 ]
 
 VARIABLE_LABELS = {
@@ -109,6 +117,7 @@ VARIABLE_LABELS = {
 
 SUMMARY_STATS_VARS = [
     {"col": "ChangDebtChoice", "label": "Debt Choice (1=debt-only)"},
+    {"col": "ChangDebtChoice_lead", "label": "Debt Choice lead (1=debt-only)"},
     {"col": "ChangExternalFunding_lag", "label": "Lagged DV (ChangExternalFunding lag)"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
@@ -345,14 +354,14 @@ def _sig_stars(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write unified 6-column LaTeX table."""
+    """Write unified 12-column LaTeX table (6 contemp + 6 lead)."""
     results_by_col = {}
     for r in all_results:
         meta = r.get("meta", {})
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 6
+    n_cols = 12
 
     def fmt_coef(val, stars):
         return f"{val:.4f}{stars}" if not np.isnan(val) else ""
@@ -382,9 +391,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(f" & {col_nums} " + r"\\")
 
     lines.append(
-        r" & \multicolumn{6}{c}{ChangDebtChoice} \\"
+        r" & \multicolumn{6}{c}{ChangDebtChoice} & \multicolumn{6}{c}{ChangDebtChoice\_lead} \\"
     )
-    lines.append(r"\cmidrule(lr){2-7}")
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     for iv in KEY_IVS:
@@ -537,7 +546,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    4 IVs x 1 DV x 3 FE x 2 controls = 6 models")
+    print(f"Design:    4 IVs x 2 DVs x 3 FE x 2 controls = 12 models")
     print(f"FE time:   cal_yr (calendar year) + cal_yr_qtr (calendar year-quarter)")
 
     panel, panel_file = load_panel(root, panel_path)

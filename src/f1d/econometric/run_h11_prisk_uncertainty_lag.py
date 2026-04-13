@@ -95,6 +95,7 @@ CONFIG = {
     ],
     "samples": ["Main", "Finance", "Utility"],
     "iv_vars": ["PRisk_lag", "PRisk_lag2"],  # Test both lag-1 and lag-2
+    "fe_specs": ["industry", "firm"],
 }
 
 BASE_CONTROLS = [
@@ -163,7 +164,7 @@ def prepare_regression_data(
     if pres_control:
         controls.append(pres_control)
 
-    required = [dv_var, iv_var] + controls + ["gvkey", "year"]
+    required = [dv_var, iv_var] + controls + ["gvkey", "year", "ff12_code"]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -180,15 +181,12 @@ def run_regression(
     sample_name: str,
     iv_var: str,
     controls: List[str],
+    fe_type: str,
 ) -> Tuple[Any, Dict[str, Any]]:
-    formula = (
-        f"{dv_var} ~ 1 + {iv_var} + "
-        + " + ".join(controls)
-        + " + EntityEffects + TimeEffects"
-    )
+    fe_label = "Firm + CalYr" if fe_type == "firm" else "Industry(FF12) + CalYr"
 
     print(
-        f"  Formula: {dv_var} ~ {iv_var} + {' + '.join(controls)} + EntityEffects + TimeEffects"
+        f"  Formula: {dv_var} ~ {iv_var} + {' + '.join(controls)} + {fe_label}"
     )
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
@@ -200,7 +198,20 @@ def run_regression(
     df_panel = df_sample.set_index(["gvkey", "year"])
 
     try:
-        model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+        if fe_type == "firm":
+            exog_str = " + ".join([iv_var] + controls)
+            formula = f"{dv_var} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
+            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+        else:  # industry
+            model_obj = PanelOLS(
+                dependent=df_panel[dv_var],
+                exog=df_panel[[iv_var] + controls],
+                entity_effects=False,
+                time_effects=True,
+                other_effects=df_panel["ff12_code"],
+                drop_absorbed=True,
+                check_rank=False,
+            )
         model = model_obj.fit(cov_type="clustered", cluster_entity=True)
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
@@ -236,6 +247,7 @@ def run_regression(
         "dv": dv_var,
         "sample": sample_name,
         "iv": iv_var,
+        "fe": fe_type,
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),
@@ -256,29 +268,24 @@ def run_regression(
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     tex_path = out_dir / "h11_prisk_uncertainty_lag_table.tex"
 
-    # Get results for Main sample, lag-1
-    def get_res_lag1(dv):
+    # Main sample, 4 DVs × 2 lags × 2 FE = 16 cols
+    # Layout: cols 1-4  = lag1 industry,  cols 5-8  = lag1 firm
+    #         cols 9-12 = lag2 industry,  cols 13-16= lag2 firm
+    def get_res(dv, iv, fe):
         for r in all_results:
-            if r.get("sample") == "Main" and r.get("dv") == dv and r.get("iv") == "PRisk_lag":
+            if (r.get("sample") == "Main" and r.get("dv") == dv
+                    and r.get("iv") == iv and r.get("fe") == fe):
                 return r
         return None
 
-    # Get results for Main sample, lag-2
-    def get_res_lag2(dv):
-        for r in all_results:
-            if r.get("sample") == "Main" and r.get("dv") == dv and r.get("iv") == "PRisk_lag2":
-                return r
-        return None
-
-    r_mq_1 = get_res_lag1("UncAnsMgr")
-    r_cq_1 = get_res_lag1("UncAnsCEO")
-    r_mp_1 = get_res_lag1("UncPreMgr")
-    r_cp_1 = get_res_lag1("UncPreCEO")
-
-    r_mq_2 = get_res_lag2("UncAnsMgr")
-    r_cq_2 = get_res_lag2("UncAnsCEO")
-    r_mp_2 = get_res_lag2("UncPreMgr")
-    r_cp_2 = get_res_lag2("UncPreCEO")
+    dv_order = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+    col_order = (
+        [(dv, "PRisk_lag",  "industry") for dv in dv_order]
+        + [(dv, "PRisk_lag",  "firm")     for dv in dv_order]
+        + [(dv, "PRisk_lag2", "industry") for dv in dv_order]
+        + [(dv, "PRisk_lag2", "firm")     for dv in dv_order]
+    )
+    col_results = [get_res(dv, iv, fe) for dv, iv, fe in col_order]
 
     def fmt_coef(val, pval):
         if val is None or pd.isna(val):
@@ -304,87 +311,58 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             return f"{val:.2e}"
         return f"{val:.4f}"
 
+    def build_row(label, extractor, fmt):
+        cells = [fmt(extractor(r)) if r else "" for r in col_results]
+        return label + " & " + " & ".join(cells) + " \\\\"
+
+    col_nums = " & ".join(f"({i})" for i in range(1, 17))
+    sub_labels = " & ".join(["Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres"] * 4)
+
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
         "\\caption{H11-Lag: Political Risk (Lagged) and Language Uncertainty}",
         "\\label{tab:h11_prisk_uncertainty_lag}",
-        "\\begin{tabular}{lcccc}",
+        "\\scriptsize",
+        "\\begin{tabular}{l" + "c" * 16 + "}",
         "\\toprule",
-        " & \\multicolumn{2}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} \\\\",
-        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5}",
-        " & Mgr Unc & CEO Unc & Mgr Unc & CEO Unc \\\\",
-        " & (1) & (2) & (3) & (4) \\\\",
+        (" & \\multicolumn{8}{c}{Political Risk$_{t-1}$}"
+         " & \\multicolumn{8}{c}{Political Risk$_{t-2}$} \\\\"),
+        "\\cmidrule(lr){2-9} \\cmidrule(lr){10-17}",
+        (" & \\multicolumn{4}{c}{Industry FE} & \\multicolumn{4}{c}{Firm FE}"
+         " & \\multicolumn{4}{c}{Industry FE} & \\multicolumn{4}{c}{Firm FE} \\\\"),
+        "\\cmidrule(lr){2-5} \\cmidrule(lr){6-9} \\cmidrule(lr){10-13} \\cmidrule(lr){14-17}",
+        f" & {sub_labels} \\\\",
+        f" & {col_nums} \\\\",
         "\\midrule",
     ]
 
-    # Row 1: PRisk_lag (t-1)
-    r1 = "Political Risk$_{t-1}$ & "
-    r1 += f"{fmt_coef(r_mq_1['beta_prisk'], r_mq_1['beta_prisk_p_one'])} & " if r_mq_1 else " & "
-    r1 += f"{fmt_coef(r_cq_1['beta_prisk'], r_cq_1['beta_prisk_p_one'])} & " if r_cq_1 else " & "
-    r1 += f"{fmt_coef(r_mp_1['beta_prisk'], r_mp_1['beta_prisk_p_one'])} & " if r_mp_1 else " & "
-    r1 += f"{fmt_coef(r_cp_1['beta_prisk'], r_cp_1['beta_prisk_p_one'])} \\\\" if r_cp_1 else " \\\\"
-    lines.append(r1)
+    # PRisk_lag/PRisk_lag2 coefficient + SE row
+    coef_cells, se_cells = [], []
+    for r in col_results:
+        if r:
+            coef_cells.append(fmt_coef(r["beta_prisk"], r["beta_prisk_p_one"]))
+            se_cells.append(fmt_se(r["beta_prisk_se"]))
+        else:
+            coef_cells.append("")
+            se_cells.append("")
+    lines.append("Lagged PRisk & " + " & ".join(coef_cells) + " \\\\")
+    lines.append(" & " + " & ".join(se_cells) + " \\\\")
 
-    # Row 2: SE for lag-1
-    r2 = " & "
-    r2 += f"{fmt_se(r_mq_1['beta_prisk_se'])} & " if r_mq_1 else " & "
-    r2 += f"{fmt_se(r_cq_1['beta_prisk_se'])} & " if r_cq_1 else " & "
-    r2 += f"{fmt_se(r_mp_1['beta_prisk_se'])} & " if r_mp_1 else " & "
-    r2 += f"{fmt_se(r_cp_1['beta_prisk_se'])} \\\\" if r_cp_1 else " \\\\"
-    lines.append(r2)
+    lines.append("\\midrule")
+    lines.append("Controls & " + " & ".join(["Yes"] * 16) + " \\\\")
+    ind_row = ["Yes"] * 4 + [""] * 4 + ["Yes"] * 4 + [""] * 4
+    firm_row = [""] * 4 + ["Yes"] * 4 + [""] * 4 + ["Yes"] * 4
+    lines.append("Industry FE & " + " & ".join(ind_row) + " \\\\")
+    lines.append("Firm FE & " + " & ".join(firm_row) + " \\\\")
+    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 16) + " \\\\")
+    lines.append("\\midrule")
 
-    # Row 3: PRisk_lag2 (t-2)
-    r3 = "Political Risk$_{t-2}$ & "
-    r3 += f"{fmt_coef(r_mq_2['beta_prisk'], r_mq_2['beta_prisk_p_one'])} & " if r_mq_2 else " & "
-    r3 += f"{fmt_coef(r_cq_2['beta_prisk'], r_cq_2['beta_prisk_p_one'])} & " if r_cq_2 else " & "
-    r3 += f"{fmt_coef(r_mp_2['beta_prisk'], r_mp_2['beta_prisk_p_one'])} & " if r_mp_2 else " & "
-    r3 += f"{fmt_coef(r_cp_2['beta_prisk'], r_cp_2['beta_prisk_p_one'])} \\\\" if r_cp_2 else " \\\\"
-    lines.append(r3)
-
-    # Row 4: SE for lag-2
-    r4 = " & "
-    r4 += f"{fmt_se(r_mq_2['beta_prisk_se'])} & " if r_mq_2 else " & "
-    r4 += f"{fmt_se(r_cq_2['beta_prisk_se'])} & " if r_cq_2 else " & "
-    r4 += f"{fmt_se(r_mp_2['beta_prisk_se'])} & " if r_mp_2 else " & "
-    r4 += f"{fmt_se(r_cp_2['beta_prisk_se'])} \\\\" if r_cp_2 else " \\\\"
-    lines.append(r4)
-
-    lines.extend(
-        [
-            "\\midrule",
-            "Negative Sentiment & Yes & Yes & Yes & Yes \\\\",
-            "Controls & Yes & Yes & Yes & Yes \\\\",
-            "Firm FE & Yes & Yes & Yes & Yes \\\\",
-            "Calendar Year FE & Yes & Yes & Yes & Yes \\\\",
-            "\\midrule",
-        ]
-    )
-
-    # Observations row (use lag-1 results for consistency)
-    rn = "Observations & "
-    rn += f"{r_mq_1['n_obs']:,} & " if r_mq_1 else " & "
-    rn += f"{r_cq_1['n_obs']:,} & " if r_cq_1 else " & "
-    rn += f"{r_mp_1['n_obs']:,} & " if r_mp_1 else " & "
-    rn += f"{r_cp_1['n_obs']:,} \\\\" if r_cp_1 else " \\\\"
-    lines.append(rn)
-
-    rr = "$R^2$ & "
-    rr += f"{fmt_r2(r_mq_1['r2'])} & " if r_mq_1 else " & "
-    rr += f"{fmt_r2(r_cq_1['r2'])} & " if r_cq_1 else " & "
-    rr += f"{fmt_r2(r_mp_1['r2'])} & " if r_mp_1 else " & "
-    rr += f"{fmt_r2(r_cp_1['r2'])} \\\\" if r_cp_1 else " \\\\"
-    lines.append(rr)
-
-    ra = "Adj.~$R^2$ & "
-    ra += f"{fmt_r2(r_mq_1['adj_r2'])} & " if r_mq_1 else " & "
-    ra += f"{fmt_r2(r_cq_1['adj_r2'])} & " if r_cq_1 else " & "
-    ra += f"{fmt_r2(r_mp_1['adj_r2'])} & " if r_mp_1 else " & "
-    ra += f"{fmt_r2(r_cp_1['adj_r2'])} \\\\" if r_cp_1 else " \\\\"
-    lines.append(ra)
+    lines.append(build_row("Observations", lambda r: r["n_obs"], lambda v: f"{v:,}"))
+    lines.append(build_row("$R^2$",     lambda r: r["r2"],     fmt_r2))
+    lines.append(build_row("Adj.~$R^2$", lambda r: r["adj_r2"], fmt_r2))
 
     lines.extend(["\\bottomrule", "\\end{tabular}"])
-    # Add table notes
     lines.extend([
         "\\\\[-0.5em]",
         "\\parbox{\\textwidth}{\\scriptsize ",
@@ -392,10 +370,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "This table reports the effect of lagged political risk on language uncertainty. ",
         "Political Risk$_{t-1}$ is measured one quarter before the earnings call; ",
         "Political Risk$_{t-2}$ is measured two quarters before. ",
-        "Columns (1)--(2) use Q\\&A session measures; columns (3)--(4) use presentation measures. ",
+        "Columns (1)--(8) use Political Risk$_{t-1}$; columns (9)--(16) use Political Risk$_{t-2}$. ",
+        "Within each lag block, columns (1)--(4) and (9)--(12) use industry (FF12) fixed effects; ",
+        "columns (5)--(8) and (13)--(16) use firm fixed effects. ",
         "All models use the Main industry sample (non-financial, non-utility firms). ",
         "Firms with fewer than 5 calls are excluded. ",
-        "Standard errors are clustered at the firm level. ",
+        "Standard errors are clustered at the firm level (Petersen 2009). ",
         "All continuous controls are standardized. ",
         "Variables are winsorized at 1\\%/99\\% by year.",
         "}",
@@ -504,7 +484,7 @@ def main(panel_path: str | None = None) -> int:
 
     all_results = []
 
-    # Run regressions for each DV, sample, and IV combination
+    # Run regressions for each DV, sample, IV, and FE combination
     for iv_var in CONFIG["iv_vars"]:
         print(f"\n{'=' * 60}")
         print(f"Testing IV: {iv_var}")
@@ -512,8 +492,6 @@ def main(panel_path: str | None = None) -> int:
 
         for dv in CONFIG["dependent_variables"]:
             for sample in CONFIG["samples"]:
-                print(f"\n--- {sample} / {dv} / {iv_var} ---")
-
                 df_prep, controls = prepare_regression_data(panel, dv, iv_var)
 
                 if sample == "Main":
@@ -530,27 +508,30 @@ def main(panel_path: str | None = None) -> int:
                     df_sample["gvkey_count"] >= CONFIG["min_calls"]
                 ].copy()
 
-                print(
-                    f"  After filters: {len(df_filtered):,} calls, {df_filtered['gvkey'].nunique():,} firms"
-                )
-
                 if len(df_filtered) < 100:
-                    print("  Skipping: insufficient data")
+                    print(f"\n--- {sample} / {dv} / {iv_var} ---  Skipping: insufficient data ({len(df_filtered)} obs)")
                     continue
 
-                print(f"\n============================================================")
-                print(f"Running regression: {sample} / {dv} / {iv_var}")
-                print(f"============================================================")
+                for fe_type in CONFIG["fe_specs"]:
+                    print(f"\n--- {sample} / {dv} / {iv_var} / FE={fe_type} ---")
+                    print(
+                        f"  After filters: {len(df_filtered):,} calls, {df_filtered['gvkey'].nunique():,} firms"
+                    )
 
-                model, meta = run_regression(df_filtered, dv, sample, iv_var, controls)
+                    print(f"============================================================")
+                    print(f"Running regression: {sample} / {dv} / {iv_var} / FE={fe_type}")
+                    print(f"============================================================")
 
-                if model is not None:
-                    all_results.append(meta)
-                    # Save individual regression results with lag version in filename
-                    lag_suffix = "lag1" if iv_var == "PRisk_lag" else "lag2"
-                    with open(out_dir / f"regression_results_{sample}_{dv}_{lag_suffix}.txt", "w") as f:
-                        f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
-                        f.write(str(model.summary))
+                    model, meta = run_regression(df_filtered, dv, sample, iv_var, controls, fe_type)
+
+                    if model is not None:
+                        all_results.append(meta)
+                        # Save individual regression results with lag + FE in filename
+                        lag_suffix = "lag1" if iv_var == "PRisk_lag" else "lag2"
+                        with open(out_dir / f"regression_results_{sample}_{dv}_{lag_suffix}_{fe_type}.txt", "w") as f:
+                            f.write(f"FE: {fe_type}\n")
+                            f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
+                            f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
     pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
@@ -558,7 +539,10 @@ def main(panel_path: str | None = None) -> int:
     # Generate sample attrition table
     if all_results:
         main_result = next(
-            (r for r in all_results if r.get("sample") == "Main" and r.get("iv") == "PRisk_lag"),
+            (r for r in all_results
+             if r.get("sample") == "Main"
+             and r.get("iv") == "PRisk_lag"
+             and r.get("fe") == "firm"),
             all_results[0]
         )
         attrition_stages = [

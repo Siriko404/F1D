@@ -2,7 +2,7 @@
 
 **Purpose:** persistent memory for Claude across context compactions. Claude appends/updates this file as work progresses. Read at start of every draft session.
 
-**Current phase:** **Phase 2.5 + Phase 3 tier 1 + tier 2A COMPLETE and COMMITTED** (commits 6a98792, 513b001). Tier 2B/C/D pending: H11, H11-Lag, H20b.
+**Current phase:** **Phase 3 (ALL TIERS) + Phase 4 (full 35-suite rerun + PDF regeneration) COMPLETE.** 6 files modified + 2 new incident reports UNCOMMITTED in working tree. Next: commit + Phase 5 (findings.txt + narrative synthesis).
 **Last updated:** 2026-04-13
 
 ---
@@ -22,9 +22,9 @@
 - [x] **Phase 1** — Diagnose + protocol (2026-04-13)
 - [x] **Phase 2** — Suite audit with discipline (COMPLETE 2026-04-13)
 - [x] **Phase 2.5** — Clustering methodology decision (COMPLETE 2026-04-13 — uniform firm-only + macro exception, empirical H1 test confirmed direction)
-- [ ] **Phase 3** — Apply all pipeline fixes
-- [ ] **Phase 4** — Rerun affected suites + regenerate tables
-- [ ] **Phase 5** — Clean read of post-fix data + synthesize narrative on blank slate
+- [x] **Phase 3** — Apply all pipeline fixes (tier 1 + tier 2A/B/C/D ALL DONE)
+- [x] **Phase 4** — Rerun affected suites + regenerate tables (full 35-suite rerun, PDF verified clean)
+- [ ] **Phase 5** — Clean read of post-fix data + synthesize narrative on blank slate (PENDING — next session; needs findings.txt regen first)
 
 ---
 
@@ -99,14 +99,64 @@ All 14 remaining families audited. Full bug inventory and raw cell facts in DECI
 - [x] H17 silent naming bug fixed: field `_p_one` stored `p_two` values → renamed to `_p_two`. Effective tailing unchanged (still two-tailed per user).
 - [x] H13, H16, H20b remain two-tailed per user explicit decision.
 
-**STILL PENDING (tier 2B/C/D)**:
-- [ ] **H11 spec ladder expansion** (4 → 8 cols, add firm/industry split). Complexity: H11 loops over 4 DVs × 3 samples (Main/Finance/Utility); only Main appears in thesis table. Has its own `_save_latex_table` function. Need to refactor `run_regression` to accept FE type, double the main loop, and update `generate_all_tables.py` H11 entry (currently maps 4 files; needs 8).
-- [ ] **H11-Lag spec ladder** (8 → 16 cols). Same pattern as H11 but for 2 lag variants.
-- [ ] **H20b add `ChangDebtChoice_lead` DV** (6 → 12 cols matching H19b). Check if panel has lead column or needs panel-builder extension.
+**Tier 2B/C/D — DONE 2026-04-13**:
+- [x] **H11 spec ladder expansion** (4 → 8 cols, firm/industry FE split). Refactored `run_regression` with fe_type dispatch, main loop iterates `for fe in ['industry', 'firm']`. Output filenames: `regression_results_{sample}_{dv}_{fe}.txt`. `generate_all_tables.py` H11 entry maps 8 col_files. Smoke test passed; all PRisk p<0.01 across all 8 cols.
+- [x] **H11-Lag spec ladder** (8 → ORIGINALLY 16 → FINAL 8+8 split). Initial design was single 16-col table with `key_vars=["PRisk_lag","PRisk_lag2"]` (cols 1-8 = lag1, cols 9-16 = lag2), which created two half-empty coefficient rows. Resolved by SPLITTING into two separate entries in `generate_all_tables.py`: **H11-Lag1** (8 cols, `PRisk_{t-1}`, label `tab:h11_lag1`) and **H11-Lag2** (8 cols, `PRisk_{t-2}`, label `tab:h11_lag2`). Single runner produces all 16 text files (2 lags × 4 DVs × 2 FE); generate_all_tables.py renders them as 2 tables. Retrospective in `log/incidents/2026-04-13_shallow-pdf-verification-and-render-design.md`.
+- [x] **H20b add `ChangDebtChoice_lead` DV** (6 → 12 cols matching H19b). Panel already had lead column (from `build_h19b_h20b_financing_panel.py` line 198). Runner extended with cols 7-12 for lead DV. Sample: N=3,518 lead vs 13,666 contemp (26% retention from complete-case NaN drop — expected since lead DV only defined for firms externally funding in t+1). No restructuring of `prepare_regression_data` needed (complete-case handles the sample restriction).
 
 **Deferred to Phase 5 (no code fix)**:
 - Sample/methodological notes (H12, H20b, H14 family, H22 — document in limitations).
 - Within-family contradictions (H18 vs H21 UncPreMgr sign; H25 GPR wrong-sign QA).
+
+---
+
+## Phase 3 bugs surfaced + fixed during tier 2B/C/D implementation
+
+Both bugs caught by user inspection of the rendered LaTeX file, not by my smoke tests. Full retrospectives in `log/incidents/`.
+
+### Bug 1: `const` row in H11/H11-Lag (template drift — my bug)
+- **Symptom**: H11 and H11-Lag coefficient tables contained a spurious `const` row with values in cols 1-4 (industry FE) and empty cells in cols 5-8 (firm FE).
+- **Cause**: In the industry-FE branch of `run_regression`, I added `exog = exog.assign(const=1.0)` which PanelOLS estimated as a regression variable. The firm-FE branch used `PanelOLS.from_formula` where the `1 +` intercept is absorbed by `EntityEffects`, so no `const` row. H13.1 (the template I copied) does NOT add `const=1.0` — PanelOLS with `other_effects + time_effects` absorbs the intercept via the FE.
+- **Fix**: Removed `assign(const=1.0)` from both H11 and H11-Lag runners. Reran. Verified `grep -c "^const &" outputs/all_tables.tex` returns 0.
+- **Retrospective**: `log/incidents/2026-04-13_h11-const-row-template-drift.md`.
+- **Prevention rule**: `memory/feedback_template_diff_discipline.md` — when adapting a runner from a template, diff line-by-line and justify every deviation; no speculative "symmetry" additions.
+
+### Bug 2: H18b empty `Firm FE` row (pre-existing renderer inconsistency — not my bug but caught during hunt)
+- **Symptom**: H18b's `Firm FE & & \\` row was entirely empty (both cols). H18b is logit and uses only industry FE (firm FE inappropriate due to incidental parameters). The renderer emitted the Firm FE row unconditionally.
+- **Cause**: Regular renderer (`generate_table` in `outputs/generate_all_tables.py`) unconditionally emitted Industry FE and Firm FE rows. Moderation renderer had `has_firm`/`has_ind` guards but regular renderer did not. Pre-existing inconsistency; H18b was the only affected table (only suite using industry-FE-only specs via the regular renderer).
+- **Fix**: Added `has_firm`/`has_ind` guards to regular renderer (lines 1405-1410 of generate_all_tables.py, mirrors moderation renderer). Regenerated all_tables.tex, empty row gone.
+
+### Bug 3: H7d stale output with NaN SEs (Phase 4 miss — reruns needed)
+- **Symptom**: H7d table showed empty cells in UncAnsCEO (cols 1, 3), UncPreCEO (col 1), Capex (col 6). User caught this after I reported "PDF verified clean".
+- **Cause**: The Phase 3 clustering downgrade (commit `6a98792`) fixed the underlying NaN SE bug in code, but I never reran H7d (and 12 other stale suites). `generate_all_tables.py` resolves to the latest timestamped run via `resolve_suite_dir`, picking up the 2026-04-09 pre-Phase-3 output which still had NaN SEs from the two-way clustering rank-deficient covariance. The `parse_txt` function silently drops variables with <4 numeric parts in the parameter table, hiding NaN-SE rows from the rendered output.
+- **Fix**: Reran all 13 stale clustering-downgrade suites (H7, H7b, H7c, H7d, H7e, H12b, H13, H13.2, H14, H14b, H14c, H14d, H14e, H16). Then per user request, reran ALL 35 suites for full freshness. Regenerated `outputs/all_tables.tex` + PDF. H7d cells now fully populated.
+- **Retrospective**: `log/incidents/2026-04-13_shallow-pdf-verification-and-render-design.md`.
+- **Prevention rules**:
+  - `memory/feedback_verification_depth.md` — verification claims must name specific checks performed; PDF verification requires a 5-item checklist (compile, empty-cell sweep, parameter-list sanity, modified-table spot-check, structural anomalies).
+  - `memory/feedback_render_simulation.md` — for complex multi-col table layouts (multi-IV, multi-DV, mixed FE, ≥8 cols), re-read the renderer and simulate row output BEFORE implementing. Prefer multiple simpler tables over one complex table with empty regions.
+
+---
+
+## Phase 4 — full 35-suite rerun + PDF regeneration (COMPLETE 2026-04-13)
+
+Per user request, reran ALL 35 suites (not just the 13 stale ones):
+
+**Batch 1 (10 suites)**: H1, H1.1, H1.1b, H1.2, H4, H5b, H7, H7b, H7c, H7d.
+**Batch 2 (25 suites)**: H7e, H11, H11-Lag, H12, H12b, H13, H13.1, H13.2, H14, H14b, H14c, H14d, H14e, H16, H17, H18, H18b, H19b, H20b, H21, H22, H23, H24, H24b, H25.
+
+All 35 completed with exit code 0. Regenerated `outputs/all_tables.tex` + `outputs/all_tables.pdf`. 37 table captions rendered (35 unique suites; H4 → H4a+H4b split; H11-Lag → H11-Lag1+H11-Lag2 split). PDF size 246,182 bytes, pdflatex SUCCESS.
+
+**Verification checklist (per `feedback_verification_depth.md`)**:
+1. `grep -c "^const &"` → **0** ✓
+2. Fully-empty Industry FE / Firm FE rows → **0** ✓
+3. H7d key IVs (UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr) fully populated across all 12 cols ✓
+4. H7d Capex control populated in all 12 cols ✓
+5. pdflatex compile SUCCESS, 1 pre-existing Overfull hbox warning (H13.2, 25pt — latent since before session) ✓
+
+**Remaining empty cells (all DESIGNED/pre-existing patterns)**:
+- FE alternation rows (Industry FE / Firm FE / Year FE / Year-Quarter FE alternate Yes/blank based on which FE each spec uses — academic convention)
+- Extended Controls indicator row (blank in base-control cols; H19b, H20b, H22 etc.)
+- Dynamic control pattern in H11-family and macro suites (UncPreMgr/UncPreCEO appear only in cols where DV = UncAnsMgr/UncAnsCEO via `PRES_CONTROL_MAP`)
 
 **Sample / methodological notes (document in Phase 5, no code fix):**
 - [ ] H12 sample selection: DV NaN when `ibq ≤ 0`; N=45k vs H12b N=64k
@@ -124,14 +174,34 @@ All 14 remaining families audited. Full bug inventory and raw cell facts in DECI
 ## Session-resume notes (for post-compaction pickup)
 
 1. **Read PROGRESS.md first** — authoritative current state.
-2. **Phase 2.5 + tier 1 + tier 2A are DONE and COMMITTED** (6a98792 + 513b001). Do NOT re-run those. Next action is tier 2B/C/D (H11, H11-Lag, H20b) then Phase 4 reruns.
-3. **DECISIONS.md §2 and §4 are authoritative** — §2.1.1 shows the 17 runners as [x] done. §2.2 moderation suites as done. §2.3 tailing items: H4/H17/H23 done; H13, H16, H20b kept two-tailed per user.
-4. **H1 clustering evidence directory**: `outputs/econometric/h1_cash_holdings/2026-04-13_162202/` — DO NOT DELETE.
-5. **Commit risk flag**: `513b001` includes 57 files of prior-session WIP in shared/ and variables/. If Phase 4 reruns break, revert `513b001` and investigate.
-6. **H11 refactor entry point**: read `src/f1d/econometric/run_h11_prisk_uncertainty.py` fully first. The `run_regression` function uses `from_formula` with `EntityEffects + TimeEffects`. Add a base_fe dispatch like the moderation suites. Main loop at line 463 iterates `for dv: for sample:`; need to wrap in `for fe in ['firm', 'industry']:`. Filenames become `regression_results_{sample}_{dv}_{fe}.txt`. Update `outputs/generate_all_tables.py` H11 entry at line 295 to map 8 col_files.
-7. **H20b entry point**: read `src/f1d/econometric/run_h20b_debt_choice.py` MODEL_SPECS; check panel for `ChangDebtChoice_lead`. If missing, extend the panel builder then rebuild.
-8. **Phase 4 command**: `python outputs/generate_all_tables.py` regenerates `outputs/all_tables.tex` + PDFs.
-9. **User preferences (active feedback)**: concise by default (`feedback_concise_default.md`), adversarial challenge (CLAUDE.md global rule), audit-first discipline (`feedback_audit_first_no_narrative.md`).
+2. **Phases 1, 2, 2.5, 3, 4 are ALL DONE.** Only Phase 5 remains. Do NOT rerun suites unless a bug is found or a runner is edited.
+3. **UNCOMMITTED WORK** (6 modified + 2 new files, needs commit before Phase 5):
+   - `src/f1d/econometric/run_h11_prisk_uncertainty.py` (FE dispatch + const fix)
+   - `src/f1d/econometric/run_h11_prisk_uncertainty_lag.py` (FE dispatch + const fix)
+   - `src/f1d/econometric/run_h20b_debt_choice.py` (ChangDebtChoice_lead DV)
+   - `outputs/generate_all_tables.py` (H11 8-col + H11-Lag1/Lag2 split + H20b 12-col + has_firm/has_ind guards on regular renderer)
+   - `outputs/all_tables.tex` (regenerated)
+   - `outputs/all_tables.pdf` (regenerated, 246,182 bytes)
+   - `log/incidents/2026-04-13_h11-const-row-template-drift.md` (new)
+   - `log/incidents/2026-04-13_shallow-pdf-verification-and-render-design.md` (new)
+4. **Three new feedback memories created this session** (already indexed in MEMORY.md):
+   - `feedback_template_diff_discipline.md`
+   - `feedback_verification_depth.md`
+   - `feedback_render_simulation.md`
+5. **Prior commits landed before this session**: `6a98792` (Phase 2.5 + tier 1 + tier 2A), `513b001` (prior-session WIP batch, 57 files in shared/ + variables/), `6348cde` (PROGRESS.md updates). `513b001` remains a RISK flag — if downstream Phase 5 tests break, revert and investigate.
+6. **Evidence directory**: `outputs/econometric/h1_cash_holdings/2026-04-13_162202/` — DO NOT DELETE (Phase 2.5 clustering evidence).
+7. **Phase 5 entry point** — the Phase 5 task list (after commit):
+   - a. Regenerate `outputs/findings.txt` via `scripts/generate_findings.py` (or the ad-hoc script the user uses).
+   - b. Blank-slate narrative synthesis using the fresh 37-table PDF + findings.txt. Follow `feedback_audit_first_no_narrative.md` discipline (data-first, no rescue narratives for contradictions).
+   - c. Draft/rewrite thesis sections using `docs/Draft/DECISIONS.md §11` (raw findings catalogue) as the sole source of truth for cell facts.
+8. **Phase 4 rerun command** (if needed): `python outputs/generate_all_tables.py` regenerates TeX + PDF. Any individual suite: `python -m f1d.econometric.run_<suite_name>`.
+9. **H11-Lag table structure**: renderer now outputs TWO tables from one runner (H11-Lag1 at line 863 and H11-Lag2 at line 921 in all_tables.tex). Single runner (`run_h11_prisk_uncertainty_lag.py`) produces 16 `regression_results_Main_*_lag{1,2}_{industry,firm}.txt` files; `generate_all_tables.py` has 2 separate entries mapping 8 files each.
+10. **Phase 4 verification checklist** (from `feedback_verification_depth.md`) — rerun before claiming "PDF clean" any time tables are regenerated:
+    - `grep -c "^const &" outputs/all_tables.tex` → 0
+    - `grep -cE "^(Firm|Industry) FE & +\\\\\\\\$" outputs/all_tables.tex` → 0
+    - Spot-check any modified suite's rendering block
+    - pdflatex compile SUCCESS, enumerate any Overfull/Underfull warnings
+11. **User preferences (active feedback)**: concise by default (`feedback_concise_default.md`), adversarial challenge (CLAUDE.md global rule), audit-first discipline (`feedback_audit_first_no_narrative.md`), template diff discipline (`feedback_template_diff_discipline.md`), verification depth (`feedback_verification_depth.md`), design-time render simulation (`feedback_render_simulation.md`).
 
 ---
 
@@ -151,3 +221,12 @@ All 14 remaining families audited. Full bug inventory and raw cell facts in DECI
 - **2026-04-13**: Phase 3 tier 2A moderation FE expansion: H1.1 (2→4), H1.1b (2→4), H1.2 (4→8), H13.1 (4→8). Added firm-FE dispatch branch to each regression function. All smoke tests passed. `outputs/generate_all_tables.py` entries updated for 4 suites. User D1 rule: extended controls only, full FE ladder consistent across all moderation suites.
 - **2026-04-13**: Committed `6a98792` (18 files, my session work: Phase 2.5 + Phase 3 tier 1 + tier 2A + DECISIONS.md + PROGRESS.md) and `513b001` (57 files, prior-session WIP batch including H7c/d/e, H14c/d/e, H12b runners from prior audit cleanup; RISK: shared/ + variables/ modules untested). Working tree clean.
 - **2026-04-13**: Third compaction prep. Memory + PROGRESS.md + MEMORY.md updated. Tier 2B/C/D (H11, H11-Lag, H20b) explicitly documented as next work with file entry points for post-compaction pickup.
+- **2026-04-13 (post-compaction, same session)**: Phase 3 tier 2B/C/D executed. H11 refactored to 8 cols with firm/industry FE dispatch. H11-Lag initially refactored to 16 cols with dual IV rows but resulted in half-empty coefficient rows; resolved by splitting generate_all_tables.py entry into H11-Lag1 + H11-Lag2 (8 cols each). H20b extended with ChangDebtChoice_lead DV → 12 cols. All smoke tests passed.
+- **2026-04-13 (Phase 3 bug 1 — const row)**: User inspection of all_tables.tex revealed spurious `const` coefficient row in H11 and H11-Lag (cols 1-4 industry FE filled, cols 5-8 firm FE empty). Root cause: I added `exog = exog.assign(const=1.0)` in the industry-FE branch of `run_regression`, deviating from the H13.1 template which passes `df_panel[exog]` directly. PanelOLS with `other_effects + time_effects` absorbs the intercept via the FE — no explicit constant needed. Fixed by removing the `assign(const=1.0)` line from both H11 and H11-Lag runners. Retrospective written to `log/incidents/2026-04-13_h11-const-row-template-drift.md`. Prevention rule in `memory/feedback_template_diff_discipline.md`.
+- **2026-04-13 (Phase 3 bug 2 — H18b empty Firm FE row)**: User-directed hunt for remaining empty cells surfaced H18b's empty `Firm FE & & \\` row (pre-existing renderer inconsistency). Cause: regular renderer (`generate_table` in `outputs/generate_all_tables.py`) unconditionally emitted Industry FE and Firm FE rows; moderation renderer had `has_firm`/`has_ind` guards but regular renderer did not. H18b (logit, industry FE only) was the only affected table. Fixed by adding guards to regular renderer (mirrors moderation renderer pattern). Also via AskUserQuestion: user chose to split H11-Lag 16-col into H11-Lag1 + H11-Lag2 (two 8-col tables).
+- **2026-04-13 (Phase 3 bug 3 — H7d stale output)**: User continued hunt revealed H7d cols 1, 3 had empty UncAnsCEO, col 1 had empty UncPreCEO, col 6 had empty Capex. Root cause: Phase 3 clustering downgrade (commit `6a98792`) fixed the underlying NaN SE bug in the code via `cluster_time=False`, but H7d and 12 other stale suites were never rerun. `generate_all_tables.py`'s `resolve_suite_dir` silently picked up the 2026-04-09 pre-Phase-3 outputs which still had NaN clustered SEs. The `parse_txt` function silently drops rows with <4 numeric parts in the parameter table, so NaN-SE rows disappeared from the rendered output. Fixed by rerunning the 13 stale clustering-downgrade suites.
+- **2026-04-13 (Phase 4 full rerun)**: Per user request ("rerun ALL suites and rerender the latex script once more"), ran all 35 suites in two batches (batch 1: H1-H7d; batch 2: H7e-H25). All 35 completed with exit code 0. Regenerated `outputs/all_tables.tex` + `outputs/all_tables.pdf`. PDF size 246,182 bytes, 37 table captions rendered. Verification checklist passed: 0 `const` rows, 0 fully-empty FE rows, H7d key IVs fully populated. Only pre-existing Overfull hbox warning (H13.2, 25pt) remains, unrelated to session work.
+- **2026-04-13 (incident retrospectives)**: Two structured retrospectives written via `/research-lessons-learned` skill:
+  1. `log/incidents/2026-04-13_h11-const-row-template-drift.md` — template drift root cause → `feedback_template_diff_discipline.md` prevention rule.
+  2. `log/incidents/2026-04-13_shallow-pdf-verification-and-render-design.md` — shallow verification + no design-time render simulation → `feedback_verification_depth.md` + `feedback_render_simulation.md` prevention rules.
+- **2026-04-13 (fourth compaction prep — this one)**: Session state frozen. 6 modified files + 2 new incident reports UNCOMMITTED in working tree. All 35 suites fresh, PDF verified clean per checklist. PROGRESS.md + project_draft_playing_it_safe.md updated. Next session entry point: (a) git commit the current working tree, (b) regenerate findings.txt, (c) Phase 5 narrative synthesis.

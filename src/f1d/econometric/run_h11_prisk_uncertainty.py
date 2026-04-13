@@ -89,6 +89,7 @@ CONFIG = {
         "UncPreCEO",
     ],
     "samples": ["Main", "Finance", "Utility"],
+    "fe_specs": ["industry", "firm"],
 }
 
 BASE_CONTROLS = [
@@ -155,7 +156,7 @@ def prepare_regression_data(
     if pres_control:
         controls.append(pres_control)
 
-    required = [dv_var, "PRisk"] + controls + ["gvkey", "year"]
+    required = [dv_var, "PRisk"] + controls + ["gvkey", "year", "ff12_code"]
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -171,15 +172,12 @@ def run_regression(
     dv_var: str,
     sample_name: str,
     controls: List[str],
+    fe_type: str,
 ) -> Tuple[Any, Dict[str, Any]]:
-    formula = (
-        f"{dv_var} ~ 1 + PRisk + "
-        + " + ".join(controls)
-        + " + EntityEffects + TimeEffects"
-    )
+    fe_label = "Firm + CalYr" if fe_type == "firm" else "Industry(FF12) + CalYr"
 
     print(
-        f"  Formula: {dv_var} ~ PRisk + {' + '.join(controls)} + EntityEffects + TimeEffects"
+        f"  Formula: {dv_var} ~ PRisk + {' + '.join(controls)} + {fe_label}"
     )
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
@@ -191,7 +189,20 @@ def run_regression(
     df_panel = df_sample.set_index(["gvkey", "year"])
 
     try:
-        model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+        if fe_type == "firm":
+            exog_str = " + ".join(["PRisk"] + controls)
+            formula = f"{dv_var} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
+            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+        else:  # industry
+            model_obj = PanelOLS(
+                dependent=df_panel[dv_var],
+                exog=df_panel[["PRisk"] + controls],
+                entity_effects=False,
+                time_effects=True,
+                other_effects=df_panel["ff12_code"],
+                drop_absorbed=True,
+                check_rank=False,
+            )
         model = model_obj.fit(cov_type="clustered", cluster_entity=True)
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
@@ -223,6 +234,7 @@ def run_regression(
     meta = {
         "dv": dv_var,
         "sample": sample_name,
+        "fe": fe_type,
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters": df_sample["gvkey"].nunique(),
@@ -243,17 +255,26 @@ def run_regression(
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     tex_path = out_dir / "h11_prisk_uncertainty_table.tex"
 
-    # We will pick: Main sample, all 6 DVs
-    def get_res(dv):
+    # Main sample, 4 DVs × 2 FE = 8 cols
+    # Layout: cols 1-4 = Industry FE, cols 5-8 = Firm FE
+    #         within each FE block: Mgr QA, CEO QA, Mgr Pres, CEO Pres
+    def get_res(dv, fe_type):
         for r in all_results:
-            if r["sample"] == "Main" and r["dv"] == dv:
+            if r["sample"] == "Main" and r["dv"] == dv and r.get("fe") == fe_type:
                 return r
         return None
 
-    r_mq = get_res("UncAnsMgr")
-    r_cq = get_res("UncAnsCEO")
-    r_mp = get_res("UncPreMgr")
-    r_cp = get_res("UncPreCEO")
+    col_order = [
+        ("UncAnsMgr", "industry"),
+        ("UncAnsCEO", "industry"),
+        ("UncPreMgr", "industry"),
+        ("UncPreCEO", "industry"),
+        ("UncAnsMgr", "firm"),
+        ("UncAnsCEO", "firm"),
+        ("UncPreMgr", "firm"),
+        ("UncPreCEO", "firm"),
+    ]
+    col_results = [get_res(dv, fe) for dv, fe in col_order]
 
     def fmt_coef(val, pval):
         if val is None or pd.isna(val):
@@ -279,80 +300,62 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             return f"{val:.2e}"
         return f"{val:.4f}"
 
+    def build_row(label, extractor, fmt):
+        cells = []
+        for r in col_results:
+            cells.append(fmt(extractor(r)) if r else "")
+        return label + " & " + " & ".join(cells) + " \\\\"
+
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
         "\\caption{H11: Political Risk and Language Uncertainty}",
         "\\label{tab:h11_prisk_uncertainty}",
-        "\\begin{tabular}{lcccc}",
+        "\\scriptsize",
+        "\\begin{tabular}{l" + "c" * 8 + "}",
         "\\toprule",
-        " & \\multicolumn{2}{c}{Q\\&A Session} & \\multicolumn{2}{c}{Presentation} \\\\",
-        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5}",
-        " & Mgr Unc & CEO Unc & Mgr Unc & CEO Unc \\\\",
-        " & (1) & (2) & (3) & (4) \\\\",
+        " & \\multicolumn{4}{c}{Industry FE} & \\multicolumn{4}{c}{Firm FE} \\\\",
+        "\\cmidrule(lr){2-5} \\cmidrule(lr){6-9}",
+        " & Mgr QA & CEO QA & Mgr Pres & CEO Pres & Mgr QA & CEO QA & Mgr Pres & CEO Pres \\\\",
+        " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\",
         "\\midrule",
     ]
 
-    # Row 1: PRisk
-    r1 = "Political Risk$_{t}$ & "
-    r1 += f"{fmt_coef(r_mq['beta_prisk'], r_mq['beta_prisk_p_one'])} & " if r_mq else " & "
-    r1 += f"{fmt_coef(r_cq['beta_prisk'], r_cq['beta_prisk_p_one'])} & " if r_cq else " & "
-    r1 += f"{fmt_coef(r_mp['beta_prisk'], r_mp['beta_prisk_p_one'])} & " if r_mp else " & "
-    r1 += f"{fmt_coef(r_cp['beta_prisk'], r_cp['beta_prisk_p_one'])} \\\\" if r_cp else " \\\\"
-    lines.append(r1)
+    # PRisk coefficient + SE row (one-tailed β>0)
+    coef_cells = []
+    se_cells = []
+    for r in col_results:
+        if r:
+            coef_cells.append(fmt_coef(r["beta_prisk"], r["beta_prisk_p_one"]))
+            se_cells.append(fmt_se(r["beta_prisk_se"]))
+        else:
+            coef_cells.append("")
+            se_cells.append("")
+    lines.append("Political Risk$_{t}$ & " + " & ".join(coef_cells) + " \\\\")
+    lines.append(" & " + " & ".join(se_cells) + " \\\\")
 
-    # Row 2: SE
-    r2 = " & "
-    r2 += f"{fmt_se(r_mq['beta_prisk_se'])} & " if r_mq else " & "
-    r2 += f"{fmt_se(r_cq['beta_prisk_se'])} & " if r_cq else " & "
-    r2 += f"{fmt_se(r_mp['beta_prisk_se'])} & " if r_mp else " & "
-    r2 += f"{fmt_se(r_cp['beta_prisk_se'])} \\\\" if r_cp else " \\\\"
-    lines.append(r2)
+    lines.append("\\midrule")
+    lines.append("Controls & " + " & ".join(["Yes"] * 8) + " \\\\")
+    lines.append("Industry FE & " + " & ".join(["Yes"] * 4 + [""] * 4) + " \\\\")
+    lines.append("Firm FE & " + " & ".join([""] * 4 + ["Yes"] * 4) + " \\\\")
+    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 8) + " \\\\")
+    lines.append("\\midrule")
 
-    lines.extend(
-        [
-            "\\midrule",
-            "Negative Sentiment & Yes & Yes & Yes & Yes \\\\",
-            "Controls & Yes & Yes & Yes & Yes \\\\",
-            "Firm FE & Yes & Yes & Yes & Yes \\\\",
-            "Calendar Year FE & Yes & Yes & Yes & Yes \\\\",
-            "\\midrule",
-        ]
-    )
-
-    rn = "Observations & "
-    rn += f"{r_mq['n_obs']:,} & " if r_mq else " & "
-    rn += f"{r_cq['n_obs']:,} & " if r_cq else " & "
-    rn += f"{r_mp['n_obs']:,} & " if r_mp else " & "
-    rn += f"{r_cp['n_obs']:,} \\\\" if r_cp else " \\\\"
-    lines.append(rn)
-
-    rr = "$R^2$ & "
-    rr += f"{fmt_r2(r_mq['r2'])} & " if r_mq else " & "
-    rr += f"{fmt_r2(r_cq['r2'])} & " if r_cq else " & "
-    rr += f"{fmt_r2(r_mp['r2'])} & " if r_mp else " & "
-    rr += f"{fmt_r2(r_cp['r2'])} \\\\" if r_cp else " \\\\"
-    lines.append(rr)
-
-    ra = "Adj.~$R^2$ & "
-    ra += f"{fmt_r2(r_mq['adj_r2'])} & " if r_mq else " & "
-    ra += f"{fmt_r2(r_cq['adj_r2'])} & " if r_cq else " & "
-    ra += f"{fmt_r2(r_mp['adj_r2'])} & " if r_mp else " & "
-    ra += f"{fmt_r2(r_cp['adj_r2'])} \\\\" if r_cp else " \\\\"
-    lines.append(ra)
+    lines.append(build_row("Observations", lambda r: r["n_obs"], lambda v: f"{v:,}"))
+    lines.append(build_row("$R^2$",     lambda r: r["r2"],     fmt_r2))
+    lines.append(build_row("Adj.~$R^2$", lambda r: r["adj_r2"], fmt_r2))
 
     lines.extend(["\\bottomrule", "\\end{tabular}"])
-    # Add table notes
     lines.extend([
         "\\\\[-0.5em]",
         "\\parbox{\\textwidth}{\\scriptsize ",
         "\\textit{Notes:} ",
         "This table reports the effect of quarterly political risk on language uncertainty. ",
-        "Columns (1)--(2) use Q\\&A session measures; columns (3)--(4) use presentation measures. ",
+        "Columns (1)--(4) use industry (FF12) fixed effects; columns (5)--(8) use firm fixed effects. ",
         "All models use the Main industry sample (non-financial, non-utility firms). ",
         "Political Risk is measured contemporaneously in the same calendar quarter as the earnings call. ",
         "Firms with fewer than 5 calls are excluded. ",
-        "Standard errors are clustered at the firm level. ",
+        "Standard errors are clustered at the firm level (Petersen 2009). ",
         "All continuous controls are standardized. ",
         "Variables are winsorized at 1\\%/99\\% by year.",
         "}",
@@ -462,8 +465,6 @@ def main(panel_path: str | None = None) -> int:
 
     for dv in CONFIG["dependent_variables"]:
         for sample in CONFIG["samples"]:
-            print(f"\n--- {sample} / {dv} ---")
-
             df_prep, controls = prepare_regression_data(panel, dv)
 
             if sample == "Main":
@@ -480,25 +481,28 @@ def main(panel_path: str | None = None) -> int:
                 df_sample["gvkey_count"] >= CONFIG["min_calls"]
             ].copy()
 
-            print(
-                f"  After filters: {len(df_filtered):,} calls, {df_filtered['gvkey'].nunique():,} firms"
-            )
-
             if len(df_filtered) < 100:
-                print("  Skipping: insufficient data")
+                print(f"\n--- {sample} / {dv} ---  Skipping: insufficient data ({len(df_filtered)} obs)")
                 continue
 
-            print(f"\n============================================================")
-            print(f"Running regression: {sample} / {dv}")
-            print(f"============================================================")
+            for fe_type in CONFIG["fe_specs"]:
+                print(f"\n--- {sample} / {dv} / FE={fe_type} ---")
+                print(
+                    f"  After filters: {len(df_filtered):,} calls, {df_filtered['gvkey'].nunique():,} firms"
+                )
 
-            model, meta = run_regression(df_filtered, dv, sample, controls)
+                print(f"============================================================")
+                print(f"Running regression: {sample} / {dv} / FE={fe_type}")
+                print(f"============================================================")
 
-            if model is not None:
-                all_results.append(meta)
-                with open(out_dir / f"regression_results_{sample}_{dv}.txt", "w") as f:
-                    f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
-                    f.write(str(model.summary))
+                model, meta = run_regression(df_filtered, dv, sample, controls, fe_type)
+
+                if model is not None:
+                    all_results.append(meta)
+                    with open(out_dir / f"regression_results_{sample}_{dv}_{fe_type}.txt", "w") as f:
+                        f.write(f"FE: {fe_type}\n")
+                        f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
+                        f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
     pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
