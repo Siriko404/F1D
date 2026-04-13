@@ -139,6 +139,28 @@ LINGUISTIC_PCT_COLUMNS = [
     "NonCEO_Manager_QA_Strong_Modal_pct",
     "NonCEO_Manager_QA_Uncertainty_pct",
     "NonCEO_Manager_QA_Weak_Modal_pct",
+    # CFO (NEW 2026-04-09 — Execucomp cfoann + tiered last-name match)
+    "CFO_All_Constraining_pct",
+    "CFO_All_Litigious_pct",
+    "CFO_All_Negative_pct",
+    "CFO_All_Positive_pct",
+    "CFO_All_Strong_Modal_pct",
+    "CFO_All_Uncertainty_pct",
+    "CFO_All_Weak_Modal_pct",
+    "CFO_Pres_Constraining_pct",
+    "CFO_Pres_Litigious_pct",
+    "CFO_Pres_Negative_pct",
+    "CFO_Pres_Positive_pct",
+    "CFO_Pres_Strong_Modal_pct",
+    "CFO_Pres_Uncertainty_pct",
+    "CFO_Pres_Weak_Modal_pct",
+    "CFO_QA_Constraining_pct",
+    "CFO_QA_Litigious_pct",
+    "CFO_QA_Negative_pct",
+    "CFO_QA_Positive_pct",
+    "CFO_QA_Strong_Modal_pct",
+    "CFO_QA_Uncertainty_pct",
+    "CFO_QA_Weak_Modal_pct",
 ]
 
 # =========================================================================
@@ -181,6 +203,18 @@ LINGUISTIC_RENAME_MAP = {
     "Manager_Pres_Weak_Modal_pct": "WModPreMgr",
     "CEO_QA_Weak_Modal_pct": "WModAnsCEO",
     "CEO_Pres_Weak_Modal_pct": "WModPreCEO",
+    # ====================================================================
+    # NEW 2026-04-09 — CFO and ManagerV2 families
+    # ====================================================================
+    # CFO (Execucomp cfoann; symmetric to CEO)
+    "CFO_QA_Uncertainty_pct": "UncAnsCFO",
+    "CFO_Pres_Uncertainty_pct": "UncPreCFO",
+    "CFO_QA_Positive_pct": "PosAnsCFO",
+    "CFO_Pres_Positive_pct": "PosPreCFO",
+    "CFO_QA_Negative_pct": "NegAnsCFO",
+    "CFO_Pres_Negative_pct": "NegPreCFO",
+    "CFO_QA_Weak_Modal_pct": "WModAnsCFO",
+    "CFO_Pres_Weak_Modal_pct": "WModPreCFO",
 }
 
 

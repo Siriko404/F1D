@@ -32,6 +32,9 @@
 #   bbd2016   = Baker, Bloom & Davis (2016, QJE) — US Economic Policy Uncertainty (EPU)
 #   davis2016 = Davis (2016, NBER WP 22740) — Global Economic Policy Uncertainty (GEPU)
 #   ci2022    = Caldara & Iacoviello (2022, AER) — Geopolitical Risk (GPR)
+#   bgt2018   = Bushee, Gow & Taylor (2018, JAR) — Linguistic complexity in firm disclosures
+#               (25-day post-call Amihud window; verbatim "the period starting the day of
+#                the call and ending 25 trading days subsequent to the call"; H7c/d/e + H14c/d/e)
 #
 # Architecture:
 #   Stage 1 (Sample):     outputs/1.4_AssembleManifest/{timestamp}/
@@ -134,10 +137,17 @@ variables:
 
   cfo_qa_uncertainty:
     stage: 2
-    source: "outputs/2_Textual_Analysis/2.1_Tokenized"
-    file_pattern: "linguistic_counts_{year}.parquet"
-    column: "CFO_QA_Uncertainty_pct"
-    description: "CFO-only Q&A uncertainty percentage (computed from token counts)"
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "UncAnsCFO"
+    description: "CFO-only Q&A uncertainty percentage from F123 + Execucomp cfoann"
+
+  cfo_pres_uncertainty:
+    stage: 2
+    source: "outputs/2_Textual_Analysis/2.2_Variables"
+    file_pattern: "linguistic_variables_{year}.parquet"
+    column: "UncPreCFO"
+    description: "CFO-only presentation uncertainty percentage from F123 + Execucomp cfoann"
 
   # ---------------------------------------------------------------------------
   # Tone / Sentiment (Positive & Negative pct per speaker/context)
@@ -329,6 +339,14 @@ variables:
     column: "DivDummy"
     formula: "(dvy_Q4 > 0).astype(float)  (Q4-only full-year dvy joined back to all quarters by gvkey+fyearq)"
     description: "Binary: 1 if firm paid common dividends in the fiscal year (Compustat; dvy Q4 full-year value; ~45% payers)"
+
+  dividend_payer_quarterly:
+    stage: input
+    source: "inputs/comp_na_daily_all"
+    column: "DivPayerQ"
+    formula: "(dvpsxq > 0).astype(float)  (quarterly ex-date dividend per share; Compustat item 26 analog)"
+    reference: "Hoberg & Prabhala (2009, RFS) -- primary; Chetty & Saez (2005, QJE) -- secondary (firm-quarter frequency precedent)"
+    description: "Binary: 1 if firm paid any dividend this fiscal quarter (Compustat dvpsxq > 0). Call-level DV for H12b. Distinct from DivDummy (annual, pay-date proxy via dvy_Q4); DivPayerQ is the HP-faithful ex-date quarterly DV."
 
   ocf_volatility:
     stage: input
@@ -723,6 +741,26 @@ variables:
     role: dv
     suites: [H14]
     description: "Change in closing bid-ask spread around earnings call"
+
+  bgt_long_window_amihud:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "BGTLevel_Amihud"
+    formula: "BGTLevel = mean(daily Amihud over [0,+25] trading days, day 0 INCLUDED); BGTDelta = mean[+1,+25] - mean[-25,-1]; BGTAvg = mean[-25,+25]"
+    reference: "bgt2018"
+    role: dv
+    suites: [H7c, H7d, H7e]
+    description: "BGT (2018) 25-day post-call Amihud illiquidity (Level / Delta / Avg). Day 0 inclusion in Level/Avg is BGT verbatim. Daily Amihud = |RET|/(VOL*|PRC|)*1e6. Per-year 1%/99% winsor (deviation from BGT's percentile-rank treatment, F1D pipeline convention)."
+
+  bgt_long_window_spread:
+    stage: input
+    source: "inputs/CRSP_DSF"
+    column: "BGTLevel_Spread"
+    formula: "BGTLevel = mean(2*(ASK-BID)/(ASK+BID) over [0,+25], day 0 INCLUDED); BGTDelta = mean[+1,+25] - mean[-25,-1]; BGTAvg = mean[-25,+25]"
+    reference: "bgt2018, lee2016"
+    role: dv
+    suites: [H14c, H14d, H14e]
+    description: "BGT (2018) 25-day window applied to Lee (2016) closing-quote bid-ask spread (Level / Delta / Avg). Hybrid construction: window from BGT, formula from Lee — BGT's spread variant uses TAQ intraday MRR lambda, not compatible with daily CRSP. Pooled 1%/99% winsorization applied at H14 panel level (matches DSPREAD/PreCallSpread)."
 
   rd_sales:
     stage: input

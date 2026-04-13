@@ -1,0 +1,1880 @@
+*** important note: manager is all managers, including the CEO.
+
+COMPREHENSIVE REGRESSION FINDINGS
+===================================
+37 suites | 4 IVs: UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr (where applicable)
+Significance: * p<0.10, ** p<0.05, *** p<0.01; n.s. = not significant.
+Source: outputs/all_tables.tex (regenerated 2026-04-09 post-V2-cutover).
+Manager classification: BGT (2018) verbatim pres + F1+F2+F3 + per-call roster.
+
+Each IV row lists one line per column with model spec in brackets.
+Spec format: [<FE type>, <time FE>, <controls>, <DV>]  (empty parts collapsed).
+
+================================================================================
+H1: SPEECH UNCERTAINTY AND CASH HOLDINGS
+================================================================================
+DV: CashRatio (cols 1-6), CashRatio_lead (cols 7-12)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed (beta > 0)
+SEs: Firm-level clustered (Petersen 2009). N=56,131 (base), 53,880 (extended).
+DV Mean: CashRatio = 0.1660, CashRatio_lead = 0.1675
+One-SD(UncAnsMgr) effect: +0.0011 (col4, Firm FE) = 0.67% of mean; +0.0022 (col3, Ind FE) = 1.33% of mean
+
+  UncAnsCEO:
+      col1   __H1__UncAnsCEO__col1__[Ind FE, Yr FE, basic, CashRatio]
+      col2   __H1__UncAnsCEO__col2__[Firm FE, Yr FE, basic, CashRatio]
+      col3   __H1__UncAnsCEO__col3__[Ind FE, Yr FE, extended, CashRatio]
+      col4   __H1__UncAnsCEO__col4__[Firm FE, Yr FE, extended, CashRatio]
+      col5   __H1__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, CashRatio]
+      col6   __H1__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, CashRatio]
+      col7   __H1__UncAnsCEO__col7__[Ind FE, Yr FE, basic, CashRatio_lead]
+      col8   __H1__UncAnsCEO__col8__[Firm FE, Yr FE, basic, CashRatio_lead]
+      col9   __H1__UncAnsCEO__col9__[Ind FE, Yr FE, extended, CashRatio_lead]
+      col10  __H1__UncAnsCEO__col10__[Firm FE, Yr FE, extended, CashRatio_lead]
+      col11  __H1__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, CashRatio_lead]
+      col12  __H1__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, CashRatio_lead]
+  UncPreCEO:
+      col1   __H1__UncPreCEO__col1__[Ind FE, Yr FE, basic, CashRatio]
+      col2   __H1__UncPreCEO__col2__[Firm FE, Yr FE, basic, CashRatio]
+      col3   __H1__UncPreCEO__col3__[Ind FE, Yr FE, extended, CashRatio]
+      col4   __H1__UncPreCEO__col4__[Firm FE, Yr FE, extended, CashRatio]
+      col5   __H1__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, CashRatio]
+      col6   __H1__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, CashRatio]
+      col7   __H1__UncPreCEO__col7__[Ind FE, Yr FE, basic, CashRatio_lead]
+      col8   __H1__UncPreCEO__col8__[Firm FE, Yr FE, basic, CashRatio_lead]
+      col9   __H1__UncPreCEO__col9__[Ind FE, Yr FE, extended, CashRatio_lead]
+      col10  __H1__UncPreCEO__col10__[Firm FE, Yr FE, extended, CashRatio_lead]
+      col11  __H1__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, CashRatio_lead]
+      col12  __H1__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, CashRatio_lead]
+  UncAnsMgr:
+      col1   __H1__UncAnsMgr__col1__[Ind FE, Yr FE, basic, CashRatio]
+      col2   __H1__UncAnsMgr__col2__[Firm FE, Yr FE, basic, CashRatio]
+      col3   __H1__UncAnsMgr__col3__[Ind FE, Yr FE, extended, CashRatio]
+      col4   __H1__UncAnsMgr__col4__[Firm FE, Yr FE, extended, CashRatio]
+      col5   __H1__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, CashRatio]
+      col6   __H1__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, CashRatio]
+      col7   __H1__UncAnsMgr__col7__[Ind FE, Yr FE, basic, CashRatio_lead]
+      col8   __H1__UncAnsMgr__col8__[Firm FE, Yr FE, basic, CashRatio_lead]
+      col9   __H1__UncAnsMgr__col9__[Ind FE, Yr FE, extended, CashRatio_lead]
+      col10  __H1__UncAnsMgr__col10__[Firm FE, Yr FE, extended, CashRatio_lead]
+      col11  __H1__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, CashRatio_lead]
+      col12  __H1__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, CashRatio_lead]
+  UncPreMgr:
+      col1   __H1__UncPreMgr__col1__[Ind FE, Yr FE, basic, CashRatio]
+      col2   __H1__UncPreMgr__col2__[Firm FE, Yr FE, basic, CashRatio]
+      col3   __H1__UncPreMgr__col3__[Ind FE, Yr FE, extended, CashRatio]
+      col4   __H1__UncPreMgr__col4__[Firm FE, Yr FE, extended, CashRatio]
+      col5   __H1__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, CashRatio]
+      col6   __H1__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, CashRatio]
+      col7   __H1__UncPreMgr__col7__[Ind FE, Yr FE, basic, CashRatio_lead]
+      col8   __H1__UncPreMgr__col8__[Firm FE, Yr FE, basic, CashRatio_lead]
+      col9   __H1__UncPreMgr__col9__[Ind FE, Yr FE, extended, CashRatio_lead]
+      col10  __H1__UncPreMgr__col10__[Firm FE, Yr FE, extended, CashRatio_lead]
+      col11  __H1__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, CashRatio_lead]
+      col12  __H1__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, CashRatio_lead]
+
+================================================================================
+H1.1: PRODUCT SIMILARITY-MODERATED CASH HOLDINGS (continuous TSIMM)
+================================================================================
+DV: CashRatio (2 cols)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed (beta > 0) for IV, moderator, and interaction
+
+  Manager_QA_Unc_c:
+      col1   __H1.1__Manager_QA_Unc_c__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.1__Manager_QA_Unc_c__col2__[Ind FE, YrQtr FE, CashRatio]
+  z_log_TotalSimilarity:
+      col1   __H1.1__z_log_TotalSimilarity__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.1__z_log_TotalSimilarity__col2__[Ind FE, YrQtr FE, CashRatio]
+  MgrQAUnc_x_zlogTSIMM:
+      col1   __H1.1__MgrQAUnc_x_zlogTSIMM__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.1__MgrQAUnc_x_zlogTSIMM__col2__[Ind FE, YrQtr FE, CashRatio]
+
+================================================================================
+H1.1b: BINARY PRODUCT SIMILARITY-MODERATED CASH HOLDINGS
+================================================================================
+DV: CashRatio (2 cols)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed (beta > 0) for IV, moderator, and interaction
+
+  Manager_QA_Unc_c:
+      col1   __H1.1b__Manager_QA_Unc_c__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.1b__Manager_QA_Unc_c__col2__[Ind FE, YrQtr FE, CashRatio]
+  HighTSIMM:
+      col1   __H1.1b__HighTSIMM__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.1b__HighTSIMM__col2__[Ind FE, YrQtr FE, CashRatio]
+  MgrQAUnc_x_HighTSIMM:
+      col1   __H1.1b__MgrQAUnc_x_HighTSIMM__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.1b__MgrQAUnc_x_HighTSIMM__col2__[Ind FE, YrQtr FE, CashRatio]
+
+================================================================================
+H1.2: FINANCIAL CONSTRAINT-MODERATED CASH HOLDINGS (Three-Category)
+================================================================================
+DV: CashRatio (2 cols)
+    Formula: CashRatio = cheq / atq
+      cheq = Cash and Short-Term Investments (Compustat Quarterly)
+      atq  = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: One-tailed for base IV (beta > 0); two-tailed for categories & interactions
+SEs: Firm-level clustered (Petersen 2009). N=67,487.
+DV Mean: CashRatio = 0.1716
+One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
+
+  Manager_QA_Unc_c:
+      col1   __H1.2__Manager_QA_Unc_c__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.2__Manager_QA_Unc_c__col2__[Ind FE, YrQtr FE, CashRatio]
+  MgrQAUnc_x_IG:
+      col1   __H1.2__MgrQAUnc_x_IG__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.2__MgrQAUnc_x_IG__col2__[Ind FE, YrQtr FE, CashRatio]
+  BelowIG:
+      col1   __H1.2__BelowIG__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.2__BelowIG__col2__[Ind FE, YrQtr FE, CashRatio]
+  Unrated:
+      col1   __H1.2__Unrated__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.2__Unrated__col2__[Ind FE, YrQtr FE, CashRatio]
+  MgrQAUnc_x_BelowIG:
+      col1   __H1.2__MgrQAUnc_x_BelowIG__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.2__MgrQAUnc_x_BelowIG__col2__[Ind FE, YrQtr FE, CashRatio]
+  MgrQAUnc_x_Unrated:
+      col1   __H1.2__MgrQAUnc_x_Unrated__col1__[Ind FE, Yr FE, CashRatio]
+      col2   __H1.2__MgrQAUnc_x_Unrated__col2__[Ind FE, YrQtr FE, CashRatio]
+
+================================================================================
+H4a: SPEECH UNCERTAINTY AND BOOK LEVERAGE
+================================================================================
+DV: Leverage (cols 1-6), Leverage_lead (cols 7-12)
+    Formula: Leverage = (dlcq + dlttq) / atq
+      dlcq  = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq = Long-Term Debt (Compustat Quarterly)
+      atq   = Total Assets (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF); Rajan & Zingales (1995, JF)
+Tail: Two-tailed
+SEs: Firm-level clustered (Petersen 2009). N=56,131 (base), 53,880 (extended).
+DV Mean: Leverage = 0.2307, Leverage_lead = 0.2348
+One-SD(UncAnsMgr) effect on Leverage_lead: -0.0026 (col10, Firm FE) = 1.12% of mean
+
+  UncAnsCEO:
+      col1   __H4a__UncAnsCEO__col1__[Ind FE, Yr FE, basic, Leverage]
+      col2   __H4a__UncAnsCEO__col2__[Firm FE, Yr FE, basic, Leverage]
+      col3   __H4a__UncAnsCEO__col3__[Ind FE, Yr FE, extended, Leverage]
+      col4   __H4a__UncAnsCEO__col4__[Firm FE, Yr FE, extended, Leverage]
+      col5   __H4a__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, Leverage]
+      col6   __H4a__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, Leverage]
+      col7   __H4a__UncAnsCEO__col7__[Ind FE, Yr FE, basic, Leverage_lead]
+      col8   __H4a__UncAnsCEO__col8__[Firm FE, Yr FE, basic, Leverage_lead]
+      col9   __H4a__UncAnsCEO__col9__[Ind FE, Yr FE, extended, Leverage_lead]
+      col10  __H4a__UncAnsCEO__col10__[Firm FE, Yr FE, extended, Leverage_lead]
+      col11  __H4a__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, Leverage_lead]
+      col12  __H4a__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, Leverage_lead]
+  UncPreCEO:
+      col1   __H4a__UncPreCEO__col1__[Ind FE, Yr FE, basic, Leverage]
+      col2   __H4a__UncPreCEO__col2__[Firm FE, Yr FE, basic, Leverage]
+      col3   __H4a__UncPreCEO__col3__[Ind FE, Yr FE, extended, Leverage]
+      col4   __H4a__UncPreCEO__col4__[Firm FE, Yr FE, extended, Leverage]
+      col5   __H4a__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, Leverage]
+      col6   __H4a__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, Leverage]
+      col7   __H4a__UncPreCEO__col7__[Ind FE, Yr FE, basic, Leverage_lead]
+      col8   __H4a__UncPreCEO__col8__[Firm FE, Yr FE, basic, Leverage_lead]
+      col9   __H4a__UncPreCEO__col9__[Ind FE, Yr FE, extended, Leverage_lead]
+      col10  __H4a__UncPreCEO__col10__[Firm FE, Yr FE, extended, Leverage_lead]
+      col11  __H4a__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, Leverage_lead]
+      col12  __H4a__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, Leverage_lead]
+  UncAnsMgr:
+      col1   __H4a__UncAnsMgr__col1__[Ind FE, Yr FE, basic, Leverage]
+      col2   __H4a__UncAnsMgr__col2__[Firm FE, Yr FE, basic, Leverage]
+      col3   __H4a__UncAnsMgr__col3__[Ind FE, Yr FE, extended, Leverage]
+      col4   __H4a__UncAnsMgr__col4__[Firm FE, Yr FE, extended, Leverage]
+      col5   __H4a__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, Leverage]
+      col6   __H4a__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, Leverage]
+      col7   __H4a__UncAnsMgr__col7__[Ind FE, Yr FE, basic, Leverage_lead]
+      col8   __H4a__UncAnsMgr__col8__[Firm FE, Yr FE, basic, Leverage_lead]
+      col9   __H4a__UncAnsMgr__col9__[Ind FE, Yr FE, extended, Leverage_lead]
+      col10  __H4a__UncAnsMgr__col10__[Firm FE, Yr FE, extended, Leverage_lead]
+      col11  __H4a__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, Leverage_lead]
+      col12  __H4a__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, Leverage_lead]
+  UncPreMgr:
+      col1   __H4a__UncPreMgr__col1__[Ind FE, Yr FE, basic, Leverage]
+      col2   __H4a__UncPreMgr__col2__[Firm FE, Yr FE, basic, Leverage]
+      col3   __H4a__UncPreMgr__col3__[Ind FE, Yr FE, extended, Leverage]
+      col4   __H4a__UncPreMgr__col4__[Firm FE, Yr FE, extended, Leverage]
+      col5   __H4a__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, Leverage]
+      col6   __H4a__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, Leverage]
+      col7   __H4a__UncPreMgr__col7__[Ind FE, Yr FE, basic, Leverage_lead]
+      col8   __H4a__UncPreMgr__col8__[Firm FE, Yr FE, basic, Leverage_lead]
+      col9   __H4a__UncPreMgr__col9__[Ind FE, Yr FE, extended, Leverage_lead]
+      col10  __H4a__UncPreMgr__col10__[Firm FE, Yr FE, extended, Leverage_lead]
+      col11  __H4a__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, Leverage_lead]
+      col12  __H4a__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, Leverage_lead]
+
+================================================================================
+H4b: SPEECH UNCERTAINTY AND DEBT-TO-CAPITAL
+================================================================================
+DV: DebtToCapital (cols 1-6), DebtToCapital_lead (cols 7-12)
+    Formula: DebtToCapital = (dlcq + dlttq) / (seqq + dlcq + dlttq)
+      dlcq  = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq = Long-Term Debt (Compustat Quarterly)
+      seqq  = Stockholders' Equity (Compustat Quarterly)
+      Reference: Rajan & Zingales (1995, JF)
+Tail: Two-tailed
+SEs: Firm-level clustered (Petersen 2009). N=55,950 (base), 53,713 (extended).
+DV Mean: DebtToCapital = 0.3384, DebtToCapital_lead = 0.3461
+One-SD(UncAnsMgr) effect on DebtToCapital_lead: -0.0063 (col9, Ind FE) = 1.82% of mean
+
+  UncAnsCEO:
+      col1   __H4b__UncAnsCEO__col1__[Ind FE, Yr FE, basic, DebtToCapital]
+      col2   __H4b__UncAnsCEO__col2__[Firm FE, Yr FE, basic, DebtToCapital]
+      col3   __H4b__UncAnsCEO__col3__[Ind FE, Yr FE, extended, DebtToCapital]
+      col4   __H4b__UncAnsCEO__col4__[Firm FE, Yr FE, extended, DebtToCapital]
+      col5   __H4b__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, DebtToCapital]
+      col6   __H4b__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, DebtToCapital]
+      col7   __H4b__UncAnsCEO__col7__[Ind FE, Yr FE, basic, DebtToCapital_lead]
+      col8   __H4b__UncAnsCEO__col8__[Firm FE, Yr FE, basic, DebtToCapital_lead]
+      col9   __H4b__UncAnsCEO__col9__[Ind FE, Yr FE, extended, DebtToCapital_lead]
+      col10  __H4b__UncAnsCEO__col10__[Firm FE, Yr FE, extended, DebtToCapital_lead]
+      col11  __H4b__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, DebtToCapital_lead]
+      col12  __H4b__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, DebtToCapital_lead]
+  UncPreCEO:
+      col1   __H4b__UncPreCEO__col1__[Ind FE, Yr FE, basic, DebtToCapital]
+      col2   __H4b__UncPreCEO__col2__[Firm FE, Yr FE, basic, DebtToCapital]
+      col3   __H4b__UncPreCEO__col3__[Ind FE, Yr FE, extended, DebtToCapital]
+      col4   __H4b__UncPreCEO__col4__[Firm FE, Yr FE, extended, DebtToCapital]
+      col5   __H4b__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, DebtToCapital]
+      col6   __H4b__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, DebtToCapital]
+      col7   __H4b__UncPreCEO__col7__[Ind FE, Yr FE, basic, DebtToCapital_lead]
+      col8   __H4b__UncPreCEO__col8__[Firm FE, Yr FE, basic, DebtToCapital_lead]
+      col9   __H4b__UncPreCEO__col9__[Ind FE, Yr FE, extended, DebtToCapital_lead]
+      col10  __H4b__UncPreCEO__col10__[Firm FE, Yr FE, extended, DebtToCapital_lead]
+      col11  __H4b__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, DebtToCapital_lead]
+      col12  __H4b__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, DebtToCapital_lead]
+  UncAnsMgr:
+      col1   __H4b__UncAnsMgr__col1__[Ind FE, Yr FE, basic, DebtToCapital]
+      col2   __H4b__UncAnsMgr__col2__[Firm FE, Yr FE, basic, DebtToCapital]
+      col3   __H4b__UncAnsMgr__col3__[Ind FE, Yr FE, extended, DebtToCapital]
+      col4   __H4b__UncAnsMgr__col4__[Firm FE, Yr FE, extended, DebtToCapital]
+      col5   __H4b__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, DebtToCapital]
+      col6   __H4b__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, DebtToCapital]
+      col7   __H4b__UncAnsMgr__col7__[Ind FE, Yr FE, basic, DebtToCapital_lead]
+      col8   __H4b__UncAnsMgr__col8__[Firm FE, Yr FE, basic, DebtToCapital_lead]
+      col9   __H4b__UncAnsMgr__col9__[Ind FE, Yr FE, extended, DebtToCapital_lead]
+      col10  __H4b__UncAnsMgr__col10__[Firm FE, Yr FE, extended, DebtToCapital_lead]
+      col11  __H4b__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, DebtToCapital_lead]
+      col12  __H4b__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, DebtToCapital_lead]
+  UncPreMgr:
+      col1   __H4b__UncPreMgr__col1__[Ind FE, Yr FE, basic, DebtToCapital]
+      col2   __H4b__UncPreMgr__col2__[Firm FE, Yr FE, basic, DebtToCapital]
+      col3   __H4b__UncPreMgr__col3__[Ind FE, Yr FE, extended, DebtToCapital]
+      col4   __H4b__UncPreMgr__col4__[Firm FE, Yr FE, extended, DebtToCapital]
+      col5   __H4b__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, DebtToCapital]
+      col6   __H4b__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, DebtToCapital]
+      col7   __H4b__UncPreMgr__col7__[Ind FE, Yr FE, basic, DebtToCapital_lead]
+      col8   __H4b__UncPreMgr__col8__[Firm FE, Yr FE, basic, DebtToCapital_lead]
+      col9   __H4b__UncPreMgr__col9__[Ind FE, Yr FE, extended, DebtToCapital_lead]
+      col10  __H4b__UncPreMgr__col10__[Firm FE, Yr FE, extended, DebtToCapital_lead]
+      col11  __H4b__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, DebtToCapital_lead]
+      col12  __H4b__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, DebtToCapital_lead]
+
+================================================================================
+H5: SPEECH UNCERTAINTY AND ANALYST FORECAST DISPERSION (Wang 2020)
+================================================================================
+DV: DISP (cols 1-6), DISP_lead (cols 7-12)
+    Formula: DISP = SD(analyst EPS forecasts in [T-31, T-1]) / prccq_prior
+      SD(forecasts) = Standard deviation of individual analyst EPS estimates (IBES Detail)
+      prccq_prior   = Prior quarter's closing stock price (Compustat Quarterly)
+      Window: forecasts issued 1-31 days before fiscal period end date
+      Reference: Wang (2020, Review of Accounting and Finance)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:
+      col1   __H5__UncAnsCEO__col1__[Ind FE, Yr FE, basic, DISP]
+      col2   __H5__UncAnsCEO__col2__[Firm FE, Yr FE, basic, DISP]
+      col3   __H5__UncAnsCEO__col3__[Ind FE, Yr FE, extended, DISP]
+      col4   __H5__UncAnsCEO__col4__[Firm FE, Yr FE, extended, DISP]
+      col5   __H5__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, DISP]
+      col6   __H5__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, DISP]
+      col7   __H5__UncAnsCEO__col7__[Ind FE, Yr FE, basic, DISP_lead]
+      col8   __H5__UncAnsCEO__col8__[Firm FE, Yr FE, basic, DISP_lead]
+      col9   __H5__UncAnsCEO__col9__[Ind FE, Yr FE, extended, DISP_lead]
+      col10  __H5__UncAnsCEO__col10__[Firm FE, Yr FE, extended, DISP_lead]
+      col11  __H5__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, DISP_lead]
+      col12  __H5__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, DISP_lead]
+  UncPreCEO:
+      col1   __H5__UncPreCEO__col1__[Ind FE, Yr FE, basic, DISP]
+      col2   __H5__UncPreCEO__col2__[Firm FE, Yr FE, basic, DISP]
+      col3   __H5__UncPreCEO__col3__[Ind FE, Yr FE, extended, DISP]
+      col4   __H5__UncPreCEO__col4__[Firm FE, Yr FE, extended, DISP]
+      col5   __H5__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, DISP]
+      col6   __H5__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, DISP]
+      col7   __H5__UncPreCEO__col7__[Ind FE, Yr FE, basic, DISP_lead]
+      col8   __H5__UncPreCEO__col8__[Firm FE, Yr FE, basic, DISP_lead]
+      col9   __H5__UncPreCEO__col9__[Ind FE, Yr FE, extended, DISP_lead]
+      col10  __H5__UncPreCEO__col10__[Firm FE, Yr FE, extended, DISP_lead]
+      col11  __H5__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, DISP_lead]
+      col12  __H5__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, DISP_lead]
+  UncAnsMgr:
+      col1   __H5__UncAnsMgr__col1__[Ind FE, Yr FE, basic, DISP]
+      col2   __H5__UncAnsMgr__col2__[Firm FE, Yr FE, basic, DISP]
+      col3   __H5__UncAnsMgr__col3__[Ind FE, Yr FE, extended, DISP]
+      col4   __H5__UncAnsMgr__col4__[Firm FE, Yr FE, extended, DISP]
+      col5   __H5__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, DISP]
+      col6   __H5__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, DISP]
+      col7   __H5__UncAnsMgr__col7__[Ind FE, Yr FE, basic, DISP_lead]
+      col8   __H5__UncAnsMgr__col8__[Firm FE, Yr FE, basic, DISP_lead]
+      col9   __H5__UncAnsMgr__col9__[Ind FE, Yr FE, extended, DISP_lead]
+      col10  __H5__UncAnsMgr__col10__[Firm FE, Yr FE, extended, DISP_lead]
+      col11  __H5__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, DISP_lead]
+      col12  __H5__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, DISP_lead]
+  UncPreMgr:
+      col1   __H5__UncPreMgr__col1__[Ind FE, Yr FE, basic, DISP]
+      col2   __H5__UncPreMgr__col2__[Firm FE, Yr FE, basic, DISP]
+      col3   __H5__UncPreMgr__col3__[Ind FE, Yr FE, extended, DISP]
+      col4   __H5__UncPreMgr__col4__[Firm FE, Yr FE, extended, DISP]
+      col5   __H5__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, DISP]
+      col6   __H5__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, DISP]
+      col7   __H5__UncPreMgr__col7__[Ind FE, Yr FE, basic, DISP_lead]
+      col8   __H5__UncPreMgr__col8__[Firm FE, Yr FE, basic, DISP_lead]
+      col9   __H5__UncPreMgr__col9__[Ind FE, Yr FE, extended, DISP_lead]
+      col10  __H5__UncPreMgr__col10__[Firm FE, Yr FE, extended, DISP_lead]
+      col11  __H5__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, DISP_lead]
+      col12  __H5__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, DISP_lead]
+
+================================================================================
+H7: SPEECH UNCERTAINTY AND POST-CALL ILLIQUIDITY
+================================================================================
+DV: DeltaILLIQ (6 cols)
+    Formula: DeltaILLIQ = PostCallILLIQ - PreCallILLIQ
+      daily_ILLIQ = |RET| / (VOL * |PRC|) * 1e6
+      PreCallILLIQ  = mean(daily_ILLIQ) over [-3, -1] trading days before call
+      PostCallILLIQ = mean(daily_ILLIQ) over [+1, +3] trading days after call
+      RET = Daily stock return (CRSP DSF)
+      VOL = Daily trading volume in shares (CRSP DSF)
+      PRC = Daily closing price (CRSP DSF)
+      Reference: Amihud (2002, Journal of Financial Markets)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:
+      col1   __H7__UncAnsCEO__col1__[Ind FE, Yr FE, basic, DeltaILLIQ]
+      col2   __H7__UncAnsCEO__col2__[Firm FE, Yr FE, basic, DeltaILLIQ]
+      col3   __H7__UncAnsCEO__col3__[Ind FE, Yr FE, extended, DeltaILLIQ]
+      col4   __H7__UncAnsCEO__col4__[Firm FE, Yr FE, extended, DeltaILLIQ]
+      col5   __H7__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, DeltaILLIQ]
+      col6   __H7__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, DeltaILLIQ]
+      col7   __H7__UncAnsCEO__col7__[Ind FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col8   __H7__UncAnsCEO__col8__[Firm FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col9   __H7__UncAnsCEO__col9__[Ind FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col10  __H7__UncAnsCEO__col10__[Firm FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col11  __H7__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+      col12  __H7__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+  UncPreCEO:
+      col1   __H7__UncPreCEO__col1__[Ind FE, Yr FE, basic, DeltaILLIQ]
+      col2   __H7__UncPreCEO__col2__[Firm FE, Yr FE, basic, DeltaILLIQ]
+      col3   __H7__UncPreCEO__col3__[Ind FE, Yr FE, extended, DeltaILLIQ]
+      col4   __H7__UncPreCEO__col4__[Firm FE, Yr FE, extended, DeltaILLIQ]
+      col5   __H7__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, DeltaILLIQ]
+      col6   __H7__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, DeltaILLIQ]
+      col7   __H7__UncPreCEO__col7__[Ind FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col8   __H7__UncPreCEO__col8__[Firm FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col9   __H7__UncPreCEO__col9__[Ind FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col10  __H7__UncPreCEO__col10__[Firm FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col11  __H7__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+      col12  __H7__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+  UncAnsMgr:
+      col1   __H7__UncAnsMgr__col1__[Ind FE, Yr FE, basic, DeltaILLIQ]
+      col2   __H7__UncAnsMgr__col2__[Firm FE, Yr FE, basic, DeltaILLIQ]
+      col3   __H7__UncAnsMgr__col3__[Ind FE, Yr FE, extended, DeltaILLIQ]
+      col4   __H7__UncAnsMgr__col4__[Firm FE, Yr FE, extended, DeltaILLIQ]
+      col5   __H7__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, DeltaILLIQ]
+      col6   __H7__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, DeltaILLIQ]
+      col7   __H7__UncAnsMgr__col7__[Ind FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col8   __H7__UncAnsMgr__col8__[Firm FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col9   __H7__UncAnsMgr__col9__[Ind FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col10  __H7__UncAnsMgr__col10__[Firm FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col11  __H7__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+      col12  __H7__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+  UncPreMgr:
+      col1   __H7__UncPreMgr__col1__[Ind FE, Yr FE, basic, DeltaILLIQ]
+      col2   __H7__UncPreMgr__col2__[Firm FE, Yr FE, basic, DeltaILLIQ]
+      col3   __H7__UncPreMgr__col3__[Ind FE, Yr FE, extended, DeltaILLIQ]
+      col4   __H7__UncPreMgr__col4__[Firm FE, Yr FE, extended, DeltaILLIQ]
+      col5   __H7__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, DeltaILLIQ]
+      col6   __H7__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, DeltaILLIQ]
+      col7   __H7__UncPreMgr__col7__[Ind FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col8   __H7__UncPreMgr__col8__[Firm FE, Yr FE, basic, DeltaILLIQ_lead1]
+      col9   __H7__UncPreMgr__col9__[Ind FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col10  __H7__UncPreMgr__col10__[Firm FE, Yr FE, extended, DeltaILLIQ_lead1]
+      col11  __H7__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+      col12  __H7__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, DeltaILLIQ_lead1]
+
+================================================================================
+H7b: SPEECH UNCERTAINTY AND POST-CALL AMIHUD ILLIQUIDITY LEVEL
+================================================================================
+DV: PostCallAmihud (6 cols)
+    Formula: PostCallAmihud = mean(|RET| / (VOL * |PRC|) * 1e6) over [+1, +3] trading days
+      RET = Daily stock return (CRSP DSF)
+      VOL = Daily trading volume in shares (CRSP DSF)
+      PRC = Daily closing price (CRSP DSF)
+      Reference: Amihud (2002, Journal of Financial Markets)
+Tail: One-tailed (beta > 0)
+NOTE: Level specification (algebraically equivalent to H7 delta with PreCallILLIQ control)
+
+  UncAnsCEO:
+      col1   __H7b__UncAnsCEO__col1__[Ind FE, Yr FE, basic, PostCallAmihud]
+      col2   __H7b__UncAnsCEO__col2__[Firm FE, Yr FE, basic, PostCallAmihud]
+      col3   __H7b__UncAnsCEO__col3__[Ind FE, Yr FE, extended, PostCallAmihud]
+      col4   __H7b__UncAnsCEO__col4__[Firm FE, Yr FE, extended, PostCallAmihud]
+      col5   __H7b__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, PostCallAmihud]
+      col6   __H7b__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, PostCallAmihud]
+      col7   __H7b__UncAnsCEO__col7__[Ind FE, Yr FE, basic, PostCallAmihud_lead1]
+      col8   __H7b__UncAnsCEO__col8__[Firm FE, Yr FE, basic, PostCallAmihud_lead1]
+      col9   __H7b__UncAnsCEO__col9__[Ind FE, Yr FE, extended, PostCallAmihud_lead1]
+      col10  __H7b__UncAnsCEO__col10__[Firm FE, Yr FE, extended, PostCallAmihud_lead1]
+      col11  __H7b__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, PostCallAmihud_lead1]
+      col12  __H7b__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, PostCallAmihud_lead1]
+  UncPreCEO:
+      col1   __H7b__UncPreCEO__col1__[Ind FE, Yr FE, basic, PostCallAmihud]
+      col2   __H7b__UncPreCEO__col2__[Firm FE, Yr FE, basic, PostCallAmihud]
+      col3   __H7b__UncPreCEO__col3__[Ind FE, Yr FE, extended, PostCallAmihud]
+      col4   __H7b__UncPreCEO__col4__[Firm FE, Yr FE, extended, PostCallAmihud]
+      col5   __H7b__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, PostCallAmihud]
+      col6   __H7b__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, PostCallAmihud]
+      col7   __H7b__UncPreCEO__col7__[Ind FE, Yr FE, basic, PostCallAmihud_lead1]
+      col8   __H7b__UncPreCEO__col8__[Firm FE, Yr FE, basic, PostCallAmihud_lead1]
+      col9   __H7b__UncPreCEO__col9__[Ind FE, Yr FE, extended, PostCallAmihud_lead1]
+      col10  __H7b__UncPreCEO__col10__[Firm FE, Yr FE, extended, PostCallAmihud_lead1]
+      col11  __H7b__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, PostCallAmihud_lead1]
+      col12  __H7b__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, PostCallAmihud_lead1]
+  UncAnsMgr:
+      col1   __H7b__UncAnsMgr__col1__[Ind FE, Yr FE, basic, PostCallAmihud]
+      col2   __H7b__UncAnsMgr__col2__[Firm FE, Yr FE, basic, PostCallAmihud]
+      col3   __H7b__UncAnsMgr__col3__[Ind FE, Yr FE, extended, PostCallAmihud]
+      col4   __H7b__UncAnsMgr__col4__[Firm FE, Yr FE, extended, PostCallAmihud]
+      col5   __H7b__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, PostCallAmihud]
+      col6   __H7b__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, PostCallAmihud]
+      col7   __H7b__UncAnsMgr__col7__[Ind FE, Yr FE, basic, PostCallAmihud_lead1]
+      col8   __H7b__UncAnsMgr__col8__[Firm FE, Yr FE, basic, PostCallAmihud_lead1]
+      col9   __H7b__UncAnsMgr__col9__[Ind FE, Yr FE, extended, PostCallAmihud_lead1]
+      col10  __H7b__UncAnsMgr__col10__[Firm FE, Yr FE, extended, PostCallAmihud_lead1]
+      col11  __H7b__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, PostCallAmihud_lead1]
+      col12  __H7b__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, PostCallAmihud_lead1]
+  UncPreMgr:
+      col1   __H7b__UncPreMgr__col1__[Ind FE, Yr FE, basic, PostCallAmihud]
+      col2   __H7b__UncPreMgr__col2__[Firm FE, Yr FE, basic, PostCallAmihud]
+      col3   __H7b__UncPreMgr__col3__[Ind FE, Yr FE, extended, PostCallAmihud]
+      col4   __H7b__UncPreMgr__col4__[Firm FE, Yr FE, extended, PostCallAmihud]
+      col5   __H7b__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, PostCallAmihud]
+      col6   __H7b__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, PostCallAmihud]
+      col7   __H7b__UncPreMgr__col7__[Ind FE, Yr FE, basic, PostCallAmihud_lead1]
+      col8   __H7b__UncPreMgr__col8__[Firm FE, Yr FE, basic, PostCallAmihud_lead1]
+      col9   __H7b__UncPreMgr__col9__[Ind FE, Yr FE, extended, PostCallAmihud_lead1]
+      col10  __H7b__UncPreMgr__col10__[Firm FE, Yr FE, extended, PostCallAmihud_lead1]
+      col11  __H7b__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, PostCallAmihud_lead1]
+      col12  __H7b__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, PostCallAmihud_lead1]
+
+================================================================================
+H7c: SPEECH UNCERTAINTY AND BGT (2018) 25-DAY POST-CALL AMIHUD LEVEL ([0,+25], DAY 0 INCLUDED)
+================================================================================
+N: 55,022, 51,940, 54,622, 52,666
+DV Mean: 0.0142, 0.0144
+
+  UncAnsCEO:
+      col1   __H7c__UncAnsCEO__col1__[Ind FE, Yr FE, basic, BGTLevel_Amihud]
+      col2   __H7c__UncAnsCEO__col2__[Firm FE, Yr FE, basic, BGTLevel_Amihud]
+      col3   __H7c__UncAnsCEO__col3__[Ind FE, Yr FE, extended, BGTLevel_Amihud]
+      col4   __H7c__UncAnsCEO__col4__[Firm FE, Yr FE, extended, BGTLevel_Amihud]
+      col5   __H7c__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col6   __H7c__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col7   __H7c__UncAnsCEO__col7__[Ind FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col8   __H7c__UncAnsCEO__col8__[Firm FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col9   __H7c__UncAnsCEO__col9__[Ind FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col10  __H7c__UncAnsCEO__col10__[Firm FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col11  __H7c__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+      col12  __H7c__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+  UncPreCEO:
+      col1   __H7c__UncPreCEO__col1__[Ind FE, Yr FE, basic, BGTLevel_Amihud]
+      col2   __H7c__UncPreCEO__col2__[Firm FE, Yr FE, basic, BGTLevel_Amihud]
+      col3   __H7c__UncPreCEO__col3__[Ind FE, Yr FE, extended, BGTLevel_Amihud]
+      col4   __H7c__UncPreCEO__col4__[Firm FE, Yr FE, extended, BGTLevel_Amihud]
+      col5   __H7c__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col6   __H7c__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col7   __H7c__UncPreCEO__col7__[Ind FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col8   __H7c__UncPreCEO__col8__[Firm FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col9   __H7c__UncPreCEO__col9__[Ind FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col10  __H7c__UncPreCEO__col10__[Firm FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col11  __H7c__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+      col12  __H7c__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+  UncAnsMgr:
+      col1   __H7c__UncAnsMgr__col1__[Ind FE, Yr FE, basic, BGTLevel_Amihud]
+      col2   __H7c__UncAnsMgr__col2__[Firm FE, Yr FE, basic, BGTLevel_Amihud]
+      col3   __H7c__UncAnsMgr__col3__[Ind FE, Yr FE, extended, BGTLevel_Amihud]
+      col4   __H7c__UncAnsMgr__col4__[Firm FE, Yr FE, extended, BGTLevel_Amihud]
+      col5   __H7c__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col6   __H7c__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col7   __H7c__UncAnsMgr__col7__[Ind FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col8   __H7c__UncAnsMgr__col8__[Firm FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col9   __H7c__UncAnsMgr__col9__[Ind FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col10  __H7c__UncAnsMgr__col10__[Firm FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col11  __H7c__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+      col12  __H7c__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+  UncPreMgr:
+      col1   __H7c__UncPreMgr__col1__[Ind FE, Yr FE, basic, BGTLevel_Amihud]
+      col2   __H7c__UncPreMgr__col2__[Firm FE, Yr FE, basic, BGTLevel_Amihud]
+      col3   __H7c__UncPreMgr__col3__[Ind FE, Yr FE, extended, BGTLevel_Amihud]
+      col4   __H7c__UncPreMgr__col4__[Firm FE, Yr FE, extended, BGTLevel_Amihud]
+      col5   __H7c__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col6   __H7c__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud]
+      col7   __H7c__UncPreMgr__col7__[Ind FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col8   __H7c__UncPreMgr__col8__[Firm FE, Yr FE, basic, BGTLevel_Amihud_lead1]
+      col9   __H7c__UncPreMgr__col9__[Ind FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col10  __H7c__UncPreMgr__col10__[Firm FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col11  __H7c__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+      col12  __H7c__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
+
+================================================================================
+H7d: SPEECH UNCERTAINTY AND BGT-WINDOW 25-DAY AMIHUD DELTA ([+1,+25]-[-25,-1])
+================================================================================
+N: 54,794, 51,764, 54,390, 52,448
+DV Mean: -0.0008
+
+  UncAnsCEO:
+      col1   __H7d__UncAnsCEO__col1__[Ind FE, Yr FE, basic, BGTDelta_Amihud]
+      col2   __H7d__UncAnsCEO__col2__[Firm FE, Yr FE, basic, BGTDelta_Amihud]
+      col3   __H7d__UncAnsCEO__col3__[Ind FE, Yr FE, extended, BGTDelta_Amihud]
+      col4   __H7d__UncAnsCEO__col4__[Firm FE, Yr FE, extended, BGTDelta_Amihud]
+      col5   __H7d__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col6   __H7d__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col7   __H7d__UncAnsCEO__col7__[Ind FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col8   __H7d__UncAnsCEO__col8__[Firm FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col9   __H7d__UncAnsCEO__col9__[Ind FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col10  __H7d__UncAnsCEO__col10__[Firm FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col11  __H7d__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+      col12  __H7d__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+  UncPreCEO:
+      col1   __H7d__UncPreCEO__col1__[Ind FE, Yr FE, basic, BGTDelta_Amihud]
+      col2   __H7d__UncPreCEO__col2__[Firm FE, Yr FE, basic, BGTDelta_Amihud]
+      col3   __H7d__UncPreCEO__col3__[Ind FE, Yr FE, extended, BGTDelta_Amihud]
+      col4   __H7d__UncPreCEO__col4__[Firm FE, Yr FE, extended, BGTDelta_Amihud]
+      col5   __H7d__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col6   __H7d__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col7   __H7d__UncPreCEO__col7__[Ind FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col8   __H7d__UncPreCEO__col8__[Firm FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col9   __H7d__UncPreCEO__col9__[Ind FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col10  __H7d__UncPreCEO__col10__[Firm FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col11  __H7d__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+      col12  __H7d__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+  UncAnsMgr:
+      col1   __H7d__UncAnsMgr__col1__[Ind FE, Yr FE, basic, BGTDelta_Amihud]
+      col2   __H7d__UncAnsMgr__col2__[Firm FE, Yr FE, basic, BGTDelta_Amihud]
+      col3   __H7d__UncAnsMgr__col3__[Ind FE, Yr FE, extended, BGTDelta_Amihud]
+      col4   __H7d__UncAnsMgr__col4__[Firm FE, Yr FE, extended, BGTDelta_Amihud]
+      col5   __H7d__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col6   __H7d__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col7   __H7d__UncAnsMgr__col7__[Ind FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col8   __H7d__UncAnsMgr__col8__[Firm FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col9   __H7d__UncAnsMgr__col9__[Ind FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col10  __H7d__UncAnsMgr__col10__[Firm FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col11  __H7d__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+      col12  __H7d__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+  UncPreMgr:
+      col1   __H7d__UncPreMgr__col1__[Ind FE, Yr FE, basic, BGTDelta_Amihud]
+      col2   __H7d__UncPreMgr__col2__[Firm FE, Yr FE, basic, BGTDelta_Amihud]
+      col3   __H7d__UncPreMgr__col3__[Ind FE, Yr FE, extended, BGTDelta_Amihud]
+      col4   __H7d__UncPreMgr__col4__[Firm FE, Yr FE, extended, BGTDelta_Amihud]
+      col5   __H7d__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col6   __H7d__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud]
+      col7   __H7d__UncPreMgr__col7__[Ind FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col8   __H7d__UncPreMgr__col8__[Firm FE, Yr FE, basic, BGTDelta_Amihud_lead1]
+      col9   __H7d__UncPreMgr__col9__[Ind FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col10  __H7d__UncPreMgr__col10__[Firm FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col11  __H7d__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+      col12  __H7d__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
+
+================================================================================
+H7e: SPEECH UNCERTAINTY AND BGT-WINDOW 25-DAY AMIHUD AVERAGE ([-25,+25], 51-DAY SYMMETRIC)
+================================================================================
+N: 55,032, 51,942, 54,663, 52,701
+DV Mean: 0.0157, 0.0160
+
+  UncAnsCEO:
+      col1   __H7e__UncAnsCEO__col1__[Ind FE, Yr FE, basic, BGTAvg_Amihud]
+      col2   __H7e__UncAnsCEO__col2__[Firm FE, Yr FE, basic, BGTAvg_Amihud]
+      col3   __H7e__UncAnsCEO__col3__[Ind FE, Yr FE, extended, BGTAvg_Amihud]
+      col4   __H7e__UncAnsCEO__col4__[Firm FE, Yr FE, extended, BGTAvg_Amihud]
+      col5   __H7e__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col6   __H7e__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col7   __H7e__UncAnsCEO__col7__[Ind FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col8   __H7e__UncAnsCEO__col8__[Firm FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col9   __H7e__UncAnsCEO__col9__[Ind FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col10  __H7e__UncAnsCEO__col10__[Firm FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col11  __H7e__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+      col12  __H7e__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+  UncPreCEO:
+      col1   __H7e__UncPreCEO__col1__[Ind FE, Yr FE, basic, BGTAvg_Amihud]
+      col2   __H7e__UncPreCEO__col2__[Firm FE, Yr FE, basic, BGTAvg_Amihud]
+      col3   __H7e__UncPreCEO__col3__[Ind FE, Yr FE, extended, BGTAvg_Amihud]
+      col4   __H7e__UncPreCEO__col4__[Firm FE, Yr FE, extended, BGTAvg_Amihud]
+      col5   __H7e__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col6   __H7e__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col7   __H7e__UncPreCEO__col7__[Ind FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col8   __H7e__UncPreCEO__col8__[Firm FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col9   __H7e__UncPreCEO__col9__[Ind FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col10  __H7e__UncPreCEO__col10__[Firm FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col11  __H7e__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+      col12  __H7e__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+  UncAnsMgr:
+      col1   __H7e__UncAnsMgr__col1__[Ind FE, Yr FE, basic, BGTAvg_Amihud]
+      col2   __H7e__UncAnsMgr__col2__[Firm FE, Yr FE, basic, BGTAvg_Amihud]
+      col3   __H7e__UncAnsMgr__col3__[Ind FE, Yr FE, extended, BGTAvg_Amihud]
+      col4   __H7e__UncAnsMgr__col4__[Firm FE, Yr FE, extended, BGTAvg_Amihud]
+      col5   __H7e__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col6   __H7e__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col7   __H7e__UncAnsMgr__col7__[Ind FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col8   __H7e__UncAnsMgr__col8__[Firm FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col9   __H7e__UncAnsMgr__col9__[Ind FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col10  __H7e__UncAnsMgr__col10__[Firm FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col11  __H7e__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+      col12  __H7e__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+  UncPreMgr:
+      col1   __H7e__UncPreMgr__col1__[Ind FE, Yr FE, basic, BGTAvg_Amihud]
+      col2   __H7e__UncPreMgr__col2__[Firm FE, Yr FE, basic, BGTAvg_Amihud]
+      col3   __H7e__UncPreMgr__col3__[Ind FE, Yr FE, extended, BGTAvg_Amihud]
+      col4   __H7e__UncPreMgr__col4__[Firm FE, Yr FE, extended, BGTAvg_Amihud]
+      col5   __H7e__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col6   __H7e__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col7   __H7e__UncPreMgr__col7__[Ind FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col8   __H7e__UncPreMgr__col8__[Firm FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col9   __H7e__UncPreMgr__col9__[Ind FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col10  __H7e__UncPreMgr__col10__[Firm FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col11  __H7e__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+      col12  __H7e__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+
+================================================================================
+H11: POLITICAL RISK AND LANGUAGE UNCERTAINTY
+================================================================================
+DV: QA_Uncertainty_pct (Mgr col1, CEO col2), Pres_Uncertainty_pct (Mgr col3, CEO col4)
+    Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
+      DVs: UncAnsMgr, UncAnsCEO (Q&A answers), UncPreMgr, UncPreCEO (presentation)
+      Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
+      Reference: Dzielinski, Wagner & Zeckhauser (2021)
+Tail: One-tailed for PRisk (beta > 0)
+NOTE: REVERSED CAUSALITY -- uncertainty is the DV, political risk is the IV.
+All specs: Firm FE + Year FE
+
+  PRisk:
+      col1   __H11__PRisk__col1__[Firm FE, Yr FE, QA_Uncertainty_pct / Manager]
+      col2   __H11__PRisk__col2__[Firm FE, Yr FE, QA_Uncertainty_pct / CEO]
+      col3   __H11__PRisk__col3__[Firm FE, Yr FE, Pres_Uncertainty_pct / Manager]
+      col4   __H11__PRisk__col4__[Firm FE, Yr FE, Pres_Uncertainty_pct / CEO]
+
+================================================================================
+H11-Lag: LAGGED POLITICAL RISK AND LANGUAGE UNCERTAINTY
+================================================================================
+DV: Uncertainty measures predicted by lagged political risk
+    Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
+      DVs: UncAnsMgr, UncAnsCEO (Q&A answers), UncPreMgr, UncPreCEO (presentation)
+      Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
+      Reference: Dzielinski, Wagner & Zeckhauser (2021)
+Tail: One-tailed (beta > 0)
+NOTE: Reversed causality. All specs: Firm FE + Year FE.
+
+  PRisk_lag:
+      col1   __H11-Lag__PRisk_lag__col1__[Firm FE, Yr FE, PRisk_lag / Mgr QA]
+      col2   __H11-Lag__PRisk_lag__col2__[Firm FE, Yr FE, PRisk_lag / CEO QA]
+      col3   __H11-Lag__PRisk_lag__col3__[Firm FE, Yr FE, PRisk_lag / Mgr Pres]
+      col4   __H11-Lag__PRisk_lag__col4__[Firm FE, Yr FE, PRisk_lag / CEO Pres]
+      col5   __H11-Lag__PRisk_lag__col5__[Firm FE, Yr FE, PRisk_lag2 / Mgr QA]
+      col6   __H11-Lag__PRisk_lag__col6__[Firm FE, Yr FE, PRisk_lag2 / CEO QA]
+      col7   __H11-Lag__PRisk_lag__col7__[Firm FE, Yr FE, PRisk_lag2 / Mgr Pres]
+      col8   __H11-Lag__PRisk_lag__col8__[Firm FE, Yr FE, PRisk_lag2 / CEO Pres]
+  PRisk_lag2:
+      col1   __H11-Lag__PRisk_lag2__col1__[Firm FE, Yr FE, PRisk_lag / Mgr QA]
+      col2   __H11-Lag__PRisk_lag2__col2__[Firm FE, Yr FE, PRisk_lag / CEO QA]
+      col3   __H11-Lag__PRisk_lag2__col3__[Firm FE, Yr FE, PRisk_lag / Mgr Pres]
+      col4   __H11-Lag__PRisk_lag2__col4__[Firm FE, Yr FE, PRisk_lag / CEO Pres]
+      col5   __H11-Lag__PRisk_lag2__col5__[Firm FE, Yr FE, PRisk_lag2 / Mgr QA]
+      col6   __H11-Lag__PRisk_lag2__col6__[Firm FE, Yr FE, PRisk_lag2 / CEO QA]
+      col7   __H11-Lag__PRisk_lag2__col7__[Firm FE, Yr FE, PRisk_lag2 / Mgr Pres]
+      col8   __H11-Lag__PRisk_lag2__col8__[Firm FE, Yr FE, PRisk_lag2 / CEO Pres]
+
+================================================================================
+H12: SPEECH UNCERTAINTY AND QUARTERLY PAYOUT RATIO
+================================================================================
+DV: PayoutRatio_q (cols 1-6), PayoutRatio_q_lead_qtr (cols 7-12)
+    Formula: PayoutRatio_q = (dvpspq * cshoq) / ibq
+      dvpspq = Dividends Per Share (Compustat Quarterly)
+      cshoq  = Common Shares Outstanding (Compustat Quarterly)
+      ibq    = Income Before Extraordinary Items (Compustat Quarterly)
+      NaN when ibq <= 0 (loss quarters excluded)
+      Reference: DeAngelo, DeAngelo & Skinner (2004, JFE)
+Tail: One-tailed (beta < 0) -- hypothesis predicts uncertainty REDUCES payout
+
+  UncAnsCEO:
+      col1   __H12__UncAnsCEO__col1__[Ind FE, Yr FE, basic, PayoutRatio_q]
+      col2   __H12__UncAnsCEO__col2__[Firm FE, Yr FE, basic, PayoutRatio_q]
+      col3   __H12__UncAnsCEO__col3__[Ind FE, Yr FE, extended, PayoutRatio_q]
+      col4   __H12__UncAnsCEO__col4__[Firm FE, Yr FE, extended, PayoutRatio_q]
+      col5   __H12__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, PayoutRatio_q]
+      col6   __H12__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, PayoutRatio_q]
+      col7   __H12__UncAnsCEO__col7__[Ind FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col8   __H12__UncAnsCEO__col8__[Firm FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col9   __H12__UncAnsCEO__col9__[Ind FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col10  __H12__UncAnsCEO__col10__[Firm FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col11  __H12__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+      col12  __H12__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+  UncPreCEO:
+      col1   __H12__UncPreCEO__col1__[Ind FE, Yr FE, basic, PayoutRatio_q]
+      col2   __H12__UncPreCEO__col2__[Firm FE, Yr FE, basic, PayoutRatio_q]
+      col3   __H12__UncPreCEO__col3__[Ind FE, Yr FE, extended, PayoutRatio_q]
+      col4   __H12__UncPreCEO__col4__[Firm FE, Yr FE, extended, PayoutRatio_q]
+      col5   __H12__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, PayoutRatio_q]
+      col6   __H12__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, PayoutRatio_q]
+      col7   __H12__UncPreCEO__col7__[Ind FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col8   __H12__UncPreCEO__col8__[Firm FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col9   __H12__UncPreCEO__col9__[Ind FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col10  __H12__UncPreCEO__col10__[Firm FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col11  __H12__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+      col12  __H12__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+  UncAnsMgr:
+      col1   __H12__UncAnsMgr__col1__[Ind FE, Yr FE, basic, PayoutRatio_q]
+      col2   __H12__UncAnsMgr__col2__[Firm FE, Yr FE, basic, PayoutRatio_q]
+      col3   __H12__UncAnsMgr__col3__[Ind FE, Yr FE, extended, PayoutRatio_q]
+      col4   __H12__UncAnsMgr__col4__[Firm FE, Yr FE, extended, PayoutRatio_q]
+      col5   __H12__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, PayoutRatio_q]
+      col6   __H12__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, PayoutRatio_q]
+      col7   __H12__UncAnsMgr__col7__[Ind FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col8   __H12__UncAnsMgr__col8__[Firm FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col9   __H12__UncAnsMgr__col9__[Ind FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col10  __H12__UncAnsMgr__col10__[Firm FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col11  __H12__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+      col12  __H12__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+  UncPreMgr:
+      col1   __H12__UncPreMgr__col1__[Ind FE, Yr FE, basic, PayoutRatio_q]
+      col2   __H12__UncPreMgr__col2__[Firm FE, Yr FE, basic, PayoutRatio_q]
+      col3   __H12__UncPreMgr__col3__[Ind FE, Yr FE, extended, PayoutRatio_q]
+      col4   __H12__UncPreMgr__col4__[Firm FE, Yr FE, extended, PayoutRatio_q]
+      col5   __H12__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, PayoutRatio_q]
+      col6   __H12__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, PayoutRatio_q]
+      col7   __H12__UncPreMgr__col7__[Ind FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col8   __H12__UncPreMgr__col8__[Firm FE, Yr FE, basic, PayoutRatio_q_lead_qtr]
+      col9   __H12__UncPreMgr__col9__[Ind FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col10  __H12__UncPreMgr__col10__[Firm FE, Yr FE, extended, PayoutRatio_q_lead_qtr]
+      col11  __H12__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+      col12  __H12__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, PayoutRatio_q_lead_qtr]
+
+================================================================================
+H12b: SPEECH UNCERTAINTY AND DIVIDEND PAYER INDICATOR (Hoberg-Prabhala 2009 analog)
+================================================================================
+DV: DivPayerQ (cols 1-6), DivPayerQ_lead1 (cols 7-12)
+    Formula: DivPayerQ = (dvpsxq > 0).astype(float)
+      dvpsxq = Div per Share by EX date (Compustat Quarterly)
+      Compustat item 26 ex-date analog at firm-quarter frequency
+      Primary reference: Hoberg & Prabhala (2009, RFS) -- annual firm-year DV; H12b extends to firm-quarter
+      Secondary reference: Chetty & Saez (2005, QJE) -- firm-quarter frequency precedent
+Tail: One-tailed (beta < 0) -- uncertainty REDUCES payer probability per HP (2009) risk framing
+Estimator: LPM via PanelOLS (Timoneda 2021 for binary DV)
+SEs: Firm-level clustered (Petersen 2009)
+Sample: 88,205 Main calls, 1,884 firms; 42.35% payer rate (DivPayerQ==1); 42.90% payer rate on lead DV
+N per spec: 64,145 (base contemp), 61,535 (extended contemp), 61,359 (base lead), 60,175 (extended lead)
+Controls: lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, sCFO, Lagged_DV (=DivPayerQ_lag)
+          Extended adds SalesGrowth, RDSales, CashFlowAt, DailyVola
+
+  UncAnsCEO:
+      col1   __H12b__UncAnsCEO__col1__[Ind FE, Yr FE, basic, DivPayerQ]
+      col2   __H12b__UncAnsCEO__col2__[Firm FE, Yr FE, basic, DivPayerQ]
+      col3   __H12b__UncAnsCEO__col3__[Ind FE, Yr FE, extended, DivPayerQ]
+      col4   __H12b__UncAnsCEO__col4__[Firm FE, Yr FE, extended, DivPayerQ]
+      col5   __H12b__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, DivPayerQ]
+      col6   __H12b__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, DivPayerQ]
+      col7   __H12b__UncAnsCEO__col7__[Ind FE, Yr FE, basic, DivPayerQ_lead1]
+      col8   __H12b__UncAnsCEO__col8__[Firm FE, Yr FE, basic, DivPayerQ_lead1]
+      col9   __H12b__UncAnsCEO__col9__[Ind FE, Yr FE, extended, DivPayerQ_lead1]
+      col10  __H12b__UncAnsCEO__col10__[Firm FE, Yr FE, extended, DivPayerQ_lead1]
+      col11  __H12b__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, DivPayerQ_lead1]
+      col12  __H12b__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, DivPayerQ_lead1]
+  UncPreCEO:
+      col1   __H12b__UncPreCEO__col1__[Ind FE, Yr FE, basic, DivPayerQ]
+      col2   __H12b__UncPreCEO__col2__[Firm FE, Yr FE, basic, DivPayerQ]
+      col3   __H12b__UncPreCEO__col3__[Ind FE, Yr FE, extended, DivPayerQ]
+      col4   __H12b__UncPreCEO__col4__[Firm FE, Yr FE, extended, DivPayerQ]
+      col5   __H12b__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, DivPayerQ]
+      col6   __H12b__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, DivPayerQ]
+      col7   __H12b__UncPreCEO__col7__[Ind FE, Yr FE, basic, DivPayerQ_lead1]
+      col8   __H12b__UncPreCEO__col8__[Firm FE, Yr FE, basic, DivPayerQ_lead1]
+      col9   __H12b__UncPreCEO__col9__[Ind FE, Yr FE, extended, DivPayerQ_lead1]
+      col10  __H12b__UncPreCEO__col10__[Firm FE, Yr FE, extended, DivPayerQ_lead1]
+      col11  __H12b__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, DivPayerQ_lead1]
+      col12  __H12b__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, DivPayerQ_lead1]
+  UncAnsMgr:
+      col1   __H12b__UncAnsMgr__col1__[Ind FE, Yr FE, basic, DivPayerQ]
+      col2   __H12b__UncAnsMgr__col2__[Firm FE, Yr FE, basic, DivPayerQ]
+      col3   __H12b__UncAnsMgr__col3__[Ind FE, Yr FE, extended, DivPayerQ]
+      col4   __H12b__UncAnsMgr__col4__[Firm FE, Yr FE, extended, DivPayerQ]
+      col5   __H12b__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, DivPayerQ]
+      col6   __H12b__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, DivPayerQ]
+      col7   __H12b__UncAnsMgr__col7__[Ind FE, Yr FE, basic, DivPayerQ_lead1]
+      col8   __H12b__UncAnsMgr__col8__[Firm FE, Yr FE, basic, DivPayerQ_lead1]
+      col9   __H12b__UncAnsMgr__col9__[Ind FE, Yr FE, extended, DivPayerQ_lead1]
+      col10  __H12b__UncAnsMgr__col10__[Firm FE, Yr FE, extended, DivPayerQ_lead1]
+      col11  __H12b__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, DivPayerQ_lead1]
+      col12  __H12b__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, DivPayerQ_lead1]
+  UncPreMgr:
+      col1   __H12b__UncPreMgr__col1__[Ind FE, Yr FE, basic, DivPayerQ]
+      col2   __H12b__UncPreMgr__col2__[Firm FE, Yr FE, basic, DivPayerQ]
+      col3   __H12b__UncPreMgr__col3__[Ind FE, Yr FE, extended, DivPayerQ]
+      col4   __H12b__UncPreMgr__col4__[Firm FE, Yr FE, extended, DivPayerQ]
+      col5   __H12b__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, DivPayerQ]
+      col6   __H12b__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, DivPayerQ]
+      col7   __H12b__UncPreMgr__col7__[Ind FE, Yr FE, basic, DivPayerQ_lead1]
+      col8   __H12b__UncPreMgr__col8__[Firm FE, Yr FE, basic, DivPayerQ_lead1]
+      col9   __H12b__UncPreMgr__col9__[Ind FE, Yr FE, extended, DivPayerQ_lead1]
+      col10  __H12b__UncPreMgr__col10__[Firm FE, Yr FE, extended, DivPayerQ_lead1]
+      col11  __H12b__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, DivPayerQ_lead1]
+      col12  __H12b__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, DivPayerQ_lead1]
+
+Pattern: Manager Pres Uncertainty is the only IV with robust negative effect -- 6/12 specs
+  significant at p<0.05, entirely driven by Industry-FE specifications (cols 1,3,5,7,9,11).
+  ALL firm-FE specs are n.s., indicating the effect is between-firm (cross-sectional)
+  rather than within-firm (time-series). Consistent with HP (2009) disappearing-dividends
+  risk framing but only via Manager-Pres channel; CEO channels and Manager-QA show no
+  significance. Parallels the H12 PayoutRatio pattern (also driven by UncPreMgr/Industry-FE)
+  but with sharper statistical significance at the payer margin.
+
+================================================================================
+H13: SPEECH UNCERTAINTY AND CAPITAL EXPENDITURE
+================================================================================
+DV: Capex (cols 1-6), Capex_lead (cols 7-12)
+    Formula: Capex = capxy_Q4 / atq
+      capxy = Capital Expenditures, fiscal-year cumulative (Compustat Annual via Q4)
+      atq   = Total Assets, contemporaneous (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: Two-tailed
+SEs: Firm-level clustered (Petersen 2009). N=56,114 (base), 53,864 (extended).
+DV Mean: Capex = 0.0487, Capex_lead = 0.0481
+One-SD(UncAnsMgr) effect on Capex: +0.0006 (col3, Ind FE) = 1.24% of mean
+
+  UncAnsCEO:
+      col1   __H13__UncAnsCEO__col1__[Ind FE, Yr FE, basic, Capex]
+      col2   __H13__UncAnsCEO__col2__[Firm FE, Yr FE, basic, Capex]
+      col3   __H13__UncAnsCEO__col3__[Ind FE, Yr FE, extended, Capex]
+      col4   __H13__UncAnsCEO__col4__[Firm FE, Yr FE, extended, Capex]
+      col5   __H13__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, Capex]
+      col6   __H13__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, Capex]
+      col7   __H13__UncAnsCEO__col7__[Ind FE, Yr FE, basic, Capex_lead]
+      col8   __H13__UncAnsCEO__col8__[Firm FE, Yr FE, basic, Capex_lead]
+      col9   __H13__UncAnsCEO__col9__[Ind FE, Yr FE, extended, Capex_lead]
+      col10  __H13__UncAnsCEO__col10__[Firm FE, Yr FE, extended, Capex_lead]
+      col11  __H13__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col12  __H13__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, Capex_lead]
+  UncPreCEO:
+      col1   __H13__UncPreCEO__col1__[Ind FE, Yr FE, basic, Capex]
+      col2   __H13__UncPreCEO__col2__[Firm FE, Yr FE, basic, Capex]
+      col3   __H13__UncPreCEO__col3__[Ind FE, Yr FE, extended, Capex]
+      col4   __H13__UncPreCEO__col4__[Firm FE, Yr FE, extended, Capex]
+      col5   __H13__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, Capex]
+      col6   __H13__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, Capex]
+      col7   __H13__UncPreCEO__col7__[Ind FE, Yr FE, basic, Capex_lead]
+      col8   __H13__UncPreCEO__col8__[Firm FE, Yr FE, basic, Capex_lead]
+      col9   __H13__UncPreCEO__col9__[Ind FE, Yr FE, extended, Capex_lead]
+      col10  __H13__UncPreCEO__col10__[Firm FE, Yr FE, extended, Capex_lead]
+      col11  __H13__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col12  __H13__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, Capex_lead]
+  UncAnsMgr:
+      col1   __H13__UncAnsMgr__col1__[Ind FE, Yr FE, basic, Capex]
+      col2   __H13__UncAnsMgr__col2__[Firm FE, Yr FE, basic, Capex]
+      col3   __H13__UncAnsMgr__col3__[Ind FE, Yr FE, extended, Capex]
+      col4   __H13__UncAnsMgr__col4__[Firm FE, Yr FE, extended, Capex]
+      col5   __H13__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, Capex]
+      col6   __H13__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, Capex]
+      col7   __H13__UncAnsMgr__col7__[Ind FE, Yr FE, basic, Capex_lead]
+      col8   __H13__UncAnsMgr__col8__[Firm FE, Yr FE, basic, Capex_lead]
+      col9   __H13__UncAnsMgr__col9__[Ind FE, Yr FE, extended, Capex_lead]
+      col10  __H13__UncAnsMgr__col10__[Firm FE, Yr FE, extended, Capex_lead]
+      col11  __H13__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col12  __H13__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, Capex_lead]
+  UncPreMgr:
+      col1   __H13__UncPreMgr__col1__[Ind FE, Yr FE, basic, Capex]
+      col2   __H13__UncPreMgr__col2__[Firm FE, Yr FE, basic, Capex]
+      col3   __H13__UncPreMgr__col3__[Ind FE, Yr FE, extended, Capex]
+      col4   __H13__UncPreMgr__col4__[Firm FE, Yr FE, extended, Capex]
+      col5   __H13__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, Capex]
+      col6   __H13__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, Capex]
+      col7   __H13__UncPreMgr__col7__[Ind FE, Yr FE, basic, Capex_lead]
+      col8   __H13__UncPreMgr__col8__[Firm FE, Yr FE, basic, Capex_lead]
+      col9   __H13__UncPreMgr__col9__[Ind FE, Yr FE, extended, Capex_lead]
+      col10  __H13__UncPreMgr__col10__[Firm FE, Yr FE, extended, Capex_lead]
+      col11  __H13__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col12  __H13__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, Capex_lead]
+
+================================================================================
+H13.1: PRODUCT SIMILARITY-MODERATED CAPEX
+================================================================================
+DV: Capex (cols 1-2), Capex_lead (cols 3-4)
+    Formula: Capex = capxy_Q4 / atq
+      capxy = Capital Expenditures, fiscal-year cumulative (Compustat Annual via Q4)
+      atq   = Total Assets, contemporaneous (Compustat Quarterly)
+      Reference: Bates, Kahle & Stulz (2009, JF)
+Tail: Two-tailed for all
+
+  Manager_QA_Unc_c:
+      col1   __H13.1__Manager_QA_Unc_c__col1__[Ind FE, Yr FE, Capex]
+      col2   __H13.1__Manager_QA_Unc_c__col2__[Ind FE, YrQtr FE, Capex]
+      col3   __H13.1__Manager_QA_Unc_c__col3__[Ind FE, Yr FE, Capex_lead]
+      col4   __H13.1__Manager_QA_Unc_c__col4__[Ind FE, YrQtr FE, Capex_lead]
+  z_log_TotalSimilarity:
+      col1   __H13.1__z_log_TotalSimilarity__col1__[Ind FE, Yr FE, Capex]
+      col2   __H13.1__z_log_TotalSimilarity__col2__[Ind FE, YrQtr FE, Capex]
+      col3   __H13.1__z_log_TotalSimilarity__col3__[Ind FE, Yr FE, Capex_lead]
+      col4   __H13.1__z_log_TotalSimilarity__col4__[Ind FE, YrQtr FE, Capex_lead]
+  MgrQAUnc_x_zlogTSIMM:
+      col1   __H13.1__MgrQAUnc_x_zlogTSIMM__col1__[Ind FE, Yr FE, Capex]
+      col2   __H13.1__MgrQAUnc_x_zlogTSIMM__col2__[Ind FE, YrQtr FE, Capex]
+      col3   __H13.1__MgrQAUnc_x_zlogTSIMM__col3__[Ind FE, Yr FE, Capex_lead]
+      col4   __H13.1__MgrQAUnc_x_zlogTSIMM__col4__[Ind FE, YrQtr FE, Capex_lead]
+
+================================================================================
+H14: SPEECH UNCERTAINTY AND BID-ASK SPREAD CHANGES
+================================================================================
+DV: DSPREAD (6 cols)
+    Formula: DSPREAD = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])
+      RelSpread = 2 * (ASK - BID) / (ASK + BID)
+      ASK = Daily closing ask price (CRSP DSF)
+      BID = Daily closing bid price (CRSP DSF)
+      Window: [-3,-1] and [+1,+3] trading days around earnings call
+      Reference: Lee (2016, The Accounting Review)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:
+      col1   __H14__UncAnsCEO__col1__[Ind FE, Yr FE, basic, DSPREAD]
+      col2   __H14__UncAnsCEO__col2__[Firm FE, Yr FE, basic, DSPREAD]
+      col3   __H14__UncAnsCEO__col3__[Ind FE, Yr FE, extended, DSPREAD]
+      col4   __H14__UncAnsCEO__col4__[Firm FE, Yr FE, extended, DSPREAD]
+      col5   __H14__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, DSPREAD]
+      col6   __H14__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, DSPREAD]
+      col7   __H14__UncAnsCEO__col7__[Ind FE, Yr FE, basic, DSPREAD_lead1]
+      col8   __H14__UncAnsCEO__col8__[Firm FE, Yr FE, basic, DSPREAD_lead1]
+      col9   __H14__UncAnsCEO__col9__[Ind FE, Yr FE, extended, DSPREAD_lead1]
+      col10  __H14__UncAnsCEO__col10__[Firm FE, Yr FE, extended, DSPREAD_lead1]
+      col11  __H14__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, DSPREAD_lead1]
+      col12  __H14__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, DSPREAD_lead1]
+  UncPreCEO:
+      col1   __H14__UncPreCEO__col1__[Ind FE, Yr FE, basic, DSPREAD]
+      col2   __H14__UncPreCEO__col2__[Firm FE, Yr FE, basic, DSPREAD]
+      col3   __H14__UncPreCEO__col3__[Ind FE, Yr FE, extended, DSPREAD]
+      col4   __H14__UncPreCEO__col4__[Firm FE, Yr FE, extended, DSPREAD]
+      col5   __H14__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, DSPREAD]
+      col6   __H14__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, DSPREAD]
+      col7   __H14__UncPreCEO__col7__[Ind FE, Yr FE, basic, DSPREAD_lead1]
+      col8   __H14__UncPreCEO__col8__[Firm FE, Yr FE, basic, DSPREAD_lead1]
+      col9   __H14__UncPreCEO__col9__[Ind FE, Yr FE, extended, DSPREAD_lead1]
+      col10  __H14__UncPreCEO__col10__[Firm FE, Yr FE, extended, DSPREAD_lead1]
+      col11  __H14__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, DSPREAD_lead1]
+      col12  __H14__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, DSPREAD_lead1]
+  UncAnsMgr:
+      col1   __H14__UncAnsMgr__col1__[Ind FE, Yr FE, basic, DSPREAD]
+      col2   __H14__UncAnsMgr__col2__[Firm FE, Yr FE, basic, DSPREAD]
+      col3   __H14__UncAnsMgr__col3__[Ind FE, Yr FE, extended, DSPREAD]
+      col4   __H14__UncAnsMgr__col4__[Firm FE, Yr FE, extended, DSPREAD]
+      col5   __H14__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, DSPREAD]
+      col6   __H14__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, DSPREAD]
+      col7   __H14__UncAnsMgr__col7__[Ind FE, Yr FE, basic, DSPREAD_lead1]
+      col8   __H14__UncAnsMgr__col8__[Firm FE, Yr FE, basic, DSPREAD_lead1]
+      col9   __H14__UncAnsMgr__col9__[Ind FE, Yr FE, extended, DSPREAD_lead1]
+      col10  __H14__UncAnsMgr__col10__[Firm FE, Yr FE, extended, DSPREAD_lead1]
+      col11  __H14__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, DSPREAD_lead1]
+      col12  __H14__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, DSPREAD_lead1]
+  UncPreMgr:
+      col1   __H14__UncPreMgr__col1__[Ind FE, Yr FE, basic, DSPREAD]
+      col2   __H14__UncPreMgr__col2__[Firm FE, Yr FE, basic, DSPREAD]
+      col3   __H14__UncPreMgr__col3__[Ind FE, Yr FE, extended, DSPREAD]
+      col4   __H14__UncPreMgr__col4__[Firm FE, Yr FE, extended, DSPREAD]
+      col5   __H14__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, DSPREAD]
+      col6   __H14__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, DSPREAD]
+      col7   __H14__UncPreMgr__col7__[Ind FE, Yr FE, basic, DSPREAD_lead1]
+      col8   __H14__UncPreMgr__col8__[Firm FE, Yr FE, basic, DSPREAD_lead1]
+      col9   __H14__UncPreMgr__col9__[Ind FE, Yr FE, extended, DSPREAD_lead1]
+      col10  __H14__UncPreMgr__col10__[Firm FE, Yr FE, extended, DSPREAD_lead1]
+      col11  __H14__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, DSPREAD_lead1]
+      col12  __H14__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, DSPREAD_lead1]
+
+================================================================================
+H14b: SPEECH UNCERTAINTY AND POST-CALL BID-ASK SPREAD LEVEL
+================================================================================
+DV: PostCallSpread (6 cols)
+    Formula: PostCallSpread = mean(RelSpread) over [+1,+3] trading days
+      RelSpread = 2 * (ASK - BID) / (ASK + BID)
+      ASK = Daily closing ask price (CRSP DSF)
+      BID = Daily closing bid price (CRSP DSF)
+      Reference: Lee (2016, The Accounting Review)
+Tail: One-tailed (beta > 0)
+NOTE: Level specification (algebraically equivalent to H14 delta with PreCallSpread control)
+
+  UncAnsCEO:
+      col1   __H14b__UncAnsCEO__col1__[Ind FE, Yr FE, basic, PostCallSpread]
+      col2   __H14b__UncAnsCEO__col2__[Firm FE, Yr FE, basic, PostCallSpread]
+      col3   __H14b__UncAnsCEO__col3__[Ind FE, Yr FE, extended, PostCallSpread]
+      col4   __H14b__UncAnsCEO__col4__[Firm FE, Yr FE, extended, PostCallSpread]
+      col5   __H14b__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, PostCallSpread]
+      col6   __H14b__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, PostCallSpread]
+      col7   __H14b__UncAnsCEO__col7__[Ind FE, Yr FE, basic, PostCallSpread_lead1]
+      col8   __H14b__UncAnsCEO__col8__[Firm FE, Yr FE, basic, PostCallSpread_lead1]
+      col9   __H14b__UncAnsCEO__col9__[Ind FE, Yr FE, extended, PostCallSpread_lead1]
+      col10  __H14b__UncAnsCEO__col10__[Firm FE, Yr FE, extended, PostCallSpread_lead1]
+      col11  __H14b__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, PostCallSpread_lead1]
+      col12  __H14b__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, PostCallSpread_lead1]
+  UncPreCEO:
+      col1   __H14b__UncPreCEO__col1__[Ind FE, Yr FE, basic, PostCallSpread]
+      col2   __H14b__UncPreCEO__col2__[Firm FE, Yr FE, basic, PostCallSpread]
+      col3   __H14b__UncPreCEO__col3__[Ind FE, Yr FE, extended, PostCallSpread]
+      col4   __H14b__UncPreCEO__col4__[Firm FE, Yr FE, extended, PostCallSpread]
+      col5   __H14b__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, PostCallSpread]
+      col6   __H14b__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, PostCallSpread]
+      col7   __H14b__UncPreCEO__col7__[Ind FE, Yr FE, basic, PostCallSpread_lead1]
+      col8   __H14b__UncPreCEO__col8__[Firm FE, Yr FE, basic, PostCallSpread_lead1]
+      col9   __H14b__UncPreCEO__col9__[Ind FE, Yr FE, extended, PostCallSpread_lead1]
+      col10  __H14b__UncPreCEO__col10__[Firm FE, Yr FE, extended, PostCallSpread_lead1]
+      col11  __H14b__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, PostCallSpread_lead1]
+      col12  __H14b__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, PostCallSpread_lead1]
+  UncAnsMgr:
+      col1   __H14b__UncAnsMgr__col1__[Ind FE, Yr FE, basic, PostCallSpread]
+      col2   __H14b__UncAnsMgr__col2__[Firm FE, Yr FE, basic, PostCallSpread]
+      col3   __H14b__UncAnsMgr__col3__[Ind FE, Yr FE, extended, PostCallSpread]
+      col4   __H14b__UncAnsMgr__col4__[Firm FE, Yr FE, extended, PostCallSpread]
+      col5   __H14b__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, PostCallSpread]
+      col6   __H14b__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, PostCallSpread]
+      col7   __H14b__UncAnsMgr__col7__[Ind FE, Yr FE, basic, PostCallSpread_lead1]
+      col8   __H14b__UncAnsMgr__col8__[Firm FE, Yr FE, basic, PostCallSpread_lead1]
+      col9   __H14b__UncAnsMgr__col9__[Ind FE, Yr FE, extended, PostCallSpread_lead1]
+      col10  __H14b__UncAnsMgr__col10__[Firm FE, Yr FE, extended, PostCallSpread_lead1]
+      col11  __H14b__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, PostCallSpread_lead1]
+      col12  __H14b__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, PostCallSpread_lead1]
+  UncPreMgr:
+      col1   __H14b__UncPreMgr__col1__[Ind FE, Yr FE, basic, PostCallSpread]
+      col2   __H14b__UncPreMgr__col2__[Firm FE, Yr FE, basic, PostCallSpread]
+      col3   __H14b__UncPreMgr__col3__[Ind FE, Yr FE, extended, PostCallSpread]
+      col4   __H14b__UncPreMgr__col4__[Firm FE, Yr FE, extended, PostCallSpread]
+      col5   __H14b__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, PostCallSpread]
+      col6   __H14b__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, PostCallSpread]
+      col7   __H14b__UncPreMgr__col7__[Ind FE, Yr FE, basic, PostCallSpread_lead1]
+      col8   __H14b__UncPreMgr__col8__[Firm FE, Yr FE, basic, PostCallSpread_lead1]
+      col9   __H14b__UncPreMgr__col9__[Ind FE, Yr FE, extended, PostCallSpread_lead1]
+      col10  __H14b__UncPreMgr__col10__[Firm FE, Yr FE, extended, PostCallSpread_lead1]
+      col11  __H14b__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, PostCallSpread_lead1]
+      col12  __H14b__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, PostCallSpread_lead1]
+
+================================================================================
+H14c: SPEECH UNCERTAINTY AND BGT-WINDOW 25-DAY BID-ASK SPREAD LEVEL ([0,+25], DAY 0 INCLUDED)
+================================================================================
+N: 63,846, 44,050, 63,378, 44,522
+DV Mean: 0.0015
+
+  UncAnsCEO:
+      col1   __H14c__UncAnsCEO__col1__[Ind FE, Yr FE, basic, BGTLevel_Spread]
+      col2   __H14c__UncAnsCEO__col2__[Firm FE, Yr FE, basic, BGTLevel_Spread]
+      col3   __H14c__UncAnsCEO__col3__[Ind FE, Yr FE, extended, BGTLevel_Spread]
+      col4   __H14c__UncAnsCEO__col4__[Firm FE, Yr FE, extended, BGTLevel_Spread]
+      col5   __H14c__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Spread]
+      col6   __H14c__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Spread]
+      col7   __H14c__UncAnsCEO__col7__[Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col8   __H14c__UncAnsCEO__col8__[Firm FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col9   __H14c__UncAnsCEO__col9__[Ind FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col10  __H14c__UncAnsCEO__col10__[Firm FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col11  __H14c__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+      col12  __H14c__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+  UncPreCEO:
+      col1   __H14c__UncPreCEO__col1__[Ind FE, Yr FE, basic, BGTLevel_Spread]
+      col2   __H14c__UncPreCEO__col2__[Firm FE, Yr FE, basic, BGTLevel_Spread]
+      col3   __H14c__UncPreCEO__col3__[Ind FE, Yr FE, extended, BGTLevel_Spread]
+      col4   __H14c__UncPreCEO__col4__[Firm FE, Yr FE, extended, BGTLevel_Spread]
+      col5   __H14c__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Spread]
+      col6   __H14c__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Spread]
+      col7   __H14c__UncPreCEO__col7__[Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col8   __H14c__UncPreCEO__col8__[Firm FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col9   __H14c__UncPreCEO__col9__[Ind FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col10  __H14c__UncPreCEO__col10__[Firm FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col11  __H14c__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+      col12  __H14c__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+  UncAnsMgr:
+      col1   __H14c__UncAnsMgr__col1__[Ind FE, Yr FE, basic, BGTLevel_Spread]
+      col2   __H14c__UncAnsMgr__col2__[Firm FE, Yr FE, basic, BGTLevel_Spread]
+      col3   __H14c__UncAnsMgr__col3__[Ind FE, Yr FE, extended, BGTLevel_Spread]
+      col4   __H14c__UncAnsMgr__col4__[Firm FE, Yr FE, extended, BGTLevel_Spread]
+      col5   __H14c__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Spread]
+      col6   __H14c__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Spread]
+      col7   __H14c__UncAnsMgr__col7__[Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col8   __H14c__UncAnsMgr__col8__[Firm FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col9   __H14c__UncAnsMgr__col9__[Ind FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col10  __H14c__UncAnsMgr__col10__[Firm FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col11  __H14c__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+      col12  __H14c__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+  UncPreMgr:
+      col1   __H14c__UncPreMgr__col1__[Ind FE, Yr FE, basic, BGTLevel_Spread]
+      col2   __H14c__UncPreMgr__col2__[Firm FE, Yr FE, basic, BGTLevel_Spread]
+      col3   __H14c__UncPreMgr__col3__[Ind FE, Yr FE, extended, BGTLevel_Spread]
+      col4   __H14c__UncPreMgr__col4__[Firm FE, Yr FE, extended, BGTLevel_Spread]
+      col5   __H14c__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, BGTLevel_Spread]
+      col6   __H14c__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, BGTLevel_Spread]
+      col7   __H14c__UncPreMgr__col7__[Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col8   __H14c__UncPreMgr__col8__[Firm FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col9   __H14c__UncPreMgr__col9__[Ind FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col10  __H14c__UncPreMgr__col10__[Firm FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col11  __H14c__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+      col12  __H14c__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+
+================================================================================
+H14d: SPEECH UNCERTAINTY AND BGT-WINDOW 25-DAY BID-ASK SPREAD DELTA ([+1,+25]-[-25,-1])
+================================================================================
+N: 62,432, 43,242, 61,967, 43,705
+DV Mean: -0.0001
+
+  UncAnsCEO:
+      col1   __H14d__UncAnsCEO__col1__[Ind FE, Yr FE, basic, BGTDelta_Spread]
+      col2   __H14d__UncAnsCEO__col2__[Firm FE, Yr FE, basic, BGTDelta_Spread]
+      col3   __H14d__UncAnsCEO__col3__[Ind FE, Yr FE, extended, BGTDelta_Spread]
+      col4   __H14d__UncAnsCEO__col4__[Firm FE, Yr FE, extended, BGTDelta_Spread]
+      col5   __H14d__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Spread]
+      col6   __H14d__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Spread]
+      col7   __H14d__UncAnsCEO__col7__[Ind FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col8   __H14d__UncAnsCEO__col8__[Firm FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col9   __H14d__UncAnsCEO__col9__[Ind FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col10  __H14d__UncAnsCEO__col10__[Firm FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col11  __H14d__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+      col12  __H14d__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+  UncPreCEO:
+      col1   __H14d__UncPreCEO__col1__[Ind FE, Yr FE, basic, BGTDelta_Spread]
+      col2   __H14d__UncPreCEO__col2__[Firm FE, Yr FE, basic, BGTDelta_Spread]
+      col3   __H14d__UncPreCEO__col3__[Ind FE, Yr FE, extended, BGTDelta_Spread]
+      col4   __H14d__UncPreCEO__col4__[Firm FE, Yr FE, extended, BGTDelta_Spread]
+      col5   __H14d__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Spread]
+      col6   __H14d__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Spread]
+      col7   __H14d__UncPreCEO__col7__[Ind FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col8   __H14d__UncPreCEO__col8__[Firm FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col9   __H14d__UncPreCEO__col9__[Ind FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col10  __H14d__UncPreCEO__col10__[Firm FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col11  __H14d__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+      col12  __H14d__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+  UncAnsMgr:
+      col1   __H14d__UncAnsMgr__col1__[Ind FE, Yr FE, basic, BGTDelta_Spread]
+      col2   __H14d__UncAnsMgr__col2__[Firm FE, Yr FE, basic, BGTDelta_Spread]
+      col3   __H14d__UncAnsMgr__col3__[Ind FE, Yr FE, extended, BGTDelta_Spread]
+      col4   __H14d__UncAnsMgr__col4__[Firm FE, Yr FE, extended, BGTDelta_Spread]
+      col5   __H14d__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Spread]
+      col6   __H14d__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Spread]
+      col7   __H14d__UncAnsMgr__col7__[Ind FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col8   __H14d__UncAnsMgr__col8__[Firm FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col9   __H14d__UncAnsMgr__col9__[Ind FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col10  __H14d__UncAnsMgr__col10__[Firm FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col11  __H14d__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+      col12  __H14d__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+  UncPreMgr:
+      col1   __H14d__UncPreMgr__col1__[Ind FE, Yr FE, basic, BGTDelta_Spread]
+      col2   __H14d__UncPreMgr__col2__[Firm FE, Yr FE, basic, BGTDelta_Spread]
+      col3   __H14d__UncPreMgr__col3__[Ind FE, Yr FE, extended, BGTDelta_Spread]
+      col4   __H14d__UncPreMgr__col4__[Firm FE, Yr FE, extended, BGTDelta_Spread]
+      col5   __H14d__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, BGTDelta_Spread]
+      col6   __H14d__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, BGTDelta_Spread]
+      col7   __H14d__UncPreMgr__col7__[Ind FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col8   __H14d__UncPreMgr__col8__[Firm FE, Yr FE, basic, BGTDelta_Spread_lead1]
+      col9   __H14d__UncPreMgr__col9__[Ind FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col10  __H14d__UncPreMgr__col10__[Firm FE, Yr FE, extended, BGTDelta_Spread_lead1]
+      col11  __H14d__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+      col12  __H14d__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, BGTDelta_Spread_lead1]
+
+================================================================================
+H14e: SPEECH UNCERTAINTY AND BGT-WINDOW 25-DAY BID-ASK SPREAD AVERAGE ([-25,+25], 51-DAY SYMMETRIC)
+================================================================================
+N: 63,883, 44,058, 63,444, 44,553
+DV Mean: 0.0015
+
+  UncAnsCEO:
+      col1   __H14e__UncAnsCEO__col1__[Ind FE, Yr FE, basic, BGTAvg_Spread]
+      col2   __H14e__UncAnsCEO__col2__[Firm FE, Yr FE, basic, BGTAvg_Spread]
+      col3   __H14e__UncAnsCEO__col3__[Ind FE, Yr FE, extended, BGTAvg_Spread]
+      col4   __H14e__UncAnsCEO__col4__[Firm FE, Yr FE, extended, BGTAvg_Spread]
+      col5   __H14e__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Spread]
+      col6   __H14e__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Spread]
+      col7   __H14e__UncAnsCEO__col7__[Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col8   __H14e__UncAnsCEO__col8__[Firm FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col9   __H14e__UncAnsCEO__col9__[Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col10  __H14e__UncAnsCEO__col10__[Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col11  __H14e__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+      col12  __H14e__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+  UncPreCEO:
+      col1   __H14e__UncPreCEO__col1__[Ind FE, Yr FE, basic, BGTAvg_Spread]
+      col2   __H14e__UncPreCEO__col2__[Firm FE, Yr FE, basic, BGTAvg_Spread]
+      col3   __H14e__UncPreCEO__col3__[Ind FE, Yr FE, extended, BGTAvg_Spread]
+      col4   __H14e__UncPreCEO__col4__[Firm FE, Yr FE, extended, BGTAvg_Spread]
+      col5   __H14e__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Spread]
+      col6   __H14e__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Spread]
+      col7   __H14e__UncPreCEO__col7__[Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col8   __H14e__UncPreCEO__col8__[Firm FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col9   __H14e__UncPreCEO__col9__[Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col10  __H14e__UncPreCEO__col10__[Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col11  __H14e__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+      col12  __H14e__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+  UncAnsMgr:
+      col1   __H14e__UncAnsMgr__col1__[Ind FE, Yr FE, basic, BGTAvg_Spread]
+      col2   __H14e__UncAnsMgr__col2__[Firm FE, Yr FE, basic, BGTAvg_Spread]
+      col3   __H14e__UncAnsMgr__col3__[Ind FE, Yr FE, extended, BGTAvg_Spread]
+      col4   __H14e__UncAnsMgr__col4__[Firm FE, Yr FE, extended, BGTAvg_Spread]
+      col5   __H14e__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Spread]
+      col6   __H14e__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Spread]
+      col7   __H14e__UncAnsMgr__col7__[Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col8   __H14e__UncAnsMgr__col8__[Firm FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col9   __H14e__UncAnsMgr__col9__[Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col10  __H14e__UncAnsMgr__col10__[Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col11  __H14e__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+      col12  __H14e__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+  UncPreMgr:
+      col1   __H14e__UncPreMgr__col1__[Ind FE, Yr FE, basic, BGTAvg_Spread]
+      col2   __H14e__UncPreMgr__col2__[Firm FE, Yr FE, basic, BGTAvg_Spread]
+      col3   __H14e__UncPreMgr__col3__[Ind FE, Yr FE, extended, BGTAvg_Spread]
+      col4   __H14e__UncPreMgr__col4__[Firm FE, Yr FE, extended, BGTAvg_Spread]
+      col5   __H14e__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, BGTAvg_Spread]
+      col6   __H14e__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, BGTAvg_Spread]
+      col7   __H14e__UncPreMgr__col7__[Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col8   __H14e__UncPreMgr__col8__[Firm FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col9   __H14e__UncPreMgr__col9__[Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col10  __H14e__UncPreMgr__col10__[Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col11  __H14e__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+      col12  __H14e__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
+
+================================================================================
+H16: SPEECH UNCERTAINTY AND R&D INVESTMENT INTENSITY
+================================================================================
+DV: RDSales (cols 1-6), RDSales_lead (cols 7-12)
+    Formula: RDSales = xrdy_Q4 / saley_Q4
+      xrdy  = Research and Development Expense, annual (Compustat Annual via Q4)
+      saley = Sales/Turnover (Net), annual (Compustat Annual via Q4)
+      Reference: Bates, Kahle & Stulz (2009, JF); Jiang, John & Larsen (2021, RQFA)
+Tail: Two-tailed
+SEs: Firm-level clustered (Petersen 2009). N=56,130 (base), 53,892 (extended).
+DV Mean: RDSales = 0.0645, RDSales_lead = 0.0658
+One-SD(UncAnsMgr) effect on RDSales: +0.0112 (col3, Ind FE) = 17.4% of mean; +0.0071 (col4, Firm FE) = 11.0% of mean
+
+  UncAnsCEO:
+      col1   __H16__UncAnsCEO__col1__[Ind FE, Yr FE, basic, RDSales]
+      col2   __H16__UncAnsCEO__col2__[Firm FE, Yr FE, basic, RDSales]
+      col3   __H16__UncAnsCEO__col3__[Ind FE, Yr FE, extended, RDSales]
+      col4   __H16__UncAnsCEO__col4__[Firm FE, Yr FE, extended, RDSales]
+      col5   __H16__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, RDSales]
+      col6   __H16__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, RDSales]
+      col7   __H16__UncAnsCEO__col7__[Ind FE, Yr FE, basic, RDSales_lead]
+      col8   __H16__UncAnsCEO__col8__[Firm FE, Yr FE, basic, RDSales_lead]
+      col9   __H16__UncAnsCEO__col9__[Ind FE, Yr FE, extended, RDSales_lead]
+      col10  __H16__UncAnsCEO__col10__[Firm FE, Yr FE, extended, RDSales_lead]
+      col11  __H16__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, RDSales_lead]
+      col12  __H16__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, RDSales_lead]
+  UncPreCEO:
+      col1   __H16__UncPreCEO__col1__[Ind FE, Yr FE, basic, RDSales]
+      col2   __H16__UncPreCEO__col2__[Firm FE, Yr FE, basic, RDSales]
+      col3   __H16__UncPreCEO__col3__[Ind FE, Yr FE, extended, RDSales]
+      col4   __H16__UncPreCEO__col4__[Firm FE, Yr FE, extended, RDSales]
+      col5   __H16__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, RDSales]
+      col6   __H16__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, RDSales]
+      col7   __H16__UncPreCEO__col7__[Ind FE, Yr FE, basic, RDSales_lead]
+      col8   __H16__UncPreCEO__col8__[Firm FE, Yr FE, basic, RDSales_lead]
+      col9   __H16__UncPreCEO__col9__[Ind FE, Yr FE, extended, RDSales_lead]
+      col10  __H16__UncPreCEO__col10__[Firm FE, Yr FE, extended, RDSales_lead]
+      col11  __H16__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, RDSales_lead]
+      col12  __H16__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, RDSales_lead]
+  UncAnsMgr:
+      col1   __H16__UncAnsMgr__col1__[Ind FE, Yr FE, basic, RDSales]
+      col2   __H16__UncAnsMgr__col2__[Firm FE, Yr FE, basic, RDSales]
+      col3   __H16__UncAnsMgr__col3__[Ind FE, Yr FE, extended, RDSales]
+      col4   __H16__UncAnsMgr__col4__[Firm FE, Yr FE, extended, RDSales]
+      col5   __H16__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, RDSales]
+      col6   __H16__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, RDSales]
+      col7   __H16__UncAnsMgr__col7__[Ind FE, Yr FE, basic, RDSales_lead]
+      col8   __H16__UncAnsMgr__col8__[Firm FE, Yr FE, basic, RDSales_lead]
+      col9   __H16__UncAnsMgr__col9__[Ind FE, Yr FE, extended, RDSales_lead]
+      col10  __H16__UncAnsMgr__col10__[Firm FE, Yr FE, extended, RDSales_lead]
+      col11  __H16__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, RDSales_lead]
+      col12  __H16__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, RDSales_lead]
+  UncPreMgr:
+      col1   __H16__UncPreMgr__col1__[Ind FE, Yr FE, basic, RDSales]
+      col2   __H16__UncPreMgr__col2__[Firm FE, Yr FE, basic, RDSales]
+      col3   __H16__UncPreMgr__col3__[Ind FE, Yr FE, extended, RDSales]
+      col4   __H16__UncPreMgr__col4__[Firm FE, Yr FE, extended, RDSales]
+      col5   __H16__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, RDSales]
+      col6   __H16__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, RDSales]
+      col7   __H16__UncPreMgr__col7__[Ind FE, Yr FE, basic, RDSales_lead]
+      col8   __H16__UncPreMgr__col8__[Firm FE, Yr FE, basic, RDSales_lead]
+      col9   __H16__UncPreMgr__col9__[Ind FE, Yr FE, extended, RDSales_lead]
+      col10  __H16__UncPreMgr__col10__[Firm FE, Yr FE, extended, RDSales_lead]
+      col11  __H16__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, RDSales_lead]
+      col12  __H16__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, RDSales_lead]
+
+================================================================================
+H17: SPEECH UNCERTAINTY AND REPURCHASE INTENSITY
+================================================================================
+DV: RepurchaseIntensity (cols 1-6), RepurchaseIntensity_lead_qtr (cols 7-12)
+    Formula: RepurchaseIntensity = prstkcy_q / atq_lag
+      prstkcy_q = De-cumulated quarterly purchase of common stock (Compustat Quarterly)
+      atq_lag   = Total Assets, lagged one quarter (Compustat Quarterly)
+      De-cumulation: prstkcy_q = prstkcy_t - prstkcy_{t-1} (within fiscal year)
+      Reference: Thesis Advisor Suggestion
+Tail: Two-tailed
+
+  UncAnsCEO:
+      col1   __H17__UncAnsCEO__col1__[Ind FE, Yr FE, basic, RepurchaseIntensity]
+      col2   __H17__UncAnsCEO__col2__[Firm FE, Yr FE, basic, RepurchaseIntensity]
+      col3   __H17__UncAnsCEO__col3__[Ind FE, Yr FE, extended, RepurchaseIntensity]
+      col4   __H17__UncAnsCEO__col4__[Firm FE, Yr FE, extended, RepurchaseIntensity]
+      col5   __H17__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, RepurchaseIntensity]
+      col6   __H17__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, RepurchaseIntensity]
+      col7   __H17__UncAnsCEO__col7__[Ind FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col8   __H17__UncAnsCEO__col8__[Firm FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col9   __H17__UncAnsCEO__col9__[Ind FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col10  __H17__UncAnsCEO__col10__[Firm FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col11  __H17__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+      col12  __H17__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+  UncPreCEO:
+      col1   __H17__UncPreCEO__col1__[Ind FE, Yr FE, basic, RepurchaseIntensity]
+      col2   __H17__UncPreCEO__col2__[Firm FE, Yr FE, basic, RepurchaseIntensity]
+      col3   __H17__UncPreCEO__col3__[Ind FE, Yr FE, extended, RepurchaseIntensity]
+      col4   __H17__UncPreCEO__col4__[Firm FE, Yr FE, extended, RepurchaseIntensity]
+      col5   __H17__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, RepurchaseIntensity]
+      col6   __H17__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, RepurchaseIntensity]
+      col7   __H17__UncPreCEO__col7__[Ind FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col8   __H17__UncPreCEO__col8__[Firm FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col9   __H17__UncPreCEO__col9__[Ind FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col10  __H17__UncPreCEO__col10__[Firm FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col11  __H17__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+      col12  __H17__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+  UncAnsMgr:
+      col1   __H17__UncAnsMgr__col1__[Ind FE, Yr FE, basic, RepurchaseIntensity]
+      col2   __H17__UncAnsMgr__col2__[Firm FE, Yr FE, basic, RepurchaseIntensity]
+      col3   __H17__UncAnsMgr__col3__[Ind FE, Yr FE, extended, RepurchaseIntensity]
+      col4   __H17__UncAnsMgr__col4__[Firm FE, Yr FE, extended, RepurchaseIntensity]
+      col5   __H17__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, RepurchaseIntensity]
+      col6   __H17__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, RepurchaseIntensity]
+      col7   __H17__UncAnsMgr__col7__[Ind FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col8   __H17__UncAnsMgr__col8__[Firm FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col9   __H17__UncAnsMgr__col9__[Ind FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col10  __H17__UncAnsMgr__col10__[Firm FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col11  __H17__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+      col12  __H17__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+  UncPreMgr:
+      col1   __H17__UncPreMgr__col1__[Ind FE, Yr FE, basic, RepurchaseIntensity]
+      col2   __H17__UncPreMgr__col2__[Firm FE, Yr FE, basic, RepurchaseIntensity]
+      col3   __H17__UncPreMgr__col3__[Ind FE, Yr FE, extended, RepurchaseIntensity]
+      col4   __H17__UncPreMgr__col4__[Firm FE, Yr FE, extended, RepurchaseIntensity]
+      col5   __H17__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, RepurchaseIntensity]
+      col6   __H17__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, RepurchaseIntensity]
+      col7   __H17__UncPreMgr__col7__[Ind FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col8   __H17__UncPreMgr__col8__[Firm FE, Yr FE, basic, RepurchaseIntensity_lead_qtr]
+      col9   __H17__UncPreMgr__col9__[Ind FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col10  __H17__UncPreMgr__col10__[Firm FE, Yr FE, extended, RepurchaseIntensity_lead_qtr]
+      col11  __H17__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+      col12  __H17__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, RepurchaseIntensity_lead_qtr]
+
+================================================================================
+H18: SPEECH UNCERTAINTY AND SEC COMMENT LETTERS (CCCL)
+================================================================================
+DV: CCCL (binary, 6 cols)
+    Formula: CCCL = 1 if firm received SEC comment letter in next calendar quarter (Q+1), 0 otherwise
+      Source: EDGAR Comment Letters database (SEC UPLOAD-type filings)
+      CIK-to-gvkey linkage via CCM + Compustat direct CIK field
+      Reference: Cassell, Dreher & Myers (2013, The Accounting Review)
+Tail: One-tailed (beta > 0)
+Model: LPM (Linear Probability Model)
+DV base rate: ~0.27% (extremely rare event)
+
+  UncAnsCEO:
+      col1   __H18__UncAnsCEO__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18__UncAnsCEO__col2__[Firm FE, Yr FE, basic, CCCL]
+      col3   __H18__UncAnsCEO__col3__[Ind FE, Yr FE, extended, CCCL]
+      col4   __H18__UncAnsCEO__col4__[Firm FE, Yr FE, extended, CCCL]
+      col5   __H18__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, CCCL]
+      col6   __H18__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, CCCL]
+  UncPreCEO:
+      col1   __H18__UncPreCEO__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18__UncPreCEO__col2__[Firm FE, Yr FE, basic, CCCL]
+      col3   __H18__UncPreCEO__col3__[Ind FE, Yr FE, extended, CCCL]
+      col4   __H18__UncPreCEO__col4__[Firm FE, Yr FE, extended, CCCL]
+      col5   __H18__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, CCCL]
+      col6   __H18__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, CCCL]
+  UncAnsMgr:
+      col1   __H18__UncAnsMgr__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18__UncAnsMgr__col2__[Firm FE, Yr FE, basic, CCCL]
+      col3   __H18__UncAnsMgr__col3__[Ind FE, Yr FE, extended, CCCL]
+      col4   __H18__UncAnsMgr__col4__[Firm FE, Yr FE, extended, CCCL]
+      col5   __H18__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, CCCL]
+      col6   __H18__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, CCCL]
+  UncPreMgr:
+      col1   __H18__UncPreMgr__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18__UncPreMgr__col2__[Firm FE, Yr FE, basic, CCCL]
+      col3   __H18__UncPreMgr__col3__[Ind FE, Yr FE, extended, CCCL]
+      col4   __H18__UncPreMgr__col4__[Firm FE, Yr FE, extended, CCCL]
+      col5   __H18__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, CCCL]
+      col6   __H18__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, CCCL]
+
+================================================================================
+H18b: LOGIT ROBUSTNESS -- SEC COMMENT LETTERS (CCCL)
+================================================================================
+DV: CCCL (binary, 2 cols)
+    Formula: CCCL = 1 if firm received SEC comment letter in next calendar quarter (Q+1), 0 otherwise
+      Source: EDGAR Comment Letters database (SEC UPLOAD-type filings)
+      CIK-to-gvkey linkage via CCM + Compustat direct CIK field
+      Reference: Cassell, Dreher & Myers (2013, The Accounting Review)
+Tail: One-tailed (beta > 0)
+Model: Logit (AME coefficients reported)
+NOTE: Industry FE + Year FE only (no Firm FE -- logit cannot handle large FE)
+
+  UncAnsCEO:
+      col1   __H18b__UncAnsCEO__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18b__UncAnsCEO__col2__[Ind FE, Yr FE, extended, CCCL]
+  UncPreCEO:
+      col1   __H18b__UncPreCEO__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18b__UncPreCEO__col2__[Ind FE, Yr FE, extended, CCCL]
+  UncAnsMgr:
+      col1   __H18b__UncAnsMgr__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18b__UncAnsMgr__col2__[Ind FE, Yr FE, extended, CCCL]
+  UncPreMgr:
+      col1   __H18b__UncPreMgr__col1__[Ind FE, Yr FE, basic, CCCL]
+      col2   __H18b__UncPreMgr__col2__[Ind FE, Yr FE, extended, CCCL]
+
+================================================================================
+H19: SPEECH UNCERTAINTY AND EXTERNAL VS INTERNAL FINANCING
+================================================================================
+DV: ExternalFunding (cols 1-6), ExternalFunding_lead (cols 7-12)
+    Formula: ExternalFunding = 1 if max(debt_issuance, equity_issuance) > 5% of lagged assets
+      debt_issuance   = delta(dlcq + dlttq) / lagged_atq
+      equity_issuance = (sstky - prstkcy) / lagged_atq
+      dlcq   = Debt in Current Liabilities (Compustat Quarterly)
+      dlttq  = Long-Term Debt (Compustat Quarterly)
+      sstky  = Sale of Common and Preferred Stock (Compustat Quarterly, cumulative)
+      prstkcy = Purchase of Common and Preferred Stock (Compustat Quarterly, cumulative)
+      Reference: Leary & Roberts (2010, JFE)
+Tail: One-tailed (beta < 0) -- hypothesis: uncertainty increases internal funding
+Classification: Leary & Roberts (2010, JFE). Debt issuance if delta(dlcq+dlttq)/lagged_atq > 5%;
+  equity issuance if (sstky-prstkcy)/lagged_atq > 5%. Internal if neither. Dual -> equity.
+Sample split: 73.1% internal, 26.9% external (at call level)
+
+  UncAnsCEO:
+      col1   __H19__UncAnsCEO__col1__[Ind FE, Yr FE, basic, ExternalFunding]
+      col2   __H19__UncAnsCEO__col2__[Firm FE, Yr FE, basic, ExternalFunding]
+      col3   __H19__UncAnsCEO__col3__[Ind FE, Yr FE, extended, ExternalFunding]
+      col4   __H19__UncAnsCEO__col4__[Firm FE, Yr FE, extended, ExternalFunding]
+      col5   __H19__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   __H19__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   __H19__UncAnsCEO__col7__[Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   __H19__UncAnsCEO__col8__[Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   __H19__UncAnsCEO__col9__[Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  __H19__UncAnsCEO__col10__[Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  __H19__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  __H19__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+  UncPreCEO:
+      col1   __H19__UncPreCEO__col1__[Ind FE, Yr FE, basic, ExternalFunding]
+      col2   __H19__UncPreCEO__col2__[Firm FE, Yr FE, basic, ExternalFunding]
+      col3   __H19__UncPreCEO__col3__[Ind FE, Yr FE, extended, ExternalFunding]
+      col4   __H19__UncPreCEO__col4__[Firm FE, Yr FE, extended, ExternalFunding]
+      col5   __H19__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   __H19__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   __H19__UncPreCEO__col7__[Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   __H19__UncPreCEO__col8__[Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   __H19__UncPreCEO__col9__[Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  __H19__UncPreCEO__col10__[Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  __H19__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  __H19__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+  UncAnsMgr:
+      col1   __H19__UncAnsMgr__col1__[Ind FE, Yr FE, basic, ExternalFunding]
+      col2   __H19__UncAnsMgr__col2__[Firm FE, Yr FE, basic, ExternalFunding]
+      col3   __H19__UncAnsMgr__col3__[Ind FE, Yr FE, extended, ExternalFunding]
+      col4   __H19__UncAnsMgr__col4__[Firm FE, Yr FE, extended, ExternalFunding]
+      col5   __H19__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   __H19__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   __H19__UncAnsMgr__col7__[Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   __H19__UncAnsMgr__col8__[Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   __H19__UncAnsMgr__col9__[Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  __H19__UncAnsMgr__col10__[Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  __H19__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  __H19__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+  UncPreMgr:
+      col1   __H19__UncPreMgr__col1__[Ind FE, Yr FE, basic, ExternalFunding]
+      col2   __H19__UncPreMgr__col2__[Firm FE, Yr FE, basic, ExternalFunding]
+      col3   __H19__UncPreMgr__col3__[Ind FE, Yr FE, extended, ExternalFunding]
+      col4   __H19__UncPreMgr__col4__[Firm FE, Yr FE, extended, ExternalFunding]
+      col5   __H19__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   __H19__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   __H19__UncPreMgr__col7__[Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   __H19__UncPreMgr__col8__[Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   __H19__UncPreMgr__col9__[Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  __H19__UncPreMgr__col10__[Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  __H19__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  __H19__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+
+================================================================================
+H20: SPEECH UNCERTAINTY AND DEBT VS EQUITY CHOICE
+================================================================================
+DV: DebtChoice (6 cols)
+    Formula: DebtChoice = 1 if debt-only issuance, 0 if equity-only or dual; NaN if internal
+      Conditional on ExternalFunding = 1
+      Dual issuers (both debt and equity > 5%) classified as equity per Leary & Roberts convention
+      Reference: Leary & Roberts (2010, JFE)
+Tail: Two-tailed
+Sample: RESTRICTED to ExternalFunding == 1 (~27% of main sample, ~12,700-13,200 calls)
+Classification: Leary & Roberts (2010, JFE). DebtChoice = 1 if debt-only issuance,
+  0 if equity-only or dual issuance. Dual -> equity per L&R convention.
+Controls: Leverage EXCLUDED (bad control: shares numerator with debt issuance DV)
+Sample split among external funders: 70% debt-only, 30% equity/dual
+
+  UncAnsCEO:
+      col1   __H20__UncAnsCEO__col1__[Ind FE, Yr FE, basic, DebtChoice]
+      col2   __H20__UncAnsCEO__col2__[Firm FE, Yr FE, basic, DebtChoice]
+      col3   __H20__UncAnsCEO__col3__[Ind FE, Yr FE, extended, DebtChoice]
+      col4   __H20__UncAnsCEO__col4__[Firm FE, Yr FE, extended, DebtChoice]
+      col5   __H20__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   __H20__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, DebtChoice]
+  UncPreCEO:
+      col1   __H20__UncPreCEO__col1__[Ind FE, Yr FE, basic, DebtChoice]
+      col2   __H20__UncPreCEO__col2__[Firm FE, Yr FE, basic, DebtChoice]
+      col3   __H20__UncPreCEO__col3__[Ind FE, Yr FE, extended, DebtChoice]
+      col4   __H20__UncPreCEO__col4__[Firm FE, Yr FE, extended, DebtChoice]
+      col5   __H20__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   __H20__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, DebtChoice]
+  UncAnsMgr:
+      col1   __H20__UncAnsMgr__col1__[Ind FE, Yr FE, basic, DebtChoice]
+      col2   __H20__UncAnsMgr__col2__[Firm FE, Yr FE, basic, DebtChoice]
+      col3   __H20__UncAnsMgr__col3__[Ind FE, Yr FE, extended, DebtChoice]
+      col4   __H20__UncAnsMgr__col4__[Firm FE, Yr FE, extended, DebtChoice]
+      col5   __H20__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   __H20__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, DebtChoice]
+  UncPreMgr:
+      col1   __H20__UncPreMgr__col1__[Ind FE, Yr FE, basic, DebtChoice]
+      col2   __H20__UncPreMgr__col2__[Firm FE, Yr FE, basic, DebtChoice]
+      col3   __H20__UncPreMgr__col3__[Ind FE, Yr FE, extended, DebtChoice]
+      col4   __H20__UncPreMgr__col4__[Firm FE, Yr FE, extended, DebtChoice]
+      col5   __H20__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   __H20__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, DebtChoice]
+
+================================================================================
+H21: SPEECH UNCERTAINTY AND SEC COMMENT LETTER COUNT
+================================================================================
+DV: SEC_Letters_fwd (6 cols)
+    Formula: SEC_Letters_fwd = count of SEC-originated UPLOAD letters in next calendar quarter (Q+1)
+      Source: EDGAR Comment Letters database (filtered to SEC-originated UPLOAD type)
+      CIK-to-gvkey linkage via CCM + Compustat direct CIK field
+      Reference: Cassell, Dreher & Myers (2013, TAR) (thesis extension to count)
+Tail: One-tailed (beta > 0)
+
+  UncAnsCEO:
+      col1   __H21__UncAnsCEO__col1__[Ind FE, Yr FE, basic, SEC_Letters_fwd]
+      col2   __H21__UncAnsCEO__col2__[Firm FE, Yr FE, basic, SEC_Letters_fwd]
+      col3   __H21__UncAnsCEO__col3__[Ind FE, Yr FE, extended, SEC_Letters_fwd]
+      col4   __H21__UncAnsCEO__col4__[Firm FE, Yr FE, extended, SEC_Letters_fwd]
+      col5   __H21__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, SEC_Letters_fwd]
+      col6   __H21__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, SEC_Letters_fwd]
+  UncPreCEO:
+      col1   __H21__UncPreCEO__col1__[Ind FE, Yr FE, basic, SEC_Letters_fwd]
+      col2   __H21__UncPreCEO__col2__[Firm FE, Yr FE, basic, SEC_Letters_fwd]
+      col3   __H21__UncPreCEO__col3__[Ind FE, Yr FE, extended, SEC_Letters_fwd]
+      col4   __H21__UncPreCEO__col4__[Firm FE, Yr FE, extended, SEC_Letters_fwd]
+      col5   __H21__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, SEC_Letters_fwd]
+      col6   __H21__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, SEC_Letters_fwd]
+  UncAnsMgr:
+      col1   __H21__UncAnsMgr__col1__[Ind FE, Yr FE, basic, SEC_Letters_fwd]
+      col2   __H21__UncAnsMgr__col2__[Firm FE, Yr FE, basic, SEC_Letters_fwd]
+      col3   __H21__UncAnsMgr__col3__[Ind FE, Yr FE, extended, SEC_Letters_fwd]
+      col4   __H21__UncAnsMgr__col4__[Firm FE, Yr FE, extended, SEC_Letters_fwd]
+      col5   __H21__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, SEC_Letters_fwd]
+      col6   __H21__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, SEC_Letters_fwd]
+  UncPreMgr:
+      col1   __H21__UncPreMgr__col1__[Ind FE, Yr FE, basic, SEC_Letters_fwd]
+      col2   __H21__UncPreMgr__col2__[Firm FE, Yr FE, basic, SEC_Letters_fwd]
+      col3   __H21__UncPreMgr__col3__[Ind FE, Yr FE, extended, SEC_Letters_fwd]
+      col4   __H21__UncPreMgr__col4__[Firm FE, Yr FE, extended, SEC_Letters_fwd]
+      col5   __H21__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, SEC_Letters_fwd]
+      col6   __H21__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, SEC_Letters_fwd]
+
+================================================================================
+H22: SPEECH UNCERTAINTY AND EQUITY FINANCING CONSTRAINTS
+================================================================================
+DV: EquityDelayCon_lead — Hoberg & Maksimovic (2015, RFS) equity-specific
+    financial constraint score from next fiscal year's 10-K.
+    Cosine similarity of CAPLIQ text to equity-delay training set,
+    boilerplate-purged. Higher = more equity-constrained.
+    Mean ~ 0 by construction.
+
+Unit: Firm-fiscal-year (FIRST non-call-level panel in pipeline).
+IVs: Fiscal-year averages of call-level uncertainty measures.
+Sample: ~7,300 firm-years, ~860 firms, 2002-2014.
+Tail: One-tailed positive (beta > 0).
+Run: 2026-04-05
+
+RESULTS (4 columns):
+
+  UncAnsCEO:
+      col1   __H22__UncAnsCEO__col1__[Ind FE, Yr FE, basic, EquityDelayCon_lead]
+      col2   __H22__UncAnsCEO__col2__[Firm FE, Yr FE, basic, EquityDelayCon_lead]
+      col3   __H22__UncAnsCEO__col3__[Ind FE, Yr FE, extended, EquityDelayCon_lead]
+      col4   __H22__UncAnsCEO__col4__[Firm FE, Yr FE, extended, EquityDelayCon_lead]
+  UncPreCEO:
+      col1   __H22__UncPreCEO__col1__[Ind FE, Yr FE, basic, EquityDelayCon_lead]
+      col2   __H22__UncPreCEO__col2__[Firm FE, Yr FE, basic, EquityDelayCon_lead]
+      col3   __H22__UncPreCEO__col3__[Ind FE, Yr FE, extended, EquityDelayCon_lead]
+      col4   __H22__UncPreCEO__col4__[Firm FE, Yr FE, extended, EquityDelayCon_lead]
+  UncAnsMgr:
+      col1   __H22__UncAnsMgr__col1__[Ind FE, Yr FE, basic, EquityDelayCon_lead]
+      col2   __H22__UncAnsMgr__col2__[Firm FE, Yr FE, basic, EquityDelayCon_lead]
+      col3   __H22__UncAnsMgr__col3__[Ind FE, Yr FE, extended, EquityDelayCon_lead]
+      col4   __H22__UncAnsMgr__col4__[Firm FE, Yr FE, extended, EquityDelayCon_lead]
+  UncPreMgr:
+      col1   __H22__UncPreMgr__col1__[Ind FE, Yr FE, basic, EquityDelayCon_lead]
+      col2   __H22__UncPreMgr__col2__[Firm FE, Yr FE, basic, EquityDelayCon_lead]
+      col3   __H22__UncPreMgr__col3__[Ind FE, Yr FE, extended, EquityDelayCon_lead]
+      col4   __H22__UncPreMgr__col4__[Firm FE, Yr FE, extended, EquityDelayCon_lead]
+
+================================================================================
+H23: PRODUCT-MARKET COMPETITION AND UNCERTAINTY LANGUAGE
+================================================================================
+N: 20,769, 15,882, 20,770, 15,924
+
+  z(log(TSIMM)):
+      col1   __H23__z(log(TSIMM))__col1__[Ind FE, Yr FE, QA_Uncertainty / Manager]
+      col2   __H23__z(log(TSIMM))__col2__[Ind FE, Yr FE, QA_Uncertainty / CEO]
+      col3   __H23__z(log(TSIMM))__col3__[Ind FE, Yr FE, Pres_Uncertainty / Manager]
+      col4   __H23__z(log(TSIMM))__col4__[Ind FE, Yr FE, Pres_Uncertainty / CEO]
+      col5   __H23__z(log(TSIMM))__col5__[Firm FE, Yr FE, QA_Uncertainty / Manager]
+      col6   __H23__z(log(TSIMM))__col6__[Firm FE, Yr FE, QA_Uncertainty / CEO]
+      col7   __H23__z(log(TSIMM))__col7__[Firm FE, Yr FE, Pres_Uncertainty / Manager]
+      col8   __H23__z(log(TSIMM))__col8__[Firm FE, Yr FE, Pres_Uncertainty / CEO]
+
+================================================================================
+H13.2: SPEECH UNCERTAINTY AND CAPITAL EXPENDITURE — LEAD HORIZONS
+================================================================================
+DVs: Capex_lead (t+1), Capex_lead2 (t+2), Capex_lead3 (t+3), Capex_lead4 (t+4)
+     = Q4 annual capxy / lagged assets
+Unit: Call-level.
+Controls: Extended only. Lagged DV = Capex_lag (t-1) for all specs.
+FE: Industry+Year, Firm+Year, Industry+YQ, Firm+YQ (4 specs per DV).
+Tail: Two-tailed.
+Run: 2026-04-05
+
+SAMPLE SIZES (declining with lead horizon):
+
+  UncAnsCEO:
+      col1   __H13.2__UncAnsCEO__col1__[Ind FE, Yr FE, extended, Capex_lead]
+      col2   __H13.2__UncAnsCEO__col2__[Firm FE, Yr FE, extended, Capex_lead]
+      col3   __H13.2__UncAnsCEO__col3__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col4   __H13.2__UncAnsCEO__col4__[Firm FE, YrQtr FE, extended, Capex_lead]
+      col5   __H13.2__UncAnsCEO__col5__[Ind FE, Yr FE, extended, Capex_lead2]
+      col6   __H13.2__UncAnsCEO__col6__[Firm FE, Yr FE, extended, Capex_lead2]
+      col7   __H13.2__UncAnsCEO__col7__[Ind FE, YrQtr FE, extended, Capex_lead2]
+      col8   __H13.2__UncAnsCEO__col8__[Firm FE, YrQtr FE, extended, Capex_lead2]
+      col9   __H13.2__UncAnsCEO__col9__[Ind FE, Yr FE, extended, Capex_lead3]
+      col10  __H13.2__UncAnsCEO__col10__[Firm FE, Yr FE, extended, Capex_lead3]
+      col11  __H13.2__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, Capex_lead3]
+      col12  __H13.2__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, Capex_lead3]
+      col13  __H13.2__UncAnsCEO__col13__[Ind FE, Yr FE, extended, Capex_lead4]
+      col14  __H13.2__UncAnsCEO__col14__[Firm FE, Yr FE, extended, Capex_lead4]
+      col15  __H13.2__UncAnsCEO__col15__[Ind FE, YrQtr FE, extended, Capex_lead4]
+      col16  __H13.2__UncAnsCEO__col16__[Firm FE, YrQtr FE, extended, Capex_lead4]
+  UncPreCEO:
+      col1   __H13.2__UncPreCEO__col1__[Ind FE, Yr FE, extended, Capex_lead]
+      col2   __H13.2__UncPreCEO__col2__[Firm FE, Yr FE, extended, Capex_lead]
+      col3   __H13.2__UncPreCEO__col3__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col4   __H13.2__UncPreCEO__col4__[Firm FE, YrQtr FE, extended, Capex_lead]
+      col5   __H13.2__UncPreCEO__col5__[Ind FE, Yr FE, extended, Capex_lead2]
+      col6   __H13.2__UncPreCEO__col6__[Firm FE, Yr FE, extended, Capex_lead2]
+      col7   __H13.2__UncPreCEO__col7__[Ind FE, YrQtr FE, extended, Capex_lead2]
+      col8   __H13.2__UncPreCEO__col8__[Firm FE, YrQtr FE, extended, Capex_lead2]
+      col9   __H13.2__UncPreCEO__col9__[Ind FE, Yr FE, extended, Capex_lead3]
+      col10  __H13.2__UncPreCEO__col10__[Firm FE, Yr FE, extended, Capex_lead3]
+      col11  __H13.2__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, Capex_lead3]
+      col12  __H13.2__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, Capex_lead3]
+      col13  __H13.2__UncPreCEO__col13__[Ind FE, Yr FE, extended, Capex_lead4]
+      col14  __H13.2__UncPreCEO__col14__[Firm FE, Yr FE, extended, Capex_lead4]
+      col15  __H13.2__UncPreCEO__col15__[Ind FE, YrQtr FE, extended, Capex_lead4]
+      col16  __H13.2__UncPreCEO__col16__[Firm FE, YrQtr FE, extended, Capex_lead4]
+  UncAnsMgr:
+      col1   __H13.2__UncAnsMgr__col1__[Ind FE, Yr FE, extended, Capex_lead]
+      col2   __H13.2__UncAnsMgr__col2__[Firm FE, Yr FE, extended, Capex_lead]
+      col3   __H13.2__UncAnsMgr__col3__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col4   __H13.2__UncAnsMgr__col4__[Firm FE, YrQtr FE, extended, Capex_lead]
+      col5   __H13.2__UncAnsMgr__col5__[Ind FE, Yr FE, extended, Capex_lead2]
+      col6   __H13.2__UncAnsMgr__col6__[Firm FE, Yr FE, extended, Capex_lead2]
+      col7   __H13.2__UncAnsMgr__col7__[Ind FE, YrQtr FE, extended, Capex_lead2]
+      col8   __H13.2__UncAnsMgr__col8__[Firm FE, YrQtr FE, extended, Capex_lead2]
+      col9   __H13.2__UncAnsMgr__col9__[Ind FE, Yr FE, extended, Capex_lead3]
+      col10  __H13.2__UncAnsMgr__col10__[Firm FE, Yr FE, extended, Capex_lead3]
+      col11  __H13.2__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, Capex_lead3]
+      col12  __H13.2__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, Capex_lead3]
+      col13  __H13.2__UncAnsMgr__col13__[Ind FE, Yr FE, extended, Capex_lead4]
+      col14  __H13.2__UncAnsMgr__col14__[Firm FE, Yr FE, extended, Capex_lead4]
+      col15  __H13.2__UncAnsMgr__col15__[Ind FE, YrQtr FE, extended, Capex_lead4]
+      col16  __H13.2__UncAnsMgr__col16__[Firm FE, YrQtr FE, extended, Capex_lead4]
+  UncPreMgr:
+      col1   __H13.2__UncPreMgr__col1__[Ind FE, Yr FE, extended, Capex_lead]
+      col2   __H13.2__UncPreMgr__col2__[Firm FE, Yr FE, extended, Capex_lead]
+      col3   __H13.2__UncPreMgr__col3__[Ind FE, YrQtr FE, extended, Capex_lead]
+      col4   __H13.2__UncPreMgr__col4__[Firm FE, YrQtr FE, extended, Capex_lead]
+      col5   __H13.2__UncPreMgr__col5__[Ind FE, Yr FE, extended, Capex_lead2]
+      col6   __H13.2__UncPreMgr__col6__[Firm FE, Yr FE, extended, Capex_lead2]
+      col7   __H13.2__UncPreMgr__col7__[Ind FE, YrQtr FE, extended, Capex_lead2]
+      col8   __H13.2__UncPreMgr__col8__[Firm FE, YrQtr FE, extended, Capex_lead2]
+      col9   __H13.2__UncPreMgr__col9__[Ind FE, Yr FE, extended, Capex_lead3]
+      col10  __H13.2__UncPreMgr__col10__[Firm FE, Yr FE, extended, Capex_lead3]
+      col11  __H13.2__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, Capex_lead3]
+      col12  __H13.2__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, Capex_lead3]
+      col13  __H13.2__UncPreMgr__col13__[Ind FE, Yr FE, extended, Capex_lead4]
+      col14  __H13.2__UncPreMgr__col14__[Firm FE, Yr FE, extended, Capex_lead4]
+      col15  __H13.2__UncPreMgr__col15__[Ind FE, YrQtr FE, extended, Capex_lead4]
+      col16  __H13.2__UncPreMgr__col16__[Firm FE, YrQtr FE, extended, Capex_lead4]
+
+================================================================================
+H19b: SPEECH UNCERTAINTY AND EXTERNAL VS INTERNAL FINANCING (Chang et al. 2006)
+================================================================================
+DV: ChangExternalFunding / ChangExternalFunding_lead (12 cols)
+    Formula: ChangExternalFunding = 1 if cash-flow debt (dltisy-dltry+dlcchy)/lagged_at > 5%
+             OR equity (sstky-prstkcy)/lagged_at > 5%, 0 if internal
+             Debt: cash flow statement items (Chang, Dasgupta & Hilary 2006)
+             Equity: IDENTICAL to L&R (sstky-prstkcy)
+             Dual: counted as external (1), NOT separately classified
+    Sample: 25.1% external, 74.9% internal (cf. H19 L&R: ~26% external)
+Tail: One-tailed (beta < 0)
+
+  UncAnsCEO:
+      col1   __H19b__UncAnsCEO__col1__[Ind FE, Yr FE, basic, ChangExternalFunding]
+      col2   __H19b__UncAnsCEO__col2__[Firm FE, Yr FE, basic, ChangExternalFunding]
+      col3   __H19b__UncAnsCEO__col3__[Ind FE, Yr FE, extended, ChangExternalFunding]
+      col4   __H19b__UncAnsCEO__col4__[Firm FE, Yr FE, extended, ChangExternalFunding]
+      col5   __H19b__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, ChangExternalFunding]
+      col6   __H19b__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, ChangExternalFunding]
+      col7   __H19b__UncAnsCEO__col7__[Ind FE, Yr FE, basic, ChangExternalFunding_lead]
+      col8   __H19b__UncAnsCEO__col8__[Firm FE, Yr FE, basic, ChangExternalFunding_lead]
+      col9   __H19b__UncAnsCEO__col9__[Ind FE, Yr FE, extended, ChangExternalFunding_lead]
+      col10  __H19b__UncAnsCEO__col10__[Firm FE, Yr FE, extended, ChangExternalFunding_lead]
+      col11  __H19b__UncAnsCEO__col11__[Ind FE, YrQtr FE, extended, ChangExternalFunding_lead]
+      col12  __H19b__UncAnsCEO__col12__[Firm FE, YrQtr FE, extended, ChangExternalFunding_lead]
+  UncPreCEO:
+      col1   __H19b__UncPreCEO__col1__[Ind FE, Yr FE, basic, ChangExternalFunding]
+      col2   __H19b__UncPreCEO__col2__[Firm FE, Yr FE, basic, ChangExternalFunding]
+      col3   __H19b__UncPreCEO__col3__[Ind FE, Yr FE, extended, ChangExternalFunding]
+      col4   __H19b__UncPreCEO__col4__[Firm FE, Yr FE, extended, ChangExternalFunding]
+      col5   __H19b__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, ChangExternalFunding]
+      col6   __H19b__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, ChangExternalFunding]
+      col7   __H19b__UncPreCEO__col7__[Ind FE, Yr FE, basic, ChangExternalFunding_lead]
+      col8   __H19b__UncPreCEO__col8__[Firm FE, Yr FE, basic, ChangExternalFunding_lead]
+      col9   __H19b__UncPreCEO__col9__[Ind FE, Yr FE, extended, ChangExternalFunding_lead]
+      col10  __H19b__UncPreCEO__col10__[Firm FE, Yr FE, extended, ChangExternalFunding_lead]
+      col11  __H19b__UncPreCEO__col11__[Ind FE, YrQtr FE, extended, ChangExternalFunding_lead]
+      col12  __H19b__UncPreCEO__col12__[Firm FE, YrQtr FE, extended, ChangExternalFunding_lead]
+  UncAnsMgr:
+      col1   __H19b__UncAnsMgr__col1__[Ind FE, Yr FE, basic, ChangExternalFunding]
+      col2   __H19b__UncAnsMgr__col2__[Firm FE, Yr FE, basic, ChangExternalFunding]
+      col3   __H19b__UncAnsMgr__col3__[Ind FE, Yr FE, extended, ChangExternalFunding]
+      col4   __H19b__UncAnsMgr__col4__[Firm FE, Yr FE, extended, ChangExternalFunding]
+      col5   __H19b__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, ChangExternalFunding]
+      col6   __H19b__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, ChangExternalFunding]
+      col7   __H19b__UncAnsMgr__col7__[Ind FE, Yr FE, basic, ChangExternalFunding_lead]
+      col8   __H19b__UncAnsMgr__col8__[Firm FE, Yr FE, basic, ChangExternalFunding_lead]
+      col9   __H19b__UncAnsMgr__col9__[Ind FE, Yr FE, extended, ChangExternalFunding_lead]
+      col10  __H19b__UncAnsMgr__col10__[Firm FE, Yr FE, extended, ChangExternalFunding_lead]
+      col11  __H19b__UncAnsMgr__col11__[Ind FE, YrQtr FE, extended, ChangExternalFunding_lead]
+      col12  __H19b__UncAnsMgr__col12__[Firm FE, YrQtr FE, extended, ChangExternalFunding_lead]
+  UncPreMgr:
+      col1   __H19b__UncPreMgr__col1__[Ind FE, Yr FE, basic, ChangExternalFunding]
+      col2   __H19b__UncPreMgr__col2__[Firm FE, Yr FE, basic, ChangExternalFunding]
+      col3   __H19b__UncPreMgr__col3__[Ind FE, Yr FE, extended, ChangExternalFunding]
+      col4   __H19b__UncPreMgr__col4__[Firm FE, Yr FE, extended, ChangExternalFunding]
+      col5   __H19b__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, ChangExternalFunding]
+      col6   __H19b__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, ChangExternalFunding]
+      col7   __H19b__UncPreMgr__col7__[Ind FE, Yr FE, basic, ChangExternalFunding_lead]
+      col8   __H19b__UncPreMgr__col8__[Firm FE, Yr FE, basic, ChangExternalFunding_lead]
+      col9   __H19b__UncPreMgr__col9__[Ind FE, Yr FE, extended, ChangExternalFunding_lead]
+      col10  __H19b__UncPreMgr__col10__[Firm FE, Yr FE, extended, ChangExternalFunding_lead]
+      col11  __H19b__UncPreMgr__col11__[Ind FE, YrQtr FE, extended, ChangExternalFunding_lead]
+      col12  __H19b__UncPreMgr__col12__[Firm FE, YrQtr FE, extended, ChangExternalFunding_lead]
+
+================================================================================
+H20b: SPEECH UNCERTAINTY AND DEBT VS EQUITY CHOICE (Chang et al. 2006)
+================================================================================
+DV: ChangDebtChoice (6 cols)
+    Formula: ChangDebtChoice = 1 if debt-only, 0 if equity-only
+             Dual issuers EXCLUDED (NaN) — key difference from H20 (L&R classifies dual as equity)
+    Sample restricted to ChangExternalFunding == 1: ~11,500 calls, ~865 firms
+    Tail: Two-tailed
+    Controls: INCLUDE Leverage (not a bad control under Chang — DV uses cash-flow items,
+              not balance-sheet items like H20's DebtChoice)
+
+  UncAnsCEO:
+      col1   __H20b__UncAnsCEO__col1__[Ind FE, Yr FE, basic, ChangDebtChoice]
+      col2   __H20b__UncAnsCEO__col2__[Firm FE, Yr FE, basic, ChangDebtChoice]
+      col3   __H20b__UncAnsCEO__col3__[Ind FE, Yr FE, extended, ChangDebtChoice]
+      col4   __H20b__UncAnsCEO__col4__[Firm FE, Yr FE, extended, ChangDebtChoice]
+      col5   __H20b__UncAnsCEO__col5__[Ind FE, YrQtr FE, extended, ChangDebtChoice]
+      col6   __H20b__UncAnsCEO__col6__[Firm FE, YrQtr FE, extended, ChangDebtChoice]
+  UncPreCEO:
+      col1   __H20b__UncPreCEO__col1__[Ind FE, Yr FE, basic, ChangDebtChoice]
+      col2   __H20b__UncPreCEO__col2__[Firm FE, Yr FE, basic, ChangDebtChoice]
+      col3   __H20b__UncPreCEO__col3__[Ind FE, Yr FE, extended, ChangDebtChoice]
+      col4   __H20b__UncPreCEO__col4__[Firm FE, Yr FE, extended, ChangDebtChoice]
+      col5   __H20b__UncPreCEO__col5__[Ind FE, YrQtr FE, extended, ChangDebtChoice]
+      col6   __H20b__UncPreCEO__col6__[Firm FE, YrQtr FE, extended, ChangDebtChoice]
+  UncAnsMgr:
+      col1   __H20b__UncAnsMgr__col1__[Ind FE, Yr FE, basic, ChangDebtChoice]
+      col2   __H20b__UncAnsMgr__col2__[Firm FE, Yr FE, basic, ChangDebtChoice]
+      col3   __H20b__UncAnsMgr__col3__[Ind FE, Yr FE, extended, ChangDebtChoice]
+      col4   __H20b__UncAnsMgr__col4__[Firm FE, Yr FE, extended, ChangDebtChoice]
+      col5   __H20b__UncAnsMgr__col5__[Ind FE, YrQtr FE, extended, ChangDebtChoice]
+      col6   __H20b__UncAnsMgr__col6__[Firm FE, YrQtr FE, extended, ChangDebtChoice]
+  UncPreMgr:
+      col1   __H20b__UncPreMgr__col1__[Ind FE, Yr FE, basic, ChangDebtChoice]
+      col2   __H20b__UncPreMgr__col2__[Firm FE, Yr FE, basic, ChangDebtChoice]
+      col3   __H20b__UncPreMgr__col3__[Ind FE, Yr FE, extended, ChangDebtChoice]
+      col4   __H20b__UncPreMgr__col4__[Firm FE, Yr FE, extended, ChangDebtChoice]
+      col5   __H20b__UncPreMgr__col5__[Ind FE, YrQtr FE, extended, ChangDebtChoice]
+      col6   __H20b__UncPreMgr__col6__[Firm FE, YrQtr FE, extended, ChangDebtChoice]
+
+================================================================================
+H24: US ECONOMIC POLICY UNCERTAINTY AND CALL LANGUAGE UNCERTAINTY
+================================================================================
+N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
+
+  log(US EPU)_t:
+      col1   __H24__log(US EPU)_t__col1__[Firm FE, Contemporaneous / Mgr QA]
+      col2   __H24__log(US EPU)_t__col2__[Firm FE, Contemporaneous / Mgr Pres]
+      col3   __H24__log(US EPU)_t__col3__[Firm FE, Contemporaneous / CEO QA]
+      col4   __H24__log(US EPU)_t__col4__[Firm FE, Contemporaneous / CEO Pres]
+      col5   __H24__log(US EPU)_t__col5__[Firm FE, Next Quarter (t+1) / Mgr QA]
+      col6   __H24__log(US EPU)_t__col6__[Firm FE, Next Quarter (t+1) / Mgr Pres]
+      col7   __H24__log(US EPU)_t__col7__[Firm FE, Next Quarter (t+1) / CEO QA]
+      col8   __H24__log(US EPU)_t__col8__[Firm FE, Next Quarter (t+1) / CEO Pres]
+
+================================================================================
+H24b: GLOBAL ECONOMIC POLICY UNCERTAINTY AND CALL LANGUAGE UNCERTAINTY
+================================================================================
+N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
+
+  log(GEPU)_t:
+      col1   __H24b__log(GEPU)_t__col1__[Firm FE, Contemporaneous / Mgr QA]
+      col2   __H24b__log(GEPU)_t__col2__[Firm FE, Contemporaneous / Mgr Pres]
+      col3   __H24b__log(GEPU)_t__col3__[Firm FE, Contemporaneous / CEO QA]
+      col4   __H24b__log(GEPU)_t__col4__[Firm FE, Contemporaneous / CEO Pres]
+      col5   __H24b__log(GEPU)_t__col5__[Firm FE, Next Quarter (t+1) / Mgr QA]
+      col6   __H24b__log(GEPU)_t__col6__[Firm FE, Next Quarter (t+1) / Mgr Pres]
+      col7   __H24b__log(GEPU)_t__col7__[Firm FE, Next Quarter (t+1) / CEO QA]
+      col8   __H24b__log(GEPU)_t__col8__[Firm FE, Next Quarter (t+1) / CEO Pres]
+
+================================================================================
+H25: GEOPOLITICAL RISK AND CALL LANGUAGE UNCERTAINTY
+================================================================================
+N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
+
+  log(GPR)_t:
+      col1   __H25__log(GPR)_t__col1__[Firm FE, Contemporaneous / Mgr QA]
+      col2   __H25__log(GPR)_t__col2__[Firm FE, Contemporaneous / Mgr Pres]
+      col3   __H25__log(GPR)_t__col3__[Firm FE, Contemporaneous / CEO QA]
+      col4   __H25__log(GPR)_t__col4__[Firm FE, Contemporaneous / CEO Pres]
+      col5   __H25__log(GPR)_t__col5__[Firm FE, Next Quarter (t+1) / Mgr QA]
+      col6   __H25__log(GPR)_t__col6__[Firm FE, Next Quarter (t+1) / Mgr Pres]
+      col7   __H25__log(GPR)_t__col7__[Firm FE, Next Quarter (t+1) / CEO QA]
+      col8   __H25__log(GPR)_t__col8__[Firm FE, Next Quarter (t+1) / CEO Pres]

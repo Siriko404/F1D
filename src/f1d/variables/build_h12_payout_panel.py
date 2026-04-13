@@ -41,13 +41,20 @@ import pandas as pd
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
-from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
+from f1d.shared.variables.panel_utils import (
+    assign_industry_sample,
+    attach_fyearq,
+    build_cal_yr_qtr_index,
+    create_next_quarter_lead,
+    create_prior_quarter_lag,
+)
 from f1d.shared.variables import (
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     PayoutRatioQuarterlyBuilder,
+    DividendPayerQuarterlyBuilder,
     SizeBuilder,
     BookLevBuilder,
     TobinsQBuilder,
@@ -99,6 +106,7 @@ def build_call_level_panel(
             var_config.get("ceo_pres_uncertainty", {})
         ),
         "payout_ratio_q": PayoutRatioQuarterlyBuilder({}),
+        "dividend_payer_q": DividendPayerQuarterlyBuilder({}),
         "size": SizeBuilder({}),
         "book_lev": BookLevBuilder({}),
         "tobins_q": TobinsQBuilder({}),
@@ -352,6 +360,26 @@ def main(year_start: Optional[int] = None, year_end: Optional[int] = None) -> in
 
     # Create lead variables
     panel = create_lead_variables(panel, root_path=root)
+
+    # H12b dividend payer lead/lag via canonical calendar-quarter helpers.
+    # Kept separate from H12 PayoutRatio_q's fiscal-quarter lead mechanism
+    # (in create_lead_variables above) to avoid disturbing H12 production results.
+    print("\n" + "=" * 60)
+    print("H12b: Dividend payer calendar-quarter lag/lead (DivPayerQ)")
+    print("=" * 60)
+    panel = build_cal_yr_qtr_index(panel)
+    panel = create_prior_quarter_lag(panel, ["DivPayerQ"])
+    panel = create_next_quarter_lead(panel, ["DivPayerQ"])
+    n_dpq = panel["DivPayerQ"].notna().sum()
+    n_dpq1 = (panel["DivPayerQ"] == 1).sum()
+    print(f"  DivPayerQ non-null: {n_dpq:,} ({100*n_dpq/len(panel):.1f}% of panel)")
+    if n_dpq > 0:
+        print(f"  DivPayerQ == 1 (payers): {n_dpq1:,} "
+              f"({100*n_dpq1/n_dpq:.1f}% of non-null)")
+    print(f"  DivPayerQ_lag non-null: {panel['DivPayerQ_lag'].notna().sum():,} "
+          f"({100*panel['DivPayerQ_lag'].notna().sum()/len(panel):.1f}%)")
+    print(f"  DivPayerQ_lead1 non-null: {panel['DivPayerQ_lead1'].notna().sum():,} "
+          f"({100*panel['DivPayerQ_lead1'].notna().sum()/len(panel):.1f}%)")
 
     # Assign sample
     panel["sample"] = assign_industry_sample(panel["ff12_code"])

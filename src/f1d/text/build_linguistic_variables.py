@@ -107,6 +107,18 @@ analysis (fog index, word length, etc.).
         action="store_true",
         help="Validate inputs and prerequisites without executing",
     )
+    parser.add_argument(
+        "--year-start",
+        type=int,
+        default=2002,
+        help="First year to process (default: 2002)",
+    )
+    parser.add_argument(
+        "--year-end",
+        type=int,
+        default=2018,
+        help="Last year to process inclusive (default: 2018)",
+    )
 
     return parser.parse_args()
 
@@ -130,15 +142,10 @@ def check_prerequisites(root):
         required_file="master_sample_manifest.parquet",
     )
 
-    # Validate required files exist
-    required_files = {
-        "managerial_roles_extracted.txt": root
-        / "inputs"
-        / "Manager_roles"
-        / "managerial_roles_extracted.txt",
-    }
-
-    validate_prerequisites(required_files, {})
+    # No file-based prerequisites: manager classification now uses BGT (2018)
+    # verbatim presentation rule + F1+F2+F3 filters + per-call pres roster,
+    # no external keyword list required.
+    validate_prerequisites({}, {})
 
 
 def compute_file_checksum(filepath, algorithm="sha256"):
@@ -362,16 +369,32 @@ def detect_anomalies_iqr(df, columns, multiplier=3.0):
 # ==============================================================================
 
 
-def load_manager_keywords(root: Path) -> Pattern[str]:
-    path = root / "inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
-    with open(path, "r") as f:
-        keywords = [line.strip() for line in f if line.strip()]
-    pattern = re.compile("|".join(keywords), re.IGNORECASE)
-    print(f"  Loaded {len(keywords)} manager keywords")
-    return pattern
+# Strip professional credential suffixes (", CPA", ", Jr.", ", III", ", CFA", ...)
+# from executive names before last-name extraction.
+# Affects 30.0% of CFOs (11,715 / 39,067) and 14.2% of CEOs (8,766 / 61,790)
+# in Execucomp; without stripping, naive str.split()[-1] returns "cpa" instead
+# of the real last name and breaks last-name matching.
+CREDENTIAL_SUFFIX_PAT = re.compile(
+    r"(?:,\s*(?:CPA|MBA|Ph\.?D\.?|Jr\.?|Sr\.?|III|IV|II|CFA|CA|Esq\.?|DDS|JD|MD|CMA|CIA)\.?)+\s*$",
+    re.IGNORECASE,
+)
 
 
-def load_ceo_map(root):
+def _strip_credentials(name_series: pd.Series) -> pd.Series:
+    """Strip trailing professional credential suffixes from a name Series."""
+    return (
+        name_series.fillna("")
+        .str.replace(CREDENTIAL_SUFFIX_PAT, "", regex=True)
+        .str.strip()
+    )
+
+
+def load_executive_map(root):
+    """Load manifest with CEO/prev-CEO data and merge in Execucomp CFO records.
+
+    Returns a DataFrame keyed by file_name with cleaned (credential-stripped)
+    name fields for CEO, prev-CEO, and CFO matching downstream.
+    """
     manifest_dir = get_latest_output_dir(
         root / "outputs" / "1.4_AssembleManifest",
         required_file="master_sample_manifest.parquet",
@@ -391,14 +414,38 @@ def load_ceo_map(root):
         ],
     )
 
-    # Extract last names
-    df["ceo_last"] = df["ceo_name"].fillna("").str.split().str[-1].str.lower()
-    df["prev_ceo_last"] = df["prev_ceo_name"].fillna("").str.split().str[-1].str.lower()
-    df["ceo_name_lower"] = df["ceo_name"].fillna("").str.lower()
-    df["prev_ceo_name_lower"] = df["prev_ceo_name"].fillna("").str.lower()
+    # Strip credential suffixes BEFORE extracting last names (bugfix:
+    # ~14% of CEO records have trailing ", CPA" / ", Jr." etc. that the
+    # naive str.split()[-1] would otherwise return as the "last name").
+    df["ceo_name_clean"] = _strip_credentials(df["ceo_name"])
+    df["prev_ceo_name_clean"] = _strip_credentials(df["prev_ceo_name"])
+    df["ceo_last"] = df["ceo_name_clean"].str.split().str[-1].str.lower()
+    df["prev_ceo_last"] = df["prev_ceo_name_clean"].str.split().str[-1].str.lower()
+    df["ceo_name_lower"] = df["ceo_name_clean"].str.lower()
+    df["prev_ceo_name_lower"] = df["prev_ceo_name_clean"].str.lower()
 
     # Extract Year from start_date
     df["year"] = pd.to_datetime(df["start_date"]).dt.year
+
+    # Load Execucomp CFO records (cfoann == "CFO" flag)
+    exec_path = root / "inputs" / "Execucomp" / "comp_execucomp.parquet"
+    validate_input_file(exec_path, must_exist=True)
+    exec_df = pd.read_parquet(
+        exec_path, columns=["gvkey", "year", "exec_fullname", "cfoann"]
+    )
+    cfo_df = (
+        exec_df[exec_df["cfoann"] == "CFO"][["gvkey", "year", "exec_fullname"]]
+        .rename(columns={"exec_fullname": "cfo_name"})
+        .sort_values(["gvkey", "year", "cfo_name"])
+        # 127 firm-years (0.3%) have >1 CFO; pick first alphabetically.
+        # Documented sub-issue; not blocking.
+        .drop_duplicates(["gvkey", "year"])
+    )
+    # gvkey is object/str in both Execucomp and manifest
+    df = df.merge(cfo_df, on=["gvkey", "year"], how="left")
+    df["cfo_name_clean"] = _strip_credentials(df["cfo_name"])
+    df["cfo_name_lower"] = df["cfo_name_clean"].str.lower()
+    df["cfo_last"] = df["cfo_name_clean"].str.split().str[-1].str.lower()
 
     return df
 
@@ -408,9 +455,8 @@ def load_ceo_map(root):
 # ==============================================================================
 
 
-def flag_speakers(df, manager_pattern, manifest_df):
-    # Merge manifest info for context (company name, ceo name)
-    # We only need 'conm' and CEO cols for flagging, not everything
+def flag_speakers(df, manifest_df):
+    # Merge manifest info for context (company name, ceo/cfo names)
     cols_to_merge = [
         "file_name",
         "conm",
@@ -418,6 +464,8 @@ def flag_speakers(df, manager_pattern, manifest_df):
         "prev_ceo_name_lower",
         "ceo_last",
         "prev_ceo_last",
+        "cfo_name_lower",
+        "cfo_last",
     ]
     # Merge only columns that are NOT in df already (except key)
     cols_to_merge = [
@@ -429,37 +477,133 @@ def flag_speakers(df, manager_pattern, manifest_df):
     # Fill NA
     role = df["role"].fillna("")
     employer = df["employer"].fillna("")
-    conm = df["conm"].fillna("")
     speaker_name = df["speaker_name"].fillna("")
 
-    # Analyst
+    # Analyst (legacy role-based, kept unchanged for the Analyst sample)
     df["is_analyst"] = role.str.contains("analyst", case=False)
-
-    # Operator
     df["is_operator"] = role.str.contains("operator", case=False)
 
-    # Manager
-    # Keyword match
-    is_keyword = role.str.contains(manager_pattern)
-    # Employer match
-    is_employer = employer.str.lower() == conm.str.lower()
-
-    df["is_manager"] = (~df["is_analyst"] & ~df["is_operator"]) & (
-        is_keyword | is_employer
-    )
-
-    # CEO (Tiered)
+    # CEO (Tiered: exact full-name OR last-name)
     speaker_lower = speaker_name.str.lower()
     speaker_last = speaker_name.str.split().str[-1].str.lower()
-
     is_ceo_exact = (speaker_lower == df["ceo_name_lower"]) | (
         speaker_lower == df["prev_ceo_name_lower"]
     )
     is_ceo_last = (speaker_last == df["ceo_last"]) | (
         speaker_last == df["prev_ceo_last"]
     )
-
     df["is_ceo"] = is_ceo_exact | is_ceo_last
+
+    # ============================================================
+    # CFO classification (Execucomp cfoann + tiered match)
+    # ============================================================
+    # Dual CEO+CFO persons (424 person-years in Execucomp) are counted in
+    # BOTH samples per DWZ (2021) convention — no exclusion filter.
+    is_cfo_exact = speaker_lower == df["cfo_name_lower"].fillna("")
+    is_cfo_last = (speaker_last == df["cfo_last"].fillna("")) & (
+        df["cfo_last"].notna() & (df["cfo_last"] != "")
+    )
+    df["is_cfo"] = is_cfo_exact | is_cfo_last
+
+    # ============================================================
+    # Manager classification (BGT 2018 + F1+F2+F3 + pres roster)
+    # ============================================================
+    # Replaces the legacy 45-keyword role-string regex on 2026-04-09 after
+    # validation showed Pearson 0.94+ correlation with the legacy measure
+    # across all 8 LM categories and a procedural-precedent grounding in
+    # Bushee-Gow-Taylor (2018, JAR).
+    placeholders = {
+        "Operator",
+        "Unidentified",
+        "Unidentified Participant",
+        "Unidentified Audience Member",
+        "Unidentified Speaker",
+        "Unidentified Company Representative",
+        "??",
+        "Editor",
+        "Moderator",
+        "Caller",
+        "Unknown Speaker",
+        "Company Executive",
+        "Company Representative",
+        "Corporate Participant",
+        "Analyst",
+        "Conference Facilitator",
+        "Unidentified Analyst",
+    }
+
+    sn_clean = speaker_name.str.strip().str.rstrip(",").str.strip()
+    sn_lower = sn_clean.str.lower()
+
+    # F1: placeholder + operator filter
+    is_ph = (
+        sn_clean.isna()
+        | (sn_clean == "")
+        | sn_clean.isin(placeholders)
+        | sn_clean.str.contains("nidentified", na=False)
+        | sn_lower.isin({"operator", "unknown"})
+    )
+
+    # F2: role-based analyst exclusion
+    # Tightened: \bresearch\b would wrongly exclude "EVP of Research & Development"
+    # at pharma firms. Restrict to analyst-compound contexts only.
+    role_analyst_pat = (
+        r"\banalyst\b|"
+        r"\bresearch\s+(?:analyst|associate|division|head|director)\b|"
+        r"\bhead\s+of\s+research\b|"
+        r"\b(?:equity|quantitative|sell.?side|buy.?side)\s+research\b|"
+        r"\bsell.?side\b|\bbuy.?side\b|\bstrategist\b"
+    )
+    role_is_analyst = role.str.contains(
+        role_analyst_pat, regex=True, case=False, na=False
+    )
+
+    # F3: employer-based analyst exclusion
+    # The literal "securities," (with comma) is intentional — Capital IQ
+    # employer strings nearly always include the comma between firm name
+    # and corporate suffix ("Wells Fargo Securities, LLC" etc.). Empirical
+    # test on 2014 Q&A: original 23,527 turns vs "fixed" 19,349 — original
+    # is correct (red team finding #6 falsified).
+    emp_analyst_pat = (
+        r"research division|equity research|capital markets|"
+        r"securities,|securities llc|securities inc|securities ltd|"
+        r", llc, research|brokerage|sell.?side"
+    )
+    emp_is_analyst = employer.str.contains(
+        emp_analyst_pat, regex=True, case=False, na=False
+    )
+
+    passes_f123 = (
+        (~is_ph)
+        & (sn_clean != "Operator")
+        & (~role_is_analyst)
+        & (~emp_is_analyst)
+    )
+    df["passes_f123"] = passes_f123
+    df["speaker_name_lower_clean"] = sn_lower
+
+    # Per-call pres roster: set of cleaned-lowercased speaker names that
+    # appear in the call's presentation section AND pass F123. Q&A turns
+    # qualify as Manager only if their speaker name is in this roster.
+    pres_qualifying = df[(df["context"] == "pres") & passes_f123]
+    roster = (
+        pres_qualifying.groupby("file_name")["speaker_name_lower_clean"]
+        .apply(set)
+        .to_dict()
+    )
+
+    # Vectorized per-row roster lookup
+    df["in_pres_roster"] = [
+        sn in roster.get(fn, set())
+        for sn, fn in zip(sn_lower.values, df["file_name"].values)
+    ]
+
+    # Manager is context-aware: all pres turns that pass F123, plus Q&A
+    # turns whose speaker is in the call's pres roster.
+    df["is_manager"] = passes_f123 & (
+        (df["context"] == "pres")
+        | ((df["context"] == "qa") & df["in_pres_roster"])
+    )
 
     return df
 
@@ -502,7 +646,7 @@ def aggregate_weighted(
     return result_df
 
 
-def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_dir):
+def process_year(year, root, manifest_df, out_dir, tokenized_dir):
     in_path = tokenized_dir / f"linguistic_counts_{year}.parquet"
     if not in_path.exists():
         print(f"  Skipping {year}: Input not found")
@@ -530,7 +674,7 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     len(df)
 
     # Flag
-    df = flag_speakers(df, manager_pattern, manifest_df)
+    df = flag_speakers(df, manifest_df)
 
     analyst_count = df["is_analyst"].sum()
     manager_count = df["is_manager"].sum()
@@ -549,11 +693,12 @@ def process_year(year, root, manager_pattern, manifest_df, out_dir, tokenized_di
     # We will generate comprehensive set
 
     samples = {
-        "Manager": df["is_manager"],
+        "Manager": df["is_manager"],  # BGT 2018 + F1+F2+F3 + pres roster (2026-04-09)
         "Analyst": df["is_analyst"],
         "CEO": df["is_ceo"],
         "NonCEO_Manager": df["is_manager"] & ~df["is_ceo"],  # Managers excluding CEO
         "Entire": pd.Series(True, index=df.index),
+        "CFO": df["is_cfo"],
     }
 
     contexts = {
@@ -871,7 +1016,7 @@ def generate_variable_construction_report(stats, output_path):
     print(f"Report generated: {output_path.name}")
 
 
-def main():
+def main(year_start: int = 2002, year_end: int = 2018):
     start_time = time.perf_counter()
     start_iso = datetime.now().isoformat()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
@@ -899,9 +1044,6 @@ def main():
         "timing": {"start_iso": start_iso, "end_iso": "", "duration_seconds": 0.0},
     }
 
-    # Load References and checksum inputs
-    keywords_path = root / "inputs" / "Manager_roles" / "managerial_roles_extracted.txt"
-
     # Resolve manifest path using timestamp-based directory resolution
     manifest_dir = get_latest_output_dir(
         root / "outputs" / "1.4_AssembleManifest",
@@ -915,17 +1057,12 @@ def main():
         required_file="linguistic_counts_2002.parquet",
     )
 
-    stats["input"]["files"].append(str(keywords_path))
-    stats["input"]["checksums"]["managerial_roles_extracted.txt"] = (
-        compute_file_checksum(keywords_path)
-    )
     stats["input"]["files"].append(str(manifest_path))
     stats["input"]["checksums"]["master_sample_manifest.parquet"] = (
         compute_file_checksum(manifest_path)
     )
 
-    manager_pattern = load_manager_keywords(root)
-    manifest_df = load_ceo_map(root)
+    manifest_df = load_executive_map(root)
     stats["input"]["total_rows"] = len(manifest_df)
     stats["input"]["total_columns"] = len(manifest_df.columns)
     print_stat("Manifest rows", value=len(manifest_df))
@@ -934,7 +1071,7 @@ def main():
     from f1d.shared.observability import compute_constructvariables_input_stats
 
     stats["constructvariables_input"] = compute_constructvariables_input_stats(
-        tokenized_dir, manifest_df, years_range=(2002, 2019)
+        tokenized_dir, manifest_df, years_range=(year_start, year_end + 1)
     )
     print(
         f"  Input stats collected: {stats['constructvariables_input']['tokenized_files_stats']['total_rows']:,} tokenized rows"
@@ -947,9 +1084,9 @@ def main():
     per_year_stats = []
     total_variables_created = 0
 
-    for year in range(2002, 2019):
+    for year in range(year_start, year_end + 1):
         year_output = process_year(
-            year, root, manager_pattern, manifest_df, out_dir, tokenized_dir
+            year, root, manifest_df, out_dir, tokenized_dir
         )
         if year_output:
             output_rows += year_output["rows"]
@@ -1031,7 +1168,7 @@ def main():
     # Collect output statistics for variable construction
     # Load all output files for analysis
     output_dfs = []
-    for year in range(2002, 2019):
+    for year in range(year_start, year_end + 1):
         year_file = out_dir / f"linguistic_variables_{year}.parquet"
         if year_file.exists():
             try:
@@ -1049,7 +1186,14 @@ def main():
 
     if output_dfs:
         # Define samples, contexts, and categories for analysis
-        samples = ["Manager", "Analyst", "CEO", "NonCEO_Manager", "Entire"]
+        samples = [
+            "Manager",
+            "Analyst",
+            "CEO",
+            "NonCEO_Manager",
+            "Entire",
+            "CFO",
+        ]
         contexts = ["QA", "Pres", "All"]
         # Extract categories from input stats
         categories = (
@@ -1090,4 +1234,4 @@ if __name__ == "__main__":
         sys.exit(0)
 
     check_prerequisites(root)
-    main()
+    main(year_start=args.year_start, year_end=args.year_end)

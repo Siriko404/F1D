@@ -1,0 +1,151 @@
+
+# [Paper Title]
+
+[Author Name]
+[Institution]
+[Email]
+
+[Author Name]
+[Institution]
+[Email]
+
+[Author Name]
+[Institution]
+[Email]
+
+[Month Year]
+
+---
+
+## Abstract
+
+[Insert abstract here]
+
+**Keywords:** [Insert keywords]
+**JEL Classification:** [Insert JEL codes]
+
+---
+
+# I. INTRODUCTION
+
+[Insert introduction]
+
+---
+
+# II. CONCEPTUAL FRAMEWORK AND EMPIRICAL STRATEGY
+
+## Conceptual Framework
+
+[Insert text]
+
+## [Theory / Main Construct / Research Logic]
+
+[Insert text]
+
+## [Estimation of Main Variable(s)]
+
+[Insert text]
+
+## [Methodology / Empirical Design]
+
+[Insert text]
+
+## [Specification and Measurement of Key Constructs]
+
+[Insert text]
+
+---
+
+# III. MAIN EMPIRICAL ANALYSES
+
+## [Data / Sample / Variable Construction]
+
+[Insert text]
+
+## [Main Analysis 1]
+
+[Insert text]
+
+## [Main Analysis 2]
+
+[Insert text]
+
+## [Main Analysis 3]
+
+[Insert text]
+
+---
+
+# IV. ADDITIONAL ANALYSES
+
+## [Additional Analysis 1]
+
+[Insert text]
+
+## [Additional Analysis 2]
+
+[Insert text]
+
+---
+
+# V. CONCLUSION
+
+[Insert conclusion]
+
+---
+
+# References
+
+[Insert references]
+
+---
+
+# Appendix: Variable Definition and Measurement
+
+## Dependent Variables
+
+[Insert definitions]
+
+## Independent Variables
+
+[Insert definitions]
+
+---
+
+# Tables
+
+## Table 1. Summary Statistics
+
+[Insert table]
+
+## Table 2. [First Main Estimation Table Title]
+
+[Insert table]
+
+## Table 3. [Second Main Estimation Table Title]
+
+[Insert table]
+
+## Table 4. [Performance / Main Results Table Title]
+
+[Insert table]
+
+## Table 5. [Mechanism / Channel Table Title]
+
+[Insert table]
+
+## Table 6. [Supplementary Table Title]
+
+[Insert table]
+
+## Table 7. [Supplementary Table Title]
+
+[Insert table]
+
+## Table 8. [Additional Analysis Table Title]
+
+[Insert table]
+
+## Table 9. [Additional Analysis Table Title]
+
+[Insert table]

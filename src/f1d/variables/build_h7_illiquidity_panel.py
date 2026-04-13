@@ -33,7 +33,13 @@ import pandas as pd
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
-from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
+from f1d.shared.variables.panel_utils import (
+    assign_industry_sample,
+    attach_fyearq,
+    build_cal_yr_qtr_index,
+    create_prior_quarter_lag,
+    create_next_quarter_lead,
+)
 from f1d.shared.variables import (
     # 4 Key IVs (all simultaneous)
     CEOQAUncertaintyBuilder,
@@ -42,6 +48,8 @@ from f1d.shared.variables import (
     ManagerPresUncertaintyBuilder,
     # DV builder (produces DeltaILLIQ + PreCallILLIQ)
     AmihudChangeBuilder,
+    # H7c/d/e BGT (2018) 25-day post-call Amihud (Level/Delta/Avg)
+    BGTLongWindowAmihudBuilder,
     # Base controls
     SizeBuilder,
     TobinsQBuilder,
@@ -99,6 +107,10 @@ def build_panel(
         ),
         # DV (produces DeltaILLIQ + PreCallILLIQ)
         "amihud_change": AmihudChangeBuilder(var_config.get("amihud_change", {})),
+        # H7c/d/e BGT (2018) 25-day post-call Amihud — Level/Delta/Avg in one builder
+        "bgt_long_window_amihud": BGTLongWindowAmihudBuilder(
+            var_config.get("bgt_long_window_amihud", {})
+        ),
         # Base controls
         "size": SizeBuilder(var_config.get("size", {})),
         "tobins_q": TobinsQBuilder(var_config.get("tobins_q", {})),
@@ -148,6 +160,63 @@ def build_panel(
     # Attach fyearq for fiscal year FE (switching from call_quarter_int)
     panel = attach_fyearq(panel, root_path)
     panel["fyearq_int"] = pd.to_numeric(panel["fyearq"], errors="coerce")
+
+    # ============================================================================
+    # Long-window liquidity extension (2026-04-17)
+    # ============================================================================
+    # Phase C of the H7c/d/e + lead extension plan. Adds:
+    #   1. cal_yr / cal_qtr / cal_yr_qtr index columns (required by lag/lead)
+    #   2. PostCallAmihud = PreCallILLIQ + DeltaILLIQ (promoted from H7b runner-time)
+    #   3. {DV}_lag for 5 base columns (true t-1 prior-quarter lag)
+    #   4. {DV}_lead1 for 5 base columns (next-quarter lead)
+    # ============================================================================
+
+    # Step 1: calendar year-quarter time index (required by lag/lead helpers)
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} "
+          f"({100*n_yr_qtr/len(panel):.1f}%)")
+
+    # Step 2: PostCallAmihud = PreCallILLIQ + DeltaILLIQ
+    # Promoted from H7b runner-time computation to panel-time so the lag/lead
+    # helpers can produce PostCallAmihud_lag and PostCallAmihud_lead1 columns.
+    # NOTE: this is NOT the same as winsorizing PostCallILLIQ directly --
+    # PreCallILLIQ and DeltaILLIQ are independently winsorized per-year inside
+    # AmihudChangeBuilder, so the sum can in principle be negative. Empirically
+    # n_neg = 0 on the 2026-04-02 H7 panel (the per-year winsorization keeps
+    # the sum positive in the Amihud case, unlike the H14 spread case which
+    # has ~1,006 negatives due to pooled winsorization).
+    panel["PostCallAmihud"] = panel["PreCallILLIQ"] + panel["DeltaILLIQ"]
+    n_neg_post = (panel["PostCallAmihud"] < 0).sum()
+    if n_neg_post > 0:
+        print(f"  WARNING: {n_neg_post} negative PostCallAmihud values "
+              f"(winsorization artifact -- preserved for backward compat with H7b)")
+    print(f"  PostCallAmihud: mean={panel['PostCallAmihud'].mean():.6f}, "
+          f"non-null={panel['PostCallAmihud'].notna().sum():,}")
+
+    # Step 3 + 4: lag and lead for all 5 liquidity DVs
+    # (DeltaILLIQ, PostCallAmihud, plus 3 BGT 25-day Amihud variants)
+    liquidity_dvs = [
+        "DeltaILLIQ",
+        "PostCallAmihud",
+        "BGTLevel_Amihud",
+        "BGTDelta_Amihud",
+        "BGTAvg_Amihud",
+    ]
+    panel = create_prior_quarter_lag(panel, liquidity_dvs)
+    panel = create_next_quarter_lead(panel, liquidity_dvs)
+
+    # Coverage report for new columns
+    print("  Lag/lead coverage:")
+    for dv in liquidity_dvs:
+        lag_col = f"{dv}_lag"
+        lead_col = f"{dv}_lead1"
+        if lag_col in panel.columns:
+            print(f"    {lag_col:30s}: {panel[lag_col].notna().sum():>7,} "
+                  f"({100*panel[lag_col].notna().sum()/len(panel):.1f}%)")
+        if lead_col in panel.columns:
+            print(f"    {lead_col:30s}: {panel[lead_col].notna().sum():>7,} "
+                  f"({100*panel[lead_col].notna().sum()/len(panel):.1f}%)")
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]
 

@@ -3,64 +3,51 @@
 ================================================================================
 STAGE 4: Test H25 Geopolitical Risk -> Call Language Uncertainty
 ================================================================================
-ID: econometric/test_h25_gpr
-Description: Reverse-direction suite - aggregate Geopolitical Risk
-             (Caldara & Iacoviello 2022, AER - headline 10-newspaper index)
-             predicts call-level language uncertainty. Analogous structure to
-             H11 (PRisk -> Uncertainty).
+ID: econometric/run_h25_gpr
+Description: Reverse-direction suite - aggregate Geopolitical Risk index
+             (Caldara & Iacoviello 2022, AER) predicts call-level language
+             uncertainty.
 
-Model Specification:
-    Uncertainty_it ~ log(GPR)_mt + PresControl_it + Lagged_DV_i,t-1 +
-                     UncQue_it + NegCall_it + lnAssets_it + TobinsQ_it +
-                     ROA_it + CashRatio_it + DivDummy_it + FirmMat_it +
-                     EarnVol_it + EntityEffects
+8 Model Specifications (matches H23 house pattern):
+    Cols 1-4:  Industry (FF12) + Calendar Year FE  (one per DV)
+    Cols 5-8:  Firm + Calendar Year FE             (one per DV)
+    DVs in order: UncAnsMgr, UncPreMgr, UncAnsCEO, UncPreCEO (contemp only)
 
-Dependent variables (8 total, contemporaneous + next-quarter lead):
-    Cols 1-4: UncAnsMgr, UncPreMgr, UncAnsCEO, UncPreCEO      (contemporaneous)
-    Cols 5-8: UncAnsMgr_lead1, UncPreMgr_lead1,
-              UncAnsCEO_lead1, UncPreCEO_lead1                (next quarter)
+IV identification: within-year cross-firm variation in monthly-matched GPR.
+Calendar Year FE absorbs the year-level mean of GPR; monthly matching
+preserves substantial within-year variation across firms with calls in
+different months.
 
-CRITICAL DEVIATIONS FROM THE H11 TEMPLATE:
-    1. Panel index is (gvkey, cal_yr_qtr), NOT (gvkey, year).
-    2. Formula ends with `+ EntityEffects` only. NO TimeEffects - it would
-       absorb the monthly macro IV entirely.
-    3. Standard errors are TWO-WAY clustered (firm, cal_yr_qtr) via
-       cluster_entity=True, cluster_time=True.
+Estimator: PanelOLS.
+Panel index: (gvkey, cal_yr_qtr) - preserves quarterly observations and
+             enables two-way clustering by firm and calendar year-quarter.
+Calendar Year FE: added via other_effects=cal_yr (NOT time_effects, which
+             would create year-quarter dummies and fully absorb the IV).
+Industry FE: absorbed via other_effects=ff12_code.
+Firm FE: entity_effects=True.
+Clustering: two-way (firm, cal_yr_qtr).
 
 Hypothesis (one-tailed, positive):
     H25: beta(log(GPR)) > 0
-         Higher aggregate geopolitical risk -> higher call-level language
-         uncertainty.
 
-Industry Samples:
-    - Main: FF12 codes 1-7, 9-10, 12 (non-financial, non-utility)
-    - Finance: FF12 code 11 (reported, not in headline table)
-    - Utility: FF12 code 8  (reported, not in headline table)
-
-Minimum Calls Filter:
-    Firms must have >= 5 calls to be included in regression (standard).
+Sample: Main only (FF12 != 8, 11).
 
 Inputs:
     - outputs/variables/h24_h24b_h25_macro/latest/h24_h24b_h25_macro_panel.parquet
 
 Outputs:
-    - outputs/econometric/h25_gpr/{timestamp}/regression_results_{sample}_{dv}.txt
+    - outputs/econometric/h25_gpr/{timestamp}/regression_results_col{1..8}.txt
     - outputs/econometric/h25_gpr/{timestamp}/h25_gpr_table.tex
     - outputs/econometric/h25_gpr/{timestamp}/model_diagnostics.csv
     - outputs/econometric/h25_gpr/{timestamp}/summary_stats.csv / .tex
     - outputs/econometric/h25_gpr/{timestamp}/sample_attrition.csv / .tex
     - outputs/econometric/h25_gpr/{timestamp}/run_manifest.json
 
-Deterministic: true
-Dependencies:
-    - Requires: Stage 3 (build_h24_h24b_h25_macro_uncertainty_panel)
-    - Uses: linearmodels, f1d.shared.latex_tables_accounting
-
-Reference: Caldara, Dario & Matteo Iacoviello (2022) "Measuring Geopolitical Risk,"
-           American Economic Review 112(4): 1194-1225.
+Reference: Caldara, Dario, and Matteo Iacoviello (2022). "Measuring Geopolitical
+           Risk," American Economic Review 112(4): 1194-1225.
 
 Author: Thesis Author
-Date: 2026-04-09
+Date: 2026-04-10
 ================================================================================
 """
 
@@ -109,14 +96,17 @@ PANEL_INPUT_FILE = "h24_h24b_h25_macro_panel.parquet"
 
 CONFIG = {
     "min_calls": 5,
-    "samples": ["Main", "Finance", "Utility"],
 }
 
-# Base 4 uncertainty DVs (contemporaneous)
-BASE_DVS = ["UncAnsMgr", "UncPreMgr", "UncAnsCEO", "UncPreCEO"]
-LEAD_DVS = [f"{d}_lead1" for d in BASE_DVS]
-# Full DV list - 4 contemporaneous + 4 next-quarter leads = 8
-ALL_DVS = BASE_DVS + LEAD_DVS
+# 4 contemporaneous uncertainty DVs (used across 2 FE types = 8 cols)
+DVS = ["UncAnsMgr", "UncPreMgr", "UncAnsCEO", "UncPreCEO"]
+
+DV_LABELS = {
+    "UncAnsMgr": "Mgr QA",
+    "UncPreMgr": "Mgr Pres",
+    "UncAnsCEO": "CEO QA",
+    "UncPreCEO": "CEO Pres",
+}
 
 # H11-style base controls (excluding presentation control, which is DV-dependent,
 # and Lagged_DV, which is also DV-dependent)
@@ -132,30 +122,28 @@ BASE_CONTROLS = [
     "EarnVol",
 ]
 
-# Presentation-control map for Q&A dependents - when DV is a Q&A measure, the
-# matching Presentation measure is added as a control. Matches H11 convention.
-# For lead DVs, the lead's pres control is the lead's corresponding pres measure.
+# Presentation-control map: when DV is a Q&A measure, the matching
+# contemporaneous Presentation measure is added as a control.
 PRES_CONTROL_MAP = {
     "UncAnsMgr": "UncPreMgr",
     "UncAnsCEO": "UncPreCEO",
     "UncPreMgr": None,
     "UncPreCEO": None,
-    "UncAnsMgr_lead1": "UncPreMgr_lead1",
-    "UncAnsCEO_lead1": "UncPreCEO_lead1",
-    "UncPreMgr_lead1": None,
-    "UncPreCEO_lead1": None,
 }
 
-
-def _lag_column_for_dv(dv: str) -> str:
-    """Return the Lagged_DV column name for a given DV.
-
-    Contemporaneous DV: `Y_t ~ ... + Y_{t-1}` -> use `{base}_lag`
-    Lead1 DV:           `Y_{t+1} ~ ... + Y_t` -> use `{base}` (contemp base)
-    """
-    if dv.endswith("_lead1"):
-        return dv[: -len("_lead1")]
-    return f"{dv}_lag"
+# 8 model specifications: 4 DVs x 2 FE types
+MODEL_SPECS = [
+    # Industry + Calendar Year FE (cols 1-4)
+    {"col": 1, "dv": "UncAnsMgr", "fe": "industry"},
+    {"col": 2, "dv": "UncPreMgr", "fe": "industry"},
+    {"col": 3, "dv": "UncAnsCEO", "fe": "industry"},
+    {"col": 4, "dv": "UncPreCEO", "fe": "industry"},
+    # Firm + Calendar Year FE (cols 5-8)
+    {"col": 5, "dv": "UncAnsMgr", "fe": "firm"},
+    {"col": 6, "dv": "UncPreMgr", "fe": "firm"},
+    {"col": 7, "dv": "UncAnsCEO", "fe": "firm"},
+    {"col": 8, "dv": "UncPreCEO", "fe": "firm"},
+]
 
 
 # ==============================================================================
@@ -163,20 +151,12 @@ def _lag_column_for_dv(dv: str) -> str:
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # DVs (contemporaneous)
     {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
     {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
-    # DVs (next quarter)
-    {"col": "UncAnsMgr_lead1", "label": r"Mgr QA Uncertainty$_{t+1}$"},
-    {"col": "UncPreMgr_lead1", "label": r"Mgr Pres Uncertainty$_{t+1}$"},
-    {"col": "UncAnsCEO_lead1", "label": r"CEO QA Uncertainty$_{t+1}$"},
-    {"col": "UncPreCEO_lead1", "label": r"CEO Pres Uncertainty$_{t+1}$"},
-    # Macro IV (raw and log)
     {"col": MACRO_IV_RAW, "label": "GPR (raw)"},
     {"col": MACRO_IV, "label": "log(GPR)"},
-    # Controls
     {"col": "UncQue", "label": "Analyst QA Uncertainty"},
     {"col": "NegCall", "label": "Negative Sentiment"},
     {"col": "lnAssets", "label": "Firm Size (log AT)"},
@@ -222,11 +202,8 @@ def _required_columns() -> List[str]:
         "cal_qtr",
         "cal_yr_qtr",
         "ff12_code",
+        "sample",
     ]
-    if "sample" not in cols:
-        cols.append("sample")
-    # Macro IVs (raw + all log variants - we only use MACRO_IV but load raw
-    # for summary stats and the other two log variants for optional comparison)
     cols += [
         "GPR",
         "US_EPU",
@@ -235,13 +212,9 @@ def _required_columns() -> List[str]:
         "US_EPU_log",
         "GEPU_log",
     ]
-    # DVs and their leads/lags
-    cols += BASE_DVS
-    cols += LEAD_DVS
-    cols += [f"{d}_lag" for d in BASE_DVS]
-    # Base controls
+    cols += DVS
+    cols += [f"{d}_lag" for d in DVS]
     cols += BASE_CONTROLS
-    # Dedupe while preserving order
     seen = set()
     unique: List[str] = []
     for c in cols:
@@ -256,28 +229,29 @@ def prepare_regression_data(
     dv_var: str,
 ) -> Tuple[pd.DataFrame, List[str]]:
     """Complete-case filter for a specific DV + its dynamic controls."""
-    pres_control = PRES_CONTROL_MAP.get(dv_var)
-    lagged_col = _lag_column_for_dv(dv_var)
+    pres_source = PRES_CONTROL_MAP.get(dv_var)
 
     controls = list(BASE_CONTROLS)
-    if pres_control:
-        controls.append(pres_control)
+    if pres_source:
+        controls.append(pres_source)
     controls.append("Lagged_DV")
 
-    # Stage a Lagged_DV column on the panel (dynamically per DV)
     df = panel.copy()
-    df["Lagged_DV"] = df[lagged_col]
+    df["Lagged_DV"] = df[f"{dv_var}_lag"]
 
     required = (
         [dv_var, MACRO_IV]
-        + [c for c in controls if c != "Lagged_DV"]
-        + ["Lagged_DV", "gvkey", "cal_yr_qtr"]
+        + list(BASE_CONTROLS)
+        + ([pres_source] if pres_source else [])
+        + ["Lagged_DV", "gvkey", "cal_yr_qtr", "cal_yr", "ff12_code"]
     )
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns in panel: {missing}")
 
     df = df.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
+    df["cal_yr"] = df["cal_yr"].astype(int)
+    df["ff12_code"] = df["ff12_code"].astype(int)
     return df, controls
 
 
@@ -288,76 +262,98 @@ def prepare_regression_data(
 
 def run_regression(
     df_sample: pd.DataFrame,
-    dv_var: str,
-    sample_name: str,
+    spec: Dict[str, Any],
     controls: List[str],
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run PanelOLS with Firm FE only (NO TimeEffects) and two-way clustering.
+    """Run PanelOLS with Industry or Firm FE + Calendar Year FE.
 
-    Panel index: (gvkey, cal_yr_qtr). Time level = cal_yr_qtr, so
-    cluster_time=True yields quarter-level clustering.
+    Industry FE branch: entity_effects=False, other_effects=[ff12_code, cal_yr]
+    Firm FE branch:     entity_effects=True,  other_effects=[cal_yr]
+
+    Panel index (gvkey, cal_yr_qtr) is preserved for two-way clustering
+    (firm, cal_yr_qtr). Calendar Year FE is added via other_effects (not
+    via time_effects, which would be year-quarter FE and fully absorb the
+    monthly macro IV).
     """
-    exog_str = " + ".join([MACRO_IV] + controls)
-    formula = f"{dv_var} ~ 1 + {exog_str} + EntityEffects"
-    #                                          ^^^^^^^^^^^^^
-    # CRITICAL: no TimeEffects. Macro IV is constant across firms within any
-    # calendar month; including time FE at any granularity would absorb it.
+    col_num = spec["col"]
+    dv_var = spec["dv"]
+    fe_type = spec["fe"]
 
-    print(f"  Formula: {dv_var} ~ {MACRO_IV} + {' + '.join(controls)} + EntityEffects")
+    exog = [MACRO_IV] + controls
+
+    print(f"\n{'=' * 60}")
+    print(f"Col ({col_num}) | DV={DV_LABELS.get(dv_var, dv_var)} | FE={fe_type}")
+    print(f"{'=' * 60}")
     print(
         f"  N calls: {len(df_sample):,}  |  N firms: {df_sample['gvkey'].nunique():,}"
     )
-    print("  Estimating with TWO-WAY clustered SEs (firm, cal_yr_qtr)...")
+    print(f"  Controls: {controls}")
+    print("  Two-way clustered SEs (firm, cal_yr_qtr)")
 
     t0 = datetime.now()
 
     df_panel = df_sample.set_index(["gvkey", "cal_yr_qtr"])
 
     try:
-        model_obj = PanelOLS.from_formula(
-            formula, data=df_panel, drop_absorbed=True
-        )
+        if fe_type == "industry":
+            other_effects = df_panel[["ff12_code", "cal_yr"]]
+            model_obj = PanelOLS(
+                dependent=df_panel[dv_var],
+                exog=df_panel[exog],
+                entity_effects=False,
+                time_effects=False,
+                other_effects=other_effects,
+                drop_absorbed=True,
+                check_rank=False,
+            )
+        else:  # firm
+            other_effects = df_panel[["cal_yr"]]
+            model_obj = PanelOLS(
+                dependent=df_panel[dv_var],
+                exog=df_panel[exog],
+                entity_effects=True,
+                time_effects=False,
+                other_effects=other_effects,
+                drop_absorbed=True,
+                check_rank=False,
+            )
+
         model = model_obj.fit(
             cov_type="clustered",
             cluster_entity=True,
             cluster_time=True,
-            # ^ Upgrade vs H11's firm-only cluster. Macro IV is correlated
-            #   across firms within time, so time clustering is required.
         )
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
         return None, {}
 
     duration = (datetime.now() - t0).total_seconds()
-    print(f"  [OK] Complete in {duration:.1f}s")
-
     adj_r2 = 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid
-    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {adj_r2:.4f}")
-    print(f"  N obs:     {int(model.nobs):,}")
+    print(f"  [OK] {duration:.1f}s  R2={model.rsquared:.4f}  AdjR2={adj_r2:.4f}  N={int(model.nobs):,}")
 
     beta = float(model.params.get(MACRO_IV, np.nan))
     p_two = float(model.pvalues.get(MACRO_IV, np.nan))
     se = float(model.std_errors.get(MACRO_IV, np.nan))
     t_stat = float(model.tstats.get(MACRO_IV, np.nan))
 
-    # H24 is one-tailed positive: beta > 0
     if not np.isnan(p_two) and not np.isnan(beta):
         p_one = p_two / 2 if beta > 0 else 1 - p_two / 2
     else:
         p_one = np.nan
 
     sig = not np.isnan(p_one) and p_one < 0.05 and beta > 0
-    sig_text = "YES" if sig else "no"
     print(
-        f"  beta({MACRO_IV}): {beta:.4f}  SE={se:.4f}  p(one-tail)={p_one:.4f}  "
-        f"{SUITE_ID} significant={sig_text}"
+        f"  beta({MACRO_IV}): {beta:.4f}  SE={se:.4f}  p(1-tail)={p_one:.4f}  "
+        f"sig={'YES' if sig else 'no'}"
     )
 
     meta = {
+        "col": col_num,
         "suite": SUITE_ID,
         "dv": dv_var,
-        "sample": sample_name,
+        "fe": fe_type,
         "macro_iv": MACRO_IV,
+        "pres_control": PRES_CONTROL_MAP.get(dv_var) or "",
         "n_obs": int(model.nobs),
         "n_firms": df_sample["gvkey"].nunique(),
         "n_clusters_entity": df_sample["gvkey"].nunique(),
@@ -377,69 +373,57 @@ def run_regression(
 
 
 # ==============================================================================
-# LaTeX Table (8 columns - contemporaneous + next-quarter lead)
+# LaTeX Table (8 columns: 4 DVs x Industry/Firm FE)
 # ==============================================================================
 
 
-def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write 8-column LaTeX table grouped as [Contemporaneous | Next Quarter (t+1)].
+def _sig_stars_one(p: float, beta: float) -> str:
+    if np.isnan(p) or np.isnan(beta):
+        return ""
+    if beta <= 0:
+        return ""
+    if p < 0.01:
+        return "***"
+    if p < 0.05:
+        return "**"
+    if p < 0.10:
+        return "*"
+    return ""
 
-    Columns 1-4: UncAnsMgr, UncPreMgr, UncAnsCEO, UncPreCEO           (Main sample, t)
-    Columns 5-8: UncAnsMgr_lead1, UncPreMgr_lead1, UncAnsCEO_lead1, UncPreCEO_lead1
-    """
+
+def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
+    """Write 8-column LaTeX table: 4 DVs x Industry/Firm FE groups."""
     tex_path = out_dir / f"{SUITE_DIR}_table.tex"
 
-    # Lookup by (sample, dv) -> meta
-    def _get(dv: str) -> Dict[str, Any]:
-        for r in all_results:
-            if r.get("sample") == "Main" and r.get("dv") == dv:
-                return r
-        return {}
+    by_col = {r["col"]: r for r in all_results if r.get("col")}
 
-    ordered_dvs = BASE_DVS + LEAD_DVS  # 8
-    results = [_get(d) for d in ordered_dvs]
-
-    def fmt_coef(meta: Dict[str, Any]) -> str:
-        if not meta:
-            return ""
-        beta = meta.get("beta", np.nan)
-        p_one = meta.get("beta_p_one", np.nan)
+    def fmt_coef(m: Dict[str, Any]) -> str:
+        beta = m.get("beta", np.nan)
+        p_one = m.get("beta_p_one", np.nan)
         if np.isnan(beta):
             return ""
-        if np.isnan(p_one):
-            return f"{beta:.4f}"
-        if p_one < 0.01:
-            stars = r"^{***}"
-        elif p_one < 0.05:
-            stars = r"^{**}"
-        elif p_one < 0.10:
-            stars = r"^{*}"
-        else:
-            stars = ""
-        return f"{beta:.4f}{stars}"
+        stars = _sig_stars_one(p_one, beta)
+        return f"{beta:.4f}{('^{' + stars + '}') if stars else ''}"
 
-    def fmt_se(meta: Dict[str, Any]) -> str:
-        if not meta:
-            return ""
-        se = meta.get("beta_se", np.nan)
+    def fmt_se(m: Dict[str, Any]) -> str:
+        se = m.get("beta_se", np.nan)
         return "" if np.isnan(se) else f"({se:.4f})"
 
-    def fmt_int(meta: Dict[str, Any]) -> str:
-        n = meta.get("n_obs", 0) if meta else 0
+    def fmt_int(m: Dict[str, Any]) -> str:
+        n = m.get("n_obs", 0)
         return f"{n:,}" if n else ""
 
-    def fmt_r2(meta: Dict[str, Any], key: str) -> str:
-        if not meta:
-            return ""
-        v = meta.get(key, np.nan)
+    def fmt_r2(m: Dict[str, Any], key: str) -> str:
+        v = m.get(key, np.nan)
         if np.isnan(v):
             return ""
-        if abs(v) < 0.001:
-            return f"{v:.2e}"
-        return f"{v:.3f}"
+        return f"{v:.2e}" if abs(v) < 0.001 else f"{v:.3f}"
 
     def row(label: str, cells: List[str]) -> str:
         return f"{label} & " + " & ".join(cells) + r" \\"
+
+    cols = list(range(1, 9))
+    results = [by_col.get(c, {}) for c in cols]
 
     lines = [
         r"\begin{table}[htbp]",
@@ -449,32 +433,35 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\small",
         r"\begin{tabular}{l" + "c" * 8 + r"}",
         r"\toprule",
-        r" & \multicolumn{4}{c}{Contemporaneous} & \multicolumn{4}{c}{Next Quarter (t+1)} \\",
+        r" & \multicolumn{4}{c}{Industry + Cal.~Year FE} & \multicolumn{4}{c}{Firm + Cal.~Year FE} \\",
         r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}",
-        r" & Mgr QA & Mgr Pres & CEO QA & CEO Pres & Mgr QA & Mgr Pres & CEO QA & CEO Pres \\",
-        r" & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\",
+        r" & "
+        + " & ".join([DV_LABELS[MODEL_SPECS[c - 1]["dv"]] for c in cols])
+        + r" \\",
+        r" & " + " & ".join(f"({c})" for c in cols) + r" \\",
         r"\midrule",
     ]
 
-    # Main IV row - coefficient + SE
     lines.append(row(MACRO_IV_LABEL, [fmt_coef(m) for m in results]))
     lines.append(row("", [fmt_se(m) for m in results]))
 
     lines.append(r"\midrule")
 
-    # Controls / FE indicator rows
     lines.append(row("BASE Controls", ["Yes"] * 8))
-    lines.append(row("Pres Control", ["Yes"] * 8))
+    pres_cells = [
+        ("Yes" if PRES_CONTROL_MAP.get(MODEL_SPECS[c - 1]["dv"]) else "")
+        for c in cols
+    ]
+    lines.append(row("Pres Control", pres_cells))
     lines.append(row("Lagged DV", ["Yes"] * 8))
-    lines.append(row("Firm FE", ["Yes"] * 8))
-    lines.append(
-        row("Calendar Year FE", ["No"] * 8)  # crystal clear: no time FE
-    )
-    lines.append(row("Year-Quarter FE", ["No"] * 8))
+
+    ind_cells = ["Yes" if MODEL_SPECS[c - 1]["fe"] == "industry" else "" for c in cols]
+    firm_cells = ["Yes" if MODEL_SPECS[c - 1]["fe"] == "firm" else "" for c in cols]
+    lines.append(row("Industry FE", ind_cells))
+    lines.append(row("Firm FE", firm_cells))
+    lines.append(row("Calendar Year FE", ["Yes"] * 8))
 
     lines.append(r"\midrule")
-
-    # N, R^2, Adj R^2
     lines.append(row("Observations", [fmt_int(m) for m in results]))
     lines.append(row(r"$R^{2}$", [fmt_r2(m, "r2") for m in results]))
     lines.append(row(r"Adj.~$R^{2}$", [fmt_r2(m, "adj_r2") for m in results]))
@@ -488,18 +475,19 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
             r"\textit{Notes:} ",
             r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ "
             rf"(one-tailed test: {SUITE_ID} predicts $\beta > 0$). ",
-            r"Standard errors (in parentheses) are two-way clustered by firm and "
-            r"calendar year-quarter. ",
-            r"Dependent variables are call-level uncertainty language measures "
-            r"(contemporaneous in columns 1--4; next calendar quarter's call in "
-            r"columns 5--8). ",
-            r"Key regressor is $\log(\text{GPR})$, the log of the "
+            r"Standard errors (in parentheses) are two-way clustered by firm "
+            r"and calendar year-quarter. ",
+            r"Dependent variables are contemporaneous call-level uncertainty "
+            r"language measures. ",
+            rf"Key regressor is $\log({MACRO_IV_RAW})$, the log of the "
             r"Caldara \& Iacoviello (2022) news-based Geopolitical Risk "
-            r"index (headline 10-newspaper version, recent), matched to each "
-            r"call by its calendar month. ",
-            r"Models include firm fixed effects. ",
-            r"No time fixed effects are included - they would absorb the "
-            r"aggregate macro regressor. ",
+            r"index, matched to each call by its calendar month. ",
+            r"Models include Industry (FF12) or Firm fixed effects AND "
+            r"Calendar Year fixed effects. ",
+            r"Year-quarter fixed effects are NOT included as they would "
+            r"absorb the aggregate macro regressor; Calendar Year FE only "
+            r"absorbs year-to-year variation, preserving within-year "
+            r"cross-firm variation from monthly macro matching. ",
             r"Main sample (excludes financial and utility firms). ",
             r"Controls include the presentation-context sibling of Q\&A DVs, "
             r"the lagged dependent variable, analyst Q\&A uncertainty, negative "
@@ -535,7 +523,7 @@ def main(panel_path: str | None = None) -> int:
     )
 
     print("=" * 80)
-    print(f"STAGE 4: {SUITE_ID} - {MACRO_IV} -> Call Language Uncertainty")
+    print(f"STAGE 4: {SUITE_ID} - {MACRO_IV} (GPR) -> Call Language Uncertainty")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
@@ -587,51 +575,46 @@ def main(panel_path: str | None = None) -> int:
     print("  Saved: summary_stats.csv / .tex")
 
     all_results: List[Dict[str, Any]] = []
+    all_models: List[Tuple[int, Any, Dict[str, Any]]] = []
 
-    for dv in ALL_DVS:
-        for sample in CONFIG["samples"]:
-            print(f"\n--- {sample} / {dv} ---")
+    # Main sample only for headline 8-col table
+    panel_main = panel[panel["sample"] == "Main"].copy()
+    print(f"\n  Main sample: {len(panel_main):,} rows")
 
-            df_prep, controls = prepare_regression_data(panel, dv)
+    for spec in MODEL_SPECS:
+        dv_var = spec["dv"]
+        print(f"\n--- Spec col {spec['col']}: DV={dv_var} FE={spec['fe']} ---")
 
-            df_sample = df_prep[df_prep["sample"] == sample].copy()
+        df_prep, controls = prepare_regression_data(panel_main, dv_var)
 
-            df_sample["gvkey_count"] = df_sample.groupby("gvkey")[
-                "file_name"
-            ].transform("count")
-            df_filtered = df_sample[
-                df_sample["gvkey_count"] >= CONFIG["min_calls"]
-            ].copy()
+        # Min calls filter
+        df_prep["gvkey_count"] = df_prep.groupby("gvkey")["file_name"].transform("count")
+        df_sample = df_prep[df_prep["gvkey_count"] >= CONFIG["min_calls"]].copy()
+        print(
+            f"  After filters: {len(df_sample):,} calls, "
+            f"{df_sample['gvkey'].nunique():,} firms"
+        )
 
-            print(
-                f"  After filters: {len(df_filtered):,} calls, "
-                f"{df_filtered['gvkey'].nunique():,} firms"
-            )
+        if len(df_sample) < 100:
+            print("  Skipping: insufficient data")
+            continue
 
-            if len(df_filtered) < 100:
-                print("  Skipping: insufficient data")
-                continue
+        model, meta = run_regression(df_sample, spec, controls)
 
-            print(f"\n{'=' * 60}")
-            print(f"Running regression: {sample} / {dv}")
-            print(f"{'=' * 60}")
-
-            model, meta = run_regression(df_filtered, dv, sample, controls)
-
-            if model is not None:
-                all_results.append(meta)
-                with open(
-                    out_dir / f"regression_results_{sample}_{dv}.txt",
-                    "w",
-                    encoding="utf-8",
-                ) as f:
-                    f.write(f"Suite: {SUITE_ID}\n")
-                    f.write(f"DV: {dv}\n")
-                    f.write(f"Macro IV: {MACRO_IV}\n")
-                    f.write(f"Sample: {sample}\n")
-                    f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
-                    f.write("=" * 60 + "\n\n")
-                    f.write(str(model.summary))
+        if model is not None:
+            all_results.append(meta)
+            all_models.append((spec["col"], model, meta))
+            fname = f"regression_results_col{spec['col']}.txt"
+            with open(out_dir / fname, "w", encoding="utf-8") as f:
+                f.write(f"Suite: {SUITE_ID}\n")
+                f.write(f"Col: ({spec['col']})\n")
+                f.write(f"DV: {dv_var} ({DV_LABELS.get(dv_var, '')})\n")
+                f.write(f"Macro IV: {MACRO_IV}\n")
+                f.write(f"FE: {spec['fe']}\n")
+                f.write(f"Pres control: {meta.get('pres_control', '')}\n")
+                f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
+                f.write("=" * 60 + "\n\n")
+                f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
     pd.DataFrame(all_results).to_csv(
@@ -641,9 +624,7 @@ def main(panel_path: str | None = None) -> int:
 
     # Sample attrition
     if all_results:
-        main_result = next(
-            (r for r in all_results if r.get("sample") == "Main"), all_results[0]
-        )
+        main_result = all_results[0]
         attrition_stages = [
             ("Master manifest", len(panel)),
             ("Main sample filter", int((panel["sample"] == "Main").sum())),

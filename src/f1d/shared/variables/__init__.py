@@ -125,6 +125,7 @@ from .cash_holdings import CashHoldingsBuilder
 from .tobins_q import TobinsQBuilder
 from .capex_intensity import CapexIntensityBuilder
 from .dividend_payer import DividendPayerBuilder
+from .dividend_payer_quarterly import DividendPayerQuarterlyBuilder
 from .ocf_volatility import OCFVolatilityBuilder
 
 # Quarterly Payout Ratio
@@ -209,6 +210,7 @@ __all__ = [
     "TobinsQBuilder",
     "CapexIntensityBuilder",
     "DividendPayerBuilder",
+    "DividendPayerQuarterlyBuilder",
     "OCFVolatilityBuilder",
     # Quarterly Payout Ratio
     "PayoutRatioQuarterlyBuilder",
@@ -252,10 +254,14 @@ __all__ = [
     # H7
     "AmihudIlliqBuilder",
     "AmihudChangeBuilder",
+    # H7c/d/e BGT 25-day Amihud (Level/Delta/Avg)
+    "BGTLongWindowAmihudBuilder",
     # H14
     "BidAskSpreadChangeBuilder",
     "StockPriceBuilder",
     "TurnoverBuilder",
+    # H14c/d/e BGT 25-day closing-quote Spread (Level/Delta/Avg)
+    "BGTLongWindowSpreadBuilder",
     # Clarity Residuals (from CEO Clarity Extended Stage 4)
     "CEOClarityResidualBuilder",
     "ManagerClarityResidualBuilder",
@@ -291,10 +297,16 @@ from .wang_disp import WangDispBuilder
 from .amihud_illiq import AmihudIlliqBuilder
 from .amihud_change import AmihudChangeBuilder
 
+# H7c/d/e BGT (2018) 25-day post-call Amihud illiquidity (Level/Delta/Avg)
+from .bgt_long_window_amihud import BGTLongWindowAmihudBuilder
+
 # H14 Bid-Ask Spread Change
 from .bidask_spread_change import BidAskSpreadChangeBuilder
 from .stock_price import StockPriceBuilder
 from .turnover import TurnoverBuilder
+
+# H14c/d/e BGT (2018) window + Lee (2016) closing-quote spread (Level/Delta/Avg)
+from .bgt_long_window_spread import BGTLongWindowSpreadBuilder
 
 # Clarity Residuals (from CEO Clarity Extended Stage 4)
 from .ceo_clarity_residual import CEOClarityResidualBuilder

@@ -49,7 +49,13 @@ import pandas as pd
 from f1d.shared.config import load_variable_config, get_config
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest
-from f1d.shared.variables.panel_utils import assign_industry_sample, attach_fyearq
+from f1d.shared.variables.panel_utils import (
+    assign_industry_sample,
+    attach_fyearq,
+    build_cal_yr_qtr_index,
+    create_prior_quarter_lag,
+    create_next_quarter_lead,
+)
 from f1d.shared.variables.winsorization import winsorize_pooled
 from f1d.shared.variables import (
     # Key IVs (4 simultaneous)
@@ -71,6 +77,8 @@ from f1d.shared.variables import (
     TurnoverBuilder,
     # DV builder
     BidAskSpreadChangeBuilder,
+    # H14c/d/e BGT (2018) 25-day window + Lee (2016) closing-quote spread
+    BGTLongWindowSpreadBuilder,
     # IBES control
     EarningsSurpriseBuilder,
     # Infrastructure
@@ -134,6 +142,11 @@ def build_panel(
         # DV and pre_call_spread control (±3 trading day window)
         "bidask_spread": BidAskSpreadChangeBuilder(
             var_config.get("bidask_spread_change", {})
+        ),
+        # H14c/d/e BGT (2018) 25-day window + Lee (2016) closing-quote spread
+        # (Level/Delta/Avg in one builder pass)
+        "bgt_long_window_spread": BGTLongWindowSpreadBuilder(
+            var_config.get("bgt_long_window_spread", {})
         ),
         # Earnings surprise control
         "earnings_surprise": EarningsSurpriseBuilder(
@@ -199,9 +212,75 @@ def build_panel(
     # Winsorize CRSP-derived variables at 1%/99% (pooled)
     # Compustat variables are already winsorized by their engines
     # Volatility is already winsorized per-year by CRSPEngine
-    winsorize_cols = ["DSPREAD", "PreCallSpread", "StockPrice", "Turnover", "AbsSurpDec"]
+    # The 3 new BGT spread columns are added here so they get the same pooled
+    # winsorization as DSPREAD/PreCallSpread (matches existing H14 convention).
+    winsorize_cols = [
+        "DSPREAD", "PreCallSpread", "StockPrice", "Turnover", "AbsSurpDec",
+        "BGTLevel_Spread", "BGTDelta_Spread", "BGTAvg_Spread",
+    ]
     panel = winsorize_pooled(panel, winsorize_cols)
     print(f"  Winsorized {len(winsorize_cols)} columns at 1%/99% pooled")
+
+    # ============================================================================
+    # Long-window liquidity extension (2026-04-17)
+    # ============================================================================
+    # Phase C of the H14c/d/e + lead extension plan. Adds:
+    #   1. cal_yr / cal_qtr / cal_yr_qtr index columns (required by lag/lead)
+    #   2. PostCallSpread = PreCallSpread + DSPREAD (promoted from H14b runner-time)
+    #   3. {DV}_lag for 5 base columns (true t-1 prior-quarter lag)
+    #   4. {DV}_lead1 for 5 base columns (next-quarter lead)
+    # ============================================================================
+
+    # Step 1: calendar year-quarter time index (required by lag/lead helpers)
+    panel = build_cal_yr_qtr_index(panel)
+    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
+    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} "
+          f"({100*n_yr_qtr/len(panel):.1f}%)")
+
+    # Step 2: PostCallSpread = PreCallSpread + DSPREAD
+    # Promoted from H14b runner-time computation. Empirically n_neg ~= 1,006
+    # negative values exist due to pooled winsorization of PreCallSpread/DSPREAD
+    # independently. This artifact is preserved for backward compatibility with
+    # existing H14b col 1-6 production results (the H14b runner has been emitting
+    # this warning for months and the published coefficients already incorporate
+    # the artifact). Re-winsorizing PostCallSpread here would silently change
+    # H14b results -- DO NOT do that. Just propagate the warning to panel-build
+    # time so users are aware.
+    panel["PostCallSpread"] = panel["PreCallSpread"] + panel["DSPREAD"]
+    n_neg_post = (panel["PostCallSpread"] < 0).sum()
+    if n_neg_post > 0:
+        print(f"  WARNING: {n_neg_post} negative PostCallSpread values "
+              f"(winsorization artifact -- preserved for backward compat with H14b)")
+    print(f"  PostCallSpread: mean={panel['PostCallSpread'].mean():.6f}, "
+          f"non-null={panel['PostCallSpread'].notna().sum():,}")
+
+    # Step 3 + 4: lag and lead for all 5 spread DVs
+    # (DSPREAD, PostCallSpread, plus 3 BGT 25-day Spread variants)
+    # NOTE: legacy high-low columns (pre_call_spread, delta_spread,
+    # pre_spread_change) are intentionally NOT lagged/leaded -- only the
+    # closing-quote columns (which are the H14 production DV family) are
+    # in scope.
+    spread_dvs = [
+        "DSPREAD",
+        "PostCallSpread",
+        "BGTLevel_Spread",
+        "BGTDelta_Spread",
+        "BGTAvg_Spread",
+    ]
+    panel = create_prior_quarter_lag(panel, spread_dvs)
+    panel = create_next_quarter_lead(panel, spread_dvs)
+
+    # Coverage report for new columns
+    print("  Lag/lead coverage:")
+    for dv in spread_dvs:
+        lag_col = f"{dv}_lag"
+        lead_col = f"{dv}_lead1"
+        if lag_col in panel.columns:
+            print(f"    {lag_col:30s}: {panel[lag_col].notna().sum():>7,} "
+                  f"({100*panel[lag_col].notna().sum()/len(panel):.1f}%)")
+        if lead_col in panel.columns:
+            print(f"    {lead_col:30s}: {panel[lead_col].notna().sum():>7,} "
+                  f"({100*panel[lead_col].notna().sum()/len(panel):.1f}%)")
 
 
     stats["variable_stats"] = [asdict(r.stats) for r in all_results.values()]

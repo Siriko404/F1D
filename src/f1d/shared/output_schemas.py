@@ -38,13 +38,14 @@ import pandas as pd
 try:
     import pandera as pa
     from pandera import Column, DataFrameSchema, Check
-    from pandera.errors import SchemaError
+    from pandera.errors import SchemaError, SchemaErrors
 
     PANDERA_AVAILABLE = True
 except ImportError:
     PANDERA_AVAILABLE = False
     DataFrameSchema = object  # type: ignore[misc,assignment]
     SchemaError = Exception  # type: ignore[misc,assignment]
+    SchemaErrors = Exception  # type: ignore[misc,assignment]
     logging.warning(
         "Pandera not installed. Schema validation will be skipped. "
         "Install with: pip install pandera>=0.20.0"
@@ -68,7 +69,9 @@ if PANDERA_AVAILABLE:
             "sic": Column(str, nullable=True),
             # Linguistic variables (nullable - NaN means "no text in section")
             # These are pct columns, should be 0-100 range
-            "UncAnsMgr": Column(
+            # Use raw column name (rename to DWZ alias happens later in
+            # _linguistic_engine.py at engine load time, not at parquet write time).
+            "Manager_QA_Uncertainty_pct": Column(
                 float, nullable=True, checks=Check.ge(0.0)
             ),
         },
@@ -164,8 +167,8 @@ def _validate_with_schema(
         validated_df = schema.validate(df, lazy=True)
         logger.info(f"{schema_name} validation passed: {len(df):,} rows")
         return validated_df
-    except SchemaError as e:
-        msg = f"{schema_name} validation failed: {e.failure_cases}"
+    except (SchemaError, SchemaErrors) as e:
+        msg = f"{schema_name} validation failed: {getattr(e, 'failure_cases', e)}"
         if warn_only:
             logger.warning(msg)
             return df

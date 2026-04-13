@@ -125,6 +125,8 @@ COMPUSTAT_COLS = [
     "sCFO",
     # H12 extension (Quarterly Payout Ratio)
     "PayoutRatio_q",
+    # H12b extension (Binary Dividend Payer, HP 2009 ex-date analog)
+    "DivPayerQ",
     # Biddle (2009) — CashFlowAt & SalesGrowth kept; InvestmentResidual removed (H2 deleted)
     "CashFlowAt",
     "SalesGrowth",
@@ -177,7 +179,8 @@ REQUIRED_COMPUSTAT_COLS = [
     "aqcy",  # Acquisitions annual YTD -- used Q4-only (Biddle investment numerator)
     "sppey",  # Sale of PP&E annual YTD -- used Q4-only (Biddle investment numerator)
     # H3 extension
-    "dvpspq",  # Dividends per share by ex-date (quarterly)
+    "dvpspq",  # Dividends per share by PAY date (quarterly) -- used by H12 PayoutRatio_q
+    "dvpsxq",  # Div per share by EX date (quarterly) -- H12b DivPayerQ (HP 2009 verbatim field, Compustat item 26 analog)
     "req",  # Retained earnings (quarterly)
     "seqq",  # Shareholders' equity (quarterly)
     "ibq",  # Income Before Extraordinary Items (quarterly)
@@ -1037,6 +1040,13 @@ def _compute_and_winsorize(
         np.nan,
     )
 
+    # --- H12b: Binary dividend payer, HP (2009) ex-date field ---
+    # Verbatim Compustat item 26 ex-date analog at quarterly frequency.
+    # Reference: Hoberg & Prabhala (2009, RFS) — primary inspiration (annual firm-year);
+    #            Chetty & Saez (2005, QJE) — secondary firm-quarter frequency precedent.
+    # fillna(0) classifies missing dvpsxq as non-payer quarters (HP convention).
+    comp["DivPayerQ"] = (comp["dvpsxq"].fillna(0) > 0).astype(float)
+
     comp["sCFO"] = _compute_ocf_volatility(comp)
 
     # --- Biddle (2009) extension: CashFlow + SalesGrowth (InvestmentResidual removed — H2 deleted) ---
@@ -1287,6 +1297,7 @@ def _compute_and_winsorize(
     # per-year inside _compute_biddle_residual — do not double-winsorize).
     skip_winsorize = {
         "DivDummy",
+        "DivPayerQ",         # binary dividend payer (H12b, HP 2009 ex-date)
         "CashFlowAt",
         "SalesGrowth",
         "fqtr",              # fiscal quarter identifier (not a variable to winsorize)
