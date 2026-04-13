@@ -297,16 +297,22 @@ def run_regression(
     elapsed = (datetime.now() - t0).total_seconds()
     adj_r2 = 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid
 
-    # Extract IV coefficient — two-tailed
+    # Extract IV coefficient — one-tailed (H23: β>0, higher competition → more uncertainty)
     beta_iv = float(model.params.get(IV, np.nan))
     se_iv = float(model.std_errors.get(IV, np.nan))
     p_two_iv = float(model.pvalues.get(IV, np.nan))
+
+    # One-tailed β>0: halve p if β>0 (supports H23), else 1 - p/2
+    if not np.isnan(p_two_iv) and not np.isnan(beta_iv):
+        p_one_iv = p_two_iv / 2 if beta_iv > 0 else 1 - p_two_iv / 2
+    else:
+        p_one_iv = np.nan
 
     # DV mean in regression sample
     dv_mean = float(df_prepared[dv].mean())
 
     print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {adj_r2:.4f}  ({elapsed:.1f}s)")
-    print(f"  {IV}: b={beta_iv:.6f} se={se_iv:.6f} p2={p_two_iv:.4f} {_sig_stars(p_two_iv)}")
+    print(f"  {IV}: b={beta_iv:.6f} se={se_iv:.6f} p1={p_one_iv:.4f} {_sig_stars(p_one_iv)}")
     print(f"  DV mean: {dv_mean:.4f}")
 
     meta: Dict[str, Any] = {
@@ -321,6 +327,7 @@ def run_regression(
         "beta_iv": beta_iv,
         "se_iv": se_iv,
         "p_two_iv": p_two_iv,
+        "p_one_iv": p_one_iv,
         "pres_control": pres_ctrl or "",
     }
 
@@ -334,7 +341,7 @@ def run_regression(
 
 
 def _sig_stars(p: float) -> str:
-    """Significance stars for two-tailed p-value."""
+    """Significance stars for one-tailed p-value."""
     if np.isnan(p):
         return ""
     if p < 0.01:
@@ -409,7 +416,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
         beta = meta.get("beta_iv", np.nan)
-        p = meta.get("p_two_iv", np.nan)
+        p = meta.get("p_one_iv", np.nan)
         coef_cells.append(fmt_coef(beta, _sig_stars(p)))
     lines.append(r"$z(\log(\mathrm{TSIMM}))$ & " + " & ".join(coef_cells) + r" \\")
 
@@ -480,7 +487,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\begin{minipage}{\linewidth}",
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed). ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed). ",
         r"Standard errors (in parentheses) clustered at firm level. ",
         r"DV is fiscal-year average of call-level LM uncertainty word percentage. ",
         r"IV is $z(\log(\mathrm{TSIMM}))$, standardized log of Hoberg \& Phillips (2016) TNIC3 total product similarity. ",
@@ -643,9 +650,9 @@ def main(panel_path: Optional[str] = None) -> int:
     # Summary of IV significance
     for r in all_results:
         m = r["meta"]
-        stars = _sig_stars(m["p_two_iv"])
+        stars = _sig_stars(m["p_one_iv"])
         print(f"  Col ({m['col']}) {DV_LABELS.get(m['dv'], m['dv'])} [{m['fe']}]: "
-              f"b={m['beta_iv']:.6f} p2={m['p_two_iv']:.4f} {stars}")
+              f"b={m['beta_iv']:.6f} p1={m['p_one_iv']:.4f} {stars}")
 
     return 0
 

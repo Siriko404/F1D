@@ -105,12 +105,16 @@ YEAR_MIN = 2002
 YEAR_MAX = 2016
 
 MODEL_SPECS = [
-    # Base specs: unconditional Manager_QA_Unc_c (no interactions)
+    # Unconditional specs (no interactions): cols 1-4, full FE ladder
     {"col": 1, "dv": "CashRatio", "fe": "industry",    "extra_controls": [], "interactions": False},
-    {"col": 2, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": False},
-    # Interaction specs: Manager_QA_Unc_c = IG-reference conditional effect
-    {"col": 3, "dv": "CashRatio", "fe": "industry",    "extra_controls": [], "interactions": True},
-    {"col": 4, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": True},
+    {"col": 2, "dv": "CashRatio", "fe": "firm",        "extra_controls": [], "interactions": False},
+    {"col": 3, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": False},
+    {"col": 4, "dv": "CashRatio", "fe": "firm_yq",     "extra_controls": [], "interactions": False},
+    # Interaction specs (IG-reference conditional effect): cols 5-8, full FE ladder
+    {"col": 5, "dv": "CashRatio", "fe": "industry",    "extra_controls": [], "interactions": True},
+    {"col": 6, "dv": "CashRatio", "fe": "firm",        "extra_controls": [], "interactions": True},
+    {"col": 7, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": True},
+    {"col": 8, "dv": "CashRatio", "fe": "firm_yq",     "extra_controls": [], "interactions": True},
 ]
 
 SUMMARY_STATS_VARS = [
@@ -413,7 +417,8 @@ def run_regression(
 
     # Determine time column and FE label
     time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
-    fe_label = "Industry + CalYrQtr" if fe.endswith("_yq") else "Industry + CalYear"
+    base_fe = fe.replace("_yq", "")
+    fe_label = f"{'Firm' if base_fe == 'firm' else 'Industry(FF12)'} + {'CalYrQtr' if fe.endswith('_yq') else 'CalYear'}"
 
     print(f"\n{'=' * 60}")
     print(f"Col ({col_num}) | DV={dv} | FE={fe_label}")
@@ -448,16 +453,21 @@ def run_regression(
     df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        model_obj = PanelOLS(
-            dependent=df_panel[dv],
-            exog=df_panel[exog],
-            entity_effects=False,
-            time_effects=True,
-            other_effects=df_panel["ff12_code"],
-            drop_absorbed=True,
-            check_rank=False,
-        )
-        model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=True)
+        if base_fe == "industry":
+            model_obj = PanelOLS(
+                dependent=df_panel[dv],
+                exog=df_panel[exog],
+                entity_effects=False,
+                time_effects=True,
+                other_effects=df_panel["ff12_code"],
+                drop_absorbed=True,
+                check_rank=False,
+            )
+        else:  # firm
+            exog_str = " + ".join(exog)
+            formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
+            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
+        model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
     except Exception as e:
         print(f"  ERROR: {e}", file=sys.stderr)
         return None, {}
@@ -670,7 +680,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"Below-IG: firms rated BB$+$ through SD. ",
         r"Unrated: firms with no S\&P long-term issuer credit rating. ",
         r"Rating matched via merge\_asof to most recent rating before call date. ",
-        r"Standard errors (in parentheses) two-way clustered (firm, time). ",
+        r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Sample restricted to fiscal years 2002--2016 (ratings coverage). ",
         r"Cols~(1),(3): Calendar Year FE. Cols~(2),(4): Calendar Year-Quarter FE. ",

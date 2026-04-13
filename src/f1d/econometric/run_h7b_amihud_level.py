@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H7b Post-Call Amihud Illiquidity LEVEL
+STAGE 4: Test H7b Post-Call Amihud Illiquidity LEVEL (12-col 2-DV)
 ================================================================================
 ID: econometric/run_h7b_amihud_level
-Description: Run H7b — does speech uncertainty predict higher post-call Amihud
-             illiquidity LEVELS? Uses the same H7 panel, computing
-             PostCallAmihud = PreCallILLIQ + DeltaILLIQ at runner time.
+Description: Run H7b -- does speech uncertainty predict higher post-call Amihud
+             illiquidity LEVELS, contemporaneous AND next-quarter lead?
 
-DV: PostCallAmihud — post-call Amihud illiquidity level (mean daily illiq [+1,+3]).
-    Computed as: PreCallILLIQ + DeltaILLIQ (both from H7 panel).
+DV (cols 1-6):  PostCallAmihud  -- post-call Amihud illiquidity level (mean
+                daily illiq [+1,+3]). Computed at panel build time as
+                PreCallILLIQ + DeltaILLIQ (algebraically equal to PostCallILLIQ).
+DV (cols 7-12): PostCallAmihud_lead1 -- next-quarter call's PostCallAmihud.
 
-Note: By Frisch-Waugh-Lovell, when PreCallILLIQ is a control (which it is),
-the IV coefficients are algebraically identical to H7's delta regression.
-This suite is implemented for completeness per Amihud (2002).
+Note: By Frisch-Waugh-Lovell, when the t-1 lag of PostCallAmihud is a control
+(which it is, via Lagged_DV), the IV coefficients are NOT identical to H7's
+delta regression -- because the new lag (true prior-quarter lag) differs from
+the old PreCallILLIQ control (same-call pre-window mean). H7b is therefore now
+a meaningfully distinct test from H7, not just an algebraic re-arrangement.
 
-6 Model Specifications:
-    Cols 1-2: Industry/Firm FE + CalYear FE, Base controls
-    Cols 3-4: Industry/Firm FE + CalYear FE, Extended controls
-    Cols 5-6: Industry/Firm FE + CalYrQtr FE, Extended controls
+12 Model Specifications: same as H7 (industry/firm x base/extended x cal_yr/cal_yr_qtr x 2 DVs).
 
-Hypothesis: One-tailed (beta > 0) — higher uncertainty -> higher post-call illiquidity.
-Ref: Amihud (2002, Journal of Financial Markets).
+Hypothesis: One-tailed (beta > 0) -- higher uncertainty -> higher post-call illiquidity.
+Ref: Amihud (2002, Journal of Financial Markets); Lee (2016, TAR).
 
 Author: Thesis Author
-Date: 2026-03-31
+Date: 2026-04-17 (12-col 2-DV upgrade)
 ================================================================================
 """
 
@@ -55,9 +55,10 @@ KEY_IVS = [
     "UncAnsCEO",
     "UncPreCEO",
     "UncAnsMgr",
-    "UncPreMgr",]
+    "UncPreMgr",
+]
 
-# Mirrors H14 bid-ask spread pattern: standard 7 + lagged-DV control
+# Lagged_DV placeholder routed at spec-prep time (PreCallILLIQ removed)
 BASE_CONTROLS = [
     "lnAssets",
     "TobinsQ",
@@ -66,7 +67,7 @@ BASE_CONTROLS = [
     "Capex",
     "DivDummy",
     "sCFO",
-    "PreCallILLIQ",
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -77,13 +78,18 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "PostCallAmihud", "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "PostCallAmihud", "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "PostCallAmihud", "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "PostCallAmihud", "fe": "firm",     "controls": "extended"},
-    # Year-Quarter FE specs (Extended controls only)
-    {"col": 5, "dv": "PostCallAmihud", "fe": "industry_yq", "controls": "extended"},
-    {"col": 6, "dv": "PostCallAmihud", "fe": "firm_yq",     "controls": "extended"},
+    {"col": 1,  "dv": "PostCallAmihud",       "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "PostCallAmihud",       "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "PostCallAmihud",       "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "PostCallAmihud",       "fe": "firm",        "controls": "extended"},
+    {"col": 5,  "dv": "PostCallAmihud",       "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "PostCallAmihud",       "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "PostCallAmihud_lead1", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "PostCallAmihud_lead1", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "PostCallAmihud_lead1", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "PostCallAmihud_lead1", "fe": "firm",        "controls": "extended"},
+    {"col": 11, "dv": "PostCallAmihud_lead1", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "PostCallAmihud_lead1", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -92,15 +98,18 @@ VARIABLE_LABELS = {
     "UncAnsCEO": "CEO QA Uncertainty",
     "UncPreCEO": "CEO Pres Uncertainty",
     "UncAnsMgr": "Mgr QA Uncertainty",
-    "UncPreMgr": "Mgr Pres Uncertainty",}
+    "UncPreMgr": "Mgr Pres Uncertainty",
+}
 
 SUMMARY_STATS_VARS = [
-    {"col": "PostCallAmihud", "label": "Post-Call Amihud Level"},
+    {"col": "PostCallAmihud", "label": "Post-Call Amihud$_t$"},
+    {"col": "PostCallAmihud_lead1", "label": "Post-Call Amihud$_{t+1}$"},
     {"col": "PreCallILLIQ", "label": "Pre-Call Amihud"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
-    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},    {"col": "lnAssets", "label": "Firm Size (log AT)"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
     {"col": "Leverage", "label": "Leverage"},
@@ -111,8 +120,14 @@ SUMMARY_STATS_VARS = [
 ]
 
 
+def _lag_column_for_dv(dv: str) -> str:
+    if dv.endswith("_lead1"):
+        return dv[: -len("_lead1")]
+    return f"{dv}_lag"
+
+
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Stage 4: Test H7b Amihud Level (call-level)")
+    parser = argparse.ArgumentParser(description="Stage 4: Test H7b Amihud Level (12-col 2-DV)")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
     return parser.parse_args()
@@ -134,9 +149,13 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
-        "start_date",  # needed for calendar year-quarter FE
+        "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "DeltaILLIQ", "PreCallILLIQ",
+        "cal_yr", "cal_qtr", "cal_yr_qtr",
+        # PostCallAmihud (panel-time computed) + lag + lead
+        "PostCallAmihud", "PostCallAmihud_lag", "PostCallAmihud_lead1",
+        # Kept for summary stats reference
+        "PreCallILLIQ",
         "UncAnsCEO", "UncPreCEO",
         "UncAnsMgr", "UncPreMgr",
         "lnAssets", "TobinsQ", "ROA", "Leverage", "Capex",
@@ -148,18 +167,15 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}  |  Columns: {len(panel.columns)}")
 
-    # Compute post-call level DV = pre + delta
-    panel["PostCallAmihud"] = panel["PreCallILLIQ"] + panel["DeltaILLIQ"]
+    # PostCallAmihud is now computed at panel build time (was previously computed
+    # here at runner-time -- removed in 2026-04-17 panel-time promotion).
     n_neg = (panel["PostCallAmihud"] < 0).sum()
     if n_neg > 0:
-        print(f"  WARNING: {n_neg} negative PostCallAmihud values (winsorization artifact)")
+        print(f"  WARNING: {n_neg} negative PostCallAmihud values "
+              f"(winsorization artifact -- preserved for backward compat)")
     print(f"  PostCallAmihud: mean={panel['PostCallAmihud'].mean():.6f}, "
           f"non-null={panel['PostCallAmihud'].notna().sum():,}")
-
-    # Build calendar year-quarter index for YQ FE specs
-    panel = build_cal_yr_qtr_index(panel)
-    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
-    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+    print(f"  PostCallAmihud_lead1: non-null={panel['PostCallAmihud_lead1'].notna().sum():,}")
 
     return panel
 
@@ -176,6 +192,10 @@ def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.Dat
     dv = spec["dv"]
     fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[_lag_column_for_dv(dv)]
+
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
     if fe_type.endswith("_yq"):
         required.append("cal_yr_qtr")
@@ -222,14 +242,16 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
 
     exog = KEY_IVS + controls
 
-    # Determine time index based on FE type
     time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
     base_fe = fe_type.replace("_yq", "")
-    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+    fe_label = (
+        f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'}"
+        f" + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+    )
 
     print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
-    print("  Estimating with firm-clustered SEs via PanelOLS...")
+    print("  Estimating with firm-level clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
     df_panel = df_prepared.set_index(["gvkey", time_col])
@@ -242,12 +264,12 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
                 other_effects=df_panel["ff12_code"],
                 drop_absorbed=True, check_rank=False,
             )
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
-        else:  # "firm"
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+        else:
             exog_str = " + ".join(exog)
             formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
             model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
         return None, {}
@@ -262,9 +284,9 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
         "n_obs": int(model.nobs), "n_firms": df_prepared["gvkey"].nunique(),
         "r2": float(model.rsquared),
         "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
+        "dv_mean": float(model.model.dependent.dataframe.mean().iloc[0]),
     }
 
-    # One-tailed: H7 beta > 0 (higher uncertainty -> more illiquidity)
     for iv in KEY_IVS:
         beta = float(model.params.get(iv, np.nan))
         se = float(model.std_errors.get(iv, np.nan))
@@ -294,7 +316,7 @@ def _sig_stars(p):
 
 def _save_latex_table(all_results, out_dir):
     results_by_col = {r["meta"]["col"]: r["meta"] for r in all_results if r.get("meta")}
-    n_cols = 6
+    n_cols = 12
 
     def fmt_coef(v, s): return "" if np.isnan(v) else f"{v:.4f}{s}"
     def fmt_se(v): return "" if np.isnan(v) else f"({v:.4f})"
@@ -308,14 +330,17 @@ def _save_latex_table(all_results, out_dir):
 
     lines = [
         r"\begin{table}[htbp]", r"\centering",
-        r"\caption{Speech Uncertainty and Post-Call Amihud Illiquidity Level}",
+        r"\caption{Speech Uncertainty and Post-Call Amihud Illiquidity LEVEL (contemp + $t+1$ lead)}",
         r"\label{tab:h7b_amihud_level}", r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}", r"\toprule",
     ]
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
-    lines.append(r" & \multicolumn{6}{c}{Post-Call Amihud Illiquidity Level} \\")
-    lines.append(r"\cmidrule(lr){2-7}")
+    lines.append(
+        r" & \multicolumn{6}{c}{PostCallAmihud$_t$}"
+        r" & \multicolumn{6}{c}{PostCallAmihud$_{t+1}$} \\"
+    )
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     for iv in KEY_IVS:
@@ -331,10 +356,7 @@ def _save_latex_table(all_results, out_dir):
     lines.append(r"\midrule")
     ctrl = ["Extended" if results_by_col.get(c, {}).get("controls") == "extended" else "Base" for c in range(1, n_cols + 1)]
     lines.append(r"Controls & " + " & ".join(ctrl) + r" \\")
-    ind_fe_cells = []
-    firm_fe_cells = []
-    year_fe_cells = []
-    yr_qtr_fe_cells = []
+    ind_fe_cells, firm_fe_cells, year_fe_cells, yr_qtr_fe_cells = [], [], [], []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
         fe = meta.get("fe", "")
@@ -355,18 +377,20 @@ def _save_latex_table(all_results, out_dir):
     lines.append(r"$R^2$ & " + " & ".join(r2s) + r" \\")
     adj_r2s = [fmt_r2(results_by_col.get(c, {}).get("adj_r2", np.nan)) for c in range(1, n_cols + 1)]
     lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2s) + r" \\")
+    dv_means = [fmt_r2(results_by_col.get(c, {}).get("dv_mean", np.nan)) for c in range(1, n_cols + 1)]
+    lines.append(r"DV Mean & " + " & ".join(dv_means) + r" \\")
 
     lines += [
         r"\bottomrule", r"\end{tabular}",
         r"\begin{minipage}{\linewidth}", r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H7: $\beta > 0$). ",
-        r"Standard errors (in parentheses) clustered at firm level. ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H7b: $\beta > 0$). ",
+        r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
-        r"$\Delta$Amihud = post-call ([+1,+3] days) minus pre-call ([-3,-1] days) Amihud illiquidity. ",
-        r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses calendar year (cal\_yr) or calendar year-quarter (cal\_yr\_qtr). ",
-        r"All variables winsorized at 1\%/99\% per year (controls at engine level; $\Delta$Amihud and pre-call Amihud at builder level). ",
+        r"PostCallAmihud$_t$ = post-call ([+1,+3] days) Amihud illiquidity LEVEL = PreCallILLIQ + DeltaILLIQ. ",
+        r"PostCallAmihud$_{t+1}$ = next-quarter call's PostCallAmihud (calendar quarter, strict consecutive). ",
+        r"Lagged\_DV control = true t-1 prior-quarter lag. ",
+        r"Firm-level clustered SEs. Time index switches per spec (cal\_yr or cal\_yr\_qtr). ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}", r"\end{table}",
     ]
@@ -387,6 +411,7 @@ def save_outputs(all_results, out_dir):
         with open(out_dir / f"regression_results_col{col_num}.txt", "w", encoding="utf-8") as f:
             f.write(f"Col ({col_num}) | DV: {meta['dv']} | FE: {meta['fe']} | Controls: {meta['controls']}\n")
             f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
+            f.write(f"DV_Mean: {meta.get('dv_mean', float('nan')):.10f}\n")
             f.write("=" * 60 + "\n\n" + str(model.summary))
         print(f"  Saved: regression_results_col{col_num}.txt")
 
@@ -409,15 +434,12 @@ def main(panel_path: Optional[str] = None) -> int:
     log_dir = setup_run_logging(log_base_dir=root / "logs", suite_name="H7b_Amihud_Level", timestamp=timestamp)
 
     print("=" * 80)
-    print("STAGE 4: Test H7b Post-Call Amihud Level Hypothesis")
+    print("STAGE 4: Test H7b Post-Call Amihud Level Hypothesis (12-col 2-DV)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Sample:    Main only (FF12 != 8, 11)")
-    print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
-    print(f"Specs:     {len(MODEL_SPECS)} model columns")
-    print(f"Time FE:   cal_yr (calendar year) + cal_yr_qtr (calendar year-quarter)")
-    print(f"Test:      One-tailed (beta > 0)")
+    print(f"Specs:     {len(MODEL_SPECS)} model columns (6 contemp + 6 lead)")
+    print(f"Cluster:   Firm-level (Petersen 2009)")
 
     panel = load_panel(root, panel_path)
     panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
@@ -430,7 +452,6 @@ def main(panel_path: Optional[str] = None) -> int:
     main_panel_n = len(panel)
 
     print(f"\n  Main sample: {main_panel_n:,} calls, {panel['gvkey'].nunique():,} firms")
-    print(f"  DeltaILLIQ non-null: {panel['DeltaILLIQ'].notna().sum():,}")
     for iv in KEY_IVS:
         n_valid = panel[iv].notna().sum()
         print(f"  {iv}: {n_valid:,} ({100.0 * n_valid / main_panel_n:.1f}%)")
@@ -440,7 +461,7 @@ def main(panel_path: Optional[str] = None) -> int:
         df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
         output_csv=out_dir / "summary_stats.csv", output_tex=out_dir / "summary_stats.tex",
         caption="Summary Statistics -- H7b Amihud Level (Main Sample)",
-        label="tab:summary_stats_h7",
+        label="tab:summary_stats_h7b",
     )
 
     all_results: List[Dict[str, Any]] = []
@@ -452,7 +473,6 @@ def main(panel_path: Optional[str] = None) -> int:
             print(f"  ERROR: {e}", file=sys.stderr)
             continue
         if len(df_prepared) < 100:
-            print(f"  Skipping: too few obs")
             continue
         model, meta = run_regression(df_prepared, spec)
         if model is not None and meta:
@@ -466,6 +486,7 @@ def main(panel_path: Optional[str] = None) -> int:
             ("Full panel", full_panel_n),
             ("Main sample", main_panel_n),
             ("PostCallAmihud non-null", panel["PostCallAmihud"].notna().sum()),
+            ("PostCallAmihud_lead1 non-null", panel["PostCallAmihud_lead1"].notna().sum()),
             ("Complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ], out_dir, "H7b Amihud Level")
 
@@ -478,25 +499,19 @@ def main(panel_path: Optional[str] = None) -> int:
     )
 
     duration = (datetime.now() - start_time).total_seconds()
-    with open(out_dir / "report_step4_H7.md", "w", encoding="utf-8") as f:
-        f.write(f"# H7b Amihud Level Report\n\n**Duration:** {duration:.1f}s\n**Sample:** Main only\n")
-    print(f"  Saved: report_step4_H7.md")
+    with open(out_dir / "report_step4_H7b.md", "w", encoding="utf-8") as f:
+        f.write(f"# H7b Amihud Level Report (12-col 2-DV)\n\n**Duration:** {duration:.1f}s\n")
+    print(f"  Saved: report_step4_H7b.md")
 
     print("\n" + "=" * 80)
     print("COMPLETE")
     print("=" * 80)
     print(f"Duration: {duration:.1f}s  |  Regressions: {len(all_results)}/{len(MODEL_SPECS)}")
-    for iv in KEY_IVS:
-        sig = sum(1 for r in all_results
-                  if r["meta"].get(f"{iv}_p_one", 1.0) < 0.05 and r["meta"].get(f"{iv}_beta", 0) > 0)
-        print(f"  {iv}: {sig}/{len(all_results)} significant (p<0.05, one-tail, beta>0)")
     return 0
 
 
 if __name__ == "__main__":
     args = parse_arguments()
     if args.dry_run:
-        print(f"KEY_IVS: {len(KEY_IVS)}, MODEL_SPECS: {len(MODEL_SPECS)}, BASE: {len(BASE_CONTROLS)}, EXT: {len(EXTENDED_CONTROLS)}")
-        print("[OK]")
         sys.exit(0)
     sys.exit(main(panel_path=args.panel_path))

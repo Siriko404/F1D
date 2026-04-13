@@ -18,6 +18,43 @@ import pandas as pd
 BASE = Path(__file__).resolve().parent / "econometric"
 
 
+def resolve_suite_dir(dir_value: str) -> Path:
+    """Resolve a suite dir entry to the latest valid run on disk.
+
+    Format:
+      - "suite_name"                  → auto-pick latest timestamped subdir
+      - "suite_name/timestamp"        → timestamp is ignored; auto-latest
+      - "suite_name/:pin:<timestamp>" → force that exact run (escape hatch)
+
+    A run is "valid" if it contains at least one regression_results_col*.txt
+    or a *_table.tex (for prebuilt/moderation suites). Dirs starting with "_"
+    (e.g. _archived) are skipped.
+    """
+    parts = dir_value.split("/", 1)
+    suite_name = parts[0]
+    suite_root = BASE / suite_name
+
+    if len(parts) == 2 and parts[1].startswith(":pin:"):
+        pinned = suite_root / parts[1][len(":pin:"):]
+        if not pinned.exists():
+            raise FileNotFoundError(f"Pinned run not found: {pinned}")
+        return pinned
+
+    if not suite_root.exists():
+        return BASE / dir_value  # let downstream .exists() checks fail naturally
+
+    candidates = []
+    for p in suite_root.iterdir():
+        if not p.is_dir() or p.name.startswith("_"):
+            continue
+        has_results = any(p.glob("regression_results_col*.txt")) or any(p.glob("*_table.tex"))
+        if has_results:
+            candidates.append(p)
+    if not candidates:
+        return BASE / dir_value
+    return max(candidates, key=lambda p: p.name)
+
+
 def _load_dv_means(suite_dir, col_offset=0):
     """Load DV means from model_diagnostics.csv (regression-sample means)."""
     diag_path = suite_dir / "model_diagnostics.csv"
@@ -37,7 +74,7 @@ SUITES = [
     # ── H1 family ──
     {
         "id": "H1",
-        "dir": "h1_cash_holdings/2026-04-03_031235",
+        "dir": "h1_cash_holdings",
         "caption": "H1: Speech Uncertainty and Cash Holdings",
         "label": "tab:h1",
         "cols": 12,
@@ -51,12 +88,12 @@ SUITES = [
     {
         "id": "H1.1",
         "type": "moderation",
-        "dir": "h1_1_cash_tsimm/2026-04-02_124916",
+        "dir": "h1_1_cash_tsimm",
         "caption": "H1.1: Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
         "label": "tab:h1_1",
-        "cols": 2,
+        "cols": 4,
         "dvs": [
-            ("CashRatio", 2),
+            ("CashRatio", 4),
         ],
         "key_vars": [
             "Manager_QA_Unc_c",
@@ -75,12 +112,12 @@ SUITES = [
     {
         "id": "H1.1b",
         "type": "moderation",
-        "dir": "h1_1b_cash_tsimm_binary/2026-04-02_124927",
+        "dir": "h1_1b_cash_tsimm_binary",
         "caption": "H1.1b: Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings",
         "label": "tab:h1_1b",
-        "cols": 2,
+        "cols": 4,
         "dvs": [
-            ("CashRatio", 2),
+            ("CashRatio", 4),
         ],
         "key_vars": [
             "Manager_QA_Unc_c",
@@ -99,21 +136,25 @@ SUITES = [
     {
         "id": "H1.2",
         "type": "moderation",
-        "dir": "h1_2_cash_constraint/2026-04-03_031542",
+        "dir": "h1_2_cash_constraint",
         "caption": "H1.2: Financial Constraint--Moderated Speech Uncertainty and Cash Holdings (Three-Category)",
         "label": "tab:h1_2",
-        "cols": 2,
+        "cols": 4,
         "col_files": {
-            1: "regression_results_col3.txt",
-            2: "regression_results_col4.txt",
+            1: "regression_results_col5.txt",
+            2: "regression_results_col6.txt",
+            3: "regression_results_col7.txt",
+            4: "regression_results_col8.txt",
         },
         "dvs": [
-            ("CashRatio", 2),
+            ("CashRatio", 4),
         ],
         "base_iv": {
             "files": {
                 1: "regression_results_col1.txt",
                 2: "regression_results_col2.txt",
+                3: "regression_results_col3.txt",
+                4: "regression_results_col4.txt",
             },
             "var": "Manager_QA_Unc_c",
             "label": r"Manager\_QA\_Unc\_c",
@@ -140,7 +181,7 @@ SUITES = [
     # ── H4 family ──
     {
         "id": "H4a",
-        "dir": "h4_leverage/2026-04-03_031328",
+        "dir": "h4_leverage",
         "caption": "H4a: Speech Uncertainty and Book Leverage",
         "label": "tab:h4a",
         "cols": 12,
@@ -153,7 +194,7 @@ SUITES = [
     },
     {
         "id": "H4b",
-        "dir": "h4_leverage/2026-04-03_031328",
+        "dir": "h4_leverage",
         "caption": "H4b: Speech Uncertainty and Debt-to-Capital",
         "label": "tab:h4b",
         "cols": 12,
@@ -168,7 +209,7 @@ SUITES = [
     # ── H5 (Wang 2020) ──
     {
         "id": "H5",
-        "dir": "h5b_wang_disp/2026-04-02_130908",
+        "dir": "h5b_wang_disp",
         "caption": "H5: Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)",
         "label": "tab:h5",
         "cols": 12,
@@ -179,28 +220,72 @@ SUITES = [
         "tail": "one",
         "hyp_dir": ">",
     },
-    # ── H7 ──
+    # ── H7 (12-col 2-DV: contemp + t+1 lead, 2026-04-17 upgrade) ──
     {
         "id": "H7",
-        "dir": "h7_illiquidity/2026-04-02_131525",
-        "caption": "H7: Speech Uncertainty and Post-Call Illiquidity",
+        "dir": "h7_illiquidity",
+        "caption": "H7: Speech Uncertainty and 3-Day Post-Call Illiquidity Change ($\\Delta$Amihud, $[+1,+3]-[-3,-1]$)",
         "label": "tab:h7",
-        "cols": 6,
+        "cols": 12,
         "dvs": [
             (r"DeltaILLIQ", 6),
+            (r"DeltaILLIQ\_lead1", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
     },
-    # ── H7b ──
+    # ── H7b (12-col 2-DV) ──
     {
         "id": "H7b",
-        "dir": "h7b_amihud_level/2026-04-02_131541",
-        "caption": "H7b: Speech Uncertainty and Post-Call Amihud Illiquidity Level",
+        "dir": "h7b_amihud_level",
+        "caption": "H7b: Speech Uncertainty and 3-Day Post-Call Amihud Illiquidity Level ($[+1,+3]$)",
         "label": "tab:h7b",
-        "cols": 6,
+        "cols": 12,
         "dvs": [
             (r"PostCallAmihud", 6),
+            (r"PostCallAmihud\_lead1", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H7c (NEW: BGT 2018 25-day post-call Amihud LEVEL) ──
+    {
+        "id": "H7c",
+        "dir": "h7c_amihud_bgt_level",
+        "caption": "H7c: Speech Uncertainty and BGT (2018) 25-Day Post-Call Amihud Level ($[0,+25]$, day 0 included)",
+        "label": "tab:h7c",
+        "cols": 12,
+        "dvs": [
+            (r"BGTLevel\_Amihud", 6),
+            (r"BGTLevel\_Amihud\_lead1", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H7d (NEW: BGT-Window Amihud DELTA) ──
+    {
+        "id": "H7d",
+        "dir": "h7d_amihud_bgt_delta",
+        "caption": "H7d: Speech Uncertainty and BGT-Window 25-Day Amihud Delta ($[+1,+25]-[-25,-1]$)",
+        "label": "tab:h7d",
+        "cols": 12,
+        "dvs": [
+            (r"BGTDelta\_Amihud", 6),
+            (r"BGTDelta\_Amihud\_lead1", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H7e (NEW: BGT-Window Amihud AVERAGE) ──
+    {
+        "id": "H7e",
+        "dir": "h7e_amihud_bgt_avg",
+        "caption": "H7e: Speech Uncertainty and BGT-Window 25-Day Amihud Average ($[-25,+25]$, 51-day symmetric)",
+        "label": "tab:h7e",
+        "cols": 12,
+        "dvs": [
+            (r"BGTAvg\_Amihud", 6),
+            (r"BGTAvg\_Amihud\_lead1", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -209,7 +294,7 @@ SUITES = [
     {
         "id": "H11",
         "type": "moderation",
-        "dir": "h11_prisk_uncertainty/2026-04-02_132019",
+        "dir": "h11_prisk_uncertainty",
         "caption": "H11: Political Risk and Language Uncertainty",
         "label": "tab:h11",
         "cols": 4,
@@ -231,7 +316,7 @@ SUITES = [
     {
         "id": "H11-Lag",
         "type": "moderation",
-        "dir": "h11_prisk_uncertainty_lag/2026-04-02_132208",
+        "dir": "h11_prisk_uncertainty_lag",
         "caption": "H11-Lag: Lagged Political Risk and Language Uncertainty",
         "label": "tab:h11_lag",
         "cols": 8,
@@ -260,7 +345,7 @@ SUITES = [
     # ── H12 ──
     {
         "id": "H12",
-        "dir": "h12_payout/2026-04-02_132912",
+        "dir": "h12_payout",
         "caption": "H12: Speech Uncertainty and Quarterly Payout Ratio",
         "label": "tab:h12",
         "cols": 12,
@@ -272,10 +357,25 @@ SUITES = [
         "hyp_dir": "<",
         "time_fe_label": "Year FE",
     },
+    # ── H12b ── (dividend payer binary — Hoberg-Prabhala 2009 ex-date analog)
+    {
+        "id": "H12b",
+        "dir": "h12b_dividend_payer",
+        "caption": "H12b: Speech Uncertainty and Dividend Payer Indicator (Hoberg-Prabhala 2009 analog)",
+        "label": "tab:h12b",
+        "cols": 12,
+        "dvs": [
+            (r"DivPayerQ", 6),
+            (r"DivPayerQ\_lead1", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": "<",
+        "time_fe_label": "Year FE",
+    },
     # ── H13 family ──
     {
         "id": "H13",
-        "dir": "h13_capex/2026-04-03_031508",
+        "dir": "h13_capex",
         "caption": "H13: Speech Uncertainty and Capital Expenditure",
         "label": "tab:h13",
         "cols": 12,
@@ -289,19 +389,23 @@ SUITES = [
     {
         "id": "H13.1",
         "type": "moderation",
-        "dir": "h13_1_competition/2026-04-02_133255",
+        "dir": "h13_1_competition",
         "caption": "H13.1: Product Similarity--Moderated Speech Uncertainty and Capital Expenditure",
         "label": "tab:h13_1",
-        "cols": 4,
+        "cols": 8,
         "col_files": {
             1: "regression_results_col1_Capex_tsimm.txt",
-            2: "regression_results_col3_Capex_tsimm.txt",
-            3: "regression_results_col2_Capex_lead_tsimm.txt",
-            4: "regression_results_col4_Capex_lead_tsimm.txt",
+            2: "regression_results_col2_Capex_tsimm.txt",
+            3: "regression_results_col3_Capex_tsimm.txt",
+            4: "regression_results_col4_Capex_tsimm.txt",
+            5: "regression_results_col5_Capex_lead_tsimm.txt",
+            6: "regression_results_col6_Capex_lead_tsimm.txt",
+            7: "regression_results_col7_Capex_lead_tsimm.txt",
+            8: "regression_results_col8_Capex_lead_tsimm.txt",
         },
         "dvs": [
-            ("Capex", 2),
-            (r"Capex\_lead", 2),
+            ("Capex", 4),
+            (r"Capex\_lead", 4),
         ],
         "lagged_dv_var": "Lagged_DV",
         "lagged_dv_label": r"Lagged\_DV",
@@ -320,7 +424,7 @@ SUITES = [
     # ── H13.2 ──
     {
         "id": "H13.2",
-        "dir": "h13_2_capex_leads/2026-04-05_155414",
+        "dir": "h13_2_capex_leads",
         "caption": "H13.2: Speech Uncertainty and Capital Expenditure --- Lead Horizons",
         "label": "tab:h13_2",
         "cols": 16,
@@ -333,28 +437,72 @@ SUITES = [
         "tail": "two",
         "hyp_dir": None,
     },
-    # ── H14 ──
+    # ── H14 (12-col 2-DV: contemp + t+1 lead, 2026-04-17 upgrade) ──
     {
         "id": "H14",
-        "dir": "h14_bidask_spread/2026-04-02_133911",
-        "caption": "H14: Speech Uncertainty and Bid-Ask Spread Changes",
+        "dir": "h14_bidask_spread",
+        "caption": "H14: Speech Uncertainty and Lee (2016) 3-Day Bid-Ask Spread Change ($\\Delta$DSPREAD, $[+1,+3]-[-3,-1]$)",
         "label": "tab:h14",
-        "cols": 6,
+        "cols": 12,
         "dvs": [
             ("DSPREAD", 6),
+            (r"DSPREAD\_lead1", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
     },
-    # ── H14b ──
+    # ── H14b (12-col 2-DV) ──
     {
         "id": "H14b",
-        "dir": "h14b_spread_level/2026-04-02_133934",
-        "caption": "H14b: Speech Uncertainty and Post-Call Bid-Ask Spread Level",
+        "dir": "h14b_spread_level",
+        "caption": "H14b: Speech Uncertainty and Lee (2016) 3-Day Post-Call Bid-Ask Spread Level ($[+1,+3]$)",
         "label": "tab:h14b",
-        "cols": 6,
+        "cols": 12,
         "dvs": [
             (r"PostCallSpread", 6),
+            (r"PostCallSpread\_lead1", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H14c (NEW: BGT-Window 25-Day Closing-Quote Spread LEVEL) ──
+    {
+        "id": "H14c",
+        "dir": "h14c_spread_bgt_level",
+        "caption": "H14c: Speech Uncertainty and BGT-Window 25-Day Bid-Ask Spread Level ($[0,+25]$, day 0 included)",
+        "label": "tab:h14c",
+        "cols": 12,
+        "dvs": [
+            (r"BGTLevel\_Spread", 6),
+            (r"BGTLevel\_Spread\_lead1", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H14d (NEW: BGT-Window Spread DELTA) ──
+    {
+        "id": "H14d",
+        "dir": "h14d_spread_bgt_delta",
+        "caption": "H14d: Speech Uncertainty and BGT-Window 25-Day Bid-Ask Spread Delta ($[+1,+25]-[-25,-1]$)",
+        "label": "tab:h14d",
+        "cols": 12,
+        "dvs": [
+            (r"BGTDelta\_Spread", 6),
+            (r"BGTDelta\_Spread\_lead1", 6),
+        ],
+        "tail": "one",
+        "hyp_dir": ">",
+    },
+    # ── H14e (NEW: BGT-Window Spread AVERAGE) ──
+    {
+        "id": "H14e",
+        "dir": "h14e_spread_bgt_avg",
+        "caption": "H14e: Speech Uncertainty and BGT-Window 25-Day Bid-Ask Spread Average ($[-25,+25]$, 51-day symmetric)",
+        "label": "tab:h14e",
+        "cols": 12,
+        "dvs": [
+            (r"BGTAvg\_Spread", 6),
+            (r"BGTAvg\_Spread\_lead1", 6),
         ],
         "tail": "one",
         "hyp_dir": ">",
@@ -362,7 +510,7 @@ SUITES = [
     # ── H16 ──
     {
         "id": "H16",
-        "dir": "h16_rd_sales/2026-04-03_031435",
+        "dir": "h16_rd_sales",
         "caption": r"H16: Speech Uncertainty and R\&D Investment Intensity",
         "label": "tab:h16",
         "cols": 12,
@@ -376,7 +524,7 @@ SUITES = [
     # ── H17 ──
     {
         "id": "H17",
-        "dir": "h17_repurchase_intensity/2026-04-02_134619",
+        "dir": "h17_repurchase_intensity",
         "caption": "H17: Speech Uncertainty and Repurchase Intensity",
         "label": "tab:h17",
         "cols": 12,
@@ -390,7 +538,7 @@ SUITES = [
     # ── H18 ──
     {
         "id": "H18",
-        "dir": "h18_cccl_received/2026-04-02_150950",
+        "dir": "h18_cccl_received",
         "caption": "H18: Speech Uncertainty and SEC Comment Letters",
         "label": "tab:h18",
         "cols": 6,
@@ -403,7 +551,7 @@ SUITES = [
     # ── H18b (Logit robustness) ──
     {
         "id": "H18b",
-        "dir": "h18b_cccl_logit/2026-04-02_151005",
+        "dir": "h18b_cccl_logit",
         "caption": "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters",
         "label": "tab:h18b",
         "cols": 2,
@@ -415,37 +563,10 @@ SUITES = [
         "r2_label": r"Pseudo~$R^2$",
         "skip_adj_r2": True,
     },
-    # ── H19 ──
-    {
-        "id": "H19",
-        "dir": "h19_external_funding/2026-04-02_135326",
-        "caption": "H19: Speech Uncertainty and External vs Internal Financing",
-        "label": "tab:h19",
-        "cols": 12,
-        "dvs": [
-            ("ExternalFunding", 6),
-            (r"ExternalFunding\_lead", 6),
-        ],
-        "tail": "one",
-        "hyp_dir": "<",
-    },
-    # ── H20 ──
-    {
-        "id": "H20",
-        "dir": "h20_debt_choice/2026-04-02_135344",
-        "caption": "H20: Speech Uncertainty and Debt vs Equity Choice",
-        "label": "tab:h20",
-        "cols": 6,
-        "dvs": [
-            ("DebtChoice", 6),
-        ],
-        "tail": "two",
-        "hyp_dir": None,
-    },
     # ── H19b (Chang et al. 2006 robustness) ──
     {
         "id": "H19b",
-        "dir": "h19b_external_funding/2026-04-06_151522",
+        "dir": "h19b_external_funding",
         "caption": r"H19b: Speech Uncertainty and External vs Internal Financing (Chang et al. 2006)",
         "label": "tab:h19b",
         "cols": 12,
@@ -459,7 +580,7 @@ SUITES = [
     # ── H20b (Chang et al. 2006 robustness) ──
     {
         "id": "H20b",
-        "dir": "h20b_debt_choice/2026-04-06_151540",
+        "dir": "h20b_debt_choice",
         "caption": r"H20b: Speech Uncertainty and Debt vs Equity Choice (Chang et al. 2006)",
         "label": "tab:h20b",
         "cols": 6,
@@ -472,7 +593,7 @@ SUITES = [
     # ── H21 ──
     {
         "id": "H21",
-        "dir": "h21_sec_letters/2026-04-02_135701",
+        "dir": "h21_sec_letters",
         "caption": "H21: Speech Uncertainty and SEC Comment Letter Count",
         "label": "tab:h21",
         "cols": 6,
@@ -485,7 +606,7 @@ SUITES = [
     # ── H22 ──
     {
         "id": "H22",
-        "dir": "h22_equity_constraints/2026-04-05_145526",
+        "dir": "h22_equity_constraints",
         "caption": "H22: Speech Uncertainty and Equity Financing Constraints",
         "label": "tab:h22",
         "cols": 4,
@@ -499,7 +620,7 @@ SUITES = [
     {
         "id": "H23",
         "type": "moderation",
-        "dir": "h23_competition_uncertainty/2026-04-05_160232",
+        "dir": "h23_competition_uncertainty",
         "caption": "H23: Product-Market Competition and Uncertainty Language",
         "label": "tab:h23",
         "cols": 8,
@@ -535,31 +656,30 @@ SUITES = [
     },
     # ── H24 / H24b / H25 Macro Uncertainty Suites ──
     # Reverse-direction suites: aggregate monthly macro uncertainty (EPU / GEPU / GPR)
-    # predicts call-level language uncertainty. Firm FE only, NO time FE (would absorb
-    # the macro IV). SEs two-way clustered (firm, cal_yr_qtr).
-    # NOTE: the `dir` timestamp strings below are placeholders (_PENDING_STAGE4_)
-    # and must be updated to the actual Stage 4 output timestamps after running
-    # the three runners.
+    # predicts call-level language uncertainty. 8 cols = 4 DVs × 2 FE types
+    # (Industry FE cols 1-4, Firm FE cols 5-8), ALL with Calendar Year FE.
+    # Year-Quarter FE NOT used (would absorb the macro IV). Two-way clustered
+    # SEs (firm, cal_yr_qtr). Auto FE detection from runner output.
     {
         "id": "H24",
         "type": "moderation",
-        "dir": "h24_us_epu/2026-04-09_155907",
+        "dir": "h24_us_epu",
         "caption": "H24: US Economic Policy Uncertainty and Call Language Uncertainty",
         "label": "tab:h24",
         "cols": 8,
         "col_files": {
-            1: "regression_results_Main_UncAnsMgr.txt",
-            2: "regression_results_Main_UncPreMgr.txt",
-            3: "regression_results_Main_UncAnsCEO.txt",
-            4: "regression_results_Main_UncPreCEO.txt",
-            5: "regression_results_Main_UncAnsMgr_lead1.txt",
-            6: "regression_results_Main_UncPreMgr_lead1.txt",
-            7: "regression_results_Main_UncAnsCEO_lead1.txt",
-            8: "regression_results_Main_UncPreCEO_lead1.txt",
+            1: "regression_results_col1.txt",
+            2: "regression_results_col2.txt",
+            3: "regression_results_col3.txt",
+            4: "regression_results_col4.txt",
+            5: "regression_results_col5.txt",
+            6: "regression_results_col6.txt",
+            7: "regression_results_col7.txt",
+            8: "regression_results_col8.txt",
         },
         "dvs": [
-            (r"Contemporaneous", 4),
-            (r"Next Quarter (t+1)", 4),
+            (r"Industry + Cal.~Year FE", 4),
+            (r"Firm + Cal.~Year FE", 4),
         ],
         "col_dv_labels": [
             "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
@@ -568,33 +688,27 @@ SUITES = [
         "key_vars": ["US_EPU_log"],
         "key_labels": [r"$\log(\mathrm{US\ EPU})_{t}$"],
         "key_tails": ["one_pos"],
-        "fe_rows": [
-            ("Firm FE", ["Yes"] * 8),
-            ("Year FE", ["No"] * 8),
-            ("Year-Quarter FE", ["No"] * 8),
-        ],
-        "time_fe_label": "Year FE",
     },
     {
         "id": "H24b",
         "type": "moderation",
-        "dir": "h24b_global_epu/2026-04-09_155942",
+        "dir": "h24b_global_epu",
         "caption": "H24b: Global Economic Policy Uncertainty and Call Language Uncertainty",
         "label": "tab:h24b",
         "cols": 8,
         "col_files": {
-            1: "regression_results_Main_UncAnsMgr.txt",
-            2: "regression_results_Main_UncPreMgr.txt",
-            3: "regression_results_Main_UncAnsCEO.txt",
-            4: "regression_results_Main_UncPreCEO.txt",
-            5: "regression_results_Main_UncAnsMgr_lead1.txt",
-            6: "regression_results_Main_UncPreMgr_lead1.txt",
-            7: "regression_results_Main_UncAnsCEO_lead1.txt",
-            8: "regression_results_Main_UncPreCEO_lead1.txt",
+            1: "regression_results_col1.txt",
+            2: "regression_results_col2.txt",
+            3: "regression_results_col3.txt",
+            4: "regression_results_col4.txt",
+            5: "regression_results_col5.txt",
+            6: "regression_results_col6.txt",
+            7: "regression_results_col7.txt",
+            8: "regression_results_col8.txt",
         },
         "dvs": [
-            (r"Contemporaneous", 4),
-            (r"Next Quarter (t+1)", 4),
+            (r"Industry + Cal.~Year FE", 4),
+            (r"Firm + Cal.~Year FE", 4),
         ],
         "col_dv_labels": [
             "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
@@ -603,33 +717,27 @@ SUITES = [
         "key_vars": ["GEPU_log"],
         "key_labels": [r"$\log(\mathrm{GEPU})_{t}$"],
         "key_tails": ["one_pos"],
-        "fe_rows": [
-            ("Firm FE", ["Yes"] * 8),
-            ("Year FE", ["No"] * 8),
-            ("Year-Quarter FE", ["No"] * 8),
-        ],
-        "time_fe_label": "Year FE",
     },
     {
         "id": "H25",
         "type": "moderation",
-        "dir": "h25_gpr/2026-04-09_160005",
+        "dir": "h25_gpr",
         "caption": "H25: Geopolitical Risk and Call Language Uncertainty",
         "label": "tab:h25",
         "cols": 8,
         "col_files": {
-            1: "regression_results_Main_UncAnsMgr.txt",
-            2: "regression_results_Main_UncPreMgr.txt",
-            3: "regression_results_Main_UncAnsCEO.txt",
-            4: "regression_results_Main_UncPreCEO.txt",
-            5: "regression_results_Main_UncAnsMgr_lead1.txt",
-            6: "regression_results_Main_UncPreMgr_lead1.txt",
-            7: "regression_results_Main_UncAnsCEO_lead1.txt",
-            8: "regression_results_Main_UncPreCEO_lead1.txt",
+            1: "regression_results_col1.txt",
+            2: "regression_results_col2.txt",
+            3: "regression_results_col3.txt",
+            4: "regression_results_col4.txt",
+            5: "regression_results_col5.txt",
+            6: "regression_results_col6.txt",
+            7: "regression_results_col7.txt",
+            8: "regression_results_col8.txt",
         },
         "dvs": [
-            (r"Contemporaneous", 4),
-            (r"Next Quarter (t+1)", 4),
+            (r"Industry + Cal.~Year FE", 4),
+            (r"Firm + Cal.~Year FE", 4),
         ],
         "col_dv_labels": [
             "Mgr QA", "Mgr Pres", "CEO QA", "CEO Pres",
@@ -638,12 +746,6 @@ SUITES = [
         "key_vars": ["GPR_log"],
         "key_labels": [r"$\log(\mathrm{GPR})_{t}$"],
         "key_tails": ["one_pos"],
-        "fe_rows": [
-            ("Firm FE", ["Yes"] * 8),
-            ("Year FE", ["No"] * 8),
-            ("Year-Quarter FE", ["No"] * 8),
-        ],
-        "time_fe_label": "Year FE",
     },
 ]
 
@@ -712,6 +814,7 @@ CTRL_DISPLAY = {
     "Analyst_QA_Uncertainty_pct": "UncQue",
     "Entire_All_Negative_pct": "NegCall",
     "Entire_All_Uncertainty_pct": "UncCall",
+    "Pres_Control": "Pres Unc.",
 }
 
 def fix_bare_superscripts(tex):
@@ -839,7 +942,7 @@ def generate_interaction_table(suite):
     """
     import pandas as pd
 
-    suite_dir = BASE / suite["dir"]
+    suite_dir = resolve_suite_dir(suite["dir"])
     diag_path = suite_dir / "model_diagnostics.csv"
     if not diag_path.exists():
         return ""
@@ -1057,7 +1160,19 @@ def generate_interaction_table(suite):
     lines.append(r" TNIC3HHI is the Hoberg-Phillips (2016) text-based Herfindahl index.")
     lines.append(r" Control coefficients shown from Manager QA regression (representative).")
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16"}
+    _twoway_ids = {
+        "H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16",
+        # 2026-04-17 liquidity-extension upgrade: 10 suites added (H7/H7b/H14/H14b
+        # upgraded firm-only -> two-way; H7c/d/e + H14c/d/e are new BGT 25-day suites)
+        "H7", "H7b", "H7c", "H7d", "H7e",
+        "H14", "H14b", "H14c", "H14d", "H14e",
+        # 2026-04-10 H12b dividend payer binary (Hoberg-Prabhala 2009 ex-date analog)
+        "H12b",
+        # 2026-04-10 H24/H24b/H25 reverse macro uncertainty suites
+        # (firm × cal_yr_qtr two-way clustering; time FE omitted because it
+        # would absorb the macro IV — see run_h24_us_epu.py)
+        "H24", "H24b", "H25",
+    }
     if suite.get("id", "") in _twoway_ids:
         lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     else:
@@ -1076,7 +1191,7 @@ def generate_moderation_table(suite):
     (IV, moderator(s), interaction(s)) shown prominently, then all controls
     with coefficients and SEs, matching the style of the main suite tables.
     """
-    suite_dir = BASE / suite["dir"]
+    suite_dir = resolve_suite_dir(suite["dir"])
     n_cols = suite["cols"]
     key_vars = suite["key_vars"]
     key_labels = suite["key_labels"]
@@ -1095,7 +1210,8 @@ def generate_moderation_table(suite):
         if not fpath.exists():
             continue
         results, r2, n, fe, ctrl, adj_r2 = parse_txt(fpath)
-        col_data[c] = {"results": results, "r2": r2, "n": n, "fe": fe, "ctrl": ctrl, "adj_r2": adj_r2}
+        cluster_fallback = bool(re.search(r"Cluster_Fallback:\s*True", fpath.read_text(encoding="utf-8")))
+        col_data[c] = {"results": results, "r2": r2, "n": n, "fe": fe, "ctrl": ctrl, "adj_r2": adj_r2, "cluster_fallback": cluster_fallback}
         for v in results.keys():
             if v not in all_vars_seen:
                 all_vars_seen.add(v)
@@ -1285,19 +1401,6 @@ def generate_moderation_table(suite):
         n_cells.append(f"{n:,}" if n else "")
     lines.append(r"N & " + " & ".join(n_cells) + r" \\")
 
-    # DV Mean row (regression-sample means from model_diagnostics.csv)
-    dv_means = _load_dv_means(suite_dir)
-    if dv_means:
-        mean_parts = []
-        for dv_name_latex, dv_ncols in suite["dvs"]:
-            dv_raw = dv_name_latex.replace(r"\_", "_")
-            mean_val = dv_means.get(dv_raw)
-            if mean_val is not None:
-                mean_parts.append(f"\\multicolumn{{{dv_ncols}}}{{c}}{{{mean_val:.4f}}}")
-            else:
-                mean_parts.append(f"\\multicolumn{{{dv_ncols}}}{{c}}{{}}")
-        lines.append(r"DV Mean & " + " & ".join(mean_parts) + r" \\")
-
     # R² and Adj R²
     r2_label = suite.get("r2_label", r"$R^2$")
     r2_cells = []
@@ -1332,7 +1435,19 @@ def generate_moderation_table(suite):
     lines.append(r"\textit{Notes:} ")
     lines.append(tail_note)
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16"}
+    _twoway_ids = {
+        "H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16",
+        # 2026-04-17 liquidity-extension upgrade: 10 suites added (H7/H7b/H14/H14b
+        # upgraded firm-only -> two-way; H7c/d/e + H14c/d/e are new BGT 25-day suites)
+        "H7", "H7b", "H7c", "H7d", "H7e",
+        "H14", "H14b", "H14c", "H14d", "H14e",
+        # 2026-04-10 H12b dividend payer binary (Hoberg-Prabhala 2009 ex-date analog)
+        "H12b",
+        # 2026-04-10 H24/H24b/H25 reverse macro uncertainty suites
+        # (firm × cal_yr_qtr two-way clustering; time FE omitted because it
+        # would absorb the macro IV — see run_h24_us_epu.py)
+        "H24", "H24b", "H25",
+    }
     if suite.get("id", "") in _twoway_ids:
         lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
     else:
@@ -1347,7 +1462,7 @@ def generate_moderation_table(suite):
 
 def generate_table(suite):
     """Generate a complete LaTeX table for one suite."""
-    suite_dir = BASE / suite["dir"]
+    suite_dir = resolve_suite_dir(suite["dir"])
     n_cols = suite["cols"]
     tail = suite["tail"]
     hyp_dir = suite.get("hyp_dir")
@@ -1366,7 +1481,8 @@ def generate_table(suite):
         if not fpath.exists():
             continue
         results, r2, n, fe, ctrl, adj_r2 = parse_txt(fpath)
-        col_data[c] = {"results": results, "r2": r2, "n": n, "fe": fe, "ctrl": ctrl, "adj_r2": adj_r2}
+        cluster_fallback = bool(re.search(r"Cluster_Fallback:\s*True", fpath.read_text(encoding="utf-8")))
+        col_data[c] = {"results": results, "r2": r2, "n": n, "fe": fe, "ctrl": ctrl, "adj_r2": adj_r2, "cluster_fallback": cluster_fallback}
         # Add new variables in order they appear, preserving first-seen order
         for v in results.keys():
             if v not in all_vars_seen:
@@ -1501,19 +1617,6 @@ def generate_table(suite):
         n_cells.append(f"{n:,}" if n else "")
     lines.append(r"N & " + " & ".join(n_cells) + r" \\")
 
-    # DV Mean row (regression-sample means from model_diagnostics.csv)
-    dv_means = _load_dv_means(suite_dir, col_offset=col_offset)
-    if dv_means:
-        mean_parts = []
-        for dv_name_latex, dv_ncols in suite["dvs"]:
-            dv_raw = dv_name_latex.replace(r"\_", "_")
-            mean_val = dv_means.get(dv_raw)
-            if mean_val is not None:
-                mean_parts.append(f"\\multicolumn{{{dv_ncols}}}{{c}}{{{mean_val:.4f}}}")
-            else:
-                mean_parts.append(f"\\multicolumn{{{dv_ncols}}}{{c}}{{}}")
-        lines.append(r"DV Mean & " + " & ".join(mean_parts) + r" \\")
-
     # R² and Adj R² rows
     r2_label = suite.get("r2_label", r"$R^2$")
     r2_cells = []
@@ -1543,9 +1646,28 @@ def generate_table(suite):
     lines.append(r"\vspace{2pt}\scriptsize")
     lines.append(r"\textit{Notes:} " + sig_note)
     lines.append(r" Significant coefficients in \textbf{bold}.")
-    _twoway_ids = {"H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16"}
+    _twoway_ids = {
+        "H1", "H1.1", "H1.1b", "H1.2", "H4a", "H4b", "H13", "H13.2", "H16",
+        # 2026-04-17 liquidity-extension upgrade: 10 suites added (H7/H7b/H14/H14b
+        # upgraded firm-only -> two-way; H7c/d/e + H14c/d/e are new BGT 25-day suites)
+        "H7", "H7b", "H7c", "H7d", "H7e",
+        "H14", "H14b", "H14c", "H14d", "H14e",
+        # 2026-04-10 H12b dividend payer binary (Hoberg-Prabhala 2009 ex-date analog)
+        "H12b",
+        # 2026-04-10 H24/H24b/H25 reverse macro uncertainty suites
+        # (firm × cal_yr_qtr two-way clustering; time FE omitted because it
+        # would absorb the macro IV — see run_h24_us_epu.py)
+        "H24", "H24b", "H25",
+    }
     if suite.get("id", "") in _twoway_ids:
         lines.append(r" Standard errors (in parentheses) two-way clustered (firm, time).")
+        fallback_cols = [c for c in range(1, n_cols + 1) if col_data.get(c, {}).get("cluster_fallback")]
+        if fallback_cols:
+            cols_str = ", ".join(f"({c})" for c in fallback_cols)
+            lines.append(
+                r" Columns " + cols_str + r" fall back to firm-only clustering"
+                r" (two-way clustered VCV rank-deficient; coefficients unchanged)."
+            )
     else:
         lines.append(r" Standard errors (in parentheses) clustered at firm level.")
     lines.append(r" Main sample (excludes financial and utility firms).")
@@ -1559,12 +1681,23 @@ def generate_table(suite):
 def main():
     out_dir = Path(__file__).resolve().parent
 
+    # Resolve each suite's dir to the latest run on disk
+    print("Resolving latest runs:")
+    for suite in SUITES:
+        try:
+            resolved = resolve_suite_dir(suite["dir"])
+            marker = "" if resolved.exists() else "  [MISSING]"
+            print(f"  {suite['id']:<8} -> {resolved.relative_to(BASE)}{marker}")
+        except FileNotFoundError as e:
+            print(f"  {suite['id']:<8} -> ERROR: {e}")
+    print()
+
     # Generate individual .tex files
     all_tex = []
     for suite in SUITES:
         print(f"Generating {suite['id']}...")
         if suite.get("prebuilt_tex"):
-            tex_path = BASE / suite["dir"] / suite["prebuilt_tex"]
+            tex_path = resolve_suite_dir(suite["dir"]) / suite["prebuilt_tex"]
             if tex_path.exists():
                 tex = fix_bare_superscripts(tex_path.read_text(encoding="utf-8"))
                 all_tex.append(tex)

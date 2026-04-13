@@ -177,14 +177,6 @@ def parse_arguments():
         default=None,
         help="Path to panel parquet file (default: latest from Stage 3)",
     )
-    parser.add_argument(
-        "--single-iv", action="store_true",
-        help="Robustness: Use only UncAnsMgr as IV",
-    )
-    parser.add_argument(
-        "--nonceo-decomp", action="store_true",
-        help="Robustness: Decompose into UncAnsNoCEO + UncAnsCEO",
-    )
     return parser.parse_args()
 
 
@@ -316,7 +308,7 @@ def run_regression(
     Industry FE: absorbed via other_effects (not dummies) + TimeEffects
     Firm FE: EntityEffects + TimeEffects (via from_formula)
 
-    All models: two-way clustered SEs (firm, time), drop_absorbed=True.
+    All models: firm-level clustered SEs (firm only), drop_absorbed=True.
     Time index: cal_yr (calendar year).
     """
     col_num = spec["col"]
@@ -363,13 +355,13 @@ def run_regression(
                 drop_absorbed=True,
                 check_rank=False,
             )
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
         else:
             # Firm FE: EntityEffects + TimeEffects
             exog_str = " + ".join(exog)
             formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
             model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
         return None, {}
@@ -563,7 +555,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed). ",
-        r"Standard errors (in parentheses) two-way clustered (firm, time). ",
+        r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
         r"Time FE uses calendar year (\texttt{cal\_yr}). ",
@@ -657,7 +649,7 @@ def generate_report(
 
     lines += [
         "",
-        "Standard errors: two-way clustered (cov_type='clustered', cluster_entity=True, cluster_time=True)",
+        "Standard errors: firm-level clustered (cov_type='clustered', cluster_entity=True, cluster_time=False)",
         "Two-tailed test: H13 beta != 0",
         "",
         "## Results Summary",
@@ -711,24 +703,12 @@ def generate_report(
 # ==============================================================================
 
 
-def main(panel_path: Optional[str] = None, single_iv: bool = False,
-         nonceo_decomp: bool = False) -> int:
+def main(panel_path: Optional[str] = None) -> int:
     """Main execution."""
-    global KEY_IVS, VARIABLE_LABELS
-    if nonceo_decomp:
-        KEY_IVS = ["UncAnsNoCEO", "UncAnsCEO"]
-        VARIABLE_LABELS["UncAnsNoCEO"] = "Non-CEO Mgr QA Uncertainty"
-    elif single_iv:
-        KEY_IVS = ["UncAnsMgr"]
-
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
     start_time = datetime.now()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
-    suffix = ""
-    if single_iv: suffix += "_single_iv"
-    if nonceo_decomp: suffix += "_nonceo_decomp"
-    timestamp += suffix
 
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h13_capex" / timestamp
@@ -878,8 +858,4 @@ if __name__ == "__main__":
         print("[OK] All inputs validated")
         sys.exit(0)
 
-    sys.exit(main(
-        panel_path=args.panel_path,
-        single_iv=args.single_iv,
-        nonceo_decomp=args.nonceo_decomp,
-    ))
+    sys.exit(main(panel_path=args.panel_path))

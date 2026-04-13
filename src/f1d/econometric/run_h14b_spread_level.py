@@ -1,56 +1,31 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H14b Post-Call Bid-Ask Spread LEVEL
+STAGE 4: Test H14b Post-Call Bid-Ask Spread LEVEL (12-col 2-DV)
 ================================================================================
 ID: econometric/run_h14b_spread_level
-Description: Run H14b — does speech uncertainty predict higher post-call bid-ask
-             spread LEVELS? Uses the same H14 panel, computing
-             PostCallSpread = PreCallSpread + DSPREAD at runner time.
+Description: Run H14b -- does speech uncertainty predict higher post-call
+             bid-ask spread LEVELS, contemporaneous AND next-quarter lead?
 
-DV: PostCallSpread — post-call relative bid-ask spread level (mean [+1,+3]).
-    Computed as: PreCallSpread + DSPREAD (both from H14 panel).
+DV (cols 1-6):  PostCallSpread  -- post-call closing-quote spread LEVEL.
+                Computed at panel build time as PreCallSpread + DSPREAD.
+DV (cols 7-12): PostCallSpread_lead1 -- next-quarter call's PostCallSpread.
 
-Note: By Frisch-Waugh-Lovell, when PreCallSpread is a control (which it is),
-the IV coefficients are algebraically identical to H14's delta regression.
+NOTE on the winsorization artifact: PostCallSpread has ~1,006 negative values
+on the production panel because PreCallSpread and DSPREAD are independently
+pooled-winsorized at 1%/99% inside the H14 panel builder. This artifact
+predates the 2026-04-17 panel-time promotion (the H14b runner has been
+emitting this same warning for months) and is preserved here for backward
+compatibility with previously published H14b col 1-6 results.
 
-Ref: Leuz & Verrecchia (2000); Diamond & Verrecchia (1991, JF).
+12 Model Specifications: same structure as H14 (industry/firm x base/extended x
+cal_yr/cal_yr_qtr x 2 DVs).
 
-Key Independent Variables (4, all enter simultaneously):
-    UncAnsCEO, UncPreCEO,
-    UncAnsMgr, UncPreMgr,
-
-Base Controls (8):
-    lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO,
-    PreCallSpread (lagged-DV control: pre-call relative spread level)
-
-Extended Controls (Base + 4):
-    + DailyVola, StockPrice, Turnover, UncQue
-
-Sample: Main only (FF12 codes 1-7, 9-10, 12).
-
-Hypothesis Test (one-tailed):
-    H14: beta(uncertainty_var) > 0 — higher uncertainty -> wider spreads.
-
-FE Time Index: cal_yr (calendar year).
-Standard Errors: Firm-clustered (groups=gvkey).
-Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
-
-Inputs:
-    - outputs/variables/h14b_spread_level/latest/h14_bidask_spread_panel.parquet
-
-Outputs:
-    - outputs/econometric/h14b_spread_level/{timestamp}/regression_results_col{1-4}.txt
-    - outputs/econometric/h14b_spread_level/{timestamp}/h14b_spread_level_table.tex
-    - outputs/econometric/h14b_spread_level/{timestamp}/model_diagnostics.csv
-    - outputs/econometric/h14b_spread_level/{timestamp}/summary_stats.csv
-    - outputs/econometric/h14b_spread_level/{timestamp}/summary_stats.tex
-    - outputs/econometric/h14b_spread_level/{timestamp}/report_step4_H14.md
-    - outputs/econometric/h14b_spread_level/{timestamp}/sample_attrition.csv
-    - outputs/econometric/h14b_spread_level/{timestamp}/run_manifest.json
+Hypothesis: One-tailed (beta > 0).
+Cluster: Firm-level (Petersen 2009).
 
 Author: Thesis Author
-Date: 2026-03-17
+Date: 2026-04-17 (12-col 2-DV upgrade)
 ================================================================================
 """
 
@@ -71,7 +46,6 @@ from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
 from f1d.shared.outputs import generate_manifest, generate_attrition_table
 from f1d.shared.path_utils import get_latest_output_dir
-from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 warnings.filterwarnings(
     "ignore", message="covariance of constraints does not have full rank"
@@ -86,9 +60,10 @@ KEY_IVS = [
     "UncAnsCEO",
     "UncPreCEO",
     "UncAnsMgr",
-    "UncPreMgr",]
+    "UncPreMgr",
+]
 
-# Controls aligned with H7b (same microstructure control set, different lagged DV).
+# Lagged_DV placeholder routed at spec-prep time (PreCallSpread removed)
 BASE_CONTROLS = [
     "lnAssets",
     "TobinsQ",
@@ -97,24 +72,29 @@ BASE_CONTROLS = [
     "Capex",
     "DivDummy",
     "sCFO",
-    "PreCallSpread",
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
     "DailyVola",
     "StockPrice",
     "Turnover",
-    "UncQue",
+    "UncQue",  # cross-panel merge from H7
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "PostCallSpread", "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "PostCallSpread", "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "PostCallSpread", "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "PostCallSpread", "fe": "firm",     "controls": "extended"},
-    # Year-Quarter FE specs (Extended controls only)
-    {"col": 5, "dv": "PostCallSpread", "fe": "industry_yq", "controls": "extended"},
-    {"col": 6, "dv": "PostCallSpread", "fe": "firm_yq",     "controls": "extended"},
+    {"col": 1,  "dv": "PostCallSpread",       "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "PostCallSpread",       "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "PostCallSpread",       "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "PostCallSpread",       "fe": "firm",        "controls": "extended"},
+    {"col": 5,  "dv": "PostCallSpread",       "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "PostCallSpread",       "fe": "firm_yq",     "controls": "extended"},
+    {"col": 7,  "dv": "PostCallSpread_lead1", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "PostCallSpread_lead1", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "PostCallSpread_lead1", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "PostCallSpread_lead1", "fe": "firm",        "controls": "extended"},
+    {"col": 11, "dv": "PostCallSpread_lead1", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "PostCallSpread_lead1", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -123,59 +103,47 @@ VARIABLE_LABELS = {
     "UncAnsCEO": "CEO QA Uncertainty",
     "UncPreCEO": "CEO Pres Uncertainty",
     "UncAnsMgr": "Mgr QA Uncertainty",
-    "UncPreMgr": "Mgr Pres Uncertainty",}
+    "UncPreMgr": "Mgr Pres Uncertainty",
+}
 
 SUMMARY_STATS_VARS = [
-    {"col": "PostCallSpread", "label": r"$\Delta$Spread (DV)"},
+    {"col": "PostCallSpread", "label": "Post-Call Spread$_t$"},
+    {"col": "PostCallSpread_lead1", "label": "Post-Call Spread$_{t+1}$"},
     {"col": "PreCallSpread", "label": "Pre-Call Spread"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
-    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},    {"col": "lnAssets", "label": "Firm Size (log AT)"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
     {"col": "Leverage", "label": "Leverage"},
     {"col": "Capex", "label": "CapEx / Assets"},
     {"col": "DivDummy", "label": "Dividend Payer"},
     {"col": "sCFO", "label": "OCF Volatility"},
+    {"col": "DailyVola", "label": "Stock Volatility"},
     {"col": "StockPrice", "label": "Stock Price"},
     {"col": "Turnover", "label": "Share Turnover"},
-    {"col": "DailyVola", "label": "Return Volatility"},
-    {"col": "UncQue", "label": "Analyst QA Uncertainty"},
 ]
 
 
-# ==============================================================================
-# CLI Arguments
-# ==============================================================================
+def _lag_column_for_dv(dv: str) -> str:
+    if dv.endswith("_lead1"):
+        return dv[: -len("_lead1")]
+    return f"{dv}_lag"
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(
-        description="Stage 4: Test H14b Post-Call Spread Level Hypothesis (call-level)",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Validate inputs without executing"
-    )
-    parser.add_argument(
-        "--panel-path", type=str, default=None,
-        help="Path to panel parquet file (default: latest from Stage 3)",
-    )
+    parser = argparse.ArgumentParser(description="Stage 4: Test H14b Spread Level (12-col 2-DV)")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--panel-path", type=str, default=None)
     return parser.parse_args()
 
 
-# ==============================================================================
-# Data Loading
-# ==============================================================================
-
-
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
-    """Load call-level H14 panel from Stage 3 output."""
     print("\n" + "=" * 60)
     print("Loading panel")
     print("=" * 60)
-
     if panel_path:
         panel_file = Path(panel_path)
     else:
@@ -184,29 +152,27 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
             required_file="h14_bidask_spread_panel.parquet",
         )
         panel_file = panel_dir / "h14_bidask_spread_panel.parquet"
-
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
-        "file_name",
-        "start_date",  # needed for calendar year-quarter FE
+        "file_name",  # needed for cross-panel UncQue merge
+        "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
-        # Components for post-call level DV
-        "DSPREAD",
-        # Key IVs (4 simultaneous)
+        "cal_yr", "cal_qtr", "cal_yr_qtr",
+        # PostCallSpread (panel-time computed) + lag + lead
+        "PostCallSpread", "PostCallSpread_lag", "PostCallSpread_lead1",
+        "PreCallSpread", "DSPREAD",  # for summary stats / sanity
         "UncAnsCEO", "UncPreCEO",
         "UncAnsMgr", "UncPreMgr",
         "lnAssets", "TobinsQ", "ROA", "Leverage",
         "Capex", "DivDummy", "sCFO",
-        "PreCallSpread",
-        # Extended controls (shared with H7b)
         "DailyVola", "StockPrice", "Turnover",
     ]
 
     panel = pd.read_parquet(panel_file, columns=columns)
 
-    # UncQue is in H7 panel, not H14. Merge it.
+    # UncQue lives in H7 panel, not H14. Cross-panel merge by file_name.
     h7_dir = get_latest_output_dir(
         root_path / "outputs" / "variables" / "h7_illiquidity",
         required_file="h7_illiquidity_panel.parquet",
@@ -217,28 +183,22 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     )
     panel = panel.merge(h7_analyst, on="file_name", how="left")
     panel = panel.drop(columns=["file_name"])
-    print(f"  Loaded: {panel_file}")
-    print(f"  Rows: {len(panel):,}")
-    print(f"  Columns: {len(panel.columns)}")
 
-    # Compute post-call level DV = pre + delta
-    panel["PostCallSpread"] = panel["PreCallSpread"] + panel["DSPREAD"]
+    print(f"  Loaded: {panel_file}")
+    print(f"  Rows: {len(panel):,}  |  Columns: {len(panel.columns)}")
+
     n_neg = (panel["PostCallSpread"] < 0).sum()
     if n_neg > 0:
-        print(f"  WARNING: {n_neg} negative PostCallSpread values (winsorization artifact)")
+        print(f"  WARNING: {n_neg} negative PostCallSpread values "
+              f"(winsorization artifact -- preserved for backward compat)")
     print(f"  PostCallSpread: mean={panel['PostCallSpread'].mean():.6f}, "
           f"non-null={panel['PostCallSpread'].notna().sum():,}")
-
-    # Build calendar year-quarter index for YQ FE specs
-    panel = build_cal_yr_qtr_index(panel)
-    n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
-    print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
+    print(f"  PostCallSpread_lead1: non-null={panel['PostCallSpread_lead1'].notna().sum():,}")
 
     return panel
 
 
 def filter_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
-    """Filter to Main sample only (exclude Finance ff12=11, Utility ff12=8)."""
     before = len(panel)
     main = panel[~panel["ff12_code"].isin([8, 11])].copy()
     print(f"  Main sample filter: {len(main):,} / {before:,} "
@@ -246,27 +206,23 @@ def filter_main_sample(panel: pd.DataFrame) -> pd.DataFrame:
     return main
 
 
-def prepare_regression_data(
-    panel: pd.DataFrame,
-    spec: Dict[str, Any],
-) -> pd.DataFrame:
-    """Prepare panel for a specific model specification."""
+def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.DataFrame:
     dv = spec["dv"]
     fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[_lag_column_for_dv(dv)]
+
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
     if fe_type.endswith("_yq"):
         required.append("cal_yr_qtr")
-
     missing = [c for c in required if c not in panel.columns]
     if missing:
-        raise ValueError(
-            f"Required columns missing from panel: {missing}. Check Stage 3 output."
-        )
+        raise ValueError(f"Required columns missing: {missing}")
 
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
-
     for iv in KEY_IVS:
         pct_missing = df[iv].isna().mean() * 100
         if pct_missing > 50:
@@ -283,24 +239,12 @@ def prepare_regression_data(
     firm_counts = df["gvkey"].value_counts()
     valid_firms = set(firm_counts[firm_counts >= MIN_CALLS_PER_FIRM].index)
     df = df[df["gvkey"].isin(valid_firms)].copy()
-    print(
-        f"  After >={MIN_CALLS_PER_FIRM} calls/firm: "
-        f"{len(df):,} calls, {df['gvkey'].nunique():,} firms"
-    )
-
+    print(f"  After >={MIN_CALLS_PER_FIRM} calls/firm: "
+          f"{len(df):,} calls, {df['gvkey'].nunique():,} firms")
     return df
 
 
-# ==============================================================================
-# Regression
-# ==============================================================================
-
-
-def run_regression(
-    df_prepared: pd.DataFrame,
-    spec: Dict[str, Any],
-) -> Tuple[Any, Dict[str, Any]]:
-    """Run PanelOLS regression for a given model specification."""
+def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any, Dict[str, Any]]:
     col_num = spec["col"]
     dv = spec["dv"]
     fe_type = spec["fe"]
@@ -311,63 +255,51 @@ def run_regression(
     print("=" * 60)
 
     if len(df_prepared) < 100:
-        print(f"  WARNING: Too few observations ({len(df_prepared)}), skipping")
         return None, {}
 
     exog = KEY_IVS + controls
 
-    # Determine time index based on FE type
     time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
     base_fe = fe_type.replace("_yq", "")
-    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+    fe_label = (
+        f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'}"
+        f" + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+    )
 
     print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
-    print(f"  Controls: {spec['controls']} ({len(controls)} vars)")
-    print("  Estimating with firm-clustered SEs via PanelOLS...")
+    print("  Estimating with firm-level clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
     df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
         if base_fe == "industry":
-            dependent_data = df_panel[dv]
-            exog_data = df_panel[exog]
-            industry_data = df_panel["ff12_code"]
             model_obj = PanelOLS(
-                dependent=dependent_data,
-                exog=exog_data,
-                entity_effects=False,
-                time_effects=True,
-                other_effects=industry_data,
-                drop_absorbed=True,
-                check_rank=False,
+                dependent=df_panel[dv], exog=df_panel[exog],
+                entity_effects=False, time_effects=True,
+                other_effects=df_panel["ff12_code"],
+                drop_absorbed=True, check_rank=False,
             )
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
-        else:  # "firm"
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+        else:
             exog_str = " + ".join(exog)
             formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
             model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
         return None, {}
 
     elapsed = (datetime.now() - t0).total_seconds()
-    print(f"  [OK] Complete in {elapsed:.1f}s")
-    print(f"  R-squared: {model.rsquared:.4f}  Adj R-squared: {1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
-    print(f"  N obs: {int(model.nobs):,}")
+    print(f"  [OK] Complete in {elapsed:.1f}s | R-squared: {model.rsquared:.4f} | N obs: {int(model.nobs):,}")
 
-    # Build metadata with per-IV one-tailed p-values (H14: beta > 0)
     meta: Dict[str, Any] = {
-        "col": col_num,
-        "dv": dv,
-        "fe": fe_type,
-        "controls": spec["controls"],
-        "n_obs": int(model.nobs),
-        "n_firms": df_prepared["gvkey"].nunique(),
+        "col": col_num, "dv": dv, "fe": fe_type, "controls": spec["controls"],
+        "n_obs": int(model.nobs), "n_firms": df_prepared["gvkey"].nunique(),
         "r2": float(model.rsquared),
         "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
+        "dv_mean": float(model.model.dependent.dataframe.mean().iloc[0]),
     }
 
     for iv in KEY_IVS:
@@ -375,119 +307,71 @@ def run_regression(
         se = float(model.std_errors.get(iv, np.nan))
         p_two = float(model.pvalues.get(iv, np.nan))
         t_stat = float(model.tstats.get(iv, np.nan))
-
         if not np.isnan(p_two) and not np.isnan(beta):
             p_one = p_two / 2 if beta > 0 else 1 - p_two / 2
         else:
             p_one = np.nan
-
         meta[f"{iv}_beta"] = beta
         meta[f"{iv}_se"] = se
         meta[f"{iv}_t"] = t_stat
         meta[f"{iv}_p_one"] = p_one
-
         stars = _sig_stars(p_one)
         print(f"  {iv}: beta={beta:.6f} SE={se:.6f} p1={p_one:.4f} {stars}")
 
     return model, meta
 
 
-# ==============================================================================
-# Output Generation
-# ==============================================================================
-
-
-def _sig_stars(p: float) -> str:
-    """Return significance stars for one-tailed p-value."""
-    if np.isnan(p):
-        return ""
-    if p < 0.01:
-        return "***"
-    if p < 0.05:
-        return "**"
-    if p < 0.10:
-        return "*"
+def _sig_stars(p):
+    if np.isnan(p): return ""
+    if p < 0.01: return "***"
+    if p < 0.05: return "**"
+    if p < 0.10: return "*"
     return ""
 
 
-def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write 4-column LaTeX table with stars + SE in parentheses."""
-    results_by_col = {}
-    for r in all_results:
-        meta = r.get("meta", {})
-        if meta:
-            results_by_col[meta["col"]] = meta
+def _save_latex_table(all_results, out_dir):
+    results_by_col = {r["meta"]["col"]: r["meta"] for r in all_results if r.get("meta")}
+    n_cols = 12
 
-    n_cols = 6
-
-    def fmt_coef(val: float, stars: str) -> str:
-        if np.isnan(val):
+    def fmt_coef(v, s): return "" if np.isnan(v) else f"{v:.4f}{s}"
+    def fmt_se(v): return "" if np.isnan(v) else f"({v:.4f})"
+    def fmt_int(v): return f"{v:,}"
+    def fmt_r2(v):
+        if np.isnan(v):
             return ""
-        return f"{val:.4f}{stars}"
-
-    def fmt_se(val: float) -> str:
-        if np.isnan(val):
-            return ""
-        return f"({val:.4f})"
-
-    def fmt_int(val: int) -> str:
-        return f"{val:,}"
-
-    def fmt_r2(val: float) -> str:
-        if np.isnan(val):
-            return ""
-        if abs(val) < 0.001:
-            return f"{val:.2e}"
-        return f"{val:.3f}"
+        if abs(v) < 0.001:
+            return f"{v:.2e}"
+        return f"{v:.3f}"
 
     lines = [
-        r"\begin{table}[htbp]",
-        r"\centering",
-        r"\caption{Speech Uncertainty and Bid-Ask Spread Changes}",
-        r"\label{tab:h14b_spread_level}",
-        r"\scriptsize",
-        r"\begin{tabular}{l" + "c" * n_cols + "}",
-        r"\toprule",
+        r"\begin{table}[htbp]", r"\centering",
+        r"\caption{Speech Uncertainty and Post-Call Bid-Ask Spread LEVEL (contemp + $t+1$ lead)}",
+        r"\label{tab:h14b_spread_level}", r"\scriptsize",
+        r"\begin{tabular}{l" + "c" * n_cols + "}", r"\toprule",
     ]
-
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
-
     lines.append(
-        r" & \multicolumn{6}{c}{$\Delta$Spread (DSPREAD)} \\"
+        r" & \multicolumn{6}{c}{PostCallSpread$_t$}"
+        r" & \multicolumn{6}{c}{PostCallSpread$_{t+1}$} \\"
     )
-    lines.append(r"\cmidrule(lr){2-7}")
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     for iv in KEY_IVS:
         label = VARIABLE_LABELS.get(iv, iv)
-        coef_cells = []
-        for c in range(1, n_cols + 1):
-            meta = results_by_col.get(c, {})
-            beta = meta.get(f"{iv}_beta", np.nan)
-            p_one = meta.get(f"{iv}_p_one", np.nan)
-            coef_cells.append(fmt_coef(beta, _sig_stars(p_one)))
-        lines.append(f"{label} & " + " & ".join(coef_cells) + r" \\")
-
-        se_cells = []
-        for c in range(1, n_cols + 1):
-            meta = results_by_col.get(c, {})
-            se = meta.get(f"{iv}_se", np.nan)
-            se_cells.append(fmt_se(se))
-        lines.append(f" & " + " & ".join(se_cells) + r" \\")
+        coefs = [fmt_coef(results_by_col.get(c, {}).get(f"{iv}_beta", np.nan),
+                          _sig_stars(results_by_col.get(c, {}).get(f"{iv}_p_one", np.nan)))
+                 for c in range(1, n_cols + 1)]
+        lines.append(f"{label} & " + " & ".join(coefs) + r" \\")
+        ses = [fmt_se(results_by_col.get(c, {}).get(f"{iv}_se", np.nan))
+               for c in range(1, n_cols + 1)]
+        lines.append(f" & " + " & ".join(ses) + r" \\")
 
     lines.append(r"\midrule")
-
-    ctrl_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        ctrl_cells.append("Extended" if meta.get("controls") == "extended" else "Base")
-    lines.append(r"Controls & " + " & ".join(ctrl_cells) + r" \\")
-
-    ind_fe_cells = []
-    firm_fe_cells = []
-    year_fe_cells = []
-    yr_qtr_fe_cells = []
+    ctrl = ["Extended" if results_by_col.get(c, {}).get("controls") == "extended" else "Base" for c in range(1, n_cols + 1)]
+    lines.append(r"Controls & " + " & ".join(ctrl) + r" \\")
+    ind_fe_cells, firm_fe_cells, year_fe_cells, yr_qtr_fe_cells = [], [], [], []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
         fe = meta.get("fe", "")
@@ -501,212 +385,73 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
     lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
     lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
-
     lines.append(r"\midrule")
-
-    n_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        n_val = meta.get("n_obs", 0)
-        n_cells.append(fmt_int(n_val) if n_val else "")
-    lines.append(r"N & " + " & ".join(n_cells) + r" \\")
-
-    r2_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        r2_cells.append(fmt_r2(meta.get("r2", np.nan)))
-    lines.append(r"$R^2$ & " + " & ".join(r2_cells) + r" \\")
-
-    adj_r2_cells = []
-    for c in range(1, n_cols + 1):
-        meta = results_by_col.get(c, {})
-        adj_r2_cells.append(fmt_r2(meta.get("adj_r2", np.nan)))
-    lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2_cells) + r" \\")
+    ns = [fmt_int(results_by_col.get(c, {}).get("n_obs", 0)) for c in range(1, n_cols + 1)]
+    lines.append(r"N & " + " & ".join(ns) + r" \\")
+    r2s = [fmt_r2(results_by_col.get(c, {}).get("r2", np.nan)) for c in range(1, n_cols + 1)]
+    lines.append(r"$R^2$ & " + " & ".join(r2s) + r" \\")
+    adj_r2s = [fmt_r2(results_by_col.get(c, {}).get("adj_r2", np.nan)) for c in range(1, n_cols + 1)]
+    lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2s) + r" \\")
+    dv_means = [fmt_r2(results_by_col.get(c, {}).get("dv_mean", np.nan)) for c in range(1, n_cols + 1)]
+    lines.append(r"DV Mean & " + " & ".join(dv_means) + r" \\")
 
     lines += [
-        r"\bottomrule",
-        r"\end{tabular}",
-        r"\begin{minipage}{\linewidth}",
-        r"\vspace{2pt}\scriptsize",
+        r"\bottomrule", r"\end{tabular}",
+        r"\begin{minipage}{\linewidth}", r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
-        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H14: $\beta > 0$). ",
-        r"Standard errors (in parentheses) clustered at firm level. ",
+        r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H14b: $\beta > 0$). ",
+        r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
-        r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses calendar year (\texttt{cal\_yr}). ",
-        r"Following Lee (2016), DSPREAD is the change in the average relative bid-ask spread ",
-        r"from the [$-$3,$-$1] to [$+$1,$+$3] trading day window around the conference call, ",
-        r"where daily relative spread = $2 \times (\text{Ask} - \text{Bid}) / (\text{Ask} + \text{Bid})$ ",
-        r"using closing quotes from CRSP. ",
-        r"Pre-call spread (closing quotes, [$-$3,$-$1] window) included as control. ",
-        r"Variables winsorized at 1\%/99\%. ",
+        r"PostCallSpread$_t$ = post-call ([+1,+3] days) closing-quote spread LEVEL = PreCallSpread + DSPREAD. ",
+        r"PostCallSpread$_{t+1}$ = next-quarter call's PostCallSpread (calendar quarter, strict consecutive). ",
+        r"Lagged\_DV control = true t-1 prior-quarter lag. ",
         r"Unit of observation: individual earnings call.",
-        r"\end{minipage}",
-        r"\end{table}",
+        r"\end{minipage}", r"\end{table}",
     ]
-
-    tex_path = out_dir / "h14b_spread_level_table.tex"
-    with open(tex_path, "w", encoding="utf-8") as f:
+    with open(out_dir / "h14b_spread_level_table.tex", "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"  Saved: h14b_spread_level_table.tex")
 
 
-def save_outputs(
-    all_results: List[Dict[str, Any]],
-    out_dir: Path,
-) -> pd.DataFrame:
-    """Save regression outputs."""
+def save_outputs(all_results, out_dir):
     print("\n" + "=" * 60)
     print("Saving outputs")
     print("=" * 60)
-
     out_dir.mkdir(parents=True, exist_ok=True)
-
     for r in all_results:
-        model = r.get("model")
-        meta = r.get("meta", {})
-        if model is None or not meta:
-            continue
-        col_num = meta.get("col", 0)
-        fname = f"regression_results_col{col_num}.txt"
-        fpath = out_dir / fname
-        with open(fpath, "w", encoding="utf-8") as f:
-            f.write(f"Model Specification: Col ({col_num})\n")
-            f.write(f"DV: {meta.get('dv')}\n")
-            f.write(f"FE: {meta.get('fe')}\n")
-            f.write(f"Controls: {meta.get('controls')}\n")
+        model, meta = r.get("model"), r.get("meta", {})
+        if model is None or not meta: continue
+        col_num = meta["col"]
+        with open(out_dir / f"regression_results_col{col_num}.txt", "w", encoding="utf-8") as f:
+            f.write(f"Col ({col_num}) | DV: {meta['dv']} | FE: {meta['fe']} | Controls: {meta['controls']}\n")
             f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
-            f.write("=" * 60 + "\n\n")
-            f.write(str(model.summary))
-        print(f"  Saved: {fname}")
+            f.write(f"DV_Mean: {meta.get('dv_mean', float('nan')):.10f}\n")
+            f.write("=" * 60 + "\n\n" + str(model.summary))
+        print(f"  Saved: regression_results_col{col_num}.txt")
 
     diag_rows = [r["meta"] for r in all_results if r.get("meta")]
     diag_df = pd.DataFrame(diag_rows)
-    diag_path = out_dir / "model_diagnostics.csv"
-    diag_df.to_csv(diag_path, index=False, float_format="%.10f")
+    diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
     print(f"  Saved: model_diagnostics.csv ({len(diag_df)} regressions)")
-
     _save_latex_table(all_results, out_dir)
-
     return diag_df
 
 
-def generate_report(
-    all_results: List[Dict[str, Any]],
-    diag_df: pd.DataFrame,
-    out_dir: Path,
-    duration: float,
-) -> None:
-    """Generate markdown report summarising H14 results."""
-    lines = [
-        "# Stage 4: H14b Post-Call Spread Level Hypothesis Test Report",
-        "",
-        f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        f"**Duration:** {duration:.1f} seconds",
-        f"**Unit of observation:** individual earnings call (call-level)",
-        f"**Sample:** Main only (excludes Finance FF12=11, Utility FF12=8)",
-        f"**Time index:** cal_yr (calendar year)",
-        f"**Hypothesis test:** One-tailed (H14: beta > 0)",
-        f"**DV:** DSPREAD — Lee (2016) change in relative bid-ask spread (closing quotes)",
-        "",
-        "## Model Specifications",
-        "",
-        "All 4 key IVs enter each model simultaneously:",
-        "- UncAnsCEO, UncPreCEO",
-        "- UncAnsMgr, UncPreMgr",
-        "",
-        "| Col | DV | FE | Controls |",
-        "|-----|----|----|----------|",
-    ]
-    for spec in MODEL_SPECS:
-        lines.append(
-            f"| ({spec['col']}) | {spec['dv']} | {spec['fe']} | {spec['controls']} |"
-        )
-
-    lines += [
-        "",
-        "## Results Summary",
-        "",
-        "| Col | DV | FE | Controls | N | R-sq |",
-        "|-----|----|----|----------|---|------|",
-    ]
-
-    for r in all_results:
-        meta = r.get("meta", {})
-        if not meta:
-            continue
-        lines.append(
-            f"| ({meta['col']}) | {meta['dv']} | {meta['fe']} | "
-            f"{meta['controls']} | {meta['n_obs']:,} | {meta['r2']:.4f} |"
-        )
-
-    lines += [
-        "",
-        "## Key IV Coefficients (one-tailed p-values)",
-        "",
-        "| IV | Col | Beta | SE | p(one-tail) | Sig |",
-        "|----|-----|------|-----|-------------|-----|",
-    ]
-
-    for r in all_results:
-        meta = r.get("meta", {})
-        if not meta:
-            continue
-        for iv in KEY_IVS:
-            beta = meta.get(f"{iv}_beta", np.nan)
-            se = meta.get(f"{iv}_se", np.nan)
-            p_one = meta.get(f"{iv}_p_one", np.nan)
-            stars = _sig_stars(p_one)
-            if not np.isnan(beta):
-                lines.append(
-                    f"| {iv} | ({meta['col']}) | {beta:.6f} | {se:.6f} | "
-                    f"{p_one:.4f} | {stars} |"
-                )
-
-    lines.append("")
-
-    report_path = out_dir / "report_step4_H14.md"
-    with open(report_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
-    print("  Saved: report_step4_H14.md")
-
-
-# ==============================================================================
-# Main
-# ==============================================================================
-
-
 def main(panel_path: Optional[str] = None) -> int:
-    """Main execution."""
     if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+        sys.stdout.reconfigure(encoding="utf-8")
     start_time = datetime.now()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
 
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h14b_spread_level" / timestamp
-
-    log_dir = setup_run_logging(
-        log_base_dir=root / "logs",
-        suite_name="H14b_Spread_Level",
-        timestamp=timestamp,
-    )
+    log_dir = setup_run_logging(log_base_dir=root / "logs", suite_name="H14b_Spread_Level", timestamp=timestamp)
 
     print("=" * 80)
-    print("STAGE 4: Test H14b Post-Call Spread Level Hypothesis")
+    print("STAGE 4: Test H14b Post-Call Spread Level Hypothesis (12-col 2-DV)")
     print("=" * 80)
-    print(f"Timestamp: {timestamp}")
-    print(f"Output:    {out_dir}")
-    print(f"Log dir:   {log_dir}")
-    print(f"Sample:    Main only (FF12 != 8, 11)")
-    print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
-    print(f"Specs:     {len(MODEL_SPECS)} model columns")
-    print(f"Time FE:   cal_yr (calendar year)")
-    print(f"Test:      One-tailed (H14: beta > 0)")
-    print(f"DV:        DSPREAD (Lee 2016, closing BID/ASK)")
 
     panel = load_panel(root, panel_path)
-
     panel_file = Path(panel_path) if panel_path else get_latest_output_dir(
         root / "outputs" / "variables" / "h14_bidask_spread",
         required_file="h14_bidask_spread_panel.parquet",
@@ -716,49 +461,25 @@ def main(panel_path: Optional[str] = None) -> int:
     panel = filter_main_sample(panel)
     main_panel_n = len(panel)
 
-    print(f"\n  Main sample: {main_panel_n:,} calls, "
-          f"{panel['gvkey'].nunique():,} firms")
-    print(f"  DSPREAD non-null: {panel['DSPREAD'].notna().sum():,}")
-    print(f"  PreCallSpread non-null: {panel['PreCallSpread'].notna().sum():,}")
-    for iv in KEY_IVS:
-        n_valid = panel[iv].notna().sum()
-        pct = 100.0 * n_valid / main_panel_n if main_panel_n > 0 else 0
-        print(f"  {iv}: {n_valid:,} ({pct:.1f}%)")
-
-    print("\n" + "=" * 60)
-    print("Generating summary statistics")
-    print("=" * 60)
     out_dir.mkdir(parents=True, exist_ok=True)
     make_summary_stats_table(
-        df=panel,
-        variables=SUMMARY_STATS_VARS,
-        sample_names=None,
-        output_csv=out_dir / "summary_stats.csv",
-        output_tex=out_dir / "summary_stats.tex",
-        caption="Summary Statistics — H14b Post-Call Spread Level (Main Sample)",
-        label="tab:summary_stats_h14",
+        df=panel, variables=SUMMARY_STATS_VARS, sample_names=None,
+        output_csv=out_dir / "summary_stats.csv", output_tex=out_dir / "summary_stats.tex",
+        caption="Summary Statistics -- H14b Spread Level (Main Sample)",
+        label="tab:summary_stats_h14b",
     )
-    print("  Saved: summary_stats.csv")
-    print("  Saved: summary_stats.tex")
 
     all_results: List[Dict[str, Any]] = []
-
     for spec in MODEL_SPECS:
-        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} FE={spec['fe']} "
-              f"Controls={spec['controls']} ---")
-
+        print(f"\n--- Model ({spec['col']}): DV={spec['dv']} FE={spec['fe']} Controls={spec['controls']} ---")
         try:
             df_prepared = prepare_regression_data(panel, spec)
         except ValueError as e:
-            print(f"  ERROR preparing data: {e}", file=sys.stderr)
+            print(f"  ERROR: {e}", file=sys.stderr)
             continue
-
         if len(df_prepared) < 100:
-            print(f"  Skipping: too few obs ({len(df_prepared)})")
             continue
-
         model, meta = run_regression(df_prepared, spec)
-
         if model is not None and meta:
             all_results.append({"model": model, "meta": meta})
 
@@ -766,59 +487,35 @@ def main(panel_path: Optional[str] = None) -> int:
 
     if all_results:
         first_meta = all_results[0].get("meta", {})
-        attrition_stages = [
-            ("Master manifest (full panel)", full_panel_n),
-            ("Main sample filter (excl Finance/Utility)", main_panel_n),
-            ("DSPREAD non-null", panel["PostCallSpread"].notna().sum()),
-            ("After complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
-        ]
-        generate_attrition_table(attrition_stages, out_dir, "H14b Post-Call Spread Level")
-        print("  Saved: sample_attrition.csv and sample_attrition.tex")
+        generate_attrition_table([
+            ("Full panel", full_panel_n),
+            ("Main sample", main_panel_n),
+            ("PostCallSpread non-null", panel["PostCallSpread"].notna().sum()),
+            ("PostCallSpread_lead1 non-null", panel["PostCallSpread_lead1"].notna().sum()),
+            ("Complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
+        ], out_dir, "H14b Spread Level")
 
     generate_manifest(
-        output_dir=out_dir,
-        stage="stage4",
-        timestamp=timestamp,
+        output_dir=out_dir, stage="stage4", timestamp=timestamp,
         input_paths={"panel": panel_file},
-        output_files={
-            "diagnostics": out_dir / "model_diagnostics.csv",
-            "table": out_dir / "h14b_spread_level_table.tex",
-        },
+        output_files={"diagnostics": out_dir / "model_diagnostics.csv",
+                      "table": out_dir / "h14b_spread_level_table.tex"},
         panel_path=panel_file,
     )
-    print("  Saved: run_manifest.json")
 
     duration = (datetime.now() - start_time).total_seconds()
-    generate_report(all_results, diag_df, out_dir, duration)
+    with open(out_dir / "report_step4_H14b.md", "w", encoding="utf-8") as f:
+        f.write(f"# H14b Spread Level Report (12-col 2-DV)\n\n**Duration:** {duration:.1f}s\n")
 
     print("\n" + "=" * 80)
     print("COMPLETE")
     print("=" * 80)
-    print(f"Duration: {duration:.1f} seconds")
-    print(f"Output:   {out_dir}")
-    print(f"Total regressions completed: {len(all_results)}/{len(MODEL_SPECS)}")
-
-    for iv in KEY_IVS:
-        sig_count = sum(
-            1 for r in all_results
-            if r["meta"].get(f"{iv}_p_one", 1.0) < 0.05
-            and r["meta"].get(f"{iv}_beta", 0) > 0
-        )
-        print(f"  {iv}: {sig_count}/{len(all_results)} significant (p<0.05, one-tail)")
-
+    print(f"Duration: {duration:.1f}s  |  Regressions: {len(all_results)}/{len(MODEL_SPECS)}")
     return 0
 
 
 if __name__ == "__main__":
     args = parse_arguments()
-
     if args.dry_run:
-        print("Dry-run mode: validating inputs...")
-        print(f"  KEY_IVS: {len(KEY_IVS)} variables")
-        print(f"  MODEL_SPECS: {len(MODEL_SPECS)} specifications")
-        print(f"  BASE_CONTROLS: {len(BASE_CONTROLS)} variables")
-        print(f"  EXTENDED_CONTROLS: {len(EXTENDED_CONTROLS)} variables")
-        print("[OK] All inputs validated")
         sys.exit(0)
-
     sys.exit(main(panel_path=args.panel_path))

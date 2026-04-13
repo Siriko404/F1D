@@ -26,7 +26,7 @@ Lagged DV: Capex_lag (t-1) for ALL specs. NOT derived from DV name stripping
            (Capex_lead2.replace("_lead","") would give "Capex2" — bug).
 
 Sample: Main only (FF12 != 8, 11).
-SEs: Two-way clustered (firm, time).
+SEs: Firm-level clustered (Petersen 2009).
 
 Inputs:
     - outputs/variables/h13_2_capex_leads/latest/h13_2_capex_leads_panel.parquet
@@ -251,7 +251,7 @@ def prepare_regression_data(
 def run_regression(
     df_prepared: pd.DataFrame, spec: Dict[str, Any],
 ) -> Tuple[Any, Dict[str, Any]]:
-    """Run PanelOLS with FE and two-way clustered SEs."""
+    """Run PanelOLS with FE and firm-level clustered SEs."""
     col_num = spec["col"]
     dv = spec["dv"]
     fe_type = spec["fe"]
@@ -287,12 +287,12 @@ def run_regression(
                 drop_absorbed=True,
                 check_rank=False,
             )
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
         else:
             exog_str = " + ".join(exog)
             formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
             model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
     except Exception as e:
         print(f"  ERROR: {e}", file=sys.stderr)
         return None, {}
@@ -466,7 +466,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed). ",
-        r"Standard errors (in parentheses) two-way clustered (firm, time). ",
+        r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
         r"CapEx intensity is constant within firm-fiscal-year (Q4 capxy / lagged assets). ",
         r"Lagged DV = Capex$_{t-1}$ for all specifications. ",

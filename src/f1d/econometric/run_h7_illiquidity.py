@@ -1,27 +1,36 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H7 Post-Call Illiquidity Hypothesis
+STAGE 4: Test H7 Post-Call Illiquidity Hypothesis (12-col 2-DV)
 ================================================================================
 ID: econometric/test_h7_illiquidity
-Description: Run H7 Illiquidity hypothesis test using 4 model specifications
-             with 4 simultaneous uncertainty IVs, varying FE type and
-             control set. Main sample only.
+Description: Run H7 Illiquidity hypothesis test using 12 model specifications
+             with 4 simultaneous uncertainty IVs and a contemp + t+1 lead DV.
 
-Model Specifications (4 columns in one table):
-    Col 1: Industry FE (FF12) + CalYear FE, Base controls
-    Col 2: Firm FE + CalYear FE, Base controls
-    Col 3: Industry FE (FF12) + CalYear FE, Extended controls
-    Col 4: Firm FE + CalYear FE, Extended controls
+Model Specifications (12 columns in one table):
+    Cols 1-6:  DV = DeltaILLIQ (contemporaneous)
+    Cols 7-12: DV = DeltaILLIQ_lead1 (next-quarter lead)
 
-DV: DeltaILLIQ — change in Amihud illiquidity around call ([+1,+3] - [-3,-1] days).
+    Within each DV block:
+      Col 1/7:   Industry FE + CalYear FE,  Base controls
+      Col 2/8:   Firm FE     + CalYear FE,  Base controls
+      Col 3/9:   Industry FE + CalYear FE,  Extended controls
+      Col 4/10:  Firm FE     + CalYear FE,  Extended controls
+      Col 5/11:  Industry FE + CalYrQtr FE, Extended controls
+      Col 6/12:  Firm FE     + CalYrQtr FE, Extended controls
+
+DV: DeltaILLIQ -- change in Amihud illiquidity around call ([+1,+3] - [-3,-1] days).
+DV (lead): DeltaILLIQ_lead1 -- next-quarter call's DeltaILLIQ.
 
 Key Independent Variables (4, all enter simultaneously):
-    UncAnsCEO, UncPreCEO,
-    UncAnsMgr, UncPreMgr,
+    UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
 
-Base Controls (8, mirrors H14):
-    lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, PreCallILLIQ
+Base Controls (8):
+    lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, Lagged_DV
+    NOTE: Lagged_DV is a placeholder routed at spec-prep time:
+          contemp DV -> {base}_lag; lead DV -> {base} (current value).
+    NOTE: PreCallILLIQ has been REMOVED from controls (replaced by true t-1
+          Lagged_DV via create_prior_quarter_lag at panel build time).
 
 Extended Controls (Base + 4):
     + DailyVola, StockPrice, Turnover, UncQue
@@ -29,15 +38,18 @@ Extended Controls (Base + 4):
 Sample: Main only (FF12 codes 1-7, 9-10, 12).
 
 Hypothesis Test (one-tailed):
-    H7: beta(uncertainty_var) > 0 — higher uncertainty -> more illiquidity.
+    H7: beta(uncertainty_var) > 0 -- higher uncertainty -> more illiquidity.
     Stars based on one-tailed p-values.
 
-FE Time Index: cal_yr (calendar year); cal_yr_qtr (calendar year-quarter) for YQ specs.
-Standard Errors: Firm-clustered (groups=gvkey).
-Industry FE: Absorbed via PanelOLS constructor other_effects (not C() dummies).
+FE Time Index: cal_yr (cols 1-4, 7-10) or cal_yr_qtr (cols 5-6, 11-12).
+Standard Errors: Firm-level clustered following Petersen (2009). Phase 2.5
+    decision (2026-04-13) committed uniform firm-only clustering across
+    non-macro suites; see docs/Draft/DECISIONS.md §2.1 for empirical
+    justification from the H1 comparison test.
+Industry FE: absorbed via PanelOLS constructor other_effects (not C() dummies).
 
 Author: Thesis Author
-Date: 2026-03-17
+Date: 2026-04-17 (12-col 2-DV upgrade)
 ================================================================================
 """
 
@@ -68,9 +80,11 @@ KEY_IVS = [
     "UncAnsCEO",
     "UncPreCEO",
     "UncAnsMgr",
-    "UncPreMgr",]
+    "UncPreMgr",
+]
 
-# Mirrors H14 bid-ask spread pattern: standard 7 + lagged-DV control
+# Lagged_DV is a placeholder routed at spec-prep time via _lag_column_for_dv().
+# PreCallILLIQ has been REMOVED -- replaced by the true t-1 prior-quarter lag.
 BASE_CONTROLS = [
     "lnAssets",
     "TobinsQ",
@@ -79,7 +93,7 @@ BASE_CONTROLS = [
     "Capex",
     "DivDummy",
     "sCFO",
-    "PreCallILLIQ",
+    "Lagged_DV",
 ]
 
 EXTENDED_CONTROLS = BASE_CONTROLS + [
@@ -90,13 +104,20 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
 ]
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "DeltaILLIQ", "fe": "industry", "controls": "base"},
-    {"col": 2, "dv": "DeltaILLIQ", "fe": "firm",     "controls": "base"},
-    {"col": 3, "dv": "DeltaILLIQ", "fe": "industry", "controls": "extended"},
-    {"col": 4, "dv": "DeltaILLIQ", "fe": "firm",     "controls": "extended"},
-    # Year-Quarter FE specs (Extended controls only)
-    {"col": 5, "dv": "DeltaILLIQ", "fe": "industry_yq", "controls": "extended"},
-    {"col": 6, "dv": "DeltaILLIQ", "fe": "firm_yq",     "controls": "extended"},
+    # Contemporaneous DV (cols 1-6)
+    {"col": 1,  "dv": "DeltaILLIQ",       "fe": "industry",    "controls": "base"},
+    {"col": 2,  "dv": "DeltaILLIQ",       "fe": "firm",        "controls": "base"},
+    {"col": 3,  "dv": "DeltaILLIQ",       "fe": "industry",    "controls": "extended"},
+    {"col": 4,  "dv": "DeltaILLIQ",       "fe": "firm",        "controls": "extended"},
+    {"col": 5,  "dv": "DeltaILLIQ",       "fe": "industry_yq", "controls": "extended"},
+    {"col": 6,  "dv": "DeltaILLIQ",       "fe": "firm_yq",     "controls": "extended"},
+    # Next-quarter lead DV (cols 7-12)
+    {"col": 7,  "dv": "DeltaILLIQ_lead1", "fe": "industry",    "controls": "base"},
+    {"col": 8,  "dv": "DeltaILLIQ_lead1", "fe": "firm",        "controls": "base"},
+    {"col": 9,  "dv": "DeltaILLIQ_lead1", "fe": "industry",    "controls": "extended"},
+    {"col": 10, "dv": "DeltaILLIQ_lead1", "fe": "firm",        "controls": "extended"},
+    {"col": 11, "dv": "DeltaILLIQ_lead1", "fe": "industry_yq", "controls": "extended"},
+    {"col": 12, "dv": "DeltaILLIQ_lead1", "fe": "firm_yq",     "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -105,15 +126,18 @@ VARIABLE_LABELS = {
     "UncAnsCEO": "CEO QA Uncertainty",
     "UncPreCEO": "CEO Pres Uncertainty",
     "UncAnsMgr": "Mgr QA Uncertainty",
-    "UncPreMgr": "Mgr Pres Uncertainty",}
+    "UncPreMgr": "Mgr Pres Uncertainty",
+}
 
 SUMMARY_STATS_VARS = [
-    {"col": "DeltaILLIQ", "label": "$\\Delta$Amihud (post$-$pre call)"},
+    {"col": "DeltaILLIQ", "label": "$\\Delta$Amihud$_t$"},
+    {"col": "DeltaILLIQ_lead1", "label": "$\\Delta$Amihud$_{t+1}$"},
     {"col": "PreCallILLIQ", "label": "Pre-Call Amihud"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
-    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},    {"col": "lnAssets", "label": "Firm Size (log AT)"},
+    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
     {"col": "Leverage", "label": "Leverage"},
@@ -124,12 +148,37 @@ SUMMARY_STATS_VARS = [
 ]
 
 
+# ==============================================================================
+# Lagged DV routing (placeholder pattern from run_h24_us_epu.py:149)
+# ==============================================================================
+
+def _lag_column_for_dv(dv: str) -> str:
+    """Map a DV name to its actual t-1 lag column.
+
+    For contemporaneous DV: returns {dv}_lag (true prior-quarter lag created
+    by create_prior_quarter_lag at panel build time).
+    For lead DV (e.g., DeltaILLIQ_lead1): returns the base DV name (the
+    current-quarter value IS the lag of the next-quarter lead).
+    """
+    if dv.endswith("_lead1"):
+        return dv[: -len("_lead1")]
+    return f"{dv}_lag"
+
+
+# ==============================================================================
+# Argument parsing
+# ==============================================================================
+
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Stage 4: Test H7 Illiquidity (call-level)")
+    parser = argparse.ArgumentParser(description="Stage 4: Test H7 Illiquidity (12-col 2-DV)")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
     return parser.parse_args()
 
+
+# ==============================================================================
+# Data loading
+# ==============================================================================
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
     print("\n" + "=" * 60)
@@ -147,11 +196,18 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
     columns = [
-        "start_date",  # needed for calendar year-quarter FE
+        "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "DeltaILLIQ", "PreCallILLIQ",
+        # Cal-quarter index (built at panel time)
+        "cal_yr", "cal_qtr", "cal_yr_qtr",
+        # DV (contemp + lag + lead)
+        "DeltaILLIQ", "DeltaILLIQ_lag", "DeltaILLIQ_lead1",
+        # Pre-call (kept for summary stats; no longer in BASE_CONTROLS)
+        "PreCallILLIQ",
+        # Key IVs
         "UncAnsCEO", "UncPreCEO",
         "UncAnsMgr", "UncPreMgr",
+        # Base + extended controls
         "lnAssets", "TobinsQ", "ROA", "Leverage", "Capex",
         "DivDummy", "sCFO",
         "DailyVola", "StockPrice", "Turnover",
@@ -161,8 +217,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  Loaded: {panel_file}")
     print(f"  Rows: {len(panel):,}  |  Columns: {len(panel.columns)}")
 
-    # Build calendar year-quarter index for YQ FE specs
-    panel = build_cal_yr_qtr_index(panel)
+    # cal_yr_qtr already exists in the panel (built at Phase C). Sanity check.
     n_yr_qtr = panel["cal_yr_qtr"].notna().sum()
     print(f"  cal_yr_qtr coverage: {n_yr_qtr:,}/{len(panel):,} ({100*n_yr_qtr/len(panel):.1f}%)")
 
@@ -181,6 +236,11 @@ def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.Dat
     dv = spec["dv"]
     fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
+
+    # Route Lagged_DV placeholder to the actual lag column for this DV
+    panel = panel.copy()
+    panel["Lagged_DV"] = panel[_lag_column_for_dv(dv)]
+
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
     if fe_type.endswith("_yq"):
         required.append("cal_yr_qtr")
@@ -211,6 +271,10 @@ def prepare_regression_data(panel: pd.DataFrame, spec: Dict[str, Any]) -> pd.Dat
     return df
 
 
+# ==============================================================================
+# Regression (H13 capex template — firm-level clustered, time_col switching)
+# ==============================================================================
+
 def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any, Dict[str, Any]]:
     col_num = spec["col"]
     dv = spec["dv"]
@@ -227,14 +291,17 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
 
     exog = KEY_IVS + controls
 
-    # Determine time index based on FE type
+    # Time index switches with FE type (matches H1 / H13 capex production pattern)
     time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
     base_fe = fe_type.replace("_yq", "")
-    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+    fe_label = (
+        f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'}"
+        f" + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+    )
 
     print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
-    print("  Estimating with firm-clustered SEs via PanelOLS...")
+    print("  Estimating with firm-level clustered SEs via PanelOLS...")
     t0 = datetime.now()
 
     df_panel = df_prepared.set_index(["gvkey", time_col])
@@ -247,12 +314,12 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
                 other_effects=df_panel["ff12_code"],
                 drop_absorbed=True, check_rank=False,
             )
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
         else:  # "firm"
             exog_str = " + ".join(exog)
             formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
             model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
-            model = model_obj.fit(cov_type="clustered", cluster_entity=True)
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
     except Exception as e:
         print(f"  ERROR: Regression failed: {e}", file=sys.stderr)
         return None, {}
@@ -267,6 +334,7 @@ def run_regression(df_prepared: pd.DataFrame, spec: Dict[str, Any]) -> Tuple[Any
         "n_obs": int(model.nobs), "n_firms": df_prepared["gvkey"].nunique(),
         "r2": float(model.rsquared),
         "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
+        "dv_mean": float(model.model.dependent.dataframe.mean().iloc[0]),
     }
 
     # One-tailed: H7 beta > 0 (higher uncertainty -> more illiquidity)
@@ -297,9 +365,13 @@ def _sig_stars(p):
     return ""
 
 
+# ==============================================================================
+# 12-col LaTeX table (H1 / H13 capex template)
+# ==============================================================================
+
 def _save_latex_table(all_results, out_dir):
     results_by_col = {r["meta"]["col"]: r["meta"] for r in all_results if r.get("meta")}
-    n_cols = 6
+    n_cols = 12
 
     def fmt_coef(v, s): return "" if np.isnan(v) else f"{v:.4f}{s}"
     def fmt_se(v): return "" if np.isnan(v) else f"({v:.4f})"
@@ -313,14 +385,17 @@ def _save_latex_table(all_results, out_dir):
 
     lines = [
         r"\begin{table}[htbp]", r"\centering",
-        r"\caption{Speech Uncertainty and Post-Call Illiquidity}",
+        r"\caption{Speech Uncertainty and Post-Call Illiquidity ($\Delta$Amihud, contemp + $t+1$ lead)}",
         r"\label{tab:h7_illiquidity}", r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}", r"\toprule",
     ]
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
-    lines.append(r" & \multicolumn{6}{c}{$\Delta$Amihud Illiquidity} \\")
-    lines.append(r"\cmidrule(lr){2-7}")
+    lines.append(
+        r" & \multicolumn{6}{c}{$\Delta$Amihud$_t$}"
+        r" & \multicolumn{6}{c}{$\Delta$Amihud$_{t+1}$} \\"
+    )
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     for iv in KEY_IVS:
@@ -360,18 +435,22 @@ def _save_latex_table(all_results, out_dir):
     lines.append(r"$R^2$ & " + " & ".join(r2s) + r" \\")
     adj_r2s = [fmt_r2(results_by_col.get(c, {}).get("adj_r2", np.nan)) for c in range(1, n_cols + 1)]
     lines.append(r"Adj.~$R^2$ & " + " & ".join(adj_r2s) + r" \\")
+    dv_means = [fmt_r2(results_by_col.get(c, {}).get("dv_mean", np.nan)) for c in range(1, n_cols + 1)]
+    lines.append(r"DV Mean & " + " & ".join(dv_means) + r" \\")
 
     lines += [
         r"\bottomrule", r"\end{tabular}",
         r"\begin{minipage}{\linewidth}", r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H7: $\beta > 0$). ",
-        r"Standard errors (in parentheses) clustered at firm level. ",
+        r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
-        r"$\Delta$Amihud = post-call ([+1,+3] days) minus pre-call ([-3,-1] days) Amihud illiquidity. ",
+        r"$\Delta$Amihud$_t$ = post-call ([+1,+3] days) minus pre-call ([-3,-1] days) Amihud illiquidity (Lee 2016 window). ",
+        r"$\Delta$Amihud$_{t+1}$ = next-quarter call's $\Delta$Amihud (calendar quarter, strict consecutive). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"Time FE uses calendar year (cal\_yr) or calendar year-quarter (cal\_yr\_qtr). ",
-        r"All variables winsorized at 1\%/99\% per year (controls at engine level; $\Delta$Amihud and pre-call Amihud at builder level). ",
+        r"Time FE uses calendar year (\texttt{cal\_yr}) for cols 1--4, 7--10 or calendar year-quarter (\texttt{cal\_yr\_qtr}) for cols 5--6, 11--12. ",
+        r"Lagged\_DV control = true t-1 prior-quarter lag (\texttt{create\_prior\_quarter\_lag}); replaces the former PreCallILLIQ control as of 2026-04-17. ",
+        r"All variables winsorized at 1\%/99\% per year (controls at engine level; $\Delta$Amihud at builder level). ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}", r"\end{table}",
     ]
@@ -392,6 +471,7 @@ def save_outputs(all_results, out_dir):
         with open(out_dir / f"regression_results_col{col_num}.txt", "w", encoding="utf-8") as f:
             f.write(f"Col ({col_num}) | DV: {meta['dv']} | FE: {meta['fe']} | Controls: {meta['controls']}\n")
             f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
+            f.write(f"DV_Mean: {meta.get('dv_mean', float('nan')):.10f}\n")
             f.write("=" * 60 + "\n\n" + str(model.summary))
         print(f"  Saved: regression_results_col{col_num}.txt")
 
@@ -414,14 +494,15 @@ def main(panel_path: Optional[str] = None) -> int:
     log_dir = setup_run_logging(log_base_dir=root / "logs", suite_name="H7_Illiquidity", timestamp=timestamp)
 
     print("=" * 80)
-    print("STAGE 4: Test H7 Post-Call Illiquidity Hypothesis")
+    print("STAGE 4: Test H7 Post-Call Illiquidity Hypothesis (12-col 2-DV)")
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
     print(f"Sample:    Main only (FF12 != 8, 11)")
     print(f"IVs:       {len(KEY_IVS)} (all simultaneous)")
-    print(f"Specs:     {len(MODEL_SPECS)} model columns")
-    print(f"Time FE:   cal_yr (calendar year) + cal_yr_qtr (calendar year-quarter)")
+    print(f"Specs:     {len(MODEL_SPECS)} model columns (6 contemp + 6 lead)")
+    print(f"Time FE:   cal_yr (cols 1-4, 7-10) + cal_yr_qtr (cols 5-6, 11-12)")
+    print(f"Cluster:   Firm-level (Petersen 2009)")
     print(f"Test:      One-tailed (beta > 0)")
 
     panel = load_panel(root, panel_path)
@@ -436,6 +517,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     print(f"\n  Main sample: {main_panel_n:,} calls, {panel['gvkey'].nunique():,} firms")
     print(f"  DeltaILLIQ non-null: {panel['DeltaILLIQ'].notna().sum():,}")
+    print(f"  DeltaILLIQ_lead1 non-null: {panel['DeltaILLIQ_lead1'].notna().sum():,}")
     for iv in KEY_IVS:
         n_valid = panel[iv].notna().sum()
         print(f"  {iv}: {n_valid:,} ({100.0 * n_valid / main_panel_n:.1f}%)")
@@ -471,6 +553,7 @@ def main(panel_path: Optional[str] = None) -> int:
             ("Full panel", full_panel_n),
             ("Main sample", main_panel_n),
             ("DeltaILLIQ non-null", panel["DeltaILLIQ"].notna().sum()),
+            ("DeltaILLIQ_lead1 non-null", panel["DeltaILLIQ_lead1"].notna().sum()),
             ("Complete-case + min-calls (col 1)", first_meta.get("n_obs", 0)),
         ], out_dir, "H7 Illiquidity")
 
@@ -484,7 +567,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     duration = (datetime.now() - start_time).total_seconds()
     with open(out_dir / "report_step4_H7.md", "w", encoding="utf-8") as f:
-        f.write(f"# H7 Illiquidity Report\n\n**Duration:** {duration:.1f}s\n**Sample:** Main only\n")
+        f.write(f"# H7 Illiquidity Report (12-col 2-DV)\n\n**Duration:** {duration:.1f}s\n**Sample:** Main only\n")
     print(f"  Saved: report_step4_H7.md")
 
     print("\n" + "=" * 80)

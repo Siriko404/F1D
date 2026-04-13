@@ -326,7 +326,7 @@ def run_regression(
 
         meta[f"{iv}_beta"] = beta
         meta[f"{iv}_se"] = se
-        meta[f"{iv}_p_one"] = p_two  # two-tailed
+        meta[f"{iv}_p_two"] = p_two  # two-tailed
 
         stars = _sig_stars(p_two)
         print(f"  {VARIABLE_LABELS.get(iv, iv)}: b={beta:.4f} p2={p_two:.4f} {stars}")
@@ -404,8 +404,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         for c in range(1, n_cols + 1):
             meta = results_by_col.get(c, {})
             beta = meta.get(f"{iv}_beta", np.nan)
-            p_one = meta.get(f"{iv}_p_one", np.nan)
-            coef_cells.append(fmt_coef(beta, _sig_stars(p_one)))
+            p_two = meta.get(f"{iv}_p_two", np.nan)
+            coef_cells.append(fmt_coef(beta, _sig_stars(p_two)))
         lines.append(f"{label} & " + " & ".join(coef_cells) + r" \\")
 
         se_cells = []
@@ -640,7 +640,7 @@ def main(panel_path: Optional[str] = None) -> int:
     for iv in KEY_IVS:
         sig_count = sum(
             1 for r in all_results
-            if r["meta"].get(f"{iv}_p_one", 1.0) < 0.05
+            if r["meta"].get(f"{iv}_p_two", 1.0) < 0.05
         )
         print(f"  {VARIABLE_LABELS.get(iv, iv)}: {sig_count}/{len(all_results)} significant (p<0.05, two-tail)")
 

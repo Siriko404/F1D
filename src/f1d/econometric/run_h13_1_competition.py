@@ -92,12 +92,16 @@ MODERATORS = {
 MIN_CALLS_PER_FIRM = 5
 
 MODEL_SPECS = [
-    # Calendar Year FE
+    # Capex DV: cols 1-4 (full FE ladder)
     {"col": 1, "dv": "Capex",      "mod": "tsimm", "fe": "industry",    "extra_controls": []},
-    {"col": 2, "dv": "Capex_lead", "mod": "tsimm", "fe": "industry",    "extra_controls": []},
-    # Year-Quarter FE
+    {"col": 2, "dv": "Capex",      "mod": "tsimm", "fe": "firm",        "extra_controls": []},
     {"col": 3, "dv": "Capex",      "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
-    {"col": 4, "dv": "Capex_lead", "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
+    {"col": 4, "dv": "Capex",      "mod": "tsimm", "fe": "firm_yq",     "extra_controls": []},
+    # Capex_lead DV: cols 5-8 (full FE ladder)
+    {"col": 5, "dv": "Capex_lead", "mod": "tsimm", "fe": "industry",    "extra_controls": []},
+    {"col": 6, "dv": "Capex_lead", "mod": "tsimm", "fe": "firm",        "extra_controls": []},
+    {"col": 7, "dv": "Capex_lead", "mod": "tsimm", "fe": "industry_yq", "extra_controls": []},
+    {"col": 8, "dv": "Capex_lead", "mod": "tsimm", "fe": "firm_yq",     "extra_controls": []},
 ]
 
 DV_TEX = {
@@ -348,7 +352,8 @@ def run_regression(
 
     fe_type = spec.get("fe", "industry")
     time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
-    fe_label = "Industry+YQ" if fe_type.endswith("_yq") else "Industry+CalYr"
+    base_fe = fe_type.replace("_yq", "")
+    fe_label = f"{'Firm' if base_fe == 'firm' else 'Industry(FF12)'} + {'YQ' if fe_type.endswith('_yq') else 'CalYr'}"
 
     print(f"\n{'=' * 60}")
     print(f"Col ({col_num}) | DV={dv} | Mod={mod_info['label']} | FE={fe_label}")
@@ -370,15 +375,20 @@ def run_regression(
     df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        model_obj = PanelOLS(
-            dependent=df_panel[dv],
-            exog=df_panel[exog],
-            entity_effects=False,
-            time_effects=True,
-            other_effects=df_panel["ff12_code"],
-            drop_absorbed=True,
-            check_rank=False,
-        )
+        if base_fe == "industry":
+            model_obj = PanelOLS(
+                dependent=df_panel[dv],
+                exog=df_panel[exog],
+                entity_effects=False,
+                time_effects=True,
+                other_effects=df_panel["ff12_code"],
+                drop_absorbed=True,
+                check_rank=False,
+            )
+        else:  # firm
+            exog_str = " + ".join(exog)
+            formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
+            model_obj = PanelOLS.from_formula(formula, data=df_panel, drop_absorbed=True)
         model = model_obj.fit(cov_type="clustered", cluster_entity=True)
     except Exception as e:
         print(f"  ERROR: {e}", file=sys.stderr)
