@@ -2,7 +2,7 @@
 
 **Purpose:** persistent memory for Claude across context compactions. Claude appends/updates this file as work progresses. Read at start of every draft session.
 
-**Current phase:** **Phases 2 and 2.5 COMPLETE.** Clustering methodology committed: uniform firm-only + macro exception. Phase 3 ready.
+**Current phase:** **Phase 2.5 + Phase 3 tier 1 + tier 2A COMPLETE and COMMITTED** (commits 6a98792, 513b001). Tier 2B/C/D pending: H11, H11-Lag, H20b.
 **Last updated:** 2026-04-13
 
 ---
@@ -77,36 +77,36 @@ All 14 remaining families audited. Full bug inventory and raw cell facts in DECI
 
 ---
 
-## Verified Phase 3 bugs
+## Phase 3 progress
 
-**Clustering downgrades — uniform firm-only rule** (see DECISIONS.md §2.1.1 for full list + line numbers):
-- [ ] 16 currently-two-way non-macro runners: H1, H1.2, H4, H7, H7b, H7c, H7d, H7e, H12b, H13, H13.2, H14, H14b, H14c, H14d, H14e, H16
-- [ ] For each: switch `cluster_time=True` → `cluster_time=False` AND update runner footnote string ("two-way clustered" → "firm-level clustered")
-- [ ] H7d is part of this batch and automatically fixes the silent NaN SE bug (see §2.1.4)
-- [ ] Leave H14/H14d defensive fallback code in place — becomes dead but harmless (see §2.1.5)
+**Clustering downgrades — uniform firm-only rule** — **DONE 2026-04-13** (commit 6a98792 + 513b001):
+- [x] 17 runners downgraded: H1, H1.2, H4, H7, H7b, H7c, H7d, H7e, H12b, H13, H13.2, H14, H14b, H14c, H14d, H14e, H16
+- [x] All cluster_time args + footnotes + docstrings + prints updated to "firm-level clustered"
+- [x] H7d silent NaN SE bug auto-fixed by downgrade
+- [x] H14/H14d defensive fallback branches preserved (dead but harmless per advisor)
+- [x] `scripts/findings_template.txt` 7 clustering references updated
 
-**Missing firm-FE specs on moderation suites** (add firm-FE cols for spec-ladder consistency):
-- [ ] H1.1 (TSIMM continuous × cash)
-- [ ] H1.1b (TSIMM binary × cash)
-- [ ] H1.2 (rating × cash)
-- [ ] H13.1 (TSIMM × capex)
+**Moderation suite FE expansion** — **DONE 2026-04-13** (commit 6a98792):
+- [x] H1.1 — 2 → 4 cols (industry + firm + industry_yq + firm_yq; extended controls only). Smoke test passed.
+- [x] H1.1b — 2 → 4 cols (same pattern). Smoke test passed.
+- [x] H1.2 — 4 → 8 cols (4 unconditional + 4 interaction, each with full FE ladder). Smoke test passed.
+- [x] H13.1 — 4 → 8 cols (4 Capex + 4 Capex_lead, each with full FE ladder). Smoke test passed.
+- [x] `outputs/generate_all_tables.py` entries updated: cols + col_files + base_iv + dvs mappings
 
-**Missing spec ladder** (only 4/8 cols; single FE spec):
-- [ ] H11 / H11-Lag — expand to spec ladder or document as deliberate
-- [ ] H22 — 4 cols, no YrQtr variant (small N=8.6k may justify)
+**Directional tailing fixes** — **DONE 2026-04-13** (commit 6a98792):
+- [x] H4 → one-tailed β<0 (uncertainty reduces leverage per user). Smoke test passed. FINDING: contemp Leverage cols 1-4 NOT sig at 10% one-tailed; user accepted.
+- [x] H23 → one-tailed β>0 (competition increases uncertainty per user). Smoke test passed. Col 1 p_one=0.031 sig.
+- [x] H17 silent naming bug fixed: field `_p_one` stored `p_two` values → renamed to `_p_two`. Effective tailing unchanged (still two-tailed per user).
+- [x] H13, H16, H20b remain two-tailed per user explicit decision.
 
-**Missing lead DV variant** (unilateral 6-col suite):
-- [ ] H20b (vs H19b which has 12 cols / 2 DVs)
-- [ ] H18 (CCCL receipt; single DV; H21 is the count variant but different DV entirely)
+**STILL PENDING (tier 2B/C/D)**:
+- [ ] **H11 spec ladder expansion** (4 → 8 cols, add firm/industry split). Complexity: H11 loops over 4 DVs × 3 samples (Main/Finance/Utility); only Main appears in thesis table. Has its own `_save_latex_table` function. Need to refactor `run_regression` to accept FE type, double the main loop, and update `generate_all_tables.py` H11 entry (currently maps 4 files; needs 8).
+- [ ] **H11-Lag spec ladder** (8 → 16 cols). Same pattern as H11 but for 2 lag variants.
+- [ ] **H20b add `ChangDebtChoice_lead` DV** (6 → 12 cols matching H19b). Check if panel has lead column or needs panel-builder extension.
 
-**Directional test convention (two-tailed on directional hypotheses):**
-- [ ] H4a, H4b — leverage direction negative
-- [ ] H13, H13.1, H13.2 — capex direction positive
-- [ ] H17 — repurchase intensity
-- [ ] H19b vs H20b — within-family tailing inconsistency (H19b one-tailed β<0, H20b two-tailed)
-- [ ] H20b — two-tailed while directional
-- [ ] H23 — two-tailed while reverse-direction with directional expectation
-- (user decision pending: per-IV vs uniform one-tailed; H1 already per-IV one-tailed for IVs only)
+**Deferred to Phase 5 (no code fix)**:
+- Sample/methodological notes (H12, H20b, H14 family, H22 — document in limitations).
+- Within-family contradictions (H18 vs H21 UncPreMgr sign; H25 GPR wrong-sign QA).
 
 **Sample / methodological notes (document in Phase 5, no code fix):**
 - [ ] H12 sample selection: DV NaN when `ibq ≤ 0`; N=45k vs H12b N=64k
@@ -123,17 +123,15 @@ All 14 remaining families audited. Full bug inventory and raw cell facts in DECI
 
 ## Session-resume notes (for post-compaction pickup)
 
-1. **Read PROGRESS.md first** — authoritative current state
-2. **Phases 2 and 2.5 are COMPLETE.** Do NOT re-audit families. Do NOT re-run the H1 clustering test. Next action is Phase 3 (pipeline fixes).
-3. **DECISIONS.md §2 and §4 are authoritative** — §2.1 now encodes the uniform firm-only + macro exception rule with full empirical H1 evidence (delta table + CGM 2011 decomposition). §4 has raw cell facts for all 14 post-reset families plus pre-reset rounds. §1.3 FE-selection rule is structural, stays valid.
-4. **H1 clustering evidence directory**: `outputs/econometric/h1_cash_holdings/2026-04-13_162202/` — DO NOT DELETE. This is the empirical basis for the Phase 2.5 decision.
-5. **Phase 3 entry point**: DECISIONS.md §2.1.1 has the 16-runner clustering downgrade list with line numbers. Start there. §2.2–§2.5 have the non-clustering Phase 3 work (moderation FE specs, spec ladder, directional tailing, sample notes).
-6. **Pipeline source verified for these runners** (14 post-reset families all done + the pre-reset ones): H1, H4, H5, H7, H7b-e, H11, H11-Lag, H12, H12b, H13, H13.1, H13.2, H14, H14b-e, H16, H17, H18, H18b, H19b, H20b, H21, H22, H23, H24, H24b, H25. All audited for clustering + FE spec + tailing + cell facts.
-7. **Files to reference**:
-   - `docs/Draft/PROGRESS.md` — current workflow state (this file)
-   - `docs/Draft/DECISIONS.md` — bug inventory (§2), audit table (§3), raw cell catalogue (§4)
-   - `draft.tex` — IGNORE (pre-reset placeholder skeleton; Phase 5 rewrite)
-8. **Memory entries that stay valid**: `feedback_audit_first_no_narrative.md` (the 5-rule discipline), `feedback_ceo_noisy_mgr_central.md` (secondary-measure rule), `feedback_pres_is_presentation.md`, `feedback_macro_iv_handling.md`, `project_notebooklm_papers.md`, `reference_paper_search_mcp.md`. Pre-reset narrative framings in `project_duong_2024_buyback_staging.md` and `project_grenadier_2002_competitive_real_options.md` are IGNORED for now — Phase 5 decision.
+1. **Read PROGRESS.md first** — authoritative current state.
+2. **Phase 2.5 + tier 1 + tier 2A are DONE and COMMITTED** (6a98792 + 513b001). Do NOT re-run those. Next action is tier 2B/C/D (H11, H11-Lag, H20b) then Phase 4 reruns.
+3. **DECISIONS.md §2 and §4 are authoritative** — §2.1.1 shows the 17 runners as [x] done. §2.2 moderation suites as done. §2.3 tailing items: H4/H17/H23 done; H13, H16, H20b kept two-tailed per user.
+4. **H1 clustering evidence directory**: `outputs/econometric/h1_cash_holdings/2026-04-13_162202/` — DO NOT DELETE.
+5. **Commit risk flag**: `513b001` includes 57 files of prior-session WIP in shared/ and variables/. If Phase 4 reruns break, revert `513b001` and investigate.
+6. **H11 refactor entry point**: read `src/f1d/econometric/run_h11_prisk_uncertainty.py` fully first. The `run_regression` function uses `from_formula` with `EntityEffects + TimeEffects`. Add a base_fe dispatch like the moderation suites. Main loop at line 463 iterates `for dv: for sample:`; need to wrap in `for fe in ['firm', 'industry']:`. Filenames become `regression_results_{sample}_{dv}_{fe}.txt`. Update `outputs/generate_all_tables.py` H11 entry at line 295 to map 8 col_files.
+7. **H20b entry point**: read `src/f1d/econometric/run_h20b_debt_choice.py` MODEL_SPECS; check panel for `ChangDebtChoice_lead`. If missing, extend the panel builder then rebuild.
+8. **Phase 4 command**: `python outputs/generate_all_tables.py` regenerates `outputs/all_tables.tex` + PDFs.
+9. **User preferences (active feedback)**: concise by default (`feedback_concise_default.md`), adversarial challenge (CLAUDE.md global rule), audit-first discipline (`feedback_audit_first_no_narrative.md`).
 
 ---
 
@@ -148,3 +146,8 @@ All 14 remaining families audited. Full bug inventory and raw cell facts in DECI
 - **2026-04-13**: Clustering methodology reconsideration. User raised whether two-way clustering is universally appropriate given time FE inclusion. Advisor (second opinion) confirmed direction: uniform firm-only defensible via Petersen (2009); keep macro-IV two-way exception; verify H1 empirically before committing. Phase 2.5 milestone added to workflow. DECISIONS.md §2.1 NOT yet updated — awaiting H1 test. §2.1 remains authoritative as conservative fallback.
 - **2026-04-13**: Second compaction prep: memory consolidation methodical update (PROGRESS.md Phase 2.5 added, project_draft_playing_it_safe.md rewritten).
 - **2026-04-13**: Phase 2.5 COMPLETE. H1 empirical test run (`outputs/econometric/h1_cash_holdings/2026-04-13_162202/`). Result: firm-only SEs are 0.5%–27.1% LARGER than two-way across 12 specs; all 6 significant contemp UncAnsMgr cells survive; col 9 weakens from p=.009 to p=.032 but remains sig at 5% one-tailed. Direction is CONSERVATIVE (firm-only tightens inference, not loosens). Advisor confirmed: proceed with commit. DECISIONS.md §2.1 fully rewritten — uniform firm-only + macro exception rule, delta table preserved, 16-runner Phase 3 downgrade list in §2.1.1, 13 already-correct firm-only runners reclassified in §2.1.2, 3 macro runners in §2.1.3, H7d NaN fix subsumed in §2.1.4, H14/H14d fallback becomes dead code in §2.1.5. PROGRESS.md updated accordingly. Phase 3 ready.
+- **2026-04-13**: Phase 3 clustering downgrades executed across 17 runners (H1, H1.2, H4, H7, H7b, H7c, H7d, H7e, H12b, H13, H13.2, H14, H14b, H14c, H14d, H14e, H16). All docstrings, print statements, LaTeX footnotes updated to "firm-level clustered". H1 re-smoke-test (`2026-04-13_165454/`) confirmed bit-identical to Phase 2.5 test baseline. scripts/findings_template.txt cleaned. 17 runners compile. DECISIONS.md §2.1.1 marked [x] DONE.
+- **2026-04-13**: Phase 3 tier 1 tailing: H17 naming bug fixed (field `_p_one` held `p_two` values; renamed to `_p_two`); H4 flipped to one-tailed β<0 (user: "uncertainty should decrease leverage"); H23 flipped to one-tailed β>0 (user: "higher uncertainty"). H4/H23 smoke-tested; H4 finding: contemp Leverage cols 1-4 NOT sig at 10% under one-tailed (user accepted, said proceed). H13/H16/H20b remain two-tailed per user decision.
+- **2026-04-13**: Phase 3 tier 2A moderation FE expansion: H1.1 (2→4), H1.1b (2→4), H1.2 (4→8), H13.1 (4→8). Added firm-FE dispatch branch to each regression function. All smoke tests passed. `outputs/generate_all_tables.py` entries updated for 4 suites. User D1 rule: extended controls only, full FE ladder consistent across all moderation suites.
+- **2026-04-13**: Committed `6a98792` (18 files, my session work: Phase 2.5 + Phase 3 tier 1 + tier 2A + DECISIONS.md + PROGRESS.md) and `513b001` (57 files, prior-session WIP batch including H7c/d/e, H14c/d/e, H12b runners from prior audit cleanup; RISK: shared/ + variables/ modules untested). Working tree clean.
+- **2026-04-13**: Third compaction prep. Memory + PROGRESS.md + MEMORY.md updated. Tier 2B/C/D (H11, H11-Lag, H20b) explicitly documented as next work with file entry points for post-compaction pickup.
