@@ -58,7 +58,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -66,7 +66,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -86,10 +91,25 @@ MACRO_IV_LABEL = r"$\log(\text{GPR})_{t}$"
 SUITE_ID = "H25"
 SUITE_NAME = "H25_GPR"
 SUITE_DIR = "h25_gpr"
+SUITE_TITLE = "Geopolitical Risk and Call Language Uncertainty"
 SUITE_CAPTION = (
     "H25: Geopolitical Risk and Call Language Uncertainty"
 )
 SUITE_LABEL = "tab:h25_gpr"
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (single sub-table, 2-row header).
+# Macro IV suites use two-way clustering (firm, cal_yr_qtr) and no
+# Year-Quarter FE (would absorb the macro IV).
+# ------------------------------------------------------------------
+SAMPLE_LABEL = (
+    "Main sample (excludes financial and utility firms). "
+    "Firms with fewer than 5 calls are excluded."
+)
+HYP_DIR = "positive"  # H25: log(GPR) -> higher speech uncertainty
+CLUSTERING = {"entity": True, "time": True}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+EXTENDED_ONLY_CONTROLS: List[str] = []  # Macro suites have no extended set
 
 PANEL_INPUT_DIR = "h24_h24b_h25_macro"
 PANEL_INPUT_FILE = "h24_h24b_h25_macro_panel.parquet"
@@ -505,6 +525,111 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     print(f"  Saved: {tex_path.name}")
 
 
+def _write_suite_spec_json(
+    all_models: List[Tuple[int, Any, Dict[str, Any]]],
+    col_controls: Dict[int, List[str]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec.json for H25 (GPR macro suite).
+
+    Same two-way clustering, two-row header, per-col control_vars pattern as
+    H24/H24b. See run_h24_us_epu.py for the annotated reference implementation.
+    """
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    models_by_col = {col: (model, meta) for col, model, meta in all_models}
+
+    for spec in MODEL_SPECS:
+        col_num = spec["col"]
+        if col_num not in models_by_col:
+            raise RuntimeError(
+                f"{SUITE_ID} spec build: missing result for col {col_num}"
+            )
+        model, meta = models_by_col[col_num]
+        controls = col_controls.get(col_num, [])
+
+        fe_type = spec["fe"]
+        fe_entity = "industry" if fe_type == "industry" else "firm"
+
+        try:
+            dv_mean: Optional[float] = float(
+                model.model.dependent.dataframe.mean().iloc[0]
+            )
+        except Exception:
+            dv_mean = None
+
+        col_metadata.append(
+            {
+                "col": col_num,
+                "dv": spec["dv"],
+                "fe_entity": fe_entity,
+                "fe_time": "calendar_year",
+                "control_vars": list(controls),
+                "n_obs": int(meta["n_obs"]),
+                "n_firms": int(meta.get("n_firms", 0)) or None,
+                "r2": float(meta["r2"]),
+                "adj_r2": float(meta.get("adj_r2", float("nan"))),
+                "dv_mean": dv_mean,
+                "cluster_fallback": False,
+            }
+        )
+
+        coefs_per_col.append(
+            extract_coefs_panelols(
+                model=model,
+                key_ivs=[MACRO_IV],
+                all_vars=[MACRO_IV] + controls,
+                hyp_dir=HYP_DIR,
+            )
+        )
+
+    base_plus_dynamic = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "Lagged_DV"]
+
+    header_rows = [
+        [
+            {"label": r"Industry + Cal. Year FE", "span": 4},
+            {"label": r"Firm + Cal. Year FE", "span": 4},
+        ],
+        [{"label": spec["dv"], "span": 1} for spec in MODEL_SPECS],
+    ]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": [s["col"] for s in MODEL_SPECS],
+                "header_rows": header_rows,
+                "suite_type": "moderation",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=[{"name": MACRO_IV, "label": MACRO_IV_LABEL, "tail": "one_pos"}],
+        controls={
+            "base": base_plus_dynamic,
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+            "labels": {
+                "UncPreMgr": "UncPreMgr",
+                "UncPreCEO": "UncPreCEO",
+                "Lagged_DV": r"Lagged\_DV",
+            },
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -576,6 +701,9 @@ def main(panel_path: str | None = None) -> int:
 
     all_results: List[Dict[str, Any]] = []
     all_models: List[Tuple[int, Any, Dict[str, Any]]] = []
+    # Track per-col control lists so the spec builder can emit per-col
+    # control_vars (PRES_CONTROL_MAP asymmetry) without recomputing them.
+    col_controls: Dict[int, List[str]] = {}
 
     # Main sample only for headline 8-col table
     panel_main = panel[panel["sample"] == "Main"].copy()
@@ -604,6 +732,7 @@ def main(panel_path: str | None = None) -> int:
         if model is not None:
             all_results.append(meta)
             all_models.append((spec["col"], model, meta))
+            col_controls[spec["col"]] = list(controls)
             fname = f"regression_results_col{spec['col']}.txt"
             with open(out_dir / fname, "w", encoding="utf-8") as f:
                 f.write(f"Suite: {SUITE_ID}\n")
@@ -617,6 +746,7 @@ def main(panel_path: str | None = None) -> int:
                 f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
+    _write_suite_spec_json(all_models, col_controls, out_dir)
     pd.DataFrame(all_results).to_csv(
         out_dir / "model_diagnostics.csv", index=False, float_format="%.10f"
     )
